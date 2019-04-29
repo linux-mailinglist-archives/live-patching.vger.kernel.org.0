@@ -2,24 +2,54 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3CAEAA1
-	for <lists+live-patching@lfdr.de>; Mon, 29 Apr 2019 21:07:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C3FEACD
+	for <lists+live-patching@lfdr.de>; Mon, 29 Apr 2019 21:24:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729002AbfD2TH3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 29 Apr 2019 15:07:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58960 "EHLO mail.kernel.org"
+        id S1728928AbfD2TYn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 29 Apr 2019 15:24:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41166 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726725AbfD2TH3 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 29 Apr 2019 15:07:29 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729087AbfD2TYk (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 29 Apr 2019 15:24:40 -0400
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2FFAD20673;
-        Mon, 29 Apr 2019 19:07:26 +0000 (UTC)
-Date:   Mon, 29 Apr 2019 15:07:24 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id 510C8217F5
+        for <live-patching@vger.kernel.org>; Mon, 29 Apr 2019 19:24:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556565878;
+        bh=Fu/hOYIZwVfzmJTjU83cB5kYU+/G8jx9tdKv57qTrFw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=DXjxbd2Lmoo7ZhT4rQRWlNx5tEMhMkUhhz6oNcEqKJmks+85LbaOlYELmHhzWnmXw
+         t1P35R8xDyDyVPx7mebki/bK7xMFQYVF//VBvJS31jfq0Z83F3sRF6+kJgN2WhRHD1
+         1yPl5zKEp0fXgsgRq3kEdoNEfBSDGCCwrnFjQTJw=
+Received: by mail-wm1-f41.google.com with SMTP id w15so713682wmc.3
+        for <live-patching@vger.kernel.org>; Mon, 29 Apr 2019 12:24:38 -0700 (PDT)
+X-Gm-Message-State: APjAAAW74ikEHyaPO89T/jM5WRLTUJJHF3iREXUanyaZfK/dVs2N9InU
+        NPu1j+VfEx1xudO2sw7j6yQZHj4wOLFvdafginyjWw==
+X-Google-Smtp-Source: APXvYqyjZBsIOAF7hRXJ3H5ln2FIgXx47NTYjflr71BzIx+w9pLCUNqgqyvcXcorJunBRFnUslFSeqIvc4RKDh2gXiQ=
+X-Received: by 2002:a7b:c257:: with SMTP id b23mr415036wmj.83.1556565875080;
+ Mon, 29 Apr 2019 12:24:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190427100639.15074-1-nstange@suse.de> <20190427100639.15074-4-nstange@suse.de>
+ <20190427102657.GF2623@hirez.programming.kicks-ass.net> <20190428133826.3e142cfd@oasis.local.home>
+ <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
+ <CAHk-=wjphmrQXMfbw9j-tTzDvJ+Uc+asMHdFa=1_1xZoYVUC=g@mail.gmail.com>
+ <CALCETrXvmZPHsfRVnW0AtyddfN-2zaCmWn+FsrF6XPTOFd_Jmw@mail.gmail.com>
+ <CAHk-=whtt4K2f0KPtG-4Pykh3FK8UBOjD8jhXCUKB5nWDj_YRA@mail.gmail.com>
+ <CALCETrWELBCK-kqX5FCEDVUy8kCT-yVu7m_7Dtn=GCsHY0Du5A@mail.gmail.com>
+ <CAHk-=wgewK4eFhF3=0RNtk1KQjMANFH6oDE=8m=84RExn2gxhw@mail.gmail.com> <CAHk-=whay7eN6+2gZjY-ybRbkbcqAmgrLwwszzHx8ws3c=S-MA@mail.gmail.com>
+In-Reply-To: <CAHk-=whay7eN6+2gZjY-ybRbkbcqAmgrLwwszzHx8ws3c=S-MA@mail.gmail.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Mon, 29 Apr 2019 12:24:23 -0700
+X-Gmail-Original-Message-ID: <CALCETrXzVU0Q7u1q=QFPaDr=aojjF5cjbOi9CxxXnp5GqTqsWA@mail.gmail.com>
+Message-ID: <CALCETrXzVU0Q7u1q=QFPaDr=aojjF5cjbOi9CxxXnp5GqTqsWA@mail.gmail.com>
+Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
+ fops invocation
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
+Cc:     Andrew Lutomirski <luto@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
         Nicolai Stange <nstange@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -39,64 +69,44 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
         Nayna Jain <nayna@linux.ibm.com>,
         Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Andy Lutomirski <luto@kernel.org>,
         Joerg Roedel <jroedel@suse.de>,
         Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
         live-patching@vger.kernel.org,
         "open list:KERNEL SELFTEST FRAMEWORK" 
         <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
- fops invocation
-Message-ID: <20190429150724.6e501d27@gandalf.local.home>
-In-Reply-To: <CAHk-=wjm93jLtVxTX4HZs6K4k1Wqh3ujjmapqaYtcibVk_YnzQ@mail.gmail.com>
-References: <20190427100639.15074-1-nstange@suse.de>
-        <20190427100639.15074-4-nstange@suse.de>
-        <20190427102657.GF2623@hirez.programming.kicks-ass.net>
-        <20190428133826.3e142cfd@oasis.local.home>
-        <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
-        <20190429145250.1a5da6ed@gandalf.local.home>
-        <CAHk-=wjm93jLtVxTX4HZs6K4k1Wqh3ujjmapqaYtcibVk_YnzQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, 29 Apr 2019 11:59:04 -0700
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+On Mon, Apr 29, 2019 at 12:13 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+>
+>
+> On Mon, Apr 29, 2019, 12:02 Linus Torvalds <torvalds@linux-foundation.org> wrote:
+>>
+>>
+>>
+>> If nmi were to break it, it would be a cpu bug.
+>
+>
+> Side note: we *already* depend on sti shadow working in other parts of the kernel, namely sti->iret.
+>
 
-> I really don't care. Just do what I suggested, and if you have numbers to
-> show problems, then maybe I'll care.
-> 
+Where?  STI; IRET would be nuts.
 
-Are you suggesting that I rewrite the code to do it one function at a
-time? This has always been batch mode. This is not something new. The
-function tracer has been around longer than the text poke code.
+Before:
 
-> Right now you're just making excuses for this. I described the solution
-> months ago, now I've written a patch, if that's not good enough then we can
-> just skip this all entirely.
-> 
-> Honestly, if you need to rewrite tens of thousands of calls, maybe you're
-> doing something wrong?
-> 
+commit 4214a16b02971c60960afd675d03544e109e0d75
+Author: Andy Lutomirski <luto@kernel.org>
+Date:   Thu Apr 2 17:12:12 2015 -0700
 
- # cd /sys/kernel/debug/tracing
- # cat available_filter_functions | wc -l
- 45856
- # cat enabled_functions | wc -l
- 0
- # echo function > current_tracer
- # cat enabled_functions | wc -l
- 45856
+    x86/asm/entry/64/compat: Use SYSRETL to return from compat mode SYSENTER
 
-There, I just enabled 45,856 function call sites in one shot!
+we did sti; sysxit, but, when we discussed this, I don't recall anyone
+speaking up in favor of the safely of the old code.
 
-How else do you want to update them? Every function in the kernel has a
-nop, that turns into a call to the ftrace_handler, if I add another
-user of that code, it will change each one as well.
-
--- Steve
+Not to mention that the crash we'll get if we get an NMI and a
+rescheduling interrupt in this path will be very, very hard to debug.
