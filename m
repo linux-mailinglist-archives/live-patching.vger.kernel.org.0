@@ -2,65 +2,23 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C78DDEB9B
-	for <lists+live-patching@lfdr.de>; Mon, 29 Apr 2019 22:26:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3A7EBA7
+	for <lists+live-patching@lfdr.de>; Mon, 29 Apr 2019 22:30:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729252AbfD2U0s (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 29 Apr 2019 16:26:48 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:33491 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729212AbfD2U0r (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 29 Apr 2019 16:26:47 -0400
-Received: by mail-lj1-f195.google.com with SMTP id f23so10678270ljc.0
-        for <live-patching@vger.kernel.org>; Mon, 29 Apr 2019 13:26:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w50mZSoHkn4YcdVSRzxMDCW63EO0vPkQ2Zrko7ZDpHk=;
-        b=AoO6Qi9m5Ef2LQWrXsqnatYGBHOrBL3A+gnuAsmezQFUMAvvmPyPcegTT9th39HlUb
-         s0behpUfbgVFRk/qomTxJbvucaUEQ+T1StzlVKWLMf0QmKqLJwshHyUYFwvc5w4cct+e
-         ULknvqmm/IVR0Nk7kkerKDJNE3EHy3hhGQff4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w50mZSoHkn4YcdVSRzxMDCW63EO0vPkQ2Zrko7ZDpHk=;
-        b=S6uFqLltzUOmIbMzcZ7nsKx4p7wdpdIYM9urTuUSWd3ga3nwPM3Ttq5mGDmLlFjtjQ
-         ZQJWclc+0CKPNiN/0ToI1HQJkFrej/aZ0Ck9B5/TjxeZuAZJQpGLvUfsTm3ZU5SZF6qq
-         rJCOeFQssiulQFzXtQJPbI7AgpG5lWdGr+OwPoeiZleQVnXx06Mq/fuZCdilU4cTFu0h
-         5gK64AjpIZ0uP0UX0HgLOIs7u1LIEBlPKVMmD/4GStb8C6O1RKpoYFUKkVVgKQ6/xCoq
-         hvxktH/ODVffmPb6uL/HDETDux8l61xp3bbMyBdtQM7bPjHDjH5A/smbaby0xsL3Yjai
-         p2Wg==
-X-Gm-Message-State: APjAAAWvnMu4uXxrLwJjt1xKCt2Axj23vXa1IwJZvjRMDWKWDiLv9LvQ
-        RxnlKhf+vSgyVFzO0cdt3gir3nvQ1fY=
-X-Google-Smtp-Source: APXvYqwvMjPazSR5CXfW6Zg2oKFr8YubF/QMnyx0IgxrpIDOM/swE7B0/3czwnmxXtxS7krXIrzOCw==
-X-Received: by 2002:a2e:a0c9:: with SMTP id f9mr1750228ljm.62.1556569604682;
-        Mon, 29 Apr 2019 13:26:44 -0700 (PDT)
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
-        by smtp.gmail.com with ESMTPSA id w8sm7539147lfn.95.2019.04.29.13.26.44
-        for <live-patching@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Apr 2019 13:26:44 -0700 (PDT)
-Received: by mail-lj1-f172.google.com with SMTP id b12so9451727lji.4
-        for <live-patching@vger.kernel.org>; Mon, 29 Apr 2019 13:26:44 -0700 (PDT)
-X-Received: by 2002:a2e:8090:: with SMTP id i16mr8383998ljg.135.1556569221934;
- Mon, 29 Apr 2019 13:20:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190427100639.15074-1-nstange@suse.de> <20190427100639.15074-4-nstange@suse.de>
- <20190427102657.GF2623@hirez.programming.kicks-ass.net> <20190428133826.3e142cfd@oasis.local.home>
- <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
- <20190429145250.1a5da6ed@gandalf.local.home> <CAHk-=wjm93jLtVxTX4HZs6K4k1Wqh3ujjmapqaYtcibVk_YnzQ@mail.gmail.com>
- <20190429150724.6e501d27@gandalf.local.home> <CAHk-=wgbC-wiSrdDYAh1ORF4EKmecY+MkNsJBF=BWf4W1bXXgA@mail.gmail.com>
-In-Reply-To: <CAHk-=wgbC-wiSrdDYAh1ORF4EKmecY+MkNsJBF=BWf4W1bXXgA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 29 Apr 2019 13:20:05 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiMG95TmkMm5AK7w73=mn+is8qnNztS7iJVfz23-A44Yg@mail.gmail.com>
-Message-ID: <CAHk-=wiMG95TmkMm5AK7w73=mn+is8qnNztS7iJVfz23-A44Yg@mail.gmail.com>
-Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
- fops invocation
-To:     Steven Rostedt <rostedt@goodmis.org>
+        id S1729372AbfD2Uat (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 29 Apr 2019 16:30:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44326 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729252AbfD2Uas (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 29 Apr 2019 16:30:48 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6EAB1215EA;
+        Mon, 29 Apr 2019 20:30:45 +0000 (UTC)
+Date:   Mon, 29 Apr 2019 16:30:43 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Nicolai Stange <nstange@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -87,27 +45,83 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         live-patching@vger.kernel.org,
         "open list:KERNEL SELFTEST FRAMEWORK" 
         <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
+ fops invocation
+Message-ID: <20190429163043.535f4272@gandalf.local.home>
+In-Reply-To: <CAHk-=wgbC-wiSrdDYAh1ORF4EKmecY+MkNsJBF=BWf4W1bXXgA@mail.gmail.com>
+References: <20190427100639.15074-1-nstange@suse.de>
+        <20190427100639.15074-4-nstange@suse.de>
+        <20190427102657.GF2623@hirez.programming.kicks-ass.net>
+        <20190428133826.3e142cfd@oasis.local.home>
+        <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
+        <20190429145250.1a5da6ed@gandalf.local.home>
+        <CAHk-=wjm93jLtVxTX4HZs6K4k1Wqh3ujjmapqaYtcibVk_YnzQ@mail.gmail.com>
+        <20190429150724.6e501d27@gandalf.local.home>
+        <CAHk-=wgbC-wiSrdDYAh1ORF4EKmecY+MkNsJBF=BWf4W1bXXgA@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 1:06 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
+On Mon, 29 Apr 2019 13:06:17 -0700
+Linus Torvalds <torvalds@linux-foundation.org> wrote:
+
+> On Mon, Apr 29, 2019 at 12:07 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+> >
+> > Are you suggesting that I rewrite the code to do it one function at a
+> > time? This has always been batch mode. This is not something new. The
+> > function tracer has been around longer than the text poke code.  
+> 
 > Only do the 'call' instructions one at a time. Why would you change
 > _existing_ code?
 
-Side note: if you want to, you can easily batch up rewriting 'call'
-instructions to the same target using the exact same code. You just
-need to change the int3 handler case to calculate the
-bp_int3_call_return from the fixed one-time address to use sopmething
-like
+The function tracing is a call instruction.
 
-     this_cpu_write(bp_call_return, int3_address-1+bp_int3_call_size);
+On boot:
 
-instead (and you'd need to also teach the function that there's not
-just a single int3 live at a time)
+<function_X>:
+	nop
+	blah
+	blah
 
-                Linus
+After a callback to function tracing is called:
+
+<function_X>
+	call custom_trampoline
+	blah
+	blah
+
+
+If we have two functions to that function added:
+
+<function_X>
+	call iterator_trampoline
+	blah
+	blah
+
+The update from "call custom_trampoline" to "call iterator_trampoline"
+is where we have an issue.
+
+We could make this a special case where we do this one at a time, but
+currently the code is all the same looking at tables to determine to
+what to do. Which is one of three:
+
+ 1) change nop to call function
+ 2) change call function to nop
+ 3) update call function to another call function
+
+#3 is where we have an issue. But if we want this to be different, we
+would need to change the code significantly, and know that we are only
+updating calls to calls. Which would take a bit of accounting to see if
+that's the change that is being made.
+
+This thread started about that #3 operation causing a call to be missed
+because we turn it into a nop while we make the transition, where in
+reality it needs to be a call to one of the two functions in the
+transition.
+
+-- Steve
