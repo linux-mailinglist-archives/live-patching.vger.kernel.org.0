@@ -2,110 +2,354 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFFD101EA
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 23:39:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7AE21020D
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 23:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727178AbfD3VjL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 17:39:11 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:45479 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726155AbfD3VjL (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 17:39:11 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3E4AD236D8;
-        Tue, 30 Apr 2019 17:39:10 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 30 Apr 2019 17:39:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tobin.cc; h=date
-        :from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=9349H2ViHXlJUGHErMFiQqJwUGB
-        88NDt1/wQq0/Wh3g=; b=ftwZE9ZTpFyvUhV4lztNeU60jZAupgq/Gzep3WCojzQ
-        DTfyVawYRrsfEVc9aRrIYwAfmC9GwEU5xkyZmAsiO4SwCF1A4iqTU4zqmWzo/qxf
-        2/ezSulz7pmO7ubbYYdkXSCFDEXVcj42pN2wNLc5rF07NNBRuAvl80TyC81iUKky
-        Yl6pSA8nCoMPSs3o4uW8WBGd/1wZeJ4w9F+xyeoe1Q2O0DyZiqHTeWk2PcHKD5x6
-        YMya3oOogPpU1qdFksEW7W7wrsPCZ3u56Y2u0JSvgcW0El0BNwjbpFnaddPnrGyL
-        Zw8YEzi7jUQ1fzQ7qWrdlwTHdvhbi0dFnDpFJlTZGHQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=9349H2
-        ViHXlJUGHErMFiQqJwUGB88NDt1/wQq0/Wh3g=; b=MEebjIxWNESD3EhKg7PEgw
-        P5i1zdNuz88T48wwlNUW+aIhTffT/0+wt/vHOzEPrcvCCq5wswLrOT8J7Awhv0OK
-        sCy+uOcNKlQszQzhoElYhQiKu1PBLEprOIw/DU/8qTkoEK0aoAvZpvtyj2a7lyNY
-        S4gamL6vB9r0fJMANfJ2kr3WuI2qfTcBuwUtlglGH+9ui8dbTEEWzG3R4QVCaqNw
-        w487TaYtdJQmCiP4U9VBtdCVArjm9oi5ScOtXLTt8ROCcghtU+/Vvsx7IkUeWGGz
-        Ty5cPseDfl3hyWa8/we80enYp3zsIxk0qVT5sA4ZmZB05XfxIDPP/S8sfJiXhrHQ
-        ==
-X-ME-Sender: <xms:fsDIXBUm9OwT1BRYg0zn4JQcknJGLxy9AvQevYKvncknWvRob0Iubg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrieeigddtudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
-    hrlhcuvffnffculdduhedmnecujfgurhepfffhvffukfhfgggtuggjofgfsehttdertdfo
-    redvnecuhfhrohhmpedfvfhosghinhcuvedrucfjrghrughinhhgfdcuoehmvgesthhosg
-    hinhdrtggtqeenucfkphepuddvuddrgeegrddvtdegrddvfeehnecurfgrrhgrmhepmhgr
-    ihhlfhhrohhmpehmvgesthhosghinhdrtggtnecuvehluhhsthgvrhfuihiivgepud
-X-ME-Proxy: <xmx:fsDIXF0KrDD8IpOm3vu1soouyyA6YkD3u69R1efkUf9BMfFNMbPjNQ>
-    <xmx:fsDIXIbk9j8F39F1XXoKi1k74hoJLsGRXVZtVL5d1yjeRskzqevxmA>
-    <xmx:fsDIXIq69vvCnNGsPhg-qrMPMHUvCCx1aQZ5w9LL8TgoUmRfoOPuMw>
-    <xmx:fsDIXGnzNOVNaxq3GNXuRlGJA-PhC5nohY0eXp6kotFLO4sER_3CWw>
-Received: from localhost (ppp121-44-204-235.bras1.syd2.internode.on.net [121.44.204.235])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 9C008E424F;
-        Tue, 30 Apr 2019 17:39:08 -0400 (EDT)
-Date:   Wed, 1 May 2019 07:38:27 +1000
-From:   "Tobin C. Harding" <me@tobin.cc>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     "Tobin C. Harding" <tobin@kernel.org>,
+        id S1726105AbfD3Vxk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 17:53:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39924 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726048AbfD3Vxj (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 17:53:39 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7FA252087B;
+        Tue, 30 Apr 2019 21:53:36 +0000 (UTC)
+Date:   Tue, 30 Apr 2019 17:53:34 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Nicolai Stange <nstange@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] livepatch: Use correct kobject cleanup function
-Message-ID: <20190430213827.GD9454@eros.localdomain>
-References: <20190430001534.26246-1-tobin@kernel.org>
- <20190430001534.26246-3-tobin@kernel.org>
- <alpine.LSU.2.21.1904301256550.8507@pobox.suse.cz>
+        Shuah Khan <shuah@kernel.org>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Juergen Gross <jgross@suse.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        live-patching@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: [RFC][PATCH v2] ftrace/x86: Emulate call function while updating in
+ breakpoint handler
+Message-ID: <20190430175334.423821c0@gandalf.local.home>
+In-Reply-To: <20190430134913.4e29ce72@gandalf.local.home>
+References: <20190428133826.3e142cfd@oasis.local.home>
+        <CAHk-=wjphmrQXMfbw9j-tTzDvJ+Uc+asMHdFa=1_1xZoYVUC=g@mail.gmail.com>
+        <CALCETrXvmZPHsfRVnW0AtyddfN-2zaCmWn+FsrF6XPTOFd_Jmw@mail.gmail.com>
+        <CAHk-=whtt4K2f0KPtG-4Pykh3FK8UBOjD8jhXCUKB5nWDj_YRA@mail.gmail.com>
+        <CALCETrWELBCK-kqX5FCEDVUy8kCT-yVu7m_7Dtn=GCsHY0Du5A@mail.gmail.com>
+        <CAHk-=wgewK4eFhF3=0RNtk1KQjMANFH6oDE=8m=84RExn2gxhw@mail.gmail.com>
+        <CAHk-=whay7eN6+2gZjY-ybRbkbcqAmgrLwwszzHx8ws3c=S-MA@mail.gmail.com>
+        <CALCETrXzVU0Q7u1q=QFPaDr=aojjF5cjbOi9CxxXnp5GqTqsWA@mail.gmail.com>
+        <CAHk-=wg1QPz0m+7jnVcjQgkySUQLzAXE8_PZARV-vWYK27LB=w@mail.gmail.com>
+        <20190430135602.GD2589@hirez.programming.kicks-ass.net>
+        <CAHk-=wg7vUGMRHyBsLig6qiPK0i4_BK3bRrTN+HHHziUGg1P_A@mail.gmail.com>
+        <CALCETrXujRWxwkgAwB+8xja3N9H22t52AYBYM_mbrjKKZ624Eg@mail.gmail.com>
+        <20190430130359.330e895b@gandalf.local.home>
+        <20190430132024.0f03f5b8@gandalf.local.home>
+        <20190430134913.4e29ce72@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.1904301256550.8507@pobox.suse.cz>
-X-Mailer: Mutt 1.11.4 (2019-03-13)
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 01:00:05PM +0200, Miroslav Benes wrote:
-> On Tue, 30 Apr 2019, Tobin C. Harding wrote:
-> 
-> > The correct cleanup function after a call to kobject_init_and_add() has
-> > succeeded is kobject_del() _not_ kobject_put().  kobject_del() calls
-> > kobject_put().
-> > 
-> > Use correct cleanup function when removing a kobject.
-> > 
-> > Signed-off-by: Tobin C. Harding <tobin@kernel.org>
-> > ---
-> >  kernel/livepatch/core.c | 8 +++-----
-> >  1 file changed, 3 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> > index 98a7bec41faa..4cce6bb6e073 100644
-> > --- a/kernel/livepatch/core.c
-> > +++ b/kernel/livepatch/core.c
-> > @@ -589,9 +589,8 @@ static void __klp_free_funcs(struct klp_object *obj, bool nops_only)
-> >  
-> >  		list_del(&func->node);
-> >  
-> > -		/* Might be called from klp_init_patch() error path. */
-> 
-> Could you leave the comment as is? If I am not mistaken, it is still 
-> valid. func->kobj_added check is here exactly because the function may be 
-> called as mentioned.
+From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 
-Will put it back in for you on v2
+Nicolai Stange discovered[1] that if live kernel patching is enabled, and the
+function tracer started tracing the same function that was patched, the
+conversion of the fentry call site during the translation of going from
+calling the live kernel patch trampoline to the iterator trampoline, would
+have as slight window where it didn't call anything.
 
-thanks,
-Tobin.
+As live kernel patching depends on ftrace to always call its code (to
+prevent the function being traced from being called, as it will redirect
+it). This small window would allow the old buggy function to be called, and
+this can cause undesirable results.
+
+Nicolai submitted new patches[2] but these were controversial. As this is
+similar to the static call emulation issues that came up a while ago[3],
+Linus suggested using per CPU data along with special trampolines[4] to emulate
+the calls.
+
+Linus's solution was for text poke (which was mostly what the static_call
+code did), but as ftrace has its own mechanism, it required doing its own
+thing.
+
+Having ftrace use its own per CPU data and having its own set of specialized
+trampolines solves the issue of missed calls that live kernel patching
+suffers.
+
+[1] http://lkml.kernel.org/r/20180726104029.7736-1-nstange@suse.de
+[2] http://lkml.kernel.org/r/20190427100639.15074-1-nstange@suse.de
+[3] http://lkml.kernel.org/r/3cf04e113d71c9f8e4be95fb84a510f085aa4afa.1541711457.git.jpoimboe@redhat.com
+[4] http://lkml.kernel.org/r/CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com
+
+Inspired-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: b700e7f03df5 ("livepatch: kernel: add support for live patching")
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+
+Changes since v1:
+
+  - Use "push push ret" instead of indirect jumps (Linus)
+  - Handle 32 bit as well as non SMP
+  - Fool lockdep into thinking interrupts are enabled
+
+
+ arch/x86/kernel/ftrace.c | 175 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 170 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
+index ef49517f6bb2..9160f5cc3b6d 100644
+--- a/arch/x86/kernel/ftrace.c
++++ b/arch/x86/kernel/ftrace.c
+@@ -17,6 +17,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/ftrace.h>
+ #include <linux/percpu.h>
++#include <linux/frame.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/init.h>
+@@ -232,6 +233,9 @@ int ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
+ 
+ static unsigned long ftrace_update_func;
+ 
++/* Used within inline asm below */
++unsigned long ftrace_update_func_call;
++
+ static int update_ftrace_func(unsigned long ip, void *new)
+ {
+ 	unsigned char old[MCOUNT_INSN_SIZE];
+@@ -259,6 +263,8 @@ int ftrace_update_ftrace_func(ftrace_func_t func)
+ 	unsigned char *new;
+ 	int ret;
+ 
++	ftrace_update_func_call = (unsigned long)func;
++
+ 	new = ftrace_call_replace(ip, (unsigned long)func);
+ 	ret = update_ftrace_func(ip, new);
+ 
+@@ -280,6 +286,125 @@ static nokprobe_inline int is_ftrace_caller(unsigned long ip)
+ 	return 0;
+ }
+ 
++/*
++ * We need to handle the "call func1" -> "call func2" case.
++ * Just skipping the call is not sufficient as it will be like
++ * changing to "nop" first and then updating the call. But some
++ * users of ftrace require calls never to be missed.
++ *
++ * To emulate the call while converting the call site with a breakpoint,
++ * some trampolines are used along with per CPU buffers.
++ * There are three trampolines for the call sites and three trampolines
++ * for the updating of the call in ftrace trampoline. The three
++ * trampolines are:
++ *
++ * 1) Interrupts are enabled when the breakpoint is hit
++ * 2) Interrupts are disabled when the breakpoint is hit
++ * 3) The breakpoint was hit in an NMI
++ *
++ * As per CPU data is used, interrupts must be disabled to prevent them
++ * from corrupting the data. A separate NMI trampoline is used for the
++ * NMI case. If interrupts are already disabled, then the return path
++ * of where the breakpoint was hit (saved in the per CPU data) is pushed
++ * on the stack and then a jump to either the ftrace_caller (which will
++ * loop through all registered ftrace_ops handlers depending on the ip
++ * address), or if its a ftrace trampoline call update, it will call
++ * ftrace_update_func_call which will hold the call that should be
++ * called.
++ */
++extern asmlinkage void ftrace_emulate_call_irqon(void);
++extern asmlinkage void ftrace_emulate_call_irqoff(void);
++extern asmlinkage void ftrace_emulate_call_nmi(void);
++extern asmlinkage void ftrace_emulate_call_update_irqoff(void);
++extern asmlinkage void ftrace_emulate_call_update_irqon(void);
++extern asmlinkage void ftrace_emulate_call_update_nmi(void);
++
++static DEFINE_PER_CPU(void *, ftrace_bp_call_return);
++static DEFINE_PER_CPU(void *, ftrace_bp_call_nmi_return);
++
++#ifdef CONFIG_SMP
++#ifdef CONFIG_X86_64
++# define BP_CALL_RETURN		"%gs:ftrace_bp_call_return"
++# define BP_CALL_NMI_RETURN	"%gs:ftrace_bp_call_nmi_return"
++#else
++# define BP_CALL_RETURN		"%fs:ftrace_bp_call_return"
++# define BP_CALL_NMI_RETURN	"%fs:ftrace_bp_call_nmi_return"
++#endif
++#else /* SMP */
++# define BP_CALL_RETURN		"ftrace_bp_call_return"
++# define BP_CALL_NMI_RETURN	"ftrace_bp_call_nmi_return"
++#endif
++
++/* To hold the ftrace_caller address to push on the stack */
++void *ftrace_caller_func = (void *)ftrace_caller;
++
++asm(
++	".text\n"
++
++	/* Trampoline for function update with interrupts enabled */
++	".global ftrace_emulate_call_irqoff\n"
++	".type ftrace_emulate_call_irqoff, @function\n"
++	"ftrace_emulate_call_irqoff:\n\t"
++		"push "BP_CALL_RETURN"\n\t"
++		"push ftrace_caller_func\n"
++		"sti\n\t"
++		"ret\n\t"
++	".size ftrace_emulate_call_irqoff, .-ftrace_emulate_call_irqoff\n"
++
++	/* Trampoline for function update with interrupts disabled*/
++	".global ftrace_emulate_call_irqon\n"
++	".type ftrace_emulate_call_irqon, @function\n"
++	"ftrace_emulate_call_irqon:\n\t"
++		"push "BP_CALL_RETURN"\n\t"
++		"push ftrace_caller_func\n"
++		"ret\n\t"
++	".size ftrace_emulate_call_irqon, .-ftrace_emulate_call_irqon\n"
++
++	/* Trampoline for function update in an NMI */
++	".global ftrace_emulate_call_nmi\n"
++	".type ftrace_emulate_call_nmi, @function\n"
++	"ftrace_emulate_call_nmi:\n\t"
++		"push "BP_CALL_NMI_RETURN"\n\t"
++		"push ftrace_caller_func\n"
++		"ret\n\t"
++	".size ftrace_emulate_call_nmi, .-ftrace_emulate_call_nmi\n"
++
++	/* Trampoline for ftrace trampoline call update with interrupts enabled */
++	".global ftrace_emulate_call_update_irqoff\n"
++	".type ftrace_emulate_call_update_irqoff, @function\n"
++	"ftrace_emulate_call_update_irqoff:\n\t"
++		"push "BP_CALL_RETURN"\n\t"
++		"push ftrace_update_func_call\n"
++		"sti\n\t"
++		"ret\n\t"
++	".size ftrace_emulate_call_update_irqoff, .-ftrace_emulate_call_update_irqoff\n"
++
++	/* Trampoline for ftrace trampoline call update with interrupts disabled */
++	".global ftrace_emulate_call_update_irqon\n"
++	".type ftrace_emulate_call_update_irqon, @function\n"
++	"ftrace_emulate_call_update_irqon:\n\t"
++		"push "BP_CALL_RETURN"\n\t"
++		"push ftrace_update_func_call\n"
++		"ret\n\t"
++	".size ftrace_emulate_call_update_irqon, .-ftrace_emulate_call_update_irqon\n"
++
++	/* Trampoline for ftrace trampoline call update in an NMI */
++	".global ftrace_emulate_call_update_nmi\n"
++	".type ftrace_emulate_call_update_nmi, @function\n"
++	"ftrace_emulate_call_update_nmi:\n\t"
++		"push "BP_CALL_NMI_RETURN"\n\t"
++		"push ftrace_update_func_call\n"
++		"ret\n\t"
++	".size ftrace_emulate_call_update_nmi, .-ftrace_emulate_call_update_nmi\n"
++	".previous\n");
++
++STACK_FRAME_NON_STANDARD(ftrace_emulate_call_irqoff);
++STACK_FRAME_NON_STANDARD(ftrace_emulate_call_irqon);
++STACK_FRAME_NON_STANDARD(ftrace_emulate_call_nmi);
++STACK_FRAME_NON_STANDARD(ftrace_emulate_call_update_irqoff);
++STACK_FRAME_NON_STANDARD(ftrace_emulate_call_update_irqon);
++STACK_FRAME_NON_STANDARD(ftrace_emulate_call_update_nmi);
++
+ /*
+  * A breakpoint was added to the code address we are about to
+  * modify, and this is the handle that will just skip over it.
+@@ -295,12 +420,49 @@ int ftrace_int3_handler(struct pt_regs *regs)
+ 		return 0;
+ 
+ 	ip = regs->ip - 1;
+-	if (!ftrace_location(ip) && !is_ftrace_caller(ip))
+-		return 0;
+-
+-	regs->ip += MCOUNT_INSN_SIZE - 1;
++	if (ftrace_location(ip)) {
++		/* A breakpoint at the beginning of the function was hit */
++		if (in_nmi()) {
++			/* NMIs have their own trampoline */
++			this_cpu_write(ftrace_bp_call_nmi_return, (void *)ip + MCOUNT_INSN_SIZE);
++			regs->ip = (unsigned long) ftrace_emulate_call_nmi;
++			return 1;
++		}
++		this_cpu_write(ftrace_bp_call_return, (void *)ip + MCOUNT_INSN_SIZE);
++		if (regs->flags & X86_EFLAGS_IF) {
++			regs->flags &= ~X86_EFLAGS_IF;
++			regs->ip = (unsigned long) ftrace_emulate_call_irqoff;
++			/* Tell lockdep here we are enabling interrupts */
++			trace_hardirqs_on();
++		} else {
++			regs->ip = (unsigned long) ftrace_emulate_call_irqon;
++		}
++		return 1;
++	} else if (is_ftrace_caller(ip)) {
++		/* An ftrace trampoline is being updated */
++		if (!ftrace_update_func_call) {
++			/* If it's a jump, just need to skip it */
++			regs->ip += MCOUNT_INSN_SIZE -1;
++			return 1;
++		}
++		if (in_nmi()) {
++			/* NMIs have their own trampoline */
++			this_cpu_write(ftrace_bp_call_nmi_return, (void *)ip + MCOUNT_INSN_SIZE);
++			regs->ip = (unsigned long) ftrace_emulate_call_update_nmi;
++			return 1;
++		}
++		this_cpu_write(ftrace_bp_call_return, (void *)ip + MCOUNT_INSN_SIZE);
++		if (regs->flags & X86_EFLAGS_IF) {
++			regs->flags &= ~X86_EFLAGS_IF;
++			regs->ip = (unsigned long) ftrace_emulate_call_update_irqoff;
++			trace_hardirqs_on();
++		} else {
++			regs->ip = (unsigned long) ftrace_emulate_call_update_irqon;
++		}
++		return 1;
++	}
+ 
+-	return 1;
++	return 0;
+ }
+ NOKPROBE_SYMBOL(ftrace_int3_handler);
+ 
+@@ -859,6 +1021,8 @@ void arch_ftrace_update_trampoline(struct ftrace_ops *ops)
+ 
+ 	func = ftrace_ops_get_func(ops);
+ 
++	ftrace_update_func_call = (unsigned long)func;
++
+ 	/* Do a safe modify in case the trampoline is executing */
+ 	new = ftrace_call_replace(ip, (unsigned long)func);
+ 	ret = update_ftrace_func(ip, new);
+@@ -960,6 +1124,7 @@ static int ftrace_mod_jmp(unsigned long ip, void *func)
+ {
+ 	unsigned char *new;
+ 
++	ftrace_update_func_call = 0;
+ 	new = ftrace_jmp_replace(ip, (unsigned long)func);
+ 
+ 	return update_ftrace_func(ip, new);
+-- 
+2.20.1
+
+
