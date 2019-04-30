@@ -2,27 +2,69 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 710FAEE03
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 02:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC36DEECA
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 04:34:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729310AbfD3ApG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 29 Apr 2019 20:45:06 -0400
-Received: from mga02.intel.com ([134.134.136.20]:53516 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729238AbfD3ApG (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 29 Apr 2019 20:45:06 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Apr 2019 17:45:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,411,1549958400"; 
-   d="scan'208";a="146939893"
-Received: from sjchrist-coffee.jf.intel.com (HELO linux.intel.com) ([10.54.74.181])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Apr 2019 17:45:04 -0700
-Date:   Mon, 29 Apr 2019 17:45:04 -0700
-From:   Sean Christopherson <sean.j.christopherson@intel.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
+        id S1729877AbfD3Ce3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 29 Apr 2019 22:34:29 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:33651 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729803AbfD3Ce3 (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 29 Apr 2019 22:34:29 -0400
+Received: by mail-lf1-f66.google.com with SMTP id j11so9611583lfm.0
+        for <live-patching@vger.kernel.org>; Mon, 29 Apr 2019 19:34:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7bXLV+X1SboPUgfWfwBzkogeRLHq9rIZ+BOOT2J1Fvk=;
+        b=NCQTeCycXmEyoLD3XSPWnZUF+hXdPskjwYAWiIQuU1WhztQQ6dqXbSCj4NSwXP8DWN
+         ZjcvtRAgsvdgAc/3KSLAFxaK4kcCHoNxoycA6JsPI8ky1/xJP5BClUWpKZT4TRT9XT4m
+         1DJsH/YCVSV0nucpo2++hoaf5DTQ5zm7Bsf9A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7bXLV+X1SboPUgfWfwBzkogeRLHq9rIZ+BOOT2J1Fvk=;
+        b=BP3RyX4DpPhNN8zyJrlfjBmISiSR8K399RL0arH0MQycOBrLUO9myxZbY2XJDIciIJ
+         lSxtqe8iBUoVQl7vX22v9SSez/no12AOWN9F40ELQFOniLtq1nQoPPN5GJ8gAS5pbJb4
+         MHZlClg2tk/xQeKYWrpYjpPzW3wVcfMBjkXsMr2pfjwyyl3wooQsPyPOMvsqhBMW/iJa
+         qsiu2sRv01WdaKOL4eDfnh5s5rpr6TfmlT0HnfwKvySx5PBbzKy2zbZ1GWgX0R3Txmpz
+         B67MP1IzN590LhTjRg/KNtA7tRn9M65IsZzG8pRAMTbiEzidqFYJiuD7hyQRO96qaxN3
+         t0xg==
+X-Gm-Message-State: APjAAAVXd2hq5Q2+JkRg5ismisVU3O3ght2Xa32Jlh3rykpuOqFgvTCv
+        IrXe5XPS1nDxaMzgCmiFyLIavfD+eTg=
+X-Google-Smtp-Source: APXvYqxR5VJWKtGrLEsxCBhMfGRtxaUmYmk31htflxuoivKu/rNoXE89Qq9zEiNv5RKYLJtjCRCmag==
+X-Received: by 2002:ac2:4186:: with SMTP id z6mr33422179lfh.50.1556591666940;
+        Mon, 29 Apr 2019 19:34:26 -0700 (PDT)
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
+        by smtp.gmail.com with ESMTPSA id 12sm686482ljj.79.2019.04.29.19.34.26
+        for <live-patching@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Apr 2019 19:34:26 -0700 (PDT)
+Received: by mail-lf1-f46.google.com with SMTP id w23so9442080lfc.9
+        for <live-patching@vger.kernel.org>; Mon, 29 Apr 2019 19:34:26 -0700 (PDT)
+X-Received: by 2002:a19:ca02:: with SMTP id a2mr33690036lfg.88.1556591178970;
+ Mon, 29 Apr 2019 19:26:18 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
+ <CAHk-=wjphmrQXMfbw9j-tTzDvJ+Uc+asMHdFa=1_1xZoYVUC=g@mail.gmail.com>
+ <CALCETrXvmZPHsfRVnW0AtyddfN-2zaCmWn+FsrF6XPTOFd_Jmw@mail.gmail.com>
+ <CAHk-=whtt4K2f0KPtG-4Pykh3FK8UBOjD8jhXCUKB5nWDj_YRA@mail.gmail.com>
+ <CALCETrWELBCK-kqX5FCEDVUy8kCT-yVu7m_7Dtn=GCsHY0Du5A@mail.gmail.com>
+ <CAHk-=wgewK4eFhF3=0RNtk1KQjMANFH6oDE=8m=84RExn2gxhw@mail.gmail.com>
+ <CAHk-=wjyyKDv-WZLXZbVD=V05p2X7eg74z2SpR4TQTxN9JLq4Q@mail.gmail.com>
+ <20190429220814.GF31379@linux.intel.com> <CAHk-=whpq2=f2LdB-nc52Rd=iZkUH-N-r8OTqEfo+4UaJc7piA@mail.gmail.com>
+ <20190430000846.GG31379@linux.intel.com> <20190430004504.GH31379@linux.intel.com>
+In-Reply-To: <20190430004504.GH31379@linux.intel.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 29 Apr 2019 19:26:02 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjXHfVkrO6ftk9FGtAbpCsaEBa+tGrC8qjV6RUJHu+pCg@mail.gmail.com>
+Message-ID: <CAHk-=wjXHfVkrO6ftk9FGtAbpCsaEBa+tGrC8qjV6RUJHu+pCg@mail.gmail.com>
+Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
+ fops invocation
+To:     Sean Christopherson <sean.j.christopherson@intel.com>
 Cc:     Andrew Lutomirski <luto@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -30,7 +72,7 @@ Cc:     Andrew Lutomirski <luto@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         "H. Peter Anvin" <hpa@zytor.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
@@ -50,47 +92,30 @@ Cc:     Andrew Lutomirski <luto@kernel.org>,
         live-patching@vger.kernel.org,
         "open list:KERNEL SELFTEST FRAMEWORK" 
         <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
- fops invocation
-Message-ID: <20190430004504.GH31379@linux.intel.com>
-References: <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
- <CAHk-=wjphmrQXMfbw9j-tTzDvJ+Uc+asMHdFa=1_1xZoYVUC=g@mail.gmail.com>
- <CALCETrXvmZPHsfRVnW0AtyddfN-2zaCmWn+FsrF6XPTOFd_Jmw@mail.gmail.com>
- <CAHk-=whtt4K2f0KPtG-4Pykh3FK8UBOjD8jhXCUKB5nWDj_YRA@mail.gmail.com>
- <CALCETrWELBCK-kqX5FCEDVUy8kCT-yVu7m_7Dtn=GCsHY0Du5A@mail.gmail.com>
- <CAHk-=wgewK4eFhF3=0RNtk1KQjMANFH6oDE=8m=84RExn2gxhw@mail.gmail.com>
- <CAHk-=wjyyKDv-WZLXZbVD=V05p2X7eg74z2SpR4TQTxN9JLq4Q@mail.gmail.com>
- <20190429220814.GF31379@linux.intel.com>
- <CAHk-=whpq2=f2LdB-nc52Rd=iZkUH-N-r8OTqEfo+4UaJc7piA@mail.gmail.com>
- <20190430000846.GG31379@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190430000846.GG31379@linux.intel.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 05:08:46PM -0700, Sean Christopherson wrote:
-> On Mon, Apr 29, 2019 at 03:22:09PM -0700, Linus Torvalds wrote:
-> > On Mon, Apr 29, 2019 at 3:08 PM Sean Christopherson
-> > <sean.j.christopherson@intel.com> wrote:
-> > >
-> > > FWIW, Lakemont (Quark) doesn't block NMI/SMI in the STI shadow, but I'm
-> > > not sure that counters the "horrible errata" statement ;-).  SMI+RSM saves
-> > > and restores STI blocking in that case, but AFAICT NMI has no such
-> > > protection and will effectively break the shadow on its IRET.
-> > 
-> > Ugh. I can't say I care deeply about Quark (ie never seemed to go
-> > anywhere), but it's odd. I thought it was based on a Pentium core (or
-> > i486+?). Are you saying those didn't do it either?
-> 
-> It's 486 based, but either way I suspect the answer is "yes".  IIRC,
-> Knights Corner, a.k.a. Larrabee, also had funkiness around SMM and that
-> was based on P54C, though I'm struggling to recall exactly what the
-> Larrabee weirdness was.
+On Mon, Apr 29, 2019 at 5:45 PM Sean Christopherson
+<sean.j.christopherson@intel.com> wrote:
+>
+> On Mon, Apr 29, 2019 at 05:08:46PM -0700, Sean Christopherson wrote:
+> >
+> > It's 486 based, but either way I suspect the answer is "yes".  IIRC,
+> > Knights Corner, a.k.a. Larrabee, also had funkiness around SMM and that
+> > was based on P54C, though I'm struggling to recall exactly what the
+> > Larrabee weirdness was.
+>
+> Aha!  Found an ancient comment that explicitly states P5 does not block
+> NMI/SMI in the STI shadow, while P6 does block NMI/SMI.
 
-Aha!  Found an ancient comment that explicitly states P5 does not block
-NMI/SMI in the STI shadow, while P6 does block NMI/SMI.
+Ok, so the STI shadow really wouldn't be reliable on those machines. Scary.
+
+Of course, the good news is that hopefully nobody has them any more,
+and if they do, they presumably don't use fancy NMI profiling etc, so
+any actual NMI's are probably relegated purely to largely rare and
+effectively fatal errors anyway (ie memory parity errors).
+
+                     Linus
