@@ -2,100 +2,96 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16FCCF475
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 12:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D4F1F4E7
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 13:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727310AbfD3KrT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 06:47:19 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:59070 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbfD3KrT (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 06:47:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=hqqOHMMUuBvpuVQELeBZmURuJXjgQFqffW8kA9cAK/I=; b=PaVG+9RwpCsXq15eaBB6EYSbN
-        kSbHYkqvjqUvSv3jpTDD9Z/uLy3t//bG0X+q/rBM5tUljQmNVrSIAC16d5DWJjguWhS03TvhXFVke
-        m2tBVj6tvBTp0mR573beuNeRyZSVhY3M1m+BidytXleKrDBBZqCaR6QJFLPSlaidaZ2HPF+y1bEwS
-        WZ1t8L0HPIZFikNyRg3L6ZMurl0eejHBOFV4y+vUIr5iMBjfipjE7DJFdIwN7KNXOmwsbqnddIIb4
-        x8YKCMOSStKAuoQRJbG7ZhKn3fq3uJb2stY/jCun14hfRD3yhi8H7az6tyHPLffJLOAMnz4bRGxeN
-        41K2u1XDw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
-        by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-        id 1hLQHi-0004y1-Ln; Tue, 30 Apr 2019 10:46:50 +0000
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id F4112203E886A; Tue, 30 Apr 2019 12:46:48 +0200 (CEST)
-Date:   Tue, 30 Apr 2019 12:46:48 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Nicolai Stange <nstange@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
+        id S1726436AbfD3LAH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 07:00:07 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60260 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726294AbfD3LAH (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 07:00:07 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id E174CAE63;
+        Tue, 30 Apr 2019 11:00:05 +0000 (UTC)
+Date:   Tue, 30 Apr 2019 13:00:05 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     "Tobin C. Harding" <tobin@kernel.org>
+cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Juergen Gross <jgross@suse.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        live-patching@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
- fops invocation
-Message-ID: <20190430104648.GR2623@hirez.programming.kicks-ass.net>
-References: <20190427100639.15074-1-nstange@suse.de>
- <20190427100639.15074-4-nstange@suse.de>
- <20190427102657.GF2623@hirez.programming.kicks-ass.net>
- <20190428133826.3e142cfd@oasis.local.home>
- <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
- <20190429145250.1a5da6ed@gandalf.local.home>
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] livepatch: Use correct kobject cleanup function
+In-Reply-To: <20190430001534.26246-3-tobin@kernel.org>
+Message-ID: <alpine.LSU.2.21.1904301256550.8507@pobox.suse.cz>
+References: <20190430001534.26246-1-tobin@kernel.org> <20190430001534.26246-3-tobin@kernel.org>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190429145250.1a5da6ed@gandalf.local.home>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 02:52:50PM -0400, Steven Rostedt wrote:
-> On Mon, 29 Apr 2019 11:06:58 -0700
-> Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> 
-> > +void replace_call(void *addr, const void *opcode, size_t len, void *target)
-> > +{
-> > +	bp_int3_call_target = target;
-> > +	bp_int3_call_return = addr + len;
-> > +	bp_int3_handler_irqoff = emulate_call_irqoff;
-> > +	text_poke_bp(addr, opcode, len, emulate_call_irqon);
-> > +}
-> 
-> Note, the function tracer does not use text poke. It does it in batch
-> mode. It can update over 40,000 calls in one go:
+On Tue, 30 Apr 2019, Tobin C. Harding wrote:
 
-Note that Daniel is adding batch stuff to text_poke(), because
-jump_label/static_key stuffs also end up wanting to change more than one
-site at a time and IPI spraying the machine for every single instance is
-hurting.
+> The correct cleanup function after a call to kobject_init_and_add() has
+> succeeded is kobject_del() _not_ kobject_put().  kobject_del() calls
+> kobject_put().
+> 
+> Use correct cleanup function when removing a kobject.
+> 
+> Signed-off-by: Tobin C. Harding <tobin@kernel.org>
+> ---
+>  kernel/livepatch/core.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index 98a7bec41faa..4cce6bb6e073 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -589,9 +589,8 @@ static void __klp_free_funcs(struct klp_object *obj, bool nops_only)
+>  
+>  		list_del(&func->node);
+>  
+> -		/* Might be called from klp_init_patch() error path. */
 
-So ideally ftrace would start to use the 'normal' code when that
-happens.
+Could you leave the comment as is? If I am not mistaken, it is still 
+valid. func->kobj_added check is here exactly because the function may be 
+called as mentioned.
+
+One could argue that the comment is not so important, but the change does 
+not belong to the patch anyway in my opinion.
+
+>  		if (func->kobj_added) {
+> -			kobject_put(&func->kobj);
+> +			kobject_del(&func->kobj);
+>  		} else if (func->nop) {
+>  			klp_free_func_nop(func);
+>  		}
+> @@ -625,9 +624,8 @@ static void __klp_free_objects(struct klp_patch *patch, bool nops_only)
+>  
+>  		list_del(&obj->node);
+>  
+> -		/* Might be called from klp_init_patch() error path. */
+
+Same here.
+
+>  		if (obj->kobj_added) {
+> -			kobject_put(&obj->kobj);
+> +			kobject_del(&obj->kobj);
+>  		} else if (obj->dynamic) {
+>  			klp_free_object_dynamic(obj);
+>  		}
+> @@ -676,7 +674,7 @@ static void klp_free_patch_finish(struct klp_patch *patch)
+>  	 * cannot get enabled again.
+>  	 */
+>  	if (patch->kobj_added) {
+> -		kobject_put(&patch->kobj);
+> +		kobject_del(&patch->kobj);
+>  		wait_for_completion(&patch->finish);
+>  	}
+
+Miroslav
