@@ -2,21 +2,21 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A7910007
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 21:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E1E1016A
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 23:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbfD3TAR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 15:00:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48614 "EHLO mail.kernel.org"
+        id S1726991AbfD3VIN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 17:08:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52252 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726112AbfD3TAR (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 15:00:17 -0400
+        id S1726015AbfD3VIM (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 17:08:12 -0400
 Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 27C7820854;
-        Tue, 30 Apr 2019 19:00:14 +0000 (UTC)
-Date:   Tue, 30 Apr 2019 15:00:12 -0400
+        by mail.kernel.org (Postfix) with ESMTPSA id C8C252087B;
+        Tue, 30 Apr 2019 21:08:09 +0000 (UTC)
+Date:   Tue, 30 Apr 2019 17:08:08 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     Andy Lutomirski <luto@kernel.org>,
@@ -47,7 +47,7 @@ Cc:     Andy Lutomirski <luto@kernel.org>,
         <linux-kselftest@vger.kernel.org>
 Subject: Re: [RFC][PATCH] ftrace/x86: Emulate call function while updating
  in breakpoint handler
-Message-ID: <20190430150012.58ed382b@gandalf.local.home>
+Message-ID: <20190430170808.1053b3e2@gandalf.local.home>
 In-Reply-To: <CAHk-=wjJ8D74+FDcXGL65Q9aB0cc7B4vr2s2rS6V4d4a3hU-1Q@mail.gmail.com>
 References: <20190428133826.3e142cfd@oasis.local.home>
         <CALCETrXvmZPHsfRVnW0AtyddfN-2zaCmWn+FsrF6XPTOFd_Jmw@mail.gmail.com>
@@ -76,32 +76,6 @@ X-Mailing-List: live-patching@vger.kernel.org
 On Tue, 30 Apr 2019 11:33:21 -0700
 Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-> On Tue, Apr 30, 2019 at 10:49 AM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > +
-> > +asm(
-> > +       ".text\n"
-> > +
-> > +       /* Trampoline for function update with interrupts enabled */
-> > +       ".global ftrace_emulate_call_irqoff\n"
-> > +       ".type ftrace_emulate_call_irqoff, @function\n"
-> > +       "ftrace_emulate_call_irqoff:\n\t"
-> > +               "push %gs:ftrace_bp_call_return\n\t"  
-> 
-> Well, as mentioned in my original suggestion, this won't work on
-> 32-bit, or on UP. They have different models for per-cpu data (32-bti
-> uses %fs, and UP doesn't use a segment override at all).
-
-Ah, yeah, I forgot about 32-bit. I could easily make this use fs as
-well, and for UP, just use a static variable.
-
-> 
-> Maybe we just don't care about UP at all for this code, of course.
-> 
-> And maybe we can make the decision to also make 32-bit just not use
-> this either - so maybe the code is ok per se, just needs to make sure
-> it never triggers for the cases that it's not written for..
-> 
 > > +       "ftrace_emulate_call_update_irqoff:\n\t"
 > > +               "push %gs:ftrace_bp_call_return\n\t"
 > > +               "sti\n\t"
@@ -111,19 +85,40 @@ well, and for UP, just use a static variable.
 > 
 > Plus get updated for objtool complaints.
 
-Yeah, I see that now. Somehow it disappeared when I looked for it after
-making some other changes. I can update it.
+And unfortunately, this blows up on lockdep. Lockdep notices that the
+return from the breakpoint handler has interrupts enabled, and will not
+enable them in its shadow irqs disabled variable. But then we enabled
+them in the trampoline, without telling lockdep and we trigger
+something likes this:
 
-> 
-> Anyway, since Andy really likes the entry code change, can we have
-> that patch in parallel and judge the difference that way? Iirc, that
-> was x86-64 specific too.
+------------[ cut here ]------------
+IRQs not enabled as expected
+WARNING: CPU: 2 PID: 0 at kernel/time/tick-sched.c:979 tick_nohz_idle_enter+0x44/0x8c
+Modules linked in:
+CPU: 2 PID: 0 Comm: swapper/2 Not tainted 5.1.0-rc3-test+ #123
+Hardware name: MSI MS-7823/CSM-H87M-G43 (MS-7823), BIOS V1.6 02/22/2014
+EIP: tick_nohz_idle_enter+0x44/0x8c
+Code: f0 05 00 00 00 75 26 83 b8 c4 05 00 00 00 75 1d 80 3d 5f 0f 43 c1 00 75 14 68 72 74 16 c1 c6 05 5f 0f 43 c1 01 e8 33 d7 f8 ff <0f> 0b 58 fa e8 4e 2c 04 00 bb e0 36 6b c1 64 03 1d 28 81 56 c1 8b
+EAX: 0000001c EBX: ee769f84 ECX: 00000000 EDX: 00000006
+ESI: 00000000 EDI: 00000002 EBP: ee769f50 ESP: ee769f48
+DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00210292
+CR0: 80050033 CR2: 00000000 CR3: 016c4000 CR4: 001406f0
+Call Trace:
+ do_idle+0x2a/0x1fc
+ cpu_startup_entry+0x1e/0x20
+ start_secondary+0x1d3/0x1ec
+ startup_32_smp+0x164/0x168
 
-Note, I don't think live kernel patching supports 32 bit anyway, so
-that may not be an issue.
 
-Josh,
+I have to fool lockdep with the following:
 
-When you come back to the office, can you look into that method?
+		if (regs->flags & X86_EFLAGS_IF) {
+			regs->flags &= ~X86_EFLAGS_IF;
+			regs->ip = (unsigned long) ftrace_emulate_call_irqoff;
+			/* Tell lockdep here we are enabling interrupts */
+			trace_hardirqs_on();
+		} else {
+			regs->ip = (unsigned long) ftrace_emulate_call_irqon;
+		}
 
 -- Steve
