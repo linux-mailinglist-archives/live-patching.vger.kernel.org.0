@@ -2,90 +2,148 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 248BBFC7E
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 17:10:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9158FD99
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 18:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbfD3PKJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 11:10:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37136 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726028AbfD3PKI (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 11:10:08 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8EB4B20835;
-        Tue, 30 Apr 2019 15:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556637008;
-        bh=zBYVD89Ga502t2W3oixEvvE+fgpD1hl8GQQvPTyVRkk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zUDdEa0JtLy8WrOxbx7BBxtDmXrNIiFICLg7H2xTTiXms64PfZ/Fh2KB2DlmrgE15
-         PoBF/xyJoecS5srDBmHfzTeR3mF1gUPR1qAZopw9g30sRcF7VkpokPRdXvjhnkOHwl
-         lFO5RSMStrU0KCVjf8jTztwFQ6lS5ridnVz7vHYk=
-Date:   Tue, 30 Apr 2019 17:10:05 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     "Tobin C. Harding" <tobin@kernel.org>,
+        id S1726048AbfD3QOZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 12:14:25 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:35249 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725976AbfD3QOY (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 12:14:24 -0400
+Received: by mail-lf1-f67.google.com with SMTP id j20so11351045lfh.2
+        for <live-patching@vger.kernel.org>; Tue, 30 Apr 2019 09:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I8IWSyZfLA4XVOsmM4DscMmixmVfvW4j4t9n7Z2aPEk=;
+        b=W6fmTN0+D899+DLFXEO0qv05jRrqGLHpOnj5hjbo6BgYsF8/3yQk/MgOBusQc/+nur
+         zEcvFY9Ms51BaYKVfQUT4d8XQLgPU3hFz4sUMV31rJJ+EwViTRrCjM/neFZh3KWEKiVH
+         36y5Lj+2NTIPCZFvYHm6hgeuBfzI0lc+RedSY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I8IWSyZfLA4XVOsmM4DscMmixmVfvW4j4t9n7Z2aPEk=;
+        b=QPQIXHw9cNcaIcd6wQjGflQAfnizrR57fmCd4yadNZRfnB+j3OOkxmD/Kbq7YoS6H7
+         r9wGODCsifC1oDxI5OMOvLgL1+djbUg13dDbSVV2ROiKckRif5mWjEXa/rBTcrDfCLBV
+         jle/qgSqoyxscqswIQsVj0j1vEnvdWjshLOj7ReFKb3kLMu4+YpYjPjvIESoJwRfi0gn
+         jRmcGZS4DuzP6FrkGLrcgkoza8b1vEKoU4YzhCi+Cv+IUy0W55rn1uaurwMH9I9ubV6O
+         xNNJLyBhJvkg1yfd+qYtbqxF0mCbPXZ81edRd3NRl8WIk+3vvl/aDGutY1TYiJ+ZXous
+         bAAQ==
+X-Gm-Message-State: APjAAAW/jctangB4tvMTaVR76Ng952X+aZ5CPRtb/9BDXW3ymj2/kMlp
+        DqZdigX0F0CVBGiqQu57FRolFoy6UlI=
+X-Google-Smtp-Source: APXvYqz/DTyXrUVeaxxXvas2cUeykGl0MuOpgxVmm4PrDVb5jjZ0BxCkCserH9nzFGmxxYsLA/uj8g==
+X-Received: by 2002:ac2:4186:: with SMTP id z6mr35369743lfh.50.1556640861270;
+        Tue, 30 Apr 2019 09:14:21 -0700 (PDT)
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
+        by smtp.gmail.com with ESMTPSA id w2sm5740059ljh.72.2019.04.30.09.14.20
+        for <live-patching@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Apr 2019 09:14:21 -0700 (PDT)
+Received: by mail-lj1-f180.google.com with SMTP id z26so13377062ljj.2
+        for <live-patching@vger.kernel.org>; Tue, 30 Apr 2019 09:14:20 -0700 (PDT)
+X-Received: by 2002:a2e:8090:: with SMTP id i16mr11128807ljg.135.1556640377738;
+ Tue, 30 Apr 2019 09:06:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190428133826.3e142cfd@oasis.local.home> <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
+ <CAHk-=wjphmrQXMfbw9j-tTzDvJ+Uc+asMHdFa=1_1xZoYVUC=g@mail.gmail.com>
+ <CALCETrXvmZPHsfRVnW0AtyddfN-2zaCmWn+FsrF6XPTOFd_Jmw@mail.gmail.com>
+ <CAHk-=whtt4K2f0KPtG-4Pykh3FK8UBOjD8jhXCUKB5nWDj_YRA@mail.gmail.com>
+ <CALCETrWELBCK-kqX5FCEDVUy8kCT-yVu7m_7Dtn=GCsHY0Du5A@mail.gmail.com>
+ <CAHk-=wgewK4eFhF3=0RNtk1KQjMANFH6oDE=8m=84RExn2gxhw@mail.gmail.com>
+ <CAHk-=whay7eN6+2gZjY-ybRbkbcqAmgrLwwszzHx8ws3c=S-MA@mail.gmail.com>
+ <CALCETrXzVU0Q7u1q=QFPaDr=aojjF5cjbOi9CxxXnp5GqTqsWA@mail.gmail.com>
+ <CAHk-=wg1QPz0m+7jnVcjQgkySUQLzAXE8_PZARV-vWYK27LB=w@mail.gmail.com> <20190430135602.GD2589@hirez.programming.kicks-ass.net>
+In-Reply-To: <20190430135602.GD2589@hirez.programming.kicks-ass.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 30 Apr 2019 09:06:01 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wg7vUGMRHyBsLig6qiPK0i4_BK3bRrTN+HHHziUGg1P_A@mail.gmail.com>
+Message-ID: <CAHk-=wg7vUGMRHyBsLig6qiPK0i4_BK3bRrTN+HHHziUGg1P_A@mail.gmail.com>
+Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
+ fops invocation
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Nicolai Stange <nstange@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] livepatch: Fix kobject memleak
-Message-ID: <20190430151005.GA20916@kroah.com>
-References: <20190430001534.26246-1-tobin@kernel.org>
- <20190430001534.26246-2-tobin@kernel.org>
- <20190430145613.7tokgyqjsuxlyh2g@pathway.suse.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190430145613.7tokgyqjsuxlyh2g@pathway.suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        Shuah Khan <shuah@kernel.org>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Juergen Gross <jgross@suse.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        live-patching@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 04:56:13PM +0200, Petr Mladek wrote:
-> On Tue 2019-04-30 10:15:33, Tobin C. Harding wrote:
-> > Currently error return from kobject_init_and_add() is not followed by a
-> > call to kobject_put().  This means there is a memory leak.
-> 
-> I see, the ref count is always initialized to 1 via:
-> 
->   + kobject_init_and_add()
->     + kobject_init()
->       + kobject_init_internal()
-> 	+ kref_init()
-> 
-> 
-> > Signed-off-by: Tobin C. Harding <tobin@kernel.org>
-> > ---
-> >  kernel/livepatch/core.c | 12 +++++++++---
-> >  1 file changed, 9 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> > index eb0ee10a1981..98a7bec41faa 100644
-> > --- a/kernel/livepatch/core.c
-> > +++ b/kernel/livepatch/core.c
-> > @@ -727,7 +727,9 @@ static int klp_init_func(struct klp_object *obj, struct klp_func *func)
-> >  	ret = kobject_init_and_add(&func->kobj, &klp_ktype_func,
-> >  				   &obj->kobj, "%s,%lu", func->old_name,
-> >  				   func->old_sympos ? func->old_sympos : 1);
-> > -	if (!ret)
-> > +	if (ret)
-> > +		kobject_put(&func->kobj);
-> > +	else
-> >  		func->kobj_added = true;
-> 
-> We could actually get rid of the custom kobj_added. Intead, we could
-> check for kobj->state_initialized in the various klp_free* functions.
+On Tue, Apr 30, 2019 at 6:56 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Mon, Apr 29, 2019 at 01:07:33PM -0700, Linus Torvalds wrote:
+> >
+> > We still have that sti sysexit in the 32-bit code.
+>
+> We also have both: "STI; HLT" and "STI; MWAIT" where we rely on the STI
+> shadow.
 
-Why do you need to care about this at all anyway?  The kobject can
-handle it's own lifetime just fine (that's what it is there for), why do
-you need to also track it?
+I guess the good news is that in all cases we really only ever protect
+against a very unlikely race, and if the race happens it's not
+actually fatal.
 
-thanks,
+Yes, if we get an NMI and then an interrupt in between the "st;hlt" we
+might wait for the next interrupt and get a (potentially fairly
+horrible) latency issue. I guess that with maximal luck it might be a
+one-shot timer and not get re-armed, but it sounds very very very
+unlikely.
 
-greg k-h
+Googling around, I actually find a patch from Avi Kivity from back in
+2010 for this exact issue, apparently because kvm got this case wrong
+and somebody hit it. The patch never made it upstream exactly because
+kvm could be fixed and people decided that most real hardware didn't
+have the issue in the first place.
+
+In the discussion I found, Peter Anvin tried to get confirmation from
+AMD engineers about this too, but I don't see any resolution.
+
+Realistically, I don't think you can hit the problem in practice. The
+only way to hit that incredibly small race of "one instruction, *both*
+NMI and interrupts" is to have a lot of interrupts going all at the
+same time, but that will also then solve the latency problem, so the
+very act of triggering it will also fix it.
+
+I don't see any case where it's really bad. The "sti sysexit" race is
+similar, just about latency of user space signal reporting (and
+perhaps any pending TIF_WORK_xyz flags).
+
+So maybe we don't care deeply about the sti shadow. It's a potential
+latecy problem when broken, but not a huge issue. And for the
+instruction rewriting hack, moving to "push+sti+ret" also makes a lost
+sti shadow just a "possibly odd stack frame visibility" issue rather
+than anything deeply fatal.
+
+We can probably just write it off as "some old CPU's (and a smattering
+or very rare and not relevant new ones) have potential but unlikely
+latency issues because of a historical CPU mis-design - don't do perf
+on them".
+
+                Linus
