@@ -2,83 +2,96 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F9CF8E0
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 14:31:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29083FABE
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 15:44:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726105AbfD3MaT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 08:30:19 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:42352 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726123AbfD3MaS (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 08:30:18 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x3UCMC34145878
-        for <live-patching@vger.kernel.org>; Tue, 30 Apr 2019 08:30:17 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2s6p27hbkd-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <live-patching@vger.kernel.org>; Tue, 30 Apr 2019 08:30:17 -0400
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
-        Tue, 30 Apr 2019 13:30:15 +0100
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 30 Apr 2019 13:30:11 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x3UCUAk751314936
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 30 Apr 2019 12:30:10 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 52C8FAE055;
-        Tue, 30 Apr 2019 12:30:10 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5CC16AE053;
-        Tue, 30 Apr 2019 12:30:08 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.85.97.254])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 30 Apr 2019 12:30:08 +0000 (GMT)
-Date:   Tue, 30 Apr 2019 18:00:05 +0530
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
+        id S1726309AbfD3Nou (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 09:44:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51764 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726053AbfD3Nou (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 09:44:50 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A8DAC21670;
+        Tue, 30 Apr 2019 13:44:47 +0000 (UTC)
+Date:   Tue, 30 Apr 2019 09:44:45 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Nicolai Stange <nstange@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        the arch/x86 maintainers <x86@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] livepatch: Use static buffer for debugging
- messages under rq lock
-References: <20190430091049.30413-1-pmladek@suse.com>
- <20190430091049.30413-3-pmladek@suse.com>
+        Shuah Khan <shuah@kernel.org>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Juergen Gross <jgross@suse.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        live-patching@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
+ fops invocation
+Message-ID: <20190430094445.13e61f41@gandalf.local.home>
+In-Reply-To: <20190430104648.GR2623@hirez.programming.kicks-ass.net>
+References: <20190427100639.15074-1-nstange@suse.de>
+        <20190427100639.15074-4-nstange@suse.de>
+        <20190427102657.GF2623@hirez.programming.kicks-ass.net>
+        <20190428133826.3e142cfd@oasis.local.home>
+        <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
+        <20190429145250.1a5da6ed@gandalf.local.home>
+        <20190430104648.GR2623@hirez.programming.kicks-ass.net>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190430091049.30413-3-pmladek@suse.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
-X-TM-AS-GCONF: 00
-x-cbid: 19043012-0012-0000-0000-00000316DAF1
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19043012-0013-0000-0000-0000214F43D1
-Message-Id: <20190430123005.GB18595@JAVRIS.in.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-04-30_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=744 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1904300081
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 11:10:49AM +0200, Petr Mladek wrote:
-> klp_try_switch_task() is called under klp_mutex. The buffer for
-> debugging messages might be static.
+On Tue, 30 Apr 2019 12:46:48 +0200
+Peter Zijlstra <peterz@infradead.org> wrote:
+
+> On Mon, Apr 29, 2019 at 02:52:50PM -0400, Steven Rostedt wrote:
+> > On Mon, 29 Apr 2019 11:06:58 -0700
+> > Linus Torvalds <torvalds@linux-foundation.org> wrote:
+> >   
+> > > +void replace_call(void *addr, const void *opcode, size_t len, void *target)
+> > > +{
+> > > +	bp_int3_call_target = target;
+> > > +	bp_int3_call_return = addr + len;
+> > > +	bp_int3_handler_irqoff = emulate_call_irqoff;
+> > > +	text_poke_bp(addr, opcode, len, emulate_call_irqon);
+> > > +}  
+> > 
+> > Note, the function tracer does not use text poke. It does it in batch
+> > mode. It can update over 40,000 calls in one go:  
 > 
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
+> Note that Daniel is adding batch stuff to text_poke(), because
+> jump_label/static_key stuffs also end up wanting to change more than one
+> site at a time and IPI spraying the machine for every single instance is
+> hurting.
+> 
+> So ideally ftrace would start to use the 'normal' code when that
+> happens.
 
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+Sure, but that's a completely different issue. We would need to solve
+the 'emulate' call for batch mode first.
 
+-- Steve
