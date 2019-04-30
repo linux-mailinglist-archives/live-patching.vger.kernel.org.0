@@ -2,83 +2,75 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 779FFFB9B
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 16:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCFFCFBF1
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 16:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbfD3Ogg (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 10:36:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52974 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726145AbfD3Ogg (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 10:36:36 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E360220835;
-        Tue, 30 Apr 2019 14:36:32 +0000 (UTC)
-Date:   Tue, 30 Apr 2019 10:36:29 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Nicolai Stange <nstange@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        id S1726066AbfD3O4P (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 10:56:15 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56398 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726053AbfD3O4O (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 10:56:14 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 9FA9AABE1;
+        Tue, 30 Apr 2019 14:56:13 +0000 (UTC)
+Date:   Tue, 30 Apr 2019 16:56:13 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Tobin C. Harding" <tobin@kernel.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Juergen Gross <jgross@suse.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        live-patching@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
- fops invocation
-Message-ID: <20190430103629.0899b3a8@gandalf.local.home>
-In-Reply-To: <20190430142047.GF2589@hirez.programming.kicks-ass.net>
-References: <20190427100639.15074-1-nstange@suse.de>
-        <20190427100639.15074-4-nstange@suse.de>
-        <20190427102657.GF2623@hirez.programming.kicks-ass.net>
-        <20190428133826.3e142cfd@oasis.local.home>
-        <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
-        <20190429145250.1a5da6ed@gandalf.local.home>
-        <20190430104648.GR2623@hirez.programming.kicks-ass.net>
-        <20190430094445.13e61f41@gandalf.local.home>
-        <20190430142047.GF2589@hirez.programming.kicks-ass.net>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] livepatch: Fix kobject memleak
+Message-ID: <20190430145613.7tokgyqjsuxlyh2g@pathway.suse.cz>
+References: <20190430001534.26246-1-tobin@kernel.org>
+ <20190430001534.26246-2-tobin@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190430001534.26246-2-tobin@kernel.org>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 30 Apr 2019 16:20:47 +0200
-Peter Zijlstra <peterz@infradead.org> wrote:
+On Tue 2019-04-30 10:15:33, Tobin C. Harding wrote:
+> Currently error return from kobject_init_and_add() is not followed by a
+> call to kobject_put().  This means there is a memory leak.
 
-> > 
-> > Sure, but that's a completely different issue. We would need to solve
-> > the 'emulate' call for batch mode first.  
+I see, the ref count is always initialized to 1 via:
+
+  + kobject_init_and_add()
+    + kobject_init()
+      + kobject_init_internal()
+	+ kref_init()
+
+
+> Signed-off-by: Tobin C. Harding <tobin@kernel.org>
+> ---
+>  kernel/livepatch/core.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
 > 
-> I don't see a problem there; when INT3 happens; you bsearch() the batch
-> array to find the one you hit, you frob that into the percpu variables
-> and do the thing. Or am I loosing the plot again?
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index eb0ee10a1981..98a7bec41faa 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -727,7 +727,9 @@ static int klp_init_func(struct klp_object *obj, struct klp_func *func)
+>  	ret = kobject_init_and_add(&func->kobj, &klp_ktype_func,
+>  				   &obj->kobj, "%s,%lu", func->old_name,
+>  				   func->old_sympos ? func->old_sympos : 1);
+> -	if (!ret)
+> +	if (ret)
+> +		kobject_put(&func->kobj);
+> +	else
+>  		func->kobj_added = true;
 
-I may need to tweak Linus's patch slightly, but I may be able to get it
-to work with the batch mode.
+We could actually get rid of the custom kobj_added. Intead, we could
+check for kobj->state_initialized in the various klp_free* functions.
 
--- Steve
+Best Regards,
+Petr
