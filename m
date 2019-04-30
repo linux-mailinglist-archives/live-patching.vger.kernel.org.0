@@ -2,123 +2,114 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69E1E1016A
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 23:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 312D5101DF
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 23:38:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbfD3VIN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 17:08:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52252 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726015AbfD3VIM (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 17:08:12 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C8C252087B;
-        Tue, 30 Apr 2019 21:08:09 +0000 (UTC)
-Date:   Tue, 30 Apr 2019 17:08:08 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Nicolai Stange <nstange@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
+        id S1726102AbfD3ViM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 17:38:12 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:60781 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726048AbfD3ViM (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 17:38:12 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 489E423075;
+        Tue, 30 Apr 2019 17:38:11 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 30 Apr 2019 17:38:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tobin.cc; h=date
+        :from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=z/wot53dADMViIAkfdEWPVrOhYU
+        SuTUgxPTfH7rwG3I=; b=ihfnKxtkM8dC5o+KzimVK+qfTuDO0q2coXzeoit84DY
+        uFVU0L8GkxgZH8P3Pis38k699KtYwBWLk18s1c6G1HGeeUYqGCeh1fRhz1kOlHXI
+        tSpKiId4Fn5IJ7GBOiV1scXvmHlYfrD+StLjin+KcJcxAX/8MsgmWRifYs3zWqab
+        TOp74PSP/XjQBP1GQod+uh+r54AfYsK2gGGpyWn4eDAuWOrsdir/qI8tRgS0EUj7
+        9SG15Ad0veTG1BrIrfLgICrPfyN6g6BvX/hm/TBVa68B5ZUXu7R+CBQI8wqAIwJE
+        lml0ME09qN/FJKtcS6z96+3Wk5n4tcp5GUyP4lC2QrQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=z/wot5
+        3dADMViIAkfdEWPVrOhYUSuTUgxPTfH7rwG3I=; b=N5MhjEuKkADRg2xBbcgrpz
+        730hK4VfLVFlEr1OTVxUJ7gBwCv97y9UvUokzHx9v0FUNGO6i7xyl0q1yBpP48+K
+        1a+yTxLa8vUSY3P2hWqYE7WxWf8T6+bD7HE8K8I3M0Ym12G+r6ew5uFWKRiKLOwn
+        FCMO6wSugoAP7MM2PCi6lf/a6NXozEDW439vkG4/Dctdax/Y/1RO4IHPx5Gj+4PS
+        e6dA6vrD7zF2wVPYuU/eKMfP0sapfneh/t/4tS3Xn/qfPPGlvWcYo9obqGrcpJq0
+        dAfA2/Hx58yaitOPzMWz7cQKuI9YBC2tALvrz/g7L51pWFLzeDgDZuqR3EfoPwGA
+        ==
+X-ME-Sender: <xms:QsDIXJ2dxTMClk89e3Buei1Q-5L00jmt4FotNQXm_PFKjAbNSabTXw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrieeigddtudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
+    hrlhcuvffnffculdeftddmnecujfgurhepfffhvffukfhfgggtuggjofgfsehttdertdfo
+    redvnecuhfhrohhmpedfvfhosghinhcuvedrucfjrghrughinhhgfdcuoehmvgesthhosg
+    hinhdrtggtqeenucfkphepuddvuddrgeegrddvtdegrddvfeehnecurfgrrhgrmhepmhgr
+    ihhlfhhrohhmpehmvgesthhosghinhdrtggtnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:QsDIXIHJ7uplv-AU9I6i8_Ism9pcqyvsYVLgajweymZDu4bBIFh2Ag>
+    <xmx:QsDIXKiHXmMxc69XlsC8t1gCBEJE6AchJ-8Ok1hf_ZGT6ykb6-hbrg>
+    <xmx:QsDIXGbl7Zi_-lRftJfCoi1fYgSSheW-Qt1E2KsQQ0pvR2Pvy99NAg>
+    <xmx:Q8DIXMqXyeRft_XnONG1OJgJ5qXqhCCAZZu9kHsEWBUyxFQqdipl1A>
+Received: from localhost (ppp121-44-204-235.bras1.syd2.internode.on.net [121.44.204.235])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1BB03103CD;
+        Tue, 30 Apr 2019 17:38:09 -0400 (EDT)
+Date:   Wed, 1 May 2019 07:37:30 +1000
+From:   "Tobin C. Harding" <me@tobin.cc>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     "Tobin C. Harding" <tobin@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Juergen Gross <jgross@suse.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        live-patching@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [RFC][PATCH] ftrace/x86: Emulate call function while updating
- in breakpoint handler
-Message-ID: <20190430170808.1053b3e2@gandalf.local.home>
-In-Reply-To: <CAHk-=wjJ8D74+FDcXGL65Q9aB0cc7B4vr2s2rS6V4d4a3hU-1Q@mail.gmail.com>
-References: <20190428133826.3e142cfd@oasis.local.home>
-        <CALCETrXvmZPHsfRVnW0AtyddfN-2zaCmWn+FsrF6XPTOFd_Jmw@mail.gmail.com>
-        <CAHk-=whtt4K2f0KPtG-4Pykh3FK8UBOjD8jhXCUKB5nWDj_YRA@mail.gmail.com>
-        <CALCETrWELBCK-kqX5FCEDVUy8kCT-yVu7m_7Dtn=GCsHY0Du5A@mail.gmail.com>
-        <CAHk-=wgewK4eFhF3=0RNtk1KQjMANFH6oDE=8m=84RExn2gxhw@mail.gmail.com>
-        <CAHk-=whay7eN6+2gZjY-ybRbkbcqAmgrLwwszzHx8ws3c=S-MA@mail.gmail.com>
-        <CALCETrXzVU0Q7u1q=QFPaDr=aojjF5cjbOi9CxxXnp5GqTqsWA@mail.gmail.com>
-        <CAHk-=wg1QPz0m+7jnVcjQgkySUQLzAXE8_PZARV-vWYK27LB=w@mail.gmail.com>
-        <20190430135602.GD2589@hirez.programming.kicks-ass.net>
-        <CAHk-=wg7vUGMRHyBsLig6qiPK0i4_BK3bRrTN+HHHziUGg1P_A@mail.gmail.com>
-        <CALCETrXujRWxwkgAwB+8xja3N9H22t52AYBYM_mbrjKKZ624Eg@mail.gmail.com>
-        <20190430130359.330e895b@gandalf.local.home>
-        <20190430132024.0f03f5b8@gandalf.local.home>
-        <20190430134913.4e29ce72@gandalf.local.home>
-        <CAHk-=wjJ8D74+FDcXGL65Q9aB0cc7B4vr2s2rS6V4d4a3hU-1Q@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] livepatch: Use correct kobject cleanup function
+Message-ID: <20190430213730.GC9454@eros.localdomain>
+References: <20190430001534.26246-1-tobin@kernel.org>
+ <20190430001534.26246-3-tobin@kernel.org>
+ <20190430150811.4hzhtz4w46o6numh@pathway.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190430150811.4hzhtz4w46o6numh@pathway.suse.cz>
+X-Mailer: Mutt 1.11.4 (2019-03-13)
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 30 Apr 2019 11:33:21 -0700
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
-
-> > +       "ftrace_emulate_call_update_irqoff:\n\t"
-> > +               "push %gs:ftrace_bp_call_return\n\t"
-> > +               "sti\n\t"
-> > +               "jmp *ftrace_update_func_call\n"  
+On Tue, Apr 30, 2019 at 05:08:11PM +0200, Petr Mladek wrote:
+> On Tue 2019-04-30 10:15:34, Tobin C. Harding wrote:
+> > The correct cleanup function after a call to kobject_init_and_add() has
+> > succeeded is kobject_del() _not_ kobject_put().  kobject_del() calls
+> > kobject_put().
 > 
-> .. and this should then use the "push push sti ret" model instead.
-> 
-> Plus get updated for objtool complaints.
+> Really? I see only kobject_put(kobj->parent) in kobject_del.
+> It decreases a reference of the _parent_ object and not
+> the given one.
 
-And unfortunately, this blows up on lockdep. Lockdep notices that the
-return from the breakpoint handler has interrupts enabled, and will not
-enable them in its shadow irqs disabled variable. But then we enabled
-them in the trampoline, without telling lockdep and we trigger
-something likes this:
+Thanks Petr, you are right.  I misread kobject_del().  The story
+thickens, so we need to call kobject_del() AND kobject_put().
 
-------------[ cut here ]------------
-IRQs not enabled as expected
-WARNING: CPU: 2 PID: 0 at kernel/time/tick-sched.c:979 tick_nohz_idle_enter+0x44/0x8c
-Modules linked in:
-CPU: 2 PID: 0 Comm: swapper/2 Not tainted 5.1.0-rc3-test+ #123
-Hardware name: MSI MS-7823/CSM-H87M-G43 (MS-7823), BIOS V1.6 02/22/2014
-EIP: tick_nohz_idle_enter+0x44/0x8c
-Code: f0 05 00 00 00 75 26 83 b8 c4 05 00 00 00 75 1d 80 3d 5f 0f 43 c1 00 75 14 68 72 74 16 c1 c6 05 5f 0f 43 c1 01 e8 33 d7 f8 ff <0f> 0b 58 fa e8 4e 2c 04 00 bb e0 36 6b c1 64 03 1d 28 81 56 c1 8b
-EAX: 0000001c EBX: ee769f84 ECX: 00000000 EDX: 00000006
-ESI: 00000000 EDI: 00000002 EBP: ee769f50 ESP: ee769f48
-DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00210292
-CR0: 80050033 CR2: 00000000 CR3: 016c4000 CR4: 001406f0
-Call Trace:
- do_idle+0x2a/0x1fc
- cpu_startup_entry+0x1e/0x20
- start_secondary+0x1d3/0x1ec
- startup_32_smp+0x164/0x168
+> Also the section "Kobject removal" in Documentation/kobject.txt
+> says that kobject_del() is for two-stage removal. kobject_put()
+> still needs to get called at a later time.
 
+Is this call sequence above what is meant by 'two-stage removal', I
+didn't really understand that bit of the docs (and I almost always just
+assume docs are stale and take them as a hint only :)
 
-I have to fool lockdep with the following:
+> IMHO, this patch causes that kobject_put() would never get called.
 
-		if (regs->flags & X86_EFLAGS_IF) {
-			regs->flags &= ~X86_EFLAGS_IF;
-			regs->ip = (unsigned long) ftrace_emulate_call_irqoff;
-			/* Tell lockdep here we are enabling interrupts */
-			trace_hardirqs_on();
-		} else {
-			regs->ip = (unsigned long) ftrace_emulate_call_irqon;
-		}
+I'll do a v2 of this one and re-check all the patches on this I've
+already sent (including the docs ones).
 
--- Steve
+> That said, we could probably make the removal a bit cleaner
+> by using kobject_del() in klp_free_patch_start() and
+> kobject_put() in klp_free_patch_finish(). But I have
+> to think more about it.
+
+Noted, thanks for your review.
+
+	Tobin
+	
