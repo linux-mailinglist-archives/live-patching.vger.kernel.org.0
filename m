@@ -2,105 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF732F46E
-	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 12:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16FCCF475
+	for <lists+live-patching@lfdr.de>; Tue, 30 Apr 2019 12:47:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbfD3Kqm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Apr 2019 06:46:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50496 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726736AbfD3Kql (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Apr 2019 06:46:41 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C048E20675;
-        Tue, 30 Apr 2019 10:46:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556621201;
-        bh=D3sfDG7uxYtxPW02ApZZJFjnsJg3kMpIBjXi36/qpno=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ChJUZQJwe1XcML0+wkCvqsopVCkLe5hjyK/1ECif/g6SLfTtVah03jseseraLfs+I
-         16ipOq+lLYd/SruQpfU1YH04tKiAz1KJsCIySGy8dfEPU+YkIuR7OZoi/D2V1obGMD
-         yHBwa6YyFXLg4bVfE+x1nfz9vectIJs3tW0CwtS4=
-Date:   Tue, 30 Apr 2019 12:46:38 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     "Tobin C. Harding" <tobin@kernel.org>,
+        id S1727310AbfD3KrT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Apr 2019 06:47:19 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:59070 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726736AbfD3KrT (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Apr 2019 06:47:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=hqqOHMMUuBvpuVQELeBZmURuJXjgQFqffW8kA9cAK/I=; b=PaVG+9RwpCsXq15eaBB6EYSbN
+        kSbHYkqvjqUvSv3jpTDD9Z/uLy3t//bG0X+q/rBM5tUljQmNVrSIAC16d5DWJjguWhS03TvhXFVke
+        m2tBVj6tvBTp0mR573beuNeRyZSVhY3M1m+BidytXleKrDBBZqCaR6QJFLPSlaidaZ2HPF+y1bEwS
+        WZ1t8L0HPIZFikNyRg3L6ZMurl0eejHBOFV4y+vUIr5iMBjfipjE7DJFdIwN7KNXOmwsbqnddIIb4
+        x8YKCMOSStKAuoQRJbG7ZhKn3fq3uJb2stY/jCun14hfRD3yhi8H7az6tyHPLffJLOAMnz4bRGxeN
+        41K2u1XDw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+        id 1hLQHi-0004y1-Ln; Tue, 30 Apr 2019 10:46:50 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id F4112203E886A; Tue, 30 Apr 2019 12:46:48 +0200 (CEST)
+Date:   Tue, 30 Apr 2019 12:46:48 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Nicolai Stange <nstange@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        the arch/x86 maintainers <x86@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] livepatch: Fix kobject memleak
-Message-ID: <20190430104638.GA8137@kroah.com>
-References: <20190430001534.26246-1-tobin@kernel.org>
- <20190430001534.26246-2-tobin@kernel.org>
- <20190430084254.GB11737@kroah.com>
- <alpine.LSU.2.21.1904301235450.8507@pobox.suse.cz>
+        Shuah Khan <shuah@kernel.org>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Juergen Gross <jgross@suse.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        live-patching@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH 3/4] x86/ftrace: make ftrace_int3_handler() not to skip
+ fops invocation
+Message-ID: <20190430104648.GR2623@hirez.programming.kicks-ass.net>
+References: <20190427100639.15074-1-nstange@suse.de>
+ <20190427100639.15074-4-nstange@suse.de>
+ <20190427102657.GF2623@hirez.programming.kicks-ass.net>
+ <20190428133826.3e142cfd@oasis.local.home>
+ <CAHk-=wh5OpheSU8Em_Q3Hg8qw_JtoijxOdPtHru6d+5K8TWM=A@mail.gmail.com>
+ <20190429145250.1a5da6ed@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.1904301235450.8507@pobox.suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190429145250.1a5da6ed@gandalf.local.home>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 12:44:55PM +0200, Miroslav Benes wrote:
-> On Tue, 30 Apr 2019, Greg Kroah-Hartman wrote:
+On Mon, Apr 29, 2019 at 02:52:50PM -0400, Steven Rostedt wrote:
+> On Mon, 29 Apr 2019 11:06:58 -0700
+> Linus Torvalds <torvalds@linux-foundation.org> wrote:
 > 
-> > On Tue, Apr 30, 2019 at 10:15:33AM +1000, Tobin C. Harding wrote:
-> > > Currently error return from kobject_init_and_add() is not followed by a
-> > > call to kobject_put().  This means there is a memory leak.
-> > > 
-> > > Add call to kobject_put() in error path of kobject_init_and_add().
-> > > 
-> > > Signed-off-by: Tobin C. Harding <tobin@kernel.org>
-> > 
-> > Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > +void replace_call(void *addr, const void *opcode, size_t len, void *target)
+> > +{
+> > +	bp_int3_call_target = target;
+> > +	bp_int3_call_return = addr + len;
+> > +	bp_int3_handler_irqoff = emulate_call_irqoff;
+> > +	text_poke_bp(addr, opcode, len, emulate_call_irqon);
+> > +}
 > 
-> Well, it does not even compile...
+> Note, the function tracer does not use text poke. It does it in batch
+> mode. It can update over 40,000 calls in one go:
 
-The idea is correct :)
+Note that Daniel is adding batch stuff to text_poke(), because
+jump_label/static_key stuffs also end up wanting to change more than one
+site at a time and IPI spraying the machine for every single instance is
+hurting.
 
-> On Tue, 30 Apr 2019, Tobin C. Harding wrote:
-> 
-> > Currently error return from kobject_init_and_add() is not followed by a
-> > call to kobject_put().  This means there is a memory leak.
-> > 
-> > Add call to kobject_put() in error path of kobject_init_and_add().
-> > 
-> > Signed-off-by: Tobin C. Harding <tobin@kernel.org>
-> > ---
-> >  kernel/livepatch/core.c | 12 +++++++++---
-> >  1 file changed, 9 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> > index eb0ee10a1981..98a7bec41faa 100644
-> > --- a/kernel/livepatch/core.c
-> > +++ b/kernel/livepatch/core.c
-> > @@ -727,7 +727,9 @@ static int klp_init_func(struct klp_object *obj, struct klp_func *func)
-> >  	ret = kobject_init_and_add(&func->kobj, &klp_ktype_func,
-> >  				   &obj->kobj, "%s,%lu", func->old_name,
-> >  				   func->old_sympos ? func->old_sympos : 1);
-> > -	if (!ret)
-> > +	if (ret)
-> > +		kobject_put(&func->kobj);
-> > +	else
-> >  		func->kobj_added = true;
-> >  
-> >  	return ret;
-> > @@ -803,8 +805,10 @@ static int klp_init_object(struct klp_patch *patch, struct klp_object *obj)
-> >  	name = klp_is_module(obj) ? obj->name : "vmlinux";
-> >  	ret = kobject_init_and_add(&obj->kobj, &klp_ktype_object,
-> >  				   &patch->kobj, "%s", name);
-> > -	if (ret)
-> > +	if (ret) {
-> > +		kobject_put(&func->kobj);
-> 
-> kobject_put(&obj->kobj); I suppose.
-
-Yeah, that makes it better, sorry for not catching that in the review :(
-
-greg k-h
+So ideally ftrace would start to use the 'normal' code when that
+happens.
