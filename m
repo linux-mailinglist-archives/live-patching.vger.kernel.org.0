@@ -2,79 +2,96 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2559A11447
-	for <lists+live-patching@lfdr.de>; Thu,  2 May 2019 09:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9801145B
+	for <lists+live-patching@lfdr.de>; Thu,  2 May 2019 09:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726289AbfEBHiR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 2 May 2019 03:38:17 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:38032 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725795AbfEBHiQ (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 2 May 2019 03:38:16 -0400
-Received: by mail-lj1-f195.google.com with SMTP id e18so1265428lja.5;
-        Thu, 02 May 2019 00:38:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=BBJ1hjxqa+5BnXyt7pCtMPz5hZf7jhfxyIk6LZ9P3rM=;
-        b=fZLai2Hgs7iH0UDuaGecGdq++MJ55RYWa2BuhClRowkPQw+hXnURfJH9Pplu3ziXxc
-         p0mhyARMSDDjHFcbfGEEXcFQsLbqpogawacIXVDQbhJMhrYkfQBmp9/jmu0WpgMT/zyo
-         BjuDkIK4On9GSuaz5Vn5xXGcyVfnR52GIzjmmt8tGXixF9FZErMSCZkM/WqLleIMYohz
-         LDou1w29UXbxF+eSJQnMcQ6tetr94fLYzvRrNkLnV/hOpdsTaZYf25JLOoqN6VI/eZFL
-         DGmDfCA5qeS6mpda7fDomJrI61aj95W46vsd5rOpdaP/NusKjMOZWPeKjkoeXZAPwd85
-         MbuA==
-X-Gm-Message-State: APjAAAWIHOq9TfCLzYo6hrjSnVjLR+md+IyTU+6XcQJdiThJpa0yGSBx
-        KudNG5gOYnUSrVc7bBNKrQ0=
-X-Google-Smtp-Source: APXvYqxgXmiMGnAj6ZI51kaf+UJVBTXjjhDiMew5xLleR1sKi+TvBdIjVm6aUGEkdhnkPuFrsHDr3A==
-X-Received: by 2002:a2e:880b:: with SMTP id x11mr640795ljh.4.1556782694716;
-        Thu, 02 May 2019 00:38:14 -0700 (PDT)
-Received: from xi.terra (c-74bee655.07-184-6d6c6d4.bbcust.telenor.se. [85.230.190.116])
-        by smtp.gmail.com with ESMTPSA id y20sm9328553lfe.8.2019.05.02.00.38.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 00:38:13 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.91)
-        (envelope-from <johan@kernel.org>)
-        id 1hM6IR-0006zW-Bf; Thu, 02 May 2019 09:38:23 +0200
-Date:   Thu, 2 May 2019 09:38:23 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     "Tobin C. Harding" <tobin@kernel.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        id S1726207AbfEBHme (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 May 2019 03:42:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49856 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726203AbfEBHmd (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 2 May 2019 03:42:33 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 803A820873;
+        Thu,  2 May 2019 07:42:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556782953;
+        bh=TTKkqMKRnS10zsZ6GIqwWKgzc1iZ0VEa/3aFdwJHGaA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MMmPcHFJ5qPEdNk1wLQ95fxfpyanD5o8FTZCmJhD7Ml76a8Z6H2fEJ3qiuGXwl2RA
+         a+5/V6a/gxtms62G4dmua1GFV5CRZbSumjLWfdA1WDCmCQwg+uRWU7NQSQHJgbrql4
+         b4PTBSAx7/6Bb4cD4W50uBM2qGutKPgm3v7/4F5M=
+Date:   Thu, 2 May 2019 09:42:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     "Tobin C. Harding" <tobin@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 3/5] kobject: Fix kernel-doc comment first line
-Message-ID: <20190502073823.GQ26546@localhost>
+Subject: Re: [RFC PATCH 5/5] livepatch: Do not manually track kobject
+ initialization
+Message-ID: <20190502074230.GA27847@kroah.com>
 References: <20190502023142.20139-1-tobin@kernel.org>
- <20190502023142.20139-4-tobin@kernel.org>
+ <20190502023142.20139-6-tobin@kernel.org>
+ <20190502071232.GB16247@kroah.com>
+ <20190502073044.bfzugymrncnaajxe@pathway.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190502023142.20139-4-tobin@kernel.org>
+In-Reply-To: <20190502073044.bfzugymrncnaajxe@pathway.suse.cz>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, May 02, 2019 at 12:31:40PM +1000, Tobin C. Harding wrote:
-> kernel-doc comments have a prescribed format.  This includes parenthesis
-> on the function name.  To be _particularly_ correct we should also
-> capitalise the brief description and terminate it with a period.
+On Thu, May 02, 2019 at 09:30:44AM +0200, Petr Mladek wrote:
+> On Thu 2019-05-02 09:12:32, Greg Kroah-Hartman wrote:
+> > On Thu, May 02, 2019 at 12:31:42PM +1000, Tobin C. Harding wrote:
+> > > Currently we use custom logic to track kobject initialization.  Recently
+> > > a predicate function was added to the kobject API so we now no longer
+> > > need to do this.
+> > > 
+> > > Use kobject API to check for initialized state of kobjects instead of
+> > > using custom logic to track state.
+> > > 
+> > > Signed-off-by: Tobin C. Harding <tobin@kernel.org>
+> > > ---
+> > >  include/linux/livepatch.h |  6 ------
+> > >  kernel/livepatch/core.c   | 18 +++++-------------
+> > >  2 files changed, 5 insertions(+), 19 deletions(-)
+> > > 
+> > > @@ -626,7 +626,7 @@ static void __klp_free_objects(struct klp_patch *patch, bool nops_only)
+> > >  		list_del(&obj->node);
+> > >  
+> > >  		/* Might be called from klp_init_patch() error path. */
+> > > -		if (obj->kobj_added) {
+> > > +		if (kobject_is_initialized(&obj->kobj)) {
+> > >  			kobject_put(&obj->kobj);
+> > >  		} else if (obj->dynamic) {
+> > >  			klp_free_object_dynamic(obj);
+> > 
+> > Same here, let's not be lazy.
+> > 
+> > The code should "know" if the kobject has been initialized or not
+> > because it is the entity that asked for it to be initialized.  Don't add
+> > extra logic to the kobject core (like the patch before this did) just
+> > because this one subsystem wanted to only write 1 "cleanup" function.
+> 
+> We use kobject for a mix of statically and dynamically defined
+> structures[*]. And we misunderstood the behavior of kobject_init().
 
-Why do think capitalisation and full stop is required for the function
-description?
+Eeek, no, a kobject should never be used for a static structure, that's
+just wrong.
 
-Sure, the example in the current doc happen to use that, but I'm not
-sure that's intended as a prescription.
+Well, almost wrong, ignore how the driver core itself does this in
+places :)
 
-The old kernel-doc nano-HOWTO specifically did not use this:
+thanks,
 
-	https://www.kernel.org/doc/Documentation/kernel-doc-nano-HOWTO.txt
-
-Johan
+greg k-h
