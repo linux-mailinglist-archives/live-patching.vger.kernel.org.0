@@ -2,55 +2,109 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 558DE115B0
-	for <lists+live-patching@lfdr.de>; Thu,  2 May 2019 10:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC21D115C1
+	for <lists+live-patching@lfdr.de>; Thu,  2 May 2019 10:51:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbfEBIqW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 2 May 2019 04:46:22 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35208 "EHLO mx1.suse.de"
+        id S1726428AbfEBIv3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 May 2019 04:51:29 -0400
+Received: from mx2.suse.de ([195.135.220.15]:36198 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725951AbfEBIqV (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 2 May 2019 04:46:21 -0400
+        id S1726011AbfEBIv2 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 2 May 2019 04:51:28 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 955F0AED4;
-        Thu,  2 May 2019 08:46:20 +0000 (UTC)
-Date:   Thu, 2 May 2019 10:46:20 +0200
+        by mx1.suse.de (Postfix) with ESMTP id 9339AAF3E;
+        Thu,  2 May 2019 08:51:27 +0000 (UTC)
+Date:   Thu, 2 May 2019 10:51:27 +0200
 From:   Petr Mladek <pmladek@suse.com>
-To:     "Tobin C. Harding" <tobin@kernel.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+To:     "Tobin C. Harding" <me@tobin.cc>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Tobin C. Harding" <tobin@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/5] livepatch: Fix kobject memleak
-Message-ID: <20190502084620.vrtalu473z6wwo22@pathway.suse.cz>
+Subject: Re: [RFC PATCH 5/5] livepatch: Do not manually track kobject
+ initialization
+Message-ID: <20190502085127.5kiuxdey2fmrx4kr@pathway.suse.cz>
 References: <20190502023142.20139-1-tobin@kernel.org>
- <20190502023142.20139-2-tobin@kernel.org>
+ <20190502023142.20139-6-tobin@kernel.org>
+ <20190502071232.GB16247@kroah.com>
+ <20190502073044.bfzugymrncnaajxe@pathway.suse.cz>
+ <20190502083127.GC18363@eros.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190502023142.20139-2-tobin@kernel.org>
+In-Reply-To: <20190502083127.GC18363@eros.localdomain>
 User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2019-05-02 12:31:38, Tobin C. Harding wrote:
-> Currently error return from kobject_init_and_add() is not followed by a
-> call to kobject_put().  This means there is a memory leak.
+On Thu 2019-05-02 18:31:27, Tobin C. Harding wrote:
+> On Thu, May 02, 2019 at 09:30:44AM +0200, Petr Mladek wrote:
+> > On Thu 2019-05-02 09:12:32, Greg Kroah-Hartman wrote:
+> > > On Thu, May 02, 2019 at 12:31:42PM +1000, Tobin C. Harding wrote:
+> > > > Currently we use custom logic to track kobject initialization.  Recently
+> > > > a predicate function was added to the kobject API so we now no longer
+> > > > need to do this.
+> > > > 
+> > > > Use kobject API to check for initialized state of kobjects instead of
+> > > > using custom logic to track state.
+> > > > 
+> > > > Signed-off-by: Tobin C. Harding <tobin@kernel.org>
+> > > > ---
+> > > >  include/linux/livepatch.h |  6 ------
+> > > >  kernel/livepatch/core.c   | 18 +++++-------------
+> > > >  2 files changed, 5 insertions(+), 19 deletions(-)
+> > > > 
+> > > > @@ -626,7 +626,7 @@ static void __klp_free_objects(struct klp_patch *patch, bool nops_only)
+> > > >  		list_del(&obj->node);
+> > > >  
+> > > >  		/* Might be called from klp_init_patch() error path. */
+> > > > -		if (obj->kobj_added) {
+> > > > +		if (kobject_is_initialized(&obj->kobj)) {
+> > > >  			kobject_put(&obj->kobj);
+> > > >  		} else if (obj->dynamic) {
+> > > >  			klp_free_object_dynamic(obj);
+> > > 
+> > > Same here, let's not be lazy.
+> > > 
+> > > The code should "know" if the kobject has been initialized or not
+> > > because it is the entity that asked for it to be initialized.  Don't add
+> > > extra logic to the kobject core (like the patch before this did) just
+> > > because this one subsystem wanted to only write 1 "cleanup" function.
+> > 
+> > We use kobject for a mix of statically and dynamically defined
+> > structures[*]. And we misunderstood the behavior of kobject_init().
+> > 
+> > Anyway, the right solution is to call kobject_init()
+> > already in klp_init_patch_early() for the statically
+> > defined structures and in klp_alloc*() for the dynamically
+> > allocated ones. Then we could simply call kobject_put()
+> > every time.
+> > 
+> > Tobin, this goes deeper into the livepatching code that
+> > you probably expected. Do you want to do the above
+> > suggested change or should I prepare the patch?
+> 
+> I'd love for you to handle this one Petr, I'd say its a net gain
+> time wise that way since if I do it you'll have to review it too
+> carefully anyways.
+> 
+> So that will mean patch #1 and #5 of this series are dropped and handed
+> off to you (thanks).  Patch #2 and #3 Greg said he will take.  Patch #4
+> is not needed.  That's a win in my books :)
 
-Strictly speaking there is no real memory leak in this case because
-the structures are either static and or freed later via
-klp_free*() functions.
+Sound like a great plan. I am going to work on the patch for
+the livepatching code.
 
-That said, we could do the kobject manipulation a more clear way
-as discussed in the 5th patch.
-
-Anyway, thanks for cleaning this.
+Anyway, thanks a lot for your patches. It is a big relief to realize
+that we could remove some hacks and do it clearly, modulo the static
+structures ;-)
 
 Best Regards,
 Petr
