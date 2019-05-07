@@ -2,91 +2,77 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F6BC16452
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 15:12:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D59B316471
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 15:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbfEGNM2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 May 2019 09:12:28 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52104 "EHLO mx1.redhat.com"
+        id S1726321AbfEGNTQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 7 May 2019 09:19:16 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42890 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726321AbfEGNM1 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 May 2019 09:12:27 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        id S1726426AbfEGNTQ (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 7 May 2019 09:19:16 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 782942C9710;
-        Tue,  7 May 2019 13:12:27 +0000 (UTC)
-Received: from [10.18.17.208] (dhcp-17-208.bos.redhat.com [10.18.17.208])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C111148CFC;
-        Tue,  7 May 2019 13:12:26 +0000 (UTC)
-Subject: Re: [PATCH] livepatch: Remove stale kobj_added entries from
- kernel-doc descriptions
-To:     Miroslav Benes <mbenes@suse.cz>, jikos@kernel.org,
-        jpoimboe@redhat.com, pmladek@suse.com
-Cc:     kamalesh@linux.vnet.ibm.com, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190507130815.17685-1-mbenes@suse.cz>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <0d62c598-1f59-c931-c2bd-2600683c57f6@redhat.com>
-Date:   Tue, 7 May 2019 09:12:26 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        by mx1.redhat.com (Postfix) with ESMTPS id 231CE307D91F;
+        Tue,  7 May 2019 13:19:16 +0000 (UTC)
+Received: from treble (ovpn-123-166.rdu2.redhat.com [10.10.123.166])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0519660C4E;
+        Tue,  7 May 2019 13:19:09 +0000 (UTC)
+Date:   Tue, 7 May 2019 08:19:07 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] livepatch: Use static buffer for debugging
+ messages under rq lock
+Message-ID: <20190507131907.ep5g2hi4hp2lvy3d@treble>
+References: <20190430091049.30413-1-pmladek@suse.com>
+ <20190430091049.30413-3-pmladek@suse.com>
+ <20190507004319.oxxncicid6pxg352@treble>
+ <20190507115029.54qxbsd4vsouwvjo@pathway.suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20190507130815.17685-1-mbenes@suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Tue, 07 May 2019 13:12:27 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190507115029.54qxbsd4vsouwvjo@pathway.suse.cz>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Tue, 07 May 2019 13:19:16 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 5/7/19 9:08 AM, Miroslav Benes wrote:
-> Commit 4d141ab3416d ("livepatch: Remove custom kobject state handling")
-> removed kobj_added members of klp_func, klp_object and klp_patch
-> structures. kernel-doc descriptions were omitted by accident. Remove
-> them.
+On Tue, May 07, 2019 at 01:50:29PM +0200, Petr Mladek wrote:
+> On Mon 2019-05-06 19:43:19, Josh Poimboeuf wrote:
+> > On Tue, Apr 30, 2019 at 11:10:49AM +0200, Petr Mladek wrote:
+> > > klp_try_switch_task() is called under klp_mutex. The buffer for
+> > > debugging messages might be static.
+> > 
+> > The patch description is missing a "why" (presumably to reduce stack
+> > usage).
 > 
-> Reported-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
-> ---
->   include/linux/livepatch.h | 3 ---
->   1 file changed, 3 deletions(-)
+> Exactly. I thought that it was obvious. But I am infected by printk
+> code where line buffers are 1k and nobody wants them on the stack.
 > 
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index a14bab1a0a3e..955d46f37b72 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -47,7 +47,6 @@
->    * @stack_node:	list node for klp_ops func_stack list
->    * @old_size:	size of the old function
->    * @new_size:	size of the new function
-> - * @kobj_added: @kobj has been added and needs freeing
->    * @nop:        temporary patch to use the original code again; dyn. allocated
->    * @patched:	the func has been added to the klp_ops list
->    * @transition:	the func is currently being applied or reverted
-> @@ -125,7 +124,6 @@ struct klp_callbacks {
->    * @node:	list node for klp_patch obj_list
->    * @mod:	kernel module associated with the patched object
->    *		(NULL for vmlinux)
-> - * @kobj_added: @kobj has been added and needs freeing
->    * @dynamic:    temporary object for nop functions; dynamically allocated
->    * @patched:	the object's funcs have been added to the klp_ops list
->    */
-> @@ -152,7 +150,6 @@ struct klp_object {
->    * @list:	list node for global list of actively used patches
->    * @kobj:	kobject for sysfs resources
->    * @obj_list:	dynamic list of the object entries
-> - * @kobj_added: @kobj has been added and needs freeing
->    * @enabled:	the patch is enabled (but operation may be incomplete)
->    * @forced:	was involved in a forced transition
->    * @free_work:	patch cleanup from workqueue-context
+> 128bytes in klp_try_switch_task() context are acceptable but
+> it is still rather big buffer.
 > 
+> OK, what about the following commit message?
+> 
+> "klp_try_switch_task() is called under klp_mutex. The buffer for
+> debugging messages might be static to reduce stack usage."
 
-D'oh, missed that in the review.  Good eye, Kamalesh.
+It's better to use imperative language.  It would also be good to
+reverse the order of the wording by starting with the problem.
 
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+Something like:
 
--- Joe
+The err_buf array uses 128 bytes of stack space.  Move it off the stack
+by making it static.  It's safe to use a shared buffer because
+klp_try_switch_task() is called under klp_mutex.
+
+-- 
+Josh
