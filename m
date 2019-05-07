@@ -2,137 +2,63 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7C916364
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 14:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7964D163C6
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 14:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbfEGMEB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 May 2019 08:04:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:50454 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726276AbfEGMEB (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 May 2019 08:04:01 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C57FA81F19;
-        Tue,  7 May 2019 12:03:56 +0000 (UTC)
-Received: from treble (ovpn-123-166.rdu2.redhat.com [10.10.123.166])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 74F631A7D9;
-        Tue,  7 May 2019 12:03:52 +0000 (UTC)
-Date:   Tue, 7 May 2019 07:03:50 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
+        id S1726197AbfEGMc7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 7 May 2019 08:32:59 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55620 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726206AbfEGMc7 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 7 May 2019 08:32:59 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 3E064AE14;
+        Tue,  7 May 2019 12:32:58 +0000 (UTC)
+Date:   Tue, 7 May 2019 14:32:57 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
 To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+cc:     Jiri Kosina <jikos@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        "Tobin C . Harding" <tobin@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] livepatch: Remove duplicate warning about missing
- reliable stacktrace support
-Message-ID: <20190507120350.gpazr6xivzwvd3az@treble>
-References: <20190430091049.30413-1-pmladek@suse.com>
- <20190430091049.30413-2-pmladek@suse.com>
- <20190507004032.2fgddlsycyypqdsn@treble>
- <20190507014332.l5pmvjyfropaiui2@treble>
- <20190507112950.wejw6nmfwzmm3vaf@pathway.suse.cz>
+Subject: Re: [PATCH 1/2] livepatch: Remove custom kobject state handling
+In-Reply-To: <20190503132625.23442-2-pmladek@suse.com>
+Message-ID: <alpine.LSU.2.21.1905071355430.7486@pobox.suse.cz>
+References: <20190503132625.23442-1-pmladek@suse.com> <20190503132625.23442-2-pmladek@suse.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190507112950.wejw6nmfwzmm3vaf@pathway.suse.cz>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Tue, 07 May 2019 12:04:01 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, May 07, 2019 at 01:29:50PM +0200, Petr Mladek wrote:
-> On Mon 2019-05-06 20:43:32, Josh Poimboeuf wrote:
-> > On Mon, May 06, 2019 at 07:40:32PM -0500, Josh Poimboeuf wrote:
-> > > On Tue, Apr 30, 2019 at 11:10:48AM +0200, Petr Mladek wrote:
-> > > > WARN_ON_ONCE() could not be called safely under rq lock because
-> > > > of console deadlock issues. Fortunately, there is another check
-> > > > for the reliable stacktrace support in klp_enable_patch().
-> > > > 
-> > > > Signed-off-by: Petr Mladek <pmladek@suse.com>
-> > > > ---
-> > > >  kernel/livepatch/transition.c | 9 ++++++++-
-> > > >  1 file changed, 8 insertions(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-> > > > index 9c89ae8b337a..8e0274075e75 100644
-> > > > --- a/kernel/livepatch/transition.c
-> > > > +++ b/kernel/livepatch/transition.c
-> > > > @@ -263,8 +263,15 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
-> > > >  	trace.nr_entries = 0;
-> > > >  	trace.max_entries = MAX_STACK_ENTRIES;
-> > > >  	trace.entries = entries;
-> > > > +
-> > > >  	ret = save_stack_trace_tsk_reliable(task, &trace);
-> > > > -	WARN_ON_ONCE(ret == -ENOSYS);
-> > > > +	/*
-> > > > +	 * pr_warn() under task rq lock might cause a deadlock.
-> > > > +	 * Fortunately, missing reliable stacktrace support has
-> > > > +	 * already been handled when the livepatch was enabled.
-> > > > +	 */
-> > > > +	if (ret == -ENOSYS)
-> > > > +		return ret;
-> > > 
-> > > I find the comment to be a bit wordy and confusing (and vague).
+On Fri, 3 May 2019, Petr Mladek wrote:
+
+> kobject_init() always succeeds and sets the reference count to 1.
+> It allows to always free the structures via kobject_put() and
+> the related release callback.
 > 
-> Then please provide a better one. I have no idea what might make
-> you happy and am not interested into an endless disputing.
-
-Something like this would be clearer:
-
-	if (ret == -ENOSYS) {
-		/*
-		 * This arch doesn't support reliable stack tracing.  No
-		 * need to print a warning; that has already been done
-		 * by klp_enable_patch().
-		 */
-		return ret;
-	}
-
-But my next point was that changing the code would be even better than
-fixing the comment.
-
-> > > Also this check is effectively the same as the klp_have_reliable_stack()
-> > > check which is done in kernel/livepatch/core.c.  So I think it would be
-> > > clearer and more consistent if the same check is done here:
-> > > 
-> > > 	if (!klp_have_reliable_stack())
-> > > 		return -ENOSYS;
+> Note that the custom kobject state handling was used only
+> because we did not know that kobject_put() can and actually
+> should get called even when kobject_init_and_add() fails.
 > 
-> Huh, it smells with over engineering to me.
+> The patch should not change the existing behavior.
 
-How so?  It makes the code more readable and the generated code should
-be much better because it becomes a build-time check.
+Pity that the changelog does not describe the change from 
+kobject_init_and_add() to two-stage kobject init (separate kobject_init() 
+and kobject_add()).
 
-But I think Miroslav's suggestion to revert 1d98a69e5cef would be even
-better.
+Petr changed it, because now each member of new dynamic lists (created in 
+klp_init_patch_early()) is initialized with kobject_init(), so we do not 
+have to worry about calling kobject_put() (this is slightly different from 
+kobj_added).
 
-> > > 	ret = save_stack_trace_tsk_reliable(task, &trace);
-> > > 
-> > > 	[ no need to check ret for ENOSYS here ]
-> > > 
-> > > Then, IMO, no comment is needed.
-> > 
-> > BTW, if you agree with this approach then we can leave the
-> > WARN_ON_ONCE() in save_stack_trace_tsk_reliable() after all.
-> 
-> I really like the removal of the WARN_ON_ONCE(). I consider
-> it an old fashioned way used when people are lazy to handle
-> errors. It might make sense when the backtrace helps to locate
-> the context but the context is well known here. Finally,
-> WARN() should be used with care. It might cause reboot
-> with panic_on_warn.
+It would also be possible to retain kobject_init_and_add() and move it to 
+klp_init_patch_early(), but it would be uglier in my opinion.
 
-The warning makes the function consistent with the other weak functions
-in stacktrace.c and clarifies that it should never be called unless an
-arch has misconfigured something.  And if we aren't even checking the
-specific ENOSYS error as I proposed then this warning would make the
-error more obvious.
-
--- 
-Josh
+Miroslav
