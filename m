@@ -2,156 +2,86 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D57165A5
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 16:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E47165B0
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 16:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbfEGO2t (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 May 2019 10:28:49 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49696 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726730AbfEGO2t (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 May 2019 10:28:49 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 75258ACAE;
-        Tue,  7 May 2019 14:28:47 +0000 (UTC)
-Date:   Tue, 7 May 2019 16:28:47 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] livepatch: Remove duplicate warning about missing
- reliable stacktrace support
-Message-ID: <20190507142847.pre7tvm4oysimfww@pathway.suse.cz>
-References: <20190430091049.30413-1-pmladek@suse.com>
- <20190430091049.30413-2-pmladek@suse.com>
- <20190507004032.2fgddlsycyypqdsn@treble>
- <20190507014332.l5pmvjyfropaiui2@treble>
- <20190507112950.wejw6nmfwzmm3vaf@pathway.suse.cz>
- <20190507120350.gpazr6xivzwvd3az@treble>
+        id S1726575AbfEGOay (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 7 May 2019 10:30:54 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:41854 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726486AbfEGOay (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 7 May 2019 10:30:54 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x47ETMp0069767
+        for <live-patching@vger.kernel.org>; Tue, 7 May 2019 10:30:53 -0400
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2sbb0vjmk5-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <live-patching@vger.kernel.org>; Tue, 07 May 2019 10:30:50 -0400
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
+        Tue, 7 May 2019 15:30:05 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 7 May 2019 15:30:00 +0100
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x47ETxx346596170
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 7 May 2019 14:29:59 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B3EFC420B0;
+        Tue,  7 May 2019 14:29:59 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CA2FE42081;
+        Tue,  7 May 2019 14:29:57 +0000 (GMT)
+Received: from JAVRIS.in.ibm.com (unknown [9.102.0.77])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue,  7 May 2019 14:29:57 +0000 (GMT)
+Date:   Tue, 7 May 2019 19:59:51 +0530
+From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     jikos@kernel.org, jpoimboe@redhat.com, pmladek@suse.com,
+        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Remove stale kobj_added entries from
+ kernel-doc descriptions
+References: <20190507130815.17685-1-mbenes@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190507120350.gpazr6xivzwvd3az@treble>
-User-Agent: NeoMutt/20170912 (1.9.0)
+In-Reply-To: <20190507130815.17685-1-mbenes@suse.cz>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-TM-AS-GCONF: 00
+x-cbid: 19050714-0008-0000-0000-000002E431E2
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19050714-0009-0000-0000-00002250AF46
+Message-Id: <20190507142951.GA8038@JAVRIS.in.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-07_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=780 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905070094
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue 2019-05-07 07:03:50, Josh Poimboeuf wrote:
-> On Tue, May 07, 2019 at 01:29:50PM +0200, Petr Mladek wrote:
-> > On Mon 2019-05-06 20:43:32, Josh Poimboeuf wrote:
-> > > On Mon, May 06, 2019 at 07:40:32PM -0500, Josh Poimboeuf wrote:
-> > > > On Tue, Apr 30, 2019 at 11:10:48AM +0200, Petr Mladek wrote:
-> > > > > --- a/kernel/livepatch/transition.c
-> > > > > +++ b/kernel/livepatch/transition.c
-> > > > > @@ -263,8 +263,15 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
-> > > > >  	trace.nr_entries = 0;
-> > > > >  	trace.max_entries = MAX_STACK_ENTRIES;
-> > > > >  	trace.entries = entries;
-> > > > > +
-> > > > >  	ret = save_stack_trace_tsk_reliable(task, &trace);
-> > > > > -	WARN_ON_ONCE(ret == -ENOSYS);
-> > > > > +	/*
-> > > > > +	 * pr_warn() under task rq lock might cause a deadlock.
-> > > > > +	 * Fortunately, missing reliable stacktrace support has
-> > > > > +	 * already been handled when the livepatch was enabled.
-> > > > > +	 */
-> > > > > +	if (ret == -ENOSYS)
-> > > > > +		return ret;
-> > > > 
-> > > > I find the comment to be a bit wordy and confusing (and vague).
-> > 
-> > Then please provide a better one. I have no idea what might make
-> > you happy and am not interested into an endless disputing.
->
-> Something like this would be clearer:
+On Tue, May 07, 2019 at 03:08:14PM +0200, Miroslav Benes wrote:
+> Commit 4d141ab3416d ("livepatch: Remove custom kobject state handling")
+> removed kobj_added members of klp_func, klp_object and klp_patch
+> structures. kernel-doc descriptions were omitted by accident. Remove
+> them.
 > 
-> 	if (ret == -ENOSYS) {
-> 		/*
-> 		 * This arch doesn't support reliable stack tracing.  No
-> 		 * need to print a warning; that has already been done
-> 		 * by klp_enable_patch().
-> 		 */
-> 		return ret;
-> 	}
+> Reported-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
 
-I do not mind.
+Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
 
-> > > > Also this check is effectively the same as the klp_have_reliable_stack()
-> > > > check which is done in kernel/livepatch/core.c.  So I think it would be
-> > > > clearer and more consistent if the same check is done here:
-> > > > 
-> > > > 	if (!klp_have_reliable_stack())
-> > > > 		return -ENOSYS;
-> > 
-> > Huh, it smells with over engineering to me.
-> 
-> How so?  It makes the code more readable and the generated code should
-> be much better because it becomes a build-time check.
+-- 
+Kamalesh
 
-save_stack_trace_tsk_reliable() returns various error codes.
-We catch a specific one because otherwise the message below
-might be misleading.
-
-I do not see why we should prevent this error by calling
-a custom hack: klp_have_reliable_stack()?
-
-Regarding reliability. If anyone changes semantic of
-save_stack_trace_tsk_reliable() error codes, they would likely
-check if all users (one at the moment) handle it correctly.
-
-On the other hand, the dependency between the -ENOSYS
-return value and klp_have_reliable_stack() is far from
-obvious.
-
-If we want to discuss and fix this to the death. We should change
-the return value from -ENOSYS to -EOPNOTSUPP. The reason
-is the same as in the commit 375bfca3459db1c5596
-("livepatch: core: Return EOPNOTSUPP instead of ENOSYS").
-
-Note that EOPNOTSUPP is the same errno as ENOTSUP, see
-man 3 errno.
-
-
-> But I think Miroslav's suggestion to revert 1d98a69e5cef would be even
-> better.
-
-AFAIK, Miroslav wanted to point out that your opinion was inconsistent.
-
-
-> > > > 	ret = save_stack_trace_tsk_reliable(task, &trace);
-> > > > 
-> > > > 	[ no need to check ret for ENOSYS here ]
-> > > > 
-> > > > Then, IMO, no comment is needed.
-> > > 
-> > > BTW, if you agree with this approach then we can leave the
-> > > WARN_ON_ONCE() in save_stack_trace_tsk_reliable() after all.
-> > 
-> > I really like the removal of the WARN_ON_ONCE(). I consider
-> > it an old fashioned way used when people are lazy to handle
-> > errors. It might make sense when the backtrace helps to locate
-> > the context but the context is well known here. Finally,
-> > WARN() should be used with care. It might cause reboot
-> > with panic_on_warn.
-> 
-> The warning makes the function consistent with the other weak functions
-> in stacktrace.c and clarifies that it should never be called unless an
-> arch has misconfigured something.  And if we aren't even checking the
-> specific ENOSYS error as I proposed then this warning would make the
-> error more obvious.
-
-I consider both WARN() and error value as superfluous. I like the
-error value because it allows users to handle the situation as
-they need it.
-
-Best Regards,
-Petr
-
-PS: This is my last mail in the thread this week. I will eventually
-return to it with a clear head next week. It is all nitpicking from
-my POV and I have better things to do.
