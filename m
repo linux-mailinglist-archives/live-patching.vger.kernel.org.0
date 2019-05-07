@@ -2,108 +2,103 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3ACF1611F
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 11:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21745162CC
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 13:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726286AbfEGJic (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 May 2019 05:38:32 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:36487 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbfEGJic (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 May 2019 05:38:32 -0400
-Received: by mail-lj1-f196.google.com with SMTP id z1so1478748ljb.3;
-        Tue, 07 May 2019 02:38:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Tc6IIAjzg9ip1EiDB2DwT04Nip0LdOfWWuVFTByFfgo=;
-        b=UDognZTYXEUniKF86MKUW8+deTu3dwQfNsGJvCJW5jdCXBggyLyUuPIM1P62MEc7IC
-         geaY9U+nG+LjyYH9PRrTmtunVmzCvoqdOsEWSbqSy8hdSlvXX6uPUqOf/Ucp0dXRCsb9
-         qQBQnWxrM4Uj0N5AIT6UKedAFp2Q9Eeg2E1XyZk+LEca9MRdsJaWMqRE27lSQo7BFNKc
-         rjXkrgTD1TzOG74F3Aguy+KzlZUl/qDUKi9Taj27YxdkrQYz6rC6vOe2YKyKd2q692/m
-         sbNm/Ao4v2ExhfUpmiHiYFaOX2BJhOGuvsQ4CDj0XlHiFpw8dcCqn9NGFpHP4K7YSIsF
-         IVzw==
-X-Gm-Message-State: APjAAAUgLIPLvG2DTC8AOR/v/6Y7D77YK2yZcSMy5Fp5UAZ0eekKavav
-        Q/GGvtKfMDXcUkWEngqbnws=
-X-Google-Smtp-Source: APXvYqybeeeYP4hHflBw+LYg1ipaMT1I4IYHEpl2+FiWwNASLJPLex61menqwVWecLyO5n2BV7l1jA==
-X-Received: by 2002:a2e:85d2:: with SMTP id h18mr16296224ljj.128.1557221910203;
-        Tue, 07 May 2019 02:38:30 -0700 (PDT)
-Received: from xi.terra (c-74bee655.07-184-6d6c6d4.bbcust.telenor.se. [85.230.190.116])
-        by smtp.gmail.com with ESMTPSA id z3sm3060282ljg.78.2019.05.07.02.38.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 07 May 2019 02:38:29 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.91)
-        (envelope-from <johan@kernel.org>)
-        id 1hNwYP-0007Of-Jw; Tue, 07 May 2019 11:38:29 +0200
-Date:   Tue, 7 May 2019 11:38:29 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     "Tobin C. Harding" <me@tobin.cc>
-Cc:     Johan Hovold <johan@kernel.org>,
-        "Tobin C. Harding" <tobin@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
+        id S1725859AbfEGL3w (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 7 May 2019 07:29:52 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44240 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725843AbfEGL3w (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 7 May 2019 07:29:52 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 4D460ABF1;
+        Tue,  7 May 2019 11:29:51 +0000 (UTC)
+Date:   Tue, 7 May 2019 13:29:50 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 3/5] kobject: Fix kernel-doc comment first line
-Message-ID: <20190507093829.GF4333@localhost>
-References: <20190502023142.20139-1-tobin@kernel.org>
- <20190502023142.20139-4-tobin@kernel.org>
- <20190502073823.GQ26546@localhost>
- <20190502082539.GB18363@eros.localdomain>
- <20190502083922.GR26546@localhost>
- <20190503014015.GC7416@eros.localdomain>
- <20190503075607.GC26546@localhost>
- <20190506230035.GA29554@eros.localdomain>
+Subject: Re: [PATCH v2 1/2] livepatch: Remove duplicate warning about missing
+ reliable stacktrace support
+Message-ID: <20190507112950.wejw6nmfwzmm3vaf@pathway.suse.cz>
+References: <20190430091049.30413-1-pmladek@suse.com>
+ <20190430091049.30413-2-pmladek@suse.com>
+ <20190507004032.2fgddlsycyypqdsn@treble>
+ <20190507014332.l5pmvjyfropaiui2@treble>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190506230035.GA29554@eros.localdomain>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190507014332.l5pmvjyfropaiui2@treble>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, May 07, 2019 at 09:00:35AM +1000, Tobin C. Harding wrote:
-> On Fri, May 03, 2019 at 09:56:07AM +0200, Johan Hovold wrote:
+On Mon 2019-05-06 20:43:32, Josh Poimboeuf wrote:
+> On Mon, May 06, 2019 at 07:40:32PM -0500, Josh Poimboeuf wrote:
+> > On Tue, Apr 30, 2019 at 11:10:48AM +0200, Petr Mladek wrote:
+> > > WARN_ON_ONCE() could not be called safely under rq lock because
+> > > of console deadlock issues. Fortunately, there is another check
+> > > for the reliable stacktrace support in klp_enable_patch().
+> > > 
+> > > Signed-off-by: Petr Mladek <pmladek@suse.com>
+> > > ---
+> > >  kernel/livepatch/transition.c | 9 ++++++++-
+> > >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> > > index 9c89ae8b337a..8e0274075e75 100644
+> > > --- a/kernel/livepatch/transition.c
+> > > +++ b/kernel/livepatch/transition.c
+> > > @@ -263,8 +263,15 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
+> > >  	trace.nr_entries = 0;
+> > >  	trace.max_entries = MAX_STACK_ENTRIES;
+> > >  	trace.entries = entries;
+> > > +
+> > >  	ret = save_stack_trace_tsk_reliable(task, &trace);
+> > > -	WARN_ON_ONCE(ret == -ENOSYS);
+> > > +	/*
+> > > +	 * pr_warn() under task rq lock might cause a deadlock.
+> > > +	 * Fortunately, missing reliable stacktrace support has
+> > > +	 * already been handled when the livepatch was enabled.
+> > > +	 */
+> > > +	if (ret == -ENOSYS)
+> > > +		return ret;
+> > 
+> > I find the comment to be a bit wordy and confusing (and vague).
 
-> > This isn't about any particular subsystem, but more the tendency of
-> > people to make up random rules and try to to force it on others. It's
-> > churn, and also makes things like code forensics and backports harder
-> > for no good reason.
+Then please provide a better one. I have no idea what might make
+you happy and am not interested into an endless disputing.
+
+> > Also this check is effectively the same as the klp_have_reliable_stack()
+> > check which is done in kernel/livepatch/core.c.  So I think it would be
+> > clearer and more consistent if the same check is done here:
+> > 
+> > 	if (!klp_have_reliable_stack())
+> > 		return -ENOSYS;
+
+Huh, it smells with over engineering to me.
+
+> > 	ret = save_stack_trace_tsk_reliable(task, &trace);
+> > 
+> > 	[ no need to check ret for ENOSYS here ]
+> > 
+> > Then, IMO, no comment is needed.
 > 
-> Points noted.
-> 
-> > Both capitalisation styles are about as common for the function
-> > description judging from a quick grep, but only 10% or so use a full
-> > stop ('.'). And forcing the use of sentence case and full stop for
-> > things like
-> > 
-> > 	/**
-> > 	 * maar_init() - Initialise MAARs.
-> > 
-> > or
-> > 
-> > 	* @instr: Operational instruction.
-> > 
-> > would be not just ugly, but wrong (as these are not independent
-> > clauses).
-> 
-> You are correct here.
+> BTW, if you agree with this approach then we can leave the
+> WARN_ON_ONCE() in save_stack_trace_tsk_reliable() after all.
 
-Actually, I may have been wrong about the first example (imperative),
-but the second still stands.
+I really like the removal of the WARN_ON_ONCE(). I consider
+it an old fashioned way used when people are lazy to handle
+errors. It might make sense when the backtrace helps to locate
+the context but the context is well known here. Finally,
+WARN() should be used with care. It might cause reboot
+with panic_on_warn.
 
-> Thanks for taking the time to flesh out your argument Johan, I am now in
-> agreement with you :)
-
-Good to hear! :)
-
-Johan
+Best Regards,
+Petr
