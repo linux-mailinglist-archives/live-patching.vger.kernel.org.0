@@ -2,80 +2,74 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7BB16432
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 15:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB9816446
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 15:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbfEGNGU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 May 2019 09:06:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726406AbfEGNGU (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 May 2019 09:06:20 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D928720578;
-        Tue,  7 May 2019 13:06:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557234379;
-        bh=XfQZU2DpqqrNaC5uwBRr2mXrJytyFoUzUl7vvTJlB8c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CqpLWNvcQYpwOH0Ds3NTlc9nCXnv0qgpF0DE5BgxFOBWxB5O9IwDE++/eiiqgLqC7
-         zgwwtIGe/kQfEykEnjo7lXnoozEu4ckYLeqRhgjX7ZegjRKcU+zNgx9oPo8lBwiFhN
-         yh/3iZ0MkOUnVjxqkPVCPrwuPah2PEPxomZ5pWDY=
-Date:   Tue, 7 May 2019 15:06:16 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Petr Mladek <pmladek@suse.com>, Jiri Kosina <jikos@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        "Tobin C . Harding" <tobin@kernel.org>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] livepatch: Remove custom kobject state handling
-Message-ID: <20190507130616.GA17386@kroah.com>
-References: <20190503132625.23442-1-pmladek@suse.com>
- <20190503132625.23442-2-pmladek@suse.com>
- <alpine.LSU.2.21.1905071355430.7486@pobox.suse.cz>
+        id S1726446AbfEGNIR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 7 May 2019 09:08:17 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34044 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726404AbfEGNIR (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 7 May 2019 09:08:17 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 58150AE72;
+        Tue,  7 May 2019 13:08:16 +0000 (UTC)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     jikos@kernel.org, jpoimboe@redhat.com, pmladek@suse.com
+Cc:     joe.lawrence@redhat.com, kamalesh@linux.vnet.ibm.com,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH] livepatch: Remove stale kobj_added entries from kernel-doc descriptions
+Date:   Tue,  7 May 2019 15:08:14 +0200
+Message-Id: <20190507130815.17685-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.1905071355430.7486@pobox.suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, May 07, 2019 at 02:32:57PM +0200, Miroslav Benes wrote:
-> On Fri, 3 May 2019, Petr Mladek wrote:
-> 
-> > kobject_init() always succeeds and sets the reference count to 1.
-> > It allows to always free the structures via kobject_put() and
-> > the related release callback.
-> > 
-> > Note that the custom kobject state handling was used only
-> > because we did not know that kobject_put() can and actually
-> > should get called even when kobject_init_and_add() fails.
-> > 
-> > The patch should not change the existing behavior.
-> 
-> Pity that the changelog does not describe the change from 
-> kobject_init_and_add() to two-stage kobject init (separate kobject_init() 
-> and kobject_add()).
-> 
-> Petr changed it, because now each member of new dynamic lists (created in 
-> klp_init_patch_early()) is initialized with kobject_init(), so we do not 
-> have to worry about calling kobject_put() (this is slightly different from 
-> kobj_added).
-> 
-> It would also be possible to retain kobject_init_and_add() and move it to 
-> klp_init_patch_early(), but it would be uglier in my opinion.
+Commit 4d141ab3416d ("livepatch: Remove custom kobject state handling")
+removed kobj_added members of klp_func, klp_object and klp_patch
+structures. kernel-doc descriptions were omitted by accident. Remove
+them.
 
-kobject_init_and_add() is only there for the "simple" use cases.
-There's no problem with doing the two-stage process on your own like
-this, that's exactly what it is there for :)
+Reported-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+---
+ include/linux/livepatch.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-thanks,
+diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+index a14bab1a0a3e..955d46f37b72 100644
+--- a/include/linux/livepatch.h
++++ b/include/linux/livepatch.h
+@@ -47,7 +47,6 @@
+  * @stack_node:	list node for klp_ops func_stack list
+  * @old_size:	size of the old function
+  * @new_size:	size of the new function
+- * @kobj_added: @kobj has been added and needs freeing
+  * @nop:        temporary patch to use the original code again; dyn. allocated
+  * @patched:	the func has been added to the klp_ops list
+  * @transition:	the func is currently being applied or reverted
+@@ -125,7 +124,6 @@ struct klp_callbacks {
+  * @node:	list node for klp_patch obj_list
+  * @mod:	kernel module associated with the patched object
+  *		(NULL for vmlinux)
+- * @kobj_added: @kobj has been added and needs freeing
+  * @dynamic:    temporary object for nop functions; dynamically allocated
+  * @patched:	the object's funcs have been added to the klp_ops list
+  */
+@@ -152,7 +150,6 @@ struct klp_object {
+  * @list:	list node for global list of actively used patches
+  * @kobj:	kobject for sysfs resources
+  * @obj_list:	dynamic list of the object entries
+- * @kobj_added: @kobj has been added and needs freeing
+  * @enabled:	the patch is enabled (but operation may be incomplete)
+  * @forced:	was involved in a forced transition
+  * @free_work:	patch cleanup from workqueue-context
+-- 
+2.21.0
 
-greg k-h
