@@ -2,188 +2,90 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF39B15640
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 01:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7B8E15706
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2019 02:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726218AbfEFXBO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 6 May 2019 19:01:14 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:44413 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726063AbfEFXBN (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 6 May 2019 19:01:13 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 62C22148C8;
-        Mon,  6 May 2019 19:01:10 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Mon, 06 May 2019 19:01:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tobin.cc; h=date
-        :from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=xM4jzc9dPTg4gnuuWc7wADR0BLb
-        nKp4nVQ2UXDxHlno=; b=eecXp3dVsf21b/PePO+9dDTmHMKmNs/bczR0WgIq2VG
-        oRcW0wnHuFcwqgTLkBMWIcA4vmbfkCFDXcwxugn2eUFF4J9d6Z+AlRlfdgcsQJnN
-        t0oaRAkr8nUezQ9K9pwUg92YlLJT1o/oPm3G4C7ZxTv1xLefYcMgTOxGN8eGPa8K
-        yGmHEkK468uOfWS4WI8RKJbdXoTuMb3JM840VQuykkGX+W3dnFi3WqHKh4ykadrP
-        SXKgKwsZYWk27TuL7M08Umxghaz8zoLnR/YZgaOvcYdEhlvJQz0D/pzRFaTovEI9
-        hiM2n3i3QZflDkM4DucwObTdpYIxUCG09zyre/P0m+Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=xM4jzc
-        9dPTg4gnuuWc7wADR0BLbnKp4nVQ2UXDxHlno=; b=DxAdKNqbMrpd1c/MEb2Mzz
-        nn25hafBJtjPs3+Tinc9xoNd1VYfIeBmB9EqTU3i2oQIko4Ok9RmxbNJvS+lX6N5
-        9ZW0HJHHacAKsuOb332WPdeRAz7p27Tm/4TQhHst0B3dMVcmv2AdpPIY6UB2Egs0
-        qQEfJVojB3ilByqTYIG/pIBeA652uTM5FCZnj3dwHVQTqQMOnVvCmxZHG3oTGVmb
-        rHXC6mfC7J09GnBYZX9OhpbYD5wrCqqHZtOMpoYpCaZY/QDz4RF0dCFCDFvjplYI
-        iAR3XcMFsQaqJanKkxogOUYbE8WacNkjacmAQZupxY8itmmTIpSL9si2V5nKXJFw
-        ==
-X-ME-Sender: <xms:tLzQXD10ZEomj0bVeUMzj6XLrdNFC0oL0Ek7j6IymvyP8FuOT30AXg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrjeelgddukecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
-    hrlhcuvffnffculdduhedmnecujfgurhepfffhvffukfhfgggtuggjofgfsehttdertdfo
-    redvnecuhfhrohhmpedfvfhosghinhcuvedrucfjrghrughinhhgfdcuoehmvgesthhosg
-    hinhdrtggtqeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeduvddurdeg
-    gedrudelkedrudegudenucfrrghrrghmpehmrghilhhfrhhomhepmhgvsehtohgsihhnrd
-    gttgenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:tLzQXEphdkpoC4t8paPfeEJWIV3_MYhQcks3J-y_Cjt0sGqtxmGIPA>
-    <xmx:tLzQXLCvZjaJsYGdN52lnTOinc7X84Q1Ho450kOQPqIlo2FEZyR7_g>
-    <xmx:tLzQXBG0wQBewtjvTIuiPLppZxhI1vyHqxfW1fEW7ybvfpeSGlfv-g>
-    <xmx:trzQXAJanD-b7_V4GWJSPP_KlaZgvoWD8kg4V3M9RsCVIK75ZxIkgw>
-Received: from localhost (ppp121-44-198-141.bras1.syd2.internode.on.net [121.44.198.141])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CD8FF1037C;
-        Mon,  6 May 2019 19:01:07 -0400 (EDT)
-Date:   Tue, 7 May 2019 09:00:35 +1000
-From:   "Tobin C. Harding" <me@tobin.cc>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     "Tobin C. Harding" <tobin@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
+        id S1726095AbfEGAkj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 6 May 2019 20:40:39 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48104 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726073AbfEGAkj (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 6 May 2019 20:40:39 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id F02F859468;
+        Tue,  7 May 2019 00:40:38 +0000 (UTC)
+Received: from treble (ovpn-123-166.rdu2.redhat.com [10.10.123.166])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 403B1611CF;
+        Tue,  7 May 2019 00:40:34 +0000 (UTC)
+Date:   Mon, 6 May 2019 19:40:32 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 3/5] kobject: Fix kernel-doc comment first line
-Message-ID: <20190506230035.GA29554@eros.localdomain>
-References: <20190502023142.20139-1-tobin@kernel.org>
- <20190502023142.20139-4-tobin@kernel.org>
- <20190502073823.GQ26546@localhost>
- <20190502082539.GB18363@eros.localdomain>
- <20190502083922.GR26546@localhost>
- <20190503014015.GC7416@eros.localdomain>
- <20190503075607.GC26546@localhost>
+Subject: Re: [PATCH v2 1/2] livepatch: Remove duplicate warning about missing
+ reliable stacktrace support
+Message-ID: <20190507004032.2fgddlsycyypqdsn@treble>
+References: <20190430091049.30413-1-pmladek@suse.com>
+ <20190430091049.30413-2-pmladek@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190503075607.GC26546@localhost>
-X-Mailer: Mutt 1.11.4 (2019-03-13)
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190430091049.30413-2-pmladek@suse.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Tue, 07 May 2019 00:40:39 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, May 03, 2019 at 09:56:07AM +0200, Johan Hovold wrote:
-> On Fri, May 03, 2019 at 11:40:15AM +1000, Tobin C. Harding wrote:
-> > On Thu, May 02, 2019 at 10:39:22AM +0200, Johan Hovold wrote:
-> > > On Thu, May 02, 2019 at 06:25:39PM +1000, Tobin C. Harding wrote: > Adding Jon to CC
-> > > > 
-> > > > On Thu, May 02, 2019 at 09:38:23AM +0200, Johan Hovold wrote:
-> > > > > On Thu, May 02, 2019 at 12:31:40PM +1000, Tobin C. Harding wrote:
-> > > > > > kernel-doc comments have a prescribed format.  This includes parenthesis
-> > > > > > on the function name.  To be _particularly_ correct we should also
-> > > > > > capitalise the brief description and terminate it with a period.
-> > > > > 
-> > > > > Why do think capitalisation and full stop is required for the function
-> > > > > description?
-> > > > > 
-> > > > > Sure, the example in the current doc happen to use that, but I'm not
-> > > > > sure that's intended as a prescription.
-> > > > > 
-> > > > > The old kernel-doc nano-HOWTO specifically did not use this:
-> > > > > 
-> > > > > 	https://www.kernel.org/doc/Documentation/kernel-doc-nano-HOWTO.txt
-> > > > > 
-> > > > 
-> > > > Oh?  I was basing this on Documentation/doc-guide/kernel-doc.rst
-> > > > 
-> > > > 	Function documentation
-> > > > 	----------------------
-> > > > 
-> > > > 	The general format of a function and function-like macro kernel-doc comment is::
-> > > > 
-> > > > 	  /**
-> > > > 	   * function_name() - Brief description of function.
-> > > > 	   * @arg1: Describe the first argument.
-> > > > 	   * @arg2: Describe the second argument.
-> > > > 	   *        One can provide multiple line descriptions
-> > > > 	   *        for arguments.
-> > > > 
-> > > > I figured that was the canonical way to do kernel-doc function
-> > > > comments.  I have however refrained from capitalising and adding the
-> > > > period to argument strings to reduce code churn.  I figured if I'm
-> > > > touching the line to add parenthesis then I might as well make it
-> > > > perfect (if such a thing exists).
-> > >
-> > > I think you may have read too much into that example. Many of the
-> > > current function and parameter descriptions aren't even full sentences,
-> > > so sentence case and full stop doesn't really make any sense.
-> > >
-> > > Looks like we discussed this last fall as well:
-> > 
-> > Ha, this was funny.  By 'we' at first I thought you meant 'we the kernel
-> > community' but you actually meant we as in 'me and you'.  Clearly you
-> > failed to convince me last time :)
-> > 
-> > > 	https://lkml.kernel.org/r/20180912093116.GC1089@localhost
-> > 
-> > I am totally aware this is close to code churn and any discussion is
-> > bikeshedding ... for me just because loads of places don't do this it
-> > still looks nicer to my eyes
-> > 
-> > /**
-> > * sfn() - Super awesome function.
-> > 
-> > than
-> > 
-> > /**
-> > */ sfn() - super awesome function
-> > 
-> > I most likely will keep doing these changes if I am touching the
-> > kernel-doc comments for other reasons and then drop the changes if the
-> > subsystem maintainer thinks its code churn.
-> > 
-> > I defiantly won't do theses changes in GNSS, GREYBUS, or USB SERIAL.
+On Tue, Apr 30, 2019 at 11:10:48AM +0200, Petr Mladek wrote:
+> WARN_ON_ONCE() could not be called safely under rq lock because
+> of console deadlock issues. Fortunately, there is another check
+> for the reliable stacktrace support in klp_enable_patch().
 > 
-> This isn't about any particular subsystem, but more the tendency of
-> people to make up random rules and try to to force it on others. It's
-> churn, and also makes things like code forensics and backports harder
-> for no good reason.
-
-Points noted.
-
-> Both capitalisation styles are about as common for the function
-> description judging from a quick grep, but only 10% or so use a full
-> stop ('.'). And forcing the use of sentence case and full stop for
-> things like
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
+> ---
+>  kernel/livepatch/transition.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 > 
-> 	/**
-> 	 * maar_init() - Initialise MAARs.
-> 
-> or
-> 
-> 	* @instr: Operational instruction.
-> 
-> would be not just ugly, but wrong (as these are not independent
-> clauses).
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index 9c89ae8b337a..8e0274075e75 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -263,8 +263,15 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
+>  	trace.nr_entries = 0;
+>  	trace.max_entries = MAX_STACK_ENTRIES;
+>  	trace.entries = entries;
+> +
+>  	ret = save_stack_trace_tsk_reliable(task, &trace);
+> -	WARN_ON_ONCE(ret == -ENOSYS);
+> +	/*
+> +	 * pr_warn() under task rq lock might cause a deadlock.
+> +	 * Fortunately, missing reliable stacktrace support has
+> +	 * already been handled when the livepatch was enabled.
+> +	 */
+> +	if (ret == -ENOSYS)
+> +		return ret;
 
-You are correct here.
+I find the comment to be a bit wordy and confusing (and vague).
 
-Thanks for taking the time to flesh out your argument Johan, I am now in
-agreement with you :)
+Also this check is effectively the same as the klp_have_reliable_stack()
+check which is done in kernel/livepatch/core.c.  So I think it would be
+clearer and more consistent if the same check is done here:
 
-Cheers,
-Tobin.
+	if (!klp_have_reliable_stack())
+		return -ENOSYS;
+
+	ret = save_stack_trace_tsk_reliable(task, &trace);
+
+	[ no need to check ret for ENOSYS here ]
+
+Then, IMO, no comment is needed.
+
+-- 
+Josh
