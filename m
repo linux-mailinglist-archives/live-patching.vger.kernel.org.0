@@ -2,93 +2,56 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8884718C0D
-	for <lists+live-patching@lfdr.de>; Thu,  9 May 2019 16:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ADDF18CDC
+	for <lists+live-patching@lfdr.de>; Thu,  9 May 2019 17:22:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfEIOj3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 9 May 2019 10:39:29 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43610 "EHLO mx1.redhat.com"
+        id S1726590AbfEIPWO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 9 May 2019 11:22:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50866 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726922AbfEIOjS (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 9 May 2019 10:39:18 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726558AbfEIPWO (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 9 May 2019 11:22:14 -0400
+Received: from pobox.suse.cz (prg-ext-pat.suse.com [213.151.95.130])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5706B3079B74;
-        Thu,  9 May 2019 14:39:18 +0000 (UTC)
-Received: from jlaw-desktop.redhat.com (ovpn-123-90.rdu2.redhat.com [10.10.123.90])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 622755ED22;
-        Thu,  9 May 2019 14:39:16 +0000 (UTC)
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Subject: [PATCH v4 10/10] livepatch/klp-convert: abort on special sections
-Date:   Thu,  9 May 2019 10:38:59 -0400
-Message-Id: <20190509143859.9050-11-joe.lawrence@redhat.com>
-In-Reply-To: <20190509143859.9050-1-joe.lawrence@redhat.com>
-References: <20190509143859.9050-1-joe.lawrence@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 4A2D020989;
+        Thu,  9 May 2019 15:22:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557415332;
+        bh=aCuboc0DBEqSYwhDmmHu+oqhpDTlyXuSlUr8dAcbDY0=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=xh1HvqatwMyA5VW31J8qpmiWMIpqBPbCZl9CTu9sauGcmuVqXG8C284OGylgFSV93
+         HLbT5+PDleEAoKSY+C3qRbLliaSDnHzJfkJ+jKpTTXtgm4OlTeDt4B7FbLcBwhYZZH
+         ehS9pr7LAdbR9fOuvT7afHMBcSJR3R6VPiHVJqqU=
+Date:   Thu, 9 May 2019 17:22:09 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Miroslav Benes <mbenes@suse.cz>
+cc:     jpoimboe@redhat.com, pmladek@suse.com, joe.lawrence@redhat.com,
+        kamalesh@linux.vnet.ibm.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Remove stale kobj_added entries from kernel-doc
+ descriptions
+In-Reply-To: <20190507130815.17685-1-mbenes@suse.cz>
+Message-ID: <nycvar.YFH.7.76.1905091721590.17054@cbobk.fhfr.pm>
+References: <20190507130815.17685-1-mbenes@suse.cz>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 09 May 2019 14:39:18 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-To properly convert alternatives, paravirt ops, and static keys,
-klp-convert needs to implement "klp.arch" sections as supported by
-d4c3e6e1b193 (“livepatch/x86: apply alternatives and paravirt patches
-after relocations”).
+On Tue, 7 May 2019, Miroslav Benes wrote:
 
-There is some amount of ELF section bookkeeping required for this (ie,
-moving data structure entries and relocations to their ".klp.arch"
-equivalents) but the hardest part will be determining klp_object
-relationships.  This may require some larger changes to livepatch API,
-so defer support for now.
+> Commit 4d141ab3416d ("livepatch: Remove custom kobject state handling")
+> removed kobj_added members of klp_func, klp_object and klp_patch
+> structures. kernel-doc descriptions were omitted by accident. Remove
+> them.
 
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
----
- scripts/livepatch/klp-convert.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Applied to for-5.2/fixes. Thanks,
 
-diff --git a/scripts/livepatch/klp-convert.c b/scripts/livepatch/klp-convert.c
-index 72b65428e738..b5873abecefb 100644
---- a/scripts/livepatch/klp-convert.c
-+++ b/scripts/livepatch/klp-convert.c
-@@ -617,6 +617,18 @@ static void free_converted_resources(struct elf *klp_elf)
- 	}
- }
- 
-+/* Check for special sections that klp-convert doesn't support */
-+static bool is_section_supported(char *sname)
-+{
-+	if (strcmp(sname, ".rela.altinstructions") == 0)
-+		return false;
-+	if (strcmp(sname, ".rela.parainstructions") == 0)
-+		return false;
-+	if (strcmp(sname, ".rela__jump_table") == 0)
-+		return false;
-+	return true;
-+}
-+
- int main(int argc, const char **argv)
- {
- 	const char *klp_in_module, *klp_out_module, *symbols_list;
-@@ -649,6 +661,12 @@ int main(int argc, const char **argv)
- 	}
- 
- 	list_for_each_entry_safe(sec, aux, &klp_elf->sections, list) {
-+		if (!is_section_supported(sec->name)) {
-+			WARN("Special ELF section: %s not supported",
-+				sec->name);
-+			return -1;
-+		}
-+
- 		if (!is_rela_section(sec) ||
- 		    is_klp_rela_section(sec->name))
- 			continue;
 -- 
-2.20.1
+Jiri Kosina
+SUSE Labs
 
