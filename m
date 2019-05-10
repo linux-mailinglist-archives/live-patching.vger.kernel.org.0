@@ -2,87 +2,66 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 198F8196BB
-	for <lists+live-patching@lfdr.de>; Fri, 10 May 2019 04:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 803BD19900
+	for <lists+live-patching@lfdr.de>; Fri, 10 May 2019 09:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726806AbfEJChf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 9 May 2019 22:37:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53994 "EHLO mail.kernel.org"
+        id S1726981AbfEJHaU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 10 May 2019 03:30:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41778 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726939AbfEJChb (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 9 May 2019 22:37:31 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        id S1726976AbfEJHaT (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 10 May 2019 03:30:19 -0400
+Received: from pobox.suse.cz (prg-ext-pat.suse.com [213.151.95.130])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CEE26217F4;
-        Fri, 10 May 2019 02:37:29 +0000 (UTC)
-Date:   Thu, 9 May 2019 22:37:28 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        by mail.kernel.org (Postfix) with ESMTPSA id C8F332175B;
+        Fri, 10 May 2019 07:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557473419;
+        bh=BWrULVzHUxmrIZ/1PBVnKb7g/rLEN890zSUCxeUSOSE=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=uC9XIXL5NOnZiIp1vI/7XQ5e8RSwZ4IT5AyZqoCVLEKI36bA3aJ7ebMhe8K9UrwZK
+         NB1cOHJMRucygvFiEebZKXgQwJpXbnf6xXOwc7cXZlfBuV/wIwek5990NI2/ITYz+C
+         1hVHTxl4GyWwqagtyopplsoOJ6pfWsNyveCFmpN8=
+Date:   Fri, 10 May 2019 09:30:14 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Ingo Molnar <mingo@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
+        "H. Peter Anvin" <hpa@zytor.com>, Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, x86@kernel.org,
+        live-patching@vger.kernel.org,
+        the arch/x86 maintainers <x86@kernel.org>,
         Borislav Petkov <bp@alien8.de>
 Subject: Re: [RFC][PATCH] ftrace/x86: Remove mcount support
-Message-ID: <20190509223728.203a58cd@gandalf.local.home>
-In-Reply-To: <20190509154902.34ea14f8@gandalf.local.home>
-References: <20190509154902.34ea14f8@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+In-Reply-To: <20190509222858.3ef96113@gandalf.local.home>
+Message-ID: <nycvar.YFH.7.76.1905100929290.17054@cbobk.fhfr.pm>
+References: <20190509154902.34ea14f8@gandalf.local.home> <CAHk-=wgZGWpXdscUHyuoRqkJ8XD5Wh2Q-320KGFBhGoBJGzAWQ@mail.gmail.com> <20190509222858.3ef96113@gandalf.local.home>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 9 May 2019 15:49:02 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On Thu, 9 May 2019, Steven Rostedt wrote:
 
-> diff --git a/arch/x86/include/asm/ftrace.h b/arch/x86/include/asm/ftrace.h
-> index cf350639e76d..287f1f7b2e52 100644
-> --- a/arch/x86/include/asm/ftrace.h
-> +++ b/arch/x86/include/asm/ftrace.h
-> @@ -3,12 +3,10 @@
->  #define _ASM_X86_FTRACE_H
->  
->  #ifdef CONFIG_FUNCTION_TRACER
-> -#ifdef CC_USING_FENTRY
-> -# define MCOUNT_ADDR		((unsigned long)(__fentry__))
-> -#else
-> -# define MCOUNT_ADDR		((unsigned long)(mcount))
-> -# define HAVE_FUNCTION_GRAPH_FP_TEST
-> +#ifndef CC_USING_FENTRY
-> +# error Compiler does not support fentry?
->  #endif
-> +# define MCOUNT_ADDR		((unsigned long)(__fentry__))
->  #define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
->  
->  #ifdef CONFIG_DYNAMIC_FTRACE
+> As this patch is simply a "remove mcount" patch, I'd like to have the 
+> removal of klp_check_compiler_support() be a separate patch.
+> 
+> Jiri or Josh, care to send a patch on top of this one?
 
-Failed my tests. :-(
+Sure thing, I'll do that once you send v2 fixing x86_32 of your patch.
 
-In arch/x86/Kconfig ...
+Thanks,
 
-	select HAVE_FENTRY                      if X86_64 || DYNAMIC_FTRACE
+-- 
+Jiri Kosina
+SUSE Labs
 
-
-Bah! I need to work a little on this patch.
-
-I need to implement fentry in the !DYNAMIC_FTRACE code of x86_32 first.
-Shouldn't be too hard, but still.
-
-I could also just force DYNAMIC_FTRACE to be 'y' for x86_32 if
-CONFIG_FUNCTION_TRACER is set. The only reason I still support static
-FTRACE on x86 is because I use it to test !DYNAMIC_FTRACE generic code,
-because there's still some archs that only support the !DYNAMIC_FTRACE
-function tracer.
-
--- Steve
