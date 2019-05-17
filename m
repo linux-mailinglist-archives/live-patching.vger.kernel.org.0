@@ -2,100 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EECFA219D3
-	for <lists+live-patching@lfdr.de>; Fri, 17 May 2019 16:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E7FE21DD0
+	for <lists+live-patching@lfdr.de>; Fri, 17 May 2019 20:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728482AbfEQOaN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 17 May 2019 10:30:13 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:45846 "EHLO mx1.redhat.com"
+        id S1726869AbfEQSvk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 17 May 2019 14:51:40 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43834 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728396AbfEQOaN (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 17 May 2019 10:30:13 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        id S1726732AbfEQSvk (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 17 May 2019 14:51:40 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5C09575724;
-        Fri, 17 May 2019 14:30:07 +0000 (UTC)
-Received: from [10.18.17.208] (dhcp-17-208.bos.redhat.com [10.18.17.208])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6059C78576;
-        Fri, 17 May 2019 14:30:05 +0000 (UTC)
-Subject: Re: livepatching selftests failure on current master branch
-To:     Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     jikos@kernel.org, jpoimboe@redhat.com, pmladek@suse.com,
-        tglx@linutronix.de
-References: <alpine.LSU.2.21.1905171608550.24009@pobox.suse.cz>
+        by mx1.redhat.com (Postfix) with ESMTPS id 26FB8C09AD16;
+        Fri, 17 May 2019 18:51:40 +0000 (UTC)
+Received: from jlaw-desktop.bos.redhat.com (dhcp-17-208.bos.redhat.com [10.18.17.208])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 28DBC413C;
+        Fri, 17 May 2019 18:51:35 +0000 (UTC)
 From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <ca57cb3a-cd4b-9d3b-1c67-4b60c4a00cb3@redhat.com>
-Date:   Fri, 17 May 2019 10:30:04 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     jikos@kernel.org, joe.lawrence@redhat.com, jpoimboe@redhat.com,
+        pmladek@suse.com, tglx@linutronix.de
+Subject: [PATCH] stacktrace: fix CONFIG_ARCH_STACKWALK stack_trace_save_tsk_reliable return
+Date:   Fri, 17 May 2019 14:51:17 -0400
+Message-Id: <20190517185117.24642-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.LSU.2.21.1905171608550.24009@pobox.suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Fri, 17 May 2019 14:30:12 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Fri, 17 May 2019 18:51:40 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 5/17/19 10:17 AM, Miroslav Benes wrote:
-> Hi,
-> 
-> I noticed that livepatching selftests fail on our master branch
-> (https://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git/).
-> 
-> ...
-> TEST: busy target module ... not ok
-> 
-> --- expected
-> +++ result
-> @@ -7,16 +7,24 @@ livepatch: 'test_klp_callbacks_demo': in
->   test_klp_callbacks_demo: pre_patch_callback: vmlinux
->   test_klp_callbacks_demo: pre_patch_callback: test_klp_callbacks_busy -> [MODULE_STATE_LIVE] Normal state
->   livepatch: 'test_klp_callbacks_demo': starting patching transition
-> +livepatch: 'test_klp_callbacks_demo': completing patching transition
-> +test_klp_callbacks_demo: post_patch_callback: vmlinux
-> +test_klp_callbacks_demo: post_patch_callback: test_klp_callbacks_busy -> [MODULE_STATE_LIVE] Normal state
-> +livepatch: 'test_klp_callbacks_demo': patching complete
->   % modprobe test_klp_callbacks_mod
->   livepatch: applying patch 'test_klp_callbacks_demo' to loading module
-> 'test_klp_callbacks_mod'
->   test_klp_callbacks_demo: pre_patch_callback: test_klp_callbacks_mod -> [MODULE_STATE_COMING] Full formed, running module_init
-> +test_klp_callbacks_demo: post_patch_callback: test_klp_callbacks_mod -> [MODULE_STATE_COMING] Full formed, running module_init
->   test_klp_callbacks_mod: test_klp_callbacks_mod_init
->   % rmmod test_klp_callbacks_mod
->   test_klp_callbacks_mod: test_klp_callbacks_mod_exit
-> +test_klp_callbacks_demo: pre_unpatch_callback: test_klp_callbacks_mod -> [MODULE_STATE_GOING] Going away
->   livepatch: reverting patch 'test_klp_callbacks_demo' on unloading module
-> 'test_klp_callbacks_mod'
->   test_klp_callbacks_demo: post_unpatch_callback: test_klp_callbacks_mod -> [MODULE_STATE_GOING] Going away
->   % echo 0 > /sys/kernel/livepatch/test_klp_callbacks_demo/enabled
-> -livepatch: 'test_klp_callbacks_demo': reversing transition from patching to unpatching
-> +livepatch: 'test_klp_callbacks_demo': initializing unpatching transition
-> +test_klp_callbacks_demo: pre_unpatch_callback: vmlinux
-> +test_klp_callbacks_demo: pre_unpatch_callback: test_klp_callbacks_busy -> [MODULE_STATE_LIVE] Normal state
->   livepatch: 'test_klp_callbacks_demo': starting unpatching transition
->   livepatch: 'test_klp_callbacks_demo': completing unpatching transition
->   test_klp_callbacks_demo: post_unpatch_callback: vmlinux
-> 
-> ERROR: livepatch kselftest(s) failed
-> not ok 1..2 selftests: livepatch: test-callbacks.sh [FAIL]
-> 
-> which probably means that the consistency model is not in the best shape.
-> There were not many livepatch changes in the latest pull request. Stack
-> unwinder changes may be connected, so adding Thomas to be aware if it
-> leads in this direction.
-> 
-> Unfortunately, I'm leaving in a minute and will be gone till Wednesday, so
-> if someone confirms and wants to investigate, definitely feel free to do
-> it.
-> 
+Miroslav reported that the livepatch self-tests were failing,
+specifically a case in which the consistency model ensures that we do
+not patch a current executing function, "TEST: busy target module".
 
-I will take a look today.  Thanks for reporting.  I hope it's something 
-silly in the tests not the consistency model ...
+Recent renovations to stack_trace_save_tsk_reliable() left it returning
+only an -ERRNO success indication in some configuration combinations:
 
--- Joe
+  klp_check_stack()
+    ret = stack_trace_save_tsk_reliable()
+      #ifdef CONFIG_ARCH_STACKWALK && CONFIG_HAVE_RELIABLE_STACKTRACE
+        stack_trace_save_tsk_reliable()
+          ret = arch_stack_walk_reliable()
+            return 0
+            return -EINVAL
+          ...
+          return ret;
+    ...
+    if (ret < 0)
+      /* stack_trace_save_tsk_reliable error */
+    nr_entries = ret;                               << 0
+
+Previously (and currently for !CONFIG_ARCH_STACKWALK &&
+CONFIG_HAVE_RELIABLE_STACKTRACE) stack_trace_save_tsk_reliable()
+returned the number of entries that it consumed in the passed storage
+array.
+
+In the case of the above config and trace, be sure to return the
+stacktrace_cookie.len on stack_trace_save_tsk_reliable() success.
+
+Fixes: 25e39e32b0a3f ("livepatch: Simplify stack trace retrieval")
+Reported-by: Miroslav Benes <mbenes@suse.cz>
+Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+---
+ kernel/stacktrace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/stacktrace.c b/kernel/stacktrace.c
+index 27bafc1e271e..90d3e0bf0302 100644
+--- a/kernel/stacktrace.c
++++ b/kernel/stacktrace.c
+@@ -206,7 +206,7 @@ int stack_trace_save_tsk_reliable(struct task_struct *tsk, unsigned long *store,
+ 
+ 	ret = arch_stack_walk_reliable(consume_entry, &c, tsk);
+ 	put_task_stack(tsk);
+-	return ret;
++	return ret ? ret : c.len;
+ }
+ #endif
+ 
+-- 
+2.20.1
+
