@@ -2,74 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 373002561C
-	for <lists+live-patching@lfdr.de>; Tue, 21 May 2019 18:53:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D25C02583E
+	for <lists+live-patching@lfdr.de>; Tue, 21 May 2019 21:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729116AbfEUQxX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 21 May 2019 12:53:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36744 "EHLO mail.kernel.org"
+        id S1726771AbfEUT2F (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 21 May 2019 15:28:05 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40938 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727817AbfEUQxW (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 21 May 2019 12:53:22 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726525AbfEUT2F (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 21 May 2019 15:28:05 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4FFEB217F5;
-        Tue, 21 May 2019 16:53:21 +0000 (UTC)
-Date:   Tue, 21 May 2019 12:53:19 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Johannes Erdfelt <johannes@erdfelt.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Jessica Yu <jeyu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        by mx1.redhat.com (Postfix) with ESMTPS id DF10C81E0E;
+        Tue, 21 May 2019 19:27:49 +0000 (UTC)
+Received: from [10.18.17.208] (dhcp-17-208.bos.redhat.com [10.18.17.208])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DF5E5537AD;
+        Tue, 21 May 2019 19:27:47 +0000 (UTC)
+Subject: Re: Oops caused by race between livepatch and ftrace
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     Johannes Erdfelt <johannes@erdfelt.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>, Jessica Yu <jeyu@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>, live-patching@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: Oops caused by race between livepatch and ftrace
-Message-ID: <20190521125319.04ac8b6c@gandalf.local.home>
-In-Reply-To: <20190521164227.bxdff77kq7fgl5lp@treble>
 References: <20190520194915.GB1646@sventech.com>
-        <90f78070-95ec-ce49-1641-19d061abecf4@redhat.com>
-        <20190520210905.GC1646@sventech.com>
-        <20190520211931.vokbqxkx5kb6k2bz@treble>
-        <20190520173910.6da9ddaf@gandalf.local.home>
-        <20190521141629.bmk5onsaab26qoaw@treble>
-        <20190521104204.47d4e175@gandalf.local.home>
-        <20190521164227.bxdff77kq7fgl5lp@treble>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+ <90f78070-95ec-ce49-1641-19d061abecf4@redhat.com>
+ <20190520210905.GC1646@sventech.com>
+ <1802c0d2-702f-08ec-6a85-c7f887eb6d14@redhat.com>
+Message-ID: <a2075a5b-e048-4a7b-2813-01ed7e75bde8@redhat.com>
+Date:   Tue, 21 May 2019 15:27:47 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1802c0d2-702f-08ec-6a85-c7f887eb6d14@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Tue, 21 May 2019 19:28:00 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 21 May 2019 11:42:27 -0500
-Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-
-> Hm.  I suppose using ftrace_lock might be less risky since that lock is
-> only used internally by ftrace (up until now).  But I think it would
-> also make less sense because the text_mutex is supposed to protect code
-> patching.  And presumably ftrace_lock is supposed to be ftrace-specific.
+On 5/20/19 5:19 PM, Joe Lawrence wrote:
+> On 5/20/19 5:09 PM, Johannes Erdfelt wrote:
+>> On Mon, May 20, 2019, Joe Lawrence <joe.lawrence@redhat.com> wrote:
+>>> These two testing scenarios might be interesting to add to our selftests
+>>> suite.  Can you post or add the source(s) to livepatch-test<n>.ko to the
+>>> tarball?
+>>
+>> I made the livepatches using kpatch-build and this simple patch:
+>>
+>> diff --git a/fs/proc/version.c b/fs/proc/version.c
+>> index 94901e8e700d..6b8a3449f455 100644
+>> --- a/fs/proc/version.c
+>> +++ b/fs/proc/version.c
+>> @@ -12,6 +12,7 @@ static int version_proc_show(struct seq_file *m, void *v)
+>>    		utsname()->sysname,
+>>    		utsname()->release,
+>>    		utsname()->version);
+>> +	seq_printf(m, "example livepatch\n");
+>>    	return 0;
+>>    }
+>>
+>> I just created enough livepatches with the same source patch so that I
+>> could reproduce the issue somewhat reliably.
+>>
+>> I'll see if I can make something that uses klp directly.
 > 
-> Here's the latest patch, still using text_mutex.  I added some lockdep
-> assertions to ensure the permissions toggling functions are always
-> called with text_mutex.  It's running through 0-day right now.  I can
-> try to run it through various tests with CONFIG_LOCKDEP.
-
-Yeah, text_mutex probably does make more sense. ftrace_mutex was around
-before text_mutex as ftrace was the first one to do the runtime
-patching (after boot has finished). It wasn't until we introduced
-text_poke that we decided to create the text_mutex locking as well.
-
+> Ah ok great, I was hoping it was a relatively simply livepatch.  We
+> could probably reuse lib/livepatch/test_klp_livepatch.c to do this
+> (patching cmdline_proc_show instead).
 > 
+>> The rest of the userspace in the initramfs is really straight forward
+>> with the only interesting parts being a couple of shell scripts.
 > 
-> From: Josh Poimboeuf <jpoimboe@redhat.com>
-> Subject: [PATCH] livepatch: Fix ftrace module text permissions race
+> Yup.  I'll be on PTO later this week, but I'll see about extracting the
+> scripts and building a pile of livepatch .ko's to see how easily it
+> reproduces without qemu.
+> 
 
-Thanks,
+D'oh -- I just remembered that klp doesn't create those klp (arch) 
+relocation sections just yet!  Without those, the window for module RO 
+-> RW -> RO in klp_init_object_loaded is going to be really small... at 
+least I can't reproduce it yet without those special sections.  So maybe 
+such selftests need to wait post klp-convert.
 
-I'll try to find some time to test this as well.
 
--- Steve
+BTW, livepatching folks -- speaking of this window, does it make sense 
+for klp_init_object_loaded() to unconditionally frob the module section 
+permissions?  Should it only bother iff it's going to apply 
+relocations/alternatives/paravirt?
+
+-- Joe
