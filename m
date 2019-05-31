@@ -2,90 +2,121 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2042330EE2
-	for <lists+live-patching@lfdr.de>; Fri, 31 May 2019 15:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2C333151B
+	for <lists+live-patching@lfdr.de>; Fri, 31 May 2019 21:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726485AbfEaN3o (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 31 May 2019 09:29:44 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48508 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726418AbfEaN3o (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 31 May 2019 09:29:44 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id F3D19AE4E;
-        Fri, 31 May 2019 13:29:42 +0000 (UTC)
-Date:   Fri, 31 May 2019 15:29:42 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
+        id S1727083AbfEaTNE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 31 May 2019 15:13:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51434 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726807AbfEaTNE (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 31 May 2019 15:13:04 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8016430821BF;
+        Fri, 31 May 2019 19:13:03 +0000 (UTC)
+Received: from treble (ovpn-124-142.rdu2.redhat.com [10.10.124.142])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 85C615DAAF;
+        Fri, 31 May 2019 19:12:58 +0000 (UTC)
+Date:   Fri, 31 May 2019 14:12:56 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     Petr Mladek <pmladek@suse.com>
-cc:     Jiri Kosina <jikos@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, Jessica Yu <jeyu@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] livepatch: Remove duplicate warning about missing
- reliable stacktrace support
-In-Reply-To: <20190531131906.lkhrfgpze57pqrcg@pathway.suse.cz>
-Message-ID: <alpine.LSU.2.21.1905311528000.742@pobox.suse.cz>
-References: <20190531074147.27616-1-pmladek@suse.com> <20190531074147.27616-3-pmladek@suse.com> <alpine.LSU.2.21.1905311425450.742@pobox.suse.cz> <20190531131906.lkhrfgpze57pqrcg@pathway.suse.cz>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        Johannes Erdfelt <johannes@erdfelt.com>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH] livepatch: Fix ftrace module text permissions race
+Message-ID: <20190531191256.z5fm4itxewagd5xc@treble>
+References: <bb69d4ac34111bbd9cb16180a6fafe471a88d80b.1559156299.git.jpoimboe@redhat.com>
+ <20190530135414.taftuprranwtowry@pathway.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190530135414.taftuprranwtowry@pathway.suse.cz>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Fri, 31 May 2019 19:13:03 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, 31 May 2019, Petr Mladek wrote:
-
-> On Fri 2019-05-31 14:32:34, Miroslav Benes wrote:
-> > On Fri, 31 May 2019, Petr Mladek wrote:
+On Thu, May 30, 2019 at 03:54:14PM +0200, Petr Mladek wrote:
+> On Wed 2019-05-29 14:02:24, Josh Poimboeuf wrote:
+> > The above panic occurs when loading two modules at the same time with
+> > ftrace enabled, where at least one of the modules is a livepatch module:
 > > 
-> > > WARN_ON_ONCE() could not be called safely under rq lock because
-> > > of console deadlock issues.
-> > > 
-> > > It can be simply removed. A better descriptive message is written
-> > > in klp_enable_patch() when klp_have_reliable_stack() fails.
-> > > The remaining debug message is good enough.
-> > > 
-> > > Signed-off-by: Petr Mladek <pmladek@suse.com>
-> > > ---
-> > >  kernel/livepatch/transition.c | 1 -
-> > >  1 file changed, 1 deletion(-)
-> > > 
-> > > diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-> > > index abb2a4a2cbb2..1bf362df76e1 100644
-> > > --- a/kernel/livepatch/transition.c
-> > > +++ b/kernel/livepatch/transition.c
-> > > @@ -247,7 +247,6 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
-> > >  	int ret, nr_entries;
-> > >  
-> > >  	ret = stack_trace_save_tsk_reliable(task, entries, ARRAY_SIZE(entries));
-> > > -	WARN_ON_ONCE(ret == -ENOSYS);
-> > >  	if (ret < 0) {
-> > >  		snprintf(err_buf, STACK_ERR_BUF_SIZE,
-> > >  			 "%s: %s:%d has an unreliable stack\n",
-> > 
-> > The current situation is not the best, but I think the patch improves it 
-> > only slightly. I see two possible solutions.
-> > 
-> > 1. we either revert commit 1d98a69e5cef ("livepatch: Remove reliable 
-> > stacktrace check in klp_try_switch_task()"), so that klp_check_stack() 
-> > returns right away.
-> > 
-> > 2. or we test ret from stack_trace_save_tsk_reliable() for ENOSYS and 
-> > return.
-> > 
-> > In my opinion either of them is better than what we have now (and what we 
-> > would have with the patch), because klp_check_stack() returns, but it 
-> > prints out that a task has an unreliable stack. Yes, it is pr_debug() only 
-> > in the end, but still.
+> > CPU0					CPU1
+> > klp_enable_patch()
+> >   klp_init_object_loaded()
+> >     module_disable_ro()
+> >     					ftrace_module_enable()
+> > 					  ftrace_arch_code_modify_post_process()
+> > 				    	    set_all_modules_text_ro()
+> >       klp_write_object_relocations()
+> >         apply_relocate_add()
+> > 	  *patches read-only code* - BOOM
 > 
-> IMHO, any extra check will not improve the situation much. Quiet
-> return is as useless as the misleading pr_debug() that will
-> not normally get printed anyway.
+> This patch looks fine and fixes the race:
+> 
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> 
+> 
+> That said, the semantic of text_mutex is a bit unclear:
+> 
+>    + It serializes RO/RW setting but not NX
 
-I disagree here. I think the silent return would be perfectly fine. The 
-user was warned in klp_enable_patch() already.
+True.  module_enable_nx() is a static function which is only called
+internally.  I should probably rename it to __module_enable_nx() so the
+locking semantics match the others.
 
-Miroslav
+>    + Nothing prevents manipulation of the access rights
+>      by external code before the module is ready-enough.
+>      I mean before the sections are set RO by the module
+>      loader itself.
+> 
+>      Most sections are ready in MODULE_STATE_COMMING state.
+>      Only ro_after_init sections need to stay RW longer,
+>      see my question below.
+> 
+> 
+> > diff --git a/kernel/module.c b/kernel/module.c
+> > index 6e6712b3aaf5..3c056b56aefa 100644
+> > --- a/kernel/module.c
+> > +++ b/kernel/module.c
+> > @@ -3519,7 +3534,7 @@ static noinline int do_init_module(struct module *mod)
+> >  	/* Switch to core kallsyms now init is done: kallsyms may be walking! */
+> >  	rcu_assign_pointer(mod->kallsyms, &mod->core_kallsyms);
+> >  #endif
+> > -	module_enable_ro(mod, true);
+> > +	__module_enable_ro(mod, true);
+> 
+> The "true" parameter causes that also ro_after_init section is
+> set read only. What is the purpose of this section, please?
+> 
+> I ask because module_enable_ro(mod, true) can be called
+> earlier from klp_init_object_loaded() from do_one_initcall().
+> 
+> For example, it could some MODULE_STATE_LIVE notifier
+> when it requires write access to ro_after_init section.
+
+Hm, I think you're right.  klp_init_object_loaded() should change the
+module_enable_ro() argument to false when it's called from a patch
+module's initcall.
+
+Maybe we can instead remove __module_enable_ro()'s after_init argument
+and just make it smarter?  It should only do ro_after_init frobbing if
+the module state is MODULE_STATE_LIVE.
+
+> Anyway, the above is a separate problem. This patch looks
+> fine for the original problem.
+
+Thanks for the review.  I'll post another version, with the above
+changes and with the patches split up like Miroslav suggested.
+
+-- 
+Josh
