@@ -2,20 +2,20 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC83130E0F
-	for <lists+live-patching@lfdr.de>; Fri, 31 May 2019 14:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0C530E26
+	for <lists+live-patching@lfdr.de>; Fri, 31 May 2019 14:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727267AbfEaMZR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 31 May 2019 08:25:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33508 "EHLO mx1.suse.de"
+        id S1726403AbfEaMch (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 31 May 2019 08:32:37 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34578 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726330AbfEaMZR (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 31 May 2019 08:25:17 -0400
+        id S1726233AbfEaMcg (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 31 May 2019 08:32:36 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 42AA4AD76;
-        Fri, 31 May 2019 12:25:16 +0000 (UTC)
-Date:   Fri, 31 May 2019 14:25:15 +0200 (CEST)
+        by mx1.suse.de (Postfix) with ESMTP id 08C13AD96;
+        Fri, 31 May 2019 12:32:35 +0000 (UTC)
+Date:   Fri, 31 May 2019 14:32:34 +0200 (CEST)
 From:   Miroslav Benes <mbenes@suse.cz>
 To:     Petr Mladek <pmladek@suse.com>
 cc:     Jiri Kosina <jikos@kernel.org>,
@@ -23,11 +23,11 @@ cc:     Jiri Kosina <jikos@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] stacktrace: Remove superfluous WARN_ONCE() from
- save_stack_trace_tsk_reliable()
-In-Reply-To: <20190531074147.27616-2-pmladek@suse.com>
-Message-ID: <alpine.LSU.2.21.1905311418120.742@pobox.suse.cz>
-References: <20190531074147.27616-1-pmladek@suse.com> <20190531074147.27616-2-pmladek@suse.com>
+Subject: Re: [PATCH 2/3] livepatch: Remove duplicate warning about missing
+ reliable stacktrace support
+In-Reply-To: <20190531074147.27616-3-pmladek@suse.com>
+Message-ID: <alpine.LSU.2.21.1905311425450.742@pobox.suse.cz>
+References: <20190531074147.27616-1-pmladek@suse.com> <20190531074147.27616-3-pmladek@suse.com>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -38,45 +38,48 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 On Fri, 31 May 2019, Petr Mladek wrote:
 
-> WARN_ONCE() in the generic save_stack_trace_tsk_reliable() is superfluous.
+> WARN_ON_ONCE() could not be called safely under rq lock because
+> of console deadlock issues.
 > 
-> The information is passed also via the return value. The only current
-> user klp_check_stack() writes its own warning when the reliable stack
-> traces are not supported. Other eventual users might want its own error
-> handling as well.
+> It can be simply removed. A better descriptive message is written
+> in klp_enable_patch() when klp_have_reliable_stack() fails.
+> The remaining debug message is good enough.
 > 
 > Signed-off-by: Petr Mladek <pmladek@suse.com>
-> Acked-by: Miroslav Benes <mbenes@suse.cz>
-> Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
 > ---
->  kernel/stacktrace.c | 1 -
+>  kernel/livepatch/transition.c | 1 -
 >  1 file changed, 1 deletion(-)
 > 
-> diff --git a/kernel/stacktrace.c b/kernel/stacktrace.c
-> index 5667f1da3ede..8d088408928d 100644
-> --- a/kernel/stacktrace.c
-> +++ b/kernel/stacktrace.c
-> @@ -259,7 +259,6 @@ __weak int
->  save_stack_trace_tsk_reliable(struct task_struct *tsk,
->  			      struct stack_trace *trace)
->  {
-> -	WARN_ONCE(1, KERN_INFO "save_stack_tsk_reliable() not implemented yet.\n");
->  	return -ENOSYS;
->  }
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index abb2a4a2cbb2..1bf362df76e1 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -247,7 +247,6 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
+>  	int ret, nr_entries;
+>  
+>  	ret = stack_trace_save_tsk_reliable(task, entries, ARRAY_SIZE(entries));
+> -	WARN_ON_ONCE(ret == -ENOSYS);
+>  	if (ret < 0) {
+>  		snprintf(err_buf, STACK_ERR_BUF_SIZE,
+>  			 "%s: %s:%d has an unreliable stack\n",
 
-Do we even need the weak function now after Thomas' changes to 
-kernel/stacktrace.c?
+The current situation is not the best, but I think the patch improves it 
+only slightly. I see two possible solutions.
 
-- livepatch is the only user and it calls stack_trace_save_tsk_reliable()
-- x86 defines CONFIG_ARCH_STACKWALK and CONFIG_HAVE_RELIABLE_STACKTRACE, 
-  so it has stack_trace_save_tsk_reliable() implemented and it calls 
-  arch_stack_walk_reliable()
-- powerpc defines CONFIG_HAVE_RELIABLE_STACKTRACE and does not have 
-  CONFIG_ARCH_STACKWALK. It also has stack_trace_save_tsk_reliable() 
-  implemented and it calls save_stack_trace_tsk_reliable(), which is 
-  implemented in arch/powerpc/
-- all other archs do not have CONFIG_HAVE_RELIABLE_STACKTRACE and there is 
-  stack_trace_save_tsk_reliable() returning ENOSYS for these cases in 
-  include/linux/stacktrace.c
+1. we either revert commit 1d98a69e5cef ("livepatch: Remove reliable 
+stacktrace check in klp_try_switch_task()"), so that klp_check_stack() 
+returns right away.
+
+2. or we test ret from stack_trace_save_tsk_reliable() for ENOSYS and 
+return.
+
+In my opinion either of them is better than what we have now (and what we 
+would have with the patch), because klp_check_stack() returns, but it 
+prints out that a task has an unreliable stack. Yes, it is pr_debug() only 
+in the end, but still.
+
+I don't have a preference and my understanding is that Petr does not want 
+to do v4. I can prepare a patch, but it would be nice to choose now. Josh? 
+Anyone else?
 
 Miroslav
