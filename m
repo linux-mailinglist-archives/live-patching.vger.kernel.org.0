@@ -2,74 +2,120 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8BAD30998
-	for <lists+live-patching@lfdr.de>; Fri, 31 May 2019 09:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE38430AA1
+	for <lists+live-patching@lfdr.de>; Fri, 31 May 2019 10:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbfEaHmO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 31 May 2019 03:42:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41376 "EHLO mx1.suse.de"
+        id S1726330AbfEaItG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 31 May 2019 04:49:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55838 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726331AbfEaHmL (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 31 May 2019 03:42:11 -0400
+        id S1726002AbfEaItF (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 31 May 2019 04:49:05 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 2E6F0AE20;
-        Fri, 31 May 2019 07:42:10 +0000 (UTC)
-From:   Petr Mladek <pmladek@suse.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 3/3] livepatch: Use static buffer for debugging messages under rq lock
-Date:   Fri, 31 May 2019 09:41:47 +0200
-Message-Id: <20190531074147.27616-4-pmladek@suse.com>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20190531074147.27616-1-pmladek@suse.com>
-References: <20190531074147.27616-1-pmladek@suse.com>
+        by mx1.suse.de (Postfix) with ESMTP id BDDB7AF55;
+        Fri, 31 May 2019 08:49:03 +0000 (UTC)
+Date:   Fri, 31 May 2019 10:49:02 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        Johannes Erdfelt <johannes@erdfelt.com>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH] livepatch: Fix ftrace module text permissions race
+In-Reply-To: <bb69d4ac34111bbd9cb16180a6fafe471a88d80b.1559156299.git.jpoimboe@redhat.com>
+Message-ID: <alpine.LSU.2.21.1905311045040.742@pobox.suse.cz>
+References: <bb69d4ac34111bbd9cb16180a6fafe471a88d80b.1559156299.git.jpoimboe@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The err_buf array uses 128 bytes of stack space.  Move it off the stack
-by making it static.  It's safe to use a shared buffer because
-klp_try_switch_task() is called under klp_mutex.
+On Wed, 29 May 2019, Josh Poimboeuf wrote:
 
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Acked-by: Miroslav Benes <mbenes@suse.cz>
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
----
- kernel/livepatch/transition.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> It's possible for livepatch and ftrace to be toggling a module's text
+> permissions at the same time, resulting in the following panic:
+> 
+>   BUG: unable to handle page fault for address: ffffffffc005b1d9
+>   #PF: supervisor write access in kernel mode
+>   #PF: error_code(0x0003) - permissions violation
+>   PGD 3ea0c067 P4D 3ea0c067 PUD 3ea0e067 PMD 3cc13067 PTE 3b8a1061
+>   Oops: 0003 [#1] PREEMPT SMP PTI
+>   CPU: 1 PID: 453 Comm: insmod Tainted: G           O  K   5.2.0-rc1-a188339ca5 #1
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-20181126_142135-anatol 04/01/2014
+>   RIP: 0010:apply_relocate_add+0xbe/0x14c
+>   Code: fa 0b 74 21 48 83 fa 18 74 38 48 83 fa 0a 75 40 eb 08 48 83 38 00 74 33 eb 53 83 38 00 75 4e 89 08 89 c8 eb 0a 83 38 00 75 43 <89> 08 48 63 c1 48 39 c8 74 2e eb 48 83 38 00 75 32 48 29 c1 89 08
+>   RSP: 0018:ffffb223c00dbb10 EFLAGS: 00010246
+>   RAX: ffffffffc005b1d9 RBX: 0000000000000000 RCX: ffffffff8b200060
+>   RDX: 000000000000000b RSI: 0000004b0000000b RDI: ffff96bdfcd33000
+>   RBP: ffffb223c00dbb38 R08: ffffffffc005d040 R09: ffffffffc005c1f0
+>   R10: ffff96bdfcd33c40 R11: ffff96bdfcd33b80 R12: 0000000000000018
+>   R13: ffffffffc005c1f0 R14: ffffffffc005e708 R15: ffffffff8b2fbc74
+>   FS:  00007f5f447beba8(0000) GS:ffff96bdff900000(0000) knlGS:0000000000000000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: ffffffffc005b1d9 CR3: 000000003cedc002 CR4: 0000000000360ea0
+>   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>   Call Trace:
+>    klp_init_object_loaded+0x10f/0x219
+>    ? preempt_latency_start+0x21/0x57
+>    klp_enable_patch+0x662/0x809
+>    ? virt_to_head_page+0x3a/0x3c
+>    ? kfree+0x8c/0x126
+>    patch_init+0x2ed/0x1000 [livepatch_test02]
+>    ? 0xffffffffc0060000
+>    do_one_initcall+0x9f/0x1c5
+>    ? kmem_cache_alloc_trace+0xc4/0xd4
+>    ? do_init_module+0x27/0x210
+>    do_init_module+0x5f/0x210
+>    load_module+0x1c41/0x2290
+>    ? fsnotify_path+0x3b/0x42
+>    ? strstarts+0x2b/0x2b
+>    ? kernel_read+0x58/0x65
+>    __do_sys_finit_module+0x9f/0xc3
+>    ? __do_sys_finit_module+0x9f/0xc3
+>    __x64_sys_finit_module+0x1a/0x1c
+>    do_syscall_64+0x52/0x61
+>    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> The above panic occurs when loading two modules at the same time with
+> ftrace enabled, where at least one of the modules is a livepatch module:
+> 
+> CPU0					CPU1
+> klp_enable_patch()
+>   klp_init_object_loaded()
+>     module_disable_ro()
+>     					ftrace_module_enable()
+> 					  ftrace_arch_code_modify_post_process()
+> 				    	    set_all_modules_text_ro()
+>       klp_write_object_relocations()
+>         apply_relocate_add()
+> 	  *patches read-only code* - BOOM
+> 
+> A similar race exists when toggling ftrace while loading a livepatch
+> module.
+> 
+> Fix it by ensuring that the livepatch and ftrace code patching
+> operations -- and their respective permissions changes -- are protected
+> by the text_mutex.
+> 
+> Reported-by: Johannes Erdfelt <johannes@erdfelt.com>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index 1bf362df76e1..5c4f0c1f826e 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -280,11 +280,11 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
-  */
- static bool klp_try_switch_task(struct task_struct *task)
- {
-+	static char err_buf[STACK_ERR_BUF_SIZE];
- 	struct rq *rq;
- 	struct rq_flags flags;
- 	int ret;
- 	bool success = false;
--	char err_buf[STACK_ERR_BUF_SIZE];
- 
- 	err_buf[0] = '\0';
- 
-@@ -327,7 +327,6 @@ static bool klp_try_switch_task(struct task_struct *task)
- 		pr_debug("%s", err_buf);
- 
- 	return success;
--
- }
- 
- /*
--- 
-2.16.4
+For the code
+
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+
+However, shouldn't the patch be split in two? One adding text_mutex 
+protection to livepatch and ftrace. The other adding lockdep_assert_held() 
+and __module_enable_ro()? The current changelog does not mention lockdep 
+changes at all.
+
+Miroslav
 
