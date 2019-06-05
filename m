@@ -2,174 +2,59 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F320E341F6
-	for <lists+live-patching@lfdr.de>; Tue,  4 Jun 2019 10:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A4435E3C
+	for <lists+live-patching@lfdr.de>; Wed,  5 Jun 2019 15:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726872AbfFDIgy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 4 Jun 2019 04:36:54 -0400
-Received: from mail-eopbgr40094.outbound.protection.outlook.com ([40.107.4.94]:30594
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726793AbfFDIgy (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 4 Jun 2019 04:36:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fahgcrdMfKkmYUlmAIvSrLe5nsWsGz6Hcjswc+q02Lw=;
- b=OuNR41bvfF/YWurIv+9g8gsFJg892PuJibCdwpwzH9ISDI09Edmg5sJyt5MRf2F7nKSKglPytpdQ+8eok3PhWa5rWUdpnxb2i3xpN1urquIeutwxyJ8Qaeonc9wG36TPFXGv+DxfDPuqXJ6/dAkNVSazadGPGibJ+Ab36bp5kig=
-Received: from VI1PR08MB3294.eurprd08.prod.outlook.com (52.134.31.11) by
- VI1PR08MB3870.eurprd08.prod.outlook.com (20.178.80.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.22; Tue, 4 Jun 2019 08:36:48 +0000
-Received: from VI1PR08MB3294.eurprd08.prod.outlook.com
- ([fe80::f020:b78e:363d:dac6]) by VI1PR08MB3294.eurprd08.prod.outlook.com
- ([fe80::f020:b78e:363d:dac6%6]) with mapi id 15.20.1943.018; Tue, 4 Jun 2019
- 08:36:48 +0000
-From:   Evgenii Shatokhin <eshatokhin@virtuozzo.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-CC:     "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
-Subject: Re: Reducing the number of ELF section in the livepatch modules
-Thread-Topic: Reducing the number of ELF section in the livepatch modules
-Thread-Index: AQHVGf126Wb7w4ynSEaq5gMhcsBa36aKW3gAgADR1YA=
-Date:   Tue, 4 Jun 2019 08:36:47 +0000
-Message-ID: <9e2707ba-b119-2a16-e7be-cae92db921df@virtuozzo.com>
-References: <7ae3d164-1717-e41b-0683-1779f0e666f2@virtuozzo.com>
- <1f9dd9a3-9bf2-d610-1fc1-8cde1b6501f2@redhat.com>
-In-Reply-To: <1f9dd9a3-9bf2-d610-1fc1-8cde1b6501f2@redhat.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1PR05CA0167.eurprd05.prod.outlook.com
- (2603:10a6:3:f8::15) To VI1PR08MB3294.eurprd08.prod.outlook.com
- (2603:10a6:803:3e::11)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=eshatokhin@virtuozzo.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [185.231.240.5]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f7e2d7bd-4e06-4950-7f90-08d6e8c7c853
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR08MB3870;
-x-ms-traffictypediagnostic: VI1PR08MB3870:
-x-microsoft-antispam-prvs: <VI1PR08MB3870D4A125E57A88E5BAB702D9150@VI1PR08MB3870.eurprd08.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0058ABBBC7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(376002)(39850400004)(346002)(366004)(189003)(199004)(81166006)(81156014)(26005)(5660300002)(8676002)(3846002)(6116002)(102836004)(186003)(6916009)(53936002)(8936002)(4326008)(6246003)(71200400001)(71190400001)(76176011)(31696002)(2906002)(86362001)(316002)(73956011)(14444005)(478600001)(52116002)(6506007)(386003)(2616005)(256004)(36756003)(66446008)(476003)(66946007)(53546011)(6512007)(11346002)(99286004)(14454004)(6436002)(66556008)(64756008)(31686004)(66476007)(446003)(68736007)(66066001)(305945005)(7736002)(229853002)(6486002)(486006)(25786009);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR08MB3870;H:VI1PR08MB3294.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: virtuozzo.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: sitm6YuQzuzHhVd9HATXWxS5ZOTdSGYQqYS757mpnawS3vF9GzzlolvDBsy9AoPoL8l+TrJ5SHQ9ra7mUHrTsiXgHyLQBNgHt6ip4EYyJChI2hFHP0xodJsXPOHj7NIY74hbLxbPNMFvfuAOa0ZfEY84I9OMe1z/Vozz3s2HZeeAJpgXt/6YHIgufZ+9zaLNMyK/UP4z8pxG36bDDN6NXQfmLdYfIsSjADIhSAWI0VVTfdpTBZ3HTZ5dAJPxe2aDZcRPpEfldqMAQHA/Cb/HlKSd18XaY4cuCH2nJUY1tK+BOKoSRITfQImGRss65w+itgA83cjJlO5uqMnr0HyJQva+gDT754Jh7up9Pub3YlyvkldVgA3N8wgcvL1FWJuTZwqAi7Rmn95IoEbNI3A2vINAErPJKE9nnbRohWzBpdg=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F595370B01B031419C69E97BC16452E1@eurprd08.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727820AbfFENsK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 5 Jun 2019 09:48:10 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49664 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726600AbfFENsK (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 5 Jun 2019 09:48:10 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 45A2D307D93F;
+        Wed,  5 Jun 2019 13:48:05 +0000 (UTC)
+Received: from [10.16.196.26] (wlan-196-26.bos.redhat.com [10.16.196.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4B23C60C68;
+        Wed,  5 Jun 2019 13:48:03 +0000 (UTC)
+Subject: Re: livepatching selftests failure on current master branch
+To:     live-patching@vger.kernel.org, lkp@01.org
+Cc:     Miroslav Benes <mbenes@suse.cz>, jikos@kernel.org,
+        jpoimboe@redhat.com, pmladek@suse.com, tglx@linutronix.de
+References: <alpine.LSU.2.21.1905171608550.24009@pobox.suse.cz>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <c3a528e2-40f1-5a3d-38d7-6acb188bbd88@redhat.com>
+Date:   Wed, 5 Jun 2019 09:48:02 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: virtuozzo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7e2d7bd-4e06-4950-7f90-08d6e8c7c853
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2019 08:36:47.9843
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eshatokhin@virtuozzo.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3870
+In-Reply-To: <alpine.LSU.2.21.1905171608550.24009@pobox.suse.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Wed, 05 Jun 2019 13:48:10 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-SGksDQoNCk9uIDAzLjA2LjIwMTkgMjM6MDUsIEpvZSBMYXdyZW5jZSB3cm90ZToNCj4gT24gNi8z
-LzE5IDc6MTQgQU0sIEV2Z2VuaWkgU2hhdG9raGluIHdyb3RlOg0KPj4gSGksDQo+Pg0KPj4gSXQg
-aXMgcG9zc2libGUgdGhhdCBrZWVwaW5nIGVhY2ggbmV3IGFuZCBwYXRjaGVkIGZ1bmN0aW9uIGlu
-IGEgc2VwYXJhdGUNCj4+IEVMRiBzZWN0aW9uIGluIGEgbGl2ZXBhdGNoIGtlcm5lbCBtb2R1bGUg
-Y291bGQgY2F1c2UgcHJvYmxlbXMuDQo+Pg0KPj4gRHVyaW5nIHRoZSB0ZXN0aW5nIG9mIGJpbmFy
-eSBwYXRjaGVzIGZvciB0aGUga2VybmVscyB1c2VkIGluIFZpcnR1b3p6bw0KPj4gNywgSSBmb3Vu
-ZCB0aGF0IHRoZSBrZXJuZWwgbWF5IHRyeSB0byBhbGxvY2F0ZSBhIHJlbGF0aXZlbHkgbGFyZ2Ug
-KGZvcg0KPj4ga21hbGxvYykgbWVtb3J5IGFyZWEgdG8gc3VwcG9ydCBzeXNmcyBmaWxlcw0KPj4g
-L3N5cy9tb2R1bGUvPG1vZHVsZV9uYW1lPi9zZWN0aW9ucy8qIGZvciB0aGUgcGF0Y2ggbW9kdWxl
-cy4gVGhlIHNpemUgd2FzDQo+PiAxNiAtIDM1IEtCLCBkZXBlbmRpbmcgb24gdGhlIHBhdGNoLCBp
-LmUuIDNyZCBhbmQgNHRoIG9yZGVyIGFsbG9jYXRpb25zLg0KPj4gVGhlIG51bWJlcnMgZG8gbm90
-IGxvb2sgdmVyeSBiaWcgYnV0IHN0aWxsIGluY3JlYXNlIHRoZSBjaGFuY2UgdGhhdCB0aGUNCj4+
-IHBhdGNoIG1vZHVsZSB3aWxsIGZhaWwgdG8gbG9hZCB3aGVuIHRoZSBtZW1vcnkgaXMgZnJhZ21l
-bnRlZC4NCj4+DQo+PiBrZXJuZWwvbW9kdWxlLmMsIGFkZF9zZWN0X2F0dHJzKCk6DQo+PiDCoMKg
-wqDCoC8qIENvdW50IGxvYWRlZCBzZWN0aW9ucyBhbmQgYWxsb2NhdGUgc3RydWN0dXJlcyAqLw0K
-Pj4gwqDCoMKgwqBmb3IgKGkgPSAwOyBpIDwgaW5mby0+aGRyLT5lX3NobnVtOyBpKyspDQo+PiDC
-oMKgwqDCoMKgwqDCoCBpZiAoIXNlY3RfZW1wdHkoJmluZm8tPnNlY2hkcnNbaV0pKQ0KPj4gwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBubG9hZGVkKys7DQo+PiDCoMKgwqDCoHNpemVbMF0gPSBBTElH
-TihzaXplb2YoKnNlY3RfYXR0cnMpDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICsgbmxvYWRl
-ZCAqIHNpemVvZihzZWN0X2F0dHJzLT5hdHRyc1swXSksDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHNpemVvZihzZWN0X2F0dHJzLT5ncnAuYXR0cnNbMF0pKTsNCj4+IMKgwqDCoMKgc2l6ZVsx
-XSA9IChubG9hZGVkICsgMSkgKiBzaXplb2Yoc2VjdF9hdHRycy0+Z3JwLmF0dHJzWzBdKTsNCj4+
-IMKgwqDCoMKgc2VjdF9hdHRycyA9IGt6YWxsb2Moc2l6ZVswXSArIHNpemVbMV0sIEdGUF9LRVJO
-RUwpOw0KPj4NCj4+IFNvLCBpbiBvdXIgY2FzZSwgdGhlIHNpemUgb2YgdGhlIHJlcXVlc3RlZCBt
-ZW1vcnkgY2h1bmsgd2FzDQo+PiA0OCArIDgwICogPG51bWJlcl9vZl9sb2FkZWRfRUxGX3NlY3Rp
-b25zPi4NCj4+DQo+PiBCb3RoIGxpdmVwYXRjaCBhbmQgb2xkLXN0eWxlIEtQYXRjaCBrZXJuZWwg
-bW9kdWxlcyBwbGFjZSBlYWNoIG5ldyBvcg0KPj4gcGF0Y2hlZCBmdW5jdGlvbiBpbiBhIHNlcGFy
-YXRlIHNlY3Rpb24sIHNhbWUgZm9yIHRoZSBuZXcgZ2xvYmFsIGFuZA0KPj4gc3RhdGljIGRhdGEu
-Li4NCj4gDQo+IEhpIEV2Z2VuaWksDQo+IA0KPiBUbyBiZSBzcGVjaWZpYywgSSB0aGluayB0aGlz
-IGlzIGEga3BhdGNoLXJlbGF0ZWQgaXNzdWUsIHJpZ2h0P8KgIEkgZG9uJ3QgDQo+IHJlY2FsbCB0
-aGVyZSBiZWluZyBhbnkgc2VjdGlvbiBzcGVjaWZpY2F0aW9ucyBpbiB0aGUgdXBzdHJlYW0gbGl2
-ZXBhdGNoIA0KPiBjb2RlIGJhc2UgKGFzaWRlIGZyb20gYXJjaC1zcGVjaWZpYyByZWxvY2F0aW9u
-cyBmb3IgYWx0L3BhcmEgaW5zdCwgZXRjLikNCg0KWWVzLCBJIHRoaW5rIHNvLiBUaGUgcGF0Y2gg
-bW9kdWxlcyBidWlsdCB3aXRoIGtwYXRjaC1idWlsZCwgYmUgdGhleSANCmxpdmVwYXRjaC1jb21w
-YXRpYmxlIG9yIHRoZSBvbGQtc3R5bGUga3BhdGNoIG1vZHVsZXMsIGtlZXAgdGhlIGZ1bmN0aW9u
-cyANCmluIHNlcGFyYXRlIHNlY3Rpb25zIGFuZCB0aGVyZWZvcmUgaGF2ZSB0aGUgaXNzdWUuDQoN
-CkFzIGZhciBhcyBJIGNhbiBzZWUsIERvY3VtZW50YXRpb24vbGl2ZXBhdGNoL21vZHVsZS1lbGYt
-Zm9ybWF0LnJzdCBkb2VzIA0Kbm90IHN0cmljdGx5IHJlcXVpcmUgc3VjaCBzZXBhcmF0aW9uIG9m
-IGZ1bmN0aW9ucywgZXRjLg0KDQpJIGZvcmdvdCBhYm91dCAua2xwLnJlbGEuKiwgaG93ZXZlci4g
-SXQgaXMgbmVlZGVkIHRvIGNoZWNrIGlmIG1lcmdpbmcgb2YgDQoudGV4dC4qIHNlY3Rpb25zIHBs
-YXlzIHdlbGwgd2l0aCBsaXZlcGF0Y2ggcmVsb2NhdGlvbnMuIEknbGwgZXhwZXJpbWVudCANCndp
-dGggdGhhdCBhIGJpdCBtb3JlLg0KDQo+IA0KPiAgPsKgwqDCoMKgwqDCoMKgwqDCoCAuLi4gU28s
-IGlmIHdlIHBhdGNoIDIwMCsga2VybmVsIGZ1bmN0aW9ucyAod2hpY2ggbm90IHRoYXQNCj4+IHVu
-dXN1YWwgaW4gY3VtdWxhdGl2ZSBwYXRjaGVzKSwgdGhlIGtlcm5lbCB3aWxsIHRyeSB0byBhbGxv
-Y2F0ZSBhcm91bmQNCj4+IDE2IEtCIG9mIG1lbW9yeSBmb3IgdGhlc2Ugc3lzZnMgZGF0YSBvbmx5
-LiBUaGUgbGFyZ2VzdCBvZiBvdXIgYmluYXJ5DQo+PiBwYXRjaGVzIGhhdmUgYXJvdW5kIDQwMCBu
-ZXcgYW5kIHBhdGNoZWQgZnVuY3Rpb25zLCBwbHVzIGEgZmV3IGRvemVucyBvZg0KPj4gbmV3IGRh
-dGEgaXRlbXMsIHdoaWNoIHJlc3VsdHMgaW4gYSB3YXN0ZWQga2VybmVsIG1lbW9yeSBjaHVuayBv
-ZiAzNSBLQg0KPj4gaW4gc2l6ZS4NCj4+DQo+PiBIZXJlIGFyZSB0aGUgcXVlc3Rpb25zLg0KPj4N
-Cj4+IDEuIFRoZSBmaWxlcyAvc3lzL21vZHVsZS88bW9kdWxlX25hbWU+L3NlY3Rpb25zLyogY3Vy
-cmVudGx5IGNvbnRhaW4gdGhlDQo+PiBzdGFydCBhZGRyZXNzZXMgb2YgdGhlIHJlbGV2YW50IHNl
-Y3Rpb25zLCBpLmUuIHRoZSBhZGRyZXNzZXMgb2YgbmV3IGFuZA0KPj4gcGF0Y2hlZCBmdW5jdGlv
-bnMgYW1vbmcgb3RoZXIgdGhpbmdzLiBJcyB0aGlzIGluZm8gcmVhbGx5IG5lZWRlZCBmb3INCj4+
-IGxpdmVwYXRjaCBrZXJuZWwgbW9kdWxlcyBhZnRlciB0aGV5IGhhdmUgYmVlbiBsb2FkZWQ/DQo+
-IA0KPiBJIHRoaW5rIHRoaXMgaXMgZ2VuZXJpYyBtb2R1bGUgZGVidWdnaW5nIGluZm8gYW5kIHRo
-YXQgbGl2ZXBhdGNoIGlzbid0IA0KPiBpbnRlcmVzdGVkIGluIHRoZXNlLsKgIEkgc3VwcG9zZSB0
-aGVyZSBtaWdodCBiZSBzb21lIHVzZXJzcGFjZSB0b29scyB0aGF0IA0KPiBsb29rIGF0IHRob3Nl
-IHN5c2ZzIGZpbGVzIGZvciBxdWljayB2ZXJpZmljYXRpb24gcHVycG9zZXMuLi4gdGhvdWdoIA0K
-PiB0aGVyZSBhcHBlYXJzIHRvIGJlIHNvbWUgZmlsdGVyaW5nIG9mIHNlY3Rpb25zIHRoYXQgYXJl
-IGxpc3RlZCBoZXJlLiBOb3QgDQo+IHN1cmUgd2hpY2ggbWVldCB0aGUgY3JpdGVyaWEuDQo+IA0K
-Pj4gMi4gT2YgY291cnNlLCBjcmVhdGUtZGlmZi1vYmplY3QgcmVsaWVzIGhlYXZpbHkgdXBvbiBw
-bGFjaW5nIGVhY2ggbmV3IG9yDQo+PiBwYXRjaGVkIGZ1bmN0aW9uIGluIGEgc2VwYXJhdGUgc2Vj
-dGlvbi4gQnV0IGlzIGl0IG5lZWRlZCB0byBrZWVwIHRoZQ0KPj4gZnVuY3Rpb25zIHRoZXJlIGFm
-dGVyIHRoZSBkaWZmIG9iamVjdCBmaWxlcyBoYXZlIGJlZW4gcHJlcGFyZWQ/DQo+Pg0KPj4gRG9l
-cyB0aGUgY29kZSB0aGF0IGxvYWRzL3VubG9hZHMgdGhlIHBhdGNoZXMgcmVxdWlyZSB0aGF0IGVh
-Y2ggZnVuY3Rpb24NCj4+IGlzIGtlcHQgdGhhdCB3YXk/IExvb2tzIGxpa2Ugbm8sIGJ1dCBJIGFt
-IG5vdCAxMDAlIHN1cmUuDQo+IA0KPiBKb3NoIHdpbGwga25vdyBiZXR0ZXIgdGhhbiBtZSwgYnV0
-IEkgc3VzcGVjdCB0aGVzZSBzZWN0aW9ucyBhcmUganVzdCBhbiANCj4gYXJ0aWZhY3Qgb2YgLWZm
-dW5jdGlvbi1zZWN0aW9ucyB1c2VkIGZvciB0aGUga3BhdGNoIEVMRiBjb21wYXJpc29uIGFuZCAN
-Cj4gZXh0cmFjdGlvbi4NCg0KWWVzLCBpdCBzZWVtcyBzby4NCg0KPiANCj4+IEFzIGFuIGV4cGVy
-aW1lbnQsIEkgYWRkZWQgdGhlIGZvbGxvd2luZyB0byBrbW9kL3BhdGNoL2twYXRjaC5sZHMuUyB0
-bw0KPj4gbWVyZ2UgYWxsIC50ZXh0Liogc2VjdGlvbnMgaW50byAudGV4dC5saXZlcGF0Y2ggaW4g
-dGhlIHJlc3VsdGluZyBwYXRjaA0KPj4gbW9kdWxlOg0KPj4NCj4+IFNFQ1RJT05TDQo+PiB7DQo+
-PiArwqDCoCAudGV4dC5saXZlcGF0Y2ggOiB7DQo+PiArwqDCoMKgICooLnRleHQuKikNCj4+ICvC
-oMKgIH0NCj4+DQo+PiBNeSB0ZXN0IHBhdGNoIG1vZHVsZSB3aXRoIGFyb3VuZCAyMDAgY2hhbmdl
-ZCBmdW5jdGlvbnMgd2FzIGJ1aWx0IE9LIHdpdGgNCj4+IHRoYXQsIHRoZSBmdW5jdGlvbnMgd2Vy
-ZSBhY3R1YWxseSBwbGFjZWQgaW50byAudGV4dC5saXZlcGF0Y2ggc2VjdGlvbiBhcw0KPj4gcmVx
-dWVzdGVkLiBUaGUgcGF0Y2ggd2FzIGxvYWRlZCBmaW5lIGJ1dCBJIGhhdmVuJ3QgdGVzdGVkIGl0
-IG11Y2ggeWV0Lg0KPj4NCj4+IEl0IGFsc28gbWlnaHQgYmUgcmVhc29uYWJsZSB0byBtZXJnZSAu
-cm9kYXRhLl9fZnVuY19fLiogdGhlIHNhbWUgd2F5Lg0KPj4NCj4gDQo+IE5pY2UuwqAgSWYgeW91
-IGhhdmUgc3VjY2VzcyB3aXRoIHRoaXMgYXBwcm9hY2gsIHBsZWFzZSBwb3N0IHVwIGEgUFIgb24g
-DQo+IHRoZSBrcGF0Y2ggZ2l0aHViIGZvciByZXZpZXcuDQoNCkknZCBsaWtlIHRvIGV4cGVyaW1l
-bnQgd2l0aCB0aGF0IGluIHVwc3RyZWFtIGxpdmVwYXRjaC1jb21wYXRpYmxlIA0KcGF0Y2hlcyBh
-IGJpdCBtb3JlLiBkeW5yZWxhIC8gLmtscC5yZWxhKiBhcmUgbXkgcHJpbWFyeSBjb25jZXJuIGhl
-cmUuIElmIA0KdGhlIGFwcHJvYWNoIHBsYXlzIHdlbGwgd2l0aCB0aGVzZSwgSSdsbCBwb3N0IHRo
-ZSBQUiwgb2YgY291cnNlLg0KDQo+IA0KPiBBbHNvLCBpbiB0aGUgaW50ZXJlc3Qgb2YgbWluaW1p
-emluZyBzZWN0aW9ucywgcGVyaGFwcyB0aGUga3BhdGNoIA0KPiBjYWxsYmFjayBhbmQgZm9yY2Ug
-c2VjdGlvbnMgY2FuIGJlIG9taXR0ZWQgaWYgdGhleSBhcmUgdW51c2VkLsKgIERvIHRoZXkgDQo+
-IGNvdW50IHRvd2FyZHMgdGhlIGttYWxsb2MgYWxsb2NhdGlvbiB5b3UgbGlzdGVkIGFib3ZlIG9y
-IGFyZSB0aGV5IA0KPiBza2lwcGVkIHdoZW4gZW1wdHk/DQoNCklmIEkgYW0gbm90IG1pc3Rha2Vu
-LCB6ZXJvLXNpemUgc2VjdGlvbnMgYXJlIHNraXBwZWQsIHNvIHdlIGFyZSBmaW5lIA0KaGVyZS4g
-c2VjdF9lbXB0eSgpIGZyb20ga2VybmVsL21vZHVsZS5jIGNoZWNrcyBib3RoIFNIRl9BTExPQyBm
-bGFnIGFuZCANCnRoZSBzaXplIG9mIHRoZSBzZWN0aW9uLg0KDQo+IA0KPj4gQXJlIHRoZXJlIGFu
-eSBwaXRmYWxscyBpbiBzdWNoIG1lcmdpbmcgb2Ygc2VjdGlvbnM/IEFtIEkgbWlzc2luZw0KPj4g
-c29tZXRoaW5nIG9idmlvdXM/IA0KPiBSZWdhcmRzLA0KPiANCj4gLS0gSm9lDQo+IC4NCj4gDQoN
-ClJlZ2FyZHMsDQpFdmdlbmlpDQoNCg==
+On 5/17/19 10:17 AM, Miroslav Benes wrote:
+> Hi,
+> 
+> I noticed that livepatching selftests fail on our master branch
+> (https://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git/).
+> 
+> ...
+
+[ adding lkp@01.org to this email ]
+
+lkp folks, I was wondering if the kernel selftests were included as part 
+of the test-bot and if so, do we need to do anything specific to include 
+the livepatching selftests?
+
+Thanks,
+
+-- Joe
