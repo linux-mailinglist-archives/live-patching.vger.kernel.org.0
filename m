@@ -2,62 +2,87 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1509B3C550
-	for <lists+live-patching@lfdr.de>; Tue, 11 Jun 2019 09:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B47613CDB4
+	for <lists+live-patching@lfdr.de>; Tue, 11 Jun 2019 15:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403997AbfFKHm7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 11 Jun 2019 03:42:59 -0400
-Received: from mx2.suse.de ([195.135.220.15]:47442 "EHLO mx1.suse.de"
+        id S1728344AbfFKN4n (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 11 Jun 2019 09:56:43 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39862 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2403920AbfFKHm7 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 11 Jun 2019 03:42:59 -0400
+        id S1728111AbfFKN4n (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 11 Jun 2019 09:56:43 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 05440AB99;
-        Tue, 11 Jun 2019 07:42:57 +0000 (UTC)
-Date:   Tue, 11 Jun 2019 09:42:57 +0200
+        by mx1.suse.de (Postfix) with ESMTP id 65C7BAE9A;
+        Tue, 11 Jun 2019 13:56:42 +0000 (UTC)
 From:   Petr Mladek <pmladek@suse.com>
-To:     Philip Li <philip.li@intel.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>
 Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, lkp@01.org, jikos@kernel.org,
-        Miroslav Benes <mbenes@suse.cz>, tglx@linutronix.de,
-        jpoimboe@redhat.com
-Subject: Re: [LKP] livepatching selftests failure on current master branch
-Message-ID: <20190611074257.kogayuriz5aovv4b@pathway.suse.cz>
-References: <alpine.LSU.2.21.1905171608550.24009@pobox.suse.cz>
- <c3a528e2-40f1-5a3d-38d7-6acb188bbd88@redhat.com>
- <20190605143117.GC19267@intel.com>
- <e264efb1-0b6e-c860-7a6d-ce92bde8efa2@redhat.com>
- <20190606004943.GA30795@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606004943.GA30795@intel.com>
-User-Agent: NeoMutt/20170912 (1.9.0)
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Nicolai Stange <nstange@suse.de>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Petr Mladek <pmladek@suse.com>
+Subject: [RFC 0/5] livepatch: new API to track system state changes
+Date:   Tue, 11 Jun 2019 15:56:22 +0200
+Message-Id: <20190611135627.15556-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.16.4
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2019-06-06 08:49:43, Philip Li wrote:
-> On Wed, Jun 05, 2019 at 10:51:53AM -0400, Joe Lawrence wrote:
-> > On 6/5/19 10:31 AM, Philip Li wrote:
-> > >On Wed, Jun 05, 2019 at 09:48:02AM -0400, Joe Lawrence wrote:
-> > That's okay, though I guess I'm not clear why there wasn't an email
-> > reporting that the livepatching selftests failed after
-> > livepatching.git was recently updated to include tglx's stack trace
-> > fixes.
-> > 
-> > Do the tests only run for unique commits (ie, will it skip when
-> > livepatching.git updates/merges latest linux tree ??)
-> it will not skip, though we are not testing commit by commit. If the issue
-> is found, and bisect to the bad commit, we will report to author of that
-> commit for information.
+Hi,
 
-Bisecting might take a lot of time or even fail. But each selftest
-should get associated with a kernel subsystem. It would be helpful
-to always inform the subsystem maintainers. Or at least the author
-of the selftest that failed.
+this is another piece in the puzzle that helps to maintain more
+livepatches.
 
-Best Regards,
-Petr
+Especially pre/post (un)patch callbacks might change a system state.
+Any newly installed livepatch has to somehow deal with system state
+modifications done be already installed livepatches.
+
+This patchset provides, hopefully, a simple and generic API that
+helps to keep and pass information between the livepatches.
+It is also usable to prevent loading incompatible livepatches.
+
+There was also a related idea to add a sticky flag. It should be
+easy to add it later. It would perfectly fit into the new struct
+klp_state.
+
+Petr Mladek (5):
+  livepatch: Keep replaced patches until post_patch callback is called
+  livepatch: Basic API to track system state changes
+  livepatch: Allow to distinguish different version of system state
+    changes
+  livepatch: Documentation of the new API for tracking system state
+    changes
+  livepatch: Selftests of the API for tracking system state changes
+
+ Documentation/livepatch/index.rst               |   1 +
+ Documentation/livepatch/system-state.rst        |  80 ++++++++++
+ include/linux/livepatch.h                       |  17 +++
+ kernel/livepatch/Makefile                       |   2 +-
+ kernel/livepatch/core.c                         |  44 ++++--
+ kernel/livepatch/core.h                         |   5 +-
+ kernel/livepatch/state.c                        | 121 +++++++++++++++
+ kernel/livepatch/state.h                        |   9 ++
+ kernel/livepatch/transition.c                   |  12 +-
+ lib/livepatch/Makefile                          |   5 +-
+ lib/livepatch/test_klp_state.c                  | 161 ++++++++++++++++++++
+ lib/livepatch/test_klp_state2.c                 | 190 ++++++++++++++++++++++++
+ lib/livepatch/test_klp_state3.c                 |   5 +
+ tools/testing/selftests/livepatch/Makefile      |   3 +-
+ tools/testing/selftests/livepatch/test-state.sh | 180 ++++++++++++++++++++++
+ 15 files changed, 814 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/livepatch/system-state.rst
+ create mode 100644 kernel/livepatch/state.c
+ create mode 100644 kernel/livepatch/state.h
+ create mode 100644 lib/livepatch/test_klp_state.c
+ create mode 100644 lib/livepatch/test_klp_state2.c
+ create mode 100644 lib/livepatch/test_klp_state3.c
+ create mode 100755 tools/testing/selftests/livepatch/test-state.sh
+
+-- 
+2.16.4
+
