@@ -2,19 +2,19 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC253CDB9
-	for <lists+live-patching@lfdr.de>; Tue, 11 Jun 2019 15:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFE773CDBD
+	for <lists+live-patching@lfdr.de>; Tue, 11 Jun 2019 15:57:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391439AbfFKN44 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 11 Jun 2019 09:56:56 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40006 "EHLO mx1.suse.de"
+        id S2391496AbfFKN5A (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 11 Jun 2019 09:57:00 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40026 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2391441AbfFKN44 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 11 Jun 2019 09:56:56 -0400
+        id S2391465AbfFKN46 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 11 Jun 2019 09:56:58 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id B36B1AEE9;
-        Tue, 11 Jun 2019 13:56:54 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id F24F7AF0A;
+        Tue, 11 Jun 2019 13:56:55 +0000 (UTC)
 From:   Petr Mladek <pmladek@suse.com>
 To:     Jiri Kosina <jikos@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
@@ -24,9 +24,9 @@ Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
         Nicolai Stange <nstange@suse.de>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>
-Subject: [RFC 3/5] livepatch: Allow to distinguish different version of system state changes
-Date:   Tue, 11 Jun 2019 15:56:25 +0200
-Message-Id: <20190611135627.15556-4-pmladek@suse.com>
+Subject: [RFC 4/5] livepatch: Documentation of the new API for tracking system state changes
+Date:   Tue, 11 Jun 2019 15:56:26 +0200
+Message-Id: <20190611135627.15556-5-pmladek@suse.com>
 X-Mailer: git-send-email 2.16.4
 In-Reply-To: <20190611135627.15556-1-pmladek@suse.com>
 References: <20190611135627.15556-1-pmladek@suse.com>
@@ -35,159 +35,114 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The atomic replace runs pre/post (un)install callbacks only from the new
-livepatch. There are several reasons for this:
-
-  + Simplicity: clear ordering of operations, no interactions between
-	old and new callbacks.
-
-  + Reliability: only new livepatch knows what changes can already be made
-	by older livepatches and how to take over the state.
-
-  + Testing: the atomic replace can be properly tested only when a newer
-	livepatch is available. It might be too late to fix unwanted effect
-	of callbacks from older	livepatches.
-
-It might happen that an older change is not enough and the same system
-state has to be modified another way. Different changes need to get
-distinguished by a version number added to struct klp_state.
-
-The version can also be used to prevent loading incompatible livepatches.
-The check is done when the livepatch is enabled. The rules are:
-
-  + Any completely new system state modification is allowed.
-
-  + System state modifications with the same or higher version are allowed
-    for already modified system states.
-
-  + Cumulative livepatches must handle all system state modifications from
-    already installed livepatches.
-
-  + Non-cumulative livepatches are allowed to touch already modified
-    system states.
+Documentation explaining the motivation, capabilities, and usage
+of the new API for tracking system state changes.
 
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- include/linux/livepatch.h |  2 ++
- kernel/livepatch/core.c   |  8 ++++++++
- kernel/livepatch/state.c  | 40 +++++++++++++++++++++++++++++++++++++++-
- kernel/livepatch/state.h  |  9 +++++++++
- 4 files changed, 58 insertions(+), 1 deletion(-)
- create mode 100644 kernel/livepatch/state.h
+ Documentation/livepatch/index.rst        |  1 +
+ Documentation/livepatch/system-state.rst | 80 ++++++++++++++++++++++++++++++++
+ 2 files changed, 81 insertions(+)
+ create mode 100644 Documentation/livepatch/system-state.rst
 
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index 591abdee30d7..8bc4c6cc3f3f 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -135,10 +135,12 @@ struct klp_object {
- /**
-  * struct klp_state - state of the system modified by the livepatch
-  * @id:		system state identifier (non zero)
-+ * @version:	version of the change (non-zero)
-  * @data:	custom data
-  */
- struct klp_state {
- 	int id;
-+	int version;
- 	void *data;
- };
+diff --git a/Documentation/livepatch/index.rst b/Documentation/livepatch/index.rst
+index edd291d51847..94bbbc2c8993 100644
+--- a/Documentation/livepatch/index.rst
++++ b/Documentation/livepatch/index.rst
+@@ -9,6 +9,7 @@ Kernel Livepatching
  
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 24c4a13bd26c..614642719825 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -21,6 +21,7 @@
- #include <asm/cacheflush.h>
- #include "core.h"
- #include "patch.h"
-+#include "state.h"
- #include "transition.h"
- 
- /*
-@@ -1003,6 +1004,13 @@ int klp_enable_patch(struct klp_patch *patch)
- 
- 	mutex_lock(&klp_mutex);
- 
-+	if(!klp_is_patch_compatible(patch)) {
-+		pr_err("Livepatch patch (%s) is not compatible with the already installed livepatches.\n",
-+			patch->mod->name);
-+		mutex_unlock(&klp_mutex);
-+		return -EINVAL;
-+	}
-+
- 	ret = klp_init_patch_early(patch);
- 	if (ret) {
- 		mutex_unlock(&klp_mutex);
-diff --git a/kernel/livepatch/state.c b/kernel/livepatch/state.c
-index f8822b71f96e..b54a69b9e4b4 100644
---- a/kernel/livepatch/state.c
-+++ b/kernel/livepatch/state.c
-@@ -12,7 +12,9 @@
- #include "transition.h"
- 
- #define klp_for_each_state(patch, state)		\
--	for (state = patch->states; state && state->id; state++)
-+	for (state = patch->states;			\
-+	     state && state->id && state->version;	\
-+	     state++)
- 
- /**
-  * klp_get_state() - get information about system state modified by
-@@ -81,3 +83,39 @@ struct klp_state *klp_get_prev_state(int id)
- 	return last_state;
- }
- EXPORT_SYMBOL_GPL(klp_get_prev_state);
-+
-+/* Check if the patch is able to deal with the given system state. */
-+static bool klp_is_state_compatible(struct klp_patch *patch,
-+				    struct klp_state *state)
-+{
-+	struct klp_state *new_state;
-+
-+	new_state = klp_get_state(patch, state->id);
-+
-+	if (new_state)
-+		return new_state->version < state->version ? false : true;
-+
-+	/* Cumulative livepatch must handle all already modified states. */
-+	return patch->replace ? false : true;
-+}
-+
-+/*
-+ * Check if the new livepatch will not break the existing system states.
-+ * Cumulative patches must handle all already modified states.
-+ * Non-cumulative patches can touch already modified states.
-+ */
-+bool klp_is_patch_compatible(struct klp_patch *patch)
-+{
-+	struct klp_patch *old_patch;
-+	struct klp_state *state;
-+
-+
-+	klp_for_each_patch(old_patch) {
-+		klp_for_each_state(old_patch, state) {
-+			if (!klp_is_state_compatible(patch, state))
-+				return false;
-+		}
-+	}
-+
-+	return true;
-+}
-diff --git a/kernel/livepatch/state.h b/kernel/livepatch/state.h
+     livepatch
+     callbacks
++    system-state
+     cumulative-patches
+     module-elf-format
+     shadow-vars
+diff --git a/Documentation/livepatch/system-state.rst b/Documentation/livepatch/system-state.rst
 new file mode 100644
-index 000000000000..49d9c16e8762
+index 000000000000..3a35073a0b80
 --- /dev/null
-+++ b/kernel/livepatch/state.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LIVEPATCH_STATE_H
-+#define _LIVEPATCH_STATE_H
++++ b/Documentation/livepatch/system-state.rst
+@@ -0,0 +1,80 @@
++====================
++System State Changes
++====================
 +
-+#include <linux/livepatch.h>
++Some users are really reluctant to reboot a system. This brings the need
++to provide more livepatches and maintain some compatibility between them.
 +
-+bool klp_is_patch_compatible(struct klp_patch *patch);
++Maintaining more livepatches is much easier with cumulative livepatches.
++Each new livepatch completely replaces any older one. It can keep,
++add, and even remove fixes. And it is typically safe to replace any version
++of the livepatch with any other one thanks to the atomic replace feature.
 +
-+#endif /* _LIVEPATCH_STATE_H */
++The problems might come with shadow variables and callbacks. They might
++change the system behavior or state so that it is not longer safe to
++go back and use an older livepatch or the original kernel code. Also
++any new livepatch must be able to detect what changes have already been
++done by the already installed livepatches.
++
++This is where the livepatch system state tracking gets useful. It
++allows to:
++
++  - store data needed to manipulate and restore the system state
++
++  - define compatibility between livepatches using a change id
++    and version
++
++
++1. Livepatch system state API
++=============================
++
++The state of the system might get modified either by several livepatch callbacks
++or by the newly used code. Also it must be possible to find changes done by
++already installed livepatches.
++
++Each modified state is described by struct klp_state, see
++include/linux/livepatch.h.
++
++Each livepatch defines an array of struct klp_states. They mention
++all states that the livepatch modifies.
++
++The livepatch author must define the following two fields for each
++struct klp_state:
++
++  - *id*
++
++    - Non-zero number used to identify the affected system state.
++
++  - *version*
++
++    - Number describing the variant of the system state change that
++      is supported by the given livepatch.
++
++The state can be manipulated using two functions:
++
++  - *klp_get_state(patch, id)*
++
++    - Get struct klp_state associated with the given livepatch
++      and state id.
++
++  - *klp_get_prev_state(id)*
++
++    - Get struct klp_state associated with the given feature id and
++      already installed livepatches.
++
++1. Livepatch compatibility
++==========================
++
++The system state version is used to prevent loading incompatible livepatches.
++The check is done when the livepatch is enabled. The rules are:
++
++  - Any completely new system state modification is allowed.
++
++  - System state modifications with the same or higher version are allowed
++    for already modified system states.
++
++  - Cumulative livepatches must handle all system state modifications from
++    already installed livepatches.
++
++  - Non-cumulative livepatches are allowed to touch already modified
++    system states.
 -- 
 2.16.4
 
