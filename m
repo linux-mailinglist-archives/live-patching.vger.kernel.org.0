@@ -2,19 +2,19 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5F73CDB6
-	for <lists+live-patching@lfdr.de>; Tue, 11 Jun 2019 15:57:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 239D23CDC2
+	for <lists+live-patching@lfdr.de>; Tue, 11 Jun 2019 15:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728901AbfFKN4w (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 11 Jun 2019 09:56:52 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39956 "EHLO mx1.suse.de"
+        id S2391443AbfFKN44 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 11 Jun 2019 09:56:56 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39986 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728111AbfFKN4w (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 11 Jun 2019 09:56:52 -0400
+        id S2391439AbfFKN4y (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 11 Jun 2019 09:56:54 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 75C74AE24;
-        Tue, 11 Jun 2019 13:56:50 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id B2E53AEBB;
+        Tue, 11 Jun 2019 13:56:52 +0000 (UTC)
 From:   Petr Mladek <pmladek@suse.com>
 To:     Jiri Kosina <jikos@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
@@ -24,9 +24,9 @@ Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
         Nicolai Stange <nstange@suse.de>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>
-Subject: [RFC 1/5] livepatch: Keep replaced patches until post_patch callback is called
-Date:   Tue, 11 Jun 2019 15:56:23 +0200
-Message-Id: <20190611135627.15556-2-pmladek@suse.com>
+Subject: [RFC 2/5] livepatch: Basic API to track system state changes
+Date:   Tue, 11 Jun 2019 15:56:24 +0200
+Message-Id: <20190611135627.15556-3-pmladek@suse.com>
 X-Mailer: git-send-email 2.16.4
 In-Reply-To: <20190611135627.15556-1-pmladek@suse.com>
 References: <20190611135627.15556-1-pmladek@suse.com>
@@ -35,149 +35,189 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Pre/post (un)patch callbacks might manipulate the system state. Cumulative
-livepatches might need to take over the changes made by the replaced
-ones. For this they might need to access some data stored or referenced
-by the old livepatches.
+This is another step how to help maintaining more livepatches.
 
-Therefore the replaced livepatches has to stay around until post_patch()
-callback is called. It is achieved by calling the free functions later.
-It is the same location where disabled livepatches have already been
-freed.
+One big help was the atomic replace and cumulative livepatches. These
+livepatches replaces the already installed ones. Therefore it should
+be enough when each cumulative livepatch is consistent.
+
+The problems might come with shadow variables and callbacks. They might
+change the system behavior or state so that it is not longer safe to
+go back and use an older livepatch or the original kernel code. Also
+any new livepatch must be able to detect what changes have already been
+done by the already installed livepatches.
+
+This is where the livepatch system state tracking gets useful. It
+allows to:
+
+  - find whether a system state has already been modified by
+    previous livepatches
+
+  - store data needed to manipulate and restore the system state
+
+The information about the manipulated system states is stored in an
+array of struct klp_state. There are two functions that allow
+to find this structure for a given struct klp_patch or for
+already installed (replaced) livepatches.
+
+The dependencies are going to be solved by a version field added later.
+The only important information is that it will be allowed to modify
+the same state by more non-cumulative livepatches. It is the same logic
+as that it is allowed to modify the same function several times.
+The livepatch author is responsible for preventing incompatible
+changes.
 
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- kernel/livepatch/core.c       | 36 ++++++++++++++++++++++++++----------
- kernel/livepatch/core.h       |  5 +++--
- kernel/livepatch/transition.c | 12 ++++++------
- 3 files changed, 35 insertions(+), 18 deletions(-)
+ include/linux/livepatch.h | 15 +++++++++
+ kernel/livepatch/Makefile |  2 +-
+ kernel/livepatch/state.c  | 83 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 99 insertions(+), 1 deletion(-)
+ create mode 100644 kernel/livepatch/state.c
 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 2398832947c6..24c4a13bd26c 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -631,7 +631,7 @@ static void klp_free_objects_dynamic(struct klp_patch *patch)
-  * The operation must be completed by calling klp_free_patch_finish()
-  * outside klp_mutex.
-  */
--void klp_free_patch_start(struct klp_patch *patch)
-+static void klp_free_patch_start(struct klp_patch *patch)
- {
- 	if (!list_empty(&patch->list))
- 		list_del(&patch->list);
-@@ -676,6 +676,23 @@ static void klp_free_patch_work_fn(struct work_struct *work)
- 	klp_free_patch_finish(patch);
- }
+diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+index eeba421cc671..591abdee30d7 100644
+--- a/include/linux/livepatch.h
++++ b/include/linux/livepatch.h
+@@ -132,10 +132,21 @@ struct klp_object {
+ 	bool patched;
+ };
  
-+void klp_free_patch_async(struct klp_patch *patch)
-+{
-+	klp_free_patch_start(patch);
-+	schedule_work(&patch->free_work);
-+}
++/**
++ * struct klp_state - state of the system modified by the livepatch
++ * @id:		system state identifier (non zero)
++ * @data:	custom data
++ */
++struct klp_state {
++	int id;
++	void *data;
++};
 +
-+void klp_free_replaced_patches_async(struct klp_patch *new_patch)
-+{
-+	struct klp_patch *old_patch, *tmp_patch;
+ /**
+  * struct klp_patch - patch structure for live patching
+  * @mod:	reference to the live patch module
+  * @objs:	object entries for kernel objects to be patched
++ * @states:	system states that can get modified
+  * @replace:	replace all actively used patches
+  * @list:	list node for global list of actively used patches
+  * @kobj:	kobject for sysfs resources
+@@ -150,6 +161,7 @@ struct klp_patch {
+ 	/* external */
+ 	struct module *mod;
+ 	struct klp_object *objs;
++	struct klp_state *states;
+ 	bool replace;
+ 
+ 	/* internal */
+@@ -220,6 +232,9 @@ void *klp_shadow_get_or_alloc(void *obj, unsigned long id,
+ void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor);
+ void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor);
+ 
++struct klp_state *klp_get_state(struct klp_patch *patch, int id);
++struct klp_state *klp_get_prev_state(int id);
 +
-+	klp_for_each_patch_safe(old_patch, tmp_patch) {
-+		if (old_patch == new_patch)
-+			return;
-+		klp_free_patch_async(old_patch);
+ #else /* !CONFIG_LIVEPATCH */
+ 
+ static inline int klp_module_coming(struct module *mod) { return 0; }
+diff --git a/kernel/livepatch/Makefile b/kernel/livepatch/Makefile
+index cf9b5bcdb952..cf03d4bdfc66 100644
+--- a/kernel/livepatch/Makefile
++++ b/kernel/livepatch/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_LIVEPATCH) += livepatch.o
+ 
+-livepatch-objs := core.o patch.o shadow.o transition.o
++livepatch-objs := core.o patch.o shadow.o state.o transition.o
+diff --git a/kernel/livepatch/state.c b/kernel/livepatch/state.c
+new file mode 100644
+index 000000000000..f8822b71f96e
+--- /dev/null
++++ b/kernel/livepatch/state.c
+@@ -0,0 +1,83 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * system_state.c - State of the system modified by livepatches
++ *
++ * Copyright (C) 2019 SUSE
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/livepatch.h>
++#include "core.h"
++#include "transition.h"
++
++#define klp_for_each_state(patch, state)		\
++	for (state = patch->states; state && state->id; state++)
++
++/**
++ * klp_get_state() - get information about system state modified by
++ *	the given patch
++ * @patch:	livepatch that modifies the given system state
++ * @id:		custom identifier of the modified system state
++ *
++ * Checks whether the given patch modifies to given system state.
++ *
++ * The function can be called either from pre/post (un)patch
++ * callbacks or from the kernel code added by the livepatch.
++ *
++ * Return: pointer to struct klp_state when found, otherwise NULL.
++ */
++struct klp_state *klp_get_state(struct klp_patch *patch, int id)
++{
++	struct klp_state *state;
++
++	klp_for_each_state(patch, state) {
++		if (state->id == id)
++			return state;
 +	}
-+}
 +
- static int klp_init_func(struct klp_object *obj, struct klp_func *func)
- {
- 	if (!func->old_name)
-@@ -1016,12 +1033,13 @@ int klp_enable_patch(struct klp_patch *patch)
- EXPORT_SYMBOL_GPL(klp_enable_patch);
- 
- /*
-- * This function removes replaced patches.
-+ * This function unpatches objects from the replaced livepatches.
-  *
-  * We could be pretty aggressive here. It is called in the situation where
-- * these structures are no longer accessible. All functions are redirected
-- * by the klp_transition_patch. They use either a new code or they are in
-- * the original code because of the special nop function patches.
-+ * these structures are no longer accessed from the ftrace handler.
-+ * All functions are redirected by the klp_transition_patch. They
-+ * use either a new code or they are in the original code because
-+ * of the special nop function patches.
-  *
-  * The only exception is when the transition was forced. In this case,
-  * klp_ftrace_handler() might still see the replaced patch on the stack.
-@@ -1029,18 +1047,16 @@ EXPORT_SYMBOL_GPL(klp_enable_patch);
-  * thanks to RCU. We only have to keep the patches on the system. Also
-  * this is handled transparently by patch->module_put.
-  */
--void klp_discard_replaced_patches(struct klp_patch *new_patch)
-+void klp_unpatch_replaced_patches(struct klp_patch *new_patch)
- {
--	struct klp_patch *old_patch, *tmp_patch;
-+	struct klp_patch *old_patch;
- 
--	klp_for_each_patch_safe(old_patch, tmp_patch) {
-+	klp_for_each_patch(old_patch) {
- 		if (old_patch == new_patch)
- 			return;
- 
- 		old_patch->enabled = false;
- 		klp_unpatch_objects(old_patch);
--		klp_free_patch_start(old_patch);
--		schedule_work(&old_patch->free_work);
- 	}
- }
- 
-diff --git a/kernel/livepatch/core.h b/kernel/livepatch/core.h
-index ec43a40b853f..38209c7361b6 100644
---- a/kernel/livepatch/core.h
-+++ b/kernel/livepatch/core.h
-@@ -13,8 +13,9 @@ extern struct list_head klp_patches;
- #define klp_for_each_patch(patch)	\
- 	list_for_each_entry(patch, &klp_patches, list)
- 
--void klp_free_patch_start(struct klp_patch *patch);
--void klp_discard_replaced_patches(struct klp_patch *new_patch);
-+void klp_free_patch_async(struct klp_patch *patch);
-+void klp_free_replaced_patches_async(struct klp_patch *new_patch);
-+void klp_unpatch_replaced_patches(struct klp_patch *new_patch);
- void klp_discard_nops(struct klp_patch *new_patch);
- 
- static inline bool klp_is_object_loaded(struct klp_object *obj)
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index abb2a4a2cbb2..d6a73dd409ba 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -78,7 +78,7 @@ static void klp_complete_transition(void)
- 		 klp_target_state == KLP_PATCHED ? "patching" : "unpatching");
- 
- 	if (klp_transition_patch->replace && klp_target_state == KLP_PATCHED) {
--		klp_discard_replaced_patches(klp_transition_patch);
-+		klp_unpatch_replaced_patches(klp_transition_patch);
- 		klp_discard_nops(klp_transition_patch);
- 	}
- 
-@@ -441,14 +441,14 @@ void klp_try_complete_transition(void)
- 	klp_complete_transition();
- 
- 	/*
--	 * It would make more sense to free the patch in
-+	 * It would make more sense to free the unused patches in
- 	 * klp_complete_transition() but it is called also
- 	 * from klp_cancel_transition().
- 	 */
--	if (!patch->enabled) {
--		klp_free_patch_start(patch);
--		schedule_work(&patch->free_work);
--	}
-+	if (!patch->enabled)
-+		klp_free_patch_async(patch);
-+	else if (patch->replace)
-+		klp_free_replaced_patches_async(patch);
- }
- 
- /*
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(klp_get_state);
++
++/**
++ * klp_get_prev_state() - get information about system state modified by
++ *	the already installed livepatches
++ * @id:		custom identifier of the modified system state
++ *
++ * Checks whether already installed livepatches modify the given
++ * system state.
++ *
++ * The same system state can be modified by more non-cumulative
++ * livepatches. It is expected that the latest livepatch has
++ * the most up-to-date information.
++ *
++ * The function can be called only during transition when a new
++ * livepatch is being enabled or when such a transition is reverted.
++ * It is typically called only from from pre/post (un)patch
++ * callbacks.
++ *
++ * Return: pointer to the latest struct klp_state from already
++ *	installed livepatches, NULL when not found.
++ */
++struct klp_state *klp_get_prev_state(int id)
++{
++	struct klp_patch *patch;
++	struct klp_state *state, *last_state = NULL;
++
++	if (WARN_ON_ONCE(!klp_transition_patch))
++		return NULL;
++
++	klp_for_each_patch(patch) {
++		if (patch == klp_transition_patch)
++			goto out;
++
++		state = klp_get_state(patch, id);
++		if (state)
++			last_state = state;
++	}
++
++out:
++	return last_state;
++}
++EXPORT_SYMBOL_GPL(klp_get_prev_state);
 -- 
 2.16.4
 
