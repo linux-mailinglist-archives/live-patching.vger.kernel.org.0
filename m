@@ -2,158 +2,160 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1EE46060
-	for <lists+live-patching@lfdr.de>; Fri, 14 Jun 2019 16:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D01DC4607F
+	for <lists+live-patching@lfdr.de>; Fri, 14 Jun 2019 16:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728913AbfFNOO4 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 14 Jun 2019 10:14:56 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34754 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728555AbfFNOO4 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 14 Jun 2019 10:14:56 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 08FA2AEB3;
-        Fri, 14 Jun 2019 14:14:54 +0000 (UTC)
-Date:   Fri, 14 Jun 2019 16:14:53 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Jessica Yu <jeyu@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        Johannes Erdfelt <johannes@erdfelt.com>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH 3/3] module: Improve module __ro_after_init handling
-Message-ID: <20190614141453.fjtvk7uvux6vcmlp@pathway.suse.cz>
-References: <cover.1560474114.git.jpoimboe@redhat.com>
- <1b72f40d863a1444f687b3e1b958bdc6925882ed.1560474114.git.jpoimboe@redhat.com>
+        id S1728666AbfFNOUS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 14 Jun 2019 10:20:18 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58792 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728642AbfFNOUS (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 14 Jun 2019 10:20:18 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AEAEFC1EB1FE;
+        Fri, 14 Jun 2019 14:20:12 +0000 (UTC)
+Received: from [10.18.17.153] (dhcp-17-153.bos.redhat.com [10.18.17.153])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 037E219C58;
+        Fri, 14 Jun 2019 14:20:09 +0000 (UTC)
+Subject: Re: [PATCH v4 00/10] klp-convert livepatch build tooling
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        =?UTF-8?Q?Libor_Pech=c3=a1=c4=8dek?= <lpechacek@suse.com>
+References: <20190509143859.9050-1-joe.lawrence@redhat.com>
+ <alpine.LSU.2.21.1906131451560.22698@pobox.suse.cz>
+ <b1a627a4-3702-9689-6c03-0c2123c06a2d@redhat.com>
+ <c9021573-11c6-b576-0aa6-97754c98a06e@redhat.com>
+ <20190614083435.uq3mk6mprbatysol@pathway.suse.cz>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <a0db1cee-8bba-4093-c3ca-4c2fe61b15ba@redhat.com>
+Date:   Fri, 14 Jun 2019 10:20:09 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1b72f40d863a1444f687b3e1b958bdc6925882ed.1560474114.git.jpoimboe@redhat.com>
-User-Agent: NeoMutt/20170912 (1.9.0)
+In-Reply-To: <20190614083435.uq3mk6mprbatysol@pathway.suse.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Fri, 14 Jun 2019 14:20:17 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2019-06-13 20:07:24, Josh Poimboeuf wrote:
-> module_enable_ro() can be called in the following scenario:
+On 6/14/19 4:34 AM, Petr Mladek wrote:
+> On Thu 2019-06-13 16:48:02, Joe Lawrence wrote:
+>> On 6/13/19 9:15 AM, Joe Lawrence wrote:
+>>> On 6/13/19 9:00 AM, Miroslav Benes wrote:
+>>>> Hi Joe,
+>>>>
+>>>> first, I'm sorry for the lack of response so far.
+>>>>
+>>>> Maybe you've already noticed but the selftests fail. Well, at least in
+>>>> my VM. When test_klp_convert1.ko is loaded, the process is killed with
+>>>>
+>>>> [  518.041826] BUG: kernel NULL pointer dereference, address: 0000000000000000
+>>>> [  518.042816] #PF: supervisor read access in kernel mode
+>>>> [  518.043393] #PF: error_code(0x0000) - not-present page
+>>>> [  518.043981] PGD 0 P4D 0
+>>>> [  518.044185] Oops: 0000 [#1] SMP PTI
+>>>> [  518.044518] CPU: 2 PID: 2255 Comm: insmod Tainted: G           O  K   5.1.0-klp_convert_v4-193435-g67748576637e #2
+>>>> [  518.045784] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58-prebuilt.qemu.org 04/01/2014
+>>>> [  518.046940] RIP: 0010:test_klp_convert_init+0x1c/0x40 [test_klp_convert1]
+>>>> [  518.047611] Code: 1b a0 48 89 c6 e9 a8 c0 f4 e0 0f 1f 40 00 0f 1f 44 00 00 53 48 c7 c7 00 30 1b a0 e8 5e 33 f6 e0 85 c0 89 c3 74 04 89 d8 5b c3 <48> 8b 35 5d ef e4 5f 48 c7 c7 28 20 1b a0 e8 75 c0 f4 e0 e8 6c ff
+>>>> [  518.049779] RSP: 0018:ffffc90000f37cc8 EFLAGS: 00010246
+>>>> [  518.050243] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000027de0
+>>>> [  518.050922] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffff88807ab54f40
+>>>> [  518.051619] RBP: ffffffffa01b1080 R08: 0000000096efde7a R09: 0000000000000001
+>>>> [  518.052332] R10: 0000000000000000 R11: 0000000000000000 R12: 00000000ffffffff
+>>>> [  518.053012] R13: 0000000000000000 R14: ffff888078b55000 R15: ffffc90000f37ea0
+>>>> [  518.053714] FS:  00007febece1fb80(0000) GS:ffff88807d400000(0000) knlGS:0000000000000000
+>>>> [  518.054514] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>> [  518.055078] CR2: 0000000000000000 CR3: 000000007a56a000 CR4: 00000000000006e0
+>>>> [  518.055818] Call Trace:
+>>>> [  518.056007]  do_one_initcall+0x6a/0x2da
+>>>> [  518.056340]  ? do_init_module+0x22/0x230
+>>>> [  518.056702]  ? rcu_read_lock_sched_held+0x96/0xa0
+>>>> [  518.057125]  ? kmem_cache_alloc_trace+0x284/0x2e0
+>>>> [  518.057493]  do_init_module+0x5a/0x230
+>>>> [  518.057900]  load_module+0x17bc/0x1f50
+>>>> [  518.058214]  ? __symbol_put+0x40/0x40
+>>>> [  518.058499]  ? vfs_read+0x12d/0x160
+>>>> [  518.058766]  __do_sys_finit_module+0x83/0xc0
+>>>> [  518.059122]  do_syscall_64+0x57/0x190
+>>>> [  518.059407]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+>>>> ...
+>>>>
+>>>> It crashes right in test_klp_convert_init() when print_*() using
+>>>> supposed-to-be-converted symbols are called. I'll debug it next week. Can
+>>>> you reproduce it too?
+>>>
+>>> Hey, thanks for the report..
+>>>
+>>> I don't recall the tests crashing, but I had put this patchset on the
+>>> side for a few weeks now.  I'll try to fire up a VM and see what happens
+>>> today.
+>>>
+>>
+>> Hmm, I haven't been able to reproduce using my original base (Linux 5.1-rc6)
+>> or when rebased ontop of livepatching.git/master + 997a55f3fb6d("stacktrace: Unbreak stack_trace_save_tsk_reliable()")
 > 
->   [load livepatch module]
->     initcall
->       klp_enable_patch()
->         klp_init_patch()
->           klp_init_object()
->             klp_init_object_loaded()
->               module_enable_ro(pmod, true)
+> I stared into the code a bit but I did not find any bug. Let's hope
+> that it was just some pre-vacation last minute mistake (system
+> inconsistency or so ;-)
 > 
-> In this case, module_enable_ro()'s 'after_init' argument is true, which
-> prematurely changes the module's __ro_after_init area to read-only.
+> Anyway, I am curious about one thing. I saw:
 > 
-> If, theoretically, a registrant of the MODULE_STATE_LIVE module notifier
-> tried to write to the livepatch module's __ro_after_init section, an
-> oops would occur.
+> function __load_mod() {
+> 	local mod="$1"; shift
 > 
-> Remove the 'after_init' argument and instead make __module_enable_ro()
-> smart enough to only frob the __ro_after_init section after the module
-> has gone live.
+> 	local msg="% modprobe $mod $*"
+> 	log "${msg%% }"
+> 	ret=$(modprobe "$mod" "$@" 2>&1)
+> 	if [[ "$ret" != "" ]]; then
+> 		die "$ret"
+> 	fi
 > 
-> Reported-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  arch/arm64/kernel/ftrace.c |  2 +-
->  include/linux/module.h     |  4 ++--
->  kernel/livepatch/core.c    |  4 ++--
->  kernel/module.c            | 14 +++++++-------
->  4 files changed, 12 insertions(+), 12 deletions(-)
+> 	# Wait for module in sysfs ...
+> 	loop_until '[[ -e "/sys/module/$mod" ]]' ||
+> 		die "failed to load module $mod"
+> }
 > 
-> diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
-> index 65a51331088e..c17d98aafc93 100644
-> --- a/arch/arm64/kernel/ftrace.c
-> +++ b/arch/arm64/kernel/ftrace.c
-> @@ -120,7 +120,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
->  			/* point the trampoline to our ftrace entry point */
->  			module_disable_ro(mod);
->  			*mod->arch.ftrace_trampoline = trampoline;
-> -			module_enable_ro(mod, true);
-> +			module_enable_ro(mod);
->  
->  			/* update trampoline before patching in the branch */
->  			smp_wmb();
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index 188998d3dca9..4d6922f3760e 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -844,12 +844,12 @@ extern int module_sysfs_initialized;
->  #ifdef CONFIG_STRICT_MODULE_RWX
->  extern void set_all_modules_text_rw(void);
->  extern void set_all_modules_text_ro(void);
-> -extern void module_enable_ro(const struct module *mod, bool after_init);
-> +extern void module_enable_ro(const struct module *mod);
->  extern void module_disable_ro(const struct module *mod);
->  #else
->  static inline void set_all_modules_text_rw(void) { }
->  static inline void set_all_modules_text_ro(void) { }
-> -static inline void module_enable_ro(const struct module *mod, bool after_init) { }
-> +static inline void module_enable_ro(const struct module *mod) { }
->  static inline void module_disable_ro(const struct module *mod) { }
->  #endif
->  
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index c4ce08f43bd6..f9882ffa2f44 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -724,13 +724,13 @@ static int klp_init_object_loaded(struct klp_patch *patch,
->  	module_disable_ro(patch->mod);
->  	ret = klp_write_object_relocations(patch->mod, obj);
->  	if (ret) {
-> -		module_enable_ro(patch->mod, true);
-> +		module_enable_ro(patch->mod);
->  		mutex_unlock(&text_mutex);
->  		return ret;
->  	}
->  
->  	arch_klp_init_object_loaded(patch, obj);
-> -	module_enable_ro(patch->mod, true);
-> +	module_enable_ro(patch->mod);
->  
->  	mutex_unlock(&text_mutex);
->  
-> diff --git a/kernel/module.c b/kernel/module.c
-> index e43a90ee2d23..fb3561e0c5b0 100644
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -1956,7 +1956,7 @@ void module_disable_ro(const struct module *mod)
->  	frob_rodata(&mod->init_layout, set_memory_rw);
->  }
->  
-> -void __module_enable_ro(const struct module *mod, bool after_init)
-> +static void __module_enable_ro(const struct module *mod)
->  {
->  	if (!rodata_enabled)
->  		return;
-> @@ -1973,15 +1973,15 @@ void __module_enable_ro(const struct module *mod, bool after_init)
->  
->  	frob_rodata(&mod->init_layout, set_memory_ro);
->  
-> -	if (after_init)
-> +	if (mod->state == MODULE_STATE_LIVE)
->  		frob_ro_after_init(&mod->core_layout, set_memory_ro);
+> Is the waiting for sysfs really necessary here?
+> 
+> Note that it is /sys/module and not /sys/kernel/livepatch/.
 
-This works only now because __module_enable_ro() is called only from
-three locations (klp_init_object_loaded(),  complete_formation(),
-and do_init_module(). And they all are called in a well defined order
-from load_module().
+I can't remember if that was just paranoid-protective-bash coding or 
+actually required.  Libor provided great feedback on the initial patch 
+series that introduced the self-tests, perhaps he remembers.
 
-Only the final call in do_init_module() should touch the after_init
-section.
+> My understanding is that modprobe waits until the module succesfully
+> loaded. mod_sysfs_setup() is called before the module init callback.
+> Therefore the sysfs interface should be read before modprobe returns.
+> Do I miss something?
+ >
+> If it works different way then there might be some races because
+> mod_sysfs_setup() is called before the module is alive.
 
-IMHO, the most clean solutiuon would be to call frob_ro_after_init()
-from extra __module_after_init_enable_ro() or so. This should be
-called only from the single place.
+All of this is called from a single bash script function, so in a call 
+stack fashion, something like this would occur when loading a livepatch 
+module:
 
-Best Regards,
-Petr
+   [ mod_sysfs_setup() ]
+   modprobe waits for:         .init complete, MODULE_STATE_LIVE
+   __load_mod() waits for:     /sys/module/$mod
+   load_lp_nowait() waits for: /sys/kernel/livepatch/$mod
+   load_lp() waits for:        /sys/kernel/livepatch/$mod/transition = 0
+   test-script.sh
+
+So I would think that by calling modprobe, we ensure that the module 
+code is ready to go.  The /sys/module/$mod check might be redundant as 
+you say, but because modprobe completed, we should be safe, no?
+
+The only "nowait" function we have is load_lp_nowait(), which would let 
+us march onward before the livepatch transition may have completed.
+
+-- Joe
