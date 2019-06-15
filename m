@@ -2,78 +2,76 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E90447220
-	for <lists+live-patching@lfdr.de>; Sat, 15 Jun 2019 22:43:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD93F47224
+	for <lists+live-patching@lfdr.de>; Sat, 15 Jun 2019 22:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725535AbfFOUnb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 15 Jun 2019 16:43:31 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43226 "EHLO mx1.redhat.com"
+        id S1725944AbfFOUro (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 15 Jun 2019 16:47:44 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:60838 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726857AbfFOUnb (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Sat, 15 Jun 2019 16:43:31 -0400
+        id S1725535AbfFOUrn (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Sat, 15 Jun 2019 16:47:43 -0400
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 108A13083391;
-        Sat, 15 Jun 2019 20:43:31 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9A6222F8BC8;
+        Sat, 15 Jun 2019 20:47:43 +0000 (UTC)
 Received: from treble (ovpn-112-16.rdu2.redhat.com [10.10.112.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 044F660CA3;
-        Sat, 15 Jun 2019 20:43:24 +0000 (UTC)
-Date:   Sat, 15 Jun 2019 15:43:20 -0500
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2F05960CA3;
+        Sat, 15 Jun 2019 20:47:38 +0000 (UTC)
+Date:   Sat, 15 Jun 2019 15:47:36 -0500
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
-        kamalesh@linux.vnet.ibm.com, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v4 0/3] livepatch: Cleanup of reliable stacktrace warnings
-Message-ID: <20190615204320.i4qxbk2m3ee73vyg@treble>
-References: <20190611141320.25359-1-mbenes@suse.cz>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Nicolai Stange <nstange@suse.de>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC 0/5] livepatch: new API to track system state changes
+Message-ID: <20190615204736.coc2gbgffahkirnz@treble>
+References: <20190611135627.15556-1-pmladek@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190611141320.25359-1-mbenes@suse.cz>
+In-Reply-To: <20190611135627.15556-1-pmladek@suse.com>
 User-Agent: NeoMutt/20180716
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Sat, 15 Jun 2019 20:43:31 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Sat, 15 Jun 2019 20:47:43 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 04:13:17PM +0200, Miroslav Benes wrote:
-> This is the fourth attempt to improve the situation of reliable stack
-> trace warnings in livepatch. Based on discussion in
-> 20190531074147.27616-1-pmladek@suse.com (v3).
+On Tue, Jun 11, 2019 at 03:56:22PM +0200, Petr Mladek wrote:
+> Hi,
 > 
-> Changes against v3:
-> + weak save_stack_trace_tsk_reliable() removed, because it is not needed
->   anymore thanks to Thomas' recent improvements
-> + klp_have_reliable_stack() check reintroduced in klp_try_switch_task()
+> this is another piece in the puzzle that helps to maintain more
+> livepatches.
 > 
-> Changes against v2:
+> Especially pre/post (un)patch callbacks might change a system state.
+> Any newly installed livepatch has to somehow deal with system state
+> modifications done be already installed livepatches.
 > 
-> + Put back the patch removing WARN_ONCE in the weak
->   save_stack_trace_tsk_reliable(). It is related.
-> + Simplified patch removing the duplicate warning from klp_check_stack()
-> + Update commit message for 3rd patch [Josh]
+> This patchset provides, hopefully, a simple and generic API that
+> helps to keep and pass information between the livepatches.
+> It is also usable to prevent loading incompatible livepatches.
 > 
-> Miroslav Benes (2):
->   stacktrace: Remove weak version of save_stack_trace_tsk_reliable()
->   Revert "livepatch: Remove reliable stacktrace check in
->     klp_try_switch_task()"
+> There was also a related idea to add a sticky flag. It should be
+> easy to add it later. It would perfectly fit into the new struct
+> klp_state.
 > 
-> Petr Mladek (1):
->   livepatch: Remove duplicate warning about missing reliable stacktrace
->     support
-> 
->  kernel/livepatch/transition.c | 8 +++++++-
->  kernel/stacktrace.c           | 8 --------
->  2 files changed, 7 insertions(+), 9 deletions(-)
+> Petr Mladek (5):
+>   livepatch: Keep replaced patches until post_patch callback is called
+>   livepatch: Basic API to track system state changes
+>   livepatch: Allow to distinguish different version of system state
+>     changes
+>   livepatch: Documentation of the new API for tracking system state
+>     changes
+>   livepatch: Selftests of the API for tracking system state changes
 
-Thanks Miroslav for wrapping this up, and thanks to Petr for his
-previous work on this.
-
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+I confess I missed most of the previous discussion, but from a first
+read-through this seems reasonable, and the code looks simple and
+self-contained.
 
 -- 
 Josh
