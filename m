@@ -2,84 +2,78 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB7C346B78
-	for <lists+live-patching@lfdr.de>; Fri, 14 Jun 2019 23:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E90447220
+	for <lists+live-patching@lfdr.de>; Sat, 15 Jun 2019 22:43:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725809AbfFNVEL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 14 Jun 2019 17:04:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53110 "EHLO mail.kernel.org"
+        id S1725535AbfFOUnb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 15 Jun 2019 16:43:31 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43226 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725808AbfFNVEL (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 14 Jun 2019 17:04:11 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726857AbfFOUnb (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Sat, 15 Jun 2019 16:43:31 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EFE8F217F9;
-        Fri, 14 Jun 2019 21:04:09 +0000 (UTC)
-Date:   Fri, 14 Jun 2019 17:04:08 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Jessica Yu <jeyu@kernel.org>, Petr Mladek <pmladek@suse.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        Johannes Erdfelt <johannes@erdfelt.com>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH 1/3] module: Fix livepatch/ftrace module text
- permissions race
-Message-ID: <20190614170408.1b1162dc@gandalf.local.home>
-In-Reply-To: <ab43d56ab909469ac5d2520c5d944ad6d4abd476.1560474114.git.jpoimboe@redhat.com>
-References: <cover.1560474114.git.jpoimboe@redhat.com>
-        <ab43d56ab909469ac5d2520c5d944ad6d4abd476.1560474114.git.jpoimboe@redhat.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by mx1.redhat.com (Postfix) with ESMTPS id 108A13083391;
+        Sat, 15 Jun 2019 20:43:31 +0000 (UTC)
+Received: from treble (ovpn-112-16.rdu2.redhat.com [10.10.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 044F660CA3;
+        Sat, 15 Jun 2019 20:43:24 +0000 (UTC)
+Date:   Sat, 15 Jun 2019 15:43:20 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
+        kamalesh@linux.vnet.ibm.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v4 0/3] livepatch: Cleanup of reliable stacktrace warnings
+Message-ID: <20190615204320.i4qxbk2m3ee73vyg@treble>
+References: <20190611141320.25359-1-mbenes@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190611141320.25359-1-mbenes@suse.cz>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Sat, 15 Jun 2019 20:43:31 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 13 Jun 2019 20:07:22 -0500
-Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-
-> It's possible for livepatch and ftrace to be toggling a module's text
-> permissions at the same time, resulting in the following panic:
+On Tue, Jun 11, 2019 at 04:13:17PM +0200, Miroslav Benes wrote:
+> This is the fourth attempt to improve the situation of reliable stack
+> trace warnings in livepatch. Based on discussion in
+> 20190531074147.27616-1-pmladek@suse.com (v3).
 > 
-
-[..]
-
-> The above panic occurs when loading two modules at the same time with
-> ftrace enabled, where at least one of the modules is a livepatch module:
+> Changes against v3:
+> + weak save_stack_trace_tsk_reliable() removed, because it is not needed
+>   anymore thanks to Thomas' recent improvements
+> + klp_have_reliable_stack() check reintroduced in klp_try_switch_task()
 > 
-> CPU0					CPU1
-> klp_enable_patch()
->   klp_init_object_loaded()
->     module_disable_ro()
->     					ftrace_module_enable()
-> 					  ftrace_arch_code_modify_post_process()
-> 				    	    set_all_modules_text_ro()
->       klp_write_object_relocations()
->         apply_relocate_add()
-> 	  *patches read-only code* - BOOM
+> Changes against v2:
 > 
-> A similar race exists when toggling ftrace while loading a livepatch
-> module.
+> + Put back the patch removing WARN_ONCE in the weak
+>   save_stack_trace_tsk_reliable(). It is related.
+> + Simplified patch removing the duplicate warning from klp_check_stack()
+> + Update commit message for 3rd patch [Josh]
 > 
-> Fix it by ensuring that the livepatch and ftrace code patching
-> operations -- and their respective permissions changes -- are protected
-> by the text_mutex.
+> Miroslav Benes (2):
+>   stacktrace: Remove weak version of save_stack_trace_tsk_reliable()
+>   Revert "livepatch: Remove reliable stacktrace check in
+>     klp_try_switch_task()"
 > 
-> Reported-by: Johannes Erdfelt <johannes@erdfelt.com>
-> Fixes: 444d13ff10fb ("modules: add ro_after_init support")
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> Acked-by: Jessica Yu <jeyu@kernel.org>
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+> Petr Mladek (1):
+>   livepatch: Remove duplicate warning about missing reliable stacktrace
+>     support
+> 
+>  kernel/livepatch/transition.c | 8 +++++++-
+>  kernel/stacktrace.c           | 8 --------
+>  2 files changed, 7 insertions(+), 9 deletions(-)
 
-This patch looks uncontroversial. I'm going to pull this one in and
-start testing it. And if it works, I'll push to Linus.
+Thanks Miroslav for wrapping this up, and thanks to Petr for his
+previous work on this.
 
--- Steve
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
+-- 
+Josh
