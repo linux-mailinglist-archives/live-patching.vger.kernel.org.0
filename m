@@ -2,127 +2,133 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D7D508DD
-	for <lists+live-patching@lfdr.de>; Mon, 24 Jun 2019 12:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB9A52142
+	for <lists+live-patching@lfdr.de>; Tue, 25 Jun 2019 05:31:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728574AbfFXK0K convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 24 Jun 2019 06:26:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:42386 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727101AbfFXK0K (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 24 Jun 2019 06:26:10 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id AE358AC98;
-        Mon, 24 Jun 2019 10:26:08 +0000 (UTC)
-From:   Nicolai Stange <nstange@suse.de>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Nicolai Stange <nstange@suse.de>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC 3/5] livepatch: Allow to distinguish different version of system state changes
-References: <20190611135627.15556-1-pmladek@suse.com>
-        <20190611135627.15556-4-pmladek@suse.com>
-Date:   Mon, 24 Jun 2019 12:26:07 +0200
-In-Reply-To: <20190611135627.15556-4-pmladek@suse.com> (Petr Mladek's message
-        of "Tue, 11 Jun 2019 15:56:25 +0200")
-Message-ID: <87o92n2sao.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
+        id S1726495AbfFYDbe (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 24 Jun 2019 23:31:34 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:32834 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726362AbfFYDbe (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 24 Jun 2019 23:31:34 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id C986FC1EB1E8;
+        Tue, 25 Jun 2019 03:31:33 +0000 (UTC)
+Received: from treble (ovpn-126-66.rdu2.redhat.com [10.10.126.66])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C1F5C19936;
+        Tue, 25 Jun 2019 03:31:29 +0000 (UTC)
+Date:   Mon, 24 Jun 2019 22:31:25 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Cheng Jian <cj.chengjian@huawei.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        mingo@redhat.com, huawei.libin@huawei.com, xiexiuqi@huawei.com,
+        yangyingliang@huawei.com, bobo.shaobowang@huawei.com
+Subject: Re: [PATCH] Revert "x86/module: Detect and skip invalid relocations"
+Message-ID: <20190625033125.7wcxeymke6zsdvdg@treble>
+References: <1561019068-132672-1-git-send-email-cj.chengjian@huawei.com>
+ <alpine.LSU.2.21.1906201028490.25778@pobox.suse.cz>
+ <alpine.DEB.2.21.1906220927460.5503@nanos.tec.linutronix.de>
+ <alpine.LSU.2.21.1906241150000.31030@pobox.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.1906241150000.31030@pobox.suse.cz>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 25 Jun 2019 03:31:33 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Petr Mladek <pmladek@suse.com> writes:
+On Mon, Jun 24, 2019 at 12:00:33PM +0200, Miroslav Benes wrote:
+> On Sat, 22 Jun 2019, Thomas Gleixner wrote:
+> 
+> > Miroslav,
+> > 
+> > On Thu, 20 Jun 2019, Miroslav Benes wrote:
+> > > On Thu, 20 Jun 2019, Cheng Jian wrote:
+> > > 
+> > > > This reverts commit eda9cec4c9a12208a6f69fbe68f72a6311d50032.
+> > > > 
+> > > > Since commit (eda9cec4c9a1 'x86/module: Detect and skip invalid
+> > > > relocations') add some sanity check in apply_relocate_add, borke
+> > > > re-insmod a kernel module which has been patched before,
+> > > > 
+> > > > The relocation informations of the livepatch module have been
+> > > > overwritten since first patched, so if we rmmod and insmod the
+> > > > kernel module, these values are not zero anymore, when
+> > > > klp_module_coming doing, and that commit marks them as invalid
+> > > > invalid_relocation.
+> > > > 
+> > > > Then the following error occurs:
+> > > > 
+> > > > 	module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc (____ptrval____), val ffffffffc000236c
+> > > > 	livepatch: failed to initialize patch 'livepatch_0001_test' for module 'test' (-8)
+> > > > 	livepatch: patch 'livepatch_0001_test' failed for module 'test', refusing to load module 'test'
+> > > 
+> > > Oh yeah. First reported here 20180602161151.apuhs2dygsexmcg2@treble (LP ML 
+> > > only and there is no archive on lore.kernel.org yet. Sorry about that.). I 
+> > > posted v1 here 
+> > > https://lore.kernel.org/lkml/20180607092949.1706-1-mbenes@suse.cz/ and 
+> > > even started to work on v2 in March with arch-specific nullifying, but 
+> > > then I got sidetracked again. I'll move it up my todo list a bit.
+> > 
+> > so we need to revert it for now, right?
+> 
+> Not necessarily.
+> 
+> Quoting Josh from the original bug report:
+> "Possible ways to fix it:
+> 
+> 1) Remove the error check in apply_relocate_add().  I don't think we
+>    should do this, because the error is actually useful for detecting
+>    corrupt modules.  And also, powerpc has the similar error so this
+>    wouldn't be a universal solution.
+> 
+> 2) In klp_unpatch_object(), call an arch-specific arch_unpatch_object()
+>    which reverses any arch-specific patching: on x86, clearing all
+>    relocation targets to zero; on powerpc, converting the instructions
+>    after relative link branches to nops.  I don't think we should do
+>    this because it's not a global solution and requires fidgety
+>    arch-specific patching code.
+> 
+> 3) Don't allow patched modules to be removed.  I think this makes the
+>    most sense.  Nobody needs this functionality anyway (right?).
+> "
+> 
+> 1 would be the revert. We decided against it. The scenario (rmmod a 
+> module) is (supposedly) not that common in practice. Even the current bug 
+> report was triggered just in testing if I am not mistaken. Moreover, you 
+> need kpatch-build to properly set up relocation records. Upstream 
+> livepatch does not offer it as of now. That's why (I think) Josh thought 
+> the benefits of the check outweighed the disadvantage.
+> 
+> Then I tried to implement 3, but there were problems with it too. 2 
+> remains to be finished and then we can decide what the best approach is.
+> 
+> That being said... I am not against the reverting the commit per se, but 
+> we lived with it or quite a long time and no one has met it so far in 
+> "real life". I don't think it is the classic "we broke something, we have 
+> to revert" scenario.
+> 
+> Josh, any comment? I think your opinion matters here much more than mine.
 
-> ---
->  include/linux/livepatch.h |  2 ++
->  kernel/livepatch/core.c   |  8 ++++++++
->  kernel/livepatch/state.c  | 40 +++++++++++++++++++++++++++++++++++++++-
->  kernel/livepatch/state.h  |  9 +++++++++
->  4 files changed, 58 insertions(+), 1 deletion(-)
->  create mode 100644 kernel/livepatch/state.h
->
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index 591abdee30d7..8bc4c6cc3f3f 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -135,10 +135,12 @@ struct klp_object {
->  /**
->   * struct klp_state - state of the system modified by the livepatch
->   * @id:		system state identifier (non zero)
-> + * @version:	version of the change (non-zero)
->   * @data:	custom data
->   */
->  struct klp_state {
->  	int id;
-> +	int version;
->  	void *data;
->  };
->  
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 24c4a13bd26c..614642719825 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -21,6 +21,7 @@
->  #include <asm/cacheflush.h>
->  #include "core.h"
->  #include "patch.h"
-> +#include "state.h"
->  #include "transition.h"
->  
->  /*
-> @@ -1003,6 +1004,13 @@ int klp_enable_patch(struct klp_patch *patch)
->  
->  	mutex_lock(&klp_mutex);
->  
-> +	if(!klp_is_patch_compatible(patch)) {
-> +		pr_err("Livepatch patch (%s) is not compatible with the already installed livepatches.\n",
-> +			patch->mod->name);
-> +		mutex_unlock(&klp_mutex);
-> +		return -EINVAL;
-> +	}
-> +
->  	ret = klp_init_patch_early(patch);
->  	if (ret) {
->  		mutex_unlock(&klp_mutex);
+Agreed, as far as I know the problem is purely theoretical and we
+haven't seen any real-world bug reports, because people aren't reloading
+patched modules in the real world.
 
+If we were to revert the error checks in apply_relocate_add() then it
+could expose us to real-world regressions (which we have actually seen
+in the past).
 
-Just as a remark: klp_reverse_transition() could still transition back
-to a !klp_is_patch_compatible() patch.
-
-I don't think it's much of a problem, because for live patches
-introducing completely new states to the system, it is reasonable
-to assume that they'll start applying incompatible changes only from
-their ->post_patch(), I guess.
-
-For state "upgrades" to higher versions, it's not so clear though and
-some care will be needed. But I think these could still be handled
-safely at the cost of some complexity in the new live patch's
-->post_patch().
-
-Another detail is that ->post_unpatch() will be called for the new live
-patch which has been unpatched due to transition reversal and one would
-have to be careful not to free shared state from under the older, still
-active live patch. How would ->post_unpatch() distinguish between
-transition reversal and "normal" live patch disabling?  By
-klp_get_prev_state() != NULL?
-
-Perhaps transition reversal should be mentioned in the documentation?
-
-Thanks,
-
-Nicolai
-
+So I would vote to leave the error checks in place, at least until it
+becomes a real-world issue.  And in the meantime hopefully you can
+finish implementing #2 or #3 soon :-)
 
 -- 
-SUSE Linux GmbH, GF: Felix Imendörffer, Mary Higgins, Sri Rasiah, HRB
-21284 (AG Nürnberg)
+Josh
