@@ -2,159 +2,221 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55C235578D
-	for <lists+live-patching@lfdr.de>; Tue, 25 Jun 2019 21:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A83560DE
+	for <lists+live-patching@lfdr.de>; Wed, 26 Jun 2019 05:53:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728658AbfFYTIl (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 25 Jun 2019 15:08:41 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58468 "EHLO mx1.redhat.com"
+        id S1726958AbfFZDtj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 25 Jun 2019 23:49:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54804 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727684AbfFYTIk (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 25 Jun 2019 15:08:40 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727360AbfFZDnd (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 25 Jun 2019 23:43:33 -0400
+Received: from sasha-vm.mshome.net (mobile-107-77-172-74.mobile.att.net [107.77.172.74])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 35F8930C1AFD;
-        Tue, 25 Jun 2019 19:08:40 +0000 (UTC)
-Received: from redhat.com (dhcp-17-153.bos.redhat.com [10.18.17.153])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8A36E60BE5;
-        Tue, 25 Jun 2019 19:08:38 +0000 (UTC)
-Date:   Tue, 25 Jun 2019 15:08:36 -0400
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, linux-kbuild@vger.kernel.org
-Subject: Re: [PATCH v4 00/10] klp-convert livepatch build tooling
-Message-ID: <20190625190836.GL20356@redhat.com>
-References: <20190509143859.9050-1-joe.lawrence@redhat.com>
- <alpine.LSU.2.21.1906131451560.22698@pobox.suse.cz>
- <b1a627a4-3702-9689-6c03-0c2123c06a2d@redhat.com>
- <c9021573-11c6-b576-0aa6-97754c98a06e@redhat.com>
- <20190614083435.uq3mk6mprbatysol@pathway.suse.cz>
- <alpine.LSU.2.21.1906251324450.12085@pobox.suse.cz>
+        by mail.kernel.org (Postfix) with ESMTPSA id E3DB421655;
+        Wed, 26 Jun 2019 03:43:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561520612;
+        bh=s093pJ5X4SJ39pDwCs25wm3kxqLJKlbUMRofKgwIBd0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ktUzKmG+7EUhr1GrKilaE3ulluPLvHdI4wYD4r9TuCOMdhcAlQ17LLKYMWjrq/eV0
+         aQSPTNJu87DkQ0+BkWKLLtcztTMa1xOvkhF3PDPGCP1PT4I9G7WMTGQoT/2CLwP+69
+         oCccBblIAQho1i+XXALBDftL7jDTH7kDPxJyIxRI=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Johannes Erdfelt <johannes@erdfelt.com>,
+        Jessica Yu <jeyu@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>, live-patching@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 50/51] module: Fix livepatch/ftrace module text permissions race
+Date:   Tue, 25 Jun 2019 23:41:06 -0400
+Message-Id: <20190626034117.23247-50-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190626034117.23247-1-sashal@kernel.org>
+References: <20190626034117.23247-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.1906251324450.12085@pobox.suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Tue, 25 Jun 2019 19:08:40 +0000 (UTC)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 01:36:37PM +0200, Miroslav Benes wrote:
->
-> [ ... snip ... ]
->
-> If I revert commit d59cadc0a8f8 ("[squash] klp-convert: make
-> convert_rela() list-safe") (from Joe's expanded github tree), the problem
-> disappears.
->
-> I haven't spotted any problem in the code and I cannot explain a
-> dependency on GCC version. Any ideas?
->
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-I can confirm that test_klp_convert1.ko crashes with RHEL-7 and its
-older gcc.  I added some debugging printf's to klp-convert and see:
+[ Upstream commit 9f255b632bf12c4dd7fc31caee89aa991ef75176 ]
 
-  % ./scripts/livepatch/klp-convert \
-          ./Symbols.list \
-          lib/livepatch/test_klp_convert1.klp.o \
-          lib/livepatch/test_klp_convert1.ko | \
-          grep saved_command_line
+It's possible for livepatch and ftrace to be toggling a module's text
+permissions at the same time, resulting in the following panic:
 
-  convert_rela: oldsec: .rela.text rela @ 0x1279670 rela->sym @ 0x12791f0 (.klp.sym.vmlinux.saved_command_line,0) offset: 0x3
-  convert_rela: oldsec: .rela.text rela @ 0x1279cd0 rela->sym @ 0x12791f0 (.klp.sym.vmlinux.saved_command_line,0) offset: 0x9a
-  move_rela: rela @ 0x1279670 rela->sym @ 0x12791f0 (.klp.sym.vmlinux.saved_command_line,0) offset: 0x3
-  main: skipping rela @ 0x1279cd0 rela->sym @ 0x12791f0 (.klp.sym.vmlinux.saved_command_line,0) (!must_convert)
+  BUG: unable to handle page fault for address: ffffffffc005b1d9
+  #PF: supervisor write access in kernel mode
+  #PF: error_code(0x0003) - permissions violation
+  PGD 3ea0c067 P4D 3ea0c067 PUD 3ea0e067 PMD 3cc13067 PTE 3b8a1061
+  Oops: 0003 [#1] PREEMPT SMP PTI
+  CPU: 1 PID: 453 Comm: insmod Tainted: G           O  K   5.2.0-rc1-a188339ca5 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-20181126_142135-anatol 04/01/2014
+  RIP: 0010:apply_relocate_add+0xbe/0x14c
+  Code: fa 0b 74 21 48 83 fa 18 74 38 48 83 fa 0a 75 40 eb 08 48 83 38 00 74 33 eb 53 83 38 00 75 4e 89 08 89 c8 eb 0a 83 38 00 75 43 <89> 08 48 63 c1 48 39 c8 74 2e eb 48 83 38 00 75 32 48 29 c1 89 08
+  RSP: 0018:ffffb223c00dbb10 EFLAGS: 00010246
+  RAX: ffffffffc005b1d9 RBX: 0000000000000000 RCX: ffffffff8b200060
+  RDX: 000000000000000b RSI: 0000004b0000000b RDI: ffff96bdfcd33000
+  RBP: ffffb223c00dbb38 R08: ffffffffc005d040 R09: ffffffffc005c1f0
+  R10: ffff96bdfcd33c40 R11: ffff96bdfcd33b80 R12: 0000000000000018
+  R13: ffffffffc005c1f0 R14: ffffffffc005e708 R15: ffffffff8b2fbc74
+  FS:  00007f5f447beba8(0000) GS:ffff96bdff900000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: ffffffffc005b1d9 CR3: 000000003cedc002 CR4: 0000000000360ea0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Call Trace:
+   klp_init_object_loaded+0x10f/0x219
+   ? preempt_latency_start+0x21/0x57
+   klp_enable_patch+0x662/0x809
+   ? virt_to_head_page+0x3a/0x3c
+   ? kfree+0x8c/0x126
+   patch_init+0x2ed/0x1000 [livepatch_test02]
+   ? 0xffffffffc0060000
+   do_one_initcall+0x9f/0x1c5
+   ? kmem_cache_alloc_trace+0xc4/0xd4
+   ? do_init_module+0x27/0x210
+   do_init_module+0x5f/0x210
+   load_module+0x1c41/0x2290
+   ? fsnotify_path+0x3b/0x42
+   ? strstarts+0x2b/0x2b
+   ? kernel_read+0x58/0x65
+   __do_sys_finit_module+0x9f/0xc3
+   ? __do_sys_finit_module+0x9f/0xc3
+   __x64_sys_finit_module+0x1a/0x1c
+   do_syscall_64+0x52/0x61
+   entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-I think the problem is:
+The above panic occurs when loading two modules at the same time with
+ftrace enabled, where at least one of the modules is a livepatch module:
 
-- Relas at different offsets, but for the same symbol may share symbol
-  storage.  Note the same rela->sym value above.
+CPU0					CPU1
+klp_enable_patch()
+  klp_init_object_loaded()
+    module_disable_ro()
+    					ftrace_module_enable()
+					  ftrace_arch_code_modify_post_process()
+				    	    set_all_modules_text_ro()
+      klp_write_object_relocations()
+        apply_relocate_add()
+	  *patches read-only code* - BOOM
 
-- Before d59cadc0a8f8 ("[squash] klp-convert: make convert_rela()
-  list-safe"), convert_rela() iterated through the entire section's
-  relas, moving any of the same name.  This was determined not to be
-  list safe when moving consecutive relas in the linked list.
+A similar race exists when toggling ftrace while loading a livepatch
+module.
 
-- After d59cadc0a8f8 ("[squash] klp-convert: make convert_rela()
-  list-safe"), convert_rela() still iterates through the section relas,
-  but only updates r1->sym->klp_rela_sec instead of moving them.
-  move_rela() was added to be called by the for-each-rela loop in
-  main().
+Fix it by ensuring that the livepatch and ftrace code patching
+operations -- and their respective permissions changes -- are protected
+by the text_mutex.
 
-  - Bug 1: klp_rela_sec probably belongs in struct rela and not struct
-    symbol
+Link: http://lkml.kernel.org/r/ab43d56ab909469ac5d2520c5d944ad6d4abd476.1560474114.git.jpoimboe@redhat.com
 
-  - Bug 2: the main loop skips over second, third, etc. matching relas
-    anyway as the shared symbol name will have already been converted
+Reported-by: Johannes Erdfelt <johannes@erdfelt.com>
+Fixes: 444d13ff10fb ("modules: add ro_after_init support")
+Acked-by: Jessica Yu <jeyu@kernel.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/livepatch/core.c |  6 ++++++
+ kernel/trace/ftrace.c   | 10 +++++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-The following fix might not be elegant, but I can't think of a clever
-way to handle the original issue d59cadc0a8f8 ("[squash] klp-convert:
-make convert_rela() list-safe") as well as these resulting regressions.
-So I broke out the moving of relas to a seperate loop.  That is probably
-worth a comment and at the same time we might be able to drop some of
-these other "safe" loop traversals for ordinary list_for_each_entry.
-
--- Joe
-
--->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8--
-
-diff --git a/scripts/livepatch/elf.h b/scripts/livepatch/elf.h
-index 7551409..57a8242 100644
---- a/scripts/livepatch/elf.h
-+++ b/scripts/livepatch/elf.h
-@@ -33,7 +33,6 @@ struct symbol {
- 	struct list_head list;
- 	GElf_Sym sym;
- 	struct section *sec;
--	struct section *klp_rela_sec;
- 	char *name;
- 	unsigned int idx;
- 	unsigned char bind, type;
-@@ -45,6 +44,7 @@ struct rela {
- 	struct list_head list;
- 	GElf_Rela rela;
- 	struct symbol *sym;
-+	struct section *klp_rela_sec;
- 	unsigned int type;
- 	unsigned long offset;
- 	int addend;
-diff --git a/scripts/livepatch/klp-convert.c b/scripts/livepatch/klp-convert.c
-index b5873ab..50d6471 100644
---- a/scripts/livepatch/klp-convert.c
-+++ b/scripts/livepatch/klp-convert.c
-@@ -525,7 +525,7 @@ static bool convert_rela(struct section *oldsec, struct rela *r,
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index eb0ee10a1981..05d5b0afc864 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -30,6 +30,7 @@
+ #include <linux/elf.h>
+ #include <linux/moduleloader.h>
+ #include <linux/completion.h>
++#include <linux/memory.h>
+ #include <asm/cacheflush.h>
+ #include "core.h"
+ #include "patch.h"
+@@ -746,16 +747,21 @@ static int klp_init_object_loaded(struct klp_patch *patch,
+ 	struct klp_func *func;
+ 	int ret;
  
- 	list_for_each_entry_safe(r1, r2, &oldsec->relas, list) {
- 		if (r1->sym->name == r->sym->name) {
--			r1->sym->klp_rela_sec = sec;
-+			r1->klp_rela_sec = sec;
- 		}
++	mutex_lock(&text_mutex);
++
+ 	module_disable_ro(patch->mod);
+ 	ret = klp_write_object_relocations(patch->mod, obj);
+ 	if (ret) {
+ 		module_enable_ro(patch->mod, true);
++		mutex_unlock(&text_mutex);
+ 		return ret;
  	}
- 	return true;
-@@ -535,7 +535,7 @@ static void move_rela(struct rela *r)
+ 
+ 	arch_klp_init_object_loaded(patch, obj);
+ 	module_enable_ro(patch->mod, true);
+ 
++	mutex_unlock(&text_mutex);
++
+ 	klp_for_each_func(obj, func) {
+ 		ret = klp_find_object_symbol(obj->name, func->old_name,
+ 					     func->old_sympos,
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 538f0b1c7ea2..045e7f46a74a 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -34,6 +34,7 @@
+ #include <linux/hash.h>
+ #include <linux/rcupdate.h>
+ #include <linux/kprobes.h>
++#include <linux/memory.h>
+ 
+ #include <trace/events/sched.h>
+ 
+@@ -2614,10 +2615,12 @@ static void ftrace_run_update_code(int command)
  {
- 	/* Move the converted rela to klp rela section */
- 	list_del(&r->list);
--	list_add(&r->list, &r->sym->klp_rela_sec->relas);
-+	list_add(&r->list, &r->klp_rela_sec->relas);
+ 	int ret;
+ 
++	mutex_lock(&text_mutex);
++
+ 	ret = ftrace_arch_code_modify_prepare();
+ 	FTRACE_WARN_ON(ret);
+ 	if (ret)
+-		return;
++		goto out_unlock;
+ 
+ 	/*
+ 	 * By default we use stop_machine() to modify the code.
+@@ -2629,6 +2632,9 @@ static void ftrace_run_update_code(int command)
+ 
+ 	ret = ftrace_arch_code_modify_post_process();
+ 	FTRACE_WARN_ON(ret);
++
++out_unlock:
++	mutex_unlock(&text_mutex);
  }
  
- /* Checks if given symbol name matches a symbol in exp_symbols */
-@@ -687,8 +687,11 @@ int main(int argc, const char **argv)
- 					return -1;
- 				}
- 			}
-+		}
+ static void ftrace_run_modify_code(struct ftrace_ops *ops, int command,
+@@ -5779,6 +5785,7 @@ void ftrace_module_enable(struct module *mod)
+ 	struct ftrace_page *pg;
  
--			move_rela(rela);
-+		list_for_each_entry_safe(rela, tmprela, &sec->relas, list) {
-+			if (is_converted(rela->sym->name))
-+				move_rela(rela);
- 		}
- 	}
+ 	mutex_lock(&ftrace_lock);
++	mutex_lock(&text_mutex);
  
+ 	if (ftrace_disabled)
+ 		goto out_unlock;
+@@ -5840,6 +5847,7 @@ void ftrace_module_enable(struct module *mod)
+ 		ftrace_arch_code_modify_post_process();
+ 
+  out_unlock:
++	mutex_unlock(&text_mutex);
+ 	mutex_unlock(&ftrace_lock);
+ 
+ 	process_cached_mods(mod->name);
+-- 
+2.20.1
+
