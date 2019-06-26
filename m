@@ -2,221 +2,186 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1E45605C
-	for <lists+live-patching@lfdr.de>; Wed, 26 Jun 2019 05:48:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 218735646C
+	for <lists+live-patching@lfdr.de>; Wed, 26 Jun 2019 10:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727875AbfFZDqB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 25 Jun 2019 23:46:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57682 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727457AbfFZDqA (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 25 Jun 2019 23:46:00 -0400
-Received: from sasha-vm.mshome.net (mobile-107-77-172-74.mobile.att.net [107.77.172.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 44F4E21738;
-        Wed, 26 Jun 2019 03:45:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561520759;
-        bh=YMxhF3xZpLjkpgDDYAqBSMQStGwzFgN9urEAb/LeJeg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HOLECe4j2AJVDprEinjdRawbOIQ+0UduJcpIKA/NLAgskBVEIO2iVwsiYs+GVBGAK
-         OLz1EyV6KaJHb+9ihmBX5eOxZfgsmNLa2vfn0gPqoQS6pCDpWHLTcMpL88honMwDRT
-         Tksopat7Xr3tyfssDfcDObkpLCJjVSSeqmFs8MrA=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        id S1726006AbfFZIWt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 26 Jun 2019 04:22:49 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58772 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725876AbfFZIWt (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 26 Jun 2019 04:22:49 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id C0B52AD12;
+        Wed, 26 Jun 2019 08:22:46 +0000 (UTC)
+Date:   Wed, 26 Jun 2019 10:22:45 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Steven Rostedt <rostedt@goodmis.org>
+cc:     Josh Poimboeuf <jpoimboe@redhat.com>, Jessica Yu <jeyu@kernel.org>,
+        Petr Mladek <pmladek@suse.com>, Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
         Johannes Erdfelt <johannes@erdfelt.com>,
-        Jessica Yu <jeyu@kernel.org>, Petr Mladek <pmladek@suse.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, live-patching@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 20/21] module: Fix livepatch/ftrace module text permissions race
-Date:   Tue, 25 Jun 2019 23:45:05 -0400
-Message-Id: <20190626034506.24125-20-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190626034506.24125-1-sashal@kernel.org>
-References: <20190626034506.24125-1-sashal@kernel.org>
+        Ingo Molnar <mingo@kernel.org>, mhiramat@kernel.org,
+        torvalds@linux-foundation.org, tglx@linutronix.de
+Subject: Re: [PATCH 1/3] module: Fix livepatch/ftrace module text permissions
+ race
+In-Reply-To: <20190614170408.1b1162dc@gandalf.local.home>
+Message-ID: <alpine.LSU.2.21.1906260908170.22069@pobox.suse.cz>
+References: <cover.1560474114.git.jpoimboe@redhat.com> <ab43d56ab909469ac5d2520c5d944ad6d4abd476.1560474114.git.jpoimboe@redhat.com> <20190614170408.1b1162dc@gandalf.local.home>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+On Fri, 14 Jun 2019, Steven Rostedt wrote:
 
-[ Upstream commit 9f255b632bf12c4dd7fc31caee89aa991ef75176 ]
+> On Thu, 13 Jun 2019 20:07:22 -0500
+> Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> 
+> > It's possible for livepatch and ftrace to be toggling a module's text
+> > permissions at the same time, resulting in the following panic:
+> > 
+> 
+> [..]
+> 
+> > The above panic occurs when loading two modules at the same time with
+> > ftrace enabled, where at least one of the modules is a livepatch module:
+> > 
+> > CPU0					CPU1
+> > klp_enable_patch()
+> >   klp_init_object_loaded()
+> >     module_disable_ro()
+> >     					ftrace_module_enable()
+> > 					  ftrace_arch_code_modify_post_process()
+> > 				    	    set_all_modules_text_ro()
+> >       klp_write_object_relocations()
+> >         apply_relocate_add()
+> > 	  *patches read-only code* - BOOM
+> > 
+> > A similar race exists when toggling ftrace while loading a livepatch
+> > module.
+> > 
+> > Fix it by ensuring that the livepatch and ftrace code patching
+> > operations -- and their respective permissions changes -- are protected
+> > by the text_mutex.
+> > 
+> > Reported-by: Johannes Erdfelt <johannes@erdfelt.com>
+> > Fixes: 444d13ff10fb ("modules: add ro_after_init support")
+> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > Acked-by: Jessica Yu <jeyu@kernel.org>
+> > Reviewed-by: Petr Mladek <pmladek@suse.com>
+> > Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+> 
+> This patch looks uncontroversial. I'm going to pull this one in and
+> start testing it. And if it works, I'll push to Linus.
 
-It's possible for livepatch and ftrace to be toggling a module's text
-permissions at the same time, resulting in the following panic:
+Triggered this on s390x. Masami CCed and Linus as well, because the patch 
+is in master branch and we are after -rc6. Thomas CCed because of commit 
+2d1e38f56622 ("kprobes: Cure hotplug lock ordering issues").
 
-  BUG: unable to handle page fault for address: ffffffffc005b1d9
-  #PF: supervisor write access in kernel mode
-  #PF: error_code(0x0003) - permissions violation
-  PGD 3ea0c067 P4D 3ea0c067 PUD 3ea0e067 PMD 3cc13067 PTE 3b8a1061
-  Oops: 0003 [#1] PREEMPT SMP PTI
-  CPU: 1 PID: 453 Comm: insmod Tainted: G           O  K   5.2.0-rc1-a188339ca5 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-20181126_142135-anatol 04/01/2014
-  RIP: 0010:apply_relocate_add+0xbe/0x14c
-  Code: fa 0b 74 21 48 83 fa 18 74 38 48 83 fa 0a 75 40 eb 08 48 83 38 00 74 33 eb 53 83 38 00 75 4e 89 08 89 c8 eb 0a 83 38 00 75 43 <89> 08 48 63 c1 48 39 c8 74 2e eb 48 83 38 00 75 32 48 29 c1 89 08
-  RSP: 0018:ffffb223c00dbb10 EFLAGS: 00010246
-  RAX: ffffffffc005b1d9 RBX: 0000000000000000 RCX: ffffffff8b200060
-  RDX: 000000000000000b RSI: 0000004b0000000b RDI: ffff96bdfcd33000
-  RBP: ffffb223c00dbb38 R08: ffffffffc005d040 R09: ffffffffc005c1f0
-  R10: ffff96bdfcd33c40 R11: ffff96bdfcd33b80 R12: 0000000000000018
-  R13: ffffffffc005c1f0 R14: ffffffffc005e708 R15: ffffffff8b2fbc74
-  FS:  00007f5f447beba8(0000) GS:ffff96bdff900000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: ffffffffc005b1d9 CR3: 000000003cedc002 CR4: 0000000000360ea0
-  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-  Call Trace:
-   klp_init_object_loaded+0x10f/0x219
-   ? preempt_latency_start+0x21/0x57
-   klp_enable_patch+0x662/0x809
-   ? virt_to_head_page+0x3a/0x3c
-   ? kfree+0x8c/0x126
-   patch_init+0x2ed/0x1000 [livepatch_test02]
-   ? 0xffffffffc0060000
-   do_one_initcall+0x9f/0x1c5
-   ? kmem_cache_alloc_trace+0xc4/0xd4
-   ? do_init_module+0x27/0x210
-   do_init_module+0x5f/0x210
-   load_module+0x1c41/0x2290
-   ? fsnotify_path+0x3b/0x42
-   ? strstarts+0x2b/0x2b
-   ? kernel_read+0x58/0x65
-   __do_sys_finit_module+0x9f/0xc3
-   ? __do_sys_finit_module+0x9f/0xc3
-   __x64_sys_finit_module+0x1a/0x1c
-   do_syscall_64+0x52/0x61
-   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+======================================================
+WARNING: possible circular locking dependency detected
+5.2.0-rc6 #1 Tainted: G           O  K  
+------------------------------------------------------
+insmod/1393 is trying to acquire lock:
+000000002fdee887 (cpu_hotplug_lock.rw_sem){++++}, at: stop_machine+0x2e/0x60
 
-The above panic occurs when loading two modules at the same time with
-ftrace enabled, where at least one of the modules is a livepatch module:
+but task is already holding lock:
+000000005b22fb82 (text_mutex){+.+.}, at: ftrace_run_update_code+0x2a/0xa0
 
-CPU0					CPU1
-klp_enable_patch()
-  klp_init_object_loaded()
-    module_disable_ro()
-    					ftrace_module_enable()
-					  ftrace_arch_code_modify_post_process()
-				    	    set_all_modules_text_ro()
-      klp_write_object_relocations()
-        apply_relocate_add()
-	  *patches read-only code* - BOOM
+which lock already depends on the new lock.
 
-A similar race exists when toggling ftrace while loading a livepatch
-module.
 
-Fix it by ensuring that the livepatch and ftrace code patching
-operations -- and their respective permissions changes -- are protected
-by the text_mutex.
+the existing dependency chain (in reverse order) is:
 
-Link: http://lkml.kernel.org/r/ab43d56ab909469ac5d2520c5d944ad6d4abd476.1560474114.git.jpoimboe@redhat.com
+-> #1 (text_mutex){+.+.}:
+       validate_chain.isra.21+0xb32/0xd70
+       __lock_acquire+0x4b8/0x928
+       lock_acquire+0x102/0x230
+       __mutex_lock+0x88/0x908
+       mutex_lock_nested+0x32/0x40
+       register_kprobe+0x254/0x658
+       init_kprobes+0x11a/0x168
+       do_one_initcall+0x70/0x318
+       kernel_init_freeable+0x456/0x508
+       kernel_init+0x22/0x150
+       ret_from_fork+0x30/0x34
+       kernel_thread_starter+0x0/0xc
 
-Reported-by: Johannes Erdfelt <johannes@erdfelt.com>
-Fixes: 444d13ff10fb ("modules: add ro_after_init support")
-Acked-by: Jessica Yu <jeyu@kernel.org>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/livepatch/core.c |  6 ++++++
- kernel/trace/ftrace.c   | 10 +++++++++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+-> #0 (cpu_hotplug_lock.rw_sem){++++}:
+       check_prev_add+0x90c/0xde0
+       validate_chain.isra.21+0xb32/0xd70
+       __lock_acquire+0x4b8/0x928
+       lock_acquire+0x102/0x230
+       cpus_read_lock+0x62/0xd0
+       stop_machine+0x2e/0x60
+       arch_ftrace_update_code+0x2e/0x40
+       ftrace_run_update_code+0x40/0xa0
+       ftrace_startup+0xb2/0x168
+       register_ftrace_function+0x64/0x88
+       klp_patch_object+0x1a2/0x290
+       klp_enable_patch+0x554/0x980
+       do_one_initcall+0x70/0x318
+       do_init_module+0x6e/0x250
+       load_module+0x1782/0x1990
+       __s390x_sys_finit_module+0xaa/0xf0
+       system_call+0xd8/0x2d0
 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 7c51f065b212..88754e9790f9 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -30,6 +30,7 @@
- #include <linux/elf.h>
- #include <linux/moduleloader.h>
- #include <linux/completion.h>
-+#include <linux/memory.h>
- #include <asm/cacheflush.h>
- #include "core.h"
- #include "patch.h"
-@@ -635,16 +636,21 @@ static int klp_init_object_loaded(struct klp_patch *patch,
- 	struct klp_func *func;
- 	int ret;
- 
-+	mutex_lock(&text_mutex);
-+
- 	module_disable_ro(patch->mod);
- 	ret = klp_write_object_relocations(patch->mod, obj);
- 	if (ret) {
- 		module_enable_ro(patch->mod, true);
-+		mutex_unlock(&text_mutex);
- 		return ret;
- 	}
- 
- 	arch_klp_init_object_loaded(patch, obj);
- 	module_enable_ro(patch->mod, true);
- 
-+	mutex_unlock(&text_mutex);
-+
- 	klp_for_each_func(obj, func) {
- 		ret = klp_find_object_symbol(obj->name, func->old_name,
- 					     func->old_sympos,
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 3e92852c8b23..4e4b88047fcc 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -34,6 +34,7 @@
- #include <linux/hash.h>
- #include <linux/rcupdate.h>
- #include <linux/kprobes.h>
-+#include <linux/memory.h>
- 
- #include <trace/events/sched.h>
- 
-@@ -2692,10 +2693,12 @@ static void ftrace_run_update_code(int command)
- {
- 	int ret;
- 
-+	mutex_lock(&text_mutex);
-+
- 	ret = ftrace_arch_code_modify_prepare();
- 	FTRACE_WARN_ON(ret);
- 	if (ret)
--		return;
-+		goto out_unlock;
- 
- 	/*
- 	 * By default we use stop_machine() to modify the code.
-@@ -2707,6 +2710,9 @@ static void ftrace_run_update_code(int command)
- 
- 	ret = ftrace_arch_code_modify_post_process();
- 	FTRACE_WARN_ON(ret);
-+
-+out_unlock:
-+	mutex_unlock(&text_mutex);
- }
- 
- static void ftrace_run_modify_code(struct ftrace_ops *ops, int command,
-@@ -5791,6 +5797,7 @@ void ftrace_module_enable(struct module *mod)
- 	struct ftrace_page *pg;
- 
- 	mutex_lock(&ftrace_lock);
-+	mutex_lock(&text_mutex);
- 
- 	if (ftrace_disabled)
- 		goto out_unlock;
-@@ -5851,6 +5858,7 @@ void ftrace_module_enable(struct module *mod)
- 		ftrace_arch_code_modify_post_process();
- 
-  out_unlock:
-+	mutex_unlock(&text_mutex);
- 	mutex_unlock(&ftrace_lock);
- 
- 	process_cached_mods(mod->name);
--- 
-2.20.1
+other info that might help us debug this:
 
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(text_mutex);
+                               lock(cpu_hotplug_lock.rw_sem);
+                               lock(text_mutex);
+  lock(cpu_hotplug_lock.rw_sem);
+
+ *** DEADLOCK ***
+
+3 locks held by insmod/1393:
+ #0: 00000000a9723159 (klp_mutex){+.+.}, at: klp_enable_patch+0x62/0x980
+ #1: 00000000bd173ffc (ftrace_lock){+.+.}, at: register_ftrace_function+0x56/0x88
+ #2: 000000005b22fb82 (text_mutex){+.+.}, at: ftrace_run_update_code+0x2a/0xa0
+
+stack backtrace:
+CPU: 0 PID: 1393 Comm: insmod Tainted: G           O  K   5.2.0-rc6 #1
+Hardware name: IBM 2827 H43 400 (KVM/Linux)
+Call Trace:
+([<00000000682100b4>] show_stack+0xb4/0x130)
+ [<0000000068adeb8c>] dump_stack+0x94/0xd8 
+ [<00000000682b563c>] print_circular_bug+0x1f4/0x328 
+ [<00000000682b7264>] check_prev_add+0x90c/0xde0 
+ [<00000000682b826a>] validate_chain.isra.21+0xb32/0xd70 
+ [<00000000682ba018>] __lock_acquire+0x4b8/0x928 
+ [<00000000682ba952>] lock_acquire+0x102/0x230 
+ [<0000000068243c12>] cpus_read_lock+0x62/0xd0 
+ [<0000000068336bf6>] stop_machine+0x2e/0x60 
+ [<0000000068355b3e>] arch_ftrace_update_code+0x2e/0x40 
+ [<0000000068355b90>] ftrace_run_update_code+0x40/0xa0 
+ [<000000006835971a>] ftrace_startup+0xb2/0x168 
+ [<0000000068359834>] register_ftrace_function+0x64/0x88 
+ [<00000000682e8a9a>] klp_patch_object+0x1a2/0x290 
+ [<00000000682e7d64>] klp_enable_patch+0x554/0x980 
+ [<00000000681fcaa0>] do_one_initcall+0x70/0x318 
+ [<000000006831449e>] do_init_module+0x6e/0x250 
+ [<0000000068312b52>] load_module+0x1782/0x1990 
+ [<0000000068313002>] __s390x_sys_finit_module+0xaa/0xf0 
+ [<0000000068b03f30>] system_call+0xd8/0x2d0 
+INFO: lockdep is turned off.
+
+If I am reading the code correctly, ftrace_run_update_code() takes 
+text_mutex now and then calls stop_machine(), which grabs 
+cpu_hotplug_lock for reading. do_optimize_kprobes() (see the comment 
+there) expects cpu_hotplug_lock to be held and takes text_mutex. Whoops.
+
+Maybe there is a simple fix, but reverting the commit in this stage seems 
+warranted.
+
+Miroslav
