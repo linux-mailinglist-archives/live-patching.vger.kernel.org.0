@@ -2,68 +2,157 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2703D58FCC
-	for <lists+live-patching@lfdr.de>; Fri, 28 Jun 2019 03:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9FA659506
+	for <lists+live-patching@lfdr.de>; Fri, 28 Jun 2019 09:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726646AbfF1BiA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 27 Jun 2019 21:38:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36284 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726606AbfF1BiA (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 27 Jun 2019 21:38:00 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 01173205F4;
-        Fri, 28 Jun 2019 01:37:57 +0000 (UTC)
-Date:   Thu, 27 Jun 2019 21:37:56 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>,
-        Miroslav Benes <mbenes@suse.cz>, Jessica Yu <jeyu@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
+        id S1726653AbfF1HcG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 28 Jun 2019 03:32:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:32996 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726650AbfF1HcG (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 28 Jun 2019 03:32:06 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 74B71B187;
+        Fri, 28 Jun 2019 07:32:04 +0000 (UTC)
+Date:   Fri, 28 Jun 2019 09:32:03 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Petr Mladek <pmladek@suse.com>
+cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
         Johannes Erdfelt <johannes@erdfelt.com>,
         Ingo Molnar <mingo@kernel.org>, mhiramat@kernel.org,
-        torvalds@linux-foundation.org
-Subject: Re: [PATCH] ftrace/x86: Add a comment to why we take text_mutex in
- ftrace_arch_code_modify_prepare()
-Message-ID: <20190627213756.25e7b914@gandalf.local.home>
-In-Reply-To: <20190628012109.p7a2whpsnad5vjz7@treble>
-References: <20190627211819.5a591f52@gandalf.local.home>
-        <20190628012109.p7a2whpsnad5vjz7@treble>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        torvalds@linux-foundation.org, tglx@linutronix.de
+Subject: Re: [PATCH] ftrace: Remove possible deadlock between register_kprobe()
+ and ftrace_run_update_code()
+In-Reply-To: <20190627081334.12793-1-pmladek@suse.com>
+Message-ID: <alpine.LSU.2.21.1906280928410.17146@pobox.suse.cz>
+References: <20190627081334.12793-1-pmladek@suse.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 27 Jun 2019 20:21:09 -0500
-Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+On Thu, 27 Jun 2019, Petr Mladek wrote:
 
-> On Thu, Jun 27, 2019 at 09:18:19PM -0400, Steven Rostedt wrote:
-> > 
-> > From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
-> > 
-> > Taking the text_mutex in ftrace_arch_code_modify_prepare() is to fix a
-> > race against module loading and live kernel patching that might try to
-> > change the text permissions while ftrace has it as read/write. This
-> > really needs to be documented in the code. Add a comment that does such.
-> > 
-> > Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-
- 
+> The commit 9f255b632bf12c4dd7 ("module: Fix livepatch/ftrace module text
+> permissions race") causes a possible deadlock between register_kprobe()
+> and ftrace_run_update_code() when ftrace is using stop_machine().
 > 
-> Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> The existing dependency chain (in reverse order) is:
 > 
+> -> #1 (text_mutex){+.+.}:
+>        validate_chain.isra.21+0xb32/0xd70
+>        __lock_acquire+0x4b8/0x928
+>        lock_acquire+0x102/0x230
+>        __mutex_lock+0x88/0x908
+>        mutex_lock_nested+0x32/0x40
+>        register_kprobe+0x254/0x658
+>        init_kprobes+0x11a/0x168
+>        do_one_initcall+0x70/0x318
+>        kernel_init_freeable+0x456/0x508
+>        kernel_init+0x22/0x150
+>        ret_from_fork+0x30/0x34
+>        kernel_thread_starter+0x0/0xc
+> 
+> -> #0 (cpu_hotplug_lock.rw_sem){++++}:
+>        check_prev_add+0x90c/0xde0
+>        validate_chain.isra.21+0xb32/0xd70
+>        __lock_acquire+0x4b8/0x928
+>        lock_acquire+0x102/0x230
+>        cpus_read_lock+0x62/0xd0
+>        stop_machine+0x2e/0x60
+>        arch_ftrace_update_code+0x2e/0x40
+>        ftrace_run_update_code+0x40/0xa0
+>        ftrace_startup+0xb2/0x168
+>        register_ftrace_function+0x64/0x88
+>        klp_patch_object+0x1a2/0x290
+>        klp_enable_patch+0x554/0x980
+>        do_one_initcall+0x70/0x318
+>        do_init_module+0x6e/0x250
+>        load_module+0x1782/0x1990
+>        __s390x_sys_finit_module+0xaa/0xf0
+>        system_call+0xd8/0x2d0
+> 
+>  Possible unsafe locking scenario:
+> 
+>        CPU0                    CPU1
+>        ----                    ----
+>   lock(text_mutex);
+>                                lock(cpu_hotplug_lock.rw_sem);
+>                                lock(text_mutex);
+>   lock(cpu_hotplug_lock.rw_sem);
+> 
+> It is similar problem that has been solved by the commit 2d1e38f56622b9b
+> ("kprobes: Cure hotplug lock ordering issues"). Many locks are involved.
+> To be on the safe side, text_mutex must become a low level lock taken
+> after cpu_hotplug_lock.rw_sem.
+> 
+> This can't be achieved easily with the current ftrace design.
+> For example, arm calls set_all_modules_text_rw() already in
+> ftrace_arch_code_modify_prepare(), see arch/arm/kernel/ftrace.c.
+> This functions is called:
+> 
+>   + outside stop_machine() from ftrace_run_update_code()
+>   + without stop_machine() from ftrace_module_enable()
+> 
+> Fortunately, the problematic fix is needed only on x86_64. It is
+> the only architecture that calls set_all_modules_text_rw()
+> in ftrace path and supports livepatching at the same time.
+> 
+> Therefore it is enough to move text_mutex handling from the generic
+> kernel/trace/ftrace.c into arch/x86/kernel/ftrace.c:
+> 
+>    ftrace_arch_code_modify_prepare()
+>    ftrace_arch_code_modify_post_process()
+> 
+> This patch basically reverts the ftrace part of the problematic
+> commit 9f255b632bf12c4dd7 ("module: Fix livepatch/ftrace module
+> text permissions race"). And provides x86_64 specific-fix.
+> 
+> Some refactoring of the ftrace code will be needed when livepatching
+> is implemented for arm or nds32. These architectures call
+> set_all_modules_text_rw() and use stop_machine() at the same time.
+> 
+> Fixes: 9f255b632bf12c4dd7 ("module: Fix livepatch/ftrace module text permissions race")
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-Thanks!
+Reported-by: Miroslav Benes <mbenes@suse.cz>
 
--- Steve
+> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+> index 38277af44f5c..d3034a4a3fcc 100644
+> --- a/kernel/trace/ftrace.c
+> +++ b/kernel/trace/ftrace.c
+> @@ -34,7 +34,6 @@
+>  #include <linux/hash.h>
+>  #include <linux/rcupdate.h>
+>  #include <linux/kprobes.h>
+> -#include <linux/memory.h>
+>  
+>  #include <trace/events/sched.h>
+>  
+> @@ -2611,12 +2610,10 @@ static void ftrace_run_update_code(int command)
+>  {
+>  	int ret;
+>  
+> -	mutex_lock(&text_mutex);
+> -
+>  	ret = ftrace_arch_code_modify_prepare();
+>  	FTRACE_WARN_ON(ret);
+>  	if (ret)
+> -		goto out_unlock;
+> +		return ret;
+
+Should be just "return;", because the function is "static void".
+
+With that
+
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+
+Miroslav
