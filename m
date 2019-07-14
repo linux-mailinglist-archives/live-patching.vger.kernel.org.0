@@ -2,75 +2,133 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7D766750A
-	for <lists+live-patching@lfdr.de>; Fri, 12 Jul 2019 20:14:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75C9967F45
+	for <lists+live-patching@lfdr.de>; Sun, 14 Jul 2019 16:28:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727141AbfGLSO7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 12 Jul 2019 14:14:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59498 "EHLO mail.kernel.org"
+        id S1728441AbfGNO2e (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 14 Jul 2019 10:28:34 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57290 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727028AbfGLSO6 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 12 Jul 2019 14:14:58 -0400
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728146AbfGNO2e (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Sun, 14 Jul 2019 10:28:34 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 87D3D205C9;
-        Fri, 12 Jul 2019 18:14:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562955297;
-        bh=FX5tQfx73p/PD4+aLUhm4xR9ruoKX9OaywZznKgJZ+M=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=mjPbw0igg4Pw25Fpu+sbcey7jz4oohHBsPOf6sjaT9dRYDYZGsYh0gDV5xYkn59uZ
-         kHi8Bpij0uF7L3HTKVidrJmwoC2fKojgFRJR3jYdLZotjwLdIXb/Q/sXmybXIpQDLW
-         /99SeOTWrAYmU5LR8dE/2igAn718lhRdla0BQ3Zg=
-Subject: Re: [RFC PATCH] selftests/livepatch: only consider supported arches
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        shuah <shuah@kernel.org>
-References: <20190712171402.15930-1-joe.lawrence@redhat.com>
- <20190712172517.GA15872@redhat.com>
- <eec9376b-8c0d-8f09-59cb-e38839b13368@kernel.org>
- <20190712175812.GB15872@redhat.com>
-From:   shuah <shuah@kernel.org>
-Message-ID: <2e1349e8-7c78-8aa5-e04b-18e824c6c029@kernel.org>
-Date:   Fri, 12 Jul 2019 12:14:56 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        by mx1.redhat.com (Postfix) with ESMTPS id 11CFCC058CBA;
+        Sun, 14 Jul 2019 14:28:34 +0000 (UTC)
+Received: from jlaw-desktop.redhat.com (ovpn-120-38.rdu2.redhat.com [10.10.120.38])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 823365D9D6;
+        Sun, 14 Jul 2019 14:28:32 +0000 (UTC)
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     shuah@kernel.org
+Subject: [PATCH] selftests/livepatch: add test skip handling
+Date:   Sun, 14 Jul 2019 10:28:29 -0400
+Message-Id: <20190714142829.29458-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20190712175812.GB15872@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Sun, 14 Jul 2019 14:28:34 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/12/19 11:58 AM, Joe Lawrence wrote:
-> On Fri, Jul 12, 2019 at 11:43:02AM -0600, shuah wrote:
->> Hi Joe,
->>
->> [ ... snip ... ]
->>
->> The one thing I am not seeing is Skip handling. Without that users will
->> complain livepatch test is failing as opposed to that the test can't
->> run due to unmet dependencies and skipped.
->>
->> Maybe that is all you need? I would recommend going in that direction
->> instead of Arch check.
->>
-> 
-> Okay, I see that kselftest/runner.sh compares test return code with
-> skip_rc=4 to determine SKIP status... so perhaps our scripts could
-> perform a simple "modinfo" on their test modules to determine if they
-> have been built and installed?  If not found, just SKIP to the next
-> test.
-> 
+Before running a livpeatch self-test, first verify that we've built and
+installed the livepatch self-test kernel modules by running a 'modprobe
+--dry-run'.  This should catch a few environment issues, including
+!CONFIG_LIVEPATCH and !CONFIG_TEST_LIVEPATCH.  In these cases, exit
+gracefully with test-skip status rather than test-fail status.
 
-Yes. That would fix the problem.
+Reported-by: Jiri Benc <jbenc@redhat.com>
+Suggested-by: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+---
+ tools/testing/selftests/livepatch/functions.sh | 18 ++++++++++++++++++
+ .../selftests/livepatch/test-callbacks.sh      |  5 +++++
+ .../selftests/livepatch/test-livepatch.sh      |  3 +++
+ .../selftests/livepatch/test-shadow-vars.sh    |  2 ++
+ 4 files changed, 28 insertions(+)
 
-tools/testing/selftests/kselftest_module.sh has hooks to help you
-with modules checks. e.g: assert_have_module
+diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+index 30195449c63c..92d6cfb49365 100644
+--- a/tools/testing/selftests/livepatch/functions.sh
++++ b/tools/testing/selftests/livepatch/functions.sh
+@@ -13,6 +13,14 @@ function log() {
+ 	echo "$1" > /dev/kmsg
+ }
+ 
++# skip(msg) - testing can't proceed
++#	msg - explanation
++function skip() {
++	log "SKIP: $1"
++	echo "SKIP: $1" >&2
++	exit 4
++}
++
+ # die(msg) - game over, man
+ #	msg - dying words
+ function die() {
+@@ -43,6 +51,16 @@ function loop_until() {
+ 	done
+ }
+ 
++function assert_mod() {
++	local mod="$1"
++
++	if ! modprobe --dry-run "$mod" &>/dev/null ; then
++		skip "Failed modprobe --dry-run of module: $mod"
++	fi
++
++	return 1
++}
++
+ function is_livepatch_mod() {
+ 	local mod="$1"
+ 
+diff --git a/tools/testing/selftests/livepatch/test-callbacks.sh b/tools/testing/selftests/livepatch/test-callbacks.sh
+index e97a9dcb73c7..87a407cee7fd 100755
+--- a/tools/testing/selftests/livepatch/test-callbacks.sh
++++ b/tools/testing/selftests/livepatch/test-callbacks.sh
+@@ -9,6 +9,11 @@ MOD_LIVEPATCH2=test_klp_callbacks_demo2
+ MOD_TARGET=test_klp_callbacks_mod
+ MOD_TARGET_BUSY=test_klp_callbacks_busy
+ 
++assert_mod $MOD_LIVEPATCH
++assert_mod $MOD_LIVEPATCH2
++assert_mod $MOD_TARGET
++assert_mod $MOD_TARGET_BUSY
++
+ set_dynamic_debug
+ 
+ 
+diff --git a/tools/testing/selftests/livepatch/test-livepatch.sh b/tools/testing/selftests/livepatch/test-livepatch.sh
+index f05268aea859..8d3b75ceeeff 100755
+--- a/tools/testing/selftests/livepatch/test-livepatch.sh
++++ b/tools/testing/selftests/livepatch/test-livepatch.sh
+@@ -7,6 +7,9 @@
+ MOD_LIVEPATCH=test_klp_livepatch
+ MOD_REPLACE=test_klp_atomic_replace
+ 
++assert_mod $MOD_LIVEPATCH
++assert_mod $MOD_REPLACE
++
+ set_dynamic_debug
+ 
+ 
+diff --git a/tools/testing/selftests/livepatch/test-shadow-vars.sh b/tools/testing/selftests/livepatch/test-shadow-vars.sh
+index 04a37831e204..1ab09bc50363 100755
+--- a/tools/testing/selftests/livepatch/test-shadow-vars.sh
++++ b/tools/testing/selftests/livepatch/test-shadow-vars.sh
+@@ -6,6 +6,8 @@
+ 
+ MOD_TEST=test_klp_shadow_vars
+ 
++assert_mod $MOD_TEST
++
+ set_dynamic_debug
+ 
+ 
+-- 
+2.21.0
 
-thanks,
--- Shuah
