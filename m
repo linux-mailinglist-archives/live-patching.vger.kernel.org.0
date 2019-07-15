@@ -2,100 +2,161 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C4F683AF
-	for <lists+live-patching@lfdr.de>; Mon, 15 Jul 2019 08:50:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E477A68807
+	for <lists+live-patching@lfdr.de>; Mon, 15 Jul 2019 13:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725787AbfGOGuq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 15 Jul 2019 02:50:46 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:33552 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726579AbfGOGuq (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 15 Jul 2019 02:50:46 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6F6l5r7127975
-        for <live-patching@vger.kernel.org>; Mon, 15 Jul 2019 02:50:45 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2trkbpjqr6-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <live-patching@vger.kernel.org>; Mon, 15 Jul 2019 02:50:45 -0400
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
-        Mon, 15 Jul 2019 07:50:43 +0100
-Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 15 Jul 2019 07:50:40 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6F6odX340829378
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Jul 2019 06:50:39 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 54B09A4055;
-        Mon, 15 Jul 2019 06:50:39 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8E632A4053;
-        Mon, 15 Jul 2019 06:50:38 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.124.35.178])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Mon, 15 Jul 2019 06:50:38 +0000 (GMT)
+        id S1729876AbfGOLRs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 15 Jul 2019 07:17:48 -0400
+Received: from mx2.suse.de ([195.135.220.15]:47330 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729756AbfGOLRs (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 15 Jul 2019 07:17:48 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 1D27AADBF;
+        Mon, 15 Jul 2019 11:17:46 +0000 (UTC)
+Date:   Mon, 15 Jul 2019 13:17:39 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        shuah@kernel.org
 Subject: Re: [PATCH] selftests/livepatch: add test skip handling
-To:     Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     shuah@kernel.org
-References: <20190714142829.29458-1-joe.lawrence@redhat.com>
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-Date:   Mon, 15 Jul 2019 12:20:37 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+In-Reply-To: <20190714143306.GA29501@redhat.com>
+Message-ID: <alpine.LSU.2.21.1907151314590.19907@pobox.suse.cz>
+References: <20190714142829.29458-1-joe.lawrence@redhat.com> <20190714143306.GA29501@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20190714142829.29458-1-joe.lawrence@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071506-0012-0000-0000-00000332A910
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071506-0013-0000-0000-0000216C1DAA
-Message-Id: <9de46fed-785c-d5c4-8a76-205674bd0912@linux.vnet.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-15_02:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907150079
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/14/19 7:58 PM, Joe Lawrence wrote:
-> Before running a livpeatch self-test, first verify that we've built and
-> installed the livepatch self-test kernel modules by running a 'modprobe
-> --dry-run'.  This should catch a few environment issues, including
-> !CONFIG_LIVEPATCH and !CONFIG_TEST_LIVEPATCH.  In these cases, exit
-> gracefully with test-skip status rather than test-fail status.
+On Sun, 14 Jul 2019, Joe Lawrence wrote:
+
+> On Sun, Jul 14, 2019 at 10:28:29AM -0400, Joe Lawrence wrote:
+> > Before running a livpeatch self-test, first verify that we've built and
+> > installed the livepatch self-test kernel modules by running a 'modprobe
+> > --dry-run'.  This should catch a few environment issues, including
+> > !CONFIG_LIVEPATCH and !CONFIG_TEST_LIVEPATCH.  In these cases, exit
+> > gracefully with test-skip status rather than test-fail status.
+> > 
+> > Reported-by: Jiri Benc <jbenc@redhat.com>
+> > Suggested-by: Shuah Khan <shuah@kernel.org>
+> > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> > ---
+> >  tools/testing/selftests/livepatch/functions.sh | 18 ++++++++++++++++++
+> >  .../selftests/livepatch/test-callbacks.sh      |  5 +++++
+> >  .../selftests/livepatch/test-livepatch.sh      |  3 +++
+> >  .../selftests/livepatch/test-shadow-vars.sh    |  2 ++
+> >  4 files changed, 28 insertions(+)
+> > 
+> > diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+> > index 30195449c63c..92d6cfb49365 100644
+> > --- a/tools/testing/selftests/livepatch/functions.sh
+> > +++ b/tools/testing/selftests/livepatch/functions.sh
+> > @@ -13,6 +13,14 @@ function log() {
+> >  	echo "$1" > /dev/kmsg
+> >  }
+> >  
+> > +# skip(msg) - testing can't proceed
+> > +#	msg - explanation
+> > +function skip() {
+> > +	log "SKIP: $1"
+> > +	echo "SKIP: $1" >&2
+> > +	exit 4
+> > +}
+> > +
+> >  # die(msg) - game over, man
+> >  #	msg - dying words
+> >  function die() {
+> > @@ -43,6 +51,16 @@ function loop_until() {
+> >  	done
+> >  }
+> >  
+> > +function assert_mod() {
+> > +	local mod="$1"
+> > +
+> > +	if ! modprobe --dry-run "$mod" &>/dev/null ; then
+> > +		skip "Failed modprobe --dry-run of module: $mod"
+> > +	fi
+> > +
+> > +	return 1
+> > +}
+> > +
+> >  function is_livepatch_mod() {
+> >  	local mod="$1"
+> >  
+> > diff --git a/tools/testing/selftests/livepatch/test-callbacks.sh b/tools/testing/selftests/livepatch/test-callbacks.sh
+> > index e97a9dcb73c7..87a407cee7fd 100755
+> > --- a/tools/testing/selftests/livepatch/test-callbacks.sh
+> > +++ b/tools/testing/selftests/livepatch/test-callbacks.sh
+> > @@ -9,6 +9,11 @@ MOD_LIVEPATCH2=test_klp_callbacks_demo2
+> >  MOD_TARGET=test_klp_callbacks_mod
+> >  MOD_TARGET_BUSY=test_klp_callbacks_busy
+> >  
+> > +assert_mod $MOD_LIVEPATCH
+> > +assert_mod $MOD_LIVEPATCH2
+> > +assert_mod $MOD_TARGET
+> > +assert_mod $MOD_TARGET_BUSY
+> > +
+> >  set_dynamic_debug
+> >  
+> >  
+> > diff --git a/tools/testing/selftests/livepatch/test-livepatch.sh b/tools/testing/selftests/livepatch/test-livepatch.sh
+> > index f05268aea859..8d3b75ceeeff 100755
+> > --- a/tools/testing/selftests/livepatch/test-livepatch.sh
+> > +++ b/tools/testing/selftests/livepatch/test-livepatch.sh
+> > @@ -7,6 +7,9 @@
+> >  MOD_LIVEPATCH=test_klp_livepatch
+> >  MOD_REPLACE=test_klp_atomic_replace
+> >  
+> > +assert_mod $MOD_LIVEPATCH
+> > +assert_mod $MOD_REPLACE
+> > +
+> >  set_dynamic_debug
+> >  
+> >  
+> > diff --git a/tools/testing/selftests/livepatch/test-shadow-vars.sh b/tools/testing/selftests/livepatch/test-shadow-vars.sh
+> > index 04a37831e204..1ab09bc50363 100755
+> > --- a/tools/testing/selftests/livepatch/test-shadow-vars.sh
+> > +++ b/tools/testing/selftests/livepatch/test-shadow-vars.sh
+> > @@ -6,6 +6,8 @@
+> >  
+> >  MOD_TEST=test_klp_shadow_vars
+> >  
+> > +assert_mod $MOD_TEST
+> > +
+> >  set_dynamic_debug
+> >  
+> >  
+> > -- 
+> > 2.21.0
+> > 
 > 
-> Reported-by: Jiri Benc <jbenc@redhat.com>
-> Suggested-by: Shuah Khan <shuah@kernel.org>
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-
-[...]
+> Testing:
 > 
-> +function assert_mod() {
-> +	local mod="$1"
-> +
-> +	if ! modprobe --dry-run "$mod" &>/dev/null ; then
+> Here's the output if modprobe --dry-run doesn't like the modules (not
+> built, etc.):
+> 
+>   TAP version 13
+>   selftests: livepatch: test-livepatch.sh
+>   ========================================
+>   SKIP: Failed modprobe --dry-run of module: test_klp_livepatch
+>   not ok 1..1 selftests: livepatch: test-livepatch.sh [SKIP]
+>   selftests: livepatch: test-callbacks.sh
+>   ========================================
+>   SKIP: Failed modprobe --dry-run of module: test_klp_callbacks_demo
+>   not ok 1..2 selftests: livepatch: test-callbacks.sh [SKIP]
+>   selftests: livepatch: test-shadow-vars.sh
+>   ========================================
+>   SKIP: Failed modprobe --dry-run of module: test_klp_shadow_vars
+>   not ok 1..3 selftests: livepatch: test-shadow-vars.sh [SKIP]
+> 
+> We could fold assert_mod() into __load_mod() if folks perfer.  I
+> don't have strong opinion either way.
 
-Just a preference comment, shorter version 'modprobe -q -n'
-can be used here.
+I think it would be better to move it there. Otherwise, we might forget to 
+add assert_module call for new modules in the future.
 
-Thanks,
-Kamalesh
-
-
-
+Miroslav
