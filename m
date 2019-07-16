@@ -2,84 +2,101 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D616B68ED3
-	for <lists+live-patching@lfdr.de>; Mon, 15 Jul 2019 16:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA246A94D
+	for <lists+live-patching@lfdr.de>; Tue, 16 Jul 2019 15:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387532AbfGOOKB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 15 Jul 2019 10:10:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57802 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388845AbfGOOKA (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 15 Jul 2019 10:10:00 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E974530C543C;
-        Mon, 15 Jul 2019 14:09:59 +0000 (UTC)
-Received: from [10.18.17.153] (dhcp-17-153.bos.redhat.com [10.18.17.153])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7C15A60C91;
-        Mon, 15 Jul 2019 14:09:59 +0000 (UTC)
+        id S1726593AbfGPNNC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 16 Jul 2019 09:13:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:50574 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726997AbfGPNNC (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 16 Jul 2019 09:13:02 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 3318DAFCC;
+        Tue, 16 Jul 2019 13:13:01 +0000 (UTC)
+Date:   Tue, 16 Jul 2019 15:13:00 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     linux-kselftest@vger.kernel.org, live-patching@vger.kernel.org,
+        shuah@kernel.org
 Subject: Re: [PATCH] selftests/livepatch: add test skip handling
-To:     Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     shuah@kernel.org
+Message-ID: <20190716131300.a6y4klluz2xgmtdh@pathway.suse.cz>
 References: <20190714142829.29458-1-joe.lawrence@redhat.com>
- <9de46fed-785c-d5c4-8a76-205674bd0912@linux.vnet.ibm.com>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <b675ce40-40c8-69aa-0767-dc1af9fc7797@redhat.com>
-Date:   Mon, 15 Jul 2019 10:09:58 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <9de46fed-785c-d5c4-8a76-205674bd0912@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Mon, 15 Jul 2019 14:10:00 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190714142829.29458-1-joe.lawrence@redhat.com>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/15/19 2:50 AM, Kamalesh Babulal wrote:
-> On 7/14/19 7:58 PM, Joe Lawrence wrote:
->> Before running a livpeatch self-test, first verify that we've built and
->> installed the livepatch self-test kernel modules by running a 'modprobe
->> --dry-run'.  This should catch a few environment issues, including
->> !CONFIG_LIVEPATCH and !CONFIG_TEST_LIVEPATCH.  In these cases, exit
->> gracefully with test-skip status rather than test-fail status.
->>
->> Reported-by: Jiri Benc <jbenc@redhat.com>
->> Suggested-by: Shuah Khan <shuah@kernel.org>
->> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+On Sun 2019-07-14 10:28:29, Joe Lawrence wrote:
+> Before running a livpeatch self-test, first verify that we've built and
+> installed the livepatch self-test kernel modules by running a 'modprobe
+> --dry-run'.  This should catch a few environment issues, including
+> !CONFIG_LIVEPATCH and !CONFIG_TEST_LIVEPATCH.  In these cases, exit
+> gracefully with test-skip status rather than test-fail status.
 > 
-> Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-> 
-> [...]
->>
->> +function assert_mod() {
->> +	local mod="$1"
->> +
->> +	if ! modprobe --dry-run "$mod" &>/dev/null ; then
-> 
-> Just a preference comment, shorter version 'modprobe -q -n'
-> can be used here.
-> 
+> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+> index 30195449c63c..92d6cfb49365 100644
+> --- a/tools/testing/selftests/livepatch/functions.sh
+> +++ b/tools/testing/selftests/livepatch/functions.sh
+> @@ -13,6 +13,14 @@ function log() {
+>  	echo "$1" > /dev/kmsg
+>  }
+>  
+> +# skip(msg) - testing can't proceed
+> +#	msg - explanation
+> +function skip() {
+> +	log "SKIP: $1"
+> +	echo "SKIP: $1" >&2
+> +	exit 4
+> +}
+> +
+>  # die(msg) - game over, man
+>  #	msg - dying words
+>  function die() {
+> @@ -43,6 +51,16 @@ function loop_until() {
+>  	done
+>  }
+>  
+> +function assert_mod() {
+> +	local mod="$1"
+> +
+> +	if ! modprobe --dry-run "$mod" &>/dev/null ; then
 
-Hi Kamalesh,
+JFYI, I do not have strong opinion but the long option and redirection
+looks fine to me.
 
-Re: command line options: my preference has been to use the long form 
-command switches inside scripts as they are more likely to be self 
-documenting than their short counterparts.  e.g. I could have guessed 
-that -q is --quiet, but not that -n is --dry-run.
+> +		skip "Failed modprobe --dry-run of module: $mod"
+> +	fi
+> +
+> +	return 1
 
-Re: --quiet vs. command redirection: Another detail I don't have a 
-strong opinion about.  I guess I very slightly prefer the redirect so I 
-don't have to research various modprobe versions to determine if --quiet 
-is universally supported (it probably is).
+return 0 or nothing?
 
-In both cases, I'll defer to whatever reviewers think is more 
-readable/conventional for the self-tests.
+> +}
+> +
+>  function is_livepatch_mod() {
+>  	local mod="$1"
+>  
+> diff --git a/tools/testing/selftests/livepatch/test-callbacks.sh b/tools/testing/selftests/livepatch/test-callbacks.sh
+> index e97a9dcb73c7..87a407cee7fd 100755
+> --- a/tools/testing/selftests/livepatch/test-callbacks.sh
+> +++ b/tools/testing/selftests/livepatch/test-callbacks.sh
+> @@ -9,6 +9,11 @@ MOD_LIVEPATCH2=test_klp_callbacks_demo2
+>  MOD_TARGET=test_klp_callbacks_mod
+>  MOD_TARGET_BUSY=test_klp_callbacks_busy
+>  
+> +assert_mod $MOD_LIVEPATCH
+> +assert_mod $MOD_LIVEPATCH2
+> +assert_mod $MOD_TARGET
+> +assert_mod $MOD_TARGET_BUSY
 
--- Joe
+I agree that moving this into __load_mod() is less error prone.
+
+Best Regards,
+Petr
