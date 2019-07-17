@@ -2,83 +2,91 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8AA86BC8E
-	for <lists+live-patching@lfdr.de>; Wed, 17 Jul 2019 14:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 558346BE80
+	for <lists+live-patching@lfdr.de>; Wed, 17 Jul 2019 16:46:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbfGQMpa (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 17 Jul 2019 08:45:30 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:60320 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725906AbfGQMp3 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 17 Jul 2019 08:45:29 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 907E13093382;
-        Wed, 17 Jul 2019 12:45:29 +0000 (UTC)
-Received: from localhost (unknown [10.40.205.143])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 08A32600D1;
-        Wed, 17 Jul 2019 12:45:25 +0000 (UTC)
-Date:   Wed, 17 Jul 2019 14:45:24 +0200
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        linux-kselftest@vger.kernel.org, live-patching@vger.kernel.org,
-        shuah@kernel.org
+        id S1726063AbfGQOpo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 17 Jul 2019 10:45:44 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:11138 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726620AbfGQOpn (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 17 Jul 2019 10:45:43 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6HEh3jK018526
+        for <live-patching@vger.kernel.org>; Wed, 17 Jul 2019 10:45:43 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2tt5p085ek-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <live-patching@vger.kernel.org>; Wed, 17 Jul 2019 10:45:42 -0400
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
+        Wed, 17 Jul 2019 15:45:40 +0100
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 17 Jul 2019 15:45:36 +0100
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6HEjM4q35389812
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Jul 2019 14:45:22 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D9C8DA405F;
+        Wed, 17 Jul 2019 14:45:35 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ED5F9A4059;
+        Wed, 17 Jul 2019 14:45:34 +0000 (GMT)
+Received: from JAVRIS.in.ibm.com (unknown [9.85.115.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 17 Jul 2019 14:45:34 +0000 (GMT)
 Subject: Re: [PATCH v2] selftests/livepatch: add test skip handling
-Message-ID: <20190717144524.715f46c4@redhat.com>
-In-Reply-To: <20190717120055.pno2b7zczpcgaixg@pathway.suse.cz>
+To:     Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     shuah@kernel.org
 References: <20190716133414.20196-1-joe.lawrence@redhat.com>
-        <20190717120055.pno2b7zczpcgaixg@pathway.suse.cz>
+From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+Date:   Wed, 17 Jul 2019 20:15:33 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190716133414.20196-1-joe.lawrence@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 17 Jul 2019 12:45:29 +0000 (UTC)
+X-TM-AS-GCONF: 00
+x-cbid: 19071714-0012-0000-0000-00000333C7A3
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071714-0013-0000-0000-0000216D4690
+Message-Id: <eac825ab-04c2-77cf-671e-1a2a576109b0@linux.vnet.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-17_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907170172
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 17 Jul 2019 14:00:55 +0200, Petr Mladek wrote:
-> Adding Jiri into CC to be sure that we really solved the original problem.
-
-The patch looks good to me, the runner expects 4 as an indication that
-the test was skipped.
-
-> I get the following output when livepatching is not configured:
+On 7/16/19 7:04 PM, Joe Lawrence wrote:
+> Add a skip() message function that stops the test, logs an explanation,
+> and sets the "skip" return code (4).
 > 
-> $> make run_tests  
-> TAP version 13
-> 1..4
-> # selftests: livepatch: test-livepatch.sh
-> # TEST: basic function patching ... SKIP: Failed modprobe --dry-run of module: test_klp_livepatch
-> not ok 1 selftests: livepatch: test-livepatch.sh # SKIP
-> # selftests: livepatch: test-callbacks.sh
-> # TEST: target module before livepatch ... SKIP: Failed modprobe --dry-run of module: test_klp_callbacks_mod
-> not ok 2 selftests: livepatch: test-callbacks.sh # SKIP
-> # selftests: livepatch: test-shadow-vars.sh
-> # TEST: basic shadow variable API ... SKIP: Failed modprobe --dry-run of module: test_klp_shadow_vars
-> not ok 3 selftests: livepatch: test-shadow-vars.sh # SKIP
-> # selftests: livepatch: test-state.sh
-> # TEST: system state modification ... SKIP: Failed modprobe --dry-run of module: test_klp_state
-> not ok 4 selftests: livepatch: test-state.sh # SKIP
+> Before loading a livepatch self-test kernel module, first verify that
+> we've built and installed it by running a 'modprobe --dry-run'.  This
+> should catch a few environment issues, including !CONFIG_LIVEPATCH and
+> !CONFIG_TEST_LIVEPATCH.  In these cases, exit gracefully with the new
+> skip() function.
 > 
-> Jiri, is it acceptable solution for you, please?
+> Reported-by: Jiri Benc <jbenc@redhat.com>
+> Suggested-by: Shuah Khan <shuah@kernel.org>
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-It looks correct. My reading of the TAP 13 specification is that it
-should be returned as "ok" instead of "not ok" but that is not a
-problem of this patch.
+Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
 
-> Otherwise, the patch looks fine to me. If Jiri is fine
-> then feel free to use:
-> 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
+-- 
+Kamalesh
 
-Sure.
-
-Acked-by: Jiri Benc <jbenc@redhat.com>
-
-Thanks!
-
- Jiri
