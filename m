@@ -2,91 +2,102 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 558346BE80
-	for <lists+live-patching@lfdr.de>; Wed, 17 Jul 2019 16:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF6E6CB8C
+	for <lists+live-patching@lfdr.de>; Thu, 18 Jul 2019 11:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726063AbfGQOpo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 17 Jul 2019 10:45:44 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:11138 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726620AbfGQOpn (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 17 Jul 2019 10:45:43 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6HEh3jK018526
-        for <live-patching@vger.kernel.org>; Wed, 17 Jul 2019 10:45:43 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tt5p085ek-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <live-patching@vger.kernel.org>; Wed, 17 Jul 2019 10:45:42 -0400
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
-        Wed, 17 Jul 2019 15:45:40 +0100
-Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 17 Jul 2019 15:45:36 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x6HEjM4q35389812
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Jul 2019 14:45:22 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D9C8DA405F;
-        Wed, 17 Jul 2019 14:45:35 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ED5F9A4059;
-        Wed, 17 Jul 2019 14:45:34 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.85.115.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 17 Jul 2019 14:45:34 +0000 (GMT)
-Subject: Re: [PATCH v2] selftests/livepatch: add test skip handling
-To:     Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     shuah@kernel.org
-References: <20190716133414.20196-1-joe.lawrence@redhat.com>
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-Date:   Wed, 17 Jul 2019 20:15:33 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726551AbfGRJIC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 18 Jul 2019 05:08:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:52048 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726513AbfGRJIB (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 18 Jul 2019 05:08:01 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id B9942AF95;
+        Thu, 18 Jul 2019 09:08:00 +0000 (UTC)
+Date:   Thu, 18 Jul 2019 11:08:00 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>
+Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Nicolai Stange <nstange@suse.de>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC 3/5] livepatch: Allow to distinguish different version of
+ system state changes
+Message-ID: <20190718090800.gd2neswknsnmey2h@pathway.suse.cz>
+References: <20190611135627.15556-1-pmladek@suse.com>
+ <20190611135627.15556-4-pmladek@suse.com>
 MIME-Version: 1.0
-In-Reply-To: <20190716133414.20196-1-joe.lawrence@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 19071714-0012-0000-0000-00000333C7A3
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071714-0013-0000-0000-0000216D4690
-Message-Id: <eac825ab-04c2-77cf-671e-1a2a576109b0@linux.vnet.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-17_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907170172
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190611135627.15556-4-pmladek@suse.com>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/16/19 7:04 PM, Joe Lawrence wrote:
-> Add a skip() message function that stops the test, logs an explanation,
-> and sets the "skip" return code (4).
+On Tue 2019-06-11 15:56:25, Petr Mladek wrote:
+> It might happen that an older change is not enough and the same system
+> state has to be modified another way. Different changes need to get
+> distinguished by a version number added to struct klp_state.
 > 
-> Before loading a livepatch self-test kernel module, first verify that
-> we've built and installed it by running a 'modprobe --dry-run'.  This
-> should catch a few environment issues, including !CONFIG_LIVEPATCH and
-> !CONFIG_TEST_LIVEPATCH.  In these cases, exit gracefully with the new
-> skip() function.
+> The version can also be used to prevent loading incompatible livepatches.
+> The check is done when the livepatch is enabled. The rules are:
 > 
-> Reported-by: Jiri Benc <jbenc@redhat.com>
-> Suggested-by: Shuah Khan <shuah@kernel.org>
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+>   + Any completely new system state modification is allowed.
+> 
+>   + System state modifications with the same or higher version are allowed
+>     for already modified system states.
+> 
+>   + Cumulative livepatches must handle all system state modifications from
+>     already installed livepatches.
+> 
+>   + Non-cumulative livepatches are allowed to touch already modified
+>     system states.
+> 
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
+> ---
+>  include/linux/livepatch.h |  2 ++
+>  kernel/livepatch/core.c   |  8 ++++++++
+>  kernel/livepatch/state.c  | 40 +++++++++++++++++++++++++++++++++++++++-
+>  kernel/livepatch/state.h  |  9 +++++++++
+>  4 files changed, 58 insertions(+), 1 deletion(-)
+>  create mode 100644 kernel/livepatch/state.h
+> 
+> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+> index 591abdee30d7..8bc4c6cc3f3f 100644
+> --- a/include/linux/livepatch.h
+> +++ b/include/linux/livepatch.h
+> @@ -135,10 +135,12 @@ struct klp_object {
+>  /**
+>   * struct klp_state - state of the system modified by the livepatch
+>   * @id:		system state identifier (non zero)
+> + * @version:	version of the change (non-zero)
+>   * @data:	custom data
+>   */
+>  struct klp_state {
+>  	int id;
 
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+As suggested by Nicolay, there will be in v2:
 
--- 
-Kamalesh
+	unsigned long id;
 
+> +	int version;
+
+It would make sense to make "version" unsigned as well.
+I am just unsure about the size:
+
+  + "unsigned long" looks like an overhead to me
+  + "u8" might be enough
+
+But I would stay on the safe side and use:
+
+	unsigned int version;
+
+Is anyone against?
+
+Best Regards,
+Petr
