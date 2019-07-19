@@ -2,68 +2,73 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B936E476
-	for <lists+live-patching@lfdr.de>; Fri, 19 Jul 2019 12:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA7216E5A7
+	for <lists+live-patching@lfdr.de>; Fri, 19 Jul 2019 14:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727771AbfGSKq1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 19 Jul 2019 06:46:27 -0400
-Received: from mx2.suse.de ([195.135.220.15]:47440 "EHLO mx1.suse.de"
+        id S1728096AbfGSM2n (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 19 Jul 2019 08:28:43 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49110 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726711AbfGSKq1 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 19 Jul 2019 06:46:27 -0400
+        id S1727552AbfGSM2n (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 19 Jul 2019 08:28:43 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 1F381AFF0;
-        Fri, 19 Jul 2019 10:46:26 +0000 (UTC)
-Date:   Fri, 19 Jul 2019 12:46:25 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     linux-kselftest@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: [PATCH] selftests/livepatch: push and pop dynamic debug config
-Message-ID: <20190719104625.5aigkzsm5wh3d5kn@pathway.suse.cz>
-References: <20190718202948.3404-1-joe.lawrence@redhat.com>
- <e5027867-88db-fa45-6767-286f3b7b86ad@redhat.com>
+        by mx1.suse.de (Postfix) with ESMTP id 8591BAF37;
+        Fri, 19 Jul 2019 12:28:42 +0000 (UTC)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     jikos@kernel.org, jpoimboe@redhat.com, pmladek@suse.com
+Cc:     joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: [RFC PATCH 0/2] livepatch: Clear relocation targets on a module removal
+Date:   Fri, 19 Jul 2019 14:28:38 +0200
+Message-Id: <20190719122840.15353-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e5027867-88db-fa45-6767-286f3b7b86ad@redhat.com>
-User-Agent: NeoMutt/20170912 (1.9.0)
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2019-07-18 16:42:25, Joe Lawrence wrote:
-> On 7/18/19 4:29 PM, Joe Lawrence wrote:
-> > The livepatching self-tests tweak the dynamic debug config to verify
-> > the kernel log during the tests.  Enhance set_dynamic_debug() so that
-> > the config changes are restored when the script exits.
-> > 
-> > diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-> > index de5a504ffdbc..860f27665ebd 100644
-> > --- a/tools/testing/selftests/livepatch/functions.sh
-> > +++ b/tools/testing/selftests/livepatch/functions.sh
-> > @@ -29,13 +29,27 @@ function die() {
-> >   	exit 1
-> >   }
-> > -# set_dynamic_debug() - setup kernel dynamic debug
-> > -#	TODO - push and pop this config?
-> > +function push_dynamic_debug() {
-> > +        DYNAMIC_DEBUG=$(grep '^kernel/livepatch' /sys/kernel/debug/dynamic_debug/control | \
-> > +                awk -F'[: ]' '{print "file " $1 " line " $2 " " $4}')
-> > +}
-> 
-> It works for me, though I feel that the
-> /sys/kernel/debug/dynamic_debug/control output to input translation is
-> brittle.  It would be nice to have some kind of mass export/import
-> capability for that interface.
+The second attempt to resolve the issue reported by Josh last year [1]
+and also reported earlier this year again [2]. The first attempt [3]
+tried to deny the patched modules to be removed. It did not solve the
+issue completely. It would be possible, but we decided to try the
+arch-specific approach first, which I am sending now.
 
-I believe that the format is pretty stable. We could always reconsider
-it when it breaks.
+Sending early as RFC, because I am leaving on holiday tomorrow and it
+would be great if you took a look meanwhile.
 
-I could confirm that it restores the original state, so:
+- I decided not to CC the arch maintainers yet. If we decide that the
+  approach is feasible first on our livepatch side, I will split the
+  second patch and resend properly.
+- the first patch could go in regardless the rest, I guess.
+- I am not sure about the placement in
+  klp_cleanup_module_patches_limited(). I think it is the best possible,
+  but I would really appreciate double-checking.
+- I am also not sure about the naming, so ideas also welcome
 
-Tested-by: Petr Mladek <pmladek@suse.com>
+Lightly tested on both x86_64 and ppc64le and it looked ok.
 
-Best Regards,
-Petr
+[1] 20180602161151.apuhs2dygsexmcg2@treble
+[2] 1561019068-132672-1-git-send-email-cj.chengjian@huawei.com
+[3] 20180607092949.1706-1-mbenes@suse.cz
+
+Miroslav Benes (2):
+  livepatch: Nullify obj->mod in klp_module_coming()'s error path
+  livepatch: Clear relocation targets on a module removal
+
+ arch/powerpc/kernel/Makefile    |  1 +
+ arch/powerpc/kernel/livepatch.c | 75 +++++++++++++++++++++++++++++++++
+ arch/powerpc/kernel/module.h    | 15 +++++++
+ arch/powerpc/kernel/module_64.c |  7 +--
+ arch/x86/kernel/livepatch.c     | 67 +++++++++++++++++++++++++++++
+ include/linux/livepatch.h       |  5 +++
+ kernel/livepatch/core.c         | 18 +++++---
+ 7 files changed, 177 insertions(+), 11 deletions(-)
+ create mode 100644 arch/powerpc/kernel/livepatch.c
+ create mode 100644 arch/powerpc/kernel/module.h
+
+-- 
+2.22.0
+
