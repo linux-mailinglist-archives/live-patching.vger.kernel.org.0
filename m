@@ -2,175 +2,97 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 127B56EC68
-	for <lists+live-patching@lfdr.de>; Sat, 20 Jul 2019 00:11:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3F316ED61
+	for <lists+live-patching@lfdr.de>; Sat, 20 Jul 2019 04:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728727AbfGSWLN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 19 Jul 2019 18:11:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59754 "EHLO mail.kernel.org"
+        id S1728974AbfGTCvM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 19 Jul 2019 22:51:12 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45854 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727344AbfGSWLN (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 19 Jul 2019 18:11:13 -0400
-Received: from [172.20.8.67] (fs96f9c61d.tkyc509.ap.nuro.jp [150.249.198.29])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728058AbfGTCvM (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 19 Jul 2019 22:51:12 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A2F9B2184E;
-        Fri, 19 Jul 2019 22:11:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563574273;
-        bh=CJKeacO6+Fz48FQ2UIIH5GFAeHwDu2ZUhvMvJNtHMr8=;
-        h=Subject:To:References:From:Date:In-Reply-To:From;
-        b=yUKUVjeaNhnOIrnJZmdIu4GPHZtiFh7WQX6cQ1itU5EnJgKT7pQSgyUH6HIyHwuyb
-         s1rxtfVqOq+ivHoTSMA2xs3/gN3Eckh0ycJg+Tm6Zc4uJLn07tghuV1hMdYioTzyyN
-         XoQQ8W1u/MZ0KtdlXWVGxoSuuHS9gbKYtqj18VoM=
+        by mx1.redhat.com (Postfix) with ESMTPS id 548AE821CB;
+        Sat, 20 Jul 2019 02:51:12 +0000 (UTC)
+Received: from [10.10.124.112] (ovpn-124-112.rdu2.redhat.com [10.10.124.112])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D40FF608A4;
+        Sat, 20 Jul 2019 02:51:11 +0000 (UTC)
 Subject: Re: [PATCH] selftests/livepatch: add test skip handling
-To:     Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        shuah <shuah@kernel.org>
+To:     shuah <shuah@kernel.org>, live-patching@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
 References: <20190714142829.29458-1-joe.lawrence@redhat.com>
  <20190714143306.GA29501@redhat.com>
-From:   shuah <shuah@kernel.org>
-Message-ID: <5535ff5e-0f75-9185-11bb-400465f09f5c@kernel.org>
-Date:   Fri, 19 Jul 2019 16:11:11 -0600
+ <5535ff5e-0f75-9185-11bb-400465f09f5c@kernel.org>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <42feff41-8a92-e252-0e90-5c0335547de1@redhat.com>
+Date:   Fri, 19 Jul 2019 22:51:11 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190714143306.GA29501@redhat.com>
+In-Reply-To: <5535ff5e-0f75-9185-11bb-400465f09f5c@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Sat, 20 Jul 2019 02:51:12 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/14/19 8:33 AM, Joe Lawrence wrote:
-> On Sun, Jul 14, 2019 at 10:28:29AM -0400, Joe Lawrence wrote:
->> Before running a livpeatch self-test, first verify that we've built and
->> installed the livepatch self-test kernel modules by running a 'modprobe
->> --dry-run'.  This should catch a few environment issues, including
->> !CONFIG_LIVEPATCH and !CONFIG_TEST_LIVEPATCH.  In these cases, exit
->> gracefully with test-skip status rather than test-fail status.
+On 7/19/19 6:11 PM, shuah wrote:
+> On 7/14/19 8:33 AM, Joe Lawrence wrote:
+>> On Sun, Jul 14, 2019 at 10:28:29AM -0400, Joe Lawrence wrote:
+>> 
+ >> [ ... snip ... ]
 >>
->> Reported-by: Jiri Benc <jbenc@redhat.com>
->> Suggested-by: Shuah Khan <shuah@kernel.org>
->> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
->> ---
->>   tools/testing/selftests/livepatch/functions.sh | 18 ++++++++++++++++++
->>   .../selftests/livepatch/test-callbacks.sh      |  5 +++++
->>   .../selftests/livepatch/test-livepatch.sh      |  3 +++
->>   .../selftests/livepatch/test-shadow-vars.sh    |  2 ++
->>   4 files changed, 28 insertions(+)
+>> Testing:
 >>
->> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
->> index 30195449c63c..92d6cfb49365 100644
->> --- a/tools/testing/selftests/livepatch/functions.sh
->> +++ b/tools/testing/selftests/livepatch/functions.sh
->> @@ -13,6 +13,14 @@ function log() {
->>   	echo "$1" > /dev/kmsg
->>   }
->>   
->> +# skip(msg) - testing can't proceed
->> +#	msg - explanation
->> +function skip() {
->> +	log "SKIP: $1"
->> +	echo "SKIP: $1" >&2
->> +	exit 4
->> +}
->> +
->>   # die(msg) - game over, man
->>   #	msg - dying words
->>   function die() {
->> @@ -43,6 +51,16 @@ function loop_until() {
->>   	done
->>   }
->>   
->> +function assert_mod() {
->> +	local mod="$1"
->> +
->> +	if ! modprobe --dry-run "$mod" &>/dev/null ; then
->> +		skip "Failed modprobe --dry-run of module: $mod"
->> +	fi
->> +
->> +	return 1
->> +}
->> +
->>   function is_livepatch_mod() {
->>   	local mod="$1"
->>   
->> diff --git a/tools/testing/selftests/livepatch/test-callbacks.sh b/tools/testing/selftests/livepatch/test-callbacks.sh
->> index e97a9dcb73c7..87a407cee7fd 100755
->> --- a/tools/testing/selftests/livepatch/test-callbacks.sh
->> +++ b/tools/testing/selftests/livepatch/test-callbacks.sh
->> @@ -9,6 +9,11 @@ MOD_LIVEPATCH2=test_klp_callbacks_demo2
->>   MOD_TARGET=test_klp_callbacks_mod
->>   MOD_TARGET_BUSY=test_klp_callbacks_busy
->>   
->> +assert_mod $MOD_LIVEPATCH
->> +assert_mod $MOD_LIVEPATCH2
->> +assert_mod $MOD_TARGET
->> +assert_mod $MOD_TARGET_BUSY
->> +
->>   set_dynamic_debug
->>   
->>   
->> diff --git a/tools/testing/selftests/livepatch/test-livepatch.sh b/tools/testing/selftests/livepatch/test-livepatch.sh
->> index f05268aea859..8d3b75ceeeff 100755
->> --- a/tools/testing/selftests/livepatch/test-livepatch.sh
->> +++ b/tools/testing/selftests/livepatch/test-livepatch.sh
->> @@ -7,6 +7,9 @@
->>   MOD_LIVEPATCH=test_klp_livepatch
->>   MOD_REPLACE=test_klp_atomic_replace
->>   
->> +assert_mod $MOD_LIVEPATCH
->> +assert_mod $MOD_REPLACE
->> +
->>   set_dynamic_debug
->>   
->>   
->> diff --git a/tools/testing/selftests/livepatch/test-shadow-vars.sh b/tools/testing/selftests/livepatch/test-shadow-vars.sh
->> index 04a37831e204..1ab09bc50363 100755
->> --- a/tools/testing/selftests/livepatch/test-shadow-vars.sh
->> +++ b/tools/testing/selftests/livepatch/test-shadow-vars.sh
->> @@ -6,6 +6,8 @@
->>   
->>   MOD_TEST=test_klp_shadow_vars
->>   
->> +assert_mod $MOD_TEST
->> +
->>   set_dynamic_debug
->>   
->>   
->> -- 
->> 2.21.0
+>> Here's the output if modprobe --dry-run doesn't like the modules (not
+>> built, etc.):
 >>
+>>     TAP version 13
+>>     selftests: livepatch: test-livepatch.sh
+>>     ========================================
+>>     SKIP: Failed modprobe --dry-run of module: test_klp_livepatch
+>>     not ok 1..1 selftests: livepatch: test-livepatch.sh [SKIP]
+>>     selftests: livepatch: test-callbacks.sh
+>>     ========================================
+>>     SKIP: Failed modprobe --dry-run of module: test_klp_callbacks_demo
+>>     not ok 1..2 selftests: livepatch: test-callbacks.sh [SKIP]
+>>     selftests: livepatch: test-shadow-vars.sh
+>>     ========================================
+>>     SKIP: Failed modprobe --dry-run of module: test_klp_shadow_vars
+>>     not ok 1..3 selftests: livepatch: test-shadow-vars.sh [SKIP]
+>> 
 > 
-> Testing:
-> 
-> Here's the output if modprobe --dry-run doesn't like the modules (not
-> built, etc.):
-> 
->    TAP version 13
->    selftests: livepatch: test-livepatch.sh
->    ========================================
->    SKIP: Failed modprobe --dry-run of module: test_klp_livepatch
->    not ok 1..1 selftests: livepatch: test-livepatch.sh [SKIP]
->    selftests: livepatch: test-callbacks.sh
->    ========================================
->    SKIP: Failed modprobe --dry-run of module: test_klp_callbacks_demo
->    not ok 1..2 selftests: livepatch: test-callbacks.sh [SKIP]
->    selftests: livepatch: test-shadow-vars.sh
->    ========================================
->    SKIP: Failed modprobe --dry-run of module: test_klp_shadow_vars
->    not ok 1..3 selftests: livepatch: test-shadow-vars.sh [SKIP]
-> 
-> We could fold assert_mod() into __load_mod() if folks perfer.  I
-> don't have strong opinion either way.
+> Please refine these messages to say what users should do. In addition
+> to what failed, also add what is missing - enable config option etc.
 > 
 
-Please refine these messages to say what users should do. In addition
-to what failed, also add what is missing - enable config option etc.
+Hi Shuah,
 
-thanks,
--- Shuah
+Note that v2 was posted [1], but the output remains basically the same, 
+so your comments still apply.
 
+Off the top of my head, modprobe can fail for many reasons: unprivileged 
+user, missing .ko files, missing modules.dep entry, kernel vermagic, 
+interface versions, etc.
+
+What would you think about modifying our skip() function to provide a 
+catch-all list of CONFIG, environment, etc. requirements?  Something 
+like, "Please ensure that the kernel was build with CONFIG_XYZ and that 
+the tests are run with foo privileges"?  That would let us avoid trying 
+to figure out exactly why the modprobe failed, but still help out the user.
+
+Alternatively, are there existing modprobe callers in the selftests that 
+already do a better job?
+
+[1] 
+https://lore.kernel.org/linux-kselftest/eac825ab-04c2-77cf-671e-1a2a576109b0@linux.vnet.ibm.com/T/#mc2f70095215738cb6a539e2c2e6a415c78a8add6
+
+Thanks,
+
+-- Joe
