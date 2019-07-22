@@ -2,211 +2,127 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E69CD6FC3A
-	for <lists+live-patching@lfdr.de>; Mon, 22 Jul 2019 11:33:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B77DF701DF
+	for <lists+live-patching@lfdr.de>; Mon, 22 Jul 2019 16:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727365AbfGVJdR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 22 Jul 2019 05:33:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60032 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726571AbfGVJdR (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 22 Jul 2019 05:33:17 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 4CD59B062;
-        Mon, 22 Jul 2019 09:33:15 +0000 (UTC)
-Date:   Mon, 22 Jul 2019 11:33:14 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     jikos@kernel.org, jpoimboe@redhat.com, joe.lawrence@redhat.com,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <20190722093314.reobkfhdzqb7ch2d@pathway.suse.cz>
-References: <20190719122840.15353-1-mbenes@suse.cz>
- <20190719122840.15353-3-mbenes@suse.cz>
+        id S1728637AbfGVOFs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 22 Jul 2019 10:05:48 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39012 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728591AbfGVOFs (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 22 Jul 2019 10:05:48 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1E4F630821A3;
+        Mon, 22 Jul 2019 14:05:48 +0000 (UTC)
+Received: from jlaw-desktop.redhat.com (ovpn-124-112.rdu2.redhat.com [10.10.124.112])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 881E9620CE;
+        Mon, 22 Jul 2019 14:05:47 +0000 (UTC)
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     shuah@kernel.org, Jiri Benc <jbenc@redhat.com>
+Subject: [PATCH v3] selftests/livepatch: add test skip handling
+Date:   Mon, 22 Jul 2019 10:05:44 -0400
+Message-Id: <20190722140544.29867-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190719122840.15353-3-mbenes@suse.cz>
-User-Agent: NeoMutt/20170912 (1.9.0)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Mon, 22 Jul 2019 14:05:48 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri 2019-07-19 14:28:40, Miroslav Benes wrote:
-> Josh reported a bug:
-> 
->   When the object to be patched is a module, and that module is
->   rmmod'ed and reloaded, it fails to load with:
-> 
->   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
->   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
->   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> 
->   The livepatch module has a relocation which references a symbol
->   in the _previous_ loading of nfsd. When apply_relocate_add()
->   tries to replace the old relocation with a new one, it sees that
->   the previous one is nonzero and it errors out.
-> 
->   On ppc64le, we have a similar issue:
-> 
->   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
->   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
->   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> 
-> He also proposed three different solutions. We could remove the error
-> check in apply_relocate_add() introduced by commit eda9cec4c9a1
-> ("x86/module: Detect and skip invalid relocations"). However the check
-> is useful for detecting corrupted modules.
-> 
-> We could also deny the patched modules to be removed. If it proved to be
-> a major drawback for users, we could still implement a different
-> approach. The solution would also complicate the existing code a lot.
-> 
-> We thus decided to reverse the relocation patching (clear all relocation
-> targets on x86_64, or return back nops on powerpc). The solution is not
-> universal and is too much arch-specific, but it may prove to be simpler
-> in the end.
-> 
-> Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
-> ---
->  arch/powerpc/kernel/Makefile    |  1 +
->  arch/powerpc/kernel/livepatch.c | 75 +++++++++++++++++++++++++++++++++
->  arch/powerpc/kernel/module.h    | 15 +++++++
->  arch/powerpc/kernel/module_64.c |  7 +--
->  arch/x86/kernel/livepatch.c     | 67 +++++++++++++++++++++++++++++
->  include/linux/livepatch.h       |  5 +++
->  kernel/livepatch/core.c         | 17 +++++---
->  7 files changed, 176 insertions(+), 11 deletions(-)
->  create mode 100644 arch/powerpc/kernel/livepatch.c
->  create mode 100644 arch/powerpc/kernel/module.h
-> 
-> diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
-> index 0ea6c4aa3a20..639000f78dc3 100644
-> --- a/arch/powerpc/kernel/Makefile
-> +++ b/arch/powerpc/kernel/Makefile
-> @@ -154,6 +154,7 @@ endif
->  
->  obj-$(CONFIG_EPAPR_PARAVIRT)	+= epapr_paravirt.o epapr_hcalls.o
->  obj-$(CONFIG_KVM_GUEST)		+= kvm.o kvm_emul.o
-> +obj-$(CONFIG_LIVEPATCH)	+= livepatch.o
->  
->  # Disable GCOV, KCOV & sanitizers in odd or sensitive code
->  GCOV_PROFILE_prom_init.o := n
-> diff --git a/arch/powerpc/kernel/livepatch.c b/arch/powerpc/kernel/livepatch.c
-> new file mode 100644
-> index 000000000000..6f2468c60695
-> --- /dev/null
-> +++ b/arch/powerpc/kernel/livepatch.c
-> @@ -0,0 +1,75 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * livepatch.c - powerpc-specific Kernel Live Patching Core
-> + */
-> +
-> +#include <linux/livepatch.h>
-> +#include <asm/code-patching.h>
-> +#include "module.h"
-> +
-> +void arch_klp_free_object_loaded(struct klp_patch *patch,
-> +				 struct klp_object *obj)
+Add a skip() message function that stops the test, logs an explanation,
+and sets the "skip" return code (4).
 
-If I get it correctly then this functions reverts changes done by
-klp_write_object_relocations(). Therefore it should get called
-klp_clear_object_relocations() or so.
+Before loading a livepatch self-test kernel module, first verify that
+we've built and installed it by running a 'modprobe --dry-run'.  This
+should catch a few environment issues, including !CONFIG_LIVEPATCH and
+!CONFIG_TEST_LIVEPATCH.  In these cases, exit gracefully with the new
+skip() function.
 
-There is also arch_klp_init_object_loaded() but it does different
-things, for example it applies alternatives or paravirt instructions.
-Do we need to revert these as well?
+Reported-by: Jiri Benc <jbenc@redhat.com>
+Suggested-by: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+---
 
+v3: tweak modprobe error message: check kernel config and run as root,
+so output now looks like [shuah] :
 
-> +{
-> +	const char *objname, *secname, *symname;
-> +	char sec_objname[MODULE_NAME_LEN];
-> +	struct klp_modinfo *info;
-> +	Elf64_Shdr *s;
-> +	Elf64_Rela *rel;
-> +	Elf64_Sym *sym;
-> +	void *loc;
-> +	u32 *instruction;
-> +	int i, cnt;
-> +
-> +	info = patch->mod->klp_info;
-> +	objname = klp_is_module(obj) ? obj->name : "vmlinux";
-> +
-> +	/* See livepatch core code for BUILD_BUG_ON() explanation */
-> +	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 128);
-> +
-> +	/* For each klp relocation section */
-> +	for (s = info->sechdrs; s < info->sechdrs + info->hdr.e_shnum; s++) {
-> +		if (!(s->sh_flags & SHF_RELA_LIVEPATCH))
-> +			continue;
-> +
-> +		/*
-> +		 * Format: .klp.rela.sec_objname.section_name
-> +		 */
-> +		secname = info->secstrings + s->sh_name;
-> +		cnt = sscanf(secname, ".klp.rela.%55[^.]", sec_objname);
-> +		if (cnt != 1) {
-> +			pr_err("section %s has an incorrectly formatted name\n",
-> +			       secname);
-> +			continue;
-> +		}
-> +
-> +		if (strcmp(objname, sec_objname))
-> +			continue;
+  % make run_tests
+  TAP version 13
+  1..3
+  # selftests: livepatch: test-livepatch.sh
+  # TEST: basic function patching ... SKIP: unable load module test_klp_livepatch, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
+  not ok 1 selftests: livepatch: test-livepatch.sh # SKIP
+  # selftests: livepatch: test-callbacks.sh
+  # TEST: target module before livepatch ... SKIP: unable load module test_klp_callbacks_mod, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
+  not ok 2 selftests: livepatch: test-callbacks.sh # SKIP
+  # selftests: livepatch: test-shadow-vars.sh
+  # TEST: basic shadow variable API ... SKIP: unable load module test_klp_shadow_vars, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
+  not ok 3 selftests: livepatch: test-shadow-vars.sh # SKIP
 
-The above code seems to be arch-independent. Please, move it into
-klp_clear_object_relocations() or so.
+v2: move assert_mod() call into load_mod() and load_lp_nowait(), before
+    they check whether the module is a livepatch or not (a test-failing
+    assertion). [mbenes, pmladek]
 
-> +		rel = (void *)s->sh_addr;
-> +		for (i = 0; i < s->sh_size / sizeof(*rel); i++) {
-> +			loc = (void *)info->sechdrs[s->sh_info].sh_addr
-> +				+ rel[i].r_offset;
-> +			sym = (Elf64_Sym *)info->sechdrs[info->symndx].sh_addr
-> +				+ ELF64_R_SYM(rel[i].r_info);
-> +			symname = patch->mod->core_kallsyms.strtab
-> +				+ sym->st_name;
-> +
-> +			if (ELF64_R_TYPE(rel[i].r_info) != R_PPC_REL24)
-> +				continue;
-> +
-> +			if (sym->st_shndx != SHN_UNDEF &&
-> +			    sym->st_shndx != SHN_LIVEPATCH)
-> +				continue;
+ .../testing/selftests/livepatch/functions.sh  | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-The above check is livepatch-specific. But in principle, this should
-revert changes done by apply_relocate_add(). I would implement
-apply_relocation_clear() or apply_relocation_del() or ...
-and call it from the generic klp_clear_object_relocations().
+diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+index 30195449c63c..8eb21fcc71de 100644
+--- a/tools/testing/selftests/livepatch/functions.sh
++++ b/tools/testing/selftests/livepatch/functions.sh
+@@ -13,6 +13,14 @@ function log() {
+ 	echo "$1" > /dev/kmsg
+ }
+ 
++# skip(msg) - testing can't proceed
++#	msg - explanation
++function skip() {
++	log "SKIP: $1"
++	echo "SKIP: $1" >&2
++	exit 4
++}
++
+ # die(msg) - game over, man
+ #	msg - dying words
+ function die() {
+@@ -43,6 +51,12 @@ function loop_until() {
+ 	done
+ }
+ 
++function assert_mod() {
++	local mod="$1"
++
++	modprobe --dry-run "$mod" &>/dev/null
++}
++
+ function is_livepatch_mod() {
+ 	local mod="$1"
+ 
+@@ -75,6 +89,9 @@ function __load_mod() {
+ function load_mod() {
+ 	local mod="$1"; shift
+ 
++	assert_mod "$mod" ||
++		skip "unable load module ${mod}, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root"
++
+ 	is_livepatch_mod "$mod" &&
+ 		die "use load_lp() to load the livepatch module $mod"
+ 
+@@ -88,6 +105,9 @@ function load_mod() {
+ function load_lp_nowait() {
+ 	local mod="$1"; shift
+ 
++	assert_mod "$mod" ||
++		skip "unable load module ${mod}, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root"
++
+ 	is_livepatch_mod "$mod" ||
+ 		die "module $mod is not a livepatch"
+ 
+-- 
+2.21.0
 
-The code should be put into the same source files as
-apply_relocate_add(). It will increase the chance that
-any changes will be in sync.
-
-Of course, it is possible that there was a reason for the
-livepatch-specific filtering that I am not aware of.
-
-> +
-> +			instruction = (u32 *)loc;
-> +			if (is_mprofile_mcount_callsite(symname, instruction))
-> +				continue;
-> +
-> +			if (!instr_is_relative_link_branch(*instruction))
-> +				continue;
-> +
-> +			instruction += 1;
-> +			*instruction = PPC_INST_NOP;
-> +		}
-> +	}
-> +}
-
-Otherwise, this approach looks fine to me. I believe that this area
-is pretty stable and the maintenance should be rather cheap.
-
-Best Regards,
-Petr
-acceptable.
