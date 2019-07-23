@@ -2,127 +2,91 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B77DF701DF
-	for <lists+live-patching@lfdr.de>; Mon, 22 Jul 2019 16:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2791D71C41
+	for <lists+live-patching@lfdr.de>; Tue, 23 Jul 2019 17:54:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbfGVOFs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 22 Jul 2019 10:05:48 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39012 "EHLO mx1.redhat.com"
+        id S2387427AbfGWPyH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Jul 2019 11:54:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728591AbfGVOFs (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 22 Jul 2019 10:05:48 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1730033AbfGWPyH (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 23 Jul 2019 11:54:07 -0400
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1E4F630821A3;
-        Mon, 22 Jul 2019 14:05:48 +0000 (UTC)
-Received: from jlaw-desktop.redhat.com (ovpn-124-112.rdu2.redhat.com [10.10.124.112])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 881E9620CE;
-        Mon, 22 Jul 2019 14:05:47 +0000 (UTC)
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     shuah@kernel.org, Jiri Benc <jbenc@redhat.com>
-Subject: [PATCH v3] selftests/livepatch: add test skip handling
-Date:   Mon, 22 Jul 2019 10:05:44 -0400
-Message-Id: <20190722140544.29867-1-joe.lawrence@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 8D62B206B8;
+        Tue, 23 Jul 2019 15:54:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563897246;
+        bh=b6VnbTtD9IPzYVY1gRe1ylhiT1DaFR8zYW6Mgy/1M5g=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=HZW3ipDkg/rCQkwYFSg/p8M7yS4JETGblrZ2mLlYY9+sRerNyPgapoTonQy8e0rOX
+         ir/FEfIPI9XZ/QYNERNBFpabjTf4vObUkfU0eDN25EAeVMuw6qF+9h9yX4+y9CeBal
+         EXjukEEejkNYMqMhI58CORLgs8F40MxS7GK5Z1PU=
+Subject: Re: [PATCH v3] selftests/livepatch: add test skip handling
+To:     Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Jiri Benc <jbenc@redhat.com>, shuah <shuah@kernel.org>
+References: <20190722140544.29867-1-joe.lawrence@redhat.com>
+From:   shuah <shuah@kernel.org>
+Message-ID: <e450e2ec-b683-f712-c8d5-ef1c2e2dee7c@kernel.org>
+Date:   Tue, 23 Jul 2019 09:53:53 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Mon, 22 Jul 2019 14:05:48 +0000 (UTC)
+In-Reply-To: <20190722140544.29867-1-joe.lawrence@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Add a skip() message function that stops the test, logs an explanation,
-and sets the "skip" return code (4).
+Hi Joe,
 
-Before loading a livepatch self-test kernel module, first verify that
-we've built and installed it by running a 'modprobe --dry-run'.  This
-should catch a few environment issues, including !CONFIG_LIVEPATCH and
-!CONFIG_TEST_LIVEPATCH.  In these cases, exit gracefully with the new
-skip() function.
+On 7/22/19 8:05 AM, Joe Lawrence wrote:
+> Add a skip() message function that stops the test, logs an explanation,
+> and sets the "skip" return code (4).
+> 
+> Before loading a livepatch self-test kernel module, first verify that
+> we've built and installed it by running a 'modprobe --dry-run'.  This
+> should catch a few environment issues, including !CONFIG_LIVEPATCH and
+> !CONFIG_TEST_LIVEPATCH.  In these cases, exit gracefully with the new
+> skip() function.
+> 
+> Reported-by: Jiri Benc <jbenc@redhat.com>
+> Suggested-by: Shuah Khan <shuah@kernel.org>
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> ---
+> 
+> v3: tweak modprobe error message: check kernel config and run as root,
+> so output now looks like [shuah] :
+> 
 
-Reported-by: Jiri Benc <jbenc@redhat.com>
-Suggested-by: Shuah Khan <shuah@kernel.org>
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
----
+Couple of small tweaks to user visible message below.
 
-v3: tweak modprobe error message: check kernel config and run as root,
-so output now looks like [shuah] :
+>    % make run_tests
+>    TAP version 13
+>    1..3
+>    # selftests: livepatch: test-livepatch.sh
+>    # TEST: basic function patching ... SKIP: unable load module test_klp_livepatch, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
+>    not ok 1 selftests: livepatch: test-livepatch.sh # SKIP
 
-  % make run_tests
-  TAP version 13
-  1..3
-  # selftests: livepatch: test-livepatch.sh
-  # TEST: basic function patching ... SKIP: unable load module test_klp_livepatch, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
-  not ok 1 selftests: livepatch: test-livepatch.sh # SKIP
-  # selftests: livepatch: test-callbacks.sh
-  # TEST: target module before livepatch ... SKIP: unable load module test_klp_callbacks_mod, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
-  not ok 2 selftests: livepatch: test-callbacks.sh # SKIP
-  # selftests: livepatch: test-shadow-vars.sh
-  # TEST: basic shadow variable API ... SKIP: unable load module test_klp_shadow_vars, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
-  not ok 3 selftests: livepatch: test-shadow-vars.sh # SKIP
+unable to
 
-v2: move assert_mod() call into load_mod() and load_lp_nowait(), before
-    they check whether the module is a livepatch or not (a test-failing
-    assertion). [mbenes, pmladek]
+>    # selftests: livepatch: test-callbacks.sh
+>    # TEST: target module before livepatch ... SKIP: unable load module test_klp_callbacks_mod, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
 
- .../testing/selftests/livepatch/functions.sh  | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+unable to
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index 30195449c63c..8eb21fcc71de 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -13,6 +13,14 @@ function log() {
- 	echo "$1" > /dev/kmsg
- }
- 
-+# skip(msg) - testing can't proceed
-+#	msg - explanation
-+function skip() {
-+	log "SKIP: $1"
-+	echo "SKIP: $1" >&2
-+	exit 4
-+}
-+
- # die(msg) - game over, man
- #	msg - dying words
- function die() {
-@@ -43,6 +51,12 @@ function loop_until() {
- 	done
- }
- 
-+function assert_mod() {
-+	local mod="$1"
-+
-+	modprobe --dry-run "$mod" &>/dev/null
-+}
-+
- function is_livepatch_mod() {
- 	local mod="$1"
- 
-@@ -75,6 +89,9 @@ function __load_mod() {
- function load_mod() {
- 	local mod="$1"; shift
- 
-+	assert_mod "$mod" ||
-+		skip "unable load module ${mod}, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root"
-+
- 	is_livepatch_mod "$mod" &&
- 		die "use load_lp() to load the livepatch module $mod"
- 
-@@ -88,6 +105,9 @@ function load_mod() {
- function load_lp_nowait() {
- 	local mod="$1"; shift
- 
-+	assert_mod "$mod" ||
-+		skip "unable load module ${mod}, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root"
-+
- 	is_livepatch_mod "$mod" ||
- 		die "module $mod is not a livepatch"
- 
--- 
-2.21.0
+>    not ok 2 selftests: livepatch: test-callbacks.sh # SKIP
+>    # selftests: livepatch: test-shadow-vars.sh
+>    # TEST: basic shadow variable API ... SKIP: unable load module test_klp_shadow_vars, verify CONFIG_TEST_LIVEPATCH=m and run self-tests as root
+> 
 
+unable to
+
+thanks for taking care of this.
+
+-- Shuah
