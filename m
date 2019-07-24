@@ -2,118 +2,102 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B611973297
-	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2019 17:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054B473374
+	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2019 18:15:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387581AbfGXPTp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 24 Jul 2019 11:19:45 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47626 "EHLO mx1.redhat.com"
+        id S1727295AbfGXQPF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 24 Jul 2019 12:15:05 -0400
+Received: from foss.arm.com ([217.140.110.172]:43186 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387503AbfGXPTp (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 24 Jul 2019 11:19:45 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A76E6C024AF3;
-        Wed, 24 Jul 2019 15:19:44 +0000 (UTC)
-Received: from redhat.com (ovpn-123-65.rdu2.redhat.com [10.10.123.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1A5D95D9DE;
-        Wed, 24 Jul 2019 15:19:43 +0000 (UTC)
-Date:   Wed, 24 Jul 2019 11:19:42 -0400
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: kprobes, livepatch and FTRACE_OPS_FL_IPMODIFY
-Message-ID: <20190724151942.GA7205@redhat.com>
+        id S1726099AbfGXQPF (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 24 Jul 2019 12:15:05 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94F4828;
+        Wed, 24 Jul 2019 09:15:04 -0700 (PDT)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AD5DE3F71F;
+        Wed, 24 Jul 2019 09:15:02 -0700 (PDT)
+Date:   Wed, 24 Jul 2019 17:15:00 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Ruslan Bilovol <ruslan.bilovol@gmail.com>
+Cc:     Will Deacon <will.deacon@arm.com>, Torsten Duwe <duwe@lst.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Julien Thierry <julien.thierry@arm.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        AKASHI Takahiro <takahiro.akashi@linaro.org>,
+        Amit Daniel Kachhap <amit.kachhap@arm.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: Re: [PATCH v8 0/5] arm64: ftrace with regs
+Message-ID: <20190724161500.GG2624@lakrids.cambridge.arm.com>
+References: <20190208150826.44EBC68DD2@newverein.lst.de>
+ <0f8d2e77-7e51-fba8-b179-102318d9ff84@arm.com>
+ <20190311114945.GA5625@lst.de>
+ <20190408153628.GL6139@lakrids.cambridge.arm.com>
+ <20190409175238.GE9255@fuggles.cambridge.arm.com>
+ <CAB=otbRXuDHSmh9NrGYoep=hxOKkXVsy6R84ACZ9xELwNr=4AA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Wed, 24 Jul 2019 15:19:44 +0000 (UTC)
+In-Reply-To: <CAB=otbRXuDHSmh9NrGYoep=hxOKkXVsy6R84ACZ9xELwNr=4AA@mail.gmail.com>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Masami,
+Hi Ruslan,
 
-I wanted to revisit FTRACE_OPS_FL_IPMODIFY blocking of kprobes and
-livepatch, at least in cases where kprobe pre_handlers don't modify
-regs->ip.
+On Wed, Jul 10, 2019 at 03:27:58PM +0300, Ruslan Bilovol wrote:
+> On Tue, Apr 9, 2019 at 8:52 PM Will Deacon <will.deacon@arm.com> wrote:
+> >
+> > On Mon, Apr 08, 2019 at 04:36:28PM +0100, Mark Rutland wrote:
+> > > On Mon, Mar 11, 2019 at 12:49:46PM +0100, Torsten Duwe wrote:
+> > > > On Wed, Feb 13, 2019 at 11:11:04AM +0000, Julien Thierry wrote:
+> > > > > Hi Torsten,
+> > > > >
+> > > > > On 08/02/2019 15:08, Torsten Duwe wrote:
+> > > > > > Patch series v8, as discussed.
+> > > > > > The whole series applies cleanly on 5.0-rc5
+> > > >
+> > > > So what's the status now? Besides debatable minor style
+> > > > issues there were no more objections to v8. Would this
+> > > > go through the ARM repo or via the ftrace repo?
+> > >
+> > > Sorry agains for the delay on this. I'm now back in the office and in
+> > > front of a computer daily, so I can spend a bit more time on this.
+> > >
+> > > Regardless of anything else, I think that we should queue the first
+> > > three patches now. I've poked the relevant maintainers for their acks so
+> > > that those can be taken via the arm64 tree.
+> > >
+> > > I'm happy to do the trivial cleanups on the last couple of patches (e.g.
+> > > s/lr/x30), and I'm actively looking at the API rework I requested.
+> >
+> > Ok, I've picked up patches 1-3 and I'll wait for you to spin updates to the
+> > last two.
+> 
+> Ok, I see that patches 1-3 are picked up and are already present in recent
+> kernels.
+> 
+> Is there any progress on remaining two patches?
 
-(We've discussed this previously at part of a kpatch github issue #47:
-https://github.com/dynup/kpatch/issues/47)
+I'm afraid that I've been distracted on other fronts, so I haven't made
+progress there.
 
-The particular use case I was wondering about was perf probing a
-particular function, then attempting to livepatch that same function:
+> Any help required?
 
-  % uname -r
-  5.3.0-rc1+
+If you'd be happy to look at the cleanup I previously suggested for the
+core, that would be great. When I last looked, it was simple to rework
+things so that arch code doesn't have to define MCOUNT_ADDR, but I
+hadn't figured out exactly how to split the core mcount assumptions from
+the important state machine bits.
 
-  % dmesg -C
-  % perf probe --add cmdline_proc_show
-  Added new event:
-    probe:cmdline_proc_show (on cmdline_proc_show)
+I'll take another look and see if I can provide more detail. :)
 
-  You can now use it in all perf tools, such as:
-
-          perf record -e probe:cmdline_proc_show -aR sleep 1
-
-  % perf record -e probe:cmdline_proc_show -aR sleep 30 &
-  [1] 1007
-  % insmod samples/livepatch/livepatch-sample.ko
-  insmod: ERROR: could not insert module samples/livepatch/livepatch-sample.ko: Device or resource busy
-  % dmesg
-  [  440.913962] livepatch_sample: tainting kernel with TAINT_LIVEPATCH
-  [  440.917123] livepatch_sample: module verification failed: signature and/or required key missing - tainting kernel
-  [  440.942493] livepatch: enabling patch 'livepatch_sample'
-  [  440.943445] livepatch: failed to register ftrace handler for function 'cmdline_proc_show' (-16)
-  [  440.944576] livepatch: failed to patch object 'vmlinux'
-  [  440.945270] livepatch: failed to enable patch 'livepatch_sample'
-  [  440.946085] livepatch: 'livepatch_sample': unpatching complete
-
-This same behavior holds in reverse, if we want to probe a livepatched
-function:
-
-  % insmod samples/livepatch/livepatch-sample.ko
-  % perf probe --add cmdline_proc_show
-  Added new event:
-    probe:cmdline_proc_show (on cmdline_proc_show)
-
-  You can now use it in all perf tools, such as:
-
-          perf record -e probe:cmdline_proc_show -aR sleep 1
-
-  % perf record -e probe:cmdline_proc_show -aR sleep 30
-  Error:
-  The sys_perf_event_open() syscall returned with 16 (Device or resource busy) for event (probe:cmdline_proc_show).
-  /bin/dmesg | grep -i perf may provide additional information.
-
-
-Now, if I read kernel/trace/trace_kprobe.c :: kprobe_dispatcher()
-correctly, it's only going to return !0 (indicating a modified regs->ip)
-when kprobe_perf_func() returns !0, i.e. regs->ip changes over a call to
-trace_call_bpf().
-
-Aside: should kprobe_ftrace_handler() check that FTRACE_OPS_FL_IPMODIFY
-is set when a pre_handler returns !0?
-
-In kpatch #47, Josh suggested:
-
-- If a kprobe handler needs to modify IP, user sets KPROBE_FLAG_IPMODIFY
-  flag to register_kprobe, and then kprobes sets FTRACE_OPS_FL_IPMODIFY
-  when registering with ftrace for that probe.
-
-- If KPROBE_FLAG_IPMODIFY is not used, kprobe_ftrace_handler() can
-  detect when a kprobe handler changes regs->ip and restore it to its
-  original value (regs->ip = ip).
-
-Is this something that could still be supported?  In cases like perf
-probe, could we get away with not setting FTRACE_OPS_FL_IPMODIFY?  The
-current way that we're applying that flag, kprobes and livepatch are
-mutually exclusive (for the same function).
-
-Regards,
-
--- Joe
+Thanks,
+Mark.
