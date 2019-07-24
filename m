@@ -2,102 +2,77 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 054B473374
-	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2019 18:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B919E73423
+	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2019 18:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727295AbfGXQPF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 24 Jul 2019 12:15:05 -0400
-Received: from foss.arm.com ([217.140.110.172]:43186 "EHLO foss.arm.com"
+        id S2387558AbfGXQpS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 24 Jul 2019 12:45:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57486 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726099AbfGXQPF (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 24 Jul 2019 12:15:05 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94F4828;
-        Wed, 24 Jul 2019 09:15:04 -0700 (PDT)
-Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AD5DE3F71F;
-        Wed, 24 Jul 2019 09:15:02 -0700 (PDT)
-Date:   Wed, 24 Jul 2019 17:15:00 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Ruslan Bilovol <ruslan.bilovol@gmail.com>
-Cc:     Will Deacon <will.deacon@arm.com>, Torsten Duwe <duwe@lst.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Julien Thierry <julien.thierry@arm.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>,
-        Amit Daniel Kachhap <amit.kachhap@arm.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: [PATCH v8 0/5] arm64: ftrace with regs
-Message-ID: <20190724161500.GG2624@lakrids.cambridge.arm.com>
-References: <20190208150826.44EBC68DD2@newverein.lst.de>
- <0f8d2e77-7e51-fba8-b179-102318d9ff84@arm.com>
- <20190311114945.GA5625@lst.de>
- <20190408153628.GL6139@lakrids.cambridge.arm.com>
- <20190409175238.GE9255@fuggles.cambridge.arm.com>
- <CAB=otbRXuDHSmh9NrGYoep=hxOKkXVsy6R84ACZ9xELwNr=4AA@mail.gmail.com>
+        id S2387555AbfGXQpS (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 24 Jul 2019 12:45:18 -0400
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 956ED2189F;
+        Wed, 24 Jul 2019 16:45:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563986716;
+        bh=k5s66pEgEBv+nR9tMAZXt6QiRx8uZOUa/8yBMLysUjw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=n3Yky+YTRGgs66Y/xnADc+NfLsjRajh3fGCCqD2l2hlcUqLBKcTEgDYori4bPBGbK
+         YMr67AaPU7n3f+y/DR9kDv9iKCSACSw0/NbgWgXT696BFsZsohYsvHdamp5dRH40wr
+         uuwMBFW1Oep3t9+PDs341olSQti/DkfCa4X/G/Iw=
+Subject: Re: [PATCH v3] selftests/livepatch: add test skip handling
+To:     Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     linux-kselftest@vger.kernel.org, live-patching@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>, shuah <shuah@kernel.org>
+References: <20190722140544.29867-1-joe.lawrence@redhat.com>
+ <20190724062730.xtutfqgpsr3pubv7@pathway.suse.cz>
+From:   shuah <shuah@kernel.org>
+Message-ID: <0aae34cf-ae82-1f80-7bc9-27708c61287a@kernel.org>
+Date:   Wed, 24 Jul 2019 10:45:05 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAB=otbRXuDHSmh9NrGYoep=hxOKkXVsy6R84ACZ9xELwNr=4AA@mail.gmail.com>
-User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
+In-Reply-To: <20190724062730.xtutfqgpsr3pubv7@pathway.suse.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Ruslan,
-
-On Wed, Jul 10, 2019 at 03:27:58PM +0300, Ruslan Bilovol wrote:
-> On Tue, Apr 9, 2019 at 8:52 PM Will Deacon <will.deacon@arm.com> wrote:
-> >
-> > On Mon, Apr 08, 2019 at 04:36:28PM +0100, Mark Rutland wrote:
-> > > On Mon, Mar 11, 2019 at 12:49:46PM +0100, Torsten Duwe wrote:
-> > > > On Wed, Feb 13, 2019 at 11:11:04AM +0000, Julien Thierry wrote:
-> > > > > Hi Torsten,
-> > > > >
-> > > > > On 08/02/2019 15:08, Torsten Duwe wrote:
-> > > > > > Patch series v8, as discussed.
-> > > > > > The whole series applies cleanly on 5.0-rc5
-> > > >
-> > > > So what's the status now? Besides debatable minor style
-> > > > issues there were no more objections to v8. Would this
-> > > > go through the ARM repo or via the ftrace repo?
-> > >
-> > > Sorry agains for the delay on this. I'm now back in the office and in
-> > > front of a computer daily, so I can spend a bit more time on this.
-> > >
-> > > Regardless of anything else, I think that we should queue the first
-> > > three patches now. I've poked the relevant maintainers for their acks so
-> > > that those can be taken via the arm64 tree.
-> > >
-> > > I'm happy to do the trivial cleanups on the last couple of patches (e.g.
-> > > s/lr/x30), and I'm actively looking at the API rework I requested.
-> >
-> > Ok, I've picked up patches 1-3 and I'll wait for you to spin updates to the
-> > last two.
+On 7/24/19 12:27 AM, Petr Mladek wrote:
+> On Mon 2019-07-22 10:05:44, Joe Lawrence wrote:
+>> Add a skip() message function that stops the test, logs an explanation,
+>> and sets the "skip" return code (4).
+>>
+>> Before loading a livepatch self-test kernel module, first verify that
+>> we've built and installed it by running a 'modprobe --dry-run'.  This
+>> should catch a few environment issues, including !CONFIG_LIVEPATCH and
+>> !CONFIG_TEST_LIVEPATCH.  In these cases, exit gracefully with the new
+>> skip() function.
+>>
+>> Reported-by: Jiri Benc <jbenc@redhat.com>
+>> Suggested-by: Shuah Khan <shuah@kernel.org>
+>> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 > 
-> Ok, I see that patches 1-3 are picked up and are already present in recent
-> kernels.
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
 > 
-> Is there any progress on remaining two patches?
+> Best Regards,
+> Petr
+> 
+> PS: No need to send v4. The missing "to", suggested by Shuah, could
+>      get added when pushing the patch into the repo.
+> 
 
-I'm afraid that I've been distracted on other fronts, so I haven't made
-progress there.
+I can't make changes to the patch. I can adjust the commit log at times
+and correct merge conflicts.
 
-> Any help required?
+I would like to see v4 for this.
 
-If you'd be happy to look at the cleanup I previously suggested for the
-core, that would be great. When I last looked, it was simple to rework
-things so that arch code doesn't have to define MCOUNT_ADDR, but I
-hadn't figured out exactly how to split the core mcount assumptions from
-the important state machine bits.
-
-I'll take another look and see if I can provide more detail. :)
-
-Thanks,
-Mark.
+thanks,
+-- Shuah
