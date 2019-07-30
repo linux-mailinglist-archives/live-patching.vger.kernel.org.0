@@ -2,75 +2,87 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C850378288
-	for <lists+live-patching@lfdr.de>; Mon, 29 Jul 2019 01:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFDC7B002
+	for <lists+live-patching@lfdr.de>; Tue, 30 Jul 2019 19:31:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726319AbfG1X61 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 28 Jul 2019 19:58:27 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:38772 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbfG1X60 (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Sun, 28 Jul 2019 19:58:26 -0400
-Received: by mail-oi1-f193.google.com with SMTP id v186so44037779oie.5
-        for <live-patching@vger.kernel.org>; Sun, 28 Jul 2019 16:58:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=8HerNJ+KPshsmAFkEGOs3SrN9ygWfkRsx5jp23KpQmk=;
-        b=UE1OVjFfxfUyKE47fGFjsbqH2pjkUAchAFgYQVBOZQD93o44X/us08fYgMsme12cO/
-         gNl5T1GlO9/UKMq+2vsOeOR5ikSx/HPwlcwbsFaBpuB4WByUE/HaYdqBi2TJjTHa19LH
-         p6t4ahjga4IAe2ET7y1hB6Zm6fnZYWmcKtAbQXp5uZxZzkk4Rj0MV1B/GAEdvpStyYzP
-         vejs86suD0/pzc5vESaJJ/pBAY+uAgAQyWsJH6YqOYo2GmQpnjc+vWU3zQ5ce788XKgp
-         8YWvFM+MWlPUxO1OdHgMjW+Z8RSQtJCWyHKCYL37noZFaBkwE3+KijpagGWyYQW3mfoW
-         196Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=8HerNJ+KPshsmAFkEGOs3SrN9ygWfkRsx5jp23KpQmk=;
-        b=LBiSKZq5zinnI/XXhwDO/Rkayl3PkbIVx5W3mTFhOl0NRMLylJO77P/4i1BkoEKFYs
-         sx1hpyVzq8GFpL/q0jHagC4606vf9Nx4t5NJlbFKokk9I96PYBz8/ql/UnTVy96CKIkv
-         +bF38ZOCm40H4EVzucsLLjoUiIt/mol8C4+04sjlkXvjTgLc96vSLNAe79OiSN4QOsZb
-         a60f4GnR2l1t4i+ZKmsgPvJYgLM/fV7ZHPXqMichD7/MiQ3vO1Tk5QV4L9c5Rn9/YYiR
-         +aUrpaN2jH6VIMxmlGDW91F4OPGuR40Hr1cubIAqV+RtTA5J5y1cg7qfdaV0ATDYsIjI
-         e0Sw==
-X-Gm-Message-State: APjAAAUPhKAi+H8ojddw2zS1uqj7lQjAZjcuICQSZgup0GTLcbU1xAdP
-        Xqfxq9CUVIbBSbv869N4Q1kke/DBYKkI/zqfqRA=
-X-Google-Smtp-Source: APXvYqwRfBIKnrRW1g3hbIT03ZSrOUL2g7JhUSY0xVxHn4Icg2TL499H2WIVXhgLAQc6oMV9DjWCQnk+R8KQjohhffc=
-X-Received: by 2002:aca:dd04:: with SMTP id u4mr51516865oig.152.1564358305943;
- Sun, 28 Jul 2019 16:58:25 -0700 (PDT)
+        id S1729224AbfG3RbM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Jul 2019 13:31:12 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53118 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726740AbfG3RbM (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Jul 2019 13:31:12 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 47EDA3082B15;
+        Tue, 30 Jul 2019 17:31:12 +0000 (UTC)
+Received: from [10.18.17.153] (dhcp-17-153.bos.redhat.com [10.18.17.153])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DBD565D9D3;
+        Tue, 30 Jul 2019 17:31:11 +0000 (UTC)
+Subject: Re: [PATCH] selftests/livepatch: push and pop dynamic debug config
+To:     shuah <shuah@kernel.org>
+Cc:     linux-kselftest@vger.kernel.org, live-patching@vger.kernel.org
+References: <20190718202948.3404-1-joe.lawrence@redhat.com>
+ <e5027867-88db-fa45-6767-286f3b7b86ad@redhat.com>
+ <20190719104625.5aigkzsm5wh3d5kn@pathway.suse.cz>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <23dcfc4d-c741-bea1-06f4-6eae48d64d63@redhat.com>
+Date:   Tue, 30 Jul 2019 13:31:10 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Received: by 2002:a9d:7614:0:0:0:0:0 with HTTP; Sun, 28 Jul 2019 16:58:25
- -0700 (PDT)
-Reply-To: williamrobert416@gmail.com
-From:   "Mr. Robert William" <omarmariam373@gmail.com>
-Date:   Mon, 29 Jul 2019 00:58:25 +0100
-Message-ID: <CA+FSRKAVxyW31h9d68W9WJKo0FOqOjiUd7uUaaS_VywvMz8sEw@mail.gmail.com>
-Subject: Its Urgent
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190719104625.5aigkzsm5wh3d5kn@pathway.suse.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 30 Jul 2019 17:31:12 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
--- 
-Hello,
+On 7/19/19 6:46 AM, Petr Mladek wrote:
+> On Thu 2019-07-18 16:42:25, Joe Lawrence wrote:
+>> On 7/18/19 4:29 PM, Joe Lawrence wrote:
+>>> The livepatching self-tests tweak the dynamic debug config to verify
+>>> the kernel log during the tests.  Enhance set_dynamic_debug() so that
+>>> the config changes are restored when the script exits.
+>>>
+>>> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+>>> index de5a504ffdbc..860f27665ebd 100644
+>>> --- a/tools/testing/selftests/livepatch/functions.sh
+>>> +++ b/tools/testing/selftests/livepatch/functions.sh
+>>> @@ -29,13 +29,27 @@ function die() {
+>>>    	exit 1
+>>>    }
+>>> -# set_dynamic_debug() - setup kernel dynamic debug
+>>> -#	TODO - push and pop this config?
+>>> +function push_dynamic_debug() {
+>>> +        DYNAMIC_DEBUG=$(grep '^kernel/livepatch' /sys/kernel/debug/dynamic_debug/control | \
+>>> +                awk -F'[: ]' '{print "file " $1 " line " $2 " " $4}')
+>>> +}
+>>
+>> It works for me, though I feel that the
+>> /sys/kernel/debug/dynamic_debug/control output to input translation is
+>> brittle.  It would be nice to have some kind of mass export/import
+>> capability for that interface.
+> 
+> I believe that the format is pretty stable. We could always reconsider
+> it when it breaks.
+> 
+> I could confirm that it restores the original state, so:
+> 
+> Tested-by: Petr Mladek <pmladek@suse.com>
+> 
+> Best Regards,
+> Petr
+> 
 
-I am Eng. Robert William, a retired Marine Engineer residing in
-Trinidad & Tobago.
-Unfortunately i am admitted to the hospital for a cancer (Sickness)
-over a year now,my doctor reported that i have only few months to pass
-away. Please i need your consent to invest my money (USD$1.8 Million)
-in any business of your
+Hi Shuah,
 
-choice in your country before i die, i have no other relatives not
-even children because i lost my family in a fire disaster in 2005.
-Please i need your urgent and
+Can you review and route this patch through your tree as well?
 
-kind response to enable me send you more information on how to contact
-my bank as my next of kin to process the fund into your bank account.
+Thanks,
 
-
-Mr Robert William
+-- Joe
