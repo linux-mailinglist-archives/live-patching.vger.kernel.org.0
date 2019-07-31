@@ -2,235 +2,197 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B36AA7B841
-	for <lists+live-patching@lfdr.de>; Wed, 31 Jul 2019 05:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2FD67B95A
+	for <lists+live-patching@lfdr.de>; Wed, 31 Jul 2019 07:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727318AbfGaDgx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Jul 2019 23:36:53 -0400
-Received: from conssluserg-03.nifty.com ([210.131.2.82]:50617 "EHLO
-        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbfGaDgx (ORCPT
+        id S1726231AbfGaF7T (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 31 Jul 2019 01:59:19 -0400
+Received: from conssluserg-01.nifty.com ([210.131.2.80]:37145 "EHLO
+        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725935AbfGaF7T (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Jul 2019 23:36:53 -0400
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id x6V3agnq023839;
-        Wed, 31 Jul 2019 12:36:45 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com x6V3agnq023839
+        Wed, 31 Jul 2019 01:59:19 -0400
+X-Greylist: delayed 11287 seconds by postgrey-1.27 at vger.kernel.org; Wed, 31 Jul 2019 01:59:17 EDT
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com [209.85.222.41]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id x6V5x46Z020578;
+        Wed, 31 Jul 2019 14:59:07 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com x6V5x46Z020578
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1564544205;
-        bh=ZWUXlJ6vCyDfxDsdJIqtKViAIw2UA65PS88eID+Zq5s=;
+        s=dec2015msa; t=1564552747;
+        bh=pb22LnSUq/I5TuyMMV/ed22byQ1Vd9m60c55OfeuMhI=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=FJ3tbwUl7HgSgYGVuOcJoaNhC8Sposhetgk7+SQRefX9gJUOi6alyn/NUSDT9YvEg
-         7YLfnIfWkY64gXlES2Qpsj8T05VpxIMdCU8rj9sR16fS81pg14UmqpkkyxSQjzMklK
-         GkKyTNv2I7Rmgs7kINCt6DlUaRt5E4EMV0M61J1irriKgvHg/yJJ+BKuqDEwJGhfI/
-         4JUUNhvgQsiYPLTPGN9kQLrXiWee3QBshV22B5ruUPSNww7hqPAi7v3ZEsqbB98NUe
-         Nf48qAQpfzjWWaV/iRRNhWOVj7ZaRUJbxZOWdkSssMQqd2rOHM+HvEHXomyq39AkXz
-         6PPr7IhkmLRPQ==
-X-Nifty-SrcIP: [209.85.222.42]
-Received: by mail-ua1-f42.google.com with SMTP id a97so26368983uaa.9;
-        Tue, 30 Jul 2019 20:36:45 -0700 (PDT)
-X-Gm-Message-State: APjAAAVUYgZ+ExF0l0g0H/G9diiiEDchVqg2QI3hVjxzUBg0tMVk81us
-        sjkZzweio2rSApGthe0Pqf9w9vYZLrSff6r5gpI=
-X-Google-Smtp-Source: APXvYqz6s/L4vEIgOO2gnaVIIJ8dt0VbYEcQqKM0Wi8oUweR8OASjZl3ArznIJxx3/aQwf0xeNqQaVdKGtWMddWarxo=
-X-Received: by 2002:ab0:5ea6:: with SMTP id y38mr76076029uag.40.1564544202169;
- Tue, 30 Jul 2019 20:36:42 -0700 (PDT)
+        b=E+l61C0K8NMre7x8Ip9zckBBpPk4LsH/enunjZIfdV1+ykHT3zfDPAmQn3a1B3PRh
+         zFboEnr4Xgt/jMyhawQUOQqTpltUAbV4Q8FXzV6f+YE0+lqIrFze1+weknyaneA2hC
+         r97Yxqu+AvkD5zsiSv9LEkkWgGy3JBXPO0q84NeW+OBoO4DaZM/A8kqoBwCY/7n20T
+         55VjFeR7oDTesi6qJhAXv32mPpgSzremGe0tfEJ9svL7YxC8arDLzfGTsRPfue26hy
+         2wOvMAlxtKM4v2p13bxzNZ5dxDGc+4LFe8CKzbI61kM+omKfrJt8pyNGXgFVA4PBms
+         jXFn1aqG4YCrA==
+X-Nifty-SrcIP: [209.85.222.41]
+Received: by mail-ua1-f41.google.com with SMTP id 34so26500080uar.8;
+        Tue, 30 Jul 2019 22:59:06 -0700 (PDT)
+X-Gm-Message-State: APjAAAW7XurefAVn10eb0lliGeWdXoCGO4CE/l2m1t0QTOPqQe5uLstu
+        vCl53Mwc5f27h0bdpJ97AUMLCJ3QC9dS2hAw4oQ=
+X-Google-Smtp-Source: APXvYqzUIBQ+X2Qhsv3t3MCmTOaywit/O1KFV5D0RgL5oi4OIjK2ALX40Vb/IhgnVqtvrl3BHdGPzv8CCw0HpFG5Wlk=
+X-Received: by 2002:ab0:70d9:: with SMTP id r25mr47885061ual.109.1564552743799;
+ Tue, 30 Jul 2019 22:59:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190509143859.9050-1-joe.lawrence@redhat.com>
- <20190509143859.9050-4-joe.lawrence@redhat.com> <CAK7LNAT3qZ8EESs0eEtaezjgjzRa1XqoAAxpKh_sLi_JPJie2A@mail.gmail.com>
-In-Reply-To: <CAK7LNAT3qZ8EESs0eEtaezjgjzRa1XqoAAxpKh_sLi_JPJie2A@mail.gmail.com>
+References: <20190509143859.9050-1-joe.lawrence@redhat.com> <20190509143859.9050-7-joe.lawrence@redhat.com>
+In-Reply-To: <20190509143859.9050-7-joe.lawrence@redhat.com>
 From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Wed, 31 Jul 2019 12:36:05 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAToLyKSk9C0hwuMRxDK8yjJtghi_y6fH1p0+wK7N1wKow@mail.gmail.com>
-Message-ID: <CAK7LNAToLyKSk9C0hwuMRxDK8yjJtghi_y6fH1p0+wK7N1wKow@mail.gmail.com>
-Subject: Re: [PATCH v4 03/10] livepatch: Add klp-convert tool
+Date:   Wed, 31 Jul 2019 14:58:27 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQuS-YcXecfJ21BGzc0CimzWxQcYST5-1xRgnCQGtcL4A@mail.gmail.com>
+Message-ID: <CAK7LNAQuS-YcXecfJ21BGzc0CimzWxQcYST5-1xRgnCQGtcL4A@mail.gmail.com>
+Subject: Re: [PATCH v4 06/10] modpost: Add modinfo flag to livepatch modules
 To:     Joe Lawrence <joe.lawrence@redhat.com>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         live-patching@vger.kernel.org,
         Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="00000000000086ed9a058ef3d24e"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 11:50 AM Masahiro Yamada
-<yamada.masahiro@socionext.com> wrote:
->
-> On Thu, May 9, 2019 at 11:39 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
-> >
-> > From: Josh Poimboeuf <jpoimboe@redhat.com>
-> >
-> > Livepatches may use symbols which are not contained in its own scope,
-> > and, because of that, may end up compiled with relocations that will
-> > only be resolved during module load. Yet, when the referenced symbols
-> > are not exported, solving this relocation requires information on the
-> > object that holds the symbol (either vmlinux or modules) and its
-> > position inside the object, as an object may contain multiple symbols
-> > with the same name. Providing such information must be done
-> > accordingly to what is specified in
-> > Documentation/livepatch/module-elf-format.txt.
-> >
-> > Currently, there is no trivial way to embed the required information
-> > as requested in the final livepatch elf object. klp-convert solves
-> > this problem in two different forms: (i) by relying on Symbols.list,
-> > which is built during kernel compilation, to automatically infer the
-> > relocation targeted symbol, and, when such inference is not possible
-> > (ii) by using annotations in the elf object to convert the relocation
-> > accordingly to the specification, enabling it to be handled by the
-> > livepatch loader.
-> >
-> > Given the above, create scripts/livepatch to hold tools developed for
-> > livepatches and add source files for klp-convert there.
-> >
-> > The core file of klp-convert is scripts/livepatch/klp-convert.c, which
-> > implements the heuristics used to solve the relocations and the
-> > conversion of unresolved symbols into the expected format, as defined
-> > in [1].
-> >
-> > klp-convert receives as arguments the Symbols.list file, an input
-> > livepatch module to be converted and the output name for the converted
-> > livepatch. When it starts running, klp-convert parses Symbols.list and
-> > builds two internal lists of symbols, one containing the exported and
-> > another containing the non-exported symbols. Then, by parsing the rela
-> > sections in the elf object, klp-convert identifies which symbols must
-> > be converted, which are those unresolved and that do not have a
-> > corresponding exported symbol, and attempts to convert them
-> > accordingly to the specification.
-> >
-> > By using Symbols.list, klp-convert identifies which symbols have names
-> > that only appear in a single kernel object, thus being capable of
-> > resolving these cases without the intervention of the developer. When
-> > various homonymous symbols exist through kernel objects, it is not
-> > possible to infer the right one, thus klp-convert falls back into
-> > using developer annotations. If these were not provided, then the tool
-> > will print a list with all acceptable targets for the symbol being
-> > processed.
-> >
-> > Annotations in the context of klp-convert are accessible as struct
-> > klp_module_reloc entries in sections named
-> > .klp.module_relocs.<objname>. These entries are pairs of symbol
-> > references and positions which are to be resolved against definitions
-> > in <objname>.
-> >
-> > Define the structure klp_module_reloc in
-> > include/linux/uapi/livepatch.h allowing developers to annotate the
-> > livepatch source code with it.
-> >
-> > klp-convert relies on libelf and on a list implementation. Add files
-> > scripts/livepatch/elf.c and scripts/livepatch/elf.h, which are a
-> > libelf interfacing layer and scripts/livepatch/list.h, which is a
-> > list implementation.
-> >
-> > Update Makefiles to correctly support the compilation of the new tool,
-> > update MAINTAINERS file and add a .gitignore file.
-> >
-> > [1] - Documentation/livepatch/module-elf-format.txt
-> >
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-> > Signed-off-by: Joao Moreira <jmoreira@suse.de>
-> > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-> > ---
-> >  MAINTAINERS                     |   1 +
-> >  include/uapi/linux/livepatch.h  |   5 +
-> >  scripts/Makefile                |   1 +
-> >  scripts/livepatch/.gitignore    |   1 +
-> >  scripts/livepatch/Makefile      |   7 +
-> >  scripts/livepatch/elf.c         | 753 ++++++++++++++++++++++++++++++++
-> >  scripts/livepatch/elf.h         |  73 ++++
-> >  scripts/livepatch/klp-convert.c | 713 ++++++++++++++++++++++++++++++
-> >  scripts/livepatch/klp-convert.h |  39 ++
-> >  scripts/livepatch/list.h        | 391 +++++++++++++++++
-> >  10 files changed, 1984 insertions(+)
-> >  create mode 100644 scripts/livepatch/.gitignore
-> >  create mode 100644 scripts/livepatch/Makefile
-> >  create mode 100644 scripts/livepatch/elf.c
-> >  create mode 100644 scripts/livepatch/elf.h
-> >  create mode 100644 scripts/livepatch/klp-convert.c
-> >  create mode 100644 scripts/livepatch/klp-convert.h
-> >  create mode 100644 scripts/livepatch/list.h
-> >
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 52842fa37261..c1587e1cc385 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -9022,6 +9022,7 @@ F:        arch/x86/kernel/livepatch.c
-> >  F:     Documentation/livepatch/
-> >  F:     Documentation/ABI/testing/sysfs-kernel-livepatch
-> >  F:     samples/livepatch/
-> > +F:     scripts/livepatch/
-> >  F:     tools/testing/selftests/livepatch/
-> >  L:     live-patching@vger.kernel.org
-> >  T:     git git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git
-> > diff --git a/include/uapi/linux/livepatch.h b/include/uapi/linux/livepatch.h
-> > index e19430918a07..1c364d42d38e 100644
-> > --- a/include/uapi/linux/livepatch.h
-> > +++ b/include/uapi/linux/livepatch.h
-> > @@ -12,4 +12,9 @@
-> >  #define KLP_RELA_PREFIX                ".klp.rela."
-> >  #define KLP_SYM_PREFIX         ".klp.sym."
-> >
-> > +struct klp_module_reloc {
-> > +       void *sym;
-> > +       unsigned int sympos;
-> > +} __attribute__((packed));
-> > +
-> >  #endif /* _UAPI_LIVEPATCH_H */
-> > diff --git a/scripts/Makefile b/scripts/Makefile
-> > index 9d442ee050bd..bf9ce74b70b0 100644
-> > --- a/scripts/Makefile
-> > +++ b/scripts/Makefile
-> > @@ -39,6 +39,7 @@ build_unifdef: $(obj)/unifdef
-> >  subdir-$(CONFIG_GCC_PLUGINS) += gcc-plugins
-> >  subdir-$(CONFIG_MODVERSIONS) += genksyms
-> >  subdir-$(CONFIG_SECURITY_SELINUX) += selinux
-> > +subdir-$(CONFIG_LIVEPATCH)   += livepatch
-> >
-> >  # Let clean descend into subdirs
-> >  subdir-        += basic dtc gdb kconfig mod package
-> > diff --git a/scripts/livepatch/.gitignore b/scripts/livepatch/.gitignore
-> > new file mode 100644
-> > index 000000000000..dc22fe4b6a5b
-> > --- /dev/null
-> > +++ b/scripts/livepatch/.gitignore
-> > @@ -0,0 +1 @@
-> > +klp-convert
-> > diff --git a/scripts/livepatch/Makefile b/scripts/livepatch/Makefile
-> > new file mode 100644
-> > index 000000000000..2842ecdba3fd
-> > --- /dev/null
-> > +++ b/scripts/livepatch/Makefile
-> > @@ -0,0 +1,7 @@
-> > +hostprogs-y                    := klp-convert
-> > +always                         := $(hostprogs-y)
-> > +
-> > +klp-convert-objs               := klp-convert.o elf.o
-> > +
-> > +HOST_EXTRACFLAGS               := -g -I$(INSTALL_HDR_PATH)/include -Wall
->
-> This looks strange.
->
-> Theoretically, you cannot include headers in $(INSTALL_HDR_PATH)/include
-> from host programs.
->
-> headers_install works for the target architecture, not host architecture.
-> This may cause a strange result when you are cross-compiling the kernel.
->
-> BTW, which header in $(INSTALL_HDR_PATH)/include do you need to include ?
->
->
-> Also, -Wall is redundant because it is set by the top-level Makefile.
+--00000000000086ed9a058ef3d24e
+Content-Type: text/plain; charset="UTF-8"
+
+Hi Joe,
 
 
-I deleted HOST_EXTRACFLAGS entirely,
-and I was still able to build klp-convert.
+On Thu, May 9, 2019 at 11:39 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
+>
+> From: Miroslav Benes <mbenes@suse.cz>
+>
+> Currently, livepatch infrastructure in the kernel relies on
+> MODULE_INFO(livepatch, "Y") statement in a livepatch module. Then the
+> kernel module loader knows a module is indeed livepatch module and can
+> behave accordingly.
+>
+> klp-convert, on the other hand relies on LIVEPATCH_* statement in the
+> module's Makefile for exactly the same reason.
+>
+> Remove dependency on modinfo and generate MODULE_INFO flag
+> automatically in modpost when LIVEPATCH_* is defined in the module's
+> Makefile. Generate a list of all built livepatch modules based on
+> the .livepatch file and store it in (MODVERDIR)/livepatchmods. Give
+> this list as an argument for modpost which will use it to identify
+> livepatch modules.
+>
+> As MODULE_INFO is no longer needed, remove it.
 
 
-What is the purpose of '-g' ?
-If it is only needed for local debugging,
-it should be removed from the upstream code, in my opinion.
+I do not understand this patch.
+This makes the implementation so complicated.
+
+I think MODULE_INFO(livepatch, "Y") is cleaner than
+LIVEPATCH_* in Makefile.
+
+
+How about this approach?
+
+
+[1] Make modpost generate the list of livepatch modules.
+    (livepatch-modules)
+
+[2] Generate Symbols.list in scripts/Makefile.modpost
+    (vmlinux + modules excluding livepatch-modules)
+
+[3] Run klp-convert for modules in livepatch-modules.
+
+
+If you do this, you can remove most of the build system hacks
+can't you?
+
+
+I attached an example implementation for [1].
+
+Please check whether this works.
+
+Thanks.
+
 
 
 -- 
 Best Regards
 Masahiro Yamada
+
+--00000000000086ed9a058ef3d24e
+Content-Type: text/x-patch; charset="US-ASCII"; 
+	name="0001-livepatch-make-modpost-generate-the-list-of-livepatc.patch"
+Content-Disposition: attachment; 
+	filename="0001-livepatch-make-modpost-generate-the-list-of-livepatc.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jyqu4zy00>
+X-Attachment-Id: f_jyqu4zy00
+
+RnJvbSA4NTU3MTQzMGFhMTJjZDE5YTc1Y2JjODU2ZGExMDkyMTk5ODc2ZTZhIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBNYXNhaGlybyBZYW1hZGEgPHlhbWFkYS5tYXNhaGlyb0Bzb2Np
+b25leHQuY29tPgpEYXRlOiBXZWQsIDMxIEp1bCAyMDE5IDE0OjUxOjI5ICswOTAwClN1YmplY3Q6
+IFtQQVRDSF0gbGl2ZXBhdGNoOiBtYWtlIG1vZHBvc3QgZ2VuZXJhdGUgdGhlIGxpc3Qgb2YgbGl2
+ZXBhdGNoCiBtb2R1bGVzCgpSZXZlcnNlIHRoZSBsaXZlcGF0Y2gtbW9kdWxlcyBkaXJlY3Rpb24u
+CgpUaGUgbW9kcG9zdCBnZW5lcmF0ZXMgdGhlIGxpdmVwYXRjaC1tb2R1bGVzIGZpbGUgaW5zdGVh
+ZCBvZgpNYWtlZmlsZSBmZWVkaW5nIGl0IHRvIG1vZHBvc3QuCgpUaGUgaW1wbGVtZW50YXRpb24g
+anVzdCBtaW1pY3Mgd3JpdGVfZHVtcCgpLgoKU2lnbmVkLW9mZi1ieTogTWFzYWhpcm8gWWFtYWRh
+IDx5YW1hZGEubWFzYWhpcm9Ac29jaW9uZXh0LmNvbT4KLS0tCiBzY3JpcHRzL01ha2VmaWxlLm1v
+ZHBvc3QgfCAgMyArKy0KIHNjcmlwdHMvbW9kL21vZHBvc3QuYyAgICB8IDI4ICsrKysrKysrKysr
+KysrKysrKysrKysrKysrLS0KIHNjcmlwdHMvbW9kL21vZHBvc3QuaCAgICB8ICAxICsKIDMgZmls
+ZXMgY2hhbmdlZCwgMjkgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
+YS9zY3JpcHRzL01ha2VmaWxlLm1vZHBvc3QgYi9zY3JpcHRzL01ha2VmaWxlLm1vZHBvc3QKaW5k
+ZXggOTJlZDAyZDdjZDVlLi5jODg0YjdiNzA5Y2EgMTAwNjQ0Ci0tLSBhL3NjcmlwdHMvTWFrZWZp
+bGUubW9kcG9zdAorKysgYi9zY3JpcHRzL01ha2VmaWxlLm1vZHBvc3QKQEAgLTU2LDcgKzU2LDgg
+QEAgTU9EUE9TVCA9IHNjcmlwdHMvbW9kL21vZHBvc3QJCQkJCQlcCiAJJChpZiAkKEtCVUlMRF9F
+WFRNT0QpLCQoYWRkcHJlZml4IC1lICwkKEtCVUlMRF9FWFRSQV9TWU1CT0xTKSkpCVwKIAkkKGlm
+ICQoS0JVSUxEX0VYVE1PRCksLW8gJChtb2R1bGVzeW1maWxlKSkJCQlcCiAJJChpZiAkKENPTkZJ
+R19TRUNUSU9OX01JU01BVENIX1dBUk5fT05MWSksLC1FKQkJCVwKLQkkKGlmICQoS0JVSUxEX01P
+RFBPU1RfV0FSTiksLXcpCisJJChpZiAkKEtCVUlMRF9NT0RQT1NUX1dBUk4pLC13KQkJCQkJXAor
+CSQoaWYgJChDT05GSUdfTElWRVBBVENIKSwtbCBsaXZlcGF0Y2gtbW9kdWxlcykKIAogaWZkZWYg
+TU9EUE9TVF9WTUxJTlVYCiAKZGlmZiAtLWdpdCBhL3NjcmlwdHMvbW9kL21vZHBvc3QuYyBiL3Nj
+cmlwdHMvbW9kL21vZHBvc3QuYwppbmRleCAzZTZkMzZkZGZjZGYuLmUzZjYzN2YyMjVlNCAxMDA2
+NDQKLS0tIGEvc2NyaXB0cy9tb2QvbW9kcG9zdC5jCisrKyBiL3NjcmlwdHMvbW9kL21vZHBvc3Qu
+YwpAQCAtMTk3Niw2ICsxOTc2LDEwIEBAIHN0YXRpYyB2b2lkIHJlYWRfc3ltYm9scyhjb25zdCBj
+aGFyICptb2RuYW1lKQogCQlsaWNlbnNlID0gZ2V0X25leHRfbW9kaW5mbygmaW5mbywgImxpY2Vu
+c2UiLCBsaWNlbnNlKTsKIAl9CiAKKwkvKiBMaXZlcGF0Y2ggbW9kdWxlcyBoYXZlIHVucmVzb2x2
+ZWQgc3ltYm9scyByZXNvbHZlZCBieSBrbHAtY29udmVydCAqLworCWlmIChnZXRfbW9kaW5mbygm
+aW5mbywgImxpdmVwYXRjaCIpKQorCQltb2QtPmxpdmVwYXRjaCA9IDE7CisKIAlmb3IgKHN5bSA9
+IGluZm8uc3ltdGFiX3N0YXJ0OyBzeW0gPCBpbmZvLnN5bXRhYl9zdG9wOyBzeW0rKykgewogCQlz
+eW1uYW1lID0gcmVtb3ZlX2RvdChpbmZvLnN0cnRhYiArIHN5bS0+c3RfbmFtZSk7CiAKQEAgLTIx
+MTgsNyArMjEyMiw3IEBAIHN0YXRpYyBpbnQgY2hlY2tfZXhwb3J0cyhzdHJ1Y3QgbW9kdWxlICpt
+b2QpCiAJCWNvbnN0IGNoYXIgKmJhc2VuYW1lOwogCQlleHAgPSBmaW5kX3N5bWJvbChzLT5uYW1l
+KTsKIAkJaWYgKCFleHAgfHwgZXhwLT5tb2R1bGUgPT0gbW9kKSB7Ci0JCQlpZiAoaGF2ZV92bWxp
+bnV4ICYmICFzLT53ZWFrKSB7CisJCQlpZiAoaGF2ZV92bWxpbnV4ICYmICFzLT53ZWFrICYmICFt
+b2QtPmxpdmVwYXRjaCkgewogCQkJCWlmICh3YXJuX3VucmVzb2x2ZWQpIHsKIAkJCQkJd2Fybigi
+XCIlc1wiIFslcy5rb10gdW5kZWZpbmVkIVxuIiwKIAkJCQkJICAgICBzLT5uYW1lLCBtb2QtPm5h
+bWUpOwpAQCAtMjQyOSw2ICsyNDMzLDIwIEBAIHN0YXRpYyB2b2lkIHdyaXRlX2R1bXAoY29uc3Qg
+Y2hhciAqZm5hbWUpCiAJZnJlZShidWYucCk7CiB9CiAKK3N0YXRpYyB2b2lkIHdyaXRlX2xpdmVw
+YXRjaF9tb2R1bGVzKGNvbnN0IGNoYXIgKmZuYW1lKQoreworCXN0cnVjdCBidWZmZXIgYnVmID0g
+eyB9OworCXN0cnVjdCBtb2R1bGUgKm1vZDsKKworCWZvciAobW9kID0gbW9kdWxlczsgbW9kOyBt
+b2QgPSBtb2QtPm5leHQpIHsKKwkJaWYgKG1vZC0+bGl2ZXBhdGNoKQorCQkJYnVmX3ByaW50Zigm
+YnVmLCAiJXNcbiIsIG1vZC0+bmFtZSk7CisJfQorCisJd3JpdGVfaWZfY2hhbmdlZCgmYnVmLCBm
+bmFtZSk7CisJZnJlZShidWYucCk7Cit9CisKIHN0cnVjdCBleHRfc3ltX2xpc3QgewogCXN0cnVj
+dCBleHRfc3ltX2xpc3QgKm5leHQ7CiAJY29uc3QgY2hhciAqZmlsZTsKQEAgLTI0NDAsMTMgKzI0
+NTgsMTQgQEAgaW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKiphcmd2KQogCXN0cnVjdCBidWZmZXIg
+YnVmID0geyB9OwogCWNoYXIgKmtlcm5lbF9yZWFkID0gTlVMTCwgKm1vZHVsZV9yZWFkID0gTlVM
+TDsKIAljaGFyICpkdW1wX3dyaXRlID0gTlVMTCwgKmZpbGVzX3NvdXJjZSA9IE5VTEw7CisJY2hh
+ciAqbGl2ZXBhdGNoX21vZHVsZXMgPSBOVUxMOwogCWludCBvcHQ7CiAJaW50IGVycjsKIAlpbnQg
+bjsKIAlzdHJ1Y3QgZXh0X3N5bV9saXN0ICpleHRzeW1faXRlcjsKIAlzdHJ1Y3QgZXh0X3N5bV9s
+aXN0ICpleHRzeW1fc3RhcnQgPSBOVUxMOwogCi0Jd2hpbGUgKChvcHQgPSBnZXRvcHQoYXJnYywg
+YXJndiwgImk6STplOm1uc1Q6bzphd0UiKSkgIT0gLTEpIHsKKwl3aGlsZSAoKG9wdCA9IGdldG9w
+dChhcmdjLCBhcmd2LCAiaTpJOmU6bDptbnNUOm86YXdFIikpICE9IC0xKSB7CiAJCXN3aXRjaCAo
+b3B0KSB7CiAJCWNhc2UgJ2knOgogCQkJa2VybmVsX3JlYWQgPSBvcHRhcmc7CkBAIC0yNDYzLDYg
+KzI0ODIsOSBAQCBpbnQgbWFpbihpbnQgYXJnYywgY2hhciAqKmFyZ3YpCiAJCQlleHRzeW1faXRl
+ci0+ZmlsZSA9IG9wdGFyZzsKIAkJCWV4dHN5bV9zdGFydCA9IGV4dHN5bV9pdGVyOwogCQkJYnJl
+YWs7CisJCWNhc2UgJ2wnOgorCQkJbGl2ZXBhdGNoX21vZHVsZXMgPSBvcHRhcmc7CisJCQlicmVh
+azsKIAkJY2FzZSAnbSc6CiAJCQltb2R2ZXJzaW9ucyA9IDE7CiAJCQlicmVhazsKQEAgLTI1MzUs
+NiArMjU1Nyw4IEBAIGludCBtYWluKGludCBhcmdjLCBjaGFyICoqYXJndikKIAl9CiAJaWYgKGR1
+bXBfd3JpdGUpCiAJCXdyaXRlX2R1bXAoZHVtcF93cml0ZSk7CisJaWYgKGxpdmVwYXRjaF9tb2R1
+bGVzKQorCQl3cml0ZV9saXZlcGF0Y2hfbW9kdWxlcyhsaXZlcGF0Y2hfbW9kdWxlcyk7CiAJaWYg
+KHNlY19taXNtYXRjaF9jb3VudCAmJiBzZWNfbWlzbWF0Y2hfZmF0YWwpCiAJCWZhdGFsKCJtb2Rw
+b3N0OiBTZWN0aW9uIG1pc21hdGNoZXMgZGV0ZWN0ZWQuXG4iCiAJCSAgICAgICJTZXQgQ09ORklH
+X1NFQ1RJT05fTUlTTUFUQ0hfV0FSTl9PTkxZPXkgdG8gYWxsb3cgdGhlbS5cbiIpOwpkaWZmIC0t
+Z2l0IGEvc2NyaXB0cy9tb2QvbW9kcG9zdC5oIGIvc2NyaXB0cy9tb2QvbW9kcG9zdC5oCmluZGV4
+IDg0NTNkNmFjMmY3Ny4uMmFjZmFhZTA2NGVjIDEwMDY0NAotLS0gYS9zY3JpcHRzL21vZC9tb2Rw
+b3N0LmgKKysrIGIvc2NyaXB0cy9tb2QvbW9kcG9zdC5oCkBAIC0xMTgsNiArMTE4LDcgQEAgc3Ry
+dWN0IG1vZHVsZSB7CiAJaW50IHNraXA7CiAJaW50IGhhc19pbml0OwogCWludCBoYXNfY2xlYW51
+cDsKKwlpbnQgbGl2ZXBhdGNoOwogCXN0cnVjdCBidWZmZXIgZGV2X3RhYmxlX2J1ZjsKIAljaGFy
+CSAgICAgc3JjdmVyc2lvblsyNV07CiAJaW50IGlzX2RvdF9vOwotLSAKMi4xNy4xCgo=
+--00000000000086ed9a058ef3d24e--
