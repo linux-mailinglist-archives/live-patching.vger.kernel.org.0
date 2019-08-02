@@ -2,29 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4CB17D885
-	for <lists+live-patching@lfdr.de>; Thu,  1 Aug 2019 11:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB1D8018B
+	for <lists+live-patching@lfdr.de>; Fri,  2 Aug 2019 22:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729449AbfHAJZb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 1 Aug 2019 05:25:31 -0400
-Received: from [182.61.175.77] ([182.61.175.77]:57504 "EHLO
-        miaoxie-BaiDu.localdomain" rhost-flags-FAIL-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726521AbfHAJZb (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 1 Aug 2019 05:25:31 -0400
-X-Greylist: delayed 682 seconds by postgrey-1.27 at vger.kernel.org; Thu, 01 Aug 2019 05:25:31 EDT
-Received: from localhost (localhost [IPv6:::1])
-        by miaoxie-BaiDu.localdomain (Postfix) with SMTP id 67864102A2F
-        for <live-patching@vger.kernel.org>; Thu,  1 Aug 2019 17:13:29 +0800 (CST)
-From:   live-patching@vger.kernel.org
-Reply-To: prodawez@armyspy.com
-To:     GLwlive-patching@vger.kernel.org
-Subject: Zdravstvujte! Vas interesuyut klientskie bazy dannyh?
-Message-Id: <20190801091329.67864102A2F@miaoxie-BaiDu.localdomain>
-Date:   Thu,  1 Aug 2019 17:13:29 +0800 (CST)
+        id S2406905AbfHBUEh (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 2 Aug 2019 16:04:37 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41240 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406875AbfHBUEh (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 2 Aug 2019 16:04:37 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D88A5309DEFA;
+        Fri,  2 Aug 2019 20:04:36 +0000 (UTC)
+Received: from treble (ovpn-120-177.rdu2.redhat.com [10.10.120.177])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 76D9A5D962;
+        Fri,  2 Aug 2019 20:04:31 +0000 (UTC)
+Date:   Fri, 2 Aug 2019 15:04:29 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     live-patching@vger.kernel.org
+Cc:     Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Nicolai Stange <nstange@suse.com>,
+        Joao Moreira <jmoreira@suse.de>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Alice Ferrazzi <alice.ferrazzi@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [URGENT] Please submit your LPC topic proposals by Monday
+Message-ID: <20190802200429.sbk63umojkwjsize@treble>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Fri, 02 Aug 2019 20:04:37 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Zdravstvujte! Vas interesuyut klientskie bazy dannyh?
+Hi all,
+
+Sorry for the late notice, but the CfP for LPC microconference topics is
+rapidly approaching.  In fact, I just realized the deadline is
+officially today, but they're giving us until Monday.
+
+This year, each presenter is supposed to submit their proposal on the
+LPC web site.  Here's what we initially proposed:
+
+  https://www.linuxplumbersconf.org/event/4/page/34-accepted-microconferences#lpatch
+
+     5 min Intro - What happened in kernel live patching over the last year
+     API for state changes made by callbacks [1][2]
+     source-based livepatch creation tooling [3][4]
+     klp-convert [5][6]
+     livepatch developers guide
+     userspace live patching
+
+If one of those topics is yours, or even if you have something else
+you'd like to present/discuss, please go ahead and submit a proposal.  I
+think this is the link for submitting:
+
+  https://www.linuxplumbersconf.org/login/?next=%2Fevent%2F4%2Fabstracts%2F%23submit-abstract
+
+When planning your talk, please consider Steven Rostedt's sage advice:
+
+  Please avoid presentations. There's not much time per topic thus the
+  time spent on a topic needs to be efficient. Slides are allowed, but
+  any presentation should only be used to help bring the audience up to
+  speed on what you want to accomplish. Focus only on the necessary
+  details to allow folks to participate. This should take no more than 5
+  minutes (7 tops, but that's stretching it). The important point is
+  that slides should be only used to complement a discussion. They
+  should not be used to present a new feature or product unless it is
+  absolutely necessary for the discussion at hand. All slides and
+  "presentations" should be used to help the discussion that follows.
+
+When selecting topics, Jiri and I will prioritize those topics which are
+more discussion-based.
+
+Thanks!
+
+-- 
+Josh
