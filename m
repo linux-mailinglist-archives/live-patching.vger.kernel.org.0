@@ -2,20 +2,20 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 143A28BA53
-	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2019 15:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 158868BA77
+	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2019 15:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728312AbfHMNdf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 13 Aug 2019 09:33:35 -0400
-Received: from mx2.suse.de ([195.135.220.15]:56010 "EHLO mx1.suse.de"
+        id S1728464AbfHMNg4 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 13 Aug 2019 09:36:56 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56962 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728229AbfHMNdf (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 13 Aug 2019 09:33:35 -0400
+        id S1728413AbfHMNg4 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 13 Aug 2019 09:36:56 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8C063B009;
-        Tue, 13 Aug 2019 13:33:33 +0000 (UTC)
-Date:   Tue, 13 Aug 2019 15:33:28 +0200 (CEST)
+        by mx1.suse.de (Postfix) with ESMTP id 787DDAD05;
+        Tue, 13 Aug 2019 13:36:55 +0000 (UTC)
+Date:   Tue, 13 Aug 2019 15:36:50 +0200 (CEST)
 From:   Miroslav Benes <mbenes@suse.cz>
 To:     Petr Mladek <pmladek@suse.com>
 cc:     Jiri Kosina <jikos@kernel.org>,
@@ -24,11 +24,11 @@ cc:     Jiri Kosina <jikos@kernel.org>,
         Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
         Nicolai Stange <nstange@suse.de>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] livepatch: Basic API to track system state
- changes
-In-Reply-To: <20190719074034.29761-3-pmladek@suse.com>
-Message-ID: <alpine.LSU.2.21.1908131525480.10477@pobox.suse.cz>
-References: <20190719074034.29761-1-pmladek@suse.com> <20190719074034.29761-3-pmladek@suse.com>
+Subject: Re: [PATCH v2 3/5] livepatch: Allow to distinguish different version
+ of system state changes
+In-Reply-To: <20190719074034.29761-4-pmladek@suse.com>
+Message-ID: <alpine.LSU.2.21.1908131534130.10477@pobox.suse.cz>
+References: <20190719074034.29761-1-pmladek@suse.com> <20190719074034.29761-4-pmladek@suse.com>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -37,140 +37,16 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, 19 Jul 2019, Petr Mladek wrote:
-
-> This is another step how to help maintaining more livepatches.
-> 
-> One big help was the atomic replace and cumulative livepatches. These
-> livepatches replace the already installed ones. Therefore it should
-> be enough when each cumulative livepatch is consistent.
-> 
-> The problems might come with shadow variables and callbacks. They might
-> change the system behavior or state so that it is no longer safe to
-> go back and use an older livepatch or the original kernel code. Also
-> any new livepatch must be able to detect what changes have already been
-> done by the already installed livepatches.
-
-"Also, a new livepatch must be able to detect changes which were made 
-by the already installed livepatches." would sound better to me.
- 
-> This is where the livepatch system state tracking gets useful. It
-> allows to:
-> 
->   - find whether a system state has already been modified by
->     previous livepatches
-> 
->   - store data needed to manipulate and restore the system state
-> 
-> The information about the manipulated system states is stored in an
-> array of struct klp_state. It can be searched by two new functions
-> klp_get_state() and klp_get_prev_state().
-> 
-> The dependencies are going to be solved by a version field added later.
-> The only important information is that it will be allowed to modify
-> the same state by more non-cumulative livepatches. It is the same logic
-> as that it is allowed to modify the same function several times.
-
-Wouldn't something like "It is similar to allowing to modify the same 
-function several times." be better to parse?
-
-> The livepatch author is responsible for preventing incompatible
-> changes.
-> 
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
->  include/linux/livepatch.h | 15 +++++++++
->  kernel/livepatch/Makefile |  2 +-
->  kernel/livepatch/state.c  | 85 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 101 insertions(+), 1 deletion(-)
->  create mode 100644 kernel/livepatch/state.c
-> 
 > diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index 273400814020..9c8b637f17cd 100644
+> index 9c8b637f17cd..bc5766f45442 100644
 > --- a/include/linux/livepatch.h
 > +++ b/include/linux/livepatch.h
-> @@ -130,10 +130,21 @@ struct klp_object {
->  	bool patched;
->  };
->  
-> +/**
-> + * struct klp_state - state of the system modified by the livepatch
-> + * @id:		system state identifier (non zero)
-> + * @data:	custom data
-> + */
-> +struct klp_state {
-> +	unsigned long id;
-> +	void *data;
-> +};
-> +
+> @@ -133,10 +133,12 @@ struct klp_object {
 >  /**
->   * struct klp_patch - patch structure for live patching
->   * @mod:	reference to the live patch module
->   * @objs:	object entries for kernel objects to be patched
-> + * @states:	system states that can get modified
->   * @replace:	replace all actively used patches
->   * @list:	list node for global list of actively used patches
->   * @kobj:	kobject for sysfs resources
-> @@ -147,6 +158,7 @@ struct klp_patch {
->  	/* external */
->  	struct module *mod;
->  	struct klp_object *objs;
-> +	struct klp_state *states;
->  	bool replace;
->  
->  	/* internal */
-> @@ -217,6 +229,9 @@ void *klp_shadow_get_or_alloc(void *obj, unsigned long id,
->  void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor);
->  void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor);
->  
-> +struct klp_state *klp_get_state(struct klp_patch *patch, unsigned long id);
-> +struct klp_state *klp_get_prev_state(unsigned long id);
-> +
->  #else /* !CONFIG_LIVEPATCH */
->  
->  static inline int klp_module_coming(struct module *mod) { return 0; }
-> diff --git a/kernel/livepatch/Makefile b/kernel/livepatch/Makefile
-> index cf9b5bcdb952..cf03d4bdfc66 100644
-> --- a/kernel/livepatch/Makefile
-> +++ b/kernel/livepatch/Makefile
-> @@ -1,4 +1,4 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  obj-$(CONFIG_LIVEPATCH) += livepatch.o
->  
-> -livepatch-objs := core.o patch.o shadow.o transition.o
-> +livepatch-objs := core.o patch.o shadow.o state.o transition.o
-> diff --git a/kernel/livepatch/state.c b/kernel/livepatch/state.c
-> new file mode 100644
-> index 000000000000..f76d90e856b1
-> --- /dev/null
-> +++ b/kernel/livepatch/state.c
-> @@ -0,0 +1,85 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * system_state.c - State of the system modified by livepatches
-> + *
-> + * Copyright (C) 2019 SUSE
-> + */
-> +
-> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> +
-> +#include <linux/livepatch.h>
-> +#include "core.h"
-> +#include "transition.h"
-> +
-> +#define klp_for_each_state(patch, state)		\
-> +	for (state = patch->states;			\
-> +	     state && state->id;			\
-> +	     state++)
-> +
-> +/**
-> + * klp_get_state() - get information about system state modified by
-> + *	the given patch
-> + * @patch:	livepatch that modifies the given system state
-> + * @id:		custom identifier of the modified system state
-> + *
-> + * Checks whether the given patch modifies to given system state.
+>   * struct klp_state - state of the system modified by the livepatch
+>   * @id:		system state identifier (non zero)
+> + * @version:	version of the change (non-zero)
 
-s/to given/the given/ ?
+This is inconsistent. Maybe "nonzero" in both cases (or "non-zero")?
 
 Miroslav
