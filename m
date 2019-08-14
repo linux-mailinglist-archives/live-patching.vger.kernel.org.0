@@ -2,116 +2,84 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D834A8D1B2
-	for <lists+live-patching@lfdr.de>; Wed, 14 Aug 2019 13:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FFA48D1F0
+	for <lists+live-patching@lfdr.de>; Wed, 14 Aug 2019 13:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726019AbfHNLGR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 14 Aug 2019 07:06:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33460 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725800AbfHNLGQ (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 14 Aug 2019 07:06:16 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id F07B2AE5A;
-        Wed, 14 Aug 2019 11:06:14 +0000 (UTC)
-Date:   Wed, 14 Aug 2019 13:06:09 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module
- removal
-In-Reply-To: <20190728200427.dbrojgu7hafphia7@treble>
-Message-ID: <alpine.LSU.2.21.1908141256150.16696@pobox.suse.cz>
-References: <20190719122840.15353-1-mbenes@suse.cz> <20190719122840.15353-3-mbenes@suse.cz> <20190728200427.dbrojgu7hafphia7@treble>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S1726865AbfHNLQ6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 14 Aug 2019 07:16:58 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:33812 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726619AbfHNLQ6 (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 14 Aug 2019 07:16:58 -0400
+Received: by mail-lj1-f195.google.com with SMTP id x18so7970907ljh.1
+        for <live-patching@vger.kernel.org>; Wed, 14 Aug 2019 04:16:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mM+lOG3uuaZKO9SiLPdJ+4deUlKV/b5HbUdj3Mc9GeI=;
+        b=DyZlW9rEyj+EVzbT42xD4GrOCx8/nZME5s1x9ubtqPvmzO3OboHv2sJX6yUbEIHv8I
+         VJeZOl5WCXgmjaoXlMtr+GU4OSoVo9m2HdDGg6ma9v7dv79kZXAa4eHOQPkPavbyFn+Z
+         LmVee68sPKqFRaEehadGBa9OSzLoWu7goRFs3nf90Wxg/kHBHrXxSYTK2wndU3zORTkC
+         UOX8E2oWqHFTJiazrI7Xv40sqBbRdSViRNeSDBSnoVsXQ7AQPJetvC21HTDU5G1LhGog
+         +VaFBgwg0tdww7ZnKwLqt5Xh0O3zHbQuTmDdkfFTDpbkiN7jrd14O5xaxAP3SkOnv2MU
+         pBrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mM+lOG3uuaZKO9SiLPdJ+4deUlKV/b5HbUdj3Mc9GeI=;
+        b=bxqvV2dsJvKpEO3mXt528740JduluYo4/SP40nNPwTWJIvSn4zRUkLWKi2BXqOfBCo
+         LabxCyG0xyxjvj5n8xkT+Ar4MC1rCfwY0sZeV5Tr9OoiSI+UT/qCvPhjk6rQt3/Z798k
+         tgBFR56RfvbGbR0IXENA7I2603fP6M/a+hrNr123nVCbghQC04auBt4yvFUz2s0Q9u2F
+         eXAJtvtX+ANrMon8QTqRemybqV6GWR9G4CbjKpPsg24nQrDnijMNfbSDBvdD0bbw8h4j
+         Ssrb5tCSUa+rEvmuVOSayVNa/HSRAJSB0Cji7DMfTzhz3uDwNQ4VPmWLrTatG5gix2R3
+         PAFA==
+X-Gm-Message-State: APjAAAXOep+ucIj+f/EBumUW2CqAZg1jBP4tyT+3Y5tTe8/T8NlGDi9G
+        RTtNjylzWew6hTQ47RqsIG0/XVUHZRZ+Ew==
+X-Google-Smtp-Source: APXvYqyE6JOL4CkL17m8OpVNbigSqpiZyVfokme8qoKLjA4Eav66jqxj/Jm39QFjJRx7gKdhbyUEew==
+X-Received: by 2002:a2e:9e81:: with SMTP id f1mr24935605ljk.29.1565781416360;
+        Wed, 14 Aug 2019 04:16:56 -0700 (PDT)
+Received: from localhost (c-243c70d5.07-21-73746f28.bbcust.telenor.se. [213.112.60.36])
+        by smtp.gmail.com with ESMTPSA id q24sm2004302ljc.72.2019.08.14.04.16.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 14 Aug 2019 04:16:55 -0700 (PDT)
+From:   Anders Roxell <anders.roxell@linaro.org>
+To:     shuah@kernel.org, pmladek@suse.com, mbenes@suse.cz,
+        jikos@kernel.org, jpoimboe@redhat.com
+Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: [PATCH] selftests: livepatch: add missing fragments to config
+Date:   Wed, 14 Aug 2019 13:16:51 +0200
+Message-Id: <20190814111651.28433-1-anders.roxell@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Sun, 28 Jul 2019, Josh Poimboeuf wrote:
+When generating config with 'make defconfig kselftest-merge' fragment
+CONFIG_TEST_LIVEPATCH=m isn't set.
 
-> On Fri, Jul 19, 2019 at 02:28:40PM +0200, Miroslav Benes wrote:
-> > Josh reported a bug:
-> > 
-> >   When the object to be patched is a module, and that module is
-> >   rmmod'ed and reloaded, it fails to load with:
-> > 
-> >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
-> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > 
-> >   The livepatch module has a relocation which references a symbol
-> >   in the _previous_ loading of nfsd. When apply_relocate_add()
-> >   tries to replace the old relocation with a new one, it sees that
-> >   the previous one is nonzero and it errors out.
-> > 
-> >   On ppc64le, we have a similar issue:
-> > 
-> >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
-> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > 
-> > He also proposed three different solutions. We could remove the error
-> > check in apply_relocate_add() introduced by commit eda9cec4c9a1
-> > ("x86/module: Detect and skip invalid relocations"). However the check
-> > is useful for detecting corrupted modules.
-> > 
-> > We could also deny the patched modules to be removed. If it proved to be
-> > a major drawback for users, we could still implement a different
-> > approach. The solution would also complicate the existing code a lot.
-> > 
-> > We thus decided to reverse the relocation patching (clear all relocation
-> > targets on x86_64, or return back nops on powerpc). The solution is not
-> > universal and is too much arch-specific, but it may prove to be simpler
-> > in the end.
-> 
-> Thanks for the patch Miroslav.
-> 
-> However, I really don't like it.  All this extra convoluted
-> arch-specific code, just so users can unload a patched module.
+Rework to enable CONFIG_LIVEPATCH and CONFIG_DYNAMIC_DEBUG as well.
 
-Yes, it is unfortunate.
- 
-> Remind me why we didn't do the "deny the patched modules to be removed"
-> option?
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+---
+ tools/testing/selftests/livepatch/config | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Petr came with a couple of issues in the patch. Nothing unfixable, but it 
-would complicate the code a bit, so we wanted to explore arch-specific 
-approach first. I'll return to it, fix it and we'll see the outcome.
+diff --git a/tools/testing/selftests/livepatch/config b/tools/testing/selftests/livepatch/config
+index 0dd7700464a8..ad23100cb27c 100644
+--- a/tools/testing/selftests/livepatch/config
++++ b/tools/testing/selftests/livepatch/config
+@@ -1 +1,3 @@
++CONFIG_LIVEPATCH=y
++CONFIG_DYNAMIC_DEBUG=y
+ CONFIG_TEST_LIVEPATCH=m
+-- 
+2.20.1
 
-> Really, we should be going in the opposite direction, by creating module
-> dependencies, like all other kernel modules do, ensuring that a module
-> is loaded *before* we patch it.  That would also eliminate this bug.
-
-Yes, but it is not ideal either with cumulative one-fixes-all patch 
-modules. It would load also modules which are not necessary for a 
-customer and I know that at least some customers care about this. They 
-want to deploy only things which are crucial for their systems.
-
-We could split patch modules as you proposed in the past, but that have 
-issues as well.
-
-Anyway, that is why I proposed "Rethinking late module patching" talk at 
-LPC and we should try to come up with a solution there.
-
-> And I think it would also help us remove a lot of nasty code, like the
-> coming/going notifiers and the .klp.arch mess.  Which, BTW, seem to be
-> the sources of most of our bugs...
-
-Yes.
-
-> Yes, there's the "but it's less flexible!" argument.  Does anybody
-> really need the flexibility?  I strongly doubt it.  I would love to see
-> an RFC patch which enforces that restriction, to see all the nasty code
-> we could remove.  I would much rather live patching be stable than
-> flexible.
-
-I agree that unloading a module does not make sense much (famous last 
-words), so we could try.
-
-Miroslav
