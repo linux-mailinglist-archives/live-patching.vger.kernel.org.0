@@ -2,32 +2,29 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 141788D180
-	for <lists+live-patching@lfdr.de>; Wed, 14 Aug 2019 12:52:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D834A8D1B2
+	for <lists+live-patching@lfdr.de>; Wed, 14 Aug 2019 13:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbfHNKwO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 14 Aug 2019 06:52:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57832 "EHLO mx1.suse.de"
+        id S1726019AbfHNLGR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 14 Aug 2019 07:06:17 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33460 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725888AbfHNKwO (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 14 Aug 2019 06:52:14 -0400
+        id S1725800AbfHNLGQ (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 14 Aug 2019 07:06:16 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 87819ADEF;
-        Wed, 14 Aug 2019 10:52:12 +0000 (UTC)
-Date:   Wed, 14 Aug 2019 12:52:07 +0200 (CEST)
+        by mx1.suse.de (Postfix) with ESMTP id F07B2AE5A;
+        Wed, 14 Aug 2019 11:06:14 +0000 (UTC)
+Date:   Wed, 14 Aug 2019 13:06:09 +0200 (CEST)
 From:   Miroslav Benes <mbenes@suse.cz>
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jikos@kernel.org, pmladek@suse.com,
-        joe.lawrence@redhat.com, nstange@suse.de,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH] s390/livepatch: Implement reliable stack tracing for
- the consistency model
-In-Reply-To: <20190728204456.7bxnsbuo4o3tjxeq@treble>
-Message-ID: <alpine.LSU.2.21.1908141241061.16696@pobox.suse.cz>
-References: <20190710105918.22487-1-mbenes@suse.cz> <20190728204456.7bxnsbuo4o3tjxeq@treble>
+cc:     jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module
+ removal
+In-Reply-To: <20190728200427.dbrojgu7hafphia7@treble>
+Message-ID: <alpine.LSU.2.21.1908141256150.16696@pobox.suse.cz>
+References: <20190719122840.15353-1-mbenes@suse.cz> <20190719122840.15353-3-mbenes@suse.cz> <20190728200427.dbrojgu7hafphia7@treble>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -36,171 +33,85 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-> > diff --git a/arch/s390/include/asm/unwind.h b/arch/s390/include/asm/unwind.h
-> > index d827b5b9a32c..1cc96c54169c 100644
-> > --- a/arch/s390/include/asm/unwind.h
-> > +++ b/arch/s390/include/asm/unwind.h
-> > @@ -45,6 +45,25 @@ void __unwind_start(struct unwind_state *state, struct task_struct *task,
-> >  bool unwind_next_frame(struct unwind_state *state);
-> >  unsigned long unwind_get_return_address(struct unwind_state *state);
-> >  
-> > +#ifdef CONFIG_HAVE_RELIABLE_STACKTRACE
-> > +void __unwind_start_reliable(struct unwind_state *state,
-> > +			     struct task_struct *task, unsigned long sp);
-> > +bool unwind_next_frame_reliable(struct unwind_state *state);
-> > +
-> > +static inline void unwind_start_reliable(struct unwind_state *state,
-> > +					 struct task_struct *task)
-> > +{
-> > +	unsigned long sp;
-> > +
-> > +	if (task == current)
-> > +		sp = current_stack_pointer();
-> > +	else
-> > +		sp = task->thread.ksp;
-> > +
-> > +	__unwind_start_reliable(state, task, sp);
-> > +}
-> > +#endif
-> > +
+On Sun, 28 Jul 2019, Josh Poimboeuf wrote:
+
+> On Fri, Jul 19, 2019 at 02:28:40PM +0200, Miroslav Benes wrote:
+> > Josh reported a bug:
+> > 
+> >   When the object to be patched is a module, and that module is
+> >   rmmod'ed and reloaded, it fails to load with:
+> > 
+> >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > 
+> >   The livepatch module has a relocation which references a symbol
+> >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> >   tries to replace the old relocation with a new one, it sees that
+> >   the previous one is nonzero and it errors out.
+> > 
+> >   On ppc64le, we have a similar issue:
+> > 
+> >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > 
+> > He also proposed three different solutions. We could remove the error
+> > check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> > ("x86/module: Detect and skip invalid relocations"). However the check
+> > is useful for detecting corrupted modules.
+> > 
+> > We could also deny the patched modules to be removed. If it proved to be
+> > a major drawback for users, we could still implement a different
+> > approach. The solution would also complicate the existing code a lot.
+> > 
+> > We thus decided to reverse the relocation patching (clear all relocation
+> > targets on x86_64, or return back nops on powerpc). The solution is not
+> > universal and is too much arch-specific, but it may prove to be simpler
+> > in the end.
 > 
-> (Ah, cool, I didn't realize s390 ported the x86 unwind interfaces.  We
-> should look at unifying them someday.)
-
-Yes, it is quite recent change.
- 
-> Why do you need _reliable() variants of the unwind interfaces?  Can the
-> error checking be integrated into unwind_start() and unwind_next_frame()
-> like they are on x86?
-
-Good question. I rebased the patch a lot of times and it was much easier 
-in the end just to separate the original and reliable infrastructure. Not 
-the best for upstream inclusion though.
-
-unwind_start_reliable() is basically the same as the original. 
-get_stack_info_reliable() is the main difference. It is much simpler in 
-our case. I wanted to avoid a new parameter or a callback, but let me 
-think about it again.
-
-unwind_next_frame_reliable() is again a lot simpler than the original one, 
-because we know that the unwinding happens only on a task stack. I'll 
-think about inclusion to the unwind_next_frame() though. The code 
-duplication is not nice.
-
-> > +#ifdef CONFIG_HAVE_RELIABLE_STACKTRACE
-> > +void __unwind_start_reliable(struct unwind_state *state,
-> > +			     struct task_struct *task, unsigned long sp)
-> > +{
-> > +	struct stack_info *info = &state->stack_info;
-> > +	struct stack_frame *sf;
-> > +	unsigned long ip;
-> > +
-> > +	memset(state, 0, sizeof(*state));
-> > +	state->task = task;
-> > +
-> > +	/* Get current stack pointer and initialize stack info */
-> > +	if (get_stack_info_reliable(sp, task, info) ||
-> > +	    !on_stack(info, sp, sizeof(struct stack_frame))) {
-> > +		/* Something is wrong with the stack pointer */
-> > +		info->type = STACK_TYPE_UNKNOWN;
-> > +		state->error = true;
-> > +		return;
-> > +	}
-> > +
-> > +	/* Get the instruction pointer from the stack frame */
-> > +	sf = (struct stack_frame *) sp;
-> > +	ip = READ_ONCE_NOCHECK(sf->gprs[8]);
-> > +
-> > +#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-> > +	/* Decode any ftrace redirection */
-> > +	if (ip == (unsigned long) return_to_handler)
-> > +		ip = ftrace_graph_ret_addr(state->task, &state->graph_idx,
-> > +					   ip, NULL);
-> > +#endif
+> Thanks for the patch Miroslav.
 > 
-> The return_to_handler and ifdef checks aren't needed.  Those are done
-> already by the call.
+> However, I really don't like it.  All this extra convoluted
+> arch-specific code, just so users can unload a patched module.
 
-Correct. I realized it when Joe asked about the hunk.
+Yes, it is unfortunate.
  
-> Also it seems a bit odd that the kretprobes check isn't done in this
-> function next to the ftrace check.
+> Remind me why we didn't do the "deny the patched modules to be removed"
+> option?
 
-Ah, yes.
+Petr came with a couple of issues in the patch. Nothing unfixable, but it 
+would complicate the code a bit, so we wanted to explore arch-specific 
+approach first. I'll return to it, fix it and we'll see the outcome.
 
-> > +
-> > +	/* Update unwind state */
-> > +	state->sp = sp;
-> > +	state->ip = ip;
-> > +}
-> > +
-> > +bool unwind_next_frame_reliable(struct unwind_state *state)
-> > +{
-> > +	struct stack_info *info = &state->stack_info;
-> > +	struct stack_frame *sf;
-> > +	struct pt_regs *regs;
-> > +	unsigned long sp, ip;
-> > +
-> > +	sf = (struct stack_frame *) state->sp;
-> > +	sp = READ_ONCE_NOCHECK(sf->back_chain);
-> > +	/*
-> > +	 * Idle tasks are special. The final back-chain points to nodat_stack.
-> > +	 * See CALL_ON_STACK() in smp_start_secondary() callback used in
-> > +	 * __cpu_up(). We just accept it, go to else branch and look for
-> > +	 * pt_regs.
-> > +	 */
-> > +	if (likely(sp && !(is_idle_task(state->task) &&
-> > +			   outside_of_stack(state, sp)))) {
-> > +		/* Non-zero back-chain points to the previous frame */
-> > +		if (unlikely(outside_of_stack(state, sp)))
-> > +			goto out_err;
-> > +
-> > +		sf = (struct stack_frame *) sp;
-> > +		ip = READ_ONCE_NOCHECK(sf->gprs[8]);
-> > +	} else {
-> > +		/* No back-chain, look for a pt_regs structure */
-> > +		sp = state->sp + STACK_FRAME_OVERHEAD;
-> > +		regs = (struct pt_regs *) sp;
-> > +		if ((unsigned long)regs != info->end - sizeof(struct pt_regs))
-> > +			goto out_err;
-> > +		if (!(state->task->flags & (PF_KTHREAD | PF_IDLE)) &&
-> > +		     !user_mode(regs))
-> > +			goto out_err;
-> > +
-> > +		state->regs = regs;
-> > +		goto out_stop;
-> > +	}
-> > +
-> > +#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-> > +	/* Decode any ftrace redirection */
-> > +	if (ip == (unsigned long) return_to_handler)
-> > +		ip = ftrace_graph_ret_addr(state->task, &state->graph_idx,
-> > +					   ip, (void *) sp);
-> > +#endif
-> > +
-> > +	/* Update unwind state */
-> > +	state->sp = sp;
-> > +	state->ip = ip;
-> > +	return true;
-> > +
-> > +out_err:
-> > +	state->error = true;
-> > +out_stop:
-> > +	state->stack_info.type = STACK_TYPE_UNKNOWN;
-> > +	return false;
-> > +}
-> > +#endif
-> 
-> For the _reliable() variants of the unwind interfaces, there's a lot of
-> code duplication with the non-reliable variants.  It looks like it would
-> be a lot cleaner (and easier to follow) if they were integrated.
+> Really, we should be going in the opposite direction, by creating module
+> dependencies, like all other kernel modules do, ensuring that a module
+> is loaded *before* we patch it.  That would also eliminate this bug.
 
-True.
- 
-> Overall it's looking good though.
+Yes, but it is not ideal either with cumulative one-fixes-all patch 
+modules. It would load also modules which are not necessary for a 
+customer and I know that at least some customers care about this. They 
+want to deploy only things which are crucial for their systems.
 
-Great. Now let me try to make it nicer.
+We could split patch modules as you proposed in the past, but that have 
+issues as well.
 
-Thanks for the review.
+Anyway, that is why I proposed "Rethinking late module patching" talk at 
+LPC and we should try to come up with a solution there.
+
+> And I think it would also help us remove a lot of nasty code, like the
+> coming/going notifiers and the .klp.arch mess.  Which, BTW, seem to be
+> the sources of most of our bugs...
+
+Yes.
+
+> Yes, there's the "but it's less flexible!" argument.  Does anybody
+> really need the flexibility?  I strongly doubt it.  I would love to see
+> an RFC patch which enforces that restriction, to see all the nasty code
+> we could remove.  I would much rather live patching be stable than
+> flexible.
+
+I agree that unloading a module does not make sense much (famous last 
+words), so we could try.
 
 Miroslav
