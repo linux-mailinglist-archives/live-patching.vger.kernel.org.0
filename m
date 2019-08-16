@@ -2,106 +2,79 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F81F900CF
-	for <lists+live-patching@lfdr.de>; Fri, 16 Aug 2019 13:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73C4E901DF
+	for <lists+live-patching@lfdr.de>; Fri, 16 Aug 2019 14:43:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727094AbfHPLgL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 16 Aug 2019 07:36:11 -0400
-Received: from conssluserg-03.nifty.com ([210.131.2.82]:17417 "EHLO
-        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727021AbfHPLgL (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 16 Aug 2019 07:36:11 -0400
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id x7GBZrpM022199;
-        Fri, 16 Aug 2019 20:35:54 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com x7GBZrpM022199
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1565955354;
-        bh=ZGRmRX21HFZjQOo6RUWLj0+rE8mt19pv78l71bEdnLE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=VA46zsniLssyX0pAMX25lscd0r1N4AERHsHGfn/BoCbWRt5Od0fH84SzCDb+4bgj9
-         4PtYMEX8lwJaVhk5GAfHXSYtAvJirrFQ6PwcIsmj14zJS6jA8BAuc5fPIUy0JQkI5M
-         m3muZLwX4Brc++HuqYi6HQ3e3S4SUhVtV7mkzQOUtLA5tfcrDo4OQGVHchImcr5eZL
-         SMASoPj+iBbsXXnnmkDwuQXhH0VGJJWexuX1+qsLK82GZY9NzYo++5K0aJFPx5ENZg
-         PUJlNqXjDP60SrILfi0Sy2YMGN7F2S+LpQl2yjZP2ZqJnPKktQO3mT5w96U1LlCXKc
-         hY+kgNIRUJ6sg==
-X-Nifty-SrcIP: [209.85.217.46]
-Received: by mail-vs1-f46.google.com with SMTP id y16so3512031vsc.3;
-        Fri, 16 Aug 2019 04:35:53 -0700 (PDT)
-X-Gm-Message-State: APjAAAUNttRxHmDAoK2BA8b6y/xsOtcVl6kGq33FntpE9n9DRNn6wOTK
-        hyLbDFw+xX5OrO5xqgz+JgIRLxfRLdiwYHfe4t8=
-X-Google-Smtp-Source: APXvYqzv23a3GBmJ0SccB/pHPvVNysuT6fBRyLXfZ2q4xrQiSNthqFdA1frMSstRmg8ojb3PZyJahfOTRwUbs+uozOM=
-X-Received: by 2002:a67:fe12:: with SMTP id l18mr5914342vsr.54.1565955352684;
- Fri, 16 Aug 2019 04:35:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190509143859.9050-1-joe.lawrence@redhat.com> <20190509143859.9050-8-joe.lawrence@redhat.com>
-In-Reply-To: <20190509143859.9050-8-joe.lawrence@redhat.com>
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Fri, 16 Aug 2019 20:35:16 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARmkRi1ug9C780egxUn1m1FMxAE+uN1d08hLNYZF1724Q@mail.gmail.com>
-Message-ID: <CAK7LNARmkRi1ug9C780egxUn1m1FMxAE+uN1d08hLNYZF1724Q@mail.gmail.com>
-Subject: Re: [PATCH v4 07/10] livepatch: Add sample livepatch module
-To:     Joe Lawrence <joe.lawrence@redhat.com>
+        id S1727104AbfHPMnk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 16 Aug 2019 08:43:40 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47714 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726075AbfHPMnk (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 16 Aug 2019 08:43:40 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3C907308302F;
+        Fri, 16 Aug 2019 12:43:40 +0000 (UTC)
+Received: from [10.10.123.64] (ovpn-123-64.rdu2.redhat.com [10.10.123.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 751431719E;
+        Fri, 16 Aug 2019 12:43:39 +0000 (UTC)
+Subject: Re: [PATCH v4 06/10] modpost: Add modinfo flag to livepatch modules
+To:     Miroslav Benes <mbenes@suse.cz>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         live-patching@vger.kernel.org,
         Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+References: <20190509143859.9050-1-joe.lawrence@redhat.com>
+ <20190509143859.9050-7-joe.lawrence@redhat.com>
+ <CAK7LNAQuS-YcXecfJ21BGzc0CimzWxQcYST5-1xRgnCQGtcL4A@mail.gmail.com>
+ <20190812155626.GA19845@redhat.com>
+ <CAK7LNATRLTBqA9c=b+Y38T-zWc9o5JMq18r9auA=enPC=p10pA@mail.gmail.com>
+ <alpine.LSU.2.21.1908161016430.2020@pobox.suse.cz>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <6c7e4d19-b993-1c14-d6cf-6aa1ee891361@redhat.com>
+Date:   Fri, 16 Aug 2019 08:43:37 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <alpine.LSU.2.21.1908161016430.2020@pobox.suse.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Fri, 16 Aug 2019 12:43:40 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Joe,
+On 8/16/19 4:19 AM, Miroslav Benes wrote:
+> Hi,
+> 
+>> I cleaned up the build system, and pushed it based on my
+>> kbuild tree.
+>>
+>> Please see:
+>>
+>> git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+>> klp-cleanup
+> 
+> This indeed looks much simpler and cleaner (as far as I can judge with my
+> limited kbuild knowledge). We just need to remove MODULE_INFO(livepatch,
+> "Y") from lib/livepatch/test_klp_convert_mod_a.c to make it compile and
+> work (test_klp_convert_mod_a is not a livepatch module, it is just a dummy
+> module which is then livepatched by lib/livepatch/test_klp_convert1.c).
+> 
 
-On Thu, May 9, 2019 at 11:39 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
->
-> From: Josh Poimboeuf <jpoimboe@redhat.com>
->
-> Add a new livepatch sample in samples/livepatch/ to make use of
-> symbols that must be post-processed to enable load-time relocation
-> resolution. As the new sample is to be used as an example, it is
-> annotated with KLP_MODULE_RELOC and with KLP_SYMPOS macros.
->
-> The livepatch sample updates the function cmdline_proc_show to
-> print the string referenced by the symbol saved_command_line
-> appended by the string "livepatch=1".
->
-> Update livepatch-sample.c to remove livepatch MODULE_INFO
-> statement.
->
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> Signed-off-by: Joao Moreira <jmoreira@suse.de>
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-> ---
+Yeah, Masahiro this is great, thanks for reworking this!
 
+I did tweak one module like Miroslav mentioned and I think a few of the 
+newly generated files need to be cleaned up as part of "make clean", but 
+all said, this is a nice improvement.
 
-> --- /dev/null
-> +++ b/samples/livepatch/livepatch-annotated-sample.c
-> @@ -0,0 +1,102 @@
-> +/*
-> + * livepatch-annotated-sample.c - Kernel Live Patching Sample Module
-> + *
-> + * Copyright (C) 2014 Seth Jennings <sjenning@redhat.com>
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License
-> + * as published by the Free Software Foundation; either version 2
-> + * of the License, or (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program; if not, see <http://www.gnu.org/licenses/>.
+Are you targeting the next merge window for your kbuild branch?  (This 
+appears to be what the klp-cleanup branch was based on.)
 
-Please use SPDX instead of the license boilerplate.
+Thanks,
 
-Thanks.
-
-
--- 
-Best Regards
-Masahiro Yamada
+-- Joe
