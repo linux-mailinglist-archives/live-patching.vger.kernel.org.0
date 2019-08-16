@@ -2,131 +2,106 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 496AE8FF56
-	for <lists+live-patching@lfdr.de>; Fri, 16 Aug 2019 11:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F81F900CF
+	for <lists+live-patching@lfdr.de>; Fri, 16 Aug 2019 13:36:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726867AbfHPJqP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 16 Aug 2019 05:46:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34290 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726839AbfHPJqO (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 16 Aug 2019 05:46:14 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id C33F5B64A;
-        Fri, 16 Aug 2019 09:46:12 +0000 (UTC)
-Date:   Fri, 16 Aug 2019 11:46:08 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>, jikos@kernel.org,
-        joe.lawrence@redhat.com, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <20190816094608.3p2z73oxcoqavnm4@pathway.suse.cz>
-References: <20190719122840.15353-1-mbenes@suse.cz>
- <20190719122840.15353-3-mbenes@suse.cz>
- <20190728200427.dbrojgu7hafphia7@treble>
- <alpine.LSU.2.21.1908141256150.16696@pobox.suse.cz>
- <20190814151244.5xoaxib5iya2qjco@treble>
+        id S1727094AbfHPLgL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 16 Aug 2019 07:36:11 -0400
+Received: from conssluserg-03.nifty.com ([210.131.2.82]:17417 "EHLO
+        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727021AbfHPLgL (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Fri, 16 Aug 2019 07:36:11 -0400
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id x7GBZrpM022199;
+        Fri, 16 Aug 2019 20:35:54 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com x7GBZrpM022199
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1565955354;
+        bh=ZGRmRX21HFZjQOo6RUWLj0+rE8mt19pv78l71bEdnLE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=VA46zsniLssyX0pAMX25lscd0r1N4AERHsHGfn/BoCbWRt5Od0fH84SzCDb+4bgj9
+         4PtYMEX8lwJaVhk5GAfHXSYtAvJirrFQ6PwcIsmj14zJS6jA8BAuc5fPIUy0JQkI5M
+         m3muZLwX4Brc++HuqYi6HQ3e3S4SUhVtV7mkzQOUtLA5tfcrDo4OQGVHchImcr5eZL
+         SMASoPj+iBbsXXnnmkDwuQXhH0VGJJWexuX1+qsLK82GZY9NzYo++5K0aJFPx5ENZg
+         PUJlNqXjDP60SrILfi0Sy2YMGN7F2S+LpQl2yjZP2ZqJnPKktQO3mT5w96U1LlCXKc
+         hY+kgNIRUJ6sg==
+X-Nifty-SrcIP: [209.85.217.46]
+Received: by mail-vs1-f46.google.com with SMTP id y16so3512031vsc.3;
+        Fri, 16 Aug 2019 04:35:53 -0700 (PDT)
+X-Gm-Message-State: APjAAAUNttRxHmDAoK2BA8b6y/xsOtcVl6kGq33FntpE9n9DRNn6wOTK
+        hyLbDFw+xX5OrO5xqgz+JgIRLxfRLdiwYHfe4t8=
+X-Google-Smtp-Source: APXvYqzv23a3GBmJ0SccB/pHPvVNysuT6fBRyLXfZ2q4xrQiSNthqFdA1frMSstRmg8ojb3PZyJahfOTRwUbs+uozOM=
+X-Received: by 2002:a67:fe12:: with SMTP id l18mr5914342vsr.54.1565955352684;
+ Fri, 16 Aug 2019 04:35:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190814151244.5xoaxib5iya2qjco@treble>
-User-Agent: NeoMutt/20170912 (1.9.0)
+References: <20190509143859.9050-1-joe.lawrence@redhat.com> <20190509143859.9050-8-joe.lawrence@redhat.com>
+In-Reply-To: <20190509143859.9050-8-joe.lawrence@redhat.com>
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Fri, 16 Aug 2019 20:35:16 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARmkRi1ug9C780egxUn1m1FMxAE+uN1d08hLNYZF1724Q@mail.gmail.com>
+Message-ID: <CAK7LNARmkRi1ug9C780egxUn1m1FMxAE+uN1d08hLNYZF1724Q@mail.gmail.com>
+Subject: Re: [PATCH v4 07/10] livepatch: Add sample livepatch module
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        live-patching@vger.kernel.org,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2019-08-14 10:12:44, Josh Poimboeuf wrote:
-> On Wed, Aug 14, 2019 at 01:06:09PM +0200, Miroslav Benes wrote:
-> > > Really, we should be going in the opposite direction, by creating module
-> > > dependencies, like all other kernel modules do, ensuring that a module
-> > > is loaded *before* we patch it.  That would also eliminate this bug.
-> > 
-> > Yes, but it is not ideal either with cumulative one-fixes-all patch 
-> > modules. It would load also modules which are not necessary for a 
-> > customer and I know that at least some customers care about this. They 
-> > want to deploy only things which are crucial for their systems.
-> 
-> If you frame the question as "do you want to destabilize the live
-> patching infrastucture" then the answer might be different.
-> 
-> We should look at whether it makes sense to destabilize live patching
-> for everybody, for a small minority of people who care about a small
-> minority of edge cases.
+Hi Joe,
 
-I do not see it that simple. Forcing livepatched modules to be
-loaded would mean loading "random" new modules when updating
-livepatches:
-
-  + It means more actions and higher risk to destabilize
-    the system. Different modules have different quality.
-
-  + It might open more security holes that are not fixed by
-    the livepatch.
-
-  + It might require some extra configuration actions to handle
-    the newly opened interfaces (devices). For example, updating
-    SELinux policies.
-
-  + Are there conflicting modules that might need to get
-    livepatched?
-
-This approach has a strong no-go from my side.
-
-
-> Or maybe there's some other solution we haven't thought about, which
-> fits more in the framework of how kernel modules already work.
+On Thu, May 9, 2019 at 11:39 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
 >
-> > We could split patch modules as you proposed in the past, but that have 
-> > issues as well.
-
-> Right, I'm not really crazy about that solution either.
-
-Yes, this would just move the problem somewhere else.
-
-
-> Here's another idea: per-object patch modules.  Patches to vmlinux are
-> in a vmlinux patch module.  Patches to kvm.ko are in a kvm patch module.
-> That would require:
-> 
-> - Careful management of dependencies between object-specific patches.
->   Maybe that just means that exported function ABIs shouldn't change.
-> 
-> - Some kind of hooking into modprobe to ensure the patch module gets
->   loaded with the real one.
-
-I see this just as a particular approach how to split livepatches
-per-object. The above points suggest how to handle dependencies
-on the kernel side.
-
-> - Changing 'atomic replace' to allow patch modules to be per-object.
-
-The problem might be how to transition all loaded objects atomically
-when the needed code is loaded from different modules.
-
-Alternative would be to support only per-object consitency. But it
-might reduce the number of supported scenarios too much. Also it
-would make livepatching more error-prone.
-
-
-I would like to see updated variant of this patch to see how much
-arch-specific code is really necessary.
-
-IMHO, if reverting relocations is too complicated then the least painful
-compromise is to "deny the patched modules to be removed".
-
-> > Anyway, that is why I proposed "Rethinking late module patching" talk at 
-> > LPC and we should try to come up with a solution there.
+> From: Josh Poimboeuf <jpoimboe@redhat.com>
 >
-> Thanks, I saw that.  It's definitely worthy of more discussion.  The
-> talk may be more productive if there were code to look at.  For example,
-> a patch which removes all the "late module patching" gunk, so we can at
-> least quantify the cost of the current approach.
+> Add a new livepatch sample in samples/livepatch/ to make use of
+> symbols that must be post-processed to enable load-time relocation
+> resolution. As the new sample is to be used as an example, it is
+> annotated with KLP_MODULE_RELOC and with KLP_SYMPOS macros.
+>
+> The livepatch sample updates the function cmdline_proc_show to
+> print the string referenced by the symbol saved_command_line
+> appended by the string "livepatch=1".
+>
+> Update livepatch-sample.c to remove livepatch MODULE_INFO
+> statement.
+>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Joao Moreira <jmoreira@suse.de>
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> ---
 
-+1
 
-Best Regards,
-Petr
+> --- /dev/null
+> +++ b/samples/livepatch/livepatch-annotated-sample.c
+> @@ -0,0 +1,102 @@
+> +/*
+> + * livepatch-annotated-sample.c - Kernel Live Patching Sample Module
+> + *
+> + * Copyright (C) 2014 Seth Jennings <sjenning@redhat.com>
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License
+> + * as published by the Free Software Foundation; either version 2
+> + * of the License, or (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program; if not, see <http://www.gnu.org/licenses/>.
+
+Please use SPDX instead of the license boilerplate.
+
+Thanks.
+
+
+-- 
+Best Regards
+Masahiro Yamada
