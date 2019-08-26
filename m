@@ -2,165 +2,103 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1C39A9DD
-	for <lists+live-patching@lfdr.de>; Fri, 23 Aug 2019 10:13:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 296229D0D3
+	for <lists+live-patching@lfdr.de>; Mon, 26 Aug 2019 15:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733287AbfHWINJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 23 Aug 2019 04:13:09 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41782 "EHLO mx1.suse.de"
+        id S1730548AbfHZNoY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 26 Aug 2019 09:44:24 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43280 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730979AbfHWINJ (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 23 Aug 2019 04:13:09 -0400
+        id S1728749AbfHZNoY (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 26 Aug 2019 09:44:24 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E9547AE00;
-        Fri, 23 Aug 2019 08:13:06 +0000 (UTC)
-Date:   Fri, 23 Aug 2019 10:13:06 +0200
-From:   Petr Mladek <pmladek@suse.com>
+        by mx1.suse.de (Postfix) with ESMTP id EBD1BAD08;
+        Mon, 26 Aug 2019 13:44:21 +0000 (UTC)
+From:   Nicolai Stange <nstange@suse.de>
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     jikos@kernel.org, joe.lawrence@redhat.com,
-        Miroslav Benes <mbenes@suse.cz>, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <20190823081306.kbkm7b4deqrare2v@pathway.suse.cz>
+Cc:     Miroslav Benes <mbenes@suse.cz>, jikos@kernel.org,
+        pmladek@suse.com, joe.lawrence@redhat.com,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module removal
 References: <20190719122840.15353-1-mbenes@suse.cz>
- <20190719122840.15353-3-mbenes@suse.cz>
- <20190728200427.dbrojgu7hafphia7@treble>
- <alpine.LSU.2.21.1908141256150.16696@pobox.suse.cz>
- <20190814151244.5xoaxib5iya2qjco@treble>
- <20190816094608.3p2z73oxcoqavnm4@pathway.suse.cz>
- <20190822223649.ptg6e7qyvosrljqx@treble>
+        <20190719122840.15353-3-mbenes@suse.cz>
+        <20190728200427.dbrojgu7hafphia7@treble>
+        <alpine.LSU.2.21.1908141256150.16696@pobox.suse.cz>
+        <20190814151244.5xoaxib5iya2qjco@treble>
+Date:   Mon, 26 Aug 2019 15:44:21 +0200
+In-Reply-To: <20190814151244.5xoaxib5iya2qjco@treble> (Josh Poimboeuf's
+        message of "Wed, 14 Aug 2019 10:12:44 -0500")
+Message-ID: <878srgkpmy.fsf@suse.de>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.3 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190822223649.ptg6e7qyvosrljqx@treble>
-User-Agent: NeoMutt/20170912 (1.9.0)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2019-08-22 17:36:49, Josh Poimboeuf wrote:
-> On Fri, Aug 16, 2019 at 11:46:08AM +0200, Petr Mladek wrote:
-> > On Wed 2019-08-14 10:12:44, Josh Poimboeuf wrote:
-> > > On Wed, Aug 14, 2019 at 01:06:09PM +0200, Miroslav Benes wrote:
-> > > > > Really, we should be going in the opposite direction, by creating module
-> > > > > dependencies, like all other kernel modules do, ensuring that a module
-> > > > > is loaded *before* we patch it.  That would also eliminate this bug.
-> > > 
-> > > We should look at whether it makes sense to destabilize live patching
-> > > for everybody, for a small minority of people who care about a small
-> > > minority of edge cases.
-> > 
-> > I do not see it that simple. Forcing livepatched modules to be
-> > loaded would mean loading "random" new modules when updating
-> > livepatches:
-> 
-> I don't want to start a long debate on this, because this idea isn't
-> even my first choice.  But we shouldn't dismiss it outright.
+Josh Poimboeuf <jpoimboe@redhat.com> writes:
 
-I am glad to hear that this is not your first choice.
+> On Wed, Aug 14, 2019 at 01:06:09PM +0200, Miroslav Benes wrote:
+>> > Really, we should be going in the opposite direction, by creating module
+>> > dependencies, like all other kernel modules do, ensuring that a module
+>> > is loaded *before* we patch it.  That would also eliminate this bug.
+>> 
+>> Yes, but it is not ideal either with cumulative one-fixes-all patch 
+>> modules. It would load also modules which are not necessary for a 
+>> customer and I know that at least some customers care about this. They 
+>> want to deploy only things which are crucial for their systems.
+
+Security concerns set aside, some of the patched modules might get
+distributed separately from the main kernel through some sort of
+kernel-*-extra packages and thus, not be found on some target system
+at all. Or they might have been blacklisted.
 
 
-> >   + It means more actions and higher risk to destabilize
-> >     the system. Different modules have different quality.
-> 
-> Maybe the distro shouldn't ship modules which would destabilize the
-> system.
+> If you frame the question as "do you want to destabilize the live
+> patching infrastucture" then the answer might be different.
+>
+> We should look at whether it makes sense to destabilize live patching
+> for everybody, for a small minority of people who care about a small
+> minority of edge cases.
+>
+> Or maybe there's some other solution we haven't thought about, which
+> fits more in the framework of how kernel modules already work.
+>
+>> We could split patch modules as you proposed in the past, but that have 
+>> issues as well.
+>
+> Right, I'm not really crazy about that solution either.
+>
+> Here's another idea: per-object patch modules.  Patches to vmlinux are
+> in a vmlinux patch module.  Patches to kvm.ko are in a kvm patch module.
+> That would require:
+>
+> - Careful management of dependencies between object-specific patches.
+>   Maybe that just means that exported function ABIs shouldn't change.
+>
+> - Some kind of hooking into modprobe to ensure the patch module gets
+>   loaded with the real one.
+>
+> - Changing 'atomic replace' to allow patch modules to be per-object.
+>
 
-Is this realistic? Even the best QA could not check all scenarios.
-My point is that the more actions we do the bigger the risk is.
+Perhaps I'm misunderstanding, but supporting only per-object livepatch
+modules would make livepatch creation for something like commit
+15fab63e1e57 ("fs: prevent page refcount overflow in pipe_buf_get"),
+CVE-2019-11487 really cumbersome (see the fuse part)?
 
-Anyway, this approach might cause loading modules that are never
-or rarely loaded together. Real life systems have limited number of
-peripherals.
-
-I wonder if it might actually break certification of some
-hardware. It is just an idea. I do not know how certifications
-are done and what is the scope or limits.
-
-
-> >   + It might open more security holes that are not fixed by
-> >     the livepatch.
-> 
-> Following the same line of thinking, the livepatch infrastructure might
-> open security holes because of the inherent complexity of late module
-> patching.
-
-Could you be more specific, please?
-Has there been any known security hole in the late module
-livepatching code?
-
-
-> >   + It might require some extra configuration actions to handle
-> >     the newly opened interfaces (devices). For example, updating
-> >     SELinux policies.
-> 
-> I assume you mean user-created policies, not distro ones?  Is this even
-> a realistic concern?
-
-Honestly, I do not know. I am not familiar with this area. There are
-also containers. They are going to be everywhere. They also need a lot
-of rules to keep stuff separated. And it is another area where I have
-no idea if newly loaded and unexpectedly modules might need special
-handling.
+I think I've seen similar interdependencies between e.g. kvm.ko <->
+kvm_intel.ko, but can't find an example right now.
 
 
-> >   + Are there conflicting modules that might need to get
-> >     livepatched?
-> 
-> Again is this realistic?
+Thanks,
 
-I do not know. But I could imagine it.
+Nicolai
 
-
-> > This approach has a strong no-go from my side.
-> 
-> </devils-advocate>
-> 
-> I agree it's not ideal, but nothing is ideal at this point.  Let's not
-> to rule it out prematurely.  I do feel that our current approach is not
-> the best.  It will continue to create problems for us until we fix it.
-
-I am sure that we could do better. I just think that forcibly loading
-modules is opening too huge can of worms. Basically all other
-approaches have more limited or better defined effects.
-
-For example, the newly added code that clears the relocations
-is something that can be tested. Behavior of "random" mix of
-loaded modules opens possibilities that have never been
-discovered before.
-
-
-> > > - Changing 'atomic replace' to allow patch modules to be per-object.
-> > 
-> > The problem might be how to transition all loaded objects atomically
-> > when the needed code is loaded from different modules.
-> 
-> I'm not sure what you mean.
-> 
-> My idea was that each patch module would be specific to an object, with
-> no inter-module change dependencies.  So when using atomic replace, if
-> the patch module is only targeted to vmlinux, then only vmlinux-targeted
-> patch modules would be replaced.
-> 
-> In other words, 'atomic replace' would be object-specific.
-> 
-> > Alternative would be to support only per-object consitency. But it
-> > might reduce the number of supported scenarios too much. Also it
-> > would make livepatching more error-prone.
-
-By per-object consistency I mean the same as you with "each patch
-module would be specific to an object, with no inter-module change
-dependencies".
-
-My concern is that it would prevent semantic changes in a shared code.
-Semantic changes are rare. But changes in shared code are not.
-
-If we reduce the consistency to per-object consistency. Will the
-consistency still make sense then? We might want to go back to
-trees, I mean immediate mode.
-
-Best Regards,
-Petr
+--
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
+(HRB 247165, AG München), GF: Felix Imendörffer
