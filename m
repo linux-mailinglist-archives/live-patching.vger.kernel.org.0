@@ -2,34 +2,29 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 679B9A9893
-	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2019 04:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE50AAA0FE
+	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2019 13:10:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730804AbfIECvB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 4 Sep 2019 22:51:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:45350 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725965AbfIECvA (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 4 Sep 2019 22:51:00 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 56697C0578F8;
-        Thu,  5 Sep 2019 02:51:00 +0000 (UTC)
-Received: from treble (ovpn-121-98.rdu2.redhat.com [10.10.121.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 051B11001958;
-        Thu,  5 Sep 2019 02:50:56 +0000 (UTC)
-Date:   Wed, 4 Sep 2019 21:50:55 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>, jikos@kernel.org,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+        id S2388250AbfIELKB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 5 Sep 2019 07:10:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49696 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732051AbfIELJ5 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 5 Sep 2019 07:09:57 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id A9FA2B6AD;
+        Thu,  5 Sep 2019 11:09:55 +0000 (UTC)
+Date:   Thu, 5 Sep 2019 13:09:55 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     jikos@kernel.org, Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org
 Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module
  removal
-Message-ID: <20190905025055.36loaatxtkhdo4q5@treble>
-References: <alpine.LSU.2.21.1908141256150.16696@pobox.suse.cz>
- <20190814151244.5xoaxib5iya2qjco@treble>
+Message-ID: <20190905110955.wl4lwjbnpqybhkcn@pathway.suse.cz>
+References: <20190814151244.5xoaxib5iya2qjco@treble>
  <20190816094608.3p2z73oxcoqavnm4@pathway.suse.cz>
  <20190822223649.ptg6e7qyvosrljqx@treble>
  <20190823081306.kbkm7b4deqrare2v@pathway.suse.cz>
@@ -38,132 +33,116 @@ References: <alpine.LSU.2.21.1908141256150.16696@pobox.suse.cz>
  <5c649320-a9bf-ae7f-5102-483bc34d219f@redhat.com>
  <alpine.LSU.2.21.1909031447140.3872@pobox.suse.cz>
  <20190904084932.gndrtewubqiaxmzy@pathway.suse.cz>
+ <20190905025055.36loaatxtkhdo4q5@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190904084932.gndrtewubqiaxmzy@pathway.suse.cz>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Thu, 05 Sep 2019 02:51:00 +0000 (UTC)
+In-Reply-To: <20190905025055.36loaatxtkhdo4q5@treble>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Sep 04, 2019 at 10:49:32AM +0200, Petr Mladek wrote:
-> On Tue 2019-09-03 15:02:34, Miroslav Benes wrote:
-> > On Mon, 2 Sep 2019, Joe Lawrence wrote:
+On Wed 2019-09-04 21:50:55, Josh Poimboeuf wrote:
+> On Wed, Sep 04, 2019 at 10:49:32AM +0200, Petr Mladek wrote:
+> > I wonder what is necessary for a productive discussion on Plumbers:
 > > 
-> > > On 9/2/19 12:13 PM, Miroslav Benes wrote:
-> > > >> I can easily foresee more problems like those in the future.  Going
-> > > >> forward we have to always keep track of which special sections are
-> > > >> needed for which architectures.  Those special sections can change over
-> > > >> time, or can simply be overlooked for a given architecture.  It's
-> > > >> fragile.
-> > > > 
-> > > > Indeed. It bothers me a lot. Even x86 "port" is not feature complete in
-> > > > this regard (jump labels, alternatives,...) and who knows what lurks in
-> > > > the corners of the other architectures we support.
-> > > > 
-> > > > So it is in itself reason enough to do something about late module
-> > > > patching.
-> > > > 
-> > > 
-> > > Hi Miroslav,
-> > > 
-> > > I was tinkering with the "blue-sky" ideas that I mentioned to Josh the other
-> > > day.
-> > 
-> > > I dunno if you had a chance to look at what removing that code looks
-> > > like, but I can continue to flesh out that idea if it looks interesting:
-> > 
-> > Unfortunately no and I don't think I'll come up with something useful 
-> > before LPC, so anything is really welcome.
-> > 
-> > > 
-> > >   https://github.com/joe-lawrence/linux/tree/blue-sky
-> > > 
-> > > A full demo would require packaging up replacement .ko's with a livepatch, as
-> > > well as "blacklisting" those deprecated .kos, etc.  But that's all I had time
-> > > to cook up last week before our holiday weekend here.
-> > 
-> > Frankly, I'm not sure about this approach. I'm kind of torn. The current 
-> > solution is far from ideal, but I'm not excited about the other options 
-> > either. It seems like the choice is basically between "general but 
-> > technically complicated fragile solution with nontrivial maintenance 
-> > burden", or "something safer and maybe cleaner, but limiting for 
-> > users/distros". Of course it depends on whether the limitation is even 
-> > real and how big it is. Unfortunately we cannot quantify it much and that 
-> > is probably why our opinions (in the email thread) differ.
+> >   + Josh would like to see what code can get removed when late
+> >     handling of modules gets removed. I think that it might be
+> >     partially visible from Joe's blue-sky patches.
 > 
-> I wonder what is necessary for a productive discussion on Plumbers:
+> Yes, and I like what I see.  Especially the removal of the .klp.arch
+> nastiness!
+
+Could we get rid of it?
+
+Is there any other way to get access to static variables
+and functions from the livepatched code?
+
+> I think the .klp.arch sections are the big ones:
 > 
->   + Josh would like to see what code can get removed when late
->     handling of modules gets removed. I think that it might be
->     partially visible from Joe's blue-sky patches.
-
-Yes, and I like what I see.  Especially the removal of the .klp.arch
-nastiness!
-
->   + I would like to better understand the scope of the current
->     problems. It is about modifying code in the livepatch that
->     depends on position of the related code:
+>   .klp.arch.altinstructions
+>   .klp.arch.parainstructions
+>   .klp.arch.jump_labels (doesn't exist yet)
 > 
->       + relocations are rather clear; we will need them anyway
-> 	to access non-public (static) API from the original code.
+> And that's just x86...
 > 
->       + What are the other changes?
+> And then of course there's the klp coming/going notifiers which have
+> also been an additional source of complexity.
+> 
+> >       + Do we use them in livepatches? How often?
+> 
+> I don't have a number, but it's very common to patch a function which
+> uses jump labels or alternatives.
 
-I think the .klp.arch sections are the big ones:
+Really? My impression is that both alternatives and jump_labels
+are used in hot paths. I would expect them mostly in core code
+that is always loaded.
 
-  .klp.arch.altinstructions
-  .klp.arch.parainstructions
-  .klp.arch.jump_labels (doesn't exist yet)
+Alternatives are often used in assembly that we are not able
+to livepatch anyway.
 
-And that's just x86...
+Or are they spread widely via some macros or inlined functions?
 
-And then of course there's the klp coming/going notifiers which have
-also been an additional source of complexity.
 
->       + Do we use them in livepatches? How often?
+> >       + How often new problematic features appear?
+> 
+> I'm not exactly sure what you mean, but it seems that anytime we add a
+> new feature, we have to try to wrap our heads around how it interacts
+> with the weirdness of late module patching.
 
-I don't have a number, but it's very common to patch a function which
-uses jump labels or alternatives.
+I agree that we need to think about it and it makes complications.
+Anyway, I think that these are never the biggest problems.
 
->       + How often new problematic features appear?
+I would be more concerned about arch-specific features that might need
+special handling in the livepatch code. Everyone talks only about
+alternatives and jump_labels that were added long time ago.
 
-I'm not exactly sure what you mean, but it seems that anytime we add a
-new feature, we have to try to wrap our heads around how it interacts
-with the weirdness of late module patching.
 
->       + Would be possible to detect potential problems, for example
-> 	by comparing the code in the binary and in memory when
-> 	the module is loaded the normal way?
+> >       Anyway, it might rule out some variants so that we could better
+> >       concentrate on the acceptable ones. Or come with yet another
+> >       proposal that would avoid the real blockers.
+> 
+> I'd like to hear more specific negatives about Joe's recent patches,
+> which IMO, are the best option we've discussed so far.
 
-Perhaps, though I assume this would be some out-of-band testing thing.
+I discussed this approach with our project manager. He was not much
+excited about this solution. His first idea was that it would block
+attaching USB devices. They are used by admins when taking care of
+the servers. And there might be other scenarios where a new module
+might need loading to solve some situation.
 
->       + Would be possible to reset the livepatch code in memory
-> 	when the related module is unloaded and safe us half
-> 	of the troubles?
+Customers understand Livepatching as a way how to secure system
+without immediate reboot and with minimal (invisible) effect
+on the workload. They might get pretty surprised when the system
+suddenly blocks their "normal" workflow.
 
-Maybe, but I think that would solve a much lower percentage of our
-troubles than half :-/
+As Miroslav said. No solution is perfect. We need to find the most
+acceptable compromise. It seems that you are more concerned about
+saving code, reducing complexity and risk. I am more concerned
+about user satisfaction.
 
->     + It might be useful to prepare overview of the existing proposals
->       and agree on the positives and negatives. I am afraid that some
->       of them might depend on the customer base and
->       use cases. Sometimes we might not have enough information.
->       But it might be good to get on the same page where possible.
+It is almost impossible to predict effects on user satisfaction
+because they have different workflow, use case, expectation,
+and tolerance.
 
-I think we've already done that for the existing proposals.  Maybe
-Miroslav can summarize them at the LPC session.
+We could better estimate the technical side of each solution:
 
->       Anyway, it might rule out some variants so that we could better
->       concentrate on the acceptable ones. Or come with yet another
->       proposal that would avoid the real blockers.
+   + implementation cost
+   + maintenance cost
+   + risks
+   + possible improvements and hardening
+   + user visible effects
+   + complication and limits with creating livepatches
 
-I'd like to hear more specific negatives about Joe's recent patches,
-which IMO, are the best option we've discussed so far.
 
--- 
-Josh
+From my POV, the most problematic is the arch-specific code.
+It is hard to maintain and we do not have it fully under
+control.
+
+And I do not believe that we could remove all arch specific code
+when we do not allow delayed livepatching of modules.
+
+Best Regards,
+Petr
