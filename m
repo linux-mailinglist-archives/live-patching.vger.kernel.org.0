@@ -2,114 +2,106 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B69ABDF8
-	for <lists+live-patching@lfdr.de>; Fri,  6 Sep 2019 18:45:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D30AC3F0
+	for <lists+live-patching@lfdr.de>; Sat,  7 Sep 2019 03:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731128AbfIFQpy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 6 Sep 2019 12:45:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44628 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727816AbfIFQpy (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 6 Sep 2019 12:45:54 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id ED1433084288;
-        Fri,  6 Sep 2019 16:45:53 +0000 (UTC)
-Received: from treble (ovpn-112-76.rdu2.redhat.com [10.10.112.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CB107194BB;
-        Fri,  6 Sep 2019 16:45:48 +0000 (UTC)
-Date:   Fri, 6 Sep 2019 11:45:44 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Petr Mladek <pmladek@suse.com>, jikos@kernel.org,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <20190906164544.4hmszo2wlqw3pvu5@treble>
-References: <20190822223649.ptg6e7qyvosrljqx@treble>
- <20190823081306.kbkm7b4deqrare2v@pathway.suse.cz>
- <20190826145449.wyo7avwpqyriem46@treble>
- <alpine.LSU.2.21.1909021802180.29987@pobox.suse.cz>
- <5c649320-a9bf-ae7f-5102-483bc34d219f@redhat.com>
- <alpine.LSU.2.21.1909031447140.3872@pobox.suse.cz>
- <20190905023202.ed7fecc22xze4pwj@treble>
- <alpine.LSU.2.21.1909051403530.25712@pobox.suse.cz>
- <20190905125418.kleis5ackvhtn4hs@treble>
- <alpine.LSU.2.21.1909061431590.3031@pobox.suse.cz>
+        id S2406434AbfIGBfy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 6 Sep 2019 21:35:54 -0400
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:38152 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406421AbfIGBfx (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Fri, 6 Sep 2019 21:35:53 -0400
+Received: by mail-vs1-f66.google.com with SMTP id b123so5283679vsb.5
+        for <live-patching@vger.kernel.org>; Fri, 06 Sep 2019 18:35:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=C+0rVi6PzTMFYTcbcIBgVtgcdKuod3fbgGTlJ3s1Cbc=;
+        b=aAqX8GF3NxJfYWTz+7NIDPLIjo0XP9/JZPono8ypSM0neNSMZHUmzdkq2Se7OJFOh9
+         PoY/oOktOwroaWpUhvkh/0lVCpOy0KJOLjA7Oi/nzaXZuFlZGZbL/4747zKBrwwhtzas
+         gG/MLSk0D7meYg6rv72yzT1Ye0iKhsbuA3x7qNKl17C/ShWvLceuPesYJRB24JI3yF/d
+         RlQ1pN3llWGMGktA9M5mcCV2mXYnONq4mktjFBILLKDKqhDlfm3tts6F97UbE+dOxwKG
+         stLn6T4VogMt45OE5RvOA2uSkgh1bK36Tx1Z5lO8sum/OTUS4kxFqGu49PNKiFyRTNrp
+         8fGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=C+0rVi6PzTMFYTcbcIBgVtgcdKuod3fbgGTlJ3s1Cbc=;
+        b=HfhQ0xU1YYsPXDoMyFMWOB733a+6koQGR8l+etVn6jPCLAk+PWFShB9PsIfVvb6HXO
+         J8XBvG2S9lHnZpyyGIcDcCRdi0yC9nu8lYRW6nhojWClEsSPKQRznHTl4havOwD+kMi1
+         yGludkUxAp7jSAZsd1QJBp8QEy0tOOwWXj/V3slvgj14xa5qD4UWyIXXAV6rJ/ukjWZy
+         Gh/g7xdGjCreZXCOfTWLvQ9Yi6yLIC0pX3xZyYnbfsLjnAcXwIekEcmv1jmo96vbRES1
+         UPzV2cQ57zPpHZ0rtShs7DlQe+oVGoTtxICD3+m2l+qmGbm5io3wzBsSB5DbSHoG5RMY
+         3NMg==
+X-Gm-Message-State: APjAAAV2N8vYmPzX38STRncowtw0c5Hon17PyrUM49mwdwZ6TGAygkMG
+        FzYY7SIzJqKPiBewy+24GpnuoT0iro+QU9qSDTA=
+X-Google-Smtp-Source: APXvYqyTtP/aHSfYAfmSrs7MWIe/GTCmIy0j5/fOPaIGMbEKnvKQPW7B/2OIkBGdOM/ShGwFA2jh7u3jozMFI6xv0E8=
+X-Received: by 2002:a05:6102:15a:: with SMTP id a26mr6991278vsr.143.1567820152517;
+ Fri, 06 Sep 2019 18:35:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.1909061431590.3031@pobox.suse.cz>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 06 Sep 2019 16:45:54 +0000 (UTC)
+Received: by 2002:a1f:c545:0:0:0:0:0 with HTTP; Fri, 6 Sep 2019 18:35:52 -0700 (PDT)
+Reply-To: waltonalice41@gmail.com
+From:   Alice Walton <saraharmony501@gmail.com>
+Date:   Sat, 7 Sep 2019 02:35:52 +0100
+Message-ID: <CAHoQAbVi2eUJHHAx8-i6uv=tXXkdZbDQj+bGXrd4foXr+8goAQ@mail.gmail.com>
+Subject: Please forgive me
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Sep 06, 2019 at 02:51:01PM +0200, Miroslav Benes wrote:
-> 
-> > > Now, I don't think that replacing .ko on disk is a good idea. We've 
-> > > already discussed it. It would lead to a maintenance/packaging problem, 
-> > > because you never know which version of the module is loaded in the 
-> > > system. The state space grows rather rapidly there.
-> > 
-> > What exactly are your concerns?
-> > 
-> > Either the old version of the module is loaded, and it's livepatched; or
-> > the new version of the module is loaded, and it's not livepatched.
-> 
-> Let's have module foo.ko with function a().
-> 
-> Live patch 1 (LP1) fixes it to a'(), which calls new function b() (present 
-> in LP1). LP1 is used only if foo.ko is loaded. foo.ko is replaced with 
-> foo'.ko on disk. It contains both a'() (fixed a() to be precise) and new 
-> b().
-> 
-> Now there is LP2 with new function c() (or c'(), it does not matter) 
-> calling b(). Either foo.ko or foo'.ko can be loaded and you don't know 
-> which one. The implementation LP2 would be different in both cases.
-> 
-> You could say that it does not matter. If LP2 is implemented for foo.ko, 
-> the same could work for foo'.ko (b() would be a part of LP2 and would not 
-> be called directly from foo'.ko). LP2 would only be necessarily larger. It 
-> is true in case of functions, but if symbol b is not a function but a 
-> global variable, it is different then.
+My Dearest,
 
-Assuming atomic replace, I don't see how this could be a problem.  LP2
-replaces LP1, so why would LP2 need to access LP1's (or foo'.ko's)
-symbol b?  All live patches should be built against and targeted for the
-original foo.ko.
+Please forgive me for stressing you with my predicaments as I know
+that this letter may come to you as a big surprise.
 
-However... it might break atomic replace functionality in another way.
+Actually, I came across your E-mail from my personal search afterward
+I decided to email you directly believing that you will be honest to
+fulfil my final wish before anything happens to me. Meanwhile, I am
+Madam Alice Walton, 71 years old childless widow from France but i
+reside and doing Gold mining business in Africa before i fall sick.
 
-If LP2 is an 'atomic replace' partial revert of LP1, and foo'.ko were
-loaded, when loading LP2, the atomic replace code wouldn't be able to
-detect which functions were "patched" in foo'.ko. So if the LP2
-functions are not a superset of the LP1 functions, the "patched"
-functions in foo'.ko wouldn't get reverted.
+I am suffering from Adenocarcinoma Cancer of the lungs for the past 8
+years and from all indication my condition is really deteriorating as
+my doctors have confirmed and courageously advised me that I may not
+live beyond 3 weeks from now for the reason that my tumor has reached
+a critical stage which has defiled all forms of medical treatment.
 
-What if foo'.ko were really just the original foo.ko, plus livepatch
-metadata grafted onto it somehow, such that it patches itself when it
-loads?  Then patched state would always be the same regardless of
-whether the patch came from the LP or foo'.ko.
+Since my days are numbered, I=E2=80=99ve decided willingly to fulfil my
+long-time vow to donate to the less privileges the sum of($18.5
+million dollars) I deposited in my offshore account over 7 years now
+because I have tried to handle this project by myself but I have seen
+that my health could not allow me to do so anymore.
 
-> Moreover, in this case foo'.ko is "LP superset". Meaning that it contains 
-> only fixes which are present in LP1. What if it is not. We usually 
-> preserve kABI, so there could be a module in two or more versions compiled 
-> from slightly different code (older/newer and so on) and you don't know 
-> which one is loaded. To be fair we don't allow it (I think) at SUSE except 
-> for KMPs (kernel module packages) (the issue of course exists even now 
-> and we haven't solved it yet, because it is rare) and out of tree modules 
-> which we don't support with LP. It could be solved with srcversion, but it 
-> complicates things a lot. "blue sky" idea could extend the issue to all 
-> modules given the above is real.
+My promise to God includes building of well-equipped charity
+foundation/hospital and a technical school for the orphans and less
+privileges.
 
-I'm having trouble understanding what this issue is and how "blue sky"
-would extend it.
+Since i am not capable to handle this again myself due to my critical
+health condition,please i need your consent to help me receive my
+money from the bank and use it to do this divine works of God in your
+country in my name so that my soul can be at rest if anything happens
+to me.
 
--- 
-Josh
+If you will be honest, kind and willing to assist me handle this
+charity project as I=E2=80=99ve mentioned here, I will like you to provide =
+me
+your personal data like,
+
+(1) Your full name:
+(2) country:
+(3) Occupation:
+(4) phone number:
+(5) Age:
+
+Let me have this data so that i can link you up with my bank as my
+representative and receiver of the funds now that i am still alive.
+
+Warmest Regards!
+Mrs. Alice Walton
