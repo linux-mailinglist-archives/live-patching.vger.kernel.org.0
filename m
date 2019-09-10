@@ -2,26 +2,24 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6951CADD65
-	for <lists+live-patching@lfdr.de>; Mon,  9 Sep 2019 18:39:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 297FBAF2F9
+	for <lists+live-patching@lfdr.de>; Wed, 11 Sep 2019 00:37:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729260AbfIIQjW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 9 Sep 2019 12:39:22 -0400
-Received: from [171.13.201.4] ([171.13.201.4]:55454 "EHLO
-        localhost.localdomain" rhost-flags-FAIL-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725872AbfIIQjW (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 9 Sep 2019 12:39:22 -0400
-X-Greylist: delayed 4198 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Sep 2019 12:39:17 EDT
-Received: from 127.0.0.1 (localhost [127.0.0.1])
-        by localhost.localdomain (Postfix) with SMTP id 52CF110BA800
-        for <live-patching@vger.kernel.org>; Mon,  9 Sep 2019 19:25:40 +0800 (CST)
-From:   live-patching@vger.kernel.org
+        id S1725978AbfIJWhd (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 10 Sep 2019 18:37:33 -0400
+Received: from [206.81.29.36] ([206.81.29.36]:54862 "EHLO TEST.localdomain"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725880AbfIJWhd (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 10 Sep 2019 18:37:33 -0400
+Received: from 127.0.0.1 (TEST [127.0.0.1])
+        by TEST.localdomain (Postfix) with SMTP id 2C57C5F2023;
+        Tue, 10 Sep 2019 21:56:16 +0000 (UTC)
+From:   128128live-muzic@mail.ru
 Reply-To: prodawez@cuvox.de
-To:     live-patching@vger.kernel.org
+To:     live-muzic@mail.ru
 Subject: Zdravstvujte! Vas interesujut klientskie bazy dannyh?
-Message-Id: <20190909112540.52CF110BA800@localhost.localdomain>
-Date:   Mon,  9 Sep 2019 19:25:40 +0800 (CST)
+Message-Id: <20190910215616.2C57C5F2023@TEST.localdomain>
+Date:   Tue, 10 Sep 2019 21:56:16 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
