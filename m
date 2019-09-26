@@ -2,53 +2,101 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DF6CBBC39
-	for <lists+live-patching@lfdr.de>; Mon, 23 Sep 2019 21:25:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C398BF1CA
+	for <lists+live-patching@lfdr.de>; Thu, 26 Sep 2019 13:35:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440470AbfIWTZ1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 23 Sep 2019 15:25:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52124 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727206AbfIWTZ0 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 23 Sep 2019 15:25:26 -0400
-Subject: Re: [GIT PULL] livepatching for 5.4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569266726;
-        bh=0l4ZfPNuZ16anhWKGlYT8WoJs78vbxnUQFvQklQhILo=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=oNA1cupY3hOSkeT+hFVKG5GEIAsuS0jlHDh+mJjIZcwm5TjaAiIB278jFnnCuMbsu
-         wDlmqu9L6+sseYKoISm8RII/nNwiLyifp+/eg6JhkqjX7qgzoVybld6s5K82URUTDH
-         +I/XlTADPZgqfDpaXqr8lzuLijLitrN50FaSqsgg=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <nycvar.YFH.7.76.1909222252260.1459@cbobk.fhfr.pm>
-References: <nycvar.YFH.7.76.1909222252260.1459@cbobk.fhfr.pm>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <nycvar.YFH.7.76.1909222252260.1459@cbobk.fhfr.pm>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git
- for-linus
-X-PR-Tracked-Commit-Id: 4ff96fb52c6964ad42e0a878be8f86a2e8052ddd
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 9f7582d15f82e86b2041ab22327b7d769e061c1f
-Message-Id: <156926672607.9893.2020070265416069332.pr-tracker-bot@kernel.org>
-Date:   Mon, 23 Sep 2019 19:25:26 +0000
-To:     Jiri Kosina <jikos@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1726004AbfIZLf3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 26 Sep 2019 07:35:29 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45870 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725955AbfIZLf3 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 26 Sep 2019 07:35:29 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id A6B0BACD9;
+        Thu, 26 Sep 2019 11:35:27 +0000 (UTC)
+Date:   Thu, 26 Sep 2019 13:35:04 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Thomas Gleixner <tglx@linutronix.de>
+cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org
+Subject: Re: [RFC patch 14/15] workpending: Provide infrastructure for work
+ before entering a guest
+In-Reply-To: <20190919150809.860645841@linutronix.de>
+Message-ID: <alpine.LSU.2.21.1909261324580.3740@pobox.suse.cz>
+References: <20190919150314.054351477@linutronix.de> <20190919150809.860645841@linutronix.de>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The pull request you sent on Sun, 22 Sep 2019 22:56:23 +0200 (CEST):
+> --- a/include/linux/entry-common.h
+> +++ b/include/linux/entry-common.h
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git for-linus
+[...]
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/9f7582d15f82e86b2041ab22327b7d769e061c1f
+> +#define EXIT_TO_GUESTMODE_WORK						\
+> +	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_RESUME |	\
+> +	 ARCH_EXIT_TO_GUESTMODE_WORK)
 
-Thank you!
+[...]
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+> --- a/kernel/entry/common.c
+> +++ b/kernel/entry/common.c
+>
+> +int core_exit_to_guestmode_work(struct kvm *kvm, struct kvm_vcpu *vcpu,
+> +				unsigned long ti_work)
+> +{
+> +	/*
+> +	 * Before returning to guest mode handle all pending work
+> +	 */
+> +	if (ti_work & _TIF_SIGPENDING) {
+> +		vcpu->run->exit_reason = KVM_EXIT_INTR;
+> +		vcpu->stat.signal_exits++;
+> +		return -EINTR;
+> +	}
+> +
+> +	if (ti_work & _TIF_NEED_RESCHED) {
+> +		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
+> +		schedule();
+> +		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
+> +	}
+> +
+> +	if (ti_work & _TIF_PATCH_PENDING) {
+> +		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
+> +		klp_update_patch_state(current);
+> +		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
+> +	}
+
+If I am reading the code correctly, _TIF_PATCH_PENDING is not a part of 
+EXIT_TO_GUESTMODE_WORK, so the handling code here would not be called on 
+any arch as of now.
+
+I also think that _TIF_PATCH_PENDING must not be handled here generally. 
+It could break consistency guarantees when live patching KVM (and we do 
+that from time to time).
+
+Adding live-patching ML to CC.
+
+Miroslav
+
+> +	if (ti_work & _TIF_NOTIFY_RESUME) {
+> +		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
+> +		clear_thread_flag(TIF_NOTIFY_RESUME);
+> +		tracehook_notify_resume(NULL);
+> +		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
+> +	}
+> +
+> +	/* Any extra architecture specific work */
+> +	return arch_exit_to_guestmode_work(kvm, vcpu, ti_work);
+> +}
