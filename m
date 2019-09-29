@@ -2,38 +2,38 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F54DC182B
-	for <lists+live-patching@lfdr.de>; Sun, 29 Sep 2019 19:42:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17E9FC17EE
+	for <lists+live-patching@lfdr.de>; Sun, 29 Sep 2019 19:41:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729977AbfI2RdM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 29 Sep 2019 13:33:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44392 "EHLO mail.kernel.org"
+        id S1730412AbfI2Rel (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 29 Sep 2019 13:34:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46696 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729973AbfI2RdM (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Sun, 29 Sep 2019 13:33:12 -0400
+        id S1729236AbfI2Rek (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Sun, 29 Sep 2019 13:34:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DEB022196E;
-        Sun, 29 Sep 2019 17:33:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C19EE21D7A;
+        Sun, 29 Sep 2019 17:34:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569778391;
-        bh=pBQwV3mhbv58jsEbhbzwxQUB2adUWroTzKgDObDMn5I=;
+        s=default; t=1569778479;
+        bh=28EPEBeuVuP6Khqm6zlfvXCAwy4C7eBB7QJBK6lTiqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SQSzDkWBoYA3HCQECrXKCVLG76WgCJECNFGS8nCTKaTpefRG7RrGoDt+wRvL5usk/
-         x5UYX/M9ZPhrtsywRfL/bz+iuJeH43S9CyCs6jgbld5VpsYBlPQAAzIMPwhrF2p9uK
-         kE0nYTidMWcCwWg3Mim0FaHUi8JoEpNrw0ZoFDeQ=
+        b=SFg7/nZQU19uettwodGd+pBvIjhjy0wvcoZaOQJBt9RSXMG8Wvtb2xq2WoibZhgs4
+         sIZwyX4qTEG2fq+Bu9HV/vubJWQFliCxNDTqN26/1Hr5c9SZtEy+2W+zRmprvevHlw
+         miRaTz4CYDaK0XtKRRG+YBiNLae9Xsajy5OcdvpU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Sasha Levin <sashal@kernel.org>, live-patching@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 12/42] livepatch: Nullify obj->mod in klp_module_coming()'s error path
-Date:   Sun, 29 Sep 2019 13:32:11 -0400
-Message-Id: <20190929173244.8918-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 08/33] livepatch: Nullify obj->mod in klp_module_coming()'s error path
+Date:   Sun, 29 Sep 2019 13:33:56 -0400
+Message-Id: <20190929173424.9361-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190929173244.8918-1-sashal@kernel.org>
-References: <20190929173244.8918-1-sashal@kernel.org>
+In-Reply-To: <20190929173424.9361-1-sashal@kernel.org>
+References: <20190929173424.9361-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -65,10 +65,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index c4ce08f43bd63..ab4a4606d19b7 100644
+index 722c27c40e5b3..a1250ad591c1d 100644
 --- a/kernel/livepatch/core.c
 +++ b/kernel/livepatch/core.c
-@@ -1175,6 +1175,7 @@ int klp_module_coming(struct module *mod)
+@@ -1027,6 +1027,7 @@ int klp_module_coming(struct module *mod)
  	pr_warn("patch '%s' failed for module '%s', refusing to load module '%s'\n",
  		patch->mod->name, obj->mod->name, obj->mod->name);
  	mod->klp_alive = false;
