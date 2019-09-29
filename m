@@ -2,101 +2,80 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C398BF1CA
-	for <lists+live-patching@lfdr.de>; Thu, 26 Sep 2019 13:35:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B93B1C1777
+	for <lists+live-patching@lfdr.de>; Sun, 29 Sep 2019 19:38:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726004AbfIZLf3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 26 Sep 2019 07:35:29 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45870 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725955AbfIZLf3 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 26 Sep 2019 07:35:29 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id A6B0BACD9;
-        Thu, 26 Sep 2019 11:35:27 +0000 (UTC)
-Date:   Thu, 26 Sep 2019 13:35:04 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Thomas Gleixner <tglx@linutronix.de>
-cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: [RFC patch 14/15] workpending: Provide infrastructure for work
- before entering a guest
-In-Reply-To: <20190919150809.860645841@linutronix.de>
-Message-ID: <alpine.LSU.2.21.1909261324580.3740@pobox.suse.cz>
-References: <20190919150314.054351477@linutronix.de> <20190919150809.860645841@linutronix.de>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S1730651AbfI2Rfv (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 29 Sep 2019 13:35:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729757AbfI2Rfr (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Sun, 29 Sep 2019 13:35:47 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6426121D7D;
+        Sun, 29 Sep 2019 17:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1569778547;
+        bh=7p8XyQrphJ/tq8QCysawjdWH1XU2lS/L9DrP0XhWqyo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vdTezx6U7aHNhMq3QIYLuoo4Zx4LD4mJa87KmHJxYb2AJeRxigjhrDWryfl1unSLq
+         oVtUIP/ZaUuThg1eSRaltlnZPiit3tEAoiON+HBwo+e99N+KKcII2Iir1OHXQM6mCe
+         MwTiywualgL1FpSbQKL0SDox1n0iDPtU5meyJ5G8=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, live-patching@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 06/23] livepatch: Nullify obj->mod in klp_module_coming()'s error path
+Date:   Sun, 29 Sep 2019 13:35:16 -0400
+Message-Id: <20190929173535.9744-6-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190929173535.9744-1-sashal@kernel.org>
+References: <20190929173535.9744-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-> --- a/include/linux/entry-common.h
-> +++ b/include/linux/entry-common.h
+From: Miroslav Benes <mbenes@suse.cz>
 
-[...]
+[ Upstream commit 4ff96fb52c6964ad42e0a878be8f86a2e8052ddd ]
 
-> +#define EXIT_TO_GUESTMODE_WORK						\
-> +	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_RESUME |	\
-> +	 ARCH_EXIT_TO_GUESTMODE_WORK)
+klp_module_coming() is called for every module appearing in the system.
+It sets obj->mod to a patched module for klp_object obj. Unfortunately
+it leaves it set even if an error happens later in the function and the
+patched module is not allowed to be loaded.
 
-[...]
+klp_is_object_loaded() uses obj->mod variable and could currently give a
+wrong return value. The bug is probably harmless as of now.
 
-> --- a/kernel/entry/common.c
-> +++ b/kernel/entry/common.c
->
-> +int core_exit_to_guestmode_work(struct kvm *kvm, struct kvm_vcpu *vcpu,
-> +				unsigned long ti_work)
-> +{
-> +	/*
-> +	 * Before returning to guest mode handle all pending work
-> +	 */
-> +	if (ti_work & _TIF_SIGPENDING) {
-> +		vcpu->run->exit_reason = KVM_EXIT_INTR;
-> +		vcpu->stat.signal_exits++;
-> +		return -EINTR;
-> +	}
-> +
-> +	if (ti_work & _TIF_NEED_RESCHED) {
-> +		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
-> +		schedule();
-> +		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
-> +	}
-> +
-> +	if (ti_work & _TIF_PATCH_PENDING) {
-> +		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
-> +		klp_update_patch_state(current);
-> +		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
-> +	}
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/livepatch/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-If I am reading the code correctly, _TIF_PATCH_PENDING is not a part of 
-EXIT_TO_GUESTMODE_WORK, so the handling code here would not be called on 
-any arch as of now.
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 88754e9790f9b..f8dc77b18962c 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -941,6 +941,7 @@ int klp_module_coming(struct module *mod)
+ 	pr_warn("patch '%s' failed for module '%s', refusing to load module '%s'\n",
+ 		patch->mod->name, obj->mod->name, obj->mod->name);
+ 	mod->klp_alive = false;
++	obj->mod = NULL;
+ 	klp_cleanup_module_patches_limited(mod, patch);
+ 	mutex_unlock(&klp_mutex);
+ 
+-- 
+2.20.1
 
-I also think that _TIF_PATCH_PENDING must not be handled here generally. 
-It could break consistency guarantees when live patching KVM (and we do 
-that from time to time).
-
-Adding live-patching ML to CC.
-
-Miroslav
-
-> +	if (ti_work & _TIF_NOTIFY_RESUME) {
-> +		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
-> +		clear_thread_flag(TIF_NOTIFY_RESUME);
-> +		tracehook_notify_resume(NULL);
-> +		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
-> +	}
-> +
-> +	/* Any extra architecture specific work */
-> +	return arch_exit_to_guestmode_work(kvm, vcpu, ti_work);
-> +}
