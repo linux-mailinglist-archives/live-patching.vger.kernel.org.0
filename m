@@ -2,80 +2,70 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17E9FC17EE
-	for <lists+live-patching@lfdr.de>; Sun, 29 Sep 2019 19:41:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0AF1C3439
+	for <lists+live-patching@lfdr.de>; Tue,  1 Oct 2019 14:31:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730412AbfI2Rel (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 29 Sep 2019 13:34:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46696 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729236AbfI2Rek (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Sun, 29 Sep 2019 13:34:40 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C19EE21D7A;
-        Sun, 29 Sep 2019 17:34:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569778479;
-        bh=28EPEBeuVuP6Khqm6zlfvXCAwy4C7eBB7QJBK6lTiqQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SFg7/nZQU19uettwodGd+pBvIjhjy0wvcoZaOQJBt9RSXMG8Wvtb2xq2WoibZhgs4
-         sIZwyX4qTEG2fq+Bu9HV/vubJWQFliCxNDTqN26/1Hr5c9SZtEy+2W+zRmprvevHlw
-         miRaTz4CYDaK0XtKRRG+YBiNLae9Xsajy5OcdvpU=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, live-patching@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/33] livepatch: Nullify obj->mod in klp_module_coming()'s error path
-Date:   Sun, 29 Sep 2019 13:33:56 -0400
-Message-Id: <20190929173424.9361-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190929173424.9361-1-sashal@kernel.org>
-References: <20190929173424.9361-1-sashal@kernel.org>
+        id S1726326AbfJAMbK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 1 Oct 2019 08:31:10 -0400
+Received: from mx2.suse.de ([195.135.220.15]:52346 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726137AbfJAMbK (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 1 Oct 2019 08:31:10 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 96CE5AD95;
+        Tue,  1 Oct 2019 12:31:08 +0000 (UTC)
+Date:   Tue, 1 Oct 2019 14:30:44 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     jikos@kernel.org, jpoimboe@redhat.com, pmladek@suse.com
+cc:     joe.lawrence@redhat.com, nstange@suse.de,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 0/3] livepatch: Clear relocation targets on a
+ module removal
+In-Reply-To: <20190905124514.8944-1-mbenes@suse.cz>
+Message-ID: <alpine.LSU.2.21.1910011428001.6105@pobox.suse.cz>
+References: <20190905124514.8944-1-mbenes@suse.cz>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Miroslav Benes <mbenes@suse.cz>
+On Thu, 5 Sep 2019, Miroslav Benes wrote:
 
-[ Upstream commit 4ff96fb52c6964ad42e0a878be8f86a2e8052ddd ]
+> Updated version with Petr's feedback. It looks a bit different and
+> better now (I would say). Not that it should be considered before we
+> decide what to do with late module patching, but I finished it before
+> the discussion started and someone could be interested.
+> 
+> v1: http://lore.kernel.org/r/20190719122840.15353-1-mbenes@suse.cz
+> 
+> Tested on x86_64, ppc64le and s390x. Cross-compiled on arm64 to verify
+> that nothing is broken.
+> 
+> [1] 20180602161151.apuhs2dygsexmcg2@treble
+> [2] 1561019068-132672-1-git-send-email-cj.chengjian@huawei.com
+> [3] 20180607092949.1706-1-mbenes@suse.cz
+> 
+> Miroslav Benes (3):
+>   livepatch: Clear relocation targets on a module removal
+>   livepatch: Unify functions for writing and clearing object relocations
+>   livepatch: Clean up klp_update_object_relocations() return paths
+> 
+>  arch/powerpc/kernel/module_64.c | 45 +++++++++++++++++++++++++
+>  arch/s390/kernel/module.c       |  8 +++++
+>  arch/x86/kernel/module.c        | 43 ++++++++++++++++++++++++
+>  include/linux/moduleloader.h    |  7 ++++
+>  kernel/livepatch/core.c         | 58 ++++++++++++++++++++++++---------
+>  5 files changed, 146 insertions(+), 15 deletions(-)
 
-klp_module_coming() is called for every module appearing in the system.
-It sets obj->mod to a patched module for klp_object obj. Unfortunately
-it leaves it set even if an error happens later in the function and the
-patched module is not allowed to be loaded.
+Ping.
 
-klp_is_object_loaded() uses obj->mod variable and could currently give a
-wrong return value. The bug is probably harmless as of now.
+If I remember correctly, we decided to have this as a temporary solution 
+before better late module patching is implemented. Feedback is welcome.
+I'll then resend with arch maintainters CCed.
 
-Signed-off-by: Miroslav Benes <mbenes@suse.cz>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/livepatch/core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 722c27c40e5b3..a1250ad591c1d 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -1027,6 +1027,7 @@ int klp_module_coming(struct module *mod)
- 	pr_warn("patch '%s' failed for module '%s', refusing to load module '%s'\n",
- 		patch->mod->name, obj->mod->name, obj->mod->name);
- 	mod->klp_alive = false;
-+	obj->mod = NULL;
- 	klp_cleanup_module_patches_limited(mod, patch);
- 	mutex_unlock(&klp_mutex);
- 
--- 
-2.20.1
-
+Thanks
+Miroslav
