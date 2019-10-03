@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 783D6C9A6A
-	for <lists+live-patching@lfdr.de>; Thu,  3 Oct 2019 11:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 870F2C9A98
+	for <lists+live-patching@lfdr.de>; Thu,  3 Oct 2019 11:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727382AbfJCJJN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 3 Oct 2019 05:09:13 -0400
-Received: from mx2.suse.de ([195.135.220.15]:52602 "EHLO mx1.suse.de"
+        id S1728769AbfJCJSB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 3 Oct 2019 05:18:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:54936 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727357AbfJCJJN (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 3 Oct 2019 05:09:13 -0400
+        id S1728767AbfJCJSB (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 3 Oct 2019 05:18:01 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id DFFDAB14B;
-        Thu,  3 Oct 2019 09:09:11 +0000 (UTC)
-Date:   Thu, 3 Oct 2019 11:08:47 +0200 (CEST)
+        by mx1.suse.de (Postfix) with ESMTP id E74DBAD73;
+        Thu,  3 Oct 2019 09:17:59 +0000 (UTC)
+Date:   Thu, 3 Oct 2019 11:17:35 +0200 (CEST)
 From:   Miroslav Benes <mbenes@suse.cz>
-To:     Petr Mladek <pmladek@suse.com>
-cc:     jikos@kernel.org, jpoimboe@redhat.com, joe.lawrence@redhat.com,
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
         nstange@suse.de, live-patching@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/3] livepatch: Clean up klp_update_object_relocations()
- return paths
-In-Reply-To: <20191002134623.b6mwrvenrywgwdce@pathway.suse.cz>
-Message-ID: <alpine.LSU.2.21.1910031100150.9011@pobox.suse.cz>
-References: <20190905124514.8944-1-mbenes@suse.cz> <20190905124514.8944-4-mbenes@suse.cz> <20191002134623.b6mwrvenrywgwdce@pathway.suse.cz>
+Subject: Re: [RFC PATCH v2 1/3] livepatch: Clear relocation targets on a
+ module removal
+In-Reply-To: <20191002181817.xpiqiisg5ybtwhru@treble>
+Message-ID: <alpine.LSU.2.21.1910031110440.9011@pobox.suse.cz>
+References: <20190905124514.8944-1-mbenes@suse.cz> <20190905124514.8944-2-mbenes@suse.cz> <20191002181817.xpiqiisg5ybtwhru@treble>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -34,38 +34,68 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 2 Oct 2019, Petr Mladek wrote:
+On Wed, 2 Oct 2019, Josh Poimboeuf wrote:
 
-> On Thu 2019-09-05 14:45:14, Miroslav Benes wrote:
+> On Thu, Sep 05, 2019 at 02:45:12PM +0200, Miroslav Benes wrote:
+> > Josh reported a bug:
+> > 
+> >   When the object to be patched is a module, and that module is
+> >   rmmod'ed and reloaded, it fails to load with:
+> > 
+> >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > 
+> >   The livepatch module has a relocation which references a symbol
+> >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> >   tries to replace the old relocation with a new one, it sees that
+> >   the previous one is nonzero and it errors out.
+> > 
+> >   On ppc64le, we have a similar issue:
+> > 
+> >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > 
+> > He also proposed three different solutions. We could remove the error
+> > check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> > ("x86/module: Detect and skip invalid relocations"). However the check
+> > is useful for detecting corrupted modules.
+> > 
+> > We could also deny the patched modules to be removed. If it proved to be
+> > a major drawback for users, we could still implement a different
+> > approach. The solution would also complicate the existing code a lot.
+> > 
+> > We thus decided to reverse the relocation patching (clear all relocation
+> > targets on x86_64, or return back nops on powerpc). The solution is not
+> > universal and is too much arch-specific, but it may prove to be simpler
+> > in the end.
+> > 
+> > Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
 > > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
 > 
-> This might depend on personal preferences.
+> Since we decided to fix late module patching at LPC, the commit message
+> and clear_relocate_add() should both probably clarify that these
+> functions are hacks which are relatively temporary, until we fix the
+> root cause.
 
-True.
+It was the plan, but thanks for pointing it out explicitly. I could 
+forget.
+ 
+> But this patch gives me a bad feeling :-/  Not that I have a better
+> idea.
 
-> What was the motivation
-> for this patch, please? Did it just follow some common
-> style in this source file?
+I know what you are talking about.
 
-We had it like this once, so it is only going back to the original code. 
-And yes, I think it is better.
+> Has anybody seen this problem in the real world?  If not, maybe we'd be
+> better off just pretending the problem doesn't exist for now.
 
-Commit b56b36ee6751 ("livepatch: Cleanup module page permission changes") 
-changed it due to the error handling. Commit 255e732c61db ("livepatch: use 
-arch_klp_init_object_loaded() to finish arch-specific tasks") removed the 
-reason for the change but did not cleanup the rest.
+I don't think so. You reported the issue originally and I guess it 
+happened during the testing. Then there is a report from Huawei, but it 
+suggests testing environment too. Reloading modules seems artificial to 
+me.
 
-> To make it clear. I have no real preference. I just want to avoid
-> some back and forth changes of the code depending on who touches
-> it at the moment.
+So I agree, we can pretend the issue does not exist and wait for the real 
+solution.
 
-I have no real preference either. I noticed something I did not like while 
-touching the code and that's it.
-
-> I would prefer to either remove this patch or explain the motivation
-> in the commit message. Beside that
-> 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-Ok, thanks.
 Miroslav
