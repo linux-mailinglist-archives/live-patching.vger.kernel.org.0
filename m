@@ -2,100 +2,120 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 870F2C9A98
-	for <lists+live-patching@lfdr.de>; Thu,  3 Oct 2019 11:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5CD7CBD81
+	for <lists+live-patching@lfdr.de>; Fri,  4 Oct 2019 16:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728769AbfJCJSB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 3 Oct 2019 05:18:01 -0400
-Received: from mx2.suse.de ([195.135.220.15]:54936 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728767AbfJCJSB (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 3 Oct 2019 05:18:01 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E74DBAD73;
-        Thu,  3 Oct 2019 09:17:59 +0000 (UTC)
-Date:   Thu, 3 Oct 2019 11:17:35 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
-        nstange@suse.de, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 1/3] livepatch: Clear relocation targets on a
- module removal
-In-Reply-To: <20191002181817.xpiqiisg5ybtwhru@treble>
-Message-ID: <alpine.LSU.2.21.1910031110440.9011@pobox.suse.cz>
-References: <20190905124514.8944-1-mbenes@suse.cz> <20190905124514.8944-2-mbenes@suse.cz> <20191002181817.xpiqiisg5ybtwhru@treble>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S2389260AbfJDOjG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 4 Oct 2019 10:39:06 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49256 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388982AbfJDOjG (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 4 Oct 2019 10:39:06 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B150E30860D5;
+        Fri,  4 Oct 2019 14:39:05 +0000 (UTC)
+Received: from redhat.com (ovpn-122-165.rdu2.redhat.com [10.10.122.165])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3EDD960600;
+        Fri,  4 Oct 2019 14:39:04 +0000 (UTC)
+Date:   Fri, 4 Oct 2019 10:39:01 -0400
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Nicolai Stange <nstange@suse.de>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/5] livepatch: new API to track system state changes
+Message-ID: <20191004143901.GA3768@redhat.com>
+References: <20191003090137.6874-1-pmladek@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191003090137.6874-1-pmladek@suse.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 04 Oct 2019 14:39:05 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 2 Oct 2019, Josh Poimboeuf wrote:
-
-> On Thu, Sep 05, 2019 at 02:45:12PM +0200, Miroslav Benes wrote:
-> > Josh reported a bug:
-> > 
-> >   When the object to be patched is a module, and that module is
-> >   rmmod'ed and reloaded, it fails to load with:
-> > 
-> >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
-> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > 
-> >   The livepatch module has a relocation which references a symbol
-> >   in the _previous_ loading of nfsd. When apply_relocate_add()
-> >   tries to replace the old relocation with a new one, it sees that
-> >   the previous one is nonzero and it errors out.
-> > 
-> >   On ppc64le, we have a similar issue:
-> > 
-> >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
-> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > 
-> > He also proposed three different solutions. We could remove the error
-> > check in apply_relocate_add() introduced by commit eda9cec4c9a1
-> > ("x86/module: Detect and skip invalid relocations"). However the check
-> > is useful for detecting corrupted modules.
-> > 
-> > We could also deny the patched modules to be removed. If it proved to be
-> > a major drawback for users, we could still implement a different
-> > approach. The solution would also complicate the existing code a lot.
-> > 
-> > We thus decided to reverse the relocation patching (clear all relocation
-> > targets on x86_64, or return back nops on powerpc). The solution is not
-> > universal and is too much arch-specific, but it may prove to be simpler
-> > in the end.
-> > 
-> > Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+On Thu, Oct 03, 2019 at 11:01:32AM +0200, Petr Mladek wrote:
+> Hi,
 > 
-> Since we decided to fix late module patching at LPC, the commit message
-> and clear_relocate_add() should both probably clarify that these
-> functions are hacks which are relatively temporary, until we fix the
-> root cause.
+> this is another piece in the puzzle that helps to maintain more
+> livepatches.
+> 
+> Especially pre/post (un)patch callbacks might change a system state.
+> Any newly installed livepatch has to somehow deal with system state
+> modifications done be already installed livepatches.
+> 
+> This patchset provides a simple and generic API that
+> helps to keep and pass information between the livepatches.
+> It is also usable to prevent loading incompatible livepatches.
+> 
+> Changes since v2:
+> 
+>   + Typo fixes [Miroslav]
+>   + Move the documentation at the end of the list [Miroslav]
+>   + Add Miroslav's acks
+> 
+> Changes since v1:
+> 
+>   + Use "unsigned long" instead of "int" for "state.id" [Nicolai]
+>   + Use "unsigned int" instead of "int" for "state.version [Petr]
+>   + Include "state.h" to avoid warning about non-static func [Miroslav]
+>   + Simplify logic in klp_is_state_compatible() [Miroslav]
+>   + Document how livepatches should handle the state [Nicolai]
+>   + Fix some typos, formulation, module metadata [Joe, Miroslav]
+> 
+> Petr Mladek (5):
+>   livepatch: Keep replaced patches until post_patch callback is called
+>   livepatch: Basic API to track system state changes
+>   livepatch: Allow to distinguish different version of system state
+>     changes
+>   livepatch: Documentation of the new API for tracking system state
+>     changes
+>   livepatch: Selftests of the API for tracking system state changes
+> 
+>  Documentation/livepatch/index.rst               |   1 +
+>  Documentation/livepatch/system-state.rst        | 167 +++++++++++++++++++++
+>  include/linux/livepatch.h                       |  17 +++
+>  kernel/livepatch/Makefile                       |   2 +-
+>  kernel/livepatch/core.c                         |  44 ++++--
+>  kernel/livepatch/core.h                         |   5 +-
+>  kernel/livepatch/state.c                        | 122 +++++++++++++++
+>  kernel/livepatch/state.h                        |   9 ++
+>  kernel/livepatch/transition.c                   |  12 +-
+>  lib/livepatch/Makefile                          |   5 +-
+>  lib/livepatch/test_klp_state.c                  | 161 ++++++++++++++++++++
+>  lib/livepatch/test_klp_state2.c                 | 190 ++++++++++++++++++++++++
+>  lib/livepatch/test_klp_state3.c                 |   5 +
+>  tools/testing/selftests/livepatch/Makefile      |   3 +-
+>  tools/testing/selftests/livepatch/test-state.sh | 180 ++++++++++++++++++++++
+>  15 files changed, 902 insertions(+), 21 deletions(-)
+>  create mode 100644 Documentation/livepatch/system-state.rst
+>  create mode 100644 kernel/livepatch/state.c
+>  create mode 100644 kernel/livepatch/state.h
+>  create mode 100644 lib/livepatch/test_klp_state.c
+>  create mode 100644 lib/livepatch/test_klp_state2.c
+>  create mode 100644 lib/livepatch/test_klp_state3.c
+>  create mode 100755 tools/testing/selftests/livepatch/test-state.sh
+> 
+> -- 
+> 2.16.4
+> 
 
-It was the plan, but thanks for pointing it out explicitly. I could 
-forget.
- 
-> But this patch gives me a bad feeling :-/  Not that I have a better
-> idea.
+Hi Petr,
 
-I know what you are talking about.
+Thanks for respinning this one with the latest updates.  The
+implementation looks fine to me.  I have two really minor nits for the
+selftest (I'll reply to that commit), but I wouldn't hold up the series
+for them.
 
-> Has anybody seen this problem in the real world?  If not, maybe we'd be
-> better off just pretending the problem doesn't exist for now.
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-I don't think so. You reported the issue originally and I guess it 
-happened during the testing. Then there is a report from Huawei, but it 
-suggests testing environment too. Reloading modules seems artificial to 
-me.
-
-So I agree, we can pretend the issue does not exist and wait for the real 
-solution.
-
-Miroslav
+-- Joe
