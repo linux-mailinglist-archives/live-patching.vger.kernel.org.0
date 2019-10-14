@@ -2,72 +2,196 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5794BD2BB8
-	for <lists+live-patching@lfdr.de>; Thu, 10 Oct 2019 15:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1405D60C8
+	for <lists+live-patching@lfdr.de>; Mon, 14 Oct 2019 12:59:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726068AbfJJNuz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 10 Oct 2019 09:50:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43396 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725932AbfJJNuz (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 10 Oct 2019 09:50:55 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 456AE2067B;
-        Thu, 10 Oct 2019 13:43:55 +0000 (UTC)
-Date:   Thu, 10 Oct 2019 09:43:52 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Petr Mladek <pmladek@suse.com>, jikos@kernel.org,
-        Joe Lawrence <joe.lawrence@redhat.com>, jpoimboe@redhat.com,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH 0/3] ftrace: Introduce PERMANENT ftrace_ops flag
-Message-ID: <20191010094352.35056c84@gandalf.local.home>
-In-Reply-To: <alpine.LSU.2.21.1910101535310.32665@pobox.suse.cz>
-References: <20191007081714.20259-1-mbenes@suse.cz>
-        <20191008193534.GA16675@redhat.com>
-        <20191009112234.bi7lvp4pvmna26vz@pathway.suse.cz>
-        <20191009102654.501ad7c3@gandalf.local.home>
-        <20191010085035.emsdks6xecazqc6k@pathway.suse.cz>
-        <20191010091403.5ecf0fdb@gandalf.local.home>
-        <alpine.LSU.2.21.1910101535310.32665@pobox.suse.cz>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1731451AbfJNK7a (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 14 Oct 2019 06:59:30 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44928 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731389AbfJNK73 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 14 Oct 2019 06:59:29 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 010A8BBFA;
+        Mon, 14 Oct 2019 10:59:27 +0000 (UTC)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     rostedt@goodmis.org, mingo@redhat.com, jpoimboe@redhat.com,
+        jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com
+Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH v2] ftrace: Introduce PERMANENT ftrace_ops flag
+Date:   Mon, 14 Oct 2019 12:59:23 +0200
+Message-Id: <20191014105923.29607-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 10 Oct 2019 15:38:20 +0200 (CEST)
-Miroslav Benes <mbenes@suse.cz> wrote:
+Livepatch uses ftrace for redirection to new patched functions. It means
+that if ftrace is disabled, all live patched functions are disabled as
+well. Toggling global 'ftrace_enabled' sysctl thus affect it directly.
+It is not a problem per se, because only administrator can set sysctl
+values, but it still may be surprising.
 
-> On Thu, 10 Oct 2019, Steven Rostedt wrote:
-> 
-> > On Thu, 10 Oct 2019 10:50:35 +0200
-> > Petr Mladek <pmladek@suse.com> wrote:
-> >   
-> > > It will make the flag unusable for other ftrace users. But it
-> > > will be already be the case when it can't be disabled.  
-> > 
-> > Honestly, I hate that flag. Most people don't even know about it. It
-> > was added in the beginning of ftrace as a way to stop function tracing
-> > in the latency tracer. But that use case has been obsoleted by
-> > 328df4759c03e ("tracing: Add function-trace option to disable function
-> > tracing of latency tracers"). I may just remove the damn thing and only
-> > add it back if somebody complains about it.  
-> 
-> That would of course solve the issue too and code removal is always 
-> better.
->
+Introduce PERMANENT ftrace_ops flag to amend this. If the
+FTRACE_OPS_FL_PERMANENT is set on any ftrace ops, the tracing cannot be
+disabled by disabling ftrace_enabled. Equally, a callback with the flag
+set cannot be registered if ftrace_enabled is disabled.
 
-Yes, but let's still add the patch that does the permanent check. And
-then I'll put the "remove this flag" patch on top (and revert
-everything else). This way, if somebody complains, and Linus reverts
-the removal patch, we don't end up breaking live kernel patching
-again ;-)
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+---
+v1->v2:
+- different logic, proposed by Joe Lawrence
 
--- Steve
+Two things I am not sure about much:
+
+- return codes. I chose EBUSY, because it seemed the least
+  inappropriate. I usually pick the wrong one, so suggestions are
+  welcome.
+- I did not add any pr_* reporting the problem to make it consistent
+  with the existing code.
+
+ Documentation/trace/ftrace-uses.rst |  8 ++++++++
+ Documentation/trace/ftrace.rst      |  4 +++-
+ include/linux/ftrace.h              |  3 +++
+ kernel/livepatch/patch.c            |  3 ++-
+ kernel/trace/ftrace.c               | 23 +++++++++++++++++++++--
+ 5 files changed, 37 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/trace/ftrace-uses.rst b/Documentation/trace/ftrace-uses.rst
+index 1fbc69894eed..740bd0224d35 100644
+--- a/Documentation/trace/ftrace-uses.rst
++++ b/Documentation/trace/ftrace-uses.rst
+@@ -170,6 +170,14 @@ FTRACE_OPS_FL_RCU
+ 	a callback may be executed and RCU synchronization will not protect
+ 	it.
+ 
++FTRACE_OPS_FL_PERMANENT
++        If this is set on any ftrace ops, then the tracing cannot disabled by
++        writing 0 to the proc sysctl ftrace_enabled. Equally, a callback with
++        the flag set cannot be registered if ftrace_enabled is 0.
++
++        Livepatch uses it not to lose the function redirection, so the system
++        stays protected.
++
+ 
+ Filtering which functions to trace
+ ==================================
+diff --git a/Documentation/trace/ftrace.rst b/Documentation/trace/ftrace.rst
+index e3060eedb22d..d2b5657ed33e 100644
+--- a/Documentation/trace/ftrace.rst
++++ b/Documentation/trace/ftrace.rst
+@@ -2976,7 +2976,9 @@ Note, the proc sysctl ftrace_enable is a big on/off switch for the
+ function tracer. By default it is enabled (when function tracing is
+ enabled in the kernel). If it is disabled, all function tracing is
+ disabled. This includes not only the function tracers for ftrace, but
+-also for any other uses (perf, kprobes, stack tracing, profiling, etc).
++also for any other uses (perf, kprobes, stack tracing, profiling, etc). It
++cannot be disabled if there is a callback with FTRACE_OPS_FL_PERMANENT set
++registered.
+ 
+ Please disable this with care.
+ 
+diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+index 8a8cb3c401b2..c2cad29dc557 100644
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -142,6 +142,8 @@ ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *ops);
+  * PID     - Is affected by set_ftrace_pid (allows filtering on those pids)
+  * RCU     - Set when the ops can only be called when RCU is watching.
+  * TRACE_ARRAY - The ops->private points to a trace_array descriptor.
++ * PERMAMENT - Set when the ops is permanent and should not be affected by
++ *             ftrace_enabled.
+  */
+ enum {
+ 	FTRACE_OPS_FL_ENABLED			= 1 << 0,
+@@ -160,6 +162,7 @@ enum {
+ 	FTRACE_OPS_FL_PID			= 1 << 13,
+ 	FTRACE_OPS_FL_RCU			= 1 << 14,
+ 	FTRACE_OPS_FL_TRACE_ARRAY		= 1 << 15,
++	FTRACE_OPS_FL_PERMANENT                 = 1 << 16,
+ };
+ 
+ #ifdef CONFIG_DYNAMIC_FTRACE
+diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
+index bd43537702bd..b552cf2d85f8 100644
+--- a/kernel/livepatch/patch.c
++++ b/kernel/livepatch/patch.c
+@@ -196,7 +196,8 @@ static int klp_patch_func(struct klp_func *func)
+ 		ops->fops.func = klp_ftrace_handler;
+ 		ops->fops.flags = FTRACE_OPS_FL_SAVE_REGS |
+ 				  FTRACE_OPS_FL_DYNAMIC |
+-				  FTRACE_OPS_FL_IPMODIFY;
++				  FTRACE_OPS_FL_IPMODIFY |
++				  FTRACE_OPS_FL_PERMANENT;
+ 
+ 		list_add(&ops->node, &klp_ops);
+ 
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 62a50bf399d6..d2992ea29fe1 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -325,6 +325,8 @@ int __register_ftrace_function(struct ftrace_ops *ops)
+ 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS_IF_SUPPORTED)
+ 		ops->flags |= FTRACE_OPS_FL_SAVE_REGS;
+ #endif
++	if (!ftrace_enabled && (ops->flags & FTRACE_OPS_FL_PERMANENT))
++		return -EBUSY;
+ 
+ 	if (!core_kernel_data((unsigned long)ops))
+ 		ops->flags |= FTRACE_OPS_FL_DYNAMIC;
+@@ -6723,6 +6725,18 @@ int unregister_ftrace_function(struct ftrace_ops *ops)
+ }
+ EXPORT_SYMBOL_GPL(unregister_ftrace_function);
+ 
++static bool is_permanent_ops_registered(void)
++{
++	struct ftrace_ops *op;
++
++	do_for_each_ftrace_op(op, ftrace_ops_list) {
++		if (op->flags & FTRACE_OPS_FL_PERMANENT)
++			return true;
++	} while_for_each_ftrace_op(op);
++
++	return false;
++}
++
+ int
+ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 		     void __user *buffer, size_t *lenp,
+@@ -6740,8 +6754,6 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 	if (ret || !write || (last_ftrace_enabled == !!ftrace_enabled))
+ 		goto out;
+ 
+-	last_ftrace_enabled = !!ftrace_enabled;
+-
+ 	if (ftrace_enabled) {
+ 
+ 		/* we are starting ftrace again */
+@@ -6752,12 +6764,19 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 		ftrace_startup_sysctl();
+ 
+ 	} else {
++		if (is_permanent_ops_registered()) {
++			ftrace_enabled = last_ftrace_enabled;
++			ret = -EBUSY;
++			goto out;
++		}
++
+ 		/* stopping ftrace calls (just send to ftrace_stub) */
+ 		ftrace_trace_function = ftrace_stub;
+ 
+ 		ftrace_shutdown_sysctl();
+ 	}
+ 
++	last_ftrace_enabled = !!ftrace_enabled;
+  out:
+ 	mutex_unlock(&ftrace_lock);
+ 	return ret;
+-- 
+2.23.0
+
