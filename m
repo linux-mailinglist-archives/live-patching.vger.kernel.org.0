@@ -2,30 +2,25 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC34D79D5
-	for <lists+live-patching@lfdr.de>; Tue, 15 Oct 2019 17:31:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00640D836C
+	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 00:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387526AbfJOPbd (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 15 Oct 2019 11:31:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58800 "EHLO mail.kernel.org"
+        id S1726856AbfJOWRu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 15 Oct 2019 18:17:50 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51926 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733265AbfJOPbd (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 15 Oct 2019 11:31:33 -0400
-Received: from linux-8ccs (ip5f5adbbb.dynamic.kabel-deutschland.de [95.90.219.187])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726747AbfJOWRu (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 15 Oct 2019 18:17:50 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C2A7E20640;
-        Tue, 15 Oct 2019 15:31:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571153492;
-        bh=/yZECSqFbWBM+e6pr6Kd5FtztUG0bQpf7Ebo3eMkr4Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qpniGNXnqcLyiiO/RRW9XTnDa4FejS5RQpnNbcvdVBprpweRnstkoVNPSM186i3u/
-         QvNSUgmnGm0gkq1WLc4rTyy0xdwNki9GMlO2aJoeh7T3IcdReTIB9KQyAvAAIte9xL
-         Jo47KrGF4zgd9S3rbMzlmswUUXphuGOtdQQQ5I8c=
-Date:   Tue, 15 Oct 2019 17:31:20 +0200
-From:   Jessica Yu <jeyu@kernel.org>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id 513AA51EE6;
+        Tue, 15 Oct 2019 22:17:49 +0000 (UTC)
+Received: from [10.10.120.184] (ovpn-120-184.rdu2.redhat.com [10.10.120.184])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F3C096064B;
+        Tue, 15 Oct 2019 22:17:44 +0000 (UTC)
+Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
+To:     Jessica Yu <jeyu@kernel.org>
 Cc:     Miroslav Benes <mbenes@suse.cz>,
         Peter Zijlstra <peterz@infradead.org>,
         Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
@@ -35,8 +30,6 @@ Cc:     Miroslav Benes <mbenes@suse.cz>,
         mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
         ard.biesheuvel@linaro.org, jpoimboe@redhat.com,
         live-patching@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-Message-ID: <20191015153120.GA21580@linux-8ccs>
 References: <20191010092054.GR2311@hirez.programming.kicks-ass.net>
  <20191010091956.48fbcf42@gandalf.local.home>
  <20191010140513.GT2311@hirez.programming.kicks-ass.net>
@@ -47,32 +40,47 @@ References: <20191010092054.GR2311@hirez.programming.kicks-ass.net>
  <20191015135634.GK2328@hirez.programming.kicks-ass.net>
  <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz>
  <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
+ <20191015153120.GA21580@linux-8ccs>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
+Date:   Tue, 15 Oct 2019 18:17:43 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
-X-OS:   Linux linux-8ccs 4.12.14-lp150.12.28-default x86_64
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191015153120.GA21580@linux-8ccs>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Tue, 15 Oct 2019 22:17:49 +0000 (UTC)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-+++ Joe Lawrence [15/10/19 11:06 -0400]:
->On 10/15/19 10:13 AM, Miroslav Benes wrote:
->>Yes, it does. klp_module_coming() calls module_disable_ro() on all
->>patching modules which patch the coming module in order to call
->>apply_relocate_add(). New (patching) code for a module can be relocated
->>only when the relevant module is loaded.
->
->FWIW, would the LPC blue-sky2 model (ie, Steve's suggestion @ 
->plumber's where livepatches only patch a single object and updates are 
->kept on disk to handle coming module updates as they are loaded) 
->eliminate those outstanding relocations and the need to perform this 
->late permission flipping?
+On 10/15/19 11:31 AM, Jessica Yu wrote:
+> +++ Joe Lawrence [15/10/19 11:06 -0400]:
+>> On 10/15/19 10:13 AM, Miroslav Benes wrote:
+>>> Yes, it does. klp_module_coming() calls module_disable_ro() on all
+>>> patching modules which patch the coming module in order to call
+>>> apply_relocate_add(). New (patching) code for a module can be relocated
+>>> only when the relevant module is loaded.
+>>
+>> FWIW, would the LPC blue-sky2 model (ie, Steve's suggestion @
+>> plumber's where livepatches only patch a single object and updates are
+>> kept on disk to handle coming module updates as they are loaded)
+>> eliminate those outstanding relocations and the need to perform this
+>> late permission flipping?
+> 
+> I wasn't at Plumbers sadly, was this idea documented/talked about in
+> detail somewhere? (recording, slides, etherpad, etc?). What do you
+> mean by updates are kept on disk? Maybe someone can explain it more
+> in detail? :)
+> 
 
-I wasn't at Plumbers sadly, was this idea documented/talked about in
-detail somewhere? (recording, slides, etherpad, etc?). What do you
-mean by updates are kept on disk? Maybe someone can explain it more
-in detail? :)
+Livepatching folks -- I don't have the LPC summary link (etherpad?) that 
+Jiri put together.  Does someone have that handy for Jessica?
 
+Thanks,
+
+-- Joe
