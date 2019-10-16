@@ -2,98 +2,206 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A58ED926F
-	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 15:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11114D92DF
+	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 15:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391844AbfJPN3V (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Oct 2019 09:29:21 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58888 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730142AbfJPN3V (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Oct 2019 09:29:21 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 0CA19B583;
-        Wed, 16 Oct 2019 13:29:19 +0000 (UTC)
-Date:   Wed, 16 Oct 2019 15:29:17 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Peter Zijlstra <peterz@infradead.org>
-cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Jessica Yu <jeyu@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
-        bristot@redhat.com, jbaron@akamai.com,
-        torvalds@linux-foundation.org, tglx@linutronix.de,
-        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, jpoimboe@redhat.com,
-        live-patching@vger.kernel.org, pmladek@suse.com
-Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-In-Reply-To: <alpine.LSU.2.21.1910161216100.7750@pobox.suse.cz>
-Message-ID: <alpine.LSU.2.21.1910161521010.7750@pobox.suse.cz>
-References: <20191010115449.22044b53@gandalf.local.home> <20191010172819.GS2328@hirez.programming.kicks-ass.net> <20191011125903.GN2359@hirez.programming.kicks-ass.net> <20191015130739.GA23565@linux-8ccs> <20191015135634.GK2328@hirez.programming.kicks-ass.net>
- <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz> <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com> <20191015153120.GA21580@linux-8ccs> <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com> <20191015182705.1aeec284@gandalf.local.home>
- <20191016074951.GM2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910161216100.7750@pobox.suse.cz>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S1726743AbfJPNs6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Oct 2019 09:48:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726689AbfJPNs6 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 16 Oct 2019 09:48:58 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BE2AE20663;
+        Wed, 16 Oct 2019 13:48:55 +0000 (UTC)
+Date:   Wed, 16 Oct 2019 09:48:53 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     mingo@redhat.com, jpoimboe@redhat.com, jikos@kernel.org,
+        pmladek@suse.com, joe.lawrence@redhat.com,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        shuah@kernel.org, kamalesh@linux.vnet.ibm.com,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] ftrace: Introduce PERMANENT ftrace_ops flag
+Message-ID: <20191016094853.3913f5ae@gandalf.local.home>
+In-Reply-To: <20191016113316.13415-2-mbenes@suse.cz>
+References: <20191016113316.13415-1-mbenes@suse.cz>
+        <20191016113316.13415-2-mbenes@suse.cz>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 16 Oct 2019, Miroslav Benes wrote:
+On Wed, 16 Oct 2019 13:33:13 +0200
+Miroslav Benes <mbenes@suse.cz> wrote:
 
-> On Wed, 16 Oct 2019, Peter Zijlstra wrote:
+> Livepatch uses ftrace for redirection to new patched functions. It means
+> that if ftrace is disabled, all live patched functions are disabled as
+> well. Toggling global 'ftrace_enabled' sysctl thus affect it directly.
+> It is not a problem per se, because only administrator can set sysctl
+> values, but it still may be surprising.
 > 
-> > On Tue, Oct 15, 2019 at 06:27:05PM -0400, Steven Rostedt wrote:
-> > 
-> > > (7) Seventh session, titled "klp-convert and livepatch relocations", was led
-> > > by Joe Lawrence.
-> > > 
-> > > Joe started the session with problem statement: accessing non exported / static
-> > > symbols from inside the patch module. One possible workardound is manually via
-> > > kallsyms. Second workaround is klp-convert, which actually creates proper
-> > > relocations inside the livepatch module from the symbol database during the
-> > > final .ko link.
-> > > Currently module loader looks for special livepatch relocations and resolves
-> > > those during runtime; kernel support for these relocations have so far been
-> > > added for x86 only. Special livepatch relocations are supported and processed
-> > > also on other architectures. Special quirks/sections are not yet supported.
-> > > Plus klp-convert would still be needed even with late module patching update.
-> > > vmlinux or modules could have ambiguous static symbols.
-> > > 
-> > > It turns out that the features / bugs below have to be resolved before we
-> > > can claim the klp-convert support for relocation complete:
-> > >     - handle all the corner cases (jump labels, static keys, ...) properly and
-> > >       have a good regression tests in place
-> > 
-> > I suppose all the patches in this series-of-series here will make life
-> > harder for KLP, static_call() and 2 byte jumps etc..
+> Introduce PERMANENT ftrace_ops flag to amend this. If the
+> FTRACE_OPS_FL_PERMANENT is set on any ftrace ops, the tracing cannot be
+> disabled by disabling ftrace_enabled. Equally, a callback with the flag
+> set cannot be registered if ftrace_enabled is disabled.
 > 
-> Yes, I think so. We'll have to deal with that once it lands. That is why 
-> we want to get rid of all this arch-specific code in livepatch and 
-> reinvent the late module patching. So it is perhaps better to start 
-> working on it sooner than later. Adding Petr, who hesitantly signed up for 
-> the task...
+> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+> ---
+>
 
-Thinking about it more... crazy idea. I think we could leverage these new 
-ELF .text per vmlinux/module sections for the reinvention I was talking 
-about. If we teach module loader to relocate (and apply alternatives and 
-so on, everything in arch-specific module_finalize()) not the whole module 
-in case of live patch modules, but separate ELF .text sections, it could 
-solve the issue with late module patching we have. It is a variation on 
-Steven's idea. When live patch module is loaded, only its section for 
-present modules would be processed. Then whenever a to-be-patched module 
-is loaded, its .text section in all present patch module would be 
-processed.
+I pulled in this patch as is, but then I realized we have a race. This
+race has been there before this patch series, and actually, been there
+since the dawn of ftrace.
 
-The upside is that almost no work would be required on patch modules 
-creation side. The downside is that klp_modinfo must stay. Module loader 
-needs to be hacked a lot in both cases. So it remains to be seen which 
-idea is easier to implement.
+I realized that the user can modify ftrace_enabled out of lock context.
+That is, the ftrace_enabled is modified directly from the sysctl code,
+without taking the ftrace_lock mutex. Which means if the user was
+starting and stopping function tracing while playing with the
+ftrace_enabled switch, it could potentially cause an accounting failure.
 
-Jessica, do you think it would be feasible?
+I'm going to apply this patch on top of yours. It reverses the role of
+how ftrace_enabled is set in the sysctl handler. Instead of having it
+directly modify ftrace_enabled, I have it modify a new variable called
+sysctl_ftrace_enabled. I no longer need the last_ftrace_enabled. This
+way we only need to set or disable ftrace_enabled on a change and if
+all conditions are met.
 
-Petr, Joe, Josh, am I missing something or would it work?
+Thoughts?
 
-Miroslav
+-- Steve
+
+diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+index 8385cafe4f9f..aa2e2c7cef9e 100644
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -79,6 +79,7 @@ static inline int ftrace_mod_get_kallsym(unsigned int symnum, unsigned long *val
+ #ifdef CONFIG_FUNCTION_TRACER
+ 
+ extern int ftrace_enabled;
++extern int sysctl_ftrace_enabled;
+ extern int
+ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 		     void __user *buffer, size_t *lenp,
+@@ -638,6 +639,7 @@ static inline void tracer_disable(void)
+ {
+ #ifdef CONFIG_FUNCTION_TRACER
+ 	ftrace_enabled = 0;
++	sysctl_ftrace_enabled = 0;
+ #endif
+ }
+ 
+@@ -651,6 +653,7 @@ static inline int __ftrace_enabled_save(void)
+ #ifdef CONFIG_FUNCTION_TRACER
+ 	int saved_ftrace_enabled = ftrace_enabled;
+ 	ftrace_enabled = 0;
++	sysctl_ftrace_enabled = 0;
+ 	return saved_ftrace_enabled;
+ #else
+ 	return 0;
+@@ -661,6 +664,7 @@ static inline void __ftrace_enabled_restore(int enabled)
+ {
+ #ifdef CONFIG_FUNCTION_TRACER
+ 	ftrace_enabled = enabled;
++	sysctl_ftrace_enabled = enabled;
+ #endif
+ }
+ 
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 00fcea236eba..773fdfc6c645 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -648,7 +648,7 @@ static struct ctl_table kern_table[] = {
+ #ifdef CONFIG_FUNCTION_TRACER
+ 	{
+ 		.procname	= "ftrace_enabled",
+-		.data		= &ftrace_enabled,
++		.data		= &sysctl_ftrace_enabled,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= ftrace_enable_sysctl,
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index dacb8b50a263..b55c9a4e2b5b 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -88,7 +88,7 @@ struct ftrace_ops ftrace_list_end __read_mostly = {
+ 
+ /* ftrace_enabled is a method to turn ftrace on or off */
+ int ftrace_enabled __read_mostly;
+-static int last_ftrace_enabled;
++int sysctl_ftrace_enabled __read_mostly;
+ 
+ /* Current function tracing op */
+ struct ftrace_ops *function_trace_op __read_mostly = &ftrace_list_end;
+@@ -6221,7 +6221,7 @@ void __init ftrace_init(void)
+ 	pr_info("ftrace: allocating %ld entries in %ld pages\n",
+ 		count, count / ENTRIES_PER_PAGE + 1);
+ 
+-	last_ftrace_enabled = ftrace_enabled = 1;
++	sysctl_ftrace_enabled = ftrace_enabled = 1;
+ 
+ 	ret = ftrace_process_locs(NULL,
+ 				  __start_mcount_loc,
+@@ -6265,6 +6265,7 @@ struct ftrace_ops global_ops = {
+ static int __init ftrace_nodyn_init(void)
+ {
+ 	ftrace_enabled = 1;
++	sysctl_ftrace_enabled = 1;
+ 	return 0;
+ }
+ core_initcall(ftrace_nodyn_init);
+@@ -6714,6 +6715,7 @@ void ftrace_kill(void)
+ {
+ 	ftrace_disabled = 1;
+ 	ftrace_enabled = 0;
++	sysctl_ftrace_enabled = 0;
+ 	ftrace_trace_function = ftrace_stub;
+ }
+ 
+@@ -6796,10 +6798,12 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 
+ 	ret = proc_dointvec(table, write, buffer, lenp, ppos);
+ 
+-	if (ret || !write || (last_ftrace_enabled == !!ftrace_enabled))
++	if (ret || !write || (ftrace_enabled == !!sysctl_ftrace_enabled))
+ 		goto out;
+ 
+-	if (ftrace_enabled) {
++	if (sysctl_ftrace_enabled) {
++
++		ftrace_enabled = true;
+ 
+ 		/* we are starting ftrace again */
+ 		if (rcu_dereference_protected(ftrace_ops_list,
+@@ -6810,19 +6814,21 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 
+ 	} else {
+ 		if (is_permanent_ops_registered()) {
+-			ftrace_enabled = true;
+ 			ret = -EBUSY;
+ 			goto out;
+ 		}
+ 
++		ftrace_enabled = false;
++
+ 		/* stopping ftrace calls (just send to ftrace_stub) */
+ 		ftrace_trace_function = ftrace_stub;
+ 
+ 		ftrace_shutdown_sysctl();
+ 	}
+ 
+-	last_ftrace_enabled = !!ftrace_enabled;
+  out:
++	sysctl_ftrace_enabled = ftrace_enabled;
++
+ 	mutex_unlock(&ftrace_lock);
+ 	return ret;
+ }
