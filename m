@@ -2,53 +2,103 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E711D9510
-	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 17:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4266DD9832
+	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 19:06:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730850AbfJPPIk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Oct 2019 11:08:40 -0400
-Received: from mx2.suse.de ([195.135.220.15]:50494 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726244AbfJPPIk (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Oct 2019 11:08:40 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E9BB0B3C5;
-        Wed, 16 Oct 2019 15:08:38 +0000 (UTC)
-Date:   Wed, 16 Oct 2019 17:08:38 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     rostedt@goodmis.org, jikos@kernel.org, joe.lawrence@redhat.com,
-        jpoimboe@redhat.com, mingo@redhat.com, shuah@kernel.org,
-        kamalesh@linux.vnet.ibm.com, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] selftests/livepatch: Make dynamic debug setup and
- restore generic
-Message-ID: <20191016150838.jd2bxb3yzyhap6m4@pathway.suse.cz>
+        id S1731530AbfJPRGo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Oct 2019 13:06:44 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14816 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388531AbfJPRGn (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 16 Oct 2019 13:06:43 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9GGlE85052867
+        for <live-patching@vger.kernel.org>; Wed, 16 Oct 2019 13:06:42 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vp5ag4x9f-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <live-patching@vger.kernel.org>; Wed, 16 Oct 2019 13:06:42 -0400
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
+        Wed, 16 Oct 2019 18:06:40 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 16 Oct 2019 18:06:35 +0100
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9GH6Yan44236942
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 16 Oct 2019 17:06:34 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 70B2BAE051;
+        Wed, 16 Oct 2019 17:06:34 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A7CCBAE057;
+        Wed, 16 Oct 2019 17:06:31 +0000 (GMT)
+Received: from JAVRIS.in.ibm.com (unknown [9.199.32.238])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 16 Oct 2019 17:06:31 +0000 (GMT)
+Subject: Re: [PATCH v3 3/3] selftests/livepatch: Test interaction with
+ ftrace_enabled
+To:     Miroslav Benes <mbenes@suse.cz>, rostedt@goodmis.org,
+        mingo@redhat.com, jpoimboe@redhat.com, jikos@kernel.org,
+        pmladek@suse.com, joe.lawrence@redhat.com
+Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        shuah@kernel.org, linux-kselftest@vger.kernel.org
 References: <20191016113316.13415-1-mbenes@suse.cz>
- <20191016113316.13415-3-mbenes@suse.cz>
+ <20191016113316.13415-4-mbenes@suse.cz>
+From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+Date:   Wed, 16 Oct 2019 22:36:29 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191016113316.13415-3-mbenes@suse.cz>
-User-Agent: NeoMutt/20170912 (1.9.0)
+In-Reply-To: <20191016113316.13415-4-mbenes@suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 19101617-0012-0000-0000-00000358A60E
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19101617-0013-0000-0000-00002193C080
+Message-Id: <61b8e995-f5a2-8094-8e91-1a60019d2916@linux.vnet.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-16_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910160142
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2019-10-16 13:33:14, Miroslav Benes wrote:
+On 10/16/19 5:03 PM, Miroslav Benes wrote:
 > From: Joe Lawrence <joe.lawrence@redhat.com>
 > 
-> Livepatch selftests currently save the current dynamic debug config and
-> tweak it for the selftests. The config is restored at the end. Make the
-> infrastructure generic, so that more variables can be saved and
-> restored.
+> Since livepatching depends upon ftrace handlers to implement "patched"
+> code functionality, verify that the ftrace_enabled sysctl value
+> interacts with livepatch registration as expected.  At the same time,
+> ensure that ftrace_enabled is set and part of the test environment
+> configuration that is saved and restored when running the selftests.
 > 
 > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+[...]
+> diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
+> new file mode 100755
+> index 000000000000..e2a76887f40a
+> --- /dev/null
+> +++ b/tools/testing/selftests/livepatch/test-ftrace.sh
 
-Best Regards,
-Petr
+This test fails due to wrong file permissions, with the warning:
+
+# Warning: file test-ftrace.sh is not executable, correct this.
+not ok 4 selftests: livepatch: test-ftrace.sh
+
+-- 
+Kamalesh
+
