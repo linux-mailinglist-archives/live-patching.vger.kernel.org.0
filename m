@@ -2,182 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1228D8FA0
-	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 13:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80C83D8FC5
+	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 13:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728838AbfJPLd1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Oct 2019 07:33:27 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35654 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2391089AbfJPLdW (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Oct 2019 07:33:22 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 0EBDCB18D;
-        Wed, 16 Oct 2019 11:33:20 +0000 (UTC)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     rostedt@goodmis.org, mingo@redhat.com, jpoimboe@redhat.com,
-        jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com
-Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        shuah@kernel.org, kamalesh@linux.vnet.ibm.com,
-        linux-kselftest@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
-Subject: [PATCH v3 3/3] selftests/livepatch: Test interaction with ftrace_enabled
-Date:   Wed, 16 Oct 2019 13:33:15 +0200
-Message-Id: <20191016113316.13415-4-mbenes@suse.cz>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191016113316.13415-1-mbenes@suse.cz>
-References: <20191016113316.13415-1-mbenes@suse.cz>
+        id S1726632AbfJPLnG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Oct 2019 07:43:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34650 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726423AbfJPLnF (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 16 Oct 2019 07:43:05 -0400
+Received: from pobox.suse.cz (prg-ext-pat.suse.com [213.151.95.130])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 14CC221848;
+        Wed, 16 Oct 2019 11:43:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571226185;
+        bh=PmYKqxbOOvz8BV7rulnSKvx5ub0QO0AeeOamne1eykg=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=i1w1YZlGDYWLysQYdPGSEO8ia3QEop5kFW1QZeyZiycshs41S1t8NKKBqUzCxCeUh
+         RFXrccRyr7r/WmYMKN7k2gMXNJyd2Jn6n4Z6b8zYbd3lnr/IqfAuSP7p0H7Lt4DIds
+         lul6X0aPFKBqKJXEydY3BFN5TalV6VZM4AltHPTU=
+Date:   Wed, 16 Oct 2019 13:42:59 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+cc:     Ruslan Bilovol <ruslan.bilovol@gmail.com>,
+        Will Deacon <will.deacon@arm.com>, Torsten Duwe <duwe@lst.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Julien Thierry <julien.thierry@arm.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        AKASHI Takahiro <takahiro.akashi@linaro.org>,
+        Amit Daniel Kachhap <amit.kachhap@arm.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: Re: [PATCH v8 0/5] arm64: ftrace with regs
+In-Reply-To: <20190724161500.GG2624@lakrids.cambridge.arm.com>
+Message-ID: <nycvar.YFH.7.76.1910161341520.13160@cbobk.fhfr.pm>
+References: <20190208150826.44EBC68DD2@newverein.lst.de> <0f8d2e77-7e51-fba8-b179-102318d9ff84@arm.com> <20190311114945.GA5625@lst.de> <20190408153628.GL6139@lakrids.cambridge.arm.com> <20190409175238.GE9255@fuggles.cambridge.arm.com>
+ <CAB=otbRXuDHSmh9NrGYoep=hxOKkXVsy6R84ACZ9xELwNr=4AA@mail.gmail.com> <20190724161500.GG2624@lakrids.cambridge.arm.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Joe Lawrence <joe.lawrence@redhat.com>
+On Wed, 24 Jul 2019, Mark Rutland wrote:
 
-Since livepatching depends upon ftrace handlers to implement "patched"
-code functionality, verify that the ftrace_enabled sysctl value
-interacts with livepatch registration as expected.  At the same time,
-ensure that ftrace_enabled is set and part of the test environment
-configuration that is saved and restored when running the selftests.
+> > > > > So what's the status now? Besides debatable minor style
+> > > > > issues there were no more objections to v8. Would this
+> > > > > go through the ARM repo or via the ftrace repo?
+> > > >
+> > > > Sorry agains for the delay on this. I'm now back in the office and in
+> > > > front of a computer daily, so I can spend a bit more time on this.
+> > > >
+> > > > Regardless of anything else, I think that we should queue the first
+> > > > three patches now. I've poked the relevant maintainers for their acks so
+> > > > that those can be taken via the arm64 tree.
+> > > >
+> > > > I'm happy to do the trivial cleanups on the last couple of patches (e.g.
+> > > > s/lr/x30), and I'm actively looking at the API rework I requested.
+> > >
+> > > Ok, I've picked up patches 1-3 and I'll wait for you to spin updates to the
+> > > last two.
+> > 
+> > Ok, I see that patches 1-3 are picked up and are already present in recent
+> > kernels.
+> > 
+> > Is there any progress on remaining two patches?
+> 
+> I'm afraid that I've been distracted on other fronts, so I haven't made
+> progress there.
+> 
+> > Any help required?
+> 
+> If you'd be happy to look at the cleanup I previously suggested for the
+> core, that would be great. When I last looked, it was simple to rework
+> things so that arch code doesn't have to define MCOUNT_ADDR, but I
+> hadn't figured out exactly how to split the core mcount assumptions from
+> the important state machine bits.
+> 
+> I'll take another look and see if I can provide more detail. :)
 
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-Signed-off-by: Miroslav Benes <mbenes@suse.cz>
----
- tools/testing/selftests/livepatch/Makefile    |  3 +-
- .../testing/selftests/livepatch/functions.sh  | 14 +++-
- .../selftests/livepatch/test-ftrace.sh        | 65 +++++++++++++++++++
- 3 files changed, 80 insertions(+), 2 deletions(-)
- create mode 100755 tools/testing/selftests/livepatch/test-ftrace.sh
+Hi Mark,
 
-diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
-index fd405402c3ff..1886d9d94b88 100644
---- a/tools/testing/selftests/livepatch/Makefile
-+++ b/tools/testing/selftests/livepatch/Makefile
-@@ -4,6 +4,7 @@ TEST_PROGS_EXTENDED := functions.sh
- TEST_PROGS := \
- 	test-livepatch.sh \
- 	test-callbacks.sh \
--	test-shadow-vars.sh
-+	test-shadow-vars.sh \
-+	test-ftrace.sh
- 
- include ../lib.mk
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index b7e5a67ae434..31eb09e38729 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -32,12 +32,16 @@ function die() {
- function push_config() {
- 	DYNAMIC_DEBUG=$(grep '^kernel/livepatch' /sys/kernel/debug/dynamic_debug/control | \
- 			awk -F'[: ]' '{print "file " $1 " line " $2 " " $4}')
-+	FTRACE_ENABLED=$(sysctl --values kernel.ftrace_enabled)
- }
- 
- function pop_config() {
- 	if [[ -n "$DYNAMIC_DEBUG" ]]; then
- 		echo -n "$DYNAMIC_DEBUG" > /sys/kernel/debug/dynamic_debug/control
- 	fi
-+	if [[ -n "$FTRACE_ENABLED" ]]; then
-+		sysctl kernel.ftrace_enabled="$FTRACE_ENABLED" &> /dev/null
-+	fi
- }
- 
- function set_dynamic_debug() {
-@@ -47,12 +51,20 @@ function set_dynamic_debug() {
- 		EOF
- }
- 
-+function set_ftrace_enabled() {
-+	local sysctl="$1"
-+	result=$(sysctl kernel.ftrace_enabled="$1" 2>&1 | paste --serial --delimiters=' ')
-+	echo "livepatch: $result" > /dev/kmsg
-+}
-+
- # setup_config - save the current config and set a script exit trap that
- #		 restores the original config.  Setup the dynamic debug
--#		 for verbose livepatching output.
-+#		 for verbose livepatching output and turn on
-+#		 the ftrace_enabled sysctl.
- function setup_config() {
- 	push_config
- 	set_dynamic_debug
-+	set_ftrace_enabled 1
- 	trap pop_config EXIT INT TERM HUP
- }
- 
-diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-new file mode 100755
-index 000000000000..e2a76887f40a
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-@@ -0,0 +1,65 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (C) 2019 Joe Lawrence <joe.lawrence@redhat.com>
-+
-+. $(dirname $0)/functions.sh
-+
-+MOD_LIVEPATCH=test_klp_livepatch
-+
-+setup_config
-+
-+
-+# TEST: livepatch interaction with ftrace_enabled sysctl
-+# - turn ftrace_enabled OFF and verify livepatches can't load
-+# - turn ftrace_enabled ON and verify livepatch can load
-+# - verify that ftrace_enabled can't be turned OFF while a livepatch is loaded
-+
-+echo -n "TEST: livepatch interaction with ftrace_enabled sysctl ... "
-+dmesg -C
-+
-+set_ftrace_enabled 0
-+load_failing_mod $MOD_LIVEPATCH
-+
-+set_ftrace_enabled 1
-+load_lp $MOD_LIVEPATCH
-+if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
-+	echo -e "FAIL\n\n"
-+	die "livepatch kselftest(s) failed"
-+fi
-+
-+set_ftrace_enabled 0
-+if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
-+	echo -e "FAIL\n\n"
-+	die "livepatch kselftest(s) failed"
-+fi
-+disable_lp $MOD_LIVEPATCH
-+unload_lp $MOD_LIVEPATCH
-+
-+check_result "livepatch: kernel.ftrace_enabled = 0
-+% modprobe $MOD_LIVEPATCH
-+livepatch: enabling patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': initializing patching transition
-+livepatch: failed to register ftrace handler for function 'cmdline_proc_show' (-16)
-+livepatch: failed to patch object 'vmlinux'
-+livepatch: failed to enable patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': canceling patching transition, going to unpatch
-+livepatch: '$MOD_LIVEPATCH': completing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': unpatching complete
-+modprobe: ERROR: could not insert '$MOD_LIVEPATCH': Device or resource busy
-+livepatch: kernel.ftrace_enabled = 1
-+% modprobe $MOD_LIVEPATCH
-+livepatch: enabling patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': initializing patching transition
-+livepatch: '$MOD_LIVEPATCH': starting patching transition
-+livepatch: '$MOD_LIVEPATCH': completing patching transition
-+livepatch: '$MOD_LIVEPATCH': patching complete
-+livepatch: sysctl: setting key \"kernel.ftrace_enabled\": Device or resource busy kernel.ftrace_enabled = 0
-+% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH/enabled
-+livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': starting unpatching transition
-+livepatch: '$MOD_LIVEPATCH': completing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': unpatching complete
-+% rmmod $MOD_LIVEPATCH"
-+
-+
-+exit 0
+has any progress been made on any front? Feels like this got stuck a bit.
+
+Thanks,
+
 -- 
-2.23.0
+Jiri Kosina
+SUSE Labs
 
