@@ -2,39 +2,39 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8E2D8A04
-	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 09:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6BCFD8A3D
+	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 09:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391191AbfJPHmb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Oct 2019 03:42:31 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:53938 "EHLO
+        id S2391364AbfJPHuD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Oct 2019 03:50:03 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:57086 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728201AbfJPHmb (ORCPT
+        with ESMTP id S2391302AbfJPHuD (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Oct 2019 03:42:31 -0400
+        Wed, 16 Oct 2019 03:50:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=HZk+bV3WLC0Kp3efq7J7NzYocbzHcIWk7+ZyTXdSxy4=; b=Z9FEfEftwdBAqYl5xGywYMCj1
-        Bu8Oxg35mWjPBwtU9Ct4ZiRdzAPHhfk0vd4uw++CYEesW7gV/J7HaflSLW1T71OJbz17o1SbEExsa
-        N9oqpDZ0qSleAu8M+IiDqv5N5wq2YXUeC2MRXhbHos7NmLflK8orqFlzz8GJ09J2CnuJxP5lkyXGP
-        aij33sW+4KbMkp/C+A+lQ/Tivg8eKonAQxoXddjAdaXeFbiCVwrDWNlOSOfUYUlDvsX0LtGXT3pkA
-        JxytniYK4UkZGipYAi0TbgSkgwDENkm30cTdP52UWF+0N6LFzBn3Ae7smd62Kdu/PxvL9JxVUg848
-        82MCo2gYg==;
+         bh=gHzug1GaUc7ezNj7bFyKz/sT6qVftQ/c/eZSM2ZX/yA=; b=KCZ+f1LSz+WgwwiREH87xcTq/
+        gdAvldI5Mhnc/Q14EWgLX8/WgPcNqstNJEAWsC5WoFJHN+AxJtLVDmeP9Qmf1IRwh/ho/R4hTHGgw
+        MVY8hfrR2oLY+aCCeR8uMeudZ2hNu21TKkPW4RZkvYIAcIes4+edKfjInFEG10Yg9y/t0UwCGAEws
+        0Tsp1c2BB+5htwUkDzZuv8VVC5p3AahL7ThhupbnCqduKuC+6NSo9mg9AH8eE+jllee2nJ6eV8pmZ
+        GRzY87IwtVS1UFmc2euekMg/WlWdrK0MQkIjkt5aXdrTqY66a5Z8c2OEQrIoCowYWG3LeTHMl+HoP
+        0C78MuyDw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iKdwq-00085M-9S; Wed, 16 Oct 2019 07:42:20 +0000
+        id 1iKe49-0001yz-LA; Wed, 16 Oct 2019 07:49:54 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D65213032F8;
-        Wed, 16 Oct 2019 09:41:22 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6F197303C1E;
+        Wed, 16 Oct 2019 09:48:56 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A6F0820B972E4; Wed, 16 Oct 2019 09:42:17 +0200 (CEST)
-Date:   Wed, 16 Oct 2019 09:42:17 +0200
+        id 3936520B972E4; Wed, 16 Oct 2019 09:49:51 +0200 (CEST)
+Date:   Wed, 16 Oct 2019 09:49:51 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
@@ -46,7 +46,7 @@ Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
         ard.biesheuvel@linaro.org, jpoimboe@redhat.com,
         live-patching@vger.kernel.org
 Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-Message-ID: <20191016074217.GL2328@hirez.programming.kicks-ass.net>
+Message-ID: <20191016074951.GM2328@hirez.programming.kicks-ass.net>
 References: <20191010115449.22044b53@gandalf.local.home>
  <20191010172819.GS2328@hirez.programming.kicks-ass.net>
  <20191011125903.GN2359@hirez.programming.kicks-ass.net>
@@ -67,11 +67,33 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-> which are not compatible with livepatching. GCC upstream now has
-> -flive-patching option, which disables all those interfering optimizations.
+On Tue, Oct 15, 2019 at 06:27:05PM -0400, Steven Rostedt wrote:
 
-Which, IIRC, has a significant performance impact and should thus really
-not be used...
+> (7) Seventh session, titled "klp-convert and livepatch relocations", was led
+> by Joe Lawrence.
+> 
+> Joe started the session with problem statement: accessing non exported / static
+> symbols from inside the patch module. One possible workardound is manually via
+> kallsyms. Second workaround is klp-convert, which actually creates proper
+> relocations inside the livepatch module from the symbol database during the
+> final .ko link.
+> Currently module loader looks for special livepatch relocations and resolves
+> those during runtime; kernel support for these relocations have so far been
+> added for x86 only. Special livepatch relocations are supported and processed
+> also on other architectures. Special quirks/sections are not yet supported.
+> Plus klp-convert would still be needed even with late module patching update.
+> vmlinux or modules could have ambiguous static symbols.
+> 
+> It turns out that the features / bugs below have to be resolved before we
+> can claim the klp-convert support for relocation complete:
+>     - handle all the corner cases (jump labels, static keys, ...) properly and
+>       have a good regression tests in place
 
-If distros ship that crap, I'm going to laugh at them the next time they
-want a single digit performance improvement because *important*.
+I suppose all the patches in this series-of-series here will make life
+harder for KLP, static_call() and 2 byte jumps etc..
+
+>     - one day we might (or might not) add support for out-of-tree modules which
+>       need klp-convert
+>     - BFD bug 24456 (multiple relocations to the same .text section)
+
+
