@@ -2,97 +2,109 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E73D0D9851
-	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 19:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B48BD98C9
+	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 19:58:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406453AbfJPRKk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Oct 2019 13:10:40 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:21368 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2406577AbfJPRKh (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Oct 2019 13:10:37 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9GH8EBG070917
-        for <live-patching@vger.kernel.org>; Wed, 16 Oct 2019 13:10:36 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2vp5yf35e9-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <live-patching@vger.kernel.org>; Wed, 16 Oct 2019 13:10:35 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
-        Wed, 16 Oct 2019 18:10:33 +0100
-Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 16 Oct 2019 18:10:29 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9GHAS2N39453030
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Oct 2019 17:10:29 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DC9D6AE045;
-        Wed, 16 Oct 2019 17:10:28 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A8FA2AE053;
-        Wed, 16 Oct 2019 17:10:26 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.199.32.238])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 16 Oct 2019 17:10:26 +0000 (GMT)
-Subject: Re: [PATCH v3 2/3] selftests/livepatch: Make dynamic debug setup and
- restore generic
-To:     Miroslav Benes <mbenes@suse.cz>, rostedt@goodmis.org,
-        mingo@redhat.com, jpoimboe@redhat.com, jikos@kernel.org,
-        pmladek@suse.com, joe.lawrence@redhat.com
-Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org
-References: <20191016113316.13415-1-mbenes@suse.cz>
- <20191016113316.13415-3-mbenes@suse.cz>
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-Date:   Wed, 16 Oct 2019 22:40:24 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S2388804AbfJPR6r (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Oct 2019 13:58:47 -0400
+Received: from foss.arm.com ([217.140.110.172]:46972 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726691AbfJPR6r (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 16 Oct 2019 13:58:47 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8612F28;
+        Wed, 16 Oct 2019 10:58:46 -0700 (PDT)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4A1D43F6C4;
+        Wed, 16 Oct 2019 10:58:44 -0700 (PDT)
+Date:   Wed, 16 Oct 2019 18:58:42 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Ruslan Bilovol <ruslan.bilovol@gmail.com>,
+        Will Deacon <will.deacon@arm.com>, Torsten Duwe <duwe@lst.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Julien Thierry <julien.thierry@arm.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        AKASHI Takahiro <takahiro.akashi@linaro.org>,
+        Amit Daniel Kachhap <amit.kachhap@arm.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: Re: [PATCH v8 0/5] arm64: ftrace with regs
+Message-ID: <20191016175841.GF46264@lakrids.cambridge.arm.com>
+References: <20190208150826.44EBC68DD2@newverein.lst.de>
+ <0f8d2e77-7e51-fba8-b179-102318d9ff84@arm.com>
+ <20190311114945.GA5625@lst.de>
+ <20190408153628.GL6139@lakrids.cambridge.arm.com>
+ <20190409175238.GE9255@fuggles.cambridge.arm.com>
+ <CAB=otbRXuDHSmh9NrGYoep=hxOKkXVsy6R84ACZ9xELwNr=4AA@mail.gmail.com>
+ <20190724161500.GG2624@lakrids.cambridge.arm.com>
+ <nycvar.YFH.7.76.1910161341520.13160@cbobk.fhfr.pm>
 MIME-Version: 1.0
-In-Reply-To: <20191016113316.13415-3-mbenes@suse.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 19101617-0016-0000-0000-000002B8A3F2
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19101617-0017-0000-0000-00003319C83C
-Message-Id: <f50cf434-6dd2-51eb-a688-0da79d7ab8bc@linux.vnet.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-16_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910160143
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <nycvar.YFH.7.76.1910161341520.13160@cbobk.fhfr.pm>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 10/16/19 5:03 PM, Miroslav Benes wrote:
-> From: Joe Lawrence <joe.lawrence@redhat.com>
+On Wed, Oct 16, 2019 at 01:42:59PM +0200, Jiri Kosina wrote:
+> On Wed, 24 Jul 2019, Mark Rutland wrote:
 > 
-> Livepatch selftests currently save the current dynamic debug config and
-> tweak it for the selftests. The config is restored at the end. Make the
-> infrastructure generic, so that more variables can be saved and
-> restored.
+> > > > > > So what's the status now? Besides debatable minor style
+> > > > > > issues there were no more objections to v8. Would this
+> > > > > > go through the ARM repo or via the ftrace repo?
+> > > > >
+> > > > > Sorry agains for the delay on this. I'm now back in the office and in
+> > > > > front of a computer daily, so I can spend a bit more time on this.
+> > > > >
+> > > > > Regardless of anything else, I think that we should queue the first
+> > > > > three patches now. I've poked the relevant maintainers for their acks so
+> > > > > that those can be taken via the arm64 tree.
+> > > > >
+> > > > > I'm happy to do the trivial cleanups on the last couple of patches (e.g.
+> > > > > s/lr/x30), and I'm actively looking at the API rework I requested.
+> > > >
+> > > > Ok, I've picked up patches 1-3 and I'll wait for you to spin updates to the
+> > > > last two.
+> > > 
+> > > Ok, I see that patches 1-3 are picked up and are already present in recent
+> > > kernels.
+> > > 
+> > > Is there any progress on remaining two patches?
+> > 
+> > I'm afraid that I've been distracted on other fronts, so I haven't made
+> > progress there.
+> > 
+> > > Any help required?
+> > 
+> > If you'd be happy to look at the cleanup I previously suggested for the
+> > core, that would be great. When I last looked, it was simple to rework
+> > things so that arch code doesn't have to define MCOUNT_ADDR, but I
+> > hadn't figured out exactly how to split the core mcount assumptions from
+> > the important state machine bits.
+> > 
+> > I'll take another look and see if I can provide more detail. :)
 > 
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
-> ---
->  .../testing/selftests/livepatch/functions.sh  | 22 +++++++++++--------
->  .../selftests/livepatch/test-callbacks.sh     |  2 +-
->  .../selftests/livepatch/test-livepatch.sh     |  2 +-
->  .../selftests/livepatch/test-shadow-vars.sh   |  2 +-
+> Hi Mark,
 
-A minor nit pick, should the README also updated with the setup_config()?
+Hi Jiri,
 
--- 
-Kamalesh
+> has any progress been made on any front? Feels like this got stuck a bit.
 
+Sorry about this; I've been a bit distracted.
+
+I've just done the core (non-arm64) bits today, and pushed that out:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=arm64/ftrace-with-regs
+
+... I'll fold the remainging bits of patches 4 and 5 together tomorrow
+atop of that.
+
+Thanks,
+Mark.
