@@ -2,66 +2,76 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FDFDD88C1
-	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 08:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE8E2D8A04
+	for <lists+live-patching@lfdr.de>; Wed, 16 Oct 2019 09:42:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388546AbfJPGvb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Oct 2019 02:51:31 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35846 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388363AbfJPGvb (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Oct 2019 02:51:31 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 2435DB715;
-        Wed, 16 Oct 2019 06:51:29 +0000 (UTC)
-Date:   Wed, 16 Oct 2019 08:51:27 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
+        id S2391191AbfJPHmb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Oct 2019 03:42:31 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:53938 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728201AbfJPHmb (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 16 Oct 2019 03:42:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HZk+bV3WLC0Kp3efq7J7NzYocbzHcIWk7+ZyTXdSxy4=; b=Z9FEfEftwdBAqYl5xGywYMCj1
+        Bu8Oxg35mWjPBwtU9Ct4ZiRdzAPHhfk0vd4uw++CYEesW7gV/J7HaflSLW1T71OJbz17o1SbEExsa
+        N9oqpDZ0qSleAu8M+IiDqv5N5wq2YXUeC2MRXhbHos7NmLflK8orqFlzz8GJ09J2CnuJxP5lkyXGP
+        aij33sW+4KbMkp/C+A+lQ/Tivg8eKonAQxoXddjAdaXeFbiCVwrDWNlOSOfUYUlDvsX0LtGXT3pkA
+        JxytniYK4UkZGipYAi0TbgSkgwDENkm30cTdP52UWF+0N6LFzBn3Ae7smd62Kdu/PxvL9JxVUg848
+        82MCo2gYg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iKdwq-00085M-9S; Wed, 16 Oct 2019 07:42:20 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D65213032F8;
+        Wed, 16 Oct 2019 09:41:22 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A6F0820B972E4; Wed, 16 Oct 2019 09:42:17 +0200 (CEST)
+Date:   Wed, 16 Oct 2019 09:42:17 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+        x86@kernel.org, linux-kernel@vger.kernel.org, mhiramat@kernel.org,
         bristot@redhat.com, jbaron@akamai.com,
         torvalds@linux-foundation.org, tglx@linutronix.de,
         mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
         ard.biesheuvel@linaro.org, jpoimboe@redhat.com,
         live-patching@vger.kernel.org
 Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-In-Reply-To: <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
-Message-ID: <alpine.LSU.2.21.1910160843420.7750@pobox.suse.cz>
-References: <20191007081945.10951536.8@infradead.org> <20191008104335.6fcd78c9@gandalf.local.home> <20191009224135.2dcf7767@oasis.local.home> <20191010092054.GR2311@hirez.programming.kicks-ass.net> <20191010091956.48fbcf42@gandalf.local.home>
- <20191010140513.GT2311@hirez.programming.kicks-ass.net> <20191010115449.22044b53@gandalf.local.home> <20191010172819.GS2328@hirez.programming.kicks-ass.net> <20191011125903.GN2359@hirez.programming.kicks-ass.net> <20191015130739.GA23565@linux-8ccs>
- <20191015135634.GK2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz> <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+Message-ID: <20191016074217.GL2328@hirez.programming.kicks-ass.net>
+References: <20191010115449.22044b53@gandalf.local.home>
+ <20191010172819.GS2328@hirez.programming.kicks-ass.net>
+ <20191011125903.GN2359@hirez.programming.kicks-ass.net>
+ <20191015130739.GA23565@linux-8ccs>
+ <20191015135634.GK2328@hirez.programming.kicks-ass.net>
+ <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz>
+ <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
+ <20191015153120.GA21580@linux-8ccs>
+ <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
+ <20191015182705.1aeec284@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191015182705.1aeec284@gandalf.local.home>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 15 Oct 2019, Joe Lawrence wrote:
+> which are not compatible with livepatching. GCC upstream now has
+> -flive-patching option, which disables all those interfering optimizations.
 
-> On 10/15/19 10:13 AM, Miroslav Benes wrote:
-> > Yes, it does. klp_module_coming() calls module_disable_ro() on all
-> > patching modules which patch the coming module in order to call
-> > apply_relocate_add(). New (patching) code for a module can be relocated
-> > only when the relevant module is loaded.
-> 
-> FWIW, would the LPC blue-sky2 model (ie, Steve's suggestion @ plumber's where
-> livepatches only patch a single object and updates are kept on disk to handle
-> coming module updates as they are loaded) eliminate those outstanding
-> relocations and the need to perform this late permission flipping?
+Which, IIRC, has a significant performance impact and should thus really
+not be used...
 
-Yes, it should, but we don't have to wait for it. PeterZ proposed a 
-different solution to this specific issue in 
-https://lore.kernel.org/lkml/20191015141111.GP2359@hirez.programming.kicks-ass.net/
-
-It should not be a problem to create a live patch module like that and the 
-code in kernel/livepatch/ is almost ready. Something like 
-module_section_disable_ro(mod, section) (and similar for X protection) 
-should be enough. Module reloads would still require juggling with the 
-protections, but I think it is all feasible.
-
-Miroslav
+If distros ship that crap, I'm going to laugh at them the next time they
+want a single digit performance improvement because *important*.
