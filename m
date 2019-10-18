@@ -2,126 +2,94 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63FB9DC658
-	for <lists+live-patching@lfdr.de>; Fri, 18 Oct 2019 15:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94F6DDCCF5
+	for <lists+live-patching@lfdr.de>; Fri, 18 Oct 2019 19:41:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393787AbfJRNlC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 18 Oct 2019 09:41:02 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40414 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728150AbfJRNlC (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 18 Oct 2019 09:41:02 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 0FBAFB1D4;
-        Fri, 18 Oct 2019 13:41:00 +0000 (UTC)
-Date:   Fri, 18 Oct 2019 15:40:58 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Jessica Yu <jeyu@kernel.org>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
-        bristot@redhat.com, jbaron@akamai.com,
-        torvalds@linux-foundation.org, tglx@linutronix.de,
-        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, jpoimboe@redhat.com,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-Message-ID: <20191018134058.7zyls4746wpa7jy5@pathway.suse.cz>
-References: <20191015135634.GK2328@hirez.programming.kicks-ass.net>
- <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz>
- <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
- <20191015153120.GA21580@linux-8ccs>
- <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
- <20191015182705.1aeec284@gandalf.local.home>
- <20191016074951.GM2328@hirez.programming.kicks-ass.net>
- <alpine.LSU.2.21.1910161216100.7750@pobox.suse.cz>
- <alpine.LSU.2.21.1910161521010.7750@pobox.suse.cz>
- <20191018130342.GA4625@linux-8ccs>
+        id S2405493AbfJRRlb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 18 Oct 2019 13:41:31 -0400
+Received: from [217.140.110.172] ([217.140.110.172]:47744 "EHLO foss.arm.com"
+        rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
+        id S2405459AbfJRRlb (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 18 Oct 2019 13:41:31 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 195971534;
+        Fri, 18 Oct 2019 10:41:06 -0700 (PDT)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 15C613F718;
+        Fri, 18 Oct 2019 10:41:03 -0700 (PDT)
+Date:   Fri, 18 Oct 2019 18:41:02 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Julien Thierry <julien.thierry@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Will Deacon <will.deacon@arm.com>,
+        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        AKASHI Takahiro <takahiro.akashi@linaro.org>,
+        Ingo Molnar <mingo@redhat.com>, Torsten Duwe <duwe@lst.de>,
+        Ruslan Bilovol <ruslan.bilovol@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Amit Daniel Kachhap <amit.kachhap@arm.com>,
+        live-patching@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v8 0/5] arm64: ftrace with regs
+Message-ID: <20191018174100.GC18838@lakrids.cambridge.arm.com>
+References: <20190208150826.44EBC68DD2@newverein.lst.de>
+ <0f8d2e77-7e51-fba8-b179-102318d9ff84@arm.com>
+ <20190311114945.GA5625@lst.de>
+ <20190408153628.GL6139@lakrids.cambridge.arm.com>
+ <20190409175238.GE9255@fuggles.cambridge.arm.com>
+ <CAB=otbRXuDHSmh9NrGYoep=hxOKkXVsy6R84ACZ9xELwNr=4AA@mail.gmail.com>
+ <20190724161500.GG2624@lakrids.cambridge.arm.com>
+ <nycvar.YFH.7.76.1910161341520.13160@cbobk.fhfr.pm>
+ <20191016175841.GF46264@lakrids.cambridge.arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191018130342.GA4625@linux-8ccs>
-User-Agent: NeoMutt/20170912 (1.9.0)
+In-Reply-To: <20191016175841.GF46264@lakrids.cambridge.arm.com>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri 2019-10-18 15:03:42, Jessica Yu wrote:
-> +++ Miroslav Benes [16/10/19 15:29 +0200]:
-> > On Wed, 16 Oct 2019, Miroslav Benes wrote:
-> > Thinking about it more... crazy idea. I think we could leverage these new
-> > ELF .text per vmlinux/module sections for the reinvention I was talking
-> > about. If we teach module loader to relocate (and apply alternatives and
-> > so on, everything in arch-specific module_finalize()) not the whole module
-> > in case of live patch modules, but separate ELF .text sections, it could
-> > solve the issue with late module patching we have. It is a variation on
-> > Steven's idea. When live patch module is loaded, only its section for
-> > present modules would be processed. Then whenever a to-be-patched module
-> > is loaded, its .text section in all present patch module would be
-> > processed.
-> > 
-> > The upside is that almost no work would be required on patch modules
-> > creation side. The downside is that klp_modinfo must stay. Module loader
-> > needs to be hacked a lot in both cases. So it remains to be seen which
-> > idea is easier to implement.
-> > 
-> > Jessica, do you think it would be feasible?
+On Wed, Oct 16, 2019 at 06:58:42PM +0100, Mark Rutland wrote:
+> I've just done the core (non-arm64) bits today, and pushed that out:
 > 
-> I think that does sound feasible. I'm trying to visualize how that
-> would look. I guess there would need to be various livepatching hooks
-> called during the different stages (apply_relocate_add(),
-> module_finalize(), module_enable_ro/x()).
+>   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=arm64/ftrace-with-regs
 > 
-> So maybe something like the following?
-> 
-> When a livepatch module loads:
->    apply_relocate_add()
->        klp hook: apply .klp.rela.$objname relocations *only* for
->        already loaded modules
->    module_finalize()
->        klp hook: apply .klp.arch.$objname changes for already loaded modules
->    module_enable_ro()
->        klp hook: only enable ro/x for .klp.text.$objname for already
->        loaded modules
+> ... I'll fold the remainging bits of patches 4 and 5 together tomorrow
+> atop of that.
 
-Just for record. We should also set ro for the not-yet used
-.klp.text.$objname at this stage so that it can't be modified
-easily "by accident".
+I've just force-pushed an updated version with the actual arm64
+FTRACE_WITH_REGS bits. There are a couple of bits I still need to
+verify, but I'm hoping that I can send this out for real next week.
 
+In the process of reworking this I spotted some issues that will get in
+the way of livepatching. Notably:
 
-> When a to-be-patched module loads:
->    apply_relocate_add()
->        klp hook: for each patch module that patches the coming
->        module, apply .klp.rela.$objname relocations for this object
->    module_finalize()
->        klp hook: for each patch module that patches the coming
->        module, apply .klp.arch.$objname changes for this object
->    module_enable_ro()
->        klp hook: for each patch module, apply ro/x permissions for
->        .klp.text.$objname for this object
-> 
-> Then, in klp_module_coming, we only need to do the callbacks and
-> enable the patch, and get rid of the module_disable_ro->apply
-> relocs->module_enable_ro block.
-> 
-> Does that sound like what you had in mind or am I totally off?
+* When modules can be loaded far away from the kernel, we'll potentially
+  need a PLT for each function within a module, if each can be patched
+  to a unique function. Currently we have a fixed number, which is only
+  sufficient for the two ftrace entry trampolines.
 
-Makes sense to me.
+  IIUC, the new code being patched in is itself a module, in which case
+  we'd need a PLT for each function in the main kernel image.
 
-Well, I wonder if it is really any better from what we have now.
-We would still need special delayed handling for the module-specific
-elf sections. Also we still would not need to clear the modifications
-in these sections when the livepatched object gets unloaded.
+  We have a few options here, e.g. changing which memory size model we
+  use, or reserving space for a PLT before each function using
+  -f patchable-function-entry=N,M.
 
-I am afraid that the real difference might come when we split
-the livepatch into per-livepatched object modules. This would
-move the complexity to another parts of the code ;-) I am
-unable to say what approach is easier and more safe to maintain
-at the moment.
+* There are windows where backtracing will miss the callsite's caller,
+  as its address is not live in the LR or existing chain of frame
+  records. Thus we cannot claim to have a reliable stacktrace.
 
-Best Regards,
-Petr
+  I suspect we'll have to teach the stacktrace code to handle this as a
+  special-case.
+
+  I'll try to write these up, as similar probably applies to other
+  architectures with a link register.
+
+Thanks,
+Mark.
