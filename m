@@ -2,37 +2,37 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF56DFF66
-	for <lists+live-patching@lfdr.de>; Tue, 22 Oct 2019 10:27:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B434CDFFE6
+	for <lists+live-patching@lfdr.de>; Tue, 22 Oct 2019 10:45:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388362AbfJVI1x (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 22 Oct 2019 04:27:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39198 "EHLO mx1.suse.de"
+        id S2388646AbfJVIp2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 22 Oct 2019 04:45:28 -0400
+Received: from mx2.suse.de ([195.135.220.15]:54638 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388061AbfJVI1x (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 22 Oct 2019 04:27:53 -0400
+        id S2388485AbfJVIp1 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 22 Oct 2019 04:45:27 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 87540B399;
-        Tue, 22 Oct 2019 08:27:50 +0000 (UTC)
-Date:   Tue, 22 Oct 2019 10:27:49 +0200 (CEST)
+        by mx1.suse.de (Postfix) with ESMTP id 96A7EB18B;
+        Tue, 22 Oct 2019 08:45:25 +0000 (UTC)
+Date:   Tue, 22 Oct 2019 10:45:23 +0200 (CEST)
 From:   Miroslav Benes <mbenes@suse.cz>
-To:     Jessica Yu <jeyu@kernel.org>
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>, x86@kernel.org,
+To:     Peter Zijlstra <peterz@infradead.org>
+cc:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org, mhiramat@kernel.org,
         bristot@redhat.com, jbaron@akamai.com,
         torvalds@linux-foundation.org, tglx@linutronix.de,
         mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
         ard.biesheuvel@linaro.org, jpoimboe@redhat.com,
-        live-patching@vger.kernel.org, pmladek@suse.com
+        live-patching@vger.kernel.org
 Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-In-Reply-To: <20191018130342.GA4625@linux-8ccs>
-Message-ID: <alpine.LSU.2.21.1910221022590.28918@pobox.suse.cz>
-References: <20191015130739.GA23565@linux-8ccs> <20191015135634.GK2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz> <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com> <20191015153120.GA21580@linux-8ccs>
- <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com> <20191015182705.1aeec284@gandalf.local.home> <20191016074951.GM2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910161216100.7750@pobox.suse.cz> <alpine.LSU.2.21.1910161521010.7750@pobox.suse.cz>
- <20191018130342.GA4625@linux-8ccs>
+In-Reply-To: <20191016123906.GR2328@hirez.programming.kicks-ass.net>
+Message-ID: <alpine.LSU.2.21.1910221034450.28918@pobox.suse.cz>
+References: <20191010091956.48fbcf42@gandalf.local.home> <20191010140513.GT2311@hirez.programming.kicks-ass.net> <20191010115449.22044b53@gandalf.local.home> <20191010172819.GS2328@hirez.programming.kicks-ass.net> <20191011125903.GN2359@hirez.programming.kicks-ass.net>
+ <20191015130739.GA23565@linux-8ccs> <20191015135634.GK2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz> <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com> <alpine.LSU.2.21.1910160843420.7750@pobox.suse.cz>
+ <20191016123906.GR2328@hirez.programming.kicks-ass.net>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -41,114 +41,117 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, 18 Oct 2019, Jessica Yu wrote:
+On Wed, 16 Oct 2019, Peter Zijlstra wrote:
 
-> +++ Miroslav Benes [16/10/19 15:29 +0200]:
-> >On Wed, 16 Oct 2019, Miroslav Benes wrote:
-> >
-> >> On Wed, 16 Oct 2019, Peter Zijlstra wrote:
-> >>
-> >> > On Tue, Oct 15, 2019 at 06:27:05PM -0400, Steven Rostedt wrote:
-> >> >
-> >> > > (7) Seventh session, titled "klp-convert and livepatch relocations",
-> >> > > was led
-> >> > > by Joe Lawrence.
-> >> > >
-> >> > > Joe started the session with problem statement: accessing non exported
-> >> > > / static
-> >> > > symbols from inside the patch module. One possible workardound is
-> >> > > manually via
-> >> > > kallsyms. Second workaround is klp-convert, which actually creates
-> >> > > proper
-> >> > > relocations inside the livepatch module from the symbol database during
-> >> > > the
-> >> > > final .ko link.
-> >> > > Currently module loader looks for special livepatch relocations and
-> >> > > resolves
-> >> > > those during runtime; kernel support for these relocations have so far
-> >> > > been
-> >> > > added for x86 only. Special livepatch relocations are supported and
-> >> > > processed
-> >> > > also on other architectures. Special quirks/sections are not yet
-> >> > > supported.
-> >> > > Plus klp-convert would still be needed even with late module patching
-> >> > > update.
-> >> > > vmlinux or modules could have ambiguous static symbols.
-> >> > >
-> >> > > It turns out that the features / bugs below have to be resolved before
-> >> > > we
-> >> > > can claim the klp-convert support for relocation complete:
-> >> > >     - handle all the corner cases (jump labels, static keys, ...)
-> >> > >     properly and
-> >> > >       have a good regression tests in place
-> >> >
-> >> > I suppose all the patches in this series-of-series here will make life
-> >> > harder for KLP, static_call() and 2 byte jumps etc..
-> >>
-> >> Yes, I think so. We'll have to deal with that once it lands. That is why
-> >> we want to get rid of all this arch-specific code in livepatch and
-> >> reinvent the late module patching. So it is perhaps better to start
-> >> working on it sooner than later. Adding Petr, who hesitantly signed up for
-> >> the task...
-> >
-> >Thinking about it more... crazy idea. I think we could leverage these new
-> >ELF .text per vmlinux/module sections for the reinvention I was talking
-> >about. If we teach module loader to relocate (and apply alternatives and
-> >so on, everything in arch-specific module_finalize()) not the whole module
-> >in case of live patch modules, but separate ELF .text sections, it could
-> >solve the issue with late module patching we have. It is a variation on
-> >Steven's idea. When live patch module is loaded, only its section for
-> >present modules would be processed. Then whenever a to-be-patched module
-> >is loaded, its .text section in all present patch module would be
-> >processed.
-> >
-> >The upside is that almost no work would be required on patch modules
-> >creation side. The downside is that klp_modinfo must stay. Module loader
-> >needs to be hacked a lot in both cases. So it remains to be seen which
-> >idea is easier to implement.
-> >
-> >Jessica, do you think it would be feasible?
+> On Wed, Oct 16, 2019 at 08:51:27AM +0200, Miroslav Benes wrote:
+> > On Tue, 15 Oct 2019, Joe Lawrence wrote:
+> > 
+> > > On 10/15/19 10:13 AM, Miroslav Benes wrote:
+> > > > Yes, it does. klp_module_coming() calls module_disable_ro() on all
+> > > > patching modules which patch the coming module in order to call
+> > > > apply_relocate_add(). New (patching) code for a module can be relocated
+> > > > only when the relevant module is loaded.
+> > > 
+> > > FWIW, would the LPC blue-sky2 model (ie, Steve's suggestion @ plumber's where
+> > > livepatches only patch a single object and updates are kept on disk to handle
+> > > coming module updates as they are loaded) eliminate those outstanding
+> > > relocations and the need to perform this late permission flipping?
+> > 
+> > Yes, it should, but we don't have to wait for it. PeterZ proposed a 
+> > different solution to this specific issue in 
+> > https://lore.kernel.org/lkml/20191015141111.GP2359@hirez.programming.kicks-ass.net/
+> > 
+> > It should not be a problem to create a live patch module like that and the 
+> > code in kernel/livepatch/ is almost ready. Something like 
+> > module_section_disable_ro(mod, section) (and similar for X protection) 
+> > should be enough. Module reloads would still require juggling with the 
+> > protections, but I think it is all feasible.
 > 
-> I think that does sound feasible. I'm trying to visualize how that
-> would look. I guess there would need to be various livepatching hooks
-> called during the different stages (apply_relocate_add(),
-> module_finalize(), module_enable_ro/x()).
-> 
-> So maybe something like the following?
-> 
-> When a livepatch module loads:
->    apply_relocate_add()
->        klp hook: apply .klp.rela.$objname relocations *only* for
->        already loaded modules
->    module_finalize()
->        klp hook: apply .klp.arch.$objname changes for already loaded modules
->    module_enable_ro()
->        klp hook: only enable ro/x for .klp.text.$objname for already
->        loaded modules
-> 
-> When a to-be-patched module loads:
->    apply_relocate_add()
->        klp hook: for each patch module that patches the coming
->        module, apply .klp.rela.$objname relocations for this object
->    module_finalize()
->        klp hook: for each patch module that patches the coming
->        module, apply .klp.arch.$objname changes for this object
->    module_enable_ro()
->        klp hook: for each patch module, apply ro/x permissions for
->        .klp.text.$objname for this object
-> 
-> Then, in klp_module_coming, we only need to do the callbacks and
-> enable the patch, and get rid of the module_disable_ro->apply
-> relocs->module_enable_ro block.
-> 
-> Does that sound like what you had in mind or am I totally off?
+> Something a little like so.. completely fresh of the keyboard.
 
-Sort of. What I had in mind was that we could get rid of all special .klp 
-ELF section if module loader guarantees that only sections for loaded 
-modules are processed. Then .klp.rela.$objname is not needed and proper 
-.rela.text.$objname (or whatever its text section is named) should be 
-sufficient. The same for the rest (.klp.arch).
-
-Only then it would be useful.
+Yes, but I noticed you found different and better way through text_poke() 
+(I was not aware that text_poke() works around the protections).
 
 Miroslav
+ 
+> ---
+> --- a/include/linux/module.h
+> +++ b/include/linux/module.h
+> @@ -853,6 +853,18 @@ static inline void module_enable_ro(cons
+>  static inline void module_disable_ro(const struct module *mod) { }
+>  #endif
+>  
+> +#if defined(CONFIG_STRICT_MODULE_RWX) && defined(CONFIG_LIVEPATCH)
+> +extern void module_section_disable_ro(struct module *mod, const char *sec);
+> +extern void module_section_enable_ro(struct module *mod, const char *sec);
+> +extern void module_section_disable_x(struct module *mod, const char *sec);
+> +extern void module_section_enable_x(struct module *mod, const char *sec);
+> +#else
+> +static inline void module_section_disable_ro(struct module *mod, const char *sec) { }
+> +static inline void module_section_enable_ro(struct module *mod, const char *sec) { }
+> +static inline void module_section_disable_x(struct module *mod, const char *sec) { }
+> +static inline void module_section_enable_x(struct module *mod, const char *sec) { }
+> +#endif
+> +
+>  #ifdef CONFIG_GENERIC_BUG
+>  void module_bug_finalize(const Elf_Ehdr *, const Elf_Shdr *,
+>  			 struct module *);
+> --- a/kernel/module.c
+> +++ b/kernel/module.c
+> @@ -2107,6 +2107,54 @@ static void free_module_elf(struct modul
+>  	kfree(mod->klp_info->secstrings);
+>  	kfree(mod->klp_info);
+>  }
+> +
+> +#ifdef CONFIG_STRICT_MODULE_RWX
+> +
+> +static void __frob_section(struct Elf_Shdr *sec, int (*set_memory)(unsigned long start, int num_pages))
+> +{
+> +	BUG_ON((unsigned long)sec->sh_addr & (PAGE_SIZE-1));
+> +	BUG_ON((unsigned long)sec->sh_size & (PAGE_SIZE-1));
+> +	set_memory((unsigned long)sec->sh_addr, sec->sh_size >> PAGE_SHIFT);
+> +}
+> +
+> +static void frob_section(struct module *mod, const char *section,
+> +			 int (*set_memory)(unsigned long start, int num_pages))
+> +{
+> +	struct klp_modinfo *info = mod->klp_info;
+> +	const char *secname;
+> +	Elf_Shdr *s;
+> +
+> +	for (s = info->sechdrs; s < info->sechdrs + info->hdr.e_shnum; s++) {
+> +		secname = mod->klp_info->secstrings + s->sh_name;
+> +		if (strcmp(secname, section))
+> +			continue;
+> +
+> +		__frob_section(s, set_memory);
+> +	}
+> +}
+> +
+> +void module_section_disable_ro(struct module *mod, const char *section)
+> +{
+> +	frob_section(mod, section, set_memory_rw);
+> +}
+> +
+> +void module_section_enable_ro(struct module *mod, const char *section)
+> +{
+> +	frob_section(mod, section, set_memory_ro);
+> +}
+> +
+> +void module_section_disable_x(struct module *mod, const char *section)
+> +{
+> +	frob_section(mod, section, set_memory_nx);
+> +}
+> +
+> +void module_section_enable_x(struct module *mod, const char *section)
+> +{
+> +	frob_section(mod, section, set_memory_x);
+> +}
+> +
+> +#endif /* ONFIG_STRICT_MODULE_RWX */
+> +
+>  #else /* !CONFIG_LIVEPATCH */
+>  static int copy_module_elf(struct module *mod, struct load_info *info)
+>  {
+> 
+
