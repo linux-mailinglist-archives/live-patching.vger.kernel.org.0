@@ -2,156 +2,134 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B434CDFFE6
-	for <lists+live-patching@lfdr.de>; Tue, 22 Oct 2019 10:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4261EE0671
+	for <lists+live-patching@lfdr.de>; Tue, 22 Oct 2019 16:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388646AbfJVIp2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 22 Oct 2019 04:45:28 -0400
-Received: from mx2.suse.de ([195.135.220.15]:54638 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388485AbfJVIp1 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 22 Oct 2019 04:45:27 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 96A7EB18B;
-        Tue, 22 Oct 2019 08:45:25 +0000 (UTC)
-Date:   Tue, 22 Oct 2019 10:45:23 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Peter Zijlstra <peterz@infradead.org>
-cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
+        id S1727531AbfJVObZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 22 Oct 2019 10:31:25 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47554 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726702AbfJVObZ (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 22 Oct 2019 10:31:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571754684;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uQINK4WAab2a12o9SHlK/upMXG8ZGLD6Q9Wbn9V1iMw=;
+        b=hH+8tRk9V1z6FMZbYVcThekFC9ViWQgz0MdULNXdgg3HTJMKlML4sywFdbVjWKn3gfXlhk
+        dC/H5gVIS+1MzTBI4Jib50u+cm8Wxtnp1DqkDkv31U8af8FhC6tEkpmwfAohsrtH3whstb
+        Yo0JU/fXzTZPBqU8/0RNYSKPAndM3Mw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-371-SjCmvh6LOxCAPrxBPRs7jQ-1; Tue, 22 Oct 2019 10:31:20 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 308C61005500;
+        Tue, 22 Oct 2019 14:31:18 +0000 (UTC)
+Received: from treble (ovpn-124-213.rdu2.redhat.com [10.10.124.213])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C6353608C0;
+        Tue, 22 Oct 2019 14:31:09 +0000 (UTC)
+Date:   Tue, 22 Oct 2019 09:31:07 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Jessica Yu <jeyu@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org, mhiramat@kernel.org,
         bristot@redhat.com, jbaron@akamai.com,
         torvalds@linux-foundation.org, tglx@linutronix.de,
         mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, jpoimboe@redhat.com,
-        live-patching@vger.kernel.org
+        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
+        pmladek@suse.com
 Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-In-Reply-To: <20191016123906.GR2328@hirez.programming.kicks-ass.net>
-Message-ID: <alpine.LSU.2.21.1910221034450.28918@pobox.suse.cz>
-References: <20191010091956.48fbcf42@gandalf.local.home> <20191010140513.GT2311@hirez.programming.kicks-ass.net> <20191010115449.22044b53@gandalf.local.home> <20191010172819.GS2328@hirez.programming.kicks-ass.net> <20191011125903.GN2359@hirez.programming.kicks-ass.net>
- <20191015130739.GA23565@linux-8ccs> <20191015135634.GK2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz> <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com> <alpine.LSU.2.21.1910160843420.7750@pobox.suse.cz>
- <20191016123906.GR2328@hirez.programming.kicks-ass.net>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+Message-ID: <20191022143107.xkymboxgcgojc5b5@treble>
+References: <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz>
+ <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
+ <20191015153120.GA21580@linux-8ccs>
+ <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
+ <20191015182705.1aeec284@gandalf.local.home>
+ <20191016074951.GM2328@hirez.programming.kicks-ass.net>
+ <alpine.LSU.2.21.1910161216100.7750@pobox.suse.cz>
+ <alpine.LSU.2.21.1910161521010.7750@pobox.suse.cz>
+ <20191018130342.GA4625@linux-8ccs>
+ <alpine.LSU.2.21.1910221022590.28918@pobox.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <alpine.LSU.2.21.1910221022590.28918@pobox.suse.cz>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: SjCmvh6LOxCAPrxBPRs7jQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 16 Oct 2019, Peter Zijlstra wrote:
+On Tue, Oct 22, 2019 at 10:27:49AM +0200, Miroslav Benes wrote:
+> > Does that sound like what you had in mind or am I totally off?
+>=20
+> Sort of. What I had in mind was that we could get rid of all special .klp=
+=20
+> ELF section if module loader guarantees that only sections for loaded=20
+> modules are processed. Then .klp.rela.$objname is not needed and proper=
+=20
+> .rela.text.$objname (or whatever its text section is named) should be=20
+> sufficient. The same for the rest (.klp.arch).
 
-> On Wed, Oct 16, 2019 at 08:51:27AM +0200, Miroslav Benes wrote:
-> > On Tue, 15 Oct 2019, Joe Lawrence wrote:
-> > 
-> > > On 10/15/19 10:13 AM, Miroslav Benes wrote:
-> > > > Yes, it does. klp_module_coming() calls module_disable_ro() on all
-> > > > patching modules which patch the coming module in order to call
-> > > > apply_relocate_add(). New (patching) code for a module can be relocated
-> > > > only when the relevant module is loaded.
-> > > 
-> > > FWIW, would the LPC blue-sky2 model (ie, Steve's suggestion @ plumber's where
-> > > livepatches only patch a single object and updates are kept on disk to handle
-> > > coming module updates as they are loaded) eliminate those outstanding
-> > > relocations and the need to perform this late permission flipping?
-> > 
-> > Yes, it should, but we don't have to wait for it. PeterZ proposed a 
-> > different solution to this specific issue in 
-> > https://lore.kernel.org/lkml/20191015141111.GP2359@hirez.programming.kicks-ass.net/
-> > 
-> > It should not be a problem to create a live patch module like that and the 
-> > code in kernel/livepatch/ is almost ready. Something like 
-> > module_section_disable_ro(mod, section) (and similar for X protection) 
-> > should be enough. Module reloads would still require juggling with the 
-> > protections, but I think it is all feasible.
-> 
-> Something a little like so.. completely fresh of the keyboard.
+If I understand correctly, using kvm as an example to-be-patched module,
+we'd have:
 
-Yes, but I noticed you found different and better way through text_poke() 
-(I was not aware that text_poke() works around the protections).
+  .text.kvm
+  .rela.text.kvm
+  .altinstructions.kvm
+  .rela.altinstructions.kvm
+  __jump_table.kvm
+  .rela__jump_table.kvm
 
-Miroslav
- 
-> ---
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -853,6 +853,18 @@ static inline void module_enable_ro(cons
->  static inline void module_disable_ro(const struct module *mod) { }
->  #endif
->  
-> +#if defined(CONFIG_STRICT_MODULE_RWX) && defined(CONFIG_LIVEPATCH)
-> +extern void module_section_disable_ro(struct module *mod, const char *sec);
-> +extern void module_section_enable_ro(struct module *mod, const char *sec);
-> +extern void module_section_disable_x(struct module *mod, const char *sec);
-> +extern void module_section_enable_x(struct module *mod, const char *sec);
-> +#else
-> +static inline void module_section_disable_ro(struct module *mod, const char *sec) { }
-> +static inline void module_section_enable_ro(struct module *mod, const char *sec) { }
-> +static inline void module_section_disable_x(struct module *mod, const char *sec) { }
-> +static inline void module_section_enable_x(struct module *mod, const char *sec) { }
-> +#endif
-> +
->  #ifdef CONFIG_GENERIC_BUG
->  void module_bug_finalize(const Elf_Ehdr *, const Elf_Shdr *,
->  			 struct module *);
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -2107,6 +2107,54 @@ static void free_module_elf(struct modul
->  	kfree(mod->klp_info->secstrings);
->  	kfree(mod->klp_info);
->  }
-> +
-> +#ifdef CONFIG_STRICT_MODULE_RWX
-> +
-> +static void __frob_section(struct Elf_Shdr *sec, int (*set_memory)(unsigned long start, int num_pages))
-> +{
-> +	BUG_ON((unsigned long)sec->sh_addr & (PAGE_SIZE-1));
-> +	BUG_ON((unsigned long)sec->sh_size & (PAGE_SIZE-1));
-> +	set_memory((unsigned long)sec->sh_addr, sec->sh_size >> PAGE_SHIFT);
-> +}
-> +
-> +static void frob_section(struct module *mod, const char *section,
-> +			 int (*set_memory)(unsigned long start, int num_pages))
-> +{
-> +	struct klp_modinfo *info = mod->klp_info;
-> +	const char *secname;
-> +	Elf_Shdr *s;
-> +
-> +	for (s = info->sechdrs; s < info->sechdrs + info->hdr.e_shnum; s++) {
-> +		secname = mod->klp_info->secstrings + s->sh_name;
-> +		if (strcmp(secname, section))
-> +			continue;
-> +
-> +		__frob_section(s, set_memory);
-> +	}
-> +}
-> +
-> +void module_section_disable_ro(struct module *mod, const char *section)
-> +{
-> +	frob_section(mod, section, set_memory_rw);
-> +}
-> +
-> +void module_section_enable_ro(struct module *mod, const char *section)
-> +{
-> +	frob_section(mod, section, set_memory_ro);
-> +}
-> +
-> +void module_section_disable_x(struct module *mod, const char *section)
-> +{
-> +	frob_section(mod, section, set_memory_nx);
-> +}
-> +
-> +void module_section_enable_x(struct module *mod, const char *section)
-> +{
-> +	frob_section(mod, section, set_memory_x);
-> +}
-> +
-> +#endif /* ONFIG_STRICT_MODULE_RWX */
-> +
->  #else /* !CONFIG_LIVEPATCH */
->  static int copy_module_elf(struct module *mod, struct load_info *info)
->  {
-> 
+etc.  i.e. any "special" sections would need to be renamed.
+
+Is that right?
+
+But also I think *any* sections which need relocations would need to be
+renamed, for example:
+
+  .rodata.kvm
+  .rela.rodata.kvm
+  .orc_unwind_ip.kvm
+  .rela.orc_unwind_ip.kvm
+
+
+It's an interesting idea.
+
+We'd have to be careful about ordering issues.  For example, there are
+module-specific jump labels stored in mod->jump_entries.  Right now
+that's just a pointer to the module's __jump_table section.  With late
+module patching, when kvm is loaded we'd have to insert the klp module's
+__jump_table.kvm entries into kvm's mod->jump_entries list somehow.
+
+Presumably we'd also have that issue for other sections.  Handling that
+_might_ be as simple as just hacking up find_module_sections() to
+re-allocate sections and append "patched sections" to them.
+
+But then you still have to worry about when to apply the relocations.
+If you apply them before patching the sections, then relative
+relocations would have the wrong values.  If you apply them after, then
+you have to figure out where the appended relocations are.
+
+And if we allow unpatching then we'd presumably have to be able to
+remove entries from the module specific section lists.
+
+So I get the feeling a lot of complexity would creep in.  Even just
+thinking about it requires more mental gymnastics than the
+one-patch-per-module idea, so I view that as a bad sign.
+
+--=20
+Josh
 
