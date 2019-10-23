@@ -2,117 +2,133 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF682E1537
-	for <lists+live-patching@lfdr.de>; Wed, 23 Oct 2019 11:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0BC3E2140
+	for <lists+live-patching@lfdr.de>; Wed, 23 Oct 2019 19:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390394AbfJWJEV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 23 Oct 2019 05:04:21 -0400
-Received: from mx2.suse.de ([195.135.220.15]:52210 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390380AbfJWJEV (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 23 Oct 2019 05:04:21 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 4FDFFB365;
-        Wed, 23 Oct 2019 09:04:18 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 11:04:04 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     Jessica Yu <jeyu@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
-        bristot@redhat.com, jbaron@akamai.com,
+        id S1726852AbfJWRAk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 23 Oct 2019 13:00:40 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41470 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726851AbfJWRAj (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 23 Oct 2019 13:00:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571850038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mS56Ocf2Wr6s6lxq3UrbaaoGODBCpGlIzwdbwNzrmFM=;
+        b=A6f167nnaJ6DttIs4zWbA1olBTys1ifRwlWe0+2BHJqeiNrrz5hF6NX0n/fJzBPJ4cpbrh
+        dj6MiydnVp654E3/SS5/MkswuL+TgKl4xzPvc139mDR1g2Urpaor/uj3LsmDwuNycVccHF
+        Y8DCdzBiHYtWRH1pA4Eb+ePY5/E41M0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-182-adgGpz8OP6mPpsyr71ygaA-1; Wed, 23 Oct 2019 13:00:34 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 70B2C1800D6B;
+        Wed, 23 Oct 2019 17:00:32 +0000 (UTC)
+Received: from treble (ovpn-121-225.rdu2.redhat.com [10.10.121.225])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A93D16061E;
+        Wed, 23 Oct 2019 17:00:27 +0000 (UTC)
+Date:   Wed, 23 Oct 2019 12:00:25 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        mhiramat@kernel.org, bristot@redhat.com, jbaron@akamai.com,
         torvalds@linux-foundation.org, tglx@linutronix.de,
         mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
-        pmladek@suse.com
-Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-In-Reply-To: <20191022143107.xkymboxgcgojc5b5@treble>
-Message-ID: <alpine.LSU.2.21.1910231057270.4266@pobox.suse.cz>
-References: <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz> <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com> <20191015153120.GA21580@linux-8ccs> <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com> <20191015182705.1aeec284@gandalf.local.home>
- <20191016074951.GM2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910161216100.7750@pobox.suse.cz> <alpine.LSU.2.21.1910161521010.7750@pobox.suse.cz> <20191018130342.GA4625@linux-8ccs> <alpine.LSU.2.21.1910221022590.28918@pobox.suse.cz>
- <20191022143107.xkymboxgcgojc5b5@treble>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        ard.biesheuvel@linaro.org, jeyu@kernel.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v4 15/16] module: Move where we mark modules RO,X
+Message-ID: <20191023170025.f34g3vxaqr4f5gqh@treble>
+References: <20191018073525.768931536@infradead.org>
+ <20191018074634.801435443@infradead.org>
+ <20191021135312.jbbxsuipxldocdjk@treble>
+ <20191021141402.GI1817@hirez.programming.kicks-ass.net>
+ <20191023114835.GT1817@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20191023114835.GT1817@hirez.programming.kicks-ass.net>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: adgGpz8OP6mPpsyr71ygaA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 22 Oct 2019, Josh Poimboeuf wrote:
+On Wed, Oct 23, 2019 at 01:48:35PM +0200, Peter Zijlstra wrote:
+> Now sadly that commit missed all the useful information, luckily I could
+> find the patch in my LKML folder, more sad, that thread still didn't
+> contain the actual useful information, for that I was directed to
+> github:
+>=20
+>   https://github.com/dynup/kpatch/issues/580
+>=20
+> Now, someone is owning me a beer for having to look at github for this.
 
-> On Tue, Oct 22, 2019 at 10:27:49AM +0200, Miroslav Benes wrote:
-> > > Does that sound like what you had in mind or am I totally off?
-> > 
-> > Sort of. What I had in mind was that we could get rid of all special .klp 
-> > ELF section if module loader guarantees that only sections for loaded 
-> > modules are processed. Then .klp.rela.$objname is not needed and proper 
-> > .rela.text.$objname (or whatever its text section is named) should be 
-> > sufficient. The same for the rest (.klp.arch).
-> 
-> If I understand correctly, using kvm as an example to-be-patched module,
-> we'd have:
-> 
->   .text.kvm
->   .rela.text.kvm
->   .altinstructions.kvm
->   .rela.altinstructions.kvm
->   __jump_table.kvm
->   .rela__jump_table.kvm
-> 
-> etc.  i.e. any "special" sections would need to be renamed.
-> 
-> Is that right?
+Deal.  And you probably deserve a few more for fixing our crap.
 
-Yes.
- 
-> But also I think *any* sections which need relocations would need to be
-> renamed, for example:
-> 
->   .rodata.kvm
->   .rela.rodata.kvm
->   .orc_unwind_ip.kvm
->   .rela.orc_unwind_ip.kvm
+The github thing is supposed to be temporary, at least in theory we'll
+eventually have all klp patch module building code in the kernel tree.
 
-Correct.
- 
-> It's an interesting idea.
-> 
-> We'd have to be careful about ordering issues.  For example, there are
-> module-specific jump labels stored in mod->jump_entries.  Right now
-> that's just a pointer to the module's __jump_table section.  With late
-> module patching, when kvm is loaded we'd have to insert the klp module's
-> __jump_table.kvm entries into kvm's mod->jump_entries list somehow.
+> That finally explained that what happens is that the RELA was trying to
+> fix up the paravirt indirect call to 'local_irq_disable', which
+> apply_paravirt() will have overwritten with 'CLI; NOP'. This then
+> obviously goes *bang*.
+>=20
+> This then raises a number of questions:
+>=20
+>  1) why is that RELA (that obviously does not depend on any module)
+>     applied so late?
 
-Yes.
- 
-> Presumably we'd also have that issue for other sections.  Handling that
-> _might_ be as simple as just hacking up find_module_sections() to
-> re-allocate sections and append "patched sections" to them.
->
-> But then you still have to worry about when to apply the relocations.
-> If you apply them before patching the sections, then relative
-> relocations would have the wrong values.  If you apply them after, then
-> you have to figure out where the appended relocations are.
+Good question.  The 'pv_ops' symbol is exported by the core kernel, so I
+can't see any reason why we'd need to apply that rela late.  In theory,
+kpatch-build isn't supposed to convert that to a klp rela.  Maybe
+something went wrong in the patch creation code.
 
-Ah, right. That is a valid remark.
- 
-> And if we allow unpatching then we'd presumably have to be able to
-> remove entries from the module specific section lists.
+I'm also questioning why we even need to apply the parainstructions
+section late.  Maybe we can remove that apply_paravirt() call
+altogether, along with .klp.arch.parainstruction sections.
 
-Correct.
+I'll need to look into it...
 
-> So I get the feeling a lot of complexity would creep in.  Even just
-> thinking about it requires more mental gymnastics than the
-> one-patch-per-module idea, so I view that as a bad sign.
+>  2) why can't we unconditionally skip RELA's to paravirt sites?
 
-Yes, the devil is in the details. It would be better if the approach 
-helped even someone/something else in the kernel. Without it, it is 
-probably better to stick to Steven's proposal and handle the complexity 
-elsewhere.
+We could, but I don't think it's needed if we fix #1.
 
-Thanks
-Miroslav
+>  3) Is there ever a possible module-dependent RELA to a paravirt /
+>     alternative site?
+
+Good question...
+
+> Now, for 1), I would propose '.klp.rela.${mod}' sections only contain
+> RELAs that depend on symbols in ${mod} (or modules in general).
+
+That was already the goal, but we've apparently failed at that.
+
+> We can fix up RELAs that depend on core kernel early without problems.
+> Let them be in the normal .rela sections and be fixed up on loading
+> the patch-module as per usual.
+
+If such symbols aren't exported, then they still need to be in
+.klp.rela.vmlinux sections, since normal relas won't work.
+
+> This should also deal with 2, paravirt should always have RELAs into the
+> core kernel.
+>=20
+> Then for 3) we only have alternatives left, and I _think_ it unlikely to
+> be the case, but I'll have to have a hard look at that.
+
+I'm not sure about alternatives, but maybe we can enforce such
+limitations with tooling and/or kernel checks.
+
+--=20
+Josh
+
