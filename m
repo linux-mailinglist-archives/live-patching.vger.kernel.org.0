@@ -2,74 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52FCCE6FCF
-	for <lists+live-patching@lfdr.de>; Mon, 28 Oct 2019 11:43:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA508E8AFD
+	for <lists+live-patching@lfdr.de>; Tue, 29 Oct 2019 15:39:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732924AbfJ1Knq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 28 Oct 2019 06:43:46 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:35926 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732891AbfJ1Knq (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 28 Oct 2019 06:43:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=nar9Iq7Q7mTUudrNdJ/jj69T2ZUNiLNNiPhobZAvyPM=; b=FgDpTFpvRAHkibxg6VtMsFgC2
-        sDSt8Yp+REORhqdfaPb8sB455Z0xfr7MDZlIap8nAU8BjZg/gZXg/MUjeilLECHPtSPIfPvxnq5Af
-        yEMTOmUzzTWra7TXvpnhHnNJ+mZl3jSCl3gdsJ7XgrNUBrRKODUdR5eckaVSoonpOHQSL1SaC7d0D
-        /WFWsV4WVGS+M9+Vx9WM+nAGspV7Z9YdaocylsyTYr2qNF3/k+pLAqTW1GyhJXzHV3db3nNz4dMR8
-        CkK7UEflpptcaMx+tKo6F7SBb+I/W/bJFp6LZtzLHrv/gG4zSEM+2Uoydv/XmamDWiYU/kTUl+hQ1
-        /kVvEXfKA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iP2Uo-0003zV-N0; Mon, 28 Oct 2019 10:43:34 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D5332300E4D;
-        Mon, 28 Oct 2019 11:42:31 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 10EE120761E44; Mon, 28 Oct 2019 11:43:32 +0100 (CET)
-Date:   Mon, 28 Oct 2019 11:43:32 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Petr Mladek <pmladek@suse.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
-        mhiramat@kernel.org, bristot@redhat.com, jbaron@akamai.com,
-        torvalds@linux-foundation.org, tglx@linutronix.de,
-        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, jeyu@kernel.org,
-        live-patching@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v4 15/16] module: Move where we mark modules RO,X
-Message-ID: <20191028104332.GL4131@hirez.programming.kicks-ass.net>
-References: <20191018074634.801435443@infradead.org>
- <20191021135312.jbbxsuipxldocdjk@treble>
- <20191021141402.GI1817@hirez.programming.kicks-ass.net>
- <20191023114835.GT1817@hirez.programming.kicks-ass.net>
- <20191023170025.f34g3vxaqr4f5gqh@treble>
- <20191024131634.GC4131@hirez.programming.kicks-ass.net>
- <20191025064456.6jjrngm4m3mspaxw@pathway.suse.cz>
- <20191025084300.GG4131@hirez.programming.kicks-ass.net>
- <20191025100612.GB5671@hirez.programming.kicks-ass.net>
- <20191026011741.xywerjv62vdmz6sp@treble>
+        id S2389354AbfJ2OjR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 29 Oct 2019 10:39:17 -0400
+Received: from mx2.suse.de ([195.135.220.15]:54584 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388885AbfJ2OjI (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 29 Oct 2019 10:39:08 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 7CB12B29A;
+        Tue, 29 Oct 2019 14:39:06 +0000 (UTC)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, jpoimboe@redhat.com,
+        joe.lawrence@redhat.com
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jikos@kernel.org, pmladek@suse.com, nstange@suse.de,
+        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH v2 0/3] s390/livepatch: Implement reliable stack tracing for the consistency model
+Date:   Tue, 29 Oct 2019 15:39:01 +0100
+Message-Id: <20191029143904.24051-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191026011741.xywerjv62vdmz6sp@treble>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 08:17:41PM -0500, Josh Poimboeuf wrote:
+The livepatch consistency model requires reliable stack tracing
+architecture support in order to work properly. In order to achieve
+this, two main issues have to be solved. First, reliable and consistent
+call chain backtracing has to be ensured. Second, the unwinder needs to
+be able to detect stack corruptions and return errors.
 
-> I can take over the livepatch-specific patches if you want.  Or however
-> you want to do it.
+The former should be guaranteed (see 3/3 for details), the latter is
+implemented by the patch set (mainly 3/3).
 
-Sure, feel free to take and route the livepatch patches. Then I'll wait
-until those and the ARM64 patches land before I'll pick this up again.
+It passes livepatch kselftests (with timeout disabled, see
+https://lore.kernel.org/live-patching/20191025115041.23186-1-mbenes@suse.cz/)
+and tests from https://github.com/lpechacek/qa_test_klp.
+
+Changes since v1 and questions follow:
+- rebased on top of v5.4-rc5. It also meant rebasing on top of
+  ARCH_STACKWALK, which made the outcome nicer and addressed some of
+  Joe's remarks.
+- sp alignment is checked in both _start and _next_frame cases
+- ftrace_graph_ret_addr() calling cleanup
+
+- I tried to use the existing infrastructure as much as possible with
+  one exception. I kept unwind_next_frame_reliable() next to the
+  ordinary unwind_next_frame(). I did not come up with a nice solution
+  how to integrate it. The reliable unwinding is executed on a task
+  stack only, which leads to a nice simplification. My integration
+  attempts only obfuscated the existing unwind_next_frame() which is
+  already not easy to read. Ideas are definitely welcome.
+
+- although not nice (Josh mentioned it in his review), I kept checking
+  for kretprobe_trampoline in the main loop. It could go into _start and
+  _next_frame callbacks, but more changes would be required (changing a
+  function return type, ordinary unwinding does not need it). So I did
+  not think it was worth it. I could change it in v3, of course.
+
+Miroslav Benes (3):
+  s390/unwind: drop unnecessary code around calling
+    ftrace_graph_ret_addr()
+  s390/unwind: prepare the unwinding interface for reliable stack traces
+  s390/livepatch: Implement reliable stack tracing for the consistency
+    model
+
+ arch/s390/Kconfig                  |  1 +
+ arch/s390/include/asm/stacktrace.h |  3 +-
+ arch/s390/include/asm/unwind.h     | 15 +++---
+ arch/s390/kernel/dumpstack.c       | 16 +++++-
+ arch/s390/kernel/perf_event.c      |  2 +-
+ arch/s390/kernel/stacktrace.c      | 48 +++++++++++++++++-
+ arch/s390/kernel/unwind_bc.c       | 79 ++++++++++++++++++++++++------
+ arch/s390/oprofile/init.c          |  2 +-
+ 8 files changed, 139 insertions(+), 27 deletions(-)
+
+-- 
+2.23.0
+
