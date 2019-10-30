@@ -2,19 +2,19 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2570E9F65
-	for <lists+live-patching@lfdr.de>; Wed, 30 Oct 2019 16:43:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7539E9F5F
+	for <lists+live-patching@lfdr.de>; Wed, 30 Oct 2019 16:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727514AbfJ3Pn3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 30 Oct 2019 11:43:29 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35738 "EHLO mx1.suse.de"
+        id S1727517AbfJ3Pna (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 30 Oct 2019 11:43:30 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35754 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726242AbfJ3Pn3 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 30 Oct 2019 11:43:29 -0400
+        id S1727485AbfJ3Pna (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 30 Oct 2019 11:43:30 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id C0689B471;
-        Wed, 30 Oct 2019 15:43:25 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id BDAECB479;
+        Wed, 30 Oct 2019 15:43:26 +0000 (UTC)
 From:   Petr Mladek <pmladek@suse.com>
 To:     Jiri Kosina <jikos@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
@@ -24,9 +24,9 @@ Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
         Nicolai Stange <nstange@suse.de>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v4 4/5] livepatch: Documentation of the new API for tracking system state changes
-Date:   Wed, 30 Oct 2019 16:43:12 +0100
-Message-Id: <20191030154313.13263-5-pmladek@suse.com>
+Subject: [PATCH v4 5/5] livepatch: Selftests of the API for tracking system state changes
+Date:   Wed, 30 Oct 2019 16:43:13 +0100
+Message-Id: <20191030154313.13263-6-pmladek@suse.com>
 X-Mailer: git-send-email 2.16.4
 In-Reply-To: <20191030154313.13263-1-pmladek@suse.com>
 References: <20191030154313.13263-1-pmladek@suse.com>
@@ -35,202 +35,614 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Documentation explaining the motivation, capabilities, and usage
-of the new API for tracking system state changes.
+Four selftests for the new API.
 
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 Acked-by: Miroslav Benes <mbenes@suse.cz>
 ---
- Documentation/livepatch/index.rst        |   1 +
- Documentation/livepatch/system-state.rst | 167 +++++++++++++++++++++++++++++++
- 2 files changed, 168 insertions(+)
- create mode 100644 Documentation/livepatch/system-state.rst
+ lib/livepatch/Makefile                          |   5 +-
+ lib/livepatch/test_klp_state.c                  | 162 ++++++++++++++++++++
+ lib/livepatch/test_klp_state2.c                 | 191 ++++++++++++++++++++++++
+ lib/livepatch/test_klp_state3.c                 |   5 +
+ tools/testing/selftests/livepatch/Makefile      |   3 +-
+ tools/testing/selftests/livepatch/test-state.sh | 180 ++++++++++++++++++++++
+ 6 files changed, 544 insertions(+), 2 deletions(-)
+ create mode 100644 lib/livepatch/test_klp_state.c
+ create mode 100644 lib/livepatch/test_klp_state2.c
+ create mode 100644 lib/livepatch/test_klp_state3.c
+ create mode 100755 tools/testing/selftests/livepatch/test-state.sh
 
-diff --git a/Documentation/livepatch/index.rst b/Documentation/livepatch/index.rst
-index 17674a9e21b2..525944063be7 100644
---- a/Documentation/livepatch/index.rst
-+++ b/Documentation/livepatch/index.rst
-@@ -12,6 +12,7 @@ Kernel Livepatching
-     cumulative-patches
-     module-elf-format
-     shadow-vars
-+    system-state
+diff --git a/lib/livepatch/Makefile b/lib/livepatch/Makefile
+index 26900ddaef82..295b94bff370 100644
+--- a/lib/livepatch/Makefile
++++ b/lib/livepatch/Makefile
+@@ -8,7 +8,10 @@ obj-$(CONFIG_TEST_LIVEPATCH) += test_klp_atomic_replace.o \
+ 				test_klp_callbacks_busy.o \
+ 				test_klp_callbacks_mod.o \
+ 				test_klp_livepatch.o \
+-				test_klp_shadow_vars.o
++				test_klp_shadow_vars.o \
++				test_klp_state.o \
++				test_klp_state2.o \
++				test_klp_state3.o
  
- .. only::  subproject and html
- 
-diff --git a/Documentation/livepatch/system-state.rst b/Documentation/livepatch/system-state.rst
+ # Target modules to be livepatched require CC_FLAGS_FTRACE
+ CFLAGS_test_klp_callbacks_busy.o	+= $(CC_FLAGS_FTRACE)
+diff --git a/lib/livepatch/test_klp_state.c b/lib/livepatch/test_klp_state.c
 new file mode 100644
-index 000000000000..c6d127c2d9aa
+index 000000000000..57a4253acb01
 --- /dev/null
-+++ b/Documentation/livepatch/system-state.rst
-@@ -0,0 +1,167 @@
-+====================
-+System State Changes
-+====================
++++ b/lib/livepatch/test_klp_state.c
+@@ -0,0 +1,162 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (C) 2019 SUSE
 +
-+Some users are really reluctant to reboot a system. This brings the need
-+to provide more livepatches and maintain some compatibility between them.
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 +
-+Maintaining more livepatches is much easier with cumulative livepatches.
-+Each new livepatch completely replaces any older one. It can keep,
-+add, and even remove fixes. And it is typically safe to replace any version
-+of the livepatch with any other one thanks to the atomic replace feature.
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/printk.h>
++#include <linux/livepatch.h>
 +
-+The problems might come with shadow variables and callbacks. They might
-+change the system behavior or state so that it is no longer safe to
-+go back and use an older livepatch or the original kernel code. Also
-+any new livepatch must be able to detect what changes have already been
-+done by the already installed livepatches.
++#define CONSOLE_LOGLEVEL_STATE 1
++/* Version 1 does not support migration. */
++#define CONSOLE_LOGLEVEL_STATE_VERSION 1
 +
-+This is where the livepatch system state tracking gets useful. It
-+allows to:
++static const char *const module_state[] = {
++	[MODULE_STATE_LIVE]	= "[MODULE_STATE_LIVE] Normal state",
++	[MODULE_STATE_COMING]	= "[MODULE_STATE_COMING] Full formed, running module_init",
++	[MODULE_STATE_GOING]	= "[MODULE_STATE_GOING] Going away",
++	[MODULE_STATE_UNFORMED]	= "[MODULE_STATE_UNFORMED] Still setting it up",
++};
 +
-+  - store data needed to manipulate and restore the system state
++static void callback_info(const char *callback, struct klp_object *obj)
++{
++	if (obj->mod)
++		pr_info("%s: %s -> %s\n", callback, obj->mod->name,
++			module_state[obj->mod->state]);
++	else
++		pr_info("%s: vmlinux\n", callback);
++}
 +
-+  - define compatibility between livepatches using a change id
-+    and version
++static struct klp_patch patch;
++
++static int allocate_loglevel_state(void)
++{
++	struct klp_state *loglevel_state;
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return -EINVAL;
++
++	loglevel_state->data = kzalloc(sizeof(console_loglevel), GFP_KERNEL);
++	if (!loglevel_state->data)
++		return -ENOMEM;
++
++	pr_info("%s: allocating space to store console_loglevel\n",
++		__func__);
++	return 0;
++}
++
++static void fix_console_loglevel(void)
++{
++	struct klp_state *loglevel_state;
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return;
++
++	pr_info("%s: fixing console_loglevel\n", __func__);
++	*(int *)loglevel_state->data = console_loglevel;
++	console_loglevel = CONSOLE_LOGLEVEL_MOTORMOUTH;
++}
++
++static void restore_console_loglevel(void)
++{
++	struct klp_state *loglevel_state;
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return;
++
++	pr_info("%s: restoring console_loglevel\n", __func__);
++	console_loglevel = *(int *)loglevel_state->data;
++}
++
++static void free_loglevel_state(void)
++{
++	struct klp_state *loglevel_state;
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return;
++
++	pr_info("%s: freeing space for the stored console_loglevel\n",
++		__func__);
++	kfree(loglevel_state->data);
++}
++
++/* Executed on object patching (ie, patch enablement) */
++static int pre_patch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	return allocate_loglevel_state();
++}
++
++/* Executed on object unpatching (ie, patch disablement) */
++static void post_patch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	fix_console_loglevel();
++}
++
++/* Executed on object unpatching (ie, patch disablement) */
++static void pre_unpatch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	restore_console_loglevel();
++}
++
++/* Executed on object unpatching (ie, patch disablement) */
++static void post_unpatch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	free_loglevel_state();
++}
++
++static struct klp_func no_funcs[] = {
++	{}
++};
++
++static struct klp_object objs[] = {
++	{
++		.name = NULL,	/* vmlinux */
++		.funcs = no_funcs,
++		.callbacks = {
++			.pre_patch = pre_patch_callback,
++			.post_patch = post_patch_callback,
++			.pre_unpatch = pre_unpatch_callback,
++			.post_unpatch = post_unpatch_callback,
++		},
++	}, { }
++};
++
++static struct klp_state states[] = {
++	{
++		.id = CONSOLE_LOGLEVEL_STATE,
++		.version = CONSOLE_LOGLEVEL_STATE_VERSION,
++	}, { }
++};
++
++static struct klp_patch patch = {
++	.mod = THIS_MODULE,
++	.objs = objs,
++	.states = states,
++	.replace = true,
++};
++
++static int test_klp_callbacks_demo_init(void)
++{
++	return klp_enable_patch(&patch);
++}
++
++static void test_klp_callbacks_demo_exit(void)
++{
++}
++
++module_init(test_klp_callbacks_demo_init);
++module_exit(test_klp_callbacks_demo_exit);
++MODULE_LICENSE("GPL");
++MODULE_INFO(livepatch, "Y");
++MODULE_AUTHOR("Petr Mladek <pmladek@suse.com>");
++MODULE_DESCRIPTION("Livepatch test: system state modification");
+diff --git a/lib/livepatch/test_klp_state2.c b/lib/livepatch/test_klp_state2.c
+new file mode 100644
+index 000000000000..c978ea4d5e67
+--- /dev/null
++++ b/lib/livepatch/test_klp_state2.c
+@@ -0,0 +1,191 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (C) 2019 SUSE
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/printk.h>
++#include <linux/livepatch.h>
++
++#define CONSOLE_LOGLEVEL_STATE 1
++/* Version 2 supports migration. */
++#define CONSOLE_LOGLEVEL_STATE_VERSION 2
++
++static const char *const module_state[] = {
++	[MODULE_STATE_LIVE]	= "[MODULE_STATE_LIVE] Normal state",
++	[MODULE_STATE_COMING]	= "[MODULE_STATE_COMING] Full formed, running module_init",
++	[MODULE_STATE_GOING]	= "[MODULE_STATE_GOING] Going away",
++	[MODULE_STATE_UNFORMED]	= "[MODULE_STATE_UNFORMED] Still setting it up",
++};
++
++static void callback_info(const char *callback, struct klp_object *obj)
++{
++	if (obj->mod)
++		pr_info("%s: %s -> %s\n", callback, obj->mod->name,
++			module_state[obj->mod->state]);
++	else
++		pr_info("%s: vmlinux\n", callback);
++}
++
++static struct klp_patch patch;
++
++static int allocate_loglevel_state(void)
++{
++	struct klp_state *loglevel_state, *prev_loglevel_state;
++
++	prev_loglevel_state = klp_get_prev_state(CONSOLE_LOGLEVEL_STATE);
++	if (prev_loglevel_state) {
++		pr_info("%s: space to store console_loglevel already allocated\n",
++		__func__);
++		return 0;
++	}
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return -EINVAL;
++
++	loglevel_state->data = kzalloc(sizeof(console_loglevel), GFP_KERNEL);
++	if (!loglevel_state->data)
++		return -ENOMEM;
++
++	pr_info("%s: allocating space to store console_loglevel\n",
++		__func__);
++	return 0;
++}
++
++static void fix_console_loglevel(void)
++{
++	struct klp_state *loglevel_state, *prev_loglevel_state;
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return;
++
++	prev_loglevel_state = klp_get_prev_state(CONSOLE_LOGLEVEL_STATE);
++	if (prev_loglevel_state) {
++		pr_info("%s: taking over the console_loglevel change\n",
++		__func__);
++		loglevel_state->data = prev_loglevel_state->data;
++		return;
++	}
++
++	pr_info("%s: fixing console_loglevel\n", __func__);
++	*(int *)loglevel_state->data = console_loglevel;
++	console_loglevel = CONSOLE_LOGLEVEL_MOTORMOUTH;
++}
++
++static void restore_console_loglevel(void)
++{
++	struct klp_state *loglevel_state, *prev_loglevel_state;
++
++	prev_loglevel_state = klp_get_prev_state(CONSOLE_LOGLEVEL_STATE);
++	if (prev_loglevel_state) {
++		pr_info("%s: passing the console_loglevel change back to the old livepatch\n",
++		__func__);
++		return;
++	}
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return;
++
++	pr_info("%s: restoring console_loglevel\n", __func__);
++	console_loglevel = *(int *)loglevel_state->data;
++}
++
++static void free_loglevel_state(void)
++{
++	struct klp_state *loglevel_state, *prev_loglevel_state;
++
++	prev_loglevel_state = klp_get_prev_state(CONSOLE_LOGLEVEL_STATE);
++	if (prev_loglevel_state) {
++		pr_info("%s: keeping space to store console_loglevel\n",
++		__func__);
++		return;
++	}
++
++	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
++	if (!loglevel_state)
++		return;
++
++	pr_info("%s: freeing space for the stored console_loglevel\n",
++		__func__);
++	kfree(loglevel_state->data);
++}
++
++/* Executed on object patching (ie, patch enablement) */
++static int pre_patch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	return allocate_loglevel_state();
++}
++
++/* Executed on object unpatching (ie, patch disablement) */
++static void post_patch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	fix_console_loglevel();
++}
++
++/* Executed on object unpatching (ie, patch disablement) */
++static void pre_unpatch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	restore_console_loglevel();
++}
++
++/* Executed on object unpatching (ie, patch disablement) */
++static void post_unpatch_callback(struct klp_object *obj)
++{
++	callback_info(__func__, obj);
++	free_loglevel_state();
++}
++
++static struct klp_func no_funcs[] = {
++	{}
++};
++
++static struct klp_object objs[] = {
++	{
++		.name = NULL,	/* vmlinux */
++		.funcs = no_funcs,
++		.callbacks = {
++			.pre_patch = pre_patch_callback,
++			.post_patch = post_patch_callback,
++			.pre_unpatch = pre_unpatch_callback,
++			.post_unpatch = post_unpatch_callback,
++		},
++	}, { }
++};
++
++static struct klp_state states[] = {
++	{
++		.id = CONSOLE_LOGLEVEL_STATE,
++		.version = CONSOLE_LOGLEVEL_STATE_VERSION,
++	}, { }
++};
++
++static struct klp_patch patch = {
++	.mod = THIS_MODULE,
++	.objs = objs,
++	.states = states,
++	.replace = true,
++};
++
++static int test_klp_callbacks_demo_init(void)
++{
++	return klp_enable_patch(&patch);
++}
++
++static void test_klp_callbacks_demo_exit(void)
++{
++}
++
++module_init(test_klp_callbacks_demo_init);
++module_exit(test_klp_callbacks_demo_exit);
++MODULE_LICENSE("GPL");
++MODULE_INFO(livepatch, "Y");
++MODULE_AUTHOR("Petr Mladek <pmladek@suse.com>");
++MODULE_DESCRIPTION("Livepatch test: system state modification");
+diff --git a/lib/livepatch/test_klp_state3.c b/lib/livepatch/test_klp_state3.c
+new file mode 100644
+index 000000000000..9226579d10c5
+--- /dev/null
++++ b/lib/livepatch/test_klp_state3.c
+@@ -0,0 +1,5 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (C) 2019 SUSE
++
++/* The console loglevel fix is the same in the next cumulative patch. */
++#include "test_klp_state2.c"
+diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
+index fd405402c3ff..1cf40a9e7185 100644
+--- a/tools/testing/selftests/livepatch/Makefile
++++ b/tools/testing/selftests/livepatch/Makefile
+@@ -4,6 +4,7 @@ TEST_PROGS_EXTENDED := functions.sh
+ TEST_PROGS := \
+ 	test-livepatch.sh \
+ 	test-callbacks.sh \
+-	test-shadow-vars.sh
++	test-shadow-vars.sh \
++	test-state.sh
+ 
+ include ../lib.mk
+diff --git a/tools/testing/selftests/livepatch/test-state.sh b/tools/testing/selftests/livepatch/test-state.sh
+new file mode 100755
+index 000000000000..dc2908c22c26
+--- /dev/null
++++ b/tools/testing/selftests/livepatch/test-state.sh
+@@ -0,0 +1,180 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++# Copyright (C) 2019 SUSE
++
++. $(dirname $0)/functions.sh
++
++MOD_LIVEPATCH=test_klp_state
++MOD_LIVEPATCH2=test_klp_state2
++MOD_LIVEPATCH3=test_klp_state3
++
++set_dynamic_debug
 +
 +
-+1. Livepatch system state API
-+=============================
++# TEST: Loading and removing a module that modifies the system state
 +
-+The state of the system might get modified either by several livepatch callbacks
-+or by the newly used code. Also it must be possible to find changes done by
-+already installed livepatches.
++echo -n "TEST: system state modification ... "
++dmesg -C
 +
-+Each modified state is described by struct klp_state, see
-+include/linux/livepatch.h.
++load_lp $MOD_LIVEPATCH
++disable_lp $MOD_LIVEPATCH
++unload_lp $MOD_LIVEPATCH
 +
-+Each livepatch defines an array of struct klp_states. They mention
-+all states that the livepatch modifies.
++check_result "% modprobe $MOD_LIVEPATCH
++livepatch: enabling patch '$MOD_LIVEPATCH'
++livepatch: '$MOD_LIVEPATCH': initializing patching transition
++$MOD_LIVEPATCH: pre_patch_callback: vmlinux
++$MOD_LIVEPATCH: allocate_loglevel_state: allocating space to store console_loglevel
++livepatch: '$MOD_LIVEPATCH': starting patching transition
++livepatch: '$MOD_LIVEPATCH': completing patching transition
++$MOD_LIVEPATCH: post_patch_callback: vmlinux
++$MOD_LIVEPATCH: fix_console_loglevel: fixing console_loglevel
++livepatch: '$MOD_LIVEPATCH': patching complete
++% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH/enabled
++livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
++$MOD_LIVEPATCH: pre_unpatch_callback: vmlinux
++$MOD_LIVEPATCH: restore_console_loglevel: restoring console_loglevel
++livepatch: '$MOD_LIVEPATCH': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH': completing unpatching transition
++$MOD_LIVEPATCH: post_unpatch_callback: vmlinux
++$MOD_LIVEPATCH: free_loglevel_state: freeing space for the stored console_loglevel
++livepatch: '$MOD_LIVEPATCH': unpatching complete
++% rmmod $MOD_LIVEPATCH"
 +
-+The livepatch author must define the following two fields for each
-+struct klp_state:
 +
-+  - *id*
++# TEST: Take over system state change by a cumulative patch
 +
-+    - Non-zero number used to identify the affected system state.
++echo -n "TEST: taking over system state modification ... "
++dmesg -C
 +
-+  - *version*
++load_lp $MOD_LIVEPATCH
++load_lp $MOD_LIVEPATCH2
++unload_lp $MOD_LIVEPATCH
++disable_lp $MOD_LIVEPATCH2
++unload_lp $MOD_LIVEPATCH2
 +
-+    - Number describing the variant of the system state change that
-+      is supported by the given livepatch.
++check_result "% modprobe $MOD_LIVEPATCH
++livepatch: enabling patch '$MOD_LIVEPATCH'
++livepatch: '$MOD_LIVEPATCH': initializing patching transition
++$MOD_LIVEPATCH: pre_patch_callback: vmlinux
++$MOD_LIVEPATCH: allocate_loglevel_state: allocating space to store console_loglevel
++livepatch: '$MOD_LIVEPATCH': starting patching transition
++livepatch: '$MOD_LIVEPATCH': completing patching transition
++$MOD_LIVEPATCH: post_patch_callback: vmlinux
++$MOD_LIVEPATCH: fix_console_loglevel: fixing console_loglevel
++livepatch: '$MOD_LIVEPATCH': patching complete
++% modprobe $MOD_LIVEPATCH2
++livepatch: enabling patch '$MOD_LIVEPATCH2'
++livepatch: '$MOD_LIVEPATCH2': initializing patching transition
++$MOD_LIVEPATCH2: pre_patch_callback: vmlinux
++$MOD_LIVEPATCH2: allocate_loglevel_state: space to store console_loglevel already allocated
++livepatch: '$MOD_LIVEPATCH2': starting patching transition
++livepatch: '$MOD_LIVEPATCH2': completing patching transition
++$MOD_LIVEPATCH2: post_patch_callback: vmlinux
++$MOD_LIVEPATCH2: fix_console_loglevel: taking over the console_loglevel change
++livepatch: '$MOD_LIVEPATCH2': patching complete
++% rmmod $MOD_LIVEPATCH
++% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH2/enabled
++livepatch: '$MOD_LIVEPATCH2': initializing unpatching transition
++$MOD_LIVEPATCH2: pre_unpatch_callback: vmlinux
++$MOD_LIVEPATCH2: restore_console_loglevel: restoring console_loglevel
++livepatch: '$MOD_LIVEPATCH2': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH2': completing unpatching transition
++$MOD_LIVEPATCH2: post_unpatch_callback: vmlinux
++$MOD_LIVEPATCH2: free_loglevel_state: freeing space for the stored console_loglevel
++livepatch: '$MOD_LIVEPATCH2': unpatching complete
++% rmmod $MOD_LIVEPATCH2"
 +
-+The state can be manipulated using two functions:
 +
-+  - *klp_get_state(patch, id)*
++# TEST: Take over system state change by a cumulative patch
 +
-+    - Get struct klp_state associated with the given livepatch
-+      and state id.
++echo -n "TEST: compatible cumulative livepatches ... "
++dmesg -C
 +
-+  - *klp_get_prev_state(id)*
++load_lp $MOD_LIVEPATCH2
++load_lp $MOD_LIVEPATCH3
++unload_lp $MOD_LIVEPATCH2
++load_lp $MOD_LIVEPATCH2
++disable_lp $MOD_LIVEPATCH2
++unload_lp $MOD_LIVEPATCH2
++unload_lp $MOD_LIVEPATCH3
 +
-+    - Get struct klp_state associated with the given feature id and
-+      already installed livepatches.
++check_result "% modprobe $MOD_LIVEPATCH2
++livepatch: enabling patch '$MOD_LIVEPATCH2'
++livepatch: '$MOD_LIVEPATCH2': initializing patching transition
++$MOD_LIVEPATCH2: pre_patch_callback: vmlinux
++$MOD_LIVEPATCH2: allocate_loglevel_state: allocating space to store console_loglevel
++livepatch: '$MOD_LIVEPATCH2': starting patching transition
++livepatch: '$MOD_LIVEPATCH2': completing patching transition
++$MOD_LIVEPATCH2: post_patch_callback: vmlinux
++$MOD_LIVEPATCH2: fix_console_loglevel: fixing console_loglevel
++livepatch: '$MOD_LIVEPATCH2': patching complete
++% modprobe $MOD_LIVEPATCH3
++livepatch: enabling patch '$MOD_LIVEPATCH3'
++livepatch: '$MOD_LIVEPATCH3': initializing patching transition
++$MOD_LIVEPATCH3: pre_patch_callback: vmlinux
++$MOD_LIVEPATCH3: allocate_loglevel_state: space to store console_loglevel already allocated
++livepatch: '$MOD_LIVEPATCH3': starting patching transition
++livepatch: '$MOD_LIVEPATCH3': completing patching transition
++$MOD_LIVEPATCH3: post_patch_callback: vmlinux
++$MOD_LIVEPATCH3: fix_console_loglevel: taking over the console_loglevel change
++livepatch: '$MOD_LIVEPATCH3': patching complete
++% rmmod $MOD_LIVEPATCH2
++% modprobe $MOD_LIVEPATCH2
++livepatch: enabling patch '$MOD_LIVEPATCH2'
++livepatch: '$MOD_LIVEPATCH2': initializing patching transition
++$MOD_LIVEPATCH2: pre_patch_callback: vmlinux
++$MOD_LIVEPATCH2: allocate_loglevel_state: space to store console_loglevel already allocated
++livepatch: '$MOD_LIVEPATCH2': starting patching transition
++livepatch: '$MOD_LIVEPATCH2': completing patching transition
++$MOD_LIVEPATCH2: post_patch_callback: vmlinux
++$MOD_LIVEPATCH2: fix_console_loglevel: taking over the console_loglevel change
++livepatch: '$MOD_LIVEPATCH2': patching complete
++% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH2/enabled
++livepatch: '$MOD_LIVEPATCH2': initializing unpatching transition
++$MOD_LIVEPATCH2: pre_unpatch_callback: vmlinux
++$MOD_LIVEPATCH2: restore_console_loglevel: restoring console_loglevel
++livepatch: '$MOD_LIVEPATCH2': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH2': completing unpatching transition
++$MOD_LIVEPATCH2: post_unpatch_callback: vmlinux
++$MOD_LIVEPATCH2: free_loglevel_state: freeing space for the stored console_loglevel
++livepatch: '$MOD_LIVEPATCH2': unpatching complete
++% rmmod $MOD_LIVEPATCH2
++% rmmod $MOD_LIVEPATCH3"
 +
-+2. Livepatch compatibility
-+==========================
 +
-+The system state version is used to prevent loading incompatible livepatches.
-+The check is done when the livepatch is enabled. The rules are:
++# TEST: Failure caused by incompatible cumulative livepatches
 +
-+  - Any completely new system state modification is allowed.
++echo -n "TEST: incompatible cumulative livepatches ... "
++dmesg -C
 +
-+  - System state modifications with the same or higher version are allowed
-+    for already modified system states.
++load_lp $MOD_LIVEPATCH2
++load_failing_mod $MOD_LIVEPATCH
++disable_lp $MOD_LIVEPATCH2
++unload_lp $MOD_LIVEPATCH2
 +
-+  - Cumulative livepatches must handle all system state modifications from
-+    already installed livepatches.
++check_result "% modprobe $MOD_LIVEPATCH2
++livepatch: enabling patch '$MOD_LIVEPATCH2'
++livepatch: '$MOD_LIVEPATCH2': initializing patching transition
++$MOD_LIVEPATCH2: pre_patch_callback: vmlinux
++$MOD_LIVEPATCH2: allocate_loglevel_state: allocating space to store console_loglevel
++livepatch: '$MOD_LIVEPATCH2': starting patching transition
++livepatch: '$MOD_LIVEPATCH2': completing patching transition
++$MOD_LIVEPATCH2: post_patch_callback: vmlinux
++$MOD_LIVEPATCH2: fix_console_loglevel: fixing console_loglevel
++livepatch: '$MOD_LIVEPATCH2': patching complete
++% modprobe $MOD_LIVEPATCH
++livepatch: Livepatch patch ($MOD_LIVEPATCH) is not compatible with the already installed livepatches.
++modprobe: ERROR: could not insert '$MOD_LIVEPATCH': Invalid argument
++% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH2/enabled
++livepatch: '$MOD_LIVEPATCH2': initializing unpatching transition
++$MOD_LIVEPATCH2: pre_unpatch_callback: vmlinux
++$MOD_LIVEPATCH2: restore_console_loglevel: restoring console_loglevel
++livepatch: '$MOD_LIVEPATCH2': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH2': completing unpatching transition
++$MOD_LIVEPATCH2: post_unpatch_callback: vmlinux
++$MOD_LIVEPATCH2: free_loglevel_state: freeing space for the stored console_loglevel
++livepatch: '$MOD_LIVEPATCH2': unpatching complete
++% rmmod $MOD_LIVEPATCH2"
 +
-+  - Non-cumulative livepatches are allowed to touch already modified
-+    system states.
-+
-+3. Supported scenarios
-+======================
-+
-+Livepatches have their life-cycle and the same is true for the system
-+state changes. Every compatible livepatch has to support the following
-+scenarios:
-+
-+  - Modify the system state when the livepatch gets enabled and the state
-+    has not been already modified by a livepatches that are being
-+    replaced.
-+
-+  - Take over or update the system state modification when is has already
-+    been done by a livepatch that is being replaced.
-+
-+  - Restore the original state when the livepatch is disabled.
-+
-+  - Restore the previous state when the transition is reverted.
-+    It might be the original system state or the state modification
-+    done by livepatches that were being replaced.
-+
-+  - Remove any already made changes when error occurs and the livepatch
-+    cannot get enabled.
-+
-+4. Expected usage
-+=================
-+
-+System states are usually modified by livepatch callbacks. The expected
-+role of each callback is as follows:
-+
-+*pre_patch()*
-+
-+  - Allocate *state->data* when necessary. The allocation might fail
-+    and *pre_patch()* is the only callback that could stop loading
-+    of the livepatch. The allocation is not needed when the data
-+    are already provided by previously installed livepatches.
-+
-+  - Do any other preparatory action that is needed by
-+    the new code even before the transition gets finished.
-+    For example, initialize *state->data*.
-+
-+    The system state itself is typically modified in *post_patch()*
-+    when the entire system is able to handle it.
-+
-+  - Clean up its own mess in case of error. It might be done by a custom
-+    code or by calling *post_unpatch()* explicitly.
-+
-+*post_patch()*
-+
-+  - Copy *state->data* from the previous livepatch when they are
-+    compatible.
-+
-+  - Do the actual system state modification. Eventually allow
-+    the new code to use it.
-+
-+  - Make sure that *state->data* has all necessary information.
-+
-+  - Free *state->data* from replaces livepatches when they are
-+    not longer needed.
-+
-+*pre_unpatch()*
-+
-+  - Prevent the code, added by the livepatch, relying on the system
-+    state change.
-+
-+  - Revert the system state modification..
-+
-+*post_unpatch()*
-+
-+  - Distinguish transition reverse and livepatch disabling by
-+    checking *klp_get_prev_state()*.
-+
-+  - In case of transition reverse, restore the previous system
-+    state. It might mean doing nothing.
-+
-+  - Remove any not longer needed setting or data.
-+
-+.. note::
-+
-+   *pre_unpatch()* typically does symmetric operations to *post_patch()*.
-+   Except that it is called only when the livepatch is being disabled.
-+   Therefore it does not need to care about any previously installed
-+   livepatch.
-+
-+   *post_unpatch()* typically does symmetric operations to *pre_patch()*.
-+   It might be called also during the transition reverse. Therefore it
-+   has to handle the state of the previously installed livepatches.
++exit 0
 -- 
 2.16.4
 
