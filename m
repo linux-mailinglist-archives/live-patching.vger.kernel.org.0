@@ -2,122 +2,140 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0FC611DBE5
-	for <lists+live-patching@lfdr.de>; Fri, 13 Dec 2019 02:56:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 901D411DF85
+	for <lists+live-patching@lfdr.de>; Fri, 13 Dec 2019 09:34:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731874AbfLMB4U (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 12 Dec 2019 20:56:20 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:36622 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731867AbfLMB4U (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 12 Dec 2019 20:56:20 -0500
-Received: by mail-io1-f68.google.com with SMTP id a22so789611ios.3
-        for <live-patching@vger.kernel.org>; Thu, 12 Dec 2019 17:56:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QpJgpn5xWwVD9J6P9JsUIUWPTgZ7VxyS6OWeolrkzBI=;
-        b=GFzm6ZniEqoDdzO+qsDrFCn2PlIlt4Kf5CvCuVwkcCzKJHi1qzv2Rly2Hu/ARaqshP
-         BKY/7qK+vmWdEZX8nyAjOe5b89WLSu9YRd2qFBRCX1htrD9vZKfQkbHZkWC7dW8B3DL/
-         YKb9dlHn9T6qvm2tQMYJvxVrb5y6G9v1wPfVw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QpJgpn5xWwVD9J6P9JsUIUWPTgZ7VxyS6OWeolrkzBI=;
-        b=TCF3T0u0nW9wHj2aXJowAh2LWwxri2eWgGKLjF1YveZFaT78bUGNSB6ttp2Z4BSknC
-         RuXjVVLfRG4SvkBscgMrWko/jYKg9SGsmIoKNT+EsOHBU6CsnGQf4+DxgpPav+NilH+u
-         yKnKtGb8jI0G7Qigg8PHxxgEW8SrZeVHLgp/WDq94N5BSiMHpqa1bIS2Mg3qSwKbk39H
-         RYdHSKv0YXuGKN+RnYhgoaAamawkQDPEX1DPSUCe+KFjUMLu9n6ewhm7I7Xatt00lMEX
-         O4QLLyk6VqfBU4DYLwI88k/yhhUGSRvpwrLhdMIo4h2GbCMkhYYlLSXb8iEjO2g6vOhP
-         cRmQ==
-X-Gm-Message-State: APjAAAW1DseINKn0c0qwewCTTQB77WpUFQRMLB1Wo5k/BWlfhMoYIQc3
-        W+z+22+zjCUmoQNBm/q/8fTgz6raz6pcZw==
-X-Google-Smtp-Source: APXvYqznGK3WNdNstYWfdpigO3kQ1gScdYqkS3+WOfJTJh+/XlPm0/REhsuCLncgscsqVxIXlo71sw==
-X-Received: by 2002:a5e:9608:: with SMTP id a8mr5549510ioq.18.1576202179412;
-        Thu, 12 Dec 2019 17:56:19 -0800 (PST)
-Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id w28sm2274755ila.64.2019.12.12.17.56.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 17:56:18 -0800 (PST)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        pmladek@suse.com, joe.lawrence@redhat.com, shuah@kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        id S1725928AbfLMIeP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 13 Dec 2019 03:34:15 -0500
+Received: from mx2.suse.de ([195.135.220.15]:35322 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725810AbfLMIeP (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 13 Dec 2019 03:34:15 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 3DE0DAB9B;
+        Fri, 13 Dec 2019 08:34:12 +0000 (UTC)
+Date:   Fri, 13 Dec 2019 09:34:11 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, shuah@kernel.org,
         live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: livepatch: Fix it to do root uid check and skip
-Date:   Thu, 12 Dec 2019 18:56:17 -0700
-Message-Id: <20191213015617.23110-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.20.1
+Subject: Re: [PATCH] selftests: livepatch: Fix it to do root uid check and
+ skip
+Message-ID: <20191213083411.delrxditrpcdm7az@pathway.suse.cz>
+References: <20191213015617.23110-1-skhan@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191213015617.23110-1-skhan@linuxfoundation.org>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-livepatch test configures the system and debug environment to run
-tests. Some of these actions fail without root access and test
-dumps several permission denied messages before it exits.
+On Thu 2019-12-12 18:56:17, Shuah Khan wrote:
+> livepatch test configures the system and debug environment to run
+> tests. Some of these actions fail without root access and test
+> dumps several permission denied messages before it exits.
+> 
+> Fix it to check root uid and exit with skip code instead.
 
-Fix it to check root uid and exit with skip code instead.
+It works when I run the tests directly, e.g.
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+$> cd tools/testing/selftests/livepatch
+$> ./test-livepatch.sh
+
+But I still get an error from the selftest framework when running
+make run_tests:
+
+$> make run_tests
+TAP version 13
+1..5
+# selftests: livepatch: test-livepatch.sh
+/mnt/kernel/linux/tools/testing/selftests/kselftest/runner.sh: line 43: /dev/stdout: Permission denied
+not ok 1 selftests: livepatch: test-livepatch.sh # exit=1
+# selftests: livepatch: test-callbacks.sh
+/mnt/kernel/linux/tools/testing/selftests/kselftest/runner.sh: line 43: /dev/stdout: Permission denied
+not ok 2 selftests: livepatch: test-callbacks.sh # exit=1
+# selftests: livepatch: test-shadow-vars.sh
+/mnt/kernel/linux/tools/testing/selftests/kselftest/runner.sh: line 43: /dev/stdout: Permission denied
+not ok 3 selftests: livepatch: test-shadow-vars.sh # exit=1
+# selftests: livepatch: test-state.sh
+/mnt/kernel/linux/tools/testing/selftests/kselftest/runner.sh: line 43: /dev/stdout: Permission denied
+not ok 4 selftests: livepatch: test-state.sh # exit=1
+# selftests: livepatch: test-ftrace.sh
+/mnt/kernel/linux/tools/testing/selftests/kselftest/runner.sh: line 43: /dev/stdout: Permission denied
+not ok 5 selftests: livepatch: test-ftrace.sh # exit=1
+
+The same problem is also in linux-next. Is this a know problem, please?
+
+
+> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+> ---
+>  tools/testing/selftests/livepatch/functions.sh | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+> index 31eb09e38729..014b587692f0 100644
+> --- a/tools/testing/selftests/livepatch/functions.sh
+> +++ b/tools/testing/selftests/livepatch/functions.sh
+> @@ -45,6 +57,7 @@ function pop_config() {
+>  }
+>  
+>  function set_dynamic_debug() {
+> +	is_root
+>          cat <<-EOF > /sys/kernel/debug/dynamic_debug/control
+>  		file kernel/livepatch/* +p
+>  		func klp_try_switch_task -p
+
+This test is superfluous.
+
+I guess that it was added because of test-state.sh. But it calls
+set_dynamic_debug() instead of config_setup() by mistake.
+Please, use the patch below instead of the above hunk.
+
+Otherwise, this patch looks good. Thanks for fixing this.
+Without the hunk above, and with the patch below, feel free to use:
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+
+Here is the fix of test-state.sh:
+
+From 01ca8fd71fc964b892e54aea198537d007d33b4f Mon Sep 17 00:00:00 2001
+From: Petr Mladek <pmladek@suse.com>
+Date: Fri, 13 Dec 2019 09:26:45 +0100
+Subject: [PATCH] selftests/livepatch: Use setup_config() also in test-state.sh
+
+The commit 35c9e74cff4c798d0 ("selftests/livepatch: Make dynamic debug
+setup and restore generic") introduced setup_config() to prepare
+the testing environment. All selftests should call it instead
+of set_dynamic_debug().
+
+test-state.sh has been developed in parallel and was not converted
+by mistake.
+
+Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- tools/testing/selftests/livepatch/functions.sh | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ tools/testing/selftests/livepatch/test-state.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index 31eb09e38729..014b587692f0 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -7,6 +7,9 @@
- MAX_RETRIES=600
- RETRY_INTERVAL=".1"	# seconds
+diff --git a/tools/testing/selftests/livepatch/test-state.sh b/tools/testing/selftests/livepatch/test-state.sh
+index dc2908c22c26..5c80e51fca55 100755
+--- a/tools/testing/selftests/livepatch/test-state.sh
++++ b/tools/testing/selftests/livepatch/test-state.sh
+@@ -8,7 +8,7 @@ MOD_LIVEPATCH=test_klp_state
+ MOD_LIVEPATCH2=test_klp_state2
+ MOD_LIVEPATCH3=test_klp_state3
  
-+# Kselftest framework requirement - SKIP code is 4
-+ksft_skip=4
-+
- # log(msg) - write message to kernel log
- #	msg - insightful words
- function log() {
-@@ -18,7 +21,16 @@ function log() {
- function skip() {
- 	log "SKIP: $1"
- 	echo "SKIP: $1" >&2
--	exit 4
-+	exit $ksft_skip
-+}
-+
-+# root test
-+function is_root() {
-+	uid=$(id -u)
-+	if [ $uid -ne 0 ]; then
-+		echo "skip all tests: must be run as root" >&2
-+		exit $ksft_skip
-+	fi
- }
+-set_dynamic_debug
++setup_config
  
- # die(msg) - game over, man
-@@ -45,6 +57,7 @@ function pop_config() {
- }
  
- function set_dynamic_debug() {
-+	is_root
-         cat <<-EOF > /sys/kernel/debug/dynamic_debug/control
- 		file kernel/livepatch/* +p
- 		func klp_try_switch_task -p
-@@ -62,6 +75,7 @@ function set_ftrace_enabled() {
- #		 for verbose livepatching output and turn on
- #		 the ftrace_enabled sysctl.
- function setup_config() {
-+	is_root
- 	push_config
- 	set_dynamic_debug
- 	set_ftrace_enabled 1
+ # TEST: Loading and removing a module that modifies the system state
 -- 
-2.20.1
+2.16.4
 
