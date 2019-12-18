@@ -2,92 +2,95 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B97A122FBB
-	for <lists+live-patching@lfdr.de>; Tue, 17 Dec 2019 16:08:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCD02124B29
+	for <lists+live-patching@lfdr.de>; Wed, 18 Dec 2019 16:14:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727749AbfLQPI4 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 17 Dec 2019 10:08:56 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:38318 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727517AbfLQPI4 (ORCPT
+        id S1727368AbfLRPOI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 18 Dec 2019 10:14:08 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40710 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727216AbfLRPOF (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 17 Dec 2019 10:08:56 -0500
-Received: by mail-io1-f68.google.com with SMTP id v3so11390441ioj.5
-        for <live-patching@vger.kernel.org>; Tue, 17 Dec 2019 07:08:55 -0800 (PST)
+        Wed, 18 Dec 2019 10:14:05 -0500
+Received: by mail-qt1-f194.google.com with SMTP id e6so2199804qtq.7
+        for <live-patching@vger.kernel.org>; Wed, 18 Dec 2019 07:14:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bHgBoZjI4n84pTBe8b2XKBtgme/qK2l3tBlbTZYezI4=;
-        b=AfmS0cSw5QZHULbCOFeGtG7GAHck2Q++sb5um6GXJkmP3N74teYGjrH8nxhXlh4S9U
-         3K2/LXXnxBr7Qb4EnJcdKWCcBV4kBG6YIs+la6InGRWI03RKxE5NyD3e+dB73rH+39ur
-         bC72PrPQnTlDFqxEATW/TENGnRKLcFeO1pRTo=
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=R9l9mbjTMtC+3agOxuj88vgGSGUSi1shzIvbtHPQHDA=;
+        b=RfaUJbE64AqObBUWyZFAX00yFzfv+PMQBeMlfEbyOTSSIZSlP9dNPzblRe9C4/Xp5G
+         OOrfzjlEIPRCszaxaclLviha/Gl6J+8MNE2wJIlQr3g8uWJn+m5NNx6dyOIWXJDzHKAu
+         CFfw6ayoPSChbR+RAE0+B68G/pEf5o1uZqam8GCW/DM3JVJn1rrKg09G5nyaA4x8K46C
+         DidFmOGbhUnnebgzWtKvL2IYqcm0dJ4hRYsroJX5h4wZl5ygcdMBOrPylnEG0iZgtaC4
+         tctA6UVKTV1ZO7eaOpJeM3zJ9lY8Otzi6Az77Sm1wv6CYLTS/yvcKPbBaIHIL7wY9gk+
+         23sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bHgBoZjI4n84pTBe8b2XKBtgme/qK2l3tBlbTZYezI4=;
-        b=OdZKU9E79OAgHffFk0cqjVAE8wYjGPlxGNw7p/vwHOI9C1KNP3awsPmOq5QNNwRrEZ
-         qa5iC5gCZe1Any+6H+5N3l5mPioqNgzzzbrZzdtHyFA0pEBeCmJmqMHDeKn+8JxLMt8b
-         EgUzncjikooKN+ia4/WEUHq++Lzq1Uv0WjqoUDs9fCH62UCMvOIM61qHLZVR+8Ltk503
-         QRqWvteIa8zo1+oOihg+XD75Hc865zq0fEpGi1lgzNGqXQ3lmk7GcvCesb+kR0orjbLr
-         TUBMrXK2/NXqTdS5f1yOZCDwDKyuv6Wwg+Ycd0r+4lRGrPubq6gWBodX9qz+Q5tB6Fdm
-         RZ5Q==
-X-Gm-Message-State: APjAAAWdzQ/eEPt6HEqmdRZwSywe2vjuJlU1wMB0E1w7xX2kSm87+nFh
-        tG/lksUi863Xb5hN6Ny9fSm71g==
-X-Google-Smtp-Source: APXvYqyTHwu0VRhRXpJa0BvlWII0VilsqEu6uN33ZMGJiPdgsD3daCtfo2G9T4JwIvCqzVkI1QWgcA==
-X-Received: by 2002:a6b:ed15:: with SMTP id n21mr1646057iog.128.1576595335283;
-        Tue, 17 Dec 2019 07:08:55 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id 16sm5246124iog.13.2019.12.17.07.08.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 07:08:54 -0800 (PST)
-Subject: Re: [PATCH v2] selftests: livepatch: Fix it to do root uid check and
- skip
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, shuah@kernel.org,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20191216191840.15188-1-skhan@linuxfoundation.org>
- <20191217090210.ky3il3qu4jkr2vaa@pathway.suse.cz>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <8f2a1599-df35-ec19-da9a-795330cf185f@linuxfoundation.org>
-Date:   Tue, 17 Dec 2019 08:08:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=R9l9mbjTMtC+3agOxuj88vgGSGUSi1shzIvbtHPQHDA=;
+        b=p4yZ6s4/tRh72RVkkNYMhrXR4iLLRFxDou+9nCFpcbugx0UY5v2yyT3RTBnScE75ah
+         PRUrvEPYn0Da2kICSqL+ePzrCChmXOKQJ2NQ7PSFtAlDbUh5yEGyh3b9pkL3Vlj6GkR+
+         nXkj93/AisPwzkcARGTyDZsYvDfD6277RNg3hguEqlu2EMWTKSOzAw+SR/TOJq7p91b6
+         48LgZvOLjhF0b38PI8b/I2A0X2n6GzuGmxhgvIT3zenf2DVY/rM79URriXnI3VmvSd/0
+         YfiSarQQ8XFE9VRC4fsReKeSWKktuEXfRSLkPU2NpdBdaLYSD+kNzlyncKVwsbAff63h
+         nHjg==
+X-Gm-Message-State: APjAAAVKv8uYFhIFAda0SfJvCH+dC6f8pJgroGUwuUmIXhZsFThCEHWb
+        4BpfPFTwqDcs5C7H2SjgLH1wngVlTZRQUWlFM+BzI9Y=
+X-Google-Smtp-Source: APXvYqyIz9CrpHcrXivylieLEiE1VxRyGUw+E9DXz6VIYz+kYlOCef915g/qsmML8+OoqrwbsBK3G0eW6o6RBALrF/E=
+X-Received: by 2002:a05:6638:950:: with SMTP id f16mr2789501jad.107.1576682043767;
+ Wed, 18 Dec 2019 07:14:03 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191217090210.ky3il3qu4jkr2vaa@pathway.suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a02:6603:0:0:0:0:0 with HTTP; Wed, 18 Dec 2019 07:14:03
+ -0800 (PST)
+Reply-To: dhl.expresscourier102156@outlook.fr
+From:   "MS. MARYANNA B. THOMASON" <info.zennitbankplcnigerian@gmail.com>
+Date:   Wed, 18 Dec 2019 16:14:03 +0100
+Message-ID: <CABHzvr=Pq7-TqhY8TPvFCsr+5-DhDQy=XOg-TM13qqbFWeemfQ@mail.gmail.com>
+Subject: =?UTF-8?Q?Urgent_delivery_Notification_of_your_ATM_MASTER_CARD?=
+        =?UTF-8?Q?_Amount=2C=2415=2E800=E2=80=99000=E2=80=9900=2C?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 12/17/19 2:02 AM, Petr Mladek wrote:
-> On Mon 2019-12-16 12:18:40, Shuah Khan wrote:
->> livepatch test configures the system and debug environment to run
->> tests. Some of these actions fail without root access and test
->> dumps several permission denied messages before it exits.
->>
->> Fix test-state.sh to call setup_config instead of set_dynamic_debug
->> as suggested by Petr Mladek <pmladek@suse.com>
->>
->> Fix it to check root uid and exit with skip code instead.
->>
->> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-> 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> 
-> Shuah, I assume that you will push this fix via linux-kselftest tree.
-> Please, tell us if you have other preference.
-> 
+Attn Dear.
 
-Hi Petr, Yes I will push this in. Thanks for the reviews.
+Urgent delivery Notification of your ATM MASTER CARD, Dhl-Benin is
+ready for delivery of your ATM Master card worth $15.800=E2=80=99000=E2=80=
+=9900, as
+approved this morning, Date, 18/12/2019. Through the Intruction from
+INTERNATIONAL MONETARY FUNDS, I.M.F official Directors.
 
-thanks,
--- Shuah
+REGISTRATION NO :EG58945
+PARCEL NUMBER: 140479
+Delivery Schuleded now,
+Finally all we required from you is your ATM Card Proccessing Delivery
+fees $19.00 only which you must send to this DHL service to enable us
+dispatch the parcel to your destination today.
+
+Here is our receiving payment details.
+You are advised to send it Via Money Gram Service.
+
+Receiver's Name--------Alan Ude
+Country-------Benin Republic.
+City/ Address--------Cotonou
+Test Question--------In God
+Answer-------We Trust
+Amount------------$US19.00 only
+Mtcn-------------
+Sender's Name-------
+
+Your delivery  ATM card worth $15.800=E2=80=99000=E2=80=9900,
+Is Due for delivery to your address today upon confirmation of
+required fee from you asap.
+
+Call us on this phone number for any inquiry. +229 62819378
+Awaiting your urgent response.
+
+MS. MARYANNA B. THOMASON, Shipment director, DHL Express
+Courier Company-Benin
