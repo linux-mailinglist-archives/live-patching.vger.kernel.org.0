@@ -2,92 +2,89 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FF41131636
-	for <lists+live-patching@lfdr.de>; Mon,  6 Jan 2020 17:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3904F13165E
+	for <lists+live-patching@lfdr.de>; Mon,  6 Jan 2020 17:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbgAFQj6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 6 Jan 2020 11:39:58 -0500
-Received: from mail-ot1-f53.google.com ([209.85.210.53]:44551 "EHLO
-        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726518AbgAFQj6 (ORCPT
+        id S1726546AbgAFQ5Q (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 6 Jan 2020 11:57:16 -0500
+Received: from merlin.infradead.org ([205.233.59.134]:43152 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726448AbgAFQ5P (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 6 Jan 2020 11:39:58 -0500
-Received: by mail-ot1-f53.google.com with SMTP id h9so69791716otj.11
-        for <live-patching@vger.kernel.org>; Mon, 06 Jan 2020 08:39:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=BYX+ysDLixguPL9U7dTnnMHsyuHIKDFw1NJsrezq400=;
-        b=HYACJWe7iC1JO54rLjWk/PavmoaeeOJJuzQRDOcsQWfJO67/UJxQhZOj7/OHKg/L8x
-         0ysV6fkDOhztER0XKzJ1PwzCjL7zapiZoZqwysTAVMsry+duaYK1I/j8cVw89/qWN1r6
-         UKsTgFexVIq0TbVZLxEB3tkuHabjQfhsLR3ofgyqxSs7IUCTmAzkXf6nOd3RPT2IK3L9
-         JGZolBaGH0slMOBbYeUGag+MGi9wLIYV0cPaFGRfYnXb89/8N/O6iDI2kvoC3HOJI1Eb
-         b2V4RqWKPrfLMpvyjWnsj8D+l+sTzgtEBRw9PsQ0WjFYkjT20hVMrzI9S9bm+pGII2yf
-         EvYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=BYX+ysDLixguPL9U7dTnnMHsyuHIKDFw1NJsrezq400=;
-        b=HmRKuADWN3r04adwB8ca2NTu7CviwUbvmTFmAE/4dHKllgejsIm7JFj4Ke9XfWvba7
-         LvdUjgZ8aMr4BddnsMcuFFy0az8OrytKPbL/mHZzCGyCkCWGM3W7NTLoD+IDrauxwiQW
-         vDGIBGRPmyiNU0pFZ4bF5U/D15ybXb4LYZVpvlA8jvL8n3zlhRogCIst5t/mG+uYr49G
-         m6ypQh+qPtpqA4YbQ2Kx3HzZtb2SftDVuq2wwhrCjqrOslrjqOYyumPVBueIQPFfWjNL
-         tZpMRcoAzyJxYb45rs1ECScT3j94ARK9naCNQsnuBJUrprAJigyEDK1CV93AZ0T0L09D
-         /WPw==
-X-Gm-Message-State: APjAAAXH9BQG393Ye/1nI3XBNtdy3dIEyOCinxguKPAwb7nVvWmi3q6G
-        L7IigwxyiUBCO32n7Ng2VWSGkTpNm2SH9uRs/PNynw==
-X-Google-Smtp-Source: APXvYqyzJZgS9aC7Sd3hjVODNTRsj55lXa5LHChcNvYlVMoVjaqF3LKL0u3oYBiod7r1Yv6oUpSmScmSEqnX9/uI01k=
-X-Received: by 2002:a9d:c02:: with SMTP id 2mr119359452otr.183.1578328797486;
- Mon, 06 Jan 2020 08:39:57 -0800 (PST)
-MIME-Version: 1.0
-From:   Jann Horn <jannh@google.com>
-Date:   Mon, 6 Jan 2020 17:39:30 +0100
-Message-ID: <CAG48ez2gDDRtKaOcGdKLREd7RGtVzCypXiBMHBguOGSpxQFk3w@mail.gmail.com>
-Subject: BPF tracing trampoline synchronization between update/freeing and execution?
-To:     bpf@vger.kernel.org, live-patching@vger.kernel.org,
+        Mon, 6 Jan 2020 11:57:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KtA6VhFyLFqi7kWb+PYao12HEhPZ8hVXP/AvLkDg57w=; b=a5X7Xgvn+fusWiITMXIBJxch6
+        EibH0GZfsBa2Tv9KJ+ZrJeS+EMTFUA37iCHDQ/323udgQbtuCpXVVvBd2Cb47R25VSxG2xSyKYPoH
+        Mg4HVzLO1jpMtvDH/YH0NMqO8phqEKdv8gwhGNdVwRb5rVIcSf0XB5xLWl1Wgd+Ifl16JA37EXwaS
+        aAJOJnW0/B1z9hvPB6HziekS9RhBQ/qb1DMlJIqpu1mONgo4IEaaiUsFfub1LuVbNUtWf/DolglDm
+        KaEVL1bzv8juBkJM4P1B8MhCoMUPZwSewjJRJLwdhjw8AtT9mr6JESczMhgynMp9FsMRptO6rtteP
+        gu+7D+CfA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1ioVgY-00046W-7E; Mon, 06 Jan 2020 16:56:58 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CC2CF3012DC;
+        Mon,  6 Jan 2020 17:55:22 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id E06D12B2844FC; Mon,  6 Jan 2020 17:56:54 +0100 (CET)
+Date:   Mon, 6 Jan 2020 17:56:54 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Jann Horn <jannh@google.com>
+Cc:     bpf@vger.kernel.org, live-patching@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        KP Singh <kpsingh@chromium.org>,
         Andy Lutomirski <luto@amacapital.net>,
         kernel list <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Ingo Molnar <mingo@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: BPF tracing trampoline synchronization between update/freeing
+ and execution?
+Message-ID: <20200106165654.GP2844@hirez.programming.kicks-ass.net>
+References: <CAG48ez2gDDRtKaOcGdKLREd7RGtVzCypXiBMHBguOGSpxQFk3w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG48ez2gDDRtKaOcGdKLREd7RGtVzCypXiBMHBguOGSpxQFk3w@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi!
+On Mon, Jan 06, 2020 at 05:39:30PM +0100, Jann Horn wrote:
+> Hi!
+> 
+> I was chatting with kpsingh about BPF trampolines, and I noticed that
+> it looks like BPF trampolines (as of current bpf-next/master) seem to
+> be missing synchronization between trampoline code updates and
+> trampoline execution. Or maybe I'm missing something?
+> 
+> If I understand correctly, trampolines are executed directly from the
+> fentry placeholders at the start of arbitrary kernel functions, so
+> they can run without any locks held. So for example, if task A starts
+> executing a trampoline on entry to sys_open(), then gets preempted in
+> the middle of the trampoline, and then task B quickly calls
+> BPF_RAW_TRACEPOINT_OPEN twice, and then task A continues execution,
+> task A will end up executing the middle of newly-written machine code,
+> which can probably end up crashing the kernel somehow?
+> 
+> I think that at least to synchronize trampoline text freeing with
+> concurrent trampoline execution, it is necessary to do something
+> similar to what the livepatching code does with klp_check_stack(), and
+> then either use a callback from the scheduler to periodically re-check
+> tasks that were in the trampoline or let the trampoline tail-call into
+> a cleanup helper that is part of normal kernel text. And you'd
+> probably have to gate BPF trampolines on
+> CONFIG_HAVE_RELIABLE_STACKTRACE.
 
-I was chatting with kpsingh about BPF trampolines, and I noticed that
-it looks like BPF trampolines (as of current bpf-next/master) seem to
-be missing synchronization between trampoline code updates and
-trampoline execution. Or maybe I'm missing something?
-
-If I understand correctly, trampolines are executed directly from the
-fentry placeholders at the start of arbitrary kernel functions, so
-they can run without any locks held. So for example, if task A starts
-executing a trampoline on entry to sys_open(), then gets preempted in
-the middle of the trampoline, and then task B quickly calls
-BPF_RAW_TRACEPOINT_OPEN twice, and then task A continues execution,
-task A will end up executing the middle of newly-written machine code,
-which can probably end up crashing the kernel somehow?
-
-I think that at least to synchronize trampoline text freeing with
-concurrent trampoline execution, it is necessary to do something
-similar to what the livepatching code does with klp_check_stack(), and
-then either use a callback from the scheduler to periodically re-check
-tasks that were in the trampoline or let the trampoline tail-call into
-a cleanup helper that is part of normal kernel text. And you'd
-probably have to gate BPF trampolines on
-CONFIG_HAVE_RELIABLE_STACKTRACE.
-
-[Trampoline *updates* could probably be handled more easily if a
-trampoline consisted of an immutable header that increments something
-like a percpu refcount followed by a mutable body, but given that that
-doesn't solve freeing trampolines, I'm not sure if it'd be worth the
-effort. Unless you just never free trampoline memory, but that's
-probably not a great idea.]
+ftrace uses synchronize_rcu_tasks() to flip between trampolines iirc.
