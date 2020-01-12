@@ -2,73 +2,86 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 852A5138B61
-	for <lists+live-patching@lfdr.de>; Mon, 13 Jan 2020 06:52:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4DEA138C7E
+	for <lists+live-patching@lfdr.de>; Mon, 13 Jan 2020 08:48:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387617AbgAMFwk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 13 Jan 2020 00:52:40 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:45652 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387595AbgAMFwj (ORCPT
+        id S1728211AbgAMHsO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Jan 2020 02:48:14 -0500
+Received: from mail01.vodafone.es ([217.130.24.71]:42301 "EHLO
+        mail01.vodafone.es" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727021AbgAMHsN (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 13 Jan 2020 00:52:39 -0500
-Received: by mail-oi1-f196.google.com with SMTP id n16so7171713oie.12
-        for <live-patching@vger.kernel.org>; Sun, 12 Jan 2020 21:52:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Rjbe3pVeMfYVPdmVklZ4b2stSqI32LIYp+bn/8NyJvk=;
-        b=MaFAR6FR5toOKNJiEvYgCYPSHBGxfYmCPV6emkC7SrII/5AmIWDAmjw+8MGyn64q68
-         9CsgcE1hGtq75I6+9hwFmyBssVlHG8xOr3te5U8HrnTcKEJc+7juFT9oooRvWt1+45DG
-         RPV96DxfwDihu0rCNOFyxk2ERywYRaBSesCO/LOAkwlbgAvaSG/6DM8RXOy3mUhyHVeM
-         sujmVe6N/DFa+La31T34jj9TMU+/zoHchXnntqs/45nixai6zXFC/Dj/ie9ONUNDdCBl
-         wLYFSBTuGG/E+CveKQ3ZD2EjJiiPHbBj9j2S1uTteq+3hmhBlvSgfLgtMc/1Q9R0Qp/9
-         wN7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Rjbe3pVeMfYVPdmVklZ4b2stSqI32LIYp+bn/8NyJvk=;
-        b=oJ2d+ugCwTZnaVXhtXymDx2oabBUOK3z0LiEApb7YRZQpM26drzKLRqPn9uPmVgi3n
-         Sl4n9GzN7r2LvBfdQmeW9un18NrAKi9Qp/f838kihWsJo/SyZ62PFrIElELRvXQNtd70
-         viWI93xuLrZqI9OmOR/xmT1sWmweg77/bOvE7gENKHo6/GpnYeX1vnPZXMjNSlc6frpB
-         QHE2S9GvVSFhYalBPpmEKOgKgmCW9UDDr0iWHKbus1rJDdRxHUNLAqNqm586VPgKWZAh
-         j5Jbaj+PEsj1K/0AbeXPV2wha5Cf5becPjpIatY2C0FFZ3FutD/p5ZNKHmwOpQ5SFOBx
-         FF4A==
-X-Gm-Message-State: APjAAAXPGlfTZkCvyS5ZAATFEo14k8GRqDmgP3HwxrWqHqrk9pMmLlKv
-        a5a2A4L0XPDY0w5STgNJifFs9qA5sw2hJz3jkXQ=
-X-Google-Smtp-Source: APXvYqxpLuvGBSXJi0LygFRWySu0TKIxqhta6upKSXVoj+SD3HVRl3hBir1/mczgV9iZ7wN0WQE0dauBJq3F3sofYg0=
-X-Received: by 2002:a54:4f04:: with SMTP id e4mr10830211oiy.111.1578894758224;
- Sun, 12 Jan 2020 21:52:38 -0800 (PST)
+        Mon, 13 Jan 2020 02:48:13 -0500
+IronPort-SDR: 8k5nAHk5tSrTpb4ux6cC4Xb5A/2PkQeBZDJ0pT4o3XJztqLTXMmSeRk4c0o36NkjeUt6spEZVS
+ TtNZCVDX96GQ==
+IronPort-PHdr: =?us-ascii?q?9a23=3AG0jPtRB3csWRSAixMPf/UyQJP3N1i/DPJgcQr6?=
+ =?us-ascii?q?AfoPdwSPX7pcbcNUDSrc9gkEXOFd2Cra4d0KyM7fGrADVcqb+681k6OKRWUB?=
+ =?us-ascii?q?EEjchE1ycBO+WiTXPBEfjxciYhF95DXlI2t1uyMExSBdqsLwaK+i764jEdAA?=
+ =?us-ascii?q?jwOhRoLerpBIHSk9631+ev8JHPfglEnjWwba58IRmsswnct80bjYR/JqosxR?=
+ =?us-ascii?q?bCv2dFdflRyW50P1yYggzy5t23/J5t8iRQv+wu+stdWqjkfKo2UKJVAi0+P2?=
+ =?us-ascii?q?86+MPkux/DTRCS5nQHSWUZjgBIAwne4x7kWJr6rzb3ufB82CmeOs32UKw0VD?=
+ =?us-ascii?q?G/5KplVBPklCEKPCM//G3Ql8J/kLhUoBehphBm3YPUZ5uVNOJ5fqPHZ9waWX?=
+ =?us-ascii?q?ROUt9PWCxHG4+xc5cPD/YbMulEr4nyuV4OogW4BQmwHe/g1DlIimbx06091e?=
+ =?us-ascii?q?QuDwHH0BU+ENIIrX/YqNv4OLsOXeywyqTD0DfNYO5M2Trl5obGcgohr++PU7?=
+ =?us-ascii?q?xtfsXe1UYhGhjZjliStYPpIy+Z2vgTv2Wd8uFuVfivi2kiqwxpuDag2NsshZ?=
+ =?us-ascii?q?fThokIyl/E8iN5wIkoLtC/UE50f8KkH4VKtyCUMIt2RMwiTnpouCYh0bIJpY?=
+ =?us-ascii?q?S3czQNyJQi3RLfa/+HfpGO7xn+V+iROS91iGx4dL+9nRq+7EatxvHmWsWq31?=
+ =?us-ascii?q?tGtCRIn9nKu3sQzRLc8NKHReF4/kq53DaP0B3c5f9cLEAvkKrbN4Yhwrktlp?=
+ =?us-ascii?q?oPqUjDHjH5mEHxjKKOc0Ur4Omo6+D9Yrr4op+QK4B5hhvgMqQph8OwG+o4Mg?=
+ =?us-ascii?q?8IX2eF4+izyqbj8VX4QLVMkPI2jrHUvI7HKckZvKK1HgFY3po55xqhADqqyt?=
+ =?us-ascii?q?oVkHkfIFJAYh2HjozpO1/UIPD/CPeym0ysnyl3x//YJL3gDJLNLn7MkLr6fb?=
+ =?us-ascii?q?Z98FVTxxYpwd9D4JJUD6sNIPLwWkPprtzXEgc5MxCow+bgENh90oIeWXyRDa?=
+ =?us-ascii?q?OAKKPdq0OI6f4vI+mNYo8Vty3wK+Yq5/Hwl381g1wdcrez3ZsRdn+4Gu5qI0?=
+ =?us-ascii?q?KDYXrj0Z89FjIOvxQzCfTjlFaCUDhcT2i9Urh65TwhDo+iS4DZSdOXjaSFzR?=
+ =?us-ascii?q?u8S6Vbem1cQm+LF3igI52JR/oWdyWULc9ikicOXpCuToYg0VelswqsmJR9Ke?=
+ =?us-ascii?q?+BwiAEuIir699z6KWHjRwu+CZrCMKS+2GWRWoylWQNAT81ivMs6Xdhw0uOhP?=
+ =?us-ascii?q?Ery8dTEsZesqgRCgo=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2EGEgBqIBxeeiMYgtkUBjMYGgEBAQE?=
+ =?us-ascii?q?BAQEBAQMBAQEBEQEBAQICAQEBAYF7AgEBFwEBgS6BTVIgEpNQgU0fg0OLY4E?=
+ =?us-ascii?q?Agx4VhggTDIFbDQEBAQEBGxoCAQGEQE4BF4ESJDoEDQIDDQEBBQEBAQEBBQQ?=
+ =?us-ascii?q?BAQIQAQEJDQsEK4VKgh0MHgEEAQEBAQMDAwEBDAGDXQcZDzlKTAEOAVOFTwE?=
+ =?us-ascii?q?BM4UolzUBhASJAA0NAoUdgkUECoEJgRojgTYBjBgagUE/gSMhgisIAYIBgn8?=
+ =?us-ascii?q?BEgFsgkiCWQSNQhIhgQeIKZgXgkEEdolMjAKCNwEPiAGEMQMQgkUPgQmIA4R?=
+ =?us-ascii?q?OgX2jN1eBDA16cTMagiYagSBPGA2WSECBFhACT4kugjIBAQ?=
+X-IPAS-Result: =?us-ascii?q?A2EGEgBqIBxeeiMYgtkUBjMYGgEBAQEBAQEBAQMBAQEBE?=
+ =?us-ascii?q?QEBAQICAQEBAYF7AgEBFwEBgS6BTVIgEpNQgU0fg0OLY4EAgx4VhggTDIFbD?=
+ =?us-ascii?q?QEBAQEBGxoCAQGEQE4BF4ESJDoEDQIDDQEBBQEBAQEBBQQBAQIQAQEJDQsEK?=
+ =?us-ascii?q?4VKgh0MHgEEAQEBAQMDAwEBDAGDXQcZDzlKTAEOAVOFTwEBM4UolzUBhASJA?=
+ =?us-ascii?q?A0NAoUdgkUECoEJgRojgTYBjBgagUE/gSMhgisIAYIBgn8BEgFsgkiCWQSNQ?=
+ =?us-ascii?q?hIhgQeIKZgXgkEEdolMjAKCNwEPiAGEMQMQgkUPgQmIA4ROgX2jN1eBDA16c?=
+ =?us-ascii?q?TMagiYagSBPGA2WSECBFhACT4kugjIBAQ?=
+X-IronPort-AV: E=Sophos;i="5.69,428,1571695200"; 
+   d="scan'208";a="304668533"
+Received: from mailrel04.vodafone.es ([217.130.24.35])
+  by mail01.vodafone.es with ESMTP; 13 Jan 2020 08:48:10 +0100
+Received: (qmail 10454 invoked from network); 12 Jan 2020 05:37:46 -0000
+Received: from unknown (HELO 192.168.1.3) (quesosbelda@[217.217.179.17])
+          (envelope-sender <peterwong@hsbc.com.hk>)
+          by mailrel04.vodafone.es (qmail-ldap-1.03) with SMTP
+          for <live-patching@vger.kernel.org>; 12 Jan 2020 05:37:46 -0000
+Date:   Sun, 12 Jan 2020 06:37:45 +0100 (CET)
+From:   Peter Wong <peterwong@hsbc.com.hk>
+Reply-To: Peter Wong <peterwonghkhsbc@gmail.com>
+To:     live-patching@vger.kernel.org
+Message-ID: <19632617.579275.1578807466069.JavaMail.cash@217.130.24.55>
+Subject: Investment opportunity
 MIME-Version: 1.0
-Received: by 2002:a4a:41cb:0:0:0:0:0 with HTTP; Sun, 12 Jan 2020 21:52:37
- -0800 (PST)
-Reply-To: rickschaech@gmail.com
-From:   Rick Schaech <cathben72@gmail.com>
-Date:   Mon, 13 Jan 2020 01:52:37 -0400
-Message-ID: <CAEcBxO=DoZZeZuHjVOxQpB8CM4fADYg6sCQVLkjP+qQwsNEH9A@mail.gmail.com>
-Subject: I wait for your swift response,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Dear, I'm Mr Rick Schaech, I am the General Account Auditor, Though i
-know we have not meet each other before but sometimes in life God have
-a reason of bringing two people from two different countries together
-as business partners or life partners.
+Greetings,
+Please read the attached investment proposal and reply for more details.
+Are you interested in loan?
+Sincerely: Peter Wong
 
-My dear friend, I have the sum of 15.7 Million USD i wish to put in
-your name due to the death of my late client who died several years
-ago as his next of kin column still remain blank. Though the internet
-medium is highly abuse these days but am assuring you that this
-transaction is legitimate and I am contacting you that we may have a
-deal, note for your cooperation and collaboration 40% of the sum will
-be for you while the other 60% will be for me as well. I wait for your
-swift response for more details. please forward your response to my
-personal E-mail: rickschaech@gmail.com
 
-Yours sincerely,
-Rick Schaech.
+
+
+----------------------------------------------------
+This email was sent by the shareware version of Postman Professional.
+
