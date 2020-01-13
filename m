@@ -2,298 +2,73 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B43A1355CD
-	for <lists+live-patching@lfdr.de>; Thu,  9 Jan 2020 10:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 852A5138B61
+	for <lists+live-patching@lfdr.de>; Mon, 13 Jan 2020 06:52:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729602AbgAIJ3j (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 9 Jan 2020 04:29:39 -0500
-Received: from mx2.suse.de ([195.135.220.15]:54600 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729269AbgAIJ3j (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 9 Jan 2020 04:29:39 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 40DA7BD10;
-        Thu,  9 Jan 2020 09:29:34 +0000 (UTC)
-Date:   Thu, 9 Jan 2020 10:29:34 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org
-Subject: Re: [bug report] livepatch: Initialize shadow variables safely by a
- custom callback
-Message-ID: <20200109092934.fdjgqc4es46mjpkv@pathway.suse.cz>
-References: <20200107132929.ficffmrm5ntpzcqa@kili.mountain>
- <4affb6d1-699e-af7e-9a1d-364393adc3a8@redhat.com>
- <20200107152337.GB27042@kadam>
+        id S2387617AbgAMFwk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Jan 2020 00:52:40 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:45652 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387595AbgAMFwj (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 13 Jan 2020 00:52:39 -0500
+Received: by mail-oi1-f196.google.com with SMTP id n16so7171713oie.12
+        for <live-patching@vger.kernel.org>; Sun, 12 Jan 2020 21:52:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=Rjbe3pVeMfYVPdmVklZ4b2stSqI32LIYp+bn/8NyJvk=;
+        b=MaFAR6FR5toOKNJiEvYgCYPSHBGxfYmCPV6emkC7SrII/5AmIWDAmjw+8MGyn64q68
+         9CsgcE1hGtq75I6+9hwFmyBssVlHG8xOr3te5U8HrnTcKEJc+7juFT9oooRvWt1+45DG
+         RPV96DxfwDihu0rCNOFyxk2ERywYRaBSesCO/LOAkwlbgAvaSG/6DM8RXOy3mUhyHVeM
+         sujmVe6N/DFa+La31T34jj9TMU+/zoHchXnntqs/45nixai6zXFC/Dj/ie9ONUNDdCBl
+         wLYFSBTuGG/E+CveKQ3ZD2EjJiiPHbBj9j2S1uTteq+3hmhBlvSgfLgtMc/1Q9R0Qp/9
+         wN7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=Rjbe3pVeMfYVPdmVklZ4b2stSqI32LIYp+bn/8NyJvk=;
+        b=oJ2d+ugCwTZnaVXhtXymDx2oabBUOK3z0LiEApb7YRZQpM26drzKLRqPn9uPmVgi3n
+         Sl4n9GzN7r2LvBfdQmeW9un18NrAKi9Qp/f838kihWsJo/SyZ62PFrIElELRvXQNtd70
+         viWI93xuLrZqI9OmOR/xmT1sWmweg77/bOvE7gENKHo6/GpnYeX1vnPZXMjNSlc6frpB
+         QHE2S9GvVSFhYalBPpmEKOgKgmCW9UDDr0iWHKbus1rJDdRxHUNLAqNqm586VPgKWZAh
+         j5Jbaj+PEsj1K/0AbeXPV2wha5Cf5becPjpIatY2C0FFZ3FutD/p5ZNKHmwOpQ5SFOBx
+         FF4A==
+X-Gm-Message-State: APjAAAXPGlfTZkCvyS5ZAATFEo14k8GRqDmgP3HwxrWqHqrk9pMmLlKv
+        a5a2A4L0XPDY0w5STgNJifFs9qA5sw2hJz3jkXQ=
+X-Google-Smtp-Source: APXvYqxpLuvGBSXJi0LygFRWySu0TKIxqhta6upKSXVoj+SD3HVRl3hBir1/mczgV9iZ7wN0WQE0dauBJq3F3sofYg0=
+X-Received: by 2002:a54:4f04:: with SMTP id e4mr10830211oiy.111.1578894758224;
+ Sun, 12 Jan 2020 21:52:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200107152337.GB27042@kadam>
-User-Agent: NeoMutt/20170912 (1.9.0)
+Received: by 2002:a4a:41cb:0:0:0:0:0 with HTTP; Sun, 12 Jan 2020 21:52:37
+ -0800 (PST)
+Reply-To: rickschaech@gmail.com
+From:   Rick Schaech <cathben72@gmail.com>
+Date:   Mon, 13 Jan 2020 01:52:37 -0400
+Message-ID: <CAEcBxO=DoZZeZuHjVOxQpB8CM4fADYg6sCQVLkjP+qQwsNEH9A@mail.gmail.com>
+Subject: I wait for your swift response,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue 2020-01-07 18:23:37, Dan Carpenter wrote:
-> On Tue, Jan 07, 2020 at 10:06:21AM -0500, Joe Lawrence wrote:
-> > On 1/7/20 8:29 AM, Dan Carpenter wrote:
-> > > Hello Petr Mladek,
-> > > 
-> > > The patch e91c2518a5d2: "livepatch: Initialize shadow variables
-> > > safely by a custom callback" from Apr 16, 2018, leads to the
-> > > following static checker warning:
-> > > 
-> > > 	samples/livepatch/livepatch-shadow-fix1.c:86 livepatch_fix1_dummy_alloc()
-> > > 	error: 'klp_shadow_alloc()' 'leak' too small (4 vs 8)
-> > > 
-> > > samples/livepatch/livepatch-shadow-fix1.c
-> > >      53  static int shadow_leak_ctor(void *obj, void *shadow_data, void *ctor_data)
-> > >      54  {
-> > >      55          void **shadow_leak = shadow_data;
-> > >      56          void *leak = ctor_data;
-> > >      57
-> > >      58          *shadow_leak = leak;
-> > >      59          return 0;
-> > >      60  }
-> > >      61
-> > >      62  static struct dummy *livepatch_fix1_dummy_alloc(void)
-> > >      63  {
-> > >      64          struct dummy *d;
-> > >      65          void *leak;
-> > >      66
-> > >      67          d = kzalloc(sizeof(*d), GFP_KERNEL);
-> > >      68          if (!d)
-> > >      69                  return NULL;
-> > >      70
-> > >      71          d->jiffies_expire = jiffies +
-> > >      72                  msecs_to_jiffies(1000 * EXPIRE_PERIOD);
-> > >      73
-> > >      74          /*
-> > >      75           * Patch: save the extra memory location into a SV_LEAK shadow
-> > >      76           * variable.  A patched dummy_free routine can later fetch this
-> > >      77           * pointer to handle resource release.
-> > >      78           */
-> > >      79          leak = kzalloc(sizeof(int), GFP_KERNEL);
-> > >      80          if (!leak) {
-> > >      81                  kfree(d);
-> > >      82                  return NULL;
-> > >      83          }
-> > >      84
-> > >      85          klp_shadow_alloc(d, SV_LEAK, sizeof(leak), GFP_KERNEL,
-> > >                                               ^^^^^^^^^^^^
-> > > This doesn't seem right at all?  Leak is a pointer.  Why is leak a void
-> > > pointer instead of an int pointer?
-> > > 
-> > 
-> > Hi Dan,
-> > 
-> > If I remember this code correctly, the shadow variable is tracking the
-> > pointer value itself and not its contents, so sizeof(leak) should be correct
-> > for the shadow variable data size.
-> > 
-> > (For kernel/livepatch/shadow.c :: __klp_shadow_get_or_alloc() creates new
-> > struct klp_shadow with .data[size] to accommodate its meta-data plus the
-> > desired data).
-> > 
-> > Why isn't leak an int pointer?  I don't remember why, according to git
-> > history it's been that way since the beginning.  I think it was coded to
-> > say, "Give me some storage, any size an int will do.  I'm not going to touch
-> > it, but I want to demonstrate a memory leak".
-> > 
-> > Would modifying the pointer type satisfy the static code complaint?
-> > 
-> > Since the warning is about a size mismatch, what are the parameters that it
-> > is keying on?  Does it expect to see the typical allocation pattern like:
-> > 
-> >   int *foo = alloc(sizeof(*foo))
-> > 
-> > and not:
-> > 
-> >   int *foo = alloc(sizeof(foo))
-> > 
-> 
-> It looks at places which call klp_shadow_alloc() and says that sometimes
-> the third argument is the size of the last argument.  Then it complains
-> when a caller doesn't match.
+Dear, I'm Mr Rick Schaech, I am the General Account Auditor, Though i
+know we have not meet each other before but sometimes in life God have
+a reason of bringing two people from two different countries together
+as business partners or life partners.
 
-I think that this is the problem. 3rd argument is size of the
-data. The last argument should be pointer to the data.
+My dear friend, I have the sum of 15.7 Million USD i wish to put in
+your name due to the death of my late client who died several years
+ago as his next of kin column still remain blank. Though the internet
+medium is highly abuse these days but am assuring you that this
+transaction is legitimate and I am contacting you that we may have a
+deal, note for your cooperation and collaboration 40% of the sum will
+be for you while the other 60% will be for me as well. I wait for your
+swift response for more details. please forward your response to my
+personal E-mail: rickschaech@gmail.com
 
-In our case, the data is pointer to the integer. We correctly
-pass the size of the pointer but we pass the pointer directly.
-It works because shadow_leak_ctor() is aware of this. But
-it is semantically wrong.
-
-I propose the following patch. It should probably get split
-into 2 or 3 patches. In addition, we should fix
-lib/livepatch/test_klp_shadow_vars.c and use the API
-a clean way there as well.
-
-I could prepare a proper patchset if you agree with
-the idea. And if it actually fixes the reported error
-message.
-
-Here is a RFC patch:
-
-From ab6cd83f6a46894c764adf9315db99ce52a9283b Mon Sep 17 00:00:00 2001
-From: Petr Mladek <pmladek@suse.com>
-Date: Wed, 8 Jan 2020 15:44:33 +0100
-Subject: [RFC 1/1] livepatch/samples: Correctly use leak variable as a
- pointer to int
-
-The commit e91c2518a5d2 ("livepatch: Initialize shadow variables
-safely by a custom callback" leads to the following static checker
-warning:
-
-	samples/livepatch/livepatch-shadow-fix1.c:86 livepatch_fix1_dummy_alloc()
-	error: 'klp_shadow_alloc()' 'leak' too small (4 vs 8)
-
-It is because klp_shadow_alloc() is used a wrong way:
-
-	int *leak;
-	shadow_leak = klp_shadow_alloc(d, SV_LEAK, sizeof(leak), GFP_KERNEL,
-				       shadow_leak_ctor, leak);
-
-The code is supposed to store the "leak" pointer into the shadow variable.
-3rd parameter correctly passes size of the data (size if pointer). But
-the 5th parameter is wrong. It should pass pointer to the data (pointer
-to the pointer) but it passes the pointer directly.
-
-It works because shadow_leak_ctor() handle "ctor_data" as the data
-insted of pointer to the data. But it is semantically wrong and
-confusing.
-
-The minimal fix is to pass poiter to the poitner. Even better is
-using the correct type: int pointer instead of void poiter.
-
-In addition there should be some check of potential failures.
-
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
----
- samples/livepatch/livepatch-shadow-fix1.c | 38 +++++++++++++++++++++----------
- samples/livepatch/livepatch-shadow-fix2.c |  4 ++--
- samples/livepatch/livepatch-shadow-mod.c  |  2 +-
- 3 files changed, 29 insertions(+), 15 deletions(-)
-
-diff --git a/samples/livepatch/livepatch-shadow-fix1.c b/samples/livepatch/livepatch-shadow-fix1.c
-index e89ca4546114..a02371cf34d3 100644
---- a/samples/livepatch/livepatch-shadow-fix1.c
-+++ b/samples/livepatch/livepatch-shadow-fix1.c
-@@ -52,17 +52,21 @@ struct dummy {
-  */
- static int shadow_leak_ctor(void *obj, void *shadow_data, void *ctor_data)
- {
--	void **shadow_leak = shadow_data;
--	void *leak = ctor_data;
-+	int **shadow_leak = shadow_data;
-+	int **leak = ctor_data;
- 
--	*shadow_leak = leak;
-+	if (!ctor_data)
-+		return -EINVAL;
-+
-+	*shadow_leak = *leak;
- 	return 0;
- }
- 
- static struct dummy *livepatch_fix1_dummy_alloc(void)
- {
- 	struct dummy *d;
--	void *leak;
-+	int *leak;
-+	int **shadow_leak;
- 
- 	d = kzalloc(sizeof(*d), GFP_KERNEL);
- 	if (!d)
-@@ -77,24 +81,34 @@ static struct dummy *livepatch_fix1_dummy_alloc(void)
- 	 * pointer to handle resource release.
- 	 */
- 	leak = kzalloc(sizeof(int), GFP_KERNEL);
--	if (!leak) {
--		kfree(d);
--		return NULL;
--	}
-+	if (!leak)
-+		goto err_leak;
- 
--	klp_shadow_alloc(d, SV_LEAK, sizeof(leak), GFP_KERNEL,
--			 shadow_leak_ctor, leak);
-+	shadow_leak = klp_shadow_alloc(d, SV_LEAK, sizeof(leak), GFP_KERNEL,
-+				       shadow_leak_ctor, &leak);
-+
-+	if (!shadow_leak) {
-+		pr_err("%s: failed to allocate shadow variable for the leaking pointer: dummy @ %p, leak @ %p\n",
-+		       __func__, d, leak);
-+		goto err_shadow;
-+	}
- 
- 	pr_info("%s: dummy @ %p, expires @ %lx\n",
- 		__func__, d, d->jiffies_expire);
- 
- 	return d;
-+
-+err_shadow:
-+	kfree(leak);
-+err_leak:
-+	kfree(d);
-+	return NULL;
- }
- 
- static void livepatch_fix1_dummy_leak_dtor(void *obj, void *shadow_data)
- {
- 	void *d = obj;
--	void **shadow_leak = shadow_data;
-+	int **shadow_leak = shadow_data;
- 
- 	kfree(*shadow_leak);
- 	pr_info("%s: dummy @ %p, prevented leak @ %p\n",
-@@ -103,7 +117,7 @@ static void livepatch_fix1_dummy_leak_dtor(void *obj, void *shadow_data)
- 
- static void livepatch_fix1_dummy_free(struct dummy *d)
- {
--	void **shadow_leak;
-+	int **shadow_leak;
- 
- 	/*
- 	 * Patch: fetch the saved SV_LEAK shadow variable, detach and
-diff --git a/samples/livepatch/livepatch-shadow-fix2.c b/samples/livepatch/livepatch-shadow-fix2.c
-index 50d223b82e8b..29fe5cd42047 100644
---- a/samples/livepatch/livepatch-shadow-fix2.c
-+++ b/samples/livepatch/livepatch-shadow-fix2.c
-@@ -59,7 +59,7 @@ static bool livepatch_fix2_dummy_check(struct dummy *d, unsigned long jiffies)
- static void livepatch_fix2_dummy_leak_dtor(void *obj, void *shadow_data)
- {
- 	void *d = obj;
--	void **shadow_leak = shadow_data;
-+	int **shadow_leak = shadow_data;
- 
- 	kfree(*shadow_leak);
- 	pr_info("%s: dummy @ %p, prevented leak @ %p\n",
-@@ -68,7 +68,7 @@ static void livepatch_fix2_dummy_leak_dtor(void *obj, void *shadow_data)
- 
- static void livepatch_fix2_dummy_free(struct dummy *d)
- {
--	void **shadow_leak;
-+	int **shadow_leak;
- 	int *shadow_count;
- 
- 	/* Patch: copy the memory leak patch from the fix1 module. */
-diff --git a/samples/livepatch/livepatch-shadow-mod.c b/samples/livepatch/livepatch-shadow-mod.c
-index ecfe83a943a7..19c3a6824b64 100644
---- a/samples/livepatch/livepatch-shadow-mod.c
-+++ b/samples/livepatch/livepatch-shadow-mod.c
-@@ -95,7 +95,7 @@ struct dummy {
- static __used noinline struct dummy *dummy_alloc(void)
- {
- 	struct dummy *d;
--	void *leak;
-+	int *leak;
- 
- 	d = kzalloc(sizeof(*d), GFP_KERNEL);
- 	if (!d)
--- 
-2.16.4
-
+Yours sincerely,
+Rick Schaech.
