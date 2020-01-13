@@ -2,87 +2,78 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AAFD139183
-	for <lists+live-patching@lfdr.de>; Mon, 13 Jan 2020 14:00:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6606F1393C4
+	for <lists+live-patching@lfdr.de>; Mon, 13 Jan 2020 15:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726523AbgAMNAV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 13 Jan 2020 08:00:21 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:56220 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726505AbgAMNAV (ORCPT
+        id S1727014AbgAMOht (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Jan 2020 09:37:49 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47989 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726277AbgAMOht (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 13 Jan 2020 08:00:21 -0500
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00DCvuHA181311
-        for <live-patching@vger.kernel.org>; Mon, 13 Jan 2020 08:00:20 -0500
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2xfvjxbtkn-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <live-patching@vger.kernel.org>; Mon, 13 Jan 2020 08:00:20 -0500
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <live-patching@vger.kernel.org> from <kamalesh@linux.vnet.ibm.com>;
-        Mon, 13 Jan 2020 13:00:18 -0000
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 13 Jan 2020 13:00:15 -0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 00DD0EF722282434
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jan 2020 13:00:14 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 35AFC42057;
-        Mon, 13 Jan 2020 13:00:14 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4AEFF42045;
-        Mon, 13 Jan 2020 13:00:12 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.199.42.111])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Mon, 13 Jan 2020 13:00:12 +0000 (GMT)
-Subject: Re: [PATCH 2/2] selftests/livepatch: Remove unused local variable in
- set_ftrace_enabled()
+        Mon, 13 Jan 2020 09:37:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578926268;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bS5GWahrJ1O+34i2WctYNhu18hENHqUcaYD0bIdK6TY=;
+        b=iYOxHFSUubtq6GKvdn0gcAOOoeX6oooFliUaKY9TI1op/eSPlaBqXAVa0x1Xo1coieZdCm
+        H4Vnqj1WztRoTxsIR1nDRK4su4Y1cnLD1wp141sZ+Fbtwh5+xTirWF0BS0vu+wuyx3oD4X
+        yAoCMsoRhY0nYnRlMhhl09yCcuqPCcM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-81-THJL3bLzOKGSiCPXQe6hug-1; Mon, 13 Jan 2020 09:37:45 -0500
+X-MC-Unique: THJL3bLzOKGSiCPXQe6hug-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 35F6718FF660;
+        Mon, 13 Jan 2020 14:37:44 +0000 (UTC)
+Received: from [10.18.17.119] (dhcp-17-119.bos.redhat.com [10.18.17.119])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6AFA45C21B;
+        Mon, 13 Jan 2020 14:37:43 +0000 (UTC)
+Subject: Re: [PATCH 0/2] selftests/livepatch: Trivial cleanups
 To:     Miroslav Benes <mbenes@suse.cz>, jpoimboe@redhat.com,
-        jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
-        shuah@kernel.org
+        jikos@kernel.org, pmladek@suse.com, shuah@kernel.org
 Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20200113124907.11086-1-mbenes@suse.cz>
- <20200113124907.11086-3-mbenes@suse.cz>
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-Date:   Mon, 13 Jan 2020 18:30:10 +0530
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <9cb551f6-1480-328e-9e4a-ac31fcd56a97@redhat.com>
+Date:   Mon, 13 Jan 2020 09:37:42 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200113124907.11086-3-mbenes@suse.cz>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200113124907.11086-1-mbenes@suse.cz>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 20011313-0012-0000-0000-0000037CEB72
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20011313-0013-0000-0000-000021B9154C
-Message-Id: <64ec82d8-61ea-fe2a-7fd9-794904ba148c@linux.vnet.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-13_03:2020-01-13,2020-01-13 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=836
- lowpriorityscore=0 bulkscore=0 suspectscore=0 adultscore=0 phishscore=0
- priorityscore=1501 malwarescore=0 spamscore=0 impostorscore=0
- clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001130108
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 1/13/20 6:19 PM, Miroslav Benes wrote:
-> set_ftrace_enabled() contains unused local variable "sysctl". Remove it.
+On 1/13/20 7:49 AM, Miroslav Benes wrote:
+> Two trivial cleanups after recent changes in selftests/livepatch. Based
+> on "next" branch of Shuah's kselftest tree.
 > 
-> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> Miroslav Benes (2):
+>    selftests/livepatch: Replace set_dynamic_debug() with setup_config()
+>      in README
+>    selftests/livepatch: Remove unused local variable in
+>      set_ftrace_enabled()
+> 
+>   tools/testing/selftests/livepatch/README       | 2 +-
+>   tools/testing/selftests/livepatch/functions.sh | 1 -
+>   2 files changed, 1 insertion(+), 2 deletions(-)
+> 
 
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+For the series:
 
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
 
--- 
-Kamalesh
+-- Joe
 
