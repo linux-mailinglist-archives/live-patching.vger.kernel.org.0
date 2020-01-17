@@ -2,18 +2,18 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 201A6140D5F
-	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2020 16:05:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CD04140D3E
+	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2020 16:04:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729431AbgAQPE4 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 17 Jan 2020 10:04:56 -0500
-Received: from mx2.suse.de ([195.135.220.15]:46254 "EHLO mx2.suse.de"
+        id S1729139AbgAQPEB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 17 Jan 2020 10:04:01 -0500
+Received: from mx2.suse.de ([195.135.220.15]:46284 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729096AbgAQPEA (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        id S1729107AbgAQPEA (ORCPT <rfc822;live-patching@vger.kernel.org>);
         Fri, 17 Jan 2020 10:04:00 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 4AF15BB9F;
+        by mx2.suse.de (Postfix) with ESMTP id AC481BBAE;
         Fri, 17 Jan 2020 15:03:58 +0000 (UTC)
 From:   Petr Mladek <pmladek@suse.com>
 To:     Jiri Kosina <jikos@kernel.org>,
@@ -24,9 +24,9 @@ Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
         Nicolai Stange <nstange@suse.de>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>
-Subject: [POC 09/23] livepatch: Handle race when livepatches are reloaded during a module load
-Date:   Fri, 17 Jan 2020 16:03:09 +0100
-Message-Id: <20200117150323.21801-10-pmladek@suse.com>
+Subject: [POC 10/23] livepatch: Handle modprobe exit code
+Date:   Fri, 17 Jan 2020 16:03:10 +0100
+Message-Id: <20200117150323.21801-11-pmladek@suse.com>
 X-Mailer: git-send-email 2.16.4
 In-Reply-To: <20200117150323.21801-1-pmladek@suse.com>
 References: <20200117150323.21801-1-pmladek@suse.com>
@@ -35,91 +35,55 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-klp_module_coming() might fail to load a livepatch module when
-the related livepatch gets reloaded in the meantime.
+request_module() returns classic negative error codes when it was
+not even able to call "modprobe" from some reasons. Otherwise,
+it returns the exit code multiplied by 256.
 
-Detect this situation by adding a timestamp into struct klp_patch.
-local_clock is enough because klp_mutex must be released and taken
-several times during this scenario.
+modprobe exit code is always 1 in case of error. Use -EINVAL
+instead as the least ugly internal error code.
+
+A better solution would be to somehow pass the original error
+code from the init_module() syscall or at least the error code
+from klp_module_add() functions. But there is no obvious way
+how to pass the information.
+
+Global variable is not enough because more livepatch modules
+can be loaded simultaneously from klp_enable_patch() and
+klp_module_comming().
 
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- include/linux/livepatch.h | 2 ++
- kernel/livepatch/core.c   | 9 +++++----
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ kernel/livepatch/core.c                             | 3 +++
+ tools/testing/selftests/livepatch/test-callbacks.sh | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index a4567c17a9f2..feb33f023f9f 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -155,6 +155,7 @@ struct klp_state {
-  * @obj_list:	dynamic list of the object entries
-  * @enabled:	the patch is enabled (but operation may be incomplete)
-  * @forced:	was involved in a forced transition
-+ * ts:		timestamp when the livepatch has been loaded
-  * @free_work:	patch cleanup from workqueue-context
-  * @finish:	for waiting till it is safe to remove the patch module
-  */
-@@ -171,6 +172,7 @@ struct klp_patch {
- 	struct list_head obj_list;
- 	bool enabled;
- 	bool forced;
-+	u64 ts;
- 	struct work_struct free_work;
- 	struct completion finish;
- };
 diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 34e3ee2be7ef..8e693c58b736 100644
+index 8e693c58b736..19ca8baa2f16 100644
 --- a/kernel/livepatch/core.c
 +++ b/kernel/livepatch/core.c
-@@ -20,6 +20,7 @@
- #include <linux/moduleloader.h>
- #include <linux/completion.h>
- #include <linux/memory.h>
-+#include <linux/sched/clock.h>
- #include <asm/cacheflush.h>
- #include "core.h"
- #include "patch.h"
-@@ -854,6 +855,7 @@ static int klp_init_patch_early(struct klp_patch *patch)
- 	kobject_init(&patch->kobj, &klp_ktype_patch);
- 	patch->enabled = false;
- 	patch->forced = false;
-+	patch->ts = local_clock();
- 	INIT_WORK(&patch->free_work, klp_free_patch_work_fn);
- 	init_completion(&patch->finish);
+@@ -1109,6 +1109,9 @@ static int klp_try_load_object(const char *patch_name, const char *obj_name)
  
-@@ -1324,6 +1326,7 @@ int klp_module_coming(struct module *mod)
- {
- 	char patch_name[MODULE_NAME_LEN];
- 	struct klp_patch *patch;
-+	u64 patch_ts;
- 	int ret = 0;
- 
- 	if (WARN_ON(mod->state != MODULE_STATE_COMING))
-@@ -1339,6 +1342,7 @@ int klp_module_coming(struct module *mod)
- 			continue;
- 
- 		strncpy(patch_name, patch->obj->patch_name, sizeof(patch_name));
-+		patch_ts = patch->ts;
- 		mutex_unlock(&klp_mutex);
- 
- 		ret = klp_try_load_object(patch_name, mod->name);
-@@ -1346,14 +1350,11 @@ int klp_module_coming(struct module *mod)
- 		 * The load might have failed because the patch has
- 		 * been removed in the meantime. In this case, the
- 		 * error might be ignored.
--		 *
--		 * FIXME: It is not fully proof. The patch might have be
--		 * unloaded and loaded again in the mean time.
- 		 */
- 		mutex_lock(&klp_mutex);
- 		if (ret) {
- 			patch = klp_find_patch(patch_name);
--			if (patch)
-+			if (patch && patch->ts == patch_ts)
- 				goto err;
- 			ret = 0;
- 		}
+ 	ret = request_module("%s__%s", patch_name, obj_name);
+ 	if (ret) {
++		/* modprobe always set exit code 1 on error */
++		if (ret > 0)
++			ret = -EINVAL;
+ 		pr_info("Module load failed: %s__%s\n", patch_name, obj_name);
+ 		return ret;
+ 	}
+diff --git a/tools/testing/selftests/livepatch/test-callbacks.sh b/tools/testing/selftests/livepatch/test-callbacks.sh
+index 39a4f35e5f8e..060e5b512367 100755
+--- a/tools/testing/selftests/livepatch/test-callbacks.sh
++++ b/tools/testing/selftests/livepatch/test-callbacks.sh
+@@ -331,7 +331,7 @@ $MOD_LIVEPATCH: pre_patch_callback: $MOD_TARGET -> [MODULE_STATE_COMING] Full fo
+ livepatch: pre-patch callback failed for object '$MOD_TARGET'
+ livepatch: patch '$MOD_LIVEPATCH' failed for module '$MOD_TARGET', refusing to load module '$MOD_TARGET'
+ livepatch: Module load failed: ${MOD_LIVEPATCH}__${MOD_TARGET}
+-modprobe: ERROR: could not insert '$MOD_TARGET': No such device
++modprobe: ERROR: could not insert '$MOD_TARGET': Invalid argument
+ % echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH/enabled
+ livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
+ $MOD_LIVEPATCH: pre_unpatch_callback: vmlinux
 -- 
 2.16.4
 
