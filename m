@@ -2,18 +2,18 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80700140D4F
+	by mail.lfdr.de (Postfix) with ESMTP id 0D298140D4E
 	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2020 16:05:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729163AbgAQPET (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        id S1729277AbgAQPET (ORCPT <rfc822;lists+live-patching@lfdr.de>);
         Fri, 17 Jan 2020 10:04:19 -0500
-Received: from mx2.suse.de ([195.135.220.15]:46214 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:46518 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729187AbgAQPEF (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        id S1729107AbgAQPEF (ORCPT <rfc822;live-patching@vger.kernel.org>);
         Fri, 17 Jan 2020 10:04:05 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 636FCBBBC;
+        by mx2.suse.de (Postfix) with ESMTP id D1902BBBD;
         Fri, 17 Jan 2020 15:04:03 +0000 (UTC)
 From:   Petr Mladek <pmladek@suse.com>
 To:     Jiri Kosina <jikos@kernel.org>,
@@ -24,9 +24,9 @@ Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
         Nicolai Stange <nstange@suse.de>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>
-Subject: [POC 21/23] livepatch: Remove obsolete arch_klp_init_object_loaded()
-Date:   Fri, 17 Jan 2020 16:03:21 +0100
-Message-Id: <20200117150323.21801-22-pmladek@suse.com>
+Subject: [POC 22/23] livepatch/module: Remove obsolete copy_module_elf()
+Date:   Fri, 17 Jan 2020 16:03:22 +0100
+Message-Id: <20200117150323.21801-23-pmladek@suse.com>
 X-Mailer: git-send-email 2.16.4
 In-Reply-To: <20200117150323.21801-1-pmladek@suse.com>
 References: <20200117150323.21801-1-pmladek@suse.com>
@@ -35,177 +35,182 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The livepatch specific-relocation is finally done together with the normal
-module relocations. As a result, alternatives, paraintructions, and other
-architecture-specific modifications are done correctly by the module
-loader out of box. There is no longer need to do them explicitely by
-arch_klp_init_object_loaded().
+The split livepatch modules can be relocated immedidately when they
+are loaded. There is no longer needed to preserve the elf sections.
 
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- Documentation/livepatch/module-elf-format.rst | 29 ---------------
- arch/x86/kernel/Makefile                      |  1 -
- arch/x86/kernel/livepatch.c                   | 52 ---------------------------
- include/linux/livepatch.h                     |  2 --
- kernel/livepatch/core.c                       | 11 ------
- 5 files changed, 95 deletions(-)
- delete mode 100644 arch/x86/kernel/livepatch.c
+ Documentation/livepatch/module-elf-format.rst | 18 ++++++
+ include/linux/module.h                        |  3 -
+ kernel/module.c                               | 87 ---------------------------
+ 3 files changed, 18 insertions(+), 90 deletions(-)
 
 diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentation/livepatch/module-elf-format.rst
-index 2a591e6f8e6c..9f0c997d4940 100644
+index 9f0c997d4940..8c6b894c4661 100644
 --- a/Documentation/livepatch/module-elf-format.rst
 +++ b/Documentation/livepatch/module-elf-format.rst
-@@ -14,8 +14,6 @@ This document outlines the Elf format requirements that livepatch modules must f
+@@ -14,6 +14,7 @@ This document outlines the Elf format requirements that livepatch modules must f
     4. Livepatch symbols
        4.1 A livepatch module's symbol table
        4.2 Livepatch symbol format
--   5. Architecture-specific sections
--   6. Symbol table and Elf section access
++   5. Symbol table and Elf section access
  
  1. Background and motivation
  ============================
-@@ -297,30 +295,3 @@ See include/uapi/linux/elf.h for the actual definitions.
+@@ -295,3 +296,20 @@ See include/uapi/linux/elf.h for the actual definitions.
  [*]
    Note that the 'Ndx' (Section index) for these symbols is SHN_LIVEPATCH (0xff20).
    "OS" means OS-specific.
++
++5. Symbol table and Elf section access
++======================================
++A livepatch module's symbol table is accessible through module->symtab.
++
++Since apply_relocate_add() requires access to a module's section headers,
++symbol table, and relocation section indices, Elf information is preserved for
++livepatch modules and is made accessible by the module loader through
++module->klp_info, which is a klp_modinfo struct. When a livepatch module loads,
++this struct is filled in by the module loader. Its fields are documented below::
++
++	struct klp_modinfo {
++		Elf_Ehdr hdr; /* Elf header */
++		Elf_Shdr *sechdrs; /* Section header table */
++		char *secstrings; /* String table for the section headers */
++		unsigned int symndx; /* The symbol table section index */
++	};
+diff --git a/include/linux/module.h b/include/linux/module.h
+index f69f3fd72dd5..8545f3087274 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -483,9 +483,6 @@ struct module {
+ #ifdef CONFIG_LIVEPATCH
+ 	bool klp; /* Is this a livepatch module? */
+ 	bool klp_alive;
 -
--5. Architecture-specific sections
--=================================
--Architectures may override arch_klp_init_object_loaded() to perform
--additional arch-specific tasks when a target module loads, such as applying
--arch-specific sections. On x86 for example, we must apply per-object
--.altinstructions and .parainstructions sections when a target module loads.
--These sections must be prefixed with ".klp.arch.$objname." so that they can
--be easily identified when iterating through a patch module's Elf sections
--(See arch/x86/kernel/livepatch.c for a complete example).
+-	/* Elf information */
+-	struct klp_modinfo *klp_info;
+ #endif
+ 
+ #ifdef CONFIG_MODULE_UNLOAD
+diff --git a/kernel/module.c b/kernel/module.c
+index c14b5135db27..442926fc5f34 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -2125,82 +2125,6 @@ static void module_enable_nx(const struct module *mod) { }
+ static void module_enable_x(const struct module *mod) { }
+ #endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+ 
 -
--6. Symbol table and Elf section access
--======================================
--A livepatch module's symbol table is accessible through module->symtab.
--
--Since apply_relocate_add() requires access to a module's section headers,
--symbol table, and relocation section indices, Elf information is preserved for
--livepatch modules and is made accessible by the module loader through
--module->klp_info, which is a klp_modinfo struct. When a livepatch module loads,
--this struct is filled in by the module loader. Its fields are documented below::
--
--	struct klp_modinfo {
--		Elf_Ehdr hdr; /* Elf header */
--		Elf_Shdr *sechdrs; /* Section header table */
--		char *secstrings; /* String table for the section headers */
--		unsigned int symndx; /* The symbol table section index */
--	};
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 6175e370ee4a..21540cac67b9 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -89,7 +89,6 @@ obj-$(CONFIG_X86_MPPARSE)	+= mpparse.o
- obj-y				+= apic/
- obj-$(CONFIG_X86_REBOOTFIXUPS)	+= reboot_fixups_32.o
- obj-$(CONFIG_DYNAMIC_FTRACE)	+= ftrace.o
--obj-$(CONFIG_LIVEPATCH)	+= livepatch.o
- obj-$(CONFIG_FUNCTION_TRACER)	+= ftrace_$(BITS).o
- obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += ftrace.o
- obj-$(CONFIG_FTRACE_SYSCALLS)	+= ftrace.o
-diff --git a/arch/x86/kernel/livepatch.c b/arch/x86/kernel/livepatch.c
-deleted file mode 100644
-index 728b44eaa168..000000000000
---- a/arch/x86/kernel/livepatch.c
-+++ /dev/null
-@@ -1,52 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
+-#ifdef CONFIG_LIVEPATCH
 -/*
-- * livepatch.c - x86-specific Kernel Live Patching Core
+- * Persist Elf information about a module. Copy the Elf header,
+- * section header table, section string table, and symtab section
+- * index from info to mod->klp_info.
 - */
--
--#include <linux/module.h>
--#include <linux/kallsyms.h>
--#include <linux/livepatch.h>
--#include <asm/text-patching.h>
--
--/* Apply per-object alternatives. Based on x86 module_finalize() */
--void arch_klp_init_object_loaded(struct klp_object *obj)
+-static int copy_module_elf(struct module *mod, struct load_info *info)
 -{
--	int cnt;
--	struct klp_modinfo *info;
--	Elf_Shdr *s, *alt = NULL, *para = NULL;
--	void *aseg, *pseg;
--	const char *objname;
--	char sec_objname[MODULE_NAME_LEN];
--	char secname[KSYM_NAME_LEN];
+-	unsigned int size, symndx;
+-	int ret;
 -
--	info = obj->mod->klp_info;
--	objname = obj->name ? obj->name : "vmlinux";
+-	size = sizeof(*mod->klp_info);
+-	mod->klp_info = kmalloc(size, GFP_KERNEL);
+-	if (mod->klp_info == NULL)
+-		return -ENOMEM;
 -
--	/* See livepatch core code for BUILD_BUG_ON() explanation */
--	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 128);
+-	/* Elf header */
+-	size = sizeof(mod->klp_info->hdr);
+-	memcpy(&mod->klp_info->hdr, info->hdr, size);
 -
--	for (s = info->sechdrs; s < info->sechdrs + info->hdr.e_shnum; s++) {
--		/* Apply per-object .klp.arch sections */
--		cnt = sscanf(info->secstrings + s->sh_name,
--			     ".klp.arch.%55[^.].%127s",
--			     sec_objname, secname);
--		if (cnt != 2)
--			continue;
--		if (strcmp(sec_objname, objname))
--			continue;
--		if (!strcmp(".altinstructions", secname))
--			alt = s;
--		if (!strcmp(".parainstructions", secname))
--			para = s;
+-	/* Elf section header table */
+-	size = sizeof(*info->sechdrs) * info->hdr->e_shnum;
+-	mod->klp_info->sechdrs = kmemdup(info->sechdrs, size, GFP_KERNEL);
+-	if (mod->klp_info->sechdrs == NULL) {
+-		ret = -ENOMEM;
+-		goto free_info;
 -	}
 -
--	if (alt) {
--		aseg = (void *) alt->sh_addr;
--		apply_alternatives(aseg, aseg + alt->sh_size);
+-	/* Elf section name string table */
+-	size = info->sechdrs[info->hdr->e_shstrndx].sh_size;
+-	mod->klp_info->secstrings = kmemdup(info->secstrings, size, GFP_KERNEL);
+-	if (mod->klp_info->secstrings == NULL) {
+-		ret = -ENOMEM;
+-		goto free_sechdrs;
 -	}
 -
--	if (para) {
--		pseg = (void *) para->sh_addr;
--		apply_paravirt(pseg, pseg + para->sh_size);
--	}
--}
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index d721e79ac691..3b27ef1a7291 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -204,8 +204,6 @@ struct klp_patch {
- int klp_enable_patch(struct klp_patch *);
- int klp_add_object(struct klp_object *);
- 
--void arch_klp_init_object_loaded(struct klp_object *obj);
+-	/* Elf symbol section index */
+-	symndx = info->index.sym;
+-	mod->klp_info->symndx = symndx;
 -
- /* Called from the module loader during module coming/going states */
- bool klp_break_recursion(struct module *mod);
- int klp_module_coming(struct module *mod);
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 4da6bbd687d0..cc0ac93fe8cd 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -701,23 +701,12 @@ static int klp_init_func(struct klp_object *obj, struct klp_func *func)
- 			   func->old_sympos ? func->old_sympos : 1);
- }
- 
--/* Arches may override this to finish any remaining arch-specific tasks */
--void __weak arch_klp_init_object_loaded(struct klp_object *obj)
--{
+-	/*
+-	 * For livepatch modules, core_kallsyms.symtab is a complete
+-	 * copy of the original symbol table. Adjust sh_addr to point
+-	 * to core_kallsyms.symtab since the copy of the symtab in module
+-	 * init memory is freed at the end of do_init_module().
+-	 */
+-	mod->klp_info->sechdrs[symndx].sh_addr = \
+-		(unsigned long) mod->core_kallsyms.symtab;
+-
+-	return 0;
+-
+-free_sechdrs:
+-	kfree(mod->klp_info->sechdrs);
+-free_info:
+-	kfree(mod->klp_info);
+-	return ret;
 -}
 -
- /* parts of the initialization that is done only when the object is loaded */
- static int klp_init_object_loaded(struct klp_object *obj)
+-static void free_module_elf(struct module *mod)
+-{
+-	kfree(mod->klp_info->sechdrs);
+-	kfree(mod->klp_info->secstrings);
+-	kfree(mod->klp_info);
+-}
+-#else /* !CONFIG_LIVEPATCH */
+-static int copy_module_elf(struct module *mod, struct load_info *info)
+-{
+-	return 0;
+-}
+-
+-static void free_module_elf(struct module *mod)
+-{
+-}
+-#endif /* CONFIG_LIVEPATCH */
+-
+ void __weak module_memfree(void *module_region)
  {
- 	struct klp_func *func;
- 	int ret;
+ 	/*
+@@ -2244,9 +2168,6 @@ static void free_module(struct module *mod)
+ 	/* Free any allocated parameters. */
+ 	destroy_params(mod->kp, mod->num_kp);
  
--	mutex_lock(&text_mutex);
--	module_disable_ro(obj->mod);
--	arch_klp_init_object_loaded(obj);
--	module_enable_ro(obj->mod, true);
--	mutex_unlock(&text_mutex);
+-	if (is_livepatch_module(mod))
+-		free_module_elf(mod);
 -
- 	klp_for_each_func(obj, func) {
- 		ret = klp_find_object_symbol(obj->name, func->old_name,
- 					     func->old_sympos,
+ 	/* Now we can delete it from the lists */
+ 	mutex_lock(&module_mutex);
+ 	/* Unlink carefully: kallsyms could be walking list. */
+@@ -3967,12 +3888,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 	if (err < 0)
+ 		goto coming_cleanup;
+ 
+-	if (is_livepatch_module(mod)) {
+-		err = copy_module_elf(mod, info);
+-		if (err < 0)
+-			goto sysfs_cleanup;
+-	}
+-
+ 	/* Get rid of temporary copy. */
+ 	free_copy(info);
+ 
+@@ -3981,8 +3896,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 
+ 	return do_init_module(mod);
+ 
+- sysfs_cleanup:
+-	mod_sysfs_teardown(mod);
+  coming_cleanup:
+ 	mod->state = MODULE_STATE_GOING;
+ 	destroy_params(mod->kp, mod->num_kp);
 -- 
 2.16.4
 
