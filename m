@@ -2,19 +2,19 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 688E8140D34
-	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2020 16:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52C94140D36
+	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2020 16:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbgAQPDj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 17 Jan 2020 10:03:39 -0500
-Received: from mx2.suse.de ([195.135.220.15]:45270 "EHLO mx2.suse.de"
+        id S1728709AbgAQPDp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 17 Jan 2020 10:03:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:45434 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726827AbgAQPDj (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 17 Jan 2020 10:03:39 -0500
+        id S1726827AbgAQPDp (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 17 Jan 2020 10:03:45 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 20ECBBB71;
-        Fri, 17 Jan 2020 15:03:36 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id A8C5BBB74;
+        Fri, 17 Jan 2020 15:03:41 +0000 (UTC)
 From:   Petr Mladek <pmladek@suse.com>
 To:     Jiri Kosina <jikos@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
@@ -24,175 +24,238 @@ Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
         Nicolai Stange <nstange@suse.de>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>
-Subject: [POC 00/23] livepatch: Split livepatch module per-object
-Date:   Fri, 17 Jan 2020 16:03:00 +0100
-Message-Id: <20200117150323.21801-1-pmladek@suse.com>
+Subject: [POC 01/23] module: Allow to delete module also from inside kernel
+Date:   Fri, 17 Jan 2020 16:03:01 +0100
+Message-Id: <20200117150323.21801-2-pmladek@suse.com>
 X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20200117150323.21801-1-pmladek@suse.com>
+References: <20200117150323.21801-1-pmladek@suse.com>
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
+Livepatch subsystems will need to automatically load and delete
+livepatch module when the livepatched one is being removed
+or when the entire livepatch is being removed.
 
-first, do not get scared by the size of the patchset. There are only
-few patches that are really complicated and need attention at this
-stage. I just wanted to split it as much as possible to review
-and discuss each change separately.
+The code stopping the kernel module is moved to separate function
+so that it can be reused.
 
-Now to the problem. There are long term complains about maintainability
-of the arch-specific code that is needed to livepatch modules that
-are loaded after the livepatch itself.
+The function always have rights to do the action. Also it does not
+need to search for struct module because it is already passed as
+a parameter.
 
-There was always an idea about splitting the livepatch module
-per-livepatched object. One interesting approach was drafted
-on the last Livepatch microconference at Linux Plubmers 2019.
+On the other hand, it has to make sure that the given struct module
+can't be released in parallel. It is achieved by combining module_put()
+and module_delete() functionality in a single function.
 
-I played with the idea and came up with this POC. Of course,
-there are pros and cons.
+This patch does not change the existing behavior of delete_module
+syscall.
 
-On the positive note:
+Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-    + The approach seems to work.
+module: Add module_put_and_delete()
+---
+ include/linux/module.h |   5 +++
+ kernel/module.c        | 119 +++++++++++++++++++++++++++++++------------------
+ 2 files changed, 80 insertions(+), 44 deletions(-)
 
-    + The same scenarios are supported. It is even newly possible to use
-      the livepatch-specific relocations and reload the livepatched module.
-
-    + The livepatch-specific relocations are still needed but
-      they are handled together with other relocations. As
-      a result, the other code modifications work out of box,
-      e.g. alternatives, parainstructions.
-
-    + Some problematic code could get removed (last 4 patches):
-
-      + module_disable_ro()
-      + arch_klp_init_object_loaded()
-      + copy_module_elf()
-
-    + The amount if livepatch-specific hooks in the module loader
-      is about the same. They are _not_ longer arch-specific. But
-      they are a bit tricky, see negatives below.
-
-
-On the negative side:
-
-    + It adds dependency on userspace tool "modprobe" called
-      via usermodhelper. It brings several new problems:
-
-       + How to distinguish modprobe called by user or by kernel
-         when resolving races and errors.
-
-       + How to pass the real error code to the usermodhelper caller.
-
-       + Automatic dependencies are generated and handled in
-         the userspace. Might create unwanted cyclic load.
-	 It requires crazy workarounds from the kernel side,
-	 see the patch 19.
-
-     + There is a new bunch of races that sometimes need a tricky
-       solution. For example, see the patches 8, 9, 15.
-
-     + It might be slightly more complicated to prepare and use
-       the livepatches. There are more modules that need to built
-       and are visibly to the administrators. Also it complicates
-       sharing some common helper functionality.
-
-
-From my point of view. The new code is much less arch-dependent
-and more self-contained. Therefore it should be easier to maintain
-in the long term.
-
-On the other hand, it is more tricky regarding possible races and
-infinite loops. They are not always easy to solve because of
-"modprobe" called via userspace and because of more switches
-between klp_mutex and module_mutex guarded code. Anyway, once
-this is solved, it should just work for a long time as is.
-
-All in all, I think that this approach is worth exploring.
-I am curious about your opinion.
-
-Best Regards,
-Petr
-
-PS: The patchset applies against Linus' master (v5.5-rc6).
-
-Petr Mladek (23):
-  module: Allow to delete module also from inside kernel
-  livepatch: Split livepatch modules per livepatched object
-  livepatch: Better checks of struct klp_object definition
-  livepatch: Prevent loading livepatch sub-module unintentionally.
-  livepatch: Initialize and free livepatch submodule
-  livepatch: Enable the livepatch submodule
-  livepatch: Remove obsolete functionality from klp_module_coming()
-  livepatch: Automatically load livepatch module when the patch module
-    is loaded
-  livepatch: Handle race when livepatches are reloaded during a module
-    load
-  livepatch: Handle modprobe exit code
-  livepatch: Safely detect forced transition when removing split
-    livepatch modules
-  livepatch: Automatically remove livepatch module when the object is
-    freed
-  livepatch: Remove livepatch module when the livepatched module is
-    unloaded
-  livepatch: Never block livepatch modules when the related module is
-    being removed
-  livepatch: Prevent infinite loop when loading livepatch module
-  livepatch: Add patch into the global list early
-  livepatch: Load livepatches for modules when loading  the main
-    livepatch
-  module: Refactor add_unformed_module()
-  module/livepatch: Allow to use exported symbols from livepatch module
-    for "vmlinux"
-  module/livepatch: Relocate local variables in the module loaded when
-    the livepatch is being loaded
-  livepatch: Remove obsolete arch_klp_init_object_loaded()
-  livepatch/module: Remove obsolete copy_module_elf()
-  module: Remove obsolete module_disable_ro()
-
- Documentation/livepatch/module-elf-format.rst      |  15 +-
- arch/x86/kernel/Makefile                           |   1 -
- arch/x86/kernel/livepatch.c                        |  53 --
- include/linux/livepatch.h                          |  36 +-
- include/linux/module.h                             |  10 +-
- kernel/livepatch/core.c                            | 743 ++++++++++++++-------
- kernel/livepatch/core.h                            |   5 -
- kernel/livepatch/transition.c                      |  22 +-
- kernel/module.c                                    | 279 ++++----
- lib/livepatch/Makefile                             |   2 +
- lib/livepatch/test_klp_atomic_replace.c            |  18 +-
- lib/livepatch/test_klp_callbacks_demo.c            |  90 ++-
- lib/livepatch/test_klp_callbacks_demo.h            |  11 +
- lib/livepatch/test_klp_callbacks_demo2.c           |  62 +-
- lib/livepatch/test_klp_callbacks_demo2.h           |  11 +
- ...t_klp_callbacks_demo__test_klp_callbacks_busy.c |  50 ++
- ...st_klp_callbacks_demo__test_klp_callbacks_mod.c |  42 ++
- lib/livepatch/test_klp_livepatch.c                 |  18 +-
- lib/livepatch/test_klp_state.c                     |  53 +-
- lib/livepatch/test_klp_state2.c                    |  53 +-
- samples/livepatch/Makefile                         |   4 +
- samples/livepatch/livepatch-callbacks-demo.c       |  90 ++-
- samples/livepatch/livepatch-callbacks-demo.h       |  11 +
- ...h-callbacks-demo__livepatch-callbacks-busymod.c |  54 ++
- ...patch-callbacks-demo__livepatch-callbacks-mod.c |  46 ++
- samples/livepatch/livepatch-sample.c               |  18 +-
- samples/livepatch/livepatch-shadow-fix1.c          | 120 +---
- .../livepatch-shadow-fix1__livepatch-shadow-mod.c  | 155 +++++
- samples/livepatch/livepatch-shadow-fix2.c          |  92 +--
- .../livepatch-shadow-fix2__livepatch-shadow-mod.c  | 127 ++++
- .../testing/selftests/livepatch/test-callbacks.sh  |  19 +-
- 31 files changed, 1424 insertions(+), 886 deletions(-)
- delete mode 100644 arch/x86/kernel/livepatch.c
- create mode 100644 lib/livepatch/test_klp_callbacks_demo.h
- create mode 100644 lib/livepatch/test_klp_callbacks_demo2.h
- create mode 100644 lib/livepatch/test_klp_callbacks_demo__test_klp_callbacks_busy.c
- create mode 100644 lib/livepatch/test_klp_callbacks_demo__test_klp_callbacks_mod.c
- create mode 100644 samples/livepatch/livepatch-callbacks-demo.h
- create mode 100644 samples/livepatch/livepatch-callbacks-demo__livepatch-callbacks-busymod.c
- create mode 100644 samples/livepatch/livepatch-callbacks-demo__livepatch-callbacks-mod.c
- create mode 100644 samples/livepatch/livepatch-shadow-fix1__livepatch-shadow-mod.c
- create mode 100644 samples/livepatch/livepatch-shadow-fix2__livepatch-shadow-mod.c
-
+diff --git a/include/linux/module.h b/include/linux/module.h
+index bd165ba68617..f69f3fd72dd5 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -623,6 +623,7 @@ extern void __module_get(struct module *module);
+ extern bool try_module_get(struct module *module);
+ 
+ extern void module_put(struct module *module);
++extern int module_put_and_delete(struct module *mod);
+ 
+ #else /*!CONFIG_MODULE_UNLOAD*/
+ static inline bool try_module_get(struct module *module)
+@@ -632,6 +633,10 @@ static inline bool try_module_get(struct module *module)
+ static inline void module_put(struct module *module)
+ {
+ }
++static inline int module_put_and_delete(struct module *mod)
++{
++	return 0;
++}
+ static inline void __module_get(struct module *module)
+ {
+ }
+diff --git a/kernel/module.c b/kernel/module.c
+index b56f3224b161..b3f11524f8f9 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -964,62 +964,36 @@ EXPORT_SYMBOL(module_refcount);
+ /* This exists whether we can unload or not */
+ static void free_module(struct module *mod);
+ 
+-SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
+-		unsigned int, flags)
++int stop_module(struct module *mod, int flags)
+ {
+-	struct module *mod;
+-	char name[MODULE_NAME_LEN];
+-	int ret, forced = 0;
+-
+-	if (!capable(CAP_SYS_MODULE) || modules_disabled)
+-		return -EPERM;
+-
+-	if (strncpy_from_user(name, name_user, MODULE_NAME_LEN-1) < 0)
+-		return -EFAULT;
+-	name[MODULE_NAME_LEN-1] = '\0';
++	int forced = 0;
+ 
+-	audit_log_kern_module(name);
+-
+-	if (mutex_lock_interruptible(&module_mutex) != 0)
+-		return -EINTR;
+-
+-	mod = find_module(name);
+-	if (!mod) {
+-		ret = -ENOENT;
+-		goto out;
+-	}
+-
+-	if (!list_empty(&mod->source_list)) {
+-		/* Other modules depend on us: get rid of them first. */
+-		ret = -EWOULDBLOCK;
+-		goto out;
+-	}
++	/* Other modules depend on us: get rid of them first. */
++	if (!list_empty(&mod->source_list))
++		return -EWOULDBLOCK;
+ 
+ 	/* Doing init or already dying? */
+ 	if (mod->state != MODULE_STATE_LIVE) {
+ 		/* FIXME: if (force), slam module count damn the torpedoes */
+ 		pr_debug("%s already dying\n", mod->name);
+-		ret = -EBUSY;
+-		goto out;
++		return -EBUSY;
+ 	}
+ 
+ 	/* If it has an init func, it must have an exit func to unload */
+ 	if (mod->init && !mod->exit) {
+ 		forced = try_force_unload(flags);
+-		if (!forced) {
+-			/* This module can't be removed */
+-			ret = -EBUSY;
+-			goto out;
+-		}
++		/* This module can't be removed */
++		if (!forced)
++			return -EBUSY;
+ 	}
+ 
+ 	/* Stop the machine so refcounts can't move and disable module. */
+-	ret = try_stop_module(mod, flags, &forced);
+-	if (ret != 0)
+-		goto out;
++	return try_stop_module(mod, flags, &forced);
++}
+ 
+-	mutex_unlock(&module_mutex);
+-	/* Final destruction now no one is using it. */
++/* Final destruction now no one is using it. */
++static void destruct_module(struct module *mod)
++{
+ 	if (mod->exit != NULL)
+ 		mod->exit();
+ 	blocking_notifier_call_chain(&module_notify_list,
+@@ -1033,8 +1007,44 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
+ 	strlcpy(last_unloaded_module, mod->name, sizeof(last_unloaded_module));
+ 
+ 	free_module(mod);
++
+ 	/* someone could wait for the module in add_unformed_module() */
+ 	wake_up_all(&module_wq);
++}
++
++SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
++		unsigned int, flags)
++{
++	struct module *mod;
++	char name[MODULE_NAME_LEN];
++	int ret;
++
++	if (!capable(CAP_SYS_MODULE) || modules_disabled)
++		return -EPERM;
++
++	if (strncpy_from_user(name, name_user, MODULE_NAME_LEN-1) < 0)
++		return -EFAULT;
++	name[MODULE_NAME_LEN-1] = '\0';
++
++	audit_log_kern_module(name);
++
++	if (mutex_lock_interruptible(&module_mutex) != 0)
++		return -EINTR;
++
++	mod = find_module(name);
++	if (!mod) {
++		ret = -ENOENT;
++		goto out;
++	}
++
++	ret = stop_module(mod, flags);
++	if (ret)
++		goto out;
++
++	mutex_unlock(&module_mutex);
++
++/* Final destruction now no one is using it. */
++	destruct_module(mod);
+ 	return 0;
+ out:
+ 	mutex_unlock(&module_mutex);
+@@ -1138,20 +1148,41 @@ bool try_module_get(struct module *module)
+ }
+ EXPORT_SYMBOL(try_module_get);
+ 
+-void module_put(struct module *module)
++/* Must be called under module_mutex or with preemtion disabled */
++static void __module_put(struct module* module)
+ {
+ 	int ret;
+ 
++	ret = atomic_dec_if_positive(&module->refcnt);
++	WARN_ON(ret < 0);	/* Failed to put refcount */
++	trace_module_put(module, _RET_IP_);
++}
++
++void module_put(struct module *module)
++{
+ 	if (module) {
+ 		preempt_disable();
+-		ret = atomic_dec_if_positive(&module->refcnt);
+-		WARN_ON(ret < 0);	/* Failed to put refcount */
+-		trace_module_put(module, _RET_IP_);
++		__module_put(module);
+ 		preempt_enable();
+ 	}
+ }
+ EXPORT_SYMBOL(module_put);
+ 
++int module_put_and_delete(struct module *mod)
++{
++	int ret;
++	mutex_lock(&module_mutex);
++	__module_put(mod);
++	ret = stop_module(mod, 0);
++	mutex_unlock(&module_mutex);
++
++	if (ret)
++		return ret;
++
++	destruct_module(mod);
++	return 0;
++}
++
+ #else /* !CONFIG_MODULE_UNLOAD */
+ static inline void print_unload_info(struct seq_file *m, struct module *mod)
+ {
 -- 
 2.16.4
 
