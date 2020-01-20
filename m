@@ -2,63 +2,101 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBBCE141F57
-	for <lists+live-patching@lfdr.de>; Sun, 19 Jan 2020 19:43:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB6A143041
+	for <lists+live-patching@lfdr.de>; Mon, 20 Jan 2020 17:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727144AbgASSn5 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 19 Jan 2020 13:43:57 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:34345 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727123AbgASSn5 (ORCPT
+        id S1728842AbgATQuu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 20 Jan 2020 11:50:50 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31385 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726642AbgATQuu (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 19 Jan 2020 13:43:57 -0500
-Received: by mail-io1-f67.google.com with SMTP id z193so31341966iof.1
-        for <live-patching@vger.kernel.org>; Sun, 19 Jan 2020 10:43:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=/o+CA7VDRA7UR3HGeT8+/tYzwEnOXwq5B8ZHP2/HeYc=;
-        b=pgUFBBIclCeISuTuaUUV3dpQBmDSd0p2Koi+bHuiFCWLjuu31Z/kJ3U28O7Zv4Vdf0
-         I7/sSO4ORHTfboutKpGMXkUszBOqfUL5z4u7e2Gb0T5KW5llYrPSTSQSPGHW6nAGLMzo
-         PnSxLDo4VOUEb0C5pvSAXxbJvjt0HefIFA1vIVIqAKCSuy9QxKQTHLVAeSbmKBlTyyme
-         cLiK+/tFbj4Vd7ZumjX7MWhWhYu9mSSM2LfF79T87lIHsZp3xiizkJv7aibCrOl03x20
-         tayTWZI83VNgBV8h4WpRQPz5vupd4Pt87h38C4LkrAbJdM6tMDnA1t4vpLH9dk0BoikJ
-         T8nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=/o+CA7VDRA7UR3HGeT8+/tYzwEnOXwq5B8ZHP2/HeYc=;
-        b=GEnxrmkjkbNgXRizZwI9/xIMgdiwLAo5g44xeujKNHx4HL6lyGgI5b8mNurywclnS0
-         mHwOlrGG88Bcyy4fEoydNLnEkVh5XKyndj2rEWPbnSJW0nXdYxG+m5ngF+yMel5r9OBo
-         Lx08aTodoeR2EPyDAmnIRZeEpfqfXhWhSD7OpArUj8TQuFLD95eVZA6v26isfk4b6E5x
-         V+EXRBFg0niZu2r/16yU/lY6nlykfH+2AjqrbGwLGuUpqCpt9opfh1+/8jZzo/xImE06
-         WLmgPdapKV3K0fRU9w3hVHfVu3244GeiN0Yt7srjnjqrGelVMv6FqvaqFqXuz9PAxLeC
-         xmsQ==
-X-Gm-Message-State: APjAAAVdVXPrnzeZRHidL4J0ghl9TjxfPz0MwuPM550eWcrUqQ4CSecz
-        828hpsiCezVS1lEMjbeVXYuaxgeNRxK8r47kBUA=
-X-Google-Smtp-Source: APXvYqxBczsjsQLgn21P299zoWNi15GtK6M0rhzKtYzBamtHow4NyHaRpaibAV24dYDIPcRLqNf3BcR/AYgWjb5bWW0=
-X-Received: by 2002:a6b:b297:: with SMTP id b145mr40109541iof.19.1579459436636;
- Sun, 19 Jan 2020 10:43:56 -0800 (PST)
+        Mon, 20 Jan 2020 11:50:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579539049;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jLPz2Zth+2ZStIwZ+5ljQmnZerYZCaQViHX5ArD0Uso=;
+        b=EwcOXp5jNtAhkQiwO94Hap0MS44E4hDFiLOfzuTu3qMkTY/F3B6QOFJe6j7KOz4yTRc53K
+        VDrbNwAluxmjXzXAQmz2gsjWF5D8fFFuoQEbQgvRhR5OD/oDSr5LEj8QeZO59QB3LyYqgN
+        Q2eEYeh4peo37ALkrrbBse0TkMkCLsA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-423-jvNGqmbPODqUa4-fwhBrLA-1; Mon, 20 Jan 2020 11:50:47 -0500
+X-MC-Unique: jvNGqmbPODqUa4-fwhBrLA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7A15D8018CC;
+        Mon, 20 Jan 2020 16:50:44 +0000 (UTC)
+Received: from treble (ovpn-125-19.rdu2.redhat.com [10.10.125.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C9F308643A;
+        Mon, 20 Jan 2020 16:50:41 +0000 (UTC)
+Date:   Mon, 20 Jan 2020 10:50:39 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+        x86@kernel.org, linux-kernel@vger.kernel.org, mhiramat@kernel.org,
+        bristot@redhat.com, jbaron@akamai.com,
+        torvalds@linux-foundation.org, tglx@linutronix.de,
+        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
+        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
+Message-ID: <20200120165039.6hohicj5o52gdghu@treble>
+References: <20191011125903.GN2359@hirez.programming.kicks-ass.net>
+ <20191015130739.GA23565@linux-8ccs>
+ <20191015135634.GK2328@hirez.programming.kicks-ass.net>
+ <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz>
+ <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
+ <20191015153120.GA21580@linux-8ccs>
+ <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
+ <20191015182705.1aeec284@gandalf.local.home>
+ <20191016074217.GL2328@hirez.programming.kicks-ass.net>
+ <20191021150549.bitgqifqk2tbd3aj@treble>
 MIME-Version: 1.0
-Received: by 2002:a02:95c8:0:0:0:0:0 with HTTP; Sun, 19 Jan 2020 10:43:56
- -0800 (PST)
-Reply-To: favordens@email.com
-From:   Favor Desmond <contecindy5@gmail.com>
-Date:   Sun, 19 Jan 2020 18:43:56 +0000
-Message-ID: <CAOfCPNw=78GMyTgmh34pr92fjEzt5GwAN1qgacokkjrNZaC3_g@mail.gmail.com>
-Subject: HELLO
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20191021150549.bitgqifqk2tbd3aj@treble>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello Dear
-Greetings to you,I am Favor Desmond from Ivory coast currently living
-in  Togo Republic,I would like to know you more, so that i can tell
-you little amount myself and my photo, email address is
-favordens@email.com
-Thanks
-Favor
+On Mon, Oct 21, 2019 at 10:05:49AM -0500, Josh Poimboeuf wrote:
+> On Wed, Oct 16, 2019 at 09:42:17AM +0200, Peter Zijlstra wrote:
+> > > which are not compatible with livepatching. GCC upstream now has
+> > > -flive-patching option, which disables all those interfering optimizations.
+> > 
+> > Which, IIRC, has a significant performance impact and should thus really
+> > not be used...
+> > 
+> > If distros ship that crap, I'm going to laugh at them the next time they
+> > want a single digit performance improvement because *important*.
+> 
+> I have a crazy plan to try to use objtool to detect function changes at
+> a binary level, which would hopefully allow us to drop this flag.
+> 
+> But regardless, I wonder if we enabled this flag prematurely.  We still
+> don't have a reasonable way to use it for creating source-based live
+> patches upstream, and it should really be optional for CONFIG_LIVEPATCH,
+> since kpatch-build doesn't need it.
+
+I also just discovered that -flive-patching is responsible for all those
+"unreachable instruction" objtool warnings which Randy has been
+dutifully bugging me about over the last several months.  For some
+reason it subtly breaks GCC implicit noreturn detection for local
+functions.
+
+At this point, I only see downsides of -flive-patching, at least until
+we actually have real upstream code which needs it.
+
+If there aren't any objections I'll be posting a patch soon to revert.
+
+-- 
+Josh
+
