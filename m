@@ -2,176 +2,117 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 166BA143C64
-	for <lists+live-patching@lfdr.de>; Tue, 21 Jan 2020 12:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F901441C1
+	for <lists+live-patching@lfdr.de>; Tue, 21 Jan 2020 17:11:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728797AbgAUL66 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 21 Jan 2020 06:58:58 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:55471 "EHLO
+        id S1729275AbgAUQLK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 21 Jan 2020 11:11:10 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23923 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726052AbgAUL66 (ORCPT
+        by vger.kernel.org with ESMTP id S1729256AbgAUQLJ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 21 Jan 2020 06:58:58 -0500
+        Tue, 21 Jan 2020 11:11:09 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579607937;
+        s=mimecast20190719; t=1579623069;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mIJRmUS3RoI/eRku0oSveKGJeOaZOoTBV3XTY86CXrI=;
-        b=ALh8zseSdE6nbbELjiOUcxEq40PzpOoXm5TQtOW2EgJuUIZ+/m6N5eJmL6vXbMxCrYD9Ww
-        nsMMpdGUkVEJz86CmpFioq32NCK2U0086d4zU6WXVh+BYfL1OYd4IUezJBqm1gVvw7cgqm
-        79FT0wB8Bqu+j9+JIMIrWK01jA2ppKY=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-213-ZEEjfg0JNr2LCfgaGN6WdA-1; Tue, 21 Jan 2020 06:58:56 -0500
-X-MC-Unique: ZEEjfg0JNr2LCfgaGN6WdA-1
-Received: by mail-wm1-f72.google.com with SMTP id b9so525339wmj.6
-        for <live-patching@vger.kernel.org>; Tue, 21 Jan 2020 03:58:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mIJRmUS3RoI/eRku0oSveKGJeOaZOoTBV3XTY86CXrI=;
-        b=WlB2+QSW6lwWgHDGlDMXseVYQLjg8gbQCwpD49dMdsUXGfvm9j5Yq9bveH41cAVJ1Z
-         P1maNrk60qO2I/vaqqA7JNhz02srqY6vHL87E9X7X//Y5bUfOKzTalhWWcOTq307LUNl
-         y2H9Bbt0k1JzlVHM7O0pwAup4+ckKfi3ji5lXlrChVN3IQam5B64zVe1o0RzItQEIfAc
-         FoW6BhK+ZEYRqAD6kST81v9+fM/WEK4FOEaBQmG8b4EwtC31u/9kQr+atrqI3UEx7e+b
-         YrIocE7vhQluAJ6u/AZ8LYPdtQjcuA9KeeYzFuy3msrEnydiEti1qFY2NcO5zR4WXHPl
-         dEqA==
-X-Gm-Message-State: APjAAAUIBz9NqK9nPz/hCzmUM1SM1nkW36Nr83aEvmuCmSeHMHNbng0F
-        XkYM0LmVOYEttFVYBSMTFBq2iG2vZKPbkRUYf0V/raDadu4iZPV8VRSVluphHaCuGH8rElBENHL
-        +ClqnYiYMq+E4ZkIRFjz18dOD5A==
-X-Received: by 2002:a1c:a9c6:: with SMTP id s189mr4079717wme.151.1579607935021;
-        Tue, 21 Jan 2020 03:58:55 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy1OprcTDbiQO/QR6z0+OgYBrUc82Dc0O0g2xxJa107E1VFaHvFSIoh4166ZrRF0PqTnsAc4Q==
-X-Received: by 2002:a1c:a9c6:: with SMTP id s189mr4079700wme.151.1579607934843;
-        Tue, 21 Jan 2020 03:58:54 -0800 (PST)
-Received: from [192.168.1.81] (host81-140-166-164.range81-140.btcentralplus.com. [81.140.166.164])
-        by smtp.gmail.com with ESMTPSA id x11sm53508323wre.68.2020.01.21.03.58.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jan 2020 03:58:54 -0800 (PST)
-Subject: Re: [POC 05/23] livepatch: Initialize and free livepatch submodule
-To:     Petr Mladek <pmladek@suse.com>, Jiri Kosina <jikos@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Nicolai Stange <nstange@suse.de>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200117150323.21801-1-pmladek@suse.com>
- <20200117150323.21801-6-pmladek@suse.com>
-From:   Julien Thierry <jthierry@redhat.com>
-Message-ID: <0cc056a0-99c7-68d6-9f22-28c043254ab2@redhat.com>
-Date:   Tue, 21 Jan 2020 11:58:53 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        bh=heVKG+KSMzawq2hC2KgTNTV1AZM6QZ5629QiClM/r1A=;
+        b=DvWqyFeXCIVWIQfTa6O7EDCPLTdyr2SpUsYk90z6zYMD8GekQWRK7ypH10El6l+/4Z0A7+
+        F2G+klwk1qN3woOZ5U6X5sAm1eDB/G+ONAjg7w2RR+gnjOVpOP6zhJqgmOQc9jkmshQUdS
+        fQ/DH7wgt+zRO1gaKVtntuZo9Mr3aiQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-298-2Vtp-qc_OfeKGDhAjMVAfQ-1; Tue, 21 Jan 2020 11:11:02 -0500
+X-MC-Unique: 2Vtp-qc_OfeKGDhAjMVAfQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A4B4113784C;
+        Tue, 21 Jan 2020 16:11:00 +0000 (UTC)
+Received: from treble (ovpn-122-154.rdu2.redhat.com [10.10.122.154])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9C81E2898C;
+        Tue, 21 Jan 2020 16:10:47 +0000 (UTC)
+Date:   Tue, 21 Jan 2020 10:10:45 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
+        bristot@redhat.com, jbaron@akamai.com,
+        torvalds@linux-foundation.org, tglx@linutronix.de,
+        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
+        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
+Message-ID: <20200121161045.dhihqibnpyrk2lsu@treble>
+References: <20191015135634.GK2328@hirez.programming.kicks-ass.net>
+ <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz>
+ <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
+ <20191015153120.GA21580@linux-8ccs>
+ <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
+ <20191015182705.1aeec284@gandalf.local.home>
+ <20191016074217.GL2328@hirez.programming.kicks-ass.net>
+ <20191021150549.bitgqifqk2tbd3aj@treble>
+ <20200120165039.6hohicj5o52gdghu@treble>
+ <alpine.LSU.2.21.2001210922060.6036@pobox.suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20200117150323.21801-6-pmladek@suse.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.2001210922060.6036@pobox.suse.cz>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Petr,
-
-On 1/17/20 3:03 PM, Petr Mladek wrote:
-> Another step when loading livepatches to livepatch modules is
-> to initialize the structure, create sysfs entries, do livepatch
-> specific relocations.
+On Tue, Jan 21, 2020 at 09:35:28AM +0100, Miroslav Benes wrote:
+> On Mon, 20 Jan 2020, Josh Poimboeuf wrote:
 > 
-> These operation can fail and the objects must be freed that case.
-> The error message is taken from klp_module_coming() to match
-> selftests.
+> > On Mon, Oct 21, 2019 at 10:05:49AM -0500, Josh Poimboeuf wrote:
+> > > On Wed, Oct 16, 2019 at 09:42:17AM +0200, Peter Zijlstra wrote:
+> > > > > which are not compatible with livepatching. GCC upstream now has
+> > > > > -flive-patching option, which disables all those interfering optimizations.
+> > > > 
+> > > > Which, IIRC, has a significant performance impact and should thus really
+> > > > not be used...
+> > > > 
+> > > > If distros ship that crap, I'm going to laugh at them the next time they
+> > > > want a single digit performance improvement because *important*.
+> > > 
+> > > I have a crazy plan to try to use objtool to detect function changes at
+> > > a binary level, which would hopefully allow us to drop this flag.
+> > > 
+> > > But regardless, I wonder if we enabled this flag prematurely.  We still
+> > > don't have a reasonable way to use it for creating source-based live
+> > > patches upstream, and it should really be optional for CONFIG_LIVEPATCH,
+> > > since kpatch-build doesn't need it.
+> > 
+> > I also just discovered that -flive-patching is responsible for all those
+> > "unreachable instruction" objtool warnings which Randy has been
+> > dutifully bugging me about over the last several months.  For some
+> > reason it subtly breaks GCC implicit noreturn detection for local
+> > functions.
 > 
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
->   kernel/livepatch/core.c | 34 +++++++++++++++++++++++++++-------
->   1 file changed, 27 insertions(+), 7 deletions(-)
+> Ugh, that is unfortunate. Have you reported it?
+
+Not yet (but I plan to).
+
+> > At this point, I only see downsides of -flive-patching, at least until
+> > we actually have real upstream code which needs it.
 > 
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index e2c7dc6c2d5f..6c27b635e5a7 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -583,18 +583,23 @@ static void klp_free_object_loaded(struct klp_object *obj)
->   	}
->   }
->   
-> +static void klp_free_object(struct klp_object *obj, bool nops_only)
-> +{
-> +	__klp_free_funcs(obj, nops_only);
-> +
-> +	if (nops_only && !obj->dynamic)
-> +		return;
-> +
-> +	list_del(&obj->node);
-> +	kobject_put(&obj->kobj);
-> +}
-> +
->   static void __klp_free_objects(struct klp_patch *patch, bool nops_only)
->   {
->   	struct klp_object *obj, *tmp_obj;
->   
->   	klp_for_each_object_safe(patch, obj, tmp_obj) {
-> -		__klp_free_funcs(obj, nops_only);
-> -
-> -		if (nops_only && !obj->dynamic)
-> -			continue;
-> -
-> -		list_del(&obj->node);
-> -		kobject_put(&obj->kobj);
-> +		klp_free_object(obj, nops_only);
->   	}
->   }
->   
-> @@ -812,6 +817,8 @@ static int klp_init_object_early(struct klp_patch *patch,
->   	if (obj->dynamic || try_module_get(obj->mod))
->   		return 0;
->   
-> +	/* patch stays when this function fails in klp_add_object() */
-> +	list_del(&obj->node);
->   	return -ENODEV;
->   }
->   
-> @@ -993,9 +1000,22 @@ int klp_add_object(struct klp_object *obj)
->   		goto err;
->   	}
->   
-> +	ret = klp_init_object_early(patch, obj);
+> Can you explain this? The option makes GCC to avoid optimizations which 
+> are difficult to detect and would make live patching unsafe. I consider it 
+> useful as it is, so if you shared the other downsides and what you meant 
+> by real upstream code, we could discuss it.
 
-klp_init_object_early() can fail after adding obj to patch->obj_list. 
-This wouldn't get cleaned up by the "err" path.
-
-It probably would keep things simple to only add obj to patch->obj_list 
-if early initialization is successful in patch 2 (ofc I'm talking about 
-the actual patch of this patch series ;) ).
-
-> +	if (ret)
-> +		goto err;
-> +
-> +	ret = klp_init_object(patch, obj);
-> +	if (ret) {
-> +		pr_warn("failed to initialize patch '%s' for module '%s' (%d)\n",
-> +			patch->obj->patch_name, obj->name, ret);
-> +		goto err_free;
-> +	}
-> +
->   	mutex_unlock(&klp_mutex);
->   	return 0;
->   
-> +err_free:
-> +	klp_free_object(obj, false);
->   err:
->   	/*
->   	 * If a patch is unsuccessfully applied, return
-> 
-
-Cheers,
+Only SLES needs it right?  Why inflict it on other livepatch users?  By
+"real upstream code" I mean there's no (documented) way to create live
+patches using the method which relies on this flag.  So I don't see any
+upstream benefits for having it enabled.
 
 -- 
-Julien Thierry
+Josh
 
