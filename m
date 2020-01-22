@@ -2,184 +2,121 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA067145BC1
-	for <lists+live-patching@lfdr.de>; Wed, 22 Jan 2020 19:51:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4062A145E3A
+	for <lists+live-patching@lfdr.de>; Wed, 22 Jan 2020 22:43:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728853AbgAVSvx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Jan 2020 13:51:53 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:35037 "EHLO
+        id S1726103AbgAVVm6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 22 Jan 2020 16:42:58 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59135 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725884AbgAVSvx (ORCPT
+        with ESMTP id S1725943AbgAVVm5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Jan 2020 13:51:53 -0500
+        Wed, 22 Jan 2020 16:42:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579719112;
+        s=mimecast20190719; t=1579729376;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AacXIVvW/L9Wi/tQd6CQ3WlW5xZVTV3hdmJ5WDrZQuI=;
-        b=AjQbhojwJ/aVLYHgrlT7cR2+EPfBiEtpWyO3EpdIrY2yEso12Qe0s5Stvq+m6E4ffmGB1N
-        o6P8r/hCEb2H/PN988wbG8KWm/OaYQvSWJVXNMwX6jRDodmGsUkEavc6VUPeKNuml24hVS
-        vemaViBhYmEJEIGqAHfdhIB2DOfLrTI=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-73-xp7zKNaSOzWdFXBAhugIeg-1; Wed, 22 Jan 2020 13:51:50 -0500
-X-MC-Unique: xp7zKNaSOzWdFXBAhugIeg-1
-Received: by mail-wr1-f69.google.com with SMTP id d8so390428wrq.12
-        for <live-patching@vger.kernel.org>; Wed, 22 Jan 2020 10:51:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AacXIVvW/L9Wi/tQd6CQ3WlW5xZVTV3hdmJ5WDrZQuI=;
-        b=QIhtjHx4LVhFGCkaRjrspNqKFMKIXlZtWVP8ASRS0KhkeI7LlCoZi1IW9S9uq4n968
-         N9zipkKpKTZJex7CjOIL/VTAmiLibdXPN/05WX3gFHYUVpOlk60dgx5c4YAuyukIu63q
-         jjOABhXy7sXjIFByKkuVzO30i6BdFdsyAh2lSQFdnv9XgkbuheqkH/TtiBDK8gMjyejE
-         E5mhPtCxKh58DwckjyrPXCVedUQcGYOw969letZuqHTQ2eXTE7AqUsLnI0p6Er0IPJ2H
-         20p49rejmexVivwjUWiRm0WOwEyp1ACH0S0eniQdpF7fDlNK5k0lRA+ELgcKZLkXItIn
-         lpSA==
-X-Gm-Message-State: APjAAAU5qjqKRx+gBm5etn/GijXA5pqvE6jOw9wLwH8HsXxfDNGaNnHN
-        qM580qEQTbaYZqu/CXoFQHtthBzdGLGoQcOv8Wq43Xkz3Lw2unCEulWhAOpAtbqqQNX54tJTdN1
-        hMUFjeMQk34KcixP9mWRW+OnM9A==
-X-Received: by 2002:a7b:cf0d:: with SMTP id l13mr4555109wmg.13.1579719109384;
-        Wed, 22 Jan 2020 10:51:49 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwjoe52IEp8wH9WLT03b8oTlH5pHHcleUFCdfM3BUg8u4w8DvvniP1058w8iBiqweitzvHTNg==
-X-Received: by 2002:a7b:cf0d:: with SMTP id l13mr4555090wmg.13.1579719109177;
-        Wed, 22 Jan 2020 10:51:49 -0800 (PST)
-Received: from [192.168.1.81] (host81-140-166-164.range81-140.btcentralplus.com. [81.140.166.164])
-        by smtp.gmail.com with ESMTPSA id v17sm58395781wrt.91.2020.01.22.10.51.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jan 2020 10:51:48 -0800 (PST)
-Subject: Re: [POC 09/23] livepatch: Handle race when livepatches are reloaded
- during a module load
-To:     Petr Mladek <pmladek@suse.com>, Jiri Kosina <jikos@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Nicolai Stange <nstange@suse.de>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200117150323.21801-1-pmladek@suse.com>
- <20200117150323.21801-10-pmladek@suse.com>
-From:   Julien Thierry <jthierry@redhat.com>
-Message-ID: <9f79bff4-42b2-ad1e-6ca6-a3464ab56ef4@redhat.com>
-Date:   Wed, 22 Jan 2020 18:51:47 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        bh=1gFcEZJIvMTM55lub5PAcGjASB5nWcvJKHPzUNKZDoA=;
+        b=Gtm4ADD7TcgCJPtzido722+WuA0NUdAPAV8Cc1WriXQuxN+nUWgP6woHBwe5wOuAPrVjEJ
+        WSql1WLxvMQh9etbGMW5FxdV2ADRBJ+evK4rIoBmzaX77/9/xVkuMi3HoK8itkHz89+7Qd
+        nGvJyRXf3Kce9irGCozhKf34FvSEAVA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-46-vfrKVyS_PUyEIk0FIgm2lg-1; Wed, 22 Jan 2020 16:42:51 -0500
+X-MC-Unique: vfrKVyS_PUyEIk0FIgm2lg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C11F9107ACC4;
+        Wed, 22 Jan 2020 21:42:48 +0000 (UTC)
+Received: from treble (ovpn-122-154.rdu2.redhat.com [10.10.122.154])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6DE9A88893;
+        Wed, 22 Jan 2020 21:42:41 +0000 (UTC)
+Date:   Wed, 22 Jan 2020 15:42:39 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
+        bristot@redhat.com, jbaron@akamai.com,
+        torvalds@linux-foundation.org, tglx@linutronix.de,
+        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
+        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
+Message-ID: <20200122214239.ivnebi7hiabi5tbs@treble>
+References: <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com>
+ <20191015153120.GA21580@linux-8ccs>
+ <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
+ <20191015182705.1aeec284@gandalf.local.home>
+ <20191016074217.GL2328@hirez.programming.kicks-ass.net>
+ <20191021150549.bitgqifqk2tbd3aj@treble>
+ <20200120165039.6hohicj5o52gdghu@treble>
+ <alpine.LSU.2.21.2001210922060.6036@pobox.suse.cz>
+ <20200121161045.dhihqibnpyrk2lsu@treble>
+ <alpine.LSU.2.21.2001221052331.15957@pobox.suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20200117150323.21801-10-pmladek@suse.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.2001221052331.15957@pobox.suse.cz>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Petr,
-
-On 1/17/20 3:03 PM, Petr Mladek wrote:
-> klp_module_coming() might fail to load a livepatch module when
-> the related livepatch gets reloaded in the meantime.
+On Wed, Jan 22, 2020 at 11:09:56AM +0100, Miroslav Benes wrote:
 > 
-> Detect this situation by adding a timestamp into struct klp_patch.
-> local_clock is enough because klp_mutex must be released and taken
-> several times during this scenario.
+> > > > At this point, I only see downsides of -flive-patching, at least until
+> > > > we actually have real upstream code which needs it.
+> > > 
+> > > Can you explain this? The option makes GCC to avoid optimizations which 
+> > > are difficult to detect and would make live patching unsafe. I consider it 
+> > > useful as it is, so if you shared the other downsides and what you meant 
+> > > by real upstream code, we could discuss it.
+> > 
+> > Only SLES needs it right?  Why inflict it on other livepatch users?  By
+> > "real upstream code" I mean there's no (documented) way to create live
+> > patches using the method which relies on this flag.  So I don't see any
+> > upstream benefits for having it enabled.
 > 
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
->   include/linux/livepatch.h | 2 ++
->   kernel/livepatch/core.c   | 9 +++++----
->   2 files changed, 7 insertions(+), 4 deletions(-)
+> I'd put it differently. SLES and upstream need it, RHEL does not need it. 
+> Or anyone using kpatch-build.
+
+I'm confused about why you think upstream needs it.
+
+Is all the tooling available somewhere?  Is there documentation
+available which describes how to build patches using that method from
+start to finish?  Are there actual users other than SUSE?
+
+BTW, kpatch-build has a *lot* of users other than RHEL.  All its tooling
+and documentation are available on Github.
+
+> It is perfectly fine to prepare live patches just from the source code
+> using upstream live patching infrastructure. 
+
+Do you mean the dangerous method used by the livepatch sample code which
+completely ignores interprocedural optimizations?  I wouldn't call that
+perfectly fine.
+
+> After all, SLES is nothing else than upstream here. We were creating live 
+> patches manually for quite a long time and only recently we have been 
+> using Nicolai's klp-ccp automation (https://github.com/SUSE/klp-ccp).
 > 
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index a4567c17a9f2..feb33f023f9f 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -155,6 +155,7 @@ struct klp_state {
->    * @obj_list:	dynamic list of the object entries
->    * @enabled:	the patch is enabled (but operation may be incomplete)
->    * @forced:	was involved in a forced transition
-> + * ts:		timestamp when the livepatch has been loaded
+> So, everyone using upstream directly relies on the flag, which seems to be 
+> a clear benefit to me. Reverting the patch would be a step back.
 
-Nit: Missing '@'.
+Who exactly is "everyone using upstream"?
 
->    * @free_work:	patch cleanup from workqueue-context
->    * @finish:	for waiting till it is safe to remove the patch module
->    */
-> @@ -171,6 +172,7 @@ struct klp_patch {
->   	struct list_head obj_list;
->   	bool enabled;
->   	bool forced;
-> +	u64 ts;
->   	struct work_struct free_work;
->   	struct completion finish;
->   };
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 34e3ee2be7ef..8e693c58b736 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -20,6 +20,7 @@
->   #include <linux/moduleloader.h>
->   #include <linux/completion.h>
->   #include <linux/memory.h>
-> +#include <linux/sched/clock.h>
->   #include <asm/cacheflush.h>
->   #include "core.h"
->   #include "patch.h"
-> @@ -854,6 +855,7 @@ static int klp_init_patch_early(struct klp_patch *patch)
->   	kobject_init(&patch->kobj, &klp_ktype_patch);
->   	patch->enabled = false;
->   	patch->forced = false;
-> +	patch->ts = local_clock();
->   	INIT_WORK(&patch->free_work, klp_free_patch_work_fn);
->   	init_completion(&patch->finish);
->   
-> @@ -1324,6 +1326,7 @@ int klp_module_coming(struct module *mod)
->   {
->   	char patch_name[MODULE_NAME_LEN];
->   	struct klp_patch *patch;
-> +	u64 patch_ts;
->   	int ret = 0;
->   
->   	if (WARN_ON(mod->state != MODULE_STATE_COMING))
-> @@ -1339,6 +1342,7 @@ int klp_module_coming(struct module *mod)
->   			continue;
->   
->   		strncpy(patch_name, patch->obj->patch_name, sizeof(patch_name));
-> +		patch_ts = patch->ts;
->   		mutex_unlock(&klp_mutex);
->   
->   		ret = klp_try_load_object(patch_name, mod->name);
-> @@ -1346,14 +1350,11 @@ int klp_module_coming(struct module *mod)
->   		 * The load might have failed because the patch has
->   		 * been removed in the meantime. In this case, the
->   		 * error might be ignored.
-> -		 *
-> -		 * FIXME: It is not fully proof. The patch might have be
-> -		 * unloaded and loaded again in the mean time.
->   		 */
->   		mutex_lock(&klp_mutex);
->   		if (ret) {
->   			patch = klp_find_patch(patch_name);
-> -			if (patch)
-> +			if (patch && patch->ts == patch_ts)
->   				goto err;
-
-If the timestamps differ, we have found the klp_patch, feels a bit of a 
-waste to go through the list again without trying to load it right away.
-
-Admittedly this is to solve a race condition which should not even 
-happen very often...
-
->   			ret = 0;
->   		}
-> 
-
-Cheers,
+From what I can tell, kpatch-build is the only known way (to those
+outside of SUSE) to make safe patches for an upstream kernel.  And it
+doesn't need this flag and the problems associated with it: performance,
+LTO incompatibility, clang incompatibility (I think?), the GCC dead code
+issue.
 
 -- 
-Julien Thierry
+Josh
 
