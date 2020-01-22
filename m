@@ -2,99 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E1F8145246
-	for <lists+live-patching@lfdr.de>; Wed, 22 Jan 2020 11:15:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A323145447
+	for <lists+live-patching@lfdr.de>; Wed, 22 Jan 2020 13:16:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729061AbgAVKPW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Jan 2020 05:15:22 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37309 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728609AbgAVKPT (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Jan 2020 05:15:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579688117;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HuN8xwBV9YhqHIBUUs/6FS3OY1fEoZoqFPlPS7k1hAM=;
-        b=Lkno0Ha1XUTiqm50VLeG+Eat19DA61WcITscXH6RHpK7McR11GoOlRFhTQTFeGiD3xjlqC
-        xlrTKaavo8QMOp5iyH6xDUsLp7t40zGiL8K3NDhM/+8kUh8DfZSdnf7qtXKivtgYeRn9fv
-        q//LazP5Bth5SVJKBZPLG6/C9x4D6ZI=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-182-IQmE4_0sOFWJQbg0-G7cLw-1; Wed, 22 Jan 2020 05:15:15 -0500
-X-MC-Unique: IQmE4_0sOFWJQbg0-G7cLw-1
-Received: by mail-wr1-f72.google.com with SMTP id o6so2808155wrp.8
-        for <live-patching@vger.kernel.org>; Wed, 22 Jan 2020 02:15:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HuN8xwBV9YhqHIBUUs/6FS3OY1fEoZoqFPlPS7k1hAM=;
-        b=OK+irlVsP7Exwd8YfAPryg/vSml5+WGyV9K3eTm2pxBbRATdbLxEFMbcnmtU/ohLsx
-         40qD8BdfXG7qf7r0WWoBjep5WMZs1Z/x5t9RAv9j4eEt0WD3OjS3Pr7mEqojJxGlqiJl
-         1xsZLNdG02NZ/ShKWqvTpmdpyJTkbcOf8+p06opJAFdKwM25rPFuUyLioEyEss80LCFv
-         p8rRLhnZJViINYI46GlbFBA2VPVj3vwRQECCBdiay9XNwTS6aHrO8u53E2f6LSSA8KAj
-         GL2i6i/xg5VvRmg13hY2Ayu6NDp06KZQHqTonHxkXX8wVEoVraoJQ/FVnEMLJoIUYhAw
-         LBdQ==
-X-Gm-Message-State: APjAAAVkmZ0jxvB5p5B8Hy0xn7v0DZ2j2LDB8ahjeTrql2dtPHMaj7W9
-        yjpuP2H10vfAHZQedCgmfDlESN7UPAyJXx/JpzdLnHM+XbvhwEVZzNopRJUmy3xU5IH/0gkoqbZ
-        3fqjmtZvT5A8/EdRDekt1rqk01A==
-X-Received: by 2002:a1c:4144:: with SMTP id o65mr2093333wma.81.1579688114094;
-        Wed, 22 Jan 2020 02:15:14 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy4aJRil/tx8VppIJLye7IN3S0YAWx4OvHVzJ7tulPLojRCiJc2Ih8d67ITRZEjrA1rix0gpA==
-X-Received: by 2002:a1c:4144:: with SMTP id o65mr2093323wma.81.1579688113923;
-        Wed, 22 Jan 2020 02:15:13 -0800 (PST)
-Received: from [192.168.1.81] (host81-140-166-164.range81-140.btcentralplus.com. [81.140.166.164])
-        by smtp.gmail.com with ESMTPSA id t1sm3484231wma.43.2020.01.22.02.15.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jan 2020 02:15:13 -0800 (PST)
-Subject: Re: [POC 11/23] livepatch: Safely detect forced transition when
- removing split livepatch modules
-To:     Petr Mladek <pmladek@suse.com>, Jiri Kosina <jikos@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Nicolai Stange <nstange@suse.de>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200117150323.21801-1-pmladek@suse.com>
- <20200117150323.21801-12-pmladek@suse.com>
-From:   Julien Thierry <jthierry@redhat.com>
-Message-ID: <2d92bc17-0844-54dd-b6ea-8d89ce2d590b@redhat.com>
-Date:   Wed, 22 Jan 2020 10:15:11 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1729160AbgAVMPz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 22 Jan 2020 07:15:55 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33218 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729299AbgAVMPx (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 22 Jan 2020 07:15:53 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 550A8B259;
+        Wed, 22 Jan 2020 12:15:51 +0000 (UTC)
+Date:   Wed, 22 Jan 2020 13:15:49 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jessica Yu <jeyu@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
+        bristot@redhat.com, jbaron@akamai.com,
+        torvalds@linux-foundation.org, tglx@linutronix.de,
+        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
+        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
+In-Reply-To: <20200121161045.dhihqibnpyrk2lsu@treble>
+Message-ID: <alpine.LSU.2.21.2001221312030.15957@pobox.suse.cz>
+References: <20191015135634.GK2328@hirez.programming.kicks-ass.net> <alpine.LSU.2.21.1910151611000.13169@pobox.suse.cz> <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com> <20191015153120.GA21580@linux-8ccs> <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com>
+ <20191015182705.1aeec284@gandalf.local.home> <20191016074217.GL2328@hirez.programming.kicks-ass.net> <20191021150549.bitgqifqk2tbd3aj@treble> <20200120165039.6hohicj5o52gdghu@treble> <alpine.LSU.2.21.2001210922060.6036@pobox.suse.cz>
+ <20200121161045.dhihqibnpyrk2lsu@treble>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20200117150323.21801-12-pmladek@suse.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Petr,
+On Tue, 21 Jan 2020, Josh Poimboeuf wrote:
 
-On 1/17/20 3:03 PM, Petr Mladek wrote:
-> The information about forced livepatch transition is currently stored
-> in struct klp_patch. But there is not any obvious safe way how to
-> access it when the split livepatch modules are removed.
+> On Tue, Jan 21, 2020 at 09:35:28AM +0100, Miroslav Benes wrote:
+> > On Mon, 20 Jan 2020, Josh Poimboeuf wrote:
+> > 
+> > > On Mon, Oct 21, 2019 at 10:05:49AM -0500, Josh Poimboeuf wrote:
+> > > > On Wed, Oct 16, 2019 at 09:42:17AM +0200, Peter Zijlstra wrote:
+> > > > > > which are not compatible with livepatching. GCC upstream now has
+> > > > > > -flive-patching option, which disables all those interfering optimizations.
+> > > > > 
+> > > > > Which, IIRC, has a significant performance impact and should thus really
+> > > > > not be used...
+> > > > > 
+> > > > > If distros ship that crap, I'm going to laugh at them the next time they
+> > > > > want a single digit performance improvement because *important*.
+> > > > 
+> > > > I have a crazy plan to try to use objtool to detect function changes at
+> > > > a binary level, which would hopefully allow us to drop this flag.
+> > > > 
+> > > > But regardless, I wonder if we enabled this flag prematurely.  We still
+> > > > don't have a reasonable way to use it for creating source-based live
+> > > > patches upstream, and it should really be optional for CONFIG_LIVEPATCH,
+> > > > since kpatch-build doesn't need it.
+> > > 
+> > > I also just discovered that -flive-patching is responsible for all those
+> > > "unreachable instruction" objtool warnings which Randy has been
+> > > dutifully bugging me about over the last several months.  For some
+> > > reason it subtly breaks GCC implicit noreturn detection for local
+> > > functions.
+> > 
+> > Ugh, that is unfortunate. Have you reported it?
 > 
+> Not yet (but I plan to).
 
-If that's the only motivation to do this, klp_objects could have a 
-reference to the klp_patch they are part of. This could easily be set 
-when adding the klp_object to the klp_patch->obj_list in 
-klp_init_object_early() .
+My findings so far...
 
-Having this reference could also prove useful in future scenarios.
+I bisected through GCC options which -flive-patching disables and 
+-fno-ipa-pure-const is the culprit. I got no warnings without the option 
+with my config.
 
-Cheers,
+Then I found out allmodconfig was ok even with -flive-patching. 
+CONFIG_GCOV is the difference. CONFIG_GCOV=y seems to make the warnings go 
+away here.
 
--- 
-Julien Thierry
-
+/me goes staring
