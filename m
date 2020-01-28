@@ -2,111 +2,187 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FB714B1BF
-	for <lists+live-patching@lfdr.de>; Tue, 28 Jan 2020 10:28:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA54E14B410
+	for <lists+live-patching@lfdr.de>; Tue, 28 Jan 2020 13:16:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbgA1J2N (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 28 Jan 2020 04:28:13 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33168 "EHLO mx2.suse.de"
+        id S1726002AbgA1MQ4 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 28 Jan 2020 07:16:56 -0500
+Received: from mx2.suse.de ([195.135.220.15]:57378 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725920AbgA1J2N (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 28 Jan 2020 04:28:13 -0500
+        id S1725959AbgA1MQ4 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 28 Jan 2020 07:16:56 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 3B8B7ADA1;
-        Tue, 28 Jan 2020 09:28:10 +0000 (UTC)
-Date:   Tue, 28 Jan 2020 10:28:07 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        by mx2.suse.de (Postfix) with ESMTP id 95B15AEFF;
+        Tue, 28 Jan 2020 12:16:53 +0000 (UTC)
+Date:   Tue, 28 Jan 2020 13:16:53 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Julien Thierry <jthierry@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Jessica Yu <jeyu@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
-        bristot@redhat.com, jbaron@akamai.com,
-        torvalds@linux-foundation.org, tglx@linutronix.de,
-        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-In-Reply-To: <20200122214239.ivnebi7hiabi5tbs@treble>
-Message-ID: <alpine.LSU.2.21.2001281014280.14030@pobox.suse.cz>
-References: <88bab814-ea24-ece9-2bc0-7a1e10a62f12@redhat.com> <20191015153120.GA21580@linux-8ccs> <7e9c7dd1-809e-f130-26a3-3d3328477437@redhat.com> <20191015182705.1aeec284@gandalf.local.home> <20191016074217.GL2328@hirez.programming.kicks-ass.net>
- <20191021150549.bitgqifqk2tbd3aj@treble> <20200120165039.6hohicj5o52gdghu@treble> <alpine.LSU.2.21.2001210922060.6036@pobox.suse.cz> <20200121161045.dhihqibnpyrk2lsu@treble> <alpine.LSU.2.21.2001221052331.15957@pobox.suse.cz>
- <20200122214239.ivnebi7hiabi5tbs@treble>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Nicolai Stange <nstange@suse.de>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [POC 02/23] livepatch: Split livepatch modules per livepatched
+ object
+Message-ID: <20200128121653.72mhdqnfwtw7kifr@pathway.suse.cz>
+References: <20200117150323.21801-1-pmladek@suse.com>
+ <20200117150323.21801-3-pmladek@suse.com>
+ <af90531e-219c-3515-1dc8-d86191902ea4@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <af90531e-219c-3515-1dc8-d86191902ea4@redhat.com>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 22 Jan 2020, Josh Poimboeuf wrote:
-
-> On Wed, Jan 22, 2020 at 11:09:56AM +0100, Miroslav Benes wrote:
+On Tue 2020-01-21 11:11:45, Julien Thierry wrote:
+> Hi Petr,
+> 
+> On 1/17/20 3:03 PM, Petr Mladek wrote:
+> > One livepatch module allows to fix vmlinux and any number of modules
+> > while providing some guarantees defined by the consistency model.
 > > 
-> > > > > At this point, I only see downsides of -flive-patching, at least until
-> > > > > we actually have real upstream code which needs it.
-> > > > 
-> > > > Can you explain this? The option makes GCC to avoid optimizations which 
-> > > > are difficult to detect and would make live patching unsafe. I consider it 
-> > > > useful as it is, so if you shared the other downsides and what you meant 
-> > > > by real upstream code, we could discuss it.
-> > > 
-> > > Only SLES needs it right?  Why inflict it on other livepatch users?  By
-> > > "real upstream code" I mean there's no (documented) way to create live
-> > > patches using the method which relies on this flag.  So I don't see any
-> > > upstream benefits for having it enabled.
+> > The solution is to split the livepatch module per livepatched
+> > object (vmlinux or module). Then both livepatch module and
+> > the livepatched modules could get loaded and removed at the
+> > same time.
 > > 
-> > I'd put it differently. SLES and upstream need it, RHEL does not need it. 
-> > Or anyone using kpatch-build.
-> 
-> I'm confused about why you think upstream needs it.
-> 
-> Is all the tooling available somewhere?  Is there documentation
-> available which describes how to build patches using that method from
-> start to finish?  Are there actual users other than SUSE?
-> 
-> BTW, kpatch-build has a *lot* of users other than RHEL.  All its tooling
-> and documentation are available on Github.
-> 
-> > It is perfectly fine to prepare live patches just from the source code
-> > using upstream live patching infrastructure. 
-> 
-> Do you mean the dangerous method used by the livepatch sample code which
-> completely ignores interprocedural optimizations?  I wouldn't call that
-> perfectly fine.
-> 
-> > After all, SLES is nothing else than upstream here. We were creating live 
-> > patches manually for quite a long time and only recently we have been 
-> > using Nicolai's klp-ccp automation (https://github.com/SUSE/klp-ccp).
+> > The livepatches for modules are put into separate source files
+> > that define only struct klp_object() and call the new klp_add_object()
+> > in the init() callback. The name of the module follows the pattern:
 > > 
-> > So, everyone using upstream directly relies on the flag, which seems to be 
-> > a clear benefit to me. Reverting the patch would be a step back.
+> >    <patch_name>__<object_name>
+> > 
 > 
-> Who exactly is "everyone using upstream"?
+> Is that a requirement? Or is it just the convention followed for the current
+> tests?
+
+This naming pattern is enforced by the code. The reason is to
+distinguish the purpose of each livepatch module.
+
+   + Livepatch module for "vmlinux" and the related livepatch modules
+     for other objects.
+
+   + Different livepatches (versions) that might be installed at the
+     same time. This happens even with cumulative livepatches.
+
+
+It is important for the functionality:
+
+   + Consistency checks that all and right livepatch modules are
+     loaded.
+
+   + Automatic loading of livepatch modules for modules when the patched
+     module is being loaded.
+
+But it should be "clear" even for humans because the livepatch modules are
+listed by lsmod, ...
+
+Of course, we could talk about other naming scheme, another approach.
+
+
+> > @@ -844,21 +822,7 @@ static int klp_init_patch_early(struct klp_patch *patch)
+> >   	INIT_WORK(&patch->free_work, klp_free_patch_work_fn);
+> >   	init_completion(&patch->finish);
+> > -	klp_for_each_object_static(patch, obj) {
 > 
-> >From what I can tell, kpatch-build is the only known way (to those
-> outside of SUSE) to make safe patches for an upstream kernel.  And it
-> doesn't need this flag and the problems associated with it: performance,
-> LTO incompatibility, clang incompatibility (I think?), the GCC dead code
-> issue.
+> I think we can get rid of klp_for_each_object_static(), no? Now the
+> klp_patch is only associated to a single klp_object, so everything will be
+> dynamic. Is this correct?
 
-I don't think we have something special at SUSE not generally available...
+Yes, the macro klp_for_each_object_static() is not longer needed.
 
-...and I don't think it is really important to discuss that and replying 
-to the above, because there is a legitimate use case which relies on the 
-flag. We decided to support different use cases right at the beginning.
+Just to be sure. It would be better to say that all klp_object
+structures will be in the linked lists only.
 
-I understand it currently complicates things for objtool, but objtool is 
-sensitive to GCC code generation by definition. "Issues" appear with every 
-new GCC version. I see no difference here and luckily it is not so 
-difficult to fix it.
+Most structures are still defined statically. The name "dynamic" is
+used for the dynamically allocated structures. They are used for
+"nop" functions that might be needed when doing atomic replace
+of cumulative patches and functions that are not longer patched.
+See obj->dynamic and func->nop.
 
-I am happy to help with acting on those objtool warning reports you 
-mentioned in the other email. Just Cc me where appropriate. We will take a 
-look.
 
-Regards
-Miroslav
+> > @@ -991,12 +958,12 @@ int klp_enable_patch(struct klp_patch *patch)
+> >   {
+> >   	int ret;
+> > -	if (!patch || !patch->mod)
+> > +	if (!patch || !patch->obj || !patch->obj->mod)
+> >   		return -EINVAL;
+> > -	if (!is_livepatch_module(patch->mod)) {
+> > +	if (!is_livepatch_module(patch->obj->mod)) {
+> >   		pr_err("module %s is not marked as a livepatch module\n",
+> > -		       patch->mod->name);
+> > +		       patch->obj->patch_name);
+> 
+> Shouldn't that be "patch->obj->mod->name" ?
+
+They are actually the same. Note that it is redundant only in
+struct klp_object that is in the livepatch module for vmlinux.
+
+Hmm, it might be possible to get rid of it after I added the array
+patch->obj_names. But I would prefer to keep it as a consistency
+check.
+
+One big drawback of the split modules approach is that there are
+suddenly many more livepatch modules. The kernel code has to make
+sure always the right ones are loaded. It is great to have some
+cross-checks.
+
+
+> >   		return -EINVAL;
+> >   	}
+
+> > diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> > index f6310f848f34..78e3280560cd 100644
+> > --- a/kernel/livepatch/transition.c
+> > +++ b/kernel/livepatch/transition.c
+> > @@ -147,7 +145,7 @@ void klp_cancel_transition(void)
+> >   		return;
+> >   	pr_debug("'%s': canceling patching transition, going to unpatch\n",
+> > -		 klp_transition_patch->mod->name);
+> > +		 klp_transition_patch->obj->patch_name);
+> >   	klp_target_state = KLP_UNPATCHED;
+> >   	klp_complete_transition();
+> > @@ -468,7 +466,7 @@ void klp_start_transition(void)
+> >   	WARN_ON_ONCE(klp_target_state == KLP_UNDEFINED);
+> >   	pr_notice("'%s': starting %s transition\n",
+> > -		  klp_transition_patch->mod->name,
+> > +		  klp_transition_patch->obj->patch_name,
+> 
+> Isn't the transition per livepatched module rather than per-patch now?
+> If so, would it make more sense to display also the name of the module being
+> patched/unpatched?
+
+The transition still happens for the entire livepatch defined by
+struct klp_patch. All needed livepatch modules for the other objects
+are loaded before the transition starts, see the patch 17/24
+("livepatch: Load livepatches for modules when loading the main
+livepatch").
+
+> >   		  klp_target_state == KLP_PATCHED ? "patching" : "unpatching");
+> >   	/*
+
+Best Regards,
+Petr
+
+PS: Julien,
+
+first, thanks a lot for looking at the patchset.
+
+I am going to answer questions and comments that are related to
+the overall design. The most important question is if the split
+livepatch modules are the way to go. I hope that this patchset
+shows possible wins and catches so that we could decide if it
+is worth the effort.
+
+Anyway, feel free to comment even details when you notice
+a mistake. There might be some catches that I missed, ...
+
+Best Regards,
+Petr
