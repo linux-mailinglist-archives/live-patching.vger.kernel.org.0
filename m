@@ -2,22 +2,40 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A38314D86A
-	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2020 10:53:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD8814DCB1
+	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2020 15:17:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgA3Jxv (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 30 Jan 2020 04:53:51 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33068 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726922AbgA3Jxv (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 30 Jan 2020 04:53:51 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id D4B6FAC4B;
-        Thu, 30 Jan 2020 09:53:47 +0000 (UTC)
-Date:   Thu, 30 Jan 2020 10:53:46 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
+        id S1727241AbgA3ORu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 30 Jan 2020 09:17:50 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:50248 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727219AbgA3ORu (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Thu, 30 Jan 2020 09:17:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580393869;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SQLCEiwjxFUhrMsORDFo4u4SoI+4SqDuOptNlKVezG8=;
+        b=D0pSnybUNZCn/Wdr7JZ4AO4Mh4h/4Ci7TNgbh/HvCsC0zShQw8Q/Q+NYbHl7ws8pz8pG/j
+        L4UOXPpRbHeMFCUkqE6vm7Efoa4ZA04ZLS7PoZhr1KwaDa251dzWo+9ULzDNn5gN05Wsuh
+        JGFYksLPCYMZYI5Y5fuY6DD2d3Lws7k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-170-MywjOwE5PnGrr_6RyZCF3Q-1; Thu, 30 Jan 2020 09:17:47 -0500
+X-MC-Unique: MywjOwE5PnGrr_6RyZCF3Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 806A31005F73;
+        Thu, 30 Jan 2020 14:17:44 +0000 (UTC)
+Received: from treble (ovpn-120-83.rdu2.redhat.com [10.10.120.83])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 98BDD60BE1;
+        Thu, 30 Jan 2020 14:17:36 +0000 (UTC)
+Date:   Thu, 30 Jan 2020 08:17:33 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Petr Mladek <pmladek@suse.com>
 Cc:     Miroslav Benes <mbenes@suse.cz>,
         Peter Zijlstra <peterz@infradead.org>,
         Steven Rostedt <rostedt@goodmis.org>,
@@ -30,9 +48,8 @@ Cc:     Miroslav Benes <mbenes@suse.cz>,
         ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
         Randy Dunlap <rdunlap@infradead.org>, nstange@suse.de
 Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-Message-ID: <20200130095346.6buhb3reehijbamz@pathway.suse.cz>
-References: <alpine.LSU.2.21.2001210922060.6036@pobox.suse.cz>
- <20200121161045.dhihqibnpyrk2lsu@treble>
+Message-ID: <20200130141733.krfdmirathscgkkp@treble>
+References: <20200121161045.dhihqibnpyrk2lsu@treble>
  <alpine.LSU.2.21.2001221052331.15957@pobox.suse.cz>
  <20200122214239.ivnebi7hiabi5tbs@treble>
  <alpine.LSU.2.21.2001281014280.14030@pobox.suse.cz>
@@ -41,113 +58,49 @@ References: <alpine.LSU.2.21.2001210922060.6036@pobox.suse.cz>
  <20200128170254.igb72ib5n7lvn3ds@treble>
  <alpine.LSU.2.21.2001291249430.28615@pobox.suse.cz>
  <20200129155951.qvf3tjsv2qvswciw@treble>
+ <20200130095346.6buhb3reehijbamz@pathway.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200129155951.qvf3tjsv2qvswciw@treble>
-User-Agent: NeoMutt/20170912 (1.9.0)
+In-Reply-To: <20200130095346.6buhb3reehijbamz@pathway.suse.cz>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2020-01-29 09:59:51, Josh Poimboeuf wrote:
-> In retrospect, the prerequisites for merging it should have been:
+On Thu, Jan 30, 2020 at 10:53:46AM +0100, Petr Mladek wrote:
+> On Wed 2020-01-29 09:59:51, Josh Poimboeuf wrote:
+> > In retrospect, the prerequisites for merging it should have been:
+> 
+> OK, let me do one more move in this game.
+> 
+> 
+> > 1) Document how source-based patches can be safely generated;
+> 
+> I agree that the information are really scattered over many files
+> in Documentation/livepatch/.
 
-OK, let me do one more move in this game.
+Once again you're blithely ignoring my point and pretending I'm saying
+something else.  And you did that again further down in the email, but
+what's the point of arguing if you're not going to listen.
 
+This has nothing to do with the organization of the existing
+documentation.  When did I say that?
 
-> 1) Document how source-based patches can be safely generated;
+Adding the -flive-patching flag doesn't remove *all*
+function-ABI-breaking optimizations.  It's only a partial solution.  The
+rest of the solution involves tooling and processes which need to be
+documented.  But you already know that.
 
-I agree that the information are really scattered over many files
-in Documentation/livepatch/. Anyway, there is a lot of useful
-hints:
+If we weren't co-maintainers I would have reverted the patch days ago.
+I've tried to give you all the benefit of the doubt.  But you seem to be
+playing company politics.
 
-   + structure and behavior of the livepatch module, link
-     to a sample, limitations, are described in livepatch.rst
+I would ask that you please put on your upstream hats and stop playing
+politics.  If the patch creation process is a secret, then by all means,
+keep it secret.  But then keep your GCC flag to yourself.
 
-   + many other catches are described in the other files:
-     callbacks, module-elf-fomat, cumulative-patches,
-     system-state.
+-- 
+Josh
 
-Yes, it would be great to have a better structure, more information.
-But do not get me wrong. Anyone, Joe definitely, is able to create
-livepatch from sources by this information.
-
-Anyone could play with it, ask questions, and improve the
-documentation. Better documentation would help but it is
-not a blocker, definitely.
-
-
-> 2) Fix the scheduler performance regression;
-
-The optimizations are disabled only when livepatching is enabled.
-I would consider this as a prize for the feature. There are
-many things like this.
-
-As it was said. It was 1-3 percent in scheduler microbenchmark.
-It would make sense to fix it only when it causes such a regression
-in real workloads. Do you have any?
-
-
-> 3) Figure out if there are any other regressions by detecting which
->    function interfaces are affected by the flag and seeing if they're
->    hot path;
-
-IMHO, benchmarks are much more effective and we spent non-trivial
-resources when running them.
-
-
-> 4) Provide a way for the N-1 users to opt-out
-
-AFAIK, the only prize is the 1-3 percent scheduler performance degradation.
-If you really do not want to pay this prize, let's make it configurable.
-
-But the option is definitely needed when source livepatches are used.
-There is no other reasonable way to detect and workaround these
-problems. For this, it has to be in upstream kernel. It is in line
-with the effort to make livepatching less and less error prone.
-
-And please, let's stop playing this multi-user games. There is at least
-one known user of source based livepatches. By coincidence, it is also
-a big contributor to this subsystem. Adding an extra option into
-CFLAGS is quite error prone. You can imagine how complicated is
-a kernel rpm spec file for more kernel flavors. The only safe way
-is to have the optimization tight with the CONFIG option in
-kernel sources.
-
-
-> 5) Fix the objtool warnings (or is it a GCC bug)
-
-Nobody was aware of them. I wonder if they even existed at that time.
-We have a simple fix now. Let's continue in the thread started by
-Jikos if we could get a better solution.
-
-
-> 6) Make -flive-patching compatible with LTO (or at least acknowledge
->    that it should and will be done soon)
-
-Is LTO officially supported upstream?
-Are all patches, features tested for LTO compactibility?
-Is there any simple way to build and run LTO kernel?
-
-
-> 7) At least make it build- or runtime-incompatible with Clang-built
->    kernels to prevent people from assuming it's safe.
-
-Same questions as for LTO.
-
-
-> If you don't want to revert the patch, then address my concerns instead
-> of minimizing and deflecting at every opportunity.
-
-I would really like to keep focusing on realistic problems and
-realistic solutions:
-
-   + make the optimization configurable if you resist on it
-   + fix the objtool warnings
-
-Anything else is out of scope of this thread from my POV.
-
-Best Regards,
-Petr
