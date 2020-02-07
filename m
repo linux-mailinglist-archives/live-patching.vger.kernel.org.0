@@ -2,79 +2,72 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B4014E915
-	for <lists+live-patching@lfdr.de>; Fri, 31 Jan 2020 08:17:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0201A156017
+	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2020 21:44:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728114AbgAaHRU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 31 Jan 2020 02:17:20 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42644 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727525AbgAaHRU (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 31 Jan 2020 02:17:20 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id D096FAB6D;
-        Fri, 31 Jan 2020 07:17:17 +0000 (UTC)
-Date:   Fri, 31 Jan 2020 08:17:16 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Jessica Yu <jeyu@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
-        bristot@redhat.com, jbaron@akamai.com,
-        torvalds@linux-foundation.org, tglx@linutronix.de,
-        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>, nstange@suse.de
-Subject: Re: [PATCH v3 5/6] x86/ftrace: Use text_poke()
-Message-ID: <20200131071716.GA9569@linux-b0ei>
-References: <alpine.LSU.2.21.2001221052331.15957@pobox.suse.cz>
- <20200122214239.ivnebi7hiabi5tbs@treble>
- <alpine.LSU.2.21.2001281014280.14030@pobox.suse.cz>
- <20200128150014.juaxfgivneiv6lje@treble>
- <20200128154046.trkpkdaz7qeovhii@pathway.suse.cz>
- <20200128170254.igb72ib5n7lvn3ds@treble>
- <alpine.LSU.2.21.2001291249430.28615@pobox.suse.cz>
- <20200129155951.qvf3tjsv2qvswciw@treble>
- <20200130095346.6buhb3reehijbamz@pathway.suse.cz>
- <20200130141733.krfdmirathscgkkp@treble>
+        id S1727130AbgBGUoa (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 7 Feb 2020 15:44:30 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:39886 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727032AbgBGUoa (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Fri, 7 Feb 2020 15:44:30 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 77so592344oty.6
+        for <live-patching@vger.kernel.org>; Fri, 07 Feb 2020 12:44:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=8cDRXBFOpE9J1p6S5H+HXSQg9q3m7pUJ3iUuQ5MPcDc=;
+        b=j3CFd8//HjfRnn0+Xn3ugtmPageVNjzAWW1eXv/n2qF2c3a+Qem5peAl100ZvUhadi
+         dtpkC5xws+Omb6Jlj1VFd4X1VsW8XqbTMKuolnYLwCwSQjznYKWrr28cMAbSss3xuzV3
+         hMTEJHepf198g2Uiw7o7qnGFyYjsEtvVF5E/Hg95GV1esaWtbWdR3vk4+3a90UUUrjPv
+         VI3J+IOYaSIvtXYy2+60kDaJOMlrHJBGEwYGQjccrR2f0vEYd2XQQjrWRizMgtcVpDSc
+         v/t9pSMKlLXHfk1vluHLFHRgIPTU6F83pLQD32j3aPyiu0XHNcz9bMDG6zPPcL07VDEM
+         /gcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=8cDRXBFOpE9J1p6S5H+HXSQg9q3m7pUJ3iUuQ5MPcDc=;
+        b=BmDnZYuXjig5U33Yad+khOFDg1nVhWNERHRCG5YuCv3cB6312xlK43cQ0d24qwAgCS
+         De2Q/lfnHWeS1JYMt7rtHUluso1cRMWYMGhCzweJ+r2s7uvJ+OoxadF+/ImbX50mHvzT
+         4BYWrhikKlC/AjkuzQdeDLjfrz2TmOX6q/QRkOPuXWvaJof0RhHmsKEQMVxBqWDAIePY
+         sv3gYQeMiU0tl6gtRaUdtN1v4semO5pKMm6X/Ke7ZWoVv7W8tbentifsQY8fBMJoUa6P
+         842S4d70lOFcajBz58RMm7R7ApOVpBnTfvWl2b0HhX//667x0SA0fgZgdfF4zXugn7VE
+         oJAQ==
+X-Gm-Message-State: APjAAAVPuvq0ne9mau4TkczNfxW/YVN6fHYSMjehQmMZaysmuEADIj42
+        WpdpqfwE3cUaxfzf2/vDBQf3SlZO3eaEX2j5KpE=
+X-Google-Smtp-Source: APXvYqwTjvE0qeB/5qTvPAo7MTT636zDJCtPWKvkYc5bZ+Gl8y/89PCL8ImhG/mUpHmQEZ3mg5eWeaPtjVWgTpMz5M0=
+X-Received: by 2002:a9d:6f8f:: with SMTP id h15mr892617otq.1.1581108269464;
+ Fri, 07 Feb 2020 12:44:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200130141733.krfdmirathscgkkp@treble>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:a4a:d508:0:0:0:0:0 with HTTP; Fri, 7 Feb 2020 12:44:29 -0800 (PST)
+Reply-To: auch197722@gmail.com
+From:   "Mr. Theophilus Odadudu" <cristinamedina0010@gmail.com>
+Date:   Fri, 7 Feb 2020 15:44:29 -0500
+Message-ID: <CAPNvSThSGLHdgGbtt62DKcAad7R0hEdmR4adDmquJHR=aTiV4w@mail.gmail.com>
+Subject: LETTER OF INQUIRY
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2020-01-30 08:17:33, Josh Poimboeuf wrote:
-> On Thu, Jan 30, 2020 at 10:53:46AM +0100, Petr Mladek wrote:
-> > On Wed 2020-01-29 09:59:51, Josh Poimboeuf wrote:
-> > > In retrospect, the prerequisites for merging it should have been:
-> > 
-> > OK, let me do one more move in this game.
-> > 
-> > 
-> > > 1) Document how source-based patches can be safely generated;
-> > 
-> > I agree that the information are really scattered over many files
-> > in Documentation/livepatch/.
-> 
-> Once again you're blithely ignoring my point and pretending I'm saying
-> something else.  And you did that again further down in the email, but
-> what's the point of arguing if you're not going to listen.
+Good Day,
 
-I have exactly the same feeling but the opposite way.
+I work as a clerk in a Bank here in Nigeria, I have a very
+confidential Business Proposition for you. There is a said amount of
+money floating in the bank unclaimed, belonging to the bank Foreign
+customer who die with his family in the Ethiopian Airline crash of
+March 11, 2019.
 
-> I would ask that you please put on your upstream hats and stop playing
-> politics.  If the patch creation process is a secret, then by all means,
-> keep it secret.  But then keep your GCC flag to yourself.
+I seek your good collaboration to move the fund for our benefit. we
+have agreed that 40% be yours once you help claim.
 
-The thing is that we do not have any magic secret.
+Do get back to with 1) Your Full Name: (2) Residential Address: (3)
+Phone, Mobile  (4) Scan Copy of Your ID. to apply for claims of the
+funds.
 
-Best Regards,
-Petr
+Regards
+Theophilus Odadudu
