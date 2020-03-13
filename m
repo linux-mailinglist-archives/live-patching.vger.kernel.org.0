@@ -2,117 +2,160 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34646184421
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2020 10:54:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D062184829
+	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2020 14:30:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726364AbgCMJyP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 13 Mar 2020 05:54:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40866 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726055AbgCMJyP (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 13 Mar 2020 05:54:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 6A096ABEA;
-        Fri, 13 Mar 2020 09:54:13 +0000 (UTC)
-Date:   Fri, 13 Mar 2020 10:54:12 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     =?ISO-8859-15?Q?J=FCrgen_Gro=DF?= <jgross@suse.com>
-cc:     boris.ostrovsky@oracle.com, sstabellini@kernel.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        jpoimboe@redhat.com, x86@kernel.org,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, jslaby@suse.cz
-Subject: Re: [RFC PATCH 2/2] x86/xen: Make the secondary CPU idle tasks
- reliable
-In-Reply-To: <75224ad1-f160-802a-9d72-b092ba864fb7@suse.com>
-Message-ID: <alpine.LSU.2.21.2003131048110.30076@pobox.suse.cz>
-References: <20200312142007.11488-1-mbenes@suse.cz> <20200312142007.11488-3-mbenes@suse.cz> <75224ad1-f160-802a-9d72-b092ba864fb7@suse.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S1726591AbgCMNay (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 13 Mar 2020 09:30:54 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41894 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726554AbgCMNay (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Fri, 13 Mar 2020 09:30:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584106253;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zr+KPeie+yoAZtVSZnlWsX5gt6YKL/Jm3XuRBVo7aJw=;
+        b=KtJ2gIu++0XxDEta6W3g/cN179ISFU5H5r3r6+Dhv6XtrV8aRELr57bBIZPpz295s8/k5V
+        tXlpf0Ia/qoIHOQsibkLQQuGn3hUUegFHenVM9szmVciZXnbffHTYML8LaYF9C7l/Xo2MC
+        +uBUJIQ4+nGm6Ke0VZypCyFClQrZ8ZU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-338-auGgvM1_Pv2jjNtuJ9vyvg-1; Fri, 13 Mar 2020 09:30:47 -0400
+X-MC-Unique: auGgvM1_Pv2jjNtuJ9vyvg-1
+Received: by mail-wr1-f69.google.com with SMTP id q18so4260142wrw.5
+        for <live-patching@vger.kernel.org>; Fri, 13 Mar 2020 06:30:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Zr+KPeie+yoAZtVSZnlWsX5gt6YKL/Jm3XuRBVo7aJw=;
+        b=dS+hRuTZHY6vQn+gSfg9dTOw3mNhIHtp59EAumh6gH0jqhqEuLLnrJB59FIUV32Awb
+         ODrz927+ckpRCQXL5UDxgy+kA8m9hzZqOJHfmtDKHATz/V8hoO3nysf8JKJ95/nNCNVg
+         2Ijp78pyJW29zp4DnxK2Z2WC8iSuIYctbNXvlHo0CwLTpPIAKEeKNMUuyuDScbQBR1B7
+         I4E+2Kk3+t6/DyUCSZ3zxo78TJle+i/znogrZDyxiRiv2wJTTsuyjVbF57fiLcYIkNA+
+         y2RdGTC+DrOYoaK871akqbezyfR+HpsJyKbKe1fJL5ylLkcGKqCOdOvEBTeZKardcf7x
+         hjnw==
+X-Gm-Message-State: ANhLgQ0beOyXUa9SXvpFydAS356oQzdxu9tYBVdWkWzDIG0JXvVDP3xE
+        yoCL0EGPanK1/BGwiTTndjUyi/xPMWnHSvpi/BN3EKKlIbTa7Buv1CJHidpcUl3XplYVuhggHG7
+        kuqICDZjjmPKaRoQzNtbrUapb3A==
+X-Received: by 2002:adf:a2d9:: with SMTP id t25mr17639097wra.414.1584106245999;
+        Fri, 13 Mar 2020 06:30:45 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vsLYemjmrrWZxRzt/EOX2o+jDs1q9FV/8Dx1PNh1Lwu84a2s5vkEYAn4ev4AeQJvdwy8uViKw==
+X-Received: by 2002:adf:a2d9:: with SMTP id t25mr17639079wra.414.1584106245699;
+        Fri, 13 Mar 2020 06:30:45 -0700 (PDT)
+Received: from ?IPv6:2a01:cb14:58d:8400:ecf6:58e2:9c06:a308? ([2a01:cb14:58d:8400:ecf6:58e2:9c06:a308])
+        by smtp.gmail.com with ESMTPSA id c72sm16626306wme.35.2020.03.13.06.30.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Mar 2020 06:30:45 -0700 (PDT)
+Subject: Re: Current status about arm64 livepatch support
+To:     Mark Rutland <mark.rutland@arm.com>,
+        Xiao Yang <yangx.jy@cn.fujitsu.com>
+Cc:     Torsten Duwe <duwe@suse.de>, Torsten Duwe <duwe@lst.de>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Brown <broonie@kernel.org>, live-patching@vger.kernel.org
+References: <5E5F5647.3040705@cn.fujitsu.com>
+ <5E6AEF8B.4090905@cn.fujitsu.com>
+ <20200313122244.GI42546@lakrids.cambridge.arm.com>
+From:   Julien Thierry <jthierry@redhat.com>
+Message-ID: <f248adc0-e3c5-0519-3a4e-50935d0d1a76@redhat.com>
+Date:   Fri, 13 Mar 2020 13:30:44 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="1678380546-951734477-1584093253=:30076"
+In-Reply-To: <20200313122244.GI42546@lakrids.cambridge.arm.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+[Cc-ing live-patching mailing list which might also be interested in the 
+progress of arm64 support]
 
---1678380546-951734477-1584093253=:30076
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
-On Fri, 13 Mar 2020, Jürgen Groß wrote:
-
-> On 12.03.20 15:20, Miroslav Benes wrote:
-> > The unwinder reports the secondary CPU idle tasks' stack on XEN PV as
-> > unreliable, which affects at least live patching.
-> > cpu_initialize_context() sets up the context of the CPU through
-> > VCPUOP_initialise hypercall. After it is woken up, the idle task starts
-> > in cpu_bringup_and_idle() function and its stack starts at the offset
-> > right below pt_regs. The unwinder correctly detects the end of stack
-> > there but it is confused by NULL return address in the last frame.
-> > 
-> > RFC: I haven't found the way to teach the unwinder about the state of
-> > the stack there. Thus the ugly hack using assembly. Similar to what
-> > startup_xen() has got for boot CPU.
-> > 
-> > It introduces objtool "unreachable instruction" warning just right after
-> > the jump to cpu_bringup_and_idle(). It should show the idea what needs
-> > to be done though, I think. Ideas welcome.
-> > 
-> > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
-> > ---
-> >   arch/x86/xen/smp_pv.c   |  3 ++-
-> >   arch/x86/xen/xen-head.S | 10 ++++++++++
-> >   2 files changed, 12 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-> > index 802ee5bba66c..6b88cdcbef8f 100644
-> > --- a/arch/x86/xen/smp_pv.c
-> > +++ b/arch/x86/xen/smp_pv.c
-> > @@ -53,6 +53,7 @@ static DEFINE_PER_CPU(struct xen_common_irq, xen_irq_work)
-> > = { .irq = -1 };
-> >   static DEFINE_PER_CPU(struct xen_common_irq, xen_pmu_irq) = { .irq = -1 };
-> >   
-> >   static irqreturn_t xen_irq_work_interrupt(int irq, void *dev_id);
-> > +extern unsigned char asm_cpu_bringup_and_idle[];
-> >   
-> >   static void cpu_bringup(void)
-> >   {
+On 3/13/20 12:22 PM, Mark Rutland wrote:
+> On Fri, Mar 13, 2020 at 10:27:23AM +0800, Xiao Yang wrote:
+>> Hi,
+>>
+>> Ping.
+>>
+>> Best Regards,
+>> Xiao Yang
+>>
+>> On 2020/3/4 15:18, Xiao Yang wrote:
+>>> Hi Torsten,
+>>>
+>>> Sorry to bother you.
+>>>
+>>> I focus on arm64 livepatch support recently and saw that you have tried
+>>> to implement it by:
+>>> -------------------------------------------------------------------------------
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2018-October/609126.html
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2018-October/609124.html
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2018-October/609125.html
+>>> -------------------------------------------------------------------------------
+>>>
+>>> This patch set seems to be blocked because of some issues, but your
+>>> another patch set inlcuding the first one "arm64: implement ftrace with
+>>> regs" has been merged into upstream kernel:
+>>> -------------------------------------------------------------------------------
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631104.html
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631107.html
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631105.html
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631106.html
+>>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631114.html
+>>> --------------------------------------------------------------------------------
+>>>
+>>> Could you tell me current status about arm64 livepatch support?
+>>> For example:
+>>> 1) Are you(or someone) still working on arm64 livepatch support?
+>>> 2) Are there some unresolved problems about arm64 livepatch support?
+>>>      What are they?
+>>> 3) Will you send a newer version for arm64 livepatch support recently?
 > 
-> Would adding this here work?
+> 1) I beleive a few people are working on portions of this.
 > 
-> +	asm volatile (UNWIND_HINT(ORC_REG_UNDEFINED, 0, ORC_TYPE_CALL, 1));
+> 2) I believe that some work is necessary.
+> 
+>     Julien Thierry has done some work on objtool, which is necessary to
+>     check ensure that sequences (including assembly functions) manipulate
+>     the stack, and calls/returns as we expect. Mark Brown has been
+>     converting our assembly to use modern annotations which objtool
+>     consumes when checking this.
+> 
 
-I tried something similar. It did not work, because than the hint is 
-"bound" to the closest next call in the function which is cr4_init() in 
-this case. The unwinder would not take it into account.
+I've recently started working on the arm64 objtool again and saw the 
+work to use new annotations by Mark B. which is very helpful, thanks for 
+that. I've rebased the objtool work on them and working on solving the 
+new/remaining objtool warnings.
 
-In my case, I placed it at the beginning of cpu_bringup_and_idle(). I also 
-open coded it and played with the offset in the orc entry, but that did 
-not work for some other reason.
+I've also reworked the arm64 decoder. I'm not sure yet when I'll be able 
+to post a new version but it's coming!
 
-However, now I tried this
+>     There might be additional assembly work necessary for this, depending
+>     on any deecisions we make for objtool.
+> 
+>     For reliable stack tracing we may need to rework some assemvly and/or
+>     rework the stack tracing code. That will likely depend on the objtool
+>     bits.
+> 
 
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index 6b88cdcbef8f..39afd88309cb 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -92,6 +92,7 @@ asmlinkage __visible void cpu_bringup_and_idle(void)
- {
-        cpu_bringup();
-        boot_init_stack_canary();
-+       asm volatile (UNWIND_HINT(ORC_REG_UNDEFINED, 0, ORC_TYPE_CALL, 1));
-        cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
- }
+There is one thing I'll be introducing in the next arm64 objtool 
+patchset which are unwind_hints (inspired from 
+arch/x86/include/asm/unhind_hints.h) which are annotation indicating in 
+which state we expect the stack to be when entering assembly code or 
+fiddling with stack registers in the middle of assembly code.
 
-and that seems to work. I need to properly verify and test, but the 
-explanation is that as opposed to the above, cpu_startup_entry() is on the 
-idle task's stack and the hint is then taken into account. The unwound 
-stack seems to be complete, so it could indeed be the fix.
+I haven't finished the work on that yet.
 
-Thanks
-Miroslav
---1678380546-951734477-1584093253=:30076--
+Cheers,
+
+-- 
+Julien Thierry
+
