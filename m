@@ -2,160 +2,136 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D062184829
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2020 14:30:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88E81186D24
+	for <lists+live-patching@lfdr.de>; Mon, 16 Mar 2020 15:34:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgCMNay (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 13 Mar 2020 09:30:54 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41894 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726554AbgCMNay (ORCPT
+        id S1731553AbgCPOeN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 16 Mar 2020 10:34:13 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:42940 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731572AbgCPOeN (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 13 Mar 2020 09:30:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584106253;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Zr+KPeie+yoAZtVSZnlWsX5gt6YKL/Jm3XuRBVo7aJw=;
-        b=KtJ2gIu++0XxDEta6W3g/cN179ISFU5H5r3r6+Dhv6XtrV8aRELr57bBIZPpz295s8/k5V
-        tXlpf0Ia/qoIHOQsibkLQQuGn3hUUegFHenVM9szmVciZXnbffHTYML8LaYF9C7l/Xo2MC
-        +uBUJIQ4+nGm6Ke0VZypCyFClQrZ8ZU=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-338-auGgvM1_Pv2jjNtuJ9vyvg-1; Fri, 13 Mar 2020 09:30:47 -0400
-X-MC-Unique: auGgvM1_Pv2jjNtuJ9vyvg-1
-Received: by mail-wr1-f69.google.com with SMTP id q18so4260142wrw.5
-        for <live-patching@vger.kernel.org>; Fri, 13 Mar 2020 06:30:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Zr+KPeie+yoAZtVSZnlWsX5gt6YKL/Jm3XuRBVo7aJw=;
-        b=dS+hRuTZHY6vQn+gSfg9dTOw3mNhIHtp59EAumh6gH0jqhqEuLLnrJB59FIUV32Awb
-         ODrz927+ckpRCQXL5UDxgy+kA8m9hzZqOJHfmtDKHATz/V8hoO3nysf8JKJ95/nNCNVg
-         2Ijp78pyJW29zp4DnxK2Z2WC8iSuIYctbNXvlHo0CwLTpPIAKEeKNMUuyuDScbQBR1B7
-         I4E+2Kk3+t6/DyUCSZ3zxo78TJle+i/znogrZDyxiRiv2wJTTsuyjVbF57fiLcYIkNA+
-         y2RdGTC+DrOYoaK871akqbezyfR+HpsJyKbKe1fJL5ylLkcGKqCOdOvEBTeZKardcf7x
-         hjnw==
-X-Gm-Message-State: ANhLgQ0beOyXUa9SXvpFydAS356oQzdxu9tYBVdWkWzDIG0JXvVDP3xE
-        yoCL0EGPanK1/BGwiTTndjUyi/xPMWnHSvpi/BN3EKKlIbTa7Buv1CJHidpcUl3XplYVuhggHG7
-        kuqICDZjjmPKaRoQzNtbrUapb3A==
-X-Received: by 2002:adf:a2d9:: with SMTP id t25mr17639097wra.414.1584106245999;
-        Fri, 13 Mar 2020 06:30:45 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vsLYemjmrrWZxRzt/EOX2o+jDs1q9FV/8Dx1PNh1Lwu84a2s5vkEYAn4ev4AeQJvdwy8uViKw==
-X-Received: by 2002:adf:a2d9:: with SMTP id t25mr17639079wra.414.1584106245699;
-        Fri, 13 Mar 2020 06:30:45 -0700 (PDT)
-Received: from ?IPv6:2a01:cb14:58d:8400:ecf6:58e2:9c06:a308? ([2a01:cb14:58d:8400:ecf6:58e2:9c06:a308])
-        by smtp.gmail.com with ESMTPSA id c72sm16626306wme.35.2020.03.13.06.30.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Mar 2020 06:30:45 -0700 (PDT)
-Subject: Re: Current status about arm64 livepatch support
-To:     Mark Rutland <mark.rutland@arm.com>,
-        Xiao Yang <yangx.jy@cn.fujitsu.com>
-Cc:     Torsten Duwe <duwe@suse.de>, Torsten Duwe <duwe@lst.de>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Brown <broonie@kernel.org>, live-patching@vger.kernel.org
-References: <5E5F5647.3040705@cn.fujitsu.com>
- <5E6AEF8B.4090905@cn.fujitsu.com>
- <20200313122244.GI42546@lakrids.cambridge.arm.com>
-From:   Julien Thierry <jthierry@redhat.com>
-Message-ID: <f248adc0-e3c5-0519-3a4e-50935d0d1a76@redhat.com>
-Date:   Fri, 13 Mar 2020 13:30:44 +0000
+        Mon, 16 Mar 2020 10:34:13 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02GEWcIM124967;
+        Mon, 16 Mar 2020 14:33:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=EaXbpU2ZDyooHia0EQunsfL41osG5mIuhxxLo3/FsAg=;
+ b=wOI5Zr/AQdJtD7uLID9FHUU1sunIRSVTPZaEXsH5hLpkca1bGrZ4PYhJ3KwljZEBUTff
+ resHWmUlTaxvGKq/SGoJQkW+Hhx2kvJyUmJTEQ/f64FNaO7pGKoV2rAV/FPBPFCe63HD
+ mgV5tscfmZHJPATcH96kham2KexW09mBVXYVrW9dZUQL2NEkhoqd74lfSVYZOybFC7DE
+ BjK7IBbnbgNTzo1WbJgirTQBwABs519Vssr/wcGSPUsSjJurVWHtHXyiRQa8Ag17XHC2
+ up96EQ+hD++SeSdcUQpSl1jD5CVmsPB/IgfMRk88Q/PN5b1+45e7v0+Y7psaLDObiDc6 +w== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2yrq7kq835-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 Mar 2020 14:33:50 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02GEWv2v191626;
+        Mon, 16 Mar 2020 14:33:50 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3030.oracle.com with ESMTP id 2ys8tpum4v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 Mar 2020 14:33:50 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 02GEXlnk014515;
+        Mon, 16 Mar 2020 14:33:47 GMT
+Received: from bostrovs-us.us.oracle.com (/10.152.32.65)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 16 Mar 2020 07:33:46 -0700
+Subject: Re: [PATCH 1/2] x86/xen: Make the boot CPU idle task reliable
+To:     Miroslav Benes <mbenes@suse.cz>, jgross@suse.com,
+        sstabellini@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, hpa@zytor.com, jpoimboe@redhat.com
+Cc:     x86@kernel.org, xen-devel@lists.xenproject.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        jslaby@suse.cz
+References: <20200312142007.11488-1-mbenes@suse.cz>
+ <20200312142007.11488-2-mbenes@suse.cz>
+From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
+ 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
+ Jg6OxFYd01z+a+oL
+Message-ID: <1b98d601-d9d9-879c-918c-737830d80ac5@oracle.com>
+Date:   Mon, 16 Mar 2020 10:33:27 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200313122244.GI42546@lakrids.cambridge.arm.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
+In-Reply-To: <20200312142007.11488-2-mbenes@suse.cz>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9561 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0 mlxscore=0
+ malwarescore=0 suspectscore=0 mlxlogscore=999 spamscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2003160070
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9561 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 suspectscore=0
+ adultscore=0 bulkscore=0 mlxlogscore=999 priorityscore=1501 clxscore=1011
+ malwarescore=0 mlxscore=0 phishscore=0 impostorscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2003160070
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-[Cc-ing live-patching mailing list which might also be interested in the 
-progress of arm64 support]
 
-On 3/13/20 12:22 PM, Mark Rutland wrote:
-> On Fri, Mar 13, 2020 at 10:27:23AM +0800, Xiao Yang wrote:
->> Hi,
->>
->> Ping.
->>
->> Best Regards,
->> Xiao Yang
->>
->> On 2020/3/4 15:18, Xiao Yang wrote:
->>> Hi Torsten,
->>>
->>> Sorry to bother you.
->>>
->>> I focus on arm64 livepatch support recently and saw that you have tried
->>> to implement it by:
->>> -------------------------------------------------------------------------------
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2018-October/609126.html
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2018-October/609124.html
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2018-October/609125.html
->>> -------------------------------------------------------------------------------
->>>
->>> This patch set seems to be blocked because of some issues, but your
->>> another patch set inlcuding the first one "arm64: implement ftrace with
->>> regs" has been merged into upstream kernel:
->>> -------------------------------------------------------------------------------
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631104.html
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631107.html
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631105.html
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631106.html
->>> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-February/631114.html
->>> --------------------------------------------------------------------------------
->>>
->>> Could you tell me current status about arm64 livepatch support?
->>> For example:
->>> 1) Are you(or someone) still working on arm64 livepatch support?
->>> 2) Are there some unresolved problems about arm64 livepatch support?
->>>      What are they?
->>> 3) Will you send a newer version for arm64 livepatch support recently?
-> 
-> 1) I beleive a few people are working on portions of this.
-> 
-> 2) I believe that some work is necessary.
-> 
->     Julien Thierry has done some work on objtool, which is necessary to
->     check ensure that sequences (including assembly functions) manipulate
->     the stack, and calls/returns as we expect. Mark Brown has been
->     converting our assembly to use modern annotations which objtool
->     consumes when checking this.
-> 
 
-I've recently started working on the arm64 objtool again and saw the 
-work to use new annotations by Mark B. which is very helpful, thanks for 
-that. I've rebased the objtool work on them and working on solving the 
-new/remaining objtool warnings.
+On 3/12/20 10:20 AM, Miroslav Benes wrote:
+> --- a/arch/x86/xen/xen-head.S
+> +++ b/arch/x86/xen/xen-head.S
+> @@ -35,7 +35,7 @@ SYM_CODE_START(startup_xen)
+>  	rep __ASM_SIZE(stos)
+>  
+>  	mov %_ASM_SI, xen_start_info
+> -	mov $init_thread_union+THREAD_SIZE, %_ASM_SP
+> +	mov $init_thread_union+THREAD_SIZE-SIZEOF_PTREGS, %_ASM_SP
 
-I've also reworked the arm64 decoder. I'm not sure yet when I'll be able 
-to post a new version but it's coming!
+This is initial_stack, isn't it?
 
->     There might be additional assembly work necessary for this, depending
->     on any deecisions we make for objtool.
-> 
->     For reliable stack tracing we may need to rework some assemvly and/or
->     rework the stack tracing code. That will likely depend on the objtool
->     bits.
-> 
-
-There is one thing I'll be introducing in the next arm64 objtool 
-patchset which are unwind_hints (inspired from 
-arch/x86/include/asm/unhind_hints.h) which are annotation indicating in 
-which state we expect the stack to be when entering assembly code or 
-fiddling with stack registers in the middle of assembly code.
-
-I haven't finished the work on that yet.
-
-Cheers,
-
--- 
-Julien Thierry
+-boris
 
