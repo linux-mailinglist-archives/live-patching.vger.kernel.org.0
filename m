@@ -2,62 +2,66 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BECC188300
-	for <lists+live-patching@lfdr.de>; Tue, 17 Mar 2020 13:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBC3618B098
+	for <lists+live-patching@lfdr.de>; Thu, 19 Mar 2020 10:56:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbgCQMJP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 17 Mar 2020 08:09:15 -0400
-Received: from sonic307-2.consmr.mail.ne1.yahoo.com ([66.163.190.121]:34414
-        "EHLO sonic307-2.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726852AbgCQMJP (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 17 Mar 2020 08:09:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1584446954; bh=kcevCRoll2+Bsa3FDERpIV72LVcB1A4YV1b5N2AWYBk=; h=Date:From:Reply-To:Subject:References:From:Subject; b=Rrbbl+lM61hZyf9c3JU3tad348/wC0rOJwEr5gQRL0rlhaLClQXTSp3OnqVJK6fQ7fur4yl3NBdmqehvK3pll+nCQWr1uf+fjEZr6KPSHYouVBbaolzgBW0/yNDr/VEUuOn5l4acACf1cwr1Y3fZwl/62Qo/yv1tE08FmnGmK5iwR6+8WSdROSFmXJVjm81FK+ML/ErXZZUPsmKW1GGu4qmuOrMyVAyQYBgIunmqBWL29cEbS+tHyhCiLnypUT8VMcwFVaYM9h1P7FDMc8SOt2ee5KPeFBvFaMiBZKmvxeEuIJIxSbP8SHTeztsqaEVoylC/DOfbHr+VDKxBAISd9g==
-X-YMail-OSG: t2pjGGUVM1kIKYq1Zp3_kkeUyzT4O0Q332.E8w7MbiE2rkt4VUZCbhvg4MYYgao
- _8Suik9VHsy8mwx5i3ITvP2GRvswFmqne0BQigVcHJN_JlQ.jR0q2I2F9p2ftXLPVj0R_Bb83Vyv
- 73llJpPkiO6WzRVkYmVZXVYYb5mC.aDG_Aji2wPUHBbVhl3.NhYpYEyH3Nuzu4afCu9ASmXBcyjS
- xtsdoqMJV1fRI..vZNNrDFewsKV5oThTArSeLQTBdN.gsWahkgJH8nGdRRk3Jj05hEvPagkn_oWz
- 9OiefMrwluoFF3crQHWAPqDSJtKAGz2rb9HL7lA.YcnLBuFE3TGsHg3oOuCnKF1hwtSy4VuXebPP
- Kppw6O7p.n_6Bg5U5_iMS4TJMC549w0iPEwRJbqyr_ed7rTSyf3fCqrXiVLEBUbqa_qadstqzyC6
- zLlMiXoM9FovWOjItNnqqtdIFy2Vg_uAKcy4ofibShpUqAwmyOl5F50sO3zlE6rU8QgDS2RQJmrr
- gzchTgYv.Ly_fQWJUPHtaeYm4xZiskCGzefT1EIR2VLsBsTkkxIsWtIrs6vDYXqjgns9C.ojGLw4
- 5hddiHwobj88qvMEimRcvQqi0SLsxPZ6uqrSmZ6ZdJVESZtavT08eAsHE5MR_IOxwcwqyOafIW.B
- ulW8HISl8hF63yipztV7pxJkzoHFEYzw6d.f1baU9...IaKDasCoGw34z22Zb.f.rlo.LO1EjfH_
- mN4bYLGSiuHZuU2zhaBnv.LaruVFnFa5AfUcrwmR8P4WmR0ba1t_XHKQbtv0g9SguPRMLA22OSzM
- eCM4SvsO1jxr.vzgUB5lPvE9_sXFInrxgmHvYBFqGqcn68hv60JovQd7osQCaGzayt3sDfZmkFvV
- pNqv0XhO4BDYnc0ltwpYmxm_30VsZWsg14O9FD0WH4YfgVhNeijpN7UKsvY0mgz8gE_BiCL6atPe
- 64u0ZcM44fbyqiRv1ocqHJDv6BcoME0gdKlbHmyRR0Hl.Atg1gYM_zuwHDFDhC.ksrAPrrqX1_Rk
- TrNU0z2svaPxfGqbh83SRzgohQx461n6PzMmrNSwE21wxV3oetyWeYQprFb7FMnx4f5t5kFd0rjO
- wMONTbuY2o_idkdtux6P486bQvC.a9OPBB2AXr8oC.3BQuUelBFYC8UhozGlkSumqlzpsyb7tOA3
- WX3AGjcYbXu7k7VuaMRC4L0kFTRpAtMkNTaG5cibM5xkzuQ32XNO8kzPEADp3qODQpFrrCx9SZpJ
- RX55CIpE6Vzbz7iwiAajrZaMIuIbxE1F0BvAF1pxC0YjNP.JExyfUPxsxEjf2jTKNVDO4GAJMjvN
- RqPBGdQZmxbDksuG1um22QpXn0bb_Ew--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.ne1.yahoo.com with HTTP; Tue, 17 Mar 2020 12:09:14 +0000
-Date:   Tue, 17 Mar 2020 12:07:13 +0000 (UTC)
-From:   Stephen Li <stenn7@gabg.net>
-Reply-To: stephli947701@gmail.com
-Message-ID: <2078071840.1852905.1584446833663@mail.yahoo.com>
-Subject: REF
+        id S1726989AbgCSJ4M (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 19 Mar 2020 05:56:12 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35442 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726895AbgCSJ4M (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 19 Mar 2020 05:56:12 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 3D1FEAD9A;
+        Thu, 19 Mar 2020 09:56:10 +0000 (UTC)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, hpa@zytor.com, jpoimboe@redhat.com
+Cc:     x86@kernel.org, xen-devel@lists.xenproject.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        jslaby@suse.cz, andrew.cooper3@citrix.com,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH v2 0/2] x86/xen: Make idle tasks reliable
+Date:   Thu, 19 Mar 2020 10:56:04 +0100
+Message-Id: <20200319095606.23627-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <2078071840.1852905.1584446833663.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15342 YMailNodin Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+The unwinder reports idle tasks' stack on XEN PV as unreliable which
+complicates things for at least live patching. The two patches in the
+series try to amend that by using similar approach as non-XEN x86 does.
 
+v1->v2:
+- call instruction used instead of push+jmp
+- initial_stack used directly
 
-Greetings,
-I was searching through a local business directory when I found your
-profile. I am Soliciting On-Behalf of my private client who is
-interested in having a serious business investment in your country. If
-you have a valid business, investment or project he can invest
-back to me for more details. Your swift response is highly needed.
-Sincerely
-Stephen Li
-Please response back to me with is my private email below for more details
-stephli947701@gmail.com
+There is a thing which makes me slightly uncomfortable. s/jmp/call/
+means that, theoretically, the called function could return. GCC then
+generates not so nice code and there is
+asm_cpu_bringup_and_idle+0x5/0x1000 symbol last on the stack due to
+alignment in asm/x86/xen/xen-head.S which could be confusing.
+Practically it is all fine, because neither xen_start_kernel(), nor
+cpu_bringup_and_idle() return (there is unbounded loop in
+cpu_startup_entry() around do_idle()). __noreturn annotation of these
+functions did not help.
+
+So I don't think it is really a problem, but one may wonder.
+
+Miroslav Benes (2):
+  x86/xen: Make the boot CPU idle task reliable
+  x86/xen: Make the secondary CPU idle tasks reliable
+
+ arch/x86/xen/smp_pv.c   |  3 ++-
+ arch/x86/xen/xen-head.S | 16 ++++++++++++++--
+ 2 files changed, 16 insertions(+), 3 deletions(-)
+
+-- 
+2.25.1
+
