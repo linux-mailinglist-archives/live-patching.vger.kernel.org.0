@@ -2,99 +2,78 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2262F18B09F
-	for <lists+live-patching@lfdr.de>; Thu, 19 Mar 2020 10:56:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A438D18B0BC
+	for <lists+live-patching@lfdr.de>; Thu, 19 Mar 2020 11:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbgCSJ4O (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 19 Mar 2020 05:56:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35502 "EHLO mx2.suse.de"
+        id S1726783AbgCSKBY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 19 Mar 2020 06:01:24 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38442 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726988AbgCSJ4N (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 19 Mar 2020 05:56:13 -0400
+        id S1725601AbgCSKBY (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 19 Mar 2020 06:01:24 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 6CB58AF85;
-        Thu, 19 Mar 2020 09:56:11 +0000 (UTC)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     boris.ostrovsky@oracle.com, jgross@suse.com,
+        by mx2.suse.de (Postfix) with ESMTP id 4638CB152;
+        Thu, 19 Mar 2020 10:01:22 +0000 (UTC)
+Subject: Re: [PATCH v2 1/2] x86/xen: Make the boot CPU idle task reliable
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     boris.ostrovsky@oracle.com, jgross@suse.com,
         sstabellini@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, hpa@zytor.com, jpoimboe@redhat.com
-Cc:     x86@kernel.org, xen-devel@lists.xenproject.org,
+        bp@alien8.de, hpa@zytor.com, jpoimboe@redhat.com,
+        andrew.cooper3@citrix.com, x86@kernel.org,
         linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        jslaby@suse.cz, andrew.cooper3@citrix.com,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: [PATCH v2 2/2] x86/xen: Make the secondary CPU idle tasks reliable
-Date:   Thu, 19 Mar 2020 10:56:06 +0100
-Message-Id: <20200319095606.23627-3-mbenes@suse.cz>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200319095606.23627-1-mbenes@suse.cz>
+        xen-devel@lists.xenproject.org, jslaby@suse.cz
 References: <20200319095606.23627-1-mbenes@suse.cz>
+ <20200319095606.23627-2-mbenes@suse.cz>
+From:   Jan Beulich <jbeulich@suse.com>
+Message-ID: <71c4eeaf-958a-b215-3033-c3e0d74a9cfa@suse.com>
+Date:   Thu, 19 Mar 2020 11:01:21 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200319095606.23627-2-mbenes@suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The unwinder reports the secondary CPU idle tasks' stack on XEN PV as
-unreliable, which affects at least live patching.
-cpu_initialize_context() sets up the context of the CPU through
-VCPUOP_initialise hypercall. After it is woken up, the idle task starts
-in cpu_bringup_and_idle() function and its stack starts at the offset
-right below pt_regs. The unwinder correctly detects the end of stack
-there but it is confused by NULL return address in the last frame.
+On 19.03.2020 10:56, Miroslav Benes wrote:
+> The unwinder reports the boot CPU idle task's stack on XEN PV as
+> unreliable, which affects at least live patching. There are two reasons
+> for this. First, the task does not follow the x86 convention that its
+> stack starts at the offset right below saved pt_regs. It allows the
+> unwinder to easily detect the end of the stack and verify it. Second,
+> startup_xen() function does not store the return address before jumping
+> to xen_start_kernel() which confuses the unwinder.
+> 
+> Amend both issues by moving the starting point of initial stack in
+> startup_xen() and storing the return address before the jump, which is
+> exactly what call instruction does.
+> 
+> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> ---
+>  arch/x86/xen/xen-head.S | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
+> index 1d0cee3163e4..edc776af0e0a 100644
+> --- a/arch/x86/xen/xen-head.S
+> +++ b/arch/x86/xen/xen-head.S
+> @@ -35,7 +35,11 @@ SYM_CODE_START(startup_xen)
+>  	rep __ASM_SIZE(stos)
+>  
+>  	mov %_ASM_SI, xen_start_info
+> -	mov $init_thread_union+THREAD_SIZE, %_ASM_SP
+> +#ifdef CONFIG_X86_64
+> +	mov initial_stack(%rip), %_ASM_SP
+> +#else
+> +	mov pa(initial_stack), %_ASM_SP
+> +#endif
 
-Introduce a wrapper in assembly, which just calls
-cpu_bringup_and_idle(). The return address is thus pushed on the stack
-and the wrapper contains the annotation hint for the unwinder regarding
-the stack state.
+If you need to distinguish the two anyway, why not use %rsp and
+%esp respectively?
 
-Signed-off-by: Miroslav Benes <mbenes@suse.cz>
----
- arch/x86/xen/smp_pv.c   | 3 ++-
- arch/x86/xen/xen-head.S | 8 ++++++++
- 2 files changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index 802ee5bba66c..6b88cdcbef8f 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -53,6 +53,7 @@ static DEFINE_PER_CPU(struct xen_common_irq, xen_irq_work) = { .irq = -1 };
- static DEFINE_PER_CPU(struct xen_common_irq, xen_pmu_irq) = { .irq = -1 };
- 
- static irqreturn_t xen_irq_work_interrupt(int irq, void *dev_id);
-+extern unsigned char asm_cpu_bringup_and_idle[];
- 
- static void cpu_bringup(void)
- {
-@@ -309,7 +310,7 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
- 	 * pointing just below where pt_regs would be if it were a normal
- 	 * kernel entry.
- 	 */
--	ctxt->user_regs.eip = (unsigned long)cpu_bringup_and_idle;
-+	ctxt->user_regs.eip = (unsigned long)asm_cpu_bringup_and_idle;
- 	ctxt->flags = VGCF_IN_KERNEL;
- 	ctxt->user_regs.eflags = 0x1000; /* IOPL_RING1 */
- 	ctxt->user_regs.ds = __USER_DS;
-diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
-index edc776af0e0a..9dc6f9a420a8 100644
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -58,6 +58,14 @@ SYM_CODE_START(startup_xen)
- 	call xen_start_kernel
- SYM_CODE_END(startup_xen)
- 	__FINIT
-+
-+.pushsection .text
-+SYM_CODE_START(asm_cpu_bringup_and_idle)
-+	UNWIND_HINT_EMPTY
-+
-+	call cpu_bringup_and_idle
-+SYM_CODE_END(asm_cpu_bringup_and_idle)
-+.popsection
- #endif
- 
- .pushsection .text
--- 
-2.25.1
-
+Jan
