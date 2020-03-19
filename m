@@ -2,18 +2,18 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC3618B098
-	for <lists+live-patching@lfdr.de>; Thu, 19 Mar 2020 10:56:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 341F418B09D
+	for <lists+live-patching@lfdr.de>; Thu, 19 Mar 2020 10:56:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726989AbgCSJ4M (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        id S1727039AbgCSJ4M (ORCPT <rfc822;lists+live-patching@lfdr.de>);
         Thu, 19 Mar 2020 05:56:12 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35442 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:35468 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726895AbgCSJ4M (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        id S1726936AbgCSJ4M (ORCPT <rfc822;live-patching@vger.kernel.org>);
         Thu, 19 Mar 2020 05:56:12 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 3D1FEAD9A;
+        by mx2.suse.de (Postfix) with ESMTP id C6909AE59;
         Thu, 19 Mar 2020 09:56:10 +0000 (UTC)
 From:   Miroslav Benes <mbenes@suse.cz>
 To:     boris.ostrovsky@oracle.com, jgross@suse.com,
@@ -23,10 +23,12 @@ Cc:     x86@kernel.org, xen-devel@lists.xenproject.org,
         linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
         jslaby@suse.cz, andrew.cooper3@citrix.com,
         Miroslav Benes <mbenes@suse.cz>
-Subject: [PATCH v2 0/2] x86/xen: Make idle tasks reliable
-Date:   Thu, 19 Mar 2020 10:56:04 +0100
-Message-Id: <20200319095606.23627-1-mbenes@suse.cz>
+Subject: [PATCH v2 1/2] x86/xen: Make the boot CPU idle task reliable
+Date:   Thu, 19 Mar 2020 10:56:05 +0100
+Message-Id: <20200319095606.23627-2-mbenes@suse.cz>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200319095606.23627-1-mbenes@suse.cz>
+References: <20200319095606.23627-1-mbenes@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
@@ -34,34 +36,49 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The unwinder reports idle tasks' stack on XEN PV as unreliable which
-complicates things for at least live patching. The two patches in the
-series try to amend that by using similar approach as non-XEN x86 does.
+The unwinder reports the boot CPU idle task's stack on XEN PV as
+unreliable, which affects at least live patching. There are two reasons
+for this. First, the task does not follow the x86 convention that its
+stack starts at the offset right below saved pt_regs. It allows the
+unwinder to easily detect the end of the stack and verify it. Second,
+startup_xen() function does not store the return address before jumping
+to xen_start_kernel() which confuses the unwinder.
 
-v1->v2:
-- call instruction used instead of push+jmp
-- initial_stack used directly
+Amend both issues by moving the starting point of initial stack in
+startup_xen() and storing the return address before the jump, which is
+exactly what call instruction does.
 
-There is a thing which makes me slightly uncomfortable. s/jmp/call/
-means that, theoretically, the called function could return. GCC then
-generates not so nice code and there is
-asm_cpu_bringup_and_idle+0x5/0x1000 symbol last on the stack due to
-alignment in asm/x86/xen/xen-head.S which could be confusing.
-Practically it is all fine, because neither xen_start_kernel(), nor
-cpu_bringup_and_idle() return (there is unbounded loop in
-cpu_startup_entry() around do_idle()). __noreturn annotation of these
-functions did not help.
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+---
+ arch/x86/xen/xen-head.S | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-So I don't think it is really a problem, but one may wonder.
-
-Miroslav Benes (2):
-  x86/xen: Make the boot CPU idle task reliable
-  x86/xen: Make the secondary CPU idle tasks reliable
-
- arch/x86/xen/smp_pv.c   |  3 ++-
- arch/x86/xen/xen-head.S | 16 ++++++++++++++--
- 2 files changed, 16 insertions(+), 3 deletions(-)
-
+diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
+index 1d0cee3163e4..edc776af0e0a 100644
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -35,7 +35,11 @@ SYM_CODE_START(startup_xen)
+ 	rep __ASM_SIZE(stos)
+ 
+ 	mov %_ASM_SI, xen_start_info
+-	mov $init_thread_union+THREAD_SIZE, %_ASM_SP
++#ifdef CONFIG_X86_64
++	mov initial_stack(%rip), %_ASM_SP
++#else
++	mov pa(initial_stack), %_ASM_SP
++#endif
+ 
+ #ifdef CONFIG_X86_64
+ 	/* Set up %gs.
+@@ -51,7 +55,7 @@ SYM_CODE_START(startup_xen)
+ 	wrmsr
+ #endif
+ 
+-	jmp xen_start_kernel
++	call xen_start_kernel
+ SYM_CODE_END(startup_xen)
+ 	__FINIT
+ #endif
 -- 
 2.25.1
 
