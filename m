@@ -2,71 +2,62 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFEA018CC4F
-	for <lists+live-patching@lfdr.de>; Fri, 20 Mar 2020 12:08:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BBF193BC5
+	for <lists+live-patching@lfdr.de>; Thu, 26 Mar 2020 10:26:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727183AbgCTLIY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 20 Mar 2020 07:08:24 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:34951 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727197AbgCTLIY (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 20 Mar 2020 07:08:24 -0400
-Received: by mail-oi1-f194.google.com with SMTP id k8so6087805oik.2
-        for <live-patching@vger.kernel.org>; Fri, 20 Mar 2020 04:08:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=kuhba0bbR9oJup1oQ7P5tNPZ9FqBHXE57QqcfHgaIHo=;
-        b=A60SjmFBNa4d1kwHvRw4bc9lj2jiNyAhDuqhjWo3cgAebNQqUJEnh/RoZdx7hfzsrp
-         4SWQhn688QXBqYnglKKuLTjif0JDt0fbCcv1RHUlno7cqw3eMo57hxRetkNV0RbvyU25
-         M3Jm200pLL3/1wwAtQ85SI+8PfMjYJLVzBJYLK/vQaegR5eqdknK9K4xDkTLKTPKubnA
-         jGBcsvwmCzHJiZPplG796lErwiPd5PyUKcHhVXfFsJFFRLfDf/MjQ1z0m6oXKEAnHYyc
-         EWcmpEoSaUnQlmPVU7PKje3QuaxL3J4usaauhIJ+Oh0CZo7E+79qWEUCq+sR+oQvF80l
-         qZkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=kuhba0bbR9oJup1oQ7P5tNPZ9FqBHXE57QqcfHgaIHo=;
-        b=E4o+RGouBwY2NTXqcKGROjpROcRDxj8WXNIVHKy5R+7xtqC4rk94t8EsIJIjU482QP
-         AkwY88ORRUxItZWLr8qFqgoiVGYdXtfzinsSC833svS3yD8ogyUb0/mzDSmVEM//6DnA
-         AaI5MGbPXHzvgaS1QgZm3zvhQSKJ3STsL6BQ1b0RKqd9q16uHf4pmdq5YaufI1zaMsEm
-         Ib2SuszcdDyalDHI6V7wX/0/7yEUSz9M7rrNOlSzX1ksXERtHgDsjHxPi/++FrPYgbTH
-         9uk5wyivpQmBbX78bOMH1j6c+aAtdeo4oKLZf7lH3qkD3NhvEPCAwZHeZ01pbwFX29CQ
-         dHyA==
-X-Gm-Message-State: ANhLgQ190E3PzgESDYmoXNhdYxSUwPhYkbpGX9EmsqYII82coxwhzBNc
-        HGcu0JPzWoL/Cs8Th16p8ijQL9oZvo3vkafIyMA=
-X-Google-Smtp-Source: ADFU+vt8k2nsikl8+F6zZy6KhM6oVL5vQUIBRP29fSYh+mzbePjgR8pd4xdQF9Q4z698VmxSff9iU79jql6v8FVByH8=
-X-Received: by 2002:aca:4bc5:: with SMTP id y188mr6033676oia.9.1584702503363;
- Fri, 20 Mar 2020 04:08:23 -0700 (PDT)
+        id S1727834AbgCZJ0I (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 26 Mar 2020 05:26:08 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45810 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727729AbgCZJ0H (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 26 Mar 2020 05:26:07 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id C6AE8AC5F;
+        Thu, 26 Mar 2020 09:26:05 +0000 (UTC)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, hpa@zytor.com, jpoimboe@redhat.com
+Cc:     x86@kernel.org, xen-devel@lists.xenproject.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        jslaby@suse.cz, andrew.cooper3@citrix.com, jbeulich@suse.com,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH v3 0/2] x86/xen: Make idle tasks reliable
+Date:   Thu, 26 Mar 2020 10:26:01 +0100
+Message-Id: <20200326092603.7230-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a4a:c897:0:0:0:0:0 with HTTP; Fri, 20 Mar 2020 04:08:22
- -0700 (PDT)
-From:   federa bureau of inteligence <federabureauofinteligence@gmail.com>
-Date:   Fri, 20 Mar 2020 11:08:22 +0000
-Message-ID: <CAE9o6LCqCOnKQYMchcW8zWHww1Rv4p89mYY9EaPpi4XVZ-00Mg@mail.gmail.com>
-Subject: HAPPY SURVIVAL OF CORONAVIRUS
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Dear Sir,
+The unwinder reports idle tasks' stack on XEN PV as unreliable which
+complicates things for at least live patching. The two patches in the
+series try to amend that by using similar approach as non-XEN x86 does.
 
-HAPPY SURVIVAL OF CORONAVIRUS
+v2->v3:
+- change prototype of asm_cpu_bringup_and_idle()
+- replace %_ASM_SP with %rsp and %esp respectively
+- fix build for !CONFIG_XEN_PV_SMP
 
-We are reaching for a very interesting business transaction which we
-feel will of great benefit.We the FBI unit in the western subregion of
-Africa have a fund which we confiscated and lodge it in a bank
+v1->v2:
+- call instruction used instead of push+jmp
+- initial_stack used directly
 
-This fund is worth of $12.5 million dollars.We will need your
-assistance to recieve this fund into your account for investment in
-your country.
+v1 https://lore.kernel.org/live-patching/20200312142007.11488-1-mbenes@suse.cz/
+v2 https://lore.kernel.org/live-patching/20200319095606.23627-1-mbenes@suse.cz/
 
-We will need your urgent response for details
+Miroslav Benes (2):
+  x86/xen: Make the boot CPU idle task reliable
+  x86/xen: Make the secondary CPU idle tasks reliable
 
-Inspector Greg Adams,
-For and on behalf of Cote D'Ivoire FBI
-Tel 00225 6716 6756
+ arch/x86/xen/smp_pv.c   |  3 ++-
+ arch/x86/xen/xen-head.S | 18 ++++++++++++++++--
+ 2 files changed, 18 insertions(+), 3 deletions(-)
+
+-- 
+2.25.1
+
