@@ -2,120 +2,85 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A24019502B
-	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2020 05:51:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0691957E4
+	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2020 14:20:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726233AbgC0Evf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 27 Mar 2020 00:51:35 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:51721 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726096AbgC0Eve (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 27 Mar 2020 00:51:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585284693;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/bfRnjUF9okDBSODyoBPPTnAyjMFKuJMpBFwnLOeDBI=;
-        b=L1T5HMg+xcZTQr7iw5q6kLnMU1WIku8PAU9IWNXE6rclsQaFV0zW5FECwdV0Tr9MM4tCyT
-        DNqIi9VxFRHdXUPforj8eUQqrW/ofZyNp8glSMekoSqXSPjZBx3sLSkPGX352Op5qbQMDZ
-        7jk6OeHYWLseetcgh8hnQUmuUWnzv2s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-415-vZmYp6t-NtCnCeL4FoBT2Q-1; Fri, 27 Mar 2020 00:51:30 -0400
-X-MC-Unique: vZmYp6t-NtCnCeL4FoBT2Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726333AbgC0NU6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 27 Mar 2020 09:20:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37460 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726275AbgC0NU6 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 27 Mar 2020 09:20:58 -0400
+Received: from pobox.suse.cz (prg-ext-pat.suse.com [213.151.95.130])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E952C107ACC4;
-        Fri, 27 Mar 2020 04:51:27 +0000 (UTC)
-Received: from treble (unknown [10.10.110.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B585219C69;
-        Fri, 27 Mar 2020 04:51:21 +0000 (UTC)
-Date:   Thu, 26 Mar 2020 23:51:19 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Jessica Yu <jeyu@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
-        mhiramat@kernel.org, bristot@redhat.com, jbaron@akamai.com,
-        torvalds@linux-foundation.org, tglx@linutronix.de,
-        mingo@kernel.org, namit@vmware.com, hpa@zytor.com, luto@kernel.org,
-        ard.biesheuvel@linaro.org, live-patching@vger.kernel.org
-Subject: Re: [RESEND][PATCH v3 03/17] module: Properly propagate
- MODULE_STATE_COMING failure
-Message-ID: <20200327045119.r7f6b6y2riyagemx@treble>
-References: <20200324135603.483964896@infradead.org>
- <20200324142245.445253190@infradead.org>
- <20200325173519.GA5415@linux-8ccs>
+        by mail.kernel.org (Postfix) with ESMTPSA id 87F2A206DB;
+        Fri, 27 Mar 2020 13:20:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585315257;
+        bh=zSWswf+5WS0gDf6lyvGbAoFBxZ8H5nUIyaS2V82uvYE=;
+        h=Date:From:To:cc:Subject:From;
+        b=eTvmJSwyVP3L5NOqSRoSEGJ9sy8W3JsSH4iVWLHCKD+JafgyI+EkR12Y49T/LhSdk
+         Bg9Ts/L2zopoWJQIG27zGZMi52f8AgdYMXcnYLijilogOnOPIwGdXcu7Yq9jrO11sK
+         hXKkWK0YWflL4oNvgnkj5xBPqVyeir+0nDGCWgz0=
+Date:   Fri, 27 Mar 2020 14:20:52 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Nicolai Stange <nstange@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Gabriel Gomes <gagomes@suse.com>,
+        Alice Ferrazzi <alice.ferrazzi@gmail.com>,
+        Michael Matz <matz@suse.de>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+cc:     ulp-devel@opensuse.org, live-patching@vger.kernel.org
+Subject: Live patching MC at LPC2020?
+Message-ID: <nycvar.YFH.7.76.2003271409380.19500@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200325173519.GA5415@linux-8ccs>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 06:35:22PM +0100, Jessica Yu wrote:
-> +++ Peter Zijlstra [24/03/20 14:56 +0100]:
-> > Now that notifiers got unbroken; use the proper interface to handle
-> > notifier errors and propagate them.
-> > 
-> > There were already MODULE_STATE_COMING notifiers that failed; notably:
-> > 
-> > - jump_label_module_notifier()
-> > - tracepoint_module_notify()
-> > - bpf_event_notify()
-> > 
-> > By propagating this error, we fix those users.
-> > 
-> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > Cc: jeyu@kernel.org
-> > ---
-> > kernel/module.c |   10 +++++++---
-> > 1 file changed, 7 insertions(+), 3 deletions(-)
-> > 
-> > --- a/kernel/module.c
-> > +++ b/kernel/module.c
-> > @@ -3751,9 +3751,13 @@ static int prepare_coming_module(struct
-> > 	if (err)
-> > 		return err;
-> > 
-> > -	blocking_notifier_call_chain(&module_notify_list,
-> > -				     MODULE_STATE_COMING, mod);
-> > -	return 0;
-> > +	err = blocking_notifier_call_chain_robust(&module_notify_list,
-> > +			MODULE_STATE_COMING, MODULE_STATE_GOING, mod);
-> > +	err = notifier_to_errno(err);
-> > +	if (err)
-> > +		klp_module_going(mod);
-> > +
-> > +	return err;
-> > }
-> > 
-> > static int unknown_module_param_cb(char *param, char *val, const char *modname,
-> > 
-> 
-> This looks fine to me - klp_module_going() is only called after
-> successful klp_module_coming(), and klp_module_going() is fine with
-> mod->state still being MODULE_STATE_COMING here. Would be good to have
-> livepatch folks double check. Which reminds me - Miroslav had pointed
-> out in the past that if there is an error when calling the COMING
-> notifiers, the GOING notifiers will be called while the mod->state is
-> still MODULE_STATE_COMING. I've briefly looked through all the module
-> notifiers and it looks like nobody is looking at mod->state directly
-> at least.
-> 
-> Acked-by: Jessica Yu <jeyu@kernel.org>
+Hi everybody,
 
-Looks good to me.  klp_module_going() is already called in other
-load_module() error scenarios so this should be fine from a livepatch
-standpoint.
+oh well, it sounds a bit awkward to be talking about any conference plans 
+for this year given how the corona things are untangling in the world, but 
+LPC planning committee has issued (a) statement about Covid-19 (b) call 
+for papers (as originally planned) nevertheless. Please see:
 
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+	https://linuxplumbersconf.org/
+	https://linuxplumbersconf.org/event/7/abstracts/
+
+for details.
+
+Under the asumption that this Covid nuisance is over by that time and 
+travel is possible (and safe) again -- do we want to eventually submit a 
+livepatching miniconf proposal again?
+
+I believe there are still kernel related topics on our plate (like revised 
+handling of the modules that has been agreed on in Lisbon and Petr has 
+started to work on, the C parsing effort by Nicolai, etc), and at the same 
+time I'd really like to include the new kids on the block too -- the 
+userspace livepatching folks (CCing those I know for sure are working on 
+it).
+
+So, please if you have any opinion one way or the other, please speak up. 
+Depending on the feedback, I will be fine handling the logistics of the 
+miniconf submission as last year (together with Josh I guess?) unless 
+someone else wants to step up and volunter himself :)
+
+(*) which is totally unclear, yes -- for example goverment in my country 
+    has been talking for border closure lasting for 1+ years ... but it 
+    all depends on how things develop of course).
+
+
+Thanks,
 
 -- 
-Josh
-
+Jiri Kosina
+SUSE Labs
