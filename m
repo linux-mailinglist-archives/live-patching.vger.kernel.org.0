@@ -2,85 +2,68 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0691957E4
-	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2020 14:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76DF61979CC
+	for <lists+live-patching@lfdr.de>; Mon, 30 Mar 2020 12:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726333AbgC0NU6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 27 Mar 2020 09:20:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37460 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726275AbgC0NU6 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 27 Mar 2020 09:20:58 -0400
-Received: from pobox.suse.cz (prg-ext-pat.suse.com [213.151.95.130])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 87F2A206DB;
-        Fri, 27 Mar 2020 13:20:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585315257;
-        bh=zSWswf+5WS0gDf6lyvGbAoFBxZ8H5nUIyaS2V82uvYE=;
-        h=Date:From:To:cc:Subject:From;
-        b=eTvmJSwyVP3L5NOqSRoSEGJ9sy8W3JsSH4iVWLHCKD+JafgyI+EkR12Y49T/LhSdk
-         Bg9Ts/L2zopoWJQIG27zGZMi52f8AgdYMXcnYLijilogOnOPIwGdXcu7Yq9jrO11sK
-         hXKkWK0YWflL4oNvgnkj5xBPqVyeir+0nDGCWgz0=
-Date:   Fri, 27 Mar 2020 14:20:52 +0100 (CET)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Nicolai Stange <nstange@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Gabriel Gomes <gagomes@suse.com>,
-        Alice Ferrazzi <alice.ferrazzi@gmail.com>,
-        Michael Matz <matz@suse.de>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-cc:     ulp-devel@opensuse.org, live-patching@vger.kernel.org
-Subject: Live patching MC at LPC2020?
-Message-ID: <nycvar.YFH.7.76.2003271409380.19500@cbobk.fhfr.pm>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S1729354AbgC3Kwu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 30 Mar 2020 06:52:50 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:47065 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729681AbgC3Kwq (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 30 Mar 2020 06:52:46 -0400
+Received: by mail-vs1-f68.google.com with SMTP id z125so10646892vsb.13
+        for <live-patching@vger.kernel.org>; Mon, 30 Mar 2020 03:52:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=82B0OONv9gwbZlPp43NzThDz2fRV+KRFwafOQ16joDw=;
+        b=I2bZK+Edwp7f1bl38ZDsYZ8gkHoLOp7N+SgwKjOSdbsqnWhmYlKKFyWTTwwdBuA4Vg
+         rwBHnP7ed1EksF/Uo6wi0daOtai1jA53B5b9RrMCwInP8fTj6xlf+N87Jxy7Sxa+QbUF
+         l2GP0Lv6JzwuZiPJAzgKXNfvaR6mAHzPBfBvakflfZ8B4h5bL4zPFQy+qXgn4TFvbTXz
+         A1ohkR077EumDiarvC1dhS/fXXyUHKbnnxfkdMVlwSlZiAQJvL50ZQklv05R+GT0yrBC
+         3q/4vjuGZ1FGpK3Ogg0O4Ce18OqauZECfFoMpKCzkd0qt9LKtlmIkWUwZqPjuntycFFN
+         I7DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=82B0OONv9gwbZlPp43NzThDz2fRV+KRFwafOQ16joDw=;
+        b=azAmuUb5OXqqCx2HAyyZTf0W23i4uGA3LfSW+4ACb2fj7iQZ9zDaZ5i3LMTsvAKF2T
+         wv9vINsZNgebXfb7zqWqe6pNP0vcCTzV78GhhUEAcppBfzTWE79QXkGsitrqo55f0QX1
+         ZsL8P31s83VcR9UeICjPsAIQiZlyA7E60SgwzMscADxDkxhTV1DUj1Md9wgPcnNl5/BE
+         s9mF2ZKfi71TZ7/bdQAHrE4sz8BiVovcSBCwSge5s4OT7e3aP2FjUg6gWejYz12YojmY
+         3Fbxf5wJzkAJqXT2BakfJj0PxKBQMzpYJPVnfpIeWr62kQBfin9eDVTdIv+SsGc0JWN7
+         Yg0w==
+X-Gm-Message-State: AGi0PuY4mkkmxDJODobUpTHB122KP+5T/8JFfD1z8lVHMY5iNPTmXXfS
+        ResYpvS9Q75yY2WxpAHJ7JXEY7kjvwlPWucQ8b8=
+X-Google-Smtp-Source: APiQypIWKERkhJyfw3nllppwlKx4Kg5tACX7YV91IKVmdYpKGJw8tan3l05zjbxOy64C+jzvYjD6e0YtF987t4KsIjw=
+X-Received: by 2002:a67:e24c:: with SMTP id w12mr8442912vse.153.1585565563772;
+ Mon, 30 Mar 2020 03:52:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: by 2002:a67:c005:0:0:0:0:0 with HTTP; Mon, 30 Mar 2020 03:52:43
+ -0700 (PDT)
+Reply-To: maryalice00.12@postribe.com
+From:   Maryalice Williams <maryalicewilliams730@gmail.com>
+Date:   Mon, 30 Mar 2020 08:52:43 -0200
+Message-ID: <CAKwdjsr+YKgJk7z-UHX7Zo55cx5RUN3-bw03sWcArP4vbM2B5g@mail.gmail.com>
+Subject: Reply For More Details.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi everybody,
-
-oh well, it sounds a bit awkward to be talking about any conference plans 
-for this year given how the corona things are untangling in the world, but 
-LPC planning committee has issued (a) statement about Covid-19 (b) call 
-for papers (as originally planned) nevertheless. Please see:
-
-	https://linuxplumbersconf.org/
-	https://linuxplumbersconf.org/event/7/abstracts/
-
-for details.
-
-Under the asumption that this Covid nuisance is over by that time and 
-travel is possible (and safe) again -- do we want to eventually submit a 
-livepatching miniconf proposal again?
-
-I believe there are still kernel related topics on our plate (like revised 
-handling of the modules that has been agreed on in Lisbon and Petr has 
-started to work on, the C parsing effort by Nicolai, etc), and at the same 
-time I'd really like to include the new kids on the block too -- the 
-userspace livepatching folks (CCing those I know for sure are working on 
-it).
-
-So, please if you have any opinion one way or the other, please speak up. 
-Depending on the feedback, I will be fine handling the logistics of the 
-miniconf submission as last year (together with Josh I guess?) unless 
-someone else wants to step up and volunter himself :)
-
-(*) which is totally unclear, yes -- for example goverment in my country 
-    has been talking for border closure lasting for 1+ years ... but it 
-    all depends on how things develop of course).
-
-
-Thanks,
-
 -- 
-Jiri Kosina
-SUSE Labs
+My dear,
+
+I am Mrs Maryalice Williams, I want to send you donation of two
+million seven hundred thousand Dollars ($2.7M) for volunteer projects
+in your country due to my ill health that could not permit me. Kindly
+reply for more details, and also send me the following details, as per
+below, your full Name ..........,  Address...........,
+Age...............,  Occupation ...............
+
+Remain blessed,
+Mrs. Maryalice Williams.
