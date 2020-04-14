@@ -2,98 +2,120 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FDE21A8B17
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 21:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF131A8AD1
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 21:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505017AbgDNTjQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Apr 2020 15:39:16 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:52491 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2505003AbgDNTjC (ORCPT
+        id S2504833AbgDNTcM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Apr 2020 15:32:12 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:44885 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2504831AbgDNTcA (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Apr 2020 15:39:02 -0400
+        Tue, 14 Apr 2020 15:32:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586893141;
+        s=mimecast20190719; t=1586892719;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=RUlH4sbSgo9eT5+QKvwXQtoxUNAaT+Wa5wO2eVFJNO0=;
-        b=CzCmIF6lBbpPKVMqXaJFh30Je7aWjdzUydqhA07g5S5X/vsrbl50w1J6S3zIpXR6Tq+7f2
-        /euGa9BafelOVgNMrwmIsgUj/VrpxWzXIwfzrebY7ikgVfMrtMU0va1G5i42OwnIL0St/2
-        fl0AhcPciZQqWWKQ2WDI3BT/ygQe2MA=
+        bh=+Ahnft7vUrxEzTLFARwrc8iGTJuhUk/MsvvVIUVUZdA=;
+        b=LpL5y2pTDHwwpm/Rnpep/Co1NiuC/qJrJHXZvi2W5iTEmqx8G92kq9BW8OtWJqa4jw5W5m
+        NEdzN1XQbI0GVYL+0p1Je+u/esKYRtYdbxLq2+H1vzO2B1Iw+TuNdcmw1xfMi/w4aSZT+Q
+        OOc8SlcU1eUZLwwDNzGF5IPS5sqx0ns=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-467-UVDK63RMMBK0YMgqki-D8Q-1; Tue, 14 Apr 2020 15:08:18 -0400
-X-MC-Unique: UVDK63RMMBK0YMgqki-D8Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-405-APxugEDrOxmPbni84qHg7w-1; Tue, 14 Apr 2020 15:31:55 -0400
+X-MC-Unique: APxugEDrOxmPbni84qHg7w-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 253AE800D53;
-        Tue, 14 Apr 2020 19:08:17 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D27311034AE1;
+        Tue, 14 Apr 2020 19:31:53 +0000 (UTC)
 Received: from treble (ovpn-116-146.rdu2.redhat.com [10.10.116.146])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7103B126518;
-        Tue, 14 Apr 2020 19:08:16 +0000 (UTC)
-Date:   Tue, 14 Apr 2020 14:08:14 -0500
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D40F95D9CD;
+        Tue, 14 Apr 2020 19:31:52 +0000 (UTC)
+Date:   Tue, 14 Apr 2020 14:31:50 -0500
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     Peter Zijlstra <peterz@infradead.org>
 Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jessica Yu <jeyu@kernel.org>
-Subject: Re: [PATCH 0/7] livepatch,module: Remove .klp.arch and
- module_disable_ro()
-Message-ID: <20200414190814.glra2gceqgy34iyx@treble>
+Subject: Re: [PATCH 1/7] livepatch: Apply vmlinux-specific KLP relocations
+ early
+Message-ID: <20200414193150.iqw224itgpedpltm@treble>
 References: <cover.1586881704.git.jpoimboe@redhat.com>
- <20200414182726.GF2483@worktop.programming.kicks-ass.net>
+ <8c3af42719fe0add37605ede634c7035a90f9acc.1586881704.git.jpoimboe@redhat.com>
+ <20200414174406.GC2483@worktop.programming.kicks-ass.net>
+ <20200414180109.da4v2b4ifpixuzn3@treble>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200414182726.GF2483@worktop.programming.kicks-ass.net>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20200414180109.da4v2b4ifpixuzn3@treble>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 08:27:26PM +0200, Peter Zijlstra wrote:
-> On Tue, Apr 14, 2020 at 11:28:36AM -0500, Josh Poimboeuf wrote:
-> > Better late than never, these patches add simplifications and
-> > improvements for some issues Peter found six months ago, as part of his
-> > non-writable text code (W^X) cleanups.
+On Tue, Apr 14, 2020 at 01:01:09PM -0500, Josh Poimboeuf wrote:
+> On Tue, Apr 14, 2020 at 07:44:06PM +0200, Peter Zijlstra wrote:
+> > On Tue, Apr 14, 2020 at 11:28:37AM -0500, Josh Poimboeuf wrote:
+> > > KLP relocations are livepatch-specific relocations which are applied to
+> > >   1) vmlinux-specific KLP relocation sections
+> > > 
+> > >      .klp.rela.vmlinux.{sec}
+> > > 
+> > >      These are relocations (applied to the KLP module) which reference
+> > >      unexported vmlinux symbols.
+> > > 
+> > >   2) module-specific KLP relocation sections
+> > > 
+> > >      .klp.rela.{module}.{sec}:
+> > > 
+> > >      These are relocations (applied to the KLP module) which reference
+> > >      unexported or exported module symbols.
+> > 
+> > Is there something that disallows a module from being called 'vmlinux' ?
+> > If not, we might want to enforce this somewhere.
 > 
-> Excellent stuff, thanks!!
->
-> I'll go brush up these two patches then:
+> I'm pretty sure we don't have a check for that anywhere, though the KLP
+> module would almost certainly fail during the module load when it
+> couldn't find the vmlinux.ko symbols it needed.
 > 
->   https://lkml.kernel.org/r/20191018074634.801435443@infradead.org
->   https://lkml.kernel.org/r/20191018074634.858645375@infradead.org
+> It wouldn't hurt to add a check somewhere though.  Maybe in
+> klp_module_coming() since the restriction only applies to
+> CONFIG_LIVEPATCH...
 
-Ah right, I meant to bring that up.  I actually played around with those
-patches.  While it would be nice to figure out a way to converge the
-ftrace module init, I didn't really like the first patch.
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH] livepatch: Disallow vmlinux.ko
 
-It bothers me that both the notifiers and the module init() both see the
-same MODULE_STATE_COMING state, but only in the former case is the text
-writable.
+This is purely a theoretical issue, but if there were a module named
+vmlinux.ko, the livepatch relocation code wouldn't be able to
+distinguish between vmlinux-specific and vmlinux.o-specific KLP
+relocations.
 
-I think it's cognitively simpler if MODULE_STATE_COMING always means the
-same thing, like the comments imply, "fully formed" and thus
-not-writable:
+If CONFIG_LIVEPATCH is enabled, don't allow a module named vmlinux.ko.
 
-enum module_state {
-	MODULE_STATE_LIVE,	/* Normal state. */
-	MODULE_STATE_COMING,	/* Full formed, running module_init. */
-	MODULE_STATE_GOING,	/* Going away. */
-	MODULE_STATE_UNFORMED,	/* Still setting it up. */
-};
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+---
+ kernel/livepatch/core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-And, it keeps tighter constraints on what a notifier can do, which is a
-good thing if we can get away with it.
-
-> and write a patch that makes the x86 code throw a wobbly on W+X.
-> 
-> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-
-Thanks!
-
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 3a88639b3326..3ff886b911ae 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -1169,6 +1169,11 @@ int klp_module_coming(struct module *mod)
+ 	if (WARN_ON(mod->state != MODULE_STATE_COMING))
+ 		return -EINVAL;
+ 
++	if (!strcmp(mod->name, "vmlinux")) {
++		pr_err("vmlinux.ko: invalid module name");
++		return -EINVAL;
++	}
++
+ 	mutex_lock(&klp_mutex);
+ 	/*
+ 	 * Each module has to know that klp_module_coming()
 -- 
-Josh
+2.21.1
 
