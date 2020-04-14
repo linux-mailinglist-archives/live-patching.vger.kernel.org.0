@@ -2,105 +2,66 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF6E1A8501
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 18:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC6B31A87D3
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 19:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391716AbgDNQcI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Apr 2020 12:32:08 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:56757 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390547AbgDNQ3Q (ORCPT
+        id S2502186AbgDNRoe (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Apr 2020 13:44:34 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:37310 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2502164AbgDNRod (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Apr 2020 12:29:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586881746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mI0X+qpNN8QkK4GuqcTnDoFIUVteWF3NgrYV4egmVdI=;
-        b=hy2WlQJ+BWc4pDYsWNdDte8lf8CThxLfpngMzJ8Mb09rvlnsnlIN/7NLlHScm7e1Pk8NR0
-        ktaYi+KU+8pQXUi0bB3Ljk7VDo+vOlNoGU/pVYi6fod2nEiGTXKKievEDgZ0XM9UOdO6kA
-        XSBekft+Ltwxc/p6z30DUc+3wh+h6/k=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-341-_vcLn_wUMLm09pKWmQvKYw-1; Tue, 14 Apr 2020 12:29:04 -0400
-X-MC-Unique: _vcLn_wUMLm09pKWmQvKYw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 37465DB60;
-        Tue, 14 Apr 2020 16:29:03 +0000 (UTC)
-Received: from treble.redhat.com (ovpn-116-146.rdu2.redhat.com [10.10.116.146])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D5C75DA66;
-        Tue, 14 Apr 2020 16:29:02 +0000 (UTC)
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     live-patching@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
+        Tue, 14 Apr 2020 13:44:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Af8lJ0Q2s1M3sb97EdyeWvWIG/dElM2CzH7yymWGsh0=; b=CzGrac61uE2SZOlx/djVUAq2cb
+        TelWTgDV4XsyQXfPmf/hj9f+Qf8eaZ3WwCcXJW8aAE+E2bVmHg1rFwUS+OWk5CtlZGn2b04YYgNZI
+        PNUPpqkSQp+d8K3l+R7jrZdsjLIZZ5KDobAVPMJsTy1c0j1lVyYffKsKqRk5Jm3C8pAAuJr0vppY3
+        wZ+Frk1DgBPEGp7LKtBhl75zvay0KKZoT87SwYva3mwgDJk4mS6bIs9havJXN9yBXGI4h8bOhR4Zg
+        2WEO4xgdcAZQk/ciMrSwg3vtOgUY9b5iM0HNw1M17HKtNkLiNhNlIYSDEDV2Z0vTEnX6nkSw79tzN
+        UYL1J2xQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jOPbW-0001gA-Mw; Tue, 14 Apr 2020 17:44:10 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D7E59981086; Tue, 14 Apr 2020 19:44:06 +0200 (CEST)
+Date:   Tue, 14 Apr 2020 19:44:06 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jessica Yu <jeyu@kernel.org>
-Subject: [PATCH 7/7] module: Remove module_disable_ro()
-Date:   Tue, 14 Apr 2020 11:28:43 -0500
-Message-Id: <3115fb64e95420dea2d43da55c4474feb03c4185.1586881704.git.jpoimboe@redhat.com>
-In-Reply-To: <cover.1586881704.git.jpoimboe@redhat.com>
+Subject: Re: [PATCH 1/7] livepatch: Apply vmlinux-specific KLP relocations
+ early
+Message-ID: <20200414174406.GC2483@worktop.programming.kicks-ass.net>
 References: <cover.1586881704.git.jpoimboe@redhat.com>
+ <8c3af42719fe0add37605ede634c7035a90f9acc.1586881704.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8c3af42719fe0add37605ede634c7035a90f9acc.1586881704.git.jpoimboe@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-module_disable_ro() has no more users.  Remove it.
+On Tue, Apr 14, 2020 at 11:28:37AM -0500, Josh Poimboeuf wrote:
+> KLP relocations are livepatch-specific relocations which are applied to
+>   1) vmlinux-specific KLP relocation sections
+> 
+>      .klp.rela.vmlinux.{sec}
+> 
+>      These are relocations (applied to the KLP module) which reference
+>      unexported vmlinux symbols.
+> 
+>   2) module-specific KLP relocation sections
+> 
+>      .klp.rela.{module}.{sec}:
+> 
+>      These are relocations (applied to the KLP module) which reference
+>      unexported or exported module symbols.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
----
- include/linux/module.h |  2 --
- kernel/module.c        | 13 -------------
- 2 files changed, 15 deletions(-)
-
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 1ad393e62bef..e4ef7b36feda 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -860,10 +860,8 @@ extern int module_sysfs_initialized;
-=20
- #ifdef CONFIG_STRICT_MODULE_RWX
- extern void module_enable_ro(const struct module *mod, bool after_init);
--extern void module_disable_ro(const struct module *mod);
- #else
- static inline void module_enable_ro(const struct module *mod, bool after=
-_init) { }
--static inline void module_disable_ro(const struct module *mod) { }
- #endif
-=20
- #ifdef CONFIG_GENERIC_BUG
-diff --git a/kernel/module.c b/kernel/module.c
-index d36ea8a8c3ec..b1d30ad67e82 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -1997,19 +1997,6 @@ static void frob_writable_data(const struct module=
-_layout *layout,
- 		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
- }
-=20
--/* livepatching wants to disable read-only so it can frob module. */
--void module_disable_ro(const struct module *mod)
--{
--	if (!rodata_enabled)
--		return;
--
--	frob_text(&mod->core_layout, set_memory_rw);
--	frob_rodata(&mod->core_layout, set_memory_rw);
--	frob_ro_after_init(&mod->core_layout, set_memory_rw);
--	frob_text(&mod->init_layout, set_memory_rw);
--	frob_rodata(&mod->init_layout, set_memory_rw);
--}
--
- void module_enable_ro(const struct module *mod, bool after_init)
- {
- 	if (!rodata_enabled)
---=20
-2.21.1
-
+Is there something that disallows a module from being called 'vmlinux' ?
+If not, we might want to enforce this somewhere.
