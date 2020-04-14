@@ -2,125 +2,124 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D9B1A7830
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 12:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B44F71A8439
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 18:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438185AbgDNKMq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Apr 2020 06:12:46 -0400
-Received: from mail.alicef.me ([219.94.233.166]:52134 "EHLO mail.alicef.me"
+        id S2388214AbgDNQJi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Apr 2020 12:09:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2438130AbgDNKMp (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Apr 2020 06:12:45 -0400
-X-Greylist: delayed 547 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 Apr 2020 06:12:44 EDT
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id EC925222B8;
-        Tue, 14 Apr 2020 19:03:23 +0900 (JST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alicef.me; s=dkim;
-        t=1586858606;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1EtgEbXUPidrJ3KNxNCAA/ujW9mGww6taEMNQehMGq0=;
-        b=pPW3RhrHyLSDNCnPpzDg0ggySNA7wVTSqorT8SAaPcR2OPNsOiipmUO2f4fa3s+PUWRr/Q
-        KZyhz9j3mP7hQMJteywsTYTq+l7KbThnv/MLh7QZI4+O20flER5rLtF3GTc75g0rKNo1K/
-        CikIZCzoqUkK3uieYgFvwHQrFTV6VS8jIzyIe2NQcun/2FqNQoTBv2MuK9Ytip0n5V2X1Z
-        j7SNFEIycfjn14GPVKnfO3SntoSRQoWxjkc+K7ha16CxEzfBQDm32FNn0pfMnBsdp+remy
-        82mTErY5xobEyTLKeoYAZSsWTpw0AJnN+q3d+Ss2puJqg1dlL153/tqR3QRUrA==
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (1.0)
-Subject: Re: Live patching MC at LPC2020?
-From:   Alice ferrazzi <alicef@alicef.me>
-In-Reply-To: <57a1a529-3afb-988e-f5a8-f979d8a1fe12@linux.vnet.ibm.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Miroslav Benes <mbenes@suse.cz>,
+        id S1732059AbgDNQJg (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 14 Apr 2020 12:09:36 -0400
+Received: from linux-8ccs (p3EE2C7AC.dip0.t-ipconnect.de [62.226.199.172])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2FC5720656;
+        Tue, 14 Apr 2020 16:09:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586880575;
+        bh=92IsLYBmWN95MoOIca4RMfGjPAcw1IKPVPEKjp32bes=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ac5iWxiX16fyMzAsVdtABxx+uPrGaYPif+EvWbdKo3vaSAQKTs4GavzuqzXTDgcUD
+         Fqx1T4fSnNr9aDcq/qaWoWUt20C0kk0NH8NRSokf/Ycem6zqvFuF2ztPgItdjMUmQ2
+         XmyJVIq/vgwRBP6uSDXkYcvTcw7SNTWDzw8VgXbw=
+Date:   Tue, 14 Apr 2020 18:09:31 +0200
+From:   Jessica Yu <jeyu@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
         Petr Mladek <pmladek@suse.com>,
-        Nicolai Stange <nstange@suse.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Gabriel Gomes <gagomes@suse.com>, Michael Matz <matz@suse.de>,
-        ulp-devel@opensuse.org
-Date:   Tue, 14 Apr 2020 19:03:07 +0900
-Message-Id: <0FB3F062-0E9F-40E6-836A-197DB9991045@alicef.me>
-References: <57a1a529-3afb-988e-f5a8-f979d8a1fe12@linux.vnet.ibm.com>
-To:     live-patching@vger.kernel.org
-X-Last-TLS-Session-Version: TLSv1.3
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-modules@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        live-patching@vger.kernel.org
+Subject: Re: RFC: Handle hard module dependencies that are not symbol-based
+ (r8169 + realtek)
+Message-ID: <20200414160930.GA20229@linux-8ccs>
+References: <f8e3f271-82df-165f-63f1-6df73ba3d59c@gmail.com>
+ <20200409000200.2qsqcbrzcztk6gmu@ldmartin-desk1>
+ <6ed6259b-888d-605a-9a6f-526c18e7bb14@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <6ed6259b-888d-605a-9a6f-526c18e7bb14@gmail.com>
+X-OS:   Linux linux-8ccs 4.12.14-lp150.12.61-default x86_64
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
++++ Heiner Kallweit [10/04/20 00:25 +0200]:
+>On 09.04.2020 02:02, Lucas De Marchi wrote:
+>> On Wed, Apr 01, 2020 at 11:20:20PM +0200, Heiner Kallweit wrote:
+>>> Currently we have no way to express a hard dependency that is not
+>>> a symbol-based dependency (symbol defined in module A is used in
+>>> module B). Use case:
+>>> Network driver ND uses callbacks in the dedicated PHY driver DP
+>>> for the integrated PHY (namely read_page() and write_page() in
+>>> struct phy_driver). If DP can't be loaded (e.g. because ND is in
+>>> initramfs but DP is not), then phylib will use the generic
+>>> PHY driver GP. GP doesn't implement certain callbacks that are
+>>> needed by ND, therefore ND's probe has to bail out with an error
+>>> once it detects that DP is not loaded.
+>>> We have this problem with driver r8169 having such a dependency
+>>> on PHY driver realtek. Some distributions have tools for
+>>> configuring initramfs that consider hard dependencies based on
+>>> depmod output. Means so far somebody can add r8169.ko to initramfs,
+>>> and neither human being nor machine will have an idea that
+>>> realtek.ko needs to be added too.
+>>
+>> Could you expand on why softdep doesn't solve this problem
+>> with MODULE_SOFTDEP()
+>>
+>> initramfs tools can already read it and modules can already expose them
+>> (they end up in /lib/modules/$(uname -r)/modules.softdep and modprobe
+>> makes use of them)
+>>
+>Thanks for the feedback. I was under the impression that initramfs-tools
+>is affected, but you're right, it considers softdeps.
+>Therefore I checked the error reports again, and indeed they are about
+>Gentoo's "genkernel" tool only. See here:
+>https://bugzilla.kernel.org/show_bug.cgi?id=204343#c15
+>
+>If most kernel/initramfs tools consider softdeps, then I don't see
+>a need for the proposed change. But well, everything is good for
+>something, and I learnt something about the structure of kmod.
+>Sorry for the noise.
 
-hello everyone,
+Well, I wouldn't really call it noise :) I think there *could* be
+cases out there where a establishing a non-symbol-based hard
+dependency would be beneficial.
 
-> 2020/04/08 19:23=E3=80=81Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>=E3=
-=81=AE=E3=83=A1=E3=83=BC=E3=83=AB:
->=20
-> =EF=BB=BFOn 4/1/20 2:22 AM, Joe Lawrence wrote:
->>>> On Fri, Mar 27, 2020 at 02:20:52PM +0100, Jiri Kosina wrote:
->>>> Hi everybody,
->>>> oh well, it sounds a bit awkward to be talking about any conference pla=
-ns
->>>> for this year given how the corona things are untangling in the world, b=
-ut
->>>> LPC planning committee has issued (a) statement about Covid-19 (b) call=
+In the bug you linked, I think one could hypothetically run into the
+same oops if the realtek module fails to load for whatever reason, no?
+Since realtek is only a soft dependency of r8169, modprobe would
+consider realtek optional and would still try to load r8169 even if
+realtek had failed to load previously. Then wouldn't the same problem
+(described in the bugzilla) arise?  Maybe a hard dependency could
+possibly come in handy in this case, because a softdep unfortunately
+implies that r8169 can work without realtek loaded.
 
->>>> for papers (as originally planned) nevertheless. Please see:
->>>>   https://linuxplumbersconf.org/
->>>>   https://linuxplumbersconf.org/event/7/abstracts/
->>>> for details.
->>>> Under the asumption that this Covid nuisance is over by that time and
->>>> travel is possible (and safe) again -- do we want to eventually submit a=
+Another potential usecase - I think livepatch folks (CC'd) have
+contemplated establishing some type of hard dependency between patch
+module and the target module before. I have only briefly skimmed
+Petr's POC [1] and it looks like this patch module dependency is
+accomplished through a request_module() call during load_module()
+(specifically, in klp_module_coming()) so that the patch module gets
+loaded before the target module finishes loading.
 
->>>> livepatching miniconf proposal again?
->>>> I believe there are still kernel related topics on our plate (like revi=
-sed
->>>> handling of the modules that has been agreed on in Lisbon and Petr has
->>>> started to work on, the C parsing effort by Nicolai, etc), and at the s=
-ame
->>>> time I'd really like to include the new kids on the block too -- the
->>>> userspace livepatching folks (CCing those I know for sure are working o=
-n
->>>> it).
->> Hi Jiri,
->> First off, I hope everyone is riding out COVID-19 as well as possible,
->> considering all that's happening.
->> As for LPC mini-conf topics, I'd be interested in (at least):
->> - Petr's per-object livepatch POC
->> - klp-convert status
->> - objtool hacking
->> - Nicolai's klp-ccp status
->> - arch update (arm64, etc)
->=20
-> Hi Jiri,
->=20
-> I hope everyone is keeping safe. I would be interested in the topics liste=
-d
-> by Joe and in userspace patching.
+I initially thought this dependency could be expressed through
+MODULE_HARDDEP(target_module) in the patch module source code, but it
+looks like livepatch might require something more fine-grained, since
+the current POC tries to load the patch module before the target
+module runs its init(). In addition, this method wouldn't prevent the
+target module from loading if the patch module fails to load..
 
+In any case, I appreciate the RFC and don't really have any gripes
+against having an analogous MODULE_HARDDEP() macro. If more similar
+cases crop up then it may be worth seriously pursuing, and then we'll
+at least have this RFC to start with :)
 
-I'm also interested in userspace patching.
+Thanks,
 
->=20
->>> So, please if you have any opinion one way or the other, please speak up=
-.
->>> Depending on the feedback, I will be fine handling the logistics of the
->>> miniconf submission as last year (together with Josh I guess?) unless
->>> someone else wants to step up and volunter himself :)
->>> (*) which is totally unclear, yes -- for example goverment in my country=
-
->>>   has been talking for border closure lasting for 1+ years ... but it
->>>   all depends on how things develop of course).
->> Hmm, all good points.  Some conferences have gone virtual to cope with
->> necessary cancellations, but who knows what things will look like even
->> at the end of August.  Perhaps we can still do something remotely if the
->> conditions dictate it.  But my vote would be yes, and let's see what
->> topics interest folks.
->=20
-> Regards,
-> Kamalesh
-
-thanks,
-Alice=
+Jessica
