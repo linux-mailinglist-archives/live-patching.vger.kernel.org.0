@@ -2,86 +2,65 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09B411A8862
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 20:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBD131A8977
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2020 20:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503306AbgDNSDO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Apr 2020 14:03:14 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23777 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2503176AbgDNSBV (ORCPT
+        id S2503938AbgDNS1b (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Apr 2020 14:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2503947AbgDNS13 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Apr 2020 14:01:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586887280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z05Q+2Rh6hZ2Arh2dMLAzEQOInQCTBfGLKRs8w+a0Pk=;
-        b=cXTGo/8XY2ijXepE8k1eOgM/LZ2pI79khsm025PrMsyZObh+NzG83h5f7/ztE9uU8JpfTg
-        4X96jPbID8MoDFtYlW0ZKU6f4fyO2aNn54UQ3RtTy1S9jc0KxfXAAkvSB0fTi2fhVH6An+
-        3myUZE3h5iCU6HNB6wzhIOhJQiBVP0w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-52-3uTR-LcoO8a8gbEDYIqANw-1; Tue, 14 Apr 2020 14:01:13 -0400
-X-MC-Unique: 3uTR-LcoO8a8gbEDYIqANw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C666986A07C;
-        Tue, 14 Apr 2020 18:01:11 +0000 (UTC)
-Received: from treble (ovpn-116-146.rdu2.redhat.com [10.10.116.146])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2994360BE0;
-        Tue, 14 Apr 2020 18:01:11 +0000 (UTC)
-Date:   Tue, 14 Apr 2020 13:01:09 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
+        Tue, 14 Apr 2020 14:27:29 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBD2C061A0C;
+        Tue, 14 Apr 2020 11:27:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=w2oScmLWvNS0pE9g0BNFVGRJ1Z3X4h/XpiGkuoMfTl8=; b=tD3LQn4fu/VaX7Xe/1Od68HJYr
+        pQsue+85LW0nQVRKGurdh9H89+cq+T7kyJK81NIT/34ojHpMLUsNro0ArivA2S8eX5d2kbOcq7q3n
+        C16cG89tI/IOhvjg0reh1ApEsmxAL/UIaMByTx2VoL/EsNoCBaK97mxF1/ypRYj9w7Y1PyQ6wVU37
+        VpOuv24MwH0C0JrSMk8gEFV8glwMK9kySl3I53rr1anvD37m99Shsy0d5k6S2isvE97N62nmkoGi6
+        MVUvxqCHAbJFNiaOPw/Rn/nu6wCcOxItpQyELcpbZ0diuG7IhS2qYfX9RpmUfucBzt0OEkpTcZZoT
+        JG4Ccq9A==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jOQHR-0005cu-1P; Tue, 14 Apr 2020 18:27:29 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 118D1981086; Tue, 14 Apr 2020 20:27:27 +0200 (CEST)
+Date:   Tue, 14 Apr 2020 20:27:26 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
 Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jessica Yu <jeyu@kernel.org>
-Subject: Re: [PATCH 1/7] livepatch: Apply vmlinux-specific KLP relocations
- early
-Message-ID: <20200414180109.da4v2b4ifpixuzn3@treble>
+Subject: Re: [PATCH 0/7] livepatch,module: Remove .klp.arch and
+ module_disable_ro()
+Message-ID: <20200414182726.GF2483@worktop.programming.kicks-ass.net>
 References: <cover.1586881704.git.jpoimboe@redhat.com>
- <8c3af42719fe0add37605ede634c7035a90f9acc.1586881704.git.jpoimboe@redhat.com>
- <20200414174406.GC2483@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200414174406.GC2483@worktop.programming.kicks-ass.net>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+In-Reply-To: <cover.1586881704.git.jpoimboe@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 07:44:06PM +0200, Peter Zijlstra wrote:
-> On Tue, Apr 14, 2020 at 11:28:37AM -0500, Josh Poimboeuf wrote:
-> > KLP relocations are livepatch-specific relocations which are applied to
-> >   1) vmlinux-specific KLP relocation sections
-> > 
-> >      .klp.rela.vmlinux.{sec}
-> > 
-> >      These are relocations (applied to the KLP module) which reference
-> >      unexported vmlinux symbols.
-> > 
-> >   2) module-specific KLP relocation sections
-> > 
-> >      .klp.rela.{module}.{sec}:
-> > 
-> >      These are relocations (applied to the KLP module) which reference
-> >      unexported or exported module symbols.
-> 
-> Is there something that disallows a module from being called 'vmlinux' ?
-> If not, we might want to enforce this somewhere.
+On Tue, Apr 14, 2020 at 11:28:36AM -0500, Josh Poimboeuf wrote:
+> Better late than never, these patches add simplifications and
+> improvements for some issues Peter found six months ago, as part of his
+> non-writable text code (W^X) cleanups.
 
-I'm pretty sure we don't have a check for that anywhere, though the KLP
-module would almost certainly fail during the module load when it
-couldn't find the vmlinux.ko symbols it needed.
+Excellent stuff, thanks!!
 
-It wouldn't hurt to add a check somewhere though.  Maybe in
-klp_module_coming() since the restriction only applies to
-CONFIG_LIVEPATCH...
+I'll go brush up these two patches then:
 
--- 
-Josh
+  https://lkml.kernel.org/r/20191018074634.801435443@infradead.org
+  https://lkml.kernel.org/r/20191018074634.858645375@infradead.org
 
+and write a patch that makes the x86 code throw a wobbly on W+X.
+
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
