@@ -2,123 +2,130 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E4A61A9834
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2020 11:16:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 357D41AA9DB
+	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2020 16:26:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895184AbgDOJQT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 15 Apr 2020 05:16:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35508 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2895121AbgDOJQS (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 15 Apr 2020 05:16:18 -0400
-Received: from linux-8ccs (p3EE2C7AC.dip0.t-ipconnect.de [62.226.199.172])
+        id S2391887AbgDOOYj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 15 Apr 2020 10:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387746AbgDOOYg (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 15 Apr 2020 10:24:36 -0400
+X-Greylist: delayed 74408 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Apr 2020 07:24:36 PDT
+Received: from merlin.infradead.org (unknown [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A021C061A0C;
+        Wed, 15 Apr 2020 07:24:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=k70JX9dGb5HJevGuiLeyAfGQdNacrtEnoRjysTqq8Jc=; b=FDikE0Ggh/CSVMyB2amhONlMRw
+        pj/k9Wpy0t5hXqbTH8Fk3U1RIh8AM3QVcmZevBbPeUy7Qq0YvY+Wx9Id2QdbwxS6vBcNtnAP6vtD2
+        B85Y3yamN+NbhZ6Sa/Z6Wy1ILjyRn2i4cVsqJb1G10+Xa5+Sv604cMMxMdE0WMWSyQagUTheSl2xy
+        0RhDHbYgCXUHHX6Ye34Uc8IVvRUr1veavNPhUc79lU9r/K9mlSuBRGHt0peSl5Xsxq51EoBioTM19
+        hq6SWjBTNp+uBqsH91U7QklfQDGtevz7ymQoRpurVnzDawDpcs5wezfs8/jODWyrZ2fWzajkUgOLS
+        lT+dIG5Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jOixe-0006JI-Df; Wed, 15 Apr 2020 14:24:18 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C6D2020771;
-        Wed, 15 Apr 2020 09:16:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586942177;
-        bh=DBJHhwh9ZnxQg604Oc+Qnu5YCCqtx3fTWag+7vPzb68=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pXy1eVlDbhoKyEdUrIJ/LQLiotIxm6446XQm4JqZly0sKcPmuMLMABoQs85L0RCI3
-         rk1rj8jIoawXHdpTUaBUy0Fww/ytK8HhuCyop9PfluY6bIShlw0gMafXkHkxlntpR6
-         KlPsAw96jkZifAIwMD1/zeXkwW15mFd7+MES5yOM=
-Date:   Wed, 15 Apr 2020 11:16:12 +0200
-From:   Jessica Yu <jeyu@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        live-patching@vger.kernel.org
-Subject: Re: RFC: Handle hard module dependencies that are not symbol-based
- (r8169 + realtek)
-Message-ID: <20200415091612.GA384@linux-8ccs>
-References: <f8e3f271-82df-165f-63f1-6df73ba3d59c@gmail.com>
- <20200409000200.2qsqcbrzcztk6gmu@ldmartin-desk1>
- <6ed6259b-888d-605a-9a6f-526c18e7bb14@gmail.com>
- <20200414160930.GA20229@linux-8ccs>
- <e38f3115-1e77-ebce-423b-8ea445be9e0d@gmail.com>
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B8016304D58;
+        Wed, 15 Apr 2020 16:24:15 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A45712BC703E8; Wed, 15 Apr 2020 16:24:15 +0200 (CEST)
+Date:   Wed, 15 Apr 2020 16:24:15 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jessica Yu <jeyu@kernel.org>
+Subject: Re: [PATCH 0/7] livepatch,module: Remove .klp.arch and
+ module_disable_ro()
+Message-ID: <20200415142415.GH20730@hirez.programming.kicks-ass.net>
+References: <cover.1586881704.git.jpoimboe@redhat.com>
+ <20200414182726.GF2483@worktop.programming.kicks-ass.net>
+ <20200414190814.glra2gceqgy34iyx@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e38f3115-1e77-ebce-423b-8ea445be9e0d@gmail.com>
-X-OS:   Linux linux-8ccs 4.12.14-lp150.12.61-default x86_64
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200414190814.glra2gceqgy34iyx@treble>
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-+++ Heiner Kallweit [14/04/20 18:20 +0200]:
->On 14.04.2020 18:09, Jessica Yu wrote:
->> +++ Heiner Kallweit [10/04/20 00:25 +0200]:
->>> On 09.04.2020 02:02, Lucas De Marchi wrote:
->>>> On Wed, Apr 01, 2020 at 11:20:20PM +0200, Heiner Kallweit wrote:
->>>>> Currently we have no way to express a hard dependency that is not
->>>>> a symbol-based dependency (symbol defined in module A is used in
->>>>> module B). Use case:
->>>>> Network driver ND uses callbacks in the dedicated PHY driver DP
->>>>> for the integrated PHY (namely read_page() and write_page() in
->>>>> struct phy_driver). If DP can't be loaded (e.g. because ND is in
->>>>> initramfs but DP is not), then phylib will use the generic
->>>>> PHY driver GP. GP doesn't implement certain callbacks that are
->>>>> needed by ND, therefore ND's probe has to bail out with an error
->>>>> once it detects that DP is not loaded.
->>>>> We have this problem with driver r8169 having such a dependency
->>>>> on PHY driver realtek. Some distributions have tools for
->>>>> configuring initramfs that consider hard dependencies based on
->>>>> depmod output. Means so far somebody can add r8169.ko to initramfs,
->>>>> and neither human being nor machine will have an idea that
->>>>> realtek.ko needs to be added too.
->>>>
->>>> Could you expand on why softdep doesn't solve this problem
->>>> with MODULE_SOFTDEP()
->>>>
->>>> initramfs tools can already read it and modules can already expose them
->>>> (they end up in /lib/modules/$(uname -r)/modules.softdep and modprobe
->>>> makes use of them)
->>>>
->>> Thanks for the feedback. I was under the impression that initramfs-tools
->>> is affected, but you're right, it considers softdeps.
->>> Therefore I checked the error reports again, and indeed they are about
->>> Gentoo's "genkernel" tool only. See here:
->>> https://bugzilla.kernel.org/show_bug.cgi?id=204343#c15
->>>
->>> If most kernel/initramfs tools consider softdeps, then I don't see
->>> a need for the proposed change. But well, everything is good for
->>> something, and I learnt something about the structure of kmod.
->>> Sorry for the noise.
->>
->> Well, I wouldn't really call it noise :) I think there *could* be
->> cases out there where a establishing a non-symbol-based hard
->> dependency would be beneficial.
->>
->Thanks for the encouraging words ;)
->
->> In the bug you linked, I think one could hypothetically run into the
->> same oops if the realtek module fails to load for whatever reason, no?
->
->Basically yes. Just that it wouldn't be an oops any longer, r8169
->would detect the missing dedicated PHY driver and bail out in probe().
->
->> Since realtek is only a soft dependency of r8169, modprobe would
->> consider realtek optional and would still try to load r8169 even if
->> realtek had failed to load previously. Then wouldn't the same problem
->> (described in the bugzilla) arise?  Maybe a hard dependency could
->> possibly come in handy in this case, because a softdep unfortunately
->> implies that r8169 can work without realtek loaded.
->>
->Right. Even though kmod treats a softdep more or less like a harddep
->with regard to module loading, it's called "soft" for a reason.
->Relying on a softdep to satisfy a hard dependency doesn't seem
->to be the ideal solution.
+On Tue, Apr 14, 2020 at 02:08:14PM -0500, Josh Poimboeuf wrote:
+> On Tue, Apr 14, 2020 at 08:27:26PM +0200, Peter Zijlstra wrote:
+> > On Tue, Apr 14, 2020 at 11:28:36AM -0500, Josh Poimboeuf wrote:
+> > > Better late than never, these patches add simplifications and
+> > > improvements for some issues Peter found six months ago, as part of his
+> > > non-writable text code (W^X) cleanups.
+> > 
+> > Excellent stuff, thanks!!
+> >
+> > I'll go brush up these two patches then:
+> > 
+> >   https://lkml.kernel.org/r/20191018074634.801435443@infradead.org
+> >   https://lkml.kernel.org/r/20191018074634.858645375@infradead.org
+> 
+> Ah right, I meant to bring that up.  I actually played around with those
+> patches.  While it would be nice to figure out a way to converge the
+> ftrace module init, I didn't really like the first patch.
 
-Hm, I wonder how many other drivers do this. It may be worth auditing
-all current MODULE_SOFTDEP() users to see if there are others also
-using it to mean harddep (i.e., it's actually a non-optional
-dependency) rather than softdep. Something to add on my todo list.
+ftrace only needs it done after ftrace_module_enable(), which is before
+the notifier chain happens, so we can simply do something like so
+instead:
 
-Jessica
+diff --git a/kernel/module.c b/kernel/module.c
+index a3a8f6d0e144..89f8d02c3c3e 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3700,6 +3700,10 @@ static int prepare_coming_module(struct module *mod)
+ 	if (err)
+ 		return err;
+ 
++	module_enable_ro(mod, false);
++	module_enable_nx(mod);
++	module_enable_x(mod);
++
+ 	err = blocking_notifier_call_chain_robust(&module_notify_list,
+ 			MODULE_STATE_COMING, MODULE_STATE_GOING, mod);
+ 	err = notifier_to_errno(err);
+@@ -3845,10 +3849,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 	if (err)
+ 		goto bug_cleanup;
+ 
+-	module_enable_ro(mod, false);
+-	module_enable_nx(mod);
+-	module_enable_x(mod);
+-
+ 	/* Module is ready to execute: parsing args may do that. */
+ 	after_dashes = parse_args(mod->name, mod->args, mod->kp, mod->num_kp,
+ 				  -32768, 32767, mod,
+
+> It bothers me that both the notifiers and the module init() both see the
+> same MODULE_STATE_COMING state, but only in the former case is the text
+> writable.
+> 
+> I think it's cognitively simpler if MODULE_STATE_COMING always means the
+> same thing, like the comments imply, "fully formed" and thus
+> not-writable:
+> 
+> enum module_state {
+> 	MODULE_STATE_LIVE,	/* Normal state. */
+> 	MODULE_STATE_COMING,	/* Full formed, running module_init. */
+> 	MODULE_STATE_GOING,	/* Going away. */
+> 	MODULE_STATE_UNFORMED,	/* Still setting it up. */
+> };
+> 
+> And, it keeps tighter constraints on what a notifier can do, which is a
+> good thing if we can get away with it.
+
+Moo! -- but jump_label and static_call are on the notifier chain and I
+was hoping to make it cheaper for them. Should we perhaps weane them off the
+notifier and, like ftrace/klp put in explicit calls?
+
+It'd make the error handling in prepare_coming_module() a bigger mess,
+but it should work.
