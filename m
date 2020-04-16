@@ -2,28 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A781ABCC9
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2020 11:29:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCB291ABD26
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2020 11:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392206AbgDPJ2b (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 16 Apr 2020 05:28:31 -0400
-Received: from mx2.suse.de ([195.135.220.15]:59948 "EHLO mx2.suse.de"
+        id S2504123AbgDPJpJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 16 Apr 2020 05:45:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41080 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392188AbgDPJ22 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 16 Apr 2020 05:28:28 -0400
+        id S2503578AbgDPJpI (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 16 Apr 2020 05:45:08 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id E9FEBAD0E;
-        Thu, 16 Apr 2020 09:28:25 +0000 (UTC)
-Date:   Thu, 16 Apr 2020 11:28:25 +0200 (CEST)
+        by mx2.suse.de (Postfix) with ESMTP id 08D91AE19;
+        Thu, 16 Apr 2020 09:45:06 +0000 (UTC)
+Date:   Thu, 16 Apr 2020 11:45:05 +0200 (CEST)
 From:   Miroslav Benes <mbenes@suse.cz>
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     Jessica Yu <jeyu@kernel.org>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 6/7] livepatch: Remove module_disable_ro() usage
-In-Reply-To: <20200415163303.ubdnza6okg4h3e5a@treble>
-Message-ID: <alpine.LSU.2.21.2004161126540.10475@pobox.suse.cz>
-References: <cover.1586881704.git.jpoimboe@redhat.com> <9f0d8229bbe79d8c13c091ed70c41d49caf598f2.1586881704.git.jpoimboe@redhat.com> <20200415150216.GA6164@linux-8ccs.fritz.box> <20200415163303.ubdnza6okg4h3e5a@treble>
+cc:     Peter Zijlstra <peterz@infradead.org>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jessica Yu <jeyu@kernel.org>
+Subject: Re: [PATCH 0/7] livepatch,module: Remove .klp.arch and
+ module_disable_ro()
+In-Reply-To: <20200414190814.glra2gceqgy34iyx@treble>
+Message-ID: <alpine.LSU.2.21.2004161136340.10475@pobox.suse.cz>
+References: <cover.1586881704.git.jpoimboe@redhat.com> <20200414182726.GF2483@worktop.programming.kicks-ass.net> <20200414190814.glra2gceqgy34iyx@treble>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -32,51 +34,50 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 15 Apr 2020, Josh Poimboeuf wrote:
+On Tue, 14 Apr 2020, Josh Poimboeuf wrote:
 
-> On Wed, Apr 15, 2020 at 05:02:16PM +0200, Jessica Yu wrote:
-> > +++ Josh Poimboeuf [14/04/20 11:28 -0500]:
-> > > With arch_klp_init_object_loaded() gone, and apply_relocate_add() now
-> > > using text_poke(), livepatch no longer needs to use module_disable_ro().
-> > > 
-> > > The text_mutex usage can also be removed -- its purpose was to protect
-> > > against module permission change races.
-> > > 
-> > > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > > ---
-> > > kernel/livepatch/core.c | 8 --------
-> > > 1 file changed, 8 deletions(-)
-> > > 
-> > > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> > > index 817676caddee..3a88639b3326 100644
-> > > --- a/kernel/livepatch/core.c
-> > > +++ b/kernel/livepatch/core.c
-> > > @@ -767,10 +767,6 @@ static int klp_init_object_loaded(struct klp_patch *patch,
-> > > 	struct klp_modinfo *info = patch->mod->klp_info;
-> > > 
-> > > 	if (klp_is_module(obj)) {
-> > > -
-> > > -		mutex_lock(&text_mutex);
-> > > -		module_disable_ro(patch->mod);
-> > > -
+> On Tue, Apr 14, 2020 at 08:27:26PM +0200, Peter Zijlstra wrote:
+> > On Tue, Apr 14, 2020 at 11:28:36AM -0500, Josh Poimboeuf wrote:
+> > > Better late than never, these patches add simplifications and
+> > > improvements for some issues Peter found six months ago, as part of his
+> > > non-writable text code (W^X) cleanups.
 > > 
-> > Don't you still need the text_mutex to use text_poke() though?
-> > (Through klp_write_relocations -> apply_relocate_add -> text_poke)
-> > At least, I see this assertion there:
+> > Excellent stuff, thanks!!
+> >
+> > I'll go brush up these two patches then:
 > > 
-> > void *text_poke(void *addr, const void *opcode, size_t len)
-> > {
-> > 	lockdep_assert_held(&text_mutex);
-> > 
-> > 	return __text_poke(addr, opcode, len);
-> > }
+> >   https://lkml.kernel.org/r/20191018074634.801435443@infradead.org
+> >   https://lkml.kernel.org/r/20191018074634.858645375@infradead.org
 > 
-> Hm, guess I should have tested with lockdep ;-)
+> Ah right, I meant to bring that up.  I actually played around with those
+> patches.  While it would be nice to figure out a way to converge the
+> ftrace module init, I didn't really like the first patch.
+> 
+> It bothers me that both the notifiers and the module init() both see the
+> same MODULE_STATE_COMING state, but only in the former case is the text
+> writable.
+> 
+> I think it's cognitively simpler if MODULE_STATE_COMING always means the
+> same thing, like the comments imply, "fully formed" and thus
+> not-writable:
+> 
+> enum module_state {
+> 	MODULE_STATE_LIVE,	/* Normal state. */
+> 	MODULE_STATE_COMING,	/* Full formed, running module_init. */
+> 	MODULE_STATE_GOING,	/* Going away. */
+> 	MODULE_STATE_UNFORMED,	/* Still setting it up. */
+> };
+> 
+> And, it keeps tighter constraints on what a notifier can do, which is a
+> good thing if we can get away with it.
 
-:)
+Agreed.
 
-If I remember correctly, text_mutex must be held whenever text is modified 
-to prevent race due to the modification. It is not only about permission 
-changes even though it was how it manifested itself in our case.
+On the other hand, the first patch would remove the tiny race window when 
+a module state is still UNFORMED, but the protections are (being) set up. 
+Patches 4/7 and 5/7 allow to use memcpy in that case, because it is early. 
+But it is in fact not already. I haven't checked yet if it really matters 
+somewhere (a race with livepatch running klp_module_coming while another 
+module is being loaded or anything like that).
 
 Miroslav
