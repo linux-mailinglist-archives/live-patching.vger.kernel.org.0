@@ -2,31 +2,28 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0033C1ABBD3
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2020 10:56:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14A781ABCC9
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2020 11:29:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503051AbgDPI4V (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 16 Apr 2020 04:56:21 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40456 "EHLO mx2.suse.de"
+        id S2392206AbgDPJ2b (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 16 Apr 2020 05:28:31 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59948 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2502931AbgDPI4H (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 16 Apr 2020 04:56:07 -0400
+        id S2392188AbgDPJ22 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 16 Apr 2020 05:28:28 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 3EB20AC4D;
-        Thu, 16 Apr 2020 08:56:03 +0000 (UTC)
-Date:   Thu, 16 Apr 2020 10:56:02 +0200 (CEST)
+        by mx2.suse.de (Postfix) with ESMTP id E9FEBAD0E;
+        Thu, 16 Apr 2020 09:28:25 +0000 (UTC)
+Date:   Thu, 16 Apr 2020 11:28:25 +0200 (CEST)
 From:   Miroslav Benes <mbenes@suse.cz>
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jessica Yu <jeyu@kernel.org>, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com
-Subject: Re: [PATCH 4/7] s390/module: Use s390_kernel_write() for
- relocations
-In-Reply-To: <e7f2ad87cf83dcdaa7b69b4e37c11fa355bdfe78.1586881704.git.jpoimboe@redhat.com>
-Message-ID: <alpine.LSU.2.21.2004161047410.10475@pobox.suse.cz>
-References: <cover.1586881704.git.jpoimboe@redhat.com> <e7f2ad87cf83dcdaa7b69b4e37c11fa355bdfe78.1586881704.git.jpoimboe@redhat.com>
+cc:     Jessica Yu <jeyu@kernel.org>, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH 6/7] livepatch: Remove module_disable_ro() usage
+In-Reply-To: <20200415163303.ubdnza6okg4h3e5a@treble>
+Message-ID: <alpine.LSU.2.21.2004161126540.10475@pobox.suse.cz>
+References: <cover.1586881704.git.jpoimboe@redhat.com> <9f0d8229bbe79d8c13c091ed70c41d49caf598f2.1586881704.git.jpoimboe@redhat.com> <20200415150216.GA6164@linux-8ccs.fritz.box> <20200415163303.ubdnza6okg4h3e5a@treble>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -35,127 +32,51 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 14 Apr 2020, Josh Poimboeuf wrote:
+On Wed, 15 Apr 2020, Josh Poimboeuf wrote:
 
-> From: Peter Zijlstra <peterz@infradead.org>
+> On Wed, Apr 15, 2020 at 05:02:16PM +0200, Jessica Yu wrote:
+> > +++ Josh Poimboeuf [14/04/20 11:28 -0500]:
+> > > With arch_klp_init_object_loaded() gone, and apply_relocate_add() now
+> > > using text_poke(), livepatch no longer needs to use module_disable_ro().
+> > > 
+> > > The text_mutex usage can also be removed -- its purpose was to protect
+> > > against module permission change races.
+> > > 
+> > > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > > ---
+> > > kernel/livepatch/core.c | 8 --------
+> > > 1 file changed, 8 deletions(-)
+> > > 
+> > > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> > > index 817676caddee..3a88639b3326 100644
+> > > --- a/kernel/livepatch/core.c
+> > > +++ b/kernel/livepatch/core.c
+> > > @@ -767,10 +767,6 @@ static int klp_init_object_loaded(struct klp_patch *patch,
+> > > 	struct klp_modinfo *info = patch->mod->klp_info;
+> > > 
+> > > 	if (klp_is_module(obj)) {
+> > > -
+> > > -		mutex_lock(&text_mutex);
+> > > -		module_disable_ro(patch->mod);
+> > > -
+> > 
+> > Don't you still need the text_mutex to use text_poke() though?
+> > (Through klp_write_relocations -> apply_relocate_add -> text_poke)
+> > At least, I see this assertion there:
+> > 
+> > void *text_poke(void *addr, const void *opcode, size_t len)
+> > {
+> > 	lockdep_assert_held(&text_mutex);
+> > 
+> > 	return __text_poke(addr, opcode, len);
+> > }
 > 
-> Instead of playing games with module_{dis,en}able_ro(), use existing
-> text poking mechanisms to apply relocations after module loading.
-> 
-> So far only x86, s390 and Power have HAVE_LIVEPATCH but only the first
-> two also have STRICT_MODULE_RWX.
-> 
-> This will allow removal of the last module_disable_ro() usage in
-> livepatch.  The ultimate goal is to completely disallow making
-> executable mappings writable.
-> 
-> [ jpoimboe: Split up patches. Use mod state to determine whether
-> 	    memcpy() can be used. ]
-> 
-> Cc: linux-s390@vger.kernel.org
-> Cc: heiko.carstens@de.ibm.com
-> Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  arch/s390/kernel/module.c | 106 ++++++++++++++++++++++----------------
->  1 file changed, 61 insertions(+), 45 deletions(-)
-> 
-> diff --git a/arch/s390/kernel/module.c b/arch/s390/kernel/module.c
-> index ba8f19bb438b..e85e378f876e 100644
-> --- a/arch/s390/kernel/module.c
-> +++ b/arch/s390/kernel/module.c
-> @@ -174,7 +174,8 @@ int module_frob_arch_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
->  }
->  
->  static int apply_rela_bits(Elf_Addr loc, Elf_Addr val,
-> -			   int sign, int bits, int shift)
-> +			   int sign, int bits, int shift,
-> +			   void (*write)(void *dest, const void *src, size_t len))
->  {
->  	unsigned long umax;
->  	long min, max;
-> @@ -194,26 +195,29 @@ static int apply_rela_bits(Elf_Addr loc, Elf_Addr val,
->  			return -ENOEXEC;
->  	}
->  
-> -	if (bits == 8)
-> -		*(unsigned char *) loc = val;
-> -	else if (bits == 12)
-> -		*(unsigned short *) loc = (val & 0xfff) |
-> +	if (bits == 8) {
-> +		write(loc, &val, 1);
-> +	} else if (bits == 12) {
-> +		unsigned short tmp = (val & 0xfff) |
->  			(*(unsigned short *) loc & 0xf000);
-> -	else if (bits == 16)
-> -		*(unsigned short *) loc = val;
-> -	else if (bits == 20)
-> -		*(unsigned int *) loc = (val & 0xfff) << 16 |
-> -			(val & 0xff000) >> 4 |
-> -			(*(unsigned int *) loc & 0xf00000ff);
-> -	else if (bits == 32)
-> -		*(unsigned int *) loc = val;
-> -	else if (bits == 64)
-> -		*(unsigned long *) loc = val;
-> +		write(loc, &tmp, 2);
-> +	} else if (bits == 16) {
-> +		write(loc, &val, 2);
-> +	} else if (bits == 20) {
-> +		unsigned int tmp = (val & 0xfff) << 16 |
-> +			(val & 0xff000) >> 4 | (*(unsigned int *) loc & 0xf00000ff);
-> +		write(loc, &tmp, 4);
-> +	} else if (bits == 32) {
-> +		write(loc, &val, 4);
-> +	} else if (bits == 64) {
-> +		write(loc, &val, 8);
-> +	}
->  	return 0;
->  }
+> Hm, guess I should have tested with lockdep ;-)
 
-The compiler complains about the above changes
+:)
 
-arch/s390/kernel/module.c:199:9: warning: passing argument 1 of 'write' makes pointer from integer without a cast [-Wint-conversion]
-   write(loc, &val, 1);
-         ^~~
-arch/s390/kernel/module.c:199:9: note: expected 'void *' but argument is of type 'Elf64_Addr' {aka 'long long unsigned int'}
-
-[...]  
-
-> -int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
-> +static int __apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
->  		       unsigned int symindex, unsigned int relsec,
-> -		       struct module *me)
-> +		       struct module *me,
-> +		       void (*write)(void *dest, const void *src, size_t len))
->  {
->  	Elf_Addr base;
->  	Elf_Sym *symtab;
-
-You also need to update apply_rela() call site in this function. It is 
-missing write argument.
-
-> @@ -437,6 +442,17 @@ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
->  	return 0;
->  }
->  
-> +int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
-> +		       unsigned int symindex, unsigned int relsec,
-> +		       struct module *me)
-> +{
-> +	int ret;
-
-ret is unused;
-
-> +	bool early = me->state == MODULE_STATE_UNFORMED;
-> +
-> +	return __apply_relocate_add(sechdrs, strtab, symindex, relsec, me,
-> +				    early ? memcpy : s390_kernel_write);
-
-The compiler warns about
-
-arch/s390/kernel/module.c: In function 'apply_relocate_add':
-arch/s390/kernel/module.c:453:24: warning: pointer type mismatch in conditional expression
-         early ? memcpy : s390_kernel_write);
+If I remember correctly, text_mutex must be held whenever text is modified 
+to prevent race due to the modification. It is not only about permission 
+changes even though it was how it manifested itself in our case.
 
 Miroslav
