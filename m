@@ -2,94 +2,126 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A6DF1B1639
-	for <lists+live-patching@lfdr.de>; Mon, 20 Apr 2020 21:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B9B71B255D
+	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2020 13:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbgDTTvV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 20 Apr 2020 15:51:21 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:26780 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725897AbgDTTvU (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 20 Apr 2020 15:51:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587412279;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TWPS8Ag7vK66l0A1WZiPeQ8HRASExb1Zd/J41NjFSx4=;
-        b=bCQSCeE3kHWNQt8EjEIlXUABatiKDng0YkWPgQjhJCwbSbt7Is0qOK+UMgeye1lBghBeYu
-        fNhn+jMhwGTZqegR9qN8OVmz1LC3LQkMQv+tzXmoyvblYAhjuVfgEGTEx7TXuytF6VB6T/
-        hfpLGjyUZb05n6iCZ8ExwcNbmeDoIio=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-32-C1aiVMz-M62ucoynYrtO3A-1; Mon, 20 Apr 2020 15:51:17 -0400
-X-MC-Unique: C1aiVMz-M62ucoynYrtO3A-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A7F4E1922020;
-        Mon, 20 Apr 2020 19:51:16 +0000 (UTC)
-Received: from treble (ovpn-118-158.rdu2.redhat.com [10.10.118.158])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B98FB9A253;
-        Mon, 20 Apr 2020 19:51:13 +0000 (UTC)
-Date:   Mon, 20 Apr 2020 14:51:11 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
+        id S1726403AbgDULy1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 21 Apr 2020 07:54:27 -0400
+Received: from mx2.suse.de ([195.135.220.15]:36088 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726018AbgDULy1 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 21 Apr 2020 07:54:27 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 57FD6AD88;
+        Tue, 21 Apr 2020 11:54:24 +0000 (UTC)
+Date:   Tue, 21 Apr 2020 13:54:24 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
 To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Peter Zijlstra <peterz@infradead.org>,
         Jessica Yu <jeyu@kernel.org>
 Subject: Re: [PATCH v2 2/9] livepatch: Apply vmlinux-specific KLP relocations
  early
-Message-ID: <20200420195111.ob7jnhs7wqp6d56g@treble>
-References: <cover.1587131959.git.jpoimboe@redhat.com>
- <83eb0be61671eab05e2d7bcd0aa848f6e20087b0.1587131959.git.jpoimboe@redhat.com>
- <20200420175751.GA13807@redhat.com>
- <20200420182516.6awwwbvoen62gwbr@treble>
- <20200420190141.GB13807@redhat.com>
- <20200420191117.wrjauayeutkpvkwd@treble>
- <20200420194900.GC13807@redhat.com>
+In-Reply-To: <20200420175751.GA13807@redhat.com>
+Message-ID: <alpine.LSU.2.21.2004211346180.9609@pobox.suse.cz>
+References: <cover.1587131959.git.jpoimboe@redhat.com> <83eb0be61671eab05e2d7bcd0aa848f6e20087b0.1587131959.git.jpoimboe@redhat.com> <20200420175751.GA13807@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200420194900.GC13807@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 03:49:00PM -0400, Joe Lawrence wrote:
-> On Mon, Apr 20, 2020 at 02:11:17PM -0500, Josh Poimboeuf wrote:
-> > On Mon, Apr 20, 2020 at 03:01:41PM -0400, Joe Lawrence wrote:
-> > > > > ... apply_relocations() is also iterating over the section headers (the
-> > > > > diff context doesn't show it here, but i is an incrementing index over
-> > > > > sechdrs[]).
-> > > > > 
-> > > > > So if there is more than one KLP relocation section, we'll process them
-> > > > > multiple times.  At least the x86 relocation code will detect this and
-> > > > > fail the module load with an invalid relocation (existing value not
-> > > > > zero).
-> > > > 
-> > > > Ah, yes, good catch!
-> > > > 
-> > > 
-> > > The same test case passed with a small modification to push the foreach
-> > > KLP section part to a kernel/livepatch/core.c local function and
-> > > exposing the klp_resolve_symbols() + apply_relocate_add() for a given
-> > > section to kernel/module.c.  Something like following...
+On Mon, 20 Apr 2020, Joe Lawrence wrote:
+
+> On Fri, Apr 17, 2020 at 09:04:27AM -0500, Josh Poimboeuf wrote:
 > > 
-> > I came up with something very similar, though I named them
-> > klp_apply_object_relocs() and klp_apply_section_relocs() and changed the
-> > argument order a bit (module first).  Since it sounds like you have a
-> > test, could you try this one?
+> > [ ... snip ... ]
 > > 
+> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> > index 40cfac8156fd..5fda3afc0285 100644
+> > --- a/kernel/livepatch/core.c
+> > +++ b/kernel/livepatch/core.c
+> > 
+> > [ ... snip ... ]
+> > 
+> > +int klp_write_relocations(Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
+> > +			  const char *shstrtab, const char *strtab,
+> > +			  unsigned int symndx, struct module *pmod,
+> > +			  const char *objname)
+> >  {
+> >  	int i, cnt, ret = 0;
+> > -	const char *objname, *secname;
+> >  	char sec_objname[MODULE_NAME_LEN];
+> >  	Elf_Shdr *sec;
+> >  
+> > -	if (WARN_ON(!klp_is_object_loaded(obj)))
+> > -		return -EINVAL;
+> > -
+> > -	objname = klp_is_module(obj) ? obj->name : "vmlinux";
+> > -
+> >  	/* For each klp relocation section */
+> > -	for (i = 1; i < pmod->klp_info->hdr.e_shnum; i++) {
+> > -		sec = pmod->klp_info->sechdrs + i;
+> > -		secname = pmod->klp_info->secstrings + sec->sh_name;
+> > +	for (i = 1; i < ehdr->e_shnum; i++) {
+> > +		sec = sechdrs + i;
 > 
-> LGTM.  I have a few klp-convert selftests that I've been slowly
-> tinkering on and they all load/run successfully with this version. :)
+> Hi Josh, minor bug:
+> 
+> Note the for loop through the section headers in
+> klp_write_relocations(), but its calling function ...
+> 
+> > [ ... snip ... ]
+> > 
+> > diff --git a/kernel/module.c b/kernel/module.c
+> > index 646f1e2330d2..d36ea8a8c3ec 100644
+> > --- a/kernel/module.c
+> > +++ b/kernel/module.c
+> > @@ -2334,11 +2334,12 @@ static int apply_relocations(struct module *mod, const struct load_info *info)
+> >  		if (!(info->sechdrs[infosec].sh_flags & SHF_ALLOC))
+> >  			continue;
+> >  
+> > -		/* Livepatch relocation sections are applied by livepatch */
+> >  		if (info->sechdrs[i].sh_flags & SHF_RELA_LIVEPATCH)
+> > -			continue;
+> > -
+> > -		if (info->sechdrs[i].sh_type == SHT_REL)
+> > +			err = klp_write_relocations(info->hdr, info->sechdrs,
+> > +						    info->secstrings,
+> > +						    info->strtab,
+> > +						    info->index.sym, mod, NULL);
+> > +		else if (info->sechdrs[i].sh_type == SHT_REL)
+> >  			err = apply_relocate(info->sechdrs, info->strtab,
+> >  					     info->index.sym, i, mod);
+> >  		else if (info->sechdrs[i].sh_type == SHT_RELA)
+> 
+> ... apply_relocations() is also iterating over the section headers (the
+> diff context doesn't show it here, but i is an incrementing index over
+> sechdrs[]).
+> 
+> So if there is more than one KLP relocation section, we'll process them
+> multiple times.  At least the x86 relocation code will detect this and
+> fail the module load with an invalid relocation (existing value not
+> zero).
 
-Good to hear, thanks!  Hooray selftests :-)
+The last paragraph confused me a little. I'm sending the following, so it 
+is archived publicly.
 
--- 
-Josh
+If there is more than one KLP relocation section in a patch module, let's 
+say for vmlinux and some arbitrary module, klp_write_relocations() will 
+be called multiple times from apply_relocations(). Each time with NULL as 
+the last parameter, so each time vmlinux relocation section will be 
+processed and x86 relocation code will detect this the second time and 
+fail.
 
+If there was no relocation section for vmlinux, but for multiple arbitrary 
+modules, all should be "fine", because klp_write_relocations() would just 
+skip everything.
+
+Anyway, good catch, I missed it completely.
+
+Miroslav
