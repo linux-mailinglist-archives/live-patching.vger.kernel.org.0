@@ -2,47 +2,47 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87BC01B8605
-	for <lists+live-patching@lfdr.de>; Sat, 25 Apr 2020 13:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2ED1B8609
+	for <lists+live-patching@lfdr.de>; Sat, 25 Apr 2020 13:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726284AbgDYLI6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 25 Apr 2020 07:08:58 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:59817 "EHLO
+        id S1726355AbgDYLJM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 25 Apr 2020 07:09:12 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:20876 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726262AbgDYLI5 (ORCPT
+        by vger.kernel.org with ESMTP id S1726228AbgDYLI6 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sat, 25 Apr 2020 07:08:57 -0400
+        Sat, 25 Apr 2020 07:08:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587812936;
+        s=mimecast20190719; t=1587812937;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LKEepzAVCkQKxwp4tsPAZXxKU22P0OBrYEGsohWOvBY=;
-        b=Y+ivHLgIAJJJeGmb519+mRHc49TtAyT5RoaI6x4+GOcpeNZXv3INTswzQ0Y4mD0PPWgDeE
-        hCHrr6yT1nKFfKs9+k4vr26VC8QfUgcKjZqCaco0AyvuKTb5cGQhWSKR2Nb8xOSqJyOqKF
-        UBXXYTfVusunwA4XGy8Vy9oRmX2gSdw=
+        bh=HVnDGeFkqHxYb6JYfvKvmBLlLrCl0RNnUymEdkvh3L4=;
+        b=d9ylCytNdQIRy2aX9lp82BCqQEHRGp2LSPf9AoEUBvE4jjkpo/p2GGOZhyeu5cGp7TujgC
+        ukHREaJpd3NejqunNBBh5kD/DCESdVvEbdkvM67dC8Gtd9nHQny8ZO/Lv0l9YeDqBRdTN3
+        mv7GL2BDDr6an2BIl3btZlriaPOZ/2Q=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-364-9KPGV2IPNTKj0wHAP8qlvA-1; Sat, 25 Apr 2020 07:08:52 -0400
-X-MC-Unique: 9KPGV2IPNTKj0wHAP8qlvA-1
+ us-mta-251-UdyXikkFMSWe8aotxXWkXQ-1; Sat, 25 Apr 2020 07:08:55 -0400
+X-MC-Unique: UdyXikkFMSWe8aotxXWkXQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 680C9800C78;
-        Sat, 25 Apr 2020 11:08:51 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7A7D9462;
+        Sat, 25 Apr 2020 11:08:54 +0000 (UTC)
 Received: from treble.redhat.com (ovpn-114-29.rdu2.redhat.com [10.10.114.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8ED605C1D4;
-        Sat, 25 Apr 2020 11:08:50 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 950ED5C1D4;
+        Sat, 25 Apr 2020 11:08:51 +0000 (UTC)
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     live-patching@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Peter Zijlstra <peterz@infradead.org>,
         Jessica Yu <jeyu@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>
-Subject: [PATCH v3 08/10] livepatch: Remove module_disable_ro() usage
-Date:   Sat, 25 Apr 2020 06:07:28 -0500
-Message-Id: <36eaeb7551e06e90dbb07e1bdaad8b0f4ff890da.1587812518.git.jpoimboe@redhat.com>
+Subject: [PATCH v3 09/10] module: Remove module_disable_ro()
+Date:   Sat, 25 Apr 2020 06:07:29 -0500
+Message-Id: <33089a8ffb2e724cecfa51d72887ae9bf70354f9.1587812518.git.jpoimboe@redhat.com>
 In-Reply-To: <cover.1587812518.git.jpoimboe@redhat.com>
 References: <cover.1587812518.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
@@ -53,37 +53,56 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-With arch_klp_init_object_loaded() gone, and apply_relocate_add() now
-using text_poke(), livepatch no longer needs to use module_disable_ro().
+module_disable_ro() has no more users.  Remove it.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- kernel/livepatch/core.c | 2 --
- 1 file changed, 2 deletions(-)
+ include/linux/module.h |  2 --
+ kernel/module.c        | 13 -------------
+ 2 files changed, 15 deletions(-)
 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index f9ebb54affab..6b8b3c067be0 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -777,7 +777,6 @@ static int klp_init_object_loaded(struct klp_patch *p=
-atch,
- 	if (klp_is_module(obj)) {
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 1ad393e62bef..e4ef7b36feda 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -860,10 +860,8 @@ extern int module_sysfs_initialized;
 =20
- 		mutex_lock(&text_mutex);
--		module_disable_ro(patch->mod);
+ #ifdef CONFIG_STRICT_MODULE_RWX
+ extern void module_enable_ro(const struct module *mod, bool after_init);
+-extern void module_disable_ro(const struct module *mod);
+ #else
+ static inline void module_enable_ro(const struct module *mod, bool after=
+_init) { }
+-static inline void module_disable_ro(const struct module *mod) { }
+ #endif
 =20
- 		/*
- 		 * Only write module-specific relocations here
-@@ -787,7 +786,6 @@ static int klp_init_object_loaded(struct klp_patch *p=
-atch,
- 		 */
- 		ret =3D klp_apply_object_relocs(patch, obj);
+ #ifdef CONFIG_GENERIC_BUG
+diff --git a/kernel/module.c b/kernel/module.c
+index 96b2575329f4..f0e414a01d91 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -2016,19 +2016,6 @@ static void frob_writable_data(const struct module=
+_layout *layout,
+ 		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
+ }
 =20
--		module_enable_ro(patch->mod, true);
- 		mutex_unlock(&text_mutex);
-=20
- 		if (ret)
+-/* livepatching wants to disable read-only so it can frob module. */
+-void module_disable_ro(const struct module *mod)
+-{
+-	if (!rodata_enabled)
+-		return;
+-
+-	frob_text(&mod->core_layout, set_memory_rw);
+-	frob_rodata(&mod->core_layout, set_memory_rw);
+-	frob_ro_after_init(&mod->core_layout, set_memory_rw);
+-	frob_text(&mod->init_layout, set_memory_rw);
+-	frob_rodata(&mod->init_layout, set_memory_rw);
+-}
+-
+ void module_enable_ro(const struct module *mod, bool after_init)
+ {
+ 	if (!rodata_enabled)
 --=20
 2.21.1
 
