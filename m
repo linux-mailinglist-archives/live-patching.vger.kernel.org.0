@@ -2,38 +2,38 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 351051BE2A7
-	for <lists+live-patching@lfdr.de>; Wed, 29 Apr 2020 17:26:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01CEC1BE293
+	for <lists+live-patching@lfdr.de>; Wed, 29 Apr 2020 17:25:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbgD2PZy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 29 Apr 2020 11:25:54 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37822 "EHLO
+        id S1727848AbgD2PZZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 29 Apr 2020 11:25:25 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60775 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726929AbgD2PZP (ORCPT
+        with ESMTP id S1727789AbgD2PZT (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 29 Apr 2020 11:25:15 -0400
+        Wed, 29 Apr 2020 11:25:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588173913;
+        s=mimecast20190719; t=1588173916;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=G0NNCNu4KS0FprZjjrTlqmZ6uV18rv2509FzBkSKIeU=;
-        b=h10xlLmWAzhx+2NHafoDkMtXVcjQom8gFLjvrLIT3CjIGoiotla5dh+jvlO5b07Cl1A7Bf
-        yx6K02kRKlSCJvRP+/nu8grfx2TrxEBwsMmnY0NQUKDj+bg8njBSf5geH0RnppTjsBb78t
-        /NHB9oSitwa8U6DSe/Dh7pmZp9OIOb4=
+        bh=KM+CEqDp0Iw7Y56yc9iAAs3cMDMSLmle79heGPkkOEM=;
+        b=J2rwkF419+oCz5GldoX+Dk99rL9RpttYdZ5ljoV1TKCrDdY7IOFuytVBPJwc+0A2xdEfd/
+        7hmaDtExG4i71kC2OwwrRHOoUJD1d1COCeK2Bagntp5AK+2liAKJ18vI3EHggn1QK2d6lY
+        NL/IZdBwMoStMfx4MX4tRGJiMtaAd+8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-373-epJPCi9mMEO5IGo0QiVR2w-1; Wed, 29 Apr 2020 11:25:11 -0400
-X-MC-Unique: epJPCi9mMEO5IGo0QiVR2w-1
+ us-mta-231-1zyvK3m9PhC_PElfwN_-TQ-1; Wed, 29 Apr 2020 11:25:12 -0400
+X-MC-Unique: 1zyvK3m9PhC_PElfwN_-TQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6F790100A8D2;
-        Wed, 29 Apr 2020 15:25:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 87906100A47D;
+        Wed, 29 Apr 2020 15:25:04 +0000 (UTC)
 Received: from treble.redhat.com (ovpn-113-19.rdu2.redhat.com [10.10.113.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D2725114B;
-        Wed, 29 Apr 2020 15:25:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9CD905114B;
+        Wed, 29 Apr 2020 15:25:03 +0000 (UTC)
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     live-patching@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -41,9 +41,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Jessica Yu <jeyu@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Miroslav Benes <mbenes@suse.cz>
-Subject: [PATCH v4 02/11] livepatch: Apply vmlinux-specific KLP relocations early
-Date:   Wed, 29 Apr 2020 10:24:44 -0500
-Message-Id: <852333417504813eddcce4a24524d8c440d89973.1588173720.git.jpoimboe@redhat.com>
+Subject: [PATCH v4 03/11] livepatch: Remove .klp.arch
+Date:   Wed, 29 Apr 2020 10:24:45 -0500
+Message-Id: <8c792544caddef7d2cabf29ff98129a76e3a56de.1588173720.git.jpoimboe@redhat.com>
 In-Reply-To: <cover.1588173720.git.jpoimboe@redhat.com>
 References: <cover.1588173720.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
@@ -54,371 +54,253 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-KLP relocations are livepatch-specific relocations which are applied to
-a KLP module's text or data.  They exist for two reasons:
+From: Peter Zijlstra <peterz@infradead.org>
 
-  1) Unexported symbols: replacement functions often need to access
-     unexported symbols (e.g. static functions), which "normal"
-     relocations don't allow.
+After the previous patch, vmlinux-specific KLP relocations are now
+applied early during KLP module load.  This means that .klp.arch
+sections are no longer needed for *vmlinux-specific* KLP relocations.
 
-  2) Late module patching: this is the ability for a KLP module to
-     bypass normal module dependencies, such that the KLP module can be
-     loaded *before* a to-be-patched module.  This means that
-     relocations which need to access symbols in the to-be-patched
-     module might need to be applied to the KLP module well after it has
-     been loaded.
+One might think they're still needed for *module-specific* KLP
+relocations.  If a to-be-patched module is loaded *after* its
+corresponding KLP module is loaded, any corresponding KLP relocations
+will be delayed until the to-be-patched module is loaded.  If any
+special sections (.parainstructions, for example) rely on those
+relocations, their initializations (apply_paravirt) need to be done
+afterwards.  Thus the apparent need for arch_klp_init_object_loaded()
+and its corresponding .klp.arch sections -- it allows some of the
+special section initializations to be done at a later time.
 
-Non-late-patched KLP relocations are applied from the KLP module's init
-function.  That usually works fine, unless the patched code wants to use
-alternatives, paravirt patching, jump tables, or some other special
-section which needs relocations.  Then we run into ordering issues and
-crashes.
+But... if you look closer, that dependency between the special sections
+and the module-specific KLP relocations doesn't actually exist in
+reality.  Looking at the contents of the .altinstructions and
+.parainstructions sections, there's not a realistic scenario in which a
+KLP module's .altinstructions or .parainstructions section needs to
+access a symbol in a to-be-patched module.  It might need to access a
+local symbol or even a vmlinux symbol; but not another module's symbol.
+When a special section needs to reference a local or vmlinux symbol, a
+normal rela can be used instead of a KLP rela.
 
-In order for those special sections to work properly, the KLP
-relocations should be applied *before* the special section init code
-runs, such as apply_paravirt(), apply_alternatives(), or
-jump_label_apply_nops().
+Since the special section initializations don't actually have any real
+dependency on module-specific KLP relocations, .klp.arch and
+arch_klp_init_object_loaded() no longer have a reason to exist.  So
+remove them.
 
-You might think the obvious solution would be to move the KLP relocation
-initialization earlier, but it's not necessarily that simple.  The
-problem is the above-mentioned late module patching, for which KLP
-relocations can get applied well after the KLP module is loaded.
+As Peter said much more succinctly:
 
-To "fix" this issue in the past, we created .klp.arch sections:
+  So the reason for .klp.arch was that .klp.rela.* stuff would overwrite
+  paravirt instructions. If that happens you're doing it wrong. Those
+  RELAs are core kernel, not module, and thus should've happened in
+  .rela.* sections at patch-module loading time.
 
-  .klp.arch.{module}..altinstructions
-  .klp.arch.{module}..parainstructions
+  Reverting this removes the two apply_{paravirt,alternatives}() calls
+  from the late patching path, and means we don't have to worry about
+  them when removing module_disable_ro().
 
-Those sections allow KLP late module patching code to call
-apply_paravirt() and apply_alternatives() after the module-specific KLP
-relocations (.klp.rela.{module}.{section}) have been applied.
+[ jpoimboe: Rewrote patch description.  Tweaked klp_init_object_loaded()
+	    error path. ]
 
-But that has a lot of drawbacks, including code complexity, the need for
-arch-specific code, and the (per-arch) danger that we missed some
-special section -- for example the __jump_table section which is used
-for jump labels.
-
-It turns out there's a simpler and more functional approach.  There are
-two kinds of KLP relocation sections:
-
-  1) vmlinux-specific KLP relocation sections
-
-     .klp.rela.vmlinux.{sec}
-
-     These are relocations (applied to the KLP module) which reference
-     unexported vmlinux symbols.
-
-  2) module-specific KLP relocation sections
-
-     .klp.rela.{module}.{sec}:
-
-     These are relocations (applied to the KLP module) which reference
-     unexported or exported module symbols.
-
-Up until now, these have been treated the same.  However, they're
-inherently different.
-
-Because of late module patching, module-specific KLP relocations can be
-applied very late, thus they can create the ordering headaches described
-above.
-
-But vmlinux-specific KLP relocations don't have that problem.  There's
-nothing to prevent them from being applied earlier.  So apply them at
-the same time as normal relocations, when the KLP module is being
-loaded.
-
-This means that for vmlinux-specific KLP relocations, we no longer have
-any ordering issues.  vmlinux-referencing jump labels, alternatives, and
-paravirt patching will work automatically, without the need for the
-.klp.arch hacks.
-
-All that said, for module-specific KLP relocations, the ordering
-problems still exist and we *do* still need .klp.arch.  Or do we?  Stay
-tuned.
-
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
 Acked-by: Miroslav Benes <mbenes@suse.cz>
 ---
- include/linux/livepatch.h |  14 ++++
- kernel/livepatch/core.c   | 137 ++++++++++++++++++++++++--------------
- kernel/module.c           |  10 +--
- 3 files changed, 106 insertions(+), 55 deletions(-)
+ Documentation/livepatch/module-elf-format.rst | 15 +-----
+ arch/x86/kernel/Makefile                      |  1 -
+ arch/x86/kernel/livepatch.c                   | 53 -------------------
+ include/linux/livepatch.h                     |  3 --
+ kernel/livepatch/core.c                       | 27 ++++------
+ 5 files changed, 11 insertions(+), 88 deletions(-)
+ delete mode 100644 arch/x86/kernel/livepatch.c
 
+diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentatio=
+n/livepatch/module-elf-format.rst
+index 2a591e6f8e6c..8c6b894c4661 100644
+--- a/Documentation/livepatch/module-elf-format.rst
++++ b/Documentation/livepatch/module-elf-format.rst
+@@ -14,8 +14,7 @@ This document outlines the Elf format requirements that=
+ livepatch modules must f
+    4. Livepatch symbols
+       4.1 A livepatch module's symbol table
+       4.2 Livepatch symbol format
+-   5. Architecture-specific sections
+-   6. Symbol table and Elf section access
++   5. Symbol table and Elf section access
+=20
+ 1. Background and motivation
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+@@ -298,17 +297,7 @@ Examples:
+   Note that the 'Ndx' (Section index) for these symbols is SHN_LIVEPATCH=
+ (0xff20).
+   "OS" means OS-specific.
+=20
+-5. Architecture-specific sections
+-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+-Architectures may override arch_klp_init_object_loaded() to perform
+-additional arch-specific tasks when a target module loads, such as apply=
+ing
+-arch-specific sections. On x86 for example, we must apply per-object
+-.altinstructions and .parainstructions sections when a target module loa=
+ds.
+-These sections must be prefixed with ".klp.arch.$objname." so that they =
+can
+-be easily identified when iterating through a patch module's Elf section=
+s
+-(See arch/x86/kernel/livepatch.c for a complete example).
+-
+-6. Symbol table and Elf section access
++5. Symbol table and Elf section access
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ A livepatch module's symbol table is accessible through module->symtab.
+=20
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index 92e1261ec4ec..e77261db2391 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -94,7 +94,6 @@ obj-$(CONFIG_X86_MPPARSE)	+=3D mpparse.o
+ obj-y				+=3D apic/
+ obj-$(CONFIG_X86_REBOOTFIXUPS)	+=3D reboot_fixups_32.o
+ obj-$(CONFIG_DYNAMIC_FTRACE)	+=3D ftrace.o
+-obj-$(CONFIG_LIVEPATCH)	+=3D livepatch.o
+ obj-$(CONFIG_FUNCTION_TRACER)	+=3D ftrace_$(BITS).o
+ obj-$(CONFIG_FUNCTION_GRAPH_TRACER) +=3D ftrace.o
+ obj-$(CONFIG_FTRACE_SYSCALLS)	+=3D ftrace.o
+diff --git a/arch/x86/kernel/livepatch.c b/arch/x86/kernel/livepatch.c
+deleted file mode 100644
+index 6a68e41206e7..000000000000
+--- a/arch/x86/kernel/livepatch.c
++++ /dev/null
+@@ -1,53 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*
+- * livepatch.c - x86-specific Kernel Live Patching Core
+- */
+-
+-#include <linux/module.h>
+-#include <linux/kallsyms.h>
+-#include <linux/livepatch.h>
+-#include <asm/text-patching.h>
+-
+-/* Apply per-object alternatives. Based on x86 module_finalize() */
+-void arch_klp_init_object_loaded(struct klp_patch *patch,
+-				 struct klp_object *obj)
+-{
+-	int cnt;
+-	struct klp_modinfo *info;
+-	Elf_Shdr *s, *alt =3D NULL, *para =3D NULL;
+-	void *aseg, *pseg;
+-	const char *objname;
+-	char sec_objname[MODULE_NAME_LEN];
+-	char secname[KSYM_NAME_LEN];
+-
+-	info =3D patch->mod->klp_info;
+-	objname =3D obj->name ? obj->name : "vmlinux";
+-
+-	/* See livepatch core code for BUILD_BUG_ON() explanation */
+-	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN !=3D 128);
+-
+-	for (s =3D info->sechdrs; s < info->sechdrs + info->hdr.e_shnum; s++) {
+-		/* Apply per-object .klp.arch sections */
+-		cnt =3D sscanf(info->secstrings + s->sh_name,
+-			     ".klp.arch.%55[^.].%127s",
+-			     sec_objname, secname);
+-		if (cnt !=3D 2)
+-			continue;
+-		if (strcmp(sec_objname, objname))
+-			continue;
+-		if (!strcmp(".altinstructions", secname))
+-			alt =3D s;
+-		if (!strcmp(".parainstructions", secname))
+-			para =3D s;
+-	}
+-
+-	if (alt) {
+-		aseg =3D (void *) alt->sh_addr;
+-		apply_alternatives(aseg, aseg + alt->sh_size);
+-	}
+-
+-	if (para) {
+-		pseg =3D (void *) para->sh_addr;
+-		apply_paravirt(pseg, pseg + para->sh_size);
+-	}
+-}
 diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index e894e74905f3..c4302e9a5905 100644
+index c4302e9a5905..2614247a9781 100644
 --- a/include/linux/livepatch.h
 +++ b/include/linux/livepatch.h
-@@ -234,6 +234,11 @@ void klp_shadow_free_all(unsigned long id, klp_shado=
-w_dtor_t dtor);
- struct klp_state *klp_get_state(struct klp_patch *patch, unsigned long i=
-d);
- struct klp_state *klp_get_prev_state(unsigned long id);
+@@ -195,9 +195,6 @@ struct klp_patch {
 =20
-+int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
-+			     const char *shstrtab, const char *strtab,
-+			     unsigned int symindex, unsigned int secindex,
-+			     const char *objname);
-+
- #else /* !CONFIG_LIVEPATCH */
+ int klp_enable_patch(struct klp_patch *);
 =20
- static inline int klp_module_coming(struct module *mod) { return 0; }
-@@ -242,6 +247,15 @@ static inline bool klp_patch_pending(struct task_str=
-uct *task) { return false; }
- static inline void klp_update_patch_state(struct task_struct *task) {}
- static inline void klp_copy_process(struct task_struct *child) {}
-=20
-+static inline
-+int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
-+			     const char *shstrtab, const char *strtab,
-+			     unsigned int symindex, unsigned int secindex,
-+			     const char *objname)
-+{
-+	return 0;
-+}
-+
- #endif /* CONFIG_LIVEPATCH */
-=20
- #endif /* _LINUX_LIVEPATCH_H_ */
+-void arch_klp_init_object_loaded(struct klp_patch *patch,
+-				 struct klp_object *obj);
+-
+ /* Called from the module loader during module coming/going states */
+ int klp_module_coming(struct module *mod);
+ void klp_module_going(struct module *mod);
 diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 40cfac8156fd..c02791e5c75b 100644
+index c02791e5c75b..16632e75112a 100644
 --- a/kernel/livepatch/core.c
 +++ b/kernel/livepatch/core.c
-@@ -191,12 +191,12 @@ static int klp_find_object_symbol(const char *objna=
-me, const char *name,
- 	return -EINVAL;
+@@ -729,12 +729,6 @@ static int klp_init_func(struct klp_object *obj, str=
+uct klp_func *func)
+ 			   func->old_sympos ? func->old_sympos : 1);
  }
 =20
--static int klp_resolve_symbols(Elf_Shdr *relasec, struct module *pmod)
-+static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
-+			       unsigned int symndx, Elf_Shdr *relasec)
- {
- 	int i, cnt, vmlinux, ret;
- 	char objname[MODULE_NAME_LEN];
- 	char symname[KSYM_NAME_LEN];
--	char *strtab =3D pmod->core_kallsyms.strtab;
- 	Elf_Rela *relas;
- 	Elf_Sym *sym;
- 	unsigned long sympos, addr;
-@@ -216,7 +216,7 @@ static int klp_resolve_symbols(Elf_Shdr *relasec, str=
-uct module *pmod)
- 	relas =3D (Elf_Rela *) relasec->sh_addr;
- 	/* For each rela in this klp relocation section */
- 	for (i =3D 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
--		sym =3D pmod->core_kallsyms.symtab + ELF_R_SYM(relas[i].r_info);
-+		sym =3D (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_in=
-fo);
- 		if (sym->st_shndx !=3D SHN_LIVEPATCH) {
- 			pr_err("symbol %s is not marked as a livepatch symbol\n",
- 			       strtab + sym->st_name);
-@@ -246,54 +246,59 @@ static int klp_resolve_symbols(Elf_Shdr *relasec, s=
-truct module *pmod)
- 	return 0;
- }
-=20
--static int klp_write_object_relocations(struct module *pmod,
+-/* Arches may override this to finish any remaining arch-specific tasks =
+*/
+-void __weak arch_klp_init_object_loaded(struct klp_patch *patch,
 -					struct klp_object *obj)
-+/*
-+ * At a high-level, there are two types of klp relocation sections: thos=
-e which
-+ * reference symbols which live in vmlinux; and those which reference sy=
-mbols
-+ * which live in other modules.  This function is called for both types:
-+ *
-+ * 1) When a klp module itself loads, the module code calls this functio=
-n to
-+ *    write vmlinux-specific klp relocations (.klp.rela.vmlinux.* sectio=
-ns).
-+ *    These relocations are written to the klp module text to allow the =
-patched
-+ *    code/data to reference unexported vmlinux symbols.  They're writte=
-n as
-+ *    early as possible to ensure that other module init code (.e.g.,
-+ *    jump_label_apply_nops) can access any unexported vmlinux symbols w=
-hich
-+ *    might be referenced by the klp module's special sections.
-+ *
-+ * 2) When a to-be-patched module loads -- or is already loaded when a
-+ *    corresponding klp module loads -- klp code calls this function to =
-write
-+ *    module-specific klp relocations (.klp.rela.{module}.* sections).  =
-These
-+ *    are written to the klp module text to allow the patched code/data =
-to
-+ *    reference symbols which live in the to-be-patched module or one of=
- its
-+ *    module dependencies.  Exported symbols are supported, in addition =
-to
-+ *    unexported symbols, in order to enable late module patching, which=
- allows
-+ *    the to-be-patched module to be loaded and patched sometime *after*=
- the
-+ *    klp module is loaded.
-+ */
-+int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
-+			     const char *shstrtab, const char *strtab,
-+			     unsigned int symndx, unsigned int secndx,
-+			     const char *objname)
- {
--	int i, cnt, ret =3D 0;
--	const char *objname, *secname;
-+	int cnt, ret;
- 	char sec_objname[MODULE_NAME_LEN];
--	Elf_Shdr *sec;
-+	Elf_Shdr *sec =3D sechdrs + secndx;
-=20
--	if (WARN_ON(!klp_is_object_loaded(obj)))
-+	/*
-+	 * Format: .klp.rela.sec_objname.section_name
-+	 * See comment in klp_resolve_symbols() for an explanation
-+	 * of the selected field width value.
-+	 */
-+	cnt =3D sscanf(shstrtab + sec->sh_name, ".klp.rela.%55[^.]",
-+		     sec_objname);
-+	if (cnt !=3D 1) {
-+		pr_err("section %s has an incorrectly formatted name\n",
-+		       shstrtab + sec->sh_name);
- 		return -EINVAL;
-+	}
-=20
--	objname =3D klp_is_module(obj) ? obj->name : "vmlinux";
+-{
+-}
 -
--	/* For each klp relocation section */
--	for (i =3D 1; i < pmod->klp_info->hdr.e_shnum; i++) {
--		sec =3D pmod->klp_info->sechdrs + i;
--		secname =3D pmod->klp_info->secstrings + sec->sh_name;
--		if (!(sec->sh_flags & SHF_RELA_LIVEPATCH))
--			continue;
--
--		/*
--		 * Format: .klp.rela.sec_objname.section_name
--		 * See comment in klp_resolve_symbols() for an explanation
--		 * of the selected field width value.
--		 */
--		cnt =3D sscanf(secname, ".klp.rela.%55[^.]", sec_objname);
--		if (cnt !=3D 1) {
--			pr_err("section %s has an incorrectly formatted name\n",
--			       secname);
--			ret =3D -EINVAL;
--			break;
--		}
--
--		if (strcmp(objname, sec_objname))
--			continue;
--
--		ret =3D klp_resolve_symbols(sec, pmod);
--		if (ret)
--			break;
-+	if (strcmp(objname ? objname : "vmlinux", sec_objname))
-+		return 0;
-=20
--		ret =3D apply_relocate_add(pmod->klp_info->sechdrs,
--					 pmod->core_kallsyms.strtab,
--					 pmod->klp_info->symndx, i, pmod);
--		if (ret)
--			break;
--	}
-+	ret =3D klp_resolve_symbols(sechdrs, strtab, symndx, sec);
-+	if (ret)
-+		return ret;
-=20
--	return ret;
-+	return apply_relocate_add(sechdrs, strtab, symndx, secndx, pmod);
- }
-=20
- /*
-@@ -730,6 +735,28 @@ void __weak arch_klp_init_object_loaded(struct klp_p=
-atch *patch,
- {
- }
-=20
-+int klp_apply_object_relocs(struct klp_patch *patch, struct klp_object *=
+ int klp_apply_object_relocs(struct klp_patch *patch, struct klp_object *=
 obj)
-+{
-+	int i, ret;
-+	struct klp_modinfo *info =3D patch->mod->klp_info;
+ {
+ 	int i, ret;
+@@ -764,10 +758,11 @@ static int klp_init_object_loaded(struct klp_patch =
+*patch,
+ 	struct klp_func *func;
+ 	int ret;
+=20
+-	mutex_lock(&text_mutex);
+-	module_disable_ro(patch->mod);
+-
+ 	if (klp_is_module(obj)) {
 +
-+	for (i =3D 1; i < info->hdr.e_shnum; i++) {
-+		Elf_Shdr *sec =3D info->sechdrs + i;
++		mutex_lock(&text_mutex);
++		module_disable_ro(patch->mod);
 +
-+		if (!(sec->sh_flags & SHF_RELA_LIVEPATCH))
-+			continue;
-+
-+		ret =3D klp_apply_section_relocs(patch->mod, info->sechdrs,
-+					       info->secstrings,
-+					       patch->mod->core_kallsyms.strtab,
-+					       info->symndx, i, obj->name);
+ 		/*
+ 		 * Only write module-specific relocations here
+ 		 * (.klp.rela.{module}.*).  vmlinux-specific relocations were
+@@ -775,17 +770,13 @@ static int klp_init_object_loaded(struct klp_patch =
+*patch,
+ 		 * itself.
+ 		 */
+ 		ret =3D klp_apply_object_relocs(patch, obj);
+-		if (ret) {
+-			module_enable_ro(patch->mod, true);
+-			mutex_unlock(&text_mutex);
+-			return ret;
+-		}
+-	}
+=20
+-	arch_klp_init_object_loaded(patch, obj);
++		module_enable_ro(patch->mod, true);
++		mutex_unlock(&text_mutex);
+=20
+-	module_enable_ro(patch->mod, true);
+-	mutex_unlock(&text_mutex);
 +		if (ret)
 +			return ret;
 +	}
-+
-+	return 0;
-+}
-+
- /* parts of the initialization that is done only when the object is load=
-ed */
- static int klp_init_object_loaded(struct klp_patch *patch,
- 				  struct klp_object *obj)
-@@ -738,18 +765,26 @@ static int klp_init_object_loaded(struct klp_patch =
-*patch,
- 	int ret;
-=20
- 	mutex_lock(&text_mutex);
--
- 	module_disable_ro(patch->mod);
--	ret =3D klp_write_object_relocations(patch->mod, obj);
--	if (ret) {
--		module_enable_ro(patch->mod, true);
--		mutex_unlock(&text_mutex);
--		return ret;
-+
-+	if (klp_is_module(obj)) {
-+		/*
-+		 * Only write module-specific relocations here
-+		 * (.klp.rela.{module}.*).  vmlinux-specific relocations were
-+		 * written earlier during the initialization of the klp module
-+		 * itself.
-+		 */
-+		ret =3D klp_apply_object_relocs(patch, obj);
-+		if (ret) {
-+			module_enable_ro(patch->mod, true);
-+			mutex_unlock(&text_mutex);
-+			return ret;
-+		}
- 	}
-=20
- 	arch_klp_init_object_loaded(patch, obj);
--	module_enable_ro(patch->mod, true);
-=20
-+	module_enable_ro(patch->mod, true);
- 	mutex_unlock(&text_mutex);
 =20
  	klp_for_each_func(obj, func) {
-diff --git a/kernel/module.c b/kernel/module.c
-index d626dc31b37f..96b2575329f4 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -2363,11 +2363,13 @@ static int apply_relocations(struct module *mod, =
-const struct load_info *info)
- 		if (!(info->sechdrs[infosec].sh_flags & SHF_ALLOC))
- 			continue;
-=20
--		/* Livepatch relocation sections are applied by livepatch */
- 		if (info->sechdrs[i].sh_flags & SHF_RELA_LIVEPATCH)
--			continue;
--
--		if (info->sechdrs[i].sh_type =3D=3D SHT_REL)
-+			err =3D klp_apply_section_relocs(mod, info->sechdrs,
-+						       info->secstrings,
-+						       info->strtab,
-+						       info->index.sym, i,
-+						       NULL);
-+		else if (info->sechdrs[i].sh_type =3D=3D SHT_REL)
- 			err =3D apply_relocate(info->sechdrs, info->strtab,
- 					     info->index.sym, i, mod);
- 		else if (info->sechdrs[i].sh_type =3D=3D SHT_RELA)
+ 		ret =3D klp_find_object_symbol(obj->name, func->old_name,
 --=20
 2.21.1
 
