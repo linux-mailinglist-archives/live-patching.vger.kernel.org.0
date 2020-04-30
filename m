@@ -2,84 +2,139 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C761BF827
-	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2020 14:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2423F1BFE83
+	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2020 16:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbgD3MX1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 30 Apr 2020 08:23:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57980 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726500AbgD3MX1 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 30 Apr 2020 08:23:27 -0400
-Received: from linux-8ccs.fritz.box (p3EE2CE96.dip0.t-ipconnect.de [62.226.206.150])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727870AbgD3Oib (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 30 Apr 2020 10:38:31 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58366 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727899AbgD3Oib (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Thu, 30 Apr 2020 10:38:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588257509;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ByKU/UvmG+5uVD3nwPmlWIqbXZ/e5s+ex3rfVMZS44E=;
+        b=TRnJUs8SRQxiNh7uZxh1UQ6QweqFyU94WmLpEfsULP/zetXOaa5Uryi3WnjFozKe4KY7Qc
+        roZm7fYNwK5ns8/k7TDBkZIzFAeah8H/z4zdLwZRxWPutna+mOtV1DGPqnEhYvE3i+vx2T
+        jz++vyuqgim3UqGo/EtoYMl/ra5Z5Bk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-439-aCIDm1xEOq-BFhOT_wXtLA-1; Thu, 30 Apr 2020 10:38:25 -0400
+X-MC-Unique: aCIDm1xEOq-BFhOT_wXtLA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DE382076D;
-        Thu, 30 Apr 2020 12:23:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588249406;
-        bh=s+u4WbOI6jCW0oIE7DyFq3VAR+Yi4wx9kBa1D0/SdQg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mhgOxvO5SzP0qyFjlsPvJqJqqlCQC1gkhUSEE3PFUKNYiTehOjao3zPe8AbRfqp1p
-         uJiP7AjcSpDq+dUZMmPVdH79vT+q5tiO7b+IbSfVTv+dC5g7SI3LJy21McqaopMJt4
-         sDh98PHeCpSs7Vvx+ngCX2xBesWFf71Lv+vwgw+c=
-Date:   Thu, 30 Apr 2020 14:23:22 +0200
-From:   Jessica Yu <jeyu@kernel.org>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 37A9D1009613;
+        Thu, 30 Apr 2020 14:38:24 +0000 (UTC)
+Received: from redhat.com (ovpn-112-171.phx2.redhat.com [10.3.112.171])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 03BCD610AF;
+        Thu, 30 Apr 2020 14:38:22 +0000 (UTC)
+Date:   Thu, 30 Apr 2020 10:38:21 -0400
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>,
+        Gerald Schaefer <gerald.schaefer@de.ibm.com>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Peter Zijlstra <peterz@infradead.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH v4 11/11] module: Make module_enable_ro() static again
-Message-ID: <20200430122321.GA16620@linux-8ccs.fritz.box>
-References: <cover.1588173720.git.jpoimboe@redhat.com>
- <d8b705c20aee017bf9a694c0462a353d6a9f9001.1588173720.git.jpoimboe@redhat.com>
- <20200430111032.GA4436@linux-8ccs>
- <alpine.LSU.2.21.2004301334560.8465@pobox.suse.cz>
- <20200430114055.GA15426@linux-8ccs.fritz.box>
+        Jessica Yu <jeyu@kernel.org>, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, Vasily Gorbik <gor@linux.ibm.com>
+Subject: Re: [PATCH v2 6/9] s390/module: Use s390_kernel_write() for late
+ relocations
+Message-ID: <20200430143821.GA10092@redhat.com>
+References: <cover.1587131959.git.jpoimboe@redhat.com>
+ <18266eb2c2c9a2ce0033426837d89dcb363a85d3.1587131959.git.jpoimboe@redhat.com>
+ <20200422164037.7edd21ea@thinkpad>
+ <20200422172126.743908f5@thinkpad>
+ <20200422194605.n77t2wtx5fomxpyd@treble>
+ <20200423141834.234ed0bc@thinkpad>
+ <alpine.LSU.2.21.2004231513250.6520@pobox.suse.cz>
+ <20200423141228.sjvnxwdqlzoyqdwg@treble>
+ <20200423181030.b5mircvgc7zmqacr@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200430114055.GA15426@linux-8ccs.fritz.box>
-X-OS:   Linux linux-8ccs 4.12.14-lp150.12.61-default x86_64
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200423181030.b5mircvgc7zmqacr@treble>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-+++ Jessica Yu [30/04/20 13:40 +0200]:
->+++ Miroslav Benes [30/04/20 13:35 +0200]:
->>On Thu, 30 Apr 2020, Jessica Yu wrote:
->>
->>>+++ Josh Poimboeuf [29/04/20 10:24 -0500]:
->>>>Now that module_enable_ro() has no more external users, make it static
->>>>again.
->>>>
->>>>Suggested-by: Jessica Yu <jeyu@kernel.org>
->>>>Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
->>>
->>>Thanks! Since this patch is separate from the rest and it's based on
->>>modules-next, I can just take this last patch through the modules tree.
->>
->>It depends on 8/11 of the series.
->>
->>Acked-by: Miroslav Benes <mbenes@suse.cz>
->>
->>for the patch.
->
->Ah yeah, you are right (you meant patch 9/11 right)? Will take both
->through modules-next.
+On Thu, Apr 23, 2020 at 01:10:30PM -0500, Josh Poimboeuf wrote:
+> On Thu, Apr 23, 2020 at 09:12:28AM -0500, Josh Poimboeuf wrote:
+> > > > this is strange. While I would have expected an exception similar to
+> > > > this, it really should have happened on the "sturg" instruction which
+> > > > does the DAT-off store in s390_kernel_write(), and certainly not with
+> > > > an ID of 0004 (protection). However, in your case, it happens on a
+> > > > normal store instruction, with 0004 indicating a protection exception.
+> > > > 
+> > > > This is more like what I would expect e.g. in the case where you do
+> > > > _not_ use the s390_kernel_write() function for RO module text patching,
+> > > > but rather normal memory access. So I am pretty sure that this is not
+> > > > related to the s390_kernel_write(), but some other issue, maybe some
+> > > > place left where you still use normal memory access?
+> > > 
+> > > The call trace above also suggests that it is not a late relocation, no? 
+> > > The path is from KLP module init function through klp_enable_patch. It should 
+> > > mean that the to-be-patched object is loaded (it must be a module thanks 
+> > > to a check klp_init_object_loaded(), vmlinux relocations were processed 
+> > > earlier in apply_relocations()).
+> > > 
+> > > However, the KLP module state here must be COMING, so s390_kernel_write() 
+> > > should be used. What are we missing?
+> > 
+> > I'm also scratching my head.  It _should_ be using s390_kernel_write()
+> > based on the module state, but I don't see that on the stack trace.
+> > 
+> > This trace (and Gerald's comment) seem to imply it's using
+> > __builtin_memcpy(), which might expected for UNFORMED state.
+> > 
+> > Weird...
+> 
+> Mystery solved:
+> 
+>   $ CROSS_COMPILE=s390x-linux-gnu- scripts/faddr2line vmlinux apply_rela+0x16a/0x520
+>   apply_rela+0x16a/0x520:
+>   apply_rela at arch/s390/kernel/module.c:336
+> 
+> which corresponds to the following code in apply_rela():
+> 
+> 
+> 	case R_390_PLTOFF64:	/* 16 bit offset from GOT to PLT. */
+> 		if (info->plt_initialized == 0) {
+> 			unsigned int *ip;
+> 			ip = me->core_layout.base + me->arch.plt_offset +
+> 				info->plt_offset;
+> 			ip[0] = 0x0d10e310;	/* basr 1,0  */
+> 			ip[1] = 0x100a0004;	/* lg	1,10(1) */
+> 
+> 
+> Notice how it's writing directly to text... oops.
+> 
 
-So I'm speaking nonsense apparently. I suggested taking them because
-the module patches were based on modules-next. But Miroslav correctly
-pointed out that these patches still depend on livepatch removing
-module_disable_ro() usage before we can even remove them from
-module.c.
+This is more of note for the future, but when/if we add livepatch
+support on arm64 we'll need to make the very same adjustment there as
+well.  See the following pattern:
 
-So ignore what I said earlier, the whole patchset should be applied
-together (I'm assuming the livepatching for-next branch). In any case,
-should there be any conflicts with modules-next they should be easy to
-resolve. Sorry for the noise!
+arch/arm64/kernel/module.c:
 
-Jessica
+  reloc_insn_movw()
+  reloc_insn_imm()
+  reloc_insn_adrp()
+
+    *place = cpu_to_le32(insn);
+
+maybe something like aarch64_insn_patch_text_nosync() could be used
+there, I dunno. (It looks like ftrace and jump_labels are using that
+interface.)
+
+This is outside the scope of the patchset, but I thought I'd mention it
+as I was curious to see how other arches were currently handling their
+relocation updates.
+
+-- Joe
+
