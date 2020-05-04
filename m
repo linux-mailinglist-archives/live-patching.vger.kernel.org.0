@@ -2,99 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC18C1C0387
-	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2020 19:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 228141C4985
+	for <lists+live-patching@lfdr.de>; Tue,  5 May 2020 00:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726509AbgD3REU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 30 Apr 2020 13:04:20 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28235 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726333AbgD3REU (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 30 Apr 2020 13:04:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588266258;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AhnGahDqQjczcKUBCMlSkJo4Ce+ioGSLMDnlvtp40tA=;
-        b=PGpc8uvwuk5D+DLYN0mCkOlCYF9oKKiCzqDbj105qgJm88FCbTL1E+fk/Q+xnB466mW1h/
-        wdsr+PlJfv0r6f1NJtcxr/2AjGX+4CH0wcWl72qPY9mSylYd29u0nyNUjK6dqrJyAyb8bD
-        wYkKfHzPgXKe0+KH0n+dnPvXkG8B/x4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-34-gT3uIt64M3ezpWPYQQpIXQ-1; Thu, 30 Apr 2020 13:04:16 -0400
-X-MC-Unique: gT3uIt64M3ezpWPYQQpIXQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726453AbgEDWUj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 4 May 2020 18:20:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35858 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726291AbgEDWUi (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 4 May 2020 18:20:38 -0400
+Received: from pobox.suse.cz (unknown [195.250.132.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 672131895A2F;
-        Thu, 30 Apr 2020 17:04:14 +0000 (UTC)
-Received: from [10.3.112.171] (ovpn-112-171.phx2.redhat.com [10.3.112.171])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7FC3E5D9F5;
-        Thu, 30 Apr 2020 17:04:11 +0000 (UTC)
-Subject: Re: [PATCH v2 6/9] s390/module: Use s390_kernel_write() for late
- relocations
+        by mail.kernel.org (Postfix) with ESMTPSA id E1514206A4;
+        Mon,  4 May 2020 22:20:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588630838;
+        bh=cvKz/TW55lC8yvXi3iR0AU74dO/R1dsn6RuW11AKRvc=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=gJKG6J+q/xog0qE2Xn+NjR7z/SEHm8XkPKTHfuecDO3i+xViaVIPvmcFKmSG4mGuZ
+         +iEZdm8G4+sSjArWGnEGs+vqdKH5+dNBk8+TWL+YJilEBqyL/2ebjCGYnnAGzsUIlw
+         41+lRL9dAmeDeo3Qbv9/s7oIxlb72C75LK4+7IYU=
+Date:   Tue, 5 May 2020 00:20:34 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Peter Zijlstra <peterz@infradead.org>,
-        Jessica Yu <jeyu@kernel.org>, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, Vasily Gorbik <gor@linux.ibm.com>
-References: <cover.1587131959.git.jpoimboe@redhat.com>
- <18266eb2c2c9a2ce0033426837d89dcb363a85d3.1587131959.git.jpoimboe@redhat.com>
- <20200422164037.7edd21ea@thinkpad> <20200422172126.743908f5@thinkpad>
- <20200422194605.n77t2wtx5fomxpyd@treble> <20200423141834.234ed0bc@thinkpad>
- <alpine.LSU.2.21.2004231513250.6520@pobox.suse.cz>
- <20200423141228.sjvnxwdqlzoyqdwg@treble>
- <20200423181030.b5mircvgc7zmqacr@treble> <20200430143821.GA10092@redhat.com>
- <20200430164842.bvkrh5fz24ro7ye2@treble>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <691690e3-b792-bac5-2080-2abfc0beb11b@redhat.com>
-Date:   Thu, 30 Apr 2020 13:04:10 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Jessica Yu <jeyu@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH v4 00/11] livepatch,module: Remove .klp.arch and
+ module_disable_ro()
+In-Reply-To: <cover.1588173720.git.jpoimboe@redhat.com>
+Message-ID: <nycvar.YFH.7.76.2005050019060.19713@cbobk.fhfr.pm>
+References: <cover.1588173720.git.jpoimboe@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20200430164842.bvkrh5fz24ro7ye2@treble>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 4/30/20 12:48 PM, Josh Poimboeuf wrote:
-> On Thu, Apr 30, 2020 at 10:38:21AM -0400, Joe Lawrence wrote:
->> On Thu, Apr 23, 2020 at 01:10:30PM -0500, Josh Poimboeuf wrote:
->> This is more of note for the future, but when/if we add livepatch
->> support on arm64 we'll need to make the very same adjustment there as
->> well.  See the following pattern:
->>
->> arch/arm64/kernel/module.c:
->>
->>    reloc_insn_movw()
->>    reloc_insn_imm()
->>    reloc_insn_adrp()
->>
->>      *place = cpu_to_le32(insn);
->>
->> maybe something like aarch64_insn_patch_text_nosync() could be used
->> there, I dunno. (It looks like ftrace and jump_labels are using that
->> interface.)
->>
->> This is outside the scope of the patchset, but I thought I'd mention it
->> as I was curious to see how other arches were currently handling their
->> relocation updates.
-> 
-> True... I suspect your klp-convert selftests will catch that?
-> 
+On Wed, 29 Apr 2020, Josh Poimboeuf wrote:
 
-Indeed.  Actually I had hacked enough livepatch code support on ARM to 
-see what happened when converting and loading the test patches :)
+> v4:
+> - Fixed rebase bisection regression [Miroslav]
+> - Made module_enable_ro() static [Jessica]
+> - Added Acked-by's
+> 
+> v3:
+> - klp: split klp_write_relocations() into object/section specific
+>   functions [joe]
+> - s390: fix plt/got writes [joe]
+> - s390: remove text_mutex usage [mbenes]
+> - x86: do text_poke_sync() before releasing text_mutex [peterz]
+> - split x86 text_mutex changes into separate patch [mbenes]
+> 
+> v2:
+> - add vmlinux.ko check [peterz]
+> - remove 'klp_object' forward declaration [mbenes]
+> - use text_mutex [jeyu]
+> - fix documentation TOC [jeyu]
+> - fix s390 issues [mbenes]
+> - upstream kpatch-build now supports this
+>   (though it's only enabled for Linux >= 5.8)
+> 
+> These patches add simplifications and improvements for some issues Peter
+> found six months ago, as part of his non-writable text code (W^X)
+> cleanups.
+> 
+> Highlights:
+> 
+> - Remove the livepatch arch-specific .klp.arch sections, which were used
+>   to do paravirt patching and alternatives patching for livepatch
+>   replacement code.
+> 
+> - Add support for jump labels in patched code (only for static keys
+>   which live in vmlinux).
+> 
+> - Remove the last module_disable_ro() usage.
+> 
+> For more background, see this thread:
+> 
+>   https://lkml.kernel.org/r/20191021135312.jbbxsuipxldocdjk@treble
+> 
+> This has been tested with kpatch-build integration tests and klp-convert
+> selftests.
 
--- Joe
+So I think this should best go through livepatching.git for 5.8. Unless 
+anyone has a better idea or objects heavily, I'll queue it tomorrow.
+
+Thanks,
+
+-- 
+Jiri Kosina
+SUSE Labs
 
