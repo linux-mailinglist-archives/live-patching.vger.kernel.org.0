@@ -2,124 +2,118 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90DE11C8AB6
-	for <lists+live-patching@lfdr.de>; Thu,  7 May 2020 14:28:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87CF21C8C7D
+	for <lists+live-patching@lfdr.de>; Thu,  7 May 2020 15:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726074AbgEGM2A (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 7 May 2020 08:28:00 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:7504 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725923AbgEGM17 (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 7 May 2020 08:27:59 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 047C422X113559;
-        Thu, 7 May 2020 08:27:51 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s4vabmgu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 May 2020 08:27:50 -0400
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 047C6Vwx121760;
-        Thu, 7 May 2020 08:27:50 -0400
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s4vabmfv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 May 2020 08:27:50 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 047CKEA1028886;
-        Thu, 7 May 2020 12:27:48 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 30s0g5cmh7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 May 2020 12:27:48 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 047CRk9f56295540
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 7 May 2020 12:27:46 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 18626AE056;
-        Thu,  7 May 2020 12:27:46 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A3003AE051;
-        Thu,  7 May 2020 12:27:45 +0000 (GMT)
-Received: from thinkpad (unknown [9.145.63.153])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  7 May 2020 12:27:45 +0000 (GMT)
-Date:   Thu, 7 May 2020 14:27:44 +0200
-From:   Gerald Schaefer <gerald.schaefer@de.ibm.com>
-To:     Jiri Kosina <jikos@kernel.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        id S1725939AbgEGNgw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 7 May 2020 09:36:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49012 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725879AbgEGNgw (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 7 May 2020 09:36:52 -0400
+Received: from pobox.suse.cz (nat1.prg.suse.com [195.250.132.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F100B20643;
+        Thu,  7 May 2020 13:36:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588858611;
+        bh=LzQDOyhUPzaN/QEmH/5Zc/cFyUE1+mfVuXz0rvZ8LqA=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=eStuCrUmYvOzkkb/b4gwo9EssNgSWMvVXNQfMmAmE3/4XYZlvs7S40Q9uCK3FyII/
+         ZUug+OReaOaXNuqa34GONmSGK97EHYDBrdlFU/G7dNy+eRUj4oFGLGIdAGWICWyr8+
+         a4mkZ7utRJPgqiGk8/ZqsQ1Uz8FrYTdz2jtWB8y8=
+Date:   Thu, 7 May 2020 15:36:48 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Peter Zijlstra <peterz@infradead.org>,
         Jessica Yu <jeyu@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Miroslav Benes <mbenes@suse.cz>, linux-s390@vger.kernel.org,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
+        heiko.carstens@de.ibm.com,
         Gerald Schaefer <gerald.schaefer@de.ibm.com>
-Subject: Re: [PATCH v4 06/11] s390/module: Use s390_kernel_write() for late
- relocations
-Message-ID: <20200507142744.05271ac0@thinkpad>
-In-Reply-To: <nycvar.YFH.7.76.2005071159490.25812@cbobk.fhfr.pm>
-References: <cover.1588173720.git.jpoimboe@redhat.com>
-        <4710f82c960ff5f8b0dd7dba6aafde5bea275cfa.1588173720.git.jpoimboe@redhat.com>
-        <nycvar.YFH.7.76.2005071159490.25812@cbobk.fhfr.pm>
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+Subject: Re: [PATCH v4 05/11] s390: Change s390_kernel_write() return type
+ to match memcpy()
+In-Reply-To: <be5119b30920d2da6fca3f6d2b1aca5712a2fd30.1588173720.git.jpoimboe@redhat.com>
+Message-ID: <nycvar.YFH.7.76.2005071534170.25812@cbobk.fhfr.pm>
+References: <cover.1588173720.git.jpoimboe@redhat.com> <be5119b30920d2da6fca3f6d2b1aca5712a2fd30.1588173720.git.jpoimboe@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-07_06:2020-05-07,2020-05-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- suspectscore=0 adultscore=0 clxscore=1011 impostorscore=0
- lowpriorityscore=0 bulkscore=0 phishscore=0 mlxscore=0 mlxlogscore=999
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005070094
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 7 May 2020 12:00:13 +0200 (CEST)
-Jiri Kosina <jikos@kernel.org> wrote:
+On Wed, 29 Apr 2020, Josh Poimboeuf wrote:
 
-> On Wed, 29 Apr 2020, Josh Poimboeuf wrote:
+> s390_kernel_write()'s function type is almost identical to memcpy().
+> Change its return type to "void *" so they can be used interchangeably.
 > 
-> > From: Peter Zijlstra <peterz@infradead.org>
-> > 
-> > Because of late module patching, a livepatch module needs to be able to
-> > apply some of its relocations well after it has been loaded.  Instead of
-> > playing games with module_{dis,en}able_ro(), use existing text poking
-> > mechanisms to apply relocations after module loading.
-> > 
-> > So far only x86, s390 and Power have HAVE_LIVEPATCH but only the first
-> > two also have STRICT_MODULE_RWX.
-> > 
-> > This will allow removal of the last module_disable_ro() usage in
-> > livepatch.  The ultimate goal is to completely disallow making
-> > executable mappings writable.
-> > 
-> > [ jpoimboe: Split up patches.  Use mod state to determine whether
-> > 	    memcpy() can be used.  Test and add fixes. ]
-> > 
-> > Cc: linux-s390@vger.kernel.org
-> > Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
-> > Cc: Gerald Schaefer <gerald.schaefer@de.ibm.com>
-> > Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-> > Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
-> > Acked-by: Miroslav Benes <mbenes@suse.cz>
+> Cc: linux-s390@vger.kernel.org
+> Cc: heiko.carstens@de.ibm.com
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+> Acked-by: Miroslav Benes <mbenes@suse.cz>
+
+Also for this one -- s390 folks, could you please provide your Ack for 
+taking things through livepatching.git as part of this series?
+
+Thanks.
+
+> ---
+>  arch/s390/include/asm/uaccess.h | 2 +-
+>  arch/s390/mm/maccess.c          | 9 ++++++---
+>  2 files changed, 7 insertions(+), 4 deletions(-)
 > 
-> Could we please get an Ack / Reviewed-by: for this patch from s390 folks?
-> 
-> Thanks,
+> diff --git a/arch/s390/include/asm/uaccess.h b/arch/s390/include/asm/uaccess.h
+> index a470f1fa9f2a..324438889fe1 100644
+> --- a/arch/s390/include/asm/uaccess.h
+> +++ b/arch/s390/include/asm/uaccess.h
+> @@ -276,6 +276,6 @@ static inline unsigned long __must_check clear_user(void __user *to, unsigned lo
+>  }
+>  
+>  int copy_to_user_real(void __user *dest, void *src, unsigned long count);
+> -void s390_kernel_write(void *dst, const void *src, size_t size);
+> +void *s390_kernel_write(void *dst, const void *src, size_t size);
+>  
+>  #endif /* __S390_UACCESS_H */
+> diff --git a/arch/s390/mm/maccess.c b/arch/s390/mm/maccess.c
+> index de7ca4b6718f..22a0be655f27 100644
+> --- a/arch/s390/mm/maccess.c
+> +++ b/arch/s390/mm/maccess.c
+> @@ -55,19 +55,22 @@ static notrace long s390_kernel_write_odd(void *dst, const void *src, size_t siz
+>   */
+>  static DEFINE_SPINLOCK(s390_kernel_write_lock);
+>  
+> -void notrace s390_kernel_write(void *dst, const void *src, size_t size)
+> +notrace void *s390_kernel_write(void *dst, const void *src, size_t size)
+>  {
+> +	void *tmp = dst;
+>  	unsigned long flags;
+>  	long copied;
+>  
+>  	spin_lock_irqsave(&s390_kernel_write_lock, flags);
+>  	while (size) {
+> -		copied = s390_kernel_write_odd(dst, src, size);
+> -		dst += copied;
+> +		copied = s390_kernel_write_odd(tmp, src, size);
+> +		tmp += copied;
+>  		src += copied;
+>  		size -= copied;
+>  	}
+>  	spin_unlock_irqrestore(&s390_kernel_write_lock, flags);
+> +
+> +	return dst;
+>  }
+>  
+>  static int __no_sanitize_address __memcpy_real(void *dest, void *src, size_t count)
+> -- 
+> 2.21.1
 > 
 
-Looks pretty straightforward, and using s390_kernel_write() is OK, so
+-- 
+Jiri Kosina
+SUSE Labs
 
-Acked-by: Gerald Schaefer <gerald.schaefer@de.ibm.com> # s390
