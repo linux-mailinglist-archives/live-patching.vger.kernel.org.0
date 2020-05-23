@@ -2,57 +2,66 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B01881D9A7E
-	for <lists+live-patching@lfdr.de>; Tue, 19 May 2020 16:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 184201DFA1C
+	for <lists+live-patching@lfdr.de>; Sat, 23 May 2020 20:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729020AbgESO6E (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 19 May 2020 10:58:04 -0400
-Received: from sonic304-9.consmr.mail.bf2.yahoo.com ([74.6.128.32]:42269 "EHLO
-        sonic304-9.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728725AbgESO6D (ORCPT
+        id S1727811AbgEWSE5 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 23 May 2020 14:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726868AbgEWSE5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 19 May 2020 10:58:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1589900282; bh=lMwnL/6WltFrTd0TmVnY+7WY/Sq+3khHK9hYAyAunB4=; h=Date:From:Reply-To:Subject:References:From:Subject; b=XuSjVp+YteEaeyjsxBwu7muJmwJWcHdIJ7TXeY/JoonTVXNjfM/XHgdb0AnNybRceZ9s7K+OHoVnn8WtKZnmkn2lm2eB5WQARGEwcvAJ0ehkohkorHcxev95vnsZ4gj5rtRdRiwdkbNe4J5R8lshvrYZSZ8CjGi7gJa4ch4eCNTssDvoBBvGLGN4ecN9WagD5hoYGWWGIkLpY6AxsCjmgwcra4BJLUF350hSK0CjGAfSzh5QVcs05912sbdU1n1LYyI+c0jV2yBrveVdcuqTohw5KARg56QFl8UtkrtbzbTkn0UJVAKpAdHib3/cjk3f8VYLYrIxfVV6UR2ckrY/OA==
-X-YMail-OSG: 2L.dEiwVM1kM2PyfeRABO3joJY3kri_iPCszGxmEzLi9X17PTROoLKmI9AOu5Sx
- 74xeafwn1vkB2lCqVSOw1PWUp_VaIh8nbKPW9c.TuOEWsdYKCVkVWCcgj66hK7cSEyJqZHTM7EH0
- BYNpa6A4RF5Op.v7lkpFPC_o1_hzbsyIq_SnoXX3Y69Y4oDyTDfhZZ3_IYsEuIB0r8ak3NNC9qYw
- 4Fcv6d4zbcWLBLyWnwqmzKGkXi3i6fveb0ZGf5_bpBK.U8j3nGfvNA2kvPxB6ZMsS_mxRykVUbmy
- jbvQhB3Fb2uVwxZzXp0BlVDOk_QwnpMkL4Z6Imai4UQpx9Vnw8hHdPBckRmGtznV8n_wnMNv8i_7
- Dg3PEUMGt7vD9HKkXKESeqNb62fNgRogjRwMSGYPYKn8upqqoz8hPUrUtiOqFFBlorHUb8QMzr6D
- MzTNGsOMTrVV1c9CMPAEDJyZBprEeRo.Vxo7mKpJf3Wd007IVPVdortb7wL_qguqWt0vwuHKdxQM
- zYosHHZooukR0z2D_trKfJu9KbbcH17_FCunjQ5X5psqlsGZZeugdKHxlsogYaLWWALVT9.TSuJK
- JG1moC5r.u086WWtD3dWQji4.PKj27aeiAefjNJLC5nV8lCm4jqY339PmD_4XMtBNI_DQe7sQyaP
- larUMsukw5P_Pq0M2Ya6.tqrzk5XxO8UMVEPyC_zGm4WV44Icm3Et9ZHeQrwo0AvCq1_KXdkyzwM
- EH1nV.xcjttSP3Lifs.Ba.DSLk52Tc8sj6BGosZuoqM6HK5PqPfhjaYDd0f5g29phk32WpHWbA8u
- FSXU1ezqBnFrLff7CCtJMyh0ZhmQXorm.jMPBebarKXwL4K34o2YwpawouUWMlylwxfq2RirCwtE
- PKB2N9nxxHgCVnirH6tjRd5GV.uSeWO2BS5KiNSMMJ_uJtjwnPW6EslEmo4tJkeTPEC6JU0delEa
- .vxg08EB06E.vs3X.UaKyEDiEnWnRraRv3UcvMYrxtsFD0ktPF8rbtf.zzhZHSXcY_XuL3yXni3k
- w9_otNKJbLerF9tmJhTv4giaosCIqUe8F.8wpvBpTguQVxzJcSZZKAnHji9ATKn2eWYXctdey0uf
- WNIYaXeLPo9vSjPRnZm2jfYKRpt0m9Y.PweuYz2xJ67_K7DTEVzB37WPIztJYKrLRpq89nwEJDnx
- GYzD5djYsZHIVxLhufUd06PvGfouDSxiJQg.9hjCN.OGQqxGwrp7eJX6V2sRI0zufn5fyGbLxTBA
- aFcspbooyxPCljeqh0WsLmMlX0bOtreEBpP_TOWQO2diI2GRKbA4y7rB3q5ySudUOA0auWqx1DYc
- -
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.bf2.yahoo.com with HTTP; Tue, 19 May 2020 14:58:02 +0000
-Date:   Tue, 19 May 2020 14:57:58 +0000 (UTC)
-From:   Rose Gordon <rosegordonor@gmail.com>
-Reply-To: rosegordonor@gmail.com
-Message-ID: <2088720139.1027951.1589900278769@mail.yahoo.com>
-Subject: Greetings to you
+        Sat, 23 May 2020 14:04:57 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B330C061A0E
+        for <live-patching@vger.kernel.org>; Sat, 23 May 2020 11:04:57 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id w3so8472884qkb.6
+        for <live-patching@vger.kernel.org>; Sat, 23 May 2020 11:04:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=F3NMDrR9dummcUXdRfruEEfbIS6yB2vx68nB8Asq/5Q=;
+        b=pNVSOezqzWDSAspd5UrTuIO0/MBh/Rk4cxXwO7mz2dQXNc27pct2LxFWxCfG39Hpsj
+         UQZ+pZFmTVjl8sy+T2zBmHXJk1EEqQF+UFF4mnJc0PQw0L88Ts6TnUN1H9vC1heqGHe1
+         YM0jD+A0mYjRegeI8nedqUcJLiUk0mPEpXjtUpXfz566Jqwg4f5RZAJ0aeeJsPhTcN3E
+         9yFdvQgwO60wxeTIKFR/ZKdP75HkRXVpDZhRL1F46k2NRN0Dv+6Grh6Ms5Fhnm4gjM9B
+         DCPvTxMonw0HCtlWTs+9Z67Hejhv/LVBK3njY9zdA44XYVdLjgsJLfsPvezJAug/GtWX
+         Fedw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=F3NMDrR9dummcUXdRfruEEfbIS6yB2vx68nB8Asq/5Q=;
+        b=skHzKax6pd5nFWY1WcKl2a1mFjN/xF4MNM1aEafRWrUNcFzXrUIPnfssyim86q3RHd
+         ch4cQiucnfT657Je/2ntAU66ibdhOmCE7CGW2VuX3p9BH8TLiWVbNDI5/C/xgnMoDtE/
+         TtlMbkOWyCnxJxwF3SBgO3Sdn8s3XOR4n64yR9mgSILFEGBSaBty6k1vcFr4TEJqbdsV
+         M0ZsjPDeBSBE+u8B57ktY7BoAIj30TJ2vZC6YP0ZCln7AE5nXeGN3Dzwa9Agj1RqrgFK
+         TpistbnbVgO+//ZsFbxOmce659YLY+sUoTWeaEqaV3dvxdJcI9YqMdafoZa3gAHCKvkm
+         0K9Q==
+X-Gm-Message-State: AOAM533H5EwQyqpOG5P1W6VB/eXTLPUsjjtd5eMC09niaMCnwACUTV+O
+        2UsH/kTuQkB4XyDH+gQbDpRJHY+SiiGktaoCOns=
+X-Google-Smtp-Source: ABdhPJzNomu6Xolgkzhh3dBEiIEIrSvIBRkf1lGpBW4m0rqFvCrTQnT5EMQuEI30XfntllzZq4QwqKGtHquqhQKl1YM=
+X-Received: by 2002:a37:6e42:: with SMTP id j63mr2991720qkc.329.1590257096246;
+ Sat, 23 May 2020 11:04:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <2088720139.1027951.1589900278769.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15960 YMailNodin Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0
-To:     unlisted-recipients:; (no To-header on input)
+Received: by 2002:aed:3ac5:0:0:0:0:0 with HTTP; Sat, 23 May 2020 11:04:55
+ -0700 (PDT)
+Reply-To: mrs.chantala2055@gmail.com
+From:   mrs chantal <mrs.chantaltwo@gmail.com>
+Date:   Sat, 23 May 2020 18:04:55 +0000
+Message-ID: <CAGVwK0W8GZTrcmF-fH4=A5Lcu=0E6kd7AkYv8KomWWtW7adB4A@mail.gmail.com>
+Subject: jjCompliment
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Greetings to you,
-I hope that this letter finds you in the best of health and spirit. My name is Rose Gordan, Please I kindly request for your attention, I have a very important business to discuss with you privately and in a much matured manner but i will give the details upon receipt of your response,
-
-Thank you in advance!
-
-Yours sincerely,
-Rose.
+     Compliment of the day to you. I am Mrs.CHANTAL I am sending this brief
+    letter to solicit your partnership to transfer $13.5 Million US
+    Dollars.I shall send you more information and procedures when I receive
+    positive response From you. Please send me a message in My private
+    email address is ( mrschantal066@gmail.com  )
+    Best Regards
+    MrS.Chantal
