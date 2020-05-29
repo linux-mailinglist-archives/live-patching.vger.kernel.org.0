@@ -2,86 +2,90 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5848D1E815E
-	for <lists+live-patching@lfdr.de>; Fri, 29 May 2020 17:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E1C81E857D
+	for <lists+live-patching@lfdr.de>; Fri, 29 May 2020 19:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726966AbgE2PMY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 29 May 2020 11:12:24 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:46278 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726882AbgE2PMY (ORCPT
+        id S1726999AbgE2Ros (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 29 May 2020 13:44:48 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:48014 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726829AbgE2Ror (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 29 May 2020 11:12:24 -0400
+        Fri, 29 May 2020 13:44:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590765143;
+        s=mimecast20190719; t=1590774286;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NyeQg8ZregT21iKXzyH6UaHW5smbt/BetQWzJvj6THg=;
-        b=aR7hzEvB/ZIRWuS+SH/PY5P64zPz+d8A8CA7Whu86KgZlNn8M9nX0r7khrLeuhyNmAguse
-        2TwcsfLlOPPRb5hDzmHCXC9mHy1777QuSHl2VJnADpJQsgbCuQyNGHpA18jJnbM0g9SX06
-        3O4KsHqc+EIud1/1Jcboytab2lgMSuQ=
+        bh=dTz4t9XSMrolUyKg6CsMoUPC7f/9JweFm6zuCIDCXNg=;
+        b=jGCrhbdH2tf6fgYvG6tZJuvffy1eRR4xxdq5dKrrtBr4uSlwiImExkCV0rK+xpQDNZMNH8
+        PSEnswm2LXObPd2ZcCg3txYPsPj39YFqGFp6dWyDX1naR4+qdJPEfrJK+3fg6iJAYdn1n3
+        +xnBF5vrcQECPYKSghpB8A2SBkXiO1g=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-41-3mr9cXEzNi-tw5PBq78Uwg-1; Fri, 29 May 2020 11:12:21 -0400
-X-MC-Unique: 3mr9cXEzNi-tw5PBq78Uwg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-287-TaVu2yjfOy2MO9txOqUAXw-1; Fri, 29 May 2020 13:44:42 -0400
+X-MC-Unique: TaVu2yjfOy2MO9txOqUAXw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21B32107ACCD;
-        Fri, 29 May 2020 15:12:20 +0000 (UTC)
-Received: from [10.3.112.17] (ovpn-112-17.phx2.redhat.com [10.3.112.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9B4607A8C9;
-        Fri, 29 May 2020 15:12:19 +0000 (UTC)
-Subject: Re: [PATCH 0/4] selftests/livepatch: rework of
- test-klp-{callbacks,shadow_vars}
-To:     Yannick Cote <ycote@redhat.com>, live-patching@vger.kernel.org
-Cc:     linux-kselftest@vger.kernel.org
-References: <20200528134849.7890-1-ycote@redhat.com>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <4d69a69d-480c-5abc-1d26-e107012041dd@redhat.com>
-Date:   Fri, 29 May 2020 11:12:18 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DAFE0107ACCA;
+        Fri, 29 May 2020 17:44:40 +0000 (UTC)
+Received: from treble (ovpn-116-170.rdu2.redhat.com [10.10.116.170])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B75765C1B5;
+        Fri, 29 May 2020 17:44:35 +0000 (UTC)
+Date:   Fri, 29 May 2020 12:44:33 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Wang ShaoBo <bobo.shaobowang@huawei.com>
+Cc:     huawei.libin@huawei.com, xiexiuqi@huawei.com,
+        cj.chengjian@huawei.com, mingo@redhat.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        mbenes@suse.cz, devel@etsukata.com, viro@zeniv.linux.org.uk,
+        esyr@redhat.com
+Subject: Re: Question: livepatch failed for new fork() task stack unreliable
+Message-ID: <20200529174433.wpkknhypx2bmjika@treble>
+References: <20200529101059.39885-1-bobo.shaobowang@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20200528134849.7890-1-ycote@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200529101059.39885-1-bobo.shaobowang@huawei.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 5/28/20 9:48 AM, Yannick Cote wrote:
-> The test-klp-callbacks change implement a synchronization replacement of
-> initial code to use completion variables instead of delays. The
-> completion variable interlocks the busy module with the concurrent
-> loading of the target livepatch patches which works with the execution
-> flow instead of estimated time delays.
-> 
+On Fri, May 29, 2020 at 06:10:59PM +0800, Wang ShaoBo wrote:
+> Stack unreliable error is reported by stack_trace_save_tsk_reliable() when trying
+> to insmod a hot patch for module modification, this results in frequent failures
+> sometimes. We found this 'unreliable' stack is from task just fork.
 
-For more context: we had been seeing occasional glitches with this test 
-in our continuous kernel integration suite.  In every case, it seemed 
-that the worker thread wasn't running when expected, so I assumed that 
-system load had something to do with it.  We shuffled the ordering of 
-tests, but still encountered issues and I decided life was too sort to 
-continue remotely debugging sleep-"synchronized" code.
+For livepatch, this shouldn't actually be a failure.  The patch will
+just stay in the transition state until after the fork has completed.
+Which should happen in a reasonable amount of time, right?
 
-> The test-klp-shadow-vars changes first refactors the code to be more of
-> a readable example as well as continuing to verify the component code.
-> The patch is broken in two to display the renaming and restructuring in
-> part 1 and the addition and change of logic in part 2. The last change
-> frees memory before bailing in case of errors.
-> 
+> 1) The task was not actually scheduled to excute, at this time UNWIND_HINT_EMPTY in
+> ret_from_fork() has not reset unwind_hint, it's sp_reg and end field remain default value
+> and end up throwing an error in unwind_next_frame() when called by arch_stack_walk_reliable();
 
-Yannick's patches look fine to me, so for those:
+Yes, this seems to be true for forked-but-not-yet-scheduled tasks.
 
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+I can look at fixing that.  I have some ORC cleanups in progress which
+are related to UNWIND_HINT_EMPTY and the end of the stack.  I can add
+this issue to the list of improvements.
 
-(I can ack individually if required, let me know.)
+> 2) The task has been scheduled but UNWIND_HINT_REGS not finished, at this time
+> arch_stack_walk_reliable() terminates it's backtracing loop for pt_regs unknown
+> and return -EINVAL because it's a user task.
 
--- Joe
+Hm, do you see this problem with upstream?  It seems like it should
+work.  arch_stack_walk_reliable() has this:
+
+			/* Success path for user tasks */
+			if (user_mode(regs))
+				return 0;
+
+Where exactly is the error coming from?
+
+-- 
+Josh
 
