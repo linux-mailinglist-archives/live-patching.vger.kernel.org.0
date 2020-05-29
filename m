@@ -2,132 +2,86 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB12C1E7A20
-	for <lists+live-patching@lfdr.de>; Fri, 29 May 2020 12:11:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5848D1E815E
+	for <lists+live-patching@lfdr.de>; Fri, 29 May 2020 17:12:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725775AbgE2KLa (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 29 May 2020 06:11:30 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:58174 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725601AbgE2KL3 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 29 May 2020 06:11:29 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id C003B6E80F94C9C22371;
-        Fri, 29 May 2020 18:11:26 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Fri, 29 May 2020
- 18:11:15 +0800
-From:   Wang ShaoBo <bobo.shaobowang@huawei.com>
-CC:     <huawei.libin@huawei.com>, <xiexiuqi@huawei.com>,
-        <cj.chengjian@huawei.com>, <bobo.shaobowang@huawei.com>,
-        <mingo@redhat.com>, <x86@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <live-patching@vger.kernel.org>,
-        <mbenes@suse.cz>, <jpoimboe@redhat.com>, <devel@etsukata.com>,
-        <viro@zeniv.linux.org.uk>, <esyr@redhat.com>
-Subject: Question: livepatch failed for new fork() task stack unreliable
-Date:   Fri, 29 May 2020 18:10:59 +0800
-Message-ID: <20200529101059.39885-1-bobo.shaobowang@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726966AbgE2PMY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 29 May 2020 11:12:24 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:46278 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726882AbgE2PMY (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Fri, 29 May 2020 11:12:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590765143;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NyeQg8ZregT21iKXzyH6UaHW5smbt/BetQWzJvj6THg=;
+        b=aR7hzEvB/ZIRWuS+SH/PY5P64zPz+d8A8CA7Whu86KgZlNn8M9nX0r7khrLeuhyNmAguse
+        2TwcsfLlOPPRb5hDzmHCXC9mHy1777QuSHl2VJnADpJQsgbCuQyNGHpA18jJnbM0g9SX06
+        3O4KsHqc+EIud1/1Jcboytab2lgMSuQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-41-3mr9cXEzNi-tw5PBq78Uwg-1; Fri, 29 May 2020 11:12:21 -0400
+X-MC-Unique: 3mr9cXEzNi-tw5PBq78Uwg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21B32107ACCD;
+        Fri, 29 May 2020 15:12:20 +0000 (UTC)
+Received: from [10.3.112.17] (ovpn-112-17.phx2.redhat.com [10.3.112.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9B4607A8C9;
+        Fri, 29 May 2020 15:12:19 +0000 (UTC)
+Subject: Re: [PATCH 0/4] selftests/livepatch: rework of
+ test-klp-{callbacks,shadow_vars}
+To:     Yannick Cote <ycote@redhat.com>, live-patching@vger.kernel.org
+Cc:     linux-kselftest@vger.kernel.org
+References: <20200528134849.7890-1-ycote@redhat.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <4d69a69d-480c-5abc-1d26-e107012041dd@redhat.com>
+Date:   Fri, 29 May 2020 11:12:18 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.124.27]
-X-CFilter-Loop: Reflected
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <20200528134849.7890-1-ycote@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Stack unreliable error is reported by stack_trace_save_tsk_reliable() when trying
-to insmod a hot patch for module modification, this results in frequent failures
-sometimes. We found this 'unreliable' stack is from task just fork.
+On 5/28/20 9:48 AM, Yannick Cote wrote:
+> The test-klp-callbacks change implement a synchronization replacement of
+> initial code to use completion variables instead of delays. The
+> completion variable interlocks the busy module with the concurrent
+> loading of the target livepatch patches which works with the execution
+> flow instead of estimated time delays.
+> 
 
-The task just fork need to go through these steps will the problem not appear:
+For more context: we had been seeing occasional glitches with this test 
+in our continuous kernel integration suite.  In every case, it seemed 
+that the worker thread wasn't running when expected, so I assumed that 
+system load had something to do with it.  We shuffled the ordering of 
+tests, but still encountered issues and I decided life was too sort to 
+continue remotely debugging sleep-"synchronized" code.
 
-_do_fork
-    -=> copy_process
-    ...
-    -=> ret_from_fork
-            -=> UNWIND_HINT_REGS
+> The test-klp-shadow-vars changes first refactors the code to be more of
+> a readable example as well as continuing to verify the component code.
+> The patch is broken in two to display the renaming and restructuring in
+> part 1 and the addition and change of logic in part 2. The last change
+> frees memory before bailing in case of errors.
+> 
 
-Call trace as follow when stack_trace_save_tsk_reliable() return failure:
-    [ 896.214710] livepatch: klp_check_stack: monitor-process:41642 has an unreliable stack
-    [ 896.214735] livepatch: Call Trace:    # print trace entries by myself
-    [ 896.214760] Call Trace:               # call show_stack()
-    [ 896.214763] ? __switch_to_asm+0x70/0x70
+Yannick's patches look fine to me, so for those:
 
-Only for user mode task, there are two cases related for one task just created:
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-1) The task was not actually scheduled to excute, at this time UNWIND_HINT_EMPTY in
-ret_from_fork() has not reset unwind_hint, it's sp_reg and end field remain default value
-and end up throwing an error in unwind_next_frame() when called by arch_stack_walk_reliable();
+(I can ack individually if required, let me know.)
 
-2) The task has been scheduled but UNWIND_HINT_REGS not finished, at this time
-arch_stack_walk_reliable() terminates it's backtracing loop for pt_regs unknown
-and return -EINVAL because it's a user task.
-
-As shown below, for user task, There exists a gap where ORC unwinder cannot
-capture the stack state of task immediately, at this time the task has already been
-created but ret_from_fork() has not complete it's mission.
-
-We attempt to append a bit field orc_info_prepared in task_struct to probe when
-related actions finished in ret_from_fork, we found scenario 1) 2) can be capatured.
-It's a informal solution, just for testing our conjecture.
-
-I am eager to purse an effective answer, welcome any ideas.
-Another similar question: https://lkml.org/lkml/2020/3/12/590
-
-Following is the draft modification:
-
-1. Add a bit field orc_info_prepared int task_struct.
-
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 4418f5cb8324..3ff1368b8877 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -791,6 +791,9 @@ struct task_struct {
-	/* Stalled due to lack of memory */
-	unsigned			in_memstall:1;
- #endif
-+#ifdef CONFIG_UNWINDER_ORC
-+	unsigned			orc_info_prepared:1;
-+#endif
- 
-	unsigned long			atomic_flags; /* Flags requiring atomic access. */
-
-
-2. if UNWIND_HINT_REGS complete, pt_regs can be known by orc unwinder,
-   set orc_info_prepared = 1 in orc_info_prepared_fini().
-
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 3063aa9090f9..637bdb091090 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -339,6 +339,7 @@ SYM_CODE_START(ret_from_fork)
- 
- 2:
- 	UNWIND_HINT_REGS
-+	call	orc_info_prepared_fini
- 	movq	%rsp, %rdi
- 	call	syscall_return_slowpath	/* returns with IRQs disabled */
- 	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
- 
-3. Simply judge orc_info_prepared if task is user mode process.
-
-diff --git a/arch/x86/kernel/stacktrace.c b/arch/x86/kernel/stacktrace.c
-index 6ad43fc44556..bf1d2887f00b 100644
---- a/arch/x86/kernel/stacktrace.c
-+++ b/arch/x86/kernel/stacktrace.c
-@@ -77,6 +77,10 @@ int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
- 			return -EINVAL;
- 	}
-
-
-+	if (!(task->flags & (PF_KTHREAD | PF_IDLE)) &&
-+		!task_orc_info_prepared(task))
-+		return 0;
-+
- 	/* Check for stack corruption */
- 	if (unwind_error(&state))
- 		return -EINVAL;
+-- Joe
 
