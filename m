@@ -2,114 +2,176 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 427D61EB4D4
-	for <lists+live-patching@lfdr.de>; Tue,  2 Jun 2020 07:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E28221EB72F
+	for <lists+live-patching@lfdr.de>; Tue,  2 Jun 2020 10:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726485AbgFBFCE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 2 Jun 2020 01:02:04 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:2814 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725787AbgFBFCC (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 2 Jun 2020 01:02:02 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0524XkCG114231;
-        Tue, 2 Jun 2020 01:02:02 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31bm07mjrn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Jun 2020 01:02:01 -0400
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0524u4xN006388;
-        Tue, 2 Jun 2020 01:02:01 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31bm07mjqt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Jun 2020 01:02:01 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0524xnkB030256;
-        Tue, 2 Jun 2020 05:01:58 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 31bf47w9wv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Jun 2020 05:01:58 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05251uck8716598
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 2 Jun 2020 05:01:56 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ADFB84C044;
-        Tue,  2 Jun 2020 05:01:56 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A72BE4C05A;
-        Tue,  2 Jun 2020 05:01:55 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.199.37.29])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue,  2 Jun 2020 05:01:55 +0000 (GMT)
-Subject: Re: [PATCH 0/4] selftests/livepatch: rework of
- test-klp-{callbacks,shadow_vars}
-To:     Yannick Cote <ycote@redhat.com>, live-patching@vger.kernel.org
-Cc:     linux-kselftest@vger.kernel.org, joe.lawrence@redhat.com
+        id S1726183AbgFBIQ6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 Jun 2020 04:16:58 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38818 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725900AbgFBIQ6 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 2 Jun 2020 04:16:58 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id F24DDAC64;
+        Tue,  2 Jun 2020 08:16:57 +0000 (UTC)
+Date:   Tue, 2 Jun 2020 10:16:55 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Yannick Cote <ycote@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        joe.lawrence@redhat.com
+Subject: Re: [PATCH 1/4] selftests/livepatch: rework test-klp-callbacks to
+ use completion variables
+Message-ID: <20200602081654.GI27273@linux-b0ei>
 References: <20200528134849.7890-1-ycote@redhat.com>
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-Message-ID: <5ca6dcae-c686-6f62-2927-afeba97fbe2a@linux.vnet.ibm.com>
-Date:   Tue, 2 Jun 2020 10:31:54 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+ <20200528134849.7890-2-ycote@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200528134849.7890-1-ycote@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-02_04:2020-06-01,2020-06-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 phishscore=0
- impostorscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
- cotscore=-2147483648 priorityscore=1501 clxscore=1011 mlxscore=0
- suspectscore=0 spamscore=0 adultscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006020025
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200528134849.7890-2-ycote@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 5/28/20 7:18 PM, Yannick Cote wrote:
-> The test-klp-callbacks change implement a synchronization replacement of
-> initial code to use completion variables instead of delays. The
-> completion variable interlocks the busy module with the concurrent
-> loading of the target livepatch patches which works with the execution
-> flow instead of estimated time delays.
+On Thu 2020-05-28 09:48:46, Yannick Cote wrote:
+> From: Joe Lawrence <joe.lawrence@redhat.com>
 > 
-> The test-klp-shadow-vars changes first refactors the code to be more of
-> a readable example as well as continuing to verify the component code.
-> The patch is broken in two to display the renaming and restructuring in
-> part 1 and the addition and change of logic in part 2. The last change
-> frees memory before bailing in case of errors.
+> The test-klp-callbacks script includes a few tests which rely on kernel
+> task timings that may not always execute as expected under system load.
+> These will generate out of sequence kernel log messages that result in
+> test failure.
 > 
-> Patchset to be merged via the livepatching tree is against: livepatching/for-next
+> Instead of using sleep timing windows to orchestrate the test, rework
+> the test_klp_callbacks_busy module to use completion variables.
 > 
-> Joe Lawrence (1):
->   selftests/livepatch: rework test-klp-callbacks to use completion
->     variables
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> Signed-off-by: Yannick Cote <ycote@redhat.com>
+> ---
+>  lib/livepatch/test_klp_callbacks_busy.c       | 42 +++++++++++++++----
+>  .../selftests/livepatch/test-callbacks.sh     | 29 +++++++------
+>  2 files changed, 47 insertions(+), 24 deletions(-)
 > 
-> Yannick Cote (3):
->   selftests/livepatch: rework test-klp-shadow-vars
->   selftests/livepatch: more verification in test-klp-shadow-vars
->   selftests/livepatch: fix mem leaks in test-klp-shadow-vars
-> 
->  lib/livepatch/test_klp_callbacks_busy.c       |  42 +++-
->  lib/livepatch/test_klp_shadow_vars.c          | 222 +++++++++---------
->  .../selftests/livepatch/test-callbacks.sh     |  29 ++-
->  .../selftests/livepatch/test-shadow-vars.sh   |  85 ++++---
->  4 files changed, 214 insertions(+), 164 deletions(-)
-> 
+> diff --git a/lib/livepatch/test_klp_callbacks_busy.c b/lib/livepatch/test_klp_callbacks_busy.c
+> index 40beddf8a0e2..c3df12f47e5e 100644
+> --- a/lib/livepatch/test_klp_callbacks_busy.c
+> +++ b/lib/livepatch/test_klp_callbacks_busy.c
+> @@ -5,34 +5,58 @@
+>  
+>  #include <linux/module.h>
+>  #include <linux/kernel.h>
+> +#include <linux/sched.h>
+>  #include <linux/workqueue.h>
+>  #include <linux/delay.h>
+>  
+> -static int sleep_secs;
+> -module_param(sleep_secs, int, 0644);
+> -MODULE_PARM_DESC(sleep_secs, "sleep_secs (default=0)");
+> +/* load/run-time control from sysfs writer  */
+> +static bool block_transition;
+> +module_param(block_transition, bool, 0644);
+> +MODULE_PARM_DESC(block_transition, "block_transition (default=false)");
+>  
+>  static void busymod_work_func(struct work_struct *work);
+> -static DECLARE_DELAYED_WORK(work, busymod_work_func);
+> +static DECLARE_WORK(work, busymod_work_func);
+> +static DECLARE_COMPLETION(busymod_work_complete);
+>  
+>  static void busymod_work_func(struct work_struct *work)
+>  {
+> -	pr_info("%s, sleeping %d seconds ...\n", __func__, sleep_secs);
+> -	msleep(sleep_secs * 1000);
+> +	bool early_complete = block_transition;
+> +
+> +	pr_info("%s enter\n", __func__);
+> +
+> +	/*
+> +	 * When blocking the livepatch transition, set completion flag
+> +	 * early so subsequent test commands see the transition.
+> +	 */
+> +	if (early_complete)
+> +		complete(&busymod_work_complete);
 
-Series looks good to me, with one minor typo in patch 3 (s/kpatch-patch//),
-which Miroslav as already mentioned.
+I have to say that the code is really confusing. A completion called
+"work_complete" is completed when the work gets actually. It is
+completed later when the work is done immediately.
 
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+Do we need the completion at all? See below.
 
--- 
-Kamalesh
+> +
+> +	while (block_transition)
+
+The compiler might optimize the code and avoid the re-reads. Please, use:
+
+	/* Re-read variable in each cycle */
+	while (READ_ONCE(block_transition))
+
+
+> +		msleep(1000);
+
+Nit: This is still a busy wait even though there is a big
+delay between waits. The right solution would be using wait_event().
+But feel free to keep msleep(). It is good enough for selftests.
+
+> +
+>  	pr_info("%s exit\n", __func__);
+> +
+> +	/*
+> +	 * In non-blocking case, wait until we're done to complete to
+> +	 * ensure kernel log ordering
+> +	 */
+> +	if (!early_complete)
+> +		complete(&busymod_work_complete);
+>  }
+>  
+>  static int test_klp_callbacks_busy_init(void)
+>  {
+>  	pr_info("%s\n", __func__);
+> -	schedule_delayed_work(&work,
+> -		msecs_to_jiffies(1000 * 0));
+> +	schedule_work(&work);
+> +	wait_for_completion(&busymod_work_complete);
+
+IMHO, the completion is not needed when using:
+
+	schedule_work(&work);
+	/*
+	 * Print all messages from the work before returning from init().
+	 * It helps to serialize messages from the loaded modules.
+	 */
+	if (!block_transition)
+		flush_work(&work);
+
+> +
+>  	return 0;
+>  }
+>  
+>  static void test_klp_callbacks_busy_exit(void)
+>  {
+> -	cancel_delayed_work_sync(&work);
+> +	block_transition = false;
+
+The compiler could move this assignment after the following
+call. Please, use:
+
+	/* Make sure that the variable is set before flushing work. */
+	WRITE_ONCE(block_transition, false);
+
+
+> +	cancel_work_sync(&work);
+
+The work is not longer canceled. flush_work() better fits here.
+Also I would do this only when the transition is blocked:
+
+	if (block_transition) {
+		/* Make sure that the variable is set before flushing work. */
+		WRITE_ONCE(block_transition, false);
+		flush_work(&work);
+	}
+
+
+Otherwise this is a nice improvement.
+
+Best Regards,
+Petr
