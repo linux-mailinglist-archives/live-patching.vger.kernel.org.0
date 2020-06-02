@@ -2,157 +2,103 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1137D1EBBCA
-	for <lists+live-patching@lfdr.de>; Tue,  2 Jun 2020 14:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 353CA1EBCD0
+	for <lists+live-patching@lfdr.de>; Tue,  2 Jun 2020 15:15:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726842AbgFBMf7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 2 Jun 2020 08:35:59 -0400
-Received: from mx2.suse.de ([195.135.220.15]:43764 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726007AbgFBMf7 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 2 Jun 2020 08:35:59 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 23F7DABD1;
-        Tue,  2 Jun 2020 12:36:00 +0000 (UTC)
-Date:   Tue, 2 Jun 2020 14:35:57 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Yannick Cote <ycote@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        joe.lawrence@redhat.com
-Subject: Re: [PATCH 3/4] selftests/livepatch: more verification in
- test-klp-shadow-vars
-Message-ID: <20200602123557.GL27273@linux-b0ei>
-References: <20200528134849.7890-1-ycote@redhat.com>
- <20200528134849.7890-4-ycote@redhat.com>
+        id S1728103AbgFBNPE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 Jun 2020 09:15:04 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56749 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725958AbgFBNPD (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 2 Jun 2020 09:15:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591103702;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8+xkXD/89f3E/jLx1RHCiW0SRJppAJLBRgRaNSAEXLI=;
+        b=EgyxhnObc1Y088q0+ER2S4ozADOdK2ftsW+INAAEJpWJwJN0e1ZttoDoTZQeT2xOJNj1ji
+        4eMMvGXOP+ovd2Zsbq60OVkWvt7M+T26dX/Oc6MnjKav5/ifm96d/jC/pa3EscnczlYa3y
+        SS13ki4a5x2s6b+f0tMGnUyG8+Pjiew=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-133-dTvVxfvtPVO5Ym7N0GU9GA-1; Tue, 02 Jun 2020 09:14:58 -0400
+X-MC-Unique: dTvVxfvtPVO5Ym7N0GU9GA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D47BB800053;
+        Tue,  2 Jun 2020 13:14:56 +0000 (UTC)
+Received: from treble (ovpn-116-170.rdu2.redhat.com [10.10.116.170])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 98B075C1D6;
+        Tue,  2 Jun 2020 13:14:52 +0000 (UTC)
+Date:   Tue, 2 Jun 2020 08:14:50 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
+Cc:     huawei.libin@huawei.com, xiexiuqi@huawei.com,
+        cj.chengjian@huawei.com, mingo@redhat.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        mbenes@suse.cz, devel@etsukata.com, viro@zeniv.linux.org.uk,
+        esyr@redhat.com
+Subject: Re: Question: livepatch failed for new fork() task stack unreliable
+Message-ID: <20200602131450.oydrydelpdaval4h@treble>
+References: <20200529101059.39885-1-bobo.shaobowang@huawei.com>
+ <20200529174433.wpkknhypx2bmjika@treble>
+ <a9ed9157-f3cf-7d2c-7a8e-56150a2a114e@huawei.com>
+ <20200601180538.o5agg5trbdssqken@treble>
+ <a5e0f476-02b5-cc44-8d4e-d33ff2138143@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200528134849.7890-4-ycote@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <a5e0f476-02b5-cc44-8d4e-d33ff2138143@huawei.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2020-05-28 09:48:48, Yannick Cote wrote:
-> This change makes the test feel more familiar with narrowing to a
-> typical usage by operating on a number of identical structure instances
-> and populating the same two new shadow variables symmetrically while
-> keeping the same testing and verification criteria for the extra
-> variables.
-> 
-> @@ -157,122 +165,96 @@ struct test_object {
->  
->  static int test_klp_shadow_vars_init(void)
->  {
-> -	struct test_object obj1, obj2, obj3;
-> -	char nfield1, nfield2, *pnfield1, *pnfield2, **sv1, **sv2;
-> -	int  nfield3, nfield4, *pnfield3, *pnfield4, **sv3, **sv4;
-> +	struct test_object objs[NUM_OBJS];
-> +	char nfields1[NUM_OBJS], *pnfields1[NUM_OBJS], **sv1[NUM_OBJS];
-> +	char *pndup[NUM_OBJS];
-> +	int nfields2[NUM_OBJS], *pnfields2[NUM_OBJS], **sv2[NUM_OBJS];
->  	void **sv;
+On Tue, Jun 02, 2020 at 09:22:30AM +0800, Wangshaobo (bobo) wrote:
+> so i think this question is related to ORC unwinder, could i ask if you have
+> strategy or plan to avoid this problem ?
 
-> +	/* pass 1: init & alloc a char+int pair of svars for each objs */
-> +	for (i = 0; i < NUM_OBJS; i++) {
-> +		pnfields1[i] = &nfields1[i];
-> +		pnfields2[i] = &nfields2[i];
-> +		ptr_id(pnfields1[i]);
-> +		ptr_id(pnfields2[i]);
-> +
-> +		/* alloc a few svars with different <obj> and <id>. */
-> +		sv1[i] = shadow_alloc(&objs[i], SV_ID1, sizeof(pnfields1[i]),
-> +					GFP_KERNEL, shadow_ctor, &pnfields1[i]);
-> +		if (!sv1[i])
-> +			return -ENOMEM;
+I suspect something like this would fix it (untested):
 
-Please, put empty line here to delimit ID1 ID2 handling a bit.
+diff --git a/arch/x86/kernel/stacktrace.c b/arch/x86/kernel/stacktrace.c
+index 6ad43fc44556..8cf95ded1410 100644
+--- a/arch/x86/kernel/stacktrace.c
++++ b/arch/x86/kernel/stacktrace.c
+@@ -50,7 +50,7 @@ int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
+ 		if (regs) {
+ 			/* Success path for user tasks */
+ 			if (user_mode(regs))
+-				return 0;
++				break;
+ 
+ 			/*
+ 			 * Kernel mode registers on the stack indicate an
+@@ -81,10 +81,6 @@ int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
+ 	if (unwind_error(&state))
+ 		return -EINVAL;
+ 
+-	/* Success path for non-user tasks, i.e. kthreads and idle tasks */
+-	if (!(task->flags & (PF_KTHREAD | PF_IDLE)))
+-		return -EINVAL;
+-
+ 	return 0;
+ }
+ 
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 7f969b2d240f..d7396431261a 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -540,7 +540,7 @@ bool unwind_next_frame(struct unwind_state *state)
+ 		state->sp = sp;
+ 		state->regs = NULL;
+ 		state->prev_regs = NULL;
+-		state->signal = false;
++		state->signal = ((void *)state->ip == ret_from_fork);
+ 		break;
+ 
+ 	case ORC_TYPE_REGS:
 
-Also I have got a bit more predictable PTR IDs when I moved pnfields2
-initialization here:
-
-		pnfields2[i] = &nfields2[i];
-		ptr_id(pnfields2[i]);
-
-> +		sv2[i] = shadow_alloc(&objs[i], SV_ID2, sizeof(pnfields2[i]),
-> +					GFP_KERNEL, shadow_ctor, &pnfields2[i]);
-> +		if (!sv2[i])
-> +			return -ENOMEM;
-> +	}
-
-It looks like:
-
-test_klp_shadow_vars: klp_shadow_alloc(obj=PTR1, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR4, ctor_data=PTR2 = PTR3
-test_klp_shadow_vars: shadow_ctor: PTR6 -> PTR5
-test_klp_shadow_vars: klp_shadow_alloc(obj=PTR1, id=0x1235, size=8, gfp_flags=GFP_KERNEL), ctor=PTR4, ctor_data=PTR5 = PTR6
-test_klp_shadow_vars: shadow_ctor: PTR8 -> PTR7
-test_klp_shadow_vars: klp_shadow_alloc(obj=PTR9, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR4, ctor_data=PTR7 = PTR8
-test_klp_shadow_vars: shadow_ctor: PTR11 -> PTR10
-
-instead of
-
-test_klp_shadow_vars: klp_shadow_alloc(obj=PTR1, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR2 = PTR4
-test_klp_shadow_vars: shadow_ctor: PTR6 -> PTR3
-test_klp_shadow_vars: klp_shadow_alloc(obj=PTR1, id=0x1235, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR3 = PTR6
-test_klp_shadow_vars: shadow_ctor: PTR9 -> PTR7
-test_klp_shadow_vars: klp_shadow_alloc(obj=PTR10, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR7 = PTR9
-test_klp_shadow_vars: shadow_ctor: PTR11 -> PTR8
-
-
-By other words, the PTR IDs are incrementing by the same offset for
-both SV_ID1 and SV_ID2. It looks better even later in the log.
-
-
-> +	/* pass 3: verify that 'get_of_alloc' returns already allocated svars */
-> +	for (i = 0; i < NUM_OBJS; i++) {
-> +		sv = shadow_get_or_alloc(&objs[i], SV_ID1, sizeof(pndup[i]),
-> +					GFP_KERNEL, shadow_ctor, &pndup[i]);
-
-First, the test failed on my system. I have got:
-
-# --- expected
-# +++ result
-# @@ -27,20 +27,20 @@ test_klp_shadow_vars: klp_shadow_get(obj
-#  test_klp_shadow_vars:   got expected PTR16 -> PTR13 result
-#  test_klp_shadow_vars: klp_shadow_get_or_alloc(obj=PTR1, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR17 = PTR4
-#  test_klp_shadow_vars:   got expected PTR4 -> PTR2 result
-# -test_klp_shadow_vars: klp_shadow_get_or_alloc(obj=PTR10, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR18 = PTR9
-# +test_klp_shadow_vars: klp_shadow_get_or_alloc(obj=PTR10, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR0 = PTR9
-#  test_klp_shadow_vars:   got expected PTR9 -> PTR7 result
-# -test_klp_shadow_vars: klp_shadow_get_or_alloc(obj=PTR15, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR19 = PTR14
-# +test_klp_shadow_vars: klp_shadow_get_or_alloc(obj=PTR15, id=0x1234, size=8, gfp_flags=GFP_KERNEL), ctor=PTR5, ctor_data=PTR0 = PTR14
-
-In my build, it uses PTR0 for ctor_data. But it takes a new pointer in
-your case.
-
-It is because pndup[i] was not initialized. Note that it is the value (data)
-that is stored in the shadow variable.
-
-The solution is to initialize pndup[i] here:
-
-		pndup[i] = &nfields1[i];
-		ptr_id(pndup[i]);
-
-
-2nd problem, klp_shadow_get_or_alloc() is always
-called for already allocated values now. It would be great to test
-that they can be created when they are not available.
-
-A solution might be to allocate half of the variables by
-shadow_alloc() and the other half with shadow_get_or_alloc().
-I would do this in the first cycle, using:
-
-	if (i % 2) {
-		sv1[i] = shadow_alloc(&objs[i], SV_ID1, sizeof(pnfields1[i]),
-				GFP_KERNEL, shadow_ctor, &pnfields1[i]);
-	} else {
-		sv1[i] = shadow_get_or_alloc(&objs[i], SV_ID1, sizeof(pnfields1[i]),
-				GFP_KERNEL, shadow_ctor, &pnfields1[i]);
-	}
-
-Otherwise, it is a nice clean up.
-
-Best Regards,
-Petr
