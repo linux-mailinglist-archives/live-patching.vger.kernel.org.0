@@ -2,133 +2,114 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7527A1EB2EE
-	for <lists+live-patching@lfdr.de>; Tue,  2 Jun 2020 03:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427D61EB4D4
+	for <lists+live-patching@lfdr.de>; Tue,  2 Jun 2020 07:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725850AbgFBBWn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 1 Jun 2020 21:22:43 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5325 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725832AbgFBBWm (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 1 Jun 2020 21:22:42 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 4E8A139E2513CCB8B04F;
-        Tue,  2 Jun 2020 09:22:40 +0800 (CST)
-Received: from [127.0.0.1] (10.166.213.10) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Tue, 2 Jun 2020
- 09:22:33 +0800
-Subject: Re: Question: livepatch failed for new fork() task stack unreliable
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-CC:     <huawei.libin@huawei.com>, <xiexiuqi@huawei.com>,
-        <cj.chengjian@huawei.com>, <mingo@redhat.com>, <x86@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <live-patching@vger.kernel.org>,
-        <mbenes@suse.cz>, <devel@etsukata.com>, <viro@zeniv.linux.org.uk>,
-        <esyr@redhat.com>
-References: <20200529101059.39885-1-bobo.shaobowang@huawei.com>
- <20200529174433.wpkknhypx2bmjika@treble>
- <a9ed9157-f3cf-7d2c-7a8e-56150a2a114e@huawei.com>
- <20200601180538.o5agg5trbdssqken@treble>
-From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Message-ID: <a5e0f476-02b5-cc44-8d4e-d33ff2138143@huawei.com>
-Date:   Tue, 2 Jun 2020 09:22:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S1726485AbgFBFCE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 Jun 2020 01:02:04 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:2814 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725787AbgFBFCC (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 2 Jun 2020 01:02:02 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0524XkCG114231;
+        Tue, 2 Jun 2020 01:02:02 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31bm07mjrn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Jun 2020 01:02:01 -0400
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0524u4xN006388;
+        Tue, 2 Jun 2020 01:02:01 -0400
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31bm07mjqt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Jun 2020 01:02:01 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0524xnkB030256;
+        Tue, 2 Jun 2020 05:01:58 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 31bf47w9wv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Jun 2020 05:01:58 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05251uck8716598
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 2 Jun 2020 05:01:56 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ADFB84C044;
+        Tue,  2 Jun 2020 05:01:56 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A72BE4C05A;
+        Tue,  2 Jun 2020 05:01:55 +0000 (GMT)
+Received: from JAVRIS.in.ibm.com (unknown [9.199.37.29])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue,  2 Jun 2020 05:01:55 +0000 (GMT)
+Subject: Re: [PATCH 0/4] selftests/livepatch: rework of
+ test-klp-{callbacks,shadow_vars}
+To:     Yannick Cote <ycote@redhat.com>, live-patching@vger.kernel.org
+Cc:     linux-kselftest@vger.kernel.org, joe.lawrence@redhat.com
+References: <20200528134849.7890-1-ycote@redhat.com>
+From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+Message-ID: <5ca6dcae-c686-6f62-2927-afeba97fbe2a@linux.vnet.ibm.com>
+Date:   Tue, 2 Jun 2020 10:31:54 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200601180538.o5agg5trbdssqken@treble>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20200528134849.7890-1-ycote@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.166.213.10]
-X-CFilter-Loop: Reflected
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-02_04:2020-06-01,2020-06-02 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 phishscore=0
+ impostorscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ cotscore=-2147483648 priorityscore=1501 clxscore=1011 mlxscore=0
+ suspectscore=0 spamscore=0 adultscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006020025
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On 5/28/20 7:18 PM, Yannick Cote wrote:
+> The test-klp-callbacks change implement a synchronization replacement of
+> initial code to use completion variables instead of delays. The
+> completion variable interlocks the busy module with the concurrent
+> loading of the target livepatch patches which works with the execution
+> flow instead of estimated time delays.
+> 
+> The test-klp-shadow-vars changes first refactors the code to be more of
+> a readable example as well as continuing to verify the component code.
+> The patch is broken in two to display the renaming and restructuring in
+> part 1 and the addition and change of logic in part 2. The last change
+> frees memory before bailing in case of errors.
+> 
+> Patchset to be merged via the livepatching tree is against: livepatching/for-next
+> 
+> Joe Lawrence (1):
+>   selftests/livepatch: rework test-klp-callbacks to use completion
+>     variables
+> 
+> Yannick Cote (3):
+>   selftests/livepatch: rework test-klp-shadow-vars
+>   selftests/livepatch: more verification in test-klp-shadow-vars
+>   selftests/livepatch: fix mem leaks in test-klp-shadow-vars
+> 
+>  lib/livepatch/test_klp_callbacks_busy.c       |  42 +++-
+>  lib/livepatch/test_klp_shadow_vars.c          | 222 +++++++++---------
+>  .../selftests/livepatch/test-callbacks.sh     |  29 ++-
+>  .../selftests/livepatch/test-shadow-vars.sh   |  85 ++++---
+>  4 files changed, 214 insertions(+), 164 deletions(-)
+> 
 
-在 2020/6/2 2:05, Josh Poimboeuf 写道:
-> On Sat, May 30, 2020 at 10:21:19AM +0800, Wangshaobo (bobo) wrote:
->> 1) when a user mode task just fork start excuting ret_from_fork() till
->> schedule_tail, unwind_next_frame found
->>
->> orc->sp_reg is ORC_REG_UNDEFINED but orc->end not equals zero, this time
->> arch_stack_walk_reliable()
->>
->> terminates it's backtracing loop for unwind_done() return true. then 'if
->> (!(task->flags & (PF_KTHREAD | PF_IDLE)))'
->>
->> in arch_stack_walk_reliable() true and return -EINVAL after.
->>
->> * The stack trace looks like that:
->>
->> ret_from_fork
->>
->>        -=> UNWIND_HINT_EMPTY
->>
->>        -=> schedule_tail             /* schedule out */
->>
->>        ...
->>
->>        -=> UNWIND_HINT_REGS      /*  UNDO */
-> Yes, makes sense.
->
->> 2) when using call_usermodehelper_exec_async() to create a user mode task,
->> ret_from_fork() still not exec whereas
->>
->> the task has been scheduled in __schedule(), at this time, orc->sp_reg is
->> ORC_REG_UNDEFINED but orc->end equals zero,
->>
->> unwind_error() return true and also terminates arch_stack_walk_reliable()'s
->> backtracing loop, end up return from
->>
->> 'if (unwind_error())' branch.
->>
->> * The stack trace looks like that:
->>
->> -=> call_usermodehelper_exec
->>
->>                   -=> do_exec
->>
->>                             -=> search_binary_handler
->>
->>                                        -=> load_elf_binary
->>
->>                                                  -=> elf_map
->>
->>                                                           -=> vm_mmap_pgoff
->>
->> -=> down_write_killable
->>
->> -=> _cond_resched
->>
->>               -=> __schedule           /* scheduled to work */
->>
->> -=> ret_from_fork       /* UNDO */
-> I don't quite follow the stacktrace, but it sounds like the issue is the
-> same as the first one you originally reported:
+Series looks good to me, with one minor typo in patch 3 (s/kpatch-patch//),
+which Miroslav as already mentioned.
 
-yes, true, same as the first one,  the only difference what i want to 
-say is the task has been scheduled but the first one is not.
+Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
 
->> 1) The task was not actually scheduled to excute, at this time
->> UNWIND_HINT_EMPTY in ret_from_fork() has not reset unwind_hint, it's
->> sp_reg and end field remain default value and end up throwing an error
->> in unwind_next_frame() when called by arch_stack_walk_reliable();
-> Or am I misunderstanding?
->
-> And to reiterate, these are not "livepatch failures", right?  Livepatch
-> doesn't fail when stack_trace_save_tsk_reliable() returns an error.  It
-> recovers gracefully and tries again later.
-
-yes, you are right,  "livepatch failures" only indicates serveral retry 
-failures, we found if frequent fork() happend in current
-
-system, it is easier to cause retry but still always end up success.
-
-so i think this question is related to ORC unwinder, could i ask if you 
-have strategy or plan to avoid this problem ?
-
-thanks,
-
-Wang ShaoBo
-
-
+-- 
+Kamalesh
