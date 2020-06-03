@@ -2,116 +2,89 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 359531ED49F
-	for <lists+live-patching@lfdr.de>; Wed,  3 Jun 2020 19:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C421ED60F
+	for <lists+live-patching@lfdr.de>; Wed,  3 Jun 2020 20:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726090AbgFCRAN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 3 Jun 2020 13:00:13 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39860 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725961AbgFCRAM (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 3 Jun 2020 13:00:12 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 00A6AABCE;
-        Wed,  3 Jun 2020 17:00:13 +0000 (UTC)
-Date:   Wed, 3 Jun 2020 19:00:10 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Cheng Jian <cj.chengjian@huawei.com>
-cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        chenwandun@huawei.com, xiexiuqi@huawei.com,
-        bobo.shaobowang@huawei.com, huawei.libin@huawei.com,
-        jeyu@kernel.org, jikos@kernel.org
-Subject: Re: [PATCH] module: make module symbols visible after init
-In-Reply-To: <20200603141200.17745-1-cj.chengjian@huawei.com>
-Message-ID: <alpine.LSU.2.21.2006031848020.26737@pobox.suse.cz>
-References: <20200603141200.17745-1-cj.chengjian@huawei.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S1726088AbgFCSVk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 3 Jun 2020 14:21:40 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:28481 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726076AbgFCSVj (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 3 Jun 2020 14:21:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591208498;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+c1cgHsK07BrW3OA4NvtHTy/+/91BrD1QDQgKn/57QU=;
+        b=LNpXPPCEIvG+GVvRWvLWsjTofgNOQj8WC0Ty0GTcI3gyI7pEyu47YbxwkML6OQG+bLvARX
+        Cu16loYEK6mkemjGHu20qCmo+STi9ie57j6eWNvyQ9OgSUB3NHap/ypqANlkDJljdAWj/M
+        LAMCIuJQFFN/oNXuMrAx7559rC2OMYM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-z6ZVHDynO0SDP4ytoFxXvQ-1; Wed, 03 Jun 2020 14:21:34 -0400
+X-MC-Unique: z6ZVHDynO0SDP4ytoFxXvQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 608F2107ACF2;
+        Wed,  3 Jun 2020 18:21:33 +0000 (UTC)
+Received: from dm.redhat.com (unknown [10.10.67.78])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 982BD5D9CD;
+        Wed,  3 Jun 2020 18:21:29 +0000 (UTC)
+From:   Yannick Cote <ycote@redhat.com>
+To:     live-patching@vger.kernel.org
+Cc:     linux-kselftest@vger.kernel.org, joe.lawrence@redhat.com,
+        linux-kernel@vger.kernel.org, pmladek@suse.com, mbenes@suse.cz,
+        kamalesh@linux.vnet.ibm.com
+Subject: [PATCH v2 0/4] selftests/livepatch: rework of test-klp-{callbacks,shadow_vars}
+Date:   Wed,  3 Jun 2020 14:20:54 -0400
+Message-Id: <20200603182058.109470-1-ycote@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
+v2:
+ - drop completion variables and flush workqueue [pmladek]
+ - comment typo/pr_info cleanup [kbabulal/mbenes]
+ - cleanup goto ret assignations [pmladek]
+ - allocate pndup[]'s, leave some svar allocations to
+   shadow_get_or_alloc() [pmladek]
+ - change allocation order for cleaner test dmesg output [pmladek]
 
-I'm confused...
+The test-klp-callbacks change implements a synchronization replacement of
+initial code which relied on solely on sleep delays. Remove the sleeps
+and pass a block_transition flag from test script to module. Use
+flush_workqueue() to serialize module output for test result
+consideration.
 
-On Wed, 3 Jun 2020, Cheng Jian wrote:
+The test-klp-shadow-vars changes first refactors the code to be more of
+a readable example as well as continuing to verify the component code.
+The patch is broken in two to display the renaming and restructuring in
+part 1 and the addition and change of logic in part 2. The last change
+frees memory before bailing in case of errors.
 
-> When lookup the symbols of module by module_kallsyms_lookup_name(),
-> the symbols address is visible only if the module's status isn't
-> MODULE_STATE_UNFORMED, This is problematic.
-> 
-> When complete_formation is done, the state of the module is modified
-> to MODULE_STATE_COMING, and the symbol of module is visible to the
-> outside.
-> 
-> At this time, the init function of the module has not been called,
-> so if the address of the function symbol has been found and called,
-> it may cause some exceptions.
-> 
-> For livepatch module, the relocation information of the livepatch
-> module is completed in init by klp_write_object_relocations(), and
-> the symbol name of the old and new functions are the same. Therefore,
-> when we lookup the symbol, we may get the function address of the
-> livepatch module. a crash can occurs when we call this function.
-> 
-> 	CPU 0				CPU 1
-> 	==================================================
-> 	load_module
-> 	add_unformed_module # MODULE_STATE_UNFORMED;
-> 	post_relocation
-> 	complete_formation  # MODULE_STATE_COMING;
-> 					------------------
-> 					module_kallsymc_lookup_name("A")
-> 					call A()	# CRASH
-> 					------------------
-> 	do_init_module
-> 	klp_write_object_relocations
-> 	mod->state = MODULE_STATE_LIVE;
+Patchset to be merged via the livepatching tree is against: livepatching/for-next
 
-We don't call module_kallsymc_lookup_name() anywhere in livepatch if I am 
-not missing something. So is this your code? Then I could see the problem. 
-You get the address of a function from a livepatch module and call it, 
-which is not correct.
+Joe Lawrence (1):
+  selftests/livepatch: simplify test-klp-callbacks busy target tests
 
-I see two options...
+Yannick Cote (3):
+  selftests/livepatch: rework test-klp-shadow-vars
+  selftests/livepatch: more verification in test-klp-shadow-vars
+  selftests/livepatch: fix mem leaks in test-klp-shadow-vars
 
-1. don't use the same name for the new function. Use some kind of prefix. 
-It is more bulletproof anyway.
+ lib/livepatch/test_klp_callbacks_busy.c       |  37 ++-
+ lib/livepatch/test_klp_shadow_vars.c          | 240 ++++++++++--------
+ .../selftests/livepatch/test-callbacks.sh     |  29 +--
+ .../selftests/livepatch/test-shadow-vars.sh   |  81 +++---
+ 4 files changed, 225 insertions(+), 162 deletions(-)
 
-2. module_kallsyms_lookup_name() accepts a module name as a prefix of a 
-symbol. So you can use module_kallsyms_lookup_name("module:A") and it 
-should return A from that particular module only (if it exists).
- 
-> In commit 0bd476e6c671 ("kallsyms: unexport kallsyms_lookup_name() and
-> kallsyms_on_each_symbol()") restricts the invocation for kernel unexported
-> symbols, but it is still incorrect to make the symbols of non-LIVE modules
-> visible to the outside.
+-- 
+2.25.4
 
-Why? It could easily break something somewhere. I didn't check properly, 
-but module states are not safe to play with, so I'd be conservative here.
-
-> Signed-off-by: Cheng Jian <cj.chengjian@huawei.com>
-> ---
->  kernel/module.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/module.c b/kernel/module.c
-> index 64a2b4daaaa5..96c9cb64de57 100644
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -4220,7 +4220,7 @@ unsigned long module_kallsyms_lookup_name(const char *name)
->  			ret = find_kallsyms_symbol_value(mod, colon+1);
->  	} else {
->  		list_for_each_entry_rcu(mod, &modules, list) {
-> -			if (mod->state == MODULE_STATE_UNFORMED)
-> +			if (mod->state != MODULE_STATE_LIVE)
->  				continue;
->  			if ((ret = find_kallsyms_symbol_value(mod, name)) != 0)
->  				break;
-
-Thanks,
-Miroslav
