@@ -2,43 +2,43 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FE61F5A2D
-	for <lists+live-patching@lfdr.de>; Wed, 10 Jun 2020 19:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 673AE1F5A2B
+	for <lists+live-patching@lfdr.de>; Wed, 10 Jun 2020 19:21:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727904AbgFJRVL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 10 Jun 2020 13:21:11 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:48239 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727923AbgFJRVK (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
+        id S1727813AbgFJRVK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
         Wed, 10 Jun 2020 13:21:10 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:21739 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727904AbgFJRVJ (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 10 Jun 2020 13:21:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1591809668;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rwokYWzqDrOxPRws4POBhs9ccT6l1S+fFHgfZOKR8iI=;
-        b=BkCHkPZwSG3bm3InsNOV13aT6QcqI2GAw0QVamjqzI9IUsZbCHpBOdGn7EDG//jU/lu9zt
-        qfKCA3fZuANPZaDnDupf8CqM+wEju/6s5zJadBLyiwki1k1EPTv0uGRtNd+coV1FEGPokd
-        WdcWS7/Lr29Gd9EQFl0qNUcaX9mgUhQ=
+        bh=8x7zA9DhLqDyItEuwbgv+8oouxrHDSySR8TUcLh+iQM=;
+        b=MoVUz+nT4FCI21X0x9xU4WcUCow7mkTk0jhrm4yIONq3YP7uH8chLlhvzWvYEFQXpPXITU
+        qA0I0GC16ivR8jaUVLT1LfdRlPw3dYBFtCVJsOiRBjhwFBqdneI4JHIOdmA1L00JCExjnz
+        2S/PBFYrrf9sATezLJZQRhvIVP6HC0s=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-349-f9SpL4cLNHGnLH02Zx5HWA-1; Wed, 10 Jun 2020 13:21:05 -0400
-X-MC-Unique: f9SpL4cLNHGnLH02Zx5HWA-1
+ us-mta-172-mwvzNnDFN6qhEhqHIyyxow-1; Wed, 10 Jun 2020 13:21:06 -0400
+X-MC-Unique: mwvzNnDFN6qhEhqHIyyxow-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B959B8018A5;
-        Wed, 10 Jun 2020 17:21:04 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6CFA0107ACF4;
+        Wed, 10 Jun 2020 17:21:05 +0000 (UTC)
 Received: from jlaw-desktop.redhat.com (ovpn-117-142.rdu2.redhat.com [10.10.117.142])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2DBFD1944D;
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 03C6B1944D;
         Wed, 10 Jun 2020 17:21:04 +0000 (UTC)
 From:   Joe Lawrence <joe.lawrence@redhat.com>
 To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH 2/3] selftests/livepatch: use $(dmesg --notime) instead of manually filtering
-Date:   Wed, 10 Jun 2020 13:21:00 -0400
-Message-Id: <20200610172101.21910-3-joe.lawrence@redhat.com>
+Subject: [PATCH 3/3] selftests/livepatch: filter 'taints' from dmesg comparison
+Date:   Wed, 10 Jun 2020 13:21:01 -0400
+Message-Id: <20200610172101.21910-4-joe.lawrence@redhat.com>
 In-Reply-To: <20200610172101.21910-1-joe.lawrence@redhat.com>
 References: <20200610172101.21910-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
@@ -49,58 +49,30 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The dmesg utility already comes with a command line switch to omit
-kernel timestamps, let's use it instead of applying an extra regex to
-filter them out.
+The livepatch selftests currently filter out "tainting kernel with
+TAINT_LIVEPATCH" messages which may be logged when loading livepatch
+modules.
 
-Now without the '[timestamp]: ' prefix at the beginning of the log
-entry, revise the filtering regex to search for the 'livepatch:'
-subsystem prefix at the beginning of the line.
+Further filter the log to drop "loading out-of-tree module taints
+kernel" in the rare case the klp_test modules have been built
+out-of-tree.
 
 Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 ---
- tools/testing/selftests/livepatch/README       | 8 ++++----
- tools/testing/selftests/livepatch/functions.sh | 7 +++----
- 2 files changed, 7 insertions(+), 8 deletions(-)
+ tools/testing/selftests/livepatch/functions.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/livepatch/README b/tools/testing/selftests/livepatch/README
-index 0942dd5826f8..79dafab03017 100644
---- a/tools/testing/selftests/livepatch/README
-+++ b/tools/testing/selftests/livepatch/README
-@@ -37,7 +37,7 @@ Adding tests
- See the common functions.sh file for the existing collection of utility
- functions, most importantly setup_config(), start_test() and
- check_result().  The latter function greps the kernel's ring buffer for
--"livepatch:" and "test_klp" strings, so tests be sure to include one of
--those strings for result comparison.  Other utility functions include
--general module loading and livepatch loading helpers (waiting for patch
--transitions, sysfs entries, etc.)
-+the "^livepatch:" subsystem prefix and also any "test_klp" strings.
-+Test log entries need include one of those for result comparison.  Other
-+utility functions include general module loading and livepatch loading
-+helpers (waiting for patch transitions, sysfs entries, etc.)
 diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index e84375a33852..83560c3df2ee 100644
+index 83560c3df2ee..f5d4ef12f1cb 100644
 --- a/tools/testing/selftests/livepatch/functions.sh
 +++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -248,7 +248,7 @@ function start_test {
- 
- 	# Save existing dmesg so we can detect new content below
- 	SAVED_DMESG=$(mktemp --tmpdir -t klp-dmesg-XXXXXX)
--	dmesg > "$SAVED_DMESG"
-+	dmesg --notime > "$SAVED_DMESG"
- 
- 	echo -n "TEST: $test ... "
- }
-@@ -259,9 +259,8 @@ function check_result {
- 	local expect="$*"
+@@ -260,7 +260,8 @@ function check_result {
  	local result
  
--	result=$(dmesg | diff --changed-group-format='%>' --unchanged-group-format='' "$SAVED_DMESG" - | \
--		 grep -v 'tainting' | grep -e 'livepatch:' -e 'test_klp' | \
--		 sed 's/^\[[ 0-9.]*\] //')
-+	result=$(dmesg --notime | diff --changed-group-format='%>' --unchanged-group-format='' "$SAVED_DMESG" - | \
-+		 grep -v 'tainting' | grep -e '^livepatch:' -e 'test_klp')
+ 	result=$(dmesg --notime | diff --changed-group-format='%>' --unchanged-group-format='' "$SAVED_DMESG" - | \
+-		 grep -v 'tainting' | grep -e '^livepatch:' -e 'test_klp')
++		 grep -e '^livepatch:' -e 'test_klp' | \
++		 grep -ve '\<taints\>' -ve '\<tainting\>')
  
  	if [[ "$expect" == "$result" ]] ; then
  		echo "ok"
