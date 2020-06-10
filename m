@@ -2,62 +2,73 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC9F1F16A5
-	for <lists+live-patching@lfdr.de>; Mon,  8 Jun 2020 12:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A32131F5A2C
+	for <lists+live-patching@lfdr.de>; Wed, 10 Jun 2020 19:21:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729293AbgFHK1G (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 8 Jun 2020 06:27:06 -0400
-Received: from mx2.suse.de ([195.135.220.15]:50124 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726202AbgFHK1F (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 8 Jun 2020 06:27:05 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id DADCDB181;
-        Mon,  8 Jun 2020 10:27:07 +0000 (UTC)
-Date:   Mon, 8 Jun 2020 12:27:03 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Yannick Cote <ycote@redhat.com>, live-patching@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, joe.lawrence@redhat.com,
-        linux-kernel@vger.kernel.org, kamalesh@linux.vnet.ibm.com
-Subject: Re: [PATCH v2 1/4] selftests/livepatch: simplify test-klp-callbacks
- busy target tests
-Message-ID: <20200608102703.GA3728@linux-b0ei>
-References: <20200603182058.109470-1-ycote@redhat.com>
- <20200603182058.109470-2-ycote@redhat.com>
- <alpine.LSU.2.21.2006051505230.23532@pobox.suse.cz>
+        id S1727998AbgFJRVJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 10 Jun 2020 13:21:09 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45510 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727813AbgFJRVI (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 10 Jun 2020 13:21:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591809667;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4Nchs7giH9/7F+jYJ/Q/sPpycdHjWoC2ELbn/5DQJ2o=;
+        b=MHlVfmXh32O/WqomG4MIr0TryuT+QDud6Frbxx4LEberAv6Of2cu6YbJXNsKUScjo2BI6h
+        oHT22ZXTPfnDMSeAPP5VdHLeo3vAehqjAvqAjZ1NuLVFkhprHtsaFRgULm1FWBVVUEhi5y
+        9V4yuY2TNaVHasXe5sdpxZRFgXcMAmQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-20-Y1eX-00sO2eeV1GR3MKuLA-1; Wed, 10 Jun 2020 13:21:04 -0400
+X-MC-Unique: Y1eX-00sO2eeV1GR3MKuLA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3E2CC100CCC0;
+        Wed, 10 Jun 2020 17:21:03 +0000 (UTC)
+Received: from jlaw-desktop.redhat.com (ovpn-117-142.rdu2.redhat.com [10.10.117.142])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CCD267BFE2;
+        Wed, 10 Jun 2020 17:21:02 +0000 (UTC)
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH 0/3] selftests/livepatch: small script cleanups
+Date:   Wed, 10 Jun 2020 13:20:58 -0400
+Message-Id: <20200610172101.21910-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.2006051505230.23532@pobox.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri 2020-06-05 15:05:55, Miroslav Benes wrote:
-> On Wed, 3 Jun 2020, Yannick Cote wrote:
-> 
-> > From: Joe Lawrence <joe.lawrence@redhat.com>
-> > 
-> > The test-klp-callbacks script includes a few tests which rely on kernel
-> > task timings that may not always execute as expected under system load.
-> > These may generate out of sequence kernel log messages that result in
-> > test failure.
-> > 
-> > Instead of using sleep timing windows to orchestrate these tests, add a
-> > block_transition module parameter to communicate the test purpose and
-> > utilize flush_queue() to serialize the test module's task output.
-> > 
-> > Suggested-by: Petr Mladek <pmladek@suse.com>
-> > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-> 
-> Acked-by: Miroslav Benes <mbenes@suse.cz>
+This is a small collection of tweaks for the shellscript side of the
+livepatch tests.  If anyone else has a small cleanup (or even just a
+suggestion for a low-hanging change) and would like to tack it onto the
+set, let me know.
 
-JFYI, this patchset is committed in livepatching.git, branch
-for-5.9/selftests-cleanup.
+based-on: livepatching.git, for-5.9/selftests-cleanup
+merge-thru: livepatching.git
 
-Best Regards,
-Petr
+Joe Lawrence (3):
+  selftests/livepatch: Don't clear dmesg when running tests
+  selftests/livepatch: use $(dmesg --notime) instead of manually
+    filtering
+  selftests/livepatch: filter 'taints' from dmesg comparison
+
+ tools/testing/selftests/livepatch/README      | 16 +++---
+ .../testing/selftests/livepatch/functions.sh  | 16 +++++-
+ .../selftests/livepatch/test-callbacks.sh     | 55 ++++---------------
+ .../selftests/livepatch/test-ftrace.sh        |  5 +-
+ .../selftests/livepatch/test-livepatch.sh     | 15 +----
+ .../selftests/livepatch/test-shadow-vars.sh   |  5 +-
+ .../testing/selftests/livepatch/test-state.sh | 20 ++-----
+ 7 files changed, 43 insertions(+), 89 deletions(-)
+
+-- 
+2.21.3
+
