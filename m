@@ -2,74 +2,83 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBCC1F9323
-	for <lists+live-patching@lfdr.de>; Mon, 15 Jun 2020 11:19:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2C3F1F9E68
+	for <lists+live-patching@lfdr.de>; Mon, 15 Jun 2020 19:28:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729040AbgFOJTL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 15 Jun 2020 05:19:11 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41904 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728865AbgFOJTK (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 15 Jun 2020 05:19:10 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 07743AECE;
-        Mon, 15 Jun 2020 09:19:12 +0000 (UTC)
-Date:   Mon, 15 Jun 2020 11:19:08 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH 3/3] selftests/livepatch: filter 'taints' from dmesg
- comparison
-Message-ID: <20200615091908.GD31238@alley>
-References: <20200610172101.21910-1-joe.lawrence@redhat.com>
- <20200610172101.21910-4-joe.lawrence@redhat.com>
- <alpine.LSU.2.21.2006110938090.32091@pobox.suse.cz>
- <047eba61-b0b9-4e91-395f-13bafbf43af6@redhat.com>
- <20200612114706.GH4311@linux-b0ei>
- <ba0202cf-beea-ddde-4941-053718c77257@linux.vnet.ibm.com>
- <b1db9ae1-781c-6ea5-c748-0928bed145f1@redhat.com>
- <alpine.LSU.2.21.2006150953520.5945@pobox.suse.cz>
+        id S1729966AbgFOR2L (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 15 Jun 2020 13:28:11 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39929 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731213AbgFOR2K (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 15 Jun 2020 13:28:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592242089;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=eIUgaJlpBEsWcVjf7X49COP6pjWDszlj8zDwIDGR7u0=;
+        b=d6OXDqkefjkpTOCrxO7KtkkfJkHvJpwmsYn2JLRjErDiJ4KOTvmjzAWRe+70dne4fWBz7P
+        Gsd+QUQobpDP87BgtRy5WWPWjRW37YJx9K8EY0oHC/p25AJjyGFQZifWHSzhkdcmyaCuNi
+        6m6nsBF5cBMrZ1Dpq8TnR5TjeAOsoSY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-375-BW0iutSFMVyTL4pPy62K2g-1; Mon, 15 Jun 2020 13:27:59 -0400
+X-MC-Unique: BW0iutSFMVyTL4pPy62K2g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AC303184D149;
+        Mon, 15 Jun 2020 17:27:58 +0000 (UTC)
+Received: from jlaw-desktop.redhat.com (ovpn-112-56.rdu2.redhat.com [10.10.112.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CE34E19C66;
+        Mon, 15 Jun 2020 17:27:57 +0000 (UTC)
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
+Subject: [PATCH v2 0/4] selftests/livepatch: small script cleanups
+Date:   Mon, 15 Jun 2020 13:27:52 -0400
+Message-Id: <20200615172756.12912-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <alpine.LSU.2.21.2006150953520.5945@pobox.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon 2020-06-15 09:55:27, Miroslav Benes wrote:
-> > From
-> > https://www.gnu.org/software/grep/manual/grep.html#The-Backslash-Character-and-Special-Expressions
-> > :
-> > 
-> > The ‘\’ character, when followed by certain ordinary characters, takes a
-> > special meaning:
-> > 
-> > ...
-> > 
-> > ‘\<’
-> > 
-> >     Match the empty string at the beginning of word.
-> > ‘\>’
-> > 
-> >     Match the empty string at the end of word.
+This is a small collection of tweaks for the shellscript side of the
+livepatch tests.  If anyone else has a small cleanup (or even just a
+suggestion for a low-hanging change) and would like to tack it onto the
+set, let me know.
 
-The description is a bit confusing. I wonder how it handles dot,
-comma, or colon. They are neither empty or word characters.
+based-on: livepatching.git, for-5.9/selftests-cleanup
+merge-thru: livepatching.git
 
-> > 
-> > I'd be happy to use any other (more readable!) whole-word matching grep trick,
-> > this \<one\> just happens to be committed to my cmdline muscle memory.
-> 
-> There is 'grep -w' which I use for this.
+v2:
+- use consistent start_test messages from the original echoes [mbenes]
+- move start_test invocations to just after their descriptions [mbenes]
+- clean up $SAVED_DMSG on trap EXIT [pmladek]
+- grep longer kernel taint line, avoid word-matching [mbenes, pmladek]
+- add "===== TEST: $test =====" delimiter patch [pmladek]
 
-'grep -w' looks good promissing.
+Joe Lawrence (4):
+  selftests/livepatch: Don't clear dmesg when running tests
+  selftests/livepatch: use $(dmesg --notime) instead of manually
+    filtering
+  selftests/livepatch: refine dmesg 'taints' in dmesg comparison
+  selftests/livepatch: add test delimiter to dmesg
 
-Best Regards,
-Petr
+ tools/testing/selftests/livepatch/README      | 16 +++---
+ .../testing/selftests/livepatch/functions.sh  | 32 ++++++++++-
+ .../selftests/livepatch/test-callbacks.sh     | 55 ++++---------------
+ .../selftests/livepatch/test-ftrace.sh        |  4 +-
+ .../selftests/livepatch/test-livepatch.sh     | 12 +---
+ .../selftests/livepatch/test-shadow-vars.sh   |  4 +-
+ .../testing/selftests/livepatch/test-state.sh | 21 +++----
+ 7 files changed, 63 insertions(+), 81 deletions(-)
+
+-- 
+2.21.3
+
