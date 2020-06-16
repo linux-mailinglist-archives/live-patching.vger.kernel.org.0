@@ -2,77 +2,115 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E17EB1F9E6C
-	for <lists+live-patching@lfdr.de>; Mon, 15 Jun 2020 19:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D27A1FAB30
+	for <lists+live-patching@lfdr.de>; Tue, 16 Jun 2020 10:29:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728585AbgFOR2M (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 15 Jun 2020 13:28:12 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:57314 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729967AbgFOR2H (ORCPT
+        id S1726064AbgFPI3e (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 16 Jun 2020 04:29:34 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:44510 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726099AbgFPI3e (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 15 Jun 2020 13:28:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592242086;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RDYd5mUdjgScnsnMuq70DAzpJt/WeKbHjzW7zJWYAes=;
-        b=fFfWiljDQZbp+hEwTtYedDDQtH4xxUhpCt5/HCRVsLRKcYBs54FgwEQw9Y1RNzKGDpis18
-        reb0GKLvI4QIXibnkSsKmf5JZ/Anl0wPVbzHrprO/9SVMc4FSh3kcP+Bmky5Rlk+lEOT6C
-        2fafLY79cVVPbpzIA+RvNvPE3dhf6u4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-107-mHKY17zYNs2TniF4H1symw-1; Mon, 15 Jun 2020 13:28:03 -0400
-X-MC-Unique: mHKY17zYNs2TniF4H1symw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 416B610059B3;
-        Mon, 15 Jun 2020 17:28:02 +0000 (UTC)
-Received: from jlaw-desktop.redhat.com (ovpn-112-56.rdu2.redhat.com [10.10.112.56])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 96A4A19C66;
-        Mon, 15 Jun 2020 17:28:01 +0000 (UTC)
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Tue, 16 Jun 2020 04:29:34 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05G81aLg124781;
+        Tue, 16 Jun 2020 04:29:29 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31phf5dthp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Jun 2020 04:29:28 -0400
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 05G82Do9127769;
+        Tue, 16 Jun 2020 04:29:28 -0400
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31phf5dth1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Jun 2020 04:29:28 -0400
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05G8LB3J011391;
+        Tue, 16 Jun 2020 08:29:26 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma05fra.de.ibm.com with ESMTP id 31mpe820k0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Jun 2020 08:29:26 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05G8TNVP43122836
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jun 2020 08:29:23 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D0245A4057;
+        Tue, 16 Jun 2020 08:29:23 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C6729A4040;
+        Tue, 16 Jun 2020 08:29:21 +0000 (GMT)
+Received: from JAVRIS.in.ibm.com (unknown [9.85.112.16])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue, 16 Jun 2020 08:29:21 +0000 (GMT)
+Subject: Re: [PATCH v2 0/4] selftests/livepatch: small script cleanups
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
         Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 4/4] selftests/livepatch: add test delimiter to dmesg
-Date:   Mon, 15 Jun 2020 13:27:56 -0400
-Message-Id: <20200615172756.12912-5-joe.lawrence@redhat.com>
-In-Reply-To: <20200615172756.12912-1-joe.lawrence@redhat.com>
 References: <20200615172756.12912-1-joe.lawrence@redhat.com>
+From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+Message-ID: <9502b7e6-bf62-678c-aa10-6be01d769c6f@linux.vnet.ibm.com>
+Date:   Tue, 16 Jun 2020 13:59:19 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20200615172756.12912-1-joe.lawrence@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-16_02:2020-06-15,2020-06-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ cotscore=-2147483648 impostorscore=0 lowpriorityscore=0 suspectscore=0
+ clxscore=1015 mlxscore=0 spamscore=0 bulkscore=0 adultscore=0
+ priorityscore=1501 mlxlogscore=999 phishscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006160053
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Make it bit easier to parse the kernel logs during the selftests by
-adding a "===== TEST: $test =====" delimiter when each individual test
-begins.
+On 6/15/20 10:57 PM, Joe Lawrence wrote:
+> This is a small collection of tweaks for the shellscript side of the
+> livepatch tests.  If anyone else has a small cleanup (or even just a
+> suggestion for a low-hanging change) and would like to tack it onto the
+> set, let me know.
+> 
+> based-on: livepatching.git, for-5.9/selftests-cleanup
+> merge-thru: livepatching.git
+> 
+> v2:
+> - use consistent start_test messages from the original echoes [mbenes]
+> - move start_test invocations to just after their descriptions [mbenes]
+> - clean up $SAVED_DMSG on trap EXIT [pmladek]
+> - grep longer kernel taint line, avoid word-matching [mbenes, pmladek]
+> - add "===== TEST: $test =====" delimiter patch [pmladek]
+> 
+> Joe Lawrence (4):
+>   selftests/livepatch: Don't clear dmesg when running tests
+>   selftests/livepatch: use $(dmesg --notime) instead of manually
+>     filtering
+>   selftests/livepatch: refine dmesg 'taints' in dmesg comparison
+>   selftests/livepatch: add test delimiter to dmesg
+> 
+>  tools/testing/selftests/livepatch/README      | 16 +++---
+>  .../testing/selftests/livepatch/functions.sh  | 32 ++++++++++-
+>  .../selftests/livepatch/test-callbacks.sh     | 55 ++++---------------
+>  .../selftests/livepatch/test-ftrace.sh        |  4 +-
+>  .../selftests/livepatch/test-livepatch.sh     | 12 +---
+>  .../selftests/livepatch/test-shadow-vars.sh   |  4 +-
+>  .../testing/selftests/livepatch/test-state.sh | 21 +++----
+>  7 files changed, 63 insertions(+), 81 deletions(-)
+> 
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
----
- tools/testing/selftests/livepatch/functions.sh | 1 +
- 1 file changed, 1 insertion(+)
+For the series:
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index cb8a6df8c73a..d2b831cc710e 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -264,6 +264,7 @@ function start_test {
- 
- 	save_dmesg
- 	echo -n "TEST: $test ... "
-+	log "===== TEST: $test ====="
- }
- 
- # check_result() - verify dmesg output
+Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+
 -- 
-2.21.3
-
+Kamalesh
