@@ -2,105 +2,66 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED27020502A
-	for <lists+live-patching@lfdr.de>; Tue, 23 Jun 2020 13:13:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B362051AA
+	for <lists+live-patching@lfdr.de>; Tue, 23 Jun 2020 14:02:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732439AbgFWLNc (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Jun 2020 07:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S1729611AbgFWMCO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Jun 2020 08:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732227AbgFWLNb (ORCPT
+        with ESMTP id S1732436AbgFWMCO (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Jun 2020 07:13:31 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3D1C061573
-        for <live-patching@vger.kernel.org>; Tue, 23 Jun 2020 04:13:31 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id j16so6772189ili.9
-        for <live-patching@vger.kernel.org>; Tue, 23 Jun 2020 04:13:31 -0700 (PDT)
+        Tue, 23 Jun 2020 08:02:14 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58B6C061573
+        for <live-patching@vger.kernel.org>; Tue, 23 Jun 2020 05:02:13 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id v19so12657720qtq.10
+        for <live-patching@vger.kernel.org>; Tue, 23 Jun 2020 05:02:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=D7l/Y2nU4ivOXB3kYNarWKNDy1SUWuawPt7q4q/Bhv4=;
-        b=JmFWxL8jcgFtJ4lXeAh1tsN1JKedqnhe1aARR5DLLNfnmxbRVdigZWObFQCKHma7V/
-         nXcD5YIWEVXNXCqrytPGgDqMF7LG3AjbXiqLTgzqk1NJVD0/SRZf4OoSI6wnKQxYV3Ks
-         amS6a4QzU5emTI071jmI7+yuVO8cf4VT9H8sEhnpri7+7G+PTXCBUyZqsrxfqxuiwOG4
-         xEIjMamwRMoIta8KsYy3dHkpvW0oyFzbTuaV2CPgDnFo04GeMPe10QjUEXx8wj4RHH8B
-         DHZEqlRnedz4pCoeB0pVzmh4bko7PaIqIxbPCx2izv0Xwb2Gc8VLztOXP6mjnrkcvxdC
-         tn1w==
+        bh=7fNnQnFssZCc2Jtw2cUlJB4v7zrpRiQS682aXMZO9+Q=;
+        b=UJLFqH+nz6JL18vmMp9AOPI2FroC31pq+teAwHPNar1eiBQ9Yy+80ms5K4v1/p3T2J
+         L2/VBlv2V7VfKE4rYCdbWJvLLZVc6lYLnv+fXOe3DKiEunpb4W19D97rUv9DtkFDrPR6
+         bxx9SCKFFR7oxS5wyOawR10NgiPx7iNPtQtk1jgGWBrP8t2WHU3s2Svu9XywyJgiovqp
+         l3N+/UeaWFg1/B0rDgEZev7snS4P5yMRqccSmgr8wtgvtp7SCEkaeMIuLfVC1abYn28a
+         0lOm8r0Y3ORb/ecNi+nwJO1PSdlC3wO2gaNbjCYRAGTYyl1dNKtQmi5TFLPwZkpxG3z2
+         jLVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:reply-to:from:date:message-id
          :subject:to;
-        bh=D7l/Y2nU4ivOXB3kYNarWKNDy1SUWuawPt7q4q/Bhv4=;
-        b=MUAUSRH4I2MuReF7c5Ovsv8gfPWu+wDYMywrT4mi93kp+pps0HZoB3OQfxJq3LIHrt
-         aVPlyBgkUcCq9Ys5Sflrbg8qQMkeeDdRUS9+8JzPr8FGgb/cfR1fd9TY7wGfSwR8E4fh
-         Sc5fMypnZGe9Lq+QbbUAdSW7F5eGkQU554aNr4ajnPEQZCuXanAIdb0CS+1e0/izmbAT
-         DZ9Q6jfU2XxkRikU7eP5wd0FUt3rt+h0SapLipaNtg2JwL9cylFfIsQiiejsQqu5f+Ix
-         sg7frYrxrbN5S8s71ZNNktR1VXRWz5DIyTIYB+nUaB1QaocAkF7Zcc1+R5kTI4DoBoAB
-         hPrw==
-X-Gm-Message-State: AOAM531vAW5aSG8O7HDOhQpOTMti2+lzJSX43d+wOHC0fHWB9V7fw+MI
-        FpAPxeAVye9UBui2a6x01WsITGJyydnxS7ivIBg=
-X-Google-Smtp-Source: ABdhPJwK923lg5M3WnkXSapWWzottNhCJnxFSYd3ngrqt2SS9qPX4AJ/vikM4fv3WoLbmggVNNCfvDQtP1sd5XzwhK0=
-X-Received: by 2002:a92:c643:: with SMTP id 3mr23427492ill.229.1592910811076;
- Tue, 23 Jun 2020 04:13:31 -0700 (PDT)
+        bh=7fNnQnFssZCc2Jtw2cUlJB4v7zrpRiQS682aXMZO9+Q=;
+        b=pEQ77Br2nEJv+VMweZwM4CUnUppTM9SZsNU7FNWqpnj2imwLTsCpkemF4442qhbG6a
+         o7h/Nz4fJijRzVSJr4dfkmHBBFO7czfuISFyWvsvetn4W4w31snUC97n1R064AMw8t0e
+         2IYHY/Eo1mGIIei92zE/7uaqk9Y14CryFAm8m4e4KOsnl8CFBDgqSzgtEKTE02pAr1wq
+         66CYhcxFPkHXiJnq1kYQivm+d47cM25y02QR76eQKD/mcb97tVIOx/7LXgrnVkQlrLPy
+         l5n7KhS3Vhr6fAxrZhfhdTsmnRhPE0tEHVO/vDQgFQ2BPEXoQ6puART/WSA+N0pNLOsh
+         g5tw==
+X-Gm-Message-State: AOAM531odAYxIyoMMMslee28mCaoLrE8Kpfmgd+iqt2xfRqVbTOZzD4o
+        jLW4ahaj7+v7LHWYGbnjV6qf/Xpx1EiECud7vow=
+X-Google-Smtp-Source: ABdhPJy9hL0j/lhNbfcB00DeOK7b0U4zsoic5mnnMbHNRRfvtq2YEG4GVY9xM4euUA/qj/6OFeVzDzuTpkOX9D54k0k=
+X-Received: by 2002:ac8:2fb0:: with SMTP id l45mr20693117qta.260.1592913733005;
+ Tue, 23 Jun 2020 05:02:13 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6638:14d3:0:0:0:0 with HTTP; Tue, 23 Jun 2020 04:13:30
+Received: by 2002:ac8:47c2:0:0:0:0:0 with HTTP; Tue, 23 Jun 2020 05:02:12
  -0700 (PDT)
-Reply-To: sarahkoffi389@yahoo.co.jp
-From:   Sarah Koffi <elnana194@gmail.com>
-Date:   Tue, 23 Jun 2020 12:13:30 +0100
-Message-ID: <CA+NUCuTpRBCNhzPsUx6VPrOLF5ST46h_JaJQFi9zwqK2yEciSw@mail.gmail.com>
-Subject: Greetings From Mrs. Sarah Koffi
-To:     sarahkoffi389@yahoo.co.jp
+Reply-To: bektery@outlook.com
+From:   YAVUZ BEKTER <bakert.jg@gmail.com>
+Date:   Tue, 23 Jun 2020 05:02:12 -0700
+Message-ID: <CAAUSuTW=r1zPYsLsMYZRnSyv_sPyVA3dnZKNBmSk5AVRmY-kDQ@mail.gmail.com>
+Subject: Hello.
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Greetings From Mrs. Sarah Koffi
-
-I'm contacting you based on your good profiles I read and for a good
-reasons, I am in search of a property to buy in your country as I
-intended to come over to your
-country for investment, Though I have not meet with you before but I
-believe that one has to risk confiding in someone to succeed sometimes
-in life.
-
-My name is Mrs. Sarah Koffi. My late husband deals on Crude Oil with
-Federal Government of Sudan and he has a personal Oil firm in Bentiu
-Oil zone town and Upper
-Nile city. What I have experience physically, I don't wish to
-experience it again in my life due to the recent civil Ethnic war
-cause by our President Mr. Salva Kiir
-and the rebel leader Mr Riek Machar, I have been Under United Nation
-refuge camp in chad to save my life and that of my little daughter.
-
-Though, I do not know how you will feel to my proposal, but the truth
-is that I sneaked into Chad our neighboring country where I am living
-now as a refugee.
-I escaped with my little daughter when the rebels bust into our house
-and killed my husband as one of the big oil dealers in the country,
-ever since then, I have being on the run.
-
-I left my country and move to Chad our neighboring country with the
-little ceasefire we had, due to the face to face peace meeting accord
-coordinated by the US Secretary of State, Mr John Kerry and United
-Nations in Ethiopia (Addis Ababa) between our President Mr Salva Kiir
-and the rebel leader Mr Riek Machar to stop this war.
-
-I want to solicit for your partnership with trust to invest the $8
-million dollars deposited by my late husband in Bank because my life
-is no longer safe in our country, since the rebels are looking for the
-families of all the oil business men in the country to kill, saying
-that they are they one that is milking the country dry.
-
-I will offer you 20% of the total fund for your help while I will
-partner with you for the investment in your country.
-If I get your reply.
-
-I will wait to hear from you so as to give you details.With love from
-
- i need you to contact me here sarahkoffi389@yahoo.co.jp
-
-Mrs. Sarah Koffi
+I am the foreign operations director of Bank of Turkey.
+My name is Mr, Yavuz. I have a sensitive investment project to discuss
+with you, please reply now.
+________________________
+Ik ben de directeur buitenlandse activiteiten van de Bank of Turkey.
+Mijn naam is meneer Yavuz. Ik moet een gevoelig investeringsproject bespreken
+met u, antwoord dan nu.
