@@ -2,110 +2,98 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7ABF20FF53
-	for <lists+live-patching@lfdr.de>; Tue, 30 Jun 2020 23:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF50B20FF65
+	for <lists+live-patching@lfdr.de>; Tue, 30 Jun 2020 23:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgF3Vgy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Jun 2020 17:36:54 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31276 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726117AbgF3Vgy (ORCPT
+        id S1728317AbgF3VqD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Jun 2020 17:46:03 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:43945 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728205AbgF3VqC (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Jun 2020 17:36:54 -0400
+        Tue, 30 Jun 2020 17:46:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593553012;
+        s=mimecast20190719; t=1593553561;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=T8HFffOX994sg1wvTHx+e4a2JbF0zYztyobMfFyAbl0=;
-        b=IzlEwTGo/rSmT6jmTbObC5ixJldR5AUBmwtSrXmuZP8PrONW4nvXE4BWKgwB+AVpkhF+VF
-        5kOlCQwfZD6MiCEWtoiAdOp8JNXwkELYSdSQJR1CYOhOxmQ0M4vPSW4E2+KfdQXoNf1Szj
-        47fGjeeQW/KZgmPLBwz7J6RmHW0gzHA=
+        bh=xSGR+2AtpMMqNY4d55iQ5FyoVPs+lh6SFJWS4mBlL0M=;
+        b=a90X2le2Kuo+pvKyerpFLwLaLcfdHJEL7XMlawqi6RymZCvvlMx5OGQCRX5/khFfwdMhOx
+        ICGr6Jin65I/w0v1UfI/I5L2kGSE+yMEaMsnAIj/L+X6hQLbdfC2DEhiySfCn4seFe31Xl
+        L38gxdvNKH1GbkKvsvX/MuMD4ZHUB5o=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-501-PTqCLy6WNKOZnRq2wUANSQ-1; Tue, 30 Jun 2020 17:36:47 -0400
-X-MC-Unique: PTqCLy6WNKOZnRq2wUANSQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-398-8qDLoif2ODONDHNVw9g3Hg-1; Tue, 30 Jun 2020 17:45:59 -0400
+X-MC-Unique: 8qDLoif2ODONDHNVw9g3Hg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 177E780183C;
-        Tue, 30 Jun 2020 21:36:46 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E243800C60;
+        Tue, 30 Jun 2020 21:45:57 +0000 (UTC)
 Received: from treble (ovpn-114-241.rdu2.redhat.com [10.10.114.241])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9653E78137;
-        Tue, 30 Jun 2020 21:36:41 +0000 (UTC)
-Date:   Tue, 30 Jun 2020 16:36:39 -0500
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C69C619C4F;
+        Tue, 30 Jun 2020 21:45:52 +0000 (UTC)
+Date:   Tue, 30 Jun 2020 16:45:50 -0500
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Cc:     huawei.libin@huawei.com, xiexiuqi@huawei.com,
-        cj.chengjian@huawei.com, mingo@redhat.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        mbenes@suse.cz, devel@etsukata.com, viro@zeniv.linux.org.uk,
-        esyr@redhat.com
-Subject: Re: Question: livepatch failed for new fork() task stack unreliable
-Message-ID: <20200630213639.kijctnz4y3zjbkhx@treble>
-References: <20200601180538.o5agg5trbdssqken@treble>
- <a5e0f476-02b5-cc44-8d4e-d33ff2138143@huawei.com>
- <20200602131450.oydrydelpdaval4h@treble>
- <1353648b-f3f7-5b8d-f0bb-28bdb1a66f0f@huawei.com>
- <20200603153358.2ezz2pgxxxld7mj7@treble>
- <2225bc83-95f2-bf3d-7651-fdd10a3ddd00@huawei.com>
- <20200604024051.6ovbr6tbrowwg6jr@treble>
- <c3a81224-bea1-116b-7528-f03f90be5264@huawei.com>
- <20200605015142.w65uu5wxfmrun2ro@treble>
- <e914bcd6-009c-0a89-bc59-b9a87a9c552d@huawei.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Nicolai Stange <nstange@suse.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Gabriel Gomes <gagomes@suse.com>,
+        Alice Ferrazzi <alice.ferrazzi@gmail.com>,
+        Michael Matz <matz@suse.de>,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        ulp-devel@opensuse.org, live-patching@vger.kernel.org
+Subject: Re: Live patching MC at LPC2020?
+Message-ID: <20200630214550.cbli6oex4xskwdjp@treble>
+References: <nycvar.YFH.7.76.2003271409380.19500@cbobk.fhfr.pm>
+ <20200331205204.GA7388@redhat.com>
+ <20200625065943.GB6156@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e914bcd6-009c-0a89-bc59-b9a87a9c552d@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20200625065943.GB6156@alley>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 09:04:12PM +0800, Wangshaobo (bobo) wrote:
+On Thu, Jun 25, 2020 at 08:59:43AM +0200, Petr Mladek wrote:
+> On Tue 2020-03-31 16:52:04, Joe Lawrence wrote:
+> It seems that there is interest into sharing/discussing some topics.
+> The question is whether is has to be under the LPC even umbrella.
 > 
-> 在 2020/6/5 9:51, Josh Poimboeuf 写道:
-> > On Fri, Jun 05, 2020 at 09:26:42AM +0800, Wangshaobo (bobo) wrote:
-> > > > > So, I want to ask is there any side effects if i modify like this ? this
-> > > > > modification is based on
-> > > > > 
-> > > > > your fix. It looks like ok with proper test.
-> > > > > 
-> > > > > diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
-> > > > > index e9cc182aa97e..ecce5051e8fd 100644
-> > > > > --- a/arch/x86/kernel/unwind_orc.c
-> > > > > +++ b/arch/x86/kernel/unwind_orc.c
-> > > > > @@ -620,6 +620,7 @@ void __unwind_start(struct unwind_state *state, struct
-> > > > > task_struct *task,
-> > > > >                   state->sp = task->thread.sp;
-> > > > >                   state->bp = READ_ONCE_NOCHECK(frame->bp);
-> > > > >                   state->ip = READ_ONCE_NOCHECK(frame->ret_addr);
-> > > > > +              state->signal = ((void *)state->ip == ret_from_fork);
-> > > > >           }
-> > > > > 
-> > > > > diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
-> > > > > index 7f969b2d240f..d7396431261a 100644
-> > > > > --- a/arch/x86/kernel/unwind_orc.c
-> > > > > +++ b/arch/x86/kernel/unwind_orc.c
-> > > > > @@ -540,7 +540,7 @@ bool unwind_next_frame(struct unwind_state *state)
-> > > > >            state->sp = sp;
-> > > > >            state->regs = NULL;
-> > > > >            state->prev_regs = NULL;
-> > > > > -        state->signal = ((void *)state->ip == ret_from_fork);
-> > > > > +        state->signal = false;
-> > > > >            break;
-> > > > Yes that's correct.
-> > > Hi, josh
-> > > 
-> > > Could i ask when are you free to send the patch, all the tests are passed
-> > > by.
-> > I want to run some regression tests, so it will probably be next week.
+> Advantages of LPC:
+> 
+>    + well defined date
+>    + more attendees (ARM people, Steven Rostedt ;-)
+>    + access to some powerful video conference tool
+>    + access to another LPC content
+>    + support for the conference in the long term
+> 
+> 
+> Advantages of self-organized event:
+> 
+>    + less paperwork?
+>    + cheaper?
+>    + only interested people invited
+>    + date after summer holidays
+>    + more time for the discussion
+> 
+> I am in the favor of self organized event. For me, LPC is much less
+> interesting without the personal contact and hallway conversations.
+> All the LPC date is not ideal for me.
 
-Sorry, I was away for a bit and I didn't get a chance to send the patch.
-I should hopefully have it ready soon.
+I'd prefer LPC proper, as it would be easier (infrastructure is already
+taken care of) and more inclusive (in the past we often got good
+feedback from outside the direct livepatch community).  And it's only
+$50 US.
+
+But to be honest I have doubts about the usefulness of any online
+conference, so either way may be equally useless ;-)
 
 -- 
 Josh
