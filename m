@@ -2,73 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC03E20D54D
-	for <lists+live-patching@lfdr.de>; Mon, 29 Jun 2020 21:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8393E20F563
+	for <lists+live-patching@lfdr.de>; Tue, 30 Jun 2020 15:04:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730909AbgF2TQO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 29 Jun 2020 15:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731946AbgF2TQM (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 29 Jun 2020 15:16:12 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A444EC08EAF3
-        for <live-patching@vger.kernel.org>; Mon, 29 Jun 2020 12:16:03 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id i25so18455271iog.0
-        for <live-patching@vger.kernel.org>; Mon, 29 Jun 2020 12:16:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=XdfoRVGuOCD2JOxmLnJxyvoO2f5zjf1xh4i//8cGLHs=;
-        b=E57soH+fAZU9oM/uuDn4bCNx2wALmvA7rwFsDeo/VdmyR4hSt+vRDMPW0qpAcJ9V/h
-         UbYJ9fIR9BUAZrS+1TfrEzBoFSxbLFUBB/IIzj7rfy4Y1SyxPmM/cs9fEremwVWV5m5u
-         b9v38myIgTBJNjasjLIOUO/K2CJS7vPJsURIlWBEC7RA0ax+vZbkexDjvFbqaAUgNm/w
-         yj4NkgHNxXLdKOO4AZsIv5vnXx8YMl4s3e1fTXh2Hp6rhwVI9k4nzVvvlc/OSvXrfpbl
-         +6DOlsrKa8IKCRxKxdcbetpm2uz+ZUKJBnziwlMhGJ11qW6bGQPIDGjYXF06+gry04Zz
-         3NGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=XdfoRVGuOCD2JOxmLnJxyvoO2f5zjf1xh4i//8cGLHs=;
-        b=ptZ62ANp/RJv0QXE69vBs5L02OKcvs6X/P09pIFVWO2w15SBS38NWtqg6yu8d6LI0j
-         FaWmBS3whicnZEpC5d+0A6AHacyDdhq7xKWDLfSpNkPS5p9IKHgBUh5ZsqrzzxsrhkGm
-         FyH+eQSvuLJMs/+ZcO/fil3IfIPIhFOBnyb8uy3loHBHfgYB5xeMH5YgvDQ5lMseqxrG
-         UQJWPH7kMo/oN6ywSwF88H+TIwgw+kzmFbfK2HHgxvw24NUzl5F1KS4Co5PsHtiJiH09
-         DPuumLmCJ+lUqUA0DIUkgt2168Beq7OWT/gIUzsR5AYttxHunVDDRyCxfnVq637Dh2l6
-         JVhQ==
-X-Gm-Message-State: AOAM533vrX9q4vasQset9QZa5OYvzQ8ijAp0kfGInrK6NYZXQdhFF4pq
-        Q9o3r601FqK8DLghijmD0pE9WnanHMt0Igdkj50=
-X-Google-Smtp-Source: ABdhPJyNR5zXZ8o09DSJzsSA3OSccnAxM/c9AxKQjYYOZlXvOMCiHs1YW/1gQi1Sa70TQ2VOPtabshfviWRkV7+ICnM=
-X-Received: by 2002:a6b:db17:: with SMTP id t23mr18236117ioc.4.1593458159284;
- Mon, 29 Jun 2020 12:15:59 -0700 (PDT)
+        id S2387936AbgF3NEy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Jun 2020 09:04:54 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:45370 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387492AbgF3NEx (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 30 Jun 2020 09:04:53 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id ABBDE157EE50F893074F;
+        Tue, 30 Jun 2020 21:04:27 +0800 (CST)
+Received: from [127.0.0.1] (10.174.179.63) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Tue, 30 Jun 2020
+ 21:04:20 +0800
+Subject: Re: Question: livepatch failed for new fork() task stack unreliable
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+CC:     <huawei.libin@huawei.com>, <xiexiuqi@huawei.com>,
+        <cj.chengjian@huawei.com>, <mingo@redhat.com>, <x86@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <live-patching@vger.kernel.org>,
+        <mbenes@suse.cz>, <devel@etsukata.com>, <viro@zeniv.linux.org.uk>,
+        <esyr@redhat.com>
+References: <20200529174433.wpkknhypx2bmjika@treble>
+ <a9ed9157-f3cf-7d2c-7a8e-56150a2a114e@huawei.com>
+ <20200601180538.o5agg5trbdssqken@treble>
+ <a5e0f476-02b5-cc44-8d4e-d33ff2138143@huawei.com>
+ <20200602131450.oydrydelpdaval4h@treble>
+ <1353648b-f3f7-5b8d-f0bb-28bdb1a66f0f@huawei.com>
+ <20200603153358.2ezz2pgxxxld7mj7@treble>
+ <2225bc83-95f2-bf3d-7651-fdd10a3ddd00@huawei.com>
+ <20200604024051.6ovbr6tbrowwg6jr@treble>
+ <c3a81224-bea1-116b-7528-f03f90be5264@huawei.com>
+ <20200605015142.w65uu5wxfmrun2ro@treble>
+From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
+Message-ID: <e914bcd6-009c-0a89-bc59-b9a87a9c552d@huawei.com>
+Date:   Tue, 30 Jun 2020 21:04:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Received: by 2002:a05:6602:1588:0:0:0:0 with HTTP; Mon, 29 Jun 2020 12:15:58
- -0700 (PDT)
-Reply-To: mrs.victoria.alexander2@gmail.com
-From:   "mrs.victoria alexander" <markalexandermilley321@gmail.com>
-Date:   Mon, 29 Jun 2020 12:15:58 -0700
-Message-ID: <CAP7XNCwEGQ+-Q==u4yk4yvJdk1X+gsfSU6pUV_hROjmF=p-DHw@mail.gmail.com>
-Subject: Hello,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200605015142.w65uu5wxfmrun2ro@treble>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.63]
+X-CFilter-Loop: Reflected
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Dear friend,
+
+在 2020/6/5 9:51, Josh Poimboeuf 写道:
+> On Fri, Jun 05, 2020 at 09:26:42AM +0800, Wangshaobo (bobo) wrote:
+>>>> So, I want to ask is there any side effects if i modify like this ? this
+>>>> modification is based on
+>>>>
+>>>> your fix. It looks like ok with proper test.
+>>>>
+>>>> diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+>>>> index e9cc182aa97e..ecce5051e8fd 100644
+>>>> --- a/arch/x86/kernel/unwind_orc.c
+>>>> +++ b/arch/x86/kernel/unwind_orc.c
+>>>> @@ -620,6 +620,7 @@ void __unwind_start(struct unwind_state *state, struct
+>>>> task_struct *task,
+>>>>                   state->sp = task->thread.sp;
+>>>>                   state->bp = READ_ONCE_NOCHECK(frame->bp);
+>>>>                   state->ip = READ_ONCE_NOCHECK(frame->ret_addr);
+>>>> +              state->signal = ((void *)state->ip == ret_from_fork);
+>>>>           }
+>>>>
+>>>> diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+>>>> index 7f969b2d240f..d7396431261a 100644
+>>>> --- a/arch/x86/kernel/unwind_orc.c
+>>>> +++ b/arch/x86/kernel/unwind_orc.c
+>>>> @@ -540,7 +540,7 @@ bool unwind_next_frame(struct unwind_state *state)
+>>>>            state->sp = sp;
+>>>>            state->regs = NULL;
+>>>>            state->prev_regs = NULL;
+>>>> -        state->signal = ((void *)state->ip == ret_from_fork);
+>>>> +        state->signal = false;
+>>>>            break;
+>>> Yes that's correct.
+>> Hi, josh
+>>
+>> Could i ask when are you free to send the patch, all the tests are passed
+>> by.
+> I want to run some regression tests, so it will probably be next week.
+
+Hi, josh
+
+did you send this patch, I haven't received it up to now, so i ask u to 
+confirm again.
+
+thanks,
+
+Wang ShaoBo
 
 
-I have a business container transaction what that some of( $13million dollars)
-
- I would like to discuss with you. If you are interested, please
-contact my email
-
-address (mrs.victoria.alexander2@gmail.com)
-
-My WhatsApp number but only message (+19293737780)
-
-Please do not reply if you are not ready
-Thanks
