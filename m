@@ -2,91 +2,101 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 990D221D565
-	for <lists+live-patching@lfdr.de>; Mon, 13 Jul 2020 13:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C0321D651
+	for <lists+live-patching@lfdr.de>; Mon, 13 Jul 2020 14:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728714AbgGML53 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 13 Jul 2020 07:57:29 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:19382 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726586AbgGML53 (ORCPT
+        id S1729597AbgGMMvc (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Jul 2020 08:51:32 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40038 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729494AbgGMMvc (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 13 Jul 2020 07:57:29 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06DBV7PT010647;
-        Mon, 13 Jul 2020 07:57:24 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3276buc1sn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 13 Jul 2020 07:57:24 -0400
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06DBepoJ050958;
-        Mon, 13 Jul 2020 07:57:24 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3276buc1s2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 13 Jul 2020 07:57:23 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06DBsY3L001857;
-        Mon, 13 Jul 2020 11:57:22 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 327527t5nv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 13 Jul 2020 11:57:22 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06DBvJ2U62062766
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jul 2020 11:57:19 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C9C6452050;
-        Mon, 13 Jul 2020 11:57:19 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.199.49.56])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 799D25204E;
-        Mon, 13 Jul 2020 11:57:18 +0000 (GMT)
-Subject: Re: [PATCH] selftests/livepatch: Use "comm" instead of "diff" for
- dmesg
-To:     Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org
-Cc:     linux-kselftest@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-References: <20200710183745.19730-1-joe.lawrence@redhat.com>
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-Message-ID: <be472e58-7538-3655-6032-57219e18c9ff@linux.vnet.ibm.com>
-Date:   Mon, 13 Jul 2020 17:27:16 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        Mon, 13 Jul 2020 08:51:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594644690;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YjOX0+qMsr0MZ2n7yEIvNR1la6gfCqgxiam2qlcsRPU=;
+        b=S9qTjGSy8Xh/EUevtMgzDRA5Vo4caNjV2uga7EwXHJoIpFsi7g4CyD8m35h8gluJr/feDr
+        JIWjptrN5JSKyxaqwD/Rws9SjGj2fKNAa8dlK7L7VzlB+wa1In3aLW+tMqDaUPwF5mTRKw
+        JrSIrL86jQOmTefW7L+LRMSNZUXSW0A=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-510-8Mdafo7qOC6Iv2X1W7id_w-1; Mon, 13 Jul 2020 08:51:27 -0400
+X-MC-Unique: 8Mdafo7qOC6Iv2X1W7id_w-1
+Received: by mail-qv1-f70.google.com with SMTP id j6so7349964qvl.13
+        for <live-patching@vger.kernel.org>; Mon, 13 Jul 2020 05:51:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YjOX0+qMsr0MZ2n7yEIvNR1la6gfCqgxiam2qlcsRPU=;
+        b=jNUDerFK0kCRlwg3dM00fO83TxOnlQsHguVgB33iZlGvVTOBLRfbzDcm9aPZaLcJ0p
+         YoLoiLT7BUvM4Jf0GkTeiGVzeVifjsjx7JVR4tT94QnUDWkWpSd2rl8FZGVwQLf6VwV1
+         CC3gArAfQcRVqh1o03yLZJLzwZwq4O1jDlb3AkFxNEPLIa4DA8n4bCvhZYFQJIaS9B3p
+         PlqKg/mD75xIooZ69zI9wxdIL6Srw0gGslleihepUHla/d0hkvv6Kj7du97orpFzRiAG
+         Yie9lBz3tpGX5hDpukYZc9PfFYKROfYW0pwxtXAul0uj/GUNUSU/hMh6SYjqxn5INXki
+         k/1w==
+X-Gm-Message-State: AOAM53154/B8pGE1p4wdc5pw71g5gqCYSq6TCPPji81FWKgFTMwhBc9V
+        8GEmMZ4XB2qjNVZN8MD657+FZijWNmzOSD4czAVcL4ZdYSnRAmEIut5GKjGdndOhXyduQCbh7Om
+        GJCW3bVrk7LtUqpYrpnyb2qONp8Gq7+mGoNkSzFmZ8g==
+X-Received: by 2002:a37:5b81:: with SMTP id p123mr79713627qkb.150.1594644686658;
+        Mon, 13 Jul 2020 05:51:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxekftooSxa1u1VC3aPSrNHxSTGnX+9e052hcG04Me+8Z6Np01h076NBmbFLdN/2WyjobuC1GlPp9SslA84gNU=
+X-Received: by 2002:a37:5b81:: with SMTP id p123mr79713605qkb.150.1594644686341;
+ Mon, 13 Jul 2020 05:51:26 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200710183745.19730-1-joe.lawrence@redhat.com>
 In-Reply-To: <20200710183745.19730-1-joe.lawrence@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-13_07:2020-07-13,2020-07-13 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- phishscore=0 clxscore=1011 priorityscore=1501 bulkscore=0
- lowpriorityscore=0 spamscore=0 suspectscore=0 mlxlogscore=999 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007130084
+From:   Yannick Cote <ycote@redhat.com>
+Date:   Mon, 13 Jul 2020 08:51:15 -0400
+Message-ID: <CAKMMXfb0kuynAjA76fnB+BWX+wRVY2NQ+hPs4nSJi3YgbEnsew@mail.gmail.com>
+Subject: Re: [PATCH] selftests/livepatch: Use "comm" instead of "diff" for dmesg
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Petr Mladek <pmladek@suse.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 11/07/20 12:07 am, Joe Lawrence wrote:
+On Fri, Jul 10, 2020 at 2:39 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
+>
 > BusyBox diff doesn't support the GNU diff '--LTYPE-line-format' options
 > that were used in the selftests to filter older kernel log messages from
 > dmesg output.
-> 
+>
 > Use "comm" which is more available in smaller boot environments.
-> 
+>
 > Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
 > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> ---
+>
+> based-on: livepatching.git/for-5.9/selftests-cleanup
+> merge-thru: livepatching.git
+>
+>  tools/testing/selftests/livepatch/functions.sh | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+> index 36648ca367c2..408529d94ddb 100644
+> --- a/tools/testing/selftests/livepatch/functions.sh
+> +++ b/tools/testing/selftests/livepatch/functions.sh
+> @@ -277,7 +277,7 @@ function check_result {
+>         # help differentiate repeated testing runs.  Remove them with a
+>         # post-comparison sed filter.
+>
+> -       result=$(dmesg | diff --changed-group-format='%>' --unchanged-group-format='' "$SAVED_DMESG" - | \
+> +       result=$(dmesg | comm -13 "$SAVED_DMESG" - | \
+>                  grep -e 'livepatch:' -e 'test_klp' | \
+>                  grep -v '\(tainting\|taints\) kernel' | \
+>                  sed 's/^\[[ 0-9.]*\] //')
+> --
+> 2.21.3
+>
 
-LGTM. All the test passes on non-busybox environment.
+Reviewed-by: Yannick Cote <ycote@redhat.com>
 
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-
-
--- 
-Kamalesh
