@@ -2,96 +2,108 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EB8A21ED88
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jul 2020 12:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2CE21EE6C
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jul 2020 12:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgGNKCu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Jul 2020 06:02:50 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:54684 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725906AbgGNKCu (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Jul 2020 06:02:50 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06E9VaZL139060;
-        Tue, 14 Jul 2020 05:59:43 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 328s1he621-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jul 2020 05:59:43 -0400
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06E9VqAC140386;
-        Tue, 14 Jul 2020 05:59:42 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 328s1he60u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jul 2020 05:59:42 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06E9stK5031001;
-        Tue, 14 Jul 2020 09:57:40 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 327527u6qs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jul 2020 09:57:39 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06E9vbtP45154344
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jul 2020 09:57:37 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A5149A4053;
-        Tue, 14 Jul 2020 09:57:37 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 983AEA4051;
-        Tue, 14 Jul 2020 09:57:35 +0000 (GMT)
-Received: from JAVRIS.in.ibm.com (unknown [9.199.51.67])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 14 Jul 2020 09:57:35 +0000 (GMT)
-Subject: Re: [PATCH v2] selftests/livepatch: adopt to newer sysctl error
- format
-To:     Petr Mladek <pmladek@suse.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Shuah Khan <shuah@kernel.org>, live-patching@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200714091030.1611-1-pmladek@suse.com>
-From:   Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-Message-ID: <d71ffba0-87ab-0a31-d7cc-c476f5748c57@linux.vnet.ibm.com>
-Date:   Tue, 14 Jul 2020 15:27:33 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727095AbgGNK4X (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Jul 2020 06:56:23 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33508 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726729AbgGNK4X (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 14 Jul 2020 06:56:23 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 47770AD1A;
+        Tue, 14 Jul 2020 10:56:24 +0000 (UTC)
+Date:   Tue, 14 Jul 2020 12:56:21 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, pmladek@suse.cz,
+        live-patching@vger.kernel.org
+Subject: Re: linux-next: Tree for Jun 23 (objtool (2))
+In-Reply-To: <20200702123555.bjioosahrs5vjovu@treble>
+Message-ID: <alpine.LSU.2.21.2007141240540.5393@pobox.suse.cz>
+References: <20200623162820.3f45feae@canb.auug.org.au> <61df2e8f-75e8-d233-9c3c-5b4fa2b7fbdc@infradead.org> <20200702123555.bjioosahrs5vjovu@treble>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20200714091030.1611-1-pmladek@suse.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-14_02:2020-07-13,2020-07-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 bulkscore=0
- lowpriorityscore=0 impostorscore=0 spamscore=0 priorityscore=1501
- malwarescore=0 suspectscore=0 mlxscore=0 clxscore=1015 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007140070
+Content-Type: text/plain; charset=US-ASCII
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 14/07/20 2:40 pm, Petr Mladek wrote:
-> With procfs v3.3.16, the sysctl command doesn't print the set key and
-> value on error.  This change breaks livepatch selftest test-ftrace.sh,
-> that tests the interaction of sysctl ftrace_enabled:
-> 
-> Make it work with all sysctl versions using '-q' option.
-> 
-> Explicitly print the final status on success so that it can be verified
-> in the log. The error message is enough on failure.
-> 
-> Reported-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
+On Thu, 2 Jul 2020, Josh Poimboeuf wrote:
 
-Reviewed-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
+> On Tue, Jun 23, 2020 at 08:06:07AM -0700, Randy Dunlap wrote:
+> > On 6/22/20 11:28 PM, Stephen Rothwell wrote:
+> > > Hi all,
+> > > 
+> > > Changes since 20200622:
+> > > 
+> > 
+> > on x86_64:
+> > 
+> > arch/x86/kernel/cpu/mce/core.o: warning: objtool: mce_timed_out()+0x24: unreachable instruction
+> > kernel/exit.o: warning: objtool: __x64_sys_exit_group()+0x14: unreachable instruction
+> > 
+> > Full randconfig file is attached.
+> 
+> More livepatch...
 
--- 
-Kamalesh
+Correct.
+
+Both are known and I thought Josh had fixes queued somewhere for both, but 
+my memory fails me quite often. See below.
+
+However, I think it is time to decide how to approach this whole saga. It 
+seems that there are not so many places in the kernel in need of 
+__noreturn annotation in the end and as jikos argued at least some of 
+those should be fixed regardless. Josh, should I prepare proper patches 
+and submit them to relevant maintainers to see where this path is going?
+
+It would be much better to fix it in GCC, but it has been like banging 
+one's head against a wall so far. Josh, you wanted to create a bug 
+for GCC in this respect in the past? Has that happened?
+
+If I remember correctly, we discussed briefly a possibility to cope with 
+that in objtool, but no solution was presented.
+
+Removing -flive-patching is also a possibility. I don't like it much, but 
+we discussed it with Petr M. a couple of months ago and it might be a way 
+too.
+
+Thanks
+Miroslav
+
+---
+
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 14e4b4d17ee5..469a71ecea3c 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -279,7 +279,7 @@ static int fake_panic;
+ static atomic_t mce_fake_panicked;
+ 
+ /* Panic in progress. Enable interrupts and wait for final IPI */
+-static void wait_for_panic(void)
++static void __noreturn wait_for_panic(void)
+ {
+        long timeout = PANIC_TIMEOUT*USEC_PER_SEC;
+ 
+diff --git a/kernel/exit.c b/kernel/exit.c
+index 727150f28103..570649152e7f 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -877,7 +877,7 @@ SYSCALL_DEFINE1(exit, int, error_code)
+  * as well as by sys_exit_group (below).
+  */
+ void
+-do_group_exit(int exit_code)
++__noreturn do_group_exit(int exit_code)
+ {
+        struct signal_struct *sig = current->signal;
+
