@@ -2,116 +2,138 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14B2D21F170
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jul 2020 14:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C9421F34B
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jul 2020 15:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727772AbgGNMgj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Jul 2020 08:36:39 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:52495 "EHLO
+        id S1728208AbgGNN55 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Jul 2020 09:57:57 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33080 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726352AbgGNMgj (ORCPT
+        with ESMTP id S1726945AbgGNN54 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Jul 2020 08:36:39 -0400
+        Tue, 14 Jul 2020 09:57:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594730197;
+        s=mimecast20190719; t=1594735075;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uN+URw2m81+BGl4jOJuzvBqo88yHsU8OolOc4NwmsLI=;
-        b=O5WUPXHD/oJfYjcMvNsVe0RWicWxsF8ZhP2TTzjLgGClMntoyxeFRiRtRJEHsZRYtDxAme
-        WTxMlqd+cxkY7C/FY9j46huc9JpgoJzFJlouuX0hwSJ0BIO0+VKSDV6A9HmLAzLYlb8SZa
-        7YSTmpl3De+iSMyRXxrHRZjKR1L5N5c=
+        bh=KsP+Zg2SXxpGWvQphHBj9WDMJC0wpn9ZmfS2E7PsRDA=;
+        b=Scn2/xTWKBpr9P5UiC/GOQUBA6x3vpB0t6qyVXFI8Ewqv57OnMesIfD9ZD3LyB8eROXC/A
+        WbmTpDUXWlkgTVsXvid9i+/Gpjy+IkMKWhZwBQFobENKpJ8CxuhGXhrvNL2tWh3Z+bdNMX
+        SBCwvKwJutBLG+nh1P9154npK4Si0Cw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-195-94l5EXXuMgaqUySrQrUW0g-1; Tue, 14 Jul 2020 08:36:34 -0400
-X-MC-Unique: 94l5EXXuMgaqUySrQrUW0g-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-491-VBrKysQKOeejqWQNk3_Q2A-1; Tue, 14 Jul 2020 09:57:53 -0400
+X-MC-Unique: VBrKysQKOeejqWQNk3_Q2A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97BF91085;
-        Tue, 14 Jul 2020 12:36:32 +0000 (UTC)
-Received: from [10.10.112.73] (ovpn-112-73.rdu2.redhat.com [10.10.112.73])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9C6F17B42D;
-        Tue, 14 Jul 2020 12:36:31 +0000 (UTC)
-Subject: Re: [PATCH v2] selftests/livepatch: adopt to newer sysctl error
- format
-To:     Petr Mladek <pmladek@suse.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>
-Cc:     Shuah Khan <shuah@kernel.org>, live-patching@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200714091030.1611-1-pmladek@suse.com>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <480e4da4-36b6-c112-255c-8cdab57e24ff@redhat.com>
-Date:   Tue, 14 Jul 2020 08:36:30 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A50F1800597;
+        Tue, 14 Jul 2020 13:57:51 +0000 (UTC)
+Received: from treble (unknown [10.10.119.254])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6D5DF2E02A;
+        Tue, 14 Jul 2020 13:57:49 +0000 (UTC)
+Date:   Tue, 14 Jul 2020 08:57:47 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, pmladek@suse.cz,
+        live-patching@vger.kernel.org
+Subject: Re: linux-next: Tree for Jun 23 (objtool (2))
+Message-ID: <20200714135747.lcgysd5joguhssas@treble>
+References: <20200623162820.3f45feae@canb.auug.org.au>
+ <61df2e8f-75e8-d233-9c3c-5b4fa2b7fbdc@infradead.org>
+ <20200702123555.bjioosahrs5vjovu@treble>
+ <alpine.LSU.2.21.2007141240540.5393@pobox.suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20200714091030.1611-1-pmladek@suse.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.2007141240540.5393@pobox.suse.cz>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/14/20 5:10 AM, Petr Mladek wrote:
-> With procfs v3.3.16, the sysctl command doesn't print the set key and
-> value on error.  This change breaks livepatch selftest test-ftrace.sh,
-> that tests the interaction of sysctl ftrace_enabled:
+On Tue, Jul 14, 2020 at 12:56:21PM +0200, Miroslav Benes wrote:
+> On Thu, 2 Jul 2020, Josh Poimboeuf wrote:
 > 
-> Make it work with all sysctl versions using '-q' option.
+> > On Tue, Jun 23, 2020 at 08:06:07AM -0700, Randy Dunlap wrote:
+> > > On 6/22/20 11:28 PM, Stephen Rothwell wrote:
+> > > > Hi all,
+> > > > 
+> > > > Changes since 20200622:
+> > > > 
+> > > 
+> > > on x86_64:
+> > > 
+> > > arch/x86/kernel/cpu/mce/core.o: warning: objtool: mce_timed_out()+0x24: unreachable instruction
+> > > kernel/exit.o: warning: objtool: __x64_sys_exit_group()+0x14: unreachable instruction
+> > > 
+> > > Full randconfig file is attached.
+> > 
+> > More livepatch...
 > 
-> Explicitly print the final status on success so that it can be verified
-> in the log. The error message is enough on failure.
+> Correct.
 > 
-> Reported-by: Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
-> The patch has been created against livepatch.git,
-> branch for-5.9/selftests-cleanup. But it applies also against
-> the current Linus' tree.
-> 
-> tools/testing/selftests/livepatch/functions.sh   | 3 ++-
->   tools/testing/selftests/livepatch/test-ftrace.sh | 2 +-
->   2 files changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-> index 408529d94ddb..1aba83c87ad3 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -75,7 +75,8 @@ function set_dynamic_debug() {
->   }
->   
->   function set_ftrace_enabled() {
-> -	result=$(sysctl kernel.ftrace_enabled="$1" 2>&1 | paste --serial --delimiters=' ')
-> +	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
-> +		 sysctl kernel.ftrace_enabled 2>&1)
->   	echo "livepatch: $result" > /dev/kmsg
->   }
->   
-> diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-> index 9160c9ec3b6f..552e165512f4 100755
-> --- a/tools/testing/selftests/livepatch/test-ftrace.sh
-> +++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-> @@ -51,7 +51,7 @@ livepatch: '$MOD_LIVEPATCH': initializing patching transition
->   livepatch: '$MOD_LIVEPATCH': starting patching transition
->   livepatch: '$MOD_LIVEPATCH': completing patching transition
->   livepatch: '$MOD_LIVEPATCH': patching complete
-> -livepatch: sysctl: setting key \"kernel.ftrace_enabled\": Device or resource busy kernel.ftrace_enabled = 0
-> +livepatch: sysctl: setting key \"kernel.ftrace_enabled\": Device or resource busy
->   % echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH/enabled
->   livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
->   livepatch: '$MOD_LIVEPATCH': starting unpatching transition
-> 
+> Both are known and I thought Josh had fixes queued somewhere for both, but 
+> my memory fails me quite often. See below.
 
-Looks good, thanks.
+I did have fixes for some of them in a stash somewhere, but I never
+finished them because I decided it's a GCC bug.
 
-Reviewed-by: Joe Lawrence <joe.lawrence@redhat.com>
+> However, I think it is time to decide how to approach this whole saga. It 
+> seems that there are not so many places in the kernel in need of 
+> __noreturn annotation in the end and as jikos argued at least some of 
+> those should be fixed regardless.
 
--- Joe
+I would agree that global functions like do_group_exit() deserve a
+__noreturn annotation, though it should be in the header file.  But
+static functions shouldn't need it.
+
+> Josh, should I prepare proper patches and submit them to relevant
+> maintainers to see where this path is going?
+
+If that's how you want to handle it, ok, but it doesn't seem right to
+me, for the static functions at least.
+
+> It would be much better to fix it in GCC, but it has been like banging 
+> one's head against a wall so far. Josh, you wanted to create a bug 
+> for GCC in this respect in the past? Has that happened?
+
+I didn't open a bug, but I could, if you think that would help.  I
+haven't had a lot of success with GCC bugs in the past.
+
+> If I remember correctly, we discussed briefly a possibility to cope with 
+> that in objtool, but no solution was presented.
+
+That would also feel like a GCC workaround and might impede objtool's
+ability to find bugs like this one, and possibly more serious bugs.
+
+> Removing -flive-patching is also a possibility. I don't like it much, but 
+> we discussed it with Petr M. a couple of months ago and it might be a way 
+> too.
+
+-flive-patching has many problems which I outlined before.  None of them
+have been addressed.  I still feel the same way, that it should be
+reverted until it's ready.  Otherwise it's a drain on upstream.
+
+Also, if the GCC developers won't acknowledge this bug then it doesn't
+give me confidence in their ability to keep the feature working as
+optimizations are added or changed.
+
+I still think a potential alternative exists: objtool could be used as a
+simple tree-wide object diff tool by generating a checksum for each
+function.  Then the patch can be applied and built to see exactly which
+functions have changed, based on the changed checksums.  In which case
+this feature would no longer be needed anyway, would you agree?
+
+I also think that could be a first step for converging our patch
+creation processes.
+
+-- 
+Josh
 
