@@ -2,92 +2,78 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 016D6229AC5
-	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 16:56:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11308229CC8
+	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 18:07:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730465AbgGVO4v (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Jul 2020 10:56:51 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:39043 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732143AbgGVO4u (ORCPT
+        id S1726406AbgGVQHj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 22 Jul 2020 12:07:39 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:54337 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728400AbgGVQHi (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Jul 2020 10:56:50 -0400
+        Wed, 22 Jul 2020 12:07:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595429809;
+        s=mimecast20190719; t=1595434057;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6gVk//BUazCMtzlozAWa7nTU6Yu6g/1ZlLTzqK6oLIM=;
-        b=i4uLGmClG2UFEOkTbOZPY4wlpfNzommGt2S98eWYAd5Rq84XL5/RM7ftUpoGhUkt0ebAMZ
-        vn5mdh35t6HQDdWyC5ELOI5iaZZxWHOrtHBRxII0CA48RCv1qKCjQKqd+5B6r9GWZTg+Xy
-        e/PGHEKZjDddWlB3O6fxUDmb5K5Lre8=
+        bh=bE26wHn/H6+Nxep03XAoDVa8RROZuwKayFCoxg4SHVI=;
+        b=Bed0O3JPdiDiBoePqKHAX5iAsEsNCh7pJU82v3Pn3ovGaohNKL/W+GjsPQhj8h3eA5nZ+d
+        ScGuoQGN0eta7limsEN/dZVxztqIXtDFeFqmJ9eOH0bgBqU3zs6DpzkWnsHAl/y0G226Rj
+        lacj255VnZMz8EaqiMORSk5iFsIF3ws=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-502-mG0EkZpuPlCR4i706fgDDw-1; Wed, 22 Jul 2020 10:56:43 -0400
-X-MC-Unique: mG0EkZpuPlCR4i706fgDDw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+ us-mta-73-ZOruSB_gPSe_y9gfuhk1QQ-1; Wed, 22 Jul 2020 12:07:35 -0400
+X-MC-Unique: ZOruSB_gPSe_y9gfuhk1QQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F40419253C2;
-        Wed, 22 Jul 2020 14:56:42 +0000 (UTC)
-Received: from [10.10.114.255] (ovpn-114-255.rdu2.redhat.com [10.10.114.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B50615FC3B;
-        Wed, 22 Jul 2020 14:56:40 +0000 (UTC)
-Subject: Re: [PATCH v4 00/10] Function Granular KASLR
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Kees Cook <keescook@chromium.org>, Miroslav Benes <mbenes@suse.cz>
-Cc:     Kristen Carlson Accardi <kristen@linux.intel.com>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D9535193F571;
+        Wed, 22 Jul 2020 16:07:33 +0000 (UTC)
+Received: from treble (ovpn-117-60.rdu2.redhat.com [10.10.117.60])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5574B2B4DD;
+        Wed, 22 Jul 2020 16:07:32 +0000 (UTC)
+Date:   Wed, 22 Jul 2020 11:07:30 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Miroslav Benes <mbenes@suse.cz>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
         tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         arjan@linux.intel.com, x86@kernel.org,
         linux-kernel@vger.kernel.org, kernel-hardening@lists.openwall.com,
         rick.p.edgecombe@intel.com, live-patching@vger.kernel.org
+Subject: Re: [PATCH v4 00/10] Function Granular KASLR
+Message-ID: <20200722160730.cfhcj4eisglnzolr@treble>
 References: <20200717170008.5949-1-kristen@linux.intel.com>
  <alpine.LSU.2.21.2007221122110.10163@pobox.suse.cz>
  <202007220738.72F26D2480@keescook>
- <aa51eb26-e2a9-c448-a3b8-e9e68deeb468@redhat.com>
-Message-ID: <b5bc7a92-a11e-d75d-eefb-fc640c87490d@redhat.com>
-Date:   Wed, 22 Jul 2020 10:56:39 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <aa51eb26-e2a9-c448-a3b8-e9e68deeb468@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202007220738.72F26D2480@keescook>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/22/20 10:51 AM, Joe Lawrence wrote:
-> On 7/22/20 10:39 AM, Kees Cook wrote:
->> On Wed, Jul 22, 2020 at 11:27:30AM +0200, Miroslav Benes wrote:
->>> Let me CC live-patching ML, because from a quick glance this is something
->>> which could impact live patching code. At least it invalidates assumptions
->>> which "sympos" is based on.
->>
->> In a quick skim, it looks like the symbol resolution is using
->> kallsyms_on_each_symbol(), so I think this is safe? What's a good
->> selftest for live-patching?
->>
+On Wed, Jul 22, 2020 at 07:39:55AM -0700, Kees Cook wrote:
+> On Wed, Jul 22, 2020 at 11:27:30AM +0200, Miroslav Benes wrote:
+> > Let me CC live-patching ML, because from a quick glance this is something 
+> > which could impact live patching code. At least it invalidates assumptions 
+> > which "sympos" is based on.
 > 
-> Hi Kees,
-> 
-> I don't think any of the in-tree tests currently exercise the
-> kallsyms/sympos end of livepatching.
-> 
+> In a quick skim, it looks like the symbol resolution is using
+> kallsyms_on_each_symbol(), so I think this is safe? What's a good
+> selftest for live-patching?
 
-On second thought, I mispoke.. The general livepatch code does use it:
+The problem is duplicate symbols.  If there are two static functions
+named 'foo' then livepatch needs a way to distinguish them.
 
-klp_init_object
-   klp_init_object_loaded
-     klp_find_object_symbol
+Our current approach to that problem is "sympos".  We rely on the fact
+that the second foo() always comes after the first one in the symbol
+list and kallsyms.  So they're referred to as foo,1 and foo,2.
 
-in which case any of the current kselftests should exercise that.
-
-   % make -C tools/testing/selftests/livepatch run_tests
-
--- Joe
+-- 
+Josh
 
