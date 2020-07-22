@@ -2,106 +2,91 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B30F229DB0
-	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 19:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61647229F33
+	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 20:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729866AbgGVRDJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Jul 2020 13:03:09 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40554 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726666AbgGVRDJ (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Jul 2020 13:03:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595437387;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rNxAC2081w6KkDSHTZofG7jYDLRJsJOKNUQR0/igp1I=;
-        b=ALIKBDfsvDxoH5zu0hVo39m/t08eIebmpgAxHLw7Uns570kyWUw9yIxgXJNRRVaVEKZ1g5
-        kvqktIjETNJAiQSgAY4X/V0F59Jyk6y71+NKFAjCoc+ZvrmCKn/LQMWFeUruOnPyGDa903
-        fVGCKTVirGgoYrJJ7I9g28sDVYkGFaw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-506-UlCdbfnNNT6NNRdnZGjhwA-1; Wed, 22 Jul 2020 13:03:05 -0400
-X-MC-Unique: UlCdbfnNNT6NNRdnZGjhwA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C422181EDEE;
-        Wed, 22 Jul 2020 17:03:04 +0000 (UTC)
-Received: from [10.10.114.255] (ovpn-114-255.rdu2.redhat.com [10.10.114.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 611221017E28;
-        Wed, 22 Jul 2020 17:03:04 +0000 (UTC)
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH 1/2] docs/livepatch: Add new compiler considerations doc
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200721161407.26806-1-joe.lawrence@redhat.com>
- <20200721161407.26806-2-joe.lawrence@redhat.com>
- <20200721230442.5v6ah7bpjx4puqva@treble>
-Message-ID: <de3672ef-8779-245f-943d-3d5a4b875446@redhat.com>
-Date:   Wed, 22 Jul 2020 13:03:03 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726666AbgGVSZE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 22 Jul 2020 14:25:04 -0400
+Received: from mga07.intel.com ([134.134.136.100]:23523 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726462AbgGVSZE (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 22 Jul 2020 14:25:04 -0400
+IronPort-SDR: 0Q8LwTn3V6mJQwhUeF0vHnMOteUFPyhiOq7qYPd5h7WiwiyH+gIkZPvGVoIRJIu8V6FilyvUhX
+ w+03zLBuxVow==
+X-IronPort-AV: E=McAfee;i="6000,8403,9690"; a="215029140"
+X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
+   d="scan'208";a="215029140"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 11:25:03 -0700
+IronPort-SDR: 0aKlQxXbmxsipBjsWOtrkvAy7O06GfhEqxJVOlVaisFefFtYFu31rglF+d2fWnFGv7uefTvaVh
+ x0s8xDK0OrAA==
+X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
+   d="scan'208";a="284311422"
+Received: from kcaccard-mobl.amr.corp.intel.com (HELO kcaccard-mobl1.jf.intel.com) ([10.212.14.158])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 11:24:59 -0700
+Message-ID: <24fedc0f503527ef847a4f534277856388fb6a6a.camel@linux.intel.com>
+Subject: Re: [PATCH v4 00/10] Function Granular KASLR
+From:   Kristen Carlson Accardi <kristen@linux.intel.com>
+To:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miroslav Benes <mbenes@suse.cz>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        arjan@linux.intel.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        rick.p.edgecombe@intel.com, live-patching@vger.kernel.org
+Date:   Wed, 22 Jul 2020 11:24:46 -0700
+In-Reply-To: <b5bc7a92-a11e-d75d-eefb-fc640c87490d@redhat.com>
+References: <20200717170008.5949-1-kristen@linux.intel.com>
+         <alpine.LSU.2.21.2007221122110.10163@pobox.suse.cz>
+         <202007220738.72F26D2480@keescook>
+         <aa51eb26-e2a9-c448-a3b8-e9e68deeb468@redhat.com>
+         <b5bc7a92-a11e-d75d-eefb-fc640c87490d@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-In-Reply-To: <20200721230442.5v6ah7bpjx4puqva@treble>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/21/20 7:04 PM, Josh Poimboeuf wrote:
-> On Tue, Jul 21, 2020 at 12:14:06PM -0400, Joe Lawrence wrote:
->> Compiler optimizations can have serious implications on livepatching.
->> Create a document that outlines common optimization patterns and safe
->> ways to livepatch them.
->>
->> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+On Wed, 2020-07-22 at 10:56 -0400, Joe Lawrence wrote:
+> On 7/22/20 10:51 AM, Joe Lawrence wrote:
+> > On 7/22/20 10:39 AM, Kees Cook wrote:
+> > > On Wed, Jul 22, 2020 at 11:27:30AM +0200, Miroslav Benes wrote:
+> > > > Let me CC live-patching ML, because from a quick glance this is
+> > > > something
+> > > > which could impact live patching code. At least it invalidates
+> > > > assumptions
+> > > > which "sympos" is based on.
+> > > 
+> > > In a quick skim, it looks like the symbol resolution is using
+> > > kallsyms_on_each_symbol(), so I think this is safe? What's a good
+> > > selftest for live-patching?
+> > > 
+> > 
+> > Hi Kees,
+> > 
+> > I don't think any of the in-tree tests currently exercise the
+> > kallsyms/sympos end of livepatching.
+> > 
 > 
-> There's a lot of good info here, but I wonder if it should be
-> reorganized a bit and instead called "how to create a livepatch module",
-> because that's really the point of it all.
+> On second thought, I mispoke.. The general livepatch code does use
+> it:
 > 
-
-That would be nice.  Would you consider a stand-alone 
-compiler-optimizations doc an incremental step towards that end?  Note 
-that the other files (callbacks, shadow-vars, system-state) in their 
-current form might be as confusing to the newbie.
-
-> I'm thinking a newcomer reading this might be lost.  It's not
-> necessarily clear that there are currently two completely different
-> approaches to creating a livepatch module, each with their own quirks
-> and benefits/drawbacks.  There is one mention of a "source-based
-> livepatch author" but no explanation of what that means.
+> klp_init_object
+>    klp_init_object_loaded
+>      klp_find_object_symbol
 > 
-
-Yes, the initial draft was light on source-based patching since I only 
-really tinker with it for samples/kselftests.  The doc was the result of 
-an experienced livepatch developer and Sunday afternoon w/the compiler. 
-I'm sure it reads as such. :)
-
-> Maybe it could begin with an overview of the two approaches, and then
-> delve more into the details of each approach, and then delve even more
-> into the gory details about compiler optimizations.
+> in which case any of the current kselftests should exercise that.
 > 
-
-Up until now, the livepatch documentation has danced around the 
-particular creation method and only described the API in abstract.  If a 
-compiler considerations doc needs to have that complete context then I'd 
-suggest we reorganize the entire lot as a prerequisite.
-
-> Also the kpatch-build section can reference the patch author guide which
-> we have on github.
+>    % make -C tools/testing/selftests/livepatch run_tests
+> 
+> -- Joe
 > 
 
-Good point.  I think there are a few kpatch-specific implications 
-(sibling call changes maybe) to consider.
-
--- Joe
+Thanks, it looks like this should work for helping me exercise the live
+patch code paths. I will take a look and get back to you all.
 
