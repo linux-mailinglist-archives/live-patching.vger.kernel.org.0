@@ -2,79 +2,111 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF773228C72
-	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 01:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C93228DE9
+	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 04:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728314AbgGUXE6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 21 Jul 2020 19:04:58 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50001 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726555AbgGUXE5 (ORCPT
+        id S1731830AbgGVCNK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 21 Jul 2020 22:13:10 -0400
+Received: from condef-07.nifty.com ([202.248.20.72]:30785 "EHLO
+        condef-07.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731621AbgGVCNJ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 21 Jul 2020 19:04:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595372696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kx0Hqea23204+1Vxqe4zJbIPov8gmWienWErS47JZPw=;
-        b=flyT4lX+upe1sunCLZphZKl1PZAyUqjQOVVGJp4ftCcpNhfTTFGY75JYMx4M4aDJevXurI
-        ARlfhVQOMftyBJNtRa54pcLuUCIMlIEgLUNYk4Bm8UNwLNRtQUG+8qljNng0N16BDLBFfI
-        tsOJoltGr7hIWqAmjzNqlOnTlVKgGVE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-203-sUelSXFeOdqLma5mtRQ2jw-1; Tue, 21 Jul 2020 19:04:54 -0400
-X-MC-Unique: sUelSXFeOdqLma5mtRQ2jw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D3741005510;
-        Tue, 21 Jul 2020 23:04:53 +0000 (UTC)
-Received: from treble (ovpn-113-106.rdu2.redhat.com [10.10.113.106])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id F279369316;
-        Tue, 21 Jul 2020 23:04:49 +0000 (UTC)
-Date:   Tue, 21 Jul 2020 18:04:42 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] docs/livepatch: Add new compiler considerations doc
-Message-ID: <20200721230442.5v6ah7bpjx4puqva@treble>
-References: <20200721161407.26806-1-joe.lawrence@redhat.com>
- <20200721161407.26806-2-joe.lawrence@redhat.com>
+        Tue, 21 Jul 2020 22:13:09 -0400
+Received: from conssluserg-01.nifty.com ([10.126.8.80])by condef-07.nifty.com with ESMTP id 06M29rjj003253;
+        Wed, 22 Jul 2020 11:09:53 +0900
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com [209.85.217.44]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 06M29TuW014750;
+        Wed, 22 Jul 2020 11:09:29 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 06M29TuW014750
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1595383770;
+        bh=06gcJexBF/tpPqvX05Gt/CkE+hULn79ToD587rmdDQs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=dSg4gOQ/jjsop05eIvXnSVytHbNKER9gJUCj/xFmRlxYS+uGMyhYC2Jk8d1UBmCVX
+         N1wjZTgmQYzpQCSGv2J5c4KvJ2kjyLKOzJFC5l8gYX1yjdoAtZ7mns1fCfS9MfKUGa
+         feiB1WnrJiEjtgGX1PThQkOVSt0m95ze/qj3NqeLBZOk3KVAJoyBMNQGHxUiE6bUgU
+         S7BpYr/Q3jpf2LPbiVV4KR9pdEwxudC0XZrB2hLCO21kIoIwLsPStojFwuyeXxnb3e
+         +DA66Lbh5i1vksPqHMaAxXTAXudMclMGABTxcYMX8driO5gHjm+9iL6JkpQWAP1/AR
+         VVd88rpFkynxw==
+X-Nifty-SrcIP: [209.85.217.44]
+Received: by mail-vs1-f44.google.com with SMTP id s20so330522vsq.5;
+        Tue, 21 Jul 2020 19:09:29 -0700 (PDT)
+X-Gm-Message-State: AOAM533nsgc4IMlpB454vyz6TB6mt+fAfr7w+7yvTX9jwoDxUQuIjOAS
+        1ZOQry2AGUE6VKL880TXZIx/CvCLACPhDxKUjJI=
+X-Google-Smtp-Source: ABdhPJzHR+EIktThMD2rIpFhI4uTJPOQdJWdMC4eTf5k71hKCt1edF/2edrSgjCexGMNslyvA9SMcKmKrD1IOmpXMxw=
+X-Received: by 2002:a67:de09:: with SMTP id q9mr21900661vsk.179.1595383768506;
+ Tue, 21 Jul 2020 19:09:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200721161407.26806-2-joe.lawrence@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20200707092117.963394-1-masahiroy@kernel.org> <20200707092117.963394-2-masahiroy@kernel.org>
+ <20200707120212.7010fa4f@oasis.local.home>
+In-Reply-To: <20200707120212.7010fa4f@oasis.local.home>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 22 Jul 2020 11:08:51 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASdytWgqQWux1cyBrGJb_FvS7Ur5UqgHaA2Xf5cwfL85A@mail.gmail.com>
+Message-ID: <CAK7LNASdytWgqQWux1cyBrGJb_FvS7Ur5UqgHaA2Xf5cwfL85A@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] kbuild: trace functions in subdirectories of lib/
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Haren Myneni <haren@us.ibm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Tal Gilboa <talgi@mellanox.com>, kunit-dev@googlegroups.com,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, live-patching@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 12:14:06PM -0400, Joe Lawrence wrote:
-> Compiler optimizations can have serious implications on livepatching.
-> Create a document that outlines common optimization patterns and safe
-> ways to livepatch them.
-> 
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+On Wed, Jul 8, 2020 at 1:02 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Tue,  7 Jul 2020 18:21:17 +0900
+> Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> >   ccflags-remove-$(CONFIG_FUNCTION_TRACER) += $(CC_FLAGS_FTRACE)
+> >
+> > exists here in sub-directories of lib/ to keep the behavior of
+> > commit 2464a609ded0 ("ftrace: do not trace library functions").
+> >
+> > Since that commit, not only the objects in lib/ but also the ones in
+> > the sub-directories are excluded from ftrace (although the commit
+> > description did not explicitly mention this).
+> >
+> > However, most of library functions in sub-directories are not so hot.
+> > Re-add them to ftrace.
+>
+> I'm OK with this change, but note, it wasn't just the hot path that I
+> disabled ftrace on lib for, but some of these calls are done very early
+> at boot up. It may have been PowerPC that I was stumbling over. The
+> issue is that they would call mcount before the kernel was mapped
+> properly, and the system would crash.
+>
+> My PowerPC box no longer boots so I can't test this anymore. But a lot
+> has changed since 2008, and all this may very well be OK.
+>
+> -- Steve
 
-There's a lot of good info here, but I wonder if it should be
-reorganized a bit and instead called "how to create a livepatch module",
-because that's really the point of it all.
 
-I'm thinking a newcomer reading this might be lost.  It's not
-necessarily clear that there are currently two completely different
-approaches to creating a livepatch module, each with their own quirks
-and benefits/drawbacks.  There is one mention of a "source-based
-livepatch author" but no explanation of what that means.
+That's why I split this into two commits
+so that we can do git-bisect and
+revert the second one in case of a regression.
 
-Maybe it could begin with an overview of the two approaches, and then
-delve more into the details of each approach, and then delve even more
-into the gory details about compiler optimizations.
+Anyway, we have some more time to test this in linux-next
+(and somebody reports an issue, if any).
 
-Also the kpatch-build section can reference the patch author guide which
-we have on github.
 
 -- 
-Josh
-
+Best Regards
+Masahiro Yamada
