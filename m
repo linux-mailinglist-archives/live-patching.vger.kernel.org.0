@@ -2,171 +2,78 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E832294DF
-	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 11:27:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6A4E229A45
+	for <lists+live-patching@lfdr.de>; Wed, 22 Jul 2020 16:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727819AbgGVJ1e (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Jul 2020 05:27:34 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49764 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726153AbgGVJ1e (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Jul 2020 05:27:34 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 2CE5EABD2;
-        Wed, 22 Jul 2020 09:27:38 +0000 (UTC)
-Date:   Wed, 22 Jul 2020 11:27:30 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Kristen Carlson Accardi <kristen@linux.intel.com>
-cc:     keescook@chromium.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, arjan@linux.intel.com, x86@kernel.org,
+        id S1732485AbgGVOj6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 22 Jul 2020 10:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732467AbgGVOj6 (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 22 Jul 2020 10:39:58 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F293C0619DE
+        for <live-patching@vger.kernel.org>; Wed, 22 Jul 2020 07:39:58 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id s189so1353410pgc.13
+        for <live-patching@vger.kernel.org>; Wed, 22 Jul 2020 07:39:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=16Y8bWUyysyD6RX/r5XeFDtXgEqasoaIb5QlD/Fn9gY=;
+        b=m6/oHRfM8k+Nz9zcIKR0qeNOD5tEEwDyDId3PTGUUDN4p9UGsI0fn00KoI9/QyQ1v8
+         apM4heGRp20HL1suh7bRv/oYHQT+8FbwsOEUGzspMxDK5to8xMCVJ1IVeG4ELQ8PRnvM
+         UVLan5R8bzs3XxdU33aX86W1aVtTlW0hiqd8Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=16Y8bWUyysyD6RX/r5XeFDtXgEqasoaIb5QlD/Fn9gY=;
+        b=aiIXi3lQBTP2gezsZ5ozKmRpwiqigZZ/ongWLUCGbcMeyqBLcUgABXI9OscoKk0nNa
+         H7tsLMdoqF6uC5/kpwNYD1BRd70FHz6R7VqS4pb/KddigG1TeSt8bmo1Xmxu41Mmm4kS
+         0AFGje4qqtTQpnyvuQPBXWOS1XULMrO6/Quyq3WXMjW4ww2tEpKpEgG5WfMIfx238BdY
+         az6QAz1e5btG6CgO3FzvZ3V6/g4yx4pBMQIZarNkMtdhqrCzeLH4vTLVW+IZQqMq8ACO
+         6ReXZnOFRpTv8tjNcmNA0mUDz5s9SMDa05VcPt8Fa0r1UtuUbj/YbfhOuEmV8KWMajnJ
+         Yl0w==
+X-Gm-Message-State: AOAM530WmW+mIEabAsuaWnB0j7XCqw6gq4gNlmniITQAumo8DRTwQ5A9
+        9QZMNSWny2DlYuElJIoqK17Usw==
+X-Google-Smtp-Source: ABdhPJybf+F7pwNThVxNEaAxDjLaau/pl+1vyZd8ayI2jp7rUGVlHGz+ar7yf1UhbFootA15osR7TA==
+X-Received: by 2002:aa7:9ac6:: with SMTP id x6mr3300pfp.326.1595428797861;
+        Wed, 22 Jul 2020 07:39:57 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q17sm116352pfk.0.2020.07.22.07.39.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 07:39:56 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 07:39:55 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Kristen Carlson Accardi <kristen@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        arjan@linux.intel.com, x86@kernel.org,
         linux-kernel@vger.kernel.org, kernel-hardening@lists.openwall.com,
         rick.p.edgecombe@intel.com, live-patching@vger.kernel.org
 Subject: Re: [PATCH v4 00/10] Function Granular KASLR
-In-Reply-To: <20200717170008.5949-1-kristen@linux.intel.com>
-Message-ID: <alpine.LSU.2.21.2007221122110.10163@pobox.suse.cz>
+Message-ID: <202007220738.72F26D2480@keescook>
 References: <20200717170008.5949-1-kristen@linux.intel.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+ <alpine.LSU.2.21.2007221122110.10163@pobox.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.2007221122110.10163@pobox.suse.cz>
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Let me CC live-patching ML, because from a quick glance this is something 
-which could impact live patching code. At least it invalidates assumptions 
-which "sympos" is based on.
+On Wed, Jul 22, 2020 at 11:27:30AM +0200, Miroslav Benes wrote:
+> Let me CC live-patching ML, because from a quick glance this is something 
+> which could impact live patching code. At least it invalidates assumptions 
+> which "sympos" is based on.
 
-Miroslav
+In a quick skim, it looks like the symbol resolution is using
+kallsyms_on_each_symbol(), so I think this is safe? What's a good
+selftest for live-patching?
 
-On Fri, 17 Jul 2020, Kristen Carlson Accardi wrote:
-
-> Function Granular Kernel Address Space Layout Randomization (fgkaslr)
-> ---------------------------------------------------------------------
-> 
-> This patch set is an implementation of finer grained kernel address space
-> randomization. It rearranges your kernel code at load time 
-> on a per-function level granularity, with only around a second added to
-> boot time.
-
-[...]
-
-> Background
-> ----------
-> KASLR was merged into the kernel with the objective of increasing the
-> difficulty of code reuse attacks. Code reuse attacks reused existing code
-> snippets to get around existing memory protections. They exploit software bugs
-> which expose addresses of useful code snippets to control the flow of
-> execution for their own nefarious purposes. KASLR moves the entire kernel
-> code text as a unit at boot time in order to make addresses less predictable.
-> The order of the code within the segment is unchanged - only the base address
-> is shifted. There are a few shortcomings to this algorithm.
-> 
-> 1. Low Entropy - there are only so many locations the kernel can fit in. This
->    means an attacker could guess without too much trouble.
-> 2. Knowledge of a single address can reveal the offset of the base address,
->    exposing all other locations for a published/known kernel image.
-> 3. Info leaks abound.
-> 
-> Finer grained ASLR has been proposed as a way to make ASLR more resistant
-> to info leaks. It is not a new concept at all, and there are many variations
-> possible. Function reordering is an implementation of finer grained ASLR
-> which randomizes the layout of an address space on a function level
-> granularity. We use the term "fgkaslr" in this document to refer to the
-> technique of function reordering when used with KASLR, as well as finer grained
-> KASLR in general.
-> 
-> Proposed Improvement
-> --------------------
-> This patch set proposes adding function reordering on top of the existing
-> KASLR base address randomization. The over-arching objective is incremental
-> improvement over what we already have. It is designed to work in combination
-> with the existing solution. The implementation is really pretty simple, and
-> there are 2 main area where changes occur:
-> 
-> * Build time
-> 
-> GCC has had an option to place functions into individual .text sections for
-> many years now. This option can be used to implement function reordering at
-> load time. The final compiled vmlinux retains all the section headers, which
-> can be used to help find the address ranges of each function. Using this
-> information and an expanded table of relocation addresses, individual text
-> sections can be suffled immediately after decompression. Some data tables
-> inside the kernel that have assumptions about order require re-sorting
-> after being updated when applying relocations. In order to modify these tables,
-> a few key symbols are excluded from the objcopy symbol stripping process for
-> use after shuffling the text segments.
-> 
-> Some highlights from the build time changes to look for:
-> 
-> The top level kernel Makefile was modified to add the gcc flag if it
-> is supported. Currently, I am applying this flag to everything it is
-> possible to randomize. Anything that is written in C and not present in a
-> special input section is randomized. The final binary segment 0 retains a
-> consolidated .text section, as well as all the individual .text.* sections.
-> Future work could turn off this flags for selected files or even entire
-> subsystems, although obviously at the cost of security.
-> 
-> The relocs tool is updated to add relative relocations. This information
-> previously wasn't included because it wasn't necessary when moving the
-> entire .text segment as a unit. 
-> 
-> A new file was created to contain a list of symbols that objcopy should
-> keep. We use those symbols at load time as described below.
-> 
-> * Load time
-> 
-> The boot kernel was modified to parse the vmlinux elf file after
-> decompression to check for our interesting symbols that we kept, and to
-> look for any .text.* sections to randomize. The consolidated .text section
-> is skipped and not moved. The sections are shuffled randomly, and copied
-> into memory following the .text section in a new random order. The existing
-> code which updated relocation addresses was modified to account for
-> not just a fixed delta from the load address, but the offset that the function
-> section was moved to. This requires inspection of each address to see if
-> it was impacted by a randomization. We use a bsearch to make this less
-> horrible on performance. Any tables that need to be modified with new
-> addresses or resorted are updated using the symbol addresses parsed from the
-> elf symbol table.
-> 
-> In order to hide our new layout, symbols reported through /proc/kallsyms
-> will be displayed in a random order.
-> 
-> Security Considerations
-> -----------------------
-> The objective of this patch set is to improve a technology that is already
-> merged into the kernel (KASLR). This code will not prevent all attacks,
-> but should instead be considered as one of several tools that can be used.
-> In particular, this code is meant to make KASLR more effective in the presence
-> of info leaks.
-> 
-> How much entropy we are adding to the existing entropy of standard KASLR will
-> depend on a few variables. Firstly and most obviously, the number of functions
-> that are randomized matters. This implementation keeps the existing .text
-> section for code that cannot be randomized - for example, because it was
-> assembly code. The less sections to randomize, the less entropy. In addition,
-> due to alignment (16 bytes for x86_64), the number of bits in a address that
-> the attacker needs to guess is reduced, as the lower bits are identical.
-
-[...]
-
-> Modules
-> -------
-> Modules are randomized similarly to the rest of the kernel by shuffling
-> the sections at load time prior to moving them into memory. The module must
-> also have been build with the -ffunction-sections compiler option.
-> 
-> Although fgkaslr for the kernel is only supported for the X86_64 architecture,
-> it is possible to use fgkaslr with modules on other architectures. To enable
-> this feature, select
-> 
-> CONFIG_MODULE_FG_KASLR=y
-> 
-> This option is selected automatically for X86_64 when CONFIG_FG_KASLR is set.
-> 
-> Disabling
-> ---------
-> Disabling normal KASLR using the nokaslr command line option also disables
-> fgkaslr. It is also possible to disable fgkaslr separately by booting with
-> fgkaslr=off on the commandline.
+-- 
+Kees Cook
