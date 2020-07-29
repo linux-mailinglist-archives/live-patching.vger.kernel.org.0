@@ -2,85 +2,107 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3D52308FD
-	for <lists+live-patching@lfdr.de>; Tue, 28 Jul 2020 13:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A114223225F
+	for <lists+live-patching@lfdr.de>; Wed, 29 Jul 2020 18:13:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729089AbgG1Li3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 28 Jul 2020 07:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729110AbgG1LiQ (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 28 Jul 2020 07:38:16 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD5CC0619D7
-        for <live-patching@vger.kernel.org>; Tue, 28 Jul 2020 04:38:15 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id r4so14993107wrx.9
-        for <live-patching@vger.kernel.org>; Tue, 28 Jul 2020 04:38:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=z88eUg589kIPbwfcJkBbHKFa4QR0wOZWGk2diK1jFPM=;
-        b=b8/14qSmtpua6DExDbiZQujm3FVCJQWOEnGYc8m39CT4QhCFHb7H/8m/Mr+GJhki5y
-         D26KeL8e5wwIhpqswED7Iyj8LNXjLx29RYfhZ1pPRjvkmM3zHNDeTF1tCFcQE9cmRh/R
-         raunFxUrBwUmVbHiIcNmDsAsXlg0feXUzfnq5cUO9m3PCR65DPFX0ENqSsff92XlzdML
-         2lZ1DHEdMBJRJ7G/JmLQNbN9a0xCfCCdIavasCRbfc1GMLbxrWB9YQiD4Jx827i+wgQH
-         uvPy2fXgy98qEeiaY5zYJY4YAm1gQLhdwyYSQS3qfKNnqXIVHUgDrgxJy+XFocnlCNnt
-         WweQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=z88eUg589kIPbwfcJkBbHKFa4QR0wOZWGk2diK1jFPM=;
-        b=ZXp/yPCV0IWfFttLX28PNN/vrCim/KwM3OzcbiI4VFmyd8gfXZBNWUgb809rRuW/wP
-         sbZG7epCIjajJ7iirlkyIZtb6gKnVtadrSXgCfYeFXu+VLAJY3WnQFWqpDBTec3KJM14
-         4tsv2ANSckslvJddMwXxXcX7NAabyyP3elpDtD3R2buOelCS3bP4HLVDvtgiwj4ULfzO
-         QhUiLKF92BUW0iAVBbSd7fBQ7Gp1rvz6gIlWqbkvPod0aeYK8PR88+5chR0jFfhFdE3V
-         FHO+ywGI9nfGc5HFmeevwyJ65TJU2RUs597HjjE6TavkV0jjl/1Bp1pNOm4wZOlIJjY+
-         WXbw==
-X-Gm-Message-State: AOAM533Pf5OM0a2nZX8sIuI5GdWpHvu5LfpkkJ/NG+61/TLO6Kl9snPw
-        Wb5zeyafY052NhWbH2dAdxJy7nSWPGb6K8wtF/Q=
-X-Google-Smtp-Source: ABdhPJxf3Z6j28ZJZ91yE+38HygJgiTtZMyB/VSeYng0agg0J+nv4s0qzz48SwEN7D8BizofBLS128ELYqeZWTC2zc4=
-X-Received: by 2002:a5d:5746:: with SMTP id q6mr24649773wrw.59.1595936294234;
- Tue, 28 Jul 2020 04:38:14 -0700 (PDT)
+        id S1726385AbgG2QNX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 29 Jul 2020 12:13:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50582 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726341AbgG2QNX (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 29 Jul 2020 12:13:23 -0400
+Received: from linux-8ccs (p57a236d4.dip0.t-ipconnect.de [87.162.54.212])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A5FA920FC3;
+        Wed, 29 Jul 2020 16:13:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596039202;
+        bh=Dr2f1rnIAwAbgJYQlSq8HsSXozp4VHgRlAMcB3TsJwI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VbFyGvQaGLh/SJN5nvdnlpgMswUCpssnC9Nl7UBme2OYXtALrCxRXizttfSXu0hB/
+         o/qDT0CWgK2s5/EKiaxIsxqNpPFYUsgZb1dMsgY4B4uivr3KQfMr54qT33UYvdO/uH
+         lRY6C1kcYcdHG4PvvkTlrguh+GS7BLCg6RendzIw=
+Date:   Wed, 29 Jul 2020 18:13:18 +0200
+From:   Jessica Yu <jeyu@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH 2/7] modules: mark find_symbol static
+Message-ID: <20200729161318.GA30898@linux-8ccs>
+References: <20200729062711.13016-1-hch@lst.de>
+ <20200729062711.13016-3-hch@lst.de>
 MIME-Version: 1.0
-Received: by 2002:a5d:65cb:0:0:0:0:0 with HTTP; Tue, 28 Jul 2020 04:38:13
- -0700 (PDT)
-From:   Rashid Al-Wahaibi <pdlarsen550@gmail.com>
-Date:   Tue, 28 Jul 2020 12:38:13 +0100
-Message-ID: <CAE00X2F5SUiQf0qCZYq3Yx353S0Esu1hA3RH4THqOM0WZMKHFQ@mail.gmail.com>
-Subject: Your Partnership
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20200729062711.13016-3-hch@lst.de>
+X-OS:   Linux linux-8ccs 5.5.0-lp150.12.61-default x86_64
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
--- 
-Good day,
-My name is Rashid Al-Wahaibi, I am from Oman but base here in the UK
-and a Managing Partner of BP Partnership Ltd, a Financial Consultancy
-Firm with office in the United Kingdom. I am contacting you based on
-the request of Ms Rosmah Mansor Najib Razak, wife of Najib Razak, the
-immediate past Malaysian Prime Minister.
++++ Christoph Hellwig [29/07/20 08:27 +0200]:
+>find_symbol is only used in module.c.
+>
+>Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-I found your profile satisfying and decided to contact you based on Ms
-Rosmah Mansor Najib Razak desire to invest in any viable project in
-your region.
+CCing the livepatching ML, as this may or may not impact its users.
 
-I need you to guide me on the type of investment that will be of best
-interest and provide good return on investment in your country and
-also act as her investment manager. She is ready to invest $25m to
-$50m USD
+AFAIK, the out-of-tree kpatch module had used find_symbol() in the
+past, I am not sure what its current status is. I suspect all of its
+functionality has been migrated to upstream livepatch already.
 
-I will explain further detail of this business proposal when you reply
-to this email indicating your interest.
-
-
-Regards,
-
-Rashid Al-Wahaibi,
-Bp Partnership Ltd
-60 Raglan Road
-Reigate, ENG RH2 0HN,
-United Kingdom
+>---
+> include/linux/module.h | 11 -----------
+> kernel/module.c        |  3 +--
+> 2 files changed, 1 insertion(+), 13 deletions(-)
+>
+>diff --git a/include/linux/module.h b/include/linux/module.h
+>index f1fdbeef2153a8..90bdc362be3681 100644
+>--- a/include/linux/module.h
+>+++ b/include/linux/module.h
+>@@ -590,17 +590,6 @@ struct symsearch {
+> 	bool unused;
+> };
+>
+>-/*
+>- * Search for an exported symbol by name.
+>- *
+>- * Must be called with module_mutex held or preemption disabled.
+>- */
+>-const struct kernel_symbol *find_symbol(const char *name,
+>-					struct module **owner,
+>-					const s32 **crc,
+>-					bool gplok,
+>-					bool warn);
+>-
+> /*
+>  * Walk the exported symbol table
+>  *
+>diff --git a/kernel/module.c b/kernel/module.c
+>index 17d64dae756c80..84da96a6d8241c 100644
+>--- a/kernel/module.c
+>+++ b/kernel/module.c
+>@@ -585,7 +585,7 @@ static bool find_exported_symbol_in_section(const struct symsearch *syms,
+>
+> /* Find an exported symbol and return it, along with, (optional) crc and
+>  * (optional) module which owns it.  Needs preempt disabled or module_mutex. */
+>-const struct kernel_symbol *find_symbol(const char *name,
+>+static const struct kernel_symbol *find_symbol(const char *name,
+> 					struct module **owner,
+> 					const s32 **crc,
+> 					bool gplok,
+>@@ -608,7 +608,6 @@ const struct kernel_symbol *find_symbol(const char *name,
+> 	pr_debug("Failed to find symbol %s\n", name);
+> 	return NULL;
+> }
+>-EXPORT_SYMBOL_GPL(find_symbol);
+>
+> /*
+>  * Search for module by name: must hold module_mutex (or preempt disabled
+>-- 
+>2.27.0
+>
