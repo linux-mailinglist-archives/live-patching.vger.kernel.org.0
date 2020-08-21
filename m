@@ -2,97 +2,155 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D820C24582F
-	for <lists+live-patching@lfdr.de>; Sun, 16 Aug 2020 16:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30CFD24E3BA
+	for <lists+live-patching@lfdr.de>; Sat, 22 Aug 2020 01:02:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbgHPOcz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 16 Aug 2020 10:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729512AbgHPObr (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Sun, 16 Aug 2020 10:31:47 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137E9C061343
-        for <live-patching@vger.kernel.org>; Sun, 16 Aug 2020 07:31:07 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id h16so11450853oti.7
-        for <live-patching@vger.kernel.org>; Sun, 16 Aug 2020 07:31:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=Duxa+mmNF3T3C2WDKsmzowR2OzvdY892XFjTPp0RWRI=;
-        b=rFfqrYfENnIGrjiP3XEXZfljCEjLNS6mLz9+/LvFhRl2KUoZhbCFtBq+Tk74TT/VnH
-         e4Kq5gyNBNqLn9/IWoCeJTaKRVdr+hcRhAoH/WUOypuce8kb5WYLkOHOMMxMPiI7feFy
-         3vwz1lbVG68k04kGym8V5s9Wa1uNQvuw/vjyHYujPFZBHayCdzks1qSwWB4AtNSDNc+g
-         hHLmu9cO6FN3IQ4/GGM91xTYP4KVsrpBy3MKwYL4dNQmnNZF1UrRQYzQOjJZY15dFlRo
-         nzoYUgAUHJWU3VVo4lkI0IIFC/KMzowgQk8PFJbiBXDveJ79RbGk02a0n6XBeE9JQF4c
-         6jEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=Duxa+mmNF3T3C2WDKsmzowR2OzvdY892XFjTPp0RWRI=;
-        b=VnzB5PY2pN3BEajUlf0PkqSUoH3L97B3rY4XBx2BXidOva7/7AVa6rynnqnU3mTiyR
-         hv4y222XrGteU8WvoQCJQ2a8AgKPF3fftZHTMk3f2tBxkoYFCiafONFCWg390DocU9J3
-         NH/h6OLsiPeSdSDwDPE0IOyPoFcVM7hyVERfuhWsZWSvo23UN7xLCWSGhDWEwUHVqblv
-         kKn6Dqn81JVJ76OG5CpPRnalLGKqsCuGxTOO5YXrv6hTPiRey0pH3mgzhCI5KzKeyQR8
-         mHyMzk07tDXKSXGmeGd9tod95GkE8iWCNAHC473Z+d6yKhD2mfpJfCW5QfLqm0Pl58xs
-         BmlA==
-X-Gm-Message-State: AOAM533gJ9rLEylbYLDXp585SoZD+b48+Mkz2HkGYZ8LHyE2IOMwwDUt
-        S42DL0Vps7XoxPlvchJG+Golq7XzVLgaby8oGIM=
-X-Google-Smtp-Source: ABdhPJzxMZRvUQDm0qdIuRC89IkX1kitXF9hIYVPA7HGLeERRoly4k1LVeg3HT6RTykT8ODwoJyxrA0qReRNMFId7MM=
-X-Received: by 2002:a9d:6c54:: with SMTP id g20mr8414395otq.120.1597588264824;
- Sun, 16 Aug 2020 07:31:04 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:aca:d655:0:0:0:0:0 with HTTP; Sun, 16 Aug 2020 07:31:04
- -0700 (PDT)
-Reply-To: sctnld11170@tlen.pl
-From:   "Mr. Scott Donald" <ptsd383@gmail.com>
-Date:   Sun, 16 Aug 2020 07:31:04 -0700
-Message-ID: <CAPdjYadgKKx3UrADWGGde3wcKo2U+Tk54eiTDWdUhPCg-AfZ8w@mail.gmail.com>
-Subject: Hello, Please
-To:     undisclosed-recipients:;
+        id S1726697AbgHUXCn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 21 Aug 2020 19:02:43 -0400
+Received: from mga11.intel.com ([192.55.52.93]:30336 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726688AbgHUXCl (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 21 Aug 2020 19:02:41 -0400
+IronPort-SDR: StPZFGGBcdKmY04Xv+y/pNhI75rPIq2ARYNw52mEqZk9915od8EypXsExsxQWjk3XdpUVmZn4V
+ fymAAMZGxOEA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9720"; a="153248926"
+X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
+   d="scan'208";a="153248926"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 16:02:40 -0700
+IronPort-SDR: ToGmx6dS8MqJfWdeMn8gS85sydet1IIwHZhopRPEpLlrhZIQI12Cn7bDwDzvyQqiuYnCbfRP41
+ Vaio4ho7wJqA==
+X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
+   d="scan'208";a="473214632"
+Received: from jlpaulk-mobl.amr.corp.intel.com (HELO kcaccard-mobl1.jf.intel.com) ([10.252.133.148])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 16:02:37 -0700
+Message-ID: <46c49dec078cb8625a9c3a3cd1310a4de7ec760b.camel@linux.intel.com>
+Subject: Re: [PATCH v4 00/10] Function Granular KASLR
+From:   Kristen Carlson Accardi <kristen@linux.intel.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Kees Cook <keescook@chromium.org>, Miroslav Benes <mbenes@suse.cz>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        arjan@linux.intel.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        rick.p.edgecombe@intel.com, live-patching@vger.kernel.org,
+        Hongjiu Lu <hongjiu.lu@intel.com>, joe.lawrence@redhat.com
+Date:   Fri, 21 Aug 2020 16:02:24 -0700
+In-Reply-To: <20200722213313.aetl3h5rkub6ktmw@treble>
+References: <20200717170008.5949-1-kristen@linux.intel.com>
+         <alpine.LSU.2.21.2007221122110.10163@pobox.suse.cz>
+         <202007220738.72F26D2480@keescook> <20200722160730.cfhcj4eisglnzolr@treble>
+         <202007221241.EBC2215A@keescook>
+         <301c7fb7d22ad6ef97856b421873e32c2239d412.camel@linux.intel.com>
+         <20200722213313.aetl3h5rkub6ktmw@treble>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
---=20
-Dear Friend,
+On Wed, 2020-07-22 at 16:33 -0500, Josh Poimboeuf wrote:
+> On Wed, Jul 22, 2020 at 12:56:10PM -0700, Kristen Carlson Accardi
+> wrote:
+> > On Wed, 2020-07-22 at 12:42 -0700, Kees Cook wrote:
+> > > On Wed, Jul 22, 2020 at 11:07:30AM -0500, Josh Poimboeuf wrote:
+> > > > On Wed, Jul 22, 2020 at 07:39:55AM -0700, Kees Cook wrote:
+> > > > > On Wed, Jul 22, 2020 at 11:27:30AM +0200, Miroslav Benes
+> > > > > wrote:
+> > > > > > Let me CC live-patching ML, because from a quick glance
+> > > > > > this is
+> > > > > > something 
+> > > > > > which could impact live patching code. At least it
+> > > > > > invalidates
+> > > > > > assumptions 
+> > > > > > which "sympos" is based on.
+> > > > > 
+> > > > > In a quick skim, it looks like the symbol resolution is using
+> > > > > kallsyms_on_each_symbol(), so I think this is safe? What's a
+> > > > > good
+> > > > > selftest for live-patching?
+> > > > 
+> > > > The problem is duplicate symbols.  If there are two static
+> > > > functions
+> > > > named 'foo' then livepatch needs a way to distinguish them.
+> > > > 
+> > > > Our current approach to that problem is "sympos".  We rely on
+> > > > the
+> > > > fact
+> > > > that the second foo() always comes after the first one in the
+> > > > symbol
+> > > > list and kallsyms.  So they're referred to as foo,1 and foo,2.
+> > > 
+> > > Ah. Fun. In that case, perhaps the LTO series has some solutions.
+> > > I
+> > > think builds with LTO end up renaming duplicate symbols like
+> > > that, so
+> > > it'll be back to being unique.
+> > > 
+> > 
+> > Well, glad to hear there might be some precendence for how to solve
+> > this, as I wasn't able to think of something reasonable off the top
+> > of
+> > my head. Are you speaking of the Clang LTO series? 
+> > https://lore.kernel.org/lkml/20200624203200.78870-1-samitolvanen@google.com/
+> 
+> I'm not sure how LTO does it, but a few more (half-brained) ideas
+> that
+> could work:
+> 
+> 1) Add a field in kallsyms to keep track of a symbol's original
+> offset
+>    before randomization/re-sorting.  Livepatch could use that field
+> to
+>    determine the original sympos.
+> 
+> 2) In fgkaslr code, go through all the sections and mark the ones
+> which
+>    have duplicates (i.e. same name).  Then when shuffling the
+> sections,
+>    skip a shuffle if it involves a duplicate section.  That way all
+> the
+>    duplicates would retain their original sympos.
+> 
+> 3) Livepatch could uniquely identify symbols by some feature other
+> than
+>    sympos.  For example:
+> 
+>    Symbol/function size - obviously this would only work if
+> duplicately
+>    named symbols have different sizes.
+> 
+>    Checksum - as part of a separate feature we're also looking at
+> giving
+>    each function its own checksum, calculated based on its
+> instruction
+>    opcodes.  Though calculating checksums at runtime could be
+>    complicated by IP-relative addressing.
+> 
+> I'm thinking #1 or #2 wouldn't be too bad.  #3 might be harder.
+> 
 
-I'm Mr. Scott Donald a Successful businessMan dealing with
-Exportation, I got your mail contact through search to let you know my
-intension and my Ugly Situation Am a dying Man here in Los Angeles
-California Hospital Bed in (USA), I Lost my Wife and my only Daughter
-for Covid-19 and I also have a problem in my Health and I can die
-anytime I Know,
+Hi there! I was trying to find a super easy way to address this, so I
+thought the best thing would be if there were a compiler or linker
+switch to just eliminate any duplicate symbols at compile time for
+vmlinux. I filed this question on the binutils bugzilla looking to see
+if there were existing flags that might do this, but H.J. Lu went ahead
+and created a new one "-z unique", that seems to do what we would need
+it to do. 
 
-I have a project that I am about to hand over to you. and I already
-instructed the Bankia S.A. Madrid, Spain(BSA) to transfer my fund sum
-of =C2=A33,7M GBP. Equivalent to =E2=82=AC4,077,033.91 EUR, to you as to en=
-able you
-to give 50% of this fund to Charitable Home in your State and take 50%
-don't think otherwise and why would anybody send someone you barely
-know to help you deliver a message, help me do this for the happiness
-of my soul and for God to mercy me and my Family and give Us a good
-place.
+https://sourceware.org/bugzilla/show_bug.cgi?id=26391
 
-please, do as I said there was someone from your State that I deeply
-love so very very much and I miss her so badly I have no means to
-reach any Charitable Home there. that is why I go for a personal
-search of the Country and State and I got your mail contact through
-search to let you know my Bitterness and please, help me is getting
-Dark I ask my Doctor to help me keep you notice failure for me to
-reach you in person Your urgent Response, here is my Doctor Whats-app
-Number for urgent notice +13019692737
+When I use this option, it renames any duplicate symbols with an
+extension - for example duplicatefunc.1 or duplicatefunc.2. You could
+either match on the full unique name of the specific binary you are
+trying to patch, or you match the base name and use the extension to
+determine original position. Do you think this solution would work? If
+so, I can modify livepatch to refuse to patch on duplicated symbols if
+CONFIG_FG_KASLR and when this option is merged into the tool chain I
+can add it to KBUILD_LDFLAGS when CONFIG_FG_KASLR and livepatching
+should work in all cases. 
 
-Hope To Hear From You. I'm sending this email to you for the second
-time yet no response from you.
-
-My Regards.
-
-Mr. Scott Donald
-CEO
