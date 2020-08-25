@@ -2,96 +2,206 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACB082514FE
-	for <lists+live-patching@lfdr.de>; Tue, 25 Aug 2020 11:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A298251D06
+	for <lists+live-patching@lfdr.de>; Tue, 25 Aug 2020 18:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729205AbgHYJHn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 25 Aug 2020 05:07:43 -0400
-Received: from sonic303-1.consmr.mail.bf2.yahoo.com ([74.6.131.40]:33923 "EHLO
-        sonic303-1.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729201AbgHYJHn (ORCPT
+        id S1727045AbgHYQQ5 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 25 Aug 2020 12:16:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49489 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726094AbgHYQQw (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 25 Aug 2020 05:07:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1598346461; bh=hkYSfrxTonACfliPSB6IYnWC0p+Veg0756S5roQpVX8=; h=Date:From:Reply-To:Subject:References:From:Subject; b=jtOwt1cGUPU8PikXMo3ltYAwNu+YsrBfsVmDM7mZqnlX0qcU9ZWaTu6rmT7PSmzSMKUT7DpLdxh5oHmuHD3a5z3saNoftmwhyW9+VimH1nu6TlpGvtUxKlMOT2ofqU9TYvq9VMxZiQmRpE2no/mixDoxEpJ8aoCFuvGvuw1J0CU75V5nA30hdcYmceESoegLXJzuuiJLyqGsa6jF/UuYt7QU60tNZPRGb4pIjsJ8UNqlqWhWqez+I6J18zMPSok6G16WaoJYBanKdzqvGIexYUqpoWIs6OI99NVYNH4tSlw0QnDgl3iO+sckiDX1Za3weqk2YuTKz9r+MWYYZHBajA==
-X-YMail-OSG: a.csGUIVM1nRs5yjgFfqWmdHXm4zibTWJCs9FyC802tkhMRJ6tdPgn3eX2WkOHO
- .aVFaILlx9bOOXRgItdy3LM2LOhbwrJKcXSJzbHDNl.cHRwUkowU4TX23lvUOe98K38.XBy89.wx
- .2ZBzfHBfviL.87uMJX6FMGwsCYK5CuZlg7jtrcR4u7grUFOK.RuChOZ3z4OrEueuf8eNi1Lu_5U
- Ao.LSQB26QJxPRKoCm8d0a0WZt46MPVagDGOQwc0A_YYOTgW3iMu.xw.8QZJYeUaf7TjTrVXs7kj
- ggrqSb3FlKs1GNsLA7yZlNfBJ5W8OrZ8Hh5kGJKGCc1af2zsBmTsy_Qz5gKbieGMjuwgqBKu7YL5
- DjuB6yyx5WiUM4yxPnONcnQGKIHtYIxi.AxfnYXPZEvT.Nat4nnpWHdcKAx9cFZ4BLYTMfChX9JU
- VW9pg_7kXTLERcOQGhRrA8P1ySySrjtNB35HNNTnlESWltKdWMWUaaihB6D9ly_1A40tPSqwNUhV
- IxljG5V6i7s6FZzE3BEc5vYkmu4TjVWgQq9I.hsh_nvr8ZosXfIrlf5ggfPonM_XxQoMabo9QEzh
- RC9YBRBMmRCZWIBT5sAXLiYrTkhSAGeR92gf99eQ8MtehkXy4VvtRCrpgUUGIgPk9GS2Fs102zeI
- lJ4Fs8omc4bIASMZa1tii2mNoxyqqB12KVn0XydwnMczmuCclkbmlIYrZwx_rXae.fRs0j_SjxbZ
- yNdbMkI.rchXnmiBRXYKwuz8A22TyJPj3M0MdvojKIQkWYD9v_3umXQaroWIM79Ay0NTz8zWVcJy
- xFW0YCNSh57ex4Ia7E1ffTn669LLfq5TxfZ5zWxdgK1GSElAmmhNAnFbU3JQwVKmz53tbqnugRdP
- hGdlXRGMxsHBZf37xJtZvA0QgqvfNHoBBhJ7iqnId0aOGyMObXThgXPehBUFas2yO_Wt2EXKbd46
- Dz0qJQ1nnCFiGHHC._tmwNSehlT2OZ13IuvoahEzQlEXZFcUx7F2Muab3cU.GWCt3aS9iTvgY8ZU
- ru.CxkesIG4pZ18.bzGpFw9MZuqKM0E3VtCPbOrfZJjbwPlkEvVLeaQ8CgR4PtxhK3izwWGHZ_SM
- fImkepKPelOg8r9S9MZSycczyiXbcDhPWlQYpt3yLbcNbwoUWXWEUvv_pscs8AfKXwkBJHB01o1e
- aWeJg78K6vC8a1miwH9WNz.Efu_VuTCPybMjIfbvU7OAPEsglp6HOS_7JCrey0ToQdZyUXHufX0R
- DdtL.Iw1BCZVXdABnMb39lkzq8xpxgvEQFp9mk7irc8SYAnZ09aP0ngDXRSpnebMKzKFWekSJs6x
- EbDuzWwCegmDGXlwmKcpNpRXfgp28qewgjUF81Wtz.z1Xxb9fLRUHc.XaUCe1gxKnhnpQmHYij7i
- aIb2FTDafb.sL5ipg2libaHlWWPNx_OsiHdabNWo2M0HfEy8oG1c-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic303.consmr.mail.bf2.yahoo.com with HTTP; Tue, 25 Aug 2020 09:07:41 +0000
-Date:   Tue, 25 Aug 2020 09:07:38 +0000 (UTC)
-From:   Sgt Vivian Robert <sgtvivarob@gmail.com>
-Reply-To: sgtvivarob@gmail.com
-Message-ID: <560999273.5272175.1598346458271@mail.yahoo.com>
-Subject:  kindly respond to my mail
+        Tue, 25 Aug 2020 12:16:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598372210;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q3HoWWtTXzG1DNyfWvPLzOd/wEe/1eM21yozmk7l7k0=;
+        b=WpBgXc5WNCZPWyBEs6HHZPwMXtAAZyLR4fAhJonSwDLLbt60PW69q8CDFnqLblIf8PShO2
+        ZNj9Gxhv9/lPRyhFo4N9qCWpSR8rOib0Wt1SgJQ/zpM0wxQCwWnnJI1C+/haOQl/v34tyT
+        tr9UNvDuI5QSHLRZpNJBwImv167HA7g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-84-uIA61BQsMv-0LkTdrzDS3A-1; Tue, 25 Aug 2020 12:16:44 -0400
+X-MC-Unique: uIA61BQsMv-0LkTdrzDS3A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 40ED0800479;
+        Tue, 25 Aug 2020 16:16:42 +0000 (UTC)
+Received: from [10.10.114.28] (ovpn-114-28.rdu2.redhat.com [10.10.114.28])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 403AC5C1C2;
+        Tue, 25 Aug 2020 16:16:40 +0000 (UTC)
+Subject: Re: [PATCH v4 00/10] Function Granular KASLR
+To:     Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Kees Cook <keescook@chromium.org>, Miroslav Benes <mbenes@suse.cz>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        arjan@linux.intel.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        rick.p.edgecombe@intel.com, live-patching@vger.kernel.org,
+        Hongjiu Lu <hongjiu.lu@intel.com>
+References: <20200717170008.5949-1-kristen@linux.intel.com>
+ <alpine.LSU.2.21.2007221122110.10163@pobox.suse.cz>
+ <202007220738.72F26D2480@keescook> <20200722160730.cfhcj4eisglnzolr@treble>
+ <202007221241.EBC2215A@keescook>
+ <301c7fb7d22ad6ef97856b421873e32c2239d412.camel@linux.intel.com>
+ <20200722213313.aetl3h5rkub6ktmw@treble>
+ <46c49dec078cb8625a9c3a3cd1310a4de7ec760b.camel@linux.intel.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <a29e8960-916b-8a5b-f8ed-ec040eddbbde@redhat.com>
+Date:   Tue, 25 Aug 2020 12:16:39 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <560999273.5272175.1598346458271.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16455 YMailNodin Mozilla/5.0 (Windows NT 6.1; rv:79.0) Gecko/20100101 Firefox/79.0
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <46c49dec078cb8625a9c3a3cd1310a4de7ec760b.camel@linux.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On 8/21/20 7:02 PM, Kristen Carlson Accardi wrote:
+> On Wed, 2020-07-22 at 16:33 -0500, Josh Poimboeuf wrote:
+>> On Wed, Jul 22, 2020 at 12:56:10PM -0700, Kristen Carlson Accardi
+>> wrote:
+>>> On Wed, 2020-07-22 at 12:42 -0700, Kees Cook wrote:
+>>>> On Wed, Jul 22, 2020 at 11:07:30AM -0500, Josh Poimboeuf wrote:
+>>>>> On Wed, Jul 22, 2020 at 07:39:55AM -0700, Kees Cook wrote:
+>>>>>> On Wed, Jul 22, 2020 at 11:27:30AM +0200, Miroslav Benes
+>>>>>> wrote:
+>>>>>>> Let me CC live-patching ML, because from a quick glance
+>>>>>>> this is
+>>>>>>> something
+>>>>>>> which could impact live patching code. At least it
+>>>>>>> invalidates
+>>>>>>> assumptions
+>>>>>>> which "sympos" is based on.
+>>>>>>
+>>>>>> In a quick skim, it looks like the symbol resolution is using
+>>>>>> kallsyms_on_each_symbol(), so I think this is safe? What's a
+>>>>>> good
+>>>>>> selftest for live-patching?
+>>>>>
+>>>>> The problem is duplicate symbols.  If there are two static
+>>>>> functions
+>>>>> named 'foo' then livepatch needs a way to distinguish them.
+>>>>>
+>>>>> Our current approach to that problem is "sympos".  We rely on
+>>>>> the
+>>>>> fact
+>>>>> that the second foo() always comes after the first one in the
+>>>>> symbol
+>>>>> list and kallsyms.  So they're referred to as foo,1 and foo,2.
+>>>>
+>>>> Ah. Fun. In that case, perhaps the LTO series has some solutions.
+>>>> I
+>>>> think builds with LTO end up renaming duplicate symbols like
+>>>> that, so
+>>>> it'll be back to being unique.
+>>>>
+>>>
+>>> Well, glad to hear there might be some precendence for how to solve
+>>> this, as I wasn't able to think of something reasonable off the top
+>>> of
+>>> my head. Are you speaking of the Clang LTO series?
+>>> https://lore.kernel.org/lkml/20200624203200.78870-1-samitolvanen@google.com/
+>>
+>> I'm not sure how LTO does it, but a few more (half-brained) ideas
+>> that
+>> could work:
+>>
+>> 1) Add a field in kallsyms to keep track of a symbol's original
+>> offset
+>>     before randomization/re-sorting.  Livepatch could use that field
+>> to
+>>     determine the original sympos.
+>>
+>> 2) In fgkaslr code, go through all the sections and mark the ones
+>> which
+>>     have duplicates (i.e. same name).  Then when shuffling the
+>> sections,
+>>     skip a shuffle if it involves a duplicate section.  That way all
+>> the
+>>     duplicates would retain their original sympos.
+>>
+>> 3) Livepatch could uniquely identify symbols by some feature other
+>> than
+>>     sympos.  For example:
+>>
+>>     Symbol/function size - obviously this would only work if
+>> duplicately
+>>     named symbols have different sizes.
+>>
+>>     Checksum - as part of a separate feature we're also looking at
+>> giving
+>>     each function its own checksum, calculated based on its
+>> instruction
+>>     opcodes.  Though calculating checksums at runtime could be
+>>     complicated by IP-relative addressing.
+>>
+>> I'm thinking #1 or #2 wouldn't be too bad.  #3 might be harder.
+>>
+> 
+> Hi there! I was trying to find a super easy way to address this, so I
+> thought the best thing would be if there were a compiler or linker
+> switch to just eliminate any duplicate symbols at compile time for
+> vmlinux. I filed this question on the binutils bugzilla looking to see
+> if there were existing flags that might do this, but H.J. Lu went ahead
+> and created a new one "-z unique", that seems to do what we would need
+> it to do.
+> 
+> https://sourceware.org/bugzilla/show_bug.cgi?id=26391
+> 
+> When I use this option, it renames any duplicate symbols with an
+> extension - for example duplicatefunc.1 or duplicatefunc.2.
 
+I tried out H.J. Lu's branch and built some of the livepatch selftests 
+with -z unique-symbol and indeed observe the following pattern:
 
-Good=C2=A0Day,=C2=A0I=C2=A0am=C2=A0glad=C2=A0to=C2=A0contact=C2=A0you=C2=A0=
-through=C2=A0this=C2=A0medium=C2=A0I=E2=80=99m=C2=A0Sgt=C2=A0Vivian=C2=A0Ro=
-bert=C2=A0am=C2=A0from=C2=A0united=C2=A0state,=C2=A028=C2=A0years=C2=A0old=
-=C2=A0single=C2=A0I=C2=A0am=C2=A0the=C2=A0only=C2=A0surviving=C2=A0child=C2=
-=A0of=C2=A0my=C2=A0late=C2=A0parents,=C2=A0I=C2=A0am=C2=A0America=C2=A0fema=
-le=C2=A0soldier=C2=A0presently=C2=A0in=C2=A0Afghanistan=C2=A0for=C2=A0the=
-=C2=A0training,=C2=A0advising=C2=A0the=C2=A0Afghan=C2=A0forces=C2=A0and=C2=
-=A0also=C2=A0helping=C2=A0in=C2=A0stabilizing=C2=A0the=C2=A0country=C2=A0ag=
-ainst=C2=A0security=C2=A0challenges,=C2=A0am=C2=A0Actually=C2=A0seeking=C2=
-=A0your=C2=A0assistance=C2=A0to=C2=A0evacuate=C2=A0the=C2=A0sum=C2=A0of=C2=
-=A0$3.5=C2=A0million,=C2=A0This=C2=A0money=C2=A0I=C2=A0got=C2=A0it=C2=A0as=
-=C2=A0my=C2=A0reward=C2=A0in=C2=A0service=C2=A0by=C2=A0Afghanistan=C2=A0gov=
-ernment=C2=A0to=C2=A0support=C2=A0me=C2=A0for=C2=A0my=C2=A0Good=C2=A0job=C2=
-=A0in=C2=A0their=C2=A0land.=C2=A0Right=C2=A0now,=C2=A0I=C2=A0want=C2=A0you=
-=C2=A0to=C2=A0stand=C2=A0as=C2=A0my=C2=A0beneficiary=C2=A0and=C2=A0receive=
-=C2=A0the=C2=A0fund=C2=A0my=C2=A0certificate=C2=A0of=C2=A0deposit=C2=A0from=
-=C2=A0the=C2=A0Bank=C2=A0where=C2=A0this=C2=A0fund=C2=A0deposited=C2=A0and=
-=C2=A0my=C2=A0authorization=C2=A0letter=C2=A0is=C2=A0with=C2=A0me=C2=A0now.=
-My=C2=A0contact=C2=A0with=C2=A0you=C2=A0is=C2=A0not=C2=A0by=C2=A0my=C2=A0po=
-wer=C2=A0but=C2=A0it=C2=A0is=C2=A0divinely=C2=A0made=C2=A0for=C2=A0God's=C2=
-=A0purpose=C2=A0to=C2=A0be=C2=A0fulfilled=C2=A0in=C2=A0our=C2=A0lives.=C2=
-=A0I=C2=A0want=C2=A0you=C2=A0to=C2=A0be=C2=A0rest=C2=A0assured=C2=A0that=C2=
-=A0this=C2=A0transaction=C2=A0is=C2=A0legitimate=C2=A0and=C2=A0a=C2=A0100%=
-=C2=A0risk=C2=A0free=C2=A0involvement,=C2=A0all=C2=A0you=C2=A0have=C2=A0to=
-=C2=A0do=C2=A0is=C2=A0to=C2=A0keep=C2=A0it=C2=A0secret=C2=A0and=C2=A0confid=
-ential=C2=A0to=C2=A0yourself=C2=A0,=C2=A0this=C2=A0transaction=C2=A0will=C2=
-=A0not=C2=A0take=C2=A0more=C2=A0than=C2=A07=C2=A0working=C2=A0banking=C2=A0=
-days=C2=A0for=C2=A0the=C2=A0money=C2=A0to=C2=A0get=C2=A0into=C2=A0your=C2=
-=A0account=C2=A0based=C2=A0on=C2=A0your=C2=A0sincerity=C2=A0and=C2=A0cooper=
-ation.=C2=A0i=C2=A0want=C2=A0you=C2=A0to=C2=A0take=C2=A040%=C2=A0Percent=C2=
-=A0of=C2=A0the=C2=A0total=C2=A0money=C2=A0for=C2=A0your=C2=A0personal=C2=A0=
-use=C2=A0While=C2=A020%=C2=A0Percent=C2=A0of=C2=A0the=C2=A0money=C2=A0will=
-=C2=A0go=C2=A0to=C2=A0charity,=C2=A0people=C2=A0in=C2=A0the=C2=A0street=C2=
-=A0and=C2=A0helping=C2=A0the=C2=A0orphanage=C2=A0the=C2=A0remaining=C2=A040=
-%=C2=A0percent=C2=A0of=C2=A0the=C2=A0total=C2=A0money=C2=A0.you=C2=A0will=
-=C2=A0assist=C2=A0me=C2=A0to=C2=A0invest=C2=A0it=C2=A0in=C2=A0a=C2=A0good=
-=C2=A0profitable=C2=A0Venture=C2=A0or=C2=A0you=C2=A0keep=C2=A0it=C2=A0for=
-=C2=A0me=C2=A0until=C2=A0I=C2=A0arrive=C2=A0your=C2=A0country.=C2=A0If=C2=
-=A0you=E2=80=99re=C2=A0willing=C2=A0to=C2=A0assist=C2=A0me=C2=A0contact=C2=
-=A0me=C2=A0through=C2=A0my=C2=A0email=C2=A0address=C2=A0=E2=80=9Csgtvivarob=
-@gmail.com.
+  foo, foo.1, foo.2, etc.
 
-Sgt=C2=A0Vivian=C2=A0Robert
+for homonym symbol names.
+
+ > You could
+> either match on the full unique name of the specific binary you are
+> trying to patch, or you match the base name and use the extension to
+> determine original position. Do you think this solution would work? 
+
+I think it could work for klp-relocations.
+
+As a quick test, I was able to hack the WIP klp-convert branch [1] to 
+generate klp-relocations with the following hack:
+
+   const char *foo(void) __asm__("foo.1");
+
+when building foo's target with -z unique-symbol.  (The target contained 
+two static foo() functions.)  The asm rename trick exercised the 
+klp-convert implicit conversion feature, as the symbol was now uniquely 
+named and included a non-valid C symbol character.  User-defined 
+klp-convert annotation support will require some refactoring, but 
+shouldn't be too difficult to support as well.
+
+> If
+> so, I can modify livepatch to refuse to patch on duplicated symbols if
+> CONFIG_FG_KASLR and when this option is merged into the tool chain I
+> can add it to KBUILD_LDFLAGS when CONFIG_FG_KASLR and livepatching
+> should work in all cases.
+> 
+
+I don't have a grasp on how complicated the alternatives might be, so 
+I'll let others comment on best paths forward.  I just wanted to note 
+that -z unique-symbol looks like it could reasonable work well for this 
+niche case.
+
+[1] 
+https://github.com/joe-lawrence/linux/tree/klp-convert-v5-expanded-v5.8 
+(not modified for -z unique-symbol, but noted for reference)
+
+-- Joe
+
