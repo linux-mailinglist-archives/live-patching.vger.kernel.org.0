@@ -2,56 +2,68 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7604C25283B
-	for <lists+live-patching@lfdr.de>; Wed, 26 Aug 2020 09:14:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24670254499
+	for <lists+live-patching@lfdr.de>; Thu, 27 Aug 2020 13:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbgHZHOJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 26 Aug 2020 03:14:09 -0400
-Received: from wrqvpnpf.outbound-mail.sendgrid.net ([149.72.50.63]:34215 "EHLO
-        wrqvpnpf.outbound-mail.sendgrid.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726240AbgHZHOI (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 26 Aug 2020 03:14:08 -0400
-X-Greylist: delayed 432 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Aug 2020 03:14:08 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sendgrid.net; 
-        h=reply-to:from:to:subject:mime-version:content-type:content-transfer-encoding; 
-        s=smtpapi; bh=X26aPoX6gR9djsd72z5yNZYm6Ya/Kovyt1BC7xENI0c=; b=ar
-        XQX1/q5fqA8FJoqmhOmFxYwNXARcPH61FfEfaiw+7znR7de5p4G2LyygBHrOdcvv
-        XcBjdlqGzp3aXsXwhcDY0EY2WgpC39KPHlTFEEppsoQdZWTywIse8XnB0o6EweQB
-        uW6PnqTXXM6QBJeAwxaxQ/k7+RTnUk8wWNPvGFKb4=
-Received: by filter0863p1iad2.sendgrid.net with SMTP id filter0863p1iad2-14446-5F460A0F-C
-        2020-08-26 07:06:55.353729114 +0000 UTC m=+29374.516449032
-Received: from mail.com (unknown)
-        by ismtpd0016p1las1.sendgrid.net (SG) with ESMTP id skkEd2Q8Sc6dUeb5uHE6HQ
-        for <live-patching@vger.kernel.org>; Wed, 26 Aug 2020 07:06:55.128 +0000 (UTC)
-Reply-To: adelenbreton@gmail.com
-From:   Richard Wahl <wahl-Richy@mail.com>
-To:     live-patching@vger.kernel.org
-Subject: DONATION
-Date:   Wed, 26 Aug 2020 07:06:55 +0000 (UTC)
-Message-ID: <20200826070654.828EFB70A4C0C53B@mail.com>
+        id S1728918AbgH0Lxu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 27 Aug 2020 07:53:50 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59598 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728820AbgH0Lxp (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 27 Aug 2020 07:53:45 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 1F147AC50;
+        Thu, 27 Aug 2020 11:07:43 +0000 (UTC)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        joe.lawrence@redhat.com, shuah@kernel.org
+Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH] selftests/livepatch: Do not check order when using "comm" for dmesg checking
+Date:   Thu, 27 Aug 2020 13:07:09 +0200
+Message-Id: <20200827110709.26824-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-SG-EID: jhSWqe94tY2bVrSeapujnZbEdZq4fzccZv7L4ciwpRA4I8biX9lGcHnzbSu0/Fn7M3/F/8ifMhTBuv
- bakaKe2wLDtoKZTZvO5UlV/iWj9zOKu+lDG5lBTGIpXvYnJoj9sxFP2XKHORuLzoCQJp8XfrsOw49L
- LRgG1Z6o3zMG9rl7tNRfTRZu64X8wTyt+oeueaSkRtxVkDyW2dykUEZ4OqtJkf4NcndQghH2OXi4OQ
- k=
+Content-Transfer-Encoding: 8bit
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello live-patching,
+check_result() uses "comm" to check expected results of selftests output
+in dmesg. Everything works fine if timestamps in dmesg are unique. If
+not, like in this example
 
-you have a donation of $3,000,000.00 ( 3 million dollars).
-My name is Richard Wahl from the united states. I won the America=20
-lottery worth $533 million and I am donating a portion of it to=20
-just 10 lucky people and a few Orphanage homes as a memorandum of=20
-goodwill to humanity. and also as a way of assistance over the=20
-COVID 19 Pandemic.
-If you are a recipient of this mail live-patching@vger.kernel.org=20
- contact me on  adelenebreton@gmail.com for more details and=20
-claim. I may be very busy but I will take out time to respond to=20
-you.
+[   86.844422] test_klp_callbacks_demo: pre_unpatch_callback: test_klp_callbacks_mod -> [MODULE_STATE_LIVE] Normal state
+[   86.844422] livepatch: 'test_klp_callbacks_demo': starting unpatching transition
+
+, "comm" fails with "comm: file 2 is not in sorted order". Suppress the
+order checking with --nocheck-order option.
+
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+---
+
+The strange thing is, I can reproduce the issue easily and reliably on
+older codestreams (4.12) but not on current upstream in my testing
+environment. I think the change makes sense regardless though.
+
+ tools/testing/selftests/livepatch/functions.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+index 1aba83c87ad3..846c7ed71556 100644
+--- a/tools/testing/selftests/livepatch/functions.sh
++++ b/tools/testing/selftests/livepatch/functions.sh
+@@ -278,7 +278,7 @@ function check_result {
+ 	# help differentiate repeated testing runs.  Remove them with a
+ 	# post-comparison sed filter.
+ 
+-	result=$(dmesg | comm -13 "$SAVED_DMESG" - | \
++	result=$(dmesg | comm --nocheck-order -13 "$SAVED_DMESG" - | \
+ 		 grep -e 'livepatch:' -e 'test_klp' | \
+ 		 grep -v '\(tainting\|taints\) kernel' | \
+ 		 sed 's/^\[[ 0-9.]*\] //')
+-- 
+2.28.0
+
