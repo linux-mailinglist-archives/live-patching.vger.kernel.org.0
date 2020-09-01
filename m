@@ -2,151 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A17C0259C32
-	for <lists+live-patching@lfdr.de>; Tue,  1 Sep 2020 19:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBAFB259D1C
+	for <lists+live-patching@lfdr.de>; Tue,  1 Sep 2020 19:25:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729354AbgIARMe (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 1 Sep 2020 13:12:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31391 "EHLO
+        id S1728376AbgIARZD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 1 Sep 2020 13:25:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23990 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729511AbgIARMa (ORCPT
+        by vger.kernel.org with ESMTP id S1726307AbgIARZA (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 1 Sep 2020 13:12:30 -0400
+        Tue, 1 Sep 2020 13:25:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598980348;
+        s=mimecast20190719; t=1598981099;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=6tq9XbBkkctfISvu/8JAip4aOF6DG++oXbCP77hju3Y=;
-        b=gJkKQHN55Bpw5EkTKici/3xksgTyQKzzzuFnlpmYlk61Is8Os6zESmLcWoAclCskphna71
-        02mecyF9UmvgHtKXwsccpkBhXqXYiPl43Rr+VCXHbVU26E5kI9exvw/okXnmk5FeK4MhB1
-        4R3NksX6o4EeTTYMGVZqCLCMEClfV3g=
+        bh=8PqT0EakorR2gsUjc/WrDrlcsD1OTR+SxQRxSKs2oGQ=;
+        b=K6U6qqw4W5EXo36ba9g8GAtdfaWIE/2GIYq4DS0yhPjeMT9gHmIUoZiAeQEPcIemwi7mYk
+        N/DPtrGEUCm3Fn4et3c8ED4XR59a7jax4qW3MbRmovEPpXWzto9VhYIDoO+51/p7YvbGUv
+        iZAERVc/jQL+Ue75tXCKdUOrRg5D750=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-559-gfbAtqhlPbKr-7JAzqN6xw-1; Tue, 01 Sep 2020 13:12:27 -0400
-X-MC-Unique: gfbAtqhlPbKr-7JAzqN6xw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-397-Ubgxi10CMnChTxIDXzvLyw-1; Tue, 01 Sep 2020 13:24:55 -0400
+X-MC-Unique: Ubgxi10CMnChTxIDXzvLyw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 344B11006708;
-        Tue,  1 Sep 2020 17:12:26 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8DD3810ABDB2;
+        Tue,  1 Sep 2020 17:24:54 +0000 (UTC)
 Received: from treble (ovpn-113-168.rdu2.redhat.com [10.10.113.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8B1BD1002D60;
-        Tue,  1 Sep 2020 17:12:22 +0000 (UTC)
-Date:   Tue, 1 Sep 2020 12:12:20 -0500
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B97F95C1BB;
+        Tue,  1 Sep 2020 17:24:53 +0000 (UTC)
+Date:   Tue, 1 Sep 2020 12:24:51 -0500
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: refactoring livepatch documentation was Re: [PATCH 1/2]
- docs/livepatch: Add new compiler considerations doc
-Message-ID: <20200901171220.pgepj3hxrfwy37rj@treble>
-References: <20200721161407.26806-1-joe.lawrence@redhat.com>
- <20200721161407.26806-2-joe.lawrence@redhat.com>
- <20200721230442.5v6ah7bpjx4puqva@treble>
- <de3672ef-8779-245f-943d-3d5a4b875446@redhat.com>
- <20200722205139.hwbej2atk2ejq27n@treble>
- <20200806120336.GP24529@alley>
- <3842fe65-332e-9f90-fe75-7cd80b34b75e@redhat.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH] Revert "kbuild: use -flive-patching when
+ CONFIG_LIVEPATCH is enabled"
+Message-ID: <20200901172451.uckohkruradfhd6g@treble>
+References: <696262e997359666afa053fe7d1a9fb2bb373964.1595010490.git.jpoimboe@redhat.com>
+ <alpine.LSU.2.21.2007211316410.31851@pobox.suse.cz>
+ <20200806092426.GL24529@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3842fe65-332e-9f90-fe75-7cd80b34b75e@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <20200806092426.GL24529@alley>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 03:46:46PM -0400, Joe Lawrence wrote:
-> > > > > I'm thinking a newcomer reading this might be lost.  It's not
-> > > > > necessarily clear that there are currently two completely different
-> > > > > approaches to creating a livepatch module, each with their own quirks
-> > > > > and benefits/drawbacks.  There is one mention of a "source-based
-> > > > > livepatch author" but no explanation of what that means.
-> > > > > 
-> > > > 
-> > > > Yes, the initial draft was light on source-based patching since I only
-> > > > really tinker with it for samples/kselftests.  The doc was the result of an
-> > > > experienced livepatch developer and Sunday afternoon w/the compiler. I'm
-> > > > sure it reads as such. :)
+On Thu, Aug 06, 2020 at 11:24:26AM +0200, Petr Mladek wrote:
+> On Tue 2020-07-21 13:17:00, Miroslav Benes wrote:
+> > On Fri, 17 Jul 2020, Josh Poimboeuf wrote:
+> > 
+> > > Use of the new -flive-patching flag was introduced with the following
+> > > commit:
 > > > 
-> > > Are experienced livepatch developers the intended audience?  If so I
-> > > question what value this document has in its current form.  Presumably
-> > > experienced livepatch developers would already know this stuff.
+> > >   43bd3a95c98e ("kbuild: use -flive-patching when CONFIG_LIVEPATCH is enabled")
+> > > 
+> > > This reverts commit 43bd3a95c98e1a86b8b55d97f745c224ecff02b9.
+> > > 
+> > > Fixes: 43bd3a95c98e ("kbuild: use -flive-patching when CONFIG_LIVEPATCH is enabled")
+> > > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 > > 
-> > IMHO, this document is useful even for newbies. They might at
-> > least get a clue about these catches. It is better than nothing.
-> > 
-> > I do not want to discourage Joe from creating even better
-> > documentation. But if he does not have interest or time
-> > to work on it, I am happy even for this piece.
-
-Agreed.  Joe, sorry for instigating and then disappearing :-)
-
-I know we're all busy and I didn't intend to block the patch until we
-reach Documentation Nirvana.  Though it would be _really_ nice to get
-more input from those who have more experience with the subject matter
-(source-based patch generation).
-
-It's part of my job as a maintainer to push back, question, and
-sometimes even complain.  I was just wondering where this is heading,
-because as our documentation grows (a good thing), the overall state is
-getting less cohesive (a bad thing).
-
-Anyway, ACK to the original patch.
-
-> 1. Provide a better index page to connect the other files/docs, like
-> https://www.kernel.org/doc/html/latest/core-api/index.html but obviously not
-> that extensive.  Right now we have only a Table of Contents tree without any
-> commentary.
+> > Acked-by: Miroslav Benes <mbenes@suse.cz>
 > 
-> 2. Rearrange and refactor sections:
+> Acked-by: Petr Mladek <pmladek@suse.com>
 > 
-> livepatch.rst
->   Keep just about everything
->   Add a history section to explain ksplice, kgraft, kpatch for the
->     uninitiated?
->   Add a section on source based vs. binary diff livepatch creation,
->     this may be worth its own top-level section
+> Hmm, the patch has not been pushed into livepatching.git and is not
+> available in the pull request for 5.9.
 > 
-> Livepatch API
->   Basic API
->   Callbacks
->   Shadow variables
->   Cumulative patches
->   System state
+> Is it OK to leave it for 5.10?
+> Or would you prefer to get it into 5.9 even on this stage?
 > 
-> KLP Relocations
->   Right now this is a bit academic AFAIK kpatch is the only tool
->   currently making use of them.  So maybe this document becomes a
->   more general purpose doc explaining how to reference unexported
->   symbols?  (ie, how does kgraft currently do it, particularly
->   w/kallsyms going unexported?)
-> 
->   Eventually this could contain klp-convert howto if it ever gets
->   merged.
-> 
-> Compiler considerations
->   TBD
+> I personally do not mind. It depends how urgent it is for others.
 
-This is certainly a logical way to organize things.  But again I would
-wonder, who's the audience?
-
-> I suppose this doesn't create a "Livepatching creation for dummies" guide,
-> but my feeling is that there are so many potential (hidden) pitfalls that
-> such guide would be dangerous.
-
-I disagree that a live patching creation guide would be dangerous.  I
-think it would be less dangerous than *not* having one.  There are
-several companies now delivering (hopefully reliable) livepatches to
-customers, and they're all presumably following processes.  We just need
-to agree on best practices and document the resulting process.  Over
-time I believe that will create much more good than harm.
-
-Sure, there are pitfalls, but the known ones can be highlighted in the
-guide.  No document is perfect but it hopefully improves and becomes
-more useful over time.
+Sorry for leaving this question hanging.  Let's go with 5.10 ;-)
 
 -- 
 Josh
