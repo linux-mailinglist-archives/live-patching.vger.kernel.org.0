@@ -2,99 +2,79 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89EEE261A4D
-	for <lists+live-patching@lfdr.de>; Tue,  8 Sep 2020 20:34:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C8CB261B16
+	for <lists+live-patching@lfdr.de>; Tue,  8 Sep 2020 20:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729048AbgIHSei (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 8 Sep 2020 14:34:38 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38402 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731858AbgIHScr (ORCPT
+        id S1731280AbgIHSna (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 8 Sep 2020 14:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728663AbgIHSmT (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 8 Sep 2020 14:32:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599589966;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B2G7IynuJTWu26rmvtUiX/MucuRuUehwK9kbE6Qud0s=;
-        b=Lg9OJ9MBzGicyQB9DcRDESKpPIQBd3AU09JKew0WqcSl/+5VuEuhfByTDx7buQt7cxNeS3
-        FomzA6F76Xpb793rLr8ZyvJxUFEU2FP4KkU30UdD7U5e3zpDNULqE6YAH76twxYsdAk6d+
-        CS1caXSLD/OgUp4FXnByslH8kxReYe4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-352-BEmFX_K2Mwiz9tXCT2NziQ-1; Tue, 08 Sep 2020 14:32:42 -0400
-X-MC-Unique: BEmFX_K2Mwiz9tXCT2NziQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E13010050EC;
-        Tue,  8 Sep 2020 18:32:41 +0000 (UTC)
-Received: from treble (ovpn-117-163.rdu2.redhat.com [10.10.117.163])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1F63E27CC3;
-        Tue,  8 Sep 2020 18:32:41 +0000 (UTC)
-Date:   Tue, 8 Sep 2020 13:32:39 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
+        Tue, 8 Sep 2020 14:42:19 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA68C061573
+        for <live-patching@vger.kernel.org>; Tue,  8 Sep 2020 11:42:18 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id k25so200252ljg.9
+        for <live-patching@vger.kernel.org>; Tue, 08 Sep 2020 11:42:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ex6ni327I15z8C3RrOtZFWWRNPfspAjIP05UlmQ1nl4=;
+        b=cCJaROOcsnp26K4DukJrO0BU+LT56NzAyYSPMFzM8BMKk7BWV5Pl7UCZa+6PS5tKQu
+         xxI3a0RzwnjPeHxeXrwE/SnLoNnxWz3vaDJ2QF370ZSDUbmHT+Kd4HNeWX461sOlZjkF
+         uEwgTWEiQSdVN9BvCS9xomWc5XghpodRjW0sw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ex6ni327I15z8C3RrOtZFWWRNPfspAjIP05UlmQ1nl4=;
+        b=qQMyAyqR1SUwvzKKh1JaFZfqOIzn3J3SsrFWNl4tdlQw30CcNIkfSAPC5b0f8F2pRV
+         1C7mBvAe8tA3Z/Xv5il10/10LRRpJWy/6FVOcuMa7XNgvWIUZnIaId1YmzBW2kGcBaw0
+         eYFjlmroUA+7BKDun+4bhrIlmW7jkMkKmELjt/q4Sbyh+3425cVeMA8MQ12J0FwF7RZc
+         i760SYOqxUpz4wuIlGmVehpZKtJeWLozNi8MMif+mHr3ZXi68xIJn2fyOYz/YZsyEnJR
+         xybuiUHhiK6GOTUGpISHifsWENn1/C4rnTx+fbksNRPB76wKG4uBvFs12xRaXGYxPQr3
+         NYjQ==
+X-Gm-Message-State: AOAM531sgzb+YSPcdprXuYQGJ7C78ZSusVo4xw4D+A1lRn0WVIJH3ehA
+        Q76GRaYPRH2qGe/17Mn31uLCs+mmnIdKtg==
+X-Google-Smtp-Source: ABdhPJzazJqETWhufH1YLscc810avGG1D9x5ERO/2m/EPvjD2r7gum4rooFQHFT/KlPOifXHTrrYSA==
+X-Received: by 2002:a2e:8988:: with SMTP id c8mr12854329lji.433.1599590537064;
+        Tue, 08 Sep 2020 11:42:17 -0700 (PDT)
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
+        by smtp.gmail.com with ESMTPSA id i5sm90947lfe.8.2020.09.08.11.42.16
+        for <live-patching@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 11:42:16 -0700 (PDT)
+Received: by mail-lj1-f172.google.com with SMTP id k25so262991ljk.0
+        for <live-patching@vger.kernel.org>; Tue, 08 Sep 2020 11:42:16 -0700 (PDT)
+X-Received: by 2002:a2e:7819:: with SMTP id t25mr5241560ljc.371.1599590536022;
+ Tue, 08 Sep 2020 11:42:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200907082036.GC8084@alley> <CAHk-=wiZUYjmPLiEaN5uHM4mGyYq8RBFvk=iZKkm9=8NxvcoZQ@mail.gmail.com>
+ <20200908183239.vhy2txzcmlliul7d@treble>
+In-Reply-To: <20200908183239.vhy2txzcmlliul7d@treble>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 8 Sep 2020 11:42:00 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wi==UJf0fWUGn6RhQ2hvLW7PA9Yj4GWaTJxa3roENAHDg@mail.gmail.com>
+Message-ID: <CAHk-=wi==UJf0fWUGn6RhQ2hvLW7PA9Yj4GWaTJxa3roENAHDg@mail.gmail.com>
+Subject: Re: [GIT PULL] livepatching for 5.9-rc5
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
 Cc:     Petr Mladek <pmladek@suse.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         live-patching@vger.kernel.org
-Subject: Re: [GIT PULL] livepatching for 5.9-rc5
-Message-ID: <20200908183239.vhy2txzcmlliul7d@treble>
-References: <20200907082036.GC8084@alley>
- <CAHk-=wiZUYjmPLiEaN5uHM4mGyYq8RBFvk=iZKkm9=8NxvcoZQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wiZUYjmPLiEaN5uHM4mGyYq8RBFvk=iZKkm9=8NxvcoZQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 11:13:58AM -0700, Linus Torvalds wrote:
-> Josh,
-> 
-> On Mon, Sep 7, 2020 at 1:20 AM Petr Mladek <pmladek@suse.com> wrote:
-> >
-> > - Workaround "unreachable instruction" objtool warnings that happen
-> >   with some compiler versions.
-> 
-> I know I said this fixes things for me, but I just realized it doesn't entirely.
-> 
-> I wonder how I missed the remaining one:
-> 
->    arch/x86/kvm/vmx/vmx.o: warning: objtool:
-> vmx_handle_exit_irqoff()+0x142: unreachable instruction
-> 
-> so apparently gcc and objtool can still disagree even without that
-> '-flive-patching'.
-> 
-> The unreachable code in question is after the call to
-> handle_external_interrupt_irqoff(), and while that function is a bit
-> odd, in this case I think it's objtool that is wrong.
-> 
-> I think that what happens is that the function doesn't have a 'ret'
-> instruction, and instead returns by doing a tail-call to
-> __sanitizer_cov_trace_pc with my config. And maybe that is what
-> confuses objtool.
-> 
-> This is current tip-of-git of my tree, with a allmodconfig build (but
-> the actual config will then depend on things like the gcc plugins
-> being there too, so you may not get exactly the same thing as I do)
-> 
-> Josh? Am I missing something, and the objtool warning is valid? But
-> yes, that code is doing some very very special stuff with that thunk
-> call asm, so it's hard to read the asm.
+On Tue, Sep 8, 2020 at 11:32 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+>
+> Can you share the .o file?  At least I can't recreate with GCC 9.3.1,
+> which is all I have at the moment.
 
-Hm, I don't think I've seen that one.  We saw a similar warning in that
-function before, but it was caused by the combination of
-CONFIG_UBSAN_ALIGNMENT and CONFIG_UBSAN_TRAP, which I think Kees fixed.
+Done off-list in private, because I don't think anybody else wants
+object files flying around on the mailing lists..
 
-Can you share the .o file?  At least I can't recreate with GCC 9.3.1,
-which is all I have at the moment.
-
--- 
-Josh
-
+               Linus
