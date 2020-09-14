@@ -2,93 +2,115 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6299262199
-	for <lists+live-patching@lfdr.de>; Tue,  8 Sep 2020 22:59:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F882693AD
+	for <lists+live-patching@lfdr.de>; Mon, 14 Sep 2020 19:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729649AbgIHU7z (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 8 Sep 2020 16:59:55 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:56788 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725997AbgIHU7y (ORCPT
+        id S1725976AbgINRju (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 14 Sep 2020 13:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726247AbgINMZx (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 8 Sep 2020 16:59:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599598793;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QDxqJJtxikAk+TP8erWdser2zhhtAWwdtKyMtfuzbSY=;
-        b=H1qNW6RK5GlNWvWpgmdopBK/M5ZCL5n61MfmWeEAqxMHfGj1w8DS3gydCaFHkdSX3+/Jke
-        uwJW41BUqq8qu5cfUtBumFvaR5pyZEqqk7yRW3lSWDmjoA/IPzqAvsjzp1rJj2lP9zN2jq
-        O/H2j6Ik+GsVyTntFkc2VULOjiKxMLw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-203-cNX-G96bOXm-dG0MkvF8ZA-1; Tue, 08 Sep 2020 16:59:51 -0400
-X-MC-Unique: cNX-G96bOXm-dG0MkvF8ZA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D320A8018A1;
-        Tue,  8 Sep 2020 20:59:49 +0000 (UTC)
-Received: from treble (ovpn-117-163.rdu2.redhat.com [10.10.117.163])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 561CE7EEAC;
-        Tue,  8 Sep 2020 20:59:49 +0000 (UTC)
-Date:   Tue, 8 Sep 2020 15:59:47 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        live-patching@vger.kernel.org
-Subject: Re: [GIT PULL] livepatching for 5.9-rc5
-Message-ID: <20200908205947.arryy75c5cvldps7@treble>
-References: <20200907082036.GC8084@alley>
- <CAHk-=wiZUYjmPLiEaN5uHM4mGyYq8RBFvk=iZKkm9=8NxvcoZQ@mail.gmail.com>
- <20200908183239.vhy2txzcmlliul7d@treble>
- <CAHk-=wi==UJf0fWUGn6RhQ2hvLW7PA9Yj4GWaTJxa3roENAHDg@mail.gmail.com>
+        Mon, 14 Sep 2020 08:25:53 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2856CC061A2A
+        for <live-patching@vger.kernel.org>; Mon, 14 Sep 2020 05:12:10 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id l17so17287774edq.12
+        for <live-patching@vger.kernel.org>; Mon, 14 Sep 2020 05:12:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=gxYQz48aGorfvze6exW0FuIKKJvVhs5z+cRnEenJUaY=;
+        b=cPk7UQKPAY0niCC6TT/oxTcpG9PIqKuJjnFPhX009+46qVktiRiBKwDBcFRtrWEs1o
+         1xFbX7WY2jqSEjRbFHVe4t/wUIE6CTFZxqDPJJ1CDk8fInyxRi3MX1nCr+zDlg13hFie
+         7doyZvJE/Yi6MLdh9kCGahrbMB9ndy16NeuJZOcD58EqroamjeuwAkYuVAmAJbaxmPSG
+         VDG4+iZXzl1VwJ5ehrIM2SkcpZEpr6I1W1LK/aeNlrGRtPxsQm8a+fhqXC7ZmlSBQrKk
+         u/8iSae7nzJg2hXHqZ6Jka3y/FUzDduN2HiBKCWk9yHfhPoNjDXpgyCdPC/dcFMH+Pbn
+         zooQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=gxYQz48aGorfvze6exW0FuIKKJvVhs5z+cRnEenJUaY=;
+        b=mEFJQlMgDHDidPLW9kYtUrmbXel3GQVC1IpHhoqSd5x6gxkwoxx0O3+jvdrClwAkE6
+         DC9FgxASOWVQ+2lVfs5+i6fEIAyE8JBHLe+GSVG/4TO1pKy/UWxDZzes7i6r9MWOq7IW
+         fo90YWHAxidMP4t6nfRmSlci5UNg5Lt8js2uArtJYtMcvmXLx9V37zNIUo/zaAm4mTbR
+         E/khovylRjG2UMc1aWPw74QVZnAZjdJONiZfo1bcnHG1R/AWFRXUtFMQyfPEf7nLN8GR
+         a5ZgFAZiETUngBh8LJLhzmlaV6TuV1rtTEYlzo4RI/Skbdoxmz5Q6EITLbc08Fa5BPpm
+         VwVQ==
+X-Gm-Message-State: AOAM530CbHalae4ROlBr4FM9yHSQMdzZY61SSv0i4S/Ok+/ne4JDCQej
+        zGMnEbUowMxbGtUGJxoYrXhqn9UtW90TLebVkb4=
+X-Google-Smtp-Source: ABdhPJxZz1oFec8IgYwjxdPSB+qicpvrLFlZS4jLHZckqIY73ppaLdSbxRoFMaVkJ4G7dB1zJybtU3kR3TkSTMXhYq4=
+X-Received: by 2002:a05:6402:483:: with SMTP id k3mr17175269edv.24.1600085528853;
+ Mon, 14 Sep 2020 05:12:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wi==UJf0fWUGn6RhQ2hvLW7PA9Yj4GWaTJxa3roENAHDg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Received: by 2002:a17:906:6945:0:0:0:0 with HTTP; Mon, 14 Sep 2020 05:12:08
+ -0700 (PDT)
+Reply-To: mrsmegwilliam6@gmail.com
+From:   Ms Mary Mcniff <dhlcouriercompanymiami@gmail.com>
+Date:   Mon, 14 Sep 2020 05:12:08 -0700
+Message-ID: <CAG_Oktof2_498qkjG+mO797FoacJjAguWDbkUTYfcGTEHEQ5QQ@mail.gmail.com>
+Subject: Your Respond ASAP
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: live-patching-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 11:42:00AM -0700, Linus Torvalds wrote:
-> On Tue, Sep 8, 2020 at 11:32 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> >
-> > Can you share the .o file?  At least I can't recreate with GCC 9.3.1,
-> > which is all I have at the moment.
-> 
-> Done off-list in private, because I don't think anybody else wants
-> object files flying around on the mailing lists..
+-- 
+From Chief Compliance Officer, Citigroup Inc CITIBANK
+388 Greenwich St, New York, 10013, United States United.
+PAYMENT CODE: FRB010
+Swift: PTBLBXXX
+==============================================
 
-The problem is that objtool ignores handle_external_interrupt_irqoff()
-(because it has the STACK_FRAME_NON_STANDARD annotation), and the
-'ignore' logic is a bit crude.
+Attention: Beneficiary,
 
-Because that function is ignored, the tail call isn't detected (as you
-pointed out).  Which confuses the static noreturn detection logic.
+We write to inform you that Series of meetings have been held over the
+past 2 weeks with the Secretary General of United Nations,U.S
+Department of State and Dubai Union Organization this ended last
+week.And parcel is under our custody right now, It will deliver to you
+within 24 hours once you clear the charges which will cost you
+according to the BANKERS COURIER SERVICES that wish to deliver your
+ATM CARD card to
+you immediately.
 
-The proper fix would be to move that thunk call code to proper asm,
-where we can add some unwind hints, and then get rid of the
-STACK_FRAME_NON_STANDARD.
+However, it is the pleasure of this office to inform you that your ATM
+CARD number; is 29741733 and it has been approved and upgraded in your
+favor .you call me for the pin code numbers. The ATM CARD value is us
+$10.5 Million only.
 
-But, in the interest of being lazy, here's the easiest fix for now.
-I'll need to run some builds to make sure it doesn't break anything.
+Kindly contact the paying bank for the claim of your ATM visa card
+payment fund $10,500,000.00 through the below contact information;
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index e034a8f24f46..90a66891441a 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -619,7 +619,7 @@ static int add_jump_destinations(struct objtool_file *file)
- 		if (!is_static_jump(insn))
- 			continue;
- 
--		if (insn->ignore || insn->offset == FAKE_JUMP_OFFSET)
-+		if (insn->offset == FAKE_JUMP_OFFSET)
- 			continue;
- 
- 		reloc = find_reloc_by_dest_range(file->elf, insn->sec,
+Contact Person:Mr Williams S Young
+Director of Financial Controller
+Bank Name: CITIBANK
+Bank address; 388 Greenwich St,
+New York City,10013, United States
+Email:mrsmegwilliam6@gmail.com
 
+Reconfirm the following information?
+
+(1)Your Full Name=============
+(2)Mobile Phone Number======
+(3)Current Home Address==== ====
+(4)Fax Number================
+(5)Passport/Drivers license ======
+
+Endeavor to keep me posted once you contacted the officer in charge
+through the above mentioned information.
+
+Your timely response is highly appreciated.To this end, you are
+required to forward your payment information as follows to enable us
+load your fund into the card with your information and deliver it to
+your door step. as the BANKERS COURIER SERVICES are in charge of the
+delivery services to your destination.
+
+Yours truly;
+
+Ms Mary Mcniff.
+Chief Compliance Officer, Citigroup Inc
+FEDERAL RESERVE SYSTEM.
+Email: marymcniff7@gmail.com.
