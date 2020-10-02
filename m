@@ -2,87 +2,64 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F3082813B2
-	for <lists+live-patching@lfdr.de>; Fri,  2 Oct 2020 15:06:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C593281B7E
+	for <lists+live-patching@lfdr.de>; Fri,  2 Oct 2020 21:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726176AbgJBNGO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 2 Oct 2020 09:06:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:59470 "EHLO mx2.suse.de"
+        id S2388321AbgJBTVu convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>); Fri, 2 Oct 2020 15:21:50 -0400
+Received: from mx.metalurgs.lv ([81.198.125.103]:65054 "EHLO mx.metalurgs.lv"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726569AbgJBNGN (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 2 Oct 2020 09:06:13 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 2C67BAE7D;
-        Fri,  2 Oct 2020 13:06:12 +0000 (UTC)
-Date:   Fri, 2 Oct 2020 15:06:11 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Evgenii Shatokhin <eshatokhin@virtuozzo.com>
-cc:     live-patching@vger.kernel.org, pmladek@suse.com, nstange@suse.de
-Subject: Re: Patching kthread functions
-In-Reply-To: <1cdecdce-fb34-29aa-1dda-1d02d8a635ef@virtuozzo.com>
-Message-ID: <alpine.LSU.2.21.2010021501510.24950@pobox.suse.cz>
-References: <9c9e5b82-660e-a666-b55c-a357dd7482cb@virtuozzo.com> <alpine.LSU.2.21.2010011300450.6689@pobox.suse.cz> <05a9533b-4b12-d600-5307-1f4fadb44f2b@virtuozzo.com> <alpine.LSU.2.21.2010021339390.24950@pobox.suse.cz>
- <1cdecdce-fb34-29aa-1dda-1d02d8a635ef@virtuozzo.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S2388174AbgJBTVt (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 2 Oct 2020 15:21:49 -0400
+X-Greylist: delayed 353 seconds by postgrey-1.27 at vger.kernel.org; Fri, 02 Oct 2020 15:21:45 EDT
+Received: from mx.metalurgs.lv (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id 95FDF61BA1
+        for <live-patching@vger.kernel.org>; Fri,  2 Oct 2020 22:16:24 +0300 (EEST)
+Received: from kas30pipe.localhost (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id 79FC561B57
+        for <live-patching@vger.kernel.org>; Fri,  2 Oct 2020 22:16:24 +0300 (EEST)
+Received: by mx.metalurgs.lv (Postfix, from userid 1005)
+        id 614B55F50B; Fri,  2 Oct 2020 22:16:22 +0300 (EEST)
+Received: from [100.64.1.74] (unknown [190.15.125.50])
+        (Authenticated sender: admin)
+        by mx.metalurgs.lv (Postfix) with ESMTPA id AF22C62C40;
+        Fri,  2 Oct 2020 22:16:15 +0300 (EEST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Description: Mail message body
+To:     Recipients <financialcapability6@gmail.com>
+From:   "Mr. Hashim Bin" <financialcapability6@gmail.com>
+Date:   Fri, 02 Oct 2020 16:16:08 -0300
+Reply-To: binmurrah@gmail.com
+X-SpamTest-Envelope-From: financialcapability6@gmail.com
+X-SpamTest-Group-ID: 00000000
+X-SpamTest-Info: Profiles 71303 [Jan 01 2015]
+X-SpamTest-Info: {TO: forged address, i.e. recipient, investors, public, etc.}
+X-SpamTest-Info: {DATE: unreal year}
+X-SpamTest-Method: none
+X-SpamTest-Rate: 55
+X-SpamTest-Status: Not detected
+X-SpamTest-Status-Extended: not_detected
+X-SpamTest-Version: SMTP-Filter Version 3.0.0 [0284], KAS30/Release
+Message-ID: <20201002191622.614B55F50B@mx.metalurgs.lv>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Subject: Low Rate Loan.
+X-Anti-Virus: Kaspersky Anti-Virus for Linux Mail Server 5.6.39/RELEASE,
+         bases: 20140401 #7726142, check: 20201002 notchecked
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, 2 Oct 2020, Evgenii Shatokhin wrote:
+Hello Dear,
 
-> On 02.10.2020 14:53, Miroslav Benes wrote:
-> > 
-> >>>> The old function will continue running, right?
-> >>>
-> >>> Correct. It will, however, call new functions.
-> >>
-> >> Ah, I see.
-> >>
-> >> So, I guess, our best bet would be to rewrite the thread function so that
-> >> it
-> >> contains just the event loop and calls other non-inline functions to
-> >> actually
-> >> process the requests. And, perhaps, - place klp_update_patch_state() before
-> >> schedule().
-> > 
-> > Yes, that might be the way. klp_update_patch_state() might not be even
-> > needed. If the callees are live patched, the kthread would be migrated
-> > thanks to stack checking once a task leaves the callee.
-> 
-> You mean, the task runs the callee, then goes to schedule(), then, while it
-> waits, livepatch core checks its stack, sees no target functions there and
-> switches patch_state?
+We are Investment Company offering Corporate and Personal
+Loan at 3% Interest Rate for a duration of 10Years.
 
-Yes. Once the task gets out of the target function (or the set of 
-functions), its patch state can be changed. If it sleeps (interruptedly) 
-in the target function, we wake it up so it can get out 
-(klp_send_signals()).
- 
-> >   
-> >> This will not help with this particular kernel version but could make it
-> >> possible to live-patch the request-processing functions in the future
-> >> kernel
-> >> versions. The main thread function will remain unpatchable but it will call
-> >> the patched functions once we switch the patch_state for the thread.
-> > 
-> > Yes. The only issue is if the intended fix changes the semantics which is
-> > incompatible between old and new functions (livepatch consistency model is
-> > LEAVE_PATCHED_SET, SWITCH_THREAD, see
-> > https://lore.kernel.org/lkml/20141107140458.GA21774@suse.cz/ for the
-> > explanation if interested).
-> 
-> Yes, I have read that.
-> 
-> In our case, the fix only adds a kind of lock/unlock around the part of the
-> function processing actual requests. The implementation is more complex, but,
-> essentially, it is lock + unlock. The code not touched by the patch already
-> handles such locking OK, so it can work both with old and the new versions of
-> patched functions. And - even if some threads use the old functions and some -
-> the new ones. So, I guess, it should be fine.
+We also pay 1% commission to brokers, who introduce project
+owners for finance or other opportunities.
 
-Ok, that should be fine.
+Please get back to me if you are interested for more
+details.
 
-Miroslav
+Yours faithfully,
+Hashim Bin 
