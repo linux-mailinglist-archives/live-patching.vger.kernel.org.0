@@ -2,79 +2,57 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BF42286485
-	for <lists+live-patching@lfdr.de>; Wed,  7 Oct 2020 18:34:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FF02884B5
+	for <lists+live-patching@lfdr.de>; Fri,  9 Oct 2020 10:02:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726129AbgJGQew (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 7 Oct 2020 12:34:52 -0400
-Received: from sonic307-9.consmr.mail.ne1.yahoo.com ([66.163.190.32]:42978
-        "EHLO sonic307-9.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726702AbgJGQew (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 7 Oct 2020 12:34:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1602088491; bh=PxMwWzXvs+dqOoH0/FHvFmQpYH2JguaCUHYAVLLmaiw=; h=Date:From:Reply-To:Subject:References:From:Subject; b=b5tzIyOWX562g+1+7XFwP3F0qHlylBE4VR/DySfRlJE8RQQWCKdX0Cvx1QRIxF9dsRC7jYv3AisLjpuuO4+IgVT9TxjdWg48nFsfHqGw+yc0ONmgC8s3OooF7t/L2Hl+ZZjU1fPJ4aDPupYfXBBkwP7TkhCT/zJ/Y9CsCaLAM5IamjT0zQxdq0RCCHaOtMIRIUcfQWqv3TL4lVZLDRHzBfVeF1P2FOWZRFUkxrUSJ6AjMLb53Mc6EoqrjXo0WbXuF30CHvzch7cOcDDRLuC0tVL+ijM0BI9f5DU0ETM9fr+guRY7LVQnisc/bXHIv7Rri/uKmMBd48m253kV9QvNbA==
-X-YMail-OSG: cf9kJ2oVM1kK3T6VOOsgCsR19qP6pE4rv1Nkqt8rGR35kXS4fZJOqche7JeIlVR
- qFthOBPawK3fABEy1f3x47yELoM1QdPVIllcbCXZVpJ0XyZbOmT4Q_yomz8zS2l8RYB_tlobF.FQ
- K7gHjq1ogZyKC2aXDERtALMxQvba7_ca52_I5wgxZyFmLtb033Zel3zSFylJkd9b3WaKMH0OaRqE
- BP8F8lIUADgHcryBS2fY3yUPQANCvYlJn4H9H1vbqUi5xKU_bSw92NMqbk.szYfMx5IdVn43XT_t
- ZNBAByWC1LFpBtagT7gRcNYqYpd1aGcSohQJSDPxVA2L4z6VzjZK6vJpYr4lI4gEc_aP10R4wAaC
- gkzjssh1Gx_O.Mrh8Hz8CPoEWVzdT0iGRrLDoxYzTXRS8xpGz1A8jfZImPixqLrLbM7lEDfeWufV
- e57Dz1o1_qia3jbLryDy5Pj04omBoguJckpndBrmee38e4sDY2JbbQ2Az5MhjVZrwCkwSaj9NNkU
- ccPShg4OIGUNZDefirSman0b6.CNIirWdHxgqfwBe5qswzVaOabmaoyMpyjAUS2cIxITZI8_heZJ
- 5nREsHs0I9HnoE5bZu9GHK3WcG8x44tYQyHkyPfVE2bhg4unpggrrocvJsEQ7MlE__Bo1iZfF7Fx
- gdr5HoaP3LJL6a2w3zl9L3QceCILU7izsaUV2Cd0NccbkAvF0vkGu.GAwmuBcikZWTrplskMeZ1e
- CGIVyZZwhpRI7AOA8tzYjv84T46.Qwkgc7SNTijBdBplRIRP6OzD41w6kiZtx59Q4GAZj9Gj6t0v
- OrzudK30FDXm2k5cBk5jHucRVPMCBja8Nz2STyyVL2HoeaovSvlhJs.BB6jyh0Cq2tLw5fEqeYLP
- ubHwtUVJaUOlb8U0MSa8aFAzHu1t1mni8EZjQ6vJOq4mexRo8a4Cvjlgg_438wZkh8AOU2HkWoSZ
- _TdkaiosH0Hki5uVn.fOuz3xA3EGU5sMUcaTbNtxEMEH.gTBByzfJ4n4Pwhudt.O.ITgtiC0xu3F
- 5bmXe3smr84rMtWNk.9RqyR1D6yOUOKkvhyJlLX8nOiyf4HDnLdy_jmABIVeRYQFxgSt202UngQv
- RG8xh8F2WZjbMR9yf6v3BvRWwdpKcxRUJ5sPFLZbtLYE08p3LJ0jZXue.lT47Psa87zKjQPRXgDr
- MJ6B9yzn1PswBC7nmTervV.AEsSO5ns.Ea8Of1o8ioFdXMEKPTZWwPCiwq_vZYh5sVBAYWX4Ol8X
- 5KpPHoBSs79EBP8V2BYMuoyuSGU0ocVtZ3G1QEhBoP2eiv7J3o3d6qVx4utjcArT55FD828IRVD1
- 6yvXR9ZKy6VugjgeVUHBMJ2zh2Foe9spleuVwSUcBVgf38s5qGqQezwNVoI4cBuqWMFC9VqLJbpL
- bfBQVVy7z1jEkXDrF.jp9Vs.n8WemnfN2EIkq8KnY
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.ne1.yahoo.com with HTTP; Wed, 7 Oct 2020 16:34:51 +0000
-Date:   Wed, 7 Oct 2020 16:34:47 +0000 (UTC)
-From:   Marilyn Robert <fredodinga22@gmail.com>
-Reply-To: marilyobert@gmail.com
-Message-ID: <1477561969.293747.1602088487254@mail.yahoo.com>
-Subject: =?UTF-8?B?0J3QsNGY0LzQuNC70LAg0LrQsNGYINCz0L7RgdC/0L7QtNCw0YDQvtGC?=
+        id S1732914AbgJIICC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 9 Oct 2020 04:02:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:51602 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732742AbgJIIB7 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 9 Oct 2020 04:01:59 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 2C296AEAC;
+        Fri,  9 Oct 2020 08:01:58 +0000 (UTC)
+Date:   Fri, 9 Oct 2020 10:01:57 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Oleg Nesterov <oleg@redhat.com>
+cc:     Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        io-uring@vger.kernel.org, peterz@infradead.org, tglx@linutronix.de,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCHSET RFC v3 0/6] Add support for TIF_NOTIFY_SIGNAL
+In-Reply-To: <20201008145610.GK9995@redhat.com>
+Message-ID: <alpine.LSU.2.21.2010090959260.23400@pobox.suse.cz>
+References: <20201005150438.6628-1-axboe@kernel.dk> <20201008145610.GK9995@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-References: <1477561969.293747.1602088487254.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16795 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-DQoNCtCd0LDRmNC80LjQu9CwINC60LDRmCDQs9C+0YHQv9C+0LTQsNGA0L7Rgg0KDQrQiNCw0YEg
-0YHRg9C8IDY4LdCz0L7QtNC40YjQvdCwINC20LXQvdCwLCDQutC+0ZjQsCDRgdGC0YDQsNC00LAg
-0L7QtCDQv9GA0L7QtNC+0LvQttC10L0g0LrQsNGA0YbQuNC90L7QvCDQvdCwINC00L7RmNC60LAs
-INC+0LQg0YHQuNGC0LUg0LzQtdC00LjRhtC40L3RgdC60Lgg0LjQvdC00LjQutCw0YbQuNC4LCDQ
-vNC+0ZjQsNGC0LAg0YHQvtGB0YLQvtGY0LHQsCDQvdCw0LLQuNGB0YLQuNC90LAg0YHQtSDQstC7
-0L7RiNC4INC4INC+0YfQuNCz0LvQtdC00L3QviDQtSDQtNC10LrQsCDQvNC+0LbQtdCx0Lgg0L3Q
-tdC80LAg0LTQsCDQttC40LLQtdCw0Lwg0L/QvtCy0LXRnNC1INC+0LQg0YjQtdGB0YIg0LzQtdGB
-0LXRhtC4INC60LDQutC+INGA0LXQt9GD0LvRgtCw0YIg0L3QsCDQsdGA0LfQuNC+0YIg0YDQsNGB
-0YIg0Lgg0LHQvtC70LrQsNGC0LAg0YjRgtC+INGB0LUg0ZjQsNCy0YPQstCwINC60LDRmCDQvdC1
-0LAuINCc0L7RmNC+0YIg0YHQvtC/0YDRg9CzINC/0L7Rh9C40L3QsCDQvdC10LrQvtC70LrRgyDQ
-s9C+0LTQuNC90Lgg0L3QsNC90LDQt9Cw0LQg0Lgg0L3QsNGI0LjRgtC1INC00L7Qu9Cz0Lgg0LPQ
-vtC00LjQvdC4INCx0YDQsNC6INC90LUg0LHQtdCwINCx0LvQsNCz0L7RgdC70L7QstC10L3QuCDR
-gdC+INC90LjRgtGDINC10LTQvdC+INC00LXRgtC1LCDQv9C+INC90LXQs9C+0LLQsNGC0LAg0YHQ
-vNGA0YIg0LPQviDQvdCw0YHQu9C10LTQuNCyINGG0LXQu9C+0YLQviDQvdC10LPQvtCy0L4g0LHQ
-vtCz0LDRgtGB0YLQstC+Lg0KDQrQlNC+0LDRk9Cw0Lwg0LrQsNGYINCy0LDRgSDQvtGC0LrQsNC6
-0L4g0YHQtSDQv9C+0LzQvtC70LjQsiDQt9CwINGC0L7QsCwg0L/QvtC00LPQvtGC0LLQtdC9INGB
-0YPQvCDQtNCwINC00L7QvdC40YDQsNC8INGB0YPQvNCwINC+0LQgMiwgMzAwLCAwMDAg0LXQstGA
-0LAg0LfQsCDQv9C+0LzQvtGIINC90LAg0YHQuNGA0L7QvNCw0YjQvdC40YLQtSwg0YHQuNGA0L7Q
-vNCw0YjQvdC40YLQtSDQuCDQv9C+0LzQsNC70LrRgyDQv9GA0LjQstC40LvQtdCz0LjRgNCw0L3Q
-uNGC0LUg0LzQtdGT0YMg0LLQsNGI0LjRgtC1INGB0L7QsdGA0LDQvdC40ZjQsCAvINC+0L/RiNGC
-0LXRgdGC0LLQvi4g0JfQsNCx0LXQu9C10LbQtdGC0LUg0LTQtdC60LAg0L7QstC+0Zgg0YTQvtC9
-0LQg0LUg0LTQtdC/0L7QvdC40YDQsNC9INCy0L4g0LHQsNC90LrQsCDQutCw0LTQtSDRiNGC0L4g
-0YDQsNCx0L7RgtC10YjQtSDQvNC+0ZjQvtGCINGB0L7Qv9GA0YPQsy4gQXBwcmVjaWF0ZdC1INGG
-0LXQvdCw0Lwg0LDQutC+INC+0LHRgNC90LXRgtC1INCy0L3QuNC80LDQvdC40LUg0L3QsCDQvNC+
-0LXRgtC+INCx0LDRgNCw0ZrQtSDQt9CwINC/0YDQvtC/0LDQs9C40YDQsNGa0LUg0L3QsCDQvNCw
-0YHQsNC20LDRgtCwINC90LAg0LrRgNCw0LvRgdGC0LLQvtGC0L4sINGc0LUg0LLQuCDQtNCw0LTQ
-sNC8INC/0L7QstC10ZzQtSDQtNC10YLQsNC70Lgg0LfQsCDRgtC+0LAg0LrQsNC60L4g0LTQsCDQ
-v9C+0YHRgtCw0L/QuNGC0LUuDQoNCtCR0LvQsNCz0L7QtNCw0YDQsNC8DQrQky3Rk9CwINCc0LXR
-gNC40LvQuNC9INCg0L7QsdC10YDRgg==
+On Thu, 8 Oct 2020, Oleg Nesterov wrote:
+
+> On 10/05, Jens Axboe wrote:
+> >
+> > Hi,
+> >
+> > The goal is this patch series is to decouple TWA_SIGNAL based task_work
+> > from real signals and signal delivery.
+> 
+> I think TIF_NOTIFY_SIGNAL can have more users. Say, we can move
+> try_to_freeze() from get_signal() to tracehook_notify_signal(), kill
+> fake_signal_wake_up(), and remove freezing() from recalc_sigpending().
+> 
+> Probably the same for TIF_PATCH_PENDING, klp_send_signals() can use
+> set_notify_signal() rather than signal_wake_up().
+
+Yes, that was my impression from the patch set too, when I accidentally 
+noticed it.
+
+Jens, could you CC our live patching ML when you submit v4, please? It 
+would be a nice cleanup.
+
+Thanks
+Miroslav
