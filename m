@@ -2,123 +2,168 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC9FF28DD66
-	for <lists+live-patching@lfdr.de>; Wed, 14 Oct 2020 11:26:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DD5A28D991
+	for <lists+live-patching@lfdr.de>; Wed, 14 Oct 2020 07:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729095AbgJNJYQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 14 Oct 2020 05:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388196AbgJNJU5 (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 14 Oct 2020 05:20:57 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CE0C08EADD
-        for <live-patching@vger.kernel.org>; Tue, 13 Oct 2020 16:37:52 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id r10so737705pgb.10
-        for <live-patching@vger.kernel.org>; Tue, 13 Oct 2020 16:37:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vNrLxhuzbKySTdaq3eK6IYs4qYFra1Niz95iXgK6Jj4=;
-        b=cjD4hai8nvmN++DcR3kvZkEq/tP8L40YpzvCPlc1ePqdY1yVT4JeA3OyuLC4W3e1K6
-         6g+xwrF/3qc5tVO4LZ1OR/ICoupDOTDlTFkLsGQvmzNxkDIDGhFTkBUkcJaWzr3GRxMk
-         lGIalkMtRUo+mFS6WFpI420AIzjcLspBbrklvjlYwnFmtxgj58/WvxgbpXvEFYcxRGfY
-         sLxv+V3HQFLs4wTtJ/tursNEIZDI9JR+TlZstbItQSZ+IcKyAAixFOMDyrqVWd+re+wg
-         5FRLz2g5W+UUPxzw/1FNbGPqzsvuQbQP4wQdVIC1muE+0mzfQdDauwIowzItn3ATHWPk
-         1KYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vNrLxhuzbKySTdaq3eK6IYs4qYFra1Niz95iXgK6Jj4=;
-        b=sC4d6UxF+03SSAzhyfu84VERvmXZwVRKg+QusQuWA/CxGJRo4g2FpMJnzhWFF6CYaj
-         GDVai0tZFaL8xXaU2aQIzdU88WVH6ArKC82AfXHE4cxmiJ8aeI5Bzq94Ow+4ME5gdlKG
-         /7R8xGtoBb+Pj0DXlWOaYKefBpR8pnDzToju2eDdWN9+GnTiW7UuCe8POSrtB5RbE4Lp
-         xfw/VdFeX/dFOZso79VSHzyh0Vh3uQnnaS+Th4aVa2rx2t456Xh+JrzGLhm1mlHUYkwE
-         EVUywYHDFNQvwpgpdA4VdUvZgWhLqOexJqOy+Z6kfC4qmM51HUz3Eaw5J2nyW1j+KKyW
-         I8Cg==
-X-Gm-Message-State: AOAM531BB2PTUrbdvaYJmG6VNAW6YXCbMQDjeBbTjZRGjcsMxSbsb4ha
-        0/+ORiB5WTP5ti3tGzhfidq7PR5g8gB88uTB
-X-Google-Smtp-Source: ABdhPJylS9WM3J27JvugooESy3X8ZP2DkugADfW8R9kmS5rfhg9PZZ7pOQiiHHcwmhl2bDhMJ1JARQ==
-X-Received: by 2002:a65:4bcc:: with SMTP id p12mr1491715pgr.353.1602632271367;
-        Tue, 13 Oct 2020 16:37:51 -0700 (PDT)
-Received: from [192.168.1.134] ([66.219.217.173])
-        by smtp.gmail.com with ESMTPSA id u27sm810116pgm.60.2020.10.13.16.37.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Oct 2020 16:37:50 -0700 (PDT)
-Subject: Re: [PATCHSET RFC v3 0/6] Add support for TIF_NOTIFY_SIGNAL
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Miroslav Benes <mbenes@suse.cz>
-Cc:     Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
-        io-uring@vger.kernel.org, peterz@infradead.org,
+        id S1728819AbgJNFay (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 14 Oct 2020 01:30:54 -0400
+Received: from mx2.suse.de ([195.135.220.15]:36078 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728619AbgJNFay (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 14 Oct 2020 01:30:54 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id E6783AC3C;
+        Wed, 14 Oct 2020 05:30:51 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     bp@alien8.de
+Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
         live-patching@vger.kernel.org
-References: <20201005150438.6628-1-axboe@kernel.dk>
- <20201008145610.GK9995@redhat.com>
- <alpine.LSU.2.21.2010090959260.23400@pobox.suse.cz>
- <e33ec671-3143-d720-176b-a8815996fd1c@kernel.dk>
- <9a01ab10-3140-3fa6-0fcf-07d3179973f2@kernel.dk>
- <alpine.LSU.2.21.2010121921420.10435@pobox.suse.cz>
- <3c3616f2-8801-1d42-6d7d-3dfbf977edb2@kernel.dk>
- <87lfg9og3b.fsf@nanos.tec.linutronix.de>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <f5009735-c4e4-816a-d02f-29f7da7ab287@kernel.dk>
-Date:   Tue, 13 Oct 2020 17:37:48 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Subject: [PATCH v2] x86/unwind/orc: fix inactive tasks with stack pointer in %sp
+Date:   Wed, 14 Oct 2020 07:30:51 +0200
+Message-Id: <20201014053051.24199-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <87lfg9og3b.fsf@nanos.tec.linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 10/13/20 5:34 PM, Thomas Gleixner wrote:
-> Jens,
-> 
-> On Tue, Oct 13 2020 at 13:39, Jens Axboe wrote:
->> On 10/12/20 11:27 AM, Miroslav Benes wrote:
->> I'm continuing to hone the series, what's really missing so far is arch
->> review. Most conversions are straight forward, some I need folks to
->> definitely take a look at (arm, s390). powerpc is also a bit hair right
->> now, but I'm told that 5.10 will kill a TIF flag there, so that'll make
->> it trivial once I rebase on that.
-> 
-> can you pretty please not add that to anything which is not going
-> through kernel/entry/ ?
+gcc 10 optimizes the scheduler code differently than its predecessors.
+When DEBUG_SECTION_MISMATCH config is enabled, Makefile forces gcc not
+to inline some functions (-fno-inline-functions-called-once). Before gcc
+10, "no-inlined" __schedule starts with the usual prologue (push %bp; mov
+%sp,%bp). So ORC unwinder simply picks stack pointer from %bp and
+unwinds from __schedule just perfectly:
+$ cat /proc/1/stack
+[<0>] ep_poll+0x3e9/0x450
+[<0>] do_epoll_wait+0xaa/0xc0
+[<0>] __x64_sys_epoll_wait+0x1a/0x20
+[<0>] do_syscall_64+0x33/0x40
+[<0>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Certainly, tif-task_work is just a holding ground for all of it so
-far. Once the core bits are agreed upon and merged, then I'll bounce
-the rest through the arch maintainers. So please don't view it as
-on cohesive series, it only is up until (and including):
+But now, with gcc 10, there is no %bp prologue in __schedule:
+$ cat /proc/1/stack
+<nothing>
 
-commit 8dc14b576a9bf13dba4993e4ddb4068d39dee1e9
-Author: Jens Axboe <axboe@kernel.dk>
-Date:   Thu Oct 1 13:29:21 2020 -0600
+The orc entry of the point in __schedule is:
+sp:sp+88 bp:last_sp-48 type:call end:0
 
-    task_work: use TIF_NOTIFY_SIGNAL if available
+In this case, nobody subtracts sizeof "struct inactive_task_frame" in
+__unwind_start. The struct is put on the stack by __switch_to_asm and
+only then __switch_to_asm stores %sp to task->thread.sp. But we start
+unwinding from a point in __schedule (stored in frame->ret_addr by
+'call') and not in __switch_to_asm.
 
+So for these example values in __unwind_start:
+sp=ffff94b50001fdc8 bp=ffff8e1f41d29340 ip=__schedule+0x1f0
 
-> The amount of duplicated and differently buggy, inconsistent and
-> incomplete code in syscall and exception handling is just annoying.
-> 
-> It's perfectly fine if we keep that #ifdeffery around for a while and
-> encourage arch folks to move over to the generic infrastructure instead
-> of proliferating the status quo by adding this to their existing pile.
+The stack is:
+ ffff94b50001fdc8: ffff8e1f41578000 # struct inactive_task_frame
+ ffff94b50001fdd0: 0000000000000000
+ ffff94b50001fdd8: ffff8e1f41d29340
+ ffff94b50001fde0: ffff8e1f41611d40 # ...
+ ffff94b50001fde8: ffffffff93c41920 # bx
+ ffff94b50001fdf0: ffff8e1f41d29340 # bp
+ ffff94b50001fdf8: ffffffff9376cad0 # ret_addr (and end of the struct)
 
-Agree
+0xffffffff9376cad0 is __schedule+0x1f0 (after the call to
+__switch_to_asm).  Now follow those 88 bytes from the ORC entry (sp+88).
+The entry is correct, __schedule really pushes 48 bytes (8*7) + 32 bytes
+via subq to store some local values (like 4U below). So to unwind, look
+at the offset 88-sizeof(long) = 0x50 from here:
 
-> The #ifdef guarding this in set_notify_signal() and other core code
-> places wants to be:
-> 
->     #if defined(CONFIG_GENERIC_ENTRY) && defined(TIF_NOTIFY_SIGNAL)
+ ffff94b50001fe00: ffff8e1f41578618
+ ffff94b50001fe08: 00000cc000000255
+ ffff94b50001fe10: 0000000500000004
+ ffff94b50001fe18: 7793fab6956b2d00 # NOTE (see below)
+ ffff94b50001fe20: ffff8e1f41578000
+ ffff94b50001fe28: ffff8e1f41578000
+ ffff94b50001fe30: ffff8e1f41578000
+ ffff94b50001fe38: ffff8e1f41578000
+ ffff94b50001fe40: ffff94b50001fed8
+ ffff94b50001fe48: ffff8e1f41577ff0
+ ffff94b50001fe50: ffffffff9376cf12
 
-OK no problem, I'll fix that up.
+Here               ^^^^^^^^^^^^^^^^ is the correct ret addr from
+__schedule. It translates to schedule+0x42 (insn after a call to
+__schedule).
 
+BUT, unwind_next_frame tries to take the address starting from
+0xffff94b50001fdc8. That is exactly from thread.sp+88-sizeof(long) =
+0xffff94b50001fdc8+88-8 = 0xffff94b50001fe18, which is garbage marked as
+NOTE above. So this quits the unwinding as 7793fab6956b2d00 is obviously
+not a kernel address.
+
+There was a fix to skip 'struct inactive_task_frame' in
+unwind_get_return_address_ptr in commit 187b96db5ca7 ("x86/unwind/orc:
+Fix unwind_get_return_address_ptr() for inactive tasks").
+
+But we need to skip the struct already in the unwinder proper. So
+subtract the size (increase the stack pointer) of the structure in
+__unwind_start directly. This allows for removal of the code added by
+commit 187b96db5ca7 completely, as the address is now at
+'(unsigned long *)state->sp - 1', the same as in the generic case.
+
+Fixes: ee9f8fce9964 ("x86/unwind: Add the ORC unwinder")
+Bug: https://bugzilla.suse.com/show_bug.cgi?id=1176907
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Miroslav Benes <mbenes@suse.cz>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: x86@kernel.org
+Cc: live-patching@vger.kernel.org
+---
+
+[v2]
+  * Remove comment from __unwind_start.
+  * Cc more parties
+  * Polish the commitlog
+
+ arch/x86/kernel/unwind_orc.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 6a339ce328e0..73f800100066 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -321,19 +321,12 @@ EXPORT_SYMBOL_GPL(unwind_get_return_address);
+ 
+ unsigned long *unwind_get_return_address_ptr(struct unwind_state *state)
+ {
+-	struct task_struct *task = state->task;
+-
+ 	if (unwind_done(state))
+ 		return NULL;
+ 
+ 	if (state->regs)
+ 		return &state->regs->ip;
+ 
+-	if (task != current && state->sp == task->thread.sp) {
+-		struct inactive_task_frame *frame = (void *)task->thread.sp;
+-		return &frame->ret_addr;
+-	}
+-
+ 	if (state->sp)
+ 		return (unsigned long *)state->sp - 1;
+ 
+@@ -663,7 +656,7 @@ void __unwind_start(struct unwind_state *state, struct task_struct *task,
+ 	} else {
+ 		struct inactive_task_frame *frame = (void *)task->thread.sp;
+ 
+-		state->sp = task->thread.sp;
++		state->sp = task->thread.sp + sizeof(*frame);
+ 		state->bp = READ_ONCE_NOCHECK(frame->bp);
+ 		state->ip = READ_ONCE_NOCHECK(frame->ret_addr);
+ 		state->signal = (void *)state->ip == ret_from_fork;
 -- 
-Jens Axboe
+2.28.0
 
