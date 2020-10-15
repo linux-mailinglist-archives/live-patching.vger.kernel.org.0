@@ -2,52 +2,43 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA3228F656
-	for <lists+live-patching@lfdr.de>; Thu, 15 Oct 2020 18:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 453C828F885
+	for <lists+live-patching@lfdr.de>; Thu, 15 Oct 2020 20:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389512AbgJOQDa (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 15 Oct 2020 12:03:30 -0400
-Received: from edge.kilargo.pl ([77.252.52.110]:54141 "EHLO edge.kilargo.pl"
+        id S1727468AbgJOS17 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 15 Oct 2020 14:27:59 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39164 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388357AbgJOQDa (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 15 Oct 2020 12:03:30 -0400
-X-Greylist: delayed 392 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Oct 2020 12:03:25 EDT
-Received: from mail.kilargo.pl (77.252.52.107) by edge.kilargo.pl
- (77.252.52.109) with Microsoft SMTP Server (TLS) id 8.3.485.1; Thu, 15 Oct
- 2020 16:06:46 +0200
-Received: from User (185.248.12.71) by MAIL.kilargo.pl (172.22.0.36) with
- Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 15 Oct 2020 15:47:23 +0200
-Reply-To: <kim.leang2011@yahoo.com>
-From:   Kim Leang <mechanik@kilargo.pl>
-Subject: Greeting! !!   
-Date:   Thu, 15 Oct 2020 16:47:27 +0300
+        id S1727416AbgJOS16 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 15 Oct 2020 14:27:58 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 66955AC4C
+        for <live-patching@vger.kernel.org>; Thu, 15 Oct 2020 18:27:57 +0000 (UTC)
+Date:   Thu, 15 Oct 2020 20:27:57 +0200 (CEST)
+From:   Jiri Kosina <jkosina@suse.cz>
+To:     live-patching@vger.kernel.org
+Subject: livepatching.git#for-linus rebased
+Message-ID: <nycvar.YFH.7.76.2010152005130.18859@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
-Message-ID: <55a38c8ac4224b998f2e1ab8688008cd@mail.kilargo.pl>
-To:     Undisclosed recipients:;
-X-Originating-IP: [185.248.12.71]
-X-ClientProxiedBy: mail.kilargo.pl (172.22.0.36) To MAIL.kilargo.pl
- (172.22.0.36)
-X-EsetResult: clean, is OK
-X-EsetId: 37303A295AAB9B6B647163
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Greeting!
+Hi,
 
-I am contacting you to receive and share with me an abandoned fund ( $21,537.000.00 ) left in our bank by a deceased customer. I was going through the Internet search when I found your email address. My name is Mr. Kim Leang.
+JFYI I decided to rebase for-linus branch, due to slight confusion, that'd 
+result in for-linus be just one commit and one merge commit, which is 
+pointless (it's not possible to do ff-merge into for-linus without 
+rebasing).
 
-I want to utilize this opportunity and make use of this fund if I should present your name to the bank to stand as his business associate/ trustee for the fund to be released to you via Visa card for easy withdrawals in any VISA ATM machine anywhere in the World.
+As this is just an integration branch, this should be fine for everybody I 
+hope.
 
-The bank will also give you international online transfer options. With these you can transfer the funds without any risk.
+Thanks,
 
-Should you be interested in working with me in this project? Please reply back and let's benefit from this golden opportunity.You are my first contact. I shall wait a few days and if I do not hear from you, I shall look for another person.
-
-Thanks and have a nice day,
-Mr. Kim Leang.
+-- 
+Jiri Kosina
+SUSE Labs
