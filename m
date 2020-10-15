@@ -2,24 +2,37 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 453C828F885
-	for <lists+live-patching@lfdr.de>; Thu, 15 Oct 2020 20:28:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0DDF28F8A9
+	for <lists+live-patching@lfdr.de>; Thu, 15 Oct 2020 20:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727468AbgJOS17 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 15 Oct 2020 14:27:59 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39164 "EHLO mx2.suse.de"
+        id S1730494AbgJOScA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 15 Oct 2020 14:32:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32864 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727416AbgJOS16 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 15 Oct 2020 14:27:58 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 66955AC4C
-        for <live-patching@vger.kernel.org>; Thu, 15 Oct 2020 18:27:57 +0000 (UTC)
-Date:   Thu, 15 Oct 2020 20:27:57 +0200 (CEST)
-From:   Jiri Kosina <jkosina@suse.cz>
-To:     live-patching@vger.kernel.org
-Subject: livepatching.git#for-linus rebased
-Message-ID: <nycvar.YFH.7.76.2010152005130.18859@cbobk.fhfr.pm>
+        id S1730461AbgJOSb7 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 15 Oct 2020 14:31:59 -0400
+Received: from pobox.suse.cz (nat1.prg.suse.com [195.250.132.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9ED03206B6;
+        Thu, 15 Oct 2020 18:31:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602786719;
+        bh=QIEcyyIynUrELEiAlqt0aVNgGRJvQPp7jpGWp5yNelU=;
+        h=Date:From:To:cc:Subject:From;
+        b=ZkYTN3HzUR8w0FsPn5McquEn/xS12YWxUn3oSnhjBy5YffnCqD8hLFdmsILZ7fwAt
+         OIfZZxy20aBJFdu1OaeEn17uAzV4DX5CQIKqYGhSWhWUAMe7Jqs2OJcOE4Avbd7H7p
+         Za7rxXVEGqfluKPw1CjgWWmXp1/6G8Qow2ZX74Is=
+Date:   Thu, 15 Oct 2020 20:31:55 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] livepatching for 5.10
+Message-ID: <nycvar.YFH.7.76.2010151950140.18859@cbobk.fhfr.pm>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -27,18 +40,28 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
+Linus,
 
-JFYI I decided to rebase for-linus branch, due to slight confusion, that'd 
-result in for-linus be just one commit and one merge commit, which is 
-pointless (it's not possible to do ff-merge into for-linus without 
-rebasing).
+please pull from
 
-As this is just an integration branch, this should be fine for everybody I 
-hope.
+  git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching for-linus
 
-Thanks,
+to receive livepatching update for 5.10.
+
+=====
+- livepatching kselftest output fix from Miroslav Benes
+=====
+
+Thanks.
+
+----------------------------------------------------------------
+Miroslav Benes (1):
+      selftests/livepatch: Do not check order when using "comm" for dmesg checking
+
+ tools/testing/selftests/livepatch/functions.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 -- 
 Jiri Kosina
 SUSE Labs
+
