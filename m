@@ -2,21 +2,21 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37DAD2A33C8
-	for <lists+live-patching@lfdr.de>; Mon,  2 Nov 2020 20:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CCD22A33F5
+	for <lists+live-patching@lfdr.de>; Mon,  2 Nov 2020 20:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726255AbgKBTPI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 2 Nov 2020 14:15:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59650 "EHLO mail.kernel.org"
+        id S1726277AbgKBTXY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>); Mon, 2 Nov 2020 14:23:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33632 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725809AbgKBTPI (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 2 Nov 2020 14:15:08 -0500
+        id S1725791AbgKBTXX (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 2 Nov 2020 14:23:23 -0500
 Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AFA442225E;
-        Mon,  2 Nov 2020 19:15:00 +0000 (UTC)
-Date:   Mon, 2 Nov 2020 14:14:58 -0500
+        by mail.kernel.org (Postfix) with ESMTPSA id 926F4206F9;
+        Mon,  2 Nov 2020 19:23:16 +0000 (UTC)
+Date:   Mon, 2 Nov 2020 14:23:14 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     linux-kernel@vger.kernel.org,
@@ -50,23 +50,27 @@ Cc:     linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-csky@vger.kernel.org,
         linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-s390@vger.kernel.org, live-patching@vger.kernel.org
-Subject: [PATCH 11/11 v2.1] ftrace: Add recording of functions that caused
+Subject: [PATCH 11/11 v2.2] ftrace: Add recording of functions that caused
  recursion
-Message-ID: <20201102141458.28c62a16@gandalf.local.home>
-In-Reply-To: <20201102123721.4fcce2cb@gandalf.local.home>
+Message-ID: <20201102142254.7e148f8a@gandalf.local.home>
+In-Reply-To: <20201102124606.72bd89c5@gandalf.local.home>
 References: <20201030213142.096102821@goodmis.org>
         <20201030214014.801706340@goodmis.org>
         <20201102164147.GJ20201@alley>
         <20201102123721.4fcce2cb@gandalf.local.home>
+        <20201102124606.72bd89c5@gandalf.local.home>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+From c532ff6b048dd4a12943b05c7b8ce30666c587c8 Mon Sep 17 00:00:00 2001
 From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Date: Thu, 29 Oct 2020 15:27:06 -0400
+Subject: [PATCH] ftrace: Add recording of functions that caused recursion
 
 This adds CONFIG_FTRACE_RECORD_RECURSION that will record to a file
 "recursed_functions" all the functions that caused recursion while a
@@ -107,6 +111,10 @@ Cc: linux-s390@vger.kernel.org
 Cc: live-patching@vger.kernel.org
 Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 ---
+
+Changes since v2.1:
+  Added EXPORT_SYMBOL_GPL() to ftrace_record_recursion() function
+
  Documentation/trace/ftrace-uses.rst   |   6 +-
  arch/csky/kernel/probes/ftrace.c      |   2 +-
  arch/parisc/kernel/ftrace.c           |   2 +-
@@ -123,8 +131,8 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  kernel/trace/trace_functions.c        |   2 +-
  kernel/trace/trace_output.c           |   6 +-
  kernel/trace/trace_output.h           |   1 +
- kernel/trace/trace_recursion_record.c | 235 ++++++++++++++++++++++++++
- 17 files changed, 308 insertions(+), 20 deletions(-)
+ kernel/trace/trace_recursion_record.c | 236 ++++++++++++++++++++++++++
+ 17 files changed, 309 insertions(+), 20 deletions(-)
  create mode 100644 kernel/trace/trace_recursion_record.c
 
 diff --git a/Documentation/trace/ftrace-uses.rst b/Documentation/trace/ftrace-uses.rst
@@ -435,10 +443,10 @@ index 2f742b74e7e6..4c954636caf0 100644
  
 diff --git a/kernel/trace/trace_recursion_record.c b/kernel/trace/trace_recursion_record.c
 new file mode 100644
-index 000000000000..a1859843781b
+index 000000000000..b2edac1fe156
 --- /dev/null
 +++ b/kernel/trace/trace_recursion_record.c
-@@ -0,0 +1,235 @@
+@@ -0,0 +1,236 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +#include <linux/seq_file.h>
@@ -554,6 +562,7 @@ index 000000000000..a1859843781b
 +	else if (i <= index)
 +		atomic_cmpxchg(&nr_records, i, index + 1);
 +}
++EXPORT_SYMBOL_GPL(ftrace_record_recursion);
 +
 +static DEFINE_MUTEX(recursed_function_lock);
 +static struct trace_seq *tseq;
