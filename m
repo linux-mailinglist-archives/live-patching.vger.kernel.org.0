@@ -2,31 +2,23 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16FB12A96BE
-	for <lists+live-patching@lfdr.de>; Fri,  6 Nov 2020 14:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA9B2A9727
+	for <lists+live-patching@lfdr.de>; Fri,  6 Nov 2020 14:41:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727346AbgKFNNV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 6 Nov 2020 08:13:21 -0500
-Received: from mx2.suse.de ([195.135.220.15]:57040 "EHLO mx2.suse.de"
+        id S1727496AbgKFNli (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 6 Nov 2020 08:41:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47810 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727169AbgKFNNV (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 6 Nov 2020 08:13:21 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1604668398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/qFlNeW+fj9kPag6iPvAKbxfuQxHVIdXyO+NAnfQv1k=;
-        b=M+tR/rKxslTPuT6FfxTzbpuuxYbiZZG3CnqFYk93k8am/VLmSymRvyUiwOy4Hr5waPoLce
-        uQiZvPathsmCgazo7IfORam7PuE22q5xJHq/iNivwhCmxch4+MaufWlLk/oXEAcDNCMlcc
-        x3wJTN1WOECehMoqwdLrqgU3bZ/wBxo=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 6BB69AB8F;
-        Fri,  6 Nov 2020 13:13:18 +0000 (UTC)
-Date:   Fri, 6 Nov 2020 14:13:17 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
+        id S1726708AbgKFNli (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 6 Nov 2020 08:41:38 -0500
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AA5E12067B;
+        Fri,  6 Nov 2020 13:41:33 +0000 (UTC)
+Date:   Fri, 6 Nov 2020 08:41:31 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Petr Mladek <pmladek@suse.com>
 Cc:     linux-kernel@vger.kernel.org,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
@@ -60,38 +52,43 @@ Cc:     linux-kernel@vger.kernel.org,
         linux-s390@vger.kernel.org, live-patching@vger.kernel.org
 Subject: Re: [PATCH 11/11 v3] ftrace: Add recording of functions that caused
  recursion
-Message-ID: <20201106131317.GW20201@alley>
+Message-ID: <20201106084131.7dfc3a30@gandalf.local.home>
+In-Reply-To: <20201106131317.GW20201@alley>
 References: <20201106023235.367190737@goodmis.org>
- <20201106023548.102375687@goodmis.org>
+        <20201106023548.102375687@goodmis.org>
+        <20201106131317.GW20201@alley>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201106023548.102375687@goodmis.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2020-11-05 21:32:46, Steven Rostedt wrote:
-> From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+On Fri, 6 Nov 2020 14:13:17 +0100
+Petr Mladek <pmladek@suse.com> wrote:
+
+> JFYI, the code reading and writing the cache looks good to me.
 > 
-> This adds CONFIG_FTRACE_RECORD_RECURSION that will record to a file
-> "recursed_functions" all the functions that caused recursion while a
-> callback to the function tracer was running.
+> It is still possible that some entries might stay unused (filled
+> with zeroes) but it should be hard to hit in practice. It
+> is good enough from my POV.
+
+You mean the part that was commented?
+
 > 
-> Changes since v2:
-> 
->  - Use trace_recursion flags in current for protecting recursion of recursion recording
->  - Make the recursion logic a little cleaner
->  - Export GPL the recursion recording
+> I do not give Reviewed-by tag just because I somehow do not have power
+> to review the entire patch carefully enough at the moment.
 
-JFYI, the code reading and writing the cache looks good to me.
+No problem. Thanks for looking at it.
 
-It is still possible that some entries might stay unused (filled
-with zeroes) but it should be hard to hit in practice. It
-is good enough from my POV.
+I'm adding a link to this thread, so if someone wants proof you helped out
+on this code, you can have them follow the links ;-)
 
-I do not give Reviewed-by tag just because I somehow do not have power
-to review the entire patch carefully enough at the moment.
+Anyway, even if I push this to linux-next where I stop rebasing code
+(because of test coverage), I do rebase for adding tags. So if you ever get
+around at looking at this code, I can add that tag later (before the next
+merge window), or if you find something, I could fix it with a new patch and
+give you a Reported-by.
 
-Best Regards,
-Petr
+-- Steve
