@@ -2,104 +2,123 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F50E2F6F3B
-	for <lists+live-patching@lfdr.de>; Fri, 15 Jan 2021 01:05:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E5E42F7AEE
+	for <lists+live-patching@lfdr.de>; Fri, 15 Jan 2021 13:58:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731139AbhAOAFi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 14 Jan 2021 19:05:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26781 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731135AbhAOAFi (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 14 Jan 2021 19:05:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610669051;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xQ0ErKvc7UzwqNKxM2CmsA5gF/0THDUFsSSbaFvNOvI=;
-        b=Ye4X8EEmdzAvtX8m3mK34Au4aE2rJlaAvmAzhBWRR09N76NIlZxv8jkYPaCjU0L8X4Kv5V
-        fu9zr6qaiT79zhvu9VLv9ma74CIIm6zS686+a7Hrez+MCbYbrsVx8cFs1jNkLxUc1MVdtb
-        1/IHPhyfF2FWCpHLQxGTOtSEdjD1ybs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-509-jopQxvanNzadbIv647B3qA-1; Thu, 14 Jan 2021 19:04:10 -0500
-X-MC-Unique: jopQxvanNzadbIv647B3qA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 425DE107ACF7;
-        Fri, 15 Jan 2021 00:04:08 +0000 (UTC)
-Received: from treble (ovpn-120-156.rdu2.redhat.com [10.10.120.156])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B534B19C45;
-        Fri, 15 Jan 2021 00:04:01 +0000 (UTC)
-Date:   Thu, 14 Jan 2021 18:03:59 -0600
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>, linux-doc@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH] Documentation: livepatch: document reliable stacktrace
-Message-ID: <20210115000359.dxzivd7hvqvhkqji@treble>
-References: <20210113165743.3385-1-broonie@kernel.org>
- <20210113192735.rg2fxwlfrzueinci@treble>
- <20210113202315.GI4641@sirena.org.uk>
- <20210113222541.ysvtievx4o5r42ym@treble>
- <20210114181013.GE2739@C02TD0UTHF1T.local>
+        id S2387505AbhAOMej (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 15 Jan 2021 07:34:39 -0500
+Received: from foss.arm.com ([217.140.110.172]:38960 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387500AbhAOMei (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 15 Jan 2021 07:34:38 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 986DEED1;
+        Fri, 15 Jan 2021 04:33:52 -0800 (PST)
+Received: from C02TD0UTHF1T.local (unknown [10.57.41.13])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BD5D03F70D;
+        Fri, 15 Jan 2021 04:33:50 -0800 (PST)
+Date:   Fri, 15 Jan 2021 12:33:47 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Mark Brown <broonie@kernel.org>,
+        Julien Thierry <jthierry@redhat.com>, jpoimboe@redhat.com,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Live patching on ARM64
+Message-ID: <20210115123347.GB39776@C02TD0UTHF1T.local>
+References: <f3fe6a60-9ac2-591d-1b83-9113c50dc492@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210114181013.GE2739@C02TD0UTHF1T.local>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <f3fe6a60-9ac2-591d-1b83-9113c50dc492@linux.microsoft.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 06:10:13PM +0000, Mark Rutland wrote:
-> On Wed, Jan 13, 2021 at 04:25:41PM -0600, Josh Poimboeuf wrote:
-> > On Wed, Jan 13, 2021 at 08:23:15PM +0000, Mark Brown wrote:
-> > > On Wed, Jan 13, 2021 at 01:33:13PM -0600, Josh Poimboeuf wrote:
-> > > 
-> > > > I think it's worth mentioning a little more about objtool.  There are a
-> > > > few passing mentions of objtool's generation of metadata (i.e. ORC), but
-> > > > objtool has another relevant purpose: stack validation.  That's
-> > > > particularly important when it comes to frame pointers.
-> > > 
-> > > > For some architectures like x86_64 and arm64 (but not powerpc/s390),
-> > > > it's far too easy for a human to write asm and/or inline asm which
-> > > > violates frame pointer protocol, silently causing the violater's callee
-> > > > to get skipped in the unwind.  Such architectures need objtool
-> > > > implemented for CONFIG_STACK_VALIDATION.
-> > > 
-> > > This basically boils down to just adding a statement saying "you may
-> > > need to depend on objtool" I think?
-> > 
-> > Right, but maybe it would be a short paragraph or two.
+On Thu, Jan 14, 2021 at 04:07:55PM -0600, Madhavan T. Venkataraman wrote:
+> Hi all,
 > 
-> I reckon that's a top-level section between requirements and
-> consideration along the lines of:
-> 
-> 3. Compile-time analysis
-> ========================
-> 
-> To ensure that kernel code can be correctly unwound in all cases,
-> architectures may need to verify that code has been compiled in a manner
-> expected by the unwinder. For example, an unwinder may expect that
-> functions manipulate the stack pointer in a limited way, or that all
-> functions use specific prologue and epilogue sequences. Architectures
-> with such requirements should verify the kernel compilation using
-> objtool.
-> 
-> In some cases, an unwinder may require metadata to correctly unwind.
-> Where necessary, this metadata should be generated at build time using
-> objtool.
+> My name is Madhavan Venkataraman.
 
-Sounds good to me.
+Hi Madhavan,
 
--- 
-Josh
+> Microsoft is very interested in Live Patching support for ARM64.
+> On behalf of Microsoft, I would like to contribute.
+> 
+> I would like to get in touch with the people who are currently working
+> in this area, find out what exactly they are working on and see if they
+> could use an extra pair of eyes/hands with what they are working on.
+> 
+> It looks like the most recent work in this area has been from the
+> following folks:
+> 
+> Mark Brown and Mark Rutland:
+> 	Kernel changes to providing reliable stack traces.
+> 
+> Julien Thierry:
+> 	Providing ARM64 support in objtool.
+> 
+> Torsten Duwe:
+> 	Ftrace with regs.
 
+IIRC that's about right. I'm also trying to make arm64 patch-safe (more
+on that below), and there's a long tail of work there for anyone
+interested.
+
+> I apologize if I have missed anyone else who is working on Live Patching
+> for ARM64. Do let me know.
+> 
+> Is there any work I can help with? Any areas that need investigation, any code
+> that needs to be written, any work that needs to be reviewed, any testing that
+> needs to done? You folks are probably super busy and would not mind an extra
+> hand.
+
+One general thing that I believe we'll need to do is to rework code to
+be patch-safe (which implies being noinstr-safe too). For example, we'll
+need to rework the instruction patching code such that this cannot end
+up patching itself (or anything that has instrumented it) in an unsafe
+way.
+
+Once we have objtool it should be possible to identify those cases
+automatically. Currently I'm aware that we'll need to do something in at
+least the following places:
+
+* The entry code -- I'm currently chipping away at this.
+
+* The insn framework (which is used by some patching code), since the
+  bulk of it lives in arch/arm64/kernel/insn.c and isn't marked noinstr.
+  
+  We can probably shift the bulk of the aarch64_insn_gen_*() and
+  aarch64_get_*() helpers into a header as __always_inline functions,
+  which would allow them to be used in noinstr code. As those are
+  typically invoked with a number of constant arguments that the
+  compiler can fold, this /might/ work out as an optimization if the
+  compiler can elide the error paths.
+
+* The alternatives code, since we call instrumentable and patchable
+  functions between updating instructions and performing all the
+  necessary maintenance. There are a number of cases within
+  __apply_alternatives(), e.g.
+
+  - test_bit()
+  - cpus_have_cap()
+  - pr_info_once()
+  - lm_alias()
+  - alt_cb, if the callback is not marked as noinstr, or if it calls
+    instrumentable code (e.g. from the insn framework).
+  - clean_dcache_range_nopatch(), as read_sanitised_ftr_reg() and
+    related code can be instrumented.
+
+  This might need some underlying rework elsewhere (e.g. in the
+  cpufeature code, or atomics framework).
+
+So on the kernel side, maybe a first step would be to try to headerize
+the insn generation code as __always_inline, and see whether that looks
+ok? With that out of the way it'd be a bit easier to rework patching
+code depending on the insn framework.
+
+I'm not sure about the objtool side, so I'll leave that to Julien and co
+to answer.
+
+Thanks,
+Mark.
