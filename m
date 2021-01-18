@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70E672FA7C6
-	for <lists+live-patching@lfdr.de>; Mon, 18 Jan 2021 18:45:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68FB02FA7D3
+	for <lists+live-patching@lfdr.de>; Mon, 18 Jan 2021 18:47:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436667AbhARRnm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 18 Jan 2021 12:43:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44540 "EHLO mail.kernel.org"
+        id S2436669AbhARRnn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 18 Jan 2021 12:43:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436654AbhARRng (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 18 Jan 2021 12:43:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 62B3F22CA0;
-        Mon, 18 Jan 2021 17:42:52 +0000 (UTC)
+        id S2436655AbhARRnh (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 18 Jan 2021 12:43:37 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DEA7122CA1;
+        Mon, 18 Jan 2021 17:42:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610991772;
-        bh=xbHuN2zsULR9qjDlmKjLayObJYjaJVz+LNHEHTSE/pY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bHT9UmLFXzXWXSMq5t1MVbZmTYilKklSRZpGKSvbCTyAGIcJ9esbV2yvCprqHJm2Y
-         sKk3Ehp1LtQ24mjmASyYxTgjhqxuA2CMAPpbxKGFz7DIvnRgwbpS2S3p5kCjDNH1y9
-         y0LsXzU+9js2wDWuMYw0FhQ9T9QLWNYtMXWAoGUkTADo60W1eGQZvkAePLLI2rnGaH
-         f+BI6Yi54+JBQwS73eCYFF8NrLlsSNQixWveLlv+ZfGYbcqXSe9jsvX/BXjf1EAy2W
-         Y/+B4hYWRzfg9ktfv7wGQ89Vsb2o9VnLe8lv7EtpgPrN5IunRqXLTHp/y+Yc8bOj8n
-         N3gbW10bpMsIw==
+        s=k20201202; t=1610991775;
+        bh=LyPDRuU3UPZhcSSl9mMoTdV/L94Icx6ItI0GSHQV708=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Mag3o+7S3+GY79W7Ifa6l1s2MVfXEdfqWoQC8bxL7VfSMo5K6qcC2nE6N0aui5SqE
+         3vLly3XJ+7TNcgdEY0egb37qwqUhmX0bKbxL1pGQVBUkrPmu2ga6eAdWsv4XmBOSte
+         lg1yg7vDPIvPDg0QhsmqBWTa0fCChFpVUbxClxACwOp0PSfUJfN9ik3lO0n8IliIYV
+         XmE0w1Tc/eS7dwiBzw096aKOWvTJUY5AHTLWb2pyl0hU9znln/tOZMvfnhsMorhdb5
+         31iWV7r/3UwDIKz8ujFVGFJ9jOolYCQf/EsOroNJJXm1LlFsztzffRvtowBANwd4ED
+         SNWaSrR+dIAhg==
 From:   Mark Brown <broonie@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Mark Rutland <mark.rutland@arm.com>,
@@ -34,47 +34,77 @@ Cc:     Mark Rutland <mark.rutland@arm.com>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         linux-doc@vgert.kernel.org, live-patching@vger.kernel.org,
         Mark Brown <broonie@kernel.org>
-Subject: [PATCH v5 0/2] Documentation: livepatch: Document reliable stacktrace and minor cleanup
-Date:   Mon, 18 Jan 2021 17:39:52 +0000
-Message-Id: <20210118173954.36577-1-broonie@kernel.org>
+Subject: [PATCH v5 1/2] Documentation: livepatch: Convert to automatically generated contents
+Date:   Mon, 18 Jan 2021 17:39:53 +0000
+Message-Id: <20210118173954.36577-2-broonie@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210118173954.36577-1-broonie@kernel.org>
+References: <20210118173954.36577-1-broonie@kernel.org>
 MIME-Version: 1.0
+X-Patch-Hashes: v=1; h=sha256; i=B41P/NyBiZr52ZgLMD1EC67DEBuJtlCAf6fQniGZ1yU=; m=nqsLKlThM/W+vzeMqXV5WYNF/9hoOR8pCeQ1bYoHfZI=; p=2MUKXici6S/sAj84vYSavNtcg2sj4YeMK0QGWULmAu0=; g=119515872595811257e582bba7d8323e2f1210c3
+X-Patch-Sig: m=pgp; i=broonie@kernel.org; s=0xC3F436CA30F5D8EB; b=iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmAFx+cACgkQJNaLcl1Uh9AnFwf9Ffq 7SwXDF75cYktqlnCIbP1u8pSqklL3LduBhpSFSnU84qwVdAuBqEYcFSVBWTvwOqPeeUG7owWFWt4p bkQjysxb19m+FyU5+bpGGE92PXdSDobzQy4YPUh1Tp6IvmI5fq6OVlDnPNGRo3KzkH7kOtyFo0tbm F4/VpNr2fXTC22fzsVOPQzdl7xWFUBbNP08pHF9T6Mpw8EdXp98gUTNh9i0joaXKX8EU/eEriTMoM 68V0UATdTl0y+ipqZqWKtLZq+ZHppQqhEQW3WSn4U0V0Ec9d3s/mpxXMS2EqmaVVPvYiTQQ8SiIGY bnZGrXQcjuqQ03TCFlu7AWNJTyPrJbA==
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-This series adds a document, mainly written by Mark Rutland, which makes
-explicit the requirements for implementing reliable stacktrace in order
-to aid architectures adding this feature.  It also updates the other
-livepatching documents to use automatically generated tables of contents
-following review comments on Mark's document.
+Automatically generate the tables of contents for livepatch documentation
+files that have tables of contents rather than open coding them so things
+are a little easier to maintain.
 
-v5:
- - Tweaks to the commit message for the new document.
- - Convert new and existing documents to autogenerated tables of
-   contents.
-v4:
- - Renumber table of contents
-v3:
- - Incorporated objtool section from Mark.
- - Deleted confusing notes about using annotations.
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ Documentation/livepatch/livepatch.rst         | 15 +--------------
+ Documentation/livepatch/module-elf-format.rst | 10 ++--------
+ 2 files changed, 3 insertions(+), 22 deletions(-)
 
-Mark Brown (1):
-  Documentation: livepatch: Convert to automatically generated contents
-
-Mark Rutland (1):
-  Documentation: livepatch: document reliable stacktrace
-
- Documentation/livepatch/index.rst             |   1 +
- Documentation/livepatch/livepatch.rst         |  15 +-
- Documentation/livepatch/module-elf-format.rst |  10 +-
- .../livepatch/reliable-stacktrace.rst         | 309 ++++++++++++++++++
- 4 files changed, 313 insertions(+), 22 deletions(-)
- create mode 100644 Documentation/livepatch/reliable-stacktrace.rst
-
-
-base-commit: 7c53f6b671f4aba70ff15e1b05148b10d58c2837
+diff --git a/Documentation/livepatch/livepatch.rst b/Documentation/livepatch/livepatch.rst
+index c2c598c4ead8..68e3651e8af9 100644
+--- a/Documentation/livepatch/livepatch.rst
++++ b/Documentation/livepatch/livepatch.rst
+@@ -6,20 +6,7 @@ This document outlines basic information about kernel livepatching.
+ 
+ .. Table of Contents:
+ 
+-    1. Motivation
+-    2. Kprobes, Ftrace, Livepatching
+-    3. Consistency model
+-    4. Livepatch module
+-       4.1. New functions
+-       4.2. Metadata
+-    5. Livepatch life-cycle
+-       5.1. Loading
+-       5.2. Enabling
+-       5.3. Replacing
+-       5.4. Disabling
+-       5.5. Removing
+-    6. Sysfs
+-    7. Limitations
++.. contents:: :local:
+ 
+ 
+ 1. Motivation
+diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentation/livepatch/module-elf-format.rst
+index 8c6b894c4661..dbe9b400e39f 100644
+--- a/Documentation/livepatch/module-elf-format.rst
++++ b/Documentation/livepatch/module-elf-format.rst
+@@ -7,14 +7,8 @@ This document outlines the Elf format requirements that livepatch modules must f
+ 
+ .. Table of Contents
+ 
+-   1. Background and motivation
+-   2. Livepatch modinfo field
+-   3. Livepatch relocation sections
+-      3.1 Livepatch relocation section format
+-   4. Livepatch symbols
+-      4.1 A livepatch module's symbol table
+-      4.2 Livepatch symbol format
+-   5. Symbol table and Elf section access
++.. contents:: :local:
++
+ 
+ 1. Background and motivation
+ ============================
 -- 
 2.20.1
 
