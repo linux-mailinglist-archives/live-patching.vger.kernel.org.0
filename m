@@ -2,73 +2,85 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1A342FA7F1
-	for <lists+live-patching@lfdr.de>; Mon, 18 Jan 2021 18:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 901402FA838
+	for <lists+live-patching@lfdr.de>; Mon, 18 Jan 2021 19:02:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406081AbhARRwV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 18 Jan 2021 12:52:21 -0500
-Received: from foss.arm.com ([217.140.110.172]:40148 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727931AbhARRvo (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 18 Jan 2021 12:51:44 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8FAD631B;
-        Mon, 18 Jan 2021 09:50:58 -0800 (PST)
-Received: from C02TD0UTHF1T.local (unknown [10.57.39.202])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EC8753F719;
-        Mon, 18 Jan 2021 09:50:56 -0800 (PST)
-Date:   Mon, 18 Jan 2021 17:50:54 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        id S2407448AbhARSCs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 18 Jan 2021 13:02:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44152 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2407376AbhARSCj (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 18 Jan 2021 13:02:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610992868;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cmWI9q0Yv6ws45Gm17M/evkneZf1hih8Ce1di6ywSvo=;
+        b=JeuprGzT6Uy+7ZziqQOg8DtV1TI8zIof0bmh6Y+cC3CnBq24GRvLbKp40mmJCHh2G/3Ed8
+        /zneb9S8VBsaL0tRTwRJ1sYx1BIJwf7YiAwC65guqdh11QRnLKjutNqSgupd8N7twB7zbS
+        Y8dfM4w29ajoquWeBKDev1xi/eMB7f8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-464-876FNId9MRuKl0FEUpEOUg-1; Mon, 18 Jan 2021 13:01:06 -0500
+X-MC-Unique: 876FNId9MRuKl0FEUpEOUg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C853D8030A2;
+        Mon, 18 Jan 2021 18:01:03 +0000 (UTC)
+Received: from treble (ovpn-116-102.rdu2.redhat.com [10.10.116.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DBC865D9CD;
+        Mon, 18 Jan 2021 18:00:53 +0000 (UTC)
+Date:   Mon, 18 Jan 2021 12:00:46 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
         Jiri Kosina <jikos@kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Jonathan Corbet <corbet@lwn.net>,
-        Miroslav Benes <mbenes@suse.cz>, linux-doc@vger.kernel.org,
-        live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH v4] Documentation: livepatch: document reliable stacktrace
-Message-ID: <20210118175054.GB38844@C02TD0UTHF1T.local>
-References: <20210115171617.47273-1-broonie@kernel.org>
- <YAWU0D50KH4mVTgn@alley>
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>, linux-doc@vger.kernel.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v5 0/2] Documentation: livepatch: Document reliable
+ stacktrace and minor cleanup
+Message-ID: <20210118175927.jjscqq24jbtqprc7@treble>
+References: <20210118173954.36577-1-broonie@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YAWU0D50KH4mVTgn@alley>
+In-Reply-To: <20210118173954.36577-1-broonie@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Petr,
+On Mon, Jan 18, 2021 at 05:39:52PM +0000, Mark Brown wrote:
+> This series adds a document, mainly written by Mark Rutland, which makes
+> explicit the requirements for implementing reliable stacktrace in order
+> to aid architectures adding this feature.  It also updates the other
+> livepatching documents to use automatically generated tables of contents
+> following review comments on Mark's document.
+> 
+> v5:
+>  - Tweaks to the commit message for the new document.
+>  - Convert new and existing documents to autogenerated tables of
+>    contents.
+> v4:
+>  - Renumber table of contents
+> v3:
+>  - Incorporated objtool section from Mark.
+>  - Deleted confusing notes about using annotations.
+> 
+> Mark Brown (1):
+>   Documentation: livepatch: Convert to automatically generated contents
+> 
+> Mark Rutland (1):
+>   Documentation: livepatch: document reliable stacktrace
 
-On Mon, Jan 18, 2021 at 03:02:31PM +0100, Petr Mladek wrote:
-> On Fri 2021-01-15 17:16:17, Mark Brown wrote:
-> > I've made a few assumptions about preferred behaviour, notably:
-> > 
-> > * If you can reliably unwind through exceptions, you should (as x86_64
-> >   does).
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
-IIRC this was confirmed as desireable, and the text already reflects
-this.
+-- 
+Josh
 
-> > * It's fine to omit ftrace_return_to_handler and other return
-> >   trampolines so long as these are not subject to patching and the
-> >   original return address is reported. Most architectures do this for
-> >   ftrace_return_handler, but not other return trampolines.
-
-Likewise I think we agreed this was fine, given these were not
-themselves subkect to patching.
-
-> > * For cases where link register unreliability could result in duplicate
-> >   entries in the trace or an inverted trace, I've assumed this should be
-> >   treated as unreliable. This specific case shouldn't matter to
-> >   livepatching, but I assume that that we want a reliable trace to have
-> >   the correct order.
-
-I don't think we had any comments either way on this, but I think it's
-sane to say this for now and later relax it if we need to.
-
-... so I reckon we can just delete all this as Josh suggests. Any acks
-for the patch itself tacitly agrees with these points. :)
-
-Thanks,
-Mark.
