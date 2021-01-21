@@ -2,67 +2,39 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 980AF2FE636
-	for <lists+live-patching@lfdr.de>; Thu, 21 Jan 2021 10:21:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 030DF2FE6FD
+	for <lists+live-patching@lfdr.de>; Thu, 21 Jan 2021 11:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728592AbhAUJUN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 21 Jan 2021 04:20:13 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:4486 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728320AbhAUJK1 (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 21 Jan 2021 04:10:27 -0500
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10L91lQD055285;
-        Thu, 21 Jan 2021 04:09:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=MIROihBdMjJIKhC+tSW35NZfjljBZpxTZ8W3u2vfuks=;
- b=cqRzMTKhA3pIGU3ja/nPBQ6238mE5b0d+97NdxaDtJ0tRYkjJhOzCXL1l8aCxifmwgHZ
- qVqUV9k4C78ZhZ8vhRFP9BV1FUriz1RCcRWz75zyk8r16N0xIB45wuRmXRN0rz2gNGuh
- 9xI9gSwtCZRGiqGZja8/wiPFBGZaWbf8cb77ZnkugirJOus/GoiCHgp0O4Y0vR6eTf6w
- x0UE0OMgnznKtW3mkZm9BSyMHsUrMoZg/X/OkEe0Np5Idkzq1pw87HgoNiS0qvfdtz+q
- Za9YfQC5j3kAQO5AReZU5Kg+Ey1AJSsZiwlpRdP9jg2L+zi7vRuWnAXR5IFlwn6BW8iR sw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3675ych8rm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 04:09:24 -0500
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 10L92YCS057489;
-        Thu, 21 Jan 2021 04:09:23 -0500
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3675ych8qs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 04:09:22 -0500
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10L97s4S031626;
-        Thu, 21 Jan 2021 09:09:20 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3668pasfrk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 09:09:20 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10L99Ilw32506304
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Jan 2021 09:09:18 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0EFD5A4066;
-        Thu, 21 Jan 2021 09:09:18 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A859FA405F;
-        Thu, 21 Jan 2021 09:09:17 +0000 (GMT)
-Received: from ozlabs.au.ibm.com (unknown [9.192.253.14])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 21 Jan 2021 09:09:17 +0000 (GMT)
-Received: from [9.81.210.19] (unknown [9.81.210.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by ozlabs.au.ibm.com (Postfix) with ESMTPSA id 9A4B160167;
-        Thu, 21 Jan 2021 20:09:15 +1100 (AEDT)
-Subject: Re: [PATCH 01/13] powerpc/powernv: remove get_cxl_module
+        id S1728838AbhAUKBU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 21 Jan 2021 05:01:20 -0500
+Received: from pegase1.c-s.fr ([93.17.236.30]:38880 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728336AbhAUKBI (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 21 Jan 2021 05:01:08 -0500
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4DLyYw37yGz9v6LH;
+        Thu, 21 Jan 2021 11:00:20 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id gZx8YCs2vO5j; Thu, 21 Jan 2021 11:00:20 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4DLyYw1bykz9v6L8;
+        Thu, 21 Jan 2021 11:00:20 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 644DE8B7FC;
+        Thu, 21 Jan 2021 11:00:21 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id GUfPkvtK1UQx; Thu, 21 Jan 2021 11:00:21 +0100 (CET)
+Received: from [192.168.4.90] (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 51AC08B771;
+        Thu, 21 Jan 2021 11:00:20 +0100 (CET)
+Subject: Re: [PATCH 02/13] module: add a module_loaded helper
 To:     Christoph Hellwig <hch@lst.de>,
         Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
         Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
         Thomas Zimmermann <tzimmermann@suse.de>,
@@ -73,48 +45,52 @@ To:     Christoph Hellwig <hch@lst.de>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        dri-devel@lists.freedesktop.org, live-patching@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 References: <20210121074959.313333-1-hch@lst.de>
- <20210121074959.313333-2-hch@lst.de>
-From:   Andrew Donnellan <ajd@linux.ibm.com>
-Message-ID: <a9e53c05-cfb9-2946-542d-4acda109a49d@linux.ibm.com>
-Date:   Thu, 21 Jan 2021 20:09:02 +1100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ <20210121074959.313333-3-hch@lst.de>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <844a7fc3-2cba-46d2-fd4e-e5fe16b08573@csgroup.eu>
+Date:   Thu, 21 Jan 2021 11:00:20 +0100
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <20210121074959.313333-2-hch@lst.de>
+In-Reply-To: <20210121074959.313333-3-hch@lst.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-21_03:2021-01-20,2021-01-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
- adultscore=0 priorityscore=1501 bulkscore=0 impostorscore=0 suspectscore=0
- phishscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101210045
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 21/1/21 6:49 pm, Christoph Hellwig wrote:
-> The static inline get_cxl_module function is entirely unused,
-> remove it.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-The one user of this was removed in 8bf6b91a5125a ("Revert 
-"powerpc/powernv: Add support for the cxl kernel api on the real phb").
 
-Thanks for picking this up.
 
-Reviewed-by: Andrew Donnellan <ajd@linux.ibm.com>
+Le 21/01/2021 à 08:49, Christoph Hellwig a écrit :
+ > Add a helper that takes modules_mutex and uses find_module to check if a
+ > given module is loaded.  This provides a better abstraction for the two
+ > callers, and allows to unexport modules_mutex and find_module.
+ >
+ > Signed-off-by: Christoph Hellwig <hch@lst.de>
+ > ---
+ >   drivers/gpu/drm/drm_fb_helper.c |  7 +------
+ >   include/linux/module.h          |  3 +++
+ >   kernel/module.c                 | 14 ++++++++++++--
+ >   kernel/trace/trace_kprobe.c     |  4 +---
+ >   4 files changed, 17 insertions(+), 11 deletions(-)
+ >
 
--- 
-Andrew Donnellan              OzLabs, ADL Canberra
-ajd@linux.ibm.com             IBM Australia Limited
+ > diff --git a/include/linux/module.h b/include/linux/module.h
+ > index 7a0bcb5b1ffccd..b4654f8a408134 100644
+ > --- a/include/linux/module.h
+ > +++ b/include/linux/module.h
+ > @@ -589,6 +589,9 @@ static inline bool within_module(unsigned long addr, const struct module *mod)
+ >   /* Search for module by name: must hold module_mutex. */
+ >   struct module *find_module(const char *name);
+ >   +/* Check if a module is loaded. */
+ > +bool module_loaded(const char *name);
+
+Maybe module_is_loaded() would be a better name.
