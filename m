@@ -2,109 +2,118 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6FD32FD8AE
-	for <lists+live-patching@lfdr.de>; Wed, 20 Jan 2021 19:47:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2A8D2FE46B
+	for <lists+live-patching@lfdr.de>; Thu, 21 Jan 2021 08:55:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388671AbhATSpl (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 20 Jan 2021 13:45:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22504 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2391886AbhATSMf (ORCPT
+        id S1727798AbhAUHzE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 21 Jan 2021 02:55:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727776AbhAUHyy (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 20 Jan 2021 13:12:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611166269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r+rdpRSOqx0e5Um1NSM010H1HcWGo+y5f3OqsTp6gAE=;
-        b=apuMhguiDHIyLqxuL/HNENyNCmW2grIJ1sprz0nUg8XBJKRADnGR9hS2wbhykcDySiLNSU
-        Gyg3gQOF0xIQCDsNLu7c8Yxw8cu4/BXnamtHl4IHNea4hIu5rUzHVTz2wBaA5+xhVRK4G7
-        DuASbRrB98vyDxtIfjlFRbyC7XHjqo0=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-344-A-4sQzR3N-SLe_bUKOhlRQ-1; Wed, 20 Jan 2021 13:11:06 -0500
-X-MC-Unique: A-4sQzR3N-SLe_bUKOhlRQ-1
-Received: by mail-wr1-f70.google.com with SMTP id r8so11959711wro.22
-        for <live-patching@vger.kernel.org>; Wed, 20 Jan 2021 10:11:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=r+rdpRSOqx0e5Um1NSM010H1HcWGo+y5f3OqsTp6gAE=;
-        b=GiXHyFFcUmwc8xqt0DSyhAEqo1D88IJIG4Vg7ftK35d9yJWKYxqTDAD9/sUqSzmfNm
-         Z26UWVmRm8I5ocbwB5cKkB1OBU7ek6E6kTPAJYbCyNVQkCjEw2GaznqY15xtiDQJ/8T2
-         JAkNkCEfZYbV5TUP3R6P41WE1hxvHw3+aSOl4zkEFvEiYbGPTObkYF43lQdCvcAyjzB/
-         XQL6ZFqtvLMuPI32Gdq5k53H/hyIxGHIZ5HKdYen0dMxz/aAWn4mc/cGuH5fnh5iyacQ
-         5seLqh6XfDflZCdIon9/YNohyasN5eUanmyes4loSF8sMxw4LaQeTc3llHrtTnd8LWLa
-         0GxQ==
-X-Gm-Message-State: AOAM5304WiT3plqty2hVpi7rrHbxChLeotp0s/wpNvSxUnnjvFwUhWi4
-        uje955RYCS/S4N+NnmA5bWw8M/U4kGk6paqoB0Ith+W3gS69LRAtUlaNvMD8PD0Xo6DWGQxtoaa
-        cmx8em+yDzkSfH3JqYekPUMm0sQ==
-X-Received: by 2002:adf:fbd2:: with SMTP id d18mr10723061wrs.222.1611166264940;
-        Wed, 20 Jan 2021 10:11:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx712Nf6ZKaG9Jo2uAax6LE/sAn/qhhDWtpCKz/UcyiauPjShsbvk20cwqythG/pVi2ehZ8BQ==
-X-Received: by 2002:adf:fbd2:: with SMTP id d18mr10723047wrs.222.1611166264802;
-        Wed, 20 Jan 2021 10:11:04 -0800 (PST)
-Received: from ?IPv6:2a01:cb14:499:3d00:cd47:f651:9d80:157a? ([2a01:cb14:499:3d00:cd47:f651:9d80:157a])
-        by smtp.gmail.com with ESMTPSA id g14sm6087511wru.45.2021.01.20.10.11.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jan 2021 10:11:04 -0800 (PST)
-Subject: Re: Live patching on ARM64
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Mark Brown <broonie@kernel.org>, jpoimboe@redhat.com,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <f3fe6a60-9ac2-591d-1b83-9113c50dc492@linux.microsoft.com>
- <20210115123347.GB39776@C02TD0UTHF1T.local>
- <a5f22237-a18d-3905-0521-f0d0f9c253ea@linux.microsoft.com>
- <1cd6ab9a-74bc-258e-abf8-fcabba5e3484@redhat.com>
- <32ec8721-90d6-c93d-f6f3-926c8876235b@linux.microsoft.com>
-From:   Julien Thierry <jthierry@redhat.com>
-Message-ID: <1f30b295-b307-ad61-b7f5-8cd55bc246d1@redhat.com>
-Date:   Wed, 20 Jan 2021 19:11:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        Thu, 21 Jan 2021 02:54:54 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4C4C0613CF;
+        Wed, 20 Jan 2021 23:54:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=GGrjojACjhG+8+TH5sgivGQzb3BJ/eSauJM3q5KfBTs=; b=Ktv0btKAweC7bgWiS0Tq9kQcDq
+        lur3JwNvnp9BIFyDhZcmUI1H3pxmjd/ZLvA2pRyULJoTJauKkKBe3DSoBTDJQV1JqQkoFJq9Bggb/
+        9fo/7N4p/S2mX+gKVtR2JCvftPc1c+niZwyH3x8iQYowJRjI1y9N55LbKj6NZXHZ9lNyh1bcQc0is
+        82naw907YI2rbhBZ6CTkkzH9BFv9pwJu+HRnB8QYUDtNr1CDTSoaXl2Sx7RwAd218qaJbpAr0dal1
+        UFAfSxVf8j/5ACKYD7rhFBOTJkxhehMlzgqP21VL+D/N0FubU73KdhAX/7mIcfo+iJ4E5TJ9qGcpg
+        z/nWA2Ug==;
+Received: from [2001:4bb8:188:1954:d5b3:2657:287:e45f] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1l2Umc-00Gm60-80; Thu, 21 Jan 2021 07:53:35 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Jessica Yu <jeyu@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        dri-devel@lists.freedesktop.org, live-patching@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH 03/13] livepatch: refactor klp_init_object
+Date:   Thu, 21 Jan 2021 08:49:49 +0100
+Message-Id: <20210121074959.313333-4-hch@lst.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210121074959.313333-1-hch@lst.de>
+References: <20210121074959.313333-1-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <32ec8721-90d6-c93d-f6f3-926c8876235b@linux.microsoft.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
+Merge three calls to klp_is_module (including one hidden inside
+klp_find_object_module) into a single one to simplify the code a bit.
 
-On 1/19/21 4:19 PM, Madhavan T. Venkataraman wrote:
-> 
->> Sorry for the late reply. The last RFC for arm64 support in objtool is a bit old because it was preferable to split things into smaller series.
->>
->> I touched it much lately, so I'm picking it back up and will try to get a git branch into shape on a recent mainline (a few things need fixing since the last time I rebased it).
->>
->> I'll update you once I have something at least usable/presentable.
->>
->> Cheers,
->>
-> 
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ kernel/livepatch/core.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-I just sent some series the arm64 objtool support:
-- https://lkml.org/lkml/2021/1/20/791
-- 
-https://lore.kernel.org/linux-arm-kernel/20210120173800.1660730-1-jthierry@redhat.com/T/#t
-
-There are still some things missing, so if you want to investigate a 
-more complete state I have a branch:
-$ git clone https://github.com/julien-thierry/linux.git -b 
-objtoolxarm64-latest
-
-Let me know if there are any questions related to it.
-
-Cheers,
-
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index f76fdb9255323d..a7f625dc24add3 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -54,9 +54,6 @@ static void klp_find_object_module(struct klp_object *obj)
+ {
+ 	struct module *mod;
+ 
+-	if (!klp_is_module(obj))
+-		return;
+-
+ 	mutex_lock(&module_mutex);
+ 	/*
+ 	 * We do not want to block removal of patched modules and therefore
+@@ -73,7 +70,6 @@ static void klp_find_object_module(struct klp_object *obj)
+ 	 */
+ 	if (mod && mod->klp_alive)
+ 		obj->mod = mod;
+-
+ 	mutex_unlock(&module_mutex);
+ }
+ 
+@@ -823,15 +819,19 @@ static int klp_init_object(struct klp_patch *patch, struct klp_object *obj)
+ 	int ret;
+ 	const char *name;
+ 
+-	if (klp_is_module(obj) && strlen(obj->name) >= MODULE_NAME_LEN)
+-		return -EINVAL;
+-
+ 	obj->patched = false;
+ 	obj->mod = NULL;
+ 
+-	klp_find_object_module(obj);
++	if (klp_is_module(obj)) {
++		if (strlen(obj->name) >= MODULE_NAME_LEN)
++			return -EINVAL;
++		name = obj->name;
++
++		klp_find_object_module(obj);
++	} else {
++		name = "vmlinux";
++	}
+ 
+-	name = klp_is_module(obj) ? obj->name : "vmlinux";
+ 	ret = kobject_add(&obj->kobj, &patch->kobj, "%s", name);
+ 	if (ret)
+ 		return ret;
 -- 
-Julien Thierry
+2.29.2
 
