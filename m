@@ -2,115 +2,66 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7294303066
-	for <lists+live-patching@lfdr.de>; Tue, 26 Jan 2021 00:46:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0FB303ACA
+	for <lists+live-patching@lfdr.de>; Tue, 26 Jan 2021 11:52:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732498AbhAYV22 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 25 Jan 2021 16:28:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35735 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732664AbhAYVVI (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 25 Jan 2021 16:21:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611609579;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gfg/hxSYIFb+RC3VgIgWh3IEpOrZKtS57wEA5wqW8hY=;
-        b=LyoMwtcJaXISdgsWH9sz2JtiuhyPFgs14/eVwpVlSmg1fbxh/Qc9KxfT+Ir1oUQpX7lEOS
-        3d0hUF4HlPyb+wZCW0Txx22pQGT1oHMsHvwEjmcttjtwtO9PNthSPQH4sW32Jo86Iw7gUL
-        pzVhSLRuv+S/tQNFa/hoph+gOzrKfTc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-24-7J9p8aPkNCeVG5QgMZHZjg-1; Mon, 25 Jan 2021 16:19:35 -0500
-X-MC-Unique: 7J9p8aPkNCeVG5QgMZHZjg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 133E710054FF;
-        Mon, 25 Jan 2021 21:19:33 +0000 (UTC)
-Received: from treble (ovpn-120-118.rdu2.redhat.com [10.10.120.118])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 23F015D6AB;
-        Mon, 25 Jan 2021 21:19:31 +0000 (UTC)
-Date:   Mon, 25 Jan 2021 15:19:29 -0600
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Mark Brown <broonie@kernel.org>,
+        id S1732112AbhAZKvw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Jan 2021 05:51:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56976 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404253AbhAZKvj (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 26 Jan 2021 05:51:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 871A4230FD;
+        Tue, 26 Jan 2021 10:50:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611658258;
+        bh=Xfyl0VQcIuqe4e956VVFqDmX5OfaPoi+OGgwbqduj08=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=m+ho0nCSB6XlRcFx0GW9VXbH0Hp/2ViCkA9BlS5LqN5OFmhEWi9cZU5htWmGu3SMS
+         /814gETtB06b8EhpNGKSdhxcwPe+eoFsaJuQcEdsiszgAq0asP0MYcACJciDP3wwME
+         UAYfosjlI/IvL3s0tpWaGDR7feEUvxsfKbGMsZSDh60PV/D7eojPY5DLefLm06u6Lb
+         YzM1hfswqdgKQBfCsQimXV+NECOW7Fz5r8OjuBDQqCcmf+2WcNghrjhiejrSwVpWHv
+         GoS/lX5BowAfGixianMRKGyFl2NhOV1tpjOM9WMjXxWnTdvLmbvtux4OiAxsMvwL7q
+         cNOvTmDq/5zgg==
+Date:   Tue, 26 Jan 2021 11:50:54 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         Mark Rutland <mark.rutland@arm.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Julien Thierry <jthierry@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        linux-hardening@vger.kernel.org, live-patching@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [RFC PATCH 00/17] objtool: add base support for arm64
-Message-ID: <20210125211929.62e6gzvl54hpmwn2@treble>
-References: <20210120173800.1660730-1-jthierry@redhat.com>
- <CAMj1kXHO0wgcZ4ZDxj1vS9s7Szfpz8Nz=SAW_=Dnnjy+S9AtyQ@mail.gmail.com>
- <186bb660-6e70-6bbf-4e96-1894799c79ce@redhat.com>
- <CAMj1kXHznGnN2UEai1c2UgyKuTFCS5SZ+qGR6VJwyCuccViw_A@mail.gmail.com>
- <YAlkOFwkb6/hFm1Q@hirez.programming.kicks-ass.net>
- <CAMj1kXE+675mbS66kteKHNfcrco84WTaEL6ncVkkV7tQgbMpFw@mail.gmail.com>
- <20210121185452.fxoz4ehqfv75bdzq@treble>
- <20210122174342.GG6391@sirena.org.uk>
- <bebccb15-1195-c004-923e-74d8444250e1@linux.microsoft.com>
- <CAMj1kXFr0wvx-hG6nBY4ibju9ww4x0CGhQber3MZQ2ZZn9LHWw@mail.gmail.com>
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-doc@vger.kernel.org, live-patching@vger.kernel.org
+Subject: Re: [PATCH v6 0/2] Documentation: livepatch: Document reliable
+ stacktrace and minor cleanup
+In-Reply-To: <nycvar.YFH.7.76.2101221158450.5622@cbobk.fhfr.pm>
+Message-ID: <nycvar.YFH.7.76.2101261150400.5622@cbobk.fhfr.pm>
+References: <20210120164714.16581-1-broonie@kernel.org> <20210121115226.565790ef@lwn.net> <nycvar.YFH.7.76.2101221158450.5622@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXFr0wvx-hG6nBY4ibju9ww4x0CGhQber3MZQ2ZZn9LHWw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 10:43:09PM +0100, Ard Biesheuvel wrote:
-> On Fri, 22 Jan 2021 at 22:15, Madhavan T. Venkataraman <madvenka@linux.microsoft.com> wrote:
-> > On 1/22/21 11:43 AM, Mark Brown wrote:
-> > > On Thu, Jan 21, 2021 at 12:54:52PM -0600, Josh Poimboeuf wrote:
-> > >
-> > >> 2) The shadow stack idea sounds promising -- how hard would it be to
-> > >>    make a prototype reliable unwinder?
-> > >
-> > > In theory it doesn't look too hard and I can't see a particular reason
-> > > not to try doing this - there's going to be edge cases but hopefully for
-> > > reliable stack trace they're all in areas where we would be happy to
-> > > just decide the stack isn't reliable anyway, things like nesting which
-> > > allocates separate shadow stacks for each nested level for example.
-> > > I'll take a look.
-> > >
-> >
-> > I am a new comer to this discussion and I am learning. Just have some
-> > questions. Pardon me if they are obvious or if they have already been
-> > asked and answered.
-> >
-> > Doesn't Clang already have support for a shadow stack implementation for ARM64?
-> > We could take a look at how Clang does it.
-> >
-> > Will there not be a significant performance hit? May be, some of it can be
-> > mitigated by using a parallel shadow stack rather than a compact one.
-> >
-> > Are there any longjmp style situations in the kernel where the stack is
-> > unwound by several frames? In these cases, the shadow stack must be unwound
-> > accordingly.
-> >
-> 
-> Hello Madhavan,
-> 
-> Let's discuss the details of shadow call stacks on a separate thread,
-> instead of further hijacking Julien's series.
+On Fri, 22 Jan 2021, Jiri Kosina wrote:
 
-It's quite relevant to this thread.  There's no need to consider merging
-Julien's patches if you have a better approach.  Why not discuss it
-here?  I'm also interested in the answers to Madhavan's questions.
+> > > This series adds a document, mainly written by Mark Rutland, which 
+> > > makes explicit the requirements for implementing reliable stacktrace 
+> > > in order to aid architectures adding this feature.  It also updates 
+> > > the other livepatching documents to use automatically generated tables 
+> > > of contents following review comments on Mark's document.
+> > 
+> > So...is this deemed ready and, if so, do you want it to go through the
+> > docs tree or via some other path?
+> 
+> I am planning to take it through livepatching tree unless there are any 
+> additional last-minutes comments.
+
+Now applied to for-5.12/doc branch. Thanks,
 
 -- 
-Josh
+Jiri Kosina
+SUSE Labs
 
