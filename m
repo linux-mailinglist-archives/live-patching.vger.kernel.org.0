@@ -2,120 +2,148 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E0FD307FED
-	for <lists+live-patching@lfdr.de>; Thu, 28 Jan 2021 21:54:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF1D3080F1
+	for <lists+live-patching@lfdr.de>; Thu, 28 Jan 2021 23:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbhA1UwR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 28 Jan 2021 15:52:17 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:31758 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229831AbhA1UwN (ORCPT
+        id S229872AbhA1WLg (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 28 Jan 2021 17:11:36 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:34908 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229677AbhA1WLe (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 28 Jan 2021 15:52:13 -0500
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10SKVcpg023361;
-        Thu, 28 Jan 2021 15:51:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=references : from : to :
- cc : subject : in-reply-to : date : message-id : mime-version :
- content-type; s=pp1; bh=pPg1XBrZNOKt8PfRp2cpKYCHVhYVgYATSuz8a5k9sWs=;
- b=s/l0pmVJBeGfhLJGM9iTfiQoVbA/zJnyD9eZBqmBkrJsTkZ5ibP8rglrttvRBSJ2rWqC
- VegDJ4kmPIvKZ7zh+i42gtnv6ereyfJEOfXjA1EJJjouLOAxeL8Wu7sdFp2kaaV/oC5L
- 0bRfDr0n3n6Ce2PtVwfT7K8X7ahWKVjb6rU9xh3OCwKu/sY1jcDdwAJ+9fN+/0tzmwHg
- Z/6Q+Y7JCWhJH/daaz4NJ9GkJKNHemPLI+uWgo7PHEcyV1c/FWoPCS9UyXuO9L6ncyb+
- xKhbBiZEJMePet4Al5qjHZoPW8BVl9ivby8bodas04NDxBMjvtRoM60rMYHWOP8Gezwq iw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36c3b6sxe8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jan 2021 15:51:05 -0500
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 10SKW4IC027685;
-        Thu, 28 Jan 2021 15:51:05 -0500
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36c3b6sxdx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jan 2021 15:51:05 -0500
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10SKgio5020310;
-        Thu, 28 Jan 2021 20:51:04 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma02dal.us.ibm.com with ESMTP id 36a4mccqkt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jan 2021 20:51:04 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10SKp3ln28901864
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 Jan 2021 20:51:03 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2FFFFAE05F;
-        Thu, 28 Jan 2021 20:51:03 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AF93EAE060;
-        Thu, 28 Jan 2021 20:50:58 +0000 (GMT)
-Received: from manicouagan.localdomain (unknown [9.85.160.249])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Thu, 28 Jan 2021 20:50:58 +0000 (GMT)
-References: <20210128181421.2279-1-hch@lst.de>
- <20210128181421.2279-5-hch@lst.de>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Thiago Jung Bauermann <bauerman@linux.ibm.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Frederic Barrat <fbarrat@linux.ibm.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Jessica Yu <jeyu@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
+        Thu, 28 Jan 2021 17:11:34 -0500
+Received: from [192.168.254.32] (unknown [47.187.219.45])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7F77920B7192;
+        Thu, 28 Jan 2021 14:10:52 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7F77920B7192
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1611871853;
+        bh=ZA2oSM80w+RdJ/gENbHPlEraVHFQ5GUGuDOI84otWqQ=;
+        h=From:Subject:To:Cc:References:Date:In-Reply-To:From;
+        b=b1XGVIJ11p8YrFEjhTOOsWPkgVJ1pwfcR9jZ+MllQtZMHIWyYefW7DKgPJatPai+7
+         Dz7hbE72mu7+23aHXEWklEXI7+cnEwZ1vcsBxJ9nq7MlZTar2idPNvNO9c86/AYmH4
+         78ogAZo3+o5tEXQX2VNOWZoF16HDXD/bYTvewRCs=
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Subject: Re: [RFC PATCH 00/17] objtool: add base support for arm64
+To:     Mark Brown <broonie@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Julien Thierry <jthierry@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
         Michal Marek <michal.lkml@markovi.net>,
-        linux-kbuild@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 04/13] module: use RCU to synchronize find_module
-In-reply-to: <20210128181421.2279-5-hch@lst.de>
-Date:   Thu, 28 Jan 2021 17:50:56 -0300
-Message-ID: <874kj023bj.fsf@manicouagan.localdomain>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        linux-hardening@vger.kernel.org, live-patching@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Kees Cook <keescook@chromium.org>
+References: <20210120173800.1660730-1-jthierry@redhat.com>
+ <CAMj1kXHO0wgcZ4ZDxj1vS9s7Szfpz8Nz=SAW_=Dnnjy+S9AtyQ@mail.gmail.com>
+ <186bb660-6e70-6bbf-4e96-1894799c79ce@redhat.com>
+ <CAMj1kXHznGnN2UEai1c2UgyKuTFCS5SZ+qGR6VJwyCuccViw_A@mail.gmail.com>
+ <YAlkOFwkb6/hFm1Q@hirez.programming.kicks-ass.net>
+ <CAMj1kXE+675mbS66kteKHNfcrco84WTaEL6ncVkkV7tQgbMpFw@mail.gmail.com>
+ <20210121185452.fxoz4ehqfv75bdzq@treble>
+ <20210122174342.GG6391@sirena.org.uk>
+ <CAMj1kXF31FxCTbo4M8MX0aaegaq7AQXMUdCtsm6xrKUFSpkzjA@mail.gmail.com>
+Message-ID: <c8f0cfec-b23e-dc84-0c43-feb9d892ea26@linux.microsoft.com>
+Date:   Thu, 28 Jan 2021 16:10:51 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-28_12:2021-01-28,2021-01-28 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
- suspectscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999 clxscore=1011
- bulkscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101280097
+In-Reply-To: <CAMj1kXF31FxCTbo4M8MX0aaegaq7AQXMUdCtsm6xrKUFSpkzjA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Hi,
 
-Hi Christoph,
+I sent this suggestion to linux-arm-kernel in response to the Reliable Stacktrace RFC from Mark Brown
+and Mark Rutland. I am repeating it here for two reasons:
 
-Christoph Hellwig <hch@lst.de> writes:
+- It involves objtool.
 
-> diff --git a/kernel/module.c b/kernel/module.c
-> index 981302f616b411..6772fb2680eb3e 100644
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -668,7 +668,6 @@ static struct module *find_module_all(const char *name, size_t len,
->  
->  struct module *find_module(const char *name)
->  {
-> -	module_assert_mutex();
+- There are many more recipients in this thread that may be interested in this topic.
 
-Does it make sense to replace the assert above with the warn below (untested)?
+Please let me know if this suggestion is acceptable. If it is not, please let me know why.
+Thanks.
 
-     RCU_LOCKDEP_WARN(rcu_read_lock_sched_held());
+Also, I apologize to all of you who have received this more than once.
 
->  	return find_module_all(name, strlen(name), false);
->  }
+FP and no-FP functions
+=====================
 
--- 
-Thiago Jung Bauermann
-IBM Linux Technology Center
+I have a suggestion for objtool and the unwinder for ARM64.
+
+IIUC, objtool is responsible for walking all the code paths (except unreachable
+and ignored ones) and making sure that every function has proper frame pointer
+code (prolog, epilog, etc). If a function is found to not have it, the kernel
+build is failed. Is this understanding correct?
+
+If so, can we take a different approach for ARM64?
+
+Instead of failing the kernel build, can we just mark the functions as:
+
+	FP	Functions that have proper FP code
+	no-FP	Functions that don't
+
+May be, we can add an "FP" flag in the symbol table entry for this.
+
+Then, the unwinder can check the functions it encounters in the stack trace and
+inform the caller if it found any no-FP functions. The caller of the unwinder can
+decide what he wants to do with that information.
+
+	- the caller can ignore it
+
+	- the caller can print the stack trace with a warning that no-FP functions
+	  were found
+
+	- if the caller is livepatch, the caller can retry until the no-FP functions
+	  disappear from the stack trace. This way, we can have live patching even
+	  when some of the functions in the kernel are no-FP.
+
+Does this make any sense? Is this acceptable? What are the pitfalls?
+
+If we can do this, the unwinder could detect cases such as:
+
+- If gcc thinks that a function is a leaf function but the function contains
+  inline assembly code that calls another function.
+
+- If a call to a function bounces through some intermediate code such as a
+  trampoline.
+
+- etc.
+
+For specific no-FP functions, the unwinder might be able to deduce the original
+caller. In these cases, the stack trace would still be reliable. For all the others,
+the stack trace would be considered unreliable.
+
+Compiler instead of objtool
+===========================
+
+If the above suggestion is acceptable, I have another suggestion.
+
+It is a lot of work for every new architecture to add frame pointer verification
+support in objtool. Can we get some help from the compiler?
+
+The compiler knows which C functions it generates the FP prolog and epilog for. It can
+mark those functions as FP. As for assembly functions, kernel developers could manually
+annotate functions that have proper FP code. The compiler/assembler would mark them
+as FP. Only a small subset of assembly functions would even have FP prolog and epilog.
+
+Is this acceptable? What are the pitfalls?
+
+This can be implemented easily for all architectures for which the compiler generates
+FP code.
+
+Can this be implemented using a GCC plugin? I know squat about GCC plugins.
+
+Thanks!
+
+Madhavan
