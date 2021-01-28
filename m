@@ -2,100 +2,120 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55E45307E34
-	for <lists+live-patching@lfdr.de>; Thu, 28 Jan 2021 19:39:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E0FD307FED
+	for <lists+live-patching@lfdr.de>; Thu, 28 Jan 2021 21:54:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232366AbhA1Sih (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 28 Jan 2021 13:38:37 -0500
-Received: from spe8-2.ucebox.co.za ([197.242.156.207]:33013 "EHLO
-        spe8-2.ucebox.co.za" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231730AbhA1ShI (ORCPT
+        id S229840AbhA1UwR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 28 Jan 2021 15:52:17 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:31758 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229831AbhA1UwN (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 28 Jan 2021 13:37:08 -0500
-X-Greylist: delayed 1090 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 Jan 2021 13:36:34 EST
-Received: from cornucopia.aserv.co.za ([154.0.175.203])
-        by spe8.ucebox.co.za with esmtps (TLSv1.2:AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <manornutgrovemanor@gmail.com>)
-        id 1l5Bpi-0007LJ-Au; Thu, 28 Jan 2021 20:16:15 +0200
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by cornucopia.aserv.co.za (Postfix) with ESMTPA id CF403C1250;
-        Thu, 28 Jan 2021 20:14:51 +0200 (SAST)
+        Thu, 28 Jan 2021 15:52:13 -0500
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10SKVcpg023361;
+        Thu, 28 Jan 2021 15:51:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=references : from : to :
+ cc : subject : in-reply-to : date : message-id : mime-version :
+ content-type; s=pp1; bh=pPg1XBrZNOKt8PfRp2cpKYCHVhYVgYATSuz8a5k9sWs=;
+ b=s/l0pmVJBeGfhLJGM9iTfiQoVbA/zJnyD9eZBqmBkrJsTkZ5ibP8rglrttvRBSJ2rWqC
+ VegDJ4kmPIvKZ7zh+i42gtnv6ereyfJEOfXjA1EJJjouLOAxeL8Wu7sdFp2kaaV/oC5L
+ 0bRfDr0n3n6Ce2PtVwfT7K8X7ahWKVjb6rU9xh3OCwKu/sY1jcDdwAJ+9fN+/0tzmwHg
+ Z/6Q+Y7JCWhJH/daaz4NJ9GkJKNHemPLI+uWgo7PHEcyV1c/FWoPCS9UyXuO9L6ncyb+
+ xKhbBiZEJMePet4Al5qjHZoPW8BVl9ivby8bodas04NDxBMjvtRoM60rMYHWOP8Gezwq iw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36c3b6sxe8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Jan 2021 15:51:05 -0500
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 10SKW4IC027685;
+        Thu, 28 Jan 2021 15:51:05 -0500
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36c3b6sxdx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Jan 2021 15:51:05 -0500
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10SKgio5020310;
+        Thu, 28 Jan 2021 20:51:04 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma02dal.us.ibm.com with ESMTP id 36a4mccqkt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Jan 2021 20:51:04 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10SKp3ln28901864
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Jan 2021 20:51:03 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2FFFFAE05F;
+        Thu, 28 Jan 2021 20:51:03 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AF93EAE060;
+        Thu, 28 Jan 2021 20:50:58 +0000 (GMT)
+Received: from manicouagan.localdomain (unknown [9.85.160.249])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
+        Thu, 28 Jan 2021 20:50:58 +0000 (GMT)
+References: <20210128181421.2279-1-hch@lst.de>
+ <20210128181421.2279-5-hch@lst.de>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Jessica Yu <jeyu@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 04/13] module: use RCU to synchronize find_module
+In-reply-to: <20210128181421.2279-5-hch@lst.de>
+Date:   Thu, 28 Jan 2021 17:50:56 -0300
+Message-ID: <874kj023bj.fsf@manicouagan.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 28 Jan 2021 20:14:51 +0200
-From:   Nut Grove Manor <manornutgrovemanor@gmail.com>
-To:     undisclosed-recipients:;
-Subject: Invitation To Quote
-User-Agent: Roundcube Webmail/1.4.1
-Message-ID: <f4df241716ca77b03e15c5275364cf84@gmail.com>
-X-Sender: manornutgrovemanor@gmail.com
-X-Originating-IP: 154.0.175.203
-X-Afrihost-Domain: pesci.aserv.co.za
-X-Afrihost-Username: 154.0.175.203
-Authentication-Results: ucebox.co.za; auth=pass smtp.auth=154.0.175.203@pesci.aserv.co.za
-X-Afrihost-Outgoing-Class: unsure
-X-Afrihost-Outgoing-Evidence: Combined (0.71)
-X-Recommended-Action: accept
-X-Filter-ID: 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
-X-Report-Abuse-To: spam@spe1.ucebox.co.za
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-28_12:2021-01-28,2021-01-28 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
+ suspectscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999 clxscore=1011
+ bulkscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101280097
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Good Day Sir
 
-We are please to invite you/your company to quote the following item
-listed
-below:
+Hi Christoph,
 
-Product/Model No: TM9653 PRESSURE REGULATOR
-Product Name:MEKO
-Qty. 30 units
+Christoph Hellwig <hch@lst.de> writes:
 
-Compulsory,Kindly send your quotation
-for immediate approval.
+> diff --git a/kernel/module.c b/kernel/module.c
+> index 981302f616b411..6772fb2680eb3e 100644
+> --- a/kernel/module.c
+> +++ b/kernel/module.c
+> @@ -668,7 +668,6 @@ static struct module *find_module_all(const char *name, size_t len,
+>  
+>  struct module *find_module(const char *name)
+>  {
+> -	module_assert_mutex();
 
-Kind Regards,
-Albert Bourla
-PFIZER B.V Supply Chain Manager
-Tel: +31(0)208080 880
-ADDRESS: Rivium Westlaan 142, 2909 LD
-Capelle aan den IJssel, Netherlands
+Does it make sense to replace the assert above with the warn below (untested)?
+
+     RCU_LOCKDEP_WARN(rcu_read_lock_sched_held());
+
+>  	return find_module_all(name, strlen(name), false);
+>  }
+
+-- 
+Thiago Jung Bauermann
+IBM Linux Technology Center
