@@ -2,73 +2,64 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AD7630F11C
-	for <lists+live-patching@lfdr.de>; Thu,  4 Feb 2021 11:46:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B705310E90
+	for <lists+live-patching@lfdr.de>; Fri,  5 Feb 2021 18:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235436AbhBDKpl (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 4 Feb 2021 05:45:41 -0500
-Received: from ozlabs.org ([203.11.71.1]:48873 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231387AbhBDKpi (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 4 Feb 2021 05:45:38 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DWZtr4RvTz9sXV;
-        Thu,  4 Feb 2021 21:44:52 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
-        s=201909; t=1612435496;
-        bh=7gUDiKUJsUlnyL1hzNVaMIZFOrtzUH+RnQewMgPBJXA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=aeithg5XbYtGR3+3M0J2fWWh+BH4YzO0m/tpovXY4JTNI34gGy0ZFPKzi6lAxzbdt
-         p4lAuxnwJYSnrDXZnLVdsh8F0iA2jhQ4lDRw7p1Ocl/U6Q0wMnDs23z3/QrU4Q+lno
-         vB6Wm/ETnQGaQPRkmOAk+Cg4eN2q25qRCTLtm9IPEiw22Jg7kttOdCnyq2xIB3d3Mu
-         W6uJuZIKbssUj6v53+5imSR9JR3l28/X1jC6TANDAQeGIAHjg+1q4qg9hrQPw8eQ5U
-         eF+le40oSyflT3D2CclEO5XCqDqyoXIurBtwcjRAc2Wf+Tc0nSes3mnm+UAEcPnkf7
-         5fFb3xrUGnKIQ==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Christoph Hellwig <hch@lst.de>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Jessica Yu <jeyu@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        dri-devel@lists.freedesktop.org, live-patching@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Subject: Re: [PATCH 01/13] powerpc/powernv: remove get_cxl_module
-In-Reply-To: <20210202121334.1361503-2-hch@lst.de>
-References: <20210202121334.1361503-1-hch@lst.de>
- <20210202121334.1361503-2-hch@lst.de>
-Date:   Thu, 04 Feb 2021 21:44:51 +1100
-Message-ID: <87h7msp0ws.fsf@mpe.ellerman.id.au>
+        id S230154AbhBEPlC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 5 Feb 2021 10:41:02 -0500
+Received: from [20.39.40.203] ([20.39.40.203]:59370 "EHLO optinix.in"
+        rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
+        id S233166AbhBEPiq (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 5 Feb 2021 10:38:46 -0500
+dkim-signature: v=1; a=rsa-sha256; d=digitalsol.in; s=dkim;
+        c=relaxed/relaxed; q=dns/txt; h=From:Reply-To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=wK2neTcOXNiSQ+RBxrnFed+mRrGUU/ndLGEgvo8IMCc=;
+        b=TjKzVIXP26N0CgiuV2iRpbn/+/UPE848d1cEKpcksJQG2Fzvr8BroMQEKLaSJYsYgm2mc0SNnNqy/71L6H1Kk3l77l/8U2CTLtRGWiENB5z0yvD6UwRUHqbUNwaGv1GwZx1JlH2sfS9eIHVi3C4kv00xkYxUFnEbiEu89AudQFVEUMLTqRv+rYdWYzUfmvUfNudo/+sX+Hiq850DJRQzHheIwmNXpeEJSJVlO8r7j5M448GKIYFdMUMFbG
+        Jd8t5jFVtcMtEwQ27t+SNUukCyvEdjerDMdOfFc8R67EI8MAzJECL43GogVQopZHMtjdrpfh9eo3wFH50icVXdgu/a/g==
+Received: from User (Unknown [52.231.31.5])
+        by optinix.in with ESMTP
+        ; Mon, 1 Feb 2021 08:58:53 +0000
+Message-ID: <D836DAE5-B0AE-49B1-81C4-2C46BBE2F305@optinix.in>
+Reply-To: <ms.reem@yandex.com>
+From:   "Ms. Reem" <support@digitalsol.in>
+Subject: Re:read
+Date:   Mon, 1 Feb 2021 08:58:52 -0000
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Christoph Hellwig <hch@lst.de> writes:
-> The static inline get_cxl_module function is entirely unused since commit
-> 8bf6b91a5125a ("Revert "powerpc/powernv: Add support for the cxl kernel
-> api on the real phb"), so remove it.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Reviewed-by: Andrew Donnellan <ajd@linux.ibm.com>
-> ---
->  arch/powerpc/platforms/powernv/pci-cxl.c | 22 ----------------------
->  1 file changed, 22 deletions(-)
+Hello,
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+My name is Ms. Reem Ebrahim Al-Hashimi, I am the "Minister of state
+and Petroleum" also "Minister of State for International Cooperation"
+in UAE. I write to you on behalf of my other "three (3) colleagues"
+who has approved me to solicit for your "partnership in claiming of
+{us$47=Million}" from a Financial Home in Cambodia on their behalf and
+for our "Mutual Benefits".
 
-cheers
+The Fund {us$47=Million} is our share from the (over-invoiced) Oil/Gas
+deal with Cambodian/Vietnam Government within 2013/2014, however, we
+don't want our government to know about the fund. If this proposal
+interests you, let me know, by sending me an email and I will send to
+you detailed information on how this business would be successfully
+transacted. Be informed that nobody knows about the secret of this
+fund except us, and we know how to carry out the entire transaction.
+So I am compelled to ask, that you will stand on our behalf and
+receive this fund into any account that is solely controlled by you.
+
+We will compensate you with 15% of the total amount involved as
+gratification for being our partner in this transaction. Reply to:
+ms.reem@yandex.com
+
+Regards,
+Ms. Reem.
+
