@@ -2,24 +2,34 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8532C30BC52
-	for <lists+live-patching@lfdr.de>; Tue,  2 Feb 2021 11:46:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41F8C30BDDD
+	for <lists+live-patching@lfdr.de>; Tue,  2 Feb 2021 13:15:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbhBBKqb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 2 Feb 2021 05:46:31 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33980 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229441AbhBBKqa (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 2 Feb 2021 05:46:30 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 27FC9AE8D;
-        Tue,  2 Feb 2021 10:45:48 +0000 (UTC)
-Date:   Tue, 2 Feb 2021 11:45:47 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Christoph Hellwig <hch@lst.de>
-cc:     Petr Mladek <pmladek@suse.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
+        id S230419AbhBBMOw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 Feb 2021 07:14:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230518AbhBBMOl (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 2 Feb 2021 07:14:41 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97303C061786;
+        Tue,  2 Feb 2021 04:14:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=x0ild1pWjAVS3WJxvq5XS64FoqpcDSC4Uujd61u50FE=; b=srM/EzIfbz/5riWYH6qumnb+zn
+        j+mvi5gYrNB+AOYu3bH2i/2M1fx63vsCsf2YIiEVvlyENL+ojTgqwGXMJUGdqwp4OEMWQ4aObiZ3H
+        B+0koplMVj7VdqGLo6QxINw2K1pPISxF+kTMN0mNirghPTmZYC8RLKeCQ/OCR8Ff7Rqv5Be4TQVuK
+        M5qKT5l3HuJyH04i8EHBxJh98XWMNEPc+qGqhCjgDNrLd36g6Ug04LWZyNF/qW+Hj7Vqx9COZL6rr
+        jFQnwP7EDOpAKJHGVY2nr8FtSMZvZlG3rLoxmOxEMmdSrfWNwf6Xks/iXNj+HglObnNEjoXvCOzCs
+        PaXZle4w==;
+Received: from [2001:4bb8:198:6bf4:7f38:755e:a6e0:73e9] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1l6uYq-00FAKY-Ez; Tue, 02 Feb 2021 12:13:37 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Frederic Barrat <fbarrat@linux.ibm.com>,
         Andrew Donnellan <ajd@linux.ibm.com>,
         Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
@@ -28,58 +38,39 @@ cc:     Petr Mladek <pmladek@suse.com>,
         Daniel Vetter <daniel@ffwll.ch>, Jessica Yu <jeyu@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
         Michal Marek <michal.lkml@markovi.net>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         dri-devel@lists.freedesktop.org, live-patching@vger.kernel.org,
         linux-kbuild@vger.kernel.org
-Subject: Re: [PATCH 05/13] kallsyms: refactor
- {,module_}kallsyms_on_each_symbol
-In-Reply-To: <20210201162842.GB7276@lst.de>
-Message-ID: <alpine.LSU.2.21.2102021145160.570@pobox.suse.cz>
-References: <20210128181421.2279-1-hch@lst.de> <20210128181421.2279-6-hch@lst.de> <YBPYyEvesLMrRtZM@alley> <20210201114749.GB19696@lst.de> <alpine.LSU.2.21.2102011436320.21637@pobox.suse.cz> <20210201162842.GB7276@lst.de>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+Subject: module loader dead code removal and cleanups v3
+Date:   Tue,  2 Feb 2021 13:13:21 +0100
+Message-Id: <20210202121334.1361503-1-hch@lst.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, 1 Feb 2021, Christoph Hellwig wrote:
+Hi all,
 
-> On Mon, Feb 01, 2021 at 02:37:12PM +0100, Miroslav Benes wrote:
-> > > > This change is not needed. (objname == NULL) means that we are
-> > > > interested only in symbols in "vmlinux".
-> > > > 
-> > > > module_kallsyms_on_each_symbol(klp_find_callback, &args)
-> > > > will always fail when objname == NULL.
-> > > 
-> > > I just tried to keep the old behavior.  I can respin it with your
-> > > recommended change noting the change in behavior, though.
-> > 
-> > Yes, please. It would be cleaner that way.
-> 
-> Let me know if this works for you:
-> 
-> ---
-> >From 18af41e88d088cfb8680d1669fcae2bc2ede5328 Mon Sep 17 00:00:00 2001
-> From: Christoph Hellwig <hch@lst.de>
-> Date: Wed, 20 Jan 2021 16:23:16 +0100
-> Subject: kallsyms: refactor {,module_}kallsyms_on_each_symbol
-> 
-> Require an explicit call to module_kallsyms_on_each_symbol to look
-> for symbols in modules instead of the call from kallsyms_on_each_symbol,
-> and acquire module_mutex inside of module_kallsyms_on_each_symbol instead
-> of leaving that up to the caller.  Note that this slightly changes the
-> behavior for the livepatch code in that the symbols from vmlinux are not
-> iterated anymore if objname is set, but that actually is the desired
-> behavior in this case.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+this series removes support for long term unused export types and
+cleans up various loose ends in the module loader.
 
-Acked-by: Miroslav Benes <mbenes@suse.cz>
+Changes since v2:
+ - clean up klp_find_object_symbol a bit
+ - remove the now unused module_assert_mutex helper 
 
-Thanks Christoph
+Changes since v1:
+ - move struct symsearch to module.c
+ - rework drm to not call find_module at all
+ - allow RCU-sched locking for find_module
+ - keep find_module as a public API instead of module_loaded
+ - update a few comments and commit logs
 
-M
+Diffstat:
