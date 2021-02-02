@@ -2,32 +2,32 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1107D30BDE1
-	for <lists+live-patching@lfdr.de>; Tue,  2 Feb 2021 13:15:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F97C30BDEA
+	for <lists+live-patching@lfdr.de>; Tue,  2 Feb 2021 13:17:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230193AbhBBMPG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 2 Feb 2021 07:15:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        id S231389AbhBBMP0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 Feb 2021 07:15:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230430AbhBBMOl (ORCPT
+        with ESMTP id S230184AbhBBMPS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 2 Feb 2021 07:14:41 -0500
+        Tue, 2 Feb 2021 07:15:18 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7750FC0613ED;
-        Tue,  2 Feb 2021 04:14:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF27C061788;
+        Tue,  2 Feb 2021 04:14:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=XZTC5SIMvJdOEqgDU+iIbCSxaEGoFe1SHGfByrwd00g=; b=S3XLWVvOyKvKUYYqHqqt+ziNGW
-        yJYK/kqQMGT1QCR9/vos9RUmeKJPxeHpkcazip+Yknz0VlFHQAFL8LW43Q49lmNcN7Ew5AgKEsqTY
-        DW36OZVvxv8Mp+UJpRx+eVcgZo4eXZ9UA2dKuKGYj9b9a3m/gS+Xg6ETWat5E7Y6AjUj21wztjsf7
-        ez1Xef7D21kx0aCFnYCwMi7D+2PBLd8iQdKg7Osu6/TkXJhl5Lt394F5YZqRVxek29x+V6lr3LFYz
-        ovUQ1mEvxvJ2zZEQMcjIbUpCXkzLL7KzBVOpU+KSsY4pmesHVlECQFxfhk0PZMz+WLjSGyDCVw+Zf
-        R5s+Snwg==;
+        bh=Nt3OH/j8x3/E3EkxymSc5d71PS1AjT6KFPt4K6BMIsQ=; b=nZ+T+b9GD5oLErWBB4jZj+iTsh
+        tG9ykvdy/X7hETt+BBVa1DA7rIxv6b2pCYO0kJmwmbOfzqjScubyewfLqvho8w2kmdwYW0NL1Lzs4
+        848O6Y4vzqMBFvWe68kRlP/JSpbZbBmVGaOsK60ysi80LyMa8Lf0V+oUp2dZjj96bbgi9kaKUHQq3
+        oyjU/HyX7aeodA+kTGRWAsC5VxhKUFiDV85pf9uDJ2HjHS78n7be1AMIJrto68QGpW0+lyT7UjClo
+        +ENT94VOWmypwqAxsEZFDx+WA5M8psyTZb5VjJsh0D7KYreuiNDUwQ/+sI8RwHifY1WqBCdc1xqR8
+        KhL3DknA==;
 Received: from [2001:4bb8:198:6bf4:7f38:755e:a6e0:73e9] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1l6uYz-00FALZ-GH; Tue, 02 Feb 2021 12:13:46 +0000
+        id 1l6uZ1-00FALm-V6; Tue, 02 Feb 2021 12:13:48 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Frederic Barrat <fbarrat@linux.ibm.com>,
         Andrew Donnellan <ajd@linux.ibm.com>,
@@ -46,9 +46,9 @@ Cc:     Masahiro Yamada <masahiroy@kernel.org>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         dri-devel@lists.freedesktop.org, live-patching@vger.kernel.org,
         linux-kbuild@vger.kernel.org
-Subject: [PATCH 04/13] module: use RCU to synchronize find_module
-Date:   Tue,  2 Feb 2021 13:13:25 +0100
-Message-Id: <20210202121334.1361503-5-hch@lst.de>
+Subject: [PATCH 05/13] kallsyms: refactor {,module_}kallsyms_on_each_symbol
+Date:   Tue,  2 Feb 2021 13:13:26 +0100
+Message-Id: <20210202121334.1361503-6-hch@lst.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210202121334.1361503-1-hch@lst.de>
 References: <20210202121334.1361503-1-hch@lst.de>
@@ -59,92 +59,103 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Allow for a RCU-sched critical section around find_module, following
-the lower level find_module_all helper, and switch the two callers
-outside of module.c to use such a RCU-sched critical section instead
-of module_mutex.
+Require an explicit call to module_kallsyms_on_each_symbol to look
+for symbols in modules instead of the call from kallsyms_on_each_symbol,
+and acquire module_mutex inside of module_kallsyms_on_each_symbol instead
+of leaving that up to the caller.  Note that this slightly changes the
+behavior for the livepatch code in that the symbols from vmlinux are not
+iterated anymore if objname is set, but that actually is the desired
+behavior in this case.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
 Acked-by: Miroslav Benes <mbenes@suse.cz>
 ---
- include/linux/module.h      | 2 +-
- kernel/livepatch/core.c     | 5 +++--
- kernel/module.c             | 1 -
- kernel/trace/trace_kprobe.c | 4 ++--
- 4 files changed, 6 insertions(+), 6 deletions(-)
+ kernel/kallsyms.c       |  6 +++++-
+ kernel/livepatch/core.c |  2 --
+ kernel/module.c         | 13 ++++---------
+ 3 files changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 7a0bcb5b1ffccd..a64aa84d1b182c 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -586,7 +586,7 @@ static inline bool within_module(unsigned long addr, const struct module *mod)
- 	return within_module_init(addr, mod) || within_module_core(addr, mod);
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index fe9de067771c34..a0d3f0865916f9 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -177,6 +177,10 @@ unsigned long kallsyms_lookup_name(const char *name)
+ 	return module_kallsyms_lookup_name(name);
  }
  
--/* Search for module by name: must hold module_mutex. */
-+/* Search for module by name: must be in a RCU-sched critical section. */
- struct module *find_module(const char *name);
++/*
++ * Iterate over all symbols in vmlinux.  For symbols from modules use
++ * module_kallsyms_on_each_symbol instead.
++ */
+ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+ 				      unsigned long),
+ 			    void *data)
+@@ -192,7 +196,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+ 		if (ret != 0)
+ 			return ret;
+ 	}
+-	return module_kallsyms_on_each_symbol(fn, data);
++	return 0;
+ }
  
- struct symsearch {
+ static unsigned long get_symbol_pos(unsigned long addr,
 diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index f76fdb9255323d..262cd9b003b9f0 100644
+index 262cd9b003b9f0..335d988bd81117 100644
 --- a/kernel/livepatch/core.c
 +++ b/kernel/livepatch/core.c
-@@ -19,6 +19,7 @@
- #include <linux/moduleloader.h>
- #include <linux/completion.h>
- #include <linux/memory.h>
-+#include <linux/rcupdate.h>
- #include <asm/cacheflush.h>
- #include "core.h"
- #include "patch.h"
-@@ -57,7 +58,7 @@ static void klp_find_object_module(struct klp_object *obj)
- 	if (!klp_is_module(obj))
- 		return;
+@@ -164,12 +164,10 @@ static int klp_find_object_symbol(const char *objname, const char *name,
+ 		.pos = sympos,
+ 	};
  
 -	mutex_lock(&module_mutex);
-+	rcu_read_lock_sched();
- 	/*
- 	 * We do not want to block removal of patched modules and therefore
- 	 * we do not take a reference here. The patches are removed by
-@@ -74,7 +75,7 @@ static void klp_find_object_module(struct klp_object *obj)
- 	if (mod && mod->klp_alive)
- 		obj->mod = mod;
- 
+ 	if (objname)
+ 		module_kallsyms_on_each_symbol(klp_find_callback, &args);
+ 	else
+ 		kallsyms_on_each_symbol(klp_find_callback, &args);
 -	mutex_unlock(&module_mutex);
-+	rcu_read_unlock_sched();
- }
  
- static bool klp_initialized(void)
+ 	/*
+ 	 * Ensure an address was found. If sympos is 0, ensure symbol is unique;
 diff --git a/kernel/module.c b/kernel/module.c
-index 981302f616b411..6772fb2680eb3e 100644
+index 6772fb2680eb3e..25345792c770d1 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -668,7 +668,6 @@ static struct module *find_module_all(const char *name, size_t len,
+@@ -255,11 +255,6 @@ static void mod_update_bounds(struct module *mod)
+ struct list_head *kdb_modules = &modules; /* kdb needs the list of modules */
+ #endif /* CONFIG_KGDB_KDB */
  
- struct module *find_module(const char *name)
+-static void module_assert_mutex(void)
+-{
+-	lockdep_assert_held(&module_mutex);
+-}
+-
+ static void module_assert_mutex_or_preempt(void)
  {
+ #ifdef CONFIG_LOCKDEP
+@@ -4379,8 +4374,7 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
+ 	unsigned int i;
+ 	int ret;
+ 
 -	module_assert_mutex();
- 	return find_module_all(name, strlen(name), false);
+-
++	mutex_lock(&module_mutex);
+ 	list_for_each_entry(mod, &modules, list) {
+ 		/* We hold module_mutex: no need for rcu_dereference_sched */
+ 		struct mod_kallsyms *kallsyms = mod->kallsyms;
+@@ -4396,10 +4390,11 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
+ 			ret = fn(data, kallsyms_symbol_name(kallsyms, i),
+ 				 mod, kallsyms_symbol_value(sym));
+ 			if (ret != 0)
+-				return ret;
++				break;
+ 		}
+ 	}
+-	return 0;
++	mutex_unlock(&module_mutex);
++	return ret;
  }
+ #endif /* CONFIG_KALLSYMS */
  
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index e6fba1798771b4..3137992baa5e7a 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -124,9 +124,9 @@ static nokprobe_inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
- 	if (!p)
- 		return true;
- 	*p = '\0';
--	mutex_lock(&module_mutex);
-+	rcu_read_lock_sched();
- 	ret = !!find_module(tk->symbol);
--	mutex_unlock(&module_mutex);
-+	rcu_read_unlock_sched();
- 	*p = ':';
- 
- 	return ret;
 -- 
 2.29.2
 
