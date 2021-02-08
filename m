@@ -2,68 +2,80 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C39312E6E
-	for <lists+live-patching@lfdr.de>; Mon,  8 Feb 2021 11:06:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB5B313114
+	for <lists+live-patching@lfdr.de>; Mon,  8 Feb 2021 12:41:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231673AbhBHKBa (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 8 Feb 2021 05:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232001AbhBHJ51 (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 8 Feb 2021 04:57:27 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE59C03C060
-        for <live-patching@vger.kernel.org>; Mon,  8 Feb 2021 01:46:48 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id x9so7528404plb.5
-        for <live-patching@vger.kernel.org>; Mon, 08 Feb 2021 01:46:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=z7Z/JdX0RhrlgqchmamXWMY47TIIKUp5Zm0+e0J1lMs=;
-        b=Ky1giLXIhrehOc8aY2MQm/k2Y3UC3JSFGtKwBNIXX45tRpEb8JWb/ZvgyPVmXaPxqm
-         BAfNBaVcFrd55k9ZigtT6qUpKWWCJJapaxnIePeZdIIqg9OqGDW18kZQ0WYsvb09kp0t
-         l41AMsZCpszFb3Lfzy9oZl+JV2IUXThohx8em3i1teF4LIduvuluNP8WwXhhLqXoFiRN
-         LHpmMsllRIbplSnvl1eRMPy+GjG8GP1k3aUPGN+mPhbXo4G1v1SuQ5XzmQOicNY7HN2B
-         82M2H3OVdu+6rrSjfmI47pyfalTe4A+FxptPdT7ufXuumx0vhHzH5DyPKFPetdL1yHiU
-         DA0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=z7Z/JdX0RhrlgqchmamXWMY47TIIKUp5Zm0+e0J1lMs=;
-        b=pHso+OLmy7q1N+dVTxqYJwY88k9imEleUWSFQec/l54P1TtNiB3RD0uXKK0PyX7tZM
-         dF7ESON5feHTsyjLUeRMPYzuDvua5w88sZ4+2Zsim+kndl867MRHbEY8Buf/0ADikFA1
-         1rxTpEl8DdbieIsrUxK17OSguC10XUNxn2WivnMlRiPzCYWysgumxoIvyUfCvLr4iZZR
-         gT+SAGJSRa5hCdVqGUFB/B30d7dtNXXpkrV8fC2dBZpEF24SJzyKHVe4p31866WyoJH9
-         8I6Z2agLQr6t+hLQFz5mQZFDHercDQ5EFw4+UvFf5eK22HI5SfYPKkROBmaqpoCR0fZE
-         laZQ==
-X-Gm-Message-State: AOAM531oDeh+VuiPAH4C8tBYbFwE1dhhl9mzR4wmYsdz+Us9Ev4NIB2l
-        Y+rsAtHoW/tUO4DP1rUzEymcOPyVvy+IkvSGYU0=
-X-Google-Smtp-Source: ABdhPJzS/+5EfBXyljDSscIrnRAbE864WGXvJDPpbdbonA7hX/0y1YXXbB+dNUNOxdkEf+4lt6BP3yVHsw+Nkh7xgyE=
-X-Received: by 2002:a17:902:988e:b029:e1:2c5b:321c with SMTP id
- s14-20020a170902988eb02900e12c5b321cmr15666317plp.54.1612777607820; Mon, 08
- Feb 2021 01:46:47 -0800 (PST)
+        id S232839AbhBHLk2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 8 Feb 2021 06:40:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35708 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232106AbhBHLhF (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 8 Feb 2021 06:37:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6780F64E40;
+        Mon,  8 Feb 2021 11:36:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612784185;
+        bh=fBp9LiWsmCqhuaI9wcJM8SBAr5veZ226g9+wpY2pX+k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ubHOUH2l2tFZUF2ynWkVVod7BUYjSKuOSrCEIvHN0ZJyFeqBx8hPUkx8ibDvJM6cp
+         nYgvBXrN7yP6JPyVxnB5Vl25KRr4gUYEtwf8ZWhdKErl70xdsLpHW/kxIlsvpTL2KU
+         7wshBHn6WQ/X9D2rLICFJKJ6l/CWRLTblBGEIZjFAboNqwhE1W6cXhnVCMmg+s3RK8
+         t3HE2TPmQBQPngHWdOQeK67EAanjk7crsmyGh7z9toVdi4bcIA4jwAmSMy7m/GHEBq
+         aCd9u393CVZ+h6B9r1/Qqj4tW0JbbTw8jCs10nzwjrpRirqCtk8wVn3xF8/6XFQklM
+         6j1XdiBtOr5PQ==
+Date:   Mon, 8 Feb 2021 12:36:18 +0100
+From:   Jessica Yu <jeyu@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        dri-devel@lists.freedesktop.org, live-patching@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Subject: Re: module loader dead code removal and cleanups v3
+Message-ID: <YCEiMoWRLj+lpNqS@gunter>
+References: <20210202121334.1361503-1-hch@lst.de>
 MIME-Version: 1.0
-Received: by 2002:a17:90a:5d0a:0:0:0:0 with HTTP; Mon, 8 Feb 2021 01:46:47
- -0800 (PST)
-Reply-To: richadtomm@qq.com
-From:   "Mr.Richard Thomas" <tommiirrrch@gmail.com>
-Date:   Mon, 8 Feb 2021 01:46:47 -0800
-Message-ID: <CAGbSTZNCbyUb_AKpr0YcwpYhAU-4fxYUb=tru4zpMs3O=qFGGA@mail.gmail.com>
-Subject: Re Thanks.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210202121334.1361503-1-hch@lst.de>
+X-OS:   Linux gunter 5.10.9-1-default x86_64
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Dear Friend,
-I will be pleased if you can allow me to invest $104M Dollars in
-Estate Management,in your company or any area you best that will be
-of good profit to both of us
++++ Christoph Hellwig [02/02/21 13:13 +0100]:
+>Hi all,
+>
+>this series removes support for long term unused export types and
+>cleans up various loose ends in the module loader.
+>
+>Changes since v2:
+> - clean up klp_find_object_symbol a bit
+> - remove the now unused module_assert_mutex helper
+>
+>Changes since v1:
+> - move struct symsearch to module.c
+> - rework drm to not call find_module at all
+> - allow RCU-sched locking for find_module
+> - keep find_module as a public API instead of module_loaded
+> - update a few comments and commit logs
+>
+>Diffstat:
 
-Please do well to respond including your information for more details.
+Queued on modules-next (along with the updated patch 10).
 
-Thanks.
-Mr.Richard Thomas
+Thanks everyone,
+
+Jessica
