@@ -2,62 +2,62 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C309A31544A
-	for <lists+live-patching@lfdr.de>; Tue,  9 Feb 2021 17:48:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1341331547D
+	for <lists+live-patching@lfdr.de>; Tue,  9 Feb 2021 17:56:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233014AbhBIQsW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 9 Feb 2021 11:48:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
+        id S233100AbhBIQ4k (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 9 Feb 2021 11:56:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbhBIQqe (ORCPT
+        with ESMTP id S232959AbhBIQ4e (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 9 Feb 2021 11:46:34 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540FDC0613D6;
-        Tue,  9 Feb 2021 08:45:53 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id f2so23217875ljp.11;
-        Tue, 09 Feb 2021 08:45:53 -0800 (PST)
+        Tue, 9 Feb 2021 11:56:34 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A26C06174A
+        for <live-patching@vger.kernel.org>; Tue,  9 Feb 2021 08:55:54 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id t2so2009515pjq.2
+        for <live-patching@vger.kernel.org>; Tue, 09 Feb 2021 08:55:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ucw59OKhM9Q+zWkYzS3DfxjYeaWxtahJyWWZM+ZSxcs=;
-        b=CksqofXNoheIa9e1LmljJyAtF5mIk/2VO9Knc5og6IIcHV3s+qa62XPGPBZbukFUc3
-         llf8VuBHfG4uQkV4ZcWZTsHju69yHLidkySv9wacWjQUlssJMOqjXvNdtJUBoednu1Em
-         qryZm5jdr0AZY7z/ZooZKOUUZMFrsLLnAPUwW7yntjouTNDO1FDSE/KCQE0DI2KMkkCr
-         Tfeio6TdlWhCWmxpkNL/dYuGvhFgaKZsFK3jafISWZf/9oawVz69aoT2/qljhF5wCSPW
-         XJT418JirCZ6+xQkOQzuwqEFDZV9jSRUVJ9wd2TkG2xLjLpUlU+NISXqT/pBPsi09kEj
-         qcgw==
+        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:from:mime-version:subject:date:message-id
+         :references:cc:in-reply-to:to;
+        bh=1bFvl2bIW4Oh3wbTy7ZymRT/srGmZL+rM5fEH6hBOlE=;
+        b=CxCedMb+RMB2rjOGYlf85FglO5AAOwRCDrVJYQqgZJ3h664qF8scVpNpV/nk0Ve6bF
+         HEjnDUY5gDFsyQ8iVQrRAuxXEh35W9yseTgpHovrhVPKTehosh/tzsH5759uqnI1E5Wy
+         tW6aevBIg9FHOUewdYnhGr4E8JME1JdGZoSMMOTM1uGNpxXYtBOl5oF64/yeGwHysdPw
+         /ug4f0ZDK505aiX8XTyznhLVnlb8WxksZl73oxKbSSdi9/FRXIMClEh7Zle8ewUbrBjP
+         G8Gap02Yhbea/hUqJqSPcJXJmsm+4qDc7RlCSD6QZnKJLJOXXCDFkOm5KQbgBLp8DbN/
+         Xd9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ucw59OKhM9Q+zWkYzS3DfxjYeaWxtahJyWWZM+ZSxcs=;
-        b=Ig1Zv+kXU53r0PZAnW0YsMO8j7NcbBlS7f28ifoIg2ADcMdYXQCxZ/kEMa9eEGHLxP
-         8qMG/f+ln5pgHdoiXuY4DiOs2SJNZJXN/ekIIFDd7dbm2aE75pPFYOKNxRhVpfJ4HYDV
-         lpRnWG+jg9xpRtdHlTaOb7TNE8cozMLCCiAkiejY8+cqd6yo5Ruprp3FJyjE3+fQqysS
-         uUmC7LK4CpZy7yJ9Pwt8ZAvD1QlXMInK5ujJDFewKmBcYt1wFtNnx9d95na3ET5glyYZ
-         vCH2xk3ARf//tTpIeY0sSx+3gHZDQq3SmzoFvoOwJu3CuIT+YRiyUN6zOCwlzS0a60cf
-         ijWg==
-X-Gm-Message-State: AOAM532gKEWCB++J4pwvv6SFGGRBzaE6UJhGtuitcqwEm6jWMq7lsNGK
-        FOBS5haMaZbyZkl/hEkj1HC1ZreRXPnZefGJ0QE=
-X-Google-Smtp-Source: ABdhPJyKBJ6ktL1eFnp+AoAxD/FKdiQevwz7oTqE1bleouoAFpSG94b5wPM3hE3xefsG58tczevDsSO/zUqG03qJFds=
-X-Received: by 2002:a2e:3507:: with SMTP id z7mr14328131ljz.32.1612889151851;
- Tue, 09 Feb 2021 08:45:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20210207104022.GA32127@zn.tnic> <CAHk-=widXSyJ8W3vRrqO-zNP12A+odxg2J2_-oOUskz33wtfqA@mail.gmail.com>
- <20210207175814.GF32127@zn.tnic> <CAHk-=wi5z9S7x94SKYNj6qSHBqz+OD76GW=MDzo-KN2Fzm-V4Q@mail.gmail.com>
- <20210207224540.ercf5657pftibyaw@treble> <20210208100206.3b74891e@gandalf.local.home>
- <20210208153300.m5skwcxxrdpo37iz@treble> <YCFc+ewvwNWqrbY7@hirez.programming.kicks-ass.net>
- <20210208111546.5e01c3fb@gandalf.local.home> <alpine.LSU.2.21.2102090927230.31501@pobox.suse.cz>
- <20210209094953.65d2f322@gandalf.local.home>
-In-Reply-To: <20210209094953.65d2f322@gandalf.local.home>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 9 Feb 2021 08:45:40 -0800
-Message-ID: <CAADnVQK-qdE6mHUogeaQo9Av_58cLptosmfUVmdMzW7gJn5UVw@mail.gmail.com>
+        h=x-gm-message-state:content-transfer-encoding:from:mime-version
+         :subject:date:message-id:references:cc:in-reply-to:to;
+        bh=1bFvl2bIW4Oh3wbTy7ZymRT/srGmZL+rM5fEH6hBOlE=;
+        b=Ypue5WXsMzaBulemFTXjvmGwjarrqpkLH5VyeSA3kEksADGB/HkmmyfxPzWXTHdwqb
+         MOfuRPLfNwQ7Pmy0RTQydn9XLvfBq6In+OjGORbigyX2vuRB90PHiVZxdsaNVMnrpdHF
+         zHp0Ky3wbZrHhmdOuPZAcHTf/x+4LLZ3An8lCK+DVU50zVBLhmb5fw5LNfXmNfAX7T7N
+         fLkAcSeREEf9++JtzKooPZXC2u0sK0NN29nZBa6yeXESuAq7b4tqC8Jgk7/vphU5u2yJ
+         3R37mzhF8CjODxHEQnKNJ2GaeyZLsUJjklChM+SFSFcB5t3Q/atz7yshYo1qa8MJo5RA
+         wtFA==
+X-Gm-Message-State: AOAM5303d9qmbii90nJ0Wb1i8kQpazBJIX76aZ3uhzrDqddja6i4CnCd
+        sSt2rB42NChSrmSP/+96MIclqKHchI7jcJon
+X-Google-Smtp-Source: ABdhPJwO9CnieT0CraLne733rr1Axe7Z0/TeuoS/LaAA3J09+3wwD2JbNMH5wJ6XjL3/DRuyn6gOMg==
+X-Received: by 2002:a17:902:ed95:b029:e2:d080:7e0e with SMTP id e21-20020a170902ed95b02900e2d0807e0emr13163938plj.85.1612889753378;
+        Tue, 09 Feb 2021 08:55:53 -0800 (PST)
+Received: from ?IPv6:2601:646:c200:1ef2:2db1:f678:b1ca:a522? ([2601:646:c200:1ef2:2db1:f678:b1ca:a522])
+        by smtp.gmail.com with ESMTPSA id z31sm2978386pjj.47.2021.02.09.08.55.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Feb 2021 08:55:52 -0800 (PST)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   Andy Lutomirski <luto@amacapital.net>
+Mime-Version: 1.0 (1.0)
 Subject: Re: [GIT PULL] x86/urgent for v5.11-rc7
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
+Date:   Tue, 9 Feb 2021 08:55:51 -0800
+Message-Id: <73175691-4AE1-496D-80D1-DC85AE1E9C27@amacapital.net>
+References: <CAADnVQK-qdE6mHUogeaQo9Av_58cLptosmfUVmdMzW7gJn5UVw@mail.gmail.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Miroslav Benes <mbenes@suse.cz>,
         Peter Zijlstra <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
@@ -66,49 +66,69 @@ Cc:     Miroslav Benes <mbenes@suse.cz>,
         lkml <linux-kernel@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         live-patching@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAADnVQK-qdE6mHUogeaQo9Av_58cLptosmfUVmdMzW7gJn5UVw@mail.gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+X-Mailer: iPhone Mail (18D52)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 6:49 AM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Tue, 9 Feb 2021 09:32:34 +0100 (CET)
-> Miroslav Benes <mbenes@suse.cz> wrote:
->
-> > powerpc has this
-> >
-> > static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
-> > {
-> >         /*
-> >          * Live patch works only with -mprofile-kernel on PPC. In this case,
-> >          * the ftrace location is always within the first 16 bytes.
-> >          */
-> >         return ftrace_location_range(faddr, faddr + 16);
-> > }
-> >
-> > > > I suppose the trivial fix is to see if it points to endbr64 and if so,
-> > > > increment the addr by the length of that.
-> > >
-> > > I thought of that too. But one thing that may be possible, is to use
-> > > kallsym. I believe you can get the range of a function (start and end of
-> > > the function) from kallsyms. Then ask ftrace for the addr in that range
-> > > (there should only be one).
-> >
-> > And we can do this if a hard-coded value live above is not welcome. If I
-> > remember correctly, we used to have exactly this in the old versions of
-> > kGraft. We walked through all ftrace records, called
-> > kallsyms_lookup_size_offset() on every record's ip and if the offset+ip
-> > matched faddr (in this case), we returned the ip.
->
-> Either way is fine. Question is, should we just wait till CET is
-> implemented for the kernel before making any of these changes? Just knowing
-> that we have a solution to handle it may be good enough for now.
 
-I think the issue is more fundamental than what appears on the surface.
-According to endbr64 documentation it's not just any instruction.
-The cpu will wait for it and if it's replaced with int3 or not seen at
-the branch target the cpu will throw an exception.
-If I understood the doc correctly it means that endbr64 can never be
-replaced with a breakpoint. If that's the case text_poke_bp and kprobe
-need to do extra safety checks.
+
+> On Feb 9, 2021, at 8:45 AM, Alexei Starovoitov <alexei.starovoitov@gmail.c=
+om> wrote:
+>=20
+> =EF=BB=BFOn Tue, Feb 9, 2021 at 6:49 AM Steven Rostedt <rostedt@goodmis.or=
+g> wrote:
+>>=20
+>>> On Tue, 9 Feb 2021 09:32:34 +0100 (CET)
+>>> Miroslav Benes <mbenes@suse.cz> wrote:
+>>>=20
+>>> powerpc has this
+>>>=20
+>>> static inline unsigned long klp_get_ftrace_location(unsigned long faddr)=
+
+>>> {
+>>>        /*
+>>>         * Live patch works only with -mprofile-kernel on PPC. In this ca=
+se,
+>>>         * the ftrace location is always within the first 16 bytes.
+>>>         */
+>>>        return ftrace_location_range(faddr, faddr + 16);
+>>> }
+>>>=20
+>>>>> I suppose the trivial fix is to see if it points to endbr64 and if so,=
+
+>>>>> increment the addr by the length of that.
+>>>>=20
+>>>> I thought of that too. But one thing that may be possible, is to use
+>>>> kallsym. I believe you can get the range of a function (start and end o=
+f
+>>>> the function) from kallsyms. Then ask ftrace for the addr in that range=
+
+>>>> (there should only be one).
+>>>=20
+>>> And we can do this if a hard-coded value live above is not welcome. If I=
+
+>>> remember correctly, we used to have exactly this in the old versions of
+>>> kGraft. We walked through all ftrace records, called
+>>> kallsyms_lookup_size_offset() on every record's ip and if the offset+ip
+>>> matched faddr (in this case), we returned the ip.
+>>=20
+>> Either way is fine. Question is, should we just wait till CET is
+>> implemented for the kernel before making any of these changes? Just knowi=
+ng
+>> that we have a solution to handle it may be good enough for now.
+>=20
+> I think the issue is more fundamental than what appears on the surface.
+> According to endbr64 documentation it's not just any instruction.
+> The cpu will wait for it and if it's replaced with int3 or not seen at
+> the branch target the cpu will throw an exception.
+> If I understood the doc correctly it means that endbr64 can never be
+> replaced with a breakpoint. If that's the case text_poke_bp and kprobe
+> need to do extra safety checks.
+
+Ugh.
+
+Or we hack up #CP to handle this case. I don=E2=80=99t quite know how I feel=
+ about this.=
