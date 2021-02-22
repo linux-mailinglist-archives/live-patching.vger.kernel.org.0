@@ -2,31 +2,40 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C497321AE2
-	for <lists+live-patching@lfdr.de>; Mon, 22 Feb 2021 16:13:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04590321E8B
+	for <lists+live-patching@lfdr.de>; Mon, 22 Feb 2021 18:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230358AbhBVPM6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 22 Feb 2021 10:12:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54560 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230378AbhBVPMv (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 22 Feb 2021 10:12:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6B9F564E61;
-        Mon, 22 Feb 2021 15:12:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614006725;
-        bh=NDgZTqFZ6L94F/HVezS1Spyd2g4LoZ+F846hPirmNbA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tWrOZaT2AURA9mEIP8mlw8AFHJqdT8KxHGbvKVexcD6uTOqVixaqssbcR3wBPIE8E
-         QF7uzowYMhST48vWyDWYi+UuueqEIYXcqxLpU+EKaxfw46p05e+Av6oKi7Da74hFYA
-         HeydWYDr745b1uAkS6oGi2d8beJJmLg2gxTQpB1cWB0prPzT90cAlWXUUlkJ1MTm2v
-         AUMmK7naH69pTokCVgtJKq3yj0RSIEvYOebNLlWSsUPL9QIbALx8kJ+6PncrL9NO6d
-         abhi+UHslg7IwJ1a9v+Hw3SfnOM9lHDb4JnKqHTB9epPyye+1ElMBb0F4QvxJJy23e
-         wufjIgry68WuQ==
-Date:   Tue, 23 Feb 2021 00:12:01 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
+        id S230403AbhBVRxZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 22 Feb 2021 12:53:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38186 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230317AbhBVRxY (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 22 Feb 2021 12:53:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614016318;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q/184qGC08c/X9yZo4h4BJEplxwrcfp8FbIowMgcbh8=;
+        b=EnK4qSmoCoPPoWJO1Y1X92E6UDV8m6ZszFohuIJl6bxlw0F585NJy5A03tFN8B4N99LrJx
+        GQnnVXEtLZY/1NLVxZbCZ9JDXJ26RbwlXpor5gBkeNf1yZXxSnYojoszKjLRZNfl+o6CHx
+        bbB0mLvk/8V9SHvMTyFsOsKJk78Se2Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-107-RChLU-ryP-K3uWCL8GQBYQ-1; Mon, 22 Feb 2021 12:51:55 -0500
+X-MC-Unique: RChLU-ryP-K3uWCL8GQBYQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACBA3100961C;
+        Mon, 22 Feb 2021 17:51:53 +0000 (UTC)
+Received: from treble (ovpn-118-117.rdu2.redhat.com [10.10.118.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BD5435D6B1;
+        Mon, 22 Feb 2021 17:51:52 +0000 (UTC)
+Date:   Mon, 22 Feb 2021 11:51:50 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
 Cc:     Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
         Arnaldo Carvalho de Melo <acme@kernel.org>,
         Kristen Carlson Accardi <kristen@linux.intel.com>,
@@ -35,67 +44,46 @@ Cc:     Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
         Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
         Konstantin Khorenko <khorenko@virtuozzo.com>
 Subject: Re: 'perf probe' and symbols from .text.<something>
-Message-Id: <20210223001201.c478d4cb6481385d31b3f09b@kernel.org>
-In-Reply-To: <20210223000508.cab3cddaa3a3790525f49247@kernel.org>
+Message-ID: <20210222175150.yxgw3sxxaqjqgq56@treble>
 References: <09257fb8-3ded-07b0-b3cc-55d5431698d8@virtuozzo.com>
-        <20210223000508.cab3cddaa3a3790525f49247@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+ <20210223000508.cab3cddaa3a3790525f49247@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210223000508.cab3cddaa3a3790525f49247@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 23 Feb 2021 00:05:08 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
-
-> Hi Evgenii,
-> 
-> On Thu, 18 Feb 2021 20:09:17 +0300
-> Evgenii Shatokhin <eshatokhin@virtuozzo.com> wrote:
-> 
-> > Hi,
+On Tue, Feb 23, 2021 at 12:05:08AM +0900, Masami Hiramatsu wrote:
+> > Of course, one could place probes using absolute addresses of the 
+> > functions but that would be less convenient.
 > > 
-> > It seems, 'perf probe' can only see functions from .text section in the 
-> > kernel modules, but not from .text.unlikely or other .text.* sections.
+> > This also affects many livepatch modules where the kernel code can be 
+> > compiled with -ffunction-sections and each function may end up in a 
+> > separate section .text.<function_name>. 'perf probe' cannot be used 
+> > there, except with the absolute addresses.
 > > 
-> > For example, with kernel 5.11 and nf_conntrack.ko with debug info, 'perf 
-> > probe' succeeds for nf_conntrack_attach() from .text and fails for 
-> > nf_ct_resolve_clash() from .text.unlikely:
+> > Moreover, if FGKASLR patches are merged 
+> > (https://lwn.net/Articles/832434/) and the kernel is built with FGKASLR 
+> > enabled, -ffunction-sections will be used too. 'perf probe' will be 
+> > unable to see the kernel functions then.
 > 
-> Thanks for reporting it!
-> 
-> > 
-> > ------------
-> > # perf probe -v -m nf_conntrack nf_ct_resolve_clash
-> > probe-definition(0): nf_ct_resolve_clash
-> > symbol:nf_ct_resolve_clash file:(null) line:0 offset:0 return:0 lazy:(null)
-> > 0 arguments
-> > Failed to get build-id from nf_conntrack.
-> > Cache open error: -1
-> > Open Debuginfo file: 
-> > /lib/modules/5.11.0-test01/kernel/net/netfilter/nf_conntrack.ko
-> > Try to find probe point from debuginfo.
-> > Matched function: nf_ct_resolve_clash [33616]
-> > Probe point found: nf_ct_resolve_clash+0
-> > Found 1 probe_trace_events.
-> > Post processing failed or all events are skipped. (-2)
-> > Probe point 'nf_ct_resolve_clash' not found.
-> >    Error: Failed to add events. Reason: No such file or directory (Code: -2)
-> 
-[...]
+> Hmm, if the FGKASLAR really randomizes the symbol address, perf-probe
+> should give up "_text-relative" probe for that kernel, and must fallback
+> to the "symbol-based" probe. (Are there any way to check the FGKASLR is on?)
+> The problem of "symbol-based" probe is that local (static) symbols
+> may share a same name sometimes. In that case, it can not find correct
+> symbol. (Maybe I can find a candidate from its size.)
+> Anyway, sometimes the security and usability are trade-off.
 
-> > Is there a way to allow probing of functions in .text.<something> ?
+We had a similar issue with FGKASLR and live patching.  The proposed
+solution is a new linker flag which eliminates duplicates: -z
+unique-symbol.
 
-BTW, just for putting a probe on nf_ct_resolve_clash, please give the module *path*
-instead of the module *name*. For example,
-
-perf probe -v -m /lib/modules/5.11.0-test01/kernel/net/netfilter/nf_conntrack.ko nf_ct_resolve_clash
-
-This should work (at least works for me), because it directly loads the symbols from the .ko file.
-
-Thank you,
+https://sourceware.org/bugzilla/show_bug.cgi?id=26391
 
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+Josh
+
