@@ -2,99 +2,60 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4335D322675
-	for <lists+live-patching@lfdr.de>; Tue, 23 Feb 2021 08:39:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A73F6322A2B
+	for <lists+live-patching@lfdr.de>; Tue, 23 Feb 2021 13:02:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231675AbhBWHio (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Feb 2021 02:38:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37052 "EHLO mail.kernel.org"
+        id S232491AbhBWMBm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Feb 2021 07:01:42 -0500
+Received: from mail.jvpinto.com ([65.49.11.60]:4457 "EHLO mail.JVPinto.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230104AbhBWHii (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Feb 2021 02:38:38 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4798264E3F;
-        Tue, 23 Feb 2021 07:37:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614065877;
-        bh=+afHJL7e/wCiWy1fR3SnBqcXl4qAUrsL6SV/cscUuS4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CojkXMw+D4xi8Ti41V/VFR9Q1WVoX0hp7R75fovuDbPZcg+qj6u7m6YzpVYGC71HE
-         jR5UecxyC6v/4qy07UXCqwmEw+GYkh6+kPzHRvw2URO6hT4EsIwcaFwPGr670/80nY
-         kSssKQYG2EWbxJ6tnRTdRst/4u92kpzBmyovp5eTfaaPqipAJ5C4F8JwEr2I55KPIa
-         BGoAxQIipcdnWHrZpuP+EtmYaolNQK1B3KdGGrkPx9e/BgBaTp8RW4/di+dSF8csBd
-         4ZNHASZsdVu5K6siL04IqjJbpPet+nl1xTqZ6mXd2rHBT6EoDUk3Xg/eLROT2uztVr
-         VnjH2YWHRoyyQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        live-patching@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        Konstantin Khorenko <khorenko@virtuozzo.com>
-Subject: [PATCH] perf-probe: dso: Add symbols in .text.* subsections to text symbol map in kenrel modules
-Date:   Tue, 23 Feb 2021 16:37:52 +0900
-Message-Id: <161406587251.969784.5469149622544499077.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210223000508.cab3cddaa3a3790525f49247@kernel.org>
-References: <20210223000508.cab3cddaa3a3790525f49247@kernel.org>
-User-Agent: StGit/0.19
+        id S232738AbhBWL5Q (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 23 Feb 2021 06:57:16 -0500
+Received: from RW-EXC1.JVPinto.com (2002:ac20:10d::ac20:10d) by
+ RW-EXC1.JVPinto.com (2002:ac20:10d::ac20:10d) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.2; Tue, 23 Feb 2021 03:55:37 -0800
+Received: from User (52.231.198.195) by RW-EXC1.JVPinto.com (172.32.1.13) with
+ Microsoft SMTP Server id 15.0.1497.2 via Frontend Transport; Tue, 23 Feb 2021
+ 03:55:22 -0800
+Reply-To: <ms.reem@yandex.com>
+From:   "Ms. Reem" <johnpinto@jvpinto.com>
+Subject: Hello okay
+Date:   Tue, 23 Feb 2021 11:55:36 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+Message-ID: <c290ad866c304a17afbffbf2031c9e8c@RW-EXC1.JVPinto.com>
+To:     Undisclosed recipients:;
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The kernel modules have .text.* subsections such as .text.unlikely.
-Since dso__process_kernel_symbol() only identify the symbols in the ".text"
-section as the text symbols and inserts it in the default dso in the map,
-the symbols in such subsections can not be found by map__find_symbol().
+Hello,
 
-This adds the symbols in those subsections to the default dso in the map so
-that map__find_symbol() can find them. This solves the perf-probe issue on
-probing online module.
+My name is Ms. Reem Ebrahim Al-Hashimi, I am the "Minister of state
+and Petroleum" also "Minister of State for International Cooperation"
+in UAE. I write to you on behalf of my other "three (3) colleagues"
+who has approved me to solicit for your "partnership in claiming of
+{us$47=Million}" from a Financial Home in Cambodia on their behalf and
+for our "Mutual Benefits".
 
-Without this fix, probing on a symbol in .text.unlikely fails.
-  ----
-  # perf probe -m nf_conntrack nf_l4proto_log_invalid
-  Probe point 'nf_l4proto_log_invalid' not found.
-    Error: Failed to add events.
-  ----
+The Fund {us$47=Million} is our share from the (over-invoiced) Oil/Gas
+deal with Cambodian/Vietnam Government within 2013/2014, however, we
+don't want our government to know about the fund. If this proposal
+interests you, let me know, by sending me an email and I will send to
+you detailed information on how this business would be successfully
+transacted. Be informed that nobody knows about the secret of this
+fund except us, and we know how to carry out the entire transaction.
+So I am compelled to ask, that you will stand on our behalf and
+receive this fund into any account that is solely controlled by you.
 
-With this fix, it works because map__find_symbol() can find the symbol
-correctly.
-  ----
-  # perf probe -m nf_conntrack nf_l4proto_log_invalid
-  Added new event:
-    probe:nf_l4proto_log_invalid (on nf_l4proto_log_invalid in nf_conntrack)
+We will compensate you with 15% of the total amount involved as
+gratification for being our partner in this transaction. Reply to:
+ms.reem@yandex.com
 
-  You can now use it in all perf tools, such as:
-
-  	perf record -e probe:nf_l4proto_log_invalid -aR sleep 1
-
-  ----
-
-Reported-by: Evgenii Shatokhin <eshatokhin@virtuozzo.com>
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- tools/perf/util/symbol-elf.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
-index 6dff843fd883..0c1113236913 100644
---- a/tools/perf/util/symbol-elf.c
-+++ b/tools/perf/util/symbol-elf.c
-@@ -985,7 +985,9 @@ static int dso__process_kernel_symbol(struct dso *dso, struct map *map,
- 	if (strcmp(section_name, (curr_dso->short_name + dso->short_name_len)) == 0)
- 		return 0;
- 
--	if (strcmp(section_name, ".text") == 0) {
-+	/* .text and .text.* are included in the text dso */
-+	if (strncmp(section_name, ".text", 5) == 0 &&
-+	    (section_name[5] == '\0' || section_name[5] == '.')) {
- 		/*
- 		 * The initial kernel mapping is based on
- 		 * kallsyms and identity maps.  Overwrite it to
-
+Regards,
+Ms. Reem.
