@@ -2,38 +2,39 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AC4E32305A
-	for <lists+live-patching@lfdr.de>; Tue, 23 Feb 2021 19:13:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD04323058
+	for <lists+live-patching@lfdr.de>; Tue, 23 Feb 2021 19:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232986AbhBWSNd (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Feb 2021 13:13:33 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:60284 "EHLO
+        id S233711AbhBWSNg (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Feb 2021 13:13:36 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:60294 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232180AbhBWSNc (ORCPT
+        with ESMTP id S232634AbhBWSNd (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Feb 2021 13:13:32 -0500
+        Tue, 23 Feb 2021 13:13:33 -0500
 Received: from x64host.home (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8F0A520B6C40;
-        Tue, 23 Feb 2021 10:12:50 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8F0A520B6C40
+        by linux.microsoft.com (Postfix) with ESMTPSA id 41A0120A247C;
+        Tue, 23 Feb 2021 10:12:51 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 41A0120A247C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
         s=default; t=1614103971;
-        bh=sy1CSkf4NPTHdPtm6j5T9s2Pe4lqTfBSvIKFA247V6w=;
+        bh=VCa+ZCbvJMbIKML3X/zZgJgbXAV9P4yVGWxgCW2AniU=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=K03r/VXlwk2jKpOAoakKfKTnk9GgZIaZ9RmcwGyE5/jK0n0yMqk9aGLaUFlg9nGS7
-         vh8SAXoOZ99GbSj9QKLNVoO+IqAjd5RBtUqtEt0bMUmbji47YgJB/vCTRpw/4CcHaU
-         lsSYlbqTz0gCx991Ir1S5iazzjKggR2/3oJBmQEU=
+        b=Jpld8dXunZwrEM1ux+o8ce23dOS6lhLJ+kkuTeCa0eS2COsUZjIbDsXX2d90xhh39
+         hKmx9e1WLDAyijCBTOPPPnl9SK3Dvy/I9nvA/I8ynV0hgB8V9NZi43OgpY7eomQd6D
+         HiItxaUrtJ0kOJe4TK9ahaezOJdKcE/QN/a/52Js=
 From:   madvenka@linux.microsoft.com
 To:     broonie@kernel.org, mark.rutland@arm.com, jpoimboe@redhat.com,
         jthierry@redhat.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v1 0/1] arm64: Unwinder enhancements for reliable stack trace
-Date:   Tue, 23 Feb 2021 12:12:42 -0600
-Message-Id: <20210223181243.6776-1-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v1 1/1] arm64: Unwinder enhancements for reliable stack trace
+Date:   Tue, 23 Feb 2021 12:12:43 -0600
+Message-Id: <20210223181243.6776-2-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <bc4761a47ad08ab7fdd555fc8094beb8fc758d33>
+In-Reply-To: <20210223181243.6776-1-madvenka@linux.microsoft.com>
 References: <bc4761a47ad08ab7fdd555fc8094beb8fc758d33>
+ <20210223181243.6776-1-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -41,9 +42,6 @@ List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-
-I have made an attempt to add some enhancements to the stack trace code
-so it is a few steps closer to what is required for livepatch.
 
 Unwinder changes
 ================
@@ -64,8 +62,8 @@ Unwinder changes
 	{
 	}
 
-	In this patch, the FP is set to arm64_last_frame and the PC is set
-	to arm64_last_func in the bottom most frame.
+	So, set the FP to arm64_last_frame and the PC to arm64_last_func in
+	the bottom most frame.
 
 	Exception/Interrupt detection
 	=============================
@@ -74,25 +72,22 @@ Unwinder changes
 	anywhere including the frame pointer prolog and epilog. The
 	unwinder needs to be able to detect the exception on the stack.
 
-	Currently, the EL1 exception handler sets up pt_regs on the stack.
-	pt_regs contains a stack frame field that can hold an FP and a PC.
-	The exception handler chains this stack frame field along with other
-	frames on the stack. In other words, the EL1 handler creates a
-	synthetic exception frame. Currently, the unwinder does not know
-	where this exception frame is in the stack trace.
+	Currently, the EL1 exception handler sets up pt_regs on the stack
+	and chains pt_regs->stackframe with the other frames on the stack.
+	But, the unwinder does not know where this exception frame is in
+	the stack trace.
 
-	In this patch, the LSB of the exception frame FP is set. This is
-	similar to what is done on X86. When the unwinder detects the frame
-	with the LSB set, it needs to make sure that it is really an
-	exception frame and not the result of any stack corruption.
+	Set the LSB of the exception frame FP to allow the unwinder to
+	detect the exception frame. When the unwinder detects the frame,
+	it needs to make sure that it is really an exception frame and
+	not the result of any stack corruption.
 
 	It can do this if the FP and PC are also recorded elsewhere in the
 	pt_regs for comparison. Currently, the FP is also stored in
 	regs->regs[29]. The PC is stored in regs->pc. However, regs->pc can
-	be changed by lower level functions. So, the PC needs to be stored
-	somewhere else as well.
+	be changed by lower level functions.
 
-	This patch defines a new field, pt_regs->orig_pc, and records the
+	Create a new field, pt_regs->orig_pc, and record the return address
 	PC there. With this, the unwinder can validate the exception frame
 	and set a flag so that the caller of the unwinder can know when
 	an exception frame is encountered.
@@ -101,34 +96,30 @@ Unwinder changes
 	=====================
 
 	Currently, the unwinder returns -EINVAL for stack trace termination
-	as well as stack trace error. In this patch, the unwinder returns
-	-ENOENT for stack trace termination and -EINVAL for error. This idea
-	has been plagiarized from Mark Brown.
+	as well as stack trace error. Return -ENOENT for stack trace
+	termination and -EINVAL for error to disambiguate. This idea has
+	been borrowed from Mark Brown.
 
 Reliable stack trace function
 =============================
 
-arch_stack_walk_reliable() is implemented in this patch. It walks the
-stack like the existing stack trace functions with a couple of additional
-checks:
+Implement arch_stack_walk_reliable(). This function walks the stack like
+the existing stack trace functions with a couple of additional checks:
 
 	Return address check
 	--------------------
 
-	For each frame, the return address is checked to see if it is
-	a proper kernel text address. If not, the stack walk fails.
+	For each frame, check the return address to see if it is a
+	proper kernel text address. If not, return -EINVAL.
 
 	Exception frame check
 	---------------------
 
-	Each frame is checked to see if it is an EL1 exception frame.
-	If it is, the stack walk fails.
+	Check each frame to see if it is an EL1 exception frame. If it is,
+	return -EINVAL.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
-
-Madhavan T. Venkataraman (1):
-  arm64: Unwinder enhancements for reliable stack trace
-
+---
  arch/arm64/include/asm/processor.h  |   2 +
  arch/arm64/include/asm/ptrace.h     |   7 ++
  arch/arm64/include/asm/stacktrace.h |   5 ++
@@ -139,8 +130,298 @@ Madhavan T. Venkataraman (1):
  arch/arm64/kernel/stacktrace.c      | 103 +++++++++++++++++++++++++---
  8 files changed, 137 insertions(+), 15 deletions(-)
 
-
-base-commit: e0756cfc7d7cd08c98a53b6009c091a3f6a50be6
+diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
+index ca2cd75d3286..d268c74d262e 100644
+--- a/arch/arm64/include/asm/processor.h
++++ b/arch/arm64/include/asm/processor.h
+@@ -195,6 +195,8 @@ static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
+ 	memset(regs, 0, sizeof(*regs));
+ 	forget_syscall(regs);
+ 	regs->pc = pc;
++	regs->stackframe[0] = (u64) arm64_last_frame;
++	regs->stackframe[1] = (u64) arm64_last_func;
+ 
+ 	if (system_uses_irq_prio_masking())
+ 		regs->pmr_save = GIC_PRIO_IRQON;
+diff --git a/arch/arm64/include/asm/ptrace.h b/arch/arm64/include/asm/ptrace.h
+index e58bca832dff..a15750a9f6e5 100644
+--- a/arch/arm64/include/asm/ptrace.h
++++ b/arch/arm64/include/asm/ptrace.h
+@@ -201,8 +201,15 @@ struct pt_regs {
+ 	/* Only valid for some EL1 exceptions. */
+ 	u64 lockdep_hardirqs;
+ 	u64 exit_rcu;
++
++	/* Only valid for EL1 exceptions. */
++	u64 orig_pc;
++	u64 unused1;
+ };
+ 
++extern const u64 arm64_last_frame[2];
++extern void arm64_last_func(void);
++
+ static inline bool in_syscall(struct pt_regs const *regs)
+ {
+ 	return regs->syscallno != NO_SYSCALL;
+diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
+index eb29b1fe8255..9760ceddbd78 100644
+--- a/arch/arm64/include/asm/stacktrace.h
++++ b/arch/arm64/include/asm/stacktrace.h
+@@ -49,6 +49,9 @@ struct stack_info {
+  *
+  * @graph:       When FUNCTION_GRAPH_TRACER is selected, holds the index of a
+  *               replacement lr value in the ftrace graph stack.
++ *
++ * @exception_frame
++ *		EL1 exception frame.
+  */
+ struct stackframe {
+ 	unsigned long fp;
+@@ -59,6 +62,7 @@ struct stackframe {
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+ 	int graph;
+ #endif
++	bool exception_frame;
+ };
+ 
+ extern int unwind_frame(struct task_struct *tsk, struct stackframe *frame);
+@@ -169,6 +173,7 @@ static inline void start_backtrace(struct stackframe *frame,
+ 	bitmap_zero(frame->stacks_done, __NR_STACK_TYPES);
+ 	frame->prev_fp = 0;
+ 	frame->prev_type = STACK_TYPE_UNKNOWN;
++	frame->exception_frame = false;
+ }
+ 
+ #endif	/* __ASM_STACKTRACE_H */
+diff --git a/arch/arm64/kernel/asm-offsets.c b/arch/arm64/kernel/asm-offsets.c
+index 301784463587..a9fbe1ca6d8a 100644
+--- a/arch/arm64/kernel/asm-offsets.c
++++ b/arch/arm64/kernel/asm-offsets.c
+@@ -75,6 +75,7 @@ int main(void)
+   DEFINE(S_SDEI_TTBR1,		offsetof(struct pt_regs, sdei_ttbr1));
+   DEFINE(S_PMR_SAVE,		offsetof(struct pt_regs, pmr_save));
+   DEFINE(S_STACKFRAME,		offsetof(struct pt_regs, stackframe));
++  DEFINE(S_ORIG_PC,		offsetof(struct pt_regs, orig_pc));
+   DEFINE(PT_REGS_SIZE,		sizeof(struct pt_regs));
+   BLANK();
+ #ifdef CONFIG_COMPAT
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index c9bae73f2621..b2d6c73dd054 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -264,10 +264,21 @@ alternative_else_nop_endif
+ 	 * In order to be able to dump the contents of struct pt_regs at the
+ 	 * time the exception was taken (in case we attempt to walk the call
+ 	 * stack later), chain it together with the stack frames.
++	 *
++	 * Set up a synthetic EL0 frame such that the unwinder can recognize
++	 * it and stop the unwind.
++	 *
++	 * Set up a synthetic EL1 frame such that the unwinder can recognize
++	 * it. For a reliable stack trace, the unwinder stops here. Else, it
++	 * continues. Also, record the return address in regs->orig_pc for
++	 * the unwinder's benefit because regs->pc can be changed.
+ 	 */
+ 	.if \el == 0
+-	stp	xzr, xzr, [sp, #S_STACKFRAME]
++	ldr	x29, =arm64_last_frame
++	ldr	x17, =arm64_last_func
++	stp	x29, x17, [sp, #S_STACKFRAME]
+ 	.else
++	orr	x29, x29, #1
+ 	stp	x29, x22, [sp, #S_STACKFRAME]
+ 	.endif
+ 	add	x29, sp, #S_STACKFRAME
+@@ -279,6 +290,7 @@ alternative_else_nop_endif
+ #endif
+ 
+ 	stp	x22, x23, [sp, #S_PC]
++	str	x22, [sp, #S_ORIG_PC]
+ 
+ 	/* Not in a syscall by default (el0_svc overwrites for real syscall) */
+ 	.if	\el == 0
+diff --git a/arch/arm64/kernel/head.S b/arch/arm64/kernel/head.S
+index a0dc987724ed..2cce019f29fa 100644
+--- a/arch/arm64/kernel/head.S
++++ b/arch/arm64/kernel/head.S
+@@ -448,8 +448,8 @@ SYM_FUNC_START_LOCAL(__primary_switched)
+ 0:
+ #endif
+ 	add	sp, sp, #16
+-	mov	x29, #0
+-	mov	x30, #0
++	ldr	x29, =arm64_last_frame
++	ldr	x30, =arm64_last_func
+ 	b	start_kernel
+ SYM_FUNC_END(__primary_switched)
+ 
+@@ -644,8 +644,8 @@ SYM_FUNC_START_LOCAL(__secondary_switched)
+ 	cbz	x2, __secondary_too_slow
+ 	msr	sp_el0, x2
+ 	scs_load x2, x3
+-	mov	x29, #0
+-	mov	x30, #0
++	ldr	x29, =arm64_last_frame
++	ldr	x30, =arm64_last_func
+ 
+ #ifdef CONFIG_ARM64_PTR_AUTH
+ 	ptrauth_keys_init_cpu x2, x3, x4, x5
+diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+index 6616486a58fe..bac13fc33914 100644
+--- a/arch/arm64/kernel/process.c
++++ b/arch/arm64/kernel/process.c
+@@ -380,6 +380,12 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
+ 
+ asmlinkage void ret_from_fork(void) asm("ret_from_fork");
+ 
++const u64	arm64_last_frame[2] __attribute__ ((aligned (16)));
++
++void arm64_last_func(void)
++{
++}
++
+ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
+ 		unsigned long stk_sz, struct task_struct *p, unsigned long tls)
+ {
+@@ -437,6 +443,12 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
+ 	}
+ 	p->thread.cpu_context.pc = (unsigned long)ret_from_fork;
+ 	p->thread.cpu_context.sp = (unsigned long)childregs;
++	/*
++	 * Set up a special termination stack frame for the task.
++	 */
++	p->thread.cpu_context.fp = (unsigned long)childregs->stackframe;
++	childregs->stackframe[0] = (u64) arm64_last_frame;
++	childregs->stackframe[1] = (u64) arm64_last_func;
+ 
+ 	ptrace_hw_copy_thread(p);
+ 
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index fa56af1a59c3..26ac4dd54eaf 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -18,6 +18,60 @@
+ #include <asm/stack_pointer.h>
+ #include <asm/stacktrace.h>
+ 
++static notrace struct pt_regs *get_frame_regs(struct task_struct *task,
++					      struct stackframe *frame)
++{
++	unsigned long stackframe, regs_start, regs_end;
++	struct stack_info info;
++
++	stackframe = frame->prev_fp;
++	if (!stackframe)
++		return NULL;
++
++	(void) on_accessible_stack(task, stackframe, &info);
++
++	regs_start = stackframe - offsetof(struct pt_regs, stackframe);
++	if (regs_start < info.low)
++		return NULL;
++	regs_end = regs_start + sizeof(struct pt_regs);
++	if (regs_end > info.high)
++		return NULL;
++	return (struct pt_regs *) regs_start;
++}
++
++static notrace int update_frame(struct task_struct *task,
++				struct stackframe *frame)
++{
++	unsigned long lsb = frame->fp & 0xf;
++	unsigned long fp = frame->fp & ~lsb;
++	unsigned long pc = frame->pc;
++	struct pt_regs *regs;
++
++	frame->exception_frame = false;
++
++	if (fp == (unsigned long) arm64_last_frame &&
++	    pc == (unsigned long) arm64_last_func)
++		return -ENOENT;
++
++	if (!lsb)
++		return 0;
++	if (lsb != 1)
++		return -EINVAL;
++
++	/*
++	 * This looks like an EL1 exception frame.
++	 * Make sure the frame matches the EL1 pt_regs.
++	 */
++	regs = get_frame_regs(task, frame);
++	if (!regs || fp != READ_ONCE_NOCHECK(regs->regs[29]) ||
++	   pc != regs->orig_pc)
++		return -EINVAL;
++
++	frame->exception_frame = true;
++	frame->fp = fp;
++	return 0;
++}
++
+ /*
+  * AArch64 PCS assigns the frame pointer to x29.
+  *
+@@ -104,16 +158,7 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
+ 
+ 	frame->pc = ptrauth_strip_insn_pac(frame->pc);
+ 
+-	/*
+-	 * Frames created upon entry from EL0 have NULL FP and PC values, so
+-	 * don't bother reporting these. Frames created by __noreturn functions
+-	 * might have a valid FP even if PC is bogus, so only terminate where
+-	 * both are NULL.
+-	 */
+-	if (!frame->fp && !frame->pc)
+-		return -EINVAL;
+-
+-	return 0;
++	return update_frame(tsk, frame);
+ }
+ NOKPROBE_SYMBOL(unwind_frame);
+ 
+@@ -217,4 +262,42 @@ void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
+ 	walk_stackframe(task, &frame, consume_entry, cookie);
+ }
+ 
++int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
++			      void *cookie, struct task_struct *task)
++{
++	struct stackframe frame;
++	int ret = 0;
++
++	if (task == current) {
++		start_backtrace(&frame,
++				(unsigned long)__builtin_frame_address(0),
++				(unsigned long)arch_stack_walk_reliable);
++	} else {
++		start_backtrace(&frame, thread_saved_fp(task),
++				thread_saved_pc(task));
++	}
++
++	while (!ret) {
++		/*
++		 * If the task encountered an EL1 exception, the stack trace
++		 * is unreliable.
++		 */
++		if (frame.exception_frame)
++			return -EINVAL;
++
++		/*
++		 * A NULL or invalid return address probably means there's
++		 * some generated code which __kernel_text_address() doesn't
++		 * know about.
++		 */
++		if (!__kernel_text_address(frame.pc))
++			return -EINVAL;
++		if (!consume_entry(cookie, frame.pc))
++			return -EINVAL;
++		ret = unwind_frame(task, &frame);
++	}
++
++	return ret == -ENOENT ? 0 : -EINVAL;
++}
++
+ #endif
 -- 
 2.25.1
 
