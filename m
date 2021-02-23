@@ -2,184 +2,116 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28E8332315E
-	for <lists+live-patching@lfdr.de>; Tue, 23 Feb 2021 20:25:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA2D2323195
+	for <lists+live-patching@lfdr.de>; Tue, 23 Feb 2021 20:47:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232197AbhBWTXL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Feb 2021 14:23:11 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:41214 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233995AbhBWTVb (ORCPT
+        id S232754AbhBWTrX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Feb 2021 14:47:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57172 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231858AbhBWTrW (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Feb 2021 14:21:31 -0500
-Received: from [192.168.254.32] (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 451ED20B6C40;
-        Tue, 23 Feb 2021 11:20:50 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 451ED20B6C40
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1614108050;
-        bh=bgVREtbThCXyyNVzI6besUKkeZ3w63oXLPzE3PrY3pg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Ro2SNAFV/9dYuQbu/CjgaupoR8BXXeFbt/T1IF29ETKMMSFV5PUCPjxTQxgWVvWky
-         EEhrkZ+OpfQ3TrkVrT2gd4x1EKYGbYxTJBWpd01fbhyNYGXxQzmzZReTHR6aqxpBdw
-         7QIGdAHiLRcLUOHBX0I4UoCLFvpcm3ZUhGKOpbDU=
-Subject: Re: [RFC PATCH v1 1/1] arm64: Unwinder enhancements for reliable
- stack trace
-To:     Mark Brown <broonie@kernel.org>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, jthierry@redhat.com,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <bc4761a47ad08ab7fdd555fc8094beb8fc758d33>
- <20210223181243.6776-1-madvenka@linux.microsoft.com>
- <20210223181243.6776-2-madvenka@linux.microsoft.com>
- <20210223190240.GK5116@sirena.org.uk>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <08e8e02c-8ef0-26bb-1d0d-7dda54b5fefd@linux.microsoft.com>
-Date:   Tue, 23 Feb 2021 13:20:49 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 23 Feb 2021 14:47:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614109556;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=k6yTUk4uiMxB/J45WOwiwNDUQruhsfoPNbtv/+KOvq4=;
+        b=BxNTynZ+GbCYXyQFq7S29WUOcG9xvivZifkiNXH1/GmlLivSNcB1DLx2g7yKZl7sxdociV
+        L506hP82hox2UDP1lV/960cMO/q5o4gP7/cEe9Q0NV068Dlq40H56P+e5XsDeeHBTZIKgM
+        cHFbStmTr++9q39QuLbfzW/oWMihpZo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-207-0o9XgixIO7SOTOk_xRElUw-1; Tue, 23 Feb 2021 14:45:51 -0500
+X-MC-Unique: 0o9XgixIO7SOTOk_xRElUw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D0C78107ACF8;
+        Tue, 23 Feb 2021 19:45:49 +0000 (UTC)
+Received: from treble (ovpn-118-117.rdu2.redhat.com [10.10.118.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AB5B75C277;
+        Tue, 23 Feb 2021 19:45:48 +0000 (UTC)
+Date:   Tue, 23 Feb 2021 13:45:46 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        live-patching@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        Konstantin Khorenko <khorenko@virtuozzo.com>
+Subject: Re: 'perf probe' and symbols from .text.<something>
+Message-ID: <20210223194546.dhejf4mpugyw3nqq@treble>
+References: <09257fb8-3ded-07b0-b3cc-55d5431698d8@virtuozzo.com>
+ <20210223000508.cab3cddaa3a3790525f49247@kernel.org>
+ <20210222175150.yxgw3sxxaqjqgq56@treble>
+ <20210223102331.147d62de88886a75013c10e0@kernel.org>
+ <20210223163619.0cd580a4290165208c8aa7bb@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210223190240.GK5116@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210223163619.0cd580a4290165208c8aa7bb@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-
-
-On 2/23/21 1:02 PM, Mark Brown wrote:
-> On Tue, Feb 23, 2021 at 12:12:43PM -0600, madvenka@linux.microsoft.com wrote:
->> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>
->> Unwinder changes
->> ================
+On Tue, Feb 23, 2021 at 04:36:19PM +0900, Masami Hiramatsu wrote:
+> On Tue, 23 Feb 2021 10:23:31 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
 > 
-> This is making several different changes so should be split into a patch
-> series - for example the change to terminate on a specific function
-> pointer rather than NULL and the changes to the exception/interupt
-> detection should be split.  Please see submitting-patches.rst for some
-> discussion about how to split things up.  In general if you've got a
-> changelog enumerating a number of different changes in a patch that's a
-> warning sign that it might be good split things up.
+> > On Mon, 22 Feb 2021 11:51:50 -0600
+> > Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> > 
+> > > On Tue, Feb 23, 2021 at 12:05:08AM +0900, Masami Hiramatsu wrote:
+> > > > > Of course, one could place probes using absolute addresses of the 
+> > > > > functions but that would be less convenient.
+> > > > > 
+> > > > > This also affects many livepatch modules where the kernel code can be 
+> > > > > compiled with -ffunction-sections and each function may end up in a 
+> > > > > separate section .text.<function_name>. 'perf probe' cannot be used 
+> > > > > there, except with the absolute addresses.
+> > > > > 
+> > > > > Moreover, if FGKASLR patches are merged 
+> > > > > (https://lwn.net/Articles/832434/) and the kernel is built with FGKASLR 
+> > > > > enabled, -ffunction-sections will be used too. 'perf probe' will be 
+> > > > > unable to see the kernel functions then.
+> > > > 
+> > > > Hmm, if the FGKASLAR really randomizes the symbol address, perf-probe
+> > > > should give up "_text-relative" probe for that kernel, and must fallback
+> > > > to the "symbol-based" probe. (Are there any way to check the FGKASLR is on?)
+> > > > The problem of "symbol-based" probe is that local (static) symbols
+> > > > may share a same name sometimes. In that case, it can not find correct
+> > > > symbol. (Maybe I can find a candidate from its size.)
+> > > > Anyway, sometimes the security and usability are trade-off.
+> > > 
+> > > We had a similar issue with FGKASLR and live patching.  The proposed
+> > > solution is a new linker flag which eliminates duplicates: -z
+> > > unique-symbol.
+> > > 
+> > > https://sourceware.org/bugzilla/show_bug.cgi?id=26391
+> > 
+> > Interesting, but it might not be enough for perf-probe.
+> > Since the perf-probe has to handle both dwarf and elf, both must be
+> > changed. I think the problem is that the dwarf is generated while
+> > compiling, but this -z seems converting elf symbols in linkage.
+> > As far as I can see, this appends ".COUNT" suffix to the non-unique
+> > symbols in the linkage phase. Is that also applied to dwarf too?
 > 
+> Ah, OK. If there is an offline elf binary with symbol map, I can convert
+> DWARF symbol -> address -> offline elf symbol (unique name)-> kallsyms.
+> Currently, it directly converts address by kallsyms, so I will change it
+> to find elf-symbol and solve address by kallsyms in post processing.
 
-Will do.
+DWARF sections have references to the ELF symbols, which are renamed by
+the linker.  So DWARF should automatically show the new symbol name.
 
-> You should also copy the architecture maintainers (Catalin and Will) on
-> any arch/arm64 submissions.
-> 
+And kallsyms is generated after the kernel is linked.  So I'm not sure I
+understand the problem.
 
-Will do when I resubmit.
+-- 
+Josh
 
->> 	Unwinder return value
->> 	=====================
->>
->> 	Currently, the unwinder returns -EINVAL for stack trace termination
->> 	as well as stack trace error. Return -ENOENT for stack trace
->> 	termination and -EINVAL for error to disambiguate. This idea has
->> 	been borrowed from Mark Brown.
-> 
-> You could just include my patch for this in your series.
-> 
-
-OK.
-
->> Reliable stack trace function
->> =============================
->>
->> Implement arch_stack_walk_reliable(). This function walks the stack like
->> the existing stack trace functions with a couple of additional checks:
->>
->> 	Return address check
->> 	--------------------
->>
->> 	For each frame, check the return address to see if it is a
->> 	proper kernel text address. If not, return -EINVAL.
->>
->> 	Exception frame check
->> 	---------------------
->>
->> 	Check each frame to see if it is an EL1 exception frame. If it is,
->> 	return -EINVAL.
-> 
-> Again, this should be at least one separate patch.  How does this ensure
-> that we don't have any issues with any of the various probe mechanisms?
-> If there's no need to explicitly check anything that should be called
-> out in the changelog.
-> 
-
-I am trying to do this in an incremental fashion. I have to study the probe
-mechanisms a little bit more before I can come up with a solution. But
-if you want to see that addressed in this patch set, I could do that.
-It will take a little bit of time. That is all.
-
-> Since all these changes are mixed up this is a fairly superficial
-> review of the actual code.
-> 
-
-Understood. I will split things up and we can take it from there.
-
->> +static notrace struct pt_regs *get_frame_regs(struct task_struct *task,
->> +					      struct stackframe *frame)
->> +{
->> +	unsigned long stackframe, regs_start, regs_end;
->> +	struct stack_info info;
->> +
->> +	stackframe = frame->prev_fp;
->> +	if (!stackframe)
->> +		return NULL;
->> +
->> +	(void) on_accessible_stack(task, stackframe, &info);
-> 
-> Shouldn't we return NULL if we are not on an accessible stack?
-> 
-
-The prev_fp has already been checked by the unwinder in the previous
-frame. That is why I don't check the return value. If that is acceptable,
-I will add a comment.
-
->> +static notrace int update_frame(struct task_struct *task,
->> +				struct stackframe *frame)
-> 
-> This function really needs some documentation, the function is just
-> called update_frame() which doesn't say what sort of updates it's
-> supposed to do and most of the checks aren't explained, not all of them
-> are super obvious.
-> 
-
-I will add the documentation as well as try think of a better name.
-
->> +{
->> +	unsigned long lsb = frame->fp & 0xf;
->> +	unsigned long fp = frame->fp & ~lsb;
->> +	unsigned long pc = frame->pc;
->> +	struct pt_regs *regs;
->> +
->> +	frame->exception_frame = false;
->> +
->> +	if (fp == (unsigned long) arm64_last_frame &&
->> +	    pc == (unsigned long) arm64_last_func)
->> +		return -ENOENT;
->> +
->> +	if (!lsb)
->> +		return 0;
->> +	if (lsb != 1)
->> +		return -EINVAL;
->> +
->> +	/*
->> +	 * This looks like an EL1 exception frame.
-> 
-> For clarity it would be good to spell out the properties of an EL1
-> exception frame.  It is not clear to me why we don't reference the frame
-> type information the unwinder already records as part of these checks.
-> 
-> In general, especially for the bits specific to reliable stack trace, I
-> think we want to err on the side of verbosity here so that it is crystal
-> clear what all the checks are supposed to be doing and it's that much
-> easier to tie everything through to the requirements document.
-
-OK. I will improve the documentation.
-
-Madhavan
