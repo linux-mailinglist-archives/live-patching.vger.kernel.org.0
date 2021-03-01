@@ -2,167 +2,65 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8AC23285F1
-	for <lists+live-patching@lfdr.de>; Mon,  1 Mar 2021 18:02:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B21BE3290DC
+	for <lists+live-patching@lfdr.de>; Mon,  1 Mar 2021 21:17:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235960AbhCARBn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 1 Mar 2021 12:01:43 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:34560 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236027AbhCAQ7f (ORCPT
+        id S235978AbhCAUQn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 1 Mar 2021 15:16:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242832AbhCAUMt (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 1 Mar 2021 11:59:35 -0500
-Received: from [192.168.254.32] (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id DA81A20B57A1;
-        Mon,  1 Mar 2021 08:58:51 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DA81A20B57A1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1614617932;
-        bh=5iLiT4zCUvpdCRGwIN7OylfYUPKmTAZ9Z3KeVffXDOc=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=dS1CAaa3yJ0UPOnsU90ZhqIFUaGnM5whBFQxd4ni8FzqozwSNdhHqCBBMfo4UpdRZ
-         yNWiIqBtGNJ7FyPngJzbZcDNLT1EqeU3tLQjuKaN0CVz+YPzSYOuTqxKLDikiqRP09
-         sQglsDNjAYMPV/CAe9LfgyevWmJNRu5VzfExbUXM=
-Subject: Re: [RFC PATCH v1 1/1] arm64: Unwinder enhancements for reliable
- stack trace
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, jthierry@redhat.com,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <bc4761a47ad08ab7fdd555fc8094beb8fc758d33>
- <20210223181243.6776-1-madvenka@linux.microsoft.com>
- <20210223181243.6776-2-madvenka@linux.microsoft.com>
- <20210224121716.GE50741@C02TD0UTHF1T.local>
- <4a96b31d-0d16-1f12-fa64-5fdae64cd2d1@linux.microsoft.com>
- <20210225115825.GB37015@C02TD0UTHF1T.local>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <0227d386-c392-eb5a-3f52-621a637e46a8@linux.microsoft.com>
-Date:   Mon, 1 Mar 2021 10:58:51 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 1 Mar 2021 15:12:49 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F8CC061756
+        for <live-patching@vger.kernel.org>; Mon,  1 Mar 2021 12:12:08 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id s8so22468301edd.5
+        for <live-patching@vger.kernel.org>; Mon, 01 Mar 2021 12:12:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ZoFi747BMIBv44jVyJA6Rbtux2kDlDRfb4aXNCXPk+M=;
+        b=oZAZP5bdSBhkgk/hVktDG7z7+KYdPzYFkHVADN+plt0XhyYefMYR4re+awBDJiRdwk
+         12b0cdQvNckJ3SY6nRnGkuyXDsTdbgJzfQY7VtkTISsCZzC7rQEH7cezN0lXgXB6bnJW
+         lM1toiOWjHHkwQDHh1Tv5kBroXkwwm+jcDY9cnE6XBhw8doVW1eGC3CdMseHAcEBQc3x
+         br3btgQTH8pI0zNNC+uF8M61J+14C8I0H2my6w86SicSQ7AK2Of78DzpC6A6VJUDpi0Z
+         1AKtZLYRfErOjrCQ+VTprCl4I7Ss7fxinx2msEiQb7G/HyE4+18fNorHn95VFkp5rWEh
+         clSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ZoFi747BMIBv44jVyJA6Rbtux2kDlDRfb4aXNCXPk+M=;
+        b=NIrPun5KeY9mhtINz11Q/ftwi1+jdHma449TExt5mQq/UW58tbI9qEw0HAqWQVM0Ov
+         k6A/eiFp5+lAVliBbGBDIdSfHOLT9+YrvozLlNJDMFgumjhVTDIa5qzQSLzQIVAHZBLV
+         62Cr/drJN+bYvqiOljkyS1ApR91b7njP4R17r5CQVSe6qzNZmhovd3RcsmRoDjVlQvqU
+         WQhAkSxx4++vwr0nTnaUr6yVFQvchHYjhtVMgFf/6TqQxr1IG809ov2FEs8pt5H3MiLg
+         A7J2U04dgyEhHlFqE6VMiWzt9hJ/Fs+EytBUHNz9Rm6Sk4nNFapVDK6kIaFIGLqluxld
+         iNNA==
+X-Gm-Message-State: AOAM5335BYll3KHe4Cm3EyEQAjFzMbDo+bj6UiD4cotZFU5TlD8zKPaw
+        VTeVqc7rJMm0D7HkRMwwtLq3tLzU8YdpNVgKjQQ=
+X-Google-Smtp-Source: ABdhPJytAvfTM/FcxL02ImUmkO6paxpYFH3X7yNNQ3dX3N0lV+P3+l/jVvkB5HArL70xzzA6VjxM8KJr1ftI/4u5sNE=
+X-Received: by 2002:a05:6402:430c:: with SMTP id m12mr18370001edc.299.1614629527527;
+ Mon, 01 Mar 2021 12:12:07 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210225115825.GB37015@C02TD0UTHF1T.local>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a17:906:60d7:0:0:0:0 with HTTP; Mon, 1 Mar 2021 12:12:07
+ -0800 (PST)
+Reply-To: blakeanold@outlook.com
+From:   Blake Arnold <offficcemuf@gmail.com>
+Date:   Mon, 1 Mar 2021 21:12:07 +0100
+Message-ID: <CADMcwjYkvcBs_hSYb4Y169dLGODTtVQTpxFsvxZRPZTiXb_WEw@mail.gmail.com>
+Subject: Greetings
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Hello,
 
+I have sent you mails, but still have not received a response. Kindly
+get back to me for a mutual benefit transaction.
 
-On 2/25/21 5:58 AM, Mark Rutland wrote:
-> On Wed, Feb 24, 2021 at 01:34:09PM -0600, Madhavan T. Venkataraman wrote:
->> On 2/24/21 6:17 AM, Mark Rutland wrote:
->>> On Tue, Feb 23, 2021 at 12:12:43PM -0600, madvenka@linux.microsoft.com wrote:
->>>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>>> 	Termination
->>>> 	===========
->>>>
->>>> 	Currently, the unwinder terminates when both the FP (frame pointer)
->>>> 	and the PC (return address) of a frame are 0. But a frame could get
->>>> 	corrupted and zeroed. There needs to be a better check.
->>>>
->>>> 	The following special terminating frame and function have been
->>>> 	defined for this purpose:
->>>>
->>>> 	const u64    arm64_last_frame[2] __attribute__ ((aligned (16)));
->>>>
->>>> 	void arm64_last_func(void)
->>>> 	{
->>>> 	}
->>>>
->>>> 	So, set the FP to arm64_last_frame and the PC to arm64_last_func in
->>>> 	the bottom most frame.
->>>
->>> My expectation was that we'd do this per-task, creating an empty frame
->>> record (i.e. with fp=NULL and lr=NULL) on the task's stack at the
->>> instant it was created, and chaining this into x29. That way the address
->>> is known (since it can be derived from the task), and the frame will
->>> also implicitly check that the callchain terminates on the task stack
->>> without loops. That also means that we can use it to detect the entry
->>> code going wrong (e.g. if the SP gets corrupted), since in that case the
->>> entry code would place the record at a different location.
->>
->> That is exactly what this is doing. arm64_last_frame[] is a marker frame
->> that contains fp=0 and pc=0.
-> 
-> Almost! What I meant was that rather that each task should have its own
-> final/marker frame record on its task task rather than sharing a common
-> global variable.
-> 
-> That way a check for that frame record implicitly checks that a task
-> started at the expected location *on that stack*, which catches
-> additional stack corruption cases (e.g. if we left data on the stack
-> prior to an EL0 entry).
-> 
-
-Ok. I will think about this.
-
-> [...]
-> 
->>> ... I reckon once we've moved the last of the exception triage out to C
->>> this will be relatively simple, since all of the exception handlers will
->>> look like:
->>>
->>> | SYM_CODE_START_LOCAL(elX_exception)
->>> | 	kernel_entry X
->>> | 	mov	x0, sp
->>> | 	bl	elX_exception_handler
->>> | 	kernel_exit X
->>> | SYM_CODE_END(elX_exception)
->>>
->>> ... and so we just need to identify the set of elX_exception functions
->>> (which we'll never expect to take exceptions from directly). We could be
->>> strict and reject unwinding into arbitrary bits of the entry code (e.g.
->>> if we took an unexpected exception), and only permit unwinding to the
->>> BL.
->>>
->>>> 	It can do this if the FP and PC are also recorded elsewhere in the
->>>> 	pt_regs for comparison. Currently, the FP is also stored in
->>>> 	regs->regs[29]. The PC is stored in regs->pc. However, regs->pc can
->>>> 	be changed by lower level functions.
->>>>
->>>> 	Create a new field, pt_regs->orig_pc, and record the return address
->>>> 	PC there. With this, the unwinder can validate the exception frame
->>>> 	and set a flag so that the caller of the unwinder can know when
->>>> 	an exception frame is encountered.
->>>
->>> I don't understand the case you're trying to solve here. When is
->>> regs->pc changed in a way that's problematic?
->>>
->>
->> For instance, I used a test driver in which the driver calls a function
->> pointer which is NULL. The low level fault handler sends a signal to the
->> task. Looks like it changes regs->pc for this.
-> 
-> I'm struggling to follow what you mean here.
-> 
-> If the kernel branches to NULL, the CPU should raise an instruction
-> abort from the current EL, and our handling of that should terminate the
-> thread via die_kernel_fault(), without returning to the faulting
-> context, and without altering the PC in the faulting context.
-> 
-> Signals are delivered to userspace and alter the userspace PC, not a
-> kernel PC, so this doesn't seem relevant. Do you mean an exception fixup
-> handler rather than a signal?
-> 
->> When I dump the stack from the low level handler, the comparison with
->> regs->pc does not work.  But comparison with regs->orig_pc works.
-> 
-> As above, I'm struggling with this; could you share a concrete example? 
-> 
-
-Actually, my bad. I needed the orig_pc because of something that my test
-driver did. And, it slipped my mind entirely.
-
-Thanks for pointing it out. I will fix this in my resend.
-
-Thanks again for your comments.
-
-I am currently studying probing/tracing. As soon as I have a solution for that,
-I will send out the next version. I look forward to the in-depth review.
-
-Thanks,
-
-Madhavan
+Thank you.
+Blake Arnold
