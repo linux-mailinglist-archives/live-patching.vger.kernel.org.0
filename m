@@ -2,87 +2,89 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7ABC333EDB
-	for <lists+live-patching@lfdr.de>; Wed, 10 Mar 2021 14:37:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A80233C29F
+	for <lists+live-patching@lfdr.de>; Mon, 15 Mar 2021 17:56:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbhCJN1v (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 10 Mar 2021 08:27:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52614 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233157AbhCJN11 (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 10 Mar 2021 08:27:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BEE5564FF7;
-        Wed, 10 Mar 2021 13:27:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615382847;
-        bh=FfYG4HSnZMF4JEobpIUzK9ujMCQ4hzxfRr0vd2iFSJI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HwLZtuAROqKQC2VQP413P8AdCSOIWB3soto3vzlcgQMo5yS/TV5vxzMb3YsNZofm3
-         1qG8aes0V4xk9WwpgTmrpkN+nGGwKF4XM4PL8Rpl4TkfrsCYgWdqAko1YN+dCb/+A0
-         +NbKvi3+lAAfrUWoasTJeinguoD40yS5QFMgmqxkwgvH90Z/AxrPost6deBGsvNiwM
-         FInkIZXNJmpFaVWA9aUT3AAYd7YSG5lSorlm3x89CUH3i36bAAxS8qkdut1UcjGrdw
-         QawaMbHm41Q7MzyRWNX0z1ACT26UcvhTxLeeQ222z4prhA25GKE2tg8rfOENm9ep75
-         uBH1WlCJ1hf+A==
-Date:   Wed, 10 Mar 2021 13:26:15 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>, x86@kernel.org,
-        linux-s390@vger.kernel.org, live-patching@vger.kernel.org,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH] stacktrace: Move documentation for
- arch_stack_walk_reliable() to header
-Message-ID: <20210310132615.GC4746@sirena.org.uk>
-References: <20210309194125.652-1-broonie@kernel.org>
- <20210310052436.GA23521@zn.tnic>
+        id S234043AbhCOQ4C (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 15 Mar 2021 12:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233956AbhCOQzz (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 15 Mar 2021 12:55:55 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C434FC061762
+        for <live-patching@vger.kernel.org>; Mon, 15 Mar 2021 09:55:54 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id v9so57989959lfa.1
+        for <live-patching@vger.kernel.org>; Mon, 15 Mar 2021 09:55:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=nn1W9Wc+k1CJYE8WxkSJGXK0N+qf/mcCb4Whw81sCBc=;
+        b=NFIKK+nfxU1Bk+3WCrU9O3MGPlJFWuI8pQsA4NO+khcy4IfqkRAKK0AWxN7+EKZoLp
+         ZJdTuC+bpEdcdWNQ48J87QTkicfcXwM5vDqZ8THerD1aG4Htzvz9a8JuF6RyJkH/0P/H
+         YgO1aQNpeqjVVeUnRQEq3uywJyLa3nZEYCEBnu4oOP+0oHYiPqvxycfJjg+Miw3Su0Ly
+         Onkizp0dFVpKsHJYeRS3jOJIv2iHgnLZCWQKktBFLeEPOJEkBM6YPDst3Txzn97hyyCo
+         2L0z4aN/23aR2RV7uI7XCiWyNGs6jwGUBK0c+VJVf2SO//1QRq75v2XWVIep95A54pTN
+         yPCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=nn1W9Wc+k1CJYE8WxkSJGXK0N+qf/mcCb4Whw81sCBc=;
+        b=nUrydnufPJhO3RCoOm+MMuJO8NSkO2umxYmtQztkQmaFebtkDxkfE6+kXaYaPb7RBG
+         OobZSM4UHYsq875vFXB9W+v95rvBRnfJC0EmhdN35sO7wzSEOshnG8TjFskSv/j2zyA7
+         2/w+UESDWIXEVX8cHfuTsY8QHALw5qTsk74SBAiVWMwxqthqGSkwTsR6KLLvcMnV7aGP
+         r8RKssBZdAgl2/9IEWqZqgxIQOOjz8si/4ytBj2mzEQoeL43j3PfE7N0gBXrTxMeZwG5
+         A/2a+xRZYXVOC7+DOpxuArJUqnHrr5US4xXFX45My2d/pTgsQacwPtFLPYnchMMtvQ6D
+         yNsg==
+X-Gm-Message-State: AOAM53053pTFF+iywx39cZiRpErv54BKs+RUWgZ6JdFaXEcYMoeJZjP3
+        erBVz5hP64RIcJqiLytETFQzFVHNlLcGzYqZQ8U=
+X-Google-Smtp-Source: ABdhPJyti9j1xbG7VWGMZ7aPtd7Btkjs1GN0IVYGnPzacRUiAM0k8HHHlBfAb/Fiz24mX/Aiqm6jmarQAvIoeTz7Yr8=
+X-Received: by 2002:a19:c309:: with SMTP id t9mr8176362lff.348.1615827353222;
+ Mon, 15 Mar 2021 09:55:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="da4uJneut+ArUgXk"
-Content-Disposition: inline
-In-Reply-To: <20210310052436.GA23521@zn.tnic>
-X-Cookie: no maintenance:
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:a05:651c:1382:0:0:0:0 with HTTP; Mon, 15 Mar 2021 09:55:52
+ -0700 (PDT)
+Reply-To: ezbtg22@gmail.com
+From:   "Mrs.Glenn" <mrganuserge@gmail.com>
+Date:   Mon, 15 Mar 2021 09:55:52 -0700
+Message-ID: <CA+Wfa7YVrx0ws3646y2_O1kPsYemM7JwcJJmf2b35t-FLHsF1g@mail.gmail.com>
+Subject: From Mrs.Glenn
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+-- 
+Dear Beloved,
 
---da4uJneut+ArUgXk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I am Mrs Elizabet Glenn from Israel. I am a missionary but right now
+in a hospital bed in Israel. I am 59 years and childless; my husband
+is dead. I was diagnosed with terminal cancer. And my doctor just
+predicted that I have but very limited time to live due to damages in
+my system and as a result of that I decided to dispose my 10.5 million
+US dollars to a God-fearing one for the continuation of charitable
+work. This is why I located you.My guess about you may not be accurate
+because I came across your contact at the humanitarian calendar event
+of the year but I believe in God who  divinely directed me to you for
+this solemn proposal of charitable work. I wholeheartedly wish to
+bequeath my fortune to you as a God-fearing person for the
+continuation of charitable work anywhere around the world.
 
-On Wed, Mar 10, 2021 at 06:24:36AM +0100, Borislav Petkov wrote:
-> On Tue, Mar 09, 2021 at 07:41:25PM +0000, Mark Brown wrote:
-> > Currently arch_stack_wallk_reliable() is documented with an identical
+I shall be going in for a surgery operations soonest and desire this
+money to be transferred to you as I do not wish to leave this money in
+the bank because bankers might misuse it for their own interest after
+my death. As soon as I receive your quick reply assuring me that you
+will utilize the money as I instructed you for the benefit of the less
+privilege, I shall give you more details and also instruct my bank to
+release the money to you for the charity project. I hope you receive
+this mail in good health.
 
-> LGTM.
+Because I don t know what will be my situation in next minute,
 
-> Holler if I should take this through tip.
+I am waiting for your reply.
 
-Yes please, though there's a typo Peter pointed out in the commit log
-above - should be walk not wallk.  Let me know if you want me to resend
-for that.
-
---da4uJneut+ArUgXk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmBIyPYACgkQJNaLcl1U
-h9Bo1wf+PtmTrLqFBbY3HHo3Ufd2+iGwYOO71T6JYrqBdpCDaUGIvQj8U2fevLbj
-z97fTwzwB1CJqVAtI+2sJuXNJw1UDEBOSIEmIoe/gXP75Pu9cx2/MHUCPV6kiNF1
-kOf52dWsFCdj6WK1iHZUHZi2Xf4dBXQnJwbQ0myXMw9xqkYmoIVzwma0FeF591cF
-fAKCrrW2URKm6TCCPSFeCDuDW5y6x7wI8Y+MX9cybPJgXnS0xHHFvr4cyXDQPPb4
-3RLW4eb0yMM6CizFuz4dBEFQnwr+3u6Lnn9Tvjl9a/48YM71k/1KJ89aa3xMLb4o
-ysZVUu0vS9i911IJxVP1kkITAfmtfA==
-=QBwg
------END PGP SIGNATURE-----
-
---da4uJneut+ArUgXk--
+Yours sincerely,
+Mrs Elizabet Glenn.
