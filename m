@@ -2,36 +2,36 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FCE33C2D6
-	for <lists+live-patching@lfdr.de>; Mon, 15 Mar 2021 17:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C2633C2DB
+	for <lists+live-patching@lfdr.de>; Mon, 15 Mar 2021 17:59:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234646AbhCOQ6o (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 15 Mar 2021 12:58:44 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:51068 "EHLO
+        id S234640AbhCOQ6q (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 15 Mar 2021 12:58:46 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:51072 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbhCOQ6O (ORCPT
+        with ESMTP id S231899AbhCOQ6P (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 15 Mar 2021 12:58:14 -0400
+        Mon, 15 Mar 2021 12:58:15 -0400
 Received: from x64host.home (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D836E20B26FB;
-        Mon, 15 Mar 2021 09:58:13 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D836E20B26FB
+        by linux.microsoft.com (Postfix) with ESMTPSA id AF36C20B26FC;
+        Mon, 15 Mar 2021 09:58:14 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AF36C20B26FC
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1615827494;
-        bh=W6ZISsydraSfmBUaXZNZybizasn9n7l3dqdjWeTYpVk=;
+        s=default; t=1615827495;
+        bh=TPMn1YTK7zzFM7ywn8W1+RGydSCGcujwty9kEX/anVI=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=cWlQpsTTPGAf6UKT9Dc4VnlDB8pEVFGxPTAOmNjt8A2GFyUZ4PG5FTB7X1JJVDaG+
-         rWlmv16kWUtpD37wEVcrbBXKi6z2DOg7bdRJrbJyhWpRVbqZnj4XvzyE8qA8OOvcFm
-         gciSTE831gidSSlkGJ5YQ7SvGPMllIY4f83HYNA4=
+        b=Nx301mR2PlY4Cw21cjxPBVPLKynmTKQ3bXAU1qjHdCodL6b9mqIIkgNKjbfH55NgH
+         ICEPIZtTE9mGjfBxI85Gand/ox/arvN5X8A55FxaktvHkThxUlGy8u3VJvQcZAW8K0
+         8Q4EJfVX1W29IbQUoKEuo5d0iBV7x8bLbf8v/818=
 From:   madvenka@linux.microsoft.com
 To:     broonie@kernel.org, mark.rutland@arm.com, jpoimboe@redhat.com,
         jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 4/8] arm64: Detect an EL1 exception frame and mark a stack trace unreliable
-Date:   Mon, 15 Mar 2021 11:57:56 -0500
-Message-Id: <20210315165800.5948-5-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v2 5/8] arm64: Detect an FTRACE frame and mark a stack trace unreliable
+Date:   Mon, 15 Mar 2021 11:57:57 -0500
+Message-Id: <20210315165800.5948-6-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210315165800.5948-1-madvenka@linux.microsoft.com>
 References: <5997dfe8d261a3a543667b83c902883c1e4bd270>
@@ -44,138 +44,96 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-EL1 exceptions can happen on any instruction including instructions in
-the frame pointer prolog or epilog. Depending on where exactly they happen,
-they could render the stack trace unreliable.
+When CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled and tracing is activated
+for a function, the ftrace infrastructure is called for the function at
+the very beginning. Ftrace creates two frames:
 
-If an EL1 exception frame is found on the stack, mark the stack trace as
-unreliable.
+	- One for the traced function
 
-Now, the EL1 exception frame is not at any well-known offset on the stack.
-It can be anywhere on the stack. In order to properly detect an EL1
-exception frame the following checks must be done:
+	- One for the caller of the traced function
 
-	- The frame type must be EL1_FRAME.
+That gives a reliable stack trace while executing in the ftrace
+infrastructure code. When ftrace returns to the traced function, the frames
+are popped and everything is back to normal.
 
-	- When the register state is saved in the EL1 pt_regs, the frame
-	  pointer x29 is saved in pt_regs->regs[29] and the return PC
-	  is saved in pt_regs->pc. These must match with the current
-	  frame.
+However, in cases like live patch, execution is redirected to a different
+function when ftrace returns. A stack trace taken while still in the ftrace
+infrastructure code will not show the target function. The target function
+is the real function that we want to track.
 
-Interrupts encountered in kernel code are also EL1 exceptions. At the end
-of an interrupt, the interrupt handler checks if the current task must be
-preempted for any reason. If so, it calls the preemption code which takes
-the task off the CPU. A stack trace taken on the task after the preemption
-will show the EL1 frame and will be considered unreliable. This is correct
-behavior as preemption can happen practically at any point in code
-including the frame pointer prolog and epilog.
-
-Breakpoints encountered in kernel code are also EL1 exceptions. The probing
-infrastructure uses breakpoints for executing probe code. While in the probe
-code, the stack trace will show an EL1 frame and will be considered
-unreliable. This is also correct behavior.
+So, if an FTRACE frame is detected on the stack, just mark the stack trace
+as unreliable.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/include/asm/stacktrace.h |  2 +
- arch/arm64/kernel/stacktrace.c      | 57 +++++++++++++++++++++++++++++
- 2 files changed, 59 insertions(+)
+ arch/arm64/kernel/entry-ftrace.S |  2 ++
+ arch/arm64/kernel/stacktrace.c   | 33 ++++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
 
-diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-index eb29b1fe8255..684f65808394 100644
---- a/arch/arm64/include/asm/stacktrace.h
-+++ b/arch/arm64/include/asm/stacktrace.h
-@@ -59,6 +59,7 @@ struct stackframe {
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
- 	int graph;
- #endif
-+	bool reliable;
- };
+diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+index b3e4f9a088b1..1ec8c5180fc0 100644
+--- a/arch/arm64/kernel/entry-ftrace.S
++++ b/arch/arm64/kernel/entry-ftrace.S
+@@ -74,6 +74,8 @@
+ 	/* Create our frame record within pt_regs. */
+ 	stp	x29, x30, [sp, #S_STACKFRAME]
+ 	add	x29, sp, #S_STACKFRAME
++	ldr	w17, =FTRACE_FRAME
++	str	w17, [sp, #S_FRAME_TYPE]
+ 	.endm
  
- extern int unwind_frame(struct task_struct *tsk, struct stackframe *frame);
-@@ -169,6 +170,7 @@ static inline void start_backtrace(struct stackframe *frame,
- 	bitmap_zero(frame->stacks_done, __NR_STACK_TYPES);
- 	frame->prev_fp = 0;
- 	frame->prev_type = STACK_TYPE_UNKNOWN;
-+	frame->reliable = true;
- }
- 
- #endif	/* __ASM_STACKTRACE_H */
+ SYM_CODE_START(ftrace_regs_caller)
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 504cd161339d..6ae103326f7b 100644
+index 6ae103326f7b..594806a0c225 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -18,6 +18,58 @@
- #include <asm/stack_pointer.h>
- #include <asm/stacktrace.h>
+@@ -23,6 +23,7 @@ static void check_if_reliable(unsigned long fp, struct stackframe *frame,
+ {
+ 	struct pt_regs *regs;
+ 	unsigned long regs_start, regs_end;
++	unsigned long caller_fp;
  
-+static void check_if_reliable(unsigned long fp, struct stackframe *frame,
-+			      struct stack_info *info)
-+{
-+	struct pt_regs *regs;
-+	unsigned long regs_start, regs_end;
+ 	/*
+ 	 * If the stack trace has already been marked unreliable, just
+@@ -68,6 +69,38 @@ static void check_if_reliable(unsigned long fp, struct stackframe *frame,
+ 		frame->reliable = false;
+ 		return;
+ 	}
 +
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
 +	/*
-+	 * If the stack trace has already been marked unreliable, just
-+	 * return.
-+	 */
-+	if (!frame->reliable)
-+		return;
-+
-+	/*
-+	 * Assume that this is an intermediate marker frame inside a pt_regs
-+	 * structure created on the stack and get the pt_regs pointer. Other
-+	 * checks will be done below to make sure that this is a marker
-+	 * frame.
-+	 */
-+	regs_start = fp - offsetof(struct pt_regs, stackframe);
-+	if (regs_start < info->low)
-+		return;
-+	regs_end = regs_start + sizeof(*regs);
-+	if (regs_end > info->high)
-+		return;
-+	regs = (struct pt_regs *) regs_start;
-+
-+	/*
-+	 * When an EL1 exception happens, a pt_regs structure is created
-+	 * on the stack and the register state is recorded. Part of the
-+	 * state is the FP and PC at the time of the exception.
++	 * When tracing is active for a function, the ftrace code is called
++	 * from the function even before the frame pointer prolog and
++	 * epilog. ftrace creates a pt_regs structure on the stack to save
++	 * register state.
 +	 *
-+	 * In addition, the FP and PC are also stored in pt_regs->stackframe
-+	 * and pt_regs->stackframe is chained with other frames on the stack.
-+	 * This is so that the interrupted function shows up in the stack
-+	 * trace.
++	 * In addition, ftrace sets up two stack frames and chains them
++	 * with other frames on the stack. One frame is pt_regs->stackframe
++	 * that is for the traced function. The other frame is set up right
++	 * after the pt_regs structure and it is for the caller of the
++	 * traced function. This is done to ensure a proper stack trace.
 +	 *
-+	 * The exception could have happened during the frame pointer
-+	 * prolog or epilog. This could result in a missing frame in
-+	 * the stack trace so that the caller of the interrupted
-+	 * function does not show up in the stack trace.
++	 * If the ftrace code returns to the traced function, then all is
++	 * fine. But if it transfers control to a different function (like
++	 * in livepatch), then a stack walk performed while still in the
++	 * ftrace code will not find the target function.
 +	 *
-+	 * So, mark the stack trace as unreliable if an EL1 frame is
++	 * So, mark the stack trace as unreliable if an ftrace frame is
 +	 * detected.
 +	 */
-+	if (regs->frame_type == EL1_FRAME && regs->pc == frame->pc &&
-+	    regs->regs[29] == frame->fp) {
-+		frame->reliable = false;
-+		return;
++	if (regs->frame_type == FTRACE_FRAME && frame->fp == regs_end &&
++	    frame->fp < info->high) {
++		/* Check the traced function's caller's frame. */
++		caller_fp = READ_ONCE_NOCHECK(*(unsigned long *)(frame->fp));
++		if (caller_fp == regs->regs[29]) {
++			frame->reliable = false;
++			return;
++		}
 +	}
-+}
-+
- /*
-  * AArch64 PCS assigns the frame pointer to x29.
-  *
-@@ -114,6 +166,11 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
- 
- 	frame->pc = ptrauth_strip_insn_pac(frame->pc);
- 
-+	/*
-+	 * Check for features that render the stack trace unreliable.
-+	 */
-+	check_if_reliable(fp, frame, &info);
-+
- 	return 0;
++#endif
  }
- NOKPROBE_SYMBOL(unwind_frame);
+ 
+ /*
 -- 
 2.25.1
 
