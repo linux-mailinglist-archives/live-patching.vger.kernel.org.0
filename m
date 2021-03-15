@@ -2,36 +2,36 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF8433C2DD
-	for <lists+live-patching@lfdr.de>; Mon, 15 Mar 2021 17:59:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25B6B33C2E5
+	for <lists+live-patching@lfdr.de>; Mon, 15 Mar 2021 17:59:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234691AbhCOQ6r (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 15 Mar 2021 12:58:47 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:51090 "EHLO
+        id S234703AbhCOQ6s (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 15 Mar 2021 12:58:48 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:51106 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234587AbhCOQ6R (ORCPT
+        with ESMTP id S234589AbhCOQ6S (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 15 Mar 2021 12:58:17 -0400
+        Mon, 15 Mar 2021 12:58:18 -0400
 Received: from x64host.home (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 5D3FD20B24C9;
-        Mon, 15 Mar 2021 09:58:16 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5D3FD20B24C9
+        by linux.microsoft.com (Postfix) with ESMTPSA id 342EA20B24E6;
+        Mon, 15 Mar 2021 09:58:17 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 342EA20B24E6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
         s=default; t=1615827497;
-        bh=U+g0k+CbNn5bvnLnkW0oWUHs8xX5CpmhC3AM4YySraA=;
+        bh=NS3hnkt5UwYxkTgE05jIzpsdhEjTfgYuj02sn7S/gpA=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=TTELecyPokPX3waxtRE8n2B5zh3IpIDfunnF9vcMo7BWdiR0m16rpdEVxyRQlm2dZ
-         hDRqbTIGUQi+Vqa+j2lzZgmXt37RIVSxofNatCRvnfdBaUXPtihaj4L5Ro3QBv30SO
-         qNLTLIpLbXSzPFynG2eQVOxPrVDjTpRf+Lrccos0=
+        b=tAnL8saAEHYVh93a0MZLgmdvKOze1VnSLCDAbic/wGmkeCijxnPAq5lTPrRz8Ym2d
+         vNKgQxWEXET4xIPrffDDVSiyrv1y+QAUGA23mId8BWJX8hcAPSMFZsBdetjv8x/XZk
+         SwRPm1jyxHk0hECp4kkPwzjDSMWfBy4P/6WwNoj0=
 From:   madvenka@linux.microsoft.com
 To:     broonie@kernel.org, mark.rutland@arm.com, jpoimboe@redhat.com,
         jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 7/8] arm64: Detect kretprobed functions in stack trace
-Date:   Mon, 15 Mar 2021 11:57:59 -0500
-Message-Id: <20210315165800.5948-8-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v2 8/8] arm64: Implement arch_stack_walk_reliable()
+Date:   Mon, 15 Mar 2021 11:58:00 -0500
+Message-Id: <20210315165800.5948-9-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210315165800.5948-1-madvenka@linux.microsoft.com>
 References: <5997dfe8d261a3a543667b83c902883c1e4bd270>
@@ -44,89 +44,75 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-When a kretprobe is active for a function, the function's return address
-in its stack frame is modified to point to the kretprobe trampoline. When
-the function returns, the frame is popped and control is transferred
-to the trampoline. The trampoline eventually returns to the original return
-address.
+unwind_frame() already sets the reliable flag in the stack frame during
+a stack walk to indicate whether the stack trace is reliable or not.
 
-If a stack walk is done within the function (or any functions that get
-called from there), the stack trace will only show the trampoline and the
-not the original caller. Detect this and mark the stack trace as unreliable.
-
-Also, if the trampoline and the functions it calls do a stack trace,
-that stack trace will also have the same problem. Detect this as well.
-
-This is done by looking up the symbol table entry for the trampoline
-and checking if the return PC in a frame falls anywhere in the
-trampoline function.
+Implement arch_stack_walk_reliable() like arch_stack_walk() but abort
+the stack walk as soon as the reliable flag is set to false for any
+reason.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/kernel/stacktrace.c | 43 ++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ arch/arm64/Kconfig             |  1 +
+ arch/arm64/kernel/stacktrace.c | 35 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+)
 
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 1f212b47a48a..954f60c35b26 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -167,6 +167,7 @@ config ARM64
+ 		if $(cc-option,-fpatchable-function-entry=2)
+ 	select FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY \
+ 		if DYNAMIC_FTRACE_WITH_REGS
++	select HAVE_RELIABLE_STACKTRACE
+ 	select HAVE_EFFICIENT_UNALIGNED_ACCESS
+ 	select HAVE_FAST_GUP
+ 	select HAVE_FTRACE_MCOUNT_RECORD
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 358aae3906d7..752b77f11c61 100644
+index 752b77f11c61..5d15c111f3aa 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -18,6 +18,26 @@
- #include <asm/stack_pointer.h>
- #include <asm/stacktrace.h>
- 
-+#ifdef CONFIG_KRETPROBES
-+static bool kretprobe_detected(struct stackframe *frame)
-+{
-+	static char kretprobe_name[KSYM_NAME_LEN];
-+	static unsigned long kretprobe_pc, kretprobe_end_pc;
-+	unsigned long pc, offset, size;
-+
-+	if (!kretprobe_pc) {
-+		pc = (unsigned long) kretprobe_trampoline;
-+		if (!kallsyms_lookup(pc, &size, &offset, NULL, kretprobe_name))
-+			return false;
-+
-+		kretprobe_pc = pc - offset;
-+		kretprobe_end_pc = kretprobe_pc + size;
-+	}
-+
-+	return frame->pc >= kretprobe_pc && frame->pc < kretprobe_end_pc;
-+}
-+#endif
-+
- static void check_if_reliable(unsigned long fp, struct stackframe *frame,
- 			      struct stack_info *info)
- {
-@@ -111,6 +131,29 @@ static void check_if_reliable(unsigned long fp, struct stackframe *frame,
- 		frame->reliable = false;
- 		return;
- 	}
-+
-+#ifdef CONFIG_KRETPROBES
-+	/*
-+	 * The return address of a function that has an active kretprobe
-+	 * is modified in the stack frame to point to a trampoline. So,
-+	 * the original return address is not available on the stack.
-+	 *
-+	 * A stack trace taken while executing the function (and its
-+	 * descendants) will not show the original caller. So, mark the
-+	 * stack trace as unreliable if the trampoline shows up in the
-+	 * stack trace. (Obtaining the original return address from
-+	 * task->kretprobe_instances seems problematic and not worth the
-+	 * effort).
-+	 *
-+	 * The stack trace taken while inside the trampoline and functions
-+	 * called by the trampoline have the same problem as above. This
-+	 * is also covered by kretprobe_detected() using a range check.
-+	 */
-+	if (kretprobe_detected(frame)) {
-+		frame->reliable = false;
-+		return;
-+	}
-+#endif
+@@ -361,4 +361,39 @@ void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
+ 	walk_stackframe(task, &frame, consume_entry, cookie);
  }
  
- /*
++/*
++ * Walk the stack like arch_stack_walk() but stop the walk as soon as
++ * some unreliability is detected in the stack.
++ */
++int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
++			      void *cookie, struct task_struct *task)
++{
++	struct stackframe frame;
++	int ret = 0;
++
++	if (task == current) {
++		start_backtrace(&frame,
++				(unsigned long)__builtin_frame_address(0),
++				(unsigned long)arch_stack_walk_reliable);
++	} else {
++		/*
++		 * The task must not be running anywhere for the duration of
++		 * arch_stack_walk_reliable(). The caller must guarantee
++		 * this.
++		 */
++		start_backtrace(&frame, thread_saved_fp(task),
++				thread_saved_pc(task));
++	}
++
++	while (!ret) {
++		if (!frame.reliable)
++			return -EINVAL;
++		if (!consume_entry(cookie, frame.pc))
++			return -EINVAL;
++		ret = unwind_frame(task, &frame);
++	}
++
++	return ret == -ENOENT ? 0 : -EINVAL;
++}
++
+ #endif
 -- 
 2.25.1
 
