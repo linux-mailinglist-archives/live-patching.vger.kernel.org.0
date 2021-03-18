@@ -2,142 +2,178 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DCA334104F
-	for <lists+live-patching@lfdr.de>; Thu, 18 Mar 2021 23:24:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55C11341069
+	for <lists+live-patching@lfdr.de>; Thu, 18 Mar 2021 23:39:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbhCRWXS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 18 Mar 2021 18:23:18 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:60680 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbhCRWWv (ORCPT
+        id S231846AbhCRWis (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 18 Mar 2021 18:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230368AbhCRWib (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 18 Mar 2021 18:22:51 -0400
-Received: from [192.168.254.32] (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 47F42209C385;
-        Thu, 18 Mar 2021 15:22:50 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 47F42209C385
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1616106170;
-        bh=PxqNmQsDo2rsOIU7l0L48WnHUDlca3iv6Y4rPU2NjOg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=dy+rDJewmHv0Jftz1A38quDC6GtDy/K2yVeTNmyD0ljxXwj4Eaq2HAlrt9QgTKmZz
-         gfqxe863tIcam/QexESaStvgkdaax6Icj9dL2vHCrSXu20R3OVrQsFA2sFBsdVfkdU
-         wVJiPYPLx6b0V8sPFLRrUM/fWdQKz6OZsh4YYJXw=
-Subject: Re: [RFC PATCH v2 2/8] arm64: Implement frame types
-To:     Mark Brown <broonie@kernel.org>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, jthierry@redhat.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
+        Thu, 18 Mar 2021 18:38:31 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF99C06174A;
+        Thu, 18 Mar 2021 15:38:31 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id q5so4506337pfh.10;
+        Thu, 18 Mar 2021 15:38:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hPV6PFlpjtaaQAGr+gXeOd26mXT5CK+0etiUFA1UmqY=;
+        b=OqRfeKnan531gNoR4Nd5w07qAxyWwLt4N1mVSIGgcrjc0OUl/C+1Ot9r8Rz6AAurhL
+         8yKR4OQp1/YgQCqMa9oXsNccxmz7A31fWb4dyR2/8NeJoOYpKYbNXRXtW5+/ESDng0GL
+         3DB9zlWP5/JOFf2FAvMxzaGAHEyWtqz4vxR6k0qXFQVA51OwkFa6b67ATPZ4wWt1rlia
+         AojEZR7Em6bSbXuCSfvOL2wnZHF4MzRjdqj/CODxCIu/0dHpFEA48tIPbH8QJq1NAVdR
+         CGnFotTADS8fpQMYNYv9b5ONo64lRcNFTbt3ZC2jonERPYisi7RALzmmwVpiPdguQD1s
+         Q5FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hPV6PFlpjtaaQAGr+gXeOd26mXT5CK+0etiUFA1UmqY=;
+        b=lMbTWwuAti8nh5vu1m+L2o3q0faGN8DYRBuplDOXMY2zmrpUgsVhKmRNJOYdYNKC14
+         p9FNEJ/HUcaYowpg/jlzwR7pJ5gjyMJRVw2c3nosP5/QmBFYBFa6XXNB04VQV/PZ4lX/
+         32aQueeLbLUfSoB4kdMb/4Yveg1zaQQVI33Wi6waa+Cshmn4F7T7dd6vrORSpRZfjYo+
+         /OejGDWgzeH6KEdxWBfadrjbGxW3v5tBi5XD3Y7nnUxYIBsd8Z8q2DpXDzA/w0eUGK9Y
+         EOsfhkkx6r/AyNoDM/q8jjICNUbps90mj9SIu47RgssiAFKysISAh3onYPH2wsruHL9W
+         iYbA==
+X-Gm-Message-State: AOAM531l3NwjxegN6Q6xfJWX4FsNYpoMNIP7b6i1KzXk2jtQmSkwYKxN
+        4rJEgHS/MzPP8zmywJmZX2i/7YRv5TI=
+X-Google-Smtp-Source: ABdhPJwmZiMlog75NmzcgOTt8rBz68L8AA9VFQ3YUiU/r50zikM5233QpapMYME/h3cjmwNVdDaZOA==
+X-Received: by 2002:a62:800c:0:b029:203:6990:78e2 with SMTP id j12-20020a62800c0000b0290203699078e2mr6178087pfd.3.1616107109985;
+        Thu, 18 Mar 2021 15:38:29 -0700 (PDT)
+Received: from f8ffc2228008.ant.amazon.com ([54.240.193.1])
+        by smtp.gmail.com with ESMTPSA id 10sm3300782pfp.4.2021.03.18.15.38.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Mar 2021 15:38:27 -0700 (PDT)
+Subject: Re: Live patching on ARM64
+To:     Mark Rutland <mark.rutland@arm.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Mark Brown <broonie@kernel.org>,
+        Julien Thierry <jthierry@redhat.com>, jpoimboe@redhat.com,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <5997dfe8d261a3a543667b83c902883c1e4bd270>
- <20210315165800.5948-1-madvenka@linux.microsoft.com>
- <20210315165800.5948-3-madvenka@linux.microsoft.com>
- <20210318174029.GM5469@sirena.org.uk>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <6474b609-b624-f439-7bf7-61ce78ff7b83@linux.microsoft.com>
-Date:   Thu, 18 Mar 2021 17:22:49 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+References: <f3fe6a60-9ac2-591d-1b83-9113c50dc492@linux.microsoft.com>
+ <20210115123347.GB39776@C02TD0UTHF1T.local>
+From:   "Singh, Balbir" <bsingharora@gmail.com>
+Message-ID: <176e6c60-18dd-167b-41aa-dfd11e5810d3@gmail.com>
+Date:   Fri, 19 Mar 2021 09:38:20 +1100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210318174029.GM5469@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
+In-Reply-To: <20210115123347.GB39776@C02TD0UTHF1T.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-
-
-On 3/18/21 12:40 PM, Mark Brown wrote:
-> On Mon, Mar 15, 2021 at 11:57:54AM -0500, madvenka@linux.microsoft.com wrote:
+On 15/1/21 11:33 pm, Mark Rutland wrote:
+> On Thu, Jan 14, 2021 at 04:07:55PM -0600, Madhavan T. Venkataraman wrote:
+>> Hi all,
+>>
+>> My name is Madhavan Venkataraman.
 > 
->> To summarize, pt_regs->stackframe is used (or will be used) as a marker
->> frame in stack traces. To enable the unwinder to detect these frames, tag
->> each pt_regs->stackframe with a type. To record the type, use the unused2
->> field in struct pt_regs and rename it to frame_type. The types are:
+> Hi Madhavan,
 > 
-> Unless I'm misreading what's going on here this is more trying to set a
-> type for the stack as a whole than for a specific stack frame.  I'm also
-> finding this a bit confusing as the unwinder already tracks things it
-> calls frame types and it handles types that aren't covered here like
-> SDEI.  At the very least there's a naming issue here.
+>> Microsoft is very interested in Live Patching support for ARM64.
+>> On behalf of Microsoft, I would like to contribute.
+>>
+>> I would like to get in touch with the people who are currently working
+>> in this area, find out what exactly they are working on and see if they
+>> could use an extra pair of eyes/hands with what they are working on.
+>>
+>> It looks like the most recent work in this area has been from the
+>> following folks:
+>>
+>> Mark Brown and Mark Rutland:
+>> 	Kernel changes to providing reliable stack traces.
+>>
+>> Julien Thierry:
+>> 	Providing ARM64 support in objtool.
+>>
+>> Torsten Duwe:
+>> 	Ftrace with regs.
 > 
-
-When the unwinder gets to EL1 pt_regs->stackframe, it needs to be sure that
-it is indeed a frame inside an EL1 pt_regs structure. It performs the
-following checks:
-
-	FP == pt_regs->regs[29]
-	PC == pt_regs->pc
-	type == EL1_FRAME
-
-to confirm that the frame is EL1 pt_regs->stackframe.
-
-Similarly, for EL0, the type is EL0_FRAME.
-
-Both these frames are on the task stack. So, it is not a stack type.
-
-> Taking a step back though do we want to be tracking this via pt_regs?
-> It's reliant on us robustly finding the correct pt_regs and on having
-> the things that make the stack unreliable explicitly go in and set the
-> appropriate type.  That seems like it will be error prone, I'd been
-> expecting to do something more like using sections to filter code for
-> unreliable features based on the addresses of the functions we find on
-> the stack or similar.  This could still go wrong of course but there's
-> fewer moving pieces, and especially fewer moving pieces specific to
-> reliable stack trace.
+> IIRC that's about right. I'm also trying to make arm64 patch-safe (more
+> on that below), and there's a long tail of work there for anyone
+> interested.
 > 
+>> I apologize if I have missed anyone else who is working on Live Patching
+>> for ARM64. Do let me know.
 
-In that case, I suggest doing both. That is, check the type as well
-as specific functions. For instance, in the EL1 pt_regs, in addition
-to the above checks, check the PC against el1_sync(), el1_irq() and
-el1_error(). I have suggested this in the cover letter.
+I am quite interested as well, I did some of the work for ppc64le
 
-If this is OK with you, we could do that. We want to make really sure that
-nothing goes wrong with detecting the exception frame.
-
-> I'm wary of tracking data that only ever gets used for the reliable
-> stack trace path given that it's going to be fairly infrequently used
-> and hence tested, especially things that only crop up in cases that are
-> hard to provoke reliably.  If there's a way to detect things that
-> doesn't use special data that seems safer.
+>>
+>> Is there any work I can help with? Any areas that need investigation, any code
+>> that needs to be written, any work that needs to be reviewed, any testing that
+>> needs to done? You folks are probably super busy and would not mind an extra
+>> hand.
 > 
+> One general thing that I believe we'll need to do is to rework code to
+> be patch-safe (which implies being noinstr-safe too). For example, we'll
+> need to rework the instruction patching code such that this cannot end
+> up patching itself (or anything that has instrumented it) in an unsafe
+> way.
 
-If you dislike the frame type, I could remove it and just do the
-following checks:
+Do we know how this differs across architectures? Usually kprobe and ftrace
+unsafe functions are annotated as such, is there more to it?
 
-	FP == pt_regs->regs[29]
-	PC == pt_regs->pc
-	and the address check against el1_*() functions
-
-and similar changes for EL0 as well.
-
-I still think that the frame type check makes it more robust.
-
->> EL1_FRAME
->> 	EL1 exception frame.
 > 
-> We do trap into EL2 as well, the patch will track EL2 frames as EL1
-> frames.  Even if we can treat them the same the naming ought to be
-> clear.
+> Once we have objtool it should be possible to identify those cases
+> automatically. Currently I'm aware that we'll need to do something in at
+> least the following places:
 > 
+> * The entry code -- I'm currently chipping away at this.
 
-Are you referring to ARMv8.1 VHE extension where the kernel can run
-at EL2? Could you elaborate? I thought that EL2 was basically for
-Hypervisors.
+Could you please explain, whats bits of the entry code? I suspect we never
+patch anything in assembly
 
-Thanks.
-
->> FTRACE_FRAME
->>         FTRACE frame.
 > 
-> This is implemented later in the series.  If using this approach I'd
-> suggest pulling the change in entry-ftrace.S that sets this into this
-> patch, it's easier than adding a note about this being added later and
-> should help with any bisect issues.
+> * The insn framework (which is used by some patching code), since the
+>   bulk of it lives in arch/arm64/kernel/insn.c and isn't marked noinstr.
+>   
+
+noinstr is largely kcsan and kasan related, right?
+
+>   We can probably shift the bulk of the aarch64_insn_gen_*() and
+>   aarch64_get_*() helpers into a header as __always_inline functions,
+>   which would allow them to be used in noinstr code. As those are
+>   typically invoked with a number of constant arguments that the
+>   compiler can fold, this /might/ work out as an optimization if the
+>   compiler can elide the error paths.
 > 
+> * The alternatives code, since we call instrumentable and patchable
+>   functions between updating instructions and performing all the
+>   necessary maintenance. There are a number of cases within
+>   __apply_alternatives(), e.g.
+> 
+>   - test_bit()
+>   - cpus_have_cap()
+>   - pr_info_once()
+>   - lm_alias()
+>   - alt_cb, if the callback is not marked as noinstr, or if it calls
+>     instrumentable code (e.g. from the insn framework).
+>   - clean_dcache_range_nopatch(), as read_sanitised_ftr_reg() and
+>     related code can be instrumented.
+> 
+>   This might need some underlying rework elsewhere (e.g. in the
+>   cpufeature code, or atomics framework).
+> 
+> So on the kernel side, maybe a first step would be to try to headerize
+> the insn generation code as __always_inline, and see whether that looks
+> ok? With that out of the way it'd be a bit easier to rework patching
+> code depending on the insn framework.
+> 
+> I'm not sure about the objtool side, so I'll leave that to Julien and co
+> to answer.
 
-OK. Good point.
+Thanks, it would be good to see what the expectations from objtool are,
+I thought only x86 needed it due to variable size instructions and -fomit-
+frame-pointers
 
-Madhavan
+Balbir Singh.
