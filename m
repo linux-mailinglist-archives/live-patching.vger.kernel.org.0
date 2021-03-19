@@ -2,178 +2,91 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55C11341069
-	for <lists+live-patching@lfdr.de>; Thu, 18 Mar 2021 23:39:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7340B341CF1
+	for <lists+live-patching@lfdr.de>; Fri, 19 Mar 2021 13:31:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231846AbhCRWis (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 18 Mar 2021 18:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbhCRWib (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 18 Mar 2021 18:38:31 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF99C06174A;
-        Thu, 18 Mar 2021 15:38:31 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id q5so4506337pfh.10;
-        Thu, 18 Mar 2021 15:38:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hPV6PFlpjtaaQAGr+gXeOd26mXT5CK+0etiUFA1UmqY=;
-        b=OqRfeKnan531gNoR4Nd5w07qAxyWwLt4N1mVSIGgcrjc0OUl/C+1Ot9r8Rz6AAurhL
-         8yKR4OQp1/YgQCqMa9oXsNccxmz7A31fWb4dyR2/8NeJoOYpKYbNXRXtW5+/ESDng0GL
-         3DB9zlWP5/JOFf2FAvMxzaGAHEyWtqz4vxR6k0qXFQVA51OwkFa6b67ATPZ4wWt1rlia
-         AojEZR7Em6bSbXuCSfvOL2wnZHF4MzRjdqj/CODxCIu/0dHpFEA48tIPbH8QJq1NAVdR
-         CGnFotTADS8fpQMYNYv9b5ONo64lRcNFTbt3ZC2jonERPYisi7RALzmmwVpiPdguQD1s
-         Q5FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hPV6PFlpjtaaQAGr+gXeOd26mXT5CK+0etiUFA1UmqY=;
-        b=lMbTWwuAti8nh5vu1m+L2o3q0faGN8DYRBuplDOXMY2zmrpUgsVhKmRNJOYdYNKC14
-         p9FNEJ/HUcaYowpg/jlzwR7pJ5gjyMJRVw2c3nosP5/QmBFYBFa6XXNB04VQV/PZ4lX/
-         32aQueeLbLUfSoB4kdMb/4Yveg1zaQQVI33Wi6waa+Cshmn4F7T7dd6vrORSpRZfjYo+
-         /OejGDWgzeH6KEdxWBfadrjbGxW3v5tBi5XD3Y7nnUxYIBsd8Z8q2DpXDzA/w0eUGK9Y
-         EOsfhkkx6r/AyNoDM/q8jjICNUbps90mj9SIu47RgssiAFKysISAh3onYPH2wsruHL9W
-         iYbA==
-X-Gm-Message-State: AOAM531l3NwjxegN6Q6xfJWX4FsNYpoMNIP7b6i1KzXk2jtQmSkwYKxN
-        4rJEgHS/MzPP8zmywJmZX2i/7YRv5TI=
-X-Google-Smtp-Source: ABdhPJwmZiMlog75NmzcgOTt8rBz68L8AA9VFQ3YUiU/r50zikM5233QpapMYME/h3cjmwNVdDaZOA==
-X-Received: by 2002:a62:800c:0:b029:203:6990:78e2 with SMTP id j12-20020a62800c0000b0290203699078e2mr6178087pfd.3.1616107109985;
-        Thu, 18 Mar 2021 15:38:29 -0700 (PDT)
-Received: from f8ffc2228008.ant.amazon.com ([54.240.193.1])
-        by smtp.gmail.com with ESMTPSA id 10sm3300782pfp.4.2021.03.18.15.38.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Mar 2021 15:38:27 -0700 (PDT)
-Subject: Re: Live patching on ARM64
-To:     Mark Rutland <mark.rutland@arm.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Mark Brown <broonie@kernel.org>,
-        Julien Thierry <jthierry@redhat.com>, jpoimboe@redhat.com,
+        id S229806AbhCSMa4 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 19 Mar 2021 08:30:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36586 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229634AbhCSMa2 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 19 Mar 2021 08:30:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 25C2E64E09;
+        Fri, 19 Mar 2021 12:30:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616157027;
+        bh=STuc4t7Ex+kxKPe6umFc1+qm6aDEDEQvBbxhw2YlGvY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OEqj7olBLe9tvO/HUo8ZkhlvM7YIVwA4mQbLGLJOYiN7bYkggTOI+iNfMK/gFmE1a
+         A9itO1s+Z7s5DKzwKe9TNmdbwqmfy7oEhtohrurO/N5BPvx3toX+dGH9/8CIhIByPP
+         4bz+Za+WCbyzcHVkPlO4lja5iNfkp0FpZ1l5KiGhfS2sgmvC2gz5MqOzs6yhzuVNWP
+         +1nEv30LHt5BALndrYJHE4qOFPxHawirlyafcTNJZp6kjpnGllZLt01+7P1sS6iFe6
+         cEGO3hL0pB82BBQPD6v3MM5jIBA9Ww6io3dQFU8jvheSp+cYTcPJvwGK9Q6gkhkCnq
+         J2TaDnvcHlcnQ==
+Date:   Fri, 19 Mar 2021 12:30:23 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, jthierry@redhat.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <f3fe6a60-9ac2-591d-1b83-9113c50dc492@linux.microsoft.com>
- <20210115123347.GB39776@C02TD0UTHF1T.local>
-From:   "Singh, Balbir" <bsingharora@gmail.com>
-Message-ID: <176e6c60-18dd-167b-41aa-dfd11e5810d3@gmail.com>
-Date:   Fri, 19 Mar 2021 09:38:20 +1100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.1
+Subject: Re: [RFC PATCH v2 1/8] arm64: Implement stack trace termination
+ record
+Message-ID: <20210319123023.GC5619@sirena.org.uk>
+References: <5997dfe8d261a3a543667b83c902883c1e4bd270>
+ <20210315165800.5948-1-madvenka@linux.microsoft.com>
+ <20210315165800.5948-2-madvenka@linux.microsoft.com>
+ <20210318150905.GL5469@sirena.org.uk>
+ <8591e34a-c181-f3ff-e691-a6350225e5b4@linux.microsoft.com>
 MIME-Version: 1.0
-In-Reply-To: <20210115123347.GB39776@C02TD0UTHF1T.local>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="S1BNGpv0yoYahz37"
+Content-Disposition: inline
+In-Reply-To: <8591e34a-c181-f3ff-e691-a6350225e5b4@linux.microsoft.com>
+X-Cookie: No purchase necessary.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 15/1/21 11:33 pm, Mark Rutland wrote:
-> On Thu, Jan 14, 2021 at 04:07:55PM -0600, Madhavan T. Venkataraman wrote:
->> Hi all,
->>
->> My name is Madhavan Venkataraman.
-> 
-> Hi Madhavan,
-> 
->> Microsoft is very interested in Live Patching support for ARM64.
->> On behalf of Microsoft, I would like to contribute.
->>
->> I would like to get in touch with the people who are currently working
->> in this area, find out what exactly they are working on and see if they
->> could use an extra pair of eyes/hands with what they are working on.
->>
->> It looks like the most recent work in this area has been from the
->> following folks:
->>
->> Mark Brown and Mark Rutland:
->> 	Kernel changes to providing reliable stack traces.
->>
->> Julien Thierry:
->> 	Providing ARM64 support in objtool.
->>
->> Torsten Duwe:
->> 	Ftrace with regs.
-> 
-> IIRC that's about right. I'm also trying to make arm64 patch-safe (more
-> on that below), and there's a long tail of work there for anyone
-> interested.
-> 
->> I apologize if I have missed anyone else who is working on Live Patching
->> for ARM64. Do let me know.
 
-I am quite interested as well, I did some of the work for ppc64le
+--S1BNGpv0yoYahz37
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->>
->> Is there any work I can help with? Any areas that need investigation, any code
->> that needs to be written, any work that needs to be reviewed, any testing that
->> needs to done? You folks are probably super busy and would not mind an extra
->> hand.
-> 
-> One general thing that I believe we'll need to do is to rework code to
-> be patch-safe (which implies being noinstr-safe too). For example, we'll
-> need to rework the instruction patching code such that this cannot end
-> up patching itself (or anything that has instrumented it) in an unsafe
-> way.
+On Thu, Mar 18, 2021 at 03:26:13PM -0500, Madhavan T. Venkataraman wrote:
+> On 3/18/21 10:09 AM, Mark Brown wrote:
 
-Do we know how this differs across architectures? Usually kprobe and ftrace
-unsafe functions are annotated as such, is there more to it?
+> > If we are going to add the extra record there would probably be less
+> > potential for confusion if we pointed it at some sensibly named dummy
+> > function so anything or anyone that does see it on the stack doesn't get
+> > confused by a NULL.
 
-> 
-> Once we have objtool it should be possible to identify those cases
-> automatically. Currently I'm aware that we'll need to do something in at
-> least the following places:
-> 
-> * The entry code -- I'm currently chipping away at this.
+> I agree. I will think about this some more. If no other solution presents
+> itself, I will add the dummy function.
 
-Could you please explain, whats bits of the entry code? I suspect we never
-patch anything in assembly
+After discussing this with Mark Rutland offlist he convinced me that so
+long as we ensure the kernel doesn't print the NULL record we're
+probably OK here, the effort setting the function pointer up correctly
+in all circumstances (especially when we're not in the normal memory
+map) is probably not worth it for the limited impact it's likely to have
+to see the NULL pointer (probably mainly a person working with some
+external debugger).  It should be noted in the changelog though, and/or
+merged in with the relevant change to the unwinder.
 
-> 
-> * The insn framework (which is used by some patching code), since the
->   bulk of it lives in arch/arm64/kernel/insn.c and isn't marked noinstr.
->   
+--S1BNGpv0yoYahz37
+Content-Type: application/pgp-signature; name="signature.asc"
 
-noinstr is largely kcsan and kasan related, right?
+-----BEGIN PGP SIGNATURE-----
 
->   We can probably shift the bulk of the aarch64_insn_gen_*() and
->   aarch64_get_*() helpers into a header as __always_inline functions,
->   which would allow them to be used in noinstr code. As those are
->   typically invoked with a number of constant arguments that the
->   compiler can fold, this /might/ work out as an optimization if the
->   compiler can elide the error paths.
-> 
-> * The alternatives code, since we call instrumentable and patchable
->   functions between updating instructions and performing all the
->   necessary maintenance. There are a number of cases within
->   __apply_alternatives(), e.g.
-> 
->   - test_bit()
->   - cpus_have_cap()
->   - pr_info_once()
->   - lm_alias()
->   - alt_cb, if the callback is not marked as noinstr, or if it calls
->     instrumentable code (e.g. from the insn framework).
->   - clean_dcache_range_nopatch(), as read_sanitised_ftr_reg() and
->     related code can be instrumented.
-> 
->   This might need some underlying rework elsewhere (e.g. in the
->   cpufeature code, or atomics framework).
-> 
-> So on the kernel side, maybe a first step would be to try to headerize
-> the insn generation code as __always_inline, and see whether that looks
-> ok? With that out of the way it'd be a bit easier to rework patching
-> code depending on the insn framework.
-> 
-> I'm not sure about the objtool side, so I'll leave that to Julien and co
-> to answer.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmBUmV8ACgkQJNaLcl1U
+h9ABJwgAgN92saU1Ljsz55wJhiKxyalqRT9vs3rxeTR2So6rrXGyFb8YKrZacIrG
+tARHk3LFN8JU5kHE0iEHvLkqkmVxgGwxppsyKRSy9tL44fURVTS4ZA0+Flhm8wdf
+yCqxgPwKgN4viY1sDH4HL1jOpa3AdK/x93O0qelxHYw4UZsruna6jmxVRle4gwj3
+U2qv7muAQiTigUJluJ5KZLRzs4ca1c0bfldwvfM3ruTwmiE/sggqMC+3LWi0aPlc
+PUMp0wqWkCkoqNXHS1qIiU/lp0ZhW+qdhBe0SrSsYHpAUSZw/iDb475VjlKRKdCD
+DY84czq9IA2dQnZ1LQTL9TyU6bMRwg==
+=ouYL
+-----END PGP SIGNATURE-----
 
-Thanks, it would be good to see what the expectations from objtool are,
-I thought only x86 needed it due to variable size instructions and -fomit-
-frame-pointers
-
-Balbir Singh.
+--S1BNGpv0yoYahz37--
