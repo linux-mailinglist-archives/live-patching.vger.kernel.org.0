@@ -2,38 +2,38 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D22B6346647
-	for <lists+live-patching@lfdr.de>; Tue, 23 Mar 2021 18:28:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13DEB34679D
+	for <lists+live-patching@lfdr.de>; Tue, 23 Mar 2021 19:28:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbhCWR1r (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Mar 2021 13:27:47 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:60124 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230198AbhCWR1i (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Mar 2021 13:27:38 -0400
-Received: from [192.168.254.32] (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 13A1020B5680;
-        Tue, 23 Mar 2021 10:27:37 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 13A1020B5680
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1616520457;
-        bh=p1pmPljb8ZS9xoSxAxg/MECHfcb5ywuGv+WYp/09E78=;
-        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
-        b=HuwZjruLEWv0TT34ZZaPXAug9Yq/DKVVeUtQBlYLfF/NvKNPQ5mz+LQkx4iKi0VPE
-         EID4btZg8bDcRtZplySFtYi1Zz2mRVKl4H6SYXEu0EV7MvaUtl2p0owNxQoB6o307s
-         AUh1ZS65DNEowBBOR06bNR/NvPjTXVZ006VB/Gcs=
-Subject: Re: [RFC PATCH v2 5/8] arm64: Detect an FTRACE frame and mark a stack
- trace unreliable
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, jthierry@redhat.com,
-        catalin.marinas@arm.com, will@kernel.org,
+        id S231979AbhCWS2M (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Mar 2021 14:28:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48770 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231862AbhCWS2B (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 23 Mar 2021 14:28:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C94B619C0;
+        Tue, 23 Mar 2021 18:28:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616524080;
+        bh=ZZ/sbfEWjmjWbM+sY6+EEzhfSIm8CwgOZMeCjqk2aiI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TM9WZvHfrbZ7xt0+5JhUBYMBSINu9iyvAhbMK1MmUCUz229ezyqdJ5EFldRL6nWhf
+         GHHG1R9tjP5EqrCPsbN4x0+cpC7nNDCBGZrczhMp2Xd0CkCY2zNu7Jz4vYgJ5tOvnH
+         eO/2H6cWdzfaLX1B4hp+4Kp55X7o0WnVxZKoVqOzy78GuhsjQfYbqUQTDcieIZL4lC
+         5Em5Pru//FeQnUHJXRgJohWNLh48hb1dYzEbYOZLT5WOdVDdd2uSaJpHzbVicpyU3f
+         VHP3yT5Ar9uPls7uW6U6qiF9SKyohmEJIx8YFdvnDk5NTSibPlCpACTAESne9oiKcp
+         DeNsi8r94EC0A==
+Date:   Tue, 23 Mar 2021 18:27:53 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>, jpoimboe@redhat.com,
+        jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210315165800.5948-1-madvenka@linux.microsoft.com>
- <20210315165800.5948-6-madvenka@linux.microsoft.com>
- <20210323105118.GE95840@C02TD0UTHF1T.local>
+Subject: Re: [RFC PATCH v2 5/8] arm64: Detect an FTRACE frame and mark a
+ stack trace unreliable
+Message-ID: <20210323182753.GE5490@sirena.org.uk>
+References: <20210323105118.GE95840@C02TD0UTHF1T.local>
  <2167f3c5-e7d0-40c8-99e3-ae89ceb2d60e@linux.microsoft.com>
  <20210323133611.GB98545@C02TD0UTHF1T.local>
  <ccd5ee66-6444-fac9-4c7b-b3bdabf1b149@linux.microsoft.com>
@@ -43,114 +43,60 @@ References: <20210315165800.5948-1-madvenka@linux.microsoft.com>
  <a38e4966-9b0d-3e51-80bd-acc36d8bee9b@linux.microsoft.com>
  <20210323170236.GF98545@C02TD0UTHF1T.local>
  <bc450f09-1881-9a9c-bfbc-5bb31c01d8ce@linux.microsoft.com>
-Message-ID: <2a390ffb-4931-9b7d-e203-5d0189052744@linux.microsoft.com>
-Date:   Tue, 23 Mar 2021 12:27:36 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+SfteS7bOf3dGlBC"
+Content-Disposition: inline
 In-Reply-To: <bc450f09-1881-9a9c-bfbc-5bb31c01d8ce@linux.microsoft.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Cookie: Formatted to fit your screen.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
+--+SfteS7bOf3dGlBC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 3/23/21 12:23 PM, Madhavan T. Venkataraman wrote:
-> 
-> 
+On Tue, Mar 23, 2021 at 12:23:34PM -0500, Madhavan T. Venkataraman wrote:
 > On 3/23/21 12:02 PM, Mark Rutland wrote:
->> On Tue, Mar 23, 2021 at 11:20:44AM -0500, Madhavan T. Venkataraman wrote:
->>> On 3/23/21 10:26 AM, Madhavan T. Venkataraman wrote:
->>>> On 3/23/21 9:57 AM, Mark Rutland wrote:
->>>>> On Tue, Mar 23, 2021 at 09:15:36AM -0500, Madhavan T. Venkataraman wrote:
->>>> So, my next question is - can we define a practical limit for the
->>>> nesting so that any nesting beyond that is fatal? The reason I ask
->>>> is - if there is a max, then we can allocate an array of stack
->>>> frames out of band for the special frames so they are not part of
->>>> the stack and will not likely get corrupted.
->>>>
->>>> Also, we don't have to do any special detection. If the number of
->>>> out of band frames used is one or more then we have exceptions and
->>>> the stack trace is unreliable.
->>>
->>> Alternatively, if we can just increment a counter in the task
->>> structure when an exception is entered and decrement it when an
->>> exception returns, that counter will tell us that the stack trace is
->>> unreliable.
->>
->> As I noted earlier, we must treat *any* EL1 exception boundary needs to
->> be treated as unreliable for unwinding, and per my other comments w.r.t.
->> corrupting the call chain I don't think we need additional protection on
->> exception boundaries specifically.
->>
->>> Is this feasible?
->>>
->>> I think I have enough for v3 at this point. If you think that the
->>> counter idea is OK, I can implement it in v3. Once you confirm, I will
->>> start working on v3.
->>
->> Currently, I don't see a compelling reason to need this, and would
->> prefer to avoid it.
->>
-> 
-> I think that I did a bad job of explaining what I wanted to do. It is not
-> for any additional protection at all.
-> 
-> So, let us say we create a field in the task structure:
-> 
-> 	u64		unreliable_stack;
-> 
-> Whenever an EL1 exception is entered or FTRACE is entered and pt_regs get
-> set up and pt_regs->stackframe gets chained, increment unreliable_stack.
-> On exiting the above, decrement unreliable_stack.
-> 
-> In arch_stack_walk_reliable(), simply do this check upfront:
-> 
-> 	if (task->unreliable_stack)
-> 		return -EINVAL;
-> 
-> This way, the function does not even bother unwinding the stack to find
-> exception frames or checking for different return addresses or anything.
-> We also don't have to worry about code being reorganized, functions
-> being renamed, etc. It also may help in debugging to know if a task is
-> experiencing an exception and the level of nesting, etc.
-> 
->> More generally, could we please break this work into smaller steps? I
->> reckon we can break this down into the following chunks:
->>
->> 1. Add the explicit final frame and associated handling. I suspect that
->>    this is complicated enough on its own to be an independent series,
->>    and it's something that we can merge without all the bits and pieces
->>    necessary for truly reliable stacktracing.
->>
-> 
-> OK. I can do that.
-> 
->> 2. Figure out how we must handle kprobes and ftrace. That probably means
->>    rejecting unwinds from specific places, but we might also want to
->>    adjust the trampolines if that makes this easier.
->>
-> 
-> I think I am already doing all the checks except the one you mentioned
-> earlier. Yes, I can do this separately.
-> 
->> 3. Figure out exception boundary handling. I'm currently working to
->>    simplify the entry assembly down to a uniform set of stubs, and I'd
->>    prefer to get that sorted before we teach the unwinder about
->>    exception boundaries, as it'll be significantly simpler to reason
->>    about and won't end up clashing with the rework.
->>
-> 
+
+> > 3. Figure out exception boundary handling. I'm currently working to
+> >    simplify the entry assembly down to a uniform set of stubs, and I'd
+> >    prefer to get that sorted before we teach the unwinder about
+> >    exception boundaries, as it'll be significantly simpler to reason
+> >    about and won't end up clashing with the rework.
+
 > So, here is where I still have a question. Is it necessary for the unwinder
 > to know the exception boundaries? Is it not enough if it knows if there are
 > exceptions present? For instance, using something like num_special_frames
+> I suggested above?
 
-Typo - num_special_frames should be unreliable_stack. That is the name of
-the counter I used above.
+For reliable stack trace we can live with just flagging things as
+unreliable when we know there's an exception boundary somewhere but (as
+Mark mentioned elsewhere) being able to actually go through a subset of
+exception boundaries safely is likely to help usefully improve the
+performance of live patching, and for defensiveness we want to try to
+detect during an actual unwind anyway so it ends up being a performance
+improvment and double check rather than saving us code.  Better
+understanding of what's going on in the presence of exceptions may also
+help other users of the unwinder which can use stacks which aren't
+reliable get better results.
 
-Sorry about that.
+--+SfteS7bOf3dGlBC
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Madhavan
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmBaMygACgkQJNaLcl1U
+h9DlBAf/VDhf95shcrw6CnGs6PtiVyFMVP2UhH5a5mOOodvlWpsmf6mo+iGsWAvO
+Hp8mEVFU/FTSVBgmDjoyI52XzwYaqrGF0dwPSVu7NarlElFtk0ZcTKgO20bOfqPb
+SVfgGp+eOwe/Tcs0VZm7nNmxU+1UJ8R8quEqQ5hsxR5C0USubAV8MQcRmhie3kiG
+XzWKXeUcrchV8LnB42XyMRZNDSYf1DpEyB17+zYCNadHGrgBc7T186G3/Ace/R+g
+LsgS+JqZS6/K5RnxbUVz4WCI1CzC1e7gvNAN+ItCFWGJ3cH6d/Bazo6Tqu37ZQEj
+BaepHrBhtSiqvSTW85A/J2DsUYLi6Q==
+=cyeR
+-----END PGP SIGNATURE-----
+
+--+SfteS7bOf3dGlBC--
