@@ -2,29 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4EF345FDB
-	for <lists+live-patching@lfdr.de>; Tue, 23 Mar 2021 14:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6780B34612C
+	for <lists+live-patching@lfdr.de>; Tue, 23 Mar 2021 15:16:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231312AbhCWNjb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Mar 2021 09:39:31 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:58964 "EHLO
+        id S232245AbhCWOPp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Mar 2021 10:15:45 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:35476 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbhCWNjA (ORCPT
+        with ESMTP id S232211AbhCWOPi (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Mar 2021 09:39:00 -0400
+        Tue, 23 Mar 2021 10:15:38 -0400
 Received: from [192.168.254.32] (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id A4DD020B5680;
-        Tue, 23 Mar 2021 06:38:59 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A4DD020B5680
+        by linux.microsoft.com (Postfix) with ESMTPSA id 1AB2920B5680;
+        Tue, 23 Mar 2021 07:15:37 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1AB2920B5680
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1616506740;
-        bh=DwRsLoQPY0fFMEhsi2TeLN5GvE6GzKWHyVlv0powA4Y=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=rPua/ORFsVGJ5Wqu8WYJ/bMN52OnjWRzUx3NyvoZWpxTafNMBz5nQdnB+qWKzx9F9
-         XIMs4+6hvCF9Q+U/qs6sPqZbfKdnyt6CdwpEdfoib3PD98nlVoWgud+3SR6lmAMDj7
-         l3oKoMYWqJtabVYmoxI79DJge2dhumkOH7d/FSfI=
+        s=default; t=1616508937;
+        bh=xgH5742pf9m8cPa2AZwpL/Wba0dOvxATlNgx0Syu1uY=;
+        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
+        b=dd74ytk9ub/9O/tG2Uc0luCp0AuFiMdkHXYkoCQ9PD7OQmA+zDSONc2/U6D+ULydO
+         YFRRHcUZWyDVvBOZfzqobW0AyhOCGO2uG7dwt2KIFDluc07ftHfwW9q/w9efBYr5sv
+         MbCvwDCoI+7N+ghkk2JlZ6JpgYUnso6TdZxiS044=
 Subject: Re: [RFC PATCH v2 5/8] arm64: Detect an FTRACE frame and mark a stack
  trace unreliable
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 To:     Mark Rutland <mark.rutland@arm.com>
 Cc:     broonie@kernel.org, jpoimboe@redhat.com, jthierry@redhat.com,
         catalin.marinas@arm.com, will@kernel.org,
@@ -36,13 +37,13 @@ References: <5997dfe8d261a3a543667b83c902883c1e4bd270>
  <20210323105118.GE95840@C02TD0UTHF1T.local>
  <2167f3c5-e7d0-40c8-99e3-ae89ceb2d60e@linux.microsoft.com>
  <20210323133611.GB98545@C02TD0UTHF1T.local>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <ccd5ee66-6444-fac9-4c7b-b3bdabf1b149@linux.microsoft.com>
-Date:   Tue, 23 Mar 2021 08:38:58 -0500
+ <ccd5ee66-6444-fac9-4c7b-b3bdabf1b149@linux.microsoft.com>
+Message-ID: <f9e21fe1-e646-bb36-c711-94cbbc60af8a@linux.microsoft.com>
+Date:   Tue, 23 Mar 2021 09:15:36 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210323133611.GB98545@C02TD0UTHF1T.local>
+In-Reply-To: <ccd5ee66-6444-fac9-4c7b-b3bdabf1b149@linux.microsoft.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -50,129 +51,16 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Hi Mark,
 
+I have a general question. When exceptions are nested, how does it work? Let us consider 2 cases:
 
-On 3/23/21 8:36 AM, Mark Rutland wrote:
-> On Tue, Mar 23, 2021 at 07:56:40AM -0500, Madhavan T. Venkataraman wrote:
->>
->>
->> On 3/23/21 5:51 AM, Mark Rutland wrote:
->>> On Mon, Mar 15, 2021 at 11:57:57AM -0500, madvenka@linux.microsoft.com wrote:
->>>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>>>
->>>> When CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled and tracing is activated
->>>> for a function, the ftrace infrastructure is called for the function at
->>>> the very beginning. Ftrace creates two frames:
->>>>
->>>> 	- One for the traced function
->>>>
->>>> 	- One for the caller of the traced function
->>>>
->>>> That gives a reliable stack trace while executing in the ftrace
->>>> infrastructure code. When ftrace returns to the traced function, the frames
->>>> are popped and everything is back to normal.
->>>>
->>>> However, in cases like live patch, execution is redirected to a different
->>>> function when ftrace returns. A stack trace taken while still in the ftrace
->>>> infrastructure code will not show the target function. The target function
->>>> is the real function that we want to track.
->>>>
->>>> So, if an FTRACE frame is detected on the stack, just mark the stack trace
->>>> as unreliable.
->>>
->>> To identify this case, please identify the ftrace trampolines instead,
->>> e.g. ftrace_regs_caller, return_to_handler.
->>>
->>
->> Yes. As part of the return address checking, I will check this. IIUC, I think that
->> I need to check for the inner labels that are defined at the point where the
->> instructions are patched for ftrace. E.g., ftrace_call and ftrace_graph_call.
->>
->> SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
->>         bl      ftrace_stub	<====================================
->>
->> #ifdef CONFIG_FUNCTION_GRAPH_TRACER
->> SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL) // ftrace_graph_caller();
->>         nop	<=======                // If enabled, this will be replaced
->>                                         // "b ftrace_graph_caller"
->> #endif
->>
->> For instance, the stack trace I got while tracing do_mmap() with the stack trace
->> tracer looks like this:
->>
->> 		 ...
->> [  338.911793]   trace_function+0xc4/0x160
->> [  338.911801]   function_stack_trace_call+0xac/0x130
->> [  338.911807]   ftrace_graph_call+0x0/0x4
->> [  338.911813]   do_mmap+0x8/0x598
->> [  338.911820]   vm_mmap_pgoff+0xf4/0x188
->> [  338.911826]   ksys_mmap_pgoff+0x1d8/0x220
->> [  338.911832]   __arm64_sys_mmap+0x38/0x50
->> [  338.911839]   el0_svc_common.constprop.0+0x70/0x1a8
->> [  338.911846]   do_el0_svc+0x2c/0x98
->> [  338.911851]   el0_svc+0x2c/0x70
->> [  338.911859]   el0_sync_handler+0xb0/0xb8
->> [  338.911864]   el0_sync+0x180/0x1c0
->>
->>> It'd be good to check *exactly* when we need to reject, since IIUC when
->>> we have a graph stack entry the unwind will be correct from livepatch's
->>> PoV.
->>>
->>
->> The current unwinder already handles this like this:
->>
->> #ifdef CONFIG_FUNCTION_GRAPH_TRACER
->>         if (tsk->ret_stack &&
->>                 (ptrauth_strip_insn_pac(frame->pc) == (unsigned long)return_to_handler)) {
->>                 struct ftrace_ret_stack *ret_stack;
->>                 /*
->>                  * This is a case where function graph tracer has
->>                  * modified a return address (LR) in a stack frame
->>                  * to hook a function return.
->>                  * So replace it to an original value.
->>                  */
->>                 ret_stack = ftrace_graph_get_ret_stack(tsk, frame->graph++);
->>                 if (WARN_ON_ONCE(!ret_stack))
->>                         return -EINVAL;
->>                 frame->pc = ret_stack->ret;
->>         }
->> #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
-> 
-> Beware that this handles the case where a function will return to
-> return_to_handler, but doesn't handle unwinding from *within*
-> return_to_handler, which we can't do reliably today, so that might need
-> special handling.
-> 
+1. Exception in a page fault handler itself. In this case, I guess one more pt_regs will get
+   established in the task stack for the second exception.
 
-OK. I will take a look at this.
+2. Exception in an interrupt handler. Here the interrupt handler is running on the IRQ stack.
+   Will the pt_regs get created on the IRQ stack?
 
->> Is there anything else that needs handling here?
-> 
-> I wrote up a few cases to consider in:
-> 
-> https://www.kernel.org/doc/html/latest/livepatch/reliable-stacktrace.html
-> 
-> ... e.g. the "Obscuring of return addresses" case.
-> 
-> It might be that we're fine so long as we refuse to unwind across
-> exception boundaries, but it needs some thought. We probably need to go
-> over each of the trampolines instruction-by-instruction to consider
-> that.
-> 
-> As mentioned above, within return_to_handler when we call
-> ftrace_return_to_handler, there's a period where the real return address
-> has been removed from the ftrace return stack, but hasn't yet been
-> placed in x30, and wouldn't show up in a trace (e.g. if we could somehow
-> hook the return from ftrace_return_to_handler).
-> 
-> We might be saved by the fact we'll mark traces across exception
-> boundaries as unreliable, but I haven't thought very hard about it. We
-> might want to explciitly reject unwinds within return_to_handler in case
-> it's possible to interpose ftrace_return_to_handler somehow.
-> 
-
-OK. I will study the above.
-
-Thanks.
+Also, is there a maximum nesting for exceptions?
 
 Madhavan
