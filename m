@@ -2,140 +2,172 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF18346ABA
-	for <lists+live-patching@lfdr.de>; Tue, 23 Mar 2021 22:05:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55F383480E0
+	for <lists+live-patching@lfdr.de>; Wed, 24 Mar 2021 19:47:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbhCWVFO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Mar 2021 17:05:14 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:59476 "EHLO
+        id S237391AbhCXSrB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 24 Mar 2021 14:47:01 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:57474 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233489AbhCWVEs (ORCPT
+        with ESMTP id S237532AbhCXSqg (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Mar 2021 17:04:48 -0400
-Received: from [192.168.254.32] (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id E873920B5680;
-        Tue, 23 Mar 2021 14:04:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E873920B5680
+        Wed, 24 Mar 2021 14:46:36 -0400
+Received: from x64host.home (unknown [47.187.194.202])
+        by linux.microsoft.com (Postfix) with ESMTPSA id CD89720B5680;
+        Wed, 24 Mar 2021 11:46:35 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CD89720B5680
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1616533488;
-        bh=OXR8yOga0/h10z0/w8+nlFHgpqAPODs3PDqE1WL4q1A=;
-        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
-        b=BMkCtQ1v6P65n3C3S1DgHgChYKUAfW4cYWty31O2g0bDdyAg4gD9pHKXgc3W/qPPR
-         whSduVPY89bFxr43JQOEoIh2zIZ3a+YOgBV4hfOe6wRECTEhAz5BZoGFHQBWRBIKu4
-         GlHbadEgBZjgG9iBRvnhP3sweuceSHCPBimchckk=
-Subject: Re: [RFC PATCH v2 5/8] arm64: Detect an FTRACE frame and mark a stack
- trace unreliable
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, jthierry@redhat.com,
-        catalin.marinas@arm.com, will@kernel.org,
+        s=default; t=1616611596;
+        bh=/DQ0Kpr6KrIt6d8Mcz3Cfl93aJt8TaoUE+dzxu5+xMc=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=bhn7c10geVPdJG/vxrJ9h2WuUMZKX/mlZQHOKRsUpVgRpPl03f5COUpFd4KC18/yr
+         EAxlelM7NrsTSevOm+Ci+m3RCTifs6wDZmd01LTKIaoQSVmPEdOxuCCnygmKo9yvlg
+         p0q0BFUjbXEppZuyA/NTrs3MgiazVfozsYtOtpkA=
+From:   madvenka@linux.microsoft.com
+To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
+        jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210323105118.GE95840@C02TD0UTHF1T.local>
- <2167f3c5-e7d0-40c8-99e3-ae89ceb2d60e@linux.microsoft.com>
- <20210323133611.GB98545@C02TD0UTHF1T.local>
- <ccd5ee66-6444-fac9-4c7b-b3bdabf1b149@linux.microsoft.com>
- <f9e21fe1-e646-bb36-c711-94cbbc60af8a@linux.microsoft.com>
- <20210323145734.GD98545@C02TD0UTHF1T.local>
- <a21e701d-dbcb-c48d-4ba6-774cfcfe1543@linux.microsoft.com>
- <a38e4966-9b0d-3e51-80bd-acc36d8bee9b@linux.microsoft.com>
- <20210323170236.GF98545@C02TD0UTHF1T.local>
- <bc450f09-1881-9a9c-bfbc-5bb31c01d8ce@linux.microsoft.com>
- <20210323183053.GH98545@C02TD0UTHF1T.local>
- <8aa50127-3f00-818d-d58c-4b3ff7235c74@linux.microsoft.com>
-Message-ID: <5f32abc2-5759-5fb9-a626-cce962ac275a@linux.microsoft.com>
-Date:   Tue, 23 Mar 2021 16:04:47 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        madvenka@linux.microsoft.com
+Subject: [RFC PATCH v1 0/1] arm64: Implement stack trace termination record
+Date:   Wed, 24 Mar 2021 13:46:06 -0500
+Message-Id: <20210324184607.120948-1-madvenka@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <b6144b5b1dc66bf775fe66374bba31af7e5f1d54>
+References: <b6144b5b1dc66bf775fe66374bba31af7e5f1d54>
 MIME-Version: 1.0
-In-Reply-To: <8aa50127-3f00-818d-d58c-4b3ff7235c74@linux.microsoft.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Thanks for all the input - Mark Rutland and Mark Brown.
+From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-I will send out the stack termination patch next. Since I am splitting
-the original series into 3 separate series, I will change the titles and
-start with version 1 in each case, if there is no objection.
+The unwinder needs to be able to reliably tell when it has reached the end
+of a stack trace. One way to do this is to have the last stack frame at a
+fixed offset from the base of the task stack. When the unwinder reaches
+that offset, it knows it is done.
 
-Again, Thanks.
+All tasks have a pt_regs structure right after the task stack in the stack
+page. The pt_regs structure contains a stackframe field. Make this stackframe
+field the last frame in the task stack so all stack traces end at a fixed
+stack offset.
 
-Madhavan
+For kernel tasks, this is simple to understand. For user tasks, there is
+some extra detail. User tasks get created via fork() et al. Once they return
+from fork, they enter the kernel only on an EL0 exception. In arm64,
+system calls are also EL0 exceptions.
 
-On 3/23/21 3:24 PM, Madhavan T. Venkataraman wrote:
-> 
-> 
-> On 3/23/21 1:30 PM, Mark Rutland wrote:
->> On Tue, Mar 23, 2021 at 12:23:34PM -0500, Madhavan T. Venkataraman wrote:
->>> On 3/23/21 12:02 PM, Mark Rutland wrote:
->>
->> [...]
->>
->>> I think that I did a bad job of explaining what I wanted to do. It is not
->>> for any additional protection at all.
->>>
->>> So, let us say we create a field in the task structure:
->>>
->>> 	u64		unreliable_stack;
->>>
->>> Whenever an EL1 exception is entered or FTRACE is entered and pt_regs get
->>> set up and pt_regs->stackframe gets chained, increment unreliable_stack.
->>> On exiting the above, decrement unreliable_stack.
->>>
->>> In arch_stack_walk_reliable(), simply do this check upfront:
->>>
->>> 	if (task->unreliable_stack)
->>> 		return -EINVAL;
->>>
->>> This way, the function does not even bother unwinding the stack to find
->>> exception frames or checking for different return addresses or anything.
->>> We also don't have to worry about code being reorganized, functions
->>> being renamed, etc. It also may help in debugging to know if a task is
->>> experiencing an exception and the level of nesting, etc.
->>
->> As in my other reply, since this is an optimization that is not
->> necessary for functional correctness, I would prefer to avoid this for
->> now. We can reconsider that in future if we encounter performance
->> problems.
->>
->> Even with this there will be cases where we have to identify
->> non-unwindable functions explicitly (e.g. the patchable-function-entry
->> trampolines, where the real return address is in x9), and I'd prefer
->> that we use one mechanism consistently.
->>
->> I suspect that in the future we'll need to unwind across exception
->> boundaries using metadata, and we can treat the non-unwindable metadata
->> in the same way.
->>
->> [...]
->>
->>>> 3. Figure out exception boundary handling. I'm currently working to
->>>>    simplify the entry assembly down to a uniform set of stubs, and I'd
->>>>    prefer to get that sorted before we teach the unwinder about
->>>>    exception boundaries, as it'll be significantly simpler to reason
->>>>    about and won't end up clashing with the rework.
->>>
->>> So, here is where I still have a question. Is it necessary for the unwinder
->>> to know the exception boundaries? Is it not enough if it knows if there are
->>> exceptions present? For instance, using something like num_special_frames
->>> I suggested above?
->>
->> I agree that it would be legitimate to bail out early if we knew there
->> was going to be an exception somewhere in the trace. Regardless, I think
->> it's simpler overall to identify non-unwindability during the trace, and
->> doing that during the trace aligns more closely with the structure that
->> we'll need to permit unwinding across these boundaries in future, so I'd
->> prefer we do that rather than trying to optimize for early returns
->> today.
->>
-> 
-> OK. Fair enough.
-> 
-> Thanks.
-> 
-> Madhavan
-> 
+The EL0 exception handler uses the task pt_regs mentioned above to save
+register state and call different exception functions. All stack traces
+from EL0 exception code must end at the pt_regs. So, make pt_regs->stackframe
+the last frame in the EL0 exception stack.
+
+To summarize, task_pt_regs(task)->stackframe will always be the stack
+termination record.
+
+Sample stack traces
+===================
+
+These stack traces were taken using a test driver called callfd from
+certain locations.
+
+Primary CPU's idle task
+=======================
+
+[    0.022932]   arch_stack_walk+0x0/0xd0
+[    0.022944]   callfd_stack+0x30/0x60
+[    0.022955]   rest_init+0xd8/0xf8
+[    0.022968]   arch_call_rest_init+0x18/0x24
+[    0.022984]   start_kernel+0x5b8/0x5f4
+[    0.022993]   ret_from_fork+0x0/0x18
+
+Secondary CPU's idle task
+=========================
+
+[    0.023043]   arch_stack_walk+0x0/0xd0
+[    0.023052]   callfd_stack+0x30/0x60
+[    0.023061]   secondary_start_kernel+0x188/0x1e0
+[    0.023071]   ret_from_fork+0x0/0x18
+
+Sample kernel thread
+====================
+
+[   12.000679]   arch_stack_walk+0x0/0xd0
+[   12.007616]   callfd_stack+0x30/0x60
+[   12.014347]   kernel_init+0x84/0x148
+[   12.021026]   ret_from_fork+0x10/0x18
+
+kernel_clone() system call
+==========================
+
+Showing EL0 exception:
+
+[  364.152827]   arch_stack_walk+0x0/0xd0
+[  364.152833]   callfd_stack+0x30/0x60
+[  364.152839]   kernel_clone+0x57c/0x590
+[  364.152846]   __do_sys_clone+0x58/0x88
+[  364.152851]   __arm64_sys_clone+0x28/0x38
+[  364.152856]   el0_svc_common.constprop.0+0x70/0x1a8
+[  364.152863]   do_el0_svc+0x2c/0x98
+[  364.152868]   el0_svc+0x2c/0x70
+[  364.152873]   el0_sync_handler+0xb0/0xb8
+[  364.152879]   el0_sync+0x178/0x180
+
+Timer interrupt
+===============
+
+Showing EL1 exception (Interrupt happened on a secondary CPU):
+
+[  364.195456]   arch_stack_walk+0x0/0xd0
+[  364.195467]   callfd_stack+0x30/0x60
+[  364.195475]   callfd_callback+0x2c/0x38
+[  364.195482]   call_timer_fn+0x38/0x180
+[  364.195489]   run_timer_softirq+0x43c/0x6b8
+[  364.195495]   __do_softirq+0x138/0x37c
+[  364.195501]   irq_exit+0xc0/0xe8
+[  364.195512]   __handle_domain_irq+0x70/0xc8
+[  364.195521]   gic_handle_irq+0xd4/0x2f4
+[  364.195527]   el1_irq+0xc0/0x180
+[  364.195533]   arch_cpu_idle+0x18/0x40
+[  364.195540]   default_idle_call+0x44/0x170
+[  364.195548]   do_idle+0x224/0x278
+[  364.195567]   cpu_startup_entry+0x2c/0x98
+[  364.195573]   secondary_start_kernel+0x198/0x1e0
+[  364.195581]   ret_from_fork+0x0/0x18
+---
+Changelog:
+
+v1
+	- Set up task_pt_regs(current)->stackframe as the last frame
+	  when a new task is initialized in copy_thread().
+
+	- Create pt_regs for the idle tasks and set up pt_regs->stackframe
+	  as the last frame for the idle tasks.
+
+	- Set up task_pt_regs(current)->stackframe as the last frame in
+	  the EL0 exception handler so the EL0 exception stack trace ends
+	  there.
+
+	- Terminate the stack trace successfully in unwind_frame() when
+	  the FP reaches task_pt_regs(current)->stackframe.
+
+	- The stack traces (above) in the kernel will terminate at the
+	  correct place. Debuggers may show an extra record 0x0 at the end
+	  for pt_regs->stackframe. That said, I did not see that extra frame
+	  when I did stack traces using gdb.
+
+Madhavan T. Venkataraman (1):
+  arm64: Implement stack trace termination record
+
+ arch/arm64/kernel/entry.S      |  8 +++++---
+ arch/arm64/kernel/head.S       | 28 ++++++++++++++++++++++++----
+ arch/arm64/kernel/process.c    |  5 +++++
+ arch/arm64/kernel/stacktrace.c |  8 ++++----
+ 4 files changed, 38 insertions(+), 11 deletions(-)
+
+
+base-commit: 0d02ec6b3136c73c09e7859f0d0e4e2c4c07b49b
+-- 
+2.25.1
+
