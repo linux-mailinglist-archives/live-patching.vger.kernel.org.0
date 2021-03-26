@@ -2,64 +2,85 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A38334A34C
-	for <lists+live-patching@lfdr.de>; Fri, 26 Mar 2021 09:40:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C15B834A9BE
+	for <lists+live-patching@lfdr.de>; Fri, 26 Mar 2021 15:31:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbhCZIjc (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 26 Mar 2021 04:39:32 -0400
-Received: from mx2.suse.de ([195.135.220.15]:52876 "EHLO mx2.suse.de"
+        id S229986AbhCZOar (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 26 Mar 2021 10:30:47 -0400
+Received: from mx2.suse.de ([195.135.220.15]:50416 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229871AbhCZIjN (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 26 Mar 2021 04:39:13 -0400
+        id S229848AbhCZOaZ (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 26 Mar 2021 10:30:25 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 5F4E1AA55;
-        Fri, 26 Mar 2021 08:39:12 +0000 (UTC)
-Date:   Fri, 26 Mar 2021 09:39:12 +0100 (CET)
+        by mx2.suse.de (Postfix) with ESMTP id 4E6F1AC6A;
+        Fri, 26 Mar 2021 14:30:24 +0000 (UTC)
 From:   Miroslav Benes <mbenes@suse.cz>
-To:     Jens Axboe <axboe@kernel.dk>
-cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Dong Kai <dongkai11@huawei.com>, jpoimboe@redhat.com,
-        jikos@kernel.org, pmladek@suse.com, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] livepatch: klp_send_signal should treat PF_IO_WORKER
- like PF_KTHREAD
-In-Reply-To: <f4969563-23fa-cb49-8243-d600f1bf0b23@kernel.dk>
-Message-ID: <alpine.LSU.2.21.2103260934470.9965@pobox.suse.cz>
-References: <20210325014836.40649-1-dongkai11@huawei.com> <cd701421-f2c6-56f6-5798-106bc9de0084@redhat.com> <alpine.LSU.2.21.2103251026180.30447@pobox.suse.cz> <f4969563-23fa-cb49-8243-d600f1bf0b23@kernel.dk>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+To:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        joe.lawrence@redhat.com
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        axboe@kernel.dk, Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH] livepatch: Replace the fake signal sending with TIF_NOTIFY_SIGNAL infrastructure
+Date:   Fri, 26 Mar 2021 15:30:21 +0100
+Message-Id: <20210326143021.17773-1-mbenes@suse.cz>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 25 Mar 2021, Jens Axboe wrote:
+Livepatch sends a fake signal to all remaining blocking tasks of a
+running transition after a set period of time. It uses TIF_SIGPENDING
+flag for the purpose. Commit 12db8b690010 ("entry: Add support for
+TIF_NOTIFY_SIGNAL") added a generic infrastructure to achieve the same.
+Replace our bespoke solution with the generic one.
 
-> On 3/25/21 3:30 AM, Miroslav Benes wrote:
-> >> (PF_KTHREAD | PF_IO_WORKER) is open coded in soo many places maybe this is a
-> >> silly question, but...
-> >>
-> >> If the livepatch code could use fake_signal_wake_up(), we could consolidate
-> >> the pattern in klp_send_signals() with the one in freeze_task().  Then there
-> >> would only one place for wake up / fake signal logic.
-> >>
-> >> I don't fully understand the differences in the freeze_task() version, so I
-> >> only pose this as a question and not v2 request.
-> > 
-> > The plan was to remove our live patching fake signal completely and use 
-> > the new infrastructure Jens proposed in the past.
-> 
-> That would be great, I've actually been waiting for that to show up!
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+---
+Tested on x86_64, s390x and ppc64le archs.
 
-Sorry about that. I failed to notice that the infrastructure was merged 
-already. I'll send it soonish.
+ kernel/livepatch/transition.c | 5 ++---
+ kernel/signal.c               | 3 +--
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
-> I would greatly prefer this approach if you deem it suitable for 5.12,
-> if not we'll still need the temporary work-around for live patching.
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index f6310f848f34..3a4beb9395c4 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/cpu.h>
+ #include <linux/stacktrace.h>
++#include <linux/tracehook.h>
+ #include "core.h"
+ #include "patch.h"
+ #include "transition.h"
+@@ -369,9 +370,7 @@ static void klp_send_signals(void)
+ 			 * Send fake signal to all non-kthread tasks which are
+ 			 * still not migrated.
+ 			 */
+-			spin_lock_irq(&task->sighand->siglock);
+-			signal_wake_up(task, 0);
+-			spin_unlock_irq(&task->sighand->siglock);
++			set_notify_signal(task);
+ 		}
+ 	}
+ 	read_unlock(&tasklist_lock);
+diff --git a/kernel/signal.c b/kernel/signal.c
+index f2a1b898da29..e52cb82aaecd 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -181,8 +181,7 @@ void recalc_sigpending_and_wake(struct task_struct *t)
+ 
+ void recalc_sigpending(void)
+ {
+-	if (!recalc_sigpending_tsk(current) && !freezing(current) &&
+-	    !klp_patch_pending(current))
++	if (!recalc_sigpending_tsk(current) && !freezing(current))
+ 		clear_thread_flag(TIF_SIGPENDING);
+ 
+ }
+-- 
+2.30.2
 
-I noticed there is 20210326003928.978750-1-axboe@kernel.dk now, so I 
-suppose we should wait for that to land in mainline and simply do nothing 
-about PF_IO_WORKER for live patching. 
-
-Miroslav
