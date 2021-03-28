@@ -2,86 +2,63 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95ED634B27A
-	for <lists+live-patching@lfdr.de>; Sat, 27 Mar 2021 00:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9AF234BE22
+	for <lists+live-patching@lfdr.de>; Sun, 28 Mar 2021 20:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbhCZXL3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 26 Mar 2021 19:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbhCZXK6 (ORCPT
+        id S231578AbhC1SIE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 28 Mar 2021 14:08:04 -0400
+Received: from mail.hanoi.gov.vn ([113.160.32.33]:32049 "EHLO
+        mx01.hanoi.gov.vn" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231492AbhC1SHi (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 26 Mar 2021 19:10:58 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7089BC0613AA
-        for <live-patching@vger.kernel.org>; Fri, 26 Mar 2021 16:10:58 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d8so1638388plh.11
-        for <live-patching@vger.kernel.org>; Fri, 26 Mar 2021 16:10:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7CxPBGNOJyGJAegkelSBZdLnkdPyLtywVW1PNxMx2sk=;
-        b=ZDeLJwzdKyUaDa18s3wXhLOLlLqPUu1hj8zmFihTLadpy0tNlBAUz3/MndNZTcaaom
-         zAF3qIBPA2wbWxNHHNcHNqI9ifrOWT29aSutdvsM21GjewN0MCwue4rSSctyka0RYKQC
-         Kp9q6CKvTGuSb+FXqM1UQq5oO1eJtfDn5BTVAfeuCiWRjc8Qcfv9xbNQ4pQ7AahDRRWB
-         F+Q+nYBceAOmNYrR8rUt9zUQoYpMCZWEHO6nG5iKhMn7zD0sOJ487T9Y4HeZLmub2qn9
-         Q6pP9Fyh6LvjN2mqLDuAZxwZDE+nA1PlWu/AvgVB1hpG4U1aaBZxoZbrrVSomblsXZI/
-         Y/6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7CxPBGNOJyGJAegkelSBZdLnkdPyLtywVW1PNxMx2sk=;
-        b=JeB51FWc78whCRojKxSlIXFx6gIrHVsDNI4Pcp57sghrf/yK2dDqVSuoOhfV+LgTpO
-         ceyGPpl1m3ZoCSzIpNjkrpHraErpcsCmwCNCZ0mrrQgd8CHAoCfts5J46YOHiqHtDda2
-         09eVTce3CZ+7WVMx14r6yaP5XmtQsTMpHlFf4SFybkvXbh5auvoDKDEzYYcRGQTcBbnB
-         jTKB4UtsS/Pwv55X8d2vnQFFmF2Gq/FDQuV84TOJllFZvcAlyC3EJJKQ4mfjIoPxpYKc
-         BEwpKNxaXiARqhHW53k8yRN/Xpj/oeqaNfAHeb7jo3VZsN6ztD3NSMiG6OFIm1rh6hbo
-         1sWA==
-X-Gm-Message-State: AOAM532IF+uKXlfunApN28dz6ya3ZL/p9sYxEXMWPKFwgpsJFr/n+129
-        It5pZ5dS5y7WaMrKloRfJdzoJQ==
-X-Google-Smtp-Source: ABdhPJyY69ZyA+1gLxCka3LrszGQwXRfBn3BuuflACv0Y3efCrQEYJLk+f64Fdyno/ctYykZkkpdOw==
-X-Received: by 2002:a17:90b:201:: with SMTP id fy1mr15467016pjb.108.1616800257847;
-        Fri, 26 Mar 2021 16:10:57 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c085:21cf::141d? ([2620:10d:c090:400::5:4d27])
-        by smtp.gmail.com with ESMTPSA id c193sm10174092pfc.180.2021.03.26.16.10.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Mar 2021 16:10:57 -0700 (PDT)
-Subject: Re: [PATCH] livepatch: Replace the fake signal sending with
- TIF_NOTIFY_SIGNAL infrastructure
-To:     Miroslav Benes <mbenes@suse.cz>, jpoimboe@redhat.com,
-        jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210326143021.17773-1-mbenes@suse.cz>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <d7fa9065-ed3d-43e0-5940-7c69ffd840af@kernel.dk>
-Date:   Fri, 26 Mar 2021 17:10:55 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sun, 28 Mar 2021 14:07:38 -0400
+X-Greylist: delayed 483 seconds by postgrey-1.27 at vger.kernel.org; Sun, 28 Mar 2021 14:07:32 EDT
+Received: from mx01.hanoi.gov.vn (localhost [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4B597EC3DB;
+        Mon, 29 Mar 2021 00:58:07 +0700 (+07)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hanoi.gov.vn;
+        s=default; t=1616954288;
+        bh=FuW10Z6fSdeNlf/0u/BQ1jcwkjYBw0uHUPQgn0LGo7I=; h=Date:From:To;
+        b=MnJpubbCOoNzrGbdl4opA9pGiqD1qL1TzNpy60QO4II5VnNpsotVl818lYgRa6I3d
+         Omzy1cLH1+oH7hvhrvWFGEjWO4Du7emM//yWycfTmkwXhJBSFfgFLpRpJNgbPUcm37
+         IfeanaeGGyboioiPWx6i9EzzU+DQGarsjKQF0WLA=
+X-IMSS-DKIM-Authentication-Result: mx01.hanoi.gov.vn; sigcount=0
+Received: from mx01.hanoi.gov.vn (localhost [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 713EBEC3DD;
+        Mon, 29 Mar 2021 00:58:05 +0700 (+07)
+Received: from mail.hanoi.gov.vn (mail.hanoi.gov.vn [10.1.1.25])
+        by mx01.hanoi.gov.vn (Postfix) with ESMTPS;
+        Mon, 29 Mar 2021 00:58:05 +0700 (+07)
+Received: from mail.hanoi.gov.vn (localhost [127.0.0.1])
+        by mail.hanoi.gov.vn (Postfix) with ESMTPS id 7EB1F7F41B5D;
+        Mon, 29 Mar 2021 00:57:59 +0700 (+07)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.hanoi.gov.vn (Postfix) with ESMTP id 9F9587F41B42;
+        Mon, 29 Mar 2021 00:57:56 +0700 (+07)
+Received: from mail.hanoi.gov.vn ([127.0.0.1])
+        by localhost (mail.hanoi.gov.vn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 5aziPsZZzTJX; Mon, 29 Mar 2021 00:57:52 +0700 (+07)
+Received: from mail.hanoi.gov.vn (mail.hanoi.gov.vn [10.1.1.25])
+        by mail.hanoi.gov.vn (Postfix) with ESMTP id 923357F41B59;
+        Mon, 29 Mar 2021 00:57:49 +0700 (+07)
+Date:   Mon, 29 Mar 2021 00:57:49 +0700 (ICT)
+From:   Mackenzie Scott <ttptqd_thanhoai@hanoi.gov.vn>
+Reply-To: Mackenzie Scott <propack@propck.net>
+Message-ID: <338153864.25920933.1616954269522.JavaMail.zimbra@hanoi.gov.vn>
+Subject: Congratulations ($ 100,800,000.00)
 MIME-Version: 1.0
-In-Reply-To: <20210326143021.17773-1-mbenes@suse.cz>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [185.107.80.217]
+X-Mailer: Zimbra 8.8.15_GA_3894 (zclient/8.8.15_GA_3894)
+Thread-Index: /8qcKB84H/IsUnGyWvfkptZHVH6P1Q==
+Thread-Topic: Congratulations ($ 100,800,000.00)
+To:     undisclosed-recipients:;
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 3/26/21 8:30 AM, Miroslav Benes wrote:
-> Livepatch sends a fake signal to all remaining blocking tasks of a
-> running transition after a set period of time. It uses TIF_SIGPENDING
-> flag for the purpose. Commit 12db8b690010 ("entry: Add support for
-> TIF_NOTIFY_SIGNAL") added a generic infrastructure to achieve the same.
-> Replace our bespoke solution with the generic one.
-> 
-> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
 
-Looks good to me.
 
-Reviewed-by: Jens Axboe <axboe@kernel.dk>
-
--- 
-Jens Axboe
-
+Hello,i&#39;m Mackenzie Scott,Ex-wife of Amazon founder i&#39;m donating $4 billion to charities,individuals,universities across the Globe from my divorce funds,i&#39;m donating part of it to provide immediate support to people suffering economically during the COVID-19 pandemic,i have a donation worth $100,800,000.00 Dollars for you,you can contact me for more information if you&#39;re interested.
