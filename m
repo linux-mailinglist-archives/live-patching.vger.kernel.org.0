@@ -2,60 +2,81 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B52350D3F
-	for <lists+live-patching@lfdr.de>; Thu,  1 Apr 2021 05:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A96351879
+	for <lists+live-patching@lfdr.de>; Thu,  1 Apr 2021 19:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230073AbhDADox (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 31 Mar 2021 23:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhDADom (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 31 Mar 2021 23:44:42 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74ED6C0613E6
-        for <live-patching@vger.kernel.org>; Wed, 31 Mar 2021 20:44:41 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id d13so737424lfg.7
-        for <live-patching@vger.kernel.org>; Wed, 31 Mar 2021 20:44:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=Djm5RACG0Q/tTggkaTME8LERkF9KDASCXoX4HtuQQkI=;
-        b=Ym2YqZMnSX00eU3I6Fow01pSOvJ34l7d9PaZ4Gg1Y1egbD46aq5iGAoKf1tdCO95D7
-         itgvinf3kIhDB5yMuiir9VO29HHxoqxX9EowM55chgLnJSCaxBOsyJ7TSLtKrvGVvdaO
-         /WFhgvmxUpB7v99WsyKAMbmaiyOJWLuWx+c6z2OPkVgkGakjVCypRQy3UVNgx4iVeelA
-         qcJJxnABSWGYYhS8KeArbqosqMNIhCFvr4Ml94m70+Rm0MTO8C7401gdZNLexh4vWXW8
-         YWw0IzCL9EA3851tVD0R3cBnVj0Ji212JVfaA93oIecwhQNGxZb6G1Gkf5Xe7FQTCbVd
-         g8SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=Djm5RACG0Q/tTggkaTME8LERkF9KDASCXoX4HtuQQkI=;
-        b=iejv/+FrqR4Oq99GAj0ZOQ0hg17kHTR0eb2Ik5q6ydQM05SqPlAVLcCP5wGyGTjMon
-         smyU2b9h3+n7mQYyflCyrsYsXp8e/5tQeLROF5aTBdYil3H5iX4ybGNevI5jyku2L0F6
-         MN1QlKzJyMClePRDyUK6twUt9y7c1UAd0ZSAozBCATjBZ1Vx9H+WfLRGdhLJ4gksn8P+
-         ooHjXLbGiTgWsXSwGAp0Np8FmhxccZTO4xWP+FR/qALoKyGpytjFGICIprPE7VY24NA3
-         Skcv4EX6QIggVBRdXdoX7iIvoIFe/hUt5nQwZBAJFULF+FycnQPEoxrwLH8JBrOmhuuo
-         nfLA==
-X-Gm-Message-State: AOAM531SM3OZ+u/I3jjvjbUeyIjAX5fg2zR+MHRpzPX8P9L8Q6f3E3Ve
-        hGxGmqc2v1pCjAAj0APOuCO+jeUPUHd78WqzvNQ=
-X-Google-Smtp-Source: ABdhPJwAqWsOPuwwK9Q10y8AL5baP+WTdXZ9mdPKYb7QXelO5i5/paHC1nqe4FL/gyyKA/LDG7TMDc3oYFqWTsHdXUQ=
-X-Received: by 2002:a19:2242:: with SMTP id i63mr3882426lfi.643.1617248679874;
- Wed, 31 Mar 2021 20:44:39 -0700 (PDT)
+        id S235435AbhDARpx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 1 Apr 2021 13:45:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40730 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234618AbhDARi0 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 1 Apr 2021 13:38:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A813613D3;
+        Thu,  1 Apr 2021 17:21:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617297687;
+        bh=mt7mSirjIpb9HBVKFPaqTQQ9E7aJaJ2v+9YGh4vH1pc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AjmtXXhvPL/YkPYR+EP6yFc2rsVIHmWXOmMLwxaClD0+GhQRm50xeUbalniniE+5E
+         WIA4yHbfQvXgweSofogr8XoGUS0pT2/ki2bkO4XmYPfJ0RMSdWbJ+dbYmCiovpr4dN
+         /8pwfA5V89gemlh/xK1dyF80PkxzaRmQVsOa5i/Yh6N12cXhxQVbzdqPCkIYds4Ps3
+         Y1WLisYr1jAdyONZ1oza3FP6izLmoo8oC/hQntyvbra0m33Pb/V/VCAA98yLQ0kE07
+         9UBCFZTcOWePlMGhQOqV1/D7tjavZPPQQuySsAQTZcSUhJa4+K3vQJrLLn0aEOOR+t
+         pY/f8mqNG39fg==
+Date:   Thu, 1 Apr 2021 18:21:14 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     madvenka@linux.microsoft.com
+Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, jthierry@redhat.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v1 2/4] arm64: Mark a stack trace unreliable if an
+ EL1 exception frame is detected
+Message-ID: <20210401172114.GM4758@sirena.org.uk>
+References: <77bd5edeea72d44533c769b1e8c0fea7a9d7eb3a>
+ <20210330190955.13707-1-madvenka@linux.microsoft.com>
+ <20210330190955.13707-3-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
-Sender: faridasalam3@gmail.com
-Received: by 2002:ac2:5dd4:0:0:0:0:0 with HTTP; Wed, 31 Mar 2021 20:44:39
- -0700 (PDT)
-From:   Nadia Richard <nadiarichard010@gmail.com>
-Date:   Wed, 31 Mar 2021 20:44:39 -0700
-X-Google-Sender-Auth: Ia8ioOKhKuAKuaiIyahNrk9yXzU
-Message-ID: <CAGeoi-Hh_vuB9D785_zJ9L8M0Qy+hoKiYR+E4K-Y=KD4tP1EJg@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pP0ycGQONqsnqIMP"
+Content-Disposition: inline
+In-Reply-To: <20210330190955.13707-3-madvenka@linux.microsoft.com>
+X-Cookie: You can't take damsel here now.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello how are you
+
+--pP0ycGQONqsnqIMP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Mar 30, 2021 at 02:09:53PM -0500, madvenka@linux.microsoft.com wrot=
+e:
+> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+>=20
+> EL1 exceptions can happen on any instruction including instructions in
+> the frame pointer prolog or epilog. Depending on where exactly they happe=
+n,
+> they could render the stack trace unreliable.
+
+Reviewed-by: Mark Brown <broonie@kernel.org>
+
+--pP0ycGQONqsnqIMP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmBmAQkACgkQJNaLcl1U
+h9C2SQf+NvIsAlsof26aZkOkpChuEOFcssNFTBsVHHOMiPLp6iY2W0CkN+qGkxI5
+J4lpwbAsj/LmRo7CIZgihzCAR4aPOOe2+c5qnJuRoZ3J1kZfXtKpkxwYxxkSH/wx
+o9eLE2S4xm9wiMXmEYSqahP5HNhTQgDHI//ixyxTszsA5HMAXclHq6P3x5KhJH/a
+P0ktUZPGIgP1XwZd4loFkM0JOeYHNgwtIcWoACyEISnRsBCI4gcFoEuOTrswzVL5
+feInfKQkzYebhWaEC8qUBPbawEWfmIn+sMfDKBx83OsCs+mqTeDrBbu8D9xngOjz
+dW6HR5po7mwhDy0AfmP6CCdsDDAmBg==
+=JPNJ
+-----END PGP SIGNATURE-----
+
+--pP0ycGQONqsnqIMP--
