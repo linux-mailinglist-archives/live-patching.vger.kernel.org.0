@@ -2,237 +2,172 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 302523525AC
-	for <lists+live-patching@lfdr.de>; Fri,  2 Apr 2021 05:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D5635349E
+	for <lists+live-patching@lfdr.de>; Sat,  3 Apr 2021 17:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234264AbhDBDYy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 1 Apr 2021 23:24:54 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:37572 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234047AbhDBDYy (ORCPT
+        id S236724AbhDCQAB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 3 Apr 2021 12:00:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21100 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236426AbhDCQAB (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 1 Apr 2021 23:24:54 -0400
-Received: from x64host.home (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 2159920B5681;
-        Thu,  1 Apr 2021 20:24:53 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2159920B5681
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1617333893;
-        bh=wx39VL06qND0ieyl5SCBNegtB4yZWxv5KBR7P/lA544=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=DFWZCh7EUlwvTM4aVWToaPJmJVsR1qeFxoDjR51bJA2YawFM/sWIPCpzL4dWIPEBk
-         ns0pATGrZJn/XXZtntAFhhEcCC0ydQKubxM0OAa9BPvvKwzxT3y/mdxH92ii1pdvey
-         8fiSCER/zzbk9d2SJxekQWr/ybVrCoTNVuT6PZn4=
-From:   madvenka@linux.microsoft.com
-To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
-        jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+        Sat, 3 Apr 2021 12:00:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617465597;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DUOJF2tENL+V20b7Norwu9+3fd7hFO0/P2ZvHDYWJZg=;
+        b=JzCR8Nm3B17cTubemJA+RFoF7zmXQYQ77UQOUNdLDdbjobLKhHMDX9R7JFvp80wz7L31l3
+        YAgFqg9kKirrzFyt53Skks22qMsBsCIT8mBu+uPLArOx9eJOz1bjR+O2eBQ1ToCCKdCnvv
+        pJcuH/JZ8KQZKB56TD3QKWHtV7dUFFE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-256-QhxR3gKIPF-XW4wD9-Z3JQ-1; Sat, 03 Apr 2021 11:59:55 -0400
+X-MC-Unique: QhxR3gKIPF-XW4wD9-Z3JQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A039D180FCA1;
+        Sat,  3 Apr 2021 15:59:54 +0000 (UTC)
+Received: from treble (ovpn-116-68.rdu2.redhat.com [10.10.116.68])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2428F5D9DC;
+        Sat,  3 Apr 2021 15:59:49 +0000 (UTC)
+Date:   Sat, 3 Apr 2021 10:59:48 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     madvenka@linux.microsoft.com
+Cc:     mark.rutland@arm.com, broonie@kernel.org, jthierry@redhat.com,
+        catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 1/1] arm64: Implement stack trace termination record
-Date:   Thu,  1 Apr 2021 22:24:04 -0500
-Message-Id: <20210402032404.47239-2-madvenka@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210402032404.47239-1-madvenka@linux.microsoft.com>
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 1/1] arm64: Implement stack trace termination
+ record
+Message-ID: <20210403155948.ubbgtwmlsdyar7yp@treble>
 References: <659f3d5cc025896ba4c49aea431aa8b1abc2b741>
  <20210402032404.47239-1-madvenka@linux.microsoft.com>
+ <20210402032404.47239-2-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210402032404.47239-2-madvenka@linux.microsoft.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+On Thu, Apr 01, 2021 at 10:24:04PM -0500, madvenka@linux.microsoft.com wrote:
+> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+> @@ -447,9 +464,9 @@ SYM_FUNC_START_LOCAL(__primary_switched)
+>  #endif
+>  	bl	switch_to_vhe			// Prefer VHE if possible
+>  	add	sp, sp, #16
+> -	mov	x29, #0
+> -	mov	x30, #0
+> -	b	start_kernel
+> +	setup_final_frame
+> +	bl	start_kernel
+> +	nop
+>  SYM_FUNC_END(__primary_switched)
+>  
+>  	.pushsection ".rodata", "a"
+> @@ -606,14 +623,14 @@ SYM_FUNC_START_LOCAL(__secondary_switched)
+>  	cbz	x2, __secondary_too_slow
+>  	msr	sp_el0, x2
+>  	scs_load x2, x3
+> -	mov	x29, #0
+> -	mov	x30, #0
+> +	setup_final_frame
+>  
+>  #ifdef CONFIG_ARM64_PTR_AUTH
+>  	ptrauth_keys_init_cpu x2, x3, x4, x5
+>  #endif
+>  
+> -	b	secondary_start_kernel
+> +	bl	secondary_start_kernel
+> +	nop
+>  SYM_FUNC_END(__secondary_switched)
 
-Reliable stacktracing requires that we identify when a stacktrace is
-terminated early. We can do this by ensuring all tasks have a final
-frame record at a known location on their task stack, and checking
-that this is the final frame record in the chain.
+I'm somewhat arm-ignorant, so take the following comments with a grain
+of salt.
 
-Kernel Tasks
-============
 
-All tasks except the idle task have a pt_regs structure right after the
-task stack. This is called the task pt_regs. The pt_regs structure has a
-special stackframe field. Make this stackframe field the final frame in the
-task stack. This needs to be done in copy_thread() which initializes a new
-task's pt_regs and initial CPU context.
+I don't think changing these to 'bl' is necessary, unless you wanted
+__primary_switched() and __secondary_switched() to show up in the
+stacktrace for some reason?  If so, that seems like a separate patch.
 
-For the idle task, there is no task pt_regs. For our purpose, we need one.
-So, create a pt_regs just like other kernel tasks and make
-pt_regs->stackframe the final frame in the idle task stack. This needs to be
-done at two places:
 
-	- On the primary CPU, the boot task runs. It calls start_kernel()
-	  and eventually becomes the idle task for the primary CPU. Just
-	  before start_kernel() is called, set up the final frame.
+Also, why are nops added after the calls?  My guess would be because,
+since these are basically tail calls to "noreturn" functions, the stack
+dump code would otherwise show the wrong function, i.e. whatever
+function happens to be after the 'bl'.
 
-	- On each secondary CPU, a startup task runs that calls
-	  secondary_startup_kernel() and eventually becomes the idle task
-	  on the secondary CPU. Just before secondary_start_kernel() is
-	  called, set up the final frame.
+We had the same issue for x86.  It can be fixed by using '%pB' instead
+of '%pS' when printing the address in dump_backtrace_entry().  See
+sprint_backtrace() for more details.
 
-User Tasks
-==========
+BTW I think the same issue exists for GCC-generated code.  The following
+shows several such cases:
 
-User tasks are initially set up like kernel tasks when they are created.
-Then, they return to userland after fork via ret_from_fork(). After that,
-they enter the kernel only on an EL0 exception. (In arm64, system calls are
-also EL0 exceptions). The EL0 exception handler stores state in the task
-pt_regs and calls different functions based on the type of exception. The
-stack trace for an EL0 exception must end at the task pt_regs. So, make
-task pt_regs->stackframe as the final frame in the EL0 exception stack.
+  objdump -dr vmlinux |awk '/bl   / {bl=1;l=$0;next} bl == 1 && /^$/ {print l; print} // {bl=0}'
 
-In summary, task pt_regs->stackframe is where a successful stack trace ends.
 
-Stack trace termination
-=======================
+However, looking at how arm64 unwinds through exceptions in kernel
+space, using '%pB' might have side effects when the exception LR
+(elr_el1) points to the beginning of a function.  Then '%pB' would show
+the end of the previous function, instead of the function which was
+interrupted.
 
-In the unwinder, terminate the stack trace successfully when
-task_pt_regs(task)->stackframe is reached. For stack traces in the kernel,
-this will correctly terminate the stack trace at the right place.
+So you may need to rethink how to unwind through in-kernel exceptions.
 
-However, debuggers terminate the stack trace when FP == 0. In the
-pt_regs->stackframe, the PC is 0 as well. So, stack traces taken in the
-debugger may print an extra record 0x0 at the end. While this is not
-pretty, this does not do any harm. This is a small price to pay for
-having reliable stack trace termination in the kernel.
+Basically, when printing a stack return address, you want to use '%pB'
+for a call return address and '%pS' for an interrupted address.
 
-Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
----
- arch/arm64/kernel/entry.S      |  8 +++++---
- arch/arm64/kernel/head.S       | 29 +++++++++++++++++++++++------
- arch/arm64/kernel/process.c    |  5 +++++
- arch/arm64/kernel/stacktrace.c | 10 +++++-----
- 4 files changed, 38 insertions(+), 14 deletions(-)
+On x86, with the frame pointer unwinder, we encode the frame pointer by
+setting a bit in %rbp which tells the unwinder that it's a special
+pt_regs frame.  Then instead of treating it like a normal call frame,
+the stack dump code prints the registers, and the return address
+(regs->ip) gets printed with '%pS'.
 
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index a31a0a713c85..e2dc2e998934 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -261,16 +261,18 @@ alternative_else_nop_endif
- 	stp	lr, x21, [sp, #S_LR]
- 
- 	/*
--	 * For exceptions from EL0, terminate the callchain here.
-+	 * For exceptions from EL0, terminate the callchain here at
-+	 * task_pt_regs(current)->stackframe.
-+	 *
- 	 * For exceptions from EL1, create a synthetic frame record so the
- 	 * interrupted code shows up in the backtrace.
- 	 */
- 	.if \el == 0
--	mov	x29, xzr
-+	stp	xzr, xzr, [sp, #S_STACKFRAME]
- 	.else
- 	stp	x29, x22, [sp, #S_STACKFRAME]
--	add	x29, sp, #S_STACKFRAME
- 	.endif
-+	add	x29, sp, #S_STACKFRAME
- 
- #ifdef CONFIG_ARM64_SW_TTBR0_PAN
- alternative_if_not ARM64_HAS_PAN
-diff --git a/arch/arm64/kernel/head.S b/arch/arm64/kernel/head.S
-index 840bda1869e9..743c019a42c7 100644
---- a/arch/arm64/kernel/head.S
-+++ b/arch/arm64/kernel/head.S
-@@ -393,6 +393,23 @@ SYM_FUNC_START_LOCAL(__create_page_tables)
- 	ret	x28
- SYM_FUNC_END(__create_page_tables)
- 
-+	/*
-+	 * The boot task becomes the idle task for the primary CPU. The
-+	 * CPU startup task on each secondary CPU becomes the idle task
-+	 * for the secondary CPU.
-+	 *
-+	 * The idle task does not require pt_regs. But create a dummy
-+	 * pt_regs so that task_pt_regs(idle_task)->stackframe can be
-+	 * set up to be the final frame on the idle task stack just like
-+	 * all the other kernel tasks. This helps the unwinder to
-+	 * terminate the stack trace at a well-known stack offset.
-+	 */
-+	.macro setup_final_frame
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stp	xzr, xzr, [sp, #S_STACKFRAME]
-+	add	x29, sp, #S_STACKFRAME
-+	.endm
-+
- /*
-  * The following fragment of code is executed with the MMU enabled.
-  *
-@@ -447,9 +464,9 @@ SYM_FUNC_START_LOCAL(__primary_switched)
- #endif
- 	bl	switch_to_vhe			// Prefer VHE if possible
- 	add	sp, sp, #16
--	mov	x29, #0
--	mov	x30, #0
--	b	start_kernel
-+	setup_final_frame
-+	bl	start_kernel
-+	nop
- SYM_FUNC_END(__primary_switched)
- 
- 	.pushsection ".rodata", "a"
-@@ -606,14 +623,14 @@ SYM_FUNC_START_LOCAL(__secondary_switched)
- 	cbz	x2, __secondary_too_slow
- 	msr	sp_el0, x2
- 	scs_load x2, x3
--	mov	x29, #0
--	mov	x30, #0
-+	setup_final_frame
- 
- #ifdef CONFIG_ARM64_PTR_AUTH
- 	ptrauth_keys_init_cpu x2, x3, x4, x5
- #endif
- 
--	b	secondary_start_kernel
-+	bl	secondary_start_kernel
-+	nop
- SYM_FUNC_END(__secondary_switched)
- 
- SYM_FUNC_START_LOCAL(__secondary_too_slow)
-diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
-index 325c83b1a24d..906baa232a89 100644
---- a/arch/arm64/kernel/process.c
-+++ b/arch/arm64/kernel/process.c
-@@ -437,6 +437,11 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
- 	}
- 	p->thread.cpu_context.pc = (unsigned long)ret_from_fork;
- 	p->thread.cpu_context.sp = (unsigned long)childregs;
-+	/*
-+	 * For the benefit of the unwinder, set up childregs->stackframe
-+	 * as the final frame for the new task.
-+	 */
-+	p->thread.cpu_context.fp = (unsigned long)childregs->stackframe;
- 
- 	ptrace_hw_copy_thread(p);
- 
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index ad20981dfda4..72f5af8c69dc 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -44,16 +44,16 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
- 	unsigned long fp = frame->fp;
- 	struct stack_info info;
- 
--	/* Terminal record; nothing to unwind */
--	if (!fp)
-+	if (!tsk)
-+		tsk = current;
-+
-+	/* Final frame; nothing to unwind */
-+	if (fp == (unsigned long) task_pt_regs(tsk)->stackframe)
- 		return -ENOENT;
- 
- 	if (fp & 0xf)
- 		return -EINVAL;
- 
--	if (!tsk)
--		tsk = current;
--
- 	if (!on_accessible_stack(tsk, fp, &info))
- 		return -EINVAL;
- 
+>  SYM_FUNC_START_LOCAL(__secondary_too_slow)
+> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+> index 325c83b1a24d..906baa232a89 100644
+> --- a/arch/arm64/kernel/process.c
+> +++ b/arch/arm64/kernel/process.c
+> @@ -437,6 +437,11 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
+>  	}
+>  	p->thread.cpu_context.pc = (unsigned long)ret_from_fork;
+>  	p->thread.cpu_context.sp = (unsigned long)childregs;
+> +	/*
+> +	 * For the benefit of the unwinder, set up childregs->stackframe
+> +	 * as the final frame for the new task.
+> +	 */
+> +	p->thread.cpu_context.fp = (unsigned long)childregs->stackframe;
+>  
+>  	ptrace_hw_copy_thread(p);
+>  
+> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+> index ad20981dfda4..72f5af8c69dc 100644
+> --- a/arch/arm64/kernel/stacktrace.c
+> +++ b/arch/arm64/kernel/stacktrace.c
+> @@ -44,16 +44,16 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
+>  	unsigned long fp = frame->fp;
+>  	struct stack_info info;
+>  
+> -	/* Terminal record; nothing to unwind */
+> -	if (!fp)
+> +	if (!tsk)
+> +		tsk = current;
+> +
+> +	/* Final frame; nothing to unwind */
+> +	if (fp == (unsigned long) task_pt_regs(tsk)->stackframe)
+>  		return -ENOENT;
+
+As far as I can tell, the regs stackframe value is initialized to zero
+during syscall entry, so isn't this basically just 'if (fp == 0)'?
+
+Shouldn't it instead be comparing with the _address_ of the stackframe
+field to make sure it reached the end?
+
 -- 
-2.25.1
+Josh
 
