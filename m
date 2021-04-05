@@ -2,36 +2,36 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 953173547BB
+	by mail.lfdr.de (Postfix) with ESMTP id E25C93547BC
 	for <lists+live-patching@lfdr.de>; Mon,  5 Apr 2021 22:43:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241085AbhDEUnd (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 5 Apr 2021 16:43:33 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:36178 "EHLO
+        id S241109AbhDEUng (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 5 Apr 2021 16:43:36 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:36190 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237190AbhDEUnc (ORCPT
+        with ESMTP id S235434AbhDEUnd (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 5 Apr 2021 16:43:32 -0400
+        Mon, 5 Apr 2021 16:43:33 -0400
 Received: from x64host.home (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id C4E4520B5681;
-        Mon,  5 Apr 2021 13:43:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C4E4520B5681
+        by linux.microsoft.com (Postfix) with ESMTPSA id B91F620B5683;
+        Mon,  5 Apr 2021 13:43:25 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B91F620B5683
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1617655405;
-        bh=FXJKTTAJEFg3bLgFKMRC+t8B2UTIYo8NHYupcKiM3Rw=;
+        s=default; t=1617655406;
+        bh=syB2zPgGDplCermE8pzh/3xNAVmQD2QmALo8binCuMg=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=MWcmvYhNmA3PSzFB6RSUtxu3mMOaUhE+umk9IWFD54y1pFcddpg5sfAbyy1/ve1++
-         x9uRas75ssraEYzaEk598CaW6miKKHWVfWYXXuPn1I8bqaMPHCCy/T4pf6XTpzgoT4
-         xLiG5bykpfyx+7LflqID6iEcd6RwZ3gx7t4ncNFc=
+        b=X3UivgY8YLad4RgjUyS4RJ8kx+eDKQmoa9UmEOulhHZvy5TFKwMAkCB4WV9cikMW7
+         +MqOMeWw0xV9903+IGW5qBwvRID5FSkWXMEW+h598M4YDkjMC8CxUL8VQ2zlm0wC26
+         omNEA/ABHrZPlTIAAfUJdof2csUUJmleD3cxLTvA=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 2/4] arm64: Mark a stack trace unreliable if an EL1 exception frame is detected
-Date:   Mon,  5 Apr 2021 15:43:11 -0500
-Message-Id: <20210405204313.21346-3-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v2 3/4] arm64: Detect FTRACE cases that make the stack trace unreliable
+Date:   Mon,  5 Apr 2021 15:43:12 -0500
+Message-Id: <20210405204313.21346-4-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210405204313.21346-1-madvenka@linux.microsoft.com>
 References: <705993ccb34a611c75cdae0a8cb1b40f9b218ebd>
@@ -44,169 +44,137 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-EL1 exceptions can happen on any instruction including instructions in
-the frame pointer prolog or epilog. Depending on where exactly they happen,
-they could render the stack trace unreliable.
+When CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled and tracing is activated
+for a function, the ftrace infrastructure is called for the function at
+the very beginning. Ftrace creates two frames:
 
-If an EL1 exception frame is found on the stack, mark the stack trace as
-unreliable. Now, the EL1 exception frame is not at any well-known offset
-on the stack. It can be anywhere on the stack. In order to properly detect
-an EL1 exception frame, the return address must be checked against all of
-the possible EL1 exception handlers.
+	- One for the traced function
 
-Preemption
-==========
+	- One for the caller of the traced function
 
-Interrupts encountered in kernel code are also EL1 exceptions. At the end
-of an interrupt, the interrupt handler checks if the current task must be
-preempted for any reason. If so, it calls the preemption code which takes
-the task off the CPU. A stack trace taken on the task after the preemption
-will show the EL1 frame and will be considered unreliable. This is correct
-behavior as preemption can happen practically at any point in code.
+That gives a reliable stack trace while executing in the ftrace code. When
+ftrace returns to the traced function, the frames are popped and everything
+is back to normal.
 
-Probing
-=======
+However, in cases like live patch, a tracer function may redirect execution
+to a different function when it returns. A stack trace taken while still in
+the tracer function will not show the target function. The target function
+is the real function that we want to track.
 
-Breakpoints encountered in kernel code are also EL1 exceptions. The probing
-infrastructure uses breakpoints for executing probe code. While in the probe
-code, the stack trace will show an EL1 frame and will be considered
-unreliable. This is also correct behavior.
+So, if an FTRACE frame is detected on the stack, just mark the stack trace
+as unreliable. The detection is done by checking the return PC against
+FTRACE trampolines.
 
-Reviewed-by: Mark Brown <broonie@kernel.org>
+Also, the Function Graph Tracer modifies the return address of a traced
+function to a return trampoline to gather tracing data on function return.
+Stack traces taken from that trampoline and functions it calls are
+unreliable as the original return address may not be available in
+that context. Mark the stack trace unreliable accordingly.
+
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/include/asm/exception.h |  8 +++++++
- arch/arm64/kernel/entry.S          | 14 +++++------
- arch/arm64/kernel/stacktrace.c     | 37 ++++++++++++++++++++++++++++++
- 3 files changed, 52 insertions(+), 7 deletions(-)
+ arch/arm64/kernel/entry-ftrace.S | 12 +++++++
+ arch/arm64/kernel/stacktrace.c   | 61 ++++++++++++++++++++++++++++++++
+ 2 files changed, 73 insertions(+)
 
-diff --git a/arch/arm64/include/asm/exception.h b/arch/arm64/include/asm/exception.h
-index 6546158d2f2d..4ebd2390ef54 100644
---- a/arch/arm64/include/asm/exception.h
-+++ b/arch/arm64/include/asm/exception.h
-@@ -35,6 +35,14 @@ asmlinkage void el1_sync_handler(struct pt_regs *regs);
- asmlinkage void el0_sync_handler(struct pt_regs *regs);
- asmlinkage void el0_sync_compat_handler(struct pt_regs *regs);
+diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+index b3e4f9a088b1..1f0714a50c71 100644
+--- a/arch/arm64/kernel/entry-ftrace.S
++++ b/arch/arm64/kernel/entry-ftrace.S
+@@ -86,6 +86,18 @@ SYM_CODE_START(ftrace_caller)
+ 	b	ftrace_common
+ SYM_CODE_END(ftrace_caller)
  
-+asmlinkage void el1_sync(void);
-+asmlinkage void el1_irq(void);
-+asmlinkage void el1_error(void);
-+asmlinkage void el1_sync_invalid(void);
-+asmlinkage void el1_irq_invalid(void);
-+asmlinkage void el1_fiq_invalid(void);
-+asmlinkage void el1_error_invalid(void);
-+
- asmlinkage void noinstr enter_el1_irq_or_nmi(struct pt_regs *regs);
- asmlinkage void noinstr exit_el1_irq_or_nmi(struct pt_regs *regs);
- asmlinkage void enter_from_user_mode(void);
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index a31a0a713c85..9fe3aaeff019 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -630,19 +630,19 @@ SYM_CODE_START_LOCAL(el0_fiq_invalid_compat)
- SYM_CODE_END(el0_fiq_invalid_compat)
- #endif
- 
--SYM_CODE_START_LOCAL(el1_sync_invalid)
-+SYM_CODE_START(el1_sync_invalid)
- 	inv_entry 1, BAD_SYNC
- SYM_CODE_END(el1_sync_invalid)
- 
--SYM_CODE_START_LOCAL(el1_irq_invalid)
-+SYM_CODE_START(el1_irq_invalid)
- 	inv_entry 1, BAD_IRQ
- SYM_CODE_END(el1_irq_invalid)
- 
--SYM_CODE_START_LOCAL(el1_fiq_invalid)
-+SYM_CODE_START(el1_fiq_invalid)
- 	inv_entry 1, BAD_FIQ
- SYM_CODE_END(el1_fiq_invalid)
- 
--SYM_CODE_START_LOCAL(el1_error_invalid)
-+SYM_CODE_START(el1_error_invalid)
- 	inv_entry 1, BAD_ERROR
- SYM_CODE_END(el1_error_invalid)
- 
-@@ -650,7 +650,7 @@ SYM_CODE_END(el1_error_invalid)
-  * EL1 mode handlers.
-  */
- 	.align	6
--SYM_CODE_START_LOCAL_NOALIGN(el1_sync)
-+SYM_CODE_START_NOALIGN(el1_sync)
- 	kernel_entry 1
- 	mov	x0, sp
- 	bl	el1_sync_handler
-@@ -658,7 +658,7 @@ SYM_CODE_START_LOCAL_NOALIGN(el1_sync)
- SYM_CODE_END(el1_sync)
- 
- 	.align	6
--SYM_CODE_START_LOCAL_NOALIGN(el1_irq)
-+SYM_CODE_START_NOALIGN(el1_irq)
- 	kernel_entry 1
- 	gic_prio_irq_setup pmr=x20, tmp=x1
- 	enable_da_f
-@@ -737,7 +737,7 @@ el0_irq_naked:
- 	b	ret_to_user
- SYM_CODE_END(el0_irq)
- 
--SYM_CODE_START_LOCAL(el1_error)
-+SYM_CODE_START(el1_error)
- 	kernel_entry 1
- 	mrs	x1, esr_el1
- 	gic_prio_kentry_setup tmp=x2
++/*
++ * A stack trace taken from anywhere in the FTRACE trampoline code should be
++ * considered unreliable as a tracer function (patched at ftrace_call) could
++ * potentially set pt_regs->pc and redirect execution to a function different
++ * than the traced function. E.g., livepatch.
++ *
++ * No stack traces are taken in this FTRACE trampoline assembly code. But
++ * they can be taken from C functions that get called from here. The unwinder
++ * checks if a return address falls in this FTRACE trampoline code. See
++ * stacktrace.c. If function calls in this code are changed, please keep the
++ * special_functions[] array in stacktrace.c in sync.
++ */
+ SYM_CODE_START(ftrace_common)
+ 	sub	x0, x30, #AARCH64_INSN_SIZE	// ip (callsite's BL insn)
+ 	mov	x1, x9				// parent_ip (callsite's LR)
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 557657d6e6bd..fb11e4372891 100644
+index fb11e4372891..7a3c638d4aeb 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -14,6 +14,7 @@
- #include <linux/stacktrace.h>
- 
- #include <asm/irq.h>
-+#include <asm/exception.h>
- #include <asm/pointer_auth.h>
- #include <asm/stack_pointer.h>
- #include <asm/stacktrace.h>
-@@ -25,8 +26,44 @@ struct function_range {
- 
- /*
-  * Special functions where the stack trace is unreliable.
+@@ -51,6 +51,52 @@ struct function_range {
+  * unreliable. Breakpoints are used for executing probe code. Stack traces
+  * taken while in the probe code will show an EL1 frame and will be considered
+  * unreliable. This is correct behavior.
 + *
-+ * EL1 exceptions
-+ * ==============
++ * FTRACE
++ * ======
 + *
-+ * EL1 exceptions can happen on any instruction including instructions in
-+ * the frame pointer prolog or epilog. Depending on where exactly they happen,
-+ * they could render the stack trace unreliable.
++ * When CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled, the FTRACE trampoline code
++ * is called from a traced function even before the frame pointer prolog.
++ * FTRACE sets up two stack frames (one for the traced function and one for
++ * its caller) so that the unwinder can provide a sensible stack trace for
++ * any tracer function called from the FTRACE trampoline code.
 + *
-+ * If an EL1 exception frame is found on the stack, mark the stack trace as
-+ * unreliable. Now, the EL1 exception frame is not at any well-known offset
-+ * on the stack. It can be anywhere on the stack. In order to properly detect
-+ * an EL1 exception frame, the return address must be checked against all of
-+ * the possible EL1 exception handlers.
++ * There are two cases where the stack trace is not reliable.
 + *
-+ * Interrupts encountered in kernel code are also EL1 exceptions. At the end
-+ * of an interrupt, the current task can get preempted. A stack trace taken
-+ * on the task after the preemption will show the EL1 frame and will be
-+ * considered unreliable. This is correct behavior as preemption can happen
-+ * practically at any point in code.
++ * (1) The task gets preempted before the two frames are set up. Preemption
++ *     involves an interrupt which is an EL1 exception. The unwinder already
++ *     handles EL1 exceptions.
 + *
-+ * Breakpoints encountered in kernel code are also EL1 exceptions. Breakpoints
-+ * can happen practically on any instruction. Mark the stack trace as
-+ * unreliable. Breakpoints are used for executing probe code. Stack traces
-+ * taken while in the probe code will show an EL1 frame and will be considered
-+ * unreliable. This is correct behavior.
++ * (2) The tracer function that gets called by the FTRACE trampoline code
++ *     changes the return PC (e.g., livepatch).
++ *
++ *     Not all tracer functions do that. But to err on the side of safety,
++ *     consider the stack trace as unreliable in all cases.
++ *
++ * When Function Graph Tracer is used, FTRACE modifies the return address of
++ * the traced function in its stack frame to an FTRACE return trampoline
++ * (return_to_handler). When the traced function returns, control goes to
++ * return_to_handler. return_to_handler calls FTRACE to gather tracing data
++ * and to obtain the original return address. Then, return_to_handler returns
++ * to the original return address.
++ *
++ * There are two cases to consider from a stack trace reliability point of
++ * view:
++ *
++ * (1) Stack traces taken within the traced function (and functions that get
++ *     called from there) will show return_to_handler instead of the original
++ *     return address. The original return address can be obtained from FTRACE.
++ *     The unwinder already obtains it and modifies the return PC in its copy
++ *     of the stack frame to the original return address. So, this is handled.
++ *
++ * (2) return_to_handler calls FTRACE as mentioned before. FTRACE discards
++ *     the record of the original return address along the way as it does not
++ *     need to maintain it anymore. This means that the unwinder cannot get
++ *     the original return address beyond that point while the task is still
++ *     executing in return_to_handler. So, consider the stack trace unreliable
++ *     if return_to_handler is detected on the stack.
++ *
++ * NOTE: The unwinder must do (1) before (2).
   */
  static struct function_range	special_functions[] = {
+ 	/*
+@@ -64,6 +110,21 @@ static struct function_range	special_functions[] = {
+ 	{ (unsigned long) el1_fiq_invalid, 0 },
+ 	{ (unsigned long) el1_error_invalid, 0 },
+ 
 +	/*
-+	 * EL1 exception handlers.
++	 * FTRACE trampolines.
++	 *
++	 * Tracer function gets patched at the label ftrace_call. Its return
++	 * address is the next instruction address.
 +	 */
-+	{ (unsigned long) el1_sync, 0 },
-+	{ (unsigned long) el1_irq, 0 },
-+	{ (unsigned long) el1_error, 0 },
-+	{ (unsigned long) el1_sync_invalid, 0 },
-+	{ (unsigned long) el1_irq_invalid, 0 },
-+	{ (unsigned long) el1_fiq_invalid, 0 },
-+	{ (unsigned long) el1_error_invalid, 0 },
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
++	{ (unsigned long) ftrace_call + 4, 0 },
++#endif
++
++#ifdef CONFIG_FUNCTION_GRAPH_TRACER
++	{ (unsigned long) ftrace_graph_caller, 0 },
++	{ (unsigned long) return_to_handler, 0 },
++#endif
 +
  	{ /* sentinel */ }
  };
