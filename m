@@ -2,36 +2,36 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E25C93547BC
-	for <lists+live-patching@lfdr.de>; Mon,  5 Apr 2021 22:43:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D3A3547BE
+	for <lists+live-patching@lfdr.de>; Mon,  5 Apr 2021 22:43:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241109AbhDEUng (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        id S229681AbhDEUng (ORCPT <rfc822;lists+live-patching@lfdr.de>);
         Mon, 5 Apr 2021 16:43:36 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:36190 "EHLO
+Received: from linux.microsoft.com ([13.77.154.182]:36200 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235434AbhDEUnd (ORCPT
+        with ESMTP id S241086AbhDEUne (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 5 Apr 2021 16:43:33 -0400
+        Mon, 5 Apr 2021 16:43:34 -0400
 Received: from x64host.home (unknown [47.187.194.202])
-        by linux.microsoft.com (Postfix) with ESMTPSA id B91F620B5683;
-        Mon,  5 Apr 2021 13:43:25 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B91F620B5683
+        by linux.microsoft.com (Postfix) with ESMTPSA id AC7E720B5682;
+        Mon,  5 Apr 2021 13:43:26 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AC7E720B5682
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1617655406;
-        bh=syB2zPgGDplCermE8pzh/3xNAVmQD2QmALo8binCuMg=;
+        s=default; t=1617655407;
+        bh=yDT+jIiz7wCIuh3VIPo6ld85uNay301YWbDV3aNDMqA=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=X3UivgY8YLad4RgjUyS4RJ8kx+eDKQmoa9UmEOulhHZvy5TFKwMAkCB4WV9cikMW7
-         +MqOMeWw0xV9903+IGW5qBwvRID5FSkWXMEW+h598M4YDkjMC8CxUL8VQ2zlm0wC26
-         omNEA/ABHrZPlTIAAfUJdof2csUUJmleD3cxLTvA=
+        b=Z3vvbfm2TSebdVOzNIyJPrBIuoK2e4oDYd4pX+TzUmv8aTa6WhM+DfGi7lPSbeSau
+         iz9eqWtr5gH0YNqIM1GkGRPgCvO9PEtA+1Q85m39nfPdLSVY3shJ9AV3BuDTbPbOMX
+         t6PyC99bx8VfaJ1iV0yeonsrX9fjxzhw2MIu8CTg=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 3/4] arm64: Detect FTRACE cases that make the stack trace unreliable
-Date:   Mon,  5 Apr 2021 15:43:12 -0500
-Message-Id: <20210405204313.21346-4-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v2 4/4] arm64: Mark stack trace as unreliable if kretprobed functions are present
+Date:   Mon,  5 Apr 2021 15:43:13 -0500
+Message-Id: <20210405204313.21346-5-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210405204313.21346-1-madvenka@linux.microsoft.com>
 References: <705993ccb34a611c75cdae0a8cb1b40f9b218ebd>
@@ -44,136 +44,78 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-When CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled and tracing is activated
-for a function, the ftrace infrastructure is called for the function at
-the very beginning. Ftrace creates two frames:
+When a kretprobe is active for a function, the function's return address
+in its stack frame is modified to point to the kretprobe trampoline. When
+the function returns, the frame is popped and control is transferred
+to the trampoline. The trampoline eventually returns to the original return
+address.
 
-	- One for the traced function
+If a stack walk is done within the function (or any functions that get
+called from there), the stack trace will only show the trampoline and the
+not the original caller.
 
-	- One for the caller of the traced function
+Also, if the trampoline itself and the functions it calls do a stack trace,
+that stack trace will also have the same problem. Detect this as well.
 
-That gives a reliable stack trace while executing in the ftrace code. When
-ftrace returns to the traced function, the frames are popped and everything
-is back to normal.
+If the trampoline is detected in the stack trace, mark the stack trace
+as unreliable.
 
-However, in cases like live patch, a tracer function may redirect execution
-to a different function when it returns. A stack trace taken while still in
-the tracer function will not show the target function. The target function
-is the real function that we want to track.
-
-So, if an FTRACE frame is detected on the stack, just mark the stack trace
-as unreliable. The detection is done by checking the return PC against
-FTRACE trampolines.
-
-Also, the Function Graph Tracer modifies the return address of a traced
-function to a return trampoline to gather tracing data on function return.
-Stack traces taken from that trampoline and functions it calls are
-unreliable as the original return address may not be available in
-that context. Mark the stack trace unreliable accordingly.
-
+Reviewed-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/kernel/entry-ftrace.S | 12 +++++++
- arch/arm64/kernel/stacktrace.c   | 61 ++++++++++++++++++++++++++++++++
- 2 files changed, 73 insertions(+)
+ arch/arm64/kernel/stacktrace.c | 37 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
-index b3e4f9a088b1..1f0714a50c71 100644
---- a/arch/arm64/kernel/entry-ftrace.S
-+++ b/arch/arm64/kernel/entry-ftrace.S
-@@ -86,6 +86,18 @@ SYM_CODE_START(ftrace_caller)
- 	b	ftrace_common
- SYM_CODE_END(ftrace_caller)
- 
-+/*
-+ * A stack trace taken from anywhere in the FTRACE trampoline code should be
-+ * considered unreliable as a tracer function (patched at ftrace_call) could
-+ * potentially set pt_regs->pc and redirect execution to a function different
-+ * than the traced function. E.g., livepatch.
-+ *
-+ * No stack traces are taken in this FTRACE trampoline assembly code. But
-+ * they can be taken from C functions that get called from here. The unwinder
-+ * checks if a return address falls in this FTRACE trampoline code. See
-+ * stacktrace.c. If function calls in this code are changed, please keep the
-+ * special_functions[] array in stacktrace.c in sync.
-+ */
- SYM_CODE_START(ftrace_common)
- 	sub	x0, x30, #AARCH64_INSN_SIZE	// ip (callsite's BL insn)
- 	mov	x1, x9				// parent_ip (callsite's LR)
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index fb11e4372891..7a3c638d4aeb 100644
+index 7a3c638d4aeb..926bd91ffb3f 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -51,6 +51,52 @@ struct function_range {
-  * unreliable. Breakpoints are used for executing probe code. Stack traces
-  * taken while in the probe code will show an EL1 frame and will be considered
-  * unreliable. This is correct behavior.
+@@ -97,6 +97,36 @@ struct function_range {
+  *     if return_to_handler is detected on the stack.
+  *
+  * NOTE: The unwinder must do (1) before (2).
 + *
-+ * FTRACE
-+ * ======
++ * KPROBES
++ * =======
 + *
-+ * When CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled, the FTRACE trampoline code
-+ * is called from a traced function even before the frame pointer prolog.
-+ * FTRACE sets up two stack frames (one for the traced function and one for
-+ * its caller) so that the unwinder can provide a sensible stack trace for
-+ * any tracer function called from the FTRACE trampoline code.
++ * There are two types of kprobes:
 + *
-+ * There are two cases where the stack trace is not reliable.
++ * (1) Regular kprobes that are placed anywhere in a probed function.
++ *     This is implemented by replacing the probed instruction with a
++ *     breakpoint. When the breakpoint is hit, the kprobe code emulates
++ *     the original instruction in-situ and returns to the next
++ *     instruction.
 + *
-+ * (1) The task gets preempted before the two frames are set up. Preemption
-+ *     involves an interrupt which is an EL1 exception. The unwinder already
-+ *     handles EL1 exceptions.
++ *     Breakpoints are EL1 exceptions. When the unwinder detects them,
++ *     the stack trace is marked as unreliable as it does not know where
++ *     exactly the exception happened. Detection of EL1 exceptions in
++ *     a stack trace will be done separately.
 + *
-+ * (2) The tracer function that gets called by the FTRACE trampoline code
-+ *     changes the return PC (e.g., livepatch).
++ * (2) Return kprobes that are placed on the return of a probed function.
++ *     In this case, Kprobes sets up an initial breakpoint at the
++ *     beginning of the probed function. When the breakpoint is hit,
++ *     Kprobes replaces the return address in the stack frame with the
++ *     kretprobe_trampoline and records the original return address.
++ *     When the probed function returns, control goes to the trampoline
++ *     which eventually returns to the original return address.
 + *
-+ *     Not all tracer functions do that. But to err on the side of safety,
-+ *     consider the stack trace as unreliable in all cases.
-+ *
-+ * When Function Graph Tracer is used, FTRACE modifies the return address of
-+ * the traced function in its stack frame to an FTRACE return trampoline
-+ * (return_to_handler). When the traced function returns, control goes to
-+ * return_to_handler. return_to_handler calls FTRACE to gather tracing data
-+ * and to obtain the original return address. Then, return_to_handler returns
-+ * to the original return address.
-+ *
-+ * There are two cases to consider from a stack trace reliability point of
-+ * view:
-+ *
-+ * (1) Stack traces taken within the traced function (and functions that get
-+ *     called from there) will show return_to_handler instead of the original
-+ *     return address. The original return address can be obtained from FTRACE.
-+ *     The unwinder already obtains it and modifies the return PC in its copy
-+ *     of the stack frame to the original return address. So, this is handled.
-+ *
-+ * (2) return_to_handler calls FTRACE as mentioned before. FTRACE discards
-+ *     the record of the original return address along the way as it does not
-+ *     need to maintain it anymore. This means that the unwinder cannot get
-+ *     the original return address beyond that point while the task is still
-+ *     executing in return_to_handler. So, consider the stack trace unreliable
-+ *     if return_to_handler is detected on the stack.
-+ *
-+ * NOTE: The unwinder must do (1) before (2).
++ *     Stack traces taken while in the probed function or while in the
++ *     trampoline will show kretprobe_trampoline instead of the original
++ *     return address. Detect this and mark the stack trace unreliable.
++ *     The detection is done by checking if the return PC falls anywhere
++ *     in kretprobe_trampoline.
   */
  static struct function_range	special_functions[] = {
  	/*
-@@ -64,6 +110,21 @@ static struct function_range	special_functions[] = {
- 	{ (unsigned long) el1_fiq_invalid, 0 },
- 	{ (unsigned long) el1_error_invalid, 0 },
+@@ -125,6 +155,13 @@ static struct function_range	special_functions[] = {
+ 	{ (unsigned long) return_to_handler, 0 },
+ #endif
  
 +	/*
-+	 * FTRACE trampolines.
-+	 *
-+	 * Tracer function gets patched at the label ftrace_call. Its return
-+	 * address is the next instruction address.
++	 * Kprobe trampolines.
 +	 */
-+#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
-+	{ (unsigned long) ftrace_call + 4, 0 },
-+#endif
-+
-+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-+	{ (unsigned long) ftrace_graph_caller, 0 },
-+	{ (unsigned long) return_to_handler, 0 },
++#ifdef CONFIG_KRETPROBES
++	{ (unsigned long) kretprobe_trampoline, 0 },
 +#endif
 +
  	{ /* sentinel */ }
