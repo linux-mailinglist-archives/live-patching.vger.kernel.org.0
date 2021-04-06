@@ -2,89 +2,75 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF14435517A
-	for <lists+live-patching@lfdr.de>; Tue,  6 Apr 2021 13:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 792A3355306
+	for <lists+live-patching@lfdr.de>; Tue,  6 Apr 2021 14:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232956AbhDFLDW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 6 Apr 2021 07:03:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47496 "EHLO mail.kernel.org"
+        id S1343650AbhDFMAa (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 6 Apr 2021 08:00:30 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48934 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231650AbhDFLDV (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 6 Apr 2021 07:03:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B924061055;
-        Tue,  6 Apr 2021 11:03:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617706994;
-        bh=feVSVdneCF5Z0KFs4Mc8lgfRu23TV0mL2jYYWxBzMlk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YuHT14mRco+dzf70WdkLcOIVfVU6oRTuJUkJYNQ3yDpzV3w9zWyIAePREROqXP6tX
-         WqJISse0+m/zI5QwVFK2OzII7oNMSc1ql0Skhr//j7lrkm66itj07bByKbRnQONmJs
-         wYHSqnS+JQAdHOut5WOhMx0KPdLTxlrjh9e3h1XciknW7U/dNdZUslegOhJah+J4l4
-         YSTsXTxPiLjrZVet0GBpjxQCoubxSPx745DQXo6Sm00NC4axz6ZBcYTihpxW4iM7K3
-         Wl3lL1icBZlAAodB0V/0PmIc6DuvwZu0lkBkDF/+D065Y7kHCnUQ4QAdQYoXfDK45q
-         9zH8MTmlOjugA==
-Date:   Tue, 6 Apr 2021 12:02:57 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, jthierry@redhat.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 3/4] arm64: Detect FTRACE cases that make the
- stack trace unreliable
-Message-ID: <20210406110257.GA6443@sirena.org.uk>
-References: <77bd5edeea72d44533c769b1e8c0fea7a9d7eb3a>
- <20210330190955.13707-1-madvenka@linux.microsoft.com>
- <20210330190955.13707-4-madvenka@linux.microsoft.com>
- <20210401142759.GJ4758@sirena.org.uk>
- <0bece48b-5fee-2bd1-752e-66d2b89cc5ad@linux.microsoft.com>
- <20210401182810.GO4758@sirena.org.uk>
- <2a56fe4b-9929-0d8b-aa49-c2b1c1b82b79@linux.microsoft.com>
- <fe2f3b1e-8cb6-05ce-7968-216fed079fe4@linux.microsoft.com>
- <9ebc341b-ba5a-db9a-c5e6-17b30d4b1fd4@linux.microsoft.com>
+        id S1343634AbhDFMA3 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 6 Apr 2021 08:00:29 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id BD70EB15D;
+        Tue,  6 Apr 2021 12:00:19 +0000 (UTC)
+Date:   Tue, 6 Apr 2021 14:00:19 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>
+cc:     mbenes@suse.com, Minchan Kim <minchan@kernel.org>,
+        keescook@chromium.org, dhowells@redhat.com, hch@infradead.org,
+        ngupta@vflare.org, sergey.senozhatsky.work@gmail.com,
+        axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: Re: [PATCH 1/2] zram: fix crashes due to use of cpu hotplug
+ multistate
+In-Reply-To: <20210406003152.GZ4332@42.do-not-panic.com>
+Message-ID: <alpine.LSU.2.21.2104061354110.10372@pobox.suse.cz>
+References: <20210312183238.GW4332@42.do-not-panic.com> <YEvA1dzDsFOuKdZ/@google.com> <20210319190924.GK4332@42.do-not-panic.com> <YFjHvUolScp3btJ9@google.com> <20210322204156.GM4332@42.do-not-panic.com> <YFkWMZ0m9nKCT69T@google.com> <20210401235925.GR4332@42.do-not-panic.com>
+ <YGbNpLKXfWpy0ZZa@kroah.com> <20210402183016.GU4332@42.do-not-panic.com> <YGgHg7XCHD3rATIK@kroah.com> <20210406003152.GZ4332@42.do-not-panic.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="HlL+5n6rz5pIUxbD"
-Content-Disposition: inline
-In-Reply-To: <9ebc341b-ba5a-db9a-c5e6-17b30d4b1fd4@linux.microsoft.com>
-X-Cookie: BARBARA STANWYCK makes me nervous!!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Hi,
 
---HlL+5n6rz5pIUxbD
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> > Driver developers will simply have to open code these protections. In
+> > light of what I see on LTP / fuzzing, I suspect the use case will grow
+> > and we'll have to revisit this in the future. But for now, sure, we can
+> > just open code the required protections everywhere to not crash on module
+> > removal.
+> 
+> LTP and fuzzing too do not remove modules.  So I do not understand the
+> root problem here, that's just something that does not happen on a real
+> system.
 
-On Thu, Apr 01, 2021 at 02:47:11PM -0500, Madhavan T. Venkataraman wrote:
-> On 4/1/21 1:53 PM, Madhavan T. Venkataraman wrote:
+If I am not mistaken, the issue that Luis tries to solve here was indeed 
+found by running LTP.
 
-> > Alternatively, I could just move the SYM_INNER_LABEL(ftrace_graph_call..) to outside the ifdef.
+> On Sat, Apr 03, 2021 at 08:13:23AM +0200, Greg KH wrote:
+> > On Fri, Apr 02, 2021 at 06:30:16PM +0000, Luis Chamberlain wrote:
+> > > On Fri, Apr 02, 2021 at 09:54:12AM +0200, Greg KH wrote:
+> > > > No, please no.  Module removal is a "best effort",
+> > > 
+> > > Not for live patching. I am not sure if I am missing any other valid
+> > > use case?
+> > 
+> > live patching removes modules?  We have so many code paths that are
+> > "best effort" when it comes to module unloading, trying to resolve this
+> > one is a valiant try, but not realistic.
+> 
+> Miroslav, your input / help here would be valuable. I did the
+> generalization work because you said it would be worthy for you too...
 
-> Or, even better, I could just use ftrace_call+4 because that would be the return
-> address for the tracer function at ftrace_call:
+Yes, we have the option to revert and remove the existing live patch from 
+the system. I am not sure how (if) it is used in practice.
 
-> I think that would be cleaner. And, I don't need the complicated comments for ftrace_graph_call.
+At least at SUSE we do not support the option. But we are only one of the 
+many downstream users. So yes, there is the option.
 
-> Is this acceptable?
-
-I think either of those should be fine.
-
---HlL+5n6rz5pIUxbD
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmBsP+AACgkQJNaLcl1U
-h9BAFwf7BcZKDmVjMobAlViTRTdrDIK11ry9Bg03OuKs5Ckpvl/iJqqi2JWu9P1Z
-Opj4gyGT1rGfThM8p8K03l+97zuQV7E7xD2MavLAkEQtR+DlOZ4b7stYtERSxgKL
-YkCRAGaQUFyOK6b7xAz64PW/i23MJ+1llUFGJNdxC+7akNAuvuUF+MX/TU0k82f9
-1KT+yQ1OwoCzyaGVHi4Cy+hormWNWDZBGwHg0MvSiPLw4taL7iyHnheB+LWUgA9r
-umqZnlMU9itzdWF0UR+iBH+vzeMlgWyV9jQk5WR0LxCCIxrhXv0WKQAAAjQxOW3I
-2Ly7um10NjRbLJ2kUCZ/TSYW5GI98w==
-=xD66
------END PGP SIGNATURE-----
-
---HlL+5n6rz5pIUxbD--
+Miroslav
