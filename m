@@ -2,95 +2,306 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B4DF359E0D
-	for <lists+live-patching@lfdr.de>; Fri,  9 Apr 2021 13:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C522359E5D
+	for <lists+live-patching@lfdr.de>; Fri,  9 Apr 2021 14:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232469AbhDIL5k (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 9 Apr 2021 07:57:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51472 "EHLO mail.kernel.org"
+        id S231599AbhDIMJf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 9 Apr 2021 08:09:35 -0400
+Received: from foss.arm.com ([217.140.110.172]:49994 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231611AbhDIL5k (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 9 Apr 2021 07:57:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ABD266115B;
-        Fri,  9 Apr 2021 11:57:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617969447;
-        bh=xWpZMs8SF1KeRP75gFOHcEWwPPGqR29BI1NfJEUZSpM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p5nvaFt2mOhhxiQsclwdeybVrho712FuWXR+NV8KhOzB2O7xRD4wLfZHp4HgW3ypz
-         h6y1CTRkgOerE2hXcrD9b6oXIUxy4NRLcPnhmzkxyfix2DIFv2d9z/20+3QwcB7uTF
-         j6QHEE7lXRZkW8rU7pVWXcyRBwFxUduEJ1uyGcwfevQISRDSN++5xjTdu7G6a0a7Zm
-         JiSaOVX+TTq5oUkdkA/QsRSxqfP6E5paBUgkm0J6wGGead2CHJkVWACA2ValNdbUVW
-         875sa8vPjaBibm7/DvjjFV5ZVwbB7RXDXWSTa1yv2xgI1BnkXF8DgpsRDIgHnSulfH
-         jaNIv44yfKZsw==
-Date:   Fri, 9 Apr 2021 12:57:08 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, jthierry@redhat.com,
+        id S231402AbhDIMJe (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 9 Apr 2021 08:09:34 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9DD4B1063;
+        Fri,  9 Apr 2021 05:09:20 -0700 (PDT)
+Received: from C02TD0UTHF1T.local (unknown [10.57.28.223])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7763D3F694;
+        Fri,  9 Apr 2021 05:09:18 -0700 (PDT)
+Date:   Fri, 9 Apr 2021 13:09:09 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     madvenka@linux.microsoft.com
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, jthierry@redhat.com,
         catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 1/4] arm64: Implement infrastructure for stack
- trace reliability checks
-Message-ID: <20210409115708.GB4499@sirena.org.uk>
+Subject: Re: [RFC PATCH v2 0/4] arm64: Implement stack trace reliability
+ checks
+Message-ID: <20210409120859.GA51636@C02TD0UTHF1T.local>
 References: <705993ccb34a611c75cdae0a8cb1b40f9b218ebd>
  <20210405204313.21346-1-madvenka@linux.microsoft.com>
- <20210405204313.21346-2-madvenka@linux.microsoft.com>
- <20210408171715.GQ4516@sirena.org.uk>
- <69b6924b-88f6-6c40-7b18-8cdf15d92bd1@linux.microsoft.com>
- <eb905f70-a963-6257-c597-89e008675539@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="GID0FwUMdk1T2AWN"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <eb905f70-a963-6257-c597-89e008675539@linux.microsoft.com>
-X-Cookie: Ring around the collar.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210405204313.21346-1-madvenka@linux.microsoft.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Hi Madhavan,
 
---GID0FwUMdk1T2AWN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I've noted some concerns below. At a high-level, I'm not keen on the
+blacklisting approach, and I think there's some other preparatory work
+that would be more valuable in the short term.
 
-On Thu, Apr 08, 2021 at 06:30:22PM -0500, Madhavan T. Venkataraman wrote:
-> On 4/8/21 2:30 PM, Madhavan T. Venkataraman wrote:
+On Mon, Apr 05, 2021 at 03:43:09PM -0500, madvenka@linux.microsoft.com wrote:
+> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+> 
+> There are a number of places in kernel code where the stack trace is not
+> reliable. Enhance the unwinder to check for those cases and mark the
+> stack trace as unreliable. Once all of the checks are in place, the unwinder
+> can provide a reliable stack trace. But before this can be used for livepatch,
+> some other entity needs to guarantee that the frame pointers are all set up
+> correctly in kernel functions. objtool is currently being worked on to
+> fill that gap.
+> 
+> Except for the return address check, all the other checks involve checking
+> the return PC of every frame against certain kernel functions. To do this,
+> implement some infrastructure code:
+> 
+> 	- Define a special_functions[] array and populate the array with
+> 	  the special functions
 
-> > 1. Create a common section (I will have to come up with an appropriate name) and put
-> >    all such functions in that one section.
+I'm not too keen on having to manually collate this within the unwinder,
+as it's very painful from a maintenance perspective. I'd much rather we
+could associate this information with the implementations of these
+functions, so that they're more likely to stay in sync.
 
-> > 2. Create one section for each logical type (exception section, ftrace section and
-> >    kprobe section) or some such.
+Further, I believe all the special cases are assembly functions, and
+most of those are already in special sections to begin with. I reckon
+it'd be simpler and more robust to reject unwinding based on the
+section. If we need to unwind across specific functions in those
+sections, we could opt-in with some metadata. So e.g. we could reject
+all functions in ".entry.text", special casing the EL0 entry functions
+if necessary.
 
-> For now, I will start with idea 2. I will create a special section for each class of
-> functions (EL1 exception handlers, FTRACE trampolines, KPROBE trampolines). Instead of a
-> special functions array, I will implement a special_sections array. The rest of the code
-> should just fall into place.
+As I mentioned before, I'm currently reworking the entry assembly to
+make this simpler to do. I'd prefer to not make invasive changes in that
+area until that's sorted.
 
-> Let me know if you prefer something different.
+I think there's a lot more code that we cannot unwind, e.g. KVM
+exception code, or almost anything marked with SYM_CODE_END().
 
-It might be safer to start off by just putting all SYM_CODE into a
-section then pulling bits we know to be safe out of the section as
-needed - we know that anything that's SYM_CODE is doing something
-non-standard and needs checking to verify that the unwinder will be
-happy with it and I that should cover most if not all of the cases above
-as well as anything else we didn't explicitly think of.
+> 	- Using kallsyms_lookup(), lookup the symbol table entries for the
+> 	  functions and record their address ranges
+> 
+> 	- Define an is_reliable_function(pc) to match a return PC against
+> 	  the special functions.
+> 
+> The unwinder calls is_reliable_function(pc) for every return PC and marks
+> the stack trace as reliable or unreliable accordingly.
+> 
+> Return address check
+> ====================
+> 
+> Check the return PC of every stack frame to make sure that it is a valid
+> kernel text address (and not some generated code, for example).
+> 
+> Detect EL1 exception frame
+> ==========================
+> 
+> EL1 exceptions can happen on any instruction including instructions in
+> the frame pointer prolog or epilog. Depending on where exactly they happen,
+> they could render the stack trace unreliable.
+> 
+> Add all of the EL1 exception handlers to special_functions[].
+> 
+> 	- el1_sync()
+> 	- el1_irq()
+> 	- el1_error()
+> 	- el1_sync_invalid()
+> 	- el1_irq_invalid()
+> 	- el1_fiq_invalid()
+> 	- el1_error_invalid()
+> 
+> Detect ftrace frame
+> ===================
+> 
+> When FTRACE executes at the beginning of a traced function, it creates two
+> frames and calls the tracer function:
+> 
+> 	- One frame for the traced function
+> 
+> 	- One frame for the caller of the traced function
+> 
+> That gives a sensible stack trace while executing in the tracer function.
+> When FTRACE returns to the traced function, the frames are popped and
+> everything is back to normal.
+> 
+> However, in cases like live patch, the tracer function redirects execution
+> to a different function. When FTRACE returns, control will go to that target
+> function. A stack trace taken in the tracer function will not show the target
+> function. The target function is the real function that we want to track.
+> So, the stack trace is unreliable.
 
---GID0FwUMdk1T2AWN
-Content-Type: application/pgp-signature; name="signature.asc"
+This doesn't match my understanding of the reliable stacktrace
+requirements, but I might have misunderstood what you're saying here.
 
------BEGIN PGP SIGNATURE-----
+IIUC what you're describing here is:
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmBwQRMACgkQJNaLcl1U
-h9CDkAf+M7uGGOV6l9nKclvAJwd8o31oulE0GngUxx7kQvOsTZvVfWVJOR921/x/
-42gh2W7vxL7LOfQ37vMafyz3BtoO+aX29aRSfSfqskqufOk4KmbqZ2YmMTs5iiwy
-r8Dr0POZ9NYuie7+f+aYLbYaLBStriNn6VamKJlomBaXmiZdvsEmmif8IrjrLLnR
-Sz6+G0qFRd6VK30NB0dbpjLQzzHFDN8gc0IpPjmgSMysz+/Oe8XqGgdhq6Xti6Bl
-T/A/VeO/+E3xDTwIooXm0pk95tRg8ef+gmYpFi01C63F6zEUk7/frUC/g0VZGzPL
-7lxu5UFkpo8Bi9bvHxhk6LaTXjMAxw==
-=y0XZ
------END PGP SIGNATURE-----
+1) A calls B
+2) B is traced
+3) tracer replaces B with TARGET
+4) tracer returns to TARGET
 
---GID0FwUMdk1T2AWN--
+... and if a stacktrace is taken at step 3 (before the return address is
+patched), the trace will show B rather than TARGET.
+
+My understanding is that this is legitimate behaviour.
+
+> To detect stack traces from a tracer function, add the following to
+> special_functions[]:
+> 
+> 	- ftrace_call + 4
+> 
+> ftrace_call is the label at which the tracer function is patched in. So,
+> ftrace_call + 4 is its return address. This is what will show up in a
+> stack trace taken from the tracer function.
+> 
+> When Function Graph Tracing is on, ftrace_graph_caller is patched in
+> at the label ftrace_graph_call. If a tracer function called before it has
+> redirected execution as mentioned above, the stack traces taken from within
+> ftrace_graph_caller will also be unreliable for the same reason as mentioned
+> above. So, add ftrace_graph_caller to special_functions[] as well.
+> 
+> Also, the Function Graph Tracer modifies the return address of a traced
+> function to a return trampoline (return_to_handler()) to gather tracing
+> data on function return. Stack traces taken from the traced function and
+> functions it calls will not show the original caller of the traced function.
+> The unwinder handles this case by getting the original caller from FTRACE.
+> 
+> However, stack traces taken from the trampoline itself and functions it calls
+> are unreliable as the original return address may not be available in
+> that context. This is because the trampoline calls FTRACE to gather trace
+> data as well as to obtain the actual return address and FTRACE discards the
+> record of the original return address along the way.
+
+The reason we cannot unwind the trampolines in the usual way is because
+they are not AAPCS compliant functions. We don't discard the original
+return address, but it's not in the usual location.  With care, we could
+write a special case unwinder for them. Note that we also cannot unwind
+from any PLT on the way to the trampolines, so we'd also need to
+identify those.  Luckily we're in charge of creating those, and (for
+now) we only need to care about the module PLTs.
+
+The bigger problem is return_to_handler, since there's a transient
+period when C code removes the return address from the graph return
+stack before passing this to assembly in a register, and so we can't
+reliably find the correct return address during this period. With care
+we could special case unwinding immediately before/after this.
+
+If we could find a way to restructure return_to_handler such that we can
+reliably find the correct return address, that would be a useful
+improvement today, and would mean that we don't have to blacklist it for
+reliable stacktrace.
+
+Thanks,
+Mark.
+
+> Add return_to_handler() to special_functions[].
+> 
+> Check for kretprobe
+> ===================
+> 
+> For functions with a kretprobe set up, probe code executes on entry
+> to the function and replaces the return address in the stack frame with a
+> kretprobe trampoline. Whenever the function returns, control is
+> transferred to the trampoline. The trampoline eventually returns to the
+> original return address.
+> 
+> A stack trace taken while executing in the function (or in functions that
+> get called from the function) will not show the original return address.
+> Similarly, a stack trace taken while executing in the trampoline itself
+> (and functions that get called from the trampoline) will not show the
+> original return address. This means that the caller of the probed function
+> will not show. This makes the stack trace unreliable.
+> 
+> Add the kretprobe trampoline to special_functions[].
+> 
+> Optprobes
+> =========
+> 
+> Optprobes may be implemented in the future for arm64. For optprobes,
+> the relevant trampoline(s) can be added to special_functions[].
+> ---
+> Changelog:
+> 
+> v1
+> 	- Define a bool field in struct stackframe. This will indicate if
+> 	  a stack trace is reliable.
+> 
+> 	- Implement a special_functions[] array that will be populated
+> 	  with special functions in which the stack trace is considered
+> 	  unreliable.
+> 	
+> 	- Using kallsyms_lookup(), get the address ranges for the special
+> 	  functions and record them.
+> 
+> 	- Implement an is_reliable_function(pc). This function will check
+> 	  if a given return PC falls in any of the special functions. If
+> 	  it does, the stack trace is unreliable.
+> 
+> 	- Implement check_reliability() function that will check if a
+> 	  stack frame is reliable. Call is_reliable_function() from
+> 	  check_reliability().
+> 
+> 	- Before a return PC is checked against special_funtions[], it
+> 	  must be validates as a proper kernel text address. Call
+> 	  __kernel_text_address() from check_reliability().
+> 
+> 	- Finally, call check_reliability() from unwind_frame() for
+> 	  each stack frame.
+> 
+> 	- Add EL1 exception handlers to special_functions[].
+> 
+> 		el1_sync();
+> 		el1_irq();
+> 		el1_error();
+> 		el1_sync_invalid();
+> 		el1_irq_invalid();
+> 		el1_fiq_invalid();
+> 		el1_error_invalid();
+> 
+> 	- The above functions are currently defined as LOCAL symbols.
+> 	  Make them global so that they can be referenced from the
+> 	  unwinder code.
+> 
+> 	- Add FTRACE trampolines to special_functions[]:
+> 
+> 		ftrace_graph_call()
+> 		ftrace_graph_caller()
+> 		return_to_handler()
+> 
+> 	- Add the kretprobe trampoline to special functions[]:
+> 
+> 		kretprobe_trampoline()
+> 
+> v2
+> 	- Removed the terminating entry { 0, 0 } in special_functions[]
+> 	  and replaced it with the idiom { /* sentinel */ }.
+> 
+> 	- Change the ftrace trampoline entry ftrace_graph_call in
+> 	  special_functions[] to ftrace_call + 4 and added explanatory
+> 	  comments.
+> 
+> 	- Unnested #ifdefs in special_functions[] for FTRACE.
+> 
+> Madhavan T. Venkataraman (4):
+>   arm64: Implement infrastructure for stack trace reliability checks
+>   arm64: Mark a stack trace unreliable if an EL1 exception frame is
+>     detected
+>   arm64: Detect FTRACE cases that make the stack trace unreliable
+>   arm64: Mark stack trace as unreliable if kretprobed functions are
+>     present
+> 
+>  arch/arm64/include/asm/exception.h  |   8 ++
+>  arch/arm64/include/asm/stacktrace.h |   2 +
+>  arch/arm64/kernel/entry-ftrace.S    |  12 ++
+>  arch/arm64/kernel/entry.S           |  14 +-
+>  arch/arm64/kernel/stacktrace.c      | 215 ++++++++++++++++++++++++++++
+>  5 files changed, 244 insertions(+), 7 deletions(-)
+> 
+> 
+> base-commit: 0d02ec6b3136c73c09e7859f0d0e4e2c4c07b49b
+> -- 
+> 2.25.1
+> 
