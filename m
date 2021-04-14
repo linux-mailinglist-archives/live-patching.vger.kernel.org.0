@@ -2,61 +2,61 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAE7835F6E3
-	for <lists+live-patching@lfdr.de>; Wed, 14 Apr 2021 16:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5F635F781
+	for <lists+live-patching@lfdr.de>; Wed, 14 Apr 2021 17:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbhDNOyv (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 14 Apr 2021 10:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        id S234007AbhDNPVq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 14 Apr 2021 11:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349698AbhDNOyW (ORCPT
+        with ESMTP id S232358AbhDNPVp (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 14 Apr 2021 10:54:22 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2370BC06135F;
-        Wed, 14 Apr 2021 07:52:34 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so6777889pjb.4;
-        Wed, 14 Apr 2021 07:52:34 -0700 (PDT)
+        Wed, 14 Apr 2021 11:21:45 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C82DC061574;
+        Wed, 14 Apr 2021 08:21:24 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id e2so5988983plh.8;
+        Wed, 14 Apr 2021 08:21:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:date:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4XkoYmFRvVingy29s62AE9pk1GqT7aCUqM2F6T8eWVM=;
-        b=DyzuIz36gghGh4Pb3zLXl9BcGYmCU8qvrO4YeLUK28ps26SIYJpJsPTAy41zxtetxQ
-         5+W1/6kjnMpXSTZbe8NWTLWTv3v5hkfGPvcJclPuTcSMKiMm61BSUQOzlQgtkVjHEGEz
-         QFz1qefcFcd4qzw8IvJJeGfSyqy4jt/R4vo/W51ByR380cyRXUOEWAplygfaJFIwyhcg
-         +OJlJ3OEEI/LVu5SeteTtt0kfLDgKjEL7iz6Ut2Yrx+AB0TFIrIofTZ0McKL8V+7Ufcz
-         H4pwouzMEbU4docKvhHRe9syXcZCAk1GRMo45tWmLLE2oZ61Q0VuC5B5Rpr8vjNVP+tV
-         fd3A==
+        bh=LKBWpjyMDRFuuMYdGVnQkKgGtzVnoGLy1lYODPpAzN4=;
+        b=Z7S2SFqo8Jhhfd7L9wAGEm2/Jq1XwM9BgNVD8/LS/YH5FFe3DS1y8X+8iIB5w1O//n
+         7mOKIeUGvzKkAbJH7e4DroEhKLuKLt+2I8x0K8CT7vz2O9OjSzpA/hC6+oPbzvvs1egs
+         IjOtQlRkE5W44ChjhY+CzpIQq5WIjo6mNKAEPSFwEc+U0ukXtCMxAeacQGrLwdjXFdP9
+         9xBlsb8Axpzql02GqmTcTgCH8IrK7P6fCxrvlkxTKdtr5OWvg5Fhbe3cXaHhp6A/39Qt
+         lM2DIxnnvrIDG1i0SoI+QxrMfGPcT6AzNI6p9nTIxQCWLzISJvksq4Ik/WQz3pm/KpZt
+         koqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:date:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4XkoYmFRvVingy29s62AE9pk1GqT7aCUqM2F6T8eWVM=;
-        b=BRHmSComEwj292g5CX5pFAu0q/KAE6mNbWlIjupcsSRBp9MOcbtwA+CwuvK6FFV8hO
-         I8VrVmXUY1oa75rJpAIq8hfH5AUpqQ9WypfI8/P3FA813gkUo1GthdjdCGZSZCkKBg0M
-         nbkDcUeMQWa59f4w18EfD+ljzONjviFYLXm2eNPkWFIH2SwjePXHHIh+25ohqaMsKDTp
-         OQG4mBvKjMfRUq8sA7l7C9EuBl4qyqhEYhSWadIfoPoEc6eFmGCgGB9T8reWLY1DAfWi
-         D8auM1TAGZwTVUW5+W1rCQriBz5eE/SkAlD9UNmMtxBIr8eKZwVjybrlvLIfQoYq7el3
-         IdEA==
-X-Gm-Message-State: AOAM533JUmy9mD1uZXHpsPkLBVqBPtoU19YUSU+y4b+Y3ayktuF2opsG
-        8NvfDjzarQsE/+svT9dQwmg=
-X-Google-Smtp-Source: ABdhPJxLe4e3ArNLjIvLa46OtcJYqVPrwLT/5Pq8idpyDrx0xtUMIBXQOG/IjgfkpMbzcIBVAJl8/A==
-X-Received: by 2002:a17:90a:fb89:: with SMTP id cp9mr3959882pjb.47.1618411953609;
-        Wed, 14 Apr 2021 07:52:33 -0700 (PDT)
+        bh=LKBWpjyMDRFuuMYdGVnQkKgGtzVnoGLy1lYODPpAzN4=;
+        b=F+LcziuLA6i7exmS8CxNsFiVC8GZlB64Pngq/A5xfmjH35HXTMp6F4m7I8TIgmCDpn
+         UPXqedv9dPVrHH5JYiNx6AQsGl9RGySJ7ZYQWRe9Vk6Q84IZ/FJha4PCJ+Nrpoz/2OYM
+         1ZnfISlDesHT/jlWGxDkauYrvqvaIhpCtppXw5e9buR8ZxQjRm8pxBzUr/Ci+XjsdfP/
+         pTM0M8OdKNWOKWegWr3Zxzxl8VJyWkQTJI84Wi3F+BotO/Gcd7lkzLym3rg2VFowBEeQ
+         LU20JCqHFAjNEURUv04qfnC/cpQ+TJcdPwDV5xeuHliOVK3meoFcYblOcYR6M5iWG9iZ
+         iELA==
+X-Gm-Message-State: AOAM533m1fxNRSZmrJ9zK0Ku66pR7VEbBfGrJ+DOIwtPBKXUvJuWq/vC
+        78jVgbb5iPXDEHrqKpfkHvE=
+X-Google-Smtp-Source: ABdhPJwd4ONqa2AMY1ON0aLJIMUhue0FVe7zEZeVay8oBqQMWCiM781IfgmJxOymFSRRFgHbjnWRbw==
+X-Received: by 2002:a17:902:b28b:b029:ea:eda0:4d5e with SMTP id u11-20020a170902b28bb02900eaeda04d5emr17850905plr.68.1618413683915;
+        Wed, 14 Apr 2021 08:21:23 -0700 (PDT)
 Received: from slime ([139.198.121.254])
-        by smtp.gmail.com with ESMTPSA id e13sm7639837pfd.64.2021.04.14.07.52.31
+        by smtp.gmail.com with ESMTPSA id y19sm17873854pge.50.2021.04.14.08.21.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Apr 2021 07:52:33 -0700 (PDT)
+        Wed, 14 Apr 2021 08:21:23 -0700 (PDT)
 From:   xiaojun.zhao141@gmail.com
 X-Google-Original-From: <xiaojunzhao141@gmail.com>
-Date:   Wed, 14 Apr 2021 22:52:28 +0800
+Date:   Wed, 14 Apr 2021 23:21:19 +0800
 To:     Miroslav Benes <mbenes@suse.cz>
 Cc:     xiaojun.zhao141@gmail.com, josef@toxicpanda.com,
         linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
 Subject: Re: the qemu-nbd process automatically exit with the commit
  43347d56c 'livepatch: send a fake signal to all blocking tasks'
-Message-ID: <20210414225228.436ae00d@slime>
+Message-ID: <20210414232119.13b126fa@slime>
 In-Reply-To: <alpine.LSU.2.21.2104141320060.6604@pobox.suse.cz>
 References: <20210414115548.0cdb529b@slime>
         <alpine.LSU.2.21.2104141320060.6604@pobox.suse.cz>
@@ -119,11 +119,7 @@ Miroslav Benes <mbenes@suse.cz> wrote:
 > NBD_RT_DISCONNECT_REQUESTED set? How does the userspace handles
 > ordinary signals? This all sounds a bit strange, but I may be missing
 > something easily.
->
-Sorry, now I also don't know how the qemu-nbd handles these signals. I
-need to see its source.
-
-Thank you very much. 
+> 
 > > When the nbd waits for atomic_read(&config->recv_threads) == 0, the
 > > klp will send a fake signal to it then the qemu-nbd process exits.
 > > And the signal of sysfs to control this action was removed in the
@@ -134,4 +130,10 @@ Thank you very much.
 > 
 > Regards
 > Miroslav
+It occurs IO error of the nbd device when I use livepatch of the
+nbd, and I guess that any livepatch on other kernel source maybe cause
+the IO error. Well, now I decide to workaround for this problem by
+adding a livepatch for the klp to disable a automatic fake signal.
+
+Regards.
 
