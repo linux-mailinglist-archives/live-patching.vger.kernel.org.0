@@ -2,120 +2,74 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F5CC360475
-	for <lists+live-patching@lfdr.de>; Thu, 15 Apr 2021 10:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAFBB362310
+	for <lists+live-patching@lfdr.de>; Fri, 16 Apr 2021 16:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbhDOIiL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 15 Apr 2021 04:38:11 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45596 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231736AbhDOIiI (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 15 Apr 2021 04:38:08 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 20484AE27;
-        Thu, 15 Apr 2021 08:37:45 +0000 (UTC)
-Date:   Thu, 15 Apr 2021 10:37:44 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Josef Bacik <josef@toxicpanda.com>
-cc:     xiaojun.zhao141@gmail.com, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: the qemu-nbd process automatically exit with the commit 43347d56c
- 'livepatch: send a fake signal to all blocking tasks'
-In-Reply-To: <f7698105-23a4-4558-7b65-9116e8587848@toxicpanda.com>
-Message-ID: <alpine.LSU.2.21.2104151026100.15642@pobox.suse.cz>
-References: <20210414115548.0cdb529b@slime> <alpine.LSU.2.21.2104141320060.6604@pobox.suse.cz> <20210414232119.13b126fa@slime> <f7698105-23a4-4558-7b65-9116e8587848@toxicpanda.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S244589AbhDPOo3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 16 Apr 2021 10:44:29 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:34918 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245336AbhDPOoO (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Fri, 16 Apr 2021 10:44:14 -0400
+Received: from [192.168.254.32] (unknown [47.187.223.33])
+        by linux.microsoft.com (Postfix) with ESMTPSA id E19B320B8001;
+        Fri, 16 Apr 2021 07:43:48 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E19B320B8001
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1618584229;
+        bh=yGPlUqDIzhuFZFcl7DevIoGiDHKMdjiHRYZvWB7Gcdc=;
+        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
+        b=ZXSTC27GAO2RgkakprT0jpYfaL73I93QUAJQIV4YrY0mJTa87YTXICpw7uxPx/mYG
+         lw/qz04hxBR7OWsSldaiBNgZUA/CGR5dOKJ9O1ffAIzGn4uHJhKGpO+/J2wVWYulfV
+         goF3hV0R2o8x4WM42VtqTG5MOojqRcDGA30VOj8E=
+Subject: Re: [RFC PATCH v2 0/4] arm64: Implement stack trace reliability
+ checks
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>, jthierry@redhat.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+References: <705993ccb34a611c75cdae0a8cb1b40f9b218ebd>
+ <20210405204313.21346-1-madvenka@linux.microsoft.com>
+ <20210409120859.GA51636@C02TD0UTHF1T.local>
+ <20210409213741.kqmwyajoppuqrkge@treble>
+ <20210412173617.GE5379@sirena.org.uk>
+ <d92ec07e-81e1-efb8-b417-d1d8a211ef7f@linux.microsoft.com>
+ <20210413110255.GB5586@sirena.org.uk>
+ <714e748c-bb79-aa9a-abb5-cf5e677e847b@linux.microsoft.com>
+Message-ID: <e8367fe9-6fd0-f962-422d-daa4548cc3b7@linux.microsoft.com>
+Date:   Fri, 16 Apr 2021 09:43:48 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <714e748c-bb79-aa9a-abb5-cf5e677e847b@linux.microsoft.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 14 Apr 2021, Josef Bacik wrote:
 
-> On 4/14/21 11:21 AM, xiaojun.zhao141@gmail.com wrote:
-> > On Wed, 14 Apr 2021 13:27:43 +0200 (CEST)
-> > Miroslav Benes <mbenes@suse.cz> wrote:
-> > 
-> >> Hi,
-> >>
-> >> On Wed, 14 Apr 2021, xiaojun.zhao141@gmail.com wrote:
-> >>
-> >>> I found the qemu-nbd process(started with qemu-nbd -t -c /dev/nbd0
-> >>> nbd.qcow2) will automatically exit when I patched for functions of
-> >>> the nbd with livepatch.
-> >>>
-> >>> The nbd relative source:
-> >>> static int nbd_start_device_ioctl(struct nbd_device *nbd, struct
-> >>> block_device *bdev)
-> >>> { struct nbd_config *config =
-> >>> nbd->config; int
-> >>> ret;
-> >>>          ret =
-> >>> nbd_start_device(nbd); if
-> >>> (ret) return
-> >>> ret;
-> >>>          if
-> >>> (max_part) bdev->bd_invalidated =
-> >>> 1;
-> >>> mutex_unlock(&nbd->config_lock); ret =
-> >>> wait_event_interruptible(config->recv_wq,
-> >>> atomic_read(&config->recv_threads) == 0); if
-> >>> (ret)
-> >>> sock_shutdown(nbd);
-> >>> flush_workqueue(nbd->recv_workq);
-> >>>          mutex_lock(&nbd->config_lock);
-> >>>          nbd_bdev_reset(bdev);
-> >>>          /* user requested, ignore socket errors
-> >>> */ if (test_bit(NBD_RT_DISCONNECT_REQUESTED,
-> >>> &config->runtime_flags)) ret =
-> >>> 0; if (test_bit(NBD_RT_TIMEDOUT,
-> >>> &config->runtime_flags)) ret =
-> >>> -ETIMEDOUT; return
-> >>> ret; }
-> >>
-> >> So my understanding is that ndb spawns a number
-> >> (config->recv_threads) of workqueue jobs and then waits for them to
-> >> finish. It waits interruptedly. Now, any signal would make
-> >> wait_event_interruptible() to return -ERESTARTSYS. Livepatch fake
-> >> signal is no exception there. The error is then propagated back to
-> >> the userspace. Unless a user requested a disconnection or there is
-> >> timeout set. How does the userspace then reacts to it? Is
-> >> _interruptible there because the userspace sends a signal in case of
-> >> NBD_RT_DISCONNECT_REQUESTED set? How does the userspace handles
-> >> ordinary signals? This all sounds a bit strange, but I may be missing
-> >> something easily.
-> >>
-> >>> When the nbd waits for atomic_read(&config->recv_threads) == 0, the
-> >>> klp will send a fake signal to it then the qemu-nbd process exits.
-> >>> And the signal of sysfs to control this action was removed in the
-> >>> commit 10b3d52790e 'livepatch: Remove signal sysfs attribute'. Are
-> >>> there other ways to control this action? How?
-> >>
-> >> No, there is no way currently. We send a fake signal automatically.
-> >>
-> >> Regards
-> >> Miroslav
-> > It occurs IO error of the nbd device when I use livepatch of the
-> > nbd, and I guess that any livepatch on other kernel source maybe cause
-> > the IO error. Well, now I decide to workaround for this problem by
-> > adding a livepatch for the klp to disable a automatic fake signal.
-> > 
-> 
-> Would wait_event_killable() fix this problem?  I'm not sure any client
-> implementations depend on being able to send other signals to the client
-> process, so it should be safe from that standpoint.  Not sure if the livepatch
-> thing would still get an error at that point tho.  Thanks,
 
-wait_event_killable() means that you would sleep uninterruptedly (still 
-reacting to fatal signals), so the fake signal from livepatch would not be 
-sent at all. set_notify_signal() handles TASK_INTERRUPTIBLE tasks. No 
-disruption for the userspace and it would fix this problem.
+On 4/14/21 5:23 AM, Madhavan T. Venkataraman wrote:
+> In any case, I have absolutely no problems in implementing your section idea. I will
+> make an attempt to do that in version 3 of my patch series.
 
-There is a catch on the livepatch side of things. If there is a live patch 
-for nbd_start_device_ioctl(), the transition process would get stuck until 
-the task leaves the function (all workqueue jobs are processed). I gather 
-it is unlikely to be it indefinite, so we can live with that, I think.
+So, I attempted a patch with just declaring all .entry.text functions as unreliable
+by checking just the section bounds. It does work for EL1 exceptions. But there
+are other functions that are actually reliable that show up as unreliable.
+The example in my test is el0_sync() which is at the base of all system call stacks.
 
-Miroslav
+How would you prefer I handle this? Should I place all SYM_CODE functions that
+are actually safe for the unwinder in a separate section? I could just take
+some approach and solve this. But I would like to get your opinion and Mark
+Rutland's opinion so we are all on the same page.
+
+Please let me know.
+
+Madhavan
