@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8E98365FA1
+	by mail.lfdr.de (Postfix) with ESMTP id DC0BA365FA2
 	for <lists+live-patching@lfdr.de>; Tue, 20 Apr 2021 20:45:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233624AbhDTSph (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 20 Apr 2021 14:45:37 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:58712 "EHLO
+        id S233629AbhDTSpi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 20 Apr 2021 14:45:38 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:58730 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233607AbhDTSpg (ORCPT
+        with ESMTP id S233618AbhDTSph (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 20 Apr 2021 14:45:36 -0400
+        Tue, 20 Apr 2021 14:45:37 -0400
 Received: from x64host.home (unknown [47.187.223.33])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 9617020B8001;
-        Tue, 20 Apr 2021 11:45:03 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9617020B8001
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7C38920B8002;
+        Tue, 20 Apr 2021 11:45:04 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7C38920B8002
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1618944304;
-        bh=0DaS2ZAaR3tWrI17aOD2elYuIto8dgrtjnc7v28PGzg=;
+        s=default; t=1618944305;
+        bh=tShjyh5Gp+GUIp+EsdayuvCVT7c3vVaXRJe9z0oDbL0=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=f8rQP2uXAZ3fqh9zU4UD8IGGpIaTLG0Yy2/SA8BY4qeqhSalsev4rMQZXTEW08Dzf
-         qPROV9sDwhw9YggGmCQ7S5i0q65iu0v+z37KzljImaHuc6XshuvYWimq4vPkKHwv/X
-         oOJRKyXnra3mok8S8i9GM4Tb/cqMjPl30OSl77n4=
+        b=hGHbhq5ZM/VMleY7be4WkGqmsBvqi40AXwNIhWIb/wcmPHw5wSC1BLmaV6kRnuiY3
+         5YA4u8pHa73Vv3RPBFwyy6rS9I/Ee6Q/AYSqJ1/yfeOG1vnpvqdBISpfarDMfLPx4u
+         0KBJUWQibFk3wvqmWROs4toUIbmZFVUiDGgJUVYE=
 From:   madvenka@linux.microsoft.com
 To:     broonie@kernel.org, jpoimboe@redhat.com, mark.rutland@arm.com,
         jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
@@ -30,12 +30,13 @@ To:     broonie@kernel.org, jpoimboe@redhat.com, mark.rutland@arm.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [PATCH v3 0/1] arm64: Implement stack trace termination record
-Date:   Tue, 20 Apr 2021 13:44:46 -0500
-Message-Id: <20210420184447.16306-1-madvenka@linux.microsoft.com>
+Subject: [PATCH v3 1/1] arm64: Implement stack trace termination record
+Date:   Tue, 20 Apr 2021 13:44:47 -0500
+Message-Id: <20210420184447.16306-2-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <80cac661608c8d3623328b37b9b1696f63f45968>
+In-Reply-To: <20210420184447.16306-1-madvenka@linux.microsoft.com>
 References: <80cac661608c8d3623328b37b9b1696f63f45968>
+ <20210420184447.16306-1-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -49,162 +50,193 @@ terminated early. We can do this by ensuring all tasks have a final
 frame record at a known location on their task stack, and checking
 that this is the final frame record in the chain.
 
-All tasks have a pt_regs structure right after the task stack in the stack
-page. The pt_regs structure contains a stackframe field. Make this stackframe
-field the final frame in the task stack so all stack traces end at a fixed
-stack offset.
+Kernel Tasks
+============
 
-For kernel tasks, this is simple to understand. For user tasks, there is
-some extra detail. User tasks get created via fork() et al. Once they return
-from fork, they enter the kernel only on an EL0 exception. In arm64,
-system calls are also EL0 exceptions.
+All tasks except the idle task have a pt_regs structure right after the
+task stack. This is called the task pt_regs. The pt_regs structure has a
+special stackframe field. Make this stackframe field the final frame in the
+task stack. This needs to be done in copy_thread() which initializes a new
+task's pt_regs and initial CPU context.
 
-The EL0 exception handler uses the task pt_regs mentioned above to save
-register state and call different exception functions. All stack traces
-from EL0 exception code must end at the pt_regs. So, make pt_regs->stackframe
-the final frame in the EL0 exception stack.
+For the idle task, there is no task pt_regs. For our purpose, we need one.
+So, create a pt_regs just like other kernel tasks and make
+pt_regs->stackframe the final frame in the idle task stack. This needs to be
+done at two places:
 
-To summarize, task_pt_regs(task)->stackframe will always be the final frame
-in a stack trace.
+	- On the primary CPU, the boot task runs. It calls start_kernel()
+	  and eventually becomes the idle task for the primary CPU. Just
+	  before start_kernel() is called, set up the final frame.
 
-Sample stack traces
-===================
+	- On each secondary CPU, a startup task runs that calls
+	  secondary_startup_kernel() and eventually becomes the idle task
+	  on the secondary CPU. Just before secondary_start_kernel() is
+	  called, set up the final frame.
 
-Showing just the last couple of frames in each stack trace to show how the
-stack trace ends.
+User Tasks
+==========
 
-Primary CPU idle task
-=====================
+User tasks are initially set up like kernel tasks when they are created.
+Then, they return to userland after fork via ret_from_fork(). After that,
+they enter the kernel only on an EL0 exception. (In arm64, system calls are
+also EL0 exceptions). The EL0 exception handler stores state in the task
+pt_regs and calls different functions based on the type of exception. The
+stack trace for an EL0 exception must end at the task pt_regs. So, make
+task pt_regs->stackframe as the final frame in the EL0 exception stack.
 
-		 ...
-[    0.077109]   rest_init+0x108/0x144
-[    0.077188]   arch_call_rest_init+0x18/0x24
-[    0.077220]   start_kernel+0x3ac/0x3e4
-[    0.077293]   __primary_switched+0xac/0xb0
+In summary, task pt_regs->stackframe is where a successful stack trace ends.
 
-Secondary CPU idle task
+Stack trace termination
 =======================
 
-		...
-[    0.077264]   secondary_start_kernel+0x228/0x388
-[    0.077326]   __secondary_switched+0x80/0x84
+In the unwinder, terminate the stack trace successfully when
+task_pt_regs(task)->stackframe is reached. For stack traces in the kernel,
+this will correctly terminate the stack trace at the right place.
 
-Sample kernel thread
-====================
+However, debuggers may terminate the stack trace when FP == 0. In the
+pt_regs->stackframe, the PC is 0 as well. So, stack traces taken in the
+debugger may print an extra record 0x0 at the end. While this is not
+pretty, this does not do any harm. This is a small price to pay for
+having reliable stack trace termination in the kernel. That said, gdb
+does not show the extra record probably because it uses DWARF and not
+frame pointers for stack traces.
 
-		 ...
-[   24.543250]   kernel_init+0xa4/0x164
-[   24.561850]   ret_from_fork+0x10/0x18
-
-Write system call (EL0 exception)
-=================
-
-(using a test driver called callfd)
-
-[ 1160.628723]   callfd_stack+0x3c/0x70
-[ 1160.628768]   callfd_op+0x35c/0x3a8
-[ 1160.628791]   callfd_write+0x5c/0xc8
-[ 1160.628813]   vfs_write+0x104/0x3b8
-[ 1160.628837]   ksys_write+0xd0/0x188
-[ 1160.628859]   __arm64_sys_write+0x4c/0x60
-[ 1160.628883]   el0_svc_common.constprop.0+0xa8/0x240
-[ 1160.628904]   do_el0_svc+0x40/0xa8
-[ 1160.628921]   el0_svc+0x2c/0x78
-[ 1160.628942]   el0_sync_handler+0xb0/0xb8
-[ 1160.628962]   el0_sync+0x17c/0x180
-
-NULL pointer dereference exception (EL1 exception)
-==================================
-
-[ 1160.637984]   callfd_stack+0x3c/0x70
-[ 1160.638015]   die_kernel_fault+0x80/0x108
-[ 1160.638042]   do_page_fault+0x520/0x600
-[ 1160.638075]   do_translation_fault+0xa8/0xdc
-[ 1160.638102]   do_mem_abort+0x68/0x100
-[ 1160.638120]   el1_abort+0x40/0x60
-[ 1160.638138]   el1_sync_handler+0xac/0xc8
-[ 1160.638157]   el1_sync+0x74/0x100
-[ 1160.638174]   0x0                           <=== NULL pointer dereference
-[ 1160.638189]   callfd_write+0x5c/0xc8
-[ 1160.638211]   vfs_write+0x104/0x3b8
-[ 1160.638234]   ksys_write+0xd0/0x188
-[ 1160.638278]   __arm64_sys_write+0x4c/0x60
-[ 1160.638325]   el0_svc_common.constprop.0+0xa8/0x240
-[ 1160.638358]   do_el0_svc+0x40/0xa8
-[ 1160.638379]   el0_svc+0x2c/0x78
-[ 1160.638409]   el0_sync_handler+0xb0/0xb8
-[ 1160.638452]   el0_sync+0x17c/0x180
-
-Timer interrupt (EL1 exception)
-===============
-
-Secondary CPU idle task interrupted by the timer interrupt:
-
-[ 1160.702949] callfd_callback:
-[ 1160.703006]   callfd_stack+0x3c/0x70
-[ 1160.703060]   callfd_callback+0x30/0x40
-[ 1160.703087]   call_timer_fn+0x48/0x220
-[ 1160.703113]   run_timer_softirq+0x7cc/0xc70
-[ 1160.703144]   __do_softirq+0x1ec/0x608
-[ 1160.703166]   irq_exit+0x138/0x180
-[ 1160.703193]   __handle_domain_irq+0x8c/0xf0
-[ 1160.703218]   gic_handle_irq+0xec/0x410
-[ 1160.703253]   el1_irq+0xc0/0x180
-[ 1160.703278]   arch_local_irq_enable+0xc/0x28
-[ 1160.703329]   default_idle_call+0x54/0x1d8
-[ 1160.703355]   do_idle+0x2d8/0x350
-[ 1160.703388]   cpu_startup_entry+0x2c/0x98
-[ 1160.703412]   secondary_start_kernel+0x238/0x388
-[ 1160.703446]   __secondary_switched+0x80/0x84
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
-Changelog:
-
-v3:
-	- Added Reviewed-by: Mark Brown <broonie@kernel.org>.
-	- Fixed an extra space after a cast reported by checkpatch --strict.
-	- Synced with mainline tip.
-
-v2:
-	- Changed some wordings as suggested by Mark Rutland.
-	- Removed the synthetic return PC for idle tasks. Changed the
-	  branches to start_kernel() and secondary_start_kernel() to
-	  calls so that they will have a proper return PC.
-
-v1:
-	- Set up task_pt_regs(current)->stackframe as the final frame
-	  when a new task is initialized in copy_thread().
-	- Create pt_regs for the idle tasks and set up pt_regs->stackframe
-	  as the final frame for the idle tasks.
-	- Set up task_pt_regs(current)->stackframe as the final frame in
-	  the EL0 exception handler so the EL0 exception stack trace ends
-	  there.
-	- Terminate the stack trace successfully in unwind_frame() when
-	  the FP reaches task_pt_regs(current)->stackframe.
-	- The stack traces (above) in the kernel will terminate at the
-	  correct place. Debuggers may show an extra record 0x0 at the end
-	  for pt_regs->stackframe. That said, I did not see that extra frame
-	  when I did stack traces using gdb.
-
-Testing:
-	- Functional validation on a ThunderX system.
-
-Previous versions and discussion
-================================
-
-v2: https://lore.kernel.org/linux-arm-kernel/20210402032404.47239-1-madvenka@linux.microsoft.com/
-v1: https://lore.kernel.org/linux-arm-kernel/20210324184607.120948-1-madvenka@linux.microsoft.com/
-
-Madhavan T. Venkataraman (1):
-  arm64: Implement stack trace termination record
-
  arch/arm64/kernel/entry.S      |  8 +++++---
  arch/arm64/kernel/head.S       | 29 +++++++++++++++++++++++------
  arch/arm64/kernel/process.c    |  5 +++++
  arch/arm64/kernel/stacktrace.c | 10 +++++-----
  4 files changed, 38 insertions(+), 14 deletions(-)
 
-
-base-commit: bf05bf16c76bb44ab5156223e1e58e26dfe30a88
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index 6acfc5e6b5e0..e677b9a2b8f8 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -263,16 +263,18 @@ alternative_else_nop_endif
+ 	stp	lr, x21, [sp, #S_LR]
+ 
+ 	/*
+-	 * For exceptions from EL0, terminate the callchain here.
++	 * For exceptions from EL0, terminate the callchain here at
++	 * task_pt_regs(current)->stackframe.
++	 *
+ 	 * For exceptions from EL1, create a synthetic frame record so the
+ 	 * interrupted code shows up in the backtrace.
+ 	 */
+ 	.if \el == 0
+-	mov	x29, xzr
++	stp	xzr, xzr, [sp, #S_STACKFRAME]
+ 	.else
+ 	stp	x29, x22, [sp, #S_STACKFRAME]
+-	add	x29, sp, #S_STACKFRAME
+ 	.endif
++	add	x29, sp, #S_STACKFRAME
+ 
+ #ifdef CONFIG_ARM64_SW_TTBR0_PAN
+ alternative_if_not ARM64_HAS_PAN
+diff --git a/arch/arm64/kernel/head.S b/arch/arm64/kernel/head.S
+index 840bda1869e9..743c019a42c7 100644
+--- a/arch/arm64/kernel/head.S
++++ b/arch/arm64/kernel/head.S
+@@ -393,6 +393,23 @@ SYM_FUNC_START_LOCAL(__create_page_tables)
+ 	ret	x28
+ SYM_FUNC_END(__create_page_tables)
+ 
++	/*
++	 * The boot task becomes the idle task for the primary CPU. The
++	 * CPU startup task on each secondary CPU becomes the idle task
++	 * for the secondary CPU.
++	 *
++	 * The idle task does not require pt_regs. But create a dummy
++	 * pt_regs so that task_pt_regs(idle_task)->stackframe can be
++	 * set up to be the final frame on the idle task stack just like
++	 * all the other kernel tasks. This helps the unwinder to
++	 * terminate the stack trace at a well-known stack offset.
++	 */
++	.macro setup_final_frame
++	sub	sp, sp, #PT_REGS_SIZE
++	stp	xzr, xzr, [sp, #S_STACKFRAME]
++	add	x29, sp, #S_STACKFRAME
++	.endm
++
+ /*
+  * The following fragment of code is executed with the MMU enabled.
+  *
+@@ -447,9 +464,9 @@ SYM_FUNC_START_LOCAL(__primary_switched)
+ #endif
+ 	bl	switch_to_vhe			// Prefer VHE if possible
+ 	add	sp, sp, #16
+-	mov	x29, #0
+-	mov	x30, #0
+-	b	start_kernel
++	setup_final_frame
++	bl	start_kernel
++	nop
+ SYM_FUNC_END(__primary_switched)
+ 
+ 	.pushsection ".rodata", "a"
+@@ -606,14 +623,14 @@ SYM_FUNC_START_LOCAL(__secondary_switched)
+ 	cbz	x2, __secondary_too_slow
+ 	msr	sp_el0, x2
+ 	scs_load x2, x3
+-	mov	x29, #0
+-	mov	x30, #0
++	setup_final_frame
+ 
+ #ifdef CONFIG_ARM64_PTR_AUTH
+ 	ptrauth_keys_init_cpu x2, x3, x4, x5
+ #endif
+ 
+-	b	secondary_start_kernel
++	bl	secondary_start_kernel
++	nop
+ SYM_FUNC_END(__secondary_switched)
+ 
+ SYM_FUNC_START_LOCAL(__secondary_too_slow)
+diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+index 6e60aa3b5ea9..999711c55274 100644
+--- a/arch/arm64/kernel/process.c
++++ b/arch/arm64/kernel/process.c
+@@ -439,6 +439,11 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
+ 	}
+ 	p->thread.cpu_context.pc = (unsigned long)ret_from_fork;
+ 	p->thread.cpu_context.sp = (unsigned long)childregs;
++	/*
++	 * For the benefit of the unwinder, set up childregs->stackframe
++	 * as the final frame for the new task.
++	 */
++	p->thread.cpu_context.fp = (unsigned long)childregs->stackframe;
+ 
+ 	ptrace_hw_copy_thread(p);
+ 
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index d55bdfb7789c..774d9af2f0b6 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -44,16 +44,16 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
+ 	unsigned long fp = frame->fp;
+ 	struct stack_info info;
+ 
+-	/* Terminal record; nothing to unwind */
+-	if (!fp)
++	if (!tsk)
++		tsk = current;
++
++	/* Final frame; nothing to unwind */
++	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
+ 		return -ENOENT;
+ 
+ 	if (fp & 0xf)
+ 		return -EINVAL;
+ 
+-	if (!tsk)
+-		tsk = current;
+-
+ 	if (!on_accessible_stack(tsk, fp, &info))
+ 		return -EINVAL;
+ 
 -- 
 2.25.1
 
