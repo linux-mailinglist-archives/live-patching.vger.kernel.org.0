@@ -2,75 +2,89 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53EA338CCA2
-	for <lists+live-patching@lfdr.de>; Fri, 21 May 2021 19:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C817938CCBB
+	for <lists+live-patching@lfdr.de>; Fri, 21 May 2021 19:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238589AbhEURu2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 21 May 2021 13:50:28 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:33412 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238628AbhEURt6 (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 21 May 2021 13:49:58 -0400
-Received: from [192.168.254.32] (unknown [47.187.214.213])
-        by linux.microsoft.com (Postfix) with ESMTPSA id A2F2A20B7188;
-        Fri, 21 May 2021 10:48:34 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A2F2A20B7188
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1621619315;
-        bh=vU/JTuWi3C5fB8RNIolLlnI9ipYsWSFq874acAyf40w=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=VbNgyb8BxOjzNrhqJ1+kLXKgpAdDz0/s4fsSb5gh6kosis6ztaDaiL82PhCuKiRPP
-         48ZhbmMBBUPNIZi8+/Cr6rsLxZ7cibrDZSGtL0OAMObMfxaF3d9NrUkBLg17VGZ7Pz
-         oRpzGr3BjYbst42wOW9ZN1L+zKbLHhowyOPtQIJI=
-Subject: Re: [RFC PATCH v4 0/2] arm64: Stack trace reliability checks in the
- unwinder
-To:     Mark Brown <broonie@kernel.org>
+        id S237060AbhEURyr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 21 May 2021 13:54:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53474 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234912AbhEURyq (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 21 May 2021 13:54:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B65DC608FE;
+        Fri, 21 May 2021 17:53:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621619602;
+        bh=d4iEeT3kENazUfx6vj5fy6JPv4wS8jBR0cwrDXv+FYk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WggyX5pUYy1jsxw7nVsbfw7cZlt5OajIOd+gRsgSNRX/LokMp+maZhTvwQwBfeV7C
+         PrLpRO5zbAKj2sbs1rrzeRg17b/qWLI6ak/nDhp4nl1eA298HJ8gFcK6HTYyZq/iAB
+         qPnNHk5Lt8r4l/uixt4RgjfzdLcw8evif1M8UNUlThuoFukpWcARi5SqmXCAXG6ld4
+         7jL9irJQw33Tt9bf2a5RnL4gmH+3/gyHRCAfdDrD3BTeuCKX5kFK/Fv/bHSJaRFFkW
+         ZQSEgLs3wowyzkveJNAQmsku6Llw6+fCSEuABO0yZ6z0Cc12VGB1cDToc6p/fCcqNR
+         rSDHF/Rs8r0OQ==
+Date:   Fri, 21 May 2021 18:53:18 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
         jthierry@redhat.com, catalin.marinas@arm.com, will@kernel.org,
         jmorris@namei.org, pasha.tatashin@soleen.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v4 1/2] arm64: Introduce stack trace reliability
+ checks in the unwinder
+Message-ID: <20210521175318.GF5825@sirena.org.uk>
 References: <68eeda61b3e9579d65698a884b26c8632025e503>
  <20210516040018.128105-1-madvenka@linux.microsoft.com>
- <20210521171808.GC5825@sirena.org.uk>
- <654dde25-e6a2-a1e7-c2d7-e2692bc11528@linux.microsoft.com>
- <20210521174702.GE5825@sirena.org.uk>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <1feec2ba-538b-e28d-1e03-ac9c1af43842@linux.microsoft.com>
-Date:   Fri, 21 May 2021 12:48:34 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ <20210516040018.128105-2-madvenka@linux.microsoft.com>
+ <20210521161117.GB5825@sirena.org.uk>
+ <a2a32666-c27e-3a0f-06b2-b7a2baa7e0f1@linux.microsoft.com>
+ <20210521174242.GD5825@sirena.org.uk>
+ <26c33633-029e-6374-16e6-e9418099da95@linux.microsoft.com>
 MIME-Version: 1.0
-In-Reply-To: <20210521174702.GE5825@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="1Ow488MNN9B9o/ov"
+Content-Disposition: inline
+In-Reply-To: <26c33633-029e-6374-16e6-e9418099da95@linux.microsoft.com>
+X-Cookie: Do not write below this line.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
+--1Ow488MNN9B9o/ov
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 5/21/21 12:47 PM, Mark Brown wrote:
-> On Fri, May 21, 2021 at 12:32:52PM -0500, Madhavan T. Venkataraman wrote:
-> 
->> I have followed the example in the Kprobe deny list. I place the section
->> in initdata so it can be unloaded during boot. This means that I need to
->> copy the information before that in early_initcall().
-> 
->> If the initialization must be performed on first use, I probably have to
->> move SYM_CODE_FUNCTIONS from initdata to some other place where it will
->> be retained.
-> 
->> If you prefer this, I could do it this way.
-> 
-> No, I think if people are fine with this for kprobes they should be fine
-> with it here too and if not we can always incrementally improve
-> performance - let's just keep things simple and easy to understand for
-> now.
-> 
+On Fri, May 21, 2021 at 12:47:13PM -0500, Madhavan T. Venkataraman wrote:
+> On 5/21/21 12:42 PM, Mark Brown wrote:
 
-OK.
+> > Like I say we may come up with some use for the flag in error cases in
+> > future so I'm not opposed to keeping the accounting there.
 
-Madhavan
+> So, should I leave it the way it is now? Or should I not set reliable = false
+> for errors? Which one do you prefer?
+
+> Josh,
+
+> Are you OK with not flagging reliable = false for errors in unwind_frame()?
+
+I think it's fine to leave it as it is.
+
+--1Ow488MNN9B9o/ov
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmCn840ACgkQJNaLcl1U
+h9B64Af+PKOojLf3mxi8xJnWbYRZtZbrmPoHiSiT/enzT0Y/XjSubDQOp0pxbeJT
+ah0rvSPhTYWO7uUm2SmBcaWUN0eidHRotNWCvPadRISC6JwLGcS3qmAnTdZ8JNXE
+4NT3oyLC8yAFI6vv5NXf9SwFW+puPPWS7quktVWiJ5Xb12vd+5x+n5lPcrMinImi
+5sWIcINkCXrthJTudokrCtuaNLp0aDQVTwQTmLBQ7q2fjAxfiylvxi6J556/YUFQ
+UvtgW9zT7JjhFuEoeiO3/QekwUijHzelN0inaw0kX8rtaD3FrPqSI8JYaBXDEC4u
+/zkIcbJJEvSDyZG8v/yUD+CeN+9CwA==
+=yZ+q
+-----END PGP SIGNATURE-----
+
+--1Ow488MNN9B9o/ov--
