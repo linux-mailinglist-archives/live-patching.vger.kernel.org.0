@@ -2,28 +2,28 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 839CB39BBDF
-	for <lists+live-patching@lfdr.de>; Fri,  4 Jun 2021 17:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3263A39BD09
+	for <lists+live-patching@lfdr.de>; Fri,  4 Jun 2021 18:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbhFDPbG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 4 Jun 2021 11:31:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33372 "EHLO mail.kernel.org"
+        id S229667AbhFDQ0O (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 4 Jun 2021 12:26:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44090 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229864AbhFDPbG (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 4 Jun 2021 11:31:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A398261404;
-        Fri,  4 Jun 2021 15:29:19 +0000 (UTC)
+        id S229809AbhFDQ0N (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 4 Jun 2021 12:26:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0163F613BF;
+        Fri,  4 Jun 2021 16:24:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622820560;
-        bh=lF4mEdpv40AVgxloddBAIZmv5h6QsjqNCuxmyL/C2ns=;
+        s=k20201202; t=1622823867;
+        bh=NGB8rXa0uoRMdYpVi/8d63o1MFZR+oN9qStawJ0e010=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aOCrj9Tan4ZVE8PMWzo2XOPSNN7dVx6/G/zS2m/oNEYrpsT9ZQXCTxG9qZJpZEHMf
-         EsooQBTC77ZjjIUSZN+yZsEJDeD6c/Meua8qXEGk+KJKYBYerpNvu6s0XFT5PvkdL6
-         x53JJexHYQe9IR679Fb7KcCiiMIcDkiDCdIe67DFK2jHLnvTq8hctE49DDD/IsIlT9
-         pJwYpKQc4YqJRwFkV8Nazq4siorZ2oI6eWbCx8bAU/ggg9cLHIP+FbRGR8bVYLAvQh
-         hW36ldhEb4fgv9rzqtR+vTPaWqvoV37B53vJORZTw5M+Pb9lpMSnl8Fm49m7MI0tOJ
-         AtjXW8h3PjKuQ==
-Date:   Fri, 4 Jun 2021 16:29:08 +0100
+        b=fdNnWhVEHUWkbXMDsrbZKBP9HPVkKy2jN3QLnKraKlfcmOT8gH7pxn9q1NghQq/wO
+         R3vTjzgzfSoQBLevy2fkykoWSJTwvAxNgFtu6gEgczmyWQNjAL5Go1Bn5sagATwS4W
+         lEYomuIEB/2udqHoeJPnhIkBSgFCGdXqs1hqMKgEOnYpi3M1u/SPAqb/IZVgh2dTZF
+         s5r/qxd6K7skcnm++kIMMElqJ6klHFsw+cJDttbpz/PP27o6KFTCiYudpZuu1Wujrk
+         gGMiH9N1hteua4tiifUldJymGZo9duSvxdNhld1kK41GvFCv8PJGNmft0mD5oOzQXP
+         Ih9chHBZ7K8QA==
+Date:   Fri, 4 Jun 2021 17:24:15 +0100
 From:   Mark Brown <broonie@kernel.org>
 To:     madvenka@linux.microsoft.com
 Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
@@ -31,16 +31,15 @@ Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
         jmorris@namei.org, pasha.tatashin@soleen.com, jthierry@redhat.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v5 0/2] arm64: Implement stack trace reliability
- checks
-Message-ID: <20210604152908.GD4045@sirena.org.uk>
-References: <ea0ef9ed6eb34618bcf468fbbf8bdba99e15df7d>
- <20210526214917.20099-1-madvenka@linux.microsoft.com>
+Subject: Re: [RFC PATCH v5 2/2] arm64: Create a list of SYM_CODE functions,
+ check return PC against list
+Message-ID: <20210604162415.GF4045@sirena.org.uk>
+References: <20210526214917.20099-3-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hoZxPH4CaxYzWscb"
+        protocol="application/pgp-signature"; boundary="ULyIDA2m8JTe+TiX"
 Content-Disposition: inline
-In-Reply-To: <20210526214917.20099-1-madvenka@linux.microsoft.com>
+In-Reply-To: <20210526214917.20099-3-madvenka@linux.microsoft.com>
 X-Cookie: There is a fly on your nose.
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
@@ -48,35 +47,53 @@ List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
---hoZxPH4CaxYzWscb
+--ULyIDA2m8JTe+TiX
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 26, 2021 at 04:49:15PM -0500, madvenka@linux.microsoft.com wrot=
-e:
-> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->=20
-> There are a number of places in kernel code where the stack trace is not
-> reliable. Enhance the unwinder to check for those cases and mark the
-> stack trace as unreliable. Once all of the checks are in place, the unwin=
-der
+On Wed, May 26, 2021 at 04:49:17PM -0500, madvenka@linux.microsoft.com wrote:
 
-Reviewed-by: Mark Brown <broonie@kernel.org>
+> The unwinder should check if the return PC falls in any function that
+> is considered unreliable from an unwinding perspective. If it does,
+> mark the stack trace unreliable.
 
---hoZxPH4CaxYzWscb
+Reviwed-by: Mark Brown <broonie@kernel.org>
+
+However it'd be good for someone else to double check this as it's
+entirely possible that I've missed some case here.
+
+> + * Some special cases covered by sym_code_functions[] deserve a mention here:
+
+> + *	- All EL1 interrupt and exception stack traces will be considered
+> + *	  unreliable. This is the correct behavior as interrupts and exceptions
+> + *	  can happen on any instruction including ones in the frame pointer
+> + *	  prolog and epilog. Unless stack metadata is available so the unwinder
+> + *	  can unwind through these special cases, such stack traces will be
+> + *	  considered unreliable.
+> + *
+
+If you're respinning this it's probably also worth noting that we only
+ever perform reliable stack trace on either blocked tasks or the current
+task which should if my reasoning is correct mean that the fact that
+the exclusions here mean that we avoid having to worry about so many
+race conditions when entering and leaving functions.  If we got
+preempted at the wrong moment for one of them then we should observe the
+preemption and mark the trace as unreliable due to that which means that
+any confusion the race causes is a non-issue.
+
+--ULyIDA2m8JTe+TiX
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmC6RsMACgkQJNaLcl1U
-h9CYNgf9Hwof1h/Xqtj4jkOFrpz2t6naEeqX3Mx6TSlmC5EyGscqgW6GBZxgFzGT
-trmeIBvno1J2hWcAatHYcw+zIwbsQuZCPi5489xduLPwkEzPDALElZroipJFmkCv
-m2KRKHr/ED6B+Ea6Kx+lgqv5xFSf3S9yPH8it2rBI+H6J2FPt42384Z72vqn4nGb
-DExKvoL/NxHKmyWxR2GeMJ6Lool40FOdcqpvBkIlsUa0UxUuVgTyIKbQL/F0YDnt
-HcyRMP745nhp0w5J85wo209LcmvHVJ+ti5d+ySCCezd9U0+RkrpgACxe6ivRNHbb
-w4RGHSLtZMD9H9TGmquniIkZ23fCUQ==
-=kfuX
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmC6U64ACgkQJNaLcl1U
+h9C4QAf9HRBqFG+nZ5GixqyUqGGU9sr9f1Ymjd4s3kINKBCnuQtCpH5uA1qARlcT
+xfpdyOCAroWlxaYytUlLNv26CkFEodFiu1+NI/fj4BIC56ACc8vB89tizCY2ZD3j
+xN1PfXXFMD7xpH7O69RqgUlptgrGbCHeWijC9xIy88cnoviEri49h8q6MQvZnoOu
+AYx1OQ+pCTOnno8YVfHghv5pHWHEFcyClHZ2HGXElWZx7/6uF+BhMFsfmm+dj+K0
+8TffheBtjKX3qkRj4hFqr5L2FSS4+9EhBXXJEFsdTO8juhNkkPRYHdLfrwQCINss
+/7O/GpYwALWDvyUiEka7PR7ybxMgqQ==
+=eQAz
 -----END PGP SIGNATURE-----
 
---hoZxPH4CaxYzWscb--
+--ULyIDA2m8JTe+TiX--
