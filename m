@@ -2,84 +2,94 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C671939BDD8
-	for <lists+live-patching@lfdr.de>; Fri,  4 Jun 2021 18:59:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1636039C16F
+	for <lists+live-patching@lfdr.de>; Fri,  4 Jun 2021 22:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbhFDRBo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 4 Jun 2021 13:01:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38366 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229778AbhFDRBn (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 4 Jun 2021 13:01:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F3A78613E3;
-        Fri,  4 Jun 2021 16:59:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622825997;
-        bh=oy91zHyeWFBR/8w6AyBF+OCwrD1WZiRJ8FRdiKTuQqI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ADXZmoNwtLICjuUk8BKk7G7Sn/xPd+xGBvgfPNa1buqZ5s7ymG8fFFBm4XDmHleCp
-         UG2ah5vUf+/9ofJnfONMsZGXqekSRlbXmU7Et+gZ937iTcymPem9/GdYi8u91VZRjS
-         vpJeLmB57RqlpLYUdthc7gZ5ddE0n4vyOe+olNExDzAlRoXc6/Jqlu4WHyAXBegups
-         2uHPcZBqrqv8ffxEd+eCKmXDbtSxS5KKwq8dixYs3SxK9oM7GYGMYPjK5ucTJJWBYv
-         aW9z2c9t8eMl5cPRfSH+AWGb9B+FtuFy04iRwovHyS7UGAvXLu6CXiJFkYbhzDt8aU
-         sDpITrpvWAY+Q==
-Date:   Fri, 4 Jun 2021 17:59:45 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     madvenka@linux.microsoft.com
+        id S229982AbhFDUkj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 4 Jun 2021 16:40:39 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:43114 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229913AbhFDUkj (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Fri, 4 Jun 2021 16:40:39 -0400
+Received: from [192.168.254.32] (unknown [47.187.214.213])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 804C320B7178;
+        Fri,  4 Jun 2021 13:38:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 804C320B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1622839132;
+        bh=/45hWiDZcsHWctcr5hRZBQDWDhCLQeyVYjjw+Z2h/ao=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=SOCXYevWE8GoQHgMS+3odsSucYuupPTeMrZQ3CPj2riFz+5QZ3Kla+sx5bOFcjDvR
+         xQUrOnf+PaeR9D1GheUMoWk0//YkB6TQZAbCBpNS4ghgjHk5IvJDBpt9wuCDUkWGX9
+         M8JNMo4Cg8f/VoC+ib2xNR0kSPLQwvlUcJ/rsp5w=
+Subject: Re: [RFC PATCH v5 2/2] arm64: Create a list of SYM_CODE functions,
+ check return PC against list
+To:     Mark Brown <broonie@kernel.org>
 Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
         nobuta.keiya@fujitsu.com, catalin.marinas@arm.com, will@kernel.org,
         jmorris@namei.org, pasha.tatashin@soleen.com, jthierry@redhat.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v5 2/2] arm64: Create a list of SYM_CODE functions,
- check return PC against list
-Message-ID: <20210604165945.GA39381@sirena.org.uk>
 References: <20210526214917.20099-3-madvenka@linux.microsoft.com>
+ <20210604162415.GF4045@sirena.org.uk>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Message-ID: <903c61d7-5717-c9df-29c5-4f162f84e84c@linux.microsoft.com>
+Date:   Fri, 4 Jun 2021 15:38:50 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Kj7319i9nmIyA2yE"
-Content-Disposition: inline
-In-Reply-To: <20210526214917.20099-3-madvenka@linux.microsoft.com>
-X-Cookie: Auction:
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210604162415.GF4045@sirena.org.uk>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
---Kj7319i9nmIyA2yE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Wed, May 26, 2021 at 04:49:17PM -0500, madvenka@linux.microsoft.com wrote:
+On 6/4/21 11:24 AM, Mark Brown wrote:
+> On Wed, May 26, 2021 at 04:49:17PM -0500, madvenka@linux.microsoft.com wrote:
+> 
+>> The unwinder should check if the return PC falls in any function that
+>> is considered unreliable from an unwinding perspective. If it does,
+>> mark the stack trace unreliable.
+> 
+> Reviwed-by: Mark Brown <broonie@kernel.org>
+> 
 
-> + *	- return_to_handler() is handled by the unwinder by attempting to
-> + *	  retrieve the original return address from the per-task return
-> + *	  address stack.
-> + *
-> + *	- kretprobe_trampoline() can be handled in a similar fashion by
-> + *	  attempting to retrieve the original return address from the per-task
-> + *	  kretprobe instance list.
-> + *
-> + *	- I reckon optprobes can be handled in a similar fashion in the future?
+Thanks.
 
-Note that there's a patch for optprobes on the list now:
+> However it'd be good for someone else to double check this as it's
+> entirely possible that I've missed some case here.
+> 
 
-   https://lore.kernel.org/r/1622803839-27354-1-git-send-email-liuqi115@huawei.com
+I will request Mark Rutland to review this as well.
 
---Kj7319i9nmIyA2yE
-Content-Type: application/pgp-signature; name="signature.asc"
+>> + * Some special cases covered by sym_code_functions[] deserve a mention here:
+> 
+>> + *	- All EL1 interrupt and exception stack traces will be considered
+>> + *	  unreliable. This is the correct behavior as interrupts and exceptions
+>> + *	  can happen on any instruction including ones in the frame pointer
+>> + *	  prolog and epilog. Unless stack metadata is available so the unwinder
+>> + *	  can unwind through these special cases, such stack traces will be
+>> + *	  considered unreliable.
+>> + *
+> 
+> If you're respinning this it's probably also worth noting that we only
+> ever perform reliable stack trace on either blocked tasks or the current
+> task which should if my reasoning is correct mean that the fact that
+> the exclusions here mean that we avoid having to worry about so many
+> race conditions when entering and leaving functions.  If we got
+> preempted at the wrong moment for one of them then we should observe the
+> preemption and mark the trace as unreliable due to that which means that
+> any confusion the race causes is a non-issue.
+> 
 
------BEGIN PGP SIGNATURE-----
+I will add a comment that "livepatch only looks at tasks that are currently
+not on any CPU (except for the current task). Such tasks either blocked
+on something and gave up the CPU voluntarily. Or, they were preempted.
+The above comment applies to the latter case".
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmC6XAAACgkQJNaLcl1U
-h9AmswgAhOf2VOY3fAiB5KkSryDhSWd3yIPNpRsIYiepRmDE0pyVzzYnyl4DxK/G
-PGvN/Wi7Uzu36mHgAA5qCka1F4gm6RN8yLbtGbvtV6fqvTE+N0LvHYt3zNhyZjix
-KhK2sFjE9bNNg7S/ZM8whyXqhPoDOtfmxgGSiuHNwh5Lbcfsl5HO1AJD02r/nbnz
-RqOCV1VcSnWit9AoMZLSfhkFCf4/G5PlijB6x1PkvWNAtsyM1NE61/a/HFfhwGkt
-ZbeuD0xBZMone+oCqNqFyslfhdj3iHBMUntYtuADIugheBEhf+L6H7yLU/CrLx5w
-CoDOftD29KUJUDdFdBuQ6QndSk4HhA==
-=cks7
------END PGP SIGNATURE-----
-
---Kj7319i9nmIyA2yE--
+Madhavan
