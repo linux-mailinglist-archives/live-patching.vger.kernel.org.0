@@ -2,105 +2,104 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 792653ABBE5
-	for <lists+live-patching@lfdr.de>; Thu, 17 Jun 2021 20:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CE03ADE94
+	for <lists+live-patching@lfdr.de>; Sun, 20 Jun 2021 15:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbhFQSeV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 17 Jun 2021 14:34:21 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:45086 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233686AbhFQSeS (ORCPT
+        id S229819AbhFTNei (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 20 Jun 2021 09:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229670AbhFTNeg (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 17 Jun 2021 14:34:18 -0400
-Received: from [192.168.254.32] (unknown [47.187.214.213])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 596D320B83DE;
-        Thu, 17 Jun 2021 11:32:09 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 596D320B83DE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1623954730;
-        bh=LUzAs8YwcV9OEjtCvxPMYvniuVgxNyeebthHhcHDNUQ=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=kD5E+KGp4yOxOp+fj4nhFGdWt11PntzW4A2NBd2U7SL9Wq6IYTKJGhJ2Llf3RGlH6
-         BUxM+DWFZ1d/2vXkeI7mU0HYUo1l0qw6abtjuebcP7c7ZP9BRSkYZk76H7PkkJQvil
-         0x+dEVwDwzioelIYxXPSSVJu8UuooGch59mPIrMI=
-Subject: Re: [RFC PATCH 1/1] arm64: implement live patching
-To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
-        Suraj Jitindar Singh <surajjs@amazon.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "duwe@lst.de" <duwe@lst.de>,
-        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20210604235930.603-1-surajjs@amazon.com>
- <TYAPR01MB526348C06BB8E410DF8CE3D3850E9@TYAPR01MB5263.jpnprd01.prod.outlook.com>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <7080d2a9-6ec2-94e9-3577-e5f7233ad3ab@linux.microsoft.com>
-Date:   Thu, 17 Jun 2021 13:32:08 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Sun, 20 Jun 2021 09:34:36 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE35C0617AD
+        for <live-patching@vger.kernel.org>; Sun, 20 Jun 2021 06:32:23 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id 69so7105470plc.5
+        for <live-patching@vger.kernel.org>; Sun, 20 Jun 2021 06:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=D7l/Y2nU4ivOXB3kYNarWKNDy1SUWuawPt7q4q/Bhv4=;
+        b=uI1HWktzNInUfptyhQFOCbHHsuWvfBePpTiQHONWTknKmYIIUTT/ScT2sm1pOtQghT
+         w4l7bggcvaIzRVYhJEw54i/j5C7uIjPI+rfKYj9eLBMMnUvVanHWJD5X8UwiF2eAuA3/
+         e7PIhGGhjecJswE1As0nWUL/TgoPBhYR8WAQ7oBplZUX7d0Wepvtu1ONc4udpFogWhnD
+         wfj5M1ULsJD5vk1emm3Wq8VNf8cpaJUJ+x7F8A8GyxSaKLBaPRKzZKjV9q/K4ntDcKgg
+         Y77ITXRVMOooid3W4tLnX41RorPGOLZ8bjpANE36HhxEjObG5cj4VLtNebY4L3rZku0x
+         CmtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=D7l/Y2nU4ivOXB3kYNarWKNDy1SUWuawPt7q4q/Bhv4=;
+        b=gcGaXPuBgPJitxt6H8ORie/IVfj7z647ZNiy6WzMQpqFZCtyxOWwX7RFmRFzqI1sju
+         MSSSOLrm1ZTxcIw5QjxouzOvC1KaetqtBv0tir69FD3uA6rJD7LCmSbD77/fGQoRxaev
+         VisKUbeyUm4fCkbDBsoOl1kTEMlejSuXJ6QDmvG4so9c4kAM4wQ8o9MdJvaCyy/irPIA
+         CXpZSuLxE9HG12aWnFuzekEY2UkNUzuZOUb6C3dI1ZngHrzbNa1bc4MTfkuUce1JDvzd
+         UeJsqqKEyPks7h/8FH2lOqUoUaHWvsGgiB/odAZwdHmmEbCTG520esS2bpmBGefdS/4b
+         v+FA==
+X-Gm-Message-State: AOAM530LEC5v8OAWGZHFOSzQSmL3oClDwMILBI75UHMMvgUj4smbj1nI
+        +THByQmbvdFUCYC3IC0SXFcHWOyvwN3IuQoTl/E=
+X-Google-Smtp-Source: ABdhPJyYTDfw4WVraS3KISSU5caoRyl92iwUfjQnfIf+bxuqEIclu8S5RViUF+VzGyie0yN6ygWa0XSQXBXCovJskeo=
+X-Received: by 2002:a17:90a:3c8d:: with SMTP id g13mr14988365pjc.229.1624195942801;
+ Sun, 20 Jun 2021 06:32:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <TYAPR01MB526348C06BB8E410DF8CE3D3850E9@TYAPR01MB5263.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a17:90b:38c4:0:0:0:0 with HTTP; Sun, 20 Jun 2021 06:32:22
+ -0700 (PDT)
+Reply-To: sarahkoffi389@yahoo.co.jp
+From:   Sarah Koffi <william.p15179@gmail.com>
+Date:   Sun, 20 Jun 2021 15:32:22 +0200
+Message-ID: <CAGDeiXEqqpFdLqbGJcZw6bD1HkUarPFWxx6wXc9qQzJYnE16zA@mail.gmail.com>
+Subject: Greetings From Mrs. Sarah Koffi
+To:     sarahkoffi389@yahoo.co.jp
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Greetings From Mrs. Sarah Koffi
 
+I'm contacting you based on your good profiles I read and for a good
+reasons, I am in search of a property to buy in your country as I
+intended to come over to your
+country for investment, Though I have not meet with you before but I
+believe that one has to risk confiding in someone to succeed sometimes
+in life.
 
-On 6/17/21 4:29 AM, nobuta.keiya@fujitsu.com wrote:
-> 
->> It's my understanding that the two pieces of work required to enable live
->> patching on arm are in flight upstream;
->> - Reliable stack traces as implemented by Madhavan T. Venkataraman [1]
->> - Objtool as implemented by Julien Thierry [2]
->>
->> This is the remaining part required to enable live patching on arm.
->> Based on work by Torsten Duwe [3]
->>
->> Allocate a task flag used to represent the patch pending state for the
->> task. Also implement generic functions klp_arch_set_pc() &
->> klp_get_ftrace_location().
->>
->> In klp_arch_set_pc() it is sufficient to set regs->pc as in
->> ftrace_common_return() the return address is loaded from the stack.
->>
->> ldr     x9, [sp, #S_PC]
->> <snip>
->> ret     x9
->>
->> In klp_get_ftrace_location() it is necessary to advance the address by
->> AARCH64_INSN_SIZE (4) to point to the BL in the callsite as 2 nops were
->> placed at the start of the function, one to be patched to save the LR and
->> another to be patched to branch to the ftrace call, and
->> klp_get_ftrace_location() is expected to return the address of the BL. It
->> may also be necessary to advance the address by another AARCH64_INSN_SIZE
->> if CONFIG_ARM64_BTI_KERNEL is enabled due to the instruction placed at the
->> branch target to satisfy BTI,
->>
->> Signed-off-by: Suraj Jitindar Singh <surajjs@amazon.com>
->>
->> [1] https://lkml.org/lkml/2021/5/26/1212
->> [2] https://lkml.org/lkml/2021/3/3/1135
->> [3] https://lkml.org/lkml/2018/10/26/536
->> ---
-> 
-> AFAIU Madhavan's patch series linked in the above [1] is currently awaiting
-> review by Mark Rutland. It seems that not only this patch series but also the
-> implementation of arch_stack_walk_reliable() at the below link is required
-> to enable livepatch.
-> 
+My name is Mrs. Sarah Koffi. My late husband deals on Crude Oil with
+Federal Government of Sudan and he has a personal Oil firm in Bentiu
+Oil zone town and Upper
+Nile city. What I have experience physically, I don't wish to
+experience it again in my life due to the recent civil Ethnic war
+cause by our President Mr. Salva Kiir
+and the rebel leader Mr Riek Machar, I have been Under United Nation
+refuge camp in chad to save my life and that of my little daughter.
 
-Yes. I have a patch ready for that. But I can submit that only after the previous
-series has been accepted.
+Though, I do not know how you will feel to my proposal, but the truth
+is that I sneaked into Chad our neighboring country where I am living
+now as a refugee.
+I escaped with my little daughter when the rebels bust into our house
+and killed my husband as one of the big oil dealers in the country,
+ever since then, I have being on the run.
 
-Thanks
+I left my country and move to Chad our neighboring country with the
+little ceasefire we had, due to the face to face peace meeting accord
+coordinated by the US Secretary of State, Mr John Kerry and United
+Nations in Ethiopia (Addis Ababa) between our President Mr Salva Kiir
+and the rebel leader Mr Riek Machar to stop this war.
 
-Madhavan
+I want to solicit for your partnership with trust to invest the $8
+million dollars deposited by my late husband in Bank because my life
+is no longer safe in our country, since the rebels are looking for the
+families of all the oil business men in the country to kill, saying
+that they are they one that is milking the country dry.
+
+I will offer you 20% of the total fund for your help while I will
+partner with you for the investment in your country.
+If I get your reply.
+
+I will wait to hear from you so as to give you details.With love from
+
+ i need you to contact me here sarahkoffi389@yahoo.co.jp
+
+Mrs. Sarah Koffi
