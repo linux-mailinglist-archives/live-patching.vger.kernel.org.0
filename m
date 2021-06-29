@@ -2,54 +2,117 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8DD13B72A2
-	for <lists+live-patching@lfdr.de>; Tue, 29 Jun 2021 14:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B5F3B76A3
+	for <lists+live-patching@lfdr.de>; Tue, 29 Jun 2021 18:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232984AbhF2M4X convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 29 Jun 2021 08:56:23 -0400
-Received: from [218.75.92.58] ([218.75.92.58]:65435 "EHLO WIN-VTPUBHNS72V"
-        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232498AbhF2M4X (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 29 Jun 2021 08:56:23 -0400
-Received: from [192.168.43.47] (Unknown [197.210.84.10])
-        by WIN-VTPUBHNS72V with ESMTPA
-        ; Thu, 24 Jun 2021 20:46:53 +0800
-Message-ID: <FBFB7C22-F67E-4947-9E6A-294B04B8BB06@WIN-VTPUBHNS72V>
-Content-Type: text/plain; charset="iso-8859-1"
+        id S234182AbhF2QuN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 29 Jun 2021 12:50:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43783 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234160AbhF2QuM (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 29 Jun 2021 12:50:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624985265;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+bJvwmYTs4hsRIzvijlTBKZHCJnIV9JSQ/ae942P0nQ=;
+        b=TRWT2D2MZA1qjDDTpPsXkqzp5kK0OwTPjfnvk6Yuh34Zf0y8MZyOeyW45XIP1yO7NsyLsR
+        0KbiPAa/d84IZ360PJRH/M3RJiqLxFbH2l1zxm1vgAsbiD3aiSLADBkLSvmx+GP1LB9hOM
+        SZ5JRyhU5AzNlw6vhcvt6zz06xEOjnk=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-475-ULSGEkxRP5WIBHxzVMYd_Q-1; Tue, 29 Jun 2021 12:47:43 -0400
+X-MC-Unique: ULSGEkxRP5WIBHxzVMYd_Q-1
+Received: by mail-pg1-f198.google.com with SMTP id 4-20020a6315440000b029022154a87a57so14567144pgv.13
+        for <live-patching@vger.kernel.org>; Tue, 29 Jun 2021 09:47:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+bJvwmYTs4hsRIzvijlTBKZHCJnIV9JSQ/ae942P0nQ=;
+        b=NI49t/M8HSmyJLc9onDFYyVMYcO9w+pXI9S654BJk17RCv6GfsaydINhxdoGRmRO6C
+         BS5sUG9rwGK0ssR9KSwcIxgw0+zsweS/VWF+xvjuFaqhysr2J0iyCpveD3XE8WREmj90
+         bf2JlYr4pC+Ki2UxWANgM3ZlgSSnB2pk7C+nMfcTxnnBIyIQlCuWFcuRa6G8Gm1rd2gl
+         CuBKkBfGJB+OTAGqRwlKaMgA6EjSzl0Qrw61w/TDplPVUMshJ1TeD88Pd/hoc1/8zG9E
+         WCXIrPYXFiR6yKLjBZ0S6yxrcN46ZLW0Zb80Hdc6UihDaSWxlN7f16mBHXIc5yyOw5FH
+         J2yg==
+X-Gm-Message-State: AOAM533h6WGaUkaYezLYz0qNpVdVFxkWk04WpmqG4ddHk8IxmWbZV4CE
+        TlODoDXpANHxjaxvnfUlxCZaoXFYdpBtCsy+fj/TfkMui3VJaIG0j24ljfTNsGNahqIEsZljKO+
+        DfDMrxrL3y1RarWdE200TXHKBbA==
+X-Received: by 2002:a17:90a:650b:: with SMTP id i11mr34962309pjj.39.1624985262581;
+        Tue, 29 Jun 2021 09:47:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx3vTTwAHy6BETIsORLHGghBWZRgo8av0Cd/hHZW70tMvDWoqyHwTA6FD/HIjdC3imDZWBejQ==
+X-Received: by 2002:a17:90a:650b:: with SMTP id i11mr34962286pjj.39.1624985262349;
+        Tue, 29 Jun 2021 09:47:42 -0700 (PDT)
+Received: from treble ([2600:380:8772:6cac:dfb6:1d6c:e068:2f39])
+        by smtp.gmail.com with ESMTPSA id u2sm6013505pja.20.2021.06.29.09.47.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Jun 2021 09:47:41 -0700 (PDT)
+Date:   Tue, 29 Jun 2021 11:47:36 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     madvenka@linux.microsoft.com, broonie@kernel.org, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, catalin.marinas@arm.com, will@kernel.org,
+        jmorris@namei.org, pasha.tatashin@soleen.com, jthierry@redhat.com,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v5 1/2] arm64: Introduce stack trace reliability
+ checks in the unwinder
+Message-ID: <20210629164736.dnysynhkjjxya4vc@treble>
+References: <ea0ef9ed6eb34618bcf468fbbf8bdba99e15df7d>
+ <20210526214917.20099-1-madvenka@linux.microsoft.com>
+ <20210526214917.20099-2-madvenka@linux.microsoft.com>
+ <20210624144021.GA17937@C02TD0UTHF1T.local>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: URGENT ATTENTION
-To:     Recipients <wjjt@wjjt.cn>
-From:   "Andres Auchincloss" <wjjt@wjjt.cn>
-Date:   Thu, 24 Jun 2021 14:46:28 +0200
-Reply-To: andresauchincloss926@gmail.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210624144021.GA17937@C02TD0UTHF1T.local>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
+On Thu, Jun 24, 2021 at 03:40:21PM +0100, Mark Rutland wrote:
+> Hi Madhavan,
+> 
+> On Wed, May 26, 2021 at 04:49:16PM -0500, madvenka@linux.microsoft.com wrote:
+> > From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+> > 
+> > The unwinder should check for the presence of various features and
+> > conditions that can render the stack trace unreliable and mark the
+> > the stack trace as unreliable for the benefit of the caller.
+> > 
+> > Introduce the first reliability check - If a return PC is not a valid
+> > kernel text address, consider the stack trace unreliable. It could be
+> > some generated code.
+> > 
+> > Other reliability checks will be added in the future.
+> > 
+> > Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+> 
+> At a high-level, I'm on-board with keeping track of this per unwind
+> step, but if we do that then I want to be abel to use this during
+> regular unwinds (e.g. so that we can have a backtrace idicate when a
+> step is not reliable, like x86 does with '?'), and to do that we need to
+> be a little more accurate.
 
-I will like to use this opportunity to wish you a productive time in 2021 and also confide in you to finalize this transaction of mutual benefits. It may seem strange to you, but it is real. This is a transaction that has no risk at all, due process shall be followed and it shall be carried out under the ambit of the financial laws. Being the Chief Financial Officer, BP Plc. I want to trust and put in your care Eighteen Million British Pounds Sterling, The funds were acquired from an over-invoiced payment from a past contract executed in one of my departments.
+On x86, the '?' entries don't come from the unwinder's determination of
+whether a frame is reliable.  (And the x86 unwinder doesn't track
+reliable-ness on a per-frame basis anyway; it keeps a per-unwind global
+error state.)
 
-I can't successfully achieve this transaction without presenting you as foreign contractor who will provide a bank account to receive the funds.
+The stack dumping code blindly scans the stack for kernel text
+addresses, in lockstep with calls to the unwinder.  Any text addresses
+which aren't also reported by the unwinder are prepended with '?'.
 
-Documentation for the claim of the funds will be legally processed and documented, so I will need your full cooperation on this matter for our mutual benefits. We will discuss details if you are interested to work with me to secure this funds. I will appreciate your prompt response in every bit of our communication. Stay Blessed and Stay Safe.
+The point is two-fold:
 
+  a) failsafe in case the unwinder fails or skips a frame;
 
+  b) showing of breadcrumbs from previous execution contexts which can
+     help the debugging of more difficult scenarios.
 
-Best Regards
-
-
-
-
-Tel: +1 (587) 770-0485
-Andres .B. Auchincloss
-Chief financial officerBP Petroleum p.l.c.
-
-
-
-
-                                  Copyright ©? 1996-2021
+-- 
+Josh
 
