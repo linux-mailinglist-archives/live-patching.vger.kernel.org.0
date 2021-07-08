@@ -2,33 +2,33 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4913BF825
-	for <lists+live-patching@lfdr.de>; Thu,  8 Jul 2021 12:12:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0B43BF87D
+	for <lists+live-patching@lfdr.de>; Thu,  8 Jul 2021 12:35:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231332AbhGHKPD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 8 Jul 2021 06:15:03 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:43140 "EHLO
+        id S231479AbhGHKiH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 8 Jul 2021 06:38:07 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:47804 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbhGHKPD (ORCPT
+        with ESMTP id S231332AbhGHKiH (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 8 Jul 2021 06:15:03 -0400
+        Thu, 8 Jul 2021 06:38:07 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7DF342235F;
-        Thu,  8 Jul 2021 10:12:20 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id C73CF22064;
+        Thu,  8 Jul 2021 10:35:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1625739140; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1625740524; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=hYO8eT5RyGu5yME6TLfsn3cvME04291AisNrXHN42ug=;
-        b=FMqIVL5DsqDK/v7wUKeoFLCQta7Y8JBC5wBM0zoHpMn9spJsdGBgYE+TcXQIC3E8sxTR23
-        Fb7JYnB+8s91edikLw1VgqjLg8zLKtLWom1edHedxiUdafxFxLNTh1rf/hdFuWv0duzCPh
-        IZ5RVsYP/gYJLwRDuYwVC1S2IESEl5o=
+        bh=ojxcqkk0kVLlNu7Ta3F99gByfDZzDKUG/V8xaV9TP94=;
+        b=H2hzpj0qV36mzJGSsQkGxWTXFCEpTAaz61yprS1BXS5QamKRHLD8Oao0b3MGvTsN9Q0IHu
+        IeadmiH9IZk/Nn5Ggrzohd0uJUxVbgvdBixnRFhmygHeHWBAwwKIHZxbuSPVl/GeKZa624
+        hYnPD0YT5YyewNLsorY/UMpYiDJewkg=
 Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 62A64A3B88;
-        Thu,  8 Jul 2021 10:12:20 +0000 (UTC)
-Date:   Thu, 8 Jul 2021 12:12:20 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id AC6A4A3B84;
+        Thu,  8 Jul 2021 10:35:24 +0000 (UTC)
+Date:   Thu, 8 Jul 2021 12:35:24 +0200
 From:   Petr Mladek <pmladek@suse.com>
 To:     Vasily Gorbik <gor@linux.ibm.com>
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
@@ -39,76 +39,69 @@ Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Sven Schnelle <svens@linux.ibm.com>,
         Sumanth Korikkar <sumanthk@linux.ibm.com>,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] livepatch: Kick idle cpu's tasks to perform
- transition
-Message-ID: <YObPhPkzRSqnzgK3@alley>
-References: <patch.git-b76842ceb035.your-ad-here.call-01625661932-ext-1304@work.hours>
+Subject: Re: [RFC PATCH] livepatch: Speed up transition retries
+Message-ID: <YObU7HQ1vUAQzME3@alley>
+References: <patch.git-3127eb42c636.your-ad-here.call-01625661963-ext-4010@work.hours>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <patch.git-b76842ceb035.your-ad-here.call-01625661932-ext-1304@work.hours>
+In-Reply-To: <patch.git-3127eb42c636.your-ad-here.call-01625661963-ext-4010@work.hours>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2021-07-07 14:49:38, Vasily Gorbik wrote:
-> On an idle system with large amount of cpus it might happen that
-> klp_update_patch_state() is not reached in do_idle() for a long periods
-> of time. With debug messages enabled log is filled with:
-> [  499.442643] livepatch: klp_try_switch_task: swapper/63:0 is running
-
-I see. I guess that the problem is only when CONFIG_NO_HZ is enabled.
-Do I get it correctly, please?
-
-> without any signs of progress. Ending up with "failed to complete
-> transition".
+On Wed 2021-07-07 14:49:41, Vasily Gorbik wrote:
+> That's just a racy hack for now for demonstration purposes.
 > 
-> On s390 LPAR with 128 cpus not a single transition is able to complete
-> and livepatch kselftests fail.
+> On a s390 system with large amount of cpus
+> klp_try_complete_transition() often cannot be "complete" from the first
+> attempt. klp_try_complete_transition() schedules itself as delayed work
+> after a second delay. This accumulates to significant amount of time when
+> there are large number of livepatching transitions.
 > 
-> To deal with that, make sure we break out of do_idle() inner loop to
-> reach klp_update_patch_state() by marking idle tasks as NEED_RESCHED
-> as well as kick cpus out of idle state.
->
-> Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
-> ---
->  kernel/livepatch/transition.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> This patch tries to minimize this delay to counting processes which still
+> need to be transitioned and then scheduling
+> klp_try_complete_transition() right away.
 > 
-> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-> index 3a4beb9395c4..793eba46e970 100644
-> --- a/kernel/livepatch/transition.c
-> +++ b/kernel/livepatch/transition.c
-> @@ -415,8 +415,11 @@ void klp_try_complete_transition(void)
->  	for_each_possible_cpu(cpu) {
->  		task = idle_task(cpu);
->  		if (cpu_online(cpu)) {
-> -			if (!klp_try_switch_task(task))
-> +			if (!klp_try_switch_task(task)) {
->  				complete = false;
-> +				set_tsk_need_resched(task);
-> +				kick_process(task);
+> For s390 LPAR with 128 cpu this reduces livepatch kselftest run time
+> from
+> real    1m11.837s
+> user    0m0.603s
+> sys     0m10.940s
+> 
+> to
+> real    0m14.550s
+> user    0m0.420s
+> sys     0m5.779s
+> 
+> And qa_test_klp run time from
+> real    5m15.950s
+> user    0m34.447s
+> sys     15m11.345s
+> 
+> to
+> real    3m51.987s
+> user    0m27.074s
+> sys     9m37.301s
+> 
+> Would smth like that be useful for production use cases?
+> Any ideas how to approach that more gracefully?
 
-First, we should kick the idle threads in klp_send_signals().
-It already solves similar problem when normal threads and kthreads
-stay in the incorruptible sleep for too long.
+Honestly, I do not see a real life use case for this, except maybe
+speeding up a test suite.
 
-Second, the way looks a bit hacky to me. need_resched() depends on
-the currect implementation of the idle loop. kick_process() has
-a completely different purpose and does checks that do not fit well
-this use-case.
+The livepatch transition is more about reliability than about speed.
+In the real life, a livepatch will be applied only once in a while.
 
-I wonder if wake_up_nohz_cpu() would fit better here. Please, add
-scheduler people into CC, namely:
+We have spent weeks thinking about and discussing the consistency
+model, code, and barriers to handle races correctly. Especially,
+klp_update_patch_state() is a super-sensitive beast because it is
+called without klp_lock. It might be pretty hard to synchronize
+it with klp_reverse_transition() or klp_force_transition().
 
-    Ingo Molnar <mingo@redhat.com>
-    Peter Zijlstra <peterz@infradead.org>
-
-and NOHZ guys:
-
-    Frederic Weisbecker <fweisbec@gmail.com>
-    Thomas Gleixner <tglx@linutronix.de>
-
+You would need to come up with a really convincing use case and
+numbers to make it worth the effort.
 
 Best Regards,
 Petr
+
