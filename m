@@ -2,75 +2,73 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D47B33DCF93
-	for <lists+live-patching@lfdr.de>; Mon,  2 Aug 2021 06:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 146DD3DEEA0
+	for <lists+live-patching@lfdr.de>; Tue,  3 Aug 2021 15:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbhHBEZN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 2 Aug 2021 00:25:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbhHBEZM (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 2 Aug 2021 00:25:12 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F5EC06175F
-        for <live-patching@vger.kernel.org>; Sun,  1 Aug 2021 21:25:02 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id z11so244889edb.11
-        for <live-patching@vger.kernel.org>; Sun, 01 Aug 2021 21:25:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=JbMtpdZj7sghISs4e5T5yryQDvERMuYalazmdQP0RcA=;
-        b=NRFezk3ksuixZ6vECttzmz3I73BVsFzImVtnyh1ASN/fKSc2DYB72zucl5vd/fuBxv
-         9988rfqy0MoB6QXzEguDdjWV7zI641uK8Y8Y5jTPfpq9/WLSZUYQH3lWEoK5hI6Hv7yE
-         frgoav49kj5ExK+j++CpyLuTrUjZKLtVG8XWKrCQALFA+YIcmkLJe4X9d8KQlnUmAjRB
-         kQILjaXuDbiODpXN6GL2L3ck9DVNXkuVdV3DYhPUgHSqdRjnMyZO8c3AUGn3Uvxg+T1p
-         3x/W5qneLtr/DNf6w51D1SMbEyGwFBTZeyp+QYIJfiU/e2TFULa2qZ4uTzvxvtkfKibQ
-         5dOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=JbMtpdZj7sghISs4e5T5yryQDvERMuYalazmdQP0RcA=;
-        b=rUlO2mCnVxk1X/HCiV9l83nskRm0MvdIIaoasrcDoOyGMyTImmOR5aVdfpl3CMH+aU
-         qCLda8s9ZgWZtQeuuCo5j2cuZdcBcf0mdcWk0l511oFlrKg47oEVfpLlzCaRycd7nnSG
-         qzzVTmh1sDzoOESM0b/SjTXs3EaxrTQ2REX0v8OSRPkZ/WIeIrVXyfZleuvrcKyslovY
-         qnOi4/utZoFaYFPot46+mPLNYlqPFRn5Z3XfQO2HbcmlAXZF71i9WPqqQOCpAoHymSyz
-         k2qVncExmQUNFM/+KilE+l89SBKYKnJ0VUhdhRATN6JOwUMrFNoKSefLizuhM0F0PoBo
-         2h1A==
-X-Gm-Message-State: AOAM530aTaoau4vzANmMyZVp4Q67QyLr6/Qqn8ReOJdgzsBF1McQ1dkq
-        6K3RDIW4wrbCBamfVOgWJPHODPbokS3d2cbWMI0=
-X-Google-Smtp-Source: ABdhPJwHBkUvoOO/wSrIugNeJ5JPVd1dPPcq+JjdmUo5oMWzNNNbs4gh5CGfxeyXWSAB/FpFqKXVvhKpWz3JAvgDSpc=
-X-Received: by 2002:a05:6402:34d1:: with SMTP id w17mr17018729edc.298.1627878301576;
- Sun, 01 Aug 2021 21:25:01 -0700 (PDT)
+        id S236047AbhHCNA7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 3 Aug 2021 09:00:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59008 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235635AbhHCNA7 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 3 Aug 2021 09:00:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B465860F58;
+        Tue,  3 Aug 2021 13:00:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627995648;
+        bh=x8tLKf2iqjAE25o6wOR+v32eKv+Q4BdSwsKqq405Lxg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=diIHh1zAb2SfxUhPfEBtJYfRDuLsJzeWzc1GtKiklh4IvpncE/wx9lGeMKzdhxhal
+         8dMKu/KKpARUATOmXgm8GW9EseZTgszIOfbRsYeQdysWx/t5j3pMlsnlkDXyhzAaFF
+         VcNDa8ugzXY+33oRJ+ctHU4ao/5HQsu1f5YyjeEGCQG79ghagi08xZOi5DWfezJga2
+         aU0+R5ZACIUXpfWcuUEEZta9uXgWgLKT/g0gTkh10sEuOB6mWMobGqkXrIqgEJSAWy
+         INL8zQG8sp1exgONvGEaq4OY2KOqouzoFwG5TmVIJpOK0Y6KsyoNUfcNlnXmLEgjAy
+         I0lXgLpLm314w==
+From:   Jessica Yu <jeyu@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        live-patching@vger.kernel.org, Jessica Yu <jeyu@kernel.org>
+Subject: [PATCH] MAINTAINERS: Add Luis Chamberlain as modules maintainer
+Date:   Tue,  3 Aug 2021 14:57:13 +0200
+Message-Id: <20210803125713.725-1-jeyu@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Received: by 2002:a17:907:d0b:0:0:0:0 with HTTP; Sun, 1 Aug 2021 21:25:01
- -0700 (PDT)
-Reply-To: ablahikazabl67@gmail.com
-From:   Abdoulahi Kazim <drwilliamcuthbert@gmail.com>
-Date:   Mon, 2 Aug 2021 05:25:01 +0100
-Message-ID: <CAKwBCXsYgbtFyGH35oCxWYYSJ7Q9EUzcJum5LtB4uGQcAAHTbw@mail.gmail.com>
-Subject: More Authentic Information
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Luis has kindly agreed to help maintain the module loader. As my
+responsibilities have shifted, I've found myself with less cycles to
+devote to upstream maintenance these days. Luis is already very involved
+and engaged upstream, and with his experience maintaining the kmod
+module loader and usermode helper, I believe he is a great fit for this
+area of the kernel.
+
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Jessica Yu <jeyu@kernel.org>
+---
+
+Hi all, just a heads up that Luis will be a co-maintainer for modules.
+For the most part I've CC'd subsystem lists that have interacted with
+modules in the past, and should probably be aware of this change. Thanks!
+
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a61f4f3b78a9..d2bdcc8dc25f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12526,6 +12526,7 @@ Q:	http://patchwork.linuxtv.org/project/linux-media/list/
+ F:	drivers/media/dvb-frontends/mn88473*
+ 
+ MODULE SUPPORT
++M:	Luis Chamberlain <mcgrof@kernel.org>
+ M:	Jessica Yu <jeyu@kernel.org>
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jeyu/linux.git modules-next
 -- 
-Dear Partner,
+2.32.0
 
-I am soliciting your partnership to relocate $12.5 Million to your
-country for investment on my behalf and you will be entitled to 30% of
-the sum once the transaction is successful made.
-
-Please indicate your genuine interest if you are capable so that i
-will send you the authentic details and documents of the transaction
-in awareness with some of my fellow Directors in the bank.
-
-If you are interested, here is my private Email address:
-(ablahikazabl67@gmail.com)
-For more authentic and legit information.
-
-
-Regards :  Abdoulahi Kazim
