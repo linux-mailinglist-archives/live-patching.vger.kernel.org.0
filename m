@@ -2,72 +2,61 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3008B3DFC4E
-	for <lists+live-patching@lfdr.de>; Wed,  4 Aug 2021 09:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E41403E070B
+	for <lists+live-patching@lfdr.de>; Wed,  4 Aug 2021 19:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236001AbhHDHxC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 4 Aug 2021 03:53:02 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:50706 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235977AbhHDHxC (ORCPT
+        id S239982AbhHDR7O (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 4 Aug 2021 13:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237302AbhHDR7N (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 4 Aug 2021 03:53:02 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 1929421B67;
-        Wed,  4 Aug 2021 07:52:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1628063569; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q0WtFYaglWyt9DdtWG8gNU/Zq2IVGbULiEIOZV/nxGI=;
-        b=Va4XCP3DYeg4L+7VjsjAcDIN4Gxhn9vqwG+MtWFMip8+be+Ao6nDCEk91VPPSoYx5DH4YU
-        hZ5urwcIqdD05p/UmDJ/wVNHELYXi9w/7Ov44BrEl2DVlVHaz3vfh69AOLLppuFwJfh5R6
-        YY3zo4TbijSzF/T9+q4eDoWrk2m6Zrg=
-Received: from suse.cz (pmladek.tcp.ovpn1.prg.suse.de [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E8F3DA3B8C;
-        Wed,  4 Aug 2021 07:52:48 +0000 (UTC)
-Date:   Wed, 4 Aug 2021 09:52:46 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH 26/38] livepatch: Replace deprecated CPU-hotplug
- functions.
-Message-ID: <YQpHTrUqO/VtyqZG@alley>
-References: <20210803141621.780504-1-bigeasy@linutronix.de>
- <20210803141621.780504-27-bigeasy@linutronix.de>
+        Wed, 4 Aug 2021 13:59:13 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A080C0613D5;
+        Wed,  4 Aug 2021 10:59:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=f05KDrtHywJ7ptgF5rdbcaksmjyPJirEWKVIlatL5dQ=; b=ZyInXTn6AUJn5/Nm0+ZZKIe/dw
+        AIYzDU9oMm85lKCsFXkMZcLEI3tUpqtdDmQEr/f1FLo63q7sSG7yxzHzPHeamw2fd5QEIW+kizVE/
+        fDQroRDkJvmQlIlm10Mc0GOZw/s7LWS4ZxHksbo+s0OelZXS17g/C50ngyawEkK0B32reP/1udCWc
+        vjC/nSD4k/XHMxKDH+TYvkmSc06J3qBTIJYkOnt05eBZag/g4x+hoCcQJznJkvMmO7qxb9WP+ej82
+        1RFeEdQmo8H1frJgEoOI91do5nV5KA2/btmeOW3q7NV3aZ7z3EW2idz/bF5bJUKwE7WWW6KGaxjA2
+        HWFhB1mQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mBLAR-00771T-Fk; Wed, 04 Aug 2021 17:58:59 +0000
+Date:   Wed, 4 Aug 2021 10:58:59 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     lucas.demarchi@intel.com, linux-modules@vger.kernel.org
+Cc:     live-patching@vger.kernel.org, fstests@vger.kernel.org,
+        linux-block@vger.kernel.org, hare@suse.de, dgilbert@interlog.com,
+        jeyu@kernel.org, osandov@fb.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] libkmod-module: add support for a patient module removal
+ option
+Message-ID: <YQrVY8Wxb026TDWN@bombadil.infradead.org>
+References: <20210803202417.462197-1-mcgrof@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210803141621.780504-27-bigeasy@linutronix.de>
+In-Reply-To: <20210803202417.462197-1-mcgrof@kernel.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue 2021-08-03 16:16:09, Sebastian Andrzej Siewior wrote:
-> The functions get_online_cpus() and put_online_cpus() have been
-> deprecated during the CPU hotplug rework. They map directly to
-> cpus_read_lock() and cpus_read_unlock().
-> 
-> Replace deprecated CPU-hotplug functions with the official version.
-> The behavior remains unchanged.
-> 
-> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-> Cc: Jiri Kosina <jikos@kernel.org>
-> Cc: Miroslav Benes <mbenes@suse.cz>
-> Cc: Petr Mladek <pmladek@suse.com>
-> Cc: Joe Lawrence <joe.lawrence@redhat.com>
-> Cc: live-patching@vger.kernel.org
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+On Tue, Aug 03, 2021 at 01:24:17PM -0700, Luis Chamberlain wrote:
+> + diff --git a/libkmod/libkmod-module.c b/libkmod/libkmod-module.c
+<-- snip -->
+> +		ERR(mod->ctx, "%s refcnt is %ld waiting for it to become 0\n", mod->name, refcnt);
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+OK after running many tests with this I think we need to just expand
+this so that the error message only applies when -v is passed to
+modprobe, otherwise we get the print message every time, and using
+INFO() doesn't cut it, given the next priority level available to
+the library is LOG_INFO (6) and when modprobe -v is passed we set the
+log level to LOG_NOTICE (5), so we need a new NOTICE(). I'll send a v2
+with that included as a separate patch.
 
-Best Regards,
-Petr
+  Luis
