@@ -2,74 +2,64 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A50DC3E0833
-	for <lists+live-patching@lfdr.de>; Wed,  4 Aug 2021 20:48:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 153F53E1208
+	for <lists+live-patching@lfdr.de>; Thu,  5 Aug 2021 12:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237378AbhHDSsH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 4 Aug 2021 14:48:07 -0400
-Received: from mga03.intel.com ([134.134.136.65]:61823 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240691AbhHDSrf (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 4 Aug 2021 14:47:35 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10066"; a="214017524"
-X-IronPort-AV: E=Sophos;i="5.84,295,1620716400"; 
-   d="scan'208";a="214017524"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2021 11:47:20 -0700
-X-IronPort-AV: E=Sophos;i="5.84,295,1620716400"; 
-   d="scan'208";a="419538604"
-Received: from ssyedfar-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.201.224])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2021 11:47:20 -0700
-Date:   Wed, 4 Aug 2021 11:47:20 -0700
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
-        fstests@vger.kernel.org, linux-block@vger.kernel.org, hare@suse.de,
-        dgilbert@interlog.com, jeyu@kernel.org, osandov@fb.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] libkmod-module: add support for a patient module removal
- option
-Message-ID: <20210804184720.z27u5aymcl5hzqgh@ldmartin-desk2>
-References: <20210803202417.462197-1-mcgrof@kernel.org>
- <YQrVY8Wxb026TDWN@bombadil.infradead.org>
+        id S240238AbhHEKHX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 5 Aug 2021 06:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240241AbhHEKHQ (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Thu, 5 Aug 2021 06:07:16 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99E5C061799
+        for <live-patching@vger.kernel.org>; Thu,  5 Aug 2021 03:07:01 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id z18so8128098ybg.8
+        for <live-patching@vger.kernel.org>; Thu, 05 Aug 2021 03:07:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=IXiF0cE8iLdsKXBHXuqgd6kWlwigyuOCyyGf/zSHAKo=;
+        b=RALHIBumXAIP210kdFqsPohSaceKiknimXw7P5PgHb9BWhGBw9lYDqSqg5WneWdu15
+         rJPy0Ue8yfyG4siGP63kJwTBZBj0PWq8Y1Qnqz+4o+8EWn137KTyCSyyVC2Q8iVGynSS
+         bhS7U1PS+aDOUPBkD4G3xFkkqdC39UoM6FteZOv233GqMXB+8Dss0b9q+7gj+/Hxgdk2
+         WUe1ESYKnF/wmxG+tpcxwgOs9vCgJ2l1ZEfOf41l9gKdNtlkCjnpV3TM2vgGn3PUuLdR
+         hPKF45VPWkxH0lm365oeJSmn5+q8KP1ii4OTRurjciu6IoIULltcjaMQ8sAiYWdLwzBw
+         HClA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=IXiF0cE8iLdsKXBHXuqgd6kWlwigyuOCyyGf/zSHAKo=;
+        b=lv1mOKPXqgQFCG+Txpu9G758uJHNrfxgiUANxa5/QxjOwWPQ2d+isek05qS1YjMFzF
+         KSNHDfyDoAYWDHD8CcXDS2dXdkq3mxbPSpUD97M22vDQ8QFQ9RfZPyah3qtLcHU93ZQu
+         Gi8IlxP6birkLS8qF1IKG24CJp9Z8KYyImXNwK+kJDG0PsY+WrmjQIFYwKeht7WA876d
+         DX/hQDsEg5MzC17KmYtdiW+VCl8jZskY9yBqIEEIWIO0kLF9roMFZJuEw4EEBVkskvrc
+         bnkchQOBZ5mVyBYKor+VjIQIQkg0hAcYZzgq0lFLV99/sFw1U1IQXCFgyHLAQ4FRkq9U
+         zUzg==
+X-Gm-Message-State: AOAM533ZrhXVjTWqndzNH7AlY7ivXHcb5mgUIcSaI00pvnK1ypBqKKfN
+        QzeZwXF862hO44mn+8J6GgYZO2hWsmgSuDX2slI=
+X-Google-Smtp-Source: ABdhPJxCSwVdvHgegcG4QDEpN8zNb5iPWAYCE1ryoSTidhfG8eSZ6oJpAYN4Z5/OvArf4AO+P0Eq0CrhZ0mIOidx3P4=
+X-Received: by 2002:a25:bc4c:: with SMTP id d12mr4886719ybk.105.1628158021140;
+ Thu, 05 Aug 2021 03:07:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YQrVY8Wxb026TDWN@bombadil.infradead.org>
+Received: by 2002:a05:7010:330b:b029:db:4f3a:6691 with HTTP; Thu, 5 Aug 2021
+ 03:07:00 -0700 (PDT)
+Reply-To: rihabmanyang07@yahoo.com
+From:   Rihab Manyang <diamakaire48@gmail.com>
+Date:   Thu, 5 Aug 2021 11:07:00 +0100
+Message-ID: <CAJq20OnbseQ=PUihcsromqPiKoQxPU3bUwyeL6MAVuzUUFCzvg@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Aug 04, 2021 at 10:58:59AM -0700, Luis Chamberlain wrote:
->On Tue, Aug 03, 2021 at 01:24:17PM -0700, Luis Chamberlain wrote:
->> + diff --git a/libkmod/libkmod-module.c b/libkmod/libkmod-module.c
-><-- snip -->
->> +		ERR(mod->ctx, "%s refcnt is %ld waiting for it to become 0\n", mod->name, refcnt);
->
->OK after running many tests with this I think we need to just expand
->this so that the error message only applies when -v is passed to
->modprobe, otherwise we get the print message every time, and using
->INFO() doesn't cut it, given the next priority level available to
->the library is LOG_INFO (6) and when modprobe -v is passed we set the
->log level to LOG_NOTICE (5), so we need a new NOTICE(). I'll send a v2
->with that included as a separate patch.
+-- 
 
-Or maybe move the sleep to modprobe instead of doing it in the
-library?  The sleep(1) seems like an arbitrary number to be introduced
-in the lib.
+Hello,
 
-Since kernfs is pollable, maybe we could rather introduce an API to
-return the pid in which the application has to wait for and then the
-application can use whatever it wants to poll, including controlling a
-timeout.
-
-I'm saying this because sleep(1) may be all fine for modprobe, but for
-other applications using libkmod it may not play well with their mainloops
-(and they may want to control both granularity of the sleep and a max
-timeout).
-
-thanks
-Lucas De Marchi
-
->
->  Luis
+i am trying to reach you hope this message get to
+you.from Rihab Manyang
