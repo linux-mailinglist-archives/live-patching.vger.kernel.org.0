@@ -2,119 +2,125 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5B103E3152
-	for <lists+live-patching@lfdr.de>; Fri,  6 Aug 2021 23:45:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E86D3E323A
+	for <lists+live-patching@lfdr.de>; Sat,  7 Aug 2021 01:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244572AbhHFVpn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 6 Aug 2021 17:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43672 "EHLO
+        id S229742AbhHFX7U (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 6 Aug 2021 19:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241587AbhHFVpn (ORCPT
+        with ESMTP id S229480AbhHFX7U (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 6 Aug 2021 17:45:43 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC1CC0613CF;
-        Fri,  6 Aug 2021 14:45:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3yo0Z1DqiPntRlxzgzVM4K1c9ilgCH5IdUhCZZNDe9s=; b=YEcpgCfI59SF9Tug3dbXK91OXX
-        sq9bPtmNl5qPktHwmAAihU+NGy4EI2Wu4qsPOh1YYDsBUr8cB8XertXL4GuKVn5dzjT+2S1FZ3ks2
-        ORtg4pVQ21049fLZZaN+E4/dG2qP3gkRUSMu6HVBgJTI1Z0dMoLe0I09+mcsDE/PnKAall2S/lIq0
-        4OTwMTLqvzUBf40IsuaIbSHTe4FUiD3OaquwRjBJ3LNndLJX1vzhAu32F2tb4kqIa7o0oif1GzujM
-        u/UJbjCcJ96IbwBmsdqgzM0qVc+m5TsYwt9kBS3BqP+RYOiQHBu6DkLVigbaVerIeFBT58rWnyT3O
-        csmQP7Bg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mC7ee-00DgiI-Nc; Fri, 06 Aug 2021 21:45:24 +0000
-Date:   Fri, 6 Aug 2021 14:45:24 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Lucas De Marchi <lucas.demarchi@intel.com>
-Cc:     linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
-        fstests@vger.kernel.org, linux-block@vger.kernel.org, hare@suse.de,
-        dgilbert@interlog.com, jeyu@kernel.org, osandov@fb.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] libkmod-module: add support for a patient module removal
- option
-Message-ID: <YQ2tdCZ5YynHtuHB@bombadil.infradead.org>
-References: <20210803202417.462197-1-mcgrof@kernel.org>
- <YQrVY8Wxb026TDWN@bombadil.infradead.org>
- <20210804184720.z27u5aymcl5hzqgh@ldmartin-desk2>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210804184720.z27u5aymcl5hzqgh@ldmartin-desk2>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+        Fri, 6 Aug 2021 19:59:20 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25DDC0613CF;
+        Fri,  6 Aug 2021 16:59:02 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id k2so9168064plk.13;
+        Fri, 06 Aug 2021 16:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=MFcpdksmO/jlYYdvb2rl+zm6YLAzt31WealFmRADfcI=;
+        b=LzHoz1WBSw98VA6YamFlirg4iypXLZPOjYRyLi+fa8cQvf/7Lldw8HcolLai7aolsJ
+         1Qa67RmzrjwGpO0SmIWrS1Werdzb+2xmDGv//KgiFy3K9aNSSbgfzJvREEC98L92n7iY
+         p17SLlKIEAo+wwKORMKRU0vT+Fn1gcxkeonqlVs2AeCziptSVnOVl/Nh+4LJxQrhL3Ok
+         L0rmLklYkiYHCop5JCiyD5rer91zAx+GIFdwze1ZwehQbJlZ+kIH7wjtYZEf/b4TsOt8
+         0wbjwxZ2m+MmdfupmqSUSMf8BI5BPxMy1stBLtFUVmJjG+E/kDyyFOWsSQSnNMOYnZUr
+         RMKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MFcpdksmO/jlYYdvb2rl+zm6YLAzt31WealFmRADfcI=;
+        b=bxtDqfaXTgu2lAvhLFJdvQ/xTV23j0axrBMc4Rn6ib0foiH31Zy3J50maKqF+Kwhg1
+         f/tzf1h5ZZWyKAfkwr2KfphYcMlwSNi0xUB1jCm1nOckwKqFYEozNMcaV9l1nVmTi2CU
+         nTidQtLfqeRrKxumfFnGnKcvsRVkN1boqtHMZhMFUhC7MyLbr4cLC5g5whx/r54YIkwl
+         4I/uBykpPvM+ge/rHcub8VcR1b3gNImKVmpf4OrZ3vxmyOfSN3KTkxfcJ5gOmI9Hnl4k
+         cjyrWJ2+UE56qRcAtzLnesayP4zNl+uOiiCgy0U2DIpJ3d3RaHktwp7a0jllUHL+XNcH
+         K3AA==
+X-Gm-Message-State: AOAM531LehLzpBFmNymWQQRJmpyfOe/j3g75s1iX3jtaOhpC7dlqiTDM
+        Bb1rLcJSbnfGnT1TyTTk27E=
+X-Google-Smtp-Source: ABdhPJzSA6uIj12lIZQGj9w5x6HWUu7xNt+wALajH8N2m3E4FORUJ3cg8CAvFzHEQ7Zzguu2riZD9A==
+X-Received: by 2002:a17:902:e04e:b029:12c:def4:56a3 with SMTP id x14-20020a170902e04eb029012cdef456a3mr9874185plx.76.1628294342188;
+        Fri, 06 Aug 2021 16:59:02 -0700 (PDT)
+Received: from xray-cmxmeta-1a-i-575ab9cd.us-east-1.amazon.com ([205.251.233.176])
+        by smtp.googlemail.com with ESMTPSA id e8sm2420058pjg.4.2021.08.06.16.59.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 06 Aug 2021 16:59:01 -0700 (PDT)
+Message-ID: <5b4f3fdddd418a39d4054981df03333b46d8ae2c.camel@gmail.com>
+Subject: Re: [RFC PATCH] livepatch: Kick idle cpu's tasks to perform
+ transition
+From:   Suraj Jitindar Singh <sjitindarsingh@gmail.com>
+To:     Vasily Gorbik <gor@linux.ibm.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
+Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 06 Aug 2021 16:59:00 -0700
+In-Reply-To: <patch.git-b76842ceb035.your-ad-here.call-01625661932-ext-1304@work.hours>
+References: <patch.git-b76842ceb035.your-ad-here.call-01625661932-ext-1304@work.hours>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Aug 04, 2021 at 11:47:20AM -0700, Lucas De Marchi wrote:
-> On Wed, Aug 04, 2021 at 10:58:59AM -0700, Luis Chamberlain wrote:
-> > On Tue, Aug 03, 2021 at 01:24:17PM -0700, Luis Chamberlain wrote:
-> > > + diff --git a/libkmod/libkmod-module.c b/libkmod/libkmod-module.c
-> > <-- snip -->
-> > > +		ERR(mod->ctx, "%s refcnt is %ld waiting for it to become 0\n", mod->name, refcnt);
-> > 
-> > OK after running many tests with this I think we need to just expand
-> > this so that the error message only applies when -v is passed to
-> > modprobe, otherwise we get the print message every time, and using
-> > INFO() doesn't cut it, given the next priority level available to
-> > the library is LOG_INFO (6) and when modprobe -v is passed we set the
-> > log level to LOG_NOTICE (5), so we need a new NOTICE(). I'll send a v2
-> > with that included as a separate patch.
+On Wed, 2021-07-07 at 14:49 +0200, Vasily Gorbik wrote:
+> On an idle system with large amount of cpus it might happen that
+> klp_update_patch_state() is not reached in do_idle() for a long
+> periods
+> of time. With debug messages enabled log is filled with:
+> [  499.442643] livepatch: klp_try_switch_task: swapper/63:0 is
+> running
 > 
-> Or maybe move the sleep to modprobe instead of doing it in the
-> library? 
+> without any signs of progress. Ending up with "failed to complete
+> transition".
+> 
+> On s390 LPAR with 128 cpus not a single transition is able to
+> complete
+> and livepatch kselftests fail.
 
-We have a few callers which need to impement the wait, and so having
-a library call is one way to share code. I realized this while first
-open coding this in each call site and realizing I was just
-re-inventing the wheel.
+This also speeds up completion of the transition on high cpu count arm
+instances.
 
-> The sleep(1) seems like an arbitrary number to be introduced
-> in the lib.
+Interested in seeing the correct way to address this.
 
-Indeed, the ideal thing here is to introduce then a timeout, and have
-a default setting, which code can override.
+Suraj.
 
-> Since kernfs is pollable,
-> maybe we could rather introduce an API to
-> return the pid in which the application has to wait for
+> 
+> To deal with that, make sure we break out of do_idle() inner loop to
+> reach klp_update_patch_state() by marking idle tasks as NEED_RESCHED
+> as well as kick cpus out of idle state.
+> 
+> Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+> ---
+>  kernel/livepatch/transition.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/livepatch/transition.c
+> b/kernel/livepatch/transition.c
+> index 3a4beb9395c4..793eba46e970 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -415,8 +415,11 @@ void klp_try_complete_transition(void)
+>  	for_each_possible_cpu(cpu) {
+>  		task = idle_task(cpu);
+>  		if (cpu_online(cpu)) {
+> -			if (!klp_try_switch_task(task))
+> +			if (!klp_try_switch_task(task)) {
+>  				complete = false;
+> +				set_tsk_need_resched(task);
+> +				kick_process(task);
+> +			}
+>  		} else if (task->patch_state != klp_target_state) {
+>  			/* offline idle tasks can be switched
+> immediately */
+>  			clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
 
-The kernel does not have information to provide userspace any
-information for how long it should wait. I mean, in a test case I am
-using its an lvm pvremove and for some reason it seems the removal
-is asynchronously putting the module refcnt (even though I do not believe
-DM_DEFERRED_REMOVE is ever set by default), and I had fixed the kernel's
-own asynchronous removal of the request_queue a little while back so
-I don't think that's the issue either.
-
-If you mean to consider adding *more* information to the kernel, as
-a new feature, I'm afraid any PID triggering a bump in the refcnt is
-ephemeral, and so I don't think it would help. It would only be useful
-if userspace *knew* it would trigger a recnt bump, and that seems
-likely a promise we would probaby want to break any time. Unless we
-want to get into the business of granting userspace the ability to
-bump refcnt's with new structural information it promises is legit.
-Then userspace can query for this. However that still seems overkill,
-I can't see a need for it yet.
-
-> and then the
-> application can use whatever it wants to poll, including controlling a
-> timeout.
-
-A dynamic timeout seems sensible indeed.
-
-> I'm saying this because sleep(1) may be all fine for modprobe, but for
-> other applications using libkmod it may not play well with their mainloops
-> (and they may want to control both granularity of the sleep and a max
-> timeout).
-
-Indeed. A default timeout set into the context seem to be the way to go,
-which callers can override. Then modprobe -t <ms_wait> can use this caller to
-update the ctx timeout to a setting.
-
-I'll post a v2 with these changes.
-
-  Luis
