@@ -2,111 +2,119 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8963E2FE2
-	for <lists+live-patching@lfdr.de>; Fri,  6 Aug 2021 21:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5B103E3152
+	for <lists+live-patching@lfdr.de>; Fri,  6 Aug 2021 23:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbhHFTvA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 6 Aug 2021 15:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
+        id S244572AbhHFVpn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 6 Aug 2021 17:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232157AbhHFTvA (ORCPT
+        with ESMTP id S241587AbhHFVpn (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 6 Aug 2021 15:51:00 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F122BC0613CF;
-        Fri,  6 Aug 2021 12:50:42 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id n12so2364675wrr.2;
-        Fri, 06 Aug 2021 12:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=7O3R+/YLffFIYvFcx+ISW6vN6f2/4fupamLlutQquIc=;
-        b=c50ZRqd7ZJ6rDenkIu2zwLRWu610VC1kr2a2yRbI76WF7Ote8TGhdSFADq/5c50sOj
-         d2rmnjr4Zl4jJm/bMbKe4V19IKJ340mNqZmMtTjiW+y/hXbWI6uL7tZyVeXBDjXnUTPb
-         9N5lmDPxY74qUdW5DOzuPsX1DraD09dg3FU/mfLcXUfDefz/D4km6HWrjio+7btOe9jA
-         VTPC55FP80lSZaOjnmG+QNCBx3tNIKuG2Jlq69+4UgvEtIf6i3OIjr7arnXdQUEP0Jsa
-         WxKpMeWC6RD4yon3wE4dJlmGBy5TtNDqTAuVdonMVKAOHo9N8EtL2BqNY9NU29jl/O9m
-         9SLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=7O3R+/YLffFIYvFcx+ISW6vN6f2/4fupamLlutQquIc=;
-        b=Rqu5aDbk6y9XQzuwmqlPFmSZkppjbJ7By3iXKJzQkH6jDEJEqKnD73uGcEhwNjXDCg
-         aGK0GIGMjg4874cJGL9lM9N3sNm8d+3JzfF+aENqCk/yP3Svxm80nwXuhD5hKURcD4KR
-         2+Vk12Ahxm5zquB4h0L59a3i1hY/fnGFbPrlcpoCsV97GdHrTt496UHz7ngOLws/DlJt
-         CYyLyzQkXvY9t9rpCOVTdUIj0VPVyKpYnOieadL6UlbhTg5qN96yLh5pUQOG54/ltBrr
-         a/v12VzSgHkXSO93LheOMVfquFiSanNjEcUBW87lIoXb/7mZ0cvy6PaE0eJ4TW3j5IUi
-         sZBw==
-X-Gm-Message-State: AOAM532k+KnJGDIovMQpDHYbzzDUbby4BazHq3d2eJJcForzzbuvItwO
-        eoJevBxrxQpq9Mj1D5y1oiw=
-X-Google-Smtp-Source: ABdhPJyVkry3+m5663VZZQh74vfTfSXLCzeg+mztE3FgXtryBM4F/fD+UDroRS8T07tJ8EED0JtNcw==
-X-Received: by 2002:a5d:49c8:: with SMTP id t8mr12342235wrs.365.1628279441558;
-        Fri, 06 Aug 2021 12:50:41 -0700 (PDT)
-Received: from felia.fritz.box ([2001:16b8:2dc9:8d00:2198:3536:ca51:cd82])
-        by smtp.gmail.com with ESMTPSA id y197sm13477902wmc.7.2021.08.06.12.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Aug 2021 12:50:41 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, live-patching@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH] tracing: define needed config DYNAMIC_FTRACE_WITH_ARGS
-Date:   Fri,  6 Aug 2021 21:50:27 +0200
-Message-Id: <20210806195027.16808-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 6 Aug 2021 17:45:43 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC1CC0613CF;
+        Fri,  6 Aug 2021 14:45:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3yo0Z1DqiPntRlxzgzVM4K1c9ilgCH5IdUhCZZNDe9s=; b=YEcpgCfI59SF9Tug3dbXK91OXX
+        sq9bPtmNl5qPktHwmAAihU+NGy4EI2Wu4qsPOh1YYDsBUr8cB8XertXL4GuKVn5dzjT+2S1FZ3ks2
+        ORtg4pVQ21049fLZZaN+E4/dG2qP3gkRUSMu6HVBgJTI1Z0dMoLe0I09+mcsDE/PnKAall2S/lIq0
+        4OTwMTLqvzUBf40IsuaIbSHTe4FUiD3OaquwRjBJ3LNndLJX1vzhAu32F2tb4kqIa7o0oif1GzujM
+        u/UJbjCcJ96IbwBmsdqgzM0qVc+m5TsYwt9kBS3BqP+RYOiQHBu6DkLVigbaVerIeFBT58rWnyT3O
+        csmQP7Bg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mC7ee-00DgiI-Nc; Fri, 06 Aug 2021 21:45:24 +0000
+Date:   Fri, 6 Aug 2021 14:45:24 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Lucas De Marchi <lucas.demarchi@intel.com>
+Cc:     linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
+        fstests@vger.kernel.org, linux-block@vger.kernel.org, hare@suse.de,
+        dgilbert@interlog.com, jeyu@kernel.org, osandov@fb.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] libkmod-module: add support for a patient module removal
+ option
+Message-ID: <YQ2tdCZ5YynHtuHB@bombadil.infradead.org>
+References: <20210803202417.462197-1-mcgrof@kernel.org>
+ <YQrVY8Wxb026TDWN@bombadil.infradead.org>
+ <20210804184720.z27u5aymcl5hzqgh@ldmartin-desk2>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210804184720.z27u5aymcl5hzqgh@ldmartin-desk2>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Commit 2860cd8a2353 ("livepatch: Use the default ftrace_ops instead of
-REGS when ARGS is available") intends to enable config LIVEPATCH when
-ftrace with ARGS is available. However, the chain of configs to enable
-LIVEPATCH is incomplete, as HAVE_DYNAMIC_FTRACE_WITH_ARGS is available,
-but the definition of DYNAMIC_FTRACE_WITH_ARGS, combining DYNAMIC_FTRACE
-and HAVE_DYNAMIC_FTRACE_WITH_ARGS, needed to enable LIVEPATCH, is missing
-in the commit.
+On Wed, Aug 04, 2021 at 11:47:20AM -0700, Lucas De Marchi wrote:
+> On Wed, Aug 04, 2021 at 10:58:59AM -0700, Luis Chamberlain wrote:
+> > On Tue, Aug 03, 2021 at 01:24:17PM -0700, Luis Chamberlain wrote:
+> > > + diff --git a/libkmod/libkmod-module.c b/libkmod/libkmod-module.c
+> > <-- snip -->
+> > > +		ERR(mod->ctx, "%s refcnt is %ld waiting for it to become 0\n", mod->name, refcnt);
+> > 
+> > OK after running many tests with this I think we need to just expand
+> > this so that the error message only applies when -v is passed to
+> > modprobe, otherwise we get the print message every time, and using
+> > INFO() doesn't cut it, given the next priority level available to
+> > the library is LOG_INFO (6) and when modprobe -v is passed we set the
+> > log level to LOG_NOTICE (5), so we need a new NOTICE(). I'll send a v2
+> > with that included as a separate patch.
+> 
+> Or maybe move the sleep to modprobe instead of doing it in the
+> library? 
 
-Fortunately, ./scripts/checkkconfigsymbols.py detects this and warns:
+We have a few callers which need to impement the wait, and so having
+a library call is one way to share code. I realized this while first
+open coding this in each call site and realizing I was just
+re-inventing the wheel.
 
-DYNAMIC_FTRACE_WITH_ARGS
-Referencing files: kernel/livepatch/Kconfig
+> The sleep(1) seems like an arbitrary number to be introduced
+> in the lib.
 
-So, define the config DYNAMIC_FTRACE_WITH_ARGS analogously to the already
-existing similar configs, DYNAMIC_FTRACE_WITH_REGS and
-DYNAMIC_FTRACE_WITH_DIRECT_CALLS, in ./kernel/trace/Kconfig to connect the
-chain of configs.
+Indeed, the ideal thing here is to introduce then a timeout, and have
+a default setting, which code can override.
 
-Fixes: 2860cd8a2353 ("livepatch: Use the default ftrace_ops instead of REGS when ARGS is available")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
+> Since kernfs is pollable,
+> maybe we could rather introduce an API to
+> return the pid in which the application has to wait for
 
-Steven, thanks for the quick response; please pick this quick config fix.
+The kernel does not have information to provide userspace any
+information for how long it should wait. I mean, in a test case I am
+using its an lvm pvremove and for some reason it seems the removal
+is asynchronously putting the module refcnt (even though I do not believe
+DM_DEFERRED_REMOVE is ever set by default), and I had fixed the kernel's
+own asynchronous removal of the request_queue a little while back so
+I don't think that's the issue either.
 
- kernel/trace/Kconfig | 5 +++++
- 1 file changed, 5 insertions(+)
+If you mean to consider adding *more* information to the kernel, as
+a new feature, I'm afraid any PID triggering a bump in the refcnt is
+ephemeral, and so I don't think it would help. It would only be useful
+if userspace *knew* it would trigger a recnt bump, and that seems
+likely a promise we would probaby want to break any time. Unless we
+want to get into the business of granting userspace the ability to
+bump refcnt's with new structural information it promises is legit.
+Then userspace can query for this. However that still seems overkill,
+I can't see a need for it yet.
 
-diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-index d567b1717c4c..3ee23f4d437f 100644
---- a/kernel/trace/Kconfig
-+++ b/kernel/trace/Kconfig
-@@ -219,6 +219,11 @@ config DYNAMIC_FTRACE_WITH_DIRECT_CALLS
- 	depends on DYNAMIC_FTRACE_WITH_REGS
- 	depends on HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
- 
-+config DYNAMIC_FTRACE_WITH_ARGS
-+	def_bool y
-+	depends on DYNAMIC_FTRACE
-+	depends on HAVE_DYNAMIC_FTRACE_WITH_ARGS
-+
- config FUNCTION_PROFILER
- 	bool "Kernel function profiler"
- 	depends on FUNCTION_TRACER
--- 
-2.17.1
+> and then the
+> application can use whatever it wants to poll, including controlling a
+> timeout.
 
+A dynamic timeout seems sensible indeed.
+
+> I'm saying this because sleep(1) may be all fine for modprobe, but for
+> other applications using libkmod it may not play well with their mainloops
+> (and they may want to control both granularity of the sleep and a max
+> timeout).
+
+Indeed. A default timeout set into the context seem to be the way to go,
+which callers can override. Then modprobe -t <ms_wait> can use this caller to
+update the ctx timeout to a setting.
+
+I'll post a v2 with these changes.
+
+  Luis
