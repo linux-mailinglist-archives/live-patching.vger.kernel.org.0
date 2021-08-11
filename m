@@ -2,64 +2,61 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0209B3E5B00
-	for <lists+live-patching@lfdr.de>; Tue, 10 Aug 2021 15:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D13E3E9176
+	for <lists+live-patching@lfdr.de>; Wed, 11 Aug 2021 14:33:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241201AbhHJNVB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 10 Aug 2021 09:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47614 "EHLO
+        id S231639AbhHKMdD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 11 Aug 2021 08:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241194AbhHJNVA (ORCPT
+        with ESMTP id S230437AbhHKMc5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 10 Aug 2021 09:21:00 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3E3C06179A
-        for <live-patching@vger.kernel.org>; Tue, 10 Aug 2021 06:20:38 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id y65so1885666vsy.3
-        for <live-patching@vger.kernel.org>; Tue, 10 Aug 2021 06:20:38 -0700 (PDT)
+        Wed, 11 Aug 2021 08:32:57 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C1EC08EACE
+        for <live-patching@vger.kernel.org>; Wed, 11 Aug 2021 05:31:07 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id bi32so4344813oib.2
+        for <live-patching@vger.kernel.org>; Wed, 11 Aug 2021 05:31:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=2tvLhkad0w+Mh63WhnFJkmRFgYsLXsJmUqGVjzUAFIo=;
-        b=jg5coosMNoq5ijxf4dVVUayM/jJ7RmQhsCxqYqXnJqZBCONfuUIXtPgzVZG92sz0KX
-         +vOtarLH5YSgxYvzDoQz41eKyfGtvJML3OAGKnFSuJN4kDekXbLKwyJKqIO7YZnry2Js
-         oV5+x0TR283M/kVC/oTmpu5zCiiJo3QoXQCNqy6DYE5lgnLDSNaqBH8p1F438vCWD1FD
-         GC053bNHLefnU8+Df9lxyh6qLJwFSDjadiq76V7H9b9KwUDf/So/tfq9sC13FhwOyi67
-         jtozZDE3xojIV4pChji3gYXlrWqrCxod37hm4cUSWgT+JBTXEopunDfm7XoL8W49ZOjS
-         wazA==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=77BwqRII9XCweQU8IJul6unijI/BEL+vUJmVmCRLxH4=;
+        b=V2WNyYdLJoP6K8E9RJHda7LwABozwr3cIVvw6Vvde1lUvj7nEn1kwTUjYENmT632Mo
+         WIvrh1+vLbSYzoPuX6Jvs3ShmY85CXNRULiOryYERC5VxiduWi1eHXykl4rZM4plaPY9
+         v0bjHvKbPX4Dmx5VGMryZtevBJBtYqlBmyCVADyoJGpXTeFxDC0rBPdZ27wWjxlPHWYz
+         44e14rCDZLm5cj050Iix5aVHNgFsagqH3cnFq7JAXcrKgC2Fka4hZJKUHzp5yDGNsN2N
+         es2oehf9N517PT8Y97WToSGj6n+Bj5wnkCVHjnDVkM+in2erAaksScM3DAQFVo4RjSvJ
+         Sh7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=2tvLhkad0w+Mh63WhnFJkmRFgYsLXsJmUqGVjzUAFIo=;
-        b=Uc4ROAccS32el3wdgQa/vojCBENEuGaZBFqivtZChOIUBPN1kEMZBynJ2Uw3F15zqP
-         9NEFWcNc4DVA6732t+awrMCtSpiDP5NYDQBh9iE3qj3QW/T+MxQ655yB2M5zetPY4mY+
-         qQxCJ3MDLNxAlVuEmwM30sHUzbaIcTTAUtNpjUi/MDb8xPSdAgZAgBbgywZdsZACGL7a
-         MDOUE/gSehfvTN+t9nGzXuEs+MSk7kyfrSZjRP7TCKcdbef3wIvPjd34zxLkZGV/lnDl
-         HKA6X77xQyCjIbiHSiB2Exnj8xqp3EcUGIl5RaW2hlhtMhJG1gy7AzfdcBJRpL4tPFXb
-         X9yw==
-X-Gm-Message-State: AOAM531AQdHQ+9yZyXXlvbS4i0EsBedkMHb9EL+7oxbSi1GDLgk/7vx+
-        12fEpfoLu+cPlbXppW0wV0ngGNDrYJMfyTnXnZI=
-X-Google-Smtp-Source: ABdhPJzw/DMn0OC252aGHpGVnoKY3Ncd6UcMTlbHX1H6TDelPfrWNMLWgxVaZwjBDUvpIEseLAh/4XedwXZt742Ytrw=
-X-Received: by 2002:a67:dc97:: with SMTP id g23mr20786344vsk.53.1628601637863;
- Tue, 10 Aug 2021 06:20:37 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=77BwqRII9XCweQU8IJul6unijI/BEL+vUJmVmCRLxH4=;
+        b=eJS7aVobf8wJZYlLO9Pc61fLGBbLFanEWyMrUstSleUDK+/rfclpuc2G9BmIXpKF5t
+         fs7rcw/AXL+LDekOEsqcn9wc6D8WAt4qnjA7DuqsyEABsEVLDHJ5a/V4U3tUZ7Q0qo8f
+         EiEjo1Dr9OWynCm1B0F2jTrsK2zfLkaukf23IsxBwHTTYQw5nwfIBY1A2uG2m1pAz8vg
+         7OPZim8P+YOV5w4gS8V3O/Yb3Y4zSdM0P2kpCQ4vp6qtNtUDHM+S6BtYZJcpnVCSQ5+v
+         cEuVuIZ/PzaDjWGOpQ5bVzvAxE1AxJd7S8e8SKUb6Jwtu+FI29X8PvGO6bOD2BmLUMeD
+         vuKg==
+X-Gm-Message-State: AOAM530X6UZTFRTxA2zNbb6Dh1p91JxEKpymfe8wSOZobg7U764xnhLU
+        iYCbTOCZDgTTNCEd+p7z0+CpGpJISb4kGypSnUI=
+X-Google-Smtp-Source: ABdhPJzKX4bddhdfg8RiiyHYBr+yLXTM9M8N23Wzjnw2ULmtvMc+zP5mUiQ+LhDoka/W+ZMFsKP6zQ+h+O0KVwFq6y0=
+X-Received: by 2002:a05:6808:1924:: with SMTP id bf36mr24193426oib.106.1628685066760;
+ Wed, 11 Aug 2021 05:31:06 -0700 (PDT)
 MIME-Version: 1.0
-Sender: immeublesourou@gmail.com
-Received: by 2002:ab0:3903:0:0:0:0:0 with HTTP; Tue, 10 Aug 2021 06:20:37
+Received: by 2002:a05:6830:23a5:0:0:0:0 with HTTP; Wed, 11 Aug 2021 05:31:06
  -0700 (PDT)
-From:   John Kumor <owo219901@gmail.com>
-Date:   Wed, 11 Aug 2021 01:20:37 +1200
-X-Google-Sender-Auth: 4IctcyUBB5zHyJGrh_9Ayc-Y12o
-Message-ID: <CAHdg_cTuapwjSQDTr6RaVyozx2L2K9xpSbhMJe8AB8XcLJh=Ww@mail.gmail.com>
-Subject: Urgent
+Reply-To: rihabmanyang07@yahoo.com
+From:   Rihab Manyang <ndourandiogou1@gmail.com>
+Date:   Wed, 11 Aug 2021 13:31:06 +0100
+Message-ID: <CAP5_mB5hsG9XL1on3vsap=m7kWJuxk1JNYnqREpDhZc=rXpfpQ@mail.gmail.com>
+Subject: hi
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-My dear,
-Greetings! I trust that all is well with you and your family. Did you
-receive my previous email?
-Regards
-John Kumor.
+-- 
+How are you?I am miss.Rihab Manyang i will like to be your friend
+please write me back on my email for more details, Thanks.
