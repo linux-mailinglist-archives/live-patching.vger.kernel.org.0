@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B673EAA9B
+	by mail.lfdr.de (Postfix) with ESMTP id B80E53EAA9D
 	for <lists+live-patching@lfdr.de>; Thu, 12 Aug 2021 21:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235803AbhHLTGn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 12 Aug 2021 15:06:43 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:60586 "EHLO
+        id S235954AbhHLTGq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 12 Aug 2021 15:06:46 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:60602 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231601AbhHLTGm (ORCPT
+        with ESMTP id S235886AbhHLTGo (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 12 Aug 2021 15:06:42 -0400
+        Thu, 12 Aug 2021 15:06:44 -0400
 Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 24AA520BE693;
-        Thu, 12 Aug 2021 12:06:16 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 24AA520BE693
+        by linux.microsoft.com (Postfix) with ESMTPSA id 5486420C1558;
+        Thu, 12 Aug 2021 12:06:17 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5486420C1558
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1628795177;
-        bh=9UDTW5f/wu5lTfTc51GK4zB/v63pXMsEhlhyVfcdK1w=;
+        s=default; t=1628795178;
+        bh=HJY2GOAOOvc8RDfN7JED+eTXmUXW5HORS7eNhRhtjow=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=SNtllFux73btP0jrBF2CqAb9OlY79+3Ekq3D+TI75ocTS782hLALfQXEjs2p21WjE
-         lgpCjCKmj2AY0Ci9SOG8LL21x6TXOKX5Fa5jNEvAtmOu5iAdun5J/84fEYk28X58TY
-         N31KiAFhpSO8vfhykMuwGDTJ1zQwpiXE+lpInOf4=
+        b=GrbvewKBq9M9zTgZ94gk4wbPsjhLtGTOrLGBBnlq1flpM586KJaiUIel6FnHopKbh
+         dqbAAr1aQbwmwNYRqA8VMv/MKgLspJiRu2BxSHhtbuiu4u1kmRCrfF0RrHdGj5VXMR
+         qj4/YiZR6MDFeI5g0Wq5FBGLLdkpFa8Fc8WNTbFw=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -31,9 +31,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v8 3/4] arm64: Introduce stack trace reliability checks in the unwinder
-Date:   Thu, 12 Aug 2021 14:06:02 -0500
-Message-Id: <20210812190603.25326-4-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v8 4/4] arm64: Create a list of SYM_CODE functions, check return PC against list
+Date:   Thu, 12 Aug 2021 14:06:03 -0500
+Message-Id: <20210812190603.25326-5-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210812190603.25326-1-madvenka@linux.microsoft.com>
 References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
@@ -46,188 +46,180 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-There are some kernel features and conditions that make a stack trace
-unreliable. Callers may require the unwinder to detect these cases.
-E.g., livepatch.
+SYM_CODE functions don't follow the usual calling conventions. Check if the
+return PC in a stack frame falls in any of these. If it does, consider the
+stack trace unreliable.
 
-Introduce a new function called unwind_is_reliable() that will detect
-these cases and return a boolean.
+Define a special section for unreliable functions
+=================================================
 
-Introduce a new argument to unwind() called "need_reliable" so a caller
-can tell unwind() that it requires a reliable stack trace. For such a
-caller, any unreliability in the stack trace must be treated as a fatal
-error and the unwind must be aborted.
+Define a SYM_CODE_END() macro for arm64 that adds the function address
+range to a new section called "sym_code_functions".
 
-Call unwind_is_reliable() from unwind_consume() like this:
+Linker file
+===========
 
-	if (frame->need_reliable && !unwind_is_reliable(frame)) {
-		frame->failed = true;
-		return false;
-	}
+Include the "sym_code_functions" section under read-only data in
+vmlinux.lds.S.
 
-In other words, if the return PC in the stackframe falls in unreliable code,
-then it cannot be unwound reliably.
+Initialization
+==============
 
-arch_stack_walk() will pass "false" for need_reliable because its callers
-don't care about reliability. arch_stack_walk() is used for debug and
-test purposes.
+Define an early_initcall() to create a sym_code_functions[] array from
+the linker data.
 
-Introduce arch_stack_walk_reliable() for ARM64. This works like
-arch_stack_walk() except for two things:
+Unwinder check
+==============
 
-	- It passes "true" for need_reliable.
-
-	- It returns -EINVAL if unwind() says that the stack trace is
-	  unreliable.
-
-Introduce the first reliability check in unwind_is_reliable() - If
-a return PC is not a valid kernel text address, consider the stack
-trace unreliable. It could be some generated code.
-
-Other reliability checks will be added in the future. Until all of the
-checks are in place, arch_stack_walk_reliable() may not be used by
-livepatch. But it may be used by debug and test code.
+Add a reliability check in unwind_is_reliable() that compares a return
+PC with sym_code_functions[]. If there is a match, then return failure.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/include/asm/stacktrace.h |  4 ++
- arch/arm64/kernel/stacktrace.c      | 63 +++++++++++++++++++++++++++--
- 2 files changed, 63 insertions(+), 4 deletions(-)
+ arch/arm64/include/asm/linkage.h  | 12 +++++++
+ arch/arm64/include/asm/sections.h |  1 +
+ arch/arm64/kernel/stacktrace.c    | 53 +++++++++++++++++++++++++++++++
+ arch/arm64/kernel/vmlinux.lds.S   | 10 ++++++
+ 4 files changed, 76 insertions(+)
 
-diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-index 407007376e97..65ea151da5da 100644
---- a/arch/arm64/include/asm/stacktrace.h
-+++ b/arch/arm64/include/asm/stacktrace.h
-@@ -53,6 +53,9 @@ struct stack_info {
-  *               replacement lr value in the ftrace graph stack.
-  *
-  * @failed:      Unwind failed.
-+ *
-+ * @need_reliable The caller needs a reliable stack trace. Treat any
-+ *                unreliability as a fatal error.
-  */
- struct stackframe {
- 	struct task_struct *task;
-@@ -65,6 +68,7 @@ struct stackframe {
- 	int graph;
- #endif
- 	bool failed;
-+	bool need_reliable;
- };
- 
- extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index ec8f5163c4d0..b60f8a20ba64 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -34,7 +34,8 @@
- 
- static void notrace unwind_start(struct stackframe *frame,
- 				 struct task_struct *task,
--				 unsigned long fp, unsigned long pc)
-+				 unsigned long fp, unsigned long pc,
-+				 bool need_reliable)
- {
- 	frame->task = task;
- 	frame->fp = fp;
-@@ -56,6 +57,7 @@ static void notrace unwind_start(struct stackframe *frame,
- 	frame->prev_fp = 0;
- 	frame->prev_type = STACK_TYPE_UNKNOWN;
- 	frame->failed = false;
-+	frame->need_reliable = need_reliable;
- }
- 
- NOKPROBE_SYMBOL(unwind_start);
-@@ -178,6 +180,23 @@ void show_stack(struct task_struct *tsk, unsigned long *sp, const char *loglvl)
- 	barrier();
- }
+diff --git a/arch/arm64/include/asm/linkage.h b/arch/arm64/include/asm/linkage.h
+index 9906541a6861..616bad74e297 100644
+--- a/arch/arm64/include/asm/linkage.h
++++ b/arch/arm64/include/asm/linkage.h
+@@ -68,4 +68,16 @@
+ 		SYM_FUNC_END_ALIAS(x);		\
+ 		SYM_FUNC_END_ALIAS(__pi_##x)
  
 +/*
-+ * Check the stack frame for conditions that make further unwinding unreliable.
++ * Record the address range of each SYM_CODE function in a struct code_range
++ * in a special section.
 + */
-+static bool notrace unwind_is_reliable(struct stackframe *frame)
++#define SYM_CODE_END(name)				\
++	SYM_END(name, SYM_T_NONE)			;\
++	99:						;\
++	.pushsection "sym_code_functions", "aw"		;\
++	.quad	name					;\
++	.quad	99b					;\
++	.popsection
++
+ #endif
+diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
+index e4ad9db53af1..c84c71063d6e 100644
+--- a/arch/arm64/include/asm/sections.h
++++ b/arch/arm64/include/asm/sections.h
+@@ -21,5 +21,6 @@ extern char __exittext_begin[], __exittext_end[];
+ extern char __irqentry_text_start[], __irqentry_text_end[];
+ extern char __mmuoff_data_start[], __mmuoff_data_end[];
+ extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
++extern char __sym_code_functions_start[], __sym_code_functions_end[];
+ 
+ #endif /* __ASM_SECTIONS_H */
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index b60f8a20ba64..26dbdd4fff77 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -18,6 +18,31 @@
+ #include <asm/stack_pointer.h>
+ #include <asm/stacktrace.h>
+ 
++struct code_range {
++	unsigned long	start;
++	unsigned long	end;
++};
++
++static struct code_range	*sym_code_functions;
++static int			num_sym_code_functions;
++
++int __init init_sym_code_functions(void)
 +{
++	size_t size = (unsigned long)__sym_code_functions_end -
++		      (unsigned long)__sym_code_functions_start;
++
++	sym_code_functions = (struct code_range *)__sym_code_functions_start;
 +	/*
-+	 * If the PC is not a known kernel text address, then we cannot
-+	 * be sure that a subsequent unwind will be reliable, as we
-+	 * don't know that the code follows our unwind requirements.
++	 * Order it so that sym_code_functions is not visible before
++	 * num_sym_code_functions.
 +	 */
-+	if (!__kernel_text_address(frame->pc))
-+		return false;
-+	return true;
++	smp_mb();
++	num_sym_code_functions = size / sizeof(struct code_range);
++
++	return 0;
 +}
++early_initcall(init_sym_code_functions);
 +
-+NOKPROBE_SYMBOL(unwind_is_reliable);
+ /*
+  * AArch64 PCS assigns the frame pointer to x29.
+  *
+@@ -185,6 +210,10 @@ void show_stack(struct task_struct *tsk, unsigned long *sp, const char *loglvl)
+  */
+ static bool notrace unwind_is_reliable(struct stackframe *frame)
+ {
++	const struct code_range *range;
++	unsigned long pc;
++	int i;
 +
- static bool notrace unwind_consume(struct stackframe *frame,
- 				   stack_trace_consume_fn consume_entry,
- 				   void *cookie)
-@@ -197,6 +216,12 @@ static bool notrace unwind_consume(struct stackframe *frame,
- 		/* Final frame; nothing to unwind */
+ 	/*
+ 	 * If the PC is not a known kernel text address, then we cannot
+ 	 * be sure that a subsequent unwind will be reliable, as we
+@@ -192,6 +221,30 @@ static bool notrace unwind_is_reliable(struct stackframe *frame)
+ 	 */
+ 	if (!__kernel_text_address(frame->pc))
  		return false;
- 	}
 +
-+	if (frame->need_reliable && !unwind_is_reliable(frame)) {
-+		/* Cannot unwind to the next frame reliably. */
-+		frame->failed = true;
-+		return false;
++	/*
++	 * Check the return PC against sym_code_functions[]. If there is a
++	 * match, then the consider the stack frame unreliable.
++	 *
++	 * As SYM_CODE functions don't follow the usual calling conventions,
++	 * we assume by default that any SYM_CODE function cannot be unwound
++	 * reliably.
++	 *
++	 * Note that this includes:
++	 *
++	 * - Exception handlers and entry assembly
++	 * - Trampoline assembly (e.g., ftrace, kprobes)
++	 * - Hypervisor-related assembly
++	 * - Hibernation-related assembly
++	 * - CPU start-stop, suspend-resume assembly
++	 * - Kernel relocation assembly
++	 */
++	pc = frame->pc;
++	for (i = 0; i < num_sym_code_functions; i++) {
++		range = &sym_code_functions[i];
++		if (pc >= range->start && pc < range->end)
++			return false;
 +	}
  	return true;
  }
  
-@@ -210,11 +235,12 @@ static inline bool unwind_failed(struct stackframe *frame)
- /* Core unwind function */
- static bool notrace unwind(stack_trace_consume_fn consume_entry, void *cookie,
- 			   struct task_struct *task,
--			   unsigned long fp, unsigned long pc)
-+			   unsigned long fp, unsigned long pc,
-+			   bool need_reliable)
- {
- 	struct stackframe frame;
- 
--	unwind_start(&frame, task, fp, pc);
-+	unwind_start(&frame, task, fp, pc, need_reliable);
- 	while (unwind_consume(&frame, consume_entry, cookie))
- 		unwind_next(&frame);
- 	return !unwind_failed(&frame);
-@@ -245,7 +271,36 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
- 		fp = thread_saved_fp(task);
- 		pc = thread_saved_pc(task);
- 	}
--	unwind(consume_entry, cookie, task, fp, pc);
-+	unwind(consume_entry, cookie, task, fp, pc, false);
-+}
-+
-+/*
-+ * arch_stack_walk_reliable() may not be used for livepatch until all of
-+ * the reliability checks are in place in unwind_consume(). However,
-+ * debug and test code can choose to use it even if all the checks are not
-+ * in place.
-+ */
-+noinline int notrace arch_stack_walk_reliable(stack_trace_consume_fn consume_fn,
-+					      void *cookie,
-+					      struct task_struct *task)
-+{
-+	unsigned long fp, pc;
-+
-+	if (!task)
-+		task = current;
-+
-+	if (task == current) {
-+		/* Skip arch_stack_walk_reliable() in the stack trace. */
-+		fp = (unsigned long)__builtin_frame_address(1);
-+		pc = (unsigned long)__builtin_return_address(0);
-+	} else {
-+		/* Caller guarantees that the task is not running. */
-+		fp = thread_saved_fp(task);
-+		pc = thread_saved_pc(task);
-+	}
-+	if (unwind(consume_fn, cookie, task, fp, pc, true))
-+		return 0;
-+	return -EINVAL;
- }
- 
+diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
+index 709d2c433c5e..2bf769f45b54 100644
+--- a/arch/arm64/kernel/vmlinux.lds.S
++++ b/arch/arm64/kernel/vmlinux.lds.S
+@@ -111,6 +111,14 @@ jiffies = jiffies_64;
+ #define TRAMP_TEXT
  #endif
+ 
++#define SYM_CODE_FUNCTIONS				\
++	. = ALIGN(16);					\
++	.symcode : AT(ADDR(.symcode) - LOAD_OFFSET) {	\
++		__sym_code_functions_start = .;		\
++		KEEP(*(sym_code_functions))		\
++		__sym_code_functions_end = .;		\
++	}
++
+ /*
+  * The size of the PE/COFF section that covers the kernel image, which
+  * runs from _stext to _edata, must be a round multiple of the PE/COFF
+@@ -196,6 +204,8 @@ SECTIONS
+ 	swapper_pg_dir = .;
+ 	. += PAGE_SIZE;
+ 
++	SYM_CODE_FUNCTIONS
++
+ 	. = ALIGN(SEGMENT_ALIGN);
+ 	__init_begin = .;
+ 	__inittext_begin = .;
 -- 
 2.25.1
 
