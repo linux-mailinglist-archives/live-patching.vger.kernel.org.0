@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE9E3EAA98
+	by mail.lfdr.de (Postfix) with ESMTP id 63BE03EAA99
 	for <lists+live-patching@lfdr.de>; Thu, 12 Aug 2021 21:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235669AbhHLTGl (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 12 Aug 2021 15:06:41 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:60534 "EHLO
+        id S235660AbhHLTGm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 12 Aug 2021 15:06:42 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:60556 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235640AbhHLTGk (ORCPT
+        with ESMTP id S235686AbhHLTGl (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 12 Aug 2021 15:06:40 -0400
+        Thu, 12 Aug 2021 15:06:41 -0400
 Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id B9255209C3B8;
-        Thu, 12 Aug 2021 12:06:13 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B9255209C3B8
+        by linux.microsoft.com (Postfix) with ESMTPSA id E904B209C3BB;
+        Thu, 12 Aug 2021 12:06:14 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E904B209C3BB
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1628795174;
-        bh=a8u879OZglm+Zxz5cwOfWelTPIwh5C5mhpNdFIotC2A=;
+        s=default; t=1628795175;
+        bh=A0Iq4hB4rYFGIumW8LpdP2LbJpF1RNqiSB5aZK65wpo=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=JjbHatampnC1XUN3QAhxCD48SDdfu3ZW7t1AcCO2P+8LLJ1ejEWxS+E3vGfjiVjg4
-         50PKyFmijjbEA5jRBv1Dj12QVof7bgAjPp1FFX5Ly/ihg8NuTV5Ero9G1Djd4hur/Q
-         l3xMTTBZoRQXJm8tnVKCHsfD3n7c8AiKfqgFWJBQ=
+        b=dHIuJfEygbSqqJU5bjEJ2+f552tw2jZDF0wZNWMMdMQFhXdXj8BMT6AoGMlgjF7IW
+         X4YkY5QXMkHfjM7CsALIhMCtwtvU09kAGJh3PMBtz3qLGUTfAvS5GQ3VWHP+AwmkAC
+         ppjpxXoHpuM5zbB31i8ZirBOJIlqIoIfizgekioE=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -31,9 +31,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v8 1/4] arm64: Make all stack walking functions use arch_stack_walk()
-Date:   Thu, 12 Aug 2021 14:06:00 -0500
-Message-Id: <20210812190603.25326-2-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v8 2/4] arm64: Reorganize the unwinder code for better consistency and maintenance
+Date:   Thu, 12 Aug 2021 14:06:01 -0500
+Message-Id: <20210812190603.25326-3-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210812190603.25326-1-madvenka@linux.microsoft.com>
 References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
@@ -46,254 +46,356 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Currently, there are multiple functions in ARM64 code that walk the
-stack using start_backtrace() and unwind_frame(). Convert all of
-them to use arch_stack_walk(). This makes maintenance easier.
+Renaming of unwinder functions
+==============================
 
-Here is the list of functions:
+Rename unwinder functions to unwind_*() similar to other architectures
+for naming consistency. More on this below.
 
-	perf_callchain_kernel()
-	get_wchan()
-	return_address()
-	dump_backtrace()
-	profile_pc()
+unwind function attributes
+==========================
+
+Mark all of the unwind_*() functions with notrace so they cannot be ftraced
+and NOKPROBE_SYMBOL() so they cannot be kprobed. Ftrace and Kprobe code
+can call the unwinder.
+
+start_backtrace()
+=================
+
+start_backtrace() is only called by arch_stack_walk(). Make it static.
+Rename start_backtrace() to unwind_start() for naming consistency.
+
+unwind_frame()
+==============
+
+Rename this to unwind_next() for naming consistency.
+
+Replace walk_stackframe() with unwind()
+=======================================
+
+walk_stackframe() contains the unwinder loop that walks the stack
+frames. Currently, start_backtrace() and walk_stackframe() are called
+separately. They should be combined in the same function. Also, the
+loop in walk_stackframe() should be simplified and should look like
+the unwind loops in other architectures such as X86 and S390.
+
+Remove walk_stackframe(). Define a new function called "unwind()" in
+its place. Define the following unwinder loop:
+
+	unwind_start(&frame, task, fp, pc);
+	while (unwind_consume(&frame, consume_entry, cookie))
+		unwind_next(&frame);
+	return !unwind_failed(&frame);
+
+unwind_start()
+	Same as the original start_backtrace().
+
+unwind_consume()
+	This is a new function that calls the callback function to
+	consume the PC in a stackframe. Do it this way so that checks
+	can be performed before and after the callback to determine
+	whether the unwind should continue or terminate.
+
+unwind_next()
+	Same as the original unwind_frame() except for two things:
+
+		- the stack trace termination check has been moved from
+		  here to unwind_consume(). So, unwind_next() is always
+		  called on a valid fp.
+
+		- unwind_frame() used to return an error value. This
+		  function does not return anything.
+
+unwind_failed()
+	Return a boolean to indicate if the stack trace completed
+	successfully or failed. arch_stack_walk() ignores the return
+	value. But arch_stack_walk_reliable() in the future will look
+	at the return value.
+
+Unwind status
+=============
+
+Introduce a new flag called "failed" in struct stackframe. unwind_next()
+and unwind_consume() will set this flag when an error is encountered and
+unwind_consume() will check this flag. This is in keeping with other
+architectures.
+
+The failed flags is accessed via the helper unwind_failed().
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/include/asm/stacktrace.h |  3 ---
- arch/arm64/kernel/perf_callchain.c  |  5 +---
- arch/arm64/kernel/process.c         | 39 ++++++++++++++++++-----------
- arch/arm64/kernel/return_address.c  |  6 +----
- arch/arm64/kernel/stacktrace.c      | 38 +++-------------------------
- arch/arm64/kernel/time.c            | 22 +++++++++-------
- 6 files changed, 43 insertions(+), 70 deletions(-)
+ arch/arm64/include/asm/stacktrace.h |   9 +-
+ arch/arm64/kernel/stacktrace.c      | 145 ++++++++++++++++++----------
+ 2 files changed, 99 insertions(+), 55 deletions(-)
 
 diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-index 8aebc00c1718..e43dea1c6b41 100644
+index e43dea1c6b41..407007376e97 100644
 --- a/arch/arm64/include/asm/stacktrace.h
 +++ b/arch/arm64/include/asm/stacktrace.h
-@@ -61,9 +61,6 @@ struct stackframe {
+@@ -34,6 +34,8 @@ struct stack_info {
+  * A snapshot of a frame record or fp/lr register values, along with some
+  * accounting information necessary for robust unwinding.
+  *
++ * @task:        The task whose stack is being unwound.
++ *
+  * @fp:          The fp value in the frame record (or the real fp)
+  * @pc:          The lr value in the frame record (or the real lr)
+  *
+@@ -49,8 +51,11 @@ struct stack_info {
+  *
+  * @graph:       When FUNCTION_GRAPH_TRACER is selected, holds the index of a
+  *               replacement lr value in the ftrace graph stack.
++ *
++ * @failed:      Unwind failed.
+  */
+ struct stackframe {
++	struct task_struct *task;
+ 	unsigned long fp;
+ 	unsigned long pc;
+ 	DECLARE_BITMAP(stacks_done, __NR_STACK_TYPES);
+@@ -59,6 +64,7 @@ struct stackframe {
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+ 	int graph;
  #endif
++	bool failed;
  };
  
--extern int unwind_frame(struct task_struct *tsk, struct stackframe *frame);
--extern void walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
--			    bool (*fn)(void *, unsigned long), void *data);
  extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
- 			   const char *loglvl);
+@@ -145,7 +151,4 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
+ 	return false;
+ }
  
-diff --git a/arch/arm64/kernel/perf_callchain.c b/arch/arm64/kernel/perf_callchain.c
-index 4a72c2727309..2f289013c9c9 100644
---- a/arch/arm64/kernel/perf_callchain.c
-+++ b/arch/arm64/kernel/perf_callchain.c
-@@ -147,15 +147,12 @@ static bool callchain_trace(void *data, unsigned long pc)
- void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
- 			   struct pt_regs *regs)
- {
--	struct stackframe frame;
+-void start_backtrace(struct stackframe *frame, unsigned long fp,
+-		     unsigned long pc);
 -
- 	if (perf_guest_cbs && perf_guest_cbs->is_in_guest()) {
- 		/* We don't support guest os callchain now */
- 		return;
- 	}
- 
--	start_backtrace(&frame, regs->regs[29], regs->pc);
--	walk_stackframe(current, &frame, callchain_trace, entry);
-+	arch_stack_walk(callchain_trace, entry, current, regs);
- }
- 
- unsigned long perf_instruction_pointer(struct pt_regs *regs)
-diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
-index c8989b999250..52c12fd26407 100644
---- a/arch/arm64/kernel/process.c
-+++ b/arch/arm64/kernel/process.c
-@@ -544,11 +544,28 @@ __notrace_funcgraph struct task_struct *__switch_to(struct task_struct *prev,
- 	return last;
- }
- 
-+struct wchan_info {
-+	unsigned long	pc;
-+	int		count;
-+};
-+
-+static bool get_wchan_cb(void *arg, unsigned long pc)
-+{
-+	struct wchan_info *wchan_info = arg;
-+
-+	if (!in_sched_functions(pc)) {
-+		wchan_info->pc = pc;
-+		return false;
-+	}
-+	wchan_info->count--;
-+	return !!wchan_info->count;
-+}
-+
- unsigned long get_wchan(struct task_struct *p)
- {
--	struct stackframe frame;
--	unsigned long stack_page, ret = 0;
--	int count = 0;
-+	unsigned long stack_page;
-+	struct wchan_info wchan_info;
-+
- 	if (!p || p == current || task_is_running(p))
- 		return 0;
- 
-@@ -556,20 +573,12 @@ unsigned long get_wchan(struct task_struct *p)
- 	if (!stack_page)
- 		return 0;
- 
--	start_backtrace(&frame, thread_saved_fp(p), thread_saved_pc(p));
-+	wchan_info.pc = 0;
-+	wchan_info.count = 16;
-+	arch_stack_walk(get_wchan_cb, &wchan_info, p, NULL);
- 
--	do {
--		if (unwind_frame(p, &frame))
--			goto out;
--		if (!in_sched_functions(frame.pc)) {
--			ret = frame.pc;
--			goto out;
--		}
--	} while (count++ < 16);
--
--out:
- 	put_task_stack(p);
--	return ret;
-+	return wchan_info.pc;
- }
- 
- unsigned long arch_align_stack(unsigned long sp)
-diff --git a/arch/arm64/kernel/return_address.c b/arch/arm64/kernel/return_address.c
-index a6d18755652f..92a0f4d434e4 100644
---- a/arch/arm64/kernel/return_address.c
-+++ b/arch/arm64/kernel/return_address.c
-@@ -35,15 +35,11 @@ NOKPROBE_SYMBOL(save_return_addr);
- void *return_address(unsigned int level)
- {
- 	struct return_address_data data;
--	struct stackframe frame;
- 
- 	data.level = level + 2;
- 	data.addr = NULL;
- 
--	start_backtrace(&frame,
--			(unsigned long)__builtin_frame_address(0),
--			(unsigned long)return_address);
--	walk_stackframe(current, &frame, save_return_addr, &data);
-+	arch_stack_walk(save_return_addr, &data, current, NULL);
- 
- 	if (!data.level)
- 		return data.addr;
+ #endif	/* __ASM_STACKTRACE_H */
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 8982a2b78acf..1800310f92be 100644
+index 1800310f92be..ec8f5163c4d0 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -151,23 +151,21 @@ void notrace walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
- }
- NOKPROBE_SYMBOL(walk_stackframe);
+@@ -32,10 +32,11 @@
+  *	add	sp, sp, #0x10
+  */
  
--static void dump_backtrace_entry(unsigned long where, const char *loglvl)
-+static bool dump_backtrace_entry(void *arg, unsigned long where)
- {
-+	char *loglvl = arg;
- 	printk("%s %pSb\n", loglvl, (void *)where);
-+	return true;
- }
- 
- void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
- 		    const char *loglvl)
- {
--	struct stackframe frame;
--	int skip = 0;
 -
- 	pr_debug("%s(regs = %p tsk = %p)\n", __func__, regs, tsk);
+-void start_backtrace(struct stackframe *frame, unsigned long fp,
+-		     unsigned long pc)
++static void notrace unwind_start(struct stackframe *frame,
++				 struct task_struct *task,
++				 unsigned long fp, unsigned long pc)
+ {
++	frame->task = task;
+ 	frame->fp = fp;
+ 	frame->pc = pc;
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+@@ -45,7 +46,7 @@ void start_backtrace(struct stackframe *frame, unsigned long fp,
+ 	/*
+ 	 * Prime the first unwind.
+ 	 *
+-	 * In unwind_frame() we'll check that the FP points to a valid stack,
++	 * In unwind_next() we'll check that the FP points to a valid stack,
+ 	 * which can't be STACK_TYPE_UNKNOWN, and the first unwind will be
+ 	 * treated as a transition to whichever stack that happens to be. The
+ 	 * prev_fp value won't be used, but we set it to 0 such that it is
+@@ -54,8 +55,11 @@ void start_backtrace(struct stackframe *frame, unsigned long fp,
+ 	bitmap_zero(frame->stacks_done, __NR_STACK_TYPES);
+ 	frame->prev_fp = 0;
+ 	frame->prev_type = STACK_TYPE_UNKNOWN;
++	frame->failed = false;
+ }
  
- 	if (regs) {
- 		if (user_mode(regs))
- 			return;
--		skip = 1;
++NOKPROBE_SYMBOL(unwind_start);
++
+ /*
+  * Unwind from one frame record (A) to the next frame record (B).
+  *
+@@ -63,26 +67,26 @@ void start_backtrace(struct stackframe *frame, unsigned long fp,
+  * records (e.g. a cycle), determined based on the location and fp value of A
+  * and the location (but not the fp value) of B.
+  */
+-int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
++static void notrace unwind_next(struct stackframe *frame)
+ {
+ 	unsigned long fp = frame->fp;
+ 	struct stack_info info;
++	struct task_struct *tsk = frame->task;
+ 
+-	if (!tsk)
+-		tsk = current;
+-
+-	/* Final frame; nothing to unwind */
+-	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
+-		return -ENOENT;
+-
+-	if (fp & 0x7)
+-		return -EINVAL;
++	if (fp & 0x7) {
++		frame->failed = true;
++		return;
++	}
+ 
+-	if (!on_accessible_stack(tsk, fp, 16, &info))
+-		return -EINVAL;
++	if (!on_accessible_stack(tsk, fp, 16, &info)) {
++		frame->failed = true;
++		return;
++	}
+ 
+-	if (test_bit(info.type, frame->stacks_done))
+-		return -EINVAL;
++	if (test_bit(info.type, frame->stacks_done)) {
++		frame->failed = true;
++		return;
++	}
+ 
+ 	/*
+ 	 * As stacks grow downward, any valid record on the same stack must be
+@@ -98,15 +102,17 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
+ 	 * stack.
+ 	 */
+ 	if (info.type == frame->prev_type) {
+-		if (fp <= frame->prev_fp)
+-			return -EINVAL;
++		if (fp <= frame->prev_fp) {
++			frame->failed = true;
++			return;
++		}
+ 	} else {
+ 		set_bit(frame->prev_type, frame->stacks_done);
  	}
  
- 	if (!tsk)
-@@ -176,36 +174,8 @@ void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
- 	if (!try_get_task_stack(tsk))
- 		return;
+ 	/*
+ 	 * Record this frame record's values and location. The prev_fp and
+-	 * prev_type are only meaningful to the next unwind_frame() invocation.
++	 * prev_type are only meaningful to the next unwind_next() invocation.
+ 	 */
+ 	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
+ 	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
+@@ -124,32 +130,18 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
+ 		 * So replace it to an original value.
+ 		 */
+ 		ret_stack = ftrace_graph_get_ret_stack(tsk, frame->graph++);
+-		if (WARN_ON_ONCE(!ret_stack))
+-			return -EINVAL;
++		if (WARN_ON_ONCE(!ret_stack)) {
++			frame->failed = true;
++			return;
++		}
+ 		frame->pc = ret_stack->ret;
+ 	}
+ #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
  
--	if (tsk == current) {
--		start_backtrace(&frame,
--				(unsigned long)__builtin_frame_address(0),
--				(unsigned long)dump_backtrace);
--	} else {
--		/*
--		 * task blocked in __switch_to
--		 */
--		start_backtrace(&frame,
--				thread_saved_fp(tsk),
--				thread_saved_pc(tsk));
--	}
+ 	frame->pc = ptrauth_strip_insn_pac(frame->pc);
 -
- 	printk("%sCall trace:\n", loglvl);
--	do {
--		/* skip until specified stack frame */
--		if (!skip) {
--			dump_backtrace_entry(frame.pc, loglvl);
--		} else if (frame.fp == regs->regs[29]) {
--			skip = 0;
--			/*
--			 * Mostly, this is the case where this function is
--			 * called in panic/abort. As exception handler's
--			 * stack frame does not contain the corresponding pc
--			 * at which an exception has taken place, use regs->pc
--			 * instead.
--			 */
--			dump_backtrace_entry(regs->pc, loglvl);
--		}
--	} while (!unwind_frame(tsk, &frame));
-+	arch_stack_walk(dump_backtrace_entry, (void *)loglvl, tsk, regs);
- 
- 	put_task_stack(tsk);
+-	return 0;
  }
-diff --git a/arch/arm64/kernel/time.c b/arch/arm64/kernel/time.c
-index eebbc8d7123e..671b3038a772 100644
---- a/arch/arm64/kernel/time.c
-+++ b/arch/arm64/kernel/time.c
-@@ -32,22 +32,26 @@
- #include <asm/stacktrace.h>
- #include <asm/paravirt.h>
+-NOKPROBE_SYMBOL(unwind_frame);
  
-+static bool profile_pc_cb(void *arg, unsigned long pc)
+-void notrace walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
+-			     bool (*fn)(void *, unsigned long), void *data)
+-{
+-	while (1) {
+-		int ret;
+-
+-		if (!fn(data, frame->pc))
+-			break;
+-		ret = unwind_frame(tsk, frame);
+-		if (ret < 0)
+-			break;
+-	}
+-}
+-NOKPROBE_SYMBOL(walk_stackframe);
++NOKPROBE_SYMBOL(unwind_next);
+ 
+ static bool dump_backtrace_entry(void *arg, unsigned long where)
+ {
+@@ -186,25 +178,74 @@ void show_stack(struct task_struct *tsk, unsigned long *sp, const char *loglvl)
+ 	barrier();
+ }
+ 
++static bool notrace unwind_consume(struct stackframe *frame,
++				   stack_trace_consume_fn consume_entry,
++				   void *cookie)
 +{
-+	unsigned long *prof_pc = arg;
++	if (frame->failed) {
++		/* PC is suspect. Cannot consume it. */
++		return false;
++	}
 +
-+	if (in_lock_functions(pc))
-+		return true;
-+	*prof_pc = pc;
-+	return false;
++	if (!consume_entry(cookie, frame->pc)) {
++		/* Caller terminated the unwind. */
++		frame->failed = true;
++		return false;
++	}
++
++	if (frame->fp == (unsigned long)task_pt_regs(frame->task)->stackframe) {
++		/* Final frame; nothing to unwind */
++		return false;
++	}
++	return true;
 +}
 +
- unsigned long profile_pc(struct pt_regs *regs)
++NOKPROBE_SYMBOL(unwind_consume);
++
++static inline bool unwind_failed(struct stackframe *frame)
++{
++	return frame->failed;
++}
++
++/* Core unwind function */
++static bool notrace unwind(stack_trace_consume_fn consume_entry, void *cookie,
++			   struct task_struct *task,
++			   unsigned long fp, unsigned long pc)
++{
++	struct stackframe frame;
++
++	unwind_start(&frame, task, fp, pc);
++	while (unwind_consume(&frame, consume_entry, cookie))
++		unwind_next(&frame);
++	return !unwind_failed(&frame);
++}
++
++NOKPROBE_SYMBOL(unwind);
++
+ #ifdef CONFIG_STACKTRACE
+ 
+ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 			      void *cookie, struct task_struct *task,
+ 			      struct pt_regs *regs)
  {
 -	struct stackframe frame;
-+	unsigned long prof_pc = 0;
++	unsigned long fp, pc;
++
++	if (!task)
++		task = current;
  
- 	if (!in_lock_functions(regs->pc))
- 		return regs->pc;
- 
--	start_backtrace(&frame, regs->regs[29], regs->pc);
+-	if (regs)
+-		start_backtrace(&frame, regs->regs[29], regs->pc);
+-	else if (task == current)
+-		start_backtrace(&frame,
+-				(unsigned long)__builtin_frame_address(1),
+-				(unsigned long)__builtin_return_address(0));
+-	else
+-		start_backtrace(&frame, thread_saved_fp(task),
+-				thread_saved_pc(task));
 -
--	do {
--		int ret = unwind_frame(NULL, &frame);
--		if (ret < 0)
--			return 0;
--	} while (in_lock_functions(frame.pc));
-+	arch_stack_walk(profile_pc_cb, &prof_pc, current, regs);
- 
--	return frame.pc;
-+	return prof_pc;
+-	walk_stackframe(task, &frame, consume_entry, cookie);
++	if (regs) {
++		fp = regs->regs[29];
++		pc = regs->pc;
++	} else if (task == current) {
++		/* Skip arch_stack_walk() in the stack trace. */
++		fp = (unsigned long)__builtin_frame_address(1);
++		pc = (unsigned long)__builtin_return_address(0);
++	} else {
++		/* Caller guarantees that the task is not running. */
++		fp = thread_saved_fp(task);
++		pc = thread_saved_pc(task);
++	}
++	unwind(consume_entry, cookie, task, fp, pc);
  }
- EXPORT_SYMBOL(profile_pc);
  
+ #endif
 -- 
 2.25.1
 
