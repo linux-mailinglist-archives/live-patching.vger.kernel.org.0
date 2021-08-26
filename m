@@ -2,97 +2,87 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 551793F8C0A
-	for <lists+live-patching@lfdr.de>; Thu, 26 Aug 2021 18:25:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A503F90C4
+	for <lists+live-patching@lfdr.de>; Fri, 27 Aug 2021 01:01:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242648AbhHZQZf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 26 Aug 2021 12:25:35 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:45766 "EHLO
-        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233834AbhHZQZb (ORCPT
+        id S233866AbhHZWfW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 26 Aug 2021 18:35:22 -0400
+Received: from mail-yb1-f173.google.com ([209.85.219.173]:36851 "EHLO
+        mail-yb1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231159AbhHZWfW (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 26 Aug 2021 12:25:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sirena.org.uk; s=20170815-heliosphere; h=In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9nLQYbnGN+yi8mzweg9S/BoVh7fXlR4Py2/ta8hD65Q=; b=B5YrvnCAVI2lJ6r7GQ1Ka2YhFl
-        WfyqQP3qnVy3QK0DixM0bEOMTzJ6f0lxs2i2jTX0tOE5tg9O1zPjq90AUEMcVnWj8WFo2RvUuwKTv
-        1yOUsoWh7EAA53sJ15f5yX7wbyQW8S65Yao6uL7hNFyKJCSut0ojScMPWyv5246t91Zk=;
-Received: from 94.196.67.80.threembb.co.uk ([94.196.67.80] helo=fitzroy.sirena.org.uk)
-        by heliosphere.sirena.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <broonie@sirena.org.uk>)
-        id 1mJHkY-00FUba-Qf; Thu, 26 Aug 2021 15:57:07 +0000
-Received: by fitzroy.sirena.org.uk (Postfix, from userid 1000)
-        id 16BDCD01BF1; Thu, 26 Aug 2021 16:57:04 +0100 (BST)
-Date:   Thu, 26 Aug 2021 16:57:04 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     madvenka@linux.microsoft.com
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        pasha.tatashin@soleen.com, jthierry@redhat.com,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v8 3/4] arm64: Introduce stack trace reliability
- checks in the unwinder
-Message-ID: <YSe50PuWM/mjNwAj@sirena.org.uk>
-References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
- <20210812190603.25326-1-madvenka@linux.microsoft.com>
- <20210812190603.25326-4-madvenka@linux.microsoft.com>
+        Thu, 26 Aug 2021 18:35:22 -0400
+Received: by mail-yb1-f173.google.com with SMTP id f15so8878145ybg.3
+        for <live-patching@vger.kernel.org>; Thu, 26 Aug 2021 15:34:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=X/STzz3xbXrNWtIX6dH3xgqdevdigA3hDWCRpqHOAxc=;
+        b=mtzOg9A1SXSb/8lNeplWcQPQsJehmCJsPGp92SPoFrVj7QzyGvc9S/+jqh8ECCOuqW
+         yWmLX961kiwj8wAamtAFlX7HuYgraqdIAajIhvIQrogsM0XY+jMObH/Ayww5/XRTJlEz
+         TPVfu3H9fjuBMVqruLLjbe5i5ozTjmhBpKYwmVoLNazHTE3u/BZBT+sZYFQmpzZwSu9Z
+         tzJxbMwFY+pnUNucO8RmM3sbplk7gCCOe4kfl5KzUxqo7izb46kpMSWNoCCCx2dgTGyQ
+         Y2/5JKrApDpPrb/iWoY6QkFbQWuG9SXzcccNkdcAoiwd5ivVxicODbgotl8dZC3IFmDZ
+         6EgA==
+X-Gm-Message-State: AOAM530swVpvqi4OJN8SEMtjBjDg+ExKrZ+Ne8iXHk1o8XXHZ6EIKioX
+        UP8auASixOAfm9AK2ga48rvnuzQmsoYI+48SWrjuE0Hj+Qg=
+X-Google-Smtp-Source: ABdhPJzSudQWUnA367Hvs5oSVHSU+mozx0we2Ietm7jpfsz7ySaOpbhrIvJABtYRdmVJ/TUI+dVpMmUXdBh3M4CSIFs=
+X-Received: by 2002:a25:1244:: with SMTP id 65mr1413110ybs.46.1630017273945;
+ Thu, 26 Aug 2021 15:34:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="DTeBTo7twGoyd0rG"
-Content-Disposition: inline
-In-Reply-To: <20210812190603.25326-4-madvenka@linux.microsoft.com>
-X-Cookie: I can relate to that.
+From:   Peter Swain <swine@pobox.com>
+Date:   Thu, 26 Aug 2021 15:34:23 -0700
+Message-ID: <CABFpvm2o+d0e-dfmCx7H6=8i3QQS_xyGFt4i3zn8G=Myr_miag@mail.gmail.com>
+Subject: announcing LLpatch: arch-independent live-patch creation
+To:     live-patching@vger.kernel.org, madvenka@linux.microsoft.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+We have a new userspace live-patch creation tool, LLpatch, paralleling
+kpatch-build, but without requiring its arch-specific code for ELF
+analysis and manipulation.
 
---DTeBTo7twGoyd0rG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+We considered extending kpatch-build to a new target architecture
+(arm64), cluttering its code with details of another architecture’s
+quirky instruction sequences & relocation modes, and suspected there
+might be a better way.
 
-On Thu, Aug 12, 2021 at 02:06:02PM -0500, madvenka@linux.microsoft.com wrote:
 
-> +	if (frame->need_reliable && !unwind_is_reliable(frame)) {
-> +		/* Cannot unwind to the next frame reliably. */
-> +		frame->failed = true;
-> +		return false;
-> +	}
+The LLVM suite already knows these details, and offers llvm-diff, for
+comparing generated code at the LLVM-IR (internal representation)
+level, which has access to much more of the code’s _intent_ than
+kpatch’s create-diff-object is able to infer from ELF-level
+differences.
 
-This means we only collect reliability information in the case
-where we're specifically doing a reliable stacktrace.  For
-example when printing stack traces on the console it might be
-useful to print a ? or something if the frame is unreliable as a
-hint to the reader that the information might be misleading.
-Could we therefore change the flag here to a reliability one and
-our need_reliable check so that we always run
-unwind_is_reliable()?
 
-I'm not sure if we need to abandon the trace on first error when
-doing a reliable trace but I can see it's a bit safer so perhaps
-better to do so.  If we don't abandon then we don't require the
-need_reliable check at all.
+Building on this, LLpatch adds namespace analysis, further
+dead/duplicate code elimination, and creation of patch modules
+compatible with kernel’s livepatch API.
 
---DTeBTo7twGoyd0rG
-Content-Type: application/pgp-signature; name="signature.asc"
+Arm64 is supported - testing against a livepatch-capable v5.12 arm64
+kernel, using the preliminary reliable-stacktrace work from
+madvenka@linux.microsoft.com, LLpatch modules for x86 and arm64 behave
+identically to the x86 kpatch-build modules, without requiring any
+additional arch-specific code.
 
------BEGIN PGP SIGNATURE-----
+On x86, where both tools are available, LLpatch produces smaller patch
+modules than kpatch, and already correctly handles most of the kpatch
+test cases, without any arch-specific code. This suggests it can work
+with any clang-supported kernel architecture.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmEnuc8ACgkQJNaLcl1U
-h9BFrAf+N3yJJQuwCLxv36qPYIv8rK67Wg7vq6QHBv9olYSZOaay2RqDa9LKPVps
-cIOnOsjsnjWwchw6R0ynXbK3UvrxZP3Mhl3hN/O0ajYq1ffUxoVzsfiAfLvgDjj1
-eK8FP8165XKy6IN7u+OFyomrl7nSKOO4zWRJw5Ce71CcTHnegpxVPb5V4OaMwK28
-pOaupCfunPrZyXaHZjpnbZinxAQqtCY/IZU4ztW+0tk78TkK07nbFYUAgmQC9drb
-gc4bkfHPdW+L8IUx5fIavhjSiVQHVdes0+u1EAajOmvEYvV8WTklgE0NekkbGPrm
-E2aQIY1iWIMZ3PFZnPkx1VYALA/qsg==
-=JSFk
------END PGP SIGNATURE-----
 
---DTeBTo7twGoyd0rG--
+Work is ongoing, collaboration is welcome.
+
+
+See https://github.com/google/LLpatch for further details on the
+technology and its benefits.
+
+
+Yonghyun Hwang (yonghyun@google.com freeaion@gmail.com)
+Bill Wendling (morbo@google.com isanbard@gmail.com)
+Pete Swain (swine@google.com swine@pobox.com)
