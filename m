@@ -2,374 +2,105 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF393F81CE
-	for <lists+live-patching@lfdr.de>; Thu, 26 Aug 2021 06:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D3A3F8C07
+	for <lists+live-patching@lfdr.de>; Thu, 26 Aug 2021 18:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233364AbhHZExb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 26 Aug 2021 00:53:31 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:33444 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbhHZExb (ORCPT
+        id S232496AbhHZQZ1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 26 Aug 2021 12:25:27 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:45722 "EHLO
+        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238124AbhHZQZS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 26 Aug 2021 00:53:31 -0400
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 5568C20B8604;
-        Wed, 25 Aug 2021 21:52:43 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5568C20B8604
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1629953564;
-        bh=n6JdYPQwaIUUknX82Qe4xl+LLh1+kRteobmDoosQ8As=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=NvriXn+594R8HBUv5f8rMAwwszQti2Sl2rqTXQRsixvJdM9q72FOnw9CL++4Wdm4p
-         VUzAkPKa8r/IM9assN83+hEhPCGfobOTLvI2/34W+Sm/yEKI7N1I2IhBiFBBWjKAnS
-         GG0rifO81Y+gvfStQpp4NKFkU3/k5n7cFWiSxNEk=
-Subject: Re: [RFC PATCH v8 1/4] arm64: Make all stack walking functions use
- arch_stack_walk()
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        Thu, 26 Aug 2021 12:25:18 -0400
+X-Greylist: delayed 1761 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Aug 2021 12:25:17 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sirena.org.uk; s=20170815-heliosphere; h=In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=YpAC7eKIN1Mk1gt9e5fi3Ne1IF3XO4Cc70sDdq2XPuo=; b=Zza36yh1cVUFJ/wznsXo2osjWg
+        qhweHSI/W3yFCGaHmPXuQQW6mCme31KjL5zFck+2gmfVyODZdylB4GOfU05DzYyjnfBF+FiNC1XzH
+        1J8Rx/0wxfA1WyyLrBq32bP9AJ6+KR3zbRA5QhoCxtpBGHrLC4ZuAbHTtDaflLgQNiLs=;
+Received: from 94.196.67.80.threembb.co.uk ([94.196.67.80] helo=fitzroy.sirena.org.uk)
+        by heliosphere.sirena.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <broonie@sirena.org.uk>)
+        id 1mJHiM-00FUXp-QF; Thu, 26 Aug 2021 15:54:51 +0000
+Received: by fitzroy.sirena.org.uk (Postfix, from userid 1000)
+        id C7C89D01B81; Thu, 26 Aug 2021 16:46:34 +0100 (BST)
+Date:   Thu, 26 Aug 2021 16:46:34 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     madvenka@linux.microsoft.com
+Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
         nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
         catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
         pasha.tatashin@soleen.com, jthierry@redhat.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v8 2/4] arm64: Reorganize the unwinder code for
+ better consistency and maintenance
+Message-ID: <YSe3WogpFIu97i/7@sirena.org.uk>
 References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
  <20210812190603.25326-1-madvenka@linux.microsoft.com>
- <20210812190603.25326-2-madvenka@linux.microsoft.com>
- <20210824131344.GE96738@C02TD0UTHF1T.local>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <406f7960-b7d8-f058-d055-7ca373689fba@linux.microsoft.com>
-Date:   Wed, 25 Aug 2021 23:52:42 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ <20210812190603.25326-3-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
-In-Reply-To: <20210824131344.GE96738@C02TD0UTHF1T.local>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="65LKdjdOaAfSQ4/m"
+Content-Disposition: inline
+In-Reply-To: <20210812190603.25326-3-madvenka@linux.microsoft.com>
+X-Cookie: I can relate to that.
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Mark Rutland, Mark Brown,
 
-Do you have any comments on the reliability part of the patch series?
+--65LKdjdOaAfSQ4/m
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Madhavan
+On Thu, Aug 12, 2021 at 02:06:01PM -0500, madvenka@linux.microsoft.com wrot=
+e:
 
-On 8/24/21 8:13 AM, Mark Rutland wrote:
-> On Thu, Aug 12, 2021 at 02:06:00PM -0500, madvenka@linux.microsoft.com wrote:
->> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>
->> Currently, there are multiple functions in ARM64 code that walk the
->> stack using start_backtrace() and unwind_frame(). Convert all of
->> them to use arch_stack_walk(). This makes maintenance easier.
-> 
-> It would be good to split this into a series of patches as Mark Brown
-> suggested in v7.
-> 
->> Here is the list of functions:
->>
->> 	perf_callchain_kernel()
->> 	get_wchan()
->> 	return_address()
->> 	dump_backtrace()
->> 	profile_pc()
-> 
-> Note that arch_stack_walk() depends on CONFIG_STACKTRACE (which is not in
-> defconfig), so we'll need to reorganise things such that it's always defined,
-> or factor out the core of that function and add a wrapper such that we
-> can always use it.
-> 
->> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
->> ---
->>  arch/arm64/include/asm/stacktrace.h |  3 ---
->>  arch/arm64/kernel/perf_callchain.c  |  5 +---
->>  arch/arm64/kernel/process.c         | 39 ++++++++++++++++++-----------
->>  arch/arm64/kernel/return_address.c  |  6 +----
->>  arch/arm64/kernel/stacktrace.c      | 38 +++-------------------------
->>  arch/arm64/kernel/time.c            | 22 +++++++++-------
->>  6 files changed, 43 insertions(+), 70 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
->> index 8aebc00c1718..e43dea1c6b41 100644
->> --- a/arch/arm64/include/asm/stacktrace.h
->> +++ b/arch/arm64/include/asm/stacktrace.h
->> @@ -61,9 +61,6 @@ struct stackframe {
->>  #endif
->>  };
->>  
->> -extern int unwind_frame(struct task_struct *tsk, struct stackframe *frame);
->> -extern void walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
->> -			    bool (*fn)(void *, unsigned long), void *data);
->>  extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
->>  			   const char *loglvl);
->>  
->> diff --git a/arch/arm64/kernel/perf_callchain.c b/arch/arm64/kernel/perf_callchain.c
->> index 4a72c2727309..2f289013c9c9 100644
->> --- a/arch/arm64/kernel/perf_callchain.c
->> +++ b/arch/arm64/kernel/perf_callchain.c
->> @@ -147,15 +147,12 @@ static bool callchain_trace(void *data, unsigned long pc)
->>  void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
->>  			   struct pt_regs *regs)
->>  {
->> -	struct stackframe frame;
->> -
->>  	if (perf_guest_cbs && perf_guest_cbs->is_in_guest()) {
->>  		/* We don't support guest os callchain now */
->>  		return;
->>  	}
->>  
->> -	start_backtrace(&frame, regs->regs[29], regs->pc);
->> -	walk_stackframe(current, &frame, callchain_trace, entry);
->> +	arch_stack_walk(callchain_trace, entry, current, regs);
->>  }
-> 
-> We can also update callchain_trace take the return value of
-> perf_callchain_store into acount, e.g.
-> 
-> | static bool callchain_trace(void *data, unsigned long pc) 
-> | {
-> | 	struct perf_callchain_entry_ctx *entry = data;
-> | 	return perf_callchain_store(entry, pc) == 0;
-> | }
-> 
->>  
->>  unsigned long perf_instruction_pointer(struct pt_regs *regs)
->> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
->> index c8989b999250..52c12fd26407 100644
->> --- a/arch/arm64/kernel/process.c
->> +++ b/arch/arm64/kernel/process.c
->> @@ -544,11 +544,28 @@ __notrace_funcgraph struct task_struct *__switch_to(struct task_struct *prev,
->>  	return last;
->>  }
->>  
->> +struct wchan_info {
->> +	unsigned long	pc;
->> +	int		count;
->> +};
->> +
->> +static bool get_wchan_cb(void *arg, unsigned long pc)
->> +{
->> +	struct wchan_info *wchan_info = arg;
->> +
->> +	if (!in_sched_functions(pc)) {
->> +		wchan_info->pc = pc;
->> +		return false;
->> +	}
->> +	wchan_info->count--;
->> +	return !!wchan_info->count;
->> +}
-> 
-> This will terminate one entry earlier than the old logic since we used
-> to use a post-increment (testing the prior value), and now we're
-> effectively using a pre-decrement (testing the new value).
-> 
-> I don't think that matters all that much in practice, but it might be
-> best to keep the original logic, e.g. initialize `count` to 0 and here
-> do:
-> 
-> 	return wchan_info->count++ < 16;
-> 
->> +
->>  unsigned long get_wchan(struct task_struct *p)
->>  {
->> -	struct stackframe frame;
->> -	unsigned long stack_page, ret = 0;
->> -	int count = 0;
->> +	unsigned long stack_page;
->> +	struct wchan_info wchan_info;
->> +
->>  	if (!p || p == current || task_is_running(p))
->>  		return 0;
->>  
->> @@ -556,20 +573,12 @@ unsigned long get_wchan(struct task_struct *p)
->>  	if (!stack_page)
->>  		return 0;
->>  
->> -	start_backtrace(&frame, thread_saved_fp(p), thread_saved_pc(p));
->> +	wchan_info.pc = 0;
->> +	wchan_info.count = 16;
->> +	arch_stack_walk(get_wchan_cb, &wchan_info, p, NULL);
->>  
->> -	do {
->> -		if (unwind_frame(p, &frame))
->> -			goto out;
->> -		if (!in_sched_functions(frame.pc)) {
->> -			ret = frame.pc;
->> -			goto out;
->> -		}
->> -	} while (count++ < 16);
->> -
->> -out:
->>  	put_task_stack(p);
->> -	return ret;
->> +	return wchan_info.pc;
->>  }
-> 
-> Other than the comment above, this looks good to me.
-> 
->>  unsigned long arch_align_stack(unsigned long sp)
->> diff --git a/arch/arm64/kernel/return_address.c b/arch/arm64/kernel/return_address.c
->> index a6d18755652f..92a0f4d434e4 100644
->> --- a/arch/arm64/kernel/return_address.c
->> +++ b/arch/arm64/kernel/return_address.c
->> @@ -35,15 +35,11 @@ NOKPROBE_SYMBOL(save_return_addr);
->>  void *return_address(unsigned int level)
->>  {
->>  	struct return_address_data data;
->> -	struct stackframe frame;
->>  
->>  	data.level = level + 2;
->>  	data.addr = NULL;
->>  
->> -	start_backtrace(&frame,
->> -			(unsigned long)__builtin_frame_address(0),
->> -			(unsigned long)return_address);
->> -	walk_stackframe(current, &frame, save_return_addr, &data);
->> +	arch_stack_walk(save_return_addr, &data, current, NULL);
->>  
->>  	if (!data.level)
->>  		return data.addr;
-> 
-> Nor that arch_stack_walk() will start with it's caller, so
-> return_address() will be included in the trace where it wasn't
-> previously, which implies we need to skip an additional level.
-> 
-> That said, I'm not entirely sure why we need to skip 2 levels today; it
-> might be worth checking that's correct.
-> 
-> We should also mark return_address() as noinline to avoid surprises with
-> LTO.
-> 
->> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
->> index 8982a2b78acf..1800310f92be 100644
->> --- a/arch/arm64/kernel/stacktrace.c
->> +++ b/arch/arm64/kernel/stacktrace.c
->> @@ -151,23 +151,21 @@ void notrace walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
->>  }
->>  NOKPROBE_SYMBOL(walk_stackframe);
->>  
->> -static void dump_backtrace_entry(unsigned long where, const char *loglvl)
->> +static bool dump_backtrace_entry(void *arg, unsigned long where)
->>  {
->> +	char *loglvl = arg;
->>  	printk("%s %pSb\n", loglvl, (void *)where);
->> +	return true;
->>  }
->>  
->>  void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
->>  		    const char *loglvl)
->>  {
->> -	struct stackframe frame;
->> -	int skip = 0;
->> -
->>  	pr_debug("%s(regs = %p tsk = %p)\n", __func__, regs, tsk);
->>  
->>  	if (regs) {
->>  		if (user_mode(regs))
->>  			return;
->> -		skip = 1;
->>  	}
-> 
-> We can simplifiy this to:
-> 
-> 	if (regs && user_mode(regs))
-> 		return;
-> 
->>  
->>  	if (!tsk)
->> @@ -176,36 +174,8 @@ void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
->>  	if (!try_get_task_stack(tsk))
->>  		return;
->>  
->> -	if (tsk == current) {
->> -		start_backtrace(&frame,
->> -				(unsigned long)__builtin_frame_address(0),
->> -				(unsigned long)dump_backtrace);
->> -	} else {
->> -		/*
->> -		 * task blocked in __switch_to
->> -		 */
->> -		start_backtrace(&frame,
->> -				thread_saved_fp(tsk),
->> -				thread_saved_pc(tsk));
->> -	}
->> -
->>  	printk("%sCall trace:\n", loglvl);
->> -	do {
->> -		/* skip until specified stack frame */
->> -		if (!skip) {
->> -			dump_backtrace_entry(frame.pc, loglvl);
->> -		} else if (frame.fp == regs->regs[29]) {
->> -			skip = 0;
->> -			/*
->> -			 * Mostly, this is the case where this function is
->> -			 * called in panic/abort. As exception handler's
->> -			 * stack frame does not contain the corresponding pc
->> -			 * at which an exception has taken place, use regs->pc
->> -			 * instead.
->> -			 */
->> -			dump_backtrace_entry(regs->pc, loglvl);
->> -		}
->> -	} while (!unwind_frame(tsk, &frame));
->> +	arch_stack_walk(dump_backtrace_entry, (void *)loglvl, tsk, regs);
-> 
-> It turns out we currently need this skipping to get the balance the
-> ftrace call stack, and arch_stack_walk() doesn't currently do the right
-> thing when starting from regs. That balancing isn't quite right, and
-> will be wrong in some case when unwinding across exception boundaries;
-> we could implement HAVE_FUNCTION_GRAPH_RET_ADDR_PTR using the FP to
-> solve that.
-> 
->>  
->>  	put_task_stack(tsk);
->>  }
->> diff --git a/arch/arm64/kernel/time.c b/arch/arm64/kernel/time.c
->> index eebbc8d7123e..671b3038a772 100644
->> --- a/arch/arm64/kernel/time.c
->> +++ b/arch/arm64/kernel/time.c
->> @@ -32,22 +32,26 @@
->>  #include <asm/stacktrace.h>
->>  #include <asm/paravirt.h>
->>  
->> +static bool profile_pc_cb(void *arg, unsigned long pc)
->> +{
->> +	unsigned long *prof_pc = arg;
->> +
->> +	if (in_lock_functions(pc))
->> +		return true;
->> +	*prof_pc = pc;
->> +	return false;
->> +}
->> +
->>  unsigned long profile_pc(struct pt_regs *regs)
->>  {
->> -	struct stackframe frame;
->> +	unsigned long prof_pc = 0;
->>  
->>  	if (!in_lock_functions(regs->pc))
->>  		return regs->pc;
->>  
->> -	start_backtrace(&frame, regs->regs[29], regs->pc);
->> -
->> -	do {
->> -		int ret = unwind_frame(NULL, &frame);
->> -		if (ret < 0)
->> -			return 0;
->> -	} while (in_lock_functions(frame.pc));
->> +	arch_stack_walk(profile_pc_cb, &prof_pc, current, regs);
->>  
->> -	return frame.pc;
->> +	return prof_pc;
->>  }
->>  EXPORT_SYMBOL(profile_pc);
-> 
-> Mdoulo the problem above w.r.t. unwinding from regs, this looks good.
-> 
-> Thanks,
-> Mark.
-> 
->>  
->> -- 
->> 2.25.1
->>
+> Renaming of unwinder functions
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+
+> Rename unwinder functions to unwind_*() similar to other architectures
+> for naming consistency. More on this below.
+
+This feels like it could probably do with splitting up a bit for
+reviewability, several of these headers you've got in the commit
+logs look like they could be separate commits.  Splitting things
+up does help with reviewability, having only one change to keep
+in mind at once is a lot less cognative load.
+
+> Replace walk_stackframe() with unwind()
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>=20
+> walk_stackframe() contains the unwinder loop that walks the stack
+> frames. Currently, start_backtrace() and walk_stackframe() are called
+> separately. They should be combined in the same function. Also, the
+> loop in walk_stackframe() should be simplified and should look like
+> the unwind loops in other architectures such as X86 and S390.
+
+This definitely seems like a separate change.
+
+--65LKdjdOaAfSQ4/m
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmEnt1oACgkQJNaLcl1U
+h9DPnAf9F4laW3vdmWRoJzkB/XwlR1FibFKsnO7ddA+FYMKZuJKT88RuCyy/oIdd
+/h434cxFWIKloXHHoVJEnN5PsOCbiyeddB+maWA5TNP7zI53+l15rrgHvLxpJ6nW
+w0hcLJRt4vvlv/1QJsW1q5FqvXkBx9WDlJ142fpX0/yH07rm+oxi4Ib4jX3E7rQL
+d2R0vgSZNXN4MLoyTaOnNdjX84zz17rFN8l7Gl2iO4dWYj9nLjFWgRY6icoGcVWh
+OgDIxg2F4D78vOCN41EsPe6ZYtNzBKAp+9DF9KH4qea9uMMiCJlhCJJNzVGWzBN6
+wFffVTt+3zbPngMhDDGDSWNO7nkCIw==
+=cnd8
+-----END PGP SIGNATURE-----
+
+--65LKdjdOaAfSQ4/m--
