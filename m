@@ -2,219 +2,374 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED2D23F6C74
-	for <lists+live-patching@lfdr.de>; Wed, 25 Aug 2021 02:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADF393F81CE
+	for <lists+live-patching@lfdr.de>; Thu, 26 Aug 2021 06:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235573AbhHYAJe (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 24 Aug 2021 20:09:34 -0400
-Received: from esa16.fujitsucc.c3s2.iphmx.com ([216.71.158.33]:27576 "EHLO
-        esa16.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235388AbhHYAJd (ORCPT
+        id S233364AbhHZExb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 26 Aug 2021 00:53:31 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:33444 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229608AbhHZExb (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 24 Aug 2021 20:09:33 -0400
-X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Tue, 24 Aug 2021 20:09:32 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
-  t=1629850129; x=1661386129;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=IaZq/mVsjwWtv0XkFPBO9ZZKlUhZWHBskSs69xPsRnY=;
-  b=uGaqYLMbwSOOUkK07WB8MJluBNvohNYgTxR/A1OvMcavXeLX2LhPVWt7
-   zW5BH0zS3PF5PsVeyDvwhFVWS681XWmfLFN/FCC4+qkncZJeG7gxyZyzJ
-   6+alwxo3Gke54EKyxte1RdYWNb/ozfjHLgQBQ+KRGXHopHMQgiu2AIXC4
-   oveJK42+RKVZgvaNNE/Zg3uMRkRAdVLAME0EfxFd1TbyAyRC9g3tdjkQk
-   dchO4dKTHxp7rQVs0c3sSy8GdM6vt2sjL9EK7I3wT9xPGu9zwBjwJLmKr
-   9i+U0qpJib+SLpkB73ReZXt7TbOsKyZgF+RhHgBzqyi9WSg6fLXQG4B9h
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10086"; a="37629090"
-X-IronPort-AV: E=Sophos;i="5.84,348,1620658800"; 
-   d="scan'208";a="37629090"
-Received: from mail-os2jpn01lp2055.outbound.protection.outlook.com (HELO JPN01-OS2-obe.outbound.protection.outlook.com) ([104.47.92.55])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2021 09:01:20 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fdglCKYyZBXBqps9OzW9elXz7P0tZ/zIY1xa+gndjqMTCqLtATKq+7Uohnu+jy5x/FGB2o3/xWUI/k6h3k+DIEW8upk4AVnrRka501xVrerNbsUdAvqlPNw2m888py/QCtT0fuOxnkgApQfultQvXmcxV35NWCwIM1H85ZMrZNTaJMUdB/grOtfvU/04vMqHLV2tZJniG/3SjVwixxG629LXYksNYG/BwmJ2myEMEidmkeAtqOmZkecwVFk2dgH++YDRj++iYgTaLeUa+Rjd6g0Wt2sslCVr128f/3mRp8v/kEZePe5yXGE1gseSJ5/4uk5wkGX7U/NonuUi4+mipA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y/NgoPTXm5Hb9++7/11h93nf63eMPbp0a3zwBifbx3g=;
- b=NpD8QlxrTr7ycf+ItxWRE7d1vnaCmBGXoJvirF3GjE34T5moBU38EtRRXjARw8eBPAuhSPz1robjl0Z6h2fCHxs0FtPodYbjC0FNJxOrJOUF5LeVNNrTSz+fRN5b1T5hHQP56Agy8Ej5Px8lEf9l3bLBtCMl0cNMxV5kiX6GDzC3Eve3DYSzAJjSh3YzqiWQr1049WnnthYucEv3bxKPs+GPZ82NdzpWfEHzFWN3aVq5Q+lNiR+G6McSYWNo2cmloO5gKDHnaPrX4NXe1u6mt34J5y6/TUrNSS/RSm05ePR4472m1CLLSnHjqYebnwk2MTwvn0ij8RFUi4yeXCL2zg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y/NgoPTXm5Hb9++7/11h93nf63eMPbp0a3zwBifbx3g=;
- b=i0Sp4NxFqo3IoM1J7DJJu4sTumrtRc7Mys52LWDU7+LeciXLAyeijQeVREKHxJKgcbVOzXlnLfrneO86J//Bq/pHoeNhuHEEMPqfXu2dFAMOFGbqZknrJ+ZcqHhxuJ0/l0qI5+YGwzsfJU+7Wsz3HEmPO7AYte7QMeCUFbHBOoY=
-Received: from TY2PR01MB5257.jpnprd01.prod.outlook.com (2603:1096:404:11a::10)
- by TYAPR01MB4718.jpnprd01.prod.outlook.com (2603:1096:404:12c::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.17; Wed, 25 Aug
- 2021 00:01:17 +0000
-Received: from TY2PR01MB5257.jpnprd01.prod.outlook.com
- ([fe80::d0f9:bb55:deb4:88bf]) by TY2PR01MB5257.jpnprd01.prod.outlook.com
- ([fe80::d0f9:bb55:deb4:88bf%5]) with mapi id 15.20.4436.025; Wed, 25 Aug 2021
- 00:01:17 +0000
-From:   "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>
-To:     "'Madhavan T. Venkataraman'" <madvenka@linux.microsoft.com>
-CC:     "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "pasha.tatashin@soleen.com" <pasha.tatashin@soleen.com>,
-        "jthierry@redhat.com" <jthierry@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFC PATCH v8 3/4] arm64: Introduce stack trace reliability
- checks in the unwinder
-Thread-Topic: [RFC PATCH v8 3/4] arm64: Introduce stack trace reliability
- checks in the unwinder
-Thread-Index: AQHXj60kVJNMm5FzxU6EDROYO/rEjquAuwsQgAHqSACAAMNBkA==
-Date:   Wed, 25 Aug 2021 00:01:16 +0000
-Message-ID: <TY2PR01MB5257492F3B6B2E904AF5E46285C69@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+        Thu, 26 Aug 2021 00:53:31 -0400
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 5568C20B8604;
+        Wed, 25 Aug 2021 21:52:43 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5568C20B8604
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1629953564;
+        bh=n6JdYPQwaIUUknX82Qe4xl+LLh1+kRteobmDoosQ8As=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=NvriXn+594R8HBUv5f8rMAwwszQti2Sl2rqTXQRsixvJdM9q72FOnw9CL++4Wdm4p
+         VUzAkPKa8r/IM9assN83+hEhPCGfobOTLvI2/34W+Sm/yEKI7N1I2IhBiFBBWjKAnS
+         GG0rifO81Y+gvfStQpp4NKFkU3/k5n7cFWiSxNEk=
+Subject: Re: [RFC PATCH v8 1/4] arm64: Make all stack walking functions use
+ arch_stack_walk()
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        pasha.tatashin@soleen.com, jthierry@redhat.com,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
  <20210812190603.25326-1-madvenka@linux.microsoft.com>
- <20210812190603.25326-4-madvenka@linux.microsoft.com>
- <TY2PR01MB5257EA835C6F28ABF457EB0B85C59@TY2PR01MB5257.jpnprd01.prod.outlook.com>
- <62d8969d-8ba1-4554-16b4-1c0bd4f8d9e7@linux.microsoft.com>
-In-Reply-To: <62d8969d-8ba1-4554-16b4-1c0bd4f8d9e7@linux.microsoft.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-shieldmailcheckermailid: 919e81a8178d48a1a67d7e32ee3d5163
-x-securitypolicycheck: OK by SHieldMailChecker v2.6.3
-msip_labels: MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Enabled=true;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_SetDate=2021-08-24T23:58:43Z;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Method=Standard;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Name=FUJITSU-RESTRICTED?;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_SiteId=a19f121d-81e1-4858-a9d8-736e267fd4c7;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_ActionId=0f27c542-3268-48e8-b71c-69fdb8c504c2;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_ContentBits=0
-authentication-results: linux.microsoft.com; dkim=none (message not signed)
- header.d=none;linux.microsoft.com; dmarc=none action=none
- header.from=fujitsu.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 292f493e-fafa-4201-0843-08d9675b7623
-x-ms-traffictypediagnostic: TYAPR01MB4718:
-x-microsoft-antispam-prvs: <TYAPR01MB471836C385E62A3E3BB81FA885C69@TYAPR01MB4718.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6/DuXXdftpoTCetUxjRVB1gztF0n6v5UXyd9AdXM87s7tNRcsHwiOCcBZAdrH7Mwuxil2isCoKd0DtzwGJEH9bt+Fo8j0P6QAZ51r5Im1HLdCnVTn90S+myyBNS7epM0Wouy6o3DRhD83ZdPjA4aA1lBxI2Kq39/uT6WBE72FFqZlYb6B+iRMr0Bk1mGoMfMtLcqiBjr1kJK5IGt2cQTBnx9FB3ATcAV1lOZa1RKBMb7P19mQxYNlhFzIL++70vSBfG2cwwhB+LPIQ/vBecZQ7kjCCGkfJc/D7JaBidjNVJtbbPQrmMML+ntpq5EwaGsmUYLAtcMP49qPVMIllPUkSpyB2kXmVVRhu6rKqpsyDU2G6nfPWWTZmZLQLTlTQTmdwCwCUH94crm2L9azqQZi68zvc0weP7h179IK+v73S1NEg+od32dgV4C+GJzwbjOm2qe2XmI15eRGzxM28HKqq1MJ6W44d0aUlRboG8Zx+TZQWd6jZlQzZ1QzpEu2gNr9iUMOtPePHfZ8HHz65zlVTa1ItM2fsjNjZWCwv0oY9KEW9AzN52bR7ThdFhsNdY9zrFehZIHVHP04/6rqHkHcyum/QErj4oiEjQMPsTra6Pagl/oIrPRDClTNtZcf+XnwqTXhyldcYBMvkvLVADtyQ+Gj5nAm//hgm93lRuzFEYKPURzGbrU3kF6v+PXvU0VC43HvFL+EX0LYchFFofR4g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB5257.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(396003)(376002)(136003)(366004)(6916009)(4326008)(54906003)(33656002)(38100700002)(186003)(26005)(122000001)(7416002)(55016002)(7696005)(86362001)(478600001)(85182001)(6506007)(64756008)(76116006)(9686003)(2906002)(66946007)(52536014)(66476007)(8676002)(66446008)(66556008)(8936002)(5660300002)(71200400001)(316002)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-2022-jp?B?dGRpdEZBZFNTSEZsVGZLM1QvNDdIM0lGTzdLbG9hY3gzeGc2SldKRVp0?=
- =?iso-2022-jp?B?ZVQ1MVljdHUxTmVybldIWkpsayt2Wi8rN0Z4S1o0SlVEejM0dnptZXIr?=
- =?iso-2022-jp?B?eS8zbmtTM2RYUUdydzkzTmQwL25TNWlBeWZsQUVZYTZQYVVnRE0rODhi?=
- =?iso-2022-jp?B?UHJRak8zZUdXSVFKSWd5T2NZS1NYQUlGTDh4b3djMWJNUjAyR3ZrWlli?=
- =?iso-2022-jp?B?cGVUUjhTR3hCdHJrWjI5K2EwNE8xZnljWEg3Nk9CbzJFUHlKRG1YOWd4?=
- =?iso-2022-jp?B?TlF5QU9IcTN1a3BlMUZzMzBMdjBUSnlieG1NUWlzTENHN2xwY0hQSWgv?=
- =?iso-2022-jp?B?ZzNPcnhjWVMvMVRnL2hKNmRZWThnQ1dxZ0RWOVdpUEFHeGU0d3ByY0E3?=
- =?iso-2022-jp?B?MlZHam1DOE5jYjliQUtjZjZCTGE5S0ZPMGxxTklhWWN5a1ZzSUV3Q2d2?=
- =?iso-2022-jp?B?TGFvcG1uZWZxK25OeFFFMkQ1OHpUZDllT2w0cHgrZm1QR3pPL3Iva2J6?=
- =?iso-2022-jp?B?OUlvSUdOQnkxVit5S0pjSzhjeWlkaXBUejZXd2JGck1EVlRGbUpSendS?=
- =?iso-2022-jp?B?SjBjdEhMOTZuRnJkSUFNL1lucWVYYkdDTzZiYVJoOWdyZWVvR05VTU5T?=
- =?iso-2022-jp?B?MGtUS2hBZEU3N0k2eGNsMW9BQyt2SExIV3BwSk9RdDM5NlZ5MHM0MEU2?=
- =?iso-2022-jp?B?ak9xb0xaVzVUbmxNM3pKcllKeCtZdUppMEVsMExwbkdrMXZJYnZvOHVq?=
- =?iso-2022-jp?B?QzdNdHl6Q1pKbTZlTmN3YzQ1UUNSM2lCU1dtbjZHZXYrSGFJWGwrYitK?=
- =?iso-2022-jp?B?bkQ3bnorVlV2OEpxMU9KVWh5K0h1cTRQK0dnd0JnN2dwNnRFMCtid2VO?=
- =?iso-2022-jp?B?VGJTT2gvK0hBdnZoRlVkd1VoUXB5WjVOcUxRZ2JLQXg5RlpBZU1VWVI3?=
- =?iso-2022-jp?B?dUMzSEhqU2M1Zkk4SC9SOXdkSFdNODY1YUNUMmRZQit3WlZKR2tOaDh3?=
- =?iso-2022-jp?B?dlNmZ051YU9iQ1dqZWk3L29FZW1GOWcrdlgvTVZ2ZVFuRnZYWVNONmZF?=
- =?iso-2022-jp?B?SUxvSG10MTVlTCtVNEo2VGFzc2R5aXVqME9vTVQwZGcxNUtEem5oK1dK?=
- =?iso-2022-jp?B?RFZCYjdtcjlWQmF6WUJJUGpnd1RVaDl1aWhBUEFGMzg3Qm9ub2lBZGt1?=
- =?iso-2022-jp?B?RVpKdVpWRWZldGI5eStEd25GR1h6K2E5YWRjdWJmZDluK3gxc0o4Tkoy?=
- =?iso-2022-jp?B?N3M2cFNYdXhYNlI2RG9yTzBQSldaZnZvQTh0VWwzWGYvT3JxWndMRXVz?=
- =?iso-2022-jp?B?OHR0bGwzQVAyOTBPUnVkZG9UYVp0c0pPZDlnTTA0aTBSWnpjU0l0NDJr?=
- =?iso-2022-jp?B?N2E0RHQ3a1ZndlVBUkNOeGNmMkFTbDF0czZ4Njk4UEhDMU9qZW4zOXRz?=
- =?iso-2022-jp?B?M05OWTlmbUpQZjRRbkl5V0J3NytKWGdyTEpua3ltbVYxd1psRmtlSStU?=
- =?iso-2022-jp?B?ZXRURGU2Qmg1ZWs3bGUrdW9HVzMyM281R0N1MnVTeUdVQldzQllQc2Vw?=
- =?iso-2022-jp?B?dEhWdlZEU1Y5YnNqMjRuTXRCY01XVjFybHhFaHBOY2pmVFdxcjlJZjE1?=
- =?iso-2022-jp?B?VS9EK0hIam1sdTNNNDhIL3dtSnZnT1ROZ0xxVlRvU3NoNjdHNTVkSElw?=
- =?iso-2022-jp?B?cmdkRFVxbWVTUTV6NWFIbVovdXVwK0RiMzQ3V1pLWVJOdkxRRDdjVzVm?=
- =?iso-2022-jp?B?U2I5ekhodUZZVmhqSGtza25ydUJEdGhKYVVxbHl5Ym01cDNQY0Q0RWNX?=
- =?iso-2022-jp?B?Z1owTU56QTlYNjlrWFZJMU1kZG9iRERUVmZQRDZWc2hsWFV3RDkveFBK?=
- =?iso-2022-jp?B?S0VpeEpwSHJyQTJUc3A1VHpzVWx4WHZ0b1RkY2ZpQnZ3enpia3EyK3BN?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+ <20210812190603.25326-2-madvenka@linux.microsoft.com>
+ <20210824131344.GE96738@C02TD0UTHF1T.local>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Message-ID: <406f7960-b7d8-f058-d055-7ca373689fba@linux.microsoft.com>
+Date:   Wed, 25 Aug 2021 23:52:42 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB5257.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 292f493e-fafa-4201-0843-08d9675b7623
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Aug 2021 00:01:17.0508
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1yZ3TdVokMWnKwrItSFmW2vQ1wzvtCsnkl0/TMl/I1q4AjkkhFz9xGVgVhJ/LNDR4niKdKVwjuMqZqvw/mtqJnY6Va45pClGRzZgSSR7ZgI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB4718
+In-Reply-To: <20210824131344.GE96738@C02TD0UTHF1T.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-> > Hi Madhavan,
-> >
-> >> @@ -245,7 +271,36 @@ noinline notrace void arch_stack_walk(stack_trace=
-_consume_fn consume_entry,
-> >>  		fp =3D thread_saved_fp(task);
-> >>  		pc =3D thread_saved_pc(task);
-> >>  	}
-> >> -	unwind(consume_entry, cookie, task, fp, pc);
-> >> +	unwind(consume_entry, cookie, task, fp, pc, false); }
-> >> +
-> >> +/*
-> >> + * arch_stack_walk_reliable() may not be used for livepatch until
-> >> +all of
-> >> + * the reliability checks are in place in unwind_consume(). However,
-> >> + * debug and test code can choose to use it even if all the checks
-> >> +are not
-> >> + * in place.
-> >> + */
-> >
-> > I'm glad to see the long-awaited function :)
-> >
-> > Does the above comment mean that this comment will be removed by
-> > another patch series that about live patch enablement, instead of [PATC=
-H 4/4]?
-> >
-> > It seems to take time... But I start thinking about test code.
-> >
->=20
-> Yes. This comment will be removed when livepatch will be enabled eventual=
-ly.
-> So, AFAICT, there are 4 pieces that are needed:
->=20
-> - Reliable stack trace in the kernel. I am trying to address that with my=
- patch
->   series.
->=20
-> - Mark Rutland's work for making patching safe on ARM64.
->=20
-> - Objtool (or alternative method) for stack validation.
->=20
-> - Suraj Jitindar Singh's patch for miscellaneous things needed to enable =
-live patch.
->=20
-> Once all of these pieces are in place, livepatch can be enabled.
->=20
-> That said, arch_stack_walk_reliable() can be used for test and debug purp=
-oses anytime once this patch series gets accepted.
->=20
-> Thanks.
->=20
-> Madhavan
+Hi Mark Rutland, Mark Brown,
 
+Do you have any comments on the reliability part of the patch series?
 
-Thank you for the information.
+Madhavan
 
-Keiya
+On 8/24/21 8:13 AM, Mark Rutland wrote:
+> On Thu, Aug 12, 2021 at 02:06:00PM -0500, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+>>
+>> Currently, there are multiple functions in ARM64 code that walk the
+>> stack using start_backtrace() and unwind_frame(). Convert all of
+>> them to use arch_stack_walk(). This makes maintenance easier.
+> 
+> It would be good to split this into a series of patches as Mark Brown
+> suggested in v7.
+> 
+>> Here is the list of functions:
+>>
+>> 	perf_callchain_kernel()
+>> 	get_wchan()
+>> 	return_address()
+>> 	dump_backtrace()
+>> 	profile_pc()
+> 
+> Note that arch_stack_walk() depends on CONFIG_STACKTRACE (which is not in
+> defconfig), so we'll need to reorganise things such that it's always defined,
+> or factor out the core of that function and add a wrapper such that we
+> can always use it.
+> 
+>> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+>> ---
+>>  arch/arm64/include/asm/stacktrace.h |  3 ---
+>>  arch/arm64/kernel/perf_callchain.c  |  5 +---
+>>  arch/arm64/kernel/process.c         | 39 ++++++++++++++++++-----------
+>>  arch/arm64/kernel/return_address.c  |  6 +----
+>>  arch/arm64/kernel/stacktrace.c      | 38 +++-------------------------
+>>  arch/arm64/kernel/time.c            | 22 +++++++++-------
+>>  6 files changed, 43 insertions(+), 70 deletions(-)
+>>
+>> diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
+>> index 8aebc00c1718..e43dea1c6b41 100644
+>> --- a/arch/arm64/include/asm/stacktrace.h
+>> +++ b/arch/arm64/include/asm/stacktrace.h
+>> @@ -61,9 +61,6 @@ struct stackframe {
+>>  #endif
+>>  };
+>>  
+>> -extern int unwind_frame(struct task_struct *tsk, struct stackframe *frame);
+>> -extern void walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
+>> -			    bool (*fn)(void *, unsigned long), void *data);
+>>  extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
+>>  			   const char *loglvl);
+>>  
+>> diff --git a/arch/arm64/kernel/perf_callchain.c b/arch/arm64/kernel/perf_callchain.c
+>> index 4a72c2727309..2f289013c9c9 100644
+>> --- a/arch/arm64/kernel/perf_callchain.c
+>> +++ b/arch/arm64/kernel/perf_callchain.c
+>> @@ -147,15 +147,12 @@ static bool callchain_trace(void *data, unsigned long pc)
+>>  void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
+>>  			   struct pt_regs *regs)
+>>  {
+>> -	struct stackframe frame;
+>> -
+>>  	if (perf_guest_cbs && perf_guest_cbs->is_in_guest()) {
+>>  		/* We don't support guest os callchain now */
+>>  		return;
+>>  	}
+>>  
+>> -	start_backtrace(&frame, regs->regs[29], regs->pc);
+>> -	walk_stackframe(current, &frame, callchain_trace, entry);
+>> +	arch_stack_walk(callchain_trace, entry, current, regs);
+>>  }
+> 
+> We can also update callchain_trace take the return value of
+> perf_callchain_store into acount, e.g.
+> 
+> | static bool callchain_trace(void *data, unsigned long pc) 
+> | {
+> | 	struct perf_callchain_entry_ctx *entry = data;
+> | 	return perf_callchain_store(entry, pc) == 0;
+> | }
+> 
+>>  
+>>  unsigned long perf_instruction_pointer(struct pt_regs *regs)
+>> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+>> index c8989b999250..52c12fd26407 100644
+>> --- a/arch/arm64/kernel/process.c
+>> +++ b/arch/arm64/kernel/process.c
+>> @@ -544,11 +544,28 @@ __notrace_funcgraph struct task_struct *__switch_to(struct task_struct *prev,
+>>  	return last;
+>>  }
+>>  
+>> +struct wchan_info {
+>> +	unsigned long	pc;
+>> +	int		count;
+>> +};
+>> +
+>> +static bool get_wchan_cb(void *arg, unsigned long pc)
+>> +{
+>> +	struct wchan_info *wchan_info = arg;
+>> +
+>> +	if (!in_sched_functions(pc)) {
+>> +		wchan_info->pc = pc;
+>> +		return false;
+>> +	}
+>> +	wchan_info->count--;
+>> +	return !!wchan_info->count;
+>> +}
+> 
+> This will terminate one entry earlier than the old logic since we used
+> to use a post-increment (testing the prior value), and now we're
+> effectively using a pre-decrement (testing the new value).
+> 
+> I don't think that matters all that much in practice, but it might be
+> best to keep the original logic, e.g. initialize `count` to 0 and here
+> do:
+> 
+> 	return wchan_info->count++ < 16;
+> 
+>> +
+>>  unsigned long get_wchan(struct task_struct *p)
+>>  {
+>> -	struct stackframe frame;
+>> -	unsigned long stack_page, ret = 0;
+>> -	int count = 0;
+>> +	unsigned long stack_page;
+>> +	struct wchan_info wchan_info;
+>> +
+>>  	if (!p || p == current || task_is_running(p))
+>>  		return 0;
+>>  
+>> @@ -556,20 +573,12 @@ unsigned long get_wchan(struct task_struct *p)
+>>  	if (!stack_page)
+>>  		return 0;
+>>  
+>> -	start_backtrace(&frame, thread_saved_fp(p), thread_saved_pc(p));
+>> +	wchan_info.pc = 0;
+>> +	wchan_info.count = 16;
+>> +	arch_stack_walk(get_wchan_cb, &wchan_info, p, NULL);
+>>  
+>> -	do {
+>> -		if (unwind_frame(p, &frame))
+>> -			goto out;
+>> -		if (!in_sched_functions(frame.pc)) {
+>> -			ret = frame.pc;
+>> -			goto out;
+>> -		}
+>> -	} while (count++ < 16);
+>> -
+>> -out:
+>>  	put_task_stack(p);
+>> -	return ret;
+>> +	return wchan_info.pc;
+>>  }
+> 
+> Other than the comment above, this looks good to me.
+> 
+>>  unsigned long arch_align_stack(unsigned long sp)
+>> diff --git a/arch/arm64/kernel/return_address.c b/arch/arm64/kernel/return_address.c
+>> index a6d18755652f..92a0f4d434e4 100644
+>> --- a/arch/arm64/kernel/return_address.c
+>> +++ b/arch/arm64/kernel/return_address.c
+>> @@ -35,15 +35,11 @@ NOKPROBE_SYMBOL(save_return_addr);
+>>  void *return_address(unsigned int level)
+>>  {
+>>  	struct return_address_data data;
+>> -	struct stackframe frame;
+>>  
+>>  	data.level = level + 2;
+>>  	data.addr = NULL;
+>>  
+>> -	start_backtrace(&frame,
+>> -			(unsigned long)__builtin_frame_address(0),
+>> -			(unsigned long)return_address);
+>> -	walk_stackframe(current, &frame, save_return_addr, &data);
+>> +	arch_stack_walk(save_return_addr, &data, current, NULL);
+>>  
+>>  	if (!data.level)
+>>  		return data.addr;
+> 
+> Nor that arch_stack_walk() will start with it's caller, so
+> return_address() will be included in the trace where it wasn't
+> previously, which implies we need to skip an additional level.
+> 
+> That said, I'm not entirely sure why we need to skip 2 levels today; it
+> might be worth checking that's correct.
+> 
+> We should also mark return_address() as noinline to avoid surprises with
+> LTO.
+> 
+>> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+>> index 8982a2b78acf..1800310f92be 100644
+>> --- a/arch/arm64/kernel/stacktrace.c
+>> +++ b/arch/arm64/kernel/stacktrace.c
+>> @@ -151,23 +151,21 @@ void notrace walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
+>>  }
+>>  NOKPROBE_SYMBOL(walk_stackframe);
+>>  
+>> -static void dump_backtrace_entry(unsigned long where, const char *loglvl)
+>> +static bool dump_backtrace_entry(void *arg, unsigned long where)
+>>  {
+>> +	char *loglvl = arg;
+>>  	printk("%s %pSb\n", loglvl, (void *)where);
+>> +	return true;
+>>  }
+>>  
+>>  void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
+>>  		    const char *loglvl)
+>>  {
+>> -	struct stackframe frame;
+>> -	int skip = 0;
+>> -
+>>  	pr_debug("%s(regs = %p tsk = %p)\n", __func__, regs, tsk);
+>>  
+>>  	if (regs) {
+>>  		if (user_mode(regs))
+>>  			return;
+>> -		skip = 1;
+>>  	}
+> 
+> We can simplifiy this to:
+> 
+> 	if (regs && user_mode(regs))
+> 		return;
+> 
+>>  
+>>  	if (!tsk)
+>> @@ -176,36 +174,8 @@ void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
+>>  	if (!try_get_task_stack(tsk))
+>>  		return;
+>>  
+>> -	if (tsk == current) {
+>> -		start_backtrace(&frame,
+>> -				(unsigned long)__builtin_frame_address(0),
+>> -				(unsigned long)dump_backtrace);
+>> -	} else {
+>> -		/*
+>> -		 * task blocked in __switch_to
+>> -		 */
+>> -		start_backtrace(&frame,
+>> -				thread_saved_fp(tsk),
+>> -				thread_saved_pc(tsk));
+>> -	}
+>> -
+>>  	printk("%sCall trace:\n", loglvl);
+>> -	do {
+>> -		/* skip until specified stack frame */
+>> -		if (!skip) {
+>> -			dump_backtrace_entry(frame.pc, loglvl);
+>> -		} else if (frame.fp == regs->regs[29]) {
+>> -			skip = 0;
+>> -			/*
+>> -			 * Mostly, this is the case where this function is
+>> -			 * called in panic/abort. As exception handler's
+>> -			 * stack frame does not contain the corresponding pc
+>> -			 * at which an exception has taken place, use regs->pc
+>> -			 * instead.
+>> -			 */
+>> -			dump_backtrace_entry(regs->pc, loglvl);
+>> -		}
+>> -	} while (!unwind_frame(tsk, &frame));
+>> +	arch_stack_walk(dump_backtrace_entry, (void *)loglvl, tsk, regs);
+> 
+> It turns out we currently need this skipping to get the balance the
+> ftrace call stack, and arch_stack_walk() doesn't currently do the right
+> thing when starting from regs. That balancing isn't quite right, and
+> will be wrong in some case when unwinding across exception boundaries;
+> we could implement HAVE_FUNCTION_GRAPH_RET_ADDR_PTR using the FP to
+> solve that.
+> 
+>>  
+>>  	put_task_stack(tsk);
+>>  }
+>> diff --git a/arch/arm64/kernel/time.c b/arch/arm64/kernel/time.c
+>> index eebbc8d7123e..671b3038a772 100644
+>> --- a/arch/arm64/kernel/time.c
+>> +++ b/arch/arm64/kernel/time.c
+>> @@ -32,22 +32,26 @@
+>>  #include <asm/stacktrace.h>
+>>  #include <asm/paravirt.h>
+>>  
+>> +static bool profile_pc_cb(void *arg, unsigned long pc)
+>> +{
+>> +	unsigned long *prof_pc = arg;
+>> +
+>> +	if (in_lock_functions(pc))
+>> +		return true;
+>> +	*prof_pc = pc;
+>> +	return false;
+>> +}
+>> +
+>>  unsigned long profile_pc(struct pt_regs *regs)
+>>  {
+>> -	struct stackframe frame;
+>> +	unsigned long prof_pc = 0;
+>>  
+>>  	if (!in_lock_functions(regs->pc))
+>>  		return regs->pc;
+>>  
+>> -	start_backtrace(&frame, regs->regs[29], regs->pc);
+>> -
+>> -	do {
+>> -		int ret = unwind_frame(NULL, &frame);
+>> -		if (ret < 0)
+>> -			return 0;
+>> -	} while (in_lock_functions(frame.pc));
+>> +	arch_stack_walk(profile_pc_cb, &prof_pc, current, regs);
+>>  
+>> -	return frame.pc;
+>> +	return prof_pc;
+>>  }
+>>  EXPORT_SYMBOL(profile_pc);
+> 
+> Mdoulo the problem above w.r.t. unwinding from regs, this looks good.
+> 
+> Thanks,
+> Mark.
+> 
+>>  
+>> -- 
+>> 2.25.1
+>>
