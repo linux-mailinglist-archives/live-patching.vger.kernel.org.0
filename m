@@ -2,87 +2,96 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A503F90C4
-	for <lists+live-patching@lfdr.de>; Fri, 27 Aug 2021 01:01:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 720613F90E5
+	for <lists+live-patching@lfdr.de>; Fri, 27 Aug 2021 01:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233866AbhHZWfW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 26 Aug 2021 18:35:22 -0400
-Received: from mail-yb1-f173.google.com ([209.85.219.173]:36851 "EHLO
-        mail-yb1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231159AbhHZWfW (ORCPT
+        id S243671AbhHZXT6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 26 Aug 2021 19:19:58 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:36022 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234555AbhHZXT5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 26 Aug 2021 18:35:22 -0400
-Received: by mail-yb1-f173.google.com with SMTP id f15so8878145ybg.3
-        for <live-patching@vger.kernel.org>; Thu, 26 Aug 2021 15:34:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=X/STzz3xbXrNWtIX6dH3xgqdevdigA3hDWCRpqHOAxc=;
-        b=mtzOg9A1SXSb/8lNeplWcQPQsJehmCJsPGp92SPoFrVj7QzyGvc9S/+jqh8ECCOuqW
-         yWmLX961kiwj8wAamtAFlX7HuYgraqdIAajIhvIQrogsM0XY+jMObH/Ayww5/XRTJlEz
-         TPVfu3H9fjuBMVqruLLjbe5i5ozTjmhBpKYwmVoLNazHTE3u/BZBT+sZYFQmpzZwSu9Z
-         tzJxbMwFY+pnUNucO8RmM3sbplk7gCCOe4kfl5KzUxqo7izb46kpMSWNoCCCx2dgTGyQ
-         Y2/5JKrApDpPrb/iWoY6QkFbQWuG9SXzcccNkdcAoiwd5ivVxicODbgotl8dZC3IFmDZ
-         6EgA==
-X-Gm-Message-State: AOAM530swVpvqi4OJN8SEMtjBjDg+ExKrZ+Ne8iXHk1o8XXHZ6EIKioX
-        UP8auASixOAfm9AK2ga48rvnuzQmsoYI+48SWrjuE0Hj+Qg=
-X-Google-Smtp-Source: ABdhPJzSudQWUnA367Hvs5oSVHSU+mozx0we2Ietm7jpfsz7ySaOpbhrIvJABtYRdmVJ/TUI+dVpMmUXdBh3M4CSIFs=
-X-Received: by 2002:a25:1244:: with SMTP id 65mr1413110ybs.46.1630017273945;
- Thu, 26 Aug 2021 15:34:33 -0700 (PDT)
+        Thu, 26 Aug 2021 19:19:57 -0400
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 8A5A420B861E;
+        Thu, 26 Aug 2021 16:19:08 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8A5A420B861E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1630019949;
+        bh=TNk71oULKpnJVXpIAkpW4dxCRZZFfi0WY/GV0rQ4Blw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=sDrPH0DIYqzWljDeynFQ2cHN8Shft6uXuyS4L8KXZr4/VtcLamVAxWh5cQW0bRTzZ
+         jRY4voAsLQE2MfrL7Lxe/Oqs/DQ0JxZFajO2NvhnOok99Bv9D9JJvywU8FT7g7p6vD
+         vtYq3ii0I1E1jMYUrrV4jbhwRbx90qfjp7fFyjq4=
+Subject: Re: [RFC PATCH v8 2/4] arm64: Reorganize the unwinder code for better
+ consistency and maintenance
+To:     Mark Brown <broonie@kernel.org>
+Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        pasha.tatashin@soleen.com, jthierry@redhat.com,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
+ <20210812190603.25326-1-madvenka@linux.microsoft.com>
+ <20210812190603.25326-3-madvenka@linux.microsoft.com>
+ <YSe3WogpFIu97i/7@sirena.org.uk>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Message-ID: <ecf0e4d1-7c47-426e-1350-fe5dc8bd88a5@linux.microsoft.com>
+Date:   Thu, 26 Aug 2021 18:19:07 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-From:   Peter Swain <swine@pobox.com>
-Date:   Thu, 26 Aug 2021 15:34:23 -0700
-Message-ID: <CABFpvm2o+d0e-dfmCx7H6=8i3QQS_xyGFt4i3zn8G=Myr_miag@mail.gmail.com>
-Subject: announcing LLpatch: arch-independent live-patch creation
-To:     live-patching@vger.kernel.org, madvenka@linux.microsoft.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <YSe3WogpFIu97i/7@sirena.org.uk>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-We have a new userspace live-patch creation tool, LLpatch, paralleling
-kpatch-build, but without requiring its arch-specific code for ELF
-analysis and manipulation.
-
-We considered extending kpatch-build to a new target architecture
-(arm64), cluttering its code with details of another architecture’s
-quirky instruction sequences & relocation modes, and suspected there
-might be a better way.
 
 
-The LLVM suite already knows these details, and offers llvm-diff, for
-comparing generated code at the LLVM-IR (internal representation)
-level, which has access to much more of the code’s _intent_ than
-kpatch’s create-diff-object is able to infer from ELF-level
-differences.
+On 8/26/21 10:46 AM, Mark Brown wrote:
+> On Thu, Aug 12, 2021 at 02:06:01PM -0500, madvenka@linux.microsoft.com wrote:
+> 
+>> Renaming of unwinder functions
+>> ==============================
+> 
+>> Rename unwinder functions to unwind_*() similar to other architectures
+>> for naming consistency. More on this below.
+> 
+> This feels like it could probably do with splitting up a bit for
+> reviewability, several of these headers you've got in the commit
+> logs look like they could be separate commits.  Splitting things
+> up does help with reviewability, having only one change to keep
+> in mind at once is a lot less cognative load.
+> 
+>> Replace walk_stackframe() with unwind()
+>> =======================================
+>>
+>> walk_stackframe() contains the unwinder loop that walks the stack
+>> frames. Currently, start_backtrace() and walk_stackframe() are called
+>> separately. They should be combined in the same function. Also, the
+>> loop in walk_stackframe() should be simplified and should look like
+>> the unwind loops in other architectures such as X86 and S390.
+> 
+> This definitely seems like a separate change.
+> 
 
+OK. I will take a look at splitting the patch.
 
-Building on this, LLpatch adds namespace analysis, further
-dead/duplicate code elimination, and creation of patch modules
-compatible with kernel’s livepatch API.
+I am also requesting a review of the sym_code special section approach.
+I know that you have already approved it. I wanted one more vote. Then,
+I can remove the "RFC" word from the title and then it will be just a
+code review of the patch series.
 
-Arm64 is supported - testing against a livepatch-capable v5.12 arm64
-kernel, using the preliminary reliable-stacktrace work from
-madvenka@linux.microsoft.com, LLpatch modules for x86 and arm64 behave
-identically to the x86 kpatch-build modules, without requiring any
-additional arch-specific code.
+Mark Rutland,
 
-On x86, where both tools are available, LLpatch produces smaller patch
-modules than kpatch, and already correctly handles most of the kpatch
-test cases, without any arch-specific code. This suggests it can work
-with any clang-supported kernel architecture.
+Do you also approve the idea of placing unreliable functions (from an unwind
+perspective) in a special section and using that in the unwinder for
+reliable stack trace?
 
+Thanks.
 
-Work is ongoing, collaboration is welcome.
-
-
-See https://github.com/google/LLpatch for further details on the
-technology and its benefits.
-
-
-Yonghyun Hwang (yonghyun@google.com freeaion@gmail.com)
-Bill Wendling (morbo@google.com isanbard@gmail.com)
-Pete Swain (swine@google.com swine@pobox.com)
+Madhavan
