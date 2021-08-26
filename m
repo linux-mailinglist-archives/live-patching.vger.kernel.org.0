@@ -2,34 +2,33 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D3A3F8C07
-	for <lists+live-patching@lfdr.de>; Thu, 26 Aug 2021 18:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 551793F8C0A
+	for <lists+live-patching@lfdr.de>; Thu, 26 Aug 2021 18:25:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbhHZQZ1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 26 Aug 2021 12:25:27 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:45722 "EHLO
+        id S242648AbhHZQZf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 26 Aug 2021 12:25:35 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:45766 "EHLO
         heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238124AbhHZQZS (ORCPT
+        with ESMTP id S233834AbhHZQZb (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 26 Aug 2021 12:25:18 -0400
-X-Greylist: delayed 1761 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Aug 2021 12:25:17 EDT
+        Thu, 26 Aug 2021 12:25:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sirena.org.uk; s=20170815-heliosphere; h=In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=YpAC7eKIN1Mk1gt9e5fi3Ne1IF3XO4Cc70sDdq2XPuo=; b=Zza36yh1cVUFJ/wznsXo2osjWg
-        qhweHSI/W3yFCGaHmPXuQQW6mCme31KjL5zFck+2gmfVyODZdylB4GOfU05DzYyjnfBF+FiNC1XzH
-        1J8Rx/0wxfA1WyyLrBq32bP9AJ6+KR3zbRA5QhoCxtpBGHrLC4ZuAbHTtDaflLgQNiLs=;
+        bh=9nLQYbnGN+yi8mzweg9S/BoVh7fXlR4Py2/ta8hD65Q=; b=B5YrvnCAVI2lJ6r7GQ1Ka2YhFl
+        WfyqQP3qnVy3QK0DixM0bEOMTzJ6f0lxs2i2jTX0tOE5tg9O1zPjq90AUEMcVnWj8WFo2RvUuwKTv
+        1yOUsoWh7EAA53sJ15f5yX7wbyQW8S65Yao6uL7hNFyKJCSut0ojScMPWyv5246t91Zk=;
 Received: from 94.196.67.80.threembb.co.uk ([94.196.67.80] helo=fitzroy.sirena.org.uk)
         by heliosphere.sirena.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <broonie@sirena.org.uk>)
-        id 1mJHiM-00FUXp-QF; Thu, 26 Aug 2021 15:54:51 +0000
+        id 1mJHkY-00FUba-Qf; Thu, 26 Aug 2021 15:57:07 +0000
 Received: by fitzroy.sirena.org.uk (Postfix, from userid 1000)
-        id C7C89D01B81; Thu, 26 Aug 2021 16:46:34 +0100 (BST)
-Date:   Thu, 26 Aug 2021 16:46:34 +0100
+        id 16BDCD01BF1; Thu, 26 Aug 2021 16:57:04 +0100 (BST)
+Date:   Thu, 26 Aug 2021 16:57:04 +0100
 From:   Mark Brown <broonie@kernel.org>
 To:     madvenka@linux.microsoft.com
 Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
@@ -38,69 +37,62 @@ Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
         pasha.tatashin@soleen.com, jthierry@redhat.com,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v8 2/4] arm64: Reorganize the unwinder code for
- better consistency and maintenance
-Message-ID: <YSe3WogpFIu97i/7@sirena.org.uk>
+Subject: Re: [RFC PATCH v8 3/4] arm64: Introduce stack trace reliability
+ checks in the unwinder
+Message-ID: <YSe50PuWM/mjNwAj@sirena.org.uk>
 References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
  <20210812190603.25326-1-madvenka@linux.microsoft.com>
- <20210812190603.25326-3-madvenka@linux.microsoft.com>
+ <20210812190603.25326-4-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="65LKdjdOaAfSQ4/m"
+        protocol="application/pgp-signature"; boundary="DTeBTo7twGoyd0rG"
 Content-Disposition: inline
-In-Reply-To: <20210812190603.25326-3-madvenka@linux.microsoft.com>
+In-Reply-To: <20210812190603.25326-4-madvenka@linux.microsoft.com>
 X-Cookie: I can relate to that.
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
---65LKdjdOaAfSQ4/m
+--DTeBTo7twGoyd0rG
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 12, 2021 at 02:06:01PM -0500, madvenka@linux.microsoft.com wrot=
-e:
+On Thu, Aug 12, 2021 at 02:06:02PM -0500, madvenka@linux.microsoft.com wrote:
 
-> Renaming of unwinder functions
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
+> +	if (frame->need_reliable && !unwind_is_reliable(frame)) {
+> +		/* Cannot unwind to the next frame reliably. */
+> +		frame->failed = true;
+> +		return false;
+> +	}
 
-> Rename unwinder functions to unwind_*() similar to other architectures
-> for naming consistency. More on this below.
+This means we only collect reliability information in the case
+where we're specifically doing a reliable stacktrace.  For
+example when printing stack traces on the console it might be
+useful to print a ? or something if the frame is unreliable as a
+hint to the reader that the information might be misleading.
+Could we therefore change the flag here to a reliability one and
+our need_reliable check so that we always run
+unwind_is_reliable()?
 
-This feels like it could probably do with splitting up a bit for
-reviewability, several of these headers you've got in the commit
-logs look like they could be separate commits.  Splitting things
-up does help with reviewability, having only one change to keep
-in mind at once is a lot less cognative load.
+I'm not sure if we need to abandon the trace on first error when
+doing a reliable trace but I can see it's a bit safer so perhaps
+better to do so.  If we don't abandon then we don't require the
+need_reliable check at all.
 
-> Replace walk_stackframe() with unwind()
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> walk_stackframe() contains the unwinder loop that walks the stack
-> frames. Currently, start_backtrace() and walk_stackframe() are called
-> separately. They should be combined in the same function. Also, the
-> loop in walk_stackframe() should be simplified and should look like
-> the unwind loops in other architectures such as X86 and S390.
-
-This definitely seems like a separate change.
-
---65LKdjdOaAfSQ4/m
+--DTeBTo7twGoyd0rG
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmEnt1oACgkQJNaLcl1U
-h9DPnAf9F4laW3vdmWRoJzkB/XwlR1FibFKsnO7ddA+FYMKZuJKT88RuCyy/oIdd
-/h434cxFWIKloXHHoVJEnN5PsOCbiyeddB+maWA5TNP7zI53+l15rrgHvLxpJ6nW
-w0hcLJRt4vvlv/1QJsW1q5FqvXkBx9WDlJ142fpX0/yH07rm+oxi4Ib4jX3E7rQL
-d2R0vgSZNXN4MLoyTaOnNdjX84zz17rFN8l7Gl2iO4dWYj9nLjFWgRY6icoGcVWh
-OgDIxg2F4D78vOCN41EsPe6ZYtNzBKAp+9DF9KH4qea9uMMiCJlhCJJNzVGWzBN6
-wFffVTt+3zbPngMhDDGDSWNO7nkCIw==
-=cnd8
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmEnuc8ACgkQJNaLcl1U
+h9BFrAf+N3yJJQuwCLxv36qPYIv8rK67Wg7vq6QHBv9olYSZOaay2RqDa9LKPVps
+cIOnOsjsnjWwchw6R0ynXbK3UvrxZP3Mhl3hN/O0ajYq1ffUxoVzsfiAfLvgDjj1
+eK8FP8165XKy6IN7u+OFyomrl7nSKOO4zWRJw5Ce71CcTHnegpxVPb5V4OaMwK28
+pOaupCfunPrZyXaHZjpnbZinxAQqtCY/IZU4ztW+0tk78TkK07nbFYUAgmQC9drb
+gc4bkfHPdW+L8IUx5fIavhjSiVQHVdes0+u1EAajOmvEYvV8WTklgE0NekkbGPrm
+E2aQIY1iWIMZ3PFZnPkx1VYALA/qsg==
+=JSFk
 -----END PGP SIGNATURE-----
 
---65LKdjdOaAfSQ4/m--
+--DTeBTo7twGoyd0rG--
