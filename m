@@ -2,84 +2,92 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55BFB3FDFB7
-	for <lists+live-patching@lfdr.de>; Wed,  1 Sep 2021 18:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B1E3FE20E
+	for <lists+live-patching@lfdr.de>; Wed,  1 Sep 2021 20:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245121AbhIAQVf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 1 Sep 2021 12:21:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58598 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234245AbhIAQVe (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 1 Sep 2021 12:21:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 34D56601FD;
-        Wed,  1 Sep 2021 16:20:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630513237;
-        bh=rsd7nCqgXJ2jWgs1sLYpLUt9ooxJDLlhdHsdL81YIUk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Sllj1aObUXyo5mzEZtQ7Nka0M+slcIpcekutusSjQ1azodImlPKerDfnABjrIXIGH
-         rAcNusIeZbog2YN62BeMh/Xy62IsApTQHH4DMhwPH5KeW3b7TGx74ShTRaUTB+YXkD
-         Jpu2VXOzq+LmiJH8xCTcpU8NqwtWmZQNztuKLnQi9fVcgw7vI1Utis85lxHHzZT0H0
-         KT25Zk2cdoQGh0NQNDtycbEnwIr9yuSkoMCUzl4gtVjSpNFBq22GPXgaemN6gKJpFO
-         qAM30rkmpKlLBGAiGmt8WvtnvLlb1HocFvzKZQOVLZVx+t9azc7/fJzAt53+HlXvc/
-         nd0nEx55DBViA==
-Date:   Wed, 1 Sep 2021 17:20:05 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        pasha.tatashin@soleen.com, jthierry@redhat.com,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v8 2/4] arm64: Reorganize the unwinder code for
- better consistency and maintenance
-Message-ID: <20210901162005.GH5976@sirena.org.uk>
-References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
- <20210812190603.25326-1-madvenka@linux.microsoft.com>
- <20210812190603.25326-3-madvenka@linux.microsoft.com>
- <YSe3WogpFIu97i/7@sirena.org.uk>
- <ecf0e4d1-7c47-426e-1350-fe5dc8bd88a5@linux.microsoft.com>
+        id S1346820AbhIASMU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 1 Sep 2021 14:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346741AbhIASMS (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 1 Sep 2021 14:12:18 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC95C0613A3
+        for <live-patching@vger.kernel.org>; Wed,  1 Sep 2021 11:11:21 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id e7so303540pgk.2
+        for <live-patching@vger.kernel.org>; Wed, 01 Sep 2021 11:11:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=2joGkq8i8C5vglZO1FYNTlWqLyr4vSiCXKQYXBVnv4Q=;
+        b=LD3mpzy1s09M3e/Eheelu/QMtbN6lrYJQ+S1BsYhmG4zP9OQuKOeD1zHV2lZaK7Hdt
+         vXoBMumPRACuZhnwd8TYAFIvdImPe0Zn4DA41GnzHGsnpDZPE0wUFWVFNzgpxF6bh6D8
+         CVxTiiIN7w8BVpPirFLytZKK2cFqqV6q9qR8cw4XmdYYgGZs+MdnDeP+neEr/SbnLI2h
+         mwT6gqJ8+HvNCQei5Zu6b3U+/YcUOepEDfVn6t0IkNG5YzxTV8mH8IqZ4zEsqBchdgxI
+         E/zGH3KCiuS7UdfEMBVKPbpzhhPyh4quLRALvE4iCHtswqSZDgWUuzksodIw8OWwGR1Z
+         0RlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=2joGkq8i8C5vglZO1FYNTlWqLyr4vSiCXKQYXBVnv4Q=;
+        b=EmRdTDA0AWDV4Mn1xGk/KN/Z/d0/SvQoiPc2fAz/BnMKKFxDVbRwTRR86Id2lsJCPR
+         YDCdGPj9i9P1ADjllYJdWE+cGG1cjwL9WLo30c3TEXgG7cXN2/ash3weMp5wm2ND+38K
+         ydxUd6DOGry1DKngN45flgdneXn3aC2YQ5rDa9VIgcbiuYXOZaZmr8BP3/Qd1cvvvDsa
+         BqCdeHNqlqFEKJUhlzkMUVBix6DEOj/FSEoDO84MlrNCaqYDXfUb1Ax01vCEOVebMZwZ
+         rUSluyVRDTM4caf3yNaxxNxJ17X670ssMnBx9v/g68lWp4pPps7RnRHxp3lAsDQQuBKq
+         kXWg==
+X-Gm-Message-State: AOAM532CS9ElvfvVkvwha2752iJpEh6xhqsDL7DlspW72O7QJ3n8JHSe
+        Z4fHLqYL2WMhQPzjQ8tDwyVTMzCmNn2HJRtAH4fvDm6QnL6j4Q==
+X-Google-Smtp-Source: ABdhPJwbbBYGjUEQSS3Bb7EfYk34O3AVuG22pVIF78fkATQG8c+PQmeHgcc35+YrriS74Wl5STB8JbzOasp+8kCVBlk=
+X-Received: by 2002:a67:8c5:: with SMTP id 188mr1017695vsi.4.1630519870726;
+ Wed, 01 Sep 2021 11:11:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qOrJKOH36bD5yhNe"
-Content-Disposition: inline
-In-Reply-To: <ecf0e4d1-7c47-426e-1350-fe5dc8bd88a5@linux.microsoft.com>
-X-Cookie: Who was that masked man?
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:ab0:740d:0:0:0:0:0 with HTTP; Wed, 1 Sep 2021 11:11:10 -0700 (PDT)
+From:   CorisBank International <corisbankintlbf@gmail.com>
+Date:   Wed, 1 Sep 2021 11:11:10 -0700
+Message-ID: <CA+25hwzjLgVdtDXYWeuqFBTvAbpc4oxK0dW54s7tjGNyU_m0ow@mail.gmail.com>
+Subject: CORISBANK INTERNATIONAL OFFICIAL NOTIFICATION
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Att: Client
 
---qOrJKOH36bD5yhNe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Thu, Aug 26, 2021 at 06:19:07PM -0500, Madhavan T. Venkataraman wrote:
+CORISBANK INTERNATIONAL URGENT NOTIFICATION
 
-> Mark Rutland,
+Notification / Notification/ Notification
 
-> Do you also approve the idea of placing unreliable functions (from an unwind
-> perspective) in a special section and using that in the unwinder for
-> reliable stack trace?
+Note, We are writing to inform you officially that Finally the Central
+Bank Financial Authority have approved to transfer your $8.2Million
+which was signed by late Mrs Rose Banneth the COVID.19 victim to
+transfer to you, Late Mrs Rose Banneth the France Lady contacted us to
+transfer her fund in our bank to you for Orphanage work before she
+died by the COVID.19
+and as it is now, you will receive your fund through our corresponding
+bank in Dubai [Emirate Investment Bank ] for security reason. Please
+you should reconfirm your details to receive the $8.2Million.
 
-Rutland is on vacation for a couple of weeks so he's unlikely to reply
-before the merge window is over I'm afraid.
+Name, Country, Address, occupations, Age, Telephone number, account
+Details so that we can immediately forward to the World Bank to
+transfer the fund.
+You are advised to comply on timely manner to permit this esteem bank
+transfer your fund as scheduled.
 
---qOrJKOH36bD5yhNe
-Content-Type: application/pgp-signature; name="signature.asc"
+We look forward to serving you better
+Your Financial Comfort Is A Priority
+Thank you for choosing Corisbank International.
 
------BEGIN PGP SIGNATURE-----
+Sincerely,
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmEvqDQACgkQJNaLcl1U
-h9A0cAf/SoHI8fwUIQSaFrtvXtb4jGfHiTu1fTupPugI2N6ZAujXJn+c/h7nfg6n
-OJGrHBqwlObt4w5SUzC54NSfVBL4CRAHD8QQtCLgJtG2t5RwMqJdDPZH6TS1KEo8
-2Hrp3pLFOWVzDL2jh5fX6RA/ncK0a/eqbBmTkZQJtfg1s/AWKKHCtZQRM0eqnDVO
-KB0KQ8s8CZ3RgwVwIoddS8vTKm2Jjra/hLof2HFxxSRAVNUO+AlpEFIifsaaABFj
-w+MgHHISeYO2Niu9QurFM6M98J4WEnSMd6Un3xk9EHjRRrc25soEbaip0+wsUa1U
-03zK0j6jLrBB5Hm8iwr4xaN/CU7mdA==
-=nGZk
------END PGP SIGNATURE-----
+----
 
---qOrJKOH36bD5yhNe--
+Mr Diakarya Ouattara
+Managing Director
+Bank Coris
+Burkina Faso
++226 556 163 37
+financial_bf_info@accountant.com
