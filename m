@@ -2,92 +2,74 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B1E3FE20E
-	for <lists+live-patching@lfdr.de>; Wed,  1 Sep 2021 20:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74CB43FE9C5
+	for <lists+live-patching@lfdr.de>; Thu,  2 Sep 2021 09:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346820AbhIASMU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 1 Sep 2021 14:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346741AbhIASMS (ORCPT
+        id S242701AbhIBHLC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 Sep 2021 03:11:02 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:41836 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242504AbhIBHLA (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 1 Sep 2021 14:12:18 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC95C0613A3
-        for <live-patching@vger.kernel.org>; Wed,  1 Sep 2021 11:11:21 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id e7so303540pgk.2
-        for <live-patching@vger.kernel.org>; Wed, 01 Sep 2021 11:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=2joGkq8i8C5vglZO1FYNTlWqLyr4vSiCXKQYXBVnv4Q=;
-        b=LD3mpzy1s09M3e/Eheelu/QMtbN6lrYJQ+S1BsYhmG4zP9OQuKOeD1zHV2lZaK7Hdt
-         vXoBMumPRACuZhnwd8TYAFIvdImPe0Zn4DA41GnzHGsnpDZPE0wUFWVFNzgpxF6bh6D8
-         CVxTiiIN7w8BVpPirFLytZKK2cFqqV6q9qR8cw4XmdYYgGZs+MdnDeP+neEr/SbnLI2h
-         mwT6gqJ8+HvNCQei5Zu6b3U+/YcUOepEDfVn6t0IkNG5YzxTV8mH8IqZ4zEsqBchdgxI
-         E/zGH3KCiuS7UdfEMBVKPbpzhhPyh4quLRALvE4iCHtswqSZDgWUuzksodIw8OWwGR1Z
-         0RlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=2joGkq8i8C5vglZO1FYNTlWqLyr4vSiCXKQYXBVnv4Q=;
-        b=EmRdTDA0AWDV4Mn1xGk/KN/Z/d0/SvQoiPc2fAz/BnMKKFxDVbRwTRR86Id2lsJCPR
-         YDCdGPj9i9P1ADjllYJdWE+cGG1cjwL9WLo30c3TEXgG7cXN2/ash3weMp5wm2ND+38K
-         ydxUd6DOGry1DKngN45flgdneXn3aC2YQ5rDa9VIgcbiuYXOZaZmr8BP3/Qd1cvvvDsa
-         BqCdeHNqlqFEKJUhlzkMUVBix6DEOj/FSEoDO84MlrNCaqYDXfUb1Ax01vCEOVebMZwZ
-         rUSluyVRDTM4caf3yNaxxNxJ17X670ssMnBx9v/g68lWp4pPps7RnRHxp3lAsDQQuBKq
-         kXWg==
-X-Gm-Message-State: AOAM532CS9ElvfvVkvwha2752iJpEh6xhqsDL7DlspW72O7QJ3n8JHSe
-        Z4fHLqYL2WMhQPzjQ8tDwyVTMzCmNn2HJRtAH4fvDm6QnL6j4Q==
-X-Google-Smtp-Source: ABdhPJwbbBYGjUEQSS3Bb7EfYk34O3AVuG22pVIF78fkATQG8c+PQmeHgcc35+YrriS74Wl5STB8JbzOasp+8kCVBlk=
-X-Received: by 2002:a67:8c5:: with SMTP id 188mr1017695vsi.4.1630519870726;
- Wed, 01 Sep 2021 11:11:10 -0700 (PDT)
+        Thu, 2 Sep 2021 03:11:00 -0400
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id E8C3220B71D5;
+        Thu,  2 Sep 2021 00:10:01 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E8C3220B71D5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1630566602;
+        bh=Gm7mDHFy4xsNam3X90cB6VLAwXc244muiywxwcxc5AM=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=AKZ78sIeyyFosHBcUapsnPcDOwYmBWVj5KPX0ePT2j71QU2tRfgXeU11TTrduE0mY
+         bFScIuyDUGp5Qlw91QIlec1KFRVt/7i9VENeBcHFzUtOO48PPNooX6shHO6Xea1zia
+         sBV+Sq/qdNlNpIL96hflImYaSJ1iLMP5feid79MI=
+Subject: Re: [RFC PATCH v8 2/4] arm64: Reorganize the unwinder code for better
+ consistency and maintenance
+To:     Mark Brown <broonie@kernel.org>
+Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        pasha.tatashin@soleen.com, jthierry@redhat.com,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
+ <20210812190603.25326-1-madvenka@linux.microsoft.com>
+ <20210812190603.25326-3-madvenka@linux.microsoft.com>
+ <YSe3WogpFIu97i/7@sirena.org.uk>
+ <ecf0e4d1-7c47-426e-1350-fe5dc8bd88a5@linux.microsoft.com>
+ <20210901162005.GH5976@sirena.org.uk>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Message-ID: <dbd7f035-ad4e-1b92-3f09-d4fddb21f5a3@linux.microsoft.com>
+Date:   Thu, 2 Sep 2021 02:10:01 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Received: by 2002:ab0:740d:0:0:0:0:0 with HTTP; Wed, 1 Sep 2021 11:11:10 -0700 (PDT)
-From:   CorisBank International <corisbankintlbf@gmail.com>
-Date:   Wed, 1 Sep 2021 11:11:10 -0700
-Message-ID: <CA+25hwzjLgVdtDXYWeuqFBTvAbpc4oxK0dW54s7tjGNyU_m0ow@mail.gmail.com>
-Subject: CORISBANK INTERNATIONAL OFFICIAL NOTIFICATION
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210901162005.GH5976@sirena.org.uk>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Att: Client
 
 
-CORISBANK INTERNATIONAL URGENT NOTIFICATION
+On 9/1/21 11:20 AM, Mark Brown wrote:
+> On Thu, Aug 26, 2021 at 06:19:07PM -0500, Madhavan T. Venkataraman wrote:
+> 
+>> Mark Rutland,
+> 
+>> Do you also approve the idea of placing unreliable functions (from an unwind
+>> perspective) in a special section and using that in the unwinder for
+>> reliable stack trace?
+> 
+> Rutland is on vacation for a couple of weeks so he's unlikely to reply
+> before the merge window is over I'm afraid.
+> 
 
-Notification / Notification/ Notification
+OK. I am pretty sure he is fine with the special sections idea. So, I will
+send out version 8 with the changes you requested and without the "RFC".
 
-Note, We are writing to inform you officially that Finally the Central
-Bank Financial Authority have approved to transfer your $8.2Million
-which was signed by late Mrs Rose Banneth the COVID.19 victim to
-transfer to you, Late Mrs Rose Banneth the France Lady contacted us to
-transfer her fund in our bank to you for Orphanage work before she
-died by the COVID.19
-and as it is now, you will receive your fund through our corresponding
-bank in Dubai [Emirate Investment Bank ] for security reason. Please
-you should reconfirm your details to receive the $8.2Million.
+Thanks.
 
-Name, Country, Address, occupations, Age, Telephone number, account
-Details so that we can immediately forward to the World Bank to
-transfer the fund.
-You are advised to comply on timely manner to permit this esteem bank
-transfer your fund as scheduled.
-
-We look forward to serving you better
-Your Financial Comfort Is A Priority
-Thank you for choosing Corisbank International.
-
-Sincerely,
-
-----
-
-Mr Diakarya Ouattara
-Managing Director
-Bank Coris
-Burkina Faso
-+226 556 163 37
-financial_bf_info@accountant.com
+Madhavan
