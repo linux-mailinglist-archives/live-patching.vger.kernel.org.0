@@ -2,74 +2,58 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CB43FE9C5
-	for <lists+live-patching@lfdr.de>; Thu,  2 Sep 2021 09:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE7A3FEB60
+	for <lists+live-patching@lfdr.de>; Thu,  2 Sep 2021 11:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242701AbhIBHLC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 2 Sep 2021 03:11:02 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:41836 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242504AbhIBHLA (ORCPT
+        id S1343520AbhIBJb6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 Sep 2021 05:31:58 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:50938 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343545AbhIBJb6 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 2 Sep 2021 03:11:00 -0400
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id E8C3220B71D5;
-        Thu,  2 Sep 2021 00:10:01 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E8C3220B71D5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1630566602;
-        bh=Gm7mDHFy4xsNam3X90cB6VLAwXc244muiywxwcxc5AM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=AKZ78sIeyyFosHBcUapsnPcDOwYmBWVj5KPX0ePT2j71QU2tRfgXeU11TTrduE0mY
-         bFScIuyDUGp5Qlw91QIlec1KFRVt/7i9VENeBcHFzUtOO48PPNooX6shHO6Xea1zia
-         sBV+Sq/qdNlNpIL96hflImYaSJ1iLMP5feid79MI=
-Subject: Re: [RFC PATCH v8 2/4] arm64: Reorganize the unwinder code for better
- consistency and maintenance
-To:     Mark Brown <broonie@kernel.org>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        pasha.tatashin@soleen.com, jthierry@redhat.com,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <b45aac2843f16ca759e065ea547ab0afff8c0f01>
- <20210812190603.25326-1-madvenka@linux.microsoft.com>
- <20210812190603.25326-3-madvenka@linux.microsoft.com>
- <YSe3WogpFIu97i/7@sirena.org.uk>
- <ecf0e4d1-7c47-426e-1350-fe5dc8bd88a5@linux.microsoft.com>
- <20210901162005.GH5976@sirena.org.uk>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <dbd7f035-ad4e-1b92-3f09-d4fddb21f5a3@linux.microsoft.com>
-Date:   Thu, 2 Sep 2021 02:10:01 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 2 Sep 2021 05:31:58 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7BE9C225DB;
+        Thu,  2 Sep 2021 09:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1630575059; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=jOFJNg/XLX0QLAhudTtZdYx6UwESXy0+qAOuyU0aulw=;
+        b=mig2R7EhyAh5z3GS1gmxdaZIuOQL97qvqHtp3zo9dglQMLimZ57CfhLLsNI1XHRV7nabuO
+        UNAwCV0hoJQNaN/iD6hbgHpXTBc1sgufrRai1xbQTzQN7SZ+G6yV/VFLaJjUazlG17SV99
+        PrAVnldxTB6jn+0yCjixpnacFqcWB88=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D3549A3B87;
+        Thu,  2 Sep 2021 09:30:53 +0000 (UTC)
+Date:   Thu, 2 Sep 2021 11:30:59 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: [GIT PULL] livepatching for 5.15
+Message-ID: <YTCZ07u6Fx4QiGoy@alley>
 MIME-Version: 1.0
-In-Reply-To: <20210901162005.GH5976@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20170912 (1.9.0)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Linus,
 
+please pull the latest livepatching changes from
 
-On 9/1/21 11:20 AM, Mark Brown wrote:
-> On Thu, Aug 26, 2021 at 06:19:07PM -0500, Madhavan T. Venkataraman wrote:
-> 
->> Mark Rutland,
-> 
->> Do you also approve the idea of placing unreliable functions (from an unwind
->> perspective) in a special section and using that in the unwinder for
->> reliable stack trace?
-> 
-> Rutland is on vacation for a couple of weeks so he's unlikely to reply
-> before the merge window is over I'm afraid.
-> 
+  git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git tags/livepatching-for-5.15
 
-OK. I am pretty sure he is fine with the special sections idea. So, I will
-send out version 8 with the changes you requested and without the "RFC".
+==================================
 
-Thanks.
+- Replace deprecated CPU-hotplug API calls.
 
-Madhavan
+----------------------------------------------------------------
+Sebastian Andrzej Siewior (1):
+      livepatch: Replace deprecated CPU-hotplug functions.
+
+ kernel/livepatch/transition.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
