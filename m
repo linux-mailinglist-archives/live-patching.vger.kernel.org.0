@@ -2,127 +2,144 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B5A4047A0
-	for <lists+live-patching@lfdr.de>; Thu,  9 Sep 2021 11:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 103E6404C6F
+	for <lists+live-patching@lfdr.de>; Thu,  9 Sep 2021 13:56:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232262AbhIIJRf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 9 Sep 2021 05:17:35 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:44728 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230379AbhIIJRe (ORCPT
+        id S1343545AbhIIL5F (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 9 Sep 2021 07:57:05 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:33810 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244846AbhIILyq (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 9 Sep 2021 05:17:34 -0400
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18993wi5016433;
-        Thu, 9 Sep 2021 05:16:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : mime-version : content-type; s=pp1;
- bh=Ljw6r7FaJTEWKs3bJDmpfjkeYs5QYc15bJkw4/W95ok=;
- b=Xh6RCRwBTSo3cPMTZXV4gIbgq+AJPSQG5/xxiZ7y+58rCUOkMJxUzMRf23DZUkus6R9S
- 26DwxWgmiUCxd3PvT5iW0+p38pbgnPanZBtArPIB6fqbeuJvPhWoGuC3url4DdwBDljR
- 5Mq2YjasCM2Oj9hExEb8lJ8guunfu3BX3tl1L8s47VHaAeLgWcF1WWNWaVkwhoFysrwy
- vbTqEmb+v2r+PkHcEMGCjxBbOfnaVntfRWJX6pHOecA3D4vyRTnhYzySF1CDKdmxU0lI
- SJUp+0yq5tLKw38owmbmOzdPtuXf+/ah8qLUlng+BMO9HBH2XfJL7g5oFXTgtlY3t6bv Qg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3axmeqx37p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Sep 2021 05:16:11 -0400
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1899DQWj052234;
-        Thu, 9 Sep 2021 05:16:10 -0400
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3axmeqx36r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Sep 2021 05:16:10 -0400
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18999OcM018708;
-        Thu, 9 Sep 2021 09:16:08 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04fra.de.ibm.com with ESMTP id 3axcnqa1cr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Sep 2021 09:16:08 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1899G4F253805522
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 9 Sep 2021 09:16:04 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 35D3252050;
-        Thu,  9 Sep 2021 09:16:04 +0000 (GMT)
-Received: from localhost (unknown [9.171.95.89])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 71A8252051;
-        Thu,  9 Sep 2021 09:16:03 +0000 (GMT)
-Date:   Thu, 9 Sep 2021 11:16:01 +0200
-From:   Vasily Gorbik <gor@linux.ibm.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] livepatch: Fix idle cpu's tasks transition
-Message-ID: <patch.git-a4aad6b1540d.your-ad-here.call-01631177886-ext-3083@work.hours>
+        Thu, 9 Sep 2021 07:54:46 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 98B442237B;
+        Thu,  9 Sep 2021 11:53:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1631188415; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eQS9ZQeFJQGmX5k5doxlCL9tdEWoOdO3DeKwN1zi5T0=;
+        b=00v59IeElg7EiE7DHb1zWtlUZ3YJjEriMz7GShwSI6HjWFzOHS2CdJ7M8fAz9nQNtDDcbs
+        J94bvmK7f4pGSSFGQotiPbZkObv+nYsyIAt733HOZLRCX7yJf4RBKu48LKihYPWrZIbBaf
+        eTzw669qmbL0RhD8IQ34BLGFO+BFHEE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1631188415;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eQS9ZQeFJQGmX5k5doxlCL9tdEWoOdO3DeKwN1zi5T0=;
+        b=p8MQdENfUnWaooQFXZj2H0QuLNNlmNpjSCkjq7a3nqRLLVr7DZorlFYl4fe7CAR7GhGKtc
+        Yfa5jdGKWMEhqCDg==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 3BD0DA3CFC;
+        Thu,  9 Sep 2021 11:53:35 +0000 (UTC)
+Date:   Thu, 9 Sep 2021 13:53:35 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+cc:     linux-hardening@vger.kernel.org,
+        Kristen C Accardi <kristen.c.accardi@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Jessica Yu <jeyu@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Lukasz Czapnik <lukasz.czapnik@intel.com>,
+        Marta A Plantykow <marta.a.plantykow@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v6 kspp-next 16/22] livepatch: only match unique symbols
+ when using fgkaslr
+In-Reply-To: <20210831144114.154-17-alexandr.lobakin@intel.com>
+Message-ID: <alpine.LSU.2.21.2109091347400.20761@pobox.suse.cz>
+References: <20210831144114.154-1-alexandr.lobakin@intel.com> <20210831144114.154-17-alexandr.lobakin@intel.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-X-Patchwork-Bot: notify
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: X2fuybb_Ji2VDbrBG_z4_UOZeLP647ld
-X-Proofpoint-ORIG-GUID: KfyibsxcL-wgA5d4tqK96Az5qhuR42mx
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-09-09_03:2021-09-07,2021-09-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- phishscore=0 adultscore=0 suspectscore=0 malwarescore=0 mlxlogscore=999
- priorityscore=1501 clxscore=1011 lowpriorityscore=0 mlxscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109030001
- definitions=main-2109090050
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On an idle system with large amount of cpus it might happen that
-klp_update_patch_state() is not reached in do_idle() for a long periods
-of time. With debug messages enabled log is filled with:
-[  499.442643] livepatch: klp_try_switch_task: swapper/63:0 is running
+Hi,
 
-without any signs of progress. Ending up with "failed to complete
-transition".
+On Tue, 31 Aug 2021, Alexander Lobakin wrote:
 
-On s390 LPAR with 128 cpus not a single transition is able to complete
-and livepatch kselftests fail. Tests on idling x86 kvm instance with 128
-cpus demonstrate similar symptoms with and without CONFIG_NO_HZ.
+> From: Kristen Carlson Accardi <kristen@linux.intel.com>
+> 
+> If any type of function granular randomization is enabled, the sympos
+> algorithm will fail, as it will be impossible to resolve symbols when
+> there are duplicates using the previous symbol position.
+> 
+> Override the value of sympos to always be zero if fgkaslr is enabled for
+> either the core kernel or modules, forcing the algorithm
+> to require that only unique symbols are allowed to be patched.
+> 
+> Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
+>  kernel/livepatch/core.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index 335d988bd811..852bbfa9da7b 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -169,6 +169,17 @@ static int klp_find_object_symbol(const char *objname, const char *name,
+>  	else
+>  		kallsyms_on_each_symbol(klp_find_callback, &args);
+>  
+> +	/*
+> +	 * If any type of function granular randomization is enabled, it
+> +	 * will be impossible to resolve symbols when there are duplicates
+> +	 * using the previous symbol position (i.e. sympos != 0). Override
+> +	 * the value of sympos to always be zero in this case. This will
+> +	 * force the algorithm to require that only unique symbols are
+> +	 * allowed to be patched.
+> +	 */
+> +	if (IS_ENABLED(CONFIG_FG_KASLR))
+> +		sympos = 0;
+> +
 
-To deal with that, since runqueue is already locked in
-klp_try_switch_task() identify idling cpus and trigger rescheduling
-potentially waking them up and making sure idle tasks break out of
-do_idle() inner loop and reach klp_update_patch_state(). This helps to
-speed up transition time while avoiding unnecessary extra system load.
+I ran the live patching tests and no problem occurred, which is great. We 
+do not have a test for old_sympos, which makes the testing less telling, 
+but at least nothing blows up with the section randomization itself.
 
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
----
-Previous discussion and RFC PATCH:
-lkml.kernel.org/r/patch.git-b76842ceb035.your-ad-here.call-01625661932-ext-1304@work.hours
+However, I want to reiterate what I wrote for the same patch in v5 
+series.
 
- kernel/livepatch/transition.c | 2 ++
- 1 file changed, 2 insertions(+)
+The above hunk should work, but I wonder if we should make it more 
+explicit. With the change the user will get the error with "unresolvable 
+ambiguity for symbol..." if they specify sympos and the symbol is not 
+unique. It could confuse them.
 
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index 3a4beb9395c4..c5832b2dd081 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -308,6 +308,8 @@ static bool klp_try_switch_task(struct task_struct *task)
- 	rq = task_rq_lock(task, &flags);
- 
- 	if (task_running(rq, task) && task != current) {
-+		if (is_idle_task(task))
-+			resched_curr(rq);
- 		snprintf(err_buf, STACK_ERR_BUF_SIZE,
- 			 "%s: %s:%d is running\n", __func__, task->comm,
- 			 task->pid);
--- 
-2.25.4
+So, how about it making it something like
+
+if (IS_ENABLED(CONFIG_FG_KASLR) || IS_ENABLED(CONFIG_MODULE_FG_KASLR))
+        if (sympos) {
+                pr_err("fgkaslr is enabled, specifying sympos for symbol '%s' in object '%s' does not work.\n",
+                        name, objname);
+                *addr = 0;
+                return -EINVAL;
+        }
+
+? (there could be goto to the error out at the end of the function to 
+save copy-pasting).
+
+In that case, if sympos is not specified, the user will get the message 
+which matches the reality. If the user specifies it, they will get the 
+error in case of fgkaslr (no matter if the symbol is found or not).
+
+What do you think?
+
+Miroslav
