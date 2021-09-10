@@ -2,144 +2,98 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 103E6404C6F
-	for <lists+live-patching@lfdr.de>; Thu,  9 Sep 2021 13:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80AFE406827
+	for <lists+live-patching@lfdr.de>; Fri, 10 Sep 2021 10:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343545AbhIIL5F (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 9 Sep 2021 07:57:05 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:33810 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244846AbhIILyq (ORCPT
+        id S231613AbhIJIKL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 10 Sep 2021 04:10:11 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:54960 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231502AbhIJIKL (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 9 Sep 2021 07:54:46 -0400
+        Fri, 10 Sep 2021 04:10:11 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 98B442237B;
-        Thu,  9 Sep 2021 11:53:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1631188415; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        by smtp-out2.suse.de (Postfix) with ESMTP id AE3352004C;
+        Fri, 10 Sep 2021 08:08:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1631261339; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=eQS9ZQeFJQGmX5k5doxlCL9tdEWoOdO3DeKwN1zi5T0=;
-        b=00v59IeElg7EiE7DHb1zWtlUZ3YJjEriMz7GShwSI6HjWFzOHS2CdJ7M8fAz9nQNtDDcbs
-        J94bvmK7f4pGSSFGQotiPbZkObv+nYsyIAt733HOZLRCX7yJf4RBKu48LKihYPWrZIbBaf
-        eTzw669qmbL0RhD8IQ34BLGFO+BFHEE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1631188415;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eQS9ZQeFJQGmX5k5doxlCL9tdEWoOdO3DeKwN1zi5T0=;
-        b=p8MQdENfUnWaooQFXZj2H0QuLNNlmNpjSCkjq7a3nqRLLVr7DZorlFYl4fe7CAR7GhGKtc
-        Yfa5jdGKWMEhqCDg==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        bh=s3YO21RL5B4bIYQW/pvfgxRmZIFg+04XQ1r4GlVCaHM=;
+        b=Vl6K96n0ceSaujzU8wf4tTVN60AwLJpnN0TiIWN/T8wFljxQ7joXK3xmBEMhcqVn4oCZRk
+        A910UPSOKm37b+4lgiTuGogoZesUuU+oqs9VIM43BKnlCfh7GB7/s4489jlyYsXxsjeaV+
+        KdwcIe5LhPJL/2kVWxrGSbaPYYj+0gI=
+Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 3BD0DA3CFC;
-        Thu,  9 Sep 2021 11:53:35 +0000 (UTC)
-Date:   Thu, 9 Sep 2021 13:53:35 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-cc:     linux-hardening@vger.kernel.org,
-        Kristen C Accardi <kristen.c.accardi@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jessica Yu <jeyu@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Lukasz Czapnik <lukasz.czapnik@intel.com>,
-        Marta A Plantykow <marta.a.plantykow@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@intel.com>,
-        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH v6 kspp-next 16/22] livepatch: only match unique symbols
- when using fgkaslr
-In-Reply-To: <20210831144114.154-17-alexandr.lobakin@intel.com>
-Message-ID: <alpine.LSU.2.21.2109091347400.20761@pobox.suse.cz>
-References: <20210831144114.154-1-alexandr.lobakin@intel.com> <20210831144114.154-17-alexandr.lobakin@intel.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        by relay2.suse.de (Postfix) with ESMTPS id 91147A3BA2;
+        Fri, 10 Sep 2021 08:08:59 +0000 (UTC)
+Date:   Fri, 10 Sep 2021 10:08:56 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Vasily Gorbik <gor@linux.ibm.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] livepatch: Kick idle cpu's tasks to perform
+ transition
+Message-ID: <YTsSmC3vGWa+kf5l@alley>
+References: <patch.git-b76842ceb035.your-ad-here.call-01625661932-ext-1304@work.hours>
+ <YSjgj+ZzOutFxevl@alley>
+ <your-ad-here.call-01631177645-ext-9742@work.hours>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <your-ad-here.call-01631177645-ext-9742@work.hours>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
-
-On Tue, 31 Aug 2021, Alexander Lobakin wrote:
-
-> From: Kristen Carlson Accardi <kristen@linux.intel.com>
+On Thu 2021-09-09 10:54:05, Vasily Gorbik wrote:
+> On Fri, Aug 27, 2021 at 02:54:39PM +0200, Petr Mladek wrote:
+> > On Wed 2021-07-07 14:49:38, Vasily Gorbik wrote:
+> > > --- a/kernel/livepatch/transition.c
+> > > +++ b/kernel/livepatch/transition.c
+> > > @@ -415,8 +415,11 @@ void klp_try_complete_transition(void)
+> > >  	for_each_possible_cpu(cpu) {
+> > >  		task = idle_task(cpu);
+> > >  		if (cpu_online(cpu)) {
+> > > -			if (!klp_try_switch_task(task))
+> > > +			if (!klp_try_switch_task(task)) {
+> > >  				complete = false;
+> > > +				set_tsk_need_resched(task);
+> > 
+> > Is this really needed?
 > 
-> If any type of function granular randomization is enabled, the sympos
-> algorithm will fail, as it will be impossible to resolve symbols when
-> there are duplicates using the previous symbol position.
+> Yes, otherwise the inner idle loop is not left and
+> klp_update_patch_state() is not reached. Only waking up idle
+> cpus is not enough.
+
+I see.
+
+> > Also, please do this in klp_send_signals(). We kick there all other
+> > tasks that block the transition for too long.
 > 
-> Override the value of sympos to always be zero if fgkaslr is enabled for
-> either the core kernel or modules, forcing the algorithm
-> to require that only unique symbols are allowed to be patched.
+> #define SIGNALS_TIMEOUT 15
 > 
-> Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> ---
->  kernel/livepatch/core.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 335d988bd811..852bbfa9da7b 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -169,6 +169,17 @@ static int klp_find_object_symbol(const char *objname, const char *name,
->  	else
->  		kallsyms_on_each_symbol(klp_find_callback, &args);
->  
-> +	/*
-> +	 * If any type of function granular randomization is enabled, it
-> +	 * will be impossible to resolve symbols when there are duplicates
-> +	 * using the previous symbol position (i.e. sympos != 0). Override
-> +	 * the value of sympos to always be zero in this case. This will
-> +	 * force the algorithm to require that only unique symbols are
-> +	 * allowed to be patched.
-> +	 */
-> +	if (IS_ENABLED(CONFIG_FG_KASLR))
-> +		sympos = 0;
-> +
+> Hm, kicking the idle threads in klp_send_signals() means extra 15 seconds
+> delay for every transition in our case and failing kselftests:
+>
+> I understand this 15 seconds delay for loaded system and tasks doing real
+> work is good,
 
-I ran the live patching tests and no problem occurred, which is great. We 
-do not have a test for old_sympos, which makes the testing less telling, 
-but at least nothing blows up with the section randomization itself.
+Yup. Also normal processes should not stay in the running state
+for this long. They are typically migrated quickly. But the idle task is
+special.
 
-However, I want to reiterate what I wrote for the same patch in v5 
-series.
+> but those lazy idle "running" tasks could be kicked right
+> away with no harm done, right?
 
-The above hunk should work, but I wonder if we should make it more 
-explicit. With the change the user will get the error with "unresolvable 
-ambiguity for symbol..." if they specify sympos and the symbol is not 
-unique. It could confuse them.
+Fair enough.
 
-So, how about it making it something like
-
-if (IS_ENABLED(CONFIG_FG_KASLR) || IS_ENABLED(CONFIG_MODULE_FG_KASLR))
-        if (sympos) {
-                pr_err("fgkaslr is enabled, specifying sympos for symbol '%s' in object '%s' does not work.\n",
-                        name, objname);
-                *addr = 0;
-                return -EINVAL;
-        }
-
-? (there could be goto to the error out at the end of the function to 
-save copy-pasting).
-
-In that case, if sympos is not specified, the user will get the message 
-which matches the reality. If the user specifies it, they will get the 
-error in case of fgkaslr (no matter if the symbol is found or not).
-
-What do you think?
-
-Miroslav
+Best Regards,
+Petr
