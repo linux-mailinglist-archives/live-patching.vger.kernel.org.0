@@ -2,117 +2,99 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F342412E62
-	for <lists+live-patching@lfdr.de>; Tue, 21 Sep 2021 07:54:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B57484138ED
+	for <lists+live-patching@lfdr.de>; Tue, 21 Sep 2021 19:43:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbhIUFzf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 21 Sep 2021 01:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
+        id S230386AbhIURpA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 21 Sep 2021 13:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhIUFzf (ORCPT
+        with ESMTP id S229915AbhIURo7 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 21 Sep 2021 01:55:35 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C29C061574;
-        Mon, 20 Sep 2021 22:54:07 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id i4so77534455lfv.4;
-        Mon, 20 Sep 2021 22:54:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bpUkPJQXkk9fBNIxLOKTcbXhkHoX6oXTQwo24b2XE1M=;
-        b=CS3Et8KOOV57xk5PhR6sFVWcizWSm/W05z/gI/FvHjtBdxmlz9UbAP+NQwpwdxtIZq
-         HB19wnN+gJu5dr9XpRcZ1ObJX/CxPCUPUx5WWSE2yvw+R73et2lmN1AKGREs4HO2v1fQ
-         oJ/GZzOAFPho/zQ9se0r+MCBqnfKRAJR+DZjuaGsUbKF5+tqOIh8Sjz9Jnt15rc6JZon
-         TABDYC4htGCJgoETF22MvazJWdc1Q3DI6/7XV+B8/97vToXjOfwK/le1yHhQnaG4Eos2
-         VHosyOiA4cujW05SXN9+Ac/gtpEdE3PANwIE90Azp42J7b7IXq4YMpykLAdB5FqPR461
-         +Rmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bpUkPJQXkk9fBNIxLOKTcbXhkHoX6oXTQwo24b2XE1M=;
-        b=4/KxijOpQE+MkmN3WM9h5BRtz+Rf0laoB+T0Mx0uzsMZvpsXJipVuXCuG9TFLJp7B9
-         CTnIARE6LlYTNIvQdmhufs6aWx8KASKJoK0zkMrJxzSdvy/PVddAHm2aJEt1ucP1NC3t
-         KpoMgWXFntvW1qQL8kSc2jsA1VMM3EYGFKynrUTDKzl3AgBe7Sna8lD1msouzM1tM351
-         VU8AW/VLVsALB6iQWBY+k7d+xa3ONr4tZbX1T1p3yd07jf33XK9tmm0JWhSFuDZiGXkA
-         i7FnD8Qp0dwauK67JxO7TrXsXA3MFIVY6xvs9SBl/gIO/CFqw/KfQzxzBY3Fs7R7Klt1
-         rI8w==
-X-Gm-Message-State: AOAM532nMGvWB2pDjjW0hdns0fuArtB17OPNgcXWLY8n7eclUz4RWUbf
-        LbULOyMm3/HMHDHEy7H0OdfljqkotS/yLibDfMU=
-X-Google-Smtp-Source: ABdhPJwrKvNOA6hoU9pJ2xyCVuHPZ7QAlv6lM0knDKsuFO6gALL2+emOzohvo+cGzSMXmXHkqEd+W9DG3SlbSHH2W6E=
-X-Received: by 2002:a2e:1645:: with SMTP id 5mr7543404ljw.123.1632203645190;
- Mon, 20 Sep 2021 22:54:05 -0700 (PDT)
+        Tue, 21 Sep 2021 13:44:59 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6F8C061574;
+        Tue, 21 Sep 2021 10:43:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=a2OzgtMmGpk6woPpOvOOcLPpmrGPO53fLZOixEExQ+g=; b=I5os7sMIFl2i1UmHdrajeHi+xW
+        XBO+ZEeHOom+1PPrXwszjpQUos2Xo1bBktJ7J9wIemW/1cndJLEVJ42gtPV6bHSNdte43CCGb/kiW
+        n9NUP+xXpfoax7cTGABhNvqvlP+QTeVjhx7lOS88wul5r5BV/PURM4ZLFGX8OiKjABWEyPew0xPYz
+        FO2cnYum4z+o1FOMjtktnuc2mJq2kI4P25hcTRBWsID8yyZxPZuFTjfArxok1oZ0/+Egf3gC/vV3r
+        qFr0It7LM56SV0FSgkCOPja53jcUaFu3zFvaUeNMZnvetFfWsU7OqnWIHHHopqxoAegc3HVMjmh2K
+        B43mzaVg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mSjna-004o6w-5i; Tue, 21 Sep 2021 17:43:18 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id BDB89300252;
+        Tue, 21 Sep 2021 19:43:16 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A7DF720303903; Tue, 21 Sep 2021 19:43:16 +0200 (CEST)
+Date:   Tue, 21 Sep 2021 19:43:16 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Vasily Gorbik <gor@linux.ibm.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] livepatch: Fix idle cpu's tasks transition
+Message-ID: <YUoZtF1qPyTx07pU@hirez.programming.kicks-ass.net>
+References: <patch.git-94c1daf66a9c.your-ad-here.call-01631714463-ext-3692@work.hours>
 MIME-Version: 1.0
-References: <20210810051602.3067384-1-mcgrof@kernel.org> <20210810051602.3067384-2-mcgrof@kernel.org>
-In-Reply-To: <20210810051602.3067384-2-mcgrof@kernel.org>
-From:   Lucas De Marchi <lucas.de.marchi@gmail.com>
-Date:   Mon, 20 Sep 2021 22:53:53 -0700
-Message-ID: <CAKi4VAKa7LKXdRmA7epgbkUZw2wpUz19JYYdZ35mPCxSL_W_kw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] libkmod: add a library notice log level print
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        live-patching@vger.kernel.org, fstests@vger.kernel.org,
-        linux-block@vger.kernel.org, hare@suse.de, dgilbert@interlog.com,
-        Jessica Yu <jeyu@kernel.org>, osandov@fb.com,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <patch.git-94c1daf66a9c.your-ad-here.call-01631714463-ext-3692@work.hours>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Aug 9, 2021 at 11:56 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> When you use pass the -v argument to modprobe we bump
-> the log level from the default modprobe log level of
-> LOG_WARNING (4) to LOG_NOTICE (5), however the library
-> only has avaiable to print:
->
->  #define DBG(ctx, arg...) kmod_log_cond(ctx, LOG_DEBUG, ## arg)
->  #define INFO(ctx, arg...) kmod_log_cond(ctx, LOG_INFO, ## arg)
->  #define ERR(ctx, arg...) kmod_log_cond(ctx, LOG_ERR, ## arg)
->
-> LOG_INFO (6) however is too high of a level for it to be
-> effective at printing anything when modprobe -v is passed.
-> And so the only way in which modprobe -v can trigger the
-> library to print a verbose message is to use ERR() but that
-> always prints something and we don't want that in some
-> situations.
->
-> We need to add a new log level macro which uses LOG_NOTICE (5)
-> for a "normal but significant condition" which users and developers
-> can use to look underneath the hood to confirm if a situation is
-> happening.
->
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> ---
->  libkmod/libkmod-internal.h | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/libkmod/libkmod-internal.h b/libkmod/libkmod-internal.h
-> index 398af9c..2e5e1bc 100644
-> --- a/libkmod/libkmod-internal.h
-> +++ b/libkmod/libkmod-internal.h
-> @@ -25,10 +25,12 @@ static _always_inline_ _printf_format_(2, 3) void
->  #  else
->  #    define DBG(ctx, arg...) kmod_log_null(ctx, ## arg)
->  #  endif
-> +#  define NOTICE(ctx, arg...) kmod_log_cond(ctx, LOG_NOTICE, ## arg)
->  #  define INFO(ctx, arg...) kmod_log_cond(ctx, LOG_INFO, ## arg)
->  #  define ERR(ctx, arg...) kmod_log_cond(ctx, LOG_ERR, ## arg)
->  #else
->  #  define DBG(ctx, arg...) kmod_log_null(ctx, ## arg)
-> +#  define NOTICE(ctx, arg...) kmod_log_cond(ctx, LOG_NOTICE, ## arg)
+On Wed, Sep 15, 2021 at 04:18:01PM +0200, Vasily Gorbik wrote:
 
-did you mean kmod_log_null()?
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index 291b857a6e20..2846a879f2dc 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -278,6 +278,8 @@ static int klp_check_stack(struct task_struct *task, char *err_buf)
+>   * Try to safely switch a task to the target patch state.  If it's currently
+>   * running, or it's sleeping on a to-be-patched or to-be-unpatched function, or
+>   * if the stack is unreliable, return false.
+> + *
+> + * Idle tasks are switched in the main loop when running.
+>   */
+>  static bool klp_try_switch_task(struct task_struct *task)
+>  {
+> @@ -308,6 +310,12 @@ static bool klp_try_switch_task(struct task_struct *task)
+>  	rq = task_rq_lock(task, &flags);
+>  
+>  	if (task_running(rq, task) && task != current) {
+> +		/*
+> +		 * Idle task might stay running for a long time. Switch them
+> +		 * in the main loop.
+> +		 */
+> +		if (is_idle_task(task))
+> +			resched_curr(rq);
+>  		snprintf(err_buf, STACK_ERR_BUF_SIZE,
+>  			 "%s: %s:%d is running\n", __func__, task->comm,
+>  			 task->pid);
 
-Lucas De Marchi
+So 'recently' we grew try_invoke_on_locked_down_task() (yes, that's a
+crap name), and I'm thinking this code is very similar to that. So
+perhaps we re-use that.
 
->  #  define INFO(ctx, arg...) kmod_log_null(ctx, ## arg)
->  #  define ERR(ctx, arg...) kmod_log_null(ctx, ## arg)
->  #endif
-> --
-> 2.30.2
->
+Perhaps have func() > 0 imply resched.
+
+I'll have a play...
