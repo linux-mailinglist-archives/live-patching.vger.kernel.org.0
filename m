@@ -2,78 +2,72 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3917A4150EB
-	for <lists+live-patching@lfdr.de>; Wed, 22 Sep 2021 22:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 555814151FE
+	for <lists+live-patching@lfdr.de>; Wed, 22 Sep 2021 22:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237277AbhIVUEU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Sep 2021 16:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49780 "EHLO
+        id S237770AbhIVU44 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 22 Sep 2021 16:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237276AbhIVUES (ORCPT
+        with ESMTP id S237908AbhIVU4s (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Sep 2021 16:04:18 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF07C061574;
-        Wed, 22 Sep 2021 13:02:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=xMMkEjEh6E2g/7bmfUoiGSvQRpLkGpcY6eTiqRST8LI=; b=DhzinNwGViZ2LB3qjFCetI4dTu
-        vlMTuCI/qLfhGb8MkVX1k6VGrgud5ucv6a9uDOeEx7KTk3/RgXRNbO7tzS1XvBePUE/2c5Aw7eBQs
-        ivBVgemAdQiLZApati8fT9X6dKMlYgz4qPWps6YtUlRinWPb5FMVGGPqXF8hKEtWbEf/0DK+idU2X
-        hcDNwOzq3y3FTZqPbTRA4fF9hT4uUsLi95lTrMXR7L1tcF+AFhxPu65Ri0EfyH3AQKInXZ3r4T/mx
-        UZ5xTy9JFgLcWFJzryobReCmWMwcnO2bTOCEQc7dW2DwQMHiutqBchz9EzsqpovN/PHge4FqIIMfl
-        zHZ4WGIQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mT8Rz-0054Hx-70; Wed, 22 Sep 2021 20:02:39 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B672C300250;
-        Wed, 22 Sep 2021 22:02:38 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9D9072C8201A6; Wed, 22 Sep 2021 22:02:38 +0200 (CEST)
-Date:   Wed, 22 Sep 2021 22:02:38 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
-        mbenes@suse.cz, pmladek@suse.com, mingo@kernel.org,
-        linux-kernel@vger.kernel.org, joe.lawrence@redhat.com,
-        fweisbec@gmail.com, tglx@linutronix.de, hca@linux.ibm.com,
-        svens@linux.ibm.com, sumanthk@linux.ibm.com,
-        live-patching@vger.kernel.org
-Subject: Re: [RFC][PATCH 6/7] context_tracking: Provide SMP ordering using RCU
-Message-ID: <YUuL3sveLOszCDlj@hirez.programming.kicks-ass.net>
-References: <20210922110506.703075504@infradead.org>
- <20210922110836.244770922@infradead.org>
- <20210922151721.GZ880162@paulmck-ThinkPad-P17-Gen-1>
- <YUuFF8+H2PE9m4wy@hirez.programming.kicks-ass.net>
- <20210922195350.GC880162@paulmck-ThinkPad-P17-Gen-1>
+        Wed, 22 Sep 2021 16:56:48 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE7DC061764
+        for <live-patching@vger.kernel.org>; Wed, 22 Sep 2021 13:55:14 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id f130so14469750qke.6
+        for <live-patching@vger.kernel.org>; Wed, 22 Sep 2021 13:55:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=ijKrByR1/KtEp2Ut8Wj0vMi00kBZm/A/r1gPwOEYZIg=;
+        b=KdXnhe/3zkHeZgixn9BpXiRXniwMgDmhauf6YTuxP0wgB5yzxGI3euReyxhx9TVrxq
+         3Od5gARvk08SiaQHEdbK80uTPJiKvZD1mvaXmFEi2OlRGGLVxi9qjTdQEJHDNx6GrhQf
+         +YDVSfcVXX6hJ9tzkOuxVlwY0IK/v4ECFsMgPN0YbEUFjdWw7wtLO6HU7k0GlwYOwBU7
+         g0u5ZrnjkFj9bDNBfxTJ+EZszn5R+MIWkE1noseX+tMOjLt3VKfnAtHOf7zGnzUi7/Ss
+         4zORj2FhCL6VBd/6ui6VhZsTJDlTQFr3MO12bpjTdn18irITsVHBfbJQd5ezVh5SqLsC
+         4EBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=ijKrByR1/KtEp2Ut8Wj0vMi00kBZm/A/r1gPwOEYZIg=;
+        b=xoIqhJABH0K+CmrXTKByZoupWCsJxtcEOHXwP99ighaOXEnxxfvfkdSILQPiN3M9dh
+         1TLbcYfYxTyKX1E9yI+MVtT2avUjETUeX/grD6Cw/z3jvFl3jFcsBVb6Y9/MQ2UzIfon
+         xFU0sSkCAAgmfeM1uc3P8ACyigu4jKwRvnRefVOnARhtaXAvxrcaF4tLPRoh3dm9NPd4
+         mEYOSieaE/c9nI63YEu2LxN4sZG+vKfP7l2xIBh2OxkOROnpEsoLqr/iqwUZWyX7j2BW
+         5E6fsjs8AHG2gNeSVsqqQPAxG6Tz6qUNSQ9ZJL7QliWh04mYXcLkDjmREy6wzdsY4bR3
+         9EKw==
+X-Gm-Message-State: AOAM533z2e2KhiEWjRDqQJl93WyDzx7nC3tG6fuLwy3B9jEruBW4VN+h
+        w9gZu2om48NXehJ4RTqVO9tIOzCVZEjbaPsK8Qas8aCbt9WO6g==
+X-Google-Smtp-Source: ABdhPJwsLqRgkk9jb+wC1ECBTFJXrEEB4mmlIo/Kaul20LfIYdlAYLv9tmwaB5Pxv0AmysZSk6ZePRs2dvYCH/qVqH0=
+X-Received: by 2002:a05:6902:150a:: with SMTP id q10mr1344586ybu.515.1632344102557;
+ Wed, 22 Sep 2021 13:55:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210922195350.GC880162@paulmck-ThinkPad-P17-Gen-1>
+Sender: pablogboy98@gmail.com
+Received: by 2002:a05:7000:1903:0:0:0:0 with HTTP; Wed, 22 Sep 2021 13:55:02
+ -0700 (PDT)
+From:   Aisha Al-Qaddafi <aisha.gdaffi24@gmail.com>
+Date:   Wed, 22 Sep 2021 21:55:02 +0100
+X-Google-Sender-Auth: EgWN-7KeHIzBWxs5WISil-9jI9s
+Message-ID: <CAFZ0LQG=HorOEh0B82pMRaOtrfukA2tHOBoX92F9fX48+pG2cA@mail.gmail.com>
+Subject: My Dear Friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 12:53:50PM -0700, Paul E. McKenney wrote:
-
-> I wasn't saying that the patch doesn't work.  But doesn't it add an IPI?
-> Or was I looking at it too early this morning?
-
-Ah, no. The patch allows a user-bound NOHZ_FULL task to be transitioned
-remotely. Unlike today, where they'll eventually poke it with a signal
-to force a kernel entry, which is bad m'kay :-)
-
-The code in question skips transitioning running tasks, seeing as you
-can't tell what they're doing etc.. Howver, with context tracking on
-you're supposedly able to tell they're in userspace without disturbing
-them -- except you really can't today.
-
-So if you can tell that a current running task is in userspace (hence my
-patch) you can allow the task to transition without any further ado,
-userspace is a safe state vs kernel text patching.
+Assalamu alaikum,
+I came across your e-mail contact prior to a private search while in
+need of your assistance. I am Aisha Al-Qaddafi, the only biological,
+Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
+single Mother and a Widow with three Children. I have investment funds
+worth Twenty Seven Million Five Hundred Thousand United State Dollar
+($27.500.000.00 ) and i need a trusted  investment Manager/Partner
+because of my current refugee status, however, I am interested in you
+for investment project assistance in your country. If you are willing
+to handle this project on my behalf kindly reply urgently to enable me
+to provide you more information about the investment
+funds.
+Best Regards
