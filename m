@@ -2,161 +2,102 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76066415F4E
-	for <lists+live-patching@lfdr.de>; Thu, 23 Sep 2021 15:14:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83B24415F58
+	for <lists+live-patching@lfdr.de>; Thu, 23 Sep 2021 15:17:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241209AbhIWNQV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 23 Sep 2021 09:16:21 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:44954 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241211AbhIWNQV (ORCPT
+        id S241199AbhIWNTD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 23 Sep 2021 09:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241192AbhIWNTD (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 23 Sep 2021 09:16:21 -0400
-Received: from relay1.suse.de (relay1.suse.de [149.44.160.133])
-        by smtp-out2.suse.de (Postfix) with ESMTP id C1CFC1FFB0;
-        Thu, 23 Sep 2021 13:14:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1632402888; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N1FFFjqNtxvFumHoY1HQ7sDzxjdq1AfkS9o1k39AM/Q=;
-        b=pZbh0RwXnp69/q47cYgywHtYNNFir4kHJ/mvQH68hramJR7aBMKTY8ntFCvwjBSVZvlkoS
-        OetBEOW1y0aG2JTpetfTIlWgbRIHrfI+H0QHKaG0cenqE5PNeXJYAr2nqkY0BlZ+t8ibAb
-        UnCs+Vsn0zFfPCR0OlyYQbXBoxVEhNo=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay1.suse.de (Postfix) with ESMTPS id 9AD8025D3C;
-        Thu, 23 Sep 2021 13:14:48 +0000 (UTC)
-Date:   Thu, 23 Sep 2021 15:14:48 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Peter Zijlstra <peterz@infradead.org>
+        Thu, 23 Sep 2021 09:19:03 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5011FC061574;
+        Thu, 23 Sep 2021 06:17:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=tmDonrWu05hjIRPkXFF1Mu4Nt+eEVaV44JNRiKNgNao=; b=H0DIJd9AONr/Qm3wvoF0U10Sc5
+        XFgyAlroSRTOuwagOj4JGeafBvbwpoXPZsRd2FbKAPO8IT7ZwbXEXu4KGzb9syWVpD8+pQrR7XIUr
+        FES2cyryRjQicYQhJAjv7vI6rKwbRPPBImdlrHMHx5Tzds17FIkajXf0bjcYu5AmIs84znUDAu54F
+        cH5Ee2yaOG9mILq9zqN28EJRyHp46PF5hdCTEqWQtrVU4KwuOXMexevjt6hkTrFVoDlC3BrAqG9B+
+        VO+2Xht0n5n0EHA8KtBFUB3cdN30c5XIds0QCp1lTwcZ7NNEMJEYNe2Q88A8hkCuWDcg1C9MqWD9A
+        7NsLjYPg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mTObH-005EcR-K7; Thu, 23 Sep 2021 13:17:20 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 20BF5300252;
+        Thu, 23 Sep 2021 15:17:17 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D0B5220251DC2; Thu, 23 Sep 2021 15:17:17 +0200 (CEST)
+Date:   Thu, 23 Sep 2021 15:17:17 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Petr Mladek <pmladek@suse.com>
 Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
         mbenes@suse.cz, mingo@kernel.org, linux-kernel@vger.kernel.org,
         joe.lawrence@redhat.com, fweisbec@gmail.com, tglx@linutronix.de,
         hca@linux.ibm.com, svens@linux.ibm.com, sumanthk@linux.ibm.com,
         live-patching@vger.kernel.org, paulmck@kernel.org
-Subject: Re: [RFC][PATCH 7/7] livepatch,context_tracking: Avoid disturbing
- NOHZ_FULL tasks
-Message-ID: <YUx9yNfgm4nnd23y@alley>
+Subject: Re: [RFC][PATCH 3/7] sched,livepatch: Use task_try_func()
+Message-ID: <YUx+XcYQlQ4SqEj8@hirez.programming.kicks-ass.net>
 References: <20210922110506.703075504@infradead.org>
- <20210922110836.304335737@infradead.org>
+ <20210922110836.065940560@infradead.org>
+ <YUxtbCthpr+l9XM0@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210922110836.304335737@infradead.org>
+In-Reply-To: <YUxtbCthpr+l9XM0@alley>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2021-09-22 13:05:13, Peter Zijlstra wrote:
-> When a task is stuck in NOHZ_FULL usermode, we can simply mark the
-> livepatch state complete.
+On Thu, Sep 23, 2021 at 02:05:00PM +0200, Petr Mladek wrote:
+> On Wed 2021-09-22 13:05:09, Peter Zijlstra wrote:
+
+> > +static int klp_check_task(struct task_struct *task, void *arg)
 > 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  kernel/livepatch/transition.c |   13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
+> Please, call this klp_check_and_switch_task() to make it clear
+> that it actually does the switch.
+
+Sure.
+
+
+> > +	ret = task_try_func(task, klp_check_task, &old_name);
+> > +	switch (ret) {
+> > +	case -EBUSY:
+> > +		pr_debug("%s: %s:%d is running\n",
+> > +			 __func__, task->comm, task->pid);
+> > +		break;
+> > +	case -EINVAL:
+> > +		pr_debug("%s: %s:%d has an unreliable stack\n",
+> > +			 __func__, task->comm, task->pid);
+> > +		break;
+> > +	case -EADDRINUSE:
+> > +		pr_debug("%s: %s:%d is sleeping on function %s\n",
+> > +			 __func__, task->comm, task->pid, old_name);
+> > +		break;
 > 
-> --- a/kernel/livepatch/transition.c
-> +++ b/kernel/livepatch/transition.c
-> @@ -270,13 +270,24 @@ static int klp_check_task(struct task_st
->  {
->  	int ret;
->  
-> -	if (task_curr(task))
-> +	if (task_curr(task)) {
-> +		if (context_tracking_state_cpu(task_cpu(task)) == CONTEXT_USER) {
-> +			/*
-> +			 * If we observe the CPU being in USER context, they
-> +			 * must issue an smp_mb() before doing much kernel
-> +			 * space and as such will observe the patched state,
-> +			 * mark it clean.
-> +			 */
-> +			goto complete;
+> I would prefer to be on the safe side and catch error codes that might
+> eventually appear in the future.
+> 
+> 	case 0:
+> 		/* success */
+> 		break;
 
-IMHO, this is not safe:
+	case -EAGAIN:
+		/* task_try_func() raced */
+		break;
 
-CPU0				CPU1
+> 	default:
+> 		pr_debug("%s: Unknown error code (%d) when trying to switch %s:%d\n",
+> 			 __func__, ret, task->comm, task->pid);
+> 
+> >  	}
 
-klp_check_task(A)
-  if (context_tracking_state_cpu(task_cpu(task)) == CONTEXT_USER)
-     goto complete;
-
-  clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
-
-				# task switching to kernel space
-				klp_update_patch_state(A)
-				       if (test_and_clear_tsk_thread_flag(task,	TIF_PATCH_PENDING))
-				       //false
-
-				# calling kernel code with old task->patch_state
-
-	task->patch_state = klp_target_state;
-
-BANG: CPU0 sets task->patch_state when task A is already running
-	kernel code on CPU1.
-
-> +		}
->  		return -EBUSY;
-> +	}
->  
->  	ret = klp_check_stack(task, arg);
->  	if (ret)
->  		return ret;
->  
-> +complete:
->  	clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
->  	task->patch_state = klp_target_state;
-
-A solution might be to switch ordering and add a barrier here.
-
->  	return 0;
-
-
-The code might look like:
-
-static int klp_check_task(struct task_struct *task, void *arg)
-{
-	int ret;
-
-	if (task_curr(task)) {
-		if (context_tracking_state_cpu(task_cpu(task)) == CONTEXT_USER) {
-			/*
-			 * Task running in USER mode might get switched
-			 * immediately. They are switched when entering
-			 * kernel code anyway.
-			 */
-			goto complete;
-		}
-		return -EBUSY;
-	}
-
-	ret = klp_check_stack(task, arg);
-	if (ret)
-		return ret;
-
-complete:
-	WRITE_ONCE(task->patch_state, klp_target_state);
-	/*
-	 * We switch also tasks running in USER mode here. They must
-	 * see the new state before clearing the pending flag.
-	 * Otherwise, they might enter kernel mode without switching
-	 * the state in klp_update_patch_state().
-	 */
-	smp_wmb();
-	clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
-
-	return 0;
-}
-
-The only problem is that the corresponding read barrier is not clear.
-It will make more sense if it is paired with some read barrier
-in the scheduler after handling TIF flags.
-
-But we should be on the safe side because klp_ftrace_handler() always
-does read barrier before reading the state. Though, it is done
-there from other reasons.
-
-Best Regards,
-Petr
+Done.
