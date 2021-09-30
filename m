@@ -2,143 +2,77 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F89041E23A
-	for <lists+live-patching@lfdr.de>; Thu, 30 Sep 2021 21:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3FD341E478
+	for <lists+live-patching@lfdr.de>; Fri,  1 Oct 2021 00:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343956AbhI3T22 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 30 Sep 2021 15:28:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58266 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234440AbhI3T21 (ORCPT
+        id S1345259AbhI3XAe (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 30 Sep 2021 19:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348270AbhI3XAe (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 30 Sep 2021 15:28:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1633030004;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=84aioMVzye4mu3+jKsp5Lz9dVTyI5BIn8daf8EFsh/I=;
-        b=ddyllbr1pUbZHeKTnRJZeLTwseu0IWbW1CBRmFz7zf4SnF+bPa1PBH5yRyUdgZtjyOLVkT
-        Kf56SJEBhEtZcZHiU3BanMIV8M459gc3UE/ejgXI3nA+9GXQIhpkZFWWTLrsJBC5J3dr0n
-        5eFnhbA3qBe1vJ6B6xtvzITbnTQ/ZsU=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-276-_C5vw1-yNWeT9g9JHa5M0A-1; Thu, 30 Sep 2021 15:26:42 -0400
-X-MC-Unique: _C5vw1-yNWeT9g9JHa5M0A-1
-Received: by mail-oi1-f200.google.com with SMTP id m189-20020aca58c6000000b0027381ff1c37so4862798oib.22
-        for <live-patching@vger.kernel.org>; Thu, 30 Sep 2021 12:26:42 -0700 (PDT)
+        Thu, 30 Sep 2021 19:00:34 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF350C06176D
+        for <live-patching@vger.kernel.org>; Thu, 30 Sep 2021 15:58:50 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id v18so27279332edc.11
+        for <live-patching@vger.kernel.org>; Thu, 30 Sep 2021 15:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=AnIUtRQtDgk3YDJAatwz+LXUKRWPbctJNdAprjwvZ5o=;
+        b=FYrpNEp0zwymsUrUWvdUY9zg7bQqbIGfxDPPCHvF42IJ3bBpebm7KBYvtEnhjVJU+k
+         kc0RkBkQWIC9qz9CmBvVwjaqxOXjsJrW+nKNcZSRCDscgYzAFIAzmbAFq4EDpnq2sNEI
+         sbWlhfW7LvmJcBf2lYyFaAQ1NoPe0MZZNTMSdqwxSZQ9FrihxeYL48acwLrCVx0/oOCu
+         bo/5xgQpQVGtvQrGXriciZI6ZLcCfsanEfD3fSOc+k4HKjLcd5FiNq+W1H/K1U0FLt0x
+         TtjtVS2fUVBBlnpRN7k6ja0F1yP1w+LTfJJvd97Etbqlgl/4h4tpEJiIbsHj2huvYLaO
+         4TFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=84aioMVzye4mu3+jKsp5Lz9dVTyI5BIn8daf8EFsh/I=;
-        b=x1rYUPhasst3qipsCLIjMfVKR/pe+cFFqhQfESpc4Iw50p7PfuJf6+V6928Ay1m3Lo
-         bbuqRt0s+7bSWrfit6d0/gf1KluXGswuuTPt1ZPemHDqPBJfuSaYNZfy8BPK1sm358hf
-         lzrp1suXh8YljbSOUOu8AV6kWX9mUdvxKDujR32L/vCBJidyNP9fVUXoQRLjDoAp/hvY
-         Bavo7JQH4Ik9gnoDPY2Ro64I/qsfhk9D5tDh8fz03aTz4003hdSO1Qk68wkO1/Nd5qQ4
-         R9Kz48LJkEX1PKbmGe2DHxB9+NDgX5PwD+UB1oW8TBj/72QAaMFXaBFGHVnfsvWg8qRp
-         0wMQ==
-X-Gm-Message-State: AOAM533VYAxSKqzdftQiybgfL3F1zsQg8N7aSmM1CgdKU2CVttXLpy6t
-        u34eyCaSsurSB1omGwMZaikMf5JQag2SF7a1tD7LZkKI59TRgtMAnnw3gWvadeYmpLTQ+Dw9HGS
-        BRqMlGpQekv6/Oh3At9wGIAgm+A==
-X-Received: by 2002:a4a:b282:: with SMTP id k2mr6154866ooo.11.1633030001820;
-        Thu, 30 Sep 2021 12:26:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzul+KG+HIrMR3r/kdHh8q4z01ZL0Yv343OQE1gnyfoE9GjNSC5C76UwoXDsn37+QmYhDN5kQ==
-X-Received: by 2002:a4a:b282:: with SMTP id k2mr6154840ooo.11.1633030001550;
-        Thu, 30 Sep 2021 12:26:41 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::15])
-        by smtp.gmail.com with ESMTPSA id x4sm748421otq.25.2021.09.30.12.26.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 12:26:41 -0700 (PDT)
-Date:   Thu, 30 Sep 2021 12:26:38 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+488ddf8087564d6de6e2@syzkaller.appspotmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
-        will@kernel.org, x86@kernel.org, live-patching@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [syzbot] upstream test error: KASAN: invalid-access Read in
- __entry_tramp_text_end
-Message-ID: <20210930192638.xwemcsohivoynwx3@treble>
-References: <20210927170122.GA9201@C02TD0UTHF1T.local>
- <20210927171812.GB9201@C02TD0UTHF1T.local>
- <CACT4Y+actfuftwMMOGXmEsLYbnCnqcZ2gJGeoMLsFCUNE-AxcQ@mail.gmail.com>
- <20210928103543.GF1924@C02TD0UTHF1T.local>
- <20210929013637.bcarm56e4mqo3ndt@treble>
- <YVQYQzP/vqNWm/hO@hirez.programming.kicks-ass.net>
- <20210929085035.GA33284@C02TD0UTHF1T.local>
- <YVQ5F9aT7oSEKenh@hirez.programming.kicks-ass.net>
- <20210929103730.GC33284@C02TD0UTHF1T.local>
- <YVRRWzXqhMIpwelm@hirez.programming.kicks-ass.net>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=AnIUtRQtDgk3YDJAatwz+LXUKRWPbctJNdAprjwvZ5o=;
+        b=0XYjEmdSCNA3blgNkvK/y8OYCQRtztM/PCFUZSQi2w4qb2Ifhh15VC85Milc7sXWIv
+         cDdo0uve/IcAxy2OlpK9YwKKsmNllIqnidYlhFkaqS12we8xAdgHePRqXm4wZ4iBfiBC
+         PMPQM9LYfvvNErc7HzchTGrM1WlmCmcvuNqFX79s1bIrtYpaAcbwQp/3YKu4f9+oLzG8
+         3Qa5Pmw0ItaWTjw6e/oq0fcA7+gtJvyPKDBCJnL2u6EaSsz1XNcJEuF82z2kYeDkPd4e
+         y/kGDFZ8zjbl2IajOEdPNErIds4avCzt+p0My2ieKesZuH+2L/cke0ipfAM9alHiy1HH
+         gVOw==
+X-Gm-Message-State: AOAM532M3xbjD8pSwo+YWkVJQHkWJ69/1bg4FBXvBOZMQH00qVvyn35T
+        oRr6GM0O9hQIGX12gyH9+Rd6BK/BkeU4UA3mt4gs4iwL7oQ7K/VI
+X-Google-Smtp-Source: ABdhPJx4GVBpAqUdpSc6GV2Ccser+SzsoFXEvbqpvIweCdcopVV+06RlyWu2S8RAkedNbXO5I85gVF7ApS9JXlkXPY0=
+X-Received: by 2002:a2e:98c3:: with SMTP id s3mr8845623ljj.430.1633042719148;
+ Thu, 30 Sep 2021 15:58:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YVRRWzXqhMIpwelm@hirez.programming.kicks-ass.net>
+Received: by 2002:a05:6512:5d8:0:0:0:0 with HTTP; Thu, 30 Sep 2021 15:58:38
+ -0700 (PDT)
+Reply-To: southwestloanco59@gmail.com
+From:   SOUTHWESTLOANCO <saniabdullahinng2020@gmail.com>
+Date:   Thu, 30 Sep 2021 15:58:38 -0700
+Message-ID: <CA+3X9TwgMQ7NU-AkrdA8VQ5-2PDYbids5N+jtor+L_1QHLjV2w@mail.gmail.com>
+Subject: Dear owner,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 01:43:23PM +0200, Peter Zijlstra wrote:
-> On Wed, Sep 29, 2021 at 11:37:30AM +0100, Mark Rutland wrote:
-> 
-> > > This is because _ASM_EXTABLE only generates data for another section.
-> > > There doesn't need to be code continuity between these two asm
-> > > statements.
-> > 
-> > I think you've missed my point. It doesn't matter that the
-> > asm_volatile_goto() doesn't contain code, and this is solely about the
-> > *state* expected at entry/exit from each asm block being different.
-> 
-> Urgh.. indeed :/
-
-So much for that idea :-/
-
-To fix the issue of the wrong .fixup code symbol names getting printed,
-we could (as Mark suggested) add a '__fixup_text_start' symbol at the
-start of the .fixup section.  And then remove all other symbols in the
-.fixup section.
-
-For x86, that means removing the kvm_fastop_exception symbol and a few
-others.  That way it's all anonymous code, displayed by the kernel as
-"__fixup_text_start+0x1234".  Which isn't all that useful, but still
-better than printing the wrong symbol.
-
-But there's still a bigger problem: the function with the faulting
-instruction doesn't get reported in the stack trace.
-
-For example, in the up-thread bug report, __d_lookup() bug report
-doesn't get printed, even though its anonymous .fixup code is running in
-the context of the function and will be branching back to it shortly.
-
-Even worse, this means livepatch is broken, because if for example
-__d_lookup()'s .fixup code gets preempted, __d_lookup() can get skipped
-by a reliable stack trace.
-
-So we may need to get rid of .fixup altogether.  Especially for arches
-which support livepatch.
-
-We can replace some of the custom .fixup handlers with generic handlers
-like x86 does, which do the fixup work in exception context.  This
-generally works better for more generic work like putting an error code
-in a certain register and resuming execution at the subsequent
-instruction.
-
-However a lot of the .fixup code is rather custom and doesn't
-necessarily work well with that model.
-
-In such cases we could just move the .fixup code into the function
-(inline for older compilers; out-of-line for compilers that support
-CC_HAS_ASM_GOTO_OUTPUT).
-
-Alternatively we could convert each .fixup code fragment into a proper
-function which returns to a specified resume point in the function, and
-then have the exception handler emulate a call to it like we do with
-int3_emulate_call().
-
 -- 
-Josh
+Good day,
+          Do you need a loan ? We offer any kind of loan to repay in
+6months with just 2% interest
 
+Kindly Reply with below information
+
+NAME...............
+ADDRESS..........
+OCCUPATION....
+AGE...................
+PHONE..............
+AMOUNT NEEDED......
+
+Regards
+
+Contact  Mr Gary Edward +13182955380
+
+Remittance Department southwestloanco59@gmail.com
