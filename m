@@ -2,151 +2,143 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C096941DF61
-	for <lists+live-patching@lfdr.de>; Thu, 30 Sep 2021 18:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F89041E23A
+	for <lists+live-patching@lfdr.de>; Thu, 30 Sep 2021 21:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352261AbhI3Qoi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 30 Sep 2021 12:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352249AbhI3Qoh (ORCPT
+        id S1343956AbhI3T22 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 30 Sep 2021 15:28:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58266 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234440AbhI3T21 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 30 Sep 2021 12:44:37 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F5FC06176D
-        for <live-patching@vger.kernel.org>; Thu, 30 Sep 2021 09:42:55 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id 66so8094686vsd.11
-        for <live-patching@vger.kernel.org>; Thu, 30 Sep 2021 09:42:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=/T9drlD1s9vO6lHEMs4LJzmDo2MKXEHBXvFYaWoQWpk=;
-        b=e/UXzsfuMGIOVlEbRTLr+LyiVLu+rk+C86Y8q3wW3py4w/E1lywchmha62s+vfDZU/
-         lDQlChCZPR0Za0O6XXqtSxHBkfDknZqHefn4JFrkJFXhtuUvXTNIb7ZXsWI1pIEy9aKF
-         J+djW1pExW+Vz85wenMcmdbvW0bRnZDuP+wBc22G8Whb+0otHmzIHD67VnaqAJJUyu2N
-         hp4Za3TRZCMM+8F1AYe4GrnZp3bXTXub14cfh+ybnoNZRNie6weSCM9l03xMOWyM6gUq
-         cOWLOgcQaxZV3c17cAG9jP+Q1Y80xOUJKYUrvTJKkS/GdFi05lMHEwckwq/k9WX3uZHS
-         4nOw==
+        Thu, 30 Sep 2021 15:28:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1633030004;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=84aioMVzye4mu3+jKsp5Lz9dVTyI5BIn8daf8EFsh/I=;
+        b=ddyllbr1pUbZHeKTnRJZeLTwseu0IWbW1CBRmFz7zf4SnF+bPa1PBH5yRyUdgZtjyOLVkT
+        Kf56SJEBhEtZcZHiU3BanMIV8M459gc3UE/ejgXI3nA+9GXQIhpkZFWWTLrsJBC5J3dr0n
+        5eFnhbA3qBe1vJ6B6xtvzITbnTQ/ZsU=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-_C5vw1-yNWeT9g9JHa5M0A-1; Thu, 30 Sep 2021 15:26:42 -0400
+X-MC-Unique: _C5vw1-yNWeT9g9JHa5M0A-1
+Received: by mail-oi1-f200.google.com with SMTP id m189-20020aca58c6000000b0027381ff1c37so4862798oib.22
+        for <live-patching@vger.kernel.org>; Thu, 30 Sep 2021 12:26:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=/T9drlD1s9vO6lHEMs4LJzmDo2MKXEHBXvFYaWoQWpk=;
-        b=l0zcA0jKJV6pbdOnf7XtmTi0xRo1rs+756xc4YiCYjheLLBomX5bqWE9YFQABe0jp2
-         pq9lGLyhA7Tdv/02CqYZq0/86nN5crzDbbVHQh7zhrQ/aoRc0vbsfOW22k919XjPElMQ
-         CznEIRIc0hkWgpUTFKz02xvqScdpcg2lJB46NakKMMjSfv7O73gk41Q2mBCN98rgtzfw
-         arjUB5cnCXruivk89tDJRiecVlJ6Lo8ZKja71l2oKwHgEIbJqUFAfwRa8TzYK6PMqP+D
-         mLxIm7jUwd394wQMvjfkhidvYlTxDjM9H0jFp7xeDKWcAJL748Win3SWHVOs7JhKZqVz
-         bm4Q==
-X-Gm-Message-State: AOAM531FuN8FssTNguGFIvtJPak7WEzIQKomPIUx2BpS2Z/E5zpowN6U
-        TSLL+O0Kl6Ekk9p0hR47xnrK9PJTuEacf5fOVLo=
-X-Google-Smtp-Source: ABdhPJy7YLP+m8kssI0cTAGZRObkTi7kloVEv0tm4oNDkoblCKkCMeQNyi2yuMCtLxU0suy9Uh8HC/qWBrEk3sGZi/s=
-X-Received: by 2002:a67:ce14:: with SMTP id s20mr160974vsl.34.1633020174218;
- Thu, 30 Sep 2021 09:42:54 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=84aioMVzye4mu3+jKsp5Lz9dVTyI5BIn8daf8EFsh/I=;
+        b=x1rYUPhasst3qipsCLIjMfVKR/pe+cFFqhQfESpc4Iw50p7PfuJf6+V6928Ay1m3Lo
+         bbuqRt0s+7bSWrfit6d0/gf1KluXGswuuTPt1ZPemHDqPBJfuSaYNZfy8BPK1sm358hf
+         lzrp1suXh8YljbSOUOu8AV6kWX9mUdvxKDujR32L/vCBJidyNP9fVUXoQRLjDoAp/hvY
+         Bavo7JQH4Ik9gnoDPY2Ro64I/qsfhk9D5tDh8fz03aTz4003hdSO1Qk68wkO1/Nd5qQ4
+         R9Kz48LJkEX1PKbmGe2DHxB9+NDgX5PwD+UB1oW8TBj/72QAaMFXaBFGHVnfsvWg8qRp
+         0wMQ==
+X-Gm-Message-State: AOAM533VYAxSKqzdftQiybgfL3F1zsQg8N7aSmM1CgdKU2CVttXLpy6t
+        u34eyCaSsurSB1omGwMZaikMf5JQag2SF7a1tD7LZkKI59TRgtMAnnw3gWvadeYmpLTQ+Dw9HGS
+        BRqMlGpQekv6/Oh3At9wGIAgm+A==
+X-Received: by 2002:a4a:b282:: with SMTP id k2mr6154866ooo.11.1633030001820;
+        Thu, 30 Sep 2021 12:26:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzul+KG+HIrMR3r/kdHh8q4z01ZL0Yv343OQE1gnyfoE9GjNSC5C76UwoXDsn37+QmYhDN5kQ==
+X-Received: by 2002:a4a:b282:: with SMTP id k2mr6154840ooo.11.1633030001550;
+        Thu, 30 Sep 2021 12:26:41 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id x4sm748421otq.25.2021.09.30.12.26.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Sep 2021 12:26:41 -0700 (PDT)
+Date:   Thu, 30 Sep 2021 12:26:38 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+488ddf8087564d6de6e2@syzkaller.appspotmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
+        will@kernel.org, x86@kernel.org, live-patching@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [syzbot] upstream test error: KASAN: invalid-access Read in
+ __entry_tramp_text_end
+Message-ID: <20210930192638.xwemcsohivoynwx3@treble>
+References: <20210927170122.GA9201@C02TD0UTHF1T.local>
+ <20210927171812.GB9201@C02TD0UTHF1T.local>
+ <CACT4Y+actfuftwMMOGXmEsLYbnCnqcZ2gJGeoMLsFCUNE-AxcQ@mail.gmail.com>
+ <20210928103543.GF1924@C02TD0UTHF1T.local>
+ <20210929013637.bcarm56e4mqo3ndt@treble>
+ <YVQYQzP/vqNWm/hO@hirez.programming.kicks-ass.net>
+ <20210929085035.GA33284@C02TD0UTHF1T.local>
+ <YVQ5F9aT7oSEKenh@hirez.programming.kicks-ass.net>
+ <20210929103730.GC33284@C02TD0UTHF1T.local>
+ <YVRRWzXqhMIpwelm@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Received: by 2002:a59:ab2e:0:b0:22d:7f44:603a with HTTP; Thu, 30 Sep 2021
- 09:42:53 -0700 (PDT)
-Reply-To: irenezakari24@gmail.com
-From:   Irene zakari <irenezakari88@gmail.com>
-Date:   Thu, 30 Sep 2021 09:42:53 -0700
-Message-ID: <CAFT8PFEiwji_tfJHzDxnx3mKwhExLN5n90A8Y-61JNL4AkCEFw@mail.gmail.com>
-Subject: PLEASE I NEED YOUR HELP
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YVRRWzXqhMIpwelm@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello   ..
+On Wed, Sep 29, 2021 at 01:43:23PM +0200, Peter Zijlstra wrote:
+> On Wed, Sep 29, 2021 at 11:37:30AM +0100, Mark Rutland wrote:
+> 
+> > > This is because _ASM_EXTABLE only generates data for another section.
+> > > There doesn't need to be code continuity between these two asm
+> > > statements.
+> > 
+> > I think you've missed my point. It doesn't matter that the
+> > asm_volatile_goto() doesn't contain code, and this is solely about the
+> > *state* expected at entry/exit from each asm block being different.
+> 
+> Urgh.. indeed :/
 
-How do you do over there? I hope you are doing well?
+So much for that idea :-/
 
-My name is Irene. (24 years), i am single, from Gambia, the only child
-of late Eng. Bernard Bakary Zakaria. the Director of Bajam Enterprise
-(Building Construction Company in The Gambia) also the CEO of Bernard
-Import and Export (GAMBIA).
+To fix the issue of the wrong .fixup code symbol names getting printed,
+we could (as Mark suggested) add a '__fixup_text_start' symbol at the
+start of the .fixup section.  And then remove all other symbols in the
+.fixup section.
 
-As a matter of fact my mother died when i was barely 4 years old
-according to my late father and because of the type of love he had for
-my mother made him to remain UN-married till he left the ghost..
+For x86, that means removing the kvm_fastop_exception symbol and a few
+others.  That way it's all anonymous code, displayed by the kernel as
+"__fixup_text_start+0x1234".  Which isn't all that useful, but still
+better than printing the wrong symbol.
 
-So after the death of my father as a result of assassinate, his brother (My
-Uncle) who is the purchasing and marketing sale manager of my late
-fathers company named (Mr. James Tokunbo Oriade Zakaria) wanted to
-convert all the properties and resources of my late father into his
-which i quarreled with him and it made him to lay his anger on me to
-the extent of hiring an assassins to kill me but to God be the glory i
-succeeded by making a way to Burkina faso for my dear life.
-Honestly i do live a fearful life even here in Burkina faso because of
-those Assassins coming after me .
+But there's still a bigger problem: the function with the faulting
+instruction doesn't get reported in the stack trace.
 
-I would want to live and study in your country for my better future.
-because my father same blood brother wanted to force me into undecided
-marriage, just for me to leave my father home and went and live with
-another man I never know as he want to occupied all my father home
-and maybe to sold it as my father no longer alive, I'm the only child
-daughter my father born, '' but he don't know that i am not
-interesting in any of my father properties or early marriage for now,
-because i still have future to think about and to focus on my studies
-first as i was doing my first year in the University before the death
-of my father.
+For example, in the up-thread bug report, __d_lookup() bug report
+doesn't get printed, even though its anonymous .fixup code is running in
+the context of the function and will be branching back to it shortly.
 
-Actually what I want to discuss with you is about my personal issue
-concern funds my late father deposited in a bank outside my country,
-worth $4.5 million united state dollars. i need your assistance to
-receive and invest this funds in your country.
+Even worse, this means livepatch is broken, because if for example
+__d_lookup()'s .fixup code gets preempted, __d_lookup() can get skipped
+by a reliable stack trace.
 
-Please help me, I am sincere to you and I want to be member of your
-family as well if you wouldn't mind to accept me and lead me to better
-future in your country.
+So we may need to get rid of .fixup altogether.  Especially for arches
+which support livepatch.
 
-All the documents the bank issue to my father during time of deposit
-is with me now.
-I already notify the bank on phone about the death of my father and
-they are surprise for the news and accept that my father is their good
-customer.
-I will be happy if this money can be invested in any business of your
-choice and it will be under your control till i finished my education,
-also I'm assuring you good relationship and I am ready to discuss the
-amount of money to give you from this money for your help.
+We can replace some of the custom .fixup handlers with generic handlers
+like x86 does, which do the fixup work in exception context.  This
+generally works better for more generic work like putting an error code
+in a certain register and resuming execution at the subsequent
+instruction.
 
-Therefore, I shall give you the bank contact and other necessary
-information in my next email if you will only promise me that you will
-not/never betray and disclosed this matter to anybody, because, this
-money is the only hope i have for survival on earth since I have lost
-my parents.
+However a lot of the .fixup code is rather custom and doesn't
+necessarily work well with that model.
 
-Moreover I have the FUND PLACEMENT CERTIFICATE and the DEATH
-CERTIFICATE here with me, but before I give you further information, i
-will like to know your full data
+In such cases we could just move the .fixup code into the function
+(inline for older compilers; out-of-line for compilers that support
+CC_HAS_ASM_GOTO_OUTPUT).
 
-1. Full Name: ........................
-2. Address: ..................
-3. Nationality: ........... Sex................
-4. Age:........... Date of Birth:................
-5. Occupation:...................
-.....
-6. Phone: ........... Fax:.........................
-7. State of Origin: .......Country:..............
-8. Occupation:...................
-................
-9. Marital status........... E-mail address's: ............
-10. Scan copy of your ID card or Driving License/Photo:............
-DECLARATION:
+Alternatively we could convert each .fixup code fragment into a proper
+function which returns to a specified resume point in the function, and
+then have the exception handler emulate a call to it like we do with
+int3_emulate_call().
 
-so that i will be fully sure that i am not trusting the wrong person.
-and it will also give me the mind to send you the bank contact for you
-to communicate with them for more verification about this money. and
-to know you more better.
+-- 
+Josh
 
-Meanwhile, you can reach me through my pastor,his name is Pastor Paul
-any time you call, tell him that you want to speak with me because
-right now i am living in the church here in Burkina faso and i don't
-want to stay here any longer,
-send for me to speak with you his phone number is this(+226 75213646)
-
-I will stop here and i will be waiting for your reply and feel free
-ask any thing you want to know about me.
-Please help me, I would be highly appreciated
-Have nice day.
-From Irene
