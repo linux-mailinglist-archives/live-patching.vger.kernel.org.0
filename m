@@ -2,24 +2,57 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5A741ED67
-	for <lists+live-patching@lfdr.de>; Fri,  1 Oct 2021 14:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E1E41F9E7
+	for <lists+live-patching@lfdr.de>; Sat,  2 Oct 2021 07:10:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351976AbhJAM3A (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 1 Oct 2021 08:29:00 -0400
-Received: from foss.arm.com ([217.140.110.172]:42676 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231312AbhJAM3A (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 1 Oct 2021 08:29:00 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8BE1B106F;
-        Fri,  1 Oct 2021 05:27:15 -0700 (PDT)
-Received: from C02TD0UTHF1T.local (unknown [10.57.20.8])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 897F93F70D;
-        Fri,  1 Oct 2021 05:27:12 -0700 (PDT)
-Date:   Fri, 1 Oct 2021 13:27:06 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
+        id S231472AbhJBFMQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 2 Oct 2021 01:12:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46832 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229581AbhJBFMP (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Sat, 2 Oct 2021 01:12:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1633151430;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2llZTC7o2LsdAZtu4bkMyBA1hnJDlag5HFNAp4HjTvs=;
+        b=NXeGpibP2mxrX4Cwn4MN18abygu8o34y5gTwj5WPbzqlIFCK3jD7EogC9IA3gIFdP80JwB
+        ZTOAx04VTgmWhJnyHsYqrArRboy6kZwvYJR3pTbJduZikGKay4K8F4HVp6OTpoPeAfgYvI
+        2l9baG0p0KW0pTj9FOJSNWuCqArsAl4=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-335-ItWx31-gO0iUj6dLQAI_KA-1; Sat, 02 Oct 2021 01:10:29 -0400
+X-MC-Unique: ItWx31-gO0iUj6dLQAI_KA-1
+Received: by mail-ot1-f71.google.com with SMTP id p26-20020a9d4e1a000000b0054d847be7aaso8044259otf.7
+        for <live-patching@vger.kernel.org>; Fri, 01 Oct 2021 22:10:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2llZTC7o2LsdAZtu4bkMyBA1hnJDlag5HFNAp4HjTvs=;
+        b=60YCHm7M3zhgkAlOucXN25ThXfeRLMoj1jOxMYbgyUI/r/OxicUJHlWxHoi5NLemXx
+         +M1Al+p1vNZAKKMcfLZ+cTs/Qkn5RO/N7RTNL2xQZPwsTcPCQ+mZ2Tk8IPQCcWG/0isd
+         G+G4OsA0WJ+KEgmksb6PfBw9aHx34CZ+pxBwhxS3nOH310ozQvtWvq1afnvY61QVxhMe
+         0me0Ua79KxX2v4IgbmpHastcA0pKyQziUBlIyYm7RBOl5cBB5vtD7eGzNKn2XIMy8Q8K
+         GBk9lLkDl/cOoU4WhGrWIIPPnRaTdYMc4R4l8kqrH9WNFiZh8WyIzKKn6kyuWZQJF8h6
+         /HIg==
+X-Gm-Message-State: AOAM530olgDUuSY4wMix1N3yJ0GswrOW5SJb6L3G+L6AJtqMHneFdCoy
+        AHu8uAKvRfD006rVtPQLXvOBteSKNk5F4iiycYaRby+scBH3nhgGOX6GdnJ7qjtGcD0cdXVWjkS
+        gvT95oM4BYpEbysqsdH2YAQ73sA==
+X-Received: by 2002:a05:6820:548:: with SMTP id n8mr1494788ooj.2.1633151428318;
+        Fri, 01 Oct 2021 22:10:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzMZBKsU0l2A3zI3qrE5E96ZbV26roVRCXpLzW4En0hQYpxaJDCLcDEsPcOAys9BDWAL5EOCA==
+X-Received: by 2002:a05:6820:548:: with SMTP id n8mr1494777ooj.2.1633151427993;
+        Fri, 01 Oct 2021 22:10:27 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id q2sm1579594ooe.12.2021.10.01.22.10.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Oct 2021 22:10:27 -0700 (PDT)
+Date:   Fri, 1 Oct 2021 22:10:24 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Mark Rutland <mark.rutland@arm.com>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Dmitry Vyukov <dvyukov@google.com>,
         syzbot <syzbot+488ddf8087564d6de6e2@syzkaller.appspotmail.com>,
@@ -30,9 +63,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [syzbot] upstream test error: KASAN: invalid-access Read in
  __entry_tramp_text_end
-Message-ID: <20211001122706.GA66786@C02TD0UTHF1T.local>
-References: <20210927171812.GB9201@C02TD0UTHF1T.local>
- <CACT4Y+actfuftwMMOGXmEsLYbnCnqcZ2gJGeoMLsFCUNE-AxcQ@mail.gmail.com>
+Message-ID: <20211002051024.bddvcr44eb4zuoxk@treble>
+References: <CACT4Y+actfuftwMMOGXmEsLYbnCnqcZ2gJGeoMLsFCUNE-AxcQ@mail.gmail.com>
  <20210928103543.GF1924@C02TD0UTHF1T.local>
  <20210929013637.bcarm56e4mqo3ndt@treble>
  <YVQYQzP/vqNWm/hO@hirez.programming.kicks-ass.net>
@@ -41,104 +73,64 @@ References: <20210927171812.GB9201@C02TD0UTHF1T.local>
  <20210929103730.GC33284@C02TD0UTHF1T.local>
  <YVRRWzXqhMIpwelm@hirez.programming.kicks-ass.net>
  <20210930192638.xwemcsohivoynwx3@treble>
+ <20211001122706.GA66786@C02TD0UTHF1T.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210930192638.xwemcsohivoynwx3@treble>
+In-Reply-To: <20211001122706.GA66786@C02TD0UTHF1T.local>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 12:26:38PM -0700, Josh Poimboeuf wrote:
-> On Wed, Sep 29, 2021 at 01:43:23PM +0200, Peter Zijlstra wrote:
-> > On Wed, Sep 29, 2021 at 11:37:30AM +0100, Mark Rutland wrote:
+On Fri, Oct 01, 2021 at 01:27:06PM +0100, Mark Rutland wrote:
+> > So we may need to get rid of .fixup altogether.  Especially for arches
+> > which support livepatch.
 > > 
-> > > > This is because _ASM_EXTABLE only generates data for another section.
-> > > > There doesn't need to be code continuity between these two asm
-> > > > statements.
-> > > 
-> > > I think you've missed my point. It doesn't matter that the
-> > > asm_volatile_goto() doesn't contain code, and this is solely about the
-> > > *state* expected at entry/exit from each asm block being different.
-> > 
-> > Urgh.. indeed :/
+> > We can replace some of the custom .fixup handlers with generic handlers
+> > like x86 does, which do the fixup work in exception context.  This
+> > generally works better for more generic work like putting an error code
+> > in a certain register and resuming execution at the subsequent
+> > instruction.
 > 
-> So much for that idea :-/
+> I reckon even ignoring the unwind problems this'd be a good thing since
+> it'd save on redundant copies of the fixup logic that happen to be
+> identical, and the common cases like uaccess all fall into this shape.
 > 
-> To fix the issue of the wrong .fixup code symbol names getting printed,
-> we could (as Mark suggested) add a '__fixup_text_start' symbol at the
-> start of the .fixup section.  And then remove all other symbols in the
-> .fixup section.
-
-Just to be clear, that was just as a "make debugging slightly less
-painful" aid, not as a fix for reliable stackrtrace and all that.
-
-> For x86, that means removing the kvm_fastop_exception symbol and a few
-> others.  That way it's all anonymous code, displayed by the kernel as
-> "__fixup_text_start+0x1234".  Which isn't all that useful, but still
-> better than printing the wrong symbol.
+> As for how to do that, in the past Peter and I had come up with some
+> assembler trickery to get the name of the error code register encoded
+> into the extable info:
 > 
-> But there's still a bigger problem: the function with the faulting
-> instruction doesn't get reported in the stack trace.
+>   https://lore.kernel.org/lkml/20170207111011.GB28790@leverpostej/
+>   https://lore.kernel.org/lkml/20170207160300.GB26173@leverpostej/
+>   https://lore.kernel.org/lkml/20170208091250.GT6515@twins.programming.kicks-ass.net/
+>
+> ... but maybe that's already solved on x86 in a different way?
+
+That's really cool :-) But it might be overkill for x86's needs.  For
+the exceptions which rely on handlers rather than anonymous .fixup code,
+the register assumptions are hard-coded in the assembler constraints.  I
+think that works well enough.
+
+> > However a lot of the .fixup code is rather custom and doesn't
+> > necessarily work well with that model.
 > 
-> For example, in the up-thread bug report, __d_lookup() bug report
-> doesn't get printed, even though its anonymous .fixup code is running in
-> the context of the function and will be branching back to it shortly.
+> Looking at arm64, even where we'd need custom handlers it does appear we
+> could mostly do that out-of-line in the exception handler. The more
+> exotic cases are largely in out-of-line asm functions, where we can move
+> the fixups within the function, after the usual return.
 > 
-> Even worse, this means livepatch is broken, because if for example
-> __d_lookup()'s .fixup code gets preempted, __d_lookup() can get skipped
-> by a reliable stack trace.
+> I reckon we can handle the fixups for load_unaligned_zeropad() in the
+> exception handler.
 > 
-> So we may need to get rid of .fixup altogether.  Especially for arches
-> which support livepatch.
-> 
-> We can replace some of the custom .fixup handlers with generic handlers
-> like x86 does, which do the fixup work in exception context.  This
-> generally works better for more generic work like putting an error code
-> in a certain register and resuming execution at the subsequent
-> instruction.
+> Is there anything specific that you think is painful in the exception
+> handler?
 
-I reckon even ignoring the unwind problems this'd be a good thing since
-it'd save on redundant copies of the fixup logic that happen to be
-identical, and the common cases like uaccess all fall into this shape.
+Actually, after looking at all the x86 .fixup usage, I think we can make
+this two-pronged approach work.  Either move the .fixup code to an
+exception handler (with a hard-coded assembler constraint register) or
+put it in the function (out-of-line where possible).  I'll try to work
+up some patches (x86 only of course).
 
-As for how to do that, in the past Peter and I had come up with some
-assembler trickery to get the name of the error code register encoded
-into the extable info:
+-- 
+Josh
 
-  https://lore.kernel.org/lkml/20170207111011.GB28790@leverpostej/
-  https://lore.kernel.org/lkml/20170207160300.GB26173@leverpostej/
-  https://lore.kernel.org/lkml/20170208091250.GT6515@twins.programming.kicks-ass.net/
-
-... but maybe that's already solved on x86 in a different way?
-
-> However a lot of the .fixup code is rather custom and doesn't
-> necessarily work well with that model.
-
-Looking at arm64, even where we'd need custom handlers it does appear we
-could mostly do that out-of-line in the exception handler. The more
-exotic cases are largely in out-of-line asm functions, where we can move
-the fixups within the function, after the usual return.
-
-I reckon we can handle the fixups for load_unaligned_zeropad() in the
-exception handler.
-
-Is there anything specific that you think is painful in the exception
-handler?
-
-> In such cases we could just move the .fixup code into the function
-> (inline for older compilers; out-of-line for compilers that support
-> CC_HAS_ASM_GOTO_OUTPUT).
-> 
-> Alternatively we could convert each .fixup code fragment into a proper
-> function which returns to a specified resume point in the function, and
-> then have the exception handler emulate a call to it like we do with
-> int3_emulate_call().
-
-For arm64 this would be somewhat unfortunate for inline asm due to our
-calling convention -- we'd have to clobber the LR, and we'd need to
-force the creation of a frame record in the caller which would otherwise
-not be necessary.
-
-Thanks,
-Mark.
