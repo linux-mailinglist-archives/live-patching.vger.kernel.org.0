@@ -2,127 +2,101 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8EAA423D3A
-	for <lists+live-patching@lfdr.de>; Wed,  6 Oct 2021 13:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B51423DC1
+	for <lists+live-patching@lfdr.de>; Wed,  6 Oct 2021 14:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238589AbhJFLuC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 6 Oct 2021 07:50:02 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:50896 "EHLO
+        id S238458AbhJFMcd (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 6 Oct 2021 08:32:33 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:58698 "EHLO
         smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238491AbhJFLtz (ORCPT
+        with ESMTP id S238501AbhJFMcc (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 6 Oct 2021 07:49:55 -0400
+        Wed, 6 Oct 2021 08:32:32 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F29E31FEA5;
-        Wed,  6 Oct 2021 11:48:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1633520882; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1A15C1FEB3;
+        Wed,  6 Oct 2021 12:30:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1633523439; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=E6Nx1r2Gh5ycxErMm9n/vHXXqSqW2SER8moOwbQTNxg=;
-        b=BmD5VMob3HKkgBPuNoqhQnMX5P4eXm3I8uDq2k8bDo2RAKDILLCQ0doPP6cN6e5/g3mTVH
-        7KDWzCg9EyuOsB4bT5FEw5qsRCmU9lvf05PQ3kMtwTOxvKUkEh2eje0M5PqtzSS2unp7RJ
-        /MZHjbhWg5TqYcffrCtHXi2lT0nti68=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1633520882;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=E6Nx1r2Gh5ycxErMm9n/vHXXqSqW2SER8moOwbQTNxg=;
-        b=Q4MsK60IfKnkbkGnTovCxhR2LPx+bW54/OLM3rmzzBF0aPrxiC5uUvp27Qt4mr4ACUUpl2
-        IiN0C1Oy5g57qTAQ==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        bh=RX8HrjnICTxsGaZOGs20/A+T7SfihBzq47R0bPRXiMM=;
+        b=o6/xjvZga9T0r38IEykYvxwSzgVAcoiq4caEjLs6IEAI4sGPyFdqgUZBETqWWwJ/NsXLEJ
+        n76aFF5k50fhrxRWhb8LjSmTZu/c1vh6m66W2dmwqeVFlw5sEXoVORwIwq0YjjeMeqADv7
+        sfKWZ2xgn7yFGwy4SW3Nf/YjndT5QG0=
+Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 8C257A3B8B;
-        Wed,  6 Oct 2021 11:48:01 +0000 (UTC)
-Date:   Wed, 6 Oct 2021 13:48:01 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Petr Mladek <pmladek@suse.com>
-cc:     Peter Zijlstra <peterz@infradead.org>, gor@linux.ibm.com,
-        jpoimboe@redhat.com, jikos@kernel.org, mingo@kernel.org,
-        linux-kernel@vger.kernel.org, joe.lawrence@redhat.com,
-        fweisbec@gmail.com, tglx@linutronix.de, hca@linux.ibm.com,
-        svens@linux.ibm.com, sumanthk@linux.ibm.com,
+        by relay2.suse.de (Postfix) with ESMTPS id BE17EA3B97;
+        Wed,  6 Oct 2021 12:30:38 +0000 (UTC)
+Date:   Wed, 6 Oct 2021 14:30:35 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
+        mbenes@suse.cz, mingo@kernel.org, linux-kernel@vger.kernel.org,
+        joe.lawrence@redhat.com, fweisbec@gmail.com, tglx@linutronix.de,
+        hca@linux.ibm.com, svens@linux.ibm.com, sumanthk@linux.ibm.com,
         live-patching@vger.kernel.org, paulmck@kernel.org,
         rostedt@goodmis.org, x86@kernel.org
-Subject: Re: [RFC][PATCH v2 09/11] context_tracking,livepatch: Dont disturb
- NOHZ_FULL
-In-Reply-To: <YV16jKrB5Azu/nD+@alley>
-Message-ID: <alpine.LSU.2.21.2110061323300.2311@pobox.suse.cz>
-References: <20210929151723.162004989@infradead.org> <20210929152429.067060646@infradead.org> <YV1aYaHEynjSAUuI@alley> <YV1mmv5QbB/vf3/O@hirez.programming.kicks-ass.net> <YV16jKrB5Azu/nD+@alley>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+Subject: Re: [RFC][PATCH v2 10/11] livepatch: Remove
+ klp_synchronize_transition()
+Message-ID: <YV2W60GY66Qh5Au+@alley>
+References: <20210929151723.162004989@infradead.org>
+ <20210929152429.125997206@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210929152429.125997206@infradead.org>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-> > That's not sufficient, you need to tag the remote task with a ct_work
-> > item to also runs klp_update_patch_state(), otherwise the remote CPU can
-> > enter kernel space between checking is_ct_user() and doing
-> > klp_update_patch_state():
-> > 
-> > 	CPU0				CPU1
-> > 
-> > 					<user>
-> > 
-> > 	if (is_ct_user()) // true
-> > 					<kernel-entry>
-> > 					  // run some kernel code
-> > 	  klp_update_patch_state()
-> > 	  *WHOOPSIE*
-> > 
-> > 
-> > So it needs to be something like:
-> > 
-> > 
-> > 	CPU0				CPU1
-> > 
-> > 					<user>
-> > 
-> > 	if (context_tracking_set_cpu_work(task_cpu(), CT_WORK_KLP))
-> > 
-> > 					<kernel-entry>
-> > 	  klp_update_patch_state	  klp_update_patch_state()
-> > 
-> > 
-> > So that CPU0 and CPU1 race to complete klp_update_patch_state() *before*
-> > any regular (!noinstr) code gets run.
-> 
-> Grr, you are right. I thought that we migrated the task when entering
-> kernel even before. But it seems that we do it only when leaving
-> the kernel in exit_to_user_mode_loop().
+On Wed 2021-09-29 17:17:33, Peter Zijlstra wrote:
+> The whole premise is broken, any trace usage outside of RCU is a BUG
+> and should be fixed. Notable all code prior (and a fair bit after)
+> ct_user_exit() is noinstr and explicitly doesn't allow any tracing.
 
-That is correct. You are probably confused by the old kGraft 
-implementation which added the TIF also to _TIF_WORK_SYSCALL_ENTRY so 
-that syscall_trace_enter() processed it too. But upstream solution has 
-always switched tasks only on their exit to user mode, because it was 
-deemed sufficient.
+I see. Is the situation the same with idle threads? I see that some
+functions, called inside rcu_idle_enter()/exit() are still visible
+for ftrace. For example, arch_cpu_idle() or tick_check_broadcast_expired().
 
-Btw, just for fun, the old kGraft in one of its first incarnations also 
-had the following horrible hack to exactly "solve" the problem.
+That said, I am not sure if anyone would ever want to livepatch
+this code. And there is still a workaround by livepatching
+the callers.
 
-+/*
-+ * Tasks which are running in userspace after the patching has been started
-+ * can immediately be marked as migrated to the new universe.
-+ *
-+ * If this function returns non-zero (i.e. also when error happens), the task
-+ * needs to be migrated using kgraft lazy mechanism.
-+ */
-+static inline bool kgr_needs_lazy_migration(struct task_struct *p)
-+{
-+       unsigned long s[3];
-+       struct stack_trace t = {
-+               .nr_entries = 0,
-+               .skip = 0,
-+               .max_entries = 3,
-+               .entries = s,
-+       };
+Also it should be easy to catch eventual problems if we check
+rcu_is_watching() in klp_ftrace_handler(). Most affected
+scheduler and idle code paths will likely be called
+even during the simple boot test.
+
+
+> Use regular RCU, which has the benefit of actually respecting
+> NOHZ_FULL.
+
+Good to know.
+
+After all, the patch looks good to me. I would just add something like:
+
+--- a/kernel/livepatch/patch.c
++++ b/kernel/livepatch/patch.c
+@@ -69,6 +69,12 @@ static void notrace klp_ftrace_handler(unsigned long ip,
+ 	if (WARN_ON_ONCE(!func))
+ 		goto unlock;
+ 
++	if (!rcu_is_watching()) {
++		printk_deferred_once(KERN_WARNING
++				     "warning: called \"%s\" without RCU watching. The function is not guarded by the consistency model. Also beware when removing the livepatch module.\n",
++				     func->old_name);
++	}
 +
-+       save_stack_trace_tsk(p, &t);
-+
-+       return t.nr_entries > 2;
-+}
+ 	/*
+ 	 * In the enable path, enforce the order of the ops->func_stack and
+ 	 * func->transition reads.  The corresponding write barrier is in
 
-Miroslav
+But we could do this in a separate patch later.
+
+Feel free to use:
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Best Regards,
+Petr
