@@ -2,121 +2,275 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1907422A1D
-	for <lists+live-patching@lfdr.de>; Tue,  5 Oct 2021 16:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC25423975
+	for <lists+live-patching@lfdr.de>; Wed,  6 Oct 2021 10:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234432AbhJEOIj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 5 Oct 2021 10:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38484 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236255AbhJEOIQ (ORCPT
+        id S237761AbhJFIOP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 6 Oct 2021 04:14:15 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:34768 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237772AbhJFIOO (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 5 Oct 2021 10:08:16 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510BFC0613BA;
-        Tue,  5 Oct 2021 07:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=e7v7PgfqKA1O480Vt1LMStZzMGGiTJbUW/3KjDTXWqM=; b=fcNQPCe35aWXS6SbfEGP9yj71a
-        hYik+IgGGs2MJkrDVTal+MkJK+h0lPJlYrkQUlUFnMEAicKK5In2IMGs2fBNyvypEgNfrJnuzlyl5
-        LVRT/NmAUiT75ankqPn2Je78zQHN6oGmZxi2uK4rBK1RywdjBMo9MNxN7IS7KrKlH7QV3dZ7gd5iF
-        wxYSDA1LRLmit8o9G25aWJzpwRhEtU74NEkts2c7YII6J8uTLr28EAuHNvHdT7nKYYL024Oz/bKiP
-        56zFQFhZZb8TVek/18pPmthSHwDnLhgEcfE+QE4COD4n+xgRnHT9bKkkqMXaCiBS1on6f9k917Ysh
-        0nnDkqiA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mXl2v-0083k9-5v; Tue, 05 Oct 2021 14:03:53 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 61D4530026F;
-        Tue,  5 Oct 2021 16:03:43 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 45912200B5F47; Tue,  5 Oct 2021 16:03:43 +0200 (CEST)
-Date:   Tue, 5 Oct 2021 16:03:43 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Petr Mladek <pmladek@suse.com>
+        Wed, 6 Oct 2021 04:14:14 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5EE1420322;
+        Wed,  6 Oct 2021 08:12:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1633507941; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2Ex/uCnma/tiMObj88oRVc2SIybziL1O5YZ+npjAnOY=;
+        b=LSORa5Nt3IiYoNElzpeQULqRJqORVrYH23kM4QiB0dRBSeuvavO6viXo15de3SZ3pIKbCQ
+        Q9TrAYhL+mu0KdbiETbJXx3aD3ulVkGziO0NGJ9hWp4S9CR1yoem+Qy795fhyTDx0dhdzz
+        +F//VyxwAqx7kp5b+OSsEC+0bc95aJ4=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 0985DA3B95;
+        Wed,  6 Oct 2021 08:12:21 +0000 (UTC)
+Date:   Wed, 6 Oct 2021 10:12:17 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Peter Zijlstra <peterz@infradead.org>
 Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
         mbenes@suse.cz, mingo@kernel.org, linux-kernel@vger.kernel.org,
         joe.lawrence@redhat.com, fweisbec@gmail.com, tglx@linutronix.de,
         hca@linux.ibm.com, svens@linux.ibm.com, sumanthk@linux.ibm.com,
         live-patching@vger.kernel.org, paulmck@kernel.org,
         rostedt@goodmis.org, x86@kernel.org
-Subject: Re: [PATCH v2 03/11] sched,livepatch: Use task_call_func()
-Message-ID: <YVxbP5fFLY10mqhy@hirez.programming.kicks-ass.net>
+Subject: Re: [RFC][PATCH v2 09/11] context_tracking,livepatch: Dont disturb
+ NOHZ_FULL
+Message-ID: <YV1aYaHEynjSAUuI@alley>
 References: <20210929151723.162004989@infradead.org>
- <20210929152428.709906138@infradead.org>
- <YVw5qO0rLA/GduFm@alley>
+ <20210929152429.067060646@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YVw5qO0rLA/GduFm@alley>
+In-Reply-To: <20210929152429.067060646@infradead.org>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Oct 05, 2021 at 01:40:24PM +0200, Petr Mladek wrote:
-> On Wed 2021-09-29 17:17:26, Peter Zijlstra wrote:
-> > Instead of frobbing around with scheduler internals, use the shiny new
-> > task_call_func() interface.
-> > 
-> > --- a/kernel/livepatch/transition.c
-> > +++ b/kernel/livepatch/transition.c
-> > @@ -274,6 +266,22 @@ static int klp_check_stack(struct task_s
-> >  	return 0;
-> >  }
-> >  
-> > +static int klp_check_and_switch_task(struct task_struct *task, void *arg)
-> > +{
-> > +	int ret;
-> > +
-> > +	if (task_curr(task))
+On Wed 2021-09-29 17:17:32, Peter Zijlstra wrote:
+> Using the new context_tracking infrastructure, avoid disturbing
+> userspace tasks when context tracking is enabled.
 > 
-> This must be
-> 
-> 	if (task_curr(task) && task != current)
-> 
-> , otherwise the task is not able to migrate itself. The condition was
-> lost when reshuffling the original code, see below.
+> When context_tracking_set_cpu_work() returns true, we have the
+> guarantee that klp_update_patch_state() is called from noinstr code
+> before it runs normal kernel code. This covers
+> syscall/exceptions/interrupts and NMI entry.
 
-Urgh, yeah, I misread that and figued task_curr() should already capture
-current, but the extra clause excludes current :/
+This patch touches the most tricky (lockless) parts of the livepatch code.
+I always have to refresh my head about all the dependencies.
 
-> JFYI, I have missed it during review. I am actually surprised that the
-> process could check its own stack reliably. But it seems to work.
+Sigh, I guess that the livepatch code looks over complicated to you.
 
-Ah, unwinding yourself is actually the only sane option ;-)
+The main problem is that we want to migrate tasks only when they
+are not inside any livepatched function. It allows to do semantic
+changes which is needed by some sort of critical security fixes.
 
-> > -	rq = task_rq_lock(task, &flags);
-> > +	ret = task_call_func(task, klp_check_and_switch_task, &old_name);
-> 
-> It looks correct. JFYI, this is why:
-> 
-> The logic seems to be exactly the same, except for the one fallout
-> mentioned above. So the only problem might be races.
-> 
-> The only important thing is that the task must not be running on any CPU
-> when klp_check_stack(task, arg) is called. By other word, the stack
-> must stay the same when being checked.
-> 
-> The original code prevented races by taking task_rq_lock().
-> And task_call_func() is slightly more relaxed but it looks safe enough:
-> 
->   + it still takes rq lock when the task is in runnable state.
->   + it always takes p->pi_lock that prevents moving the task
->     into runnable state by try_to_wake_up().
 
-Correct, the new task_call_func() is trying hard to not take rq->lock,
-but should be effectively identical to task_rq_lock().
+> --- a/kernel/context_tracking.c
+> +++ b/kernel/context_tracking.c
+> @@ -55,15 +56,13 @@ static noinstr void ct_exit_user_work(struct
+>  {
+>  	unsigned int work = arch_atomic_read(&ct->work);
+>  
+> -#if 0
+> -	if (work & CT_WORK_n) {
+> +	if (work & CT_WORK_KLP) {
+>  		/* NMI happens here and must still do/finish CT_WORK_n */
+> -		do_work_n();
+> +		__klp_update_patch_state(current);
+>  
+>  		smp_mb__before_atomic();
+> -		arch_atomic_andnot(CT_WORK_n, &ct->work);
+> +		arch_atomic_andnot(CT_WORK_KLP, &ct->work);
+>  	}
+> -#endif
+>  
+>  	smp_mb__before_atomic();
+>  	arch_atomic_andnot(CT_SEQ_WORK, &ct->seq);
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -153,6 +154,11 @@ void klp_cancel_transition(void)
+>  	klp_complete_transition();
+>  }
+>  
+> +noinstr void __klp_update_patch_state(struct task_struct *task)
+> +{
+> +	task->patch_state = READ_ONCE(klp_target_state);
+> +}
+> +
+>  /*
+>   * Switch the patched state of the task to the set of functions in the target
+>   * patch state.
+> @@ -180,8 +186,10 @@ void klp_update_patch_state(struct task_
+>  	 *    of func->transition, if klp_ftrace_handler() is called later on
+>  	 *    the same CPU.  See __klp_disable_patch().
+>  	 */
+> -	if (test_and_clear_tsk_thread_flag(task, TIF_PATCH_PENDING))
+> +	if (test_tsk_thread_flag(task, TIF_PATCH_PENDING)) {
 
-> With the added (task != current) check:
+This would require smp_rmb() here. It will make sure that we will
+read the right @klp_target_state when TIF_PATCH_PENDING is set.
 
-Done
+, where @klp_target_state is set in klp_init_transition()
+  and TIF_PATCH_PENDING is set in klp_start_transition()
 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> Tested-by: Petr Mladek <pmladek@suse.com>
+There are actually two related smp_wmp() barriers between these two
+assignments in:
 
-Thanks!
+	1st in klp_init_transition()
+	2nd in __klp_enable_patch()
+
+One would be enough for klp_update_patch_state(). But we need
+both for klp_ftrace_handler(), see the smp_rmb() there.
+In particular, they synchronize:
+
+   + ops->func_stack vs.
+   + func->transition vs.
+   + current->patch_state
+
+
+>  		task->patch_state = READ_ONCE(klp_target_state);
+
+Note that smp_wmb() is not needed here because
+klp_complete_transition() calls klp_synchronize_transition()
+aka synchronize_rcu() before clearing klp_target_state.
+This is why the original code worked.
+
+
+> +		clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
+> +	}
+>  
+>  	preempt_enable_notrace();
+>  }
+> @@ -270,15 +278,30 @@ static int klp_check_and_switch_task(str
+>  {
+>  	int ret;
+>  
+> -	if (task_curr(task))
+> +	if (task_curr(task)) {
+> +		/*
+> +		 * This only succeeds when the task is in NOHZ_FULL user
+> +		 * mode, the true return value guarantees any kernel entry
+> +		 * will call klp_update_patch_state().
+> +		 *
+> +		 * XXX: ideally we'd simply return 0 here and leave
+> +		 * TIF_PATCH_PENDING alone, to be fixed up by
+> +		 * klp_update_patch_state(), except livepatching goes wobbly
+> +		 * with 'pending' TIF bits on.
+> +		 */
+> +		if (context_tracking_set_cpu_work(task_cpu(task), CT_WORK_KLP))
+> +			goto clear;
+
+If I get it correctly, this will clear TIF_PATCH_PENDING immediately
+but task->patch_state = READ_ONCE(klp_target_state) will be
+done later by ct_exit_user_work().
+
+This is a bit problematic:
+
+  1. The global @klp_target_state is set to KLP_UNDEFINED when all
+     processes have TIF_PATCH_PENDING is cleared. This is actually
+     still fine because func->transition is cleared as well.
+     As a result, current->patch_state is ignored in klp_ftrace_handler.
+
+  2. The real problem happens when another livepatch is enabled.
+     The global @klp_target_state is set to new value and
+     func->transition is set again. In this case, the delayed
+     ct_exit_user_work() might assign wrong value that might
+     really be used by klp_ftrace_handler().
+
+
+IMHO, the original solution from v1 was better. We only needed to
+be careful when updating task->patch_state and clearing
+TIF_PATCH_PENDING to avoid the race.
+
+The following might work:
+
+static int klp_check_and_switch_task(struct task_struct *task, void *arg)
+{
+	int ret;
+
+	/*
+	 * Stack is reliable only when the task is not running on any CPU,
+	 * except for the task running this code.
+	 */
+	if (task_curr(task) && task != current) {
+		/*
+		 * This only succeeds when the task is in NOHZ_FULL user
+		 * mode. Such a task might be migrated immediately. We
+		 * only need to be careful to set task->patch_state before
+		 * clearing TIF_PATCH_PENDING so that the task migrates
+		 * itself when entring kernel in the meatime.
+		 */
+		if (is_ct_user(task)) {
+			klp_update_patch_state(task);
+			return 0;
+		}
+
+		return -EBUSY;
+	}
+
+	ret = klp_check_stack(task, arg);
+	if (ret)
+		return ret;
+
+	/*
+	 * The task neither is running on any CPU and nor it can get
+	 * running. As a result, the ordering is not important and
+	 * barrier is not needed.
+	 */
+	task->patch_state = klp_target_state;
+	clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
+
+	return 0;
+}
+
+, where is_ct_user(task) would return true when task is running in
+CONTEXT_USER. If I get the context_tracking API correctly then
+it might be implemeted the following way:
+
+
+#ifdef CONFIG_CONTEXT_TRACKING
+
+/*
+ * XXX: The value is reliable depending the context where this is called.
+ * At least migrating between CPUs should get prevented.
+ */
+static __always_inline bool is_ct_user(struct task_struct *task)
+{
+	int seq;
+
+	if (!context_tracking_enabled())
+		return false;
+
+	seq = __context_tracking_cpu_seq(task_cpu(task));
+	return __context_tracking_seq_in_user(seq);
+}
+
+#else
+
+static __always_inline bool is_ct_user(struct task_struct *task)
+{
+	return false;
+}
+
+#endif /* CONFIG_CONTEXT_TRACKING */
+
+Best Regards,
+Petr
+
+>  		return -EBUSY;
+> +	}
+>  
+>  	ret = klp_check_stack(task, arg);
+>  	if (ret)
+>  		return ret;
+>  
+> -	clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
+>  	task->patch_state = klp_target_state;
+> +clear:
+> +	clear_tsk_thread_flag(task, TIF_PATCH_PENDING);
+>  	return 0;
+>  }
