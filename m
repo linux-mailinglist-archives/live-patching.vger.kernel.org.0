@@ -2,25 +2,25 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 145AF42A468
-	for <lists+live-patching@lfdr.de>; Tue, 12 Oct 2021 14:29:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCDA42A4CA
+	for <lists+live-patching@lfdr.de>; Tue, 12 Oct 2021 14:43:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236344AbhJLMb0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 12 Oct 2021 08:31:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57302 "EHLO mail.kernel.org"
+        id S236507AbhJLMph convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 12 Oct 2021 08:45:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33966 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236281AbhJLMbZ (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 12 Oct 2021 08:31:25 -0400
+        id S233125AbhJLMpg (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 12 Oct 2021 08:45:36 -0400
 Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8122460E74;
-        Tue, 12 Oct 2021 12:29:21 +0000 (UTC)
-Date:   Tue, 12 Oct 2021 08:29:20 -0400
+        by mail.kernel.org (Postfix) with ESMTPSA id A316660E97;
+        Tue, 12 Oct 2021 12:43:32 +0000 (UTC)
+Date:   Tue, 12 Oct 2021 08:43:31 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         Michael Ellerman <mpe@ellerman.id.au>,
@@ -33,7 +33,9 @@ Cc:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
         Borislav Petkov <bp@alien8.de>, x86@kernel.org,
         "H. Peter Anvin" <hpa@zytor.com>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Colin Ian King <colin.king@canonical.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -45,58 +47,64 @@ Cc:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
         live-patching@vger.kernel.org
 Subject: Re: [PATCH 1/2] ftrace: disable preemption on the testing of
  recursion
-Message-ID: <20211012082920.1f8d6557@gandalf.local.home>
-In-Reply-To: <alpine.LSU.2.21.2110121421260.3394@pobox.suse.cz>
+Message-ID: <20211012084331.06b8dd23@gandalf.local.home>
+In-Reply-To: <a8756482-024c-c858-b3d1-1ffa9a5eb3f7@linux.alibaba.com>
 References: <8c7de46d-9869-aa5e-2bb9-5dbc2eda395e@linux.alibaba.com>
         <a8756482-024c-c858-b3d1-1ffa9a5eb3f7@linux.alibaba.com>
-        <alpine.LSU.2.21.2110121421260.3394@pobox.suse.cz>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 12 Oct 2021 14:24:43 +0200 (CEST)
-Miroslav Benes <mbenes@suse.cz> wrote:
+On Tue, 12 Oct 2021 13:40:08 +0800
+王贇 <yun.wang@linux.alibaba.com> wrote:
 
-> > +++ b/kernel/livepatch/patch.c
-> > @@ -52,11 +52,6 @@ static void notrace klp_ftrace_handler(unsigned long ip,
-> >  	bit = ftrace_test_recursion_trylock(ip, parent_ip);
-> >  	if (WARN_ON_ONCE(bit < 0))
-> >  		return;
-> > -	/*
-> > -	 * A variant of synchronize_rcu() is used to allow patching functions
-> > -	 * where RCU is not watching, see klp_synchronize_transition().
-> > -	 */
-> > -	preempt_disable_notrace();
-> > 
-> >  	func = list_first_or_null_rcu(&ops->func_stack, struct klp_func,
-> >  				      stack_node);
-> > @@ -120,7 +115,6 @@ static void notrace klp_ftrace_handler(unsigned long ip,
-> >  	klp_arch_set_pc(fregs, (unsigned long)func->new_func);
-> > 
-> >  unlock:
-> > -	preempt_enable_notrace();
-> >  	ftrace_test_recursion_unlock(bit);
-> >  }  
-> 
-> I don't like this change much. We have preempt_disable there not because 
-> of ftrace_test_recursion, but because of RCU. ftrace_test_recursion was 
-> added later. Yes, it would work with the change, but it would also hide 
-> things which should not be hidden in my opinion.
+> --- a/include/linux/trace_recursion.h
+> +++ b/include/linux/trace_recursion.h
+> @@ -214,7 +214,14 @@ static __always_inline void trace_clear_recursion(int bit)
+>  static __always_inline int ftrace_test_recursion_trylock(unsigned long ip,
+>  							 unsigned long parent_ip)
+>  {
+> -	return trace_test_and_set_recursion(ip, parent_ip, TRACE_FTRACE_START, TRACE_FTRACE_MAX);
+> +	int bit;
+> +
+> +	preempt_disable_notrace();
 
-Agreed, but I believe the change is fine, but requires a nice comment to
-explain what you said above.
+The recursion test does not require preemption disabled, it uses the task
+struct, not per_cpu variables, so you should not disable it before the test.
 
-Thus, before the "ftrace_test_recursion_trylock()" we need:
+	bit = trace_test_and_set_recursion(ip, parent_ip, TRACE_FTRACE_START, TRACE_FTRACE_MAX);
+	if (bit >= 0)
+		preempt_disable_notrace();
 
-	/*
-	 * The ftrace_test_recursion_trylock() will disable preemption,
-	 * which is required for the variant of synchronize_rcu() that is
-	 * used to allow patching functions where RCU is not watching.
-	 * See klp_synchronize_transition() for more details.
-	 */
+And if the bit is zero, it means a recursion check was already done by
+another caller (ftrace handler does the check, followed by calling perf),
+and you really don't even need to disable preemption in that case.
+
+	if (bit > 0)
+		preempt_disable_notrace();
+
+And on the unlock, have:
+
+ static __always_inline void ftrace_test_recursion_unlock(int bit)
+ {
+	if (bit)
+		preempt_enable_notrace();
+ 	trace_clear_recursion(bit);
+ }
+
+But maybe that's over optimizing ;-)
 
 -- Steve
+
+
+> +	bit = trace_test_and_set_recursion(ip, parent_ip, TRACE_FTRACE_START, TRACE_FTRACE_MAX);
+> +	if (bit < 0)
+> +		preempt_enable_notrace();
+> +
+> +	return bit;
+>  }
+
