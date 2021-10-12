@@ -2,46 +2,26 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4972942A31C
-	for <lists+live-patching@lfdr.de>; Tue, 12 Oct 2021 13:21:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87C6A42A434
+	for <lists+live-patching@lfdr.de>; Tue, 12 Oct 2021 14:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236202AbhJLLXx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 12 Oct 2021 07:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232820AbhJLLXw (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 12 Oct 2021 07:23:52 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701A0C061570;
-        Tue, 12 Oct 2021 04:21:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=UdEw1pT+fzl3XWuMYAjaroJq/eSkWpToEoEiK0H4tc8=; b=FQxDrQd8VQL8FLxSXHhYsFD549
-        Bw3bzrYjTSkvz6brYato3qgL9mUti/CSCA7aSlS/rdOtg3iWvvcBBvUgAeYrIFknl4VrCnIAyARwb
-        W2ZXY143bMOgnoZk5lM0F0hWDwSbN7tcO2rrRt3vOI6Gu/hOdQfvMSUKEbu89ZHT8kEVJjserHvJd
-        T7a8jHQf222nRNoBi1vcek3vurQIbT0ONUwczkQh/COwwW0ZYFL0GAmCPPO+A5W3537y79C/w1pmK
-        EI8baZ2LtgSX5reCbuBE8jcoOFTckA/Kx6YdhS5bzDlaMwjvlkTi6AJztbRxgYS/jG5G8VzhIIzeL
-        6WxmRXvw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1maFpg-009P0D-Kh; Tue, 12 Oct 2021 11:20:32 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5AAF630032E;
-        Tue, 12 Oct 2021 13:20:29 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0E30E20218D80; Tue, 12 Oct 2021 13:20:29 +0200 (CEST)
-Date:   Tue, 12 Oct 2021 13:20:28 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        id S236322AbhJLMTe convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 12 Oct 2021 08:19:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236196AbhJLMTe (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 12 Oct 2021 08:19:34 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DD5ED60E97;
+        Tue, 12 Oct 2021 12:17:29 +0000 (UTC)
+Date:   Tue, 12 Oct 2021 08:17:28 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -59,53 +39,46 @@ Cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Colin Ian King <colin.king@canonical.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Nicholas Piggin <npiggin@gmail.com>,
         Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
-Subject: Re: [PATCH 2/2] ftrace: prevent preemption in
- perf_ftrace_function_call()
-Message-ID: <YWVvfBybqjKuifum@hirez.programming.kicks-ass.net>
+Subject: Re: [PATCH 1/2] ftrace: disable preemption on the testing of
+ recursion
+Message-ID: <20211012081728.5d357d6c@gandalf.local.home>
+In-Reply-To: <a8756482-024c-c858-b3d1-1ffa9a5eb3f7@linux.alibaba.com>
 References: <8c7de46d-9869-aa5e-2bb9-5dbc2eda395e@linux.alibaba.com>
- <7ec34e08-a357-58d6-2ce4-c7472d8b0381@linux.alibaba.com>
+        <a8756482-024c-c858-b3d1-1ffa9a5eb3f7@linux.alibaba.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7ec34e08-a357-58d6-2ce4-c7472d8b0381@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 01:40:31PM +0800, 王贇 wrote:
+On Tue, 12 Oct 2021 13:40:08 +0800
+王贇 <yun.wang@linux.alibaba.com> wrote:
 
-> diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-> index 6aed10e..33c2f76 100644
-> --- a/kernel/trace/trace_event_perf.c
-> +++ b/kernel/trace/trace_event_perf.c
-> @@ -441,12 +441,19 @@ void perf_trace_buf_update(void *record, u16 type)
->  	if (!rcu_is_watching())
->  		return;
-> 
-> +	/*
-> +	 * Prevent CPU changing from now on. rcu must
-> +	 * be in watching if the task was migrated and
-> +	 * scheduled.
-> +	 */
-> +	preempt_disable_notrace();
-> +
->  	if ((unsigned long)ops->private != smp_processor_id())
-> -		return;
-> +		goto out;
-> 
+> @@ -52,11 +52,6 @@ static void notrace klp_ftrace_handler(unsigned long ip,
 >  	bit = ftrace_test_recursion_trylock(ip, parent_ip);
->  	if (bit < 0)
-> -		return;
-> +		goto out;
-> 
->  	event = container_of(ops, struct perf_event, ftrace_ops);
-> 
+>  	if (WARN_ON_ONCE(bit < 0))
+>  		return;
+> -	/*
+> -	 * A variant of synchronize_rcu() is used to allow patching functions
+> -	 * where RCU is not watching, see klp_synchronize_transition().
+> -	 */
 
-This seems rather daft, wouldn't it be easier to just put that check
-under the recursion thing?
+I have to take a deeper look at this patch set, but do not remove this
+comment, as it explains the protection here, that is not obvious with the
+changes you made.
+
+-- Steve
+
+
+> -	preempt_disable_notrace();
+> 
+>  	func = list_first_or_null_rcu(&ops->func_stack, struct klp_func,
+>  				      stack_node);
