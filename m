@@ -2,23 +2,25 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 478FF42BAEA
-	for <lists+live-patching@lfdr.de>; Wed, 13 Oct 2021 10:52:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEE8942C300
+	for <lists+live-patching@lfdr.de>; Wed, 13 Oct 2021 16:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238450AbhJMIyX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 13 Oct 2021 04:54:23 -0400
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:60032 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232692AbhJMIyX (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 13 Oct 2021 04:54:23 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R961e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0UrfYRTJ_1634115133;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UrfYRTJ_1634115133)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 13 Oct 2021 16:52:15 +0800
-Subject: [PATCH v3 2/2] ftrace: do CPU checking after preemption disabled
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        id S234531AbhJMO0Y convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 13 Oct 2021 10:26:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42478 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236942AbhJMO0X (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Wed, 13 Oct 2021 10:26:23 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4C6F26101D;
+        Wed, 13 Oct 2021 14:24:17 +0000 (UTC)
+Date:   Wed, 13 Oct 2021 10:24:15 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>, Guo Ren <guoren@kernel.org>,
         Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
@@ -32,9 +34,7 @@ To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         Borislav Petkov <bp@alien8.de>, x86@kernel.org,
         "H. Peter Anvin" <hpa@zytor.com>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
+        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Colin Ian King <colin.king@canonical.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -44,71 +44,41 @@ To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
-References: <609b565a-ed6e-a1da-f025-166691b5d994@linux.alibaba.com>
-Message-ID: <a450a935-17d0-63df-87fd-c27a409ea5de@linux.alibaba.com>
-Date:   Wed, 13 Oct 2021 16:52:13 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+Subject: Re: [RESEND PATCH v2 1/2] ftrace: disable preemption between
+ ftrace_test_recursion_trylock/unlock()
+Message-ID: <20211013102415.10788200@gandalf.local.home>
+In-Reply-To: <861d81d6-e202-09f3-f0be-6c77205f9d34@linux.alibaba.com>
+References: <b1d7fe43-ce84-0ed7-32f7-ea1d12d0b716@linux.alibaba.com>
+        <75ee86ac-02f2-d687-ab1e-9c8c33032495@linux.alibaba.com>
+        <alpine.LSU.2.21.2110130948120.5647@pobox.suse.cz>
+        <d5fbd49a-55c5-a9f5-6600-707c8d749312@linux.alibaba.com>
+        <alpine.LSU.2.21.2110131022590.5647@pobox.suse.cz>
+        <861d81d6-e202-09f3-f0be-6c77205f9d34@linux.alibaba.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <609b565a-ed6e-a1da-f025-166691b5d994@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-With CONFIG_DEBUG_PREEMPT we observed reports like:
+On Wed, 13 Oct 2021 16:34:53 +0800
+王贇 <yun.wang@linux.alibaba.com> wrote:
 
-  BUG: using smp_processor_id() in preemptible
-  caller is perf_ftrace_function_call+0x6f/0x2e0
-  CPU: 1 PID: 680 Comm: a.out Not tainted
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x8d/0xcf
-   check_preemption_disabled+0x104/0x110
-   ? optimize_nops.isra.7+0x230/0x230
-   ? text_poke_bp_batch+0x9f/0x310
-   perf_ftrace_function_call+0x6f/0x2e0
-   ...
-   __text_poke+0x5/0x620
-   text_poke_bp_batch+0x9f/0x310
+> On 2021/10/13 下午4:25, Miroslav Benes wrote:
+> >>> Side note... the comment will eventually conflict with peterz's 
+> >>> https://lore.kernel.org/all/20210929152429.125997206@infradead.org/.  
+> >>
+> >> Steven, would you like to share your opinion on this patch?
+> >>
+> >> If klp_synchronize_transition() will be removed anyway, the comments
+> >> will be meaningless and we can just drop it :-P  
+> > 
+> > The comment will still be needed in some form. We will handle it depending 
+> > on what gets merged first. peterz's patches are not ready yet.  
+> 
+> Ok, then I'll move it before trylock() inside klp_ftrace_handler() anyway.
 
-This telling us the CPU could be changed after task is preempted, and
-the checking on CPU before preemption will be invalid.
++1
 
-Since now ftrace_test_recursion_trylock() will help to disable the
-preemption, this patch just do the checking after trylock() to address
-the issue.
-
-CC: Steven Rostedt <rostedt@goodmis.org>
-Reported-by: Abaci <abaci@linux.alibaba.com>
-Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
----
- kernel/trace/trace_event_perf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-index 6aed10e..fba8cb7 100644
---- a/kernel/trace/trace_event_perf.c
-+++ b/kernel/trace/trace_event_perf.c
-@@ -441,13 +441,13 @@ void perf_trace_buf_update(void *record, u16 type)
- 	if (!rcu_is_watching())
- 		return;
-
--	if ((unsigned long)ops->private != smp_processor_id())
--		return;
--
- 	bit = ftrace_test_recursion_trylock(ip, parent_ip);
- 	if (bit < 0)
- 		return;
-
-+	if ((unsigned long)ops->private != smp_processor_id())
-+		goto out;
-+
- 	event = container_of(ops, struct perf_event, ftrace_ops);
-
- 	/*
--- 
-1.8.3.1
-
+-- Steve
