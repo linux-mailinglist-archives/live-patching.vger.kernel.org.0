@@ -2,44 +2,24 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B3042BA21
-	for <lists+live-patching@lfdr.de>; Wed, 13 Oct 2021 10:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7413042BA8F
+	for <lists+live-patching@lfdr.de>; Wed, 13 Oct 2021 10:35:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233015AbhJMI1p (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 13 Oct 2021 04:27:45 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:58984 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbhJMI1p (ORCPT
+        id S238677AbhJMIhE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 13 Oct 2021 04:37:04 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:37584 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233015AbhJMIhD (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 13 Oct 2021 04:27:45 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id EAFE122293;
-        Wed, 13 Oct 2021 08:25:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1634113540; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gtfMhdTCLZEryLgjqIY9aS8OXYQtmP7j21hE/U/0byU=;
-        b=XuZS1UsK+pfyAdOjBepbUpW8kD9Wf+FpL5NRUCIiFXRNt+KflFTVQ2adE8t1vhhNnd+ZFX
-        y7b55Uu04L7SStRKxz1Tl1kX7YvnJ5hKwm6Tg8+Z5msjQfyaaHzbBuTIG+AmINlEmd+ObI
-        CDgbPtcvrmua8hGgAe8Td9n54vleRBE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1634113540;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gtfMhdTCLZEryLgjqIY9aS8OXYQtmP7j21hE/U/0byU=;
-        b=f5Y5fFwlmKK9upr3244TYcrXdUE5DgxW2RHInIuAqU0gultFbVn42x1Sg/1NorKEDGSOVR
-        3Pp6eeu/JPTFI6Bw==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 74849A3B84;
-        Wed, 13 Oct 2021 08:25:39 +0000 (UTC)
-Date:   Wed, 13 Oct 2021 10:25:39 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     =?ISO-2022-JP?Q?=1B$B2&lV=1B=28J?= <yun.wang@linux.alibaba.com>
-cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        Wed, 13 Oct 2021 04:37:03 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R551e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0UrfYNmw_1634114093;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UrfYNmw_1634114093)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 13 Oct 2021 16:34:55 +0800
+Subject: Re: [RESEND PATCH v2 1/2] ftrace: disable preemption between
+ ftrace_test_recursion_trylock/unlock()
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
@@ -63,27 +43,44 @@ cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
-Subject: Re: [RESEND PATCH v2 1/2] ftrace: disable preemption between
- ftrace_test_recursion_trylock/unlock()
-In-Reply-To: <d5fbd49a-55c5-a9f5-6600-707c8d749312@linux.alibaba.com>
-Message-ID: <alpine.LSU.2.21.2110131022590.5647@pobox.suse.cz>
-References: <b1d7fe43-ce84-0ed7-32f7-ea1d12d0b716@linux.alibaba.com> <75ee86ac-02f2-d687-ab1e-9c8c33032495@linux.alibaba.com> <alpine.LSU.2.21.2110130948120.5647@pobox.suse.cz> <d5fbd49a-55c5-a9f5-6600-707c8d749312@linux.alibaba.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+References: <b1d7fe43-ce84-0ed7-32f7-ea1d12d0b716@linux.alibaba.com>
+ <75ee86ac-02f2-d687-ab1e-9c8c33032495@linux.alibaba.com>
+ <alpine.LSU.2.21.2110130948120.5647@pobox.suse.cz>
+ <d5fbd49a-55c5-a9f5-6600-707c8d749312@linux.alibaba.com>
+ <alpine.LSU.2.21.2110131022590.5647@pobox.suse.cz>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <861d81d6-e202-09f3-f0be-6c77205f9d34@linux.alibaba.com>
+Date:   Wed, 13 Oct 2021 16:34:53 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <alpine.LSU.2.21.2110131022590.5647@pobox.suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-> > Side note... the comment will eventually conflict with peterz's 
-> > https://lore.kernel.org/all/20210929152429.125997206@infradead.org/.
-> 
-> Steven, would you like to share your opinion on this patch?
-> 
-> If klp_synchronize_transition() will be removed anyway, the comments
-> will be meaningless and we can just drop it :-P
 
-The comment will still be needed in some form. We will handle it depending 
-on what gets merged first. peterz's patches are not ready yet.
 
-Miroslav
+On 2021/10/13 下午4:25, Miroslav Benes wrote:
+>>> Side note... the comment will eventually conflict with peterz's 
+>>> https://lore.kernel.org/all/20210929152429.125997206@infradead.org/.
+>>
+>> Steven, would you like to share your opinion on this patch?
+>>
+>> If klp_synchronize_transition() will be removed anyway, the comments
+>> will be meaningless and we can just drop it :-P
+> 
+> The comment will still be needed in some form. We will handle it depending 
+> on what gets merged first. peterz's patches are not ready yet.
+
+Ok, then I'll move it before trylock() inside klp_ftrace_handler() anyway.
+
+Regards,
+Michael Wang
+
+> 
+> Miroslav
+> 
