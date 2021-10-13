@@ -2,23 +2,22 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 477E142B2A0
-	for <lists+live-patching@lfdr.de>; Wed, 13 Oct 2021 04:28:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78FC442B2A6
+	for <lists+live-patching@lfdr.de>; Wed, 13 Oct 2021 04:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235216AbhJMCaI convert rfc822-to-8bit (ORCPT
+        id S233316AbhJMCcr convert rfc822-to-8bit (ORCPT
         <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 12 Oct 2021 22:30:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43074 "EHLO mail.kernel.org"
+        Tue, 12 Oct 2021 22:32:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43816 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233316AbhJMCaH (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 12 Oct 2021 22:30:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 17A2560F11;
-        Wed, 13 Oct 2021 02:28:00 +0000 (UTC)
-Date:   Tue, 12 Oct 2021 22:27:58 -0400
+        id S232245AbhJMCcq (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 12 Oct 2021 22:32:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DE40C6101D;
+        Wed, 13 Oct 2021 02:30:40 +0000 (UTC)
+Date:   Tue, 12 Oct 2021 22:30:39 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>, Guo Ren <guoren@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
+Cc:     Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         Michael Ellerman <mpe@ellerman.id.au>,
@@ -31,7 +30,9 @@ Cc:     Miroslav Benes <mbenes@suse.cz>, Guo Ren <guoren@kernel.org>,
         Borislav Petkov <bp@alien8.de>, x86@kernel.org,
         "H. Peter Anvin" <hpa@zytor.com>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Colin Ian King <colin.king@canonical.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -43,12 +44,12 @@ Cc:     Miroslav Benes <mbenes@suse.cz>, Guo Ren <guoren@kernel.org>,
         live-patching@vger.kernel.org
 Subject: Re: [PATCH 1/2] ftrace: disable preemption on the testing of
  recursion
-Message-ID: <20211012222758.1a029157@oasis.local.home>
-In-Reply-To: <74090798-7d93-0713-982c-6f0247118d20@linux.alibaba.com>
+Message-ID: <20211012223039.78099c24@oasis.local.home>
+In-Reply-To: <1eab20c1-d69b-f94b-92ff-4329d0aff6a2@linux.alibaba.com>
 References: <8c7de46d-9869-aa5e-2bb9-5dbc2eda395e@linux.alibaba.com>
         <a8756482-024c-c858-b3d1-1ffa9a5eb3f7@linux.alibaba.com>
-        <alpine.LSU.2.21.2110121421260.3394@pobox.suse.cz>
-        <74090798-7d93-0713-982c-6f0247118d20@linux.alibaba.com>
+        <20211012084331.06b8dd23@gandalf.local.home>
+        <1eab20c1-d69b-f94b-92ff-4329d0aff6a2@linux.alibaba.com>
 X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -57,34 +58,15 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, 13 Oct 2021 09:50:17 +0800
+On Wed, 13 Oct 2021 10:04:52 +0800
 王贇 <yun.wang@linux.alibaba.com> wrote:
 
-> >> -	preempt_enable_notrace();
-> >>  	ftrace_test_recursion_unlock(bit);
-> >>  }  
-> > 
-> > I don't like this change much. We have preempt_disable there not because 
-> > of ftrace_test_recursion, but because of RCU. ftrace_test_recursion was 
-> > added later. Yes, it would work with the change, but it would also hide 
-> > things which should not be hidden in my opinion.  
-> 
-> Not very sure about the backgroup stories, but just found this in
-> 'Documentation/trace/ftrace-uses.rst':
-> 
->   Note, on success,
->   ftrace_test_recursion_trylock() will disable preemption, and the
->   ftrace_test_recursion_unlock() will enable it again (if it was previously
->   enabled).
+> I see, while the user can still check smp_processor_id() after trylock
+> return bit 0...
 
-Right that part is to be fixed by what you are adding here.
-
-The point that Miroslav is complaining about is that the preemption
-disabling is special in this case, and not just from the recursion
-point of view, which is why the comment is still required.
+But preemption would have already been disabled. That's because a bit 0
+means that a recursion check has already been made by a previous
+caller and this one is nested, thus preemption is already disabled.
+If bit is 0, then preemption had better be disabled as well.
 
 -- Steve
-
-
-> 
-> Seems like this lock pair was supposed to take care the preemtion itself?
