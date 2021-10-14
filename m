@@ -2,90 +2,128 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5575D42CA2B
-	for <lists+live-patching@lfdr.de>; Wed, 13 Oct 2021 21:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12EDD42D5C7
+	for <lists+live-patching@lfdr.de>; Thu, 14 Oct 2021 11:13:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbhJMTjX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 13 Oct 2021 15:39:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33544 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231654AbhJMTjW (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 13 Oct 2021 15:39:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4272061165;
-        Wed, 13 Oct 2021 19:37:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634153839;
-        bh=ifrxkWVMul5hUh9VojQ3Svlaor+10MLDookWG/BdTkw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=GbWkfwLW/uKn2DMVou9PyNh0zbv687yV6FWEXMG7oEEQw5e6dUIe6s5a6v74VFaMA
-         bqBN/+9RU1POJI+KiurGQOjMv2e9r0GAi+JJJ2x3tf41oozeXOOMEh5jIKnU4Ruyet
-         8Ha4RQSBnmTW9+bkPbVKdWkpiWS7rGdL6kEcUcVoFqSBqfGD3RxD1OeROdGXTzOVM/
-         S8m42D8NwJk/J9lAF1l38e7oI4xJ2KOw9rTD/wa+rXd+DqutxDy0WQwwFOe/OKTdB3
-         hsTKygW+JhRMijL7itUEFZo353mJIIc/kJe/aixSqkDeCousx/NymurL79q7167NGY
-         ne8adtUg8JFyQ==
-Received: by mail-wr1-f44.google.com with SMTP id r18so11941584wrg.6;
-        Wed, 13 Oct 2021 12:37:19 -0700 (PDT)
-X-Gm-Message-State: AOAM530tnUEYrQ3V8zYNNCZicgKulv3d5Y49oFAsVI70KZLCuoXhadLc
-        k+ybqhOr09BkPV2gE6xYiLLsxiWk9KjABBsIb34=
-X-Google-Smtp-Source: ABdhPJwO4LhGFCjaFymEgvNcqwRGFlPpa7P9EPTliagCrXYJ1aU7rN8dJMKaJf0KEPyxtdqyii2IRAewdr9K1x8LuM0=
-X-Received: by 2002:adf:f481:: with SMTP id l1mr1159174wro.411.1634153837697;
- Wed, 13 Oct 2021 12:37:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210929151723.162004989@infradead.org> <20210929152428.828064133@infradead.org>
-In-Reply-To: <20210929152428.828064133@infradead.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 13 Oct 2021 21:37:01 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0N-ZuSEZyw5ub1vr3VP2Bdoa2Wq=No1gad+SyqquQXfw@mail.gmail.com>
-Message-ID: <CAK8P3a0N-ZuSEZyw5ub1vr3VP2Bdoa2Wq=No1gad+SyqquQXfw@mail.gmail.com>
-Subject: Re: [PATCH v2 05/11] sched,livepatch: Use wake_up_if_idle()
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>, Ingo Molnar <mingo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        joe.lawrence@redhat.com,
-        =?UTF-8?B?RnLDqWTDqXJpYyBXZWlzYmVja2Vy?= <fweisbec@gmail.com>,
+        id S230078AbhJNJPX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 14 Oct 2021 05:15:23 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:34094 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230118AbhJNJPW (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Thu, 14 Oct 2021 05:15:22 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 1619621A78;
+        Thu, 14 Oct 2021 09:13:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1634202796; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6qlO0B+dKVbDjD2ahAupf74QzcuBtOf+3HozXO78zVI=;
+        b=TNcMw28JoUbqZZrjTwmFLWtEVPnNV5ytCnksIJIdcU85oBHx2uqflkwC21OnsmYSMeNEMC
+        kYFkvf6iLxxdWYUsCUjTTstLSlPXR1+HgAuC5TKPtflyHbB0YnOvbj/4sp7TYCc11H5GiQ
+        3hThb2kfKCZXvj271cl6oZ0iXmz+5fw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1634202796;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6qlO0B+dKVbDjD2ahAupf74QzcuBtOf+3HozXO78zVI=;
+        b=F4BaV/k078gUywEn1Kt9pDnKXJaHdraB0NCigBl7LVC2HzjgwcBlCnC3EArFqzS4fQ7Sjb
+        P9TBANAUA3ey+kBw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A7F0BA3B8B;
+        Thu, 14 Oct 2021 09:13:13 +0000 (UTC)
+Date:   Thu, 14 Oct 2021 11:13:13 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     =?ISO-2022-JP?Q?=1B$B2&lV=1B=28J?= <yun.wang@linux.alibaba.com>
+cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Heiko Carstens <hca@linux.ibm.com>, svens@linux.ibm.com,
-        sumanthk@linux.ibm.com, live-patching@vger.kernel.org,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] ftrace: disable preemption between
+ ftrace_test_recursion_trylock/unlock()
+In-Reply-To: <7e4738b5-21d4-c4d0-3136-a096bbb5cd2c@linux.alibaba.com>
+Message-ID: <alpine.LSU.2.21.2110141108150.23710@pobox.suse.cz>
+References: <609b565a-ed6e-a1da-f025-166691b5d994@linux.alibaba.com> <7e4738b5-21d4-c4d0-3136-a096bbb5cd2c@linux.alibaba.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 6:10 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> Make sure to prod idle CPUs so they call klp_update_patch_state().
->
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  kernel/livepatch/transition.c |    5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> --- a/kernel/livepatch/transition.c
-> +++ b/kernel/livepatch/transition.c
-> @@ -413,8 +413,11 @@ void klp_try_complete_transition(void)
->         for_each_possible_cpu(cpu) {
->                 task = idle_task(cpu);
->                 if (cpu_online(cpu)) {
-> -                       if (!klp_try_switch_task(task))
-> +                       if (!klp_try_switch_task(task)) {
->                                 complete = false;
-> +                               /* Make idle task go through the main loop. */
-> +                               wake_up_if_idle(cpu);
-> +                       }
+> diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
+> index e8029ae..b8d75fb 100644
+> --- a/kernel/livepatch/patch.c
+> +++ b/kernel/livepatch/patch.c
+> @@ -49,14 +49,16 @@ static void notrace klp_ftrace_handler(unsigned long ip,
+> 
+>  	ops = container_of(fops, struct klp_ops, fops);
+> 
+> +	/*
+> +	 *
 
-This caused a build regression on non-SMP kernels:
+This empty line is not useful.
 
-x86_64-linux-ld: kernel/livepatch/transition.o: in function
-`klp_try_complete_transition':
-transition.c:(.text+0x106e): undefined reference to `wake_up_if_idle'
+> +	 * The ftrace_test_recursion_trylock() will disable preemption,
+> +	 * which is required for the variant of synchronize_rcu() that is
+> +	 * used to allow patching functions where RCU is not watching.
+> +	 * See klp_synchronize_transition() for more details.
+> +	 */
+>  	bit = ftrace_test_recursion_trylock(ip, parent_ip);
+>  	if (WARN_ON_ONCE(bit < 0))
+>  		return;
+> -	/*
+> -	 * A variant of synchronize_rcu() is used to allow patching functions
+> -	 * where RCU is not watching, see klp_synchronize_transition().
+> -	 */
+> -	preempt_disable_notrace();
+> 
+>  	func = list_first_or_null_rcu(&ops->func_stack, struct klp_func,
+>  				      stack_node);
+> @@ -120,7 +122,6 @@ static void notrace klp_ftrace_handler(unsigned long ip,
+>  	klp_arch_set_pc(fregs, (unsigned long)func->new_func);
+> 
+>  unlock:
+> -	preempt_enable_notrace();
+>  	ftrace_test_recursion_unlock(bit);
+>  }
 
-Maybe add a IS_ENABLED(CONFIG_SMP) check to one of the if() conditions?
+Acked-by: Miroslav Benes <mbenes@suse.cz>
 
-        Arnd
+for the livepatch part of the patch.
+
+I would also ask you not to submit new versions so often, so that the 
+other reviewers have time to actually review the patch set.
+
+Quoting from Documentation/process/submitting-patches.rst:
+
+"Wait for a minimum of one week before resubmitting or pinging reviewers - 
+possibly longer during busy times like merge windows."
+
+Thanks
+
+Miroslav
