@@ -2,80 +2,460 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A6542F7F5
-	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 18:17:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96CAA42F986
+	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 19:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237338AbhJOQT6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 15 Oct 2021 12:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236917AbhJOQT6 (ORCPT
+        id S241902AbhJORCn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 15 Oct 2021 13:02:43 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:36496 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241907AbhJORCl (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 15 Oct 2021 12:19:58 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC6BC061570;
-        Fri, 15 Oct 2021 09:17:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4G571e+7WIYw8I8DxxzASA83VdzBwRS9bXXbSuaKaJk=; b=BOf7V74lD3FXPUP4kCK2U0TLoV
-        SAznVCk8FeJ+WeewdASQRvl3LuAkpeUPeUYt7Yezk4dwcdYMeynJPLMmXX2ketg/uIbydVfP3fx8i
-        4IFF/PRVghZskAnfs53YUmskIsiWSmMUiZqjhTPe2PmaC9LPuznv8Q8JxnB/Lk+IXoOffuE21e2zN
-        4QFyJJFjuCIGlI7Rxldtg9k0stkjBnL/ARkashob96yYMpeLCBfkQx787ELuOwu+KLpO4wtbU8EZc
-        64hcntxiBp7R1+VdlnNysKcyoHyA19AEgiAw6E5CIm3GsV2jlF1r0Te0gVoh+BTh2SRD+pD6oIJjU
-        sHkd9clg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mbPtJ-00A1p8-2k; Fri, 15 Oct 2021 16:17:05 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 02CA79857C7; Fri, 15 Oct 2021 18:17:02 +0200 (CEST)
-Date:   Fri, 15 Oct 2021 18:17:02 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, live-patching@vger.kernel.org,
-        =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>
-Subject: Re: [PATCH] tracing: Have all levels of checks prevent recursion
-Message-ID: <20211015161702.GF174703@worktop.programming.kicks-ass.net>
-References: <20211015110035.14813389@gandalf.local.home>
+        Fri, 15 Oct 2021 13:02:41 -0400
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7D49B20B9D28;
+        Fri, 15 Oct 2021 10:00:33 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7D49B20B9D28
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1634317234;
+        bh=CZfCP5IT0iDLiQbsFtydTO3CCu+YTecyV8Br0AoYFB8=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=RiPKyyHEvorSnVlE0hCwKVsbu28CyJzfhHgj8zYWZkeK/0U14gVs78sJOq6+HUI8o
+         XVf//T1wKFHlKfRpgnQiYMGzUzgWv1e2mVMG+I30kz2MI7Ra4MPLjsljd9fqBbQDhB
+         iI3seKmlF0l/VaFhi+WQeY7HzlJufC1eeAm2Q0rk=
+Subject: Re: [PATCH v10 00/11] arm64: Reorganize the unwinder and implement
+ stack trace reliability checks
+To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
+        ardb@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
+ <20211015025847.17694-1-madvenka@linux.microsoft.com>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Message-ID: <4c6a5b8e-2eeb-67d5-d6fa-5b5933f156e5@linux.microsoft.com>
+Date:   Fri, 15 Oct 2021 12:00:32 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211015110035.14813389@gandalf.local.home>
+In-Reply-To: <20211015025847.17694-1-madvenka@linux.microsoft.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Oct 15, 2021 at 11:00:35AM -0400, Steven Rostedt wrote:
-> From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Hi Mark Rutland, Mark Brown,
+
+Sorry for the long delay in addressing your comments.
+I was out sick for a month.
+
+Please take a look when you get a chance.
+
+I have removed the word "RFC" as I believe this is mature enough to be
+a regular patch series at this point.
+
+Thanks.
+
+Madhavan
+
+On 10/14/21 9:58 PM, madvenka@linux.microsoft.com wrote:
+> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 > 
-> While writing an email explaining the "bit = 0" logic for a discussion on
-
->  	bit = trace_get_context_bit() + start;
-
-While there, you were also going to update that function to match/use
-get_recursion_context(). Because your version is still branch hell.
+> Make all stack walking functions use arch_stack_walk()
+> ======================================================
+> 
+> Currently, there are multiple functions in ARM64 code that walk the
+> stack using start_backtrace() and unwind_frame() or start_backtrace()
+> and walk_stackframe(). Convert all of them to use arch_stack_walk().
+> This makes maintenance easier.
+> 
+> This means that arch_stack_walk() needs to be always defined. So,
+> select CONFIG_STACKTRACE in the ARM64 Kconfig file.
+> 
+> Consolidate the unwinder
+> ========================
+> 
+> Currently, start_backtrace() and walk_stackframe() are called separately.
+> There is no need to do that. Move the call to start_backtrace() into
+> walk_stackframe() so that walk_stackframe() is the only unwinder function
+> a consumer needs to call.
+> 
+> The consumers of walk_stackframe() are arch_stack_walk() and
+> arch_stack_walk_reliable().
+> 
+> Rename unwinder functions
+> =========================
+> 
+> Rename unwinder functions to unwind*() similar to other architectures
+> for naming consistency.
+> 
+> 	start_backtrace() ==> unwind_start()
+> 	unwind_frame()    ==> unwind_next()
+> 	walk_stackframe() ==> unwind()
+> 
+> Annotate unwinder functions
+> ===========================
+> 
+> Annotate all of the unwind_*() functions with notrace so they cannot be
+> ftraced and NOKPROBE_SYMBOL() so they cannot be kprobed. Ftrace and Kprobe
+> code can call the unwinder.
+> 
+> Redefine the unwinder loop
+> ==========================
+> 
+> Redefine the unwinder loop and make it similar to other architectures.
+> Define the following:
+> 
+> 	unwind_start(&frame, fp, pc);
+> 	while (unwind_continue(task, &frame, consume_entry, cookie))
+> 		unwind_next(task, &frame);
+> 
+> unwind_continue()
+> 	This new function implements checks to determine whether the
+> 	unwind should continue or terminate.
+> 
+> unwind_next()
+> 	Same as the original unwind_frame() except:
+> 
+> 	- the stack trace termination check has been moved from here to
+> 	  unwind_continue(). So, unwind_next() assumes that the fp is valid.
+> 
+> 	- unwind_frame() used to return an error value. unwind_next() only
+> 	  sets an internal flag "failed" to indicate that an error was
+> 	  encountered. This flag is checked by unwind_continue().
+> 
+> Reliability checks
+> ==================
+> 
+> There are some kernel features and conditions that make a stack trace
+> unreliable. Callers may require the unwinder to detect these cases.
+> E.g., livepatch.
+> 
+> Introduce a new function called unwind_check_reliability() that will detect
+> these cases and set a boolean "reliable" in the stackframe.
+> 
+> unwind_check_reliability() will be called for every frame. That is, in
+> unwind_start() as well as unwind_next().
+> 
+> Introduce the first reliability check in unwind_check_reliability() - If
+> a return PC is not a valid kernel text address, consider the stack
+> trace unreliable. It could be some generated code.
+> 
+> Other reliability checks will be added in the future.
+> 
+> arch_stack_walk_reliable()
+> ==========================
+> 
+> Introduce arch_stack_walk_reliable() for ARM64. This works like
+> arch_stack_walk() except that it returns an error if the stack trace is
+> found to be unreliable.
+> 
+> Until all of the reliability checks are in place in
+> unwind_check_reliability(), arch_stack_walk_reliable() may not be used by
+> livepatch. But it may be used by debug and test code.
+> 
+> SYM_CODE check
+> ==============
+> 
+> This is the second reliability check implemented.
+> 
+> SYM_CODE functions do not follow normal calling conventions. They cannot
+> be unwound reliably using the frame pointer. Collect the address ranges
+> of these functions in a special section called "sym_code_functions".
+> 
+> In unwind_check_reliability(), check the return PC against these ranges. If
+> a match is found, then mark the stack trace unreliable.
+> 
+> Last stack frame
+> ----------------
+> 
+> If a SYM_CODE function occurs in the very last frame in the stack trace,
+> then the stack trace is not considered unreliable. This is because there
+> is no more unwinding to do. Examples:
+> 
+> 	- EL0 exception stack traces end in the top level EL0 exception
+> 	  handlers.
+> 
+> 	- All kernel thread stack traces end in ret_from_fork().
+> ---
+> Changelog:
+> 
+> v9:
+> 	From me:
+> 
+> 	- Removed the word "RFC" from the subject line as I believe this
+> 	  is mature enough to be a regular patch.
+> 
+> 	From Mark Brown, Mark Rutland:
+> 
+> 	- Split the patches into smaller, self-contained ones.
+> 
+> 	- Always enable STACKTRACE so that arch_stack_walk() is always
+> 	  defined.
+> 
+> 	From Mark Rutland:
+> 
+> 	- Update callchain_trace() take the return value of
+> 	  perf_callchain_store() into acount.
+> 
+> 	- Restore get_wchan() behavior to the original code.
+> 
+> 	- Simplify an if statement in dump_backtrace().
+> 
+> 	From Mark Brown:
+> 
+> 	- Do not abort the stack trace on the first unreliable frame.
+> 
+> 	
+> v8:
+> 	- Synced to v5.14-rc5.
+> 
+> 	From Mark Rutland:
+> 
+> 	- Make the unwinder loop similar to other architectures.
+> 
+> 	- Keep details to within the unwinder functions and return a simple
+> 	  boolean to the caller.
+> 
+> 	- Convert some of the current code that contains unwinder logic to
+> 	  simply use arch_stack_walk(). I have converted all of them.
+> 
+> 	- Do not copy sym_code_functions[]. Just place it in rodata for now.
+> 
+> 	- Have the main loop check for termination conditions rather than
+> 	  having unwind_frame() check for them. In other words, let
+> 	  unwind_frame() assume that the fp is valid.
+> 
+> 	- Replace the big comment for SYM_CODE functions with a shorter
+> 	  comment.
+> 
+> 		/*
+> 		 * As SYM_CODE functions don't follow the usual calling
+> 		 * conventions, we assume by default that any SYM_CODE function
+> 		 * cannot be unwound reliably.
+> 		 *
+> 		 * Note that this includes:
+> 		 *
+> 		 * - Exception handlers and entry assembly
+> 		 * - Trampoline assembly (e.g., ftrace, kprobes)
+> 		 * - Hypervisor-related assembly
+> 		 * - Hibernation-related assembly
+> 		 * - CPU start-stop, suspend-resume assembly
+> 		 * - Kernel relocation assembly
+> 		 */
+> 
+> v7:
+> 	The Mailer screwed up the threading on this. So, I have resent this
+> 	same series as version 8 with proper threading to avoid confusion.
+> v6:
+> 	From Mark Rutland:
+> 
+> 	- The per-frame reliability concept and flag are acceptable. But more
+> 	  work is needed to make the per-frame checks more accurate and more
+> 	  complete. E.g., some code reorg is being worked on that will help.
+> 
+> 	  I have now removed the frame->reliable flag and deleted the whole
+> 	  concept of per-frame status. This is orthogonal to this patch series.
+> 	  Instead, I have improved the unwinder to return proper return codes
+> 	  so a caller can take appropriate action without needing per-frame
+> 	  status.
+> 
+> 	- Remove the mention of PLTs and update the comment.
+> 
+> 	  I have replaced the comment above the call to __kernel_text_address()
+> 	  with the comment suggested by Mark Rutland.
+> 
+> 	Other comments:
+> 
+> 	- Other comments on the per-frame stuff are not relevant because
+> 	  that approach is not there anymore.
+> 
+> v5:
+> 	From Keiya Nobuta:
+> 	
+> 	- The term blacklist(ed) is not to be used anymore. I have changed it
+> 	  to unreliable. So, the function unwinder_blacklisted() has been
+> 	  changed to unwinder_is_unreliable().
+> 
+> 	From Mark Brown:
+> 
+> 	- Add a comment for the "reliable" flag in struct stackframe. The
+> 	  reliability attribute is not complete until all the checks are
+> 	  in place. Added a comment above struct stackframe.
+> 
+> 	- Include some of the comments in the cover letter in the actual
+> 	  code so that we can compare it with the reliable stack trace
+> 	  requirements document for completeness. I have added a comment:
+> 
+> 	  	- above unwinder_is_unreliable() that lists the requirements
+> 		  that are addressed by the function.
+> 
+> 		- above the __kernel_text_address() call about all the cases
+> 		  the call covers.
+> 
+> v4:
+> 	From Mark Brown:
+> 
+> 	- I was checking the return PC with __kernel_text_address() before
+> 	  the Function Graph trace handling. Mark Brown felt that all the
+> 	  reliability checks should be performed on the original return PC
+> 	  once that is obtained. So, I have moved all the reliability checks
+> 	  to after the Function Graph Trace handling code in the unwinder.
+> 	  Basically, the unwinder should perform PC translations first (for
+> 	  rhe return trampoline for Function Graph Tracing, Kretprobes, etc).
+> 	  Then, the reliability checks should be applied to the resulting
+> 	  PC.
+> 
+> 	- Mark said to improve the naming of the new functions so they don't
+> 	  collide with existing ones. I have used a prefix "unwinder_" for
+> 	  all the new functions.
+> 
+> 	From Josh Poimboeuf:
+> 
+> 	- In the error scenarios in the unwinder, the reliable flag in the
+> 	  stack frame should be set. Implemented this.
+> 
+> 	- Some of the other comments are not relevant to the new code as
+> 	  I have taken a different approach in the new code. That is why
+> 	  I have not made those changes. E.g., Ard wanted me to add the
+> 	  "const" keyword to the global section array. That array does not
+> 	  exist in v4. Similarly, Mark Brown said to use ARRAY_SIZE() for
+> 	  the same array in a for loop.
+> 
+> 	Other changes:
+> 
+> 	- Add a new definition for SYM_CODE_END() that adds the address
+> 	  range of the function to a special section called
+> 	  "sym_code_functions".
+> 
+> 	- Include the new section under initdata in vmlinux.lds.S.
+> 
+> 	- Define an early_initcall() to copy the contents of the
+> 	  "sym_code_functions" section to an array by the same name.
+> 
+> 	- Define a function unwinder_blacklisted() that compares a return
+> 	  PC against sym_code_sections[]. If there is a match, mark the
+> 	  stack trace unreliable. Call this from unwind_frame().
+> 
+> v3:
+> 	- Implemented a sym_code_ranges[] array to contains sections bounds
+> 	  for text sections that contain SYM_CODE_*() functions. The unwinder
+> 	  checks each return PC against the sections. If it falls in any of
+> 	  the sections, the stack trace is marked unreliable.
+> 
+> 	- Moved SYM_CODE functions from .text and .init.text into a new
+> 	  text section called ".code.text". Added this section to
+> 	  vmlinux.lds.S and sym_code_ranges[].
+> 
+> 	- Fixed the logic in the unwinder that handles Function Graph
+> 	  Tracer return trampoline.
+> 
+> 	- Removed all the previous code that handles:
+> 		- ftrace entry code for traced function
+> 		- special_functions[] array that lists individual functions
+> 		- kretprobe_trampoline() special case
+> 
+> v2
+> 	- Removed the terminating entry { 0, 0 } in special_functions[]
+> 	  and replaced it with the idiom { /* sentinel */ }.
+> 
+> 	- Change the ftrace trampoline entry ftrace_graph_call in
+> 	  special_functions[] to ftrace_call + 4 and added explanatory
+> 	  comments.
+> 
+> 	- Unnested #ifdefs in special_functions[] for FTRACE.
+> 
+> v1
+> 	- Define a bool field in struct stackframe. This will indicate if
+> 	  a stack trace is reliable.
+> 
+> 	- Implement a special_functions[] array that will be populated
+> 	  with special functions in which the stack trace is considered
+> 	  unreliable.
+> 	
+> 	- Using kallsyms_lookup(), get the address ranges for the special
+> 	  functions and record them.
+> 
+> 	- Implement an is_reliable_function(pc). This function will check
+> 	  if a given return PC falls in any of the special functions. If
+> 	  it does, the stack trace is unreliable.
+> 
+> 	- Implement check_reliability() function that will check if a
+> 	  stack frame is reliable. Call is_reliable_function() from
+> 	  check_reliability().
+> 
+> 	- Before a return PC is checked against special_funtions[], it
+> 	  must be validates as a proper kernel text address. Call
+> 	  __kernel_text_address() from check_reliability().
+> 
+> 	- Finally, call check_reliability() from unwind_frame() for
+> 	  each stack frame.
+> 
+> 	- Add EL1 exception handlers to special_functions[].
+> 
+> 		el1_sync();
+> 		el1_irq();
+> 		el1_error();
+> 		el1_sync_invalid();
+> 		el1_irq_invalid();
+> 		el1_fiq_invalid();
+> 		el1_error_invalid();
+> 
+> 	- The above functions are currently defined as LOCAL symbols.
+> 	  Make them global so that they can be referenced from the
+> 	  unwinder code.
+> 
+> 	- Add FTRACE trampolines to special_functions[]:
+> 
+> 		ftrace_graph_call()
+> 		ftrace_graph_caller()
+> 		return_to_handler()
+> 
+> 	- Add the kretprobe trampoline to special functions[]:
+> 
+> 		kretprobe_trampoline()
+> 
+> Previous versions and discussion
+> ================================
+> 
+> v8: https://lore.kernel.org/linux-arm-kernel/20210812190603.25326-1-madvenka@linux.microsoft.com/
+> v7: Mailer screwed up the threading. Sent the same as v8 with proper threading.
+> v6: https://lore.kernel.org/linux-arm-kernel/20210630223356.58714-1-madvenka@linux.microsoft.com/
+> v5: https://lore.kernel.org/linux-arm-kernel/20210526214917.20099-1-madvenka@linux.microsoft.com/
+> v4: https://lore.kernel.org/linux-arm-kernel/20210516040018.128105-1-madvenka@linux.microsoft.com/
+> v3: https://lore.kernel.org/linux-arm-kernel/20210503173615.21576-1-madvenka@linux.microsoft.com/
+> v2: https://lore.kernel.org/linux-arm-kernel/20210405204313.21346-1-madvenka@linux.microsoft.com/
+> v1: https://lore.kernel.org/linux-arm-kernel/20210330190955.13707-1-madvenka@linux.microsoft.com/
+> 
+> Madhavan T. Venkataraman (11):
+>   arm64: Select STACKTRACE in arch/arm64/Kconfig
+>   arm64: Make perf_callchain_kernel() use arch_stack_walk()
+>   arm64: Make get_wchan() use arch_stack_walk()
+>   arm64: Make return_address() use arch_stack_walk()
+>   arm64: Make dump_stacktrace() use arch_stack_walk()
+>   arm64: Make profile_pc() use arch_stack_walk()
+>   arm64: Call stack_backtrace() only from within walk_stackframe()
+>   arm64: Rename unwinder functions, prevent them from being traced and
+>     kprobed
+>   arm64: Make the unwind loop in unwind() similar to other architectures
+>   arm64: Introduce stack trace reliability checks in the unwinder
+>   arm64: Create a list of SYM_CODE functions, check return PC against
+>     list
+> 
+>  arch/arm64/Kconfig                  |   1 +
+>  arch/arm64/include/asm/linkage.h    |  12 ++
+>  arch/arm64/include/asm/sections.h   |   1 +
+>  arch/arm64/include/asm/stacktrace.h |  12 +-
+>  arch/arm64/kernel/perf_callchain.c  |   8 +-
+>  arch/arm64/kernel/process.c         |  38 ++--
+>  arch/arm64/kernel/return_address.c  |   6 +-
+>  arch/arm64/kernel/stacktrace.c      | 274 +++++++++++++++++++---------
+>  arch/arm64/kernel/time.c            |  22 ++-
+>  arch/arm64/kernel/vmlinux.lds.S     |  10 +
+>  10 files changed, 257 insertions(+), 127 deletions(-)
+> 
+> 
+> base-commit: 36a21d51725af2ce0700c6ebcb6b9594aac658a6
+> 
