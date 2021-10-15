@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05F1D42E6EB
-	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 04:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C659842E6EE
+	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 04:59:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233878AbhJODBK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 14 Oct 2021 23:01:10 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:58120 "EHLO
+        id S235181AbhJODBQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 14 Oct 2021 23:01:16 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:58140 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234124AbhJODBK (ORCPT
+        with ESMTP id S235087AbhJODBL (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 14 Oct 2021 23:01:10 -0400
+        Thu, 14 Oct 2021 23:01:11 -0400
 Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 6CCCA20B9D1C;
-        Thu, 14 Oct 2021 19:59:03 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6CCCA20B9D1C
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7F5A420B9D1D;
+        Thu, 14 Oct 2021 19:59:04 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7F5A420B9D1D
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1634266744;
-        bh=0yghf4gyl+zuLPydKc3wkqnxys2UvYghl6oElnkiR2M=;
+        s=default; t=1634266745;
+        bh=FmJbGXiSP+JGonZTp90DkLqCm4FVOelAbFqDoqqHdv4=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=q92AH8yQOnrbpPu1+rvgRHk4kgLV3xQy81DDuXSYiOxlY03kc8BdrRq9Gpyh6wNQj
-         av1dMLOD+/I/VCFJr0qk4jD8Flmagw5ycaIfNMFDXyjLJaCiDiN1TKF3n8WwE7nkJd
-         T37iNdTqs7mrAPsgngHWYT8Gpd8Pa0eURvMQt55Q=
+        b=jQJyeDSJfrGu1E7fZCFEcbQi17sqEQX79kndyh/soGySHlYPvUbls+j8Wpoi+UPDp
+         82F2nET8zGft4Qy33YxYAVyTH01LJN1BcNgYcRGh50IWqv9BbWJvspDUT3NcoCEQaV
+         0ICRK7MVeMFk1ZGsWjn/5Z8bHoxCRElk0jrm/0Ks=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -30,9 +30,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [PATCH v10 01/11] arm64: Select STACKTRACE in arch/arm64/Kconfig
-Date:   Thu, 14 Oct 2021 21:58:37 -0500
-Message-Id: <20211015025847.17694-2-madvenka@linux.microsoft.com>
+Subject: [PATCH v10 02/11] arm64: Make perf_callchain_kernel() use arch_stack_walk()
+Date:   Thu, 14 Oct 2021 21:58:38 -0500
+Message-Id: <20211015025847.17694-3-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211015025847.17694-1-madvenka@linux.microsoft.com>
 References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
@@ -45,32 +45,44 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Currently, there are multiple functions in ARM64 code that walk the
-stack using start_backtrace() and unwind_frame() or start_backtrace()
-and walk_stackframe(). They should all be converted to use
-arch_stack_walk(). This makes maintenance easier.
-
-To do that, arch_stack_walk() must always be defined. arch_stack_walk()
-is within #ifdef CONFIG_STACKTRACE. So, select STACKTRACE in
-arch/arm64/Kconfig.
+Currently, perf_callchain_kernel() in ARM64 code walks the stack using
+start_backtrace() and walk_stackframe(). Make it use arch_stack_walk()
+instead. This makes maintenance easier.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/kernel/perf_callchain.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index fdcd54d39c1e..bfb0ce60d820 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -35,6 +35,7 @@ config ARM64
- 	select ARCH_HAS_SET_DIRECT_MAP
- 	select ARCH_HAS_SET_MEMORY
- 	select ARCH_STACKWALK
-+	select STACKTRACE
- 	select ARCH_HAS_STRICT_KERNEL_RWX
- 	select ARCH_HAS_STRICT_MODULE_RWX
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+diff --git a/arch/arm64/kernel/perf_callchain.c b/arch/arm64/kernel/perf_callchain.c
+index 4a72c2727309..f173c448e852 100644
+--- a/arch/arm64/kernel/perf_callchain.c
++++ b/arch/arm64/kernel/perf_callchain.c
+@@ -140,22 +140,18 @@ void perf_callchain_user(struct perf_callchain_entry_ctx *entry,
+ static bool callchain_trace(void *data, unsigned long pc)
+ {
+ 	struct perf_callchain_entry_ctx *entry = data;
+-	perf_callchain_store(entry, pc);
+-	return true;
++	return perf_callchain_store(entry, pc) == 0;
+ }
+ 
+ void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
+ 			   struct pt_regs *regs)
+ {
+-	struct stackframe frame;
+-
+ 	if (perf_guest_cbs && perf_guest_cbs->is_in_guest()) {
+ 		/* We don't support guest os callchain now */
+ 		return;
+ 	}
+ 
+-	start_backtrace(&frame, regs->regs[29], regs->pc);
+-	walk_stackframe(current, &frame, callchain_trace, entry);
++	arch_stack_walk(callchain_trace, entry, current, regs);
+ }
+ 
+ unsigned long perf_instruction_pointer(struct pt_regs *regs)
 -- 
 2.25.1
 
