@@ -2,223 +2,201 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F6042E6F9
-	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 04:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D25D42E71F
+	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 05:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235115AbhJODB1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 14 Oct 2021 23:01:27 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:58298 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235175AbhJODBU (ORCPT
+        id S233066AbhJODPV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 14 Oct 2021 23:15:21 -0400
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:34772 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229526AbhJODPV (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 14 Oct 2021 23:01:20 -0400
-Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 2960420B9D21;
-        Thu, 14 Oct 2021 19:59:14 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2960420B9D21
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1634266755;
-        bh=kf57gBPyYShD4NkDAxb6KRwdylhexezlNMblj+oE9gY=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=BCYJAEEBF7f4wqkTLwhbmwOAZJioS+d4fs2JaQL/NGX2GodBMUZGW6BP7wlyb+i1i
-         t5vKWiPIjW2A0Q5Sc2Dz5i72+yQ1HeGO3xdyWuubxdwQWgOIasinnYHRM56Uj4wJrM
-         r4uZWSjtt54Qjkv45zjry6CseVqRnvnLymxoMEGk=
-From:   madvenka@linux.microsoft.com
-To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        madvenka@linux.microsoft.com
-Subject: [PATCH v10 11/11] arm64: Create a list of SYM_CODE functions, check return PC against list
-Date:   Thu, 14 Oct 2021 21:58:47 -0500
-Message-Id: <20211015025847.17694-12-madvenka@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211015025847.17694-1-madvenka@linux.microsoft.com>
-References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
- <20211015025847.17694-1-madvenka@linux.microsoft.com>
+        Thu, 14 Oct 2021 23:15:21 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0Us2T5JW_1634267588;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0Us2T5JW_1634267588)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 15 Oct 2021 11:13:09 +0800
+Subject: Re: [PATCH v3 1/2] ftrace: disable preemption between
+ ftrace_test_recursion_trylock/unlock()
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        live-patching@vger.kernel.org
+References: <609b565a-ed6e-a1da-f025-166691b5d994@linux.alibaba.com>
+ <7e4738b5-21d4-c4d0-3136-a096bbb5cd2c@linux.alibaba.com>
+ <YWhJP41cNwDphYsv@alley>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <5e907ed3-806b-b0e5-518d-d2f3b265377f@linux.alibaba.com>
+Date:   Fri, 15 Oct 2021 11:13:08 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <YWhJP41cNwDphYsv@alley>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-SYM_CODE functions don't follow the usual calling conventions. Check if the
-return PC in a stack frame falls in any of these. If it does, consider the
-stack trace unreliable.
 
-Define a special section for unreliable functions
-=================================================
+On 2021/10/14 下午11:14, Petr Mladek wrote:
+[snip]
+>> -	return trace_test_and_set_recursion(ip, parent_ip, TRACE_FTRACE_START, TRACE_FTRACE_MAX);
+>> +	int bit;
+>> +
+>> +	bit = trace_test_and_set_recursion(ip, parent_ip, TRACE_FTRACE_START, TRACE_FTRACE_MAX);
+>> +	/*
+>> +	 * The zero bit indicate we are nested
+>> +	 * in another trylock(), which means the
+>> +	 * preemption already disabled.
+>> +	 */
+>> +	if (bit > 0)
+>> +		preempt_disable_notrace();
+> 
+> Is this safe? The preemption is disabled only when
+> trace_test_and_set_recursion() was called by ftrace_test_recursion_trylock().
+> 
+> We must either always disable the preemtion when bit >= 0.
+> Or we have to disable the preemtion already in
+> trace_test_and_set_recursion().
 
-Define a SYM_CODE_END() macro for arm64 that adds the function address
-range to a new section called "sym_code_functions".
+Internal calling of trace_test_and_set_recursion() will disable preemption
+on succeed, it should be safe.
 
-Linker file
-===========
+We can also consider move the logical into trace_test_and_set_recursion()
+and trace_clear_recursion(), but I'm not very sure about that... ftrace
+internally already make sure preemption disabled, what uncovered is those
+users who call API trylock/unlock, isn't it?
 
-Include the "sym_code_functions" section under read-only data in
-vmlinux.lds.S.
+> 
+> 
+> Finally, the comment confused me a lot. The difference between nesting and
+> recursion is far from clear. And the code is tricky liky like hell :-)
+> I propose to add some comments, see below for a proposal.
+The comments do confusing, I'll make it something like:
 
-Initialization
-==============
+The zero bit indicate trace recursion happened, whatever
+the recursively call was made by ftrace handler or ftrace
+itself, the preemption already disabled.
 
-Define an early_initcall() to create a sym_code_functions[] array from
-the linker data.
+Will this one looks better to you?
 
-Unwinder check
-==============
+> 
+>> +
+>> +	return bit;
+>>  }
+>>  /**
+>> @@ -222,9 +233,13 @@ static __always_inline int ftrace_test_recursion_trylock(unsigned long ip,
+>>   * @bit: The return of a successful ftrace_test_recursion_trylock()
+>>   *
+>>   * This is used at the end of a ftrace callback.
+>> + *
+>> + * Preemption will be enabled (if it was previously enabled).
+>>   */
+>>  static __always_inline void ftrace_test_recursion_unlock(int bit)
+>>  {
+>> +	if (bit)
+> 
+> This is not symetric with trylock(). It should be:
+> 
+> 	if (bit > 0)
+> 
+> Anyway, trace_clear_recursion() quiently ignores bit != 0
 
-Add a reliability check in unwind_is_reliable() that compares a return
-PC with sym_code_functions[]. If there is a match, then return failure.
+Yes, bit == 0 should not happen in here.
 
-Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
----
- arch/arm64/include/asm/linkage.h  | 12 +++++++
- arch/arm64/include/asm/sections.h |  1 +
- arch/arm64/kernel/stacktrace.c    | 55 +++++++++++++++++++++++++++++++
- arch/arm64/kernel/vmlinux.lds.S   | 10 ++++++
- 4 files changed, 78 insertions(+)
+> 
+> 
+>> +		preempt_enable_notrace();
+>>  	trace_clear_recursion(bit);
+>>  }
+> 
+> 
+> Below is my proposed patch that tries to better explain the recursion
+> check:
+> 
+> From 20d69f11e2683262fa0043b803999061cbac543f Mon Sep 17 00:00:00 2001
+> From: Petr Mladek <pmladek@suse.com>
+> Date: Thu, 14 Oct 2021 16:57:39 +0200
+> Subject: [PATCH] trace: Better describe the recursion check return values
+> 
+> The trace recursion check might be called recursively by different
+> layers of the tracing code. It is safe recursion and the check
+> is even optimized for this case.
+> 
+> The problematic recursion is when the traced function is called
+> by the tracing code. This is properly detected.
+> 
+> Try to explain this difference a better way.
+> 
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
+> ---
+>  include/linux/trace_recursion.h | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/trace_recursion.h b/include/linux/trace_recursion.h
+> index a9f9c5714e65..b5efb804efdf 100644
+> --- a/include/linux/trace_recursion.h
+> +++ b/include/linux/trace_recursion.h
+> @@ -159,13 +159,27 @@ extern void ftrace_record_recursion(unsigned long ip, unsigned long parent_ip);
+>  # define do_ftrace_record_recursion(ip, pip)	do { } while (0)
+>  #endif
+>  
+> +/*
+> + * trace_test_and_set_recursion() is called on several layers
+> + * of the ftrace code when handling the same ftrace entry.
+> + * These calls might be nested/recursive.
+> + *
+> + * It uses TRACE_LIST_*BITs to distinguish between this
+> + * internal recursion and recursion caused by calling
+> + * the traced function by the ftrace code.
+> + *
+> + * Returns: > 0 when no recursion
+> + *          0 when called recursively internally (safe)
 
-diff --git a/arch/arm64/include/asm/linkage.h b/arch/arm64/include/asm/linkage.h
-index 9906541a6861..616bad74e297 100644
---- a/arch/arm64/include/asm/linkage.h
-+++ b/arch/arm64/include/asm/linkage.h
-@@ -68,4 +68,16 @@
- 		SYM_FUNC_END_ALIAS(x);		\
- 		SYM_FUNC_END_ALIAS(__pi_##x)
- 
-+/*
-+ * Record the address range of each SYM_CODE function in a struct code_range
-+ * in a special section.
-+ */
-+#define SYM_CODE_END(name)				\
-+	SYM_END(name, SYM_T_NONE)			;\
-+	99:						;\
-+	.pushsection "sym_code_functions", "aw"		;\
-+	.quad	name					;\
-+	.quad	99b					;\
-+	.popsection
-+
- #endif
-diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
-index e4ad9db53af1..c84c71063d6e 100644
---- a/arch/arm64/include/asm/sections.h
-+++ b/arch/arm64/include/asm/sections.h
-@@ -21,5 +21,6 @@ extern char __exittext_begin[], __exittext_end[];
- extern char __irqentry_text_start[], __irqentry_text_end[];
- extern char __mmuoff_data_start[], __mmuoff_data_end[];
- extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
-+extern char __sym_code_functions_start[], __sym_code_functions_end[];
- 
- #endif /* __ASM_SECTIONS_H */
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 142f08ae515f..40e5af7e5b1d 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -18,11 +18,40 @@
- #include <asm/stack_pointer.h>
- #include <asm/stacktrace.h>
- 
-+struct code_range {
-+	unsigned long	start;
-+	unsigned long	end;
-+};
-+
-+static struct code_range	*sym_code_functions;
-+static int			num_sym_code_functions;
-+
-+int __init init_sym_code_functions(void)
-+{
-+	size_t size = (unsigned long)__sym_code_functions_end -
-+		      (unsigned long)__sym_code_functions_start;
-+
-+	sym_code_functions = (struct code_range *)__sym_code_functions_start;
-+	/*
-+	 * Order it so that sym_code_functions is not visible before
-+	 * num_sym_code_functions.
-+	 */
-+	smp_mb();
-+	num_sym_code_functions = size / sizeof(struct code_range);
-+
-+	return 0;
-+}
-+early_initcall(init_sym_code_functions);
-+
- /*
-  * Check the stack frame for conditions that make further unwinding unreliable.
-  */
- static void notrace unwind_check_reliability(struct stackframe *frame)
- {
-+	const struct code_range *range;
-+	unsigned long pc;
-+	int i;
-+
- 	/*
- 	 * If the PC is not a known kernel text address, then we cannot
- 	 * be sure that a subsequent unwind will be reliable, as we
-@@ -30,6 +59,32 @@ static void notrace unwind_check_reliability(struct stackframe *frame)
- 	 */
- 	if (!__kernel_text_address(frame->pc))
- 		frame->reliable = false;
-+
-+	/*
-+	 * Check the return PC against sym_code_functions[]. If there is a
-+	 * match, then the consider the stack frame unreliable.
-+	 *
-+	 * As SYM_CODE functions don't follow the usual calling conventions,
-+	 * we assume by default that any SYM_CODE function cannot be unwound
-+	 * reliably.
-+	 *
-+	 * Note that this includes:
-+	 *
-+	 * - Exception handlers and entry assembly
-+	 * - Trampoline assembly (e.g., ftrace, kprobes)
-+	 * - Hypervisor-related assembly
-+	 * - Hibernation-related assembly
-+	 * - CPU start-stop, suspend-resume assembly
-+	 * - Kernel relocation assembly
-+	 */
-+	pc = frame->pc;
-+	for (i = 0; i < num_sym_code_functions; i++) {
-+		range = &sym_code_functions[i];
-+		if (pc >= range->start && pc < range->end) {
-+			frame->reliable = false;
-+			return;
-+		}
-+	}
- }
- 
- NOKPROBE_SYMBOL(unwind_check_reliability);
-diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
-index 709d2c433c5e..2bf769f45b54 100644
---- a/arch/arm64/kernel/vmlinux.lds.S
-+++ b/arch/arm64/kernel/vmlinux.lds.S
-@@ -111,6 +111,14 @@ jiffies = jiffies_64;
- #define TRAMP_TEXT
- #endif
- 
-+#define SYM_CODE_FUNCTIONS				\
-+	. = ALIGN(16);					\
-+	.symcode : AT(ADDR(.symcode) - LOAD_OFFSET) {	\
-+		__sym_code_functions_start = .;		\
-+		KEEP(*(sym_code_functions))		\
-+		__sym_code_functions_end = .;		\
-+	}
-+
- /*
-  * The size of the PE/COFF section that covers the kernel image, which
-  * runs from _stext to _edata, must be a round multiple of the PE/COFF
-@@ -196,6 +204,8 @@ SECTIONS
- 	swapper_pg_dir = .;
- 	. += PAGE_SIZE;
- 
-+	SYM_CODE_FUNCTIONS
-+
- 	. = ALIGN(SEGMENT_ALIGN);
- 	__init_begin = .;
- 	__inittext_begin = .;
--- 
-2.25.1
+The 0 can also happened when ftrace handler recursively called trylock()
+under the same context, or not?
 
+Regards,
+Michael Wang
+
+> + *	    -1 when the traced function was called recursively from
+> + *             the ftrace handler (unsafe)
+> + */
+>  static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsigned long pip,
+>  							int start, int max)
+>  {
+>  	unsigned int val = READ_ONCE(current->trace_recursion);
+>  	int bit;
+>  
+> -	/* A previous recursion check was made */
+> +	/* Called recursively internally by different ftrace code layers? */
+>  	if ((val & TRACE_CONTEXT_MASK) > max)
+>  		return 0;
+
+>  
+> 
