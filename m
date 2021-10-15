@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C0A142E6A2
-	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 04:35:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B41FD42E6A4
+	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 04:35:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235098AbhJOChF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 14 Oct 2021 22:37:05 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:55460 "EHLO
+        id S235053AbhJOChH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 14 Oct 2021 22:37:07 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:55472 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235105AbhJOChE (ORCPT
+        with ESMTP id S235099AbhJOChF (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 14 Oct 2021 22:37:04 -0400
+        Thu, 14 Oct 2021 22:37:05 -0400
 Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 6FC9420B9D22;
-        Thu, 14 Oct 2021 19:34:57 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6FC9420B9D22
+        by linux.microsoft.com (Postfix) with ESMTPSA id 824C320B9D23;
+        Thu, 14 Oct 2021 19:34:58 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 824C320B9D23
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1634265298;
-        bh=qZScEFTO+pORG9YKmb/gJbPlBbD1pvru4NrU3/YAom4=;
+        s=default; t=1634265299;
+        bh=6B7i9QOJfwrh+wxsghOjM0WArHrFBqgVADtSVHWaIEc=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=fPITtNCJx1AiyMyMCIsYoQM+nzWbH6BwA3I2FM3/ckjWOdtTOfl2VmSkZKZgDZCpG
-         4FJkaRCfQMXmgBGF74uIlUh6Pw+U0iMGs9a5d//ARcfsgvSL5EscbhKxWdo335GpKt
-         QSDnf+p7GwD71W+nzufJ69xTWYaL4ZlOseUHBWlU=
+        b=JEZx8dVtEoINgrflaJmkhHWKO0ZsSRX5Gmy+r4YZZV93gj2WWBOEKoAuLSzP3Imp/
+         EWkP21966a8CsHiUYoTRuc/o1sH8V+lE5jh++puD4WSpT3NpBcDQfGVe5J+7+DbmkW
+         T1mHUCskR0nlTjF9REbZhjEdA1CkVoNyp6Q2xoPU=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -30,9 +30,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [PATCH v9 04/11] arm64: Make return_address() use arch_stack_walk()
-Date:   Thu, 14 Oct 2021 21:34:08 -0500
-Message-Id: <20211015023413.16614-7-madvenka@linux.microsoft.com>
+Subject: [PATCH v9 05/11] arm64: Make dump_stacktrace() use arch_stack_walk()
+Date:   Thu, 14 Oct 2021 21:34:09 -0500
+Message-Id: <20211015023413.16614-8-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211015023413.16614-1-madvenka@linux.microsoft.com>
 References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
@@ -45,36 +45,87 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Currently, return_address() in ARM64 code walks the stack using
-start_backtrace() and walk_stackframe(). Make it use arch_stack_walk()
+Currently, dump_stacktrace() in ARM64 code walks the stack using
+start_backtrace() and unwind_frame(). Make it use arch_stack_walk()
 instead. This makes maintenance easier.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/kernel/return_address.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/arm64/kernel/stacktrace.c | 44 +++++-----------------------------
+ 1 file changed, 6 insertions(+), 38 deletions(-)
 
-diff --git a/arch/arm64/kernel/return_address.c b/arch/arm64/kernel/return_address.c
-index a6d18755652f..92a0f4d434e4 100644
---- a/arch/arm64/kernel/return_address.c
-+++ b/arch/arm64/kernel/return_address.c
-@@ -35,15 +35,11 @@ NOKPROBE_SYMBOL(save_return_addr);
- void *return_address(unsigned int level)
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index 8982a2b78acf..776c4debb5a7 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -151,24 +151,20 @@ void notrace walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
+ }
+ NOKPROBE_SYMBOL(walk_stackframe);
+ 
+-static void dump_backtrace_entry(unsigned long where, const char *loglvl)
++static bool dump_backtrace_entry(void *arg, unsigned long where)
  {
- 	struct return_address_data data;
++	char *loglvl = arg;
+ 	printk("%s %pSb\n", loglvl, (void *)where);
++	return true;
+ }
+ 
+ void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
+ 		    const char *loglvl)
+ {
 -	struct stackframe frame;
+-	int skip = 0;
+-
+ 	pr_debug("%s(regs = %p tsk = %p)\n", __func__, regs, tsk);
  
- 	data.level = level + 2;
- 	data.addr = NULL;
+-	if (regs) {
+-		if (user_mode(regs))
+-			return;
+-		skip = 1;
+-	}
++	if (regs && user_mode(regs))
++		return;
  
--	start_backtrace(&frame,
--			(unsigned long)__builtin_frame_address(0),
--			(unsigned long)return_address);
--	walk_stackframe(current, &frame, save_return_addr, &data);
-+	arch_stack_walk(save_return_addr, &data, current, NULL);
+ 	if (!tsk)
+ 		tsk = current;
+@@ -176,36 +172,8 @@ void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
+ 	if (!try_get_task_stack(tsk))
+ 		return;
  
- 	if (!data.level)
- 		return data.addr;
+-	if (tsk == current) {
+-		start_backtrace(&frame,
+-				(unsigned long)__builtin_frame_address(0),
+-				(unsigned long)dump_backtrace);
+-	} else {
+-		/*
+-		 * task blocked in __switch_to
+-		 */
+-		start_backtrace(&frame,
+-				thread_saved_fp(tsk),
+-				thread_saved_pc(tsk));
+-	}
+-
+ 	printk("%sCall trace:\n", loglvl);
+-	do {
+-		/* skip until specified stack frame */
+-		if (!skip) {
+-			dump_backtrace_entry(frame.pc, loglvl);
+-		} else if (frame.fp == regs->regs[29]) {
+-			skip = 0;
+-			/*
+-			 * Mostly, this is the case where this function is
+-			 * called in panic/abort. As exception handler's
+-			 * stack frame does not contain the corresponding pc
+-			 * at which an exception has taken place, use regs->pc
+-			 * instead.
+-			 */
+-			dump_backtrace_entry(regs->pc, loglvl);
+-		}
+-	} while (!unwind_frame(tsk, &frame));
++	arch_stack_walk(dump_backtrace_entry, (void *)loglvl, tsk, regs);
+ 
+ 	put_task_stack(tsk);
+ }
 -- 
 2.25.1
 
