@@ -2,24 +2,21 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A73342FB96
-	for <lists+live-patching@lfdr.de>; Fri, 15 Oct 2021 21:00:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53546430E51
+	for <lists+live-patching@lfdr.de>; Mon, 18 Oct 2021 05:38:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242281AbhJOTDC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 15 Oct 2021 15:03:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59264 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242270AbhJOTDB (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Fri, 15 Oct 2021 15:03:01 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DCAA061041;
-        Fri, 15 Oct 2021 19:00:51 +0000 (UTC)
-Date:   Fri, 15 Oct 2021 15:00:50 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
+        id S231153AbhJRDkj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 17 Oct 2021 23:40:39 -0400
+Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:40907 "EHLO
+        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229583AbhJRDkj (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Sun, 17 Oct 2021 23:40:39 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0UsUkvOd_1634528302;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UsUkvOd_1634528302)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 18 Oct 2021 11:38:23 +0800
+To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
@@ -39,46 +36,61 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Colin Ian King <colin.king@canonical.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Nicholas Piggin <npiggin@gmail.com>,
         Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, live-patching@vger.kernel.org,
-        =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>
-Subject: Re: [PATCH] tracing: Have all levels of checks prevent recursion
-Message-ID: <20211015150050.3310b3bf@gandalf.local.home>
-In-Reply-To: <20211015182459.GL174703@worktop.programming.kicks-ass.net>
-References: <20211015110035.14813389@gandalf.local.home>
-        <20211015161702.GF174703@worktop.programming.kicks-ass.net>
-        <20211015133504.6c0a9fcc@gandalf.local.home>
-        <20211015135806.72d1af23@gandalf.local.home>
-        <20211015180429.GK174703@worktop.programming.kicks-ass.net>
-        <20211015142033.72605b47@gandalf.local.home>
-        <20211015182459.GL174703@worktop.programming.kicks-ass.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        live-patching@vger.kernel.org
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Subject: [PATCH v4 0/2] fix & prevent the missing preemption disabling
+Message-ID: <32a36348-69ee-6464-390c-3a8d6e9d2b53@linux.alibaba.com>
+Date:   Mon, 18 Oct 2021 11:38:21 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, 15 Oct 2021 20:24:59 +0200
-Peter Zijlstra <peterz@infradead.org> wrote:
+The testing show that perf_ftrace_function_call() are using smp_processor_id()
+with preemption enabled, all the checking on CPU could be wrong after preemption.
 
-> > @@ -206,11 +206,7 @@ DEFINE_OUTPUT_COPY(__output_copy_user, arch_perf_out_copy_user)
-> >  static inline int get_recursion_context(int *recursion)
-> >  {
-> >  	unsigned int pc = preempt_count();  
-> 
-> Although I think we can do without that ^ line as well :-)
+As Peter point out, the section between ftrace_test_recursion_trylock/unlock()
+pair require the preemption to be disabled as 'Documentation/trace/ftrace-uses.rst'
+explained, but currently the work is done outside of the helpers.
 
-Ah, I could have sworn I deleted it. Oh well, will make a proper patch set.
+And since the internal using of trace_test_and_set_recursion()
+and trace_clear_recursion() also require preemption to be disabled, we
+can just merge the logical together.
 
-Thanks!
+Patch 1/2 will make sure preemption disabled when recursion lock succeed,
+patch 2/2 will do smp_processor_id() checking after trylock() to address the
+issue.
 
--- Steve
+v1: https://lore.kernel.org/all/8c7de46d-9869-aa5e-2bb9-5dbc2eda395e@linux.alibaba.com/
+v2: https://lore.kernel.org/all/b1d7fe43-ce84-0ed7-32f7-ea1d12d0b716@linux.alibaba.com/
+v3: https://lore.kernel.org/all/609b565a-ed6e-a1da-f025-166691b5d994@linux.alibaba.com/
 
+Michael Wang (2):
+  ftrace: disable preemption when recursion locked
+  ftrace: do CPU checking after preemption disabled
 
-> 
-> > -	unsigned char rctx = 0;
+ arch/csky/kernel/probes/ftrace.c     |  2 --
+ arch/parisc/kernel/ftrace.c          |  2 --
+ arch/powerpc/kernel/kprobes-ftrace.c |  2 --
+ arch/riscv/kernel/probes/ftrace.c    |  2 --
+ arch/x86/kernel/kprobes/ftrace.c     |  2 --
+ include/linux/trace_recursion.h      | 20 +++++++++++++++++++-
+ kernel/livepatch/patch.c             | 13 +++++++------
+ kernel/trace/ftrace.c                | 15 +++++----------
+ kernel/trace/trace_event_perf.c      |  6 +++---
+ kernel/trace/trace_functions.c       |  5 -----
+ 10 files changed, 34 insertions(+), 35 deletions(-)
+
+-- 
+1.8.3.1
+
