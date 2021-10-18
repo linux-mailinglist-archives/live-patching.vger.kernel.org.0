@@ -2,25 +2,38 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 138F1430E61
-	for <lists+live-patching@lfdr.de>; Mon, 18 Oct 2021 05:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F408B4315CD
+	for <lists+live-patching@lfdr.de>; Mon, 18 Oct 2021 12:19:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbhJRDmO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 17 Oct 2021 23:42:14 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:39507 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231579AbhJRDmO (ORCPT
+        id S230385AbhJRKVm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 18 Oct 2021 06:21:42 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:38108 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229770AbhJRKVk (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 17 Oct 2021 23:42:14 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R531e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0UsUN0R9_1634528397;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UsUN0R9_1634528397)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 18 Oct 2021 11:39:58 +0800
-Subject: [PATCH v4 2/2] ftrace: do CPU checking after preemption disabled
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        Mon, 18 Oct 2021 06:21:40 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 7CAE31FD79;
+        Mon, 18 Oct 2021 10:19:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1634552366; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iOXmerCnaJwQcxrGTYNbpRPalnhSmqAzz0pWYAYZ5Qo=;
+        b=DzL9pIaLMpfOUDOV24COilkbRbw4Zz03OVIMeFIvKy0jrLRIjKjUVrYo1E6xQSlaoJiMkr
+        ivmVDcSbU982BGrV4FEhvOUv2sbqZmkoH5LdMylpFwi3HCkh9B0ni8TIAluXo2q8Ds/4G7
+        mK11rHw/9kXtIiS4yQX063c9dKeL93w=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 136C9A3BCD;
+        Mon, 18 Oct 2021 10:19:23 +0000 (UTC)
+Date:   Mon, 18 Oct 2021 12:19:20 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
         Ingo Molnar <mingo@redhat.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
         Helge Deller <deller@gmx.de>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -34,81 +47,126 @@ To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Colin Ian King <colin.king@canonical.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Nicholas Piggin <npiggin@gmail.com>,
         Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        live-patching@vger.kernel.org
-References: <32a36348-69ee-6464-390c-3a8d6e9d2b53@linux.alibaba.com>
-Message-ID: <bae9073b-6949-d396-69c9-89353c3516ff@linux.alibaba.com>
-Date:   Mon, 18 Oct 2021 11:39:56 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, live-patching@vger.kernel.org,
+        =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>
+Subject: Re: [PATCH] tracing: Have all levels of checks prevent recursion
+Message-ID: <YW1KKCFallDG+E01@alley>
+References: <20211015110035.14813389@gandalf.local.home>
 MIME-Version: 1.0
-In-Reply-To: <32a36348-69ee-6464-390c-3a8d6e9d2b53@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211015110035.14813389@gandalf.local.home>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-With CONFIG_DEBUG_PREEMPT we observed reports like:
+On Fri 2021-10-15 11:00:35, Steven Rostedt wrote:
+> From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+> 
+> While writing an email explaining the "bit = 0" logic for a discussion on
+> making ftrace_test_recursion_trylock() disable preemption, I discovered a
+> path that makes the "not do the logic if bit is zero" unsafe.
+> 
+> Since we want to encourage architectures to implement all ftrace features,
+> having them slow down due to this extra logic may encourage the
+> maintainers to update to the latest ftrace features. And because this
+> logic is only safe for them, remove it completely.
+> 
+>  [*] There is on layer of recursion that is allowed, and that is to allow
+>      for the transition between interrupt context (normal -> softirq ->
+>      irq -> NMI), because a trace may occur before the context update is
+>      visible to the trace recursion logic.
+> 
+> diff --git a/include/linux/trace_recursion.h b/include/linux/trace_recursion.h
+> index a9f9c5714e65..168fdf07419a 100644
+> --- a/include/linux/trace_recursion.h
+> +++ b/include/linux/trace_recursion.h
+> @@ -165,40 +147,29 @@ static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsign
+>  	unsigned int val = READ_ONCE(current->trace_recursion);
+>  	int bit;
+>  
+> -	/* A previous recursion check was made */
+> -	if ((val & TRACE_CONTEXT_MASK) > max)
+> -		return 0;
 
-  BUG: using smp_processor_id() in preemptible
-  caller is perf_ftrace_function_call+0x6f/0x2e0
-  CPU: 1 PID: 680 Comm: a.out Not tainted
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x8d/0xcf
-   check_preemption_disabled+0x104/0x110
-   ? optimize_nops.isra.7+0x230/0x230
-   ? text_poke_bp_batch+0x9f/0x310
-   perf_ftrace_function_call+0x6f/0x2e0
-   ...
-   __text_poke+0x5/0x620
-   text_poke_bp_batch+0x9f/0x310
+@max parameter is no longer used.
 
-This telling us the CPU could be changed after task is preempted, and
-the checking on CPU before preemption will be invalid.
+> -
+>  	bit = trace_get_context_bit() + start;
+>  	if (unlikely(val & (1 << bit))) {
+>  		/*
+>  		 * It could be that preempt_count has not been updated during
+>  		 * a switch between contexts. Allow for a single recursion.
+>  		 */
+> -		bit = TRACE_TRANSITION_BIT;
+> +		bit = TRACE_CTX_TRANSITION + start;
 
-Since now ftrace_test_recursion_trylock() will help to disable the
-preemption, this patch just do the checking after trylock() to address
-the issue.
+I just want to be sure that I understand it correctly.
 
-CC: Steven Rostedt <rostedt@goodmis.org>
-Reported-by: Abaci <abaci@linux.alibaba.com>
-Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
----
- kernel/trace/trace_event_perf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+The transition bit is the same for all contexts. It will allow one
+recursion only in one context.
 
-diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-index 6aed10e..fba8cb7 100644
---- a/kernel/trace/trace_event_perf.c
-+++ b/kernel/trace/trace_event_perf.c
-@@ -441,13 +441,13 @@ void perf_trace_buf_update(void *record, u16 type)
- 	if (!rcu_is_watching())
- 		return;
+IMHO, the same problem (not-yet-updated preempt_count) might happen
+in any transition between contexts: normal -> soft IRQ -> IRQ -> NMI.
 
--	if ((unsigned long)ops->private != smp_processor_id())
--		return;
--
- 	bit = ftrace_test_recursion_trylock(ip, parent_ip);
- 	if (bit < 0)
- 		return;
+Well, I am not sure what exacly it means "preempt_count has not been
+updated during a switch between contexts."
 
-+	if ((unsigned long)ops->private != smp_processor_id())
-+		goto out;
-+
- 	event = container_of(ops, struct perf_event, ftrace_ops);
+   Is it that a function in the interrupt entry code is traced before
+   preempt_count is updated?
 
- 	/*
--- 
-1.8.3.1
+   Or that an interrupt entry is interrupted by a higher level
+   interrupt, e.g. IRQ entry code interrupted by NMI?
 
+
+I guess that it is the first case. It would mean that the above
+function allows one mistake (one traced funtion in an interrupt entry
+code before the entry code updates preempt_count).
+
+Do I get it correctly?
+Is this what we want?
+
+
+Could we please update the comment? I mean to say if it is a race
+or if we trace a function that should not get traced.
+
+>  		if (val & (1 << bit)) {
+>  			do_ftrace_record_recursion(ip, pip);
+>  			return -1;
+>  		}
+> -	} else {
+> -		/* Normal check passed, clear the transition to allow it again */
+> -		val &= ~(1 << TRACE_TRANSITION_BIT);
+>  	}
+>  
+>  	val |= 1 << bit;
+>  	current->trace_recursion = val;
+>  	barrier();
+>  
+> -	return bit + 1;
+> +	return bit;
+>  }
+>  
+>  static __always_inline void trace_clear_recursion(int bit)
+>  {
+> -	if (!bit)
+> -		return;
+> -
+>  	barrier();
+> -	bit--;
+>  	trace_recursion_clear(bit);
+>  }
+
+Otherwise, the change looks great. It simplifies that logic a lot.
+I think that I start understanding it ;-)
+
+Best Regards,
+Petr
