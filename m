@@ -2,123 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B32CC432E77
-	for <lists+live-patching@lfdr.de>; Tue, 19 Oct 2021 08:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D97B4331A5
+	for <lists+live-patching@lfdr.de>; Tue, 19 Oct 2021 10:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234174AbhJSGnm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 19 Oct 2021 02:43:42 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:36636 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbhJSGnl (ORCPT
+        id S234519AbhJSI7b (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 19 Oct 2021 04:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229930AbhJSI7a (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 19 Oct 2021 02:43:41 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id AA04B1FD8D;
-        Tue, 19 Oct 2021 06:41:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1634625687; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yiCf/K6bKrAWm+H5GwYg06T7whuQxu5z+Eyutq5ePEE=;
-        b=teDjFL9lr91NMRNc6Iv52QSxJj4QGuwwqDT3OOPMzK0CBm/3l5zawNGoKRXzDeN51cXEJP
-        MSlwF/JcwJeOLxY3hgNh8mmlyB20AXu0yYaXblNFINe8pkmoTcCpXT4iQCyA+bOZUlhR5W
-        yl7nzpiJ+YDINXRghZ+OA0t106VXXYU=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0F30AA3B81;
-        Tue, 19 Oct 2021 06:41:26 +0000 (UTC)
-Date:   Tue, 19 Oct 2021 08:41:23 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, live-patching@vger.kernel.org,
-        =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>
-Subject: Re: [PATCH] tracing: Have all levels of checks prevent recursion
-Message-ID: <YW5ok3CfNoRMfVQ5@alley>
-References: <20211015110035.14813389@gandalf.local.home>
- <YW1KKCFallDG+E01@alley>
- <20211018220203.064a42ed@gandalf.local.home>
+        Tue, 19 Oct 2021 04:59:30 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41ADC06161C;
+        Tue, 19 Oct 2021 01:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=AePeC9nA2QI6mWSGX2S/0MTDQgzbvo7+Ukm6tKpOg5I=; b=HxaWCe95q0/3cE+7mOP3m/kEfH
+        Y2+gVJAGq+7bjltDYOYzZMWn/PGR+LaIaVowHT1i1QYrAzPvaivHI3OuVqqRIbneHA5pZwIZB8QU6
+        focq0fcKVEX9QyPd/lsA1RnilWQa8iHlsZP2NB5Y/ujI49B8AVEnDdlikDhUCFwQJWI0cpyprJKFS
+        ND+jYxE6mdi6iePTFjhHBHEMVoqxBEKVm/G1om5wfdXe8HrQpatjn8pIFA0sf+wsjlS6ROzQalk+E
+        GP90/eIUMybnDPG6lOC7hRjKZX0M/9iw/1dEUVFoBDUy/MbYTkNZkZ/Ci7rJv1l3lmsSp6GrZELGu
+        QewadT/A==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mckvR-00AkJc-Kb; Tue, 19 Oct 2021 08:56:49 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 62AFF30024D;
+        Tue, 19 Oct 2021 10:56:48 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3C1622C7C11E1; Tue, 19 Oct 2021 10:56:48 +0200 (CEST)
+Date:   Tue, 19 Oct 2021 10:56:48 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
+        mbenes@suse.cz, pmladek@suse.com, mingo@kernel.org,
+        linux-kernel@vger.kernel.org, joe.lawrence@redhat.com,
+        fweisbec@gmail.com, tglx@linutronix.de, hca@linux.ibm.com,
+        svens@linux.ibm.com, sumanthk@linux.ibm.com,
+        live-patching@vger.kernel.org, paulmck@kernel.org,
+        rostedt@goodmis.org, x86@kernel.org
+Subject: Re: [PATCH v2 04/11] sched: Simplify wake_up_*idle*()
+Message-ID: <YW6IUIRZsBAZ+6hK@hirez.programming.kicks-ass.net>
+References: <20210929151723.162004989@infradead.org>
+ <20210929152428.769328779@infradead.org>
+ <ba4ca17f-100e-bef7-6d7b-4de0f5a515b9@quicinc.com>
+ <a354fadd-268f-8119-d37a-102e5efa1437@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211018220203.064a42ed@gandalf.local.home>
+In-Reply-To: <a354fadd-268f-8119-d37a-102e5efa1437@quicinc.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon 2021-10-18 22:02:03, Steven Rostedt wrote:
-> On Mon, 18 Oct 2021 12:19:20 +0200
-> Petr Mladek <pmladek@suse.com> wrote:
+On Mon, Oct 18, 2021 at 11:47:32PM -0400, Qian Cai wrote:
+> Peter, any thoughts? I did confirm that reverting the commit fixed the issue.
 > 
-> > > -
-> > >  	bit = trace_get_context_bit() + start;
-> > >  	if (unlikely(val & (1 << bit))) {
-> > >  		/*
-> > >  		 * It could be that preempt_count has not been updated during
-> > >  		 * a switch between contexts. Allow for a single recursion.
-> > >  		 */
-> > > -		bit = TRACE_TRANSITION_BIT;
-> > > +		bit = TRACE_CTX_TRANSITION + start;  
-> >
-> 
-> [..]
-> 
-> > Could we please update the comment? I mean to say if it is a race
-> > or if we trace a function that should not get traced.
-> 
-> What do you think of this change?
-> 
-> diff --git a/include/linux/trace_recursion.h b/include/linux/trace_recursion.h
-> index 1d8cce02c3fb..24f284eb55a7 100644
-> --- a/include/linux/trace_recursion.h
-> +++ b/include/linux/trace_recursion.h
-> @@ -168,8 +168,12 @@ static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsign
->  	bit = trace_get_context_bit() + start;
->  	if (unlikely(val & (1 << bit))) {
->  		/*
-> -		 * It could be that preempt_count has not been updated during
-> -		 * a switch between contexts. Allow for a single recursion.
-> +		 * If an interrupt occurs during a trace, and another trace
-> +		 * happens in that interrupt but before the preempt_count is
-> +		 * updated to reflect the new interrupt context, then this
-> +		 * will think a recursion occurred, and the event will be dropped.
-> +		 * Let a single instance happen via the TRANSITION_BIT to
-> +		 * not drop those events.
->  		 */
->  		bit = TRACE_TRANSITION_BIT;
->  		if (val & (1 << bit)) {
-> 
-> 
+> On 10/13/2021 10:32 AM, Qian Cai wrote:
+> > 
+> > 
+> > On 9/29/2021 11:17 AM, Peter Zijlstra wrote:
+> >> --- a/kernel/smp.c
+> >> +++ b/kernel/smp.c
+> >> @@ -1170,14 +1170,14 @@ void wake_up_all_idle_cpus(void)
+> >>  {
+> >>  	int cpu;
+> >>  
+> >> -	preempt_disable();
+> >> +	cpus_read_lock();
+> >>  	for_each_online_cpu(cpu) {
+> >> -		if (cpu == smp_processor_id())
+> >> +		if (cpu == raw_smp_processor_id())
+> >>  			continue;
+> >>  
+> >>  		wake_up_if_idle(cpu);
+> >>  	}
+> >> -	preempt_enable();
+> >> +	cpus_read_unlock();
 
-Looks good to me. Thanks for the update.
-
-Feel free to postpone this change. I do not want to complicate
-upstreaming the fix for stable. I am sorry if I already
-complicated it.
-
-Best Regards,
-Petr
+Right, so yesterday I thought: YW2KGrvvv/vSA+97@hirez.programming.kicks-ass.net
+but today I might have another idea, lemme go prod at this a bit more.
