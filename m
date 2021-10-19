@@ -2,73 +2,97 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE54433684
-	for <lists+live-patching@lfdr.de>; Tue, 19 Oct 2021 15:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81587433A7D
+	for <lists+live-patching@lfdr.de>; Tue, 19 Oct 2021 17:32:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235739AbhJSNCS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 19 Oct 2021 09:02:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46926 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231616AbhJSNCS (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 19 Oct 2021 09:02:18 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF87360FC2;
-        Tue, 19 Oct 2021 13:00:02 +0000 (UTC)
-Date:   Tue, 19 Oct 2021 09:00:01 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, live-patching@vger.kernel.org,
-        =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>
-Subject: Re: [PATCH] tracing: Have all levels of checks prevent recursion
-Message-ID: <20211019090001.0df8d678@gandalf.local.home>
-In-Reply-To: <YW5ok3CfNoRMfVQ5@alley>
-References: <20211015110035.14813389@gandalf.local.home>
-        <YW1KKCFallDG+E01@alley>
-        <20211018220203.064a42ed@gandalf.local.home>
-        <YW5ok3CfNoRMfVQ5@alley>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S231231AbhJSPed (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 19 Oct 2021 11:34:33 -0400
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:43056 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230097AbhJSPec (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 19 Oct 2021 11:34:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1634657540; x=1666193540;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9k1DtCLnVq8onijKayfDBwbvoGq8mjdO5uaTCO13EY8=;
+  b=VUdr2YWzIRcr4NgjiCT6UTpG9D9T4JQkzyPL9zIWBVS4KxKSLqFq6+mZ
+   qetZ40vx3+mL0zO9J1hP3fFHSlFW1SONETbo5SIkiltcuiiNYQmF+0WG6
+   +rPSNWrbxg2CLqhRbjveN5EFRXA2cFg6j2rV30KEZ2OrmwW/CwtfDdJdZ
+   Y=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 19 Oct 2021 08:32:20 -0700
+X-QCInternal: smtphost
+Received: from nalasex01a.na.qualcomm.com ([10.47.209.196])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2021 08:32:19 -0700
+Received: from [10.111.162.88] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.7; Tue, 19 Oct 2021
+ 08:32:16 -0700
+Message-ID: <468c435b-192b-790b-2a2d-8f7ddfb4a061@quicinc.com>
+Date:   Tue, 19 Oct 2021 11:32:15 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH v2 04/11] sched: Simplify wake_up_*idle*()
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+CC:     <gor@linux.ibm.com>, <jpoimboe@redhat.com>, <jikos@kernel.org>,
+        <mbenes@suse.cz>, <pmladek@suse.com>, <mingo@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <joe.lawrence@redhat.com>,
+        <fweisbec@gmail.com>, <tglx@linutronix.de>, <hca@linux.ibm.com>,
+        <svens@linux.ibm.com>, <sumanthk@linux.ibm.com>,
+        <live-patching@vger.kernel.org>, <paulmck@kernel.org>,
+        <rostedt@goodmis.org>, <x86@kernel.org>
+References: <20210929151723.162004989@infradead.org>
+ <20210929152428.769328779@infradead.org>
+ <ba4ca17f-100e-bef7-6d7b-4de0f5a515b9@quicinc.com>
+ <a354fadd-268f-8119-d37a-102e5efa1437@quicinc.com>
+ <YW6IUIRZsBAZ+6hK@hirez.programming.kicks-ass.net>
+ <YW6LgO4OK+YPy90S@hirez.programming.kicks-ass.net>
+From:   Qian Cai <quic_qiancai@quicinc.com>
+In-Reply-To: <YW6LgO4OK+YPy90S@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 19 Oct 2021 08:41:23 +0200
-Petr Mladek <pmladek@suse.com> wrote:
 
-> Feel free to postpone this change. I do not want to complicate
-> upstreaming the fix for stable. I am sorry if I already
-> complicated it.
+
+On 10/19/2021 5:10 AM, Peter Zijlstra wrote:
+> Here, hows this then?
 > 
+> ---
+> diff --git a/kernel/smp.c b/kernel/smp.c
+> index ad0b68a3a3d3..61ddc7a3bafa 100644
+> --- a/kernel/smp.c
+> +++ b/kernel/smp.c
+> @@ -1170,14 +1170,12 @@ void wake_up_all_idle_cpus(void)
+>  {
+>  	int cpu;
+>  
+> -	cpus_read_lock();
+> -	for_each_online_cpu(cpu) {
+> -		if (cpu == raw_smp_processor_id())
+> -			continue;
+> -
+> -		wake_up_if_idle(cpu);
+> +	for_each_cpu(cpu) {
+> +		preempt_disable();
+> +		if (cpu != smp_processor_id() && cpu_online(cpu))
+> +			wake_up_if_idle(cpu);
+> +		preempt_enable();
+>  	}
+> -	cpus_read_unlock();
+>  }
+>  EXPORT_SYMBOL_GPL(wake_up_all_idle_cpus);
 
-No problem. It's not that complicated of a merge fix. I'm sure Linus can
-handle it ;-)
+This does not compile.
 
--- Steve
+kernel/smp.c:1173:18: error: macro "for_each_cpu" requires 2 arguments, but only 1 given
