@@ -2,40 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1B94346E9
-	for <lists+live-patching@lfdr.de>; Wed, 20 Oct 2021 10:29:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA834348B0
+	for <lists+live-patching@lfdr.de>; Wed, 20 Oct 2021 12:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbhJTIbL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 20 Oct 2021 04:31:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40668 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229632AbhJTIbK (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 20 Oct 2021 04:31:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E5CF61183;
-        Wed, 20 Oct 2021 08:28:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1634718536;
-        bh=8nW1a1YxwhHLkokHLmbAPUvEy8Sro976Y9vnhAQOL7U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b5OhBK9vzw98Pra6K1wa2zJ0J5EzHVm1XCT+E1fH6mcqn/K9AU7vR477/yH5qRf2Y
-         SwAeIQb04+15xwtWK1Tt7kdQGvlEAp4HnJ10Ae/gbnnLHh9ON0GTMtaH9GB8htEXdC
-         PEBT4jNWWKAtQNxw7vujFQeR5PU+4RP0ONCEkVl4=
-Date:   Wed, 20 Oct 2021 10:28:54 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
+        id S230105AbhJTKNA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 20 Oct 2021 06:13:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32595 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230130AbhJTKM5 (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 20 Oct 2021 06:12:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634724643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iVYvpCAnj9ExJE6+BU/e/+6ORCn7prDFiQBrCjeMj74=;
+        b=NPGSL6pmGukCREO7Pw3jes/noKbmoCOALzYX9D/sUrhY5ZzvwSmfut+tMzdFnhD34FRPZC
+        75nRod3JwtE3BX2mXS5gwTcH5ZrtRlEZxyV56lF+u0nmjJVyUjeAq4S0S82gkBrM6XFA1E
+        u8xsfeivaOd2HmEm8HO0rptby20Ans4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-262-SDebCvAIP7iyuPJjpM4UEw-1; Wed, 20 Oct 2021 06:10:38 -0400
+X-MC-Unique: SDebCvAIP7iyuPJjpM4UEw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4EC83802575;
+        Wed, 20 Oct 2021 10:10:35 +0000 (UTC)
+Received: from T590 (ovpn-8-41.pek2.redhat.com [10.72.8.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A511D7621D;
+        Wed, 20 Oct 2021 10:09:56 +0000 (UTC)
+Date:   Wed, 20 Oct 2021 18:09:51 +0800
+From:   Ming Lei <ming.lei@redhat.com>
 To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Ming Lei <ming.lei@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Paul Mackerras <paulus@samba.org>, tj@kernel.org,
-        akpm@linux-foundation.org, minchan@kernel.org, jeyu@kernel.org,
-        shuah@kernel.org, bvanassche@acm.org, dan.j.williams@intel.com,
-        joe@perches.com, tglx@linutronix.de, keescook@chromium.org,
-        rostedt@goodmis.org, linux-spdx@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+        minchan@kernel.org, jeyu@kernel.org, shuah@kernel.org,
+        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
+        tglx@linutronix.de, keescook@chromium.org, rostedt@goodmis.org,
+        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org
 Subject: Re: [PATCH v8 11/12] zram: fix crashes with cpu hotplug multistate
-Message-ID: <YW/TRkXth/mbTQ6b@kroah.com>
+Message-ID: <YW/q70dLyF+YudyF@T590>
 References: <YWk9e957Hb+I7HvR@T590>
  <YWm68xUnAofop3PZ@bombadil.infradead.org>
  <YWq3Z++uoJ/kcp+3@T590>
@@ -50,6 +63,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <alpine.LSU.2.21.2110201014400.26817@pobox.suse.cz>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
@@ -116,13 +130,14 @@ On Wed, Oct 20, 2021 at 10:19:27AM +0200, Miroslav Benes wrote:
 > generally, but all the attempts to implement it correctly were utter 
 > failures.
 
-Sounds like this is the real problem that needs to be fixed.  kobjects
-should always control the lifespan of the structure they are embedded
-in.  If not, then that is a design flaw of the user of the kobject :(
+OK, then it isn't one common usage, in which kobject covers the release
+of the external object. What is the exact kobject in livepatching?
 
-Where in the kernel is this happening?  And where have been the attempts
-to fix this up?
+But kobject_del() won't release the kobject, you shouldn't need the lock
+to delete kobject first. After the kobject is deleted, no any show() and
+store() any more, isn't such sync[1] you expected?
 
-thanks,
 
-greg k-h
+Thanks,
+Ming
+
