@@ -2,80 +2,186 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B7E4361AD
-	for <lists+live-patching@lfdr.de>; Thu, 21 Oct 2021 14:30:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19A66436AB5
+	for <lists+live-patching@lfdr.de>; Thu, 21 Oct 2021 20:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231596AbhJUMc4 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 21 Oct 2021 08:32:56 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:50080 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbhJUMcq (ORCPT
+        id S230381AbhJUSmj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 21 Oct 2021 14:42:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49460 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232142AbhJUSmi (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 21 Oct 2021 08:32:46 -0400
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8107020B7179;
-        Thu, 21 Oct 2021 05:30:29 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8107020B7179
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1634819430;
-        bh=wRzipucQUyVGORKzBSV+cC6ghm4C4V7AbKJUpxlcZEU=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=NukQe+XcjzleY5DL6QhasbvKGYNgtpTDRM7oU48W0bR3dmTAyotVkE/6XObRyY73t
-         gbYaTv6zx3BE/2nR4YIOG4KUE7cmvAWxuQ6U54fzMMbRDQDOowkqqWOiBwMvtXsSZV
-         CDREQxgUirptxKHYe/0SxEJwCSi1gUq+o6fTU4AM=
-Subject: Re: [PATCH v10 03/11] arm64: Make get_wchan() use arch_stack_walk()
-To:     Mark Brown <broonie@kernel.org>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
- <20211015025847.17694-1-madvenka@linux.microsoft.com>
- <20211015025847.17694-4-madvenka@linux.microsoft.com>
- <YXA/eepRCCzL+/jD@sirena.org.uk>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <217ce31e-222b-cc10-f5e1-027e00a49cd4@linux.microsoft.com>
-Date:   Thu, 21 Oct 2021 07:30:28 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 21 Oct 2021 14:42:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634841622;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=v7YMtiHuJ6+19vfcE6VhQdUpwJIjqUrdX0VN3I4105Q=;
+        b=VG+dkp5LJPhF3zfxQwEq9a2r7e49kcjzKzfCQ1f4uyQsnIPqYXn+cifGMhekh1A74GpgOg
+        QgBLKrjbWl2pr32HT1DUzT/LZSSu/iCI5qvMJioM2Vdg4HK/Ruy5iqj8dnJVqkRWgWj7Ah
+        eBnbB6fz78zE7VOScG02Okxfi4aO8Jw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-262-AshR42GxO_22j8IkiXF27g-1; Thu, 21 Oct 2021 14:40:18 -0400
+X-MC-Unique: AshR42GxO_22j8IkiXF27g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C20D510247A6;
+        Thu, 21 Oct 2021 18:40:16 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B62DD19D9F;
+        Thu, 21 Oct 2021 18:40:09 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id BFF0C416D5C9; Thu, 21 Oct 2021 15:39:35 -0300 (-03)
+Date:   Thu, 21 Oct 2021 15:39:35 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
+        mbenes@suse.cz, pmladek@suse.com, mingo@kernel.org,
+        linux-kernel@vger.kernel.org, joe.lawrence@redhat.com,
+        fweisbec@gmail.com, tglx@linutronix.de, hca@linux.ibm.com,
+        svens@linux.ibm.com, sumanthk@linux.ibm.com,
+        live-patching@vger.kernel.org, paulmck@kernel.org,
+        rostedt@goodmis.org, x86@kernel.org
+Subject: Re: [RFC][PATCH v2 11/11] context_tracking,x86: Fix text_poke_sync()
+ vs NOHZ_FULL
+Message-ID: <20211021183935.GA9071@fuller.cnet>
+References: <20210929151723.162004989@infradead.org>
+ <20210929152429.186930629@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <YXA/eepRCCzL+/jD@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210929152429.186930629@infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-I will take a look at what Peter has done and will coordinate with him.
+Peter,
 
-Thanks.
+static __always_inline void arch_exit_to_user_mode(void)
+{
+        mds_user_clear_cpu_buffers();
+}
 
-Madhavan
+/**
+ * mds_user_clear_cpu_buffers - Mitigation for MDS and TAA vulnerability
+ *
+ * Clear CPU buffers if the corresponding static key is enabled
+ */
+static __always_inline void mds_user_clear_cpu_buffers(void)
+{
+        if (static_branch_likely(&mds_user_clear))
+                mds_clear_cpu_buffers();
+}
 
-On 10/20/21 11:10 AM, Mark Brown wrote:
-> On Thu, Oct 14, 2021 at 09:58:39PM -0500, madvenka@linux.microsoft.com wrote:
->> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>
->> Currently, get_wchan() in ARM64 code walks the stack using start_backtrace()
->> and unwind_frame(). Make it use arch_stack_walk() instead. This makes
->> maintenance easier.
+We were discussing how to perform objtool style validation 
+that no code after the check for 
+
+> +             /* NMI happens here and must still do/finish CT_WORK_n */
+> +             sync_core();
+
+But after the discussion with you, it seems doing the TLB checking 
+and (also sync_core) checking very late/very early on exit/entry 
+makes things easier to review.
+
+Can then use a single atomic variable with USER/KERNEL state and cmpxchg
+loops.
+
+On Wed, Sep 29, 2021 at 05:17:34PM +0200, Peter Zijlstra wrote:
+> Use the new context_tracking infrastructure to avoid disturbing
+> userspace tasks when we rewrite kernel code.
 > 
-> This overlaps with some very similar updates that Peter Zijlstra is
-> working on which addresses some existing problems with wchan:
+> XXX re-audit the entry code to make sure only the context_tracking
+> static_branch is before hitting this code.
 > 
-> 	https://lore.kernel.org/all/20211008111527.438276127@infradead.org/
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/include/asm/sync_core.h |    2 ++
+>  arch/x86/kernel/alternative.c    |    8 +++++++-
+>  include/linux/context_tracking.h |    1 +
+>  kernel/context_tracking.c        |   12 ++++++++++++
+>  4 files changed, 22 insertions(+), 1 deletion(-)
 > 
-> It probably makes sense for you to coordinate with Peter here, some of
-> that series is already merged up to his patch 6 which looks very
-> similar to what you've got here.  In that thread you'll see that Mark
-> Rutland spotted an issue with the handling of __switch_to() on arm64
-> which probably also applies to your change.
+> --- a/arch/x86/include/asm/sync_core.h
+> +++ b/arch/x86/include/asm/sync_core.h
+> @@ -87,6 +87,8 @@ static inline void sync_core(void)
+>  	 */
+>  	iret_to_self();
+>  }
+> +#define sync_core sync_core
+> +
+>  
+>  /*
+>   * Ensure that a core serializing instruction is issued before returning
+> --- a/arch/x86/kernel/alternative.c
+> +++ b/arch/x86/kernel/alternative.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/mmu_context.h>
+>  #include <linux/bsearch.h>
+>  #include <linux/sync_core.h>
+> +#include <linux/context_tracking.h>
+>  #include <asm/text-patching.h>
+>  #include <asm/alternative.h>
+>  #include <asm/sections.h>
+> @@ -924,9 +925,14 @@ static void do_sync_core(void *info)
+>  	sync_core();
+>  }
+>  
+> +static bool do_sync_core_cond(int cpu, void *info)
+> +{
+> +	return !context_tracking_set_cpu_work(cpu, CT_WORK_SYNC);
+> +}
+> +
+>  void text_poke_sync(void)
+>  {
+> -	on_each_cpu(do_sync_core, NULL, 1);
+> +	on_each_cpu_cond(do_sync_core_cond, do_sync_core, NULL, 1);
+>  }
+>  
+>  struct text_poke_loc {
+> --- a/include/linux/context_tracking.h
+> +++ b/include/linux/context_tracking.h
+> @@ -11,6 +11,7 @@
+>  
+>  enum ct_work {
+>  	CT_WORK_KLP = 1,
+> +	CT_WORK_SYNC = 2,
+>  };
+>  
+>  /*
+> --- a/kernel/context_tracking.c
+> +++ b/kernel/context_tracking.c
+> @@ -51,6 +51,10 @@ static __always_inline void context_trac
+>  	__this_cpu_dec(context_tracking.recursion);
+>  }
+>  
+> +#ifndef sync_core
+> +static inline void sync_core(void) { }
+> +#endif
+> +
+>  /* CT_WORK_n, must be noinstr, non-blocking, NMI safe and deal with spurious calls */
+>  static noinstr void ct_exit_user_work(struct context_tracking *ct)
+>  {
+> @@ -64,6 +68,14 @@ static noinstr void ct_exit_user_work(struct
+>  		arch_atomic_andnot(CT_WORK_KLP, &ct->work);
+>  	}
+>  
+> +	if (work & CT_WORK_SYNC) {
+> +		/* NMI happens here and must still do/finish CT_WORK_n */
+> +		sync_core();
+> +
+> +		smp_mb__before_atomic();
+> +		arch_atomic_andnot(CT_WORK_SYNC, &ct->work);
+> +	}
+> +
+>  	smp_mb__before_atomic();
+>  	arch_atomic_andnot(CT_SEQ_WORK, &ct->seq);
+>  }
 > 
 > 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
+
