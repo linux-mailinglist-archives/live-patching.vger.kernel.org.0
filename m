@@ -2,42 +2,37 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E98436BA4
-	for <lists+live-patching@lfdr.de>; Thu, 21 Oct 2021 21:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1DCF436BF0
+	for <lists+live-patching@lfdr.de>; Thu, 21 Oct 2021 22:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbhJUT7n (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 21 Oct 2021 15:59:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22011 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230020AbhJUT7m (ORCPT
+        id S231503AbhJUUXP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 21 Oct 2021 16:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231206AbhJUUXO (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 21 Oct 2021 15:59:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634846246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dxGaxjMR4kumyiXpYeJ2CbIw2HnzcdghR3vKPB/jYmw=;
-        b=gngzKhI4cZFoO8/F+cui09/cTwswKAxrByFy+9JIRcPowpwnfJu3KF25DmaCY3/1eSaq70
-        +UopsNx4mxgGLNSX3IzPHbaJ8UM/F8yJseJBhqUerg9+0Hky9fa2gm2Ee2DQL63Vp8fz5b
-        Z0P+e5wOkZ+fdOoekhoPwVQnG//9VTI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-495-J5lU4CVOOA-xODeFmepg_w-1; Thu, 21 Oct 2021 15:57:23 -0400
-X-MC-Unique: J5lU4CVOOA-xODeFmepg_w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 922C31006AA2;
-        Thu, 21 Oct 2021 19:57:20 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 109615BAE3;
-        Thu, 21 Oct 2021 19:57:14 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 94BD8416C8AE; Thu, 21 Oct 2021 16:57:09 -0300 (-03)
-Date:   Thu, 21 Oct 2021 16:57:09 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
+        Thu, 21 Oct 2021 16:23:14 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84ADFC061764;
+        Thu, 21 Oct 2021 13:20:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=KA30CcQ+4Zl2U8f/hBVPDhwHffIA5aIp2amvt4GoJrM=; b=CWjJHQhLrboPEBy9YoYtlMNNiI
+        RYw4KkS1dnmVQq52gKWRnvOUCr3ngxsIi8Ya8MfmH2h03WpC1XbmHUdlah8jm6tc/Jj5u5JzKPKOD
+        PS5QD2BTX0o4CvGpmBB1iP2CGV/hWlo1PEQYbMKBsPlNkds6dbxMU6IMHAmKVfVmQzrLUF8AiExGO
+        R/mcQ6TN6m97Ps/5yZOPB00No9jfz8yeLUjeeR9U6ZJy1zVoKgMkKutZZB11+6o2ZwC37sdCjXOKs
+        iZpK23hkNUsTs5zVnY488pSLSxtryI2w5oQuR472Psr3SoYTZzEZdTNUcy/MMDQeG4UeZcFvXZVNc
+        +7Pu6XwQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mdeWi-00BQaN-VH; Thu, 21 Oct 2021 20:19:40 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id BC6D89812EB; Thu, 21 Oct 2021 22:18:59 +0200 (CEST)
+Date:   Thu, 21 Oct 2021 22:18:59 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Marcelo Tosatti <mtosatti@redhat.com>
 Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
         mbenes@suse.cz, pmladek@suse.com, mingo@kernel.org,
         linux-kernel@vger.kernel.org, joe.lawrence@redhat.com,
@@ -47,154 +42,92 @@ Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
         rostedt@goodmis.org, x86@kernel.org
 Subject: Re: [RFC][PATCH v2 11/11] context_tracking,x86: Fix text_poke_sync()
  vs NOHZ_FULL
-Message-ID: <20211021195709.GA22422@fuller.cnet>
+Message-ID: <20211021201859.GX174703@worktop.programming.kicks-ass.net>
 References: <20210929151723.162004989@infradead.org>
  <20210929152429.186930629@infradead.org>
  <20211021183935.GA9071@fuller.cnet>
  <20211021192543.GV174703@worktop.programming.kicks-ass.net>
+ <20211021195709.GA22422@fuller.cnet>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211021192543.GV174703@worktop.programming.kicks-ass.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <20211021195709.GA22422@fuller.cnet>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 09:25:43PM +0200, Peter Zijlstra wrote:
-> On Thu, Oct 21, 2021 at 03:39:35PM -0300, Marcelo Tosatti wrote:
-> > Peter,
+On Thu, Oct 21, 2021 at 04:57:09PM -0300, Marcelo Tosatti wrote:
+> > Pretty much everything in noinstr is magical, we just have to think
+> > harder there (and possibly start writing more comments there).
+> 
+> mds_user_clear_cpu_buffers happens after sync_core, in your patchset, 
+> if i am not mistaken.
+
+Of course it does, mds_user_clear_cpu_buffers() is on exit, the
+sync_core() is on entry.
+
+> > > > +             /* NMI happens here and must still do/finish CT_WORK_n */
+> > > > +             sync_core();
+> > > 
+> > > But after the discussion with you, it seems doing the TLB checking 
+> > > and (also sync_core) checking very late/very early on exit/entry 
+> > > makes things easier to review.
 > > 
-> > static __always_inline void arch_exit_to_user_mode(void)
-> > {
-> >         mds_user_clear_cpu_buffers();
-> > }
+> > I don't know about late, it must happen *very* early in entry. The
+> > sync_core() must happen before any self-modifying code gets called
+> > (static_branch, static_call, etc..) with possible exception of the
+> > context_tracking static_branch.
 > > 
-> > /**
-> >  * mds_user_clear_cpu_buffers - Mitigation for MDS and TAA vulnerability
-> >  *
-> >  * Clear CPU buffers if the corresponding static key is enabled
-> >  */
-> > static __always_inline void mds_user_clear_cpu_buffers(void)
-> > {
-> >         if (static_branch_likely(&mds_user_clear))
-> >                 mds_clear_cpu_buffers();
-> > }
-> > 
-> > We were discussing how to perform objtool style validation 
-> > that no code after the check for 
+> > The TLBi must also happen super early, possibly while still on the
+> > entry stack (since the task stack is vmap'ed).
 > 
-> I'm not sure what the point of the above is... Were you trying to ask
-> for validation that nothing runs after the mds_user_clear_cpu_buffer()?
+> But will it be ever be freed/remapped from other CPUs while the task
+> is running?
+
+Probably not, still something we need to be really careful with.
 > 
-> That isn't strictly true today, there's lockdep code after it. I can't
-> recall why that order is as it is though.
+> > We currently don't run C
+> > code on the entry stack, that needs quite a bit of careful work to make
+> > happen.
 > 
-> Pretty much everything in noinstr is magical, we just have to think
-> harder there (and possibly start writing more comments there).
+> Was thinking of coding in ASM after (as early as possible) the write to 
+> switch to kernel CR3:
 
-mds_user_clear_cpu_buffers happens after sync_core, in your patchset, 
-if i am not mistaken.
+No, we're not going to add new feature to ASM. You'll just have to wait
+until all that gets lifted to C.
 
-> > > +             /* NMI happens here and must still do/finish CT_WORK_n */
-> > > +             sync_core();
-> > 
-> > But after the discussion with you, it seems doing the TLB checking 
-> > and (also sync_core) checking very late/very early on exit/entry 
-> > makes things easier to review.
+>  Kernel entry:
+>  -------------
 > 
-> I don't know about late, it must happen *very* early in entry. The
-> sync_core() must happen before any self-modifying code gets called
-> (static_branch, static_call, etc..) with possible exception of the
-> context_tracking static_branch.
+>        cpu = smp_processor_id();
 > 
-> The TLBi must also happen super early, possibly while still on the
-> entry stack (since the task stack is vmap'ed).
-
-But will it be ever be freed/remapped from other CPUs while the task
-is running?
-
-> We currently don't run C
-> code on the entry stack, that needs quite a bit of careful work to make
-> happen.
-
-Was thinking of coding in ASM after (as early as possible) the write to 
-switch to kernel CR3:
-
- Kernel entry:
- -------------
-
-       cpu = smp_processor_id();
-
-       if (isolation_enabled(cpu)) {
-               reqs = atomic_xchg(&percpudata->user_kernel_state, IN_KERNEL_MODE);
-               if (reqs & CPU_REQ_FLUSH_TLB)
-			flush_tlb_all();
-               if (reqs & CPU_REQ_SYNC_CORE)
-			sync_core();
-       }                           
-
-Exit to userspace (as close to write to CR3 with user pagetable
-pointer):
- -----------------
-
-       cpu = smp_processor_id();
-
-       if (isolation_enabled(cpu)) {
-               atomic_or(IN_USER_MODE, &percpudata->user_kernel_state);
-       }
-
-You think that is a bad idea (in ASM, not C) ? 
-And request side can be in C:
-
- Request side:
- -------------
-
-       int targetcpu;
-
-       do {
-               struct percpudata *pcpudata = per_cpu(&percpudata, targetcpu);
-
-               old_state = pcpudata->user_kernel_state;
-
-               /* in kernel mode ? */
-               if (!(old_state & IN_USER_MODE)) {
-                       smp_call_function_single(request_fn, targetcpu, 1);
-                       break;
-               }                                                                                                                         
-               new_state = remote_state | CPU_REQ_FLUSH_TLB; // (or CPU_REQ_INV_ICACHE)
-       } while (atomic_cmpxchg(&pcpudata->user_kernel_state, old_state, new_state) != old_state);   
-
-(need logic to protect from atomic_cmpxchg always failing, but shouldnt
-be difficult).
-
-> > Can then use a single atomic variable with USER/KERNEL state and cmpxchg
-> > loops.
+>        if (isolation_enabled(cpu)) {
+>                reqs = atomic_xchg(&percpudata->user_kernel_state, IN_KERNEL_MODE);
+>                if (reqs & CPU_REQ_FLUSH_TLB)
+> 			flush_tlb_all();
+>                if (reqs & CPU_REQ_SYNC_CORE)
+> 			sync_core();
+>        }                           
 > 
-> We're not going to add an atomic to context tracking. There is one, we
-> just got to extract/share it with RCU.
+> Exit to userspace (as close to write to CR3 with user pagetable
+> pointer):
+>  -----------------
+> 
+>        cpu = smp_processor_id();
+> 
+>        if (isolation_enabled(cpu)) {
+>                atomic_or(IN_USER_MODE, &percpudata->user_kernel_state);
+>        }
+> 
+> You think that is a bad idea (in ASM, not C) ? 
 
-Again, to avoid kernel TLB flushes you'd have to ensure:
+Those atomics are a bad idea and not goig to happen.
 
-kernel entry:
-	instrA addr1,addr2,addr3
-	instrB addr2,addr3,addr4  <--- that no address here has TLBs
-				       modified and flushed
-	instrC addr5,addr6,addr7
-        reqs = atomic_xchg(&percpudata->user_kernel_state, IN_KERNEL_MODE);
-        if (reqs & CPU_REQ_FLUSH_TLB)
-        	flush_tlb_all();
+> > We're not going to add an atomic to context tracking. There is one, we
+> > just got to extract/share it with RCU.
+> 
+> Again, to avoid kernel TLB flushes you'd have to ensure:
 
-kernel exit:
-
-        atomic_or(IN_USER_MODE, &percpudata->user_kernel_state);
-	instrA addr1,addr2,addr3
-	instrB addr2,addr3,addr4  <--- that no address here has TLBs
-				       modified and flushed
-
-This could be conditional on "task isolated mode" enabled (would be 
-better if it didnt, though).
-
-			
-
+I know how it works, but we're not going to add a second atomic to
+entry/exit. RCU has one in there, that's going to be it. Again, we just
+got to extract/share.
