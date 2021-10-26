@@ -2,91 +2,99 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A657C43B1C0
-	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 14:01:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7396343B1D7
+	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 14:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235125AbhJZMDp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 26 Oct 2021 08:03:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34966 "EHLO mail.kernel.org"
+        id S235697AbhJZMIB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Oct 2021 08:08:01 -0400
+Received: from foss.arm.com ([217.140.110.172]:57232 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229786AbhJZMDp (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 26 Oct 2021 08:03:45 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 425F3601FC;
-        Tue, 26 Oct 2021 12:01:19 +0000 (UTC)
-Date:   Tue, 26 Oct 2021 08:01:17 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>, Guo Ren <guoren@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] ftrace: disable preemption when recursion locked
-Message-ID: <20211026080117.366137a5@gandalf.local.home>
-In-Reply-To: <18ba2a71-e12d-33f7-63fe-2857b2db022c@linux.alibaba.com>
-References: <3ca92dc9-ea04-ddc2-71cd-524bfa5a5721@linux.alibaba.com>
-        <333cecfe-3045-8e0a-0c08-64ff590845ab@linux.alibaba.com>
-        <alpine.LSU.2.21.2110261128120.28494@pobox.suse.cz>
-        <18ba2a71-e12d-33f7-63fe-2857b2db022c@linux.alibaba.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S235685AbhJZMH4 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 26 Oct 2021 08:07:56 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54E8C1FB;
+        Tue, 26 Oct 2021 05:05:31 -0700 (PDT)
+Received: from C02TD0UTHF1T.local (unknown [10.57.74.144])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A3E453F73D;
+        Tue, 26 Oct 2021 05:05:28 -0700 (PDT)
+Date:   Tue, 26 Oct 2021 13:05:16 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     madvenka@linux.microsoft.com
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v10 05/11] arm64: Make dump_stacktrace() use
+ arch_stack_walk()
+Message-ID: <20211026120516.GA34073@C02TD0UTHF1T.local>
+References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
+ <20211015025847.17694-1-madvenka@linux.microsoft.com>
+ <20211015025847.17694-6-madvenka@linux.microsoft.com>
+ <20211025164925.GB2001@C02TD0UTHF1T.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211025164925.GB2001@C02TD0UTHF1T.local>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 26 Oct 2021 17:48:10 +0800
-王贇 <yun.wang@linux.alibaba.com> wrote:
+On Mon, Oct 25, 2021 at 05:49:25PM +0100, Mark Rutland wrote:
+> From f3e66ca75aff3474355839f72d123276028204e1 Mon Sep 17 00:00:00 2001
+> From: Mark Rutland <mark.rutland@arm.com>
+> Date: Mon, 25 Oct 2021 13:23:11 +0100
+> Subject: [PATCH] arm64: ftrace: use HAVE_FUNCTION_GRAPH_RET_ADDR_PTR
+> 
+> When CONFIG_FUNCTION_GRAPH_TRACER is selected, and the function graph:
+> tracer is in use, unwind_frame() may erroneously asscociate a traced
+> function with an incorrect return address. This can happen when starting
+> an unwind from a pt_regs, or when unwinding across an exception
+> boundary.
+> 
+> The underlying problem is that ftrace_graph_get_ret_stack() takes an
+> index offset from the most recent entry added to the fgraph return
+> stack. We start an unwind at offset 0, and increment the offset each
+> time we encounter `return_to_handler`, which indicates a rewritten
+> return address. This is broken in two cases:
+> 
+> * Between creating a pt_regs and starting the unwind, function calls may
+>   place entries on the stack, leaving an abitrary offset which we can
+>   only determine by performing a full unwind from the caller of the
+>   unwind code. While this initial unwind is open-coded in
+>   dump_backtrace(), this is not performed for other unwinders such as
+>   perf_callchain_kernel().
+> 
+> * When unwinding across an exception boundary (whether continuing an
+>   unwind or starting a new unwind from regs), we always consume the LR
+>   of the interrupted context, though this may not have been live at the
+>   time of the exception. Where the LR was not live but happened to
+>   contain `return_to_handler`, we'll recover an address from the graph
+>   return stack and increment the current offset, leaving subsequent
+>   entries off-by-one.
+> 
+>   Where the LR was not live and did not contain `return_to_handler`, we
+>   will still report an erroneous address, but subsequent entries will be
+>   unaffected.
 
-> > The two comments should be updated too since Steven removed the "bit == 0" 
-> > trick.  
-> 
-> Could you please give more hint on how will it be correct?
-> 
-> I get the point that bit will no longer be 0, there are only -1 or > 0 now
-> so trace_test_and_set_recursion() will disable preemption on bit > 0 and
-> trace_clear_recursion() will enabled it since it should only be called when
-> bit > 0 (I remember we could use a WARN_ON here now :-P).
-> 
-> >   
-> >> @@ -178,7 +187,7 @@ static __always_inline void trace_clear_recursion(int bit)
-> >>   * tracing recursed in the same context (normal vs interrupt),
-> >>   *
-> >>   * Returns: -1 if a recursion happened.
-> >> - *           >= 0 if no recursion
-> >> + *           > 0 if no recursion.
-> >>   */
-> >>  static __always_inline int ftrace_test_recursion_trylock(unsigned long ip,
-> >>  							 unsigned long parent_ip)  
-> > 
-> > And this change would not be correct now.  
-> 
-> I thought it will no longer return 0 so I change it to > 0, isn't that correct?
+It turns out I had this backwards, and we currently always *skip* the LR
+when unwinding across regs, because:
 
-No it is not. I removed the bit + 1 return value, which means it returns the
-actual bit now. Which is 0 or more.
+* The entry assembly creates a synthetic frame record with the original
+  FP and the ELR_EL1 value (i.e. the PC at the point of the exception),
+  skipping the LR.
 
--- Steve
+* In arch_stack_walk() we start the walk from regs->pc, and continue
+  with the frame record, skipping the LR.
+
+* In the existing dump_backtrace, we skip until we hit a frame record
+  whose FP value matches the FP in the regs (i.e. the synthetic frame
+  record created by the entry assembly). That'll dump the ELR_EL1 value,
+  then continue to the next frame record, skipping the LR.
+
+So case two is bogus, and only case one can happen today. This cleanup
+shouldn't trigger the WARN_ON_ONCE() in unwind_frame(), and we can fix
+the missing LR entry in a subsequent cleanup.
+
+Thanks,
+Mark.
