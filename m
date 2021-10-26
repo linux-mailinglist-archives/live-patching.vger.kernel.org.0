@@ -2,183 +2,127 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A28AA43AE57
-	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 10:48:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 931FD43AF2A
+	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 11:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234416AbhJZIuq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 26 Oct 2021 04:50:46 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:48794 "EHLO
+        id S233445AbhJZJhp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Oct 2021 05:37:45 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:52672 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234356AbhJZIup (ORCPT
+        with ESMTP id S230226AbhJZJhm (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 26 Oct 2021 04:50:45 -0400
+        Tue, 26 Oct 2021 05:37:42 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 95A69218F6;
-        Tue, 26 Oct 2021 08:48:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1635238099; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        by smtp-out1.suse.de (Postfix) with ESMTP id CD07021957;
+        Tue, 26 Oct 2021 09:35:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1635240917; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Q+98+lPkGDb22QCcyWAKWfGYWjs17jCOmjdrdsgCACM=;
-        b=brGyZg1VELqA3lLz8/GxVtAGDO5KLJV+h6TxCRn5ziptc07WGQnvihKlqw0Fi8jRY5zdYo
-        7oR4y9Ib1kNhPYt4gIgjqgboaKR/iaC/9646T3WjqNJrrmM/6G0pDjzn/xkQhGjExHGTyV
-        dhah+BW2dpu+75lhjQ2C4K/zNgtcMwg=
-Received: from suse.cz (unknown [10.100.224.162])
+        bh=0B4KOzLh0SzQ324Nbkzza+/yS3xupOET/Cg+lBufZUI=;
+        b=rw+fG9VAu+8kRC9wTlBf3rcyz3Kf3ZCAjBJINdd8QZW/j3p+2ahcfvCnSj8OuOuJqkx02V
+        GTi8IJ3HcUBXayzm3HUW+kf8zSfRse0QcnIbB2v1NyPMTBdz9wPJ0PnGR36r6X7vSW0okN
+        kRpnoYVmTXHa91qm+5pJr77RUdNgugk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1635240917;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0B4KOzLh0SzQ324Nbkzza+/yS3xupOET/Cg+lBufZUI=;
+        b=qgOIyawzyHE9pTOjD50nMXsKDtve0Cel3ya97cAgrn/VbL62UicJFGeCHbZLrb2CyTyimO
+        0vfvl2IWd2suabBg==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DA608A3B84;
-        Tue, 26 Oct 2021 08:48:18 +0000 (UTC)
-Date:   Tue, 26 Oct 2021 10:48:18 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Ming Lei <ming.lei@redhat.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        by relay2.suse.de (Postfix) with ESMTPS id 06EF6A3B83;
+        Tue, 26 Oct 2021 09:35:16 +0000 (UTC)
+Date:   Tue, 26 Oct 2021 11:35:16 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     =?ISO-2022-JP?Q?=1B$B2&lV=1B=28J?= <yun.wang@linux.alibaba.com>
+cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, tj@kernel.org,
-        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-        minchan@kernel.org, jeyu@kernel.org, shuah@kernel.org,
-        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
-        tglx@linutronix.de, keescook@chromium.org, rostedt@goodmis.org,
-        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Jisheng Zhang <jszhang@kernel.org>, linux-csky@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
-Subject: Re: [PATCH v8 11/12] zram: fix crashes with cpu hotplug multistate
-Message-ID: <YXfA0jfazCPDTEBw@alley>
-References: <YWm68xUnAofop3PZ@bombadil.infradead.org>
- <YWq3Z++uoJ/kcp+3@T590>
- <YW3LuzaPhW96jSBK@bombadil.infradead.org>
- <YW4uwep3BCe9Vxq8@T590>
- <alpine.LSU.2.21.2110190820590.15009@pobox.suse.cz>
- <YW6OptglA6UykZg/@T590>
- <alpine.LSU.2.21.2110200835490.26817@pobox.suse.cz>
- <YW/KEsfWJMIPnz76@T590>
- <alpine.LSU.2.21.2110201014400.26817@pobox.suse.cz>
- <YW/q70dLyF+YudyF@T590>
+Subject: Re: [PATCH v5 1/2] ftrace: disable preemption when recursion
+ locked
+In-Reply-To: <333cecfe-3045-8e0a-0c08-64ff590845ab@linux.alibaba.com>
+Message-ID: <alpine.LSU.2.21.2110261128120.28494@pobox.suse.cz>
+References: <3ca92dc9-ea04-ddc2-71cd-524bfa5a5721@linux.alibaba.com> <333cecfe-3045-8e0a-0c08-64ff590845ab@linux.alibaba.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YW/q70dLyF+YudyF@T590>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2021-10-20 18:09:51, Ming Lei wrote:
-> On Wed, Oct 20, 2021 at 10:19:27AM +0200, Miroslav Benes wrote:
-> > On Wed, 20 Oct 2021, Ming Lei wrote:
-> > 
-> > > On Wed, Oct 20, 2021 at 08:43:37AM +0200, Miroslav Benes wrote:
-> > > > On Tue, 19 Oct 2021, Ming Lei wrote:
-> > > > 
-> > > > > On Tue, Oct 19, 2021 at 08:23:51AM +0200, Miroslav Benes wrote:
-> > > > > > > > By you only addressing the deadlock as a requirement on approach a) you are
-> > > > > > > > forgetting that there *may* already be present drivers which *do* implement
-> > > > > > > > such patterns in the kernel. I worked on addressing the deadlock because
-> > > > > > > > I was informed livepatching *did* have that issue as well and so very
-> > > > > > > > likely a generic solution to the deadlock could be beneficial to other
-> > > > > > > > random drivers.
-> > > > > > > 
-> > > > > > > In-tree zram doesn't have such deadlock, if livepatching has such AA deadlock,
-> > > > > > > just fixed it, and seems it has been fixed by 3ec24776bfd0.
-> > > > > > 
-> > > > > > I would not call it a fix. It is a kind of ugly workaround because the 
-> > > > > > generic infrastructure lacked (lacks) the proper support in my opinion. 
-> > > > > > Luis is trying to fix that.
-> > > > > 
-> > > > > What is the proper support of the generic infrastructure? I am not
-> > > > > familiar with livepatching's model(especially with module unload), you mean
-> > > > > livepatching have to do the following way from sysfs:
-> > > > > 
-> > > > > 1) during module exit:
-> > > > > 	
-> > > > > 	mutex_lock(lp_lock);
-> > > > > 	kobject_put(lp_kobj);
-> > > > > 	mutex_unlock(lp_lock);
-> > > > > 	
-> > > > > 2) show()/store() method of attributes of lp_kobj
-> > > > > 	
-> > > > > 	mutex_lock(lp_lock)
-> > > > > 	...
-> > > > > 	mutex_unlock(lp_lock)
-> > > > 
-> > > > Yes, this was exactly the case. We then reworked it a lot (see 
-> > > > 958ef1e39d24 ("livepatch: Simplify API by removing registration step"), so 
-> > > > now the call sequence is different. kobject_put() is basically offloaded 
-> > > > to a workqueue scheduled right from the store() method. Meaning that 
-> > > > Luis's work would probably not help us currently, but on the other hand 
-> > > > the issues with AA deadlock were one of the main drivers of the redesign 
-> > > > (if I remember correctly). There were other reasons too as the changelog 
-> > > > of the commit describes.
-> > > > 
-> > > > So, from my perspective, if there was a way to easily synchronize between 
-> > > > a data cleanup from module_exit callback and sysfs/kernfs operations, it 
-> > > > could spare people many headaches.
-> > > 
-> > > kobject_del() is supposed to do so, but you can't hold a shared lock
-> > > which is required in show()/store() method. Once kobject_del() returns,
-> > > no pending show()/store() any more.
-> > > 
-> > > The question is that why one shared lock is required for livepatching to
-> > > delete the kobject. What are you protecting when you delete one kobject?
-> > 
-> > I think it boils down to the fact that we embed kobject statically to 
-> > structures which livepatch uses to maintain data. That is discouraged 
-> > generally, but all the attempts to implement it correctly were utter 
-> > failures.
+Hi,
+
+> diff --git a/include/linux/trace_recursion.h b/include/linux/trace_recursion.h
+> index abe1a50..2bc1522 100644
+> --- a/include/linux/trace_recursion.h
+> +++ b/include/linux/trace_recursion.h
+> @@ -135,6 +135,9 @@ static __always_inline int trace_get_context_bit(void)
+>  # define do_ftrace_record_recursion(ip, pip)	do { } while (0)
+>  #endif
 > 
-> OK, then it isn't one common usage, in which kobject covers the release
-> of the external object. What is the exact kobject in livepatching?
+> +/*
+> + * Preemption is promised to be disabled when return bit > 0.
+> + */
+>  static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsigned long pip,
+>  							int start)
+>  {
+> @@ -162,11 +165,17 @@ static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsign
+>  	current->trace_recursion = val;
+>  	barrier();
+> 
+> +	preempt_disable_notrace();
+> +
+>  	return bit;
+>  }
+> 
+> +/*
+> + * Preemption will be enabled (if it was previously enabled).
+> + */
+>  static __always_inline void trace_clear_recursion(int bit)
+>  {
+> +	preempt_enable_notrace();
+>  	barrier();
+>  	trace_recursion_clear(bit);
+>  }
 
-Below are more details about the livepatch code. I hope that it will
-help you to see if zram has similar problems or not.
+The two comments should be updated too since Steven removed the "bit == 0" 
+trick.
 
-We have kobject in three structures: klp_func, klp_object, and
-klp_patch, see include/linux/livepatch.h.
+> @@ -178,7 +187,7 @@ static __always_inline void trace_clear_recursion(int bit)
+>   * tracing recursed in the same context (normal vs interrupt),
+>   *
+>   * Returns: -1 if a recursion happened.
+> - *           >= 0 if no recursion
+> + *           > 0 if no recursion.
+>   */
+>  static __always_inline int ftrace_test_recursion_trylock(unsigned long ip,
+>  							 unsigned long parent_ip)
 
-These structures have to be statically defined in the module sources
-because they define what is livepatched, see
-samples/livepatch/livepatch-sample.c
+And this change would not be correct now.
 
-The kobject is used there to show information about the patch, patched
-objects, and patched functions, in sysfs. And most importantly,
-the sysfs interface can be used to disable the livepatch.
-
-The problem with static structures is that the module must stay
-in the memory as long as the sysfs interface exists. It can be
-solved in module_exit() callback. It could wait until the sysfs
-interface is destroyed.
-
-kobject API does not support this scenario. The relase() callbacks
-are called asynchronously. It expects that the structure is bundled
-in a dynamically allocated structure.  As a result, the sysfs
-interface can be removed even after the module removal.
-
-The livepatching might create the dynamic structures by duplicating
-the structures defined in the module statically. It might safe us
-some headaches with kobject release. But it would also need an extra code
-that would need to be maintained. The structure constrains strings
-than need to be duplicated and later freed...
-
-
-> But kobject_del() won't release the kobject, you shouldn't need the lock
-> to delete kobject first. After the kobject is deleted, no any show() and
-> store() any more, isn't such sync[1] you expected?
-
-Livepatch code never called kobject_del() under a lock. It would cause
-the obvious deadlock. The historic code only waited in the
-module_exit() callback until the sysfs interface was removed.
-
-It has changed in the commit 958ef1e39d24d6cb8bf2a740 ("livepatch:
-Simplify API by removing registration step"). The livepatch could
-never get enabled again after it was disabled now. The sysfs interface
-is removed when the livepatch gets disabled. The module could
-be removed only after the sysfs interface is destroyed, see
-the module_put() in klp_free_patch_finish().
-
-The livepatch code uses workqueue because the livepatch can be
-disabled via sysfs interface. It obviously could not wait until
-the sysfs interface is removed in the sysfs write() callback
-that triggered the removal.
-
-HTH,
-Petr
+Regards
+Miroslav
