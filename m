@@ -2,24 +2,22 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AA1443AA6B
-	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 04:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BACB43AA83
+	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 04:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234435AbhJZCpC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 25 Oct 2021 22:45:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56450 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234432AbhJZCpA (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Mon, 25 Oct 2021 22:45:00 -0400
-Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E000861074;
-        Tue, 26 Oct 2021 02:42:34 +0000 (UTC)
-Date:   Mon, 25 Oct 2021 22:42:33 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+        id S233936AbhJZCzM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 25 Oct 2021 22:55:12 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:34834 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233160AbhJZCzM (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Mon, 25 Oct 2021 22:55:12 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0Utj7nbU_1635216761;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0Utj7nbU_1635216761)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 26 Oct 2021 10:52:42 +0800
+Subject: Re: [PATCH v4 0/2] fix & prevent the missing preemption disabling
+To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
@@ -45,65 +43,80 @@ Cc:     Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] fix & prevent the missing preemption disabling
-Message-ID: <20211025224233.61b8e088@rorschach.local.home>
-In-Reply-To: <71c21f78-9c44-fdb2-f8e2-d8544b3421bd@linux.alibaba.com>
 References: <32a36348-69ee-6464-390c-3a8d6e9d2b53@linux.alibaba.com>
-        <71c21f78-9c44-fdb2-f8e2-d8544b3421bd@linux.alibaba.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <71c21f78-9c44-fdb2-f8e2-d8544b3421bd@linux.alibaba.com>
+ <20211025224233.61b8e088@rorschach.local.home>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <de35eedf-8558-233d-ca59-7c636bbb2da3@linux.alibaba.com>
+Date:   Tue, 26 Oct 2021 10:52:41 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20211025224233.61b8e088@rorschach.local.home>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 26 Oct 2021 10:09:12 +0800
-王贇 <yun.wang@linux.alibaba.com> wrote:
 
-> Just a ping, to see if there are any more comments :-P
 
-I guess you missed what went into mainline (and your name found a bug
-in my perl script for importing patches ;-)
-
-  https://lore.kernel.org/all/20211019091344.65629198@gandalf.local.home/
-
-Which means patch 1 needs to change:
-
-> +	/*
-> +	 * Disable preemption to fulfill the promise.
-> +	 *
-> +	 * Don't worry about the bit 0 cases, they indicate
-> +	 * the disabling behaviour has already been done by
-> +	 * internal call previously.
-> +	 */
-> +	preempt_disable_notrace();
-> +
->  	return bit + 1;
->  }
+On 2021/10/26 上午10:42, Steven Rostedt wrote:
+> On Tue, 26 Oct 2021 10:09:12 +0800
+> 王贇 <yun.wang@linux.alibaba.com> wrote:
 > 
-> +/*
-> + * Preemption will be enabled (if it was previously enabled).
-> + */
->  static __always_inline void trace_clear_recursion(int bit)
->  {
->  	if (!bit)
->  		return;
+>> Just a ping, to see if there are any more comments :-P
 > 
-> +	if (bit > 0)
-> +		preempt_enable_notrace();
-> +
+> I guess you missed what went into mainline (and your name found a bug
+> in my perl script for importing patches ;-)
+> 
+>   https://lore.kernel.org/all/20211019091344.65629198@gandalf.local.home/
 
-Where this wont work anymore.
+Cool~ Missing some chinese font maybe, that's fine :-)
 
-Need to preempt disable and enable always.
+> 
+> Which means patch 1 needs to change:
+>> +	/*
+>> +	 * Disable preemption to fulfill the promise.
+>> +	 *
+>> +	 * Don't worry about the bit 0 cases, they indicate
+>> +	 * the disabling behaviour has already been done by
+>> +	 * internal call previously.
+>> +	 */
+>> +	preempt_disable_notrace();
+>> +
+>>  	return bit + 1;
+>>  }
+>>
+>> +/*
+>> + * Preemption will be enabled (if it was previously enabled).
+>> + */
+>>  static __always_inline void trace_clear_recursion(int bit)
+>>  {
+>>  	if (!bit)
+>>  		return;
+>>
+>> +	if (bit > 0)
+>> +		preempt_enable_notrace();
+>> +
+> 
+> Where this wont work anymore.
+> 
+> Need to preempt disable and enable always.
 
--- Steve
+Yup, will rebase on the latest changes~
 
+Regards,
+Michael Wang
 
->  	barrier();
->  	bit--;
->  	trace_recursion_clear(bit);
-> @@ -209,7 +227,7 @@ static __always_inline void trace_clear_recursion(int bit)
->   * tracing recursed in the same context (normal vs interrupt),
->   *
+> 
+> -- Steve
+> 
+> 
+>>  	barrier();
+>>  	bit--;
+>>  	trace_recursion_clear(bit);
+>> @@ -209,7 +227,7 @@ static __always_inline void trace_clear_recursion(int bit)
+>>   * tracing recursed in the same context (normal vs interrupt),
+>>   *
