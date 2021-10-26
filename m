@@ -2,44 +2,23 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 931FD43AF2A
-	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 11:35:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7365C43AF71
+	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 11:48:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233445AbhJZJhp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 26 Oct 2021 05:37:45 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:52672 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230226AbhJZJhm (ORCPT
+        id S234374AbhJZJum (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Oct 2021 05:50:42 -0400
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:46166 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234310AbhJZJul (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 26 Oct 2021 05:37:42 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id CD07021957;
-        Tue, 26 Oct 2021 09:35:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1635240917; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0B4KOzLh0SzQ324Nbkzza+/yS3xupOET/Cg+lBufZUI=;
-        b=rw+fG9VAu+8kRC9wTlBf3rcyz3Kf3ZCAjBJINdd8QZW/j3p+2ahcfvCnSj8OuOuJqkx02V
-        GTi8IJ3HcUBXayzm3HUW+kf8zSfRse0QcnIbB2v1NyPMTBdz9wPJ0PnGR36r6X7vSW0okN
-        kRpnoYVmTXHa91qm+5pJr77RUdNgugk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1635240917;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0B4KOzLh0SzQ324Nbkzza+/yS3xupOET/Cg+lBufZUI=;
-        b=qgOIyawzyHE9pTOjD50nMXsKDtve0Cel3ya97cAgrn/VbL62UicJFGeCHbZLrb2CyTyimO
-        0vfvl2IWd2suabBg==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 06EF6A3B83;
-        Tue, 26 Oct 2021 09:35:16 +0000 (UTC)
-Date:   Tue, 26 Oct 2021 11:35:16 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     =?ISO-2022-JP?Q?=1B$B2&lV=1B=28J?= <yun.wang@linux.alibaba.com>
-cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        Tue, 26 Oct 2021 05:50:41 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=30;SR=0;TI=SMTPD_---0Utm5zog_1635241690;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0Utm5zog_1635241690)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 26 Oct 2021 17:48:12 +0800
+Subject: Re: [PATCH v5 1/2] ftrace: disable preemption when recursion locked
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
@@ -62,67 +41,90 @@ cc:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] ftrace: disable preemption when recursion
- locked
-In-Reply-To: <333cecfe-3045-8e0a-0c08-64ff590845ab@linux.alibaba.com>
-Message-ID: <alpine.LSU.2.21.2110261128120.28494@pobox.suse.cz>
-References: <3ca92dc9-ea04-ddc2-71cd-524bfa5a5721@linux.alibaba.com> <333cecfe-3045-8e0a-0c08-64ff590845ab@linux.alibaba.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+References: <3ca92dc9-ea04-ddc2-71cd-524bfa5a5721@linux.alibaba.com>
+ <333cecfe-3045-8e0a-0c08-64ff590845ab@linux.alibaba.com>
+ <alpine.LSU.2.21.2110261128120.28494@pobox.suse.cz>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <18ba2a71-e12d-33f7-63fe-2857b2db022c@linux.alibaba.com>
+Date:   Tue, 26 Oct 2021 17:48:10 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <alpine.LSU.2.21.2110261128120.28494@pobox.suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
+Hi, Miroslav
 
-> diff --git a/include/linux/trace_recursion.h b/include/linux/trace_recursion.h
-> index abe1a50..2bc1522 100644
-> --- a/include/linux/trace_recursion.h
-> +++ b/include/linux/trace_recursion.h
-> @@ -135,6 +135,9 @@ static __always_inline int trace_get_context_bit(void)
->  # define do_ftrace_record_recursion(ip, pip)	do { } while (0)
->  #endif
+On 2021/10/26 下午5:35, Miroslav Benes wrote:
+> Hi,
 > 
-> +/*
-> + * Preemption is promised to be disabled when return bit > 0.
-> + */
->  static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsigned long pip,
->  							int start)
->  {
-> @@ -162,11 +165,17 @@ static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsign
->  	current->trace_recursion = val;
->  	barrier();
+>> diff --git a/include/linux/trace_recursion.h b/include/linux/trace_recursion.h
+>> index abe1a50..2bc1522 100644
+>> --- a/include/linux/trace_recursion.h
+>> +++ b/include/linux/trace_recursion.h
+>> @@ -135,6 +135,9 @@ static __always_inline int trace_get_context_bit(void)
+>>  # define do_ftrace_record_recursion(ip, pip)	do { } while (0)
+>>  #endif
+>>
+>> +/*
+>> + * Preemption is promised to be disabled when return bit > 0.
+>> + */
+>>  static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsigned long pip,
+>>  							int start)
+>>  {
+>> @@ -162,11 +165,17 @@ static __always_inline int trace_test_and_set_recursion(unsigned long ip, unsign
+>>  	current->trace_recursion = val;
+>>  	barrier();
+>>
+>> +	preempt_disable_notrace();
+>> +
+>>  	return bit;
+>>  }
+>>
+>> +/*
+>> + * Preemption will be enabled (if it was previously enabled).
+>> + */
+>>  static __always_inline void trace_clear_recursion(int bit)
+>>  {
+>> +	preempt_enable_notrace();
+>>  	barrier();
+>>  	trace_recursion_clear(bit);
+>>  }
 > 
-> +	preempt_disable_notrace();
-> +
->  	return bit;
->  }
+> The two comments should be updated too since Steven removed the "bit == 0" 
+> trick.
+
+Could you please give more hint on how will it be correct?
+
+I get the point that bit will no longer be 0, there are only -1 or > 0 now
+so trace_test_and_set_recursion() will disable preemption on bit > 0 and
+trace_clear_recursion() will enabled it since it should only be called when
+bit > 0 (I remember we could use a WARN_ON here now :-P).
+
 > 
-> +/*
-> + * Preemption will be enabled (if it was previously enabled).
-> + */
->  static __always_inline void trace_clear_recursion(int bit)
->  {
-> +	preempt_enable_notrace();
->  	barrier();
->  	trace_recursion_clear(bit);
->  }
+>> @@ -178,7 +187,7 @@ static __always_inline void trace_clear_recursion(int bit)
+>>   * tracing recursed in the same context (normal vs interrupt),
+>>   *
+>>   * Returns: -1 if a recursion happened.
+>> - *           >= 0 if no recursion
+>> + *           > 0 if no recursion.
+>>   */
+>>  static __always_inline int ftrace_test_recursion_trylock(unsigned long ip,
+>>  							 unsigned long parent_ip)
+> 
+> And this change would not be correct now.
 
-The two comments should be updated too since Steven removed the "bit == 0" 
-trick.
+I thought it will no longer return 0 so I change it to > 0, isn't that correct?
 
-> @@ -178,7 +187,7 @@ static __always_inline void trace_clear_recursion(int bit)
->   * tracing recursed in the same context (normal vs interrupt),
->   *
->   * Returns: -1 if a recursion happened.
-> - *           >= 0 if no recursion
-> + *           > 0 if no recursion.
->   */
->  static __always_inline int ftrace_test_recursion_trylock(unsigned long ip,
->  							 unsigned long parent_ip)
+Regards,
+Michael Wang
 
-And this change would not be correct now.
-
-Regards
-Miroslav
+> 
+> Regards
+> Miroslav
+> 
