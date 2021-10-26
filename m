@@ -2,24 +2,25 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A2643AA19
-	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 04:11:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA1443AA6B
+	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 04:42:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232976AbhJZCNf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 25 Oct 2021 22:13:35 -0400
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:42134 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230216AbhJZCNe (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 25 Oct 2021 22:13:34 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0UtjMs7q_1635214264;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UtjMs7q_1635214264)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 26 Oct 2021 10:11:06 +0800
-Subject: Re: [PATCH v4 0/2] fix & prevent the missing preemption disabling
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
+        id S234435AbhJZCpC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 25 Oct 2021 22:45:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56450 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234432AbhJZCpA (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 25 Oct 2021 22:45:00 -0400
+Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E000861074;
+        Tue, 26 Oct 2021 02:42:34 +0000 (UTC)
+Date:   Mon, 25 Oct 2021 22:42:33 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         Michael Ellerman <mpe@ellerman.id.au>,
@@ -44,58 +45,65 @@ To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
+Subject: Re: [PATCH v4 0/2] fix & prevent the missing preemption disabling
+Message-ID: <20211025224233.61b8e088@rorschach.local.home>
+In-Reply-To: <71c21f78-9c44-fdb2-f8e2-d8544b3421bd@linux.alibaba.com>
 References: <32a36348-69ee-6464-390c-3a8d6e9d2b53@linux.alibaba.com>
-Message-ID: <71c21f78-9c44-fdb2-f8e2-d8544b3421bd@linux.alibaba.com>
-Date:   Tue, 26 Oct 2021 10:09:12 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        <71c21f78-9c44-fdb2-f8e2-d8544b3421bd@linux.alibaba.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <32a36348-69ee-6464-390c-3a8d6e9d2b53@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Just a ping, to see if there are any more comments :-P
+On Tue, 26 Oct 2021 10:09:12 +0800
+王贇 <yun.wang@linux.alibaba.com> wrote:
 
-Regards,
-Michael Wang
+> Just a ping, to see if there are any more comments :-P
 
-On 2021/10/18 上午11:38, 王贇 wrote:
-> The testing show that perf_ftrace_function_call() are using smp_processor_id()
-> with preemption enabled, all the checking on CPU could be wrong after preemption.
+I guess you missed what went into mainline (and your name found a bug
+in my perl script for importing patches ;-)
+
+  https://lore.kernel.org/all/20211019091344.65629198@gandalf.local.home/
+
+Which means patch 1 needs to change:
+
+> +	/*
+> +	 * Disable preemption to fulfill the promise.
+> +	 *
+> +	 * Don't worry about the bit 0 cases, they indicate
+> +	 * the disabling behaviour has already been done by
+> +	 * internal call previously.
+> +	 */
+> +	preempt_disable_notrace();
+> +
+>  	return bit + 1;
+>  }
 > 
-> As Peter point out, the section between ftrace_test_recursion_trylock/unlock()
-> pair require the preemption to be disabled as 'Documentation/trace/ftrace-uses.rst'
-> explained, but currently the work is done outside of the helpers.
+> +/*
+> + * Preemption will be enabled (if it was previously enabled).
+> + */
+>  static __always_inline void trace_clear_recursion(int bit)
+>  {
+>  	if (!bit)
+>  		return;
 > 
-> And since the internal using of trace_test_and_set_recursion()
-> and trace_clear_recursion() also require preemption to be disabled, we
-> can just merge the logical together.
-> 
-> Patch 1/2 will make sure preemption disabled when recursion lock succeed,
-> patch 2/2 will do smp_processor_id() checking after trylock() to address the
-> issue.
-> 
-> v1: https://lore.kernel.org/all/8c7de46d-9869-aa5e-2bb9-5dbc2eda395e@linux.alibaba.com/
-> v2: https://lore.kernel.org/all/b1d7fe43-ce84-0ed7-32f7-ea1d12d0b716@linux.alibaba.com/
-> v3: https://lore.kernel.org/all/609b565a-ed6e-a1da-f025-166691b5d994@linux.alibaba.com/
-> 
-> Michael Wang (2):
->   ftrace: disable preemption when recursion locked
->   ftrace: do CPU checking after preemption disabled
-> 
->  arch/csky/kernel/probes/ftrace.c     |  2 --
->  arch/parisc/kernel/ftrace.c          |  2 --
->  arch/powerpc/kernel/kprobes-ftrace.c |  2 --
->  arch/riscv/kernel/probes/ftrace.c    |  2 --
->  arch/x86/kernel/kprobes/ftrace.c     |  2 --
->  include/linux/trace_recursion.h      | 20 +++++++++++++++++++-
->  kernel/livepatch/patch.c             | 13 +++++++------
->  kernel/trace/ftrace.c                | 15 +++++----------
->  kernel/trace/trace_event_perf.c      |  6 +++---
->  kernel/trace/trace_functions.c       |  5 -----
->  10 files changed, 34 insertions(+), 35 deletions(-)
-> 
+> +	if (bit > 0)
+> +		preempt_enable_notrace();
+> +
+
+Where this wont work anymore.
+
+Need to preempt disable and enable always.
+
+-- Steve
+
+
+>  	barrier();
+>  	bit--;
+>  	trace_recursion_clear(bit);
+> @@ -209,7 +227,7 @@ static __always_inline void trace_clear_recursion(int bit)
+>   * tracing recursed in the same context (normal vs interrupt),
+>   *
