@@ -2,98 +2,164 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9505143B7C5
-	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 19:02:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 718A843B94E
+	for <lists+live-patching@lfdr.de>; Tue, 26 Oct 2021 20:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236329AbhJZREb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 26 Oct 2021 13:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231360AbhJZRE0 (ORCPT
+        id S238209AbhJZSVx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Oct 2021 14:21:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:47947 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238193AbhJZSVw (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 26 Oct 2021 13:04:26 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD49C061745;
-        Tue, 26 Oct 2021 10:02:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rokadze8fRogRPO3TrlkJtrH8Z7jdFewFpbGPuZXCIM=; b=Qu7hbKOTAdEdBAA2y8tI88Y2/9
-        fLNwaKezOpXserGMaIVWN2jN15mgeYqvk8M/nMFdvuU5t2HO/FTeOt9d2UnO/Ggl4TZKbTQdsz+G4
-        nXL1XP7usNiHTBSnuvt5MSW3VpiWZscPz5mEn0nHDheFG/gaH7XQRVOfMfyO9X9MK1IREmP9s72mA
-        QTDix5gCEW/5udqqkrYa156daZNZ2zGDGhygkQ21zCMafu9t/D+JajvGykPFMZdU/SiIGrSpnAD0A
-        1UKOvtUSFjhuxsuXZjboMKtwJV73xZGh8YYSz/Tknj3RKEaQ8H8Afu4sGA/11uH8N2/HPJ0IdzpiW
-        RZAtoISw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mfPpV-002Yak-03; Tue, 26 Oct 2021 17:01:41 +0000
-Date:   Tue, 26 Oct 2021 10:01:40 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Ming Lei <ming.lei@redhat.com>,
-        Julia Lawall <julia.lawall@inria.fr>
-Cc:     Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, tj@kernel.org,
-        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-        minchan@kernel.org, jeyu@kernel.org, shuah@kernel.org,
-        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
-        tglx@linutronix.de, keescook@chromium.org, rostedt@goodmis.org,
-        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH v8 11/12] zram: fix crashes with cpu hotplug multistate
-Message-ID: <YXg0dFZ+6qHw7d0g@bombadil.infradead.org>
-References: <YW3LuzaPhW96jSBK@bombadil.infradead.org>
- <YW4uwep3BCe9Vxq8@T590>
- <alpine.LSU.2.21.2110190820590.15009@pobox.suse.cz>
- <YW6OptglA6UykZg/@T590>
- <alpine.LSU.2.21.2110200835490.26817@pobox.suse.cz>
- <YW/KEsfWJMIPnz76@T590>
- <alpine.LSU.2.21.2110201014400.26817@pobox.suse.cz>
- <YW/q70dLyF+YudyF@T590>
- <YXfA0jfazCPDTEBw@alley>
- <YXgguuAY5iEUIV0u@T590>
+        Tue, 26 Oct 2021 14:21:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635272367;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dWX6fvkzSDQgKu3VrjYNBZqwEZ/48vhRdGouru0gtXo=;
+        b=fbqBq/3Qa8PUSeRZ5bp4xLArLcToSDaUZu7p4b6swXvn3YDg2Ax9Eft7Hh+WiQboyTbWrZ
+        DFbzJNFQvdOVGpmFE3hTZTf+GGtN6o6BgCyxPIQp4j5rWlyVNloweU6VGAJmqdtFzO/jg9
+        y7KLl3WGhPrFB+lcyd54h6ifNWZsgbE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-135-2ZMsfo8wOwmeczkJuWhaHA-1; Tue, 26 Oct 2021 14:19:21 -0400
+X-MC-Unique: 2ZMsfo8wOwmeczkJuWhaHA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 35A80802B52;
+        Tue, 26 Oct 2021 18:19:19 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BE8CF1002EE2;
+        Tue, 26 Oct 2021 18:19:15 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 9F0D14172ED8; Tue, 26 Oct 2021 15:19:11 -0300 (-03)
+Date:   Tue, 26 Oct 2021 15:19:11 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     gor@linux.ibm.com, jpoimboe@redhat.com, jikos@kernel.org,
+        mbenes@suse.cz, pmladek@suse.com, mingo@kernel.org,
+        linux-kernel@vger.kernel.org, joe.lawrence@redhat.com,
+        fweisbec@gmail.com, tglx@linutronix.de, hca@linux.ibm.com,
+        svens@linux.ibm.com, sumanthk@linux.ibm.com,
+        live-patching@vger.kernel.org, paulmck@kernel.org,
+        rostedt@goodmis.org, x86@kernel.org
+Subject: Re: [RFC][PATCH v2 11/11] context_tracking,x86: Fix text_poke_sync()
+ vs NOHZ_FULL
+Message-ID: <20211026181911.GA178890@fuller.cnet>
+References: <20210929151723.162004989@infradead.org>
+ <20210929152429.186930629@infradead.org>
+ <20211021183935.GA9071@fuller.cnet>
+ <20211021192543.GV174703@worktop.programming.kicks-ass.net>
+ <20211021195709.GA22422@fuller.cnet>
+ <20211021201859.GX174703@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YXgguuAY5iEUIV0u@T590>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <20211021201859.GX174703@worktop.programming.kicks-ass.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 11:37:30PM +0800, Ming Lei wrote:
-> On Tue, Oct 26, 2021 at 10:48:18AM +0200, Petr Mladek wrote:
-> > Livepatch code never called kobject_del() under a lock. It would cause
-> > the obvious deadlock.
-
-Never?
-
-> > The historic code only waited in the
-> > module_exit() callback until the sysfs interface was removed.
+On Thu, Oct 21, 2021 at 10:18:59PM +0200, Peter Zijlstra wrote:
+> On Thu, Oct 21, 2021 at 04:57:09PM -0300, Marcelo Tosatti wrote:
+> > > Pretty much everything in noinstr is magical, we just have to think
+> > > harder there (and possibly start writing more comments there).
+> > 
+> > mds_user_clear_cpu_buffers happens after sync_core, in your patchset, 
+> > if i am not mistaken.
 > 
-> OK, then Luis shouldn't consider livepatching as one such issue to solve
-> with one generic solution.
+> Of course it does, mds_user_clear_cpu_buffers() is on exit, the
+> sync_core() is on entry.
 
-It's not what I was told when the deadlock was found with zram, so I was
-informed quite the contrary.
+                                                                  static_key enable/disable
 
-I'm working on a generic coccinelle patch which hunts for actual cases
-using iteration (a feature of coccinelle for complex searches). The
-search is pretty involved, so I don't think I'll have an answer to this
-soon.
+__exit_to_user_mode ->                                            context_tracking_set_cpu_work(cpu, work)
+   user_enter_irqoff ->                                                  preempt_disable();
+   __context_tracking_enter(CONTEXT_USER);                               seq = atomic_read(&ct->seq);
+      ct_seq_user_enter(raw_cpu_ptr(&context_tracking));                 if (__context_tracking_seq_in_user(seq)) {
+      {                                                                          /* ctrl-dep */
+        arch_atomic_set(&ct->work, 0);                                           atomic_or(work, &ct->work);
+        return arch_atomic_add_return(CT_SEQ_USER, &ct->seq);                    ret = atomic_try_cmpxchg(&ct->seq, &seq, seq|CT_SEQ_WORK);
+                                                                         }
+      }                                                                  preempt_enable();
+   arch_exit_to_user_mode()
+   mds_user_clear_cpu_buffers();  <--- sync_core work queued,
+                                       but not executed.
+                                       i-cache potentially stale?
 
-Since the question of how generic this deadlock is remains questionable,
-I think it makes sense to put the generic deadlock fix off the table for
-now, and we address this once we have a more concrete search with
-coccinelle.
+ct_seq_user_enter should happen _after_ all possible static_key users?
 
-But to say we *don't* have drivers which can cause this is obviously
-wrong as well, from a cursory search so far. But let's wait and see how
-big this list actually is.
+(or recheck that there is no pending work after any possible
+rewritable code/static_key user).
 
-I'll drop the deadlock generic fixes and move on with at least a starter
-kernfs / sysfs tests.
+> 
+> > > > > +             /* NMI happens here and must still do/finish CT_WORK_n */
+> > > > > +             sync_core();
+> > > > 
+> > > > But after the discussion with you, it seems doing the TLB checking 
+> > > > and (also sync_core) checking very late/very early on exit/entry 
+> > > > makes things easier to review.
+> > > 
+> > > I don't know about late, it must happen *very* early in entry. The
+> > > sync_core() must happen before any self-modifying code gets called
+> > > (static_branch, static_call, etc..) with possible exception of the
+> > > context_tracking static_branch.
+> > > 
+> > > The TLBi must also happen super early, possibly while still on the
+> > > entry stack (since the task stack is vmap'ed).
+> > 
+> > But will it be ever be freed/remapped from other CPUs while the task
+> > is running?
+> 
+> Probably not, still something we need to be really careful with.
+> > 
+> > > We currently don't run C
+> > > code on the entry stack, that needs quite a bit of careful work to make
+> > > happen.
+> > 
+> > Was thinking of coding in ASM after (as early as possible) the write to 
+> > switch to kernel CR3:
+> 
+> No, we're not going to add new feature to ASM. You'll just have to wait
+> until all that gets lifted to C.
+> 
+> >  Kernel entry:
+> >  -------------
+> > 
+> >        cpu = smp_processor_id();
+> > 
+> >        if (isolation_enabled(cpu)) {
+> >                reqs = atomic_xchg(&percpudata->user_kernel_state, IN_KERNEL_MODE);
+> >                if (reqs & CPU_REQ_FLUSH_TLB)
+> > 			flush_tlb_all();
+> >                if (reqs & CPU_REQ_SYNC_CORE)
+> > 			sync_core();
+> >        }                           
+> > 
+> > Exit to userspace (as close to write to CR3 with user pagetable
+> > pointer):
+> >  -----------------
+> > 
+> >        cpu = smp_processor_id();
+> > 
+> >        if (isolation_enabled(cpu)) {
+> >                atomic_or(IN_USER_MODE, &percpudata->user_kernel_state);
+> >        }
+> > 
+> > You think that is a bad idea (in ASM, not C) ? 
+> 
+> Those atomics are a bad idea and not goig to happen.
+> 
+> > > We're not going to add an atomic to context tracking. There is one, we
+> > > just got to extract/share it with RCU.
+> > 
+> > Again, to avoid kernel TLB flushes you'd have to ensure:
+> 
+> I know how it works, but we're not going to add a second atomic to
+> entry/exit. RCU has one in there, that's going to be it. Again, we just
+> got to extract/share.
 
-  Luis
