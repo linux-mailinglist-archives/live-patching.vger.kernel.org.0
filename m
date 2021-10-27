@@ -2,102 +2,104 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15ACC43CAB4
-	for <lists+live-patching@lfdr.de>; Wed, 27 Oct 2021 15:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1515243CC39
+	for <lists+live-patching@lfdr.de>; Wed, 27 Oct 2021 16:28:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235731AbhJ0Neo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 27 Oct 2021 09:34:44 -0400
-Received: from foss.arm.com ([217.140.110.172]:43394 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230500AbhJ0Nen (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 27 Oct 2021 09:34:43 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94F7D1FB;
-        Wed, 27 Oct 2021 06:32:17 -0700 (PDT)
-Received: from C02TD0UTHF1T.local (unknown [10.57.72.240])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F18073F73D;
-        Wed, 27 Oct 2021 06:32:14 -0700 (PDT)
-Date:   Wed, 27 Oct 2021 14:32:12 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     madvenka@linux.microsoft.com
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v10 06/11] arm64: Make profile_pc() use arch_stack_walk()
-Message-ID: <20211027133212.GG54628@C02TD0UTHF1T.local>
-References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
- <20211015025847.17694-1-madvenka@linux.microsoft.com>
- <20211015025847.17694-7-madvenka@linux.microsoft.com>
+        id S242551AbhJ0Oae (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 27 Oct 2021 10:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242556AbhJ0Oad (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 27 Oct 2021 10:30:33 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A83BC061570;
+        Wed, 27 Oct 2021 07:28:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=1KiXvZSEv7u0TMNxDkm/8GeTyuUOS2eLIKnX1ZpOfDU=; b=raBwmGRGud2Nulo6ceSvmmFwxW
+        765wjTHu35TF/PK97lqZlBigzDF0BesGgPJBxXHTFPhVHqwVMCxbbpc/axD2wxN5QkGHRlFfWe75u
+        Vi/uDG6hPXh3o69NhQEd3aNW62Hpb5ovqPBifM+Alunt1AcfBZSDhGaba0wsKfa68ttzsuT0sOlZS
+        D9YmborK2KVSDHFIAGXBMSAUTk5axrvJvSTdhseh9MXkOzRSr25d/LCUOQw7WpoP5AGd0fvxrig4u
+        Ub2+MYpgmXtvQySsHJ0Wf0Bi/eSvLkYsz0GI9EDSNcEkyLBGmfK/9x8o3+AuavxpZO8nQaushinyG
+        X6LqMnTg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mfju8-00579x-Pc; Wed, 27 Oct 2021 14:27:48 +0000
+Date:   Wed, 27 Oct 2021 07:27:48 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Ming Lei <ming.lei@redhat.com>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Petr Mladek <pmladek@suse.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, tj@kernel.org,
+        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+        minchan@kernel.org, jeyu@kernel.org, shuah@kernel.org,
+        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
+        tglx@linutronix.de, keescook@chromium.org, rostedt@goodmis.org,
+        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v8 11/12] zram: fix crashes with cpu hotplug multistate
+Message-ID: <YXlh5K7FyeBXNafM@bombadil.infradead.org>
+References: <alpine.LSU.2.21.2110190820590.15009@pobox.suse.cz>
+ <YW6OptglA6UykZg/@T590>
+ <alpine.LSU.2.21.2110200835490.26817@pobox.suse.cz>
+ <YW/KEsfWJMIPnz76@T590>
+ <alpine.LSU.2.21.2110201014400.26817@pobox.suse.cz>
+ <YW/q70dLyF+YudyF@T590>
+ <YXfA0jfazCPDTEBw@alley>
+ <YXgguuAY5iEUIV0u@T590>
+ <YXg0dFZ+6qHw7d0g@bombadil.infradead.org>
+ <alpine.LSU.2.21.2110271343290.3655@pobox.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211015025847.17694-7-madvenka@linux.microsoft.com>
+In-Reply-To: <alpine.LSU.2.21.2110271343290.3655@pobox.suse.cz>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Oct 14, 2021 at 09:58:42PM -0500, madvenka@linux.microsoft.com wrote:
-> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+On Wed, Oct 27, 2021 at 01:57:40PM +0200, Miroslav Benes wrote:
+> On Tue, 26 Oct 2021, Luis Chamberlain wrote:
 > 
-> Currently, profile_pc() in ARM64 code walks the stack using
-> start_backtrace() and unwind_frame(). Make it use arch_stack_walk()
-> instead. This makes maintenance easier.
+> > On Tue, Oct 26, 2021 at 11:37:30PM +0800, Ming Lei wrote:
+> > > OK, then Luis shouldn't consider livepatching as one such issue to solve
+> > > with one generic solution.
+> > 
+> > It's not what I was told when the deadlock was found with zram, so I was
+> > informed quite the contrary.
 > 
-> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
-> ---
->  arch/arm64/kernel/time.c | 22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
-> 
-> diff --git a/arch/arm64/kernel/time.c b/arch/arm64/kernel/time.c
-> index eebbc8d7123e..671b3038a772 100644
-> --- a/arch/arm64/kernel/time.c
-> +++ b/arch/arm64/kernel/time.c
-> @@ -32,22 +32,26 @@
->  #include <asm/stacktrace.h>
->  #include <asm/paravirt.h>
->  
-> +static bool profile_pc_cb(void *arg, unsigned long pc)
-> +{
-> +	unsigned long *prof_pc = arg;
-> +
-> +	if (in_lock_functions(pc))
-> +		return true;
-> +	*prof_pc = pc;
-> +	return false;
-> +}
-> +
->  unsigned long profile_pc(struct pt_regs *regs)
->  {
-> -	struct stackframe frame;
-> +	unsigned long prof_pc = 0;
->  
->  	if (!in_lock_functions(regs->pc))
->  		return regs->pc;
+> From my perspective, it is quite easy to get it wrong due to either a lack 
+> of generic support, or missing rules/documentation.
 
-This can go -- the first call to profile_pc_cb() will use regs->pc.
+Indeed. I agree some level of guidence is needed, even if subtle, rather
+than tribal knowledge. I'll start off with the test_sysfs demo'ing what
+not to do and documenting this there. I don't think it makes sense to
+formalize yet documentation for "though shalt not do this" generically
+until a full depth search is done with Coccinelle.
 
-With that gone, and the include updates to use <linux/stacktrace.h>:
+> So if this thread 
+> leads to "do not share locks between a module removal and a sysfs 
+> operation" strict rule, it would be at least something.
 
-Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+I think that's where we are at. I'll wait to complete my coccinelle
+deadlock hunt patch to complete the full search, and that could be
+useful to *warn* aboute new use cases, so to prevent this deadlock
+in the future. Until then I agree that the complexity introduced is
+not worth it given the evidence of users, but the full evidence of
+actual users still remains to be determined. A perfect job left to
+advances with Coccinelle.
 
-Mark.
+> In the same 
+> manner as Luis proposed to document try_module_get() expectations.
 
-> -	start_backtrace(&frame, regs->regs[29], regs->pc);
-> -
-> -	do {
-> -		int ret = unwind_frame(NULL, &frame);
-> -		if (ret < 0)
-> -			return 0;
-> -	} while (in_lock_functions(frame.pc));
-> +	arch_stack_walk(profile_pc_cb, &prof_pc, current, regs);
->  
-> -	return frame.pc;
-> +	return prof_pc;
->  }
->  EXPORT_SYMBOL(profile_pc);
->  
-> -- 
-> 2.25.1
-> 
+Right and so sysfs ops using try_module_get() *still* remains safe,
+and so will keep that patch in my next iteration because there *are*
+*many* uses cases for that.
+
+  Luis
