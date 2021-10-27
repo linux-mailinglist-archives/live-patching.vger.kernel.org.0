@@ -2,24 +2,25 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 563CD43BFF9
-	for <lists+live-patching@lfdr.de>; Wed, 27 Oct 2021 04:35:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE7D043C06A
+	for <lists+live-patching@lfdr.de>; Wed, 27 Oct 2021 04:56:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238501AbhJ0ChN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 26 Oct 2021 22:37:13 -0400
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:57034 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238415AbhJ0ChJ (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 26 Oct 2021 22:37:09 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=30;SR=0;TI=SMTPD_---0UtpxLpr_1635302077;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UtpxLpr_1635302077)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 27 Oct 2021 10:34:39 +0800
-Subject: [PATCH v6 2/2] ftrace: do CPU checking after preemption disabled
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
+        id S237738AbhJ0C6W convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Oct 2021 22:58:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39980 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238780AbhJ0C6V (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Tue, 26 Oct 2021 22:58:21 -0400
+Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 03365610C7;
+        Wed, 27 Oct 2021 02:55:53 +0000 (UTC)
+Date:   Tue, 26 Oct 2021 22:55:52 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     Guo Ren <guoren@kernel.org>, Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         Michael Ellerman <mpe@ellerman.id.au>,
@@ -43,71 +44,41 @@ To:     Guo Ren <guoren@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         live-patching@vger.kernel.org
+Subject: Re: [PATCH v6 1/2] ftrace: disable preemption when recursion locked
+Message-ID: <20211026225552.72a7ee79@rorschach.local.home>
+In-Reply-To: <78c95844-16b7-8904-b48d-3b2ccd76a352@linux.alibaba.com>
 References: <df8e9b3e-504c-635d-4e92-99cdf9f05479@linux.alibaba.com>
-Message-ID: <444d3576-4160-be9e-36c0-8061bf1242fb@linux.alibaba.com>
-Date:   Wed, 27 Oct 2021 10:34:37 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        <78c95844-16b7-8904-b48d-3b2ccd76a352@linux.alibaba.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <df8e9b3e-504c-635d-4e92-99cdf9f05479@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-With CONFIG_DEBUG_PREEMPT we observed reports like:
+On Wed, 27 Oct 2021 10:34:13 +0800
+王贇 <yun.wang@linux.alibaba.com> wrote:
 
-  BUG: using smp_processor_id() in preemptible
-  caller is perf_ftrace_function_call+0x6f/0x2e0
-  CPU: 1 PID: 680 Comm: a.out Not tainted
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x8d/0xcf
-   check_preemption_disabled+0x104/0x110
-   ? optimize_nops.isra.7+0x230/0x230
-   ? text_poke_bp_batch+0x9f/0x310
-   perf_ftrace_function_call+0x6f/0x2e0
-   ...
-   __text_poke+0x5/0x620
-   text_poke_bp_batch+0x9f/0x310
+> +/*
+> + * Preemption will be enabled (if it was previously enabled).
+> + */
+>  static __always_inline void trace_clear_recursion(int bit)
+>  {
+> +	WARN_ON_ONCE(bit < 0);
 
-This telling us the CPU could be changed after task is preempted, and
-the checking on CPU before preemption will be invalid.
+Can you send a v7 without the WARN_ON.
 
-Since now ftrace_test_recursion_trylock() will help to disable the
-preemption, this patch just do the checking after trylock() to address
-the issue.
+This is an extremely hot path, and this will cause noticeable overhead.
 
-CC: Steven Rostedt <rostedt@goodmis.org>
-Reported-by: Abaci <abaci@linux.alibaba.com>
-Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
----
- kernel/trace/trace_event_perf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+If something were to call this with bit < 0, then it would crash and
+burn rather quickly.
 
-diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-index 6aed10e..fba8cb7 100644
---- a/kernel/trace/trace_event_perf.c
-+++ b/kernel/trace/trace_event_perf.c
-@@ -441,13 +441,13 @@ void perf_trace_buf_update(void *record, u16 type)
- 	if (!rcu_is_watching())
- 		return;
+-- Steve
 
--	if ((unsigned long)ops->private != smp_processor_id())
--		return;
--
- 	bit = ftrace_test_recursion_trylock(ip, parent_ip);
- 	if (bit < 0)
- 		return;
 
-+	if ((unsigned long)ops->private != smp_processor_id())
-+		goto out;
-+
- 	event = container_of(ops, struct perf_event, ftrace_ops);
-
- 	/*
--- 
-1.8.3.1
-
+> +
+> +	preempt_enable_notrace();
+>  	barrier();
+>  	trace_recursion_clear(bit);
+>  }
