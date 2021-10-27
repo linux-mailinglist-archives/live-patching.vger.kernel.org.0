@@ -2,107 +2,83 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF46543C205
-	for <lists+live-patching@lfdr.de>; Wed, 27 Oct 2021 07:07:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6847443C8C8
+	for <lists+live-patching@lfdr.de>; Wed, 27 Oct 2021 13:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236699AbhJ0FJw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 27 Oct 2021 01:09:52 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:4530 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230349AbhJ0FJw (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 27 Oct 2021 01:09:52 -0400
-X-Greylist: delayed 1376 seconds by postgrey-1.27 at vger.kernel.org; Wed, 27 Oct 2021 01:09:51 EDT
-Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-        by localhost (Postfix) with ESMTP id 4HfGLj5VxGz9s3X;
-        Wed, 27 Oct 2021 06:44:29 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id wiw_goB2UUSf; Wed, 27 Oct 2021 06:44:29 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by pegase1.c-s.fr (Postfix) with ESMTPS id 4HfGLj3Ywqz9s3W;
-        Wed, 27 Oct 2021 06:44:29 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.16.1/8.16.1) with ESMTPS id 19R4gXMn065764
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 27 Oct 2021 06:42:34 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.16.1/8.16.1/Submit) id 19R4gXoM065762;
-        Wed, 27 Oct 2021 06:42:33 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        id S241705AbhJ0LpH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 27 Oct 2021 07:45:07 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:44210 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239798AbhJ0LpG (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 27 Oct 2021 07:45:06 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 633E01FD3C;
+        Wed, 27 Oct 2021 11:42:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1635334959; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fo5sUfTsUY3UOkgJ2rkzuihsx0B4xmZU0SJdKHg3/K8=;
+        b=BOue54GcW/uw1WPm5hiAmIdhozSdpxtIujuKNq+5lCqra257QQ5+yVC0mYQ5eawxHlKDyr
+        nU0ifZU6580JYGww6p7MTa4j1eGWh/EpWynHxEW0BXP7jLQv8eUL4O/7yjEmIobBV3v+V+
+        clwH2P5+gllvmD14GruEDwwE2lrVid8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1635334959;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fo5sUfTsUY3UOkgJ2rkzuihsx0B4xmZU0SJdKHg3/K8=;
+        b=+LylReF1y8AGvSIYf9Izx8bkit9K4VmPNvnYXAU1IXcpJZ3PzIoU+CbwuMhJJKdrER1wb3
+        YbEesObRpQJsk5Bg==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B48FCA3B84;
+        Wed, 27 Oct 2021 11:42:38 +0000 (UTC)
+Date:   Wed, 27 Oct 2021 13:42:38 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Ming Lei <ming.lei@redhat.com>
+cc:     Petr Mladek <pmladek@suse.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, tj@kernel.org,
+        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+        minchan@kernel.org, jeyu@kernel.org, shuah@kernel.org,
+        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
+        tglx@linutronix.de, keescook@chromium.org, rostedt@goodmis.org,
+        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
         live-patching@vger.kernel.org
-Subject: [PATCH] livepatch: Fix build failure on 32 bits processors
-Date:   Wed, 27 Oct 2021 06:42:23 +0200
-Message-Id: <cefeeaf1447088db00c5a62e2ff03f7d15bb4c05.1635308810.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.31.1
+Subject: Re: [PATCH v8 11/12] zram: fix crashes with cpu hotplug multistate
+In-Reply-To: <YXgguuAY5iEUIV0u@T590>
+Message-ID: <alpine.LSU.2.21.2110271340180.3655@pobox.suse.cz>
+References: <YWq3Z++uoJ/kcp+3@T590> <YW3LuzaPhW96jSBK@bombadil.infradead.org> <YW4uwep3BCe9Vxq8@T590> <alpine.LSU.2.21.2110190820590.15009@pobox.suse.cz> <YW6OptglA6UykZg/@T590> <alpine.LSU.2.21.2110200835490.26817@pobox.suse.cz> <YW/KEsfWJMIPnz76@T590>
+ <alpine.LSU.2.21.2110201014400.26817@pobox.suse.cz> <YW/q70dLyF+YudyF@T590> <YXfA0jfazCPDTEBw@alley> <YXgguuAY5iEUIV0u@T590>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1635309740; l=2882; s=20211009; h=from:subject:message-id; bh=FaIgF0/d4y029q2RzpfnjkNI4436DlWb16kZwMjiL08=; b=6l1KK276TBHtSgQczXiIk7JpCCWljc2G6JKzy9CXgXkWcj9dmZmlfwk693zLq+bzyrOCTxnj4Kch j03C4jchBh0IXNpz3Q7AiqM/2ISGGaGG6qUhJIpCd9kAfxfXH6y/
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Trying to build livepatch on powerpc/32 results in:
+> > 
+> > The livepatch code uses workqueue because the livepatch can be
+> > disabled via sysfs interface. It obviously could not wait until
+> > the sysfs interface is removed in the sysfs write() callback
+> > that triggered the removal.
+> 
+> If klp_free_patch_* is moved into module_exit() and not let enable
+> store() to kill kobjects, all kobjects can be deleted in module_exit(),
+> then wait_for_completion(patch->finish) may be removed, also wq isn't
+> required for the async cleanup.
 
-	kernel/livepatch/core.c: In function 'klp_resolve_symbols':
-	kernel/livepatch/core.c:221:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
-	      |                       ^
-	kernel/livepatch/core.c:221:21: error: assignment to 'Elf32_Sym *' {aka 'struct elf32_sym *'} from incompatible pointer type 'Elf64_Sym *' {aka 'struct elf64_sym *'} [-Werror=incompatible-pointer-types]
-	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
-	      |                     ^
-	kernel/livepatch/core.c: In function 'klp_apply_section_relocs':
-	kernel/livepatch/core.c:312:35: error: passing argument 1 of 'klp_resolve_symbols' from incompatible pointer type [-Werror=incompatible-pointer-types]
-	  312 |         ret = klp_resolve_symbols(sechdrs, strtab, symndx, sec, sec_objname);
-	      |                                   ^~~~~~~
-	      |                                   |
-	      |                                   Elf32_Shdr * {aka struct elf32_shdr *}
-	kernel/livepatch/core.c:193:44: note: expected 'Elf64_Shdr *' {aka 'struct elf64_shdr *'} but argument is of type 'Elf32_Shdr *' {aka 'struct elf32_shdr *'}
-	  193 | static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
-	      |                                ~~~~~~~~~~~~^~~~~~~
+It sounds like a nice cleanup. If we combine kobject_del() to prevent any 
+show()/store() accesses and free everything later in module_exit(), it 
+could work. If I am not missing something around how we maintain internal 
+lists of live patches and their modules.
 
-Fix it by using the right types instead of forcing 64 bits types.
+Thanks
 
-Fixes: 7c8e2bdd5f0d ("livepatch: Apply vmlinux-specific KLP relocations early")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- kernel/livepatch/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 335d988bd811..c0789383807b 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -190,7 +190,7 @@ static int klp_find_object_symbol(const char *objname, const char *name,
- 	return -EINVAL;
- }
- 
--static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
-+static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
- 			       unsigned int symndx, Elf_Shdr *relasec,
- 			       const char *sec_objname)
- {
-@@ -218,7 +218,7 @@ static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
- 	relas = (Elf_Rela *) relasec->sh_addr;
- 	/* For each rela in this klp relocation section */
- 	for (i = 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
--		sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
-+		sym = (Elf_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
- 		if (sym->st_shndx != SHN_LIVEPATCH) {
- 			pr_err("symbol %s is not marked as a livepatch symbol\n",
- 			       strtab + sym->st_name);
--- 
-2.31.1
-
+Miroslav
