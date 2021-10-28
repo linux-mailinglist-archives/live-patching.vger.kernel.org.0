@@ -2,184 +2,98 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DD3943E168
-	for <lists+live-patching@lfdr.de>; Thu, 28 Oct 2021 14:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2655143E260
+	for <lists+live-patching@lfdr.de>; Thu, 28 Oct 2021 15:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbhJ1NAl (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 28 Oct 2021 09:00:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35445 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230297AbhJ1NAk (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Thu, 28 Oct 2021 09:00:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635425893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XfV7qkk1FwqGMEmGrThmZ8dj/XAbRI9RjpO/DMpPpZQ=;
-        b=NjOgluGewKMmr66OZEqzZ11w7AsR3vxGq36GewGlvf8b6Hh7x3tENXpb7+7k5LrszTmsdi
-        4SYoz+Kbff77l5PQf4zWfyHDWhI3TxIv0SBMI9eToHSaXxEV0o6/l8KIFc/PdFaS/abBkc
-        R4PmT6RXEcpKTlILih03mjOAJ+1FsiU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-334-hrz8r8tBPGWbGTHlSvUk2Q-1; Thu, 28 Oct 2021 08:58:10 -0400
-X-MC-Unique: hrz8r8tBPGWbGTHlSvUk2Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S229945AbhJ1NiS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 28 Oct 2021 09:38:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40130 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229887AbhJ1NiR (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Thu, 28 Oct 2021 09:38:17 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4DBDA8144E0;
-        Thu, 28 Oct 2021 12:57:54 +0000 (UTC)
-Received: from localhost (ovpn-8-40.pek2.redhat.com [10.72.8.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9014219D9F;
-        Thu, 28 Oct 2021 12:57:53 +0000 (UTC)
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        by mail.kernel.org (Postfix) with ESMTPSA id AFF5261038;
+        Thu, 28 Oct 2021 13:35:49 +0000 (UTC)
+Date:   Thu, 28 Oct 2021 09:35:47 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Ming Lei <ming.lei@redhat.com>
-Subject: [PATCH 3/3] livepatch: free klp_patch object synchronously
-Date:   Thu, 28 Oct 2021 20:57:34 +0800
-Message-Id: <20211028125734.3134176-4-ming.lei@redhat.com>
-In-Reply-To: <20211028125734.3134176-1-ming.lei@redhat.com>
-References: <20211028125734.3134176-1-ming.lei@redhat.com>
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v1 0/5] Implement livepatch on PPC32
+Message-ID: <20211028093547.48c69dfe@gandalf.local.home>
+In-Reply-To: <cover.1635423081.git.christophe.leroy@csgroup.eu>
+References: <cover.1635423081.git.christophe.leroy@csgroup.eu>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-klp_mutex isn't acquired before calling kobject_put(klp_patch), so it is
-fine to free klp_patch object synchronously.
+On Thu, 28 Oct 2021 14:24:00 +0200
+Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-One issue is that enabled store() method, in which the klp_patch kobject
-itself is deleted & released. However, sysfs has provided APIs for dealing
-with this corner case, so use sysfs_break_active_protection() and
-sysfs_unbreak_active_protection() for releasing klp_patch kobject from
-enabled_store().
+> This series implements livepatch on PPC32.
+> 
+> This is largely copied from what's done on PPC64.
+> 
+> Christophe Leroy (5):
+>   livepatch: Fix build failure on 32 bits processors
+>   powerpc/ftrace: No need to read LR from stack in _mcount()
+>   powerpc/ftrace: Add module_trampoline_target() for PPC32
+>   powerpc/ftrace: Activate HAVE_DYNAMIC_FTRACE_WITH_REGS on PPC32
+>   powerpc/ftrace: Add support for livepatch to PPC32
+> 
+>  arch/powerpc/Kconfig                  |   2 +-
+>  arch/powerpc/include/asm/livepatch.h  |   4 +-
+>  arch/powerpc/kernel/module_32.c       |  33 +++++
+>  arch/powerpc/kernel/trace/ftrace.c    |  53 +++-----
+>  arch/powerpc/kernel/trace/ftrace_32.S | 187 ++++++++++++++++++++++++--
+>  kernel/livepatch/core.c               |   4 +-
+>  6 files changed, 230 insertions(+), 53 deletions(-)
+> 
 
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
----
- include/linux/livepatch.h     |  1 -
- kernel/livepatch/core.c       | 29 ++++++++++-------------------
- kernel/livepatch/core.h       |  2 +-
- kernel/livepatch/transition.c |  2 +-
- 4 files changed, 12 insertions(+), 22 deletions(-)
+This is great that you are doing this, but I wonder if it would even be
+easier, and more efficient, if you could implement
+HAVE_DYNAMIC_FTRACE_WITH_ARGS?
 
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index 9712818997c5..4dcebf52fac5 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -169,7 +169,6 @@ struct klp_patch {
- 	struct list_head obj_list;
- 	bool enabled;
- 	bool forced;
--	struct work_struct free_work;
- };
- 
- #define klp_for_each_object_static(patch, obj) \
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 9ede093d699a..7fba5d47ffdd 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -337,6 +337,7 @@ static ssize_t enabled_store(struct kobject *kobj, struct kobj_attribute *attr,
- 	int ret;
- 	bool enabled;
- 	LIST_HEAD(to_free);
-+	struct kernfs_node *kn = NULL;
- 
- 	ret = kstrtobool(buf, &enabled);
- 	if (ret)
-@@ -369,7 +370,11 @@ static ssize_t enabled_store(struct kobject *kobj, struct kobj_attribute *attr,
- out:
- 	mutex_unlock(&klp_mutex);
- 
--	klp_free_patches_async(&to_free);
-+	kn = sysfs_break_active_protection(kobj, &attr->attr);
-+	WARN_ON_ONCE(!kn);
-+	klp_free_patches(&to_free);
-+	if (kn)
-+		sysfs_unbreak_active_protection(kn);
- 
- 	if (ret)
- 		return ret;
-@@ -684,32 +689,19 @@ static void klp_free_patch_finish(struct klp_patch *patch)
- 	kobject_put(&patch->kobj);
- }
- 
--/*
-- * The livepatch might be freed from sysfs interface created by the patch.
-- * This work allows to wait until the interface is destroyed in a separate
-- * context.
-- */
--static void klp_free_patch_work_fn(struct work_struct *work)
--{
--	struct klp_patch *patch =
--		container_of(work, struct klp_patch, free_work);
--
--	klp_free_patch_finish(patch);
--}
--
--static void klp_free_patch_async(struct klp_patch *patch)
-+static void klp_free_patch(struct klp_patch *patch)
- {
- 	klp_free_patch_start(patch);
--	schedule_work(&patch->free_work);
-+	klp_free_patch_finish(patch);
- }
- 
--void klp_free_patches_async(struct list_head *to_free)
-+void klp_free_patches(struct list_head *to_free)
- {
- 	struct klp_patch *patch, *tmp_patch;
- 
- 	list_for_each_entry_safe(patch, tmp_patch, to_free, list) {
- 		list_del_init(&patch->list);
--		klp_free_patch_async(patch);
-+		klp_free_patch(patch);
- 	}
- }
- 
-@@ -873,7 +865,6 @@ static int klp_init_patch_early(struct klp_patch *patch)
- 	kobject_init(&patch->kobj, &klp_ktype_patch);
- 	patch->enabled = false;
- 	patch->forced = false;
--	INIT_WORK(&patch->free_work, klp_free_patch_work_fn);
- 
- 	klp_for_each_object_static(patch, obj) {
- 		if (!obj->funcs)
-diff --git a/kernel/livepatch/core.h b/kernel/livepatch/core.h
-index 8ff97745ba40..ea593f370049 100644
---- a/kernel/livepatch/core.h
-+++ b/kernel/livepatch/core.h
-@@ -13,7 +13,7 @@ extern struct list_head klp_patches;
- #define klp_for_each_patch(patch)	\
- 	list_for_each_entry(patch, &klp_patches, list)
- 
--void klp_free_patches_async(struct list_head *to_free);
-+void klp_free_patches(struct list_head *to_free);
- void klp_unpatch_replaced_patches(struct klp_patch *new_patch);
- void klp_discard_nops(struct klp_patch *new_patch);
- 
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index a9ebc9c5db02..3eff5fc0deee 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -41,7 +41,7 @@ static void klp_transition_work_fn(struct work_struct *work)
- 
- 	mutex_unlock(&klp_mutex);
- 
--	klp_free_patches_async(&to_free);
-+	klp_free_patches(&to_free);
- }
- static DECLARE_DELAYED_WORK(klp_transition_work, klp_transition_work_fn);
- 
--- 
-2.31.1
+Then you don't need to save all regs for live kernel patching. And I am
+also working on function tracing with arguments with this too.
 
+That is, to call a generic ftrace callback, you need to save all the args
+that are stored in registers to prevent the callback from clobbering them.
+As live kernel patching only needs to have the arguments of the functions,
+you save time from having to save the other regs as well.
+
+The callbacks now have "struct ftrace_regs" instead of pt_regs, because it
+will allow non ftrace_regs_caller functions to access the arguments if it
+is supported.
+
+Look at how x86_64 implements this. It should be possible to do this for
+all other archs as well.
+
+Also note, by doing this, we can then get rid of the ftrace_graph_caller,
+and have function graph tracer be a function tracing callback, as it will
+allow ftrace_graph_caller to have access to the stack and the return as
+well.
+
+If you need any more help or information to do this, I'd be happy to assist
+you.
+
+Note, you can implement this first, (I looked over the patches and they
+seem fine) and then update both ppc64 and ppc32 to implement
+DYNAMIC_FTRACE_WITH_ARGS.
+
+Cheers,
+
+-- Steve
