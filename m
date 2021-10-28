@@ -2,128 +2,90 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1739043D213
-	for <lists+live-patching@lfdr.de>; Wed, 27 Oct 2021 22:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A7943DF85
+	for <lists+live-patching@lfdr.de>; Thu, 28 Oct 2021 12:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243779AbhJ0UJk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 27 Oct 2021 16:09:40 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:49046 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243780AbhJ0UJh (ORCPT
+        id S230077AbhJ1KzV (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 28 Oct 2021 06:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230242AbhJ1KzN (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 27 Oct 2021 16:09:37 -0400
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 7D73120A5C64;
-        Wed, 27 Oct 2021 13:07:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7D73120A5C64
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1635365231;
-        bh=BGo/Dtg7YwC8q+RFxuQcteIV/YmgEHdRFKrKDWOW+zM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=GFFcGMtfPsb7c/cwQ8Bs8gXv83qw86n+XfEOD5DCkazvHXeY3soocMGmFANA8g44+
-         GKuU9BHNGKPokRjr1ZWDQI8ZXb+tccj/Q3E6aO1dYD01iKpzkfh11+o59n00bMzpbI
-         TQh3WVZMWYu5tcXheJo/g0DQlrYdvUTmtiB9mxYI=
-Subject: Re: [PATCH v10 08/11] arm64: Rename unwinder functions, prevent them
- from being traced and kprobed
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
- <20211015025847.17694-1-madvenka@linux.microsoft.com>
- <20211015025847.17694-9-madvenka@linux.microsoft.com>
- <20211027175325.GC58503@C02TD0UTHF1T.local>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <88b9f9fb-155f-da97-b8ef-755eaf2a4af9@linux.microsoft.com>
-Date:   Wed, 27 Oct 2021 15:07:09 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 28 Oct 2021 06:55:13 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B908DC061570
+        for <live-patching@vger.kernel.org>; Thu, 28 Oct 2021 03:52:46 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id s19so9887336ljj.11
+        for <live-patching@vger.kernel.org>; Thu, 28 Oct 2021 03:52:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=vprh3gRT3Cegcj0K7Fy7tqOfLGKK384XjLMkCZvF/BY=;
+        b=EtnT33YF5oI/xr2aTAQjUSGJK1ma0+Mwnn0v+QBcfpsCHZvaUZxEcJoHpX3KOXXry3
+         ciE3qqMaUft2455oHkoPX9dBWVWFudG3PY8WdRSFNaLxcixlxSAKobADEX1ZsUNQ429X
+         FiJQRcY7djeMFv6ifH7DDV7rX/H0yBMwHaBqQDrl1kSmABlCcrBhYU77k6XQeJvuZON0
+         wFptnqOSAcYUp7bwjbjnWnP6OQgZtGenoMsNtMzPWxFjttnGHdpWqkU+aJKJ/WyjffIA
+         NO8l9Ad9rSJ0hrnNjkyeokFqeS2/iw9/N5pztGp8X3b81ekbKSO8E7PVKlcSFtlJpVYJ
+         qlUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=vprh3gRT3Cegcj0K7Fy7tqOfLGKK384XjLMkCZvF/BY=;
+        b=D8CqHpOlK6TSNKAPgOLA6rGbyMgb0VlQVSCf+VtauFMBVQAdi10aXm6lPfn2V68BJC
+         MxIXuR1vq0nzp870Rd+aI4iGY2WKAZG6z5CupD3TijUj2rCvH7GX8TQxuuemjXSY3zS7
+         XNRqLZV2rkRfWzagnx3aXHVR41KybKM5j3imNiuA1J5nQ7n2Nx7zfhxjAxoj6j+1r0Ln
+         7x5q3Lzz97240KfnBWC/eUIENxN0gSDWzEkBbq4ZJpcz8wrwkwhGk6FAiryid4fPW3Ub
+         6IDHca+Psdf+5OxGfsKXh+cfIeuyYz/gNbw7SmqyZQWIq9slR8f6TKneAY2E1rPLqUuV
+         TvrA==
+X-Gm-Message-State: AOAM533NP8su5h+TMrOeTzeuUV2AEUGden6d90TJ0rO7FoTSSrjgFv3y
+        9FUtQ7zBW8Rxh5UhrVnjBFwpKapeA4sDg2y5mmA=
+X-Google-Smtp-Source: ABdhPJzehOjMsPQs6gO3ALzREYdrW8i97313i64E3NQdcK+A77VVk3cKFNnogye3VICaLiehETR3kguB0aX1QmtmdTQ=
+X-Received: by 2002:a05:651c:626:: with SMTP id k38mr1240277lje.298.1635418364966;
+ Thu, 28 Oct 2021 03:52:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211027175325.GC58503@C02TD0UTHF1T.local>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:ab3:6f89:0:0:0:0:0 with HTTP; Thu, 28 Oct 2021 03:52:44
+ -0700 (PDT)
+Reply-To: aabdulwalialhashmi@gmail.com
+From:   Abdulwali Alhashmi <husamalsayed.hs@gmail.com>
+Date:   Thu, 28 Oct 2021 03:52:44 -0700
+Message-ID: <CAF6yYCdurETG1q5Wp32u5DYmETdWMrkOWJ9FBRJDhwdsAu6ZoQ@mail.gmail.com>
+Subject: PLEASE GET BACK TO ME IF I CAN I TRUST YOU
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+-- 
+Greetings,
 
+Firstly, I apologize for encroaching into your privacy in this manner
+as it may seem unethical though it is a matter of great importance.
 
-On 10/27/21 12:53 PM, Mark Rutland wrote:
-> On Thu, Oct 14, 2021 at 09:58:44PM -0500, madvenka@linux.microsoft.com wrote:
->> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>
->> Rename unwinder functions for consistency and better naming.
->>
->> 	- Rename start_backtrace() to unwind_start().
->> 	- Rename unwind_frame() to unwind_next().
->> 	- Rename walk_stackframe() to unwind().
-> 
-> This looks good to me.
-> 
+I am Abdulwali Alhashmi, I work with Cayman National Bank (Cayman Islands).
 
-Thanks.
+I am contacting you because my status would not permit me to do this
+alone as it is concerning our customer and an investment placed under
+our bank's management over 5 years ago.
 
-> Could we split this from the krpbes/tracing changes? I think this stands
-> on it's own, and (as below) the kprobes/tracing changes need some more
-> explanation, and would make sense as a separate patch.
-> 
+I have a proposal I would love to discuss with you which will be very
+beneficial to both of us. It's regarding my late client who has a huge
+deposit with my bank.
 
-OK. I will split the patches.
+He is from your country and shares the same last name with you.
 
->> Prevent the following unwinder functions from being traced:
->>
->> 	- unwind_start()
->> 	- unwind_next()
->>
->> 	unwind() is already prevented from being traced.
-> 
-> This could do with an explanation in the commis message as to why we
-> need to do this. If this is fixing a latent issue, it should be in a
-> preparatory patch that we can backport.
-> 
-> I dug into this a bit, and from taking a look, we prohibited ftrace in commit:
-> 
->   0c32706dac1b0a72 ("arm64: stacktrace: avoid tracing arch_stack_walk()")
-> 
-> ... which is just one special case of graph return stack unbalancing,
-> and should be addressed by using HAVE_FUNCTION_GRAPH_RET_ADDR_PTR, so
-> with the patch making us use HAVE_FUNCTION_GRAPH_RET_ADDR_PTR, that's
-> no longer necessary.
-> 
-> So we no longer seem to have a specific reason to prohibit ftrace
-> here.
-> 
+I want to seek your consent to present you as the next of kin to my
+late client who died and left a huge deposit with my bank.
 
-OK, I will think about this and add a comment.
+I would respectfully request that you keep the contents of this mail
+confidential and respect the integrity of the information you come by
+as a result of this mail.
 
->> Prevent the following unwinder functions from being kprobed:
->>
->> 	- unwind_start()
->>
->> 	unwind_next() and unwind() are already prevented from being kprobed.
-> 
-> Likewise, I think this needs some explanation. From diggin, we
-> prohibited kprobes in commit:
-> 
->   ee07b93e7721ccd5 ("arm64: unwind: Prohibit probing on return_address()")
-> 
-> ... and the commit message says we need to do this because this is
-> (transitively) called by trace_hardirqs_off(), which is kprobes
-> blacklisted, but doesn't explain the actual problem this results in.
-> 
+Please kindly get back to me for more details if I can TRUST YOU.{
+aabdulwalialhashmi@gmail.com }
 
-OK. I will think about this and add a comment.
-
-> AFAICT x86 directly uses __builtin_return_address() here, but that won't
-> recover rewritten addresses, which seems like a bug (or at least a
-> limitation) on x86, assuming I've read that correctly.
-> 
-
-OK.
-
-Thanks,
-
-Madhavan
+Regards
+Abdulwali Alhashmi
+Treasury and Deposit Management,
+Cayman National Bank Cayman Islands
