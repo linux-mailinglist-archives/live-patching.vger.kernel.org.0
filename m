@@ -2,114 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2247544166C
-	for <lists+live-patching@lfdr.de>; Mon,  1 Nov 2021 10:22:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81739441AA1
+	for <lists+live-patching@lfdr.de>; Mon,  1 Nov 2021 12:26:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232795AbhKAJY7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 1 Nov 2021 05:24:59 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:52549 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232511AbhKAJXk (ORCPT
+        id S231437AbhKAL2k (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 1 Nov 2021 07:28:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26282 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232001AbhKAL2k (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 1 Nov 2021 05:23:40 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4C1585C0124;
-        Mon,  1 Nov 2021 05:21:07 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 01 Nov 2021 05:21:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=russell.cc; h=
-        message-id:subject:from:to:cc:in-reply-to:references
-        :content-type:date:mime-version:content-transfer-encoding; s=
-        fm3; bh=84501gjsOD2kbsVp9NnfQgdde8rmPHYM3ZksjI35kNo=; b=UnGUCf4Q
-        4gRYUaXleBq6CWSqlYH/z0TAQ0Ulh358rVWElFqY1aC78Fki6dIZ/bQjEBlF22+u
-        pSapZ7tZ+GzsLYqhZAMdho3aysAXr/08pnj7r5z57sVWlH95XP5c1n49ccKnjo5i
-        nI7WzlyANhEydIe2VgTuAioRnxCy8QzgW1skfiZtu+CU+n9SgeusaZtQO8sO8SRK
-        3F51KwKSAt257D5KzSnWy5BMy5wocA/xkHfaSt7KdwKM8x0hOeQBa7361Xv5vY7i
-        kw6xBME4CIa2HZjvyWkTfRK2sh3Pq3j6AAqaJrSKEZf9SkthuXcZi0r9kkjreZ9d
-        mbQmTRTJPcWNiw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=84501gjsOD2kbsVp9NnfQgdde8rmPHYM3ZksjI35k
-        No=; b=diFBXxPTo25zcpIqem9MXCz3mScmOOBNU1fSAOdDVfYTZGXf+/WgJrusn
-        dcDYFswnFzT1zEgKW5GIsSHO4em38P2hd48iNJyIERFBQORuim+bLCaGUSIFVco+
-        YkJ6VQMhoRxenAIiHkZ00bYgb6dakeVxZFxqXnWf3aEWCBQ3uEa/Lj0FWHswzdF7
-        ibsG2swARnNAZsUds38K3gSSHG4MibR+4mlSUxPKclIKG/ZcUEFW3YzbNpVGzHVy
-        jCDTxFv9nvGzlghyR6kGbQvIHSzjogxVYSevTtO3RvPvf6DcwYQDo+7GMbBqUqa6
-        E4KEJ9VlHbQJS75eFCQoLbwqTbz0Q==
-X-ME-Sender: <xms:grF_YVEx4ow01CQWQJ-CbFfcrqMdNOXHSB834ceGU8Tk_qTDUukZoQ>
-    <xme:grF_YaXhPzHBa2aHEmMkKY1nNTGjCmMluzKwy2vISVu_kjgOZd6JtyDiS4SY0Mt7S
-    4tfDjhlZ4Gw4uBjdg>
-X-ME-Received: <xmr:grF_YXKpaW5-W8vX_u5TONtWtW1amAPKzEbaH3yQwt6OPWloXTglcmmKT_fWeeC7SCx1nhVn9bkntMSmmMu6MKL7llREDBwiZ6HvKUOUQGw6MA12lb5n>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdehvddgtdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdludehmdenucfjughrpefkuffhvfgjfhgtffggfgfgsehtjeertddt
-    reejnecuhfhrohhmpeftuhhsshgvlhhlucevuhhrrhgvhicuoehruhhstghurhesrhhush
-    hsvghllhdrtggtqeenucggtffrrghtthgvrhhnpeefteekffefuefgtddtgedvgfdvuedt
-    ieduiefhleelveeuueeikeegvddvhedtveenucffohhmrghinhepghhithhhuhgsrdgtoh
-    hmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprhhu
-    shgtuhhrsehruhhsshgvlhhlrdgttg
-X-ME-Proxy: <xmx:g7F_YbH9NEdzx70iAc9IPgsCDiRcwuM0Vl7Su6qspyl1SrDo4drGYg>
-    <xmx:g7F_YbXO7Ib-DwpBozD3SSapdiDvS7PMG9ddvZqNc8TijmR8bqLvvA>
-    <xmx:g7F_YWM9TTqj75FcY3TPeRswJplO_eDXlhVfcZr1D1ylmap0sbWkpA>
-    <xmx:g7F_YdKM8u3QVE0Fhklu2hyB4QTsW0QORIv-aeU0xpJIKBKBerZySA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 1 Nov 2021 05:21:04 -0400 (EDT)
-Message-ID: <7ee0c84650617e6307b29674dd0a12c7258417cf.camel@russell.cc>
-Subject: Re: ppc64le STRICT_MODULE_RWX and livepatch apply_relocate_add()
- crashes
-From:   Russell Currey <ruscur@russell.cc>
-To:     Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Jordan Niethe <jniethe5@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-In-Reply-To: <YX9UUBeudSUuJs01@redhat.com>
-References: <YX9UUBeudSUuJs01@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Date:   Mon, 01 Nov 2021 19:20:59 +1000
+        Mon, 1 Nov 2021 07:28:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635765966;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=KnETWn4ATxLuSMGRTYpAvY2hoOsYqW2nRmiZQxMBcXc=;
+        b=d2erFNKXIA0Tm4+Shucu9Y3RLSRrOUBSJGDEfO6C5xkhjDFRoHLlI/xaoOsuKNoaW50KMb
+        ZRAEb5sM7iSEJv3XkLezOTmkU41By25VuV/hv42cF1uI31yWQpo2KDFmevCC5nisRfKZlx
+        stFraJdAux4Xwg/TAZRC/u3vX+9LTq8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-60-PbsYymxrN6iKvl-3Zjrifg-1; Mon, 01 Nov 2021 07:26:03 -0400
+X-MC-Unique: PbsYymxrN6iKvl-3Zjrifg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 46356802682;
+        Mon,  1 Nov 2021 11:26:02 +0000 (UTC)
+Received: from localhost (ovpn-8-37.pek2.redhat.com [10.72.8.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8389B6091B;
+        Mon,  1 Nov 2021 11:25:55 +0000 (UTC)
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Ming Lei <ming.lei@redhat.com>
+Subject: [PATCH V3 0/3] livepatch: cleanup kpl_patch kobject release
+Date:   Mon,  1 Nov 2021 19:25:45 +0800
+Message-Id: <20211101112548.3364086-1-ming.lei@redhat.com>
 MIME-Version: 1.0
-User-Agent: Evolution 3.40.4 
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Sun, 2021-10-31 at 22:43 -0400, Joe Lawrence wrote:
-> Starting with 5.14 kernels, I can reliably reproduce a crash [1] on
-> ppc64le when loading livepatches containing late klp-relocations [2].
-> These are relocations, specific to livepatching, that are resolved not
-> when a livepatch module is loaded, but only when a livepatch-target
-> module is loaded.
+Hello,
 
-Hey Joe, thanks for the report.
+The 1st patch moves module_put() to release handler of klp_patch
+kobject.
 
-> I haven't started looking at a fix yet, but in the case of the x86 code
-> update, its apply_relocate_add() implementation was modified to use a
-> common text_poke() function to allowed us to drop
-> module_{en,dis}ble_ro() games by the livepatching code.
+The 2nd patch changes to free klp_patch and other kobjects without
+klp_mutex.
 
-It should be a similar fix for Power, our patch_instruction() uses a
-text poke area but apply_relocate_add() doesn't use it and does its own
-raw patching instead.
+The 3rd patch switches to synchronous kobject release for klp_patch.
 
-> I can take a closer look this week, but thought I'd send out a report
-> in case this may be a known todo for STRICT_MODULE_RWX on Power.
 
-I'm looking into this now, will update when there's progress.  I
-personally wasn't aware but Jordan flagged this as an issue back in
-August [0].  Are the selftests in the klp-convert tree sufficient for
-testing?  I'm not especially familiar with livepatching & haven't used
-the userspace tools.
+V3:
+	- one line fix on check of list_empty() in enabled_store(), 3/3
 
-- Russell
+V2:
+	- remove enabled attribute before deleting this klp_patch kobject,
+	for avoiding deadlock in deleting me
 
-[0] https://github.com/linuxppc/issues/issues/375
 
-> 
-> -- Joe
+Ming Lei (3):
+  livepatch: remove 'struct completion finish' from klp_patch
+  livepatch: free klp_patch object without holding klp_mutex
+  livepatch: free klp_patch object synchronously
+
+ include/linux/livepatch.h     |  2 --
+ kernel/livepatch/core.c       | 67 ++++++++++++++++-------------------
+ kernel/livepatch/core.h       |  3 +-
+ kernel/livepatch/transition.c | 23 ++++++++----
+ kernel/livepatch/transition.h |  2 +-
+ 5 files changed, 50 insertions(+), 47 deletions(-)
+
+-- 
+2.31.1
 
