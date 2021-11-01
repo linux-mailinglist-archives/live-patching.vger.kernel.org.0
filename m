@@ -2,58 +2,84 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A673D4410BD
-	for <lists+live-patching@lfdr.de>; Sun, 31 Oct 2021 21:09:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64EBD4411AD
+	for <lists+live-patching@lfdr.de>; Mon,  1 Nov 2021 01:31:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbhJaUMD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 31 Oct 2021 16:12:03 -0400
-Received: from mailgate.kemenperin.go.id ([202.47.80.142]:58854 "EHLO
-        mailgate.kemenperin.go.id" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbhJaUMC (ORCPT
+        id S229982AbhKAAeT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 31 Oct 2021 20:34:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40642 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230333AbhKAAeS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 31 Oct 2021 16:12:02 -0400
-X-Greylist: delayed 5193 seconds by postgrey-1.27 at vger.kernel.org; Sun, 31 Oct 2021 16:11:58 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mailgate.kemenperin.go.id (Postfix) with ESMTP id 2A4A7828F1E;
-        Mon,  1 Nov 2021 01:00:16 +0700 (WIB)
-Received: from mailgate.kemenperin.go.id ([127.0.0.1])
-        by localhost (mailgate.kemenperin.go.id [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id aSDB9UjKRu4l; Mon,  1 Nov 2021 01:00:13 +0700 (WIB)
-Received: from localhost (localhost [127.0.0.1])
-        by mailgate.kemenperin.go.id (Postfix) with ESMTP id DDB2F828CE9;
-        Mon,  1 Nov 2021 00:56:54 +0700 (WIB)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mailgate.kemenperin.go.id DDB2F828CE9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kemenperin.go.id;
-        s=3298A942-BBC6-11E3-B333-483736368EC2; t=1635703015;
-        bh=+tje3x5yIAM91gcZZJ8xoRjx6IuR+B3ePoXPCKu2mgI=;
-        h=Date:From:Message-ID:MIME-Version;
-        b=KATUX992ge7D0qn9bU4D7zaeizgarlAYHOvy9yELrWAITGQnfQ7PTBkI/H7sn7ojK
-         6pYXvXirX8AfGfpGsZJ7vxq+ahjwtWBHvtg0siRTUmL0krLt/o2v2EbA8Sx2Bxubbh
-         OIJ8zNHAsG4Q9ZMaXzGon9a6CFzAJeqzE8v3/xHo=
-X-Virus-Scanned: amavisd-new at kemenperin.go.id
-Received: from mailgate.kemenperin.go.id ([127.0.0.1])
-        by localhost (mailgate.kemenperin.go.id [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 3ZjV-aWozXQn; Mon,  1 Nov 2021 00:56:54 +0700 (WIB)
-Received: from mailgate.kemenperin.go.id (mailgate.kemenperin.go.id [10.1.0.89])
-        by mailgate.kemenperin.go.id (Postfix) with ESMTP id F1386828B2F;
-        Mon,  1 Nov 2021 00:55:03 +0700 (WIB)
-Date:   Mon, 1 Nov 2021 00:55:03 +0700 (WIB)
-From:   Manuel Franco <silitonga@kemenperin.go.id>
-Reply-To: Manuel Franco <manuelfrancospende1@gmail.com>
-Message-ID: <316885095.327001.1635702903906.JavaMail.zimbra@kemenperin.go.id>
-Subject: 2,000,000.00 Euro
+        Sun, 31 Oct 2021 20:34:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635726706;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9SQXApe41CIAZ3ih9wcWp+4OzSeZnwb2LUmrVkWeZ14=;
+        b=IPYi2rb5BUm9xVpbP6DQierbngoROs3wmhpO72iaI6rx7cWbnZB22yoNjd77GP+BYBnCH/
+        8iajwA8Gd7DAQu4J7iFHYz47b7AkI+Zn0olIypl5OTLG9d/d1HF6kg/88Hmg26qqrx/Tax
+        3ZTHskfzAoY0jZRTF/aXn3UPyAYfLGg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-18-yuBqfpSeOb2aRhLcfq3I1g-1; Sun, 31 Oct 2021 20:31:42 -0400
+X-MC-Unique: yuBqfpSeOb2aRhLcfq3I1g-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4F53136301;
+        Mon,  1 Nov 2021 00:31:41 +0000 (UTC)
+Received: from localhost (ovpn-8-17.pek2.redhat.com [10.72.8.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 11C3C5C1C5;
+        Mon,  1 Nov 2021 00:31:37 +0000 (UTC)
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Ming Lei <ming.lei@redhat.com>
+Subject: [PATCH V2 0/3] livepatch: cleanup kpl_patch kobject release
+Date:   Mon,  1 Nov 2021 08:31:29 +0800
+Message-Id: <20211101003132.3336497-1-ming.lei@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.1.0.89]
-Thread-Index: cYoBZ9/HjDprLbzYDgjeQYDGCx21TQ==
-Thread-Topic: 2,000,000.00 Euro
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Hello,
 
+The 1st patch moves module_put() to release handler of klp_patch
+kobject.
+
+The 2nd patch changes to free klp_patch and other kobjects without
+klp_mutex.
+
+The 3rd patch switches to synchronous kobject release for klp_patch.
+
+
+V2:
+	- remove enabled attribute before deleting this klp_patch kobject,
+	for avoiding deadlock in deleting me
+
+
+Ming Lei (3):
+  livepatch: remove 'struct completion finish' from klp_patch
+  livepatch: free klp_patch object without holding klp_mutex
+  livepatch: free klp_patch object synchronously
+
+ include/linux/livepatch.h     |  2 --
+ kernel/livepatch/core.c       | 67 ++++++++++++++++-------------------
+ kernel/livepatch/core.h       |  3 +-
+ kernel/livepatch/transition.c | 23 ++++++++----
+ kernel/livepatch/transition.h |  2 +-
+ 5 files changed, 50 insertions(+), 47 deletions(-)
 
 -- 
-You have a donation of 2,000,000.00 Euro.Get back to me now so we can proceed.
+2.31.1
+
