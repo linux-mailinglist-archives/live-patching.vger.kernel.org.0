@@ -2,81 +2,114 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1D894414A2
-	for <lists+live-patching@lfdr.de>; Mon,  1 Nov 2021 09:03:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2247544166C
+	for <lists+live-patching@lfdr.de>; Mon,  1 Nov 2021 10:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231402AbhKAIFo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 1 Nov 2021 04:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231441AbhKAIFm (ORCPT
+        id S232795AbhKAJY7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 1 Nov 2021 05:24:59 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:52549 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232511AbhKAJXk (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 1 Nov 2021 04:05:42 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C22C0613F5
-        for <live-patching@vger.kernel.org>; Mon,  1 Nov 2021 01:03:09 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id x27so34776547lfu.5
-        for <live-patching@vger.kernel.org>; Mon, 01 Nov 2021 01:03:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=kTlPYaJ3qmdiuwil3bN4/5BGELxQxYaH2mDV2D/+NOc=;
-        b=noIunhl9PvoPcUkMO1aIA1oVXnNEN4KUMnLzX81u41bUYmm654/d+8Zmtlo6rVUfiP
-         URKnr6K8ehg0Wh7FRqSI9k6fPv2DsXoeQF5RyVvvBWL5iE17ii0Hwy7DEGCxBrabSyNn
-         EOknVx9TADL+GR6CwdZv5iwiQkA+SgU+2TIIuYRY7UtEIvS3tf+3AOfWSGAHDegfCUDW
-         KFTXPeEWCeZvS9OsO77XW5FzLhbHNg24miTgIfpxgxdtWSxpsMgcVp1ovVt1nV8bPABY
-         Nt9t0GENejSl8bnKdYk9qzpsZJoEh4QUKHq3To1LyThtQ/UNoUZiShWGV9dnp4emntud
-         6TAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=kTlPYaJ3qmdiuwil3bN4/5BGELxQxYaH2mDV2D/+NOc=;
-        b=zvOywKQD20rxiU95eKgvuPo3gW0vUnU0horawnvbRUAq+DWayVMrE4NhnrKj5deXGL
-         surAIgOHIUFs5ryeMyhqrHThdB0+//R35EMKClMJvXj3PPZaV3+x/QFnB6yXE8WdWFKG
-         sS69f6d98MXWQpioMG+Tmk6tW8xXkzXk1FjU68+fZVdO88bgBR+gFV6Tw3EqS0iSm5AO
-         55jN34jd6UtVQGTNAePV/5mYdPmyGTKUzGXE6Gdvh+NpYwGiGVfhBBtXOto+bNPIQp4K
-         EjT3hQxNaTk8S819jarEk8XvCbwAvzIj36A1ACCUoFFEQZKf32eFAg7QBNsB6Zu4yzM+
-         Zgsg==
-X-Gm-Message-State: AOAM531qwJAjZF1gEhT+GAdjnG1o/N+SFeGrp5o9avSDR0gUdpz4BC0/
-        S1WbooYhWhqwAHFkEwNrNw9FNM68ksdNpczP4kM=
-X-Google-Smtp-Source: ABdhPJxXtE0G1whIGXe2hxI/YsBwuQCFdtv4O25KgKEw0cNYTytiUo7Vy8b5pLqj8uf6S/Zvq7lb35uF1vpbXYsY0v0=
-X-Received: by 2002:a05:6512:a8e:: with SMTP id m14mr26458494lfu.575.1635753787779;
- Mon, 01 Nov 2021 01:03:07 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a05:6512:304b:0:0:0:0 with HTTP; Mon, 1 Nov 2021 01:03:07
- -0700 (PDT)
-Reply-To: aisha.7d@yahoo.com
-From:   Aisha AG <rbx17058@gmail.com>
-Date:   Mon, 1 Nov 2021 00:03:07 -0800
-Message-ID: <CA+KbyyeEn+hP9T75RRy6+snGWxpAx+xn43MKdB30KYFYZNAV2Q@mail.gmail.com>
-Subject: Hello Dear,
-To:     undisclosed-recipients:;
+        Mon, 1 Nov 2021 05:23:40 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4C1585C0124;
+        Mon,  1 Nov 2021 05:21:07 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 01 Nov 2021 05:21:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=russell.cc; h=
+        message-id:subject:from:to:cc:in-reply-to:references
+        :content-type:date:mime-version:content-transfer-encoding; s=
+        fm3; bh=84501gjsOD2kbsVp9NnfQgdde8rmPHYM3ZksjI35kNo=; b=UnGUCf4Q
+        4gRYUaXleBq6CWSqlYH/z0TAQ0Ulh358rVWElFqY1aC78Fki6dIZ/bQjEBlF22+u
+        pSapZ7tZ+GzsLYqhZAMdho3aysAXr/08pnj7r5z57sVWlH95XP5c1n49ccKnjo5i
+        nI7WzlyANhEydIe2VgTuAioRnxCy8QzgW1skfiZtu+CU+n9SgeusaZtQO8sO8SRK
+        3F51KwKSAt257D5KzSnWy5BMy5wocA/xkHfaSt7KdwKM8x0hOeQBa7361Xv5vY7i
+        kw6xBME4CIa2HZjvyWkTfRK2sh3Pq3j6AAqaJrSKEZf9SkthuXcZi0r9kkjreZ9d
+        mbQmTRTJPcWNiw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=84501gjsOD2kbsVp9NnfQgdde8rmPHYM3ZksjI35k
+        No=; b=diFBXxPTo25zcpIqem9MXCz3mScmOOBNU1fSAOdDVfYTZGXf+/WgJrusn
+        dcDYFswnFzT1zEgKW5GIsSHO4em38P2hd48iNJyIERFBQORuim+bLCaGUSIFVco+
+        YkJ6VQMhoRxenAIiHkZ00bYgb6dakeVxZFxqXnWf3aEWCBQ3uEa/Lj0FWHswzdF7
+        ibsG2swARnNAZsUds38K3gSSHG4MibR+4mlSUxPKclIKG/ZcUEFW3YzbNpVGzHVy
+        jCDTxFv9nvGzlghyR6kGbQvIHSzjogxVYSevTtO3RvPvf6DcwYQDo+7GMbBqUqa6
+        E4KEJ9VlHbQJS75eFCQoLbwqTbz0Q==
+X-ME-Sender: <xms:grF_YVEx4ow01CQWQJ-CbFfcrqMdNOXHSB834ceGU8Tk_qTDUukZoQ>
+    <xme:grF_YaXhPzHBa2aHEmMkKY1nNTGjCmMluzKwy2vISVu_kjgOZd6JtyDiS4SY0Mt7S
+    4tfDjhlZ4Gw4uBjdg>
+X-ME-Received: <xmr:grF_YXKpaW5-W8vX_u5TONtWtW1amAPKzEbaH3yQwt6OPWloXTglcmmKT_fWeeC7SCx1nhVn9bkntMSmmMu6MKL7llREDBwiZ6HvKUOUQGw6MA12lb5n>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdehvddgtdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    gfrhhlucfvnfffucdludehmdenucfjughrpefkuffhvfgjfhgtffggfgfgsehtjeertddt
+    reejnecuhfhrohhmpeftuhhsshgvlhhlucevuhhrrhgvhicuoehruhhstghurhesrhhush
+    hsvghllhdrtggtqeenucggtffrrghtthgvrhhnpeefteekffefuefgtddtgedvgfdvuedt
+    ieduiefhleelveeuueeikeegvddvhedtveenucffohhmrghinhepghhithhhuhgsrdgtoh
+    hmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprhhu
+    shgtuhhrsehruhhsshgvlhhlrdgttg
+X-ME-Proxy: <xmx:g7F_YbH9NEdzx70iAc9IPgsCDiRcwuM0Vl7Su6qspyl1SrDo4drGYg>
+    <xmx:g7F_YbXO7Ib-DwpBozD3SSapdiDvS7PMG9ddvZqNc8TijmR8bqLvvA>
+    <xmx:g7F_YWM9TTqj75FcY3TPeRswJplO_eDXlhVfcZr1D1ylmap0sbWkpA>
+    <xmx:g7F_YdKM8u3QVE0Fhklu2hyB4QTsW0QORIv-aeU0xpJIKBKBerZySA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 1 Nov 2021 05:21:04 -0400 (EDT)
+Message-ID: <7ee0c84650617e6307b29674dd0a12c7258417cf.camel@russell.cc>
+Subject: Re: ppc64le STRICT_MODULE_RWX and livepatch apply_relocate_add()
+ crashes
+From:   Russell Currey <ruscur@russell.cc>
+To:     Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jessica Yu <jeyu@kernel.org>,
+        Jordan Niethe <jniethe5@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+In-Reply-To: <YX9UUBeudSUuJs01@redhat.com>
+References: <YX9UUBeudSUuJs01@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 01 Nov 2021 19:20:59 +1000
+MIME-Version: 1.0
+User-Agent: Evolution 3.40.4 
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
--- 
-Hello Dear,
+On Sun, 2021-10-31 at 22:43 -0400, Joe Lawrence wrote:
+> Starting with 5.14 kernels, I can reliably reproduce a crash [1] on
+> ppc64le when loading livepatches containing late klp-relocations [2].
+> These are relocations, specific to livepatching, that are resolved not
+> when a livepatch module is loaded, but only when a livepatch-target
+> module is loaded.
 
-I came across your e-mail contact prior to a private search while in
-need of your assistance. I am Aisha Al-Qaddafi, the only biological
-Daughter of Former President of Libya Col.Muammar Al-Qaddafi.
-Am a Widow and a single Mother with three Children.
+Hey Joe, thanks for the report.
 
-I have investment funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar $27.500.000.00, and i need a trusted
-investment Manager/Partner because of my current refugee status,
-however, I am interested in you for investment project assistance in
-your country, may be from there, we can build business relationship
-in the nearest future.
+> I haven't started looking at a fix yet, but in the case of the x86 code
+> update, its apply_relocate_add() implementation was modified to use a
+> common text_poke() function to allowed us to drop
+> module_{en,dis}ble_ro() games by the livepatching code.
 
-I am willing to negotiate an investment/business profit sharing ratio
-with you based on the future investment earning profits.
+It should be a similar fix for Power, our patch_instruction() uses a
+text poke area but apply_relocate_add() doesn't use it and does its own
+raw patching instead.
 
-If you are willing to handle this project on my behalf kindly reply
-urgently to enable me to provide you more information about the
-investment funds.
-Best Regards
-Mrs Aisha Al-Qaddafi.
+> I can take a closer look this week, but thought I'd send out a report
+> in case this may be a known todo for STRICT_MODULE_RWX on Power.
+
+I'm looking into this now, will update when there's progress.  I
+personally wasn't aware but Jordan flagged this as an issue back in
+August [0].  Are the selftests in the klp-convert tree sufficient for
+testing?  I'm not especially familiar with livepatching & haven't used
+the userspace tools.
+
+- Russell
+
+[0] https://github.com/linuxppc/issues/issues/375
+
+> 
+> -- Joe
+
