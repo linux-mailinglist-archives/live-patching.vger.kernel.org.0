@@ -2,300 +2,153 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AE15441226
-	for <lists+live-patching@lfdr.de>; Mon,  1 Nov 2021 03:26:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17905441234
+	for <lists+live-patching@lfdr.de>; Mon,  1 Nov 2021 03:43:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230281AbhKAC3G (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 31 Oct 2021 22:29:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21727 "EHLO
+        id S230246AbhKACqL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 31 Oct 2021 22:46:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35038 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230234AbhKAC3F (ORCPT
+        by vger.kernel.org with ESMTP id S230222AbhKACqL (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 31 Oct 2021 22:29:05 -0400
+        Sun, 31 Oct 2021 22:46:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635733592;
+        s=mimecast20190719; t=1635734618;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2CFcDAAKtdRHfDHUO+AtkQWLMsZM3R+b56iEA9NeVjE=;
-        b=i2GvQLWwGNM49xdejioYwjfPQeI9VrOB784wut/u+SBWBhW10ciKqqj49sEMjshkAV5k7K
-        f4zjcpSJM3FSGG9yjkIgcKRh27Af/hPsw3B+KDC9Rsvxx+cw5mFAuts29Ci8FboASJTmAA
-        wB0JiPta/qEypA4KCy2TdlWywFJzEPU=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=vdvnnd+T5ZBlQ5mLqGNUvJDSXvFCxOPbjTGBtJeFh4s=;
+        b=QEjohzc9/CgaE09pVMBfM+Bpyxs2mW5tWiabpd8u+Wb4FanobY24XPKCw/W58dDtLbAV4/
+        w7kywoXk74cBGPCXxqgAIjSijBAK0N9HA7lsXT0+8iCqUENCLn4HyMOu8hexmJAsc96XpG
+        lMuN0kC7iNLouD0CCyJHv8nbkA6EeAo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-234-UM0ma7m2MEieqWFDyeih2g-1; Sun, 31 Oct 2021 22:26:29 -0400
-X-MC-Unique: UM0ma7m2MEieqWFDyeih2g-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-559-rKVNv_R1P6GOe85mDPyi-Q-1; Sun, 31 Oct 2021 22:43:34 -0400
+X-MC-Unique: rKVNv_R1P6GOe85mDPyi-Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DD93C80668C;
-        Mon,  1 Nov 2021 02:26:27 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2AE861808304;
+        Mon,  1 Nov 2021 02:43:33 +0000 (UTC)
 Received: from redhat.com (unknown [10.22.16.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4048C60D30;
-        Mon,  1 Nov 2021 02:26:20 +0000 (UTC)
-Date:   Sun, 31 Oct 2021 22:26:18 -0400
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2EE1719D9F;
+        Mon,  1 Nov 2021 02:43:30 +0000 (UTC)
+Date:   Sun, 31 Oct 2021 22:43:28 -0400
 From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Ming Lei <ming.lei@redhat.com>
+To:     live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH 0/3] livepatch: cleanup kpl_patch kobject release
-Message-ID: <YX9QSqk8yg2ZbZz/@redhat.com>
-References: <20211028125734.3134176-1-ming.lei@redhat.com>
- <YXv8eoPKXk5gpsa7@redhat.com>
- <YXwjDJx+ZZNmy7CN@T590>
+        Peter Zijlstra <peterz@infradead.org>,
+        Jessica Yu <jeyu@kernel.org>,
+        Jordan Niethe <jniethe5@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Russell Currey <ruscur@russell.cc>
+Subject: ppc64le STRICT_MODULE_RWX and livepatch apply_relocate_add() crashes
+Message-ID: <YX9UUBeudSUuJs01@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YXwjDJx+ZZNmy7CN@T590>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Sat, Oct 30, 2021 at 12:36:28AM +0800, Ming Lei wrote:
-> On Fri, Oct 29, 2021 at 09:51:54AM -0400, Joe Lawrence wrote:
-> > On Thu, Oct 28, 2021 at 08:57:31PM +0800, Ming Lei wrote:
-> > > Hello,
-> > >
-> > > The 1st patch moves module_put() to release handler of klp_patch
-> > > kobject.
-> > >
-> > > The 2nd patch changes to free klp_patch and other kobjects without
-> > > klp_mutex.
-> > >
-> > > The 3rd patch switches to synchronous kobject release for klp_patch.
-> > >
-> > 
-> > Hi Ming,
-> > 
-> > I gave the patchset a spin on top of linus tree @ 1fc596a56b33 and ended
-> > up with a stuck task:
-> > 
-> > Test
-> > ----
-> > Enable the livepatch selftests:
-> >   $ grep CONFIG_TEST_LIVEPATCH .config
-> >   CONFIG_TEST_LIVEPATCH=m
-> > 
-> > Run a continuous kernel build in the background:
-> >   $ while (true); do make clean && make -j$(nproc); done
-> > 
-> > While continuously executing the selftests:
-> >   $ while (true); do make -C tools/testing/selftests/livepatch/ run_tests; done
-> > 
-> > Results
-> > -------
-> 
-> Hello Joe,
-> 
-> Thanks for the test!
-> 
-> Can you replace the 3rd patch with the following one then running the test again?
-> 
-> From 599e96f79aebc388ef3854134312c6039a7884bf Mon Sep 17 00:00:00 2001
-> From: Ming Lei <ming.lei@redhat.com>
-> Date: Thu, 28 Oct 2021 20:11:23 +0800
-> Subject: [PATCH 3/3] livepatch: free klp_patch object synchronously
-> 
-> klp_mutex isn't acquired before calling kobject_put(klp_patch), so it is
-> fine to free klp_patch object synchronously.
-> 
-> One issue is that enabled store() method, in which the klp_patch kobject
-> itself is deleted & released. However, sysfs has provided APIs for dealing
-> with this corner case, so use sysfs_break_active_protection() and
-> sysfs_unbreak_active_protection() for releasing klp_patch kobject from
-> enabled_store().
-> 
-> Signed-off-by: Ming Lei <ming.lei@redhat.com>
-> ---
->  include/linux/livepatch.h     |  1 -
->  kernel/livepatch/core.c       | 32 +++++++++++++-------------------
->  kernel/livepatch/core.h       |  2 +-
->  kernel/livepatch/transition.c |  2 +-
->  4 files changed, 15 insertions(+), 22 deletions(-)
-> 
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index 9712818997c5..4dcebf52fac5 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -169,7 +169,6 @@ struct klp_patch {
->  	struct list_head obj_list;
->  	bool enabled;
->  	bool forced;
-> -	struct work_struct free_work;
->  };
->  
->  #define klp_for_each_object_static(patch, obj) \
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 9ede093d699a..6cfc54f6bdcc 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -337,6 +337,7 @@ static ssize_t enabled_store(struct kobject *kobj, struct kobj_attribute *attr,
->  	int ret;
->  	bool enabled;
->  	LIST_HEAD(to_free);
-> +	struct kernfs_node *kn = NULL;
->  
->  	ret = kstrtobool(buf, &enabled);
->  	if (ret)
-> @@ -369,7 +370,14 @@ static ssize_t enabled_store(struct kobject *kobj, struct kobj_attribute *attr,
->  out:
->  	mutex_unlock(&klp_mutex);
->  
-> -	klp_free_patches_async(&to_free);
-> +	if (list_empty(&to_free)) {
-> +		kn = sysfs_break_active_protection(kobj, &attr->attr);
-> +		WARN_ON_ONCE(!kn);
-> +		sysfs_remove_file(kobj, &attr->attr);
-> +		klp_free_patches(&to_free);
-> +		if (kn)
-> +			sysfs_unbreak_active_protection(kn);
-> +	}
->  
->  	if (ret)
->  		return ret;
-> @@ -684,32 +692,19 @@ static void klp_free_patch_finish(struct klp_patch *patch)
->  	kobject_put(&patch->kobj);
->  }
->  
-> -/*
-> - * The livepatch might be freed from sysfs interface created by the patch.
-> - * This work allows to wait until the interface is destroyed in a separate
-> - * context.
-> - */
-> -static void klp_free_patch_work_fn(struct work_struct *work)
-> -{
-> -	struct klp_patch *patch =
-> -		container_of(work, struct klp_patch, free_work);
-> -
-> -	klp_free_patch_finish(patch);
-> -}
-> -
-> -static void klp_free_patch_async(struct klp_patch *patch)
-> +static void klp_free_patch(struct klp_patch *patch)
->  {
->  	klp_free_patch_start(patch);
-> -	schedule_work(&patch->free_work);
-> +	klp_free_patch_finish(patch);
->  }
->  
-> -void klp_free_patches_async(struct list_head *to_free)
-> +void klp_free_patches(struct list_head *to_free)
->  {
->  	struct klp_patch *patch, *tmp_patch;
->  
->  	list_for_each_entry_safe(patch, tmp_patch, to_free, list) {
->  		list_del_init(&patch->list);
-> -		klp_free_patch_async(patch);
-> +		klp_free_patch(patch);
->  	}
->  }
->  
-> @@ -873,7 +868,6 @@ static int klp_init_patch_early(struct klp_patch *patch)
->  	kobject_init(&patch->kobj, &klp_ktype_patch);
->  	patch->enabled = false;
->  	patch->forced = false;
-> -	INIT_WORK(&patch->free_work, klp_free_patch_work_fn);
->  
->  	klp_for_each_object_static(patch, obj) {
->  		if (!obj->funcs)
-> diff --git a/kernel/livepatch/core.h b/kernel/livepatch/core.h
-> index 8ff97745ba40..ea593f370049 100644
-> --- a/kernel/livepatch/core.h
-> +++ b/kernel/livepatch/core.h
-> @@ -13,7 +13,7 @@ extern struct list_head klp_patches;
->  #define klp_for_each_patch(patch)	\
->  	list_for_each_entry(patch, &klp_patches, list)
->  
-> -void klp_free_patches_async(struct list_head *to_free);
-> +void klp_free_patches(struct list_head *to_free);
->  void klp_unpatch_replaced_patches(struct klp_patch *new_patch);
->  void klp_discard_nops(struct klp_patch *new_patch);
->  
-> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-> index a9ebc9c5db02..3eff5fc0deee 100644
-> --- a/kernel/livepatch/transition.c
-> +++ b/kernel/livepatch/transition.c
-> @@ -41,7 +41,7 @@ static void klp_transition_work_fn(struct work_struct *work)
->  
->  	mutex_unlock(&klp_mutex);
->  
-> -	klp_free_patches_async(&to_free);
-> +	klp_free_patches(&to_free);
->  }
->  static DECLARE_DELAYED_WORK(klp_transition_work, klp_transition_work_fn);
->  
-> -- 
-> 2.31.1
-> 
-> 
+Starting with 5.14 kernels, I can reliably reproduce a crash [1] on
+ppc64le when loading livepatches containing late klp-relocations [2].
+These are relocations, specific to livepatching, that are resolved not
+when a livepatch module is loaded, but only when a livepatch-target
+module is loaded.
 
-Hi Ming,
+There was previously related work by Josh and Peter [3] to simplify a
+lot of x86 and s390x code (at the time, the only two arches to
+HAVE_LIVEPATCH and STRICT_MODULE_RWX) as part of disallowing writable
+executable mappings.
 
-The previous test runs without hung tasks, but I noticed that is
-probably because the selftests quickly wedge.  A simple reproducer for
-that:
+Now that Power has STRICT_MODULE_RWX, I think we will need to consider
+this architecture as well.
 
-# (background load)
-% while(true); do make clean && make -j$(nproc); done
-vs.
-# (selftests)
-% while(true); do ./tools/testing/selftests/livepatch/test-livepatch.sh || break; done
-TEST: basic function patching ... ok
-TEST: multiple livepatches ... ok
-TEST: atomic replace livepatch ... ok
-TEST: basic function patching ... ok
-TEST: multiple livepatches ... ok
-TEST: atomic replace livepatch ... ok
-TEST: basic function patching ... ok
-TEST: multiple livepatches ... ERROR: failed to disable livepatch test_klp_livepatch
+The crash was originally spotted by the external kpatch-build tool [4]
+when building its integration tests on rhel-9-beta.  It can also be
+reproduced by the endless-WIP klp-convert patchset [5], which brings
+klp-relocation creation from kpatch-build to the upstream build.
 
-% lsmod | grep test_klp
-test_klp_livepatch     16384  1
+I further verified:
+  - turning STRICT_MODULE_RWX off resulted in no crash
+  - alternatively, reverting the following commits resulted in no crash:
 
-% cat /sys/kernel/livepatch/test_klp_livepatch/enabled 
-0
+    d556e1be3332 ("livepatch: Remove module_disable_ro() usage")
+    0d9fbf78fefb ("module: Remove module_disable_ro()")
 
-% rmmod test_klp_livepatch
-rmmod: ERROR: Module test_klp_livepatch is in use
+I haven't started looking at a fix yet, but in the case of the x86 code
+update, its apply_relocate_add() implementation was modified to use a
+common text_poke() function to allowed us to drop
+module_{en,dis}ble_ro() games by the livepatching code.
 
-[  249.870587] ===== TEST: multiple livepatches =====
-[  249.885520] % modprobe test_klp_livepatch
-[  249.916987] livepatch: enabling patch 'test_klp_livepatch'
-[  249.923131] livepatch: 'test_klp_livepatch': initializing patching transition
-[  249.925575] livepatch: 'test_klp_livepatch': starting patching transition
-[  249.934215] livepatch: 'test_klp_livepatch': completing patching transition
-[  249.934337] livepatch: 'test_klp_livepatch': patching complete
-[  249.946294] test_klp_livepatch: this has been live patched
-[  249.963337] % modprobe test_klp_atomic_replace replace=0
-[  249.996371] livepatch: enabling patch 'test_klp_atomic_replace'
-[  250.002998] livepatch: 'test_klp_atomic_replace': initializing patching transition
-[  250.005333] livepatch: 'test_klp_atomic_replace': starting patching transition
-[  250.014364] livepatch: 'test_klp_atomic_replace': completing patching transition
-[  250.014471] livepatch: 'test_klp_atomic_replace': patching complete
-[  250.027259] test_klp_livepatch: this has been live patched
-[  250.036050] test_klp_atomic_replace: this has been live patched
-[  250.046347] % echo 0 > /sys/kernel/livepatch/test_klp_atomic_replace/enabled
-[  250.054403] livepatch: 'test_klp_atomic_replace': initializing unpatching transition
-[  250.054574] livepatch: 'test_klp_atomic_replace': starting unpatching transition
-[  251.764849] livepatch: 'test_klp_atomic_replace': completing unpatching transition
-[  251.799266] livepatch: 'test_klp_atomic_replace': unpatching complete
-[  251.911706] % rmmod test_klp_atomic_replace
-[  251.970438] test_klp_livepatch: this has been live patched
-[  251.980347] % echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
-[  251.987936] livepatch: 'test_klp_livepatch': initializing unpatching transition
-[  251.988115] livepatch: 'test_klp_livepatch': starting unpatching transition
-[  251.997033] livepatch: 'test_klp_livepatch': completing unpatching transition
-[  252.027090] livepatch: 'test_klp_livepatch': unpatching complete
-[  313.289932] ERROR: failed to disable livepatch test_klp_livepatch
-
-In this case, the "failed to disable" msg occurs because the sysfs
-interface / module remain present.
+I can take a closer look this week, but thought I'd send out a report
+in case this may be a known todo for STRICT_MODULE_RWX on Power.
 
 -- Joe
+
+
+[1] crashing kernel log
+
+[   84.837986] ===== TEST: klp-convert symbols =====
+[   84.858937] % modprobe test_klp_convert_mod
+[   84.879040] % modprobe test_klp_convert1
+[   84.908056] BUG: Unable to handle kernel data access on write at 0xc0080000018402f0
+[   84.908067] Faulting instruction address: 0xc000000000056b58
+[   84.908072] Oops: Kernel access of bad area, sig: 11 [#1]
+[   84.908077] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
+[   84.908082] Modules linked in: test_klp_convert1(K+) test_klp_convert_mod bonding tls rfkill pseries_rng drm fuse drm_panel_orientation_quirks xfs libcrc32c sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp vmx_crypto dm_mirror dm_region_hash dm_log dm_mod [last unloaded: test_klp_atomic_replace]
+[   84.908114] CPU: 1 PID: 4205 Comm: modprobe Kdump: loaded Tainted: G              K   5.14.0+ #2
+[   84.908121] NIP:  c000000000056b58 LR: c000000000056b1c CTR: 0000000000000009
+[   84.908127] REGS: c00000005dce3480 TRAP: 0300   Tainted: G              K    (5.14.0+)
+[   84.908132] MSR:  800000000280b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE>  CR: 24224484  XER: 00000000
+[   84.908147] CFAR: c000000000056a68 DAR: c0080000018402f0 DSISR: 0a000000 IRQMASK: 0 
+GPR00: c000000000056b1c c00000005dce3720 c000000002a2af00 0000000000000000 
+GPR04: c0080000018402f0 396b00003d620000 e98b0020f8410018 00000000ffffffff 
+GPR08: 4e8004207d8903a6 0000000080000000 c0080000018382f0 000000000000000d 
+GPR12: 0000000000004000 c000000007fcf480 c00000004d7e2000 c0080000018706d8 
+GPR16: c008000001850228 c00000004d7e2c00 00000000ffffffff c0000000010d6248 
+GPR20: c00000000298c1c8 c008000001860380 c0080000018706f0 aaaaaaaaaaaaaaab 
+GPR24: c00000004d7e2b40 c008000001870000 c00800000184005c 000000000000008c 
+GPR28: c008000001860380 c008000000770008 c00000004d7e2000 c0080000018402f0 
+[   84.908209] NIP [c000000000056b58] create_stub+0x78/0x240
+[   84.908217] LR [c000000000056b1c] create_stub+0x3c/0x240
+[   84.908223] Call Trace:
+[   84.908225] [c00000005dce3720] [c00000004d7e2b40] 0xc00000004d7e2b40 (unreliable)
+[   84.908232] [c00000005dce37a0] [c000000000056e0c] stub_for_addr+0xec/0x120
+[   84.908240] [c00000005dce37d0] [c000000000057f14] apply_relocate_add+0x814/0x9a0
+[   84.908247] [c00000005dce38d0] [c00000000021ca38] klp_apply_section_relocs+0x208/0x2d0
+[   84.908255] [c00000005dce39c0] [c00000000021cb90] klp_init_object_loaded+0x90/0x1d0
+[   84.908262] [c00000005dce3a50] [c00000000021d2dc] klp_enable_patch+0x32c/0x540
+[   84.908269] [c00000005dce3b10] [c008000001840030] test_klp_convert_init+0x28/0x48 [test_klp_convert1]
+[   84.908277] [c00000005dce3b30] [c000000000012230] do_one_initcall+0x60/0x2c0
+[   84.908284] [c00000005dce3c00] [c00000000026012c] do_init_module+0x7c/0x3b0
+[   84.908290] [c00000005dce3c90] [c000000000262b74] __do_sys_finit_module+0xd4/0x160
+[   84.908296] [c00000005dce3db0] [c000000000030664] system_call_exception+0x144/0x280
+[   84.908303] [c00000005dce3e10] [c00000000000bff0] system_call_vectored_common+0xf0/0x280
+[   84.908310] --- interrupt: 3000 at 0x7fffa06d6b9c
+[   84.908315] NIP:  00007fffa06d6b9c LR: 0000000000000000 CTR: 0000000000000000
+[   84.908320] REGS: c00000005dce3e80 TRAP: 3000   Tainted: G              K    (5.14.0+)
+[   84.908325] MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 28224244  XER: 00000000
+[   84.908340] IRQMASK: 0 
+GPR00: 0000000000000161 00007fffc4f74ad0 00007fffa07d7100 0000000000000005 
+GPR04: 000000012a926ca0 0000000000000000 0000000000000005 0000000000000000 
+GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+GPR12: 0000000000000000 00007fffa0f9c380 0000000000000020 0000000000000000 
+GPR16: 00000100010a1de0 0000000000000000 000000012a927d50 00000100010a02f8 
+GPR20: 0000000000000001 0000000000000908 00000100010a2020 00000100010a19b0 
+GPR24: 0000000000000000 0000000000000000 00000100010a2040 00000100010a03f0 
+GPR28: 00000100010a1e00 000000012a926ca0 0000000000040000 00000100010a19b0 
+[   84.908399] NIP [00007fffa06d6b9c] 0x7fffa06d6b9c
+[   84.908403] LR [0000000000000000] 0x0
+[   84.908406] --- interrupt: 3000
+[   84.908410] Instruction dump:
+[   84.908413] 3d02ffb2 395f8000 3d208000 3ce0ffff 38c68d70 39088d84 79290020 60e7ffff 
+[   84.908423] e8a60014 e8c80008 e9080010 78e70020 <f8bf0000> f8df0008 f91f0010 811c0224 
+[   84.908435] ---[ end trace 961b4b817da4a53b ]---
+
+[2] https://www.kernel.org/doc/html/latest/livepatch/module-elf-format.html
+[3] https://lore.kernel.org/lkml/cover.1588173720.git.jpoimboe@redhat.com/
+[4] https://github.com/dynup/kpatch/issues/1228
+[5] https://github.com/joe-lawrence/linux/tree/klp-convert-v5-expanded-v5.14-rebase1
 
