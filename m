@@ -2,135 +2,133 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97A9B443221
-	for <lists+live-patching@lfdr.de>; Tue,  2 Nov 2021 16:56:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1AEE4432E0
+	for <lists+live-patching@lfdr.de>; Tue,  2 Nov 2021 17:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231928AbhKBP6u (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 2 Nov 2021 11:58:50 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:58184 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231314AbhKBP6t (ORCPT
+        id S235015AbhKBQjC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 Nov 2021 12:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234881AbhKBQir (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 2 Nov 2021 11:58:49 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 0DC23212C5;
-        Tue,  2 Nov 2021 15:56:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1635868574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BmonHUnAnYnD8EpEMAbj9Xb4Tj4hqZW3n8QfuohThc4=;
-        b=q77Vi0EksI1bvwukk8f+UhQtvSydthVGfiehL1dkY8ypR3VtkJ1e5zRb6e1Q8fUNqbKHax
-        4uhSCMXUjYGYHj2b7fekF6D/3G9NVygd8rGY/YmfjpKxlOQPprQr1gOyaGxOH389rZJ3z4
-        GZIHKLBI9vw/jSphQjTc6h9J9Z7xTq0=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E63E4A3B83;
-        Tue,  2 Nov 2021 15:56:13 +0000 (UTC)
-Date:   Tue, 2 Nov 2021 16:56:10 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Ming Lei <ming.lei@redhat.com>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH V4 1/3] livepatch: remove 'struct completion finish' from
- klp_patch
-Message-ID: <YYFfmo5/Dds7bspY@alley>
-References: <20211102145932.3623108-1-ming.lei@redhat.com>
- <20211102145932.3623108-2-ming.lei@redhat.com>
+        Tue, 2 Nov 2021 12:38:47 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E670CC0797BA;
+        Tue,  2 Nov 2021 09:26:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ZpP/HZLv604vtvae1cO/0WFon0sSJn671oAr7ZIWFxw=; b=UCimNJ3QWb++sHLFKw51gCkQKn
+        WWEC2X/M7um3LJKy9tXa7f8JPMslxJ5A40mI4Vct+q0Sv3gcUEgGzPrTFydyq7LDj4xgM8jIgE+YV
+        X3uJS07PEiYfQYOrNERQyGwoz4X0qZhFpi7WHnrxKGXUXB6VAT6jwbyJRPrTKcwzCTgUhlBeArX0X
+        zO89RZAmitmlNeBzM3i1PuQboNrclSbxS3a89BcNAExHk3J5/aTm3inLRkEvgG8Qe8rIDc2Dp0p5R
+        RjMjMh0QsXI8sIp4RfVofx0u3LD67AbwsVH9w4I/TlAdY/7UhPA3WEEHPuDBki1Eo1czIcKWZnbaH
+        DvYH7+8w==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mhwbY-002IBJ-2M; Tue, 02 Nov 2021 16:25:44 +0000
+Date:   Tue, 2 Nov 2021 09:25:44 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>, Ming Lei <ming.lei@redhat.com>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, tj@kernel.org,
+        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+        minchan@kernel.org, jeyu@kernel.org, shuah@kernel.org,
+        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
+        tglx@linutronix.de, keescook@chromium.org, rostedt@goodmis.org,
+        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v8 11/12] zram: fix crashes with cpu hotplug multistate
+Message-ID: <YYFmiAAYIA2X7Uv5@bombadil.infradead.org>
+References: <YW6OptglA6UykZg/@T590>
+ <alpine.LSU.2.21.2110200835490.26817@pobox.suse.cz>
+ <YW/KEsfWJMIPnz76@T590>
+ <alpine.LSU.2.21.2110201014400.26817@pobox.suse.cz>
+ <YW/q70dLyF+YudyF@T590>
+ <YXfA0jfazCPDTEBw@alley>
+ <YXgguuAY5iEUIV0u@T590>
+ <YXg0dFZ+6qHw7d0g@bombadil.infradead.org>
+ <alpine.LSU.2.21.2110271343290.3655@pobox.suse.cz>
+ <YYFYFrnhwPiyOtst@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211102145932.3623108-2-ming.lei@redhat.com>
+In-Reply-To: <YYFYFrnhwPiyOtst@alley>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue 2021-11-02 22:59:30, Ming Lei wrote:
-> The completion finish is just for waiting release of the klp_patch
-> object, then releases module refcnt. We can simply drop the module
-> refcnt in the kobject release handler of klp_patch.
+On Tue, Nov 02, 2021 at 04:24:06PM +0100, Petr Mladek wrote:
+> On Wed 2021-10-27 13:57:40, Miroslav Benes wrote:
+> > >From my perspective, it is quite easy to get it wrong due to either a lack 
+> > of generic support, or missing rules/documentation. So if this thread 
+> > leads to "do not share locks between a module removal and a sysfs 
+> > operation" strict rule, it would be at least something. In the same 
+> > manner as Luis proposed to document try_module_get() expectations.
 > 
-> This way also helps to support allocating klp_patch from heap.
+> The rule "do not share locks between a module removal and a sysfs
+> operation" is not clear to me.
 
-IMHO, this is wrong assumption. kobject_put() might do everyting
-asynchronously, see:
+That's exactly it. It *is* not. The test_sysfs selftest will hopefully
+help with this. But I'll wait to take a final position on whether or not
+a generic fix should be merged until the Coccinelle patch which looks
+for all uses cases completes.
 
-   kobject_put()
-     kobject_release()
-       INIT_DELAYED_WORK(&kobj->release, kobject_delayed_cleanup);
-       schedule_delayed_work(&kobj->release, delay);
+So I think that once that Coccinelle hunt is done for the deadlock, we
+should also remind folks of the potential deadlock and some of the rules
+you mentioned below so that if we take a position that we don't support
+this, we at least inform developers why and what to avoid. If Coccinelle
+finds quite a bit of cases, then perhaps evaluating the generic fix
+might be worth evaluating.
 
-   asynchronously:
-
-     kobject_delayed_cleanup()
-      kobject_cleanup()
-	__kobject_del()
-
-
-> Signed-off-by: Ming Lei <ming.lei@redhat.com>
-> ---
->  include/linux/livepatch.h |  1 -
->  kernel/livepatch/core.c   | 12 +++---------
->  2 files changed, 3 insertions(+), 10 deletions(-)
+> IMHO, there are the following rules:
 > 
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index 2614247a9781..9712818997c5 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -170,7 +170,6 @@ struct klp_patch {
->  	bool enabled;
->  	bool forced;
->  	struct work_struct free_work;
-> -	struct completion finish;
->  };
->  
->  #define klp_for_each_object_static(patch, obj) \
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 335d988bd811..b967b4b0071b 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -551,10 +551,10 @@ static int klp_add_nops(struct klp_patch *patch)
->  
->  static void klp_kobj_release_patch(struct kobject *kobj)
->  {
-> -	struct klp_patch *patch;
-> +	struct klp_patch *patch = container_of(kobj, struct klp_patch, kobj);
->  
-> -	patch = container_of(kobj, struct klp_patch, kobj);
-> -	complete(&patch->finish);
-> +	if (!patch->forced)
-> +		module_put(patch->mod);
->  }
->  
->  static struct kobj_type klp_ktype_patch = {
-> @@ -678,11 +678,6 @@ static void klp_free_patch_finish(struct klp_patch *patch)
->  	 * cannot get enabled again.
->  	 */
->  	kobject_put(&patch->kobj);
-> -	wait_for_completion(&patch->finish);
-> -
-> -	/* Put the module after the last access to struct klp_patch. */
-> -	if (!patch->forced)
-> -		module_put(patch->mod);
+> 1. rule: kobject_del() or kobject_put() must not be called under a lock that
+> 	 is used by store()/show() callbacks.
+> 
+>    reason: kobject_del() waits until the sysfs interface is destroyed.
+> 	 It has to wait until all store()/show() callbacks are finished.
 
-klp_free_patch_finish() does not longer wait until the release
-callbacks are called.
+Right, this is what actually started this entire conversation.
 
-klp_free_patch_finish() is called also in klp_enable_patch() error
-path.
+Note that as Ming pointed out, the generic kernfs fix I proposed would
+only cover the case when kobject_del() ends up being called on module
+exit, so it would not cover the cases where perhaps kobject_del() might
+be called outside of module exit, and so the cope of the possible
+deadlock then increases in scope.
 
-klp_enable_patch() is called in module_init(). For example, see
-samples/livepatch/livepatch-sample.c
+Likewise, the Coccinelle hunt I'm trying would only cover the module
+exit case. I'm a bit of afraid of the complexity of a generic hunt
+as expresed in rule 1.
 
-The module must not get removed until the release callbacks are called.
-Does the module loader check the module reference counter when
-module_init() fails?
+> 
+> 2. rule: kobject_del()/kobject_put() must not be called from the
+> 	related store() callbacks.
+> 
+>    reason: same as in 1st rule.
 
-Best Regards,
-Petr
+Sensible corollary.
+
+Given tha the exact kobjet_del() / kobject_put() which must not be
+called from the respective sysfs ops depends on which kobject is
+underneath the device for which the sysfs ops is being created,
+it would make this hunt in Coccinelle a bit tricky. My current iteration
+of a coccinelle hunt cheats and looks at any sysfs looking op and
+ensures a module exit exists.
+
+> 3. rule: module_exit() must wait until all release() callbacks are called
+> 	 when kobject are static.
+> 
+>    reason: kobject_put() must be called to clean up internal
+> 	dependencies. The clean up might be done asynchronously
+> 	and need access to the kobject structure.
+
+This might be an easier rule to implement a respective Coccinelle rule
+for.
+
+  Luis
