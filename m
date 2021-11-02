@@ -2,141 +2,135 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D60443187
-	for <lists+live-patching@lfdr.de>; Tue,  2 Nov 2021 16:24:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A9B443221
+	for <lists+live-patching@lfdr.de>; Tue,  2 Nov 2021 16:56:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234341AbhKBP0u (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 2 Nov 2021 11:26:50 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:56644 "EHLO
+        id S231928AbhKBP6u (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 Nov 2021 11:58:50 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:58184 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231721AbhKBP0t (ORCPT
+        with ESMTP id S231314AbhKBP6t (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 2 Nov 2021 11:26:49 -0400
+        Tue, 2 Nov 2021 11:58:49 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 4CF42218B8;
-        Tue,  2 Nov 2021 15:24:10 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 0DC23212C5;
+        Tue,  2 Nov 2021 15:56:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1635866650; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1635868574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=20RoZlkpCStiyYhOpg9TxIwqB6XP6FGIk+CxFOjfgeQ=;
-        b=mH/HYqrgUC286FNV17ooHrSpqz0QxJaEA4gqCu8YSuFavlUVjcNclsFdd9vpEcjU4T1EWe
-        bCwYUnf+FgIGtgAvlwyq0SvUiSpGIPfWdx0lQnbh1+ec9SrxF+L+fnbM15px/lY04IQ1m3
-        VwstO6btwTo9UpMWzrGrsBPlQOpP034=
+        bh=BmonHUnAnYnD8EpEMAbj9Xb4Tj4hqZW3n8QfuohThc4=;
+        b=q77Vi0EksI1bvwukk8f+UhQtvSydthVGfiehL1dkY8ypR3VtkJ1e5zRb6e1Q8fUNqbKHax
+        4uhSCMXUjYGYHj2b7fekF6D/3G9NVygd8rGY/YmfjpKxlOQPprQr1gOyaGxOH389rZJ3z4
+        GZIHKLBI9vw/jSphQjTc6h9J9Z7xTq0=
 Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 3278AA3B83;
-        Tue,  2 Nov 2021 15:24:09 +0000 (UTC)
-Date:   Tue, 2 Nov 2021 16:24:06 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id E63E4A3B83;
+        Tue,  2 Nov 2021 15:56:13 +0000 (UTC)
+Date:   Tue, 2 Nov 2021 16:56:10 +0100
 From:   Petr Mladek <pmladek@suse.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Ming Lei <ming.lei@redhat.com>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, tj@kernel.org,
-        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-        minchan@kernel.org, jeyu@kernel.org, shuah@kernel.org,
-        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
-        tglx@linutronix.de, keescook@chromium.org, rostedt@goodmis.org,
-        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH v8 11/12] zram: fix crashes with cpu hotplug multistate
-Message-ID: <YYFYFrnhwPiyOtst@alley>
-References: <alpine.LSU.2.21.2110190820590.15009@pobox.suse.cz>
- <YW6OptglA6UykZg/@T590>
- <alpine.LSU.2.21.2110200835490.26817@pobox.suse.cz>
- <YW/KEsfWJMIPnz76@T590>
- <alpine.LSU.2.21.2110201014400.26817@pobox.suse.cz>
- <YW/q70dLyF+YudyF@T590>
- <YXfA0jfazCPDTEBw@alley>
- <YXgguuAY5iEUIV0u@T590>
- <YXg0dFZ+6qHw7d0g@bombadil.infradead.org>
- <alpine.LSU.2.21.2110271343290.3655@pobox.suse.cz>
+To:     Ming Lei <ming.lei@redhat.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH V4 1/3] livepatch: remove 'struct completion finish' from
+ klp_patch
+Message-ID: <YYFfmo5/Dds7bspY@alley>
+References: <20211102145932.3623108-1-ming.lei@redhat.com>
+ <20211102145932.3623108-2-ming.lei@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.2110271343290.3655@pobox.suse.cz>
+In-Reply-To: <20211102145932.3623108-2-ming.lei@redhat.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2021-10-27 13:57:40, Miroslav Benes wrote:
-> On Tue, 26 Oct 2021, Luis Chamberlain wrote:
+On Tue 2021-11-02 22:59:30, Ming Lei wrote:
+> The completion finish is just for waiting release of the klp_patch
+> object, then releases module refcnt. We can simply drop the module
+> refcnt in the kobject release handler of klp_patch.
 > 
-> > On Tue, Oct 26, 2021 at 11:37:30PM +0800, Ming Lei wrote:
-> > > On Tue, Oct 26, 2021 at 10:48:18AM +0200, Petr Mladek wrote:
-> > > > Livepatch code never called kobject_del() under a lock. It would cause
-> > > > the obvious deadlock.
+> This way also helps to support allocating klp_patch from heap.
 
-I have to correct myself. IMHO, the deadlock is far from obvious. I
-always get lost in the code and the documentation is not clear.
-I always get lost.
+IMHO, this is wrong assumption. kobject_put() might do everyting
+asynchronously, see:
 
-> >
-> > Never?
+   kobject_put()
+     kobject_release()
+       INIT_DELAYED_WORK(&kobj->release, kobject_delayed_cleanup);
+       schedule_delayed_work(&kobj->release, delay);
+
+   asynchronously:
+
+     kobject_delayed_cleanup()
+      kobject_cleanup()
+	__kobject_del()
+
+
+> Signed-off-by: Ming Lei <ming.lei@redhat.com>
+> ---
+>  include/linux/livepatch.h |  1 -
+>  kernel/livepatch/core.c   | 12 +++---------
+>  2 files changed, 3 insertions(+), 10 deletions(-)
 > 
-> kobject_put() to be precise.
-
-IMHO, the problem is actually with kobject_del() that gets blocked
-until the sysfs interface gets removed. kobject_put() will have
-the same problem only when the clean up is not delayed.
-
-
-> When I started working on the support for module/live patches removal, 
-> calling kobject_put() under our klp_mutex lock was the obvious first 
-> choice given how the code was structured, but I ran into problems with 
-> deadlocks immediately. So it was changed to async approach with the 
-> workqueue. Thus the mainline code has never suffered from this, but we 
-> knew about the issues.
+> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+> index 2614247a9781..9712818997c5 100644
+> --- a/include/linux/livepatch.h
+> +++ b/include/linux/livepatch.h
+> @@ -170,7 +170,6 @@ struct klp_patch {
+>  	bool enabled;
+>  	bool forced;
+>  	struct work_struct free_work;
+> -	struct completion finish;
+>  };
 >  
-> > > > The historic code only waited in the
-> > > > module_exit() callback until the sysfs interface was removed.
-> > > 
-> > > OK, then Luis shouldn't consider livepatching as one such issue to solve
-> > > with one generic solution.
-> > 
-> > It's not what I was told when the deadlock was found with zram, so I was
-> > informed quite the contrary.
-> 
-> >From my perspective, it is quite easy to get it wrong due to either a lack 
-> of generic support, or missing rules/documentation. So if this thread 
-> leads to "do not share locks between a module removal and a sysfs 
-> operation" strict rule, it would be at least something. In the same 
-> manner as Luis proposed to document try_module_get() expectations.
+>  #define klp_for_each_object_static(patch, obj) \
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index 335d988bd811..b967b4b0071b 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -551,10 +551,10 @@ static int klp_add_nops(struct klp_patch *patch)
+>  
+>  static void klp_kobj_release_patch(struct kobject *kobj)
+>  {
+> -	struct klp_patch *patch;
+> +	struct klp_patch *patch = container_of(kobj, struct klp_patch, kobj);
+>  
+> -	patch = container_of(kobj, struct klp_patch, kobj);
+> -	complete(&patch->finish);
+> +	if (!patch->forced)
+> +		module_put(patch->mod);
+>  }
+>  
+>  static struct kobj_type klp_ktype_patch = {
+> @@ -678,11 +678,6 @@ static void klp_free_patch_finish(struct klp_patch *patch)
+>  	 * cannot get enabled again.
+>  	 */
+>  	kobject_put(&patch->kobj);
+> -	wait_for_completion(&patch->finish);
+> -
+> -	/* Put the module after the last access to struct klp_patch. */
+> -	if (!patch->forced)
+> -		module_put(patch->mod);
 
-The rule "do not share locks between a module removal and a sysfs
-operation" is not clear to me.
+klp_free_patch_finish() does not longer wait until the release
+callbacks are called.
 
-IMHO, there are the following rules:
+klp_free_patch_finish() is called also in klp_enable_patch() error
+path.
 
-1. rule: kobject_del() or kobject_put() must not be called under a lock that
-	 is used by store()/show() callbacks.
+klp_enable_patch() is called in module_init(). For example, see
+samples/livepatch/livepatch-sample.c
 
-   reason: kobject_del() waits until the sysfs interface is destroyed.
-	 It has to wait until all store()/show() callbacks are finished.
-
-
-2. rule: kobject_del()/kobject_put() must not be called from the
-	related store() callbacks.
-
-   reason: same as in 1st rule.
-
-
-3. rule: module_exit() must wait until all release() callbacks are called
-	 when kobject are static.
-
-   reason: kobject_put() must be called to clean up internal
-	dependencies. The clean up might be done asynchronously
-	and need access to the kobject structure.
-
+The module must not get removed until the release callbacks are called.
+Does the module loader check the module reference counter when
+module_init() fails?
 
 Best Regards,
 Petr
-
-PS: I am sorry if I am messing things. I want to be sure that we are
-    all talking about the same and understand it the same way.
-    
