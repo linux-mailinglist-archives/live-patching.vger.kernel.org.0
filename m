@@ -2,335 +2,125 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73190444A12
-	for <lists+live-patching@lfdr.de>; Wed,  3 Nov 2021 22:07:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A197444A4B
+	for <lists+live-patching@lfdr.de>; Wed,  3 Nov 2021 22:33:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbhKCVKK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 3 Nov 2021 17:10:10 -0400
-Received: from smtp-fw-80006.amazon.com ([99.78.197.217]:21791 "EHLO
-        smtp-fw-80006.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbhKCVKK (ORCPT
+        id S229893AbhKCVgT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 3 Nov 2021 17:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229698AbhKCVgS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 3 Nov 2021 17:10:10 -0400
+        Wed, 3 Nov 2021 17:36:18 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34820C061714
+        for <live-patching@vger.kernel.org>; Wed,  3 Nov 2021 14:33:41 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id g184so3528913pgc.6
+        for <live-patching@vger.kernel.org>; Wed, 03 Nov 2021 14:33:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1635973654; x=1667509654;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=pwZqcl/VyJyVJhvsraqMbhkq73WN/eCXNJlf/Rr9QI0=;
-  b=NmPvJW7B+iPZtIgBGAfMFqPluRxGbIKE/lbjr6k2RfMB6kjzJcInY1tu
-   lbYbayEXEcdHLQbZwQeJkJMs3lC3G5O9oOUTIcP5z/jPlzGJjaDeHAOOh
-   4sGbzTPGvv+oGOF1fYDEZyKuFi3MvTXRsRZ+ntzVy88SqSYL+O82aU6cQ
-   0=;
-X-IronPort-AV: E=Sophos;i="5.87,206,1631577600"; 
-   d="scan'208";a="38972435"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-8691d7ea.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 03 Nov 2021 21:07:32 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-8691d7ea.us-east-1.amazon.com (Postfix) with ESMTPS id 8A1DEC0907;
-        Wed,  3 Nov 2021 21:07:30 +0000 (UTC)
-Received: from EX13D30UWC001.ant.amazon.com (10.43.162.128) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Wed, 3 Nov 2021 21:07:29 +0000
-Received: from u3c3f5cfe23135f.ant.amazon.com (10.43.161.210) by
- EX13D30UWC001.ant.amazon.com (10.43.162.128) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Wed, 3 Nov 2021 21:07:29 +0000
-From:   Suraj Jitindar Singh <surajjs@amazon.com>
-To:     <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <live-patching@vger.kernel.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <sjitindarsingh@gmail.com>,
-        Suraj Jitindar Singh <surajjs@amazon.com>
-Subject: [PATCH] arm64: module: Use aarch64_insn_write when updating relocations later on
-Date:   Wed, 3 Nov 2021 14:07:09 -0700
-Message-ID: <20211103210709.31790-1-surajjs@amazon.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.210]
-X-ClientProxiedBy: EX13D18UWC001.ant.amazon.com (10.43.162.105) To
- EX13D30UWC001.ant.amazon.com (10.43.162.128)
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Vrz+tdiTTOp8szNJ91rvZ9PnjQkFO5LZUDNo6iz8BFk=;
+        b=lrlsl0kWNH6gBlT7Fehk8GvFi1ohYeIPuGJC8y0Wtsn21/AFqufl0BsSeljKPJOgqo
+         QRBPr0w/Qp0WeOw9SMpGdFtR6bKT9MiFMm4l7rc7D7JPvLuMQXt5wg6s/zG+xRBW2JGD
+         DJk+sNZrRd68Jp6V9WzgNlDiqO1rA+Z8f7k3mowUuZK/h7Rx9B8/G4XTcS4ogOJantCq
+         8P8e5woqUzDLGPFMgnKjcxwTAnTIK70AJTYDjAF7HnWL1Ou5dvDVY9Fiw9rtZkHLmBeL
+         5UknEF+vmqL9qUg2cNP+nZzWRqr9oqXNFUu7H41tZ90CTaV0T884XMzKjfBfjtMJoW25
+         TAeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Vrz+tdiTTOp8szNJ91rvZ9PnjQkFO5LZUDNo6iz8BFk=;
+        b=6oyrTQ9/A9YV73WNMyOLzEt4dt1iK8+n2+VTm7UC1fIHT7NQR/siX/728ulEqM8/Uj
+         jkfW2s/iIfphoHKcZWQAxKPt2JAuaO2dM2fBmi+62Yr0tJnWwZJ+Ett29DAiazPoz9nm
+         losA8yH/TuJ8H1RiMjlzBMsZiyLrNC2EDP+IZc4iC8WfhH+TWQZbmLO5fELfIxJ9u0JY
+         d1yF5gpOsmH27dKmzkaK3SeN0DnA1vgbVmFPD2M0G6gHqWhhQevr/euLk9GLTV42FMNE
+         9pbwoe2kvUeGRMfNH/+5v8ysOyr6n+Eu64N+LC5LkIwdmeQPnpGCgw07zq3rTUkV0TOY
+         WOuQ==
+X-Gm-Message-State: AOAM531NWPwQL7cj3Y6+kRGRNUHMfM09TaV9aFfUkVHyaJ1NB44ojyih
+        V6jT9hL/zhheSIE85Ic0WaQUCK9jbUc=
+X-Google-Smtp-Source: ABdhPJyg0R3/Q3bIGPKfyNNRvH9PP7swCV9K3IQVMYv+zNfLa8JDaYKVoxGJ4Pa5OL9U2eRghuj/Ig==
+X-Received: by 2002:a63:c:: with SMTP id 12mr35942364pga.477.1635975220204;
+        Wed, 03 Nov 2021 14:33:40 -0700 (PDT)
+Received: from vpn-10-50-19-212.sea19.amazon.com ([54.240.196.175])
+        by smtp.googlemail.com with ESMTPSA id a140sm3192789pfd.150.2021.11.03.14.33.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 03 Nov 2021 14:33:39 -0700 (PDT)
+Message-ID: <664dc34bc9343e761d2f1ea701aa682778913073.camel@gmail.com>
+Subject: Re: ppc64le STRICT_MODULE_RWX and livepatch apply_relocate_add()
+ crashes
+From:   Suraj Jitindar Singh <sjitindarsingh@gmail.com>
+To:     Russell Currey <ruscur@russell.cc>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Jordan Niethe <jniethe5@gmail.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Date:   Wed, 03 Nov 2021 14:33:39 -0700
+In-Reply-To: <7ee0c84650617e6307b29674dd0a12c7258417cf.camel@russell.cc>
+References: <YX9UUBeudSUuJs01@redhat.com>
+         <7ee0c84650617e6307b29674dd0a12c7258417cf.camel@russell.cc>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Livepatch modules have relocation sections named
-.klp.rela.objname.section_name which are written on module load by calling
-klp_apply_section_relocs(). This is called in apply_relocations() to write
-relocations targeting objects in the vmlinux, before the module text is
-mapped read-only in complete_formation(). However relocations which target
-other modules are not written until after the mapping is made read-only
-causing them to fault.
+Hi Russell,
 
-Avoid this fault by calling aarch64_insn_write() to update the instruction
-if the module text has already been marked read-only. Preserve the current
-behaviour if called before this has been done.
+On Mon, 2021-11-01 at 19:20 +1000, Russell Currey wrote:
+> On Sun, 2021-10-31 at 22:43 -0400, Joe Lawrence wrote:
+> > Starting with 5.14 kernels, I can reliably reproduce a crash [1] on
+> > ppc64le when loading livepatches containing late klp-relocations
+> > [2].
+> > These are relocations, specific to livepatching, that are resolved
+> > not
+> > when a livepatch module is loaded, but only when a livepatch-target
+> > module is loaded.
+> 
+> Hey Joe, thanks for the report.
+> 
+> > I haven't started looking at a fix yet, but in the case of the x86
+> > code
+> > update, its apply_relocate_add() implementation was modified to use
+> > a
+> > common text_poke() function to allowed us to drop
+> > module_{en,dis}ble_ro() games by the livepatching code.
+> 
+> It should be a similar fix for Power, our patch_instruction() uses a
+> text poke area but apply_relocate_add() doesn't use it and does its
+> own
+> raw patching instead.
+> 
+> > I can take a closer look this week, but thought I'd send out a
+> > report
+> > in case this may be a known todo for STRICT_MODULE_RWX on Power.
+> 
+> I'm looking into this now, will update when there's progress.  I
+> personally wasn't aware but Jordan flagged this as an issue back in
+> August [0].  Are the selftests in the klp-convert tree sufficient for
+> testing?  I'm not especially familiar with livepatching & haven't
+> used
+> the userspace tools.
+> 
 
-Signed-off-by: Suraj Jitindar Singh <surajjs@amazon.com>
----
- arch/arm64/kernel/module.c | 81 ++++++++++++++++++++++----------------
- 1 file changed, 47 insertions(+), 34 deletions(-)
+You can test this by livepatching any module since this only occurs
+when writing relocations for modules since the vmlinux relocations are
+written earlier before the module text is mapped read-only.
 
-diff --git a/arch/arm64/kernel/module.c b/arch/arm64/kernel/module.c
-index b5ec010c481f..35596ea870ab 100644
---- a/arch/arm64/kernel/module.c
-+++ b/arch/arm64/kernel/module.c
-@@ -19,6 +19,7 @@
- #include <asm/alternative.h>
- #include <asm/insn.h>
- #include <asm/sections.h>
-+#include <asm/patching.h>
- 
- void *module_alloc(unsigned long size)
- {
-@@ -155,7 +156,8 @@ enum aarch64_insn_movw_imm_type {
- };
- 
- static int reloc_insn_movw(enum aarch64_reloc_op op, __le32 *place, u64 val,
--			   int lsb, enum aarch64_insn_movw_imm_type imm_type)
-+			   int lsb, enum aarch64_insn_movw_imm_type imm_type,
-+			   bool early)
- {
- 	u64 imm;
- 	s64 sval;
-@@ -187,7 +189,10 @@ static int reloc_insn_movw(enum aarch64_reloc_op op, __le32 *place, u64 val,
- 
- 	/* Update the instruction with the new encoding. */
- 	insn = aarch64_insn_encode_immediate(AARCH64_INSN_IMM_16, insn, imm);
--	*place = cpu_to_le32(insn);
-+	if (early)
-+		*place = cpu_to_le32(insn);
-+	else
-+		aarch64_insn_write(place, insn);
- 
- 	if (imm > U16_MAX)
- 		return -ERANGE;
-@@ -196,7 +201,8 @@ static int reloc_insn_movw(enum aarch64_reloc_op op, __le32 *place, u64 val,
- }
- 
- static int reloc_insn_imm(enum aarch64_reloc_op op, __le32 *place, u64 val,
--			  int lsb, int len, enum aarch64_insn_imm_type imm_type)
-+			  int lsb, int len, enum aarch64_insn_imm_type imm_type,
-+			  bool early)
- {
- 	u64 imm, imm_mask;
- 	s64 sval;
-@@ -212,7 +218,10 @@ static int reloc_insn_imm(enum aarch64_reloc_op op, __le32 *place, u64 val,
- 
- 	/* Update the instruction's immediate field. */
- 	insn = aarch64_insn_encode_immediate(imm_type, insn, imm);
--	*place = cpu_to_le32(insn);
-+	if (early)
-+		*place = cpu_to_le32(insn);
-+	else
-+		aarch64_insn_write(place, insn);
- 
- 	/*
- 	 * Extract the upper value bits (including the sign bit) and
-@@ -231,17 +240,17 @@ static int reloc_insn_imm(enum aarch64_reloc_op op, __le32 *place, u64 val,
- }
- 
- static int reloc_insn_adrp(struct module *mod, Elf64_Shdr *sechdrs,
--			   __le32 *place, u64 val)
-+			   __le32 *place, u64 val, bool early)
- {
- 	u32 insn;
- 
- 	if (!is_forbidden_offset_for_adrp(place))
- 		return reloc_insn_imm(RELOC_OP_PAGE, place, val, 12, 21,
--				      AARCH64_INSN_IMM_ADR);
-+				      AARCH64_INSN_IMM_ADR, early);
- 
- 	/* patch ADRP to ADR if it is in range */
- 	if (!reloc_insn_imm(RELOC_OP_PREL, place, val & ~0xfff, 0, 21,
--			    AARCH64_INSN_IMM_ADR)) {
-+			    AARCH64_INSN_IMM_ADR, early)) {
- 		insn = le32_to_cpu(*place);
- 		insn &= ~BIT(31);
- 	} else {
-@@ -253,7 +262,10 @@ static int reloc_insn_adrp(struct module *mod, Elf64_Shdr *sechdrs,
- 						   AARCH64_INSN_BRANCH_NOLINK);
- 	}
- 
--	*place = cpu_to_le32(insn);
-+	if (early)
-+		*place = cpu_to_le32(insn);
-+	else
-+		aarch64_insn_write(place, insn);
- 	return 0;
- }
- 
-@@ -270,6 +282,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
- 	void *loc;
- 	u64 val;
- 	Elf64_Rela *rel = (void *)sechdrs[relsec].sh_addr;
-+	bool early = me->state == MODULE_STATE_UNFORMED;
- 
- 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
- 		/* loc corresponds to P in the AArch64 ELF document. */
-@@ -322,88 +335,88 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
- 			fallthrough;
- 		case R_AARCH64_MOVW_UABS_G0:
- 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 0,
--					      AARCH64_INSN_IMM_MOVKZ);
-+					      AARCH64_INSN_IMM_MOVKZ, early);
- 			break;
- 		case R_AARCH64_MOVW_UABS_G1_NC:
- 			overflow_check = false;
- 			fallthrough;
- 		case R_AARCH64_MOVW_UABS_G1:
- 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 16,
--					      AARCH64_INSN_IMM_MOVKZ);
-+					      AARCH64_INSN_IMM_MOVKZ, early);
- 			break;
- 		case R_AARCH64_MOVW_UABS_G2_NC:
- 			overflow_check = false;
- 			fallthrough;
- 		case R_AARCH64_MOVW_UABS_G2:
- 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 32,
--					      AARCH64_INSN_IMM_MOVKZ);
-+					      AARCH64_INSN_IMM_MOVKZ, early);
- 			break;
- 		case R_AARCH64_MOVW_UABS_G3:
- 			/* We're using the top bits so we can't overflow. */
- 			overflow_check = false;
- 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 48,
--					      AARCH64_INSN_IMM_MOVKZ);
-+					      AARCH64_INSN_IMM_MOVKZ, early);
- 			break;
- 		case R_AARCH64_MOVW_SABS_G0:
- 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 0,
--					      AARCH64_INSN_IMM_MOVNZ);
-+					      AARCH64_INSN_IMM_MOVNZ, early);
- 			break;
- 		case R_AARCH64_MOVW_SABS_G1:
- 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 16,
--					      AARCH64_INSN_IMM_MOVNZ);
-+					      AARCH64_INSN_IMM_MOVNZ, early);
- 			break;
- 		case R_AARCH64_MOVW_SABS_G2:
- 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 32,
--					      AARCH64_INSN_IMM_MOVNZ);
-+					      AARCH64_INSN_IMM_MOVNZ, early);
- 			break;
- 		case R_AARCH64_MOVW_PREL_G0_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 0,
--					      AARCH64_INSN_IMM_MOVKZ);
-+					      AARCH64_INSN_IMM_MOVKZ, early);
- 			break;
- 		case R_AARCH64_MOVW_PREL_G0:
- 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 0,
--					      AARCH64_INSN_IMM_MOVNZ);
-+					      AARCH64_INSN_IMM_MOVNZ, early);
- 			break;
- 		case R_AARCH64_MOVW_PREL_G1_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 16,
--					      AARCH64_INSN_IMM_MOVKZ);
-+					      AARCH64_INSN_IMM_MOVKZ, early);
- 			break;
- 		case R_AARCH64_MOVW_PREL_G1:
- 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 16,
--					      AARCH64_INSN_IMM_MOVNZ);
-+					      AARCH64_INSN_IMM_MOVNZ, early);
- 			break;
- 		case R_AARCH64_MOVW_PREL_G2_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 32,
--					      AARCH64_INSN_IMM_MOVKZ);
-+					      AARCH64_INSN_IMM_MOVKZ, early);
- 			break;
- 		case R_AARCH64_MOVW_PREL_G2:
- 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 32,
--					      AARCH64_INSN_IMM_MOVNZ);
-+					      AARCH64_INSN_IMM_MOVNZ, early);
- 			break;
- 		case R_AARCH64_MOVW_PREL_G3:
- 			/* We're using the top bits so we can't overflow. */
- 			overflow_check = false;
- 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 48,
--					      AARCH64_INSN_IMM_MOVNZ);
-+					      AARCH64_INSN_IMM_MOVNZ, early);
- 			break;
- 
- 		/* Immediate instruction relocations. */
- 		case R_AARCH64_LD_PREL_LO19:
- 			ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 2, 19,
--					     AARCH64_INSN_IMM_19);
-+					     AARCH64_INSN_IMM_19, early);
- 			break;
- 		case R_AARCH64_ADR_PREL_LO21:
- 			ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 0, 21,
--					     AARCH64_INSN_IMM_ADR);
-+					     AARCH64_INSN_IMM_ADR, early);
- 			break;
- 		case R_AARCH64_ADR_PREL_PG_HI21_NC:
- 			overflow_check = false;
- 			fallthrough;
- 		case R_AARCH64_ADR_PREL_PG_HI21:
--			ovf = reloc_insn_adrp(me, sechdrs, loc, val);
-+			ovf = reloc_insn_adrp(me, sechdrs, loc, val, early);
- 			if (ovf && ovf != -ERANGE)
- 				return ovf;
- 			break;
-@@ -411,40 +424,40 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
- 		case R_AARCH64_LDST8_ABS_LO12_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_imm(RELOC_OP_ABS, loc, val, 0, 12,
--					     AARCH64_INSN_IMM_12);
-+					     AARCH64_INSN_IMM_12, early);
- 			break;
- 		case R_AARCH64_LDST16_ABS_LO12_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_imm(RELOC_OP_ABS, loc, val, 1, 11,
--					     AARCH64_INSN_IMM_12);
-+					     AARCH64_INSN_IMM_12, early);
- 			break;
- 		case R_AARCH64_LDST32_ABS_LO12_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_imm(RELOC_OP_ABS, loc, val, 2, 10,
--					     AARCH64_INSN_IMM_12);
-+					     AARCH64_INSN_IMM_12, early);
- 			break;
- 		case R_AARCH64_LDST64_ABS_LO12_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_imm(RELOC_OP_ABS, loc, val, 3, 9,
--					     AARCH64_INSN_IMM_12);
-+					     AARCH64_INSN_IMM_12, early);
- 			break;
- 		case R_AARCH64_LDST128_ABS_LO12_NC:
- 			overflow_check = false;
- 			ovf = reloc_insn_imm(RELOC_OP_ABS, loc, val, 4, 8,
--					     AARCH64_INSN_IMM_12);
-+					     AARCH64_INSN_IMM_12, early);
- 			break;
- 		case R_AARCH64_TSTBR14:
- 			ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 2, 14,
--					     AARCH64_INSN_IMM_14);
-+					     AARCH64_INSN_IMM_14, early);
- 			break;
- 		case R_AARCH64_CONDBR19:
- 			ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 2, 19,
--					     AARCH64_INSN_IMM_19);
-+					     AARCH64_INSN_IMM_19, early);
- 			break;
- 		case R_AARCH64_JUMP26:
- 		case R_AARCH64_CALL26:
- 			ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 2, 26,
--					     AARCH64_INSN_IMM_26);
-+					     AARCH64_INSN_IMM_26, early);
- 
- 			if (IS_ENABLED(CONFIG_ARM64_MODULE_PLTS) &&
- 			    ovf == -ERANGE) {
-@@ -452,7 +465,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
- 				if (!val)
- 					return -ENOEXEC;
- 				ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 2,
--						     26, AARCH64_INSN_IMM_26);
-+						     26, AARCH64_INSN_IMM_26, early);
- 			}
- 			break;
- 
--- 
-2.17.1
+- Suraj
+
+> - Russell
+> 
+> [0] https://github.com/linuxppc/issues/issues/375
+> 
+> > 
+> > -- Joe
+> 
+> 
 
