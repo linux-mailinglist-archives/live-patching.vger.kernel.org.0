@@ -2,87 +2,90 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3824F447D3B
-	for <lists+live-patching@lfdr.de>; Mon,  8 Nov 2021 11:01:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE45449B0B
+	for <lists+live-patching@lfdr.de>; Mon,  8 Nov 2021 18:46:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238542AbhKHKEY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 8 Nov 2021 05:04:24 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:60350 "EHLO
+        id S231401AbhKHRt2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 8 Nov 2021 12:49:28 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:38210 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238568AbhKHKES (ORCPT
+        with ESMTP id S239158AbhKHRtR (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 8 Nov 2021 05:04:18 -0500
+        Mon, 8 Nov 2021 12:49:17 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 33A1E21AFC;
-        Mon,  8 Nov 2021 10:01:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1636365693; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        by smtp-out1.suse.de (Postfix) with ESMTP id 92FC721B08;
+        Mon,  8 Nov 2021 17:46:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1636393591; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=5UZuKAmHIrwVcGr41lKYOAKA0vOHUe0ZexZ00mvExQU=;
-        b=D3eL8PObhxrU8IE4pU3nDbNQgS4xDX279ndrDe7NVbcOlV4CWeQKYLEcilP1qhzGBDs3uI
-        HmnxAMflpuaiiXUcslsjCPMak5CL4TWeHpLVKyz19GO9CWWroehg4VuHCTyaaSS/gDVgxR
-        wrpGSrPqJ5HNIFgpWfuGeQ6v/SzYcyk=
-Received: from suse.cz (unknown [10.100.224.162])
+        bh=u3cuC5W6r7T0d4b7+cnExC9SjUJDZn0OsHXsjZK83V8=;
+        b=GccMNX5idlvXmBBSP0JUUUIntu5WsL+D1Ab38f0oh9IGixM9XsA9AuqaZnMNKmJ8ekKSuS
+        mMN8JD/gugReA5nZgEPxhmVzI0UMvp2ppNVo8tPzV+9tYpuke2sVwtaBRv/cHB0CFUP0kZ
+        tYp2JylCB8gSE7hlpdsDEybVGk3TwuY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1636393591;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=u3cuC5W6r7T0d4b7+cnExC9SjUJDZn0OsHXsjZK83V8=;
+        b=WBiZLBDLJzNrT/xJlthj+i69Z5dalFFaUgpV5F+degdFhYTjRLw9MUVjTeVI93bk8BMhng
+        G3EUW+wJQpWdnnCw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 11789A3B8B;
-        Mon,  8 Nov 2021 10:01:33 +0000 (UTC)
-Date:   Mon, 8 Nov 2021 11:01:32 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH v1 5/5] powerpc/ftrace: Add support for livepatch to PPC32
-Message-ID: <YYj1fNkYAqr/H/I2@alley>
-References: <cover.1635423081.git.christophe.leroy@csgroup.eu>
- <b73d053c145245499511c4827890c9411c8b3a5a.1635423081.git.christophe.leroy@csgroup.eu>
+        by relay2.suse.de (Postfix) with ESMTPS id 78111A3B85;
+        Mon,  8 Nov 2021 17:46:31 +0000 (UTC)
+Date:   Mon, 8 Nov 2021 18:46:31 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Ming Lei <ming.lei@redhat.com>
+cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH V4 1/3] livepatch: remove 'struct completion finish' from
+ klp_patch
+In-Reply-To: <20211102145932.3623108-2-ming.lei@redhat.com>
+Message-ID: <alpine.LSU.2.21.2111081845150.1710@pobox.suse.cz>
+References: <20211102145932.3623108-1-ming.lei@redhat.com> <20211102145932.3623108-2-ming.lei@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b73d053c145245499511c4827890c9411c8b3a5a.1635423081.git.christophe.leroy@csgroup.eu>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2021-10-28 14:24:05, Christophe Leroy wrote:
-> This is heavily copied from PPC64. Not much to say about it.
+On Tue, 2 Nov 2021, Ming Lei wrote:
+
+> The completion finish is just for waiting release of the klp_patch
+> object, then releases module refcnt. We can simply drop the module
+> refcnt in the kobject release handler of klp_patch.
 > 
-> Livepatch sample modules all work.
+> This way also helps to support allocating klp_patch from heap.
 > 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> Signed-off-by: Ming Lei <ming.lei@redhat.com>
 > ---
-> diff --git a/arch/powerpc/include/asm/livepatch.h b/arch/powerpc/include/asm/livepatch.h
-> index 4fe018cc207b..daf24d837241 100644
-> --- a/arch/powerpc/include/asm/livepatch.h
-> +++ b/arch/powerpc/include/asm/livepatch.h
-> @@ -23,8 +23,8 @@ static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
->  static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
->  {
->  	/*
-> -	 * Live patch works only with -mprofile-kernel on PPC. In this case,
-> -	 * the ftrace location is always within the first 16 bytes.
-> +	 * Live patch works on PPC32 and only with -mprofile-kernel on PPC64. In
-> +	 * both cases, the ftrace location is always within the first 16 bytes.
+>  include/linux/livepatch.h |  1 -
+>  kernel/livepatch/core.c   | 12 +++---------
+>  2 files changed, 3 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+> index 2614247a9781..9712818997c5 100644
+> --- a/include/linux/livepatch.h
+> +++ b/include/linux/livepatch.h
+> @@ -170,7 +170,6 @@ struct klp_patch {
+>  	bool enabled;
+>  	bool forced;
+>  	struct work_struct free_work;
+> -	struct completion finish;
+>  };
+>  
+>  #define klp_for_each_object_static(patch, obj) \
 
-Nit: I had some problems to parse it. I wonder if the following is
-better:
+Petr pointed out the main problem. I'll just add that if it comes to it, 
+you could also remove the inclusion of completion.h header file and a 
+description of finish struct member.
 
-	 * Live patch works on PPC32 out of box and on PPC64 only with
-	 * -mprofile-kernel. In both cases, the ftrace location is always
-	 * within the first 16 bytes.
-
-
->  	 */
->  	return ftrace_location_range(faddr, faddr + 16);
->  }
-
-Best Regards,
-Petr
+Miroslav
