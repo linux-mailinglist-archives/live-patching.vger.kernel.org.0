@@ -2,97 +2,122 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB5444E3DE
-	for <lists+live-patching@lfdr.de>; Fri, 12 Nov 2021 10:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D00D444EC21
+	for <lists+live-patching@lfdr.de>; Fri, 12 Nov 2021 18:44:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234621AbhKLJgw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 12 Nov 2021 04:36:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbhKLJgv (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 12 Nov 2021 04:36:51 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6C2C061766;
-        Fri, 12 Nov 2021 01:34:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=REVGkF6eRn7+YtrHq8BUhmi5Kq0utPzdhrc+6SzJFmk=; b=DpB9UYET5QhlpaVmJgZCs2Yiv0
-        s9Mm5Z4cog+M2JmVa0m51tMwz9b+1XutM7gMfcBxnlHSmusR02rK4phHZpqfM2ZqxcbT4qqOSfVdv
-        o2FpU/rnEh8eFJu8d5maB0RBQ4Kf314oNaZvn1cfQw88sl6Xgqn07oaebzi4XSJLg7MHlUVkBLLmn
-        fwQUFLW6au+ESNDo3hNsAE4OYC1KBWAPLgzuhCN52fsTDvtbd5QmIh76c+7sB7THxFi2QHca1wSBP
-        ib3ozkopKRH9NveRJXscWxOdkgQo4fIKWoaPvE6kNDbuJ38ovq3t83y52ssRBR2TiSUXz7eAf6PEO
-        UuJAbJrg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mlSwE-00FbY0-1k; Fri, 12 Nov 2021 09:33:38 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C232330001C;
-        Fri, 12 Nov 2021 10:33:36 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9E08E20DC06DC; Fri, 12 Nov 2021 10:33:36 +0100 (CET)
-Date:   Fri, 12 Nov 2021 10:33:36 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Bill Wendling <morbo@google.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH 20/22] x86,word-at-a-time: Remove .fixup usage
-Message-ID: <YY408BW0phe9I1/o@hirez.programming.kicks-ass.net>
-References: <20211108164711.mr2cqdcvedin2lvx@treble>
- <YYlshkTmf5zdvf1Q@hirez.programming.kicks-ass.net>
- <CAKwvOdkFZ4PSN0GGmKMmoCrcp7_VVNjau_b0sNRm3MuqVi8yow@mail.gmail.com>
- <YYov8SVHk/ZpFsUn@hirez.programming.kicks-ass.net>
- <CAKwvOdn8yrRopXyfd299=SwZS9TAPfPj4apYgdCnzPb20knhbg@mail.gmail.com>
- <20211109210736.GV174703@worktop.programming.kicks-ass.net>
- <f6dbe42651e84278b44e44ed7d0ed74f@AcuMS.aculab.com>
- <YYuogZ+2Dnjyj1ge@hirez.programming.kicks-ass.net>
- <2734a37ebed2432291345aaa8d9fd47e@AcuMS.aculab.com>
- <20211112015003.pefl656m3zmir6ov@treble>
+        id S233843AbhKLRrG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 12 Nov 2021 12:47:06 -0500
+Received: from foss.arm.com ([217.140.110.172]:42522 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235122AbhKLRrF (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 12 Nov 2021 12:47:05 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 71C45D6E;
+        Fri, 12 Nov 2021 09:44:14 -0800 (PST)
+Received: from C02TD0UTHF1T.local (unknown [10.57.58.79])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA14B3F718;
+        Fri, 12 Nov 2021 09:44:11 -0800 (PST)
+Date:   Fri, 12 Nov 2021 17:44:05 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     madvenka@linux.microsoft.com
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        peterz@infradead.org
+Subject: Re: [PATCH v10 01/11] arm64: Select STACKTRACE in arch/arm64/Kconfig
+Message-ID: <20211112174405.GA5977@C02TD0UTHF1T.local>
+References: <c05ce30dcc9be1bd6b5e24a2ca8fe1d66246980b>
+ <20211015025847.17694-1-madvenka@linux.microsoft.com>
+ <20211015025847.17694-2-madvenka@linux.microsoft.com>
+ <20211022180243.GL86184@C02TD0UTHF1T.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211112015003.pefl656m3zmir6ov@treble>
+In-Reply-To: <20211022180243.GL86184@C02TD0UTHF1T.local>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Nov 11, 2021 at 05:50:03PM -0800, Josh Poimboeuf wrote:
+On Fri, Oct 22, 2021 at 07:02:43PM +0100, Mark Rutland wrote:
+> On Thu, Oct 14, 2021 at 09:58:37PM -0500, madvenka@linux.microsoft.com wrote:
+> > From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+> > 
+> > Currently, there are multiple functions in ARM64 code that walk the
+> > stack using start_backtrace() and unwind_frame() or start_backtrace()
+> > and walk_stackframe(). They should all be converted to use
+> > arch_stack_walk(). This makes maintenance easier.
+> > 
+> > To do that, arch_stack_walk() must always be defined. arch_stack_walk()
+> > is within #ifdef CONFIG_STACKTRACE. So, select STACKTRACE in
+> > arch/arm64/Kconfig.
+> 
+> I'd prefer if we could decouple ARCH_STACKWALK from STACKTRACE, so that
+> we don't have to expose /proc/*/stack unconditionally, which Peter
+> Zijlstra has a patch for:
+> 
+>   https://lore.kernel.org/lkml/20211022152104.356586621@infradead.org/
+> 
+> ... but regardless the rest of the series looks pretty good, so I'll go
+> review that, and we can figure out how to queue the bits and pieces in
+> the right order.
 
-> Hm, I think there is actually a livepatch problem here.
+FWIW, it looks like the direction of travel there is not go and unify
+the various arch unwinders, but I would like to not depend on
+STACKTRACE. Regardless, the initial arch_stack_walk() cleanup patches
+all look good, so I reckon we should try to get those out of the way and
+queue those for arm64 soon even if we need some more back-and-forth over
+the later part of the series.
 
-I suspected as much, because I couldn't find any code dealing with it
-when I looked in a hurry.. :/
+With that in mind, I've picked up Peter's patch decoupling
+ARCH_STACKWALK from STACKTRACE, and rebased the initial patches from
+this series atop. Since there's some subtltety in a few cases (and this
+was easy to miss while reviewing), I've expanded the commit messages
+with additional rationale as to why each transformation is safe.
+I've pushed that to:
 
-> Some ideas to fix:
+  https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=arm64/stacktrace/arch-stack-walk
 
-> c) Update the reliable stacktrace code to mark the stack unreliable if
->    it has a function with ".cold" in the name?
+There's a dependency on:
 
-Why not simply match func.cold as func in the transition thing? Then
-func won't get patched as long as it (or it's .cold part) is in use.
-This seems like the natural thing to do.
+  https://lore.kernel.org/r/20211029162245.39761-1-mark.rutland@arm.com
 
-If there are enough .cold functions, always reporting stacktrace as
-unreliable will make progress hard, even though it might be perfectly
-safe.
+... which was queued for v5.16-rc1, but got dropped due to a conflict,
+and I'm expecting it to be re-queued as a fix for v5.16-rc2 shortly
+after v5.16-rc1 is tagged. Hopefully that means we have a table base by
+v5.16-rc2.
 
-> e) Disable .cold optimization?
+I'll send the preparatory series as I've prepared it shortly after
+v5.16-rc1 so that people can shout if I've messed something up.
 
-Yeah, lets not do that. That'll have me lobbying to kill KLP again
-because it generates crap code.
+Hopefully it's easy enough to use that as a base for the more involved
+rework later in this series.
+
+Thanks,
+Mark.
+
+> Thanks,
+> Mark.
+> 
+> > 
+> > Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+> > ---
+> >  arch/arm64/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> > index fdcd54d39c1e..bfb0ce60d820 100644
+> > --- a/arch/arm64/Kconfig
+> > +++ b/arch/arm64/Kconfig
+> > @@ -35,6 +35,7 @@ config ARM64
+> >  	select ARCH_HAS_SET_DIRECT_MAP
+> >  	select ARCH_HAS_SET_MEMORY
+> >  	select ARCH_STACKWALK
+> > +	select STACKTRACE
+> >  	select ARCH_HAS_STRICT_KERNEL_RWX
+> >  	select ARCH_HAS_STRICT_MODULE_RWX
+> >  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+> > -- 
+> > 2.25.1
+> > 
