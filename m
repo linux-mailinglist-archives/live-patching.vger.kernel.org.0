@@ -2,41 +2,41 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7149F450482
-	for <lists+live-patching@lfdr.de>; Mon, 15 Nov 2021 13:36:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5479A4504CD
+	for <lists+live-patching@lfdr.de>; Mon, 15 Nov 2021 13:59:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbhKOMjq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 15 Nov 2021 07:39:46 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:52184 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231486AbhKOMjX (ORCPT
+        id S230253AbhKONCm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 15 Nov 2021 08:02:42 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:47940 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229716AbhKONCc (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 15 Nov 2021 07:39:23 -0500
+        Mon, 15 Nov 2021 08:02:32 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A66811FD43;
-        Mon, 15 Nov 2021 12:36:21 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8934A21A5A;
+        Mon, 15 Nov 2021 12:59:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1636979781; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1636981176; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=0a3HM55iSUahbtbOkMShQHEby0rQ6WJrVZvXete502Q=;
-        b=aOMVnsbjjUbZgyyMHdgG6GOgNd0KzBJbo186hUAYYhv62+tqkacTm4+eq1YExTodNdsvX/
-        gSpg6U0mRu+YYFDh3S0tuDXOz9ZDpkYX7TWI3E2lcRWNdoAiWA1D/J5d9DfEaoHDjdE71s
-        JSk+AXpcABNJH8xF2otjZx54cNXJKzw=
+        bh=dj+b9TzFtWSZEXv8wRzJx6fLOVSK62UITZzIdTTV6gw=;
+        b=2gFpRabP9s8dsJnS1A7v4cHkznUF1SdkTtUcOQ0lJJbwsuqvh4FUCxYe/C48cChEfLt/fp
+        TjfqJzw7hd+2aRD3d+ImhxW1YZhsjU7kAkYD6jCIGZBjjxjDIX4AdzpeCNgvg03+PaKDGN
+        PPtoBxCVLw1kYohGX6DtsQFlij7cuLQ=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1636979781;
+        s=susede2_ed25519; t=1636981176;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=0a3HM55iSUahbtbOkMShQHEby0rQ6WJrVZvXete502Q=;
-        b=OUPr8NCsXCrdkSKNjNwkeyni6rHSuvzinD+d4aXgJx1Bx8zLagBq2RshRkYklonJNOK58D
-        9ydl85kMmMVyGNDA==
+        bh=dj+b9TzFtWSZEXv8wRzJx6fLOVSK62UITZzIdTTV6gw=;
+        b=YDPmQ2Ic8mYr1pHZxfbdF1zWOrBtnQNvOiC7mcIA9Y7GAfZahLjWprcjCIO0dldbQdJP4j
+        9ymTik0cLpBeSbBg==
 Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 673D5A3B81;
-        Mon, 15 Nov 2021 12:36:21 +0000 (UTC)
-Date:   Mon, 15 Nov 2021 13:36:21 +0100 (CET)
+        by relay2.suse.de (Postfix) with ESMTPS id 4697CA3B81;
+        Mon, 15 Nov 2021 12:59:36 +0000 (UTC)
+Date:   Mon, 15 Nov 2021 13:59:36 +0100 (CET)
 From:   Miroslav Benes <mbenes@suse.cz>
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
 cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -54,7 +54,7 @@ cc:     Peter Zijlstra <peterz@infradead.org>,
         live-patching@vger.kernel.org
 Subject: Re: [PATCH 20/22] x86,word-at-a-time: Remove .fixup usage
 In-Reply-To: <20211113053500.jcnx5airbn7g763a@treble>
-Message-ID: <alpine.LSU.2.21.2111151325390.29981@pobox.suse.cz>
+Message-ID: <alpine.LSU.2.21.2111151353550.29981@pobox.suse.cz>
 References: <YYlshkTmf5zdvf1Q@hirez.programming.kicks-ass.net> <CAKwvOdkFZ4PSN0GGmKMmoCrcp7_VVNjau_b0sNRm3MuqVi8yow@mail.gmail.com> <YYov8SVHk/ZpFsUn@hirez.programming.kicks-ass.net> <CAKwvOdn8yrRopXyfd299=SwZS9TAPfPj4apYgdCnzPb20knhbg@mail.gmail.com>
  <20211109210736.GV174703@worktop.programming.kicks-ass.net> <f6dbe42651e84278b44e44ed7d0ed74f@AcuMS.aculab.com> <YYuogZ+2Dnjyj1ge@hirez.programming.kicks-ass.net> <2734a37ebed2432291345aaa8d9fd47e@AcuMS.aculab.com> <20211112015003.pefl656m3zmir6ov@treble>
  <YY408BW0phe9I1/o@hirez.programming.kicks-ass.net> <20211113053500.jcnx5airbn7g763a@treble>
@@ -67,47 +67,25 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 On Fri, 12 Nov 2021, Josh Poimboeuf wrote:
 
-> On Fri, Nov 12, 2021 at 10:33:36AM +0100, Peter Zijlstra wrote:
-> > On Thu, Nov 11, 2021 at 05:50:03PM -0800, Josh Poimboeuf wrote:
-> > 
-> > > Hm, I think there is actually a livepatch problem here.
-> > 
-> > I suspected as much, because I couldn't find any code dealing with it
-> > when I looked in a hurry.. :/
-> > 
-> > > Some ideas to fix:
-> > 
-> > > c) Update the reliable stacktrace code to mark the stack unreliable if
-> > >    it has a function with ".cold" in the name?
-> > 
-> > Why not simply match func.cold as func in the transition thing? Then
-> > func won't get patched as long as it (or it's .cold part) is in use.
-> > This seems like the natural thing to do.
-> 
-> Well yes, you're basically hinting at my first two options a and b:
-> 
-> a) Add a field to 'klp_func' which allows the patch module to specify a
->    function's .cold counterpart?
-> 
-> b) Detect such cold counterparts in klp_enable_patch()?  Presumably it
->    would require searching kallsyms for "<func>.cold", which is somewhat
->    problematic as there might be duplicates.
-> 
-> It's basically a two-step process:  1) match func to .cold if it exists;
-> 2) check for both in klp_check_stack_func().  The above two options are
-> proposals for the 1st step.  The 2nd step was implied.
+> If the child schedules out, and then the parent gets patched, things can
+> go off-script if the child later jumps back to the unpatched version of
+> the parent, and then for example the old parent tries to call another
+> patched function with a since-changed ABI.
 
-This reminded me... one of the things I have on my todo list for a long 
-time is to add an option for a live patch creator to specify functions 
-which are not contained in the live patch but their presence on stacks 
-should be checked for. It could save some space in the final live patch 
-when one would add functions (callers) just because the consistency 
-requires it.
+...
+ 
+> I don't know about other patch creation tooling, but I'd imagine they
+> also need to know about .cold functions, unless they have that
+> optimization disabled.  Because the func and its .cold counterpart
+> always need to be patched together.
 
-I took as a convenience feature with a low priority and forgot about it. 
-The problem above changes it. So should we take the opportunity and 
-implement both in one step? I wanted to include a list of functions in 
-on a patch level (klp_patch structure) and klp_check_stack() would just 
-have more to check.
+We, at SUSE, solve the issue differently... the new patched parent would 
+call that another patched function with a changed ABI statically in a live 
+patch. So in that example, .cold child would jump back to the unpatched 
+parent which would then call, also, the unpatched function.
+
+The situation would change if we ever were to have some notion of global 
+consistency. Then it would be really fragile, so it is worth of improving 
+this, I think.
 
 Miroslav
