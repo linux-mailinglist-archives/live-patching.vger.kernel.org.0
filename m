@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D3A245ACA9
+	by mail.lfdr.de (Postfix) with ESMTP id 7211245ACAB
 	for <lists+live-patching@lfdr.de>; Tue, 23 Nov 2021 20:37:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239144AbhKWTkt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Nov 2021 14:40:49 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:41914 "EHLO
+        id S239953AbhKWTkz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Nov 2021 14:40:55 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:41928 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238723AbhKWTkp (ORCPT
+        with ESMTP id S238846AbhKWTkr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Nov 2021 14:40:45 -0500
+        Tue, 23 Nov 2021 14:40:47 -0500
 Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id E8CAD20D4D39;
-        Tue, 23 Nov 2021 11:37:35 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E8CAD20D4D39
+        by linux.microsoft.com (Postfix) with ESMTPSA id 062DB20D4D3D;
+        Tue, 23 Nov 2021 11:37:36 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 062DB20D4D3D
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1637696256;
-        bh=4186IGzt9P0jgk6sDPjuuzrx/GJRpOlohBw5fEU6ZnY=;
+        s=default; t=1637696257;
+        bh=ANijem9qrqDRCyqcDOusbbhCMatgyg1SMa0VQG+ycgk=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=NH1mpd/pqVIHkZwa0kb2q2g1Eu3HnL+HMfUmRnjAxgTMIakYJdyLKv2ou5oesH8Rq
-         6TJfVLVB+W9m5yYguic9FbIGxz2CUfmlw9VDulannLVk4axoBFi9r6vaegNSLk4oVt
-         DI9JiII0OOI8WkWuv4tglMKWPh7uY5A+7ny5yvdw=
+        b=FDK5nwZ6mp0rwag3tiw+83PEtTTQG2hsym0HD4/QKmyTZH6ca4rRngn+vdO5ZzQTs
+         hJgZMffOgqx1+WS2EgyScKVsK7BEeUOuvmURYFtcyjS6+rRgyAXnQQ9+IUFXpsNQb1
+         FOh07RjB5AJVx13n2fluXl7haaRuQjzzaJ5EDsoc=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -30,9 +30,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [PATCH v11 3/5] arm64: Make the unwind loop in unwind() similar to other architectures
-Date:   Tue, 23 Nov 2021 13:37:21 -0600
-Message-Id: <20211123193723.12112-4-madvenka@linux.microsoft.com>
+Subject: [PATCH v11 4/5] arm64: Introduce stack trace reliability checks in the unwinder
+Date:   Tue, 23 Nov 2021 13:37:22 -0600
+Message-Id: <20211123193723.12112-5-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211123193723.12112-1-madvenka@linux.microsoft.com>
 References: <8b861784d85a21a9bf08598938c11aff1b1249b9>
@@ -45,195 +45,166 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Change the loop in unwind()
-===========================
+There are some kernel features and conditions that make a stack trace
+unreliable. Callers may require the unwinder to detect these cases.
+E.g., livepatch.
 
-Change the unwind loop in unwind() to:
+Introduce a new function called unwind_check_reliability() that will
+detect these cases and set a flag in the stack frame. Call
+unwind_check_reliability() for every frame, that is, in unwind_start()
+and unwind_next().
 
-	unwind_start(&frame, fp, pc);
-	while (unwind_continue(tsk, &frame, fn, data))
-		unwind_next(tsk, &frame);
+Introduce the first reliability check in unwind_check_reliability() - If
+a return PC is not a valid kernel text address, consider the stack
+trace unreliable. It could be some generated code. Other reliability checks
+will be added in the future.
 
-New function unwind_continue()
-==============================
+Let unwind() return a boolean to indicate if the stack trace is
+reliable.
 
-Define a new function unwind_continue() that is used in the unwind loop
-to check for conditions that terminate a stack trace.
+Introduce arch_stack_walk_reliable() for ARM64. This works like
+arch_stack_walk() except that it returns -EINVAL if the stack trace is not
+reliable.
 
-The conditions checked are:
-
-	- If the bottom of the stack has been reached, terminate.
-
-	- If the consume_entry() function returns false, the caller of
-	  unwind has asked to terminate the stack trace. So, terminate.
-
-	- If unwind_next() failed for some reason (like stack corruption),
-	  terminate.
-
-Do not return an error value from unwind_next()
-===============================================
-
-We want to check for terminating conditions only in unwind_continue() from
-the unwinder loop. So, do not return an error value from unwind_next().
-Simply set a flag in the stackframe and check the flag in unwind_continue().
+Until all the reliability checks are in place, arch_stack_walk_reliable()
+may not be used by livepatch. But it may be used by debug and test code.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
  arch/arm64/include/asm/stacktrace.h |  3 ++
- arch/arm64/kernel/stacktrace.c      | 75 ++++++++++++++++++-----------
- 2 files changed, 50 insertions(+), 28 deletions(-)
+ arch/arm64/kernel/stacktrace.c      | 59 +++++++++++++++++++++++++++--
+ 2 files changed, 58 insertions(+), 4 deletions(-)
 
 diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-index 3a15d376ab36..d838586adef9 100644
+index d838586adef9..7143e80c3d96 100644
 --- a/arch/arm64/include/asm/stacktrace.h
 +++ b/arch/arm64/include/asm/stacktrace.h
-@@ -51,6 +51,8 @@ struct stack_info {
-  * @kr_cur:      When KRETPOLINES is selected, holds the kretprobe instance
-  *               associated with the most recently encountered replacement lr
+@@ -53,6 +53,8 @@ struct stack_info {
   *               value.
+  *
+  * @failed:      Unwind failed.
 + *
-+ * @failed:      Unwind failed.
++ * @reliable:    Stack trace is reliable.
   */
  struct stackframe {
  	unsigned long fp;
-@@ -61,6 +63,7 @@ struct stackframe {
- #ifdef CONFIG_KRETPROBES
+@@ -64,6 +66,7 @@ struct stackframe {
  	struct llist_node *kr_cur;
  #endif
-+	bool failed;
+ 	bool failed;
++	bool reliable;
  };
  
  extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 918852cd2681..3b670ab1f0e9 100644
+index 3b670ab1f0e9..77eb00e45558 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -54,6 +54,7 @@ static void unwind_start(struct stackframe *frame, unsigned long fp,
- 	bitmap_zero(frame->stacks_done, __NR_STACK_TYPES);
+@@ -18,6 +18,26 @@
+ #include <asm/stack_pointer.h>
+ #include <asm/stacktrace.h>
+ 
++/*
++ * Check the stack frame for conditions that make further unwinding unreliable.
++ */
++static void unwind_check_reliability(struct task_struct *task,
++				     struct stackframe *frame)
++{
++	if (frame->fp == (unsigned long)task_pt_regs(task)->stackframe) {
++		/* Final frame; no more unwind, no need to check reliability */
++		return;
++	}
++
++	/*
++	 * If the PC is not a known kernel text address, then we cannot
++	 * be sure that a subsequent unwind will be reliable, as we
++	 * don't know that the code follows our unwind requirements.
++	 */
++	if (!__kernel_text_address(frame->pc))
++		frame->reliable = false;
++}
++
+ /*
+  * AArch64 PCS assigns the frame pointer to x29.
+  *
+@@ -33,8 +53,9 @@
+  */
+ 
+ 
+-static void unwind_start(struct stackframe *frame, unsigned long fp,
+-			 unsigned long pc)
++static void unwind_start(struct task_struct *task,
++			 struct stackframe *frame,
++			 unsigned long fp, unsigned long pc)
+ {
+ 	frame->fp = fp;
+ 	frame->pc = pc;
+@@ -55,6 +76,8 @@ static void unwind_start(struct stackframe *frame, unsigned long fp,
  	frame->prev_fp = 0;
  	frame->prev_type = STACK_TYPE_UNKNOWN;
-+	frame->failed = false;
+ 	frame->failed = false;
++	frame->reliable = true;
++	unwind_check_reliability(task, frame);
  }
  
  /*
-@@ -63,24 +64,26 @@ static void unwind_start(struct stackframe *frame, unsigned long fp,
-  * records (e.g. a cycle), determined based on the location and fp value of A
-  * and the location (but not the fp value) of B.
-  */
--static int notrace unwind_next(struct task_struct *tsk,
--			       struct stackframe *frame)
-+static void notrace unwind_next(struct task_struct *tsk,
-+				struct stackframe *frame)
- {
- 	unsigned long fp = frame->fp;
- 	struct stack_info info;
- 
--	/* Final frame; nothing to unwind */
--	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
--		return -ENOENT;
--
--	if (fp & 0x7)
--		return -EINVAL;
-+	if (fp & 0x7) {
-+		frame->failed = true;
-+		return;
-+	}
- 
--	if (!on_accessible_stack(tsk, fp, 16, &info))
--		return -EINVAL;
-+	if (!on_accessible_stack(tsk, fp, 16, &info)) {
-+		frame->failed = true;
-+		return;
-+	}
- 
--	if (test_bit(info.type, frame->stacks_done))
--		return -EINVAL;
-+	if (test_bit(info.type, frame->stacks_done)) {
-+		frame->failed = true;
-+		return;
-+	}
- 
- 	/*
- 	 * As stacks grow downward, any valid record on the same stack must be
-@@ -96,8 +99,10 @@ static int notrace unwind_next(struct task_struct *tsk,
- 	 * stack.
- 	 */
- 	if (info.type == frame->prev_type) {
--		if (fp <= frame->prev_fp)
--			return -EINVAL;
-+		if (fp <= frame->prev_fp) {
-+			frame->failed = true;
-+			return;
-+		}
- 	} else {
- 		set_bit(frame->prev_type, frame->stacks_done);
- 	}
-@@ -125,8 +130,10 @@ static int notrace unwind_next(struct task_struct *tsk,
- 		 */
- 		orig_pc = ftrace_graph_ret_addr(tsk, NULL, frame->pc,
- 						(void *)frame->fp);
--		if (WARN_ON_ONCE(frame->pc == orig_pc))
--			return -EINVAL;
-+		if (WARN_ON_ONCE(frame->pc == orig_pc)) {
-+			frame->failed = true;
-+			return;
-+		}
- 		frame->pc = orig_pc;
- 	}
- #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
-@@ -134,11 +141,31 @@ static int notrace unwind_next(struct task_struct *tsk,
+@@ -141,6 +164,7 @@ static void notrace unwind_next(struct task_struct *tsk,
  	if (is_kretprobe_trampoline(frame->pc))
  		frame->pc = kretprobe_find_ret_addr(tsk, (void *)frame->fp, &frame->kr_cur);
  #endif
--
--	return 0;
++	unwind_check_reliability(tsk, frame);
  }
  NOKPROBE_SYMBOL(unwind_next);
  
-+static bool unwind_continue(struct task_struct *task,
-+			    struct stackframe *frame,
-+			    stack_trace_consume_fn consume_entry, void *cookie)
-+{
-+	if (frame->failed) {
-+		/* PC is suspect. Cannot consume it. */
-+		return false;
-+	}
-+
-+	if (!consume_entry(cookie, frame->pc)) {
-+		/* Caller terminated the unwind. */
-+		frame->failed = true;
-+		return false;
-+	}
-+
-+	if (frame->fp == (unsigned long)task_pt_regs(task)->stackframe) {
-+		/* Final frame; nothing to unwind */
-+		return false;
-+	}
-+	return true;
-+}
-+
- static void notrace unwind(struct task_struct *tsk,
+@@ -166,15 +190,16 @@ static bool unwind_continue(struct task_struct *task,
+ 	return true;
+ }
+ 
+-static void notrace unwind(struct task_struct *tsk,
++static bool notrace unwind(struct task_struct *tsk,
  			   unsigned long fp, unsigned long pc,
  			   bool (*fn)(void *, unsigned long), void *data)
-@@ -146,16 +173,8 @@ static void notrace unwind(struct task_struct *tsk,
+ {
  	struct stackframe frame;
  
- 	unwind_start(&frame, fp, pc);
--
--	while (1) {
--		int ret;
--
--		if (!fn(data, frame.pc))
--			break;
--		ret = unwind_next(tsk, &frame);
--		if (ret < 0)
--			break;
--	}
-+	while (unwind_continue(tsk, &frame, fn, data))
-+		unwind_next(tsk, &frame);
+-	unwind_start(&frame, fp, pc);
++	unwind_start(tsk, &frame, fp, pc);
+ 	while (unwind_continue(tsk, &frame, fn, data))
+ 		unwind_next(tsk, &frame);
++	return !frame.failed && frame.reliable;
  }
  NOKPROBE_SYMBOL(unwind);
  
+@@ -231,3 +256,29 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 	}
+ 	unwind(task, fp, pc, consume_entry, cookie);
+ }
++
++/*
++ * arch_stack_walk_reliable() may not be used for livepatch until all of
++ * the reliability checks are in place in unwind_consume(). However,
++ * debug and test code can choose to use it even if all the checks are not
++ * in place.
++ */
++noinline int notrace arch_stack_walk_reliable(stack_trace_consume_fn consume_fn,
++					      void *cookie,
++					      struct task_struct *task)
++{
++	unsigned long fp, pc;
++
++	if (task == current) {
++		/* Skip arch_stack_walk_reliable() in the stack trace. */
++		fp = (unsigned long)__builtin_frame_address(1);
++		pc = (unsigned long)__builtin_return_address(0);
++	} else {
++		/* Caller guarantees that the task is not running. */
++		fp = thread_saved_fp(task);
++		pc = thread_saved_pc(task);
++	}
++	if (unwind(task, fp, pc, consume_fn, cookie))
++		return 0;
++	return -EINVAL;
++}
 -- 
 2.25.1
 
