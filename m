@@ -2,224 +2,116 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F46145ACAA
-	for <lists+live-patching@lfdr.de>; Tue, 23 Nov 2021 20:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D36145AD7C
+	for <lists+live-patching@lfdr.de>; Tue, 23 Nov 2021 21:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239565AbhKWTkx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 23 Nov 2021 14:40:53 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:41940 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238915AbhKWTkr (ORCPT
+        id S233255AbhKWUoH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 23 Nov 2021 15:44:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232084AbhKWUoE (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 23 Nov 2021 14:40:47 -0500
-Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 16CF920D4D3A;
-        Tue, 23 Nov 2021 11:37:38 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 16CF920D4D3A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1637696258;
-        bh=OQhzBj7Wen/J06yxGIiml0JSLgVuUwO6DOPVaGxCJ8I=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=q3ZqBQyyj4vXUauF/3jjrSnxqBpki3Mp5EpUGFvk0xo5keTmx+XEcKmEwssmidcc+
-         2a3SQOpNcC54SkbhFe1CoeeS/etKkPBDo8F7v9Iq12deNyIkxsy5KhItvzU0KS7TPE
-         9RFBUwoxv5CvSNmg3NXoKdl7k8Si0oSAQLiqyOmc=
-From:   madvenka@linux.microsoft.com
-To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        madvenka@linux.microsoft.com
-Subject: [PATCH v11 5/5] arm64: Create a list of SYM_CODE functions, check return PC against list
-Date:   Tue, 23 Nov 2021 13:37:23 -0600
-Message-Id: <20211123193723.12112-6-madvenka@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211123193723.12112-1-madvenka@linux.microsoft.com>
-References: <8b861784d85a21a9bf08598938c11aff1b1249b9>
- <20211123193723.12112-1-madvenka@linux.microsoft.com>
+        Tue, 23 Nov 2021 15:44:04 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0DDC061574
+        for <live-patching@vger.kernel.org>; Tue, 23 Nov 2021 12:40:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=mj5i4rADjLu/laWRAJiX8EK9zd7fNQSaV0qkwpWf9wk=; b=SrIUQb+4Ea7EKjYXfkCFpTvhE2
+        WMpl9mXffmKBUkNdj5hjqmsifnsad/EifSCyH93tSvRNVAuvfNjEIAaT5Ynopxco+ggtWeq/RkLJj
+        E5mBCloc4iIKdWiVAugm98tAhsHNEEbH6ka14fZVbfaLh4JSBX7pSzLnGUW/cipnvGk1rqO0tIfeh
+        R10AV78gdrhsFINcjXip8GzLllgd0SW7JJJSKU5iHhYJeeV6vnC0HT3B/Jd1189mvugF3v8qLxId9
+        jBg/zCevLoZO6/5cJ4Y0B312naQnfC93WrjvXmpljWm8/OqI1C0HZUPQ+UdazybExn4bh6frcQzcX
+        W0ZSgJZg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mpcan-0008TA-4X; Tue, 23 Nov 2021 20:40:41 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id CE4C5984951; Tue, 23 Nov 2021 21:40:39 +0100 (CET)
+Date:   Tue, 23 Nov 2021 21:40:39 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Miroslav Benes <mbenes@suse.cz>, joao@overdrivepizza.com,
+        nstange@suse.de, pmladek@suse.cz, jpoimboe@redhat.com,
+        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        alexei.starovoitov@gmail.com
+Subject: Re: CET/IBT support and live-patches
+Message-ID: <20211123204039.GC721624@worktop.programming.kicks-ass.net>
+References: <70828ca9f840960c7a3f66cd8dc141f5@overdrivepizza.com>
+ <alpine.LSU.2.21.2111231035460.15177@pobox.suse.cz>
+ <YZzHE+Cze9AX6HCZ@hirez.programming.kicks-ass.net>
+ <alpine.LSU.2.21.2111231237090.15177@pobox.suse.cz>
+ <20211123110320.75990e0b@gandalf.local.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211123110320.75990e0b@gandalf.local.home>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+On Tue, Nov 23, 2021 at 11:03:20AM -0500, Steven Rostedt wrote:
+> On Tue, 23 Nov 2021 12:39:15 +0100 (CET)
+> Miroslav Benes <mbenes@suse.cz> wrote:
+> 
+> > +++ b/kernel/livepatch/patch.c
+> > @@ -127,15 +127,18 @@ static void notrace klp_ftrace_handler(unsigned long ip,
+> >  /*
+> >   * Convert a function address into the appropriate ftrace location.
+> >   *
+> > - * Usually this is just the address of the function, but on some architectures
+> > - * it's more complicated so allow them to provide a custom behaviour.
+> > + * Usually this is just the address of the function, but there are some
+> > + * exceptions.
+> > + *
+> > + *   * PPC - live patch works only with -mprofile-kernel. In this case,
+> > + *     the ftrace location is always within the first 16 bytes.
+> > + *   * x86_64 with CET/IBT enabled - there is ENDBR instruction at +0 offset.
+> > + *     __fentry__ follows it.
+> >   */
+> > -#ifndef klp_get_ftrace_location
+> > -static unsigned long klp_get_ftrace_location(unsigned long faddr)
+> > +static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
+> 
+> Why make this the default function? It should only do this for powerpc and
+> x86 *if* CET/IBT is enabled.
 
-SYM_CODE functions don't follow the usual calling conventions. Check if the
-return PC in a stack frame falls in any of these. If it does, consider the
-stack trace unreliable.
+Well, only this variant of IBT. Once Joao gets his clang patches
+together we'll probably have it back at +0.
 
-Define a special section for unreliable functions
-=================================================
+Something like the below would be more robust, it also gets us something
+grep-able for when the IBT code-gen changes yet again.
 
-Define a SYM_CODE_END() macro for arm64 that adds the function address
-range to a new section called "sym_code_functions".
-
-Linker file
-===========
-
-Include the "sym_code_functions" section under read-only data in
-vmlinux.lds.S.
-
-Initialization
-==============
-
-Define an early_initcall() to create a sym_code_functions[] array from
-the linker data.
-
-Unwinder check
-==============
-
-Add a reliability check in unwind_is_reliable() that compares a return
-PC with sym_code_functions[]. If there is a match, then return failure.
-
-Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
----
- arch/arm64/include/asm/linkage.h  | 12 +++++++
- arch/arm64/include/asm/sections.h |  1 +
- arch/arm64/kernel/stacktrace.c    | 55 +++++++++++++++++++++++++++++++
- arch/arm64/kernel/vmlinux.lds.S   | 10 ++++++
- 4 files changed, 78 insertions(+)
-
-diff --git a/arch/arm64/include/asm/linkage.h b/arch/arm64/include/asm/linkage.h
-index 9906541a6861..616bad74e297 100644
---- a/arch/arm64/include/asm/linkage.h
-+++ b/arch/arm64/include/asm/linkage.h
-@@ -68,4 +68,16 @@
- 		SYM_FUNC_END_ALIAS(x);		\
- 		SYM_FUNC_END_ALIAS(__pi_##x)
- 
-+/*
-+ * Record the address range of each SYM_CODE function in a struct code_range
-+ * in a special section.
-+ */
-+#define SYM_CODE_END(name)				\
-+	SYM_END(name, SYM_T_NONE)			;\
-+	99:						;\
-+	.pushsection "sym_code_functions", "aw"		;\
-+	.quad	name					;\
-+	.quad	99b					;\
-+	.popsection
-+
- #endif
-diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
-index 152cb35bf9df..ac01189668c5 100644
---- a/arch/arm64/include/asm/sections.h
-+++ b/arch/arm64/include/asm/sections.h
-@@ -22,5 +22,6 @@ extern char __irqentry_text_start[], __irqentry_text_end[];
- extern char __mmuoff_data_start[], __mmuoff_data_end[];
- extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
- extern char __relocate_new_kernel_start[], __relocate_new_kernel_end[];
-+extern char __sym_code_functions_start[], __sym_code_functions_end[];
- 
- #endif /* __ASM_SECTIONS_H */
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 77eb00e45558..e47f852ad12a 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -18,12 +18,41 @@
- #include <asm/stack_pointer.h>
- #include <asm/stacktrace.h>
- 
-+struct code_range {
-+	unsigned long	start;
-+	unsigned long	end;
-+};
-+
-+static struct code_range	*sym_code_functions;
-+static int			num_sym_code_functions;
-+
-+int __init init_sym_code_functions(void)
-+{
-+	size_t size = (unsigned long)__sym_code_functions_end -
-+		      (unsigned long)__sym_code_functions_start;
-+
-+	sym_code_functions = (struct code_range *)__sym_code_functions_start;
-+	/*
-+	 * Order it so that sym_code_functions is not visible before
-+	 * num_sym_code_functions.
-+	 */
-+	smp_mb();
-+	num_sym_code_functions = size / sizeof(struct code_range);
-+
-+	return 0;
-+}
-+early_initcall(init_sym_code_functions);
-+
- /*
-  * Check the stack frame for conditions that make further unwinding unreliable.
-  */
- static void unwind_check_reliability(struct task_struct *task,
- 				     struct stackframe *frame)
- {
-+	const struct code_range *range;
-+	unsigned long pc;
-+	int i;
-+
- 	if (frame->fp == (unsigned long)task_pt_regs(task)->stackframe) {
- 		/* Final frame; no more unwind, no need to check reliability */
- 		return;
-@@ -36,6 +65,32 @@ static void unwind_check_reliability(struct task_struct *task,
- 	 */
- 	if (!__kernel_text_address(frame->pc))
- 		frame->reliable = false;
-+
-+	/*
-+	 * Check the return PC against sym_code_functions[]. If there is a
-+	 * match, then the consider the stack frame unreliable.
-+	 *
-+	 * As SYM_CODE functions don't follow the usual calling conventions,
-+	 * we assume by default that any SYM_CODE function cannot be unwound
-+	 * reliably.
-+	 *
-+	 * Note that this includes:
-+	 *
-+	 * - Exception handlers and entry assembly
-+	 * - Trampoline assembly (e.g., ftrace, kprobes)
-+	 * - Hypervisor-related assembly
-+	 * - Hibernation-related assembly
-+	 * - CPU start-stop, suspend-resume assembly
-+	 * - Kernel relocation assembly
-+	 */
-+	pc = frame->pc;
-+	for (i = 0; i < num_sym_code_functions; i++) {
-+		range = &sym_code_functions[i];
-+		if (pc >= range->start && pc < range->end) {
-+			frame->reliable = false;
-+			return;
-+		}
-+	}
+diff --git a/arch/x86/include/asm/livepatch.h b/arch/x86/include/asm/livepatch.h
+index 7c5cc6660e4b..4e683a1aa411 100644
+--- a/arch/x86/include/asm/livepatch.h
++++ b/arch/x86/include/asm/livepatch.h
+@@ -17,4 +17,13 @@ static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+ 	ftrace_instruction_pointer_set(fregs, ip);
  }
  
- /*
-diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
-index 50bab186c49b..6381e75e566e 100644
---- a/arch/arm64/kernel/vmlinux.lds.S
-+++ b/arch/arm64/kernel/vmlinux.lds.S
-@@ -122,6 +122,14 @@ jiffies = jiffies_64;
- #define TRAMP_TEXT
++#define klp_get_ftrace_location klp_get_ftrace_location
++static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
++{
++	unsigned long addr = faddr_location(faddr);
++	if (!addr && IS_ENABLED(CONFIG_X86_IBT))
++		addr = faddr_location(faddr + 4);
++	return addr;
++}
++
+ #endif /* _ASM_X86_LIVEPATCH_H */
+diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
+index fe316c021d73..fd295bbbcbc7 100644
+--- a/kernel/livepatch/patch.c
++++ b/kernel/livepatch/patch.c
+@@ -133,7 +133,7 @@ static void notrace klp_ftrace_handler(unsigned long ip,
+ #ifndef klp_get_ftrace_location
+ static unsigned long klp_get_ftrace_location(unsigned long faddr)
+ {
+-	return faddr;
++	return ftrace_location(faddr);
+ }
  #endif
  
-+#define SYM_CODE_FUNCTIONS				\
-+	. = ALIGN(16);					\
-+	.symcode : AT(ADDR(.symcode) - LOAD_OFFSET) {	\
-+		__sym_code_functions_start = .;		\
-+		KEEP(*(sym_code_functions))		\
-+		__sym_code_functions_end = .;		\
-+	}
-+
- /*
-  * The size of the PE/COFF section that covers the kernel image, which
-  * runs from _stext to _edata, must be a round multiple of the PE/COFF
-@@ -209,6 +217,8 @@ SECTIONS
- 	swapper_pg_dir = .;
- 	. += PAGE_SIZE;
- 
-+	SYM_CODE_FUNCTIONS
-+
- 	. = ALIGN(SEGMENT_ALIGN);
- 	__init_begin = .;
- 	__inittext_begin = .;
--- 
-2.25.1
-
