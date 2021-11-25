@@ -2,85 +2,181 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F10A145DC61
-	for <lists+live-patching@lfdr.de>; Thu, 25 Nov 2021 15:32:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50ADD45DC86
+	for <lists+live-patching@lfdr.de>; Thu, 25 Nov 2021 15:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355775AbhKYOgC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 25 Nov 2021 09:36:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352655AbhKYOeC (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Thu, 25 Nov 2021 09:34:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5FB7761041;
-        Thu, 25 Nov 2021 14:30:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637850650;
-        bh=0xFa/kwdXuhHGsjEJDOWGKhXNOfWoCQ4zX3oRmtXPxo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=i+pjcraC1g8STD7bshWvHBCH/nHgvcuDoiDHv5VWbW7Ei8uCUs9qaRx40KWQywqgX
-         X/gAyXOaVJRDMwOMCvAgP88/3DBrZgO5GiepBqGbyoZmLEvuhkkDHaOukDFhCpcc1s
-         COsh0Tf+dI/4Q3UFVTslcCOwc/DA8kLGtvZmgzTIBlD3XwPP17VPkB6XIvaR1YaO0O
-         TcuUUGnKGEvJjCCWUA9WSspuqItCFf1Ia42z6THHPxgA2M3xLO7WYbEplOye464lC5
-         Dgir5e2OKcNTJXmoOuBipFPrlJrUPDYbBCwNPbVBbAEDOmcuspaj9RYvlYTTKToX5H
-         e+YqGFjWSUFWQ==
-Date:   Thu, 25 Nov 2021 14:30:45 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     madvenka@linux.microsoft.com
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v11 3/5] arm64: Make the unwind loop in unwind() similar
- to other architectures
-Message-ID: <YZ+eFXEfTLa8KIHw@sirena.org.uk>
-References: <8b861784d85a21a9bf08598938c11aff1b1249b9>
- <20211123193723.12112-1-madvenka@linux.microsoft.com>
- <20211123193723.12112-4-madvenka@linux.microsoft.com>
+        id S1355834AbhKYOoq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 25 Nov 2021 09:44:46 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:33820 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350311AbhKYOmp (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Thu, 25 Nov 2021 09:42:45 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id B3DBD212BB;
+        Thu, 25 Nov 2021 14:39:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1637851172; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gxDGorvSTIRGEY6nErUaWrzq7939SEFYfdrfS8HxGJY=;
+        b=a4ESqggC1wPB6gVNyLXGDo3uT7/k0y7n7fkEwITl0odq7Mb7UcGwiLv8ZWWgeJzSgD7KvL
+        X3rfE+ih7yhbj3Q3Ko3XfbXAJAWZcRf8NO4IEQulZlZfdog9asS3KhXcNIScfko+DRlVsK
+        HQxV0Zkcg+OSgEtSaQyiq0qfRe0sC30=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 95C35A3B89;
+        Thu, 25 Nov 2021 14:39:32 +0000 (UTC)
+Date:   Thu, 25 Nov 2021 15:39:29 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     jpoimboe@redhat.com, jikos@kernel.org, joe.lawrence@redhat.com,
+        peterz@infradead.org, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 3/3] selftests/livepatch: Test of the API for specifying
+ functions to search for on a stack
+Message-ID: <YZ+gIa4dG2uPvSlY@alley>
+References: <20211119090327.12811-1-mbenes@suse.cz>
+ <20211119090327.12811-4-mbenes@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="N9fRGPaMmAWIuANF"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211123193723.12112-4-madvenka@linux.microsoft.com>
-X-Cookie: This bag is recyclable.
+In-Reply-To: <20211119090327.12811-4-mbenes@suse.cz>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On Fri 2021-11-19 10:03:27, Miroslav Benes wrote:
+> Add a test for the API which allows the user to specify functions which
+> are then searched for on any tasks's stack during a transition process.
+> 
+> --- /dev/null
+> +++ b/lib/livepatch/test_klp_funcstack_mod.c
+> @@ -0,0 +1,72 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +// Copyright (C) 2021 Miroslav Benes <mbenes@suse.cz>
+> +
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/debugfs.h>
+> +#include <linux/delay.h>
+> +
+> +static int sleep_length = 10000;
+> +module_param(sleep_length, int, 0644);
+> +MODULE_PARM_DESC(sleep_length, "length of sleep in seconds (default=10)");
+> +
+> +static noinline void child_function(void)
+> +{
+> +	pr_info("%s enter\n", __func__);
+> +	msleep(sleep_length);
 
---N9fRGPaMmAWIuANF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The hardcoded sleep is not ideal. It might be too low or non-necessary high.
 
-On Tue, Nov 23, 2021 at 01:37:21PM -0600, madvenka@linux.microsoft.com wrote:
+If I get it correctly, we are trying to achieve here the same as
+busymod_work_func() in test_klp_callbacks_busy.c.
 
-> 	unwind_start(&frame, fp, pc);
-> 	while (unwind_continue(tsk, &frame, fn, data))
-> 		unwind_next(tsk, &frame);
+The approach with debugfs is an interesting trick. Though, I slightly
+prefer using the scheduled work. The workqueue API looks less tricky
+to me than sysfs/debugfs API. Also it does not block the module
+in the init() callback[*]. But I might be biased.
 
-Other architectures seem to call their unwind_next() unwind_next_frame()
-instead, and use a function unwind_done() rather than unwind_continue().
-I appreciate that's actually a change carried through from one of the
-earlier patches but might be worth considering.  I don't really *mind*
-that, though if there's any work on pulling more code out of the
-architecture into the generic code it'll need revisiting in at least
-some of the architectures.
+Anyway, it might make sense to use the same trick in both situations.
+It would make it easier to maintain the test modules.
 
-Reviwed-by: Mark Brown <broonie@kernel.org>
+[*] There is actually a race in the workqueue approach. The module
+init() callback should wait until the work is really scheduled
+and sleeping. It might be achieved by similar hand-shake like
+with @block_transition variable. Or completion API might be
+even more elegant.
 
---N9fRGPaMmAWIuANF
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+> +	pr_info("%s exit\n", __func__);
+> +}
+> +
+> +static noinline void child2_function(void)
+> +{
+> +	pr_info("%s\n", __func__);
+> +}
+> +
+> +static noinline void parent_function(void)
+> +{
+> +	pr_info("%s enter\n", __func__);
+> +	child_function();
+> +	child2_function();
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmGfnhQACgkQJNaLcl1U
-h9ANJwf9F7OP5Y+O3J9bKoFwrSqLplZJrP0ez14Osw/lJI/amq5E68KgqEuqQ1jK
-tvKaaL4x0akbB8U3gCZxif9mvy5TZTrnDxhusoRYQOX7FDGh6wsEynMTwQNBftGh
-poSLi2vL4QfFo0ZsLrSvPNrN6zItHsvsDV7RAhogTNGu9N62v2Va7+cv22Oi0gXl
-XfBjiCR7A4teQnsKmh8DJfw5ELOrsP2VfxU4iea8olOfPK51GgryEc2c911QrluX
-Yq2720KDeM+lVbWOQaLXe9evEbg7utUR6sPHQw3w33HEUKDczFksLsH+8xBbltCq
-WRM50262xBv0AiT5fVOpE2/9+lsRcQ==
-=3X6L
------END PGP SIGNATURE-----
+This would deserve some explanation what we try to simulate here
+and how it is achieved. It is not easy for me even with the background
+that I have freshly in my mind.
 
---N9fRGPaMmAWIuANF--
+Also I think about more descriptive names ;-)
+
+What about something like this (using workqueue work and completion):
+
+/*
+ * Simulate part of the caller code that is in another .elf section
+ * and is reached via jump. It this was really the case then the stack
+ * unwinder might not be able to detect that the process is sleeping
+ * in the caller.
+ */
+static void simulate_jump_part(void)
+{
+	pr_info("%s enter\n", __func__);
+
+	/* Stay in the jump part unless told to leave. */
+	wait_for_completion(finish_jump);
+
+	pr_info("%s exit\n", __func__);
+}
+
+/*
+ * Simulate modified part of the caller code. It should never get
+ * livepatched when the caller is sleeping in the just_part().
+ */
+static void simulate_modified_part(void)
+{
+	pr_info("%s\n", __func__);
+}
+
+static void test_not_on_stack_func_work(struct work_struct *work)
+{
+	pr_info("%s enter\n", __func__);
+
+	/* Simulation ready */
+	complete(work_started);
+
+	simulate_jump_part();
+	simulate_modified_part();
+
+	pr_info("%s exit\n", __func__);
+}
+
+static int test_klp_no_on_stack_init(void)
+{
+	pr_info("%s\n", __func__);
+
+	schedule_work(&work);
+	wait_for_completion(&work_started);
+
+	return 0;
+}
+
+static void test_not_on_stack_exit(void)
+{
+	complete(&finish_jump);
+	flush_work(&work);
+	pr_info("%s\n", __func__);
+}
+
+module_init(test_klp_not_on_stack_init);
+module_exit(test_klp_not_on_stack_exit);
+
+> +	pr_info("%s exit\n", __func__);
+> +}
+> +
+
+Best Regards,
+Petr
