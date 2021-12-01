@@ -2,297 +2,78 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4DFB463F42
-	for <lists+live-patching@lfdr.de>; Tue, 30 Nov 2021 21:30:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB3E3464CCE
+	for <lists+live-patching@lfdr.de>; Wed,  1 Dec 2021 12:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240233AbhK3UdU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 30 Nov 2021 15:33:20 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:53556 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343700AbhK3UdD (ORCPT
+        id S1348965AbhLALhh (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 1 Dec 2021 06:37:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33518 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243213AbhLALhc (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 30 Nov 2021 15:33:03 -0500
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id AB08E20E0BF5;
-        Tue, 30 Nov 2021 12:29:42 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AB08E20E0BF5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1638304183;
-        bh=KMYdOA5W994MfaMzGGsxrsM8UC6AC7x5PsgboSj4d2w=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=daz2y9pu6vonfEhSN1JCd/nrFYhs9gAcVb5T07HpeliZ2DBqswIiiyb6wgADAPghN
-         eeHS6JP5EQWbvKJXcbwGxUYXGNIkFSW7x5s/UitiCeieP1eaGjM2kv/CYQfMoQEkn5
-         8CyEYQEeJFKw7vXJRVQRvlXaxk+8NJnEha/ZxTVo=
-Subject: Re: [PATCH v11 1/5] arm64: Call stack_backtrace() only from within
- walk_stackframe()
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <8b861784d85a21a9bf08598938c11aff1b1249b9>
- <20211123193723.12112-1-madvenka@linux.microsoft.com>
- <20211123193723.12112-2-madvenka@linux.microsoft.com>
- <YaY9zLNumYZ1lLkc@FVFF77S0Q05N>
- <f2dfa6cd-7a23-e1b7-09d5-737d4a95b90c@linux.microsoft.com>
- <YaZtUmBn1NUkY876@FVFF77S0Q05N>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Message-ID: <1dffea0a-fd99-ccd6-625f-c5e573186741@linux.microsoft.com>
-Date:   Tue, 30 Nov 2021 14:29:41 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 1 Dec 2021 06:37:32 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587EDC06175A
+        for <live-patching@vger.kernel.org>; Wed,  1 Dec 2021 03:34:10 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id g19so24081420pfb.8
+        for <live-patching@vger.kernel.org>; Wed, 01 Dec 2021 03:34:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=l4J9Z+m4hmgZbWtQHlC70w1zjUmiI7wjClCwm6dHAnY=;
+        b=nKE9e+4jEQRb21OhoYPSbxPLfJ2IuSmNXU0U6wmcP4ykCacrWpdbtE0jjuz/hSLLGi
+         3CHjeG+lFmWzoULwCsmlhVFgDEk5dLFaYb51pw7bXGjZ9H8t0j91dP9aL17MRQYkMPZK
+         Snvty/Yp8/ZrWZr2EuFXHqBxUdbU8X39ik45viERJ1Dn7qW8BPCFp2vlafV2okU0kn5j
+         QPTIDY8QJSy8zAVbK10d6+AY0lky+mrQRAAg0uS1DacQStzD/dQtt/uBz/RlGIdZCai/
+         BHep24kmiLdl1nvBvHYMFonu8NoJvJlErv7lbZlg2+2c277BpkzmDA4WwPZoxzlIf0Mh
+         Af5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=l4J9Z+m4hmgZbWtQHlC70w1zjUmiI7wjClCwm6dHAnY=;
+        b=IY5sT9A17UsUoV2GD4zpGPP1CuVjsKnJDh8t5d8TYWg4ny0sbnIbgeMgU63senwVBo
+         XAUxEuC5U5vG6vAEwpCXup2HiJC8sTdtv+HCjJDMoXtHhBcdCW4zhvWeOJByVPIJI21M
+         hTegY2HWyCgkK2EcIIpbseA6c68L/1/DgLKbi6vSpA/R0lrI66qz7NIWurGevspQ2gGx
+         XADfhGDodG4vuAcyZuJfAMpM71N22EEW88Mod03o7JI6zu7GXu0/lFlSlrn99O1qOjr+
+         HG9jy9TF55f++Jr8SXc8XxQl8nmEgrqUlrOkpj4BeF7s1CFbZiUDYyBx3H6MtrP/emt2
+         3fsQ==
+X-Gm-Message-State: AOAM530zn3WzAGVUIx5luxbxCwNgUhsdCsm0eG24KpqoQmJYFl4yw11t
+        Sxag+KXqeX6BmByGisTPoUCNFDxZjfzJm9D75meLMDB3yqs=
+X-Google-Smtp-Source: ABdhPJwK+H50pzFgfv5CJPfAwBzUdMqIKHh+Ckkuju2lG2knVlJrzqINPiiwPjc/Uz6xuSJez7Fkn5YZPcfa5CPpvro=
+X-Received: by 2002:a67:ef4d:: with SMTP id k13mr6266305vsr.4.1638358439020;
+ Wed, 01 Dec 2021 03:33:59 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <YaZtUmBn1NUkY876@FVFF77S0Q05N>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Sender: unitednationawardwinner@gmail.com
+Received: by 2002:ab0:6c55:0:0:0:0:0 with HTTP; Wed, 1 Dec 2021 03:33:58 -0800 (PST)
+From:   "Mrs. Orgil Baatar" <mrs.orgilbaatar21@gmail.com>
+Date:   Wed, 1 Dec 2021 03:33:58 -0800
+X-Google-Sender-Auth: uTQ_nfkzXaWGWaTWp1BSFqK3Ucs
+Message-ID: <CAJ4dHaSrD-X=xpfKNZV-hXSiMV6mNYrgy5vWCNkKm6iu5RQStg@mail.gmail.com>
+Subject: Your long awaited part payment of $2.5.000.00Usd
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Attention: Beneficiary, Your long awaited part payment of
+$2.5.000.00Usd (TWO MILLION FIVE Hundred Thousand United State
+Dollars) is ready for immediate release to you, and it was
+electronically credited into an ATM Visa Card for easy delivery.
 
+Your new Payment Reference No.- 6363836,
+Pin Code No: 1787
+Your Certificate of Merit Payment No: 05872,
 
-On 11/30/21 12:29 PM, Mark Rutland wrote:
-> On Tue, Nov 30, 2021 at 11:13:28AM -0600, Madhavan T. Venkataraman wrote:
->> On 11/30/21 9:05 AM, Mark Rutland wrote:
->>> On Tue, Nov 23, 2021 at 01:37:19PM -0600, madvenka@linux.microsoft.com wrote:
->>>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>>>
->>>> Currently, arch_stack_walk() calls start_backtrace() and walk_stackframe()
->>>> separately. There is no need to do that. Instead, call start_backtrace()
->>>> from within walk_stackframe(). In other words, walk_stackframe() is the only
->>>> unwind function a consumer needs to call.
-> 
->>>> @@ -143,15 +140,19 @@ static int notrace unwind_frame(struct task_struct *tsk,
->>>>  NOKPROBE_SYMBOL(unwind_frame);
->>>>  
->>>>  static void notrace walk_stackframe(struct task_struct *tsk,
->>>> -				    struct stackframe *frame,
->>>> +				    unsigned long fp, unsigned long pc,
->>>>  				    bool (*fn)(void *, unsigned long), void *data)
->>>>  {
->>>> +	struct stackframe frame;
->>>> +
->>>> +	start_backtrace(&frame, fp, pc);
->>>> +
->>>>  	while (1) {
->>>>  		int ret;
->>>>  
->>>> -		if (!fn(data, frame->pc))
->>>> +		if (!fn(data, frame.pc))
->>>>  			break;
->>>> -		ret = unwind_frame(tsk, frame);
->>>> +		ret = unwind_frame(tsk, &frame);
->>>>  		if (ret < 0)
->>>>  			break;
->>>>  	}
->>>> @@ -195,17 +196,19 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
->>>>  			      void *cookie, struct task_struct *task,
->>>>  			      struct pt_regs *regs)
->>>>  {
->>>> -	struct stackframe frame;
->>>> -
->>>> -	if (regs)
->>>> -		start_backtrace(&frame, regs->regs[29], regs->pc);
->>>> -	else if (task == current)
->>>> -		start_backtrace(&frame,
->>>> -				(unsigned long)__builtin_frame_address(1),
->>>> -				(unsigned long)__builtin_return_address(0));
->>>> -	else
->>>> -		start_backtrace(&frame, thread_saved_fp(task),
->>>> -				thread_saved_pc(task));
->>>> -
->>>> -	walk_stackframe(task, &frame, consume_entry, cookie);
->>>> +	unsigned long fp, pc;
->>>> +
->>>> +	if (regs) {
->>>> +		fp = regs->regs[29];
->>>> +		pc = regs->pc;
->>>> +	} else if (task == current) {
->>>> +		/* Skip arch_stack_walk() in the stack trace. */
->>>> +		fp = (unsigned long)__builtin_frame_address(1);
->>>> +		pc = (unsigned long)__builtin_return_address(0);
->>>> +	} else {
->>>> +		/* Caller guarantees that the task is not running. */
->>>> +		fp = thread_saved_fp(task);
->>>> +		pc = thread_saved_pc(task);
->>>> +	}
->>>> +	walk_stackframe(task, fp, pc, consume_entry, cookie);
->>>
->>> I'd prefer to leave this as-is. The new and old structure are largely
->>> equivalent, so we haven't made this any simpler, but we have added more
->>> arguments to walk_stackframe().
->>>
->>
->> This is just to simplify things when we eventually add arch_stack_walk_reliable().
->> That is all. All of the unwinding is done by a single unwinding function and
->> there are two consumers of that unwinding function - arch_stack_walk() and
->> arch_stack_walk_reliable().
-> 
-> I understand the theory, but I don't think that moving the start_backtrace()
-> call actually simplifies this in a meaningful way, and I think it'll make it
-> harder for us to make more meaningful simplifications later on.
-> 
-> As of patch 4 of this series, we'll have:
-> 
-> | noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
-> | 				      void *cookie, struct task_struct *task,
-> | 				      struct pt_regs *regs)
-> | {
-> | 	unsigned long fp, pc;
-> | 
-> | 	if (regs) {
-> | 		fp = regs->regs[29];
-> | 		pc = regs->pc;
-> | 	} else if (task == current) {
-> | 		/* Skip arch_stack_walk() in the stack trace. */
-> | 		fp = (unsigned long)__builtin_frame_address(1);
-> | 		pc = (unsigned long)__builtin_return_address(0);
-> | 	} else {
-> | 		/* Caller guarantees that the task is not running. */
-> | 		fp = thread_saved_fp(task);
-> | 		pc = thread_saved_pc(task);
-> | 	}
-> | 	walk_stackframe(task, fp, pc, consume_entry, cookie);
-> | }
-> | 
-> | noinline int notrace arch_stack_walk_reliable(stack_trace_consume_fn consume_fn,
-> |                                              void *cookie,
-> |                                              struct task_struct *task)
-> | {
-> | 	unsigned long fp, pc;
-> | 
-> | 	if (task == current) {
-> | 		/* Skip arch_stack_walk_reliable() in the stack trace. */
-> | 		fp = (unsigned long)__builtin_frame_address(1);
-> | 		pc = (unsigned long)__builtin_return_address(0);
-> | 	} else {
-> | 		/* Caller guarantees that the task is not running. */
-> | 		fp = thread_saved_fp(task);
-> | 		pc = thread_saved_pc(task);
-> | 	}
-> | 	if (unwind(task, fp, pc, consume_fn, cookie))
-> | 		return 0;
-> | 	return -EINVAL;
-> | }
-> 
-> Which I do not think is substantially simpler than the naive extrapolation from
-> what we currently have, e.g.
-> 
-> | noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
-> | 				      void *cookie, struct task_struct *task,
-> | 				      struct pt_regs *regs)
-> | {
-> |	struct stackframe frame;
-> | 
-> | 	if (regs) {
-> |		unwind_init(&frame, regs->regs[29], regs->pc)
-> | 	} else if (task == current) {
-> |		unwind_init(&frame, __builtin_frame_address(1),
-> |			    __builtin_return_address(0));
-> | 	} else {
-> |		unwind_init(&frame, thread_saved_fp(task),
-> |			    thread_saved_pc(task);
-> | 	}
-> | 	walk_stackframe(task, &frame, consume_entry, cookie);
-> | }
-> | 
-> | noinline int notrace arch_stack_walk_reliable(stack_trace_consume_fn consume_fn,
-> |                                              void *cookie,
-> |                                              struct task_struct *task)
-> | {
-> |	struct stackframe frame;
-> | 
-> | 	if (task == current) {
-> |		unwind_init(&frame, __builtin_frame_address(1),
-> |			    __builtin_return_address(0));
-> | 	} else {
-> |		unwind_init(&frame, thread_saved_fp(task),
-> |			    thread_saved_pc(task);
-> | 	}
-> | 	if (unwind(task, &frame, consume_fn, cookie))
-> | 		return 0;
-> | 	return -EINVAL;
-> | }
-> 
-> Further, I think we can factor this in a different way to reduce the
-> duplication:
-> 
-> | /*
-> |  * TODO: document requirements here
-> |  */
-> | static inline void unwind_init_from_current_regs(struct stackframe *frame,
-> | 						 struct pt_regs *regs)
-> | {
-> | 	unwind_init(frame, regs->regs[29], regs->pc);
-> | }
-> | 
-> | /*
-> |  * TODO: document requirements here
-> |  */
-> | static inline void unwind_init_from_blocked_task(struct stackframe *frame,
-> | 						 struct task_struct *tsk)
-> | {
-> | 	unwind_init(&frame, thread_saved_fp(task),
-> | 		    thread_saved_pc(task));
-> | }
-> | 
-> | /*
-> |  * TODO: document requirements here
-> |  *
-> |  * Note: this is always inlined, and we expect our caller to be a noinline
-> |  * function, such that this starts from our caller's caller.
-> |  */
-> | static __always_inline void unwind_init_from_caller(struct stackframe *frame)
-> | {
-> | 	unwind_init(frame, __builtin_frame_address(1),
-> | 		    __builtin_return_address(0));
-> | }
-> |
-> | noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
-> | 				      void *cookie, struct task_struct *task,
-> | 				      struct pt_regs *regs)
-> | {
-> |	struct stackframe frame;
-> | 
-> | 	if (regs)
-> |		unwind_init_current_regs(&frame, regs);
-> |	else if (task == current)
-> |		unwind_init_from_caller(&frame);
-> |	else
-> |		unwind_init_blocked_task(&frame, task);
-> |
-> |	unwind(task, &frame, consume_entry, cookie);
-> | }
-> |
-> | noinline int notrace arch_stack_walk_reliable(stack_trace_consume_fn consume_fn,
-> |                                              void *cookie,
-> |                                              struct task_struct *task)
-> | {
-> |	struct stackframe frame;
-> | 
-> | 	if (task == current)
-> |		unwind_init_from_caller(&frame);
-> | 	else
-> |		unwind_init_from_blocked_task(&frame, task);
-> |
-> | 	if (unwind(task, &frame, consume_fn, cookie))
-> | 		return 0;
-> | 	return -EINVAL;
-> | }
-> 
-> ... which minimizes the duplication and allows us to add specialized
-> initialization for each case if necessary, which I believe we will need in
-> future to make unwinding across exception boundaries (such as when starting
-> with regs) more useful.
-> 
-> Thanks,
-> Mark.
-> 
+Your Names: |
+Address: |
 
-OK. I don't mind doing it this way.
+Person to Contact:MR KELLY HALL the Director of the International
+Audit unit ATM Payment Center,
 
-Thanks.
+Email: uba-bf@e-ubabf.com
+TELEPHONE: +226 64865611 You can whatsApp the bank
 
-Madhavan
+Regards.
+Mrs ORGIL BAATAR
