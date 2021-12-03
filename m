@@ -2,182 +2,132 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69694467AB9
-	for <lists+live-patching@lfdr.de>; Fri,  3 Dec 2021 17:01:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E0A467B74
+	for <lists+live-patching@lfdr.de>; Fri,  3 Dec 2021 17:33:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235197AbhLCQFG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 3 Dec 2021 11:05:06 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:57264 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381936AbhLCQFF (ORCPT
+        id S1352893AbhLCQgi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 3 Dec 2021 11:36:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240590AbhLCQgi (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 3 Dec 2021 11:05:05 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 74C321FD40;
-        Fri,  3 Dec 2021 16:01:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1638547300; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6kmj6FkNW7pdbamCY/i7YAKxLc+ZwPDjSg5TIPovyCs=;
-        b=JGyaEAQ7zADbpOQKGAgbWAtQ0Mh3RjdwjxU8R89zemt0D4dteICmGj99fEn3OFeGnMR8aj
-        yc9eQUG79lfYtEBEOtzZRrAl0Y3jWvNe0krnKOxeACFaljCDXk6aTlm34yXtkNuOVQHYN+
-        /EIIMJaItTmaoWg7QRPOBIDWicwC7sw=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 4B968A3B83;
-        Fri,  3 Dec 2021 16:01:40 +0000 (UTC)
-Date:   Fri, 3 Dec 2021 17:01:37 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, jikos@kernel.org,
-        peterz@infradead.org, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH 2/3] livepatch: Allow user to specify functions to search
- for on a stack
-Message-ID: <Yao/YQlP0kz+lwdN@alley>
-References: <YZ9gfPuCTmDmOj9h@alley>
- <alpine.LSU.2.21.2111251110130.28836@pobox.suse.cz>
+        Fri, 3 Dec 2021 11:36:38 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9D7C061751;
+        Fri,  3 Dec 2021 08:33:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QjwBqRRkSrixSh/IDyfbmaebOro1hr1dDZ0gMoqAxDY=; b=filV5mfIAXvfm0uzdKd9gxn+Ac
+        /Z+Bd/HBfONMrS6Ywwq2Z1V9I2sh7rZnRhXrZb+mLZf65ChTQzrJUzraRuiPZrarIhntiH3mwAljC
+        BLpVdZnwOqd0WZVg9w1rzQnTT7SZJzrZ3SB4ic9vMTZx47mGfdxhg6qjQOmTQ1RurUee0ohGp6MrC
+        46nDrNFg0zbkY2BN0n0ou4kE11nRCvkPZiZsLAOE2bhH4e4V9FDaIUuJiNh54VF+CW2y5W8kS79v9
+        ZVzvesXBl8G8PJYmPI6bdsJ6+T/Gavx2XwBzBd0urakpY2UvJY15R/ay4wJJ1JSgCfCn4qqb8Z5wF
+        fhXW5HFQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mtBUA-009OIf-6T; Fri, 03 Dec 2021 16:32:35 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 37CEC9810D4; Fri,  3 Dec 2021 17:32:34 +0100 (CET)
+Date:   Fri, 3 Dec 2021 17:32:34 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v8 00/14] Function Granular KASLR
+Message-ID: <20211203163234.GJ16608@worktop.programming.kicks-ass.net>
+References: <20211202223214.72888-1-alexandr.lobakin@intel.com>
+ <YanzpvmaX1JWYf9t@hirez.programming.kicks-ass.net>
+ <20211203144136.82915-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.2111251110130.28836@pobox.suse.cz>
+In-Reply-To: <20211203144136.82915-1-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2021-11-25 11:20:04, Miroslav Benes wrote:
-> On Thu, 25 Nov 2021, Petr Mladek wrote:
-> > On Mon 2021-11-22 10:53:21, Joe Lawrence wrote:
-> > > On 11/22/21 2:57 AM, Miroslav Benes wrote:
-> > > > On Fri, 19 Nov 2021, Josh Poimboeuf wrote:
-> > > >>> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> > > >>> index 2614247a9781..89df578af8c3 100644
-> > > >>> --- a/include/linux/livepatch.h
-> > > >>> +++ b/include/linux/livepatch.h
-> > > >>> @@ -106,9 +106,11 @@ struct klp_callbacks {
-> > > >>>   * struct klp_object - kernel object structure for live patching
-> > > >>>   * @name:	module name (or NULL for vmlinux)
-> > > >>>   * @funcs:	function entries for functions to be patched in the object
-> > > >>> + * @funcs_stack:	function entries for functions to be stack checked
-> > > >>
-> > > >> So there are two arrays/lists of 'klp_func', and two implied meanings of
-> > > >> what a 'klp_func' is and how it's initialized.
-> > > >>
-> > > >> Might it be simpler and more explicit to just add a new external field
-> > > >> to 'klp_func' and continue to have a single 'funcs' array?  Similar to
-> > > >> what we already do with the special-casing of 'nop', except it would be
-> > > >> an external field, e.g. 'no_patch' or 'stack_only'.
-> > > 
-> > > I'll add that the first thing that came to mind when you raised this
-> > > feature idea in the other thread was to support existing klp_funcs array
-> > > with NULL new_func's.
+On Fri, Dec 03, 2021 at 03:41:36PM +0100, Alexander Lobakin wrote:
+> From: Peter Zijlstra <peterz@infradead.org>
+> Date: Fri, 3 Dec 2021 11:38:30 +0100
+> 
+> > On Thu, Dec 02, 2021 at 11:32:00PM +0100, Alexander Lobakin wrote:
 > > 
-> > Please, solve this with the extra flag, e.g. .stack_only, as
-> > already suggested. It will help to distinguish mistakes and
-> > intentions. Also it will allow to find these symbols by grep.
-> 
-> Indeed, that is what I did for v2. I used new_func being NULL fact even in 
-> v1, but I do not like it much. Extra flag is definitely more robust.
->  
-> > > I didn't go look to see how invasive it would be,
-> > > but it will be interesting to see if a single list approach turns out
-> > > any simpler for v2.
+> > > feat        make -j65 boot    vmlinux.o vmlinux  bzImage  bogoops/s
+> > > Relocatable 4m38.478s 24.440s 72014208  58579520  9396192 57640.39
+> > > KASLR       4m39.344s 24.204s 72020624  87805776  9740352 57393.80
+> > > FG-K 16 fps 6m16.493s 25.429s 83759856  87194160 10885632 57784.76
+> > > FG-K 8 fps  6m20.190s 25.094s 83759856  88741328 10985248 56625.84
+> > > FG-K 1 fps  7m09.611s 25.922s 83759856  95681128 11352192 56953.99
 > > 
-> > I am not sure either. But I expect that it will be easier than
-> > the extra array.
+> > :sadface: so at best it makes my kernel compiles ~50% slower. Who would
+> > ever consider doing that? It's like retpolines weren't bad enough; lets
+> > heap on the fail?
 > 
-> So, extra flag and one array makes certain things (initialization) 
-> definitely easier. On the other hand, there are suddenly more problems to 
-> think about (and I haven't solved them yet):
+> I was waiting for that :D
 > 
->   - I need to make it work with nops functions. Especially if we allow a 
->     scenario where there could be klp_object instance with just stack_only 
->     functions. Would that be useful? For example, to patch something in a 
->     module and add a stack_only for a function in vmlinux.
+> I know it's horrible for now, but there are some points to consider:
+>  - folks who are placing hardening over everything don't mind
+>    compile times most likely;
+>  - linkers choking on huge LD scripts is actually a bug in their
+>    code. They process 40k sections as orphans (without a generated
+>    LD script) for a split second, so they're likely able to do the
+>    same with it. Our position here is that after FG-KASLR landing
+>    we'll report it and probably look into linkers' code to see if
+>    that can be addressed (Kees et al are on this AFAIU);
+>  - ClangLTO (at least "Fat", not sure about Thin as I didn't used
+>    it) thinks on vmlinux.o for ~5 minutes on 8-core Skylake. Still,
+>    it is here in mainline and is widely (relatively) used.
+>    I know FG-KASLR stuff is way more exotic, but anyways.
+>  - And the last one: I wouldn't consider FG-KASLR production ready
+>    as Kees would like to see it. Apart from compilation time, you
+>    get random performance {in,de}creases here-and-there all over
+>    the kernel and modules you can't predict at all.
+>    I guess it would become better later on when/if we introduce
+>    profiling-based function placement (there are some discussions
+>    around that and one related article is referred in the orig
+>    cover letter), but dunno for now.
+>    There's one issue in the current code as well -- PTI switching
+>    code is in .entry.text which doesn't currently get randomized.
+>    So it can probably be hunted using gadget collectors I guess?
 
-My naive expectation is that the struct klp_func with @stack_only
-flag might be handled the same way on most locations, except when:
+Oooh, so those compile times are not, as one would expect the compile
+times for a set .config but with different kernel, but instead for a
+varying .config on the same kernel?
 
-   + func->new_func is handled
-   + ftrace handler is added/removed
+IOW, they don't represent the run-time overhead of this thing, but
+merely the toolchain overhead of all this.
 
-Something like:
-
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -724,7 +724,7 @@ static int klp_init_func(struct klp_object *obj, struct klp_func *func)
- 	 * NOPs get the address later. The patched module must be loaded,
- 	 * see klp_init_object_loaded().
- 	 */
--	if (!func->new_func && !func->nop)
-+	if (!func->new_func && !func->nop && !func->stack_only)
- 		return -EINVAL;
- 
- 	if (strlen(func->old_name) >= KSYM_NAME_LEN)
-@@ -801,6 +801,9 @@ static int klp_init_object_loaded(struct klp_patch *patch,
- 			return -ENOENT;
- 		}
- 
-+		if (func->stack_only)
-+			continue;
-+
- 		if (func->nop)
- 			func->new_func = func->old_func;
- 
---- a/kernel/livepatch/patch.c
-+++ b/kernel/livepatch/patch.c
-@@ -247,6 +247,9 @@ static void __klp_unpatch_object(struct klp_object *obj, bool nops_only)
- 	struct klp_func *func;
- 
- 	klp_for_each_func(obj, func) {
-+		if (func->stack_only)
-+			continue;
-+
- 		if (nops_only && !func->nop)
- 			continue;
- 
-@@ -273,6 +276,8 @@ int klp_patch_object(struct klp_object *obj)
- 		return -EINVAL;
- 
- 	klp_for_each_func(obj, func) {
-+		if (func->stack_only)
-+			continue;
- 		ret = klp_patch_func(func);
- 		if (ret) {
- 			klp_unpatch_object(obj);
-
-
->     If yes, then the interaction with nops is not completely 
->     straightforward and also some parts of the code would have to be 
->     changed (for example how obj->patched flag is handled).
-
-I would keep func->patched disabled for @stack_only entries.
-
-But they should not affect obj->patched state. I mean that
-obj->patched should be set when the patch is enabled even when
-there are only "stack_only" funcs.
-
-It might look a bit unclear. A solution might be to rename the flags:
-
-   + func->patched    ->   func->active   (and set even for @stack_only)
-   + obj->patched     ->   obj->active    (same as func)
-
-But I am not sure if it is worth it.
-
-
->   - klp_func instances are directly mirrored in sysfs. Do we want to keep 
->     stack_only functions there too? If not, it makes the whole thing 
->     slighly more difficult given how we manage kobjects.
-
-I would keep them in sysfs. It will be easier and it does not harm.
-
-> Nothing really difficult to implement if we come up with answers.
-
-I am sorry for not answering this earlier. I have missed the questions :-(
-
-Best Regards,
-Petr
+So what is the actual runtime overhead of all this?
