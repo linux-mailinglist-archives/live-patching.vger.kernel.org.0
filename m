@@ -2,44 +2,32 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26EDA467535
-	for <lists+live-patching@lfdr.de>; Fri,  3 Dec 2021 11:38:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 001524678F3
+	for <lists+live-patching@lfdr.de>; Fri,  3 Dec 2021 14:59:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244015AbhLCKmQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 3 Dec 2021 05:42:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243912AbhLCKmQ (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 3 Dec 2021 05:42:16 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4889BC06173E;
-        Fri,  3 Dec 2021 02:38:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vD4L77VHgLvDmRbeZaWlspxy3NbaUIb+bwMSWEqT/lw=; b=FtTFaIjd/WBYIJvTtPhJo44DrX
-        RcYmE57KZwuXeuzlu7Kdkx2xflj3o+rzM3kF4sQiGjDpUKtXbp7oudu7R/EH2Tab5GanjeJdbw6eO
-        GnMUQglTXZrpXUb6PqxBeqjkNPpoUjPaKxwwvHhh1HWok+iaQlCwNA2nh/Ji9od2jPr7IDgTI6h+s
-        6wTTjnPgmcndc9NEzp4lrwziWOrrhbEYll78jJR7rNpVmVFBYNExHxA7qa4w7SzUbdB53/tRQAKZg
-        lxNb/IKuJhLaZerPAOzxQBjzD64fZAp4KO4F2mRmatNFp0P5CS0fr1r14sr5agu+oxu7/6EI349BO
-        UH2M68Pg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mt5xX-001yqZ-HY; Fri, 03 Dec 2021 10:38:31 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A4DD530001C;
-        Fri,  3 Dec 2021 11:38:30 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8976D2B36B3C0; Fri,  3 Dec 2021 11:38:30 +0100 (CET)
-Date:   Fri, 3 Dec 2021 11:38:30 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
+        id S1381287AbhLCODQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 3 Dec 2021 09:03:16 -0500
+Received: from mga09.intel.com ([134.134.136.24]:35042 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1352843AbhLCODQ (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 3 Dec 2021 09:03:16 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10186"; a="236787135"
+X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
+   d="scan'208";a="236787135"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 05:59:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
+   d="scan'208";a="478332089"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 03 Dec 2021 05:59:43 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1B3DxfX7005810;
+        Fri, 3 Dec 2021 13:59:41 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Kristen Carlson Accardi <kristen@linux.intel.com>,
         Kees Cook <keescook@chromium.org>,
@@ -72,26 +60,154 @@ Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
         linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
         linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
         llvm@lists.linux.dev
-Subject: Re: [PATCH v8 00/14] Function Granular KASLR
-Message-ID: <YanzpvmaX1JWYf9t@hirez.programming.kicks-ass.net>
-References: <20211202223214.72888-1-alexandr.lobakin@intel.com>
+Subject: Re: [PATCH v8 03/14] x86: Add support for function granular KASLR
+Date:   Fri,  3 Dec 2021 14:57:25 +0100
+Message-Id: <20211203135725.82097-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <Yang97SFfwuqTNzK@hirez.programming.kicks-ass.net>
+References: <20211202223214.72888-1-alexandr.lobakin@intel.com> <20211202223214.72888-4-alexandr.lobakin@intel.com> <Yang97SFfwuqTNzK@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211202223214.72888-1-alexandr.lobakin@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 11:32:00PM +0100, Alexander Lobakin wrote:
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 3 Dec 2021 10:18:47 +0100
 
-> feat        make -j65 boot    vmlinux.o vmlinux  bzImage  bogoops/s
-> Relocatable 4m38.478s 24.440s 72014208  58579520  9396192 57640.39
-> KASLR       4m39.344s 24.204s 72020624  87805776  9740352 57393.80
-> FG-K 16 fps 6m16.493s 25.429s 83759856  87194160 10885632 57784.76
-> FG-K 8 fps  6m20.190s 25.094s 83759856  88741328 10985248 56625.84
-> FG-K 1 fps  7m09.611s 25.922s 83759856  95681128 11352192 56953.99
+> On Thu, Dec 02, 2021 at 11:32:03PM +0100, Alexander Lobakin wrote:
+> > From: Kristen Carlson Accardi <kristen@linux.intel.com>
+> > 
+> > This commit contains the changes required to re-layout the kernel text
+> > sections generated by -ffunction-sections shortly after decompression.
+> > Documentation of the feature is also added.
+> > 
+> > After decompression, the decompressed image's elf headers are parsed.
+> > In order to manually update certain data structures that are built with
+> > relative offsets during the kernel build process, certain symbols are
+> > not stripped by objdump and their location is retained in the elf symbol
+> > tables. These addresses are saved.
+> > 
+> > If the image was built with -ffunction-sections, there will be ELF section
+> > headers present which contain information about the address range of each
+> > section. Anything that is not broken out into function sections (i.e. is
+> > consolidated into .text) is left in it's original location, but any other
+> > executable section which begins with ".text." is located and shuffled
+> > randomly within the remaining text segment address range.
+> > 
+> > After the sections have been copied to their new locations, but before
+> > relocations have been applied, the kallsyms tables must be updated to
+> > reflect the new symbol locations. Because it is expected that these tables
+> > will be sorted by address, the kallsyms tables will need to be sorted
+> > after the update.
+> > 
+> > When applying relocations, the address of the relocation needs to be
+> > adjusted by the offset from the original location of the section that was
+> > randomized to it's new location. In addition, if a value at that relocation
+> > was a location in the text segment that was randomized, it's value will be
+> > adjusted to a new location.
+> > 
+> > After relocations have been applied, the exception table must be updated
+> > with new symbol locations, and then re-sorted by the new address. The
+> > orc table will have been updated as part of applying relocations, but since
+> > it is expected to be sorted by address, it will need to be resorted.
+> 
+> 
+> > +static long addr_kallsyms_names;
+> > +static long addr_kallsyms_offsets;
+> > +static long addr_kallsyms_num_syms;
+> > +static long addr_kallsyms_relative_base;
+> > +static long addr_kallsyms_markers;
+> > +static long addr___start___ex_table;
+> > +static long addr___stop___ex_table;
+> > +static long addr___altinstr_replacement;
+> > +static long addr___altinstr_replacement_end;
+> > +static long addr__stext;
+> > +static long addr__etext;
+> > +static long addr__sinittext;
+> > +static long addr__einittext;
+> > +static long addr___start_orc_unwind_ip;
+> > +static long addr___stop_orc_unwind_ip;
+> > +static long addr___start_orc_unwind;
+> 
+> > +void post_relocations_cleanup(unsigned long map)
+> > +{
+> > +	if (!nofgkaslr) {
+> > +		update_ex_table(map);
+> > +		sort_ex_table(map);
+> > +		update_orc_table(map);
+> > +		sort_orc_table(map);
+> > +	}
+> > +
+> > +	/*
+> > +	 * maybe one day free will do something. So, we "free" this memory
+> > +	 * in either case
+> > +	 */
+> > +	free(sections);
+> > +	free(sechdrs);
+> > +}
+> > +
+> > +void pre_relocations_cleanup(unsigned long map)
+> > +{
+> > +	if (nofgkaslr)
+> > +		return;
+> > +
+> > +	sort_kallsyms(map);
+> > +}
+> 
+> > diff --git a/arch/x86/boot/compressed/vmlinux.symbols b/arch/x86/boot/compressed/vmlinux.symbols
+> > new file mode 100644
+> > index 000000000000..da41f3ee153c
+> > --- /dev/null
+> > +++ b/arch/x86/boot/compressed/vmlinux.symbols
+> > @@ -0,0 +1,19 @@
+> > +kallsyms_offsets
+> > +kallsyms_addresses
+> > +kallsyms_num_syms
+> > +kallsyms_relative_base
+> > +kallsyms_names
+> > +kallsyms_token_table
+> > +kallsyms_token_index
+> > +kallsyms_markers
+> > +__start___ex_table
+> > +__stop___ex_table
+> > +__altinstr_replacement
+> > +__altinstr_replacement_end
+> > +_sinittext
+> > +_einittext
+> > +_stext
+> > +_etext
+> > +__start_orc_unwind_ip
+> > +__stop_orc_unwind_ip
+> > +__start_orc_unwind
+> 
+> So please don't make it hard to add sections; the above has far too much
+> duplication. For example you can trivially generate the addr_ symbol and
+> the .symbol file from a common include file and a bit of macro wrappery,
+> ideally that macro wrappery would also specify the sort location and
+> function such that you can also generate those pre_ and post_ functions.
 
-:sadface: so at best it makes my kernel compiles ~50% slower. Who would
-ever consider doing that? It's like retpolines weren't bad enough; lets
-heap on the fail?
+Re automatical generation using some wrappery -- sounds nice.
+I mostly was only doing makeup for Kristen's commits so didn't pay
+attention to that duplication.
+
+> And this is only for sections that need to be sorted right? There's
+> currently a patch in flight to also pre-sort the ftrace table.
+
+Kallsyms, ORC tables and extable are getting sorted. text, inittext
+and altinstr_replacement related symbols are needed to perform
+shuffling (text) and relocation fixups (altinsr, inittext).
+
+> All unsorted or runtime sorted sections are fine since they're fixed up
+> by the relocations?
+
+Right.
+
+> Is it at all feasible to share the comparison functions between the
+> various sorters?
+
+They look very similar, I think it'd be fine to merge them (seems
+like not only cmp, but adjust functions as well).
+
+Thanks,
+Al
