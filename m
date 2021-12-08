@@ -2,187 +2,57 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAABF46BE0B
-	for <lists+live-patching@lfdr.de>; Tue,  7 Dec 2021 15:44:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC3D46CA36
+	for <lists+live-patching@lfdr.de>; Wed,  8 Dec 2021 02:49:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233920AbhLGOsY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 Dec 2021 09:48:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58210 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231565AbhLGOsX (ORCPT
+        id S230185AbhLHBxO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>); Tue, 7 Dec 2021 20:53:14 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:28284 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242904AbhLHBxO (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 Dec 2021 09:48:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638888293;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZFRnYClsIQOAbSPKNTW9TG+E3dxiCbpXnDZqk0mz9ZY=;
-        b=GA4PQoplHsaWJI48qI89MkAOJRdw+3GavFMDYNrAGZTPqr8t7ppCEDrAIANYzZEK59bxTh
-        CNIunQK3JBUdHsRnE+Su0G8h4VVQ7zHeXi6SGUgZ8x8qBaoDIjtEyDtx9NyIUPaNot3E9s
-        PTM4trZ2ntqhFml1ETn//LSReGIE8+o=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-444-JLDYtLfZOyuD5yl4ljFlPQ-1; Tue, 07 Dec 2021 09:44:51 -0500
-X-MC-Unique: JLDYtLfZOyuD5yl4ljFlPQ-1
-Received: by mail-qv1-f70.google.com with SMTP id e14-20020a0562140d8e00b003bace92a1feso17965247qve.5
-        for <live-patching@vger.kernel.org>; Tue, 07 Dec 2021 06:44:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZFRnYClsIQOAbSPKNTW9TG+E3dxiCbpXnDZqk0mz9ZY=;
-        b=bZ78a1NA5bCz10Nre8MWygwNR2h7mSfb9F2eIjJae90jHoT4bPYEUlQVYNOa+8ZY7U
-         HdG0lGw+DTTIR94rAryxdWx6Nvc6et7IZCttbrBV5as3bmSzQiOJDERydGYnP4hLY97+
-         owv22ird0STJFfVnTFPMiuZBsJ2n5SxTrKLRxaNMd15eVgvJgc0IicTlKQXRz+M79VEA
-         iQ6jTGTzaLMC85kokH4INTtLoVoSyEoQVwUL3HbcMmZwRPPEfGGeudyM9NkYx0n/eDZa
-         USO8g0qOQtlUEBFWSYsgp/ML5D6Apd/C3uFvHVA3cTLVtqJedr+6uaxBcwCGOQD1Rg21
-         9yuQ==
-X-Gm-Message-State: AOAM531Rd7WhoJY3iTWn9BBfPDjjBFzSMX4LJf21bRmO2r7H1vHoiI7f
-        ud2/WKMTFu6PihATogrpa2EjV2N9id1rYc9bVBOFRGwbdpQUSnD0kjC0P5r2GYWjOJBOCIDI/3E
-        fw2gEH21aDkQjnyaYf668TXGIgxIqXdGT4MGTHCK0Nsrj9Gpx+yrhZbIZVEaKP4LAk1I3ab2pkB
-        rUdgxvEzs=
-X-Received: by 2002:a05:620a:84a:: with SMTP id u10mr41617370qku.339.1638888290281;
-        Tue, 07 Dec 2021 06:44:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzFKfpFtLLdQhG5FpFPHH4Vxm5PxhRcLv/tk5/N4acxTqPNPri1nD6OUoFTAD1JmzmJVizLuQ==
-X-Received: by 2002:a05:620a:84a:: with SMTP id u10mr41617338qku.339.1638888289918;
-        Tue, 07 Dec 2021 06:44:49 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
-        by smtp.gmail.com with ESMTPSA id b5sm7837927qka.51.2021.12.07.06.44.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 06:44:49 -0800 (PST)
-To:     Russell Currey <ruscur@russell.cc>, linuxppc-dev@lists.ozlabs.org
-Cc:     jniethe5@gmail.com, naveen.n.rao@linux.vnet.ibm.com,
-        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
-        live-patching@vger.kernel.org
-References: <20211123081520.18843-1-ruscur@russell.cc>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH] powerpc/module_64: Fix livepatching for RO modules
-Message-ID: <d9d9ef2d-4aaa-7d8b-d15e-0452a355c5cf@redhat.com>
-Date:   Tue, 7 Dec 2021 09:44:48 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Tue, 7 Dec 2021 20:53:14 -0500
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J80TP4L1CzQj7C
+        for <live-patching@vger.kernel.org>; Wed,  8 Dec 2021 09:49:29 +0800 (CST)
+Received: from dggpeml100010.china.huawei.com (7.185.36.14) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 8 Dec 2021 09:49:42 +0800
+Received: from dggpeml500011.china.huawei.com (7.185.36.84) by
+ dggpeml100010.china.huawei.com (7.185.36.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 8 Dec 2021 09:49:41 +0800
+Received: from dggpeml500011.china.huawei.com ([7.185.36.84]) by
+ dggpeml500011.china.huawei.com ([7.185.36.84]) with mapi id 15.01.2308.020;
+ Wed, 8 Dec 2021 09:49:41 +0800
+From:   Hubin <hubin57@huawei.com>
+To:     "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+Subject: Some questions about arm64 live-patching support
+Thread-Topic: Some questions about arm64 live-patching support
+Thread-Index: Adfr1ck9byrWnOH/QvqttCYrXg/ApQ==
+Date:   Wed, 8 Dec 2021 01:49:41 +0000
+Message-ID: <75f1c581d61d48ec88925ebb4f83d7fd@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.66]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-In-Reply-To: <20211123081520.18843-1-ruscur@russell.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 11/23/21 3:15 AM, Russell Currey wrote:
-> Livepatching a loaded module involves applying relocations through
-> apply_relocate_add(), which attempts to write to read-only memory when
-> CONFIG_STRICT_MODULE_RWX=y.  Work around this by performing these
-> writes through the text poke area by using patch_instruction().
-> 
-> R_PPC_REL24 is the only relocation type generated by the kpatch-build
-> userspace tool or klp-convert kernel tree that I observed applying a
-> relocation to a post-init module.
-> 
-> A more comprehensive solution is planned, but using patch_instruction()
-> for R_PPC_REL24 on should serve as a sufficient fix.
-> 
-> This does have a performance impact, I observed ~15% overhead in
-> module_load() on POWER8 bare metal with checksum verification off.
-> 
-> Fixes: c35717c71e98 ("powerpc: Set ARCH_HAS_STRICT_MODULE_RWX")
-> Cc: stable@vger.kernel.org # v5.14+
-> Reported-by: Joe Lawrence <joe.lawrence@redhat.com>
-> Signed-off-by: Russell Currey <ruscur@russell.cc>
-> ---
-> Intended to be a minimal fix that can go to stable.
-> 
->  arch/powerpc/kernel/module_64.c | 30 ++++++++++++++++++++++--------
->  1 file changed, 22 insertions(+), 8 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
-> index 6baa676e7cb6..c25ef36c3ef4 100644
-> --- a/arch/powerpc/kernel/module_64.c
-> +++ b/arch/powerpc/kernel/module_64.c
-> @@ -422,11 +422,16 @@ static inline int create_stub(const Elf64_Shdr *sechdrs,
->  			      const char *name)
->  {
->  	long reladdr;
-> +	func_desc_t desc;
-> +	int i;
->  
->  	if (is_mprofile_ftrace_call(name))
->  		return create_ftrace_stub(entry, addr, me);
->  
-> -	memcpy(entry->jump, ppc64_stub_insns, sizeof(ppc64_stub_insns));
-> +	for (i = 0; i < sizeof(ppc64_stub_insns) / sizeof(u32); i++) {
-> +		patch_instruction(&entry->jump[i],
-> +				  ppc_inst(ppc64_stub_insns[i]));
-> +	}
->  
->  	/* Stub uses address relative to r2. */
->  	reladdr = (unsigned long)entry - my_r2(sechdrs, me);
-> @@ -437,10 +442,19 @@ static inline int create_stub(const Elf64_Shdr *sechdrs,
->  	}
->  	pr_debug("Stub %p get data from reladdr %li\n", entry, reladdr);
->  
-> -	entry->jump[0] |= PPC_HA(reladdr);
-> -	entry->jump[1] |= PPC_LO(reladdr);
-> -	entry->funcdata = func_desc(addr);
-> -	entry->magic = STUB_MAGIC;
-> +	patch_instruction(&entry->jump[0],
-> +			  ppc_inst(entry->jump[0] | PPC_HA(reladdr)));
-> +	patch_instruction(&entry->jump[1],
-> +			  ppc_inst(entry->jump[1] | PPC_LO(reladdr)));
-> +
-> +	// func_desc_t is 8 bytes if ABIv2, else 16 bytes
-> +	desc = func_desc(addr);
-> +	for (i = 0; i < sizeof(func_desc_t) / sizeof(u32); i++) {
-> +		patch_instruction(((u32 *)&entry->funcdata) + i,
-> +				  ppc_inst(((u32 *)(&desc))[i]));
-> +	}
-> +
-> +	patch_instruction(&entry->magic, ppc_inst(STUB_MAGIC));
->  
->  	return 1;
->  }
-> @@ -496,7 +510,7 @@ static int restore_r2(const char *name, u32 *instruction, struct module *me)
->  		return 0;
->  	}
->  	/* ld r2,R2_STACK_OFFSET(r1) */
-> -	*instruction = PPC_INST_LD_TOC;
-> +	patch_instruction(instruction, ppc_inst(PPC_INST_LD_TOC));
->  	return 1;
->  }
->  
-> @@ -636,9 +650,9 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
->  			}
->  
->  			/* Only replace bits 2 through 26 */
-> -			*(uint32_t *)location
-> -				= (*(uint32_t *)location & ~0x03fffffc)
-> +			value = (*(uint32_t *)location & ~0x03fffffc)
->  				| (value & 0x03fffffc);
-> +			patch_instruction((u32 *)location, ppc_inst(value));
->  			break;
->  
->  		case R_PPC64_REL64:
-> 
+Hi,
 
-[[ cc += livepatching list ]]
+Currently Linux lacks support for live patching in arm64, and recently we have some patches to help enable this feature.
+But I still don't know how much gap do we have from finishing arm64 live-patching support.
+So I just have some questions:
+1. What do we need to implement to support aarch64 live-patching?
+2. Is there any plan or roadmap for this support?
+3. What can I do, if I want to contribute to enabling this feature?
 
-Hi Russell,
-
-Thanks for writing a minimal fix for stable / backporting.  As I
-mentioned on the github issue [1], this avoided the crashes I reported
-here and over on kpatch github [2].  I wasn't sure if this is the final
-version for stable, but feel free to add my:
-
-Tested-by: Joe Lawrence <joe.lawrence@redhat.com>
-
-[1] https://github.com/linuxppc/issues/issues/375
-[2] https://github.com/dynup/kpatch/issues/1228
-
--- 
-Joe
-
+Thanks
