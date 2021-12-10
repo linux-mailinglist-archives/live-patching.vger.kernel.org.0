@@ -2,103 +2,79 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B109747016F
-	for <lists+live-patching@lfdr.de>; Fri, 10 Dec 2021 14:20:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D207E47089C
+	for <lists+live-patching@lfdr.de>; Fri, 10 Dec 2021 19:25:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241625AbhLJNYb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 10 Dec 2021 08:24:31 -0500
-Received: from pb-sasl-trial3.pobox.com ([64.147.108.87]:61129 "EHLO
-        pb-sasl-trial3.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241521AbhLJNYa (ORCPT
+        id S239075AbhLJS2h (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 10 Dec 2021 13:28:37 -0500
+Received: from mail-qt1-f171.google.com ([209.85.160.171]:34353 "EHLO
+        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239276AbhLJS2h (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 10 Dec 2021 08:24:30 -0500
-Received: from pb-sasl-trial3.pobox.com (localhost.local [127.0.0.1])
-        by pb-sasl-trial3.pobox.com (Postfix) with ESMTP id A2E342E1EC;
-        Fri, 10 Dec 2021 08:20:49 -0500 (EST)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=date:from:to
-        :cc:subject:in-reply-to:message-id:references:mime-version
-        :content-type; s=sasl; bh=E68Man9i8uGbUzpPImAfkcG0qQQ=; b=M3i/hG
-        +azN6LUuLTqwmsHeWkGG7FXoUTNLjKlcghu0jP1JL7tMcr1g3DLKr0EwVhjeBZ/L
-        y8icsjLdxH0UvesHgER6DOoFGERVbG5wJCPvby524NWd/jljcQFS250sFKI/vS4w
-        tPkXHLp5Tqj+0NTd4s++EeeXGODc+op0P7iZ8=
-Received: from pb-smtp1.nyi.icgroup.com (pb-smtp1.pobox.com [10.90.30.53])
-        by pb-sasl-trial3.pobox.com (Postfix) with ESMTP id 7B5532E1E9;
-        Fri, 10 Dec 2021 08:20:49 -0500 (EST)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
- h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=t/i4EcgilqHL2J/A6MZhr8Rb0kiWWXpYExUCO+guzKc=; b=wl6ECYHXf3DMmbJe3rjaV3PHwRQeyftEtMeaXX/tLxVUyMNdWluOEpCkL6gCK68AGUCs3Qpr5a/bOUni3SRDm7odrxxtfU+++aqtjURc2s+DqWbqYpQ+/IlgADslc0PIS+iauEYxKrzGgFVDccc1X5aVWjPyjohZIr9jY6hiZmc=
-Received: from yoda.home (unknown [96.21.170.108])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by pb-smtp1.pobox.com (Postfix) with ESMTPSA id D48B2101024;
-        Fri, 10 Dec 2021 08:20:48 -0500 (EST)
-        (envelope-from nico@fluxnic.net)
-Received: from xanadu.home (xanadu.home [192.168.2.2])
-        by yoda.home (Postfix) with ESMTPSA id 5172A2DA003C;
-        Fri, 10 Dec 2021 08:20:47 -0500 (EST)
-Date:   Fri, 10 Dec 2021 08:20:47 -0500 (EST)
-From:   Nicolas Pitre <nico@fluxnic.net>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v8 05/14] x86: conditionally place regular ASM functions
- into separate sections
-In-Reply-To: <20211210110102.707759-1-alexandr.lobakin@intel.com>
-Message-ID: <2onsnq80-p1s8-00-roo9-n02q74319ro@syhkavp.arg>
-References: <20211202223214.72888-1-alexandr.lobakin@intel.com> <20211202223214.72888-6-alexandr.lobakin@intel.com> <Yanm6tJ2obi1aKv6@hirez.programming.kicks-ass.net> <20211210110102.707759-1-alexandr.lobakin@intel.com>
+        Fri, 10 Dec 2021 13:28:37 -0500
+Received: by mail-qt1-f171.google.com with SMTP id o17so9231071qtk.1;
+        Fri, 10 Dec 2021 10:25:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3ncRAC5NMmHYdYgIiX+rV/e8ReKPYkC25NOZUAGrVHg=;
+        b=rDewzmHVvHF6d3osQeiQBdTi8SJgBVcH7NjW4wZPx8TJSSzT52US0OwKCqCsQ65DbN
+         Myfbn49+uY5X4PZackbxNEmBsZS9w2emjiOc46WCUzgGbE9FmSnYbsE9rF0dcg8FPMwu
+         6K2atFhlNZDZ84mD1gD8CDh8nzux3p26E7P94vR7S2j3jkP5eGNuHkTWHScYNUmXK/JY
+         d5WBMBcej38KYf9NKHsm2wVF0gYcNhX2lEmnF8kVOXrqEOcQf4GwdqzEUN9nCcVNVMVV
+         gCaUw/8W76oUL8oN5m/1EZrqAuwRIHK/w2UBkozaB2X9HlMJbRuGrf9GCTpXUnSP64Tp
+         rPLw==
+X-Gm-Message-State: AOAM532CZpO86T+8m58IkCF+XvjYeahTZzd4JDJXtafUbCdWea7PnFC2
+        IXAeImGByo+uogeS/QdsTSM=
+X-Google-Smtp-Source: ABdhPJxYVZ/SvxezzuNIV7iBJ1zbboQXukAzXTVTGWoGA3nKX/NqayjQPgoPMjKK3KSF9tSlgaq8ug==
+X-Received: by 2002:a05:622a:92:: with SMTP id o18mr28895047qtw.570.1639160701158;
+        Fri, 10 Dec 2021 10:25:01 -0800 (PST)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-118.fbsv.net. [2a03:2880:20ff:76::face:b00c])
+        by smtp.gmail.com with ESMTPSA id s7sm2633583qta.31.2021.12.10.10.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Dec 2021 10:25:00 -0800 (PST)
+Date:   Fri, 10 Dec 2021 10:24:58 -0800
+From:   David Vernet <void@manifault.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     linux-doc@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
+        corbet@lwn.net, yhs@fb.com, songliubraving@fb.com
+Subject: Re: [PATCH] Documentation: livepatch: Add kernel-doc link to
+ klp_enable_patch
+Message-ID: <YbObeiWbLxO8MwrD@dev0025.ash9.facebook.com>
+References: <20211209165303.3205464-1-void@manifault.com>
+ <YbMc8YGIoyRU5nwJ@alley>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Pobox-Relay-ID: FD891D6C-59BB-11EC-A1FA-E10CCAD8090B-78420484!pb-smtp1.pobox.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbMc8YGIoyRU5nwJ@alley>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, 10 Dec 2021, Alexander Lobakin wrote:
-
-> I could do unconditional
+Petr Mladek <pmladek@suse.com> wrote on Fri [2021-Dec-10 10:25:05 +0100]:
 > 
-> .pushsection %S.##name
->                 ^^^^^^ function name
+> Honestly, I do not like this. It might be acceptable when it converts
+> klp_enable_patch() into a link pointing to another page describing the API.
 > 
-> but this would involve changing LDS scripts (and vmlinux.lds.h) to
-> let's say replace *(.noinstr.text) with *(.noinstr.text*).
+> But this patch causes the entire documentation of klp_enable_patch()
+> inserted into livepatch.html. It does not fit there and breaks
+> the text flow.
 
-Yes, this is meant to be used with a linker script that expects the new 
-name.
+Thank you for taking a look at the patch, Petr.
 
+I'm happy to revise the patch to instead add a new `api.rst` file that
+contains the `kernel-doc` directive, which would cause `klp_enable_patch()`
+in `livepatch.rst` to automatically link to the separate page as you
+suggested.
 
-Nicolas
+Just to check though -- I see that `shadow-vars.rst` and `system-state.rst`
+have their own "API" sections. Is it preferable to add such a section
+directly to `livepatch.rst`, rather than creating a separate file?
+
+Let me know either way and I'll send a v2 patch with your preference.
+
+Kind regards,
+David
