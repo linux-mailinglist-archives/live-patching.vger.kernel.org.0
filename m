@@ -2,137 +2,157 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1056A46FDA5
-	for <lists+live-patching@lfdr.de>; Fri, 10 Dec 2021 10:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 928FA46FF46
+	for <lists+live-patching@lfdr.de>; Fri, 10 Dec 2021 12:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239310AbhLJJ2o (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 10 Dec 2021 04:28:44 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:58720 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239270AbhLJJ2m (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 10 Dec 2021 04:28:42 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9E5821F3A0;
-        Fri, 10 Dec 2021 09:25:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1639128305; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LycgmG/LOJGB73wFgPTNENwjnXJ/W6j/W+2P+mTUqtY=;
-        b=tb2/CiUtZq6CXhb+haQSauUuxJ2aRwXLYj92PZMerEm2Pzwl5U7UeJlBqKoHIKhCSBSiVR
-        rpY2eJZ4InS7utFOpfDp8kXr4P+UqgbleouwxHfPBlGIutdqDH3ndiLMThJZxsT7mWZ4MN
-        /HqEs23frqLuieyu+GAxNU+lcBKbKrE=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6F03CA3B95;
-        Fri, 10 Dec 2021 09:25:05 +0000 (UTC)
-Date:   Fri, 10 Dec 2021 10:25:05 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     David Vernet <void@manifault.com>
-Cc:     linux-doc@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
-        jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
-        corbet@lwn.net, yhs@fb.com, songliubraving@fb.com
-Subject: Re: [PATCH] Documentation: livepatch: Add kernel-doc link to
- klp_enable_patch
-Message-ID: <YbMc8YGIoyRU5nwJ@alley>
-References: <20211209165303.3205464-1-void@manifault.com>
+        id S238959AbhLJLFS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 10 Dec 2021 06:05:18 -0500
+Received: from mga04.intel.com ([192.55.52.120]:62189 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234606AbhLJLFS (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 10 Dec 2021 06:05:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1639134103; x=1670670103;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=EBain5rvAuM0ab2ClY+MBBH0nuRkV+7ToR7QQbmwcnQ=;
+  b=fyHnR0rV98IWI7DyUobpD6PzwYJuPoaXLM34NsO2K4bhRGCwI8ZrZDL+
+   AVZRNWffcZ7H9Hpu4PubFDBc6+dM2CK7IYcJtJuCHvGydHpuQz8wfcquu
+   1ZevKgTxVG7tkFS4RKFGk7r0hEEO8MwMSMTRY4VI5N1JCDWsUy6TSGZIH
+   fHmPZHGCKN2DejZ74m6L+GYHOZtp4b31ChYM7lo/9iyNKXzv9rNoiumtj
+   2kK959X7QxKOdz5FyfnfmwnD5CPFC+5Zk/H3yYIXuLeyErKhNgYpN7dWo
+   Nj8AjzDuYIvV80WfEIK7FeLaL3OIdU/2IyfCki6XtxeZmy03JLMZ8EJjJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10193"; a="237062193"
+X-IronPort-AV: E=Sophos;i="5.88,195,1635231600"; 
+   d="scan'208";a="237062193"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2021 03:01:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,195,1635231600"; 
+   d="scan'208";a="612893140"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 10 Dec 2021 03:01:34 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1BAB1WjI016878;
+        Fri, 10 Dec 2021 11:01:32 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v8 05/14] x86: conditionally place regular ASM functions into separate sections
+Date:   Fri, 10 Dec 2021 12:01:02 +0100
+Message-Id: <20211210110102.707759-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <Yanm6tJ2obi1aKv6@hirez.programming.kicks-ass.net>
+References: <20211202223214.72888-1-alexandr.lobakin@intel.com> <20211202223214.72888-6-alexandr.lobakin@intel.com> <Yanm6tJ2obi1aKv6@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211209165303.3205464-1-void@manifault.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2021-12-09 08:53:04, David Vernet wrote:
-> The `klp_enable_patch()` function is the main entrypoint to the livepatch
-> subsystem, and is invoked by a KLP module from the module_init callback
-> when it is ready to be enabled.  The livepatch documentation specifies that
-> `klp_enable_patch()` should be invoked from the `module_init()` callback,
-> but does not actually link the user to the function's kerneldoc comment.
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 3 Dec 2021 10:44:10 +0100
+
+> On Thu, Dec 02, 2021 at 11:32:05PM +0100, Alexander Lobakin wrote:
+> > Use the newly introduces macros to create unique separate sections
+> > for (almost) every "regular" ASM function (i.e. for those which
+> > aren't explicitly put into a specific one).
+> > There should be no leftovers as input .text will be size-asserted
+> > in the LD script generated for FG-KASLR.
 > 
-> This simple change therefore adds a kernel-doc directive to link the
-> `klp_enable_patch()` function's kerneldoc comment in the livepatch
-> documentation page. With this, kernel/livepatch/core.c no longer comes up
-> as a file containing an unused doc with
-> `scripts/find-unused-docs.sh kernel/livepatch`
+> *groan*...
 > 
-> --- a/Documentation/livepatch/livepatch.rst
-> +++ b/Documentation/livepatch/livepatch.rst
-> @@ -312,8 +312,15 @@ the patch cannot get enabled.
->  -------------
->  
->  The livepatch gets enabled by calling klp_enable_patch() from
-> -the module_init() callback. The system will start using the new
-> -implementation of the patched functions at this stage.
-> +the module_init() callback:
-> +
-> +.. kernel-doc:: kernel/livepatch/core.c
-> +   :functions: klp_enable_patch
-> +
-> +----
-> +
-> +The system will start using the new implementation of the patched functions at
-> +this stage.
->  
->  First, the addresses of the patched functions are found according to their
->  names. The special relocations, mentioned in the section "New functions",
+> Please, can't we do something like:
+> 
+> #define SYM_PUSH_SECTION(name)	\
+> .if section == .text		\
+> .push_section .text.##name	\
+> .else				\
+> .push_section .text		\
+> .endif
 
-Honestly, I do not like this. It might be acceptable when it converts
-klp_enable_patch() into a link pointing to another page describing the API.
+This condition
 
-But this patch causes the entire documentation of klp_enable_patch()
-inserted into livepatch.html. It does not fit there and breaks
-the text flow.
+.pushsection .text
+.if section == .text
+# do something
+.endif
+.popsection
 
+doesn't really works. `do something` doesn't happen.
+This works only when
 
-Heh, I had hard times to build the documentation (sphinx crashed, ...).
-So, I paste the html output for others here:
+.pushsection .text
+.equ section, .text
 
-<cut&paste>
-5.2. Enabling¶
-The livepatch gets enabled by calling klp_enable_patch() from the module_init() callback:
+but it's not really okayish I'd say to find all .{,push}section
+occurences and replace them with a macro (which would also do .equ).
 
-int klp_enable_patch(struct klp_patch *patch)¶
-enable the livepatch
+I don't really know how %S with --sectname-subst should help me as
 
-Parameters
+.if %S == .text
+# do something
+.endif
 
-struct klp_patch *patch
-patch to be enabled
+doesn't work at all (syntax error) -- and it shouldn't, %S is
+supposed to work only inside .{,push}section directives.
 
-Description
+I could do unconditional
 
-Initializes the data structure associated with the patch, creates the sysfs interface, performs the needed symbol lookups and code relocations, registers the patched functions with ftrace.
+.pushsection %S.##name
+                ^^^^^^ function name
 
-This function is supposed to be called from the livepatch module_init() callback.
+but this would involve changing LDS scripts (and vmlinux.lds.h) to
+let's say replace *(.noinstr.text) with *(.noinstr.text*).
 
-Return
+So I hope there is a way to get current section name? If not, then
+the last option is the least harmful I suppose.
+At least not as harmful as current approach with alternative macros,
+far from it lol.
 
-0 on success, otherwise error
+> 
+> #define SYM_POP_SECTION()	\
+> .pop_section
+> 
+> and wrap that inside the existing SYM_FUNC_START*() SYM_FUNC_END()
+> macros.
 
-The system will start using the new implementation of the patched functions at this stage.
-
-First, the addresses of the patched functions are found according to their names. The special relocations, mentioned in the section “New functions”, are applied. The relevant entries are created under /sys/kernel/livepatch/<name>. The patch is rejected when any above operation fails.
-
-Second, livepatch enters into a transition state where tasks are converging to the patched state. If an original function is patched for the first time, a function specific struct klp_ops is created and an universal ftrace handler is registered1. This stage is indicated by a value of ‘1’ in /sys/kernel/livepatch/<name>/transition. For more information about this process, see the “Consistency model” section.
-
-Finally, once all tasks have been patched, the ‘transition’ value changes to ‘0’.
-
-1
-Note that functions might be patched multiple times. The ftrace handler is registered only once for a given function. Further patches just add an entry to the list (see field func_stack) of the struct klp_ops. The right implementation is selected by the ftrace handler, see the “Consistency model” section.
-
-That said, it is highly recommended to use cumulative livepatches
-because they help keeping the consistency of all changes. In this
-case, functions might be patched two times only during the transition
-period.
-</cut&paste>
-
-
-Best Regards,
-Petr
+Thanks,
+Al
