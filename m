@@ -2,138 +2,121 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A16EE472FB8
-	for <lists+live-patching@lfdr.de>; Mon, 13 Dec 2021 15:47:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A258473138
+	for <lists+live-patching@lfdr.de>; Mon, 13 Dec 2021 17:06:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbhLMOro (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 13 Dec 2021 09:47:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:23546 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230272AbhLMOro (ORCPT
+        id S235880AbhLMQGO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Dec 2021 11:06:14 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:37000 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233834AbhLMQGO (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 13 Dec 2021 09:47:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639406863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Mon, 13 Dec 2021 11:06:14 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8C8401F3B9;
+        Mon, 13 Dec 2021 16:06:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1639411572; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=A8hcGLH+T0gUqYBZFFXWjQPxtS91IvQDULYdbE3ot/k=;
-        b=fWP4Ss1N8aU9S8vaTBxdPzLt3SShW/F25XIHIoz1BUcUiJfd9/92y+TnrwzmkpEyLRu3LJ
-        D4ZATqp5V7PGEoCrVQpb1JlyunaNRsM+3TpHYgKibve3LuS8TdHmbXhzuSY5ko7w1VVb27
-        z26KQr1Rn6gzOs1j2RBOC+nYRh9qV1k=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-555-_DpyAXbuNTKsRZYciZ936Q-1; Mon, 13 Dec 2021 09:47:42 -0500
-X-MC-Unique: _DpyAXbuNTKsRZYciZ936Q-1
-Received: by mail-qt1-f198.google.com with SMTP id w14-20020ac87e8e000000b002b6583adcfcso23601502qtj.0
-        for <live-patching@vger.kernel.org>; Mon, 13 Dec 2021 06:47:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=A8hcGLH+T0gUqYBZFFXWjQPxtS91IvQDULYdbE3ot/k=;
-        b=mmL7bC/wCtMVJxNwScdRxJiroX1el17WwsAHjqc292czYkB+06Cc2qlaFnAE3c9iZ0
-         R9+uLUS2STTwQkPsx5P3LPDMpwsr2OkVk0nMzkw8hxZTqMEmD6x1gK5MxgucG85ZYTiv
-         zO2ErjRrPgQlocTGkjFY8vUGnDavltB9F3tjk6Aelq/H+F38FK4Mz44rKZHoFt11gfg0
-         fAcOHbbQ2WY+WN8uuag1aQiYZfz0NvTZ5N/npbeJhYh6UnzdI6VN5UKDcs1w7uGmsjKd
-         qK82CHCS9YtTDdXtTIyRdt9lTLDoXqAIPFaz8WzUryRF+VhhkUwKh9LDmntR7W69uLh+
-         +RWw==
-X-Gm-Message-State: AOAM533a1oHvYtTK6h0RiG7+J8zjNTnc2FY7JEeQeea8I9jv2vSHJn9r
-        vT8AxxieHdbVvo+pckPhqVte5oPxufzEapLT0l3gMG1BGJ+f8Md6monEbLVBlpQdIcJEPliE6TK
-        Bjqx2pTTjUtq/J+GVSBUfPH6/LQ==
-X-Received: by 2002:a05:620a:1a8d:: with SMTP id bl13mr33725403qkb.200.1639406862156;
-        Mon, 13 Dec 2021 06:47:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy1pytTz0rFDYInzO60wUAQXH29a2E/VAmEu6qrge4tTzr5qgfYjG6Yp5J6Sqb4lCXlwrm7qw==
-X-Received: by 2002:a05:620a:1a8d:: with SMTP id bl13mr33725367qkb.200.1639406861848;
-        Mon, 13 Dec 2021 06:47:41 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
-        by smtp.gmail.com with ESMTPSA id o17sm6004570qkp.89.2021.12.13.06.47.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Dec 2021 06:47:41 -0800 (PST)
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Russell Currey <ruscur@russell.cc>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Jordan Niethe <jniethe5@gmail.com>
-References: <YX9UUBeudSUuJs01@redhat.com>
- <7ee0c84650617e6307b29674dd0a12c7258417cf.camel@russell.cc>
- <f8a96ac1-fda3-92da-cf27-0992a43a2f3f@redhat.com>
- <bed88ff4-e5d3-4b78-4f28-29fc635c2f97@csgroup.eu>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: ppc64le STRICT_MODULE_RWX and livepatch apply_relocate_add()
- crashes
-Message-ID: <919a79b8-feff-b0a4-b96a-73f376b7f6dc@redhat.com>
-Date:   Mon, 13 Dec 2021 09:47:40 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        bh=FF6LuBspdsWCO4qGNpCYC3fUaZAeoqbzPnQ9aad9DtY=;
+        b=NO6CGs7rJtym1/r7x7ynSwGNQ5iKyKtebbSllG6bWHjPLRlxxiZRypCWtQBflenNHDSlcb
+        vZwW9S1+OicB5ARAhezARsw2m48WY2uChpa9P3uDg23wcc7M672wdV5yPRtRia5PP+qgUZ
+        6h8kJIJ9G7gCTrhaGv3Nx2rdLxDl7iM=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 5D4F1A3B87;
+        Mon, 13 Dec 2021 16:06:12 +0000 (UTC)
+Date:   Mon, 13 Dec 2021 17:06:09 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     David Vernet <void@manifault.com>
+Cc:     linux-doc@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
+        corbet@lwn.net, yhs@fb.com, songliubraving@fb.com
+Subject: Re: [PATCH] Documentation: livepatch: Add kernel-doc link to
+ klp_enable_patch
+Message-ID: <YbdvcXKtxvrVqN+2@alley>
+References: <20211209165303.3205464-1-void@manifault.com>
+ <YbMc8YGIoyRU5nwJ@alley>
+ <YbObeiWbLxO8MwrD@dev0025.ash9.facebook.com>
 MIME-Version: 1.0
-In-Reply-To: <bed88ff4-e5d3-4b78-4f28-29fc635c2f97@csgroup.eu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbObeiWbLxO8MwrD@dev0025.ash9.facebook.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 12/13/21 2:42 AM, Christophe Leroy wrote:
+On Fri 2021-12-10 10:24:58, David Vernet wrote:
+> Petr Mladek <pmladek@suse.com> wrote on Fri [2021-Dec-10 10:25:05 +0100]:
+> > 
+> > Honestly, I do not like this. It might be acceptable when it converts
+> > klp_enable_patch() into a link pointing to another page describing the API.
+> > 
+> > But this patch causes the entire documentation of klp_enable_patch()
+> > inserted into livepatch.html. It does not fit there and breaks
+> > the text flow.
 > 
-> Hello Joe,
+> Thank you for taking a look at the patch, Petr.
 > 
-> I'm implementing LIVEPATCH on PPC32 and I wanted to test with 
-> STRICT_MODULE_RWX enabled so I took your branch as suggested, but I'm 
-> getting the following errors on build. What shall I do ?
+> I'm happy to revise the patch to instead add a new `api.rst` file that
+> contains the `kernel-doc` directive, which would cause `klp_enable_patch()`
+> in `livepatch.rst` to automatically link to the separate page as you
+> suggested.
 > 
->    CALL    scripts/checksyscalls.sh
->    CALL    scripts/atomic/check-atomics.sh
->    CHK     include/generated/compile.h
->    KLP     lib/livepatch/test_klp_convert1.ko
-> klp-convert: section .rela.klp.module_relocs.test_klp_convert_mod length 
-> beyond nr_entries
-> 
-> klp-convert: Unable to load user-provided sympos
-> make[2]: *** [scripts/Makefile.modfinal:79: 
-> lib/livepatch/test_klp_convert1.ko] Error 255
->    KLP     lib/livepatch/test_klp_convert2.ko
-> klp-convert: section .rela.klp.module_relocs.test_klp_convert_mod length 
-> beyond nr_entries
-> 
-> klp-convert: Unable to load user-provided sympos
-> make[2]: *** [scripts/Makefile.modfinal:79: 
-> lib/livepatch/test_klp_convert2.ko] Error 255
->    KLP     lib/livepatch/test_klp_convert_sections.ko
-> klp-convert: section .rela.klp.module_relocs.test_klp_convert_mod length 
-> beyond nr_entries
-> 
-> klp-convert: Unable to load user-provided sympos
-> make[2]: *** [scripts/Makefile.modfinal:79: 
-> lib/livepatch/test_klp_convert_sections.ko] Error 255
-> make[2]: Target '__modfinal' not remade because of errors.
-> make[1]: *** [scripts/Makefile.modpost:145: __modpost] Error 2
-> make: *** [Makefile:1770: modules] Error 2
-> 
+> Just to check though -- I see that `shadow-vars.rst` and `system-state.rst`
+> have their own "API" sections.
 
-Hi Christophe,
+Good point. Well, even these file do not point to the documentation
+generated from the sources.
 
-Interesting failure mode.  That's klp-convert complaining that it found
-more relocations in a .klp.module_relocs.<objname> section than
-expected, i.e. nr_entries = sec->size / sizeof(struct klp_module_reloc).
 
-A few possibilities: the ELF sec->size was incorrectly set/read by
-build/libelf (I doubt that).  Or maybe the layout/size of struct
-klp_module_reloc is not consistent between kernel and userspace (I'm
-more suspicious of this).
+> Is it preferable to add such a section directly to `livepatch.rst`,
+> rather than creating a separate file?
 
-Can you post a copy of the build's symbols.klp and
-lib/livepatch/test_klp_convert1.tmp.ko somewhere?  I should be able to
-start debug with those files.
+Good question. I am not expert on writing documentation and I can't
+find any good example of API documentation at
+https://www.kernel.org/doc/html/latest/index.html
 
-Thanks,
--- 
-Joe
+One reason might be that most of the documentation was written as plain text
+in the past. And many people still read it in the original .rst form.
 
+Another problem is that livepatch documentation is a mix of several
+independent pieces written by different authors. It would deserve
+a lot of work:
+
+    + Connect the pieces
+    + Add missing information
+    + Make the style and structure consistent
+
+
+Anyway, I think that the documentation generated from the sources
+is useful. But it is hard to integrate it into .rst file that should
+be useful even in the .rst format.
+
+From this POV, I suggest to create Documentation/livepatch/API.rst
+and add there the documentation generated from the sources. I mean
+something like:
+
+    Documentation/core-api/kernel-api.rst
+
+that results into
+
+https://www.kernel.org/doc/html/latest/core-api/kernel-api.html
+
+
+The livepatch/API.rst might include documentation from
+
+    include/linux/livepatch.h
+    kernel/livepatch/code.c
+    kernel/livepatch/shadow.c
+    kernel/livepatch/state.c
+
+
+But let's wait if there are other opinions from another livepatch
+developers.
+
+Best Regards,
+Petr
