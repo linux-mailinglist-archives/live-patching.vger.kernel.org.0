@@ -2,181 +2,188 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F7E4732E7
-	for <lists+live-patching@lfdr.de>; Mon, 13 Dec 2021 18:27:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD2174732EF
+	for <lists+live-patching@lfdr.de>; Mon, 13 Dec 2021 18:30:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237795AbhLMR1A (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 13 Dec 2021 12:27:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33873 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237724AbhLMR06 (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Mon, 13 Dec 2021 12:26:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639416417;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y4o6oVIesfnDo84d/kPIVObUuOUn9rbV/Dxvkbz+Ve8=;
-        b=bKoWlJJc8kZJXG//hXKyVdeCyREHTN0V/xONrJGI8KmSGQHrdQsoHIH82nM70tweLS5pF2
-        dGMVdyiGufCDakK8H+Bt9UnZiB1sQQvaNuiEbdNF/SQskkt4HqTmnMpHclpDK/7OodsDTl
-        973X5hKRlN1XH4T7ydLW0xl7Ifu+2pY=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-141-SJJVB5ZHN6q_wiPxdwAv0Q-1; Mon, 13 Dec 2021 12:26:56 -0500
-X-MC-Unique: SJJVB5ZHN6q_wiPxdwAv0Q-1
-Received: by mail-qv1-f70.google.com with SMTP id kl17-20020a056214519100b003ba5b03606fso24744913qvb.0
-        for <live-patching@vger.kernel.org>; Mon, 13 Dec 2021 09:26:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Y4o6oVIesfnDo84d/kPIVObUuOUn9rbV/Dxvkbz+Ve8=;
-        b=6QcZRRMTmtbvJilb9bGrIkiBFk6+MHCZ/L789obhP0idewQDL7E/6KmstlmlvwKTnT
-         KmJnqRwajIEQ4TCVKixIphBW7QuZqpgP7ULMq5z2pStrVTZ6ffAdPIhElEgzlD1WJ1pt
-         yfpHj+yJH9wDDpE/H8kLoY9DCyWZDYKrWK30PrdiPabd1Rml0jmalF01yYbLYNLFf0Yw
-         SmxROOFSHfHWhPmxmL2OJeTf38CBweAcFUx/knycbCo3cbkx5F54RORWoBVbfZrpIV1F
-         lFSkMo9vwpTfrd2Tz7/S6HqOLSesmfcvZf5Llo4+Ywjqs2ycIm5XD4DTrAENy7yWbjl7
-         gi3Q==
-X-Gm-Message-State: AOAM531KtBDBgDa/pV/XuA5E5LuaM1oFU0Ta1vkZPheGuTZbH+miEbYy
-        Dvxpf8R/Ei1vJB6SfjQmrheNY3jMVadTBm8dRQbj0YBG58mVkl9Xt5Ciw2QdkIIhIhkvNR9pUTH
-        W7A8zC3WKquHjcOgPixuvOz7Fmw==
-X-Received: by 2002:a05:622a:1487:: with SMTP id t7mr115311qtx.484.1639416416082;
-        Mon, 13 Dec 2021 09:26:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwdKNR0RmU/rmZRwD07K87ZQ//xzz4YKuZVanITX8zCfz4ZzTxkAq+LnjECgKjaNNjJywk3Ww==
-X-Received: by 2002:a05:622a:1487:: with SMTP id t7mr115261qtx.484.1639416415755;
-        Mon, 13 Dec 2021 09:26:55 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
-        by smtp.gmail.com with ESMTPSA id f21sm9581080qte.52.2021.12.13.09.26.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Dec 2021 09:26:55 -0800 (PST)
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Russell Currey <ruscur@russell.cc>,
+        id S241269AbhLMRaw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Dec 2021 12:30:52 -0500
+Received: from mail-eopbgr90077.outbound.protection.outlook.com ([40.107.9.77]:36320
+        "EHLO FRA01-MR2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236970AbhLMRav (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Mon, 13 Dec 2021 12:30:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U+a3zDZ2l25aVD+dkGvRtMzgRzakOQdVkV3IuwYOgUi8BIgAAzmkaA3RZa3LDfE00HFcQ9cT7+WXeC/R/3YDm9zfbbV3DZZhIT0WGGa3BPBtfRz0iq17xBtJQMWukVhxDdk1exGtJ5p6A11sBTxcbLULGsx383Iyk05hiXgIXZ/wQCDQIcKcpgbW/Xx0ETZgCYGdBH7zmruKvJTNLectla4V1pV1my5YLelbCJY/Fa/JJLvJPVgXyzzE/tkB+t8WjOvRI0ZKoGk0ZT51uWa8CbOPB+L8LTI1Ooy7BbJW5A+L7oGdd0fS14wvixzO5rGVqdXdSQWvXOzOEDlKlOGR2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+shDhfzF2QWntHO/dNFBcQHGxBxnfSk7hhAuKCBYKkU=;
+ b=I/M3FJwue1ViQttOA5Urb3fmvjvWMf/BlF7RnT2X0tRJmNFl3SJcsXsGBzGTZLEbSfM+69tuoa2g7SBSfSJ6vIE7LN3FB4mzG9MzFjDJdnPn6CA+woOL9XMLvqDkU/N2d7ri9euKXbEuQLex+lzsplr7qxEeti7LilEIpxsEzGE2LlpTjpE4EVXR3e+zaDa5bz6e16Ubh1BkzPkuMUljn/LPS8b0szQrwXFPShG+sSCoVZhOc3VSA3K/t3xuS6wkdgyzjHmxzzQFYdKFmnNJPxYNC4xaIJ7ltkKq1/AS//9VdTEDSCVtq8Qh03RURdK+tZwPXbWKrD/28v4oVeJ14A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB1650.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:4::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.12; Mon, 13 Dec
+ 2021 17:30:48 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::fc67:d895:7965:663f]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::fc67:d895:7965:663f%2]) with mapi id 15.20.4778.017; Mon, 13 Dec 2021
+ 17:30:48 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
         "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Jordan Niethe <jniethe5@gmail.com>
-References: <YX9UUBeudSUuJs01@redhat.com>
- <7ee0c84650617e6307b29674dd0a12c7258417cf.camel@russell.cc>
- <f8a96ac1-fda3-92da-cf27-0992a43a2f3f@redhat.com>
- <bed88ff4-e5d3-4b78-4f28-29fc635c2f97@csgroup.eu>
- <919a79b8-feff-b0a4-b96a-73f376b7f6dc@redhat.com>
- <61a5f29c-5123-5f0f-11aa-91cb0ac95a69@csgroup.eu>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: ppc64le STRICT_MODULE_RWX and livepatch apply_relocate_add()
- crashes
-Message-ID: <8a68ffef-7e0d-b1ff-1102-2e6f2c999455@redhat.com>
-Date:   Mon, 13 Dec 2021 12:26:54 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <61a5f29c-5123-5f0f-11aa-91cb0ac95a69@csgroup.eu>
-Content-Type: text/plain; charset=utf-8
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>
+Subject: Re: [PATCH v1 0/5] Implement livepatch on PPC32
+Thread-Topic: [PATCH v1 0/5] Implement livepatch on PPC32
+Thread-Index: AQHXy/a61L5ufkyTwk+E9T1IN+85JqvoaYCAgEhc+YCAACuvAIAABD6A
+Date:   Mon, 13 Dec 2021 17:30:48 +0000
+Message-ID: <5511f43c-192a-622b-7c72-52e07f0032c2@csgroup.eu>
+References: <cover.1635423081.git.christophe.leroy@csgroup.eu>
+ <20211028093547.48c69dfe@gandalf.local.home>
+ <6209682d-0caa-b779-8763-376a984d8ed8@csgroup.eu>
+ <20211213121536.25e5488d@gandalf.local.home>
+In-Reply-To: <20211213121536.25e5488d@gandalf.local.home>
+Accept-Language: fr-FR, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2a826193-96f1-4ee7-f1e7-08d9be5e4d63
+x-ms-traffictypediagnostic: MR1P264MB1650:EE_
+x-microsoft-antispam-prvs: <MR1P264MB1650F44566B979B721A48A48ED749@MR1P264MB1650.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qZrshcX8pDgaHwKcvrPOsIjQeOjTV/0dn4wSmVoBeneaOWxOFwOjYnk6GZMpWec2+KCjMy/mLY3z4X0813whMRM8Ywta3iP/S38cTruOT6RH94GinvVK6F5X2kUtwpQt72zyMYvP1b941OJHIKWz99GAz02Wjt9j7ohgqKkGOoKJ6KMagQje+5uHvJ/BI8sAc6l/isegmw0qVItpESUqcsmapQLY9fP/V8T/A9v0kb728D3bTabkKFjvYOz/b1xHiZi7GvznlX4fsVPMut62Z420fCuKZtgBzaE8gmBtQ+69ONEZGTiiP43zfNoiJ06AMJUzys9JmsgEyTWuGZjvONmVKAwoiOoWRBd1GKIYn8GGwIo4/EKRgV1NtCONBhLSaXAHM1W/XE46roBCYNhaNeat2wsWZv2o5h6Lztz17X10VtHTwQMSQ3HtM9jKjXBYn8RNPhozsRxuMLOFqY7Q47LeI0VxJ48Pv2p/92B9KHFPPUeq8d9mQv+nuUyt4bvlbaxbgDQ/lNum9bW/5wZ5HffFQp/aLFsCCDJGeY1v+t8Nv4NoOYYKgxdgxd+CVqd0ZKZ+Zz0yZOkVcMEnJx+kyJs2AvlXd6Ijr3uKJj0Y36OKeOAYSW1oUB58jUaDT5l5e0ol6vmp6Ihv+BWitkSYRZKS4s+3WaNGc3iFVTSR27i5qYoYjL/hguA8wgy9OhSrk7r19Zsd9zYc93bslWEkP3D39YOPPgT8V9l/6x8YtOMbdiIgn1kBqGTlPKYaoUmXV3Hwu4Nnaul4T2Y/VeW7nA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(26005)(31696002)(6916009)(83380400001)(66476007)(6506007)(7416002)(86362001)(2906002)(66556008)(31686004)(36756003)(38100700002)(186003)(122000001)(508600001)(6512007)(8676002)(8936002)(316002)(64756008)(54906003)(66446008)(38070700005)(66574015)(6486002)(5660300002)(91956017)(4326008)(76116006)(66946007)(44832011)(71200400001)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TUp0akRsZldXNE1Cb0laYmxTa2J4YTBDT01xRG56empuMWl6anhyTUExaW9J?=
+ =?utf-8?B?N3RBUGI2TUZDd05BeVU2M0lzUmtBSGxtYUxkWkpQSzVKMXV5TCtxUHhOcWxx?=
+ =?utf-8?B?V29MUEZsc2xDQ3kwUml3WWdDUThWQlNtTVZwZVF0MHFDV3ovTW5tV3F5VFlw?=
+ =?utf-8?B?aFE4TjUvNlc3RmhSL08ybFBsVUp1YTNkZjZ4aW1iQmxnRm45SzduUG56aUIw?=
+ =?utf-8?B?VDNaU1NZYk4rb1RoMmdqTWtwWDFNaC9Yd0E0WEJDbXBNTVF1NzRnMGZMRUJG?=
+ =?utf-8?B?WU84QXZOZkk4bWxjY1VRMFpGblNSVEkxUC9POERTcExGd2E1YzdUR0gxZ0tm?=
+ =?utf-8?B?a3NQaWZaRUJqUlFJMG0zVUo4YVpDc3hRMEt6Yi9LNXJFY1YrRGl2VE5CaStF?=
+ =?utf-8?B?djFoa1VRL1hEQ1dlWTVWWTFxQmQwN1B5aG4zeTdjRHdnMys5VUt6bWhtaDUy?=
+ =?utf-8?B?UVFqK0hVY0dNY1FKWURJN1cwcWdxVEVmbzRjR3BDcGVsOXFBYmd2VFMyT1hB?=
+ =?utf-8?B?Szg3TTBPbTZ4aC9uZGVkZUJOUit1dEhwUS9DcFZFbExoWW5wdGhCQWM2ZTkv?=
+ =?utf-8?B?RWMxblFjZnUyNkU5ci93TmphNWRkY2tYbGRsK204WVhPYUVna0dSdU11a3F0?=
+ =?utf-8?B?MjJ5T3h2MENndkhaNVZaU1c5OWYvNFhhZFhNK3gxRDVmcVZRdjZ6L1F0SC85?=
+ =?utf-8?B?OTNZOG13SWZ6UWdOb0tlM0w3b1F0ejE1aThVbnN2RzFMTmJVZmJ5aTJSKzlh?=
+ =?utf-8?B?UFpqc1ZZV1dPMzVtUHJmNldIZENmTzg2dndiS21mTUxWYTc4d0FlaFo1aE9X?=
+ =?utf-8?B?Q3l4Zm9EL04wNjR2dmdNR2E5SzF1ejEzektZdzJzVmdzUnVCaEVubU1HQWVv?=
+ =?utf-8?B?SE5uR1lWWTNiYkN3YVVhWEFLK1dveFFHNCthbk4xMlB3RXNIRGxtM2tmMGll?=
+ =?utf-8?B?cFg5L1FVSW1zbTFSMnNZV1VUdmZkemNaT1RBTTE4Q1cxa01VZlF1cy9QRFBz?=
+ =?utf-8?B?TEF2TVFMVE9RR09aV0Nzay8yNVRIVDJabE11L1hpZ1YyNHFaT1RiNDJGZThF?=
+ =?utf-8?B?L1dZNk9WZTdDbzdscWx0b2ZRcGgxd2JyTkI1Q1NnV2o1ZFZlSnlWajFaVVBn?=
+ =?utf-8?B?YXQvenZSdkEyaUhnWWlxc0JZMDVMdndrVzYrZnVYdVYvalR1dHJSalFoQitp?=
+ =?utf-8?B?eDc2c2k5aGxPdFJScFVWdWRXZ2lld2UxOWJFNE5XaSsybXVaY0huTVZCWVlu?=
+ =?utf-8?B?bkFOV1BLejNHYlBEZkF1Q04vYXpDR2xjK1V4VE01dXNwSHFId0FjWi9pU1k2?=
+ =?utf-8?B?TFNMK3JINVM2Mm1OMVlCMmlXZ3VoMWRPcXE4K2NKU21Jc2RKTkdqbEViVFNY?=
+ =?utf-8?B?TVJnbDY2alkvQ1ZvZTlHOXVGcUJoRG5uSEhMVVJYUzdZd2E2OUlzOGpGUHY5?=
+ =?utf-8?B?eExQVTdqTTQycGdoQnh6ZDlGemxGZ2IxK2NObkkwS1grTGRoTlN5aHNVZmFU?=
+ =?utf-8?B?eVRxVlRNK1NYcUEyWDloN1pzMVBoR0hBZ0FOOWNUSFM3bUZ5TWhRUW9TODNG?=
+ =?utf-8?B?OGovR2hNQ091SVV5bEY0Y3FPSEFsN0hLd1BPTzZnT3BidHdwWGpVR3k0WU1j?=
+ =?utf-8?B?aU1ralUwRXdSVlBLdzY0c2lvN2djZDJvOWNuWTBnVzd2cmlhbHFlQ1ZFd0Mv?=
+ =?utf-8?B?TS9ucFJUVkx4dWR3TlNKUTIzRytVejNjV1FlVXJad3BZT09iVU9mYkZVcVgv?=
+ =?utf-8?B?TjA1bGhaNGhxTGp3YjJJSUp5R1pUY1JzaUxZZFdXTnNHQitJZFV2cGdmQWV6?=
+ =?utf-8?B?NGJ0ZUw1c0JHWXZKTCtQcld4N1gwT1lxcmZoeXFvZjF1QnVNbWFaYlp4eGVj?=
+ =?utf-8?B?NUZSZUhsUVNNbU5CYkdoaWE5MjhhWWphekRrQUxRNXRvVk9aVXpXNklDcjlW?=
+ =?utf-8?B?QklhWkVYYUIydVFBQ0RaY3QrY05nMzV2cGRsYWNpR1FqNWZnRUhWZVpZMmNZ?=
+ =?utf-8?B?bUlXTUpOTG9xUURYQm5FdWtMV3JTYTZad2VDVnJ2Sm05L3h3RnJOS01tWG9Z?=
+ =?utf-8?B?RlJPR09WNDBwU2ZVNWVjWlYvOXpWbTNVT0M0eW0zQUo5SDNvSU1qRkMwTXpJ?=
+ =?utf-8?B?WmJ5dDI1RCtnWUZ4SEdTZVZwdm1PUWxWY2tiYTA1bmlSTGtJSklobFhIT3RU?=
+ =?utf-8?B?QzE4MlY0VElGTUVwZTNYQkYyUXA1WG9lODlJTmMrVXRKZjZ4Z1B0Vml2ODZh?=
+ =?utf-8?Q?KRpXoptsqT5vXUNMoRiBWMkql4qR/7L3LzqWKUcKCY=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C3EF0FDADCCE6B43B5E2ED2EF30D1272@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a826193-96f1-4ee7-f1e7-08d9be5e4d63
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2021 17:30:48.3049
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /KdMWGkniWG47B7RNmPRkFNNix2zmDMm6xV4m8KCY88Jrjgcny1jh8HyoeHDGK2XSFHiGiy+PVoW5OlaSK9Ox0iFR7XuC2G06U0MDXbS7kg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB1650
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 12/13/21 11:36 AM, Christophe Leroy wrote:
-> 
-> 
-> Le 13/12/2021 à 15:47, Joe Lawrence a écrit :
->> On 12/13/21 2:42 AM, Christophe Leroy wrote:
->>>
->>> Hello Joe,
->>>
->>> I'm implementing LIVEPATCH on PPC32 and I wanted to test with
->>> STRICT_MODULE_RWX enabled so I took your branch as suggested, but I'm
->>> getting the following errors on build. What shall I do ?
->>>
->>>     CALL    scripts/checksyscalls.sh
->>>     CALL    scripts/atomic/check-atomics.sh
->>>     CHK     include/generated/compile.h
->>>     KLP     lib/livepatch/test_klp_convert1.ko
->>> klp-convert: section .rela.klp.module_relocs.test_klp_convert_mod length
->>> beyond nr_entries
->>>
->>> klp-convert: Unable to load user-provided sympos
->>> make[2]: *** [scripts/Makefile.modfinal:79:
->>> lib/livepatch/test_klp_convert1.ko] Error 255
->>>     KLP     lib/livepatch/test_klp_convert2.ko
->>> klp-convert: section .rela.klp.module_relocs.test_klp_convert_mod length
->>> beyond nr_entries
->>>
->>> klp-convert: Unable to load user-provided sympos
->>> make[2]: *** [scripts/Makefile.modfinal:79:
->>> lib/livepatch/test_klp_convert2.ko] Error 255
->>>     KLP     lib/livepatch/test_klp_convert_sections.ko
->>> klp-convert: section .rela.klp.module_relocs.test_klp_convert_mod length
->>> beyond nr_entries
->>>
->>> klp-convert: Unable to load user-provided sympos
->>> make[2]: *** [scripts/Makefile.modfinal:79:
->>> lib/livepatch/test_klp_convert_sections.ko] Error 255
->>> make[2]: Target '__modfinal' not remade because of errors.
->>> make[1]: *** [scripts/Makefile.modpost:145: __modpost] Error 2
->>> make: *** [Makefile:1770: modules] Error 2
->>>
->>
->> Hi Christophe,
->>
->> Interesting failure mode.  That's klp-convert complaining that it found
->> more relocations in a .klp.module_relocs.<objname> section than
->> expected, i.e. nr_entries = sec->size / sizeof(struct klp_module_reloc).
->>
->> A few possibilities: the ELF sec->size was incorrectly set/read by
->> build/libelf (I doubt that).  Or maybe the layout/size of struct
->> klp_module_reloc is not consistent between kernel and userspace (I'm
->> more suspicious of this).
->>
->> Can you post a copy of the build's symbols.klp and
->> lib/livepatch/test_klp_convert1.tmp.ko somewhere?  I should be able to
->> start debug with those files.
->>
-> 
-> I sent you both files off list.
-> 
-> It looks like klp-convert doesn't use the correct size. It finds a 
-> struct of size 12 hence 3 entries for a section of size 40.
-> 
-> On PPC32 the struct has size 8 (void * is 4 and int is 4).
-> 
-> But I'm cross-building from x86_64 where the struct is 8 + 4 = 12.
-> 
-> Can it be the reason ?
-> 
-
-I'm pretty sure that is it.  I haven't had much runtime with klp-convert
-and cross-building (I've only found one big/little endian bug with
-x86_64->s390x) and was going to ask you how you were testing :)
-
-Do you know if there are other kernel build tools that deal with similar
-situations?  This seems like a tricky job for the userspace build tool
-to determine non-native target struct layout.
-
-In the meantime, hacking in:
-
- struct klp_module_reloc {
--       void *sym;
-+       uint32_t sym;
-        unsigned int sympos;
- } __packed;
-
-gets me generating an output .ko file, but the readelf output doesn't
-look right.
-
-I'll add this to the patchset TODO list, but may not get to it for a
-while -- is there any chance the above hack works or could you test a
-local non-cross build?
-
-Thanks,
-
--- 
-Joe
-
+DQoNCkxlIDEzLzEyLzIwMjEgw6AgMTg6MTUsIFN0ZXZlbiBSb3N0ZWR0IGEgw6ljcml0wqA6DQo+
+IE9uIE1vbiwgMTMgRGVjIDIwMjEgMTQ6Mzk6MTUgKzAwMDANCj4gQ2hyaXN0b3BoZSBMZXJveSA8
+Y2hyaXN0b3BoZS5sZXJveUBjc2dyb3VwLmV1PiB3cm90ZToNCj4gDQo+Pj4gTm90ZSwgeW91IGNh
+biBpbXBsZW1lbnQgdGhpcyBmaXJzdCwgKEkgbG9va2VkIG92ZXIgdGhlIHBhdGNoZXMgYW5kIHRo
+ZXkNCj4+PiBzZWVtIGZpbmUpIGFuZCB0aGVuIHVwZGF0ZSBib3RoIHBwYzY0IGFuZCBwcGMzMiB0
+byBpbXBsZW1lbnQNCj4+PiBEWU5BTUlDX0ZUUkFDRV9XSVRIX0FSR1MuDQo+Pj4gICAgDQo+Pg0K
+Pj4gSSB0cmllZCB0byBhY3RpdmF0ZSBEWU5BTUlDX0ZUUkFDRV9XSVRIX0FSR1Mgb24gUFBDMzIu
+DQo+Pg0KPj4gSSBjb3BpZWQgaW50byBwb3dlcnBjIHRoZSBjaGFuZ2VzIGZyb20gNTc0MGE3Yzcx
+YWI2ICgiczM5MC9mdHJhY2U6IGFkZA0KPj4gSEFWRV9EWU5BTUlDX0ZUUkFDRV9XSVRIX0FSR1Mg
+c3VwcG9ydCIpDQo+Pg0KPj4gRnRyYWNlIHNlbGZ0ZXN0cyB0ZWxsICJUZXN0aW5nIHRyYWNlciBm
+dW5jdGlvbl9ncmFwaDogRkFJTEVEISIuDQo+Pg0KPj4gSXMgdGhlcmUgYW55dGhpbmcgZWxzZSB0
+byBkbyA/DQo+IA0KPiBZZXMuIEJlY2F1c2UgQlBGIGlzIG5vdyBob29raW5nIGludG8gdGhlIGZ1
+bmN0aW9uIGNhbGxiYWNrcywgaXQgY2F1c2VzDQo+IGlzc3VlcyB3aXRoIGZ1bmN0aW9uIGdyYXBo
+IHRyYWNlci4gU28gd2hhdCB3ZSBkaWQgd2FzIHRvIGhhdmUgZnVuY3Rpb24NCj4gZ3JhcGggdHJh
+Y2luZyB0byBub3cgdXNlIHRoZSBmdW5jdGlvbiB0cmFjZXIgY2FsbGJhY2sgYXMgd2VsbCAodGhp
+cyBhbGxvd3MNCj4gYm90aCB0aGUgQlBGIGRpcmVjdCB0cmFtcG9saW5lcyB0byB3b3JrIHdpdGgg
+ZnVuY3Rpb24gZ3JhcGggdHJhY2VyKS4NCj4gDQo+IEFzIGl0IHJlcXVpcmVzIERZTkFNSUNfRlRS
+QUNFX1dJVEhfQVJHUywgYW5kIHg4NiB3YXMgdGhlIG9ubHkgb25lIHRvDQo+IHN1cHBvcnQgdGhh
+dCBmb3Igbm93LCBJIGRlY2lkZWQgdG8gbWFrZSBhbGwgdGhlIGFyY2hzIGNoYW5nZSBmdW5jdGlv
+biBncmFwaA0KPiB0cmFjaW5nIHdoZW4gdGhleSBpbXBsZW1lbnQgRFlOQU1JQ19GVFJBQ0VfV0lU
+SF9BUkdTIHRvby4gKEl0IGlzIGJlY29taW5nIGENCj4gcGFpbiB0byBoYXZlIHRvbyBtYW55IHZh
+cmlhbnRzIG9mIGZ1bmN0aW9uIHRyYWNpbmcgYmV0d2VlbiB0aGUgYXJjaHMpLg0KPiANCj4gVGhl
+IGNoYW5nZSB0aGF0IGRpZCB0aGlzIGZvciB4ODYgd2FzOg0KPiANCj4gMGMwNTkzYjQ1YzliNCAo
+Ing4Ni9mdHJhY2U6IE1ha2UgZnVuY3Rpb24gZ3JhcGggdXNlIGZ0cmFjZSBkaXJlY3RseSIpDQo+
+IA0KPiBUaGlzIGFjdHVhbGx5IHNpbXBsaWZpZXMgdGhlIGZ1bmN0aW9uIGdyYXBoIHRyYWNlciwg
+YXMgeW91IG5vIGxvbmdlciBuZWVkDQo+IGl0J3Mgb3duIGVudHJ5IHRyYW1wb2xpbmUgKHN0aWxs
+IG5lZWQgdGhlIHRyYW1wb2xpbmUgZm9yIHRoZSByZXR1cm4gb2YgdGhlDQo+IGZ1bmN0aW9uKS4N
+Cj4gDQo+IFdoYXQgeW91IG5lZWQgdG8gZG8gaXM6DQo+IA0KPiBJbiB5b3VyIGFyY2gvKi9pbmNs
+dWRlL2FzbS9mdHJhY2UuaCBhZGQ6DQo+IA0KPiBzdHJ1Y3QgZnRyYWNlX29wczsNCj4gDQo+ICNk
+ZWZpbmUgZnRyYWNlX2dyYXBoX2Z1bmMgZnRyYWNlX2dyYXBoX2Z1bmMNCj4gdm9pZCBmdHJhY2Vf
+Z3JhcGhfZnVuYyh1bnNpZ25lZCBsb25nIGlwLCB1bnNpZ25lZCBsb25nIHBhcmVudF9pcCwNCj4g
+ICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgZnRyYWNlX29wcyAqb3AsIHN0cnVjdCBmdHJh
+Y2VfcmVncyAqZnJlZ3MpOw0KPiANCj4gDQo+IFdoZXJlIGZ0cmFjZV9ncmFwaF9mdW5jKCkgaXMg
+bm93IHdoYXQgaXMgY2FsbGVkIGZvciB0aGUgZnVuY3Rpb24gZ3JhcGgNCj4gdHJhY2VyLCBkaXJl
+Y3RseSBmcm9tIHRoZSBmdHJhY2UgY2FsbGJhY2tzIChubyBsb25nZXIgYSBzZWNvbmRhcnkNCj4g
+dHJhbXBvbGluZSkuDQo+IA0KPiBEZWZpbmUgdGhlIGZ0cmFjZV9ncmFwaF9mdW5jKCkgdG8gYmUg
+c29tZXRoaW5nIGxpa2U6DQo+IA0KPiB2b2lkIGZ0cmFjZV9ncmFwaF9mdW5jKHVuc2lnbmVkIGxv
+bmcgaXAsIHVuc2lnbmVkIGxvbmcgcGFyZW50X2lwLA0KPiAgICAgICAgICAgICAgICAgICAgICAg
+IHN0cnVjdCBmdHJhY2Vfb3BzICpvcCwgc3RydWN0IGZ0cmFjZV9yZWdzICpmcmVncykNCj4gew0K
+PiAgICAgICAgIHN0cnVjdCBwdF9yZWdzICpyZWdzID0gJmZyZWdzLT5yZWdzOw0KPiAgICAgICAg
+IHVuc2lnbmVkIGxvbmcgKnN0YWNrID0gKHVuc2lnbmVkIGxvbmcgKilrZXJuZWxfc3RhY2tfcG9p
+bnRlcihyZWdzKTsNCj4gDQo+ICAgICAgICAgcHJlcGFyZV9mdHJhY2VfcmV0dXJuKGlwLCAodW5z
+aWduZWQgbG9uZyAqKXN0YWNrLCAwKTsNCj4gfQ0KPiANCj4gVGhpcyBpcyBjYWxsZWQgYnkgdGhl
+IGZ1bmN0aW9uIHRyYWNlciBjb2RlLiBCdXQgYmVjYXVzZSB3aXRoDQo+IERZTkFNSUNfRlRSQUNF
+X1dJVEhfQVJHUywgd2UgaGF2ZSBhY2Nlc3MgdG8gdGhlIGFyZ3VtZW50IHJlZ2lzdGVyLCB3ZSBz
+aG91bGQNCj4gYWxzbyBoYXZlIGFjY2VzcyB0byB0aGUgbGluayByZWdpc3RlciBhbmQgdGhlIHN0
+YWNrLiBUaGVuIHlvdSBjYW4gdXNlIHRoYXQNCj4gdG8gbW9kaWZ5IHRoZSBzdGFjayBhbmQgb3Ig
+bGluayByZWdpc3RlciB0byBqdW1wIHRvIHRoZSB0aGUgcmV0dXJuDQo+IHRyYW1wb2xpbmUuDQo+
+IA0KPiBUaGlzIHNob3VsZCBhbGwgd29yayB3aXRoIHBvd2VycGMgKGJvdGggNjQgYW5kIDMyKSBi
+dXQgaWYgaXQgZG9lcyBub3QsIGxldA0KPiBtZSBrbm93LiBJJ20gaGFwcHkgdG8gaGVscCBvdXQu
+DQo+IA0KDQpUaGFua3MsIEkgd2lsbCB0cnkgdGhhdC4NCg0KSSBjYW4ndCBmaW5kIGZ0cmFjZV9n
+cmFwaF9mdW5jKCkgaW4gczM5MC4gRG9lcyBpdCBtZWFuIHRoYXQgczM5MCBkb2Vzbid0IA0KaGF2
+ZSBhIHdvcmtpbmcgZnVuY3Rpb24gdHJhY2VyIGFueW1vcmUgPw0KDQpJIHNlZSB5b3VyIGNvbW1p
+dCAwYzA1OTNiNDVjOWI0ICgieDg2L2Z0cmFjZTogTWFrZSBmdW5jdGlvbiBncmFwaCB1c2UgDQpm
+dHJhY2UgZGlyZWN0bHkiKSBpcyBkYXRlZCA4IE9jdCAyMDIxIHdoaWxlIDU3NDBhN2M3MWFiNiAo
+InMzOTAvZnRyYWNlOiANCmFkZCBIQVZFX0RZTkFNSUNfRlRSQUNFX1dJVEhfQVJHUyBzdXBwb3J0
+IikgaXMgNCBPY3QgMjAyMS4NCg0KQ2hyaXN0b3BoZQ==
