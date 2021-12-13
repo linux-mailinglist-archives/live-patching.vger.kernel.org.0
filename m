@@ -2,138 +2,93 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A5747359F
-	for <lists+live-patching@lfdr.de>; Mon, 13 Dec 2021 21:10:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BDDE473827
+	for <lists+live-patching@lfdr.de>; Mon, 13 Dec 2021 23:58:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231971AbhLMUKi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 13 Dec 2021 15:10:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38085 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240824AbhLMUKh (ORCPT
+        id S242188AbhLMW6r (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Dec 2021 17:58:47 -0500
+Received: from mail-qt1-f172.google.com ([209.85.160.172]:44823 "EHLO
+        mail-qt1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240451AbhLMW6p (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 13 Dec 2021 15:10:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639426234;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=98410SCY73aKt24LcVMxqvWF7akIYNbHy7o+glUPBM4=;
-        b=OzwV7bFo4v4wATHPGsIlTxR5B5IRfUn+LOCMciFkwRDMFmGIV9/JM8bh8cX8jPjhNXT/XC
-        0P9ArqMnUP7wY79T/pTBScGw47YCdqiZELP9OTM0tAv7SsSecaQIL1K49UqoR5PkOQTiPa
-        qxkPBGZyS/xpgMbAR6xTrWWJkipApeE=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-420-iq7iBg53PciWJcK38lzmZA-1; Mon, 13 Dec 2021 15:10:33 -0500
-X-MC-Unique: iq7iBg53PciWJcK38lzmZA-1
-Received: by mail-oi1-f198.google.com with SMTP id s37-20020a05680820a500b002bcbae866f9so11549009oiw.6
-        for <live-patching@vger.kernel.org>; Mon, 13 Dec 2021 12:10:27 -0800 (PST)
+        Mon, 13 Dec 2021 17:58:45 -0500
+Received: by mail-qt1-f172.google.com with SMTP id a2so16790342qtx.11;
+        Mon, 13 Dec 2021 14:58:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=98410SCY73aKt24LcVMxqvWF7akIYNbHy7o+glUPBM4=;
-        b=Tqy6wqDlRk+d9iestT6VxUkPP7ZlYfoQUZs+isR9tj1vK9oZGRg2fgjhxf1Ks4QSwd
-         w1riGxG7dmU+v8Sv+i4CCQbaqIaUtRLQbI5j8dthfg3VTbVUIJCNsLtRKcoUn6Eo07Zc
-         GvFfUf3D7aitEwBVeoJgPC0/oySLGf/Kp9OETqHT478b72yK2ybrMSrbOZwpy32gSXdf
-         a+Kxb5L9HRZ9Ke5/gEiUg1Qh5b756aIC3r+iqVC8HStPqdHlqr6UvEvsn7L7BKJ2/+D6
-         XN52uDLLj7+gQCRCvqtscfkkFbbcx6Pcbc/HXvgzdDd2ADoZG5axTE0iPOv3tPIZOSW1
-         zb0A==
-X-Gm-Message-State: AOAM530sOKo92d/f1b0kttmrOyG/AcCnZbIrav2juhLjJhmtl9GfI6pv
-        sM4OZ+9TIz0O3gZ5T6m3ChnaQVNcx27voF7+VUCbStlixq+ONUHj1kRpvMFuIgwRVu1A0UJY9LK
-        IgqX440+AKSkby1ak8IVlwN4yFA==
-X-Received: by 2002:a4a:d184:: with SMTP id j4mr448483oor.72.1639426226196;
-        Mon, 13 Dec 2021 12:10:26 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzdF5hmqnDtiL8k0ufA6KXBZMr+XhxgtNNHlmdJ9hKuUpIpa3M2DrnM0v+LSkj9mIo3zup2qw==
-X-Received: by 2002:a4a:d184:: with SMTP id j4mr448461oor.72.1639426225935;
-        Mon, 13 Dec 2021 12:10:25 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::49])
-        by smtp.gmail.com with ESMTPSA id h14sm2392996ots.22.2021.12.13.12.10.24
+        bh=eLGNpG7chlHMEMwRu47zZoAoTJegvANhf4Imkmgcq+M=;
+        b=jklnVk+dC+qpHusLKS5Zjnt680yNDREhpdeFV0eJ2+/pyS5imVoTNJrSqT105u9HJQ
+         1sXswLiBkLXJkSfQs10XZCeDEMEU8sle9MPss9HtYFlXfdS5e+n3P9YVNJsk/FnJZfoc
+         h4jYsgGvSSFNRITI5MJqQuN2k1RnQiTV1i3nB41J1DdgD+MJRzzun/ruaF4562P9OTHB
+         yl+ELkQLrFK/+GBriU29JTUJR82Id4ZlbR804e+HqdIEa2Rnuxh/Dik5QVKzW2BC2OzJ
+         j2Uj2T0GyNRC2x37kxgybyouOb7PE6HP2GGbk5fyNEwygXeo0rb4TNenzw1yAKSSS2qR
+         rboA==
+X-Gm-Message-State: AOAM532GoxyHw/YvlSqvvrhRlc4iUQPcfZvPmfaVWyJ56XvvkYgieq7N
+        FsWdkXwRZltfGDi1a0NHoeQ=
+X-Google-Smtp-Source: ABdhPJxLXAuCq1qYwxa/R4mMsQLETh9qT7nm1pMxfuMkop3nUMdoVXjuVN2UWf73VEPzdBHn+Zp07A==
+X-Received: by 2002:ac8:5c16:: with SMTP id i22mr1628787qti.641.1639436324755;
+        Mon, 13 Dec 2021 14:58:44 -0800 (PST)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-005.fbsv.net. [2a03:2880:20ff:5::face:b00c])
+        by smtp.gmail.com with ESMTPSA id t9sm6575264qkp.110.2021.12.13.14.58.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 12:10:25 -0800 (PST)
-Date:   Mon, 13 Dec 2021 12:10:22 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     David Vernet <void@manifault.com>
+        Mon, 13 Dec 2021 14:58:44 -0800 (PST)
+Date:   Mon, 13 Dec 2021 14:58:38 -0800
+From:   David Vernet <void@manifault.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
 Cc:     pmladek@suse.com, linux-doc@vger.kernel.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
         corbet@lwn.net, yhs@fb.com, songliubraving@fb.com
 Subject: Re: [PATCH] livepatch: Fix leak on klp_init_patch_early failure path
-Message-ID: <20211213201022.dhalhtc2bpey55gh@treble>
+Message-ID: <YbfQHjoUO5GTvImR@dev0025.ash9.facebook.com>
 References: <20211213191734.3238783-1-void@manifault.com>
+ <20211213201022.dhalhtc2bpey55gh@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211213191734.3238783-1-void@manifault.com>
+In-Reply-To: <20211213201022.dhalhtc2bpey55gh@treble>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 11:17:35AM -0800, David Vernet wrote:
-> When enabling a KLP patch with `klp_enable_patch`, we invoke
-> `klp_init_patch_early` to initialize the kobjects for the patch itself, as
-> well as the `struct klp_object*`'s and `struct klp_func*`'s that comprise
-> it. However, there are some paths where we may fail to do an
-> early-initialization of an object or its functions if certain conditions
-> are not met, such as an object having a `NULL` funcs pointer. In these
-> paths, we may currently leak the `struct klp_patch*`'s kobject, as well as
-> any of its objects or functions, as we don't free the patch in
-> `klp_enable_patch` if `klp_init_patch_early` returns an error code. For
-> example, if we added the following object entry to the sample livepatch
-> code, it would cause us to leak the vmlinux `klp_object`, and its `struct
-> klp_func` which updates `cmdline_proc_show`:
+Josh Poimboeuf <jpoimboe@redhat.com> wrote on Mon [2021-Dec-13 12:10:22 -0800]:
+> The patch description needs a few tweaks.  In the kernel we don't use
+> Markdown for patch descriptions.
 > 
-> ```
-> static struct klp_object objs[] = {
->         {
->                 .name = "kvm",
->         }, { }
-> };
-> ```
+> A function can be postfixed with a trailing pair of parentheses, like
+> klp_enable_patch().
 > 
-> Without this change, if we enable `CONFIG_DEBUG_KOBJECT` and try to `kpatch
-> load livepatch-sample.ko`, we don't observe the kobjects being released
-> (though of course we do observe `insmod` failing to insert the module).
-> With the change, we do observe that the `kobject` for the patch and its
-> `vmlinux` object are released.
+> Other symbols can be enclosed with single quotes, like 'struct
+> klp_object'.
 > 
-> Signed-off-by: David Vernet <void@manifault.com>
+> I'd also recommend avoiding the excessive use of "we", in favor of more
+> imperative-type language.
+> 
+> See Documentation/process/submitting-patches.rst for more details.  It's
+> also a good idea to look at some kernel commit logs to get a general
+> idea of the kernel patch description style.
 
-Thanks for reporting the issue and submitting the patch!
+Understood, I'll take a read through and re-submit the patch to honor the
+norms for Linux kernel patches. My sincere apologies for the noise, and
+thank you for the positive and constructive suggestions.
 
-The patch description needs a few tweaks.  In the kernel we don't use
-Markdown for patch descriptions.
+> I don't think the fix will be quite that simple.  For example, if
+> klp_init_patch_early() fails, that means try_module_get() hasn't been
+> done, so klp_free_patch_finish() will wrongly do a module_put().
 
-A function can be postfixed with a trailing pair of parentheses, like
-klp_enable_patch().
+Ugh, good point and thank you for catching that. Another problem with the
+current patch is that we'll call kobject_put() on the patch even if we
+never call kobject_init on the patch due to patch->objs being NULL.
 
-Other symbols can be enclosed with single quotes, like 'struct
-klp_object'.
+Perhaps we should pull try_module_get() and the NULL check for patch->objs
+out of klp_init_patch_early()? It feels a bit more intuitive to me if
+klp_init_patch_early() were only be responsible for initializing kobjects
+for the patch and its objects / funcs anyways.
 
-I'd also recommend avoiding the excessive use of "we", in favor of more
-imperative-type language.
+Testing it locally seems to work fine. Let me know if this sounds
+reasonable to you, and I'll send out a v2 patch with the fixes to both the
+patch description, and logic.
 
-See Documentation/process/submitting-patches.rst for more details.  It's
-also a good idea to look at some kernel commit logs to get a general
-idea of the kernel patch description style.
-
-> @@ -1052,10 +1052,7 @@ int klp_enable_patch(struct klp_patch *patch)
->  	}
->  
->  	ret = klp_init_patch_early(patch);
-> -	if (ret) {
-> -		mutex_unlock(&klp_mutex);
-> -		return ret;
-> -	}
-> +		goto err;
->  
->  	ret = klp_init_patch(patch);
->  	if (ret)
-
-I don't think the fix will be quite that simple.  For example, if
-klp_init_patch_early() fails, that means try_module_get() hasn't been
-done, so klp_free_patch_finish() will wrongly do a module_put().
-
--- 
-Josh
-
+- David
