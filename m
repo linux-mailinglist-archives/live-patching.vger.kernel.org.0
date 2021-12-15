@@ -2,92 +2,189 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98233475BF9
-	for <lists+live-patching@lfdr.de>; Wed, 15 Dec 2021 16:41:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D89475FB6
+	for <lists+live-patching@lfdr.de>; Wed, 15 Dec 2021 18:48:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243796AbhLOPkl (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 15 Dec 2021 10:40:41 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52700 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232480AbhLOPkl (ORCPT
+        id S237950AbhLORsH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 15 Dec 2021 12:48:07 -0500
+Received: from mail-qt1-f173.google.com ([209.85.160.173]:33558 "EHLO
+        mail-qt1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232052AbhLORsH (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 15 Dec 2021 10:40:41 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B71D8B81FE6;
-        Wed, 15 Dec 2021 15:40:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C590C350A1;
-        Wed, 15 Dec 2021 15:40:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639582831;
-        bh=daFra/it80tNYf8ZnzenMAxIx4uQffBkpSjTHdvk+I0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CMKmCvAYXr4WexuO2xqr1xCQI80kTdjB4OtyVYp/wwMiESpv1eiXDRruCJxm6RAb/
-         cwDYin8dT/ic1KIgRihshy+DXKn7v4s92W6S3W6CetMQBS6O4E/FKzQ3K3mATZefBz
-         l8SCE4lqVboUt+rqtcZODNCqmStPcIRJb6lC7b80=
-Date:   Wed, 15 Dec 2021 16:35:24 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     David Vernet <void@manifault.com>, Miroslav Benes <mbenes@suse.cz>,
-        linux-doc@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
-        jikos@kernel.org, joe.lawrence@redhat.com, corbet@lwn.net,
-        yhs@fb.com, songliubraving@fb.com
-Subject: Re: [PATCH] livepatch: Fix leak on klp_init_patch_early failure path
-Message-ID: <YboLPAmOc8/6khu2@kroah.com>
-References: <20211213191734.3238783-1-void@manifault.com>
- <YbhZwVocHDX9ZBAc@alley>
- <alpine.LSU.2.21.2112141012090.20187@pobox.suse.cz>
- <Ybi3qcA5ySDYpyib@dev0025.ash9.facebook.com>
- <Ybi9NzbvWU7ka8m1@kroah.com>
- <YbmlL0ZyfSuek9OB@alley>
+        Wed, 15 Dec 2021 12:48:07 -0500
+Received: by mail-qt1-f173.google.com with SMTP id n15so22687075qta.0;
+        Wed, 15 Dec 2021 09:48:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oPWFiRughlj0qb1f5SfsJbJyzZlG3rBdu9sEjzdKYH8=;
+        b=jEbi6y6iVmMOiro5q29/vnfrhSqlgx0arg362PiHBZxPDzO2Od2ydc3tryrX01xwnA
+         bop3IE8ap7ntGJRwPW0UDvp3s7aoesrB0G9fARhoU9lGdE+T2HOgtD1xUU2y/PSRt7un
+         JWL6pPIQVModZPdz9jQypSpZndMACU/21rvwVOEmxZ+F7A+MvHrL3/4OI+OwbiZsaqnd
+         Np4fPf0mdsVbuJ6xPITS/8b7tSGXZPy931K8i+ANGYWI4iA8+E6yZWy2wFMS2mOBU1yf
+         np08JD7pGatR/02Vz+QPxpulgUM/jRk8v6VSGvb5Skcm35KkqnCzvKQnYGJ+46oSNBWr
+         WEGg==
+X-Gm-Message-State: AOAM531cmYT+ddqXTPhItEa3j59J7BuLCA0Lq3/wd5i6GCSwpZMEVJ6I
+        pn5VfQ1t1iZ4NP9njGPbrznVYT3JQBNzYA==
+X-Google-Smtp-Source: ABdhPJyy/4QQQiy2zyPGB3HlzE9c4ZpEtAmdqAqe2e8Y9JX9tkGpv2B46q7inezn0coSPNEH1DTJ0w==
+X-Received: by 2002:ac8:5cce:: with SMTP id s14mr13127346qta.349.1639590485900;
+        Wed, 15 Dec 2021 09:48:05 -0800 (PST)
+Received: from localhost (fwdproxy-ash-119.fbsv.net. [2a03:2880:20ff:77::face:b00c])
+        by smtp.gmail.com with ESMTPSA id y18sm2076066qtx.19.2021.12.15.09.48.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 09:48:05 -0800 (PST)
+From:   David Vernet <void@manifault.com>
+To:     pmladek@suse.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, corbet@lwn.net
+Cc:     void@manifault.com
+Subject: [PATCH v2] Documentation: livepatch: Add livepatch API page
+Date:   Wed, 15 Dec 2021 09:47:00 -0800
+Message-Id: <20211215174659.2332589-1-void@manifault.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YbmlL0ZyfSuek9OB@alley>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Dec 15, 2021 at 09:19:59AM +0100, Petr Mladek wrote:
-> On Tue 2021-12-14 16:50:15, Greg Kroah-Hartman wrote:
-> > 
-> > kobject_init() does allocate things internally, where does it say it
-> > does not?  What is trying to be "fixed" here?
-> 
-> Could you please show where things are allocated in kobject_init()?
-> I do not see it in the code!
-> 
-> It looks to me like a cargo cult claim to me.
+The livepatch subsystem has several exported functions and objects with
+kerneldoc comments. Though the livepatch documentation contains
+handwritten descriptions of all of these exported functions, they are
+currently not pulled into the docs build using the kernel-doc directive.
 
-Hm, I thought I saw it yesterday when I reviewed the code.  Let me look
-again...
+In order to allow readers of the documentation to see the full kerneldoc
+comments in the generated documentation files, this change adds a new
+Documentation/livepatch/api.rst page which contains kernel-doc
+directives to link the kerneldoc comments directly in the documentation.
+With this, all of the hand-written descriptions of the APIs now
+cross-reference the kerneldoc comments on the new Livepatching APIs
+page, and running ./scripts/find-unused-docs.sh on kernel/livepatch no
+longer shows any files as missing documentation.
 
-> Documentation/core-api/kobject.rst says:
-> 
->    Once you registered your kobject via kobject_add(), you must never use
->    kfree() to free it directly. The only safe way is to use kobject_put().
-> 
-> kobject_add() makes perfect sense because it copies the name, takes
-> reference to the parent, etc.
-> 
-> kobject_init() just initializes the structure members and nothing else.
+Note that all of the handwritten API descriptions were left alone with
+the exception of Documentation/livepatch/system-state.rst, which was
+updated to allow the cross-referencing to work correctly. The file now
+follows the cross-referencing formatting guidance specified in
+Documentation/doc-guide/kernel-doc.rst. Furthermore, some comments
+around klp_shadow_free_all() were updated to say <obj, id> rather than
+<*, id> to match the rest of the file, and to prevent the docs build
+from emitting an "Inline emphasis start-string without end string"
+error.
 
-Now it does.  In the past, I think we did create some memory.  I know
-when we hook debugobjects up to kobjects (there's an external patch for
-that floating around somewhere), that is one reason to keep the
-kobject_put() rule, and there might have been other reasons in the past
-20+ years as well.
+Signed-off-by: David Vernet <void@manifault.com>
+---
+v2:
+  - Updated patch description to not use markdown, and to use imperative
+    language.
+  - Added a new API page that exports all of the public livepatch functions and
+    types.
+  - Fixed klp_shadow_free_all() documentation to match the rest of the file and
+    avoid an rst error.
+  - Updated system-state.rst to properly cross-reference functions.
 
-So yes, while you are correct today, the "normal" reference counted
-object model patern is "after the object is initialized, it MUST only be
-freed by handling its reference count."  So let's stick to that rule for
-now.
+ Documentation/livepatch/api.rst          | 28 ++++++++++++++++++++++++
+ Documentation/livepatch/index.rst        |  1 +
+ Documentation/livepatch/system-state.rst |  4 ++--
+ kernel/livepatch/shadow.c                |  6 ++---
+ 4 files changed, 34 insertions(+), 5 deletions(-)
+ create mode 100644 Documentation/livepatch/api.rst
 
-If you want, I can put some code in the kobject_init() logic to force
-this to be the case if it bothers you :)
+diff --git a/Documentation/livepatch/api.rst b/Documentation/livepatch/api.rst
+new file mode 100644
+index 000000000000..8c71b5bd73e8
+--- /dev/null
++++ b/Documentation/livepatch/api.rst
+@@ -0,0 +1,28 @@
++=================
++Livepatching APIs
++=================
++
++Livepatch Enablement
++====================
++
++.. kernel-doc:: kernel/livepatch/core.c
++   :export:
++
++
++Shadow Variables
++================
++
++.. kernel-doc:: kernel/livepatch/shadow.c
++   :export:
++
++System State Changes
++====================
++
++.. kernel-doc:: kernel/livepatch/state.c
++   :export:
++
++Object Types
++============
++
++.. kernel-doc:: include/linux/livepatch.h
++   :identifiers: klp_patch klp_object klp_func klp_callbacks klp_state
+diff --git a/Documentation/livepatch/index.rst b/Documentation/livepatch/index.rst
+index 43cce5fad705..cebf1c71d4a5 100644
+--- a/Documentation/livepatch/index.rst
++++ b/Documentation/livepatch/index.rst
+@@ -14,6 +14,7 @@ Kernel Livepatching
+     shadow-vars
+     system-state
+     reliable-stacktrace
++    api
+ 
+ .. only::  subproject and html
+ 
+diff --git a/Documentation/livepatch/system-state.rst b/Documentation/livepatch/system-state.rst
+index c6d127c2d9aa..7a3935fd812b 100644
+--- a/Documentation/livepatch/system-state.rst
++++ b/Documentation/livepatch/system-state.rst
+@@ -52,12 +52,12 @@ struct klp_state:
+ 
+ The state can be manipulated using two functions:
+ 
+-  - *klp_get_state(patch, id)*
++  - klp_get_state()
+ 
+     - Get struct klp_state associated with the given livepatch
+       and state id.
+ 
+-  - *klp_get_prev_state(id)*
++  - klp_get_prev_state()
+ 
+     - Get struct klp_state associated with the given feature id and
+       already installed livepatches.
+diff --git a/kernel/livepatch/shadow.c b/kernel/livepatch/shadow.c
+index e5c9fb295ba9..4c6617aadf87 100644
+--- a/kernel/livepatch/shadow.c
++++ b/kernel/livepatch/shadow.c
+@@ -272,12 +272,12 @@ void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor)
+ EXPORT_SYMBOL_GPL(klp_shadow_free);
+ 
+ /**
+- * klp_shadow_free_all() - detach and free all <*, id> shadow variables
++ * klp_shadow_free_all() - detach and free all <obj, id> shadow variables
+  * @id:		data identifier
+  * @dtor:	custom callback that can be used to unregister the variable
+  *		and/or free data that the shadow variable points to (optional)
+  *
+- * This function releases the memory for all <*, id> shadow variable
++ * This function releases the memory for all <obj, id> shadow variable
+  * instances, callers should stop referencing them accordingly.
+  */
+ void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor)
+@@ -288,7 +288,7 @@ void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor)
+ 
+ 	spin_lock_irqsave(&klp_shadow_lock, flags);
+ 
+-	/* Delete all <*, id> from hash */
++	/* Delete all <obj, id> from hash */
+ 	hash_for_each(klp_shadow_hash, i, shadow, node) {
+ 		if (klp_shadow_match(shadow, shadow->obj, id))
+ 			klp_shadow_free_struct(shadow, dtor);
+-- 
+2.30.2
 
-thanks,
-
-greg k-h
