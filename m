@@ -2,191 +2,101 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B3A475ABD
-	for <lists+live-patching@lfdr.de>; Wed, 15 Dec 2021 15:37:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F5F7475BBE
+	for <lists+live-patching@lfdr.de>; Wed, 15 Dec 2021 16:20:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243384AbhLOOhb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 15 Dec 2021 09:37:31 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:39990 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbhLOOhb (ORCPT
+        id S243907AbhLOPUN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 15 Dec 2021 10:20:13 -0500
+Received: from mail-qv1-f51.google.com ([209.85.219.51]:43627 "EHLO
+        mail-qv1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243891AbhLOPUH (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 15 Dec 2021 09:37:31 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A83BE1F3A3;
-        Wed, 15 Dec 2021 14:37:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1639579049; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AqBRO/NIE3ZileUsayjziVQapZwhk+Tq0b/E/cvn/ng=;
-        b=PY8PJ53frcTOAtDVC1yD5gzsDepo7ctC0J5IDL/nsb08PurypnC2bMah8Rkl6q5KeAI0mL
-        utuh2KouFWhVWypn7Rb+N9ADIlw2jpdloFRrJi4LkqItzi5SDQn5y0PzdLntZEqPX8tDX3
-        nWqsErkr57JurBNRKpx0xN+AnHDWEGc=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 84C6BA3B81;
-        Wed, 15 Dec 2021 14:37:29 +0000 (UTC)
-Date:   Wed, 15 Dec 2021 15:37:26 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>, jikos@kernel.org,
-        joe.lawrence@redhat.com, peterz@infradead.org,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] livepatch: Allow user to specify functions to
- search for on a stack
-Message-ID: <Ybn9piT9Z83SKaCK@alley>
-References: <20211210124449.21537-1-mbenes@suse.cz>
- <20211210124449.21537-2-mbenes@suse.cz>
- <20211213190008.r4rjeytfz5ycbstb@treble>
- <alpine.LSU.2.21.2112140857570.20187@pobox.suse.cz>
- <YbiNsVfoCPCJmOKj@alley>
- <Ybi6252hKwUM4KrP@alley>
- <20211214234836.3x3clp45ut6gtol6@treble>
+        Wed, 15 Dec 2021 10:20:07 -0500
+Received: by mail-qv1-f51.google.com with SMTP id m6so3409280qvh.10;
+        Wed, 15 Dec 2021 07:20:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Qmub5xNOOJMDe8hIhM9h8/alEATciJeF8DyioMLtUB8=;
+        b=arHfkLE/oMXuj9Vhp/EzfzhoQuipuI2DFL1hrz49sbPBSAQvq5iY95Ag74kc51IBCU
+         ay/5B150LwAT9hJkaLQVLAgBCw+MfvZ2+rWgLGCtLwHxH0V8TUCfo5cybFkZ7xLkg5eH
+         7+Z5b6nDVhAqZ7H3hb9qL/hV2p5D3omhFn5CpAlqaO46pFqhB/VcPSxBdjx8+0GjUT1z
+         Zz1JajOvZX8uVJ2p8bERhzDoMebYFzEd7dGuSyhUetBNPM/CVS+Vg9ThImZe09pdBy/y
+         eC/8wiZVEZhIO9poPOjhbamVxuBqnRAtyvQevjSuBvfTe8gPrq74DOqHeU3WeAWBT4Uy
+         FAgA==
+X-Gm-Message-State: AOAM532oLwhVKr517VpLaW7VLESrin/+fhFL4ghG00qk0jktXWE+Tx6D
+        wHKc0fhW+/53icCPMOakXog=
+X-Google-Smtp-Source: ABdhPJwpKCZQHgXCQtJRVjQxiaairOVcdTec8dAbnr0GZQTF2BkohLdy9oVEhVmjwIjxFEe3RMlV0w==
+X-Received: by 2002:a0c:f6ca:: with SMTP id d10mr6572282qvo.48.1639581606603;
+        Wed, 15 Dec 2021 07:20:06 -0800 (PST)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-004.fbsv.net. [2a03:2880:20ff:4::face:b00c])
+        by smtp.gmail.com with ESMTPSA id a16sm1640986qta.94.2021.12.15.07.20.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 07:20:06 -0800 (PST)
+Date:   Wed, 15 Dec 2021 07:20:04 -0800
+From:   David Vernet <void@manifault.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
+        corbet@lwn.net, songliubraving@fb.com, gregkh@linuxfoundation.org
+Subject: Re: [PATCH v2] livepatch: Fix leak on klp_init_patch_early failure
+ path
+Message-ID: <YboHpHmu3D+0hxKp@dev0025.ash9.facebook.com>
+References: <20211214220124.2911264-1-void@manifault.com>
+ <20211214235128.ckaozqsvcr6iqcnu@treble>
+ <Ybm+FyhLnuH4JThq@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211214234836.3x3clp45ut6gtol6@treble>
+In-Reply-To: <Ybm+FyhLnuH4JThq@alley>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue 2021-12-14 15:48:36, Josh Poimboeuf wrote:
-> On Tue, Dec 14, 2021 at 04:40:11PM +0100, Petr Mladek wrote:
-> > > > > Hm, what does this mean for the unpatching case?  What if the new
-> > > > > function's .cold child is on the stack when we're trying to unpatch?
-> > > > 
-> > > > Good question. I did not realize it worked both ways. Of course it does.
-> > > > 
-> > > > > Would it make sense to allow the user specify a 'new_func' for
-> > > > > stack_only, which is a func to check on the stack when unpatching?  Then
-> > > > > new_func could point to the new .cold child.  And then
-> > > > > klp_check_stack_func() wouldn't need a special case.
-> > > 
-> > > I am confused. My understanding is that .cold child is explicitly
-> > > livepatched to the new .cold child like it is done in the selftest:
-> > > 
-> > > static struct klp_func funcs_stack_only[] = {
-> > > 	{
-> > > 		.old_name = "child_function",
-> > > 		.new_func = livepatch_child_function,
-> > > 	}, {
-> > > 
-> > > We should not need anything special to check it on stack.
-> > > We only need to make sure that we check all .stack_only functions of
-> > > the to-be-disabled livepatch.
-> > 
-> > We have discussed this with Miroslav and it seems to be even more
-> > complicated. My current understanding is that we actually have
-> > three functions involved:
-> > 
-> >   parent_func()
-> >     call child_func()
-> >       jmp child_func.cold
-> > 
-> > We livepatch child_func() that uses jmp and need not be on stack.
-> > This is why we want to check parent_func() on stack.
-> > For this, we define something like:
-> > 
-> > static struct klp_func funcs[] = {
-> > 	{
-> > 		.old_name = "child_func",
-> > 		.new_func = livepatch_child_func,   // livepatched func
-> > 	},
-> > 	{
-> > 		.old_name = "parent_func",
-> > 		.stack_only = true,		    // stack only
-> > 	},
+Petr Mladek <pmladek@suse.com> wrote on Wed [2021-Dec-15 11:06:15 +0100]:
+> Well, I still believe that this is just a cargo cult. And I would prefer
+> to finish the discussion about it, first, see
+> https://lore.kernel.org/all/YbmlL0ZyfSuek9OB@alley/
+
+No problem, I won't send out v3 until we've finished the discussion and
+have consensus. I'll assume that the discussion on whether or not there is
+a leak will continue on the thread you linked to above, so I won't comment
+on it here.
+
+> Note that klp_init_*_early() functions iterate through the arrays
+> using klp_for_each_*_static. While klp_free_*() functions iterate
+> via the lists using klp_for_each_*_safe().
+
+Correct, as I've understood it, klp_for_each_*_safe() should only iterate
+over the objects that have been added to the patch and klp_object's lists,
+and thus for which kobject_init() has been invoked. So if we fail a check
+on 'struct klp_object' N, then we'll only iterate over the first N - 1
+objects in klp_for_each_*_safe().
+
+> We should not need the pre-early-init check when the lists include only
+> structures with initialized kobjects.
+
+Not sure I quite follow. We have to do NULL checks for obj->funcs at some
+point, and per Josh's suggestion it seems cleaner to do it outside the
+critical section, and before we actually invoke kobject_init(). Apologies
+if I've misunderstood your point.
+
+> Otherwise, I like the idea to do module_get() before
+> klp_init_patch_early(). I was never happy with the "hidden"
+> side effect.
+
+Ack!
+
+> I am also fine with calling klp_free() when the early init fails
+> if we agreed that it is a good practice. I just do want to pretend
+> that it fixes a leak what nobody sees any leak.
 > 
-> Hm, this is different than how I understand it.
-> 
-> In the past I referred to the "parent" as the function which jumps to
-> the cold ("child") function.  So maybe we're getting confused by
-> different terminology.  But here I'll go with the naming from your
-> example.
+> Please, wait few days until the discussion finishes before sending v3.
 
-I think that I was primary confused by the selftest where "child"
-function is livepatched and "parent" is defined as stack_only.
+Ack, no problem, I'll wait until we're all in alignment. Thanks, Petr and
+Josh for taking a look at the patch.
 
-Miroslav told me yesterday that the function that jumps into
-the .cold child needs to get livepatched. It makes sense
-because .cold child does not have well defined functionality.
-It depends on the compiler what code is put there.
-Hence I added one more level...
-
-> If parent_func() is stack_only, that could create some false positive
-> scenarios where patching stalls unnecessarily.
-
-Yes, it won't be optimal.
-
-
-> Also, wouldn't all of child_func()'s callers have to be made
-> stack_only?
-
-Well, we already do this when handling compiler optimizations,
-for example, inlining.
-
-
-> How would you definitively find all the callers?
-
-Good question. The best solution would be to get support from
-the compiler like we already get for another optimizations.
-
-We always have these problems how to find functions that need
-special handling for livepatching.
-
-
-> Instead I was thinking child_func.cold() should be stack_only.
-> 
-> e.g.:
-> 
-> static struct klp_func funcs[] = {
-> 	{
-> 		.old_name = "child_func",
-> 		.new_func = livepatch_child_func,
-> 	},
-> 	{
-> 		.old_name = "child_func.cold",
-> 		.new_name = "livepatch_child_func.cold",
-> 		.stack_only = true,
-> 	},
-> 
-> Any reason why that wouldn't work?
-
-Yes, it should work in the given example. I am just curious how this
-would work in practice:
-
-
-  1. The compiler might optimize the new code another way and there
-     need not be 1:1 relation.
-
-     We might need another set of stack_only functions checked when
-     the livepatch is enabled. And another set of functions checked
-     when the livepatch gets disabled.
-
-
-  2. The names of "child_func.cold" functions are generated by
-     the compiler. I mean that the names are "strange" ;-)
-
-     It is likely easier with the kPatch approach that creates glue
-     around already compiled symbols. It is more tricky when preparing
-     the livepatch from sources. Well, it is doable.
-
-
-BTW: livepatch_child_func.cold function must be checked on the stack
-     also when the livepatch is replaced by another livepatch.
-
-     I mean that we need to check two sets of stack only functions
-     when replacing one livepatch with another one:
-
-	+ "new_name" functions from to-be-replaced livepatch (like when disabling)
-	+ "old_name" functions from new livepatch (like when enabling)
-
-
-Note that I do not have any strong opinion about any approach at the
-moment. I primary want to be sure that I understand the problem correctly :-)
-
-Best Regards,
-Petr
+Regards,
+David
