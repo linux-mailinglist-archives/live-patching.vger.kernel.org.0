@@ -2,179 +2,160 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B35479687
-	for <lists+live-patching@lfdr.de>; Fri, 17 Dec 2021 22:50:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A0DA479BB3
+	for <lists+live-patching@lfdr.de>; Sat, 18 Dec 2021 17:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbhLQVut (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 17 Dec 2021 16:50:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:48275 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230157AbhLQVus (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Fri, 17 Dec 2021 16:50:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639777848;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rbmljmkDitEoJlRWFUe7q5wX8e3otCTyZPrRHuEzmKc=;
-        b=O5KjmGIPIoMb3P6X6ZBacptn1AqfW6oVjsknAIxA1mfj0J+N0ZAuA8mroT42Q7KjmzQKmA
-        +r/l75guY7Cx6tEzX/81k46ltZ6ptw7BeIJ4CyyUx2bf5mGG6OAlxc0YJMUFzFuGCt9KbW
-        5d3eUTMcPRWN7yPs54xvbM97HojMPzI=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-17-sn3TW3adPPKITO9tV8_lgg-1; Fri, 17 Dec 2021 16:50:47 -0500
-X-MC-Unique: sn3TW3adPPKITO9tV8_lgg-1
-Received: by mail-qv1-f70.google.com with SMTP id t3-20020a0562140c6300b0041106ef29f2so1579256qvj.5
-        for <live-patching@vger.kernel.org>; Fri, 17 Dec 2021 13:50:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rbmljmkDitEoJlRWFUe7q5wX8e3otCTyZPrRHuEzmKc=;
-        b=Yo/2RGXlLWdGWVZdRTjXjXBlzXrt3h1pA9E5yITRbS1qJZrUYpjO8uj/8rIzq9lENy
-         2xj8hY8OWsdUQ3R3x/oNUppleC9ns7XzaOHhmN9VcVqu0ySd2S0ul9syOSagc+YTLdii
-         CP32k98grGj5hgLSKtx1ctoXRsM3QoRmSNu6jbm8iX76gLiEjiEGEZ3DtUQQvMlTYt8D
-         JYxcvB36BV9cvEavhIxJb07J3f0E0iJYImCXYc0Cu4EBnr2fGaFCDobSoL/byWHy9jKF
-         Yzw1FmLUO9B4NghyAQY6qMV4hKW6hf7le+V1zg3fqbnyFKmfodiGiIcuuRiS3zMqU0pw
-         NJGQ==
-X-Gm-Message-State: AOAM530xarE1Xj9HXsY3njbJUTS1z6aa1ptH7d+cyvKeV0JL3RTebtCe
-        punpeBGuoCrJAlWG8ZBhPufxikYPmLLsnqHpNB9t4Gw/p6jbLrEhRG4sYIounzme3VtP2NR242x
-        Ah3Y+GTXGH3UTNee0mqKLZrHcOw==
-X-Received: by 2002:a05:620a:2848:: with SMTP id h8mr3225253qkp.270.1639777846765;
-        Fri, 17 Dec 2021 13:50:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx3jLcgYHEzsebMSk9tVxU2ahYLfPrYelvOzO6K5TPcHFZb+5pTnbauFLDR9slrasqJ/kdXXQ==
-X-Received: by 2002:a05:620a:2848:: with SMTP id h8mr3225241qkp.270.1639777846461;
-        Fri, 17 Dec 2021 13:50:46 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id bk39sm5577802qkb.35.2021.12.17.13.50.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Dec 2021 13:50:45 -0800 (PST)
-Date:   Fri, 17 Dec 2021 13:50:42 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     David Vernet <void@manifault.com>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, corbet@lwn.net, songliubraving@fb.com,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH v2] livepatch: Fix leak on klp_init_patch_early failure
- path
-Message-ID: <20211217215042.76m5qn5e63ptgrjq@treble>
-References: <20211214220124.2911264-1-void@manifault.com>
- <20211214235128.ckaozqsvcr6iqcnu@treble>
- <Ybm+FyhLnuH4JThq@alley>
- <YboHpHmu3D+0hxKp@dev0025.ash9.facebook.com>
- <YbyV7nsLXbQ6/44S@alley>
+        id S233477AbhLRQM2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 18 Dec 2021 11:12:28 -0500
+Received: from mail-eopbgr120054.outbound.protection.outlook.com ([40.107.12.54]:19905
+        "EHLO FRA01-PR2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229524AbhLRQM2 (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Sat, 18 Dec 2021 11:12:28 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eoEY2ygIDg6ZfnZNgq5x8mzrIfzjldZOUr2LKU/zrgHSWdjLqAYt8htDgFiQ0zXK1FX9FpuWAYkpHN78EcEvBKEmOpl0qPiLQe+Ya2KLiGgnRQ26qePP2mOqOM8qb+KrscvUjvplF/S1d9IcDJk4F2t2+Tr0eKACK9doCrdz+/1jnN4kubLxvNli5HjfkCmD3Q3RUDn8i8CFtO5NpNvfeIIl4H/wEw+cBJPpGUVI2QsZbPxLct4RWwylBnPV61v0qr5DdyHRiS5uUexW/alTM7jQ57fj0qAcAtRnl3kZvnrvk/Nkh89goE0YdJpORuXJshSzssxceUPZoqn8JX/W2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WS98UrZ2QTlU2q2CA0E+f2vNNhzQxghO1XRjC+vS06s=;
+ b=YgwffdDSqxhuWfpMGTZrNQ/RtrpTMeG+DOu7kog6NYUZr4DTSpncIkJxFBCxc2eQIBqBzOlSs5B55V3ELFxBpOEQCS9/kKXrKtPvaZ+HzlBQ335L4jqV6BbQGYbgFhsrbXMHJ7TIs001GcQ0eRnKBx/1matmkqDeWuo8EOi9Rq2H1QwCErb88Df6sWzOQh3HR5JD1DLhHHEJbYDXrs8qxk89+SbJXEH1NAX9oxSMrGOzoY5W/KWsKA4pM0Bhu4k2vhOf8S7A/ypO1MtbkVDUS7bP93GE/tsJ7jGjPtEwrvWk67N6Vw221fWS1Bfcgi4OhaV+p/s2kDNrnG+lJssolg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MRZP264MB1750.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:a::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4801.17; Sat, 18 Dec 2021 16:12:25 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::f0ef:856d:b0de:e85d]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::f0ef:856d:b0de:e85d%5]) with mapi id 15.20.4801.017; Sat, 18 Dec 2021
+ 16:12:24 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>
+Subject: Re: [PATCH v1 0/5] Implement livepatch on PPC32
+Thread-Topic: [PATCH v1 0/5] Implement livepatch on PPC32
+Thread-Index: AQHXy/a61L5ufkyTwk+E9T1IN+85JqvoaYCAgEhc+YCAACuvAIAABD6AgAAAzACAAATPgIAAEbEAgAALEoCAAANtgIAArk+AgAAX1gCAAGwBAIAGbdEA
+Date:   Sat, 18 Dec 2021 16:12:24 +0000
+Message-ID: <d14826b6-adbf-8825-d097-8b0b1eac8574@csgroup.eu>
+References: <cover.1635423081.git.christophe.leroy@csgroup.eu>
+ <20211028093547.48c69dfe@gandalf.local.home>
+ <6209682d-0caa-b779-8763-376a984d8ed8@csgroup.eu>
+ <20211213121536.25e5488d@gandalf.local.home>
+ <5511f43c-192a-622b-7c72-52e07f0032c2@csgroup.eu>
+ <20211213123338.65eda5a0@gandalf.local.home>
+ <fc3099b8-9f12-3e47-08a0-05abc37a0482@csgroup.eu>
+ <20211213135410.12642d8f@gandalf.local.home>
+ <8df90f94-9939-0178-b92b-6ae6ea81784c@csgroup.eu>
+ <20211213144603.47d7c908@gandalf.local.home>
+ <76ce2dd7-691e-df73-727c-110713c07cda@csgroup.eu>
+ <aac75717-a3ac-c0b4-3e79-dc6eb9c26d8c@csgroup.eu>
+ <20211214090148.264f4660@gandalf.local.home>
+In-Reply-To: <20211214090148.264f4660@gandalf.local.home>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 93b56b1a-4d2f-4733-a4ea-08d9c2412dfe
+x-ms-traffictypediagnostic: MRZP264MB1750:EE_
+x-microsoft-antispam-prvs: <MRZP264MB17507A7C55F831671D06AC59ED799@MRZP264MB1750.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6Xb+eaOrlGl1ZhC2jOPuiLv1FzujEeWUQb2RcMStPTKjZTQ4PeQNpudl69+ZyrxyCek61vHWru4GIUjS5O/mzHLekVqUz5kGEwPBMMmFxfz7kBiRbZkjZ2P6RVou7Y0VTZBublE/V3DVvL2ODySquNjih6qfC6MUOQUddz/Hd9JhNP1qvdRsXafHxl1/v902LJBRAGfWGkLp6YftJps3Ex5PJ9vYtBGwCYUHBQ9iIeuStpnakAHI1rlUSl3MIftukEPDtOD4pkHFeLv305TkPRE9ChxIpOdy6Ytow5TtSpu2Cjg17L5KjHy4YbszeEbUtrv/zpj3vCXCQ/L01oVdRW5clldDye5oZLENUI/6hoQG1o6kaJi14nDwWWKmuaxErjF+JkD5/VAk2Tnx3+/lL4IIL0W+2zhKelDueKCDz+ts/gz1um956TudsmIptq+RTzdLWqNJR2gZ7XbllzkmO6TMSO839vV00ftVrutuC+vSURBTJhHQmiy4zbQW4vxIN75w5OiSfJUEkJqHDgfgJDwaMI8lGfT/kx7sI0YK5p/mjeSJ4qlmlgRSiPaJ7FpKQXDgfM44tBMuCEfRSC5xNuUGKOFLmWlzBtqykjb74hnFoXh19NB9MyXvAcMwsdl+/PCltX23DP8s2oqtyUHezZNfMj9qHcV1GJvmoYkzZ5ptasNwqFaEz5Fb4HE1cukoSYdoMw6VL7Ddszqbc/ZT2RUku61y2fV1ubzB9CzcgwzFqe7y/Qp6WVTiaUIZrL5CvhsB1Eio/gLtIuDSxzI6KA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(316002)(4326008)(31696002)(6512007)(54906003)(91956017)(44832011)(86362001)(76116006)(31686004)(7416002)(71200400001)(8676002)(8936002)(66446008)(64756008)(66556008)(66476007)(38100700002)(6486002)(122000001)(6916009)(508600001)(26005)(6506007)(186003)(5660300002)(2616005)(83380400001)(38070700005)(2906002)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?d2ZrM2JYQnoxaUtQUzVOUURGYjlaREszNkNzQlFFUEkyWnVzZjhmN3pWRTVm?=
+ =?utf-8?B?Q0QyMjdlODJaaElES3hUc0RKQU5mTUorUXBVMXQycG9DL0VLZmczdG96Q1RC?=
+ =?utf-8?B?YzM1VmF4MmpESFloQU9PeUx4ejJZV05xRkdTMjhBRHRMZUxHM1hGcFROa3FT?=
+ =?utf-8?B?TDFwWW0xWE8yMzVNWlJYeDF4c0JnWXNEQ05pREpYamtFT1VzK1MvK21OcDc1?=
+ =?utf-8?B?Z2JOVVBwSlBqbDR2T1FlU2VLdVJVK0pLOFBtWUI1eHo4a1Jla3BITy80WEZI?=
+ =?utf-8?B?ODVGSGkrZmtwKzRQQjRjUXpyTGxOM3Era2pTZUxaTWRPcitOSTRtekFaTzZ2?=
+ =?utf-8?B?ajU0d0VNY0xZaS9vRFRSeUptR3pEV2xQYlVsTGNoUVRVUnU3UFZja040dmU5?=
+ =?utf-8?B?TGZkV0ZIZlN5OWZwS3o4WUxweTBqT2QrOXR2TUtISUtrUFFmMTNmWDl2dnVM?=
+ =?utf-8?B?UHV1Mk9UVXdFQzFqMnFKUXZQQWZGTm9GWHF5UXp6b1lSZW5YS3hFUWEvNG5r?=
+ =?utf-8?B?aW9OSDY1dmt4c1FjcExDTitwRzFMa0s3R0s5ZnFvbnFJMEQ1WUF2dUdLQkkx?=
+ =?utf-8?B?d0V5YjVYYWpaMW12dXExb1pvaXBEQU1FcjY1QUpMTVJXME0zQUdSU2lXemww?=
+ =?utf-8?B?M0FQWHU5TXJvV3JYaUlLMnRyY245Y3VKbE1ZMERGN3FKcUZsc3RFd1hXTUN2?=
+ =?utf-8?B?Wndad3NhT0xpR01lbGViM3FyZU1HT200Z1NFM1dvTGl2NFlXNVUwemY5M0hW?=
+ =?utf-8?B?MHd2dEQxakw2OGNVMHM0VEkzbHBTby9sdXIxQ293STZFSy9ydVRWZkF3NmV6?=
+ =?utf-8?B?OWZLM2lFaUZjSmNFN3gzRnhNN3IxOWM0WFYzdXRFa1BPL2RKbTNPdGtsdERn?=
+ =?utf-8?B?S2FXMnV2RURxdXAzckNQa3B1TndHNlRKVGF2WWVHNTIwaXIvRHFEK2kzWDkv?=
+ =?utf-8?B?b0hFOUtJOXRsSEhGbm1aSjRnR1lMai9BalcyS3MwSmFQV21IZDZwbzVJVldJ?=
+ =?utf-8?B?TzJqNk42eW1leXl3K1dZUFlCVDhUYUFSK2xjMjY4cCtNN2daTkNhbW1qK3BR?=
+ =?utf-8?B?c2Q3c2R2YzNEanpieVkwUkcvbU4zNHFBdllSUE5FOEJiZW1zU3FUQXdETUlv?=
+ =?utf-8?B?ZkVnblFzTjV0VHd2UlZiS3YvQmJBOFVXbFN5N21jcUo2QVJ3U0JrSkw3QkVG?=
+ =?utf-8?B?RkZGUkhRSjRSU3JZbVVnVS9iQ2tqVkJSbmh6ZHFSMkJiSUhrdDRFeDl6RnRx?=
+ =?utf-8?B?TGlGeGMzZVdkUklvNlF6dUpNNTZSVUZ1a1FLTHk5Z3VFcS9yZ3FaOG0ycUhD?=
+ =?utf-8?B?T1Zpd0xaclVFdmlpYUVBSU4rV3pCbUhaKzFQT2FGbzRTWUtwWkpldXQ3a21j?=
+ =?utf-8?B?cjJNNlplMkhGNXRDM21PbFBiRzJPWjVkYy9lbm9ZMXFudkRjaWZkSEIrOTll?=
+ =?utf-8?B?dk42eEZKZzZiSGtCdmpYTFRydldTWWcwYUh5TWVpbjFER2xHTmFzNzV1Z2xv?=
+ =?utf-8?B?d0NRQ04rUjJSSko3a0dBakY3TlErRDRLaUtuWkNlL1hsYkJDdzBVRVlldkFR?=
+ =?utf-8?B?Y2tNaFNPcDZmRDRMR291Skl6WHVXUVl3L0JRWFlGNUp2djVSSGY3d24wd1U2?=
+ =?utf-8?B?V2V3cGE3T1JSM2JvcW1vSlp6SmNkajJ1Y2c5QXlKWThlV2h3NHBBQUtYUS9V?=
+ =?utf-8?B?dzJLTGttTnJiSFBPRVR3T0NyWXhKSlloRFUweEFqWk41RjF2VDdvbE9xOE1u?=
+ =?utf-8?B?dS9oSE90N2xnOUd5cXpzS2Q0SFlQcHI4bkE3VDRJVXpSaUxQNkw1MzNlc2sy?=
+ =?utf-8?B?Q1BlQWtJWmxWYk82eVV5d0k0TnRjREVaeVpiSE9LU0JyOHlTSExQSjVnSHlS?=
+ =?utf-8?B?aWxhZUZXN2xJSFNrNGZaQ1FZbllrUHFySEIyQmk1Qm9uRUtMVFRYeERPQ25y?=
+ =?utf-8?B?MUtJRFlRaEZMczRJTllUaVpUUWk4UTNvNTlnQml2aDRFRHBQMDJZU1hob0dl?=
+ =?utf-8?B?ZFphWGpaVmhiS2c2MEUrN1Bab0ZsT2s1VHo4RExFRmQ1MEc3aFRmMlhwd3lk?=
+ =?utf-8?B?L2lxeUxqWURMZEtEb1lHS2d2TkE3dzlsdTNCQ3NjWjd4MUxiWWZiOVd1R1Y5?=
+ =?utf-8?B?R3hhcEZ0ZXhGcEMxVHRVWmtHMWdpWUN4S1pEcERCR05FUXFONkJWL3ByZnV2?=
+ =?utf-8?B?VC9kZFpkUWI5Y0d4U0tHMEoxSnlYZW5NT1ZQbEZZbkxNbWtXYnlvTGNJbUFU?=
+ =?utf-8?Q?2x8rrQRI4EyRGMXAgLOcghbz0DG4Jo88UawCdH2q+I=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FFE1DE220091514AADBF0C09C41558E2@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YbyV7nsLXbQ6/44S@alley>
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93b56b1a-4d2f-4733-a4ea-08d9c2412dfe
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2021 16:12:24.9180
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ThK6kQpPtghxDOw8nol8aE1ESPAiz4Kr0xOnbr0myItOSTxEjY5pF1fyeEfZ+jFOF/vwajs22zpajIwP3ggfMJnoeMhyWhmZ+q7ykUdg7AY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MRZP264MB1750
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 02:51:42PM +0100, Petr Mladek wrote:
-> On Wed 2021-12-15 07:20:04, David Vernet wrote:
-> > Petr Mladek <pmladek@suse.com> wrote on Wed [2021-Dec-15 11:06:15 +0100]:
-> > > Well, I still believe that this is just a cargo cult. And I would prefer
-> > > to finish the discussion about it, first, see
-> > > https://lore.kernel.org/all/YbmlL0ZyfSuek9OB@alley/
-> > 
-> > No problem, I won't send out v3 until we've finished the discussion and
-> > have consensus. I'll assume that the discussion on whether or not there is
-> > a leak will continue on the thread you linked to above, so I won't comment
-> > on it here.
-> > 
-> > > Note that klp_init_*_early() functions iterate through the arrays
-> > > using klp_for_each_*_static. While klp_free_*() functions iterate
-> > > via the lists using klp_for_each_*_safe().
-> > 
-> > Correct, as I've understood it, klp_for_each_*_safe() should only iterate
-> > over the objects that have been added to the patch and klp_object's lists,
-> > and thus for which kobject_init() has been invoked. So if we fail a check
-> > on 'struct klp_object' N, then we'll only iterate over the first N - 1
-> > objects in klp_for_each_*_safe().
-> > 
-> > > We should not need the pre-early-init check when the lists include only
-> > > structures with initialized kobjects.
-> > 
-> > Not sure I quite follow. We have to do NULL checks for obj->funcs at some
-> > point, and per Josh's suggestion it seems cleaner to do it outside the
-> > critical section, and before we actually invoke kobject_init(). Apologies
-> > if I've misunderstood your point.
-> 
-> The original purpose of klp_init_*_early() was to allow calling
-> klp_free_patch_*() when klp_init_*() fails. The idea was to
-> initialize all fields properly so that free functions would
-> do the right thing.
-> 
-> Josh's proposal adds pre-early-init() to allow calling
-> klp_free_patch_*() already when klp_init_*_early() fails.
-> The purpose is to make sure that klp_init_*_early()
-> will actually never fail.
-> 
-> This might make things somehow complicated. Any future change
-> in klp_init_*_early() might require change in pre-early-init()
-> to catch eventual problems earlier.
-
-I'm not sure why that would be a problem.  If we can separate out the
-things which fail from the things which don't, it simplifies things.
-
-And if klp_init_object_early() returns void then it would make sense for
-klp_init_patch_early() to also return void.
-
-> Also I am not sure what to do with the existing checks
-> in klp_init_patch_early(). I am uneasy with removing them
-> and hoping that pre-early-init() did the right job.
-
-klp_init_patch_early() already depends on some of the other checks in
-klp_enable_patch() anyway.  I don't see that as much of a problem since
-it only has one caller.
-
-The benefit of moving the rest of the checks out is that it simplifies
-the error handling, with no possibility of half-baked structures.
-
-> But if we keep the checks then klp_init_patch_early() then it
-> might fail and the code will not be ready for this.
-> 
-> 
-> My proposal is to use simple trick. klp_free_patch_*() iterate
-> using the dynamic list (list_for_each_entry) while klp_init_*_early()
-> iterate using the arrays.
-> 
-> Now, we just need to make sure that klp_init_*_early() will only add
-> fully initialized structures into the dynamic list. As a result,
-> klp_free_patch() will see only the fully initialized structures
-> and could release them. It will not see that not-yet-initialized
-> structures but it is fine. They are not initialized and they do not
-> need to be freed.
-> 
-> In fact, I think that klp_init_*_early() functions already do
-> the right thing. IMHO, if you move the module_get() then you
-> could safely do:
-> 
-> int klp_enable_patch(struct klp_patch *patch)
-> {
-> [...]
-> 	if (!try_module_get(patch->mod)) {
-> 		mutex_unlock(&klp_mutex);
-> 		return -ENODEV;
-> 	}
-> 
-> 	ret = klp_init_patch_early(patch);
-> 	if (ret)
-> 		goto err;
-> 
-> 
-> Note that it would need to get tested.
-> 
-> Anyway, does it make sense now?
-
-It would work, but it's too clever/non-obvious.  If we rely on tricks
-then we may eventually forget about them and accidentally break
-assumptions later.
-
--- 
-Josh
-
+DQoNCkxlIDE0LzEyLzIwMjEgw6AgMTU6MDEsIFN0ZXZlbiBSb3N0ZWR0IGEgw6ljcml0wqA6DQo+
+IE9uIFR1ZSwgMTQgRGVjIDIwMjEgMDg6MzU6MTQgKzAxMDANCj4gQ2hyaXN0b3BoZSBMZXJveSA8
+Y2hyaXN0b3BoZS5sZXJveUBjc2dyb3VwLmV1PiB3cm90ZToNCj4gDQo+Pj4gV2lsbCBjb250aW51
+ZSBpbnZlc3RpZ2F0aW5nLg0KPj4+ICAgIA0KPj4NCj4+IHRyYWNlX3NlbGZ0ZXN0X3N0YXJ0dXBf
+ZnVuY3Rpb25fZ3JhcGgoKSBjYWxscyByZWdpc3Rlcl9mdHJhY2VfZGlyZWN0KCkNCj4+IHdoaWNo
+IHJldHVybnMgLUVOT1NVUFAgYmVjYXVzZSBwb3dlcnBjIGRvZXNuJ3Qgc2VsZWN0DQo+PiBDT05G
+SUdfRFlOQU1JQ19GVFJBQ0VfV0lUSF9ESVJFQ1RfQ0FMTFMuDQo+Pg0KPj4gU2hvdWxkIFRFU1Rf
+RElSRUNUX1RSQU1QIGRlcGVuZCBvbiBDT05GSUdfRFlOQU1JQ19GVFJBQ0VfV0lUSF9ESVJFQ1Rf
+Q0FMTFMgPw0KPiANCj4gWWVzLCB0aGF0IHNob3VsZCBiZToNCj4gDQo+ICNpZiBkZWZpbmVkKENP
+TkZJR19EWU5BTUlDX0ZUUkFDRSkgJiYgXA0KPiAgICAgIGRlZmluZWQoQ09ORklHX0hBVkVfRFlO
+QU1JQ19GVFJBQ0VfV0lUSF9ESVJFQ1RfQ0FMTFMpDQo+ICNkZWZpbmUgVEVTVF9ESVJFQ1RfVFJB
+TVANCj4gbm9pbmxpbmUgX19ub2Nsb25lIHN0YXRpYyB2b2lkIHRyYWNlX2RpcmVjdF90cmFtcCh2
+b2lkKSB7IH0NCj4gI2VuZGlmDQo+IA0KPiANCj4gQW5kIG1ha2UgaXQgdGVzdCBpdCB3aXRoIG9y
+IHdpdGhvdXQgdGhlIGFyZ3MuDQo+IA0KDQpTaG91bGRuJ3QgaXQganVzdCBiZToNCg0KI2lmZGVm
+IENPTkZJR19EWU5BTUlDX0ZUUkFDRV9XSVRIX0RJUkVDVF9DQUxMUw0KDQpCZWNhdXNlDQoNCnJl
+Z2lzdGVyX2Z0cmFjZV9kaXJlY3QoKSBkZXBlbmRzIG9uIHRoYXQgc3ltYm9sLCBzbyBpZiB5b3Ug
+aGF2ZSANCkNPTkZJR19EWU5BTUlDX0ZUUkFDRSAmJiBDT05GSUdfSEFWRV9EWU5BTUlDX0ZUUkFD
+RV9XSVRIX0RJUkVDVF9DQUxMUyANCmJ1dCBub3QgRFlOQU1JQ19GVFJBQ0VfV0lUSF9SRUdTIHRo
+ZW4gDQpDT05GSUdfRFlOQU1JQ19GVFJBQ0VfV0lUSF9ESVJFQ1RfQ0FMTFMgaXMgdW5zZXQgYW5k
+IA0KcmVnaXN0ZXJfZnRyYWNlX2RpcmVjdCgpIHJldHVybnMgLUVOT1RTVVBQDQoNCkNocmlzdG9w
+aGU=
