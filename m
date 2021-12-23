@@ -2,121 +2,120 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2893C47DBF5
-	for <lists+live-patching@lfdr.de>; Thu, 23 Dec 2021 01:25:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E66F47DC4A
+	for <lists+live-patching@lfdr.de>; Thu, 23 Dec 2021 01:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239738AbhLWAZG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Dec 2021 19:25:06 -0500
-Received: from mga09.intel.com ([134.134.136.24]:53166 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345845AbhLWAYk (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Dec 2021 19:24:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640219080; x=1671755080;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fdl2pqtwfSmHqco13iW37DLHxkjyBxAhNXlPzt3ZhyI=;
-  b=cE7W8nuAgefwVtoAivMYMLt96NsHMrrAwna3IsRzh/kC5ZR2rkAU39zR
-   l7WqCutTqVlqH4MVT8W9tQDqbFVrbW92l2QQOixhAWQNe2XGr+QqreiTB
-   cWnUqX3M7JaXW/PQqmHsVLguEMHauKduUR+vQgWq+YJ7NPTtdOZtb4wE0
-   1hW5lMuBYTyj6lNieVmtNZqA0VC8+cq4D2Xm8UPWCzcyAwOQxnznm/MaY
-   rCJpn598xXC0+5wFcJm3y3c/i6QKoXSPIQ4jS3tWjWXg8Vh40Qq3/J+/v
-   Th2BkF1xRAuvz43cMN9eV8kTnI6qWs1zVv5La3obLMf2U/r1RYxjqucvM
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="240533513"
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; 
-   d="scan'208";a="240533513"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2021 16:23:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; 
-   d="scan'208";a="521881999"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 22 Dec 2021 16:23:39 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1BN0N79K032467;
-        Thu, 23 Dec 2021 00:23:37 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     linux-hardening@vger.kernel.org, x86@kernel.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH v9 15/15] maintainers: add MAINTAINERS entry for FG-KASLR
-Date:   Thu, 23 Dec 2021 01:22:09 +0100
-Message-Id: <20211223002209.1092165-16-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
-References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
+        id S237103AbhLWAmr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 22 Dec 2021 19:42:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41361 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235461AbhLWAmr (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 22 Dec 2021 19:42:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1640220166;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=E7Oy6iCSZJJW8lTBkEZWPZ+i3wkBqq3QgTivZq9ltkY=;
+        b=MM9NeHxuInksUmQQOBtqSTEBhQtqjdFPsXmE/df0VdgO8bIpHXRM0z+0tCz5KtELiEiVEQ
+        95ojNJs64RnsVylSfgFroyFLBhqTbUE2lLnafjpzv1Q1FSONhoGVTOFcCq7UZ/64n0wWkE
+        44A8UXccYnO78LB4haf0OkTNpaDx4ug=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-543-CFXQLiTKOfaGExxWQ_xFGw-1; Wed, 22 Dec 2021 19:42:45 -0500
+X-MC-Unique: CFXQLiTKOfaGExxWQ_xFGw-1
+Received: by mail-ot1-f72.google.com with SMTP id 66-20020a9d0c48000000b0058f58571e0fso40251otr.23
+        for <live-patching@vger.kernel.org>; Wed, 22 Dec 2021 16:42:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=E7Oy6iCSZJJW8lTBkEZWPZ+i3wkBqq3QgTivZq9ltkY=;
+        b=Hr7Rq+qpEN0/uS4PYCz+TZTU2oXU2L1b+bjbjkuUAF+534N8Hii0K5ln6da0aqcILP
+         7y39LmlvixQeE2OLlRB96GwhqorqcYLQfOk426U8y139yWaVIVV2blKazd5XuVFZ9OLX
+         yd7Mx/Mocqzom07JGst1Vffy1xq9pBPqL7M0QFPz1DC9+YNpUA5F1Mu3kVH2Gk9vtrOP
+         nBIlJt41qi8Pa6lCYB0pVHZ+3llIoLheOQ785IFnEoRoEFQJrRuJMoSBEPjD7OSOMheP
+         qn+XJSkuiKrTlu1iXrgP0OiQErY731C/8PxYIypNWCCd84inFqJiJFTL6pHjeHury+n7
+         5Y6Q==
+X-Gm-Message-State: AOAM532jB55wXxK7P6bgmeCmlhKH1UIW5JYLbT8o59LhlinI8b33L/KK
+        C482Rh/6cgmgk/btpaxcqUGnxprf8D/NjqvY994UVFpzAtKg/5a0fFyZx3jlq7U1uFIIku/ZN40
+        nTvL+5xTveZkeRSHpS80W4ZnnoQ==
+X-Received: by 2002:a54:470f:: with SMTP id k15mr60144oik.92.1640220164743;
+        Wed, 22 Dec 2021 16:42:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwmeT/M9BiyPn2ri4zzJLa19R0qkgWAVHjSJ4zSvj08GjU0PsiTvge1ijDAeDnTdnxbAKY40Q==
+X-Received: by 2002:a54:470f:: with SMTP id k15mr60137oik.92.1640220164471;
+        Wed, 22 Dec 2021 16:42:44 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::c])
+        by smtp.gmail.com with ESMTPSA id s6sm744371ois.3.2021.12.22.16.42.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Dec 2021 16:42:44 -0800 (PST)
+Date:   Wed, 22 Dec 2021 16:42:41 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     David Vernet <void@manifault.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, corbet@lwn.net
+Subject: Re: [PATCH v3] livepatch: Fix kobject refcount bug on
+ klp_init_patch_early failure path
+Message-ID: <20211223004241.zvv4ymjmcmimumra@treble>
+References: <20211221153930.137579-1-void@manifault.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20211221153930.137579-1-void@manifault.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Add an entry for FG-KASLR containing the maintainers, reviewers,
-public mailing lists, files and so on.
+On Tue, Dec 21, 2021 at 07:39:31AM -0800, David Vernet wrote:
+> When enabling a klp patch with klp_enable_patch(), klp_init_patch_early()
+> is invoked to initialize the kobjects for the patch itself, as well as the
+> 'struct klp_object' and 'struct klp_func' objects that comprise it.
+> However, there are some error paths in klp_enable_patch() where some
+> kobjects may have been initialized with kobject_init(), but an error code
+> is still returned due to e.g. a 'struct klp_object' having a NULL funcs
+> pointer.
+> 
+> In these paths, the initial reference of the kobject of the 'struct
+> klp_patch' may never be released, along with one or more of its objects and
+> their functions, as kobject_put() is not invoked on the cleanup path if
+> klp_init_patch_early() returns an error code.
+> 
+> For example, if an object entry such as the following were added to the
+> sample livepatch module's klp patch, it would cause the vmlinux klp_object,
+> and its klp_func which updates 'cmdline_proc_show', to never be released:
+> 
+> static struct klp_object objs[] = {
+> 	{
+> 		/* name being NULL means vmlinux */
+> 		.funcs = funcs,
+> 	},
+> 	{
+> 		/* NULL funcs -- would cause reference leak */
+> 		.name = "kvm",
+> 	}, { }
+> };
+> 
+> Without this change, if CONFIG_DEBUG_KOBJECT is enabled, and the sample klp
+> patch is loaded, the kobjects (the patch, the vmlinux 'struct klp_object',
+> and its func) are observed as initialized, but never released, in the dmesg
+> log output.  With the change, these kobject references no longer fail to be
+> released as the error case is properly handled before they are initialized.
+> 
+> Signed-off-by: David Vernet <void@manifault.com>
+> ---
+> v3:
+>   - Update patch description to not specifically claim to be fixing a
+>     "leak", but rather a kobject reference counting bug.
+>   - Make klp_init_patch_early() void to match klp_init_object_early() and
+>     klp_init_func_early(), and move the arg validation that previously
+>     resided there into klp_enable_patch() (where other argument validation
+>     logic already resides).
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- MAINTAINERS | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8912b2c1260c..efdb313b6813 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7853,6 +7853,18 @@ L:	platform-driver-x86@vger.kernel.org
- S:	Maintained
- F:	drivers/platform/x86/fujitsu-tablet.c
- 
-+FUNCTION-GRAINED KASLR (FG-KASLR)
-+M:	Alexander Lobakin <alexandr.lobakin@intel.com>
-+R:	Kristen Carlson Accardi <kristen@linux.intel.com>
-+R:	Kees Cook <keescook@chromium.org>
-+L:	linux-hardening@vger.kernel.org
-+S:	Supported
-+F:	Documentation/security/fgkaslr.rst
-+F:	arch/x86/boot/compressed/fgkaslr.c
-+F:	arch/x86/boot/compressed/gen-symbols.h
-+F:	arch/x86/boot/compressed/utils.c
-+F:	scripts/generate_text_sections.pl
-+
- FUSE: FILESYSTEM IN USERSPACE
- M:	Miklos Szeredi <miklos@szeredi.hu>
- L:	linux-fsdevel@vger.kernel.org
 -- 
-2.33.1
+Josh
 
