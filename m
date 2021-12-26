@@ -2,71 +2,51 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A206547F1B8
-	for <lists+live-patching@lfdr.de>; Sat, 25 Dec 2021 03:45:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE0C47F648
+	for <lists+live-patching@lfdr.de>; Sun, 26 Dec 2021 10:42:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbhLYCpZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 24 Dec 2021 21:45:25 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:16858 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbhLYCpY (ORCPT
+        id S233201AbhLZJmt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 26 Dec 2021 04:42:49 -0500
+Received: from slot0.jllresort.com ([62.197.136.5]:57256 "EHLO
+        slot0.jllresort.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231577AbhLZJms (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 24 Dec 2021 21:45:24 -0500
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JLSv21l0vz91pS;
-        Sat, 25 Dec 2021 10:44:30 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Sat, 25 Dec 2021 10:45:22 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Sat, 25 Dec
- 2021 10:45:22 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <live-patching@vger.kernel.org>
-CC:     <jpoimboe@redhat.com>, <jikos@kernel.org>, <mbenes@suse.cz>,
-        <pmladek@suse.com>, <void@manifault.com>
-Subject: [PATCH -next] livepatch: Fix missing unlock on error in klp_enable_patch()
-Date:   Sat, 25 Dec 2021 10:51:15 +0800
-Message-ID: <20211225025115.475348-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 26 Dec 2021 04:42:48 -0500
+X-Greylist: delayed 736 seconds by postgrey-1.27 at vger.kernel.org; Sun, 26 Dec 2021 04:42:48 EST
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=jllresort.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=ele.mon@jllresort.com;
+ bh=qHFFf0c6L024IrMMkq798w+z88M=;
+ b=0vVlbMdKcuM+dTC0ztYHTjMHQ1B9z+T4koky2lOBttwl4/fhKT72qcdpdltHnkNEhUWoWEQry1V/
+   sAqgwNS99eecftmzPs5p1h2wPc6yWRA0CjGngaR+ttDrRo8Gg/xBAxWLDNSKk9AITQKubp7EuY0/
+   irVxL64bBCKTaNstNO1M8oQrQ30NewL0KEBRD97pWSQghAB8kgX30jpKUhtbBZ6ZoIYI8y3b3hMw
+   MIkLi6ItzG7tMkn+U4OdzhtYYOJXpYmXsEjVMf4rfKmNsOgP4TE0WcV313OqUYeSa2UGhCmr/Vva
+   Q6RI6VIiaZxXDzmwdyeShNaMVp4LMgSZbVZWAA==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=jllresort.com;
+ b=CBxPSU7Bg/4t0cuWi+1jEbeiqkgk4bDcUQ7++HfRwMaX49lyQXXz3qFqXlUseVEhK/bjgiB2udwy
+   r/nef88Y0SiTBuBGS5mgilaOwTykHaBWHoyphWGI4C3E9RY2abjXUoaHRYw5dOqSb+YuCihWLdXg
+   1fb2Xasl8tddd3m9xx2bKydgU7zlokxgMfRcERl6Bddc2z8982K+z5Ub/KSMjY+mOxtT++aPjkwu
+   k/bTVIuVeNcVlZxKn3yoUB4MCtQnGGFjb/C9rBH0YJs0Uijz97AHrvviBrW4KHbqbVp5nmmODw/0
+   yBQtKWijf9qeHsxtYR8WksyNacwsh0kAKI9QGg==;
+Reply-To: mustafa.ayvaz@ayvazburosu.com
+From:   ele.mon@jllresort.com
+To:     live-patching@vger.kernel.org
+Subject: Happy Weekend:
+Date:   26 Dec 2021 10:29:33 +0100
+Message-ID: <20211226102855.18D7BD2A1035F71D@jllresort.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Add missing unlock when try_module_get() fails in klp_enable_patch().
+Greetings to you live-patching,
 
-Fixes: bf01c2975925 ("livepatch: Fix kobject refcount bug on klp_init_patch_early failure path")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- kernel/livepatch/core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+I was wondering if you got my previous email? I have been trying=20
+to reach you by email live-patching@vger.kernel.org, kindly get=20
+back to me swiftly, it is very important and urgent.
 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 23cf444091a8..01bfab7fe7c0 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -1047,8 +1047,10 @@ int klp_enable_patch(struct klp_patch *patch)
- 		return -EINVAL;
- 	}
- 
--	if (!try_module_get(patch->mod))
-+	if (!try_module_get(patch->mod)) {
-+		mutex_unlock(&klp_mutex);
- 		return -ENODEV;
-+	}
- 
- 	klp_init_patch_early(patch);
- 
--- 
-2.25.1
-
+Thanks
+Mustafa Ayvaz
+Email: mustafa.ayvaz@ayvazburosu.com
