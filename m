@@ -2,148 +2,85 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EB98480BC4
-	for <lists+live-patching@lfdr.de>; Tue, 28 Dec 2021 18:05:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29CDC480FB4
+	for <lists+live-patching@lfdr.de>; Wed, 29 Dec 2021 05:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235899AbhL1RFG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 28 Dec 2021 12:05:06 -0500
-Received: from mga09.intel.com ([134.134.136.24]:23840 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233280AbhL1RFF (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Tue, 28 Dec 2021 12:05:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640711105; x=1672247105;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KHhXdEfIwTp7IIrrW70KmlJrU5+AcMwf8sgzb0u1BTQ=;
-  b=BQDV12zufIn3y7kViZ5Jpt3ulVBzf1xgHYmdvpui4sYL++yBRhMLLgZl
-   +In54oVBpemChMdhPSSao9SBGGuQnw129cutz7Qf/nNUzRCAFu7YWz9R2
-   GxD3zZn3E64NTF62bjny9/LAO6irwQAZcUtaMYwEa2FUmSNP83yXJQxHU
-   0Z9wgDM+bnvLBFseQ3FQ4ne1jZh4VKaDmMBeEuEKGlgQCkglp0egUZOAw
-   Uc7z7Dlj7IfP9sX+k+2BvvismjYilXtXFrvVgBSma1hHoodEN3fhtyl1j
-   cgprRmSQTooX90qS62YE/hsf/m7imZoI75H3rmwRsPJBt8R2BRSmon1qS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="241195850"
-X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="241195850"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2021 09:05:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="572369723"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga008.fm.intel.com with ESMTP; 28 Dec 2021 09:04:56 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1BSH4sNa000463;
-        Tue, 28 Dec 2021 17:04:54 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH v9 01/15] modpost: fix removing numeric suffixes
-Date:   Tue, 28 Dec 2021 18:03:08 +0100
-Message-Id: <20211228170308.1454063-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <YcovajZkEd0WY8p4@zn.tnic>
-References: <20211223002209.1092165-1-alexandr.lobakin@intel.com> <20211223002209.1092165-2-alexandr.lobakin@intel.com> <YcShenJgaOeOdbIj@zn.tnic> <20211227182246.1447062-1-alexandr.lobakin@intel.com> <YcovajZkEd0WY8p4@zn.tnic>
+        id S238724AbhL2Eov (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 28 Dec 2021 23:44:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238716AbhL2Eov (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Tue, 28 Dec 2021 23:44:51 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A92C061746
+        for <live-patching@vger.kernel.org>; Tue, 28 Dec 2021 20:44:50 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id b85so18957558qkc.1
+        for <live-patching@vger.kernel.org>; Tue, 28 Dec 2021 20:44:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=Qn/qIc+IdWDrpF18flmXoRQQTkgxgsIUgH+1qRMEjCs=;
+        b=MP4Bw8bSGHjBVZigYkLC58fVll36y0dQlPsgLsppOhzCyW8qenp/XoWFr3l/i0JY7g
+         x1Rj1WFUKL6KK7tgH/gY4+PT7MMPVTmYKvFsr3x0dYGUI0nE22xyip57MwLSGL9mzdD1
+         gdm2wdlQultX+fuX0Qqukedvyjvw/oRjtW3977LuTliMwgNGrlTNV8mJyFTLDgzqJ1wb
+         TeOHgJ2CrSue16+U5oI/zNm7a++7mE+nIexfrA8JbpBXRY23H4XCum8+iYbVTdqnOujG
+         0a2BPYykdnnlHzSw7wh0VA87E+IdTkvyacdxKty0K89QgGsd7KwfpwN9hd3KlvM+GH9M
+         NYVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=Qn/qIc+IdWDrpF18flmXoRQQTkgxgsIUgH+1qRMEjCs=;
+        b=ArRa6VtcZzzbPfZmHPIR1Exwzj0L9Wd4CQ0AFNeaA4sj2VISiWZKGKovbi0ldTcsrB
+         Z7CktYAiEwNAU45kNBkvMC5shrM+xiJhERGIJm1ikzleyym16WnRPAYHpsrLtvphpPrS
+         lsd4/O3EJMLYzpOutKvbtqjRrQtfarhJLe0/ICFR8UHXBeQbik590N38oJ9+hKJ2d/Hy
+         ChtMujsjkAjdWQnLv1VBodad9ghLT1meBqDpqELb6qSGwb04c0fXGJqCKA81cBLGuYQN
+         j2CBJ3t0GI2jILsISXIfymL6gOfdcvdmCEbprAyhpnHxZklxl555ZD/LddR/NcpiQm4h
+         pv4g==
+X-Gm-Message-State: AOAM530/0yIz23TeU2wE9KukKFGgNlBHCRWa+3DjFnrF/oJT65lFCoFj
+        XW19CWZ7+3WHvLv3nd+S2/DWbHD/qMdNROBdjHg=
+X-Google-Smtp-Source: ABdhPJwlQP9MFs65V5hIm27k9GgKwnQToph0gooxj5i4AA6YSU5EAqlHIHSc4Ts2u6OPdP6sfU6WN4inqVsPMqTonqE=
+X-Received: by 2002:a05:620a:404b:: with SMTP id i11mr17467238qko.585.1640753089738;
+ Tue, 28 Dec 2021 20:44:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:ad4:4e83:0:0:0:0:0 with HTTP; Tue, 28 Dec 2021 20:44:49
+ -0800 (PST)
+Reply-To: jw257243@gmail.com
+From:   Ahmad Massoud <hervedodzi@gmail.com>
+Date:   Wed, 29 Dec 2021 05:44:49 +0100
+Message-ID: <CAG7OqbLtVzDB5wEnenErP05Nn7ywZwvAKJ6bs6vCG9n0uFpv=w@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de>
-Date: Mon, 27 Dec 2021 22:26:02 +0100
+Peace be unto you.
 
-> On Mon, Dec 27, 2021 at 07:22:46PM +0100, Alexander Lobakin wrote:
-> > It's just a couple lines below. I trigger this using `-z uniq-symbol`
-> > which uses numeric suffixes for globals as well.
-> 
-> Aha, so that's for the fgkaslr purposes now.
+Myself, Ahmad Massoud, from Afghanistan, a politician and government
+official working with the ministry of finance before the Talibans took
+control of Afghanistan. I plead for your help to receive and secure my
+luggage in your country.
 
-Well, linking using unique names is meant to be used always
-when available and livepatching is enabled, at least I hope so.
+I want to send out my digital safe box containing my life savings, two
+million six hundred thousand dollars and some of my very important
+documents through diplomatic delivery from Afghanistan to your country
+for security reasons and for investment in your country.
+Unfortunately, I cannot send the money through bank because the
+Talibans has taken control of all the institutions in afghanistan. we
+are under imminent threat from massacres and targeted executions of
+government officials since the Talibans returned to power in our
+country and I have been in hiding to avoid the risk of deadly
+reprisals by the Talibans as I wait for paperwork to evacuate with my
+family.
 
-> 
-> > It fixes a commit dated 2014, thus Cc:stable. Although the
-> > remove_dot() might've been introduced for neverlanded GCC LTO, but
-> > in fact numeric suffixes are used a lot by the toolchains in regular
-> > builds as well. Just not for globals, that's why it's "well hidden".
-> 
-> Does "well hidden" warrant a stable backport then? Because if no
-> toolchain is using numeric suffixes for globals, then no need for the
-> stable tag, I'd say.
+I hope to hear from you through email [ jw257243@gmail.com ] for my
+safety because the Talibans are tracking calls to find out our exact
+location in Kabul. For the delivery to your country, please send me
+your full name, address and telephone number.
 
-Hmm, makes sense. The fact that I haven't seen any similar reports
-or issues (even on LTO builds) sorta says there are no benefits from
-backporting this.
-Ok, I'll drop the tag. It's never too late anyway to port this in
-case someone will face it.
+I look forward to hearing from you.
 
-> 
-> > I thought it's a common saying in commit messages, isn't it?
-> 
-> Lemme give you my canned and a lot more eloquent explanation for that:
-> 
-> "Please use passive voice in your commit message: no "we" or "I", etc,
-> and describe your changes in imperative mood.
-> 
-> Also, pls read section "2) Describe your changes" in
-> Documentation/process/submitting-patches.rst for more details.
-> 
-> Also, see section "Changelog" in
-> Documentation/process/maintainer-tip.rst
-> 
-> Bottom line is: personal pronouns are ambiguous in text, especially with
-> so many parties/companies/etc developing the kernel so let's avoid them
-> please."
-> 
-> Thx.
-
-Ah, you're right. "Common used" doesn't mean "correct". I'll fix it
-in the next spin being published after accumulating a bunch more
-comments.
-Thanks!
-
-> 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
-
-Al
+Ahmad Massoud.
