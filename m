@@ -2,119 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF939481942
-	for <lists+live-patching@lfdr.de>; Thu, 30 Dec 2021 05:16:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82CFA481AF5
+	for <lists+live-patching@lfdr.de>; Thu, 30 Dec 2021 10:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235828AbhL3EQz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 29 Dec 2021 23:16:55 -0500
-Received: from mail-qk1-f175.google.com ([209.85.222.175]:33626 "EHLO
-        mail-qk1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233912AbhL3EQy (ORCPT
+        id S237921AbhL3JA2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 30 Dec 2021 04:00:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229567AbhL3JA2 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 29 Dec 2021 23:16:54 -0500
-Received: by mail-qk1-f175.google.com with SMTP id de30so21717087qkb.0;
-        Wed, 29 Dec 2021 20:16:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=DMt/az0eWUgDPeK+xQBQ/1ORAuUzfUrR/WRqazjMwVI=;
-        b=m6udy6hxqgGMpRHcRQUpWbokEsNqlOtSJSB1HIgGmpb8AmHVJDHwR5wjA88oCHVE22
-         l1MVNLNDZ90ZGM+HcIKlnvd1HJ3FuR8z7NaCptx/TdDgMLUXyJaJ3hNufhVIHscsy/nb
-         lpVmdlNuS/AsyaOsUT034HPR1xaCSAESzVEbM/sr5xjiUgaZQGPlqU7A9quPwEU355pH
-         tl4hU2Pjg0e+VmiRpeObh4EGBt4VsE+hKeNhD3lM6b+083YvXbfeeebziej5Q+GewR7A
-         FALJCWlK+C5HLjPmdqkZK9Ksq+t0YbsAFqhObdWxz6thOywo7dSBaSEQwIOQQhxgETAB
-         9aKA==
-X-Gm-Message-State: AOAM5306iveK+P9XMTHtE6j8BhkDsF9ZnZUi/YbvZQ2gmu7f3T1JKl81
-        0LfN/CoQK89h5cKDcrGXOhLQi/HnnD2VHQ==
-X-Google-Smtp-Source: ABdhPJziRq8H61UMeCPVVziRrMIUUKj0hBHpYBoJW3a00mf2YuFxxDjYQX8Bhux60UvKPk9CvQwVZA==
-X-Received: by 2002:a37:6941:: with SMTP id e62mr20755790qkc.735.1640837813124;
-        Wed, 29 Dec 2021 20:16:53 -0800 (PST)
-Received: from dev0025.ash9.facebook.com (fwdproxy-ash-016.fbsv.net. [2a03:2880:20ff:10::face:b00c])
-        by smtp.gmail.com with ESMTPSA id u19sm13736320qke.1.2021.12.29.20.16.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Dec 2021 20:16:52 -0800 (PST)
-Date:   Wed, 29 Dec 2021 20:16:50 -0800
-From:   David Vernet <void@manifault.com>
-To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
-        mbenes@suse.cz, joe.lawrence@redhat.com
-Cc:     linux-modules@vger.kernel.org, mcgrof@kernel.org, jeyu@kernel.org,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, memxor@gmail.com
-Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
-Message-ID: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
+        Thu, 30 Dec 2021 04:00:28 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52BC2C061574;
+        Thu, 30 Dec 2021 01:00:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=vFgwQFGnP1+nZeL5xidq9k2TiaD3WdltS2FPFb0c2qA=; b=hSaUvXVYJLH2XhksKFosQF2YHU
+        dGP5innnv/tBj7GGtJdnhhYyL6mWSDOrz1NIx6rv4mYjbHi7dEyC4CPSPe4JlCgVOyo9rYxQdsD8q
+        EQ8XSLZ5mZRJVuVC5qyz5p9S2SzO0De2a5XnNwxaI0dz1ksfOmZ0YqcwaYGQfKRR1FaxYxnIktniK
+        LSsuBJ9c8O5Bw+3/8Fo5/U5wkfG0lR9oDKlVz9GxIjrQhq2DOKWmaIivzRsc+z3/wCSt2kSTNgWaS
+        SnJjoKqTvyOarGUHx025oaka8eR1wQ0Cxieh8IWOHBM+LfioMEXHdnMqa3mKdC8jNPLJLi0q63zpo
+        LCfE3baA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n2rIM-0046EG-3y; Thu, 30 Dec 2021 09:00:22 +0000
+Date:   Thu, 30 Dec 2021 01:00:22 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v9 00/15] Function Granular KASLR
+Message-ID: <Yc11JrelnWJgV7KX@infradead.org>
+References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
+ <YcVq1pMHWvPFHH5g@infradead.org>
+ <20211227183318.1447690-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20211227183318.1447690-1-alexandr.lobakin@intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Adding modules + BPF list and maintainers to this thread.
+On Mon, Dec 27, 2021 at 07:33:18PM +0100, Alexander Lobakin wrote:
+> From: Christoph Hellwig <hch@infradead.org>
+> Date: Thu, 23 Dec 2021 22:38:14 -0800
+> 
+> > On Thu, Dec 23, 2021 at 01:21:54AM +0100, Alexander Lobakin wrote:
+> > > This is a massive rework and a respin of Kristen Accardi's marvellous
+> > > FG-KASLR series (v5).
+> > 
+> > Here would be the place to explain what this series actually does and
+> > why it is marvellous.
+> 
+> As I took this project over from another developer/team, I decided
+> to preserve the original cover letter and append it to the end of
+> mine, as well as to keep most of the original code in the separate
+> commits from mine.
+> For sure I could redo this if needed, is it really so?
 
-David Vernet <void@manifault.com> wrote on Wed [2021-Dec-29 13:56:47 -0800]:
-> When initializing a 'struct klp_object' in klp_init_object_loaded(), and
-> performing relocations in klp_resolve_symbols(), klp_find_object_symbol()
-> is invoked to look up the address of a symbol in an already-loaded module
-> (or vmlinux). This, in turn, calls kallsyms_on_each_symbol() or
-> module_kallsyms_on_each_symbol() to find the address of the symbol that is
-> being patched.
-> 
-> It turns out that symbol lookups often take up the most CPU time when
-> enabling and disabling a patch, and may hog the CPU and cause other tasks
-> on that CPU's runqueue to starve -- even in paths where interrupts are
-> enabled.  For example, under certain workloads, enabling a KLP patch with
-> many objects or functions may cause ksoftirqd to be starved, and thus for
-> interrupts to be backlogged and delayed. This may end up causing TCP
-> retransmits on the host where the KLP patch is being applied, and in
-> general, may cause any interrupts serviced by softirqd to be delayed while
-> the patch is being applied.
-> 
-> So as to ensure that kallsyms_on_each_symbol() does not end up hogging the
-> CPU, this patch adds a call to cond_resched() in kallsyms_on_each_symbol()
-> and module_kallsyms_on_each_symbol(), which are invoked when doing a symbol
-> lookup in vmlinux and a module respectively.  Without this patch, if a
-> live-patch is applied on a 36-core Intel host with heavy TCP traffic, a
-> ~10x spike is observed in TCP retransmits while the patch is being applied.
-> Additionally, collecting sched events with perf indicates that ksoftirqd is
-> awakened ~1.3 seconds before it's eventually scheduled.  With the patch, no
-> increase in TCP retransmit events is observed, and ksoftirqd is scheduled
-> shortly after it's awakened.
-> 
-> Signed-off-by: David Vernet <void@manifault.com>
-> ---
->  kernel/kallsyms.c | 1 +
->  kernel/module.c   | 2 ++
->  2 files changed, 3 insertions(+)
-> 
-> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> index 0ba87982d017..2a9afe484aec 100644
-> --- a/kernel/kallsyms.c
-> +++ b/kernel/kallsyms.c
-> @@ -223,6 +223,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
->  		ret = fn(data, namebuf, NULL, kallsyms_sym_address(i));
->  		if (ret != 0)
->  			return ret;
-> +		cond_resched();
->  	}
->  	return 0;
->  }
-> diff --git a/kernel/module.c b/kernel/module.c
-> index 40ec9a030eec..c96160f7f3f5 100644
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -4462,6 +4462,8 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
->  				 mod, kallsyms_symbol_value(sym));
->  			if (ret != 0)
->  				goto out;
-> +
-> +			cond_resched();
->  		}
->  	}
->  out:
-> -- 
-> 2.30.2
-> 
+A cover letter needs to explain what you're doing for the reader.
+No one is going to page forever to look for that.
