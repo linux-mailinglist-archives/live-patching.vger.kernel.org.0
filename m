@@ -2,143 +2,82 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ED2F4820AA
-	for <lists+live-patching@lfdr.de>; Thu, 30 Dec 2021 23:36:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12520482610
+	for <lists+live-patching@lfdr.de>; Sat,  1 Jan 2022 00:05:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242278AbhL3WgF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 30 Dec 2021 17:36:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
+        id S231889AbhLaXFz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 31 Dec 2021 18:05:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242253AbhL3WgE (ORCPT
+        with ESMTP id S230094AbhLaXFy (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 30 Dec 2021 17:36:04 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFF3C061574;
-        Thu, 30 Dec 2021 14:36:04 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 7F75A1EC047E;
-        Thu, 30 Dec 2021 23:35:58 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1640903758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=+KKK4IGlu+3zrarQbibZbQT1tUBU7oUm6HKnQkbdmKE=;
-        b=oPfknaqMGvn+62MYRbhhvqwCuLoSX5p58SSeK+N4oF9aZ7sLgUjP1n1DDIVFgf4UX6SjD4
-        BtjJXy4Yp4keYM2xcOguHwNaMZcxUdIa08dtUo7yvrKUQnGgdp8B3NQYFmeSY4AG9kn321
-        5gYDtf918vXXIlR8BZolIn+c0jp1L1w=
-Date:   Thu, 30 Dec 2021 23:36:00 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v9 03/15] kallsyms: Hide layout
-Message-ID: <Yc40UKmylVh38vl5@zn.tnic>
-References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
- <20211223002209.1092165-4-alexandr.lobakin@intel.com>
+        Fri, 31 Dec 2021 18:05:54 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FD2C061574;
+        Fri, 31 Dec 2021 15:05:54 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id x15so21005274plg.1;
+        Fri, 31 Dec 2021 15:05:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g5v1xPzowAYu3QM3an7egFraB+wrAFLcZhivMPg3KZ4=;
+        b=CuXocwPY1LkIGBBMnlAvjl1KAGA+hh8/mmpui7RbE6MbUWGHMiiBnWklZg16g7bnfW
+         VInYAmQuN3ZzoOGApQaNTUIDYvdX5tibV9MycFnF4+NJisK4XvzBx9LCWxUm3UXvke2D
+         gPa7BamE97GqNJxLtvh7jdKnI3N2M1XMclwJXaY8GpvAnBNKAHD2kNzyDqsjuz2g4sCP
+         lJryWI4ce9QzLQ8wjlbJfsePyHauKpvxzkUVKYCX4JhwjHfk/r8k6wssDjew4ELQAgP1
+         XDsBmPiFpfB4gp5RWsQQmng/kF6SPWA5gvUSBtID43qZ3suSMLW0VefjrdnkZWGVB1yX
+         Seag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g5v1xPzowAYu3QM3an7egFraB+wrAFLcZhivMPg3KZ4=;
+        b=tH5/0eF/yH+/W+gu35R2g4SlV1VkiUR9ErAZ+iuF+tSI4wLqEv/yvJ6oOtPwUNOyFK
+         SaK5MWOYzpVx/Jb6xXP1548TPWSUuUDufpjXS9+Ct1Vve4VF5RaOL+JX2bOogvbcQvcC
+         S3txEPlZ6Ufa/2jQatjJo87GSE9dD5RvEL3B219J0XHUkUZtiqwVcvjz3UtDhaJ0XlM8
+         jG4pcgNaHPdV2L6ef3r7mHndcz/BVZ95RKUiVYMjRatywFwoA4KehhAkQCEjIs4gByzt
+         xOnp+IdHzFzpDkQUTlSOGs9cT/sIn7sNlx+r657dWinuq9qTLk/5FxBqhfhT4rmmyVMT
+         PMsg==
+X-Gm-Message-State: AOAM532ENQ6yKDED9x9hpPy+heuyWXwe5QJMCBw4U0GrGT8rs1g3PLkd
+        RZ9z0fjeVsAcdnLkQZDPWbOVJLIqLxI=
+X-Google-Smtp-Source: ABdhPJwAXDdng5LIu7g1RaPML/kmSMWkLIJVrRea+7I/d8/AqEU0qSTAiGnHS1teHg6tlLkqby536w==
+X-Received: by 2002:a17:902:e843:b0:148:f219:afb7 with SMTP id t3-20020a170902e84300b00148f219afb7mr38168648plg.81.1640991953323;
+        Fri, 31 Dec 2021 15:05:53 -0800 (PST)
+Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
+        by smtp.gmail.com with ESMTPSA id k8sm33927314pfu.72.2021.12.31.15.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Dec 2021 15:05:52 -0800 (PST)
+Date:   Sat, 1 Jan 2022 04:35:50 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     David Vernet <void@manifault.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
+        mbenes@suse.cz, joe.lawrence@redhat.com,
+        linux-modules@vger.kernel.org, mcgrof@kernel.org, jeyu@kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+Message-ID: <20211231230550.t2wjz5g5ancrqx7d@apollo.legion>
+References: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211223002209.1092165-4-alexandr.lobakin@intel.com>
+In-Reply-To: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 01:21:57AM +0100, Alexander Lobakin wrote:
-> Subject: Re: [PATCH v9 03/15] kallsyms: Hide layout
+On Thu, Dec 30, 2021 at 09:46:50AM IST, David Vernet wrote:
+> Adding modules + BPF list and maintainers to this thread.
+>
 
-That title is kinda laconic...
+Thanks for the Cc, but I'm dropping my patch for the next revision, so there
+should be no conflicts with this one.
 
-> From: Kristen Carlson Accardi <kristen@linux.intel.com>
-> 
-> This patch makes /proc/kallsyms display in a random order, rather
+> [...]
 
-Avoid having "This patch" or "This commit" in the commit message. It is
-tautologically useless.
-
-Also, do
-
-$ git grep 'This patch' Documentation/process
-
-for more details.
-
-> than sorted by address in order to hide the newly randomized address
-> layout.
-
-Sorted by address?
-
-My /proc/kallsyms says
-
-$ awk '{ print $1 }' /proc/kallsyms | uniq -c
- 119086 0000000000000000
-
-so all the addresses are 0. Aha, and when I list them as root, only then
-I see non-null addresses.
-
-So why do we that patch at all?
-
-> alobakin:
-> Don't depend FG-KASLR and always do that for unpriviledged accesses
-
-Unknown word [unpriviledged] in commit message, suggestions:
-        ['unprivileged', 'underprivileged', 'privileged']
-
-> as suggested by several folks.
-> Also, introduce and use a shuffle_array() macro which shuffles an
-> array using Fisher-Yates.
-
-Fisher-Yates what?
-
-/me goes and looks at the wikipedia article.
-
-Aha, a Fisher-Yates shuffle algoithm.
-
-Don't be afraid to explain more in your commit messages and make them
-more reader-friendly.
-
-> We'll make use of it several more times
-> later on.
-
-Not important for this commit.
-
-...
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+--
+Kartikeya
