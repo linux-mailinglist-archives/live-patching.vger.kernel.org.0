@@ -2,82 +2,90 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12520482610
-	for <lists+live-patching@lfdr.de>; Sat,  1 Jan 2022 00:05:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4122483008
+	for <lists+live-patching@lfdr.de>; Mon,  3 Jan 2022 11:49:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231889AbhLaXFz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 31 Dec 2021 18:05:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbhLaXFy (ORCPT
+        id S232718AbiACKtT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 3 Jan 2022 05:49:19 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:44542 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229545AbiACKtT (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 31 Dec 2021 18:05:54 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FD2C061574;
-        Fri, 31 Dec 2021 15:05:54 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id x15so21005274plg.1;
-        Fri, 31 Dec 2021 15:05:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g5v1xPzowAYu3QM3an7egFraB+wrAFLcZhivMPg3KZ4=;
-        b=CuXocwPY1LkIGBBMnlAvjl1KAGA+hh8/mmpui7RbE6MbUWGHMiiBnWklZg16g7bnfW
-         VInYAmQuN3ZzoOGApQaNTUIDYvdX5tibV9MycFnF4+NJisK4XvzBx9LCWxUm3UXvke2D
-         gPa7BamE97GqNJxLtvh7jdKnI3N2M1XMclwJXaY8GpvAnBNKAHD2kNzyDqsjuz2g4sCP
-         lJryWI4ce9QzLQ8wjlbJfsePyHauKpvxzkUVKYCX4JhwjHfk/r8k6wssDjew4ELQAgP1
-         XDsBmPiFpfB4gp5RWsQQmng/kF6SPWA5gvUSBtID43qZ3suSMLW0VefjrdnkZWGVB1yX
-         Seag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g5v1xPzowAYu3QM3an7egFraB+wrAFLcZhivMPg3KZ4=;
-        b=tH5/0eF/yH+/W+gu35R2g4SlV1VkiUR9ErAZ+iuF+tSI4wLqEv/yvJ6oOtPwUNOyFK
-         SaK5MWOYzpVx/Jb6xXP1548TPWSUuUDufpjXS9+Ct1Vve4VF5RaOL+JX2bOogvbcQvcC
-         S3txEPlZ6Ufa/2jQatjJo87GSE9dD5RvEL3B219J0XHUkUZtiqwVcvjz3UtDhaJ0XlM8
-         jG4pcgNaHPdV2L6ef3r7mHndcz/BVZ95RKUiVYMjRatywFwoA4KehhAkQCEjIs4gByzt
-         xOnp+IdHzFzpDkQUTlSOGs9cT/sIn7sNlx+r657dWinuq9qTLk/5FxBqhfhT4rmmyVMT
-         PMsg==
-X-Gm-Message-State: AOAM532ENQ6yKDED9x9hpPy+heuyWXwe5QJMCBw4U0GrGT8rs1g3PLkd
-        RZ9z0fjeVsAcdnLkQZDPWbOVJLIqLxI=
-X-Google-Smtp-Source: ABdhPJwAXDdng5LIu7g1RaPML/kmSMWkLIJVrRea+7I/d8/AqEU0qSTAiGnHS1teHg6tlLkqby536w==
-X-Received: by 2002:a17:902:e843:b0:148:f219:afb7 with SMTP id t3-20020a170902e84300b00148f219afb7mr38168648plg.81.1640991953323;
-        Fri, 31 Dec 2021 15:05:53 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id k8sm33927314pfu.72.2021.12.31.15.05.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Dec 2021 15:05:52 -0800 (PST)
-Date:   Sat, 1 Jan 2022 04:35:50 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+        Mon, 3 Jan 2022 05:49:19 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id C4B3D2110B;
+        Mon,  3 Jan 2022 10:49:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1641206957; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kXWXkoeqCuuk6VXlljVuLN5eBry1ocUqknDqjO5oeek=;
+        b=WlxjNI4cZHAoGZ0p4MYppKOslPLul653Z5x/knyWA7LxKGIL9YaMiMLnYld2KjGXwSHlnV
+        MZhhiDsY7zTjLkySqqhbbV5H6rRGJ/2b237ooGf1ztTo6/15OiVlugUG6kdgOUipgBTJrb
+        8Ae3GgDqYw/Kj/5kB5LAHjtP6N/Jp3Q=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 46F11A3B83;
+        Mon,  3 Jan 2022 10:49:17 +0000 (UTC)
+Date:   Mon, 3 Jan 2022 11:49:14 +0100
+From:   Petr Mladek <pmladek@suse.com>
 To:     David Vernet <void@manifault.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
-        mbenes@suse.cz, joe.lawrence@redhat.com,
-        linux-modules@vger.kernel.org, mcgrof@kernel.org, jeyu@kernel.org,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
-Message-ID: <20211231230550.t2wjz5g5ancrqx7d@apollo.legion>
-References: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz
+Subject: Re: [PATCH -next] livepatch: Fix missing unlock on error in
+ klp_enable_patch()
+Message-ID: <YdLUqsYeXg91GjZ7@alley>
+References: <20211225025115.475348-1-yangyingliang@huawei.com>
+ <YcnqcXMQ7hxBe68a@dev0025.ash9.facebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
+In-Reply-To: <YcnqcXMQ7hxBe68a@dev0025.ash9.facebook.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 09:46:50AM IST, David Vernet wrote:
-> Adding modules + BPF list and maintainers to this thread.
->
+On Mon 2021-12-27 08:31:45, David Vernet wrote:
+> Yang Yingliang <yangyingliang@huawei.com> wrote on Sat [2021-Dec-25 10:51:15 +0800]:
+> > Add missing unlock when try_module_get() fails in klp_enable_patch().
+> > 
+> > Fixes: bf01c2975925 ("livepatch: Fix kobject refcount bug on klp_init_patch_early failure path")
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> > ---
+> >  kernel/livepatch/core.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> > index 23cf444091a8..01bfab7fe7c0 100644
+> > --- a/kernel/livepatch/core.c
+> > +++ b/kernel/livepatch/core.c
+> > @@ -1047,8 +1047,10 @@ int klp_enable_patch(struct klp_patch *patch)
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > -	if (!try_module_get(patch->mod))
+> > +	if (!try_module_get(patch->mod)) {
+> > +		mutex_unlock(&klp_mutex);
+> >  		return -ENODEV;
+> > +	}
+> >  
+> >  	klp_init_patch_early(patch);
+> >  
+> > -- 
+> > 2.25.1
+> > 
+> 
+> Apologies for the silly oversight. Thank you for the fix.
 
-Thanks for the Cc, but I'm dropping my patch for the next revision, so there
-should be no conflicts with this one.
+And nobody caught it. I think that it was partly caused by
+a pre-holiday loss of concentration :-/
 
-> [...]
+> Acked-by: David Vernet <void@manifault.com>
 
---
-Kartikeya
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Best Regards,
+Petr
