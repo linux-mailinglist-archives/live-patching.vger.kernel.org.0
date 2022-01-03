@@ -2,90 +2,105 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4122483008
-	for <lists+live-patching@lfdr.de>; Mon,  3 Jan 2022 11:49:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FD8483141
+	for <lists+live-patching@lfdr.de>; Mon,  3 Jan 2022 14:07:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232718AbiACKtT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 3 Jan 2022 05:49:19 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:44542 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiACKtT (ORCPT
+        id S232428AbiACNHo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 3 Jan 2022 08:07:44 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:34772 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232231AbiACNHn (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 3 Jan 2022 05:49:19 -0500
+        Mon, 3 Jan 2022 08:07:43 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id C4B3D2110B;
-        Mon,  3 Jan 2022 10:49:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1641206957; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        by smtp-out2.suse.de (Postfix) with ESMTP id 071151F38B;
+        Mon,  3 Jan 2022 13:07:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1641215262; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=kXWXkoeqCuuk6VXlljVuLN5eBry1ocUqknDqjO5oeek=;
-        b=WlxjNI4cZHAoGZ0p4MYppKOslPLul653Z5x/knyWA7LxKGIL9YaMiMLnYld2KjGXwSHlnV
-        MZhhiDsY7zTjLkySqqhbbV5H6rRGJ/2b237ooGf1ztTo6/15OiVlugUG6kdgOUipgBTJrb
-        8Ae3GgDqYw/Kj/5kB5LAHjtP6N/Jp3Q=
-Received: from suse.cz (unknown [10.100.224.162])
+        bh=CfKcPwGIyGJQW9aOLx/cbEJU5MrKtxa4IusWdY1IjT8=;
+        b=kHsrzV4/4xin7AyT/KKNZ9IKDWP/nEuJibfeGEN/Lx8s1B+YD6fZ/WK0aMxNuH+YY8tVGw
+        btB3pQuF9/4ccMpNf2s9DJeOKScQY3zkQugypgxKHgJ04QPlVNeCoFLASJNFxai3PANL4A
+        /1Rl/LRYWAhIjA7y41GMr3ydSsr+6lA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1641215262;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CfKcPwGIyGJQW9aOLx/cbEJU5MrKtxa4IusWdY1IjT8=;
+        b=764CjpdSZETDyv26UB+aYKt/k+Ywf8zz4aec6DveZDIPbdM04KHQimgi1Z0vZsDCN3AyhL
+        Kjax9zQsJrqvYfCg==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 46F11A3B83;
-        Mon,  3 Jan 2022 10:49:17 +0000 (UTC)
-Date:   Mon, 3 Jan 2022 11:49:14 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     David Vernet <void@manifault.com>
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz
-Subject: Re: [PATCH -next] livepatch: Fix missing unlock on error in
- klp_enable_patch()
-Message-ID: <YdLUqsYeXg91GjZ7@alley>
-References: <20211225025115.475348-1-yangyingliang@huawei.com>
- <YcnqcXMQ7hxBe68a@dev0025.ash9.facebook.com>
+        by relay2.suse.de (Postfix) with ESMTPS id 4422DA3B81;
+        Mon,  3 Jan 2022 13:07:40 +0000 (UTC)
+Date:   Mon, 3 Jan 2022 14:07:40 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev, stable@vger.kernel.org
+Subject: Re: [PATCH v9 01/15] modpost: fix removing numeric suffixes
+In-Reply-To: <20211223002209.1092165-2-alexandr.lobakin@intel.com>
+Message-ID: <alpine.LSU.2.21.2201031407240.15051@pobox.suse.cz>
+References: <20211223002209.1092165-1-alexandr.lobakin@intel.com> <20211223002209.1092165-2-alexandr.lobakin@intel.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YcnqcXMQ7hxBe68a@dev0025.ash9.facebook.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon 2021-12-27 08:31:45, David Vernet wrote:
-> Yang Yingliang <yangyingliang@huawei.com> wrote on Sat [2021-Dec-25 10:51:15 +0800]:
-> > Add missing unlock when try_module_get() fails in klp_enable_patch().
-> > 
-> > Fixes: bf01c2975925 ("livepatch: Fix kobject refcount bug on klp_init_patch_early failure path")
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> > ---
-> >  kernel/livepatch/core.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> > index 23cf444091a8..01bfab7fe7c0 100644
-> > --- a/kernel/livepatch/core.c
-> > +++ b/kernel/livepatch/core.c
-> > @@ -1047,8 +1047,10 @@ int klp_enable_patch(struct klp_patch *patch)
-> >  		return -EINVAL;
-> >  	}
-> >  
-> > -	if (!try_module_get(patch->mod))
-> > +	if (!try_module_get(patch->mod)) {
-> > +		mutex_unlock(&klp_mutex);
-> >  		return -ENODEV;
-> > +	}
-> >  
-> >  	klp_init_patch_early(patch);
-> >  
-> > -- 
-> > 2.25.1
-> > 
+On Thu, 23 Dec 2021, Alexander Lobakin wrote:
+
+> For now, that condition from remove_dot():
 > 
-> Apologies for the silly oversight. Thank you for the fix.
+> if (m && (s[n + m] == '.' || s[n + m] == 0))
+> 
+> which was designed to test if it's a dot or a \0 after the suffix
+> is never satisfied.
+> This is due to that s[n + m] always points to the last digit of a
+> numeric suffix, not on the symbol next to it:
+> 
+> param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+> 
+> So it's off by one and was like that since 2014.
+> 
+> `-z uniq-symbol` linker flag which we are planning to use to
 
-And nobody caught it. I think that it was partly caused by
-a pre-holiday loss of concentration :-/
+`-z unique-symbol`
 
-> Acked-by: David Vernet <void@manifault.com>
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-Best Regards,
-Petr
+Miroslav
