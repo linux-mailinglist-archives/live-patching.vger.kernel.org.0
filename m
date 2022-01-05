@@ -2,193 +2,159 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 732E24848BB
-	for <lists+live-patching@lfdr.de>; Tue,  4 Jan 2022 20:44:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A00B484CD7
+	for <lists+live-patching@lfdr.de>; Wed,  5 Jan 2022 04:25:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbiADTog (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 4 Jan 2022 14:44:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41665 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229851AbiADToc (ORCPT
+        id S230089AbiAEDZE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 4 Jan 2022 22:25:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229485AbiAEDZD (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 4 Jan 2022 14:44:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641325472;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pVpW4f5n/S0S6HV+zomyaoFiFeW+Dl4rjMkt6Jm1LkE=;
-        b=fOFRMsggBXxH8Y569Ca8ODEr9rdkepCJyuQK1vYv3HsstvUUZUFBDGKNC6SM9fP4ZUI7Kt
-        1+/AAnjhTuJsgYgzfMvEXXSELjCZzIPSJlku2WMHAji7DJAo2NHrUTeHyvtEEFPIINuwXV
-        kzWhCfOygSIjNiD01hbHZ9++QuaNkhM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-155-WIKoIBCFP9SpOYXJnQ47UA-1; Tue, 04 Jan 2022 14:44:29 -0500
-X-MC-Unique: WIKoIBCFP9SpOYXJnQ47UA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 57B3181EE62;
-        Tue,  4 Jan 2022 19:44:26 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.32.209])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B63CF1948C;
-        Tue,  4 Jan 2022 19:44:24 +0000 (UTC)
-Date:   Tue, 4 Jan 2022 14:44:22 -0500
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        Russell Currey <ruscur@russell.cc>
-Subject: Re: [PATCH v2 03/13] powerpc/module_32: Fix livepatching for RO
- modules
-Message-ID: <YdSjlgflqKi6Raof@redhat.com>
-References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
- <d5697157cb7dba3927e19aa17c915a83bc550bb2.1640017960.git.christophe.leroy@csgroup.eu>
+        Tue, 4 Jan 2022 22:25:03 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45133C061761
+        for <live-patching@vger.kernel.org>; Tue,  4 Jan 2022 19:25:03 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id s1so32843980pga.5
+        for <live-patching@vger.kernel.org>; Tue, 04 Jan 2022 19:25:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=wkuN5scY3yiYZRl2fRuA4WGrOv7r3w+Jln9UFNacBQM=;
+        b=sMREvPRxGZUwa08eFtR2hiuXSNQvK2z3b4UkIDQKPgoibmig3YKSC5pe3mtAttY7h4
+         XwK6GVkzJlAQFD2wxzX0eBRmZPIqCLwyrJwVVyBuYbzzF8v1N7MwQVj3P7PuIuTVvo0A
+         rEP82aGHqFCbL7ltVQA9rwNIlRiurCUsJqIQJ75u9fKPGEUjWr+Bd51S25yKt9bNwyWq
+         rcSVy1OCjWXA6fj3PLmN+GdKcNL6LzYc5Ao8OxtZok7AYQCkWdnX56ev9cPw3c3+UGgs
+         dVVe/F8gBmvEA8sYC1WCJBKNz2MM65RNUa7GnJFiSHqVSKWr0g4rG/r7YmFBeeHCDHyO
+         Sfog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=wkuN5scY3yiYZRl2fRuA4WGrOv7r3w+Jln9UFNacBQM=;
+        b=3gvyy1kSyg91LzIid7XOfDE9jjDoDGUH+cC8DaslV4cbOqrOEviky6GXEuKTRsoU9A
+         AExtl410mfhEX6btgF1DbegyFJcs9Hsf0B3lYyb8CFqrl50pr/4mVKY2DrsbphbHaXsg
+         w532OOKAF/FowIrozxZtMmwD/RDOreXavp+GqUL/gvYzuwwvlEPdj0alD5yeswc35DOT
+         X9+rs0Vx4vWb1/ggIThfQjddRn+a/4oV/eX+6Nw0kW4uAr4Ys030SvZQqdRvEODtIC59
+         2tMevk9tpk4o86iA5X1s/iUlZhyqha6CSBTOxxjaww3mbXEjR1lXZbNBUDN0zQwwTS1I
+         WWLw==
+X-Gm-Message-State: AOAM531TxlEXCJC5U9ns7Thethlsb1vSnRtHpq6RpSSlFbAgmlRmCIPY
+        R9qjvYM/74BIdv3RT9iCAswUZA==
+X-Google-Smtp-Source: ABdhPJwILBGPaWIQmEOPR6iQ9ZbM+KK4UsIg1jEugYbcKOG7KIm+OYdMXveHNWvOBlsyyUCtrfOdgA==
+X-Received: by 2002:a63:8149:: with SMTP id t70mr46472429pgd.71.1641353102364;
+        Tue, 04 Jan 2022 19:25:02 -0800 (PST)
+Received: from google.com ([2620:15c:2ce:200:b78:5a0b:6f2e:23e9])
+        by smtp.gmail.com with ESMTPSA id a15sm663138pjo.49.2022.01.04.19.24.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jan 2022 19:25:02 -0800 (PST)
+Date:   Tue, 4 Jan 2022 19:24:56 -0800
+From:   =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>, Borislav Petkov <bp@alien8.de>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v9 02/15] livepatch: use `-z unique-symbol` if available
+ to nuke pos-based search
+Message-ID: <20220105032456.hs3od326sdl4zjv4@google.com>
+References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
+ <20211223002209.1092165-3-alexandr.lobakin@intel.com>
+ <Yc2Tqc69W9ukKDI1@zn.tnic>
+ <CAFP8O3K1mkiCGMTEeuSifZtr2piHsKTjP5TOA25nqpv2SrbzYQ@mail.gmail.com>
+ <alpine.LSU.2.21.2201031447140.15051@pobox.suse.cz>
+ <20220103160615.7904-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <d5697157cb7dba3927e19aa17c915a83bc550bb2.1640017960.git.christophe.leroy@csgroup.eu>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220103160615.7904-1-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 04:38:09PM +0000, Christophe Leroy wrote:
-> Livepatching a loaded module involves applying relocations through
-> apply_relocate_add(), which attempts to write to read-only memory when
-> CONFIG_STRICT_MODULE_RWX=y.
-> 
-> R_PPC_ADDR16_LO, R_PPC_ADDR16_HI, R_PPC_ADDR16_HA and R_PPC_REL24 are
-> the types generated by the kpatch-build userspace tool or klp-convert
-> kernel tree observed applying a relocation to a post-init module.
-> 
-> Use patch_instruction() to patch those relocations.
-> 
-> Commit 8734b41b3efe ("powerpc/module_64: Fix livepatching for
-> RO modules") did similar change in module_64.
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> Cc: Russell Currey <ruscur@russell.cc>
-> ---
->  arch/powerpc/kernel/module_32.c | 44 ++++++++++++++++++++++-----------
->  1 file changed, 30 insertions(+), 14 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/module_32.c b/arch/powerpc/kernel/module_32.c
-> index a491ad481d85..a0432ef46967 100644
-> --- a/arch/powerpc/kernel/module_32.c
-> +++ b/arch/powerpc/kernel/module_32.c
-> @@ -18,6 +18,7 @@
->  #include <linux/bug.h>
->  #include <linux/sort.h>
->  #include <asm/setup.h>
-> +#include <asm/code-patching.h>
->  
->  /* Count how many different relocations (different symbol, different
->     addend) */
-> @@ -174,15 +175,25 @@ static uint32_t do_plt_call(void *location,
->  		entry++;
->  	}
->  
-> -	entry->jump[0] = PPC_RAW_LIS(_R12, PPC_HA(val));
-> -	entry->jump[1] = PPC_RAW_ADDI(_R12, _R12, PPC_LO(val));
-> -	entry->jump[2] = PPC_RAW_MTCTR(_R12);
-> -	entry->jump[3] = PPC_RAW_BCTR();
-> +	if (patch_instruction(&entry->jump[0], ppc_inst(PPC_RAW_LIS(_R12, PPC_HA(val)))))
-> +		return 0;
-> +	if (patch_instruction(&entry->jump[1], ppc_inst(PPC_RAW_ADDI(_R12, _R12, PPC_LO(val)))))
-> +		return 0;
-> +	if (patch_instruction(&entry->jump[2], ppc_inst(PPC_RAW_MTCTR(_R12))))
-> +		return 0;
-> +	if (patch_instruction(&entry->jump[3], ppc_inst(PPC_RAW_BCTR())))
-> +		return 0;
->  
->  	pr_debug("Initialized plt for 0x%x at %p\n", val, entry);
->  	return (uint32_t)entry;
->  }
->  
-> +static int patch_location_16(uint32_t *loc, u16 value)
-> +{
-> +	loc = PTR_ALIGN_DOWN(loc, sizeof(u32));
-> +	return patch_instruction(loc, ppc_inst((*loc & 0xffff0000) | value));
-> +}
-> +
->  int apply_relocate_add(Elf32_Shdr *sechdrs,
->  		       const char *strtab,
->  		       unsigned int symindex,
-> @@ -216,37 +227,42 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
->  
->  		case R_PPC_ADDR16_LO:
->  			/* Low half of the symbol */
-> -			*(uint16_t *)location = value;
-> +			if (patch_location_16(location, PPC_LO(value)))
-> +				return -EFAULT;
->  			break;
->  
->  		case R_PPC_ADDR16_HI:
->  			/* Higher half of the symbol */
-> -			*(uint16_t *)location = (value >> 16);
-> +			if (patch_location_16(location, PPC_HI(value)))
-> +				return -EFAULT;
->  			break;
->  
->  		case R_PPC_ADDR16_HA:
-> -			/* Sign-adjusted lower 16 bits: PPC ELF ABI says:
-> -			   (((x >> 16) + ((x & 0x8000) ? 1 : 0))) & 0xFFFF.
-> -			   This is the same, only sane.
-> -			 */
-> -			*(uint16_t *)location = (value + 0x8000) >> 16;
-> +			if (patch_location_16(location, PPC_HA(value)))
-> +				return -EFAULT;
->  			break;
->  
->  		case R_PPC_REL24:
->  			if ((int)(value - (uint32_t)location) < -0x02000000
-> -			    || (int)(value - (uint32_t)location) >= 0x02000000)
-> +			    || (int)(value - (uint32_t)location) >= 0x02000000) {
->  				value = do_plt_call(location, value,
->  						    sechdrs, module);
-> +				if (!value)
-> +					return -EFAULT;
-> +			}
->  
->  			/* Only replace bits 2 through 26 */
->  			pr_debug("REL24 value = %08X. location = %08X\n",
->  			       value, (uint32_t)location);
->  			pr_debug("Location before: %08X.\n",
->  			       *(uint32_t *)location);
-> -			*(uint32_t *)location
-> -				= (*(uint32_t *)location & ~0x03fffffc)
-> +			value = (*(uint32_t *)location & ~0x03fffffc)
->  				| ((value - (uint32_t)location)
->  				   & 0x03fffffc);
-> +
-> +			if (patch_instruction(location, ppc_inst(value)))
-> +				return -EFAULT;
-> +
->  			pr_debug("Location after: %08X.\n",
->  			       *(uint32_t *)location);
->  			pr_debug("ie. jump to %08X+%08X = %08X\n",
-> -- 
-> 2.33.1
-> 
+On 2022-01-03, Alexander Lobakin wrote:
+>From: Miroslav Benes <mbenes@suse.cz>
+>Date: Mon, 3 Jan 2022 14:55:42 +0100 (CET)
+>
+>> On Thu, 30 Dec 2021, Fāng-ruì Sòng wrote:
+>>
+>> > On Thu, Dec 30, 2021 at 3:11 AM Borislav Petkov <bp@alien8.de> wrote:
+>> > >
+>> > > On Thu, Dec 23, 2021 at 01:21:56AM +0100, Alexander Lobakin wrote:
+>> > > > [PATCH v9 02/15] livepatch: use `-z unique-symbol` if available to nuke pos-based search
+>>
+>> ...
+>>
+>> > Apologies since I haven't read the patch series.
+>> >
+>> > The option does not exist in ld.lld and I am a bit concerning about
+>> > its semantics: https://maskray.me/blog/2020-11-15-explain-gnu-linker-options#z-unique-symbol
+>> >
+>> > I thought that someone forwarded my comments (originally posted months
+>> > on a feature request ago) here but seems not.
+>> > (I am a ld.lld maintainer.)
+>>
+>> Do you mean
+>> https://lore.kernel.org/all/20210123225928.z5hkmaw6qjs2gu5g@google.com/T/#u
+>> ?
+>>
+>> Unfortunately, it did not lead anywhere. I think that '-z unique-symbol'
+>> option should work fine as long as the live patching is concerned. Maybe I
+>> misunderstood but your concerns mentioned at the blog do not apply. The
+>> stability is not an issue for us since we (KLP) always work with already
+>> built and fixed kernel. And(at least) GCC already uses number suffices for
+>> IPA clones and it has not been a problem anywhere.
 
-IIRC, offlist we hacked up klp-convert to create the klp-relocations for
-a 32-bit target and then you hit the selftest late relocation crash, so
-I assume that part is happy after this fix. :)  Thanks again for the
-testing.
+The stability problem may not happen frequently but is possible if the
+compiler performs some IPA with new code.
 
-For the livepatching implications,
+Such disturbence is probably more likely with LTO or PGO.
+For Clang LTO, Makefile currently specifies -mllvm -import-instr-limit=5.
+If a function close to the boundary happens to cross the boundary,
+if inlined into other translation units, the stability issue may affect
+many translation units.
 
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+>LLD doesn't have such an option, so FG-KASLR + livepatching builds
+>wouldn't be available for LLVM with the current approach (or we'd
+>still need a stub that prints "FG-KASLR is not compatible with
+>sympos != 0").
+>Unfortunately, I discovered this a bit late, just after sending this
+>revision.
+>
+>OTOH, there's no easy alternative. <file + function> pair looks
+>appealing, but is it even possible for now to implement in the
+>kernel without much refactoring?
 
--- Joe
-
+<file + symbol> pair looks good to me and will solve the stability problem.
