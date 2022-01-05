@@ -2,159 +2,93 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A00B484CD7
-	for <lists+live-patching@lfdr.de>; Wed,  5 Jan 2022 04:25:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3FA4850EC
+	for <lists+live-patching@lfdr.de>; Wed,  5 Jan 2022 11:17:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230089AbiAEDZE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 4 Jan 2022 22:25:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiAEDZD (ORCPT
+        id S235259AbiAEKR0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 5 Jan 2022 05:17:26 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:44892 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235244AbiAEKRZ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 4 Jan 2022 22:25:03 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45133C061761
-        for <live-patching@vger.kernel.org>; Tue,  4 Jan 2022 19:25:03 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id s1so32843980pga.5
-        for <live-patching@vger.kernel.org>; Tue, 04 Jan 2022 19:25:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=wkuN5scY3yiYZRl2fRuA4WGrOv7r3w+Jln9UFNacBQM=;
-        b=sMREvPRxGZUwa08eFtR2hiuXSNQvK2z3b4UkIDQKPgoibmig3YKSC5pe3mtAttY7h4
-         XwK6GVkzJlAQFD2wxzX0eBRmZPIqCLwyrJwVVyBuYbzzF8v1N7MwQVj3P7PuIuTVvo0A
-         rEP82aGHqFCbL7ltVQA9rwNIlRiurCUsJqIQJ75u9fKPGEUjWr+Bd51S25yKt9bNwyWq
-         rcSVy1OCjWXA6fj3PLmN+GdKcNL6LzYc5Ao8OxtZok7AYQCkWdnX56ev9cPw3c3+UGgs
-         dVVe/F8gBmvEA8sYC1WCJBKNz2MM65RNUa7GnJFiSHqVSKWr0g4rG/r7YmFBeeHCDHyO
-         Sfog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=wkuN5scY3yiYZRl2fRuA4WGrOv7r3w+Jln9UFNacBQM=;
-        b=3gvyy1kSyg91LzIid7XOfDE9jjDoDGUH+cC8DaslV4cbOqrOEviky6GXEuKTRsoU9A
-         AExtl410mfhEX6btgF1DbegyFJcs9Hsf0B3lYyb8CFqrl50pr/4mVKY2DrsbphbHaXsg
-         w532OOKAF/FowIrozxZtMmwD/RDOreXavp+GqUL/gvYzuwwvlEPdj0alD5yeswc35DOT
-         X9+rs0Vx4vWb1/ggIThfQjddRn+a/4oV/eX+6Nw0kW4uAr4Ys030SvZQqdRvEODtIC59
-         2tMevk9tpk4o86iA5X1s/iUlZhyqha6CSBTOxxjaww3mbXEjR1lXZbNBUDN0zQwwTS1I
-         WWLw==
-X-Gm-Message-State: AOAM531TxlEXCJC5U9ns7Thethlsb1vSnRtHpq6RpSSlFbAgmlRmCIPY
-        R9qjvYM/74BIdv3RT9iCAswUZA==
-X-Google-Smtp-Source: ABdhPJwILBGPaWIQmEOPR6iQ9ZbM+KK4UsIg1jEugYbcKOG7KIm+OYdMXveHNWvOBlsyyUCtrfOdgA==
-X-Received: by 2002:a63:8149:: with SMTP id t70mr46472429pgd.71.1641353102364;
-        Tue, 04 Jan 2022 19:25:02 -0800 (PST)
-Received: from google.com ([2620:15c:2ce:200:b78:5a0b:6f2e:23e9])
-        by smtp.gmail.com with ESMTPSA id a15sm663138pjo.49.2022.01.04.19.24.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 19:25:02 -0800 (PST)
-Date:   Tue, 4 Jan 2022 19:24:56 -0800
-From:   =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>, Borislav Petkov <bp@alien8.de>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v9 02/15] livepatch: use `-z unique-symbol` if available
- to nuke pos-based search
-Message-ID: <20220105032456.hs3od326sdl4zjv4@google.com>
-References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
- <20211223002209.1092165-3-alexandr.lobakin@intel.com>
- <Yc2Tqc69W9ukKDI1@zn.tnic>
- <CAFP8O3K1mkiCGMTEeuSifZtr2piHsKTjP5TOA25nqpv2SrbzYQ@mail.gmail.com>
- <alpine.LSU.2.21.2201031447140.15051@pobox.suse.cz>
- <20220103160615.7904-1-alexandr.lobakin@intel.com>
+        Wed, 5 Jan 2022 05:17:25 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 736C22110B;
+        Wed,  5 Jan 2022 10:17:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1641377843; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R3a4/jDffI/RE5UZn9PXmI80o+ierKeptaswzlJpcyo=;
+        b=RxikGIxLDjGHCsCe9FuOETZmtVE3HYzG1kGVdliKVZ4FiW2Doh7xiyAM4LGof5z6w7F4zx
+        gNpKekcjDGu0YqrSYJAaFjLKGFTykOrPJUJl3xL2kXj7rcYC7/k9LpVmWX+r2j/KGx2H4s
+        DMTDWh1QV/GtNe4wp75ldw8K6eSX0sY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1641377843;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R3a4/jDffI/RE5UZn9PXmI80o+ierKeptaswzlJpcyo=;
+        b=L2a7f1n0FrbGB+86/a1M9bqdPqG9ljjfyu30BlMf7g3qgHrbXhVMZ88NiBMwmdUQU48h3J
+        mVQyYqZmoxC+P+CA==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 59557A3B84;
+        Wed,  5 Jan 2022 10:17:23 +0000 (UTC)
+Date:   Wed, 5 Jan 2022 11:17:23 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     David Vernet <void@manifault.com>
+cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
+        joe.lawrence@redhat.com
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+In-Reply-To: <20211229215646.830451-1-void@manifault.com>
+Message-ID: <alpine.LSU.2.21.2201051045540.12365@pobox.suse.cz>
+References: <20211229215646.830451-1-void@manifault.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220103160615.7904-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 2022-01-03, Alexander Lobakin wrote:
->From: Miroslav Benes <mbenes@suse.cz>
->Date: Mon, 3 Jan 2022 14:55:42 +0100 (CET)
->
->> On Thu, 30 Dec 2021, Fāng-ruì Sòng wrote:
->>
->> > On Thu, Dec 30, 2021 at 3:11 AM Borislav Petkov <bp@alien8.de> wrote:
->> > >
->> > > On Thu, Dec 23, 2021 at 01:21:56AM +0100, Alexander Lobakin wrote:
->> > > > [PATCH v9 02/15] livepatch: use `-z unique-symbol` if available to nuke pos-based search
->>
->> ...
->>
->> > Apologies since I haven't read the patch series.
->> >
->> > The option does not exist in ld.lld and I am a bit concerning about
->> > its semantics: https://maskray.me/blog/2020-11-15-explain-gnu-linker-options#z-unique-symbol
->> >
->> > I thought that someone forwarded my comments (originally posted months
->> > on a feature request ago) here but seems not.
->> > (I am a ld.lld maintainer.)
->>
->> Do you mean
->> https://lore.kernel.org/all/20210123225928.z5hkmaw6qjs2gu5g@google.com/T/#u
->> ?
->>
->> Unfortunately, it did not lead anywhere. I think that '-z unique-symbol'
->> option should work fine as long as the live patching is concerned. Maybe I
->> misunderstood but your concerns mentioned at the blog do not apply. The
->> stability is not an issue for us since we (KLP) always work with already
->> built and fixed kernel. And(at least) GCC already uses number suffices for
->> IPA clones and it has not been a problem anywhere.
+On Wed, 29 Dec 2021, David Vernet wrote:
 
-The stability problem may not happen frequently but is possible if the
-compiler performs some IPA with new code.
+> When initializing a 'struct klp_object' in klp_init_object_loaded(), and
+> performing relocations in klp_resolve_symbols(), klp_find_object_symbol()
+> is invoked to look up the address of a symbol in an already-loaded module
+> (or vmlinux). This, in turn, calls kallsyms_on_each_symbol() or
+> module_kallsyms_on_each_symbol() to find the address of the symbol that is
+> being patched.
+> 
+> It turns out that symbol lookups often take up the most CPU time when
+> enabling and disabling a patch, and may hog the CPU and cause other tasks
+> on that CPU's runqueue to starve -- even in paths where interrupts are
+> enabled.  For example, under certain workloads, enabling a KLP patch with
+> many objects or functions may cause ksoftirqd to be starved, and thus for
+> interrupts to be backlogged and delayed. This may end up causing TCP
+> retransmits on the host where the KLP patch is being applied, and in
+> general, may cause any interrupts serviced by softirqd to be delayed while
+> the patch is being applied.
+> 
+> So as to ensure that kallsyms_on_each_symbol() does not end up hogging the
+> CPU, this patch adds a call to cond_resched() in kallsyms_on_each_symbol()
+> and module_kallsyms_on_each_symbol(), which are invoked when doing a symbol
+> lookup in vmlinux and a module respectively.  Without this patch, if a
+> live-patch is applied on a 36-core Intel host with heavy TCP traffic, a
+> ~10x spike is observed in TCP retransmits while the patch is being applied.
+> Additionally, collecting sched events with perf indicates that ksoftirqd is
+> awakened ~1.3 seconds before it's eventually scheduled.  With the patch, no
+> increase in TCP retransmit events is observed, and ksoftirqd is scheduled
+> shortly after it's awakened.
+> 
+> Signed-off-by: David Vernet <void@manifault.com>
 
-Such disturbence is probably more likely with LTO or PGO.
-For Clang LTO, Makefile currently specifies -mllvm -import-instr-limit=5.
-If a function close to the boundary happens to cross the boundary,
-if inlined into other translation units, the stability issue may affect
-many translation units.
+Acked-by: Miroslav Benes <mbenes@suse.cz>
 
->LLD doesn't have such an option, so FG-KASLR + livepatching builds
->wouldn't be available for LLVM with the current approach (or we'd
->still need a stub that prints "FG-KASLR is not compatible with
->sympos != 0").
->Unfortunately, I discovered this a bit late, just after sending this
->revision.
->
->OTOH, there's no easy alternative. <file + function> pair looks
->appealing, but is it even possible for now to implement in the
->kernel without much refactoring?
+I had similar ideas Petr mentioned elsewhere, but I, also, have no strong 
+opinion about it. Especially when livepatch is the only user of the said 
+interface.
 
-<file + symbol> pair looks good to me and will solve the stability problem.
+M
