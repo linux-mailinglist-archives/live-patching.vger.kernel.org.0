@@ -2,83 +2,87 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D0C4877EA
-	for <lists+live-patching@lfdr.de>; Fri,  7 Jan 2022 14:04:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 057374878B3
+	for <lists+live-patching@lfdr.de>; Fri,  7 Jan 2022 15:13:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347343AbiAGNEX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 7 Jan 2022 08:04:23 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:41722 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231883AbiAGNEW (ORCPT
+        id S239127AbiAGONN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 7 Jan 2022 09:13:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33275 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239025AbiAGONN (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 7 Jan 2022 08:04:22 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4D66B1F397;
-        Fri,  7 Jan 2022 13:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1641560661; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Fri, 7 Jan 2022 09:13:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641564792;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ydS8jbmtTNSvhWKqliTJ11ZJ+8dm8meUoBr5M26AGBs=;
-        b=qt9txL8Q9yT8aJ3LdX4wHHomcTGi8nLR32MAdumkrzI1zQINKKFXegLKTnGdo3jU9qnaAN
-        v/zrgeWO21SkaEN7XP/vyhAUxp195PZ3aWs09oI5q8D1AMrUMMSWT9RMtlByTcErRyw52W
-        zWNLk5dBfO3WW94F7cozZ4+el+0ae5E=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 30B1DA3B84;
-        Fri,  7 Jan 2022 13:04:21 +0000 (UTC)
-Date:   Fri, 7 Jan 2022 14:03:49 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     David Vernet <void@manifault.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com
-Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
-Message-ID: <Ydg6NYs+gEypq0LK@alley>
+        bh=2L4YEi0aDoHLNeQF/we9qhhc3irCTkuMiMi3Iny+wp0=;
+        b=RXWEO5kUivo8zJtXAcXpT2aKXarUSQer69rrTu+/tOFjSWSuxIpwsePdZ37R5b63KTbQpf
+        t1DZA8HOhtEsjYEj3NcBweIU3jec3cYa0OYEDB6xOoM9iCgBUlA+mIuEIz01FzRU+9NGSM
+        dATu6Z2qlAjGucELUaTB927AvrSVuZw=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-479-g5tYbWFmPgqWI2X5h5tWdg-1; Fri, 07 Jan 2022 09:13:10 -0500
+X-MC-Unique: g5tYbWFmPgqWI2X5h5tWdg-1
+Received: by mail-qv1-f71.google.com with SMTP id gf14-20020a056214250e00b00411ba2ba63dso4867934qvb.21
+        for <live-patching@vger.kernel.org>; Fri, 07 Jan 2022 06:13:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:to:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2L4YEi0aDoHLNeQF/we9qhhc3irCTkuMiMi3Iny+wp0=;
+        b=cdXuyyvE3NsX420qDDn++AjnbyhaGabdVJIxHlhdfDJZRxNQVnWNlCIEgdcfmWs/6G
+         F1cnoKiklzAFyy0aj07xWFdLZwJBbXfOd3JRx2AScL0+AFLHuOpXmHxbLBolzzTcsfrc
+         CXy8QI4GtLhgduNTcx/tjD5WNrjBXSVJU0LWU2iXTN3gOcWXNbswQUE9CMHyCRyKRSNY
+         AgdoTnu7pzjNPAl18fr5IcOs1eJN63eIbuuLIiWkRTqWDvXIRYXZm1Icyiru6osSINsK
+         thz/lR8cMGBt7DbkqKUlNvrCMAOfCRDieB6H6RkNTxeHcl29uHK5O9kvTQQkihlE9Ula
+         BRYw==
+X-Gm-Message-State: AOAM530VeSkWw9LXWEoIKEjL1/IfKxfoZsDxE0iINSshIx4zIDcGB60y
+        VmZm0CSlMi2VKNxG2wWLr8RyeU4Cwd+L9s+ki/40UQIK47++9ki8k1ATE5PwhqMAGioYIv0KHMN
+        TSK7UJwTlyNOtN677zeKL2pXnlA==
+X-Received: by 2002:a05:620a:4446:: with SMTP id w6mr44672982qkp.273.1641564790441;
+        Fri, 07 Jan 2022 06:13:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyxpJ4Sg3lAOJt40+fckPzVrfV1SS+laz3cGFmL/vYslY4erIf4p5P2MVtYSxieCu2+92/1+w==
+X-Received: by 2002:a05:620a:4446:: with SMTP id w6mr44672964qkp.273.1641564790148;
+        Fri, 07 Jan 2022 06:13:10 -0800 (PST)
+Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
+        by smtp.gmail.com with ESMTPSA id o17sm3509317qkp.89.2022.01.07.06.13.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 06:13:09 -0800 (PST)
+To:     David Vernet <void@manifault.com>, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz
 References: <20211229215646.830451-1-void@manifault.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+Message-ID: <1f1b9b01-cfab-8a84-f35f-c21172e5d64d@redhat.com>
+Date:   Fri, 7 Jan 2022 09:13:08 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 In-Reply-To: <20211229215646.830451-1-void@manifault.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2021-12-29 13:56:47, David Vernet wrote:
-> When initializing a 'struct klp_object' in klp_init_object_loaded(), and
-> performing relocations in klp_resolve_symbols(), klp_find_object_symbol()
-> is invoked to look up the address of a symbol in an already-loaded module
-> (or vmlinux). This, in turn, calls kallsyms_on_each_symbol() or
-> module_kallsyms_on_each_symbol() to find the address of the symbol that is
-> being patched.
-> 
-> It turns out that symbol lookups often take up the most CPU time when
-> enabling and disabling a patch, and may hog the CPU and cause other tasks
-> on that CPU's runqueue to starve -- even in paths where interrupts are
-> enabled.  For example, under certain workloads, enabling a KLP patch with
+On 12/29/21 4:56 PM, David Vernet wrote:
+> For example, under certain workloads, enabling a KLP patch with
 > many objects or functions may cause ksoftirqd to be starved, and thus for
-> interrupts to be backlogged and delayed. This may end up causing TCP
-> retransmits on the host where the KLP patch is being applied, and in
-> general, may cause any interrupts serviced by softirqd to be delayed while
-> the patch is being applied.
-> 
-> So as to ensure that kallsyms_on_each_symbol() does not end up hogging the
-> CPU, this patch adds a call to cond_resched() in kallsyms_on_each_symbol()
-> and module_kallsyms_on_each_symbol(), which are invoked when doing a symbol
-> lookup in vmlinux and a module respectively.  Without this patch, if a
-> live-patch is applied on a 36-core Intel host with heavy TCP traffic, a
-> ~10x spike is observed in TCP retransmits while the patch is being applied.
-> Additionally, collecting sched events with perf indicates that ksoftirqd is
-> awakened ~1.3 seconds before it's eventually scheduled.  With the patch, no
-> increase in TCP retransmit events is observed, and ksoftirqd is scheduled
-> shortly after it's awakened.
-> 
-> Signed-off-by: David Vernet <void@manifault.com>
+> interrupts to be backlogged and delayed.
 
-OK, there was not any strong pushback.
+Just curious, approximately how many objects/functions does it take to
+hit this condition?  While the livepatching kselftests are more about
+API and kernel correctness, this sounds like an interesting test case
+for some of the other (out of tree) test suites.
 
-I have committed the patch into livepatch.git, branch for-5.17/kallsyms.
+Thanks,
+-- 
+Joe
 
-Best Regards,
-Petr
