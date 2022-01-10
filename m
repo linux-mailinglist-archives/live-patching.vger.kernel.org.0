@@ -2,74 +2,140 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C905487AA7
-	for <lists+live-patching@lfdr.de>; Fri,  7 Jan 2022 17:46:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A43E489987
+	for <lists+live-patching@lfdr.de>; Mon, 10 Jan 2022 14:12:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240085AbiAGQq5 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 7 Jan 2022 11:46:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35374 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240038AbiAGQq5 (ORCPT
+        id S231953AbiAJNMD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 10 Jan 2022 08:12:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231545AbiAJNLr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 7 Jan 2022 11:46:57 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F93161F63;
-        Fri,  7 Jan 2022 16:46:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B804C36AEF;
-        Fri,  7 Jan 2022 16:46:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641574016;
-        bh=uY8qyK5QY52TdDm0IBri989Ttzdm1zbibvJDDniXh4U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bpu/vrNhak7b95ZBgmQlriTRt7oaTeTtLK3MqWS3u0PIJ+gwLYn66cl5Ty8rQgJKg
-         9Jwezafy84yqyYTWUuXQ3KSJntANN/HkRsQdb7ENNaXmzdBiKAlp0rSwTPAPkvfF7L
-         Y33zr5gH1+AxB0UvHQyY/sYNkq3T4pN7MFjawZRz3CBMY6Q6so65iZaZ0ce+2Q35C9
-         INgINOdsNqXYXc/gr8M+UAArxOvJHmfdsz9zXkx8Rb4i1vL5RYbNNh3GmRHR3y/IDO
-         6ymHLl6r47EvDRhF2/p7AAP2/vz1kX+DFojRuBA7L15t1hHXjHAxlx6zXzvDEJSQ2k
-         8BqL492OFwUVw==
-Received: by mail-yb1-f175.google.com with SMTP id d201so18310206ybc.7;
-        Fri, 07 Jan 2022 08:46:55 -0800 (PST)
-X-Gm-Message-State: AOAM533Vwze6CJuc0D5AFe5+rnuyw6MMr9DTzOgOGFWkmb3CiO4CfSw4
-        8Eth6HPWRLIbLdKO8N0dgoU+U3/zmiKV2EMJVDU=
-X-Google-Smtp-Source: ABdhPJxPBE7HCwAiCj6POan6TNgTerrP9DAYS4LQmDmyoY4KD1kUjFNihbISjMKwJL06bWBbmkh5TO4TFUeO1A6blX0=
-X-Received: by 2002:a5b:c01:: with SMTP id f1mr84256178ybq.47.1641574015121;
- Fri, 07 Jan 2022 08:46:55 -0800 (PST)
+        Mon, 10 Jan 2022 08:11:47 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D88FC03401F
+        for <live-patching@vger.kernel.org>; Mon, 10 Jan 2022 05:11:47 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id h10so16532496wrb.1
+        for <live-patching@vger.kernel.org>; Mon, 10 Jan 2022 05:11:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=STst/NZz7XpLuhkw/fjT1YooCLQUEgoChj9j28RAYfs=;
+        b=Bgie3w5lZXcUpEJsNUNnYT9D80sz6831OKMgWSWMpAMR4c04HQM1hwHkoZ1AqHgJ5M
+         pQJfhFBsNTGc+jfMsWTuSDXhNBe5XPwJ8/UQZKbYcWTDQ68Eu4MBBVsHf0V3Baa+27Pp
+         IUJW/950IUGNsTto2NnsTW49/Cy4Vf+KfgzDT0+KZ2gcb/QkEKg3LEIj8qPJpiII0Qbk
+         buE3CbPl0T8T6omQLXT3KYJBxN98pPIrfxDam1Qs0diPFN43pWVugWbd8LU8WaIGviK3
+         O/t/NLMKhR03EdE8rMi5c8T5epCw09Yzc4YmAU5QrO9ZaREbayNwAtpm1SWYSR1IiBuY
+         5w9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=STst/NZz7XpLuhkw/fjT1YooCLQUEgoChj9j28RAYfs=;
+        b=lY68X07CLrGtf8uaf6NFDKO2L/SyXZv1RDS+YjpJLnb0/YOuRJy8h8sYmBz8DqVHGg
+         vUn7tW849RD4zRe0SUUT6k8fvBY1F12mACTYiAw5fVB6a1BW6Ct1taH+1yjFmQNdCJQP
+         1GL/JRjNydwazdp/TCejNONnWkqF/7pDJ9qwf+95icl/ngJTQwVf3CEnCUIDHiRmk6x/
+         gm9rQxCkKAGi1FGA65cd0XxmgxuC9UEmAwvsbltajkhh/mI9B6DnqD7o4GqFUIzZyNZK
+         lYv0BevKWr0DBHQl3HMCWljIBQv5i1HHIly/Fi2Yd1+dyzdcOom2vQSYWZa7DvHEVrGZ
+         nljQ==
+X-Gm-Message-State: AOAM5300+CmGHYL+QnVsH6YN3OdzqurM+GtRS25yd6OixssqwQRzwiYJ
+        KKweUFJHDuBafYXSXk4LZLk6d+oWgCDvUcwHfPb5GRj8ttQ=
+X-Google-Smtp-Source: ABdhPJyUuzfRq9+VAp3YIslVsNF7E8r6u+SDvjtiaFw6sfTA9uOxrmlrl9JDay/jDh10uqplhgk07a+YHTpM3Ge0znw=
+X-Received: by 2002:ac2:4c51:: with SMTP id o17mr60639917lfk.558.1641820293776;
+ Mon, 10 Jan 2022 05:11:33 -0800 (PST)
 MIME-Version: 1.0
-References: <20211229215646.830451-1-void@manifault.com> <1f1b9b01-cfab-8a84-f35f-c21172e5d64d@redhat.com>
-In-Reply-To: <1f1b9b01-cfab-8a84-f35f-c21172e5d64d@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 7 Jan 2022 08:46:44 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4Ua2hDs5WMtF0s_CQki-ZdYMvkU2s+Nc7Rvs=-D6WL=Q@mail.gmail.com>
-Message-ID: <CAPhsuW4Ua2hDs5WMtF0s_CQki-ZdYMvkU2s+Nc7Rvs=-D6WL=Q@mail.gmail.com>
-Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     David Vernet <void@manifault.com>, live-patching@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>, jpoimboe@redhat.com,
-        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz
+Received: by 2002:a05:6504:15d1:0:0:0:0 with HTTP; Mon, 10 Jan 2022 05:11:32
+ -0800 (PST)
+Reply-To: gtbank107@yahoo.com
+From:   Barr Robert Richter <westernunion.benin982@gmail.com>
+Date:   Mon, 10 Jan 2022 14:11:32 +0100
+Message-ID: <CAP=nHBK9zHzp_=-EVswWQiLxEoc+HV4oqddgtnEqf-9qYab_4Q@mail.gmail.com>
+Subject: Contact GT Bank-Benin to receive your transfer amount of $18.5m US Dollars.
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 6:13 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
->
-> On 12/29/21 4:56 PM, David Vernet wrote:
-> > For example, under certain workloads, enabling a KLP patch with
-> > many objects or functions may cause ksoftirqd to be starved, and thus for
-> > interrupts to be backlogged and delayed.
->
-> Just curious, approximately how many objects/functions does it take to
-> hit this condition?  While the livepatching kselftests are more about
-> API and kernel correctness, this sounds like an interesting test case
-> for some of the other (out of tree) test suites.
+Attn,Dear
+I need you to know that the fear of the LORD is
+the beginning of wisdom, and knowledge of the Holy One is
+understanding. As power of God Most High. And This is the confidence
+we have in approaching God, that if we ask anything according to his
+will, he hears us. I will make you know that Slow and steady wins the race.
+It is your turn to receive your overdue compensation funds total
+amount $18.5Milion  USD.
+I actualized that you will receive your transfer today without any more delay
+No More fee OK, Believe me , I am your Attorney standing here on your favor.
+I just concluded conversation with the Gt Bank Director, Mrs Mary Gate
+And She told me that your transfer is ready today
 
-Not many patched functions. We only do small fixes at the moment. In the recent
-example, we hit the issue with ~10 patched functions. Another version
-with 2 to 3
-patched function seems fine.
+So the Bank Asked you to contact them immediately by re-confirming
+your Bank details asap.
+Because this is the Only thing holding this transfer
+If you did not trust me and Mrs Mary Gate,Who Else will you Trust?
+For we are the ones trying to protect your funds here
+and make sure that your funds is secure.
+So Promisingly, I am here to assure you, that Grate Miracle is coming on
+your way, and this funds total amount of $18.500,000 is your
+compensation, entitlement inheritance overdue funds on your name.
+Which you cannot let anything delay you from receiving your funds now,
 
-Yes, I think this is an important test case.
+Finally i advised you to try your possible best and contact Gt Bank Benin
+once you get this message to receive your transfer $18.5 USD today.
+I know that a journey of thousand miles begins with a single step.
+Always put your best foot forward
+Try as hard as you can, God give you best.
+take my advice and follow the due process of your payment, the
+transfer will be released to
+you smoothly without any hitches or hindrance.
 
-Song
+Contact DR.MRS MARY GATE, Director Gt bank-Benin to receive your
+transfer amount of $18.5m US Dollars
+It was deposited and registered to your name this morning.
+Contact the Bank now to know when they will transfer to your
+country today
+
+Email id: gtbank107@yahoo.com
+Tel/mobile, +229 99069872
+Contact person, Mrs Mary Gate,Director Gt bank-Benin.
+Among the blind the one-eyed man is king
+
+As you sow, so you shall reap, i want you to receive your funds
+Best things in life are free
+Send to her your Bank Details as i listed here.
+
+Your account name-------------
+Your Bank Name----------------
+Account Number----------
+your Bank address----------
+Country-----------
+Your private phone number---------
+Routing Numbers-------------
+Swift Code-----------
+
+Note, Your funds is %100 Percent ready for
+transfer.
+Everything you do remember that Good things come to those who wait.
+I have done this work for you with my personally effort, Honesty is
+the best policy.
+now your transfer is currently deposited with paying bank this morning.
+It is by the grace of God that I received Christ, having known the truth.
+I had no choice than to do what is lawful and justice in the
+sight of God for eternal life and in the sight of man for witness of
+God & His Mercies and glory upon my life.
+
+send this needed bank details to the bank today, so that you receive
+your transfer today as
+it is available for your confirmation today.
+Please do your best as a serious person and send the fee urgent, Note
+that this transfer of $18.500.000 M USD is a Gift from God to Bless
+you.
+
+If you did not contact the bank urgent, finally the Bank will release
+your transfer of $18.500.000M USD to  Mr. David Bollen as your
+representative.
+So not allow another to claim your Money.
+Thanks For your Understanding.
+
+Barr Robert Richter, UN Attorney At Law Court-Benin
