@@ -2,140 +2,85 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A43E489987
-	for <lists+live-patching@lfdr.de>; Mon, 10 Jan 2022 14:12:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64EA6489B6B
+	for <lists+live-patching@lfdr.de>; Mon, 10 Jan 2022 15:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbiAJNMD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 10 Jan 2022 08:12:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231545AbiAJNLr (ORCPT
+        id S235641AbiAJOjC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 10 Jan 2022 09:39:02 -0500
+Received: from mail-qv1-f43.google.com ([209.85.219.43]:45844 "EHLO
+        mail-qv1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231196AbiAJOjB (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 10 Jan 2022 08:11:47 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D88FC03401F
-        for <live-patching@vger.kernel.org>; Mon, 10 Jan 2022 05:11:47 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id h10so16532496wrb.1
-        for <live-patching@vger.kernel.org>; Mon, 10 Jan 2022 05:11:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=STst/NZz7XpLuhkw/fjT1YooCLQUEgoChj9j28RAYfs=;
-        b=Bgie3w5lZXcUpEJsNUNnYT9D80sz6831OKMgWSWMpAMR4c04HQM1hwHkoZ1AqHgJ5M
-         pQJfhFBsNTGc+jfMsWTuSDXhNBe5XPwJ8/UQZKbYcWTDQ68Eu4MBBVsHf0V3Baa+27Pp
-         IUJW/950IUGNsTto2NnsTW49/Cy4Vf+KfgzDT0+KZ2gcb/QkEKg3LEIj8qPJpiII0Qbk
-         buE3CbPl0T8T6omQLXT3KYJBxN98pPIrfxDam1Qs0diPFN43pWVugWbd8LU8WaIGviK3
-         O/t/NLMKhR03EdE8rMi5c8T5epCw09Yzc4YmAU5QrO9ZaREbayNwAtpm1SWYSR1IiBuY
-         5w9A==
+        Mon, 10 Jan 2022 09:39:01 -0500
+Received: by mail-qv1-f43.google.com with SMTP id a9so14599906qvd.12;
+        Mon, 10 Jan 2022 06:39:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=STst/NZz7XpLuhkw/fjT1YooCLQUEgoChj9j28RAYfs=;
-        b=lY68X07CLrGtf8uaf6NFDKO2L/SyXZv1RDS+YjpJLnb0/YOuRJy8h8sYmBz8DqVHGg
-         vUn7tW849RD4zRe0SUUT6k8fvBY1F12mACTYiAw5fVB6a1BW6Ct1taH+1yjFmQNdCJQP
-         1GL/JRjNydwazdp/TCejNONnWkqF/7pDJ9qwf+95icl/ngJTQwVf3CEnCUIDHiRmk6x/
-         gm9rQxCkKAGi1FGA65cd0XxmgxuC9UEmAwvsbltajkhh/mI9B6DnqD7o4GqFUIzZyNZK
-         lYv0BevKWr0DBHQl3HMCWljIBQv5i1HHIly/Fi2Yd1+dyzdcOom2vQSYWZa7DvHEVrGZ
-         nljQ==
-X-Gm-Message-State: AOAM5300+CmGHYL+QnVsH6YN3OdzqurM+GtRS25yd6OixssqwQRzwiYJ
-        KKweUFJHDuBafYXSXk4LZLk6d+oWgCDvUcwHfPb5GRj8ttQ=
-X-Google-Smtp-Source: ABdhPJyUuzfRq9+VAp3YIslVsNF7E8r6u+SDvjtiaFw6sfTA9uOxrmlrl9JDay/jDh10uqplhgk07a+YHTpM3Ge0znw=
-X-Received: by 2002:ac2:4c51:: with SMTP id o17mr60639917lfk.558.1641820293776;
- Mon, 10 Jan 2022 05:11:33 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pO7pYeF0q/KOlSDXskK/am/odc2RYkvEzSsdTjA4sWM=;
+        b=gRTbjgJmxjdCUi7JMQk7WGmiyclPZeWwmgoeu2VyXeCHGgJ9Vz7o/Dk5ijtymrXntb
+         g3M65jKF9TnEdtGpgstLScFbD4OBJfzVwHaHynhg6OUOW2zpVqM+fKYFocDJyUuHeoDz
+         HPsQlsqJihg/rjA2LxB7MUL03k/IavUEby7njHPZa/Ve/31HezB6CLE2qMPxgZ7Z2SwP
+         2tSJtiFZ4XzqzojNTd78hDXNo6bCETKkNsOlyT9wcKu1Zh4EUITJrZjnJhkzUQaLtFTm
+         9JILxMwCgKBv4A89KFQtI1cE1QRvWGn6reomc2kuoOhD6l0QzYx/HFeZcy463gNcMCbF
+         g1Fw==
+X-Gm-Message-State: AOAM533vUXmtCoff9+QHKY+wIY/A0NkDKQMHKO7qVIqr9G7UD4S426mP
+        SwOybfGK2YepZxnpwxHmPsTtROvv6fmNxg==
+X-Google-Smtp-Source: ABdhPJym7QBoq8Zjc+aKSJ0iSTaFS10mpRbgvEa+KZAl3mkEJk7GZpOWuY2DnxGzvLYA1H/MIZou1A==
+X-Received: by 2002:a05:6214:2a88:: with SMTP id jr8mr69282684qvb.18.1641825540470;
+        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-006.fbsv.net. [2a03:2880:20ff:6::face:b00c])
+        by smtp.gmail.com with ESMTPSA id k8sm4931234qtx.35.2022.01.10.06.38.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
+Date:   Mon, 10 Jan 2022 06:38:58 -0800
+From:   David Vernet <void@manifault.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, linux-modules@vger.kernel.org,
+        mcgrof@kernel.org, jeyu@kernel.org, bpf@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, memxor@gmail.com, clm@fb.com
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+Message-ID: <YdxFAshozmxfiLd/@dev0025.ash9.facebook.com>
+References: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
+ <YdMej8L0bqe+XetW@alley>
 MIME-Version: 1.0
-Received: by 2002:a05:6504:15d1:0:0:0:0 with HTTP; Mon, 10 Jan 2022 05:11:32
- -0800 (PST)
-Reply-To: gtbank107@yahoo.com
-From:   Barr Robert Richter <westernunion.benin982@gmail.com>
-Date:   Mon, 10 Jan 2022 14:11:32 +0100
-Message-ID: <CAP=nHBK9zHzp_=-EVswWQiLxEoc+HV4oqddgtnEqf-9qYab_4Q@mail.gmail.com>
-Subject: Contact GT Bank-Benin to receive your transfer amount of $18.5m US Dollars.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdMej8L0bqe+XetW@alley>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Attn,Dear
-I need you to know that the fear of the LORD is
-the beginning of wisdom, and knowledge of the Holy One is
-understanding. As power of God Most High. And This is the confidence
-we have in approaching God, that if we ask anything according to his
-will, he hears us. I will make you know that Slow and steady wins the race.
-It is your turn to receive your overdue compensation funds total
-amount $18.5Milion  USD.
-I actualized that you will receive your transfer today without any more delay
-No More fee OK, Believe me , I am your Attorney standing here on your favor.
-I just concluded conversation with the Gt Bank Director, Mrs Mary Gate
-And She told me that your transfer is ready today
+Apologies all for the delayed response -- I was still on holiday last week.
 
-So the Bank Asked you to contact them immediately by re-confirming
-your Bank details asap.
-Because this is the Only thing holding this transfer
-If you did not trust me and Mrs Mary Gate,Who Else will you Trust?
-For we are the ones trying to protect your funds here
-and make sure that your funds is secure.
-So Promisingly, I am here to assure you, that Grate Miracle is coming on
-your way, and this funds total amount of $18.500,000 is your
-compensation, entitlement inheritance overdue funds on your name.
-Which you cannot let anything delay you from receiving your funds now,
+Petr Mladek <pmladek@suse.com> wrote on Mon [2022-Jan-03 17:04:31 +0100]:
+> > > It turns out that symbol lookups often take up the most CPU time when
+> > > enabling and disabling a patch, and may hog the CPU and cause other tasks
+> > > on that CPU's runqueue to starve -- even in paths where interrupts are
+> > > enabled.  For example, under certain workloads, enabling a KLP patch with
+> > > many objects or functions may cause ksoftirqd to be starved, and thus for
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^
+> This suggests that a single kallsyms_on_each_symbol() is not a big
+> problem. cond_resched() might be called non-necessarily often there.
+> I wonder if it would be enough to add cond_resched() into the two
+> loops calling klp_find_object_symbol().
 
-Finally i advised you to try your possible best and contact Gt Bank Benin
-once you get this message to receive your transfer $18.5 USD today.
-I know that a journey of thousand miles begins with a single step.
-Always put your best foot forward
-Try as hard as you can, God give you best.
-take my advice and follow the due process of your payment, the
-transfer will be released to
-you smoothly without any hitches or hindrance.
+In the initial version of the patch I was intending to send out, I actually
+had the cond_resched() in klp_find_object_symbol(). Having it there did
+appear to fix the ksoftirqd starvation issue, but I elected to put it in
+klp_find_object_symbol() after Chris (cc'd) suggested it because
+cond_resched() is so lightweight, and it didn't affect the runtime for
+livepatching in my experiments.
 
-Contact DR.MRS MARY GATE, Director Gt bank-Benin to receive your
-transfer amount of $18.5m US Dollars
-It was deposited and registered to your name this morning.
-Contact the Bank now to know when they will transfer to your
-country today
+> That said, kallsyms_on_each_symbol() is a slow path and there might
+> be many symbols. So, it might be the right place.
 
-Email id: gtbank107@yahoo.com
-Tel/mobile, +229 99069872
-Contact person, Mrs Mary Gate,Director Gt bank-Benin.
-Among the blind the one-eyed man is king
-
-As you sow, so you shall reap, i want you to receive your funds
-Best things in life are free
-Send to her your Bank Details as i listed here.
-
-Your account name-------------
-Your Bank Name----------------
-Account Number----------
-your Bank address----------
-Country-----------
-Your private phone number---------
-Routing Numbers-------------
-Swift Code-----------
-
-Note, Your funds is %100 Percent ready for
-transfer.
-Everything you do remember that Good things come to those who wait.
-I have done this work for you with my personally effort, Honesty is
-the best policy.
-now your transfer is currently deposited with paying bank this morning.
-It is by the grace of God that I received Christ, having known the truth.
-I had no choice than to do what is lawful and justice in the
-sight of God for eternal life and in the sight of man for witness of
-God & His Mercies and glory upon my life.
-
-send this needed bank details to the bank today, so that you receive
-your transfer today as
-it is available for your confirmation today.
-Please do your best as a serious person and send the fee urgent, Note
-that this transfer of $18.500.000 M USD is a Gift from God to Bless
-you.
-
-If you did not contact the bank urgent, finally the Bank will release
-your transfer of $18.500.000M USD to  Mr. David Bollen as your
-representative.
-So not allow another to claim your Money.
-Thanks For your Understanding.
-
-Barr Robert Richter, UN Attorney At Law Court-Benin
+Yes, my thinking was that because it didn't seem to affect throughput, and
+because it would could potentially cause the same ssue to occur if it were
+ever called elsewhere, that this was the correct place for it.
