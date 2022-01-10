@@ -2,82 +2,104 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B28A0489BA9
-	for <lists+live-patching@lfdr.de>; Mon, 10 Jan 2022 15:56:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D9AA489D54
+	for <lists+live-patching@lfdr.de>; Mon, 10 Jan 2022 17:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235773AbiAJO4C (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 10 Jan 2022 09:56:02 -0500
-Received: from mail-qk1-f171.google.com ([209.85.222.171]:43629 "EHLO
-        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235769AbiAJO4B (ORCPT
+        id S237217AbiAJQRI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 10 Jan 2022 11:17:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44971 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237199AbiAJQRF (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 10 Jan 2022 09:56:01 -0500
-Received: by mail-qk1-f171.google.com with SMTP id f138so15013948qke.10;
-        Mon, 10 Jan 2022 06:56:01 -0800 (PST)
+        Mon, 10 Jan 2022 11:17:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641831423;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+YjTLY75U3Rr/IBjHhdFVsX4vnS2z8mb10E/ypAsx9o=;
+        b=PbcmDbWHRMMQLyCXCr9uvOmvsHV8pR9MRroSlXczTyoKWOh4CAMd7oZUodO7FLYs/FTYiy
+        LI+TCy1bBe2lvHwNgm64P45nx+gOwaXFYl0j4+L5X+UrR0WW0mBS/ScSN8QC1M4CqHyO/s
+        jT40xCu2oY4Hf52eECufsxuGKj77GTE=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-504-S8NcOPgDO2qG0R2GITO4zw-1; Mon, 10 Jan 2022 11:17:00 -0500
+X-MC-Unique: S8NcOPgDO2qG0R2GITO4zw-1
+Received: by mail-qv1-f69.google.com with SMTP id jn6-20020ad45de6000000b004146a2f1f97so12141335qvb.19
+        for <live-patching@vger.kernel.org>; Mon, 10 Jan 2022 08:17:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L3beBrNOg3nuBaTtpl+UOIFPH3z+4rFJ8EtzyRQDCqA=;
-        b=ESGJHrpZKFlpLalyjhF0qxU8uMwK+CMumj+W/8VNxFkWjwwIdVhP7CDkMPCGqCZHYo
-         IWJ8qGruQLF05ZMdhGHZvN8Dn9iHjC/sygI9Gj6I0g0B969wOweUX2AZlub8/PDxNvFw
-         irieMbHtG72W975ks5VZ5wimmNTnIE6f4AIO0G++sOPDhCEXoDgacDZdU4tIpBUfLSoi
-         Od5r/qrQDxx5gWBpRglFOF379d/h2pY3lyahER5pvWBUQMZBNnUfpTRze4WMjO6BIOU4
-         DZYk7cMTiqO81Bvr7Tmq5Dnq68RTmqzvscLk45qFjAKiocdO3u6uQvwQ7IRxBKTmxMq1
-         RDOQ==
-X-Gm-Message-State: AOAM5329MYfDDkB9LsnKFlHM5XRTod5zYlVnZjBUv+gbBltl+f8rbaDA
-        Kr7gYlQRp2thdI++KW85Zoo=
-X-Google-Smtp-Source: ABdhPJzFvAsCF2kXeHrEyboneBZ+Y7lG9bomaFt7c9MDvgK0pQVBWw08I+MccZhaYxYjK9wgpsUe3w==
-X-Received: by 2002:a05:620a:1a08:: with SMTP id bk8mr11861qkb.195.1641826560971;
-        Mon, 10 Jan 2022 06:56:00 -0800 (PST)
-Received: from dev0025.ash9.facebook.com (fwdproxy-ash-011.fbsv.net. [2a03:2880:20ff:b::face:b00c])
-        by smtp.gmail.com with ESMTPSA id v12sm4835415qtx.80.2022.01.10.06.56.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 06:56:00 -0800 (PST)
-Date:   Mon, 10 Jan 2022 06:55:59 -0800
-From:   David Vernet <void@manifault.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Song Liu <song@kernel.org>, live-patching@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>, jpoimboe@redhat.com,
-        jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+YjTLY75U3Rr/IBjHhdFVsX4vnS2z8mb10E/ypAsx9o=;
+        b=xiM4lwHU+Df5Ut1W8NiwbsRLZiSwP3JXDhDJtlQ9VdMqP32R/kxKYpHARg69J8Q+ZE
+         LhVuCLB4S6/GAbb7VtMcgt4pGKzVpBJd0yc/UA/3tfAeSVbKuiGP9qju17ZyxmBom9kX
+         EzaCFQgeU5J3gcVU0Q4c6Bd7uRpou9DiZWIczF7+dBD7tn+A2WwceqvrhNdPf3HSgPgb
+         fdK/wuOyEznnntnhe13O46Ne0gULVxSWBu7UsoTxvk6Do0WnTl73Nv0R1R3gJm19xmqe
+         gacT0zyGtGS7FMa65iAwo/a/3xinFlI8sqG9eRDsujssl8QtwOs4yaBcTJuyGsWFiYSe
+         G50w==
+X-Gm-Message-State: AOAM533NTg3GYi7QaDU3fEy/s9lW2gN1yhnDyRIJdAdKQj+LsCK37oSG
+        cOjkBWETqTyWgXD44Ou744mShmqf/mVKx53o864jneheNXLnLuSHpLEQdUXWN7ooBMaBEDPWdvw
+        dV0p3s3kvzmAEv3GRmtBZ6edn5w==
+X-Received: by 2002:ac8:5f4e:: with SMTP id y14mr377041qta.620.1641831420240;
+        Mon, 10 Jan 2022 08:17:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyAUtzH3EEX9Ff3ydZLCMZTFVjkkVjbUCwm51dfml+s1g3fpFnx//1UUzWe5M/akiYa/jS9DA==
+X-Received: by 2002:ac8:5f4e:: with SMTP id y14mr377024qta.620.1641831420013;
+        Mon, 10 Jan 2022 08:17:00 -0800 (PST)
+Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
+        by smtp.gmail.com with ESMTPSA id v13sm3080842qtk.93.2022.01.10.08.16.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 08:16:59 -0800 (PST)
 Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
-Message-ID: <YdxI/xFf1btdIhLl@dev0025.ash9.facebook.com>
+To:     Song Liu <song@kernel.org>
+Cc:     David Vernet <void@manifault.com>, live-patching@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>, jpoimboe@redhat.com,
+        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz
 References: <20211229215646.830451-1-void@manifault.com>
- <CAPhsuW5PL1w_72Hrbsp2b3jA-SGyzv5oLfgybkq=s8J5KL6kmw@mail.gmail.com>
- <Ydf3MBet/B+lUdRv@alley>
+ <1f1b9b01-cfab-8a84-f35f-c21172e5d64d@redhat.com>
+ <CAPhsuW4Ua2hDs5WMtF0s_CQki-ZdYMvkU2s+Nc7Rvs=-D6WL=Q@mail.gmail.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <4df1f9a0-3b26-903b-fe63-af5e75ed98d4@redhat.com>
+Date:   Mon, 10 Jan 2022 11:16:58 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ydf3MBet/B+lUdRv@alley>
+In-Reply-To: <CAPhsuW4Ua2hDs5WMtF0s_CQki-ZdYMvkU2s+Nc7Rvs=-D6WL=Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Petr Mladek <pmladek@suse.com> wrote on Fri [2022-Jan-07 09:17:52 +0100]:
-> On Thu 2022-01-06 16:21:18, Song Liu wrote:
-> > PS: Do we observe livepatch takes a longer time to load after this change?
-> > (I believe longer time shouldn't be a problem at all. Just curious.)
+On 1/7/22 11:46 AM, Song Liu wrote:
+> On Fri, Jan 7, 2022 at 6:13 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
+>>
+>> On 12/29/21 4:56 PM, David Vernet wrote:
+>>> For example, under certain workloads, enabling a KLP patch with
+>>> many objects or functions may cause ksoftirqd to be starved, and thus for
+>>> interrupts to be backlogged and delayed.
+>>
+>> Just curious, approximately how many objects/functions does it take to
+>> hit this condition?  While the livepatching kselftests are more about
+>> API and kernel correctness, this sounds like an interesting test case
+>> for some of the other (out of tree) test suites.
 > 
-> It should depend on the load of the system and the number of patched
-> symbols. The module is typically loaded with a normal priority
-> process.
+> Not many patched functions. We only do small fixes at the moment. In the recent
+> example, we hit the issue with ~10 patched functions. Another version
+> with 2 to 3
+> patched function seems fine.
 > 
-> The commit message talks about 1.3 seconds delay of ksoftirq. In
-> principle, the change caused that this 1.3 sec of a single CPU time
-> was interleaved with other scheduled tasks on the same CPU. I would
-> expect that it prolonged the load just by a couple of seconds in
-> the described use case.
+> Yes, I think this is an important test case.
+> 
 
-Just to add a data point here for the record, I didn't observe any increase
-in latency when applying a livepatch with this change. It took roughly ~2
-+/- ~.5 seconds both with and without the change. Obviously that number
-doesn't mean much without knowing the specifics of the patch and what
-workloads were running on the host, but in general the invocations to
-cond_resched() patch did not seem to materially affect the overhead of
-livepatching.
+Thanks, Song.  If you can share any test setup details, I'll pass those
+along to our internal QE group.  And once merged, we'll be adding this
+one to the list of backports for our distro.
 
-The only time I would expect it to cause longer livepatches is when there
-are a lot of tasks that need the CPU, which is dependent on system load as
-Petr said. I'd argue that in this case, the patch would be working as
-intended as hogging the CPU for 1 or more seconds seems like a recipe for
-problems.
+-- 
+Joe
+
