@@ -2,85 +2,82 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64EA6489B6B
-	for <lists+live-patching@lfdr.de>; Mon, 10 Jan 2022 15:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28A0489BA9
+	for <lists+live-patching@lfdr.de>; Mon, 10 Jan 2022 15:56:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235641AbiAJOjC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 10 Jan 2022 09:39:02 -0500
-Received: from mail-qv1-f43.google.com ([209.85.219.43]:45844 "EHLO
-        mail-qv1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231196AbiAJOjB (ORCPT
+        id S235773AbiAJO4C (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 10 Jan 2022 09:56:02 -0500
+Received: from mail-qk1-f171.google.com ([209.85.222.171]:43629 "EHLO
+        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235769AbiAJO4B (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 10 Jan 2022 09:39:01 -0500
-Received: by mail-qv1-f43.google.com with SMTP id a9so14599906qvd.12;
-        Mon, 10 Jan 2022 06:39:01 -0800 (PST)
+        Mon, 10 Jan 2022 09:56:01 -0500
+Received: by mail-qk1-f171.google.com with SMTP id f138so15013948qke.10;
+        Mon, 10 Jan 2022 06:56:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=pO7pYeF0q/KOlSDXskK/am/odc2RYkvEzSsdTjA4sWM=;
-        b=gRTbjgJmxjdCUi7JMQk7WGmiyclPZeWwmgoeu2VyXeCHGgJ9Vz7o/Dk5ijtymrXntb
-         g3M65jKF9TnEdtGpgstLScFbD4OBJfzVwHaHynhg6OUOW2zpVqM+fKYFocDJyUuHeoDz
-         HPsQlsqJihg/rjA2LxB7MUL03k/IavUEby7njHPZa/Ve/31HezB6CLE2qMPxgZ7Z2SwP
-         2tSJtiFZ4XzqzojNTd78hDXNo6bCETKkNsOlyT9wcKu1Zh4EUITJrZjnJhkzUQaLtFTm
-         9JILxMwCgKBv4A89KFQtI1cE1QRvWGn6reomc2kuoOhD6l0QzYx/HFeZcy463gNcMCbF
-         g1Fw==
-X-Gm-Message-State: AOAM533vUXmtCoff9+QHKY+wIY/A0NkDKQMHKO7qVIqr9G7UD4S426mP
-        SwOybfGK2YepZxnpwxHmPsTtROvv6fmNxg==
-X-Google-Smtp-Source: ABdhPJym7QBoq8Zjc+aKSJ0iSTaFS10mpRbgvEa+KZAl3mkEJk7GZpOWuY2DnxGzvLYA1H/MIZou1A==
-X-Received: by 2002:a05:6214:2a88:: with SMTP id jr8mr69282684qvb.18.1641825540470;
-        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
-Received: from dev0025.ash9.facebook.com (fwdproxy-ash-006.fbsv.net. [2a03:2880:20ff:6::face:b00c])
-        by smtp.gmail.com with ESMTPSA id k8sm4931234qtx.35.2022.01.10.06.38.59
+        bh=L3beBrNOg3nuBaTtpl+UOIFPH3z+4rFJ8EtzyRQDCqA=;
+        b=ESGJHrpZKFlpLalyjhF0qxU8uMwK+CMumj+W/8VNxFkWjwwIdVhP7CDkMPCGqCZHYo
+         IWJ8qGruQLF05ZMdhGHZvN8Dn9iHjC/sygI9Gj6I0g0B969wOweUX2AZlub8/PDxNvFw
+         irieMbHtG72W975ks5VZ5wimmNTnIE6f4AIO0G++sOPDhCEXoDgacDZdU4tIpBUfLSoi
+         Od5r/qrQDxx5gWBpRglFOF379d/h2pY3lyahER5pvWBUQMZBNnUfpTRze4WMjO6BIOU4
+         DZYk7cMTiqO81Bvr7Tmq5Dnq68RTmqzvscLk45qFjAKiocdO3u6uQvwQ7IRxBKTmxMq1
+         RDOQ==
+X-Gm-Message-State: AOAM5329MYfDDkB9LsnKFlHM5XRTod5zYlVnZjBUv+gbBltl+f8rbaDA
+        Kr7gYlQRp2thdI++KW85Zoo=
+X-Google-Smtp-Source: ABdhPJzFvAsCF2kXeHrEyboneBZ+Y7lG9bomaFt7c9MDvgK0pQVBWw08I+MccZhaYxYjK9wgpsUe3w==
+X-Received: by 2002:a05:620a:1a08:: with SMTP id bk8mr11861qkb.195.1641826560971;
+        Mon, 10 Jan 2022 06:56:00 -0800 (PST)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-011.fbsv.net. [2a03:2880:20ff:b::face:b00c])
+        by smtp.gmail.com with ESMTPSA id v12sm4835415qtx.80.2022.01.10.06.56.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
-Date:   Mon, 10 Jan 2022 06:38:58 -0800
+        Mon, 10 Jan 2022 06:56:00 -0800 (PST)
+Date:   Mon, 10 Jan 2022 06:55:59 -0800
 From:   David Vernet <void@manifault.com>
 To:     Petr Mladek <pmladek@suse.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, linux-modules@vger.kernel.org,
-        mcgrof@kernel.org, jeyu@kernel.org, bpf@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, memxor@gmail.com, clm@fb.com
+Cc:     Song Liu <song@kernel.org>, live-patching@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>, jpoimboe@redhat.com,
+        jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com
 Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
-Message-ID: <YdxFAshozmxfiLd/@dev0025.ash9.facebook.com>
-References: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
- <YdMej8L0bqe+XetW@alley>
+Message-ID: <YdxI/xFf1btdIhLl@dev0025.ash9.facebook.com>
+References: <20211229215646.830451-1-void@manifault.com>
+ <CAPhsuW5PL1w_72Hrbsp2b3jA-SGyzv5oLfgybkq=s8J5KL6kmw@mail.gmail.com>
+ <Ydf3MBet/B+lUdRv@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YdMej8L0bqe+XetW@alley>
+In-Reply-To: <Ydf3MBet/B+lUdRv@alley>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Apologies all for the delayed response -- I was still on holiday last week.
+Petr Mladek <pmladek@suse.com> wrote on Fri [2022-Jan-07 09:17:52 +0100]:
+> On Thu 2022-01-06 16:21:18, Song Liu wrote:
+> > PS: Do we observe livepatch takes a longer time to load after this change?
+> > (I believe longer time shouldn't be a problem at all. Just curious.)
+> 
+> It should depend on the load of the system and the number of patched
+> symbols. The module is typically loaded with a normal priority
+> process.
+> 
+> The commit message talks about 1.3 seconds delay of ksoftirq. In
+> principle, the change caused that this 1.3 sec of a single CPU time
+> was interleaved with other scheduled tasks on the same CPU. I would
+> expect that it prolonged the load just by a couple of seconds in
+> the described use case.
 
-Petr Mladek <pmladek@suse.com> wrote on Mon [2022-Jan-03 17:04:31 +0100]:
-> > > It turns out that symbol lookups often take up the most CPU time when
-> > > enabling and disabling a patch, and may hog the CPU and cause other tasks
-> > > on that CPU's runqueue to starve -- even in paths where interrupts are
-> > > enabled.  For example, under certain workloads, enabling a KLP patch with
-> > > many objects or functions may cause ksoftirqd to be starved, and thus for
->     ^^^^^^^^^^^^^^^^^^^^^^^^^
-> This suggests that a single kallsyms_on_each_symbol() is not a big
-> problem. cond_resched() might be called non-necessarily often there.
-> I wonder if it would be enough to add cond_resched() into the two
-> loops calling klp_find_object_symbol().
+Just to add a data point here for the record, I didn't observe any increase
+in latency when applying a livepatch with this change. It took roughly ~2
++/- ~.5 seconds both with and without the change. Obviously that number
+doesn't mean much without knowing the specifics of the patch and what
+workloads were running on the host, but in general the invocations to
+cond_resched() patch did not seem to materially affect the overhead of
+livepatching.
 
-In the initial version of the patch I was intending to send out, I actually
-had the cond_resched() in klp_find_object_symbol(). Having it there did
-appear to fix the ksoftirqd starvation issue, but I elected to put it in
-klp_find_object_symbol() after Chris (cc'd) suggested it because
-cond_resched() is so lightweight, and it didn't affect the runtime for
-livepatching in my experiments.
-
-> That said, kallsyms_on_each_symbol() is a slow path and there might
-> be many symbols. So, it might be the right place.
-
-Yes, my thinking was that because it didn't seem to affect throughput, and
-because it would could potentially cause the same ssue to occur if it were
-ever called elsewhere, that this was the correct place for it.
+The only time I would expect it to cause longer livepatches is when there
+are a lot of tasks that need the CPU, which is dependent on system load as
+Petr said. I'd argue that in this case, the patch would be working as
+intended as hogging the CPU for 1 or more seconds seems like a recipe for
+problems.
