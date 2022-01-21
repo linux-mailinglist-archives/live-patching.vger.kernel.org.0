@@ -2,77 +2,115 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D00764921E1
-	for <lists+live-patching@lfdr.de>; Tue, 18 Jan 2022 10:04:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4387A4961B7
+	for <lists+live-patching@lfdr.de>; Fri, 21 Jan 2022 16:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345138AbiARJEM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 18 Jan 2022 04:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345141AbiARJEB (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:04:01 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E16C06173F
-        for <live-patching@vger.kernel.org>; Tue, 18 Jan 2022 01:03:59 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id m6so53610950ybc.9
-        for <live-patching@vger.kernel.org>; Tue, 18 Jan 2022 01:03:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=IAamEH5Xu1dJ3X0trVcFTPIrL7aTtcDGn5mUS4vw1a8=;
-        b=NHprezroMsvNvJXQj44poYAHm3bYOXBJZX5Wg8cW9F++sdGchhDxOadiHN0N74BqVo
-         LLsuxLOWO8eNb9Df+WO3omzRkxx9CES4mNA3Io5+oAgtUVpSbYHogg87+gCtw68c4I2t
-         jU5NFjjkmYDNDUVEzOuCjT2//b/zcZNUhM8rDEil4EjAKikZAouVCPfFT1ek6iBkNaWB
-         bcv0AUKVrFCVpxHEBYPBv8KSS3FHlu8eykSeEYJmKwrS5qbSbzeHmao2+zqXdm7uNchU
-         Rqamo/TlsQaFmHXGfCx8STX0aSjqEkHcratuhlypnT20IcvCVcqt6eV72JWjrAN3qvU0
-         7wEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=IAamEH5Xu1dJ3X0trVcFTPIrL7aTtcDGn5mUS4vw1a8=;
-        b=suf9ZMOVwj8DvgfG1Ahdfc3xJ01DSG4J7X3kdFIK6eppUsD3oRGIUSNBcPNwVMpiHF
-         8wMrqzCx3sWcH0uu8seOdMKQu56l6MEKf4e50SQ+zghDfX3sbc6k6AobtsFt1/vM272k
-         W4RC2YtEM2+WwTaRg8AQyov+L/FiCe/shsiONUSBhYMoKTp+lw1r+37SWXIwLHdU70AD
-         N5tsgRyVdMCAdFXpa3BhUA/kyfsPVmhy3OlROGtcmqEK7IwBYwtYeGZyzIQO26m/8XKb
-         vHaPjKaizmVTKm/rw87pgROR1/mZQDKjrYW8W1KtQQ1iDS2RkuWWM6tTPtPpau4xjcN/
-         sE7Q==
-X-Gm-Message-State: AOAM533w1C0Bec+6mzcOReHgiIln2zMwkoMLic7fr9pa4RcQFtNeJyjL
-        H1oji82AxL/4LjAePSpY3C1+4haoFHr408zklN4=
-X-Google-Smtp-Source: ABdhPJykqN6yybQfaT0kT/1JcofcZUp4wlVhtJ/gATn7SS5XA0pfx+GW8LgTxWINZerrn1yMSBF81skqvw8cEBrK9Sg=
-X-Received: by 2002:a25:e549:: with SMTP id c70mr10839900ybh.339.1642496638937;
- Tue, 18 Jan 2022 01:03:58 -0800 (PST)
+        id S1381468AbiAUPIg (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 21 Jan 2022 10:08:36 -0500
+Received: from mail.skyhub.de ([5.9.137.197]:44830 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238192AbiAUPIg (ORCPT <rfc822;live-patching@vger.kernel.org>);
+        Fri, 21 Jan 2022 10:08:36 -0500
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3496F1EC054E;
+        Fri, 21 Jan 2022 16:08:30 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1642777710;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=GFj7pSt3cRzl5y+b79elj5aGBrpZoaFIs8Y+/JGYyW8=;
+        b=UjAJO0bd7nBpuV/579xwg7V3vVJbyhwJU+5HtPPNxlwfYiu+yMaMYuLdmzjEwnPA0X1F/r
+        PJvRuXevaRA9P97hZRg7ydVqDq+rbps3/xYbxrOUfYcPEs/QZUR5vRAYz55VayS5DqPn4X
+        n3khUusN+iYIeWihx6H1s7Rw1a/2mig=
+Date:   Fri, 21 Jan 2022 16:08:17 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v9 05/15] x86: support ASM function sections
+Message-ID: <YerMYcin4woehiL9@zn.tnic>
+References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
+ <20211223002209.1092165-6-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7108:3655:0:0:0:0 with HTTP; Tue, 18 Jan 2022 01:03:58
- -0800 (PST)
-Reply-To: asil.ajwad@gmail.com
-From:   Asil Ajwad <graceyaogokamboule@gmail.com>
-Date:   Mon, 17 Jan 2022 21:03:58 -1200
-Message-ID: <CA+Yy_gCoV9jOYW1qG-5psBKMTZyzWOj2x6Pu5iusfy4TEMaBwQ@mail.gmail.com>
-Subject: Greetings,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20211223002209.1092165-6-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On Thu, Dec 23, 2021 at 01:21:59AM +0100, Alexander Lobakin wrote:
+> Address places which need special care and enable
+> CONFIG_ARCH_SUPPORTS_ASM_FUNCTION_SECTIONS.
+> 
+> Notably:
+>  - propagate --sectname-subst to aflags in x86/boot/Makefile and
+>    x86/boot/compressed/Makefile as both override aflags;
+
+s/aflags/KBUILD_AFLAGS/
+
+Let's be more precise pls.
+
+>  - symbols starting with a dot (like ".Lbad_gs") should be handled
+>    manually with SYM_*_START_SECT(.Lbad_gs, bad_gs) as "two dots"
+>    is a special (and CPP doesn't want to concatenate two dots in
+>    general);
+>  - some symbols explicitly need to reside in one section (like
+>    kexec control code, hibernation page etc.);
+>  - macros creating aliases for functions (like __memcpy() for
+>    memcpy() etc.) should go after the main declaration (as
+>    aliases should be declared in the same section and they
+>    don't have SYM_PUSH_SECTION() inside);
+>  - things like ".org", ".align" should be manually pushed to
+>    the same section the next symbol goes to;
+>  - expand indirect_thunk and .fixup wildcards in vmlinux.lds.S
+
+$ git grep -E "\.fixup" arch/x86/*.S
+$
+
+I guess I'll continue with your new version since a bunch of stuff
+has changed in arch/x86/ in the meantime so that that set would need
+refreshing.
+
+Thx.
+
 -- 
-Greetings,
+Regards/Gruss,
+    Boris.
 
-I am Mr.Asil Ajwad, I work with United Bank of Africa, can you use
-an ATM Visa Card to withdraw money at, ATM Cash Machine in your
-country, if yes I want to transfer abounded fund the sum of $10.5million
-US-Dollars, to you from my country, this is part of the money that was
-abounded by our late old client a politician who unfortunately lost
-his life and was forced out of power Du to greedy act, the bank will
-
-change the account details to your name, and apply for a Visa Card
-with your details, the Visa Card will be send to you, and you can be
-withdrawing money with it always, whatever any amount you withdraw
-daily, you will send 60% to me and you will take 40%, the Visa Card
-and the bank account will be on your name, I will be waiting for your
-response for more details, thanks to you a lot for giving me your time.
-
-regards,
-Mr.Asil Ajwad.
+https://people.kernel.org/tglx/notes-about-netiquette
