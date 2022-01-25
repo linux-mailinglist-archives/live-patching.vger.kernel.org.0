@@ -2,73 +2,106 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF5549AD1A
-	for <lists+live-patching@lfdr.de>; Tue, 25 Jan 2022 08:08:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 175A749B54C
+	for <lists+live-patching@lfdr.de>; Tue, 25 Jan 2022 14:46:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377258AbiAYHHH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 25 Jan 2022 02:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377319AbiAYHE1 (ORCPT
+        id S1577724AbiAYNqE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 25 Jan 2022 08:46:04 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:36176 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383903AbiAYNny (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:04:27 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9ADC02B76E
-        for <live-patching@vger.kernel.org>; Mon, 24 Jan 2022 21:42:04 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id i62so12021740ybg.5
-        for <live-patching@vger.kernel.org>; Mon, 24 Jan 2022 21:42:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
-        b=bAzLrGdF4SdqZad4JUjdlesWoJX041mTydtNH8GUbxJwvWx2j1B0Boo1ZNisP6wwOI
-         x0e8RDkZZfqYnxSZAVWVGv6PjrbGjUchCi7soz0bSV2hs8EdoVfJus/u8fusMmEazCuG
-         FZShHEYe2S5C2Ehcw2+xzM6F1F+KmM6kw0CTl6myJz7BT166qVjneHmOGLgZPKoGUhFE
-         oz3PJ0PIPQrcHHHQzMvGc6gtSh/pyD/ndlqkrYkeh9LxUrGAb7YUbwAk9U6fFvrreB3q
-         t45rqa/k2kT5MQPHVBcBCpBNRzP8rmlXR9GUzEkI5dK+rJWH3X16MgEeYZcS5sa+FBIh
-         v5fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
-        b=WwfDD7UPmhvrNXauO23lcXq4oSY5m/tveM62XlKVKMYS+uO/AB1Z99PqCqbJzoRYM6
-         yxtVljIdameUXuRUMONfm0AkIBdD1MQ63lxl00BaPY/s4vWgan5FloIMxw/H+0qsSkq/
-         ZvXPXMareMyNYaNBMJ7fCzk89/npASmRV1tIAr3FOfSgNRn5Es4X2rTJqKNO0VBwnC1y
-         nisSjX+T2K9lYPSwksSEkBIFa2sMj9ON+BYV7yV/0CYpOqd07AasdbcQK/NSxprLVL4w
-         KljSlwBzU08T3eIoAYSBytgXi3d8FeyKmglX9kKgEGbRKFDgJDThsRNJbVh3kOXSR8el
-         iuPQ==
-X-Gm-Message-State: AOAM531f3H5Ji2JylizGhG24bM0cobnh31zo0Tj5kO3sMMifLUtjFami
-        1nCgblzmiYU7FIqDy95ceo5GIzee2cEFpHU6LlY=
-X-Google-Smtp-Source: ABdhPJx+Keqnc8q8Jy895VG+fsT4TQNKDmGlo8gRZp2/R6b37Q2LhR3GRSkAkehKsg8SpTwgGGoUeI0S5IhF9o+2VGk=
-X-Received: by 2002:a05:6902:102d:: with SMTP id x13mr24773676ybt.16.1643089323297;
- Mon, 24 Jan 2022 21:42:03 -0800 (PST)
+        Tue, 25 Jan 2022 08:43:54 -0500
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 5E17F20B6C61;
+        Tue, 25 Jan 2022 05:43:52 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5E17F20B6C61
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1643118233;
+        bh=pNSTEP0TRPy0j5oEkFezTz31lZK+4Yx3qQJpktHhUjs=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=QH0fuY0YhBO7vXSfmXGWSFbzJOgdLCyFhrYhzV8LZtGzmrvNybYSgEzDhld46vZ+q
+         3KFYbxmbPXOQpmp5poOJK6Zb3Z2CU8rDW0ls7Xbl21fxkAsCTS7zXbISNDna+eunUc
+         fzB0vE6t+hQelwlPCl4tEIT/f0a90+dP2KsEDVMY=
+Message-ID: <825b8b72-c746-ba24-7142-3fff481e82d6@linux.microsoft.com>
+Date:   Tue, 25 Jan 2022 07:43:51 -0600
 MIME-Version: 1.0
-Received: by 2002:a05:7000:ad9d:0:0:0:0 with HTTP; Mon, 24 Jan 2022 21:42:02
- -0800 (PST)
-Reply-To: danielseyba@yahoo.com
-From:   Seyba Daniel <mrssuzaramaling19@gmail.com>
-Date:   Tue, 25 Jan 2022 06:42:02 +0100
-Message-ID: <CAKN-9Xhjj1OW-k=bNncEaDmcCbrJ3SAoO0=z2T0JZuG8wwg-sQ@mail.gmail.com>
-Subject: Hello,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
+Content-Language: en-US
+To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220117145608.6781-1-madvenka@linux.microsoft.com>
+ <20220117145608.6781-12-madvenka@linux.microsoft.com>
+ <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello,
+I have not seen any activity on that in a long time. IIRC, Julien quit RedHat.
+I don't know if anyone else has taken over this work in RedHat.
 
-I am so sorry contacting you in this means especially when we have never
-met before. I urgently seek your service to represent me in investing in
-your region / country and you will be rewarded for your service without
-affecting your present job with very little time invested in it.
+Sorry, I don't have any more information.
 
-My interest is in buying real estate, private schools or companies with
-potentials for rapid growth in long terms.
+Madhavan
 
-So please confirm interest by responding back.
-
-My dearest regards
-
-Seyba Daniel
+On 1/24/22 23:21, nobuta.keiya@fujitsu.com wrote:
+> Hi Madhavan,
+> 
+>> Select HAVE_RELIABLE_STACKTRACE in arm64/Kconfig to allow
+>> arch_stack_walk_reliable() to be used.
+>>
+>> Note that this is conditional upon STACK_VALIDATION which will be added when frame pointer validation is implemented (say
+>> via objtool).
+> 
+> I know that Julien Thierry published objtool support for arm64 [1], but I'm not
+> sure if it has been updated. Could you tell me other threads if you know?
+> 
+> [1] https://lore.kernel.org/linux-arm-kernel/20210303170932.1838634-1-jthierry@redhat.com/
+> 
+> 
+> Thanks,
+> Keiya
+> 
+>>
+>> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+>> ---
+>>  arch/arm64/Kconfig | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig index f6e333b59314..bc7b3514b563 100644
+>> --- a/arch/arm64/Kconfig
+>> +++ b/arch/arm64/Kconfig
+>> @@ -223,6 +223,7 @@ config ARM64
+>>  	select THREAD_INFO_IN_TASK
+>>  	select HAVE_ARCH_USERFAULTFD_MINOR if USERFAULTFD
+>>  	select TRACE_IRQFLAGS_SUPPORT
+>> +	select HAVE_RELIABLE_STACKTRACE if FRAME_POINTER && STACK_VALIDATION
+>>  	help
+>>  	  ARM 64-bit (AArch64) Linux support.
+>>
+>> --
+>> 2.25.1
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
