@@ -2,138 +2,101 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A938549CCBC
-	for <lists+live-patching@lfdr.de>; Wed, 26 Jan 2022 15:52:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C1D49D079
+	for <lists+live-patching@lfdr.de>; Wed, 26 Jan 2022 18:14:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242375AbiAZOwG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 26 Jan 2022 09:52:06 -0500
-Received: from mga18.intel.com ([134.134.136.126]:52046 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242393AbiAZOwB (ORCPT <rfc822;live-patching@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:52:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643208721; x=1674744721;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+C7GbNvdhhupsiddx9nyBA2kLdGmDvK2B+OFoSsBS2A=;
-  b=lBIehyv5ZcqCNTcVcY22vJnTvHWgmJhgKUujnC1GIaH5SoRnbzTj5ECX
-   UPyopMkTIeJ84XSizZkQ4/OmV9v5rIL0Y2MwdqqZcfaA4/9Ypehvmk8If
-   0/cGAHSarb+yAok6fS9FROEo6pneH1z3T8ynRr2vySe4ydiEThmfw1Y7s
-   cgEiG0d6hF2+SKXFhT6nlB+Fk5XJCw7JEbV4Jq4EfmbNRb1ObZ/zz2LDR
-   3N7ckSQ7nuMngowD9Wjs+MY1WcCkdWa7PM5FzfTBf66nGMyh4TRDKng/m
-   f7VduCIYkmssF0157ydMaQBoq+zITh9c5Gz/crUAomOeDA1PcZtc/IPRB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="230137337"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="230137337"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:52:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="617981478"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 26 Jan 2022 06:51:52 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20QEpn8P004691;
-        Wed, 26 Jan 2022 14:51:49 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v9 05/15] x86: support ASM function sections
-Date:   Wed, 26 Jan 2022 15:49:52 +0100
-Message-Id: <20220126144952.851066-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <YerMYcin4woehiL9@zn.tnic>
-References: <20211223002209.1092165-1-alexandr.lobakin@intel.com> <20211223002209.1092165-6-alexandr.lobakin@intel.com> <YerMYcin4woehiL9@zn.tnic>
+        id S243619AbiAZROQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 26 Jan 2022 12:14:16 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:42758 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243590AbiAZROM (ORCPT
+        <rfc822;live-patching@vger.kernel.org>);
+        Wed, 26 Jan 2022 12:14:12 -0500
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id D0EBA20B6C61;
+        Wed, 26 Jan 2022 09:14:10 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D0EBA20B6C61
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1643217251;
+        bh=qjst+qeWYxaDU+MRKQkL6zF+4RSRzRgazary5tstvLY=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=XtrB4oV5zRlyA6UFpPm1uaOM2KvUJchClLB2PNDJMzq/z7dDHar0dbVIIQ78/SgcT
+         Pz00QqrEL8silAQ/SwbN/N/8G0jAu+aKD8F0w+ySTEEdxPV1jgiaGl2MqvyP2w5V14
+         xFCoG4XyjjRh129nmkTz041zpJ5zX/y8ZWRLu3cE=
+Message-ID: <1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com>
+Date:   Wed, 26 Jan 2022 11:14:10 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
+Content-Language: en-US
+To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220117145608.6781-1-madvenka@linux.microsoft.com>
+ <20220117145608.6781-12-madvenka@linux.microsoft.com>
+ <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+ <825b8b72-c746-ba24-7142-3fff481e82d6@linux.microsoft.com>
+ <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de>
-Date: Fri, 21 Jan 2022 16:08:17 +0100
 
-> On Thu, Dec 23, 2021 at 01:21:59AM +0100, Alexander Lobakin wrote:
-> > Address places which need special care and enable
-> > CONFIG_ARCH_SUPPORTS_ASM_FUNCTION_SECTIONS.
-> > 
-> > Notably:
-> >  - propagate --sectname-subst to aflags in x86/boot/Makefile and
-> >    x86/boot/compressed/Makefile as both override aflags;
-> 
-> s/aflags/KBUILD_AFLAGS/
-> 
-> Let's be more precise pls.
-> 
-> >  - symbols starting with a dot (like ".Lbad_gs") should be handled
-> >    manually with SYM_*_START_SECT(.Lbad_gs, bad_gs) as "two dots"
-> >    is a special (and CPP doesn't want to concatenate two dots in
-> >    general);
-> >  - some symbols explicitly need to reside in one section (like
-> >    kexec control code, hibernation page etc.);
-> >  - macros creating aliases for functions (like __memcpy() for
-> >    memcpy() etc.) should go after the main declaration (as
-> >    aliases should be declared in the same section and they
-> >    don't have SYM_PUSH_SECTION() inside);
-> >  - things like ".org", ".align" should be manually pushed to
-> >    the same section the next symbol goes to;
-> >  - expand indirect_thunk and .fixup wildcards in vmlinux.lds.S
-> 
-> $ git grep -E "\.fixup" arch/x86/*.S
-> $
-> 
-> I guess I'll continue with your new version since a bunch of stuff
-> has changed in arch/x86/ in the meantime so that that set would need
-> refreshing.
 
-Yeah, sure. .fixup usage was removed in particular.
-I'll queue v10 soon.
-
+On 1/26/22 04:20, nobuta.keiya@fujitsu.com wrote:
+>> I have not seen any activity on that in a long time. IIRC, Julien quit RedHat.
+>> I don't know if anyone else has taken over this work in RedHat.
+>>
+>> Sorry, I don't have any more information.
+>>
+>> Madhavan
 > 
-> Thx.
+> Thanks for your information.
 > 
-> -- 
-> Regards/Gruss,
->     Boris.
-
-Thanks for the reviews,
-Al
-
+> By the way, I'm considering test code for arch_stack_walk_reliable().
+> Specifically, I apply Suraj's patch to enable livepatch, and added a function
+> that sleeps between SYM_CODE_START and SYM_CODE_END, then livepatch
+> checks if the task has an unreliable stack.
+> For now my internal test code working correctly, but my Kconfig excludes
+> STACK_VALIDATION dependency.
 > 
-> https://people.kernel.org/tglx/notes-about-netiquette
+> It seems that objtool will not be enabled yet, so I would like to test it easier.
+> If you are already testing with this patch, could you tell me how to do it?
+> 
+> 
+
+For now, I have an instrumented kernel that directly invokes arch_stack_walk_reliable()
+from various places in the kernel (interrupt handlers, exception handlers, ftrace entry,
+kprobe handler, etc). I also have a test driver to induce conditions like null pointer
+dereference. I use this to test different cases where arch_stack_walk_reliable() should
+return an error.
+
+As for livepatch testing, I have enhanced objtool and the kernel so the frame pointer can
+be validated dynamically rather than statically. I have tested various different livepatch
+selftests successfully. I have also written my own livepatch tests to add to the selftests.
+I am currently working on preparing an RFC patch series for review. Basically, this series
+implements STACK_VALIDATION in a different way.
+
+I plan to publish my work soon (hopefully Feb 2022). I was going to do in December. However,
+my workload in Microsoft did not permit me to do that. I am also planning to set up a github
+repo so people can try out my changes, if they are interested.
+
+So, stay tuned.
+
+Madhavan
