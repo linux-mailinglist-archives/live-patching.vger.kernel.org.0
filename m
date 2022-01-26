@@ -2,37 +2,38 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C1D49D079
-	for <lists+live-patching@lfdr.de>; Wed, 26 Jan 2022 18:14:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21AF249D08A
+	for <lists+live-patching@lfdr.de>; Wed, 26 Jan 2022 18:16:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243619AbiAZROQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 26 Jan 2022 12:14:16 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:42758 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243590AbiAZROM (ORCPT
+        id S243652AbiAZRQZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 26 Jan 2022 12:16:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51494 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243650AbiAZRQY (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:14:12 -0500
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D0EBA20B6C61;
-        Wed, 26 Jan 2022 09:14:10 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D0EBA20B6C61
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1643217251;
-        bh=qjst+qeWYxaDU+MRKQkL6zF+4RSRzRgazary5tstvLY=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=XtrB4oV5zRlyA6UFpPm1uaOM2KvUJchClLB2PNDJMzq/z7dDHar0dbVIIQ78/SgcT
-         Pz00QqrEL8silAQ/SwbN/N/8G0jAu+aKD8F0w+ySTEEdxPV1jgiaGl2MqvyP2w5V14
-         xFCoG4XyjjRh129nmkTz041zpJ5zX/y8ZWRLu3cE=
-Message-ID: <1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com>
-Date:   Wed, 26 Jan 2022 11:14:10 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
-Content-Language: en-US
-To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
+        Wed, 26 Jan 2022 12:16:24 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20D1161923;
+        Wed, 26 Jan 2022 17:16:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F19C340E3;
+        Wed, 26 Jan 2022 17:16:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643217383;
+        bh=aR5TTg+yX2ncUu2adEk0kEJ2Fb368DAANpS08G5wYEo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kDm7Qz+623bPk2g1lVdMwhk4OwhthiEtOBCqN0ktL2R/nB4cLFCqs264tgN0jIsXN
+         Mq3SbKnntVhu6gVy2z76lqokQq80IL0JcQNAogisF4HDBhL92rEjPoxAitIc9uTlsZ
+         zOhdYKPSo4BXkm9rQa3byzo4nySvQ8OrO7xGMi5A3YXIMKNIBkggACXDeUmriYJN0x
+         WRqNmIXON0rl7DNEeX0JBhMGLw7eOF9s/x6d9ezZbL70RFxebKfBfiB27Nl0kQ+Q19
+         7g06pKPL9WDUnZ74EtKHiMDGrFc7xBx47SLM/tEB2hsj6nV3omkFzR/yBctHXzx5F6
+         A2aE9RbsZQgCw==
+Date:   Wed, 26 Jan 2022 17:16:17 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>
+Cc:     "'madvenka@linux.microsoft.com'" <madvenka@linux.microsoft.com>,
         "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
         "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
         "ardb@kernel.org" <ardb@kernel.org>,
         "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
@@ -43,60 +44,47 @@ To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
         <linux-arm-kernel@lists.infradead.org>,
         "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
+Message-ID: <YfGB4RnMjl9W6iso@sirena.org.uk>
 References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
  <20220117145608.6781-1-madvenka@linux.microsoft.com>
  <20220117145608.6781-12-madvenka@linux.microsoft.com>
  <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
- <825b8b72-c746-ba24-7142-3fff481e82d6@linux.microsoft.com>
- <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="v039aBggoL9WPPvU"
+Content-Disposition: inline
+In-Reply-To: <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+X-Cookie: Use only in a well-ventilated area.
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
+--v039aBggoL9WPPvU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 1/26/22 04:20, nobuta.keiya@fujitsu.com wrote:
->> I have not seen any activity on that in a long time. IIRC, Julien quit RedHat.
->> I don't know if anyone else has taken over this work in RedHat.
->>
->> Sorry, I don't have any more information.
->>
->> Madhavan
-> 
-> Thanks for your information.
-> 
-> By the way, I'm considering test code for arch_stack_walk_reliable().
-> Specifically, I apply Suraj's patch to enable livepatch, and added a function
-> that sleeps between SYM_CODE_START and SYM_CODE_END, then livepatch
-> checks if the task has an unreliable stack.
-> For now my internal test code working correctly, but my Kconfig excludes
-> STACK_VALIDATION dependency.
-> 
-> It seems that objtool will not be enabled yet, so I would like to test it easier.
-> If you are already testing with this patch, could you tell me how to do it?
-> 
-> 
+On Tue, Jan 25, 2022 at 05:21:27AM +0000, nobuta.keiya@fujitsu.com wrote:
 
-For now, I have an instrumented kernel that directly invokes arch_stack_walk_reliable()
-from various places in the kernel (interrupt handlers, exception handlers, ftrace entry,
-kprobe handler, etc). I also have a test driver to induce conditions like null pointer
-dereference. I use this to test different cases where arch_stack_walk_reliable() should
-return an error.
+> I know that Julien Thierry published objtool support for arm64 [1], but I'm not
+> sure if it has been updated. Could you tell me other threads if you know?
 
-As for livepatch testing, I have enhanced objtool and the kernel so the frame pointer can
-be validated dynamically rather than statically. I have tested various different livepatch
-selftests successfully. I have also written my own livepatch tests to add to the selftests.
-I am currently working on preparing an RFC patch series for review. Basically, this series
-implements STACK_VALIDATION in a different way.
+I've not heard of anyone else picking that up.
 
-I plan to publish my work soon (hopefully Feb 2022). I was going to do in December. However,
-my workload in Microsoft did not permit me to do that. I am also planning to set up a github
-repo so people can try out my changes, if they are interested.
+--v039aBggoL9WPPvU
+Content-Type: application/pgp-signature; name="signature.asc"
 
-So, stay tuned.
+-----BEGIN PGP SIGNATURE-----
 
-Madhavan
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHxgeEACgkQJNaLcl1U
+h9AeZQgAhE1zfok88S69ExiVCwo4qLkMK0qP4cXtzuzVw5i8WAyR0aP0xtfIZg5J
+x+Qwu0HOFe2OazXVO+nY6ggC2WhT4Mhk2w3269rN6jnvlTifJqVBHNqseJBtjrWV
+ULmrweCzOb81LQJwfn69LXusz+aqXeAKHT17924Pd0zGbRhgpObSKCdTwbZBxoWI
+pc6kZNu/Sq3z8FP6Up66BOum8+l8wKhIEsdHQm1TZHud+P+9+no0t545XKJbddTQ
+ytQeVNOes799bzJAF/DKIUvJHDUr3GKx7Z/ZVLYfcPlimNpIk1H/FP/9YDxRHWsk
+yhkqb/PkS+UpJzyMismn+sLuvXPtRw==
+=sDH5
+-----END PGP SIGNATURE-----
+
+--v039aBggoL9WPPvU--
