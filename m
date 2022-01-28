@@ -2,56 +2,56 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 416AD4A0216
-	for <lists+live-patching@lfdr.de>; Fri, 28 Jan 2022 21:39:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 378974A021A
+	for <lists+live-patching@lfdr.de>; Fri, 28 Jan 2022 21:40:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351293AbiA1Ujx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 28 Jan 2022 15:39:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32989 "EHLO
+        id S1351318AbiA1Ujz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 28 Jan 2022 15:39:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27486 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344412AbiA1Ujr (ORCPT
+        by vger.kernel.org with ESMTP id S1350900AbiA1Ujt (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 28 Jan 2022 15:39:47 -0500
+        Fri, 28 Jan 2022 15:39:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643402387;
+        s=mimecast20190719; t=1643402388;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ht4TIlDcHgebbMTmRHom2WWk1vPWsK5LmrKtQWe+Ves=;
-        b=YqpLryaCmZ1O+eT8pq87819AzYrLe285sX+qVWYu4L/y1tbAOFoLS70lqhx38WJAdkv3Fm
-        0j3i4bzULye4FHHTPYvefdVECQ+WMuYSed5FhO93JzDsrqCB9J+XY4Totr4EvgC7Bvt1Va
-        B7FzEDpKLTmUQcWZ29bMpAkVbukDRCU=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=NsAIYrsaMFdioppTbSAD/oCtDYtbz/3oa7wgYDL+PvU=;
+        b=E9PdFAS0784h9hRA7hPuz/6I46MhCRU+c47zoOrJGNiSI1VOiuVCgO8HrxKeNVwZhFIj1w
+        rKbhqQtLQocQXSTfsx9OJRDiPUGj1gDlAFSQR313gaOjWPNDzkRs0YjdL1de5an4ijBmmk
+        Vfxxs4l2rkVn3CD8/acot+X6mQYv18E=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-610-6p1XbU3DPh6a7PnpmPsEMg-1; Fri, 28 Jan 2022 15:39:46 -0500
-X-MC-Unique: 6p1XbU3DPh6a7PnpmPsEMg-1
-Received: by mail-wm1-f71.google.com with SMTP id q71-20020a1ca74a000000b003507f38e330so6368682wme.9
-        for <live-patching@vger.kernel.org>; Fri, 28 Jan 2022 12:39:45 -0800 (PST)
+ us-mta-292-Klrmhd_rNXKhdF_Np9CtMQ-1; Fri, 28 Jan 2022 15:39:46 -0500
+X-MC-Unique: Klrmhd_rNXKhdF_Np9CtMQ-1
+Received: by mail-wm1-f72.google.com with SMTP id j18-20020a05600c1c1200b0034aeea95dacso6416652wms.8
+        for <live-patching@vger.kernel.org>; Fri, 28 Jan 2022 12:39:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ht4TIlDcHgebbMTmRHom2WWk1vPWsK5LmrKtQWe+Ves=;
-        b=VE2z65PgZgW7KB+eeCV7UMymiNrrQ+Oj64df2LYGzq6msZuITgn67lHHk+EVWr/eWO
-         t5gtGRMLVp3x+V9x/ODZTArVCOLf32mZcz7WvRV6xarn9yuCOr7//ZcizVdZMEkSG4hw
-         kaE+LkfvA5O7iD8utPM3UldAd5IvJyoyuIn986m8UfzOicxyi/Y88ZyEYA7m38Z4ifgY
-         eAvLc2oDV9v4Gj2jWEH6jR86PYgLMMMEn9hXherHMaoQhEddftqixTLrn4/BfAfgZ9e/
-         QfV5QSPzOxzh/EG/Bm62z6cJHiR847wuD0tRwDoJDx/8/A+wiCJPt5YvXdUZVMW7btWc
-         ijsw==
-X-Gm-Message-State: AOAM531mZsyiNUczj+uNnhcvLfGxY9TxwFpvWokOufYAfKxnDKyw8bQB
-        pbHmoIAm8nWqSZKnZv+mpzzoAMaR9oW2XHjq20gJsRfvyuSDjXhayRLgJ2hN5BJFQOCFQWEfaHF
-        ZsZmKiiyRot6P7e5Okjf12qjK
-X-Received: by 2002:a05:600c:3b2a:: with SMTP id m42mr17175250wms.58.1643402384756;
-        Fri, 28 Jan 2022 12:39:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxsPYXDh8KcoCnxc2Q7JY8QjTh6O903oitK5a0y8Rf+i5qqBNxYbWA9fluteKxP0ATcAIXkxw==
-X-Received: by 2002:a05:600c:3b2a:: with SMTP id m42mr17175232wms.58.1643402384555;
-        Fri, 28 Jan 2022 12:39:44 -0800 (PST)
+        bh=NsAIYrsaMFdioppTbSAD/oCtDYtbz/3oa7wgYDL+PvU=;
+        b=sage00VdOaMHHwBci5h3wzXJqSaMrzdHQQDNSa8Mg6l2waOchNR2K5m7ZOcH6HmnaY
+         fa6xuOy620TrP5CLFfs6SkaJhEc2Irq0IqJsJhtP4lFJBwNciUqmD3oHlFBajoY2TuRL
+         s6N5x404IIUuy0tjKtOstpe5lXt4/pgvhjLKqOZzsASYnHGbg8dDJXacMRyzZQApzFFu
+         LP5XRlbva9FIOyTu5ZE8IB/WIbWl+CW9VLeORYLnAee3v9Q0d2ROffomYvKQOji6lXwn
+         LiL9W3p5Bm6746KNfBwlhx3V3VT25A2/0UdpBPtdibgxcKszXwRMGOsXiUzujeS7FEGB
+         fSwQ==
+X-Gm-Message-State: AOAM531w98AdZMTFXdc57qikPr9JbChXKhnORT4qfVpFG01LWwffdjMS
+        8q4YQDgBBe0J2AudQKtaxqde8vcpQMkL69qVMHoy5PEt+6Okul/MDPmBTiLjd0AbeqsKN1XWKij
+        ImiQ7c1uhoH7ptF0QuOXYgUXC
+X-Received: by 2002:a5d:500c:: with SMTP id e12mr8394467wrt.219.1643402385772;
+        Fri, 28 Jan 2022 12:39:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJylzjcgZDoD96Qm8ciNhcI7xY4BI+En+zUfdeeoKuCa44n6yGgIy3KnBjrReliOeKPRyvJFcw==
+X-Received: by 2002:a5d:500c:: with SMTP id e12mr8394460wrt.219.1643402385645;
+        Fri, 28 Jan 2022 12:39:45 -0800 (PST)
 Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id b15sm5248133wrs.93.2022.01.28.12.39.44
+        by smtp.gmail.com with ESMTPSA id 1sm2702409wmo.37.2022.01.28.12.39.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jan 2022 12:39:44 -0800 (PST)
+        Fri, 28 Jan 2022 12:39:45 -0800 (PST)
 From:   Aaron Tomlin <atomlin@redhat.com>
 To:     mcgrof@kernel.org
 Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
@@ -59,9 +59,9 @@ Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
         linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
         live-patching@vger.kernel.org, atomlin@atomlin.com,
         ghalat@redhat.com, allen.lkml@gmail.com
-Subject: [RFC PATCH v3 07/13] module: Move extra signature support out of core code
-Date:   Fri, 28 Jan 2022 20:39:28 +0000
-Message-Id: <20220128203934.600247-8-atomlin@redhat.com>
+Subject: [RFC PATCH v3 08/13] module: Move kmemleak support to a separate file
+Date:   Fri, 28 Jan 2022 20:39:29 +0000
+Message-Id: <20220128203934.600247-9-atomlin@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220128203934.600247-1-atomlin@redhat.com>
 References: <20220128203934.600247-1-atomlin@redhat.com>
@@ -73,262 +73,124 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 No functional change.
 
-This patch migrates additional module signature check
-code from core module code into kernel/module/signing.c.
+This patch migrates kmemleak code out of core module
+code into kernel/module/debug_kmemleak.c
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- include/linux/module.h   |  5 ++-
- kernel/module/internal.h |  9 +++++
- kernel/module/main.c     | 87 ----------------------------------------
- kernel/module/signing.c  | 75 ++++++++++++++++++++++++++++++++++
- 4 files changed, 87 insertions(+), 89 deletions(-)
+ kernel/module/Makefile         |  1 +
+ kernel/module/debug_kmemleak.c | 30 ++++++++++++++++++++++++++++++
+ kernel/module/internal.h       |  8 ++++++++
+ kernel/module/main.c           | 27 ---------------------------
+ 4 files changed, 39 insertions(+), 27 deletions(-)
+ create mode 100644 kernel/module/debug_kmemleak.c
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 7bf93c0d87e6..68dabc036100 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -758,8 +758,8 @@ static inline bool set_livepatch_module(struct module *mod)
- }
- #endif /* CONFIG_LIVEPATCH */
- 
--bool is_module_sig_enforced(void);
--void set_module_sig_enforced(void);
-+extern bool is_module_sig_enforced(void);
-+extern void set_module_sig_enforced(void);
- 
- #else /* !CONFIG_MODULES... */
- 
-@@ -949,6 +949,7 @@ static inline bool module_sig_ok(struct module *module)
- {
- 	return true;
- }
-+#define sig_enforce false
- #endif	/* CONFIG_MODULE_SIG */
- 
- int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index c4198fcf4772..3901f0713f22 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -11,3 +11,4 @@ obj-$(CONFIG_LIVEPATCH) += livepatch.o
+ obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
+ obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) += arch_strict_rwx.o
+ obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
++obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
+diff --git a/kernel/module/debug_kmemleak.c b/kernel/module/debug_kmemleak.c
+new file mode 100644
+index 000000000000..e896c2268011
+--- /dev/null
++++ b/kernel/module/debug_kmemleak.c
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module kmemleak support
++ *
++ * Copyright (C) 2009 Catalin Marinas
++ */
++
++#include <linux/module.h>
++#include <linux/kmemleak.h>
++#include "internal.h"
++
++void kmemleak_load_module(const struct module *mod,
++				 const struct load_info *info)
++{
++	unsigned int i;
++
++	/* only scan the sections containing data */
++	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
++
++	for (i = 1; i < info->hdr->e_shnum; i++) {
++		/* Scan all writable sections that's not executable */
++		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
++		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
++		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
++			continue;
++
++		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
++				   info->sechdrs[i].sh_size, GFP_KERNEL);
++	}
++}
 diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 0cd624179545..5aab87716d9f 100644
+index 5aab87716d9f..ef9513070b88 100644
 --- a/kernel/module/internal.h
 +++ b/kernel/module/internal.h
-@@ -80,3 +80,12 @@ static inline void module_decompress_cleanup(struct load_info *info)
- {
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/elf.h>
++#include <linux/compiler.h>
+ #include <asm/module.h>
+ #include <linux/mutex.h>
+ 
+@@ -89,3 +90,10 @@ static int module_sig_check(struct load_info *info, int flags)
+ 	return 0;
  }
- #endif
+ #endif /* !CONFIG_MODULE_SIG */
 +
-+#ifdef CONFIG_MODULE_SIG
-+extern int module_sig_check(struct load_info *info, int flags);
-+#else /* !CONFIG_MODULE_SIG */
-+static int module_sig_check(struct load_info *info, int flags)
-+{
-+	return 0;
-+}
-+#endif /* !CONFIG_MODULE_SIG */
++#ifdef CONFIG_DEBUG_KMEMLEAK
++extern void kmemleak_load_module(const struct module *mod, const struct load_info *info);
++#else /* !CONFIG_DEBUG_KMEMLEAK */
++static inline void __maybe_unused kmemleak_load_module(const struct module *mod,
++						       const struct load_info *info) { }
++#endif /* CONFIG_DEBUG_KMEMLEAK */
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 4f590b0c7aca..36ed4dd64cac 100644
+index 36ed4dd64cac..6fb1c885d9c2 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -22,7 +22,6 @@
- #include <linux/vmalloc.h>
- #include <linux/elf.h>
- #include <linux/proc_fs.h>
--#include <linux/security.h>
- #include <linux/seq_file.h>
- #include <linux/syscalls.h>
- #include <linux/fcntl.h>
-@@ -114,28 +113,6 @@ static void module_assert_mutex_or_preempt(void)
- #endif
+@@ -2466,33 +2466,6 @@ bool __weak module_exit_section(const char *name)
+ 	return strstarts(name, ".exit");
  }
  
--#ifdef CONFIG_MODULE_SIG
--static bool sig_enforce = IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
--module_param(sig_enforce, bool_enable_only, 0644);
--
--void set_module_sig_enforced(void)
+-#ifdef CONFIG_DEBUG_KMEMLEAK
+-static void kmemleak_load_module(const struct module *mod,
+-				 const struct load_info *info)
 -{
--	sig_enforce = true;
+-	unsigned int i;
+-
+-	/* only scan the sections containing data */
+-	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
+-
+-	for (i = 1; i < info->hdr->e_shnum; i++) {
+-		/* Scan all writable sections that's not executable */
+-		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
+-		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
+-		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
+-			continue;
+-
+-		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
+-				   info->sechdrs[i].sh_size, GFP_KERNEL);
+-	}
 -}
 -#else
--#define sig_enforce false
+-static inline void kmemleak_load_module(const struct module *mod,
+-					const struct load_info *info)
+-{
+-}
 -#endif
--
--/*
-- * Export sig_enforce kernel cmdline parameter to allow other subsystems rely
-- * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
-- */
--bool is_module_sig_enforced(void)
--{
--	return sig_enforce;
--}
--EXPORT_SYMBOL(is_module_sig_enforced);
--
- /* Block module loading/unloading? */
- int modules_disabled = 0;
- core_param(nomodule, modules_disabled, bint, 0);
-@@ -2516,70 +2493,6 @@ static inline void kmemleak_load_module(const struct module *mod,
- }
- #endif
- 
--#ifdef CONFIG_MODULE_SIG
--static int module_sig_check(struct load_info *info, int flags)
--{
--	int err = -ENODATA;
--	const unsigned long markerlen = sizeof(MODULE_SIG_STRING) - 1;
--	const char *reason;
--	const void *mod = info->hdr;
--	bool mangled_module = flags & (MODULE_INIT_IGNORE_MODVERSIONS |
--				       MODULE_INIT_IGNORE_VERMAGIC);
--	/*
--	 * Do not allow mangled modules as a module with version information
--	 * removed is no longer the module that was signed.
--	 */
--	if (!mangled_module &&
--	    info->len > markerlen &&
--	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) == 0) {
--		/* We truncate the module to discard the signature */
--		info->len -= markerlen;
--		err = mod_verify_sig(mod, info);
--		if (!err) {
--			info->sig_ok = true;
--			return 0;
--		}
--	}
--
--	/*
--	 * We don't permit modules to be loaded into the trusted kernels
--	 * without a valid signature on them, but if we're not enforcing,
--	 * certain errors are non-fatal.
--	 */
--	switch (err) {
--	case -ENODATA:
--		reason = "unsigned module";
--		break;
--	case -ENOPKG:
--		reason = "module with unsupported crypto";
--		break;
--	case -ENOKEY:
--		reason = "module with unavailable key";
--		break;
--
--	default:
--		/*
--		 * All other errors are fatal, including lack of memory,
--		 * unparseable signatures, and signature check failures --
--		 * even if signatures aren't required.
--		 */
--		return err;
--	}
--
--	if (is_module_sig_enforced()) {
--		pr_notice("Loading of %s is rejected\n", reason);
--		return -EKEYREJECTED;
--	}
--
--	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
--}
--#else /* !CONFIG_MODULE_SIG */
--static int module_sig_check(struct load_info *info, int flags)
--{
--	return 0;
--}
--#endif /* !CONFIG_MODULE_SIG */
 -
  static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
  {
  #if defined(CONFIG_64BIT)
-diff --git a/kernel/module/signing.c b/kernel/module/signing.c
-index 8aeb6d2ee94b..ff41541e982a 100644
---- a/kernel/module/signing.c
-+++ b/kernel/module/signing.c
-@@ -11,9 +11,28 @@
- #include <linux/module_signature.h>
- #include <linux/string.h>
- #include <linux/verification.h>
-+#include <linux/security.h>
- #include <crypto/public_key.h>
- #include "internal.h"
- 
-+static bool sig_enforce = IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
-+module_param(sig_enforce, bool_enable_only, 0644);
-+
-+/*
-+ * Export sig_enforce kernel cmdline parameter to allow other subsystems rely
-+ * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
-+ */
-+bool is_module_sig_enforced(void)
-+{
-+	return sig_enforce;
-+}
-+EXPORT_SYMBOL(is_module_sig_enforced);
-+
-+void set_module_sig_enforced(void)
-+{
-+	sig_enforce = true;
-+}
-+
- /*
-  * Verify the signature on a module.
-  */
-@@ -43,3 +62,59 @@ int mod_verify_sig(const void *mod, struct load_info *info)
- 				      VERIFYING_MODULE_SIGNATURE,
- 				      NULL, NULL);
- }
-+
-+int module_sig_check(struct load_info *info, int flags)
-+{
-+	int err = -ENODATA;
-+	const unsigned long markerlen = sizeof(MODULE_SIG_STRING) - 1;
-+	const char *reason;
-+	const void *mod = info->hdr;
-+
-+	/*
-+	 * Require flags == 0, as a module with version information
-+	 * removed is no longer the module that was signed
-+	 */
-+	if (flags == 0 &&
-+	    info->len > markerlen &&
-+	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) == 0) {
-+		/* We truncate the module to discard the signature */
-+		info->len -= markerlen;
-+		err = mod_verify_sig(mod, info);
-+		if (!err) {
-+			info->sig_ok = true;
-+			return 0;
-+		}
-+	}
-+
-+	/*
-+	 * We don't permit modules to be loaded into the trusted kernels
-+	 * without a valid signature on them, but if we're not enforcing,
-+	 * certain errors are non-fatal.
-+	 */
-+	switch (err) {
-+	case -ENODATA:
-+		reason = "unsigned module";
-+		break;
-+	case -ENOPKG:
-+		reason = "module with unsupported crypto";
-+		break;
-+	case -ENOKEY:
-+		reason = "module with unavailable key";
-+		break;
-+
-+	default:
-+		/*
-+		 * All other errors are fatal, including lack of memory,
-+		 * unparseable signatures, and signature check failures --
-+		 * even if signatures aren't required.
-+		 */
-+		return err;
-+	}
-+
-+	if (is_module_sig_enforced()) {
-+		pr_notice("Loading of %s is rejected\n", reason);
-+		return -EKEYREJECTED;
-+	}
-+
-+	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
-+}
 -- 
 2.34.1
 
