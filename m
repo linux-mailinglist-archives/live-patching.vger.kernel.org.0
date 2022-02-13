@@ -2,61 +2,62 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECCA4B3B92
-	for <lists+live-patching@lfdr.de>; Sun, 13 Feb 2022 14:32:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30C404B3BA9
+	for <lists+live-patching@lfdr.de>; Sun, 13 Feb 2022 15:14:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236295AbiBMNc3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 13 Feb 2022 08:32:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43726 "EHLO
+        id S236409AbiBMOO6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 13 Feb 2022 09:14:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236299AbiBMNc2 (ORCPT
+        with ESMTP id S230011AbiBMOO6 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 13 Feb 2022 08:32:28 -0500
+        Sun, 13 Feb 2022 09:14:58 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17AC75F241
-        for <live-patching@vger.kernel.org>; Sun, 13 Feb 2022 05:32:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C07485F257
+        for <live-patching@vger.kernel.org>; Sun, 13 Feb 2022 06:14:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644759141;
+        s=mimecast20190719; t=1644761691;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=uOYbuLgoQrIJu9nKfMdzzauQRx2lRskPgBFfceJrL3s=;
-        b=fu7YqESrPM3fhjsu3ou6FdqQeReou+eT1IVouA+eFBUxuar6lJpWZSWpLKNTOPAdn0zFPv
-        l1BcSID+cQ0FSWaay8PbwDmyvhQ+fTsNfwjt/PZZGsuxSuiRQPrxjR0YgTdA/e2uvupx1u
-        GOTwj9Kg3n72qyFMnah4EewgzwzXBrU=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=6GDOxQGVDeSQrF28P9dVTC7+ArRcSB51YDX/25gUBmk=;
+        b=EfxpBOiTvNKa3Zpnuw8eWOU+DdnelxUmN2mce94SAqtKwZx7DS/E4YK2DKR+eUb9zSVEgp
+        EQVXktCIkOeDK7tz5cRW9IkrpK8STaZB+idQUJnHKR978iCySLS+s2PuFD9D8bof8gkilJ
+        Rf8K4Z7Qk6TLC2znIn7RzonubrEDVvs=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-455-IMehF2wLMzq90hmxPuPHEA-1; Sun, 13 Feb 2022 08:32:20 -0500
-X-MC-Unique: IMehF2wLMzq90hmxPuPHEA-1
-Received: by mail-lf1-f69.google.com with SMTP id j11-20020a19f50b000000b00443304eab91so674650lfb.13
-        for <live-patching@vger.kernel.org>; Sun, 13 Feb 2022 05:32:20 -0800 (PST)
+ us-mta-607-pUznnU57MBOc8iBGjcCjuw-1; Sun, 13 Feb 2022 09:14:46 -0500
+X-MC-Unique: pUznnU57MBOc8iBGjcCjuw-1
+Received: by mail-lf1-f71.google.com with SMTP id o25-20020a05651205d900b0043e6c10892bso4383508lfo.14
+        for <live-patching@vger.kernel.org>; Sun, 13 Feb 2022 06:14:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uOYbuLgoQrIJu9nKfMdzzauQRx2lRskPgBFfceJrL3s=;
-        b=JkoJk/44y+ghtdTtpUYTSrVLjY6O/2yXhqo+ATPESbiWDrCL1qRCgzEpBcf+cLkPhN
-         bbOpj1rsvfr2+lgBP37/b9r5NW1vfh505Yo//sQVT26Kh1RDDADLfui+1xzD4xaShLez
-         DZ5fRrgkFO/5kx7FVLbM3S+S0BxCKWTFE7sCGbyxCFM9NAfF5vKxXMrwpTTrIWk2DaBt
-         gPBljg1hEPcHyRs9yDgGwW4a7UZ208TrBzP6mlmwsVpdyxQx8a6UPBZyxhVwhrkX8eGn
-         fknAkG12T8Os4RAcYz5AECxdSr58Zci3WslQ7aGgNSPir1UIrp7ZXLNCS7LvmRuJXjZL
-         X1Ew==
-X-Gm-Message-State: AOAM533Tiz5sJuUGAptZcECXCOyoT/U0mp3GWXWisU6oDJ/VLMyARpI1
-        LH0TRQZ/zc2LImacEkId/p+IJeketSpPVK674PyyZdfWcHuoxCX34cci67JvO4s9Zns1Yf1D2Je
-        LN5M7AgVNaPPs0E4kc99yFgI+VZCaQqPUFDrQ1iU2
-X-Received: by 2002:a05:6512:3b91:: with SMTP id g17mr7860189lfv.79.1644759139003;
-        Sun, 13 Feb 2022 05:32:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw6QOJ9OCsgrJpykyWrVf7n930ImpTeONtk7WaCfpRLimBjJcl5tAk9Gz17gF2GFtFKp8pZMQwJ6onRNh1AcA4=
-X-Received: by 2002:a05:6512:3b91:: with SMTP id g17mr7860177lfv.79.1644759138845;
- Sun, 13 Feb 2022 05:32:18 -0800 (PST)
+        bh=6GDOxQGVDeSQrF28P9dVTC7+ArRcSB51YDX/25gUBmk=;
+        b=Omd4CsolDbRAn183MGpgvPBaJuDEQUy6KmYYW4vKDeQUr9nduvPb1SYZ26d5GoMRU4
+         TKMXlO37LxAuUNhNhEBf8K8h0IzyVNBmhYzlXb+xPqZCs5Q/kB9wd9TkR7ghz54iDBNv
+         IdrO+I+MXnYRLArVsMozgxh32s0LPBGFAXsYPjQYDrvOBUHCql20dB4vkqVIVgKqvFhF
+         62YDxz/HvIsChpraeWHg4kVZgyq1CUazuLIIdmRJqFga8Z2JXzbPR6LJmHwUEpuHL8Q3
+         UEnKiCMOGbSnVeCP/ye4awMEvUOhpoCnMnFTKJsiBlatKcYdG+JCeRRWxpz1bNeHMd74
+         pOpA==
+X-Gm-Message-State: AOAM5304yyJDEvMGuJ2/6cE+jcVy22Ree2wdl2Cg1ksAM9imldxI5xaX
+        wpGmsuMT8294Jpybt/zjBuexjqCy3tfD22p1VldIFzJqHX5BV7Zltan+gPwSKoXzFXDXiosTd6X
+        CamZljcNlSgeVqHwiSENpgW7UmgvVVAAw1Wv0drem
+X-Received: by 2002:a05:6512:15a6:: with SMTP id bp38mr306552lfb.118.1644761685162;
+        Sun, 13 Feb 2022 06:14:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz83mwJy3I8oyj2IUUhtEPCDsHcc8BfCTfKxbZpJ9hv+glH5AqSuXL7NCVk+fr+Wru9cOxrowgs5fTnrb6RBiU=
+X-Received: by 2002:a05:6512:15a6:: with SMTP id bp38mr306524lfb.118.1644761684887;
+ Sun, 13 Feb 2022 06:14:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20220209171118.3269581-1-atomlin@redhat.com> <6d6cbfe4-ee1a-ec5f-4249-c25ab6142668@csgroup.eu>
-In-Reply-To: <6d6cbfe4-ee1a-ec5f-4249-c25ab6142668@csgroup.eu>
+References: <20220209171118.3269581-1-atomlin@redhat.com> <20220209171118.3269581-2-atomlin@redhat.com>
+ <3a3cc6b3-7bac-3cfd-ce56-7c71abb2de60@csgroup.eu>
+In-Reply-To: <3a3cc6b3-7bac-3cfd-ce56-7c71abb2de60@csgroup.eu>
 From:   Aaron Tomlin <atomlin@redhat.com>
-Date:   Sun, 13 Feb 2022 13:32:07 +0000
-Message-ID: <CANfR36hWpznfhryHtjOR8Juv_rHqF4HOg-163r_OdwY8Sfri+A@mail.gmail.com>
-Subject: Re: [PATCH v5 11/13] module: Move sysfs support into a separate file
+Date:   Sun, 13 Feb 2022 14:14:33 +0000
+Message-ID: <CANfR36in5DJ_QwOcOPyzfd28V2CPK1PTir8uDauF9R+9wr2i_Q@mail.gmail.com>
+Subject: Re: [PATCH v5 12/13] module: Move kdb_modules list out of core code
 To:     Christophe Leroy <christophe.leroy@csgroup.eu>
 Cc:     "mcgrof@kernel.org" <mcgrof@kernel.org>,
         "cl@linux.com" <cl@linux.com>,
@@ -85,37 +86,40 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2022-02-10 14:00 +0000, Christophe Leroy wrote:
-> Checkpatch:
+On Thu 2022-02-10 14:05 +0000, Christophe Leroy wrote:
+> > diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
+> > index 0852a537dad4..f101f5f078f4 100644
+> > --- a/kernel/debug/kdb/kdb_main.c
+> > +++ b/kernel/debug/kdb/kdb_main.c
+> > @@ -59,6 +59,11 @@ EXPORT_SYMBOL(kdb_grepping_flag);
+> >   int kdb_grep_leading;
+> >   int kdb_grep_trailing;
+> >
+> > +#ifdef CONFIG_MODULES
+> > +extern struct list_head modules;
 >
->     total: 0 errors, 2 warnings, 10 checks, 946 lines checked
+> Should go in module.h
 
-Ok.
+I disagree. Let's keep it restricted somewhat. The list of loaded/or added
+modules is not widely used.
+
+> > +struct list_head *kdb_modules = &modules; /* kdb needs the list of modules */
+>
+> Should be static and should be removed from kernel/debug/kdb/kdb_private.h
+
+Agreed. It is only used in kernel/debug/kdb/kdb_main.c.
 
 > > diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-> > index b67ce836746a..52d30bf6d6b0 100644
+> > index 52d30bf6d6b0..c49b4900b30b 100644
 > > --- a/kernel/module/internal.h
 > > +++ b/kernel/module/internal.h
-> > @@ -35,6 +35,9 @@
-> >   extern struct mutex module_mutex;
-> >   extern struct list_head modules;
-> >
-> > +extern struct module_attribute *modinfo_attrs[];
-> > +extern size_t modinfo_attrs_count;
+> > @@ -225,6 +225,7 @@ static int mod_sysfs_setup(struct module *mod,
+> >   {
+> >       return 0;
+> >   }
+> > +
 >
-> Can't this come in sysfs.c as well ?
-
-No.
-
-> > +#ifdef CONFIG_SYSFS
-> > +int mod_sysfs_setup(struct module *mod, const struct load_info *info,
-> > +               struct kernel_param *kparam, unsigned int num_params);
-> > +void mod_sysfs_fini(struct module *mod);
-> > +void module_remove_modinfo_attrs(struct module *mod, int end);
-> > +void del_usage_links(struct module *mod);
-> > +void init_param_lock(struct module *mod);
->
-> Why don't we move mod_sysfs_teardown() here as well ?
+> This should go in previous patch if needed (patch 11 sysfs)
 
 Agreed.
 
