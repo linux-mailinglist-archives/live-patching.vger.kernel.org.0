@@ -2,93 +2,97 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 706624B5035
-	for <lists+live-patching@lfdr.de>; Mon, 14 Feb 2022 13:33:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 898B24B547C
+	for <lists+live-patching@lfdr.de>; Mon, 14 Feb 2022 16:20:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353136AbiBNMbZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 14 Feb 2022 07:31:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58050 "EHLO
+        id S1355788AbiBNPUu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 14 Feb 2022 10:20:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346211AbiBNMbY (ORCPT
+        with ESMTP id S1355785AbiBNPUt (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:31:24 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0852549FB8;
-        Mon, 14 Feb 2022 04:31:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644841877; x=1676377877;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=msYr7lp/NjLWQX8Lr1N6lQehsKDhUEBlDaTRF91PHo0=;
-  b=WWicxnF8oUTeZyRc+grWYz7kyQUFReKLOP+L6ghk/Wn5sTO/eE/b+AsU
-   3REVQk3/f3hUuJ+o58CoXhUHcQdR8hggraxyf1nCITSRah6B2oZD97C/j
-   7Gp77r+is4g6a7H2uRxDlHw8eH/HPsXye/jTbx2wSLuoKpFgya4sIvZ6B
-   uTgTp06IpkKKlpWmYVt7XGBB4nTKvz8f50aBp1uMu+fU4riBcBmctZ+9R
-   zH2WjAMnTZsr9efWcodjdbBe6ClaAHF/L5QVKnI4F7SCqOZBNCHciwtZZ
-   9r+2h2eb8ZjJuK7zPRFDsJbnXv/0mCqBz2sJzl07Z+G1yM1B9oR66dgue
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="336505927"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="336505927"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 04:31:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="570153044"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 14 Feb 2022 04:31:07 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 21ECV4hY011148;
-        Mon, 14 Feb 2022 12:31:04 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+        Mon, 14 Feb 2022 10:20:49 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E4C5BD24;
+        Mon, 14 Feb 2022 07:20:41 -0800 (PST)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EE4hmJ009969;
+        Mon, 14 Feb 2022 15:20:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=fkrUmfPtt6zYPcLAlCBt3JXgVA+JKKKc7SEZHzMLDOM=;
+ b=R2d7Kt2UArwcORU2EzATFwybq1li5NUpNiwpJTJoRXXdwYy7N0Wktbfgeqb2kfVkCu6Q
+ 2z7Mnz0hEvfdohgEgjWWIIEaDYAs0e+mDrl/eb41Rj1/U0tDwx+D+EtBzPrShfgzti9J
+ znm6pi3nL8D0RAvg92LMGnTDoJBtPlDu79cCvYvi8OlrJ86DcosN9K1NW+MOL8Fyfz2Q
+ 6Y+KyGSbWXtRl29G0/k0CDnj4QF4LnVoyV3lUlr+V8Y3GgoQYmkxGBJZ+kubhjdkUENj
+ OXFUuIpGGzThL+j+A3g8rivdCBKXUGLfMTfCzQqRgMwRunPzSqeG4smx4SVFkLOhpSBJ lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7c4e1bq5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 15:20:05 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21EEtWhP029986;
+        Mon, 14 Feb 2022 15:20:05 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7c4e1bny-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 15:20:05 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EFD1f1020571;
+        Mon, 14 Feb 2022 15:20:03 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06fra.de.ibm.com with ESMTP id 3e645jdw7n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 15:20:02 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EFK0GI48365924
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Feb 2022 15:20:00 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 58A52A405E;
+        Mon, 14 Feb 2022 15:20:00 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9CB76A4055;
+        Mon, 14 Feb 2022 15:19:59 +0000 (GMT)
+Received: from localhost (unknown [9.43.124.167])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Feb 2022 15:19:59 +0000 (GMT)
+Date:   Mon, 14 Feb 2022 20:49:57 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2 08/13] powerpc/ftrace: Prepare PPC64's ftrace_caller()
+ for CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v10 10/15] FG-KASLR: use a scripted approach to handle .text.* sections
-Date:   Mon, 14 Feb 2022 13:30:53 +0100
-Message-Id: <20220214123053.289169-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <YgpEJ7BmuYtHkayT@hirez.programming.kicks-ass.net>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-11-alexandr.lobakin@intel.com> <20220211153706.GW23216@worktop.programming.kicks-ass.net> <20220214113434.5256-1-alexandr.lobakin@intel.com> <YgpEJ7BmuYtHkayT@hirez.programming.kicks-ass.net>
+        Miroslav Benes <mbenes@suse.cz>,
+        Ingo Molnar <mingo@redhat.com>, Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
+        <850817333cc76593699032e8e9a70d8c36e1af1e.1640017960.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <850817333cc76593699032e8e9a70d8c36e1af1e.1640017960.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1644851672.d8a13a7hsf.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Hmu2hYFU9gEsaZJi4w4TCpwYTGPH5jdQ
+X-Proofpoint-ORIG-GUID: X2BX5tu4QyN2Hw7dSQafa7aVJYunyltG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_06,2022-02-14_03,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
+ adultscore=0 clxscore=1011 lowpriorityscore=0 impostorscore=0
+ suspectscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140093
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -97,29 +101,101 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 14 Feb 2022 12:59:35 +0100
+Hi Christophe,
+Thanks for your work enabling DYNAMIC_FTRACE_WITH_ARGS on powerpc. Sorry=20
+for the late review on this series, but I have a few comments below.
 
-> On Mon, Feb 14, 2022 at 12:34:34PM +0100, Alexander Lobakin wrote:
-> 
-> > Re "won't do" -- sorry for trying to hijack this thread a bit, but
-> > did I miss something? The last comments I've read were that LLVM
-> > tools need to change their approach for CFI on x86, and Sami went
-> > redo it, but I can't recall any "life-time" nacks.
-> 
-> Won't as in the lclang-cfi as it exists today. And I've understood that
-> this CFI model is a keeper. It is true that Sami has been working on an
-> alternative KCFI, but the little I can make of this proposal, it
-> still needs serious work. Also see here:
-> 
->   https://lkml.kernel.org/r/20220211133803.GV23216@worktop.programming.kicks-ass.net
-> 
-> Specifically, I object to the existence of any __*cfi_check_fail symbol
-> on the grounds that it will bloat the code (and makes thinking about the
-> whole speculation angle more painful than it needs to be).
 
-Ah, I see, thanks! I've been tracking your IBT works, but missed
-LKML thread for some reason.
-I have no problems in dropping the related lines from my patch.
+Christophe Leroy wrote:
+> In order to implement CONFIG_DYNAMIC_FTRACE_WITH_ARGS, change ftrace_call=
+er()
+> to handle LIVEPATCH the same way as frace_caller_regs().
+>=20
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> ---
+>  .../powerpc/kernel/trace/ftrace_64_mprofile.S | 25 ++++++++++++++-----
+>  1 file changed, 19 insertions(+), 6 deletions(-)
 
-Al
+I think we also need to save r1 into pt_regs so that the stack pointer=20
+is available in the callbacks.
+
+Other than that, a few minor nits below...
+
+>=20
+> diff --git a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S b/arch/powerp=
+c/kernel/trace/ftrace_64_mprofile.S
+> index d636fc755f60..f6f787819273 100644
+> --- a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
+> +++ b/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
+> @@ -172,14 +172,19 @@ _GLOBAL(ftrace_caller)
+>  	addi	r3, r3, function_trace_op@toc@l
+>  	ld	r5, 0(r3)
+> =20
+> +#ifdef CONFIG_LIVEPATCH_64
+> +	SAVE_GPR(14, r1)
+> +	mr	r14,r7		/* remember old NIP */
+                    ^ add a space
+> +#endif
+
+Please add a blank line here, to match the formatting for the rest of=20
+this file.
+
+>  	/* Calculate ip from nip-4 into r3 for call below */
+>  	subi    r3, r7, MCOUNT_INSN_SIZE
+> =20
+>  	/* Put the original return address in r4 as parent_ip */
+> +	std	r0, _LINK(r1)
+>  	mr	r4, r0
+> =20
+> -	/* Set pt_regs to NULL */
+> -	li	r6, 0
+> +	/* Load &pt_regs in r6 for call below */
+> +	addi    r6, r1 ,STACK_FRAME_OVERHEAD
+                      ^^ incorrect spacing
+> =20
+>  	/* ftrace_call(r3, r4, r5, r6) */
+>  .globl ftrace_call
+> @@ -189,6 +194,10 @@ ftrace_call:
+> =20
+>  	ld	r3, _NIP(r1)
+>  	mtctr	r3
+
+Another blank line here.
+
+> +#ifdef CONFIG_LIVEPATCH_64
+> +	cmpd	r14, r3		/* has NIP been altered? */
+> +	REST_GPR(14, r1)
+> +#endif
+> =20
+>  	/* Restore gprs */
+>  	REST_GPRS(3, 10, r1)
+> @@ -196,13 +205,17 @@ ftrace_call:
+>  	/* Restore callee's TOC */
+>  	ld	r2, 24(r1)
+> =20
+> +	/* Restore possibly modified LR */
+> +	ld	r0, _LINK(r1)
+> +	mtlr	r0
+> +
+>  	/* Pop our stack frame */
+>  	addi	r1, r1, SWITCH_FRAME_SIZE
+> =20
+> -	/* Reload original LR */
+> -	ld	r0, LRSAVE(r1)
+> -	mtlr	r0
+> -
+> +#ifdef CONFIG_LIVEPATCH_64
+> +        /* Based on the cmpd above, if the NIP was altered handle livepa=
+tch */
+> +	bne-	livepatch_handler
+> +#endif
+
+Here too.
+
+>  	/* Handle function_graph or go back */
+>  	b	ftrace_caller_common
+> =20
+
+
+- Naveen
+
