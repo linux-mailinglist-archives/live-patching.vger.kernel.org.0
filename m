@@ -2,158 +2,242 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E104B710B
-	for <lists+live-patching@lfdr.de>; Tue, 15 Feb 2022 17:40:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FAC4B72F2
+	for <lists+live-patching@lfdr.de>; Tue, 15 Feb 2022 17:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239697AbiBOPLh (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 15 Feb 2022 10:11:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52450 "EHLO
+        id S238417AbiBOQ0w (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 15 Feb 2022 11:26:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239687AbiBOPLb (ORCPT
+        with ESMTP id S235027AbiBOQ0v (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 15 Feb 2022 10:11:31 -0500
-Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90073.outbound.protection.outlook.com [40.107.9.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F6810874D;
-        Tue, 15 Feb 2022 07:11:20 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lQZQjKGzyO12R2ITURJzcVGTQwB0JO9gdgNxu52FH7Z/2D1qbJTcVrojn9qGogP+qrNDFIh7888zYS1xPI3WHL77bcDFE0DrVv75zmL2KDYuWeljPcaJHKJCDqV353GFU2CNebT/5SmODfCn3yNzFU5uMOw30+Yq6Mcg94/A/9dzrqins1Jp+s+agHe/54mYg1qTDiVEpnmyVd9Jc5LBbwMBNDijD/JL8H1KqGBk6HNtxGFglQonQ6rgTkpcuSR8kv/Qonl1mUM93Mw5JRTuTgXa6YypAccLlB6SCMkGaow+E1bir1XvlYTQ07hurYyDrzAbgX6GZu2ESMDFy/DyBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3VjnTJVi2NjS2YZASzZG7RSpITG+/tYsMhHeGaEwTfs=;
- b=KGDlPVuZ6RAmkt8/HCUfaU/zcBvMaudzmwk+Pa/CisOv8U81wkfScKRarPvFig3ESLqwOUcTYzPKjjCfl8jSogpCMgh4FuebhT+VszYs/CUofJHNfULqITBatJqqsVCSZ6rCsFoKEaQF6ifxafF99dNHjPMQ28FTQ7wNk8U+fmSDbutfdlvlAu+gSmc/D4ftR8437rvoc2yM6sCpxmLPF423jNyKYZ/60sXjJ2OxjevGWHQtjxW5iRleftxPapU/SL78NL9+BTmmtv/kCknoMzr1wjLaMV4KPehwSri/csaRAZU1F2AiagumM0W5UJExx03FrO2v0wHTUX0amLJz5Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by MRZP264MB3115.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:30::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Tue, 15 Feb
- 2022 15:11:18 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::c9a2:1db0:5469:54e1]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::c9a2:1db0:5469:54e1%9]) with mapi id 15.20.4975.019; Tue, 15 Feb 2022
- 15:11:18 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Aaron Tomlin <atomlin@atomlin.com>
-CC:     Aaron Tomlin <atomlin@redhat.com>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "void@manifault.com" <void@manifault.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
-Subject: Re: [PATCH v5 13/13] module: Move version support into a separate
- file
-Thread-Topic: [PATCH v5 13/13] module: Move version support into a separate
- file
-Thread-Index: AQHYHdgTxacpqtiy80KvpiF8QXDq16yM2SEAgATzOQCAAAdHgIAC68CAgAABfoA=
-Date:   Tue, 15 Feb 2022 15:11:17 +0000
-Message-ID: <954fcff8-ddf2-f2bc-05ce-6a7f9d668ae2@csgroup.eu>
-References: <20220209171118.3269581-1-atomlin@redhat.com>
- <20220209171118.3269581-3-atomlin@redhat.com>
- <14a1678f-0c56-1237-c5c7-4ca1bac4b42a@csgroup.eu>
- <CANfR36gVY+1k7YJy0fn1z+mGv-LqEmZJSvSHXn_BFR4WC+oJrQ@mail.gmail.com>
- <d3d87e3e-e13f-252a-1c06-f18a78af5d98@csgroup.eu>
- <20220215150557.g7mvx47ibhjgweyo@ava.usersys.com>
-In-Reply-To: <20220215150557.g7mvx47ibhjgweyo@ava.usersys.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4df30192-1da0-447f-c82d-08d9f0956aad
-x-ms-traffictypediagnostic: MRZP264MB3115:EE_
-x-microsoft-antispam-prvs: <MRZP264MB311596CE98B4139FBBE27C8BED349@MRZP264MB3115.FRAP264.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zVjti0qOAiqqCDVNLiHNZ4wv5KWGXiVRIHvL9/3GB2e8amV1FfQvNb5wxhaT19Uu/QefGlfSFyLOpx7VvHZqnQ8AL+CkPW5fEh7EreT8X8L23hqRF+ZpJQVjd0DIe6JfGHDsy5joujbA9Nr0nknciPWM0D0dNHMzizs390vJl/dLmiVo1bY34agybFbWd/tV2YszgRDbDlsPvBErSZ8hfsVT5GlG6Q3h2+0O/BKvpqyVsIBRAl3btIKIuGDrIT7ANwjoVYitiHAaReIOBZocX/jz9uo+q04/khQpPST8rZZ9ikFkg3EzJ0ub1MS2I5FlABZTGz4253MJ45jEIXu7NkC26lDMlvkCd2xDIl/TwwQrF7p5kR0MXpBZFvml9OI2iE1O9ONafCxkynsFe5bv/PFDqpnIBT2AEzkkJ1neX/4O6XClJskBdKB4jTkdP0BghWfpfNUi6L6jdw8Q3wvWiOvPMQBisJFze5vl9SZzVjmpvWl48vhDhFz9+CCx6VwQOf8UyzgUuhf96X9zk8w4Zc+Nr6nYpTD7TNEMCxjXeyUAGEKX3C+MUs6rWUU9z014SmilWX0BnDTkE/4mJQe2wDULDXM1tmD29BACCtQJRaojE/HLiBizwxiWIZgHwCyKqRBRB5Sv+da5fGwDeRUrB3BztnlQe7PA/I2gHa4aNU90dmwufgpEToWqxAC6KDvmVaOXCnh9dHURq0FBfh/8Yd1EjSFhbW4bn5W5poCKc7pPCSt21wMGkObywaCvoCe8g+5HUZUDnw7FXn9X/ur1Mg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(71200400001)(54906003)(508600001)(6486002)(6506007)(8936002)(38070700005)(64756008)(6916009)(66446008)(66476007)(76116006)(66946007)(66556008)(316002)(31696002)(86362001)(91956017)(66574015)(8676002)(4326008)(38100700002)(2616005)(6512007)(122000001)(7416002)(26005)(186003)(5660300002)(4744005)(2906002)(36756003)(44832011)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bWRnM1dPVTVEb0N3WG03VDhuV2hPVzlueUtUeDBzandwL2FOZGFNamYvN2Rn?=
- =?utf-8?B?NmdqQi9GcWhGWWRaTzRqVm5tMisweVUwcVZYYTJGVGJONi9OYVZ5T294dkR3?=
- =?utf-8?B?eU81RHhuSHRhaWFkWW5IZ3FCcUpIb2lUdTFPWldqa0p0NTJvYkRIeElIQk5C?=
- =?utf-8?B?TXBHMnEraDZEYmtWV1BQTFhEWEtHSXp2T1VTOFhOQ3JNUHVSUVpqM3NPNncz?=
- =?utf-8?B?UU5nL1FZYzBYVTVlRmFzZjM3Z1dJN2kzRTJqQ042OENDQlZXVXNFZWNHc1F3?=
- =?utf-8?B?QXhKSjJEMVVoQ0lLZ0szSkY4WVZYQmFiY1M4WG1HVjJ1TmpUTWtZZHJaL2Ns?=
- =?utf-8?B?YnZrWURLaHlsY01keUlCOVhoS2F5YWFnUFZuM29jUXVGQVJTTzRPcDljN0ll?=
- =?utf-8?B?cVYwRWJkcEhkU2RlaSt2NkFHeTFIbi9wdjhIVGFzK1BBV1kxd2wxUzdwbDR0?=
- =?utf-8?B?N2NmRGhmSEFpZGhZeDNDTDRFZmw3TWMxMGFhUnVvczZSZzA3MmdsUUZZbzM0?=
- =?utf-8?B?WVRFQm9BODhuWGc3SkVIelFIRUVsM1I1RmE2dTgvVUxWWnVENFA4L1I1OThn?=
- =?utf-8?B?cktGcUlPcEZuZzVLR2g4clYyd01YdEZnUS9UVHFDMWpvVTJadUQrNGN4dWRK?=
- =?utf-8?B?T2ZEa2xlUm1sUTVabFhONFlDSnozWGJlN09NMlowOHlYZmtHSG9URXFDK3Zn?=
- =?utf-8?B?VGQ2aXJRanRtMWZ3YTNRd0s1MTVmR3lldm0wdEpjREV4T25kOUR4eHJQZnJt?=
- =?utf-8?B?SWxiR2RRRWlNT3pSbWExTVFSd1lnYkMxNElHcTgrMWMzbEdPVm04Q2ZNS3BP?=
- =?utf-8?B?TGVKUGh0TkpDRGVqR3BCYStYcEw1eG5sL3BqUk5PSk1uRzgydEFWVjhaSGtM?=
- =?utf-8?B?M1RiTGxEdFFrYkJHN0xBZTM3T2JPZmE4TllwaWFCNHBCOHpTRi9UdmdsNWh5?=
- =?utf-8?B?VkE3VXhNanZ0L1lsZXVsaDJwdjVxeG1uU25vdUd5VUkzYXgrYndFaEtqckFr?=
- =?utf-8?B?U010SnRuanY0SWFQNVdQM2xRNitJNms1U2RTbENRUFAwSXNBekQrWXNmbS9M?=
- =?utf-8?B?R2tyVVlad2lMOUJhWEZ3blJoMTE3YlJWZHVCZGhWK09kUEo4RTVMTDBhNzA2?=
- =?utf-8?B?OUFvNUkwYzZFZnA0ZnFkRXlvMHhwU2lVVEYzQ0Y0NTBGL1NjbXkyM1B5MUgy?=
- =?utf-8?B?MjlCSWtLVnp3bDlNcVhCR2NQNVdxaG9jWG5OdFczODJ1bCtucGxqOTFVV0FZ?=
- =?utf-8?B?Qmo1TUFxZUp3aUJjV2I3T0JLWFgwSjlGaFhiS2p2S2crRmZVNFRQOHA3WnR5?=
- =?utf-8?B?dE9RMmEwbmFhUngrS2duZFAyT3VGcFBNMDRXL2xVWUJPWG0xbDhsR2VQNmxj?=
- =?utf-8?B?OUhzL3VWMkJ2ZjcxUXdXYXZMYmhpYjlHZlRkQjNHTjhsUWwxUnp5K0htNk9V?=
- =?utf-8?B?dExyY29mdXNONzJ5aUJBWTVsYTJrejd2RFc0TEUwSXNHZHhBRGg3N3NpZVNI?=
- =?utf-8?B?UlhHWW4wZlZKZGhQZHJHYTFGMGJGaDNDOFYxdDdwNjJlaSt4b0NCbks1T0Z5?=
- =?utf-8?B?Q2RKbDZrOVpEUlhOTVNYVVRLWkNKK2w0b2RFK3d6YVB5UXBZNHVGWnhJeU1M?=
- =?utf-8?B?UTBQVnVSNXpDQndvZ1NJSkFKeFJ6eWlDK3ZSZW9rVDRVVHdjaXZraHVEeStU?=
- =?utf-8?B?bld1SHRJUDJzamt3Z1pmS3ZhYlJqaWRuMlptSGpoYWdlbTRuc1R1QitldjNB?=
- =?utf-8?B?NkhDRjI4VHNTZExMSzVzeTBZdW9iQjhJVys3eHdtb0tOdVM5a1NVdkFFNTYx?=
- =?utf-8?B?V1RPUnV3MFZrL2J2ajhyVmxvbXlBandyQWNFaGNlb0RyYjlpTUVoV0VIN3BI?=
- =?utf-8?B?SndsVHJFa2RrNUNXM2VqNHB6QXFpa2xxMVp3QXo4RlF4endxQmZiRGxkVEps?=
- =?utf-8?B?aU1tWlFCN3ZxWC9nOWhnVWpqV3l0emc4a05QMkJWNnkvcm5MUFZCWm9HNStq?=
- =?utf-8?B?dHQ3b1JwamdJRmxUYVZYQUQ3ODgrSXRTTHNIZEI3U3E1d1JlR1k2RCtYdGor?=
- =?utf-8?B?elc3TXBpZWZJLzFYSkEzbVZ2MlU3R2VUZXFMcjNkNEtuaDZTLzI0NjBPbTB3?=
- =?utf-8?B?N3Y2Zi91cmc5WWpmcW5nRkw3Q2NIZEpwdEpCaVpWb1kzTzNzMk9tU2RmbHJ0?=
- =?utf-8?B?YWRBek80M2hxN2M1c0VlSm5uSzlMd2NsVWNtTU45UFRIQkpFcGRSY0w1c2pU?=
- =?utf-8?Q?OZUAIf/l28dup6q7SWiJoEpOiz7bGgOYzT7bGbji/M=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E754E6DDD6D77944B5CD628B9D3F64F1@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Tue, 15 Feb 2022 11:26:51 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB3C48E7A;
+        Tue, 15 Feb 2022 08:26:41 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FGEGUC012232;
+        Tue, 15 Feb 2022 16:26:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : message-id : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=iP7A9xbr7WCdikDbTTC4JtVmLGumU2W/N4lvCKlQWyA=;
+ b=rXBdw3B0xh+d0sP0mpClQhyNrR4q1YsGA5OIvMn5miEQUSqPGgtbujy61nKyOALQ1pbE
+ s4bb8JC1dTHuLDm+bKnqH6iHDN51DdWiaWVI2XF5earoUhPPo6H6Jn5LmqlOpdoSKR7G
+ DW1yWljJDb0+e2EwJecYCAMfm6F7e+bu1y+pvUQZE9yeTnVqOVdXyeymdWyPV12yU9Ty
+ Eg3nLSMurCs7gYJigL0nS4CgchBN//v2tUwFDGEiGJyCFPcDA4VcxDbtrfb6uGgeECiy
+ q7y4oKFh5pYrL8vvrzE3PmTvnx9YrGT0mm87TleglDNkvQgNNWbFA/k/HnA6RugbXqHV Ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8e5katqp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 16:26:01 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21FGERFh013678;
+        Tue, 15 Feb 2022 16:26:01 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8e5katpn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 16:26:00 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21FGCAAa000869;
+        Tue, 15 Feb 2022 16:25:58 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3e64h9qr7n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 16:25:58 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21FGPsKa46137752
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 16:25:54 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7D72D4C046;
+        Tue, 15 Feb 2022 16:25:54 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 100F74C058;
+        Tue, 15 Feb 2022 16:25:54 +0000 (GMT)
+Received: from localhost (unknown [9.43.98.51])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 15 Feb 2022 16:25:54 +0000 (GMT)
+Date:   Tue, 15 Feb 2022 21:55:52 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
+ CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Ingo Molnar <mingo@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
+        <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
+        <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
+        <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
+        <875ypgo0f3.fsf@mpe.ellerman.id.au>
+        <1644930705.g64na2kgvd.naveen@linux.ibm.com>
+        <6dc50f09-4d14-afa2-d2a1-34b72b880edf@csgroup.eu>
+        <5c7b5334-6071-f131-a509-9a49ca3d628c@csgroup.eu>
+In-Reply-To: <5c7b5334-6071-f131-a509-9a49ca3d628c@csgroup.eu>
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1644941712.lqdstzo09z.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: QDZP46n6BggCxyXNreLRduagvaFZpVgp
+X-Proofpoint-GUID: YTMmRxt70LkYsWEOYMOjmpqtACe0q3Uu
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4df30192-1da0-447f-c82d-08d9f0956aad
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2022 15:11:17.9578
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +9GjKub/k0nYHFX6GJ4YrKKDW+JAngKq/YGEdOkP8MvKX2SzzY+TxuRJxs66vIdKj50xOsHiUWN8aj5OmSluiCNjrGTRn/2L88liXIrKVTw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MRZP264MB3115
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-15_04,2022-02-14_04,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 phishscore=0 impostorscore=0 mlxscore=0 bulkscore=0
+ adultscore=0 clxscore=1011 priorityscore=1501 suspectscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202150095
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-DQoNCkxlIDE1LzAyLzIwMjIgw6AgMTY6MDUsIEFhcm9uIFRvbWxpbiBhIMOpY3JpdMKgOg0KPiBP
-biBTdW4gMjAyMi0wMi0xMyAxODoyOSArMDAwMCwgQ2hyaXN0b3BoZSBMZXJveSB3cm90ZToNCj4+
-IEknbSBub3Qgc3VyZSB5b3UgY2FuIGRvIHRoYXQuDQo+Pg0KPj4gICBGcm9tIGNvbW1pdCA4Yzhl
-ZjQyYWVlOGYgKCJtb2R1bGU6IGluY2x1ZGUgb3RoZXIgc3RydWN0dXJlcyBpbiBtb2R1bGUNCj4+
-IHZlcnNpb24gY2hlY2siKSBJIHVuZGVyc3RhbmQgdGhhdCBtb2R1bGVfbGF5b3V0IGlzIHRoZXJl
-IGZvciBzb21lIHNpZ25hdHVyZS4NCj4gDQo+IEhpIENocmlzdG9waGUsDQo+IA0KPiBJIHNlZS4g
-SW4gd2hpY2ggY2FzZSwgaWYgSSB1bmRlcnN0YW5kIGNvcnJlY3RseSwgd2UnZCBoYXZlIHRvIGln
-bm9yZSB0aGUNCj4gcmVwb3J0IGZyb20gU3BhcnNlLiBJIHdpbGwgYWRkIGEgY29tbWVudCB0byBo
-b3BlZnVsbHkgc3VnZ2VzdCBhZ2FpbnN0DQo+IHJlbW92YWwuDQo+IA0KPiANCg0KSSB3b3VsZCBh
-ZGQgdGhlIGZ1bmN0aW9uJ3MgcHJvdG90eXBlIGluIGludGVybmFsLmggdG8gc2h1dCB1cCBzcGFy
-c2UuDQoNCkNocmlzdG9waGU=
+Christophe Leroy wrote:
+> + S390 people
+>=20
+> Le 15/02/2022 =C3=A0 15:28, Christophe Leroy a =C3=A9crit=C2=A0:
+>>=20
+>>=20
+>> Le 15/02/2022 =C3=A0 14:36, Naveen N. Rao a =C3=A9crit=C2=A0:
+>>> Michael Ellerman wrote:
+>>>> Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+>>>>> Le 14/02/2022 =C3=A0 16:25, Naveen N. Rao a =C3=A9crit=C2=A0:
+>>>>>> Christophe Leroy wrote:
+>>>>>>> Implement CONFIG_DYNAMIC_FTRACE_WITH_ARGS. It accelerates the call
+>>>>>>> of livepatching.
+>>>>>>>
+>>>>>>> Also note that powerpc being the last one to convert to
+>>>>>>> CONFIG_DYNAMIC_FTRACE_WITH_ARGS, it will now be possible to remove
+>>>>>>> klp_arch_set_pc() on all architectures.
+>>>>>>>
+>>>>>>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+>>>>>>> ---
+>>>>>>> =C2=A0arch/powerpc/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
+>>>>>>> =C2=A0arch/powerpc/include/asm/ftrace.h=C2=A0=C2=A0=C2=A0 | 17 ++++=
++++++++++++++
+>>>>>>> =C2=A0arch/powerpc/include/asm/livepatch.h |=C2=A0 4 +---
+>>>>>>> =C2=A03 files changed, 19 insertions(+), 3 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+>>>>>>> index cdac2115eb00..e2b1792b2aae 100644
+>>>>>>> --- a/arch/powerpc/Kconfig
+>>>>>>> +++ b/arch/powerpc/Kconfig
+>>>>>>> @@ -210,6 +210,7 @@ config PPC
+>>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DEBUG_KMEMLEAK
+>>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DEBUG_STACKOVERFLOW
+>>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE
+>>>>>>> +=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE_WITH_ARGS=C2=A0=C2=
+=A0=C2=A0 if MPROFILE_KERNEL ||=20
+>>>>>>> PPC32
+>>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE_WITH_REGS=C2=A0=
+=C2=A0=C2=A0 if MPROFILE_KERNEL ||=20
+>>>>>>> PPC32
+>>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_EBPF_JIT
+>>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_EFFICIENT_UNALIGNED_ACCESS=C2=
+=A0=C2=A0=C2=A0 if=20
+>>>>>>> !(CPU_LITTLE_ENDIAN && POWER7_CPU)
+>>>>>>> diff --git a/arch/powerpc/include/asm/ftrace.h=20
+>>>>>>> b/arch/powerpc/include/asm/ftrace.h
+>>>>>>> index b3f6184f77ea..45c3d6f11daa 100644
+>>>>>>> --- a/arch/powerpc/include/asm/ftrace.h
+>>>>>>> +++ b/arch/powerpc/include/asm/ftrace.h
+>>>>>>> @@ -22,6 +22,23 @@ static inline unsigned long=20
+>>>>>>> ftrace_call_adjust(unsigned long addr)
+>>>>>>> =C2=A0struct dyn_arch_ftrace {
+>>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0 struct module *mod;
+>>>>>>> =C2=A0};
+>>>>>>> +
+>>>>>>> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_ARGS
+>>>>>>> +struct ftrace_regs {
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct pt_regs regs;
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static __always_inline struct pt_regs=20
+>>>>>>> *arch_ftrace_get_regs(struct ftrace_regs *fregs)
+>>>>>>> +{
+>>>>>>> +=C2=A0=C2=A0=C2=A0 return &fregs->regs;
+>>>>>>> +}
+>>>>>>
+>>>>>> I think this is wrong. We need to differentiate between=20
+>>>>>> ftrace_caller() and ftrace_regs_caller() here, and only return=20
+>>>>>> pt_regs if coming in through ftrace_regs_caller() (i.e.,=20
+>>>>>> FL_SAVE_REGS is set).
+>>>>>
+>>>>> Not sure I follow you.
+>>>>>
+>>>>> This is based on 5740a7c71ab6 ("s390/ftrace: add=20
+>>>>> HAVE_DYNAMIC_FTRACE_WITH_ARGS support")
+>>>>>
+>>>>> It's all the point of HAVE_DYNAMIC_FTRACE_WITH_ARGS, have the regs=20
+>>>>> also with ftrace_caller().
+>>>>>
+>>>>> Sure you only have the params, but that's the same on s390, so what=20
+>>>>> did I miss ?
+
+Steven has explained the rationale for this in his other response:
+https://lore.kernel.org/all/20220215093849.556d5444@gandalf.local.home/
+
+>>>
+>>> It looks like s390 is special since it apparently saves all registers=20
+>>> even for ftrace_caller:=20
+>>> https://lore.kernel.org/all/YbipdU5X4HNDWIni@osiris/
+>>=20
+>> It is not what I understand from their code, see=20
+>> https://elixir.bootlin.com/linux/v5.17-rc3/source/arch/s390/kernel/mcoun=
+t.S#L37=20
+>>=20
+>>=20
+>> They have a common macro called with argument 'allregs' which is set to=
+=20
+>> 0 for ftrace_caller() and 1 for ftrace_regs_caller().
+>> When allregs =3D=3D 1, the macro seems to save more.
+>>=20
+>> But ok, I can do like x86, but I need a trick to know whether=20
+>> FL_SAVE_REGS is set or not, like they do with fregs->regs.cs
+>> Any idea what the condition can be for powerpc ?
+
+We'll need to explicitly zero-out something in pt_regs in=20
+ftrace_caller(). We can probably use regs->msr since we don't expect it=20
+to be zero when saved from ftrace_regs_caller().
+
+>>=20
+>=20
+> Finally, it looks like this change is done  via commit 894979689d3a=20
+> ("s390/ftrace: provide separate ftrace_caller/ftrace_regs_caller=20
+> implementations") four hours the same day after the implementation of=20
+> arch_ftrace_get_regs()
+>=20
+> They may have forgotten to change arch_ftrace_get_regs() which was added=
+=20
+> in commit 5740a7c71ab6 ("s390/ftrace: add HAVE_DYNAMIC_FTRACE_WITH_ARGS=20
+> support") with the assumption that ftrace_caller and ftrace_regs_caller=20
+> where identical.
+
+Indeed, good find!
+
+
+Thanks,
+Naveen
+
