@@ -2,199 +2,230 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F61D4B6A2E
-	for <lists+live-patching@lfdr.de>; Tue, 15 Feb 2022 12:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55C964B6D05
+	for <lists+live-patching@lfdr.de>; Tue, 15 Feb 2022 14:08:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235744AbiBOLFW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 15 Feb 2022 06:05:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56870 "EHLO
+        id S232815AbiBONIN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 15 Feb 2022 08:08:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234362AbiBOLFW (ORCPT
+        with ESMTP id S231377AbiBONIM (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 15 Feb 2022 06:05:22 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61B21074F0;
-        Tue, 15 Feb 2022 03:05:11 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JydXd6l0yz4xNq;
-        Tue, 15 Feb 2022 22:05:05 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1644923107;
-        bh=LoeNfqeXHZpw22Uq/3imGMD+iHu3vmdMmCYzm8O/0HE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=SHn+0P0fQHdthvYLHYFnoJt36LFHdIy60E+1+cApL4Qd3fRJ74pBCS79bFEQcIupt
-         vwupGcmCdq48K88sDm5KgEcS5aHkfeTfrotLL9p1pU6yi3vVdwxxeiqjZCp3iOiDSo
-         m8DyTQZKgC9cdIptSy7lGlVKcCH1lijaQoTFOZkodTrsxQnjlMF1pA9meNMLieskBv
-         24pHnMbAznFtrmC0gnqmVbn7E0ilcKPVgV88T3HxI/wSrVWI6lxav60uqi2mVrDtTZ
-         L54uDc4vn4/B/kV9YAv1+nOlse4K36BMU/DPR6ElvtOmkUNDcKrk8529uvKFOoib/W
-         gDLYqvVXRIB2A==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Ingo Molnar <mingo@redhat.com>, Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
-Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
- CONFIG_DYNAMIC_FTRACE_WITH_ARGS
-In-Reply-To: <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
-References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
- <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
- <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
- <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
-Date:   Tue, 15 Feb 2022 22:05:04 +1100
-Message-ID: <875ypgo0f3.fsf@mpe.ellerman.id.au>
+        Tue, 15 Feb 2022 08:08:12 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2178AB16EC;
+        Tue, 15 Feb 2022 05:08:02 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DD2631480;
+        Tue, 15 Feb 2022 05:08:01 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.89.173])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 099533F718;
+        Tue, 15 Feb 2022 05:07:59 -0800 (PST)
+Date:   Tue, 15 Feb 2022 13:07:56 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     madvenka@linux.microsoft.com
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v13 04/11] arm64: Split unwind_init()
+Message-ID: <YgulrExdlfBcHoKP@FVFF77S0Q05N>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220117145608.6781-1-madvenka@linux.microsoft.com>
+ <20220117145608.6781-5-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220117145608.6781-5-madvenka@linux.microsoft.com>
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Christophe Leroy <christophe.leroy@csgroup.eu> writes:
-> Le 14/02/2022 =C3=A0 16:25, Naveen N. Rao a =C3=A9crit=C2=A0:
->> Christophe Leroy wrote:
->>> Implement CONFIG_DYNAMIC_FTRACE_WITH_ARGS. It accelerates the call
->>> of livepatching.
->>>
->>> Also note that powerpc being the last one to convert to
->>> CONFIG_DYNAMIC_FTRACE_WITH_ARGS, it will now be possible to remove
->>> klp_arch_set_pc() on all architectures.
->>>
->>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
->>> ---
->>> =C2=A0arch/powerpc/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
->>> =C2=A0arch/powerpc/include/asm/ftrace.h=C2=A0=C2=A0=C2=A0 | 17 ++++++++=
-+++++++++
->>> =C2=A0arch/powerpc/include/asm/livepatch.h |=C2=A0 4 +---
->>> =C2=A03 files changed, 19 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
->>> index cdac2115eb00..e2b1792b2aae 100644
->>> --- a/arch/powerpc/Kconfig
->>> +++ b/arch/powerpc/Kconfig
->>> @@ -210,6 +210,7 @@ config PPC
->>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DEBUG_KMEMLEAK
->>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DEBUG_STACKOVERFLOW
->>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE
->>> +=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE_WITH_ARGS=C2=A0=C2=A0=C2=
-=A0 if MPROFILE_KERNEL || PPC32
->>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_DYNAMIC_FTRACE_WITH_REGS=C2=A0=C2=
-=A0=C2=A0 if MPROFILE_KERNEL || PPC32
->>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_EBPF_JIT
->>> =C2=A0=C2=A0=C2=A0=C2=A0 select HAVE_EFFICIENT_UNALIGNED_ACCESS=C2=A0=
-=C2=A0=C2=A0 if !(CPU_LITTLE_ENDIAN=20
->>> && POWER7_CPU)
->>> diff --git a/arch/powerpc/include/asm/ftrace.h=20
->>> b/arch/powerpc/include/asm/ftrace.h
->>> index b3f6184f77ea..45c3d6f11daa 100644
->>> --- a/arch/powerpc/include/asm/ftrace.h
->>> +++ b/arch/powerpc/include/asm/ftrace.h
->>> @@ -22,6 +22,23 @@ static inline unsigned long=20
->>> ftrace_call_adjust(unsigned long addr)
->>> =C2=A0struct dyn_arch_ftrace {
->>> =C2=A0=C2=A0=C2=A0=C2=A0 struct module *mod;
->>> =C2=A0};
->>> +
->>> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_ARGS
->>> +struct ftrace_regs {
->>> +=C2=A0=C2=A0=C2=A0 struct pt_regs regs;
->>> +};
->>> +
->>> +static __always_inline struct pt_regs *arch_ftrace_get_regs(struct=20
->>> ftrace_regs *fregs)
->>> +{
->>> +=C2=A0=C2=A0=C2=A0 return &fregs->regs;
->>> +}
->>=20
->> I think this is wrong. We need to differentiate between ftrace_caller()=
-=20
->> and ftrace_regs_caller() here, and only return pt_regs if coming in=20
->> through ftrace_regs_caller() (i.e., FL_SAVE_REGS is set).
->
-> Not sure I follow you.
->
-> This is based on 5740a7c71ab6 ("s390/ftrace: add=20
-> HAVE_DYNAMIC_FTRACE_WITH_ARGS support")
->
-> It's all the point of HAVE_DYNAMIC_FTRACE_WITH_ARGS, have the regs also=20
-> with ftrace_caller().
->
-> Sure you only have the params, but that's the same on s390, so what did=20
-> I miss ?
+Hi Madhavan,
 
-I already have this series in next, I can pull it out, but I'd rather
-not.
+The diff itself largely looks good, but we need to actually write the comments.
+Can you pleaes pick up the wording I've written below for those?
 
-I'll leave it in for now, hopefully you two can agree overnight my time
-whether this is a big problem or something we can fix with a fixup
-patch.
+That and renaming `unwind_init_from_current` to `unwind_init_from_caller`.
 
->>> +static __always_inline void ftrace_instruction_pointer_set(struct=20
->>> ftrace_regs *fregs,
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned long ip)
->>> +{
->>> +=C2=A0=C2=A0=C2=A0 regs_set_return_ip(&fregs->regs, ip);
->>=20
->> Should we use that helper here? regs_set_return_ip() also updates some=20
->> other state related to taking interrupts and I don't think it makes=20
->> sense for use with ftrace.
->
->
-> Today we have:
->
-> 	static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned=20
-> long ip)
-> 	{
-> 		struct pt_regs *regs =3D ftrace_get_regs(fregs);
->
-> 		regs_set_return_ip(regs, ip);
-> 	}
->
->
-> Which like x86 and s390 becomes:
->
-> 	static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned=20
-> long ip)
-> 	{
-> 		ftrace_instruction_pointer_set(fregs, ip);
-> 	}
->
->
->
-> That's the reason why I've been using regs_set_return_ip(). Do you think=
-=20
-> it was wrong to use regs_set_return_ip() in klp_arch_set_pc() ?
->
-> That was added by 59dc5bfca0cb ("powerpc/64s: avoid reloading (H)SRR=20
-> registers if they are still valid")
+With those I think this is good, but I'd like to see the updated version before
+I provide Acked-by or Reviewed-by tags -- hopefully that's just a formality! :)
 
-It's not wrong, but I think it's unnecessary. We need to use
-regs_set_return_ip() if we're changing the regs->ip of an interrupt
-frame, so that the interrupt return code will reload it.
+On Mon, Jan 17, 2022 at 08:56:01AM -0600, madvenka@linux.microsoft.com wrote:
+> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+> 
+> unwind_init() is currently a single function that initializes all of the
+> unwind state. Split it into the following functions and call them
+> appropriately:
+> 
+> 	- unwind_init_from_regs() - initialize from regs passed by caller.
+> 
+> 	- unwind_init_from_current() - initialize for the current task
+> 	  from the caller of arch_stack_walk().
+> 
+> 	- unwind_init_from_task() - initialize from the saved state of a
+> 	  task other than the current task. In this case, the other
+> 	  task must not be running.
+> 
+> This is done for two reasons:
+> 
+> 	- the different ways of initializing are clear
+> 
+> 	- specialized code can be added to each initializer in the future.
+> 
+> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+> ---
+>  arch/arm64/kernel/stacktrace.c | 54 +++++++++++++++++++++++++++-------
+>  1 file changed, 44 insertions(+), 10 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+> index a1a7ff93b84f..b2b568e5deba 100644
+> --- a/arch/arm64/kernel/stacktrace.c
+> +++ b/arch/arm64/kernel/stacktrace.c
+> @@ -33,11 +33,8 @@
+>   */
+>  
+>  
+> -static void unwind_init(struct unwind_state *state, unsigned long fp,
+> -			unsigned long pc)
+> +static void unwind_init_common(struct unwind_state *state)
+>  {
+> -	state->fp = fp;
+> -	state->pc = pc;
+>  #ifdef CONFIG_KRETPROBES
+>  	state->kr_cur = NULL;
+>  #endif
+> @@ -56,6 +53,46 @@ static void unwind_init(struct unwind_state *state, unsigned long fp,
+>  	state->prev_type = STACK_TYPE_UNKNOWN;
+>  }
+>  
+> +/*
+> + * TODO: document requirements here.
+> + */
 
-But AIUI in this case we're not doing that, we're changing the regs->ip
-of a pt_regs provided by ftrace, which shouldn't ever be an interrupt
-frame.
+Please make this:
 
-So it's not a bug to use regs_set_return_ip(), but it is unncessary and
-means we'll reload the interrupt state unnecessarily on the next
-interrupt return.
+/*
+ * Start an unwind from a pt_regs.
+ *
+ * The unwind will begin at the PC within the regs.
+ *
+ * The regs must be on a stack currently owned by the calling task.
+ */
 
-cheers
+> +static inline void unwind_init_from_regs(struct unwind_state *state,
+> +					 struct pt_regs *regs)
+> +{
+
+In future we could add:
+
+	WARN_ON_ONCE(!on_accessible_stack(current, regs, sizeof(*regs), NULL));
+
+... to validate the requirements, but I'm happy to lave that for a future patch
+so this patch can be a pure refactoring.
+
+> +	unwind_init_common(state);
+> +
+> +	state->fp = regs->regs[29];
+> +	state->pc = regs->pc;
+> +}
+> +
+> +/*
+> + * TODO: document requirements here.
+> + *
+> + * Note: this is always inlined, and we expect our caller to be a noinline
+> + * function, such that this starts from our caller's caller.
+> + */
+
+Please make this:
+
+/*
+ * Start an unwind from a caller.
+ *
+ * The unwind will begin at the caller of whichever function this is inlined
+ * into.
+ *
+ * The function which invokes this must be noinline.
+ */
+
+> +static __always_inline void unwind_init_from_current(struct unwind_state *state)
+
+Can we please rename s/current/caller/ here? That way it's clear *where* in
+current we're unwinding from, and the fact that it's current is implicit but
+obvious.
+
+> +{
+
+Similarly to unwind_init_from_regs(), in a future patch we could add:
+
+	WARN_ON_ONCE(task == current);
+
+... but for now we can omit that so this patch can be a pure refactoring.
+
+> +	unwind_init_common(state);
+> +
+> +	state->fp = (unsigned long)__builtin_frame_address(1);
+> +	state->pc = (unsigned long)__builtin_return_address(0);
+> +}
+> +
+> +/*
+> + * TODO: document requirements here.
+> + *
+> + * The caller guarantees that the task is not running.
+> + */
+
+Please make this:
+
+/*
+ * Start an unwind from a blocked task.
+ *
+ * The unwind will begin at the blocked tasks saved PC (i.e. the caller of
+ * cpu_switch_to()).
+ *
+ * The caller should ensure the task is blocked in cpu_switch_to() for the
+ * duration of the unwind, or the unwind will be bogus. It is never valid to
+ * call this for the current task.
+ */
+
+Thanks,
+Mark.
+
+> +static inline void unwind_init_from_task(struct unwind_state *state,
+> +					 struct task_struct *task)
+> +{
+> +	unwind_init_common(state);
+> +
+> +	state->fp = thread_saved_fp(task);
+> +	state->pc = thread_saved_pc(task);
+> +}
+> +
+>  /*
+>   * Unwind from one frame record (A) to the next frame record (B).
+>   *
+> @@ -195,14 +232,11 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+>  	struct unwind_state state;
+>  
+>  	if (regs)
+> -		unwind_init(&state, regs->regs[29], regs->pc);
+> +		unwind_init_from_regs(&state, regs);
+>  	else if (task == current)
+> -		unwind_init(&state,
+> -				(unsigned long)__builtin_frame_address(1),
+> -				(unsigned long)__builtin_return_address(0));
+> +		unwind_init_from_current(&state);
+>  	else
+> -		unwind_init(&state, thread_saved_fp(task),
+> -				thread_saved_pc(task));
+> +		unwind_init_from_task(&state, task);
+>  
+>  	unwind(task, &state, consume_entry, cookie);
+>  }
+> -- 
+> 2.25.1
+> 
