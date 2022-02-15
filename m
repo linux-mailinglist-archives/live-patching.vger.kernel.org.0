@@ -2,106 +2,55 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 696B54B73B5
-	for <lists+live-patching@lfdr.de>; Tue, 15 Feb 2022 17:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E70B4B776B
+	for <lists+live-patching@lfdr.de>; Tue, 15 Feb 2022 21:50:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238291AbiBOQ1q (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 15 Feb 2022 11:27:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35876 "EHLO
+        id S242818AbiBOSEU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 15 Feb 2022 13:04:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241558AbiBOQ1n (ORCPT
+        with ESMTP id S242827AbiBOSET (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:27:43 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE1A6C920;
-        Tue, 15 Feb 2022 08:27:30 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FGDE1F001119;
-        Tue, 15 Feb 2022 16:27:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=yuJ33/IS3C8JmgqYKYRI7WGKiRlXun9JPd2/bJ+93WA=;
- b=sOclZRJgd7NDzOsSb2uU840Kwry0jw4kCuTeWrNB5Rja9fkxfT64FGzeYCwe0RhJ5AKS
- ySmme8nLWrCxoVaavRnmZAvyrkH8BIIZ6QPr1vpF2KN3t2zKCJSCI0Gv5pJI5AqlzSvK
- boUuO9Ep8Od6htYVlFtEPAyi8Na79tE1k3svbEFDZHhtDlp+u11ovagr5coTOOOlnZkf
- HUDthA4wkeZ81x3TRFhzVEs4yjLhgJF0QgDkkfD8e4z7cDUYVNenb4dEidard4jMOURK
- hBEEmRQqhJ70xhwsRbPSQ/f5cbVAL1H+0Ji493n4Rk2io31tvRP3NnOjyGJB2LhFMOGf xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8d9fvjff-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 16:27:07 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21FGDTLm009902;
-        Tue, 15 Feb 2022 16:27:06 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8d9fvje5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 16:27:06 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21FGC1EO007679;
-        Tue, 15 Feb 2022 16:27:03 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma05fra.de.ibm.com with ESMTP id 3e64h9qrkj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 16:27:03 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21FGR1Tv24510740
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 16:27:01 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 61D3EAE045;
-        Tue, 15 Feb 2022 16:27:01 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB164AE053;
-        Tue, 15 Feb 2022 16:27:00 +0000 (GMT)
-Received: from localhost (unknown [9.43.98.51])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 15 Feb 2022 16:27:00 +0000 (GMT)
-Date:   Tue, 15 Feb 2022 21:56:59 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH v2 09/13] powerpc/ftrace: Implement
- CONFIG_DYNAMIC_FTRACE_WITH_ARGS
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Petr Mladek <pmladek@suse.com>
-References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
-        <5831f711a778fcd6eb51eb5898f1faae4378b35b.1640017960.git.christophe.leroy@csgroup.eu>
-        <1644852011.qg7ud9elo2.naveen@linux.ibm.com>
-        <1b28f52a-f8b7-6b5c-e726-feac4123517d@csgroup.eu>
-        <875ypgo0f3.fsf@mpe.ellerman.id.au>
-        <1644930705.g64na2kgvd.naveen@linux.ibm.com>
-        <20220215093849.556d5444@gandalf.local.home>
-In-Reply-To: <20220215093849.556d5444@gandalf.local.home>
+        Tue, 15 Feb 2022 13:04:19 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C39EF11941B;
+        Tue, 15 Feb 2022 10:04:08 -0800 (PST)
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id AC11320B96F6;
+        Tue, 15 Feb 2022 10:04:07 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AC11320B96F6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1644948248;
+        bh=vVZ+5Lbbj8DQfAkNXRkrE1JK8DxJgGeBHRod9B2hhSs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HpTzZe3sFgGTGrUS6o/eIgCoiAU51ZC8SCfzeiFJvjzCUQ7kA8cRXo+Xs5B3rcu8b
+         URICMndz+2iyoO+117gGqdUdYOtQ80happsUllKx/8X+AYu7qtIFHlmONRzIs7iLg6
+         UVmnVAVwLKWlyGklqcPY0UD8v+hLmYOixfvf+yMY=
+Message-ID: <dec185c2-305f-0d9a-6a2f-30cd1f4a6575@linux.microsoft.com>
+Date:   Tue, 15 Feb 2022 12:04:06 -0600
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1644942378.byz0qymic3.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: jrSZjNs8gbiYltKWnkGMOceFtwUtrkOd
-X-Proofpoint-GUID: BBeV6KJeqsMu-XQ3oul3qIPY_5o_K6oZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-15_04,2022-02-14_04,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- phishscore=0 bulkscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
- suspectscore=0 adultscore=0 impostorscore=0 clxscore=1011 mlxlogscore=782
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202150095
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v13 04/11] arm64: Split unwind_init()
+Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220117145608.6781-1-madvenka@linux.microsoft.com>
+ <20220117145608.6781-5-madvenka@linux.microsoft.com>
+ <YgulrExdlfBcHoKP@FVFF77S0Q05N>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <YgulrExdlfBcHoKP@FVFF77S0Q05N>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -109,52 +58,193 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Steven Rostedt wrote:
-> On Tue, 15 Feb 2022 19:06:48 +0530
-> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
->=20
->> As I understand it, the reason ftrace_get_regs() was introduced was to=20
->> be able to only return the pt_regs, if _all_ registers were saved into=20
->> it, which we don't do when coming in through ftrace_caller(). See the=20
->> x86 implementation (commit 02a474ca266a47 ("ftrace/x86: Allow for=20
->> arguments to be passed in to ftrace_regs by default"), which returns=20
->> pt_regs conditionally.
->=20
-> I can give you the history of ftrace_caller and ftrace_regs_caller.
->=20
-> ftrace_caller saved just enough as was denoted for gcc mcount trampolines=
-.
-> The new fentry which happens at the start of the function, whereas mcount
-> happens after the stack frame is set up, may change the rules on some
-> architectures.
->=20
-> As for ftrace_regs_caller, that was created for kprobes. As the majority =
-of
-> kprobes were added at the start of the function, it made sense to hook in=
-to
-> ftrace as the ftrace trampoline call is much faster than taking a
-> breakpoint interrupt. But to keep compatibility with breakpoint
-> interrupts, we needed to fill in all the registers, and make it act just
-> like a breakpoint interrupt.
->=20
-> I've been wanting to record function parameters, and because the ftrace
-> trampoline must at a minimum save the function parameters before calling
-> the ftrace callbacks, all the information for those parameters were being
-> saved but were never exposed to the ftrace callbacks. I created the the
-> DYNAMIC_FTRACE_WITH_ARGS to expose them. I first just used pt_regs with
-> just the parameters filled in, but that was criticized as it could be
-> confusing where the non filled in pt_regs might be used and thinking they
-> are legitimate. So I created ftrace_regs that would give you just the
-> function arguments (if DYNAMIC_FTRACE_WITH_ARGS is defined), or it will
-> give you a full pt_regs, if the caller came from the ftrace_regs_caller. =
-If
-> not, it will give you a NULL pointer.
->=20
-> The first user to use the args was live kernel patching, as they only nee=
-d
-> that and the return pointer.
 
-Thanks, that helps.
 
-- Naveen
+On 2/15/22 07:07, Mark Rutland wrote:
+> Hi Madhavan,
+> 
+> The diff itself largely looks good, but we need to actually write the comments.
+> Can you pleaes pick up the wording I've written below for those?
+> 
+> That and renaming `unwind_init_from_current` to `unwind_init_from_caller`.
+> 
+> With those I think this is good, but I'd like to see the updated version before
+> I provide Acked-by or Reviewed-by tags -- hopefully that's just a formality! :)
+> 
 
+Will do.
+
+Madhavan
+
+> On Mon, Jan 17, 2022 at 08:56:01AM -0600, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+>>
+>> unwind_init() is currently a single function that initializes all of the
+>> unwind state. Split it into the following functions and call them
+>> appropriately:
+>>
+>> 	- unwind_init_from_regs() - initialize from regs passed by caller.
+>>
+>> 	- unwind_init_from_current() - initialize for the current task
+>> 	  from the caller of arch_stack_walk().
+>>
+>> 	- unwind_init_from_task() - initialize from the saved state of a
+>> 	  task other than the current task. In this case, the other
+>> 	  task must not be running.
+>>
+>> This is done for two reasons:
+>>
+>> 	- the different ways of initializing are clear
+>>
+>> 	- specialized code can be added to each initializer in the future.
+>>
+>> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+>> ---
+>>  arch/arm64/kernel/stacktrace.c | 54 +++++++++++++++++++++++++++-------
+>>  1 file changed, 44 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+>> index a1a7ff93b84f..b2b568e5deba 100644
+>> --- a/arch/arm64/kernel/stacktrace.c
+>> +++ b/arch/arm64/kernel/stacktrace.c
+>> @@ -33,11 +33,8 @@
+>>   */
+>>  
+>>  
+>> -static void unwind_init(struct unwind_state *state, unsigned long fp,
+>> -			unsigned long pc)
+>> +static void unwind_init_common(struct unwind_state *state)
+>>  {
+>> -	state->fp = fp;
+>> -	state->pc = pc;
+>>  #ifdef CONFIG_KRETPROBES
+>>  	state->kr_cur = NULL;
+>>  #endif
+>> @@ -56,6 +53,46 @@ static void unwind_init(struct unwind_state *state, unsigned long fp,
+>>  	state->prev_type = STACK_TYPE_UNKNOWN;
+>>  }
+>>  
+>> +/*
+>> + * TODO: document requirements here.
+>> + */
+> 
+> Please make this:
+> 
+> /*
+>  * Start an unwind from a pt_regs.
+>  *
+>  * The unwind will begin at the PC within the regs.
+>  *
+>  * The regs must be on a stack currently owned by the calling task.
+>  */
+> 
+>> +static inline void unwind_init_from_regs(struct unwind_state *state,
+>> +					 struct pt_regs *regs)
+>> +{
+> 
+> In future we could add:
+> 
+> 	WARN_ON_ONCE(!on_accessible_stack(current, regs, sizeof(*regs), NULL));
+> 
+> ... to validate the requirements, but I'm happy to lave that for a future patch
+> so this patch can be a pure refactoring.
+> 
+>> +	unwind_init_common(state);
+>> +
+>> +	state->fp = regs->regs[29];
+>> +	state->pc = regs->pc;
+>> +}
+>> +
+>> +/*
+>> + * TODO: document requirements here.
+>> + *
+>> + * Note: this is always inlined, and we expect our caller to be a noinline
+>> + * function, such that this starts from our caller's caller.
+>> + */
+> 
+> Please make this:
+> 
+> /*
+>  * Start an unwind from a caller.
+>  *
+>  * The unwind will begin at the caller of whichever function this is inlined
+>  * into.
+>  *
+>  * The function which invokes this must be noinline.
+>  */
+> 
+>> +static __always_inline void unwind_init_from_current(struct unwind_state *state)
+> 
+> Can we please rename s/current/caller/ here? That way it's clear *where* in
+> current we're unwinding from, and the fact that it's current is implicit but
+> obvious.
+> 
+>> +{
+> 
+> Similarly to unwind_init_from_regs(), in a future patch we could add:
+> 
+> 	WARN_ON_ONCE(task == current);
+> 
+> ... but for now we can omit that so this patch can be a pure refactoring.
+> 
+>> +	unwind_init_common(state);
+>> +
+>> +	state->fp = (unsigned long)__builtin_frame_address(1);
+>> +	state->pc = (unsigned long)__builtin_return_address(0);
+>> +}
+>> +
+>> +/*
+>> + * TODO: document requirements here.
+>> + *
+>> + * The caller guarantees that the task is not running.
+>> + */
+> 
+> Please make this:
+> 
+> /*
+>  * Start an unwind from a blocked task.
+>  *
+>  * The unwind will begin at the blocked tasks saved PC (i.e. the caller of
+>  * cpu_switch_to()).
+>  *
+>  * The caller should ensure the task is blocked in cpu_switch_to() for the
+>  * duration of the unwind, or the unwind will be bogus. It is never valid to
+>  * call this for the current task.
+>  */
+> 
+> Thanks,
+> Mark.
+> 
+>> +static inline void unwind_init_from_task(struct unwind_state *state,
+>> +					 struct task_struct *task)
+>> +{
+>> +	unwind_init_common(state);
+>> +
+>> +	state->fp = thread_saved_fp(task);
+>> +	state->pc = thread_saved_pc(task);
+>> +}
+>> +
+>>  /*
+>>   * Unwind from one frame record (A) to the next frame record (B).
+>>   *
+>> @@ -195,14 +232,11 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+>>  	struct unwind_state state;
+>>  
+>>  	if (regs)
+>> -		unwind_init(&state, regs->regs[29], regs->pc);
+>> +		unwind_init_from_regs(&state, regs);
+>>  	else if (task == current)
+>> -		unwind_init(&state,
+>> -				(unsigned long)__builtin_frame_address(1),
+>> -				(unsigned long)__builtin_return_address(0));
+>> +		unwind_init_from_current(&state);
+>>  	else
+>> -		unwind_init(&state, thread_saved_fp(task),
+>> -				thread_saved_pc(task));
+>> +		unwind_init_from_task(&state, task);
+>>  
+>>  	unwind(task, &state, consume_entry, cookie);
+>>  }
+>> -- 
+>> 2.25.1
+>>
