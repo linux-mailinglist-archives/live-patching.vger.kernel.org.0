@@ -2,52 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 548164B8E4F
-	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 17:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 928D94B8E6C
+	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 17:47:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236608AbiBPQkU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Feb 2022 11:40:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41934 "EHLO
+        id S236596AbiBPQrT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Feb 2022 11:47:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236552AbiBPQkK (ORCPT
+        with ESMTP id S235168AbiBPQrS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:40:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECE4025D245
-        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 08:39:55 -0800 (PST)
+        Wed, 16 Feb 2022 11:47:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D30F1A82C
+        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 08:47:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645029594;
+        s=mimecast20190719; t=1645030025;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=oNQ7yPuiETH2hHgkjqQWCswPZf6yTG3g+MeccxNns3Y=;
-        b=giNi3I12lWdn2WPhZWrVQWJb0Q79YNI0IIEkG2bzAf5GOi8VVZ8QJnwffcnW2u/6aSh5vP
-        gDZspviG/MKAcLzbUV/tv5pFIfnt8XzrPspTKvRM9I4bzXOdxTzZ5+XB2EH39OA3X6wVJn
-        VwsC8Cl7w7KGforqYZx+kEwqBJjr7L0=
+        bh=36+amQYpsAR2WASYmM8zsPn0dtpM2TBA20M2ylDK/kc=;
+        b=XNdpmwo2WfcCOsfPqz+TbcwLpvI5J4QDOcDPllXza7B4dZfrBdGQlvcNmIYh0gr7V4YUQ5
+        7souzZl14Y/jdZud5Dg5AlsA+D4DPEhT3kLQAZYaLc+Qe1bF78sdEKdXks7fOcs/IDo3A4
+        1uQnjvH0zIoLH/n2YXyNLWyw/iekEzE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-353-h3haBQKqOYuVbWfFxevz_g-1; Wed, 16 Feb 2022 11:39:51 -0500
-X-MC-Unique: h3haBQKqOYuVbWfFxevz_g-1
+ us-mta-668-3ZVEvefnPn6mbvDvK6KLGA-1; Wed, 16 Feb 2022 11:47:01 -0500
+X-MC-Unique: 3ZVEvefnPn6mbvDvK6KLGA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3EEA41091DA1;
-        Wed, 16 Feb 2022 16:39:50 +0000 (UTC)
-Received: from jlaw-desktop.redhat.com (unknown [10.22.8.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE213753D9;
-        Wed, 16 Feb 2022 16:39:49 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DD62A2F44;
+        Wed, 16 Feb 2022 16:47:00 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.8.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6B6DA753DA;
+        Wed, 16 Feb 2022 16:47:00 +0000 (UTC)
+Date:   Wed, 16 Feb 2022 11:46:58 -0500
 From:   Joe Lawrence <joe.lawrence@redhat.com>
 To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kbuild@vger.kernel.org
-Subject: [RFC PATCH v6 12/12] livepatch/selftests: add static keys test
-Date:   Wed, 16 Feb 2022 11:39:40 -0500
-Message-Id: <20220216163940.228309-13-joe.lawrence@redhat.com>
-In-Reply-To: <20220216163940.228309-1-joe.lawrence@redhat.com>
+Subject: Re: [RFC PATCH v6 03/12] livepatch: Add klp-convert tool
+Message-ID: <Yg0qgtSFNQx5Mo1i@redhat.com>
 References: <20220216163940.228309-1-joe.lawrence@redhat.com>
+ <20220216163940.228309-4-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216163940.228309-4-joe.lawrence@redhat.com>
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
@@ -59,354 +60,59 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Add a livepatch kselftest that exercises klp-convert support for static
-keys:
+On Wed, Feb 16, 2022 at 11:39:31AM -0500, Joe Lawrence wrote:
+> 
+>  [ ... snip ... ]
+> 
+> +/*
+> + * Checks if rela conversion is supported in given section
+> + */
+> +static bool supported_section(struct section *sec, char *object_name)
+> +{
+> +#if 0
+> +	/*
+> +	 * klp-relocations forbidden in sections that otherwise would
+> +	 * match in allowed_prefixes[]
+> +	 */
+> +	static const char * const not_allowed[] = {
+> +		".rela.data.rel.ro",
+> +		".rela.data.rel.ro.local",
+> +		".rela.data..ro_after_init",
+> +		NULL
+> +	};
+> +#endif
+> +
+> +	/* klp-relocations allowed in sections only for vmlinux */
+> +	static const char * const allowed_vmlinux[] = {
+> +		".rela__jump_table",
+> +		NULL
+> +	};
+> +
+> +	/* klp-relocations allowed in sections with prefixes */
+> +	static const char * const allowed_prefixes[] = {
+> +		".rela.data",
+> +		".rela.rodata",	// supported ???
+> +		".rela.sdata",
+> +		".rela.text",
+> +		".rela.toc",
+> +		NULL
+> +	};
+> +
+> +	const char * const *name;
+> +
+> +#if 0
+> +	for (name = not_allowed; *name; name++)
+> +		if (strcmp(sec->name, *name) == 0)
+> +			return false;
+> +#endif
 
-  - Use static_branch_(un)likely() on vmlinux-defined keys, forcing
-    .rela__jump_table klp-relocations for them.
+I wasn't sure if relocations in .rela.<read-only> sections should be
+supported or not, particularly in the late relocation use case.  For
+most, I think they can be easily avoided by the livepatch author
+changing the storage class for the C pointer that is relocated.  On the
+other hand, this may be disruptive to automated tools like
+kpatch-build... or maybe there is no issue at all for late relocating
+.rela.<read-only>?
 
-  - Use only static_key_enable() on module-defined keys, creating .text
-    klp-relocations for them.
-
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
----
- lib/livepatch/Makefile                        |   2 +
- lib/livepatch/test_klp_convert.h              |   8 ++
- lib/livepatch/test_klp_convert_keys.c         |  91 +++++++++++++
- lib/livepatch/test_klp_convert_keys_mod.c     |  52 +++++++
- .../selftests/livepatch/test-livepatch.sh     | 127 ++++++++++++++++++
- 5 files changed, 280 insertions(+)
- create mode 100644 lib/livepatch/test_klp_convert_keys.c
- create mode 100644 lib/livepatch/test_klp_convert_keys_mod.c
-
-diff --git a/lib/livepatch/Makefile b/lib/livepatch/Makefile
-index da39aaa5c8fc..a3c2ac61387f 100644
---- a/lib/livepatch/Makefile
-+++ b/lib/livepatch/Makefile
-@@ -11,6 +11,8 @@ obj-$(CONFIG_TEST_LIVEPATCH) += test_klp_atomic_replace.o \
- 				test_klp_convert2.o \
- 				test_klp_convert_data.o \
- 				test_klp_convert_sections.o \
-+				test_klp_convert_keys.o \
-+				test_klp_convert_keys_mod.o \
- 				test_klp_convert_mod.o \
- 				test_klp_livepatch.o \
- 				test_klp_shadow_vars.o \
-diff --git a/lib/livepatch/test_klp_convert.h b/lib/livepatch/test_klp_convert.h
-index 08c0f4b1dc6b..97d4c26e4c39 100644
---- a/lib/livepatch/test_klp_convert.h
-+++ b/lib/livepatch/test_klp_convert.h
-@@ -34,4 +34,12 @@ extern int static_const_local_large[4];
- extern int static_ro_after_init;
- extern int static_read_mostly;
- 
-+/* klp-convert symbols - vmlinux */
-+extern struct static_key_false tracepoint_printk_key;
-+
-+/* klp-convert symbols - test_klp_keys_mod.ko */
-+extern struct static_key_true test_klp_true_key;
-+extern struct static_key_false test_klp_false_key;
-+
-+
- #endif
-diff --git a/lib/livepatch/test_klp_convert_keys.c b/lib/livepatch/test_klp_convert_keys.c
-new file mode 100644
-index 000000000000..90c20e84a146
---- /dev/null
-+++ b/lib/livepatch/test_klp_convert_keys.c
-@@ -0,0 +1,91 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2020 Joe Lawrence <joe.lawrence@redhat.com>
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/livepatch.h>
-+#include <linux/jump_label.h>
-+#include "test_klp_convert.h"
-+
-+/*
-+ * Carry our own copy of print_key_status() as we want static key code
-+ * patching updates to occur in the livepatch module as well as the
-+ * target module that defines the static keys.
-+ */
-+static void print_key_status(char *msg)
-+{
-+	pr_info("%s: %s\n", __func__, msg);
-+
-+	/* static_key_enable() only tests the key value */
-+	pr_info("static_key_enabled(&tracepoint_printk_key) is %s\n",
-+		static_key_enabled(&tracepoint_printk_key) ? "true" : "false");
-+	pr_info("static_key_enabled(&test_klp_true_key) is %s\n",
-+		static_key_enabled(&test_klp_true_key) ? "true" : "false");
-+	pr_info("static_key_enabled(&test_klp_false_key) is %s\n",
-+		static_key_enabled(&test_klp_false_key) ? "true" : "false");
-+
-+	/*
-+	 * static_branch_(un)likely() requires code patching when the
-+	 * key value changes
-+	 */
-+	pr_info("static_branch_unlikely(&tracepoint_printk_key) is %s\n",
-+		static_branch_unlikely(&tracepoint_printk_key) ? "true" : "false");
-+}
-+
-+/*
-+ * sysfs interface to poke the key
-+ */
-+static bool enable_false_key;
-+static int set_enable_false_key(const char *val, const struct kernel_param *kp)
-+{
-+	print_key_status("set_enable_false_key start");
-+	static_branch_enable(&test_klp_false_key);
-+	print_key_status("set_enable_false_key enabling test_klp_false_key");
-+
-+	return 0;
-+}
-+module_param_call(enable_false_key, set_enable_false_key, NULL,
-+		  &enable_false_key, 0644);
-+MODULE_PARM_DESC(enable_false_key, "Static branch enable");
-+
-+
-+static struct klp_func funcs[] = {
-+	{ }
-+};
-+
-+static struct klp_object objs[] = {
-+	{
-+		.name = "test_klp_convert_keys_mod",
-+		.funcs = funcs,
-+	}, {}
-+};
-+
-+static struct klp_patch patch = {
-+	.mod = THIS_MODULE,
-+	.objs = objs,
-+};
-+
-+static int test_klp_convert_keys_init(void)
-+{
-+	int ret;
-+
-+	ret = klp_enable_patch(&patch);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static void test_klp_convert_keys_exit(void)
-+{
-+}
-+
-+module_init(test_klp_convert_keys_init);
-+module_exit(test_klp_convert_keys_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
-+MODULE_DESCRIPTION("Livepatch test: static keys");
-+MODULE_INFO(livepatch, "Y");
-diff --git a/lib/livepatch/test_klp_convert_keys_mod.c b/lib/livepatch/test_klp_convert_keys_mod.c
-new file mode 100644
-index 000000000000..7b11c2da09c9
---- /dev/null
-+++ b/lib/livepatch/test_klp_convert_keys_mod.c
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2020 Joe Lawrence <joe.lawrence@redhat.com>
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/jump_label.h>
-+
-+static DEFINE_STATIC_KEY_TRUE(test_klp_true_key);
-+static DEFINE_STATIC_KEY_FALSE(test_klp_false_key);
-+
-+static void print_key_status(char *msg)
-+{
-+	pr_info("%s: %s\n", __func__, msg);
-+
-+	/* static_key_enable() only tests the key value */
-+	pr_info("static_key_enabled(&test_klp_true_key) is %s\n",
-+		static_key_enabled(&test_klp_true_key) ? "true" : "false");
-+	pr_info("static_key_enabled(&test_klp_false_key) is %s\n",
-+		static_key_enabled(&test_klp_false_key) ? "true" : "false");
-+
-+	/*
-+	 * static_branch_(un)likely() requires code patching when the
-+	 * key value changes
-+	 */
-+	pr_info("static_branch_likely(&test_klp_true_key) is %s\n",
-+		static_branch_likely(&test_klp_true_key) ? "true" : "false");
-+	pr_info("static_branch_unlikely(&test_klp_false_key) is %s\n",
-+		static_branch_unlikely(&test_klp_false_key) ? "true" : "false");
-+}
-+
-+static int test_klp_keys_mod_init(void)
-+{
-+	print_key_status("initial conditions");
-+	static_branch_disable(&test_klp_true_key);
-+	print_key_status("disabled test_klp_true_key");
-+
-+	return 0;
-+}
-+
-+static void test_klp_keys_mod_exit(void)
-+{
-+	print_key_status("unloading conditions");
-+}
-+
-+module_init(test_klp_keys_mod_init);
-+module_exit(test_klp_keys_mod_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
-+MODULE_DESCRIPTION("Livepatch test: static keys target module");
-diff --git a/tools/testing/selftests/livepatch/test-livepatch.sh b/tools/testing/selftests/livepatch/test-livepatch.sh
-index e3e2f59152e1..b32e981df7a1 100755
---- a/tools/testing/selftests/livepatch/test-livepatch.sh
-+++ b/tools/testing/selftests/livepatch/test-livepatch.sh
-@@ -11,6 +11,8 @@ MOD_KLP_CONVERT1=test_klp_convert1
- MOD_KLP_CONVERT2=test_klp_convert2
- MOD_KLP_CONVERT_DATA=test_klp_convert_data
- MOD_KLP_CONVERT_SECTIONS=test_klp_convert_sections
-+MOD_KLP_CONVERT_KEYS_MOD=test_klp_convert_keys_mod
-+MOD_KLP_CONVERT_KEYS=test_klp_convert_keys
- 
- setup_config
- 
-@@ -437,4 +439,129 @@ livepatch: '$MOD_KLP_CONVERT_DATA': unpatching complete
- % rmmod $MOD_KLP_CONVERT_MOD"
- 
- 
-+# TEST: klp-convert static keys
-+# - load a module which defines static keys, updates one of the keys on
-+#   load (forcing jump table patching)
-+# - load a livepatch that references the same keys, resolved by
-+#   klp-convert tool
-+# - poke the livepatch sysfs interface to update one of the key (forcing
-+#   jump table patching again)
-+# - disable and unload the livepatch
-+# - remove the module
-+
-+start_test "klp-convert static keys"
-+
-+load_mod $MOD_KLP_CONVERT_KEYS_MOD
-+load_lp $MOD_KLP_CONVERT_KEYS
-+
-+echo 1 > /sys/module/$MOD_KLP_CONVERT_KEYS/parameters/enable_false_key
-+
-+disable_lp $MOD_KLP_CONVERT_KEYS
-+unload_lp $MOD_KLP_CONVERT_KEYS
-+unload_mod $MOD_KLP_CONVERT_KEYS_MOD
-+
-+check_result "% modprobe $MOD_KLP_CONVERT_KEYS_MOD
-+$MOD_KLP_CONVERT_KEYS_MOD: print_key_status: initial conditions
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_true_key) is true
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_likely(&test_klp_true_key) is true
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_unlikely(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: print_key_status: disabled test_klp_true_key
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_likely(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_unlikely(&test_klp_false_key) is false
-+% modprobe $MOD_KLP_CONVERT_KEYS
-+livepatch: enabling patch '$MOD_KLP_CONVERT_KEYS'
-+livepatch: '$MOD_KLP_CONVERT_KEYS': initializing patching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': starting patching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': completing patching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': patching complete
-+$MOD_KLP_CONVERT_KEYS: print_key_status: set_enable_false_key start
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&tracepoint_printk_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_branch_unlikely(&tracepoint_printk_key) is false
-+$MOD_KLP_CONVERT_KEYS: print_key_status: set_enable_false_key enabling test_klp_false_key
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&tracepoint_printk_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_false_key) is true
-+$MOD_KLP_CONVERT_KEYS: static_branch_unlikely(&tracepoint_printk_key) is false
-+% echo 0 > /sys/kernel/livepatch/$MOD_KLP_CONVERT_KEYS/enabled
-+livepatch: '$MOD_KLP_CONVERT_KEYS': initializing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': starting unpatching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': completing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': unpatching complete
-+% rmmod $MOD_KLP_CONVERT_KEYS
-+% rmmod $MOD_KLP_CONVERT_KEYS_MOD
-+$MOD_KLP_CONVERT_KEYS_MOD: print_key_status: unloading conditions
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_false_key) is true
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_likely(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_unlikely(&test_klp_false_key) is true"
-+
-+
-+# TEST: klp-convert static keys (late module patching)
-+# - load a module which defines static keys, updates one of the keys on
-+#   load (forcing jump table patching)
-+# - load a livepatch that references the same keys, resolved by
-+#   klp-convert tool
-+# - poke the livepatch sysfs interface to update one of the key (forcing
-+#   jump table patching again)
-+# - disable and unload the livepatch
-+# - remove the module
-+
-+start_test "klp-convert static keys (late module patching)"
-+
-+load_lp $MOD_KLP_CONVERT_KEYS
-+load_mod $MOD_KLP_CONVERT_KEYS_MOD
-+
-+echo 1 > /sys/module/$MOD_KLP_CONVERT_KEYS/parameters/enable_false_key
-+
-+disable_lp $MOD_KLP_CONVERT_KEYS
-+unload_lp $MOD_KLP_CONVERT_KEYS
-+unload_mod $MOD_KLP_CONVERT_KEYS_MOD
-+
-+check_result "% modprobe $MOD_KLP_CONVERT_KEYS
-+livepatch: enabling patch '$MOD_KLP_CONVERT_KEYS'
-+livepatch: '$MOD_KLP_CONVERT_KEYS': initializing patching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': starting patching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': completing patching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': patching complete
-+% modprobe $MOD_KLP_CONVERT_KEYS_MOD
-+livepatch: applying patch '$MOD_KLP_CONVERT_KEYS' to loading module '$MOD_KLP_CONVERT_KEYS_MOD'
-+$MOD_KLP_CONVERT_KEYS_MOD: print_key_status: initial conditions
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_true_key) is true
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_likely(&test_klp_true_key) is true
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_unlikely(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: print_key_status: disabled test_klp_true_key
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_likely(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_unlikely(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS: print_key_status: set_enable_false_key start
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&tracepoint_printk_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_false_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_branch_unlikely(&tracepoint_printk_key) is false
-+$MOD_KLP_CONVERT_KEYS: print_key_status: set_enable_false_key enabling test_klp_false_key
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&tracepoint_printk_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS: static_key_enabled(&test_klp_false_key) is true
-+$MOD_KLP_CONVERT_KEYS: static_branch_unlikely(&tracepoint_printk_key) is false
-+% echo 0 > /sys/kernel/livepatch/$MOD_KLP_CONVERT_KEYS/enabled
-+livepatch: '$MOD_KLP_CONVERT_KEYS': initializing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': starting unpatching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': completing unpatching transition
-+livepatch: '$MOD_KLP_CONVERT_KEYS': unpatching complete
-+% rmmod $MOD_KLP_CONVERT_KEYS
-+% rmmod $MOD_KLP_CONVERT_KEYS_MOD
-+$MOD_KLP_CONVERT_KEYS_MOD: print_key_status: unloading conditions
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_key_enabled(&test_klp_false_key) is true
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_likely(&test_klp_true_key) is false
-+$MOD_KLP_CONVERT_KEYS_MOD: static_branch_unlikely(&test_klp_false_key) is true"
-+
-+
- exit 0
--- 
-2.26.3
+-- Joe
 
