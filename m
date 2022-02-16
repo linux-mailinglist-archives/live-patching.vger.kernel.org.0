@@ -2,44 +2,61 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A45964B924E
-	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 21:33:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C26534B93AB
+	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 23:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231315AbiBPUdW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Feb 2022 15:33:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52072 "EHLO
+        id S236804AbiBPWNs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Feb 2022 17:13:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231286AbiBPUdW (ORCPT
+        with ESMTP id S236738AbiBPWNr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Feb 2022 15:33:22 -0500
+        Wed, 16 Feb 2022 17:13:47 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6B6A18D02E
-        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 12:33:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 575072AED8B
+        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 14:13:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645043588;
+        s=mimecast20190719; t=1645049612;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=esrjKhqDjQRh/iEBpaxk9ksIYgz7Irgaj2mX7UxyKYA=;
-        b=bLm8K/yjTIqADGJ5G1bbktfdKEOqBkl+Qd1Ez5Ot2YOeaXjjTeDNxZy/IR7YNZHlK8OIni
-        8eWQ5uIv6OCda3l+Qtqc3VGuEYADxHO+ghcLiZLWB6N7cJuSy7xTJXPgQ+TKEgtE61e/Iu
-        4Baljqt/ViFXDb+4P7V6UoYc/BCfdGA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=GInsY8EWMmzWnfSQud73Z6xT/DOtOKlNQiWr2Elb/hk=;
+        b=gt5ZzQS+E8Z3cPcIVhuK8DF2rNR9fyTOuDz3K96kuuPwEroSyKNmOLex9kHvGVOJo5oiyF
+        +ywTazmMs0hwVa1svmxjp7UxiSqntfingy5+UVIe0/B8uuqkOj5LQJJvjZ5xBvHe9tIyai
+        0cH+sGqwyxebOoafOky5qYzJRNFEeos=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-Vy3cQXvAM8KFOvE-Jg-Pqw-1; Wed, 16 Feb 2022 15:33:06 -0500
-X-MC-Unique: Vy3cQXvAM8KFOvE-Jg-Pqw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 423DB1091DA0;
-        Wed, 16 Feb 2022 20:33:01 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.8.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C152C12E39;
-        Wed, 16 Feb 2022 20:32:43 +0000 (UTC)
-Date:   Wed, 16 Feb 2022 15:32:41 -0500
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
+ us-mta-361-N9zLvpvJNpizg57XsJxhFg-1; Wed, 16 Feb 2022 17:13:31 -0500
+X-MC-Unique: N9zLvpvJNpizg57XsJxhFg-1
+Received: by mail-qk1-f200.google.com with SMTP id de36-20020a05620a372400b00508b2c3063eso2446691qkb.12
+        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 14:13:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GInsY8EWMmzWnfSQud73Z6xT/DOtOKlNQiWr2Elb/hk=;
+        b=AIvJKQnnqeuiEYPxYKOeNJldWopCRFnyqAkCNvxZQOT0Nit8UxMxKFUtmH2pPd0hvg
+         VDRKu8KX3cZq4XYubxQ0LCrPnZfA5BulGfmVJB3WYILazudE+knBvVc1nd1AJJ9R3bJb
+         Hq3skbjD/Nfp8q9jCxn+BWmwY1mMU8g9hwEE/d72KjKNrO6p1tXGvFQDVtowsqZz65Mo
+         h2Zkoaubh/R+7SB3FTIBiMqY55fKYY3QMCV+UM7leC/O13plKcbNBsKVkQT1zetndGPl
+         spAskvGBUtAIOmYUPka1VG0rChrqGBJ5W2xuEZlH7rmbUnGHQEHePq7Ufa3BHg20TecU
+         IF+A==
+X-Gm-Message-State: AOAM530tmlhCxfW6lOzSDtJenDoWOUO7X2bZasuBe12HUp7+GJrJCpPf
+        d37nzuux6iPNXRea5QPy6eQlEnGtUbXTAkt/YhVofwr693pNQHo4brmLfzVVFcxCNW7dWvTmTes
+        7QnePjzilbCQfgPRQ5s9mXZQo9w==
+X-Received: by 2002:a37:bcd:0:b0:508:19df:59ac with SMTP id 196-20020a370bcd000000b0050819df59acmr2498022qkl.227.1645049610683;
+        Wed, 16 Feb 2022 14:13:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJylNMRi17SxjrpZK57rI6C9v3gwc8m6LOiygd1+pTiydJMqSsqj+XSkhj9zykPsZ8CKxgwdIw==
+X-Received: by 2002:a37:bcd:0:b0:508:19df:59ac with SMTP id 196-20020a370bcd000000b0050819df59acmr2497996qkl.227.1645049610346;
+        Wed, 16 Feb 2022 14:13:30 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id m22sm19966780qkn.35.2022.02.16.14.13.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 14:13:29 -0800 (PST)
+Date:   Wed, 16 Feb 2022 14:13:24 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
 Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>,
         linux-hardening@vger.kernel.org, x86@kernel.org,
@@ -79,7 +96,7 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         llvm@lists.linux.dev
 Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
  unique-symbol` is available
-Message-ID: <Yg1fab6h1rTjVbYO@redhat.com>
+Message-ID: <20220216221324.4b4avd5l3qdmqfcv@treble>
 References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
  <20220209185752.1226407-3-alexandr.lobakin@intel.com>
  <20220211174130.xxgjoqr2vidotvyw@treble>
@@ -87,11 +104,11 @@ References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
  <20220211183529.q7qi2qmlyuscxyto@treble>
  <20220214122433.288910-1-alexandr.lobakin@intel.com>
  <20220214181000.xln2qgyzgswjxwcz@treble>
+ <Yg1fab6h1rTjVbYO@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220214181000.xln2qgyzgswjxwcz@treble>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <Yg1fab6h1rTjVbYO@redhat.com>
 X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
@@ -102,202 +119,63 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:10:00AM -0800, Josh Poimboeuf wrote:
-> On Mon, Feb 14, 2022 at 01:24:33PM +0100, Alexander Lobakin wrote:
-> > > One idea I mentioned before, it may be worth exploring changing the "F"
-> > > in FGKASLR to "File" instead of "Function".  In other words, only
-> > > shuffle at an object-file granularity.  Then, even with duplicates, the
-> > > <file+function> symbol pair doesn't change in the symbol table.  And as
-> > > a bonus, it should help FGKASLR i-cache performance, significantly.
+On Wed, Feb 16, 2022 at 03:32:41PM -0500, Joe Lawrence wrote:
+> > Right, so we'd have to abandon position-based search in favor of
+> > file+func based search.
 > > 
-> > Yeah, I keep that in mind. However, this wouldn't solve the
-> > duplicate static function names problem, right?
-> > Let's say you have a static function f() in file1 and f() in file2,
-> > then the layout each boot can be
+> > It's not perfect because there are still a few file+func duplicates.
+> > But it might be good enough.  We would presumably just refuse to patch a
+> > duplicate.  Or we could remove them (and enforce their continued removal
+> > with tooling-based warnings).
 > > 
-> > .text.file1  or  .text.file2
-> > f()              f()
-> > .text.file2      .text.file1
-> > f()              f()
-> > 
-> > and position-based search won't work anyway, right?
 > 
-> Right, so we'd have to abandon position-based search in favor of
-> file+func based search.
+> You're talking about duplicate file+func combinations as stored in the
+> symbol table?
+
+Right.
+
+> ...
+>       6 OBJECT core.c::__func__.3
+>       6 OBJECT core.c::__func__.5
+>       7 OBJECT core.c::__func__.1
+>       8 OBJECT core.c::__func__.0
+>       8 OBJECT core.c::__func__.2
 > 
-> It's not perfect because there are still a few file+func duplicates.
-> But it might be good enough.  We would presumably just refuse to patch a
-> duplicate.  Or we could remove them (and enforce their continued removal
-> with tooling-based warnings).
-> 
+> We could probably minimize the FUNC duplicates with unique names, but
+> I'm not as optimistic about the OBJECTs as most are created via macros
+> like __already_done.X.  Unless clever macro magic?
 
-You're talking about duplicate file+func combinations as stored in the
-symbol table?
+Good point about objects, as we rely on disambiguating them for klp
+relocations.  Luckily, the fact that most of them are created by macros
+is largely a good thing.  We consider most of those to be "special"
+static locals, which don't actually need to be correlated or referenced
+with a klp reloc.
 
-From a recent rhel-9 development kernel:
+For example:
 
-$ readelf --wide --symbols vmlinux | \
-  awk '$4=="FILE" { f=$NF } $4=="OBJECT" || $4=="FUNC" { print $4 " " f "::" $NF }' | \
-  sort | uniq -c | sort -n | awk '$1 != 1'
+- '__func__' is just the function name.  The patched function shouldn't
+  need to reference the original function's function name string.
 
-      2 FUNC bus.c::new_id_store
-      2 FUNC core.c::native_read_msr
-      2 FUNC core.c::type_show
-      2 FUNC diag.c::sk_diag_fill.constprop.0
-      2 FUNC hid-core.c::hid_exit
-      2 FUNC hid-core.c::hid_init
-      2 FUNC inode.c::remove_one
-      2 FUNC iommu.c::__list_del_entry
-      2 FUNC msr.c::msr_init
-      2 FUNC msr.c::msr_read
-      2 FUNC proc.c::c_next
-      2 FUNC proc.c::c_start
-      2 FUNC proc.c::c_stop
-      2 FUNC raw.c::copy_overflow
-      2 FUNC raw.c::dst_output
-      2 FUNC route.c::dst_discard
-      2 FUNC sysfs.c::name_show
-      2 FUNC udp.c::copy_overflow
-      2 FUNC udp.c::udp_lib_close
-      2 FUNC udp.c::udp_lib_hash
-      2 FUNC udp.c::udplite_getfrag
-      2 FUNC udplite.c::udp_lib_close
-      2 FUNC udplite.c::udp_lib_hash
-      2 FUNC udplite.c::udplite_sk_init
-      2 OBJECT acpi.c::__func__.0
-      2 OBJECT amd.c::__already_done.10
-      2 OBJECT amd.c::__func__.4
-      2 OBJECT amd.c::__func__.5
-      2 OBJECT bus.c::driver_attr_new_id
-      2 OBJECT bus.c::__func__.1
-      2 OBJECT bus.c::__func__.2
-      2 OBJECT bus.c::__func__.3
-      2 OBJECT bus.c::__func__.4
-      2 OBJECT bus.c::__func__.5
-      2 OBJECT bus.c::__func__.6
-      2 OBJECT bus.c::__func__.7
-      2 OBJECT bus.c::__func__.8
-      2 OBJECT bus.c::__func__.9
-      2 OBJECT cgroup.c::__func__.0
-      2 OBJECT class.c::__func__.0
-      2 OBJECT class.c::__func__.1
-      2 OBJECT class.c::__func__.3
-      2 OBJECT class.c::__func__.5
-      2 OBJECT class.c::__key.0
-      2 OBJECT class.c::__key.1
-      2 OBJECT class.c::__key.4
-      2 OBJECT core.c::__already_done.18
-      2 OBJECT core.c::__already_done.19
-      2 OBJECT core.c::__already_done.3
-      2 OBJECT core.c::dev_attr_size
-      2 OBJECT core.c::dev_attr_start
-      2 OBJECT core.c::dev_attr_type
-      2 OBJECT core.c::empty_attrs
-      2 OBJECT core.c::__func__.10
-      2 OBJECT core.c::__func__.14
-      2 OBJECT core.c::__func__.7
-      2 OBJECT core.c::__func__.9
-      2 OBJECT core.c::__key.0
-      2 OBJECT core.c::__key.2
-      2 OBJECT core.c::__key.3
-      2 OBJECT dev.c::__func__.0
-      2 OBJECT dir.c::__func__.3
-      2 OBJECT driver.c::__func__.0
-      2 OBJECT fib_rules.c::__msg.0
-      2 OBJECT file.c::__func__.2
-      2 OBJECT file.c::__key.1
-      2 OBJECT file.c::__key.2
-      2 OBJECT hpet.c::__func__.4
-      2 OBJECT icmp.c::__func__.1
-      2 OBJECT inode.c::__func__.1
-      2 OBJECT inode.c::__func__.3
-      2 OBJECT intel.c::__already_done.10
-      2 OBJECT intel.c::__already_done.11
-      2 OBJECT intel.c::__already_done.13
-      2 OBJECT ioctl.c::__func__.0
-      2 OBJECT iommu.c::__already_done.15
-      2 OBJECT iommu.c::__func__.10
-      2 OBJECT iommu.c::__func__.2
-      2 OBJECT iommu.c::_rs.13
-      2 OBJECT iommu.c::_rs.5
-      2 OBJECT iommu.c::_rs.9
-      2 OBJECT irq.c::__func__.0
-      2 OBJECT irq.c::__func__.2
-      2 OBJECT irqdomain.c::__func__.0
-      2 OBJECT irqdomain.c::__func__.1
-      2 OBJECT irqdomain.c::__func__.3
-      2 OBJECT main.c::__func__.10
-      2 OBJECT main.c::__func__.11
-      2 OBJECT main.c::__func__.3
-      2 OBJECT main.c::__func__.4
-      2 OBJECT main.c::__func__.5
-      2 OBJECT manage.c::__func__.1
-      2 OBJECT mount.c::__func__.0
-      2 OBJECT msr.c::__func__.0
-      2 OBJECT ping.c::__func__.1
-      2 OBJECT property.c::__func__.3
-      2 OBJECT qos.c::__func__.0
-      2 OBJECT qos.c::__func__.2
-      2 OBJECT resource.c::__func__.1
-      2 OBJECT route.c::__key.0
-      2 OBJECT route.c::__msg.1
-      2 OBJECT route.c::__msg.2
-      2 OBJECT route.c::__msg.3
-      2 OBJECT route.c::__msg.4
-      2 OBJECT route.c::__msg.5
-      2 OBJECT route.c::__msg.6
-      2 OBJECT swap.c::__func__.0
-      2 OBJECT syncookies.c::___done.1
-      2 OBJECT syncookies.c::msstab
-      2 OBJECT syncookies.c::___once_key.2
-      2 OBJECT sysfs.c::dev_attr_name
-      2 OBJECT sysfs.c::__key.1
-      2 OBJECT sysfs.c::power_attrs
-      2 OBJECT udp.c::descriptor.12
-      2 OBJECT udp.c::descriptor.13
-      2 OBJECT udp.c::__func__.2
-      2 OBJECT udp.c::__func__.3
-      2 OBJECT udp.c::__func__.4
-      2 OBJECT utils.c::__func__.5
-      3 FUNC core.c::cmask_show
-      3 FUNC core.c::edge_show
-      3 FUNC core.c::event_show
-      3 FUNC core.c::inv_show
-      3 FUNC core.c::umask_show
-      3 FUNC inode.c::init_once
-      3 OBJECT acpi.c::__func__.1
-      3 OBJECT core.c::format_attr_cmask
-      3 OBJECT core.c::format_attr_edge
-      3 OBJECT core.c::format_attr_event
-      3 OBJECT core.c::format_attr_inv
-      3 OBJECT core.c::format_attr_umask
-      3 OBJECT core.c::__func__.6
-      3 OBJECT core.c::__func__.8
-      3 OBJECT file.c::__key.3
-      3 OBJECT generic.c::__func__.0
-      3 OBJECT iommu.c::__func__.0
-      3 OBJECT iommu.c::__func__.1
-      3 OBJECT iommu.c::__func__.8
-      3 OBJECT main.c::__func__.0
-      3 OBJECT main.c::__func__.1
-      3 OBJECT main.c::__func__.6
-      3 OBJECT quirks.c::__func__.0
-      3 OBJECT sysfs.c::__func__.0
-      4 OBJECT core.c::__func__.4
-      5 OBJECT inode.c::tokens
-      6 OBJECT core.c::__func__.3
-      6 OBJECT core.c::__func__.5
-      7 OBJECT core.c::__func__.1
-      8 OBJECT core.c::__func__.0
-      8 OBJECT core.c::__func__.2
+- '__already_done' is used for printk_once(); no harm in making a new
+  variable initialized to false and printing it again; or converting
+  printk_once() to just printk() to avoid an extra print.
 
-We could probably minimize the FUNC duplicates with unique names, but
-I'm not as optimistic about the OBJECTs as most are created via macros
-like __already_done.X.  Unless clever macro magic?
+- '__key' is used by lockdep to track lock usage and validate locking
+  order.  It probably makes sense to use a new key in the patched
+  function, since the new function might have different locking
+  behavior.
 
-Next question: what are the odds that these entries, at least the ones
-we can't easily rename, need disambiguity for livepatching?  or
-kpatch-build for related purposes?
+> Next question: what are the odds that these entries, at least the ones
+> we can't easily rename, need disambiguity for livepatching?  or
+> kpatch-build for related purposes?
 
--- Joe
+I would guess the odds are rather low, given the fact that there are so
+few functions, and we don't care about most of the objects on the list.
+
+If duplicates were to become problematic then we could consider adding
+tooling which warns on a duplicate file:sym pair with the goal of
+eliminating duplicates (exculding the "special" objects).
+
+-- 
+Josh
 
