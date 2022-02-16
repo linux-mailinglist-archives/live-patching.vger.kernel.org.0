@@ -2,175 +2,161 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1CB4B8C2E
-	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 16:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72AF54B8D9B
+	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 17:13:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233779AbiBPPPg (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Feb 2022 10:15:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38918 "EHLO
+        id S234566AbiBPQN6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Feb 2022 11:13:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231866AbiBPPPf (ORCPT
+        with ESMTP id S236177AbiBPQNy (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Feb 2022 10:15:35 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C521D11C0F;
-        Wed, 16 Feb 2022 07:15:22 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5D49C218B0;
-        Wed, 16 Feb 2022 15:15:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645024521; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yBnvgUiufkd6hqXyIL1xCUzZ9EdBPJ7jQt3pk+22Jeo=;
-        b=aWHBGySjkoi4X4eJw6em22aIBrUvu9NxLgBGA1YPe5teGkVd+OZMbfz5mAR/H5p27cqtNr
-        eTyibmLvFW46B/0440TTtOsAILpkMgsqB/KGMtndC8IzoufDHI25QQen3Or6hJ/HuWla6K
-        Pa5Mx18v2FogkqbxvqZV2A45oG5hbUQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645024521;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yBnvgUiufkd6hqXyIL1xCUzZ9EdBPJ7jQt3pk+22Jeo=;
-        b=LP1Mp5P/8Rc3AyVBb8kXt+yBGl6ouToT79WXn4Nyw3u61X15U3AEuc87d4w0SeVJ1668cR
-        KD0RqNXhlm6bqmAA==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EBB23A3B83;
-        Wed, 16 Feb 2022 15:15:20 +0000 (UTC)
-Date:   Wed, 16 Feb 2022 16:15:20 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-cc:     =?UTF-8?Q?F=C4=81ng-ru=C3=AC_S=C3=B2ng?= <maskray@google.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
- unique-symbol` is available
-In-Reply-To: <20220211183529.q7qi2qmlyuscxyto@treble>
-Message-ID: <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-3-alexandr.lobakin@intel.com> <20220211174130.xxgjoqr2vidotvyw@treble> <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com>
- <20220211183529.q7qi2qmlyuscxyto@treble>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Wed, 16 Feb 2022 11:13:54 -0500
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9325E1F6B91;
+        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
+Received: by mail-qv1-f41.google.com with SMTP id p7so2766105qvk.11;
+        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=azl/iLsb26myp3zpwyeRv5JZYujJh0LXxE2G7XtXIR8=;
+        b=ZlI6F6ExorJPmowwEofDsxizZXSD4b+rtVpSdBigUkE8c6NnxouQ222XUwPOjpUkms
+         b+hO+m0ixieNNJbrWhlZ0Acd0KICXpNjn5rNxLJwrMzIsHwAzMUmwvW9gW9D4Y4wH1vE
+         P1Ky6g20NDOPhfXQn/PXKHnttIBF9X8P+WfQP4i8OXb/taIo2SDxV0YnaV/vUiHZa3e9
+         4yk5A2t2+QIGQvLmcS9X5RqBS3eMfXvmRSuFZJQO9sav1IdC97W9FhExWi9RZ2rdMug9
+         crLS2JOFMhPLCUTw1gaSdLwInGIHSRTWdzO/Xy6jSYTK5I9J+/HsshsF4zvnank2nwEq
+         cU6A==
+X-Gm-Message-State: AOAM533+Ua4s1SNaDyTtuByUPkMI4CL3N453Z19qJKl0xCfkG9P/PZPv
+        JApBx6JF8/LGvSGHr2081h/XSWlmsTCdzg==
+X-Google-Smtp-Source: ABdhPJyGH0FygRPJsxuUBPWKFoFaQdmcFa2SP2guTbMOLt2/LvJ9Z/RVSzok6rD0gGaujjxNiwM3bQ==
+X-Received: by 2002:a05:622a:196:b0:2ce:c222:b601 with SMTP id s22-20020a05622a019600b002cec222b601mr2507862qtw.179.1645028020167;
+        Wed, 16 Feb 2022 08:13:40 -0800 (PST)
+Received: from localhost (fwdproxy-ash-024.fbsv.net. [2a03:2880:20ff:18::face:b00c])
+        by smtp.gmail.com with ESMTPSA id e9sm22957221qtx.37.2022.02.16.08.13.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 08:13:38 -0800 (PST)
+From:   David Vernet <void@manifault.com>
+To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
+        mbenes@suse.cz, joe.lawrence@redhat.com, corbet@lwn.net
+Cc:     void@manifault.com, kernel-team@fb.com
+Subject: [PATCH v3] livepatch: Skip livepatch tests if ftrace cannot be configured
+Date:   Wed, 16 Feb 2022 08:11:01 -0800
+Message-Id: <20220216161100.3243100-1-void@manifault.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="1678380546-2016212218-1645024395=:1475"
-Content-ID: <alpine.LSU.2.21.2202161614020.1475@pobox.suse.cz>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+livepatch has a set of selftests that are used to validate the behavior of
+the livepatching subsystem.  One of the testcases in the livepatch
+testsuite is test-ftrace.sh, which among other things, validates that
+livepatching gracefully fails when ftrace is disabled.  In the event that
+ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
+will fail later due to it unexpectedly successfully loading the
+test_klp_livepatch module.
 
---1678380546-2016212218-1645024395=:1475
-Content-Type: text/plain; CHARSET=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-ID: <alpine.LSU.2.21.2202161614021.1475@pobox.suse.cz>
+While the livepatch selftests are careful to remove any of the livepatch
+test modules between testcases to avoid this situation, ftrace may still
+fail to be disabled if another trace is active on the system that was
+enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
+that use trampolines will cause this test to fail due to the trampoline
+being implemented with register_ftrace_direct().  The following is an
+example of such a trace:
 
-On Fri, 11 Feb 2022, Josh Poimboeuf wrote:
+tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
+(call_direct_funcs+0x0/0x30)
+        direct-->bpf_trampoline_6442550536_0+0x0/0x1000
 
-> On Fri, Feb 11, 2022 at 10:05:02AM -0800, Fāng-ruì Sòng wrote:
-> > On Fri, Feb 11, 2022 at 9:41 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> > >
-> > > On Wed, Feb 09, 2022 at 07:57:39PM +0100, Alexander Lobakin wrote:
-> > > > Position-based search, which means that if there are several symbols
-> > > > with the same name, the user needs to additionally provide the
-> > > > "index" of a desired symbol, is fragile. For example, it breaks
-> > > > when two symbols with the same name are located in different
-> > > > sections.
-> > > >
-> > > > Since a while, LD has a flag `-z unique-symbol` which appends
-> > > > numeric suffixes to the functions with the same name (in symtab
-> > > > and strtab). It can be used to effectively prevent from having
-> > > > any ambiguity when referring to a symbol by its name.
-> > >
-> > > In the patch description can you also give the version of binutils (and
-> > > possibly other linkers) which have the flag?
-> > 
-> > GNU ld>=2.36 supports -z unique-symbol. ld.lld doesn't support -z unique-symbol.
-> > 
-> > I subscribe to llvm@lists.linux.dev and happen to notice this message
-> > (can't keep up with the changes...)
-> > I am a bit concerned with this option and replied last time on
-> > https://lore.kernel.org/r/20220105032456.hs3od326sdl4zjv4@google.com
-> > 
-> > My full reasoning is on
-> > https://maskray.me/blog/2020-11-15-explain-gnu-linker-options#z-unique-symbol
-> 
-> Ah, right.  Also discussed here:
-> 
->   https://lore.kernel.org/all/20210123225928.z5hkmaw6qjs2gu5g@google.com/T/#u
->   https://lore.kernel.org/all/20210125172124.awabevkpvq4poqxf@treble/
-> 
-> I'm not qualified to comment on LTO/PGO stability issues, but it doesn't
-> sound good.  And we want to support livepatch for LTO kernels.
+In order to make the test more resilient to system state that is out of its
+control, this patch updates set_ftrace_enabled() to detect sysctl failures,
+and skip the testrun when appropriate.
 
-Hm, bear with me, because I am very likely missing something which is 
-clear to everyone else...
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: David Vernet <void@manifault.com>
+---
+v3:
+  - Fixed a bug in v1 and v2 pointed out by Petr in
+    https://lore.kernel.org/all/20220209154934.5w5k5tqcqldbfjt3@dev0025.ash9.facebook.com/
+    wherein we'd incorrectly skip() in test-ftrace.sh when we expected to
+    fail to set sysctl due to ftrace being in-use by livepatch.
+  - Applied Petr's suggestions for the patch, which address the
+    aforementioned issue by adding a --fail flag to set_ftrace_enabled().
+    This allows callers to signal that they expect an invocation to fail.
+  - Updates the caller in test-ftrace.sh that expects the call to
+    set_ftrace_enabled() to fail, to pass this --fail flag.
+  - Slightly updates the commit summary to reflect that we only skip the
+    test "when appropriate" rather than if the call to sysctl fails.
 
-Is the stability really a problem for the live patching (and I am talking 
-about the live patching only here. It may be a problem elsewhere, but I am 
-just trying to understand.)? I understand that two different kernel builds 
-could have a different name mapping between the original symbols and their 
-unique renames. Not nice. But we can prepare two different live patches 
-for these two different kernels. Something one would like to avoid if 
-possible, but it is not impossible. Am I missing something?
+v2:
+  - Fix typo in newly added comment (s/permament/permanent).
+  - Adjust the location of the added newline to be before the new comment
+    rather than that the end of the function.
+  - Make the failure-path check a bit less brittle by checking for the
+    exact expected string, rather than specifically for "Device or resource
+    busy".
+
+ .../testing/selftests/livepatch/functions.sh  | 22 ++++++++++++++++---
+ .../selftests/livepatch/test-ftrace.sh        |  3 ++-
+ 2 files changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+index 846c7ed71556..9230b869371d 100644
+--- a/tools/testing/selftests/livepatch/functions.sh
++++ b/tools/testing/selftests/livepatch/functions.sh
+@@ -75,9 +75,25 @@ function set_dynamic_debug() {
+ }
  
-> Also I realized that this flag would have a negative effect on
-> kpatch-build, as it currently does its analysis on .o files.  So it
-> would have to figure out how to properly detect function renames, to
-> avoid patching the wrong function for example.
+ function set_ftrace_enabled() {
+-	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
+-		 sysctl kernel.ftrace_enabled 2>&1)
+-	echo "livepatch: $result" > /dev/kmsg
++	local can_fail=0
++	if [[ "$1" == "--fail" ]] ; then
++		can_fail=1
++		shift
++	fi
++
++	local err=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1)
++	local result=$(sysctl --values kernel.ftrace_enabled)
++
++	if [[ "$result" != "$1" ]] ; then
++		if [[ $can_fail -eq 1 ]] ; then
++			echo "livepatch: $err" > /dev/kmsg
++			return
++		fi
++
++		skip "failed to set kernel.ftrace_enabled = $1"
++	fi
++
++	echo "livepatch: kernel.ftrace_enabled = $result" > /dev/kmsg
+ }
+ 
+ function cleanup() {
+diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
+index 552e165512f4..825540a5194d 100755
+--- a/tools/testing/selftests/livepatch/test-ftrace.sh
++++ b/tools/testing/selftests/livepatch/test-ftrace.sh
+@@ -25,7 +25,8 @@ if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]]
+ 	die "livepatch kselftest(s) failed"
+ fi
+ 
+-set_ftrace_enabled 0
++# Check that ftrace could not get disabled when a livepatch is enabled
++set_ftrace_enabled --fail 0
+ if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
+ 	echo -e "FAIL\n\n"
+ 	die "livepatch kselftest(s) failed"
+-- 
+2.30.2
 
-Yes, that is unfortunate. And not only for kpatch-build.
-
-> And if LLD doesn't plan to support the flag then it will be a headache
-> for livepatch (and the kernel in general) to deal with the divergent
-> configs.
-
-True.
-
-The position-based approach clearly shows its limits. I like <file+func> 
-approach based on kallsyms tracking, that you proposed elsewhere in the 
-thread, more.
-
-Miroslav
---1678380546-2016212218-1645024395=:1475--
