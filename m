@@ -2,161 +2,257 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72AF54B8D9B
-	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 17:13:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485D14B8E2A
+	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 17:39:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234566AbiBPQN6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Feb 2022 11:13:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60310 "EHLO
+        id S236488AbiBPQj6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Feb 2022 11:39:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236177AbiBPQNy (ORCPT
+        with ESMTP id S231653AbiBPQj5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Feb 2022 11:13:54 -0500
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9325E1F6B91;
-        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
-Received: by mail-qv1-f41.google.com with SMTP id p7so2766105qvk.11;
-        Wed, 16 Feb 2022 08:13:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=azl/iLsb26myp3zpwyeRv5JZYujJh0LXxE2G7XtXIR8=;
-        b=ZlI6F6ExorJPmowwEofDsxizZXSD4b+rtVpSdBigUkE8c6NnxouQ222XUwPOjpUkms
-         b+hO+m0ixieNNJbrWhlZ0Acd0KICXpNjn5rNxLJwrMzIsHwAzMUmwvW9gW9D4Y4wH1vE
-         P1Ky6g20NDOPhfXQn/PXKHnttIBF9X8P+WfQP4i8OXb/taIo2SDxV0YnaV/vUiHZa3e9
-         4yk5A2t2+QIGQvLmcS9X5RqBS3eMfXvmRSuFZJQO9sav1IdC97W9FhExWi9RZ2rdMug9
-         crLS2JOFMhPLCUTw1gaSdLwInGIHSRTWdzO/Xy6jSYTK5I9J+/HsshsF4zvnank2nwEq
-         cU6A==
-X-Gm-Message-State: AOAM533+Ua4s1SNaDyTtuByUPkMI4CL3N453Z19qJKl0xCfkG9P/PZPv
-        JApBx6JF8/LGvSGHr2081h/XSWlmsTCdzg==
-X-Google-Smtp-Source: ABdhPJyGH0FygRPJsxuUBPWKFoFaQdmcFa2SP2guTbMOLt2/LvJ9Z/RVSzok6rD0gGaujjxNiwM3bQ==
-X-Received: by 2002:a05:622a:196:b0:2ce:c222:b601 with SMTP id s22-20020a05622a019600b002cec222b601mr2507862qtw.179.1645028020167;
-        Wed, 16 Feb 2022 08:13:40 -0800 (PST)
-Received: from localhost (fwdproxy-ash-024.fbsv.net. [2a03:2880:20ff:18::face:b00c])
-        by smtp.gmail.com with ESMTPSA id e9sm22957221qtx.37.2022.02.16.08.13.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 08:13:38 -0800 (PST)
-From:   David Vernet <void@manifault.com>
+        Wed, 16 Feb 2022 11:39:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 710BE25BD6B
+        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 08:39:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645029584;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sj3WWuBwzIErWOjbwMSZJMLxlyZh3msqTZyXosAhUY8=;
+        b=DMyNGZIIiKLSNSwcM9UwK2ZIEiows8RCBI6joHQSICxt//3masdelQIU6Xpakdlg0IzjMj
+        pWZn40ihOL1w47bUoFUK9KaOuBJtszEU/nBImEcRgc/At6b5sGyO0dET2yXt4jsmvvO0fi
+        9eZG9INggnwXWFDJMip2bY8t7rJE8Ow=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-552-igHaHbjIMamUf8MK42Fzrw-1; Wed, 16 Feb 2022 11:39:43 -0500
+X-MC-Unique: igHaHbjIMamUf8MK42Fzrw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5EAA6814243;
+        Wed, 16 Feb 2022 16:39:42 +0000 (UTC)
+Received: from jlaw-desktop.redhat.com (unknown [10.22.8.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E11AD753D6;
+        Wed, 16 Feb 2022 16:39:41 +0000 (UTC)
+From:   Joe Lawrence <joe.lawrence@redhat.com>
 To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
-        mbenes@suse.cz, joe.lawrence@redhat.com, corbet@lwn.net
-Cc:     void@manifault.com, kernel-team@fb.com
-Subject: [PATCH v3] livepatch: Skip livepatch tests if ftrace cannot be configured
-Date:   Wed, 16 Feb 2022 08:11:01 -0800
-Message-Id: <20220216161100.3243100-1-void@manifault.com>
-X-Mailer: git-send-email 2.30.2
+        linux-kbuild@vger.kernel.org
+Subject: [RFC PATCH v6 00/12] livepatch: klp-convert tool
+Date:   Wed, 16 Feb 2022 11:39:28 -0500
+Message-Id: <20220216163940.228309-1-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-livepatch has a set of selftests that are used to validate the behavior of
-the livepatching subsystem.  One of the testcases in the livepatch
-testsuite is test-ftrace.sh, which among other things, validates that
-livepatching gracefully fails when ftrace is disabled.  In the event that
-ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
-will fail later due to it unexpectedly successfully loading the
-test_klp_livepatch module.
+This mostly a rebase update of the livepatch klp-convert tool used to
+generate klp-relocation types (explained in the summary below).
 
-While the livepatch selftests are careful to remove any of the livepatch
-test modules between testcases to avoid this situation, ftrace may still
-fail to be disabled if another trace is active on the system that was
-enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
-that use trampolines will cause this test to fail due to the trampoline
-being implemented with register_ftrace_direct().  The following is an
-example of such a trace:
+I'm marking this as an RFC as it hasn't been extensively tested for all
+livepatch supported arches.  There are may be a few symbol annotation
+changes pending what may be implemented for the FGKASLR patchset, I've
+left a few TODO and // question? marks in the code, etc.  At the same
+time, I think "CET/IBT support and live-patches" highlighted a potential
+need for this tooling, so I'm posting it in its current format for
+discussion.  I'll reply to individual patches to highlight a few points
+of interest.
 
-tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
-(call_direct_funcs+0x0/0x30)
-        direct-->bpf_trampoline_6442550536_0+0x0/0x1000
 
-In order to make the test more resilient to system state that is out of its
-control, this patch updates set_ftrace_enabled() to detect sysctl failures,
-and skip the testrun when appropriate.
+Summary
+-------
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: David Vernet <void@manifault.com>
----
-v3:
-  - Fixed a bug in v1 and v2 pointed out by Petr in
-    https://lore.kernel.org/all/20220209154934.5w5k5tqcqldbfjt3@dev0025.ash9.facebook.com/
-    wherein we'd incorrectly skip() in test-ftrace.sh when we expected to
-    fail to set sysctl due to ftrace being in-use by livepatch.
-  - Applied Petr's suggestions for the patch, which address the
-    aforementioned issue by adding a --fail flag to set_ftrace_enabled().
-    This allows callers to signal that they expect an invocation to fail.
-  - Updates the caller in test-ftrace.sh that expects the call to
-    set_ftrace_enabled() to fail, to pass this --fail flag.
-  - Slightly updates the commit summary to reflect that we only skip the
-    test "when appropriate" rather than if the call to sysctl fails.
+Livepatches may use symbols which are not contained in its own scope,
+and, because of that, may end up compiled with relocations that will
+only be resolved during module load. Yet, when the referenced symbols
+are not exported, solving this relocation requires information on the
+object that holds the symbol (either vmlinux or modules) and its
+position inside the object, as an object may contain multiple symbols
+with the same name.  Providing such information must be done accordingly
+to what is specified in Documentation/livepatch/module-elf-format.txt.
 
+Currently, there is no trivial way to embed the required information as
+requested in the final livepatch elf object. klp-convert solves this
+problem in two different forms: (i) by relying on a symbol map, which is
+built during kernel compilation, to automatically infer the relocation
+targeted symbol, and, when such inference is not possible (ii) by using
+annotations in the elf object to convert the relocation accordingly to
+the specification, enabling it to be handled by the livepatch loader.
+
+Given the above, add support for symbol mapping in the form of a
+symbols.klp file; add klp-convert tool; integrate klp-convert tool into
+kbuild; make livepatch modules discernible during kernel compilation
+pipeline; add data-structure and macros to enable users to annotate
+livepatch source code; make modpost stage compatible with livepatches;
+update livepatch-sample and update documentation.
+
+The patch was tested under three use-cases:
+
+use-case 1: There is a relocation in the lp that can be automatically
+resolved by klp-convert.  For example. see the saved_command_line
+variable in lib/livepatch/test_klp_convert2.c.
+
+use-case 2: There is a relocation in the lp that cannot be automatically
+resolved, as the name of the respective symbol appears in multiple
+objects. The livepatch contains an annotation to enable a correct
+relocation.  See the KLP_MODULE_RELOC / KLP_SYMPOS annotation sections
+in lib/livepatch/test_klp_convert{1,2}.c.
+
+use-case 3: There is a relocation in the lp that cannot be automatically
+resolved similarly as 2, but no annotation was provided in the
+livepatch, triggering an error during compilation.  Reproducible by
+removing the KLP_MODULE_RELOC / KLP_SYMPOS annotation sections in
+lib/livepatch/test_klp_convert{1,2}.c.
+
+Selftests have been added to exercise these klp-convert use-cases
+through several tests.
+
+
+Branches
+--------
+
+
+Previous versions
+-----------------
+
+RFC:
+  https://lore.kernel.org/lkml/cover.1477578530.git.jpoimboe@redhat.com/
 v2:
-  - Fix typo in newly added comment (s/permament/permanent).
-  - Adjust the location of the added newline to be before the new comment
-    rather than that the end of the function.
-  - Make the failure-path check a bit less brittle by checking for the
-    exact expected string, rather than specifically for "Device or resource
-    busy".
+  https://lore.kernel.org/lkml/f52d29f7-7d1b-ad3d-050b-a9fa8878faf2@redhat.com/
+v3:
+  https://lore.kernel.org/lkml/20190410155058.9437-1-joe.lawrence@redhat.com/
+v4:
+  https://lore.kernel.org/lkml/20190509143859.9050-1-joe.lawrence@redhat.com/
+v5:
+  (not posted)
+  https://github.com/joe-lawrence/klp-convert-tree/tree/klp-convert-v5-devel
+v6:
+  https://github.com/joe-lawrence/klp-convert-tree/tree/klp-convert-v6
+  https://github.com/joe-lawrence/klp-convert-tree/tree/klp-convert-v6-devel
 
- .../testing/selftests/livepatch/functions.sh  | 22 ++++++++++++++++---
- .../selftests/livepatch/test-ftrace.sh        |  3 ++-
- 2 files changed, 21 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index 846c7ed71556..9230b869371d 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -75,9 +75,25 @@ function set_dynamic_debug() {
- }
- 
- function set_ftrace_enabled() {
--	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
--		 sysctl kernel.ftrace_enabled 2>&1)
--	echo "livepatch: $result" > /dev/kmsg
-+	local can_fail=0
-+	if [[ "$1" == "--fail" ]] ; then
-+		can_fail=1
-+		shift
-+	fi
-+
-+	local err=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1)
-+	local result=$(sysctl --values kernel.ftrace_enabled)
-+
-+	if [[ "$result" != "$1" ]] ; then
-+		if [[ $can_fail -eq 1 ]] ; then
-+			echo "livepatch: $err" > /dev/kmsg
-+			return
-+		fi
-+
-+		skip "failed to set kernel.ftrace_enabled = $1"
-+	fi
-+
-+	echo "livepatch: kernel.ftrace_enabled = $result" > /dev/kmsg
- }
- 
- function cleanup() {
-diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-index 552e165512f4..825540a5194d 100755
---- a/tools/testing/selftests/livepatch/test-ftrace.sh
-+++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-@@ -25,7 +25,8 @@ if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]]
- 	die "livepatch kselftest(s) failed"
- fi
- 
--set_ftrace_enabled 0
-+# Check that ftrace could not get disabled when a livepatch is enabled
-+set_ftrace_enabled --fail 0
- if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
- 	echo -e "FAIL\n\n"
- 	die "livepatch kselftest(s) failed"
+Summary of changes in v5
+------------------------
+
+[For/from Masahiro]
+- rename Symbols.list to symbols.klp
+- remove HOST_EXTRACFLAGS from klp-convert build
+- kbuild tweaks from Masahiro Yamada
+- SPDX instead of the license boilerplate
+
+[Joe]
+- a bunch of small checkpatch, clang-check fixes
+- klp-convert: account for symbols shared across sections
+- klp-convert: sympos endianness for cross-compile
+- klp-convert: implement rela section support list
+- klp-convert: update group sections sh_link
+- klp-convert: flag annotations without relocations
+- klp-convert: allow .rela__jump_table to vmlinux
+- livepatch/selftests: Add __asm__ symbol renaming examples
+- livepatch/selftests: test multiple sections
+- livepatch/selftests: add static keys test
+
+[Miroslav]
+- klp-convert: use _safe list traversals only when required
+- klp-convert: separate rela conversation from removal
+
+
+Summary of changes in v6
+------------------------
+
+[For/from Christophe]
+- klp-convert: Support for ppc32 ELF files
+
+[Joe]
+- livepatch/selftests: add data relocations test
+- klp-convert: move relas to klp_rela_sec tail
+- rebase for v5.17-rc1
+
+
+Joao Moreira (2):
+  kbuild: Support for symbols.klp creation
+  documentation: Update on livepatch elf format
+
+Joe Lawrence (5):
+  livepatch/selftests: add klp-convert
+  livepatch/selftests: test multiple sections
+  livepatch/selftests: add __asm__ symbol renaming examples
+  livepatch/selftests: add data relocations test
+  livepatch/selftests: add static keys test
+
+Josh Poimboeuf (5):
+  livepatch: Create and include UAPI headers
+  livepatch: Add klp-convert tool
+  livepatch: Add klp-convert annotation helpers
+  modpost: Integrate klp-convert
+  livepatch: Add sample livepatch module
+
+ .gitignore                                    |   2 +
+ Documentation/dontdiff                        |   1 +
+ Documentation/livepatch/livepatch.rst         |   3 +
+ Documentation/livepatch/module-elf-format.rst |  42 +-
+ MAINTAINERS                                   |   2 +
+ Makefile                                      |  12 +-
+ include/linux/livepatch.h                     |  13 +
+ include/uapi/linux/livepatch.h                |  25 +
+ kernel/livepatch/core.c                       |   4 +-
+ lib/livepatch/Makefile                        |  12 +
+ lib/livepatch/test_klp_convert.h              |  45 +
+ lib/livepatch/test_klp_convert1.c             | 121 +++
+ lib/livepatch/test_klp_convert2.c             | 110 +++
+ lib/livepatch/test_klp_convert_data.c         | 190 ++++
+ lib/livepatch/test_klp_convert_keys.c         |  91 ++
+ lib/livepatch/test_klp_convert_keys_mod.c     |  52 +
+ lib/livepatch/test_klp_convert_mod_a.c        |  31 +
+ lib/livepatch/test_klp_convert_mod_b.c        |  19 +
+ lib/livepatch/test_klp_convert_mod_c.c        |  36 +
+ lib/livepatch/test_klp_convert_sections.c     | 120 +++
+ samples/livepatch/Makefile                    |   1 +
+ .../livepatch/livepatch-annotated-sample.c    |  93 ++
+ scripts/Makefile                              |   1 +
+ scripts/Makefile.modfinal                     |  38 +-
+ scripts/Makefile.modpost                      |   5 +
+ scripts/livepatch/.gitignore                  |   1 +
+ scripts/livepatch/Makefile                    |   5 +
+ scripts/livepatch/elf.c                       | 813 ++++++++++++++++
+ scripts/livepatch/elf.h                       |  74 ++
+ scripts/livepatch/klp-convert.c               | 885 ++++++++++++++++++
+ scripts/livepatch/klp-convert.h               |  47 +
+ scripts/livepatch/list.h                      | 391 ++++++++
+ scripts/mod/modpost.c                         |  28 +-
+ scripts/mod/modpost.h                         |   1 +
+ .../selftests/livepatch/test-livepatch.sh     | 405 ++++++++
+ 35 files changed, 3708 insertions(+), 11 deletions(-)
+ create mode 100644 include/uapi/linux/livepatch.h
+ create mode 100644 lib/livepatch/test_klp_convert.h
+ create mode 100644 lib/livepatch/test_klp_convert1.c
+ create mode 100644 lib/livepatch/test_klp_convert2.c
+ create mode 100644 lib/livepatch/test_klp_convert_data.c
+ create mode 100644 lib/livepatch/test_klp_convert_keys.c
+ create mode 100644 lib/livepatch/test_klp_convert_keys_mod.c
+ create mode 100644 lib/livepatch/test_klp_convert_mod_a.c
+ create mode 100644 lib/livepatch/test_klp_convert_mod_b.c
+ create mode 100644 lib/livepatch/test_klp_convert_mod_c.c
+ create mode 100644 lib/livepatch/test_klp_convert_sections.c
+ create mode 100644 samples/livepatch/livepatch-annotated-sample.c
+ create mode 100644 scripts/livepatch/.gitignore
+ create mode 100644 scripts/livepatch/Makefile
+ create mode 100644 scripts/livepatch/elf.c
+ create mode 100644 scripts/livepatch/elf.h
+ create mode 100644 scripts/livepatch/klp-convert.c
+ create mode 100644 scripts/livepatch/klp-convert.h
+ create mode 100644 scripts/livepatch/list.h
+
 -- 
-2.30.2
+2.26.3
 
