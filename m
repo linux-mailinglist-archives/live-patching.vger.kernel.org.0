@@ -2,63 +2,47 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C26534B93AB
-	for <lists+live-patching@lfdr.de>; Wed, 16 Feb 2022 23:13:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D3A4B9A01
+	for <lists+live-patching@lfdr.de>; Thu, 17 Feb 2022 08:45:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236804AbiBPWNs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 16 Feb 2022 17:13:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37362 "EHLO
+        id S236308AbiBQHqD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 17 Feb 2022 02:46:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236738AbiBPWNr (ORCPT
+        with ESMTP id S230237AbiBQHqC (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 16 Feb 2022 17:13:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 575072AED8B
-        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 14:13:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645049612;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 17 Feb 2022 02:46:02 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A00E23A1A8;
+        Wed, 16 Feb 2022 23:45:47 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C4B591F37D;
+        Thu, 17 Feb 2022 07:45:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645083945; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=GInsY8EWMmzWnfSQud73Z6xT/DOtOKlNQiWr2Elb/hk=;
-        b=gt5ZzQS+E8Z3cPcIVhuK8DF2rNR9fyTOuDz3K96kuuPwEroSyKNmOLex9kHvGVOJo5oiyF
-        +ywTazmMs0hwVa1svmxjp7UxiSqntfingy5+UVIe0/B8uuqkOj5LQJJvjZ5xBvHe9tIyai
-        0cH+sGqwyxebOoafOky5qYzJRNFEeos=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-361-N9zLvpvJNpizg57XsJxhFg-1; Wed, 16 Feb 2022 17:13:31 -0500
-X-MC-Unique: N9zLvpvJNpizg57XsJxhFg-1
-Received: by mail-qk1-f200.google.com with SMTP id de36-20020a05620a372400b00508b2c3063eso2446691qkb.12
-        for <live-patching@vger.kernel.org>; Wed, 16 Feb 2022 14:13:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GInsY8EWMmzWnfSQud73Z6xT/DOtOKlNQiWr2Elb/hk=;
-        b=AIvJKQnnqeuiEYPxYKOeNJldWopCRFnyqAkCNvxZQOT0Nit8UxMxKFUtmH2pPd0hvg
-         VDRKu8KX3cZq4XYubxQ0LCrPnZfA5BulGfmVJB3WYILazudE+knBvVc1nd1AJJ9R3bJb
-         Hq3skbjD/Nfp8q9jCxn+BWmwY1mMU8g9hwEE/d72KjKNrO6p1tXGvFQDVtowsqZz65Mo
-         h2Zkoaubh/R+7SB3FTIBiMqY55fKYY3QMCV+UM7leC/O13plKcbNBsKVkQT1zetndGPl
-         spAskvGBUtAIOmYUPka1VG0rChrqGBJ5W2xuEZlH7rmbUnGHQEHePq7Ufa3BHg20TecU
-         IF+A==
-X-Gm-Message-State: AOAM530tmlhCxfW6lOzSDtJenDoWOUO7X2bZasuBe12HUp7+GJrJCpPf
-        d37nzuux6iPNXRea5QPy6eQlEnGtUbXTAkt/YhVofwr693pNQHo4brmLfzVVFcxCNW7dWvTmTes
-        7QnePjzilbCQfgPRQ5s9mXZQo9w==
-X-Received: by 2002:a37:bcd:0:b0:508:19df:59ac with SMTP id 196-20020a370bcd000000b0050819df59acmr2498022qkl.227.1645049610683;
-        Wed, 16 Feb 2022 14:13:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJylNMRi17SxjrpZK57rI6C9v3gwc8m6LOiygd1+pTiydJMqSsqj+XSkhj9zykPsZ8CKxgwdIw==
-X-Received: by 2002:a37:bcd:0:b0:508:19df:59ac with SMTP id 196-20020a370bcd000000b0050819df59acmr2497996qkl.227.1645049610346;
-        Wed, 16 Feb 2022 14:13:30 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::15])
-        by smtp.gmail.com with ESMTPSA id m22sm19966780qkn.35.2022.02.16.14.13.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 14:13:29 -0800 (PST)
-Date:   Wed, 16 Feb 2022 14:13:24 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>,
+        bh=N1Bwkgc0b1NsSzA+goLBbyLYnuFpjvP2ZA623nZPeoU=;
+        b=LMzvITKL+HRLw4P7XofOjk1T99l49Svs+bIG968ShkCNoMHbk4iFHhRC/+aSeIWvQXhVj4
+        IUWURCieN1XSygVBt+Oo0ERi/4JQeNKE8hwXaYdSwW7+QWRjqLQ8wyIPo1sQSujPmsKUfA
+        xvUKJPohu4obUX4yyl8TAjblL2pnEms=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645083945;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=N1Bwkgc0b1NsSzA+goLBbyLYnuFpjvP2ZA623nZPeoU=;
+        b=sA66tyj6hGa43RzOunBJ54EjO34EwRWPSAqD7VXSJ/ifWqAqw8zyPNB71MS1Z0JeTybQOl
+        6qqR0AaRmeM7F0Dw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 3F741A3B91;
+        Thu, 17 Feb 2022 07:45:44 +0000 (UTC)
+Date:   Thu, 17 Feb 2022 08:45:44 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         linux-hardening@vger.kernel.org, x86@kernel.org,
         Borislav Petkov <bp@alien8.de>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
@@ -70,7 +54,6 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Bruce Schlobohm <bruce.schlobohm@intel.com>,
         Jessica Yu <jeyu@kernel.org>,
         kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
         Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
         Jonathan Corbet <corbet@lwn.net>,
         Masahiro Yamada <masahiroy@kernel.org>,
@@ -96,86 +79,47 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         llvm@lists.linux.dev
 Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
  unique-symbol` is available
-Message-ID: <20220216221324.4b4avd5l3qdmqfcv@treble>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
- <20220209185752.1226407-3-alexandr.lobakin@intel.com>
- <20220211174130.xxgjoqr2vidotvyw@treble>
- <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com>
- <20220211183529.q7qi2qmlyuscxyto@treble>
- <20220214122433.288910-1-alexandr.lobakin@intel.com>
- <20220214181000.xln2qgyzgswjxwcz@treble>
- <Yg1fab6h1rTjVbYO@redhat.com>
+In-Reply-To: <20220216195738.vhlot4udoqga4ndm@treble>
+Message-ID: <alpine.LSU.2.21.2202170841240.29121@pobox.suse.cz>
+References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-3-alexandr.lobakin@intel.com> <20220211174130.xxgjoqr2vidotvyw@treble> <alpine.LSU.2.21.2202161601010.1475@pobox.suse.cz> <20220216195738.vhlot4udoqga4ndm@treble>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yg1fab6h1rTjVbYO@redhat.com>
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 03:32:41PM -0500, Joe Lawrence wrote:
-> > Right, so we'd have to abandon position-based search in favor of
-> > file+func based search.
+On Wed, 16 Feb 2022, Josh Poimboeuf wrote:
+
+> On Wed, Feb 16, 2022 at 04:06:24PM +0100, Miroslav Benes wrote:
+> > > > +	/*
+> > > > +	 * If the LD's `-z unique-symbol` flag is available and enabled,
+> > > > +	 * sympos checks are not relevant.
+> > > > +	 */
+> > > > +	if (IS_ENABLED(CONFIG_LD_HAS_Z_UNIQUE_SYMBOL))
+> > > > +		sympos = 0;
+> > > > +
+> > > 
+> > > Similarly, I don't see a need for this.  If the patch is legit then
+> > > sympos should already be zero.  If not, an error gets reported and the
+> > > patch fails to load.
 > > 
-> > It's not perfect because there are still a few file+func duplicates.
-> > But it might be good enough.  We would presumably just refuse to patch a
-> > duplicate.  Or we could remove them (and enforce their continued removal
-> > with tooling-based warnings).
-> > 
+> > My concern was that if the patch is not legit (that is, sympos is > 0 for 
+> > some reason), the error would be really cryptic and would not help the 
+> > user at all. So zeroing sympos seems to be a good idea to me. There is no 
+> > harm and the change is very small and compact.
 > 
-> You're talking about duplicate file+func combinations as stored in the
-> symbol table?
+> But wouldn't a cryptic error be better than no error at all?  A bad
+> sympos might be indicative of some larger issue, like the wrong symbol
+> getting patched.
 
-Right.
+Maybe you are right. I do not feel confident enough to decide it. So 
+either way would be fine, I guess.
 
-> ...
->       6 OBJECT core.c::__func__.3
->       6 OBJECT core.c::__func__.5
->       7 OBJECT core.c::__func__.1
->       8 OBJECT core.c::__func__.0
->       8 OBJECT core.c::__func__.2
-> 
-> We could probably minimize the FUNC duplicates with unique names, but
-> I'm not as optimistic about the OBJECTs as most are created via macros
-> like __already_done.X.  Unless clever macro magic?
-
-Good point about objects, as we rely on disambiguating them for klp
-relocations.  Luckily, the fact that most of them are created by macros
-is largely a good thing.  We consider most of those to be "special"
-static locals, which don't actually need to be correlated or referenced
-with a klp reloc.
-
-For example:
-
-- '__func__' is just the function name.  The patched function shouldn't
-  need to reference the original function's function name string.
-
-- '__already_done' is used for printk_once(); no harm in making a new
-  variable initialized to false and printing it again; or converting
-  printk_once() to just printk() to avoid an extra print.
-
-- '__key' is used by lockdep to track lock usage and validate locking
-  order.  It probably makes sense to use a new key in the patched
-  function, since the new function might have different locking
-  behavior.
-
-> Next question: what are the odds that these entries, at least the ones
-> we can't easily rename, need disambiguity for livepatching?  or
-> kpatch-build for related purposes?
-
-I would guess the odds are rather low, given the fact that there are so
-few functions, and we don't care about most of the objects on the list.
-
-If duplicates were to become problematic then we could consider adding
-tooling which warns on a duplicate file:sym pair with the goal of
-eliminating duplicates (exculding the "special" objects).
-
--- 
-Josh
-
+Miroslav
