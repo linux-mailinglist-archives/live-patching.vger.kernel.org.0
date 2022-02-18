@@ -2,114 +2,77 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A06F84BC0F9
-	for <lists+live-patching@lfdr.de>; Fri, 18 Feb 2022 21:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 569964BC1D4
+	for <lists+live-patching@lfdr.de>; Fri, 18 Feb 2022 22:25:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230523AbiBRUIk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 18 Feb 2022 15:08:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54748 "EHLO
+        id S239749AbiBRVZf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 18 Feb 2022 16:25:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237656AbiBRUIg (ORCPT
+        with ESMTP id S239756AbiBRVZe (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 18 Feb 2022 15:08:36 -0500
+        Fri, 18 Feb 2022 16:25:34 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCFA824B2A4
-        for <live-patching@vger.kernel.org>; Fri, 18 Feb 2022 12:08:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C6DB23D5F9
+        for <live-patching@vger.kernel.org>; Fri, 18 Feb 2022 13:25:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645214896;
+        s=mimecast20190719; t=1645219515;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qbD0qiU4RjhqV726jofvBeaOVqKh7JjTJAB5iz2l93M=;
-        b=cA7EwE5OdFiTLj2JF3mjF4lI6iI+z3lsffT4McmY3J3L3ZtEAJ3UrMQ8iv6sz+qdHsQ8qz
-        30mp4oi3Pcxr1W2A4iM/+nUzrTY/KIaOOpbqkrkLywNuMpfZqgzBQpt38FoSyXtmly/gPF
-        cB4ISfdUG4W9MIusrvPBxFyUN396AVk=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=8QQHiXtKZc6qfiHodKXWQmnnFzlUO+zklxX1NE5LbNM=;
+        b=P/fvWkaipidFZ1O8+AMhKDhFVnNKr0IbA4u7vPHP7myaOmycUrTPakgJXDGkgbJy4561nD
+        KwHvDHJyk+F2ueK+xu1hXoU09fJcUbhxDUpmeUrGLoZSSV3nUo0Q688dOGuLfKSGt5R0wv
+        0hutZ7tVOlzpzjiS4hW2BHxJ0rFSk0I=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-116-x9OxifuWNYalU_5CXlOSMQ-1; Fri, 18 Feb 2022 15:08:15 -0500
-X-MC-Unique: x9OxifuWNYalU_5CXlOSMQ-1
-Received: by mail-qv1-f70.google.com with SMTP id gi11-20020a056214248b00b0042c2cc3c1b9so9984277qvb.9
-        for <live-patching@vger.kernel.org>; Fri, 18 Feb 2022 12:08:15 -0800 (PST)
+ us-mta-454--_PQrwb_OWWwpBmXLNHORw-1; Fri, 18 Feb 2022 16:25:13 -0500
+X-MC-Unique: -_PQrwb_OWWwpBmXLNHORw-1
+Received: by mail-wr1-f69.google.com with SMTP id j8-20020adfc688000000b001e3322ced69so4075671wrg.13
+        for <live-patching@vger.kernel.org>; Fri, 18 Feb 2022 13:25:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qbD0qiU4RjhqV726jofvBeaOVqKh7JjTJAB5iz2l93M=;
-        b=lZCQoub70bmaIyvHVSMwPXcHSnOOCsL6rWhIRzfeF9ADiyo3DRTnzHoi9Jhh0NuJK0
-         DMstB+yk5gK9Ik37rh+JXmsJdnHIaKljK80vEZuQDpfSACgvcq+AONitFVhYwtpzgcu6
-         sTUYbIqku+Oiqunie7pIpihSvjFBG3IFaroVNZoZyabY5x9X7pUb8hVK4outMaJ36JWj
-         w6u+z/dp0Atoy3eZgI1FDrrm72pMMk7twNCpK6BD9guFkksiOpM7ikHTCfXFdVQ4R/Jh
-         fnVRxvZ59hyoIW7C1PYeK3P70jqHBr18yqYryuduPJTyAfvGvBcINDlT5UDG9dNPO34u
-         mi6w==
-X-Gm-Message-State: AOAM532UBPyqQU227NK1ftALpL7zm9aHuJXcPloILWHA54LpvO184peP
-        S3vhRSjsFiAdmgByZi6IwRT4P9CXUmNSKCZYeBqstxgii9TtnHthKz25KeR/1g2a85n7gDVrYSO
-        t6Mtpj/IKxtvW8PlXbCvpuWxdkg==
-X-Received: by 2002:a05:6214:17c2:b0:42c:b915:69f with SMTP id cu2-20020a05621417c200b0042cb915069fmr7009965qvb.95.1645214894988;
-        Fri, 18 Feb 2022 12:08:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyES3jxSXm6PUQSrWkCWkJOx1aXkyiFLiwQrMEdx8mKix/Dv/YjSGuwkSGrstdFEaba1AKRqg==
-X-Received: by 2002:a05:6214:17c2:b0:42c:b915:69f with SMTP id cu2-20020a05621417c200b0042cb915069fmr7009947qvb.95.1645214894772;
-        Fri, 18 Feb 2022 12:08:14 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id e64sm6288522qkd.122.2022.02.18.12.08.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8QQHiXtKZc6qfiHodKXWQmnnFzlUO+zklxX1NE5LbNM=;
+        b=kPjesEFMs/ZtASg6gQezc9EGUaSBXlkpRa27bEHOPYELggPnQANIAd6y/3uqkXxAxK
+         krYIThoanxKgc6Et8/1dNgi7yC6MOvSOWz1cK2Lq6MTZ7e7zYZ89xsh8Z7Srfwb018Ce
+         uJ4uff+6B6dGidi0716aYKR6NhHUb3Eo9iWoqrOfrfDunyT68jMdPhQj2SAXlDlOP95s
+         2I93yFGkdnsZgEZ5z1Iq2yuEYaqRV70IdM8NF4mEgNf04bl8jfTblwaE9T90m7SJ057t
+         s9xcvv7EuurRdcEMuguikCaLEnFWB39aBtZqr0qdbLl97Pw5MlF3w+ePrP90lKizmSfX
+         TBSg==
+X-Gm-Message-State: AOAM531+BTSkquyur2bYEnGw3jQDWSp7P/ksemQSJ8myV1q9AfNelYv1
+        Y2zB8ZqbkQ37uMqr/v+9MwWj7VPGctmbHZ2rv3vtjY2lSoMzxOLRcO7HNQhO7sFoXht/6QkhjTm
+        xYdhLCSkc6Lmm/+84iV8POOJs
+X-Received: by 2002:a5d:47ce:0:b0:1e8:88b7:446a with SMTP id o14-20020a5d47ce000000b001e888b7446amr7462755wrc.459.1645219512498;
+        Fri, 18 Feb 2022 13:25:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyT7nM8df1OjFYTQK+axAfa27dhMHOTeBGj+dcP/J66TJhLgCqXtBNsDeUschFutfR2BXSl0g==
+X-Received: by 2002:a5d:47ce:0:b0:1e8:88b7:446a with SMTP id o14-20020a5d47ce000000b001e888b7446amr7462743wrc.459.1645219512207;
+        Fri, 18 Feb 2022 13:25:12 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id k34sm488228wms.35.2022.02.18.13.25.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 12:08:14 -0800 (PST)
-Date:   Fri, 18 Feb 2022 12:08:08 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
- unique-symbol` is available
-Message-ID: <20220218200808.juxnoidtxa7fjsk7@treble>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
- <20220209185752.1226407-3-alexandr.lobakin@intel.com>
- <20220211174130.xxgjoqr2vidotvyw@treble>
- <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com>
- <20220211183529.q7qi2qmlyuscxyto@treble>
- <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
- <20220218163111.98564-1-alexandr.lobakin@intel.com>
+        Fri, 18 Feb 2022 13:25:11 -0800 (PST)
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     mcgrof@kernel.org
+Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
+        akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        live-patching@vger.kernel.org, atomlin@atomlin.com,
+        ghalat@redhat.com, allen.lkml@gmail.com, joe@perches.com,
+        christophe.leroy@csgroup.eu, msuchanek@suse.de,
+        oleksandr@natalenko.name
+Subject: [PATCH v6 00/13] module: core code clean up
+Date:   Fri, 18 Feb 2022 21:24:58 +0000
+Message-Id: <20220218212511.887059-1-atomlin@redhat.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220218163111.98564-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,19 +80,129 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 05:31:11PM +0100, Alexander Lobakin wrote:
-> it took 2 minutes to generate the whole map (instead of a split
-> second) (on 64-core CPU, but I guess nm runs in one thread).
-> I guess it can be optimized? I'm no a binutils master (will take a
-> look after sending this), is there a way to do it manually skipping
-> this nm lag or maybe make nm emit filenames without such delays?
+Hi Luis,
 
-Hm, yeah, adding 2 minutes to the link time isn't going to fly ;-)  It
-probably takes a while to parse all the DWARF.
+As per your suggestion [1], this is an attempt to refactor and split
+optional code out of core module support code into separate components.
+This version is based on Linus' commit 7993e65fdd0f ("Merge tag
+'mtd/fixes-for-5.17-rc5' of
+git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux").
+Please let me know your thoughts.
 
-Based on ther other discussions I think just using the basename (main.o)
-in STT_FILE would be good enough.  Some duplicates are probably ok.
+Changes since v5 [2]:
 
+ - Updated MAINTAINERS to include the entire kernel/module/ directory
+   (Christophe Leroy)
+ - Reintroduce commit a97ac8cb24a3 ("module: fix signature check failures
+   when using in-kernel decompression") (Michal Suchánek)
+ - Refactored code to address some (i.e.
+   --ignore=MULTIPLE_ASSIGNMENTS,ASSIGN_IN_IF was used) style violations
+   e.g. "Alignment should match open parenthesis", reported by
+   scripts/checkpatch.pl --strict (Christophe Leroy)
+ - Used PAGE_ALIGN() and PAGE_ALIGNED() instead (Christophe Leroy)
+ - Removed sig_enforce from include/linux/module.h as it is only
+   used in kernel/module/signing.c (Christophe Leroy)
+ - Added static keyword for anything not used outside a source file
+   (Christophe Leroy)
+ - Moved mod_sysfs_teardown() to kernel/module/sysfs.c (Christophe Leroy)
+ - Removed kdb_modules from kernel/debug/kdb/kdb_private.h
+   (Christophe Leroy)
+
+Changes since v4 [3]:
+
+ - Moved is_livepatch_module() and set_livepatch_module() to
+   kernel/module/livepatch.c
+ - Addressed minor compiler warning concerning
+   kernel/module/internal.h (0-day)
+ - Resolved style violations reported by scripts/checkpatch.pl
+ - Dropped patch 5 [4] so external patch [5] can be applied at
+   a later date post merge into module-next (Christophe Leroy)
+
+Changes since v3 [6]:
+
+ - Refactored both is_livepatch_module() and set_livepatch_module(),
+   respectively, to use IS_ENABLED(CONFIG_LIVEPATCH) (Joe Perches)
+ - Addressed various compiler warnings e.g., no previous prototype (0-day)
+
+Changes since v2 [7]:
+
+ - Moved module decompress support to a separate file
+ - Made check_modinfo_livepatch() generic (Petr Mladek)
+ - Removed filename from each newly created file (Luis Chamberlain)
+ - Addressed some (i.e. --ignore=ASSIGN_IN_IF,AVOID_BUG was used)
+   minor scripts/checkpatch.pl concerns e.g., use strscpy over
+   strlcpy and missing a blank line after declarations (Allen)
+
+Changes since v1 [8]:
+
+  - Moved module version support code into a new file
+
+[1]: https://lore.kernel.org/lkml/YbEZ4HgSYQEPuRmS@bombadil.infradead.org/
+[2]: https://lore.kernel.org/lkml/20220209170358.3266629-1-atomlin@redhat.com/
+[3]: https://lore.kernel.org/lkml/20220130213214.1042497-1-atomlin@redhat.com/
+[4]: https://lore.kernel.org/lkml/20220130213214.1042497-6-atomlin@redhat.com/
+[5]: https://lore.kernel.org/lkml/203348805c9ac9851d8939d15cb9802ef047b5e2.1643919758.git.christophe.leroy@csgroup.eu/
+[6]: https://lore.kernel.org/lkml/20220128203934.600247-1-atomlin@redhat.com/
+[7]: https://lore.kernel.org/lkml/20220106234319.2067842-1-atomlin@redhat.com/
+[8]: https://lore.kernel.org/lkml/20211228213041.1356334-1-atomlin@redhat.com/
+
+
+Aaron Tomlin (13):
+  module: Move all into module/
+  module: Simple refactor in preparation for split
+  module: Make internal.h and decompress.c more compliant
+  module: Move livepatch support to a separate file
+  module: Move latched RB-tree support to a separate file
+  module: Move strict rwx support to a separate file
+  module: Move extra signature support out of core code
+  module: Move kmemleak support to a separate file
+  module: Move kallsyms support into a separate file
+  module: Move procfs support into a separate file
+  module: Move sysfs support into a separate file
+  module: Move kdb_modules list out of core code
+  module: Move version support into a separate file
+
+ MAINTAINERS                                   |    2 +-
+ include/linux/module.h                        |    9 +-
+ kernel/Makefile                               |    5 +-
+ kernel/debug/kdb/kdb_main.c                   |    5 +
+ kernel/debug/kdb/kdb_private.h                |    4 -
+ kernel/module-internal.h                      |   50 -
+ kernel/module/Makefile                        |   19 +
+ kernel/module/debug_kmemleak.c                |   30 +
+ .../decompress.c}                             |    5 +-
+ kernel/module/internal.h                      |  284 +++
+ kernel/module/kallsyms.c                      |  502 +++++
+ kernel/module/livepatch.c                     |   74 +
+ kernel/{module.c => module/main.c}            | 1856 +----------------
+ kernel/module/procfs.c                        |  142 ++
+ .../signature.c}                              |    0
+ kernel/module/signing.c                       |  122 ++
+ kernel/module/strict_rwx.c                    |   84 +
+ kernel/module/sysfs.c                         |  436 ++++
+ kernel/module/tree_lookup.c                   |  109 +
+ kernel/module/version.c                       |  109 +
+ kernel/module_signing.c                       |   45 -
+ 21 files changed, 2010 insertions(+), 1882 deletions(-)
+ delete mode 100644 kernel/module-internal.h
+ create mode 100644 kernel/module/Makefile
+ create mode 100644 kernel/module/debug_kmemleak.c
+ rename kernel/{module_decompress.c => module/decompress.c} (99%)
+ create mode 100644 kernel/module/internal.h
+ create mode 100644 kernel/module/kallsyms.c
+ create mode 100644 kernel/module/livepatch.c
+ rename kernel/{module.c => module/main.c} (64%)
+ create mode 100644 kernel/module/procfs.c
+ rename kernel/{module_signature.c => module/signature.c} (100%)
+ create mode 100644 kernel/module/signing.c
+ create mode 100644 kernel/module/strict_rwx.c
+ create mode 100644 kernel/module/sysfs.c
+ create mode 100644 kernel/module/tree_lookup.c
+ create mode 100644 kernel/module/version.c
+ delete mode 100644 kernel/module_signing.c
+
+
+base-commit: 7993e65fdd0fe07beb9f36f998f9bbef2c0ee391
 -- 
-Josh
+2.34.1
 
