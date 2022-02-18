@@ -2,50 +2,63 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A51324BBD8D
-	for <lists+live-patching@lfdr.de>; Fri, 18 Feb 2022 17:31:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A06F84BC0F9
+	for <lists+live-patching@lfdr.de>; Fri, 18 Feb 2022 21:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237929AbiBRQcK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 18 Feb 2022 11:32:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46102 "EHLO
+        id S230523AbiBRUIk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 18 Feb 2022 15:08:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbiBRQcJ (ORCPT
+        with ESMTP id S237656AbiBRUIg (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:32:09 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2C716EA91;
-        Fri, 18 Feb 2022 08:31:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201912; x=1676737912;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4W6IsG6XIGFsgxzcIzhA34FiQVuplRXxJf4Nr78Hxdk=;
-  b=h3M5r/yP1p4/KqKNOu8HjkQwkgX7KmHaKwZQZPjXS1ix4rcz5EAkHUAT
-   8DRgzyL6FEJ2m3GvzzjSzxhjsdr69TaIxYx2u7vIDgaZhHiugghAYVNOM
-   kyB39oic3rd/O6keoyYTQQGLgJyH8pMbHM2vjNIfS1k1Gi7R6FlTApwdT
-   bh638chiBxtAYTL3iz08zfz4WhRhbqJduZvaDYu2mSApIKWyJ3VtbPjlE
-   sEt7KP3zpMg1fyDWTOshUcnsLO6Pai2WP3b5y5vNoynFq326QgcKPha+G
-   f0XOvPgxSc815+Xw7GYbAQPakud2Hko4JJdD3gQI5xgJo5mHvJKb6JmW7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="275756735"
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="275756735"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:31:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="635880026"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Feb 2022 08:31:43 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 21IGVegh000316;
-        Fri, 18 Feb 2022 16:31:40 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        =?UTF-8?Q?F=C4=81ng-ru=C3=AC_S=C3=B2ng?= <maskray@google.com>,
+        Fri, 18 Feb 2022 15:08:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCFA824B2A4
+        for <live-patching@vger.kernel.org>; Fri, 18 Feb 2022 12:08:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645214896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qbD0qiU4RjhqV726jofvBeaOVqKh7JjTJAB5iz2l93M=;
+        b=cA7EwE5OdFiTLj2JF3mjF4lI6iI+z3lsffT4McmY3J3L3ZtEAJ3UrMQ8iv6sz+qdHsQ8qz
+        30mp4oi3Pcxr1W2A4iM/+nUzrTY/KIaOOpbqkrkLywNuMpfZqgzBQpt38FoSyXtmly/gPF
+        cB4ISfdUG4W9MIusrvPBxFyUN396AVk=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-116-x9OxifuWNYalU_5CXlOSMQ-1; Fri, 18 Feb 2022 15:08:15 -0500
+X-MC-Unique: x9OxifuWNYalU_5CXlOSMQ-1
+Received: by mail-qv1-f70.google.com with SMTP id gi11-20020a056214248b00b0042c2cc3c1b9so9984277qvb.9
+        for <live-patching@vger.kernel.org>; Fri, 18 Feb 2022 12:08:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qbD0qiU4RjhqV726jofvBeaOVqKh7JjTJAB5iz2l93M=;
+        b=lZCQoub70bmaIyvHVSMwPXcHSnOOCsL6rWhIRzfeF9ADiyo3DRTnzHoi9Jhh0NuJK0
+         DMstB+yk5gK9Ik37rh+JXmsJdnHIaKljK80vEZuQDpfSACgvcq+AONitFVhYwtpzgcu6
+         sTUYbIqku+Oiqunie7pIpihSvjFBG3IFaroVNZoZyabY5x9X7pUb8hVK4outMaJ36JWj
+         w6u+z/dp0Atoy3eZgI1FDrrm72pMMk7twNCpK6BD9guFkksiOpM7ikHTCfXFdVQ4R/Jh
+         fnVRxvZ59hyoIW7C1PYeK3P70jqHBr18yqYryuduPJTyAfvGvBcINDlT5UDG9dNPO34u
+         mi6w==
+X-Gm-Message-State: AOAM532UBPyqQU227NK1ftALpL7zm9aHuJXcPloILWHA54LpvO184peP
+        S3vhRSjsFiAdmgByZi6IwRT4P9CXUmNSKCZYeBqstxgii9TtnHthKz25KeR/1g2a85n7gDVrYSO
+        t6Mtpj/IKxtvW8PlXbCvpuWxdkg==
+X-Received: by 2002:a05:6214:17c2:b0:42c:b915:69f with SMTP id cu2-20020a05621417c200b0042cb915069fmr7009965qvb.95.1645214894988;
+        Fri, 18 Feb 2022 12:08:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyES3jxSXm6PUQSrWkCWkJOx1aXkyiFLiwQrMEdx8mKix/Dv/YjSGuwkSGrstdFEaba1AKRqg==
+X-Received: by 2002:a05:6214:17c2:b0:42c:b915:69f with SMTP id cu2-20020a05621417c200b0042cb915069fmr7009947qvb.95.1645214894772;
+        Fri, 18 Feb 2022 12:08:14 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id e64sm6288522qkd.122.2022.02.18.12.08.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 12:08:14 -0800 (PST)
+Date:   Fri, 18 Feb 2022 12:08:08 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>,
+        =?utf-8?B?RsSBbmctcnXDrCBTw7JuZw==?= <maskray@google.com>,
         linux-hardening@vger.kernel.org, x86@kernel.org,
         Borislav Petkov <bp@alien8.de>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
@@ -80,159 +93,43 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
         linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
         llvm@lists.linux.dev
-Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z unique-symbol` is available
-Date:   Fri, 18 Feb 2022 17:31:11 +0100
-Message-Id: <20220218163111.98564-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-3-alexandr.lobakin@intel.com> <20220211174130.xxgjoqr2vidotvyw@treble> <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com> <20220211183529.q7qi2qmlyuscxyto@treble> <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
+Subject: Re: [PATCH v10 02/15] livepatch: avoid position-based search if `-z
+ unique-symbol` is available
+Message-ID: <20220218200808.juxnoidtxa7fjsk7@treble>
+References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
+ <20220209185752.1226407-3-alexandr.lobakin@intel.com>
+ <20220211174130.xxgjoqr2vidotvyw@treble>
+ <CAFP8O3KvZOZJqOR8HYp9xZGgnYf3D8q5kNijZKORs06L-Vit1g@mail.gmail.com>
+ <20220211183529.q7qi2qmlyuscxyto@treble>
+ <alpine.LSU.2.21.2202161606430.1475@pobox.suse.cz>
+ <20220218163111.98564-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220218163111.98564-1-alexandr.lobakin@intel.com>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Miroslav Benes <mbenes@suse.cz>
-Date: Wed, 16 Feb 2022 16:15:20 +0100 (CET)
+On Fri, Feb 18, 2022 at 05:31:11PM +0100, Alexander Lobakin wrote:
+> it took 2 minutes to generate the whole map (instead of a split
+> second) (on 64-core CPU, but I guess nm runs in one thread).
+> I guess it can be optimized? I'm no a binutils master (will take a
+> look after sending this), is there a way to do it manually skipping
+> this nm lag or maybe make nm emit filenames without such delays?
 
-> On Fri, 11 Feb 2022, Josh Poimboeuf wrote:
-> 
-> > On Fri, Feb 11, 2022 at 10:05:02AM -0800, Fāng-ruì Sòng wrote:
-> > > On Fri, Feb 11, 2022 at 9:41 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> > > >
-> > > > On Wed, Feb 09, 2022 at 07:57:39PM +0100, Alexander Lobakin wrote:
-> > > > > Position-based search, which means that if there are several symbols
-> > > > > with the same name, the user needs to additionally provide the
-> > > > > "index" of a desired symbol, is fragile. For example, it breaks
-> > > > > when two symbols with the same name are located in different
-> > > > > sections.
-> > > > >
-> > > > > Since a while, LD has a flag `-z unique-symbol` which appends
-> > > > > numeric suffixes to the functions with the same name (in symtab
-> > > > > and strtab). It can be used to effectively prevent from having
-> > > > > any ambiguity when referring to a symbol by its name.
-> > > >
-> > > > In the patch description can you also give the version of binutils (and
-> > > > possibly other linkers) which have the flag?
-> > > 
-> > > GNU ld>=2.36 supports -z unique-symbol. ld.lld doesn't support -z unique-symbol.
-> > > 
-> > > I subscribe to llvm@lists.linux.dev and happen to notice this message
-> > > (can't keep up with the changes...)
-> > > I am a bit concerned with this option and replied last time on
-> > > https://lore.kernel.org/r/20220105032456.hs3od326sdl4zjv4@google.com
-> > > 
-> > > My full reasoning is on
-> > > https://maskray.me/blog/2020-11-15-explain-gnu-linker-options#z-unique-symbol
-> > 
-> > Ah, right.  Also discussed here:
-> > 
-> >   https://lore.kernel.org/all/20210123225928.z5hkmaw6qjs2gu5g@google.com/T/#u
-> >   https://lore.kernel.org/all/20210125172124.awabevkpvq4poqxf@treble/
-> > 
-> > I'm not qualified to comment on LTO/PGO stability issues, but it doesn't
-> > sound good.  And we want to support livepatch for LTO kernels.
-> 
-> Hm, bear with me, because I am very likely missing something which is 
-> clear to everyone else...
-> 
-> Is the stability really a problem for the live patching (and I am talking 
-> about the live patching only here. It may be a problem elsewhere, but I am 
-> just trying to understand.)? I understand that two different kernel builds 
-> could have a different name mapping between the original symbols and their 
-> unique renames. Not nice. But we can prepare two different live patches 
-> for these two different kernels. Something one would like to avoid if 
-> possible, but it is not impossible. Am I missing something?
->  
-> > Also I realized that this flag would have a negative effect on
-> > kpatch-build, as it currently does its analysis on .o files.  So it
-> > would have to figure out how to properly detect function renames, to
-> > avoid patching the wrong function for example.
-> 
-> Yes, that is unfortunate. And not only for kpatch-build.
-> 
-> > And if LLD doesn't plan to support the flag then it will be a headache
-> > for livepatch (and the kernel in general) to deal with the divergent
-> > configs.
-> 
-> True.
-> 
-> The position-based approach clearly shows its limits. I like <file+func> 
-> approach based on kallsyms tracking, that you proposed elsewhere in the 
-> thread, more.
+Hm, yeah, adding 2 minutes to the link time isn't going to fly ;-)  It
+probably takes a while to parse all the DWARF.
 
-Hmm, same.
+Based on ther other discussions I think just using the basename (main.o)
+in STT_FILE would be good enough.  Some duplicates are probably ok.
 
-For FG-KASLR part, `-ffunction-sections` has no options, it only
-appends the function name to the name of a function, i.e. it can
-be only ".text.dup".
-However, LD scripts allow to specify a particular input file for
-the section being described, i.e.:
+-- 
+Josh
 
-.text.dup {         .text.file1_dup {
-    (.text.dup) ->      file1.o(.text.dup)
-}                   }
-                    .text.file2_dup {
-                        file2.o(.text.dup)
-                    }
-
-But the problem is that currently vmlinux is being linked from
-vmlinux.o solely, so there are no input files apart from vmlinux.o.
-I could probably (not 100% sure, I'm not deep into the details of
-thin archives) create a temporary linker script for vmlinux.o
-itself to process duplicates. Then vmlinux.o will always have only
-unique section names right from the start.
-It may not worth it: I don't mind that random functions with the
-same name go into one section, it's not a big deal and/or security
-risk, and it doesn't help livepatch which operates with symbol
-names, not sections.
-
-Re livepatch, the best option would probably be storing relative
-paths to the object files in kallsyms. By relative I mean starting
-from $srctree -- this would keep their versatility (no abspaths),
-but provide needed uniquity:
-
-dup()    main.o:dup()    init/main.o:dup()       /mnt/init/main.o:dup()
-dup()    main.o:dup()    foo/bar/main.o:dup()    /mnt/foo/bar/main.o:dup()
-
-                         ^^^^^^ here ^^^^^^
-
-The problem is that kallsyms are being generated at the moment of
-(re)linking vmlinux already and no earlier.
-If I could catch STT_FILE (can't say for sure now), it would provide
-only filenames, so wouldn't be enough.
-...oh wait, kallsyms rely on `nm` output. I checked nm's `-l` which
-tries to find a file corresponding to each symbol and got a nice
-output:
-
-ffffffff8109ad00 T switch_mm_irqs_off	/home/alobakin/Documents/work/xdp_hints/linux/arch/x86/mm/tlb.c:488
-
-So this could be parsed with no issues nto:
-
-name: switch_mm_irqs_off
-addr: 0x9ad00 (rel)
-file: arch/x86/mm/tlb.c
-
-This solves a lot. One problem is that
-
-> time nm -ln vmlinux > ~/Documents/tmp/nml
-nm -ln vmlinux > ~/Documents/tmp/nml  120.80s user 1.77s system 99% cpu 2:02.94 total
-
-it took 2 minutes to generate the whole map (instead of a split
-second) (on 64-core CPU, but I guess nm runs in one thread).
-I guess it can be optimized? I'm no a binutils master (will take a
-look after sending this), is there a way to do it manually skipping
-this nm lag or maybe make nm emit filenames without such delays?
-
-> 
-> Miroslav
-
-Thanks,
-Al
