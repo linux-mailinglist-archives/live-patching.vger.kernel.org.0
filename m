@@ -2,112 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAC694BF71B
-	for <lists+live-patching@lfdr.de>; Tue, 22 Feb 2022 12:18:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 637724BF84B
+	for <lists+live-patching@lfdr.de>; Tue, 22 Feb 2022 13:45:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiBVLTM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 22 Feb 2022 06:19:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
+        id S231223AbiBVMqX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 22 Feb 2022 07:46:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiBVLTL (ORCPT
+        with ESMTP id S229524AbiBVMqW (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 22 Feb 2022 06:19:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F20F3108779
-        for <live-patching@vger.kernel.org>; Tue, 22 Feb 2022 03:18:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645528725;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A2gckBtnixMVaahVtnNibGnabKhb0jcedbRGPNNAXj0=;
-        b=YQNUO0erd2QUKYfR/AbHaCec38fv2MvrXL9NyGsZ5/82YTC2MaN4IgtzSMiB9Yge8qgNat
-        Ur8BG5GNECbfZc3MdfXA61qVvtnA+TEEtaRL5sLC7rnGBm3uuhWoalzAsEVcCulJC7K2Ok
-        JaIvIvoOu7TLAekXNuCLYv2BYoYyTew=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-17-X9Wdgt_pM7GN3WN10fe3mA-1; Tue, 22 Feb 2022 06:18:44 -0500
-X-MC-Unique: X9Wdgt_pM7GN3WN10fe3mA-1
-Received: by mail-lj1-f200.google.com with SMTP id r27-20020a2e575b000000b002463f43ca0aso2951069ljd.7
-        for <live-patching@vger.kernel.org>; Tue, 22 Feb 2022 03:18:43 -0800 (PST)
+        Tue, 22 Feb 2022 07:46:22 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D407122F69;
+        Tue, 22 Feb 2022 04:45:57 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id m185so19907419iof.10;
+        Tue, 22 Feb 2022 04:45:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U1ifEzLtc0/IOyR4lb+9b3bafVQrz8ZMVMZkGpwnl1U=;
+        b=i76dJOhkFq8SztC0GExmH1uRM2VwnD7q2OJnYWUJU/iF0PQU+x9lrc3+EmWBIFcGvL
+         J1bhvCIwvsnv+r5jvgSqbWFNMzDQi/fkoyfBpOyJlh7Yd3OwL8RlFsTO9YPJUbt9TmPx
+         9K4jZ+1tBdveWtBI0GJ5mEstrDASH6hsW4eaNCN3RVMymoTMdyMgeh1+JVS66iPXCwKv
+         PSwkKY8DdQIgLwZ7JwzxiIRu5wv49ZvFlxl98BuUdYd7rJHfJXzRxoccaxOK0erxR0fn
+         D5StrbL3o33jb/PnhcccOqu5oxyQ/iBagDoHrFPRR9YBWaPVc40IjlzQOdYdziGOtRSM
+         d2UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=A2gckBtnixMVaahVtnNibGnabKhb0jcedbRGPNNAXj0=;
-        b=X9JpYc1N/DwEl+Dcz84+zNFkcvrwWOFmYZ6gJCJc58bprcLD/5/sMNdeG+oySY+Lxw
-         uh5baGEun6bdHA08oPL6EM7tHc2Vo+p3XQC17oS7+jCEQ7D6OYHbFlz8QhlC6jsNv39Q
-         1A7+OU230goWFy0SBMiFUFx/GPcI9Gsxkw2UhgAcx2Al98u6V2jQG5CdZb52hpRzVA6c
-         jrTSU8z08AvyXHDYW/2ud330ktbjUyXF1YhFVjy+mEJkveipBR5krFexiyxvujNwvFwV
-         yxg/N3CHDB6tL/X251Y3eKNRliVekinpUsvx6JyYryKuc33evmWgD/YDtt3SLBRnn2TB
-         +6Ww==
-X-Gm-Message-State: AOAM532/gvi1g6J4z6AZpEDdy8/gJGh8f8kumokWLgBe6rqjU6sgRUKg
-        1L+4fBUo1IaOhRMJHohnQquU7y6/Sb9/vZMHYgmBURCQmNvCPQT43/wGMv739DoqmvlLHBEh4Ht
-        ecHJL8Jh3B+1yMcLBEGXVZbMZa45NMX9HVBUHChtQ
-X-Received: by 2002:ac2:5cd0:0:b0:443:b112:e512 with SMTP id f16-20020ac25cd0000000b00443b112e512mr14638288lfq.118.1645528722353;
-        Tue, 22 Feb 2022 03:18:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyfIlZqtjd+JGObGg/qk7CWDZ/9xEu4n9eTUbEhI/8LWxeCG+1eUeDp/NcygYU0N+2juzdpOKkYm0z34f9B6/A=
-X-Received: by 2002:ac2:5cd0:0:b0:443:b112:e512 with SMTP id
- f16-20020ac25cd0000000b00443b112e512mr14638272lfq.118.1645528722101; Tue, 22
- Feb 2022 03:18:42 -0800 (PST)
+        bh=U1ifEzLtc0/IOyR4lb+9b3bafVQrz8ZMVMZkGpwnl1U=;
+        b=iwYli7yqnl8OD+RMOA+ZlsUmNPerlGqhOkg/HA4cTBDPlJvLMi/9R/7MVjtWZDkEaC
+         ffsTTmnYQZIO42BP4HalnzpRmQrDs9WWXUO3XaQVLIACzWmvt4JKwmwItLfVnv70EX7h
+         b+keZTZzu3ypUsjTRbMFb1gzimTCUi9dl8g89UcUHHwj5lsX6fs1Sirt9JDhc+7vqbgR
+         BuR0p0aFojHl0oTbL6Q0TtJV7hsYEl+Z42SJwQ7pzjhiCj5wvnELY1k9gJo+vnoAMUFV
+         T101J66zda79/4aglzi7Y4k5HHoYt6LTCVBnRE0ooFT6YtCqp2XO7Nsk/wh3ybh6XZJU
+         e0jg==
+X-Gm-Message-State: AOAM533eBCdFqsZSNHtIwd0PIBvDVcOgfaaAnRY3sLz3hpVgbf3FJcC4
+        a+LrFIh3b5jdAcFFcEzTTLJzvLGRaVU9h5LuRXU=
+X-Google-Smtp-Source: ABdhPJymHE6i7ESiN393PHVS6YIBpky1wMcpujNvwpJKoPffDiP/DnwSThAkfeJCZxjFtj2rDCsPAcGB3UOwdk7NQ0g=
+X-Received: by 2002:a5e:9248:0:b0:640:70ff:4e28 with SMTP id
+ z8-20020a5e9248000000b0064070ff4e28mr17211058iop.44.1645533956554; Tue, 22
+ Feb 2022 04:45:56 -0800 (PST)
 MIME-Version: 1.0
-References: <20220218212511.887059-1-atomlin@redhat.com> <YhBSBzmuiDQ4yMER@bombadil.infradead.org>
-In-Reply-To: <YhBSBzmuiDQ4yMER@bombadil.infradead.org>
-From:   Aaron Tomlin <atomlin@redhat.com>
-Date:   Tue, 22 Feb 2022 11:18:30 +0000
-Message-ID: <CANfR36jqAk2DMxVOawYZfAz-BL-g-Dxj=x-mOes3wqnukz+VAg@mail.gmail.com>
-Subject: Re: [PATCH v6 00/13] module: core code clean up
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     "Lameter, Christoph" <cl@linux.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>, jeyu@kernel.org,
+References: <20220212130410.6901-1-ojeda@kernel.org> <20220212130410.6901-3-ojeda@kernel.org>
+ <YhScgnV+n7w75WH7@alley>
+In-Reply-To: <YhScgnV+n7w75WH7@alley>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 22 Feb 2022 13:45:45 +0100
+Message-ID: <CANiq72m77SNEGfxz4Ggi6Uth1-7NsDvT9D1XbCFByYHne1x6Cw@mail.gmail.com>
+Subject: Re: [PATCH v4 02/20] kallsyms: increase maximum kernel symbol length
+ to 512
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
-        Aaron Tomlin <atomlin@atomlin.com>,
-        Grzegorz Halat <ghalat@redhat.com>,
-        Allen <allen.lkml@gmail.com>, Joe Perches <joe@perches.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michal Suchanek <msuchanek@suse.de>, oleksandr@natalenko.name
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri 2022-02-18 18:12 -0800, Luis Chamberlain wrote:
-> On Fri, Feb 18, 2022 at 09:24:58PM +0000, Aaron Tomlin wrote:
-> > Hi Luis,
-> >
-> > As per your suggestion [1], this is an attempt to refactor and split
-> > optional code out of core module support code into separate components.
-> > This version is based on Linus' commit 7993e65fdd0f ("Merge tag
-> > 'mtd/fixes-for-5.17-rc5' of
-> > git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux").
-> > Please let me know your thoughts.
+Hi Petr,
+
+On Tue, Feb 22, 2022 at 9:19 AM Petr Mladek <pmladek@suse.com> wrote:
 >
-> Fantastic, thanks for doing all this work, I've pushed this out to
-> modules-next so that the testing can start as this will be in linux-next
-> soon. I'll obviously wait for more reviews, we have a long time before this
-> gets merged to Linus, so just want to start getting testing done now rather
-> than later. And other folks are depending on your changes to start
-> getting their own code up too.
+> The livepatch selftest still pass. Feel free to add:
+>
+> Tested-by: Petr Mladek <pmladek@suse.com>       # livepatch
+> Acked-by: Petr Mladek <pmladek@suse.com>        # livepatch
 
-Hi Luis,
+Thanks a lot for the test, Petr! I will add the tags.
 
-No problem. Unfortunately, this was not the complete series. I can send a
-v7 later today with the suggested improvements made by Christophe.
-
-
-Kind regards,
-
--- 
-Aaron Tomlin
-
+Cheers,
+Miguel
