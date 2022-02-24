@@ -2,111 +2,89 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 507594C1929
-	for <lists+live-patching@lfdr.de>; Wed, 23 Feb 2022 17:57:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D3E4C277F
+	for <lists+live-patching@lfdr.de>; Thu, 24 Feb 2022 10:09:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236079AbiBWQ6G (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 23 Feb 2022 11:58:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
+        id S231327AbiBXJIj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 24 Feb 2022 04:08:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242269AbiBWQ5x (ORCPT
+        with ESMTP id S232490AbiBXJIi (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:57:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECE6B25E5
-        for <live-patching@vger.kernel.org>; Wed, 23 Feb 2022 08:57:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645635443;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 24 Feb 2022 04:08:38 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8DB17E350;
+        Thu, 24 Feb 2022 01:08:08 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3CD9A1F39D;
+        Thu, 24 Feb 2022 09:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645693687; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9lYnlwo80ekeXGGRVop7tuYwutJe1OPkYrSCkXet1IY=;
-        b=b0zVWW81StNSVD+Tj7iHkrC0lOsRpCC2RSTMlIS1fuc1UrpeXAGkp8iHz4gwvrWCcRqYYB
-        krRcA17XmOavg69nYiBiRT5lL2s5AjtOr0DPN8EA6Gcb0pqJRHT0txpVg+VIb4x7hsQ76o
-        SA4tsSOCWshA0NHZAnZsaUrWxpcmcsk=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-357-ZF2RtnW3Pk6uf8iIbsyCTQ-1; Wed, 23 Feb 2022 11:57:21 -0500
-X-MC-Unique: ZF2RtnW3Pk6uf8iIbsyCTQ-1
-Received: by mail-lf1-f72.google.com with SMTP id m18-20020a0565120a9200b004439214844dso3341169lfu.9
-        for <live-patching@vger.kernel.org>; Wed, 23 Feb 2022 08:57:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9lYnlwo80ekeXGGRVop7tuYwutJe1OPkYrSCkXet1IY=;
-        b=aHyvIn8yDx1x4ji2zag+TXz92PniJFXzFMqjosW4oVL4SqbxFZuFhyUipHJqgoKGYx
-         K2EIoOiEuMMr1PAPrGry3E2U8p7id2FQvOy4jqu30BaedwhI2ihrjylc42b/upgIfoI0
-         i+eU/bY4Pgu8xwzuKjBsaU3F9apIEly9ZXTpad4hNV9uRDSsbMCEAl6Szvb5AntvniIO
-         QfTMiyejQ/jGEegP8dEH+j4XolOMzH2HN/3ShseDaK0+FOH3Ygd2ZAUZm8Lu1wn8WHeh
-         prPzbrEsGSzZ+INiqtUyrZIre2P7EqtoqZInhgJK0+Ch15Femw1H9YKJpyQDG9TuC3lj
-         yP/A==
-X-Gm-Message-State: AOAM533dlma3bkFvBoMYDqeW7tf9z02TZG4LQ9oz+uxK1PwJOVOORDjq
-        +SZmZVY886PIHb5WwEcl5JfAx9Gq/x8/65zqn0cfnFAQGImAvflnT6Qy0TJJdL21jT8K1SKH1vB
-        AXTXdAbuvcpVWp+6I21D5sMph3lCldJKYrRI/TaCq
-X-Received: by 2002:a05:6512:3e14:b0:429:6e79:ca87 with SMTP id i20-20020a0565123e1400b004296e79ca87mr373899lfv.163.1645635440060;
-        Wed, 23 Feb 2022 08:57:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz8y+omW9xDDExHxhQDd6HLWNp9jDmHi7Vn79thFemSUK3HSORLo1ni7xvXLOo+Lt62XO3uuANFgjglrY2gMK4=
-X-Received: by 2002:a05:6512:3e14:b0:429:6e79:ca87 with SMTP id
- i20-20020a0565123e1400b004296e79ca87mr373887lfv.163.1645635439848; Wed, 23
- Feb 2022 08:57:19 -0800 (PST)
+        bh=SOS58/Bk0jKt+GavRMbVhq34RQGZyQEnbVqDH0PQCGE=;
+        b=ZsfDmmWGDWnxshaHwmwmEhWUX1QGdDuJiNaD2YQ/OFV33n6U2JmpLg5dRYmwsJ9kESmK+8
+        Wo5dp0J8aD/XZvDrZYXZ7S58V7FkfrX8My0Qqwl7Vppn0K6YwNU3nJI1avf9pNEGV90Wgr
+        yrHGX2DgwyafYkezoGxqX6Utxbg6mLY=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 20AD7A3BC5;
+        Thu, 24 Feb 2022 09:08:07 +0000 (UTC)
+Date:   Thu, 24 Feb 2022 10:08:06 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     David Vernet <void@manifault.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, corbet@lwn.net, kernel-team@fb.com
+Subject: Re: [PATCH v3] livepatch: Skip livepatch tests if ftrace cannot be
+ configured
+Message-ID: <YhdK9pjtyiKW8j3J@alley>
+References: <20220216161100.3243100-1-void@manifault.com>
 MIME-Version: 1.0
-References: <20220218212511.887059-1-atomlin@redhat.com> <20220218212511.887059-2-atomlin@redhat.com>
- <69fcaad3-e48c-11ca-ed50-7a18831e3e91@csgroup.eu> <CANfR36js06qG8HkQBPPz8bnYzcBRUtiZJAqhynt4XJcfcFXAQg@mail.gmail.com>
- <YhWK4woM1g2fAq72@bombadil.infradead.org>
-In-Reply-To: <YhWK4woM1g2fAq72@bombadil.infradead.org>
-From:   Aaron Tomlin <atomlin@redhat.com>
-Date:   Wed, 23 Feb 2022 16:57:08 +0000
-Message-ID: <CANfR36jtiq86FpONCFPOsh6x=eLnC9js+LewtUTSfZxoHoMb6w@mail.gmail.com>
-Subject: Re: [PATCH v6 01/13] module: Move all into module/
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Philipp Rudo <prudo@linux.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "atomlin@atomlin.com" <atomlin@atomlin.com>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216161100.3243100-1-void@manifault.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue 2022-02-22 17:16 -0800, Luis Chamberlain wrote:
-> How about:
->
-> obj-$(CONFIG_MODULE_SIG_FORMAT) += module/module_signature.o
->
->   Luis
+On Wed 2022-02-16 08:11:01, David Vernet wrote:
+> livepatch has a set of selftests that are used to validate the behavior of
+> the livepatching subsystem.  One of the testcases in the livepatch
+> testsuite is test-ftrace.sh, which among other things, validates that
+> livepatching gracefully fails when ftrace is disabled.  In the event that
+> ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
+> will fail later due to it unexpectedly successfully loading the
+> test_klp_livepatch module.
+> 
+> While the livepatch selftests are careful to remove any of the livepatch
+> test modules between testcases to avoid this situation, ftrace may still
+> fail to be disabled if another trace is active on the system that was
+> enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
+> that use trampolines will cause this test to fail due to the trampoline
+> being implemented with register_ftrace_direct().  The following is an
+> example of such a trace:
+> 
+> tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
+> (call_direct_funcs+0x0/0x30)
+>         direct-->bpf_trampoline_6442550536_0+0x0/0x1000
+> 
+> In order to make the test more resilient to system state that is out of its
+> control, this patch updates set_ftrace_enabled() to detect sysctl failures,
+> and skip the testrun when appropriate.
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: David Vernet <void@manifault.com>
 
-Hi Luis,
+The patch has been committed into livepatch/livepatch.git,
+branch for-5.18/selftests-fixes.
 
-Please see v8 [1].
-
-[1]: https://lore.kernel.org/all/20220222141303.1392190-1-atomlin@redhat.com/
-
-
-Kind regards,
-
--- 
-Aaron Tomlin
-
+Best Regards,
+Petr
