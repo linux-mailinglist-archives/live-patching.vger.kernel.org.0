@@ -2,29 +2,38 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E80504C2F3F
-	for <lists+live-patching@lfdr.de>; Thu, 24 Feb 2022 16:17:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D994C3BDC
+	for <lists+live-patching@lfdr.de>; Fri, 25 Feb 2022 03:43:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235925AbiBXPSA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 24 Feb 2022 10:18:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        id S231594AbiBYCnf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 24 Feb 2022 21:43:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235942AbiBXPRz (ORCPT
+        with ESMTP id S230028AbiBYCnf (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:17:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF957179;
-        Thu, 24 Feb 2022 07:17:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 24 Feb 2022 21:43:35 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D85B1A6FB9;
+        Thu, 24 Feb 2022 18:43:02 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65086B82695;
-        Thu, 24 Feb 2022 15:17:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD497C340E9;
-        Thu, 24 Feb 2022 15:17:20 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 10:17:19 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K4Ywd1cHDz4xZq;
+        Fri, 25 Feb 2022 13:42:56 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1645756978;
+        bh=uy/+QxmmrhMRi+F2ioRtaNXPlP5t3+IxpHUFAACQloo=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=YQRyLj7oyDLvap2U8mAluCdHr657d10dlyGR+HL1+sdgSRLj4sUDSEhuwzwyz+sC2
+         cffFVCyT8f7bewB6UnbBVkvCkoZIiUiXnE5mg/0PJiTz6BKj0ox29Kf4sjsrJefvB6
+         9gM5KtQRlbVioiucM3xjQ+A6dwTcyMNRjIqkq3PfAawxtJMASuODmewXD2LWLJ7j2d
+         H1UwTXxq+81TB7lyOm8iLe8zre2oveH2Bki5dzNM1LPdtanXfO4VjjRuVdvOnDaOqO
+         fVEC2A7nrPXbRxwx0YQYThN/6WBrMn4s2JC8e67OqBQYAXv6hxuVyQOopjYL393ZlU
+         rx7zjexbhcynA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
@@ -32,25 +41,23 @@ Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Ingo Molnar <mingo@redhat.com>,
         "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
         "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
 Subject: Re: [PATCH v2 02/13] tracing: Fix selftest config check for
  function graph start up test
-Message-ID: <20220224101719.51eafc60@gandalf.local.home>
-In-Reply-To: <9e62f80a-86b1-05d7-d5b7-a209b2c4f106@csgroup.eu>
+In-Reply-To: <20220224095316.67729e2b@gandalf.local.home>
 References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
-        <bdc7e594e13b0891c1d61bc8d56c94b1890eaed7.1640017960.git.christophe.leroy@csgroup.eu>
-        <74775d33-2e54-96ab-4546-57eb2c9e50e0@csgroup.eu>
-        <20220224095316.67729e2b@gandalf.local.home>
-        <9e62f80a-86b1-05d7-d5b7-a209b2c4f106@csgroup.eu>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <bdc7e594e13b0891c1d61bc8d56c94b1890eaed7.1640017960.git.christophe.leroy@csgroup.eu>
+ <74775d33-2e54-96ab-4546-57eb2c9e50e0@csgroup.eu>
+ <20220224095316.67729e2b@gandalf.local.home>
+Date:   Fri, 25 Feb 2022 13:42:54 +1100
+Message-ID: <87wnhjoedt.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,16 +65,30 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 24 Feb 2022 15:13:12 +0000
-Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
+Steven Rostedt <rostedt@goodmis.org> writes:
+> On Thu, 24 Feb 2022 13:43:02 +0000
+> Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
+>
+>> Hi Michael,
+>>=20
+>> Le 20/12/2021 =C3=A0 17:38, Christophe Leroy a =C3=A9crit=C2=A0:
+>> > CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS is required to test
+>> > direct tramp.
+>> >=20
+>> > Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>=20=20
+>>=20
+>> You didn't apply this patch when you merged the series. Without it I get=
+=20
+>> the following :
+>
+> Maybe they wanted my acked-by.
 
-> > But I'm working on a series to send to Linus. I can pick this patch up, as
-> > it touches just my code.
-> >   
-> 
-> That would be great, thanks.
+Yeah, I didn't want to take it via my tree without an ack. I meant to
+reply to the patch saying that but ...
 
-It's in my queue and running through my tests, which take 7 to 13 hours to
-complete (depending on the changes).
+> But I'm working on a series to send to Linus. I can pick this patch up, as
+> it touches just my code.
 
--- Steve
+Thanks.
+
+cheers
