@@ -2,61 +2,75 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3444CA16A
-	for <lists+live-patching@lfdr.de>; Wed,  2 Mar 2022 10:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 404EF4CB730
+	for <lists+live-patching@lfdr.de>; Thu,  3 Mar 2022 07:51:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240728AbiCBJzy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 2 Mar 2022 04:55:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
+        id S229713AbiCCGwR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 3 Mar 2022 01:52:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240708AbiCBJzv (ORCPT
+        with ESMTP id S229668AbiCCGwP (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 2 Mar 2022 04:55:51 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9B77DA99;
-        Wed,  2 Mar 2022 01:55:08 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 550321F37E;
-        Wed,  2 Mar 2022 09:55:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646214907; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UtRZPjqIyVkuTFVbEmS/q8EKiRdjfv+NaX4GERhTHdg=;
-        b=Fn3DS5eY0YV0orabtu1sCEcvykpbOfOv3x3y24XDH+5qb0g7A1hig+ae49mwfOvRGXC8yk
-        VECpoHF2NCIqhS+Yi1LHhfq4vH9LWHz9SMRniUguGsluNfyLVusH8lfWeaIuh9krbjo2+p
-        YL0D4rmJ/fj9fgjD6Y2dcL6bwm9lahY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646214907;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UtRZPjqIyVkuTFVbEmS/q8EKiRdjfv+NaX4GERhTHdg=;
-        b=lmELUlNgrXAZ8D+eX/tvlYd3+KAgpoqJ/VaBvY1cJlo0KQDB4lRlMdbFkciQeUeOS4plIu
-        MqRXehx0wr7xkRBw==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 3CFE9A3B81;
-        Wed,  2 Mar 2022 09:55:06 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 10:55:06 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        Thu, 3 Mar 2022 01:52:15 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B8116A591
+        for <live-patching@vger.kernel.org>; Wed,  2 Mar 2022 22:51:30 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id g1so3996852pfv.1
+        for <live-patching@vger.kernel.org>; Wed, 02 Mar 2022 22:51:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vGPyMpAI10MU3XsGD8/28ugapGuzl32gSygdZuFaXgw=;
+        b=yIJColnGqvEfF3gxpGrZzpxyWOXquzYrHsw7ceFq03On82nwLIBBCnVm/3e+v56jIP
+         EEKkcwh55HyhxvrLfJ4jHN7cKEsg1KPi5rnISAIuv8l6GjBnDDYTJyZrz3gyEs+VBNFH
+         6LnJ57fiNZvwjgzPgfaeUlRQS8h4l7m56MPnwbpNOoxxSwROtq8sRz4hq0ThMh4LONTe
+         Cy/n3HyIQUqIsu1EhKUqwJB3MGI1rZJPQ2btIcgTb1YOg516qdIMHOGBFkytAKS9awm4
+         +3OJHn7bFwqievUKBMZeXcmw8XsVhl4GCBrZxdprh1OEPN6arqHNa+OVINarcPxtftJ9
+         uPaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vGPyMpAI10MU3XsGD8/28ugapGuzl32gSygdZuFaXgw=;
+        b=WdoFHeRoPRlQmewWzKHKVJeYWt64/vOcM8h5ClmxDljci38X+HW1jHG8R/q2hOiyzx
+         czwcsMzExqTPdhOLN7yP/OBinior5H+9JcQuwu5AEUA/J+fA8mOfKeJ1/C7B7vtxMsh1
+         omDkarHEPfBggbidwkhDhq5T5WWq1asnWSrKKYUyF/5P53YVjDsRY75V7zQKoI469iFJ
+         63AIXtb/ud3MNa56Ags0MfROYl8DxQWSCX8S2rWBZPgO8eVGiVApvYTUSgVkxClVtUL8
+         +ytf2qV6x4nKTC7eaKSndGQOymjF4blji3GNigocIJtqs5wTXqUP7XO/o4l7+t+U80By
+         5lPg==
+X-Gm-Message-State: AOAM530xxCbn2WmX8ryhJ71bK2m29jgsSiTdxgr3aUR4G4FKbCBZ50AB
+        hH3yxqIS0wHeEV1BavX//p+DJQ==
+X-Google-Smtp-Source: ABdhPJyMNs6bPxpLikwLoiCY7jFG5Q++vQC4lxr4Qp4i25BW6Zgp/1KyngyZLACjE6eZIDlpGoawIA==
+X-Received: by 2002:a05:6a00:150a:b0:4cc:f6a6:1bc6 with SMTP id q10-20020a056a00150a00b004ccf6a61bc6mr37154677pfu.74.1646290290328;
+        Wed, 02 Mar 2022 22:51:30 -0800 (PST)
+Received: from [10.255.179.141] ([139.177.225.237])
+        by smtp.gmail.com with ESMTPSA id d10-20020a63360a000000b0037947abe4bbsm1121746pga.34.2022.03.02.22.51.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 22:51:29 -0800 (PST)
+Message-ID: <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
+Date:   Thu, 3 Mar 2022 14:51:23 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
+ KLP_UNPATCHED forced transition patch
+Content-Language: en-US
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
         joe.lawrence@redhat.com, live-patching@vger.kernel.org,
         linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
         qirui.001@bytedance.com
-Subject: Re: [PATCH] livepatch: Only block the removal of KLP_UNPATCHED forced
- transition patch
-In-Reply-To: <20220301140840.29345-1-zhouchengming@bytedance.com>
-Message-ID: <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
 References: <20220301140840.29345-1-zhouchengming@bytedance.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+ <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,46 +80,55 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 Hi,
 
-On Tue, 1 Mar 2022, Chengming Zhou wrote:
+On 2022/3/2 5:55 下午, Miroslav Benes wrote:
+> Hi,
+> 
+> On Tue, 1 Mar 2022, Chengming Zhou wrote:
+> 
+>> module_put() is currently never called for a patch with forced flag, to block
+>> the removal of that patch module that might still be in use after a forced
+>> transition.
+>>
+>> But klp_force_transition() will flag all patches on the list to be forced, since
+>> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
+>> has removed stack ordering of the livepatches, it will cause all other patches can't
+>> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+>>
+>> In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
+>> transition. It can still be unloaded only if it has passed through the consistency
+>> model in KLP_UNPATCHED transition.
+>>
+>> So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
+>> transition livepatch.
+>>
+>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+>> ---
+>>  kernel/livepatch/transition.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+>> index 5683ac0d2566..8b296ad9e407 100644
+>> --- a/kernel/livepatch/transition.c
+>> +++ b/kernel/livepatch/transition.c
+>> @@ -641,6 +641,6 @@ void klp_force_transition(void)
+>>  	for_each_possible_cpu(cpu)
+>>  		klp_update_patch_state(idle_task(cpu));
+>>  
+>> -	klp_for_each_patch(patch)
+>> -		patch->forced = true;
+>> +	if (klp_target_state == KLP_UNPATCHED)
+>> +		klp_transition_patch->forced = true;
+> 
+> I do not think this would interact nicely with the atomic replace feature. 
+> If you force the transition of a patch with ->replace set to true, no 
+> existing patch would get ->forced set with this change, which means all 
+> patches will be removed at the end of klp_try_complete_transition(). And 
+> that is something we want to prevent.
 
-> module_put() is currently never called for a patch with forced flag, to block
-> the removal of that patch module that might still be in use after a forced
-> transition.
-> 
-> But klp_force_transition() will flag all patches on the list to be forced, since
-> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
-> has removed stack ordering of the livepatches, it will cause all other patches can't
-> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
-> 
-> In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
-> transition. It can still be unloaded only if it has passed through the consistency
-> model in KLP_UNPATCHED transition.
-> 
-> So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
-> transition livepatch.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> ---
->  kernel/livepatch/transition.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-> index 5683ac0d2566..8b296ad9e407 100644
-> --- a/kernel/livepatch/transition.c
-> +++ b/kernel/livepatch/transition.c
-> @@ -641,6 +641,6 @@ void klp_force_transition(void)
->  	for_each_possible_cpu(cpu)
->  		klp_update_patch_state(idle_task(cpu));
->  
-> -	klp_for_each_patch(patch)
-> -		patch->forced = true;
-> +	if (klp_target_state == KLP_UNPATCHED)
-> +		klp_transition_patch->forced = true;
+Good point, I should check if it's an atomic replace livepatch in the else
+branch, in which case we have to set all existing patches to forced.
 
-I do not think this would interact nicely with the atomic replace feature. 
-If you force the transition of a patch with ->replace set to true, no 
-existing patch would get ->forced set with this change, which means all 
-patches will be removed at the end of klp_try_complete_transition(). And 
-that is something we want to prevent.
+Thanks.
 
-Miroslav
+> 
+> Miroslav
