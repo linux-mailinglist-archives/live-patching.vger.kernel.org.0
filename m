@@ -2,76 +2,122 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A6A64CE9D3
-	for <lists+live-patching@lfdr.de>; Sun,  6 Mar 2022 07:54:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0FA4D048E
+	for <lists+live-patching@lfdr.de>; Mon,  7 Mar 2022 17:51:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229447AbiCFGzU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 6 Mar 2022 01:55:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        id S241148AbiCGQwf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 7 Mar 2022 11:52:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiCFGzS (ORCPT
+        with ESMTP id S232809AbiCGQwe (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 6 Mar 2022 01:55:18 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584CB31DC7
-        for <live-patching@vger.kernel.org>; Sat,  5 Mar 2022 22:54:27 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id r20so16318682ljj.1
-        for <live-patching@vger.kernel.org>; Sat, 05 Mar 2022 22:54:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=VaaSLAJ+hgNGNq49WyPsh3ndDLo+mnrYcswrOHpJSv8=;
-        b=AAI16FggyI00kU2iWOY9Rzu4UPVqXo6ETVjl8XqLnfeVg3Aitv0lSh60CMBqya1mus
-         MF0B22Oew0iTq56md9fX/qlffkBr/HS5coL/W+4B08+My9Oy3YgU4vnRNeNYAYQ6IUiy
-         U7fg6OTjzXGjfx+hlgwRADconT6FR2QmdD0JM6reBjDjR4AJ1hNW9AFfPz0l+l0TT/T7
-         0IE/RaMYJ6va7hFgntebBZqTgACQI6SyEiRiSpXbEqly28v63gzENyQGdRidq1iZl0Z9
-         W9lbpIt/6TXiqg+Y6/oYQJXmmeushkwmKnrSCPqqNYADrO5nkahvhmu2uRtSvePYbLuE
-         KAGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=VaaSLAJ+hgNGNq49WyPsh3ndDLo+mnrYcswrOHpJSv8=;
-        b=sRiVikcOs/dKPbjiAATG1qZiWLRMonjbXBoCkIVufWJiDDviEZEIkes5UXlpsW3ib5
-         0ltE9MZkrK422ZRBd2j4gtiLvY2sGx1IXmUV2L9soHGCQhebNHKUGY/2Nxd/Gs7/7doY
-         exCLWjIaOW4KULq5LEZBB+mBijHwKf38vSjPvZ7DPnelv17bzizscnTJmCSxtSISzUI6
-         9AXcMHPX6flxCVuYebXzq7Mj8JJsqueWOhrTLixIqtw5eovx6kh/nJlfErotnjd+gN7Y
-         ZtSLrpp0qAvNH6qtQ0eSl1EWwAJ5DKJcSVxzv8wE0lN5FjRotAr7Sc9lbV8J2GM1474j
-         GaEw==
-X-Gm-Message-State: AOAM532ymgBFWL7wukwyNbj0pdARcE3oQky0nZQVFbrUPi9tN1X5RyuY
-        +sYCGaqDwlQaaKSwlBHUXi6g6Ce+a2wEGJ1MqeE=
-X-Google-Smtp-Source: ABdhPJxlT97hLLheeDdR+HTpUiVDS5yV8VDaeSOraG+T+cOLBN2jVp9hjY5wJK3q2jWNjCxNe8UVmlfRPhZNy8p1j8I=
-X-Received: by 2002:a05:651c:54d:b0:247:b65e:7018 with SMTP id
- q13-20020a05651c054d00b00247b65e7018mr3921300ljp.362.1646549665736; Sat, 05
- Mar 2022 22:54:25 -0800 (PST)
+        Mon, 7 Mar 2022 11:52:34 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2ED3F66FB4;
+        Mon,  7 Mar 2022 08:51:40 -0800 (PST)
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 0B8AA20B7178;
+        Mon,  7 Mar 2022 08:51:38 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0B8AA20B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1646671899;
+        bh=JQmaJ6+1WVAcZ6MJzqpqjZ1DNV3GaZkH13UClOQhBpg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ue1hmS3Gsyah9sI5cZDAOXzVc5lVCKCI8ifJyo6A/0g7bAQHQzeRQieWTOBWf6i4u
+         Xd9FVWGerNtpa5E5BfK3JVqgrU3Pdw34AV8f+mXk6C9/wsDgp6EqQyG8cuajqr7bMI
+         eO6K7351xZTqISQNNQpDI2p/XgP6mm2BsyrTJuuQ=
+Message-ID: <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
+Date:   Mon, 7 Mar 2022 10:51:38 -0600
 MIME-Version: 1.0
-Reply-To: mrs.susanelwoodhara17@gmail.com
-Sender: mrs.arawyann@gmail.com
-Received: by 2002:ab3:7d89:0:0:0:0:0 with HTTP; Sat, 5 Mar 2022 22:54:25 -0800 (PST)
-From:   Mrs Susan Elwood Hara <mrs.susanelwoodhara17@gmail.com>
-Date:   Sun, 6 Mar 2022 06:54:25 +0000
-X-Google-Sender-Auth: qnu7XbcoKR_w-FOfRCghuYn5IaQ
-Message-ID: <CACppo4606Gn-Qb6YZEutD5zCebj8SkMXd9KHyRnK3zWM79700w@mail.gmail.com>
-Subject: GOD BLESS YOU AS YOU REPLY URGENTLY
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        SUBJ_ALL_CAPS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
+ args to unwind()
+Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220117145608.6781-1-madvenka@linux.microsoft.com>
+ <20220117145608.6781-7-madvenka@linux.microsoft.com>
+ <YgutJKqYe8ss8LLd@FVFF77S0Q05N>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <YgutJKqYe8ss8LLd@FVFF77S0Q05N>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-GOD BLESS YOU AS YOU REPLY URGENTLY
+Hey Mark Rutland, Mark Brown,
 
- Hello Dear,
-Greetings, I am contacting you regarding an important information i
-have for you please reply to confirm your email address and for more
-details Thanks
-Regards
-Mrs Susan Elwood Hara.
+Could you please review the rest of the patches in the series when you can?
+
+Also, many of the patches have received a Reviewed-By from you both. So, after I send the next version out, can we upstream those ones?
+
+Thanks.
+
+Madhavan
+
+On 2/15/22 07:39, Mark Rutland wrote:
+> On Mon, Jan 17, 2022 at 08:56:03AM -0600, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+>>
+>> Rename the arguments to unwind() for better consistency. Also, use the
+>> typedef stack_trace_consume_fn for the consume_entry function as it is
+>> already defined in linux/stacktrace.h.
+>>
+>> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+> 
+> How about: 
+> 
+> | arm64: align with common stracktrace naming
+> |
+> | For historical reasons, the naming of parameters and their types in the arm64
+> | stacktrace code differs from that used in generic code and other
+> | architectures, even though the types are equivalent.
+> |
+> | For consistency and clarity, use the generic names.
+> 
+> Either way:
+> 
+> Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+> 
+> Mark.
+> 
+>> ---
+>>  arch/arm64/kernel/stacktrace.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+>> index 1b32e55735aa..f772dac78b11 100644
+>> --- a/arch/arm64/kernel/stacktrace.c
+>> +++ b/arch/arm64/kernel/stacktrace.c
+>> @@ -181,12 +181,12 @@ static int notrace unwind_next(struct unwind_state *state)
+>>  NOKPROBE_SYMBOL(unwind_next);
+>>  
+>>  static void notrace unwind(struct unwind_state *state,
+>> -			   bool (*fn)(void *, unsigned long), void *data)
+>> +			   stack_trace_consume_fn consume_entry, void *cookie)
+>>  {
+>>  	while (1) {
+>>  		int ret;
+>>  
+>> -		if (!fn(data, state->pc))
+>> +		if (!consume_entry(cookie, state->pc))
+>>  			break;
+>>  		ret = unwind_next(state);
+>>  		if (ret < 0)
+>> -- 
+>> 2.25.1
+>>
