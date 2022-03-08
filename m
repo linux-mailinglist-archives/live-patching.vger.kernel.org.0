@@ -2,49 +2,59 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C91FF4D13D1
-	for <lists+live-patching@lfdr.de>; Tue,  8 Mar 2022 10:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DD44D14BB
+	for <lists+live-patching@lfdr.de>; Tue,  8 Mar 2022 11:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345456AbiCHJw0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 8 Mar 2022 04:52:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
+        id S1344245AbiCHK3Z (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 8 Mar 2022 05:29:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345407AbiCHJwZ (ORCPT
+        with ESMTP id S1345845AbiCHK3Y (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 8 Mar 2022 04:52:25 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE38941F9A;
-        Tue,  8 Mar 2022 01:51:29 -0800 (PST)
+        Tue, 8 Mar 2022 05:29:24 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B64C93C489;
+        Tue,  8 Mar 2022 02:28:27 -0800 (PST)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 972741F397;
-        Tue,  8 Mar 2022 09:51:28 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 703C1210F6;
+        Tue,  8 Mar 2022 10:28:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646733088; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1646735306; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rfVbrz8lg45qGvZsPo5VEWHFttjSpHtZNvUX7LzR6Kc=;
-        b=Q/14xt4hxFEC3EFzitSjjIrDHD20ZIPHE9sAhGZv9bDKNlVYDwQxQ0keoh7JHnFGf4p52u
-        kUvVaHNzmJV/h77ISdtMNYNhu2SU04s8RNFKDq8cQyYjYn6xDRXCQzbtG1T37aJ16joRHJ
-        6MIEYsWQmkffQPzrMPkG85hpN6Iic+A=
+        bh=UGiJgSe0T0oOiHnAKgTMCIENUpUOw+B4X6790ZHiR4c=;
+        b=Q52Uy1TH2pLPefAJDAAWytaJOWwzLthr/Z4rDxlR6aAXBNaOg/c4kj4VfwE6KwBAWe2oU4
+        mra52iIeVV2wH6sXJVVCZncr6Su0QomG7ygU2Xg0j3H3J/zpIJweGWYRWkAO5Y9vMApdsc
+        zG+VxPgzMJutQ0YgkQKJMx3KA51GzU4=
 Received: from suse.cz (unknown [10.100.224.162])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 78E8DA3B87;
-        Tue,  8 Mar 2022 09:51:28 +0000 (UTC)
-Date:   Tue, 8 Mar 2022 10:51:28 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id 538B7A3B87;
+        Tue,  8 Mar 2022 10:28:25 +0000 (UTC)
+Date:   Tue, 8 Mar 2022 11:28:24 +0100
 From:   Petr Mladek <pmladek@suse.com>
 To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] livepatch: Don't block removal of patches that are
- safe to unload
-Message-ID: <YicnIIatfgLc2NN2@alley>
-References: <20220303105446.7152-1-zhouchengming@bytedance.com>
+Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>, jpoimboe@redhat.com,
+        jikos@kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com
+Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
+ KLP_UNPATCHED forced transition patch
+Message-ID: <YicvyEbFzZIAut+4@alley>
+References: <20220301140840.29345-1-zhouchengming@bytedance.com>
+ <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
+ <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
+ <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
+ <1929669c-7674-035b-8cf1-5b5007ecccec@bytedance.com>
+ <c1ab3333-7fea-d2d5-272d-850f4c7afb74@redhat.com>
+ <306a5d51-25e5-b7ce-cbdd-ca7e2f3a3ad5@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220303105446.7152-1-zhouchengming@bytedance.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <306a5d51-25e5-b7ce-cbdd-ca7e2f3a3ad5@bytedance.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
@@ -55,73 +65,52 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2022-03-03 18:54:46, Chengming Zhou wrote:
-> module_put() is currently never called for a patch with forced flag, to block
-> the removal of that patch module that might still be in use after a forced
-> transition.
+On Fri 2022-03-04 23:14:15, Chengming Zhou wrote:
+> On 2022/3/3 11:43 下午, Joe Lawrence wrote:
+> > On 3/3/22 5:33 AM, Chengming Zhou wrote:
+> >> On 2022/3/3 3:51 下午, Miroslav Benes wrote:
+> >> Apart from this reason, another reason we may use "force" transition
+> >> is that we want to speed up the transition process of some patches
+> >> when load them, and we can make sure these patches are safe to do so.
+> >> (just like a consistency model check disable option when load a patch)
+> >>
+> > Interesting use case.  Can you share any example livepatches where the
+> > transition time was exceptionally long and that lead to requiring this
+> > patch?
 > 
-> But klp_force_transition() will set all patches on the list to be forced, since
-> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
-> has removed stack ordering of the livepatches, it will cause all other patches can't
-> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+> Sorry, I haven't easy reproducible testcase on hand, maybe I could try to
+> make one to simulate the production environment later.
+
+An artificial test case is not much useful. We would like to know if you
+met the problem in the real life. It would be great to know more
+details if it really happened.
+
+
+> > From a kpatch developer's perspective, it would be interesting to read
+> > how you go about ensuring forced livepatch safety.  We don't generally
+> > build forced livepatches, so I'm curious how the dev/review process goes.
 > 
-> In fact, we don't need to set a patch to forced if it's a KLP_PATCHED forced
-> transition. It can still be unloaded safely as long as it has passed through
-> the consistency model in KLP_UNPATCHED transition.
-
-It really looks safe. klp_check_stack_func() makes sure that @new_func
-is not on the stack when klp_target_state == KLP_UNPATCHED. As a
-result, the system should not be using code from the livepatch module
-when KLP_UNPATCHED transition cleanly finished.
-
-
-> But the exception is when force transition of an atomic replace patch, we
-> have to set all previous patches to forced, or they will be removed at
-> the end of klp_try_complete_transition().
+> We also use kpatch-build for some patches too, but for some other patches,
+> which need to add new members to some struct type, or fix some kernel function
+> bugs, we may need to rewrite the source patch to make a livepatch module.
 > 
-> This patch only set the klp_transition_patch to be forced in KLP_UNPATCHED
-> case, and keep the old behavior when in atomic replace case.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> ---
-> v2: interact nicely with the atomic replace feature noted by Miroslav.
-> ---
->  kernel/livepatch/transition.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-> index 5683ac0d2566..34ffb8c014ed 100644
-> --- a/kernel/livepatch/transition.c
-> +++ b/kernel/livepatch/transition.c
-> @@ -641,6 +641,10 @@ void klp_force_transition(void)
->  	for_each_possible_cpu(cpu)
->  		klp_update_patch_state(idle_task(cpu));
->  
-> -	klp_for_each_patch(patch)
-> -		patch->forced = true;
-> +	if (klp_target_state == KLP_UNPATCHED)
-> +		klp_transition_patch->forced = true;
-> +	else if (klp_transition_patch->replace) {
-> +		klp_for_each_patch(patch)
-> +			patch->forced = true;
+> There are some types that don't need per-task consistency or even can replace
+> the old functions when tasks stack in the old functions. We may want to use
+> "force" transition in case load process timeout.
 
-This works only because there is should be only one patch when
-klp_target_state == KLP_UNPATCHED and
-klp_transition_patch->forced == true.
-But it is a bit tricky. I would do it the other way:
+What is the motivation for the timeout, please?
 
-	if (klp_transition_patch->replace) {
-		klp_for_each_patch(patch)
-			patch->forced = true;
-	} else if (klp_target_state == KLP_UNPATCHED) {
-		klp_transition_patch->forced = true;
-	}
+The "force" functionality was introduced as a last resort solution.
+It might be useful when the transition gets blocked and another
+transition is needed.
 
-It looks more sane. And it makes it more clear
-that the special handling of KLP_UNPATCHED transition
-is done only when the atomic replace is not used.
+"force" should be used carefully. Users should be sure that it is
+really safe in the current state.
 
-Otherwise, I do not see any real problem with the patch.
+Note that forced transition does not magically makes the system
+patched. If a process is sleeping on a non-patched function then
+it will continue running the old code until it returns
+the non-patched function.
 
 Best Regards,
 Petr
