@@ -2,58 +2,63 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 991704D23C2
-	for <lists+live-patching@lfdr.de>; Tue,  8 Mar 2022 23:00:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0CCF4D2E65
+	for <lists+live-patching@lfdr.de>; Wed,  9 Mar 2022 12:48:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236561AbiCHWBf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 8 Mar 2022 17:01:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34190 "EHLO
+        id S230366AbiCILsp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 9 Mar 2022 06:48:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiCHWBe (ORCPT
+        with ESMTP id S231716AbiCILso (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 8 Mar 2022 17:01:34 -0500
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 743FD289BA;
-        Tue,  8 Mar 2022 14:00:37 -0800 (PST)
-Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 5F17C20B7178;
-        Tue,  8 Mar 2022 14:00:36 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5F17C20B7178
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1646776837;
-        bh=6aGA5zF6jU5zH7UbdaZnmMkVSuozYHUjOEcPB4bdYIM=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=svryphXe56GxH3wIuzgftWULHzQSof0sq6j9xgRGizLEfetBH1iw9N8TcDC+1q8H4
-         nosAMecuDL0jjxqe/Pg4Yp9855PAje7MevjtTI/7/wuk0sYLH16KSld6/LlEGQSfOU
-         u/gWY8CGNOdLUg8ciaTqx87ftEXwodHcasEH9rEk=
-Message-ID: <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com>
-Date:   Tue, 8 Mar 2022 16:00:35 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
- args to unwind()
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
+        Wed, 9 Mar 2022 06:48:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256F9710E3;
+        Wed,  9 Mar 2022 03:47:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C04AA61882;
+        Wed,  9 Mar 2022 11:47:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 405E6C340E8;
+        Wed,  9 Mar 2022 11:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646826465;
+        bh=+QA/FxGruRPfGsGWICz2UjyGiib5mePYmSUey22VoFg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DjiDDldUNNlnovKQ0JBaKVcuvn/dbfSjkRQkbCon5BAEFHaDkySjAYE2z+U7bla3G
+         wWR/Umyl72MgH7tmmkUe466DMUJIFYNoFfy07My64dQoDPg1ZM/TNs34ggE2ZIUfpy
+         Lnc8BE38NSlbtEpHJ+mul9H+B/aDXnQDlDoDT18aqSyaIU2FZGFNrrFbKoPDNFiJGS
+         VMDpHT5YNJ9Du77/e9jqTuhl9qNu7jKrRNTDnltslkNYHL7hxsQIVbJAr/PRD14Ii2
+         sf+Vc8uS12V1qWI5iIS0kRBXZEgzKuaYVEzdJx5gMHOvRTnfbACHuYHJAMAVgG64Sk
+         1lUmhK3LaPBjg==
+Date:   Wed, 9 Mar 2022 11:47:38 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 Cc:     Mark Rutland <mark.rutland@arm.com>, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
         sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
+ args to unwind()
+Message-ID: <YiiT2lFuxc3ob+Zq@sirena.org.uk>
 References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
  <20220117145608.6781-1-madvenka@linux.microsoft.com>
  <20220117145608.6781-7-madvenka@linux.microsoft.com>
  <YgutJKqYe8ss8LLd@FVFF77S0Q05N>
  <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
  <YiY6hecX0pVWowQ7@sirena.org.uk>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <YiY6hecX0pVWowQ7@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+ <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="fR2gx6UElM3+rVbt"
+Content-Disposition: inline
+In-Reply-To: <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com>
+X-Cookie: You will inherit millions of dollars.
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,31 +67,40 @@ List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
+--fR2gx6UElM3+rVbt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 3/7/22 11:01, Mark Brown wrote:
-> On Mon, Mar 07, 2022 at 10:51:38AM -0600, Madhavan T. Venkataraman wrote:
->> Hey Mark Rutland, Mark Brown,
->>
->> Could you please review the rest of the patches in the series when you can?
->>
-> 
-> Please don't send content free pings.  As far as I remember I'd reviewed
-> or was expecting changes based on review or dependent patches for
-> everything that you'd sent.
-> 
+On Tue, Mar 08, 2022 at 04:00:35PM -0600, Madhavan T. Venkataraman wrote:
 
-Indeed you did! Many thanks!
+> It is just that patch 11 that defines "select
+> HAVE_RELIABLE_STACKTRACE" did not receive any comments from you
+> (unless I missed a comment that came from you. That is entirely
+> possible. If I missed it, my bad). Since you suggested that change, I
+> just wanted to make sure that that patch looks OK to you.
 
-It is just that patch 11 that defines "select HAVE_RELIABLE_STACKTRACE" did not receive any comments from you (unless I missed a comment that came from you. That is entirely possible. If I missed it, my bad). Since you suggested that change, I just wanted to make sure that that patch looks OK to you.
+I think that's more a question for the livepatch people to be honest -
+it's not entirely a technical one, there's a bunch of confidence level
+stuff going on.  For example there was some suggestion that people might
+insist on having objtool support, though there's also substantial
+pushback on making objtool a requirement for anything from other
+quarters.  I was hoping that posting that patch would provoke some
+discussion about what exactly is needed but that's not happened thus
+far.
 
->> Also, many of the patches have received a Reviewed-By from you both. So, after I send the next version out, can we upstream those ones?
-> 
-> That's more a question for Catalin and Will.  If myself and Mark have
-> reviewed patches then we're saying we think those patches are good to
-> go.
+--fR2gx6UElM3+rVbt
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Got it!
+-----BEGIN PGP SIGNATURE-----
 
-Thanks!
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIok9kACgkQJNaLcl1U
+h9Atswf/aYL+WGkgkI963GJMyK23dK7OKYHwJjpAKq7WTCiRO8kPKRIENSCe4khl
+qf1PIUDbuaEWsacF/ovb7WGNFEqtuNuGwJCdsEeVjHPya0+FxLkQZ2qI/gF0dZgB
+l06fXYg29pg5oXdYWxaJHERjgPQbZxm7FnLkNd49g2KgeDxRIDRq+R0e4t0X8AjU
+xbA6Zk+mlQxEzfMOkslmcnKsgO2PM/aOwAKSdJdm70L2UP/H0FoOZq7e5tDOK6OO
+wffrEPTucsbI3C7HHrMsULi0IHT6SWIE0U5T5/61KqIJ2xP5KhNn8FbZB6amF4qJ
+OaCn/7+3OZMScj2cx86kCAC0Nw/1hA==
+=xFhr
+-----END PGP SIGNATURE-----
 
-Madhavan
+--fR2gx6UElM3+rVbt--
