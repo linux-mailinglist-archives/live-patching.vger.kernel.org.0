@@ -2,86 +2,61 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A520E4DA8FD
-	for <lists+live-patching@lfdr.de>; Wed, 16 Mar 2022 04:43:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C885E4DB39C
+	for <lists+live-patching@lfdr.de>; Wed, 16 Mar 2022 15:48:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352608AbiCPDpI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 15 Mar 2022 23:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
+        id S242012AbiCPOtn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 16 Mar 2022 10:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345823AbiCPDpI (ORCPT
+        with ESMTP id S231273AbiCPOtm (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 15 Mar 2022 23:45:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 503EB6436
-        for <live-patching@vger.kernel.org>; Tue, 15 Mar 2022 20:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647402233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Wed, 16 Mar 2022 10:49:42 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A425B1A800;
+        Wed, 16 Mar 2022 07:48:27 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 61F3C210E4;
+        Wed, 16 Mar 2022 14:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647442106; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=ZAnnOD1TFAfWyqqMW/Wmcf4iVq3MFqF1gnAUhVDPFsI=;
-        b=US73mtLiZgsQZJB7I6/SdH5+BkYoEr+40XEmkjx/QPHjYyBp1/NIzGicH8cI9eaeTnlkFR
-        8o+sVcGLmSfiWV9nwsR0RbN0dGEHQpDxBPq3slhpJKarWB4dcrN6VycVkMgk6FL966w63V
-        6987+RHbW854kVQ2VYXs773y2L1nmNU=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-317-N62pDMj1Ol-GanSx0KM-NQ-1; Tue, 15 Mar 2022 23:43:52 -0400
-X-MC-Unique: N62pDMj1Ol-GanSx0KM-NQ-1
-Received: by mail-qk1-f197.google.com with SMTP id q5-20020a05620a0d8500b004738c1b48beso764750qkl.7
-        for <live-patching@vger.kernel.org>; Tue, 15 Mar 2022 20:43:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZAnnOD1TFAfWyqqMW/Wmcf4iVq3MFqF1gnAUhVDPFsI=;
-        b=rbqbZgdZkDxSXIVzAeUZodBjvY8q2Zij+KPicgg3DwkJx40CuWNPKiieTQLCFNHUO4
-         Cgsu1QZnUHoSpSqU4itZOrjyfDOo97p4bMVoAoX6+bj9V5eKpEBd1OFej/v9HpLx5j7e
-         vrWwzJaYJq0x96iBCl0fkjuGRQ7ucFY4Vn4mslpbzQbZqdcdjMIhgU5DRBKf8xlvfJuZ
-         p5guccD67QaEBXNlSNSlV2VU3gVhhdXjwh4K2mzfn97LM3gkyocx9I+Wp/epRuj2mIwR
-         JYGUgyleemF+PPa3JBK57sPOakJ6tXUeJEGBTFWrF0ufp+9Q7WEX2BfDP/Auw9c6Mrhi
-         aATA==
-X-Gm-Message-State: AOAM530yVCQyigd4hA54LBgF3IekPhRwwYzoVmoCNOXn1rVdYaeMWtm+
-        kAhffRDKK7JfaG84+Rrz/WIpa4R93KGgnDP6rLnm2JIvdChfK/vNjj4GV+PKojccmSN3Fs+EJ0v
-        VMqYWI5Roh6xeca4Aal2RNU+9XA==
-X-Received: by 2002:ac8:5d94:0:b0:2e1:ce44:5041 with SMTP id d20-20020ac85d94000000b002e1ce445041mr11251355qtx.356.1647402231669;
-        Tue, 15 Mar 2022 20:43:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwpH+p8m21wqZy7u+B52bawoIc/wfywaIVHyd24H+3Mr5FLKf3ex5fY0aUAsR/hQ7OuD10v5w==
-X-Received: by 2002:ac8:5d94:0:b0:2e1:ce44:5041 with SMTP id d20-20020ac85d94000000b002e1ce445041mr11251347qtx.356.1647402231457;
-        Tue, 15 Mar 2022 20:43:51 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::48])
-        by smtp.gmail.com with ESMTPSA id y24-20020a37e318000000b0067d43d76184sm377053qki.97.2022.03.15.20.43.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 20:43:50 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 20:43:47 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Mark Rutland <mark.rutland@arm.com>, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
- args to unwind()
-Message-ID: <20220316034347.5q55vxzztrpe2pjn@treble>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220117145608.6781-1-madvenka@linux.microsoft.com>
- <20220117145608.6781-7-madvenka@linux.microsoft.com>
- <YgutJKqYe8ss8LLd@FVFF77S0Q05N>
- <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
- <YiY6hecX0pVWowQ7@sirena.org.uk>
- <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com>
- <YiiT2lFuxc3ob+Zq@sirena.org.uk>
+        bh=sNgiXVZBv6F6wyCvndqNofHIp7IwWtdhnCB8N/Uhyx4=;
+        b=hothijYJO1hxPRBPTWSio0H1fgSSzQ8O7tk8VGs/WEuIfRvgvnwDzVWziL+njJmzW6wyFn
+        VATT3K4e72LwlXcRj3rW+0WbHF7s9L+fpVx64QmLSbyMLwtHUQdxspy7+5OnijG2U+hrJS
+        i9OUAEdd5u4u2QvpIpuWOodg7TL2S18=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647442106;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sNgiXVZBv6F6wyCvndqNofHIp7IwWtdhnCB8N/Uhyx4=;
+        b=PKQl+BpgTe2MRagJZ4oRxzm6SS30ZxbcbTnqEeM2XrTInCRsMggLFOJzqWHHMc41bUhnSs
+        yIjn9NvRSPch9PCA==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 31C92A3B87;
+        Wed, 16 Mar 2022 14:48:25 +0000 (UTC)
+Date:   Wed, 16 Mar 2022 15:48:25 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com
+Subject: Re: [PATCH v3] livepatch: Don't block removal of patches that are
+ safe to unload
+In-Reply-To: <20220312152220.88127-1-zhouchengming@bytedance.com>
+Message-ID: <alpine.LSU.2.21.2203161536330.6444@pobox.suse.cz>
+References: <20220312152220.88127-1-zhouchengming@bytedance.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YiiT2lFuxc3ob+Zq@sirena.org.uk>
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,29 +64,77 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 11:47:38AM +0000, Mark Brown wrote:
-> On Tue, Mar 08, 2022 at 04:00:35PM -0600, Madhavan T. Venkataraman wrote:
+On Sat, 12 Mar 2022, Chengming Zhou wrote:
+
+> module_put() is not called for a patch with "forced" flag. It should
+> block the removal of the livepatch module when the code might still
+> be in use after forced transition.
 > 
-> > It is just that patch 11 that defines "select
-> > HAVE_RELIABLE_STACKTRACE" did not receive any comments from you
-> > (unless I missed a comment that came from you. That is entirely
-> > possible. If I missed it, my bad). Since you suggested that change, I
-> > just wanted to make sure that that patch looks OK to you.
+> klp_force_transition() currently sets "forced" flag for all patches on
+> the list.
 > 
-> I think that's more a question for the livepatch people to be honest -
-> it's not entirely a technical one, there's a bunch of confidence level
-> stuff going on.  For example there was some suggestion that people might
-> insist on having objtool support, though there's also substantial
-> pushback on making objtool a requirement for anything from other
-> quarters.  I was hoping that posting that patch would provoke some
-> discussion about what exactly is needed but that's not happened thus
-> far.
+> In fact, any patch can be safely unloaded when it passed through
+> the consistency model in KLP_UNPATCHED transition.
+> 
+> By other words, the "forced" flag must be set only for livepatches
 
-That patch has HAVE_RELIABLE_STACKTRACE depending on STACK_VALIDATION,
-which doesn't exist on arm64.
+s/By/In/
 
-So it didn't seem controversial enough to warrant discussion ;-)
+> that are being removed. In particular, set the "forced" flag:
+> 
+>   + only for klp_transition_patch when the transition to KLP_UNPATCHED
+>     state was forced.
+> 
+>   + all replaced patches when the transition to KLP_PATCHED state was
+>     forced and the patch was replacing the existing patches.
+> 
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> ---
+> Changes in v3:
+>  - rewrite more clear commit message by Petr.
+> 
+> Changes in v2:
+>  - interact nicely with the atomic replace feature noted by Miroslav.
+> ---
+>  kernel/livepatch/transition.c | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index 5683ac0d2566..7f25a5ae89f6 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -641,6 +641,18 @@ void klp_force_transition(void)
+>  	for_each_possible_cpu(cpu)
+>  		klp_update_patch_state(idle_task(cpu));
+>  
+> -	klp_for_each_patch(patch)
+> -		patch->forced = true;
+> +	/*
+> +	 * Only need to set forced flag for the transition patch
+> +	 * when force transition to KLP_UNPATCHED state, but
+> +	 * have to set forced flag for all replaced patches
+> +	 * when force atomic replace transition.
+> +	 */
 
--- 
-Josh
+How about something like
 
+/*
+ * Set forced flag for patches being removed, which is the transition
+ * patch in KLP_UNPATCHED state or all replaced patches when forcing
+ * the atomic replace transition.
+ */
+
+?
+
+> +	if (klp_target_state == KLP_UNPATCHED)
+> +		klp_transition_patch->forced = true;
+> +	else if (klp_transition_patch->replace) {
+> +		klp_for_each_patch(patch) {
+> +			if (patch != klp_transition_patch)
+> +				patch->forced = true;
+> +		}
+> +	}
+
+Looks good to me.
+
+Miroslav
