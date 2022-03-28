@@ -2,82 +2,79 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE9654E562B
-	for <lists+live-patching@lfdr.de>; Wed, 23 Mar 2022 17:17:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C18A4E8E29
+	for <lists+live-patching@lfdr.de>; Mon, 28 Mar 2022 08:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238740AbiCWQTN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 23 Mar 2022 12:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        id S234298AbiC1G2z (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 28 Mar 2022 02:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237987AbiCWQTM (ORCPT
+        with ESMTP id S233541AbiC1G2y (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 23 Mar 2022 12:19:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C21CC6E8E2
-        for <live-patching@vger.kernel.org>; Wed, 23 Mar 2022 09:17:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648052261;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LMilvWqrMPZjKPNSjn2quNpLYv1XEy4/3uEFo9XhgfY=;
-        b=iImOCK1DsV8u4JB+hZOQFX0P+avcIJwUKWIspr0KYdJuql5oKn4+wnKvmSVtVy9cRKGTGs
-        UerOeZRjcQlE7p3dPcM42b+rQLqTKW0IZzR+AjYOyA+zjVrAMZ+TxZvzHTpY0eaDv5U2Rk
-        KzuSZDkiEC3sY/nZKTBYAmdwy5xl+NI=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-86-RNFonJ4QNrq9gAzvYO7UwQ-1; Wed, 23 Mar 2022 12:17:40 -0400
-X-MC-Unique: RNFonJ4QNrq9gAzvYO7UwQ-1
-Received: by mail-qk1-f200.google.com with SMTP id m6-20020a37a306000000b0067b189190c3so1274373qke.20
-        for <live-patching@vger.kernel.org>; Wed, 23 Mar 2022 09:17:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=LMilvWqrMPZjKPNSjn2quNpLYv1XEy4/3uEFo9XhgfY=;
-        b=bUP5Ubs7lkMWC6qkZEzxaE1kaj7KR0e5gFbXO6RWL4o57zsL26qIwdWdzODp2RibAC
-         SZgppXnMk1Llv0i5Mp4+BcAtr9ycbYF40QTLnPWMCNf/L5nXtUSorY75VwmJoUDLAxCk
-         ZbyjJtCFZDcF4H8wymAle44rKH0L34sFMQl/YIWXQq0BMnfyO+uqromm66wYhW045Wop
-         3H1sCQbbRoK1VTeI6Xy1PZ/q8oEP2utX7+zZHywOGBdnbH0jJRzt5ZgZaNtFIuIkj+D7
-         vmMinG0mPRsLyKm0O3k+P7RZOxAjCRcf7iwE8xtAjFLFEZbN+lME++Nmmvi+AamEnHja
-         Pycw==
-X-Gm-Message-State: AOAM530qiNKVn8Jl/P9chTf21f7EEcl5dZU5yfMFw50ywZsw1DwHUutF
-        tlBnM5ycYWoxMPtmtM03B7U1vKefROO+vc0eioXVuFukGRTy4QYKtH+7K2giG01GkS3yeTJ3zzg
-        ksMVMGOG2L1NwnSwCcGP7T1beMA==
-X-Received: by 2002:ac8:7d0f:0:b0:2e1:cd79:6c3f with SMTP id g15-20020ac87d0f000000b002e1cd796c3fmr456898qtb.551.1648052259713;
-        Wed, 23 Mar 2022 09:17:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwI+ts2Y1HOmiplnzOuO6XQHoN928vcCV0rvB/x+YY/nDDPpeIZrag/6oSq8+QdpPyfB2jmMQ==
-X-Received: by 2002:ac8:7d0f:0:b0:2e1:cd79:6c3f with SMTP id g15-20020ac87d0f000000b002e1cd796c3fmr456865qtb.551.1648052259384;
-        Wed, 23 Mar 2022 09:17:39 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id u20-20020a05620a455400b0067ec0628661sm261739qkp.110.2022.03.23.09.17.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 09:17:38 -0700 (PDT)
-Subject: Re: [PATCH v2] livepatch: Reorder to use before freeing a pointer
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220320015143.2208591-1-trix@redhat.com>
- <YjtCY1QaA6GI3b+7@alley>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <be3ac729-8d1d-0c2e-6d63-aeb23ca04bbd@redhat.com>
-Date:   Wed, 23 Mar 2022 09:17:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Mon, 28 Mar 2022 02:28:54 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937E24E3AE;
+        Sun, 27 Mar 2022 23:27:13 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KRjR33Rnjz9sSS;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TR6XdBzRQH81; Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KRjR32Szvz9sSR;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3F9C38B76C;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id LaNwMWJvjrPJ; Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0F1168B763;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22S6R0jK086991
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 08:27:00 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22S6QtUO086990;
+        Mon, 28 Mar 2022 08:26:55 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        x86@kernel.org
+Subject: [PATCH] livepatch: Remove klp_arch_set_pc() and asm/livepatch.h
+Date:   Mon, 28 Mar 2022 08:26:48 +0200
+Message-Id: <e029c7cfde436f6bbf99148ab14dc2da99add503.1648447981.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <YjtCY1QaA6GI3b+7@alley>
-Content-Type: text/plain; charset=utf-8; format=flowed
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648448806; l=5338; s=20211009; h=from:subject:message-id; bh=Ly3GCtAkNGT2oW79kHKKyNL7YZGR2HnWx0D4adICxx8=; b=XJR/9U3DapYzZNiy8ayr2RO17EEiTtxk/1b/78Yf/bR6w68Nxbu3f9F6YR6mdMciz4bDGWUfJZJ7 c/sCVLhTCtQjo+bLWTKXKGqCXOAEdIl/1KmBXMQ1lMwwdCBjge/Q
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,47 +82,173 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+All three versions of klp_arch_set_pc() do exactly the same: they
+call ftrace_instruction_pointer_set().
 
-On 3/23/22 8:53 AM, Petr Mladek wrote:
-> On Sat 2022-03-19 18:51:43, trix@redhat.com wrote:
->> From: Tom Rix <trix@redhat.com>
->>
->> Clang static analysis reports this issue
->> livepatch-shadow-fix1.c:113:2: warning: Use of
->>    memory after it is freed
->>    pr_info("%s: dummy @ %p, prevented leak @ %p\n",
->>    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>
->> The pointer is freed in the previous statement.
->> Reorder the pr_info to report before the free.
->>
->> Similar issue in livepatch-shadow-fix2.c
-> I have added the following paragraph:
->
-> <snip>
-> Note that it is a false positive. pr_info() just prints the address.
-> The freed memory is not accessed. Well, the static analyzer could not
-> know this easily.
-> </snip>
->
->> Signed-off-by: Tom Rix <trix@redhat.com>
-> and pushed the patch into livepatching/livepatching.git,
-> branch for-5.18/selftests-fixes.
->
-> IMHO, the patch is so trivial and can be added even in this merge
-> window. There is no need to create more dances around it ;-)
->
-> Let me know if you disagree. I am going to send the pull request
-> on Friday or Monday.
+Call ftrace_instruction_pointer_set() directly and remove
+klp_arch_set_pc().
 
-Do whatever is easier for you.  The addition to the commit log is fine.
+As klp_arch_set_pc() was the only thing remaining in asm/livepatch.h
+on x86 and s390, remove asm/livepatch.h
 
-Thanks
+livepatch.h remains on powerpc but its content is exclusively used
+by powerpc specific code.
 
-Tom
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ MAINTAINERS                          |  2 --
+ arch/powerpc/include/asm/livepatch.h | 10 +---------
+ arch/powerpc/kernel/irq.c            |  1 -
+ arch/powerpc/kernel/setup_64.c       |  2 +-
+ arch/s390/include/asm/livepatch.h    | 22 ----------------------
+ arch/x86/include/asm/livepatch.h     | 20 --------------------
+ include/linux/livepatch.h            |  2 --
+ kernel/livepatch/patch.c             |  2 +-
+ 8 files changed, 3 insertions(+), 58 deletions(-)
+ delete mode 100644 arch/s390/include/asm/livepatch.h
+ delete mode 100644 arch/x86/include/asm/livepatch.h
 
->
-> Best Regards,
-> Petr
->
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1ef8327aef1f..cb5f0d4a8fcc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11253,8 +11253,6 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.g
+ F:	Documentation/ABI/testing/sysfs-kernel-livepatch
+ F:	Documentation/livepatch/
+ F:	arch/powerpc/include/asm/livepatch.h
+-F:	arch/s390/include/asm/livepatch.h
+-F:	arch/x86/include/asm/livepatch.h
+ F:	include/linux/livepatch.h
+ F:	kernel/livepatch/
+ F:	lib/livepatch/
+diff --git a/arch/powerpc/include/asm/livepatch.h b/arch/powerpc/include/asm/livepatch.h
+index 1c60094ea0cd..d044a1fd4f44 100644
+--- a/arch/powerpc/include/asm/livepatch.h
++++ b/arch/powerpc/include/asm/livepatch.h
+@@ -7,17 +7,9 @@
+ #ifndef _ASM_POWERPC_LIVEPATCH_H
+ #define _ASM_POWERPC_LIVEPATCH_H
+ 
+-#include <linux/module.h>
+-#include <linux/ftrace.h>
++#include <linux/sched.h>
+ #include <linux/sched/task_stack.h>
+ 
+-#ifdef CONFIG_LIVEPATCH
+-static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+-{
+-	ftrace_instruction_pointer_set(fregs, ip);
+-}
+-#endif /* CONFIG_LIVEPATCH */
+-
+ #ifdef CONFIG_LIVEPATCH_64
+ static inline void klp_init_thread_info(struct task_struct *p)
+ {
+diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
+index 1c4715a03cd1..8c20226bcc11 100644
+--- a/arch/powerpc/kernel/irq.c
++++ b/arch/powerpc/kernel/irq.c
+@@ -64,7 +64,6 @@
+ #include <asm/machdep.h>
+ #include <asm/udbg.h>
+ #include <asm/smp.h>
+-#include <asm/livepatch.h>
+ #include <asm/hw_irq.h>
+ #include <asm/softirq_stack.h>
+ 
+diff --git a/arch/powerpc/kernel/setup_64.c b/arch/powerpc/kernel/setup_64.c
+index e547066a06aa..2c1e9a5ac6ca 100644
+--- a/arch/powerpc/kernel/setup_64.c
++++ b/arch/powerpc/kernel/setup_64.c
+@@ -59,7 +59,7 @@
+ #include <asm/udbg.h>
+ #include <asm/kexec.h>
+ #include <asm/code-patching.h>
+-#include <asm/livepatch.h>
++#include <asm/ftrace.h>
+ #include <asm/opal.h>
+ #include <asm/cputhreads.h>
+ #include <asm/hw_irq.h>
+diff --git a/arch/s390/include/asm/livepatch.h b/arch/s390/include/asm/livepatch.h
+deleted file mode 100644
+index 5209f223331a..000000000000
+--- a/arch/s390/include/asm/livepatch.h
++++ /dev/null
+@@ -1,22 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0+ */
+-/*
+- * livepatch.h - s390-specific Kernel Live Patching Core
+- *
+- *  Copyright (c) 2013-2015 SUSE
+- *   Authors: Jiri Kosina
+- *	      Vojtech Pavlik
+- *	      Jiri Slaby
+- */
+-
+-#ifndef ASM_LIVEPATCH_H
+-#define ASM_LIVEPATCH_H
+-
+-#include <linux/ftrace.h>
+-#include <asm/ptrace.h>
+-
+-static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+-{
+-	ftrace_instruction_pointer_set(fregs, ip);
+-}
+-
+-#endif
+diff --git a/arch/x86/include/asm/livepatch.h b/arch/x86/include/asm/livepatch.h
+deleted file mode 100644
+index 7c5cc6660e4b..000000000000
+--- a/arch/x86/include/asm/livepatch.h
++++ /dev/null
+@@ -1,20 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/*
+- * livepatch.h - x86-specific Kernel Live Patching Core
+- *
+- * Copyright (C) 2014 Seth Jennings <sjenning@redhat.com>
+- * Copyright (C) 2014 SUSE
+- */
+-
+-#ifndef _ASM_X86_LIVEPATCH_H
+-#define _ASM_X86_LIVEPATCH_H
+-
+-#include <asm/setup.h>
+-#include <linux/ftrace.h>
+-
+-static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+-{
+-	ftrace_instruction_pointer_set(fregs, ip);
+-}
+-
+-#endif /* _ASM_X86_LIVEPATCH_H */
+diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+index 2614247a9781..293e29960c6e 100644
+--- a/include/linux/livepatch.h
++++ b/include/linux/livepatch.h
+@@ -16,8 +16,6 @@
+ 
+ #if IS_ENABLED(CONFIG_LIVEPATCH)
+ 
+-#include <asm/livepatch.h>
+-
+ /* task patch states */
+ #define KLP_UNDEFINED	-1
+ #define KLP_UNPATCHED	 0
+diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
+index c172bf92b576..4c4f5a776d80 100644
+--- a/kernel/livepatch/patch.c
++++ b/kernel/livepatch/patch.c
+@@ -118,7 +118,7 @@ static void notrace klp_ftrace_handler(unsigned long ip,
+ 	if (func->nop)
+ 		goto unlock;
+ 
+-	klp_arch_set_pc(fregs, (unsigned long)func->new_func);
++	ftrace_instruction_pointer_set(fregs, (unsigned long)func->new_func);
+ 
+ unlock:
+ 	ftrace_test_recursion_unlock(bit);
+-- 
+2.35.1
 
