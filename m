@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D40F04F8947
-	for <lists+live-patching@lfdr.de>; Fri,  8 Apr 2022 00:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F1AE4F89C9
+	for <lists+live-patching@lfdr.de>; Fri,  8 Apr 2022 00:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiDGUkQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 7 Apr 2022 16:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56350 "EHLO
+        id S230070AbiDGUj7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 7 Apr 2022 16:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiDGUjn (ORCPT
+        with ESMTP id S230116AbiDGUjo (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:39:43 -0400
+        Thu, 7 Apr 2022 16:39:44 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90004353AB9;
-        Thu,  7 Apr 2022 13:26:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 830DA3542AB;
+        Thu,  7 Apr 2022 13:26:02 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 808C5201CBCD;
-        Thu,  7 Apr 2022 13:26:00 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 808C5201CBCD
+        by linux.microsoft.com (Postfix) with ESMTPSA id 8655420B9CEF;
+        Thu,  7 Apr 2022 13:26:01 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8655420B9CEF
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649363161;
-        bh=1to1sOnNu6e2ju/VN5XiFAGxrunN1V9CrmUnEq1yJ+8=;
+        s=default; t=1649363162;
+        bh=nVQ+gSE19+X//O4Sk/QNhBvnuZzB5LkL5Rb13i7ZcgM=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=I3CwEQbs5kuhPZ53n3cmqFQsX0zQ/lHPagKtgUJiMCU78lhCfUqX5xlwX2AaCVaJ8
-         wYUiyfF154o0ksIQ+OkRBkqZKaVp04XTfed1e9FLIovGJaO9WzfUW+gk0y1ovD0X78
-         ufjmPgKcZY4ioqMDA7MrPtJDfOhGI7d2Gb5/ouvs=
+        b=OWvphc47b+i0m2hrrF/YK+J97hpiVwg11oPGOgHp+WyQ/kxYXSDdyvxPpRSF3QlLF
+         Ha3DE7NTMcK093by8SoU3mv+gvHEDxUl4hmEGjYbJLaxGXxjxRrPLI0x/WWIYMThKF
+         Ld6a1GspxHld3r2DbDCzm0GGq+b2AbEB/pyQxydM=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v1 1/9] objtool: Parse DWARF Call Frame Information in object files
-Date:   Thu,  7 Apr 2022 15:25:10 -0500
-Message-Id: <20220407202518.19780-2-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v1 2/9] objtool: Generate DWARF rules and place them in a special section
+Date:   Thu,  7 Apr 2022 15:25:11 -0500
+Message-Id: <20220407202518.19780-3-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220407202518.19780-1-madvenka@linux.microsoft.com>
 References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
@@ -55,2244 +55,477 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-If CONFIG_DEBUG_INFO_DWARF* is enabled, the compiler generates DWARF
-Call Frame Information (CFI) for every object file and places it in a
-special section named ".debug_frame". The CFI information can be used
-for frame pointer validation.
+Convert the DWARF Call Frame Information parsed by dwarf_parse() into
+compact DWARF rules that are usable by the kernel. Place the rules in a
+special section called .dwarf_rules. Also, place the PCs for the rules in
+a special section called .dwarf_pcs. In addition, define relocation
+entries for the PCs as they will change during linking.
 
-Implement a CFI parser in objtool. This can be invoked as follows:
+An entry in .dwarf_rules and its corresponding entry in .dwarf_pcs together
+describe a code range and DWARF rules for the code range. In the future,
+the kernel will use the rules to compute the frame pointer at a given
+instruction address. The unwinder can use the computed frame pointer to
+validate the actual frame pointer for a reliable stack trace.
 
-	objtool dwarf generate <object-file>
+During rule generation, eliminate null offset rules and merge adjacent rules
+that are identical to minimize the number of rules.
 
-The version of the DWARF standard supported in this work is version 4. The
-official documentation for this version is here:
+Also add an objtool option to dump the DWARF rules for debugging purposes.
+It is invoked as follows:
 
-	https://dwarfstd.org/doc/DWARF4.pdf
-
-Section 6.4 contains the description of the CFI.
-
-Initial implementation
-======================
-
-This initial work is for supporting frame pointer validation for ARM64.
-That said, it is generic enough to support other architectures in the
-future.
-
-CFI defines 7 different register rules to compute register values at every
-instruction address. These are described below. Of these, only the first
-3 rules are generated by gcc and clang for the stack pointer (SP), the
-frame pointer (FP) and the return address (RA) for ARM64. As of this
-writing, the same is true for RISCV as well.
-
-So, in objtool, provide support for the first three rules and mark the
-rest as unsupported.
-
-Register rules
-==============
-
-CFI defines the Canonical Frame Address (CFA) as the value of the SP when
-a call instruction is executed. For the called function, other register
-values are expressed relative to the CFA.
-
-CFI defines the following rules to obtain the value of a register in the
-previous frame, given a current frame:
-
-1. Same_Value:
-
-	The current and previous values of the register are the same.
-
-2. Val_Offset(N):
-
-	The previous value is (CFA + N) where N is a signed offset.
-
-3. Offset(N):
-
-	The previous value is saved at (CFA + N).
-
-4. register(R):
-
-	The previous value is saved in register R.
-
-5. Val_Expression(E):
-
-	The previous value is the value produced by evaluating a given
-	DWARF expression. DWARF expressions are evaluated on a stack. That
-	is, operands are pushed and popped on a stack, DWARF operators are
-	applied on them and the result is obtained.
-
-6. Expression(E):
-
-	The previous value is stored at the address computed from a DWARF
-	expression.
-
-7. Architectural:
-
-	The previous value is obtained in an architecture-specific way via
-	an architecture-specific "augmentor". Augmentors are vendor specific
-	and are not part of the DWARF standard.
-
-DWARF rule encoding
-===================
-
-The CFI is defined in a very generic format to allow all of the above rules
-to be defined for different architectures. Since this work uses only a
-minimal subset of the rules, the supported CFI rules can be encoded in a
-more compact format for the kernel.
-
-Provide stubs for generating compact rule data from the CFI rules. In a
-future patch, the stubs will be filled with actual code and the rules will
-be written to a special section in the object file. And, in a future patch,
-the kernel will use the rule data.
-
-Unsupported rules
-=================
-
-For arm64, this is not an issue. If the compiler generates unsupported
-rules for the SP, FP and RA for some other architecture, objtool will
-not generate any rule data for those code locations. These will be treated
-as unreliable PCs from an unwinder perspective.
-
-FP prolog, epilog and leaf functions
-====================================
-
-This implementation recognizes these cases in the DWARF CFI. It does
-not generate any rule data unless the frame is completely setup. So, if an
-interrupt or an exception were to happen in the prolog, epilog or a function
-where the frame has not been set up for whatever reason, the kernel will
-recognize that and consider the code unreliable from an unwinder
-perspective.
-
-Assembly functions
-==================
-
-DWARF CFI is generated by the compiler only for C functions. So, objtool
-will not generate any rule data for assembly functions. By default, the
-kernel will consider all assembly functions as unreliable from an unwinder
-perspective.
-
-DWARF annotations for assembly code can be used so CFI can be generated for
-assembly functions as well. However, DWARF annotations are a pain to
-maintain. So, we should never go down that path.
-
-Now, there are certain points in assembly code that we would like to unwind
-through reliably. Like interrupt and exception handlers. For these, unwind
-hints can be defined and placed at strategic points in assembly code. This
-will be done in a futurep patch. Unwind hints are a lot simpler and a lot
-easier to maintain than DWARF annotations.
-
-Generated code
-==============
-
-Generated code will not have any DWARF rules. The kernel will consider such
-code unreliable from an unwinder perspective.
-
-Architecture-specific part
-===========================
-
-The following pieces in this implementation are architecture-specific. Code
-must be provided for each architecture spearately.
-
-	- DWARF register number to architecture register mapping
-
-	- Relocation handling for rule data (relocation types are
-	  processor-specific)
-
-	- ABI-specific checking of rules parsed by objtool.
-
-Only a small amount of architecture-specific code is required. Other aspects
-such as endianness and address size are handled in the generic code.
+	objtool dwarf dump <object-file>
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- tools/objtool/Build                           |   5 +
- tools/objtool/Makefile                        |  10 +-
- tools/objtool/arch/arm64/Build                |   2 +
- tools/objtool/arch/arm64/dwarf_arch.c         | 114 ++++
- tools/objtool/arch/arm64/dwarf_clang.c        |  53 ++
- .../arch/arm64/include/arch/dwarf_reg.h       |  17 +
- tools/objtool/builtin-dwarf.c                 |  57 ++
- tools/objtool/dwarf_op.c                      | 560 ++++++++++++++++++
- tools/objtool/dwarf_parse.c                   | 294 +++++++++
- tools/objtool/dwarf_rules.c                   |  37 ++
- tools/objtool/dwarf_util.c                    | 280 +++++++++
- tools/objtool/elf.c                           |   2 +-
- tools/objtool/include/objtool/builtin.h       |   1 +
- tools/objtool/include/objtool/dwarf_def.h     | 438 ++++++++++++++
- tools/objtool/include/objtool/elf.h           |   1 +
- tools/objtool/include/objtool/objtool.h       |   1 +
- tools/objtool/objtool.c                       |   1 +
- tools/objtool/weak.c                          |  27 +
- 18 files changed, 1898 insertions(+), 2 deletions(-)
- create mode 100644 tools/objtool/arch/arm64/Build
- create mode 100644 tools/objtool/arch/arm64/dwarf_arch.c
- create mode 100644 tools/objtool/arch/arm64/dwarf_clang.c
- create mode 100644 tools/objtool/arch/arm64/include/arch/dwarf_reg.h
- create mode 100644 tools/objtool/builtin-dwarf.c
- create mode 100644 tools/objtool/dwarf_op.c
- create mode 100644 tools/objtool/dwarf_parse.c
- create mode 100644 tools/objtool/dwarf_rules.c
- create mode 100644 tools/objtool/dwarf_util.c
- create mode 100644 tools/objtool/include/objtool/dwarf_def.h
+ include/linux/dwarf.h                     |  43 +++++
+ tools/include/linux/dwarf.h               |  43 +++++
+ tools/objtool/builtin-dwarf.c             |  22 ++-
+ tools/objtool/dwarf_rules.c               | 181 +++++++++++++++++++++-
+ tools/objtool/include/objtool/dwarf_def.h |  12 ++
+ tools/objtool/include/objtool/objtool.h   |   2 +
+ tools/objtool/sync-check.sh               |   6 +
+ tools/objtool/weak.c                      |  11 ++
+ 8 files changed, 311 insertions(+), 9 deletions(-)
+ create mode 100644 include/linux/dwarf.h
+ create mode 100644 tools/include/linux/dwarf.h
 
-diff --git a/tools/objtool/Build b/tools/objtool/Build
-index b7222d5cc7bc..2ab5885398c1 100644
---- a/tools/objtool/Build
-+++ b/tools/objtool/Build
-@@ -7,9 +7,14 @@ objtool-$(SUBCMD_CHECK) += special.o
- objtool-$(SUBCMD_ORC) += check.o
- objtool-$(SUBCMD_ORC) += orc_gen.o
- objtool-$(SUBCMD_ORC) += orc_dump.o
-+objtool-$(SUBCMD_DWARF) += dwarf_parse.o
-+objtool-$(SUBCMD_DWARF) += dwarf_op.o
-+objtool-$(SUBCMD_DWARF) += dwarf_rules.o
-+objtool-$(SUBCMD_DWARF) += dwarf_util.o
- 
- objtool-y += builtin-check.o
- objtool-y += builtin-orc.o
-+objtool-y += builtin-dwarf.o
- objtool-y += elf.o
- objtool-y += objtool.o
- 
-diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
-index 92ce4fce7bc7..2bc84ac5515f 100644
---- a/tools/objtool/Makefile
-+++ b/tools/objtool/Makefile
-@@ -41,13 +41,21 @@ AWK = awk
- 
- SUBCMD_CHECK := n
- SUBCMD_ORC := n
-+SUBCMD_DWARF := n
- 
- ifeq ($(SRCARCH),x86)
- 	SUBCMD_CHECK := y
- 	SUBCMD_ORC := y
- endif
- 
--export SUBCMD_CHECK SUBCMD_ORC
-+ifeq ($(SRCARCH),arm64)
-+	SUBCMD_DWARF := y
-+ifneq ($(LLVM),)
-+	SUBCMD_DWARF_CLANG := y
-+endif
-+endif
-+
-+export SUBCMD_CHECK SUBCMD_ORC SUBCMD_DWARF SUBCMD_DWARF_CLANG
- export srctree OUTPUT CFLAGS SRCARCH AWK
- include $(srctree)/tools/build/Makefile.include
- 
-diff --git a/tools/objtool/arch/arm64/Build b/tools/objtool/arch/arm64/Build
+diff --git a/include/linux/dwarf.h b/include/linux/dwarf.h
 new file mode 100644
-index 000000000000..e5710de8060f
+index 000000000000..16e9dd8c60c8
 --- /dev/null
-+++ b/tools/objtool/arch/arm64/Build
-@@ -0,0 +1,2 @@
-+objtool-$(SUBCMD_DWARF) += dwarf_arch.o
-+objtool-$(SUBCMD_DWARF_CLANG) += dwarf_clang.o
-diff --git a/tools/objtool/arch/arm64/dwarf_arch.c b/tools/objtool/arch/arm64/dwarf_arch.c
-new file mode 100644
-index 000000000000..2607ec94a12e
---- /dev/null
-+++ b/tools/objtool/arch/arm64/dwarf_arch.c
-@@ -0,0 +1,114 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
++++ b/include/linux/dwarf.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * dwarf_arch.c - Architecture-specific support functions.
-+ *
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+#include <stdio.h>
-+#include <errno.h>
-+
-+#include <objtool/objtool.h>
-+#include <objtool/warn.h>
-+#include <objtool/dwarf_def.h>
-+#include <arch/dwarf_reg.h>
-+#include <linux/kconfig.h>
-+#include <linux/compiler.h>
-+
-+int arch_dwarf_fde_reloc(struct fde *fde)
-+{
-+	GElf_Rela		rela;
-+	struct symbol		*rela_symbol;
-+	int			index;
-+
-+	/*
-+	 * Find the code section, offset within the section and the symbol of
-+	 * the function for this FDE. We need the symbol for debugging purposes.
-+	 * We need the section and offset to set up relocation for the DWARF
-+	 * rules that we will create in a separate section.
-+	 */
-+	if (debug_frame->reloc) {
-+		/*
-+		 * In this case, debug frame entries are relocatable. For every
-+		 * FDE, there is a pair of relocation entries - one for the FDE
-+		 * itself and one for the function it represents. So, we use
-+		 * the second entry in each pair to find the section, section
-+		 * offset and the symbol for the function.
-+		 */
-+		index = (fde->index * 2) + 1;
-+		if (!gelf_getrela(debug_frame->reloc->data, index, &rela)) {
-+			WARN_ELF("gelf_getrela");
-+			return -ENOENT;
-+		}
-+		rela_symbol = find_symbol_by_index(dwarf_file->elf,
-+						   GELF_R_SYM(rela.r_info));
-+		fde->section = find_section_by_name(dwarf_file->elf,
-+						    rela_symbol->name);
-+		if (!fde->section) {
-+			WARN("No section for FDE");
-+			return -ENOENT;
-+		}
-+		fde->offset = rela.r_addend;
-+		fde->symbol = find_symbol_containing(fde->section, fde->offset);
-+	} else {
-+		/*
-+		 * In this case, the debug frame entries are not relocatable.
-+		 * In the normal build of the kernel, this code is not required
-+		 * because objtool will be run on relocatable objects. But
-+		 * this code can handle it if objtool is run on the vmlinux
-+		 * binary itself. This is for debugging purposes.
-+		 */
-+		struct section *sec;
-+		GElf_Shdr *sh;
-+		unsigned long addr = fde->start_pc;
-+		unsigned long start_addr, end_addr;
-+
-+		fde->section = NULL;
-+		for_each_sec(dwarf_file, sec) {
-+			sh = &sec->sh;
-+			start_addr = sh->sh_addr;
-+			end_addr = start_addr + sh->sh_size;
-+			if (addr >= start_addr && addr < end_addr) {
-+				fde->section = sec;
-+				break;
-+			}
-+		}
-+		if (!fde->section) {
-+			WARN("No section for FDE");
-+			return -ENOENT;
-+		}
-+		fde->offset = 0;
-+		fde->symbol = find_symbol_containing(fde->section,
-+			fde->start_pc);
-+	}
-+	fde->start_pc += fde->offset;
-+	fde->end_pc += fde->offset;
-+	return 0;
-+}
-+
-+/*
-+ * If the offsets are 0, it means that the frame is not fully set up at
-+ * this point in the object code. E.g., in the frame pointer prolog or epilog
-+ * or in a leaf function. Check for this.
-+ *
-+ * If the frame is properly set up, then the frame pointer and return
-+ * address are saved adjacent to each other. Check for this.
-+ */
-+int arch_dwarf_check_rules(struct fde *fde, unsigned long pc,
-+			   struct rule *sp_rule, struct rule *fp_rule,
-+			   struct rule *ra_rule)
-+{
-+	if (!sp_rule->offset || sp_rule->saved ||
-+	    !fp_rule->offset || !fp_rule->saved)
-+		return -EINVAL;
-+
-+	if (!ra_rule->offset || !ra_rule->saved ||
-+	    (fp_rule->offset + 8) != ra_rule->offset)
-+		return -EINVAL;
-+
-+	if (fde)
-+		arch_dwarf_clang_hack(fde, pc, sp_rule, fp_rule);
-+
-+	return 0;
-+}
-diff --git a/tools/objtool/arch/arm64/dwarf_clang.c b/tools/objtool/arch/arm64/dwarf_clang.c
-new file mode 100644
-index 000000000000..e07ccf9484cf
---- /dev/null
-+++ b/tools/objtool/arch/arm64/dwarf_clang.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * dwarf_arch.c - Architecture-specific support functions.
-+ *
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+#include <stdio.h>
-+#include <errno.h>
-+
-+#include <objtool/objtool.h>
-+#include <objtool/warn.h>
-+#include <objtool/dwarf_def.h>
-+#include <arch/dwarf_reg.h>
-+#include <linux/kconfig.h>
-+#include <linux/compiler.h>
-+
-+void arch_dwarf_clang_hack(struct fde *fde, unsigned long pc,
-+			   struct rule *sp_rule, struct rule *fp_rule)
-+{
-+	struct section		*sec = fde->section;
-+	unsigned long		start_pc = 0;
-+	unsigned int		instruction;
-+	unsigned int		opcode, rd, rn, imm;
-+
-+	if (!fde)
-+		return;
-+
-+	if (!sec->reloc)
-+		start_pc = sec->sh.sh_addr;
-+
-+	instruction = *(unsigned int *)(sec->data->d_buf + pc - start_pc - 4);
-+	rd = instruction & 0x1F;
-+	rn = (instruction >> 5) & 0x1F;
-+	imm = (instruction >> 10) & 0x3FFF;
-+	opcode = instruction >> 24;
-+
-+	if (opcode == 0x91 && rn == SP_REG && rd == FP_REG && imm &&
-+	    sp_rule->offset == -fp_rule->offset) {
-+		fde->sp_offset = imm;
-+	}
-+
-+	imm = (instruction >> 10) & 0xFFF;
-+	opcode = instruction >> 22;
-+
-+	if (opcode == 0x344 && rn == SP_REG && rd == SP_REG && imm &&
-+	    sp_rule->offset == -fp_rule->offset) {
-+		fde->sp_offset = imm;
-+	}
-+
-+	sp_rule->offset += fde->sp_offset;
-+}
-diff --git a/tools/objtool/arch/arm64/include/arch/dwarf_reg.h b/tools/objtool/arch/arm64/include/arch/dwarf_reg.h
-new file mode 100644
-index 000000000000..b3c61060bb67
---- /dev/null
-+++ b/tools/objtool/arch/arm64/include/arch/dwarf_reg.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * dwarf_reg.h - DWARF register numbers for the stack pointer, frame pointer
-+ *		 and return address.
++ * dwarf.h - DWARF data structures used by the unwinder.
 + *
 + * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
 + *
 + * Copyright (c) 2022 Microsoft Corporation
 + */
-+#ifndef _ARM64_ARCH_DWARF_REG_H
-+#define _ARM64_ARCH_DWARF_REG_H
 +
-+#define FP_REG		29
-+#define RA_REG		30
-+#define SP_REG		31
++#ifndef _LINUX_DWARF_H
++#define _LINUX_DWARF_H
 +
-+#endif /* _ARM64_ARCH_DWARF_REG_H */
-diff --git a/tools/objtool/builtin-dwarf.c b/tools/objtool/builtin-dwarf.c
-new file mode 100644
-index 000000000000..f44b35eb3f55
---- /dev/null
-+++ b/tools/objtool/builtin-dwarf.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * builtin-dwarf.c - DWARF command invoked by "objtool dwarf ...".
-+ *
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+
-+/*
-+ * objtool dwarf:
-+ *
-+ * This command analyzes a .o file and adds .dwarf_rules and .dwarf_offsets
-+ * sections to it, which is used by the in-kernel reliable unwinder.
-+ */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <objtool/builtin.h>
-+#include <objtool/objtool.h>
-+
-+static const char * const dwarf_usage[] = {
-+	/*
-+	 * Generate DWARF rules for the kernel from DWARF Call Frame
-+	 * information.
-+	 */
-+	"objtool dwarf generate file",
-+
-+	NULL,
-+};
-+
-+const struct option dwarf_options[] = {
-+	OPT_END(),
-+};
-+
-+int cmd_dwarf(int argc, const char **argv)
-+{
-+	const char		*object;
-+	struct objtool_file	*file;
-+
-+	argc--; argv++;
-+	if (argc != 2)
-+		usage_with_options(dwarf_usage, dwarf_options);
-+
-+	object = argv[1];
-+
-+	file = objtool_open_read(object);
-+	if (!file)
-+		return 1;
-+
-+	if (!strncmp(argv[0], "gen", 3))
-+		return dwarf_parse(file);
-+
-+	usage_with_options(dwarf_usage, dwarf_options);
-+
-+	return 0;
-+}
-diff --git a/tools/objtool/dwarf_op.c b/tools/objtool/dwarf_op.c
-new file mode 100644
-index 000000000000..31f9e0b4fd4b
---- /dev/null
-+++ b/tools/objtool/dwarf_op.c
-@@ -0,0 +1,560 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * dwarf_op.c - Code to parse DWARF operations in object files.
-+ *
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+
-+#include <stdio.h>
-+
-+#include <objtool/objtool.h>
-+#include <objtool/warn.h>
-+#include <objtool/dwarf_def.h>
-+#include <arch/dwarf_reg.h>
-+#include <linux/compiler.h>
-+
-+unsigned char			op, operand;
-+
-+static unsigned long		cur_address;
-+static struct rule		sp_rule;
-+static struct rule		fp_rule;
-+static struct rule		ra_rule;
-+static bool			unsupported;
-+
-+static inline bool dwarf_ignore_reg(unsigned int reg)
-+{
-+	/*
-+	 * We don't care about registers other than the stack pointer, frame
-+	 * pointer and the return address (if defined).
-+	 */
-+	return reg != SP_REG && reg != FP_REG && reg != RA_REG;
-+}
-+
-+static inline void dwarf_offset_rule(unsigned int reg, long offset, bool saved)
-+{
-+	if (dwarf_ignore_reg(reg))
-+		return;
-+
-+	if (reg == FP_REG && offset > 0) {
-+		/* This is for Clang. */
-+		reg = SP_REG;
-+	}
-+
-+	if (reg == SP_REG) {
-+		sp_rule.offset = offset;
-+		sp_rule.saved = saved;
-+	} else if (reg == FP_REG) {
-+		fp_rule.offset = offset;
-+		fp_rule.saved = saved;
-+	} else {
-+		ra_rule.offset = offset;
-+		ra_rule.saved = saved;
-+	}
-+}
-+
-+static inline void dwarf_reg_rule(unsigned int reg, unsigned int other_reg)
-+{
-+	if (dwarf_ignore_reg(reg) && dwarf_ignore_reg(other_reg))
-+		return;
-+
-+	/*
-+	 * We don't support the SP, FP and RA being saved in other registers
-+	 * and vice-versa.
-+	 */
-+	WARN("op=%d register rule for %d is not supported", op, reg);
-+	unsupported = true;
-+}
-+
-+static inline void dwarf_restore_rule(unsigned int reg)
-+{
-+	if (dwarf_ignore_reg(reg))
-+		return;
-+
-+	if (reg == SP_REG)
-+		sp_rule = cur_cie->sp_rule;
-+	else if (reg == FP_REG)
-+		fp_rule = cur_cie->fp_rule;
-+	else
-+		ra_rule = cur_cie->ra_rule;
-+}
-+
-+static inline void dwarf_expression_rule(unsigned int reg)
-+{
-+	if (dwarf_ignore_reg(reg))
-+		return;
-+
-+	/*
-+	 * We don't support expressions to compute the values for the SP, FP
-+	 * and RA.
-+	 */
-+	WARN("op=%d is not supported!", op);
-+	unsupported = true;
-+}
-+
-+static inline void dwarf_undefined_rule(unsigned int reg)
-+{
-+	if (dwarf_ignore_reg(reg))
-+		return;
-+
-+	/*
-+	 * We don't support the values for the SP, FP and RA being undefined.
-+	 */
-+	WARN("op=%d %d register undefined?", op, reg);
-+	unsupported = true;
-+}
-+
-+/*
-+ * Whenever the PC is changed, the SP and FP rules for the range (old PC to
-+ * new PC) have to be written out in the form of a DWARF rule before
-+ * changing the PC.
-+ */
-+static void dwarf_set_address(unsigned long address, bool *fail)
-+{
-+	bool	skip = false;
-+
-+	if (unsupported) {
-+		/*
-+		 * We were not able to compute the rules. Reset the rules.
-+		 * Do not generate a DWARF rule for this code range. The
-+		 * kernel will therefore not be able to find the rules for
-+		 * the code range and will consider the range to be unreliable
-+		 * from an unwind perspective.
-+		 */
-+		unsupported = false;
-+		dwarf_offset_rule(SP_REG, 0, false);
-+		dwarf_offset_rule(FP_REG, 0, false);
-+		dwarf_offset_rule(RA_REG, 0, false);
-+		skip = true;
-+	}
-+
-+	if (arch_dwarf_check_rules(cur_fde, cur_address,
-+				   &sp_rule, &fp_rule, &ra_rule)) {
-+		/*
-+		 * Ignore the rules for now. Do not generate a DWARF rule
-+		 * for this code range. The kernel will therefore not be able
-+		 * to find the rules for the code range and will consider the
-+		 * range to be unreliable from an unwind perspective. We do
-+		 * not reset the rules as they can get modified by further
-+		 * DWARF instruction processing to the point where they are
-+		 * not ignored anymore.
-+		 */
-+		skip = true;
-+	}
-+
-+	if (skip)
-+		dwarf_rule_next(cur_fde, cur_address);
-+	else if (dwarf_rule_add(cur_fde, cur_address, &sp_rule, &fp_rule))
-+		*fail = true;
-+	cur_address = address;
-+}
-+
-+static unsigned char *dwarf_one_op(unsigned char *start, unsigned char *end)
-+{
-+	unsigned long		length;
-+	unsigned char		byte;
-+	unsigned int		delta;
-+	u64			pc, reg, other_reg;
-+	s64			offset;
-+	bool			fail = false;
-+
-+	byte = *start++;
-+
-+	/* Primary op code in the high 2 bits */
-+	op = byte & 0xc0;
-+	operand = byte & 0x3F;
-+	if (op == DW_CFA_extended_op) {
-+		/* Extended op is in the low 6 bits. */
-+		op = operand;
-+	}
-+
-+	switch (op) {
-+	/*
-+	 * No-op instruction, used for padding.
-+	 */
-+	case DW_CFA_nop:
-+		break;
-+
-+	/*
-+	 * Instructions that advance the current PC.
-+	 */
-+	case DW_CFA_advance_loc:
-+		/*
-+		 * The factored delta is the operand itself. Add the delta to
-+		 * the current instruction address to obtain the new
-+		 * instruction address.
-+		 */
-+		delta = (unsigned int) operand;
-+		delta *= cur_cie->code_factor;
-+		dwarf_set_address(cur_address + delta, &fail);
-+		break;
-+	case DW_CFA_set_loc:
-+		/*
-+		 * Extract the target PC. Set the current instruction address
-+		 * to it.
-+		 */
-+		if (cur_cie->address_size == 64)
-+			GET_VALUE(pc, start, end, 8);
-+		else
-+			GET_VALUE(pc, start, end, 4);
-+		dwarf_set_address(pc, &fail);
-+		break;
-+	case DW_CFA_advance_loc1:
-+		/*
-+		 * Extract the factored delta (unsigned byte) and add it to the
-+		 * current instruction address to obtain the new instruction
-+		 * address.
-+		 */
-+		GET_VALUE(delta, start, end, 1);
-+		delta *= cur_cie->code_factor;
-+		dwarf_set_address(cur_address + delta, &fail);
-+		break;
-+	case DW_CFA_advance_loc2:
-+		/*
-+		 * Extract the factored delta (unsigned short) and add it to
-+		 * the current instruction address to obtain the new
-+		 * instruction address.
-+		 */
-+		GET_VALUE(delta, start, end, 2);
-+		delta *= cur_cie->code_factor;
-+		dwarf_set_address(cur_address + delta, &fail);
-+		break;
-+	case DW_CFA_advance_loc4:
-+		/*
-+		 * Extract the factored delta (unsigned int) and add it to
-+		 * the current instruction address to obtain the new
-+		 * instruction address.
-+		 */
-+		GET_VALUE(delta, start, end, 4);
-+		delta *= cur_cie->code_factor;
-+		dwarf_set_address(cur_address + delta, &fail);
-+		break;
-+
-+	/*
-+	 * CFA definition instructions.
-+	 */
-+	case DW_CFA_def_cfa:
-+		/*
-+		 * Extract the CFA register and the unfactored CFA offset.
-+		 * Define a val_offset(N) rule.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_ULEB_128(offset, start, end, fail);
-+		cur_cie->cfa_reg = reg;
-+		cur_cie->cfa_offset = offset;
-+		dwarf_offset_rule(cur_cie->cfa_reg, cur_cie->cfa_offset, false);
-+		break;
-+	case DW_CFA_def_cfa_sf:
-+		/*
-+		 * Same as DW_CFA_def_cfa except that the offset is signed
-+		 * and factored.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_SLEB_128(offset, start, end, fail);
-+		offset *= cur_cie->data_factor;
-+		cur_cie->cfa_reg = reg;
-+		cur_cie->cfa_offset = offset;
-+		dwarf_offset_rule(cur_cie->cfa_reg, cur_cie->cfa_offset, false);
-+		break;
-+	case DW_CFA_def_cfa_register:
-+		/*
-+		 * Same as DW_CFA_def_cfa except that the saved offset is used.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		cur_cie->cfa_reg = reg;
-+		dwarf_offset_rule(cur_cie->cfa_reg, cur_cie->cfa_offset, false);
-+		break;
-+	case DW_CFA_def_cfa_offset:
-+		/*
-+		 * Same as DW_CFA_def_cfa except that the saved register is
-+		 * used.
-+		 */
-+		READ_ULEB_128(offset, start, end, fail);
-+		cur_cie->cfa_offset = offset;
-+		dwarf_offset_rule(cur_cie->cfa_reg, cur_cie->cfa_offset, false);
-+		break;
-+	case DW_CFA_def_cfa_offset_sf:
-+		/*
-+		 * Same as DW_CFA_def_cfa_offset except that the offset is
-+		 * signed and factored.
-+		 */
-+		READ_SLEB_128(offset, start, end, fail);
-+		offset *= cur_cie->data_factor;
-+		cur_cie->cfa_offset = offset;
-+		dwarf_offset_rule(cur_cie->cfa_reg, cur_cie->cfa_offset, false);
-+		break;
-+	case DW_CFA_def_cfa_expression:
-+		READ_ULEB_128(length, start, end, fail);
-+		/*
-+		 * Skip the expression bytes.
-+		 */
-+		start += length;
-+		if (start > end)
-+			fail = true;
-+		dwarf_expression_rule(SP_REG);
-+		break;
-+
-+	/*
-+	 * Register rule instructions.
-+	 */
-+	case DW_CFA_undefined:
-+		READ_ULEB_128(reg, start, end, fail);
-+		dwarf_undefined_rule(reg);
-+		break;
-+	case DW_CFA_same_value:
-+		/*
-+		 * Set the register offset to be "same value". That is, it has
-+		 * not been modified by the callee.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		dwarf_offset_rule(reg, 0, false);
-+		break;
-+	case DW_CFA_offset:
-+		/*
-+		 * The register number that is encoded in the operand itself.
-+		 * Extract the factored offset. Define an offset(N) rule.
-+		 */
-+		reg = operand;
-+		READ_ULEB_128(offset, start, end, fail);
-+		offset *= cur_cie->data_factor;
-+		dwarf_offset_rule(reg, offset, true);
-+		break;
-+	case DW_CFA_offset_extended:
-+		/*
-+		 * Same as DW_CFA_offset except for the encoding and size of
-+		 * the register operand.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_ULEB_128(offset, start, end, fail);
-+		offset *= cur_cie->data_factor;
-+		dwarf_offset_rule(reg, offset, true);
-+		break;
-+	case DW_CFA_offset_extended_sf:
-+		/*
-+		 * Same as DW_CFA_offset_extended except that the offset is
-+		 * signed and factored.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_SLEB_128(offset, start, end, fail);
-+		offset *= cur_cie->data_factor;
-+		dwarf_offset_rule(reg, offset, true);
-+		break;
-+	case DW_CFA_val_offset:
-+		/*
-+		 * Extract the register number and the factored offset. Define
-+		 * a val_offset(N) rule.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_ULEB_128(offset, start, end, fail);
-+		offset *= cur_cie->data_factor;
-+		dwarf_offset_rule(reg, offset, false);
-+		break;
-+	case DW_CFA_val_offset_sf:
-+		/*
-+		 * Same as DW_CFA_val_offset except that the offset is signed.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_SLEB_128(offset, start, end, fail);
-+		offset *= cur_cie->data_factor;
-+		dwarf_offset_rule(reg, offset, false);
-+		break;
-+	case DW_CFA_register:
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_ULEB_128(other_reg, start, end, fail);
-+		dwarf_reg_rule(reg, other_reg);
-+		break;
-+	case DW_CFA_expression:
-+	case DW_CFA_val_expression:
-+		READ_ULEB_128(reg, start, end, fail);
-+		READ_ULEB_128(length, start, end, fail);
-+		/*
-+		 * Skip the expression bytes.
-+		 */
-+		start += length;
-+		if (start > end)
-+			fail = true;
-+		dwarf_expression_rule(reg);
-+		break;
-+	case DW_CFA_restore:
-+		/*
-+		 * Restore the rule for the register to the one specified in
-+		 * the CIE.
-+		 */
-+		reg = operand;
-+		dwarf_restore_rule(reg);
-+		break;
-+	case DW_CFA_restore_extended:
-+		/*
-+		 * Same as DW_CFA_restore except for the encoding and size of
-+		 * the register operand.
-+		 */
-+		READ_ULEB_128(reg, start, end, fail);
-+		dwarf_restore_rule(reg);
-+		break;
-+
-+	/*
-+	 * Rule state instructions.
-+	 */
-+	case DW_CFA_remember_state:
-+		cur_cie->saved_sp_rule = sp_rule;
-+		cur_cie->saved_fp_rule = fp_rule;
-+		cur_cie->saved_ra_rule = ra_rule;
-+		break;
-+	case DW_CFA_restore_state:
-+		sp_rule = cur_cie->saved_sp_rule;
-+		fp_rule = cur_cie->saved_fp_rule;
-+		ra_rule = cur_cie->saved_ra_rule;
-+		break;
-+	default:
-+		if (op >= DW_CFA_lo_user && op <= DW_CFA_hi_user) {
-+			/*
-+			 * Ignore arch-specific or vendor-specific ops as they
-+			 * are irrelevant to the stack and frame pointers.
-+			 */
-+		} else {
-+			WARN("Illegal CFA op %d", (int) op);
-+			fail = true;
-+		}
-+		break;
-+	}
-+	return fail ? NULL : start;
-+}
-+
-+/*
-+ * Run the DWARF instructions in a CIE or an FDE.
-+ */
-+static unsigned char *dwarf_op(unsigned char *start, unsigned char *end)
-+{
-+	bool	fail = false;
-+
-+	/* cur_fde is set if this is an FDE. */
-+	if (cur_fde) {
-+		/*
-+		 * For an FDE, the rules are initialized from the rules
-+		 * computed for its CIE.
-+		 */
-+		sp_rule = cur_cie->sp_rule;
-+		fp_rule = cur_cie->fp_rule;
-+		ra_rule = cur_cie->ra_rule;
-+	} else {
-+		/*
-+		 * For a CIE, the rule is initialized to all zeroes.
-+		 */
-+		dwarf_offset_rule(SP_REG, 0, false);
-+		dwarf_offset_rule(FP_REG, 0, false);
-+		dwarf_offset_rule(RA_REG, 0, false);
-+	}
-+
-+	/*
-+	 * If an unsupported DWARF rule is discovered in dwarf_one_op(),
-+	 * this will be set to true.
-+	 */
-+	unsupported = false;
-+
-+	while (start < end) {
-+		start = dwarf_one_op(start, end);
-+		if (!start)
-+			return NULL;
-+	}
-+
-+	if (cur_fde) {
-+		/* Generate the final rule for the FDE. */
-+		dwarf_set_address(cur_fde->end_pc, &fail);
-+	}
-+	return start;
-+}
-+
-+/*
-+ * Parse DWARF instructions in CIEs and FDEs.
-+ */
-+void dwarf_parse_instructions(void)
-+{
-+	struct cie		*cie;
-+	struct fde		*fde;
-+	unsigned char		*start, *end;
-+
-+	cur_fde = NULL;
-+
-+	for (cie = cies; cie != NULL; cie = cie->next) {
-+		cur_cie = cie;
-+		start = cie->instructions;
-+		end = start + cie->instructions_size;
-+
-+		/*
-+		 * Run the DWARF instructions in the CIE to compute the
-+		 * initial SP, FP and RA rules.
-+		 */
-+		if (!dwarf_op(start, end)) {
-+			cur_cie->unusable = true;
-+			continue;
-+		}
-+
-+		cie->sp_rule = sp_rule;
-+		cie->fp_rule = fp_rule;
-+		cie->ra_rule = ra_rule;
-+	}
-+
-+	for (fde = fdes; fde != NULL; fde = fde->next) {
-+		/*
-+		 * If any problems are encountered below, simply skip the FDE.
-+		 * This means that no DWARF rules from this FDE will be
-+		 * included. So, the kernel will consider the FDE's code range
-+		 * to be unreliable from an unwinding perspective.
-+		 */
-+
-+		/*
-+		 * Find the CIE for this FDE using the section offset of the
-+		 * CIE. The CIE list is already in increasing section offset
-+		 * order.
-+		 */
-+		for (cie = cies; cie != NULL; cie = cie->next) {
-+			if (cie->offset < fde->cie_offset)
-+				continue;
-+			if (cie->offset == fde->cie_offset)
-+				fde->cie = cie;
-+			break;
-+		}
-+
-+		cur_cie = fde->cie;
-+		if (cur_cie == NULL || cur_cie->unusable) {
-+			WARN("No CIE: Could not process FDE");
-+			continue;
-+		}
-+
-+		if (!fde->section) {
-+			/*
-+			 * The section is needed to create relocation entries
-+			 * for the DWARF rules in the FDE.
-+			 */
-+			WARN("No section: Could not process FDE");
-+			continue;
-+		}
-+		cur_fde = fde;
-+
-+		/*
-+		 * Run the DWARF instructions in the FDE to derive the rules
-+		 * for computing the SP and the FP within the FDE code range.
-+		 * Encode the rules in the form of DWARF rules for the benefit
-+		 * of the kernel. dwarf_op() will generate the rules as it runs
-+		 * the instructions.
-+		 */
-+		dwarf_rule_start(fde);
-+
-+		cur_address = fde->start_pc;
-+		start = fde->instructions;
-+		end = start + fde->instructions_size;
-+
-+		if (!dwarf_op(start, end)) {
-+			/*
-+			 * Rollback the DWARF rules created in the above
-+			 * call.
-+			 */
-+			WARN("FDE instructions failed. Rolling back FDE.");
-+			dwarf_rule_reset(fde);
-+			continue;
-+		}
-+
-+		dwarf_rule_next(fde, fde->end_pc);
-+	}
-+}
-diff --git a/tools/objtool/dwarf_parse.c b/tools/objtool/dwarf_parse.c
-new file mode 100644
-index 000000000000..d5ac5630fbba
---- /dev/null
-+++ b/tools/objtool/dwarf_parse.c
-@@ -0,0 +1,294 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * dwarf_parse.c - Code to parse DWARF information in object files.
-+ *
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+
-+#include <stdio.h>
-+#include <errno.h>
-+
-+#include <objtool/objtool.h>
-+#include <objtool/warn.h>
-+#include <objtool/dwarf_def.h>
-+#include <linux/compiler.h>
-+
-+struct objtool_file		*dwarf_file;
-+struct section			*debug_frame;
-+
-+struct cie			*cies, *cur_cie;
-+struct fde			*fdes, *cur_fde;
-+
-+static struct cie		*cies_tail;
-+static struct fde		*fdes_tail;
-+
-+static u64			cie_id;
-+static int			fde_index;
-+static int			address_size;
-+static unsigned int		offset_size;
-+static u64			entry_length;
-+static unsigned char		*saved_start;
-+
-+/*
-+ * Parse and create a new CIE.
-+ */
-+static unsigned char *dwarf_parse_cie(unsigned char *start, unsigned char *end)
-+{
-+	struct cie		*cie;
-+	bool			fail = false;
-+
-+	cie = dwarf_alloc(sizeof(*cie));
-+	if (!cie) {
-+		WARN("%s: dwarf_alloc(cie) failed", __func__);
-+		return NULL;
-+	}
-+	memset(cie, 0, sizeof(*cie));
-+
-+	/* Add CIE to global list. */
-+	if (cies_tail == NULL)
-+		cies = cie;
-+	else
-+		cies_tail->next = cie;
-+	cies_tail = cie;
-+	cie->next = NULL;
-+
-+	/* Section offset where this CIE resides. */
-+	cie->offset = saved_start - (unsigned char *) debug_frame->data->d_buf;
-+	cie->length = entry_length;
-+	cie->id = cie_id;
-+	cie->unusable = false;
-+
-+	/*
-+	 * Extract the DWARF CFI version. This is different from the DWARF
-+	 * version.
-+	 */
-+	cie->version = *start++;
-+	if (cie->version > 4) {
-+		/*
-+		 * This implementation does not support these versions. For
-+		 * instance, segment selectors are not supported.
-+		 */
-+		WARN("CIE version %d is not supported", cie->version);
-+		return NULL;
-+	}
-+
-+	/*
-+	 * Store the size of an address in this architecture.
-+	 */
-+	if (cie->version == 4) {
-+		GET_VALUE(cie->address_size, start, end, 1);
-+		GET_VALUE(cie->segment_size, start, end, 1);
-+		cie->address_size += cie->segment_size;
-+	} else {
-+		cie->address_size = address_size;
-+	}
-+
-+	/*
-+	 * This implementation does not support an augmentor. For instance,
-+	 * the address_size can be modified by the augmentor. Make sure that
-+	 * the augmentor is the null string.
-+	 */
-+	cie->augmentation = (char *) start;
-+	if (*start++ != '\0') {
-+		WARN("Augmentor is not supported");
-+		return NULL;
-+	}
-+	cie->segment_size = 0;
-+
-+	/* Extract code alignment factor. */
-+	READ_ULEB_128(cie->code_factor, start, end, fail);
-+
-+	/* Extract data alignment factor. */
-+	READ_SLEB_128(cie->data_factor, start, end, fail);
-+
-+	if (cie->version == 1)
-+		GET_VALUE(cie->return_address_reg, start, end, 1);
-+	else
-+		READ_ULEB_128(cie->return_address_reg, start, end, fail);
-+
-+	/* The remaining bytes are DWARF instructions. */
-+	cie->instructions = start;
-+	cie->instructions_size = end - start;
-+	start = end;
-+
-+	return fail ? NULL : start;
-+}
-+
-+/*
-+ * Parse and create a new FDE.
-+ */
-+static unsigned char *dwarf_parse_fde(unsigned char *start, unsigned char *end)
-+{
-+	struct fde		*fde;
-+	unsigned long		length;
-+
-+	fde = dwarf_alloc(sizeof(*fde));
-+	if (!fde) {
-+		WARN("%s: dwarf_alloc(fde) failed", __func__);
-+		return NULL;
-+	}
-+	memset(fde, 0, sizeof(*fde));
-+
-+	/* Add FDE to global list. */
-+	if (fdes_tail == NULL)
-+		fdes = fde;
-+	else
-+		fdes_tail->next = fde;
-+	fdes_tail = fde;
-+	fde->next = NULL;
-+
-+	/*
-+	 * This is the index of the FDE record in the .debug_frame section.
-+	 * This is used to locate the symbol for the FDE in a relocatable
-+	 * object file.
-+	 */
-+	fde->index = fde_index++;
-+	fde->length = entry_length;
-+
-+	/*
-+	 * For an FDE, the CIE ID field actually contains the section offset
-+	 * of the CIE for the FDE.
-+	 */
-+	fde->cie_offset = cie_id;
-+
-+	/*
-+	 * Set the CIE for this FDE to NULL for now. We will set this to the
-+	 * correct CIE later.
-+	 */
-+	fde->cie = NULL;
-+	fde->segment_selector = 0;
-+
-+	/*
-+	 * Extract the starting address of the code range to which this FDE
-+	 * applies.
-+	 */
-+	GET_VALUE(fde->start_pc, start, end, address_size);
-+
-+	/* Extract the size of the code range to which this FDE applies. */
-+	GET_VALUE(length, start, end, address_size);
-+	fde->end_pc = fde->start_pc + length;
-+
-+	/* The remaining bytes are DWARF instructions. */
-+	fde->instructions = start;
-+	fde->instructions_size = end - start;
-+	start = end;
-+
-+	/* Relocation is arch-specific. */
-+	if (arch_dwarf_fde_reloc(fde) == -EOPNOTSUPP)
-+		return NULL;
-+
-+	return start;
-+}
-+
-+/*
-+ * Parse one entry for an FDE - either a CIE or an FDE.
-+ */
-+static unsigned char *dwarf_parse_one(unsigned char *start, unsigned char *end)
-+{
-+	bool			is_cie;
-+
-+	saved_start = start;
-+
-+	/*
-+	 * The first value in an entry is the length field.
-+	 */
-+	GET_VALUE(entry_length, start, end, 4);
-+	if (entry_length == 0) {
-+		WARN("Illegal length in DWARF entry");
-+		return NULL;
-+	}
-+
-+	/*
-+	 * For 64 bit entries, the first 32 bits of the entry is all 1's. The
-+	 * actual length is after that.
-+	 */
-+	if (entry_length == 0xffffffff) {
-+		GET_VALUE(entry_length, start, end, 8);
-+		offset_size = 8;
-+	} else {
-+		offset_size = 4;
-+	}
-+
-+	if (entry_length > (size_t) (end - start)) {
-+		WARN("DWARF entry is too big");
-+		return NULL;
-+	}
-+	end = start + entry_length;
-+
-+	/*
-+	 * The CIE identifier field distinguishes between a CIE and an FDE. For
-+	 * a CIE, this field contains a specific ID value. For an FDE, it
-+	 * contains the section offset of the CIE used by the FDE.
-+	 */
-+	GET_VALUE(cie_id, start, end, offset_size);
-+
-+	is_cie = (offset_size == 4 && cie_id == CIE_ID_32) ||
-+		 (offset_size == 8 && cie_id == CIE_ID_64);
-+	if (is_cie)
-+		start = dwarf_parse_cie(start, end);
-+	else
-+		start = dwarf_parse_fde(start, end);
-+	return start;
-+}
-+
-+/*
-+ * Parse DWARF Call Frame Information.
-+ */
-+int dwarf_parse(struct objtool_file *file)
-+{
-+	unsigned char		*start, *end;
-+
-+	dwarf_file = file;
-+
-+	/*
-+	 * Initialize the helper function based on endianness. This function
-+	 * is used to extract values from the DWARF section.
-+	 */
-+	switch (file->elf->ehdr.e_ident[EI_DATA]) {
-+	default:
-+		__fallthrough;
-+	case ELFDATANONE:
-+		__fallthrough;
-+	case ELFDATA2LSB:
-+		get_value = get_value_le;	/* Little endian */
-+		break;
-+	case ELFDATA2MSB:
-+		get_value = get_value_be;	/* Big endian */
-+		break;
-+	}
-+
-+	if (file->elf->ehdr.e_ident[EI_CLASS] == ELFCLASS64)
-+		address_size = 64;
-+	else
-+		address_size = 32;
-+
-+	/*
-+	 * DWARF Call Frame Information is contained in .debug_frame.
-+	 * NOTE: This implementation does not support .eh_frame.
-+	 */
-+	debug_frame = find_section_by_name(file->elf, ".debug_frame");
-+	if (!debug_frame)
-+		return 0;
-+
-+	dwarf_alloc_init();
-+
-+	/*
-+	 * Parse all the entries in .debug_frame and create CIEs and FDEs.
-+	 */
-+	start = debug_frame->data->d_buf;
-+	end = start + debug_frame->data->d_size;
-+
-+	while (start < end) {
-+		start = dwarf_parse_one(start, end);
-+		if (!start)
-+			return -1;
-+	}
-+
-+	/*
-+	 * Run all the DWARF instructions in the CIEs and FDEs.
-+	 */
-+	dwarf_parse_instructions();
-+	return 0;
-+}
-diff --git a/tools/objtool/dwarf_rules.c b/tools/objtool/dwarf_rules.c
-new file mode 100644
-index 000000000000..9cf201de392a
---- /dev/null
-+++ b/tools/objtool/dwarf_rules.c
-@@ -0,0 +1,37 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * dwarf_rules.c - Allocation and management of DWARF rules.
-+ *
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+#include <stdio.h>
-+
-+#include <objtool/objtool.h>
-+#include <objtool/warn.h>
-+#include <objtool/dwarf_def.h>
-+#include <linux/compiler.h>
-+
-+/*
-+ * The following are stubs for now. Later, they will be filled to create
-+ * DWARF rules that the kernel can use to compute the frame pointer at
-+ * a given instruction address.
-+ */
-+void dwarf_rule_start(struct fde *fde)
-+{
-+}
-+
-+int dwarf_rule_add(struct fde *fde, unsigned long addr,
-+	     struct rule *sp_rule, struct rule *fp_rule)
-+{
-+	return 0;
-+}
-+
-+void dwarf_rule_next(struct fde *fde, unsigned long addr)
-+{
-+}
-+
-+void dwarf_rule_reset(struct fde *fde)
-+{
-+}
-diff --git a/tools/objtool/dwarf_util.c b/tools/objtool/dwarf_util.c
-new file mode 100644
-index 000000000000..77c70c54d26f
---- /dev/null
-+++ b/tools/objtool/dwarf_util.c
-@@ -0,0 +1,280 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * dwarf_util.c - Support functions.
-+ *
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+#include <stdio.h>
-+#include <objtool/warn.h>
-+#include <objtool/dwarf_def.h>
 +#include <linux/types.h>
 +
-+void			*free_space;
-+size_t			free_size;
-+
-+/* Function to extract embedded values in the DWARF instruction stream. */
-+u64			(*get_value)(unsigned char *field, unsigned int size);
-+
 +/*
-+ * Little endian helper. Adapted from binutils.
++ * objtool generates two special sections that contain DWARF information that
++ * will be used by the reliable unwinder to validate the frame pointer in every
++ * frame:
++ *
++ * .dwarf_rules:
++ *	This contains an array of struct dwarf_rule. Each rule contains the
++ *	size of a code range. In addition, a rule contains the offsets that
++ *	must be used to compute the frame pointer at any of the instructions
++ *	within the code range. The computation is:
++ *
++ *		CFA = %sp + sp_offset
++ *		FP = CFA + fp_offset
++ *
++ *	where %sp is the stack pointer at the instruction address and FP is
++ *	the frame pointer.
++ *
++ * .dwarf_pcs:
++ *	This contains an array of starting PCs, one for each rule.
 + */
-+u64 get_value_le(unsigned char *field, unsigned int size)
-+{
-+	switch (size) {
-+	case 1:
-+		return *field;
++struct dwarf_rule {
++	unsigned int	size:30;
++	unsigned int	sp_saved:1;
++	unsigned int	fp_saved:1;
++	short		sp_offset;
++	short		fp_offset;
++};
 +
-+	case 2:
-+		return ((unsigned int) (field[0])) |
-+		       (((unsigned int) (field[1])) << 8);
-+
-+	case 3:
-+		return ((unsigned long) (field[0])) |
-+		       (((unsigned long) (field[1])) << 8) |
-+		       (((unsigned long) (field[2])) << 16);
-+
-+	case 4:
-+		return ((unsigned long) (field[0])) |
-+		       (((unsigned long) (field[1])) << 8) |
-+		       (((unsigned long) (field[2])) << 16) |
-+		       (((unsigned long) (field[3])) << 24);
-+
-+	case 5:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[0])) |
-+			       (((u64) (field[1])) << 8) |
-+			       (((u64) (field[2])) << 16) |
-+			       (((u64) (field[3])) << 24) |
-+			       (((u64) (field[4])) << 32);
-+		}
-+		__fallthrough;
-+
-+	case 6:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[0])) |
-+			       (((u64) (field[1])) << 8) |
-+			       (((u64) (field[2])) << 16) |
-+			       (((u64) (field[3])) << 24) |
-+			       (((u64) (field[4])) << 32) |
-+			       (((u64) (field[5])) << 40);
-+		}
-+		__fallthrough;
-+
-+	case 7:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[0])) |
-+			       (((u64) (field[1])) << 8) |
-+			       (((u64) (field[2])) << 16) |
-+			       (((u64) (field[3])) << 24) |
-+			       (((u64) (field[4])) << 32) |
-+			       (((u64) (field[5])) << 40) |
-+			       (((u64) (field[6])) << 48);
-+		}
-+		__fallthrough;
-+
-+	case 8:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[0])) |
-+			       (((u64) (field[1])) << 8) |
-+			       (((u64) (field[2])) << 16) |
-+			       (((u64) (field[3])) << 24) |
-+			       (((u64) (field[4])) << 32) |
-+			       (((u64) (field[5])) << 40) |
-+			       (((u64) (field[6])) << 48) |
-+			       (((u64) (field[7])) << 56);
-+		}
-+		__fallthrough;
-+
-+	default:
-+		WARN("%s: Unhandled data length: %d\n", __func__, size);
-+	}
-+	return 0;
-+}
-+
-+/*
-+ * Big endian helper. Adapted from binutils.
-+ */
-+u64 get_value_be(unsigned char *field, unsigned int size)
-+{
-+	switch (size) {
-+	case 1:
-+		return *field;
-+
-+	case 2:
-+		return ((unsigned int) (field[1])) |
-+		       (((int) (field[0])) << 8);
-+
-+	case 3:
-+		return ((unsigned long) (field[2])) |
-+		       (((unsigned long) (field[1])) << 8) |
-+		       (((unsigned long) (field[0])) << 16);
-+
-+	case 4:
-+		return ((unsigned long) (field[3])) |
-+		       (((unsigned long) (field[2])) << 8) |
-+		       (((unsigned long) (field[1])) << 16) |
-+		       (((unsigned long) (field[0])) << 24);
-+
-+	case 5:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[4])) |
-+			       (((u64) (field[3])) << 8) |
-+			       (((u64) (field[2])) << 16) |
-+			       (((u64) (field[1])) << 24) |
-+			       (((u64) (field[0])) << 32);
-+		}
-+		__fallthrough;
-+
-+	case 6:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[5])) |
-+			       (((u64) (field[4])) << 8) |
-+			       (((u64) (field[3])) << 16) |
-+			       (((u64) (field[2])) << 24) |
-+			       (((u64) (field[1])) << 32) |
-+			       (((u64) (field[0])) << 40);
-+		}
-+		__fallthrough;
-+
-+	case 7:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[6])) |
-+			       (((u64) (field[5])) << 8) |
-+			       (((u64) (field[4])) << 16) |
-+			       (((u64) (field[3])) << 24) |
-+			       (((u64) (field[2])) << 32) |
-+			       (((u64) (field[1])) << 40) |
-+			       (((u64) (field[0])) << 48);
-+		}
-+		__fallthrough;
-+
-+	case 8:
-+		if (sizeof(u64) >= 8) {
-+			return ((u64) (field[7])) |
-+			       (((u64) (field[6])) << 8) |
-+			       (((u64) (field[5])) << 16) |
-+			       (((u64) (field[4])) << 24) |
-+			       (((u64) (field[3])) << 32) |
-+			       (((u64) (field[2])) << 40) |
-+			       (((u64) (field[1])) << 48) |
-+			       (((u64) (field[0])) << 56);
-+		}
-+		__fallthrough;
-+
-+	default:
-+		WARN("%s: Unhandled data length: %d\n", __func__, size);
-+	}
-+	return 0;
-+}
-+
-+/*
-+ * LEB 128 read functions adapted from LLVM code.
-+ */
-+u64 read_uleb_128(unsigned char *start, unsigned char *end,
-+		  unsigned int *num_read, bool *fail)
-+{
-+	unsigned char	*cur = start, byte;
-+	unsigned int	shift = 0;
-+	u64		value = 0;
-+	u64		slice;
-+
-+	do {
-+		if (cur == end) {
-+			WARN("%s: op=%d end of data", __func__, op);
-+			*num_read = (unsigned int) (cur - start);
-+			*fail = true;
-+			return 0;
-+		}
-+
-+		byte = *cur++;
-+		slice = byte & 0x7f;
-+
-+		if ((shift >= 64 && slice != 0) ||
-+		    (slice << shift >> shift) != slice) {
-+			WARN("%s: op=%d value too large", __func__, op);
-+			*num_read = (unsigned int) (cur - start);
-+			*fail = true;
-+			return 0;
-+		}
-+
-+		value += slice << shift;
-+		shift += 7;
-+	} while (byte >= 128);
-+
-+	*num_read = (unsigned int) (cur - start);
-+
-+	return value;
-+}
-+
-+s64 read_sleb_128(unsigned char *start, unsigned char *end,
-+		  unsigned int *num_read, bool *fail)
-+{
-+	unsigned char	*cur = start, byte;
-+	unsigned int	shift = 0;
-+	s64		value = 0;
-+	u64		slice;
-+
-+	do {
-+		if (cur == end) {
-+			WARN("%s: op=%d end of data", __func__, op);
-+			*num_read = (unsigned int) (cur - start);
-+			*fail = true;
-+			return 0;
-+		}
-+
-+		byte = *cur++;
-+		slice = byte & 0x7f;
-+
-+		if ((shift >= 64 && slice != (value < 0 ? 0x7f : 0x00)) ||
-+		    (shift == 63 && slice != 0 && slice != 0x7f)) {
-+			WARN("%s: op=%d value too large", __func__, op);
-+			*num_read = (unsigned int) (cur - start);
-+			*fail = true;
-+			return 0;
-+		}
-+
-+		value |= slice << shift;
-+		shift += 7;
-+	} while (byte >= 128);
-+
-+	if (shift < 64 && (byte & 0x40)) {
-+		/* Sign extend negative numbers if needed. */
-+		value |= (-1ULL) << shift;
-+	}
-+
-+	*num_read = (unsigned int) (cur - start);
-+
-+	return value;
-+}
-+
-+void dwarf_alloc_init(void)
-+{
-+	/*
-+	 * Use the size of the .debug_frame section as an estimate of the
-+	 * memory we need.
-+	 */
-+	free_size = debug_frame->data->d_size * 4;
-+	free_space = malloc(free_size);
-+	if (!free_space) {
-+		WARN("%s: Could not optimize allocations", __func__);
-+		free_size = 0;
-+	}
-+}
-+
-+void *dwarf_alloc(size_t size)
-+{
-+	void	*buf;
-+
-+	/* Round to 8 bytes. */
-+	size = (size + 7) & ~7UL;
-+
-+	if (free_size >= size) {
-+		buf = free_space;
-+		free_space += size;
-+		free_size -= size;
-+		return buf;
-+	}
-+	return malloc(size);
-+}
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 4b384c907027..85606a19f633 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -108,7 +108,7 @@ static struct section *find_section_by_index(struct elf *elf,
- 	return NULL;
- }
- 
--static struct symbol *find_symbol_by_index(struct elf *elf, unsigned int idx)
-+struct symbol *find_symbol_by_index(struct elf *elf, unsigned int idx)
- {
- 	struct symbol *sym;
- 
-diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index 15ac0b7d3d6a..02b18149cdd7 100644
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -15,5 +15,6 @@ extern int cmd_parse_options(int argc, const char **argv, const char * const usa
- 
- extern int cmd_check(int argc, const char **argv);
- extern int cmd_orc(int argc, const char **argv);
-+extern int cmd_dwarf(int argc, const char **argv);
- 
- #endif /* _BUILTIN_H */
-diff --git a/tools/objtool/include/objtool/dwarf_def.h b/tools/objtool/include/objtool/dwarf_def.h
++#endif /* _LINUX_DWARF_H */
+diff --git a/tools/include/linux/dwarf.h b/tools/include/linux/dwarf.h
 new file mode 100644
-index 000000000000..7a0a18480d2b
+index 000000000000..16e9dd8c60c8
 --- /dev/null
-+++ b/tools/objtool/include/objtool/dwarf_def.h
-@@ -0,0 +1,438 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
++++ b/tools/include/linux/dwarf.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * dwarf_def.h - DWARF definitions for parsing DWARF information.
++ * dwarf.h - DWARF data structures used by the unwinder.
 + *
 + * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
 + *
-+ * Copyright (C) 2022 Microsoft Corporation
++ * Copyright (c) 2022 Microsoft Corporation
 + */
 +
-+#ifndef _OBJTOOL_DWARF_DEF_H
-+#define _OBJTOOL_DWARF_DEF_H
++#ifndef _LINUX_DWARF_H
++#define _LINUX_DWARF_H
 +
-+/*
-+ * The DWARF Call Frame Information (CFI) is encoded in a self-contained
-+ * section called .debug_frame.
-+ *
-+ * DWARF CFI defines the Canonical Frame Address (CFA) as the value of the
-+ * stack pointer (SP) when a call instruction is executed. For the called
-+ * function, other register values are expressed relative to the CFA. For
-+ * a given code location within the function, one can compute things like:
-+ *
-+ *	- what is the offset that must be added to the current stack pointer
-+ *	  to get the CFA.
-+ *
-+ *	- what offset must be subtracted from the CFA to obtain the current
-+ *	  frame pointer (FP).
-+ *
-+ *	- what offset must be subtracted from the CFA to obtain the location
-+ *	  on the stack where a register value is saved. E.g., the return
-+ *	  address (RA).
-+ *
-+ *	- what register is saved in what register.
-+ *
-+ *	- etc.
-+ *
-+ * This allows the unwinding of the stack. The unwinder starts at the top most
-+ * frame and gets the value of the SP, FP and RA from the current register
-+ * state. Using the DWARF CFI at the RA, the unwinder computes the values of
-+ * the SP, FP and RA in the previous frame. This process continues until the
-+ * SP hits the bottom of the stack and the unwinding terminates.
-+ *
-+ * In this work, the DWARF CFI is not used to build an unwinder. The existing
-+ * frame pointer based unwinder is retained. But the CFI is used to compute
-+ * an FP at every frame to validate the actual FP. If the computed and actual
-+ * FPs match, then the stack frame is considered reliable. Otherwise, it is
-+ * considered unreliable. If all of the frames in a stack trace are reliable,
-+ * then the stack trace is reliable.
-+ *
-+ * Entries in a .debug_frame section are aligned on a multiple of the address
-+ * size relative to the start of the section and come in two forms:
-+ *
-+ *	- a Common Information Entry (CIE) and
-+ *
-+ *	- a Frame Description Entry (FDE).
-+ *
-+ * A Common Information Entry holds information that is shared among many
-+ * Frame Description Entries. So, it is like a header. There is at least one
-+ * CIE in every non-empty .debug_frame section.
-+ *
-+ * The CIE contains information such as the size of an address in the
-+ * architecture, the number of the return address register, etc. It also
-+ * contains DWARF instructions to initialize unwind state at the start of
-+ * an FDE.
-+ *
-+ * The FDE contains a code range to which it applies. It also contains DWARF
-+ * instructions. These instructions are used to obtain the register rules
-+ * at each code location. Using these rules, the SP, FP and RA are computed
-+ * as mentioned above.
-+ */
++#include <linux/types.h>
 +
 +/*
-+ * DWARF CFI defines the following rules to obtain the value of a register
-+ * in the previous frame, given a current frame:
++ * objtool generates two special sections that contain DWARF information that
++ * will be used by the reliable unwinder to validate the frame pointer in every
++ * frame:
 + *
-+ * 1. Same_Value:
++ * .dwarf_rules:
++ *	This contains an array of struct dwarf_rule. Each rule contains the
++ *	size of a code range. In addition, a rule contains the offsets that
++ *	must be used to compute the frame pointer at any of the instructions
++ *	within the code range. The computation is:
 + *
-+ *	The current and previous values of the register are the same.
++ *		CFA = %sp + sp_offset
++ *		FP = CFA + fp_offset
 + *
-+ * 2. Val_Offset(N):
++ *	where %sp is the stack pointer at the instruction address and FP is
++ *	the frame pointer.
 + *
-+ *	The previous value is (CFA + N) where N is a signed offset.
-+ *
-+ * 3. Offset(N):
-+ *
-+ *	The previous value is saved at (CFA + N).
-+ *
-+ * 4. register(R):
-+ *
-+ *	The previous value is saved in register R.
-+ *
-+ * 5. Val_Expression(E):
-+ *
-+ *	The previous value is the value produced by evaluating a given
-+ *	DWARF expression. DWARF expressions are evaluated on a stack. That
-+ *	is, operands are pushed and popped on a stack, operators are
-+ *	applied on them and the result is obtained.
-+ *
-+ * 6. Expression(E):
-+ *
-+ *	The previous value is stored at the address computed from a DWARF
-+ *	expression.
-+ *
-+ * 7. Architectural:
-+ *
-+ *	The previous value is obtained in an architecture-specific way via
-+ *	an architecture-specific "augmentor". The augmentors are vendor
-+ *	specific and are not part of the DWARF standard.
-+ *
-+ * Now, all of this is quite complicated. In this work, only (1), (2) and (3)
-+ * will be supported. At the time of this writing, these are found to be
-+ * sufficient for ARM64 and RISCV. Other architectures have not been checked.
-+ *
-+ * The code locations at which unsupported rules exist will be treated as
-+ * unreliable from an unwinder perspective. In other words, if the RA of a
-+ * stack frame is such a code location, then that frame is unreliable.
++ * .dwarf_pcs:
++ *	This contains an array of starting PCs, one for each rule.
 + */
-+
-+/*
-+ * The following structure is used to encode the Same_Value, Offset(N) and
-+ * the Val_Offset(N) rules.
-+ *
-+ * offset = 0, saved = true	Never happens
-+ * offset = 0, saved = false	Same_Value
-+ * offset = N, saved = true	Offset(N)
-+ * offset = N, saved = false	Val_Offset(N)
-+ */
-+struct rule {
-+	long		offset;
-+	bool		saved;
++struct dwarf_rule {
++	unsigned int	size:30;
++	unsigned int	sp_saved:1;
++	unsigned int	fp_saved:1;
++	short		sp_offset;
++	short		fp_offset;
 +};
 +
-+/*
-+ * Common Information Entry (CIE):
-+ *
-+ * next
-+ *	Next CIE in list.
-+ *
-+ * offset
-+ *	Section offset at which this CIE is found.
-+ *
-+ * length
-+ *	A constant that gives the number of bytes of the CIE structure, not
-+ *	including the length field itself. The size of the length field plus
-+ *	the value of length must be an integral multiple of the address size.
-+ *
-+ * id
-+ *	A constant that is used to distinguish CIEs from FDEs.
-+ *
-+ * version
-+ *	A version number. This number is specific to the call frame information
-+ *	and is independent of the DWARF version number. Versions 4 and above
-+ *	are not supported.
-+ *
-+ * address_size
-+ *	The size of a target address in this CIE and any FDEs that use it,
-+ *	in bytes.
-+ *
-+ * segment_size
-+ *	The size of a segment selector in this CIE and any FDEs that use it,
-+ *	in bytes.
-+ *
-+ * augmentation
-+ *	A null-terminated UTF-8 string that identifies the augmentation to
-+ *	this CIE or to the FDEs that use it. An augmentation is specified by
-+ *	an architecture to compute values in a way that is specific to that
-+ *	architecture. No augmentation is supported.
-+ *
-+ * code_factor
-+ *	A constant that is factored out of all advance location instructions.
-+ *
-+ * data_factor
-+ *	A constant that is factored out of certain offset instructions.
-+ *
-+ * return_address_reg
-+ *	The number of the return address register in the architecture.
-+ *
-+ * instructions
-+ *	DWARF instructions to initialize the unwind state at the start of
-+ *	an FDE.
-+ *
-+ * instructions_size
-+ *	Number of bytes of instructions.
-+ *
-+ * sp_rule
-+ *	Initial rule to compute the CFA derived from the above instructions.
-+ *
-+ * fp_rule
-+ *	Initial rule to compute the frame pointer derived from the above
-+ *	instructions.
-+ *
-+ * ra_rule
-+ *	Initial rule to compute the return address derived from the above
-+ *	instructions.
-+ *
-+ * saved_sp_rule, saved_fp_rule, saved_ra_rule
-+ *	Temporary storage to store and restore the CFA and frame pointer rules
-+ *	offsets while running instructions.
-+ *
-+ * cfa_reg, cfa_offset
-+ *	Temporary storage to remember the default CFA register and offset
-+ *	while running instructions.
-+ *
-+ * unusable
-+ *	Some error happened while processing CIE instructions.
-+ */
-+struct cie {
-+	struct cie		*next;
-+	unsigned long		offset;
-+	unsigned long		length;
-+	unsigned long		id;
-+	unsigned char		version;
-+	unsigned char		address_size;
-+	unsigned char		segment_size;
-+	char			*augmentation;
-+	unsigned int		code_factor;
-+	int			data_factor;
-+	unsigned int		return_address_reg;
-+	unsigned char		*instructions;
-+	size_t			instructions_size;
-+	struct rule		sp_rule;
-+	struct rule		fp_rule;
-+	struct rule		ra_rule;
-+	struct rule		saved_sp_rule;
-+	struct rule		saved_fp_rule;
-+	struct rule		saved_ra_rule;
-+	unsigned int		cfa_reg;
-+	long			cfa_offset;
-+	bool			unusable;
-+};
-+
-+/*
-+ * Frame Description Entry (FDE):
-+ *
-+ * next
-+ *	Next FDE in list.
-+ *
-+ * length
-+ *	A constant that gives the number of bytes of the header and instruction
-+ *	stream for this function, not including the length field itself. The
-+ *	size of the length field plus the value of length must be an integral
-+ *	multiple of the address size.
-+ *
-+ * cie_offset
-+ *	A constant offset into the .debug_frame section that denotes the CIE
-+ *	that is associated with this FDE.
-+ *
-+ * cie
-+ *	CIE for this FDE.
-+ *
-+ * segment_selector
-+ *	Segment selectors are not supported.
-+ *
-+ * start_pc, end_pc
-+ *	Range of code to which this FDE applies.
-+ *
-+ * instructions
-+ *	DWARF instructions to compute the register rules.
-+ *
-+ * instructions_size
-+ *	Number of bytes of instructions.
-+ *
-+ * index
-+ *	Index of the FDE record in the .debug_frame section. Used to obtain
-+ *	relocation information for the FDE.
-+ *
-+ * symbol
-+ *	Symbol information for the function for the code range.
-+ *
-+ * section
-+ *	Section information for the function.
-+ *
-+ * offset
-+ *	Offset within the section for the function.
-+ *
-+ * sp_offset
-+ *	Needed for clang hack.
-+ */
-+struct fde {
-+	struct fde		*next;
-+	unsigned long		length;
-+	unsigned long		cie_offset;
-+	struct cie		*cie;
-+	unsigned long		segment_selector;
-+	unsigned long		start_pc;
-+	unsigned long		end_pc;
-+	unsigned char		*instructions;
-+	size_t			instructions_size;
-+	unsigned long		index;
-+	struct symbol		*symbol;
-+	struct section		*section;
-+	unsigned long		offset;
-+	unsigned long		sp_offset;
-+};
-+
-+/*
-+ * These are identifiers for 32-bit and 64-bit CIE entries respectively.
-+ * These identifiers distinguish a CIE from an FDE in .debug_frame.
-+ */
-+#define CIE_ID_32		0xFFFFFFFF
-+#define CIE_ID_64		0xFFFFFFFFFFFFFFFFUL
-+
-+/*
-+ * DWARF instruction op codes.
-+ */
-+
-+/* Primary op codes in the high 2 bits */
-+
-+#define DW_CFA_extended_op		0x00
-+#define DW_CFA_advance_loc		0x40
-+#define DW_CFA_offset			0x80
-+#define DW_CFA_restore			0xc0
-+
-+/* Extended op codes in the low 6 bits */
-+
-+#define DW_CFA_nop			0x00
-+#define DW_CFA_set_loc			0x01
-+#define DW_CFA_advance_loc1		0x02
-+#define DW_CFA_advance_loc2		0x03
-+#define DW_CFA_advance_loc4		0x04
-+#define DW_CFA_offset_extended		0x05
-+#define DW_CFA_restore_extended		0x06
-+#define DW_CFA_undefined		0x07
-+#define DW_CFA_same_value		0x08
-+#define DW_CFA_register			0x09
-+#define DW_CFA_remember_state		0x0a
-+#define DW_CFA_restore_state		0x0b
-+#define DW_CFA_def_cfa			0x0c
-+#define DW_CFA_def_cfa_register		0x0d
-+#define DW_CFA_def_cfa_offset		0x0e
-+/* DWARF 3.  */
-+#define DW_CFA_def_cfa_expression	0x0f
-+#define DW_CFA_expression		0x10
-+#define DW_CFA_offset_extended_sf	0x11
-+#define DW_CFA_def_cfa_sf		0x12
-+#define DW_CFA_def_cfa_offset_sf	0x13
-+#define DW_CFA_val_offset		0x14
-+#define DW_CFA_val_offset_sf		0x15
-+#define DW_CFA_val_expression		0x16
-+#define DW_CFA_lo_user			0x1c
-+#define DW_CFA_hi_user			0x3f
-+
-+/*
-+ * Extract a value directly from the DWARF instruction stream. Must take into
-+ * account endianness.
-+ */
-+#define GET_VALUE(value, start, end, count)				\
-+	do {								\
-+		size_t	_size = (count);				\
-+		size_t	_avail = (end) - (start);			\
-+									\
-+		if (sizeof(value) < _size)				\
-+			_size = sizeof(value);				\
-+		if ((start) > (end))					\
-+			_avail = 0;					\
-+		if (_size > _avail)					\
-+			_size = _avail;					\
-+		if (_size == 0)						\
-+			(value) = 0;					\
-+		else							\
-+			(value) = get_value((start), _size);		\
-+		(start) += _size;					\
-+	} while (0)
-+
-+/*
-+ * Extract an unsigned integer expressed in LEB 128 format from the DWARF
-+ * instruction stream.
-+ */
-+#define READ_ULEB_128(value, start, end, fail)				\
-+	do {								\
-+		u64		_val;					\
-+		unsigned int	_len;					\
-+		bool		_fail = false;				\
-+									\
-+		_val = read_uleb_128(start, end, &_len, &_fail);	\
-+									\
-+		start += _len;						\
-+		(value) = _val;						\
-+		if ((value) != _val) {					\
-+			WARN("READ_ULEB_128: op=%d value mismatch", op);\
-+			_fail = true;					\
-+		}							\
-+		if (_fail)						\
-+			(fail) = true;					\
-+	} while (0)
-+
-+/*
-+ * Extract a signed integer expressed in LEB 128 format from the DWARF
-+ * instruction stream.
-+ */
-+#define READ_SLEB_128(value, start, end, fail)				\
-+	do {								\
-+		s64		_val;					\
-+		unsigned int	_len;					\
-+		bool		_fail = false;				\
-+									\
-+		_val = read_sleb_128(start, end, &_len, &_fail);	\
-+									\
-+		start += _len;						\
-+		(value) = _val;						\
-+		if ((value) != _val) {					\
-+			WARN("READ_SLEB_128: op=%d value mismatch", op);\
-+			_fail = true;					\
-+		}							\
-+		if (_fail)						\
-+			(fail) = true;					\
-+	} while (0)
-+
-+extern struct objtool_file	*dwarf_file;
-+extern struct section		*debug_frame;
-+extern struct cie		*cies, *cur_cie;
-+extern struct fde		*fdes, *cur_fde;
-+extern unsigned char		op, operand;
-+extern void			*free_space;
-+extern size_t			free_size;
-+extern u64		(*get_value)(unsigned char *field, unsigned int size);
-+
-+void dwarf_rule_start(struct fde *fde);
-+int dwarf_rule_add(struct fde *fde, unsigned long addr,
-+		   struct rule *sp_rule, struct rule *fp_rule);
-+void dwarf_rule_next(struct fde *fde, unsigned long addr);
-+void dwarf_rule_reset(struct fde *fde);
-+int arch_dwarf_fde_reloc(struct fde *fde);
-+void arch_dwarf_clang_hack(struct fde *fde, unsigned long pc,
-+			   struct rule *sp_rule, struct rule *fp_rule);
-+int arch_dwarf_check_rules(struct fde *fde, unsigned long pc,
-+			   struct rule *sp_rule, struct rule *fp_rule,
-+			   struct rule *ra_rule);
-+u64 get_value_le(unsigned char *field, unsigned int size);
-+u64 get_value_be(unsigned char *field, unsigned int size);
-+u64 read_uleb_128(unsigned char *start, unsigned char *end,
-+		  unsigned int *num_read, bool *fail);
-+s64 read_sleb_128(unsigned char *start, unsigned char *end,
-+		  unsigned int *num_read, bool *fail);
-+void dwarf_parse_instructions(void);
-+void dwarf_alloc_init(void);
-+void *dwarf_alloc(size_t size);
-+
-+#endif /* _OBJTOOL_DWARF_DEF_H */
-diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index cdc739fa9a6f..c133ece2cdcf 100644
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -151,6 +151,7 @@ struct section *find_section_by_name(const struct elf *elf, const char *name);
- struct symbol *find_func_by_offset(struct section *sec, unsigned long offset);
- struct symbol *find_symbol_by_offset(struct section *sec, unsigned long offset);
- struct symbol *find_symbol_by_name(const struct elf *elf, const char *name);
-+struct symbol *find_symbol_by_index(struct elf *elf, unsigned int idx);
- struct symbol *find_symbol_containing(const struct section *sec, unsigned long offset);
- struct reloc *find_reloc_by_dest(const struct elf *elf, struct section *sec, unsigned long offset);
- struct reloc *find_reloc_by_dest_range(const struct elf *elf, struct section *sec,
-diff --git a/tools/objtool/include/objtool/objtool.h b/tools/objtool/include/objtool/objtool.h
-index f99fbc6078d5..0344e89a10e8 100644
---- a/tools/objtool/include/objtool/objtool.h
-+++ b/tools/objtool/include/objtool/objtool.h
-@@ -41,5 +41,6 @@ void objtool_pv_add(struct objtool_file *file, int idx, struct symbol *func);
- int check(struct objtool_file *file);
- int orc_dump(const char *objname);
- int orc_create(struct objtool_file *file);
-+int dwarf_parse(struct objtool_file *file);
++#endif /* _LINUX_DWARF_H */
+diff --git a/tools/objtool/builtin-dwarf.c b/tools/objtool/builtin-dwarf.c
+index f44b35eb3f55..1b451e830140 100644
+--- a/tools/objtool/builtin-dwarf.c
++++ b/tools/objtool/builtin-dwarf.c
+@@ -25,6 +25,10 @@ static const char * const dwarf_usage[] = {
+ 	 * information.
+ 	 */
+ 	"objtool dwarf generate file",
++	/*
++	 * Dump DWARF rules for debugging purposes.
++	 */
++	"objtool dwarf dump file",
  
- #endif /* _OBJTOOL_H */
-diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
-index bdf699f6552b..bfb9c5607cfc 100644
---- a/tools/objtool/objtool.c
-+++ b/tools/objtool/objtool.c
-@@ -38,6 +38,7 @@ static const char objtool_usage_string[] =
- static struct cmd_struct objtool_cmds[] = {
- 	{"check",	cmd_check,	"Perform stack metadata validation on an object file" },
- 	{"orc",		cmd_orc,	"Generate in-place ORC unwind tables for an object file" },
-+	{"dwarf",	cmd_dwarf,	"Generate DWARF rules for object file"},
+ 	NULL,
+ };
+@@ -37,6 +41,7 @@ int cmd_dwarf(int argc, const char **argv)
+ {
+ 	const char		*object;
+ 	struct objtool_file	*file;
++	int			ret;
+ 
+ 	argc--; argv++;
+ 	if (argc != 2)
+@@ -48,8 +53,21 @@ int cmd_dwarf(int argc, const char **argv)
+ 	if (!file)
+ 		return 1;
+ 
+-	if (!strncmp(argv[0], "gen", 3))
+-		return dwarf_parse(file);
++	if (!strncmp(argv[0], "gen", 3)) {
++		ret = dwarf_parse(file);
++		if (!ret)
++			ret = dwarf_write(file);
++		if (!ret && file->elf->changed)
++			ret = elf_write(file->elf);
++		return ret;
++	}
++
++	if (!strcmp(argv[0], "dump")) {
++		ret = dwarf_parse(file);
++		if (!ret)
++			dwarf_dump();
++		return ret;
++	}
+ 
+ 	usage_with_options(dwarf_usage, dwarf_options);
+ 
+diff --git a/tools/objtool/dwarf_rules.c b/tools/objtool/dwarf_rules.c
+index 9cf201de392a..a118b392aac8 100644
+--- a/tools/objtool/dwarf_rules.c
++++ b/tools/objtool/dwarf_rules.c
+@@ -13,25 +13,192 @@
+ #include <objtool/dwarf_def.h>
+ #include <linux/compiler.h>
+ 
+-/*
+- * The following are stubs for now. Later, they will be filled to create
+- * DWARF rules that the kernel can use to compute the frame pointer at
+- * a given instruction address.
+- */
++struct section			*dwarf_rules_sec;
++struct section			*dwarf_pcs_sec;
++
++static struct fde_entry		*cur_entry;
++static int			nentries;
++
++static int dwarf_rule_insert(struct fde *fde, unsigned long addr,
++			     struct rule *sp_rule, struct rule *fp_rule);
++
+ void dwarf_rule_start(struct fde *fde)
+ {
++	fde->head = NULL;
++	fde->tail = NULL;
++	cur_entry = NULL;
+ }
+ 
+ int dwarf_rule_add(struct fde *fde, unsigned long addr,
+-	     struct rule *sp_rule, struct rule *fp_rule)
++		   struct rule *sp_rule, struct rule *fp_rule)
+ {
+-	return 0;
++	if (cur_entry) {
++		struct rule		*esp_rule = &cur_entry->sp_rule;
++		struct rule		*efp_rule = &cur_entry->fp_rule;
++
++		/*
++		 * If the rules have not changed, there is nothing to do.
++		 */
++		if (esp_rule->offset == sp_rule->offset &&
++		    efp_rule->offset == fp_rule->offset &&
++		    esp_rule->saved == sp_rule->saved &&
++		    efp_rule->saved == fp_rule->saved) {
++			return 0;
++		}
++		/* Close out the current range. */
++		cur_entry->size = addr - cur_entry->addr;
++	}
++	return dwarf_rule_insert(fde, addr, sp_rule, fp_rule);
+ }
+ 
+ void dwarf_rule_next(struct fde *fde, unsigned long addr)
+ {
++	if (cur_entry) {
++		/* Close out the current range. */
++		cur_entry->size = addr - cur_entry->addr;
++		cur_entry = NULL;
++	}
+ }
+ 
+ void dwarf_rule_reset(struct fde *fde)
+ {
++	struct fde_entry	*entry;
++
++	while (fde->head) {
++		entry = fde->head;
++		fde->head = entry->next;
++		free(entry);
++		nentries--;
++	}
++	fde->tail = NULL;
++	cur_entry = NULL;
++}
++
++static int dwarf_rule_insert(struct fde *fde, unsigned long addr,
++			     struct rule *sp_rule, struct rule *fp_rule)
++{
++	struct fde_entry	*entry;
++
++	entry = dwarf_alloc(sizeof(*entry));
++	if (!entry)
++		return -1;
++
++	/* Add the entry to the FDE list. */
++	if (fde->tail)
++		fde->tail->next = entry;
++	else
++		fde->head = entry;
++	fde->tail = entry;
++	entry->next = NULL;
++
++	/*
++	 * Record the starting address of the code range here. The size of
++	 * the range will be known only when the next rule comes in. At that
++	 * time, we will close out this range.
++	 */
++	entry->addr = addr;
++
++	/* Copy the rules. */
++	entry->sp_rule = *sp_rule;
++	entry->fp_rule = *fp_rule;
++
++	cur_entry = entry;
++	nentries++;
++	return 0;
++}
++
++static int dwarf_rule_write(struct elf *elf, struct fde *fde,
++			    struct fde_entry *entry, unsigned int index)
++{
++	struct dwarf_rule	rule, *drule;
++
++	/*
++	 * Encode the SP and FP rules from the entry into a single dwarf_rule
++	 * for the kernel's benefit. Copy it into .dwarf_rules.
++	 */
++	rule.size = entry->size;
++	rule.sp_saved = entry->sp_rule.saved;
++	rule.fp_saved = entry->fp_rule.saved;
++	rule.sp_offset = entry->sp_rule.offset;
++	rule.fp_offset = entry->fp_rule.offset;
++
++	drule = (struct dwarf_rule *) dwarf_rules_sec->data->d_buf + index;
++	memcpy(drule, &rule, sizeof(rule));
++
++	/* Add relocation information for the code range. */
++	if (elf_add_reloc_to_insn(elf, dwarf_pcs_sec,
++				  index * sizeof(unsigned long),
++				  R_AARCH64_ABS64,
++				  fde->section, entry->addr)) {
++		return -1;
++	}
++	return 0;
++}
++
++int dwarf_write(struct objtool_file *file)
++{
++	struct elf		*elf = file->elf;
++	struct fde		*fde;
++	struct fde_entry	*entry;
++	int			index;
++
++	/*
++	 * Check if .dwarf_rules already exists. If it doesn't, we will
++	 * assume that .dwarf_pcs doesn't exist either.
++	 */
++	if (find_section_by_name(elf, ".dwarf_rules")) {
++		WARN("file already has .dwarf_rules section");
++		return -1;
++	}
++
++	/* Create .dwarf_rules. */
++	dwarf_rules_sec = elf_create_section(elf, ".dwarf_rules", 0,
++					     sizeof(struct dwarf_rule),
++					     nentries);
++	if (!dwarf_rules_sec) {
++		WARN("Unable to create .dwarf_rules");
++		return -1;
++	}
++
++	/* Create .dwarf_pcs. */
++	dwarf_pcs_sec = elf_create_section(elf, ".dwarf_pcs", 0,
++					   sizeof(unsigned long), nentries);
++	if (!dwarf_pcs_sec) {
++		WARN("Unable to create .dwarf_pcs");
++		return -1;
++	}
++
++	/* Write DWARF rules to sections. */
++	index = 0;
++	for (fde = fdes; fde != NULL; fde = fde->next) {
++		for (entry = fde->head; entry != NULL; entry = entry->next) {
++			if (dwarf_rule_write(elf, fde, entry, index))
++				return -1;
++			index++;
++		}
++	}
++
++	return 0;
++}
++
++void dwarf_dump(void)
++{
++	struct fde		*fde;
++	struct fde_entry	*entry;
++	struct rule		*sp_rule, *fp_rule;
++	int			index = 0;
++
++	for (fde = fdes; fde != NULL; fde = fde->next) {
++		for (entry = fde->head; entry != NULL; entry = entry->next) {
++			sp_rule = &entry->sp_rule;
++			fp_rule = &entry->fp_rule;
++
++			printf("addr=%lx size=%lx:",
++			       entry->addr, entry->size);
++			printf("\tsp=%ld sp_saved=%d fp=%ld fp_saved=%d\n",
++			       sp_rule->offset, sp_rule->saved,
++			       fp_rule->offset, fp_rule->saved);
++			index++;
++		}
++	}
+ }
+diff --git a/tools/objtool/include/objtool/dwarf_def.h b/tools/objtool/include/objtool/dwarf_def.h
+index 7a0a18480d2b..af56ccb52fff 100644
+--- a/tools/objtool/include/objtool/dwarf_def.h
++++ b/tools/objtool/include/objtool/dwarf_def.h
+@@ -10,6 +10,8 @@
+ #ifndef _OBJTOOL_DWARF_DEF_H
+ #define _OBJTOOL_DWARF_DEF_H
+ 
++#include <linux/dwarf.h>
++
+ /*
+  * The DWARF Call Frame Information (CFI) is encoded in a self-contained
+  * section called .debug_frame.
+@@ -228,6 +230,14 @@ struct cie {
+ 	bool			unusable;
  };
  
- bool help;
++struct fde_entry {
++	struct fde_entry	*next;
++	unsigned long		addr;
++	size_t			size;
++	struct rule		sp_rule;
++	struct rule		fp_rule;
++};
++
+ /*
+  * Frame Description Entry (FDE):
+  *
+@@ -290,6 +300,8 @@ struct fde {
+ 	struct section		*section;
+ 	unsigned long		offset;
+ 	unsigned long		sp_offset;
++	struct fde_entry	*head;
++	struct fde_entry	*tail;
+ };
+ 
+ /*
+diff --git a/tools/objtool/include/objtool/objtool.h b/tools/objtool/include/objtool/objtool.h
+index 0344e89a10e8..93e62639ab01 100644
+--- a/tools/objtool/include/objtool/objtool.h
++++ b/tools/objtool/include/objtool/objtool.h
+@@ -42,5 +42,7 @@ int check(struct objtool_file *file);
+ int orc_dump(const char *objname);
+ int orc_create(struct objtool_file *file);
+ int dwarf_parse(struct objtool_file *file);
++void dwarf_dump(void);
++int dwarf_write(struct objtool_file *file);
+ 
+ #endif /* _OBJTOOL_H */
+diff --git a/tools/objtool/sync-check.sh b/tools/objtool/sync-check.sh
+index 105a291ff8e7..345c259a115c 100755
+--- a/tools/objtool/sync-check.sh
++++ b/tools/objtool/sync-check.sh
+@@ -27,6 +27,12 @@ arch/x86/lib/insn.c
+ '
+ fi
+ 
++if [ "$SRCARCH" = "arm64" ]; then
++FILES="$FILES
++include/linux/dwarf.h
++"
++fi
++
+ check_2 () {
+   file1=$1
+   file2=$2
 diff --git a/tools/objtool/weak.c b/tools/objtool/weak.c
-index 8314e824db4a..67b5016a8327 100644
+index 67b5016a8327..9d89d4fad8a1 100644
 --- a/tools/objtool/weak.c
 +++ b/tools/objtool/weak.c
-@@ -8,6 +8,7 @@
- #include <stdbool.h>
- #include <errno.h>
- #include <objtool/objtool.h>
-+#include <objtool/dwarf_def.h>
- 
- #define UNSUPPORTED(name)						\
- ({									\
-@@ -29,3 +30,29 @@ int __weak orc_create(struct objtool_file *file)
- {
- 	UNSUPPORTED("orc");
+@@ -38,6 +38,17 @@ int __weak dwarf_parse(struct objtool_file *file)
+ 	return -EOPNOTSUPP;
  }
-+
-+int __weak dwarf_parse(struct objtool_file *file)
-+
+ 
++int __weak dwarf_write(struct objtool_file *file)
 +{
 +	fprintf(stderr, "error: objtool: %s not implemented\n", __func__);
-+	return -EOPNOTSUPP;
++	return -1;
 +}
 +
-+int __weak arch_dwarf_fde_reloc(struct fde *fde)
++void __weak dwarf_dump(void)
 +{
 +	fprintf(stderr, "error: objtool: %s not implemented\n", __func__);
-+	return -EOPNOTSUPP;
 +}
 +
-+void __weak arch_dwarf_clang_hack(struct fde *fde, unsigned long pc,
-+				  struct rule *sp_rule, struct rule *fp_rule)
-+{
-+}
-+
-+int __weak arch_dwarf_check_rules(struct fde *fde, unsigned long pc,
-+				  struct rule *sp_rule, struct rule *fp_rule,
-+				  struct rule *ra_rule)
-+{
-+	fprintf(stderr, "error: objtool: %s not implemented\n", __func__);
-+	return -EOPNOTSUPP;
-+}
+ int __weak arch_dwarf_fde_reloc(struct fde *fde)
+ {
+ 	fprintf(stderr, "error: objtool: %s not implemented\n", __func__);
 -- 
 2.25.1
 
