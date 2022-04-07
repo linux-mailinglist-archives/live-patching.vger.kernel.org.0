@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBB114F89A3
-	for <lists+live-patching@lfdr.de>; Fri,  8 Apr 2022 00:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C0D4F89DD
+	for <lists+live-patching@lfdr.de>; Fri,  8 Apr 2022 00:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230303AbiDGUkC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 7 Apr 2022 16:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
+        id S230116AbiDGUkE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 7 Apr 2022 16:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiDGUjr (ORCPT
+        with ESMTP id S230194AbiDGUjs (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:39:47 -0400
+        Thu, 7 Apr 2022 16:39:48 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CD32345472;
-        Thu,  7 Apr 2022 13:26:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49DAC3542BE;
+        Thu,  7 Apr 2022 13:26:05 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 6BEC820BA5AC;
-        Thu,  7 Apr 2022 13:26:03 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6BEC820BA5AC
+        by linux.microsoft.com (Postfix) with ESMTPSA id 5E4C720B36F7;
+        Thu,  7 Apr 2022 13:26:04 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5E4C720B36F7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649363164;
-        bh=BSKbGYlk+dm3FX69ux9O3ehGfhjDAqvE7NkPhunNR+w=;
+        s=default; t=1649363165;
+        bh=JukkwBZel5zBVGcAdYt8iwRbZEdTiwAJnMVwnLhJEtE=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=YTIymf1N9NBeKyBvzU6MdJLvXPltxW9AAuBmMxKb1Rm07zVgOrblLET1kxYHj8gUl
-         DbsBO+fb2Gxzb/MODrfVhS0UBMXrb7wwdnJtvYP7IhKmFudPCi6k2LkTWDVf5vhQC8
-         lSBhPw5k1X5QbhKWb3GW1NJYIpwciPdusiXbaZ1A=
+        b=oXz+FrSrlVvwkKE55Ydy2W8QVsrhMLJlxkM8NZroNmyHKwGszPgWGXfrvCxjiLeGZ
+         cJqtSdg/FAvDDhCwhMJQFxCJE5eg+3WHx/qfU6GEO22MXh7a+8AoYu3ahI5ygtzD7H
+         ek8IPT20NhahH6otb9Rokfbt9KUC2aFV/FtBf328=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v1 4/9] dwarf: Implement DWARF rule processing in the kernel
-Date:   Thu,  7 Apr 2022 15:25:13 -0500
-Message-Id: <20220407202518.19780-5-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v1 5/9] dwarf: Implement DWARF support for modules
+Date:   Thu,  7 Apr 2022 15:25:14 -0500
+Message-Id: <20220407202518.19780-6-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220407202518.19780-1-madvenka@linux.microsoft.com>
 References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
@@ -54,370 +54,291 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Define a struct dwarf_info to store all of the DWARF information needed to
-lookup the DWARF rules for an instruction address. There is one dwarf_info
-for vmlinux and one for every module.
+When a module is loaded, allocate and initialize its struct dwarf_info. When
+a module is unloaded, free the same.
 
-Implement a lookup function dwarf_lookup(). Given an instruction address,
-the function looks up the corresponding DWARF rules. The unwinder will use
-the lookup function in the future.
-
-Sort the rules based on instruction address. This allows a binary search.
-
-Divide the text range into fixed sized blocks and map the rules to their
-respective blocks. Given an instruction address, first locate the block
-for the address. Then, perform a binary search within the rules in the
-block. This minimizes the number of rules to consider in the binary search.
-
-dwarf_info contains an array of PCs to search. In order to save space, store
-the PCs array as an array of offsets from the base PC of the text range.
-This way, we only need 32 bits to store the PC.
+Add code in dwarf_lookup() to look up a given address in modules, if vmlinux
+does not contain the address.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/include/asm/sections.h |   4 +
- include/linux/dwarf.h             |  21 +++
- kernel/Makefile                   |   1 +
- kernel/dwarf_fp.c                 | 244 ++++++++++++++++++++++++++++++
- tools/include/linux/dwarf.h       |  21 +++
- 5 files changed, 291 insertions(+)
- create mode 100644 kernel/dwarf_fp.c
+ include/linux/dwarf.h       | 18 ++++++++++
+ include/linux/module.h      |  3 ++
+ kernel/dwarf_fp.c           | 71 ++++++++++++++++++++++++++++++++++---
+ kernel/module.c             | 31 ++++++++++++++++
+ tools/include/linux/dwarf.h | 18 ++++++++++
+ 5 files changed, 136 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
-index 152cb35bf9df..d9095a9094b7 100644
---- a/arch/arm64/include/asm/sections.h
-+++ b/arch/arm64/include/asm/sections.h
-@@ -22,5 +22,9 @@ extern char __irqentry_text_start[], __irqentry_text_end[];
- extern char __mmuoff_data_start[], __mmuoff_data_end[];
- extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
- extern char __relocate_new_kernel_start[], __relocate_new_kernel_end[];
-+#ifdef CONFIG_DWARF_FP
-+extern char __dwarf_rules_start[], __dwarf_rules_end[];
-+extern char __dwarf_pcs_start[], __dwarf_pcs_end[];
-+#endif
- 
- #endif /* __ASM_SECTIONS_H */
 diff --git a/include/linux/dwarf.h b/include/linux/dwarf.h
-index 16e9dd8c60c8..3df15e79003c 100644
+index 3df15e79003c..aa44a414b0b6 100644
 --- a/include/linux/dwarf.h
 +++ b/include/linux/dwarf.h
-@@ -40,4 +40,25 @@ struct dwarf_rule {
- 	short		fp_offset;
- };
+@@ -11,6 +11,7 @@
+ #define _LINUX_DWARF_H
  
-+/*
-+ * The whole text area is divided into fixed sized blocks. Rules are mapped
-+ * to their respective blocks. To find a block for an instruction address,
-+ * the block of the address is located. Then, a binary search is performed
-+ * on just the rules in the block. This minimizes the number of rules to
-+ * be considered for the search.
-+ */
-+struct dwarf_block {
-+	int		first_rule;
-+	int		last_rule;
-+};
-+
-+#ifdef CONFIG_DWARF_FP
-+extern struct dwarf_rule	*dwarf_lookup(unsigned long pc);
-+#else
-+static inline struct dwarf_rule *dwarf_lookup(unsigned long pc)
+ #include <linux/types.h>
++#include <linux/module.h>
+ 
+ /*
+  * objtool generates two special sections that contain DWARF information that
+@@ -54,11 +55,28 @@ struct dwarf_block {
+ 
+ #ifdef CONFIG_DWARF_FP
+ extern struct dwarf_rule	*dwarf_lookup(unsigned long pc);
++#ifdef CONFIG_MODULES
++extern void dwarf_module_alloc(struct module *mod,
++			       struct dwarf_rule *rules, size_t rules_size,
++			       unsigned long *pcs, size_t pcs_size);
++extern void dwarf_module_free(struct module *mod);
++#endif
+ #else
+ static inline struct dwarf_rule *dwarf_lookup(unsigned long pc)
+ {
+ 	return NULL;
+ }
++#ifdef CONFIG_MODULES
++static inline void dwarf_module_alloc(struct module *mod,
++					  struct dwarf_rule *rules,
++					  size_t rules_size,
++					  unsigned long *pcs, size_t pcs_size)
 +{
-+	return NULL;
++}
++static inline void dwarf_module_free(struct module *mod)
++{
 +}
 +#endif
-+
+ #endif
+ 
  #endif /* _LINUX_DWARF_H */
-diff --git a/kernel/Makefile b/kernel/Makefile
-index 186c49582f45..7582a6323446 100644
---- a/kernel/Makefile
-+++ b/kernel/Makefile
-@@ -130,6 +130,7 @@ obj-$(CONFIG_WATCH_QUEUE) += watch_queue.o
- 
- obj-$(CONFIG_RESOURCE_KUNIT_TEST) += resource_kunit.o
- obj-$(CONFIG_SYSCTL_KUNIT_TEST) += sysctl-test.o
-+obj-$(CONFIG_DWARF_FP) += dwarf_fp.o
- 
- CFLAGS_stackleak.o += $(DISABLE_STACKLEAK_PLUGIN)
- obj-$(CONFIG_GCC_PLUGIN_STACKLEAK) += stackleak.o
+diff --git a/include/linux/module.h b/include/linux/module.h
+index c9f1200b2312..bd7c69b82808 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -538,6 +538,9 @@ struct module {
+ 	struct error_injection_entry *ei_funcs;
+ 	unsigned int num_ei_funcs;
+ #endif
++#ifdef CONFIG_DWARF_FP
++	void *dwarf_info;
++#endif
+ } ____cacheline_aligned __randomize_layout;
+ #ifndef MODULE_ARCH_INIT
+ #define MODULE_ARCH_INIT {}
 diff --git a/kernel/dwarf_fp.c b/kernel/dwarf_fp.c
-new file mode 100644
-index 000000000000..bb14fbe3f3e1
---- /dev/null
+index bb14fbe3f3e1..07d647e828cd 100644
+--- a/kernel/dwarf_fp.c
 +++ b/kernel/dwarf_fp.c
-@@ -0,0 +1,244 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * dwarf_fp.c - Allocate DWARF info. There will be one info for vmlinux
-+ *		and one for every module. Implement a lookup function that
-+ *		can locate the rule for a given instruction address.
-+ *
-+ * Copyright (C) 2021 Microsoft, Inc.
-+ * Author: Madhavan T. Venkataraman <madvenka@microsoft.com>
-+ */
-+#include <linux/dwarf.h>
-+#include <linux/slab.h>
-+#include <linux/sort.h>
-+#include <linux/types.h>
-+#include <asm/sections.h>
-+#include <asm/memory.h>
-+
-+#define OFFSET_BLOCK_SHIFT		12
-+#define OFFSET_BLOCK(pc)		((pc) >> OFFSET_BLOCK_SHIFT)
+@@ -164,6 +164,44 @@ static struct dwarf_info *dwarf_alloc(struct dwarf_rule *rules, int nrules,
+ 	return NULL;
+ }
+ 
++#ifdef CONFIG_MODULES
 +
 +/*
-+ * There is one struct dwarf_info for vmlinux and one for each module.
++ * Errors encountered in this function should not be fatal. All it will mean
++ * is that stack traces through the module would be considered unreliable.
 + */
-+struct dwarf_info {
-+	struct dwarf_rule	*rules;
-+	int			nrules;
-+	unsigned int		*offsets;
-+
-+	struct dwarf_block	*blocks;
-+	int			nblocks;
-+
-+	unsigned long		*pcs;
-+	unsigned long		base_pc;
-+	unsigned long		end_pc;
-+};
-+
-+static DEFINE_MUTEX(dwarf_mutex);
-+
-+static struct dwarf_info	*vmlinux_dwarf_info;
-+static struct dwarf_info	*cur_info;
-+
-+static int dwarf_compare(const void *arg1, const void *arg2)
++void dwarf_module_alloc(struct module *mod,
++			struct dwarf_rule *rules, size_t rules_size,
++			unsigned long *pcs, size_t pcs_size)
 +{
-+	const unsigned long		*pc1 = arg1;
-+	const unsigned long		*pc2 = arg2;
++	int		nrules, npcs;
 +
-+	if (*pc1 > *pc2)
-+		return 1;
-+	if (*pc1 < *pc2)
-+		return -1;
-+	return 0;
++	mod->dwarf_info = NULL;
++
++	nrules = rules_size / sizeof(*rules);
++	npcs = pcs_size / sizeof(*pcs);
++	if (!nrules || npcs != nrules)
++		return;
++
++	mod->dwarf_info = dwarf_alloc(rules, nrules, pcs);
 +}
 +
-+static void dwarf_swap(void *arg1, void *arg2, int size)
-+{
-+	struct dwarf_rule	*rules = cur_info->rules;
-+	unsigned long		*pc1 = arg1;
-+	unsigned long		*pc2 = arg2;
-+	int			i = (int) (pc1 - cur_info->pcs);
-+	int			j = (int) (pc2 - cur_info->pcs);
-+	unsigned long		tmp_pc;
-+	struct dwarf_rule	tmp_rule;
-+
-+	tmp_pc = *pc1;
-+	*pc1 = *pc2;
-+	*pc2 = tmp_pc;
-+
-+	tmp_rule = rules[i];
-+	rules[i] = rules[j];
-+	rules[j] = tmp_rule;
-+}
-+
-+/*
-+ * Sort DWARF Records based on instruction addresses.
-+ */
-+static void dwarf_sort(struct dwarf_info *info)
-+{
-+	mutex_lock(&dwarf_mutex);
-+
-+	/*
-+	 * cur_info is a global that allows us to sort both arrays in one go.
-+	 */
-+	cur_info = info;
-+	sort(info->pcs, info->nrules, sizeof(*info->pcs),
-+	     dwarf_compare, dwarf_swap);
-+
-+	mutex_unlock(&dwarf_mutex);
-+}
-+
-+#define INVALID_RULE		-1
-+
-+static struct dwarf_info *dwarf_alloc(struct dwarf_rule *rules, int nrules,
-+				      unsigned long *pcs)
++void dwarf_module_free(struct module *mod)
 +{
 +	struct dwarf_info	*info;
-+	unsigned int		*offsets, last_offset;
-+	struct dwarf_block	*blocks;
-+	int			r, b, nblocks;
 +
-+	info = kmalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return NULL;
++	info = mod->dwarf_info;
++	mod->dwarf_info = NULL;
 +
-+	info->rules = rules;
-+	info->nrules = nrules;
-+	info->pcs = pcs;
-+
-+	/* Sort pcs[] and rules[] in the increasing order of PC. */
-+	dwarf_sort(info);
-+
-+	/* Compute the boundaries for the rules. */
-+	info->base_pc = pcs[0];
-+	info->end_pc = pcs[nrules - 1] + rules[nrules - 1].size;
-+
-+	offsets = kmalloc_array(nrules, sizeof(*offsets), GFP_KERNEL);
-+	if (!offsets)
-+		goto free_info;
-+
-+	/* Store the PCs as offsets from the base PC. This is to save memory. */
-+	for (r = 0; r < nrules; r++)
-+		offsets[r] = pcs[r] - info->base_pc;
-+
-+	/* Compute the number of blocks. */
-+	last_offset = offsets[nrules - 1];
-+	nblocks = OFFSET_BLOCK(last_offset) + 1;
-+
-+	blocks = kmalloc_array(nblocks, sizeof(*blocks), GFP_KERNEL);
-+	if (!blocks)
-+		goto free_offsets;
-+
-+	/* Initialize blocks. */
-+	for (b = 0; b < nblocks; b++) {
-+		blocks[b].first_rule = INVALID_RULE;
-+		blocks[b].last_rule = INVALID_RULE;
++	if (info) {
++		kfree(info->blocks);
++		kfree(info->offsets);
++		kfree(info);
 +	}
-+
-+	/* Map rules to blocks. */
-+	for (r = 0; r < nrules; r++) {
-+		b = OFFSET_BLOCK(offsets[r]);
-+		if (blocks[b].first_rule == INVALID_RULE)
-+			blocks[b].first_rule = r;
-+		blocks[b].last_rule = r;
-+	}
-+
-+	/* Initialize empty blocks. */
-+	for (b = 0; b < nblocks; b++) {
-+		if (blocks[b].first_rule == INVALID_RULE) {
-+			blocks[b].first_rule = blocks[b - 1].last_rule;
-+			blocks[b].last_rule = blocks[b - 1].last_rule;
-+		}
-+	}
-+
-+	info->blocks = blocks;
-+	info->nblocks = nblocks;
-+	info->offsets = offsets;
-+
-+	/* PCs for vmlinux is in init data. It will discarded. */
-+	info->pcs = NULL;
-+
-+	return info;
-+free_offsets:
-+	kfree(offsets);
-+free_info:
-+	kfree(info);
-+	return NULL;
 +}
 +
-+static struct dwarf_rule *dwarf_lookup_rule(struct dwarf_info *info,
-+					    unsigned long pc)
-+{
-+	struct dwarf_block	*blocks = info->blocks;
-+	unsigned int		*offsets = info->offsets, off;
-+	struct dwarf_rule	*rule;
-+	int			start, mid, end, n, b;
-+
-+	if (pc < info->base_pc || pc >= info->end_pc)
-+		return NULL;
-+
-+	/* Make PC relative to the base for binary search. */
-+	off = pc - info->base_pc;
-+
-+	/*
-+	 * Locate the block for the offset. Do a binary search between the
-+	 * start and end rules in the block.
-+	 */
-+	b = OFFSET_BLOCK(off);
-+	start = blocks[b].first_rule;
-+	end = blocks[b].last_rule + 1;
-+
-+	if (off < offsets[start])
-+		start--;
-+
-+	/*
-+	 * Binary search. For cache performance, we search in offsets[]
-+	 * first and locate a candidate rule. Then, we perform a range check
-+	 * for the candidate rule at the end. This is so that rules[]
-+	 * is only accessed at the end of the search.
-+	 */
-+	for (n = end - start; n > 1; n = end - start) {
-+		mid = start + (n >> 1);
-+
-+		if (off >= offsets[mid])
-+			start = mid;
-+		else
-+			end = mid;
-+	}
-+
-+	/* Do a final range check. */
-+	rule = &info->rules[start];
-+	if (off >= offsets[start] && off < (offsets[start] + rule->size))
-+		return rule;
-+
-+	return NULL;
-+}
-+
-+struct dwarf_rule *dwarf_lookup(unsigned long pc)
-+{
-+	/*
-+	 * Currently, only looks up vmlinux. Support for modules will be
-+	 * added later.
-+	 */
-+	return dwarf_lookup_rule(vmlinux_dwarf_info, pc);
-+}
-+
-+static int __init dwarf_init_feature(void)
-+{
-+	struct dwarf_rule	*rules;
-+	unsigned long		*pcs;
-+	int			nrules, npcs;
-+
-+	rules = (struct dwarf_rule *) __dwarf_rules_start;
-+	nrules = (__dwarf_rules_end - __dwarf_rules_start) / sizeof(*rules);
-+	if (!nrules)
-+		return -EINVAL;
-+
-+	pcs = (unsigned long *) __dwarf_pcs_start;
-+	npcs = (__dwarf_pcs_end - __dwarf_pcs_start) / sizeof(*pcs);
-+	if (npcs != nrules)
-+		return -EINVAL;
-+
-+	vmlinux_dwarf_info = dwarf_alloc(rules, nrules, pcs);
-+
-+	return vmlinux_dwarf_info ? 0 : -EINVAL;
-+}
-+early_initcall(dwarf_init_feature);
-diff --git a/tools/include/linux/dwarf.h b/tools/include/linux/dwarf.h
-index 16e9dd8c60c8..3df15e79003c 100644
---- a/tools/include/linux/dwarf.h
-+++ b/tools/include/linux/dwarf.h
-@@ -40,4 +40,25 @@ struct dwarf_rule {
- 	short		fp_offset;
- };
- 
-+/*
-+ * The whole text area is divided into fixed sized blocks. Rules are mapped
-+ * to their respective blocks. To find a block for an instruction address,
-+ * the block of the address is located. Then, a binary search is performed
-+ * on just the rules in the block. This minimizes the number of rules to
-+ * be considered for the search.
-+ */
-+struct dwarf_block {
-+	int		first_rule;
-+	int		last_rule;
-+};
-+
-+#ifdef CONFIG_DWARF_FP
-+extern struct dwarf_rule	*dwarf_lookup(unsigned long pc);
-+#else
-+static inline struct dwarf_rule *dwarf_lookup(unsigned long pc)
-+{
-+	return NULL;
-+}
 +#endif
 +
+ static struct dwarf_rule *dwarf_lookup_rule(struct dwarf_info *info,
+ 					    unsigned long pc)
+ {
+@@ -212,13 +250,36 @@ static struct dwarf_rule *dwarf_lookup_rule(struct dwarf_info *info,
+ 	return NULL;
+ }
+ 
++#ifdef CONFIG_MODULES
++
++static struct dwarf_rule *dwarf_module_lookup_rule(unsigned long pc)
++{
++	struct module	*mod;
++
++	mod = __module_address(pc);
++	if (!mod || !mod->dwarf_info)
++		return NULL;
++
++	return dwarf_lookup_rule(mod->dwarf_info, pc);
++}
++
++#else
++
++static struct dwarf_rule *dwarf_module_lookup_rule(unsigned long pc)
++{
++	return NULL;
++}
++
++#endif
++
+ struct dwarf_rule *dwarf_lookup(unsigned long pc)
+ {
+-	/*
+-	 * Currently, only looks up vmlinux. Support for modules will be
+-	 * added later.
+-	 */
+-	return dwarf_lookup_rule(vmlinux_dwarf_info, pc);
++	struct dwarf_rule	*rule;
++
++	rule = dwarf_lookup_rule(vmlinux_dwarf_info, pc);
++	if (!rule)
++		rule = dwarf_module_lookup_rule(pc);
++	return rule;
+ }
+ 
+ static int __init dwarf_init_feature(void)
+diff --git a/kernel/module.c b/kernel/module.c
+index 84a9141a5e15..d9b73995b70a 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -59,6 +59,7 @@
+ #include <linux/audit.h>
+ #include <uapi/linux/module.h>
+ #include "module-internal.h"
++#include <linux/dwarf.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+@@ -2153,6 +2154,7 @@ void __weak module_arch_freeing_init(struct module *mod)
+ }
+ 
+ static void cfi_cleanup(struct module *mod);
++static void module_dwarf_free(struct module *mod);
+ 
+ /* Free a module, remove from lists, etc. */
+ static void free_module(struct module *mod)
+@@ -2175,6 +2177,9 @@ static void free_module(struct module *mod)
+ 	/* Arch-specific cleanup. */
+ 	module_arch_cleanup(mod);
+ 
++	/* Dwarf cleanup. */
++	module_dwarf_free(mod);
++
+ 	/* Module unload stuff */
+ 	module_unload_free(mod);
+ 
+@@ -3946,6 +3951,7 @@ static int unknown_module_param_cb(char *param, char *val, const char *modname,
+ }
+ 
+ static void cfi_init(struct module *mod);
++static void module_dwarf_init(struct module *mod, struct load_info *info);
+ 
+ /*
+  * Allocate and load the module: note that size of section 0 is always
+@@ -4074,6 +4080,8 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 	if (err < 0)
+ 		goto free_modinfo;
+ 
++	module_dwarf_init(mod, info);
++
+ 	flush_module_icache(mod);
+ 
+ 	/* Setup CFI for the module. */
+@@ -4154,6 +4162,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 	kfree(mod->args);
+  free_arch_cleanup:
+ 	cfi_cleanup(mod);
++	module_dwarf_free(mod);
+ 	module_arch_cleanup(mod);
+  free_modinfo:
+ 	free_modinfo(mod);
+@@ -4542,6 +4551,28 @@ static void cfi_cleanup(struct module *mod)
+ #endif
+ }
+ 
++static void module_dwarf_init(struct module *mod, struct load_info *info)
++{
++	Elf_Shdr *dwarf_rules, *dwarf_pcs;
++
++	dwarf_rules = &info->sechdrs[find_sec(info, ".dwarf_rules")];
++	dwarf_pcs = &info->sechdrs[find_sec(info, ".dwarf_pcs")];
++
++	if (!dwarf_rules || !dwarf_pcs)
++		return;
++
++	dwarf_module_alloc(mod,
++			   (void *) dwarf_rules->sh_addr,
++			   dwarf_rules->sh_size,
++			   (void *) dwarf_pcs->sh_addr,
++			   dwarf_pcs->sh_size);
++}
++
++static void module_dwarf_free(struct module *mod)
++{
++	dwarf_module_free(mod);
++}
++
+ /* Maximum number of characters written by module_flags() */
+ #define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
+ 
+diff --git a/tools/include/linux/dwarf.h b/tools/include/linux/dwarf.h
+index 3df15e79003c..aa44a414b0b6 100644
+--- a/tools/include/linux/dwarf.h
++++ b/tools/include/linux/dwarf.h
+@@ -11,6 +11,7 @@
+ #define _LINUX_DWARF_H
+ 
+ #include <linux/types.h>
++#include <linux/module.h>
+ 
+ /*
+  * objtool generates two special sections that contain DWARF information that
+@@ -54,11 +55,28 @@ struct dwarf_block {
+ 
+ #ifdef CONFIG_DWARF_FP
+ extern struct dwarf_rule	*dwarf_lookup(unsigned long pc);
++#ifdef CONFIG_MODULES
++extern void dwarf_module_alloc(struct module *mod,
++			       struct dwarf_rule *rules, size_t rules_size,
++			       unsigned long *pcs, size_t pcs_size);
++extern void dwarf_module_free(struct module *mod);
++#endif
+ #else
+ static inline struct dwarf_rule *dwarf_lookup(unsigned long pc)
+ {
+ 	return NULL;
+ }
++#ifdef CONFIG_MODULES
++static inline void dwarf_module_alloc(struct module *mod,
++					  struct dwarf_rule *rules,
++					  size_t rules_size,
++					  unsigned long *pcs, size_t pcs_size)
++{
++}
++static inline void dwarf_module_free(struct module *mod)
++{
++}
++#endif
+ #endif
+ 
  #endif /* _LINUX_DWARF_H */
 -- 
 2.25.1
