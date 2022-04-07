@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 912884F8913
-	for <lists+live-patching@lfdr.de>; Fri,  8 Apr 2022 00:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB114F89A3
+	for <lists+live-patching@lfdr.de>; Fri,  8 Apr 2022 00:14:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiDGUj7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 7 Apr 2022 16:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
+        id S230303AbiDGUkC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 7 Apr 2022 16:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbiDGUjo (ORCPT
+        with ESMTP id S229861AbiDGUjr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:39:44 -0400
+        Thu, 7 Apr 2022 16:39:47 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 716EE345D4E;
-        Thu,  7 Apr 2022 13:26:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CD32345472;
+        Thu,  7 Apr 2022 13:26:04 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 798F420B9CF0;
-        Thu,  7 Apr 2022 13:26:02 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 798F420B9CF0
+        by linux.microsoft.com (Postfix) with ESMTPSA id 6BEC820BA5AC;
+        Thu,  7 Apr 2022 13:26:03 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6BEC820BA5AC
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649363163;
-        bh=wbp3KQRzbL8wBuPZAF+JGlo4GHESFi/Po72T2KLLghc=;
+        s=default; t=1649363164;
+        bh=BSKbGYlk+dm3FX69ux9O3ehGfhjDAqvE7NkPhunNR+w=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=R25TWtc3BkaKmcHdSg95pqX7kI1wwu5ptGUfUsniDru1WvlWHXVlclaqU2JEnbfzf
-         w61K70ILGt2p/F+/E9xjBa8ZTbPtw8HapvDAXXqegLfOuyVTrYDlcDTboQqXn4DvF9
-         W6BBgdS0l6JCAooirPH5dmPDvzUsF1HitaGFsgd0=
+        b=YTIymf1N9NBeKyBvzU6MdJLvXPltxW9AAuBmMxKb1Rm07zVgOrblLET1kxYHj8gUl
+         DbsBO+fb2Gxzb/MODrfVhS0UBMXrb7wwdnJtvYP7IhKmFudPCi6k2LkTWDVf5vhQC8
+         lSBhPw5k1X5QbhKWb3GW1NJYIpwciPdusiXbaZ1A=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v1 3/9] dwarf: Build the kernel with DWARF information
-Date:   Thu,  7 Apr 2022 15:25:12 -0500
-Message-Id: <20220407202518.19780-4-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v1 4/9] dwarf: Implement DWARF rule processing in the kernel
+Date:   Thu,  7 Apr 2022 15:25:13 -0500
+Message-Id: <20220407202518.19780-5-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220407202518.19780-1-madvenka@linux.microsoft.com>
 References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
@@ -44,9 +44,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -55,175 +54,371 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Define CONFIG_DWARF_FP - to include DWARF based FP validation code.
-Define CONFIG_STACK_VALIDATION - to enable DWARF based FP validation.
+Define a struct dwarf_info to store all of the DWARF information needed to
+lookup the DWARF rules for an instruction address. There is one dwarf_info
+for vmlinux and one for every module.
 
-When these configs are enabled, invoke objtool on relocatable files during
-the kernel build with the following command:
+Implement a lookup function dwarf_lookup(). Given an instruction address,
+the function looks up the corresponding DWARF rules. The unwinder will use
+the lookup function in the future.
 
-	objtool dwarf generate <object-file>
+Sort the rules based on instruction address. This allows a binary search.
 
-Objtool creates the following sections in each object file:
+Divide the text range into fixed sized blocks and map the rules to their
+respective blocks. Given an instruction address, first locate the block
+for the address. Then, perform a binary search within the rules in the
+block. This minimizes the number of rules to consider in the binary search.
 
-.dwarf_rules	Array of DWARF rules
-.dwarf_pcs	Array of PCs, one-to-one with rules
-
-In the future, the kernel can use these sections to find the rules for a
-given instruction address. The unwinder can then compute the FP at an
-instruction address and validate the actual FP with that.
-
-NOTE: CONFIG_STACK_VALIDATION needs to be turned on here. Otherwise, objtool
-will not be invoked during the kernel build process. The actual stack
-validation code will be added separately. This is harmless.
+dwarf_info contains an array of PCs to search. In order to save space, store
+the PCs array as an array of offsets from the base PC of the text range.
+This way, we only need 32 bits to store the PC.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/Kconfig                    |  4 +++-
- arch/arm64/Kconfig              |  2 ++
- arch/arm64/Kconfig.debug        |  5 +++++
- arch/arm64/configs/defconfig    |  1 +
- arch/arm64/kernel/vmlinux.lds.S | 22 ++++++++++++++++++++++
- scripts/Makefile.build          |  4 ++++
- scripts/link-vmlinux.sh         |  6 ++++++
- 7 files changed, 43 insertions(+), 1 deletion(-)
+ arch/arm64/include/asm/sections.h |   4 +
+ include/linux/dwarf.h             |  21 +++
+ kernel/Makefile                   |   1 +
+ kernel/dwarf_fp.c                 | 244 ++++++++++++++++++++++++++++++
+ tools/include/linux/dwarf.h       |  21 +++
+ 5 files changed, 291 insertions(+)
+ create mode 100644 kernel/dwarf_fp.c
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index d3c4ab249e9c..3b0d0db322b9 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1016,7 +1016,9 @@ config HAVE_STACK_VALIDATION
- 	bool
- 	help
- 	  Architecture supports the 'objtool check' host tool command, which
--	  performs compile-time stack metadata validation.
-+	  performs compile-time stack metadata validation. Or, on architectures
-+	  that use DWARF validated frame pointers, it supports the
-+	  'objtool dwarf generate' host tool command.
- 
- config HAVE_RELIABLE_STACKTRACE
- 	bool
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index c4207cf9bb17..c82a3a93297f 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -220,6 +220,8 @@ config ARM64
- 	select SWIOTLB
- 	select SYSCTL_EXCEPTION_TRACE
- 	select THREAD_INFO_IN_TASK
-+	select HAVE_STACK_VALIDATION	if DWARF_FP
-+	select STACK_VALIDATION		if HAVE_STACK_VALIDATION
- 	select HAVE_ARCH_USERFAULTFD_MINOR if USERFAULTFD
- 	select TRACE_IRQFLAGS_SUPPORT
- 	help
-diff --git a/arch/arm64/Kconfig.debug b/arch/arm64/Kconfig.debug
-index 265c4461031f..585967062a1c 100644
---- a/arch/arm64/Kconfig.debug
-+++ b/arch/arm64/Kconfig.debug
-@@ -20,4 +20,9 @@ config ARM64_RELOC_TEST
- 	depends on m
- 	tristate "Relocation testing module"
- 
-+config DWARF_FP
-+	def_bool y
-+	depends on FRAME_POINTER
-+	depends on DEBUG_INFO_DWARF4
-+
- source "drivers/hwtracing/coresight/Kconfig"
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index f2e2b9bdd702..a59c448f442a 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1233,3 +1233,4 @@ CONFIG_DEBUG_KERNEL=y
- # CONFIG_DEBUG_PREEMPT is not set
- # CONFIG_FTRACE is not set
- CONFIG_MEMTEST=y
-+CONFIG_DEBUG_INFO_DWARF4=y
-diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
-index 50bab186c49b..fb3b9970453b 100644
---- a/arch/arm64/kernel/vmlinux.lds.S
-+++ b/arch/arm64/kernel/vmlinux.lds.S
-@@ -122,6 +122,25 @@ jiffies = jiffies_64;
- #define TRAMP_TEXT
- #endif
- 
+diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
+index 152cb35bf9df..d9095a9094b7 100644
+--- a/arch/arm64/include/asm/sections.h
++++ b/arch/arm64/include/asm/sections.h
+@@ -22,5 +22,9 @@ extern char __irqentry_text_start[], __irqentry_text_end[];
+ extern char __mmuoff_data_start[], __mmuoff_data_end[];
+ extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
+ extern char __relocate_new_kernel_start[], __relocate_new_kernel_end[];
 +#ifdef CONFIG_DWARF_FP
-+#define DWARF_RULES					\
-+	. = ALIGN(8);					\
-+	.dwarf_rules : {				\
-+		__dwarf_rules_start = .;		\
-+		KEEP(*(.dwarf_rules))			\
-+		__dwarf_rules_end = .;			\
-+	}
++extern char __dwarf_rules_start[], __dwarf_rules_end[];
++extern char __dwarf_pcs_start[], __dwarf_pcs_end[];
++#endif
+ 
+ #endif /* __ASM_SECTIONS_H */
+diff --git a/include/linux/dwarf.h b/include/linux/dwarf.h
+index 16e9dd8c60c8..3df15e79003c 100644
+--- a/include/linux/dwarf.h
++++ b/include/linux/dwarf.h
+@@ -40,4 +40,25 @@ struct dwarf_rule {
+ 	short		fp_offset;
+ };
+ 
++/*
++ * The whole text area is divided into fixed sized blocks. Rules are mapped
++ * to their respective blocks. To find a block for an instruction address,
++ * the block of the address is located. Then, a binary search is performed
++ * on just the rules in the block. This minimizes the number of rules to
++ * be considered for the search.
++ */
++struct dwarf_block {
++	int		first_rule;
++	int		last_rule;
++};
 +
-+#define DWARF_PCS					\
-+	. = ALIGN(8);					\
-+	__dwarf_pcs_start = .;				\
-+	KEEP(*(.dwarf_pcs))				\
-+	__dwarf_pcs_end = .;
++#ifdef CONFIG_DWARF_FP
++extern struct dwarf_rule	*dwarf_lookup(unsigned long pc);
 +#else
-+#define DWARF_RULES
-+#define DWARF_PCS
++static inline struct dwarf_rule *dwarf_lookup(unsigned long pc)
++{
++	return NULL;
++}
 +#endif
 +
- /*
-  * The size of the PE/COFF section that covers the kernel image, which
-  * runs from _stext to _edata, must be a round multiple of the PE/COFF
-@@ -239,6 +258,7 @@ SECTIONS
- 		CON_INITCALL
- 		INIT_RAM_FS
- 		*(.init.altinstructions .init.bss)	/* from the EFI stub */
-+		DWARF_PCS
- 	}
- 	.exit.data : {
- 		EXIT_DATA
-@@ -291,6 +311,8 @@ SECTIONS
- 		__mmuoff_data_end = .;
- 	}
+ #endif /* _LINUX_DWARF_H */
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 186c49582f45..7582a6323446 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -130,6 +130,7 @@ obj-$(CONFIG_WATCH_QUEUE) += watch_queue.o
  
-+	DWARF_RULES
+ obj-$(CONFIG_RESOURCE_KUNIT_TEST) += resource_kunit.o
+ obj-$(CONFIG_SYSCTL_KUNIT_TEST) += sysctl-test.o
++obj-$(CONFIG_DWARF_FP) += dwarf_fp.o
+ 
+ CFLAGS_stackleak.o += $(DISABLE_STACKLEAK_PLUGIN)
+ obj-$(CONFIG_GCC_PLUGIN_STACKLEAK) += stackleak.o
+diff --git a/kernel/dwarf_fp.c b/kernel/dwarf_fp.c
+new file mode 100644
+index 000000000000..bb14fbe3f3e1
+--- /dev/null
++++ b/kernel/dwarf_fp.c
+@@ -0,0 +1,244 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * dwarf_fp.c - Allocate DWARF info. There will be one info for vmlinux
++ *		and one for every module. Implement a lookup function that
++ *		can locate the rule for a given instruction address.
++ *
++ * Copyright (C) 2021 Microsoft, Inc.
++ * Author: Madhavan T. Venkataraman <madvenka@microsoft.com>
++ */
++#include <linux/dwarf.h>
++#include <linux/slab.h>
++#include <linux/sort.h>
++#include <linux/types.h>
++#include <asm/sections.h>
++#include <asm/memory.h>
 +
- 	PECOFF_EDATA_PADDING
- 	__pecoff_data_rawsize = ABSOLUTE(. - __initdata_begin);
- 	_edata = .;
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 78656b527fe5..5e8d89c64572 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -227,6 +227,9 @@ ifdef CONFIG_STACK_VALIDATION
- 
- objtool := $(objtree)/tools/objtool/objtool
- 
-+ifdef CONFIG_DWARF_FP
-+objtool_args = dwarf generate
-+else
- objtool_args =								\
- 	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
- 	$(if $(part-of-module), --module)				\
-@@ -235,6 +238,7 @@ objtool_args =								\
- 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
- 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)
-+endif
- 
- cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
- cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 5cdd9bc5c385..433e395f977b 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -104,6 +104,12 @@ objtool_link()
- 	local objtoolcmd;
- 	local objtoolopt;
- 
-+	if [ "${CONFIG_LTO_CLANG} ${CONFIG_DWARF_FP}" = "y y" ]
-+	then
-+		tools/objtool/objtool dwarf generate ${1}
-+		return
-+	fi
++#define OFFSET_BLOCK_SHIFT		12
++#define OFFSET_BLOCK(pc)		((pc) >> OFFSET_BLOCK_SHIFT)
 +
- 	if [ "${CONFIG_LTO_CLANG} ${CONFIG_STACK_VALIDATION}" = "y y" ]; then
- 		# Don't perform vmlinux validation unless explicitly requested,
- 		# but run objtool on vmlinux.o now that we have an object file.
++/*
++ * There is one struct dwarf_info for vmlinux and one for each module.
++ */
++struct dwarf_info {
++	struct dwarf_rule	*rules;
++	int			nrules;
++	unsigned int		*offsets;
++
++	struct dwarf_block	*blocks;
++	int			nblocks;
++
++	unsigned long		*pcs;
++	unsigned long		base_pc;
++	unsigned long		end_pc;
++};
++
++static DEFINE_MUTEX(dwarf_mutex);
++
++static struct dwarf_info	*vmlinux_dwarf_info;
++static struct dwarf_info	*cur_info;
++
++static int dwarf_compare(const void *arg1, const void *arg2)
++{
++	const unsigned long		*pc1 = arg1;
++	const unsigned long		*pc2 = arg2;
++
++	if (*pc1 > *pc2)
++		return 1;
++	if (*pc1 < *pc2)
++		return -1;
++	return 0;
++}
++
++static void dwarf_swap(void *arg1, void *arg2, int size)
++{
++	struct dwarf_rule	*rules = cur_info->rules;
++	unsigned long		*pc1 = arg1;
++	unsigned long		*pc2 = arg2;
++	int			i = (int) (pc1 - cur_info->pcs);
++	int			j = (int) (pc2 - cur_info->pcs);
++	unsigned long		tmp_pc;
++	struct dwarf_rule	tmp_rule;
++
++	tmp_pc = *pc1;
++	*pc1 = *pc2;
++	*pc2 = tmp_pc;
++
++	tmp_rule = rules[i];
++	rules[i] = rules[j];
++	rules[j] = tmp_rule;
++}
++
++/*
++ * Sort DWARF Records based on instruction addresses.
++ */
++static void dwarf_sort(struct dwarf_info *info)
++{
++	mutex_lock(&dwarf_mutex);
++
++	/*
++	 * cur_info is a global that allows us to sort both arrays in one go.
++	 */
++	cur_info = info;
++	sort(info->pcs, info->nrules, sizeof(*info->pcs),
++	     dwarf_compare, dwarf_swap);
++
++	mutex_unlock(&dwarf_mutex);
++}
++
++#define INVALID_RULE		-1
++
++static struct dwarf_info *dwarf_alloc(struct dwarf_rule *rules, int nrules,
++				      unsigned long *pcs)
++{
++	struct dwarf_info	*info;
++	unsigned int		*offsets, last_offset;
++	struct dwarf_block	*blocks;
++	int			r, b, nblocks;
++
++	info = kmalloc(sizeof(*info), GFP_KERNEL);
++	if (!info)
++		return NULL;
++
++	info->rules = rules;
++	info->nrules = nrules;
++	info->pcs = pcs;
++
++	/* Sort pcs[] and rules[] in the increasing order of PC. */
++	dwarf_sort(info);
++
++	/* Compute the boundaries for the rules. */
++	info->base_pc = pcs[0];
++	info->end_pc = pcs[nrules - 1] + rules[nrules - 1].size;
++
++	offsets = kmalloc_array(nrules, sizeof(*offsets), GFP_KERNEL);
++	if (!offsets)
++		goto free_info;
++
++	/* Store the PCs as offsets from the base PC. This is to save memory. */
++	for (r = 0; r < nrules; r++)
++		offsets[r] = pcs[r] - info->base_pc;
++
++	/* Compute the number of blocks. */
++	last_offset = offsets[nrules - 1];
++	nblocks = OFFSET_BLOCK(last_offset) + 1;
++
++	blocks = kmalloc_array(nblocks, sizeof(*blocks), GFP_KERNEL);
++	if (!blocks)
++		goto free_offsets;
++
++	/* Initialize blocks. */
++	for (b = 0; b < nblocks; b++) {
++		blocks[b].first_rule = INVALID_RULE;
++		blocks[b].last_rule = INVALID_RULE;
++	}
++
++	/* Map rules to blocks. */
++	for (r = 0; r < nrules; r++) {
++		b = OFFSET_BLOCK(offsets[r]);
++		if (blocks[b].first_rule == INVALID_RULE)
++			blocks[b].first_rule = r;
++		blocks[b].last_rule = r;
++	}
++
++	/* Initialize empty blocks. */
++	for (b = 0; b < nblocks; b++) {
++		if (blocks[b].first_rule == INVALID_RULE) {
++			blocks[b].first_rule = blocks[b - 1].last_rule;
++			blocks[b].last_rule = blocks[b - 1].last_rule;
++		}
++	}
++
++	info->blocks = blocks;
++	info->nblocks = nblocks;
++	info->offsets = offsets;
++
++	/* PCs for vmlinux is in init data. It will discarded. */
++	info->pcs = NULL;
++
++	return info;
++free_offsets:
++	kfree(offsets);
++free_info:
++	kfree(info);
++	return NULL;
++}
++
++static struct dwarf_rule *dwarf_lookup_rule(struct dwarf_info *info,
++					    unsigned long pc)
++{
++	struct dwarf_block	*blocks = info->blocks;
++	unsigned int		*offsets = info->offsets, off;
++	struct dwarf_rule	*rule;
++	int			start, mid, end, n, b;
++
++	if (pc < info->base_pc || pc >= info->end_pc)
++		return NULL;
++
++	/* Make PC relative to the base for binary search. */
++	off = pc - info->base_pc;
++
++	/*
++	 * Locate the block for the offset. Do a binary search between the
++	 * start and end rules in the block.
++	 */
++	b = OFFSET_BLOCK(off);
++	start = blocks[b].first_rule;
++	end = blocks[b].last_rule + 1;
++
++	if (off < offsets[start])
++		start--;
++
++	/*
++	 * Binary search. For cache performance, we search in offsets[]
++	 * first and locate a candidate rule. Then, we perform a range check
++	 * for the candidate rule at the end. This is so that rules[]
++	 * is only accessed at the end of the search.
++	 */
++	for (n = end - start; n > 1; n = end - start) {
++		mid = start + (n >> 1);
++
++		if (off >= offsets[mid])
++			start = mid;
++		else
++			end = mid;
++	}
++
++	/* Do a final range check. */
++	rule = &info->rules[start];
++	if (off >= offsets[start] && off < (offsets[start] + rule->size))
++		return rule;
++
++	return NULL;
++}
++
++struct dwarf_rule *dwarf_lookup(unsigned long pc)
++{
++	/*
++	 * Currently, only looks up vmlinux. Support for modules will be
++	 * added later.
++	 */
++	return dwarf_lookup_rule(vmlinux_dwarf_info, pc);
++}
++
++static int __init dwarf_init_feature(void)
++{
++	struct dwarf_rule	*rules;
++	unsigned long		*pcs;
++	int			nrules, npcs;
++
++	rules = (struct dwarf_rule *) __dwarf_rules_start;
++	nrules = (__dwarf_rules_end - __dwarf_rules_start) / sizeof(*rules);
++	if (!nrules)
++		return -EINVAL;
++
++	pcs = (unsigned long *) __dwarf_pcs_start;
++	npcs = (__dwarf_pcs_end - __dwarf_pcs_start) / sizeof(*pcs);
++	if (npcs != nrules)
++		return -EINVAL;
++
++	vmlinux_dwarf_info = dwarf_alloc(rules, nrules, pcs);
++
++	return vmlinux_dwarf_info ? 0 : -EINVAL;
++}
++early_initcall(dwarf_init_feature);
+diff --git a/tools/include/linux/dwarf.h b/tools/include/linux/dwarf.h
+index 16e9dd8c60c8..3df15e79003c 100644
+--- a/tools/include/linux/dwarf.h
++++ b/tools/include/linux/dwarf.h
+@@ -40,4 +40,25 @@ struct dwarf_rule {
+ 	short		fp_offset;
+ };
+ 
++/*
++ * The whole text area is divided into fixed sized blocks. Rules are mapped
++ * to their respective blocks. To find a block for an instruction address,
++ * the block of the address is located. Then, a binary search is performed
++ * on just the rules in the block. This minimizes the number of rules to
++ * be considered for the search.
++ */
++struct dwarf_block {
++	int		first_rule;
++	int		last_rule;
++};
++
++#ifdef CONFIG_DWARF_FP
++extern struct dwarf_rule	*dwarf_lookup(unsigned long pc);
++#else
++static inline struct dwarf_rule *dwarf_lookup(unsigned long pc)
++{
++	return NULL;
++}
++#endif
++
+ #endif /* _LINUX_DWARF_H */
 -- 
 2.25.1
 
