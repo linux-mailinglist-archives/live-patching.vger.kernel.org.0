@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E9864FF883
-	for <lists+live-patching@lfdr.de>; Wed, 13 Apr 2022 16:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D62F4FF886
+	for <lists+live-patching@lfdr.de>; Wed, 13 Apr 2022 16:06:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236046AbiDMOIN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 13 Apr 2022 10:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45238 "EHLO
+        id S236042AbiDMOIM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 13 Apr 2022 10:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236029AbiDMOIJ (ORCPT
+        with ESMTP id S236032AbiDMOIL (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:08:09 -0400
+        Wed, 13 Apr 2022 10:08:11 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9F84606D2;
-        Wed, 13 Apr 2022 07:05:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9ACF9606D8;
+        Wed, 13 Apr 2022 07:05:49 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id B8FB220C34D4;
-        Wed, 13 Apr 2022 07:05:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B8FB220C34D4
+        by linux.microsoft.com (Postfix) with ESMTPSA id AB40620C34D6;
+        Wed, 13 Apr 2022 07:05:48 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AB40620C34D6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649858748;
-        bh=f/N9Y3AhHP+6L0TxuoLGQXAr5xuXJnauRqGxyO1ZK4A=;
+        s=default; t=1649858749;
+        bh=8+0+tmm79ZrOnS9Zex8wU0cF214m6bSiOKEXuw55Khc=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=Yy4A1rcENqnynxGYVqOz9YprcPsMzJ/nG7o3/WWZQhe6MrXhKE0lZPK9CwLfBLoDh
-         5Fo8NqKsS/71ebUW91iSA5V5R3jN0bT7GGpJT4cIk7bpcuRq9ewvLW/9L6x43fkuq+
-         X0YN7Lak/1EcMQfQsIS+VtEPhUB8CUK/1JJXkhOA=
+        b=Pw/QzKvPDTcghlquUWShrj8eWjhVvq+I6/fEsHWC7vHYZj3fZi5gHMm1Eu4Bhioh1
+         jL2NcGP4CU7Av09C35RGurajGnUFZXPW2rgAChufHAM9pdhrbEUclP1kZEsVXFBZkC
+         5+KYLZz1GWTmC80X0mkhryl4YonZFe8f/AHvuYgg=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [PATCH v14 6/7] arm64: Introduce arch_stack_walk_reliable()
-Date:   Wed, 13 Apr 2022 09:05:27 -0500
-Message-Id: <20220413140528.3815-7-madvenka@linux.microsoft.com>
+Subject: [PATCH v14 7/7] arm64: Select HAVE_RELIABLE_STACKTRACE
+Date:   Wed, 13 Apr 2022 09:05:28 -0500
+Message-Id: <20220413140528.3815-8-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220413140528.3815-1-madvenka@linux.microsoft.com>
 References: <f460a35f88195413bcf7305e5083480aab3ca858>
@@ -54,50 +54,29 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Introduce arch_stack_walk_reliable() for ARM64. This works like
-arch_stack_walk() except that it returns -EINVAL if the stack trace is not
-reliable.
+Select HAVE_RELIABLE_STACKTRACE in arm64/Kconfig to allow
+arch_stack_walk_reliable() to be used.
 
-Until all the reliability checks are in place, arch_stack_walk_reliable()
-may not be used by livepatch. But it may be used by debug and test code.
+Note that this is conditional upon STACK_VALIDATION which will be added
+when frame pointer validation is implemented (say via objtool).
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
-Reviewed-by: Mark Brown <broonie@kernel.org>
 ---
- arch/arm64/kernel/stacktrace.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ arch/arm64/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index eda8581f7dbe..8016ba0e2c96 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -383,3 +383,26 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 57c4c995965f..f7b9d0fecf95 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -225,6 +225,7 @@ config ARM64
+ 	select THREAD_INFO_IN_TASK
+ 	select HAVE_ARCH_USERFAULTFD_MINOR if USERFAULTFD
+ 	select TRACE_IRQFLAGS_SUPPORT
++	select HAVE_RELIABLE_STACKTRACE if FRAME_POINTER && STACK_VALIDATION
+ 	help
+ 	  ARM 64-bit (AArch64) Linux support.
  
- 	unwind(&state, consume_entry, cookie);
- }
-+
-+/*
-+ * arch_stack_walk_reliable() may not be used for livepatch until all of
-+ * the reliability checks are in place in unwind_consume(). However,
-+ * debug and test code can choose to use it even if all the checks are not
-+ * in place.
-+ */
-+noinline int notrace arch_stack_walk_reliable(
-+					stack_trace_consume_fn consume_entry,
-+					void *cookie,
-+					struct task_struct *task)
-+{
-+	struct unwind_state state;
-+	bool reliable;
-+
-+	if (task == current)
-+		unwind_init_from_caller(&state);
-+	else
-+		unwind_init_from_task(&state, task);
-+
-+	reliable = unwind(&state, consume_entry, cookie);
-+	return reliable ? 0 : -EINVAL;
-+}
 -- 
 2.25.1
 
