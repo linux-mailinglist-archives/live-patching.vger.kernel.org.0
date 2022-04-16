@@ -2,100 +2,107 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A56503448
-	for <lists+live-patching@lfdr.de>; Sat, 16 Apr 2022 07:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E72E5034D3
+	for <lists+live-patching@lfdr.de>; Sat, 16 Apr 2022 09:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbiDPCWk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 15 Apr 2022 22:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
+        id S230168AbiDPHw7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 16 Apr 2022 03:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiDPCWd (ORCPT
+        with ESMTP id S230297AbiDPHwa (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:22:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0929759A5B
-        for <live-patching@vger.kernel.org>; Fri, 15 Apr 2022 19:20:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650075602;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WHdkIGOQ4zsXGJMmIQm5BnGhIzeJfdILazCRmHTjv9o=;
-        b=Itj6UmryGVlGsZCDpuFP5eolcQGeqHyYiUUM18a7ivRvEukXJkUp0SBnk/5naAKMxfDfdg
-        3ZWiQYH77kSK8g6pIYAH+1pUsK1pISesH4uKeeW74/EJyEz9uU8AVqWAwux4vV1jRuZQwH
-        xTETAPU/WxXdsx3s5RqFL//QMGRP5Dc=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-F-Icz-trOfeZ3Ug_SVb7mg-1; Fri, 15 Apr 2022 21:07:55 -0400
-X-MC-Unique: F-Icz-trOfeZ3Ug_SVb7mg-1
-Received: by mail-qv1-f69.google.com with SMTP id a3-20020a056214062300b00443cd6175c8so7939773qvx.4
-        for <live-patching@vger.kernel.org>; Fri, 15 Apr 2022 18:07:55 -0700 (PDT)
+        Sat, 16 Apr 2022 03:52:30 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C794289A1
+        for <live-patching@vger.kernel.org>; Sat, 16 Apr 2022 00:49:48 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id a11so7148637qtb.12
+        for <live-patching@vger.kernel.org>; Sat, 16 Apr 2022 00:49:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
+        b=HZfZeLmVOMokRr7TB0HNH09zKqyGhCcsk0PlUzEKmtFlVBNpkZwF9wIj/B2xXPxp6k
+         YY9aBbamXAZyCRBrmOYZspz8K6b2gF261LRzuwCsISEcNHeYmMTgRSRbSuZht4gKtsXj
+         VR+UyF40DZrKhxqsUUuCXUuijysBtsqW4sM0W9eLwOq5PsH7FRlUzXu8Cw6mP6IpEM6M
+         3fAKWiPBttqd+K+hNX/FykzIcUMZtvmQncu0RdTg81rjByoDYCfHBSmFuGV3PEWaFpwI
+         tdvJvL4gLUm4rgKE4HDU9HXjUDgAMUrsNaVJXyrdwfALokVihyDfHlKVc/5WjjZcuju/
+         sbdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WHdkIGOQ4zsXGJMmIQm5BnGhIzeJfdILazCRmHTjv9o=;
-        b=ANJbJdSUHWgr1az7kHOmlwo/FU5D+OmavU3x8YzI3tGt+AuWp02qibKIiHnIP0c6FB
-         zcRgiGiEeynVctT7Fyx+9o4rhOfa/7FvODkpjYuU/cUGfsq0Yp3b3Rf8/QINtKjKt2+n
-         +bpWwrnoUViB+sX8Z//Ad2v+VDNs1JPRNm1p92CdHxWTk4lPFM5UgHXhTsEecqiNWHmd
-         bJxSFmYPp1TgfwbIog9NEo0kESzzt4YRqGIqABA8kP/0K/S6G50NMILWAZ/FJpgC1YGl
-         Nl1iy8m+BjvZFs2Dm9LqnY8jGuIqMznuLaZuBxpXCi0Ld5G5me6GLK5fdFvzB6RvGGLZ
-         Z5Nw==
-X-Gm-Message-State: AOAM531pS7Xpc/cupHailKoyafZQN+C2QT9fciTMsN5XGxMowe7ozSsg
-        l2Niusf5XgXkiLYZZPFJKygpc5L11FA/f7akWGKxEzn6cqxF+mcQNzOjzRNu3GbzmaIt3CQtluq
-        2+3FZb1lSW/u2/Y4woNpvdg9tbg==
-X-Received: by 2002:a05:622a:52:b0:2e2:3248:c8 with SMTP id y18-20020a05622a005200b002e2324800c8mr1114952qtw.519.1650071274684;
-        Fri, 15 Apr 2022 18:07:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzj92WtHRvw4w/rYZujE+e7lZkDtI6tiDDmPcrT25yaw625DfNGxLnrtxheCc/JrQKWUfZT+w==
-X-Received: by 2002:a05:622a:52:b0:2e2:3248:c8 with SMTP id y18-20020a05622a005200b002e2324800c8mr1114931qtw.519.1650071274442;
-        Fri, 15 Apr 2022 18:07:54 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id k66-20020a37ba45000000b0069c5adb2f2fsm3321870qkf.6.2022.04.15.18.07.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 18:07:53 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 18:07:50 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     mark.rutland@arm.com, broonie@kernel.org, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
- Information for frame pointer validation
-Message-ID: <20220416010750.cuf7tf5dgd434kac@treble>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220407202518.19780-1-madvenka@linux.microsoft.com>
- <20220408002147.pk7clzruj6sawj7z@treble>
- <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
+        b=B+hu4h+WDudzvtw00wXCEhJWxvhqcZOtn5Xrg3aRiG2A+6n6CEGRfNeta2leQdS0eo
+         1rw10X7l/4eaVwmGUbGoSGuvyx+NXQoxN0n/OfE1kA/FK+Ea759kPHXA5TgRNcGoAadA
+         979FtBEmJMqd0c7W7zsi0oHUkDaQzANNKuEW2QzaSf8YeMUl9a3kFVtYJ4QIgv/ygShB
+         MEJ6cHF2n/2im3e2hbRrZZPWB6KNFFwK8hhVhcLg+6AiNaHPndgBhzKfHtaZW+canF3L
+         JtBCegFmvQNrchRkZbsUMFzsTU+BooO6jHAnLB69UtJrVSogqB54rybIinVm7YGOQewo
+         T4Vg==
+X-Gm-Message-State: AOAM531UXp3B99XiZuSx3bWT/LJ/lNwgBPtvdAu9qU37h8gdc+oxD5SM
+        3PxdWyzhd1ww6QDJGD4LSbkgxuDLXp8A6HVktpJoy8vz1xo=
+X-Google-Smtp-Source: ABdhPJyqPyIIDwOMiNzFJhSkDqZ/6iH94Womg2Hy8BQP2BbjUwF1UVS7o6Bseq+AYg+HRInV0sp6+4kQ3BaPCAWRw/8=
+X-Received: by 2002:a02:7781:0:b0:326:5eb2:eee5 with SMTP id
+ g123-20020a027781000000b003265eb2eee5mr1252275jac.74.1650095377314; Sat, 16
+ Apr 2022 00:49:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6638:1309:0:0:0:0 with HTTP; Sat, 16 Apr 2022 00:49:36
+ -0700 (PDT)
+Reply-To: daniel.seyba@yahoo.com
+From:   Seyba Daniel <royhalton13@gmail.com>
+Date:   Sat, 16 Apr 2022 09:49:36 +0200
+Message-ID: <CALSxb2y=RX-gk5HjSyih7bSQp1zZmVbBzT+ob_ptsuH8L9eeFQ@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:844 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [royhalton13[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [royhalton13[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 12:18:13PM -0500, Madhavan T. Venkataraman wrote:
-> > There are actually several similarities between your new format and ORC,
-> > which is also an objtool-created DWARF alternative.  It would be
-> > interesting to see if they could be combined somehow.
-> > 
-> 
-> I will certainly look into it. So, if I decide to merge the two, I might want
-> to make a minor change to the ORC structure. Would that be OK with you?
+Hello,
 
-Yes, in fact I would expect it, since ORC is quite x86-specific at the
-moment.  So it would need some abstractions to make it more multi-arch
-friendly.
+I am so sorry contacting you in this means especially when we have never
+met before. I urgently seek your service to represent me in investing in
+your region / country and you will be rewarded for your service without
+affecting your present job with very little time invested in it.
 
--- 
-Josh
+My interest is in buying real estate, private schools or companies with
+potentials for rapid growth in long terms.
 
+So please confirm interest by responding back.
+
+My dearest regards
+
+Seyba Daniel
