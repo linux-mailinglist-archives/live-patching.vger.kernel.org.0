@@ -2,150 +2,98 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4865F505DE9
-	for <lists+live-patching@lfdr.de>; Mon, 18 Apr 2022 20:12:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A78505DFA
+	for <lists+live-patching@lfdr.de>; Mon, 18 Apr 2022 20:38:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345759AbiDRSPP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 18 Apr 2022 14:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
+        id S1347400AbiDRSlf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 18 Apr 2022 14:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238377AbiDRSPO (ORCPT
+        with ESMTP id S1347396AbiDRSlc (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:15:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 941A32DD6F
-        for <live-patching@vger.kernel.org>; Mon, 18 Apr 2022 11:12:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650305553;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1X1P7TWjalEM123qZYEn+EVXAidMNPjn8TgJk2XbTmY=;
-        b=G6O/qBrwP9dEKKsU7HsfIZBjc6zMR3mohydu4Lo9/Mw5CnGfinLqTk7fyVDUNxO8Tyh8ng
-        SjQdw6Ve3rq4EP/gVib1cOsq95ufyChPCUxRbDhI3IHByFwPrPqdw8RsPKZY8j7kNN8t7A
-        rMdHxn2IdNAp1f65Lv/vsy+10NoGVRk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-534-9tjdyVQgO8K919Vc6j2rHw-1; Mon, 18 Apr 2022 14:12:29 -0400
-X-MC-Unique: 9tjdyVQgO8K919Vc6j2rHw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6557C805F46;
-        Mon, 18 Apr 2022 18:12:29 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.8.122])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D2F07200D8EF;
-        Mon, 18 Apr 2022 18:12:28 +0000 (UTC)
-Date:   Mon, 18 Apr 2022 14:12:27 -0400
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Nicolas Schier <nicolas@fjasle.eu>
-Cc:     Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org
-Subject: Re: [RFC PATCH v6 02/12] kbuild: Support for symbols.klp creation
-Message-ID: <Yl2qC7p7NDq4i+9B@redhat.com>
-References: <20220216163940.228309-1-joe.lawrence@redhat.com>
- <20220216163940.228309-3-joe.lawrence@redhat.com>
- <Ylfq7t0uOP7gCPEO@alley>
- <YlhhHSQIWpLG0Cgn@fjasle.eu>
+        Mon, 18 Apr 2022 14:41:32 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10E552BB17;
+        Mon, 18 Apr 2022 11:38:53 -0700 (PDT)
+Received: from [192.168.254.32] (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id D817320C3609;
+        Mon, 18 Apr 2022 11:38:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D817320C3609
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1650307132;
+        bh=H8MyfPervZyuNt3r3vstdEuHzcoj4KqWTgx18POqIdA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=VCRFtQ/Oere8emSN1kRUq5qJ/USQF9Y3CrlpBuBMAXTs9hWhhhcL4s2wFZtCIi4Cu
+         1KssUGysj8cYkXnJARC05+b8ief9dY6f3mCjxYs+8AAG1baC+E0OaTrdtzlehbCxfZ
+         VA3jd3RotO1haVys02m+8VSWn33q4rM+ThZc1y24=
+Message-ID: <e787031d-81fd-b1bc-4619-e8236a938d5c@linux.microsoft.com>
+Date:   Mon, 18 Apr 2022 13:38:51 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlhhHSQIWpLG0Cgn@fjasle.eu>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
+ Information for frame pointer validation
+Content-Language: en-US
+To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     mark.rutland@arm.com, broonie@kernel.org, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220407202518.19780-1-madvenka@linux.microsoft.com>
+ <20220408002147.pk7clzruj6sawj7z@treble>
+ <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
+ <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
+ <20220416005609.3znhltjlhpg475ff@treble>
+ <0abfa1af-81ec-9048-6f95-cf5dda295139@huawei.com>
+ <20220418161145.hj3ahxqjdgqd3qn2@treble>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <20220418161145.hj3ahxqjdgqd3qn2@treble>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-23.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 07:59:57PM +0200, Nicolas Schier wrote:
-> On Thu, Apr 14, 2022 at 11:35:42AM +0200 Petr Mladek wrote:
-> > On Wed 2022-02-16 11:39:30, Joe Lawrence wrote:
-> > > From: Joao Moreira <jmoreira@suse.de>
-> > > 
-> > > For automatic resolution of livepatch relocations, a file called
-> > > symbols.klp is used. This file maps symbols within every compiled kernel
-> > > object allowing the identification of symbols whose name is unique, thus
-> > > relocation can be automatically inferred, or providing information that
-> > > helps developers when code annotation is required for solving the
-> > > matter.
-> > > 
-> > > Add support for creating symbols.klp in the main Makefile. First, ensure
-> > > that built-in is compiled when CONFIG_LIVEPATCH is enabled (as required
-> > > to achieve a complete symbols.klp file). Define the command to build
-> > > symbols.klp (cmd_klp_map) and hook it in the modules rule.
-> > > 
-> > > As it is undesirable to have symbols from livepatch objects inside
-> > > symbols.klp, make livepatches discernible by modifying
-> > > scripts/Makefile.build to create a .livepatch file for each livepatch in
-> > > $(MODVERDIR). This file then used by cmd_klp_map to identify and bypass
-> > > livepatches.
-> > >
-> > > For identifying livepatches during the build process, a flag variable
-> > > LIVEPATCH_$(basetarget).o is considered in scripts/Makefile.build. This
-> > > way, set this flag for the livepatch sample Makefile in
-> > > samples/livepatch/Makefile.
-> > 
-> > I do not see the related code in scripts/Makefile.build.
-> > 
-> > > Finally, Add a clean rule to ensure that symbols.klp is removed during
-> > > clean.
-> > > 
-> > > Notes:
-> > > 
-> > > To achieve a correct symbols.klp file, all kernel objects must be
-> > > considered, thus, its construction require these objects to be priorly
-> > > built. On the other hand, invoking scripts/Makefile.modpost without
-> > > having a complete symbols.klp in place would occasionally lead to
-> > > in-tree livepatches being post-processed incorrectly.
-> > 
-> > Honestly, I do not understand what it exactly means that "in-tree
-> > livepatches would occasionally be post-processed incorrectly".
-> > 
-> > Is it the problem that modpost is not able to handle the unresolved
-> > symbols that have to be updated by klp-convert?
-> > 
-> > > To prevent this
-> > > from becoming a circular dependency, the construction of symbols.klp
-> > > uses non-post-processed kernel objects and such does not cause harm as
-> > > the symbols normally referenced from within livepatches are visible at
-> > > this stage. Also due to these requirements, the spot in-between modules
-> > > compilation and the invocation of scripts/Makefile.modpost was picked
-> > > for hooking cmd_klp_map.
-> > > 
-> > > The approach based on .livepatch files was proposed as an alternative to
-> > > using MODULE_INFO statements. This approach was originally proposed by
-> > > Miroslav Benes as a workaround for identifying livepathes without
-> > > depending on modinfo during the modpost stage. It was moved to this
-> > > patch as the approach also shown to be useful while building
-> > > symbols.klp.
-> > 
-> > All the tricky code is removed in the 5th patch. My understanding is
-> > that the problem causing the cyclic dependency is solved by modifying
-> > modpost.
-> > 
-> > It looks like this patch is outdated and mostly obsoleted. On the
-> > other hand, the commit message in 5th patch is too short.
-> > 
-> > What about merging the two patches and updating the commit message?
+
+
+On 4/18/22 11:11, Josh Poimboeuf wrote:
+> On Mon, Apr 18, 2022 at 08:28:33PM +0800, Chen Zhongjin wrote:
+>> Hi Josh,
+>>
+>> IIUC, ORC on x86 can make reliable stack unwind for this scenario
+>> because objtool validates BP state.
+>>
+>> I'm thinking that on arm64 there's no guarantee that LR will be pushed
+>> onto stack. When we meet similar scenario on arm64, we should recover
+>> (LR, FP) on pt_regs and continue to unwind the stack. And this is
+>> reliable only after we validate (LR, FP).
+>>
+>> So should we track LR on arm64 additionally as track BP on x86? Or can
+>> we just treat (LR, FP) as a pair? because as I know they are always set
+>> up together.
 > 
-> +1
-> 
-> Yes, please merge those patches.  These '$(shell ...)' side-effect lines in the
-> definition of 'cmd_klp_map' are quite confusing.
+> Does the arm64 unwinder have a way to detect kernel pt_regs on the
+> stack?  If so, the simplest solution is to mark all stacks with kernel
+> regs as unreliable.  That's what the x86 FP unwinder does.
 > 
 
-Sure.  Admittedly the kbuild integration is most confusing to me, so I
-leaned heavily on Joao's original notes and Masahiro's gracious tips and
-refactored code.  I'll try cutting to the final version in later patches
-rather than providing all the (confusing) code evolution along the way.
+AFAICT, only the task pt_regs can be detected. For detecting the other pt_regs,
+we would have to set a bit in the FP. IIRC, I had a proposal where I set the LSB in
+the FP stored on the stack. The arm64 folks did not like that approach as it
+would be indistinguishable from a corrupted FP, however unlikely the corruption
+may be.
 
-Thanks,
- 
--- Joe
+Unwind hints can be used for these cases to unwind reliably through them. That is
+probably the current thinking. Mark Rutland can confirm.
 
+Madhavan
