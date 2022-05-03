@@ -2,98 +2,157 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21A78505DFA
-	for <lists+live-patching@lfdr.de>; Mon, 18 Apr 2022 20:38:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6129517BB4
+	for <lists+live-patching@lfdr.de>; Tue,  3 May 2022 03:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347400AbiDRSlf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 18 Apr 2022 14:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
+        id S229661AbiECBcY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 2 May 2022 21:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347396AbiDRSlc (ORCPT
+        with ESMTP id S229598AbiECBcW (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:41:32 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10E552BB17;
-        Mon, 18 Apr 2022 11:38:53 -0700 (PDT)
-Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D817320C3609;
-        Mon, 18 Apr 2022 11:38:51 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D817320C3609
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1650307132;
-        bh=H8MyfPervZyuNt3r3vstdEuHzcoj4KqWTgx18POqIdA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=VCRFtQ/Oere8emSN1kRUq5qJ/USQF9Y3CrlpBuBMAXTs9hWhhhcL4s2wFZtCIi4Cu
-         1KssUGysj8cYkXnJARC05+b8ief9dY6f3mCjxYs+8AAG1baC+E0OaTrdtzlehbCxfZ
-         VA3jd3RotO1haVys02m+8VSWn33q4rM+ThZc1y24=
-Message-ID: <e787031d-81fd-b1bc-4619-e8236a938d5c@linux.microsoft.com>
-Date:   Mon, 18 Apr 2022 13:38:51 -0500
+        Mon, 2 May 2022 21:32:22 -0400
+X-Greylist: delayed 233 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 02 May 2022 18:28:50 PDT
+Received: from condef-01.nifty.com (condef-01.nifty.com [202.248.20.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FEF60D6;
+        Mon,  2 May 2022 18:28:50 -0700 (PDT)
+Received: from conssluserg-05.nifty.com ([10.126.8.84])by condef-01.nifty.com with ESMTP id 24313Ssi000782;
+        Tue, 3 May 2022 10:03:28 +0900
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 2430wEQd008425;
+        Tue, 3 May 2022 09:58:14 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 2430wEQd008425
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651539495;
+        bh=X5yyCYnmChLJWpoXfwlLy3Yqy1jj1u5sgNOnl2YeT+8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=aRZ+3CIUS9z02RmoL6+keYfwec6SGR8l55vY8O7YN/YD8fA9t+YbxYUoUg3cqIxOz
+         7fS/W0toHGLlh1J4q5O+BQW6cZfc82tuWAsBNfozPKIZGpxDw7kwWVv9jFEWbg6Vb3
+         KSDrXCCPSLt2n56dM78W27r4IOXaYu1FDzEHhUH+prkClQWxpLjguUIksVR23AGl6K
+         9yMsGHR4nUxEUogDPdvGUI6jkjCesNhgh3oMFMjeYD8RcmtcZx2e3HWRv1v0yRUBBs
+         SCu/OdFZwzKhNaAD3DHa8+QbV/qS+xAznq2ut1qKO3k63WknYCuACGNW2ZUWMNC3/f
+         +1wneat+0RA+A==
+X-Nifty-SrcIP: [209.85.216.49]
+Received: by mail-pj1-f49.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso776908pjb.5;
+        Mon, 02 May 2022 17:58:14 -0700 (PDT)
+X-Gm-Message-State: AOAM531QEn2sAb+gni98iwGRuMK6bwuLy5czofNjjNHx7mbY8CAF9q2v
+        dpooWwn3PwcRPyBmIAIATsNmE22tns5RTGIcpuA=
+X-Google-Smtp-Source: ABdhPJz+NT1ytlT70sSlhO329TCvsmWaO6n7IEVV8ssLDz1hwnrwWgFpFLcb6+3gsOZ1Cyq8cWbiLDuibQJ8QIabxoU=
+X-Received: by 2002:a17:90a:e517:b0:1d7:5bbd:f9f0 with SMTP id
+ t23-20020a17090ae51700b001d75bbdf9f0mr2001475pjy.77.1651539493892; Mon, 02
+ May 2022 17:58:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
- Information for frame pointer validation
-Content-Language: en-US
-To:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     mark.rutland@arm.com, broonie@kernel.org, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220407202518.19780-1-madvenka@linux.microsoft.com>
- <20220408002147.pk7clzruj6sawj7z@treble>
- <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
- <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
- <20220416005609.3znhltjlhpg475ff@treble>
- <0abfa1af-81ec-9048-6f95-cf5dda295139@huawei.com>
- <20220418161145.hj3ahxqjdgqd3qn2@treble>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <20220418161145.hj3ahxqjdgqd3qn2@treble>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-23.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-2-alexandr.lobakin@intel.com>
+In-Reply-To: <20220209185752.1226407-2-alexandr.lobakin@intel.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 3 May 2022 09:57:09 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAS0SLmpCHB8W=D6kGmfb5S+ESjY674P6q7RiO7faD=wqQ@mail.gmail.com>
+Message-ID: <CAK7LNAS0SLmpCHB8W=D6kGmfb5S+ESjY674P6q7RiO7faD=wqQ@mail.gmail.com>
+Subject: Re: [PATCH v10 01/15] modpost: fix removing numeric suffixes
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     linux-hardening@vger.kernel.org, X86 ML <x86@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        live-patching@vger.kernel.org,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On Thu, Feb 10, 2022 at 3:59 AM Alexander Lobakin
+<alexandr.lobakin@intel.com> wrote:
+>
+> `-z unique-symbol` linker flag which is planned to use with FG-KASLR
+> to simplify livepatching (hopefully globally later on) triggers the
+> following:
+>
+> ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
+>
+> The reason is that for now the condition from remove_dot():
+>
+> if (m && (s[n + m] == '.' || s[n + m] == 0))
+>
+> which was designed to test if it's a dot or a '\0' after the suffix
+> is never satisfied.
+> This is due to that `s[n + m]` always points to the last digit of a
+> numeric suffix, not on the symbol next to it (from a custom debug
+> print added to modpost):
+>
+> param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+>
+> So it's off-by-one and was like that since 2014.
+> Fix this for the sake of upcoming features, but don't bother
+> stable-backporting, as it's well hidden -- apart from that LD flag,
+> can be triggered only by GCC LTO which never landed upstream.
+>
+> Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
 
 
-On 4/18/22 11:11, Josh Poimboeuf wrote:
-> On Mon, Apr 18, 2022 at 08:28:33PM +0800, Chen Zhongjin wrote:
->> Hi Josh,
->>
->> IIUC, ORC on x86 can make reliable stack unwind for this scenario
->> because objtool validates BP state.
->>
->> I'm thinking that on arm64 there's no guarantee that LR will be pushed
->> onto stack. When we meet similar scenario on arm64, we should recover
->> (LR, FP) on pt_regs and continue to unwind the stack. And this is
->> reliable only after we validate (LR, FP).
->>
->> So should we track LR on arm64 additionally as track BP on x86? Or can
->> we just treat (LR, FP) as a pair? because as I know they are always set
->> up together.
-> 
-> Does the arm64 unwinder have a way to detect kernel pt_regs on the
-> stack?  If so, the simplest solution is to mark all stacks with kernel
-> regs as unreliable.  That's what the x86 FP unwinder does.
-> 
+Acked-by: Masahiro Yamada <masahiroy@kernel.org>
 
-AFAICT, only the task pt_regs can be detected. For detecting the other pt_regs,
-we would have to set a bit in the FP. IIRC, I had a proposal where I set the LSB in
-the FP stored on the stack. The arm64 folks did not like that approach as it
-would be indistinguishable from a corrupted FP, however unlikely the corruption
-may be.
 
-Unwind hints can be used for these cases to unwind reliably through them. That is
-probably the current thinking. Mark Rutland can confirm.
 
-Madhavan
+>  scripts/mod/modpost.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index 6bfa33217914..4648b7afe5cc 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -1986,7 +1986,7 @@ static char *remove_dot(char *s)
+>
+>         if (n && s[n]) {
+>                 size_t m = strspn(s + n + 1, "0123456789");
+> -               if (m && (s[n + m] == '.' || s[n + m] == 0))
+> +               if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
+>                         s[n] = 0;
+>
+>                 /* strip trailing .lto */
+> --
+> 2.34.1
+>
+
+
+-- 
+Best Regards
+Masahiro Yamada
