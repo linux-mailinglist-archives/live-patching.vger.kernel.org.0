@@ -2,123 +2,115 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A7D517EF5
-	for <lists+live-patching@lfdr.de>; Tue,  3 May 2022 09:31:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E98E85184A8
+	for <lists+live-patching@lfdr.de>; Tue,  3 May 2022 14:57:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232306AbiECHep (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 3 May 2022 03:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
+        id S235637AbiECNBF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 3 May 2022 09:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbiECHeo (ORCPT
+        with ESMTP id S235642AbiECNBE (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 3 May 2022 03:34:44 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8B817074;
-        Tue,  3 May 2022 00:31:13 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1FF1E1F749;
-        Tue,  3 May 2022 07:31:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651563072; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w+PouQmnZ9GsbOBxPEA2aGYdP7XgCY+B9Qhwz2UQ8+Y=;
-        b=ox1CyHAMnWjmEqLQwK8dSc53AwYIueIddr3rIyNhdAh2r9ypOQwtjkrpz55leMI4agVEFu
-        ifQJhpDj2meSrhcdmc3gQKoNNsVuYOX/JYRryRrYxdQrC4tq6KadDhHNSdJoAa4NxZmGNc
-        jChZK/w6hEpO3GjgQW3mNeQDcjqP/fQ=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 148A12C141;
-        Tue,  3 May 2022 07:31:08 +0000 (UTC)
-Date:   Tue, 3 May 2022 09:31:07 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
+        Tue, 3 May 2022 09:01:04 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7986C38D8C
+        for <live-patching@vger.kernel.org>; Tue,  3 May 2022 05:57:31 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id s14so3463646ild.6
+        for <live-patching@vger.kernel.org>; Tue, 03 May 2022 05:57:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k3hjIGc98aGiWVuDcDXHBqc9tZBRnu/2US5kxHnNwy0=;
+        b=g1CaqJLilGnqsQUIk3eHeGaaAVDveaj9E472eEvs7gveopLPlzYMXVU2zvLL8PAj2i
+         cOMCwsKCg22v4EjYs3tMGvPcip11/JxTYXpGGQLL7Yc2O4JfKRLke/Mm5W/qGI7Fiex4
+         7fFqZbO7Y5C/wIbDpafoslf2Dp2ZCd8FCVQ+8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k3hjIGc98aGiWVuDcDXHBqc9tZBRnu/2US5kxHnNwy0=;
+        b=16AKyCSabQhZcMYkjAf4eFZvjdsUsKIfODOjkohZUYjWLnYSXEICjkYWYO18+T2jU4
+         KPUIRy+tGdkbhLlscYITE4losKOz5+xoQh3IszuPe/gmcFlbDIhYw/UCEfJdXwR+Aat8
+         uf3NaxZXCSzTI35GyE5i6O+418NPy/aBW5VK6tdLs/83DdtYaW/ibmtqS4S0rVShHq4g
+         NJ4FYweI7mlopWvjUv0Qn7bnw1u9Y6mDTcHm83iY3j6Ul0uf98Mrv9Ljsel2ZgoiYvd/
+         iWYkFZeaQdHOCAg9Mu7X3jzMQQeirK6GAUK6QZCRI9nyvlsyTpjcc2kAa9T1A7G5IHWv
+         GyhA==
+X-Gm-Message-State: AOAM5303ycT0IvtHdfSvHlpha+V99Zrdj/S9CHGEpTBytP9v++7p8p5r
+        TgiGMGFEHB1MSZAlguccrH6/Kg==
+X-Google-Smtp-Source: ABdhPJxz20K24XHCZ9JE+Zxs7lTLTqtutf6zphBovISBhMDYZIjwu43VFPOB/45pWi/dbA9pnSFaXA==
+X-Received: by 2002:a05:6e02:11ad:b0:2cd:f8ad:de1b with SMTP id 13-20020a056e0211ad00b002cdf8adde1bmr6355724ilj.159.1651582650865;
+        Tue, 03 May 2022 05:57:30 -0700 (PDT)
+Received: from localhost ([2605:a601:ac0f:820:80d8:f53c:c84d:deaa])
+        by smtp.gmail.com with ESMTPSA id f13-20020a056e020c6d00b002cde6e352ccsm3419323ilj.22.2022.05.03.05.57.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 05:57:30 -0700 (PDT)
+From:   Seth Forshee <sforshee@digitalocean.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v10 01/15] modpost: fix removing numeric suffixes
-Message-ID: <YnDaO5ThkiYkRXbO@alley>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
- <20220209185752.1226407-2-alexandr.lobakin@intel.com>
+        Andy Lutomirski <luto@kernel.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH] entry/kvm: Make vCPU tasks exit to userspace when a livepatch is pending
+Date:   Tue,  3 May 2022 07:57:29 -0500
+Message-Id: <20220503125729.2556498-1-sforshee@digitalocean.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209185752.1226407-2-alexandr.lobakin@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2022-02-09 19:57:38, Alexander Lobakin wrote:
-> `-z unique-symbol` linker flag which is planned to use with FG-KASLR
-> to simplify livepatching (hopefully globally later on) triggers the
-> following:
-> 
-> ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
-> 
-> The reason is that for now the condition from remove_dot():
-> 
-> if (m && (s[n + m] == '.' || s[n + m] == 0))
-> 
-> which was designed to test if it's a dot or a '\0' after the suffix
-> is never satisfied.
-> This is due to that `s[n + m]` always points to the last digit of a
-> numeric suffix, not on the symbol next to it (from a custom debug
-> print added to modpost):
-> 
-> param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+A livepatch migration for a task can only happen when the task is
+sleeping or it exits to userspace. This may happen infrequently for a
+heavily loaded vCPU task, leading to livepatch transition failures.
 
-Yup, the + 1  is for the '.' between the symbol name and the number.
-In the order of apperance it would be: n + 1 + m
+Fake signals will be sent to tasks which fail to migrate via stack
+checking. This will cause running vCPU tasks to exit guest mode, but
+since no signal is pending they return to guest execution without
+exiting to userspace. Fix this by treating a pending livepatch migration
+like a pending signal, exiting to userspace with EINTR. This allows the
+migration to complete, and userspace should re-excecute KVM_RUN to
+resume guest execution.
 
-> So it's off-by-one and was like that since 2014.
-> Fix this for the sake of upcoming features, but don't bother
-> stable-backporting, as it's well hidden -- apart from that LD flag,
-> can be triggered only by GCC LTO which never landed upstream.
-> 
-> Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+In my testing, systems where livepatching would timeout after 60 seconds
+were able to load livepatches within a couple of seconds with this
+change.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+---
+ kernel/entry/kvm.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Best Regards,
-Petr
+diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
+index 9d09f489b60e..efe4b791c253 100644
+--- a/kernel/entry/kvm.c
++++ b/kernel/entry/kvm.c
+@@ -14,7 +14,12 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
+ 				task_work_run();
+ 		}
+ 
+-		if (ti_work & _TIF_SIGPENDING) {
++		/*
++		 * When a livepatch migration is pending, force an exit to
++		 * userspace as though a signal is pending to allow the
++		 * migration to complete.
++		 */
++		if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
+ 			kvm_handle_signal_exit(vcpu);
+ 			return -EINTR;
+ 		}
+-- 
+2.32.0
+
