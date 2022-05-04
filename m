@@ -2,144 +2,172 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B24451A2CB
-	for <lists+live-patching@lfdr.de>; Wed,  4 May 2022 16:57:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A5A51A2F4
+	for <lists+live-patching@lfdr.de>; Wed,  4 May 2022 17:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351481AbiEDPBL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 4 May 2022 11:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49748 "EHLO
+        id S1351722AbiEDPF7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 4 May 2022 11:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240868AbiEDPBK (ORCPT
+        with ESMTP id S1351738AbiEDPFy (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 4 May 2022 11:01:10 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585771A816;
-        Wed,  4 May 2022 07:57:34 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 13BC91F745;
-        Wed,  4 May 2022 14:57:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651676253; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qyasICj/5JSCOXA5cYimIBnYtjDZxXjrA99Ky5I1g2E=;
-        b=r4k5ERPAeu7SFF3HNQ31NTb2paZ2Ea6oMcWqgL/xYLEoeC+sEQ4K64/T2QaipXscit25Fc
-        XnTLKhq3umhrtDFP5ZOZp7VU7/hNtppJEbMvhtXNfeTdj0EijNEoHHIWN+ccIJ0KrTM638
-        biVIblYdc1vQeTBbSrkqQZj6s+yfiWg=
-Received: from suse.cz (pathway.suse.cz [10.100.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E8CED2C141;
-        Wed,  4 May 2022 14:57:32 +0000 (UTC)
-Date:   Wed, 4 May 2022 16:57:32 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Seth Forshee <sforshee@digitalocean.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Wed, 4 May 2022 11:05:54 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4391C125;
+        Wed,  4 May 2022 08:02:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651676533; x=1683212533;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IvFXkRXbvHPObyixE1YmNeS0d+XfUnkt8S7gVuXki5k=;
+  b=AVpvhVXfARB44JLHtYUqyTI3Ba+GNbflUmhnQlTLb6Z5Vi/ehwZvmtEG
+   vYU7qgh7dZY1oA31XpUj/ZHeUiYrRyUm68Ng3CWXfFEniW83Jooyk8F0m
+   h+iaZFxTo7fOWwPrPjReAe269vESR67K2quQADox0hfW6E2ZfLXkp3d/E
+   G1StITImQ92ry0A5hpl8UO2+jllCIk4IiOxdUx5U2/6llIIe9rGIRWJSn
+   0JMJnDuKTOTcX5Qdq4daWCuCqX2WdZ2VXmMpV2b063YqPw92FsI4dt3GE
+   3DFIyU5n2UN6KdirK9HmqYRMWXdB/tfX7mN5dksF4dzyRDrLe/fIlZQ3V
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="266633377"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="266633377"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 08:02:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="568139943"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 04 May 2022 08:02:06 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmGVx-000BSn-K8;
+        Wed, 04 May 2022 15:02:05 +0000
+Date:   Wed, 4 May 2022 23:01:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Seth Forshee <sforshee@digitalocean.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Jens Axboe <axboe@kernel.dk>,
         Sean Christopherson <seanjc@google.com>,
         linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
         kvm@vger.kernel.org
 Subject: Re: [PATCH v2] entry/kvm: Make vCPU tasks exit to userspace when a
  livepatch is pending
-Message-ID: <20220504145732.GD8069@pathway.suse.cz>
+Message-ID: <202205042204.CiMJBtiY-lkp@intel.com>
 References: <20220503174934.2641605-1-sforshee@digitalocean.com>
- <20220504130753.GB8069@pathway.suse.cz>
- <YnKEnqfxSyVmSGYx@do-x1extreme>
- <20220504142809.GC8069@pathway.suse.cz>
- <YnKRN1zXKuh/gIMl@do-x1extreme>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnKRN1zXKuh/gIMl@do-x1extreme>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220503174934.2641605-1-sforshee@digitalocean.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2022-05-04 09:44:07, Seth Forshee wrote:
-> On Wed, May 04, 2022 at 04:28:09PM +0200, Petr Mladek wrote:
-> > On Wed 2022-05-04 08:50:22, Seth Forshee wrote:
-> > > On Wed, May 04, 2022 at 03:07:53PM +0200, Petr Mladek wrote:
-> > > > On Tue 2022-05-03 12:49:34, Seth Forshee wrote:
-> > > > > A task can be livepatched only when it is sleeping or it exits to
-> > > > > userspace. This may happen infrequently for a heavily loaded vCPU task,
-> > > > > leading to livepatch transition failures.
-> > > > 
-> > > > The problem was solved by sending a fake signal, see the commit
-> > > > 0b3d52790e1cfd6b80b826 ("livepatch: Remove signal sysfs attribute").
-> > > > It was achieved by calling signal_wake_up(). It set TIF_SIGPENDING
-> > > > and woke the task. It interrupted the syscall and the task was
-> > > > transitioned when leaving to the userspace.
-> > > > 
-> > > > signal_wake_up() was later replaced by set_notify_signal(),
-> > > > see the commit 8df1947c71ee53c7e21 ("livepatch: Replace
-> > > > the fake signal sending with TIF_NOTIFY_SIGNAL infrastructure").
-> > > > The difference is that set_notify_signal() uses TIF_NOTIFY_SIGNAL
-> > > > instead of TIF_SIGPENDING.
-> > > > 
-> > > > The effect is the same when running on a real hardware. The syscall
-> > > > gets interrupted and exit_to_user_mode_loop() is called where
-> > > > the livepatch state is updated (task migrated).
-> > > > 
-> > > > But it works a different way in kvm where the task works are
-> > > > called in the guest mode and the task does not return into
-> > > > the user space in the host mode.
-> > > 
-> > > > > --- a/kernel/entry/kvm.c
-> > > > > +++ b/kernel/entry/kvm.c
-> > > > > @@ -14,7 +14,12 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-> > > > >  				task_work_run();
-> > > > >  		}
-> > > > >  
-> > > > > -		if (ti_work & _TIF_SIGPENDING) {
-> > > > > +		/*
-> > > > > +		 * When a livepatch is pending, force an exit to userspace
-> > > > > +		 * as though a signal is pending to allow the task to be
-> > > > > +		 * patched.
-> > > > > +		 */
-> > > > > +		if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
-> > > > >  			kvm_handle_signal_exit(vcpu);
-> > 
-> > Another problem. Is it safe to call kvm_handle_signal_exit(vcpu)
-> > for kthreads?
-> > 
-> > kthreads have _TIF_PATCH_PENDING when they need the livepatch transition.
-> > But kthreads never leave kernel so we do not send the fake signal
-> > signals to them.
-> 
-> xfer_to_guest_mode_handle_work() should only be getting called on user
-> threads running ioctl(KVM_RUN).
+Hi Seth,
 
-Great!
+Thank you for the patch! Yet something to improve:
 
-> > In this case, we should revert the commit 8df1947c71ee53c7e21
-> > ("livepatch: Replace the fake signal sending with TIF_NOTIFY_SIGNAL
-> > infrastructure"). The flag TIF_NOTIFY_SIGNAL clearly does not guarantee
-> > restarting the syscall or exiting to the user space with -EINTR.
-> > 
-> > It should solve this problem. And it looks like a cleaner solution
-> > to me.
-> 
-> It looks like that should fix the issue. I'll test to confirm.
+[auto build test ERROR on v5.18-rc5]
+[also build test ERROR on next-20220504]
+[cannot apply to tip/core/entry]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Even better solution would be what Eric suggested, see
-https://lore.kernel.org/r/87r159fkmp.fsf@email.froward.int.ebiederm.org
+url:    https://github.com/intel-lab-lkp/linux/commits/Seth-Forshee/entry-kvm-Make-vCPU-tasks-exit-to-userspace-when-a-livepatch-is-pending/20220504-015159
+base:    672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+config: arm64-randconfig-r003-20220501 (https://download.01.org/0day-ci/archive/20220504/202205042204.CiMJBtiY-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/1c97c02f02b9f8e6b8e1f11657f950510f9c828e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Seth-Forshee/entry-kvm-Make-vCPU-tasks-exit-to-userspace-when-a-livepatch-is-pending/20220504-015159
+        git checkout 1c97c02f02b9f8e6b8e1f11657f950510f9c828e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-But we need to make sure that the syscall really gets restarted
-when the livepatch state is updated.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Best Regards,
-Petr
+All errors (new ones prefixed by >>):
+
+   In file included from arch/arm64/kvm/arm.c:9:
+>> include/linux/entry-kvm.h:80:22: error: use of undeclared identifier '_TIF_PATCH_PENDING'
+           return !!(ti_work & XFER_TO_GUEST_MODE_WORK);
+                               ^
+   include/linux/entry-kvm.h:20:41: note: expanded from macro 'XFER_TO_GUEST_MODE_WORK'
+           (_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |     \
+                                                  ^
+   In file included from arch/arm64/kvm/arm.c:17:
+   include/linux/mman.h:158:9: warning: division by zero is undefined [-Wdivision-by-zero]
+                  _calc_vm_trans(flags, MAP_SYNC,       VM_SYNC      ) |
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/mman.h:136:21: note: expanded from macro '_calc_vm_trans'
+      : ((x) & (bit1)) / ((bit1) / (bit2))))
+                       ^ ~~~~~~~~~~~~~~~~~
+   1 warning and 1 error generated.
+--
+   In file included from kernel/entry/kvm.c:3:
+>> include/linux/entry-kvm.h:80:22: error: use of undeclared identifier '_TIF_PATCH_PENDING'
+           return !!(ti_work & XFER_TO_GUEST_MODE_WORK);
+                               ^
+   include/linux/entry-kvm.h:20:41: note: expanded from macro 'XFER_TO_GUEST_MODE_WORK'
+           (_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |     \
+                                                  ^
+>> kernel/entry/kvm.c:22:36: error: use of undeclared identifier '_TIF_PATCH_PENDING'
+                   if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
+                                                    ^
+   kernel/entry/kvm.c:38:21: error: use of undeclared identifier '_TIF_PATCH_PENDING'
+           } while (ti_work & XFER_TO_GUEST_MODE_WORK || need_resched());
+                              ^
+   include/linux/entry-kvm.h:20:41: note: expanded from macro 'XFER_TO_GUEST_MODE_WORK'
+           (_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |     \
+                                                  ^
+   kernel/entry/kvm.c:55:18: error: use of undeclared identifier '_TIF_PATCH_PENDING'
+           if (!(ti_work & XFER_TO_GUEST_MODE_WORK))
+                           ^
+   include/linux/entry-kvm.h:20:41: note: expanded from macro 'XFER_TO_GUEST_MODE_WORK'
+           (_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |     \
+                                                  ^
+   4 errors generated.
+
+
+vim +/_TIF_PATCH_PENDING +80 include/linux/entry-kvm.h
+
+4ae7dc97f726ea Frederic Weisbecker 2021-02-01  67  
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  68  /**
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  69   * __xfer_to_guest_mode_work_pending - Check if work is pending
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  70   *
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  71   * Returns: True if work pending, False otherwise.
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  72   *
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  73   * Bare variant of xfer_to_guest_mode_work_pending(). Can be called from
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  74   * interrupt enabled code for racy quick checks with care.
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  75   */
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  76  static inline bool __xfer_to_guest_mode_work_pending(void)
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  77  {
+6ce895128b3bff Mark Rutland        2021-11-29  78  	unsigned long ti_work = read_thread_flags();
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  79  
+935ace2fb5cc49 Thomas Gleixner     2020-07-22 @80  	return !!(ti_work & XFER_TO_GUEST_MODE_WORK);
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  81  }
+935ace2fb5cc49 Thomas Gleixner     2020-07-22  82  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
