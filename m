@@ -2,56 +2,41 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 776F851CCEA
-	for <lists+live-patching@lfdr.de>; Fri,  6 May 2022 01:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 807EF51D375
+	for <lists+live-patching@lfdr.de>; Fri,  6 May 2022 10:35:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386913AbiEEXwO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 5 May 2022 19:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        id S244737AbiEFIiq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 6 May 2022 04:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241377AbiEEXwN (ORCPT
+        with ESMTP id S1390172AbiEFIin (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 5 May 2022 19:52:13 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B337A6006C
-        for <live-patching@vger.kernel.org>; Thu,  5 May 2022 16:48:31 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id t13so4795848pgn.8
-        for <live-patching@vger.kernel.org>; Thu, 05 May 2022 16:48:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LrHk44z4rhr+J8P+Rl2yRgTdAt0a5Ds6zMRJmsPQsTg=;
-        b=lQJ3Otq3nhLCj2W3ISX1HqEVDcuEnYnmPTO2Pgahhtp8IXa34EJPxmIYEqq3XrYBy2
-         YWir2n7uRXVITSB/iPQkhoCc8FBMwguoEEmXqXJH+I4z01cOaXd3ou1YYRykm5ixBmnj
-         h6CfFExsGoX5saQ2m8W196HLuEvfUG7vH9ykc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LrHk44z4rhr+J8P+Rl2yRgTdAt0a5Ds6zMRJmsPQsTg=;
-        b=joFtiJMfUWSImWwkVUyi+TeyyVz1vtbYefIL/yZ72T6ljHhCrczijGxmUsMClHNnEz
-         yu0HRjVxuzfnu10gS8C1yJi3lNHUYngl0gjvZFYNSlFh4QQRPzeX/Nzqj5ioxetMj64N
-         Ibd5bnbALwPBdmc6ifjuIbT/w5WDId+r83o02NN7pX0JD5nwgia7oWqthIRW07VCo7it
-         GPMhfsa6J0m7/+H3C5ShzYNounytSRRnYh4iXcWkvvOliORpDQFQWX9a3pT5q4RBxjUi
-         XBPoTAPlE40vrCeKED+UOiLCqF5P557mRkthyVkKNo8dvmbdtfem0tVmShgxe3ertJbi
-         T0JA==
-X-Gm-Message-State: AOAM532xWmEpE4kcSSdpece+X+a2iJ8aHyxi+sFlRz7Ba9uvJ0KDulqn
-        ZGZ0U0IJ1+btUHzIPBno4KwRMQ==
-X-Google-Smtp-Source: ABdhPJwZzdK0aRzo196BP9xtL6rZgazn73Kt6i9jFhMZ+TkZuwzvzHY0agoDbi6KbW7R7hmyS02nWQ==
-X-Received: by 2002:a62:d415:0:b0:50d:baaf:4156 with SMTP id a21-20020a62d415000000b0050dbaaf4156mr804485pfh.28.1651794511222;
-        Thu, 05 May 2022 16:48:31 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id a6-20020a636606000000b003c60b1f0dbasm1903053pgc.35.2022.05.05.16.48.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 16:48:30 -0700 (PDT)
-Date:   Thu, 5 May 2022 16:48:29 -0700
-From:   Kees Cook <keescook@chromium.org>
+        Fri, 6 May 2022 04:38:43 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598E862BF1;
+        Fri,  6 May 2022 01:35:01 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id AB3B021A63;
+        Fri,  6 May 2022 08:34:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651826099; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=E8fz2Qj+5LloVB8vVJMGmoituacjkJeR6Cyj3S17Ync=;
+        b=kdq0pyczu0FGQoWPRbX1YpR0o5BSPmfjwNvpAxR1AlStsynwpp7SB/tNoYJxLftFy/aiUv
+        TZXJf8hGYPOFT/rqwaq/jR8vnukH8M+voTZMHiaqCo+4BZBydvA2Tph0SGDOBhQj3nX2Vs
+        RrOb1FgrjYdDKxGn/SJkjE9UrMN8MUY=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id C16E32C142;
+        Fri,  6 May 2022 08:34:58 +0000 (UTC)
+Date:   Fri, 6 May 2022 10:34:58 +0200
+From:   Petr Mladek <pmladek@suse.com>
 To:     Miguel Ojeda <ojeda@kernel.org>
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -72,6 +57,7 @@ Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Nathan Chancellor <nathan@kernel.org>,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Andi Kleen <ak@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
         Adrian Hunter <adrian.hunter@intel.com>,
         linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
         linux-perf-users@vger.kernel.org, rust-for-linux@vger.kernel.org,
@@ -80,24 +66,24 @@ Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>
 Subject: Re: [PATCH v1 3/3] kallsyms: increase maximum kernel symbol length
  to 512
-Message-ID: <202205051647.184C8B2@keescook>
+Message-ID: <YnTdslR0jhUNo0lu@alley>
 References: <20220505191704.22812-1-ojeda@kernel.org>
  <20220505191704.22812-4-ojeda@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20220505191704.22812-4-ojeda@kernel.org>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, May 05, 2022 at 09:16:45PM +0200, Miguel Ojeda wrote:
+On Thu 2022-05-05 21:16:45, Miguel Ojeda wrote:
 > Rust symbols can become quite long due to namespacing introduced
 > by modules, types, traits, generics, etc. For instance,
 > the following code:
@@ -135,9 +121,13 @@ On Thu, May 05, 2022 at 09:16:45PM +0200, Miguel Ojeda wrote:
 > Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
 > Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 
-I look forward to aiming my demangler at /proc/kallsyms. ;)
+I was primary interested into the livepatching code.
+But the entire patch looks good:
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
--- 
-Kees Cook
+I just hope that it will not cause stack overflows
+somewhere.
+
+Best Regards,
+Petr
