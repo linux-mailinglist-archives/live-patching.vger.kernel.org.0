@@ -2,98 +2,174 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F21B451E574
-	for <lists+live-patching@lfdr.de>; Sat,  7 May 2022 10:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21C2E51E610
+	for <lists+live-patching@lfdr.de>; Sat,  7 May 2022 11:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383635AbiEGIKN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 7 May 2022 04:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
+        id S1446169AbiEGJdE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sat, 7 May 2022 05:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376461AbiEGIKK (ORCPT
+        with ESMTP id S1446120AbiEGJdC (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sat, 7 May 2022 04:10:10 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7003B21E2D
-        for <live-patching@vger.kernel.org>; Sat,  7 May 2022 01:06:20 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id c14so8094249pfn.2
-        for <live-patching@vger.kernel.org>; Sat, 07 May 2022 01:06:20 -0700 (PDT)
+        Sat, 7 May 2022 05:33:02 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5035556220
+        for <live-patching@vger.kernel.org>; Sat,  7 May 2022 02:29:16 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id w4so12992452wrg.12
+        for <live-patching@vger.kernel.org>; Sat, 07 May 2022 02:29:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aWQfnp8p3Sa/CZYziUv8sJFvgH/DhWMow1Ki0jzKInQ=;
-        b=d7sa/vJyLfF9BR72n72H6iTcORw0kbeaXS21B2+FXdbG66FYCW7FBC02LCRup2bO0T
-         VbztyRzKE447Dsr5bQyIcT/N6Q1+c4/IXMaJT3GrJsKz9ltWgOCmeIOcoalYl/8o+V6Q
-         JCxhKqmLoYC0fCUjLs/ACK38p33kuWfTfdyYo=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=O46NG4I/Ehd11dycpk2RjsN/cJ86swAD+6NyN8Wu3oM=;
+        b=pEJT+rz+VfSx+i3BXIXcXBka/5Yg7AcIDPJqzI64zSkN1WUpTztaU5kum35UgrsfF9
+         DzOjJPlOXIfoUzWT5jSe26grmDrcE5y4YRZ4YR+l+KCgM4xNILwg4UsizkKWsczzl+De
+         nX6pK3uT0jQrV4KFZSgHFgFeD2qqS/Q51S4GZiQOJ4lfG8T7AE63PEcYjY2oxMoY9aqJ
+         KPWdvUwiryRluS9vjmaRgu1H83GjAAQS1C7TsJMRlMrMgQMCmzL3mmrDMbW3OJyOj5Y9
+         EQP9LAp0ElcPFJCYbA8qRiTa5YvhVwVsbiztmAuOvi5ZjZGIAm5UQjWZ/T6CG7ioVXxa
+         fe5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aWQfnp8p3Sa/CZYziUv8sJFvgH/DhWMow1Ki0jzKInQ=;
-        b=q/d/yL9H5ZincGUrN8itonI8qM9AUTbkkWchGrJRPScMrUJCWx4XtRvAow+KfSJsN0
-         1BGeH2f8DQBcdYV8qa+QeqIPYJ2W1uxcnscu0jLIP6VrkqxrX8Ebv+XAae8F98V+F4eV
-         HLkMigjNeX4AW2Ju6eoHx5PwjILztcExKmMj32+rSESpPDk7yMI5VCEWxxtyvwYqkPQS
-         OnFwUCF4aYuy5b5yF76osgBJgC4zewBUqU2qgtTo2CR0JSk6hpJiRilRZtOvCHE2/X2K
-         BSNWzhA8NKfDT2H/BNuaI6KiZeu5QF2aOfPffUbltLfAS3ohvP7KJcwSovlQXHi2iSFM
-         uWRA==
-X-Gm-Message-State: AOAM533qDkQImfbmpkhRuuU1agXFi280MXDIBYpfiHUawcQS4ODOgQRm
-        Gj+lwDpSpn6E7wHy4qtXiMIaIA==
-X-Google-Smtp-Source: ABdhPJyPh1ezOw2sy0EQ6kjmLgD1rSsrITTXAJHnhVIq/PJRePuQKh9Kel3rSaI68O428UlbxAszUg==
-X-Received: by 2002:a63:6fc4:0:b0:393:9567:16dc with SMTP id k187-20020a636fc4000000b00393956716dcmr5757855pgc.593.1651910779774;
-        Sat, 07 May 2022 01:06:19 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j192-20020a638bc9000000b003c14af505fcsm4564376pge.20.2022.05.07.01.06.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 May 2022 01:06:19 -0700 (PDT)
-Date:   Sat, 7 May 2022 01:06:18 -0700
-From:   Kees Cook <keescook@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O46NG4I/Ehd11dycpk2RjsN/cJ86swAD+6NyN8Wu3oM=;
+        b=O4R3Bs8VrQU/+oyNMQzfEQjJ2VKnCD444tNB5140Wt25ly1+YDkHKjBOHf/rny0JhK
+         XkysahFZbJS1kZwvRLXHXIvPvt9S3Qktfcs4f2schulGc49hSBcfH5+pTMtaLgfK272u
+         cn+fXjdr7/XFbB4miPINyiD76RVt0hfKqk1WA+gzZua6VBC4pgJrt3Fw85nXLFczYzeX
+         qxlXjj3SrdZFD9PFu6Lp4nu4DvBzlTDyHgZ2iF0wTPZG3J9ssnk2Mp8GjGAlxs++kbHG
+         JI38Ry2JXouay6mKlfSDYQm5YttOsGT2O673zGJ2kSDaoLJDi2AgxxtUQXMFUsTj2NpK
+         EJPQ==
+X-Gm-Message-State: AOAM533IEW7XBQgYOs07/75Z8M5KCIysDD0qpYn+VyGeZ2kpGyP5zerx
+        8PRjuXmt33RYR9tYVeW2wOTF8LTODUXK6fYTUrrt2w==
+X-Google-Smtp-Source: ABdhPJwmX5iwSt0ucutb+u1FHWUawG0af5FN3nvZMbahKeV3F7Ce0O0VSgqTSlIoIeUQl+Jhb3u7MOWpzqebYk3FohA=
+X-Received: by 2002:a5d:4307:0:b0:207:9f82:e238 with SMTP id
+ h7-20020a5d4307000000b002079f82e238mr6283084wrq.430.1651915754752; Sat, 07
+ May 2022 02:29:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220507052451.12890-1-ojeda@kernel.org>
+In-Reply-To: <20220507052451.12890-1-ojeda@kernel.org>
+From:   David Gow <davidgow@google.com>
+Date:   Sat, 7 May 2022 17:29:03 +0800
+Message-ID: <CABVgOSm5S2=QYnHJ+B0JbYtFYKBDRZiOhE5YMKKUKZU56d17HQ@mail.gmail.com>
+Subject: Re: [PATCH v6 00/23] Rust support
 To:     Miguel Ojeda <ojeda@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rust-for-linux@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Jarkko Sakkinen <jarkko@kernel.org>,
-        kunit-dev@googlegroups.com, linux-arm-kernel@lists.infradead.org,
-        linux-doc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-gpio@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
         linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-riscv@lists.infradead.org, live-patching@vger.kernel.org
-Subject: Re: [PATCH v6 00/23] Rust support
-Message-ID: <202205070056.ACC3C3D@keescook>
-References: <20220507052451.12890-1-ojeda@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220507052451.12890-1-ojeda@kernel.org>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Sat, May 07, 2022 at 07:23:58AM +0200, Miguel Ojeda wrote:
-> ## Patch series status
-> 
-> The Rust support is still to be considered experimental. However,
-> support is good enough that kernel developers can start working on the
-> Rust abstractions for subsystems and write drivers and other modules.
+On Sat, May 7, 2022 at 1:25 PM Miguel Ojeda <ojeda@kernel.org> wrote:
+>
+> Rust support
+>
 
-I'd really like to see this landed for a few reasons:
+<...>
 
-- It's under active development, and I'd rather review the changes
-  "normally", incrementally, etc. Right now it can be hard to re-review
-  some of the "mostly the same each version" patches in the series.
+>   - Support running documentation tests in-kernel, based on KUnit.
+>
+>     Rust documentation tests are typically examples of usage of any
+>     item (e.g. function, struct, module...). They are very convenient
+>     because they are just written alongside the documentation, e.g.:
+>
+>         /// Sums two numbers.
+>         ///
+>         /// # Examples
+>         ///
+>         /// ```
+>         /// assert_eq!(mymod::f(10, 20), 30);
+>         /// ```
+>         pub fn f(a: i32, b: i32) -> i32 {
+>             a + b
+>         }
+>
+>     So far, we were compiling and running them in the host as any
+>     other Rust documentation test. However, that meant we could not
+>     run tests that used kernel APIs (though we were compile-testing
+>     them, which was already useful to keep the documentation in sync
+>     with the code).
+>
+>     Now, the documentation tests for the `kernel` crate are
+>     transformed into a KUnit test suite during compilation and run
+>     within the kernel at boot time, if enabled. This means now we can
+>     run the tests that use kernel APIs.
+>
+>     They look like this (their name is generated by `rustdoc`, based
+>     on the file and line):
+>
+>         [    0.581961] TAP version 14
+>         [    0.582092] 1..1
+>         [    0.582267]     # Subtest: rust_kernel_doctests
+>         [    0.582358]     1..70
+>         [    0.583626]     ok 1 - rust_kernel_doctest_build_assert_rs_12_0
+>         [    0.584579]     ok 2 - rust_kernel_doctest_build_assert_rs_55_0
+>         [    0.587357]     ok 3 - rust_kernel_doctest_device_rs_361_0
+>         [    0.588037]     ok 4 - rust_kernel_doctest_device_rs_386_0
+>
+>         ...
+>
+>         [    0.659249]     ok 69 - rust_kernel_doctest_types_rs_445_0
+>         [    0.660451]     ok 70 - rust_kernel_doctest_types_rs_509_0
+>         [    0.660680] # rust_kernel_doctests: pass:70 fail:0 skip:0 total:70
+>         [    0.660894] # Totals: pass:70 fail:0 skip:0 total:70
+>         [    0.661135] ok 1 - rust_kernel_doctests
+>
+>     There are other benefits from this, such as being able to remove
+>     unneeded wrapper functions (that were used to avoid running
+>     some tests) as well as ensuring test code would actually compile
+>     within the kernel (e.g. `alloc` used different `cfg`s).
 
-- I'd like to break the catch-22 of "ask for a new driver to be
-  written in rust but the rust support isn't landed" vs "the rust
-  support isn't landed because there aren't enough drivers". It
-  really feels like "release early, release often" is needed here;
-  it's hard to develop against -next. :)
+It's great to see some KUnit support here!
 
-Should we give it a try for this coming merge window?
+It's also possible to run these tests using the KUnit wrapper tool with:
+$ ./tools/testing/kunit/kunit.py run --kconfig_add CONFIG_RUST=y
+--make_options LLVM=1 --arch x86_64 'rust_kernel_doctests'
 
--- 
-Kees Cook
+That also nicely formats the results.
+
+(It obviously doesn't run under UML yet, though I did get it to work
+after indiscriminately hacking out everything that wasn't supported.
+Assuming we can hide the irq and iomem stuff behind the appropriate
+config options, and rework some of the architecture detection to
+either support SUBARCH or check for X86_64 instead of X86, it should
+be pretty easy to get going.)
+
+That all being said, I can't say I'm thrilled with the test names
+here: none of them are particularly descriptive, and they'll probably
+not be static (which would make it difficult to track results /
+regressions / etc between kernel versions). Neither of those are
+necessarily deal breakers, though it might make sense to hide them
+behind a kernel option (like all other KUnit tests) so that they can
+easily be excluded where they would otherwise clutter up results. (And
+if there's a way to properly name them, or maybe even split them into
+per-file or per-module suites, that would make them a bit easier to
+deal.) Additionally, there are some plans to taint the kernel[1] when
+KUnit tests run, so having a way to turn them off would be very
+useful.
+
+Regardless, this is very neat, and I'm looking forward to taking a
+closer look at it.
+
+Cheers,
+-- David
+
+[1]: https://lore.kernel.org/linux-kselftest/20220429043913.626647-1-davidgow@google.com/
