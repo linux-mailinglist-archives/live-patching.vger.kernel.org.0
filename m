@@ -2,99 +2,116 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E659452040F
-	for <lists+live-patching@lfdr.de>; Mon,  9 May 2022 20:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C22755204F8
+	for <lists+live-patching@lfdr.de>; Mon,  9 May 2022 21:11:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239879AbiEISEH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 9 May 2022 14:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
+        id S240449AbiEITOW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 9 May 2022 15:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239925AbiEISEE (ORCPT
+        with ESMTP id S240446AbiEITOV (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 9 May 2022 14:04:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A16522A2F9;
-        Mon,  9 May 2022 11:00:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 989E0615D7;
-        Mon,  9 May 2022 18:00:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 970D7C385B2;
-        Mon,  9 May 2022 18:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652119207;
-        bh=+6bV93j1JQUzPiPeS8iW/xrGtw1Q0Og6QhFnv7F7R9o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z2PsqCWAw810MTRoGUm/er10ah2EoSb8C3TIGr0VVdrDmjwgg/sscRHBpjkY3W7jM
-         VhsZ9+kX73Xe+ftMhQnNipnQvsP/30DiVxzTZGYa2jfaUN9MukhesI6yzuyk/rR/kO
-         L3XW8VteSAYo6nK3bPwi1L5nJAS7JzUj+p/08wT9/KUujrggG25DvydboTo417/4Xh
-         wtncttQe3b6xivcbNmQouhyr3qQDCu2swo9sUlPMAxeKDUnp00/e1qgYQ3B9Yfvn1G
-         07wOnSoD7D6g8j0Y14JmRtnuSEwroJDw34//38KD+1ko2mETo4AZBKh1vPtaT0dvAl
-         FMSGt6tUD9gKA==
-Date:   Mon, 9 May 2022 11:00:04 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Rik van Riel <riel@surriel.com>
+        Mon, 9 May 2022 15:14:21 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB64C293B79;
+        Mon,  9 May 2022 12:10:26 -0700 (PDT)
+Received: from imladris.surriel.com ([96.67.55.152])
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1no8lt-0002U9-KO; Mon, 09 May 2022 15:10:17 -0400
+Message-ID: <68f91fb233d5bf82e29cc5c6960a62863b297db3.camel@surriel.com>
+Subject: Re: [RFC] sched,livepatch: call stop_one_cpu in
+ klp_check_and_switch_task
+From:   Rik van Riel <riel@surriel.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
 Cc:     Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
         live-patching@vger.kernel.org, mingo@redhat.com,
         peterz@infradead.org, vincent.guittot@linaro.org,
         jpoimboe@redhat.com, joe.lawrence@redhat.com, kernel-team@fb.com
-Subject: Re: [RFC] sched,livepatch: call stop_one_cpu in
- klp_check_and_switch_task
-Message-ID: <20220509180004.zmvhz65xlncwqrrc@treble>
+Date:   Mon, 09 May 2022 15:10:16 -0400
+In-Reply-To: <20220509180004.zmvhz65xlncwqrrc@treble>
 References: <20220507174628.2086373-1-song@kernel.org>
- <20220509115227.6075105e@imladris.surriel.com>
+         <20220509115227.6075105e@imladris.surriel.com>
+         <20220509180004.zmvhz65xlncwqrrc@treble>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-8fjrMtbSQtuvFTIamLXF"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220509115227.6075105e@imladris.surriel.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Sender: riel@shelob.surriel.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, May 09, 2022 at 11:52:27AM -0400, Rik van Riel wrote:
-> Does this look like an approach that could work?
-> 
-> ---8<---
-> sched,livepatch: call stop_one_cpu in klp_check_and_switch_task
-> 
-> If a running task fails to transition to the new kernel live patch after the
-> first attempt, use the stopper thread to preempt it during subsequent attempts
-> at switching to the new kernel live patch.
-> 
-> <INSERT EXPERIMENTAL RESULTS HERE>
 
-It would be helpful to add more info about the original problem being
-solved, and how this is supposed to fix it.
+--=-8fjrMtbSQtuvFTIamLXF
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> +static int kpatch_dummy_fn(void *dummy)
+On Mon, 2022-05-09 at 11:00 -0700, Josh Poimboeuf wrote:
+> On Mon, May 09, 2022 at 11:52:27AM -0400, Rik van Riel wrote:
+> > Does this look like an approach that could work?
+> >=20
+> > @@ -315,6 +321,9 @@ static bool klp_try_switch_task(struct
+> > task_struct *task)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0case -EBUSY:=C2=A0=C2=
+=A0=C2=A0=C2=A0/* klp_check_and_switch_task() */
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0pr_debug("%s: %s:%d is running\n",
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ __func__, task->comm, task->pid);
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0/* Preempt the task from the second KLP switch
+> > attempt. */
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0if (klp_signals_cnt)
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0stop_o=
+ne_cpu(task_cpu(task),
+> > kpatch_dummy_fn, NULL);
+>=20
+> I must be missing something, how is briefly preempting a kthread
+> supposed to actually transition it?=C2=A0 Won't it likely go back to
+> running
+> on the CPU before the next periodic klp_transition_work_fn() check?
+>=20
+That's the kind of feedback I was hoping for ;)
 
-s/kpatch/klp/
+I looked around the code a little bit, and it seems
+that only the idle tasks can transition to another KLP
+while they are running?
 
-> +{
-> +	return 0;
-> +}
-> +
->  /*
->   * Try to safely switch a task to the target patch state.  If it's currently
->   * running, or it's sleeping on a to-be-patched or to-be-unpatched function, or
-> @@ -315,6 +321,9 @@ static bool klp_try_switch_task(struct task_struct *task)
->  	case -EBUSY:	/* klp_check_and_switch_task() */
->  		pr_debug("%s: %s:%d is running\n",
->  			 __func__, task->comm, task->pid);
-> +		/* Preempt the task from the second KLP switch attempt. */
-> +		if (klp_signals_cnt)
-> +			stop_one_cpu(task_cpu(task), kpatch_dummy_fn, NULL);
+That makes me wonder how the kworker thread that runs
+the klp switching code transitions itself...
 
-I must be missing something, how is briefly preempting a kthread
-supposed to actually transition it?  Won't it likely go back to running
-on the CPU before the next periodic klp_transition_work_fn() check?
+Should kernel threads that can use a lot of CPU have
+something in their outer loop to transition KLPs,
+just like the idle task does?
 
--- 
-Josh
+--=20
+All Rights Reversed.
+
+--=-8fjrMtbSQtuvFTIamLXF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmJ5ZxgACgkQznnekoTE
+3oMAbQf/atY56IVjx2ggJ6AXEZS/hq956KtUV6M0CHWL4+JGly/8Y+CFt/FDHy6U
+00r89Uty7vv6OxL++mjjfOGg7o9FGDogg1dIqRaQwX++uXk493ixmvlQE77g6WtJ
+lfk+pOtJyDwUaEiJkwHjv7MCbQBYBiwwZB4eZH/mlMwo1xNt8ten1YOOGojRmDfv
+hwxvs25AHNIDv3PUIK5YuyBR7n6/bkUgh3Wuw1zj8kQ05LgcM4obHLvjDvFcBLRW
+TbmyFC8ODY1Vq3gcWieLAlmPG9vkgzI/ESE8OYIg90xGfChbwUE8hQPrqZO5z3Y4
+/n2eqP2EBSmCD7g0cz25Ite2R82cgQ==
+=+Vcf
+-----END PGP SIGNATURE-----
+
+--=-8fjrMtbSQtuvFTIamLXF--
