@@ -2,205 +2,161 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19558520D14
-	for <lists+live-patching@lfdr.de>; Tue, 10 May 2022 06:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 667F2520F3C
+	for <lists+live-patching@lfdr.de>; Tue, 10 May 2022 09:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236548AbiEJEtJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 10 May 2022 00:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
+        id S237574AbiEJIA6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 10 May 2022 04:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbiEJEtH (ORCPT
+        with ESMTP id S237543AbiEJIA5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 10 May 2022 00:49:07 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A28293B64
-        for <live-patching@vger.kernel.org>; Mon,  9 May 2022 21:45:10 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id d5so22054755wrb.6
-        for <live-patching@vger.kernel.org>; Mon, 09 May 2022 21:45:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9s1dagxJlyBeoN8vXdOpsPpdS8AD1RWVJWE0n8ehmas=;
-        b=OrctmfTVDCxyYdwcxCtO+PuFgHBDMDC7Bjk3TGUWyuOKGBhKLCCiUkxtYUOPWSujka
-         /OoqstAYhrGXcYieyOQKBFbwQ9tdHrrlfAgfjS6rNqvPEA5JdQz3D4E5NS7VzL5WOf+E
-         ppcl6vbGTOThxdSbDLD0FF3VNmQjZYs0YaRKW2LrfcKbI7iiYsOvdodP6Nf3qoZXPgQF
-         Um1ef/9fJDTkVoHV63EAahHnEkdwxgxf/Hc8y1wACrWcQPfhb2xVBIshPVinpye5CGSN
-         DoHok7Lf+NgFTiQMqtYLLj/aSoKi0RaOM3+EWbBDgDeG8Kjhw/dRvI6d3AEZbIIqfLAr
-         UHxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9s1dagxJlyBeoN8vXdOpsPpdS8AD1RWVJWE0n8ehmas=;
-        b=Hgmj8WqL0HLqXmZopDf0ghUPP/4nt/oSsRwWRHgp/UENXfxhVIB0JVzo9zTI70BTYj
-         yEvn5l59K67CC1jlhS2NIL9fRyGLvCv2Ifbj3Wgt1GWnIKJtXeop8jGpuGlr8hImhNmL
-         Mt9ZA0mdjBIIfDIeDulhAkPrOknEP10Bk7z2t3XJoXOZhz0HfTCECfW3vxQbaDQKwcck
-         UJleo/vn0jd9sawBRK+XwG6G19x5C4pZM4G7dAA6OzGlbL5kNKKowelYGPN/+gZXwTTY
-         Qk9QubNjKu7VSPveBbXa9plPNlFeAPo4W6ObhfxxXwlwXsIHdzwT7Hh2EpQLGV+ZMOTb
-         d4CQ==
-X-Gm-Message-State: AOAM532QqrmZRBbYu5ah6BEMMetr0Fga5O7tfEOEsTC6HIA0NNuIXiiu
-        XxqobFuebadTmh6cGA3a0ZmXuZRbDV0RS+Bv697fIA==
-X-Google-Smtp-Source: ABdhPJzfNwaPy5xjCTvC86K51nEH3yemeJZ1erUUa4xvtvCZqXN7MOjD5hnH0ntxxTlSOXapkot4g5ZMqXe6px9AH2Q=
-X-Received: by 2002:a5d:4806:0:b0:20a:da03:711b with SMTP id
- l6-20020a5d4806000000b0020ada03711bmr16582569wrq.395.1652157908998; Mon, 09
- May 2022 21:45:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220507052451.12890-1-ojeda@kernel.org> <CABVgOSm5S2=QYnHJ+B0JbYtFYKBDRZiOhE5YMKKUKZU56d17HQ@mail.gmail.com>
- <CANiq72=0ft6+QLbdwWD6cLm4FhWfv53GSg6HKEwxQ-q2N-UkOw@mail.gmail.com>
-In-Reply-To: <CANiq72=0ft6+QLbdwWD6cLm4FhWfv53GSg6HKEwxQ-q2N-UkOw@mail.gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Tue, 10 May 2022 12:44:57 +0800
-Message-ID: <CABVgOSkrvfvA7Ay4GC5wg64S1gibvm5_U5VGBog3sw4_UFo8Cg@mail.gmail.com>
-Subject: Re: [PATCH v6 00/23] Rust support
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Tue, 10 May 2022 04:00:57 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8AE1E251D;
+        Tue, 10 May 2022 00:56:51 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id D240F21B2F;
+        Tue, 10 May 2022 07:56:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652169409; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7ZUtK17hBNi/Td6QjHwkqgCi5bgm/d69DDW/g/56M8s=;
+        b=Vz2UetjMX1QNQkhz/4lkCD4aJvTxtPPvFqqVkjpDar6JysSHDsVhT+r5olJ2KnUmt/iv/w
+        4l6bjj1ncF7O39Y9TNILbvo9iUBkARApAyGxeXQhwFjPDmsE9SblErbd8a7hDeJoffNvug
+        U7qB1rd6+qUR+Q708VLARz5TRFOyk5c=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id ABC412C141;
+        Tue, 10 May 2022 07:56:49 +0000 (UTC)
+Date:   Tue, 10 May 2022 09:56:49 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        live-patching@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
+Message-ID: <YnoawYtoCSvrK7lb@alley>
+References: <20220507174628.2086373-1-song@kernel.org>
+ <YnkuFrm1YR46OFx/@alley>
+ <9C7DF147-5112-42E7-9F7C-7159EFDFB766@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9C7DF147-5112-42E7-9F7C-7159EFDFB766@fb.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Sat, May 7, 2022 at 11:03 PM Miguel Ojeda
-<miguel.ojeda.sandonis@gmail.com> wrote:
->
-> Hi David,
->
-> On Sat, May 7, 2022 at 11:29 AM David Gow <davidgow@google.com> wrote:
-> >
-> > It's great to see some KUnit support here!
->
-> Thanks!
->
-> > It's also possible to run these tests using the KUnit wrapper tool with:
-> > $ ./tools/testing/kunit/kunit.py run --kconfig_add CONFIG_RUST=y
-> > --make_options LLVM=1 --arch x86_64 'rust_kernel_doctests'
-> >
-> > That also nicely formats the results.
->
-> Indeed!
->
->     [16:55:52] ============ rust_kernel_doctests (70 subtests) ============
->     [16:55:52] [PASSED] rust_kernel_doctest_build_assert_rs_12_0
->     [16:55:52] [PASSED] rust_kernel_doctest_build_assert_rs_55_0
->     ...
->     [16:55:52] [PASSED] rust_kernel_doctest_types_rs_445_0
->     [16:55:52] [PASSED] rust_kernel_doctest_types_rs_509_0
->     [16:55:52] ============== [PASSED] rust_kernel_doctests ===============
->     [16:55:52] ============================================================
->     [16:55:52] Testing complete. Passed: 70, Failed: 0, Crashed: 0,
->     Skipped: 0, Errors: 0
->
+On Mon 2022-05-09 16:22:11, Song Liu wrote:
+> 
+> 
+> > On May 9, 2022, at 8:07 AM, Petr Mladek <pmladek@suse.com> wrote:
+> > 
+> > On Sat 2022-05-07 10:46:28, Song Liu wrote:
+> >> Busy kernel threads may block the transition of livepatch. Call
+> >> klp_try_switch_task from __cond_resched to make the transition easier.
+> > 
+> > Do you have some numbers how this speeds up the transition
+> > and how it slows down the scheduler, please?
+> 
+> We don’t have number on how much this would slow down the scheduler. 
+> For the transition, we see cases where the transition cannot finish
+> with in 60 seconds (how much "kpatch load" waits by default). 
 
-I've just sent out a pull request to get this working under UML as
-well, which would simplify running these further:
-https://github.com/Rust-for-Linux/linux/pull/766
+60s might be too low limit, see below.
 
-> > That all being said, I can't say I'm thrilled with the test names
-> > here: none of them are particularly descriptive, and they'll probably
-> > not be static (which would make it difficult to track results /
-> > regressions / etc between kernel versions). Neither of those are
->
-> Yeah, the names are not great and would change from time to time
-> across kernel versions.
->
-> We could ask example writers to give each example a name, but that
-> would make them fairly less convenient. For instance, sometimes they
-> may be very small snippets interleaved with docs' prose (where giving
-> a name may feel a bit of a burden, and people may end writing
-> `foo_example1`, `foo_example2` etc. for each small "step" of an
-> explanation). In other cases they may be very long, testing a wide API
-> surface (e.g. when describing a module or type), where it is also hard
-> to give non-generic names like `rbtree_doctest`. In those kind of
-> cases, I think we would end up with not much better names than
-> automatically generated ones.
->
-> The other aspect is that, given they are part of the documentation,
-> the prose or how things are explained/split may change, thus the
-> doctests as well. For instance, one may need to split a very long
-> `rbtree_doctest` in pieces, and then the name would need to change
-> anyway.
->
-> So I think we should avoid asking documentation writers to add a
-> manual name, even if that means a bit ugly test names. Also this way
-> they are consistently named. What do you think?
+> > cond_resched() is typically called in cycles with many interactions
+> > where the task might spend a lot of time. There are two possibilities.
+> > cond_resched() is called in:
+> > 
+> >   + livepatched function
+> > 
+> >     In this case, klp_try_switch_task(current) will always fail.
+> >     And it will non-necessarily slow down every iteration by
+> >     checking the very same stack.
+> > 
+> > 
+> >   + non-livepatched function
+> > 
+> >     In this case, the transition will succeed on the first attempt.
+> >     OK, but it would succeed also without that patch. The task would
+> >     most likely sleep in this cond_resched() so that it might
+> >     be successfully transitioned on the next occasion.
+> 
+> We are in the non-live patched case. But the transition didn’t happen
+> in time, because the kernel thread doesn’t go to sleep. While there is
+> clearly something weird with this thread, we think live patch should 
+> work because the thread does call cond_resched from time to time. 
 
-Yeah, these are all fair points: particularly for small doctests.
+I guess that it goes to sleep. Otherwise it would trigger soft lockup
+report if you have the watchdog enabled.
 
-Maybe having an optional name, which more significant tests could use
-to override the file:line names? That could be useful for a few of the
-larger, more often referenced tests.
+IMHO, the problem is that klp_transition_work_fn() tries the
+transition "only" once per second, see
 
-> One idea could be giving them a name based on the hash of the content
-> and avoiding the line number, so that there is a higher chance for the
-> name to stay the same even when the file gets modified for other
-> reasons.
+void klp_try_complete_transition(void)
+{
+[...]
+		schedule_delayed_work(&klp_transition_work,
+				      round_jiffies_relative(HZ));
+[...]
+}
 
-Ugh: it's a bit ugly either way. I suspect that file:line is still
-probably better, if only because we need some way of looking up the
-test in the code if it fails. I'd hate for people to be randomly
-hashing bits of just to find out what test is failing.
+It means that there are "only" 60 attempts to migrate the busy process.
+It fails when the process is in the running state or sleeping in a
+livepatched function. There is a _non-zero_ chance of a bad luck.
 
-> > necessarily deal breakers, though it might make sense to hide them
-> > behind a kernel option (like all other KUnit tests) so that they can
-> > easily be excluded where they would otherwise clutter up results. (And
->
-> Currently they are under `CONFIG_RUST_KERNEL_KUNIT_TEST` -- or do you
-> mean something else?
->
+It would be great to measure how long it will take to complete
+the transition if you remove the limit 60s.
 
-Oops: I missed that (one of the issues with testing this on a
-different machine which had a rust toolchain). Looks good to me.
 
-> > if there's a way to properly name them, or maybe even split them into
-> > per-file or per-module suites, that would make them a bit easier to
-> > deal.) Additionally, there are some plans to taint the kernel[1] when
->
-> Yeah, splitting them further is definitely possible. We are also
-> likely splitting the `kernel` crate into several, which would also
-> make the suites smaller etc. so perhaps further splits may not be
-> needed.
+Anyway, the limit 60s looks like a bad idea to me. It is too low.
+For example, we do not use any limit at all in SUSE products.
+And the only report was that some thread from a 3rd party
+module could not be migrated. It was stuck with a livepatched
+function on the stack. The kthread had really problematic
+design. I am afraid that even this patch would not help
+in that case.
 
-Ah: I didn't realise the plan was always to have crate-specific
-suites, and possibly to split things up.
 
-The KTAP output specification does actually support arbitrary nesting
-(though KUnit itself doesn't at the moment), which would potentially
-be an option if (e.g.) providing the complete module nesting made
-sense. I'm not convinced that'd make things easier to read, though.
+Now, back to the limit. There are basically two problems when
+the transition takes too long:
 
-> > Regardless, this is very neat, and I'm looking forward to taking a
-> > closer look at it.
->
-> Thanks again for taking a look and playing with it, I am glad you
-> liked it! (even if it is just a first approximation, and only supports
-> the `kernel` crate, etc.).
->
-> Cheers,
-> Miguel
+    + It blocks another transition. But the frequency of new
+      livepatches it typically counted in days or even weeks.
 
-Thanks,
--- David
+
+    + It means that a process is running the buggy/vulnerable
+      code longer time. But few hours should be acceptable
+      given how long it takes to prepare the livepatch.
+
+      Also it looks better to have 99.9% of processes running
+      the fixed code that revert the fix just because a single
+      process needs longer time to get transitioned.
+
+
+I could imagine that there really is a process that is almost
+impossible to livepatch. It might get worse on NO_HZ system.
+The question is it happens in the real life.
+
+I would personally start with prolonging or removing the limit.
+
+Best Regards,
+Petr
