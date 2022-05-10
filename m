@@ -2,37 +2,37 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA635223B2
-	for <lists+live-patching@lfdr.de>; Tue, 10 May 2022 20:15:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 869BB5223C4
+	for <lists+live-patching@lfdr.de>; Tue, 10 May 2022 20:18:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348754AbiEJSTu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 10 May 2022 14:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
+        id S243136AbiEJSWN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 10 May 2022 14:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348890AbiEJSTn (ORCPT
+        with ESMTP id S242339AbiEJSWM (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 10 May 2022 14:19:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E062B52C6;
-        Tue, 10 May 2022 11:15:12 -0700 (PDT)
+        Tue, 10 May 2022 14:22:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086C82E698;
+        Tue, 10 May 2022 11:18:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CAA961AFD;
-        Tue, 10 May 2022 18:15:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F883C385A6;
-        Tue, 10 May 2022 18:15:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E3B3619FF;
+        Tue, 10 May 2022 18:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49F5AC385A6;
+        Tue, 10 May 2022 18:18:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652206511;
-        bh=VIBVcwjyo7mXs7/cLCcqyRqJzfOhOX/AHUyka9JqqoU=;
+        s=k20201202; t=1652206693;
+        bh=GnNlNIZmBiwYaKqtWvRkVWbmJAdWNrKhJdlPyL34d1U=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XE0o0SfLqqhE0ZDyvHRMT2rMu5YLOworrGQsrzJcfr19s2br+nteuT0lXarYoNzK8
-         JxtMiFEbwBwFH6kAazlK+38ADbpncT1bRow6NIBFyzX6LzJBmYyAOKbRQDPIxgmXfM
-         /QiFrPpONgTtA+EHOjAu4sHbUWAl5NtDm1CzYvRWyiF6Td5DaM9MhG7LpwLl92vMwY
-         G/lkj1ep+/lhMVrY6pjJeODBPJnoozNypQ3fakMFLp/jkrynyL3sZp/IcvF3SCWPOO
-         fPJdWxkiKq9VH1iNU0VLUCR1fuViKAMMFPTqnOa+sFq9JAZrdiD9u0EyTH7m+yT6y7
-         /9qitzTNayXMA==
-Date:   Tue, 10 May 2022 19:15:04 +0100
+        b=lcC3CjszU6jkvzrWqklZ9QjD2qi/9xAbnvN11w382BECCG4humsY+YbvLFw2fYrD6
+         I+HCJYCPNOOcln+1/m7L0pg0h8hZ6Pl4DpgEWRo2p057AidxnPZ4s6MU5LWFT6u4XK
+         OfAbAoNK/bRH7lyRsyjjf8b5GNVXTa5xwyYEMC/rVEJAJYLv06+D5JOSLIEdGqNRmO
+         RDgSRFvpMCgVoScxDLEiLLyMD+qNm344lk3O3hRFvNR7f0yR6LRNOu1i1dmjnnEBnr
+         rbNEFrmYGVbxo821ukFLBctw/yq7PA0rPf9nhdY9V+NwM2x57gXILjUADTutqnKEJB
+         twqcy1p7WqHEg==
+Date:   Tue, 10 May 2022 19:18:06 +0100
 From:   Mark Brown <broonie@kernel.org>
 To:     madvenka@linux.microsoft.com
 Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
@@ -40,16 +40,16 @@ Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
         catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
         linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v14 1/7] arm64: Split unwind_init()
-Message-ID: <YnqrqI/Xdq9RMwoc@sirena.org.uk>
+Subject: Re: [PATCH v14 2/7] arm64: Copy the task argument to unwind_state
+Message-ID: <YnqsXlFO5tPtSXg4@sirena.org.uk>
 References: <f460a35f88195413bcf7305e5083480aab3ca858>
  <20220413140528.3815-1-madvenka@linux.microsoft.com>
- <20220413140528.3815-2-madvenka@linux.microsoft.com>
+ <20220413140528.3815-3-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="S1gfJnV9doaxbnA7"
+        protocol="application/pgp-signature"; boundary="VWajSRPTopwHEzEF"
 Content-Disposition: inline
-In-Reply-To: <20220413140528.3815-2-madvenka@linux.microsoft.com>
+In-Reply-To: <20220413140528.3815-3-madvenka@linux.microsoft.com>
 X-Cookie: I've read SEVEN MILLION books!!
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
@@ -62,34 +62,34 @@ List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
 
---S1gfJnV9doaxbnA7
+--VWajSRPTopwHEzEF
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 13, 2022 at 09:05:22AM -0500, madvenka@linux.microsoft.com wrot=
+On Wed, Apr 13, 2022 at 09:05:23AM -0500, madvenka@linux.microsoft.com wrot=
 e:
 > From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 >=20
-> unwind_init() is currently a single function that initializes all of the
-> unwind state. Split it into the following functions and call them
-> appropriately:
+> Copy the task argument passed to arch_stack_walk() to unwind_state so that
+> it can be passed to unwind functions via unwind_state rather than as a
+> separate argument. The task is a fundamental part of the unwind state.
 
 Reviewed-by: Mark Brown <broonie@kernel.org>
 
---S1gfJnV9doaxbnA7
+--VWajSRPTopwHEzEF
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ6q6cACgkQJNaLcl1U
-h9Bg9AgAgl+At82Yt7N4YFfo4vqhuLFjD/f8TsuKv01xPB7ZGnlmbPsWJg+9l7h/
-FukrNbDpta6SMamILiT9VfsPoxpKaukQXNeNKfDmshGimH8rXVLzITIwRt3+2sE6
-+fyIUvrWnGLUYmW3FMgAMXvZ5eGypo3YTA5IknFQLfD5pOQbgMUO2rucC9ncDd6P
-//T4rX9KbzJOEL89CSApDP8yihbSEDjbrHQAgL8yHz8QBaiXix3Kn4jdvqF58vf0
-OilJ7GZeO3a8x6mUaO6l8oX+h1vWwlcb0DXrxb046XN3GDv3sTMnQLy9N/+F6npK
-6HWk/mEdAedGpbJZaWxpq/Y9jR8HPg==
-=iN7k
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ6rF4ACgkQJNaLcl1U
+h9CzKQf+Lyh1g6HXG5tDTSC/bkIp+/hjwCSWYpqLI1qBOEskswAebKu8NwC4At7A
+PcG0G9OCacUvJy6sZJHrCxa9VSQexOSbCheYzF/lukmcUBUqDfpCW2zyg8kjZ5DJ
+rzGlOMik63uR+9uW2sONrkr1rM+aeWT1Z4CbvTlxwPeBRgh12ShDhPuKKs7gafv7
+2lKoPztInhEFdgiDp+N+jeFBRcgQYrTlsLVNsxTF1SUCFcHF/KLuA84C0jnUsDq2
+RwYuX3zV7va+5Mu/xX3Smw6OailqnlHllm++Kl4E+7iRg2esvH/4J+uUeq57QFG1
+nLfbliWZawdWtu7f+v+zSXWv/eilBw==
+=tWc9
 -----END PGP SIGNATURE-----
 
---S1gfJnV9doaxbnA7--
+--VWajSRPTopwHEzEF--
