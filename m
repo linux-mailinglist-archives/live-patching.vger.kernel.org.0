@@ -2,102 +2,205 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81CF9520AD6
-	for <lists+live-patching@lfdr.de>; Tue, 10 May 2022 03:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19558520D14
+	for <lists+live-patching@lfdr.de>; Tue, 10 May 2022 06:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234150AbiEJBwl (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 9 May 2022 21:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
+        id S236548AbiEJEtJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 10 May 2022 00:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231989AbiEJBwl (ORCPT
+        with ESMTP id S236525AbiEJEtH (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 9 May 2022 21:52:41 -0400
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B78140F8;
-        Mon,  9 May 2022 18:48:45 -0700 (PDT)
-Received: from imladris.surriel.com ([96.67.55.152])
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1noEzN-0001Mi-5T; Mon, 09 May 2022 21:48:37 -0400
-Message-ID: <5c3b6c2fc875708f1452b32416235247e11296af.camel@surriel.com>
-Subject: Re: [RFC] sched,livepatch: call stop_one_cpu in
- klp_check_and_switch_task
-From:   Rik van Riel <riel@surriel.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, mingo@redhat.com,
-        peterz@infradead.org, vincent.guittot@linaro.org,
-        jpoimboe@redhat.com, joe.lawrence@redhat.com, kernel-team@fb.com
-Date:   Mon, 09 May 2022 21:48:36 -0400
-In-Reply-To: <20220509200949.vzx4g5xpebomkok4@treble>
-References: <20220507174628.2086373-1-song@kernel.org>
-         <20220509115227.6075105e@imladris.surriel.com>
-         <20220509180004.zmvhz65xlncwqrrc@treble>
-         <68f91fb233d5bf82e29cc5c6960a62863b297db3.camel@surriel.com>
-         <20220509191745.yk2txsa4cv3ypf6k@treble>
-         <1f94c48b4e0e7d73a689a076f78f0892095b4d89.camel@surriel.com>
-         <20220509200949.vzx4g5xpebomkok4@treble>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-ilNaoEj4DrmQCmIflEKz"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Tue, 10 May 2022 00:49:07 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A28293B64
+        for <live-patching@vger.kernel.org>; Mon,  9 May 2022 21:45:10 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id d5so22054755wrb.6
+        for <live-patching@vger.kernel.org>; Mon, 09 May 2022 21:45:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9s1dagxJlyBeoN8vXdOpsPpdS8AD1RWVJWE0n8ehmas=;
+        b=OrctmfTVDCxyYdwcxCtO+PuFgHBDMDC7Bjk3TGUWyuOKGBhKLCCiUkxtYUOPWSujka
+         /OoqstAYhrGXcYieyOQKBFbwQ9tdHrrlfAgfjS6rNqvPEA5JdQz3D4E5NS7VzL5WOf+E
+         ppcl6vbGTOThxdSbDLD0FF3VNmQjZYs0YaRKW2LrfcKbI7iiYsOvdodP6Nf3qoZXPgQF
+         Um1ef/9fJDTkVoHV63EAahHnEkdwxgxf/Hc8y1wACrWcQPfhb2xVBIshPVinpye5CGSN
+         DoHok7Lf+NgFTiQMqtYLLj/aSoKi0RaOM3+EWbBDgDeG8Kjhw/dRvI6d3AEZbIIqfLAr
+         UHxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9s1dagxJlyBeoN8vXdOpsPpdS8AD1RWVJWE0n8ehmas=;
+        b=Hgmj8WqL0HLqXmZopDf0ghUPP/4nt/oSsRwWRHgp/UENXfxhVIB0JVzo9zTI70BTYj
+         yEvn5l59K67CC1jlhS2NIL9fRyGLvCv2Ifbj3Wgt1GWnIKJtXeop8jGpuGlr8hImhNmL
+         Mt9ZA0mdjBIIfDIeDulhAkPrOknEP10Bk7z2t3XJoXOZhz0HfTCECfW3vxQbaDQKwcck
+         UJleo/vn0jd9sawBRK+XwG6G19x5C4pZM4G7dAA6OzGlbL5kNKKowelYGPN/+gZXwTTY
+         Qk9QubNjKu7VSPveBbXa9plPNlFeAPo4W6ObhfxxXwlwXsIHdzwT7Hh2EpQLGV+ZMOTb
+         d4CQ==
+X-Gm-Message-State: AOAM532QqrmZRBbYu5ah6BEMMetr0Fga5O7tfEOEsTC6HIA0NNuIXiiu
+        XxqobFuebadTmh6cGA3a0ZmXuZRbDV0RS+Bv697fIA==
+X-Google-Smtp-Source: ABdhPJzfNwaPy5xjCTvC86K51nEH3yemeJZ1erUUa4xvtvCZqXN7MOjD5hnH0ntxxTlSOXapkot4g5ZMqXe6px9AH2Q=
+X-Received: by 2002:a5d:4806:0:b0:20a:da03:711b with SMTP id
+ l6-20020a5d4806000000b0020ada03711bmr16582569wrq.395.1652157908998; Mon, 09
+ May 2022 21:45:08 -0700 (PDT)
 MIME-Version: 1.0
-Sender: riel@shelob.surriel.com
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220507052451.12890-1-ojeda@kernel.org> <CABVgOSm5S2=QYnHJ+B0JbYtFYKBDRZiOhE5YMKKUKZU56d17HQ@mail.gmail.com>
+ <CANiq72=0ft6+QLbdwWD6cLm4FhWfv53GSg6HKEwxQ-q2N-UkOw@mail.gmail.com>
+In-Reply-To: <CANiq72=0ft6+QLbdwWD6cLm4FhWfv53GSg6HKEwxQ-q2N-UkOw@mail.gmail.com>
+From:   David Gow <davidgow@google.com>
+Date:   Tue, 10 May 2022 12:44:57 +0800
+Message-ID: <CABVgOSkrvfvA7Ay4GC5wg64S1gibvm5_U5VGBog3sw4_UFo8Cg@mail.gmail.com>
+Subject: Re: [PATCH v6 00/23] Rust support
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        live-patching@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On Sat, May 7, 2022 at 11:03 PM Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+>
+> Hi David,
+>
+> On Sat, May 7, 2022 at 11:29 AM David Gow <davidgow@google.com> wrote:
+> >
+> > It's great to see some KUnit support here!
+>
+> Thanks!
+>
+> > It's also possible to run these tests using the KUnit wrapper tool with:
+> > $ ./tools/testing/kunit/kunit.py run --kconfig_add CONFIG_RUST=y
+> > --make_options LLVM=1 --arch x86_64 'rust_kernel_doctests'
+> >
+> > That also nicely formats the results.
+>
+> Indeed!
+>
+>     [16:55:52] ============ rust_kernel_doctests (70 subtests) ============
+>     [16:55:52] [PASSED] rust_kernel_doctest_build_assert_rs_12_0
+>     [16:55:52] [PASSED] rust_kernel_doctest_build_assert_rs_55_0
+>     ...
+>     [16:55:52] [PASSED] rust_kernel_doctest_types_rs_445_0
+>     [16:55:52] [PASSED] rust_kernel_doctest_types_rs_509_0
+>     [16:55:52] ============== [PASSED] rust_kernel_doctests ===============
+>     [16:55:52] ============================================================
+>     [16:55:52] Testing complete. Passed: 70, Failed: 0, Crashed: 0,
+>     Skipped: 0, Errors: 0
+>
 
---=-ilNaoEj4DrmQCmIflEKz
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I've just sent out a pull request to get this working under UML as
+well, which would simplify running these further:
+https://github.com/Rust-for-Linux/linux/pull/766
 
-On Mon, 2022-05-09 at 13:09 -0700, Josh Poimboeuf wrote:
+> > That all being said, I can't say I'm thrilled with the test names
+> > here: none of them are particularly descriptive, and they'll probably
+> > not be static (which would make it difficult to track results /
+> > regressions / etc between kernel versions). Neither of those are
+>
+> Yeah, the names are not great and would change from time to time
+> across kernel versions.
+>
+> We could ask example writers to give each example a name, but that
+> would make them fairly less convenient. For instance, sometimes they
+> may be very small snippets interleaved with docs' prose (where giving
+> a name may feel a bit of a burden, and people may end writing
+> `foo_example1`, `foo_example2` etc. for each small "step" of an
+> explanation). In other cases they may be very long, testing a wide API
+> surface (e.g. when describing a module or type), where it is also hard
+> to give non-generic names like `rbtree_doctest`. In those kind of
+> cases, I think we would end up with not much better names than
+> automatically generated ones.
+>
+> The other aspect is that, given they are part of the documentation,
+> the prose or how things are explained/split may change, thus the
+> doctests as well. For instance, one may need to split a very long
+> `rbtree_doctest` in pieces, and then the name would need to change
+> anyway.
+>
+> So I think we should avoid asking documentation writers to add a
+> manual name, even if that means a bit ugly test names. Also this way
+> they are consistently named. What do you think?
 
+Yeah, these are all fair points: particularly for small doctests.
 
-> To prevent patching, it would need to be some kind of sustained CPU
-> activity, rather than a burst.=C2=A0 I guess we haven't seen that show up
-> as
-> a real-world problem until now.
->=20
-It's amazing what you see when you have a few million very
-busy servers. The problems you think of as "one in a million"
-happen all the time :)
+Maybe having an optional name, which more significant tests could use
+to override the file:line names? That could be useful for a few of the
+larger, more often referenced tests.
 
-> If you're able to identify which kthreads would be problematic, then
-> yeah, defining a "transition point" in their outer loops could be an
-> option.
->=20
-I'm in the middle of creating some scripts to gather kpatch
-output from all the systems, and then sort and count the
-results so we can easily see what the main pain points are.
+> One idea could be giving them a name based on the hash of the content
+> and avoiding the line number, so that there is a higher chance for the
+> name to stay the same even when the file gets modified for other
+> reasons.
 
-We'll be back with patches once we have the data in hand :)
+Ugh: it's a bit ugly either way. I suspect that file:line is still
+probably better, if only because we need some way of looking up the
+test in the code if it fails. I'd hate for people to be randomly
+hashing bits of just to find out what test is failing.
 
+> > necessarily deal breakers, though it might make sense to hide them
+> > behind a kernel option (like all other KUnit tests) so that they can
+> > easily be excluded where they would otherwise clutter up results. (And
+>
+> Currently they are under `CONFIG_RUST_KERNEL_KUNIT_TEST` -- or do you
+> mean something else?
+>
 
---=20
-All Rights Reversed.
+Oops: I missed that (one of the issues with testing this on a
+different machine which had a rust toolchain). Looks good to me.
 
---=-ilNaoEj4DrmQCmIflEKz
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+> > if there's a way to properly name them, or maybe even split them into
+> > per-file or per-module suites, that would make them a bit easier to
+> > deal.) Additionally, there are some plans to taint the kernel[1] when
+>
+> Yeah, splitting them further is definitely possible. We are also
+> likely splitting the `kernel` crate into several, which would also
+> make the suites smaller etc. so perhaps further splits may not be
+> needed.
 
------BEGIN PGP SIGNATURE-----
+Ah: I didn't realise the plan was always to have crate-specific
+suites, and possibly to split things up.
 
-iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmJ5xHQACgkQznnekoTE
-3oMARAf+N4u8+luoI5PmUGF85x4q2r/nIulQtv/wREpq0T4vUkHesfPH78VUZfAg
-GdYTkWEDSX4o5GRR9txs7aAoPUYy+H87YEiAWzwmmRsiuQVlu56NbqY4KK2pbspz
-9BexZN15oC4yh2MEBGX/1BptB0JK0vgJNlDzzvBmXaQcBMvESgZ5A+Cg4NYCpY+u
-0PQtmAaza3sKR63aNEllqwPJ9gGzE1fdnMsjDftKLIquX6ebR3Nju/yYkiNwWKup
-BL4ij2MtwrbgA4Z5fLfObhxL6bi4dmyLHjM3aVWpgJuOWtphUDSgO8th8yV/9ylw
-uLH+GwSAznoGRnqjYHwL85LAjqP68A==
-=Mhxs
------END PGP SIGNATURE-----
+The KTAP output specification does actually support arbitrary nesting
+(though KUnit itself doesn't at the moment), which would potentially
+be an option if (e.g.) providing the complete module nesting made
+sense. I'm not convinced that'd make things easier to read, though.
 
---=-ilNaoEj4DrmQCmIflEKz--
+> > Regardless, this is very neat, and I'm looking forward to taking a
+> > closer look at it.
+>
+> Thanks again for taking a look and playing with it, I am glad you
+> liked it! (even if it is just a first approximation, and only supports
+> the `kernel` crate, etc.).
+>
+> Cheers,
+> Miguel
+
+Thanks,
+-- David
