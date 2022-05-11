@@ -2,108 +2,105 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD0455228C7
-	for <lists+live-patching@lfdr.de>; Wed, 11 May 2022 03:12:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C36FC522B57
+	for <lists+live-patching@lfdr.de>; Wed, 11 May 2022 06:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232943AbiEKBMo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 10 May 2022 21:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
+        id S234352AbiEKEkx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 11 May 2022 00:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240100AbiEKBMn (ORCPT
+        with ESMTP id S234545AbiEKEk1 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 10 May 2022 21:12:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14C5185CB5;
-        Tue, 10 May 2022 18:12:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52C6FB82073;
-        Wed, 11 May 2022 01:12:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A14DAC385D4;
-        Wed, 11 May 2022 01:12:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652231558;
-        bh=HtE0Ap2vGg3s3s+LE5LjSjmdbZKta/dQG73tticU+zY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eT1zcJbDBczwZ8nj2Pu77bH9alH2nTx9+SZjExbnBzUyBOhKfipT2VSm/Q02Hx5Ui
-         ij9I6kQLQWd+qjqm5tDzagd6i7utTfq5ebWRee4sVvnx7aS3JiGfVljnQttCLawovy
-         GUByLt5AJ9o34YOmjNFY2yyMlWRAvxir6JZRfQoR/uvOHuGs8sgGFPMHcqkhIzs7uC
-         lN9qSjZvAHv3v5ONlO8bDGE2bvtzTBhKYXqxr4yiuNpxi5MXNroYS3SUjiLfGWVs/f
-         jSjc/VBWITrJ4bjnJDNKD2ycRP9FKhpR8+Ml7RusaQ+1FhcvvrvUO622oVf0MVK267
-         G30pUlQCeH8Hg==
-Date:   Tue, 10 May 2022 18:12:35 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Rik van Riel <riel@fb.com>
-Cc:     "song@kernel.org" <song@kernel.org>,
-        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
-        Song Liu <songliubraving@fb.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "pmladek@suse.com" <pmladek@suse.com>
-Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
-Message-ID: <20220511011235.f7cdkc6xn7redqa3@treble>
-References: <6bf85ff908377508a5f5bcc7c4e75d598b96f388.camel@fb.com>
- <20220510165244.ikfh64ertnvodxb4@treble>
- <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
- <20220510184213.l3gjweeleyg7obca@treble>
- <47440502-930F-4CBD-B859-3AC9BBFF8FC6@fb.com>
- <20220510230402.e5ymkwt45sg7bd35@treble>
- <D298A3F1-43A5-4FD5-B198-906364BF4B79@fb.com>
- <6c36c09fbf426280d13f6025f41aed4c65c042d6.camel@fb.com>
- <20220511003716.2lo6gkluwycvauda@treble>
- <bf682c8874a044a643becbb8704a4dfedadc3321.camel@fb.com>
+        Wed, 11 May 2022 00:40:27 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5306E14C76F
+        for <live-patching@vger.kernel.org>; Tue, 10 May 2022 21:40:26 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id r71so434048pgr.0
+        for <live-patching@vger.kernel.org>; Tue, 10 May 2022 21:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=s3Cdswvtyrq8qHVwuRB9YRoTAIoD9G/2//h6WeFZHzo=;
+        b=CpCECsPeifPt5spOY+hxF3SPXEjo/w6hty7zyWfoD7x9Q0r+hx23YMWQhTm8eOw7HH
+         dvTnDs0/6cvkIxXvhw4qZKhOmeoleRgjjIA5RBu3s+gZeHpHgRib+NQqB0f7Rq1esj1J
+         f9Fw2ZGyhylxsHzxTt03Hg8cvTdX2sMZs/2thSR3A0SR4njfPezKqxaQUsVj81B/eefB
+         Vwj2HyNoTLjPPCBmqYpXxwJ4lOaoKqeQg5eDXmVTYbAPYxHYA2A+tLCM/M8mR7SMpYgj
+         U1CjSMy1LA2jdSzKe3q5foQHZsYLdD6YbJPsHgbhhPgoEYcX/ShGIgvc1LxLQTsLx6MV
+         oG6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=s3Cdswvtyrq8qHVwuRB9YRoTAIoD9G/2//h6WeFZHzo=;
+        b=PHYsMAZE1srlsNYsOMrN6MLKvg2pmjN07qf0k0GT0sPJEKAUxKufVW6c0xm2wQleUj
+         rGOWMJXphRajm8scEzpr88w862Z4bR7sGM/Tiv7mRW1eFX56EtUsQyfa3XILuxTNmhiV
+         ftCIb9luvWMPvejqCEokI61KzkNVeYnlsWB5la2+5Dx+xwXo6h7foCtsWaHPOIbcT9Ru
+         CmRAPzOCiwxZ+CQnZwZ+0ritW6S27IMYQdxcGFK74Zese9PR0YXVex1mhMTgBVRKmtKo
+         xidowm5gbd7jZxovcFX5kSXb6GMJFHMEF9+0NV8dvL+hebNzp5jG2LfQRgPyXHwbhFx6
+         JibQ==
+X-Gm-Message-State: AOAM530rJX4+zN1ItbJPwT98OA17rnQpWq699gEC8YN47j2jvf8Y6NCa
+        ruu5SPagesyunYwTDOFob3VSOQqSyXXDzLTfye8=
+X-Google-Smtp-Source: ABdhPJz6VOsq6tHEcJde7ze9Mwk8S/rcQCgVu5HGY72mYvCggXhNNJjlSk4uemHnGcPUzQVOuhhFYUqdwWTW5cbuyMk=
+X-Received: by 2002:a65:694a:0:b0:3db:141c:6db2 with SMTP id
+ w10-20020a65694a000000b003db141c6db2mr2414148pgq.198.1652244025817; Tue, 10
+ May 2022 21:40:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <bf682c8874a044a643becbb8704a4dfedadc3321.camel@fb.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a05:6a10:319:0:0:0:0 with HTTP; Tue, 10 May 2022 21:40:25
+ -0700 (PDT)
+From:   Private Mail <privatemail1961@gmail.com>
+Date:   Tue, 10 May 2022 21:40:25 -0700
+Message-ID: <CANjAOAjARYVC6Qk-Fnsn0bf7TP8Boo=pjYW5wBup0tWw9ZzxDA@mail.gmail.com>
+Subject: Have you had this? It is for your Benefit
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.3 required=5.0 tests=ADVANCE_FEE_4_NEW_MONEY,
+        BAYES_50,DEAR_BENEFICIARY,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,
+        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLY,
+        LOTS_OF_MONEY,MONEY_FRAUD_5,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, May 11, 2022 at 12:46:32AM +0000, Rik van Riel wrote:
-> On Tue, 2022-05-10 at 17:37 -0700, Josh Poimboeuf wrote:
-> > On Wed, May 11, 2022 at 12:35:11AM +0000, Rik van Riel wrote:
-> > > On Tue, 2022-05-10 at 23:57 +0000, Song Liu wrote:
-> > > > 
-> > > > So, if we come back to the same question: is this a bug (or a
-> > > > suboptimal
-> > > > behavior that worth fixing)? If so, we are open to any solution
-> > > > that 
-> > > > would also help PREEMPT and/or non-x86 arches. 
-> > > > 
-> > > Using the preempt notifiers during KLP transition should
-> > > work equally well for PREEMPT and !PREEMPT. It also does
-> > > not insert any additional code into the scheduler while
-> > > there is no KLP transition going on.
-> > 
-> > As I've been saying, this is not going to work for PREEMPT because,
-> > without ORC, we can't reliably unwind from an IRQ handler, so the
-> > kthread won't get patched.
-> > 
-> Isn't the sched_out preempt notifier always run in
-> process context?
-> 
-> What am I missing?
+Our Ref: BG/WA0151/2022
 
-Maybe it's technically process context at that point.  But the important
-point is that the call to the scheduler via preempt_schedule_irq()
-originates from the "return from interrupt" path.
+Dear Beneficiary
 
-So the state of the interrupted task's stack is unknown.  For example it
-could have been interrupted before the frame pointer prologue.  Or in a
-leaf function which doesn't use frame pointers.
+Subject: An Estate of US$15.8 Million
 
--- 
-Josh
+Blount and Griffin Genealogical Investigators specializes in probate
+research to locate missing heirs and beneficiaries to estates in the
+United Kingdom and Europe.
+
+We can also help you find wills, obtain copies of certificates, help
+you to administer an estate, as well as calculating how an estate,
+intestacy or trust should be distributed.
+
+You may be entitled to a large pay out for an inheritance in Europe
+worth US$15.8 million. We have discovered an estate belonging to the
+late Depositor has remained unclaimed since he died in 2011 and we
+have strong reasons to believe you are the closest living relative to
+the deceased we can find.
+
+You may unknowingly be the heir of this person who died without
+leaving a will (intestate). We will conduct a probate research to
+prove your entitlement, and can submit a claim on your behalf all at
+no risk to yourselves.
+
+Our service fee of 10% will be paid to us after you have received the estate.
+
+The estate transfer process should take just a matter of days as we
+have the mechanism and expertise to get this done very quickly. This
+message may come to you as a shock, however we hope to work with you
+to transfer the estate to you as quickly as possible.
+
+Feel free to email our senior case worker Mr. Malcolm Casey on email:
+malcolmcasey68@yahoo.com for further discussions.
+
+With warm regards,
+
+Mr. Blount W. Gort, CEO.
+Blount and Griffin Associates Inc
