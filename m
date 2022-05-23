@@ -2,156 +2,226 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D59AB531B8F
-	for <lists+live-patching@lfdr.de>; Mon, 23 May 2022 22:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FF6253180F
+	for <lists+live-patching@lfdr.de>; Mon, 23 May 2022 22:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244023AbiEWSoi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 23 May 2022 14:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
+        id S233095AbiEWUdN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 23 May 2022 16:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243314AbiEWSoZ (ORCPT
+        with ESMTP id S233079AbiEWUdM (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 23 May 2022 14:44:25 -0400
-Received: from condef-08.nifty.com (condef-08.nifty.com [202.248.20.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE74F6A079;
-        Mon, 23 May 2022 11:27:18 -0700 (PDT)
-Received: from conssluserg-04.nifty.com ([10.126.8.83])by condef-08.nifty.com with ESMTP id 24NI6ipB016156;
-        Tue, 24 May 2022 03:06:44 +0900
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 24NI5KXv002937;
-        Tue, 24 May 2022 03:05:20 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 24NI5KXv002937
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653329121;
-        bh=xyfMz2s6K1FqS7FKBYD4t23CA7hAJBCjnd+TynP5fZY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wLWMHJLOejJIXhpVDGf9HNSx+SpTPVQUXvZhixAqDXV0z7z7XYTc7NHsjSVsRdrzO
-         5gFFxjxAUV70SlzCQBQA5zl5Eo9n3JLjoa+Z6Z6R/1GbKTffwLWtZu+guZMreSmFOo
-         7q4VUHA2w4OzRP2FjYyb0e0KAjEyh94eDs+96SgIZ2UVW9GimqGFg1VqKzrk/kK8OQ
-         AcR2aj6xN3Rb2zu003g+PPx3SfgMH1DkkD+0tPAJpqKgRxHuThQsY/RooKKGvP/DEB
-         4EQhtFDGmBM6nCZxh15asv7RHHDlLkbFfBaqLcp135Okm0y8QUoLxGBd96f1e5nsjk
-         5xNLqrgDzpRng==
-X-Nifty-SrcIP: [209.85.215.173]
-Received: by mail-pg1-f173.google.com with SMTP id 137so14345838pgb.5;
-        Mon, 23 May 2022 11:05:20 -0700 (PDT)
-X-Gm-Message-State: AOAM530DxU7nDVS7Z5BXL7oz+xUhCMQ2pSYLP0vvfRhu4WCSqnnmZ8f2
-        koha5Px06Y1k+zW+TD4rzjR4rsyWMMZOi9kth9M=
-X-Google-Smtp-Source: ABdhPJx5Lme6JhQ7OKXuXU7KdkCmDLJQv7tFwa3fzbZTWXsLVHVozSYCDjkmkCCK6F2tBUWOu/ge6oucCPgm4OmGxhg=
-X-Received: by 2002:a63:fc5e:0:b0:3db:5804:f3b with SMTP id
- r30-20020a63fc5e000000b003db58040f3bmr21273043pgk.126.1653329119628; Mon, 23
- May 2022 11:05:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com> <20220209185752.1226407-2-alexandr.lobakin@intel.com>
-In-Reply-To: <20220209185752.1226407-2-alexandr.lobakin@intel.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 24 May 2022 03:04:00 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT3QTfkYLFTBKLxghY_gBQZmud3-4UJMK3tA9eOV4UeTg@mail.gmail.com>
-Message-ID: <CAK7LNAT3QTfkYLFTBKLxghY_gBQZmud3-4UJMK3tA9eOV4UeTg@mail.gmail.com>
-Subject: Re: [PATCH v10 01/15] modpost: fix removing numeric suffixes
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, X86 ML <x86@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Mon, 23 May 2022 16:33:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D9D3888;
+        Mon, 23 May 2022 13:33:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A846614C5;
+        Mon, 23 May 2022 20:33:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76106C385AA;
+        Mon, 23 May 2022 20:33:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653337991;
+        bh=VNVQzR9kS5xu6l5roSausKAujCRxQKGSD7vdR797KGE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hIJVMVPO4q0ZiGjXpeP/mp4WoS7qMOycauFqdeUAuUGM43xRdfvgUY8U5T6wMqW1L
+         zMPwuEAUOEXE75o6b8ynAoLKUQhYAvGJ0ymtZ1WAwPxNpjZO0V49qzIyyFprsl1zAP
+         8s3OG0kh5AngMWZjGcnxwNJOMNzDrPepOl+1DPt7XkAqz8gfKLlqQg516vupKzVIL/
+         TxUEMRRj8+CXre1EU5IRDttOTfc7nBok6vfvfW8mHhpuDbK2eizWsbWMngOCKATCwz
+         Z7SOdDnPK8DfSpFWHOsq5M8fXFUT+49SGHKfi6/C6UAT0Y+OZE+EuW5lBjz53bDXLM
+         LW3NXhYYO/qPA==
+Date:   Mon, 23 May 2022 23:31:29 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        live-patching@vger.kernel.org,
-        clang-built-linux <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH v7 03/25] kallsyms: increase maximum kernel symbol length
+ to 512
+Message-ID: <YovvIQeN3lmOYzJO@kernel.org>
+References: <20220523020209.11810-1-ojeda@kernel.org>
+ <20220523020209.11810-4-ojeda@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523020209.11810-4-ojeda@kernel.org>
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 3:59 AM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
->
-> `-z unique-symbol` linker flag which is planned to use with FG-KASLR
-> to simplify livepatching (hopefully globally later on) triggers the
-> following:
->
-> ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
->
-> The reason is that for now the condition from remove_dot():
->
-> if (m && (s[n + m] == '.' || s[n + m] == 0))
->
-> which was designed to test if it's a dot or a '\0' after the suffix
-> is never satisfied.
-> This is due to that `s[n + m]` always points to the last digit of a
-> numeric suffix, not on the symbol next to it (from a custom debug
-> print added to modpost):
->
-> param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
->
-> So it's off-by-one and was like that since 2014.
-> Fix this for the sake of upcoming features, but don't bother
-> stable-backporting, as it's well hidden -- apart from that LD flag,
-> can be triggered only by GCC LTO which never landed upstream.
->
-> Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+On Mon, May 23, 2022 at 04:01:16AM +0200, Miguel Ojeda wrote:
+> Rust symbols can become quite long due to namespacing introduced
+> by modules, types, traits, generics, etc. For instance,
+> the following code:
+> 
+>     pub mod my_module {
+>         pub struct MyType;
+>         pub struct MyGenericType<T>(T);
+> 
+>         pub trait MyTrait {
+>             fn my_method() -> u32;
+>         }
+> 
+>         impl MyTrait for MyGenericType<MyType> {
+>             fn my_method() -> u32 {
+>                 42
+>             }
+>         }
+>     }
+> 
+> generates a symbol of length 96 when using the upcoming v0 mangling scheme:
+> 
+>     _RNvXNtCshGpAVYOtgW1_7example9my_moduleINtB2_13MyGenericTypeNtB2_6MyTypeENtB2_7MyTrait9my_method
+> 
+> At the moment, Rust symbols may reach up to 300 in length.
+> Setting 512 as the maximum seems like a reasonable choice to
+> keep some headroom.
+
+There's no description what the patch does.
+
+> 
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Co-developed-by: Gary Guo <gary@garyguo.net>
+> Signed-off-by: Gary Guo <gary@garyguo.net>
+> Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 > ---
->  scripts/mod/modpost.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 6bfa33217914..4648b7afe5cc 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -1986,7 +1986,7 @@ static char *remove_dot(char *s)
->
->         if (n && s[n]) {
->                 size_t m = strspn(s + n + 1, "0123456789");
-> -               if (m && (s[n + m] == '.' || s[n + m] == 0))
-> +               if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
->                         s[n] = 0;
->
->                 /* strip trailing .lto */
-> --
-> 2.34.1
->
+> This is a prerequisite patch, independently submitted at:
+> 
+>     https://lore.kernel.org/lkml/20220506203443.24721-4-ojeda@kernel.org/
+> 
+>  include/linux/kallsyms.h            | 2 +-
+>  kernel/livepatch/core.c             | 4 ++--
+>  scripts/kallsyms.c                  | 4 ++--
+>  tools/include/linux/kallsyms.h      | 2 +-
+>  tools/lib/perf/include/perf/event.h | 2 +-
+>  tools/lib/symbol/kallsyms.h         | 2 +-
+>  6 files changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
+> index ce1bd2fbf23e..e5ad6e31697d 100644
+> --- a/include/linux/kallsyms.h
+> +++ b/include/linux/kallsyms.h
+> @@ -15,7 +15,7 @@
+>  
+>  #include <asm/sections.h>
+>  
+> -#define KSYM_NAME_LEN 128
+> +#define KSYM_NAME_LEN 512
+>  #define KSYM_SYMBOL_LEN (sizeof("%s+%#lx/%#lx [%s %s]") + \
+>  			(KSYM_NAME_LEN - 1) + \
+>  			2*(BITS_PER_LONG*3/10) + (MODULE_NAME_LEN - 1) + \
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index bc475e62279d..ec06ce59d728 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -213,7 +213,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+>  	 * we use the smallest/strictest upper bound possible (56, based on
+>  	 * the current definition of MODULE_NAME_LEN) to prevent overflows.
+>  	 */
+> -	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 128);
+> +	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 512);
+>  
+>  	relas = (Elf_Rela *) relasec->sh_addr;
+>  	/* For each rela in this klp relocation section */
+> @@ -227,7 +227,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+>  
+>  		/* Format: .klp.sym.sym_objname.sym_name,sympos */
+>  		cnt = sscanf(strtab + sym->st_name,
+> -			     ".klp.sym.%55[^.].%127[^,],%lu",
+> +			     ".klp.sym.%55[^.].%511[^,],%lu",
+>  			     sym_objname, sym_name, &sympos);
+>  		if (cnt != 3) {
+>  			pr_err("symbol %s has an incorrectly formatted name\n",
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index 7e99799aa7b9..275044b840dc 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -30,10 +30,10 @@
+>  #define _stringify_1(x)	#x
+>  #define _stringify(x)	_stringify_1(x)
+>  
+> -#define KSYM_NAME_LEN		128
+> +#define KSYM_NAME_LEN		512
+>  
+>  /* A substantially bigger size than the current maximum. */
+> -#define KSYM_NAME_LEN_BUFFER	512
+> +#define KSYM_NAME_LEN_BUFFER	2048
+>  _Static_assert(
+>  	KSYM_NAME_LEN_BUFFER == KSYM_NAME_LEN * 4,
+>  	"Please keep KSYM_NAME_LEN_BUFFER in sync with KSYM_NAME_LEN"
+> diff --git a/tools/include/linux/kallsyms.h b/tools/include/linux/kallsyms.h
+> index efb6c3f5f2a9..5a37ccbec54f 100644
+> --- a/tools/include/linux/kallsyms.h
+> +++ b/tools/include/linux/kallsyms.h
+> @@ -6,7 +6,7 @@
+>  #include <stdio.h>
+>  #include <unistd.h>
+>  
+> -#define KSYM_NAME_LEN 128
+> +#define KSYM_NAME_LEN 512
+>  
+>  struct module;
+>  
+> diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
+> index e7758707cadd..116a80c31675 100644
+> --- a/tools/lib/perf/include/perf/event.h
+> +++ b/tools/lib/perf/include/perf/event.h
+> @@ -95,7 +95,7 @@ struct perf_record_throttle {
+>  };
+>  
+>  #ifndef KSYM_NAME_LEN
+> -#define KSYM_NAME_LEN 256
+> +#define KSYM_NAME_LEN 512
+>  #endif
+>  
+>  struct perf_record_ksymbol {
+> diff --git a/tools/lib/symbol/kallsyms.h b/tools/lib/symbol/kallsyms.h
+> index 72ab9870454b..542f9b059c3b 100644
+> --- a/tools/lib/symbol/kallsyms.h
+> +++ b/tools/lib/symbol/kallsyms.h
+> @@ -7,7 +7,7 @@
+>  #include <linux/types.h>
+>  
+>  #ifndef KSYM_NAME_LEN
+> -#define KSYM_NAME_LEN 256
+> +#define KSYM_NAME_LEN 512
+>  #endif
+>  
+>  static inline u8 kallsyms2elf_binding(char type)
+> -- 
+> 2.36.1
+> 
 
-This trivial patch has not been picked up yet.
-
-I can apply this to my tree, if you want.
-
-Please let me know your thoughts.
-
-
--- 
-Best Regards
-Masahiro Yamada
+BR, Jarkko
