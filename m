@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42957531FA9
-	for <lists+live-patching@lfdr.de>; Tue, 24 May 2022 02:17:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D996B531FA5
+	for <lists+live-patching@lfdr.de>; Tue, 24 May 2022 02:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbiEXARK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 23 May 2022 20:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58448 "EHLO
+        id S231771AbiEXARI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 23 May 2022 20:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiEXAQy (ORCPT
+        with ESMTP id S231644AbiEXAQy (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
         Mon, 23 May 2022 20:16:54 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6ECD16D3BD;
-        Mon, 23 May 2022 17:16:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E7D86D1BA;
+        Mon, 23 May 2022 17:16:53 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 7D75F20B8952;
-        Mon, 23 May 2022 17:16:51 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7D75F20B8952
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7E30520B8955;
+        Mon, 23 May 2022 17:16:52 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7E30520B8955
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1653351412;
-        bh=hqr6+5sz0cEVD673vwUEknaY+FCv/C1YhbsmJe+cR/0=;
+        s=default; t=1653351413;
+        bh=3jHaMbw9ANe8Y9jhqk+TmlvqJI4ymT7GLSNWj4FwVgI=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=Tidu8vH+9Sk9BPmnSd6r6Kbv01dR+ZMc57shs+77Gq+m8Nddy+etACMw9hnl6/pbU
-         QZDbPyT4cNEetQyQRPgRMKFw9z0bjkC0zxdLx87y74sGiOmP7Bi9/hBaqLiAW8DAKZ
-         5NAKXbjelI6neqbPUVHYuzE8w/m8s2dYfvBTvjt8=
+        b=B5hfm0Bg4yOn5hvyfGUqiTjQulP0otUoToQK59qyKx+VjhEZviaon5HIOhG+g1drc
+         qHW/eI+CyqRg7rLO/bhoa8aWwTdMgKrgs2j/BcB6+u3YLHvjMWfmtPO8VA8bzZZckN
+         o17tg8RmMhCFTLz+INtodvWwua90RdDEtfjDlKdA=
 From:   madvenka@linux.microsoft.com
 To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 05/20] objtool: Reorganize ORC types
-Date:   Mon, 23 May 2022 19:16:22 -0500
-Message-Id: <20220524001637.1707472-6-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v2 06/20] objtool: Reorganize ORC code
+Date:   Mon, 23 May 2022 19:16:23 -0500
+Message-Id: <20220524001637.1707472-7-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220524001637.1707472-1-madvenka@linux.microsoft.com>
 References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
@@ -55,263 +55,441 @@ X-Mailing-List: live-patching@vger.kernel.org
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
 The ORC code needs to be reorganized into arch-specific and generic parts
-so that architectures other than X86 can use the generic parts.
+so that architectures other than X86 can avail the generic parts.
 
-orc_types.h contains the following ORC definitions shared between objtool
-and the kernel:
+Some arch-specific ORC code is present in orc_gen.c and orc_dump.c. Create
+the following two files for such code:
 
-	- ORC register definitions which are arch-specific.
-	- orc_entry structure which is generic.
+	- tools/objtool/include/objtool/orc.h
+	- tools/objtool/arch/x86/orc.c
 
-Move orc_entry into a new file include/linux/orc_entry.h. Also, the field
-names bp_reg and bp_offset in struct orc_entry are x86-specific. Change
-them to fp_reg and fp_offset. FP stands for frame pointer.
+Move the following arch-specific function from tools/objtool/orc_gen.c
+to tools/objtool/arch/x86/orc.c:
 
-Currently, the type field in orc_entry is only 2 bits. For other
-architectures, we will need more. So, expand this to 3 bits.
+	- init_orc_entry()
+
+Move the following arch-specific functions from tools/objtool/orc_dump.c
+to tools/objtool/arch/x86/orc.c:
+
+	- reg_name()
+	- orc_type_name()
+	- print_reg()
+
+Create arch-specific functions to print the names of the SP and FP
+registers.
+
+The relocation type for relocation entries for ORC structures is
+arch-specific. Define it in tools/objtool/arch/x86/include/arch/elf.h:
+
+	#define R_PCREL R_X86_64_PC32
+
+and use that in orc_gen.c so each architecture can provide its own
+relocation type.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/x86/include/asm/orc_types.h       | 37 +++++-------------------
- include/linux/orc_entry.h              | 39 ++++++++++++++++++++++++++
- tools/arch/x86/include/asm/orc_types.h | 37 +++++-------------------
- tools/include/linux/orc_entry.h        | 39 ++++++++++++++++++++++++++
- tools/objtool/orc_gen.c                |  4 +--
- tools/objtool/sync-check.sh            |  1 +
- 6 files changed, 95 insertions(+), 62 deletions(-)
- create mode 100644 include/linux/orc_entry.h
- create mode 100644 tools/include/linux/orc_entry.h
+ tools/objtool/arch/x86/Build              |   1 +
+ tools/objtool/arch/x86/include/arch/elf.h |   1 +
+ tools/objtool/arch/x86/orc.c              | 150 ++++++++++++++++++++++
+ tools/objtool/include/objtool/orc.h       |  18 +++
+ tools/objtool/orc_dump.c                  |  63 +--------
+ tools/objtool/orc_gen.c                   |  79 +-----------
+ 6 files changed, 179 insertions(+), 133 deletions(-)
+ create mode 100644 tools/objtool/arch/x86/orc.c
+ create mode 100644 tools/objtool/include/objtool/orc.h
 
-diff --git a/arch/x86/include/asm/orc_types.h b/arch/x86/include/asm/orc_types.h
-index 5a2baf28a1dc..851c9fb9f695 100644
---- a/arch/x86/include/asm/orc_types.h
-+++ b/arch/x86/include/asm/orc_types.h
-@@ -8,6 +8,13 @@
+diff --git a/tools/objtool/arch/x86/Build b/tools/objtool/arch/x86/Build
+index 9f7869b5c5e0..add541dbb3e3 100644
+--- a/tools/objtool/arch/x86/Build
++++ b/tools/objtool/arch/x86/Build
+@@ -1,5 +1,6 @@
+ objtool-y += special.o
+ objtool-y += decode.o
++objtool-$(SUBCMD_ORC) += orc.o
  
- #include <linux/types.h>
- #include <linux/compiler.h>
-+#include <linux/orc_entry.h>
-+
-+/*
-+ * For x86, use the appripriate name for the frame pointer in orc_entry.
-+ */
-+#define bp_offset	fp_offset
-+#define bp_reg		fp_reg
+ inat_tables_script = ../arch/x86/tools/gen-insn-attr-x86.awk
+ inat_tables_maps = ../arch/x86/lib/x86-opcode-map.txt
+diff --git a/tools/objtool/arch/x86/include/arch/elf.h b/tools/objtool/arch/x86/include/arch/elf.h
+index 69cc4264b28a..3a7eb515dbb9 100644
+--- a/tools/objtool/arch/x86/include/arch/elf.h
++++ b/tools/objtool/arch/x86/include/arch/elf.h
+@@ -2,5 +2,6 @@
+ #define _OBJTOOL_ARCH_ELF
  
- /*
-  * The ORC_REG_* registers are base registers which are used to find other
-@@ -39,34 +46,4 @@
- #define ORC_REG_SP_INDIRECT		9
- #define ORC_REG_MAX			15
+ #define R_NONE R_X86_64_NONE
++#define R_PCREL R_X86_64_PC32
  
--#ifndef __ASSEMBLY__
--#include <asm/byteorder.h>
--
--/*
-- * This struct is more or less a vastly simplified version of the DWARF Call
-- * Frame Information standard.  It contains only the necessary parts of DWARF
-- * CFI, simplified for ease of access by the in-kernel unwinder.  It tells the
-- * unwinder how to find the previous SP and BP (and sometimes entry regs) on
-- * the stack for a given code address.  Each instance of the struct corresponds
-- * to one or more code locations.
-- */
--struct orc_entry {
--	s16		sp_offset;
--	s16		bp_offset;
--#if defined(__LITTLE_ENDIAN_BITFIELD)
--	unsigned	sp_reg:4;
--	unsigned	bp_reg:4;
--	unsigned	type:2;
--	unsigned	end:1;
--#elif defined(__BIG_ENDIAN_BITFIELD)
--	unsigned	bp_reg:4;
--	unsigned	sp_reg:4;
--	unsigned	unused:5;
--	unsigned	end:1;
--	unsigned	type:2;
--#endif
--} __packed;
--
--#endif /* __ASSEMBLY__ */
--
- #endif /* _ORC_TYPES_H */
-diff --git a/include/linux/orc_entry.h b/include/linux/orc_entry.h
+ #endif /* _OBJTOOL_ARCH_ELF */
+diff --git a/tools/objtool/arch/x86/orc.c b/tools/objtool/arch/x86/orc.c
 new file mode 100644
-index 000000000000..3d49e3b9dabe
+index 000000000000..a075737d4503
 --- /dev/null
-+++ b/include/linux/orc_entry.h
-@@ -0,0 +1,39 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
++++ b/tools/objtool/arch/x86/orc.c
+@@ -0,0 +1,150 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + * Copyright (C) 2017 Josh Poimboeuf <jpoimboe@redhat.com>
 + */
 +
-+#ifndef _ORC_ENTRY_H
-+#define _ORC_ENTRY_H
++#include <stdlib.h>
++#include <string.h>
 +
-+#ifndef __ASSEMBLY__
-+#include <asm/byteorder.h>
++#include <linux/objtool.h>
 +
-+/*
-+ * This struct is more or less a vastly simplified version of the DWARF Call
-+ * Frame Information standard.  It contains only the necessary parts of DWARF
-+ * CFI, simplified for ease of access by the in-kernel unwinder.  It tells the
-+ * unwinder how to find the previous SP and BP (and sometimes entry regs) on
-+ * the stack for a given code address.  Each instance of the struct corresponds
-+ * to one or more code locations.
-+ */
-+struct orc_entry {
-+	s16		sp_offset;
-+	s16		fp_offset;
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	unsigned	sp_reg:4;
-+	unsigned	fp_reg:4;
-+	unsigned	type:3;
-+	unsigned	end:1;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	unsigned	fp_reg:4;
-+	unsigned	sp_reg:4;
-+	unsigned	unused:4;
-+	unsigned	end:1;
-+	unsigned	type:3;
-+#endif
-+} __packed;
++#include <objtool/check.h>
++#include <objtool/orc.h>
++#include <objtool/warn.h>
++#include <objtool/endianness.h>
 +
-+#endif /* __ASSEMBLY__ */
++int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
++		   struct instruction *insn)
++{
++	struct cfi_reg *bp = &cfi->regs[CFI_BP];
 +
-+#endif /* _ORC_ENTRY_H */
-diff --git a/tools/arch/x86/include/asm/orc_types.h b/tools/arch/x86/include/asm/orc_types.h
-index 5a2baf28a1dc..851c9fb9f695 100644
---- a/tools/arch/x86/include/asm/orc_types.h
-+++ b/tools/arch/x86/include/asm/orc_types.h
-@@ -8,6 +8,13 @@
- 
- #include <linux/types.h>
- #include <linux/compiler.h>
-+#include <linux/orc_entry.h>
++	memset(orc, 0, sizeof(*orc));
 +
-+/*
-+ * For x86, use the appripriate name for the frame pointer in orc_entry.
-+ */
-+#define bp_offset	fp_offset
-+#define bp_reg		fp_reg
- 
- /*
-  * The ORC_REG_* registers are base registers which are used to find other
-@@ -39,34 +46,4 @@
- #define ORC_REG_SP_INDIRECT		9
- #define ORC_REG_MAX			15
- 
--#ifndef __ASSEMBLY__
--#include <asm/byteorder.h>
--
--/*
-- * This struct is more or less a vastly simplified version of the DWARF Call
-- * Frame Information standard.  It contains only the necessary parts of DWARF
-- * CFI, simplified for ease of access by the in-kernel unwinder.  It tells the
-- * unwinder how to find the previous SP and BP (and sometimes entry regs) on
-- * the stack for a given code address.  Each instance of the struct corresponds
-- * to one or more code locations.
-- */
--struct orc_entry {
--	s16		sp_offset;
--	s16		bp_offset;
--#if defined(__LITTLE_ENDIAN_BITFIELD)
--	unsigned	sp_reg:4;
--	unsigned	bp_reg:4;
--	unsigned	type:2;
--	unsigned	end:1;
--#elif defined(__BIG_ENDIAN_BITFIELD)
--	unsigned	bp_reg:4;
--	unsigned	sp_reg:4;
--	unsigned	unused:5;
--	unsigned	end:1;
--	unsigned	type:2;
--#endif
--} __packed;
--
--#endif /* __ASSEMBLY__ */
--
- #endif /* _ORC_TYPES_H */
-diff --git a/tools/include/linux/orc_entry.h b/tools/include/linux/orc_entry.h
++	if (!cfi) {
++		orc->end = 0;
++		orc->sp_reg = ORC_REG_UNDEFINED;
++		return 0;
++	}
++
++	orc->end = cfi->end;
++
++	if (cfi->cfa.base == CFI_UNDEFINED) {
++		orc->sp_reg = ORC_REG_UNDEFINED;
++		return 0;
++	}
++
++	switch (cfi->cfa.base) {
++	case CFI_SP:
++		orc->sp_reg = ORC_REG_SP;
++		break;
++	case CFI_SP_INDIRECT:
++		orc->sp_reg = ORC_REG_SP_INDIRECT;
++		break;
++	case CFI_BP:
++		orc->sp_reg = ORC_REG_BP;
++		break;
++	case CFI_BP_INDIRECT:
++		orc->sp_reg = ORC_REG_BP_INDIRECT;
++		break;
++	case CFI_R10:
++		orc->sp_reg = ORC_REG_R10;
++		break;
++	case CFI_R13:
++		orc->sp_reg = ORC_REG_R13;
++		break;
++	case CFI_DI:
++		orc->sp_reg = ORC_REG_DI;
++		break;
++	case CFI_DX:
++		orc->sp_reg = ORC_REG_DX;
++		break;
++	default:
++		WARN_FUNC("unknown CFA base reg %d",
++			  insn->sec, insn->offset, cfi->cfa.base);
++		return -1;
++	}
++
++	switch (bp->base) {
++	case CFI_UNDEFINED:
++		orc->bp_reg = ORC_REG_UNDEFINED;
++		break;
++	case CFI_CFA:
++		orc->bp_reg = ORC_REG_PREV_SP;
++		break;
++	case CFI_BP:
++		orc->bp_reg = ORC_REG_BP;
++		break;
++	default:
++		WARN_FUNC("unknown BP base reg %d",
++			  insn->sec, insn->offset, bp->base);
++		return -1;
++	}
++
++	orc->sp_offset = cfi->cfa.offset;
++	orc->bp_offset = bp->offset;
++	orc->type = cfi->type;
++
++	return 0;
++}
++
++static const char *reg_name(unsigned int reg)
++{
++	switch (reg) {
++	case ORC_REG_PREV_SP:
++		return "prevsp";
++	case ORC_REG_DX:
++		return "dx";
++	case ORC_REG_DI:
++		return "di";
++	case ORC_REG_BP:
++		return "bp";
++	case ORC_REG_SP:
++		return "sp";
++	case ORC_REG_R10:
++		return "r10";
++	case ORC_REG_R13:
++		return "r13";
++	case ORC_REG_BP_INDIRECT:
++		return "bp(ind)";
++	case ORC_REG_SP_INDIRECT:
++		return "sp(ind)";
++	default:
++		return "?";
++	}
++}
++
++const char *orc_type_name(unsigned int type)
++{
++	switch (type) {
++	case UNWIND_HINT_TYPE_CALL:
++		return "call";
++	case UNWIND_HINT_TYPE_REGS:
++		return "regs";
++	case UNWIND_HINT_TYPE_REGS_PARTIAL:
++		return "regs (partial)";
++	default:
++		return "?";
++	}
++}
++
++void orc_print_reg(unsigned int reg, int offset)
++{
++	if (reg == ORC_REG_BP_INDIRECT)
++		printf("(bp%+d)", offset);
++	else if (reg == ORC_REG_SP_INDIRECT)
++		printf("(sp)%+d", offset);
++	else if (reg == ORC_REG_UNDEFINED)
++		printf("(und)");
++	else
++		printf("%s%+d", reg_name(reg), offset);
++}
++
++void orc_print_sp(void)
++{
++	printf(" sp:");
++}
++
++void orc_print_fp(void)
++{
++	printf(" bp:");
++}
+diff --git a/tools/objtool/include/objtool/orc.h b/tools/objtool/include/objtool/orc.h
 new file mode 100644
-index 000000000000..3d49e3b9dabe
+index 000000000000..bf141134c56f
 --- /dev/null
-+++ b/tools/include/linux/orc_entry.h
-@@ -0,0 +1,39 @@
++++ b/tools/objtool/include/objtool/orc.h
+@@ -0,0 +1,18 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/*
-+ * Copyright (C) 2017 Josh Poimboeuf <jpoimboe@redhat.com>
++ * Copyright (C) 2015-2017 Josh Poimboeuf <jpoimboe@redhat.com>
 + */
 +
-+#ifndef _ORC_ENTRY_H
-+#define _ORC_ENTRY_H
++#ifndef _OBJTOOL_ORC_H
++#define _OBJTOOL_ORC_H
 +
-+#ifndef __ASSEMBLY__
-+#include <asm/byteorder.h>
++#include <asm/orc_types.h>
 +
-+/*
-+ * This struct is more or less a vastly simplified version of the DWARF Call
-+ * Frame Information standard.  It contains only the necessary parts of DWARF
-+ * CFI, simplified for ease of access by the in-kernel unwinder.  It tells the
-+ * unwinder how to find the previous SP and BP (and sometimes entry regs) on
-+ * the stack for a given code address.  Each instance of the struct corresponds
-+ * to one or more code locations.
-+ */
-+struct orc_entry {
-+	s16		sp_offset;
-+	s16		fp_offset;
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	unsigned	sp_reg:4;
-+	unsigned	fp_reg:4;
-+	unsigned	type:3;
-+	unsigned	end:1;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	unsigned	fp_reg:4;
-+	unsigned	sp_reg:4;
-+	unsigned	unused:4;
-+	unsigned	end:1;
-+	unsigned	type:3;
-+#endif
-+} __packed;
++int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
++		   struct instruction *insn);
++const char *orc_type_name(unsigned int type);
++void orc_print_reg(unsigned int reg, int offset);
++void orc_print_sp(void);
++void orc_print_fp(void);
 +
-+#endif /* __ASSEMBLY__ */
-+
-+#endif /* _ORC_ENTRY_H */
++#endif /* _OBJTOOL_ORC_H */
+diff --git a/tools/objtool/orc_dump.c b/tools/objtool/orc_dump.c
+index f5a8508c42d6..61b39960ab6a 100644
+--- a/tools/objtool/orc_dump.c
++++ b/tools/objtool/orc_dump.c
+@@ -5,63 +5,12 @@
+ 
+ #include <unistd.h>
+ #include <linux/objtool.h>
+-#include <asm/orc_types.h>
+ #include <objtool/objtool.h>
++#include <objtool/check.h>
++#include <objtool/orc.h>
+ #include <objtool/warn.h>
+ #include <objtool/endianness.h>
+ 
+-static const char *reg_name(unsigned int reg)
+-{
+-	switch (reg) {
+-	case ORC_REG_PREV_SP:
+-		return "prevsp";
+-	case ORC_REG_DX:
+-		return "dx";
+-	case ORC_REG_DI:
+-		return "di";
+-	case ORC_REG_BP:
+-		return "bp";
+-	case ORC_REG_SP:
+-		return "sp";
+-	case ORC_REG_R10:
+-		return "r10";
+-	case ORC_REG_R13:
+-		return "r13";
+-	case ORC_REG_BP_INDIRECT:
+-		return "bp(ind)";
+-	case ORC_REG_SP_INDIRECT:
+-		return "sp(ind)";
+-	default:
+-		return "?";
+-	}
+-}
+-
+-static const char *orc_type_name(unsigned int type)
+-{
+-	switch (type) {
+-	case UNWIND_HINT_TYPE_CALL:
+-		return "call";
+-	case UNWIND_HINT_TYPE_REGS:
+-		return "regs";
+-	case UNWIND_HINT_TYPE_REGS_PARTIAL:
+-		return "regs (partial)";
+-	default:
+-		return "?";
+-	}
+-}
+-
+-static void print_reg(unsigned int reg, int offset)
+-{
+-	if (reg == ORC_REG_BP_INDIRECT)
+-		printf("(bp%+d)", offset);
+-	else if (reg == ORC_REG_SP_INDIRECT)
+-		printf("(sp)%+d", offset);
+-	else if (reg == ORC_REG_UNDEFINED)
+-		printf("(und)");
+-	else
+-		printf("%s%+d", reg_name(reg), offset);
+-}
+-
+ int orc_dump(const char *_objname)
+ {
+ 	int fd, nr_entries, i, *orc_ip = NULL, orc_size = 0;
+@@ -196,13 +145,13 @@ int orc_dump(const char *_objname)
+ 		}
+ 
+ 
+-		printf(" sp:");
++		orc_print_sp();
+ 
+-		print_reg(orc[i].sp_reg, bswap_if_needed(orc[i].sp_offset));
++		orc_print_reg(orc[i].sp_reg, bswap_if_needed(orc[i].sp_offset));
+ 
+-		printf(" bp:");
++		orc_print_fp();
+ 
+-		print_reg(orc[i].bp_reg, bswap_if_needed(orc[i].bp_offset));
++		orc_print_reg(orc[i].fp_reg, bswap_if_needed(orc[i].fp_offset));
+ 
+ 		printf(" type:%s end:%d\n",
+ 		       orc_type_name(orc[i].type), orc[i].end);
 diff --git a/tools/objtool/orc_gen.c b/tools/objtool/orc_gen.c
-index dd3c64af9db2..68c317daadbf 100644
+index 68c317daadbf..ea2e361ff7bc 100644
 --- a/tools/objtool/orc_gen.c
 +++ b/tools/objtool/orc_gen.c
-@@ -98,7 +98,7 @@ static int write_orc_entry(struct elf *elf, struct section *orc_sec,
- 	orc = (struct orc_entry *)orc_sec->data->d_buf + idx;
- 	memcpy(orc, o, sizeof(*orc));
- 	orc->sp_offset = bswap_if_needed(orc->sp_offset);
--	orc->bp_offset = bswap_if_needed(orc->bp_offset);
-+	orc->fp_offset = bswap_if_needed(orc->fp_offset);
+@@ -7,86 +7,13 @@
+ #include <string.h>
+ 
+ #include <linux/objtool.h>
+-#include <asm/orc_types.h>
++#include <arch/elf.h>
+ 
+ #include <objtool/check.h>
++#include <objtool/orc.h>
+ #include <objtool/warn.h>
+ #include <objtool/endianness.h>
+ 
+-static int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
+-			  struct instruction *insn)
+-{
+-	struct cfi_reg *bp = &cfi->regs[CFI_BP];
+-
+-	memset(orc, 0, sizeof(*orc));
+-
+-	if (!cfi) {
+-		orc->end = 0;
+-		orc->sp_reg = ORC_REG_UNDEFINED;
+-		return 0;
+-	}
+-
+-	orc->end = cfi->end;
+-
+-	if (cfi->cfa.base == CFI_UNDEFINED) {
+-		orc->sp_reg = ORC_REG_UNDEFINED;
+-		return 0;
+-	}
+-
+-	switch (cfi->cfa.base) {
+-	case CFI_SP:
+-		orc->sp_reg = ORC_REG_SP;
+-		break;
+-	case CFI_SP_INDIRECT:
+-		orc->sp_reg = ORC_REG_SP_INDIRECT;
+-		break;
+-	case CFI_BP:
+-		orc->sp_reg = ORC_REG_BP;
+-		break;
+-	case CFI_BP_INDIRECT:
+-		orc->sp_reg = ORC_REG_BP_INDIRECT;
+-		break;
+-	case CFI_R10:
+-		orc->sp_reg = ORC_REG_R10;
+-		break;
+-	case CFI_R13:
+-		orc->sp_reg = ORC_REG_R13;
+-		break;
+-	case CFI_DI:
+-		orc->sp_reg = ORC_REG_DI;
+-		break;
+-	case CFI_DX:
+-		orc->sp_reg = ORC_REG_DX;
+-		break;
+-	default:
+-		WARN_FUNC("unknown CFA base reg %d",
+-			  insn->sec, insn->offset, cfi->cfa.base);
+-		return -1;
+-	}
+-
+-	switch (bp->base) {
+-	case CFI_UNDEFINED:
+-		orc->bp_reg = ORC_REG_UNDEFINED;
+-		break;
+-	case CFI_CFA:
+-		orc->bp_reg = ORC_REG_PREV_SP;
+-		break;
+-	case CFI_BP:
+-		orc->bp_reg = ORC_REG_BP;
+-		break;
+-	default:
+-		WARN_FUNC("unknown BP base reg %d",
+-			  insn->sec, insn->offset, bp->base);
+-		return -1;
+-	}
+-
+-	orc->sp_offset = cfi->cfa.offset;
+-	orc->bp_offset = bp->offset;
+-	orc->type = cfi->type;
+-
+-	return 0;
+-}
+-
+ static int write_orc_entry(struct elf *elf, struct section *orc_sec,
+ 			   struct section *ip_sec, unsigned int idx,
+ 			   struct section *insn_sec, unsigned long insn_off,
+@@ -101,7 +28,7 @@ static int write_orc_entry(struct elf *elf, struct section *orc_sec,
+ 	orc->fp_offset = bswap_if_needed(orc->fp_offset);
  
  	/* populate reloc for ip */
- 	if (elf_add_reloc_to_insn(elf, ip_sec, idx * sizeof(int), R_X86_64_PC32,
-@@ -149,7 +149,7 @@ int orc_create(struct objtool_file *file)
+-	if (elf_add_reloc_to_insn(elf, ip_sec, idx * sizeof(int), R_X86_64_PC32,
++	if (elf_add_reloc_to_insn(elf, ip_sec, idx * sizeof(int), R_PCREL,
+ 				  insn_sec, insn_off))
+ 		return -1;
  
- 	struct orc_entry null = {
- 		.sp_reg  = ORC_REG_UNDEFINED,
--		.bp_reg  = ORC_REG_UNDEFINED,
-+		.fp_reg  = ORC_REG_UNDEFINED,
- 		.type    = UNWIND_HINT_TYPE_CALL,
- 	};
- 
-diff --git a/tools/objtool/sync-check.sh b/tools/objtool/sync-check.sh
-index ee49b4e9e72c..ef1acb064605 100755
---- a/tools/objtool/sync-check.sh
-+++ b/tools/objtool/sync-check.sh
-@@ -18,6 +18,7 @@ arch/x86/include/asm/unwind_hints.h
- arch/x86/lib/x86-opcode-map.txt
- arch/x86/tools/gen-insn-attr-x86.awk
- include/linux/static_call_types.h
-+include/linux/orc_entry.h
- "
- 
- SYNC_CHECK_FILES='
 -- 
 2.25.1
 
