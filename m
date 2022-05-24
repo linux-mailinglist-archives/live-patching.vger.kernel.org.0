@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FEEF531FA7
-	for <lists+live-patching@lfdr.de>; Tue, 24 May 2022 02:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7408531FA4
+	for <lists+live-patching@lfdr.de>; Tue, 24 May 2022 02:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbiEXARJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 23 May 2022 20:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
+        id S231905AbiEXARH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 23 May 2022 20:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231710AbiEXAQ4 (ORCPT
+        with ESMTP id S231737AbiEXAQ5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 23 May 2022 20:16:56 -0400
+        Mon, 23 May 2022 20:16:57 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70F96719F4;
-        Mon, 23 May 2022 17:16:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7221A6D4CB;
+        Mon, 23 May 2022 17:16:55 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 7E36D20B8958;
-        Mon, 23 May 2022 17:16:53 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7E36D20B8958
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7F2F220B895B;
+        Mon, 23 May 2022 17:16:54 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7F2F220B895B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1653351414;
-        bh=Rr2//iem1xjhfYP3RsVY0bD7J8s2uEkhagwtkNIGSQM=;
+        s=default; t=1653351415;
+        bh=NA16KWlQPMN0HiA+DBPspnlFwB3chkl/e0Ulkr5UDdA=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=TUNOgWrQIBG4Lr+ooPILTzPW8QHXhwcbR4hXVEMWNeqEvmx/3ELNM71a+19BgotiX
-         EAkake/AzIVIJqS6Zj0Oqll9d8GNJ9s47Ta8f5Pjqa6Bzgjn4QNirA03SBjqUTM7tZ
-         5SaGoujB6s5Xp59Kq08JhMnDoeIHrAQCdWlOY0/I=
+        b=P/8Udr7JPl0jloM1OqtLgmnqIxrhl6BjF9tfhWnx5/slYQnE74waDWn2D96EQPP/X
+         TyLxBMTcgWc6ZPLr/Nci9GakGN/DruUa59Y3DQKaD/ep3oR4502o1EjyLDUM6i9FSO
+         Mlq1iVAkglieO/HQ9jXw5EUaz3fyKb4tr1kIau3Y=
 From:   madvenka@linux.microsoft.com
 To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 07/20] objtool: Reorganize ORC kernel code
-Date:   Mon, 23 May 2022 19:16:24 -0500
-Message-Id: <20220524001637.1707472-8-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v2 08/20] objtool: arm64: Implement decoder for FP validation
+Date:   Mon, 23 May 2022 19:16:25 -0500
+Message-Id: <20220524001637.1707472-9-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220524001637.1707472-1-madvenka@linux.microsoft.com>
 References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
@@ -54,729 +54,425 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-All of the ORC code in the kernel is currently under arch/x86. The
-following parts of that code can be shared by other architectures that
-wish to use ORC.
+Implement arch_decode_instruction() for ARM64. For dynamic FP validation,
+we need to walk each function's code and determine the stack and frame
+offsets at each instruction. So, the following instructions are completely
+decoded:
 
-	(1) ORC lookup initialization for vmlinux
+	Instructions that affect the SP and FP:
 
-	(2) ORC lookup initialization for modules
+	- Load-Store instructions
+	- Add/Sub/Mov instructions
 
-	(3) ORC lookup functions
+	Instructions that affect control flow:
 
-Move arch/x86/include/asm/orc_lookup.h to include/asm-generic/orc_lookup.h.
+	- Branch instructions
+	- Call instructions
+	- Return instructions
 
-Move the ORC lookup code into kernel/orc_lookup.c.
+The rest of the instructions are either dont-care from an unwind
+perspective or unexpected from the compiler. Add checks for the unexpected
+ones to catch them if the compiler ever generates them.
 
-Rename the following init functions:
-
-	unwind_module_init	==> orc_lookup_module_init
-	unwind_init		==> orc_lookup_init
-
-since that is exactly what they do.
-
-orc_find() is the function that locates the ORC entry for a given PC.
-Currently, it contains an architecture-specific part to locate ftrace
-entries. Introduce a new arch-specific function called arch_orc_find()
-and move the ftrace-related lookup there. If orc_find() is unable to
-locate the ORC entry for a given PC in vmlinux or in the modules, it can
-call arch_orc_find() to find architecture-specific entries.
+Define CFI registers used by ARM64 in arch-specific cfi_regs.h. This is a
+small subset of the ones used in x86.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/x86/include/asm/unwind.h                 |   5 -
- arch/x86/kernel/module.c                      |   7 +-
- arch/x86/kernel/unwind_orc.c                  | 256 +----------------
- arch/x86/kernel/vmlinux.lds.S                 |   2 +-
- .../asm => include/asm-generic}/orc_lookup.h  |  42 +++
- kernel/Makefile                               |   2 +
- kernel/orc_lookup.c                           | 261 ++++++++++++++++++
- 7 files changed, 316 insertions(+), 259 deletions(-)
- rename {arch/x86/include/asm => include/asm-generic}/orc_lookup.h (51%)
- create mode 100644 kernel/orc_lookup.c
+ tools/objtool/arch/arm64/Build                |   1 +
+ tools/objtool/arch/arm64/decode.c             | 342 ++++++++++++++++++
+ .../arch/arm64/include/arch/cfi_regs.h        |  12 +
+ tools/objtool/include/objtool/arch.h          |   1 +
+ 4 files changed, 356 insertions(+)
+ create mode 100644 tools/objtool/arch/arm64/Build
+ create mode 100644 tools/objtool/arch/arm64/decode.c
+ create mode 100644 tools/objtool/arch/arm64/include/arch/cfi_regs.h
 
-diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
-index 7cede4dc21f0..71af8246c69e 100644
---- a/arch/x86/include/asm/unwind.h
-+++ b/arch/x86/include/asm/unwind.h
-@@ -94,13 +94,8 @@ static inline struct pt_regs *unwind_get_entry_regs(struct unwind_state *state,
- 
- #ifdef CONFIG_UNWINDER_ORC
- void unwind_init(void);
--void unwind_module_init(struct module *mod, void *orc_ip, size_t orc_ip_size,
--			void *orc, size_t orc_size);
- #else
- static inline void unwind_init(void) {}
--static inline
--void unwind_module_init(struct module *mod, void *orc_ip, size_t orc_ip_size,
--			void *orc, size_t orc_size) {}
- #endif
- 
- static inline
-diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index b98ffcf4d250..4ebc9eddcb6b 100644
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -23,7 +23,7 @@
- #include <asm/text-patching.h>
- #include <asm/page.h>
- #include <asm/setup.h>
--#include <asm/unwind.h>
-+#include <asm-generic/orc_lookup.h>
- 
- #if 0
- #define DEBUGP(fmt, ...)				\
-@@ -308,8 +308,9 @@ int module_finalize(const Elf_Ehdr *hdr,
- 	jump_label_apply_nops(me);
- 
- 	if (orc && orc_ip)
--		unwind_module_init(me, (void *)orc_ip->sh_addr, orc_ip->sh_size,
--				   (void *)orc->sh_addr, orc->sh_size);
-+		orc_lookup_module_init(me,
-+				       (void *)orc_ip->sh_addr, orc_ip->sh_size,
-+				       (void *)orc->sh_addr, orc->sh_size);
- 
- 	return 0;
- }
-diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
-index 7cae5bfa56c7..0a99d5261c9d 100644
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -6,80 +6,9 @@
- #include <asm/stacktrace.h>
- #include <asm/unwind.h>
- #include <asm/orc_types.h>
--#include <asm/orc_lookup.h>
--
--#define orc_warn(fmt, ...) \
--	printk_deferred_once(KERN_WARNING "WARNING: " fmt, ##__VA_ARGS__)
--
--#define orc_warn_current(args...)					\
--({									\
--	if (state->task == current && !state->error)			\
--		orc_warn(args);						\
--})
--
--extern int __start_orc_unwind_ip[];
--extern int __stop_orc_unwind_ip[];
--extern struct orc_entry __start_orc_unwind[];
--extern struct orc_entry __stop_orc_unwind[];
--
--static bool orc_init __ro_after_init;
--static unsigned int lookup_num_blocks __ro_after_init;
--
--static inline unsigned long orc_ip(const int *ip)
--{
--	return (unsigned long)ip + *ip;
--}
--
--static struct orc_entry *__orc_find(int *ip_table, struct orc_entry *u_table,
--				    unsigned int num_entries, unsigned long ip)
--{
--	int *first = ip_table;
--	int *last = ip_table + num_entries - 1;
--	int *mid = first, *found = first;
--
--	if (!num_entries)
--		return NULL;
--
--	/*
--	 * Do a binary range search to find the rightmost duplicate of a given
--	 * starting address.  Some entries are section terminators which are
--	 * "weak" entries for ensuring there are no gaps.  They should be
--	 * ignored when they conflict with a real entry.
--	 */
--	while (first <= last) {
--		mid = first + ((last - first) / 2);
--
--		if (orc_ip(mid) <= ip) {
--			found = mid;
--			first = mid + 1;
--		} else
--			last = mid - 1;
--	}
--
--	return u_table + (found - ip_table);
--}
--
--#ifdef CONFIG_MODULES
--static struct orc_entry *orc_module_find(unsigned long ip)
--{
--	struct module *mod;
--
--	mod = __module_address(ip);
--	if (!mod || !mod->arch.orc_unwind || !mod->arch.orc_unwind_ip)
--		return NULL;
--	return __orc_find(mod->arch.orc_unwind_ip, mod->arch.orc_unwind,
--			  mod->arch.num_orcs, ip);
--}
--#else
--static struct orc_entry *orc_module_find(unsigned long ip)
--{
--	return NULL;
--}
--#endif
-+#include <asm-generic/orc_lookup.h>
- 
- #ifdef CONFIG_DYNAMIC_FTRACE
--static struct orc_entry *orc_find(unsigned long ip);
--
- /*
-  * Ftrace dynamic trampolines do not have orc entries of their own.
-  * But they are copies of the ftrace entries that are static and
-@@ -117,19 +46,10 @@ static struct orc_entry *orc_ftrace_find(unsigned long ip)
- }
- #endif
- 
--/*
-- * If we crash with IP==0, the last successfully executed instruction
-- * was probably an indirect function call with a NULL function pointer,
-- * and we don't have unwind information for NULL.
-- * This hardcoded ORC entry for IP==0 allows us to unwind from a NULL function
-- * pointer into its parent and then continue normally from there.
-- */
--static struct orc_entry null_orc_entry = {
--	.sp_offset = sizeof(long),
--	.sp_reg = ORC_REG_SP,
--	.bp_reg = ORC_REG_UNDEFINED,
--	.type = UNWIND_HINT_TYPE_CALL
--};
-+struct orc_entry *arch_orc_find(unsigned long ip)
-+{
-+	return orc_ftrace_find(ip);
-+}
- 
- /* Fake frame pointer entry -- used as a fallback for generated code */
- static struct orc_entry orc_fp_entry = {
-@@ -141,173 +61,9 @@ static struct orc_entry orc_fp_entry = {
- 	.end		= 0,
- };
- 
--static struct orc_entry *orc_find(unsigned long ip)
--{
--	static struct orc_entry *orc;
--
--	if (ip == 0)
--		return &null_orc_entry;
--
--	/* For non-init vmlinux addresses, use the fast lookup table: */
--	if (ip >= LOOKUP_START_IP && ip < LOOKUP_STOP_IP) {
--		unsigned int idx, start, stop;
--
--		idx = (ip - LOOKUP_START_IP) / LOOKUP_BLOCK_SIZE;
--
--		if (unlikely((idx >= lookup_num_blocks-1))) {
--			orc_warn("WARNING: bad lookup idx: idx=%u num=%u ip=%pB\n",
--				 idx, lookup_num_blocks, (void *)ip);
--			return NULL;
--		}
--
--		start = orc_lookup[idx];
--		stop = orc_lookup[idx + 1] + 1;
--
--		if (unlikely((__start_orc_unwind + start >= __stop_orc_unwind) ||
--			     (__start_orc_unwind + stop > __stop_orc_unwind))) {
--			orc_warn("WARNING: bad lookup value: idx=%u num=%u start=%u stop=%u ip=%pB\n",
--				 idx, lookup_num_blocks, start, stop, (void *)ip);
--			return NULL;
--		}
--
--		return __orc_find(__start_orc_unwind_ip + start,
--				  __start_orc_unwind + start, stop - start, ip);
--	}
--
--	/* vmlinux .init slow lookup: */
--	if (is_kernel_inittext(ip))
--		return __orc_find(__start_orc_unwind_ip, __start_orc_unwind,
--				  __stop_orc_unwind_ip - __start_orc_unwind_ip, ip);
--
--	/* Module lookup: */
--	orc = orc_module_find(ip);
--	if (orc)
--		return orc;
--
--	return orc_ftrace_find(ip);
--}
--
--#ifdef CONFIG_MODULES
--
--static DEFINE_MUTEX(sort_mutex);
--static int *cur_orc_ip_table = __start_orc_unwind_ip;
--static struct orc_entry *cur_orc_table = __start_orc_unwind;
--
--static void orc_sort_swap(void *_a, void *_b, int size)
--{
--	struct orc_entry *orc_a, *orc_b;
--	struct orc_entry orc_tmp;
--	int *a = _a, *b = _b, tmp;
--	int delta = _b - _a;
--
--	/* Swap the .orc_unwind_ip entries: */
--	tmp = *a;
--	*a = *b + delta;
--	*b = tmp - delta;
--
--	/* Swap the corresponding .orc_unwind entries: */
--	orc_a = cur_orc_table + (a - cur_orc_ip_table);
--	orc_b = cur_orc_table + (b - cur_orc_ip_table);
--	orc_tmp = *orc_a;
--	*orc_a = *orc_b;
--	*orc_b = orc_tmp;
--}
--
--static int orc_sort_cmp(const void *_a, const void *_b)
--{
--	struct orc_entry *orc_a;
--	const int *a = _a, *b = _b;
--	unsigned long a_val = orc_ip(a);
--	unsigned long b_val = orc_ip(b);
--
--	if (a_val > b_val)
--		return 1;
--	if (a_val < b_val)
--		return -1;
--
--	/*
--	 * The "weak" section terminator entries need to always be on the left
--	 * to ensure the lookup code skips them in favor of real entries.
--	 * These terminator entries exist to handle any gaps created by
--	 * whitelisted .o files which didn't get objtool generation.
--	 */
--	orc_a = cur_orc_table + (a - cur_orc_ip_table);
--	return orc_a->sp_reg == ORC_REG_UNDEFINED && !orc_a->end ? -1 : 1;
--}
--
--void unwind_module_init(struct module *mod, void *_orc_ip, size_t orc_ip_size,
--			void *_orc, size_t orc_size)
--{
--	int *orc_ip = _orc_ip;
--	struct orc_entry *orc = _orc;
--	unsigned int num_entries = orc_ip_size / sizeof(int);
--
--	WARN_ON_ONCE(orc_ip_size % sizeof(int) != 0 ||
--		     orc_size % sizeof(*orc) != 0 ||
--		     num_entries != orc_size / sizeof(*orc));
--
--	/*
--	 * The 'cur_orc_*' globals allow the orc_sort_swap() callback to
--	 * associate an .orc_unwind_ip table entry with its corresponding
--	 * .orc_unwind entry so they can both be swapped.
--	 */
--	mutex_lock(&sort_mutex);
--	cur_orc_ip_table = orc_ip;
--	cur_orc_table = orc;
--	sort(orc_ip, num_entries, sizeof(int), orc_sort_cmp, orc_sort_swap);
--	mutex_unlock(&sort_mutex);
--
--	mod->arch.orc_unwind_ip = orc_ip;
--	mod->arch.orc_unwind = orc;
--	mod->arch.num_orcs = num_entries;
--}
--#endif
--
- void __init unwind_init(void)
- {
--	size_t orc_ip_size = (void *)__stop_orc_unwind_ip - (void *)__start_orc_unwind_ip;
--	size_t orc_size = (void *)__stop_orc_unwind - (void *)__start_orc_unwind;
--	size_t num_entries = orc_ip_size / sizeof(int);
--	struct orc_entry *orc;
--	int i;
--
--	if (!num_entries || orc_ip_size % sizeof(int) != 0 ||
--	    orc_size % sizeof(struct orc_entry) != 0 ||
--	    num_entries != orc_size / sizeof(struct orc_entry)) {
--		orc_warn("WARNING: Bad or missing .orc_unwind table.  Disabling unwinder.\n");
--		return;
--	}
--
--	/*
--	 * Note, the orc_unwind and orc_unwind_ip tables were already
--	 * sorted at build time via the 'sorttable' tool.
--	 * It's ready for binary search straight away, no need to sort it.
--	 */
--
--	/* Initialize the fast lookup table: */
--	lookup_num_blocks = orc_lookup_end - orc_lookup;
--	for (i = 0; i < lookup_num_blocks-1; i++) {
--		orc = __orc_find(__start_orc_unwind_ip, __start_orc_unwind,
--				 num_entries,
--				 LOOKUP_START_IP + (LOOKUP_BLOCK_SIZE * i));
--		if (!orc) {
--			orc_warn("WARNING: Corrupt .orc_unwind table.  Disabling unwinder.\n");
--			return;
--		}
--
--		orc_lookup[i] = orc - __start_orc_unwind;
--	}
--
--	/* Initialize the ending block: */
--	orc = __orc_find(__start_orc_unwind_ip, __start_orc_unwind, num_entries,
--			 LOOKUP_STOP_IP);
--	if (!orc) {
--		orc_warn("WARNING: Corrupt .orc_unwind table.  Disabling unwinder.\n");
--		return;
--	}
--	orc_lookup[lookup_num_blocks-1] = orc - __start_orc_unwind;
--
--	orc_init = true;
-+	orc_lookup_init();
- }
- 
- unsigned long unwind_get_return_address(struct unwind_state *state)
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index 7fda7f27e762..1b0c6b4eafae 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -29,7 +29,7 @@
- #include <asm/asm-offsets.h>
- #include <asm/thread_info.h>
- #include <asm/page_types.h>
--#include <asm/orc_lookup.h>
-+#include <asm-generic/orc_lookup.h>
- #include <asm/cache.h>
- #include <asm/boot.h>
- 
-diff --git a/arch/x86/include/asm/orc_lookup.h b/include/asm-generic/orc_lookup.h
-similarity index 51%
-rename from arch/x86/include/asm/orc_lookup.h
-rename to include/asm-generic/orc_lookup.h
-index 241631282e43..f299fbf41cd0 100644
---- a/arch/x86/include/asm/orc_lookup.h
-+++ b/include/asm-generic/orc_lookup.h
-@@ -23,6 +23,8 @@
- 
- #ifndef LINKER_SCRIPT
- 
-+#include <asm-generic/sections.h>
-+
- extern unsigned int orc_lookup[];
- extern unsigned int orc_lookup_end[];
- 
-@@ -31,4 +33,44 @@ extern unsigned int orc_lookup_end[];
- 
- #endif /* LINKER_SCRIPT */
- 
-+#ifndef __ASSEMBLY__
-+
-+#include <linux/orc_entry.h>
-+
-+#ifdef CONFIG_UNWINDER_ORC
-+void orc_lookup_init(void);
-+void orc_lookup_module_init(struct module *mod,
-+			    void *orc_ip, size_t orc_ip_size,
-+			    void *orc, size_t orc_size);
-+#else
-+static inline void orc_lookup_init(void) {}
-+static inline
-+void orc_lookup_module_init(struct module *mod,
-+			    void *orc_ip, size_t orc_ip_size,
-+			    void *orc, size_t orc_size)
-+{
-+}
-+#endif
-+
-+struct orc_entry *arch_orc_find(unsigned long ip);
-+
-+#define orc_warn(fmt, ...) \
-+	printk_deferred_once(KERN_WARNING "WARNING: " fmt, ##__VA_ARGS__)
-+
-+#define orc_warn_current(args...)					\
-+({									\
-+	if (state->task == current && !state->error)			\
-+		orc_warn(args);						\
-+})
-+
-+struct orc_entry *orc_find(unsigned long ip);
-+
-+extern bool orc_init;
-+extern int __start_orc_unwind_ip[];
-+extern int __stop_orc_unwind_ip[];
-+extern struct orc_entry __start_orc_unwind[];
-+extern struct orc_entry __stop_orc_unwind[];
-+
-+#endif /* __ASSEMBLY__ */
-+
- #endif /* _ORC_LOOKUP_H */
-diff --git a/kernel/Makefile b/kernel/Makefile
-index 471d71935e90..f9f8eb61442f 100644
---- a/kernel/Makefile
-+++ b/kernel/Makefile
-@@ -133,6 +133,8 @@ obj-$(CONFIG_WATCH_QUEUE) += watch_queue.o
- obj-$(CONFIG_RESOURCE_KUNIT_TEST) += resource_kunit.o
- obj-$(CONFIG_SYSCTL_KUNIT_TEST) += sysctl-test.o
- 
-+obj-$(CONFIG_UNWINDER_ORC) += orc_lookup.o
-+
- CFLAGS_stackleak.o += $(DISABLE_STACKLEAK_PLUGIN)
- obj-$(CONFIG_GCC_PLUGIN_STACKLEAK) += stackleak.o
- KASAN_SANITIZE_stackleak.o := n
-diff --git a/kernel/orc_lookup.c b/kernel/orc_lookup.c
+diff --git a/tools/objtool/arch/arm64/Build b/tools/objtool/arch/arm64/Build
 new file mode 100644
-index 000000000000..88b783c41e94
+index 000000000000..3ff1f00c6a47
 --- /dev/null
-+++ b/kernel/orc_lookup.c
-@@ -0,0 +1,261 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/objtool.h>
-+#include <linux/module.h>
-+#include <linux/sort.h>
-+#include <asm/orc_types.h>
-+#include <asm-generic/orc_lookup.h>
-+
-+bool orc_init __ro_after_init;
-+static unsigned int lookup_num_blocks __ro_after_init;
-+
-+static inline unsigned long orc_ip(const int *ip)
-+{
-+	return (unsigned long)ip + *ip;
-+}
-+
-+static struct orc_entry *__orc_find(int *ip_table, struct orc_entry *u_table,
-+				    unsigned int num_entries, unsigned long ip)
-+{
-+	int *first = ip_table;
-+	int *last = ip_table + num_entries - 1;
-+	int *mid = first, *found = first;
-+
-+	if (!num_entries)
-+		return NULL;
-+
-+	/*
-+	 * Do a binary range search to find the rightmost duplicate of a given
-+	 * starting address.  Some entries are section terminators which are
-+	 * "weak" entries for ensuring there are no gaps.  They should be
-+	 * ignored when they conflict with a real entry.
-+	 */
-+	while (first <= last) {
-+		mid = first + ((last - first) / 2);
-+
-+		if (orc_ip(mid) <= ip) {
-+			found = mid;
-+			first = mid + 1;
-+		} else
-+			last = mid - 1;
-+	}
-+
-+	return u_table + (found - ip_table);
-+}
-+
-+#ifdef CONFIG_MODULES
-+static struct orc_entry *orc_module_find(unsigned long ip)
-+{
-+	struct module *mod;
-+
-+	mod = __module_address(ip);
-+	if (!mod || !mod->arch.orc_unwind || !mod->arch.orc_unwind_ip)
-+		return NULL;
-+	return __orc_find(mod->arch.orc_unwind_ip, mod->arch.orc_unwind,
-+			  mod->arch.num_orcs, ip);
-+}
-+#else
-+static struct orc_entry *orc_module_find(unsigned long ip)
-+{
-+	return NULL;
-+}
-+#endif
-+
++++ b/tools/objtool/arch/arm64/Build
+@@ -0,0 +1 @@
++objtool-y += decode.o
+diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
+new file mode 100644
+index 000000000000..8a9ff030085d
+--- /dev/null
++++ b/tools/objtool/arch/arm64/decode.c
+@@ -0,0 +1,342 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * If we crash with IP==0, the last successfully executed instruction
-+ * was probably an indirect function call with a NULL function pointer,
-+ * and we don't have unwind information for NULL.
-+ * This hardcoded ORC entry for IP==0 allows us to unwind from a NULL function
-+ * pointer into its parent and then continue normally from there.
++ * decode.c - ARM64 instruction decoder for dynamic FP validation. Only a
++ *            small subset of the instructions need to be decoded.
++ *
++ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
++ *
++ * Copyright (C) 2022 Microsoft Corporation
 + */
-+static struct orc_entry null_orc_entry = {
-+	.sp_offset = sizeof(long),
-+	.sp_reg = ORC_REG_SP,
-+	.fp_reg = ORC_REG_UNDEFINED,
-+	.type = UNWIND_HINT_TYPE_CALL
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdint.h>
++
++#include <objtool/insn.h>
++#include <objtool/elf.h>
++#include <objtool/warn.h>
++#include <arch/cfi_regs.h>
++
++/* ARM64 instructions are all 4 bytes wide. */
++#define INSN_SIZE	4
++
++/* --------------------- instruction decode struct ------------------------- */
++
++struct decode {
++	unsigned long	opmask;
++	unsigned long	op;
++	unsigned int	shift;
++	unsigned int	bits;
++	unsigned int	size;
++	unsigned int	sign_extend;
++	void		(*func)(struct decode *decode,
++				u32 insn, enum insn_type *type,
++				s64 *imm, struct list_head *stack_ops);
 +};
 +
-+struct orc_entry *orc_find(unsigned long ip)
++/* --------------------- miscellaneous functions --------------------------- */
++
++static void reg_check(unsigned int sp_check, unsigned int fp_check,
++		      u32 insn, enum insn_type *type)
 +{
-+	static struct orc_entry *orc;
++	unsigned int	rd = insn & 0x1F;
 +
-+	if (ip == 0)
-+		return &null_orc_entry;
++	if ((sp_check && rd == CFI_SP) || (fp_check && rd == CFI_FP))
++		*type = INSN_UNRELIABLE;
++}
 +
-+	/* For non-init vmlinux addresses, use the fast lookup table: */
-+	if (ip >= LOOKUP_START_IP && ip < LOOKUP_STOP_IP) {
-+		unsigned int idx, start, stop;
++static void add_stack_op(unsigned char src, unsigned char dest, s64 offset,
++			 struct list_head *stack_ops)
++{
++	struct stack_op *op;
 +
-+		if (!orc_init) {
-+			/*
-+			 * Take the slow path if the fast lookup tables have
-+			 * not yet been initialized.
-+			 */
-+			return __orc_find(__start_orc_unwind_ip,
-+					  __start_orc_unwind,
-+					  __stop_orc_unwind_ip -
-+					  __start_orc_unwind_ip, ip);
-+		}
-+
-+		idx = (ip - LOOKUP_START_IP) / LOOKUP_BLOCK_SIZE;
-+
-+		if (unlikely((idx >= lookup_num_blocks-1))) {
-+			orc_warn("WARNING: bad lookup idx: idx=%u num=%u ip=%pB\n",
-+				 idx, lookup_num_blocks, (void *)ip);
-+			return NULL;
-+		}
-+
-+		start = orc_lookup[idx];
-+		stop = orc_lookup[idx + 1] + 1;
-+
-+		if (unlikely((__start_orc_unwind + start >= __stop_orc_unwind) ||
-+			     (__start_orc_unwind + stop > __stop_orc_unwind))) {
-+			orc_warn("WARNING: bad lookup value: idx=%u num=%u start=%u stop=%u ip=%pB\n",
-+				 idx, lookup_num_blocks, start, stop, (void *)ip);
-+			return NULL;
-+		}
-+
-+		return __orc_find(__start_orc_unwind_ip + start,
-+				  __start_orc_unwind + start, stop - start, ip);
++	op = calloc(1, sizeof(*op));
++	if (!op) {
++		WARN("calloc failed");
++		return;
 +	}
 +
-+	/* vmlinux .init slow lookup: */
-+	if (is_kernel_inittext(ip))
-+		return __orc_find(__start_orc_unwind_ip, __start_orc_unwind,
-+				  __stop_orc_unwind_ip - __start_orc_unwind_ip, ip);
++	op->src.reg = src;
++	op->src.type = OP_SRC_ADD;
++	op->src.offset = offset;
++	op->dest.reg = dest;
++	op->dest.type = OP_DEST_REG;
 +
-+	/* Module lookup: */
-+	orc = orc_module_find(ip);
-+	if (orc)
-+		return orc;
-+
-+	return arch_orc_find(ip);
++	list_add_tail(&op->list, stack_ops);
 +}
 +
-+#ifdef CONFIG_MODULES
++/* ------------------------ decode functions ------------------------------- */
 +
-+static DEFINE_MUTEX(sort_mutex);
-+static int *cur_orc_ip_table = __start_orc_unwind_ip;
-+static struct orc_entry *cur_orc_table = __start_orc_unwind;
++#define STP_SOFF	0x29000000	/* STP signed offset */
++#define STR_SOFF	0xB9000000	/* STR signed offset */
++#define LDP_SOFF	0x29400000	/* LDP signed offset */
++#define LDR_SOFF	0xB9400000	/* LDR signed offset */
 +
-+static void orc_sort_swap(void *_a, void *_b, int size)
++/* Load-Store instructions. */
++static void ld_st(struct decode *decode,
++		       u32 insn, enum insn_type *type,
++		       s64 *imm, struct list_head *stack_ops)
 +{
-+	struct orc_entry *orc_a, *orc_b;
-+	struct orc_entry orc_tmp;
-+	int *a = _a, *b = _b, tmp;
-+	int delta = _b - _a;
++	unsigned int	rn = (insn >> 5) & 0x1F;
 +
-+	/* Swap the .orc_unwind_ip entries: */
-+	tmp = *a;
-+	*a = *b + delta;
-+	*b = tmp - delta;
-+
-+	/* Swap the corresponding .orc_unwind entries: */
-+	orc_a = cur_orc_table + (a - cur_orc_ip_table);
-+	orc_b = cur_orc_table + (b - cur_orc_ip_table);
-+	orc_tmp = *orc_a;
-+	*orc_a = *orc_b;
-+	*orc_b = orc_tmp;
++	if (decode->op == LDP_SOFF || decode->op == LDR_SOFF ||
++	    decode->op == STP_SOFF || decode->op == STR_SOFF)
++		return;
++	if (rn == CFI_SP)
++		add_stack_op(CFI_SP, CFI_SP, *imm, stack_ops);
++	else if (rn == CFI_FP)
++		add_stack_op(CFI_FP, CFI_FP, *imm, stack_ops);
 +}
 +
-+static int orc_sort_cmp(const void *_a, const void *_b)
++/* Load-Store instructions. */
++static void ld_st_chk(struct decode *decode,
++			     u32 insn, enum insn_type *type,
++			     s64 *imm, struct list_head *stack_ops)
 +{
-+	struct orc_entry *orc_a;
-+	const int *a = _a, *b = _b;
-+	unsigned long a_val = orc_ip(a);
-+	unsigned long b_val = orc_ip(b);
++	ld_st(decode, insn, type, imm, stack_ops);
++	reg_check(0, 1, insn, type);
++}
 +
-+	if (a_val > b_val)
-+		return 1;
-+	if (a_val < b_val)
++#define CMN_OP		0x31000000	/* Alias of ADDS imm */
++#define CMP_OP		0x71000000	/* Alias of SUBS imm */
++
++/* Add instructions. */
++static void add(struct decode *decode,
++		u32 insn, enum insn_type *type,
++		s64 *imm, struct list_head *stack_ops)
++{
++	unsigned int	rd = insn & 0x1F;
++	unsigned int	rn = (insn >> 5) & 0x1F;
++	unsigned int	shift = (insn >> 22) & 1;
++
++	if (shift)
++		*imm <<= 12;
++
++	if (rd == CFI_SP) {
++		if (rn == CFI_SP)
++			add_stack_op(CFI_SP, CFI_SP, *imm, stack_ops);
++		else if (rn == CFI_FP)
++			add_stack_op(CFI_FP, CFI_SP, *imm, stack_ops);
++		else if (decode->op != CMN_OP && decode->op != CMP_OP)
++			*type = INSN_UNRELIABLE;
++	} else if (rd == CFI_FP) {
++		if (rn == CFI_SP)
++			add_stack_op(CFI_SP, CFI_FP, *imm, stack_ops);
++		else if (rn == CFI_FP)
++			add_stack_op(CFI_FP, CFI_FP, *imm, stack_ops);
++		else
++			*type = INSN_UNRELIABLE;
++	}
++}
++
++/* Subtract instructions. */
++static void sub(struct decode *decode,
++		u32 insn, enum insn_type *type,
++		s64 *imm, struct list_head *stack_ops)
++{
++	*imm = -(*imm);
++	return add(decode, insn, type, imm, stack_ops);
++}
++
++#define BR_UNCONDITIONAL		0x14000000
++
++/* Branch and Return instructions. */
++static void branch(struct decode *decode,
++		   u32 insn, enum insn_type *type,
++		   s64 *imm, struct list_head *stack_ops)
++{
++	if (*imm) {
++		if (decode->op == BR_UNCONDITIONAL)
++			*type = INSN_JUMP_UNCONDITIONAL;
++		else
++			*type = INSN_JUMP_CONDITIONAL;
++	} else {
++		*type = INSN_JUMP_DYNAMIC;
++	}
++}
++
++static void call(struct decode *decode,
++		   u32 insn, enum insn_type *type,
++		   s64 *imm, struct list_head *stack_ops)
++{
++	*type = *imm ? INSN_CALL : INSN_CALL_DYNAMIC;
++}
++
++static void ret(struct decode *decode,
++		u32 insn, enum insn_type *type,
++		s64 *imm, struct list_head *stack_ops)
++{
++	*type = INSN_RETURN;
++}
++
++static void bug(struct decode *decode,
++		u32 insn, enum insn_type *type,
++		s64 *imm, struct list_head *stack_ops)
++{
++	*type = INSN_BUG;
++}
++
++/*
++ * Other instructions are not decoded. They don't generate any stack_ops.
++ * Only checks are done to make sure that the compiler does not generate
++ * any instructions to clobber the SP and FP registers in unexpected ways.
++ */
++static void sp_check(struct decode *decode,
++		     u32 insn, enum insn_type *type,
++		     s64 *imm, struct list_head *stack_ops)
++{
++	reg_check(1, 1, insn, type);
++}
++
++static void fp_check(struct decode *decode,
++		  u32 insn, enum insn_type *type,
++		  s64 *imm, struct list_head *stack_ops)
++{
++	reg_check(0, 1, insn, type);
++}
++
++static void ignore(struct decode *decode,
++		   u32 insn, enum insn_type *type,
++		   s64 *imm, struct list_head *stack_ops)
++{
++}
++
++/* ------------------------ Instruction decode ----------------------------- */
++
++struct decode	decode_array[] = {
++/* =============================== INSTRUCTIONS =============================*/
++/* operation           mask        opcode      shift bits size sign func     */
++/* ==========================================================================*/
++/* LDP pre */        { 0x7FC00000, 0x29C00000, 15,   7,   8,   1,   ld_st },
++/* LDP post */       { 0x7FC00000, 0x28C00000, 15,   7,   8,   1,   ld_st },
++/* LDP off */        { 0x7FC00000, 0x29400000, 15,   7,   8,   1,   ld_st },
++/* LDPSW pre */      { 0xFFC00000, 0x69C00000, 15,   7,   4,   1,   ld_st_chk },
++/* LDPSW post */     { 0xFFC00000, 0x68C00000, 15,   7,   4,   1,   ld_st_chk },
++/* LDR imm pre */    { 0xBFE00C00, 0xB8400C00, 12,   9,   1,   1,   ld_st },
++/* LDR imm post */   { 0xBFE00C00, 0xB8400400, 12,   9,   1,   1,   ld_st },
++/* LDR off */        { 0xBFC00000, 0xB9400000, 12,   9,   1,   1,   ld_st },
++/* LDRB imm pre */   { 0xFFE00C00, 0x38400C00, 12,   9,   1,   1,   ld_st_chk },
++/* LDRB imm post */  { 0xFFE00C00, 0x38400400, 12,   9,   1,   1,   ld_st_chk },
++/* LDRH imm pre */   { 0xFFE00C00, 0x78400C00, 12,   9,   1,   1,   ld_st_chk },
++/* LDRH imm post */  { 0xFFE00C00, 0x78400400, 12,   9,   1,   1,   ld_st_chk },
++/* LDRSB imm pre */  { 0xFF800C00, 0x38800C00, 12,   9,   1,   1,   ld_st_chk },
++/* LDRSB imm post */ { 0xFF800C00, 0x38800400, 12,   9,   1,   1,   ld_st_chk },
++/* LDRSH imm pre */  { 0xFF800C00, 0x78800C00, 12,   9,   1,   1,   ld_st_chk },
++/* LDRSH imm post */ { 0xFF800C00, 0x78800400, 12,   9,   1,   1,   ld_st_chk },
++/* LDRSW imm pre */  { 0xFFE00C00, 0xB8800C00, 12,   9,   1,   1,   ld_st_chk },
++/* LDRSW imm post */ { 0xFFE00C00, 0xB8800400, 12,   9,   1,   1,   ld_st_chk },
++/* STP pre */        { 0x7FC00000, 0x29800000, 15,   7,   8,   1,   ld_st },
++/* STP post */       { 0x7FC00000, 0x28800000, 15,   7,   8,   1,   ld_st },
++/* STP off */        { 0x7FC00000, 0x29000000, 15,   7,   8,   1,   ld_st },
++/* STGP imm pre */   { 0xFFC00000, 0x69800000, 15,   7,  16,   1,   ld_st },
++/* STGP imm post */  { 0xFFC00000, 0x68800000, 15,   7,  16,   1,   ld_st },
++/* STR imm pre */    { 0xBFC00C00, 0xB8000C00, 12,   9,   1,   1,   ld_st },
++/* STR imm post */   { 0xBFC00C00, 0xB8000400, 12,   9,   1,   1,   ld_st },
++/* STR off */        { 0xBFC00000, 0xB9000000, 10,  12,   1,   1,   ld_st },
++/* STG imm pre */    { 0xFFC00C00, 0xD9000C00, 12,   9,  16,   1,   ld_st },
++/* STG imm post */   { 0xFFC00C00, 0xD9000400, 12,   9,  16,   1,   ld_st },
++/* ST2G imm pre */   { 0xFFE00C00, 0xD9A00C00, 12,   9,  16,   1,   ld_st },
++/* ST2G imm post */  { 0xFFE00C00, 0xD9A00400, 12,   9,  16,   1,   ld_st },
++/* ADD imm */        { 0x7F800000, 0x11000000, 10,  12,   1,   0,   add },
++/* ADDS imm */       { 0x7F800000, 0x31000000, 10,  12,   1,   0,   add },
++/* ADD ext reg */    { 0x7FE00000, 0x0B200000,  0,   0,   1,   0,   sp_check },
++/* SUB imm */        { 0x7F800000, 0x51000000, 10,  12,   1,   0,   sub },
++/* SUBS imm */       { 0x7F800000, 0x71000000, 10,  12,   1,   0,   sub },
++/* SUB ext reg */    { 0x7FE00000, 0x4B200000,  0,   0,   1,   0,   sp_check },
++/* ORR imm */        { 0x7F800000, 0x32000000,  0,   0,   1,   0,   sp_check },
++/* B */              { 0xFC000000, 0x14000000,  0,  26,   4,   1,   branch },
++/* B.cond */         { 0xFF000010, 0x54000000,  5,  19,   4,   1,   branch },
++/* BC.cond */        { 0xFF000010, 0x54000010,  5,  19,   4,   1,   branch },
++/* BR */             { 0xFFFFFC00, 0xD61F0000,  0,   0,   4,   0,   branch },
++/* BRA */            { 0xFEFFF800, 0xD61F0800,  0,   0,   4,   0,   branch },
++/* CBZ */            { 0x7F000000, 0x34000000,  5,  19,   4,   1,   branch },
++/* CBNZ */           { 0x7F000000, 0x35000000,  5,  19,   4,   1,   branch },
++/* TBZ */            { 0x7F000000, 0x36000000,  5,  14,   4,   1,   branch },
++/* TBNZ */           { 0x7F000000, 0x37000000,  5,  14,   4,   1,   branch },
++/* BL */             { 0xFC000000, 0x94000000,  0,  26,   4,   1,   call },
++/* BLR */            { 0xFFFFFC00, 0xD63F0000,  0,   0,   4,   1,   call },
++/* BLRA */           { 0xFEFFF800, 0xD63F0800,  0,   0,   4,   1,   call },
++/* RET */            { 0xFFFFFC1F, 0xD65F0000,  0,   0,   1,   0,   ret },
++/* RETA */           { 0xFFFFFBFF, 0xD65F0BFF,  0,   0,   1,   0,   ret },
++/* ERET */           { 0xFFFFFFFF, 0xD69F03E0,  0,   0,   1,   0,   ret },
++/* ERETA */          { 0xFFFFFBFF, 0xD69F0BFF,  0,   0,   1,   0,   ret },
++/* BRK */            { 0xFFE00000, 0xD4200000,  0,   0,   1,   0,   bug },
++
++/* =========================== INSTRUCTION CLASSES ==========================*/
++/* operation           mask        opcode      shift bits size sign func     */
++/* ==========================================================================*/
++/* RSVD_00 */        { 0x1E000000, 0x00000000,  0,   0,   1,   0,   ignore },
++/* UNALLOC_01 */     { 0x1E000000, 0x02000000,  0,   0,   1,   0,   ignore },
++/* SVE_02 */         { 0x1E000000, 0x04000000,  0,   0,   1,   0,   ignore },
++/* UNALLOC_03 */     { 0x1E000000, 0x06000000,  0,   0,   1,   0,   ignore },
++/* LOAD_STORE_04 */  { 0x1E000000, 0x08000000,  0,   0,   1,   0,   fp_check },
++/* DP_REGISTER_05 */ { 0x1E000000, 0x0A000000,  0,   0,   1,   0,   fp_check },
++/* LOAD_STORE_06 */  { 0x1E000000, 0x0C000000,  0,   0,   1,   0,   ignore },
++/* SIMD_FP_07 */     { 0x1E000000, 0x0E000000,  0,   0,   1,   0,   ignore },
++/* DP_IMMEDIATE_08 */{ 0x1E000000, 0x10000000,  0,   0,   1,   0,   fp_check },
++/* DP_IMMEDIATE_09 */{ 0x1E000000, 0x12000000,  0,   0,   1,   0,   fp_check },
++/* BR_SYS_10 */      { 0x1E000000, 0x14000000,  0,   0,   1,   0,   fp_check },
++/* BR_SYS_11 */      { 0x1E000000, 0x16000000,  0,   0,   1,   0,   fp_check },
++/* LOAD_STORE_12 */  { 0x1E000000, 0x18000000,  0,   0,   1,   0,   fp_check },
++/* DP_REGISTER_13 */ { 0x1E000000, 0x1A000000,  0,   0,   1,   0,   ignore },
++/* LOAD_STORE_14 */  { 0x1E000000, 0x1C000000,  0,   0,   1,   0,   fp_check },
++/* SIMD_FP_15 */     { 0x1E000000, 0x1E000000,  0,   0,   1,   0,   ignore },
++};
++unsigned int	ndecode = ARRAY_SIZE(decode_array);
++
++static inline s64 sign_extend(s64 imm, unsigned int bits)
++{
++	return (imm << (64 - bits)) >> (64 - bits);
++}
++
++/*
++ * This decoder is only for generating stack ops for instructions that
++ * affect the SP and FP. The instructions that involve only immediate
++ * operands can be evaluated in this decoder. But instructions that
++ * involve other registers cannot be evaluated because the contents of
++ * those registers are known only at runtime. There are checks to catch
++ * it if the compiler generates these for the FP and SP. Such instructions
++ * are marked as unreliable.
++ */
++int arch_decode_instruction(struct objtool_file *file,
++			    const struct section *sec,
++			    unsigned long offset, unsigned int maxlen,
++			    unsigned int *len, enum insn_type *type,
++			    unsigned long *immediate,
++			    struct list_head *stack_ops)
++{
++	struct decode		*decode;
++	s64			imm;
++	u32			insn;
++	unsigned int		mask, i;
++
++	if (maxlen < INSN_SIZE)
 +		return -1;
 +
-+	/*
-+	 * The "weak" section terminator entries need to always be on the left
-+	 * to ensure the lookup code skips them in favor of real entries.
-+	 * These terminator entries exist to handle any gaps created by
-+	 * whitelisted .o files which didn't get objtool generation.
-+	 */
-+	orc_a = cur_orc_table + (a - cur_orc_ip_table);
-+	return orc_a->sp_reg == ORC_REG_UNDEFINED && !orc_a->end ? -1 : 1;
-+}
-+
-+void orc_lookup_module_init(struct module *mod,
-+			    void *_orc_ip, size_t orc_ip_size,
-+			    void *_orc, size_t orc_size)
-+{
-+	int *orc_ip = _orc_ip;
-+	struct orc_entry *orc = _orc;
-+	unsigned int num_entries = orc_ip_size / sizeof(int);
-+
-+	WARN_ON_ONCE(orc_ip_size % sizeof(int) != 0 ||
-+		     orc_size % sizeof(*orc) != 0 ||
-+		     num_entries != orc_size / sizeof(*orc));
++	insn = *(u32 *)(sec->data->d_buf + offset);
++	*type = INSN_OTHER;
++	*len = INSN_SIZE;
 +
 +	/*
-+	 * The 'cur_orc_*' globals allow the orc_sort_swap() callback to
-+	 * associate an .orc_unwind_ip table entry with its corresponding
-+	 * .orc_unwind entry so they can both be swapped.
++	 * Find the decode structure for the specific instruction,
++	 * if listed.
 +	 */
-+	mutex_lock(&sort_mutex);
-+	cur_orc_ip_table = orc_ip;
-+	cur_orc_table = orc;
-+	sort(orc_ip, num_entries, sizeof(int), orc_sort_cmp, orc_sort_swap);
-+	mutex_unlock(&sort_mutex);
++	for (i = 0; i < ndecode; i++) {
++		decode = &decode_array[i];
++		if ((insn & decode->opmask) == decode->op) {
++			/*
++			 * Decode the instruction.
++			 */
++			mask = (1 << decode->bits) - 1;
++			imm = (insn >> decode->shift) & mask;
++			if (decode->sign_extend)
++				imm = sign_extend(imm, decode->bits);
++			imm *= decode->size;
 +
-+	mod->arch.orc_unwind_ip = orc_ip;
-+	mod->arch.orc_unwind = orc;
-+	mod->arch.num_orcs = num_entries;
-+}
-+#endif
-+
-+void __init orc_lookup_init(void)
-+{
-+	size_t orc_ip_size = (void *)__stop_orc_unwind_ip - (void *)__start_orc_unwind_ip;
-+	size_t orc_size = (void *)__stop_orc_unwind - (void *)__start_orc_unwind;
-+	size_t num_entries = orc_ip_size / sizeof(int);
-+	struct orc_entry *orc;
-+	int i;
-+
-+	if (!num_entries || orc_ip_size % sizeof(int) != 0 ||
-+	    orc_size % sizeof(struct orc_entry) != 0 ||
-+	    num_entries != orc_size / sizeof(struct orc_entry)) {
-+		orc_warn("WARNING: Bad or missing .orc_unwind table.  Disabling unwinder.\n");
-+		return;
-+	}
-+
-+	/*
-+	 * Note, the orc_unwind and orc_unwind_ip tables were already
-+	 * sorted at build time via the 'sorttable' tool.
-+	 * It's ready for binary search straight away, no need to sort it.
-+	 */
-+
-+	/* Initialize the fast lookup table: */
-+	lookup_num_blocks = orc_lookup_end - orc_lookup;
-+	for (i = 0; i < lookup_num_blocks-1; i++) {
-+		orc = __orc_find(__start_orc_unwind_ip, __start_orc_unwind,
-+				 num_entries,
-+				 LOOKUP_START_IP + (LOOKUP_BLOCK_SIZE * i));
-+		if (!orc) {
-+			orc_warn("WARNING: Corrupt .orc_unwind table.  Disabling unwinder.\n");
-+			return;
++			decode->func(decode, insn, type, &imm, stack_ops);
++			*immediate = imm;
++			return 0;
 +		}
-+
-+		orc_lookup[i] = orc - __start_orc_unwind;
 +	}
-+
-+	/* Initialize the ending block: */
-+	orc = __orc_find(__start_orc_unwind_ip, __start_orc_unwind, num_entries,
-+			 LOOKUP_STOP_IP);
-+	if (!orc) {
-+		orc_warn("WARNING: Corrupt .orc_unwind table.  Disabling unwinder.\n");
-+		return;
-+	}
-+	orc_lookup[lookup_num_blocks-1] = orc - __start_orc_unwind;
-+
-+	orc_init = true;
++	/* Cannot happen. */
++	return -1;
 +}
+diff --git a/tools/objtool/arch/arm64/include/arch/cfi_regs.h b/tools/objtool/arch/arm64/include/arch/cfi_regs.h
+new file mode 100644
+index 000000000000..a3df37fe5290
+--- /dev/null
++++ b/tools/objtool/arch/arm64/include/arch/cfi_regs.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
 +
-+__weak struct orc_entry *arch_orc_find(unsigned long ip)
-+{
-+	return NULL;
-+}
++#ifndef _OBJTOOL_CFI_REGS_H
++#define _OBJTOOL_CFI_REGS_H
++
++#define CFI_FP			29
++#define CFI_RA			30
++#define CFI_SP			31
++
++#define CFI_NUM_REGS		32
++
++#endif /* _OBJTOOL_CFI_REGS_H */
+diff --git a/tools/objtool/include/objtool/arch.h b/tools/objtool/include/objtool/arch.h
+index 9b19cc304195..e23d5746daf0 100644
+--- a/tools/objtool/include/objtool/arch.h
++++ b/tools/objtool/include/objtool/arch.h
+@@ -29,6 +29,7 @@ enum insn_type {
+ 	INSN_TRAP,
+ 	INSN_ENDBR,
+ 	INSN_OTHER,
++	INSN_UNRELIABLE,
+ };
+ 
+ enum op_dest_type {
 -- 
 2.25.1
 
