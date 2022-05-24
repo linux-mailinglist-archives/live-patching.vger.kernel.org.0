@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84033531FB5
+	by mail.lfdr.de (Postfix) with ESMTP id 37BD8531FB3
 	for <lists+live-patching@lfdr.de>; Tue, 24 May 2022 02:17:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231989AbiEXARf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 23 May 2022 20:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59748 "EHLO
+        id S232308AbiEXARi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 23 May 2022 20:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231992AbiEXARM (ORCPT
+        with ESMTP id S231890AbiEXARM (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
         Mon, 23 May 2022 20:17:12 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15FA98AE41;
-        Mon, 23 May 2022 17:17:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC51E8FD62;
+        Mon, 23 May 2022 17:17:03 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8504120B6C7C;
-        Mon, 23 May 2022 17:17:01 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8504120B6C7C
+        by linux.microsoft.com (Postfix) with ESMTPSA id 860F520B87F3;
+        Mon, 23 May 2022 17:17:02 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 860F520B87F3
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1653351422;
-        bh=i38XBmt03Yj6P5EVI/Y5EXfzyY4okm3GZVL0Cbb4zHY=;
+        s=default; t=1653351423;
+        bh=noSnCslKB9fq6Jf14ZT65t1WySif9JO6D3Dr/3SMpII=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=sfxAzXRMl11Qrr1SKOR9ea5oIJHGiWhdgsHqPPqFKf4ahKkqKBeISs0qQ+OmR29h8
-         AZvThfbgfBLg44ZxabgwLCB02mOch/EQ906C5w3Hx97du/aAmRSz0kLoAXT96QHk/Z
-         EanZbUxltHcUVXXSzqnCJ7aQSRevWF4q56vT0qJ4=
+        b=a6zAzEx/ijezFj5miAVlU0T+oHhC3mhtty4wPz5a2txcX8dCzGuYWO5BmypAhLcDz
+         pfmjTlOHui8ZtBFm3whzL6Pu1pFdgPbEXj+TC8Ozg2rWLpR/549XSTj5MApKh2aTjK
+         t1mDUmpa6P++0NrSzoCjr6EvQY9fBmCt/ir2FZEA=
 From:   madvenka@linux.microsoft.com
 To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v2 15/20] arm64: Add unwind hints to specific points in code
-Date:   Mon, 23 May 2022 19:16:32 -0500
-Message-Id: <20220524001637.1707472-16-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v2 16/20] arm64: Add kernel and module support for ORC
+Date:   Mon, 23 May 2022 19:16:33 -0500
+Message-Id: <20220524001637.1707472-17-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220524001637.1707472-1-madvenka@linux.microsoft.com>
 References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
@@ -54,123 +54,72 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Add unwind hints to the following:
+Call orc_lookup_init() from setup_arch() to perform ORC lookup
+initialization for vmlinux.
 
-	- Ftrace entry code
-
-	- Interrupt and Exception handlers
-
-	- Kretprobe trampoline
+Call orc_lookup_module_init() in module load to perform ORC lookup
+initialization for modules.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/kernel/entry-ftrace.S              | 23 +++++++++++++++++++
- arch/arm64/kernel/entry.S                     |  3 +++
- arch/arm64/kernel/probes/kprobes_trampoline.S |  3 +++
- 3 files changed, 29 insertions(+)
+ arch/arm64/kernel/module.c | 13 ++++++++++++-
+ arch/arm64/kernel/setup.c  |  2 ++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
-index e535480a4069..6d68833e8cec 100644
---- a/arch/arm64/kernel/entry-ftrace.S
-+++ b/arch/arm64/kernel/entry-ftrace.S
-@@ -11,6 +11,7 @@
- #include <asm/assembler.h>
- #include <asm/ftrace.h>
+diff --git a/arch/arm64/kernel/module.c b/arch/arm64/kernel/module.c
+index f2d4bb14bfab..d5ca2fa13156 100644
+--- a/arch/arm64/kernel/module.c
++++ b/arch/arm64/kernel/module.c
+@@ -19,6 +19,7 @@
+ #include <asm/alternative.h>
  #include <asm/insn.h>
-+#include <asm/unwind_hints.h>
+ #include <asm/sections.h>
++#include <asm-generic/orc_lookup.h>
  
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
- /*
-@@ -95,7 +96,14 @@ SYM_CODE_START(ftrace_common)
- 	mov	x3, sp				// regs
- 
- SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
-+	/*
-+	 * Tracer functions are patched at ftrace_stub. Stack traces
-+	 * taken from tracer functions will end up here. Place an
-+	 * unwind hint based on the stackframe setup in ftrace_regs_entry.
-+	 */
- 	bl	ftrace_stub
-+SYM_INNER_LABEL(ftrace_call_entry, SYM_L_GLOBAL)
-+	UNWIND_HINT_REGS PT_REGS_SIZE
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
- SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL) // ftrace_graph_caller();
-@@ -134,10 +142,25 @@ SYM_CODE_START(ftrace_graph_caller)
- 	add	x1, sp, #S_LR			// parent_ip (callsite's LR)
- 	ldr	x2, [sp, #PT_REGS_SIZE]	   	// parent fp (callsite's FP)
- 	bl	prepare_ftrace_return
-+SYM_INNER_LABEL(ftrace_graph_caller_entry, SYM_L_GLOBAL)
-+	UNWIND_HINT_REGS PT_REGS_SIZE
- 	b	ftrace_common_return
- SYM_CODE_END(ftrace_graph_caller)
- #endif
- 
-+/*
-+ * ftrace_regs_entry() sets up two stackframes - one for the callsite and
-+ * one for the ftrace entry code. Unwind hints have been placed for the
-+ * ftrace entry code above. We need an unwind hint for the callsite. Callsites
-+ * are numerous. But the unwind hint required for all the callsites is the
-+ * same. Define a dummy function here with the callsite unwind hint for the
-+ * benefit of the unwinder.
-+ */
-+SYM_CODE_START(ftrace_callsite)
-+	UNWIND_HINT_FTRACE 16		// for the callsite
-+	ret
-+SYM_CODE_END(ftrace_callsite)
+ void *module_alloc(unsigned long size)
+ {
+@@ -524,10 +525,20 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		    const Elf_Shdr *sechdrs,
+ 		    struct module *me)
+ {
+-	const Elf_Shdr *s;
++	const Elf_Shdr *s, *orc, *orc_ip;
 +
- #else /* CONFIG_DYNAMIC_FTRACE_WITH_REGS */
+ 	s = find_section(hdr, sechdrs, ".altinstructions");
+ 	if (s)
+ 		apply_alternatives_module((void *)s->sh_addr, s->sh_size);
  
- /*
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index ede028dee81b..95d5f3c08aa1 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -28,6 +28,7 @@
- #include <asm/thread_info.h>
- #include <asm/asm-uaccess.h>
- #include <asm/unistd.h>
-+#include <asm/unwind_hints.h>
- 
- 	.macro	clear_gp_regs
- 	.irp	n,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
-@@ -560,6 +561,7 @@ SYM_CODE_START_LOCAL(el\el\ht\()_\regsize\()_\label)
- 	.if \el == 0
- 	b	ret_to_user
- 	.else
-+	UNWIND_HINT_REGS PT_REGS_SIZE
- 	b	ret_to_kernel
- 	.endif
- SYM_CODE_END(el\el\ht\()_\regsize\()_\label)
-@@ -894,6 +896,7 @@ SYM_FUNC_START(call_on_irq_stack)
- 	/* Move to the new stack and call the function there */
- 	mov	sp, x16
- 	blr	x1
-+	UNWIND_HINT_IRQ 16
- 
- 	/*
- 	 * Restore the SP from the FP, and restore the FP and LR from the frame
-diff --git a/arch/arm64/kernel/probes/kprobes_trampoline.S b/arch/arm64/kernel/probes/kprobes_trampoline.S
-index 9a6499bed58b..847cbb81ca33 100644
---- a/arch/arm64/kernel/probes/kprobes_trampoline.S
-+++ b/arch/arm64/kernel/probes/kprobes_trampoline.S
-@@ -6,6 +6,7 @@
- #include <linux/linkage.h>
- #include <asm/asm-offsets.h>
- #include <asm/assembler.h>
-+#include <asm/unwind_hints.h>
- 
- 	.text
- 
-@@ -71,6 +72,8 @@ SYM_CODE_START(__kretprobe_trampoline)
- 
- 	mov x0, sp
- 	bl trampoline_probe_handler
-+	UNWIND_HINT_REGS PT_REGS_SIZE
++	orc = find_section(hdr, sechdrs, ".orc_unwind");
++	orc_ip = find_section(hdr, sechdrs, ".orc_unwind_ip");
 +
- 	/*
- 	 * Replace trampoline address in lr with actual orig_ret_addr return
- 	 * address.
++	if (orc && orc_ip) {
++		orc_lookup_module_init(me,
++				       (void *)orc_ip->sh_addr, orc_ip->sh_size,
++				       (void *)orc->sh_addr, orc->sh_size);
++	}
++
+ 	return module_init_ftrace_plt(hdr, sechdrs, me);
+ }
+diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
+index 3505789cf4bd..9094b941f6ed 100644
+--- a/arch/arm64/kernel/setup.c
++++ b/arch/arm64/kernel/setup.c
+@@ -51,6 +51,7 @@
+ #include <asm/efi.h>
+ #include <asm/xen/hypervisor.h>
+ #include <asm/mmu_context.h>
++#include <asm-generic/orc_lookup.h>
+ 
+ static int num_standard_resources;
+ static struct resource *standard_resources;
+@@ -389,6 +390,7 @@ void __init __no_sanitize_address setup_arch(char **cmdline_p)
+ 			"This indicates a broken bootloader or old kernel\n",
+ 			boot_args[1], boot_args[2], boot_args[3]);
+ 	}
++	orc_lookup_init();
+ }
+ 
+ static inline bool cpu_can_disable(unsigned int cpu)
 -- 
 2.25.1
 
