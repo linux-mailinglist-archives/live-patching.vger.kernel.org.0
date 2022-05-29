@@ -2,76 +2,56 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE4A5365F8
-	for <lists+live-patching@lfdr.de>; Fri, 27 May 2022 18:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35564537169
+	for <lists+live-patching@lfdr.de>; Sun, 29 May 2022 16:49:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354114AbiE0Q1s (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 27 May 2022 12:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
+        id S229934AbiE2Ots (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 29 May 2022 10:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiE0Q1q (ORCPT
+        with ESMTP id S229907AbiE2Ots (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 27 May 2022 12:27:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D046B340F1;
-        Fri, 27 May 2022 09:27:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8920AB824C9;
-        Fri, 27 May 2022 16:27:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C57C385A9;
-        Fri, 27 May 2022 16:27:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653668863;
-        bh=PRaPi35zkOUa2ee/LGAevmhlOaftEQU94uTYvSbtIYs=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=AUdwYQFnQL+oIJZpQBq82jSSk/heA2LObEFqnWPTzgh2mrOIXni7GDPG92ZByPDAk
-         CXin4Wfey4ZAbnSrcb4b9JF9zdlkzUnIJyGTlytzZNg9j35uWmSLNL0n6xTt1iHWX6
-         GN5QE2cHwLcpHdl8DWmcaC6mP3HldR9n21UzSajhcjyB7DZ8b7ZNP81SzbRcaPyaK1
-         otrfDC0N16l12UKtoxCh5N87Wq41JO+dF94S0HDlIXuHW93p74TPJNaWaYVXufzCts
-         UNreNLMeRwR0EM7IHX0B9C9lArH3Anry9wqsz4BPdA9v+MFBr9rL8X0o5TOhCO2ktv
-         bWLDU2W0wVVPA==
-Message-ID: <459385ee7ccf4fcf3e22d4a11b4f438d648422bf.camel@kernel.org>
-Subject: Re: [PATCH v7 03/25] kallsyms: increase maximum kernel symbol
- length to 512
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        David Howells <dhowells@redhat.com>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
-Date:   Fri, 27 May 2022 19:25:57 +0300
-In-Reply-To: <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
-References: <20220523020209.11810-1-ojeda@kernel.org>
-         <20220523020209.11810-4-ojeda@kernel.org> <YovvIQeN3lmOYzJO@kernel.org>
-         <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Sun, 29 May 2022 10:49:48 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9AD3092D0E;
+        Sun, 29 May 2022 07:49:46 -0700 (PDT)
+Received: from [192.168.254.32] (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 478FB20BA5B8;
+        Sun, 29 May 2022 07:49:45 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 478FB20BA5B8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1653835786;
+        bh=jpLDxfgmIl9vB8rYvQvsBF0PJpChGqukD9RbvahNg14=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=rGhw5agA51PCRmr2ztj3jR6qXAz+2eAqkrSCVGcs+CZV7s7wqYticx6MMqWDC7spt
+         z9E2xsULr3smT76vAMMt2AZ/pOFM+3JQDsETTG9t6h0IzoPtiQMsvO8xoMN34qyPMy
+         bIry/E6rve4EfEvKfMeabp1Um4dhqfn5aOSmIhac=
+Message-ID: <ff58b576-efee-276a-bfb3-11f5d258d580@linux.microsoft.com>
+Date:   Sun, 29 May 2022 09:49:44 -0500
 MIME-Version: 1.0
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC PATCH v2 09/20] objtool: arm64: Implement command to invoke
+ the decoder
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
+        mark.rutland@arm.com, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
+ <20220524001637.1707472-1-madvenka@linux.microsoft.com>
+ <20220524001637.1707472-10-madvenka@linux.microsoft.com>
+ <YoznLR30T+03Ea08@sirena.org.uk>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <YoznLR30T+03Ea08@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-21.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,41 +59,25 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 2022-05-24 at 20:07 +0200, Miguel Ojeda wrote:
-> On Mon, May 23, 2022 at 10:33 PM Jarkko Sakkinen <jarkko@kernel.org> wrot=
-e:
-> >=20
-> > There's no description what the patch does.
->=20
-> I am not sure what you mean. Both the subject and the last paragraph
-> describe what the patch does, while the rest gives the rationale
-> behind it.
->=20
-> Cheers,
-> Miguel
 
-The honest answer: I don't actually remember what I was thinking=C2=A0
-(other stuff stole my focus) but my comment neither makes much
-sense to me. Please just ignore it, and apologies for causing
-confusion.
 
-There's something I'm looking into in my spare time right now.
-I'm experimenting with interfacing keyring types to Rust. The
-first step, I guess, is to provide a Rust abstraction for
-assoc_array.
+On 5/24/22 09:09, Mark Brown wrote:
+> On Mon, May 23, 2022 at 07:16:26PM -0500, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+>>
+>> Implement a built-in command called cmd_fpv() that can be invoked as
+>> follows:
+>>
+>> 	objtool fpv generate file.o
+>>
+>> The built-in command invokes decode_instructions() to walk each function
+>> and decode the instructions of the function.
+> 
+> In commit b51277eb9775ce91 ("objtool: Ditch subcommands") Josh removed
+> subcommands so this interface is going to need a rethink.
 
-I've skimmed through the patch set and have now *rough* idea of
-patterns and techniques. My opens are more on the process side
-of things since there's no yet mainline subtree.
+Thanks for mentioning this. I will sync my patchset to the latest and send out version 3.
 
-If I send a patch or patch sets, would this be a good workflow:
+Thanks!
 
-1. RFC tag.
-2. In the cover letter denote the patch set version, which was
-   used the baseline.
-
-Linux keyring is without argument a kind of subsystem that would
-hugely benefit of the Rust work, as it is both user space facing=C2=A0
-nd handling a vast amount of user's confidential data.=20
-
-BR, Jarkko
+Madhavan
