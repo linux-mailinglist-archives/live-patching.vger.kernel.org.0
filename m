@@ -2,37 +2,37 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 561FB53717B
-	for <lists+live-patching@lfdr.de>; Sun, 29 May 2022 17:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD02537184
+	for <lists+live-patching@lfdr.de>; Sun, 29 May 2022 17:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbiE2PSF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 29 May 2022 11:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
+        id S231144AbiE2PaM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 29 May 2022 11:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiE2PSD (ORCPT
+        with ESMTP id S229844AbiE2PaL (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 29 May 2022 11:18:03 -0400
+        Sun, 29 May 2022 11:30:11 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60CD2377CB;
-        Sun, 29 May 2022 08:18:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD4CA3FBC4;
+        Sun, 29 May 2022 08:30:10 -0700 (PDT)
 Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 24BF720BA5A0;
-        Sun, 29 May 2022 08:18:01 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 24BF720BA5A0
+        by linux.microsoft.com (Postfix) with ESMTPSA id 9F1F920BA5B8;
+        Sun, 29 May 2022 08:30:09 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9F1F920BA5B8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1653837481;
-        bh=OnqLwBgpiR5JuHmYgm/0FFiPa8iwxGxQscALfoSTbJY=;
+        s=default; t=1653838210;
+        bh=pdXpNwS5tSP0aX9qQcLAkwzcKjd/aClB5ao6pff2Q0I=;
         h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=jiZGA5qvjxvb7hGa09YO+1rAIIB788kBcH1T3L34EEZiLDK4Afx8tvyt1x5Z30aBE
-         knQYm0zWdTpNy8U/J096LrWzW48rZrXeltg8YCZ2SF6KTL9RXlVFNWUXBisz1WOfeI
-         dBTZu2QmkFON1gAAMJmO/yibDlcxS8zBfdJ651lA=
-Message-ID: <ad2368a3-17fd-ad7e-95e8-0b7fa9b59fec@linux.microsoft.com>
-Date:   Sun, 29 May 2022 10:18:00 -0500
+        b=YVWltzDq0xT0imdsQDszhe82aLx+DIJ9wUPZO0fPx/c5zvPMypEHnW+dssG+ibi8f
+         qGNWYSYabf5K2UJUCYCe1xoq0woOn7HcRoGubaict2eIBavQLQeM8KfyvCzrY9VFSv
+         wqygMdB/fvltIODqmhU58Be0YbwNfkt4BsYsn7l8=
+Message-ID: <2b8d8fbe-e596-91bf-a63b-938c9ff4140a@linux.microsoft.com>
+Date:   Sun, 29 May 2022 10:30:08 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [RFC PATCH v2 11/20] objtool: arm64: Walk instructions and
- compute CFI for each instruction
+Subject: Re: [RFC PATCH v2 00/20] arm64: livepatch: Use ORC for dynamic frame
+ pointer validation
 Content-Language: en-US
 To:     Chen Zhongjin <chenzhongjin@huawei.com>, jpoimboe@redhat.com,
         peterz@infradead.org, mark.rutland@arm.com, broonie@kernel.org,
@@ -42,10 +42,9 @@ To:     Chen Zhongjin <chenzhongjin@huawei.com>, jpoimboe@redhat.com,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
  <20220524001637.1707472-1-madvenka@linux.microsoft.com>
- <20220524001637.1707472-12-madvenka@linux.microsoft.com>
- <767e814c-b3cc-73a1-d283-82dbc0287cde@huawei.com>
+ <061a4299-114f-96e0-86a4-6ab255778498@huawei.com>
 From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <767e814c-b3cc-73a1-d283-82dbc0287cde@huawei.com>
+In-Reply-To: <061a4299-114f-96e0-86a4-6ab255778498@huawei.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-21.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -59,101 +58,51 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Thanks for taking the time to review my patches.
 
-
-On 5/24/22 08:45, Chen Zhongjin wrote:
-> Hi,
+On 5/24/22 09:24, Chen Zhongjin wrote:
+> Hi Madvenka,
 > 
-> On 2022/5/24 8:16, madvenka@linux.microsoft.com wrote:
->> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>
->> Implement arch_initial_func_cfi_state() to initialize the CFI for a
->> function.
->>
->> Add code to fpv_decode() to walk the instructions in every function and
->> compute the CFI information for each instruction.
->>
->> Implement special handling for cases like jump tables.
->>
->> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
->> ---
->>  tools/objtool/arch/arm64/decode.c |  15 +++
->>  tools/objtool/fpv.c               | 204 ++++++++++++++++++++++++++++++
->>  2 files changed, 219 insertions(+)
-> ...
->> +static void update_cfi_state(struct cfi_state *cfi, struct stack_op *op)
->> +{
->> +	struct cfi_reg *cfa = &cfi->cfa;
->> +	struct cfi_reg *regs = cfi->regs;
->> +
->> +	if (op->src.reg == CFI_SP) {
->> +		if (op->dest.reg == CFI_SP)
->> +			cfa->offset -= op->src.offset;
->> +		else
->> +			regs[CFI_FP].offset = -cfa->offset + op->src.offset;
-> Seems wrong here, we don't have any op->src.offset for [mov x29, sp] so here we
-> get: fp->offset = -cfa->offset. The dumped info also proves this.
-
-
-See the example below.
-
-> 
->> +	case UNWIND_HINT_TYPE_CALL:
->> +		/* Normal call */
->> +		frame->cfa += orc->sp_offset;
->> +		fp = frame->cfa + orc->fp_offset;
->> +		break;
-> Obviously this is not conform to the reliability check because we get
-> frame->cfa == fp here.
+> I have a brief look at your patch and the idea that using CFA metadata to
+> validate FP is reasonable to me. And I found a problem when I used 'pv dump' to
+> check the orc value and I replied your commit 11/20 for that.
 > 
 
-See the example below:
+I have responded to that comment in another email. Please take a look.
 
-> IIUC your sp_offset equals to stack length, and fp_offset is offset from next
-> x29 to next CFA. So maybe here we should have
-> regs[CFI_FP].offset = regs[CFI_SP].offset for [mov x29, sp].
-> 
-> Anyway, in original objtool sp_offset and fp_offset both represents the offset
-> from CFA to REGs. I think it's better not spoiling their original meaning and
-> just extending.
-> 
+
+> I think it's not necessary that you rewrite the arm64 decoder(there is already a
+> decoder in my patch) and insn check(objtool check can just make it) by yourself.
+
 > 
 
-I am not spoiling anything.
+This is a fair point. I will think about this a little bit and respond to this in a separate email.
 
+> For me it's also a trouble that objtool runs too much unnecessary work. I advise
+> that we should move some check for x86 as arch specific and refactor the cmdline
+> options, they doesn't turn off everything perfectly now.
+> 
 
-Let us take an example:
+So, Josh has done what you have mentioned. He has reorganized all of that code.
+I am working on syncing up to his changes. I will send out version 3.
 
-ffff800008010000 <bcm2835_handle_irq>:
-ffff800008010000:       d503201f        nop
-ffff800008010004:       d503201f        nop
-ffff800008010008:       d503233f        paciasp
-ffff80000801000c:       a9be7bfd        stp     x29, x30, [sp, #-32]!
-ffff800008010010:       910003fd        mov     x29, sp
-ffff800008010014:       f9000bf3        str     x19, [sp, #16]
+> Other than that I have an advise: We only use orc for reliable stacktrace and
+> normal FP unwind doesn't depends on it. Should we only load these data for
+> livepatch (or other scenario needs reliable stacktrace)? It can save the memory
+> and time consuming for kernel.
+> 
 
+Yes. For ARM64, that is what I am trying to do. STACK_VALIDATION is optional and it
+is off by default. It needs to be turned on only if reliable stack trace is required.
 
-The stack pointer is first moved by -32 and the FP and LR are stored there.
-At this point, SP is pointing to the frame. The CFA is:
+> That's all. And if you don't mind, can I incorporate some commit into my set?
+> Appreciate for it.
+> 
 
-	CFA = SP + 32
+Please feel free to use any and all of my code. I am also looking at merging our two
+decoders so that there is only one decoder. I need to think about this a little bit.
+So, stay tuned.
 
-The frame pointer has been stored at the location pointed to by the SP.
-So, FP should be:
-
-	FP = CFA - 32
-
-Therefore, at instruction address ffff800008010014:
-
-	frame->cfa = SP + 32;
-	frame->fp = frame->cfa - 32 = SP;
-
-So, if a call/interrupt happens after this instruction, the frame pointer computed
-from the above data will match with the actual frame pointer.
-
-I have verified this using the DWARF data generated by the compiler. It is correct.
-I have also verified that the stack trace through such code passes the reliability
-check. That is, it computes the frame pointer correctly which matches with the
-actual frame pointer.
+Thanks!
 
 Madhavan
