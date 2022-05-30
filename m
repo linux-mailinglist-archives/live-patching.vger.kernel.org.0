@@ -2,86 +2,122 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D23653760E
-	for <lists+live-patching@lfdr.de>; Mon, 30 May 2022 09:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E8D537AF4
+	for <lists+live-patching@lfdr.de>; Mon, 30 May 2022 15:02:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231508AbiE3HxS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 30 May 2022 03:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36278 "EHLO
+        id S233847AbiE3NCD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 30 May 2022 09:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233600AbiE3HxH (ORCPT
+        with ESMTP id S236299AbiE3NCB (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 30 May 2022 03:53:07 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494B0287;
-        Mon, 30 May 2022 00:52:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=PA/t+O0nJ8ZID3NeeJjW9bADPDFRaoAD2wrlnvNm2Fc=; b=JA05FiD+94Y9SDtuOfX8qU7/8b
-        jQWH1UQ/LOU5p+OQy7OXowgT92X1PEDMGFn8eOHLmFZ5jNS3dia/BQzM8friSrCqpcyAwXOeq/bGA
-        Sdh8fWGD3zvA1fweBQ/SVTvosAAa+0/lrhlLUJna7Oj38RVccmcXxeTnUG2kp4q45U41H9UrZoO3V
-        J7MkpFmGQKV2c/RYPw4NuksF7YmyZduE7aIimfAS9vxjrv/3eLJ6nenDMKXzCULjpF8W2wLvwh5AX
-        fW9xxzVa9+BLNQQWyDwveVUtRVkTHaQQA5sDLJEj1ckFQVAUzlF9MJRKxmzMJD3t4X9n02wa52bep
-        ntxwAg7A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nvaC0-004I5j-7g; Mon, 30 May 2022 07:52:00 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0B9AC980DE7; Mon, 30 May 2022 09:51:58 +0200 (CEST)
-Date:   Mon, 30 May 2022 09:51:57 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     Mark Brown <broonie@kernel.org>, jpoimboe@redhat.com,
-        chenzhongjin@huawei.com, mark.rutland@arm.com,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 09/20] objtool: arm64: Implement command to invoke
- the decoder
-Message-ID: <YpR3naaNCNG9ZJGC@worktop.programming.kicks-ass.net>
-References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
- <20220524001637.1707472-1-madvenka@linux.microsoft.com>
- <20220524001637.1707472-10-madvenka@linux.microsoft.com>
- <YoznLR30T+03Ea08@sirena.org.uk>
- <ff58b576-efee-276a-bfb3-11f5d258d580@linux.microsoft.com>
+        Mon, 30 May 2022 09:02:01 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3061717E1C;
+        Mon, 30 May 2022 06:02:00 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id q203so11299583iod.0;
+        Mon, 30 May 2022 06:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/nsX7tQgFVjCVndQ6RpFV7BObhww0aFphEST3Aew1pU=;
+        b=aDBnKozUQpAbtuN5D/ooDBBqSx3Y+oo5MQ+1QeE2crNOB4+uZi4F8AFaQo9IURBPMv
+         TVWtenQ8DPSkeu06Zak5ks2S0Dg84W67tc+vI5DtTswEgZk0k2+gKNpJrlE5EJbOodqG
+         Vdxm0mdvIGW6kx8eUFHGJWjG24kkF6b+xVMNWdVNSCFR2Bmjq0viGo30qySCSC8imz1j
+         5z4u2g9ZUnnau7guKEFPonzFCeCgumyuk0EIouAa59SVc8aqIe1q1Xtsd+OmaJdST0aP
+         8BEyiBJL9ImKKd5CZTG7axLZNZNcTTOKhiZMNC0fAeljoM4c/Avg9Rhmy9lgOHrQzCx2
+         JA0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/nsX7tQgFVjCVndQ6RpFV7BObhww0aFphEST3Aew1pU=;
+        b=79lmhcP105YbKJX1Hk/34Yo9ey9MeCwVB4u6uWwL/kMOLxkzFIwCWnvCH+0mN477vG
+         KCW6bQG7yugO8SvKiSgDrbZ8AZazFEEK7c6QKRITk6VW0Ogi4Sl63RFJGh7wvYyTpp7U
+         Ss6nEZ3O0vXpFPFu0zXYJ/gbXmtsiRB36qTLmwvHHQpZaW5exZZAHcdHIzueMIcyjIdZ
+         R09Ndkb2MIvTTVCpTOEyA01GaMBaEcLBeKg+bkWEnt+iYq/zmcKTTObyBg4zAYSNJlwX
+         /ho8Tk3UmI8ZeEUvmc69sy8wavfJ7FGwopOkhcHGgDIAJXppukDc7aAKB0KDgkJmShmG
+         iaKg==
+X-Gm-Message-State: AOAM53173F8XARlvS0wlmU8bg6jwagNgORAzswyymofaIUxlbb9LFhWg
+        D+TUcHj7ahVJMuvEBPc4kZwI08mmhqn1XjBGNr8=
+X-Google-Smtp-Source: ABdhPJz/KcdushmmWd5Wmx13C1o+XFxVQFOFTt9BakFoqOPc639maIlLVqG2CA9llEfhnfiqOLefeStVd6eXaJtnvLM=
+X-Received: by 2002:a05:6638:f89:b0:32e:89f4:e150 with SMTP id
+ h9-20020a0566380f8900b0032e89f4e150mr27709726jal.308.1653915717905; Mon, 30
+ May 2022 06:01:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ff58b576-efee-276a-bfb3-11f5d258d580@linux.microsoft.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220523020209.11810-1-ojeda@kernel.org> <20220523020209.11810-4-ojeda@kernel.org>
+ <YovvIQeN3lmOYzJO@kernel.org> <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
+ <459385ee7ccf4fcf3e22d4a11b4f438d648422bf.camel@kernel.org>
+In-Reply-To: <459385ee7ccf4fcf3e22d4a11b4f438d648422bf.camel@kernel.org>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Mon, 30 May 2022 15:01:47 +0200
+Message-ID: <CANiq72=TmWvVUR8yAAU-oT9=TdYPJC0sGxEBv4aVKBHKdEOjJg@mail.gmail.com>
+Subject: Re: [PATCH v7 03/25] kallsyms: increase maximum kernel symbol length
+ to 512
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Sun, May 29, 2022 at 09:49:44AM -0500, Madhavan T. Venkataraman wrote:
-> 
-> 
-> On 5/24/22 09:09, Mark Brown wrote:
-> > On Mon, May 23, 2022 at 07:16:26PM -0500, madvenka@linux.microsoft.com wrote:
-> >> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-> >>
-> >> Implement a built-in command called cmd_fpv() that can be invoked as
-> >> follows:
-> >>
-> >> 	objtool fpv generate file.o
-> >>
-> >> The built-in command invokes decode_instructions() to walk each function
-> >> and decode the instructions of the function.
-> > 
-> > In commit b51277eb9775ce91 ("objtool: Ditch subcommands") Josh removed
-> > subcommands so this interface is going to need a rethink.
-> 
-> Thanks for mentioning this. I will sync my patchset to the latest and send out version 3.
+On Fri, May 27, 2022 at 6:27 PM Jarkko Sakkinen <jarkko@kernel.org> wrote:
+>
+> The honest answer: I don't actually remember what I was thinking
+> (other stuff stole my focus) but my comment neither makes much
+> sense to me. Please just ignore it, and apologies for causing
+> confusion.
 
-Before you do; why are you duplicating lots of validate_branch() ? Why
-can't you use the regular code to generate ORC data?
+No apologies needed!
 
-I'm really not happy about all this.
+> There's something I'm looking into in my spare time right now.
+> I'm experimenting with interfacing keyring types to Rust. The
+> first step, I guess, is to provide a Rust abstraction for
+> assoc_array.
+>
+> I've skimmed through the patch set and have now *rough* idea of
+> patterns and techniques. My opens are more on the process side
+> of things since there's no yet mainline subtree.
+
+Thanks a lot for taking a look and taking the initiative.
+
+> If I send a patch or patch sets, would this be a good workflow:
+>
+> 1. RFC tag.
+> 2. In the cover letter denote the patch set version, which was
+>    used the baseline.
+
+Sounds good to me. Alternatively, you can use a `--base=` pointing to
+one of the commits in our `rust` branch.
+
+Cheers,
+Miguel
