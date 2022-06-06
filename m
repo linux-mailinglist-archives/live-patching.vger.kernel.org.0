@@ -2,309 +2,130 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FD6353CB8F
-	for <lists+live-patching@lfdr.de>; Fri,  3 Jun 2022 16:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D34C53EA6C
+	for <lists+live-patching@lfdr.de>; Mon,  6 Jun 2022 19:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245101AbiFCOdZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 3 Jun 2022 10:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S239473AbiFFOOD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 6 Jun 2022 10:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244009AbiFCOdY (ORCPT
+        with ESMTP id S239440AbiFFOOC (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 3 Jun 2022 10:33:24 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536052ED61;
-        Fri,  3 Jun 2022 07:33:22 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1069B21A82;
-        Fri,  3 Jun 2022 14:33:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654266801; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hmD9vrbsq1Z0S4I7dnXkcIHxq9s5TkZQpABzmxA0LHg=;
-        b=fG1gNkmvqIl8mWFH1FVRrMmK3z6Rvn8b6bNYiDpU50t0St/0FpUd7+yrkpoZ5CV8HtfCwI
-        hLl0rxDgPVkZyDuTrYn8HGuRsoS6qHqwTIPYxLfVl0ibcBzD8OnZu87cQIzknFGJyI3fsZ
-        JccPfIsTz525HOP/fLQC+DKoKSNHHEo=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DEEA613AA2;
-        Fri,  3 Jun 2022 14:33:18 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id mMDEKK4bmmIqGgAAMHmgww
-        (envelope-from <mpdesouza@suse.com>); Fri, 03 Jun 2022 14:33:18 +0000
-From:   Marcos Paulo de Souza <mpdesouza@suse.com>
-To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     shuah@kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
-        pmladek@suse.com, Marcos Paulo de Souza <mpdesouza@suse.com>
-Subject: [PATCH 2/2] selftests: livepatch: Test livepatching a heavily called syscall
-Date:   Fri,  3 Jun 2022 11:32:42 -0300
-Message-Id: <20220603143242.870-3-mpdesouza@suse.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220603143242.870-1-mpdesouza@suse.com>
-References: <20220603143242.870-1-mpdesouza@suse.com>
+        Mon, 6 Jun 2022 10:14:02 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C67A2C656
+        for <live-patching@vger.kernel.org>; Mon,  6 Jun 2022 07:14:00 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-edeb6c3642so19289648fac.3
+        for <live-patching@vger.kernel.org>; Mon, 06 Jun 2022 07:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3cP+WhjIMFd4Hbfsr5/ENvdSuimZ1mS+1KHrF7Liuqc=;
+        b=XGYmsxg14M+lK4OHA1hxciUhwAJ4vbhy5fXTMvSsLxpIJjqmBx7/hRJYO1yMWYugvc
+         dAFXKnRxXPCYSHFLunMNMaAUun8iauYkL8M7BQyzkaaP13kHA0dr500XDDeSwe9Eax1s
+         efplhlinjoA7rk4ZAYsJ1mN8Sg+T/HXX0ej60=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3cP+WhjIMFd4Hbfsr5/ENvdSuimZ1mS+1KHrF7Liuqc=;
+        b=X0P/Uo+BhsMfZMEAdDN5T5Nn+dU4fj2EYKLzLiS2ENUZn08aUt5DeeNyWx8SA2BQVc
+         En+D5wzdqUK+DbvdyOWTeSckZRgt2Ipn7pw3JlFo+cwRpRKjZtmso3jRxDA8xYl/kbX4
+         q82RUr9UqIThrjgmauzkulkwQM2If+TjwuSSH7WeryCWLQYj8JJM+s1Jh2eqYcsuw8OS
+         uyC5CoTcrWgFqyVv9WijkHf3DuflyEin434ZOHvKy2IuI8DO8+VrYqMsZLFfYyCTD88W
+         kq0mOgEyteJ3hqU5Uh7Uuq3vJeQV/71HNV+//d7n7yqUqcpNOc4YtEsuHarCdFiGdUQO
+         MozA==
+X-Gm-Message-State: AOAM531eP2A9h7/+4sF6saZtNWOiFKPqgK2gtccZ420GWovdMO2udx2z
+        s/3nIu6YylxiufhqubRhHo/8Ew==
+X-Google-Smtp-Source: ABdhPJwLDiM99Fj8vzlM1sfE4CsjrhkLwScaAI2kR8dCZ0qI9jd/XAFsLz6CevfLJnhSXzNCmlp1PA==
+X-Received: by 2002:a05:6870:d192:b0:de:691:81ad with SMTP id a18-20020a056870d19200b000de069181admr30881237oac.165.1654524839943;
+        Mon, 06 Jun 2022 07:13:59 -0700 (PDT)
+Received: from localhost ([2605:a601:ac0f:820:cc11:d018:c11b:3321])
+        by smtp.gmail.com with ESMTPSA id c11-20020a056830000b00b0060bec21ffcdsm3348053otp.22.2022.06.06.07.13.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 07:13:59 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 09:13:58 -0500
+From:   Seth Forshee <sforshee@digitalocean.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, kvm@vger.kernel.org,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: Re: [PATCH] entry/kvm: Exit to user mode when TIF_NOTIFY_SIGNAL is
+ set
+Message-ID: <Yp4LpgBHjvBEbyeS@do-x1extreme>
+References: <20220504180840.2907296-1-sforshee@digitalocean.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504180840.2907296-1-sforshee@digitalocean.com>
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Syscalls are called a tricky way. Test that it is possible and works.
+On Wed, May 04, 2022 at 01:08:40PM -0500, Seth Forshee wrote:
+> A livepatch transition may stall indefinitely when a kvm vCPU is heavily
+> loaded. To the host, the vCPU task is a user thread which is spending a
+> very long time in the ioctl(KVM_RUN) syscall. During livepatch
+> transition, set_notify_signal() will be called on such tasks to
+> interrupt the syscall so that the task can be transitioned. This
+> interrupts guest execution, but when xfer_to_guest_mode_work() sees that
+> TIF_NOTIFY_SIGNAL is set but not TIF_SIGPENDING it concludes that an
+> exit to user mode is unnecessary, and guest execution is resumed without
+> transitioning the task for the livepatch.
+> 
+> This handling of TIF_NOTIFY_SIGNAL is incorrect, as set_notify_signal()
+> is expected to break tasks out of interruptible kernel loops and cause
+> them to return to userspace. Change xfer_to_guest_mode_work() to handle
+> TIF_NOTIFY_SIGNAL the same as TIF_SIGPENDING, signaling to the vCPU run
+> loop that an exit to userpsace is needed. Any pending task_work will be
+> run when get_signal() is called from exit_to_user_mode_loop(), so there
+> is no longer any need to run task work from xfer_to_guest_mode_work().
+> 
+> Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> Cc: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
 
-This new test creates one userspace process per online cpu calling getpid
-continuously and tries to livepatch the getpid function.
+Friendly reminder as it seems like this patch may have been forgotten.
 
-Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
----
- tools/testing/selftests/livepatch/Makefile    | 12 +++-
- .../selftests/livepatch/test-syscall.sh       | 46 ++++++++++++++
- .../test_binaries/test_klp-call_getpid.c      | 48 +++++++++++++++
- .../selftests/livepatch/test_modules/Makefile |  3 +-
- .../livepatch/test_modules/test_klp_syscall.c | 60 +++++++++++++++++++
- 5 files changed, 165 insertions(+), 4 deletions(-)
- create mode 100755 tools/testing/selftests/livepatch/test-syscall.sh
- create mode 100644 tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c
- create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+Thanks,
+Seth
 
-diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
-index 5ef492b87bb1..35014197184e 100644
---- a/tools/testing/selftests/livepatch/Makefile
-+++ b/tools/testing/selftests/livepatch/Makefile
-@@ -1,10 +1,14 @@
- # SPDX-License-Identifier: GPL-2.0
-+include ../../../build/Build.include
-+include ../../../scripts/Makefile.arch
-+include ../../../scripts/Makefile.include
- 
- TEST_FILES := settings \
- 		test_modules
- 
- # We need the test_modules dir in order to make gen_tar and install to work
--TEST_GEN_PROGS_EXTENDED := test_modules/test_klp_atomic_replace.ko \
-+TEST_GEN_PROGS_EXTENDED := test_binaries/test_klp-call_getpid \
-+			test_modules/test_klp_atomic_replace.ko \
- 			test_modules/test_klp_callbacks_busy.ko \
- 			test_modules/test_klp_callbacks_demo.ko \
- 			test_modules/test_klp_callbacks_demo2.ko \
-@@ -13,7 +17,8 @@ TEST_GEN_PROGS_EXTENDED := test_modules/test_klp_atomic_replace.ko \
- 			test_modules/test_klp_state.ko \
- 			test_modules/test_klp_state2.ko \
- 			test_modules/test_klp_state3.ko \
--			test_modules/test_klp_shadow_vars.ko
-+			test_modules/test_klp_shadow_vars.ko \
-+			test_modules/test_klp_syscall.ko
- 
- TEST_PROGS_EXTENDED := functions.sh
- TEST_PROGS := \
-@@ -21,7 +26,8 @@ TEST_PROGS := \
- 	test-callbacks.sh \
- 	test-shadow-vars.sh \
- 	test-state.sh \
--	test-ftrace.sh
-+	test-ftrace.sh \
-+	test-syscall.sh
- 
- # override lib.mk's default rules
- OVERRIDE_TARGETS := 1
-diff --git a/tools/testing/selftests/livepatch/test-syscall.sh b/tools/testing/selftests/livepatch/test-syscall.sh
-new file mode 100755
-index 000000000000..f1d49e6ce2ee
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test-syscall.sh
-@@ -0,0 +1,46 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (C) 2022 SUSE
-+# Author: Marcos Paulo de Souza <mpdesouza@suse.com>
-+
-+. $(dirname $0)/functions.sh
-+
-+MOD_SYSCALL=test_klp_syscall
-+
-+setup_config
-+
-+# - Start _NRPROC processes calling getpid and load a livepatch to patch the
-+#   getpid syscall
-+
-+start_test "patch getpid syscall while being heavily hammered"
-+
-+declare -a pids
-+for i in $(seq 1 $(getconf _NPROCESSORS_ONLN)); do
-+	./test_klp-call_getpid &
-+	pids[${#pids[*]}]="$!"
-+done
-+
-+load_lp $MOD_SYSCALL
-+# Success, getpid syscall was livepatched
-+
-+for pid in ${pids[@]}; do
-+	kill $pid || true
-+done
-+
-+disable_lp $MOD_SYSCALL
-+unload_lp $MOD_SYSCALL
-+
-+check_result "% insmod test_modules/$MOD_SYSCALL.ko
-+livepatch: enabling patch '$MOD_SYSCALL'
-+livepatch: '$MOD_SYSCALL': initializing patching transition
-+livepatch: '$MOD_SYSCALL': starting patching transition
-+livepatch: '$MOD_SYSCALL': completing patching transition
-+livepatch: '$MOD_SYSCALL': patching complete
-+% echo 0 > /sys/kernel/livepatch/$MOD_SYSCALL/enabled
-+livepatch: '$MOD_SYSCALL': initializing unpatching transition
-+livepatch: '$MOD_SYSCALL': starting unpatching transition
-+livepatch: '$MOD_SYSCALL': completing unpatching transition
-+livepatch: '$MOD_SYSCALL': unpatching complete
-+% rmmod $MOD_SYSCALL"
-+
-+exit 0
-diff --git a/tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c b/tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c
-new file mode 100644
-index 000000000000..be9d3110687d
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2017 SUSE
-+ * Author: Libor Pechacek <lpechacek@suse.cz>
-+ */
-+
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <sys/syscall.h>
-+#include <sys/types.h>
-+#include <signal.h>
-+
-+static int run = 1;
-+static int sig_int;
-+
-+void hup_handler(int signum)
-+{
-+	run = 0;
-+}
-+
-+void int_handler(int signum)
-+{
-+	run = 0;
-+	sig_int = 1;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	pid_t orig_pid, pid;
-+	long count = 0;
-+
-+	signal(SIGHUP, &hup_handler);
-+	signal(SIGINT, &int_handler);
-+
-+	orig_pid = syscall(SYS_getpid);
-+
-+	while(run) {
-+		pid = syscall(SYS_getpid);
-+		if (pid != orig_pid)
-+			return 1;
-+		count++;
-+	}
-+
-+	if (sig_int)
-+		printf("%d iterations done\n", count);
-+
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/livepatch/test_modules/Makefile b/tools/testing/selftests/livepatch/test_modules/Makefile
-index 375180bc1b16..288c65ccd080 100644
---- a/tools/testing/selftests/livepatch/test_modules/Makefile
-+++ b/tools/testing/selftests/livepatch/test_modules/Makefile
-@@ -15,7 +15,8 @@ obj-m += test_klp_atomic_replace.o \
- 	test_klp_state.o \
- 	test_klp_state2.o \
- 	test_klp_state3.o \
--	test_klp_shadow_vars.o
-+	test_klp_shadow_vars.o \
-+	test_klp_syscall.o
- 
- %.ko:
- 	make -C $(KDIR) M=$(TESTMODS_DIR) $@
-diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-new file mode 100644
-index 000000000000..e170accfb10c
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-@@ -0,0 +1,60 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2017-2022 SUSE
-+ * Authors: Libor Pechacek <lpechacek@suse.cz>
-+ *          Nicolai Stange <nstange@suse.de>
-+ *          Marcos Paulo de Souza <mpdesouza@suse.com>
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/sched.h>
-+#include <linux/livepatch.h>
-+
-+#if defined(__x86_64__)
-+#define FN_PREFIX __x64_
-+#elif defined(__s390x__)
-+#define FN_PREFIX __s390x_
-+#elif defined(__PPC64__)
-+#define FN_PREFIX __ppc64_
-+#else
-+#error "livepatch not supported"
-+#endif
-+
-+asmlinkage long lp_sys_getpid(void)
-+{
-+	return task_tgid_vnr(current);
-+}
-+
-+static struct klp_func vmlinux_funcs[] = {
-+	{
-+		.old_name = __stringify(FN_PREFIX) "sys_getpid",
-+		.new_func = lp_sys_getpid,
-+	}, {}
-+};
-+
-+static struct klp_object objs[] = {
-+	{
-+		/* name being NULL means vmlinux */
-+		.funcs = vmlinux_funcs,
-+	}, {}
-+};
-+
-+static struct klp_patch patch = {
-+	.mod = THIS_MODULE,
-+	.objs = objs,
-+};
-+
-+static int livepatch_init(void)
-+{
-+	return klp_enable_patch(&patch);
-+}
-+
-+static void livepatch_exit(void)
-+{
-+}
-+
-+module_init(livepatch_init);
-+module_exit(livepatch_exit);
-+MODULE_LICENSE("GPL");
-+MODULE_INFO(livepatch, "Y");
--- 
-2.35.3
-
+> ---
+>  kernel/entry/kvm.c | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
+> index 9d09f489b60e..2e0f75bcb7fd 100644
+> --- a/kernel/entry/kvm.c
+> +++ b/kernel/entry/kvm.c
+> @@ -9,12 +9,6 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
+>  		int ret;
+>  
+>  		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
+> -			clear_notify_signal();
+> -			if (task_work_pending(current))
+> -				task_work_run();
+> -		}
+> -
+> -		if (ti_work & _TIF_SIGPENDING) {
+>  			kvm_handle_signal_exit(vcpu);
+>  			return -EINTR;
+>  		}
+> -- 
+> 2.32.0
+> 
