@@ -2,111 +2,165 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 852765468CE
-	for <lists+live-patching@lfdr.de>; Fri, 10 Jun 2022 16:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD00B5481A2
+	for <lists+live-patching@lfdr.de>; Mon, 13 Jun 2022 10:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234666AbiFJOtp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 10 Jun 2022 10:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55912 "EHLO
+        id S233189AbiFMIWU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 13 Jun 2022 04:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349530AbiFJOtI (ORCPT
+        with ESMTP id S229819AbiFMIWU (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 10 Jun 2022 10:49:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F206144BE4;
-        Fri, 10 Jun 2022 07:48:37 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D5DA422142;
-        Fri, 10 Jun 2022 14:48:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654872515; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nzSWh5rBV1A+StTwCtLelwjw28JbYq11oZnaBq7FmbI=;
-        b=LZzoM2o4ZAIu6Dv2Vy/H07nR9RoEf+fwvQ+Mbn+L297C863vNLm8oPArrA5w52MOafX/tZ
-        86o0JWJVbXoZye2q903q+2tWkM5j+5M6tb5gJHAW8IIIqKPfa60WSyFBxoI1288BsVBS+A
-        OJTvRy2tvEFKxOXrwP4MB9JvTbo+QvU=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id B0C392C141;
-        Fri, 10 Jun 2022 14:48:35 +0000 (UTC)
-Date:   Fri, 10 Jun 2022 16:48:32 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Marcos Paulo de Souza <mpdesouza@suse.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        shuah@kernel.org, jpoimboe@redhat.com, mbenes@suse.cz
-Subject: Re: [PATCH 0/2] livepatch: Move tests from lib/livepatch to
- selftests/livepatch
-Message-ID: <YqNZwBWJmi5E/Nvo@alley>
-References: <20220603143242.870-1-mpdesouza@suse.com>
- <c5dc436e-2e3f-db2c-5cd5-215a9af19152@linuxfoundation.org>
- <5966397b-5577-8075-ffdd-f32e5e4ca75a@redhat.com>
+        Mon, 13 Jun 2022 04:22:20 -0400
+Received: from condef-02.nifty.com (condef-02.nifty.com [202.248.20.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FBF102
+        for <live-patching@vger.kernel.org>; Mon, 13 Jun 2022 01:22:18 -0700 (PDT)
+Received: from conuserg-08.nifty.com ([10.126.8.71])by condef-02.nifty.com with ESMTP id 25D8JkOV004652
+        for <live-patching@vger.kernel.org>; Mon, 13 Jun 2022 17:20:00 +0900
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id 25D8Hqcs011074;
+        Mon, 13 Jun 2022 17:17:52 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 25D8Hqcs011074
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1655108273;
+        bh=CmhbukpBhZs7hao25rQlICLG+Ns0/87DXmi5jDvd2iE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hBKp+jS9P7HmrcT7zp7l6kQNJUNh88ugzYtEluVI0KDn7TlAkLIDc8ju3Mi1RuIeH
+         N5S8Z6ThORDDGC/9XFYl+0Zod6QhGHMSD7Ds4vB+DnLevHTpIi8lZcB6NtoxMxRfbX
+         bTCLu7klIZirLYKtICeNotC+RVxKTvmM+qAH2v7jrhz5zjVquH0z4tSbw+U510lBrN
+         oh5JlCQJy7sMEamM1ncpm4+yIe8e/puiVt2+HU+ka2BNfHM9hZY2hio62Oy2Ir1vVO
+         UwKckHWfho3ccbl9oir28ZefJYO1uSj4xgWcjC4wI3buDWwwhHoYScccyxw7eWa4K2
+         IFrRwCAKfKCZg==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>, linux-modules@vger.kernel.org
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alex Shi <alexs@kernel.org>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthias Maennich <maennich@google.com>,
+        Yanteng Si <siyanteng@loongson.cn>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] doc: module: update file references
+Date:   Mon, 13 Jun 2022 17:17:40 +0900
+Message-Id: <20220613081741.1699713-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5966397b-5577-8075-ffdd-f32e5e4ca75a@redhat.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri 2022-06-10 09:06:16, Joe Lawrence wrote:
-> On 6/9/22 4:16 PM, Shuah Khan wrote:
-> > On 6/3/22 8:32 AM, Marcos Paulo de Souza wrote:
-> >> Hi there,
-> >>
-> >> The first patch moves the current livepatch tests to selftests,
-> >> allowing it
-> >> be better suited to contain more complex tests, like using userspace C
-> >> code
-> >> to use the livepatched kernel code. As a bonus it allows to use
-> >> "gen_tar" to export the livepatch selftests, rebuild the modules by
-> >> running make in selftests/livepatch directory and simplifies the process
-> >> of creating and debugging new selftests.
-> >>
-> > 
-> > In general selftests don't include modules. We keep test modules under lib.
-> > One of the reasons is that modules have dependencies on the kernel and
-> > should
-> > be built when kernel is built.
-> > 
-> > I don't fully buy the argument that moving modules under selftest would
-> > simplify
-> > the process.
-> > 
-> 
-> Hi Shuah,
-> 
-> I see that there is tools/testing/selftests/bpf/bpf_testmod/ which
-> claims to be a "conceptually out-of-tree module".  Would similarly
-> moving livepatch test modules under tools/ give us flexibility to write
-> them build for multiple kernel versions?  Then one could theoretically
-> build and run the latest, greatest selftests against older kernels
-> (assuming the associate script/module/kernel supports the idea)?
+Adjust documents to the file moves made by commit cfc1d277891e ("module:
+Move all into module/").
 
-+1
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-Another motivation is that the new selftest also needs
-an executable binary. It would be nice to handle both modules
-and binaries the same way.
+I did not touch
 
-Honestly, lib/* is a mess. It mixes real functionality and test
-modules. The relation between the modules and tools/testing/*
-is far from clear. IMHO, it would be more clean to have the related
-stuff together.
+  Documentation/translations/zh_CN/core-api/kernel-api.rst
 
-Of course, we could not move all test modules from lib/* easily.
-Some of them might be used on its own or even as built-in
-tests. But preventing the move looks like a step in
-the wrong direction to me.
+because I cannot modify it.
 
-Best Regards,
-Petr
+ Documentation/core-api/kernel-api.rst                  |  2 +-
+ Documentation/core-api/symbol-namespaces.rst           |  4 ++--
+ Documentation/livepatch/module-elf-format.rst          | 10 +++++-----
+ .../translations/it_IT/core-api/symbol-namespaces.rst  |  6 +++---
+ .../translations/zh_CN/core-api/symbol-namespaces.rst  |  2 +-
+ 5 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/Documentation/core-api/kernel-api.rst b/Documentation/core-api/kernel-api.rst
+index d6b3f94b9f1f..0793c400d4b0 100644
+--- a/Documentation/core-api/kernel-api.rst
++++ b/Documentation/core-api/kernel-api.rst
+@@ -223,7 +223,7 @@ Module Loading
+ Inter Module support
+ --------------------
+ 
+-Refer to the file kernel/module.c for more information.
++Refer to the files in kernel/module/ for more information.
+ 
+ Hardware Interfaces
+ ===================
+diff --git a/Documentation/core-api/symbol-namespaces.rst b/Documentation/core-api/symbol-namespaces.rst
+index 5ad9e0abe42c..12e4aecdae94 100644
+--- a/Documentation/core-api/symbol-namespaces.rst
++++ b/Documentation/core-api/symbol-namespaces.rst
+@@ -51,8 +51,8 @@ namespace ``USB_STORAGE``, use::
+ The corresponding ksymtab entry struct ``kernel_symbol`` will have the member
+ ``namespace`` set accordingly. A symbol that is exported without a namespace will
+ refer to ``NULL``. There is no default namespace if none is defined. ``modpost``
+-and kernel/module.c make use the namespace at build time or module load time,
+-respectively.
++and kernel/module/main.c make use the namespace at build time or module load
++time, respectively.
+ 
+ 2.2 Using the DEFAULT_SYMBOL_NAMESPACE define
+ =============================================
+diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentation/livepatch/module-elf-format.rst
+index dbe9b400e39f..7347638895a0 100644
+--- a/Documentation/livepatch/module-elf-format.rst
++++ b/Documentation/livepatch/module-elf-format.rst
+@@ -210,11 +210,11 @@ module->symtab.
+ =====================================
+ Normally, a stripped down copy of a module's symbol table (containing only
+ "core" symbols) is made available through module->symtab (See layout_symtab()
+-in kernel/module.c). For livepatch modules, the symbol table copied into memory
+-on module load must be exactly the same as the symbol table produced when the
+-patch module was compiled. This is because the relocations in each livepatch
+-relocation section refer to their respective symbols with their symbol indices,
+-and the original symbol indices (and thus the symtab ordering) must be
++in kernel/module/kallsyms.c). For livepatch modules, the symbol table copied
++into memory on module load must be exactly the same as the symbol table produced
++when the patch module was compiled. This is because the relocations in each
++livepatch relocation section refer to their respective symbols with their symbol
++indices, and the original symbol indices (and thus the symtab ordering) must be
+ preserved in order for apply_relocate_add() to find the right symbol.
+ 
+ For example, take this particular rela from a livepatch module:::
+diff --git a/Documentation/translations/it_IT/core-api/symbol-namespaces.rst b/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
+index 42f5d04e38ec..0f6898860d6d 100644
+--- a/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
++++ b/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
+@@ -50,9 +50,9 @@ Di conseguenza, nella tabella dei simboli del kernel ci sarà una voce
+ rappresentata dalla struttura ``kernel_symbol`` che avrà il campo
+ ``namespace`` (spazio dei nomi) impostato. Un simbolo esportato senza uno spazio
+ dei nomi avrà questo campo impostato a ``NULL``. Non esiste uno spazio dei nomi
+-di base. Il programma ``modpost`` e il codice in kernel/module.c usano lo spazio
+-dei nomi, rispettivamente, durante la compilazione e durante il caricamento
+-di un modulo.
++di base. Il programma ``modpost`` e il codice in kernel/module/main.c usano lo
++spazio dei nomi, rispettivamente, durante la compilazione e durante il
++caricamento di un modulo.
+ 
+ 2.2 Usare il simbolo di preprocessore DEFAULT_SYMBOL_NAMESPACE
+ ==============================================================
+diff --git a/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst b/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
+index 6abf7ed534ca..bb16f0611046 100644
+--- a/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
++++ b/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
+@@ -52,7 +52,7 @@
+ 
+ 相应的 ksymtab 条目结构体 ``kernel_symbol`` 将有相应的成员 ``命名空间`` 集。
+ 导出时未指明命名空间的符号将指向 ``NULL`` 。如果没有定义命名空间，则默认没有。
+-``modpost`` 和kernel/module.c分别在构建时或模块加载时使用名称空间。
++``modpost`` 和kernel/module/main.c分别在构建时或模块加载时使用名称空间。
+ 
+ 2.2 使用DEFAULT_SYMBOL_NAMESPACE定义
+ ====================================
+-- 
+2.32.0
+
