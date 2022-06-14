@@ -2,101 +2,117 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD8354B808
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jun 2022 19:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F40E54BCD9
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jun 2022 23:34:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234252AbiFNRtP (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Jun 2022 13:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        id S239685AbiFNVeB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Jun 2022 17:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345036AbiFNRtA (ORCPT
+        with ESMTP id S232052AbiFNVeA (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Jun 2022 13:49:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDCC33EBD;
-        Tue, 14 Jun 2022 10:48:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82E8361739;
-        Tue, 14 Jun 2022 17:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A771C3411B;
-        Tue, 14 Jun 2022 17:48:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655228937;
-        bh=vUYdTKApG+IF7N1DaWT1vcsrpTkET3iDbHsO6KbdhNw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wh402vLRYq+8GOactlzS9STTwqd0gX7VbxRuuEW6bHHjjq/dFyjm+d1e5UJ9pD1GA
-         D2dfufwV8LtXWm+RIATYcNGcXJl/1f1rMxwHUiVYvKF0/wP1rzjm8AEeDhvwMygyGF
-         w0NnIjCSVmwTj9Z2RLzviaaI1NHOif20LfQjzweP9Cy3SzirfBFfalOpu6aGhwkrmu
-         P1RoGshq94208ktuvJBBx0/lZwHbcUd/9hFIL8pdmV7i/z6lRle8sIfeeqzClY8tnt
-         MTF1aozF9Kos60JLnPb2g4JFJ0sJhyF4bHMnjSP8e9Ic9z7c5oakZi2FC4Te0JyBox
-         oMXlVfmSk0tiA==
-Date:   Tue, 14 Jun 2022 18:48:52 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     madvenka@linux.microsoft.com
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v14 0/7] arm64: Reorganize the unwinder and implement
- stack trace reliability checks
-Message-ID: <YqjKBF1dNKbTZrpY@sirena.org.uk>
-References: <f460a35f88195413bcf7305e5083480aab3ca858>
- <20220413140528.3815-1-madvenka@linux.microsoft.com>
+        Tue, 14 Jun 2022 17:34:00 -0400
+X-Greylist: delayed 134040 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 14 Jun 2022 14:33:59 PDT
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31582656B;
+        Tue, 14 Jun 2022 14:33:59 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 25ELXbSA002614;
+        Wed, 15 Jun 2022 06:33:38 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 25ELXbSA002614
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1655242418;
+        bh=jMu3IJf/gNsh1yOykgEfXmOTW4pfvsSKna8A1KEVPDk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=H8Vj0TEWaZDAyCb57/jCPeJSrt7udqr5gEj9vpZGF0yiUPM5DWETorzCvL6z4TT6r
+         dvPEbKwUr1Aqw5yycPgaJetlesEOn5iQscdrqVW3Hb+5Oxmwpfaqp/q5R0WxEeJpi2
+         mkb2r1cLq/6dGTbrCXf+EYfUOlBKnTFG8EP9XutPStoqSTK1Hdqss5r9rl1LoypyJH
+         Mt1vkvsmiMdgCwxTAIEJzmJMFomsZQxuIAvYpAGHVqfrl6njsQyy05rr746+JeIkgU
+         IgIL5R9Bs2GeHQ9jfxLcSxjPjoRWYRVYeTriy/oeLb1zS1i8wO3NuK95GyKZ6/BOEZ
+         8ZfbBDzevJtpA==
+X-Nifty-SrcIP: [209.85.128.54]
+Received: by mail-wm1-f54.google.com with SMTP id a10so5341470wmj.5;
+        Tue, 14 Jun 2022 14:33:38 -0700 (PDT)
+X-Gm-Message-State: AOAM5330k/mWGq75deKm8FkX/J9GFrIuCBGCA1PH/LaqY3Lot2dj2kDA
+        VF0gSZ1VxNtGpQKda81RbItGzJK5A6ghij1XHyU=
+X-Google-Smtp-Source: ABdhPJy382JsXm03MT6GFbPL63zd9b3gVqd3oo2ll0beKVq4fIQ7srKKI6FHgfmvJhPvDB9A162ob2fGjKC0YYGqwDs=
+X-Received: by 2002:a7b:ce04:0:b0:394:1f46:213 with SMTP id
+ m4-20020a7bce04000000b003941f460213mr6175903wmc.157.1655242416515; Tue, 14
+ Jun 2022 14:33:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2UWSi2k1RSFJ6caK"
-Content-Disposition: inline
-In-Reply-To: <20220413140528.3815-1-madvenka@linux.microsoft.com>
-X-Cookie: DYSLEXICS OF THE WORLD, UNTIE!
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220613081741.1699713-1-masahiroy@kernel.org> <027dcfc9-be47-5fb5-7ea8-26eb19122095@loongson.cn>
+In-Reply-To: <027dcfc9-be47-5fb5-7ea8-26eb19122095@loongson.cn>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 15 Jun 2022 06:32:59 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAROs84jWCHxKHuv+TOzUkCJDUgkaFU0nKopGPwNKV+VQg@mail.gmail.com>
+Message-ID: <CAK7LNAROs84jWCHxKHuv+TOzUkCJDUgkaFU0nKopGPwNKV+VQg@mail.gmail.com>
+Subject: Re: [PATCH] doc: module: update file references
+To:     Yanteng Si <siyanteng@loongson.cn>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules <linux-modules@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, Alex Shi <alexs@kernel.org>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthias Maennich <maennich@google.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On Tue, Jun 14, 2022 at 9:28 PM Yanteng Si <siyanteng@loongson.cn> wrote:
+>
+> On 2022/6/13 =E4=B8=8B=E5=8D=884:17, Masahiro Yamada wrote:
+> > Adjust documents to the file moves made by commit cfc1d277891e ("module=
+:
+> > Move all into module/").
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Acked-by: Yanteng Si <siyanteng@loongson.cn>
+> > ---
+> >
+> > I did not touch
+> >
+> >    Documentation/translations/zh_CN/core-api/kernel-api.rst
+> diff --git a/Documentation/translations/zh_CN/core-api/kernel-api.rst
+> b/Documentation/translations/zh_CN/core-api/kernel-api.rst
+> index e45fe80d1cd8..962d31d019d7 100644
+> --- a/Documentation/translations/zh_CN/core-api/kernel-api.rst
+> +++ b/Documentation/translations/zh_CN/core-api/kernel-api.rst
+> @@ -224,7 +224,7 @@ kernel/kmod.c
+>   =E6=A8=A1=E5=9D=97=E6=8E=A5=E5=8F=A3=E6=94=AF=E6=8C=81
+>   ------------
+>
+> -=E6=9B=B4=E5=A4=9A=E4=BF=A1=E6=81=AF=E8=AF=B7=E5=8F=82=E8=80=83=E6=96=87=
+=E4=BB=B6kernel/module.c=E3=80=82
+> +=E6=9B=B4=E5=A4=9A=E4=BF=A1=E6=81=AF=E8=AF=B7=E5=8F=82=E9=98=85kernel/mo=
+dule/=E7=9B=AE=E5=BD=95=E4=B8=8B=E7=9A=84=E6=96=87=E4=BB=B6=E3=80=82
+>
+>   =E7=A1=AC=E4=BB=B6=E6=8E=A5=E5=8F=A3
+>   =3D=3D=3D=3D=3D=3D=3D=3D
+>
+> >
+> > because I cannot modify it.Let me help you, it's my pleasure.  :)
 
---2UWSi2k1RSFJ6caK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 13, 2022 at 09:05:21AM -0500, madvenka@linux.microsoft.com wrot=
-e:
-> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->=20
-> I have rebased this patch series on top of this branch:
->=20
-> 	arm64/stacktrace/cleanups
->=20
-> in Mark Rutland's fork of Linux. The branch contains a set of patches
-> from Mark and me for reliable stack trace.
+Thank you very much!
 
-Do you have any plans to resend this based on v5.19-rcN?  I know you
-were waiting for some more review feedback but everyone's review queues
-will most likely have been flushed with the new release so it'll need a
-resend.  I was half thinking about some related stuff so I went to apply
-these but saw there's some small conflicts.
+I will send v2 with the update.
 
---2UWSi2k1RSFJ6caK
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKoygMACgkQJNaLcl1U
-h9DmsAf/YSmG2GfXSOpR16Oa1Hf/rrIlt5s62VLXhQcAdrfKtudpeISNVcncRJb6
-6KBwLCxjj2XIw2o2TVEDqg6U6foDtenQitTzwDRJHC8YIu1fcxrOa9XUm+xmcpDv
-3GtFq4S7E7oB2c5RhH0Xo/QM7IpJeIW8a6kYXO2Rqe54O3yRWJ7u3b2zmImfMmIc
-pAQBbVTzZbmjYo8JnY90QD55BwO/v0OVs+NH4rj+bIEVa4dMLz98HI2gPeZoQYx5
-R7l6ciD5tfN611S8hde3OmrObt4lXCWhqg6fBJGv7y9iVBQ2lyrfXdJZVC8xmDZ3
-WgJghzObuld+OmjXU4PQxMt9AHaC6g==
-=h07b
------END PGP SIGNATURE-----
-
---2UWSi2k1RSFJ6caK--
+--=20
+Best Regards
+Masahiro Yamada
