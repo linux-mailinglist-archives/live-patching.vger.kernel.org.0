@@ -2,143 +2,191 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC8354A363
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jun 2022 03:03:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EA6A54B13B
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jun 2022 14:38:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243595AbiFNBC6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 13 Jun 2022 21:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S237237AbiFNMbT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 14 Jun 2022 08:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238764AbiFNBCz (ORCPT
+        with ESMTP id S245049AbiFNM24 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:02:55 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006C72714A
-        for <live-patching@vger.kernel.org>; Mon, 13 Jun 2022 18:02:54 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id h18so5534179ilj.7
-        for <live-patching@vger.kernel.org>; Mon, 13 Jun 2022 18:02:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=U3JKGYdmDlTw2F6x4avaOz6AUUg72m8v/vKLi53Y55o=;
-        b=XPZgm7k4Cr+yPljAMD4+l1gO8xn+qimmbENRm+RaANbnTnLnnT5pKGzGk8PgG32Khc
-         iAkDtoPCQ/wON3/pUPsTgNmtdbXG0wwTvBs57F0uvqxPeZFlIQQOCgLJa5LQadT01GAZ
-         I7Nf/wsGY2tQWr515zVi6wd2yLpGX4NCnvI+M=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=U3JKGYdmDlTw2F6x4avaOz6AUUg72m8v/vKLi53Y55o=;
-        b=FFXdcwEK9OCA8BFeZhQ47Jnwroc3BDeyUxpx2c1HYxCTWg8VgtNpSX8CNxGEc16zIK
-         +BIO6kYVYnM76r4+Qrtgqa5/u/hXQXacexzgDv77CpMCFON5DXVHkeevHL24G90HNS8M
-         gr2D9jI/6VkKz1CdQ1YdUnXnWlaXVLCzWBcCCvXon9gFmkXRP8EOyC/BgnB6GE7RpZM7
-         VLBQS9sikaBy6dHoIqilQUKMWam77GeKUp3qhzWK6OHkLz7T7xcHIFjtDnqvTKxT2c3f
-         lPeyJjdjF6fMehKt3Bz0qALbwSu6alWPzefz+9aRAEDMM/8W4c5fWR825euUNTVueQpy
-         W7UQ==
-X-Gm-Message-State: AJIora/+jaXvnrUQYJl3JKFmq2ZoPRbTiX2VaQQjanbWYlMFUxJjX38s
-        ORpXzq3TGby5fReWEFa2oGvXRA==
-X-Google-Smtp-Source: AGRyM1tiRrBBCbPwtYpv2ZRItmEb/a9UGRnjSmhR0oelcDd+j7k6iVl1VwFTfEx6eRJBxnEqUrVWnA==
-X-Received: by 2002:a92:da4c:0:b0:2d5:4942:151c with SMTP id p12-20020a92da4c000000b002d54942151cmr1462803ilq.54.1655168573945;
-        Mon, 13 Jun 2022 18:02:53 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id v19-20020a02cbb3000000b0032e3b0933c6sm4176608jap.162.2022.06.13.18.02.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 18:02:53 -0700 (PDT)
-Subject: Re: [PATCH 0/2] livepatch: Move tests from lib/livepatch to
- selftests/livepatch
-To:     Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        shuah@kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220603143242.870-1-mpdesouza@suse.com>
- <c5dc436e-2e3f-db2c-5cd5-215a9af19152@linuxfoundation.org>
- <5966397b-5577-8075-ffdd-f32e5e4ca75a@redhat.com> <YqNZwBWJmi5E/Nvo@alley>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <a45df8ff-ce6b-e7c8-323d-6c37ad38f5ae@linuxfoundation.org>
-Date:   Mon, 13 Jun 2022 19:02:52 -0600
+        Tue, 14 Jun 2022 08:28:56 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C267E23165;
+        Tue, 14 Jun 2022 05:28:53 -0700 (PDT)
+Received: from [192.168.1.133] (unknown [112.20.110.105])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxX07zfqhiLj5BAA--.3602S3;
+        Tue, 14 Jun 2022 20:28:39 +0800 (CST)
+Subject: Re: [PATCH] doc: module: update file references
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, Alex Shi <alexs@kernel.org>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthias Maennich <maennich@google.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220613081741.1699713-1-masahiroy@kernel.org>
+From:   Yanteng Si <siyanteng@loongson.cn>
+Message-ID: <027dcfc9-be47-5fb5-7ea8-26eb19122095@loongson.cn>
+Date:   Tue, 14 Jun 2022 20:28:35 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <YqNZwBWJmi5E/Nvo@alley>
+In-Reply-To: <20220613081741.1699713-1-masahiroy@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9DxX07zfqhiLj5BAA--.3602S3
+X-Coremail-Antispam: 1UD129KBjvJXoW3Gw18urW8WF45Gr4fGFy3Jwb_yoWxWw1fpa
+        s2kryfXan7JryUCw18Wr12gF17GFyxWF4DW3Z5Jwn3ZFn8AFy0yF47tr9Y9a4jgry0yFW8
+        XF4xtFyjy34jvrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9mb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l
+        c7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I
+        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
+        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
+        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
+        rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr
+        0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07bOXd8UUUUU=
+X-CM-SenderInfo: pvl1t0pwhqwqxorr0wxvrqhubq/
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 6/10/22 8:48 AM, Petr Mladek wrote:
-> On Fri 2022-06-10 09:06:16, Joe Lawrence wrote:
->> On 6/9/22 4:16 PM, Shuah Khan wrote:
->>> On 6/3/22 8:32 AM, Marcos Paulo de Souza wrote:
->>>> Hi there,
->>>>
->>>> The first patch moves the current livepatch tests to selftests,
->>>> allowing it
->>>> be better suited to contain more complex tests, like using userspace C
->>>> code
->>>> to use the livepatched kernel code. As a bonus it allows to use
->>>> "gen_tar" to export the livepatch selftests, rebuild the modules by
->>>> running make in selftests/livepatch directory and simplifies the process
->>>> of creating and debugging new selftests.
->>>>
->>>
->>> In general selftests don't include modules. We keep test modules under lib.
->>> One of the reasons is that modules have dependencies on the kernel and
->>> should
->>> be built when kernel is built.
->>>
->>> I don't fully buy the argument that moving modules under selftest would
->>> simplify
->>> the process.
->>>
->>
->> Hi Shuah,
->>
->> I see that there is tools/testing/selftests/bpf/bpf_testmod/ which
->> claims to be a "conceptually out-of-tree module".  Would similarly
->> moving livepatch test modules under tools/ give us flexibility to write
->> them build for multiple kernel versions?  Then one could theoretically
->> build and run the latest, greatest selftests against older kernels
->> (assuming the associate script/module/kernel supports the idea)?
+On 2022/6/13 下午4:17, Masahiro Yamada wrote:
+> Adjust documents to the file moves made by commit cfc1d277891e ("module:
+> Move all into module/").
 > 
-> +1
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Yanteng Si <siyanteng@loongson.cn>
+> ---
 > 
-> Another motivation is that the new selftest also needs
-> an executable binary. It would be nice to handle both modules
-> and binaries the same way.
+> I did not touch
 > 
-> Honestly, lib/* is a mess. It mixes real functionality and test
-> modules. The relation between the modules and tools/testing/*
-> is far from clear. IMHO, it would be more clean to have the related
-> stuff together.
+>    Documentation/translations/zh_CN/core-api/kernel-api.rst
+diff --git a/Documentation/translations/zh_CN/core-api/kernel-api.rst 
+b/Documentation/translations/zh_CN/core-api/kernel-api.rst
+index e45fe80d1cd8..962d31d019d7 100644
+--- a/Documentation/translations/zh_CN/core-api/kernel-api.rst
++++ b/Documentation/translations/zh_CN/core-api/kernel-api.rst
+@@ -224,7 +224,7 @@ kernel/kmod.c
+  模块接口支持
+  ------------
+
+-更多信息请参考文件kernel/module.c。
++更多信息请参阅kernel/module/目录下的文件。
+
+  硬件接口
+  ========
+
 > 
-> Of course, we could not move all test modules from lib/* easily.
-> Some of them might be used on its own or even as built-in
-> tests. But preventing the move looks like a step in
-> the wrong direction to me.
+> because I cannot modify it.Let me help you, it's my pleasure.  :)
+
+Thanks,
+Yanteng
+> 
+>   Documentation/core-api/kernel-api.rst                  |  2 +-
+>   Documentation/core-api/symbol-namespaces.rst           |  4 ++--
+>   Documentation/livepatch/module-elf-format.rst          | 10 +++++-----
+>   .../translations/it_IT/core-api/symbol-namespaces.rst  |  6 +++---
+>   .../translations/zh_CN/core-api/symbol-namespaces.rst  |  2 +-
+>   5 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/core-api/kernel-api.rst b/Documentation/core-api/kernel-api.rst
+> index d6b3f94b9f1f..0793c400d4b0 100644
+> --- a/Documentation/core-api/kernel-api.rst
+> +++ b/Documentation/core-api/kernel-api.rst
+> @@ -223,7 +223,7 @@ Module Loading
+>   Inter Module support
+>   --------------------
+>   
+> -Refer to the file kernel/module.c for more information.
+> +Refer to the files in kernel/module/ for more information.
+>   
+>   Hardware Interfaces
+>   ===================
+> diff --git a/Documentation/core-api/symbol-namespaces.rst b/Documentation/core-api/symbol-namespaces.rst
+> index 5ad9e0abe42c..12e4aecdae94 100644
+> --- a/Documentation/core-api/symbol-namespaces.rst
+> +++ b/Documentation/core-api/symbol-namespaces.rst
+> @@ -51,8 +51,8 @@ namespace ``USB_STORAGE``, use::
+>   The corresponding ksymtab entry struct ``kernel_symbol`` will have the member
+>   ``namespace`` set accordingly. A symbol that is exported without a namespace will
+>   refer to ``NULL``. There is no default namespace if none is defined. ``modpost``
+> -and kernel/module.c make use the namespace at build time or module load time,
+> -respectively.
+> +and kernel/module/main.c make use the namespace at build time or module load
+> +time, respectively.
+>   
+>   2.2 Using the DEFAULT_SYMBOL_NAMESPACE define
+>   =============================================
+> diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentation/livepatch/module-elf-format.rst
+> index dbe9b400e39f..7347638895a0 100644
+> --- a/Documentation/livepatch/module-elf-format.rst
+> +++ b/Documentation/livepatch/module-elf-format.rst
+> @@ -210,11 +210,11 @@ module->symtab.
+>   =====================================
+>   Normally, a stripped down copy of a module's symbol table (containing only
+>   "core" symbols) is made available through module->symtab (See layout_symtab()
+> -in kernel/module.c). For livepatch modules, the symbol table copied into memory
+> -on module load must be exactly the same as the symbol table produced when the
+> -patch module was compiled. This is because the relocations in each livepatch
+> -relocation section refer to their respective symbols with their symbol indices,
+> -and the original symbol indices (and thus the symtab ordering) must be
+> +in kernel/module/kallsyms.c). For livepatch modules, the symbol table copied
+> +into memory on module load must be exactly the same as the symbol table produced
+> +when the patch module was compiled. This is because the relocations in each
+> +livepatch relocation section refer to their respective symbols with their symbol
+> +indices, and the original symbol indices (and thus the symtab ordering) must be
+>   preserved in order for apply_relocate_add() to find the right symbol.
+>   
+>   For example, take this particular rela from a livepatch module:::
+> diff --git a/Documentation/translations/it_IT/core-api/symbol-namespaces.rst b/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
+> index 42f5d04e38ec..0f6898860d6d 100644
+> --- a/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
+> +++ b/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
+> @@ -50,9 +50,9 @@ Di conseguenza, nella tabella dei simboli del kernel ci sarà una voce
+>   rappresentata dalla struttura ``kernel_symbol`` che avrà il campo
+>   ``namespace`` (spazio dei nomi) impostato. Un simbolo esportato senza uno spazio
+>   dei nomi avrà questo campo impostato a ``NULL``. Non esiste uno spazio dei nomi
+> -di base. Il programma ``modpost`` e il codice in kernel/module.c usano lo spazio
+> -dei nomi, rispettivamente, durante la compilazione e durante il caricamento
+> -di un modulo.
+> +di base. Il programma ``modpost`` e il codice in kernel/module/main.c usano lo
+> +spazio dei nomi, rispettivamente, durante la compilazione e durante il
+> +caricamento di un modulo.
+>   
+>   2.2 Usare il simbolo di preprocessore DEFAULT_SYMBOL_NAMESPACE
+>   ==============================================================
+> diff --git a/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst b/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
+> index 6abf7ed534ca..bb16f0611046 100644
+> --- a/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
+> +++ b/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
+> @@ -52,7 +52,7 @@
+>   
+>   相应的 ksymtab 条目结构体 ``kernel_symbol`` 将有相应的成员 ``命名空间`` 集。
+>   导出时未指明命名空间的符号将指向 ``NULL`` 。如果没有定义命名空间，则默认没有。
+> -``modpost`` 和kernel/module.c分别在构建时或模块加载时使用名称空间。
+> +``modpost`` 和kernel/module/main.c分别在构建时或模块加载时使用名称空间。
+>   
+>   2.2 使用DEFAULT_SYMBOL_NAMESPACE定义
+>   ====================================
 > 
 
-As such bpf_testmod is the only one that is currently under kselftests.
-I don't have an objection to it from technical stand point. My concern
-is more from the standpoint of people writing modules that can't be built
-out of tree. We would add another requirement to kselftest that the out
-of tree modules should build successfully.
-
-As long as that concern is addressed and also test gracefully fails if the
-module fails to build, we can move on that direction. I would hesitate to
-extend this to modules dependent on hardware and architecture features
-such as cpufreq test drivers for example.
-
-thanks,
--- Shuah
