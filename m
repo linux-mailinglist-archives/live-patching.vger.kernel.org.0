@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FA8754FCA0
-	for <lists+live-patching@lfdr.de>; Fri, 17 Jun 2022 20:02:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27FBA54FCA6
+	for <lists+live-patching@lfdr.de>; Fri, 17 Jun 2022 20:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383221AbiFQSCc (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 17 Jun 2022 14:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37324 "EHLO
+        id S1383459AbiFQSCt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 17 Jun 2022 14:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbiFQSCc (ORCPT
+        with ESMTP id S1383462AbiFQSCo (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 17 Jun 2022 14:02:32 -0400
+        Fri, 17 Jun 2022 14:02:44 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4790650E34;
-        Fri, 17 Jun 2022 11:02:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43D4D13F;
+        Fri, 17 Jun 2022 11:02:32 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 4250520C3485;
-        Fri, 17 Jun 2022 11:02:30 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4250520C3485
+        by linux.microsoft.com (Postfix) with ESMTPSA id 3E52F20C348B;
+        Fri, 17 Jun 2022 11:02:31 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3E52F20C348B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1655488951;
-        bh=B6JQW5syKKdwir3NNZtlekEMoQqCcowRgtQfTpInk0w=;
+        s=default; t=1655488952;
+        bh=4OYwsLak9eV14Lqr9wB+riHSEW5S0byajhIbP13YtuM=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=ksoyPAkw3LGpTdDkmOps8iqAPDDD+Eot4jXL22DnxuAUYWXgCqG6eRk4m/qHpggXS
-         Bma/h2bi3mf14gy7o/U60H50AnX54cxB/O2OwkJWnHMDzsOEnF9aHk93YusbqQtswN
-         2dvFsQX9dA1Zgc4OrJoIXXfhzLUHGvAnpzn1NjYI=
+        b=AyvnqnH/jC9zfFIZFQQ+t8pH9dZHICIirEq7nxYP34Rmi+nCJ12zIdJ0w63twacyR
+         qhlxKJRo7bx0nDxcvq0tPSqaV6vHglnh5O/G83URj4RpIijXQlBbzbaXljD0bHXa39
+         RlTK7jp1XSn4Ea5y6ILSYfpyMiNSHOwHsmGTsmvI=
 From:   madvenka@linux.microsoft.com
 To:     broonie@kernel.org, mark.rutland@arm.com, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     broonie@kernel.org, mark.rutland@arm.com, jpoimboe@redhat.com,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v15 1/6] arm64: Split unwind_init()
-Date:   Fri, 17 Jun 2022 13:02:14 -0500
-Message-Id: <20220617180219.20352-2-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v15 2/6] arm64: Copy the task argument to unwind_state
+Date:   Fri, 17 Jun 2022 13:02:15 -0500
+Message-Id: <20220617180219.20352-3-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220617180219.20352-1-madvenka@linux.microsoft.com>
 References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
@@ -44,9 +44,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_FILL_THIS_FORM_SHORT,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -55,124 +54,121 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-unwind_init() is currently a single function that initializes all of the
-unwind state. Split it into the following functions and call them
-appropriately:
-
-	- unwind_init_from_regs() - initialize from regs passed by caller.
-
-	- unwind_init_from_caller() - initialize for the current task
-	  from the caller of arch_stack_walk().
-
-	- unwind_init_from_task() - initialize from the saved state of a
-	  task other than the current task. In this case, the other
-	  task must not be running.
-
-This is done for two reasons:
-
-	- the different ways of initializing are clear
-
-	- specialized code can be added to each initializer in the future.
+Copy the task argument passed to arch_stack_walk() to unwind_state so that
+it can be passed to unwind functions via unwind_state rather than as a
+separate argument. The task is a fundamental part of the unwind state.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 Reviewed-by: Mark Brown <broonie@kernel.org>
 ---
- arch/arm64/kernel/stacktrace.c | 66 ++++++++++++++++++++++++++++------
- 1 file changed, 55 insertions(+), 11 deletions(-)
+ arch/arm64/kernel/stacktrace.c | 33 ++++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
 
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 0467cb79f080..e44f93ff25f0 100644
+index e44f93ff25f0..8e43444d50e2 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -50,11 +50,8 @@ struct unwind_state {
+@@ -38,6 +38,8 @@
+  * @kr_cur:      When KRETPROBES is selected, holds the kretprobe instance
+  *               associated with the most recently encountered replacement lr
+  *               value.
++ *
++ * @task:        The task being unwound.
+  */
+ struct unwind_state {
+ 	unsigned long fp;
+@@ -48,10 +50,13 @@ struct unwind_state {
+ #ifdef CONFIG_KRETPROBES
+ 	struct llist_node *kr_cur;
  #endif
++	struct task_struct *task;
  };
  
--static notrace void unwind_init(struct unwind_state *state, unsigned long fp,
--				unsigned long pc)
-+static void unwind_init_common(struct unwind_state *state)
+-static void unwind_init_common(struct unwind_state *state)
++static void unwind_init_common(struct unwind_state *state,
++			       struct task_struct *task)
  {
--	state->fp = fp;
--	state->pc = pc;
++	state->task = task;
  #ifdef CONFIG_KRETPROBES
  	state->kr_cur = NULL;
  #endif
-@@ -72,7 +69,57 @@ static notrace void unwind_init(struct unwind_state *state, unsigned long fp,
- 	state->prev_fp = 0;
- 	state->prev_type = STACK_TYPE_UNKNOWN;
- }
--NOKPROBE_SYMBOL(unwind_init);
-+
-+/*
-+ * Start an unwind from a pt_regs.
-+ *
-+ * The unwind will begin at the PC within the regs.
-+ *
-+ * The regs must be on a stack currently owned by the calling task.
-+ */
-+static inline void unwind_init_from_regs(struct unwind_state *state,
-+					 struct pt_regs *regs)
-+{
-+	unwind_init_common(state);
-+
-+	state->fp = regs->regs[29];
-+	state->pc = regs->pc;
-+}
-+
-+/*
-+ * Start an unwind from a caller.
-+ *
-+ * The unwind will begin at the caller of whichever function this is inlined
-+ * into.
-+ *
-+ * The function which invokes this must be noinline.
-+ */
-+static __always_inline void unwind_init_from_caller(struct unwind_state *state)
-+{
-+	unwind_init_common(state);
-+
-+	state->fp = (unsigned long)__builtin_frame_address(1);
-+	state->pc = (unsigned long)__builtin_return_address(0);
-+}
-+
-+/*
-+ * Start an unwind from a blocked task.
-+ *
-+ * The unwind will begin at the blocked tasks saved PC (i.e. the caller of
-+ * cpu_switch_to()).
-+ *
-+ * The caller should ensure the task is blocked in cpu_switch_to() for the
-+ * duration of the unwind, or the unwind will be bogus. It is never valid to
-+ * call this for the current task.
-+ */
-+static inline void unwind_init_from_task(struct unwind_state *state,
-+					 struct task_struct *task)
-+{
-+	unwind_init_common(state);
-+
-+	state->fp = thread_saved_fp(task);
-+	state->pc = thread_saved_pc(task);
-+}
+@@ -80,7 +85,7 @@ static void unwind_init_common(struct unwind_state *state)
+ static inline void unwind_init_from_regs(struct unwind_state *state,
+ 					 struct pt_regs *regs)
+ {
+-	unwind_init_common(state);
++	unwind_init_common(state, current);
  
- /*
-  * Unwind from one frame record (A) to the next frame record (B).
-@@ -213,14 +260,11 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 	state->fp = regs->regs[29];
+ 	state->pc = regs->pc;
+@@ -96,7 +101,7 @@ static inline void unwind_init_from_regs(struct unwind_state *state,
+  */
+ static __always_inline void unwind_init_from_caller(struct unwind_state *state)
+ {
+-	unwind_init_common(state);
++	unwind_init_common(state, current);
+ 
+ 	state->fp = (unsigned long)__builtin_frame_address(1);
+ 	state->pc = (unsigned long)__builtin_return_address(0);
+@@ -115,7 +120,7 @@ static __always_inline void unwind_init_from_caller(struct unwind_state *state)
+ static inline void unwind_init_from_task(struct unwind_state *state,
+ 					 struct task_struct *task)
+ {
+-	unwind_init_common(state);
++	unwind_init_common(state, task);
+ 
+ 	state->fp = thread_saved_fp(task);
+ 	state->pc = thread_saved_pc(task);
+@@ -128,9 +133,9 @@ static inline void unwind_init_from_task(struct unwind_state *state,
+  * records (e.g. a cycle), determined based on the location and fp value of A
+  * and the location (but not the fp value) of B.
+  */
+-static int notrace unwind_next(struct task_struct *tsk,
+-			       struct unwind_state *state)
++static int notrace unwind_next(struct unwind_state *state)
+ {
++	struct task_struct *tsk = state->task;
+ 	unsigned long fp = state->fp;
+ 	struct stack_info info;
+ 
+@@ -204,8 +209,7 @@ static int notrace unwind_next(struct task_struct *tsk,
+ }
+ NOKPROBE_SYMBOL(unwind_next);
+ 
+-static void notrace unwind(struct task_struct *tsk,
+-			   struct unwind_state *state,
++static void notrace unwind(struct unwind_state *state,
+ 			   stack_trace_consume_fn consume_entry, void *cookie)
+ {
+ 	while (1) {
+@@ -213,7 +217,7 @@ static void notrace unwind(struct task_struct *tsk,
+ 
+ 		if (!consume_entry(cookie, state->pc))
+ 			break;
+-		ret = unwind_next(tsk, state);
++		ret = unwind_next(state);
+ 		if (ret < 0)
+ 			break;
+ 	}
+@@ -259,12 +263,15 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ {
  	struct unwind_state state;
  
- 	if (regs)
--		unwind_init(&state, regs->regs[29], regs->pc);
-+		unwind_init_from_regs(&state, regs);
- 	else if (task == current)
--		unwind_init(&state,
--				(unsigned long)__builtin_frame_address(1),
--				(unsigned long)__builtin_return_address(0));
-+		unwind_init_from_caller(&state);
- 	else
--		unwind_init(&state, thread_saved_fp(task),
--				thread_saved_pc(task));
-+		unwind_init_from_task(&state, task);
+-	if (regs)
++	if (regs) {
++		if (task != current)
++			return;
+ 		unwind_init_from_regs(&state, regs);
+-	else if (task == current)
++	} else if (task == current) {
+ 		unwind_init_from_caller(&state);
+-	else
++	} else {
+ 		unwind_init_from_task(&state, task);
++	}
  
- 	unwind(task, &state, consume_entry, cookie);
+-	unwind(task, &state, consume_entry, cookie);
++	unwind(&state, consume_entry, cookie);
  }
 -- 
 2.25.1
