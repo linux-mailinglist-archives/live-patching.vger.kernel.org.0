@@ -2,381 +2,153 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD67354FF43
-	for <lists+live-patching@lfdr.de>; Fri, 17 Jun 2022 23:17:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 107C9552AC7
+	for <lists+live-patching@lfdr.de>; Tue, 21 Jun 2022 08:07:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235423AbiFQVRb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 17 Jun 2022 17:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
+        id S1345543AbiFUGHH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 21 Jun 2022 02:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235623AbiFQVRb (ORCPT
+        with ESMTP id S229480AbiFUGHF (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 17 Jun 2022 17:17:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFD1E22BDC
-        for <live-patching@vger.kernel.org>; Fri, 17 Jun 2022 14:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655500648;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pRGM3eCM2TVyTh8eKkLCwBJv4tVgFarHtFdgBbpbMvw=;
-        b=H0VvG5UM4z4XhkYMvG1NcoHHfC+IwuyBjze9wVgQsY6Oehw6ByLXisoqHsth/U+xLtxSAa
-        aF53PPIkXFL/yj1s8nKrRK4Jk8CdWL4uEO18pT1YHEyuJvip5lXaw1KDnr2BQNWRAXR9FH
-        v5f+wXzFlvIuKtRnBWG1eaXQZ7tlgYc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-119-AKmPiZPkNTePDOE-39LfxA-1; Fri, 17 Jun 2022 17:17:25 -0400
-X-MC-Unique: AKmPiZPkNTePDOE-39LfxA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D623A802C17;
-        Fri, 17 Jun 2022 21:17:24 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.8.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 70EEF4010E4D;
-        Fri, 17 Jun 2022 21:17:24 +0000 (UTC)
-Date:   Fri, 17 Jun 2022 17:17:23 -0400
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        shuah@kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
-        pmladek@suse.com
-Subject: Re: [PATCH 2/2] selftests: livepatch: Test livepatching a heavily
- called syscall
-Message-ID: <YqzvY37fI0GzHoIH@redhat.com>
-References: <20220603143242.870-1-mpdesouza@suse.com>
- <20220603143242.870-3-mpdesouza@suse.com>
+        Tue, 21 Jun 2022 02:07:05 -0400
+X-Greylist: delayed 731 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Jun 2022 23:06:59 PDT
+Received: from bufferz9.csloxinfo.com (bufferz.csloxinfo.com [203.146.237.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63BAB2018C;
+        Mon, 20 Jun 2022 23:06:59 -0700 (PDT)
+Received: from mailx1-13.cslox.com (unknown [10.20.140.13])
+        by bufferz9.csloxinfo.com (Postfix) with ESMTP id 5A85B2363E38;
+        Tue, 21 Jun 2022 12:54:47 +0700 (ICT)
+IronPort-SDR: vhR7/MXbkCdA16SZwtt4atABoFu5lIOTuBscHM41VBpXJdDfCd6OnKBHDoeQCJ2VSWT5w+HgiO
+ dCu80+a3enU93pU9yXa/zJLTcC+UneKPw=
+IronPort-Data: =?us-ascii?q?A9a23=3AW3y846pYj3y+B1wm/t1K1hVl9iZeBmLwYBIvg?=
+ =?us-ascii?q?KrLsJaIsI4StFCztgarIBnSa/bZYjTyft5yboi2/BsBvpfUmt4wQVA5+SlhF?=
+ =?us-ascii?q?SIa+ePIVI+TRqvS04F+DeWdFhM+s5hAAjX4wUldokb0/n9B65Dt8itx07+mX?=
+ =?us-ascii?q?L35BLKWMyx9X1Y9Gj0gghI6wb9/iYlt2IDrDwSIsNL0gsveJF78hm4ubDtKu?=
+ =?us-ascii?q?/7dpUM9pun2tRMZokc6NKJCs1LpnnUICI4SePOqJHziT4gIRuO3Hr6RzLyw8?=
+ =?us-ascii?q?m7D0Q0qD9epzuTyfkEQG+eAJwmFiiMMCu6phR0b/n4+1aMyNfw9b0ZLimzUz?=
+ =?us-ascii?q?4ovkYsd6cK9EF57MLfNleIRVwhjPxt/ZaAWqqXaJXWfsNCIyxyUenTh9PxiE?=
+ =?us-ascii?q?UUqMNBK4e1wG2xPqaQVJT1UNUKDiuu6zaiBR/Fol9gkKMW3booTtms5lmPWE?=
+ =?us-ascii?q?PUvQJXKQqGM7thdhW9iisdLFPfYRswYdTs2MkmbOkcRYQ9MBcJshvqsi1n+b?=
+ =?us-ascii?q?yZc+QCcqqcA6mTOyBB8jer2O93Pd93WHchYkxrKpm/C+GilUBgWOMbFkmiA+?=
+ =?us-ascii?q?3OowODVlCX3VZIZEKCj9+BnxlaUwzVLWhERUFK6p9i/i1K/AogBcxZJonJz8?=
+ =?us-ascii?q?6Vipla2StTdXgGjpCLWtBArXdcNQfYx7xuAy/aJ7guUboTeouWtU/R78p5sL?=
+ =?us-ascii?q?dAW/gXRxYmxW2Y26OT9pU+1r994kxvjYUD5EkdfPUfofSNdizXSiNlbYiDnF?=
+ =?us-ascii?q?r6PI4bt5jHBIgwc9hjRxMQIaxr/uuZQv0mz1QivbztBPfElRCZtjuncdjrNA?=
+ =?us-ascii?q?g+U+OeYi4KUBVjztZ6sLa6cR1iF+nceks6S4fAFCYyWlTKABu4KGdlF5d7fb?=
+ =?us-ascii?q?3uG3AIpRsV/sW3yk5KgVdg4DDVWLUxiNdsCZRfzYUTT4FkAopRUORNGaIcsO?=
+ =?us-ascii?q?N7rV5p3kfmI+dPNE6q8gsB1SoN6dBWA8Cx0TVCdwGHo1VUyjuc1NP+zatqlB?=
+ =?us-ascii?q?GoyF6l4zTzzWvkCl7Umrgg/w23UbY71xg6il7GZYRa9SLELN3OQYOc/4LjCp?=
+ =?us-ascii?q?gG929ZeM8+HzR9FWevySjfZ7MgfIDgiLH41ArjopdEReuPrCglrHmczAv/Vz?=
+ =?us-ascii?q?LUJZYJ42ahY/s/T5nanRkNZxVzkmVXZJg7MYH0LQLzuQb5hon8hey8hJ1Cl3?=
+ =?us-ascii?q?z4ke4nHxKMecYYnOLgm88R9wvNuCfoIYcONBrJIUDuv0zAca4Tt6ZRpdTy1i?=
+ =?us-ascii?q?g+UeSmoej4ye9hnXQOh0tvleBb/sTMCCyOfq8Qzufuj2xndTJ5FQB5tZO7Sa?=
+ =?us-ascii?q?fSy3xauvGIQnO9pRGPWLdRJPkbh6o5nL2r2lPBfC8UNNxiG3jKG3AaXBxgwu?=
+ =?us-ascii?q?+bAuck2/cPPiKTCqJ2me8N0BE1dHHLz87m5PC3e83Cyh4RHVY6gZz/YEmPp+?=
+ =?us-ascii?q?aOvY81LwPS6NPAGkFtMrox9DfBtycoW7Nvmvbtd0hhpWnPMdViwFqlnJ1GY0?=
+ =?us-ascii?q?tNCuaxKwPlCtGOeREuU+91bO67PN8LjE1k5OgU5KOCdvdkWkyPb6PMuCFv66?=
+ =?us-ascii?q?SVt+7zBV0hOVzGUjDFGLb9xOas7weoroskQrQqylnICN9+cjykS7WOANH0PT?=
+ =?us-ascii?q?qg18IoTBoTrhxgD1FFDe9rbECCeyJCJZdJkLEkuLTKSibbDjK8azU3HG1IyE?=
+ =?us-ascii?q?3bK9fRdnpULuwpHzUQCKk6HncDJwPM6tDVW/zo2RQl90BRO2Ot/N21qPEQzL?=
+ =?us-ascii?q?qKLlx9jgM9YUmynEhldBRqf0lLwwlAOkSvSSEzAfmDEMGQlI+eT9UsI6WNTf?=
+ =?us-ascii?q?iRA1K+ZwW3iVHDhe8SZ9jMoVFV+g+LiRNd280vJn8XPN9ndR8I3bTP5i7e0Z?=
+ =?us-ascii?q?HQBoAr9AMwxmFbvu+hj9+F1L6b8MEY4rrB9B5Gd/aoRQRuDIWdIWrdq+6ZhN?=
+ =?us-ascii?q?X7Rciq73TWVA16wc89QLOCM+kj+Fs8GDtxGUx65zimmsDESCKoIKvlymJYB6?=
+ =?us-ascii?q?cQPfK/DO28PvLbZpDcBmJTd6CX4mEc1QtxhnIA3J+v5aTOLHXaZrWVVkmDXp?=
+ =?us-ascii?q?Y9PPW/QSccFbQLm1cir8ewGDZtFtuxwGWkq0rayo3iPNQph8jqKvQrMfaaPl?=
+ =?us-ascii?q?apkxJgEt5XtG6pZDl+cN9L6W/6B9BG+9dJDcbvnNM7AuQISrlT7IwV+I7oYX?=
+ =?us-ascii?q?9ln07+N2Pby1UzKvbtwSGXYh5mpCahA48m9Ru1KKoT8K3wytSqEVsjE/RoK/?=
+ =?us-ascii?q?W28LZtPmd9c78y6XRG5bsb2ftkQM/9C3n1OYi5SOwgcAqL6cuHno2W2ppyx5?=
+ =?us-ascii?q?rI1ueDcBIn4syW0MScCKnFOYsKWN+M9gN72jvgwkWiGLEVs6ylaPqJF?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3At2FZhKOh5KyDC8BcT9X155DYdb4zR+YMi2?=
+ =?us-ascii?q?TDiHoddfUFSKalfp6V98jztCWE8wr5PUtNpTnuAtjkfZqxz+8Q3WBzB8bbYO?=
+ =?us-ascii?q?CFghrPEGgK1+KLrFOQeFydygNE78ddmsBFeaDN5DNB/L/HCWeDYrEdKe28gd?=
+ =?us-ascii?q?yVrNab43NpdwZmTKcI1XYCNu/XKDwAeCB2Qb4CULaM7MtOoDStPVwRc8SAH3?=
+ =?us-ascii?q?EAG9POotXa/aiWEyLvU3QciTWmvHeN0vrXAhKY1hARX3dk2rE561XIlAT/++?=
+ =?us-ascii?q?GKr+y74gW07R6e071m3P/ajvdTDs2FjcYYbh/2jByzWYhnU7qe+BgoveCU7k?=
+ =?us-ascii?q?owmtWkmWZsAy1K0QKfQoiJm2qn5+Cg6kdn15ba8y7QvZI3m72yeNo4Y/Ax9r?=
+ =?us-ascii?q?6xPCGppXbIh+sMrp6j71jpyKa/Mimw7RgVx+K4Ii2CxXDE1UbLr4Yo/gxiuM?=
+ =?us-ascii?q?0lGclskbA=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0D//wBFXLFi/xGS/htaBhUBAQEBDS8?=
+ =?us-ascii?q?BAQEDAwEBAQIBAQEFAQEBAQEJAQkJgUgBgTkCAQEBAQEBSgEBBgEUgRo2KxI?=
+ =?us-ascii?q?YAQGNeIYBgzAVAo9wGYRwiDULAQEBAQEBAQEBDQ4wBAEBgU4BgyoCCFEBAQE?=
+ =?us-ascii?q?BAQYKhGYBJTgTAQIEAQEBEgEBBQMCAQcEgQkThXVAAQwBCAEBBwEFAT8BAwF?=
+ =?us-ascii?q?kARMBAQGEEAEIAUhWDRQwAlBHAQEFAYJCRQGCUgIBnXiHQodTgTMaAmWEWYM?=
+ =?us-ascii?q?FgiCBOwIBAQEBAQEBAYYYF0eIHhYGgT9OgUuBBYFvPoFTgnGEDYIuBJk3BBo?=
+ =?us-ascii?q?5AzQTNBKBIUUsAQgGBgcKBTIGAgwYFAQCExJTHQISDAocDlQZDA8DEgMRAQc?=
+ =?us-ascii?q?CCxIIFSwIAwIDCAMCAy4CAxcJBwoDHQgKHBIQFAIEEx4LCAMZHywJAgQOA0U?=
+ =?us-ascii?q?ICwoDEQQDExgLFggQBAYDCS8NKAsDFA0BBgMGAgUFAQMgAxQDBScHAyEHCyY?=
+ =?us-ascii?q?NDQQcBx0DAwUmAwICGwcCAgMCBhcGAgJuCiYNCAQIBBwdJBAFAgcxBQQvAh4?=
+ =?us-ascii?q?EBQYRCQIWAgYEBQIEBBYCAhIIAggnGwcWNhkBBV0GCwkhHAkgCwYFBhYDI3E?=
+ =?us-ascii?q?FSA8pNTY8LyEbCoEjLCcGISlZD54igUmRLyGBOY4HYIIUnAYjBwECg06JfZV?=
+ =?us-ascii?q?8GjEYg0sBEYxDhhsOCBYDkWGWbqF7hhlhOSWBWXAVgVkKJYEcUBmPAI4MNG8?=
+ =?us-ascii?q?CBgsBAQMJiFmCJTCBGxaCIgEB?=
+Spam_Positive: LL
+X-IronPort-AV: E=Sophos;i="5.92,209,1650906000"; 
+   d="scan'208";a="334246549"
+Received: from unknown (HELO mail.grandexclusive.com) ([27.254.146.17])
+  by mail-1.csloxinfo.com with ESMTP; 21 Jun 2022 12:54:45 +0700
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mail.grandexclusive.com (Postfix) with ESMTP id 816BD2849B0;
+        Sun, 19 Jun 2022 17:48:22 +0700 (+07)
+Received: from mail.grandexclusive.com ([127.0.0.1])
+        by localhost (mail.grandexclusive.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id u8zaoDQQjiDI; Sun, 19 Jun 2022 17:48:21 +0700 (+07)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mail.grandexclusive.com (Postfix) with ESMTP id 5DB562849AB;
+        Sun, 19 Jun 2022 17:48:21 +0700 (+07)
+X-Virus-Scanned: amavisd-new at grandexclusive.com
+Received: from mail.grandexclusive.com ([127.0.0.1])
+        by localhost (mail.grandexclusive.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id htBESyOZiQPS; Sun, 19 Jun 2022 17:48:21 +0700 (+07)
+Received: from [107.161.81.135] (unknown [107.161.81.135])
+        by mail.grandexclusive.com (Postfix) with ESMTPSA id BDA6F2849B4;
+        Sun, 19 Jun 2022 17:48:09 +0700 (+07)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603143242.870-3-mpdesouza@suse.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Re: Charity Giving.... ........   
+To:     Recipients <account@rich129.com>
+From:   "Ms G. Kailai" <account@rich129.com>
+Date:   Sun, 19 Jun 2022 18:47:57 +0800
+Reply-To: mail@gukaimail.com
+Message-Id: <20220619104809.BDA6F2849B4@mail.grandexclusive.com>
+X-Spam-Status: Yes, score=6.3 required=5.0 tests=BAYES_50,KHOP_HELO_FCRDNS,
+        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_PSBL,RCVD_IN_SBL,RCVD_IN_VALIDITY_RPBL,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Report: *  1.3 RCVD_IN_BL_SPAMCOP_NET RBL: Received via a relay in
+        *      bl.spamcop.net
+        *      [Blocked - see <https://www.spamcop.net/bl.shtml?27.254.146.17>]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.1 RCVD_IN_SBL RBL: Received via a relay in Spamhaus SBL
+        *      [203.146.237.187 listed in zen.spamhaus.org]
+        *  2.7 RCVD_IN_PSBL RBL: Received via a relay in PSBL
+        *      [203.146.237.187 listed in psbl.surriel.com]
+        *  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
+        *      https://senderscore.org/blocklistlookup/
+        *      [203.146.237.187 listed in bl.score.senderscore.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 SPF_NONE SPF: sender does not publish an SPF Record
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 KHOP_HELO_FCRDNS Relay HELO differs from its IP's reverse DNS
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 11:32:42AM -0300, Marcos Paulo de Souza wrote:
-> Syscalls are called a tricky way. Test that it is possible and works.
+Hello,
 
-"Tricky" may be accurate, but short on details.  If the full story is
-too much for the commit log, maybe just handwave about the
-__SYSCALL_DEFINEx preprocessor wrappers, etc.  :)
 
-> 
-> This new test creates one userspace process per online cpu calling getpid
-> continuously and tries to livepatch the getpid function.
-> 
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> ---
->  tools/testing/selftests/livepatch/Makefile    | 12 +++-
->  .../selftests/livepatch/test-syscall.sh       | 46 ++++++++++++++
->  .../test_binaries/test_klp-call_getpid.c      | 48 +++++++++++++++
->  .../selftests/livepatch/test_modules/Makefile |  3 +-
->  .../livepatch/test_modules/test_klp_syscall.c | 60 +++++++++++++++++++
->  5 files changed, 165 insertions(+), 4 deletions(-)
->  create mode 100755 tools/testing/selftests/livepatch/test-syscall.sh
->  create mode 100644 tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c
->  create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> 
-> diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
-> index 5ef492b87bb1..35014197184e 100644
-> --- a/tools/testing/selftests/livepatch/Makefile
-> +++ b/tools/testing/selftests/livepatch/Makefile
-> @@ -1,10 +1,14 @@
->  # SPDX-License-Identifier: GPL-2.0
-> +include ../../../build/Build.include
-> +include ../../../scripts/Makefile.arch
-> +include ../../../scripts/Makefile.include
->  
->  TEST_FILES := settings \
->  		test_modules
->  
->  # We need the test_modules dir in order to make gen_tar and install to work
-> -TEST_GEN_PROGS_EXTENDED := test_modules/test_klp_atomic_replace.ko \
-> +TEST_GEN_PROGS_EXTENDED := test_binaries/test_klp-call_getpid \
-> +			test_modules/test_klp_atomic_replace.ko \
->  			test_modules/test_klp_callbacks_busy.ko \
->  			test_modules/test_klp_callbacks_demo.ko \
->  			test_modules/test_klp_callbacks_demo2.ko \
-> @@ -13,7 +17,8 @@ TEST_GEN_PROGS_EXTENDED := test_modules/test_klp_atomic_replace.ko \
->  			test_modules/test_klp_state.ko \
->  			test_modules/test_klp_state2.ko \
->  			test_modules/test_klp_state3.ko \
-> -			test_modules/test_klp_shadow_vars.ko
-> +			test_modules/test_klp_shadow_vars.ko \
-> +			test_modules/test_klp_syscall.ko
->  
->  TEST_PROGS_EXTENDED := functions.sh
->  TEST_PROGS := \
-> @@ -21,7 +26,8 @@ TEST_PROGS := \
->  	test-callbacks.sh \
->  	test-shadow-vars.sh \
->  	test-state.sh \
-> -	test-ftrace.sh
-> +	test-ftrace.sh \
-> +	test-syscall.sh
->  
->  # override lib.mk's default rules
->  OVERRIDE_TARGETS := 1
-> diff --git a/tools/testing/selftests/livepatch/test-syscall.sh b/tools/testing/selftests/livepatch/test-syscall.sh
-> new file mode 100755
-> index 000000000000..f1d49e6ce2ee
-> --- /dev/null
-> +++ b/tools/testing/selftests/livepatch/test-syscall.sh
-> @@ -0,0 +1,46 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +# Copyright (C) 2022 SUSE
-> +# Author: Marcos Paulo de Souza <mpdesouza@suse.com>
-> +
-> +. $(dirname $0)/functions.sh
-> +
-> +MOD_SYSCALL=test_klp_syscall
-> +
-> +setup_config
-> +
-> +# - Start _NRPROC processes calling getpid and load a livepatch to patch the
-> +#   getpid syscall
-> +
-> +start_test "patch getpid syscall while being heavily hammered"
-> +
-> +declare -a pids
-> +for i in $(seq 1 $(getconf _NPROCESSORS_ONLN)); do
-> +	./test_klp-call_getpid &
-> +	pids[${#pids[*]}]="$!"
-             ^^^^^^^^^^^
-This looks fancy, would it be more approachable to use something like
-this:
+I want to gve out to Charities in your City, can you refer any to me? Please reply for details.
 
-  for i in $(seq 0 $(( $(getconf _NPROCESSORS_ONLN) - 1 )) ); do
-  	./test_klp-call_getpid &
-  	pids[$i]="$!"
-  done
 
-or is there some strange race condition that requires using the method
-in the patch?
-
-> +done
-> +
-> +load_lp $MOD_SYSCALL
-> +# Success, getpid syscall was livepatched
-
-I don't think we need this comment as success is implied, otherwise
-load_lp would have pulled the die() ripcord.
-
-> +
-> +for pid in ${pids[@]}; do
-> +	kill $pid || true
-> +done
-> +
-> +disable_lp $MOD_SYSCALL
-> +unload_lp $MOD_SYSCALL
-> +
-> +check_result "% insmod test_modules/$MOD_SYSCALL.ko
-> +livepatch: enabling patch '$MOD_SYSCALL'
-> +livepatch: '$MOD_SYSCALL': initializing patching transition
-> +livepatch: '$MOD_SYSCALL': starting patching transition
-> +livepatch: '$MOD_SYSCALL': completing patching transition
-> +livepatch: '$MOD_SYSCALL': patching complete
-> +% echo 0 > /sys/kernel/livepatch/$MOD_SYSCALL/enabled
-> +livepatch: '$MOD_SYSCALL': initializing unpatching transition
-> +livepatch: '$MOD_SYSCALL': starting unpatching transition
-> +livepatch: '$MOD_SYSCALL': completing unpatching transition
-> +livepatch: '$MOD_SYSCALL': unpatching complete
-> +% rmmod $MOD_SYSCALL"
-> +
-> +exit 0
-> diff --git a/tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c b/tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c
-> new file mode 100644
-> index 000000000000..be9d3110687d
-> --- /dev/null
-> +++ b/tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c
-> @@ -0,0 +1,48 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2017 SUSE
-> + * Author: Libor Pechacek <lpechacek@suse.cz>
-> + */
-> +
-> +#include <stdio.h>
-> +#include <unistd.h>
-> +#include <sys/syscall.h>
-> +#include <sys/types.h>
-> +#include <signal.h>
-> +
-> +static int run = 1;
-> +static int sig_int;
-> +
-> +void hup_handler(int signum)
-> +{
-> +	run = 0;
-> +}
-> +
-> +void int_handler(int signum)
-> +{
-> +	run = 0;
-> +	sig_int = 1;
-> +}
-> +
-> +int main(int argc, char *argv[])
-> +{
-> +	pid_t orig_pid, pid;
-> +	long count = 0;
-> +
-> +	signal(SIGHUP, &hup_handler);
-> +	signal(SIGINT, &int_handler);
-> +
-> +	orig_pid = syscall(SYS_getpid);
-> +
-> +	while(run) {
-
-nit: could do s/run/stop/g and flip the assignment and check here so it
-matches the sig_int flag, ie, 0 by default and 1 on HUP / INT.
-
-> +		pid = syscall(SYS_getpid);
-> +		if (pid != orig_pid)
-> +			return 1;
-> +		count++;
-> +	}
-> +
-> +	if (sig_int)
-> +		printf("%d iterations done\n", count);
-
-nit: %ld for long
-
-> +
-> +	return 0;
-> +}
-> diff --git a/tools/testing/selftests/livepatch/test_modules/Makefile b/tools/testing/selftests/livepatch/test_modules/Makefile
-> index 375180bc1b16..288c65ccd080 100644
-> --- a/tools/testing/selftests/livepatch/test_modules/Makefile
-> +++ b/tools/testing/selftests/livepatch/test_modules/Makefile
-> @@ -15,7 +15,8 @@ obj-m += test_klp_atomic_replace.o \
->  	test_klp_state.o \
->  	test_klp_state2.o \
->  	test_klp_state3.o \
-> -	test_klp_shadow_vars.o
-> +	test_klp_shadow_vars.o \
-> +	test_klp_syscall.o
->  
->  %.ko:
->  	make -C $(KDIR) M=$(TESTMODS_DIR) $@
-> diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> new file mode 100644
-> index 000000000000..e170accfb10c
-> --- /dev/null
-> +++ b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> @@ -0,0 +1,60 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2017-2022 SUSE
-> + * Authors: Libor Pechacek <lpechacek@suse.cz>
-> + *          Nicolai Stange <nstange@suse.de>
-> + *          Marcos Paulo de Souza <mpdesouza@suse.com>
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/kernel.h>
-> +#include <linux/sched.h>
-> +#include <linux/livepatch.h>
-> +
-> +#if defined(__x86_64__)
-> +#define FN_PREFIX __x64_
-> +#elif defined(__s390x__)
-> +#define FN_PREFIX __s390x_
-> +#elif defined(__PPC64__)
-> +#define FN_PREFIX __ppc64_
-> +#else
-> +#error "livepatch not supported"
-
-What about 32-bit powerpc [1]?  Would this cause the selftests to fail
-on that hardware?
-
-[1] https://lore.kernel.org/live-patching/cover.1640017960.git.christophe.leroy@csgroup.eu/
-
-> +#endif
-> +
-> +asmlinkage long lp_sys_getpid(void)
-> +{
-> +	return task_tgid_vnr(current);
-> +}
-> +
-> +static struct klp_func vmlinux_funcs[] = {
-> +	{
-> +		.old_name = __stringify(FN_PREFIX) "sys_getpid",
-> +		.new_func = lp_sys_getpid,
-> +	}, {}
-> +};
-> +
-> +static struct klp_object objs[] = {
-> +	{
-> +		/* name being NULL means vmlinux */
-> +		.funcs = vmlinux_funcs,
-> +	}, {}
-> +};
-> +
-> +static struct klp_patch patch = {
-> +	.mod = THIS_MODULE,
-> +	.objs = objs,
-> +};
-> +
-> +static int livepatch_init(void)
-> +{
-> +	return klp_enable_patch(&patch);
-> +}
-> +
-> +static void livepatch_exit(void)
-> +{
-> +}
-> +
-> +module_init(livepatch_init);
-> +module_exit(livepatch_exit);
-> +MODULE_LICENSE("GPL");
-> +MODULE_INFO(livepatch, "Y");
-> -- 
-> 2.35.3
->
-
-Hi Marcos,
-
-A few comments and small nits found inline above.
-
-First, the test is pretty straightforward and a reasonable one to run,
-particularly putting the system under some load while patching.
-
-What do you think about the following tweaks:
-
-test_klp_syscall:
-- only calls the new syscall behavior for a list of known PIDs
-- PID list supplied via module parameter
-- when calling new syscall, PID is removed from list,
-  PIDs-left-to-patch counter (exposed to sysfs) decremented
-
-test-syscall.sh:
-- loads test_klp_syscall with test_klp-call_getpid PIDs that it spawned
-- before killing the test_klp-call_getpid PIDs, checks that
-  test_klp_syscall's sysfs PIDs-left-to-patch counter == 0
-
-I think this would ensure a few things:
-
-  1. Restrict the getpid syscall change to only callers expecting new
-     behavior
-  2. Force test_klp_syscall to patch each test_klp-call_getpid
-  3. Force all test_klp-call_getpid to hang around long enough for (2)
-
-Maybe this is too defensive, but I think could be handled without adding
-too much complexity.
-
-Regards,
-
---
-Joe 
-
+Ms. Gu Kailai
+19th June
+ZA1
