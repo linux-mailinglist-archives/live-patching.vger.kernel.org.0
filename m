@@ -2,56 +2,73 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 216A9557092
-	for <lists+live-patching@lfdr.de>; Thu, 23 Jun 2022 03:54:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE56F55751C
+	for <lists+live-patching@lfdr.de>; Thu, 23 Jun 2022 10:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378121AbiFWBxY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 22 Jun 2022 21:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38268 "EHLO
+        id S230050AbiFWINO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 23 Jun 2022 04:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377644AbiFWBwb (ORCPT
+        with ESMTP id S229909AbiFWINN (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 22 Jun 2022 21:52:31 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C720343AEA;
-        Wed, 22 Jun 2022 18:51:54 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LT39q6k6hzkWkG;
-        Thu, 23 Jun 2022 09:50:39 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 09:51:53 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 09:51:52 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kbuild@vger.kernel.org>, <live-patching@vger.kernel.org>
-CC:     <jpoimboe@kernel.org>, <peterz@infradead.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <masahiroy@kernel.org>, <michal.lkml@markovi.net>,
-        <ndesaulniers@google.com>, <mark.rutland@arm.com>,
-        <pasha.tatashin@soleen.com>, <broonie@kernel.org>,
-        <chenzhongjin@huawei.com>, <rmk+kernel@armlinux.org.uk>,
-        <madvenka@linux.microsoft.com>, <christophe.leroy@csgroup.eu>,
-        <daniel.thompson@linaro.org>
-Subject: [PATCH v6 33/33] objtool: revert c_file fallthrough detection for arm64
-Date:   Thu, 23 Jun 2022 09:49:17 +0800
-Message-ID: <20220623014917.199563-34-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220623014917.199563-1-chenzhongjin@huawei.com>
-References: <20220623014917.199563-1-chenzhongjin@huawei.com>
+        Thu, 23 Jun 2022 04:13:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE7D275FA;
+        Thu, 23 Jun 2022 01:13:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA6D561C17;
+        Thu, 23 Jun 2022 08:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55683C3411B;
+        Thu, 23 Jun 2022 08:13:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655971991;
+        bh=93/MTc5vO/nyRHGUbLO4hJYIXCO0SdlKGcjgsyj/v0U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TElwhEpmTWVUyAHmXlDKIQesLpLn2W/YBd3iSa3zRv0wTczabb6/S8uggaBI52ZF3
+         ep73EhM6rYn8N0UpLBPXRNSfL0cNJqo4OIMAL2JFW+5tL3Pg7POjkQgCksF6ikLLtT
+         FEbu5CueGPzYQjBNf78BGjLdCJGMZpEiGKRLwQVlmgsmiSQwmjFLNgyn4AA2tb9Qnd
+         j41cpCsvMJkeMGYmVaTD5P3I731ZqUVspZ7ppJeYhQZMapyr6UvPrkop3s0i64upL2
+         A8Nu9W9ZHSl3y1iFTtcMEh6pnnYSpXhxftQj+0k28juu44KWAQfJ/72EcCJcF8op59
+         VDbA6N4xk31Kw==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o4Hxd-002Wmo-2E;
+        Thu, 23 Jun 2022 09:13:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Date:   Thu, 23 Jun 2022 09:13:08 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kbuild@vger.kernel.org,
+        live-patching@vger.kernel.org, jpoimboe@kernel.org,
+        peterz@infradead.org, catalin.marinas@arm.com, will@kernel.org,
+        masahiroy@kernel.org, michal.lkml@markovi.net,
+        ndesaulniers@google.com, mark.rutland@arm.com,
+        pasha.tatashin@soleen.com, broonie@kernel.org,
+        rmk+kernel@armlinux.org.uk, madvenka@linux.microsoft.com,
+        christophe.leroy@csgroup.eu, daniel.thompson@linaro.org
+Subject: Re: [PATCH v6 32/33] arm64: irq-gic: Replace unreachable() with
+ -EINVAL
+In-Reply-To: <20220623014917.199563-33-chenzhongjin@huawei.com>
+References: <20220623014917.199563-1-chenzhongjin@huawei.com>
+ <20220623014917.199563-33-chenzhongjin@huawei.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <7d26e36686495866e0752e12c38f170e@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: chenzhongjin@huawei.com, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org, jpoimboe@kernel.org, peterz@infradead.org, catalin.marinas@arm.com, will@kernel.org, masahiroy@kernel.org, michal.lkml@markovi.net, ndesaulniers@google.com, mark.rutland@arm.com, pasha.tatashin@soleen.com, broonie@kernel.org, rmk+kernel@armlinux.org.uk, madvenka@linux.microsoft.com, christophe.leroy@csgroup.eu, daniel.thompson@linaro.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -60,68 +77,52 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-'commit 08feafe8d195 ("objtool: Fix function fallthrough detection for vmlinux")'
-This commit canceled c_file which used to make fallthrough detection
-only works on C objects.
+On 2022-06-23 02:49, Chen Zhongjin wrote:
+> Using unreachable() at default of switch generates an extra branch at
+> end of the function, and compiler won't generate a ret to close this
+> branch because it knows it's unreachable.
+> 
+> If there's no instruction in this branch, compiler will generate a NOP,
+> And it will confuse objtool to warn this NOP as a fall through branch.
+> 
+> In fact these branches are actually unreachable, so we can replace
+> unreachable() with returning a -EINVAL value.
+> 
+> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+> ---
+>  arch/arm64/kvm/hyp/vgic-v3-sr.c | 7 +++----
+>  drivers/irqchip/irq-gic-v3.c    | 2 +-
+>  2 files changed, 4 insertions(+), 5 deletions(-)
 
-However in arm64/crypto/aes-mods.S, there are cases that JUMP at the
-end of function which make objtool wrongly detected them as fall through.
+Basic courtesy would have been to Cc the maintainers of this code.
 
-Revert c_file before this is fixed.
+> 
+> diff --git a/arch/arm64/kvm/hyp/vgic-v3-sr.c 
+> b/arch/arm64/kvm/hyp/vgic-v3-sr.c
+> index 4fb419f7b8b6..f3cee92c3038 100644
+> --- a/arch/arm64/kvm/hyp/vgic-v3-sr.c
+> +++ b/arch/arm64/kvm/hyp/vgic-v3-sr.c
+> @@ -6,7 +6,6 @@
+> 
+>  #include <hyp/adjust_pc.h>
+> 
+> -#include <linux/compiler.h>
+>  #include <linux/irqchip/arm-gic-v3.h>
+>  #include <linux/kvm_host.h>
+> 
+> @@ -55,7 +54,7 @@ static u64 __gic_v3_get_lr(unsigned int lr)
+>  		return read_gicreg(ICH_LR15_EL2);
+>  	}
+> 
+> -	unreachable();
+> +	return -EINVAL;
 
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
----
- tools/objtool/check.c                   | 3 +--
- tools/objtool/include/objtool/objtool.h | 2 +-
- tools/objtool/objtool.c                 | 1 +
- 3 files changed, 3 insertions(+), 3 deletions(-)
+NAK. That's absolutely *wrong*, and will hide future bugs.
+Nothing checks for -EINVAL, and we *never* expect to
+reach this, hence the perfectly valid annotation.
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 8ff7c30df513..95cb88da4ed5 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -541,7 +541,6 @@ static struct instruction *find_last_insn(struct objtool_file *file,
- 	struct instruction *insn = NULL;
- 	unsigned int offset;
- 	unsigned int end = (sec->sh.sh_size > 10) ? sec->sh.sh_size - 10 : 0;
--
- 	for (offset = sec->sh.sh_size - 1; offset >= end && !insn; offset--)
- 		insn = find_insn(file, sec, offset);
- 
-@@ -3220,7 +3219,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 	while (1) {
- 		next_insn = next_insn_to_validate(file, insn);
- 
--		if (func && insn->func && func != insn->func->pfunc) {
-+		if (file->c_file && func && insn->func && func != insn->func->pfunc) {
- 			WARN("%s() falls through to next function %s()",
- 			     func->name, insn->func->name);
- 			return 1;
-diff --git a/tools/objtool/include/objtool/objtool.h b/tools/objtool/include/objtool/objtool.h
-index a6e72d916807..7a5c13a78f87 100644
---- a/tools/objtool/include/objtool/objtool.h
-+++ b/tools/objtool/include/objtool/objtool.h
-@@ -27,7 +27,7 @@ struct objtool_file {
- 	struct list_head static_call_list;
- 	struct list_head mcount_loc_list;
- 	struct list_head endbr_list;
--	bool ignore_unreachables, hints, rodata;
-+	bool ignore_unreachables, c_file, hints, rodata;
- 
- 	unsigned int nr_endbr;
- 	unsigned int nr_endbr_int;
-diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
-index 512669ce064c..d33620b1392d 100644
---- a/tools/objtool/objtool.c
-+++ b/tools/objtool/objtool.c
-@@ -105,6 +105,7 @@ struct objtool_file *objtool_open_read(const char *_objname)
- 	INIT_LIST_HEAD(&file.static_call_list);
- 	INIT_LIST_HEAD(&file.mcount_loc_list);
- 	INIT_LIST_HEAD(&file.endbr_list);
-+	file.c_file = !opts.link && find_section_by_name(file.elf, ".comment");
- 	file.ignore_unreachables = opts.no_unreachable;
- 	file.hints = false;
- 
+If something needs fixing, it probably is your tooling.
+
+         M.
 -- 
-2.17.1
-
+Jazz is not dead. It just smells funny...
