@@ -2,133 +2,93 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCC26558CCA
-	for <lists+live-patching@lfdr.de>; Fri, 24 Jun 2022 03:25:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AED505591E9
+	for <lists+live-patching@lfdr.de>; Fri, 24 Jun 2022 07:37:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230467AbiFXBZF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 23 Jun 2022 21:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37724 "EHLO
+        id S229659AbiFXFTE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 24 Jun 2022 01:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbiFXBZF (ORCPT
+        with ESMTP id S229478AbiFXFTE (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 23 Jun 2022 21:25:05 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E297856779;
-        Thu, 23 Jun 2022 18:25:03 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LTfWp4wkTzkWXL;
-        Fri, 24 Jun 2022 09:23:18 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 09:25:01 +0800
-Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
- (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 24 Jun
- 2022 09:25:01 +0800
-Message-ID: <9217c85d-e39e-55b1-36c3-603d0c6203fd@huawei.com>
-Date:   Fri, 24 Jun 2022 09:24:54 +0800
+        Fri, 24 Jun 2022 01:19:04 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B813462C16;
+        Thu, 23 Jun 2022 22:19:03 -0700 (PDT)
+Received: from [192.168.254.32] (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id A376F20C709F;
+        Thu, 23 Jun 2022 22:19:02 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A376F20C709F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1656047943;
+        bh=6qBDSvnipL8L8NZU6lQt3JoRPhECUcPIZ6ydGL4ni+0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ChfwrBSb8V7/ZKqKrqQcTjwTlXnxT4JE+xGNyYNPx+mMwGrfsdiOP1uD8wdfyRdzz
+         6AqhpEqhs9MNwyOrjtg0VXvSDKp6dJDb5i+xLGf6tUc0SP98jL202dQsYypGIGvS89
+         XxMXXdMJDYWxRuE24U05bav3nAVQ5j/xAXzx4/jc=
+Message-ID: <66545c21-cfcf-60eb-4acf-39be99520369@linux.microsoft.com>
+Date:   Fri, 24 Jun 2022 00:19:01 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 32/33] arm64: irq-gic: Replace unreachable() with
- -EINVAL
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v15 0/6] arm64: Reorganize the unwinder and implement
+ stack trace reliability checks
 Content-Language: en-US
-To:     Marc Zyngier <maz@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kbuild@vger.kernel.org>, <live-patching@vger.kernel.org>,
-        <jpoimboe@kernel.org>, <peterz@infradead.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <masahiroy@kernel.org>, <michal.lkml@markovi.net>,
-        <ndesaulniers@google.com>, <mark.rutland@arm.com>,
-        <pasha.tatashin@soleen.com>, <broonie@kernel.org>,
-        <rmk+kernel@armlinux.org.uk>, <madvenka@linux.microsoft.com>,
-        <christophe.leroy@csgroup.eu>, <daniel.thompson@linaro.org>
-References: <20220623014917.199563-1-chenzhongjin@huawei.com>
- <20220623014917.199563-33-chenzhongjin@huawei.com>
- <7d26e36686495866e0752e12c38f170e@kernel.org>
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-In-Reply-To: <7d26e36686495866e0752e12c38f170e@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.108.67]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+To:     Will Deacon <will@kernel.org>
+Cc:     broonie@kernel.org, mark.rutland@arm.com, jpoimboe@redhat.com,
+        ardb@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
+ <20220617210717.27126-1-madvenka@linux.microsoft.com>
+ <20220623173224.GB16966@willie-the-truck>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <20220623173224.GB16966@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
 
-Thanks for your review and patient.
 
-On 2022/6/23 16:13, Marc Zyngier wrote:
-> On 2022-06-23 02:49, Chen Zhongjin wrote:
->> Using unreachable() at default of switch generates an extra branch at
->> end of the function, and compiler won't generate a ret to close this
->> branch because it knows it's unreachable.
+On 6/23/22 12:32, Will Deacon wrote:
+> On Fri, Jun 17, 2022 at 04:07:11PM -0500, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 >>
->> If there's no instruction in this branch, compiler will generate a NOP,
->> And it will confuse objtool to warn this NOP as a fall through branch.
+>> I have synced this patch series to v5.19-rc2.
+>> I have also removed the following patch.
 >>
->> In fact these branches are actually unreachable, so we can replace
->> unreachable() with returning a -EINVAL value.
+>> 	[PATCH v14 7/7] arm64: Select HAVE_RELIABLE_STACKTRACE
 >>
->> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
->> ---
->>  arch/arm64/kvm/hyp/vgic-v3-sr.c | 7 +++----
->>  drivers/irqchip/irq-gic-v3.c    | 2 +-
->>  2 files changed, 4 insertions(+), 5 deletions(-)
+>> as HAVE_RELIABLE_STACKTRACE depends on STACK_VALIDATION which is not present
+>> yet. This patch will be added in the future once Objtool is enhanced to
+>> provide stack validation in some form.
 > 
-> Basic courtesy would have been to Cc the maintainers of this code.
+> Given that it's not at all obvious that we're going to end up using objtool
+> for arm64, does this patch series gain us anything in isolation?
 > 
-Sorry for that.
 
-I'll cc everyone next time.
+BTW, I have synced my patchset to 5.19-rc2 and sent it as v15.
 
->>
->> diff --git a/arch/arm64/kvm/hyp/vgic-v3-sr.c b/arch/arm64/kvm/hyp/vgic-v3-sr.c
->> index 4fb419f7b8b6..f3cee92c3038 100644
->> --- a/arch/arm64/kvm/hyp/vgic-v3-sr.c
->> +++ b/arch/arm64/kvm/hyp/vgic-v3-sr.c
->> @@ -6,7 +6,6 @@
->>
->>  #include <hyp/adjust_pc.h>
->>
->> -#include <linux/compiler.h>
->>  #include <linux/irqchip/arm-gic-v3.h>
->>  #include <linux/kvm_host.h>
->>
->> @@ -55,7 +54,7 @@ static u64 __gic_v3_get_lr(unsigned int lr)
->>          return read_gicreg(ICH_LR15_EL2);
->>      }
->>
->> -    unreachable();
->> +    return -EINVAL;
-> 
-> NAK. That's absolutely *wrong*, and will hide future bugs.
-> Nothing checks for -EINVAL, and we *never* expect to
-> reach this, hence the perfectly valid annotation.
-> 
-> If something needs fixing, it probably is your tooling.
-> 
->         M.
+So, to answer your question, patches 1 thru 3 in v15 are still useful even if we don't
+consider reliable stacktrace. These patches reorganize the unwinder code based on
+comments from both Mark Rutland and Mark Brown. Mark Brown has already OKed them.
+If Mark Rutland OKes them, we should upstream them.
 
-You are right.
+I can drop patches 4 thru 6. Actually, the objtool patch series that I have
+sent separately for supporting livepatch already addresses reliability. So, if that
+gets reviewed and accepted, we don't even need patches 4 thru 6.
 
-Essentially, this is because objtool does not anticipate that the compiler will
-generate additional instructions when marking unreachable instructions.
+If you are OK with that, I can resend v16 with just patches 1 thru 3. Let me know.
 
-I'll fix this problem or add a specific check for this state.
-
-Best,
-Chen
+Madhavan
 
