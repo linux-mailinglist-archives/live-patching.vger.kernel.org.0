@@ -2,32 +2,32 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F97755B63B
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jun 2022 06:36:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D7655B649
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jun 2022 06:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiF0Edd (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 27 Jun 2022 00:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
+        id S229492AbiF0Esn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 27 Jun 2022 00:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiF0Edc (ORCPT
+        with ESMTP id S229516AbiF0Esj (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 27 Jun 2022 00:33:32 -0400
+        Mon, 27 Jun 2022 00:48:39 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09C4A2703;
-        Sun, 26 Jun 2022 21:33:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43EF1271A;
+        Sun, 26 Jun 2022 21:48:38 -0700 (PDT)
 Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id B38A120CD148;
-        Sun, 26 Jun 2022 21:33:30 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B38A120CD148
+        by linux.microsoft.com (Postfix) with ESMTPSA id 0EB9B20CD15A;
+        Sun, 26 Jun 2022 21:48:37 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0EB9B20CD15A
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1656304411;
-        bh=avE7xHHELqklzPDcSt/YrOSC54CUqeqgCWJf4YeqCVI=;
+        s=default; t=1656305317;
+        bh=jpz2sMqvmF+l42AXrAdrJ80TvgLIvEulYW1pYCvXGX0=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=AbmNMsBTteWcN2qnNTjhnSHk3tPGG66xQvbhOJeywSKTIVS/xs1/1IUJZkFKa0O3C
-         RN5sjJueloOEnAO9+foLCHUlIAFtCyuPSwtg3JONIrX+H18mNMBokugjAySLgXCAMX
-         z9lYTQ5GLt3kqXGk8WbjHsa8KqM3lbw7EG3KlhLU=
-Message-ID: <b7f62c2e-b2ef-1528-d126-b2e0c001a7c4@linux.microsoft.com>
-Date:   Sun, 26 Jun 2022 23:33:29 -0500
+        b=OD1OuFoRuB9rJGDOgyZtJT8lG4z8dmema6etVAXdpHqFBL8eynh1UtvL7sGBLz7tz
+         XNJp5EzRf1/RINWcqkwtth90EuKsJ/IxBtXdxZ9Xg+ZdL/fmiwpMC3lAHFXzC4NT2P
+         KzPos2JOeXjUa7OOU8hkHs3mTvi4d7uN2AEIacUU=
+Message-ID: <e1154054-0b5c-6ebf-9f24-8f4f9784f5a5@linux.microsoft.com>
+Date:   Sun, 26 Jun 2022 23:48:36 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
@@ -97,16 +97,13 @@ On 6/26/22 04:18, Mark Rutland wrote:
 > I'm happy with patches 1 and 2, and I've acked those in case Will wants to pick
 > them.
 > 
-> Kalesh (cc'd) is working to share the unwinder code with hyp, and I think that
-> we need to take a step back and consider how we can make the design work
-> cleanly with that. I'd had a go at prototyping making the unwinder more data
-> driven, but I haven't come up with something satisfactory so far.
-> 
-> It would be good if you could look at / comment on each others series.
-> 
 
-I will review Kalesh's unwinder changes.
+Thanks for the review.
 
-Thanks.
+Will,
+
+Are you fine with picking up patches 1 and 2?
+
+For the other patches, I have responded separately.
 
 Madhavan
