@@ -2,58 +2,50 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3500C55DF67
-	for <lists+live-patching@lfdr.de>; Tue, 28 Jun 2022 15:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5BFC55D527
+	for <lists+live-patching@lfdr.de>; Tue, 28 Jun 2022 15:14:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238563AbiF0RE5 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 27 Jun 2022 13:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53918 "EHLO
+        id S239294AbiF0RGX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 27 Jun 2022 13:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235533AbiF0RE4 (ORCPT
+        with ESMTP id S235619AbiF0RGW (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 27 Jun 2022 13:04:56 -0400
+        Mon, 27 Jun 2022 13:06:22 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17A8E13D3D;
-        Mon, 27 Jun 2022 10:04:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D080C18B23;
+        Mon, 27 Jun 2022 10:06:21 -0700 (PDT)
 Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id E07E920CD16D;
-        Mon, 27 Jun 2022 10:04:54 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E07E920CD16D
+        by linux.microsoft.com (Postfix) with ESMTPSA id D5D4020CD15E;
+        Mon, 27 Jun 2022 10:06:20 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D5D4020CD15E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1656349495;
-        bh=KQyldYi9aNugtS575gcjHBwv/1KYNMViHcWnCpi8oHw=;
+        s=default; t=1656349581;
+        bh=5zYBrlNIUudUdqQqiRpxFOq8tdUweJZQW6d/b/T6x2s=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=q1Fhl1wQAH2cWU/7X4h+HKM34hw+r+ApMkmt7T/tDx5VUBXtp6u6qCxB6l+EcsMiw
-         duxTJqQ9Lct0KC54oiDQHhaHbjOhDF+03fYBB7I4aZXSk/8jCmbMHQGaL+w7WighNO
-         vkMRWswyX3xyevmgDmkgVmfFtX4JZccfCFVCM6S0=
-Message-ID: <89cbbe1f-8f2e-0674-ceb3-1e018e5bf2a4@linux.microsoft.com>
-Date:   Mon, 27 Jun 2022 12:04:54 -0500
+        b=Zt6t15rkvzx3wKjGM6F5N/ExJs15T9HqLE5L6XwX3ZtMcDoor/c16k9dECQWThedH
+         TQLWVo68I0VVeghqY4Kw+g4x6o6eDzPD3MUoffkiYmiXmK+ShdOrBcJ+aL/WXAaG6x
+         GPwAGZgCKugsgtmeUiKgfcIhimpWsiq8HY8b+OZA=
+Message-ID: <af83e538-fc7c-03d7-a11e-a5b257b65837@linux.microsoft.com>
+Date:   Mon, 27 Jun 2022 12:06:19 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v15 0/6] arm64: Reorganize the unwinder and implement
+Subject: Re: [RFC PATCH v15 0/6] arm64: Reorganize the unwinder and implement
  stack trace reliability checks
 Content-Language: en-US
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morris <jamorris@linux.microsoft.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        live-patching@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Marc Zyngier <maz@kernel.org>
-References: <20220617210717.27126-1-madvenka@linux.microsoft.com>
- <20220623173224.GB16966@willie-the-truck>
- <66545c21-cfcf-60eb-4acf-39be99520369@linux.microsoft.com>
- <YrgkdBtbFmOvKJpX@FVFF77S0Q05N>
- <b7f62c2e-b2ef-1528-d126-b2e0c001a7c4@linux.microsoft.com>
- <CAC_TJveqCTToimvrrTrEcRAxERL0EW+61PxS9emb-u51Eo4Eug@mail.gmail.com>
+To:     Will Deacon <will@kernel.org>, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, ardb@kernel.org, mark.rutland@arm.com,
+        jamorris@linux.microsoft.com, jpoimboe@redhat.com,
+        nobuta.keiya@fujitsu.com, live-patching@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, broonie@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel-team@android.com
+References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
+ <20220617180219.20352-1-madvenka@linux.microsoft.com>
+ <165632350271.638103.10773612881829908260.b4-ty@kernel.org>
 From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <CAC_TJveqCTToimvrrTrEcRAxERL0EW+61PxS9emb-u51Eo4Eug@mail.gmail.com>
+In-Reply-To: <165632350271.638103.10773612881829908260.b4-ty@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -69,65 +61,28 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 
 
-On 6/27/22 11:32, Kalesh Singh wrote:
-> On Sun, Jun 26, 2022 at 9:33 PM Madhavan T. Venkataraman
-> <madvenka@linux.microsoft.com> wrote:
+On 6/27/22 08:00, Will Deacon wrote:
+> On Fri, 17 Jun 2022 13:02:13 -0500, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 >>
+>> I have synced this patch series to v5.19-rc2.
+>> I have also removed the following patch.
 >>
+>> 	[PATCH v14 7/7] arm64: Select HAVE_RELIABLE_STACKTRACE
 >>
->> On 6/26/22 04:18, Mark Rutland wrote:
->>> On Fri, Jun 24, 2022 at 12:19:01AM -0500, Madhavan T. Venkataraman wrote:
->>>>
->>>>
->>>> On 6/23/22 12:32, Will Deacon wrote:
->>>>> On Fri, Jun 17, 2022 at 04:07:11PM -0500, madvenka@linux.microsoft.com wrote:
->>>>>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>>>>>
->>>>>> I have synced this patch series to v5.19-rc2.
->>>>>> I have also removed the following patch.
->>>>>>
->>>>>>    [PATCH v14 7/7] arm64: Select HAVE_RELIABLE_STACKTRACE
->>>>>>
->>>>>> as HAVE_RELIABLE_STACKTRACE depends on STACK_VALIDATION which is not present
->>>>>> yet. This patch will be added in the future once Objtool is enhanced to
->>>>>> provide stack validation in some form.
->>>>>
->>>>> Given that it's not at all obvious that we're going to end up using objtool
->>>>> for arm64, does this patch series gain us anything in isolation?
->>>>>
->>>>
->>>> BTW, I have synced my patchset to 5.19-rc2 and sent it as v15.
->>>>
->>>> So, to answer your question, patches 1 thru 3 in v15 are still useful even if we don't
->>>> consider reliable stacktrace. These patches reorganize the unwinder code based on
->>>> comments from both Mark Rutland and Mark Brown. Mark Brown has already OKed them.
->>>> If Mark Rutland OKes them, we should upstream them.
->>>
->>> Sorry for the delay; I have been rather swamped recently and haven't had the
->>> time to give this the time it needs.
->>>
->>> I'm happy with patches 1 and 2, and I've acked those in case Will wants to pick
->>> them.
->>>
->>> Kalesh (cc'd) is working to share the unwinder code with hyp, and I think that
->>> we need to take a step back and consider how we can make the design work
->>> cleanly with that. I'd had a go at prototyping making the unwinder more data
->>> driven, but I haven't come up with something satisfactory so far.
->>>
->>> It would be good if you could look at / comment on each others series.
->>>
->>
->> I will review Kalesh's unwinder changes.
+>> [...]
 > 
-> Thanks Mark, I'll take a look.
+> Applied first two patches to arm64 (for-next/stacktrace), thanks!
 > 
-> Madhavan, I'm in the process of preparing a new version. Let me rebase
-> on your first 2 patches and resend, so you can look at that version
-> instead.
+> [1/6] arm64: Split unwind_init()
+>       https://git.kernel.org/arm64/c/a019d8a2cc82
+> [2/6] arm64: Copy the task argument to unwind_state
+>       https://git.kernel.org/arm64/c/82a592c13b0a
 > 
+> Cheers,
 
-Sure thing.
+Great!
 
-Thanks.
+Thanks!
 
 Madhavan
