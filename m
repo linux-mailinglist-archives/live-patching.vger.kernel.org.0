@@ -2,37 +2,37 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C70F55B64D
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jun 2022 06:51:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D08E55B6FB
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jun 2022 07:17:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229516AbiF0Ev0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 27 Jun 2022 00:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35624 "EHLO
+        id S232457AbiF0FEm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 27 Jun 2022 01:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiF0EvZ (ORCPT
+        with ESMTP id S232463AbiF0FEJ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 27 Jun 2022 00:51:25 -0400
+        Mon, 27 Jun 2022 01:04:09 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EF712705;
-        Sun, 26 Jun 2022 21:51:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F292B6144;
+        Sun, 26 Jun 2022 22:01:57 -0700 (PDT)
 Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 231E520CD15B;
-        Sun, 26 Jun 2022 21:51:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 231E520CD15B
+        by linux.microsoft.com (Postfix) with ESMTPSA id BC45420CD15B;
+        Sun, 26 Jun 2022 22:01:56 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BC45420CD15B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1656305484;
-        bh=zJFEWu/Ud5uhM7/kCBl+rRwn01K5hofR9WJ1WLBTFIs=;
+        s=default; t=1656306117;
+        bh=GclEd+a+AcJd6or40tVatWZ5FT0NcpQFrBrtcXQqOv8=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=cwWB26CikCmaS8BVl64CjxUO7fTwCGHagFWS8ri96VfThaXNyXza+foJ8VVL8jiWJ
-         qQcABmATn0wp7cDxRZ7tSdw6piJdA4xnQYugd8CeQNryNabUOmgDOisWYUKATD9Z4G
-         ojWZhIGksU+JBUDi0ZOybg73xYApOErwyYjK4Efg=
-Message-ID: <0c31a02c-183e-cac6-8826-82330c6fd830@linux.microsoft.com>
-Date:   Sun, 26 Jun 2022 23:51:23 -0500
+        b=nde9eyggtckRZ2iEFk7/lqxjwzqfDPU/MpjYF81hGvjklISDwlCXmoPOJtJmqcdWK
+         oUpMO1LAFx5Cy5nE8uPLgZZ2PNgg0na6nxUK8Q23Qiijo7iDFKQU34yPsca4gvKvhn
+         kEsTxaJvBwjtAkjcM1u5VzBcaFx+u6LCxQjm5FPo=
+Message-ID: <c7df4f17-a788-a037-887f-368cc5dc3fac@linux.microsoft.com>
+Date:   Mon, 27 Jun 2022 00:01:55 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v15 3/6] arm64: Make the unwind loop in unwind() similar
- to other architectures
+Subject: Re: [PATCH v15 4/6] arm64: Introduce stack trace reliability checks
+ in the unwinder
 Content-Language: en-US
 To:     Mark Rutland <mark.rutland@arm.com>
 Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
@@ -42,17 +42,17 @@ Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
  <20220617210717.27126-1-madvenka@linux.microsoft.com>
- <20220617210717.27126-4-madvenka@linux.microsoft.com>
- <YrgXA/x6uw1z75R2@FVFF77S0Q05N>
+ <20220617210717.27126-5-madvenka@linux.microsoft.com>
+ <YrgZkz7BA1U09gUC@FVFF77S0Q05N>
 From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <YrgXA/x6uw1z75R2@FVFF77S0Q05N>
+In-Reply-To: <YrgZkz7BA1U09gUC@FVFF77S0Q05N>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_FILL_THIS_FORM_SHORT,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -61,107 +61,131 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 
 
-On 6/26/22 03:21, Mark Rutland wrote:
-> On Fri, Jun 17, 2022 at 04:07:14PM -0500, madvenka@linux.microsoft.com wrote:
+On 6/26/22 03:32, Mark Rutland wrote:
+> On Fri, Jun 17, 2022 at 04:07:15PM -0500, madvenka@linux.microsoft.com wrote:
 >> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 >>
->> Change the loop in unwind()
->> ===========================
+>> There are some kernel features and conditions that make a stack trace
+>> unreliable. Callers may require the unwinder to detect these cases.
+>> E.g., livepatch.
 >>
->> Change the unwind loop in unwind() to:
+>> Introduce a new function called unwind_check_reliability() that will
+>> detect these cases and set a flag in the stack frame. Call
+>> unwind_check_reliability() for every frame in unwind().
 >>
->> 	while (unwind_continue(state, consume_entry, cookie))
->> 		unwind_next(state);
+>> Introduce the first reliability check in unwind_check_reliability() - If
+>> a return PC is not a valid kernel text address, consider the stack
+>> trace unreliable. It could be some generated code. Other reliability checks
+>> will be added in the future.
 >>
->> This is easy to understand and maintain.
->> New function unwind_continue()
->> ==============================
+>> Let unwind() return a boolean to indicate if the stack trace is
+>> reliable.
 >>
->> Define a new function unwind_continue() that is used in the unwind loop
->> to check for conditions that terminate a stack trace.
+>> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+>> Reviewed-by: Mark Brown <broonie@kernel.org>
+>> ---
+>>  arch/arm64/kernel/stacktrace.c | 31 +++++++++++++++++++++++++++++--
+>>  1 file changed, 29 insertions(+), 2 deletions(-)
 >>
->> The conditions checked are:
->>
->> 	- If the bottom of the stack (final frame) has been reached,
->> 	  terminate.
->>
->> 	- If the consume_entry() function returns false, the caller of
->> 	  unwind has asked to terminate the stack trace. So, terminate.
->>
->> 	- If unwind_next() failed for some reason (like stack corruption),
->> 	  terminate.
+>> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+>> index c749129aba5a..5ef2ce217324 100644
+>> --- a/arch/arm64/kernel/stacktrace.c
+>> +++ b/arch/arm64/kernel/stacktrace.c
+>> @@ -44,6 +44,8 @@
+>>   * @final_fp:	 Pointer to the final frame.
+>>   *
+>>   * @failed:      Unwind failed.
+>> + *
+>> + * @reliable:    Stack trace is reliable.
+>>   */
 > 
-> I'm a bit confused as to why this structure, since AFAICT this doesn't match
-> other architectures (looking at x86, powerpc, and s390). I note that x86 has:
+> I would strongly prefer if we could have something like an
+> unwind_state_is_reliable() helper, and just use that directly, rather than
+> storing that into the state.
 > 
-> * In arch_stack_walk():
+> That way, we can opt-into any expensive checks in the reliable unwinder (e.g.
+> __kernel_text_address), and can use them elsewhere for informative purposes
+> (e.g. when dumping a stacktrace out to the console).
 > 
->         for (unwind_start(&state, task, regs, NULL); !unwind_done(&state);
->              unwind_next_frame(&state)) {
-> 		...
-> 		if (!consume_entry(...))
-> 			break;
-> 		...
-> 	}
+>>  struct unwind_state {
+>>  	unsigned long fp;
+>> @@ -57,6 +59,7 @@ struct unwind_state {
+>>  	struct task_struct *task;
+>>  	unsigned long final_fp;
+>>  	bool failed;
+>> +	bool reliable;
+>>  };
+>>  
+>>  static void unwind_init_common(struct unwind_state *state,
+>> @@ -80,6 +83,7 @@ static void unwind_init_common(struct unwind_state *state,
+>>  	state->prev_fp = 0;
+>>  	state->prev_type = STACK_TYPE_UNKNOWN;
+>>  	state->failed = false;
+>> +	state->reliable = true;
+>>  
+>>  	/* Stack trace terminates here. */
+>>  	state->final_fp = (unsigned long)task_pt_regs(task)->stackframe;
+>> @@ -242,11 +246,34 @@ static void notrace unwind_next(struct unwind_state *state)
+>>  }
+>>  NOKPROBE_SYMBOL(unwind_next);
+>>  
+>> -static void notrace unwind(struct unwind_state *state,
+>> +/*
+>> + * Check the stack frame for conditions that make further unwinding unreliable.
+>> + */
+>> +static void unwind_check_reliability(struct unwind_state *state)
+>> +{
+>> +	if (state->fp == state->final_fp) {
+>> +		/* Final frame; no more unwind, no need to check reliability */
+>> +		return;
+>> +	}
+>> +
+>> +	/*
+>> +	 * If the PC is not a known kernel text address, then we cannot
+>> +	 * be sure that a subsequent unwind will be reliable, as we
+>> +	 * don't know that the code follows our unwind requirements.
+>> +	 */
+>> +	if (!__kernel_text_address(state->pc))
+>> +		state->reliable = false;
+>> +}
 > 
-> * In arch_stack_walk_reliable():
+> I'd strongly prefer that we split this into two helpers, e.g.
 > 
->         for (unwind_start(&state, task, NULL, NULL);
->              !unwind_done(&state) && !unwind_error(&state);
->              unwind_next_frame(&state)) {
-> 		...
-> 		if (!consume_entry(...)
-> 			return -EINVAL;
-> 	}
-> 
-> ... and back in v6 I suggeted exactly that shape:
-> 
->   https://lore.kernel.org/linux-arm-kernel/20210728165635.GA47345@C02TD0UTHF1T.local/
-> 
-
-OK. I will take a look at your suggestion and resend this patch.
-
->>
->> Do not return an error value from unwind_next()
->> ===============================================
->>
->> We want to check for terminating conditions only in unwind_continue() from
->> the unwinder loop. So, do not return an error value from unwind_next().
->> Simply set a flag in unwind_state and check the flag in unwind_continue().
-> 
-> I'm fine with the concept of moving ghe return value out of unwind_next() (e.g.
-> if we go with an x86-like structure), but I don't think that we should
-> centralize the other checks *and* the consumption within unwind_continue(), as
-> I think those are two separate things.
-> 
-
-OK. I will address this in the next version.
-
->>
->> Final FP
->> ========
->>
->> Introduce a new field "final_fp" in "struct unwind_state". Initialize this
->> to the final frame of the stack trace:
->>
->> 	task_pt_regs(task)->stackframe
->>
->> This is where the stacktrace must terminate if it is successful. Add an
->> explicit comment to that effect.
-> 
-> Can we please make this change as a preparatory step, as with the 'task' field?
-> 
-> We can wrap this in a helper like:
-> 
-> static bool is_final_frame(struct unwind state *state)
+> static inline bool unwind_state_is_final(struct unwind_state *state)
 > {
 > 	return state->fp == state->final_fp;
 > }
 > 
-> ... and use that in the main loop.
+> static inline bool unwind_state_is_reliable(struct unwind_state *state)
+> {
+> 	return __kernel_text_address(state->pc);
+> }
+> 
+>> +
+>> +static bool notrace unwind(struct unwind_state *state,
+>>  			   stack_trace_consume_fn consume_entry, void *cookie)
+>>  {
+>> -	while (unwind_continue(state, consume_entry, cookie))
+>> +	unwind_check_reliability(state);
+>> +	while (unwind_continue(state, consume_entry, cookie)) {
+>>  		unwind_next(state);
+>> +		unwind_check_reliability(state);
+> 
+> This is going to slow down regular unwinds even when the reliablity value is
+> not consumed (e.g. for KASAN traces on alloc and free), so I don't think this
+> should live here, and should be intreoduced with arch_stack_walk_reliable().
 > 
 
-OK. I will make these changes.
+So, I have been thinking about this whole reliability check thing. Instead of
+checking many different things for reliability, I believe that a single frame
+pointer validation check is sufficient. I am attempting to do that in my
+other frame pointer validation patch series. Hopefully, in that patch series,
+I can prove that that one check is sufficient. We will continue this discussion
+there.
+
+So, for now, I am dropping the reliability checks patches from the series.
+I will just send the unwind loop reorg in v16 and focus on getting that
+upstreamed.
 
 Thanks.
 
