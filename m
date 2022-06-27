@@ -2,52 +2,50 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D7655B649
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jun 2022 06:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C70F55B64D
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jun 2022 06:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229492AbiF0Esn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 27 Jun 2022 00:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
+        id S229516AbiF0Ev0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 27 Jun 2022 00:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiF0Esj (ORCPT
+        with ESMTP id S229492AbiF0EvZ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 27 Jun 2022 00:48:39 -0400
+        Mon, 27 Jun 2022 00:51:25 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43EF1271A;
-        Sun, 26 Jun 2022 21:48:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EF712705;
+        Sun, 26 Jun 2022 21:51:25 -0700 (PDT)
 Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 0EB9B20CD15A;
-        Sun, 26 Jun 2022 21:48:37 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0EB9B20CD15A
+        by linux.microsoft.com (Postfix) with ESMTPSA id 231E520CD15B;
+        Sun, 26 Jun 2022 21:51:24 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 231E520CD15B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1656305317;
-        bh=jpz2sMqvmF+l42AXrAdrJ80TvgLIvEulYW1pYCvXGX0=;
+        s=default; t=1656305484;
+        bh=zJFEWu/Ud5uhM7/kCBl+rRwn01K5hofR9WJ1WLBTFIs=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=OD1OuFoRuB9rJGDOgyZtJT8lG4z8dmema6etVAXdpHqFBL8eynh1UtvL7sGBLz7tz
-         XNJp5EzRf1/RINWcqkwtth90EuKsJ/IxBtXdxZ9Xg+ZdL/fmiwpMC3lAHFXzC4NT2P
-         KzPos2JOeXjUa7OOU8hkHs3mTvi4d7uN2AEIacUU=
-Message-ID: <e1154054-0b5c-6ebf-9f24-8f4f9784f5a5@linux.microsoft.com>
-Date:   Sun, 26 Jun 2022 23:48:36 -0500
+        b=cwWB26CikCmaS8BVl64CjxUO7fTwCGHagFWS8ri96VfThaXNyXza+foJ8VVL8jiWJ
+         qQcABmATn0wp7cDxRZ7tSdw6piJdA4xnQYugd8CeQNryNabUOmgDOisWYUKATD9Z4G
+         ojWZhIGksU+JBUDi0ZOybg73xYApOErwyYjK4Efg=
+Message-ID: <0c31a02c-183e-cac6-8826-82330c6fd830@linux.microsoft.com>
+Date:   Sun, 26 Jun 2022 23:51:23 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v15 0/6] arm64: Reorganize the unwinder and implement
- stack trace reliability checks
+Subject: Re: [PATCH v15 3/6] arm64: Make the unwind loop in unwind() similar
+ to other architectures
 Content-Language: en-US
 To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Will Deacon <will@kernel.org>, broonie@kernel.org,
-        jpoimboe@redhat.com, ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com,
+Cc:     broonie@kernel.org, jpoimboe@redhat.com, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        maz@kernel.org, Kalesh Singh <kaleshsingh@google.com>
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
  <20220617210717.27126-1-madvenka@linux.microsoft.com>
- <20220623173224.GB16966@willie-the-truck>
- <66545c21-cfcf-60eb-4acf-39be99520369@linux.microsoft.com>
- <YrgkdBtbFmOvKJpX@FVFF77S0Q05N>
+ <20220617210717.27126-4-madvenka@linux.microsoft.com>
+ <YrgXA/x6uw1z75R2@FVFF77S0Q05N>
 From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <YrgkdBtbFmOvKJpX@FVFF77S0Q05N>
+In-Reply-To: <YrgXA/x6uw1z75R2@FVFF77S0Q05N>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -63,47 +61,108 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 
 
-On 6/26/22 04:18, Mark Rutland wrote:
-> On Fri, Jun 24, 2022 at 12:19:01AM -0500, Madhavan T. Venkataraman wrote:
+On 6/26/22 03:21, Mark Rutland wrote:
+> On Fri, Jun 17, 2022 at 04:07:14PM -0500, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 >>
+>> Change the loop in unwind()
+>> ===========================
 >>
->> On 6/23/22 12:32, Will Deacon wrote:
->>> On Fri, Jun 17, 2022 at 04:07:11PM -0500, madvenka@linux.microsoft.com wrote:
->>>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>>>
->>>> I have synced this patch series to v5.19-rc2.
->>>> I have also removed the following patch.
->>>>
->>>> 	[PATCH v14 7/7] arm64: Select HAVE_RELIABLE_STACKTRACE
->>>>
->>>> as HAVE_RELIABLE_STACKTRACE depends on STACK_VALIDATION which is not present
->>>> yet. This patch will be added in the future once Objtool is enhanced to
->>>> provide stack validation in some form.
->>>
->>> Given that it's not at all obvious that we're going to end up using objtool
->>> for arm64, does this patch series gain us anything in isolation?
->>>
+>> Change the unwind loop in unwind() to:
 >>
->> BTW, I have synced my patchset to 5.19-rc2 and sent it as v15.
+>> 	while (unwind_continue(state, consume_entry, cookie))
+>> 		unwind_next(state);
 >>
->> So, to answer your question, patches 1 thru 3 in v15 are still useful even if we don't
->> consider reliable stacktrace. These patches reorganize the unwinder code based on
->> comments from both Mark Rutland and Mark Brown. Mark Brown has already OKed them.
->> If Mark Rutland OKes them, we should upstream them.
+>> This is easy to understand and maintain.
+>> New function unwind_continue()
+>> ==============================
+>>
+>> Define a new function unwind_continue() that is used in the unwind loop
+>> to check for conditions that terminate a stack trace.
+>>
+>> The conditions checked are:
+>>
+>> 	- If the bottom of the stack (final frame) has been reached,
+>> 	  terminate.
+>>
+>> 	- If the consume_entry() function returns false, the caller of
+>> 	  unwind has asked to terminate the stack trace. So, terminate.
+>>
+>> 	- If unwind_next() failed for some reason (like stack corruption),
+>> 	  terminate.
 > 
-> Sorry for the delay; I have been rather swamped recently and haven't had the
-> time to give this the time it needs.
+> I'm a bit confused as to why this structure, since AFAICT this doesn't match
+> other architectures (looking at x86, powerpc, and s390). I note that x86 has:
 > 
-> I'm happy with patches 1 and 2, and I've acked those in case Will wants to pick
-> them.
+> * In arch_stack_walk():
+> 
+>         for (unwind_start(&state, task, regs, NULL); !unwind_done(&state);
+>              unwind_next_frame(&state)) {
+> 		...
+> 		if (!consume_entry(...))
+> 			break;
+> 		...
+> 	}
+> 
+> * In arch_stack_walk_reliable():
+> 
+>         for (unwind_start(&state, task, NULL, NULL);
+>              !unwind_done(&state) && !unwind_error(&state);
+>              unwind_next_frame(&state)) {
+> 		...
+> 		if (!consume_entry(...)
+> 			return -EINVAL;
+> 	}
+> 
+> ... and back in v6 I suggeted exactly that shape:
+> 
+>   https://lore.kernel.org/linux-arm-kernel/20210728165635.GA47345@C02TD0UTHF1T.local/
 > 
 
-Thanks for the review.
+OK. I will take a look at your suggestion and resend this patch.
 
-Will,
+>>
+>> Do not return an error value from unwind_next()
+>> ===============================================
+>>
+>> We want to check for terminating conditions only in unwind_continue() from
+>> the unwinder loop. So, do not return an error value from unwind_next().
+>> Simply set a flag in unwind_state and check the flag in unwind_continue().
+> 
+> I'm fine with the concept of moving ghe return value out of unwind_next() (e.g.
+> if we go with an x86-like structure), but I don't think that we should
+> centralize the other checks *and* the consumption within unwind_continue(), as
+> I think those are two separate things.
+> 
 
-Are you fine with picking up patches 1 and 2?
+OK. I will address this in the next version.
 
-For the other patches, I have responded separately.
+>>
+>> Final FP
+>> ========
+>>
+>> Introduce a new field "final_fp" in "struct unwind_state". Initialize this
+>> to the final frame of the stack trace:
+>>
+>> 	task_pt_regs(task)->stackframe
+>>
+>> This is where the stacktrace must terminate if it is successful. Add an
+>> explicit comment to that effect.
+> 
+> Can we please make this change as a preparatory step, as with the 'task' field?
+> 
+> We can wrap this in a helper like:
+> 
+> static bool is_final_frame(struct unwind state *state)
+> {
+> 	return state->fp == state->final_fp;
+> }
+> 
+> ... and use that in the main loop.
+> 
+
+OK. I will make these changes.
+
+Thanks.
 
 Madhavan
