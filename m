@@ -2,113 +2,154 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39F88560F47
-	for <lists+live-patching@lfdr.de>; Thu, 30 Jun 2022 04:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7AE8561DF1
+	for <lists+live-patching@lfdr.de>; Thu, 30 Jun 2022 16:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbiF3Clt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 29 Jun 2022 22:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59270 "EHLO
+        id S235788AbiF3OaM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 30 Jun 2022 10:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiF3Cls (ORCPT
+        with ESMTP id S235866AbiF3O36 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 29 Jun 2022 22:41:48 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D18CE3D;
-        Wed, 29 Jun 2022 19:41:47 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LYMww0jZXzhYcx;
-        Thu, 30 Jun 2022 10:39:28 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 10:41:45 +0800
-Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
- (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
- 2022 10:41:45 +0800
-Message-ID: <99883975-4fb7-b073-ac16-7a5474f5ac79@huawei.com>
-Date:   Thu, 30 Jun 2022 10:41:42 +0800
+        Thu, 30 Jun 2022 10:29:58 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE7B747BC;
+        Thu, 30 Jun 2022 07:12:45 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 7E26921CCF;
+        Thu, 30 Jun 2022 14:12:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656598357; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=TxYkXnk0/4I8fYFaZJI7PIVTPiAIG6UK1/rXiPeZYy0=;
+        b=NPtNaaQO05MtUL0nXK5Q2vQevImJE3d0VfpB5wVvtvh7yAM6egp2LKJ1NGk0DoCnqdZmeh
+        WpRvarHslv3dxY+YfQZzVp6O9kc4Wk6D7ZdBDGJ/BMQgesJ9jNQEtttU3R5e2YCZ+lRB4p
+        fxj8o0HS7DkVU5PicAnd/lL4kPpBUmw=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 63BA413A5C;
+        Thu, 30 Jun 2022 14:12:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 0AlVClOvvWLvYgAAMHmgww
+        (envelope-from <mpdesouza@suse.com>); Thu, 30 Jun 2022 14:12:35 +0000
+From:   Marcos Paulo de Souza <mpdesouza@suse.com>
+To:     live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     shuah@kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
+        pmladek@suse.com, Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: [PATCH v2 0/2] livepatch: Move tests from lib/livepatch to selftests/livepatch
+Date:   Thu, 30 Jun 2022 11:12:24 -0300
+Message-Id: <20220630141226.2802-1-mpdesouza@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 18/33] arm64: Change symbol type annotations
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kbuild@vger.kernel.org>, <live-patching@vger.kernel.org>,
-        <jpoimboe@kernel.org>, <peterz@infradead.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <masahiroy@kernel.org>, <michal.lkml@markovi.net>,
-        <ndesaulniers@google.com>, <mark.rutland@arm.com>,
-        <pasha.tatashin@soleen.com>, <rmk+kernel@armlinux.org.uk>,
-        <madvenka@linux.microsoft.com>, <christophe.leroy@csgroup.eu>,
-        <daniel.thompson@linaro.org>
-References: <20220623014917.199563-1-chenzhongjin@huawei.com>
- <20220623014917.199563-19-chenzhongjin@huawei.com>
- <YryQQlQga2wtWqv9@sirena.org.uk>
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-In-Reply-To: <YryQQlQga2wtWqv9@sirena.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.108.67]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Mark,
+Hi there,
 
-Thanks for review!
+this is the v2 of the patchset. The v1 can be found at [1]. There is only one
+change in patch 1, which changed the target directory to build the test modules.
+All other changes happen in patch 2.
 
-On 2022/6/30 1:47, Mark Brown wrote:
-> On Thu, Jun 23, 2022 at 09:49:02AM +0800, Chen Zhongjin wrote:
->> Code symbols not following the aarch64 procedure call convention should
->> be annotated with SYM_CODE_* instead of SYM_FUNC_*
->>
->> Mark relevant symbols as generic code symbols.
-> 
->> -SYM_CODE_START(tramp_exit_native)
->> +SYM_CODE_START_LOCAL(tramp_exit_native)
->>  	tramp_exit
->>  SYM_CODE_END(tramp_exit_native)
->>  
->> -SYM_CODE_START(tramp_exit_compat)
->> +SYM_CODE_START_LOCAL(tramp_exit_compat)
-> 
-> The commit log says this is fixing things mistakenly lablelld SYM_FUNC
-> but this bit of the actual change is making some symbols local.
-> 
+Thanks for reviewing!
 
-It makes sense. I'll remove this because whether this symbol is global makes few
-difference here.
+Changes from v1:
+# test_modules/Makefile
+  * Build the test modules targeting /lib/modules, instead of ksrc when building
+    from the kernel source.
 
->> -SYM_FUNC_START_LOCAL(__create_page_tables)
->> +SYM_CODE_START_LOCAL(__create_page_tables)
->>  	mov	x28, lr
->>  
->>  	/*
->> @@ -389,7 +389,7 @@ SYM_FUNC_START_LOCAL(__create_page_tables)
->>  	bl	dcache_inval_poc
->>  
->>  	ret	x28
->> -SYM_FUNC_END(__create_page_tables)
->> +SYM_CODE_END(__create_page_tables)
-> 
-> This is removed by Ard's recent refactoring, the others that are still
-> present look valid enough (for things that don't use the stack IIRC they
-> could be seen as conforming but equally this is all running in non
-> standard environments).
+# test_modules/test_klp_syscall.c
+  * Added a parameter array to receive the pids that should transition to the
+    new system call. (suggedted by Joe)
+  * Create a new sysfs file /sys/kernel/test_klp_syscall/npids to show how many
+    pids from the argument need to transition to the new state. (suggested by
+    Joe)
+  * Fix the PPC32 support by adding the syscall wrapper for archs that select it
+    by default, without erroring out. PPC does not set SYSCALL_WRAPPER, so
+    having it set in v1 was a mistake. (suggested by Joe)
+  * The aarch64 syscall prefix was added too, since the livepatch support will come soon.
 
-You are right, for SYM_CODE_, objtool won't generate ORC automatically as other
-normal functions, unless UNWIND_HINT is explicitly specified for non-standard
-stack frames.
+# test_binaries/test_klp-call_getpid.c
+  * Change %d/%u in printf (suggested byu Joe)
+  * Change run -> stop variable name, and inverted the assignments (suggested by
+  * Joe).
+
+# File test-syscall.sh
+  * Fixed test-syscall.sh to call test_klp-call-getpid in test_binaries dir
+  * Load test_klp_syscall passed the pids of the test_klp-call_getpid instances.
+    Check the sysfs file from test_klp_syscall module to check that all pids
+    transitioned correctly. (suggested by Joe)
+  * Simplified the loop that calls test_klp-call_getpid. (suggested by Joe)
+  * Removed the "success" comment from the script, as it's implicit that it
+    succeed. Otherwise load_lp would error out. (suggested by Joe)
+
+* Changed the commit message of patch 2 to further detail what means "tricky"
+  when livepatching syscalls. (suggested by Joe)
+
+[1]: 20220603143242.870-1-mpdesouza@suse.com
+
+Marcos Paulo de Souza (2):
+  livepatch: Move tests from lib/livepatch to selftests/livepatch
+  selftests: livepatch: Test livepatching a heavily called syscall
+
+ arch/s390/configs/debug_defconfig             |   1 -
+ arch/s390/configs/defconfig                   |   1 -
+ lib/Kconfig.debug                             |  22 ---
+ lib/Makefile                                  |   2 -
+ lib/livepatch/Makefile                        |  14 --
+ tools/testing/selftests/livepatch/Makefile    |  35 +++-
+ tools/testing/selftests/livepatch/README      |   5 +-
+ tools/testing/selftests/livepatch/config      |   1 -
+ .../testing/selftests/livepatch/functions.sh  |  34 ++--
+ .../selftests/livepatch/test-callbacks.sh     |  50 +++---
+ .../selftests/livepatch/test-ftrace.sh        |   6 +-
+ .../selftests/livepatch/test-livepatch.sh     |  10 +-
+ .../selftests/livepatch/test-shadow-vars.sh   |   2 +-
+ .../testing/selftests/livepatch/test-state.sh |  18 +--
+ .../selftests/livepatch/test-syscall.sh       |  52 ++++++
+ .../test_binaries/test_klp-call_getpid.c      |  48 ++++++
+ .../selftests/livepatch/test_modules/Makefile |  20 +++
+ .../test_modules}/test_klp_atomic_replace.c   |   0
+ .../test_modules}/test_klp_callbacks_busy.c   |   0
+ .../test_modules}/test_klp_callbacks_demo.c   |   0
+ .../test_modules}/test_klp_callbacks_demo2.c  |   0
+ .../test_modules}/test_klp_callbacks_mod.c    |   0
+ .../test_modules}/test_klp_livepatch.c        |   0
+ .../test_modules}/test_klp_shadow_vars.c      |   0
+ .../livepatch/test_modules}/test_klp_state.c  |   0
+ .../livepatch/test_modules}/test_klp_state2.c |   0
+ .../livepatch/test_modules}/test_klp_state3.c |   0
+ .../livepatch/test_modules/test_klp_syscall.c | 150 ++++++++++++++++++
+ 28 files changed, 360 insertions(+), 111 deletions(-)
+ delete mode 100644 lib/livepatch/Makefile
+ create mode 100755 tools/testing/selftests/livepatch/test-syscall.sh
+ create mode 100644 tools/testing/selftests/livepatch/test_binaries/test_klp-call_getpid.c
+ create mode 100644 tools/testing/selftests/livepatch/test_modules/Makefile
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_atomic_replace.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_callbacks_busy.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_callbacks_demo.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_callbacks_demo2.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_callbacks_mod.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_livepatch.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_shadow_vars.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_state.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_state2.c (100%)
+ rename {lib/livepatch => tools/testing/selftests/livepatch/test_modules}/test_klp_state3.c (100%)
+ create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+
+-- 
+2.35.3
 
