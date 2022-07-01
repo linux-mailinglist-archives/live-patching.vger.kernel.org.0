@@ -2,56 +2,75 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8905C563A46
-	for <lists+live-patching@lfdr.de>; Fri,  1 Jul 2022 21:58:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67A6A563B7D
+	for <lists+live-patching@lfdr.de>; Fri,  1 Jul 2022 23:15:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbiGATxe (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 1 Jul 2022 15:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
+        id S229998AbiGAVBy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 1 Jul 2022 17:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231557AbiGATxe (ORCPT
+        with ESMTP id S229808AbiGAVBx (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 1 Jul 2022 15:53:34 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B69C82DD5F;
-        Fri,  1 Jul 2022 12:53:32 -0700 (PDT)
-Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 73BBB20D4D81;
-        Fri,  1 Jul 2022 12:53:31 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 73BBB20D4D81
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1656705212;
-        bh=GWy2YeVuMJUaFDcJYtow9oLioamoe+ff03AojkonNx8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=IKZGO7wjlIW630K+t+j77XST3E9Bvb+6B5S+KUKfFB8d4OBOdz8JtCIfBXKI3Q2U1
-         CrMDyTtTsLep67lNEdOu+XPJCQ49o01fWw0ItUQgFj1UkIT9iaDiYQV06pTCJ5Pg4A
-         uC5xI0yQRw1fodp3owj/PRkB8XjaLs0gDshSkivI=
-Message-ID: <884d1d23-84ee-38ad-2bff-40b2d046fbf2@linux.microsoft.com>
-Date:   Fri, 1 Jul 2022 14:53:30 -0500
+        Fri, 1 Jul 2022 17:01:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 714F06B264
+        for <live-patching@vger.kernel.org>; Fri,  1 Jul 2022 14:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656709311;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oWS3iKCOODVJzZhTrsjiDauwqc/b5M/Jyx7jN5NzBsA=;
+        b=bMAU9uV2hKL7hpNmWJL5zgd6nYjVsf8+DK2Nv8mEoEZ82B4r3ysWFXOwpVBKeWSj86dvEs
+        fc7zAusvcavorDC21mngn/eJ84YAnpbTgs09OUyxIlIX5r//kWiQfO7an2c3MSqocQks7e
+        oZKYupLif+ny3lTvtiipAQSVU/APWm0=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-91-mH4aE-NiOOCmi6Pnq535Mw-1; Fri, 01 Jul 2022 17:01:50 -0400
+X-MC-Unique: mH4aE-NiOOCmi6Pnq535Mw-1
+Received: by mail-qt1-f198.google.com with SMTP id n18-20020ac81e12000000b00318b16f53e0so1100075qtl.5
+        for <live-patching@vger.kernel.org>; Fri, 01 Jul 2022 14:01:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oWS3iKCOODVJzZhTrsjiDauwqc/b5M/Jyx7jN5NzBsA=;
+        b=0/21R2roV+FeHuSd2UeJnMmx4xKty1D/H5V7ZGm2ihNrAZjWbVsLDc6VtMQV3SgwKN
+         pO32TCHJFtwlveUN7aWUbwGuDb9o17CKIufKojliM1cL5byPzAWVoqheLQm0VdP4mDkJ
+         i6C4mP4V1FACRUwfEZIJH9cfHODgFKOowST2L/vGWswjiYl5MmSQphoKNIFLCGnZxhhm
+         Gy3weduhh45m6rNwebRD7ahsJItUeZ4sfKqL/61e6CPaGfg0Gepj9Rk853nsZoQsAeUG
+         /gCLvTj5x3hborIUeDkZfHkcf/pdWmWbDJqHlcK2Vu6U1n9P/Q9WDMx1tfeTEp42A4ba
+         dEtQ==
+X-Gm-Message-State: AJIora+M3YxAt1nfVNJmeQKMdKVcZ71zLCgmd9kMoSSLgf6Xn8hmH0rv
+        awecJuhek0IK/lnnLSOfkcQRqJUs9kptrD+K+Al0+wSYLJGVnniENrJBnXeznlDznDk/TmYdWW2
+        8ErQCUDcblhUGunVKEMFf6pD7JA==
+X-Received: by 2002:a05:622a:11c4:b0:31a:e88d:9a22 with SMTP id n4-20020a05622a11c400b0031ae88d9a22mr14787727qtk.306.1656709309944;
+        Fri, 01 Jul 2022 14:01:49 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sQS4hYX93lB+KXqbcEdZvtlNF41WuOs5OXuunyyl65rEVlNuRm1AHwL64onsSO4JIeEJbI1A==
+X-Received: by 2002:a05:622a:11c4:b0:31a:e88d:9a22 with SMTP id n4-20020a05622a11c400b0031ae88d9a22mr14787698qtk.306.1656709309680;
+        Fri, 01 Jul 2022 14:01:49 -0700 (PDT)
+Received: from treble ([162.251.124.25])
+        by smtp.gmail.com with ESMTPSA id h16-20020a05620a401000b006a6a7b4e7besm20599283qko.109.2022.07.01.14.01.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 14:01:49 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 14:01:44 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc:     live-patching@vger.kernel.org, mbenes@suse.cz, pmladek@suse.com,
+        nstange@suse.de
+Subject: Re: [PATCH 1/4] livepatch/shadow: Separate code to get or use
+ pre-allocated shadow variable
+Message-ID: <20220701210144.2wbrrmjswey2tilb@treble>
+References: <20220701194817.24655-1-mpdesouza@suse.com>
+ <20220701194817.24655-2-mpdesouza@suse.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RFC PATCH v2 19/20] arm64: Miscellaneous changes required for
- enabling livepatch
-Content-Language: en-US
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
-        mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
- <20220524001637.1707472-1-madvenka@linux.microsoft.com>
- <20220524001637.1707472-20-madvenka@linux.microsoft.com>
- <alpine.LSU.2.21.2207011609360.23331@pobox.suse.cz>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <alpine.LSU.2.21.2207011609360.23331@pobox.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220701194817.24655-2-mpdesouza@suse.com>
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,148 +78,29 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Thanks for the review.
+On Fri, Jul 01, 2022 at 04:48:14PM -0300, Marcos Paulo de Souza wrote:
+> From: Petr Mladek <pmladek@suse.com>
+> 
+> Separate code that is used in klp_shadow_get_or_alloc() under klp_mutex.
+> It splits a long spaghetti function into two. Also it unifies the error
+> handling. The old used a mix of duplicated code, direct returns,
+> and goto. The new code has only one unlock, free, and return calls.
+> 
+> Background: The change was needed by an earlier variant of the code adding
+> 	garbage collection of shadow variables. It is not needed in
+> 	the end. But the change still looks like an useful clean up.
+> 
+> It is code refactoring without any functional changes.
+> 
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-On 7/1/22 09:16, Miroslav Benes wrote:
-> Hi,
-> 
-> sorry for the late reply...
-> 
-> On Mon, 23 May 2022, madvenka@linux.microsoft.com wrote:
-> 
->> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
->>
->> 	- Create arch/arm64/include/asm/livepatch.h and define
->> 	  klp_arch_set_pc() and klp_get_ftrace_location() which
->> 	  are required for livepatch.
->>
->> 	- Define TIF_PATCH_PENDING in arch/arm64/include/asm/thread_info.h
->> 	  for livepatch.
->>
->> 	- Check TIF_PATCH_PENDING in do_notify_resume() to patch the
->> 	  current task for livepatch.
->>
->> Signed-off-by: Suraj Jitindar Singh <sjitindarsingh@gmail.com>
->> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
->> ---
->>  arch/arm64/include/asm/livepatch.h   | 42 ++++++++++++++++++++++++++++
->>  arch/arm64/include/asm/thread_info.h |  4 ++-
->>  arch/arm64/kernel/signal.c           |  4 +++
->>  3 files changed, 49 insertions(+), 1 deletion(-)
->>  create mode 100644 arch/arm64/include/asm/livepatch.h
->>
->> diff --git a/arch/arm64/include/asm/livepatch.h b/arch/arm64/include/asm/livepatch.h
->> new file mode 100644
->> index 000000000000..72d7cd86f158
->> --- /dev/null
->> +++ b/arch/arm64/include/asm/livepatch.h
->> @@ -0,0 +1,42 @@
->> +/* SPDX-License-Identifier: GPL-2.0
->> + *
->> + * livepatch.h - arm64-specific Kernel Live Patching Core
->> + */
->> +#ifndef _ASM_ARM64_LIVEPATCH_H
->> +#define _ASM_ARM64_LIVEPATCH_H
->> +
->> +#include <linux/ftrace.h>
->> +
->> +static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
->> +{
->> +	struct pt_regs *regs = ftrace_get_regs(fregs);
->> +
->> +	regs->pc = ip;
->> +}
-> 
-> kernel/livepatch/ does not use klp_arch_set_pc() anymore. It was replaced 
-> by ftrace_instruction_pointer_set() and 
-> CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS.
-> 
+Hi Marcos,
 
-OK. I will address this in the next version.
-Thanks for pointing it out.
+Invalid Signed-off-by chain, it will need your SOB added as well.
 
->> +/*
->> + * klp_get_ftrace_location is expected to return the address of the BL to the
->> + * relevant ftrace handler in the callsite. The location of this can vary based
->> + * on several compilation options.
->> + * CONFIG_DYNAMIC_FTRACE_WITH_REGS
->> + *	- Inserts 2 nops on function entry the second of which is the BL
->> + *	  referenced above. (See ftrace_init_nop() for the callsite sequence)
->> + *	  (this is required by livepatch and must be selected)
->> + * CONFIG_ARM64_BTI_KERNEL:
->> + *	- Inserts a hint #0x22 on function entry if the function is called
->> + *	  indirectly (to satisfy BTI requirements), which is inserted before
->> + *	  the two nops from above.
->> + */
->> +#define klp_get_ftrace_location klp_get_ftrace_location
->> +static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
->> +{
->> +	unsigned long addr = faddr + AARCH64_INSN_SIZE;
->> +
->> +#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
->> +	addr = ftrace_location_range(addr, addr + AARCH64_INSN_SIZE);
->> +#endif
->> +
->> +	return addr;
->> +}
-> 
-> This is not needed either. peterz improved the ftrace code and livepatch 
-> now uses ftrace_location() which gives the proper location directly.
-> 
+Also, when posting patches please add lkml to Cc so they're archived and
+visible to the wider community.
 
-OK. I will remove this in the next version.
+-- 
+Josh
 
->> diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
->> index e1317b7c4525..a1d8999dbdcc 100644
->> --- a/arch/arm64/include/asm/thread_info.h
->> +++ b/arch/arm64/include/asm/thread_info.h
->> @@ -68,6 +68,7 @@ int arch_dup_task_struct(struct task_struct *dst,
->>  #define TIF_UPROBE		4	/* uprobe breakpoint or singlestep */
->>  #define TIF_MTE_ASYNC_FAULT	5	/* MTE Asynchronous Tag Check Fault */
->>  #define TIF_NOTIFY_SIGNAL	6	/* signal notifications exist */
->> +#define TIF_PATCH_PENDING	7	/* pending live patching update */
->>  #define TIF_SYSCALL_TRACE	8	/* syscall trace active */
->>  #define TIF_SYSCALL_AUDIT	9	/* syscall auditing */
->>  #define TIF_SYSCALL_TRACEPOINT	10	/* syscall tracepoint for ftrace */
->> @@ -98,11 +99,12 @@ int arch_dup_task_struct(struct task_struct *dst,
->>  #define _TIF_SVE		(1 << TIF_SVE)
->>  #define _TIF_MTE_ASYNC_FAULT	(1 << TIF_MTE_ASYNC_FAULT)
->>  #define _TIF_NOTIFY_SIGNAL	(1 << TIF_NOTIFY_SIGNAL)
->> +#define _TIF_PATCH_PENDING	(1 << TIF_PATCH_PENDING)
->>  
->>  #define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_SIGPENDING | \
->>  				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
->>  				 _TIF_UPROBE | _TIF_MTE_ASYNC_FAULT | \
->> -				 _TIF_NOTIFY_SIGNAL)
->> +				 _TIF_NOTIFY_SIGNAL | _TIF_PATCH_PENDING)
->>  
->>  #define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
->>  				 _TIF_SYSCALL_TRACEPOINT | _TIF_SECCOMP | \
->> diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
->> index 4a4122ef6f39..cbec9597349f 100644
->> --- a/arch/arm64/kernel/signal.c
->> +++ b/arch/arm64/kernel/signal.c
->> @@ -17,6 +17,7 @@
->>  #include <linux/sizes.h>
->>  #include <linux/string.h>
->>  #include <linux/resume_user_mode.h>
->> +#include <linux/livepatch.h>
->>  #include <linux/ratelimit.h>
->>  #include <linux/syscalls.h>
->>  
->> @@ -938,6 +939,9 @@ void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
->>  					       (void __user *)NULL, current);
->>  			}
->>  
->> +			if (thread_flags & _TIF_PATCH_PENDING)
->> +				klp_update_patch_state(current);
->> +
->>  			if (thread_flags & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL))
->>  				do_signal(regs);
-> 
-> The rest should be fine.
-> 
-
-Thanks!
-
-Madhavan
