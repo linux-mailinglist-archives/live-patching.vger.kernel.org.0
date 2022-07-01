@@ -2,74 +2,138 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46BFF563C11
-	for <lists+live-patching@lfdr.de>; Fri,  1 Jul 2022 23:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4BE4563C38
+	for <lists+live-patching@lfdr.de>; Sat,  2 Jul 2022 00:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbiGAVth (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 1 Jul 2022 17:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
+        id S230194AbiGAWN5 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 1 Jul 2022 18:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiGAVtf (ORCPT
+        with ESMTP id S229722AbiGAWNz (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 1 Jul 2022 17:49:35 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A40F5925B;
-        Fri,  1 Jul 2022 14:49:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=fjeXK1KZbGprcvCBSDuxzycjeEJ3g+xJ7Sip51yEnQ8=; b=K3K5sLpPzzqguJkgowRr6+XHZE
-        zBcK98guCTsDg3wPwvINIEnbEeQtjm+2kx4yLPYv/eZi4oNGX2V6HzO90ge8K9k+EYDdlSR6nsgFY
-        uy3fewggenXepq689csZ95Ezwl0eoyYwQP0FnWNHNLril64eErscnKUX7Ut3nWsLpbpFheHes/+Ch
-        5hQuz5kVaErWQ11vQRPS+MF28uPlq9YlrzAkxMqeTtsYZEyUctWTCw1cbiCY8VzT29tUU1u8QLHoS
-        /uLTYUM+R5wXgt87nWZ1ASDkqjobPkaPN5h1BSBnk91/z73O0PASHu1OcwXJXREETewdBJhhVWLk3
-        vlriCCIg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o7OW6-00760i-Sx; Fri, 01 Jul 2022 21:49:34 +0000
-Date:   Fri, 1 Jul 2022 14:49:34 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-modules@vger.kernel.org,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, Alex Shi <alexs@kernel.org>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthias Maennich <maennich@google.com>,
-        Yanteng Si <siyanteng@loongson.cn>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] doc: module: update file references
-Message-ID: <Yr9r7nVASTv3cVky@bombadil.infradead.org>
-References: <20220613081741.1699713-1-masahiroy@kernel.org>
- <Yr9ryl7SiiAlMQ0f@bombadil.infradead.org>
+        Fri, 1 Jul 2022 18:13:55 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DE068A1A
+        for <live-patching@vger.kernel.org>; Fri,  1 Jul 2022 15:13:53 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so2902265otk.0
+        for <live-patching@vger.kernel.org>; Fri, 01 Jul 2022 15:13:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vIW1nHmpusRVF5xA8y8f60fs96mXWAcFdbwaab9mjTQ=;
+        b=AAiP3UDUcO0WW1eVydHEQqa/0yv6PGRxMGMWMq4CA6z1TjTc3RSmdqI+IxsZBR9Rxx
+         IkwgLoWFdwWT3VY/gZd6znbNEbl59FmAPzla9CILyjGcvqZAaHJhdgtZxcYRSpdxk1nx
+         moKiZb4Gu1/JExBVtUHDKtcc+yL+6POUFeNy8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vIW1nHmpusRVF5xA8y8f60fs96mXWAcFdbwaab9mjTQ=;
+        b=uPHVsB8KvnkJZ7ya2Tp1P0m1nNG1clH8TEmGMIzAeSD93h1adkVuLCKH5XyMTZlgn5
+         FYspuHtUhNSWBH21aT7EVHbvzH1rawFUmGimUSyoCLcE9/Sw4CRJIgIw7ny7u461alz9
+         71TI6GPSPbedDh1Pls4NYp+LK3Dw+VpN8chR4Y27QBTF0/zOSMo515UK1o/yMZG1YOY+
+         8O9Zac6MpUX1eM0ubBq5Vl5nCOwraOJKEjwGYTPHP34rMDJq3IN8BIVAqsJWWnuyF+Fp
+         0pjJtqY2Wf+ClyOcxN0QXOuR6eGYuvufMkMAdm+FUOQgL39e2Z2o1cmszYAGP3SJVG2B
+         EEiA==
+X-Gm-Message-State: AJIora/EB/wgCISdXmPV38k4FN4YG8QRebXPtzi3Fzgeq573V8IyWsBh
+        kg8558kDkauU01RJEhgWb2zJHg==
+X-Google-Smtp-Source: AGRyM1vwcKyX1NeGZPO3z+npoB1EW9K/fAsey9TXHIR98gOlceBgC9O5wUKh91o6R/hQY0yXFpq7tw==
+X-Received: by 2002:a05:6830:4186:b0:614:d750:825f with SMTP id r6-20020a056830418600b00614d750825fmr7670514otu.8.1656713633270;
+        Fri, 01 Jul 2022 15:13:53 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id l7-20020a056830268700b00616a2919312sm5660316otu.8.2022.07.01.15.13.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Jul 2022 15:13:52 -0700 (PDT)
+Subject: Re: [PATCH v2 0/2] livepatch: Move tests from lib/livepatch to
+ selftests/livepatch
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
+        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        shuah@kernel.org, jpoimboe@redhat.com, pmladek@suse.com,
+        joe.lawrence@redhat.com, Shuah Khan <skhan@linuxfoundation.org>
+References: <20220630141226.2802-1-mpdesouza@suse.com>
+ <3f9f91a3-4c08-52f4-1d3c-79f835271222@linuxfoundation.org>
+ <alpine.LSU.2.21.2207010931270.13603@pobox.suse.cz>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <8ff95ef5-db76-171d-4c4c-a84d9981290d@linuxfoundation.org>
+Date:   Fri, 1 Jul 2022 16:13:50 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yr9ryl7SiiAlMQ0f@bombadil.infradead.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <alpine.LSU.2.21.2207010931270.13603@pobox.suse.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 02:48:58PM -0700, Luis Chamberlain wrote:
-> On Mon, Jun 13, 2022 at 05:17:40PM +0900, Masahiro Yamada wrote:
-> > Adjust documents to the file moves made by commit cfc1d277891e ("module:
-> > Move all into module/").
-> > 
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+On 7/1/22 1:48 AM, Miroslav Benes wrote:
+> Hi Shuah,
 > 
-> Queued up, thanks!
+> On Thu, 30 Jun 2022, Shuah Khan wrote:
+> 
 
-Sorry, missed the v2, taking that.
+>>
+>> Sorry Nack on this. Let's not add modules under selftests. Any usage of
+>> module_init()
+>> doesn't belong under selftests.
+> 
+> as mentioned before, that ship has already sailed with
+> tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c. Anyway...
+> 
 
-  Luis
+Just because of one module under bpf doesn't mean that now we can add more.
+bpf test is some ways is not a good example or model to use. bpf test requires
+specific environment and its needs are different from other tests.
+
+> You wrote before that you did not have a problem with it. And you would
+> not have a problem with Marcos' approach if modules can be compiled and if
+> not, the tests would fail gracefully. What has changed? If you see a
+> problem in the patch set regarding this, can we fix it?
+>   
+
+Yes I did and after reviewing and thinking about it some more, I decided this
+is the right direction go down on.
+
+>> Leave these under lib and use KSTM_MODULE_LOADERS to load these modules that
+>> live under lib.
+> 
+> I may misunderstand but KSTM_MODULE_LOADERS does not seem to provide the
+> flexibility we need (yes, it could be hacked around, but I do not think
+> that the result would be nice). See what we have in
+> tools/testing/selftests/livepatch/functions.sh to make sure that a live
+> patch module is properly loaded and unloaded.
+> 
+> My main question is different though. As Marcos mentioned before, we would
+> like to have our tests really flexible and a possibility to prepare and
+> load different live patch modules based on a template is a part of it.
+> What is your proposal regarding this? I can imagine having a template in
+> lib/livepatch/ which would not be compilable and a script in
+> tools/testing/selftests/livepatch/ would copy it many times, amend the
+> copies (meaning parameters would be filled in with sed or the code would
+> be changed), compile them and load them. But this sounds horrible to me,
+> especially when compared to Marcos' approach in this patch set which is
+> quite straightforward.
+> 
+
+I have to think about this some more to get a better feel for the use-case.
+
+> Then there is an opportunity which Joe described. To run the latest
+> livepatch kselftests on an older kernel. Having test modules in lib/ is
+> kind of an obstacle there.
+> 
+
+You can revision match if you think you have to have kernel and livepatch
+test be the same version.
+
+thanks,
+-- Shuah
