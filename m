@@ -2,92 +2,512 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE187569958
-	for <lists+live-patching@lfdr.de>; Thu,  7 Jul 2022 06:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE41C56A68A
+	for <lists+live-patching@lfdr.de>; Thu,  7 Jul 2022 17:02:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbiGGEp2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 7 Jul 2022 00:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
+        id S235716AbiGGPBp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 7 Jul 2022 11:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbiGGEpT (ORCPT
+        with ESMTP id S235165AbiGGPBn (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 7 Jul 2022 00:45:19 -0400
-Received: from mail.tkos.co.il (golan.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A44B2F39F;
-        Wed,  6 Jul 2022 21:45:18 -0700 (PDT)
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id 2C552440A8D;
-        Thu,  7 Jul 2022 07:45:04 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1657169104;
-        bh=FGK7QmnEhBmCrN37IDaIYfnjxN45wAQlIljVzSBB5hU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=XB8KQuBDeJYkVZU2hdGcr4RJ2jCICGkl22cEQ0N3dxoz8Lekc/95N0or9DobcNn/h
-         t5zAktu2YqquUGhJ+WahoME2zgkYIo7LxRPvOTZkteRF5bKZ5eReVNhL3TyuiRhKNH
-         TziZwKLgy8xWqSuTjTGLFb2VR/R7QdvjyVaCA+xQ/5A5ZLLf3enMlVce/WC1ZRTgna
-         vKcxQ6QdHarOtoE+tvFeM/uPeHuRO6sZFGh76uBTTh3KBjJOpiuN4A7tja0I+fX/2N
-         kcWwDFHsLuB6ShahEsXBGUQjG99yQhSjdWASLQnVzrgpU4Y4QTdwP+ab1qprE/6FMU
-         0gqOtGTlciGCA==
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH] init/Kconfig: update KALLSYMS_ALL help text
-Date:   Thu,  7 Jul 2022 07:43:29 +0300
-Message-Id: <1de95f0bf3abc9f6f9ebd96814fab2dae042f410.1657169009.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.35.1
+        Thu, 7 Jul 2022 11:01:43 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A2BF265F;
+        Thu,  7 Jul 2022 08:01:42 -0700 (PDT)
+Received: from x64host.home (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7956C20DDC7F;
+        Thu,  7 Jul 2022 08:01:41 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7956C20DDC7F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1657206102;
+        bh=KKEBAsZWBwMqsrln6Hvmb70O+5SBFRLk9qP8liiFXXs=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=IJE/rUioNiYsL6LG7Tm2mBwtPiQ7SBIWhxQgzWbdBedvjS0T/SqOLtbzp6ZonlcHg
+         G4AyukvOuKJKwvkbr9Xcu3+2won4JKNuDNe4OHGj17Ofu9V43Jf6t7Po2ByJ9FJZeO
+         PdBAdxVwvr3lJY+7vSaYELmLbJT5LiV0k3wfRMzc=
+From:   madvenka@linux.microsoft.com
+To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
+        ardb@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        madvenka@linux.microsoft.com
+Subject: [PATCH v16 0/1] arm64: Reorganize the unwinder
+Date:   Thu,  7 Jul 2022 10:01:33 -0500
+Message-Id: <20220707150134.4614-1-madvenka@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <1be3f2d391cd5d29da988242375c5fbc79aebb8f>
+References: <1be3f2d391cd5d29da988242375c5fbc79aebb8f>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-CONFIG_KALLSYMS_ALL is required for kernel live patching which is a
-common use case that is enabled in some major distros. Update the
-Kconfig help text to reflect that.
+From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-While at it, s/e.g./i.e./ to match the text intention.
+I have synced this patch series to Will Deacon's branch:
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+	for-next/stacktrace
+
+where my two previous patches are merged.
+
+I have also removed the patches for reliability checks for two reasons:
+
+	- We may need some more structure for implementing reliability
+	  checks.
+
+	- I am working on an idea in a separate patch series to replace
+	  various reliability checks with a single one that validates
+	  the frame pointer.
+
+Redefine the unwinder loop
+==========================
+
+Redefine the unwinder loop and make it similar to X86.
+
+	for (unwind_start(&state, task, regs); !unwind_done(state);
+	     unwind_next(state)) {
+
+		if (unwind_failed(state)) {
+			/* PC is suspect. Cannot consume it. */
+			return;
+		}
+
+		if (!consume_entry(cookie, state->pc)) {
+			/* Caller terminated the unwind. */
+			return;
+		}
+	}
+
+Define the helper functions unwind_start(), unwind_done() and
+unwind_failed().
+
 ---
- init/Kconfig | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+Changelog:
+v16:
+	From Mark Rutland:
 
-diff --git a/init/Kconfig b/init/Kconfig
-index c7900e8975f1..20ef72dd6f44 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1722,16 +1722,17 @@ config KALLSYMS_ALL
- 	help
- 	  Normally kallsyms only contains the symbols of functions for nicer
- 	  OOPS messages and backtraces (i.e., symbols from the text and inittext
--	  sections). This is sufficient for most cases. And only in very rare
--	  cases (e.g., when a debugger is used) all symbols are required (e.g.,
--	  names of variables from the data sections, etc).
-+	  sections). This is sufficient for most cases. And only if you want to
-+	  enable kernel live patching, or other less common use cases (e.g.,
-+	  when a debugger is used) all symbols are required (i.e., names of
-+	  variables from the data sections, etc).
- 
- 	  This option makes sure that all symbols are loaded into the kernel
- 	  image (i.e., symbols from all sections) in cost of increased kernel
- 	  size (depending on the kernel configuration, it may be 300KiB or
- 	  something like this).
- 
--	  Say N unless you really need all symbols.
-+	  Say N unless you really need all symbols, or kernel live patching.
- 
- config KALLSYMS_ABSOLUTE_PERCPU
- 	bool
+	- The structure is not exactly like X86.
+
+	- Do not centralize all the checks in one function.
+
+	- Wrap the checking of the final frame in a helper function.
+
+	- The rest of the comments are about the reliability checks.
+	  I have removed the reliability checks.
+
+v15:
+	From Mark Brown:
+
+	- Sync this patch series to v5.19-rc2.
+
+	From Madhavan T. Venkataraman:
+
+	- Remove patch 07 from the series:
+
+Subject: [PATCH v14 7/7] arm64: Select HAVE_RELIABLE_STACKTRACE
+
+	  as HAVE_RELIABLE_STACKTRACE depends on STACK_VALIDATION which is
+	  not present yet. This patch will be added in the future once
+	  Objtool is enhanced to provide stack validation in some form.
+
+v14:
+	From Mark Rutland, Mark Brown:
+
+	- Add requirements for the three helper functions that init a stack
+	  trace.
+
+	From Mark Rutland:
+
+	- Change the comment for the task field in struct stackframe.
+
+	- Hard code the task to current in unwind_init_from_regs(). Add a
+	  sanity check task == current.
+
+	- Rename unwind_init_from_current() to unwind_init_from_caller().
+
+	- Remove task argument from unwind_init_from_caller().
+
+	From Mark Brown:
+
+	- Reviewed-By: for:
+
+	[PATCH v13 05/11] arm64: Copy the task argument to unwind_state
+v13:
+	From Mark Brown:
+
+	- Reviewed-by for the following:
+
+	[PATCH v12 03/10] arm64: Rename stackframe to unwind_state
+	[PATCH v11 05/10] arm64: Copy unwind arguments to unwind_state
+	[PATCH v11 07/10] arm64: Introduce stack trace reliability checks
+	                  in the unwinder
+	[PATCH v11 5/5] arm64: Create a list of SYM_CODE functions, check
+	                return PC against list
+
+	From Mark Rutland:
+
+	- Reviewed-by for the following:
+
+	[PATCH v12 01/10] arm64: Remove NULL task check from unwind_frame()
+	[PATCH v12 02/10] arm64: Rename unwinder functions
+	[PATCH v12 03/10] arm64: Rename stackframe to unwind_state
+
+	- For each of the 3 cases of unwind initialization, have a separate
+	  init function. Call the common init from each of these init
+	  functions rather than call it separately.
+
+	- Only copy the task argument to arch_stack_walk() into
+	  unwind state. Pass the rest of the arguments as arguments to
+	  unwind functions.
+
+v12:
+	From Mark Brown:
+
+	- Reviewed-by for the following:
+
+	[PATCH v11 1/5] arm64: Call stack_backtrace() only from within
+	                walk_stackframe()
+	[PATCH v11 2/5] arm64: Rename unwinder functions
+	[PATCH v11 3/5] arm64: Make the unwind loop in unwind() similar to
+	                other architectures
+	[PATCH v11 5/5] arm64: Create a list of SYM_CODE functions, check
+	                return PC against list
+
+	- Add an extra patch at the end to select HAVE_RELIABLE_STACKTRACE
+	  just as a place holder for the review. I have added it and made
+	  it conditional on STACK_VALIDATION which has not yet been
+	  implemented.
+
+	- Mark had a concern about the code for the check for the final
+	  frame being repeated in two places. I have now added a new
+	  field called "final_fp" in struct stackframe which I compute
+	  once in stacktrace initialization. I have added an explicit
+	  comment that the stacktrace must terminate at the final_fp.
+
+	- Place the implementation of arch_stack_walk_reliable() in a
+	  separate patch after all the reliability checks have been
+	  implemented.
+
+	From Mark Rutland:
+
+	- Place the removal of the NULL task check in unwind_frame() in
+	  a separate patch.
+
+	- Add a task field to struct stackframe so the task pointer can be
+	  passed around via the frame instead of as a separate argument. I have
+	  taken this a step further by copying all of the arguments to
+	  arch_stack_walk() into struct stackframe so that only that
+	  struct needs to be passed to unwind functions.
+
+	- Rename start_backtrace() to unwind_init() instead of unwind_start().
+
+	- Acked-by for the following:
+
+	[PATCH v11 2/5] arm64: Rename unwinder functions
+
+	- Rename "struct stackframe" to "struct unwind_state".
+
+	- Define separate inline functions for initializing the starting
+	  FP and PC from regs, or caller, or blocked task. Don't merge
+	  unwind_init() into unwind().
+
+v11:
+	From Mark Rutland:
+
+	- Peter Zijlstra has submitted patches that make ARCH_STACKWALK
+	  independent of STACKTRACE. Mark Rutland extracted some of the
+	  patches from my v10 series and added his own patches and comments,
+	  rebased it on top of Peter's changes and submitted the series.
+	  
+	  So, I have rebased the rest of the patches from v10 on top of
+	  Mark Rutland's changes.
+
+	- Split the renaming of the unwinder functions and annotating them
+	  with notrace and NOKPROBE_SYMBOL(). Also, there is currently no
+	  need to annotate unwind_start() as its caller is already annotated
+	  properly. So, I am removing the annotation patch from the series.
+	  This can be done separately later if deemed necessary. Similarly,
+	  I have removed the annotations from unwind_check_reliability() and
+	  unwind_continue().
+
+	From Nobuta Keiya:
+
+	- unwind_start() should check for final frame and not mark the
+	  final frame unreliable.
+
+v9, v10:
+	- v9 had a threading problem. So, I resent it as v10.
+
+	From me:
+
+	- Removed the word "RFC" from the subject line as I believe this
+	  is mature enough to be a regular patch.
+
+	From Mark Brown, Mark Rutland:
+
+	- Split the patches into smaller, self-contained ones.
+
+	- Always enable STACKTRACE so that arch_stack_walk() is always
+	  defined.
+
+	From Mark Rutland:
+
+	- Update callchain_trace() take the return value of
+	  perf_callchain_store() into acount.
+
+	- Restore get_wchan() behavior to the original code.
+
+	- Simplify an if statement in dump_backtrace().
+
+	From Mark Brown:
+
+	- Do not abort the stack trace on the first unreliable frame.
+
+	
+v8:
+	- Synced to v5.14-rc5.
+
+	From Mark Rutland:
+
+	- Make the unwinder loop similar to other architectures.
+
+	- Keep details to within the unwinder functions and return a simple
+	  boolean to the caller.
+
+	- Convert some of the current code that contains unwinder logic to
+	  simply use arch_stack_walk(). I have converted all of them.
+
+	- Do not copy sym_code_functions[]. Just place it in rodata for now.
+
+	- Have the main loop check for termination conditions rather than
+	  having unwind_frame() check for them. In other words, let
+	  unwind_frame() assume that the fp is valid.
+
+	- Replace the big comment for SYM_CODE functions with a shorter
+	  comment.
+
+		/*
+		 * As SYM_CODE functions don't follow the usual calling
+		 * conventions, we assume by default that any SYM_CODE function
+		 * cannot be unwound reliably.
+		 *
+		 * Note that this includes:
+		 *
+		 * - Exception handlers and entry assembly
+		 * - Trampoline assembly (e.g., ftrace, kprobes)
+		 * - Hypervisor-related assembly
+		 * - Hibernation-related assembly
+		 * - CPU start-stop, suspend-resume assembly
+		 * - Kernel relocation assembly
+		 */
+
+v7:
+	The Mailer screwed up the threading on this. So, I have resent this
+	same series as version 8 with proper threading to avoid confusion.
+v6:
+	From Mark Rutland:
+
+	- The per-frame reliability concept and flag are acceptable. But more
+	  work is needed to make the per-frame checks more accurate and more
+	  complete. E.g., some code reorg is being worked on that will help.
+
+	  I have now removed the frame->reliable flag and deleted the whole
+	  concept of per-frame status. This is orthogonal to this patch series.
+	  Instead, I have improved the unwinder to return proper return codes
+	  so a caller can take appropriate action without needing per-frame
+	  status.
+
+	- Remove the mention of PLTs and update the comment.
+
+	  I have replaced the comment above the call to __kernel_text_address()
+	  with the comment suggested by Mark Rutland.
+
+	Other comments:
+
+	- Other comments on the per-frame stuff are not relevant because
+	  that approach is not there anymore.
+
+v5:
+	From Keiya Nobuta:
+	
+	- The term blacklist(ed) is not to be used anymore. I have changed it
+	  to unreliable. So, the function unwinder_blacklisted() has been
+	  changed to unwinder_is_unreliable().
+
+	From Mark Brown:
+
+	- Add a comment for the "reliable" flag in struct stackframe. The
+	  reliability attribute is not complete until all the checks are
+	  in place. Added a comment above struct stackframe.
+
+	- Include some of the comments in the cover letter in the actual
+	  code so that we can compare it with the reliable stack trace
+	  requirements document for completeness. I have added a comment:
+
+	  	- above unwinder_is_unreliable() that lists the requirements
+		  that are addressed by the function.
+
+		- above the __kernel_text_address() call about all the cases
+		  the call covers.
+
+v4:
+	From Mark Brown:
+
+	- I was checking the return PC with __kernel_text_address() before
+	  the Function Graph trace handling. Mark Brown felt that all the
+	  reliability checks should be performed on the original return PC
+	  once that is obtained. So, I have moved all the reliability checks
+	  to after the Function Graph Trace handling code in the unwinder.
+	  Basically, the unwinder should perform PC translations first (for
+	  rhe return trampoline for Function Graph Tracing, Kretprobes, etc).
+	  Then, the reliability checks should be applied to the resulting
+	  PC.
+
+	- Mark said to improve the naming of the new functions so they don't
+	  collide with existing ones. I have used a prefix "unwinder_" for
+	  all the new functions.
+
+	From Josh Poimboeuf:
+
+	- In the error scenarios in the unwinder, the reliable flag in the
+	  stack frame should be set. Implemented this.
+
+	- Some of the other comments are not relevant to the new code as
+	  I have taken a different approach in the new code. That is why
+	  I have not made those changes. E.g., Ard wanted me to add the
+	  "const" keyword to the global section array. That array does not
+	  exist in v4. Similarly, Mark Brown said to use ARRAY_SIZE() for
+	  the same array in a for loop.
+
+	Other changes:
+
+	- Add a new definition for SYM_CODE_END() that adds the address
+	  range of the function to a special section called
+	  "sym_code_functions".
+
+	- Include the new section under initdata in vmlinux.lds.S.
+
+	- Define an early_initcall() to copy the contents of the
+	  "sym_code_functions" section to an array by the same name.
+
+	- Define a function unwinder_blacklisted() that compares a return
+	  PC against sym_code_sections[]. If there is a match, mark the
+	  stack trace unreliable. Call this from unwind_frame().
+
+v3:
+	- Implemented a sym_code_ranges[] array to contains sections bounds
+	  for text sections that contain SYM_CODE_*() functions. The unwinder
+	  checks each return PC against the sections. If it falls in any of
+	  the sections, the stack trace is marked unreliable.
+
+	- Moved SYM_CODE functions from .text and .init.text into a new
+	  text section called ".code.text". Added this section to
+	  vmlinux.lds.S and sym_code_ranges[].
+
+	- Fixed the logic in the unwinder that handles Function Graph
+	  Tracer return trampoline.
+
+	- Removed all the previous code that handles:
+		- ftrace entry code for traced function
+		- special_functions[] array that lists individual functions
+		- kretprobe_trampoline() special case
+
+v2
+	- Removed the terminating entry { 0, 0 } in special_functions[]
+	  and replaced it with the idiom { /* sentinel */ }.
+
+	- Change the ftrace trampoline entry ftrace_graph_call in
+	  special_functions[] to ftrace_call + 4 and added explanatory
+	  comments.
+
+	- Unnested #ifdefs in special_functions[] for FTRACE.
+
+v1
+	- Define a bool field in struct stackframe. This will indicate if
+	  a stack trace is reliable.
+
+	- Implement a special_functions[] array that will be populated
+	  with special functions in which the stack trace is considered
+	  unreliable.
+	
+	- Using kallsyms_lookup(), get the address ranges for the special
+	  functions and record them.
+
+	- Implement an is_reliable_function(pc). This function will check
+	  if a given return PC falls in any of the special functions. If
+	  it does, the stack trace is unreliable.
+
+	- Implement check_reliability() function that will check if a
+	  stack frame is reliable. Call is_reliable_function() from
+	  check_reliability().
+
+	- Before a return PC is checked against special_funtions[], it
+	  must be validates as a proper kernel text address. Call
+	  __kernel_text_address() from check_reliability().
+
+	- Finally, call check_reliability() from unwind_frame() for
+	  each stack frame.
+
+	- Add EL1 exception handlers to special_functions[].
+
+		el1_sync();
+		el1_irq();
+		el1_error();
+		el1_sync_invalid();
+		el1_irq_invalid();
+		el1_fiq_invalid();
+		el1_error_invalid();
+
+	- The above functions are currently defined as LOCAL symbols.
+	  Make them global so that they can be referenced from the
+	  unwinder code.
+
+	- Add FTRACE trampolines to special_functions[]:
+
+		ftrace_graph_call()
+		ftrace_graph_caller()
+		return_to_handler()
+
+	- Add the kretprobe trampoline to special functions[]:
+
+		kretprobe_trampoline()
+
+Previous versions and discussion
+================================
+
+v15: https://lore.kernel.org/linux-arm-kernel/20220617180219.20352-1-madvenka@linux.microsoft.com/T/#t
+v14: https://lore.kernel.org/linux-arm-kernel/20220413140528.3815-1-madvenka@linux.microsoft.com/T/#t
+v13: https://lore.kernel.org/linux-arm-kernel/20220117145608.6781-1-madvenka@linux.microsoft.com/T/#t
+v12: https://lore.kernel.org/linux-arm-kernel/20220103165212.9303-1-madvenka@linux.microsoft.com/T/#m21e86eecb9b8f0831196568f0bf62c3b56f65bf0
+v11: https://lore.kernel.org/linux-arm-kernel/20211123193723.12112-1-madvenka@linux.microsoft.com/T/#t
+v10: https://lore.kernel.org/linux-arm-kernel/4b3d5552-590c-e6a0-866b-9bc51da7bebf@linux.microsoft.com/T/#t
+v9: Mailer screwed up the threading. Sent the same as v10 with proper threading.
+v8: https://lore.kernel.org/linux-arm-kernel/20210812190603.25326-1-madvenka@linux.microsoft.com/
+v7: Mailer screwed up the threading. Sent the same as v8 with proper threading.
+v6: https://lore.kernel.org/linux-arm-kernel/20210630223356.58714-1-madvenka@linux.microsoft.com/
+v5: https://lore.kernel.org/linux-arm-kernel/20210526214917.20099-1-madvenka@linux.microsoft.com/
+v4: https://lore.kernel.org/linux-arm-kernel/20210516040018.128105-1-madvenka@linux.microsoft.com/
+v3: https://lore.kernel.org/linux-arm-kernel/20210503173615.21576-1-madvenka@linux.microsoft.com/
+v2: https://lore.kernel.org/linux-arm-kernel/20210405204313.21346-1-madvenka@linux.microsoft.com/
+v1: https://lore.kernel.org/linux-arm-kernel/20210330190955.13707-1-madvenka@linux.microsoft.com/
+
+Madhavan T. Venkataraman (1):
+  arm64: Make the unwind loop similar to other architectures
+
+ arch/arm64/kernel/stacktrace.c | 121 ++++++++++++++++++++++-----------
+ 1 file changed, 81 insertions(+), 40 deletions(-)
+
+
+base-commit: 82a592c13b0aeff94d84d54183dae0b26384c95f
 -- 
-2.35.1
+2.25.1
 
