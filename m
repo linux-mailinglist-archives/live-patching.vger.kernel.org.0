@@ -2,84 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 476EA571B6B
-	for <lists+live-patching@lfdr.de>; Tue, 12 Jul 2022 15:37:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27B6571C83
+	for <lists+live-patching@lfdr.de>; Tue, 12 Jul 2022 16:28:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229843AbiGLNg6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 12 Jul 2022 09:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52024 "EHLO
+        id S233225AbiGLO23 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 12 Jul 2022 10:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiGLNg5 (ORCPT
+        with ESMTP id S231852AbiGLO2K (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:36:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1B2B6548;
-        Tue, 12 Jul 2022 06:36:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01682B818CF;
-        Tue, 12 Jul 2022 13:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C604AC3411C;
-        Tue, 12 Jul 2022 13:36:51 +0000 (UTC)
-Date:   Tue, 12 Jul 2022 09:36:50 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>, Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 0/5] ftrace: host klp and bpf trampoline
- together
-Message-ID: <20220712093650.5520d4a2@gandalf.local.home>
-In-Reply-To: <8B0FCB44-6241-4220-A1AE-CF91AAA25777@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
-        <20220711195552.22c3a4be@gandalf.local.home>
-        <8B0FCB44-6241-4220-A1AE-CF91AAA25777@fb.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 12 Jul 2022 10:28:10 -0400
+X-Greylist: delayed 529 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 07:28:04 PDT
+Received: from host6638.shserver.it (host6638.shserver.it [88.198.107.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29DBB93D5
+        for <live-patching@vger.kernel.org>; Tue, 12 Jul 2022 07:28:04 -0700 (PDT)
+Received: by host6638.shserver.it (Postfix, from userid 10000)
+        id A040D5F9BA; Tue, 12 Jul 2022 14:19:13 +0000 (UTC)
+To:     live-patching@vger.kernel.org
+Subject: =?UTF-8?Q?=F0=9F=92=9B_Christina_want_to_play_with_you!_Star?=  =?UTF-8?Q?t_Game:_https://letsg0dancing.page.link/go=3Fkic_?=  =?UTF-8?Q?=F0=9F=92=9B_Send_To_Friend_xblc3z?=
+Date:   Tue, 12 Jul 2022 14:19:13 +0000
+From:   WordPress <info@escortplanet.eu>
+Reply-To: live-patching@vger.kernel.org
+Message-ID: <pNVclCiBjUFM2CHpGkd8py579qpxxQQ2poy0bnpoHhA@escortplanet.eu>
+X-Mailer: PHPMailer 6.4.1 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_50,PLING_QUERY,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 12 Jul 2022 05:15:26 +0000
-Song Liu <songliubraving@fb.com> wrote:
+Dear xblc3z,
 
-> > On Jul 11, 2022, at 4:55 PM, Steven Rostedt <rostedt@goodmis.org> wrote:
-> > 
-> > I just realized that none of the live kernel patching folks are Cc'd on
-> > this thread. I think they will care much more about this than I do.  
-> 
-> vger.kernel.org often drops my email when the CC list is too long. So I
+Check this profile!
 
-Oh, they fixed that. I've had over 20 Cc's and it still works. ;-)
+Your friend 💛 Christina want to play with you! Start Game: https://letsg0dancing.page.link/go?kic 💛 visited https://escortplanet.eu/escort/italia/abruzzo/montesilvano/bella-bambola-escort-incontri-23974/ and thought you might be interested
+in the following link:
+https://escortplanet.eu/escort/italia/abruzzo/montesilvano/bella-bambola-escort-incontri-23974/
 
-> try to keep the list short. In this case, since we are not changing live
-> patch code, and there isn't any negative impact for live patch side, I 
-> didn't CC live patch folks. 
+cgnpkj
 
-It affects them indirectly, and they should be aware of what is happening
-underneath.
+Best regards,
+SiteName.com
 
-> 
-> I will at least CC live-patching@ in the next version. 
+This e-mail was sent from a contact form on EscortPlanet.eu ( https://escortplanet.eu/escort/italia/abruzzo/montesilvano/bella-bambola-escort-incontri-23974/ )
 
-Thanks.
-
--- Steve
