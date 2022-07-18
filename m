@@ -2,62 +2,63 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A2EF5779A1
-	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 04:36:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 544E85779B5
+	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 05:17:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbiGRCgO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sun, 17 Jul 2022 22:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S231629AbiGRDRb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 17 Jul 2022 23:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiGRCgO (ORCPT
+        with ESMTP id S229535AbiGRDRa (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sun, 17 Jul 2022 22:36:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B3412AD7;
-        Sun, 17 Jul 2022 19:36:13 -0700 (PDT)
+        Sun, 17 Jul 2022 23:17:30 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2D9E0DF;
+        Sun, 17 Jul 2022 20:17:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658111773; x=1689647773;
+  t=1658114249; x=1689650249;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=/M65rZf+LykCHFKChzYC+mMCtapWFiOrqIQyyPkk7vo=;
-  b=QND2PAGrtmeioGLK63JTZDQjWe1d3K6kCi/kGsHoojvjkisfMLHEkG6+
-   8Nj7I4kaDsdbRhovKr2Q20/WR8UOKu2yH209UtzMKerw9bzuj2UFlteBf
-   G10B3njXR76WHxweQzIyCk0VcbEO7il2C5WT6e3xdHEDgwycddL8ywXCt
-   AnH1mppWaRZ4KgZDpGwLPKJ0YKHlZjcCdrWYIoTXNHvej85IPpcBVb2zM
-   sZ/yAkKdsBET5JUwAoHeUzGPFfuxMhnMrYn5OkReSQqM67bW2WN108G+k
-   btYNAWhAL3EBwZ1PkJita5SebcWnYCdu/bWrdZ8Na8wTDxYvJN9E8s7Ri
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="311794674"
+  bh=wHnlpTyopzPYx4i3Zg8EzixyCbO3HkFrf2vWUj6FbC8=;
+  b=Kqr6RqYbrHAVykAig/irXNv+KvDtZMCZzfydO4GvY0fdm4+E+XqcbBQe
+   3Ryw05RDkBRHLS6SGgKcLl+htc1O7ue2PQIM/TVVO3YKeO0VNnkivVO/L
+   gLm0uNZWweWGI41TgpN8rks3oivNyE4NB3J3+sEnVVjzfkJe88NT2MngS
+   IbO8egl1NAaAT/Td2XafczeQCYfEm7F9gaKdi9g3FBBzzGgUz308ZoPeF
+   EY9MOWqMlWU3D7c31xbKmRiBPFXMBK+kJbMGLvKvVj0lW4+aI5ynL8M70
+   ZC9TpJLqrqml9Oe0drxtqoF+ztj2CZdLMhMcA7fdJl6L2UnzD+JkpjXmX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="286858663"
 X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
-   d="scan'208";a="311794674"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 19:36:13 -0700
+   d="scan'208";a="286858663"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 20:17:14 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
-   d="scan'208";a="629755398"
+   d="scan'208";a="547317801"
 Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 17 Jul 2022 19:36:10 -0700
+  by orsmga003.jf.intel.com with ESMTP; 17 Jul 2022 20:17:11 -0700
 Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1oDGcD-0003vg-Ox;
-        Mon, 18 Jul 2022 02:36:09 +0000
-Date:   Mon, 18 Jul 2022 10:35:52 +0800
+        id 1oDHFv-0003yU-78;
+        Mon, 18 Jul 2022 03:17:11 +0000
+Date:   Mon, 18 Jul 2022 11:16:23 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, daniel@iogearbox.net, kernel-team@fb.com,
-        jolsa@kernel.org, rostedt@goodmis.org, Song Liu <song@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        daniel@iogearbox.net, kernel-team@fb.com, jolsa@kernel.org,
+        rostedt@goodmis.org, Song Liu <song@kernel.org>
 Subject: Re: [PATCH v3 bpf-next 2/4] ftrace: allow IPMODIFY and DIRECT ops on
  the same function
-Message-ID: <202207181033.RY6WO0I5-lkp@intel.com>
+Message-ID: <202207181116.PO2cQ09B-lkp@intel.com>
 References: <20220718001405.2236811-3-song@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20220718001405.2236811-3-song@kernel.org>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,93 +75,89 @@ I love your patch! Yet something to improve:
 
 url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220718-081533
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: x86_64-randconfig-a006 (https://download.01.org/0day-ci/archive/20220718/202207181033.RY6WO0I5-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+config: powerpc-randconfig-r023-20220717 (https://download.01.org/0day-ci/archive/20220718/202207181116.PO2cQ09B-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d74b88c69dc2644bd0dc5d64e2d7413a0d4040e5)
 reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install powerpc cross compiling tool for clang build
+        # apt-get install binutils-powerpc-linux-gnu
         # https://github.com/intel-lab-lkp/linux/commit/1535f287d288f9b7540ec50f56da1fe437ac6512
         git remote add linux-review https://github.com/intel-lab-lkp/linux
         git fetch --no-tags linux-review Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220718-081533
         git checkout 1535f287d288f9b7540ec50f56da1fe437ac6512
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash kernel/trace/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   In file included from include/linux/rhashtable-types.h:14,
-                    from include/linux/ipc.h:7,
-                    from include/uapi/linux/sem.h:5,
-                    from include/linux/sem.h:5,
-                    from include/linux/sched.h:15,
-                    from include/linux/ratelimit.h:6,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from include/linux/node.h:18,
-                    from include/linux/cpu.h:17,
-                    from include/linux/stop_machine.h:5,
-                    from kernel/trace/ftrace.c:17:
-   kernel/trace/ftrace.c: In function 'prepare_direct_functions_for_ipmodify':
->> kernel/trace/ftrace.c:8082:21: error: 'direct_mutex' undeclared (first use in this function); did you mean 'event_mutex'?
-    8082 |         mutex_lock(&direct_mutex);
-         |                     ^~~~~~~~~~~~
-   include/linux/mutex.h:187:44: note: in definition of macro 'mutex_lock'
-     187 | #define mutex_lock(lock) mutex_lock_nested(lock, 0)
-         |                                            ^~~~
-   kernel/trace/ftrace.c:8082:21: note: each undeclared identifier is reported only once for each function it appears in
-    8082 |         mutex_lock(&direct_mutex);
-         |                     ^~~~~~~~~~~~
-   include/linux/mutex.h:187:44: note: in definition of macro 'mutex_lock'
-     187 | #define mutex_lock(lock) mutex_lock_nested(lock, 0)
-         |                                            ^~~~
->> kernel/trace/ftrace.c:8084:19: error: 'struct ftrace_ops' has no member named 'func_hash'
-    8084 |         hash = ops->func_hash->filter_hash;
-         |                   ^~
->> kernel/trace/ftrace.c:8095:37: error: implicit declaration of function 'ops_references_ip' [-Werror=implicit-function-declaration]
-    8095 |                                 if (ops_references_ip(op, ip)) {
-         |                                     ^~~~~~~~~~~~~~~~~
->> kernel/trace/ftrace.c:8103:40: error: 'struct ftrace_ops' has no member named 'ops_func'
-    8103 |                                 if (!op->ops_func) {
-         |                                        ^~
-   kernel/trace/ftrace.c:8107:41: error: 'struct ftrace_ops' has no member named 'ops_func'
-    8107 |                                 ret = op->ops_func(op, FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_PEER);
-         |                                         ^~
-   kernel/trace/ftrace.c: In function 'register_ftrace_function':
-   kernel/trace/ftrace.c:8158:31: error: 'direct_mutex' undeclared (first use in this function); did you mean 'event_mutex'?
-    8158 |                 mutex_unlock(&direct_mutex);
-         |                               ^~~~~~~~~~~~
-         |                               event_mutex
-   In file included from include/linux/rhashtable-types.h:14,
-                    from include/linux/ipc.h:7,
-                    from include/uapi/linux/sem.h:5,
-                    from include/linux/sem.h:5,
-                    from include/linux/sched.h:15,
-                    from include/linux/ratelimit.h:6,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from include/linux/node.h:18,
-                    from include/linux/cpu.h:17,
-                    from include/linux/stop_machine.h:5,
-                    from kernel/trace/ftrace.c:17:
-   kernel/trace/ftrace.c: In function 'cleanup_direct_functions_after_ipmodify':
-   kernel/trace/ftrace.c:8178:21: error: 'direct_mutex' undeclared (first use in this function); did you mean 'event_mutex'?
-    8178 |         mutex_lock(&direct_mutex);
-         |                     ^~~~~~~~~~~~
-   include/linux/mutex.h:187:44: note: in definition of macro 'mutex_lock'
-     187 | #define mutex_lock(lock) mutex_lock_nested(lock, 0)
-         |                                            ^~~~
-   kernel/trace/ftrace.c:8180:19: error: 'struct ftrace_ops' has no member named 'func_hash'
-    8180 |         hash = ops->func_hash->filter_hash;
-         |                   ^~
-   kernel/trace/ftrace.c:8199:43: error: 'struct ftrace_ops' has no member named 'ops_func'
-    8199 |                         if (found_op && op->ops_func)
-         |                                           ^~
-   kernel/trace/ftrace.c:8200:35: error: 'struct ftrace_ops' has no member named 'ops_func'
-    8200 |                                 op->ops_func(op, FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY_PEER);
-         |                                   ^~
-   cc1: some warnings being treated as errors
+   kernel/trace/ftrace.c:299:5: warning: no previous prototype for function '__register_ftrace_function' [-Wmissing-prototypes]
+   int __register_ftrace_function(struct ftrace_ops *ops)
+       ^
+   kernel/trace/ftrace.c:299:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __register_ftrace_function(struct ftrace_ops *ops)
+   ^
+   static 
+   kernel/trace/ftrace.c:342:5: warning: no previous prototype for function '__unregister_ftrace_function' [-Wmissing-prototypes]
+   int __unregister_ftrace_function(struct ftrace_ops *ops)
+       ^
+   kernel/trace/ftrace.c:342:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __unregister_ftrace_function(struct ftrace_ops *ops)
+   ^
+   static 
+   kernel/trace/ftrace.c:4030:15: warning: no previous prototype for function 'arch_ftrace_match_adjust' [-Wmissing-prototypes]
+   char * __weak arch_ftrace_match_adjust(char *str, const char *search)
+                 ^
+   kernel/trace/ftrace.c:4030:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   char * __weak arch_ftrace_match_adjust(char *str, const char *search)
+   ^
+   static 
+>> kernel/trace/ftrace.c:8082:14: error: use of undeclared identifier 'direct_mutex'; did you mean 'event_mutex'?
+           mutex_lock(&direct_mutex);
+                       ^~~~~~~~~~~~
+                       event_mutex
+   include/linux/mutex.h:187:44: note: expanded from macro 'mutex_lock'
+   #define mutex_lock(lock) mutex_lock_nested(lock, 0)
+                                              ^
+   kernel/trace/trace.h:1523:21: note: 'event_mutex' declared here
+   extern struct mutex event_mutex;
+                       ^
+   kernel/trace/ftrace.c:8122:16: error: use of undeclared identifier 'direct_mutex'; did you mean 'event_mutex'?
+           mutex_unlock(&direct_mutex);
+                         ^~~~~~~~~~~~
+                         event_mutex
+   kernel/trace/trace.h:1523:21: note: 'event_mutex' declared here
+   extern struct mutex event_mutex;
+                       ^
+   kernel/trace/ftrace.c:8158:17: error: use of undeclared identifier 'direct_mutex'; did you mean 'event_mutex'?
+                   mutex_unlock(&direct_mutex);
+                                 ^~~~~~~~~~~~
+                                 event_mutex
+   kernel/trace/trace.h:1523:21: note: 'event_mutex' declared here
+   extern struct mutex event_mutex;
+                       ^
+   kernel/trace/ftrace.c:8178:14: error: use of undeclared identifier 'direct_mutex'; did you mean 'event_mutex'?
+           mutex_lock(&direct_mutex);
+                       ^~~~~~~~~~~~
+                       event_mutex
+   include/linux/mutex.h:187:44: note: expanded from macro 'mutex_lock'
+   #define mutex_lock(lock) mutex_lock_nested(lock, 0)
+                                              ^
+   kernel/trace/trace.h:1523:21: note: 'event_mutex' declared here
+   extern struct mutex event_mutex;
+                       ^
+   kernel/trace/ftrace.c:8203:16: error: use of undeclared identifier 'direct_mutex'; did you mean 'event_mutex'?
+           mutex_unlock(&direct_mutex);
+                         ^~~~~~~~~~~~
+                         event_mutex
+   kernel/trace/trace.h:1523:21: note: 'event_mutex' declared here
+   extern struct mutex event_mutex;
+                       ^
+   3 warnings and 5 errors generated.
 
 
 vim +8082 kernel/trace/ftrace.c
@@ -198,7 +195,7 @@ vim +8082 kernel/trace/ftrace.c
   8081	
 > 8082		mutex_lock(&direct_mutex);
   8083	
-> 8084		hash = ops->func_hash->filter_hash;
+  8084		hash = ops->func_hash->filter_hash;
   8085		size = 1 << hash->size_bits;
   8086		for (i = 0; i < size; i++) {
   8087			hlist_for_each_entry(entry, &hash->buckets[i], hlist) {
@@ -209,7 +206,7 @@ vim +8082 kernel/trace/ftrace.c
   8092				do_for_each_ftrace_op(op, ftrace_ops_list) {
   8093					if (!(op->flags & FTRACE_OPS_FL_DIRECT))
   8094						continue;
-> 8095					if (ops_references_ip(op, ip)) {
+  8095					if (ops_references_ip(op, ip)) {
   8096						found_op = true;
   8097						break;
   8098					}
@@ -217,7 +214,7 @@ vim +8082 kernel/trace/ftrace.c
   8100				mutex_unlock(&ftrace_lock);
   8101	
   8102				if (found_op) {
-> 8103					if (!op->ops_func) {
+  8103					if (!op->ops_func) {
   8104						ret = -EBUSY;
   8105						goto err_out;
   8106					}
