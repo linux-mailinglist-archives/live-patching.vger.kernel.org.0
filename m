@@ -2,50 +2,50 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88AAB5782BA
-	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 14:50:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7709957832A
+	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 15:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233249AbiGRMum (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 18 Jul 2022 08:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
+        id S235275AbiGRNHU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 18 Jul 2022 09:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233493AbiGRMum (ORCPT
+        with ESMTP id S234739AbiGRNHT (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:50:42 -0400
+        Mon, 18 Jul 2022 09:07:19 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719DD6397;
-        Mon, 18 Jul 2022 05:50:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7B6BD9;
+        Mon, 18 Jul 2022 06:07:18 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 1F56033BE8;
-        Mon, 18 Jul 2022 12:50:39 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3DD3E33C3C;
+        Mon, 18 Jul 2022 13:07:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1658148639; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1658149637; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9QeNU7i1Z8jOANG2Muly2d9TTzEZo5jKEBQhnd4Wbho=;
-        b=aXCE0L5kmo7kN4TNty5IXSebf6+/gMTsHbMU8UHhLiD5s6Q/GymEAj8WT2fCYooe+u+H3E
-        8nzTlsJbn7jQhxaPDdbi1pWLoddkmSVa0BJt6HMf381Wq3CsFTB4fA5yx7Pe5rFABuYmRx
-        s4bd2JA1tX19hRCZ+8nHXLxtMpYt9yQ=
+        bh=H5Wq7UiyiOTRMUDpc6xc7IitAP2lzVm2pLNGp2lGASQ=;
+        b=XtJe6a8nF7pqBa8nRk/UCO84w5sS9fRUTRjOvlycoFn3dsOc0mRZLm8PtJoI7KPHXV4OYW
+        mqLLSB7DQg0vcVUn+lBUl5h19Uhz7Atgivc1U2HOM8CxHuJjX9ttutIwrwnyayDSkkAcdQ
+        LJFNpWbBrtpRpYRzvwjFhdnyp05AA60=
 Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id BD6AD2C141;
-        Mon, 18 Jul 2022 12:50:38 +0000 (UTC)
-Date:   Mon, 18 Jul 2022 14:50:36 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 06BF92C141;
+        Mon, 18 Jul 2022 13:07:17 +0000 (UTC)
+Date:   Mon, 18 Jul 2022 15:07:16 +0200
 From:   Petr Mladek <pmladek@suse.com>
 To:     Song Liu <song@kernel.org>
 Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         live-patching@vger.kernel.org, daniel@iogearbox.net,
         kernel-team@fb.com, jolsa@kernel.org, rostedt@goodmis.org
-Subject: Re: [PATCH v3 bpf-next 1/4] ftrace: add
- modify_ftrace_direct_multi_nolock
-Message-ID: <YtVXHDfV8HDwAm6G@alley>
+Subject: Re: [PATCH v3 bpf-next 4/4] bpf: support bpf_trampoline on functions
+ with IPMODIFY (e.g. livepatch)
+Message-ID: <YtVbBFYbJGiRAv99@alley>
 References: <20220718001405.2236811-1-song@kernel.org>
- <20220718001405.2236811-2-song@kernel.org>
+ <20220718001405.2236811-5-song@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220718001405.2236811-2-song@kernel.org>
+In-Reply-To: <20220718001405.2236811-5-song@kernel.org>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,146 +55,130 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Sun 2022-07-17 17:14:02, Song Liu wrote:
-> This is similar to modify_ftrace_direct_multi, but does not acquire
-> direct_mutex. This is useful when direct_mutex is already locked by the
-> user.
+On Sun 2022-07-17 17:14:05, Song Liu wrote:
+> When tracing a function with IPMODIFY ftrace_ops (livepatch), the bpf
+> trampoline must follow the instruction pointer saved on stack. This needs
+> extra handling for bpf trampolines with BPF_TRAMP_F_CALL_ORIG flag.
 > 
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -5691,22 +5691,8 @@ int unregister_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
-> @@ -5717,12 +5703,8 @@ int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
->  	int i, size;
->  	int err;
+> Implement bpf_tramp_ftrace_ops_func and use it for the ftrace_ops used
+> by BPF trampoline. This enables tracing functions with livepatch.
+> 
+> This also requires moving bpf trampoline to *_ftrace_direct_mult APIs.
+> 
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/static_call.h>
+>  #include <linux/bpf_verifier.h>
+>  #include <linux/bpf_lsm.h>
+> +#include <linux/delay.h>
 >  
-> -	if (check_direct_multi(ops))
-> +	if (WARN_ON_ONCE(!mutex_is_locked(&direct_mutex)))
->  		return -EINVAL;
-
-IMHO, it is better to use:
-
-	lockdep_assert_held_once(&direct_mutex);
-
-It will always catch the problem when called without the lock and
-lockdep is enabled.
-
-> -	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-> -		return -EINVAL;
-> -
-> -	mutex_lock(&direct_mutex);
+>  /* dummy _ops. The verifier will operate on target program's ops. */
+>  const struct bpf_verifier_ops bpf_extension_verifier_ops = {
+> @@ -29,6 +30,81 @@ static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
+>  /* serializes access to trampoline_table */
+>  static DEFINE_MUTEX(trampoline_mutex);
 >  
->  	/* Enable the tmp_ops to have the same functions as the direct ops */
->  	ftrace_ops_init(&tmp_ops);
-> @@ -5730,7 +5712,7 @@ int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
->  
->  	err = register_ftrace_function(&tmp_ops);
->  	if (err)
-> -		goto out_direct;
-> +		return err;
->  
->  	/*
->  	 * Now the ftrace_ops_list_func() is called to do the direct callers.
-> @@ -5754,7 +5736,64 @@ int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
->  	/* Removing the tmp_ops will add the updated direct callers to the functions */
->  	unregister_ftrace_function(&tmp_ops);
->  
-> - out_direct:
-> +	return err;
-> +}
+> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+> +static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex);
 > +
-> +/**
-> + * modify_ftrace_direct_multi_nolock - Modify an existing direct 'multi' call
-> + * to call something else
-> + * @ops: The address of the struct ftrace_ops object
-> + * @addr: The address of the new trampoline to call at @ops functions
-> + *
-> + * This is used to unregister currently registered direct caller and
-> + * register new one @addr on functions registered in @ops object.
-> + *
-> + * Note there's window between ftrace_shutdown and ftrace_startup calls
-> + * where there will be no callbacks called.
-> + *
-> + * Caller should already have direct_mutex locked, so we don't lock
-> + * direct_mutex here.
-> + *
-> + * Returns: zero on success. Non zero on error, which includes:
-> + *  -EINVAL - The @ops object was not properly registered.
-> + */
-> +int modify_ftrace_direct_multi_nolock(struct ftrace_ops *ops, unsigned long addr)
+> +static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
 > +{
-> +	if (check_direct_multi(ops))
-> +		return -EINVAL;
-> +	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-> +		return -EINVAL;
+> +	struct bpf_trampoline *tr = ops->private;
+> +	int ret = 0;
 > +
-> +	return __modify_ftrace_direct_multi(ops, addr);
+> +	if (cmd == FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF) {
+> +		/* This is called inside register_ftrace_direct_multi(), so
+> +		 * tr->mutex is already locked.
+> +		 */
+> +		WARN_ON_ONCE(!mutex_is_locked(&tr->mutex));
+
+Again, better is:
+
+		lockdep_assert_held_once(&tr->mutex);
+
+> +
+> +		/* Instead of updating the trampoline here, we propagate
+> +		 * -EAGAIN to register_ftrace_direct_multi(). Then we can
+> +		 * retry register_ftrace_direct_multi() after updating the
+> +		 * trampoline.
+> +		 */
+> +		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
+> +		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK)) {
+> +			if (WARN_ON_ONCE(tr->flags & BPF_TRAMP_F_SHARE_IPMODIFY))
+> +				return -EBUSY;
+> +
+> +			tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
+> +			return -EAGAIN;
+> +		}
+> +
+> +		return 0;
+> +	}
+> +
+> +	/* The normal locking order is
+> +	 *    tr->mutex => direct_mutex (ftrace.c) => ftrace_lock (ftrace.c)
+> +	 *
+> +	 * The following two commands are called from
+> +	 *
+> +	 *   prepare_direct_functions_for_ipmodify
+> +	 *   cleanup_direct_functions_after_ipmodify
+> +	 *
+> +	 * In both cases, direct_mutex is already locked. Use
+> +	 * mutex_trylock(&tr->mutex) to avoid deadlock in race condition
+> +	 * (something else is making changes to this same trampoline).
+> +	 */
+> +	if (!mutex_trylock(&tr->mutex)) {
+> +		/* sleep 1 ms to make sure whatever holding tr->mutex makes
+> +		 * some progress.
+> +		 */
+> +		msleep(1);
+> +		return -EAGAIN;
+> +	}
+
+Huh, this looks horrible. And I do not get it. The above block prints
+a warning when the mutex is not taken. Why it is already taken
+when cmd == FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF
+and why it has to be explicitly taken otherwise?
+
+Would it be possible to call prepare_direct_functions_for_ipmodify(),
+cleanup_direct_functions_after_ipmodify() with rt->mutex already taken
+so that the ordering is correct even in this case.
+
+That said, this is the first version when I am in Cc. I am not sure
+if it has already been discussed.
+
+
+> +	switch (cmd) {
+> +	case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_PEER:
+> +		tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
+> +
+> +		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
+> +		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK))
+> +			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
+> +		break;
+> +	case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY_PEER:
+> +		tr->flags &= ~BPF_TRAMP_F_SHARE_IPMODIFY;
+> +
+> +		if (tr->flags & BPF_TRAMP_F_ORIG_STACK)
+> +			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	};
+> +
+> +	mutex_unlock(&tr->mutex);
+> +	return ret;
 > +}
-> +EXPORT_SYMBOL_GPL(modify_ftrace_direct_multi_nolock);
+> +#endif
 > +
-> +/**
-> + * modify_ftrace_direct_multi - Modify an existing direct 'multi' call
-> + * to call something else
-> + * @ops: The address of the struct ftrace_ops object
-> + * @addr: The address of the new trampoline to call at @ops functions
-> + *
-> + * This is used to unregister currently registered direct caller and
-> + * register new one @addr on functions registered in @ops object.
-> + *
-> + * Note there's window between ftrace_shutdown and ftrace_startup calls
-> + * where there will be no callbacks called.
-> + *
-> + * Returns: zero on success. Non zero on error, which includes:
-> + *  -EINVAL - The @ops object was not properly registered.
-> + */
-> +int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
-> +{
-> +	int err;
-> +
-> +	if (check_direct_multi(ops))
-> +		return -EINVAL;
-> +	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&direct_mutex);
-> +	err = __modify_ftrace_direct_multi(ops, addr);
->  	mutex_unlock(&direct_mutex);
->  	return err;
->  }
+>  bool bpf_prog_has_trampoline(const struct bpf_prog *prog)
+>  {
+>  	enum bpf_attach_type eatype = prog->expected_attach_type;
 
-I would personally do:
-
-int __modify_ftrace_direct_multi(struct ftrace_ops *ops,
-			unsigned long addr, bool lock)
-{
-	int err;
-
-	if (check_direct_multi(ops))
-		return -EINVAL;
-	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-		return -EINVAL;
-
-	if (lock)
-		mutex_lock(&direct_mutex);
-
-	err = __modify_ftrace_direct_multi(ops, addr);
-
-	if (lock)
-		mutex_unlock(&direct_mutex);
-
-	return err;
-}
-
-int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
-{
-	__modify_ftrace_direct_multi(ops, addr, true);
-}
-
-int modify_ftrace_direct_multi_nolock(struct ftrace_ops *ops, unsigned long addr)
-{
-	__modify_ftrace_direct_multi(ops, addr, false);
-}
-
-To avoid duplication of the checks. But it is a matter of taste.
+Note that I did not do proper review. I not much familiar with the
+ftrace code. I just wanted to check how much this patchset affects
+livepatching and noticed the commented things.
 
 Best Regards,
 Petr
