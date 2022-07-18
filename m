@@ -2,389 +2,134 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2244577AB3
-	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 07:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA77577CBB
+	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 09:43:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbiGRFzO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 18 Jul 2022 01:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S233316AbiGRHnE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 18 Jul 2022 03:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233401AbiGRFzN (ORCPT
+        with ESMTP id S230009AbiGRHnD (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 18 Jul 2022 01:55:13 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC01B13D55
-        for <live-patching@vger.kernel.org>; Sun, 17 Jul 2022 22:55:11 -0700 (PDT)
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26HEMWZo013484
-        for <live-patching@vger.kernel.org>; Sun, 17 Jul 2022 22:55:11 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hbu1keqcu-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <live-patching@vger.kernel.org>; Sun, 17 Jul 2022 22:55:11 -0700
-Received: from twshared30313.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Sun, 17 Jul 2022 22:55:08 -0700
-Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 9F793A4C0216; Sun, 17 Jul 2022 22:54:59 -0700 (PDT)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <live-patching@vger.kernel.org>
-CC:     <daniel@iogearbox.net>, <kernel-team@fb.com>, <jolsa@kernel.org>,
-        <rostedt@goodmis.org>, Song Liu <song@kernel.org>
-Subject: [PATCH v4 bpf-next 4/4] bpf: support bpf_trampoline on functions with IPMODIFY (e.g. livepatch)
-Date:   Sun, 17 Jul 2022 22:54:49 -0700
-Message-ID: <20220718055449.3960512-5-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220718055449.3960512-1-song@kernel.org>
-References: <20220718055449.3960512-1-song@kernel.org>
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: P76om0xqGTXHUtqsIzqIy8bVstvzJAR4
-X-Proofpoint-GUID: P76om0xqGTXHUtqsIzqIy8bVstvzJAR4
-Content-Transfer-Encoding: 8BIT
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Mon, 18 Jul 2022 03:43:03 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714FC17582;
+        Mon, 18 Jul 2022 00:43:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658130182; x=1689666182;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RT/evMuTczhZaXG+1OMdRlzK81/SHsZdGYYmkKKKgOs=;
+  b=jxSzZOPZ3k7J/wsjfW53sFigX1bVtepJYXke6ufAfXz4eXQ5snKWLo7/
+   8y3MYHYtDi2SHgXd22ifwI9awGg7WpB2nYHspkQGA5SUgZjvRLQmeGQ+8
+   lCAKNa6XKX/CruJos9E2FlHdmYHPIDtzMSawDmCTFPgv0CuM/PJ/Bxk7W
+   fhYq3bWBNc8VPIgx+itnepN40ersIYEVh+sMUxfxKxqnUZFl9AZUjMxYU
+   X9VIG0bd93+YSMF2vIYw3sknDjRaJBKy9SE9w2BbxweX7k9Vyjgi9RDSH
+   k6RyY2S5iTnYm98A0B2+8E9lhSNM6hiN4PLOLu2bVDzwiqAAA0nO3laKD
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="372466261"
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="372466261"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 00:43:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="664914578"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 18 Jul 2022 00:42:52 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oDLP1-00049C-Ow;
+        Mon, 18 Jul 2022 07:42:51 +0000
+Date:   Mon, 18 Jul 2022 15:42:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, daniel@iogearbox.net, kernel-team@fb.com,
+        jolsa@kernel.org, rostedt@goodmis.org, Song Liu <song@kernel.org>
+Subject: Re: [PATCH v4 bpf-next 2/4] ftrace: allow IPMODIFY and DIRECT ops on
+ the same function
+Message-ID: <202207181552.VuKfz9zg-lkp@intel.com>
+References: <20220718055449.3960512-3-song@kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-18_04,2022-07-15_01,2022-06-22_01
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718055449.3960512-3-song@kernel.org>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-When tracing a function with IPMODIFY ftrace_ops (livepatch), the bpf
-trampoline must follow the instruction pointer saved on stack. This needs
-extra handling for bpf trampolines with BPF_TRAMP_F_CALL_ORIG flag.
+Hi Song,
 
-Implement bpf_tramp_ftrace_ops_func and use it for the ftrace_ops used
-by BPF trampoline. This enables tracing functions with livepatch.
+I love your patch! Perhaps something to improve:
 
-This also requires moving bpf trampoline to *_ftrace_direct_mult APIs.
+[auto build test WARNING on bpf-next/master]
 
-Link: https://lore.kernel.org/all/20220602193706.2607681-2-song@kernel.org/
-Signed-off-by: Song Liu <song@kernel.org>
----
- include/linux/bpf.h     |   8 ++
- kernel/bpf/trampoline.c | 158 +++++++++++++++++++++++++++++++++++-----
- 2 files changed, 149 insertions(+), 17 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220718-135652
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: x86_64-randconfig-a004 (https://download.01.org/0day-ci/archive/20220718/202207181552.VuKfz9zg-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/9ef1ec8cb818d8ca70887c8c123f2d579384a6c6
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220718-135652
+        git checkout 9ef1ec8cb818d8ca70887c8c123f2d579384a6c6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/trace/
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 7496842a4671..f35c59e0b742 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -47,6 +47,7 @@ struct kobject;
- struct mem_cgroup;
- struct module;
- struct bpf_func_state;
-+struct ftrace_ops;
- 
- extern struct idr btf_idr;
- extern spinlock_t btf_idr_lock;
-@@ -756,6 +757,11 @@ struct btf_func_model {
-  */
- #define BPF_TRAMP_F_ORIG_STACK		BIT(5)
- 
-+/* This trampoline is on a function with another ftrace_ops with IPMODIFY,
-+ * e.g., a live patch. This flag is set and cleared by ftrace call backs,
-+ */
-+#define BPF_TRAMP_F_SHARE_IPMODIFY	BIT(6)
-+
- /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
-  * bytes on x86.
-  */
-@@ -838,9 +844,11 @@ struct bpf_tramp_image {
- struct bpf_trampoline {
- 	/* hlist for trampoline_table */
- 	struct hlist_node hlist;
-+	struct ftrace_ops *fops;
- 	/* serializes access to fields of this trampoline */
- 	struct mutex mutex;
- 	refcount_t refcnt;
-+	u32 flags;
- 	u64 key;
- 	struct {
- 		struct btf_func_model model;
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index fd69812412ca..fa901aef7930 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -13,6 +13,7 @@
- #include <linux/static_call.h>
- #include <linux/bpf_verifier.h>
- #include <linux/bpf_lsm.h>
-+#include <linux/delay.h>
- 
- /* dummy _ops. The verifier will operate on target program's ops. */
- const struct bpf_verifier_ops bpf_extension_verifier_ops = {
-@@ -29,6 +30,81 @@ static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
- /* serializes access to trampoline_table */
- static DEFINE_MUTEX(trampoline_mutex);
- 
-+#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-+static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex);
-+
-+static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
-+{
-+	struct bpf_trampoline *tr = ops->private;
-+	int ret = 0;
-+
-+	if (cmd == FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF) {
-+		/* This is called inside register_ftrace_direct_multi(), so
-+		 * tr->mutex is already locked.
-+		 */
-+		WARN_ON_ONCE(!mutex_is_locked(&tr->mutex));
-+
-+		/* Instead of updating the trampoline here, we propagate
-+		 * -EAGAIN to register_ftrace_direct_multi(). Then we can
-+		 * retry register_ftrace_direct_multi() after updating the
-+		 * trampoline.
-+		 */
-+		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
-+		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK)) {
-+			if (WARN_ON_ONCE(tr->flags & BPF_TRAMP_F_SHARE_IPMODIFY))
-+				return -EBUSY;
-+
-+			tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
-+			return -EAGAIN;
-+		}
-+
-+		return 0;
-+	}
-+
-+	/* The normal locking order is
-+	 *    tr->mutex => direct_mutex (ftrace.c) => ftrace_lock (ftrace.c)
-+	 *
-+	 * The following two commands are called from
-+	 *
-+	 *   prepare_direct_functions_for_ipmodify
-+	 *   cleanup_direct_functions_after_ipmodify
-+	 *
-+	 * In both cases, direct_mutex is already locked. Use
-+	 * mutex_trylock(&tr->mutex) to avoid deadlock in race condition
-+	 * (something else is making changes to this same trampoline).
-+	 */
-+	if (!mutex_trylock(&tr->mutex)) {
-+		/* sleep 1 ms to make sure whatever holding tr->mutex makes
-+		 * some progress.
-+		 */
-+		msleep(1);
-+		return -EAGAIN;
-+	}
-+
-+	switch (cmd) {
-+	case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_PEER:
-+		tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
-+
-+		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
-+		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK))
-+			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
-+		break;
-+	case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY_PEER:
-+		tr->flags &= ~BPF_TRAMP_F_SHARE_IPMODIFY;
-+
-+		if (tr->flags & BPF_TRAMP_F_ORIG_STACK)
-+			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	};
-+
-+	mutex_unlock(&tr->mutex);
-+	return ret;
-+}
-+#endif
-+
- bool bpf_prog_has_trampoline(const struct bpf_prog *prog)
- {
- 	enum bpf_attach_type eatype = prog->expected_attach_type;
-@@ -89,6 +165,16 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
- 	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
- 	if (!tr)
- 		goto out;
-+#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-+	tr->fops = kzalloc(sizeof(struct ftrace_ops), GFP_KERNEL);
-+	if (!tr->fops) {
-+		kfree(tr);
-+		tr = NULL;
-+		goto out;
-+	}
-+	tr->fops->private = tr;
-+	tr->fops->ops_func = bpf_tramp_ftrace_ops_func;
-+#endif
- 
- 	tr->key = key;
- 	INIT_HLIST_NODE(&tr->hlist);
-@@ -128,7 +214,7 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
- 	int ret;
- 
- 	if (tr->func.ftrace_managed)
--		ret = unregister_ftrace_direct((long)ip, (long)old_addr);
-+		ret = unregister_ftrace_direct_multi(tr->fops, (long)old_addr);
- 	else
- 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, NULL);
- 
-@@ -137,15 +223,20 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
- 	return ret;
- }
- 
--static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr)
-+static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr,
-+			 bool lock_direct_mutex)
- {
- 	void *ip = tr->func.addr;
- 	int ret;
- 
--	if (tr->func.ftrace_managed)
--		ret = modify_ftrace_direct((long)ip, (long)old_addr, (long)new_addr);
--	else
-+	if (tr->func.ftrace_managed) {
-+		if (lock_direct_mutex)
-+			ret = modify_ftrace_direct_multi(tr->fops, (long)new_addr);
-+		else
-+			ret = modify_ftrace_direct_multi_nolock(tr->fops, (long)new_addr);
-+	} else {
- 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, new_addr);
-+	}
- 	return ret;
- }
- 
-@@ -163,10 +254,12 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
- 	if (bpf_trampoline_module_get(tr))
- 		return -ENOENT;
- 
--	if (tr->func.ftrace_managed)
--		ret = register_ftrace_direct((long)ip, (long)new_addr);
--	else
-+	if (tr->func.ftrace_managed) {
-+		ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
-+		ret = register_ftrace_direct_multi(tr->fops, (long)new_addr);
-+	} else {
- 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
-+	}
- 
- 	if (ret)
- 		bpf_trampoline_module_put(tr);
-@@ -332,11 +425,11 @@ static struct bpf_tramp_image *bpf_tramp_image_alloc(u64 key, u32 idx)
- 	return ERR_PTR(err);
- }
- 
--static int bpf_trampoline_update(struct bpf_trampoline *tr)
-+static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex)
- {
- 	struct bpf_tramp_image *im;
- 	struct bpf_tramp_links *tlinks;
--	u32 flags = BPF_TRAMP_F_RESTORE_REGS;
-+	u32 orig_flags = tr->flags;
- 	bool ip_arg = false;
- 	int err, total;
- 
-@@ -358,18 +451,31 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 		goto out;
- 	}
- 
-+	/* clear all bits except SHARE_IPMODIFY */
-+	tr->flags &= BPF_TRAMP_F_SHARE_IPMODIFY;
-+
- 	if (tlinks[BPF_TRAMP_FEXIT].nr_links ||
--	    tlinks[BPF_TRAMP_MODIFY_RETURN].nr_links)
-+	    tlinks[BPF_TRAMP_MODIFY_RETURN].nr_links) {
- 		/* NOTE: BPF_TRAMP_F_RESTORE_REGS and BPF_TRAMP_F_SKIP_FRAME
- 		 * should not be set together.
- 		 */
--		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
-+		tr->flags |= BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
-+	} else {
-+		tr->flags |= BPF_TRAMP_F_RESTORE_REGS;
-+	}
- 
- 	if (ip_arg)
--		flags |= BPF_TRAMP_F_IP_ARG;
-+		tr->flags |= BPF_TRAMP_F_IP_ARG;
-+
-+#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-+again:
-+	if ((tr->flags & BPF_TRAMP_F_SHARE_IPMODIFY) &&
-+	    (tr->flags & BPF_TRAMP_F_CALL_ORIG))
-+		tr->flags |= BPF_TRAMP_F_ORIG_STACK;
-+#endif
- 
- 	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
--					  &tr->func.model, flags, tlinks,
-+					  &tr->func.model, tr->flags, tlinks,
- 					  tr->func.addr);
- 	if (err < 0)
- 		goto out;
-@@ -378,17 +484,34 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	WARN_ON(!tr->cur_image && tr->selector);
- 	if (tr->cur_image)
- 		/* progs already running at this address */
--		err = modify_fentry(tr, tr->cur_image->image, im->image);
-+		err = modify_fentry(tr, tr->cur_image->image, im->image, lock_direct_mutex);
- 	else
- 		/* first time registering */
- 		err = register_fentry(tr, im->image);
-+
-+#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-+	if (err == -EAGAIN) {
-+		/* -EAGAIN from bpf_tramp_ftrace_ops_func. Now
-+		 * BPF_TRAMP_F_SHARE_IPMODIFY is set, we can generate the
-+		 * trampoline again, and retry register.
-+		 */
-+		/* reset fops->func and fops->trampoline for re-register */
-+		tr->fops->func = NULL;
-+		tr->fops->trampoline = 0;
-+		goto again;
-+	}
-+#endif
- 	if (err)
- 		goto out;
-+
- 	if (tr->cur_image)
- 		bpf_tramp_image_put(tr->cur_image);
- 	tr->cur_image = im;
- 	tr->selector++;
- out:
-+	/* If any error happens, restore previous flags */
-+	if (err)
-+		tr->flags = orig_flags;
- 	kfree(tlinks);
- 	return err;
- }
-@@ -454,7 +577,7 @@ static int __bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_tr
- 
- 	hlist_add_head(&link->tramp_hlist, &tr->progs_hlist[kind]);
- 	tr->progs_cnt[kind]++;
--	err = bpf_trampoline_update(tr);
-+	err = bpf_trampoline_update(tr, true /* lock_direct_mutex */);
- 	if (err) {
- 		hlist_del_init(&link->tramp_hlist);
- 		tr->progs_cnt[kind]--;
-@@ -487,7 +610,7 @@ static int __bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_
- 	}
- 	hlist_del_init(&link->tramp_hlist);
- 	tr->progs_cnt[kind]--;
--	return bpf_trampoline_update(tr);
-+	return bpf_trampoline_update(tr, true /* lock_direct_mutex */);
- }
- 
- /* bpf_trampoline_unlink_prog() should never fail. */
-@@ -715,6 +838,7 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
- 	 * multiple rcu callbacks.
- 	 */
- 	hlist_del(&tr->hlist);
-+	kfree(tr->fops);
- 	kfree(tr);
- out:
- 	mutex_unlock(&trampoline_mutex);
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   kernel/trace/ftrace.c: In function 'register_ftrace_function':
+>> kernel/trace/ftrace.c:8197:14: warning: variable 'direct_mutex_locked' set but not used [-Wunused-but-set-variable]
+    8197 |         bool direct_mutex_locked = false;
+         |              ^~~~~~~~~~~~~~~~~~~
+
+
+vim +/direct_mutex_locked +8197 kernel/trace/ftrace.c
+
+  8182	
+  8183	/**
+  8184	 * register_ftrace_function - register a function for profiling
+  8185	 * @ops:	ops structure that holds the function for profiling.
+  8186	 *
+  8187	 * Register a function to be called by all functions in the
+  8188	 * kernel.
+  8189	 *
+  8190	 * Note: @ops->func and all the functions it calls must be labeled
+  8191	 *       with "notrace", otherwise it will go into a
+  8192	 *       recursive loop.
+  8193	 */
+  8194	int register_ftrace_function(struct ftrace_ops *ops)
+  8195		__releases(&direct_mutex)
+  8196	{
+> 8197		bool direct_mutex_locked = false;
+  8198		int ret;
+  8199	
+  8200		ftrace_ops_init(ops);
+  8201	
+  8202		ret = prepare_direct_functions_for_ipmodify(ops);
+  8203		if (ret < 0)
+  8204			return ret;
+  8205		else if (ret == 1)
+  8206			direct_mutex_locked = true;
+  8207	
+  8208		mutex_lock(&ftrace_lock);
+  8209	
+  8210		ret = ftrace_startup(ops, 0);
+  8211	
+  8212		mutex_unlock(&ftrace_lock);
+  8213	
+
 -- 
-2.30.2
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
