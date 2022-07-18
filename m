@@ -2,131 +2,131 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2089F5787E6
-	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 18:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A95855787FB
+	for <lists+live-patching@lfdr.de>; Mon, 18 Jul 2022 18:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234564AbiGRQzy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 18 Jul 2022 12:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
+        id S235129AbiGRQ76 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 18 Jul 2022 12:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234186AbiGRQzw (ORCPT
+        with ESMTP id S233792AbiGRQ75 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:55:52 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404C02B624;
-        Mon, 18 Jul 2022 09:55:51 -0700 (PDT)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26IGhnGl004257;
-        Mon, 18 Jul 2022 09:55:50 -0700
+        Mon, 18 Jul 2022 12:59:57 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC22D2A409;
+        Mon, 18 Jul 2022 09:59:55 -0700 (PDT)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 26IGi21X024078;
+        Mon, 18 Jul 2022 09:59:55 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : references : in-reply-to : content-type : content-id
  : mime-version; s=facebook;
- bh=TvGewtFymnwfBlmEI+2gRnmdyD44DcHL9E2IngSFnK8=;
- b=FJoPqec6Od6bS+eyT/6PLrph1r1TcUtsjxRSiFF73oJVcyJzuJkSYYxp42+RHPoyIXKa
- XKt/Cz/bJIQoRB1y0Wo6Kcw+WlFUHZ5PQULmDdeiyp56UnBJH5E7Yv2ymPn9yAWjo4ei
- tQpEEYxngqIpK43S+8UT4WYJZyGBKl8p4CY= 
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2107.outbound.protection.outlook.com [104.47.58.107])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hcm64ebbt-4
+ bh=yXg6JjMy0R07mWI1NXny4Zx4zygxLLyoIuGq/LGc5v0=;
+ b=JPFFdL03kbcyqdBbE/hDNf9Qqe9dRnXXLp7t0NnD/gSL38E3fHMM3kNKksW7NWkn7H/V
+ fIY+9QhLU96OMqV2/wrM6pSer18VEF+iVaqJJmVezTwHQAF8rsQB9kUcbn9pIsYVRhH8
+ OLDEqh+nKl1UzbTRWtwq1XoMEIvEOJTuHPc= 
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2175.outbound.protection.outlook.com [104.47.56.175])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3hbxbg9ryj-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Jul 2022 09:55:50 -0700
+        Mon, 18 Jul 2022 09:59:54 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A7do+IXKcyIADHHtDeLnnGvVWtKLp1W11JRc514OOgsBFDex2YQzRVThUIWH6SbIHLthKvN59+ircLEBvNgA/pSUNK9CfsxmSK9TUROygUF9yl0JCd4+XovVigbdF0Wq8QAlyjpqJscm7sRwi9OaCY6L9N4FIe0MRVJnAGCejAvqEmy9AXEHCazymnbgkdal01aEqTbAqkLw/XtJb1e0rrMc7jXuZWSepqiEGYC/Cg022sfCbDM0zRuWaw4RHG5cMw5QKG67LfQ2diKfInHkYC8fxWECMHfKq+k/cs4Mzm6YPVhN7aFpTds88Xy2MBk/AA9kBFmVCcIRgokZji9vtg==
+ b=WGrID8epBMr18SQYFiHXtP+/FAZpIal/VBan+XWDE2IdBt66XS69ynIqS2a6bGlizm5koPvuGAsMqVcphtcczarhH4d24fbEGUzn/10s7I8CQqRme2PzuFKJgXMA58i7NTTrotMbn6KwmEv2QufrhA5ixaBl46glSQqAncP0M9t6HONlgEIgc2Wb/3Tv3f/vNhvYTEFxrHk/WmASxpD56FoYZvgqfiEFt7Yl5gzjOAG9Blqtwygb3viX37kCsKEJwAiIogY5TlzWGxesu5LwmpQdZZnXOYohY82UFs7A+NxbyHEUd57+pa7dC4g9XZ3qzBzNvXGSDdeyYynetyc7oA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TvGewtFymnwfBlmEI+2gRnmdyD44DcHL9E2IngSFnK8=;
- b=Zdim7f3Cx4VkO3ridD6+DOyusoJOqUVWDVyQrGg58GvTrnhKRUYUMZABXXBmlKPmQgKfVvBcyXfdXD4PTJ0tCmA9T9LSzHBCRBMmd/dfng5Loe2QEIK25nPg1FoIkTYamGZ/bQvGcFA5PCrC8dWNSOTE0dG/bU04f6uzM85My5Xe8S7it5VwtjYNvQtzmlkODelsKWAOOeZt0C+rgJNOGf0/HE3kQUyX3u2v5851E/H9DoH2g4KbsFXBFJJriYPmyYaN+a13D0k4ZKXxViA+EaOfUFJWPAjGNzWukxmOKmJEDMwh/OG70uH6xqbOSRY+aHJgb1MRW35TBP4/5qHmBA==
+ bh=DILsHDTmQWoQgf43l88XNm7Z0ZXncqbo+xf+O2O1wCo=;
+ b=kgxr5Cus2Z/JabSpaxVPveyKkYICIuG3N0g0ar12Ym1V879pbbxt3vhamGYvALPKwg/vFt6OPmww97P2lR2aCljKdLmqCUzkGD6xZOdQn7wawzRwAhsDSD3aaHf1foGoNqqlapAH1ekB4jr90zK154GW0b7Alkd9xCty16E7c11Tr7ApR6xu8gW4C0fiyAXIRsoi3U+S37I7/7hr7KVwvysjOmFF05HLst1se5FG80ZwOFxwsNguDd7NCs+5X0fMxdOXN1yaHPs8E5Mg3kOsiR5Rc43u2QW1GlNF2UdtRK8pYl6f4Ax4vg++ineGqmnzDvndfdZ7dgbYiIzbYmY9Bw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by MWHPR15MB1135.namprd15.prod.outlook.com (2603:10b6:320:23::11) with
+ by BYAPR15MB3480.namprd15.prod.outlook.com (2603:10b6:a03:112::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Mon, 18 Jul
- 2022 16:55:46 +0000
+ 2022 16:59:51 +0000
 Received: from SA1PR15MB5109.namprd15.prod.outlook.com
  ([fe80::5de3:3999:66df:42d1]) by SA1PR15MB5109.namprd15.prod.outlook.com
  ([fe80::5de3:3999:66df:42d1%4]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
- 16:55:46 +0000
+ 16:59:51 +0000
 From:   Song Liu <songliubraving@fb.com>
 To:     Petr Mladek <pmladek@suse.com>
-CC:     Song Liu <song@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+CC:     kernel test robot <lkp@intel.com>, Song Liu <song@kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
         "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <Kernel-team@fb.com>,
         "jolsa@kernel.org" <jolsa@kernel.org>,
         "rostedt@goodmis.org" <rostedt@goodmis.org>
-Subject: Re: [PATCH v3 bpf-next 4/4] bpf: support bpf_trampoline on functions
- with IPMODIFY (e.g. livepatch)
-Thread-Topic: [PATCH v3 bpf-next 4/4] bpf: support bpf_trampoline on functions
- with IPMODIFY (e.g. livepatch)
-Thread-Index: AQHYmjtcMmP3V3HYAESvvAj8lc6o962EGiQAgAA/1oA=
-Date:   Mon, 18 Jul 2022 16:55:46 +0000
-Message-ID: <A57A84BD-F140-41D6-90DE-146232B72F86@fb.com>
-References: <20220718001405.2236811-1-song@kernel.org>
- <20220718001405.2236811-5-song@kernel.org> <YtVbBFYbJGiRAv99@alley>
-In-Reply-To: <YtVbBFYbJGiRAv99@alley>
+Subject: Re: [PATCH v4 bpf-next 2/4] ftrace: allow IPMODIFY and DIRECT ops on
+ the same function
+Thread-Topic: [PATCH v4 bpf-next 2/4] ftrace: allow IPMODIFY and DIRECT ops on
+ the same function
+Thread-Index: AQHYmmrwWVTrDYAzL0G5ckglE1ecDq2DvwKAgABeKwCAAD2SAA==
+Date:   Mon, 18 Jul 2022 16:59:51 +0000
+Message-ID: <9DAB0710-7D60-46AC-8A2F-ED4B8A1A4BC0@fb.com>
+References: <20220718055449.3960512-3-song@kernel.org>
+ <202207181552.VuKfz9zg-lkp@intel.com> <YtVd4FKOcEmGfubm@alley>
+In-Reply-To: <YtVd4FKOcEmGfubm@alley>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-mailer: Apple Mail (2.3696.100.31)
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8107695f-bb5f-462d-cda5-08da68de5c3a
-x-ms-traffictypediagnostic: MWHPR15MB1135:EE_
+x-ms-office365-filtering-correlation-id: 78bc628d-23a7-4ae9-30fb-08da68deee0c
+x-ms-traffictypediagnostic: BYAPR15MB3480:EE_
 x-fb-source: Internal
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TqNLc6NTfpvSYBb9h+5qRr/3HwtWzRje1rXHbhGYVYgzbuqu5fDM1yyL6g3whA/87kAQcPwuOrsHXd2F0HMfUGocFAsqxCvgcGpBfbJiMoaCNw3SCq0QW6M8kSUhEJvUR0usNbO+2277mo/KmYzgZ872Ug/eU53LJpiQsIgJZtRFw8zosG2jEPX2Ha7XdY/nuRWrcTtVsPsXBGMywBhVm5FeJL7aO43xn/oR2SxHboec0zhZn9huQwAc/43lLT1+j2R+9FMzcUUq2qHra8Ji+WOHpRyZ6eu78OQpSpRgevLXyJmm5sAdDQ++GTgLJXwl6Wob07vMGa1XI8FvaFG4LRhNXUBm2BJirJdQ2L3i0LMGw2TVd51pct8ozu+Rk0KSZk6OOHsuBTQpiLjt+cN9Z12rK5ot2VXkgcwmt0d8iDRTuiY2X1vrlLjTy9PlLU3ICrj3fwwWkZc9goowE4IjqXBpefyvgAgJAu7D18wAutEEXSea8tu2TVe+ULwKbvuWdYrqoCzEcg76bgrj3hUbvInY6YdvKk4lAO5rS3l6AEnDCHKRCl10kgHTkLa/06WHU6dc6KUAFEQ76RHCqwso2L9y4FIh9b+LKwlFV3twMN7asR2wi/6mWnC0Jy+OtPJ1k06r23KYT4OzB7vcOElAdeLCDmuJNRPjAt1YNTIohQuSlK7jCc7C60lyMLh4KDznybOm1Hq912aTIijqV7VXqbed16ojTTMdRFiLHCr3M46mJhl3+9uJfz0FRpLDQFFuONbHynXaKvfRmZhq7GkJW2aj99GzK4oPTrirYY9qnu5rmKdvnP2rp4B2GNT71rgrTa/kQVlRzIcfl4hpG2iTyDWm+1ovH92X/uURay2+2YuHAD8GnaYMlo8GPHRbLagr
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(6486002)(41300700001)(71200400001)(966005)(478600001)(186003)(2616005)(6512007)(6506007)(122000001)(83380400001)(66946007)(53546011)(66476007)(38070700005)(38100700002)(76116006)(33656002)(2906002)(8936002)(5660300002)(91956017)(316002)(54906003)(36756003)(8676002)(86362001)(6916009)(64756008)(66446008)(66556008)(4326008)(45980500001);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: UZbscrrVTChwaTZFF1sUPIt9KF+1g6dCW1OOWspqbFOSVs16X+clEydNbELEuVN1UluNZuC25LkmKhL1dfkWBA56CWQ3VaZ9CJOpiWYt2sWfwL9t4XJwmkot052r9wKtkPDfhxY1jPE97IHz9JlBeL70FXknjPzVyQlMX/P6+IboX0j08VnGQ9l/KZ5UqUU+xUMFYaNUvWsCoT0gFw4xUsnJ4LePfOPr3BJVGcq1F6D4k65g3ox96YNcqojogieKaALXPiLszcMaVfK3g/kBAbOUVYKSn9bZNDeV0QTX9mTooF73G8colnXuyunCf1tHSQoNx1hF0tzlotnwiHTWIXV1AXp0P24G0sbievM7czoifaeGCWyioa/bTeNyTa3tmMHC3bsn9UTzProcR55dVW1YM54bgLqsV1EzVx18hEo3as6zhZbSBPIVOj/MpqKt0ZexqYs1JY/LwNhs+EEDXKgl4twlc7U9ZBeghJJ34PFaoKoiosO6OVDUAiCe7UYj2HrCOjTzYVY9wZoZIWHIIL8xds6Tht6KDTHz9il5jaYkX7tSKrOF6/oliJtgz2zHGBmwtif9HRSLyO2bjClGoU4rPeq/Fuv4bA1JPV6Gz+wp1aGDaD8ztIQsvgPEwuo6iU7ZMkAngEF5YMtc0ZWQoG4A1uN8QfBuV8IB+PDHCreIM+Aoc/2giJl54v/aSB7TfCYtaFW4yfGQm4N21S2MOKfquVXUBJJr0oGQyAU+7+E73htsYw1sq4DSjeuZbdi2dhe/MWebBzyjTOp2cLbY+Q4iV36+S8Gbrtp1jx073pzJ0nbsM841Ojelh4nG8ElxmoxWVTmcthzzNjdIs8C9XqAfr0mBKLHdaLQEBxGgEmrk65z8rEDpd4Pj2+CFZgNAPFTBjCpF8q9t4R8WVtuxkOYbk+/QbJTWzYRN2ya2KE0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(39860400002)(366004)(136003)(376002)(36756003)(122000001)(38100700002)(186003)(76116006)(2616005)(38070700005)(83380400001)(33656002)(86362001)(71200400001)(6486002)(966005)(2906002)(6916009)(54906003)(6512007)(41300700001)(478600001)(53546011)(6506007)(8936002)(316002)(8676002)(4326008)(5660300002)(7416002)(91956017)(66556008)(66476007)(64756008)(66446008)(66946007)(45980500001);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?k/zMIfW37/WbJE34C0nB+M/IDGXgXfb1vSV6yCTZPLEZ7HdaoXSIsAgXrsdh?=
- =?us-ascii?Q?fbJ1+V9Gb/vyB068ED2KU0XUSKMHuzLXzHjnkLNgRvV3SFg9tS6a5Qan1/z+?=
- =?us-ascii?Q?bKmgo/0g1wWvpzHOHeLTlTjTD6fZ2dCs9NKN8QyTpZ/5cg7exPNCJexJnsoK?=
- =?us-ascii?Q?13ZrMOQiA5ncxr38kWfeyTKDF6aC7qvi9/yW/cINSWxXpp8HdJwUQvoUeFqT?=
- =?us-ascii?Q?trCHX3O0H2+g/sFtzjvz7ObcobEskbwKNhkbyzMMK4A6fxVadwNRGxmqNQRn?=
- =?us-ascii?Q?sOO43oUHroOlvUdCxvaXWfOpdzY/O13qgTt4GeoyXOwQTBpmwonh68hBzS/d?=
- =?us-ascii?Q?YZZmzb8DWPnhO1Q61q2epK3uOhqgBHtL0OnK0e8trkx0d7Demxw6lBH9fpTT?=
- =?us-ascii?Q?S55aELcuEUNebJ0tfwieVr81j234SPWbNs+kDpzWSv/EkKwE2u1kEeSd73ye?=
- =?us-ascii?Q?mOb932ISBDwGRVuwzzuSh/fhX9qLHE4MjkU5Gwe9MIeYcMzreMpx+itD+faH?=
- =?us-ascii?Q?Eb0CWLufiK0KHCnjHMasvOjxB7oqzoWARZhTpH55T8sYvifDnQIYN1Q24Uqd?=
- =?us-ascii?Q?HtWIXmM2PyY9qcGbSYuJImruUEhBKGzpvF3nKefbxWEOUDOy4Y6xTXUPT6tP?=
- =?us-ascii?Q?oDkr3hGwMeTNs5rnD15KuaWHK2URIpmCXP4IeZj8F4yqwSimE9detBFpVBHv?=
- =?us-ascii?Q?Mcis61fUFOm66iWRAejJcQbm2AZ9PC1JcueMRAiv4Xkk72bURrRD9JnjS4cz?=
- =?us-ascii?Q?zp2AdBaEvQ+dc75lQhSDXRLRqJEezGDoI5V2ll4UErq7SlRtQf8R1wsG9+00?=
- =?us-ascii?Q?nmucRVmaR+5X2P1J71bQMk1l1Q4GmbZmwO2nLKPWmqqk9VRp1ikXPzd8DNVF?=
- =?us-ascii?Q?1BL2jaNtgXJU0X9ciN66gKLUYOVqtJoiKnCmGL8DAcufD5fgwaoNdiSYzkyQ?=
- =?us-ascii?Q?VzvH5vpfeHQk2BRopRou6aY1vjbMC2tk+wUUlGQGIw0kTgd/G+lLssbCgK1g?=
- =?us-ascii?Q?v7yuVhGSoiUo+qk300i//3G2QZZDv4Be66zesPec563mm5heVxzxcYYzJwLa?=
- =?us-ascii?Q?YtaSQHhrzFawa1VZb/Ksjkgmo1VcA1FM5DhLqxRqlxvy+Fu2EU271quysLSH?=
- =?us-ascii?Q?Q0+tslGEVEMsFplXfEgT+WrhBksyaSEHkhLegtHErM6L+9LichEuagijjki+?=
- =?us-ascii?Q?nkxEMtZ6o4WKcQbBdU/LSs+Q1cLGH9PEFkHCa2uU30TYzkJPEQ14oiVcToPu?=
- =?us-ascii?Q?H3RGLgR56Z+8tb6DCwvIuHm3M2mbZvhIfqfzy8YLQTkCNTy1T5GIyrblp6u1?=
- =?us-ascii?Q?dlJUlqn2POFYcDoWb59HB9wtChpcDHyG7rkJqMKwJqWLXpV5CjzBJ7jgMALg?=
- =?us-ascii?Q?gqzNzvvuP2t+M9VaboHXwQq2FOszfssWvm0zpzldW8arRYlrnZGg0DMGwflE?=
- =?us-ascii?Q?QUOEToAJLOUahd8qhM7bB0JUOUDVfuymjq5eVBX03Nc9uoLuzIser8LaFdDO?=
- =?us-ascii?Q?50WBOJoGaDmWE117q3zDqJ+TlKbW7w4ZftdelueEzHCSVzrXkS4GDbhLVVi5?=
- =?us-ascii?Q?RHHI4bJdKU1lJMzHP/bbThsSTP1I3myT3yXZjEwy9BNgNHwynEC03IYDkkMC?=
- =?us-ascii?Q?//T6P8nzZRjpKjrx0eLFGCM=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?4HRIsPxRx4vEFbSwFkZBP1F8l7h4e46FMRzl5rENmK5A8IzJIhB29jQavV1u?=
+ =?us-ascii?Q?nJpFO6drRBonP110CE8mDPcGZtDM9sQOHnVE5dDBH4styiMfbpWlaDSW9HP3?=
+ =?us-ascii?Q?h4p/Tk6G7FKBBDJ6vQ5F+UknV645qGPYI5MpvqVwepjDFS7Bc7uLALPHYd+I?=
+ =?us-ascii?Q?myO37jpCBlonJNSkzLFbSviN1BUfx0UPEr3NBsotlTPRzPNw8HoC73qsA3LC?=
+ =?us-ascii?Q?mBnJL4KD6NRIT4eEV6oe+BwxZjGPZ5A8+6CEJRCfb5xlTqYQz1vcvRpPl+E9?=
+ =?us-ascii?Q?3tlSzHD7jbRuk0OdSodCn9s0ZqZWEX9V3ljX9K6zRyrVVOZKdeW8I1HQmOH4?=
+ =?us-ascii?Q?vo93zvAWkzzIGwBrDvgwHKTwnx7kkUmsAlGTjV24I9MSKbwJDugHIPjcDZrY?=
+ =?us-ascii?Q?PhGNoU/H99SLmLDVYvywHgCAWvmvY0M09EKc8zztG7HwnzMiJHJGeL0mkoLq?=
+ =?us-ascii?Q?GdtaGgsBsA9NVsjWvg2NKCiNQe/afOrNbP0P54U3axlZ7Y1eotBk82trX11+?=
+ =?us-ascii?Q?iz+ICVkwWSULWui/zRSOlfUa9xFITRx20GIvD/mwvnqELmYoBIyt/ka9Duol?=
+ =?us-ascii?Q?jdwNNGvbtgY8EdJPPY9rXlTWD+rNz998ROAV1w6oHHDj2d8TiBt1eG8Toe1P?=
+ =?us-ascii?Q?y9zSGIVbVpPENi6+9juimtuiE9XHnvoIPM6jq7i9SKpwvG96W8HIykycC/Kv?=
+ =?us-ascii?Q?je5ZfWQddNnoFtkiHuX1ep0VRq3lYU6fRkm0BSWXP78bUlHv/+00V6y7gkYV?=
+ =?us-ascii?Q?dlI+/+IYrIuVE9by2nw1nPUwlR5grtTJnit0CPOO+X014EJx9aH4vqja0MGX?=
+ =?us-ascii?Q?puG3CPi6OF/BZ5Dne9lUUWq+Kgkx0KAaRuORXyP96V/dqKbwcP/wFSdxc7+3?=
+ =?us-ascii?Q?HzrCDnpO1cwXnqRVmxHTAP9Ok5t4LnMiHco3GthyOA8qQa90gwmAQ0KHzg5W?=
+ =?us-ascii?Q?KmWcxiI0Pz2EVpW3S+CRsQMi7V9AI9p4o72pS9ZFy3XThUGmR9a/4hPUrGER?=
+ =?us-ascii?Q?01TklhZK9sUtPVI3K6nMRRxtxEgFkTpbk9FvEJmGytxJmfbP/c+s+Gm1BUM5?=
+ =?us-ascii?Q?NKCncnoNMA5cJRxOXaJVSsnqyHj55heZXjIsFMTFf418ocqciBLSOJQrwQJR?=
+ =?us-ascii?Q?awWJbMATsnKHwjfuO1HwUMzwdDlwyNbg60JpulgRf8m84gFs82hten0L1Rxs?=
+ =?us-ascii?Q?GWtpdL2a1A9bUvnz+37lCikRG0ypT+E9/Veb77orTjTLY+xxTY/kN0TMFeH9?=
+ =?us-ascii?Q?hV7eJr6sNYJe+EXf7oQ1vl6QHeK3JfUvMCFjUMx5ItuPi/+36jVaqV0yruVc?=
+ =?us-ascii?Q?6MGxQ6ZhMpboPGyIWQh/hjuEoDawe7Fp2xl15jW618kpFMNEMPGYV2nQByoJ?=
+ =?us-ascii?Q?E6QmaakZ516rYEqN1pyhc1kxHH81w1rjcnEOa4uKSmjKvJnK0OFiHQyeciC4?=
+ =?us-ascii?Q?8B/VJJp2Et+CoBv3BhuHaMZmiMFn5R3qROGWR4k20wG6+EzJ8JcljBrAw/P4?=
+ =?us-ascii?Q?mWtAEuQS4HEamTBRMU0r2XvfUJWO1Mfh0kW8iSzYluhcuGkw5PwdB6lNllNg?=
+ =?us-ascii?Q?gKmLFd4zUFhDMmbHn781Exv2tXc00Epsnjp1x73xKbuh96Q+KOBzi63C9VAc?=
+ =?us-ascii?Q?xrOHdHwWrYAC/TsE1pv+Xpw=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <BFDE8CCC36F6CD438AB852FF09196FDD@namprd15.prod.outlook.com>
+Content-ID: <5432BEE94F42FB4DB6B00AACF6B5C339@namprd15.prod.outlook.com>
 X-OriginatorOrg: fb.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8107695f-bb5f-462d-cda5-08da68de5c3a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2022 16:55:46.2608
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78bc628d-23a7-4ae9-30fb-08da68deee0c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2022 16:59:51.1838
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ojzsbyf4h+LsaHP0uht6HfDUxiPxokH/4CaepLBCDpznzQPSx0J6Lf8s2+EN3FSwFrpIaHKamA3LlhCqJK0w6g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1135
-X-Proofpoint-ORIG-GUID: Yo6qivfs8q1r_M4Lx9bjGH-XSoyy4fVV
-X-Proofpoint-GUID: Yo6qivfs8q1r_M4Lx9bjGH-XSoyy4fVV
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+X-MS-Exchange-CrossTenant-userprincipalname: lYKkbhgnQ8YCik8+gQSp/wP2VETB07bY1uB3Rf8Y4gHaTLA0FswQq4XrWXEG+IiiddZ/hnB0Bw7snk4XYIReaw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3480
+X-Proofpoint-ORIG-GUID: B7XsIwzn7mnmSqeepSTUN2orJ2LuWfOS
+X-Proofpoint-GUID: B7XsIwzn7mnmSqeepSTUN2orJ2LuWfOS
+X-Proofpoint-UnRewURL: 1 URL was un-rewritten
 MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
@@ -143,178 +143,110 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 
 
-> On Jul 18, 2022, at 6:07 AM, Petr Mladek <pmladek@suse.com> wrote:
+> On Jul 18, 2022, at 6:19 AM, Petr Mladek <pmladek@suse.com> wrote:
 > 
-> On Sun 2022-07-17 17:14:05, Song Liu wrote:
->> When tracing a function with IPMODIFY ftrace_ops (livepatch), the bpf
->> trampoline must follow the instruction pointer saved on stack. This needs
->> extra handling for bpf trampolines with BPF_TRAMP_F_CALL_ORIG flag.
+> On Mon 2022-07-18 15:42:25, kernel test robot wrote:
+>> Hi Song,
 >> 
->> Implement bpf_tramp_ftrace_ops_func and use it for the ftrace_ops used
->> by BPF trampoline. This enables tracing functions with livepatch.
+>> I love your patch! Perhaps something to improve:
 >> 
->> This also requires moving bpf trampoline to *_ftrace_direct_mult APIs.
+>> [auto build test WARNING on bpf-next/master]
 >> 
->> --- a/kernel/bpf/trampoline.c
->> +++ b/kernel/bpf/trampoline.c
->> @@ -13,6 +13,7 @@
->> #include <linux/static_call.h>
->> #include <linux/bpf_verifier.h>
->> #include <linux/bpf_lsm.h>
->> +#include <linux/delay.h>
+>> url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220718-135652
+>> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+>> config: x86_64-randconfig-a004 (https://download.01.org/0day-ci/archive/20220718/202207181552.VuKfz9zg-lkp@intel.com/config )
+>> compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+>> reproduce (this is a W=1 build):
+>>        # https://github.com/intel-lab-lkp/linux/commit/9ef1ec8cb818d8ca70887c8c123f2d579384a6c6
+>>        git remote add linux-review https://github.com/intel-lab-lkp/linux
+>>        git fetch --no-tags linux-review Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220718-135652
+>>        git checkout 9ef1ec8cb818d8ca70887c8c123f2d579384a6c6
+>>        # save the config file
+>>        mkdir build_dir && cp config build_dir/.config
+>>        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/trace/
 >> 
->> /* dummy _ops. The verifier will operate on target program's ops. */
->> const struct bpf_verifier_ops bpf_extension_verifier_ops = {
->> @@ -29,6 +30,81 @@ static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
->> /* serializes access to trampoline_table */
->> static DEFINE_MUTEX(trampoline_mutex);
+>> If you fix the issue, kindly add following tag where applicable
+>> Reported-by: kernel test robot <lkp@intel.com>
 >> 
->> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
->> +static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex);
->> +
->> +static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
->> +{
->> +	struct bpf_trampoline *tr = ops->private;
->> +	int ret = 0;
->> +
->> +	if (cmd == FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF) {
->> +		/* This is called inside register_ftrace_direct_multi(), so
->> +		 * tr->mutex is already locked.
->> +		 */
->> +		WARN_ON_ONCE(!mutex_is_locked(&tr->mutex));
+>> All warnings (new ones prefixed by >>):
+>> 
+>>   kernel/trace/ftrace.c: In function 'register_ftrace_function':
+>>>> kernel/trace/ftrace.c:8197:14: warning: variable 'direct_mutex_locked' set but not used [-Wunused-but-set-variable]
+>>    8197 |         bool direct_mutex_locked = false;
+>>         |              ^~~~~~~~~~~~~~~~~~~
+>> 
+>> 
+>> vim +/direct_mutex_locked +8197 kernel/trace/ftrace.c
+>> 
+>>  8182	
+>>  8183	/**
+>>  8184	 * register_ftrace_function - register a function for profiling
+>>  8185	 * @ops:	ops structure that holds the function for profiling.
+>>  8186	 *
+>>  8187	 * Register a function to be called by all functions in the
+>>  8188	 * kernel.
+>>  8189	 *
+>>  8190	 * Note: @ops->func and all the functions it calls must be labeled
+>>  8191	 *       with "notrace", otherwise it will go into a
+>>  8192	 *       recursive loop.
+>>  8193	 */
+>>  8194	int register_ftrace_function(struct ftrace_ops *ops)
+>>  8195		__releases(&direct_mutex)
+>>  8196	{
+>>> 8197		bool direct_mutex_locked = false;
+>>  8198		int ret;
+>>  8199	
+>>  8200		ftrace_ops_init(ops);
+>>  8201	
+>>  8202		ret = prepare_direct_functions_for_ipmodify(ops);
+>>  8203		if (ret < 0)
+>>  8204			return ret;
+>>  8205		else if (ret == 1)
+>>  8206			direct_mutex_locked = true;
 > 
-> Again, better is:
+> Honestly, this is another horrible trick. Would it be possible to
+> call prepare_direct_functions_for_ipmodify() with direct_mutex
+> already taken?
 > 
-> 		lockdep_assert_held_once(&tr->mutex);
-
-Will fix. 
-
+> I mean something like:
 > 
->> +
->> +		/* Instead of updating the trampoline here, we propagate
->> +		 * -EAGAIN to register_ftrace_direct_multi(). Then we can
->> +		 * retry register_ftrace_direct_multi() after updating the
->> +		 * trampoline.
->> +		 */
->> +		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
->> +		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK)) {
->> +			if (WARN_ON_ONCE(tr->flags & BPF_TRAMP_F_SHARE_IPMODIFY))
->> +				return -EBUSY;
->> +
->> +			tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
->> +			return -EAGAIN;
->> +		}
->> +
->> +		return 0;
->> +	}
->> +
->> +	/* The normal locking order is
->> +	 *    tr->mutex => direct_mutex (ftrace.c) => ftrace_lock (ftrace.c)
->> +	 *
->> +	 * The following two commands are called from
->> +	 *
->> +	 *   prepare_direct_functions_for_ipmodify
->> +	 *   cleanup_direct_functions_after_ipmodify
->> +	 *
->> +	 * In both cases, direct_mutex is already locked. Use
->> +	 * mutex_trylock(&tr->mutex) to avoid deadlock in race condition
->> +	 * (something else is making changes to this same trampoline).
->> +	 */
->> +	if (!mutex_trylock(&tr->mutex)) {
->> +		/* sleep 1 ms to make sure whatever holding tr->mutex makes
->> +		 * some progress.
->> +		 */
->> +		msleep(1);
->> +		return -EAGAIN;
->> +	}
+> 	mutex_lock(&direct_mutex);
 > 
-> Huh, this looks horrible. And I do not get it. The above block prints
-> a warning when the mutex is not taken. Why it is already taken
-> when cmd == FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF
-> and why it has to be explicitly taken otherwise?
+> 	ret = prepare_direct_functions_for_ipmodify(ops);
+> 	if (ret)
+> 		goto out:
+> 
+> 	mutex_lock(&ftrace_lock);
+> 	ret = ftrace_startup(ops, 0);
+> 	mutex_unlock(&ftrace_lock);
+> 
+> out:
+> 	mutex_unlock(&direct_mutex);
+> 	return ret;
 
-There are two different scenarios:
-
-1. livepatch applied first, then bpf trampoline is registered. 
-
-In this case, we call ops_func(FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF). 
-_SELF means we are making change to the DIRECT ops (bpf trampoline) itself. 
-In this case, tr->mutex is already taken. 
-
-2. bpf_trampoline registered first, then livepatch is applied. 
-
-In this case, ftrace cannot take tr->mutex first. Instead, ftrace has to 
-lock direct_mutex, find any conflict DIRECT ops, and call 
-ops_func(FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_PEER). _PEER means this is
-called by a peer ftrace ops (livepatch). 
+Yeah, we can actually do something like this. We can also move the
+ops->flags & FTRACE_OPS_FL_IPMODIFY check to 
+register_ftrace_function(), so we only lock direct_mutex when when
+it is necessary. 
 
 > 
-> Would it be possible to call prepare_direct_functions_for_ipmodify(),
-> cleanup_direct_functions_after_ipmodify() with rt->mutex already taken
-> so that the ordering is correct even in this case.
 > 
-> That said, this is the first version when I am in Cc. I am not sure
-> if it has already been discussed.
+>>  8208		mutex_lock(&ftrace_lock);
+>>  8209	
+>>  8210		ret = ftrace_startup(ops, 0);
+>>  8211	
+>>  8212		mutex_unlock(&ftrace_lock);
+>>  8213	
 > 
-> 
->> +	switch (cmd) {
->> +	case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_PEER:
->> +		tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
->> +
->> +		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
->> +		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK))
->> +			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
->> +		break;
->> +	case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY_PEER:
->> +		tr->flags &= ~BPF_TRAMP_F_SHARE_IPMODIFY;
->> +
->> +		if (tr->flags & BPF_TRAMP_F_ORIG_STACK)
->> +			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
->> +		break;
->> +	default:
->> +		ret = -EINVAL;
->> +		break;
->> +	};
->> +
->> +	mutex_unlock(&tr->mutex);
->> +	return ret;
->> +}
->> +#endif
->> +
->> bool bpf_prog_has_trampoline(const struct bpf_prog *prog)
->> {
->> 	enum bpf_attach_type eatype = prog->expected_attach_type;
-> 
-> Note that I did not do proper review. I not much familiar with the
-> ftrace code. I just wanted to check how much this patchset affects
-> livepatching and noticed the commented things.
+> Would be possible to handle tr->mutex the same way to avoid
+> the trylock? I mean to take it in advance before direct_mutex?
 
-Before this set, livepatch and bpf trampoline cannot work on the same
-function. Whichever applied latter will fail. After this, the two
-will work almost perfectly together. By "almost" I mean the race
-condition protected by the mutex_trylock:
-
-	if (!mutex_trylock(&tr->mutex)) {
-		/* sleep 1 ms to make sure whatever holding tr->mutex makes
-		 * some progress.
-		 */
-		msleep(1);
-		return -EAGAIN;
-	}
-
-If livepatch is applied while something is making changes to the bpf
-trampoline at the same time, livepatch code will get -EAGAIN from 
-register_ftrace_function(). Then we need to retry from livepatch side. 
-AFAICT, kpatch user space already does the retry, so it gonna work 
-as-is. I am not sure about other user space though. 
-
-The msleep(1) is suggested by Steven to avoid deadlock in RT case [1].
-
-Does this make sense?
+Unfortunately, we cannot do this. ftrace code cannot look up 
+bpf trampolines without locking direct_mutex. 
 
 Thanks,
 Song
 
-[1] https://lore.kernel.org/bpf/20220706211858.67f9254d@rorschach.local.home/
+
 
 
