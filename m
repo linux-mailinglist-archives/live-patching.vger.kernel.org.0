@@ -2,50 +2,51 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3A1757AAF2
-	for <lists+live-patching@lfdr.de>; Wed, 20 Jul 2022 02:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E698A57AAEB
+	for <lists+live-patching@lfdr.de>; Wed, 20 Jul 2022 02:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238768AbiGTAWL convert rfc822-to-8bit (ORCPT
+        id S237626AbiGTAV7 convert rfc822-to-8bit (ORCPT
         <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 19 Jul 2022 20:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        Tue, 19 Jul 2022 20:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237865AbiGTAWE (ORCPT
+        with ESMTP id S236940AbiGTAV4 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 19 Jul 2022 20:22:04 -0400
+        Tue, 19 Jul 2022 20:21:56 -0400
 Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81CA5F116
-        for <live-patching@vger.kernel.org>; Tue, 19 Jul 2022 17:21:57 -0700 (PDT)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JI5EM4020794
-        for <live-patching@vger.kernel.org>; Tue, 19 Jul 2022 17:21:57 -0700
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3618D54ADD
+        for <live-patching@vger.kernel.org>; Tue, 19 Jul 2022 17:21:55 -0700 (PDT)
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JI4w4w009633
+        for <live-patching@vger.kernel.org>; Tue, 19 Jul 2022 17:21:54 -0700
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hd974b5bs-1
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hdv1k4tn2-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <live-patching@vger.kernel.org>; Tue, 19 Jul 2022 17:21:57 -0700
-Received: from twshared10560.18.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+        for <live-patching@vger.kernel.org>; Tue, 19 Jul 2022 17:21:54 -0700
+Received: from twshared5413.23.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 19 Jul 2022 17:21:55 -0700
+ 15.1.2375.28; Tue, 19 Jul 2022 17:21:53 -0700
 Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 7446CA6298FC; Tue, 19 Jul 2022 17:21:43 -0700 (PDT)
+        id 3D542A629907; Tue, 19 Jul 2022 17:21:45 -0700 (PDT)
 From:   Song Liu <song@kernel.org>
 To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <live-patching@vger.kernel.org>
 CC:     <daniel@iogearbox.net>, <kernel-team@fb.com>, <jolsa@kernel.org>,
         <rostedt@goodmis.org>, Song Liu <song@kernel.org>
-Subject: [PATCH v5 bpf-next 3/4] bpf, x64: Allow to use caller address from stack
-Date:   Tue, 19 Jul 2022 17:21:25 -0700
-Message-ID: <20220720002126.803253-4-song@kernel.org>
+Subject: [PATCH v5 bpf-next 4/4] bpf: Support bpf_trampoline on functions with IPMODIFY (e.g. livepatch)
+Date:   Tue, 19 Jul 2022 17:21:26 -0700
+Message-ID: <20220720002126.803253-5-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220720002126.803253-1-song@kernel.org>
 References: <20220720002126.803253-1-song@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 1OUR05HAacoG1RL52ybij1Mev5TD2r6m
-X-Proofpoint-GUID: 1OUR05HAacoG1RL52ybij1Mev5TD2r6m
+X-Proofpoint-ORIG-GUID: gitjIiU0UWE62pXsh9gfBs4jgzWQ3ErC
+X-Proofpoint-GUID: gitjIiU0UWE62pXsh9gfBs4jgzWQ3ErC
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-19_10,2022-07-19_01,2022-06-22_01
@@ -59,73 +60,331 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+When tracing a function with IPMODIFY ftrace_ops (livepatch), the bpf
+trampoline must follow the instruction pointer saved on stack. This needs
+extra handling for bpf trampolines with BPF_TRAMP_F_CALL_ORIG flag.
 
-Currently we call the original function by using the absolute address
-given at the JIT generation. That's not usable when having trampoline
-attached to multiple functions, or the target address changes dynamically
-(in case of live patch). In such cases we need to take the return address
-from the stack.
+Implement bpf_tramp_ftrace_ops_func and use it for the ftrace_ops used
+by BPF trampoline. This enables tracing functions with livepatch.
 
-Adding support to retrieve the original function address from the stack
-by adding new BPF_TRAMP_F_ORIG_STACK flag for arch_prepare_bpf_trampoline
-function.
+This also requires moving bpf trampoline to *_ftrace_direct_mult APIs.
 
-Basically we take the return address of the 'fentry' call:
-
-   function + 0: call fentry    # stores 'function + 5' address on stack
-   function + 5: ...
-
-The 'function + 5' address will be used as the address for the
-original function to call.
-
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Link: https://lore.kernel.org/all/20220602193706.2607681-2-song@kernel.org/
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c | 13 +++++++++----
- include/linux/bpf.h         |  5 +++++
- 2 files changed, 14 insertions(+), 4 deletions(-)
+ include/linux/bpf.h     |   8 ++
+ kernel/bpf/trampoline.c | 158 +++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 149 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 54c7f46c453f..e1b0c5ed0b7c 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -2119,10 +2119,15 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
- 		restore_regs(m, &prog, nr_args, regs_off);
- 
--		/* call original function */
--		if (emit_call(&prog, orig_call, prog)) {
--			ret = -EINVAL;
--			goto cleanup;
-+		if (flags & BPF_TRAMP_F_ORIG_STACK) {
-+			emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-+			EMIT2(0xff, 0xd0); /* call *rax */
-+		} else {
-+			/* call original function */
-+			if (emit_call(&prog, orig_call, prog)) {
-+				ret = -EINVAL;
-+				goto cleanup;
-+			}
- 		}
- 		/* remember return value in a stack for bpf prog to access */
- 		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index a5bf00649995..7496842a4671 100644
+index 7496842a4671..f35c59e0b742 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -751,6 +751,11 @@ struct btf_func_model {
- /* Return the return value of fentry prog. Only used by bpf_struct_ops. */
- #define BPF_TRAMP_F_RET_FENTRY_RET	BIT(4)
+@@ -47,6 +47,7 @@ struct kobject;
+ struct mem_cgroup;
+ struct module;
+ struct bpf_func_state;
++struct ftrace_ops;
  
-+/* Get original function from stack instead of from provided direct address.
-+ * Makes sense for trampolines with fexit or fmod_ret programs.
+ extern struct idr btf_idr;
+ extern spinlock_t btf_idr_lock;
+@@ -756,6 +757,11 @@ struct btf_func_model {
+  */
+ #define BPF_TRAMP_F_ORIG_STACK		BIT(5)
+ 
++/* This trampoline is on a function with another ftrace_ops with IPMODIFY,
++ * e.g., a live patch. This flag is set and cleared by ftrace call backs,
 + */
-+#define BPF_TRAMP_F_ORIG_STACK		BIT(5)
++#define BPF_TRAMP_F_SHARE_IPMODIFY	BIT(6)
 +
  /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
   * bytes on x86.
   */
+@@ -838,9 +844,11 @@ struct bpf_tramp_image {
+ struct bpf_trampoline {
+ 	/* hlist for trampoline_table */
+ 	struct hlist_node hlist;
++	struct ftrace_ops *fops;
+ 	/* serializes access to fields of this trampoline */
+ 	struct mutex mutex;
+ 	refcount_t refcnt;
++	u32 flags;
+ 	u64 key;
+ 	struct {
+ 		struct btf_func_model model;
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 6691dbf9e467..42e387a12694 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -13,6 +13,7 @@
+ #include <linux/static_call.h>
+ #include <linux/bpf_verifier.h>
+ #include <linux/bpf_lsm.h>
++#include <linux/delay.h>
+ 
+ /* dummy _ops. The verifier will operate on target program's ops. */
+ const struct bpf_verifier_ops bpf_extension_verifier_ops = {
+@@ -29,6 +30,81 @@ static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
+ /* serializes access to trampoline_table */
+ static DEFINE_MUTEX(trampoline_mutex);
+ 
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex);
++
++static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
++{
++	struct bpf_trampoline *tr = ops->private;
++	int ret = 0;
++
++	if (cmd == FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF) {
++		/* This is called inside register_ftrace_direct_multi(), so
++		 * tr->mutex is already locked.
++		 */
++		lockdep_assert_held_once(&tr->mutex);
++
++		/* Instead of updating the trampoline here, we propagate
++		 * -EAGAIN to register_ftrace_direct_multi(). Then we can
++		 * retry register_ftrace_direct_multi() after updating the
++		 * trampoline.
++		 */
++		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
++		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK)) {
++			if (WARN_ON_ONCE(tr->flags & BPF_TRAMP_F_SHARE_IPMODIFY))
++				return -EBUSY;
++
++			tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
++			return -EAGAIN;
++		}
++
++		return 0;
++	}
++
++	/* The normal locking order is
++	 *    tr->mutex => direct_mutex (ftrace.c) => ftrace_lock (ftrace.c)
++	 *
++	 * The following two commands are called from
++	 *
++	 *   prepare_direct_functions_for_ipmodify
++	 *   cleanup_direct_functions_after_ipmodify
++	 *
++	 * In both cases, direct_mutex is already locked. Use
++	 * mutex_trylock(&tr->mutex) to avoid deadlock in race condition
++	 * (something else is making changes to this same trampoline).
++	 */
++	if (!mutex_trylock(&tr->mutex)) {
++		/* sleep 1 ms to make sure whatever holding tr->mutex makes
++		 * some progress.
++		 */
++		msleep(1);
++		return -EAGAIN;
++	}
++
++	switch (cmd) {
++	case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_PEER:
++		tr->flags |= BPF_TRAMP_F_SHARE_IPMODIFY;
++
++		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
++		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK))
++			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
++		break;
++	case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY_PEER:
++		tr->flags &= ~BPF_TRAMP_F_SHARE_IPMODIFY;
++
++		if (tr->flags & BPF_TRAMP_F_ORIG_STACK)
++			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	};
++
++	mutex_unlock(&tr->mutex);
++	return ret;
++}
++#endif
++
+ bool bpf_prog_has_trampoline(const struct bpf_prog *prog)
+ {
+ 	enum bpf_attach_type eatype = prog->expected_attach_type;
+@@ -89,6 +165,16 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+ 	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
+ 	if (!tr)
+ 		goto out;
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++	tr->fops = kzalloc(sizeof(struct ftrace_ops), GFP_KERNEL);
++	if (!tr->fops) {
++		kfree(tr);
++		tr = NULL;
++		goto out;
++	}
++	tr->fops->private = tr;
++	tr->fops->ops_func = bpf_tramp_ftrace_ops_func;
++#endif
+ 
+ 	tr->key = key;
+ 	INIT_HLIST_NODE(&tr->hlist);
+@@ -128,7 +214,7 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
+ 	int ret;
+ 
+ 	if (tr->func.ftrace_managed)
+-		ret = unregister_ftrace_direct((long)ip, (long)old_addr);
++		ret = unregister_ftrace_direct_multi(tr->fops, (long)old_addr);
+ 	else
+ 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, NULL);
+ 
+@@ -137,15 +223,20 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
+ 	return ret;
+ }
+ 
+-static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr)
++static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr,
++			 bool lock_direct_mutex)
+ {
+ 	void *ip = tr->func.addr;
+ 	int ret;
+ 
+-	if (tr->func.ftrace_managed)
+-		ret = modify_ftrace_direct((long)ip, (long)old_addr, (long)new_addr);
+-	else
++	if (tr->func.ftrace_managed) {
++		if (lock_direct_mutex)
++			ret = modify_ftrace_direct_multi(tr->fops, (long)new_addr);
++		else
++			ret = modify_ftrace_direct_multi_nolock(tr->fops, (long)new_addr);
++	} else {
+ 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, new_addr);
++	}
+ 	return ret;
+ }
+ 
+@@ -163,10 +254,12 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
+ 	if (bpf_trampoline_module_get(tr))
+ 		return -ENOENT;
+ 
+-	if (tr->func.ftrace_managed)
+-		ret = register_ftrace_direct((long)ip, (long)new_addr);
+-	else
++	if (tr->func.ftrace_managed) {
++		ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
++		ret = register_ftrace_direct_multi(tr->fops, (long)new_addr);
++	} else {
+ 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
++	}
+ 
+ 	if (ret)
+ 		bpf_trampoline_module_put(tr);
+@@ -332,11 +425,11 @@ static struct bpf_tramp_image *bpf_tramp_image_alloc(u64 key, u32 idx)
+ 	return ERR_PTR(err);
+ }
+ 
+-static int bpf_trampoline_update(struct bpf_trampoline *tr)
++static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex)
+ {
+ 	struct bpf_tramp_image *im;
+ 	struct bpf_tramp_links *tlinks;
+-	u32 flags = BPF_TRAMP_F_RESTORE_REGS;
++	u32 orig_flags = tr->flags;
+ 	bool ip_arg = false;
+ 	int err, total;
+ 
+@@ -358,18 +451,31 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 		goto out;
+ 	}
+ 
++	/* clear all bits except SHARE_IPMODIFY */
++	tr->flags &= BPF_TRAMP_F_SHARE_IPMODIFY;
++
+ 	if (tlinks[BPF_TRAMP_FEXIT].nr_links ||
+-	    tlinks[BPF_TRAMP_MODIFY_RETURN].nr_links)
++	    tlinks[BPF_TRAMP_MODIFY_RETURN].nr_links) {
+ 		/* NOTE: BPF_TRAMP_F_RESTORE_REGS and BPF_TRAMP_F_SKIP_FRAME
+ 		 * should not be set together.
+ 		 */
+-		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
++		tr->flags |= BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
++	} else {
++		tr->flags |= BPF_TRAMP_F_RESTORE_REGS;
++	}
+ 
+ 	if (ip_arg)
+-		flags |= BPF_TRAMP_F_IP_ARG;
++		tr->flags |= BPF_TRAMP_F_IP_ARG;
++
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++again:
++	if ((tr->flags & BPF_TRAMP_F_SHARE_IPMODIFY) &&
++	    (tr->flags & BPF_TRAMP_F_CALL_ORIG))
++		tr->flags |= BPF_TRAMP_F_ORIG_STACK;
++#endif
+ 
+ 	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
+-					  &tr->func.model, flags, tlinks,
++					  &tr->func.model, tr->flags, tlinks,
+ 					  tr->func.addr);
+ 	if (err < 0)
+ 		goto out;
+@@ -378,17 +484,34 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 	WARN_ON(!tr->cur_image && tr->selector);
+ 	if (tr->cur_image)
+ 		/* progs already running at this address */
+-		err = modify_fentry(tr, tr->cur_image->image, im->image);
++		err = modify_fentry(tr, tr->cur_image->image, im->image, lock_direct_mutex);
+ 	else
+ 		/* first time registering */
+ 		err = register_fentry(tr, im->image);
++
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++	if (err == -EAGAIN) {
++		/* -EAGAIN from bpf_tramp_ftrace_ops_func. Now
++		 * BPF_TRAMP_F_SHARE_IPMODIFY is set, we can generate the
++		 * trampoline again, and retry register.
++		 */
++		/* reset fops->func and fops->trampoline for re-register */
++		tr->fops->func = NULL;
++		tr->fops->trampoline = 0;
++		goto again;
++	}
++#endif
+ 	if (err)
+ 		goto out;
++
+ 	if (tr->cur_image)
+ 		bpf_tramp_image_put(tr->cur_image);
+ 	tr->cur_image = im;
+ 	tr->selector++;
+ out:
++	/* If any error happens, restore previous flags */
++	if (err)
++		tr->flags = orig_flags;
+ 	kfree(tlinks);
+ 	return err;
+ }
+@@ -454,7 +577,7 @@ static int __bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_tr
+ 
+ 	hlist_add_head(&link->tramp_hlist, &tr->progs_hlist[kind]);
+ 	tr->progs_cnt[kind]++;
+-	err = bpf_trampoline_update(tr);
++	err = bpf_trampoline_update(tr, true /* lock_direct_mutex */);
+ 	if (err) {
+ 		hlist_del_init(&link->tramp_hlist);
+ 		tr->progs_cnt[kind]--;
+@@ -487,7 +610,7 @@ static int __bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_
+ 	}
+ 	hlist_del_init(&link->tramp_hlist);
+ 	tr->progs_cnt[kind]--;
+-	return bpf_trampoline_update(tr);
++	return bpf_trampoline_update(tr, true /* lock_direct_mutex */);
+ }
+ 
+ /* bpf_trampoline_unlink_prog() should never fail. */
+@@ -715,6 +838,7 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
+ 	 * multiple rcu callbacks.
+ 	 */
+ 	hlist_del(&tr->hlist);
++	kfree(tr->fops);
+ 	kfree(tr);
+ out:
+ 	mutex_unlock(&trampoline_mutex);
 -- 
 2.30.2
 
