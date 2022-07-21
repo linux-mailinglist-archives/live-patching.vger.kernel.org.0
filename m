@@ -2,332 +2,182 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA7CD57D2D2
-	for <lists+live-patching@lfdr.de>; Thu, 21 Jul 2022 19:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8465557D726
+	for <lists+live-patching@lfdr.de>; Fri, 22 Jul 2022 00:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbiGURzW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 21 Jul 2022 13:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        id S230304AbiGUW7f (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 21 Jul 2022 18:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230439AbiGURzV (ORCPT
+        with ESMTP id S229485AbiGUW7e (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 21 Jul 2022 13:55:21 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C69B201A1
-        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:55:17 -0700 (PDT)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 26LG90sx007687
-        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:55:16 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3hek9prvda-10
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:55:16 -0700
-Received: from twshared14818.18.frc3.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 21 Jul 2022 10:55:14 -0700
-Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 0F18EA767613; Thu, 21 Jul 2022 10:52:03 -0700 (PDT)
-From:   Song Liu <song@kernel.org>
-To:     <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jpoimboe@kernel.org>, <jikos@kernel.org>, <mbenes@suse.cz>,
-        <pmladek@suse.com>, <joe.lawrence@redhat.com>, <x86@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thu, 21 Jul 2022 18:59:34 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A718E1CB;
+        Thu, 21 Jul 2022 15:59:33 -0700 (PDT)
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26LJkjZb009435;
+        Thu, 21 Jul 2022 15:59:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=FZqtuzS0NK3paWbr17RfQsT/qRAuwdnRXdTcLi5fiNE=;
+ b=N2tuUvkEuI9OcxHZwh7mICMQJp4wjBbv5M7OfmxRwVxDEzuNEYsYE4vG4azNtm4gX457
+ toD8wfcOySWd63nLaTxfyeqjfTgPVRt06j70hcX9NdaKK/dFcOyJlM63MORoR3uOmk7/
+ gyuCoMZY8DeS44RvxQzxmiDbVzvyhBcUb6U= 
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam02lp2041.outbound.protection.outlook.com [104.47.56.41])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hej1vu2sf-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 15:59:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UJG7soFyTAcJSmtz1dR0ChX2y6s5CJVoz9wVlNPTgiXQ6Guvw6X/q4Zeuk49zX5Kg5LP8uxc+yLsYF977dmS6BuVGb5afY+z2GamMoZIUL+VdD3rfOuy0gijynxliUxMx836SFQGzr0Cu5eCbtus/k20xLLxMVjCaA4oLpzW5BB790fBwArUXf0ZCzPQafCmPfA+1qC5MIbCos6+8IB++RMwm8ofiZlUYGs4mBNIf4CoUbnAgqsIivruvpfmPk2GwPAyDnecyfzAgXx9989UhyXzWuHNRjZXWAE68y1IhsaPO5usl6CpWHbWs4jT/teD5HZl30ELCMV5qrhSNAihAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FZqtuzS0NK3paWbr17RfQsT/qRAuwdnRXdTcLi5fiNE=;
+ b=VxYqyNhpAM5zFe1lDKN1ELVSCTecqaKTkDyNHkYEoDILwiwVu/PrN791S9FuFSdhK4LxfGsaixi0IhCIXBkp8/qwhWjTqFf1ARHKArwl1r4vxijphNyWT/pgGhWssiqF8RY4awXBhzBgKmolQPClrIar0YEj4Fa2IHo/H+DsW0q9dCYO9SSDaylNFlsnzvfQSKGB7I2qJ6wSTy/6xg85zJT8nl/xr/26ezFldVOPIIE4HIi90QtGlzu67IbHqtDrS3n76O5kEouXOljaYVWlYX4Z0y9ncoEu7nl/wlnC/l/4ZDW5NLqWwZIbM5VRqhOPlVOMzZq6+J8VfWuYV80k8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by CY4PR15MB1782.namprd15.prod.outlook.com (2603:10b6:910:23::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
+ 2022 22:59:30 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::5de3:3999:66df:42d1]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::5de3:3999:66df:42d1%4]) with mapi id 15.20.5458.019; Thu, 21 Jul 2022
+ 22:59:30 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>, Jiri Olsa <jolsa@kernel.org>,
         Song Liu <song@kernel.org>
-Subject: [PATCH v3] livepatch: Clear relocation targets on a module removal
-Date:   Thu, 21 Jul 2022 10:51:47 -0700
-Message-ID: <20220721175147.214642-1-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: rANHpqA-y3ZMtut7gb5MJGztBtkdzWHL
-X-Proofpoint-ORIG-GUID: rANHpqA-y3ZMtut7gb5MJGztBtkdzWHL
-Content-Transfer-Encoding: 8BIT
+Subject: Re: [PATCH v5 bpf-next 0/4] ftrace: host klp and bpf trampoline
+ together
+Thread-Topic: [PATCH v5 bpf-next 0/4] ftrace: host klp and bpf trampoline
+ together
+Thread-Index: AQHYm86zhN8thRtC40unIKKXXAqaq62Jc3CA
+Date:   Thu, 21 Jul 2022 22:59:30 +0000
+Message-ID: <257B5D9A-7A52-4396-82F5-9895782952BC@fb.com>
+References: <20220720002126.803253-1-song@kernel.org>
+In-Reply-To: <20220720002126.803253-1-song@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.100.31)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2a84ce8f-4dfb-4941-c31d-08da6b6cab76
+x-ms-traffictypediagnostic: CY4PR15MB1782:EE_
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: U3Rw/0mYhKm33eqUzMB4T4s+bp+RrkzqdscrdqGq+nAdgMEz2Fpxs9wtbRwN8B+GJl3EuJW7u/JXbY4FwZ5O3U63sgT7V3WiSb/eUpZ20PBAxcXQptTSLtsaxGRsj2w1wLYZrbT96BOe0dCREIwxVAyx0szCU2bpSB5PJr5b/BsBqn0G0PMmbmVXu2iJuIIO1AVmAvfutcu6NOf+gm+Re+pk3D60hZcdATPCfSTn0Lv6HBVBoyMKUtDq0aej8wp3tOCM68656ahu6bu2RO/M7qDjO3eDehduhz/6peAldgxdgo+JKbXb/bS9eEJL8uB5WIyp3Ayrg8GONfSmcOURXHLWgGHmWx3t0OL51GV00thTAGCKicfcd53itaoyS7petL5HmCJqOa/B7UGxcXITOe6LUd9rjHv6jX+nK/4UPl5EAoWJiDXjSB8jzkNrlv5VJcs8GlP5HKAxd9EKUNwwnmYLqCesKkZidmS3VTItPmR4NBfRY/PkXltGm7WSok4D1S9xaufXMOCqaZmUFZDUOYa5MgkZbHbaP00QMxJi1BIafP261Ba9mAWvHhJMFBrCDnMNZcHSnr8SdLwYB0FhwjyqxdHvOKdNtsJi2yy8+nSaqp5UtTqrDARtVGMAZLX6Fe0N5ncmGU7oRstv10itMNR2j7KX3XOy/GSuAAtJUloj2EEKcG/7goUt+BM1FymxY4baFCFEQFnNCbhe8xJpNNij1Ez3zXrR1oS4ICj4Bo4Xt99vM0Vrnd7mTPm9EEy/9+3XzkBzDXyW97+46Xmfk/hJzzD9HppT1u4gW6Lr1DNsXbm+vBDniaz3Rje1uEEMFqH1MEhlbOYeuoszZ5cFRm4dc+Lio50IMUBi3TydV8RTGa0E3+Zet5ccxtYhgeBV
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(39860400002)(366004)(396003)(6506007)(2906002)(53546011)(5660300002)(8936002)(76116006)(36756003)(6512007)(478600001)(122000001)(6486002)(71200400001)(966005)(41300700001)(2616005)(186003)(38100700002)(38070700005)(8676002)(86362001)(316002)(4326008)(6916009)(66446008)(66946007)(91956017)(54906003)(66556008)(66476007)(33656002)(64756008)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?sBwee8LAwRtCIql4Pz2E7EvH+Y29QzP2P0fc+EcX/VheZ2IqTckla7R3NZDH?=
+ =?us-ascii?Q?0hbyYFF/j5D8zV7C5pPK9yxPU2Lx36bcYqXLGulyExscxK3zpnYXD5qc1E5S?=
+ =?us-ascii?Q?T8196O2LVzmliioCTb6Ev4wqdp8qtWkOk9o4m9dJNWaqRPWolJFekcsCLix3?=
+ =?us-ascii?Q?TcBaDkQVM0HRS345dSIRegbfCsaFH2IjwTsg0Hxkezv6a0vy7TxFwbV0ZNUx?=
+ =?us-ascii?Q?dsTSeXzABW/Rf5T2wvZj6umt487h/rbZPiKKKb4ei/b9uVr0vXEkVgfY3RhK?=
+ =?us-ascii?Q?aY1KSjh5uIJfpz+frLU0Btvd/yfUI3rmvX6wBsNODlwxBacDK9FckPBEYR+k?=
+ =?us-ascii?Q?ahcwu/56t2Mbb7/riHTVpzpO2/y+HQ7o9fzA1NTnbGEXh19PBBv+PYfLqy8F?=
+ =?us-ascii?Q?YoUTvSkqVgjAxTURCx9Kdf12XVUgO3PNAatkxKIH9ol+sGfoOQ3Ao/gYPlhL?=
+ =?us-ascii?Q?1qxJBJb1i9MjKztb+p/+vNvzX1pFSuApsBjfD7BnuFpiv5SbAe4Wnf+t/ON4?=
+ =?us-ascii?Q?AYVT6C3du+1wiJs4Grun+hfr+fdrfdhQwrRGHNrZldo05VhT16INQRJVYzcF?=
+ =?us-ascii?Q?c/a4KR1cbWdfmkoK+7LO0JWknuj+35iKDgW/3Dwn4vnIyUAIThqa4EM4pcaH?=
+ =?us-ascii?Q?dMIxEy7X0Tz6GrYncQ4zZvkMjoZ+q05ikaEFF76WqdsfUhWimTYOvfZndd/S?=
+ =?us-ascii?Q?IVP6qYg+gDdVaBi3YocedTUHhaSkKNuhUN3noPGmbkE0YhSHMSJBm8Fl+gT9?=
+ =?us-ascii?Q?YNsfo8i6JTmAt6oZ9+s68AwZMETY5mqcIMkKWCcVcjwYlXRJ9FX0u3Cm9qTV?=
+ =?us-ascii?Q?87MJIINXRU1vm9/o6kGQqW4MynJ+7s89WAbIrJsycz69xDN6pfRAsIbIiSE/?=
+ =?us-ascii?Q?JtRn3zh9OFcsXIi2hX1OR5tyhUHhmXzGz8mAQUk6MxnDalK7DxU6yElf8wyv?=
+ =?us-ascii?Q?6grYk6jLF5tY3l5ayiPTBX+vsDaB7mey0o2iyyTc5ogYlVGcIaRUTRMDJ8lF?=
+ =?us-ascii?Q?xF0v2ANcCRlP9fFOAwObW5OwPqKBdX+cc7YFYDaANFqaPXOItDIemSYwO40L?=
+ =?us-ascii?Q?wqgAzUKgOgrh5hpqdquu2WVyMlpWR6du3Dn/LutAbktlR1QBrYP0qdcZGKZG?=
+ =?us-ascii?Q?SaKQFyG16arDogXoAVUvj3PrDCrkXEHrGOdOoQyGlaFkLmadujR1cvrmSHXR?=
+ =?us-ascii?Q?z5yF8UO56zirmoZi1r2lV8EunjiCvf00cWUWHeNVVyBHhbwgAQfc6hgurInb?=
+ =?us-ascii?Q?/QKXi3XY8KloLalygipNYG++WSJ7g7xB/Rq3GO7onVOBi1ac1+jCieZRrahk?=
+ =?us-ascii?Q?ZgE98qU3tbJZEDhubna1JzEbyZhDyiOGzwd4JygbdJhzoiCOLhdcoO3cThWs?=
+ =?us-ascii?Q?9PEIriTWk2zJ3KlT8gbQoKm0+kGFHbjFk3PME+VCtUMnabYNKZKibsvlMsKv?=
+ =?us-ascii?Q?30yUI015KQL8drFyjCg2QdOy59wDntfOWOmVyTtHTMQcI3NRfIhZWwhkBuac?=
+ =?us-ascii?Q?ZSfZlKguz1UBD7nmFvq3zIAFFlDinPIK/mZDem4Uxu5GghqTWrS55mjgsvy5?=
+ =?us-ascii?Q?UDWVYDeEEt3LiR2Q8K5zDUIEchBR8o9bOkRZF3H/tefQXk5cEmOWnBRsky/R?=
+ =?us-ascii?Q?KQx5557dwrI9T/mUVYTx/7I=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <C155F1632455074B9455E9212275F996@namprd15.prod.outlook.com>
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a84ce8f-4dfb-4941-c31d-08da6b6cab76
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 22:59:30.3517
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rwkSUSw0DWuRP7hCNHbJg7mFTPCuU3HFs+M0rVNOehmOliPYvq4rvCzWullg2kyVcRLQmaruofSi977iro/JYQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1782
+X-Proofpoint-GUID: BO-e5jeSJhcnAVYL7I4VkCNKs9-njhpr
+X-Proofpoint-ORIG-GUID: BO-e5jeSJhcnAVYL7I4VkCNKs9-njhpr
 X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-21_24,2022-07-21_02,2022-06-22_01
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+ definitions=2022-07-21_28,2022-07-21_02,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Miroslav Benes <mbenes@suse.cz>
+Hi Steven, 
 
-Josh reported a bug:
+> On Jul 19, 2022, at 5:21 PM, Song Liu <song@kernel.org> wrote:
+> 
+> Changes v4 => v5:
+> 1. Cleanup direct_mutex handling in register_ftrace_function.
+>   (Steven Rostedt, Petr Mladek).
+> 2. Various smallish fixes. (Steven Rostedt, Petr Mladek).
+> 
+> Changes v3 => v4:
+> 1. Fix build errors for different config. (kernel test robot)
+> 
+> Changes v2 => v3:
+> 1. Major rewrite after discussions with Steven Rostedt. [1]
+> 2. Remove SHARE_IPMODIFY flag from ftrace code. Instead use the callback
+>   function to communicate this information. (Steven)
+> 3. Add cleanup_direct_functions_after_ipmodify() to clear SHARE_IPMODIFY
+>   on the DIRECT ops when the IPMODIFY ops is removed.
+> 
+> Changes v1 => v2:
+> 1. Fix build errors for different config. (kernel test robot)
+> 
+> Kernel Live Patch (livepatch, or klp) and bpf trampoline are important
+> features for modern systems. This set allows the two to work on the same
+> kernel function as the same time.
+> 
+> live patch uses ftrace with IPMODIFY, while bpf trampoline use direct
+> ftrace. Existing policy does not allow the two to attach to the same kernel
+> function. This is changed by fine tuning ftrace IPMODIFY policy, and allows
+> one IPMODIFY ftrace_ops and one DIRECT ftrace_ops on the same kernel
+> function at the same time. Please see patch 2 and 4 for more details.
+> 
+> Note that, one of the constraint here is to let bpf trampoline use direct
+> call when it is not working on the same function as live patch. This is
+> achieved by allowing ftrace code to ask bpf trampoline to make changes.
+> 
+> [1] https://lore.kernel.org/all/20220602193706.2607681-2-song@kernel.org/
 
-  When the object to be patched is a module, and that module is
-  rmmod'ed and reloaded, it fails to load with:
+How does this version look to you? 
 
-  module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
-  livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-  livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+Thanks,
+Song
 
-  The livepatch module has a relocation which references a symbol
-  in the _previous_ loading of nfsd. When apply_relocate_add()
-  tries to replace the old relocation with a new one, it sees that
-  the previous one is nonzero and it errors out.
-
-  On ppc64le, we have a similar issue:
-
-  module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
-  livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-  livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-
-He also proposed three different solutions. We could remove the error
-check in apply_relocate_add() introduced by commit eda9cec4c9a1
-("x86/module: Detect and skip invalid relocations"). However the check
-is useful for detecting corrupted modules.
-
-We could also deny the patched modules to be removed. If it proved to be
-a major drawback for users, we could still implement a different
-approach. The solution would also complicate the existing code a lot.
-
-We thus decided to reverse the relocation patching (clear all relocation
-targets on x86_64). The solution is not
-universal and is too much arch-specific, but it may prove to be simpler
-in the end.
-
-Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Miroslav Benes <mbenes@suse.cz>
-Signed-off-by: Song Liu <song@kernel.org>
-
----
-
-Changes from v2:
-1. Rewrite x86 changes to match current code style.
-2. Remove powerpc changes as there is no test coverage in v3.
-3. Only keep 1/3 of v2.
-
-v2: https://lore.kernel.org/all/20190905124514.8944-1-mbenes@suse.cz/T/#u
----
- arch/powerpc/kernel/module_64.c | 10 ++++
- arch/s390/kernel/module.c       |  8 ++++
- arch/x86/kernel/module.c        | 85 +++++++++++++++++++++++++++++++++
- include/linux/moduleloader.h    |  7 +++
- kernel/livepatch/core.c         | 41 +++++++++++++++-
- 5 files changed, 150 insertions(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
-index 7e45dc98df8a..9125f0aff5d4 100644
---- a/arch/powerpc/kernel/module_64.c
-+++ b/arch/powerpc/kernel/module_64.c
-@@ -739,6 +739,16 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
- 	return 0;
- }
- 
-+#ifdef CONFIG_LIVEPATCH
-+void clear_relocate_add(Elf64_Shdr *sechdrs,
-+		       const char *strtab,
-+		       unsigned int symindex,
-+		       unsigned int relsec,
-+		       struct module *me)
-+{
-+}
-+#endif
-+
- #ifdef CONFIG_DYNAMIC_FTRACE
- int module_trampoline_target(struct module *mod, unsigned long addr,
- 			     unsigned long *target)
-diff --git a/arch/s390/kernel/module.c b/arch/s390/kernel/module.c
-index 26125a9c436d..abbf45715354 100644
---- a/arch/s390/kernel/module.c
-+++ b/arch/s390/kernel/module.c
-@@ -500,6 +500,14 @@ static int module_alloc_ftrace_hotpatch_trampolines(struct module *me,
- }
- #endif /* CONFIG_FUNCTION_TRACER */
- 
-+#ifdef CONFIG_LIVEPATCH
-+void clear_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
-+			unsigned int symindex, unsigned int relsec,
-+			struct module *me)
-+{
-+}
-+#endif
-+
- int module_finalize(const Elf_Ehdr *hdr,
- 		    const Elf_Shdr *sechdrs,
- 		    struct module *me)
-diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index 67828d973389..2e4f219ea98b 100644
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -245,6 +245,91 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
- 	return ret;
- }
- 
-+#ifdef CONFIG_LIVEPATCH
-+
-+static void __clear_relocate_add(Elf64_Shdr *sechdrs,
-+		 const char *strtab,
-+		 unsigned int symindex,
-+		 unsigned int relsec,
-+		 struct module *me,
-+		 void *(*write)(void *dest, const void *src, size_t len))
-+{
-+	unsigned int i;
-+	Elf64_Rela *rel = (void *)sechdrs[relsec].sh_addr;
-+	Elf64_Sym *sym;
-+	void *loc;
-+	u64 zero_u64 = 0ULL;
-+	u32 zero_u32 = 0;
-+
-+	DEBUGP("Clearing relocate section %u to %u\n",
-+	       relsec, sechdrs[relsec].sh_info);
-+	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
-+		/* This is where to make the change */
-+		loc = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr
-+			+ rel[i].r_offset;
-+
-+		/*
-+		 * This is the symbol it is referring to.  Note that all
-+		 * undefined symbols have been resolved.
-+		 */
-+		sym = (Elf64_Sym *)sechdrs[symindex].sh_addr
-+			+ ELF64_R_SYM(rel[i].r_info);
-+
-+		DEBUGP("type %d st_value %Lx r_addend %Lx loc %Lx\n",
-+		       (int)ELF64_R_TYPE(rel[i].r_info),
-+		       sym->st_value, rel[i].r_addend, (u64)loc);
-+
-+		switch (ELF64_R_TYPE(rel[i].r_info)) {
-+		case R_X86_64_NONE:
-+			break;
-+		case R_X86_64_64:
-+			write(loc, &zero_u64, 8);
-+			break;
-+		case R_X86_64_32:
-+			write(loc, &zero_u32, 4);
-+			break;
-+		case R_X86_64_32S:
-+			write(loc, &zero_u32, 4);
-+			break;
-+		case R_X86_64_PC32:
-+		case R_X86_64_PLT32:
-+			write(loc, &zero_u32, 4);
-+			break;
-+		case R_X86_64_PC64:
-+			write(loc, &zero_u64, 8);
-+			break;
-+		default:
-+			pr_err("%s: Unknown rela relocation: %llu\n",
-+			       me->name, ELF64_R_TYPE(rel[i].r_info));
-+			break;
-+		}
-+	}
-+}
-+
-+void clear_relocate_add(Elf64_Shdr *sechdrs,
-+			const char *strtab,
-+			unsigned int symindex,
-+			unsigned int relsec,
-+			struct module *me)
-+{
-+	bool early = me->state == MODULE_STATE_UNFORMED;
-+	void *(*write)(void *, const void *, size_t) = memcpy;
-+
-+	if (!early) {
-+		write = text_poke;
-+		mutex_lock(&text_mutex);
-+	}
-+
-+	__clear_relocate_add(sechdrs, strtab, symindex, relsec, me,
-+				   write);
-+
-+	if (!early) {
-+		text_poke_sync();
-+		mutex_unlock(&text_mutex);
-+	}
-+}
-+#endif
-+
- #endif
- 
- int module_finalize(const Elf_Ehdr *hdr,
-diff --git a/include/linux/moduleloader.h b/include/linux/moduleloader.h
-index 9e09d11ffe5b..d22b36b84b4b 100644
---- a/include/linux/moduleloader.h
-+++ b/include/linux/moduleloader.h
-@@ -72,6 +72,13 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
- 		       unsigned int symindex,
- 		       unsigned int relsec,
- 		       struct module *mod);
-+#ifdef CONFIG_LIVEPATCH
-+void clear_relocate_add(Elf64_Shdr *sechdrs,
-+		   const char *strtab,
-+		   unsigned int symindex,
-+		   unsigned int relsec,
-+		   struct module *me);
-+#endif
- #else
- static inline int apply_relocate_add(Elf_Shdr *sechdrs,
- 				     const char *strtab,
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index bc475e62279d..5c0d8a4eba13 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -316,6 +316,45 @@ int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
- 	return apply_relocate_add(sechdrs, strtab, symndx, secndx, pmod);
- }
- 
-+static void klp_clear_object_relocations(struct module *pmod,
-+					struct klp_object *obj)
-+{
-+	int i, cnt;
-+	const char *objname, *secname;
-+	char sec_objname[MODULE_NAME_LEN];
-+	Elf_Shdr *sec;
-+
-+	objname = klp_is_module(obj) ? obj->name : "vmlinux";
-+
-+	/* For each klp relocation section */
-+	for (i = 1; i < pmod->klp_info->hdr.e_shnum; i++) {
-+		sec = pmod->klp_info->sechdrs + i;
-+		secname = pmod->klp_info->secstrings + sec->sh_name;
-+		if (!(sec->sh_flags & SHF_RELA_LIVEPATCH))
-+			continue;
-+
-+		/*
-+		 * Format: .klp.rela.sec_objname.section_name
-+		 * See comment in klp_resolve_symbols() for an explanation
-+		 * of the selected field width value.
-+		 */
-+		secname = pmod->klp_info->secstrings + sec->sh_name;
-+		cnt = sscanf(secname, ".klp.rela.%55[^.]", sec_objname);
-+		if (cnt != 1) {
-+			pr_err("section %s has an incorrectly formatted name\n",
-+			       secname);
-+			continue;
-+		}
-+
-+		if (strcmp(objname, sec_objname))
-+			continue;
-+
-+		clear_relocate_add(pmod->klp_info->sechdrs,
-+				   pmod->core_kallsyms.strtab,
-+				   pmod->klp_info->symndx, i, pmod);
-+	}
-+}
-+
- /*
-  * Sysfs Interface
-  *
-@@ -1154,7 +1193,7 @@ static void klp_cleanup_module_patches_limited(struct module *mod,
- 			klp_unpatch_object(obj);
- 
- 			klp_post_unpatch_callback(obj);
--
-+			klp_clear_object_relocations(patch->mod, obj);
- 			klp_free_object_loaded(obj);
- 			break;
- 		}
--- 
-2.30.2
 
