@@ -2,31 +2,31 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBD5E57D2C7
-	for <lists+live-patching@lfdr.de>; Thu, 21 Jul 2022 19:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7CD57D2D2
+	for <lists+live-patching@lfdr.de>; Thu, 21 Jul 2022 19:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229607AbiGURwL convert rfc822-to-8bit (ORCPT
+        id S231142AbiGURzW convert rfc822-to-8bit (ORCPT
         <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 21 Jul 2022 13:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
+        Thu, 21 Jul 2022 13:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiGURwL (ORCPT
+        with ESMTP id S230439AbiGURzV (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 21 Jul 2022 13:52:11 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CFD82F89
-        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:52:09 -0700 (PDT)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26LG8nPQ015561
-        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:52:08 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hes8vdy62-1
+        Thu, 21 Jul 2022 13:55:21 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C69B201A1
+        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:55:17 -0700 (PDT)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 26LG90sx007687
+        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:55:16 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3hek9prvda-10
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:52:08 -0700
-Received: from twshared35153.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+        for <live-patching@vger.kernel.org>; Thu, 21 Jul 2022 10:55:16 -0700
+Received: from twshared14818.18.frc3.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 21 Jul 2022 10:52:07 -0700
+ 15.1.2375.28; Thu, 21 Jul 2022 10:55:14 -0700
 Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
         id 0F18EA767613; Thu, 21 Jul 2022 10:52:03 -0700 (PDT)
 From:   Song Liu <song@kernel.org>
@@ -41,8 +41,8 @@ Message-ID: <20220721175147.214642-1-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: hmRXoVkfcXkfbG3AqhiGSIBq7RFOdcum
-X-Proofpoint-ORIG-GUID: hmRXoVkfcXkfbG3AqhiGSIBq7RFOdcum
+X-Proofpoint-GUID: rANHpqA-y3ZMtut7gb5MJGztBtkdzWHL
+X-Proofpoint-ORIG-GUID: rANHpqA-y3ZMtut7gb5MJGztBtkdzWHL
 Content-Transfer-Encoding: 8BIT
 X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
