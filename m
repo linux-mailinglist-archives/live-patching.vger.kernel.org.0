@@ -2,52 +2,52 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1BAC57E025
-	for <lists+live-patching@lfdr.de>; Fri, 22 Jul 2022 12:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 620E757E3CB
+	for <lists+live-patching@lfdr.de>; Fri, 22 Jul 2022 17:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231431AbiGVKlF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 22 Jul 2022 06:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49728 "EHLO
+        id S233308AbiGVPaz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 22 Jul 2022 11:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbiGVKlE (ORCPT
+        with ESMTP id S232331AbiGVPay (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 22 Jul 2022 06:41:04 -0400
+        Fri, 22 Jul 2022 11:30:54 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF3EBB23C
-        for <live-patching@vger.kernel.org>; Fri, 22 Jul 2022 03:41:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E51861137;
+        Fri, 22 Jul 2022 08:30:53 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5AFF937CBE;
-        Fri, 22 Jul 2022 10:41:01 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3B6AF38191;
+        Fri, 22 Jul 2022 15:30:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1658486461; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1658503852; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=oL8le2mq6ryfC2BV1eQoauq2m+H+jBVmGCFv7zZIY4A=;
-        b=MIlsjM6pgmimo7TZ/CSHRyqimR63+R521qLKbqUwdlyqT+9LGzk/t7grwOvTLlU5Imwpjz
-        JNMlx0ONqf5r7+Dr0T29BO2lewHfWWWS0Yg+H3CXpPN0ogGfB55aqVL17Q+N0oyEEtIedc
-        z91Fslh+ItioepBJyrsUhQT3bsrVTx0=
-Received: from suse.cz (unknown [10.100.208.146])
+        bh=PY0km1b0c4QCpa5lX65f+GqyyO69GGtiugaAUPVq0/8=;
+        b=TvL/mQHkAM+yTOvUaVY1orKzq7Tv1pgSyGAtnqEvKAqcKMBM/zZUHOu2kIAlkDhuoxdica
+        F4HXvtxEKIKF34FkPRF6rsCNsNpxz2qdqnvC5wY6btIfCqMcy8en+fwgY9vlcqJUeUUdo3
+        pNV5J2eFg0x7TARJJ1BIurqykaBmA3k=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E13B42C15A;
-        Fri, 22 Jul 2022 10:41:00 +0000 (UTC)
-Date:   Fri, 22 Jul 2022 12:40:59 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 11D822C15A;
+        Fri, 22 Jul 2022 15:30:51 +0000 (UTC)
+Date:   Fri, 22 Jul 2022 17:30:48 +0200
 From:   Petr Mladek <pmladek@suse.com>
-To:     Song Liu <song@kernel.org>
-Cc:     live-patching@vger.kernel.org,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+To:     Rik van Riel <riel@surriel.com>
+Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        kernel-team@fb.com, Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Cheng Jian <cj.chengjian@huawei.com>,
-        Song Liu <songliubraving@fb.com>
-Subject: Re: unload and reload modules with patched function
-Message-ID: <Ytp+u2mGPk5+7Tvf@alley>
-References: <CAPhsuW6xiWe-WSVtJDhcu0+aLN+bKXd76rNcZzx4cpMig2ryNg@mail.gmail.com>
+        Breno Leitao <leitao@debian.org>
+Subject: Re: [PATCH,RFC] livepatch: fix race between fork and
+ klp_reverse_transition
+Message-ID: <YtrCqMLUqJlcoqIo@alley>
+References: <20220720121023.043738bb@imladris.surriel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPhsuW6xiWe-WSVtJDhcu0+aLN+bKXd76rNcZzx4cpMig2ryNg@mail.gmail.com>
+In-Reply-To: <20220720121023.043738bb@imladris.surriel.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -57,74 +57,113 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2022-07-20 23:57:25, Song Liu wrote:
-> Hi folks,
+On Wed 2022-07-20 12:10:23, Rik van Riel wrote:
+> When a KLP fails to apply, klp_reverse_transition will clear the
+> TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+> which are not on the task list yet.
 > 
-> While testing livepatch kernel modules, we found that if a kernel module has
-> patched functions, we cannot unload and load it again (rmmod, then insmod).
-> This hasn't happened in production yet, but it feels very risky. We use
-> automation (chef to be specific) to handle kernel modules and livepatch.
-> It is totally possible some weird sequence of operations would cause insmod
-> errors on thousands of servers. Therefore, we would like to fix this issue
-> before it hits us hard.
+> Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
+> parent to the child early on, in dup_task_struct -> setup_thread_stack.
 > 
-> A bit of searching with the error message shows it was a known issue [1], and
-> a few options are discussed:
+> Much later, klp_copy_process will set child->patch_state to match
+> that of the parent.
 > 
-> "Possible ways to fix it:
+> However, the parent's patch_state may have been changed by KLP loading
+> or unloading since it was initially copied over into the child.
 > 
-> 1) Remove the error check in apply_relocate_add().  I don't think we
->    should do this, because the error is actually useful for detecting
->    corrupt modules.  And also, powerpc has the similar error so this
->    wouldn't be a universal solution.
+> This results in the KLP code occasionally hitting this warning in
+> klp_complete_transition:
 > 
-> 2) In klp_unpatch_object(), call an arch-specific arch_unpatch_object()
->    which reverses any arch-specific patching: on x86, clearing all
->    relocation targets to zero; on powerpc, converting the instructions
->    after relative link branches to nops.  I don't think we should do
->    this because it's not a global solution and requires fidgety
->    arch-specific patching code.
+>         for_each_process_thread(g, task) {
+>                 WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+>                 task->patch_state = KLP_UNDEFINED;
+>         }
+
+I see.
+
+> This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
+> process depending on whether or not it is needed at the time
+> klp_copy_process is called, at a point in copy_process where the
+> tasklist_lock is held exclusively, preventing races with the KLP
+> code.
 > 
-> 3) Don't allow patched modules to be removed.  I think this makes the
->    most sense.  Nobody needs this functionality anyway (right?).
-> "
+> This should prevent this warning from triggering again in the
+> future.
+> 
+> I have not yet figured out whether this would also help with races in
+> the other direction, where the child process fails to have TIF_PATCH_PENDING
+> set and somehow misses a transition, or whether the retries in
+> klp_try_complete_transition would catch that task and help it transition
+> later.
+> 
+> Signed-off-by: Rik van Riel <riel@surriel.com>
+> Reported-by: Breno Leitao <leitao@debian.org>
+> ---
+>  kernel/livepatch/transition.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index 5d03a2ad1066..7a90ad5e9224 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -612,7 +612,15 @@ void klp_copy_process(struct task_struct *child)
+>  {
+>  	child->patch_state = current->patch_state;
+>  
+> -	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
+> +	/*
+> +	 * The parent process may have gone through a KLP transition since
+> +	 * the thread flag was copied in setup_thread_stack earlier. Set
+> +	 * the flag according to whether this task needs a KLP transition.
+> +	 */
+> +	if (child->patch_state != klp_target_state)
+> +		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
+> +	else
+> +		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
+>  }
 
-Just for completeness there is one more possibility. We have sometimes
-discussed a split of the livepatch module into per-object
-(vmlinux + per-module) modules. So that modules can be loaded and
-unloaded together with the respective livepatch counter parts.
+I am afraid that it is more complicated.
 
-I have played with this idea some (years) ago. It was quite
-complicated because of the consistency model. If I remember correctly
-the main challenges were:
+If the parent process might have gone through a KLP transition
+then also the transition might have finished and klp_target_state might be
+KLP_UNDEFINED. We must not set TIF_PATCH_PENDING in this case.
 
-1. The livepatch module must be loaded together with all related
-   livepatch modules for all loaded modules before the transition
-   is started.
+Now, we might race with klp_complete_transition() at any stage. It
+might be before or after setting task->patch_state = KLP_UNDEFINED.
+And it might be before or after setting klp_target_state =
+KLP_UNDEFINED.
 
-2. If any module is loaded then it must wait in MODULE_STATE_COMMING
-   until the related livepatch module is loaded and the livepatch
-   ftrace callbacks applied.
+The great thing is that we could not race with
+klp_update_patch_state() that would be migrating current because
+we are current.
 
-3. The naming is a nightmare.
-
-
-Ad 1. and 2.: It needs some "hacks" in the module loader. It requires
-    calling modprobe from kernel code which some people hate.
-
-Ad 3: Livepatch is a module. The per-object livepatch is set of related
-    modules. The livepatch modules do livepatch vmlinux and "normal"
-    modules. It is easy to get lost in the terms. Especially it hard
-    to distinguish "livepatched modules" and "livepatch modules"
-    in code (variable and function names) and comments.
+So, the easiest solution would be to copy the flag from current
+once again here:
 
 
-I have never published the POC because it was not finished and it got
-less important after removing the most of the arch-specific code.
-I could put it somewhere when anyone is interested.
+/* Called from copy_process() during fork */
+void klp_copy_process(struct task_struct *child)
+{
+	/*
+	 * The parent process may have gone through a KLP transition since
+	 * the thread flag was copied in setup_thread_stack earlier.
+	 * Copy also the flag once again here.
+	 *
+	 * The operation is serialized against all klp_*_transition()
+	 * operations by tasklist_lock. The only exception is
+	 * klp_update_patch_state(current). But it could not race
+	 * because we are current.
+	 */
+	if (test_tsk_thread_flag(current, TIF_PATCH_PENDING))
+		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
+	else
+		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
 
-Anyway, I think that it is _not_ the way to go. IMHO, the split
-livepatch modules bring more problems than they solve.
+	child->patch_state = current->patch_state;
+}
+
+
+I hope that I did not miss anything. It is Friday.
 
 Best Regards,
 Petr
