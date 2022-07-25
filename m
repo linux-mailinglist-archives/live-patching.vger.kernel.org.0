@@ -2,49 +2,54 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90067580026
-	for <lists+live-patching@lfdr.de>; Mon, 25 Jul 2022 15:49:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95EFE580707
+	for <lists+live-patching@lfdr.de>; Tue, 26 Jul 2022 00:02:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbiGYNta (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 25 Jul 2022 09:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
+        id S229737AbiGYWCx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 25 Jul 2022 18:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232047AbiGYNta (ORCPT
+        with ESMTP id S229580AbiGYWCw (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:49:30 -0400
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDE5EE3F;
-        Mon, 25 Jul 2022 06:49:29 -0700 (PDT)
-Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1oFySW-00085J-5z;
-        Mon, 25 Jul 2022 09:49:20 -0400
-Date:   Mon, 25 Jul 2022 09:49:19 -0400
-From:   Rik van Riel <riel@surriel.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        kernel-team@fb.com, Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Breno Leitao <leitao@debian.org>
-Subject: [PATCH v3] livepatch: fix race between fork and
- klp_reverse_transition
-Message-ID: <20220725094919.52bcde19@imladris.surriel.com>
-In-Reply-To: <Yt6bZo5ztnVSjLLC@alley>
-References: <20220720121023.043738bb@imladris.surriel.com>
-        <YtrCqMLUqJlcoqIo@alley>
-        <20220722150106.683f3704@imladris.surriel.com>
-        <Yt6bZo5ztnVSjLLC@alley>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Mon, 25 Jul 2022 18:02:52 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5D313F72
+        for <live-patching@vger.kernel.org>; Mon, 25 Jul 2022 15:02:50 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PK2LU5027240
+        for <live-patching@vger.kernel.org>; Mon, 25 Jul 2022 15:02:50 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hj1usgs10-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <live-patching@vger.kernel.org>; Mon, 25 Jul 2022 15:02:49 -0700
+Received: from twshared5413.23.frc3.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 25 Jul 2022 15:02:49 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id DD025AA5DBDE; Mon, 25 Jul 2022 15:02:37 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <live-patching@vger.kernel.org>
+CC:     <jpoimboe@kernel.org>, <jikos@kernel.org>, <mbenes@suse.cz>,
+        <pmladek@suse.com>, <joe.lawrence@redhat.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH RFC] livepatch: add sysfs entry "patched" for each klp_object
+Date:   Mon, 25 Jul 2022 15:02:31 -0700
+Message-ID: <20220725220231.3273447-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Sender: riel@shelob.surriel.com
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: YRFN7wiflapop5AHPC3iXIK3SQ3z26wa
+X-Proofpoint-ORIG-GUID: YRFN7wiflapop5AHPC3iXIK3SQ3z26wa
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-25_13,2022-07-25_03,2022-06-22_01
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,95 +57,61 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, 25 Jul 2022 15:32:22 +0200
-Petr Mladek <pmladek@suse.com> wrote:
+I was debugging an issue that a livepatch appears to be attached, but
+actually not. It turns out that there is a mismatch in module name
+(abc-xyz vs. abc_xyz), klp_find_object_module failed to find the module.
 
-> We should update the commit message and mention also the other
-> two locations where the state is manipulated without tasklist_lock.
-> I am sorry that I did not mention it on Friday.
+Add per klp_object sysfs entry "patched" to make it easier to debug such
+issues.
 
-Done. Thank you for reviewing this patch so carefully!
-I had looked at those other places in the code as well, but
-do not have as complete a picture of the KLP code as you.
-
-v2: a better approach, suggested by Petr (thank you)
-v3: update changelog (thank you Petr)
----8<---
-When a KLP fails to apply, klp_reverse_transition will clear the
-TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
-which are not on the task list yet.
-
-Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
-parent to the child early on, in dup_task_struct -> setup_thread_stack.
-
-Much later, klp_copy_process will set child->patch_state to match
-that of the parent.
-
-However, the parent's patch_state may have been changed by KLP loading
-or unloading since it was initially copied over into the child.
-
-This results in the KLP code occasionally hitting this warning in
-klp_complete_transition:
-
-        for_each_process_thread(g, task) {
-                WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
-                task->patch_state = KLP_UNDEFINED;
-        }
-
-This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
-process depending on whether or not it is needed at the time
-klp_copy_process is called, at a point in copy_process where the
-tasklist_lock is held exclusively, preventing races with the KLP
-code.
-
-The KLP code does have a few places where the state is changed
-without the tasklist_lock held, but those should not cause
-problems because klp_update_patch_state(current) cannot be
-called while the current task is in the middle of fork,
-klp_check_and_switch_task() which is called under the pi_lock,
-which prevents rescheduling, and manipulation of the patch
-state of idle tasks, which do not fork.
-
-This should prevent this warning from triggering again in the
-future.
-
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reported-by: Breno Leitao <leitao@debian.org>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Song Liu <song@kernel.org>
 ---
- kernel/livepatch/transition.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ kernel/livepatch/core.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index 5d03a2ad1066..30187b1d8275 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -610,9 +610,23 @@ void klp_reverse_transition(void)
- /* Called from copy_process() during fork */
- void klp_copy_process(struct task_struct *child)
- {
--	child->patch_state = current->patch_state;
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 5c0d8a4eba13..a9e20c561fef 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -364,6 +364,7 @@ static void klp_clear_object_relocations(struct module *pmod,
+  * /sys/kernel/livepatch/<patch>/transition
+  * /sys/kernel/livepatch/<patch>/force
+  * /sys/kernel/livepatch/<patch>/<object>
++ * /sys/kernel/livepatch/<patch>/<object>/patched
+  * /sys/kernel/livepatch/<patch>/<object>/<function,sympos>
+  */
+ static int __klp_disable_patch(struct klp_patch *patch);
+@@ -470,6 +471,22 @@ static struct attribute *klp_patch_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(klp_patch);
  
--	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
-+	/*
-+	 * The parent process may have gone through a KLP transition since
-+	 * the thread flag was copied in setup_thread_stack earlier. Bring
-+	 * the task flag up to date with the parent here.
-+	 *
-+	 * The operation is serialized against all klp_*_transition()
-+	 * operations by the tasklist_lock. The only exception is
-+	 * klp_update_patch_state(current), but we cannot race with
-+	 * that because we are current.
-+	 */
-+	if (test_tsk_thread_flag(current, TIF_PATCH_PENDING))
-+		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
-+	else
-+		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
++static ssize_t patched_show(struct kobject *kobj,
++			    struct kobj_attribute *attr, char *buf)
++{
++	struct klp_object *obj;
 +
-+	child->patch_state = current->patch_state;
- }
++	obj = container_of(kobj, struct klp_object, kobj);
++	return snprintf(buf, PAGE_SIZE, "%d\n", obj->patched);
++}
++
++static struct kobj_attribute patched_kobj_attr = __ATTR_RO(patched);
++static struct attribute *klp_object_attrs[] = {
++	&patched_kobj_attr.attr,
++	NULL,
++};
++ATTRIBUTE_GROUPS(klp_object);
++
+ static void klp_free_object_dynamic(struct klp_object *obj)
+ {
+ 	kfree(obj->name);
+@@ -615,6 +632,7 @@ static void klp_kobj_release_object(struct kobject *kobj)
+ static struct kobj_type klp_ktype_object = {
+ 	.release = klp_kobj_release_object,
+ 	.sysfs_ops = &kobj_sysfs_ops,
++	.default_groups = klp_object_groups,
+ };
  
- /*
+ static void klp_kobj_release_func(struct kobject *kobj)
 -- 
-2.35.1
+2.30.2
 
