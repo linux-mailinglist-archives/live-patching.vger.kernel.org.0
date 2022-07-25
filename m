@@ -2,90 +2,135 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE6457E808
-	for <lists+live-patching@lfdr.de>; Fri, 22 Jul 2022 22:10:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F1EF57FFD6
+	for <lists+live-patching@lfdr.de>; Mon, 25 Jul 2022 15:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236690AbiGVUKR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 22 Jul 2022 16:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S235209AbiGYNc1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 25 Jul 2022 09:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236638AbiGVUKQ (ORCPT
+        with ESMTP id S234946AbiGYNc0 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 22 Jul 2022 16:10:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDF911448;
-        Fri, 22 Jul 2022 13:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 25 Jul 2022 09:32:26 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BBFDE96;
+        Mon, 25 Jul 2022 06:32:24 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 6B7F61FB52;
+        Mon, 25 Jul 2022 13:32:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658755943; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t9LEZiaIxr7qWut5KwVWqnFFQS4Gg1WXbelNaKHOXxs=;
+        b=ZawmajlquknUUrsNaNFuwHIe/SAjv+wxqrOqyi2DXAo1rlqiTjetta3AbZl0nNBVHRZwgT
+        0hzfjG5w1QGJ43WbAPCdIOCiVlxnEfms76oYWwAz/GQ3zoYbE4+RvTXe7eeo9gToJjI1oV
+        eONWmLAqsWsWHuvU5u1dCRkiz/g8FrA=
+Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDFDE61F5E;
-        Fri, 22 Jul 2022 20:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E828C341CA;
-        Fri, 22 Jul 2022 20:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658520614;
-        bh=H5j29TD1aac05Kotttybo0+H5KC0UQYvJJI3ZOxcHjU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h9SO7/gwY+zSz6CZh1/ATQ6T/fa5QnnYojhkDX7YzNiTvJzwOKLihL37gEdUCmgFW
-         ARIeKhPosnLFWc6m8eB9M4UftoPas9bsVZpRQcttp5uMyXnSpECJg3nKBajpauFRHh
-         F0OG18DJfuNt3C9BnqLUSqi6h+RjJy4jF5+sVBDwc1c9wGgJfo329KJjuKgPzAIQVD
-         W0OlbR40aFGlYF2eQJqLEjqqgkocqd6UQWOfPCiNPfspIsOQZ5IOEhC9VUu4k9lTsf
-         ++4dAOA3uGKC5SNdwbDlnagdW4nQUrYTtHvqMQysojuGR9voE1+gFvLXcx7o9/9tRf
-         OsKtMLSTnXbSQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 12A50E451BB;
-        Fri, 22 Jul 2022 20:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by relay2.suse.de (Postfix) with ESMTPS id 4198F2C153;
+        Mon, 25 Jul 2022 13:32:22 +0000 (UTC)
+Date:   Mon, 25 Jul 2022 15:32:22 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Rik van Riel <riel@surriel.com>
+Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        kernel-team@fb.com, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Breno Leitao <leitao@debian.org>
+Subject: Re: [PATCH v2] livepatch: fix race between fork and
+ klp_reverse_transition
+Message-ID: <Yt6bZo5ztnVSjLLC@alley>
+References: <20220720121023.043738bb@imladris.surriel.com>
+ <YtrCqMLUqJlcoqIo@alley>
+ <20220722150106.683f3704@imladris.surriel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v5 bpf-next 0/4] ftrace: host klp and bpf trampoline together
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165852061406.17882.15043433276735332820.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Jul 2022 20:10:14 +0000
-References: <20220720002126.803253-1-song@kernel.org>
-In-Reply-To: <20220720002126.803253-1-song@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, daniel@iogearbox.net,
-        kernel-team@fb.com, jolsa@kernel.org, rostedt@goodmis.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220722150106.683f3704@imladris.surriel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Tue, 19 Jul 2022 17:21:22 -0700 you wrote:
-> Changes v4 => v5:
-> 1. Cleanup direct_mutex handling in register_ftrace_function.
->    (Steven Rostedt, Petr Mladek).
-> 2. Various smallish fixes. (Steven Rostedt, Petr Mladek).
+On Fri 2022-07-22 15:01:06, Rik van Riel wrote:
+> v2: a better approach, suggested by Petr (thank you)
+> ---8<---
 > 
-> Changes v3 => v4:
-> 1. Fix build errors for different config. (kernel test robot)
+> When a KLP fails to apply, klp_reverse_transition will clear the
+> TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+> which are not on the task list yet.
 > 
-> [...]
+> Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
+> parent to the child early on, in dup_task_struct -> setup_thread_stack.
+> 
+> Much later, klp_copy_process will set child->patch_state to match
+> that of the parent.
+> 
+> However, the parent's patch_state may have been changed by KLP loading
+> or unloading since it was initially copied over into the child.
+> 
+> This results in the KLP code occasionally hitting this warning in
+> klp_complete_transition:
+> 
+>         for_each_process_thread(g, task) {
+>                 WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+>                 task->patch_state = KLP_UNDEFINED;
+>         }
+> 
+> This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
+> process depending on whether or not it is needed at the time
+> klp_copy_process is called, at a point in copy_process where the
+> tasklist_lock is held exclusively, preventing races with the KLP
+> code.
+> 
+> This should prevent this warning from triggering again in the
+> future.
+> 
+> I have not yet figured out whether this would also help with races in
+> the other direction, where the child process fails to have TIF_PATCH_PENDING
+> set and somehow misses a transition, or whether the retries in
+> klp_try_complete_transition would catch that task and help it transition
+> later.
 
-Here is the summary with links:
-  - [v5,bpf-next,1/4] ftrace: Add modify_ftrace_direct_multi_nolock
-    https://git.kernel.org/bpf/bpf-next/c/f96f644ab97a
-  - [v5,bpf-next,2/4] ftrace: Allow IPMODIFY and DIRECT ops on the same function
-    https://git.kernel.org/bpf/bpf-next/c/53cd885bc5c3
-  - [v5,bpf-next,3/4] bpf, x64: Allow to use caller address from stack
-    https://git.kernel.org/bpf/bpf-next/c/316cba62dfb7
-  - [v5,bpf-next,4/4] bpf: Support bpf_trampoline on functions with IPMODIFY (e.g. livepatch)
-    https://git.kernel.org/bpf/bpf-next/c/00963a2e75a8
+It should fix these races as well. Both task->patch_state and
+TIF_PATCH_PENDING flag are almost always modified under tasklist_lock.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+One exception is klp_update_patch_state(current) but it could not
+race because klp_copy_process() is called under spinlock.
+So that "current" can't sleep and can't get migrated in the middle of
+klp_copy_process().
+
+Another exception is klp_check_and_switch_task() that is called
+under p->pi_lock. It prevents rescheduling and the task will be
+migrated only when sleeping. As a result "current" again
+can't get migrated inside klp_copy_process().
+
+Finally, the state of "idle" tasks (idle_task(cpu)) is updated
+without tasklist_lock. But they are not forked so that we are
+on safe side.
 
 
+> Signed-off-by: Rik van Riel <riel@surriel.com>
+> Reported-by: Breno Leitao <leitao@debian.org>
+
+We should update the commit message and mention also the other
+two locations where the state is manipulated without tasklist_lock.
+I am sorry that I did not mention it on Friday.
+
+Also we should remove "I have not figured yet whether". The patch
+should fix these races as well.
+
+With the above changes:
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+
+Best Regards,
+Petr
