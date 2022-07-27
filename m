@@ -2,51 +2,57 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E7B581C6B
-	for <lists+live-patching@lfdr.de>; Wed, 27 Jul 2022 01:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A5B581CA7
+	for <lists+live-patching@lfdr.de>; Wed, 27 Jul 2022 02:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232486AbiGZXdH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 26 Jul 2022 19:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
+        id S230505AbiG0AKs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Jul 2022 20:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiGZXdH (ORCPT
+        with ESMTP id S230315AbiG0AKr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 26 Jul 2022 19:33:07 -0400
+        Tue, 26 Jul 2022 20:10:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C3E286CB;
-        Tue, 26 Jul 2022 16:33:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB62B6147;
+        Tue, 26 Jul 2022 17:10:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC1A56170E;
-        Tue, 26 Jul 2022 23:33:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE97C433C1;
-        Tue, 26 Jul 2022 23:33:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8524460F0A;
+        Wed, 27 Jul 2022 00:10:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 826A8C433C1;
+        Wed, 27 Jul 2022 00:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658878385;
-        bh=I/rSDH27s22aS09yPNSQ0IWerMS4lsIiHugHoIGthYw=;
+        s=k20201202; t=1658880642;
+        bh=DccIhri+UWz0V27fSCjeICJ7Lf2QQ0rDDGyKMMX5HCQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=msdF+gbfhutRiXqSjMj29VZXd6pPQvph7mflQ/fFoxio19nyEhvVFjvAx75z21xys
-         qXdAdKaAnhZiMGXNnM6Tg1oRH6ux/Xzn0k7vFjJInlQ2fPE/bQfGADidF5iB4vrK13
-         lxy1h2TjzrSeOTztNrwJwcutod+07eYLvfDiEsp4cULC3feNwC/D8LSASbsBH4kF4M
-         QT3VRti+eQQITHiogxHUUP7ok/pVaBKQHovewSMl/OlIoMkJpWYdn+QQxzfslphKqQ
-         RetvkjvczXXyZrHhZK8jfQW+AQRp2J8d9fHks8VQKxpPX9slYQGPhTaXl4ZMzAps7s
-         mXatNHGKk69aw==
-Date:   Tue, 26 Jul 2022 16:33:02 -0700
+        b=OJmf+TkdfZku5jpbWVXhliIiAGk3Vblm829Fz78xH6KqgYaBLQFZdDrHI0pXrwoYf
+         fkOlJwesBynUuYOQejQMc2DUAOBAvutqO7tYCIav5zPxtwCIMCtlnyUsO0YbkoT64u
+         o95xm8TDccRQHzUtsrt6rMU55bSODj0vcqhVuNn6hdDQ9FshgTeRwr9U2pc9uX4Ikk
+         qZiq93SLH4tH2sVMjdYwp80PAAvUsWLH4ujgwmb++Nz8bMqtaVTRsnvYzhUbQ3oyj+
+         Nl/h0Y+DhoBInJbKoIn4fXiaBDnsTLQP98aGHJSpa8dnZEfOYxjTa36j4REHHTZvWd
+         /IhpwXqvu57pQ==
+Date:   Tue, 26 Jul 2022 17:10:40 -0700
 From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
-        joe.lawrence@redhat.com, x86@kernel.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH v3] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <20220726233302.zwloxsammnu7clu4@treble>
-References: <20220721175147.214642-1-song@kernel.org>
+To:     Rik van Riel <riel@surriel.com>
+Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, kernel-team@fb.com,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Breno Leitao <leitao@debian.org>
+Subject: Re: [PATCH v3] livepatch: fix race between fork and
+ klp_reverse_transition
+Message-ID: <20220727001040.vlqnnb4a3um46746@treble>
+References: <20220720121023.043738bb@imladris.surriel.com>
+ <YtrCqMLUqJlcoqIo@alley>
+ <20220722150106.683f3704@imladris.surriel.com>
+ <Yt6bZo5ztnVSjLLC@alley>
+ <20220725094919.52bcde19@imladris.surriel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220721175147.214642-1-song@kernel.org>
+In-Reply-To: <20220725094919.52bcde19@imladris.surriel.com>
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,63 +62,61 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 10:51:47AM -0700, Song Liu wrote:
-> From: Miroslav Benes <mbenes@suse.cz>
-> 
-> Josh reported a bug:
-> 
->   When the object to be patched is a module, and that module is
->   rmmod'ed and reloaded, it fails to load with:
-> 
->   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
->   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
->   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> 
->   The livepatch module has a relocation which references a symbol
->   in the _previous_ loading of nfsd. When apply_relocate_add()
->   tries to replace the old relocation with a new one, it sees that
->   the previous one is nonzero and it errors out.
-> 
->   On ppc64le, we have a similar issue:
-> 
->   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
->   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
->   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> 
-> He also proposed three different solutions. We could remove the error
-> check in apply_relocate_add() introduced by commit eda9cec4c9a1
-> ("x86/module: Detect and skip invalid relocations"). However the check
-> is useful for detecting corrupted modules.
-> 
-> We could also deny the patched modules to be removed. If it proved to be
-> a major drawback for users, we could still implement a different
-> approach. The solution would also complicate the existing code a lot.
-> 
-> We thus decided to reverse the relocation patching (clear all relocation
-> targets on x86_64). The solution is not
-> universal and is too much arch-specific, but it may prove to be simpler
-> in the end.
-> 
-> Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
-> Signed-off-by: Song Liu <song@kernel.org>
-> 
-> ---
-> 
-> Changes from v2:
-> 1. Rewrite x86 changes to match current code style.
-> 2. Remove powerpc changes as there is no test coverage in v3.
-> 3. Only keep 1/3 of v2.
+On Mon, Jul 25, 2022 at 09:49:19AM -0400, Rik van Riel wrote:
+> When a KLP fails to apply, klp_reverse_transition will clear the
+> TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+> which are not on the task list yet.
 
-1) All the copy/paste is ugly and IMO guaranteed to eventually introduce
-   bugs when somebody forgets to update the copy.  Wouldn't it be more
-   robust to reuse the existing apply_relocate_add() code by making it
-   more generic somehow, like with a new 'clear' bool arg which sets
-   'val' to zero?
+This paragraph and $SUBJECT both talk about a reverse transition.  Isn't
+it also possible to race on a normal (forward) transition?
 
-2) We can't only fix x86, powerpc also needs a fix.
+> Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
+> parent to the child early on, in dup_task_struct -> setup_thread_stack.
+> 
+> Much later, klp_copy_process will set child->patch_state to match
+> that of the parent.
+> 
+> However, the parent's patch_state may have been changed by KLP loading
+> or unloading since it was initially copied over into the child.
+> 
+> This results in the KLP code occasionally hitting this warning in
+> klp_complete_transition:
+> 
+>         for_each_process_thread(g, task) {
+>                 WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+>                 task->patch_state = KLP_UNDEFINED;
+>         }
+> 
+> This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
+> process depending on whether or not it is needed at the time
+> klp_copy_process is called, at a point in copy_process where the
+> tasklist_lock is held exclusively, preventing races with the KLP
+> code.
 
-3) A selftest would be a good idea.
+Use imperative language, i.e. no "This patch".  See
+Documentation/process/submitting-patches.rst
+> 
+> The KLP code does have a few places where the state is changed
+> without the tasklist_lock held, but those should not cause
+> problems because klp_update_patch_state(current) cannot be
+> called while the current task is in the middle of fork,
+> klp_check_and_switch_task() which is called under the pi_lock,
+> which prevents rescheduling, and manipulation of the patch
+> state of idle tasks, which do not fork.
+> 
+> This should prevent this warning from triggering again in the
+> future.
+> 
+
+Fixes: d83a7cb375ee ("livepatch: change to a per-task consistency model")
+
+> Signed-off-by: Rik van Riel <riel@surriel.com>
+> Reported-by: Breno Leitao <leitao@debian.org>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+With the above minor things fixed:
+
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
 -- 
 Josh
