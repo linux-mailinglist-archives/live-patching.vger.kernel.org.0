@@ -2,166 +2,137 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FE99581CCA
-	for <lists+live-patching@lfdr.de>; Wed, 27 Jul 2022 02:38:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C49581E70
+	for <lists+live-patching@lfdr.de>; Wed, 27 Jul 2022 05:55:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232947AbiG0Aih (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 26 Jul 2022 20:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
+        id S240447AbiG0Dzr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 26 Jul 2022 23:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232498AbiG0Aih (ORCPT
+        with ESMTP id S240213AbiG0DzX (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 26 Jul 2022 20:38:37 -0400
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A85F3AB27;
-        Tue, 26 Jul 2022 17:38:36 -0700 (PDT)
-Received: from imladris.surriel.com ([96.67.55.152])
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1oGUss-0001dG-Cc;
-        Tue, 26 Jul 2022 20:26:42 -0400
-Message-ID: <924f1cf4b93ff3e4ff217203bd88448dfa4c0f85.camel@surriel.com>
-Subject: Re: [PATCH v3] livepatch: fix race between fork and
- klp_reverse_transition
-From:   Rik van Riel <riel@surriel.com>
+        Tue, 26 Jul 2022 23:55:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BA83ED56;
+        Tue, 26 Jul 2022 20:54:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D09C617D2;
+        Wed, 27 Jul 2022 03:54:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B626AC433B5;
+        Wed, 27 Jul 2022 03:54:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658894090;
+        bh=QS+qP7KbhBDY5zMM/YWZqzh8w15YmbOtuiOmKuYNj8E=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jyC4HUEHAByQ77gLS1yXYLUAV5aDxYiBUb9zIQmDDVkRO7UG5S69aH0CrYujOjLz6
+         Ahgdc+L4cZ0ZeQwdXNt1KBxyZGiNK7iXJgU1HM6vYQbXxckAIwIrbcwMN4nXKQDbN/
+         eC2ydEKSQIdC6oNYxJdBCa2qxJRZBcFy3Se9eybeiBzE7BcsUTETzOvhB4ZVgBMM44
+         v7iYdtXeWBtB4poobFFq4Hali4YwFE9TbZ5q/D4j7CLYztvfywVBaXhT0D2+KsTjQH
+         CXm/5FLJ/dKbIlwuagJ+7yYm2nAuukH9/rRx2KjB+Lr7Z4R1bcX2xScruB6iKXQ4t1
+         F+2IrxhDCvD7A==
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-31e47ac84daso162882527b3.0;
+        Tue, 26 Jul 2022 20:54:50 -0700 (PDT)
+X-Gm-Message-State: AJIora9bLYWUj6kSS74tkBSQyhjY6RlcvqHlW0xNufI5Z5fGwlOY/gmD
+        Sg6OwMWdSOPqC+CxNpXee9hOs/1DtFS41YQwNQM=
+X-Google-Smtp-Source: AGRyM1sVxrz8xGmq6xEy5Rmi6mEED7hPnN20JZHyh2Rd8bkQ1bhhAi3F5uV+vkmbRikYq+oP5uUF8YkhL9j9X7np0u0=
+X-Received: by 2002:a0d:f985:0:b0:31f:5a01:eaf2 with SMTP id
+ j127-20020a0df985000000b0031f5a01eaf2mr3257675ywf.447.1658894089690; Tue, 26
+ Jul 2022 20:54:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220721175147.214642-1-song@kernel.org> <20220726233302.zwloxsammnu7clu4@treble>
+In-Reply-To: <20220726233302.zwloxsammnu7clu4@treble>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 26 Jul 2022 20:54:38 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7tmRt=yx1+i62HPRJJ4Gp8xB_3XvpVxUC=SyGv6iCBEQ@mail.gmail.com>
+Message-ID: <CAPhsuW7tmRt=yx1+i62HPRJJ4Gp8xB_3XvpVxUC=SyGv6iCBEQ@mail.gmail.com>
+Subject: Re: [PATCH v3] livepatch: Clear relocation targets on a module removal
 To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, kernel-team@fb.com,
+Cc:     live-patching@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Breno Leitao <leitao@debian.org>
-Date:   Tue, 26 Jul 2022 20:26:41 -0400
-In-Reply-To: <20220727001040.vlqnnb4a3um46746@treble>
-References: <20220720121023.043738bb@imladris.surriel.com>
-         <YtrCqMLUqJlcoqIo@alley> <20220722150106.683f3704@imladris.surriel.com>
-         <Yt6bZo5ztnVSjLLC@alley> <20220725094919.52bcde19@imladris.surriel.com>
-         <20220727001040.vlqnnb4a3um46746@treble>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-TLgTqhyEYwEQwuZaJg5g"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
-MIME-Version: 1.0
-Sender: riel@shelob.surriel.com
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        X86 ML <x86@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On Tue, Jul 26, 2022 at 4:33 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+>
+> On Thu, Jul 21, 2022 at 10:51:47AM -0700, Song Liu wrote:
+> > From: Miroslav Benes <mbenes@suse.cz>
+> >
+> > Josh reported a bug:
+> >
+> >   When the object to be patched is a module, and that module is
+> >   rmmod'ed and reloaded, it fails to load with:
+> >
+> >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> >
+> >   The livepatch module has a relocation which references a symbol
+> >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> >   tries to replace the old relocation with a new one, it sees that
+> >   the previous one is nonzero and it errors out.
+> >
+> >   On ppc64le, we have a similar issue:
+> >
+> >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> >
+> > He also proposed three different solutions. We could remove the error
+> > check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> > ("x86/module: Detect and skip invalid relocations"). However the check
+> > is useful for detecting corrupted modules.
+> >
+> > We could also deny the patched modules to be removed. If it proved to be
+> > a major drawback for users, we could still implement a different
+> > approach. The solution would also complicate the existing code a lot.
+> >
+> > We thus decided to reverse the relocation patching (clear all relocation
+> > targets on x86_64). The solution is not
+> > universal and is too much arch-specific, but it may prove to be simpler
+> > in the end.
+> >
+> > Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> > Signed-off-by: Song Liu <song@kernel.org>
+> >
+> > ---
+> >
+> > Changes from v2:
+> > 1. Rewrite x86 changes to match current code style.
+> > 2. Remove powerpc changes as there is no test coverage in v3.
+> > 3. Only keep 1/3 of v2.
+>
+> 1) All the copy/paste is ugly and IMO guaranteed to eventually introduce
+>    bugs when somebody forgets to update the copy.  Wouldn't it be more
+>    robust to reuse the existing apply_relocate_add() code by making it
+>    more generic somehow, like with a new 'clear' bool arg which sets
+>    'val' to zero?
 
---=-TLgTqhyEYwEQwuZaJg5g
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Agreed. I can give it a try.
 
-On Tue, 2022-07-26 at 17:10 -0700, Josh Poimboeuf wrote:
-> On Mon, Jul 25, 2022 at 09:49:19AM -0400, Rik van Riel wrote:
-> > When a KLP fails to apply, klp_reverse_transition will clear the
-> > TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
-> > which are not on the task list yet.
->=20
-> This paragraph and $SUBJECT both talk about a reverse transition.=C2=A0
-> Isn't
-> it also possible to race on a normal (forward) transition?
+>
+> 2) We can't only fix x86, powerpc also needs a fix.
 
-I don't know whether the race is also possible on a forward
-transition.  If the parent task has transitioned, will
-the child have, as well, by the time we reach the end of fork?
+I have very little experience with powerpc. Would someone be willing to
+help with powerpc part of this?
 
-I suppose the only way the parent task can transition while
-inside fork would be if none of the functions in its stack
-need to be transitioned, and at that point the child process
-would automatically be safe, too?
+> 3) A selftest would be a good idea.
 
-That would make copying the KLP transition state from parent to
-child safe on a forward transition, too.
+I will try this.
 
-Am I overlooking anything?
-
-However, we have only observed this warning on reverse transitions
-for some reason.
-
-> > Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
-> > parent to the child early on, in dup_task_struct ->
-> > setup_thread_stack.
-> >=20
-> > Much later, klp_copy_process will set child->patch_state to match
-> > that of the parent.
-> >=20
-> > However, the parent's patch_state may have been changed by KLP
-> > loading
-> > or unloading since it was initially copied over into the child.
-> >=20
-> > This results in the KLP code occasionally hitting this warning in
-> > klp_complete_transition:
-> >=20
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 for_each_process_thread(g, t=
-ask) {
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 WARN_ON_ONCE(test_tsk_thread_flag(task,
-> > TIF_PATCH_PENDING));
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 task->patch_state =3D KLP_UNDEFINED;
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
-> >=20
-> > This patch will set, or clear, the TIF_PATCH_PENDING flag in the
-> > child
-> > process depending on whether or not it is needed at the time
-> > klp_copy_process is called, at a point in copy_process where the
-> > tasklist_lock is held exclusively, preventing races with the KLP
-> > code.
->=20
-> Use imperative language, i.e. no "This patch".=C2=A0 See
-> Documentation/process/submitting-patches.rst
-> >=20
-
-Will do. I'll send a v4 tomorrow.
-
-> > The KLP code does have a few places where the state is changed
-> > without the tasklist_lock held, but those should not cause
-> > problems because klp_update_patch_state(current) cannot be
-> > called while the current task is in the middle of fork,
-> > klp_check_and_switch_task() which is called under the pi_lock,
-> > which prevents rescheduling, and manipulation of the patch
-> > state of idle tasks, which do not fork.
-> >=20
-> > This should prevent this warning from triggering again in the
-> > future.
-> >=20
->=20
-> Fixes: d83a7cb375ee ("livepatch: change to a per-task consistency
-> model")
->=20
-> > Signed-off-by: Rik van Riel <riel@surriel.com>
-> > Reported-by: Breno Leitao <leitao@debian.org>
-> > Reviewed-by: Petr Mladek <pmladek@suse.com>
->=20
-> With the above minor things fixed:
->=20
-> Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
->=20
-
---=20
-All Rights Reversed.
-
---=-TLgTqhyEYwEQwuZaJg5g
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmLghkEACgkQznnekoTE
-3oN07ggAmmLQ3eP1Up7hCtc3DjHHadiJ4XzQx3ZAXJnyNtjj7gNdHG/F6naSSrWD
-Tcqz7ArnUyaDldVKWssa4iRooRQwqdi+0IXDow4Ca1sfbvusSS3/SeofR9QcaDT7
-swok1FA82hPY+Vi8LixgDILRMTw3tPVIGihlN/isPhe07LU+KxXwuIDd7pdg7qOk
-NZLlGLaywOzqqHegFrW1vcwLjTq4QwEIIGDLwiJ7K4+U1r9s2hnMs0+74H3BafvD
-Gznj2iOasGKTKooFof0waWEPPD+z9sBuVAPLb0RAf9Q4KlAEOdRrnjpyCAfqiw7O
-mhq0eXrcvGAsIY2PvJ6j1FJ8nh7ugg==
-=e8zs
------END PGP SIGNATURE-----
-
---=-TLgTqhyEYwEQwuZaJg5g--
+Thanks,
+Song
