@@ -2,53 +2,54 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D64586E7D
-	for <lists+live-patching@lfdr.de>; Mon,  1 Aug 2022 18:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B52305872F9
+	for <lists+live-patching@lfdr.de>; Mon,  1 Aug 2022 23:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231294AbiHAQYc (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 1 Aug 2022 12:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
+        id S233286AbiHAVTr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 1 Aug 2022 17:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbiHAQYb (ORCPT
+        with ESMTP id S231152AbiHAVTq (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 1 Aug 2022 12:24:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1391835C;
-        Mon,  1 Aug 2022 09:24:30 -0700 (PDT)
+        Mon, 1 Aug 2022 17:19:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A0F2DDF;
+        Mon,  1 Aug 2022 14:19:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE73B8159B;
-        Mon,  1 Aug 2022 16:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B115C433D7;
-        Mon,  1 Aug 2022 16:24:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADE1F61366;
+        Mon,  1 Aug 2022 21:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A202C433B5;
+        Mon,  1 Aug 2022 21:19:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659371068;
-        bh=A1RbxLvQa3KCWFb52lrCFsaDg25vJK6GYA+aGp3dizc=;
+        s=k20201202; t=1659388784;
+        bh=LnX9Iq/9UyjPv/ISzagIdNfDPD8aiL7nS2m3xQlGJk0=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Reu66qNV0FnzVvJlKfEvy0vUUrlU+9XCIXRSpdj91NTrJVaodVXVL/xaqCAPV3A5T
-         LTHv97KBvdb1BCiGrdVF5GSCVyaJlLPKnfGZmqNIT5Nr5uvbPerAxrnD7UjmyGaw7k
-         zLuF0KPeRuZncPEbUBxJllk7ohRa3lL0FczICwma0yrJRcsqRA9f9Z7SqJANkoRfPq
-         0MqCZI8F0f+NdyKkkvQUDKRazlR2rXqGEIbcrhg+3aJIBFYXvihqiJu7faO7zVEmhZ
-         ldwwj50YJ5U95nz7GAdCeCFeqlJJZieSPC2RBk20umotynnahc3WS8ivVk5KC43dkq
-         hXt5g0jAsCX+Q==
-Received: by mail-yb1-f172.google.com with SMTP id e127so19012634yba.12;
-        Mon, 01 Aug 2022 09:24:27 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0qpgCCZvSv8/VS+/PuozatuzNR0YZo+vPhMp9xua5WLF5IwFnY
-        8MQd8LcqD9IrCuTKXhxHdoR0m7GHdDwm8JjXbY8=
-X-Google-Smtp-Source: AA6agR4v/raQnFILKKm1xhtb4XddsBSQOk8rqJ0sPgcEfnqTO0BM4Koso/btvEPQTHnkFect2LHXHi3pdpgDqDw1D7A=
-X-Received: by 2002:a05:6902:110d:b0:670:b10b:d16e with SMTP id
- o13-20020a056902110d00b00670b10bd16emr12277757ybu.259.1659371066993; Mon, 01
- Aug 2022 09:24:26 -0700 (PDT)
+        b=bxjMC122Whn7OU7jjheEwfE6amRqHjYvQE9anGVm53yMEkQKlZY6v65q6Fg+IofL6
+         QigXNy4UQh3RwXfudmwVxJIJXI026dNAVoULvD9ip+rJ9Ll6yUkbAMJMUg/cGm8/Zk
+         zzh7wXuuM/phv6gbdVwVttBsMrSjvxw4jErfXVmkjKavxM96RjJCrhVDgw9/0yczXE
+         4h1VLRN84TFClVrZUFrmsn4OUlE3tb3CEY8DaTIRHcRkxNJK3Jin3/CxvtDolKCoXx
+         q6cZqSGhH/mKbLoYYgSCom78Il5jiRGyyXvmJ8wQR5oHHXmLAvKNLKk62ob7dX6lH+
+         +M4F+nu0ctkQQ==
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-31f41584236so122167207b3.5;
+        Mon, 01 Aug 2022 14:19:43 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3EbfcyOp3Hv2zINcpkmYteNv5XqUcL+niLWJC1DtpId+1Td3WV
+        lwSRnjPbjbfAqwNPK6wTAX1qt2gPUyMYg3hI/RM=
+X-Google-Smtp-Source: AA6agR6RzewLQl8j0NFHBFGHWv+K5hmWOYixtWpjPzUqr0nI/udvvD+DfiblQqzDcmdr9bcPmmmBgxdB930OfIc361E=
+X-Received: by 2002:a0d:f985:0:b0:31f:5a01:eaf2 with SMTP id
+ j127-20020a0df985000000b0031f5a01eaf2mr15016315ywf.447.1659388783009; Mon, 01
+ Aug 2022 14:19:43 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220721175147.214642-1-song@kernel.org> <20220726233302.zwloxsammnu7clu4@treble>
  <CAPhsuW7tmRt=yx1+i62HPRJJ4Gp8xB_3XvpVxUC=SyGv6iCBEQ@mail.gmail.com>
- <CAPhsuW4F8f9GLHF9C54oWyFiyJ0eT5HOwfhmoxSJ3HeRr8zCSw@mail.gmail.com> <YuerYVD+C3XVzDAi@alley>
-In-Reply-To: <YuerYVD+C3XVzDAi@alley>
+ <CAPhsuW4F8f9GLHF9C54oWyFiyJ0eT5HOwfhmoxSJ3HeRr8zCSw@mail.gmail.com>
+ <CAPhsuW4VFjyoYta6fEGXg4S1dbg8ynkdKZzuwYSp3FMEGPP0aA@mail.gmail.com> <Yuep+uKnDc0L2ICi@alley>
+In-Reply-To: <Yuep+uKnDc0L2ICi@alley>
 From:   Song Liu <song@kernel.org>
-Date:   Mon, 1 Aug 2022 09:24:16 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6M=wOk-72F20p-Vbzka_--k8P3DAziJJh8oi1spEmP-g@mail.gmail.com>
-Message-ID: <CAPhsuW6M=wOk-72F20p-Vbzka_--k8P3DAziJJh8oi1spEmP-g@mail.gmail.com>
+Date:   Mon, 1 Aug 2022 14:19:32 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7FLVQ4CeBp0crTh5TQk30E113=ZMz_iHh5xK-QGNcT+g@mail.gmail.com>
+Message-ID: <CAPhsuW7FLVQ4CeBp0crTh5TQk30E113=ZMz_iHh5xK-QGNcT+g@mail.gmail.com>
 Subject: Re: [PATCH v3] livepatch: Clear relocation targets on a module removal
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
@@ -68,67 +69,89 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 3:31 AM Petr Mladek <pmladek@suse.com> wrote:
+On Mon, Aug 1, 2022 at 3:25 AM Petr Mladek <pmladek@suse.com> wrote:
 >
-> On Sat 2022-07-30 15:32:58, Song Liu wrote:
-> > On Tue, Jul 26, 2022 at 8:54 PM Song Liu <song@kernel.org> wrote:
+> On Sat 2022-07-30 20:20:22, Song Liu wrote:
+> > On Sat, Jul 30, 2022 at 3:32 PM Song Liu <song@kernel.org> wrote:
 > > >
-> > > On Tue, Jul 26, 2022 at 4:33 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> > > On Tue, Jul 26, 2022 at 8:54 PM Song Liu <song@kernel.org> wrote:
 > > > >
-> > > > On Thu, Jul 21, 2022 at 10:51:47AM -0700, Song Liu wrote:
-> > > > > From: Miroslav Benes <mbenes@suse.cz>
+> > > > On Tue, Jul 26, 2022 at 4:33 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
 > > > > >
-> > > > > Josh reported a bug:
-> > > > >
-> > > > >   When the object to be patched is a module, and that module is
-> > > > >   rmmod'ed and reloaded, it fails to load with:
-> > > > >
-> > > > >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
-> > > > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> > > > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > > > >
-> > > > >   The livepatch module has a relocation which references a symbol
-> > > > >   in the _previous_ loading of nfsd. When apply_relocate_add()
-> > > > >   tries to replace the old relocation with a new one, it sees that
-> > > > >   the previous one is nonzero and it errors out.
-> > > > >
-> > > > >   On ppc64le, we have a similar issue:
-> > > > >
-> > > > >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
-> > > > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> > > > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > > > >
-> > > > 2) We can't only fix x86, powerpc also needs a fix.
+> > > > > On Thu, Jul 21, 2022 at 10:51:47AM -0700, Song Liu wrote:
+> > > > > > From: Miroslav Benes <mbenes@suse.cz>
+> > > > > >
+> > > > > > Josh reported a bug:
+> > > > > >
+> > > > > >   When the object to be patched is a module, and that module is
+> > > > > >   rmmod'ed and reloaded, it fails to load with:
+> > > > > >
+> > > > > >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> > > > > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> > > > > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > > > > >
+> > > > > >   The livepatch module has a relocation which references a symbol
+> > > > > >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> > > > > >   tries to replace the old relocation with a new one, it sees that
+> > > > > >   the previous one is nonzero and it errors out.
+> > > > > >
+> > > > > >   On ppc64le, we have a similar issue:
+> > > > > >
+> > > > > >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+> > > > > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> > > > > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > > > > >
+> > > > > 3) A selftest would be a good idea.
+> > > >
 > > >
-> > > I have very little experience with powerpc. Would someone be willing to
-> > > help with powerpc part of this?
+> > > I found it is pretty tricky to run the selftests inside a qemu VM. How about
+> > > we test it with modules in samples/livepatch? Specifically, we can add a
+> > > script try to reload livepatch-shadow-mod.ko.
 > >
-> > I guess folks are all busy. Any suggestions on how to test powerpc changes?
+> > Actually, livepatch-shadow-mod.ko doesn't have the reload problem before
+> > the fix. Is this expected?
 >
-> You might also send the patch and just mention that you were not able
-> to test it on powerpc. There are people with access to powerpc that
-> might check it.
-
-Let me give it a try.
-
+> Good question. I am afraid that there is no easy way to prepare
+> the selftest at the moment.
 >
-> Another question is how to actually test it. I wonder how you do
-> it for x86.
-
-I tested it with a patch on an in-tree module. I was using kpatch-build and
-testing it on 5.18 kernels. This is tricky at the moment for 5.19 because of
-this issue:
-
-https://github.com/dynup/kpatch/issues/1277
-
+> There are two situations when a symbol from the livepatched module is
+> relocated:
 >
-> Finally, also s390 supports livepatching. I guess that the problem is
-> there as well. Is is straightforward to write the revert code, please?
+>
+> 1. The livepatch might access a symbol exported by the module via
+>    EXPORT_SYMBOL(). In this case, it is "normal" external symbol
+>    and it gets relocated by the module loader.
+>
+>    But EXPORT_SYMBOL() will create an explicit dependency between the
+>    livepatch and livepatched module. As a result, the livepatch
+>    module could be loaded only when the livepatched module is loaded.
+>    And the livepatched module could not be removed when the livepatch
+>    module is loaded.
+>
+>    In this case, the problem will not exist. Well, the developers
+>    of the livepatch module will probably want to avoid this
+>    dependency.
+>
+>
+> 2. The livepatch module might access a non-exported symbol from another
+>    module using the special elf section for klp relocation, see
+>    section, see Documentation/livepatch/module-elf-format.rst
+>
+>    These symbols are relocated in klp_apply_section_relocs().
+>
+>    The problem is that upstream does not have a support to
+>    create this elf section. There is a patchset for this, see
+>    https://lore.kernel.org/all/20220216163940.228309-1-joe.lawrence@redhat.com/
+>    It requires some more review.
+>
+>
+> Resume: I think that we could not prepare the selftest without
+>         upstreaming klp-convert tool.
 
-v2 of the work doesn't have any real logic for s390. I wonder whether
-it is needed.
+Thanks for the explanation! I suspected the same issue, but couldn't
+connect all the logic.
+
+I guess the selftests can wait until the klp-convert tool.
 
 Thanks,
 Song
-
-v2: https://lore.kernel.org/all/20190905124514.8944-1-mbenes@suse.cz/T/#u
