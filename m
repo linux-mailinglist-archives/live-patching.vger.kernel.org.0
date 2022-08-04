@@ -2,122 +2,126 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66347588FA4
-	for <lists+live-patching@lfdr.de>; Wed,  3 Aug 2022 17:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E32589C25
+	for <lists+live-patching@lfdr.de>; Thu,  4 Aug 2022 15:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236130AbiHCPqk (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 3 Aug 2022 11:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46568 "EHLO
+        id S231232AbiHDNG0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 4 Aug 2022 09:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbiHCPqj (ORCPT
+        with ESMTP id S229625AbiHDNG0 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:46:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A361FD28
-        for <live-patching@vger.kernel.org>; Wed,  3 Aug 2022 08:46:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 4 Aug 2022 09:06:26 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7750C5F95;
+        Thu,  4 Aug 2022 06:06:24 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id F3123205C4;
+        Thu,  4 Aug 2022 13:06:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1659618382; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3gPpoOwUEkIJ+ATjFpS4H9/4o1rTRBq+mrao0Dod2bw=;
+        b=NRG0H44A8xOtANNH5QwPGhga8gWutFv2PTnz5UYN4c+onzXETxCYBAAVZZa2Y9fevgrPdo
+        qpNY4x0dUcJlU6zK4bJFIqHFTGE3sFl9m6VU+2zJ58JF6lWPcsh7yECYGUib8geTdt5M0u
+        FFY+ZYwSqeuZzajhW0qDocSQREcgUtQ=
+Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFDCFB822F4
-        for <live-patching@vger.kernel.org>; Wed,  3 Aug 2022 15:46:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9785CC433D6
-        for <live-patching@vger.kernel.org>; Wed,  3 Aug 2022 15:46:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659541595;
-        bh=849jczJm7Ze+BoIAiL1pdhhS7+TRKvhdpq3JjQ/TU3s=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QSC06Gd8N7CfsirHwtmpcGqOLLa62Iu2i4vmZXTLgcDxlJeSXtKtD/Ohmq9aW8/f8
-         Mg3TxyXlJxG/VgNKKpOy3iNCabI3Cn+Rs/sc6InuNJ7WYYJ89p7OwjoA8V/uFZNXUK
-         1KS8odncThv59uw7f+UuKzL2+jwKj1W3FwVq2plKIPmvxdQSPyaYfN9T9mX4+vPD4z
-         KZ0JpH4fzVLoaEppXOU7GDG7QXIeirQa1kMO1UBKJCKpDTFgwtp3I+4bT9yL/3n/FP
-         F6+HmOlmABMze5ZF9CHHWt6nH/3PbSDvowLTplF0JKtfv85m98Ix6NjFIIw8jwiKP9
-         +GE5Rffdmt/rw==
-Received: by mail-yb1-f181.google.com with SMTP id y127so28952106yby.8
-        for <live-patching@vger.kernel.org>; Wed, 03 Aug 2022 08:46:35 -0700 (PDT)
-X-Gm-Message-State: ACgBeo14jCn3hgMO3V25yktkACL3TLoybZcfn7mZ05Q1c5bC9QvxjeAU
-        cCPrPSUzSa7cLZBQcqX5di/UDp44x5n0SAxmhyw=
-X-Google-Smtp-Source: AA6agR6IKAd4dQ6MEV0em1tuOxMF50yU2Sv4v1RUTPdKu6lHncHY73r8jEez0yiDZ+AuZyYBTmeVZYQChkItOObhUxA=
-X-Received: by 2002:a25:55c5:0:b0:670:96cb:a295 with SMTP id
- j188-20020a2555c5000000b0067096cba295mr19363246ybb.449.1659541594608; Wed, 03
- Aug 2022 08:46:34 -0700 (PDT)
+        by relay2.suse.de (Postfix) with ESMTPS id CEAD82C141;
+        Thu,  4 Aug 2022 13:06:21 +0000 (UTC)
+Date:   Thu, 4 Aug 2022 15:06:21 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Rik van Riel <riel@surriel.com>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, kernel-team@fb.com,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Breno Leitao <leitao@debian.org>
+Subject: Re: [PATCH v4] livepatch: fix race between fork and KLP transition
+Message-ID: <YuvETeDi56Uv22nS@alley>
+References: <20220720121023.043738bb@imladris.surriel.com>
+ <YtrCqMLUqJlcoqIo@alley>
+ <20220722150106.683f3704@imladris.surriel.com>
+ <Yt6bZo5ztnVSjLLC@alley>
+ <20220725094919.52bcde19@imladris.surriel.com>
+ <20220727001040.vlqnnb4a3um46746@treble>
+ <20220727102437.34530586@imladris.surriel.com>
+ <YuKtNtOshtRfeMn7@alley>
+ <c04f97fc29c4618f137b27ce6537800b53f1d95f.camel@surriel.com>
 MIME-Version: 1.0
-References: <20220725220231.3273447-1-song@kernel.org> <YuKS1Bg8hlvEUSY2@alley>
- <CAPhsuW7Fm7q3CFrSK7H3hpd-mSyC8NLoD5M7HQDuFerdSRfQ1w@mail.gmail.com> <5eb0aebd-21ea-1a88-67de-4257e77b62ef@redhat.com>
-In-Reply-To: <5eb0aebd-21ea-1a88-67de-4257e77b62ef@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 3 Aug 2022 08:46:23 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4OUz-uqU_5_udf6zVGhmOnyA8d2rZve0RYPD_J+sJOwQ@mail.gmail.com>
-Message-ID: <CAPhsuW4OUz-uqU_5_udf6zVGhmOnyA8d2rZve0RYPD_J+sJOwQ@mail.gmail.com>
-Subject: Re: [PATCH RFC] livepatch: add sysfs entry "patched" for each klp_object
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c04f97fc29c4618f137b27ce6537800b53f1d95f.camel@surriel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Joe,
+On Tue 2022-08-02 16:07:08, Rik van Riel wrote:
+> On Thu, 2022-07-28 at 17:37 +0200, Petr Mladek wrote:
+> > On Wed 2022-07-27 10:24:37, Rik van Riel wrote:
+> > > v4: address changelog comments by Josh (thank you)
+> > > 
+> > > ---8<---
+> > > When a KLP fails to apply, klp_reverse_transition will clear the
+> > > TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+> > > which are not on the task list yet.
+> > 
+> > It actually is not true. klp_reverse_transtion() clears
+> > TIF_PATCH_FLAG only
+> > temporary when it waits until all processes leave the ftrace
+> > handler. It sets TIF_PATCH_FLAG once again for all tasks by calling
+> > klp_start_transition().
+> > 
+> > The difference is important. The WARN_ON_ONCE() in
+> > klp_complete_transition() will be printed when fork() copied
+> > TIF_PATCH_FLAG before it was set again.
+> > 
+> > Anyway, the important thing is that TIF_PATCH_FLAG and task-
+> > >patch_state
+> > might be incompatible because fork() copies them at different times.
+> > 
+> > klp_copy_process() must make sure that they are in sync. And
+> > it must be done under tasklist_lock when the child is added
+> > to the global task list.
+> 
+> Hmmm, how should this be addressed in the changelog?
+> 
+> Should I just remove most of that paragraph and leave it
+> at "there can be a race"?
 
-On Wed, Aug 3, 2022 at 5:36 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
->
-> On 8/3/22 1:53 AM, Song Liu wrote:
-> > On Thu, Jul 28, 2022 at 6:44 AM Petr Mladek <pmladek@suse.com> wrote:
-> >>
-> >> On Mon 2022-07-25 15:02:31, Song Liu wrote:
-> >>> I was debugging an issue that a livepatch appears to be attached, but
-> >>> actually not. It turns out that there is a mismatch in module name
-> >>> (abc-xyz vs. abc_xyz), klp_find_object_module failed to find the module.
-> >>
-> >> This might be a quite common mistake. IMHO, the module name stored in
-> >> the module metadata always uses underscore '_' instead of dash '-'.
-> >>
-> >> If I get it correctly, it is done by the following command in
-> >> scripts/Makefile.lib:
-> >>
-> >> --- cut ---
-> >> # These flags are needed for modversions and compiling, so we define them here
-> >> # $(modname_flags) defines KBUILD_MODNAME as the name of the module it will
-> >> # end up in (or would, if it gets compiled in)
-> >> name-fix-token = $(subst $(comma),_,$(subst -,_,$1))
-> >> --- cut ---
-> >
-> > Yeah, I can confirm the "name-fix" makes the change.
-> >
-> > Hi Josh and Joe,
-> >
-> > I hit this issue while building live patch for OOT module with kpatch-build.
-> > Do you have some suggestions on how to fix it? My current workaround is
-> > to manually edit the .ko file...
-> >
->
-> Hi Song,
->
-> Was the original issue that the module's filename included '-' dash
-> character(s) while the module name ends up replaced those with '_'
-> underscores?
+It would be nice to somehow summarize what I wrote. I mean to explain
+why the problem is easier to see with revert and not with forward
+transition.
 
-There are multiple mismatches: module name, rela section name(s), and
-rela entry name(s).
+It is because TIF_PATCH_FLAG might stay cleared in the child even
+when it was set again in the parent by the klp_revert_transtion().
+As a result, the child will never get transition back to the reverted
+state.
 
->
-> If that is the case, would you prefer that kpatch-build warn or refuse
-> to create .ko filenames that include '-' characters?
+The problem is hard to hit during the forward transition because
+child might have TIF_PATCH_FLAG still set even when
+it might later copy an already migrated task->patch_state
+when parent gets migrated in the race window. In this case,
+the TIF_PATCH_FLAG will get cleared when the child returns
+from fork and all will be good.
 
-I think the best is to have kpatch-build do the same subst for OOT
-modules, just as when the module itself is built.
+In each case, the inconsistent state is there even during
+the forward transition. But it would be caught only when
+the entire transition is finished during the rather small
+race window.
 
->
-> If you have ideas, feel free to post a new issue over on the project's
-> github.  No one should have to resort to manually (hex) editing .ko files :)
+The patch should fix the race in any direction.
 
-Yeah, I will create an issue on GitHub.
+I could provide even better description after I am back
+from vacation on Aug 22.
 
-Thanks,
-Song
+Best Regards,
+Petr
