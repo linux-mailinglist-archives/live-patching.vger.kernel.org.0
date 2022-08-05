@@ -2,70 +2,61 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B4558AD37
-	for <lists+live-patching@lfdr.de>; Fri,  5 Aug 2022 17:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 407D858B0F9
+	for <lists+live-patching@lfdr.de>; Fri,  5 Aug 2022 22:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241177AbiHEPns (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 5 Aug 2022 11:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47438 "EHLO
+        id S240307AbiHEU6P (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 5 Aug 2022 16:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241092AbiHEPnb (ORCPT
+        with ESMTP id S240175AbiHEU6O (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 5 Aug 2022 11:43:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FA465563;
-        Fri,  5 Aug 2022 08:43:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 5 Aug 2022 16:58:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C951916598
+        for <live-patching@vger.kernel.org>; Fri,  5 Aug 2022 13:58:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659733092;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PqBJYKESdHRUYaohT/lDIUbyIoy2GPwbn7JGBZzI4GY=;
+        b=MUGcusONzMzQalokPslU5Q8IEbmiMqfQ9z35EkerCXumZDAaJL+4dvPMsQMSEUlE8p5duq
+        Fa+VMAb0QzOc9Q5qz9K2STXe8ymH7r9UVHb8N4Ks3BMAnz0i+R7RhKbB8xbjcEF8I1PORS
+        IQlD1HsgMb62FD8jW3KyDd+dvruHTks=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-232-aRtC_ZOAPgerbvKnmUIezQ-1; Fri, 05 Aug 2022 16:58:11 -0400
+X-MC-Unique: aRtC_ZOAPgerbvKnmUIezQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80259B82989;
-        Fri,  5 Aug 2022 15:43:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4590C433D6;
-        Fri,  5 Aug 2022 15:43:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659714192;
-        bh=TqMR/tIQcRK94+z9eetCsW+BK+LLUVa7DCQEAcBAA+Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=isBRsQSym0LR/4yoqjnucVewW+BloK7+Tm6Ql6gD/IKbM8Pk8XUuq6muzruHqjqki
-         nYdZtgYFTqXvQMmQNJzOuqsp2sQMdBsaFlCvSsoNMIeYAuicR3ZK0oF625SqHsDfPC
-         49nPgg4c0kXp9kCL3Kv2gLc+fdO1BN9HT7ubaT4USCYGfeKp1xn+tO1av1AfVrok7Q
-         FLBY9YlIrgDlKH1Uf+xGJF5sNi/TEGeaSFyc7B5Z6WSNOgaHoytHvOaAESTz5SWo5m
-         ES3QDANw4f/yum2g+cDrgpg2N23Jywp7VA2XLcAXbqX6lRFfomLrG3g71QkgKorSo3
-         XGnIgrmcTd06w==
-From:   Miguel Ojeda <ojeda@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: [PATCH v9 05/27] kallsyms: increase maximum kernel symbol length to 512
-Date:   Fri,  5 Aug 2022 17:41:50 +0200
-Message-Id: <20220805154231.31257-6-ojeda@kernel.org>
-In-Reply-To: <20220805154231.31257-1-ojeda@kernel.org>
-References: <20220805154231.31257-1-ojeda@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E80A7803520;
+        Fri,  5 Aug 2022 20:58:10 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.33.174])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 301B71121314;
+        Fri,  5 Aug 2022 20:58:10 +0000 (UTC)
+Date:   Fri, 5 Aug 2022 16:58:08 -0400
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     Song Liu <song@kernel.org>
+Cc:     live-patching@vger.kernel.org, jpoimboe@kernel.org,
+        jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
+        kernel-team@fb.com, Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v4] livepatch: Clear relocation targets on a module
+ removal
+Message-ID: <Yu2EYG0YjPLjiPk0@redhat.com>
+References: <20220801212129.2008177-1-song@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220801212129.2008177-1-song@kernel.org>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,144 +64,89 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Rust symbols can become quite long due to namespacing introduced
-by modules, types, traits, generics, etc. For instance,
-the following code:
+On Mon, Aug 01, 2022 at 02:21:29PM -0700, Song Liu wrote:
+> From: Miroslav Benes <mbenes@suse.cz>
+> 
+> Josh reported a bug:
+> 
+>   When the object to be patched is a module, and that module is
+>   rmmod'ed and reloaded, it fails to load with:
+> 
+>   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> 
+>   The livepatch module has a relocation which references a symbol
+>   in the _previous_ loading of nfsd. When apply_relocate_add()
+>   tries to replace the old relocation with a new one, it sees that
+>   the previous one is nonzero and it errors out.
+> 
+>   On ppc64le, we have a similar issue:
+> 
+>   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> 
+> He also proposed three different solutions. We could remove the error
+> check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> ("x86/module: Detect and skip invalid relocations"). However the check
+> is useful for detecting corrupted modules.
+> 
+> We could also deny the patched modules to be removed. If it proved to be
+> a major drawback for users, we could still implement a different
+> approach. The solution would also complicate the existing code a lot.
+> 
+> We thus decided to reverse the relocation patching (clear all relocation
+> targets on x86_64). The solution is not
+> universal and is too much arch-specific, but it may prove to be simpler
+> in the end.
+> 
+> Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> Signed-off-by: Song Liu <song@kernel.org>
+> 
+> ---
+> 
+> NOTE: powerpc code has not be tested.
+> 
 
-    pub mod my_module {
-        pub struct MyType;
-        pub struct MyGenericType<T>(T);
+Hi Song,
 
-        pub trait MyTrait {
-            fn my_method() -> u32;
-        }
+I just want to provide a quick check in on this patch...
 
-        impl MyTrait for MyGenericType<MyType> {
-            fn my_method() -> u32 {
-                42
-            }
-        }
-    }
+First -- what tree / commit should this be based on?  When I add this
+patch on top of a v5.19 based tree, I see:
 
-generates a symbol of length 96 when using the upcoming v0 mangling scheme:
+arch/powerpc/kernel/module_64.c: In function ‘clear_relocate_add’:
+arch/powerpc/kernel/module_64.c:781:52: error: incompatible type for argument 1 of ‘instr_is_relative_link_branch’
+  781 |                 if (!instr_is_relative_link_branch(*instruction))
+      |                                                    ^~~~~~~~~~~~
+      |                                                    |
+      |                                                    u32 {aka unsigned int}
+In file included from arch/powerpc/kernel/module_64.c:20:
+./arch/powerpc/include/asm/code-patching.h:122:46: note: expected ‘ppc_inst_t’ but argument is of type ‘u32’ {aka ‘unsigned int’}
+  122 | int instr_is_relative_link_branch(ppc_inst_t instr);
+      |                                   ~~~~~~~~~~~^~~~~
+arch/powerpc/kernel/module_64.c:785:32: error: ‘PPC_INST_NOP’ undeclared (first use in this function); did you mean ‘PPC_INST_COPY’?
+  785 |                 *instruction = PPC_INST_NOP;
+      |                                ^~~~~~~~~~~~
+      |                                PPC_INST_COPY
+arch/powerpc/kernel/module_64.c:785:32: note: each undeclared identifier is reported only once for each function it appears in
+make[2]: *** [scripts/Makefile.build:249: arch/powerpc/kernel/module_64.o] Error 1
+make[1]: *** [scripts/Makefile.build:466: arch/powerpc/kernel] Error 2
+make: *** [Makefile:1849: arch/powerpc] Error 2
 
-    _RNvXNtCshGpAVYOtgW1_7example9my_moduleINtB2_13MyGenericTypeNtB2_6MyTypeENtB2_7MyTrait9my_method
 
-At the moment, Rust symbols may reach up to 300 in length.
-Setting 512 as the maximum seems like a reasonable choice to
-keep some headroom.
+Second, I rebased the klp-convert-tree on top of v5.19 here:
+https://github.com/joe-lawrence/klp-convert-tree/tree/klp-convert-v7-devel
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
-Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
-Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
-Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-Co-developed-by: Gary Guo <gary@garyguo.net>
-Signed-off-by: Gary Guo <gary@garyguo.net>
-Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
-Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
----
- include/linux/kallsyms.h            | 2 +-
- kernel/livepatch/core.c             | 4 ++--
- scripts/kallsyms.c                  | 4 ++--
- tools/include/linux/kallsyms.h      | 2 +-
- tools/lib/perf/include/perf/event.h | 2 +-
- tools/lib/symbol/kallsyms.h         | 2 +-
- 6 files changed, 8 insertions(+), 8 deletions(-)
+and I can confirm that at least the x86_64 livepatching selftests
+(including the klp-relocation tests added by this tree) do pass.  I
+haven't had a chance to try writing new tests to verify this specific
+patch, but I'll take a look next week.
 
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index ad39636e0c3f..649faac31ddb 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -15,7 +15,7 @@
- 
- #include <asm/sections.h>
- 
--#define KSYM_NAME_LEN 128
-+#define KSYM_NAME_LEN 512
- #define KSYM_SYMBOL_LEN (sizeof("%s+%#lx/%#lx [%s %s]") + \
- 			(KSYM_NAME_LEN - 1) + \
- 			2*(BITS_PER_LONG*3/10) + (MODULE_NAME_LEN - 1) + \
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index bc475e62279d..ec06ce59d728 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -213,7 +213,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
- 	 * we use the smallest/strictest upper bound possible (56, based on
- 	 * the current definition of MODULE_NAME_LEN) to prevent overflows.
- 	 */
--	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 128);
-+	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 512);
- 
- 	relas = (Elf_Rela *) relasec->sh_addr;
- 	/* For each rela in this klp relocation section */
-@@ -227,7 +227,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
- 
- 		/* Format: .klp.sym.sym_objname.sym_name,sympos */
- 		cnt = sscanf(strtab + sym->st_name,
--			     ".klp.sym.%55[^.].%127[^,],%lu",
-+			     ".klp.sym.%55[^.].%511[^,],%lu",
- 			     sym_objname, sym_name, &sympos);
- 		if (cnt != 3) {
- 			pr_err("symbol %s has an incorrectly formatted name\n",
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 9da3b7767e9d..3b64dda7e4cc 100644
---- a/scripts/kallsyms.c
-+++ b/scripts/kallsyms.c
-@@ -30,10 +30,10 @@
- #define _stringify_1(x)	#x
- #define _stringify(x)	_stringify_1(x)
- 
--#define KSYM_NAME_LEN		128
-+#define KSYM_NAME_LEN		512
- 
- /* A substantially bigger size than the current maximum. */
--#define KSYM_NAME_LEN_BUFFER	512
-+#define KSYM_NAME_LEN_BUFFER	2048
- _Static_assert(
- 	KSYM_NAME_LEN_BUFFER == KSYM_NAME_LEN * 4,
- 	"Please keep KSYM_NAME_LEN_BUFFER in sync with KSYM_NAME_LEN"
-diff --git a/tools/include/linux/kallsyms.h b/tools/include/linux/kallsyms.h
-index efb6c3f5f2a9..5a37ccbec54f 100644
---- a/tools/include/linux/kallsyms.h
-+++ b/tools/include/linux/kallsyms.h
-@@ -6,7 +6,7 @@
- #include <stdio.h>
- #include <unistd.h>
- 
--#define KSYM_NAME_LEN 128
-+#define KSYM_NAME_LEN 512
- 
- struct module;
- 
-diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
-index e7758707cadd..116a80c31675 100644
---- a/tools/lib/perf/include/perf/event.h
-+++ b/tools/lib/perf/include/perf/event.h
-@@ -95,7 +95,7 @@ struct perf_record_throttle {
- };
- 
- #ifndef KSYM_NAME_LEN
--#define KSYM_NAME_LEN 256
-+#define KSYM_NAME_LEN 512
- #endif
- 
- struct perf_record_ksymbol {
-diff --git a/tools/lib/symbol/kallsyms.h b/tools/lib/symbol/kallsyms.h
-index 72ab9870454b..542f9b059c3b 100644
---- a/tools/lib/symbol/kallsyms.h
-+++ b/tools/lib/symbol/kallsyms.h
-@@ -7,7 +7,7 @@
- #include <linux/types.h>
- 
- #ifndef KSYM_NAME_LEN
--#define KSYM_NAME_LEN 256
-+#define KSYM_NAME_LEN 512
- #endif
- 
- static inline u8 kallsyms2elf_binding(char type)
--- 
-2.37.1
+Regards,
+
+--
+Joe
 
