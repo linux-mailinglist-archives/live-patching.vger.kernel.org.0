@@ -2,101 +2,79 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 344B85907F7
-	for <lists+live-patching@lfdr.de>; Thu, 11 Aug 2022 23:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF8859473C
+	for <lists+live-patching@lfdr.de>; Tue, 16 Aug 2022 01:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235976AbiHKVVv (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 11 Aug 2022 17:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
+        id S1354607AbiHOXzA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 15 Aug 2022 19:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234273AbiHKVVt (ORCPT
+        with ESMTP id S1355356AbiHOXv5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 11 Aug 2022 17:21:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E09D9C203
-        for <live-patching@vger.kernel.org>; Thu, 11 Aug 2022 14:21:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660252907;
+        Mon, 15 Aug 2022 19:51:57 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC64C915C8;
+        Mon, 15 Aug 2022 13:16:39 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b988d329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:988d:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BB2E01EC02AD;
+        Mon, 15 Aug 2022 22:16:33 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660594593;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OE49Bx/6b5Z5OCjJ/iaAetDXMbSvHfaw/2U0UjvSkCQ=;
-        b=C8U/X1bhtMJ5BjSJtKBfHW/gRAgImQ1+zNbSEpy4qyuffLlu4/fkWBuBZTUA/YnPBFE4Jf
-        tkoW+YHtgUW57PthkNABKFfYjM/qI2ns+CJPcK5LU2Ccp2noG13qkxosyDo8oPsp3y5dOK
-        sLh1/JDVwzTr7ZTJLAgHeZgrnWpHS2E=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-423-hqI00qBSNDauxZ7ewUnFjQ-1; Thu, 11 Aug 2022 17:21:44 -0400
-X-MC-Unique: hqI00qBSNDauxZ7ewUnFjQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DB2501824602;
-        Thu, 11 Aug 2022 21:21:43 +0000 (UTC)
-Received: from jlaw-desktop.redhat.com (unknown [10.22.16.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7EF279459C;
-        Thu, 11 Aug 2022 21:21:43 +0000 (UTC)
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     live-patching@vger.kernel.org
-Cc:     linux-kselftest@vger.kernel.org,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Yannick Cote <ycote@redhat.com>, Dennis Li <denli@redhat.com>
-Subject: [PATCH] selftests/livepatch: normalize sysctl error message
-Date:   Thu, 11 Aug 2022 17:21:38 -0400
-Message-Id: <20220811212138.182575-1-joe.lawrence@redhat.com>
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=KMD5ZZW0UGq2Obs996tfjGpJxzdAX0qHGDYWDHvQl+Q=;
+        b=L0QhKbmGsK+x7YnEkJO3Efs8BnoHyjMhN6fVG8HyEAb+v6OPMY5NRRmwfr1N+wTC4qwX+M
+        KR558BiStQ1xGsTbFHpB+zRz0BtpTb3YSrsxi+cGm36DHMlDsnCXuM26DderQLFaZ3r760
+        aF1onIFyJBQlok+JIWgrfndBo46rZbQ=
+Date:   Mon, 15 Aug 2022 22:16:29 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Johannes Erdfelt <johannes@erdfelt.com>,
+        Ingo Molnar <mingo@redhat.com>, live-patching@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: ftrace regression with CONFIG_UNWINDER_FRAME_POINTER
+Message-ID: <YvqpnfM9ZdRO6oXa@zn.tnic>
+References: <20220815195828.GE3948@sventech.com>
+ <20220815160646.0dca7227@gandalf.local.home>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220815160646.0dca7227@gandalf.local.home>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The livepatch kselftests rely on comparing expected and actual output
-from such commands as sysctl.  A recent commit in procps-ng v4.0.0 [1]
-changed sysctl's output to emit key pathnames like:
+On Mon, Aug 15, 2022 at 04:06:46PM -0400, Steven Rostedt wrote:
+> On Mon, 15 Aug 2022 12:58:28 -0700
+> Johannes Erdfelt <johannes@erdfelt.com> wrote:
+> 
+> > I recently ran across an oops with ftrace when using the frame pointer
+> > unwinder. It does not affect Linus' tree (tested 6.0-rc1), but it does
+> > affect 5.15.60 and 5.10.136 (at least, have not tested other kernels).
+> > 
+> > It appears to be related to the recently merged retbleed mitigations,
+> 
+> If you believe this, then Cc those that are involved with those
+> mitigations, which I did.
 
-  sysctl: setting key "/proc/sys/kernel/ftrace_enabled": Device or resource busy
+Sounds like this one:
 
-versus previous dotted output:
+https://lore.kernel.org/all/Yu2H%2FRdg%2FU4bHWaY@quatroqueijos/
 
-  sysctl: setting key "kernel.ftrace_enabled": Device or resource busy
-
-The modification in output was later reverted [2], but since the change
-has been tagged in procps-ng v4.0.0, update the livepatch kselftest to
-handle either case.
-
-[1] https://gitlab.com/procps-ng/procps/-/commit/6389deca5bf667f5fab5912acde78ba8e0febbc7
-[2] https://gitlab.com/procps-ng/procps/-/commit/b159c198c9160a8eb13254e2b631d0035b9b542c
-
-Reported-by: Dennis(Zhuoheng) Li <denli@redhat.com>
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
----
- tools/testing/selftests/livepatch/functions.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index 9230b869371d..d5001c9eb72e 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -86,7 +86,7 @@ function set_ftrace_enabled() {
- 
- 	if [[ "$result" != "$1" ]] ; then
- 		if [[ $can_fail -eq 1 ]] ; then
--			echo "livepatch: $err" > /dev/kmsg
-+			echo "livepatch: $err" | sed 's#/proc/sys/kernel/#kernel.#' > /dev/kmsg
- 			return
- 		fi
- 
 -- 
-2.26.3
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
