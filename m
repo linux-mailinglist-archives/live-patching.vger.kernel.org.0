@@ -2,37 +2,49 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 389DF59831B
-	for <lists+live-patching@lfdr.de>; Thu, 18 Aug 2022 14:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F6D598483
+	for <lists+live-patching@lfdr.de>; Thu, 18 Aug 2022 15:44:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244635AbiHRM0V (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 18 Aug 2022 08:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50734 "EHLO
+        id S245252AbiHRNmm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 18 Aug 2022 09:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244633AbiHRM0U (ORCPT
+        with ESMTP id S244804AbiHRNmR (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 18 Aug 2022 08:26:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C67B5A3E1;
-        Thu, 18 Aug 2022 05:26:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27868B82168;
-        Thu, 18 Aug 2022 12:26:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45369C433C1;
-        Thu, 18 Aug 2022 12:26:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660825576;
-        bh=2HfeV/FUeCfFB9ahk1dEIdH1Z5Xm4ZpUI9pxyzXtVNY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ldExojEWXMzZbv5iaFVyGoeebhh1grtNtOMHurAW12WWoZEOxE387gy4UaZ4z4H3M
-         oi712cn5j905RlOoF1cE25p10FoK+joF2aUY+v9jxXooNL+wYu9QOQcG3DsJ/iv4rZ
-         jF590iJWZlf1aT2bEszQcOp9qcFA2JKcn5pQpuL8=
-Date:   Thu, 18 Aug 2022 14:26:14 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-kernel@vger.kernel.org,
+        Thu, 18 Aug 2022 09:42:17 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245E1B81C0;
+        Thu, 18 Aug 2022 06:41:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660830068; x=1692366068;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VY0sbb/RXNUU157VT44IttsuY4LjKgmphFRvohq9bwI=;
+  b=X3MIfQ8bFiTrygrL3X+IeA9Nc8ILWcJafDCVuqaV27M7ndbLPmG83OHi
+   Z5Fv62F4l7q+xudGNaY7RQCLEKttB08cN9OQhycEc2BKxTTVibr4LnNWO
+   E6AcidB0Ib/j8d4WpmgfQbQ/UFeloaoRXS6v7NdUwqGxrGzlYLu+64Gy+
+   Ae+s9hRUPx8X02M4AMvLG5ya2G1pYsVlPmw9OZV1ZcfuHYYFrwsoUSkz5
+   ao25o5UaX+gk4LIbM9xtMiiqkHb6dixQT7GTvwAaa9O/eSs7+45PVqoYu
+   7OS6gYO/IW+/k3ZPxuq78aNx0alBJCAyV8leaq9K32JWf884xdGU7KSQ8
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="379051431"
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="379051431"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 06:41:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="853418276"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 18 Aug 2022 06:41:02 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27IDf0GP012032;
+        Thu, 18 Aug 2022 14:41:00 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
         Michal Marek <michal.lkml@markovi.net>,
         "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
@@ -48,18 +60,18 @@ Cc:     linux-kernel@vger.kernel.org,
         Joe Lawrence <joe.lawrence@redhat.com>,
         linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
         lkp@intel.com, stable@vger.kernel.org
-Subject: Re: [RFC PATCH 1/3] modpost: fix TO_NATIVE() with expressions and
- consts
-Message-ID: <Yv4v5vwXDER3GA2y@kroah.com>
-References: <20220818115306.1109642-1-alexandr.lobakin@intel.com>
- <20220818115306.1109642-2-alexandr.lobakin@intel.com>
+Subject: Re: [RFC PATCH 0/3] kallsyms: add option to include relative filepaths into kallsyms
+Date:   Thu, 18 Aug 2022 15:39:18 +0200
+Message-Id: <20220818133918.1112657-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <Yv4udm0QKVA1ku++@kroah.com>
+References: <20220818115306.1109642-1-alexandr.lobakin@intel.com> <Yv4udm0QKVA1ku++@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818115306.1109642-2-alexandr.lobakin@intel.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,49 +79,47 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 01:53:04PM +0200, Alexander Lobakin wrote:
-> Macro TO_NATIVE() directly takes a reference to its argument @x
-> without making an intermediate variable. This makes compilers
-> emit build warnings and errors if @x is an expression or a deref
-> of a const pointer (when target Endianness != host Endianness):
+From: Greg KH <gregkh@linuxfoundation.org>
+Date: Thu, 18 Aug 2022 14:20:06 +0200
+
+> On Thu, Aug 18, 2022 at 01:53:03PM +0200, Alexander Lobakin wrote:
+> > This is an early RFC to not rewrite stuff one more time later on if
+> > the implementation is not acceptable or any major design changes are
+> > required. For the TODO list, please scroll to the end.
+> > 
+> > Make kallsyms independent of symbols positions in vmlinux (or module)
+> > by including relative filepath in each symbol's kallsyms value. I.e.
+> > 
+> > dev_gro_receive -> net/core/gro.c:dev_gro_receive
+> > 
+> > For the implementation details, please look at the patch 3/3.
+> > Patch 2/3 is just a stub, I plan to reuse kallsyms enhancement from
+> > the Rust series for it.
+> > Patch 1/3 is a fix of one modpost macro straight from 2.6.12-rc2.
+> > 
+> > A nice side effect is that it's now easier to debug the kernel, as
+> > stacktraces will now tell every call's place in the file tree:
 > 
-> >> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
->       87 |         __endian(&(x), &(__x), sizeof(__x));                    \
->          |                  ^
->    scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
->       19 | #define t(x)            TO_NATIVE(x)
->          |                         ^~~~~~~~~
->    scripts/mod/sympath.c:100:31: note: in expansion of macro 't'
->      100 |                 eh->e_shoff = t(h(eh->e_shoff) + off);
+> That's a side effect, but that does not explain _why_ you want this
+> change.
 > 
-> >> scripts/mod/modpost.h:87:24: warning: passing argument 2 of '__endian'
-> discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
->       87 |         __endian(&(x), &(__x), sizeof(__x));                    \
->          |                        ^~~~~~
->    scripts/mod/sympath.c:18:25: note: in expansion of macro 'TO_NATIVE'
->       18 | #define h(x)            TO_NATIVE(x)
->          |                         ^~~~~~~~~
->    scripts/mod/sympath.c:178:48: note: in expansion of macro 'h'
->      178 |              iter < end; iter = (void *)iter + h(eh->e_shentsize)) {
+> What is this good for?  Who can use it?  Why is it worth added build
+> times?
 
-How come this hasn't shown up in cross-builds today?
-
+I think I wrote that we need to get rid of this positioned-based
+search for kallsyms, at least for livepatching and probes, didn't
+I?
+OTOH I didn't write that originally that was a prereq for FG-KASLR,
+but then I decided it deserves a separate series =\ Thanks for
+mentioning this, so I wrote it here now and will not forget this
+time to mention it in the cover letter for v2.
 
 > 
-> Create a temporary variable, assign @x to it and don't use @x after
-> that. This makes it possible to pass expressions as an argument.
-> Also, do a cast-away for the second argument when calling __endian()
-> to avoid 'discarded qualifiers' warning, as typeof() preserves
-> qualifiers and makes compilers think that we're passing pointer
-> to a const.
+> You don't tell us anything except what this does :(
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Cc: stable@vger.kernel.org # 4.9+
+> thanks,
+> 
+> greg k-h
 
-Where are these build warnings showing up at that we don't see them
-today, yet this is needed to go back to all stable trees?
-
-still confused,
-
-greg k-h
+Thanks,
+Olek
