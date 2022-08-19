@@ -2,49 +2,37 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 139AE599A2A
-	for <lists+live-patching@lfdr.de>; Fri, 19 Aug 2022 12:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31DEC599A4A
+	for <lists+live-patching@lfdr.de>; Fri, 19 Aug 2022 13:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347957AbiHSKvt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 19 Aug 2022 06:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
+        id S1348479AbiHSLDK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 19 Aug 2022 07:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346527AbiHSKvt (ORCPT
+        with ESMTP id S1348480AbiHSLDC (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 19 Aug 2022 06:51:49 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6D012D27;
-        Fri, 19 Aug 2022 03:51:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660906307; x=1692442307;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Xg/Wu+E2dA7UBAkvJ0UOV8Vgqyso5h+bxyEw+kxytDA=;
-  b=evbgrOx7JRtVBTNd1166m8L/k2LQTrnr+WPYlwKZvVEnKUeDvg9eh/RO
-   1zLJXhy7nWPS8ODmI+SZrjxjG+pn2s8j6bmUDA7jtrKKCjVLnxGzG0rgP
-   HlBmm5KgxnnNzBT7D3FUw52DHAoK0rBvvgeCjcgg0IfqRI9TWJL9iBqQ8
-   x8XUCwRYf8/PpIxzw5a16WsleLYfQankLH31neVQ1XQU7LwlQFXogMXc5
-   UaBU28m7X0d4jmDV+TLhx6H2H0WmXRxm0ihgSKOA/dq1G699lzNEhuLAW
-   XaeCvMNRZyz066Iwu0+z6onJEb+/3vI5xmhSrFfRnffJsrl3uz0B3p4W2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="290555766"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="290555766"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 03:51:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="641215598"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 19 Aug 2022 03:51:42 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27JApf69026305;
-        Fri, 19 Aug 2022 11:51:41 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-kernel@vger.kernel.org,
+        Fri, 19 Aug 2022 07:03:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31233F4CA0;
+        Fri, 19 Aug 2022 04:03:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F26AB8274A;
+        Fri, 19 Aug 2022 11:02:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFFF4C433C1;
+        Fri, 19 Aug 2022 11:02:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660906978;
+        bh=C3OlPPVigA+yCoVFlq9TEoz3QweRVJiAh9FBT//IFQs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TjE30BvksmGabfTkUy4uFdYwtz0ddZVRvWxPub0OwJHbNn8z9kQY9CwK5vOw+juFa
+         JHA3MrN6K8Q6/dxgnJrc8GWeNLffbEQBRforFchHuUgIhKn9LxuPntgzQ/onv8SxRV
+         Pa5j2qgdSwwJJTDCbf5sszY4ylqVZXX3FwXjEODk=
+Date:   Fri, 19 Aug 2022 13:02:55 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
         Michal Marek <michal.lkml@markovi.net>,
         "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
@@ -60,18 +48,22 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
         lkp@intel.com, stable@vger.kernel.org
-Subject: Re: [RFC PATCH 3/3] kallsyms: add option to include relative filepaths into kallsyms
-Date:   Fri, 19 Aug 2022 12:50:01 +0200
-Message-Id: <20220819105001.1130876-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <Yv5IfiwqGumJwVGT@kroah.com>
-References: <20220818115306.1109642-1-alexandr.lobakin@intel.com> <20220818115306.1109642-4-alexandr.lobakin@intel.com> <Yv4vT6s6UHYvXOlX@kroah.com> <20220818135629.1113036-1-alexandr.lobakin@intel.com> <Yv5IfiwqGumJwVGT@kroah.com>
+Subject: Re: [RFC PATCH 3/3] kallsyms: add option to include relative
+ filepaths into kallsyms
+Message-ID: <Yv9t3y5kkuFKCPKp@kroah.com>
+References: <20220818115306.1109642-1-alexandr.lobakin@intel.com>
+ <20220818115306.1109642-4-alexandr.lobakin@intel.com>
+ <Yv4vT6s6UHYvXOlX@kroah.com>
+ <20220818135629.1113036-1-alexandr.lobakin@intel.com>
+ <Yv5IfiwqGumJwVGT@kroah.com>
+ <20220819105001.1130876-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819105001.1130876-1-alexandr.lobakin@intel.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,50 +71,51 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Greg KH <gregkh@linuxfoundation.org>
-Date: Thu, 18 Aug 2022 16:11:10 +0200
-
-> On Thu, Aug 18, 2022 at 03:56:29PM +0200, Alexander Lobakin wrote:
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Date: Thu, 18 Aug 2022 14:23:43 +0200
-> > 
-> > > On Thu, Aug 18, 2022 at 01:53:06PM +0200, Alexander Lobakin wrote:
-> > > > Currently, kallsyms kernel code copes with symbols with the same
-> > > > name by indexing them according to their position in vmlinux and
-> > > > requiring to provide an index of the desired symbol. This is not
-> > > > really quite reliable and is fragile to any features performing
-> > > > symbol or section manipulations such as FG-KASLR.
+On Fri, Aug 19, 2022 at 12:50:01PM +0200, Alexander Lobakin wrote:
+> From: Greg KH <gregkh@linuxfoundation.org>
+> Date: Thu, 18 Aug 2022 16:11:10 +0200
+> 
+> > On Thu, Aug 18, 2022 at 03:56:29PM +0200, Alexander Lobakin wrote:
+> > > From: Greg KH <gregkh@linuxfoundation.org>
+> > > Date: Thu, 18 Aug 2022 14:23:43 +0200
 > > > 
-> > > Ah, here's the reasoning, stuff like this should go into the 0/X message
-> > > too, right?
+> > > > On Thu, Aug 18, 2022 at 01:53:06PM +0200, Alexander Lobakin wrote:
+> > > > > Currently, kallsyms kernel code copes with symbols with the same
+> > > > > name by indexing them according to their position in vmlinux and
+> > > > > requiring to provide an index of the desired symbol. This is not
+> > > > > really quite reliable and is fragile to any features performing
+> > > > > symbol or section manipulations such as FG-KASLR.
+> > > > 
+> > > > Ah, here's the reasoning, stuff like this should go into the 0/X message
+> > > > too, right?
+> > > > 
+> > > > Anyway, what is currently broken that requires this?  What will this
+> > > > make easier in the future?  What in the future will depend on this?
 > > > 
-> > > Anyway, what is currently broken that requires this?  What will this
-> > > make easier in the future?  What in the future will depend on this?
+> > > 2) FG-KASLR will depend and probably some more crazy hardening
+> > >    stuff. And/or perf-based function/symbol placement, which is
+> > >    in the "discuss and dream sometimes" stage.
 > > 
-> > 2) FG-KASLR will depend and probably some more crazy hardening
-> >    stuff. And/or perf-based function/symbol placement, which is
-> >    in the "discuss and dream sometimes" stage.
+> > I have no idea what "FG-KASLR" is.  Why not submit these changes when
+> > whatever that is is ready for submission?
 > 
-> I have no idea what "FG-KASLR" is.  Why not submit these changes when
-> whatever that is is ready for submission?
+> It doesn't matter much, the main idea is that the current approach
+> with relying on symbol positions in the vmlinux is broken when we
+> reorder symbols during the kernel initialization.
+> As I said, this is an early RFC do discuss the idea and the
+> implementation. I could submit it along with FG-KASLR, but then if
+> there would be major change requests, I'd need to redo lots of
+> stuff, which is not very efficient. It's better to settle down the
+> implementation details in advance.
 
-It doesn't matter much, the main idea is that the current approach
-with relying on symbol positions in the vmlinux is broken when we
-reorder symbols during the kernel initialization.
-As I said, this is an early RFC do discuss the idea and the
-implementation. I could submit it along with FG-KASLR, but then if
-there would be major change requests, I'd need to redo lots of
-stuff, which is not very efficient. It's better to settle down the
-implementation details in advance.
-Plus this kallsyms feature goes standalone as it gets bigger. It
-will contain a pack of commits and touch several different
-subsystems. Mixing all of this with FG-KASLR in one series doesn't
-sound good to me.
+It's better for you to get this all working on your own first, before
+asking the community to review and accept something that is not required
+at all for the kernel today.  Why waste our time for no benefit to the
+kernel now?
 
-> 
-> thanks,
-> 
-> greg k-h
+You all know better than this.  As it is, Intel is on "thin ice" when it
+comes to kernel submissions and abusing the community by sending stuff
+out when it is not reviewed by anyone internally and needs correcting,
+don't make it any worse.
 
-Thanks,
-Olek
+greg k-h
