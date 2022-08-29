@@ -2,196 +2,159 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 841EA5A16A2
-	for <lists+live-patching@lfdr.de>; Thu, 25 Aug 2022 18:26:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E150E5A46BD
+	for <lists+live-patching@lfdr.de>; Mon, 29 Aug 2022 12:04:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243052AbiHYQ0c (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 25 Aug 2022 12:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S229543AbiH2KEL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 29 Aug 2022 06:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243069AbiHYQ0b (ORCPT
+        with ESMTP id S229490AbiH2KEK (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:26:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA15B67CA4
-        for <live-patching@vger.kernel.org>; Thu, 25 Aug 2022 09:26:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661444788;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QBP2+G42OMoMwnqdV2vMK60zYr6xOaGHcldEWnYhFNg=;
-        b=G3z/8zZuEA7w/iEz+cwnx3P5ggAG6YPEWYkr1HWkyxxA90AYC57DIehJXBbqI7PIDPzvB4
-        CZrPWtiovkBxGgaKIP9zNfd89TUz8cQf0Ln/CO3maElBsjdeRVXVLt0oRp/bjQCueTx1pg
-        FAmkVu/N4Gfa6j4dyGP2nlmyu/+kqQg=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-564-hcK5s9-QP66fyxoxiwmuXA-1; Thu, 25 Aug 2022 12:26:27 -0400
-X-MC-Unique: hcK5s9-QP66fyxoxiwmuXA-1
-Received: by mail-qv1-f70.google.com with SMTP id db3-20020a056214170300b00496c0aabfc9so11223145qvb.16
-        for <live-patching@vger.kernel.org>; Thu, 25 Aug 2022 09:26:27 -0700 (PDT)
+        Mon, 29 Aug 2022 06:04:10 -0400
+Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B4A11803
+        for <live-patching@vger.kernel.org>; Mon, 29 Aug 2022 03:04:08 -0700 (PDT)
+Received: by mail-ua1-x92a.google.com with SMTP id s5so2917314uar.1
+        for <live-patching@vger.kernel.org>; Mon, 29 Aug 2022 03:04:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:from:to:cc;
+        bh=yz8tNLv5GDz9rHewhIeryS5KktdtpS5W9tcTVT6Lch0=;
+        b=ZGdRrCUqLgRTF9p6WKR9p5Jk0Q6CXFQegrpGy9gbz33F7aczjH7SB6XVKERphRe4Z2
+         WNuAvxDV0rWnp55ieTGZyEMImqf7fGobl/p3oDQM0JNEvZAOgI53pB8ExlJqD9kBsf8e
+         z3qXHShd9nWe9F+gsSN/3Lw/KVWq6eiX715TDbQPjGy7Abo02Vpe1QjtF0Dj0v88W0S3
+         RmJV9iV1NkVTKL6XY5icLEfB8TPHXq+X28hryp5BtmHIIT4Z/NdjElis6SPLV8BJhYto
+         CufXCfR0N24k8JtUQ9qNcDAeFlxLvWfgi5dW1BaErzgswIwZpOJcLlQorPyQqLagMsrJ
+         xG3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:subject:from:references:cc:to
-         :x-gm-message-state:from:to:cc;
-        bh=QBP2+G42OMoMwnqdV2vMK60zYr6xOaGHcldEWnYhFNg=;
-        b=GZexySQ4ca0+rkoRjJauWQXq8KuB5hdbWaoHNWPmykGjUlbiRIfLZqvttYXHRcNr5/
-         B5SvJReRDsS8OOAtwuaLhkpFbUDHpSThHvSTQO/RLRymSCSLo7Cf6/r/74QkqCbIvaCN
-         Cr2HZwsp/KlbBOZfunvWAp1TejZi9J54yqVeQNLW3rm+BASO1iByQFeWdr/Md6eAKlZ/
-         6CnGyijRq4ln95pbHIvYuiefCzF2z9EIpeKk1ZQhGi+YdjvaIvqhse/eOOW3m0icUWjx
-         9A8x0P4h2gM+9YOt+KY7hE1IabwOXEVoAbE84kXKzR9JJ7PRKdw4nUYurlwtyVcrmxwo
-         O1VQ==
-X-Gm-Message-State: ACgBeo02pvgcB7DZkuLM5EwwLpBZxi/fZcmJ7nWXDjpGlxBo1MURqmP6
-        SNFxzUkUmnEqTLfBJDUbzKVCrpJobEgWwLkOyIuhZWi76CUkBNpC/Y54BXUmfUO6MwqxshLdhzF
-        c7mFDuiOHHkRYX50AISPLUODXAQ==
-X-Received: by 2002:a05:622a:1909:b0:344:9f41:9477 with SMTP id w9-20020a05622a190900b003449f419477mr4251542qtc.619.1661444787017;
-        Thu, 25 Aug 2022 09:26:27 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR62RGiq2S68kTCuavDT7NSb7NgKOTzjHMBEZeS17J6JGsxz5uqWmWKqHiDKd7xSnfoU2KF8Fw==
-X-Received: by 2002:a05:622a:1909:b0:344:9f41:9477 with SMTP id w9-20020a05622a190900b003449f419477mr4251521qtc.619.1661444786728;
-        Thu, 25 Aug 2022 09:26:26 -0700 (PDT)
-Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
-        by smtp.gmail.com with ESMTPSA id u4-20020a05620a454400b006bbe7ded98csm14674408qkp.112.2022.08.25.09.26.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 09:26:26 -0700 (PDT)
-To:     Marcos Paulo de Souza <mpdesouza@suse.com>,
-        live-patching@vger.kernel.org
-Cc:     jpoimboe@redhat.com, mbenes@suse.cz, pmladek@suse.com,
-        nstange@suse.de
-References: <20220701194817.24655-1-mpdesouza@suse.com>
- <20220701194817.24655-5-mpdesouza@suse.com>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH 4/4] livepatch/shadow: Add garbage collection of shadow
- variables
-Message-ID: <b5fc2891-2fb0-4aa7-01dd-861da22bb7ea@redhat.com>
-Date:   Thu, 25 Aug 2022 12:26:25 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=yz8tNLv5GDz9rHewhIeryS5KktdtpS5W9tcTVT6Lch0=;
+        b=kJVbSgcw9D9PSpCVKgln5iWo5MYaiuIuT4HL0CRtzpPOXy/CqjyuMaPyPBV3Zzf1r+
+         Ia0HzLDY5ead9SSe+mN9gR4TH5o3+keBmF4fgeHCepgUnW2z574IAjNjSmG/iygBZOM6
+         eSmXm0l8yrYHFOmOhKOIufrA47lZqZOd4Trdjdce6PS/YqnhJsOmKD5vpfsz8Uyc+/vM
+         Qzgs+AkBA/7zxunYhQYIU2p9fz2YmG2rzMMuBQc+J7MERhzL84aiSfSyae3+AiQgz/IQ
+         FakuDbZbe5Yq8beSArND5924n+mOm4PXaRDU0EhLE+yA6Innb894sNoY0Bct9cpvY2Xj
+         67mg==
+X-Gm-Message-State: ACgBeo2aTYZ3Fjae9s2O6ql9+dfNthpvPnWng1/2qm6I+A/iwqHgkW92
+        piVE8Sz8PD8cbMg7leNEQnQtBcObEtw0Aqz9zOE=
+X-Google-Smtp-Source: AA6agR46NGQv5D3RNN+HRNCtbMugso8jwVn1dvy8zFgCFD948aIw45i8Pz0+xe8bDKcNJV22BNb87Zuju8csEgbewAE=
+X-Received: by 2002:ab0:2713:0:b0:391:50f7:88b5 with SMTP id
+ s19-20020ab02713000000b0039150f788b5mr3131135uao.109.1661767447112; Mon, 29
+ Aug 2022 03:04:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220701194817.24655-5-mpdesouza@suse.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:612c:2813:b0:2ee:ab97:ec67 with HTTP; Mon, 29 Aug 2022
+ 03:04:06 -0700 (PDT)
+Reply-To: mrtonyelumelu98@gmail.com
+From:   "Mrs. Cristalina Georgieva" <ayshaayshaayshaaysha889765@gmail.com>
+Date:   Mon, 29 Aug 2022 11:04:06 +0100
+Message-ID: <CAAV5x9Os4DEd1ScUFRWYzVxyEn9h5vs97RpF=MddupxCfh1fQA@mail.gmail.com>
+Subject: hi
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Spam-Status: Yes, score=7.5 required=5.0 tests=BAYES_95,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:92a listed in]
+        [list.dnswl.org]
+        *  3.0 BAYES_95 BODY: Bayes spam probability is 95 to 99%
+        *      [score: 0.9897]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [ayshaayshaayshaaysha889765[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [ayshaayshaayshaaysha889765[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [mrtonyelumelu98[at]gmail.com]
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 7/1/22 3:48 PM, Marcos Paulo de Souza wrote:
-> The life of shadow variables is not completely trivial to maintain.
-> They might be used by more livepatches and more livepatched objects.
-> They should stay as long as there is any user.
-> 
-> In practice, it requires to implement reference counting in callbacks
-> of all users. They should register all the user and remove the shadow
-> variables only when there is no user left.
-> 
-> This patch hides the reference counting into the klp_shadow API.
-> The counter is connected with the shadow variable @id. It requires
-> an API to take and release the reference. The release function also
-> calls the related dtor() when defined.
-> 
-> An easy solution would be to add some get_ref()/put_ref() API.
-> But it would need to get called from pre()/post_un() callbacks.
-> It might be easy to forget a callback and make it wrong.
-> 
-> A more safe approach is to associate the klp_shadow_type with
-> klp_objects that use the shadow variables. The livepatch core
-> code might then handle the reference counters on background.
-> 
-> The shadow variable type might then be added into a new @shadow_types
-> member of struct klp_object. They will get then automatically registered
-> and unregistered when the object is being livepatched. The registration
-> increments the reference count. Unregistration decreases the reference
-> count. All shadow variables of the given type are freed when the reference
-> count reaches zero.
-> 
-> All klp_shadow_alloc/get/free functions also checks whether the requested
-> type is registered. It will help to catch missing registration and might
-> also help to catch eventual races.
-> 
-
-If I understand the patchset correctly, the last patch consolidated
-id/ctor/dtor into klp_shadow_type structure, then this one formally
-associates the new structure with a klp_object so that it bumps up /
-down a simple reference count automatically.  That count is now checked
-before calling the dtor/removal of any matching shadow variable.  So far
-so good.
-
-How does this play out for the following scenario:
-
-- atomic replace livepatches, accumulative versions
-- livepatch v1 : registers a klp_shadow_type (id=1), creates a few
-shadow vars
-- livepatch v2 : also uses klp_shadow_type (id=1) and creates a few
-shadow vars
-
-Since the first livepatch registered the klp_shadow_type, its ctor/dtor
-pair will be used for all id=1 shadow variables, including those created
-by the subsequent livepatches, right?
-
-
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
->  include/linux/livepatch.h                 |  21 ++++
->  kernel/livepatch/core.c                   |  39 +++++++
->  kernel/livepatch/core.h                   |   1 +
->  kernel/livepatch/shadow.c                 | 124 ++++++++++++++++++++++
->  kernel/livepatch/transition.c             |   4 +-
->  lib/livepatch/test_klp_shadow_vars.c      |  18 +++-
->  samples/livepatch/livepatch-shadow-fix1.c |   8 +-
->  samples/livepatch/livepatch-shadow-fix2.c |   9 +-
->  8 files changed, 214 insertions(+), 10 deletions(-)
-> 
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index 79e7bf3b35f6..cb65de831684 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -100,11 +100,14 @@ struct klp_callbacks {
->  	bool post_unpatch_enabled;
->  };
->  
-> +struct klp_shadow_type;
-> +
->  /**
->   * struct klp_object - kernel object structure for live patching
->   * @name:	module name (or NULL for vmlinux)
->   * @funcs:	function entries for functions to be patched in the object
->   * @callbacks:	functions to be executed pre/post (un)patching
-> + * @shadow_types: shadow variable types used by the livepatch for the klp_object
->   * @kobj:	kobject for sysfs resources
->   * @func_list:	dynamic list of the function entries
->   * @node:	list node for klp_patch obj_list
-> @@ -118,6 +121,7 @@ struct klp_object {
->  	const char *name;
->  	struct klp_func *funcs;
->  	struct klp_callbacks callbacks;
-> +	struct klp_shadow_type **shadow_types;
->  
-
-Hmm.  The implementation of shadow_types inside klp_object might be
-difficult to integrate into kpatch-build.  For kpatches, we do utilize
-the kernel's shadow variable API directly, but at kpatch author time we
-don't have any of klp_patch objects in hand -- those are generated by
-template after the binary before/after comparison is completed.
-
-My first thought is that kpatch-build might associate any shadow
-variables in foo.c with its parent object (vmlinux, foo.ko, etc.),
-however that may not always be 100% accurate.
-
-In fact, we have occasionally used shadow variables with <id, 0> to
-create one off variables not associated with specific code or data
-structures, but rather the presence of livepatch.  This is (too) briefly
-mentioned in "Other use-cases" section of the shadow variable Documentation.
-
--- 
-Joe
-
+5Zu96Zqb6YCa6LKo5Z+66YeRIChJTUYpDQrlm73pmpvlgrXli5nnrqHnkIboqrINCu+8gzE5MDDj
+gIFBVi5EVeekvumVtw0KDQpJLk0uRi4g44OH44Kj44Os44Kv44K/44O844Gu5YWs5byP6Zu75a2Q
+44Oh44O844OrIOOCouODieODrOOCueOBuOOCiOOBhuOBk+OBneOAguOCr+ODquOCueOCv+ODquOD
+vOODiuODu+OCsuOCquODq+OCruOCqOODrw0KDQoNCuimquaEm+OBquOCi+WPl+ebiuiAhe+8gQ0K
+DQrmlrDjgZ/jgavku7vlkb3jgZXjgozjgZ/osqHli5nplbflrpjjgajlm73pgKPpgJrosqjlvZPl
+sYDjga7ntbHmsrvmqZ/plqLjga/jgIHlm73pgKPmlL/lupzjgavplbfjgYTplpPlgrXli5njgpLo
+sqDjgaPjgabjgYTjgZ/mnKroq4vmsYLjga7os4fph5HjgpLoqr/mn7vjgZnjgovjgZPjgajjgpLo
+qLHlj6/jgZfjgZ/jgZ/jgoHjgIHmiYDmnInogIXjga/oqZDmrLrjgaflkYrnmbrjgZXjgozjgb7j
+gZfjgZ8u5Zu96YCj44Gu5ZCN5YmN44KS5L2/55So44GX44Gf6KmQ5qy65bir44CC6Kq/5p+75Lit
+44Gu44K344K544OG44Og44Gu6Zu75a2Q44Oh44O844OrDQrjgqLjg4njg6zjgrnjga7jg4fjg7zj
+gr8g44K544OI44Os44O844K46KiY6Yyy44Gr44KI44KL44Go44CB44GC44Gq44Gf44Gu5pSv5omV
+44GE44Gv44CB5qyh44Gu44Kr44OG44K044Oq44GuIDE1MCDkurrjga7lj5fnm4rogIXjga7jg6rj
+grnjg4jjgavlkKvjgb7jgozjgabjgYTjgb7jgZnjgILlpZHntITos4fph5HjgIINCg0K44GC44Gq
+44Gf44Gu6LOH6YeR44KS44Gg44G+44GX5Y+W44KL44Gf44KB44Gr5rGa6IG344KS54qv44GX44Gf
+6IWQ5pWX44GX44Gf6YqA6KGM6IG35ZOh44Gv44CB44GC44Gq44Gf44Gu5pSv5omV44GE44KS5LiN
+5b2T44Gr6YGF44KJ44Gb44CB44GC44Gq44Gf44Gu5YG044Gr5aSa44GP44Gu6LK755So44GM44GL
+44GL44KK44CB44GC44Gq44Gf44Gu5pSv5omV44GE44Gu5Y+X44GR5YWl44KM44GM5LiN5b2T44Gr
+6YGF44KM44G+44GX44GfLuWbvemAo+OBqOWbvemam+mAmuiyqOWfuumHkQ0KKElNRikg44Gv44CB
+5YyX57Gz44CB5Y2X57Gz44CB57Gz5Zu944CB44Oo44O844Ot44OD44OR44CB44Ki44K444Ki44CB
+44GK44KI44Gz5LiW55WM5Lit44GuIEFUTSBWaXNhIOOCq+ODvOODieOCkuS9v+eUqOOBl+OBpiAx
+NTANCuS6uuOBruWPl+ebiuiAheOBq+OBmeOBueOBpuOBruijnOWEn+OCkuaUr+aJleOBhuOBk+OB
+qOOCkumBuOaKnuOBl+OBvuOBl+OBn+OAguOBk+OBruOCsOODreODvOODkOODq+OBquaUr+aJleOB
+hOaKgOihk+OBjOWIqeeUqOWPr+iDveOBp+OBguOCi+OBn+OCgeOBp+OBmeOAgua2iOiyu+iAheOA
+geS8gealreOAgemHkeiejeapn+mWouOBq+OAguaUv+W6nOOBjOePvumHkeOChOWwj+WIh+aJi+OB
+ruS7o+OCj+OCiuOBq+ODh+OCuOOCv+ODq+mAmuiyqOOCkuS9v+eUqOOBp+OBjeOCi+OCiOOBhuOB
+q+OBl+OBvuOBmeOAgg0KDQpBVE0gVmlzYeOCq+ODvOODieOCkuS9v+eUqOOBl+OBpuaUr+aJleOB
+hOOCkuihjOOBhuOCiOOBhuOBq+aJi+mFjeOBl+OBvuOBl+OBn+OAguOCq+ODvOODieOBr+eZuuih
+jOOBleOCjOOAgeWIqeeUqOWPr+iDveOBquWuhemFjeOCteODvOODk+OCueOCkuS7i+OBl+OBpueb
+tOaOpeS9j+aJgOOBq+mAgeOCieOCjOOBvuOBmeOAguOBlOmAo+e1oeW+jOOAgTEsNTAwLDAwMC4w
+MA0K57Gz44OJ44Or44Gu6YeR6aGN44GMIEFUTSBWaXNhIOOCq+ODvOODieOBq+i7oumAgeOBleOC
+jOOBvuOBmeOAguOBk+OCjOOBq+OCiOOCiuOAgeOBiuS9j+OBvuOBhOOBruWbveOBriBBVE0g44GL
+44KJIDEg5pel44GC44Gf44KK5bCR44Gq44GP44Go44KCIDEwLDAwMA0K57Gz44OJ44Or44KS5byV
+44GN5Ye644GZ44GT44Go44Gn44CB44GK6YeR44KS5byV44GN5Ye644GZ44GT44Go44GM44Gn44GN
+44G+44GZ44CC44GU6KaB5pyb44Gr5b+c44GY44Gm44CBMSDml6XjgYLjgZ/jgoogMjAsMDAwLjAw
+DQrjg4njg6vjgb7jgafkuIrpmZDjgpLlvJXjgY3kuIrjgZLjgovjgZPjgajjgYzjgafjgY3jgb7j
+gZnjgILjgZPjgozjgavplqLjgZfjgabjgIHlm73pmpvmlK/miZXjgYrjgojjgbPpgIHph5HlsYDj
+gavpgKPntaHjgZfjgIHopoHmsYLjgZXjgozjgZ/mg4XloLHjgpLmrKHjga7mlrnms5Xjgafmj5Dk
+vpvjgZnjgovlv4XopoHjgYzjgYLjgorjgb7jgZnjgIINCg0KMS7jgYLjgarjgZ/jga7jg5Xjg6vj
+g43jg7zjg6AuLi4uLi4uLi4NCjIu44GC44Gq44Gf44Gu5a6M5YWo44Gq5L2P5omALi4uLi4uLi4N
+CjMuIOWbveexjSAuLi4uLi4uLi4uLi4uLi4uLg0KNC7nlJ/lubTmnIjml6Xjg7vmgKfliKXigKbi
+gKbigKbigKYNCjUu5bCC6ZaA5oCnLi4uLi4uLi4NCjYuIOmbu+ipseeVquWPtyAuLi4uLi4uLi4u
+DQo3LiDlvqHnpL7jga7jg6Hjg7zjg6vjgqLjg4njg6zjgrnigKbigKYNCjgu5YCL5Lq644Gu44Oh
+44O844Or44Ki44OJ44Os44K54oCm4oCmDQoNCg0K44GT44Gu44Kz44O844OJICjjg6rjg7Pjgq86
+IENMSUVOVC05NjYvMTYpIOOCkuitmOWIpeOBmeOCi+OBq+OBr+OAgembu+WtkOODoeODvOODq+OB
+ruS7tuWQjeOBqOOBl+OBpuS9v+eUqOOBl+OAgeS4iuiomOOBruaDheWgseOCkuasoeOBruW+k+al
+reWToeOBq+aPkOS+m+OBl+OBpiBBVE0NClZpc2Eg44Kr44O844OJ44Gu55m66KGM44Go6YWN6YCB
+44KS5L6d6aC844GX44Gm44GP44Gg44GV44GE44CCDQoNCumKgOihjOaLheW9k+iAheOBjOOBk+OB
+ruaUr+aJleOBhOOCkui/vei3oeOBl+OAgeODoeODg+OCu+ODvOOCuOOCkuS6pOaPm+OBl+OBpuOA
+geizh+mHkeOBruOBleOCieOBquOCi+mBheW7tuOChOiqpOOBo+OBn+aWueWQkeS7mOOBkeOCkumY
+suOBkOOBk+OBqOOBjOOBp+OBjeOCi+OCiOOBhuOBq+OAgeaWsOOBl+OBhOeVquWPt+OBp+WAi+S6
+uuOBrumbu+WtkOODoeODvOODqw0K44Ki44OJ44Os44K544KS6ZaL44GP44GT44Go44KS44GK5Yun
+44KB44GX44G+44GZ44CC5Lul5LiL44Gu6YCj57Wh5YWI5oOF5aCx44KS5L2/55So44GX44Gm44CB
+44Om44OK44Kk44OG44OD44OJIOODkOODs+OCryDjgqrjg5Yg44Ki44OV44Oq44Kr44Gu44Ko44O8
+44K444Kn44Oz44OI44Gr5LuK44GZ44GQ44GU6YCj57Wh44GP44Gg44GV44GE44CCDQoNCumAo+e1
+oeeqk+WPo++8muODiOODi+ODvOODu+OCqOODq+ODoeODq+awjw0K6KOc5YSf6YeR6YCB6YeR6YOo
+IFVuaXRlZCBCYW5rIG9mIEFmcmljYSDpgKPntaHlhYjjg6Hjg7zjg6vjgqLjg4njg6zjgrk6ICwo
+bXJ0b255ZWx1bWVsdTk4QGdtYWlsLmNvbSkNCg0K44GT44KM5Lul5LiK44Gu6YGF44KM44KS6YG/
+44GR44KL44Gf44KB44Gr44CB44GT44Gu44Oh44O844Or44G444Gu6L+F6YCf44Gq5a++5b+c44GM
+5b+F6KaB44Gn44GZ44CCDQoNCuaVrOWFtw0K44Kv44Oq44K544K/44Oq44O844OK44O744Ky44Kq
+44Or44Ku44Ko44OQ5aSr5Lq6DQo=
