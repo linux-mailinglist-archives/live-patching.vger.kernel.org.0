@@ -2,159 +2,220 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E150E5A46BD
-	for <lists+live-patching@lfdr.de>; Mon, 29 Aug 2022 12:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B84D5A5CC0
+	for <lists+live-patching@lfdr.de>; Tue, 30 Aug 2022 09:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbiH2KEL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 29 Aug 2022 06:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
+        id S230107AbiH3HSw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 Aug 2022 03:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiH2KEK (ORCPT
+        with ESMTP id S229775AbiH3HSv (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:04:10 -0400
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B4A11803
-        for <live-patching@vger.kernel.org>; Mon, 29 Aug 2022 03:04:08 -0700 (PDT)
-Received: by mail-ua1-x92a.google.com with SMTP id s5so2917314uar.1
-        for <live-patching@vger.kernel.org>; Mon, 29 Aug 2022 03:04:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc;
-        bh=yz8tNLv5GDz9rHewhIeryS5KktdtpS5W9tcTVT6Lch0=;
-        b=ZGdRrCUqLgRTF9p6WKR9p5Jk0Q6CXFQegrpGy9gbz33F7aczjH7SB6XVKERphRe4Z2
-         WNuAvxDV0rWnp55ieTGZyEMImqf7fGobl/p3oDQM0JNEvZAOgI53pB8ExlJqD9kBsf8e
-         z3qXHShd9nWe9F+gsSN/3Lw/KVWq6eiX715TDbQPjGy7Abo02Vpe1QjtF0Dj0v88W0S3
-         RmJV9iV1NkVTKL6XY5icLEfB8TPHXq+X28hryp5BtmHIIT4Z/NdjElis6SPLV8BJhYto
-         CufXCfR0N24k8JtUQ9qNcDAeFlxLvWfgi5dW1BaErzgswIwZpOJcLlQorPyQqLagMsrJ
-         xG3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=yz8tNLv5GDz9rHewhIeryS5KktdtpS5W9tcTVT6Lch0=;
-        b=kJVbSgcw9D9PSpCVKgln5iWo5MYaiuIuT4HL0CRtzpPOXy/CqjyuMaPyPBV3Zzf1r+
-         Ia0HzLDY5ead9SSe+mN9gR4TH5o3+keBmF4fgeHCepgUnW2z574IAjNjSmG/iygBZOM6
-         eSmXm0l8yrYHFOmOhKOIufrA47lZqZOd4Trdjdce6PS/YqnhJsOmKD5vpfsz8Uyc+/vM
-         Qzgs+AkBA/7zxunYhQYIU2p9fz2YmG2rzMMuBQc+J7MERhzL84aiSfSyae3+AiQgz/IQ
-         FakuDbZbe5Yq8beSArND5924n+mOm4PXaRDU0EhLE+yA6Innb894sNoY0Bct9cpvY2Xj
-         67mg==
-X-Gm-Message-State: ACgBeo2aTYZ3Fjae9s2O6ql9+dfNthpvPnWng1/2qm6I+A/iwqHgkW92
-        piVE8Sz8PD8cbMg7leNEQnQtBcObEtw0Aqz9zOE=
-X-Google-Smtp-Source: AA6agR46NGQv5D3RNN+HRNCtbMugso8jwVn1dvy8zFgCFD948aIw45i8Pz0+xe8bDKcNJV22BNb87Zuju8csEgbewAE=
-X-Received: by 2002:ab0:2713:0:b0:391:50f7:88b5 with SMTP id
- s19-20020ab02713000000b0039150f788b5mr3131135uao.109.1661767447112; Mon, 29
- Aug 2022 03:04:07 -0700 (PDT)
+        Tue, 30 Aug 2022 03:18:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D55183079
+        for <live-patching@vger.kernel.org>; Tue, 30 Aug 2022 00:18:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07FE2B8168D
+        for <live-patching@vger.kernel.org>; Tue, 30 Aug 2022 07:18:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7FB3C433C1
+        for <live-patching@vger.kernel.org>; Tue, 30 Aug 2022 07:18:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661843927;
+        bh=ZBFGQgaHYPR5E/LnxCan0rzWGR/tx31iB/oBDF37r5w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=VKpj5KyomHvphXzQdyOkupqgXVZWv0mC1JtCITme06Ck6pfeB36Ay5AlInS0nzWno
+         S2+NSdV+Z1H8TWHfonyHV9++k6wUyjPo/E7kUgxpEUZ6anOG39G5bAwfve13548XBW
+         hrbo5dLLoBsPBUpl9o1kQYAk376r18/gTk0mtXEJQrEP4ZbsXH7QZsl24Zcc/9ec74
+         HTZ43QHL1al8J6NlJ8zDKJUMZWPI7udIvaHGq2SJuxAUSApABPSB3izwrsB9uId42F
+         bi2xS0Re/i8AVX3igSt9Pwt6ZD28/IngPoBrspioz4EEIV70IcZ9Y6qSszuAqoHiGV
+         3xIDeWGwRoOoQ==
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-33dc31f25f9so251458877b3.11
+        for <live-patching@vger.kernel.org>; Tue, 30 Aug 2022 00:18:47 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2HCUZy6kXjXoqSmKCR7MOkkTowsLFRmMGWuKBC2Y6uKpypBX4+
+        9u6oKFY7Wb/X59Sdveae1WIPWOx9JGxLI5eJnF0=
+X-Google-Smtp-Source: AA6agR43Xj9cAQDKqkjkHqGY5/hGmEOGkJVBI9rJBWsJXDBR43tSwWP7xLVVlxnbsYdNYY9BlcLPugEPXtIqq+oUae4=
+X-Received: by 2002:a25:2357:0:b0:696:56f4:356e with SMTP id
+ j84-20020a252357000000b0069656f4356emr9945962ybj.449.1661843926765; Tue, 30
+ Aug 2022 00:18:46 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:612c:2813:b0:2ee:ab97:ec67 with HTTP; Mon, 29 Aug 2022
- 03:04:06 -0700 (PDT)
-Reply-To: mrtonyelumelu98@gmail.com
-From:   "Mrs. Cristalina Georgieva" <ayshaayshaayshaaysha889765@gmail.com>
-Date:   Mon, 29 Aug 2022 11:04:06 +0100
-Message-ID: <CAAV5x9Os4DEd1ScUFRWYzVxyEn9h5vs97RpF=MddupxCfh1fQA@mail.gmail.com>
-Subject: hi
-To:     undisclosed-recipients:;
+References: <20220801212129.2008177-1-song@kernel.org> <Yu2EYG0YjPLjiPk0@redhat.com>
+ <CAPhsuW4s2OiM6-toXqqfewnYmGDTQWjSa5R7vTQ2iq5WpYziOA@mail.gmail.com>
+In-Reply-To: <CAPhsuW4s2OiM6-toXqqfewnYmGDTQWjSa5R7vTQ2iq5WpYziOA@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 30 Aug 2022 00:18:35 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6Qu0O7VKqwhq4L=T4h7uLC=_2tF-y9uvsVACFH2Q105Q@mail.gmail.com>
+Message-ID: <CAPhsuW6Qu0O7VKqwhq4L=T4h7uLC=_2tF-y9uvsVACFH2Q105Q@mail.gmail.com>
+Subject: Re: [PATCH v4] livepatch: Clear relocation targets on a module removal
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     live-patching@vger.kernel.org,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: Yes, score=7.5 required=5.0 tests=BAYES_95,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:92a listed in]
-        [list.dnswl.org]
-        *  3.0 BAYES_95 BODY: Bayes spam probability is 95 to 99%
-        *      [score: 0.9897]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ayshaayshaayshaaysha889765[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [ayshaayshaayshaaysha889765[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [mrtonyelumelu98[at]gmail.com]
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *******
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-5Zu96Zqb6YCa6LKo5Z+66YeRIChJTUYpDQrlm73pmpvlgrXli5nnrqHnkIboqrINCu+8gzE5MDDj
-gIFBVi5EVeekvumVtw0KDQpJLk0uRi4g44OH44Kj44Os44Kv44K/44O844Gu5YWs5byP6Zu75a2Q
-44Oh44O844OrIOOCouODieODrOOCueOBuOOCiOOBhuOBk+OBneOAguOCr+ODquOCueOCv+ODquOD
-vOODiuODu+OCsuOCquODq+OCruOCqOODrw0KDQoNCuimquaEm+OBquOCi+WPl+ebiuiAhe+8gQ0K
-DQrmlrDjgZ/jgavku7vlkb3jgZXjgozjgZ/osqHli5nplbflrpjjgajlm73pgKPpgJrosqjlvZPl
-sYDjga7ntbHmsrvmqZ/plqLjga/jgIHlm73pgKPmlL/lupzjgavplbfjgYTplpPlgrXli5njgpLo
-sqDjgaPjgabjgYTjgZ/mnKroq4vmsYLjga7os4fph5HjgpLoqr/mn7vjgZnjgovjgZPjgajjgpLo
-qLHlj6/jgZfjgZ/jgZ/jgoHjgIHmiYDmnInogIXjga/oqZDmrLrjgaflkYrnmbrjgZXjgozjgb7j
-gZfjgZ8u5Zu96YCj44Gu5ZCN5YmN44KS5L2/55So44GX44Gf6KmQ5qy65bir44CC6Kq/5p+75Lit
-44Gu44K344K544OG44Og44Gu6Zu75a2Q44Oh44O844OrDQrjgqLjg4njg6zjgrnjga7jg4fjg7zj
-gr8g44K544OI44Os44O844K46KiY6Yyy44Gr44KI44KL44Go44CB44GC44Gq44Gf44Gu5pSv5omV
-44GE44Gv44CB5qyh44Gu44Kr44OG44K044Oq44GuIDE1MCDkurrjga7lj5fnm4rogIXjga7jg6rj
-grnjg4jjgavlkKvjgb7jgozjgabjgYTjgb7jgZnjgILlpZHntITos4fph5HjgIINCg0K44GC44Gq
-44Gf44Gu6LOH6YeR44KS44Gg44G+44GX5Y+W44KL44Gf44KB44Gr5rGa6IG344KS54qv44GX44Gf
-6IWQ5pWX44GX44Gf6YqA6KGM6IG35ZOh44Gv44CB44GC44Gq44Gf44Gu5pSv5omV44GE44KS5LiN
-5b2T44Gr6YGF44KJ44Gb44CB44GC44Gq44Gf44Gu5YG044Gr5aSa44GP44Gu6LK755So44GM44GL
-44GL44KK44CB44GC44Gq44Gf44Gu5pSv5omV44GE44Gu5Y+X44GR5YWl44KM44GM5LiN5b2T44Gr
-6YGF44KM44G+44GX44GfLuWbvemAo+OBqOWbvemam+mAmuiyqOWfuumHkQ0KKElNRikg44Gv44CB
-5YyX57Gz44CB5Y2X57Gz44CB57Gz5Zu944CB44Oo44O844Ot44OD44OR44CB44Ki44K444Ki44CB
-44GK44KI44Gz5LiW55WM5Lit44GuIEFUTSBWaXNhIOOCq+ODvOODieOCkuS9v+eUqOOBl+OBpiAx
-NTANCuS6uuOBruWPl+ebiuiAheOBq+OBmeOBueOBpuOBruijnOWEn+OCkuaUr+aJleOBhuOBk+OB
-qOOCkumBuOaKnuOBl+OBvuOBl+OBn+OAguOBk+OBruOCsOODreODvOODkOODq+OBquaUr+aJleOB
-hOaKgOihk+OBjOWIqeeUqOWPr+iDveOBp+OBguOCi+OBn+OCgeOBp+OBmeOAgua2iOiyu+iAheOA
-geS8gealreOAgemHkeiejeapn+mWouOBq+OAguaUv+W6nOOBjOePvumHkeOChOWwj+WIh+aJi+OB
-ruS7o+OCj+OCiuOBq+ODh+OCuOOCv+ODq+mAmuiyqOOCkuS9v+eUqOOBp+OBjeOCi+OCiOOBhuOB
-q+OBl+OBvuOBmeOAgg0KDQpBVE0gVmlzYeOCq+ODvOODieOCkuS9v+eUqOOBl+OBpuaUr+aJleOB
-hOOCkuihjOOBhuOCiOOBhuOBq+aJi+mFjeOBl+OBvuOBl+OBn+OAguOCq+ODvOODieOBr+eZuuih
-jOOBleOCjOOAgeWIqeeUqOWPr+iDveOBquWuhemFjeOCteODvOODk+OCueOCkuS7i+OBl+OBpueb
-tOaOpeS9j+aJgOOBq+mAgeOCieOCjOOBvuOBmeOAguOBlOmAo+e1oeW+jOOAgTEsNTAwLDAwMC4w
-MA0K57Gz44OJ44Or44Gu6YeR6aGN44GMIEFUTSBWaXNhIOOCq+ODvOODieOBq+i7oumAgeOBleOC
-jOOBvuOBmeOAguOBk+OCjOOBq+OCiOOCiuOAgeOBiuS9j+OBvuOBhOOBruWbveOBriBBVE0g44GL
-44KJIDEg5pel44GC44Gf44KK5bCR44Gq44GP44Go44KCIDEwLDAwMA0K57Gz44OJ44Or44KS5byV
-44GN5Ye644GZ44GT44Go44Gn44CB44GK6YeR44KS5byV44GN5Ye644GZ44GT44Go44GM44Gn44GN
-44G+44GZ44CC44GU6KaB5pyb44Gr5b+c44GY44Gm44CBMSDml6XjgYLjgZ/jgoogMjAsMDAwLjAw
-DQrjg4njg6vjgb7jgafkuIrpmZDjgpLlvJXjgY3kuIrjgZLjgovjgZPjgajjgYzjgafjgY3jgb7j
-gZnjgILjgZPjgozjgavplqLjgZfjgabjgIHlm73pmpvmlK/miZXjgYrjgojjgbPpgIHph5HlsYDj
-gavpgKPntaHjgZfjgIHopoHmsYLjgZXjgozjgZ/mg4XloLHjgpLmrKHjga7mlrnms5Xjgafmj5Dk
-vpvjgZnjgovlv4XopoHjgYzjgYLjgorjgb7jgZnjgIINCg0KMS7jgYLjgarjgZ/jga7jg5Xjg6vj
-g43jg7zjg6AuLi4uLi4uLi4NCjIu44GC44Gq44Gf44Gu5a6M5YWo44Gq5L2P5omALi4uLi4uLi4N
-CjMuIOWbveexjSAuLi4uLi4uLi4uLi4uLi4uLg0KNC7nlJ/lubTmnIjml6Xjg7vmgKfliKXigKbi
-gKbigKbigKYNCjUu5bCC6ZaA5oCnLi4uLi4uLi4NCjYuIOmbu+ipseeVquWPtyAuLi4uLi4uLi4u
-DQo3LiDlvqHnpL7jga7jg6Hjg7zjg6vjgqLjg4njg6zjgrnigKbigKYNCjgu5YCL5Lq644Gu44Oh
-44O844Or44Ki44OJ44Os44K54oCm4oCmDQoNCg0K44GT44Gu44Kz44O844OJICjjg6rjg7Pjgq86
-IENMSUVOVC05NjYvMTYpIOOCkuitmOWIpeOBmeOCi+OBq+OBr+OAgembu+WtkOODoeODvOODq+OB
-ruS7tuWQjeOBqOOBl+OBpuS9v+eUqOOBl+OAgeS4iuiomOOBruaDheWgseOCkuasoeOBruW+k+al
-reWToeOBq+aPkOS+m+OBl+OBpiBBVE0NClZpc2Eg44Kr44O844OJ44Gu55m66KGM44Go6YWN6YCB
-44KS5L6d6aC844GX44Gm44GP44Gg44GV44GE44CCDQoNCumKgOihjOaLheW9k+iAheOBjOOBk+OB
-ruaUr+aJleOBhOOCkui/vei3oeOBl+OAgeODoeODg+OCu+ODvOOCuOOCkuS6pOaPm+OBl+OBpuOA
-geizh+mHkeOBruOBleOCieOBquOCi+mBheW7tuOChOiqpOOBo+OBn+aWueWQkeS7mOOBkeOCkumY
-suOBkOOBk+OBqOOBjOOBp+OBjeOCi+OCiOOBhuOBq+OAgeaWsOOBl+OBhOeVquWPt+OBp+WAi+S6
-uuOBrumbu+WtkOODoeODvOODqw0K44Ki44OJ44Os44K544KS6ZaL44GP44GT44Go44KS44GK5Yun
-44KB44GX44G+44GZ44CC5Lul5LiL44Gu6YCj57Wh5YWI5oOF5aCx44KS5L2/55So44GX44Gm44CB
-44Om44OK44Kk44OG44OD44OJIOODkOODs+OCryDjgqrjg5Yg44Ki44OV44Oq44Kr44Gu44Ko44O8
-44K444Kn44Oz44OI44Gr5LuK44GZ44GQ44GU6YCj57Wh44GP44Gg44GV44GE44CCDQoNCumAo+e1
-oeeqk+WPo++8muODiOODi+ODvOODu+OCqOODq+ODoeODq+awjw0K6KOc5YSf6YeR6YCB6YeR6YOo
-IFVuaXRlZCBCYW5rIG9mIEFmcmljYSDpgKPntaHlhYjjg6Hjg7zjg6vjgqLjg4njg6zjgrk6ICwo
-bXJ0b255ZWx1bWVsdTk4QGdtYWlsLmNvbSkNCg0K44GT44KM5Lul5LiK44Gu6YGF44KM44KS6YG/
-44GR44KL44Gf44KB44Gr44CB44GT44Gu44Oh44O844Or44G444Gu6L+F6YCf44Gq5a++5b+c44GM
-5b+F6KaB44Gn44GZ44CCDQoNCuaVrOWFtw0K44Kv44Oq44K544K/44Oq44O844OK44O744Ky44Kq
-44Or44Ku44Ko44OQ5aSr5Lq6DQo=
+On Fri, Aug 5, 2022 at 2:33 PM Song Liu <song@kernel.org> wrote:
+>
+> On Fri, Aug 5, 2022 at 1:58 PM Joe Lawrence <joe.lawrence@redhat.com> wro=
+te:
+> >
+> > On Mon, Aug 01, 2022 at 02:21:29PM -0700, Song Liu wrote:
+> > > From: Miroslav Benes <mbenes@suse.cz>
+> > >
+> > > Josh reported a bug:
+> > >
+> > >   When the object to be patched is a module, and that module is
+> > >   rmmod'ed and reloaded, it fails to load with:
+> > >
+> > >   module: x86/modules: Skipping invalid relocation target, existing v=
+alue is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module '=
+nfsd' (-8)
+> > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusin=
+g to load module 'nfsd'
+> > >
+> > >   The livepatch module has a relocation which references a symbol
+> > >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> > >   tries to replace the old relocation with a new one, it sees that
+> > >   the previous one is nonzero and it errors out.
+> > >
+> > >   On ppc64le, we have a similar issue:
+> > >
+> > >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at=
+ e_show+0x60/0x548 [livepatch_nfsd]
+> > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module '=
+nfsd' (-8)
+> > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusin=
+g to load module 'nfsd'
+> > >
+> > > He also proposed three different solutions. We could remove the error
+> > > check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> > > ("x86/module: Detect and skip invalid relocations"). However the chec=
+k
+> > > is useful for detecting corrupted modules.
+> > >
+> > > We could also deny the patched modules to be removed. If it proved to=
+ be
+> > > a major drawback for users, we could still implement a different
+> > > approach. The solution would also complicate the existing code a lot.
+> > >
+> > > We thus decided to reverse the relocation patching (clear all relocat=
+ion
+> > > targets on x86_64). The solution is not
+> > > universal and is too much arch-specific, but it may prove to be simpl=
+er
+> > > in the end.
+> > >
+> > > Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> > > Signed-off-by: Song Liu <song@kernel.org>
+> > >
+> > > ---
+> > >
+> > > NOTE: powerpc code has not be tested.
+> > >
+> >
+> > Hi Song,
+> >
+> > I just want to provide a quick check in on this patch...
+> >
+> > First -- what tree / commit should this be based on?  When I add this
+> > patch on top of a v5.19 based tree, I see:
+> >
+> > arch/powerpc/kernel/module_64.c: In function =E2=80=98clear_relocate_ad=
+d=E2=80=99:
+> > arch/powerpc/kernel/module_64.c:781:52: error: incompatible type for ar=
+gument 1 of =E2=80=98instr_is_relative_link_branch=E2=80=99
+> >   781 |                 if (!instr_is_relative_link_branch(*instruction=
+))
+> >       |                                                    ^~~~~~~~~~~~
+> >       |                                                    |
+> >       |                                                    u32 {aka uns=
+igned int}
+> > In file included from arch/powerpc/kernel/module_64.c:20:
+> > ./arch/powerpc/include/asm/code-patching.h:122:46: note: expected =E2=
+=80=98ppc_inst_t=E2=80=99 but argument is of type =E2=80=98u32=E2=80=99 {ak=
+a =E2=80=98unsigned int=E2=80=99}
+> >   122 | int instr_is_relative_link_branch(ppc_inst_t instr);
+> >       |                                   ~~~~~~~~~~~^~~~~
+> > arch/powerpc/kernel/module_64.c:785:32: error: =E2=80=98PPC_INST_NOP=E2=
+=80=99 undeclared (first use in this function); did you mean =E2=80=98PPC_I=
+NST_COPY=E2=80=99?
+> >   785 |                 *instruction =3D PPC_INST_NOP;
+> >       |                                ^~~~~~~~~~~~
+> >       |                                PPC_INST_COPY
+> > arch/powerpc/kernel/module_64.c:785:32: note: each undeclared identifie=
+r is reported only once for each function it appears in
+> > make[2]: *** [scripts/Makefile.build:249: arch/powerpc/kernel/module_64=
+.o] Error 1
+> > make[1]: *** [scripts/Makefile.build:466: arch/powerpc/kernel] Error 2
+> > make: *** [Makefile:1849: arch/powerpc] Error 2
+> >
+
+The following should make it build on powerpc64
+
+Shall I send it as v5? (I haven't tested powerpc64 other than cross compile=
+).
+
+Thanks,
+Song
+
+diff --git i/arch/powerpc/kernel/module_64.c w/arch/powerpc/kernel/module_6=
+4.c
+index 1834dffc6795..6aaf5720070d 100644
+--- i/arch/powerpc/kernel/module_64.c
++++ w/arch/powerpc/kernel/module_64.c
+@@ -778,11 +778,11 @@ void clear_relocate_add(Elf64_Shdr *sechdrs,
+                if (is_mprofile_ftrace_call(symname))
+                        continue;
+
+-               if (!instr_is_relative_link_branch(*instruction))
++               if (!instr_is_relative_link_branch(ppc_inst(*instruction)))
+                        continue;
+
+                instruction +=3D 1;
+-               *instruction =3D PPC_INST_NOP;
++               *instruction =3D PPC_RAW_NOP();
+        }
+
+ }
+
+>
+> I am sorry that I didn't build the PPC code. (I did fix some code, but
+> I guess that's
+> not enough. ) I was hoping kernel test bot to run build tests on the
+> patch, but I
+> guess the bot is not following live-patching mail list?
+>
+> The code was based Linus' tree, probably 5.19-rc7.
+>
+> >
+> > Second, I rebased the klp-convert-tree on top of v5.19 here:
+> > https://github.com/joe-lawrence/klp-convert-tree/tree/klp-convert-v7-de=
+vel
+> >
+> > and I can confirm that at least the x86_64 livepatching selftests
+> > (including the klp-relocation tests added by this tree) do pass.  I
+> > haven't had a chance to try writing new tests to verify this specific
+> > patch, but I'll take a look next week.
+>
+> I also got the selftests pass for another patch. Checking dmesg is
+> a little tricky, btw. I will take a look at klp-convert.
+>
+> Thanks,
+> Song
