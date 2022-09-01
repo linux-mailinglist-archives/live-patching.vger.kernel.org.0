@@ -2,68 +2,51 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D13495A8B2A
-	for <lists+live-patching@lfdr.de>; Thu,  1 Sep 2022 04:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABE3C5A8B6B
+	for <lists+live-patching@lfdr.de>; Thu,  1 Sep 2022 04:28:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232286AbiIACFO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 31 Aug 2022 22:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        id S232538AbiIAC1i (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 31 Aug 2022 22:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232789AbiIACFM (ORCPT
+        with ESMTP id S229706AbiIAC1h (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 31 Aug 2022 22:05:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E9F1EAC2
-        for <live-patching@vger.kernel.org>; Wed, 31 Aug 2022 19:05:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661997909;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9LKozqYIo84oic3xLC1Bs+/dle6Aj4LlgDEmJDQ1gts=;
-        b=i5fBcCsY+BW2U/FDMHrtowca1NxEwwpah1A6asvBJUgRGwlqSelN5rUEumYwLn8j7bd2E1
-        sc8tLjQOZYEO87UjhriPgivILvA45yXNr/oLaxK+fDu9FUVRp4800dL+edem0d9gqFdWn5
-        OnBjAsGlj/DMOdjG8V3J38ukeWngCgI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-467-nmiMVpgIMAWq3p_YgCt9jQ-1; Wed, 31 Aug 2022 22:05:06 -0400
-X-MC-Unique: nmiMVpgIMAWq3p_YgCt9jQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4DC3E29AB44C;
-        Thu,  1 Sep 2022 02:05:05 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.32.220])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 84DDD2026D4C;
-        Thu,  1 Sep 2022 02:05:04 +0000 (UTC)
-Date:   Wed, 31 Aug 2022 22:05:03 -0400
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Song Liu <song@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        live-patching@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Wed, 31 Aug 2022 22:27:37 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AB2136B04;
+        Wed, 31 Aug 2022 19:27:36 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MJ4dH3lQnznTVF;
+        Thu,  1 Sep 2022 10:25:07 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 10:27:34 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 10:27:34 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>, X86 ML <x86@kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH v5] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <YxATT0lpgVndnc0z@redhat.com>
-References: <20220830185313.76402-1-song@kernel.org>
- <Yw+4xxiONngOTqin@redhat.com>
- <875yi8uju3.fsf@mpe.ellerman.id.au>
- <CAPhsuW7aZwXyuZAv23xDXsxCJc0mJNms+HegqkZqukVqT0cfZA@mail.gmail.com>
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH] livepatch: Move error print out of lock protection in klp_enable_patch()
+Date:   Thu, 1 Sep 2022 10:27:06 +0800
+Message-ID: <20220901022706.813-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW7aZwXyuZAv23xDXsxCJc0mJNms+HegqkZqukVqT0cfZA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,239 +54,38 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 03:48:26PM -0700, Song Liu wrote:
-> On Wed, Aug 31, 2022 at 3:30 PM Michael Ellerman <mpe@ellerman.id.au> wrote:
-> >
-> > Joe Lawrence <joe.lawrence@redhat.com> writes:
-> > > On Tue, Aug 30, 2022 at 11:53:13AM -0700, Song Liu wrote:
-> > >> From: Miroslav Benes <mbenes@suse.cz>
-> > >>
-> > >> Josh reported a bug:
-> > >>
-> > >>   When the object to be patched is a module, and that module is
-> > >>   rmmod'ed and reloaded, it fails to load with:
-> > >>
-> > >>   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
-> > >>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> > >>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > >>
-> > >>   The livepatch module has a relocation which references a symbol
-> > >>   in the _previous_ loading of nfsd. When apply_relocate_add()
-> > >>   tries to replace the old relocation with a new one, it sees that
-> > >>   the previous one is nonzero and it errors out.
-> > >>
-> > >>   On ppc64le, we have a similar issue:
-> > >>
-> > >>   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
-> > >>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
-> > >>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> > ...
-> > >>
-> > >
-> > > Hi Song,
-> > >
-> > > Applying your patch on top of my latest klp-convert-tree branch [1], I
-> > > modified a few of its late module patching tests
-> > > (tools/testing/selftests/livepatch/test-song.sh) such that:
-> > >
-> > >  1 - A livepatch module is loaded
-> > >    - this module contains klp-relocations to objects in (2)
-> > >  2 - A target test module is loaded
-> > >  3 - Unload the test target module
-> > >    - Clear klp-relocations in (1)
-> > >  4 - Repeat target module load (2) / unload (3) a few times
-> > >  5 - Unload livepatch module
-> >
-> > If you push that test code somewhere I could test it on ppc64le.
-> >
-> > > The results:
-> > >
-> > >  x86_64  : pass
-> > >  s390x   : pass
-> > >  ppc64le : crash
-> > >
-> > > I suspect Power 32-bit would suffer the same fate, but I don't have
-> > > hardware to verify.  See the kernel log from the crash below...
-> > >
-> > >
-> > > ===== TEST: klp-convert symbols (late module patching) =====
-> > > % modprobe test_klp_convert1
-> > > test_klp_convert1: tainting kernel with TAINT_LIVEPATCH
-> > > livepatch: enabling patch 'test_klp_convert1'
-> > > livepatch: 'test_klp_convert1': starting patching transition
-> > > livepatch: 'test_klp_convert1': patching complete
-> > > % modprobe test_klp_convert_mod
-> > > livepatch: applying patch 'test_klp_convert1' to loading module 'test_klp_convert_mod'
-> > > test_klp_convert1: saved_command_line, 0: BOOT_IMAGE=(ieee1275//vdevice/v-scsi@30000003/disk@8100000000000000,msdos2)/vmlinuz-5.19.0+ root=/dev/mapper/rhel_ibm--p9z--18--lp7-root ro crashkernel=2G-4G:384M,4G-16G:512M,16G-64G:1G,64G-128G:2G,128G-:4G rd.lvm.lv=rhel_ibm-p9z-18-lp7/root rd.lvm.lv=rhel_ibm-p9z-18-lp7/swap
-> > > test_klp_convert1: driver_name, 0: test_klp_convert_mod
-> > > test_klp_convert1: test_klp_get_driver_name(), 0: test_klp_convert_mod
-> > > test_klp_convert1: homonym_string, 1: homonym string A
-> > > test_klp_convert1: get_homonym_string(), 1: homonym string A
-> > > test_klp_convert1: klp_string.12345 = lib/livepatch/test_klp_convert_mod_a.c static string
-> > > test_klp_convert1: klp_string.67890 = lib/livepatch/test_klp_convert_mod_b.c static string
-> > > % rmmod test_klp_convert_mod
-> > > livepatch: reverting patch 'test_klp_convert1' on unloading module 'test_klp_convert_mod'
-> > > module_64: Clearing ADD relocate section 48 to 6
-> > > BUG: Unable to handle kernel data access on write at 0xc008000002140150
-> > > Faulting instruction address: 0xc00000000005659c
-> > > Oops: Kernel access of bad area, sig: 11 [#1]
-> > > LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
-> > > Modules linked in: test_klp_convert_mod(-) test_klp_convert1(K) bonding tls rfkill pseries_rng drm fuse drm_panel_orientation_quirks xfs libcrc32c sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp vmx_crypto dm_mirror dm_region_hash dm_log dm_mod
-> > > CPU: 6 PID: 4766 Comm: rmmod Kdump: loaded Tainted: G              K   5.19.0+ #1
-> > > NIP:  c00000000005659c LR: c000000000056590 CTR: 0000000000000024
-> > > REGS: c000000007223840 TRAP: 0300   Tainted: G              K    (5.19.0+)
-> > > MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 48008282  XER: 0000000a
-> > > CFAR: c0000000000a87e0 DAR: c008000002140150 DSISR: 0a000000 IRQMASK: 0
-> >
-> > This is saying you don't have permissions to write at that address.
-> >
-> > > GPR00: c000000000056568 c000000007223ae0 c000000002a68a00 0000000000000001
-> > > GPR04: c0080000021706f0 000000000000002d 0000000000000000 0000000000000000
-> > > GPR08: 0000000000000066 0000001200000010 0000000000000000 0000000000008000
-> > > GPR12: 0000000000000000 c00000000ffca080 0000000000000000 0000000000000000
-> > > GPR16: 0000010005bf1810 000000010c0f7370 c0000000011b7e50 c0000000011b7e68
-> > > GPR20: c0080000021501c8 c008000002150228 0000000000000030 0000000060000000
-> > > GPR24: c008000002160380 c000000056b43000 000000000000ff20 c000000056b43c00
-> > > GPR28: aaaaaaaaaaaaaaab c000000056b43b40 0000000000000000 c00800000214014c
-> > > NIP [c00000000005659c] clear_relocate_add+0x11c/0x1c0
-> > > LR [c000000000056590] clear_relocate_add+0x110/0x1c0
-> > > Call Trace:
-> > > [c000000007223ae0] [ffffffffffffffff] 0xffffffffffffffff (unreliable)
-> > > [c000000007223ba0] [c00000000021e3a8] klp_cleanup_module_patches_limited+0x448/0x480
-> > > [c000000007223cb0] [c000000000220278] klp_module_going+0x68/0x94
-> > > [c000000007223ce0] [c00000000022f480] __do_sys_delete_module.constprop.0+0x1d0/0x390
-> > > [c000000007223db0] [c00000000002f004] system_call_exception+0x164/0x340
-> > > [c000000007223e10] [c00000000000be68] system_call_vectored_common+0xe8/0x278
-> > > --- interrupt: 3000 at 0x7fffa178fb6c
-> > > NIP:  00007fffa178fb6c LR: 0000000000000000 CTR: 0000000000000000
-> > > REGS: c000000007223e80 TRAP: 3000   Tainted: G              K    (5.19.0+)
-> > > MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 48002482  XER: 00000000
-> > > IRQMASK: 0
-> > > GPR00: 0000000000000081 00007ffff2d1b720 00007fffa1887200 0000010005bf1878
-> > > GPR04: 0000000000000800 000000000000000a 0000000000000000 00000000000000da
-> > > GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> > > GPR12: 0000000000000000 00007fffa201c540 0000000000000000 0000000000000000
-> > > GPR16: 0000010005bf1810 000000010c0f7370 000000010c0f8090 000000010c0f8078
-> > > GPR20: 000000010c0f8050 000000010c0f80a8 000000010c0f7518 000000010c0f80d0
-> > > GPR24: 00007ffff2d1b830 00007ffff2d1efbb 0000000000000000 0000010005bf02a0
-> > > GPR28: 00007ffff2d1be50 0000000000000000 0000010005bf1810 0000000000100000
-> > > NIP [00007fffa178fb6c] 0x7fffa178fb6c
-> > > LR [0000000000000000] 0x0
-> > > --- interrupt: 3000
-> > > Instruction dump:
-> > > 40820044 813b002c 7ff5f82a 79293664 7d394a14 e9290010 7c69f82e 7fe9fa14
-> > > 48052235 60000000 2c030000 41820008 <92ff0004> eadb0020 60000000 60000000
-> > > ---[ end trace 0000000000000000 ]---
-> > >
-> > > $ addr2line 0xc00000000005659c -e vmlinux
-> > > /root/klp-convert-tree/arch/powerpc/kernel/module_64.c:785
-> > >
-> > > 743 void clear_relocate_add(Elf64_Shdr *sechdrs,
-> > > 744                        const char *strtab,
-> > > 745                        unsigned int symindex,
-> > > 746                        unsigned int relsec,
-> > > 747                        struct module *me)
-> > > 748 {
-> > > ...
-> > > 759         for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rela); i++) {
-> > > ...
-> > > 785                 *instruction = PPC_RAW_NOP();
-> > > 786         }
-> >
-> > Has the module text been marked RW prior to this? I suspect not?
-> >
-> > In which case you need to use patch_instruction() here.
-> >
-> > cheers
-> 
-> Thanks folks!
-> 
-> I guess something like this would fix compile for ppc32 and fix crash for ppc64.
-> 
-> I also pushed it to
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/song/linux.git/log/?h=klp-module-reload
-> 
-> This includes Joe's klp-convert patches and this patch.
-> 
-> Thanks!
-> Song
-> 
-> 
-> 
-> diff --git a/arch/powerpc/kernel/module_32.c b/arch/powerpc/kernel/module_32.c
-> index ea6536171778..e3c312770453 100644
-> --- a/arch/powerpc/kernel/module_32.c
-> +++ b/arch/powerpc/kernel/module_32.c
-> @@ -285,6 +285,16 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
->         return 0;
->  }
-> 
-> +#ifdef CONFIG_LIVEPATCH
-> +void clear_relocate_add(Elf32_Shdr *sechdrs,
-> +                  const char *strtab,
-> +                  unsigned int symindex,
-> +                  unsigned int relsec,
-> +                  struct module *me)
-> +{
-> +}
-> +#endif
-> +
->  #ifdef CONFIG_DYNAMIC_FTRACE
->  notrace int module_trampoline_target(struct module *mod, unsigned long addr,
->                                      unsigned long *target)
-> diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
-> index 6aaf5720070d..4d55f0e52704 100644
-> --- a/arch/powerpc/kernel/module_64.c
-> +++ b/arch/powerpc/kernel/module_64.c
-> @@ -782,7 +782,7 @@ void clear_relocate_add(Elf64_Shdr *sechdrs,
->                         continue;
-> 
->                 instruction += 1;
-> -               *instruction = PPC_RAW_NOP();
-> +               patch_instruction(instruction, PPC_RAW_NOP());
+The patch->mod is not a protected object of mutex_lock(&klp_mutex). Since
+it's in the error handling branch, it might not be helpful to reduce lock
+conflicts, but it can reduce some code size.
 
-Close.  I believe PPC_RAW_NOP() needs to be passed to ppc_inst() like:
+Before:
+   text    data     bss     dec     hex filename
+  10330     464       8   10802    2a32 kernel/livepatch/core.o
 
-diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
-index 4d55f0e52..514951f97 100644
---- a/arch/powerpc/kernel/module_64.c
-+++ b/arch/powerpc/kernel/module_64.c
-@@ -782,7 +782,7 @@ void clear_relocate_add(Elf64_Shdr *sechdrs,
- 			continue;
+After:
+   text    data     bss     dec     hex filename
+  10307     464       8   10779    2a1b kernel/livepatch/core.o
+
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ kernel/livepatch/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 42f7e716d56bf72..cb7abc821a50584 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -1041,9 +1041,9 @@ int klp_enable_patch(struct klp_patch *patch)
+ 	mutex_lock(&klp_mutex);
  
- 		instruction += 1;
--		patch_instruction(instruction, PPC_RAW_NOP());
-+		patch_instruction(instruction, ppc_inst(PPC_RAW_NOP()));
+ 	if (!klp_is_patch_compatible(patch)) {
++		mutex_unlock(&klp_mutex);
+ 		pr_err("Livepatch patch (%s) is not compatible with the already installed livepatches.\n",
+ 			patch->mod->name);
+-		mutex_unlock(&klp_mutex);
+ 		return -EINVAL;
  	}
  
- }
-
-And with that tweak, new result:
-
- ppc64le : pass
-
-Tested-by: Joe Lawrence <joe.lawrence@redhat.com> # x86_64, s390x, ppc64le
-
-Thanks guys,
-
--- Joe
-
->         }
-> 
->  }
-> diff --git a/include/linux/moduleloader.h b/include/linux/moduleloader.h
-> index d22b36b84b4b..958e6da7f475 100644
-> --- a/include/linux/moduleloader.h
-> +++ b/include/linux/moduleloader.h
-> @@ -73,7 +73,7 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
->                        unsigned int relsec,
->                        struct module *mod);
->  #ifdef CONFIG_LIVEPATCH
-> -void clear_relocate_add(Elf64_Shdr *sechdrs,
-> +void clear_relocate_add(Elf_Shdr *sechdrs,
->                    const char *strtab,
->                    unsigned int symindex,
->                    unsigned int relsec,
-> 
+-- 
+2.25.1
 
