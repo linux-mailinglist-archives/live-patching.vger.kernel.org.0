@@ -2,171 +2,158 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B7D5A9712
-	for <lists+live-patching@lfdr.de>; Thu,  1 Sep 2022 14:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8B775A98BE
+	for <lists+live-patching@lfdr.de>; Thu,  1 Sep 2022 15:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233108AbiIAMmi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 1 Sep 2022 08:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
+        id S234382AbiIAN0K (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 1 Sep 2022 09:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233087AbiIAMmh (ORCPT
+        with ESMTP id S234329AbiIANYd (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 1 Sep 2022 08:42:37 -0400
+        Thu, 1 Sep 2022 09:24:33 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3180F11C13
-        for <live-patching@vger.kernel.org>; Thu,  1 Sep 2022 05:42:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DED2CDF0
+        for <live-patching@vger.kernel.org>; Thu,  1 Sep 2022 06:24:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662036155;
+        s=mimecast20190719; t=1662038652;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oB0yOMjNHR7bzvopXfI0uoDdxW9Xzf1HMM5Tkq/E2+Q=;
-        b=WbqjEjmIrEa2YG3QR4QrjMynz7dy8WATp6QHCaTrMaoxYGpk1k4z1T5+Yk9WUYGKIBRuvs
-        9QFUPq+9OJqIc2GikuPnByx0FPs3lD3jnydtiUFC0Gdf1UNg8VfNAcjRuU9yvzIGEIysAS
-        lr1abbLpuQy5ZJ6qBCRLECwzQuoTD8I=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-350-us8Ddf-bP0O01B5BWQ25yg-1; Thu, 01 Sep 2022 08:42:32 -0400
-X-MC-Unique: us8Ddf-bP0O01B5BWQ25yg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7AAD32932489;
-        Thu,  1 Sep 2022 12:42:31 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.32.220])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B39901415125;
-        Thu,  1 Sep 2022 12:42:30 +0000 (UTC)
-Date:   Thu, 1 Sep 2022 08:42:29 -0400
+        bh=GtRrZhfcr+HBskb37rMCSyo0Md1DArbhaGxGxxH8GQE=;
+        b=LqC5neSf9E4p3PG2JbJRVftcvU/yqXlJeGnun0nf1SCIDyTL9C++ok+eSq3WvnxTBxFInY
+        xjB/pNd2IPI1+OvOd/H+zUIwQIp24FDdyvpo6dfxuTd+MYZqCsxXEHZ4tVXBb7/xN9oqIb
+        YV9Epjpu8bcdKkEMHmzAVNsC8ets2vY=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-342-GgiD-gLeO8i1EvpW0DZ-TQ-1; Thu, 01 Sep 2022 09:24:11 -0400
+X-MC-Unique: GgiD-gLeO8i1EvpW0DZ-TQ-1
+Received: by mail-qk1-f200.google.com with SMTP id f1-20020a05620a280100b006bc4966f463so14205812qkp.4
+        for <live-patching@vger.kernel.org>; Thu, 01 Sep 2022 06:24:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:subject:cc:from:references:to
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=GtRrZhfcr+HBskb37rMCSyo0Md1DArbhaGxGxxH8GQE=;
+        b=Jj5fRuYCCspSbSxU5gH3GN8yNhByVaWIx+IsOozivypO8VBkeNodOGa4zFriRZj1VB
+         C4AS8vCF1j/DxNdHr3EbfK7gNG/XGu2NlEMczNGoWn0S8YBZksgEhIr72YcsXn0j/pMZ
+         ZGiwS5gi0K9cA7sag5gTnB1SBc3TeqrOZb5GFdHhzNPbfyyA4jrHu06bX11UEPZXVYxU
+         IHqsMJXyzLmIw2gj11PPKo5SKJ9iO+T4zqdpY8Zb+vlrqdJCmhfjWzjvfQXBkQZrSqTz
+         RO4E/jdJp5tKH3zgB/xnNCE77NKOFArbx1qxGrug/x7ybOMFTAViFS9TFRKfUfbFy+uZ
+         osFA==
+X-Gm-Message-State: ACgBeo3YDkU2H1om6NoP9aWJX0kpk+0V2fEnNy7RR91fx3sYcIM7U0+n
+        v24HZmGOoLXPCHPI16KXm3gBmNQelBxfXJ4wlVIrS55wYrg0okOU++QAgHHGqs1nSUy7IBj18hV
+        EUiDYZ2d2IpSUtR5CF2EIifbwNfXfGKhvq0mo4uCZRM3UhmKr3ymhXDLKrBpxjJi5gKuCAzNvpN
+        jvH+E3QnY=
+X-Received: by 2002:a05:6214:5091:b0:496:dad0:6361 with SMTP id kk17-20020a056214509100b00496dad06361mr23925870qvb.81.1662038650300;
+        Thu, 01 Sep 2022 06:24:10 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4qoveEwai/Y3kskQEd+SFMIH7fGAf1B2jYVOWFiPGDe4ghdoizdDD4y7znxlpDIOI8OXv/Dw==
+X-Received: by 2002:a05:6214:5091:b0:496:dad0:6361 with SMTP id kk17-20020a056214509100b00496dad06361mr23925835qvb.81.1662038649901;
+        Thu, 01 Sep 2022 06:24:09 -0700 (PDT)
+Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
+        by smtp.gmail.com with ESMTPSA id m27-20020a05620a13bb00b006bbf85cad0fsm11311431qki.20.2022.09.01.06.24.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 06:24:09 -0700 (PDT)
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+References: <20220901022706.813-1-thunder.leizhen@huawei.com>
 From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Song Liu <song@kernel.org>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jpoimboe@kernel.org,
-        jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, x86@kernel.org,
-        linuxppc-dev@lists.ozlabs.org, Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH v5] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <YxCotV69C14hntYh@redhat.com>
-References: <20220830185313.76402-1-song@kernel.org>
- <Yw+4xxiONngOTqin@redhat.com>
- <875yi8uju3.fsf@mpe.ellerman.id.au>
- <YxAc87dTmclHGCUy@redhat.com>
- <8735dbvk4p.fsf@mpe.ellerman.id.au>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Move error print out of lock protection in
+ klp_enable_patch()
+Message-ID: <65fe1978-60da-5bd4-9559-fddec13f03bf@redhat.com>
+Date:   Thu, 1 Sep 2022 09:24:07 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8735dbvk4p.fsf@mpe.ellerman.id.au>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+In-Reply-To: <20220901022706.813-1-thunder.leizhen@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 01:39:02PM +1000, Michael Ellerman wrote:
-> Joe Lawrence <joe.lawrence@redhat.com> writes:
-> > On Thu, Sep 01, 2022 at 08:30:44AM +1000, Michael Ellerman wrote:
-> >> Joe Lawrence <joe.lawrence@redhat.com> writes:
-> ...
-> >
-> > Hi Michael,
-> >
-> > While we're on the topic of klp-relocations and Power, I saw a similar
-> > access problem when writing (late) relocations into
-> > .data..ro_after_init.  I'm not entirely convinced this should be allowed
-> > (ie, is it really read-only after .init or ???), but it seems that other
-> > arches currently allow it ...
+On 8/31/22 10:27 PM, Zhen Lei wrote:
+> The patch->mod is not a protected object of mutex_lock(&klp_mutex). Since
+> it's in the error handling branch, it might not be helpful to reduce lock
+> conflicts, but it can reduce some code size.
 > 
-> I guess that's because we didn't properly fix apply_relocate_add() in
-> https://github.com/linuxppc/issues/issues/375 ?
+> Before:
+>    text    data     bss     dec     hex filename
+>   10330     464       8   10802    2a32 kernel/livepatch/core.o
 > 
-> If other arches allow it then we don't want to be the odd one out :)
-> 
-> So I guess we need to implement it.
+> After:
+>    text    data     bss     dec     hex filename
+>   10307     464       8   10779    2a1b kernel/livepatch/core.o
 > 
 
-FWIW, I think it this particular relocation is pretty rare, we haven't
-seen it in real patches nor do we have a kpatch test that generates it.
-I only hit a crash as I was trying to write a more exhaustive test for
-the klp-convert implementation.
+Is a size change expected, or is it just compiler fall out from
+shuffling the code around a little bit?
 
-> > ===== TEST: klp-convert data relocations (late module patching) =====
-> > % modprobe test_klp_convert_data
-> > livepatch: enabling patch 'test_klp_convert_data'
-> > livepatch: 'test_klp_convert_data': starting patching transition
-> > livepatch: 'test_klp_convert_data': patching complete
-> > % modprobe test_klp_convert_mod
-> > ...
-> > module_64: Applying ADD relocate section 54 to 20
-> > module_64: RELOC at 000000008482d02a: 38-type as .klp.sym.test_klp_convert_mod.static_ro_after_init,0 (0xc0080000016d0084) + 0
-> > BUG: Unable to handle kernel data access on write at 0xc0080000021d0000
-> > Faulting instruction address: 0xc000000000055f14
-> > Oops: Kernel access of bad area, sig: 11 [#1]
-> > LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
-> > Modules linked in: test_klp_convert_mod(+) test_klp_convert_data(K) bonding rfkill tls pseries_rng drm fuse drm_panel_orientation_quirks xfs libcrc32c sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp vmx_crypto dm_mirror dm_region_hash dm_log dm_mod [last unloaded: test_klp_convert_mod]
-> > CPU: 0 PID: 17089 Comm: modprobe Kdump: loaded Tainted: G              K   5.19.0+ #1
-> > NIP:  c000000000055f14 LR: c00000000021ef28 CTR: c000000000055f14
-> > REGS: c0000000387af5a0 TRAP: 0300   Tainted: G              K    (5.19.0+)
-> > MSR:  8000000002009033 <SF,VEC,EE,ME,IR,DR,RI,LE>  CR: 88228444  XER: 00000000
-> > CFAR: c000000000055e04 DAR: c0080000021d0000 DSISR: 42000000 IRQMASK: 0
-> > GPR00: c00000000021ef28 c0000000387af840 c000000002a68a00 c0000000088b3000
-> > GPR04: c008000002230084 0000000000000026 0000000000000036 c0080000021e0480
-> > GPR08: 000000007c426214 c000000000055f14 c000000000055e08 0000000000000d80
-> > GPR12: c00000000021d9b0 c000000002d90000 c0000000088b3000 c0080000021f0810
-> > GPR16: c0080000021c0638 c0000000088b3d80 00000000ffffffff c000000001181e38
-> > GPR20: c0000000029dc088 c0080000021e0480 c0080000021f0870 aaaaaaaaaaaaaaab
-> > GPR24: c0000000088b3c40 c0080000021d0000 c0080000021f0000 0000000000000000
-> > GPR28: c0080000021d0000 0000000000000000 c0080000021c0638 0000000000000810
-> > NIP [c000000000055f14] apply_relocate_add+0x474/0x9e0
-> > LR [c00000000021ef28] klp_apply_section_relocs+0x208/0x2d0
-> > Call Trace:
-> > [c0000000387af840] [c0000000387af920] 0xc0000000387af920 (unreliable)
-> > [c0000000387af940] [c00000000021ef28] klp_apply_section_relocs+0x208/0x2d0
-> > [c0000000387afa30] [c00000000021f080] klp_init_object_loaded+0x90/0x1e0
-> > [c0000000387afac0] [c0000000002200ac] klp_module_coming+0x3dc/0x5c0
-> > [c0000000387afb70] [c000000000231414] load_module+0xf64/0x13a0
-> > [c0000000387afc90] [c000000000231b8c] __do_sys_finit_module+0xdc/0x180
-> > [c0000000387afdb0] [c00000000002f004] system_call_exception+0x164/0x340
-> > [c0000000387afe10] [c00000000000be68] system_call_vectored_common+0xe8/0x278
-> > --- interrupt: 3000 at 0x7fffb6af4710
-> > NIP:  00007fffb6af4710 LR: 0000000000000000 CTR: 0000000000000000
-> > REGS: c0000000387afe80 TRAP: 3000   Tainted: G              K    (5.19.0+)
-> > MSR:  800000000000f033 <SF,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 48224244  XER: 00000000
-> > IRQMASK: 0
-> > GPR00: 0000000000000161 00007fffe06f5550 00007fffb6bf7200 0000000000000005
-> > GPR04: 0000000105f36ca0 0000000000000000 0000000000000005 0000000000000000
-> > GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> > GPR12: 0000000000000000 00007fffb738c540 0000000000000020 0000000000000000
-> > GPR16: 0000010024d31de0 0000000000000000 0000000105f37d50 0000010024d302f8
-> > GPR20: 0000000000000001 0000000000000908 0000010024d32020 0000010024d319b0
-> > GPR24: 0000000000000000 0000000000000000 0000010024d32040 0000010024d303f0
-> > GPR28: 0000010024d31e00 0000000105f36ca0 0000000000040000 0000010024d319b0
-> > NIP [00007fffb6af4710] 0x7fffb6af4710
-> > LR [0000000000000000] 0x0
-> > --- interrupt: 3000
-> > Instruction dump:
-> > 0000061c 0000061c 0000061c 0000061c 0000061c 0000061c 0000061c 0000061c
-> > 00000288 00000248 60000000 7c992050 <7c9ce92a> 60000000 60000000 e9310020
-> > ---[ end trace 0000000000000000 ]---
-> >
-> > $ readelf --wide --sections lib/livepatch/test_klp_convert_data.ko | grep -e '\[20\]' -e '\[54\]'
-> > [20]  .data..ro_after_init                                 PROGBITS  0000000000000000  001a58  000008  00  WA  0   0   8
-> > [54]  .klp.rela.test_klp_convert_mod..data..ro_after_init  RELA      0000000000000000  0426e8  000018  18  Ao  49  20  8
-> >
-> > I can push a branch up to github if you'd like to try it yourself.
+I see some arches do a little better, some a little worse with gcc-9.3.0
+cross compilers:
+
+Before
+------
+   text    data     bss     dec     hex filename
+   8490     600       8    9098    238a arm64/kernel/livepatch/core.o
+   9424     680       8   10112    2780 s390/kernel/livepatch/core.o
+   9802     228       4   10034    2732 ppc32/kernel/livepatch/core.o
+  13746     456       8   14210    3782 ppc64le/kernel/livepatch/core.o
+  10443     464       8   10915    2aa3 x86_64/kernel/livepatch/core.o
+
+
+After
+-----
+   text    data     bss     dec     hex filename
+   8514     600       8    9122    23a2 arm64/kernel/livepatch/core.o
+   9424     680       8   10112    2780 s390/kernel/livepatch/core.o
+   9818     228       4   10050    2742 ppc32/kernel/livepatch/core.o
+  13762     456       8   14226    3792 ppc64le/kernel/livepatch/core.o
+  10446     464       8   10918    2aa6 x86_64/kernel/livepatch/core.o
+
+In which case, I'd just omit the size savings from the commit msg.
+
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  kernel/livepatch/core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> That would help thanks.
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index 42f7e716d56bf72..cb7abc821a50584 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -1041,9 +1041,9 @@ int klp_enable_patch(struct klp_patch *patch)
+>  	mutex_lock(&klp_mutex);
+>  
+>  	if (!klp_is_patch_compatible(patch)) {
+> +		mutex_unlock(&klp_mutex);
+>  		pr_err("Livepatch patch (%s) is not compatible with the already installed livepatches.\n",
+>  			patch->mod->name);
+> -		mutex_unlock(&klp_mutex);
+>  		return -EINVAL;
+>  	}
+>  
 > 
 
-This branch should do it:
+That said, I don't see anything obviously wrong about the change (we
+don't need to sync our error msgs, right?) so:
 
-https://github.com/joe-lawrence/klp-convert-tree/tree/klp-convert-v7-devel
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-Boot that and then run tools/testing/selftests/livepatch/test-livepatch.sh
-
--- Joe
+-- 
+Joe
 
