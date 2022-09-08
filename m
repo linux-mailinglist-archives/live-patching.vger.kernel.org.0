@@ -2,24 +2,24 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08AF65B1E21
-	for <lists+live-patching@lfdr.de>; Thu,  8 Sep 2022 15:10:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E0785B1E24
+	for <lists+live-patching@lfdr.de>; Thu,  8 Sep 2022 15:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232236AbiIHNKs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 8 Sep 2022 09:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        id S232210AbiIHNKt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 8 Sep 2022 09:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232245AbiIHNKe (ORCPT
+        with ESMTP id S232207AbiIHNKf (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 8 Sep 2022 09:10:34 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB32F5FF69;
-        Thu,  8 Sep 2022 06:10:12 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MNfWx1dTnz14QQB;
-        Thu,  8 Sep 2022 21:06:21 +0800 (CST)
+        Thu, 8 Sep 2022 09:10:35 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1842A65248;
+        Thu,  8 Sep 2022 06:10:13 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MNfYN450QznV70;
+        Thu,  8 Sep 2022 21:07:36 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Thu, 8 Sep 2022 21:10:11 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
@@ -41,9 +41,9 @@ To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         "Luis Chamberlain" <mcgrof@kernel.org>,
         <linux-modules@vger.kernel.org>
 CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 2/7] scripts/kallsyms: rename build_initial_tok_table()
-Date:   Thu, 8 Sep 2022 21:09:31 +0800
-Message-ID: <20220908130936.674-3-thunder.leizhen@huawei.com>
+Subject: [PATCH 3/7] kallsyms: Adjust the types of some local variables
+Date:   Thu, 8 Sep 2022 21:09:32 +0800
+Message-ID: <20220908130936.674-4-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220908130936.674-1-thunder.leizhen@huawei.com>
 References: <20220908130936.674-1-thunder.leizhen@huawei.com>
@@ -63,43 +63,48 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Except for the function build_initial_tok_table(), no token abbreviation
-is used elsewhere.
-
-$ cat scripts/kallsyms.c | grep tok | wc -l
-33
-$ cat scripts/kallsyms.c | grep token | wc -l
-31
-
-Here, it would be clearer to use the full name.
+The type of kallsyms_num_syms is 'unsigned int', adjust the type of
+local variables associated with it for indexing, so that their types
+are consistent.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- scripts/kallsyms.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/kallsyms.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index ab6fe7cd014efd1..678ebe7d4c1cc38 100644
---- a/scripts/kallsyms.c
-+++ b/scripts/kallsyms.c
-@@ -526,7 +526,7 @@ static void forget_symbol(const unsigned char *symbol, int len)
- }
- 
- /* do the initial token count */
--static void build_initial_tok_table(void)
-+static void build_initial_token_table(void)
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index 3e7e2c2ad2f75ef..9dd4774b6c6edf6 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -190,8 +190,7 @@ static bool cleanup_symbol_name(char *s)
+ unsigned long kallsyms_lookup_name(const char *name)
  {
- 	unsigned int i;
+ 	char namebuf[KSYM_NAME_LEN];
+-	unsigned long i;
+-	unsigned int off;
++	unsigned int i, off;
  
-@@ -651,7 +651,7 @@ static void insert_real_symbols_in_table(void)
- 
- static void optimize_token_table(void)
+ 	/* Skip the search for empty string. */
+ 	if (!*name)
+@@ -218,8 +217,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+ 			    void *data)
  {
--	build_initial_tok_table();
-+	build_initial_token_table();
+ 	char namebuf[KSYM_NAME_LEN];
+-	unsigned long i;
+-	unsigned int off;
++	unsigned int i, off;
+ 	int ret;
  
- 	insert_real_symbols_in_table();
+ 	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
+@@ -237,7 +235,7 @@ static unsigned long get_symbol_pos(unsigned long addr,
+ 				    unsigned long *offset)
+ {
+ 	unsigned long symbol_start = 0, symbol_end = 0;
+-	unsigned long i, low, high, mid;
++	unsigned int i, low, high, mid;
  
+ 	/* This kernel should never had been booted. */
+ 	if (!IS_ENABLED(CONFIG_KALLSYMS_BASE_RELATIVE))
 -- 
 2.25.1
 
