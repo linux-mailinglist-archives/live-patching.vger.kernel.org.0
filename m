@@ -2,213 +2,153 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A601C5B3E8A
-	for <lists+live-patching@lfdr.de>; Fri,  9 Sep 2022 20:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FA765B3EA2
+	for <lists+live-patching@lfdr.de>; Fri,  9 Sep 2022 20:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbiIISHR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 9 Sep 2022 14:07:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59516 "EHLO
+        id S229748AbiIISOG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 9 Sep 2022 14:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiIISHK (ORCPT
+        with ESMTP id S231903AbiIISOE (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 9 Sep 2022 14:07:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDD8E2936;
-        Fri,  9 Sep 2022 11:07:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C782E6208E;
-        Fri,  9 Sep 2022 18:07:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB15C433C1;
-        Fri,  9 Sep 2022 18:07:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662746827;
-        bh=pf+MkFLWJgD9sdFlaDtSVC4UtcaGGPaQQ4xQWTkp2YA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=jee/xnQyv2hknTpmqBgcmiaHSiptpKQQlBiFBYY1zADL9dnmjY4hVytWp5t95+lDU
-         lAwMwmmVkmvEVsI4qLbLsLn66jkwrV2hYIFdrYIeHJI8NcC3IESptUt8MkVMgLcLwh
-         xSoBWHzM6p0kKopzlIAoPL/TgLWDilUiDnxERZywDHWm46Tfxwzvvd8u8XPQrg9Lnp
-         IosJRW4W1/gJVo0mGvap/J3U1jbN/n6HPasUykdMP4iPbSkTA2ZpTylTQ213b//sqP
-         hOQXkYEbxCzNpLfA/MtfZEoHmrOPX/r1z1ngaPSIDSJTh/jLqWzN3pBMjxQ077pxTa
-         h0LudLk0O23cw==
-Date:   Fri, 9 Sep 2022 11:07:04 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     linux-toolchains@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Indu Bhagat <indu.bhagat@oracle.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, "Jose E. Marchesi" <jemarch@gnu.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Mark Brown <broonie@kernel.org>
-Subject: [RFC] Objtool toolchain proposal: -fannotate-{jump-table,noreturn}
-Message-ID: <20220909180704.jwwed4zhwvin7uyi@treble>
+        Fri, 9 Sep 2022 14:14:04 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E403E3D50;
+        Fri,  9 Sep 2022 11:14:03 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 289HhM0W037006;
+        Fri, 9 Sep 2022 18:13:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=TMGAj35IXe4Zm5sRpl1s3sEA34Iz+ttSZdHEflkb6FM=;
+ b=m/nYtKLkPisCSi8h5i8EcG6koFE+HFt/w1wnzXJMArORHZByzBZ3l6IMnwRZfiQYcHAE
+ /3WOa/hs5a7GjL7kizhFXmgfXVFsmFmHac/5mpRVFTFH+nEO79gufKipQOtIyDRutBJx
+ Zw0I1BF4Pq1pKbuo0pqVK7UHhDKh7joWgGn8uHlgIUQasgI0GVL5vNQN5tZuz2CHg39Y
+ BXKC6YicZMDZoaJSZP9Ibxt6aIR5nSRoZziJMUpF7KyyH9f7in7v3TsIYVnJQC/azzkP
+ cr8OhVjDnfhbRI3tJI9ZVYE9Zon0P02TqCcwUababMzBlM06wqunb4vD7iAaCs+yvQOo gw== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jga4kruj5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 09 Sep 2022 18:13:46 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 289I5Pas013244;
+        Fri, 9 Sep 2022 18:13:44 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03fra.de.ibm.com with ESMTP id 3jbxj8x5q0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 09 Sep 2022 18:13:44 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 289IA7JL33620472
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 9 Sep 2022 18:10:07 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 681FF5204F;
+        Fri,  9 Sep 2022 18:13:42 +0000 (GMT)
+Received: from localhost (unknown [9.43.41.127])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id A941E5204E;
+        Fri,  9 Sep 2022 18:13:41 +0000 (GMT)
+Date:   Fri, 09 Sep 2022 23:43:39 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+Subject: Re: [PATCH v5 bpf-next 2/4] ftrace: Allow IPMODIFY and DIRECT ops on
+ the same function
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Kernel Team <Kernel-team@fb.com>, bpf <bpf@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        Song Liu <song@kernel.org>
+References: <20220720002126.803253-1-song@kernel.org>
+        <20220720002126.803253-3-song@kernel.org>
+        <1662724350.8os86rhyxk.naveen@linux.ibm.com>
+        <B59F0FD0-FA3E-4A8B-B588-8F9AA8AC602A@fb.com>
+In-Reply-To: <B59F0FD0-FA3E-4A8B-B588-8F9AA8AC602A@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1662747146.nqpswjliso.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QKcrZsRK9tV5Qztkv9R6r6KOhg2rw0Nt
+X-Proofpoint-ORIG-GUID: QKcrZsRK9tV5Qztkv9R6r6KOhg2rw0Nt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-09_08,2022-09-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ clxscore=1015 malwarescore=0 suspectscore=0 spamscore=0 priorityscore=1501
+ adultscore=0 mlxscore=0 mlxlogscore=999 phishscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209090064
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi,
+Hi Song,
 
-Here's a preview of what I'm planning to discuss at the LPC toolchains
-microconference.  Feel free to start the discussion early :-)
+Song Liu wrote:
+>=20
+>=20
+>> On Sep 9, 2022, at 4:58 AM, Naveen N. Rao <naveen.n.rao@linux.ibm.com> w=
+rote:
+>>=20
+>> Song Liu wrote:
+>=20
+> [...]
+>=20
+>>> +
+>>> /**
+>>>  * register_ftrace_function - register a function for profiling
+>>>  * @ops:	ops structure that holds the function for profiling.
+>>> @@ -8018,14 +8206,15 @@ int register_ftrace_function(struct ftrace_ops =
+*ops)
+>>> {
+>>> 	int ret;
+>>> -	ftrace_ops_init(ops);
+>>> -
+>>> -	mutex_lock(&ftrace_lock);
+>>> -
+>>> -	ret =3D ftrace_startup(ops, 0);
+>>> +	lock_direct_mutex();
+>>=20
+>> Trying to enable ftrace direct on powerpc, this is resulting in a hung t=
+ask when testing samples/ftrace/ftrace-direct-modify.c
+>>=20
+>> Essentially, the sample calls modify_ftrace_direct(), which grabs direct=
+_mutex before calling ftrace_modify_direct_caller()->register_ftrace_functi=
+on().
+>>=20
+>=20
+> Thanks for the report. Would the following change fix the issue?
+>=20
+> Song
+>=20
+> diff --git i/kernel/trace/ftrace.c w/kernel/trace/ftrace.c
+> index bc921a3f7ea8..2f1e6cfa834e 100644
+> --- i/kernel/trace/ftrace.c
+> +++ w/kernel/trace/ftrace.c
+> @@ -5496,7 +5496,7 @@ int __weak ftrace_modify_direct_caller(struct ftrac=
+e_func_entry *entry,
+>         if (ret)
+>                 goto out_lock;
+>=20
+> -       ret =3D register_ftrace_function(&stub_ops);
+> +       ret =3D register_ftrace_function_nolock(&stub_ops);
+>         if (ret) {
+>                 ftrace_set_filter_ip(&stub_ops, ip, 1, 0);
+>                 goto out_lock;
+>=20
 
-This is a proposal for some new minor GCC/Clang features which would
-help objtool greatly.
-
-
-Background
-----------
-
-Objtool is a kernel-specific tool which reverse engineers the control
-flow graph (CFG) of compiled objects.  It then performs various
-validations, annotations, and modifications, mostly with the goal of
-improving robustness and security of the kernel.
-
-Objtool features which use the CFG include include:
-validation/generation of unwinding metadata; validation of Intel SMAP
-rules; and validation of kernel "noinstr" rules (preventing compiler
-instrumentation in certain critical sections).
-
-In general it's not feasible for the traditional toolchain to do any of
-this work, because the kernel has a lot of "blind spots" which the
-toolchain doesn't have visibility to, notably asm and inline asm.
-Manual .cfi annotations are very difficult to maintain and even more
-difficult to ensure correctness.  Also, due to kernel live patching, the
-kernel relies on 100% correctness of unwinding metadata, whereas the
-toolchain treats it as a best effort.
-
-
-Challenges
-----------
-
-Reverse engineering the control flow graph is mostly quite
-straightforward, with two notable exceptions:
-
-1) Jump tables (e.g., switch statements):
-
-   Depending on the architecture, it's somewhere between difficult and
-   impossible to reliabily identify which indirect jumps correspond to
-   jump tables, and what are their corresponding intra-function jump
-   destinations.
-
-2) Noreturn functions:
-   
-   There's no reliable way to determine which functions are designated
-   by the compiler to be noreturn (either explictly via function
-   attribute, or implicitly via a static function which is a wrapper
-   around a noreturn function.)  This information is needed because the
-   code after the call to such a function is optimized out as
-   unreachable and objtool has no way of knowing that.
-
-
-Proposal
---------
-
-Add the following new compiler flags which create non-allocatable ELF
-sections which "annotate" control flow:
-
-(Note this is purely hypothetical, intended for starting a discussion.
-I'm not a compiler person and I haven't written any compiler code.)
+That fixes it for me.
+Reported-and-Tested-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
 
-1) -fannotate-jump-table
+Thanks!
+- Naveen
 
-Create an .annotate.jump_table section which is an array of the
-following variable-length structure:
-
-  struct annotate_jump_table {
-	void *indirect_jmp;
-	long num_targets;
-	void *targets[];
-  };
-
-
-For example, given the following switch statement code:
-
-  .Lswitch_jmp:
-	// %rax is .Lcase_1 or .Lcase_2
-	jmp %rax
-
-  .Lcase_1:
-	...
-  .Lcase_2:
-	...
-
-
-Add the following code:
-
-  .pushsection .annotate.jump_table
-	// indirect JMP address
-	.quad .Lswitch_jmp
-
-	// num jump targets
-	.quad 2
-
-	// indirect JMP target addresses
-	.quad .Lcase_1
-	.quad .Lcase_2
-  .popsection
-
-
-2) -fannotate-noreturn
-
-Create an .annotate.noreturn section which is an array of pointers to
-noreturn functions (both explicit/implicit and defined/undefined).
-
-
-For example, given the following three noreturn functions:
-
-  // explicit noreturn:
-  __attribute__((__noreturn__)) void func1(void)
-  {
-	exit(1);
-  }
-
-  // explicit noreturn (extern):
-  extern __attribute__((__noreturn__)) void func2(void);
-
-  // implicit noreturn:
-  static void func3(void)
-  {
-  	// call noreturn function
-	func2();
-  }
-
-
-Add the following code:
-
-  .pushsection .annotate.noreturn
-	.quad func1
-	.quad func2
-	.quad func3
-  .popsection
-
-
-Alternatives
-------------
-
-Another idea which has been floated in the past is for objtool to read
-DWARF (or .eh_frame) to help it figure out the control flow.  That
-hasn't been tried yet, but would be considerably more difficult and
-fragile IMO.
-
-
--- 
-Josh
