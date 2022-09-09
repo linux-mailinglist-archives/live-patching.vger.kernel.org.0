@@ -2,146 +2,84 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C7035B1E2E
-	for <lists+live-patching@lfdr.de>; Thu,  8 Sep 2022 15:10:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D595B2AC7
+	for <lists+live-patching@lfdr.de>; Fri,  9 Sep 2022 02:07:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232260AbiIHNKx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 8 Sep 2022 09:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        id S229913AbiIIAHq (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 8 Sep 2022 20:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232200AbiIHNKf (ORCPT
+        with ESMTP id S229831AbiIIAHp (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 8 Sep 2022 09:10:35 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630CD76765;
-        Thu,  8 Sep 2022 06:10:16 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MNfXF6P81zjX3G;
-        Thu,  8 Sep 2022 21:06:37 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 8 Sep 2022 21:10:14 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 8 Sep 2022 21:10:13 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thu, 8 Sep 2022 20:07:45 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DE198D01;
+        Thu,  8 Sep 2022 17:07:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8CnUe8YsCxH7jOeI9watXOlcGG2e1D+krl2jJdDsPKk=; b=EYgnrRin8PibVJ+ZEQZ5z6zTPP
+        gq73HpWP2Ug2/e94NggkDzYdAchDB6ycog5O2RKJPa0biNITSw3g+ON1FyQL3aOqDmMXIW1AS1Pt6
+        XlM9w5s1DFKUKd/Aq4w6S6yZ7180Oy1yoPjnR98K/3iGYwfSP+V5TE9jp0V9Fqfk6M94M8A5zPwee
+        V8aJjx8UuFiwHlXA35Bze6iq3Gb6NQYS4/RmB+j6OPNwMEGLRZ9I9owrujr1+Ra3HjsUdDC3avGyg
+        kM4JWpjc/0AZ7VyCOoaNlwnQRhwDJc6CGHAwxkvOAdVH09Zal4dQq2PFbsH9FOAMEvW7QNOEqkiDQ
+        eRU91X4g==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oWRYZ-00A8Ew-Dv; Fri, 09 Sep 2022 00:07:39 +0000
+Date:   Thu, 8 Sep 2022 17:07:39 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Jiri Olsa <jolsa@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        "Luis Chamberlain" <mcgrof@kernel.org>,
-        <linux-modules@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 7/7] livepatch: Improve the search performance of module_kallsyms_on_each_symbol()
-Date:   Thu, 8 Sep 2022 21:09:36 +0800
-Message-ID: <20220908130936.674-8-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20220908130936.674-1-thunder.leizhen@huawei.com>
+        linux-modules@vger.kernel.org
+Subject: Re: [PATCH 0/7] kallsyms: Optimizes the performance of lookup symbols
+Message-ID: <YxqDyyVwVUnqc8B1@bombadil.infradead.org>
 References: <20220908130936.674-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220908130936.674-1-thunder.leizhen@huawei.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Currently we traverse all symbols of all modules to find the specified
-function for the specified module. But in reality, we just need to find
-the given module and then traverse all the symbols in it.
+On Thu, Sep 08, 2022 at 09:09:29PM +0800, Zhen Lei wrote:
+> Currently, to search for a symbol, we need to expand the symbols in
+> 'kallsyms_names' one by one, and then use the expanded string for
+> comparison. This is very slow.
+> 
+> In fact, we can first compress the name being looked up and then use
+> it for comparison when traversing 'kallsyms_names'.
+> 
+> This patch series optimizes the performance of function kallsyms_lookup_name(),
+> and function klp_find_object_symbol() in the livepatch module. Based on the
+> test results, the performance overhead is reduced to 5%. That is, the
+> performance of these functions is improved by 20 times.
+> 
+> To avoid increasing the kernel size in non-debug mode, the optimization is only
+> for the case CONFIG_KALLSYMS_ALL=y.
 
-In order to achieve this purpose, split the call to hook 'fn' into two
-phases:
-1. Finds the given module. Pass pointer 'mod'. Hook 'fn' directly returns
-   the comparison result of the module name without comparing the function
-   name.
-2. Finds the given function in that module. Pass pointer 'mod = NULL'.
-   Hook 'fn' skip the comparison of module name and directly compare
-   function names.
+WIthout having time yet to reveiw the implementation details, it would
+seem this is an area we may want to test for future improvements easily,
+so a selftest better yet a kunit test may be nice for this. Can you
+write one so we can easily gather a simple metric for "how long does
+this take"?
 
-Phase1: mod1-->mod2..(subsequent modules do not need to be compared)
-                |
-Phase2:          -->f1-->f2-->f3
-
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- kernel/livepatch/core.c  |  7 ++-----
- kernel/module/kallsyms.c | 13 ++++++++++++-
- 2 files changed, 14 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 31b57ccf908017e..98e23137e4133bc 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -130,15 +130,12 @@ static int klp_find_callback(void *data, const char *name,
- {
- 	struct klp_find_arg *args = data;
- 
--	if ((mod && !args->objname) || (!mod && args->objname))
--		return 0;
-+	if (mod)
-+		return strcmp(args->objname, mod->name);
- 
- 	if (strcmp(args->name, name))
- 		return 0;
- 
--	if (args->objname && strcmp(args->objname, mod->name))
--		return 0;
--
- 	args->addr = addr;
- 	args->count++;
- 
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-index f5c5c9175333df7..b033613e6c7e3bb 100644
---- a/kernel/module/kallsyms.c
-+++ b/kernel/module/kallsyms.c
-@@ -510,6 +510,11 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
- 		if (mod->state == MODULE_STATE_UNFORMED)
- 			continue;
- 
-+		/* check mod->name first */
-+		ret = fn(data, NULL, mod, 0);
-+		if (ret)
-+			continue;
-+
- 		/* Use rcu_dereference_sched() to remain compliant with the sparse tool */
- 		preempt_disable();
- 		kallsyms = rcu_dereference_sched(mod->kallsyms);
-@@ -522,10 +527,16 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
- 				continue;
- 
- 			ret = fn(data, kallsyms_symbol_name(kallsyms, i),
--				 mod, kallsyms_symbol_value(sym));
-+				 NULL, kallsyms_symbol_value(sym));
- 			if (ret != 0)
- 				goto out;
- 		}
-+
-+		/*
-+		 * The given module is found, the subsequent modules do not
-+		 * need to be compared.
-+		 */
-+		break;
- 	}
- out:
- 	mutex_unlock(&module_mutex);
--- 
-2.25.1
-
+  Luis
