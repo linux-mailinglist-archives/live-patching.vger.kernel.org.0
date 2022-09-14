@@ -2,44 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E415B89B9
-	for <lists+live-patching@lfdr.de>; Wed, 14 Sep 2022 16:02:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 806565B8A7A
+	for <lists+live-patching@lfdr.de>; Wed, 14 Sep 2022 16:28:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229669AbiINOCb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 14 Sep 2022 10:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
+        id S229814AbiINO2v (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 14 Sep 2022 10:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbiINOB4 (ORCPT
+        with ESMTP id S230042AbiINO23 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 14 Sep 2022 10:01:56 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2740F25F1;
-        Wed, 14 Sep 2022 07:01:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=6QAWxLdMZL2HrdyA2qxKWv8rmsu40qWwB6+Piak/frU=; b=grvdlhiDJot2FEpq+aFmAKpbVL
-        618tCmlcl9TPnZnLX8PT4AhesK8/j7mmZuPujaIwSXumYee6m/OP3I9Z8QFflX21DFKDV/1eCyZSO
-        1tXouQhREH2V6O6uTrrhCur9gYWzcDGFuM3KczBsBLsHjAH+g6vjLnj4+SbI8pdwWgVG/nIGTDvyD
-        DiHFFwPKYeMxg+uODtM74++NkL63AwP3uz/GHM1UJwCvDU+S0s8jHC8bfF+pJP8Ip02ArlO2XX031
-        PYJx514ksqOpuNFWFgGMNIp/Q19glVLvHb4u8/vmi0+mnjAgBbMDj0XzSWSfa/KX4gkD96/5qTrfO
-        EMxpDi1g==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oYSw9-000EDJ-E2; Wed, 14 Sep 2022 14:00:21 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A70D43002AE;
-        Wed, 14 Sep 2022 16:00:16 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8BBF52B8AD401; Wed, 14 Sep 2022 16:00:16 +0200 (CEST)
-Date:   Wed, 14 Sep 2022 16:00:16 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Michael Matz <matz@suse.de>, Borislav Petkov <bp@alien8.de>,
+        Wed, 14 Sep 2022 10:28:29 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73393ED5C;
+        Wed, 14 Sep 2022 07:28:28 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 884331FAC1;
+        Wed, 14 Sep 2022 14:28:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1663165707; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rNlI3zlemkHtad6UJYVAQefl5OerSoDA86fMBi08vO4=;
+        b=IMcU+sMzPrtf2swXGKoltws1DQ4PgrmVnuO6T/Q8delDYm0q8pNrJpq1MOP7xd6pZAf/Jb
+        Fj9kKS+pmhqrUq9gHQbLKe9xjwQzs0XXFM41HygdB74Nb7ZvF9w5/0sBD/TJQ6ijUhNld2
+        ovmAUy7zEQzNfJwAOOA+Lerl2Xz07qg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1663165707;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rNlI3zlemkHtad6UJYVAQefl5OerSoDA86fMBi08vO4=;
+        b=3fJIRsrioi8AmmHGURizF9ChVKr3QoUbkZwIJ7IgJ5my1PvR3SHrnTkZipLA9y0w31fOb6
+        QBhZcoLjuWM9F4Bw==
+Received: from wotan.suse.de (wotan.suse.de [10.160.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 0A94B2C141;
+        Wed, 14 Sep 2022 14:28:27 +0000 (UTC)
+Received: by wotan.suse.de (Postfix, from userid 10510)
+        id EFA0E62AF; Wed, 14 Sep 2022 14:28:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+        by wotan.suse.de (Postfix) with ESMTP id EDC3C62AE;
+        Wed, 14 Sep 2022 14:28:26 +0000 (UTC)
+Date:   Wed, 14 Sep 2022 14:28:26 +0000 (UTC)
+From:   Michael Matz <matz@suse.de>
+To:     Peter Zijlstra <peterz@infradead.org>
+cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
         linux-toolchains@vger.kernel.org,
         Indu Bhagat <indu.bhagat@oracle.com>,
         Nick Desaulniers <ndesaulniers@google.com>,
@@ -56,50 +65,52 @@ Cc:     Michael Matz <matz@suse.de>, Borislav Petkov <bp@alien8.de>,
         Mark Brown <broonie@kernel.org>
 Subject: Re: [RFC] Objtool toolchain proposal:
  -fannotate-{jump-table,noreturn}
-Message-ID: <YyHecBM8D0i1lRu8@hirez.programming.kicks-ass.net>
-References: <20220909180704.jwwed4zhwvin7uyi@treble>
- <Yx8PcldkdOLN8eaw@nazgul.tnic>
- <alpine.LSU.2.20.2209121200120.8265@wotan.suse.de>
- <20220914000416.daxbgccbxwpknn2q@treble>
+In-Reply-To: <YyHecBM8D0i1lRu8@hirez.programming.kicks-ass.net>
+Message-ID: <alpine.LSU.2.20.2209141415340.8265@wotan.suse.de>
+References: <20220909180704.jwwed4zhwvin7uyi@treble> <Yx8PcldkdOLN8eaw@nazgul.tnic> <alpine.LSU.2.20.2209121200120.8265@wotan.suse.de> <20220914000416.daxbgccbxwpknn2q@treble> <YyHecBM8D0i1lRu8@hirez.programming.kicks-ass.net>
+User-Agent: Alpine 2.20 (LSU 67 2015-01-07)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220914000416.daxbgccbxwpknn2q@treble>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Sep 14, 2022 at 01:04:16AM +0100, Josh Poimboeuf wrote:
+Hello,
 
-> > I will mention that objtool's existence is based on mistrust, of persons 
-> > (not correctly annotating stuff) and of tools (not correctly heeding those 
-> > annotations).  The mistrust in persons is understandable and can be dealt 
-> > with by tools, but the mistrust in tools can't be fixed by making tools 
-> > more complicated by emitting even more information; there's no good reason 
-> > to assume that one piece of info can be trusted more than other pieces.  
-> > So, if you mistrust the tools you have already lost.  That's somewhat 
-> > philosophical, so I won't beat that horse much more either.
+On Wed, 14 Sep 2022, Peter Zijlstra wrote:
+
+> > Maybe this is semantics, but I wouldn't characterize objtool's existence
+> > as being based on the mistrust of tools.  It's main motivation is to
+> > fill in the toolchain's blind spots in asm and inline-asm, which exist
+> > by design.
 > 
-> Maybe this is semantics, but I wouldn't characterize objtool's existence
-> as being based on the mistrust of tools.  It's main motivation is to
-> fill in the toolchain's blind spots in asm and inline-asm, which exist
-> by design.
+> That and a fairly deep seated loathing for the regular CFI annotations
+> and DWARF in general. Linus was fairly firm he didn't want anything to
+> do with DWARF for in-kernel unwinding.
 
-That and a fairly deep seated loathing for the regular CFI annotations
-and DWARF in general. Linus was fairly firm he didn't want anything to
-do with DWARF for in-kernel unwinding.
+I was referring only to the check-stuff functionality of objtool, not to 
+its other parts.  Altough, of course, "deep seated loathing" is a special 
+form of mistrust as well ;-)
 
-That left us in a spot that we needed unwind information in a 'better'
-format than DWARF.
+> That left us in a spot that we needed unwind information in a 'better'
+> format than DWARF.
+> 
+> Objtool was born out of those contraints. ORC not needing the CFI
+> annotations and ORC being *much* faster at unwiding and generation
+> (debug builds are slow) were all good.
 
-Objtool was born out of those contraints. ORC not needing the CFI
-annotations and ORC being *much* faster at unwiding and generation
-(debug builds are slow) were all good.
+Don't mix DWARF debug info with DWARF-based unwinding info, the latter 
+doesn't imply the former.  Out of interest: how does ORC get around the 
+need for CFI annotations (or equivalents to restore registers) and what 
+makes it fast?  I want faster unwinding for DWARF as well, when there's 
+feature parity :-)  Maybe something can be learned for integration into 
+dwarf-unwind.
 
 
+Ciao,
+Michael.
