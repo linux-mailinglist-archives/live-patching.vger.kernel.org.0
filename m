@@ -2,95 +2,122 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA085B9694
-	for <lists+live-patching@lfdr.de>; Thu, 15 Sep 2022 10:47:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BBCA5BA3F9
+	for <lists+live-patching@lfdr.de>; Fri, 16 Sep 2022 03:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbiIOIrs (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 15 Sep 2022 04:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
+        id S229528AbiIPB1q (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 15 Sep 2022 21:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbiIOIrr (ORCPT
+        with ESMTP id S229487AbiIPB1o (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 15 Sep 2022 04:47:47 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93E197ED8;
-        Thu, 15 Sep 2022 01:47:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ivQ/eNxqEghjLz7rraJxCT2L5vao4XynCLSzvaLXpmQ=; b=AaYWHotkjSaBPPaDMgKlOP0sp2
-        4WoMIWcg2PRmd499ZOSulGJU2/YqW9WK5yskc8Fp3dF6h0rApS22AkYrNsPLKnjxBpmSKhAmw/GvV
-        SLDooue6nA3ZPzjl/NmBqFcg3VhJopSpsio0BqirDsuQda7KKG+g4ha5WfObKQ1Bczbe+VaOgqp3D
-        KD0sX5hw7trhBFVQNceUF62xl/pAOB6AQ3rtJgvpHauySZUM8pJDpHw9JbABUs9xsk97ZJHRcjHru
-        H2wmb1hKmnl15Wfetkb+BkoskakzoCKDB982K4R78EBUD1oUP2wSfnuL0SYCCEwyObsL1nAN/mx4p
-        mG5RPjeg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oYkWY-000w90-8S; Thu, 15 Sep 2022 08:47:06 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 26C6530010B;
-        Thu, 15 Sep 2022 10:47:02 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 04DBC201ABB97; Thu, 15 Sep 2022 10:47:01 +0200 (CEST)
-Date:   Thu, 15 Sep 2022 10:47:01 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     Michael Matz <matz@suse.de>, Borislav Petkov <bp@alien8.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        linux-toolchains@vger.kernel.org,
-        Indu Bhagat <indu.bhagat@oracle.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, "Jose E. Marchesi" <jemarch@gnu.org>,
+        Thu, 15 Sep 2022 21:27:44 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF9571BE1;
+        Thu, 15 Sep 2022 18:27:42 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MTGYS4NYcz14QPq;
+        Fri, 16 Sep 2022 09:23:40 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 16 Sep 2022 09:27:40 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 16 Sep 2022 09:27:39 +0800
+Subject: Re: [PATCH v2 0/8] kallsyms: Optimizes the performance of lookup
+ symbols
+To:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [RFC] Objtool toolchain proposal:
- -fannotate-{jump-table,noreturn}
-Message-ID: <YyLmhUxTUaNzaieC@hirez.programming.kicks-ass.net>
-References: <20220909180704.jwwed4zhwvin7uyi@treble>
- <Yx8PcldkdOLN8eaw@nazgul.tnic>
- <alpine.LSU.2.20.2209121200120.8265@wotan.suse.de>
- <6a61aa57-141f-039c-5a2d-b2d79fecb8c2@huawei.com>
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Luis Chamberlain" <mcgrof@kernel.org>,
+        <linux-modules@vger.kernel.org>
+References: <20220909130016.727-1-thunder.leizhen@huawei.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <453a0f71-7478-f118-d547-aa0547abdd73@huawei.com>
+Date:   Fri, 16 Sep 2022 09:27:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6a61aa57-141f-039c-5a2d-b2d79fecb8c2@huawei.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220909130016.727-1-thunder.leizhen@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Sep 15, 2022 at 10:56:58AM +0800, Chen Zhongjin wrote:
+Hi, everybody:
+  Can anyone review it? Maybe I should split this patch series
+into two parts: kallsyms and livepatch.
+  In fact, the performance can be improved even if the compression policy
+of the symbol type is not changed, that is, the scripts/callsyms.c file is
+not modified, but we perform the len-based filtering first. That way, it'll
+be easier for everyone to review. OK, I'm ready for v3.
 
-> We have found some anonymous information on x86 in .rodata.
 
-Well yes, but that's still a bunch of heuristics on our side.
+On 2022/9/9 21:00, Zhen Lei wrote:
+> v1 --> v2:
+> Add self-test facility
+> 
+> v1:
+> Currently, to search for a symbol, we need to expand the symbols in
+> 'kallsyms_names' one by one, and then use the expanded string for
+> comparison. This is very slow.
+> 
+> In fact, we can first compress the name being looked up and then use
+> it for comparison when traversing 'kallsyms_names'.
+> 
+> This patch series optimizes the performance of function kallsyms_lookup_name(),
+> and function klp_find_object_symbol() in the livepatch module. Based on the
+> test results, the performance overhead is reduced to 5%. That is, the
+> performance of these functions is improved by 20 times.
+> 
+> To avoid increasing the kernel size in non-debug mode, the optimization is only
+> for the case CONFIG_KALLSYMS_ALL=y.
+> 
+> Zhen Lei (8):
+>   scripts/kallsyms: don't compress symbol type when
+>     CONFIG_KALLSYMS_ALL=y
+>   scripts/kallsyms: rename build_initial_tok_table()
+>   kallsyms: Adjust the types of some local variables
+>   kallsyms: Improve the performance of kallsyms_lookup_name()
+>   kallsyms: Add helper kallsyms_on_each_match_symbol()
+>   livepatch: Use kallsyms_on_each_match_symbol() to improve performance
+>   livepatch: Improve the search performance of
+>     module_kallsyms_on_each_symbol()
+>   kallsyms: Add self-test facility
+> 
+>  include/linux/kallsyms.h   |   8 ++
+>  init/Kconfig               |  13 ++
+>  kernel/Makefile            |   1 +
+>  kernel/kallsyms.c          | 135 ++++++++++++++++++++-
+>  kernel/kallsyms_selftest.c | 243 +++++++++++++++++++++++++++++++++++++
+>  kernel/livepatch/core.c    |  25 +++-
+>  kernel/module/kallsyms.c   |  13 +-
+>  scripts/kallsyms.c         |  19 ++-
+>  8 files changed, 441 insertions(+), 16 deletions(-)
+>  create mode 100644 kernel/kallsyms_selftest.c
+> 
 
-> I'm not sure if those are *all* of Josh wanted on x86, however for arm64 we
-> did not found that in the same section so it is a problem on arm64 now.
-
-Nick found Bolt managed the ARM64 jumptables:
-
-  https://github.com/llvm/llvm-project/blob/main/bolt/lib/Target/AArch64/AArch64MCPlusBuilder.cpp#L484
-
-But that does look like a less than ideal solution too.
-
-> Does the compiler will emit these for all arches? At lease I tried and
-> didn't find anything meaningful (maybe I omitted it).
-
-That's the question; can we get the compiler to help us here in a well
-defined manner.
+-- 
+Regards,
+  Zhen Lei
