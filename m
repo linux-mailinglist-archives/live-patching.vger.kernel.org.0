@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EF985BDDDF
-	for <lists+live-patching@lfdr.de>; Tue, 20 Sep 2022 09:14:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 514155BDDE1
+	for <lists+live-patching@lfdr.de>; Tue, 20 Sep 2022 09:14:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbiITHOW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 20 Sep 2022 03:14:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
+        id S230179AbiITHOX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 20 Sep 2022 03:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiITHOU (ORCPT
+        with ESMTP id S229580AbiITHOV (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 20 Sep 2022 03:14:20 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969EF5C974;
-        Tue, 20 Sep 2022 00:14:19 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MWt3g4XkCzmVZn;
-        Tue, 20 Sep 2022 15:10:23 +0800 (CST)
+        Tue, 20 Sep 2022 03:14:21 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2515C94E;
+        Tue, 20 Sep 2022 00:14:20 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MWt3T0SKzz14QlM;
+        Tue, 20 Sep 2022 15:10:13 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 20 Sep 2022 15:14:17 +0800
+ 15.1.2375.31; Tue, 20 Sep 2022 15:14:18 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 20 Sep 2022 15:14:16 +0800
+ 15.1.2375.31; Tue, 20 Sep 2022 15:14:17 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -41,9 +41,9 @@ To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         "Luis Chamberlain" <mcgrof@kernel.org>,
         <linux-modules@vger.kernel.org>
 CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v4 1/8] scripts/kallsyms: rename build_initial_tok_table()
-Date:   Tue, 20 Sep 2022 15:13:10 +0800
-Message-ID: <20220920071317.1787-2-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 2/8] scripts/kallsyms: ensure that all possible combinations are compressed
+Date:   Tue, 20 Sep 2022 15:13:11 +0800
+Message-ID: <20220920071317.1787-3-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220920071317.1787-1-thunder.leizhen@huawei.com>
 References: <20220920071317.1787-1-thunder.leizhen@huawei.com>
@@ -62,42 +62,38 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Except for the function build_initial_tok_table(), no token abbreviation
-is used elsewhere.
-
-$ cat scripts/kallsyms.c | grep tok | wc -l
-33
-$ cat scripts/kallsyms.c | grep token | wc -l
-31
-
-Here, it would be clearer to use the full name.
+For a symbol, there may be more than one place that can be merged. For
+example: nfs_fs_proc_net_init, there are two "f"+"s_" combinations.
+And we're only compressing the first combination at the moment. Let's
+compress all possible combinations.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- scripts/kallsyms.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/kallsyms.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index f18e6dfc68c5839..8caccc8f4a23703 100644
+index 8caccc8f4a23703..3319d9f38d7a5f2 100644
 --- a/scripts/kallsyms.c
 +++ b/scripts/kallsyms.c
-@@ -525,7 +525,7 @@ static void forget_symbol(const unsigned char *symbol, int len)
+@@ -553,7 +553,7 @@ static void compress_symbols(const unsigned char *str, int idx)
+ 	unsigned char *p1, *p2;
+ 
+ 	for (i = 0; i < table_cnt; i++) {
+-
++retry:
+ 		len = table[i]->len;
+ 		p1 = table[i]->sym;
+ 
+@@ -585,6 +585,9 @@ static void compress_symbols(const unsigned char *str, int idx)
+ 
+ 		/* increase the counts for this symbol's new tokens */
+ 		learn_symbol(table[i]->sym, len);
++
++		/* May be more than one place that can be merged, try again */
++		goto retry;
+ 	}
  }
- 
- /* do the initial token count */
--static void build_initial_tok_table(void)
-+static void build_initial_token_table(void)
- {
- 	unsigned int i;
- 
-@@ -650,7 +650,7 @@ static void insert_real_symbols_in_table(void)
- 
- static void optimize_token_table(void)
- {
--	build_initial_tok_table();
-+	build_initial_token_table();
- 
- 	insert_real_symbols_in_table();
  
 -- 
 2.25.1
