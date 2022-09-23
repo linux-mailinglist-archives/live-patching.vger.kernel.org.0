@@ -2,26 +2,26 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4CCA5E7961
-	for <lists+live-patching@lfdr.de>; Fri, 23 Sep 2022 13:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2884E5E7965
+	for <lists+live-patching@lfdr.de>; Fri, 23 Sep 2022 13:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232003AbiIWLWE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 23 Sep 2022 07:22:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48250 "EHLO
+        id S232187AbiIWLWF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 23 Sep 2022 07:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232095AbiIWLWB (ORCPT
+        with ESMTP id S232130AbiIWLWB (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
         Fri, 23 Sep 2022 07:22:01 -0400
 Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59F4137915;
-        Fri, 23 Sep 2022 04:21:55 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MYqPh3pddz1P6sL;
-        Fri, 23 Sep 2022 19:17:44 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFE413791F;
+        Fri, 23 Sep 2022 04:21:56 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MYqPj1wz6z1P6vv;
+        Fri, 23 Sep 2022 19:17:45 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 23 Sep 2022 19:21:53 +0800
+ 15.1.2375.31; Fri, 23 Sep 2022 19:21:54 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -43,9 +43,9 @@ To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         "Steven Rostedt" <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>
 CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v5 03/10] scripts/kallsyms: remove helper sym_name() and cleanup
-Date:   Fri, 23 Sep 2022 19:20:26 +0800
-Message-ID: <20220923112033.1958-4-thunder.leizhen@huawei.com>
+Subject: [PATCH v5 04/10] scripts/kallsyms: generate kallsyms_best_token_table[]
+Date:   Fri, 23 Sep 2022 19:20:27 +0800
+Message-ID: <20220923112033.1958-5-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220923112033.1958-1-thunder.leizhen@huawei.com>
 References: <20220923112033.1958-1-thunder.leizhen@huawei.com>
@@ -64,131 +64,71 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Now, the type and name of a symbol are no longer stored together. So the
-helper sym_name() is no longer needed. Correspondingly, replacing the
-field name 'sym[]' with 'name[]' is more accurate.
+To speed up the lookup of a symbol in the kernel, we'd better compress
+the searched symbol first and then make a quick comparison based on the
+compressed length and content. But the tokens in kallsyms_token_table[]
+have been expanded, a more complex process is required to complete the
+compression of a symbol. So generate kallsyms_best_token_table[] helps
+us to compress a symbol in the kernel using a process similar to
+compress_symbol().
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
+Some minor changes have been made to reduce memory usage and improve
+compression performance.
+1. Some entries in best_table[] are single characters, and most of them
+   are clustered together. such as a-z, A-Z, 0-9. These individual
+   characters are not used in the process of compressing a symbol. Let
+   kallsyms_best_token_table[i][0] = 0x00, [i][0] = number of consecutive
+   single characters (for exampe, a-z is 26). When [i][0] = 0x00 is
+   encountered, we can skip to the next token with two elements.
+2. Now ARRAY_SIZE(kallsyms_best_token_table) is not fixed, we store
+   the content of best_table[] to kallsyms_best_token_table[] in reverse
+   order. That is, the higher the frequency, the lower the index.
+
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- scripts/kallsyms.c | 29 ++++++++++++-----------------
- 1 file changed, 12 insertions(+), 17 deletions(-)
+ kernel/kallsyms_internal.h |  1 +
+ scripts/kallsyms.c         | 18 ++++++++++++++++++
+ 2 files changed, 19 insertions(+)
 
+diff --git a/kernel/kallsyms_internal.h b/kernel/kallsyms_internal.h
+index 2d0c6f2f0243a28..d9672ede8cfc215 100644
+--- a/kernel/kallsyms_internal.h
++++ b/kernel/kallsyms_internal.h
+@@ -26,5 +26,6 @@ extern const char kallsyms_token_table[] __weak;
+ extern const u16 kallsyms_token_index[] __weak;
+ 
+ extern const unsigned int kallsyms_markers[] __weak;
++extern const unsigned char kallsyms_best_token_table[] __weak;
+ 
+ #endif // LINUX_KALLSYMS_INTERNAL_H_
 diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 296277128d450ff..ca378a7e9425c00 100644
+index ca378a7e9425c00..40a6fe6d14ef03f 100644
 --- a/scripts/kallsyms.c
 +++ b/scripts/kallsyms.c
-@@ -35,7 +35,7 @@ struct sym_entry {
- 	unsigned int start_pos;
- 	unsigned int percpu_absolute;
- 	unsigned char type;
--	unsigned char sym[];
-+	unsigned char name[];
- };
- 
- struct addr_range {
-@@ -76,11 +76,6 @@ static void usage(void)
- 	exit(1);
+@@ -499,6 +499,24 @@ static void write_src(void)
+ 	for (i = 0; i < 256; i++)
+ 		printf("\t.short\t%d\n", best_idx[i]);
+ 	printf("\n");
++
++	output_label("kallsyms_best_token_table");
++	for (i = 255, k = 0; (int)i >= 0; i--) {
++		if (best_table_len[i] <= 1) {
++			k++;
++			continue;
++		}
++
++		if (k) {
++			printf("\t.byte 0x00, 0x%02x\n", k);
++			k = 0;
++		}
++
++		printf("\t.byte 0x%02x, 0x%02x\n", best_table[i][0], best_table[i][1]);
++	}
++	if (k)
++		printf("\t.byte 0x00, 0x%02x\n", k);
++	printf("\n");
  }
  
--static char *sym_name(const struct sym_entry *s)
--{
--	return (char *)s->sym;
--}
--
- static bool is_ignored_symbol(const char *name, char type)
- {
- 	/* Symbol names that exactly match to the following are ignored.*/
-@@ -238,7 +233,7 @@ static struct sym_entry *read_symbol(FILE *in)
- 	sym->addr = addr;
- 	sym->len = len;
- 	sym->type = type;
--	strcpy(sym_name(sym), name);
-+	strcpy((char *)sym->name, name);
- 	sym->percpu_absolute = 0;
- 
- 	return sym;
-@@ -262,7 +257,7 @@ static int symbol_in_range(const struct sym_entry *s,
- 
- static int symbol_valid(const struct sym_entry *s)
- {
--	const char *name = sym_name(s);
-+	const char *name = (char *)s->name;
- 
- 	/* if --all-symbols is not specified, then symbols outside the text
- 	 * and inittext sections are discarded */
-@@ -475,7 +470,7 @@ static void write_src(void)
- 		printf("\t.byte 0x%02x", table[i]->len + 1);
- 		printf(", 0x%02x", table[i]->type);
- 		for (k = 0; k < table[i]->len; k++)
--			printf(", 0x%02x", table[i]->sym[k]);
-+			printf(", 0x%02x", table[i]->name[k]);
- 		printf("\n");
- 
- 		/* fields 'len' and 'type' occupy one byte each */
-@@ -533,7 +528,7 @@ static void build_initial_token_table(void)
- 	unsigned int i;
- 
- 	for (i = 0; i < table_cnt; i++)
--		learn_symbol(table[i]->sym, table[i]->len);
-+		learn_symbol(table[i]->name, table[i]->len);
- }
- 
- static unsigned char *find_token(unsigned char *str, int len,
-@@ -558,14 +553,14 @@ static void compress_symbols(const unsigned char *str, int idx)
- 	for (i = 0; i < table_cnt; i++) {
- 
- 		len = table[i]->len;
--		p1 = table[i]->sym;
-+		p1 = table[i]->name;
- 
- 		/* find the token on the symbol */
- 		p2 = find_token(p1, len, str);
- 		if (!p2) continue;
- 
- 		/* decrease the counts for this symbol's tokens */
--		forget_symbol(table[i]->sym, len);
-+		forget_symbol(table[i]->name, len);
- 
- 		size = len;
- 
-@@ -587,7 +582,7 @@ static void compress_symbols(const unsigned char *str, int idx)
- 		table[i]->len = len;
- 
- 		/* increase the counts for this symbol's new tokens */
--		learn_symbol(table[i]->sym, len);
-+		learn_symbol(table[i]->name, len);
- 	}
- }
- 
-@@ -645,7 +640,7 @@ static void insert_real_symbols_in_table(void)
- 
- 	for (i = 0; i < table_cnt; i++) {
- 		for (j = 0; j < table[i]->len; j++) {
--			c = table[i]->sym[j];
-+			c = table[i]->name[j];
- 			best_table[c][0] = c;
- 			best_table_len[c] = 1;
- 		}
-@@ -667,7 +662,7 @@ static void optimize_token_table(void)
- /* guess for "linker script provide" symbol */
- static int may_be_linker_script_provide_symbol(const struct sym_entry *se)
- {
--	const char *symbol = sym_name(se);
-+	const char *symbol = (char *)se->name;
- 	int len = se->len;
- 
- 	if (len < 8)
-@@ -724,8 +719,8 @@ static int compare_symbols(const void *a, const void *b)
- 		return wa - wb;
- 
- 	/* sort by the number of prefix underscores */
--	wa = strspn(sym_name(sa), "_");
--	wb = strspn(sym_name(sb), "_");
-+	wa = strspn((char *)sa->name, "_");
-+	wb = strspn((char *)sb->name, "_");
- 	if (wa != wb)
- 		return wa - wb;
  
 -- 
 2.25.1
