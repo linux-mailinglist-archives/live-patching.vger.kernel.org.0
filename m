@@ -2,155 +2,144 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E136C5E6368
-	for <lists+live-patching@lfdr.de>; Thu, 22 Sep 2022 15:18:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D095E795B
+	for <lists+live-patching@lfdr.de>; Fri, 23 Sep 2022 13:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbiIVNRu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 22 Sep 2022 09:17:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39680 "EHLO
+        id S231557AbiIWLWB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 23 Sep 2022 07:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231415AbiIVNRm (ORCPT
+        with ESMTP id S231756AbiIWLV4 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 22 Sep 2022 09:17:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5FDECCD3;
-        Thu, 22 Sep 2022 06:17:38 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id C8DB121982;
-        Thu, 22 Sep 2022 13:17:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1663852656; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5VxXvVs0YdYO3sD0aUgYp7qqqpQnVQA/2ZsAJ0zdeDo=;
-        b=j0srfyICy6WIjrVcwpembz4gXsiclktb0/Y4yfVYyjSCvgiHG0V8LjrcAbAsJxlmP8takY
-        lqv4S7533VbkvX/ASvFYXBMDXxevueLbwuVtMA4UJgnuZdYR9tygho367XX0Jrp7WQ+VC9
-        WfB8xm7VcGw/Lmnwv00UpIiFZF/VLCw=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C68262C141;
-        Thu, 22 Sep 2022 13:17:32 +0000 (UTC)
-Date:   Thu, 22 Sep 2022 15:17:33 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Fri, 23 Sep 2022 07:21:56 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8403F127576;
+        Fri, 23 Sep 2022 04:21:53 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MYqP022JYzMpQF;
+        Fri, 23 Sep 2022 19:17:08 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 23 Sep 2022 19:21:51 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 23 Sep 2022 19:21:50 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Jiri Olsa <jolsa@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org
-Subject: Re: [PATCH v4 4/8] kallsyms: Improve the performance of
- kallsyms_lookup_name()
-Message-ID: <YyxgbZBORARoOIWf@alley>
-References: <20220920071317.1787-1-thunder.leizhen@huawei.com>
- <20220920071317.1787-5-thunder.leizhen@huawei.com>
- <Yyss3SWM0nTVnjT7@alley>
- <3c86335e-c5b8-b291-d0c2-9b69f912f900@huawei.com>
- <YywIcQzaGmV43zr6@alley>
- <ba8979fb-df77-c387-3c7b-cf5c46050c43@huawei.com>
+        "Luis Chamberlain" <mcgrof@kernel.org>,
+        <linux-modules@vger.kernel.org>,
+        "Steven Rostedt" <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v5 00/10] kallsyms: Optimizes the performance of lookup symbols
+Date:   Fri, 23 Sep 2022 19:20:23 +0800
+Message-ID: <20220923112033.1958-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ba8979fb-df77-c387-3c7b-cf5c46050c43@huawei.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2022-09-22 15:21:57, Leizhen (ThunderTown) wrote:
-> 
-> 
-> On 2022/9/22 15:02, Petr Mladek wrote:
-> > On Thu 2022-09-22 10:15:22, Leizhen (ThunderTown) wrote:
-> >>
-> >>
-> >> On 2022/9/21 23:25, Petr Mladek wrote:
-> >>> On Tue 2022-09-20 15:13:13, Zhen Lei wrote:
-> >>>> Currently, to search for a symbol, we need to expand the symbols in
-> >>>> 'kallsyms_names' one by one, and then use the expanded string for
-> >>>> comparison. This process can be optimized.
-> >>>>
-> >>>> And now scripts/kallsyms no longer compresses the symbol types, each
-> >>>> symbol type always occupies one byte. So we can first compress the
-> >>>> searched symbol and then make a quick comparison based on the compressed
-> >>>> length and content. In this way, for entries with mismatched lengths,
-> >>>> there is no need to expand and compare strings. And for those matching
-> >>>> lengths, there's no need to expand the symbol. This saves a lot of time.
-> >>>> According to my test results, the average performance of
-> >>>> kallsyms_lookup_name() can be improved by 20 to 30 times.
-> >>>>
-> >>>> The pseudo code of the test case is as follows:
-> >>>> static int stat_find_name(...)
-> >>>> {
-> >>>> 	start = sched_clock();
-> >>>> 	(void)kallsyms_lookup_name(name);
-> >>>> 	end = sched_clock();
-> >>>> 	//Update min, max, cnt, sum
-> >>>> }
-> >>>>
-> >>>> /*
-> >>>>  * Traverse all symbols in sequence and collect statistics on the time
-> >>>>  * taken by kallsyms_lookup_name() to lookup each symbol.
-> >>>>  */
-> >>>> kallsyms_on_each_symbol(stat_find_name, NULL);
-> >>>>
-> >>>> The test results are as follows (twice):
-> >>>> After : min=5250, max=  726560, avg= 302132
-> >>>> After : min=5320, max=  726850, avg= 301978
-> >>>> Before: min=170,  max=15949190, avg=7553906
-> >>>> Before: min=160,  max=15877280, avg=7517784
-> >>>>
-> >>>> The average time consumed is only 4.01% and the maximum time consumed is
-> >>>> only 4.57% of the time consumed before optimization.
-> >>>>
-> >>>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> >>>> ---
-> >>>>  kernel/kallsyms.c | 79 +++++++++++++++++++++++++++++++++++++++++++++--
-> >>>>  1 file changed, 76 insertions(+), 3 deletions(-)
-> >>>>
-> >>>> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> >>>> index 3e7e2c2ad2f75ef..2d76196cfe89f34 100644
-> >>>> --- a/kernel/kallsyms.c
-> >>>> +++ b/kernel/kallsyms.c
-> >>>> @@ -87,6 +87,71 @@ static unsigned int kallsyms_expand_symbol(unsigned int off,
-> >>>> +{
-> >>>> +	int i, j, k, n;
-> >>>> +	int len, token_len;
-> >>>> +	const char *token;
-> >>>> +	unsigned char token_idx[KSYM_NAME_LEN];
-> >>>> +	unsigned char token_bak[KSYM_NAME_LEN];
-> >>>
-> >>> Why do we need two buffers? It should be possible to compress the name
-> >>> in the same buffer as it is done in compress_symbols() in scripts/callsyms.c.
-> >>
-> >> Because the performance would be a little better. Now this function takes
-> >> just over a microsecond. Currently, it takes about 250 microseconds on
-> >> average to lookup a symbol, so adding a little more time to this function
-> >> doesn't affect the overall picture. I'll modify and test it as you suggest
-> >> below.
-> > 
-> > We need to be careful about a stack overflow. I have seen that
-> > KSYM_NAME_LEN might need to be increased to 512 because of
-> > Rust support, see
-> > https://lore.kernel.org/r/20220805154231.31257-6-ojeda@kernel.org
-> 
-> OK. Thanks for your information. I decided to add kallsyms_best_token_table[],
-> kallsyms_best_token_table_len, so that we only need one namebuf[], like
-> kallsyms_expand_symbol().
+v4 --> v5:
+1. In scripts/kallsyms.c, we use an extra field to hold type and eventually
+   put it together with name in write_src().
+2. Generate a new table kallsyms_best_token_table[], so that we compress a
+   symbol in the kernel using a process similar to compress_symbol().
+3. Remove helper sym_name(), and rename field 'sym[]' to 'name[]' in
+   scripts/kallsyms.c
+4. Add helper __kallsyms_lookup_compressed_name() to avoid duplicate code in
+   functions kallsyms_lookup_name() and kallsyms_on_each_match_symbol().
+5. Add a new parameter "const char *modname" to module_kallsyms_on_each_symbol(),
+   this makes the code logic clearer.
+6. Delete the parameter 'struct module *' in the hook function associated with
+   kallsyms_on_each_symbol(), it's unused now.
 
-Thanks for the effort. Adding kallsyms_best_token_table[] sounds like
-the right solution.
 
-Best Regards,
-Petr
+v3 --> v4:
+1. Move the declaration of function kallsyms_sym_address() to linux/kallsyms.h,
+   fix a build warning.
+
+v2 --> v3:
+1. Improve test cases, perform complete functional tests on functions
+   kallsyms_lookup_name(), kallsyms_on_each_symbol() and
+   kallsyms_on_each_match_symbol().
+2. Add patch [PATCH v3 2/8] scripts/kallsyms: ensure that all possible
+   combinations are compressed.
+3. The symbol type is not compressed regardless of whether
+   CONFIG_KALLSYMS_ALL is set or not. The memory overhead is increased
+   by less than 20KiB if CONFIG_KALLSYMS_ALL=n.
+4. Discard [PATCH v2 3/8] kallsyms: Adjust the types of some local variables
+
+v1 --> v2:
+Add self-test facility
+
+v1:
+Currently, to search for a symbol, we need to expand the symbols in
+'kallsyms_names' one by one, and then use the expanded string for
+comparison. This is very slow.
+
+In fact, we can first compress the name being looked up and then use
+it for comparison when traversing 'kallsyms_names'.
+
+This patch series optimizes the performance of function kallsyms_lookup_name(),
+and function klp_find_object_symbol() in the livepatch module. Based on the
+test results, the performance overhead is reduced to 5%. That is, the
+performance of these functions is improved by 20 times.
+
+To avoid increasing the kernel size in non-debug mode, the optimization is only
+for the case CONFIG_KALLSYMS_ALL=y.
+
+
+Zhen Lei (10):
+  scripts/kallsyms: rename build_initial_tok_table()
+  scripts/kallsyms: don't compress symbol types
+  scripts/kallsyms: remove helper sym_name() and cleanup
+  scripts/kallsyms: generate kallsyms_best_token_table[]
+  kallsyms: Improve the performance of kallsyms_lookup_name()
+  kallsyms: Add helper kallsyms_on_each_match_symbol()
+  livepatch: Use kallsyms_on_each_match_symbol() to improve performance
+  livepatch: Improve the search performance of
+    module_kallsyms_on_each_symbol()
+  kallsyms: Delete an unused parameter related to
+    kallsyms_on_each_symbol()
+  kallsyms: Add self-test facility
+
+ include/linux/kallsyms.h   |  12 +-
+ include/linux/module.h     |   4 +-
+ init/Kconfig               |  13 ++
+ kernel/Makefile            |   1 +
+ kernel/kallsyms.c          | 167 ++++++++++++++-
+ kernel/kallsyms_internal.h |   1 +
+ kernel/kallsyms_selftest.c | 421 +++++++++++++++++++++++++++++++++++++
+ kernel/livepatch/core.c    |  31 ++-
+ kernel/module/kallsyms.c   |  15 +-
+ kernel/trace/ftrace.c      |   3 +-
+ scripts/kallsyms.c         |  88 +++++---
+ 11 files changed, 694 insertions(+), 62 deletions(-)
+ create mode 100644 kernel/kallsyms_selftest.c
+
+-- 
+2.25.1
+
