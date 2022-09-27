@@ -2,61 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 290485E8C5E
-	for <lists+live-patching@lfdr.de>; Sat, 24 Sep 2022 14:23:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9465EC3F9
+	for <lists+live-patching@lfdr.de>; Tue, 27 Sep 2022 15:16:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233916AbiIXMXb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 24 Sep 2022 08:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        id S232558AbiI0NQD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 27 Sep 2022 09:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233879AbiIXMXU (ORCPT
+        with ESMTP id S232501AbiI0NP5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sat, 24 Sep 2022 08:23:20 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96572E237F;
-        Sat, 24 Sep 2022 05:22:58 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MZSj01bwPzHthx;
-        Sat, 24 Sep 2022 20:18:12 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 24 Sep 2022 20:22:56 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 24 Sep 2022 20:22:55 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Luis Chamberlain" <mcgrof@kernel.org>,
-        <linux-modules@vger.kernel.org>,
-        "Steven Rostedt" <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v6 11/11] kallsyms: Add self-test facility
-Date:   Sat, 24 Sep 2022 20:20:51 +0800
-Message-ID: <20220924122051.362-12-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20220924122051.362-1-thunder.leizhen@huawei.com>
-References: <20220924122051.362-1-thunder.leizhen@huawei.com>
+        Tue, 27 Sep 2022 09:15:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1F613E2D;
+        Tue, 27 Sep 2022 06:15:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DA57B81BB6;
+        Tue, 27 Sep 2022 13:15:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A1BC433C1;
+        Tue, 27 Sep 2022 13:15:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664284551;
+        bh=BtTLH+cSHuBy5Q/9p2KfMksnestZXgZpovnz/yO4aJw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VC7Jyj3ldKs6uGLJvtu8S7SgTUbTgxVotzSP7w/DgHix9+xSYQma0Jmp4XtqdfeUH
+         IuRu1c+n3EEwbQ8T/NiJ48Ah612UPH54jAmfe+QAm/hcg2xAAlRMy2uozXNWOtOUUJ
+         cvpRY/g7HqOF1mQSCnrDlT1ZJGm2j7NL+ax3Eh5n1MF+1XFqRSMCpmYoCiL2mTYMYW
+         7BGzGieNBuW9saY4D4d3QBEvk7rN8UajLYduvtLbDmCLxh1e2ElP2VXbn6g5zTpJzT
+         nV9J/1Jw/K+YQLg1OXb472ttSPahspZ0p3FT+N3O9D+yBCkp75PUAXBW8ekGuzH00q
+         e8v692I515F4A==
+From:   Miguel Ojeda <ojeda@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-doc@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        live-patching@vger.kernel.org
+Subject: [PATCH v10 00/27] Rust support
+Date:   Tue, 27 Sep 2022 15:14:31 +0200
+Message-Id: <20220927131518.30000-1-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,538 +56,393 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Added test cases for basic functions and performance of functions
-kallsyms_lookup_name(), kallsyms_on_each_symbol() and
-kallsyms_on_each_match_symbol(). It also calculates the compression rate
-of the kallsyms compression algorithm for the current symbol set.
+Rust support
 
-The basic functions test begins by testing a set of symbols whose address
-values are known. Then, traverse all symbol addresses and find the
-corresponding symbol name based on the address. It's impossible to
-determine whether these addresses are correct, but we can use the above
-three functions along with the addresses to test each other. Due to the
-traversal operation of kallsyms_on_each_symbol() is too slow, only 60
-symbols can be tested in one second, so let it test on average once
-every 128 symbols. The other two functions validate all symbols.
+This is the patch series (v10) to add support for Rust as a second
+language to the Linux kernel.
 
-If the basic functions test is passed, print only performance test
-results. If the test fails, print error information, but do not perform
-subsequent performance tests.
+If you are interested in following this effort, please join us in
+the mailing list at:
 
-Start self-test automatically after system startup if
-CONFIG_KALLSYMS_SELFTEST=y.
+    rust-for-linux@vger.kernel.org
 
-Example of output content: (prefix 'kallsyms_selftest:' is omitted)
- start
-  ---------------------------------------------------------
- | nr_symbols | compressed size | original size | ratio(%) |
- |---------------------------------------------------------|
- |     174099 |       1960154   |      3750756  |  52.26   |
-  ---------------------------------------------------------
- kallsyms_lookup_name() looked up 174099 symbols
- The time spent on each symbol is (ns): min=5250, max=726560, avg=302132
- kallsyms_on_each_symbol() traverse all: 16659500 ns
- kallsyms_on_each_match_symbol() traverse all: 557400 ns
- finish
+and take a look at the project itself at:
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- include/linux/kallsyms.h   |   1 +
- init/Kconfig               |  13 ++
- kernel/Makefile            |   1 +
- kernel/kallsyms.c          |   2 +-
- kernel/kallsyms_selftest.c | 421 +++++++++++++++++++++++++++++++++++++
- 5 files changed, 437 insertions(+), 1 deletion(-)
- create mode 100644 kernel/kallsyms_selftest.c
+    https://github.com/Rust-for-Linux
 
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index 015c7685765978e..c7219d74e29000c 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -66,6 +66,7 @@ static inline void *dereference_symbol_descriptor(void *ptr)
- }
- 
- #ifdef CONFIG_KALLSYMS
-+unsigned long kallsyms_sym_address(int idx);
- int kallsyms_on_each_symbol(int (*fn)(void *, const char *, unsigned long),
- 			    void *data);
- int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
-diff --git a/init/Kconfig b/init/Kconfig
-index 532362fcfe31fd3..60193fd185fb6e6 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1716,6 +1716,19 @@ config KALLSYMS
- 	  symbolic stack backtraces. This increases the size of the kernel
- 	  somewhat, as all symbols have to be loaded into the kernel image.
- 
-+config KALLSYMS_SELFTEST
-+	bool "Test the basic functions and performance of kallsyms"
-+	depends on KALLSYMS
-+	default n
-+	help
-+	  Test the basic functions and performance of some interfaces, such as
-+	  kallsyms_lookup_name. It also calculates the compression rate of the
-+	  kallsyms compression algorithm for the current symbol set.
-+
-+	  Start self-test automatically after system startup. Suggest executing
-+	  "dmesg | grep kallsyms_selftest" to collect test results. "finish" is
-+	  displayed in the last line, indicating that the test is complete.
-+
- config KALLSYMS_ALL
- 	bool "Include all symbols in kallsyms"
- 	depends on DEBUG_KERNEL && KALLSYMS
-diff --git a/kernel/Makefile b/kernel/Makefile
-index 318789c728d3290..122a5fed457bd98 100644
---- a/kernel/Makefile
-+++ b/kernel/Makefile
-@@ -68,6 +68,7 @@ endif
- obj-$(CONFIG_UID16) += uid16.o
- obj-$(CONFIG_MODULE_SIG_FORMAT) += module_signature.o
- obj-$(CONFIG_KALLSYMS) += kallsyms.o
-+obj-$(CONFIG_KALLSYMS_SELFTEST) += kallsyms_selftest.o
- obj-$(CONFIG_BSD_PROCESS_ACCT) += acct.o
- obj-$(CONFIG_CRASH_CORE) += crash_core.o
- obj-$(CONFIG_KEXEC_CORE) += kexec_core.o
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 8e7e83842bcfdd3..1512db69aa0a1b2 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -208,7 +208,7 @@ static unsigned int get_symbol_offset(unsigned long pos)
- 	return name - kallsyms_names;
- }
- 
--static unsigned long kallsyms_sym_address(int idx)
-+unsigned long kallsyms_sym_address(int idx)
- {
- 	if (!IS_ENABLED(CONFIG_KALLSYMS_BASE_RELATIVE))
- 		return kallsyms_addresses[idx];
-diff --git a/kernel/kallsyms_selftest.c b/kernel/kallsyms_selftest.c
-new file mode 100644
-index 000000000000000..f7538a70d36c531
---- /dev/null
-+++ b/kernel/kallsyms_selftest.c
-@@ -0,0 +1,421 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Test the function and performance of kallsyms
-+ *
-+ * Copyright (C) Huawei Technologies Co., Ltd., 2022
-+ *
-+ * Authors: Zhen Lei <thunder.leizhen@huawei.com> Huawei
-+ */
-+
-+#define pr_fmt(fmt) "kallsyms_selftest: " fmt
-+
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/kallsyms.h>
-+#include <linux/random.h>
-+#include <linux/sched/clock.h>
-+#include <linux/kthread.h>
-+#include <linux/vmalloc.h>
-+
-+#include "kallsyms_internal.h"
-+
-+
-+#define MAX_NUM_OF_RECORDS		64
-+
-+struct test_stat {
-+	int min;
-+	int max;
-+	int save_cnt;
-+	int real_cnt;
-+	u64 sum;
-+	char *name;
-+	unsigned long addr;
-+	unsigned long addrs[MAX_NUM_OF_RECORDS];
-+};
-+
-+struct test_item {
-+	char *name;
-+	unsigned long addr;
-+};
-+
-+#define ITEM_FUNC(s)				\
-+	{					\
-+		.name = #s,			\
-+		.addr = (unsigned long)s,	\
-+	}
-+
-+#define ITEM_DATA(s)				\
-+	{					\
-+		.name = #s,			\
-+		.addr = (unsigned long)&s,	\
-+	}
-+
-+static int test_var_bss_static;
-+static int test_var_data_static = 1;
-+int test_var_bss;
-+int test_var_data = 1;
-+
-+static int test_func_static(void)
-+{
-+	test_var_bss_static++;
-+	test_var_data_static++;
-+
-+	return 0;
-+}
-+
-+int test_func(void)
-+{
-+	return test_func_static();
-+}
-+
-+__weak int test_func_weak(void)
-+{
-+	test_var_bss++;
-+	test_var_data++;
-+	return 0;
-+}
-+
-+static struct test_item test_items[] = {
-+	ITEM_FUNC(test_func_static),
-+	ITEM_FUNC(test_func),
-+	ITEM_FUNC(test_func_weak),
-+	ITEM_FUNC(vmalloc),
-+	ITEM_FUNC(vfree),
-+#ifdef CONFIG_KALLSYMS_ALL
-+	ITEM_DATA(test_var_bss_static),
-+	ITEM_DATA(test_var_data_static),
-+	ITEM_DATA(test_var_bss),
-+	ITEM_DATA(test_var_data),
-+	ITEM_DATA(vmap_area_list),
-+#endif
-+};
-+
-+static char stub_name[KSYM_NAME_LEN];
-+
-+static int stat_symbol_len(void *data, const char *name, unsigned long addr)
-+{
-+	*(u32 *)data += strlen(name);
-+
-+	return 0;
-+}
-+
-+static void test_kallsyms_compression_ratio(void)
-+{
-+	int i;
-+	const u8 *name;
-+	u32 pos;
-+	u32 ratio, total_size, total_len = 0;
-+
-+	kallsyms_on_each_symbol(stat_symbol_len, &total_len);
-+
-+	/*
-+	 * A symbol name cannot start with a number. This stub name helps us
-+	 * traverse the entire symbol table without finding a match. It's used
-+	 * for subsequent performance tests, and its length is the average
-+	 * length of all symbol names.
-+	 */
-+	memset(stub_name, '4', sizeof(stub_name));
-+	pos = total_len / kallsyms_num_syms;
-+	stub_name[pos] = 0;
-+
-+	pos = kallsyms_num_syms - 1;
-+	name = &kallsyms_names[kallsyms_markers[pos >> 8]];
-+	for (i = 0; i <= (pos & 0xff); i++)
-+		name = name + (*name) + 1;
-+
-+	/*
-+	 * 1. The length fields is not counted
-+	 * 2. The memory occupied by array kallsyms_token_table[] and
-+	 *    kallsyms_token_index[] needs to be counted.
-+	 */
-+	total_size = (name - kallsyms_names) - kallsyms_num_syms;
-+	pos = kallsyms_token_index[0xff];
-+	total_size += pos + strlen(&kallsyms_token_table[pos]) + 1;
-+	total_size += 0x100 * sizeof(u16);
-+
-+	pr_info(" ---------------------------------------------------------\n");
-+	pr_info("| nr_symbols | compressed size | original size | ratio(%%) |\n");
-+	pr_info("|---------------------------------------------------------|\n");
-+	ratio = 10000ULL * total_size / total_len;
-+	pr_info("| %10d |    %10d   |   %10d  |  %2d.%-2d   |\n",
-+		kallsyms_num_syms, total_size, total_len, ratio / 100, ratio % 100);
-+	pr_info(" ---------------------------------------------------------\n");
-+}
-+
-+static int lookup_name(void *data, const char *name, unsigned long addr)
-+{
-+	u64 t0, t1, t;
-+	unsigned long flags;
-+	struct test_stat *stat = (struct test_stat *)data;
-+
-+	local_irq_save(flags);
-+	t0 = sched_clock();
-+	(void)kallsyms_lookup_name(name);
-+	t1 = sched_clock();
-+	local_irq_restore(flags);
-+
-+	t = t1 - t0;
-+	if (t < stat->min)
-+		stat->min = t;
-+
-+	if (t > stat->max)
-+		stat->max = t;
-+
-+	stat->real_cnt++;
-+	stat->sum += t;
-+
-+	return 0;
-+}
-+
-+static void test_perf_kallsyms_lookup_name(void)
-+{
-+	struct test_stat stat;
-+
-+	memset(&stat, 0, sizeof(stat));
-+	stat.min = INT_MAX;
-+	kallsyms_on_each_symbol(lookup_name, &stat);
-+	pr_info("kallsyms_lookup_name() looked up %d symbols\n", stat.real_cnt);
-+	pr_info("The time spent on each symbol is (ns): min=%d, max=%d, avg=%lld\n",
-+		stat.min, stat.max, stat.sum / stat.real_cnt);
-+}
-+
-+static int find_symbol(void *data, const char *name, unsigned long addr)
-+{
-+	struct test_stat *stat = (struct test_stat *)data;
-+
-+	if (strcmp(name, stat->name) == 0) {
-+		stat->real_cnt++;
-+		stat->addr = addr;
-+
-+		if (stat->save_cnt < MAX_NUM_OF_RECORDS) {
-+			stat->addrs[stat->save_cnt] = addr;
-+			stat->save_cnt++;
-+		}
-+
-+		if (stat->real_cnt == stat->max)
-+			return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static void test_perf_kallsyms_on_each_symbol(void)
-+{
-+	u64 t0, t1;
-+	unsigned long flags;
-+	struct test_stat stat;
-+
-+	memset(&stat, 0, sizeof(stat));
-+	stat.max = INT_MAX;
-+	stat.name = stub_name;
-+	local_irq_save(flags);
-+	t0 = sched_clock();
-+	kallsyms_on_each_symbol(find_symbol, &stat);
-+	t1 = sched_clock();
-+	local_irq_restore(flags);
-+	pr_info("kallsyms_on_each_symbol() traverse all: %lld ns\n", t1 - t0);
-+}
-+
-+static int match_symbol(void *data, unsigned long addr)
-+{
-+	struct test_stat *stat = (struct test_stat *)data;
-+
-+	stat->real_cnt++;
-+	stat->addr = addr;
-+
-+	if (stat->save_cnt < MAX_NUM_OF_RECORDS) {
-+		stat->addrs[stat->save_cnt] = addr;
-+		stat->save_cnt++;
-+	}
-+
-+	if (stat->real_cnt == stat->max)
-+		return 1;
-+
-+	return 0;
-+}
-+
-+static void test_perf_kallsyms_on_each_match_symbol(void)
-+{
-+	u64 t0, t1;
-+	unsigned long flags;
-+	struct test_stat stat;
-+
-+	memset(&stat, 0, sizeof(stat));
-+	stat.max = INT_MAX;
-+	stat.name = stub_name;
-+	local_irq_save(flags);
-+	t0 = sched_clock();
-+	kallsyms_on_each_match_symbol(match_symbol, stat.name, &stat);
-+	t1 = sched_clock();
-+	local_irq_restore(flags);
-+	pr_info("kallsyms_on_each_match_symbol() traverse all: %lld ns\n", t1 - t0);
-+}
-+
-+static int test_kallsyms_basic_function(void)
-+{
-+	int i, j, ret;
-+	int next = 0, nr_failed = 0;
-+	char *prefix;
-+	unsigned short rand;
-+	unsigned long addr;
-+	char namebuf[KSYM_NAME_LEN];
-+	struct test_stat stat, stat1, stat2;
-+
-+	prefix = "kallsyms_lookup_name() for";
-+	for (i = 0; i < ARRAY_SIZE(test_items); i++) {
-+		addr = kallsyms_lookup_name(test_items[i].name);
-+		if (addr != test_items[i].addr) {
-+			nr_failed++;
-+			pr_info("%s %s failed: addr=%lx, expect %lx\n",
-+				prefix, test_items[i].name, addr, test_items[i].addr);
-+		}
-+	}
-+
-+	prefix = "kallsyms_on_each_symbol() for";
-+	for (i = 0; i < ARRAY_SIZE(test_items); i++) {
-+		memset(&stat, 0, sizeof(stat));
-+		stat.max = INT_MAX;
-+		stat.name = test_items[i].name;
-+		kallsyms_on_each_symbol(find_symbol, &stat);
-+		if (stat.addr != test_items[i].addr || stat.real_cnt != 1) {
-+			nr_failed++;
-+			pr_info("%s %s failed: count=%d, addr=%lx, expect %lx\n",
-+				prefix, test_items[i].name,
-+				stat.real_cnt, stat.addr, test_items[i].addr);
-+		}
-+	}
-+
-+	prefix = "kallsyms_on_each_match_symbol() for";
-+	for (i = 0; i < ARRAY_SIZE(test_items); i++) {
-+		memset(&stat, 0, sizeof(stat));
-+		stat.max = INT_MAX;
-+		stat.name = test_items[i].name;
-+		kallsyms_on_each_match_symbol(match_symbol, test_items[i].name, &stat);
-+		if (stat.addr != test_items[i].addr || stat.real_cnt != 1) {
-+			nr_failed++;
-+			pr_info("%s %s failed: count=%d, addr=%lx, expect %lx\n",
-+				prefix, test_items[i].name,
-+				stat.real_cnt, stat.addr, test_items[i].addr);
-+		}
-+	}
-+
-+	if (nr_failed)
-+		return -ESRCH;
-+
-+	for (i = 0; i < kallsyms_num_syms; i++) {
-+		addr = kallsyms_sym_address(i);
-+		if (!is_ksym_addr(addr))
-+			continue;
-+
-+		ret = lookup_symbol_name(addr, namebuf);
-+		if (unlikely(ret)) {
-+			namebuf[0] = 0;
-+			goto failed;
-+		}
-+
-+		stat.addr = kallsyms_lookup_name(namebuf);
-+
-+		memset(&stat1, 0, sizeof(stat1));
-+		stat1.max = INT_MAX;
-+		kallsyms_on_each_match_symbol(match_symbol, namebuf, &stat1);
-+
-+		/*
-+		 * kallsyms_on_each_symbol() is too slow, randomly select some
-+		 * symbols for test.
-+		 */
-+		if (i >= next) {
-+			memset(&stat2, 0, sizeof(stat2));
-+			stat2.max = INT_MAX;
-+			stat2.name = namebuf;
-+			kallsyms_on_each_symbol(find_symbol, &stat2);
-+
-+			/*
-+			 * kallsyms_on_each_symbol() and kallsyms_on_each_match_symbol()
-+			 * need to get the same traversal result.
-+			 */
-+			if (stat1.addr != stat2.addr ||
-+			    stat1.real_cnt != stat2.real_cnt ||
-+			    memcmp(stat1.addrs, stat2.addrs,
-+				   stat1.save_cnt * sizeof(stat1.addrs[0])))
-+				goto failed;
-+
-+			/*
-+			 * The average of random increments is 128, that is, one of
-+			 * them is tested every 128 symbols.
-+			 */
-+			get_random_bytes(&rand, sizeof(rand));
-+			next = i + (rand & 0xff) + 1;
-+		}
-+
-+		/* Need to be found at least once */
-+		if (!stat1.real_cnt)
-+			goto failed;
-+
-+		/*
-+		 * kallsyms_lookup_name() returns the address of the first
-+		 * symbol found and cannot be NULL.
-+		 */
-+		if (!stat.addr || stat.addr != stat1.addrs[0])
-+			goto failed;
-+
-+		/*
-+		 * If the addresses of all matching symbols are recorded, the
-+		 * target address needs to be exist.
-+		 */
-+		if (stat1.real_cnt <= MAX_NUM_OF_RECORDS) {
-+			for (j = 0; j < stat1.save_cnt; j++) {
-+				if (stat1.addrs[j] == addr)
-+					break;
-+			}
-+
-+			if (j == stat1.save_cnt)
-+				goto failed;
-+		}
-+	}
-+
-+	return 0;
-+
-+failed:
-+	pr_info("Test for %dth symbol failed: (%s) addr=%lx", i, namebuf, addr);
-+	return -ESRCH;
-+}
-+
-+static int test_entry(void *p)
-+{
-+	int ret;
-+
-+	do {
-+		schedule_timeout(5 * HZ);
-+	} while (system_state != SYSTEM_RUNNING);
-+
-+	pr_info("start\n");
-+	ret = test_kallsyms_basic_function();
-+	if (ret) {
-+		pr_info("abort\n");
-+		return 0;
-+	}
-+
-+	test_kallsyms_compression_ratio();
-+	test_perf_kallsyms_lookup_name();
-+	test_perf_kallsyms_on_each_symbol();
-+	test_perf_kallsyms_on_each_match_symbol();
-+	pr_info("finish\n");
-+
-+	return 0;
-+}
-+
-+static int __init kallsyms_test_init(void)
-+{
-+	struct task_struct *t;
-+
-+	t = kthread_create(test_entry, NULL, "kallsyms_test");
-+	if (IS_ERR(t)) {
-+		pr_info("Create kallsyms selftest task failed\n");
-+		return PTR_ERR(t);
-+	}
-+	kthread_bind(t, 0);
-+	wake_up_process(t);
-+
-+	return 0;
-+}
-+late_initcall(kallsyms_test_init);
+As usual, special thanks go to ISRG (Internet Security Research Group)
+and Google for their financial support on this endeavor.
+
+Cheers,
+Miguel
+
+--
+
+# Rust support
+
+This cover letter explains the major changes and updates done since
+the previous ones. For those, please see:
+
+    RFC: https://lore.kernel.org/lkml/20210414184604.23473-1-ojeda@kernel.org/
+    v1:  https://lore.kernel.org/lkml/20210704202756.29107-1-ojeda@kernel.org/
+    v2:  https://lore.kernel.org/lkml/20211206140313.5653-1-ojeda@kernel.org/
+    v3:  https://lore.kernel.org/lkml/20220117053349.6804-1-ojeda@kernel.org/
+    v4:  https://lore.kernel.org/lkml/20220212130410.6901-1-ojeda@kernel.org/
+    v5:  https://lore.kernel.org/lkml/20220317181032.15436-1-ojeda@kernel.org/
+    v6:  https://lore.kernel.org/lkml/20220507052451.12890-1-ojeda@kernel.org/
+    v7:  https://lore.kernel.org/lkml/20220523020209.11810-1-ojeda@kernel.org/
+    v8:  https://lore.kernel.org/lkml/20220802015052.10452-1-ojeda@kernel.org/
+    v9:  https://lore.kernel.org/lkml/20220805154231.31257-1-ojeda@kernel.org/
+
+This is v9 with only minimal/trivial changes, intended for v6.1:
+
+  - `scripts/kallsyms.c`: replaced `sizeof` with `ARRAY_SIZE`.
+
+  - `scripts/kallsyms.c`: added a comment on `KSYM_NAME_LEN_BUFFER`
+    to clarify why the `_Static_assert` is needed.
+
+  - `Makefile`: added a comment on `export RUSTC_BOOTSTRAP := 1` to
+    explain that it enables unstable features in the stable compiler.
+
+  - Moved `min-tool-version.sh` changes to commit "scripts: add
+    `rust_is_available.sh`".
+
+  - Reworded commit "rust: import upstream `alloc` crate" to add
+    a script snippet to verify that the contents match upstream.
+
+  - Reworded commit "rust: add C helpers" to explain that the file
+    will grow over time.
+
+  - Picked `Reviewed-by` and `Tested-by` tags.
+
+  - Rebased on top of v6.0-rc7, which clears a few conflicts.
+
+Most of the code has been around in linux-next for some months now.
+In particular, v9 has been 7 weeks there.
+
+
+## Patch series status
+
+The Rust support is still to be considered experimental. However,
+support is good enough that kernel developers can start working on the
+Rust abstractions for subsystems and write drivers and other modules.
+
+The current series will appear in the next `linux-next`, as usual.
+
+I have kept the docs as they were in v8/v9 since they showcase best
+what the docs would eventually look like:
+
+    https://rust-for-linux.github.io/docs/kernel/
+
+As usual, please see the following link for the live list of unstable
+Rust features we are using (note that this trimmed version does not
+require all of them):
+
+    https://github.com/Rust-for-Linux/linux/issues/2
+
+
+## Conferences, meetings and liaisons
+
+Thanks a lot to everyone that joined us in LPC 2022 (Linux Plumbers
+Conference) for the Rust MC (microconference)!
+
+    https://lpc.events/event/16/sessions/150/
+    https://www.youtube.com/watch?v=Xw9pKeJ-4Bw
+
+In addition, I would like to personally thank Google and ISRG
+(Internet Security Research Group) for sponsoring Kangrejos,
+the Rust for Linux workshop; and everyone that made the effort
+to travel to Spain before LPC:
+
+    https://kangrejos.com
+
+
+## Acknowledgements
+
+The signatures in the main commits correspond to the people that
+wrote code that has ended up in them at the present time. For details
+on contributions to code and discussions, please see our repository:
+
+    https://github.com/Rust-for-Linux/linux
+
+However, we would like to give credit to everyone that has contributed
+in one way or another to the Rust for Linux project. Since the
+previous cover letter:
+
+  - Kees Cook, Nick Desaulniers, Konstantin Shelekhin and Masahiro
+    Yamada for their reviews of some of the v9 patches.
+
+  - Matthew Wilcox, Linus Torvalds, comex, Eric W. Biederman,
+    Greg Kroah-Hartman and Geert Stappers for their feedback on v9.
+
+  - Asahi Lina for working on her M1 GPU driver.
+
+  - FUJITA Tomonori for continuing his work on PCI, IRQ, BAR, DMA,
+    `ioremap`... support for a NVMe Rust driver, as well as adding
+    `be16/32/64` and `le16/32/64` types.
+
+  - Li Hongyu for working on making the `get_id_info` function more
+    general so that it is not tied to `platform`, continuing the work
+    on the virtio abstraction and the `virtio-net` driver, which
+    includes abstractions for `ethtool`, `scatterlist`, NAPI...
+
+  - Arnaldo Carvalho de Melo for releasing `pahole` 1.24 with support
+    for `--lang` and `--lang_exclude`, useful "to exclude Rust compile
+    units while aspects of the DWARF generated for it get sorted out
+    in a way that the kernel BPF verifier don't refuse loading the BTF
+    generated from them".
+
+  - Martin Rodriguez Reboredo for working on USB abstractions as well
+    as using the new `pahole` `--lang_exclude` feature to exclude
+    Rust compilation units.
+
+  - David Gow for fixing the UML support.
+
+  - Adam Bratschi-Kaye for redoing his debugfs implementation without
+    `seq_file`.
+
+  - Alice Ryhl for continuing her work on adding `BINDER_TYPE_PTR`
+    support.
+
+  - Philipp Gesang for updating the `sysctl` module to deal with
+    commit 32927393dc1c ("sysctl: pass kernel pointers to
+    ->proc_handler") as well as improving the `module!` macro to allow
+    overriding the name of module param constants.
+
+  - Masahiro Yamada for proposing a refactor of the Kbuild support for
+    Rust as well as removing the `-v` option of the
+    `rust_is_available.sh` script.
+
+  - Russell Currey for making `scripts/rust_is_available.sh`
+    compatible with using multiple words for `$CC`, e.g. for `ccache`.
+
+  - Jalil David Salamé Messina for marking the `bit` function as
+    `const` so that it can be used for e.g. creating `const` masks.
+
+  - Jon Olson for continuing his work on a `cpu` module with utilities
+    for SMP systems.
+
+  - Raghvender for working on improving a check on
+    `scripts/rust-is-available.sh`.
+
+  - Angelos for working on using `NonZeroI16` as the `Error` inner
+    type.
+
+  - Finn Behrens for updating his work on making it possible to
+    compile the kernel on macOS with Rust enabled.
+
+  - Kaviraj Kanagaraj for suggesting improvements to the quick start
+    guide.
+
+  - Sergio González Collado for suggesting improvements to the
+    `Makefile` to show an extra message.
+
+  - Wei Liu for taking the time to answer questions from newcomers
+    in Zulip.
+
+  - Philip Li, Yujie Liu et al. for continuing their work on adding
+    Rust support to the Intel 0DAY/LKP kernel test robot.
+
+  - Philip Herron and Arthur Cohen (and his supporters Open Source
+    Security and Embecosm) et al. for their ongoing work on Rust GCC.
+
+  - Antoni Boucher (and his supporters) et al. for their ongoing
+    work on `rustc_codegen_gcc`.
+
+  - Emilio Cobos Álvarez, Christian Poveda et al. for their work on
+    `bindgen`, including on issues that affect the kernel.
+
+  - Mats Larsen, Marc Poulhiès et al. for their ongoing work on
+    improving Rust support in Compiler Explorer.
+
+  - Many folks that have reported issues, tested the project,
+    helped spread the word, joined discussions and contributed in
+    other ways!
+
+Please see also the acknowledgements on the previous cover letters.
+
+
+Boqun Feng (2):
+  kallsyms: use `ARRAY_SIZE` instead of hardcoded size
+  kallsyms: avoid hardcoding buffer size
+
+Daniel Xu (1):
+  scripts: add `is_rust_module.sh`
+
+Gary Guo (1):
+  vsprintf: add new `%pA` format specifier
+
+Miguel Ojeda (22):
+  kallsyms: add static relationship between `KSYM_NAME_LEN{,_BUFFER}`
+  kallsyms: support "big" kernel symbols
+  kallsyms: increase maximum kernel symbol length to 512
+  rust: add C helpers
+  rust: import upstream `alloc` crate
+  rust: adapt `alloc` crate to the kernel
+  rust: add `compiler_builtins` crate
+  rust: add `macros` crate
+  rust: add `bindings` crate
+  rust: export generated symbols
+  scripts: checkpatch: diagnose uses of `%pA` in the C side as errors
+  scripts: checkpatch: enable language-independent checks for Rust
+  scripts: decode_stacktrace: demangle Rust symbols
+  scripts: add `generate_rust_analyzer.py`
+  scripts: add `generate_rust_target.rs`
+  scripts: add `rust_is_available.sh`
+  rust: add `.rustfmt.toml`
+  Kbuild: add Rust support
+  docs: add Rust documentation
+  x86: enable initial Rust support
+  samples: add first Rust examples
+  MAINTAINERS: Rust
+
+Wedson Almeida Filho (1):
+  rust: add `kernel` crate
+
+ .gitignore                                   |    6 +
+ .rustfmt.toml                                |   12 +
+ Documentation/core-api/printk-formats.rst    |   10 +
+ Documentation/doc-guide/kernel-doc.rst       |    3 +
+ Documentation/index.rst                      |    1 +
+ Documentation/kbuild/kbuild.rst              |   17 +
+ Documentation/kbuild/makefiles.rst           |   50 +-
+ Documentation/process/changes.rst            |   41 +
+ Documentation/rust/arch-support.rst          |   19 +
+ Documentation/rust/coding-guidelines.rst     |  216 ++
+ Documentation/rust/general-information.rst   |   79 +
+ Documentation/rust/index.rst                 |   22 +
+ Documentation/rust/quick-start.rst           |  232 ++
+ MAINTAINERS                                  |   18 +
+ Makefile                                     |  172 +-
+ arch/Kconfig                                 |    6 +
+ arch/x86/Kconfig                             |    1 +
+ arch/x86/Makefile                            |   10 +
+ include/linux/compiler_types.h               |    6 +-
+ include/linux/kallsyms.h                     |    2 +-
+ init/Kconfig                                 |   46 +-
+ kernel/configs/rust.config                   |    1 +
+ kernel/kallsyms.c                            |   26 +-
+ kernel/livepatch/core.c                      |    4 +-
+ lib/Kconfig.debug                            |   34 +
+ lib/vsprintf.c                               |   13 +
+ rust/.gitignore                              |    8 +
+ rust/Makefile                                |  381 +++
+ rust/alloc/README.md                         |   33 +
+ rust/alloc/alloc.rs                          |  440 +++
+ rust/alloc/borrow.rs                         |  498 +++
+ rust/alloc/boxed.rs                          | 2028 +++++++++++
+ rust/alloc/collections/mod.rs                |  156 +
+ rust/alloc/lib.rs                            |  244 ++
+ rust/alloc/raw_vec.rs                        |  527 +++
+ rust/alloc/slice.rs                          | 1204 +++++++
+ rust/alloc/vec/drain.rs                      |  186 ++
+ rust/alloc/vec/drain_filter.rs               |  145 +
+ rust/alloc/vec/into_iter.rs                  |  366 ++
+ rust/alloc/vec/is_zero.rs                    |  120 +
+ rust/alloc/vec/mod.rs                        | 3140 ++++++++++++++++++
+ rust/alloc/vec/partial_eq.rs                 |   49 +
+ rust/bindgen_parameters                      |   21 +
+ rust/bindings/bindings_helper.h              |   13 +
+ rust/bindings/lib.rs                         |   53 +
+ rust/compiler_builtins.rs                    |   63 +
+ rust/exports.c                               |   21 +
+ rust/helpers.c                               |   51 +
+ rust/kernel/allocator.rs                     |   64 +
+ rust/kernel/error.rs                         |   59 +
+ rust/kernel/lib.rs                           |   78 +
+ rust/kernel/prelude.rs                       |   20 +
+ rust/kernel/print.rs                         |  198 ++
+ rust/kernel/str.rs                           |   72 +
+ rust/macros/helpers.rs                       |   51 +
+ rust/macros/lib.rs                           |   72 +
+ rust/macros/module.rs                        |  282 ++
+ samples/Kconfig                              |    2 +
+ samples/Makefile                             |    1 +
+ samples/rust/Kconfig                         |   30 +
+ samples/rust/Makefile                        |    5 +
+ samples/rust/hostprogs/.gitignore            |    3 +
+ samples/rust/hostprogs/Makefile              |    5 +
+ samples/rust/hostprogs/a.rs                  |    7 +
+ samples/rust/hostprogs/b.rs                  |    5 +
+ samples/rust/hostprogs/single.rs             |   12 +
+ samples/rust/rust_minimal.rs                 |   38 +
+ scripts/.gitignore                           |    1 +
+ scripts/Kconfig.include                      |    6 +-
+ scripts/Makefile                             |    3 +
+ scripts/Makefile.build                       |   60 +
+ scripts/Makefile.debug                       |    8 +
+ scripts/Makefile.host                        |   34 +-
+ scripts/Makefile.lib                         |   12 +
+ scripts/Makefile.modfinal                    |    8 +-
+ scripts/cc-version.sh                        |   12 +-
+ scripts/checkpatch.pl                        |   12 +-
+ scripts/decode_stacktrace.sh                 |   14 +
+ scripts/generate_rust_analyzer.py            |  135 +
+ scripts/generate_rust_target.rs              |  182 +
+ scripts/is_rust_module.sh                    |   16 +
+ scripts/kallsyms.c                           |   53 +-
+ scripts/kconfig/confdata.c                   |   75 +
+ scripts/min-tool-version.sh                  |    6 +
+ scripts/rust_is_available.sh                 |  160 +
+ scripts/rust_is_available_bindgen_libclang.h |    2 +
+ tools/include/linux/kallsyms.h               |    2 +-
+ tools/lib/perf/include/perf/event.h          |    2 +-
+ tools/lib/symbol/kallsyms.h                  |    2 +-
+ 89 files changed, 12552 insertions(+), 51 deletions(-)
+ create mode 100644 .rustfmt.toml
+ create mode 100644 Documentation/rust/arch-support.rst
+ create mode 100644 Documentation/rust/coding-guidelines.rst
+ create mode 100644 Documentation/rust/general-information.rst
+ create mode 100644 Documentation/rust/index.rst
+ create mode 100644 Documentation/rust/quick-start.rst
+ create mode 100644 kernel/configs/rust.config
+ create mode 100644 rust/.gitignore
+ create mode 100644 rust/Makefile
+ create mode 100644 rust/alloc/README.md
+ create mode 100644 rust/alloc/alloc.rs
+ create mode 100644 rust/alloc/borrow.rs
+ create mode 100644 rust/alloc/boxed.rs
+ create mode 100644 rust/alloc/collections/mod.rs
+ create mode 100644 rust/alloc/lib.rs
+ create mode 100644 rust/alloc/raw_vec.rs
+ create mode 100644 rust/alloc/slice.rs
+ create mode 100644 rust/alloc/vec/drain.rs
+ create mode 100644 rust/alloc/vec/drain_filter.rs
+ create mode 100644 rust/alloc/vec/into_iter.rs
+ create mode 100644 rust/alloc/vec/is_zero.rs
+ create mode 100644 rust/alloc/vec/mod.rs
+ create mode 100644 rust/alloc/vec/partial_eq.rs
+ create mode 100644 rust/bindgen_parameters
+ create mode 100644 rust/bindings/bindings_helper.h
+ create mode 100644 rust/bindings/lib.rs
+ create mode 100644 rust/compiler_builtins.rs
+ create mode 100644 rust/exports.c
+ create mode 100644 rust/helpers.c
+ create mode 100644 rust/kernel/allocator.rs
+ create mode 100644 rust/kernel/error.rs
+ create mode 100644 rust/kernel/lib.rs
+ create mode 100644 rust/kernel/prelude.rs
+ create mode 100644 rust/kernel/print.rs
+ create mode 100644 rust/kernel/str.rs
+ create mode 100644 rust/macros/helpers.rs
+ create mode 100644 rust/macros/lib.rs
+ create mode 100644 rust/macros/module.rs
+ create mode 100644 samples/rust/Kconfig
+ create mode 100644 samples/rust/Makefile
+ create mode 100644 samples/rust/hostprogs/.gitignore
+ create mode 100644 samples/rust/hostprogs/Makefile
+ create mode 100644 samples/rust/hostprogs/a.rs
+ create mode 100644 samples/rust/hostprogs/b.rs
+ create mode 100644 samples/rust/hostprogs/single.rs
+ create mode 100644 samples/rust/rust_minimal.rs
+ create mode 100755 scripts/generate_rust_analyzer.py
+ create mode 100644 scripts/generate_rust_target.rs
+ create mode 100755 scripts/is_rust_module.sh
+ create mode 100755 scripts/rust_is_available.sh
+ create mode 100644 scripts/rust_is_available_bindgen_libclang.h
+
+
+base-commit: f76349cf41451c5c42a99f18a9163377e4b364ff
 -- 
-2.25.1
+2.37.3
 
