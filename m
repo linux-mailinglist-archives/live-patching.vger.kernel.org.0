@@ -2,83 +2,88 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC0F5EDFC0
-	for <lists+live-patching@lfdr.de>; Wed, 28 Sep 2022 17:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D72255EE098
+	for <lists+live-patching@lfdr.de>; Wed, 28 Sep 2022 17:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234732AbiI1PIL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 28 Sep 2022 11:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
+        id S234647AbiI1Pf1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 28 Sep 2022 11:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234686AbiI1PHm (ORCPT
+        with ESMTP id S234725AbiI1Pe5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 28 Sep 2022 11:07:42 -0400
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B16B0890;
-        Wed, 28 Sep 2022 08:07:07 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id bq9so20282922wrb.4;
-        Wed, 28 Sep 2022 08:07:07 -0700 (PDT)
+        Wed, 28 Sep 2022 11:34:57 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536186173D;
+        Wed, 28 Sep 2022 08:34:51 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id p10so411476iln.4;
+        Wed, 28 Sep 2022 08:34:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=7YMjbZ8J9tKgbU3lbB83+uhwQsHK55CjtoPPW43rcIs=;
+        b=nNT6rlWUMZ0SnuEJDO14/3j3UbMTHEOYduj5E8ktaj4JO5Au5p8UggQZHYBM9s9GmC
+         GPGoE10f0NsbRaD8tGugG3Lmnv8e6efNy4SAUsYAbFSGgKbXZJyRtmVuHhdsxWMtqSD6
+         vFSZofQPWLVPySDWnU8vboBghzU4R82yvZwVX+nt+bSgQu9XrHFq1XEg0frnQPHw24Qs
+         6FqPWpmk+NR10+DJu4YQN2hMVRaZ8hreQw/xR/1stVJHdElbahdC1o6/9sFtOYcZ3HFm
+         ifyZxxNjnmLwvBXNDiqWHI8yYwuyMoklS7kVWGY+9QXmwsiKmJ1LncnkVZBxYd/l892C
+         B+yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=qREYIWjuGjLGDeO/dgifyqQc1nhCGZnGcZ9iHgJIHrM=;
-        b=3FPbnQNvQH1QOFRPk1fHaETYNCQF/b1fykyp12/VZPRI79+YXanPxeJ7vP160rrTtb
-         f4VlpkSGJMzjqcj56ddkp1I4oRvh9L0UDeewNHPU+YyJSOQKTQ5PZ2+IizAjcKlcy2zp
-         MlUchM8rScLrcMKJCUy6dFrWEGIRL904vUcTAxpv8rwBH77tSI1A5YwqgrnhhPSRogOq
-         wD+sPQXSjuRUfMkShi7pMy7++3PicEAShc11K+Xg997yvrwAAlSwWXNqFKDFpjUt/6im
-         Pj++84oLZk8Yd6+gTqV78WRLwF+JmxHnN1NsIlgnm2rBvzuji+WcKKDUiX/HB3gX8CHT
-         6ysw==
-X-Gm-Message-State: ACrzQf2N8271h57ZQAQzcGx7qauukAF9bHFjOc4wHakyG4ItHLO19F8U
-        CKqcllBrvbiS6o2yIlCRCwbMg0qaKhg=
-X-Google-Smtp-Source: AMsMyM5FFV4aX5J6YjdrDCbVIvl3V6P8/lD53lGFfc9W3f5bjY3hHbBprT2F7AKvWApQc2n4Pf+ISQ==
-X-Received: by 2002:a05:6000:1acf:b0:22b:36ad:28e with SMTP id i15-20020a0560001acf00b0022b36ad028emr20180294wry.314.1664377619666;
-        Wed, 28 Sep 2022 08:06:59 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id f4-20020adfe904000000b0022ac38fb20asm4355010wrm.111.2022.09.28.08.06.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 08:06:59 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 15:06:57 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=7YMjbZ8J9tKgbU3lbB83+uhwQsHK55CjtoPPW43rcIs=;
+        b=3Z6RzOgmGaTIkGMHvLSO0ktNHpp/qTVs5MssMbAB1bAgqOQ5iWfQu/bXSXeDNqCw2p
+         eIuLgqiz6EbgM4U+X0DoV+qdOWX+f6QLxPGwbu+69hhhMkxL2SH9WEn3W64LlPhfFfAC
+         IMB9bobyB7NliHzfhDMAWNbaG2j2kBk4t7fXbkzj/Tp+qUOuRGF97Xw+15pIjaFP+reg
+         j2S9eN8a8w68wJaBWSDahsOPyfPCSm1SNIZj8xJLT4fgqyx+B4pgp5gy4WxeVa7hj3CC
+         g2rwQkeiy+6kpIbFpsRmiFQfmVhP83eND0nlNGb2vSUuM7sX24VzRl1+fiPAqa7Pye7P
+         ZiSQ==
+X-Gm-Message-State: ACrzQf3wPZ04zxaGdMv/qXq9PR3zQH1aRb4Cw/XgIkh2UwQIANmJVKSZ
+        /kRB8iy+7lYFQxlf3allFQsVFv+nzf2u4OwXvZfh817CSjA=
+X-Google-Smtp-Source: AMsMyM5GmHEAKGvxhjbyKefQqMoHqYHsCmV0gzis+S9H+0AZni9Jyq1QNEECB5Z8RI13e4VdJP112o1DTRnVZBgEd6U=
+X-Received: by 2002:a92:c569:0:b0:2f5:927d:b61a with SMTP id
+ b9-20020a92c569000000b002f5927db61amr15812068ilj.151.1664379290391; Wed, 28
+ Sep 2022 08:34:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220927131518.30000-1-ojeda@kernel.org> <YzRjEc9zQbHeWPFL@liuwe-devbox-debian-v2>
+In-Reply-To: <YzRjEc9zQbHeWPFL@liuwe-devbox-debian-v2>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Wed, 28 Sep 2022 17:34:39 +0200
+Message-ID: <CANiq72kq4RR4suFjGUZeg6ua8X=KU5aBPKPgjRH29hOVmDiNLQ@mail.gmail.com>
+Subject: Re: [PATCH v10 00/27] Rust support
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
         Jarkko Sakkinen <jarkko@kernel.org>, linux-doc@vger.kernel.org,
         linux-kbuild@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        live-patching@vger.kernel.org, Wei Liu <wei.liu@kernel.org>
-Subject: Re: [PATCH v10 00/27] Rust support
-Message-ID: <YzRjEc9zQbHeWPFL@liuwe-devbox-debian-v2>
-References: <20220927131518.30000-1-ojeda@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220927131518.30000-1-ojeda@kernel.org>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+        live-patching@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 03:14:31PM +0200, Miguel Ojeda wrote:
-> 
-> Miguel Ojeda (22):
->   rust: import upstream `alloc` crate
+On Wed, Sep 28, 2022 at 5:07 PM Wei Liu <wei.liu@kernel.org> wrote:
+>
+> I cannot find this patch in my inbox. That's probably filtered out by
+> the mailing list since it is too big.
 
-I cannot find this patch in my inbox. That's probably filtered out by
-the mailing list since it is too big.
+The patch reached lore in case you want to double-check:
 
-I've gone to GitHub to take a look at the commit
-753dece88d70a23b015e01674a662e683235c08f in the `rust-next` branch. It
-looks good to me, so feel free to add
+    https://lore.kernel.org/lkml/20220927131518.30000-8-ojeda@kernel.org/
 
-    Reviewed-by: Wei Liu <wei.liu@kernel.org>
+I am Cc'ing patches@lists.linux.dev as suggested by Konstantin to
+reduce the chance of problems, though I wouldn't expect to have issues
+now since it is fairly smaller than v8 where we hit the issue.
 
-to that patch.
-
-Thanks,
-Wei.
+Cheers,
+Miguel
