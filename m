@@ -2,50 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1658D5F027D
-	for <lists+live-patching@lfdr.de>; Fri, 30 Sep 2022 03:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D4FB5F05CD
+	for <lists+live-patching@lfdr.de>; Fri, 30 Sep 2022 09:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiI3B7j (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 29 Sep 2022 21:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55212 "EHLO
+        id S229677AbiI3Hhj (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 30 Sep 2022 03:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiI3B7i (ORCPT
+        with ESMTP id S230111AbiI3Hhi (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 29 Sep 2022 21:59:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AB432B;
-        Thu, 29 Sep 2022 18:59:32 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Mdtcw6RT5zpSwb;
-        Fri, 30 Sep 2022 09:56:32 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 30 Sep 2022 09:59:30 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 30 Sep 2022 09:59:30 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Fri, 30 Sep 2022 03:37:38 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE9717F57B;
+        Fri, 30 Sep 2022 00:37:36 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 71DF61F8C5;
+        Fri, 30 Sep 2022 07:37:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1664523454; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4eHJc3tsRvKBQVsLMvLqCmUK7/D5zJMrXa24JNW5PuQ=;
+        b=MTiI7reU4pPvjP/X77XGOveBIjxPDSiwtr8mB0apENbWwaiiYw88wGCHxYFYYgf+b2DEu1
+        KamfkF5tbsI+6Gg+g3VLtU7uSrNECCZP8UGg+zazMrPY0i/I1oryf832JTXJOLPbhhx7oI
+        Bfth1mZ7W6ZoEBTJbBLNClsBFM3p/6I=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 529392C15D;
+        Fri, 30 Sep 2022 07:37:34 +0000 (UTC)
+Date:   Fri, 30 Sep 2022 09:37:33 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH] livepatch: Move the result-invariant calculation out of the loop
-Date:   Fri, 30 Sep 2022 09:54:46 +0800
-Message-ID: <20220930015446.1270-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.37.3.windows.1
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Move the result-invariant calculation out of
+ the loop
+Message-ID: <YzacvcSOoICzYtx8@alley>
+References: <20220930015446.1270-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220930015446.1270-1-thunder.leizhen@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,85 +56,18 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-The calculation results of the variables 'func_addr' and 'func_size' are
-not affected by the for loop and do not change due to the changes of
-entries[i]. The performance can be improved by moving it outside the loop.
+On Fri 2022-09-30 09:54:46, Zhen Lei wrote:
+> The calculation results of the variables 'func_addr' and 'func_size' are
+> not affected by the for loop and do not change due to the changes of
+> entries[i]. The performance can be improved by moving it outside the loop.
+> 
+> No functional change.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-No functional change.
+Makes sense:
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- kernel/livepatch/transition.c | 54 +++++++++++++++++------------------
- 1 file changed, 27 insertions(+), 27 deletions(-)
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index 5d03a2ad1066195..da93aa77715a306 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -196,36 +196,36 @@ static int klp_check_stack_func(struct klp_func *func, unsigned long *entries,
- 	struct klp_ops *ops;
- 	int i;
- 
--	for (i = 0; i < nr_entries; i++) {
--		address = entries[i];
-+	if (klp_target_state == KLP_UNPATCHED) {
-+		 /*
-+		  * Check for the to-be-unpatched function
-+		  * (the func itself).
-+		  */
-+		func_addr = (unsigned long)func->new_func;
-+		func_size = func->new_size;
-+	} else {
-+		/*
-+		 * Check for the to-be-patched function
-+		 * (the previous func).
-+		 */
-+		ops = klp_find_ops(func->old_func);
- 
--		if (klp_target_state == KLP_UNPATCHED) {
--			 /*
--			  * Check for the to-be-unpatched function
--			  * (the func itself).
--			  */
--			func_addr = (unsigned long)func->new_func;
--			func_size = func->new_size;
-+		if (list_is_singular(&ops->func_stack)) {
-+			/* original function */
-+			func_addr = (unsigned long)func->old_func;
-+			func_size = func->old_size;
- 		} else {
--			/*
--			 * Check for the to-be-patched function
--			 * (the previous func).
--			 */
--			ops = klp_find_ops(func->old_func);
--
--			if (list_is_singular(&ops->func_stack)) {
--				/* original function */
--				func_addr = (unsigned long)func->old_func;
--				func_size = func->old_size;
--			} else {
--				/* previously patched function */
--				struct klp_func *prev;
--
--				prev = list_next_entry(func, stack_node);
--				func_addr = (unsigned long)prev->new_func;
--				func_size = prev->new_size;
--			}
-+			/* previously patched function */
-+			struct klp_func *prev;
-+
-+			prev = list_next_entry(func, stack_node);
-+			func_addr = (unsigned long)prev->new_func;
-+			func_size = prev->new_size;
- 		}
-+	}
-+
-+	for (i = 0; i < nr_entries; i++) {
-+		address = entries[i];
- 
- 		if (address >= func_addr && address < func_addr + func_size)
- 			return -EAGAIN;
--- 
-2.25.1
-
+Best Regards,
+Petr
