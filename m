@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6279E600705
-	for <lists+live-patching@lfdr.de>; Mon, 17 Oct 2022 08:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1474E6006ED
+	for <lists+live-patching@lfdr.de>; Mon, 17 Oct 2022 08:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiJQGw1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 17 Oct 2022 02:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
+        id S229778AbiJQGvW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 17 Oct 2022 02:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbiJQGwE (ORCPT
+        with ESMTP id S229963AbiJQGuy (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 17 Oct 2022 02:52:04 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7E6580A5;
-        Sun, 16 Oct 2022 23:51:09 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MrSFY5BTXzmVdG;
-        Mon, 17 Oct 2022 14:46:25 +0800 (CST)
+        Mon, 17 Oct 2022 02:50:54 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F421757887;
+        Sun, 16 Oct 2022 23:50:49 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MrSHZ0GCyzJn5l;
+        Mon, 17 Oct 2022 14:48:10 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 17 Oct 2022 14:50:41 +0800
+ 15.1.2375.31; Mon, 17 Oct 2022 14:50:42 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 17 Oct 2022 14:50:40 +0800
+ 15.1.2375.31; Mon, 17 Oct 2022 14:50:41 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -43,9 +43,9 @@ To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         "Steven Rostedt" <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>
 CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v7 05/11] kallsyms: Improve the performance of kallsyms_lookup_name()
-Date:   Mon, 17 Oct 2022 14:49:44 +0800
-Message-ID: <20221017064950.2038-6-thunder.leizhen@huawei.com>
+Subject: [PATCH v7 06/11] kallsyms: Improve the performance of kallsyms_lookup_name() when CONFIG_LTO_CLANG=y
+Date:   Mon, 17 Oct 2022 14:49:45 +0800
+Message-ID: <20221017064950.2038-7-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.37.3.windows.1
 In-Reply-To: <20221017064950.2038-1-thunder.leizhen@huawei.com>
 References: <20221017064950.2038-1-thunder.leizhen@huawei.com>
@@ -64,130 +64,266 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Currently, to search for a symbol, we need to expand the symbols in
-'kallsyms_names' one by one, and then use the expanded string for
-comparison. This process can be optimized.
+LLVM appends various suffixes for local functions and variables, suffixes
+observed:
+ - foo.llvm.[0-9a-f]+
+ - foo.[0-9a-f]+
 
-And now scripts/kallsyms no longer compresses the symbol types, each
-symbol type always occupies one byte. So we can first compress the
-searched symbol and then make a quick comparison based on the compressed
-length and content. In this way, for entries with mismatched lengths,
-there is no need to expand and compare strings. And for those matching
-lengths, there's no need to expand the symbol. This saves a lot of time.
-According to my test results, the average performance of
-kallsyms_lookup_name() can be improved by 20 to 30 times.
+Therefore, when CONFIG_LTO_CLANG=y, kallsyms_lookup_name() needs to
+truncate the suffix of the symbol name before comparing the local function
+or variable name.
 
-The pseudo code of the test case is as follows:
-static int stat_find_name(...)
-{
-	start = sched_clock();
-	(void)kallsyms_lookup_name(name);
-	end = sched_clock();
-	//Update min, max, cnt, sum
-}
+Currently, to improve performance, we compare tokens generated by
+compressing the function name or variable name without suffix. However,
+the symbols recorded in kallsyms_names[] are compressed with suffixes.
+During symbol compression, the suffix header may be combined with a
+subsequent token to generate a new token, or may be combined with a
+previous token to generate a new token. This combination process must
+follow a strict sequence, otherwise we may not get the same result.
+For example:
+ Assume that the following three combinations occur in descending order:
+ c. > b[c.] > ab
+ The compression result of "abc." is: "a" + "bc."
+ The compression result of "abc" is: "ab" + "c"
 
-/*
- * Traverse all symbols in sequence and collect statistics on the time
- * taken by kallsyms_lookup_name() to lookup each symbol.
- */
-kallsyms_on_each_symbol(stat_find_name, NULL);
+Therefore, when CONFIG_LTO_CLANG=y, the compression algorithm needs to be
+adjusted. That is, the token with the suffix header cannot be combined
+with the token before it. The two substrings before and after the suffix
+header are compressed separately.
+ sub-string1 (function or variable name, without suffix)
+ sub-string2 (suffix, contains suffix header '.')
 
-The test results are as follows (twice):
-After : min=5250, max=  726560, avg= 302132
-After : min=5320, max=  726850, avg= 301978
-Before: min=170,  max=15949190, avg=7553906
-Before: min=160,  max=15877280, avg=7517784
+The implementation of the tool is as follows:
+1. A new table polluted_table[] is added, it records all tokens with
+   suffix headers after expansion. These tokens are called polluted
+   tokens, which are polluted by suffix headers. When combined with other
+   tokens, these tokens cannot be placed behind them. This ensures that
+   the suffix header is at the beginning of all tokens after expansion.
+2. Because the suffix needs to be processed only when CONFIG_LTO_CLANG=y,
+   option "--lto-clang" is added, to avoid affecting the compression ratio
+   when CONFIG_LTO_CLANG=n.
+   According to the test result, the memory increment is less than 1KB,
+   regardless of whether CONFIG_LTO_CLANG=y or CONFIG_LTO_CLANG=n.
 
-The average time consumed is only 4.01% and the maximum time consumed is
-only 4.57% of the time consumed before optimization.
+The implementation on the kernel side is relatively simple:
+1. Compare only when the length is equal or the next token after expansion
+   starts with suffix initial. Although there is no guarantee that this
+   suffix initial is the suffix header, for example, the suffix may
+   contain two '.', such as "show_cpuinfo.llvm.3123972329667954434".
+   Don't worry, one with '.' and one without '.', the comparison is bound
+   to fail.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- kernel/kallsyms.c | 50 +++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 46 insertions(+), 4 deletions(-)
+ kernel/kallsyms.c       | 30 ++++++++++++-----
+ scripts/kallsyms.c      | 74 +++++++++++++++++++++++++++++++++++++++--
+ scripts/link-vmlinux.sh |  4 +++
+ 3 files changed, 97 insertions(+), 11 deletions(-)
 
 diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index f1fe404af184047..7f3987cc975be3b 100644
+index 7f3987cc975be3b..bd1f263b1c69b53 100644
 --- a/kernel/kallsyms.c
 +++ b/kernel/kallsyms.c
-@@ -107,7 +107,7 @@ static unsigned char *find_token(unsigned char *str, int len,
- 	return NULL;
- }
- 
--static int __maybe_unused kallsyms_compress_symbol_name(const char *name, char *buf, size_t size)
-+static int kallsyms_compress_symbol_name(const char *name, char *buf, size_t size)
- {
- 	int i, j, n, len;
- 	unsigned char *p1, *p2;
-@@ -267,23 +267,65 @@ static bool cleanup_symbol_name(char *s)
+@@ -267,6 +267,25 @@ static bool cleanup_symbol_name(char *s)
  	return false;
  }
  
-+static int kallsyms_lookup_compressed_name(unsigned char *namebuf, int namelen,
-+					   unsigned long *addr)
++/*
++ * Please refer to the comments in cleanup_symbol_name() for more details.
++ * The former is used to handle expanded symbols, while this function is used
++ * to handle unexpanded symbols.
++ */
++static bool cleanup_compressed_symbol_name(int token)
 +{
-+	unsigned int i, off;
-+	unsigned int len, x;
-+	const unsigned char *name;
++	char first;
 +
-+	for (i = 0, off = 0; namelen && i < kallsyms_num_syms; i++) {
-+		/*
-+		 * For each entry in kallsyms_names[], the storage format is:
-+		 *  ----------------------------
-+		 * | len(1-2) | type(1) | name(x) |
-+		 *  ----------------------------
-+		 *
-+		 * Number of bytes in parentheses, and: len = 1 + x
-+		 */
-+		len = kallsyms_names[off];
-+		off++;
-+		if (len & 0x80) {
-+			len = (len & 0x7f) | (kallsyms_names[off] << 7);
-+			off++;
-+		}
-+		name = &kallsyms_names[off + 1];
-+		off += len;
++	if (!IS_ENABLED(CONFIG_LTO_CLANG))
++		return false;
 +
-+		x = len - 1;
-+		if (x != namelen)
-+			continue;
++	first = kallsyms_token_table[kallsyms_token_index[token]];
++	if (first == '.')
++		return true;
 +
-+		if (!memcmp(name, namebuf, namelen)) {
-+			*addr = kallsyms_sym_address(i);
-+			return 0;
-+		}
-+	}
-+
-+	return -ENOENT;
++	return false;
 +}
 +
- /* Lookup the address for this symbol. Returns 0 if not found. */
+ static int kallsyms_lookup_compressed_name(unsigned char *namebuf, int namelen,
+ 					   unsigned long *addr)
+ {
+@@ -293,7 +312,8 @@ static int kallsyms_lookup_compressed_name(unsigned char *namebuf, int namelen,
+ 		off += len;
+ 
+ 		x = len - 1;
+-		if (x != namelen)
++		if ((x < namelen) ||
++		    (x > namelen && !cleanup_compressed_symbol_name(name[namelen])))
+ 			continue;
+ 
+ 		if (!memcmp(name, namebuf, namelen)) {
+@@ -309,8 +329,6 @@ static int kallsyms_lookup_compressed_name(unsigned char *namebuf, int namelen,
  unsigned long kallsyms_lookup_name(const char *name)
  {
  	char namebuf[KSYM_NAME_LEN];
- 	unsigned long i;
- 	unsigned int off;
-+	unsigned long addr;
-+	int ret, len;
+-	unsigned long i;
+-	unsigned int off;
+ 	unsigned long addr;
+ 	int ret, len;
  
- 	/* Skip the search for empty string. */
- 	if (!*name)
- 		return 0;
+@@ -323,12 +341,6 @@ unsigned long kallsyms_lookup_name(const char *name)
+ 	if (!ret)
+ 		return addr;
  
-+	len = kallsyms_compress_symbol_name(name, namebuf, ARRAY_SIZE(namebuf));
-+	ret = kallsyms_lookup_compressed_name(namebuf, len, &addr);
-+	if (!ret)
-+		return addr;
-+
- 	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
- 		off = kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
- 
--		if (strcmp(namebuf, name) == 0)
--			return kallsyms_sym_address(i);
+-	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
+-		off = kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
 -
- 		if (cleanup_symbol_name(namebuf) && strcmp(namebuf, name) == 0)
- 			return kallsyms_sym_address(i);
+-		if (cleanup_symbol_name(namebuf) && strcmp(namebuf, name) == 0)
+-			return kallsyms_sym_address(i);
+-	}
+ 	return module_kallsyms_lookup_name(name);
+ }
+ 
+diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+index 9864ce5e6c5bfc1..7fbb976f3805b17 100644
+--- a/scripts/kallsyms.c
++++ b/scripts/kallsyms.c
+@@ -78,6 +78,10 @@ static unsigned int table_size, table_cnt;
+ static int all_symbols;
+ static int absolute_percpu;
+ static int base_relative;
++static int lto_clang;
++
++static unsigned char polluted_table[256];
++static unsigned char polluted_table_len;
+ 
+ static int token_profit[0x10000];
+ 
+@@ -89,7 +93,7 @@ static unsigned char best_table_len[256];
+ static void usage(void)
+ {
+ 	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] "
+-			"[--base-relative] in.map > out.S\n");
++			"[--base-relative] [--lto-clang] in.map > out.S\n");
+ 	exit(1);
+ }
+ 
+@@ -653,6 +657,67 @@ static void compress_symbols(const unsigned char *str, int idx)
  	}
+ }
+ 
++static void init_polluted_table(void)
++{
++	int i;
++	unsigned char c;
++	unsigned char suffix_head[] = {'.'};
++
++	if (!lto_clang)
++		return;
++
++	for (i = 0; i < sizeof(suffix_head); i++) {
++		c = suffix_head[i];
++		if (best_table_len[c])
++			polluted_table[polluted_table_len++] = c;
++	}
++}
++
++static void update_polluted_table(unsigned char new_token)
++{
++	int i;
++	unsigned char first_token;
++
++	if (!lto_clang)
++		return;
++
++	/*
++	 * Polluted tokens are prohibited from being at the end, so they can
++	 * only be at the beginning, only the first sub-token needs to be
++	 * checked.
++	 */
++	first_token = best_table[new_token][0];
++	for (i = 0; i < polluted_table_len; i++) {
++		if (first_token == polluted_table[i]) {
++			polluted_table[polluted_table_len++] = new_token;
++			return;
++		}
++	}
++}
++
++/*
++ * To ensure that the first character of the suffix(such as '.') is at the
++ * beginning of the expanded substring. During compression, no token with
++ * suffix header(all of them are recorded in polluted_table[]) is allowed
++ * to be at the end.
++ */
++static bool is_forbidden(int index)
++{
++	int i;
++	unsigned char last_token;
++
++	if (!lto_clang)
++		return false;
++
++	last_token = (index >> 8) & 0xFF;
++	for (i = 0; i < polluted_table_len; i++) {
++		if (last_token == polluted_table[i])
++			return true;
++	}
++
++	return false;
++}
++
+ /* search the token with the maximum profit */
+ static int find_best_token(void)
+ {
+@@ -662,7 +727,7 @@ static int find_best_token(void)
+ 	best = 0;
+ 
+ 	for (i = 0; i < 0x10000; i++) {
+-		if (token_profit[i] > bestprofit) {
++		if ((token_profit[i] > bestprofit) && !is_forbidden(i)) {
+ 			best = i;
+ 			bestprofit = token_profit[i];
+ 		}
+@@ -693,6 +758,8 @@ static void optimize_result(void)
+ 			best_table[i][0] = best & 0xFF;
+ 			best_table[i][1] = (best >> 8) & 0xFF;
+ 
++			update_polluted_table((unsigned char)i);
++
+ 			/* replace this token in all the valid symbols */
+ 			compress_symbols(best_table[i], i);
+ 		}
+@@ -715,6 +782,8 @@ static void insert_real_symbols_in_table(void)
+ 		best_table[c][0] = c;
+ 		best_table_len[c] = 1;
+ 	}
++
++	init_polluted_table();
+ }
+ 
+ static void optimize_token_table(void)
+@@ -839,6 +908,7 @@ int main(int argc, char **argv)
+ 			{"all-symbols",     no_argument, &all_symbols,     1},
+ 			{"absolute-percpu", no_argument, &absolute_percpu, 1},
+ 			{"base-relative",   no_argument, &base_relative,   1},
++			{"lto-clang",       no_argument, &lto_clang,       1},
+ 			{},
+ 		};
+ 
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 918470d768e9c7d..32e573943cf036b 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -156,6 +156,10 @@ kallsyms()
+ 		kallsymopt="${kallsymopt} --base-relative"
+ 	fi
+ 
++	if is_enabled CONFIG_LTO_CLANG; then
++		kallsymopt="${kallsymopt} --lto-clang"
++	fi
++
+ 	info KSYMS ${2}
+ 	scripts/kallsyms ${kallsymopt} ${1} > ${2}
+ }
 -- 
 2.25.1
 
