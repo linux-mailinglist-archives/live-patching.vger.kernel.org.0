@@ -2,53 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A58160AEB4
-	for <lists+live-patching@lfdr.de>; Mon, 24 Oct 2022 17:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 916B860B175
+	for <lists+live-patching@lfdr.de>; Mon, 24 Oct 2022 18:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbiJXPNY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 24 Oct 2022 11:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
+        id S231126AbiJXQZQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 24 Oct 2022 12:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbiJXPNC (ORCPT
+        with ESMTP id S234895AbiJXQYg (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 24 Oct 2022 11:13:02 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DE78A7DB
-        for <live-patching@vger.kernel.org>; Mon, 24 Oct 2022 06:50:30 -0700 (PDT)
+        Mon, 24 Oct 2022 12:24:36 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D4115B311
+        for <live-patching@vger.kernel.org>; Mon, 24 Oct 2022 08:11:12 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 3EDDB2214F;
-        Mon, 24 Oct 2022 13:24:31 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 24D4322062;
+        Mon, 24 Oct 2022 15:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1666617871; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1666624148; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=VxyipOmoC3jQJ6MwF3AWwXixJOGtCymjNqk5udJyRvo=;
-        b=Y5Occ/BQ526ljKMi/GBnKkF/rdB+w6sHlqeUFcs0q7iqluVsPMCs1h27F5YVx5XW04bhQS
-        xsYW+uJXKPscJzOBKUgnByDYebTasW5+XJ9fwIS7af5Cu4NWRN+/hnxDp6QOTB5vzeOkbL
-        zO0jXAtu5twLBCN5fZQtzUEq6AhAVLw=
+        bh=gO1sktYJByX9L/swgAsEkHeORfMvJs6RAo/GoxFfkaw=;
+        b=YYRSFKlEMAHmGMghbEWovONqkfcvf9c277NnB9Bpt1SAZB2Q6hu25vc3PxRklprDO7boEk
+        XnHTt1MAqOTrkmBvyJSqmWE7Ele9IAiZ3gGZaJCUvrk4Of/pqd7o47XMHwMXNizbRVc4T6
+        /xc5qT6zPCdiG4xhAP+dXuSA5hHSjx0=
 Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 20EA52C141;
-        Mon, 24 Oct 2022 13:24:31 +0000 (UTC)
-Date:   Mon, 24 Oct 2022 15:24:28 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 07E342C141;
+        Mon, 24 Oct 2022 15:09:08 +0000 (UTC)
+Date:   Mon, 24 Oct 2022 17:09:07 +0200
 From:   Petr Mladek <pmladek@suse.com>
 To:     Joe Lawrence <joe.lawrence@redhat.com>
 Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
         live-patching@vger.kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
         nstange@suse.de
-Subject: Re: [PATCH 3/4] livepatch/shadow: Introduce klp_shadow_type structure
-Message-ID: <Y1aSDMi6ty8E+VGm@alley>
+Subject: Re: [PATCH 4/4] livepatch/shadow: Add garbage collection of shadow
+ variables
+Message-ID: <Y1aqkxKWnzVo7pfP@alley>
 References: <20220701194817.24655-1-mpdesouza@suse.com>
- <20220701194817.24655-4-mpdesouza@suse.com>
- <a0daa94e-a66d-ad14-339c-ed08b3914469@redhat.com>
- <2d00d226-9db2-7efd-903e-622e5698aaca@redhat.com>
+ <20220701194817.24655-5-mpdesouza@suse.com>
+ <b5fc2891-2fb0-4aa7-01dd-861da22bb7ea@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2d00d226-9db2-7efd-903e-622e5698aaca@redhat.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+In-Reply-To: <b5fc2891-2fb0-4aa7-01dd-861da22bb7ea@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,128 +56,140 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2022-08-25 10:54:18, Joe Lawrence wrote:
-> On 8/25/22 10:50 AM, Joe Lawrence wrote:
-> > On 7/1/22 3:48 PM, Marcos Paulo de Souza wrote:
-> >> The shadow variable type will be used in klp_shadow_alloc/get/free
-> >> functions instead of id/ctor/dtor parameters. As a result, all callers
-> >> use the same callbacks consistently[*][**].
-> >>
-> >> The structure will be used in the next patch that will manage the
-> >> lifetime of shadow variables and execute garbage collection automatically.
-> >>
-> >> [*] From the user POV, it might have been easier to pass $id instead
-> >>     of pointer to struct klp_shadow_type.
-> >>
-> >>     The problem is that each livepatch registers its own struct
-> >>     klp_shadow_type and defines its own @ctor/@dtor callbacks. It would
-> >>     be unclear what callback should be used. They should be compatible.
-> >>
-> >>     This problem is gone when each livepatch explicitly uses its
-> >>     own struct klp_shadow_type pointing to its own callbacks.
-> >>
-> >> [**] test_klp_shadow_vars.c uses a custom @dtor to show that it was called.
-> >>     The message must be disabled when called via klp_shadow_free_all()
-> >>     because the ordering of freed variables is not well defined there.
-> >>     It has to be done using another hack after switching to
-> >>     klp_shadow_types.
-> >>
+On Thu 2022-08-25 12:26:25, Joe Lawrence wrote:
+> On 7/1/22 3:48 PM, Marcos Paulo de Souza wrote:
+> > The life of shadow variables is not completely trivial to maintain.
+> > They might be used by more livepatches and more livepatched objects.
+> > They should stay as long as there is any user.
 > > 
-> > Is the ordering problem new to this patchset?  Shadow variables are
-> > still saved in klp_shadow_hash and I think the only change in this patch
-> > is that we need to compare through shadow_type and not id directly.  Or
-> > does patch 4/4 change behavior here?  Just curious, otherwise this patch
-> > is pretty straightforward.
+> > In practice, it requires to implement reference counting in callbacks
+> > of all users. They should register all the user and remove the shadow
+> > variables only when there is no user left.
 > > 
-> >> --- a/include/linux/livepatch.h
-> >> +++ b/include/linux/livepatch.h
-> >> @@ -216,15 +216,26 @@ typedef int (*klp_shadow_ctor_t)(void *obj,
-> >>  				 void *ctor_data);
-> >>  typedef void (*klp_shadow_dtor_t)(void *obj, void *shadow_data);
-> >>  
-> >> -void *klp_shadow_get(void *obj, unsigned long id);
-> >> -void *klp_shadow_alloc(void *obj, unsigned long id,
-> >> -		       size_t size, gfp_t gfp_flags,
-> >> -		       klp_shadow_ctor_t ctor, void *ctor_data);
-> >> -void *klp_shadow_get_or_alloc(void *obj, unsigned long id,
-> >> -			      size_t size, gfp_t gfp_flags,
-> >> -			      klp_shadow_ctor_t ctor, void *ctor_data);
-> >> -void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor);
-> >> -void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor);
-> >> +/**
-> >> + * struct klp_shadow_type - shadow variable type used by the klp_object
-> >> + * @id:		shadow variable type indentifier
-> >> + * @ctor:	custom constructor to initialize the shadow data (optional)
-> >> + * @dtor:	custom callback that can be used to unregister the variable
-> >> + *		and/or free data that the shadow variable points to (optional)
-> >> + */
-> >> +struct klp_shadow_type {
-> >> +	unsigned long id;
-> >> +	klp_shadow_ctor_t ctor;
-> >> +	klp_shadow_dtor_t dtor;
-> >> +};
-> >> +
-> >> +void *klp_shadow_get(void *obj, struct klp_shadow_type *shadow_type);
-> >> +void *klp_shadow_alloc(void *obj, struct klp_shadow_type *shadow_type,
-> >> +		       size_t size, gfp_t gfp_flags, void *ctor_data);
-> >> +void *klp_shadow_get_or_alloc(void *obj, struct klp_shadow_type *shadow_type,
-> >> +			      size_t size, gfp_t gfp_flags, void *ctor_data);
-> >> +void klp_shadow_free(void *obj, struct klp_shadow_type *shadow_type);
-> >> +void klp_shadow_free_all(struct klp_shadow_type *shadow_type);
-> >>  
-> >>  struct klp_state *klp_get_state(struct klp_patch *patch, unsigned long id);
-> >>  struct klp_state *klp_get_prev_state(unsigned long id);
-> >> diff --git a/kernel/livepatch/shadow.c b/kernel/livepatch/shadow.c
-> >> index 79b8646b1d4c..9dcbb626046e 100644
-> >> --- a/kernel/livepatch/shadow.c
-> >> +++ b/kernel/livepatch/shadow.c
-> >> @@ -63,24 +63,24 @@ struct klp_shadow {
-> >>   * klp_shadow_match() - verify a shadow variable matches given <obj, id>
-> >>   * @shadow:	shadow variable to match
-> >>   * @obj:	pointer to parent object
-> >> - * @id:		data identifier
-> >> + * @shadow_type: type of the wanted shadow variable
-> >>   *
-> >>   * Return: true if the shadow variable matches.
-> >>   */
-> >>  static inline bool klp_shadow_match(struct klp_shadow *shadow, void *obj,
-> >> -				unsigned long id)
-> >> +				struct klp_shadow_type *shadow_type)
-> >>  {
-> >> -	return shadow->obj == obj && shadow->id == id;
-> >> +	return shadow->obj == obj && shadow->id == shadow_type->id;
+> > This patch hides the reference counting into the klp_shadow API.
+> > The counter is connected with the shadow variable @id. It requires
+> > an API to take and release the reference. The release function also
+> > calls the related dtor() when defined.
 > > 
-> > Not sure if I'm being paranoid, but is there any problem if the user
-> > registers two klp_shadow_types with the same id?  I can't find any
-> > obvious logic problems with that, but I don't think the API prevents
-> > this confusing possibility.
+> > An easy solution would be to add some get_ref()/put_ref() API.
+> > But it would need to get called from pre()/post_un() callbacks.
+> > It might be easy to forget a callback and make it wrong.
+> > 
+> > A more safe approach is to associate the klp_shadow_type with
+> > klp_objects that use the shadow variables. The livepatch core
+> > code might then handle the reference counters on background.
+> > 
+> > The shadow variable type might then be added into a new @shadow_types
+> > member of struct klp_object. They will get then automatically registered
+> > and unregistered when the object is being livepatched. The registration
+> > increments the reference count. Unregistration decreases the reference
+> > count. All shadow variables of the given type are freed when the reference
+> > count reaches zero.
+> > 
+> > All klp_shadow_alloc/get/free functions also checks whether the requested
+> > type is registered. It will help to catch missing registration and might
+> > also help to catch eventual races.
+> > 
+> 
+> If I understand the patchset correctly, the last patch consolidated
+> id/ctor/dtor into klp_shadow_type structure, then this one formally
+> associates the new structure with a klp_object so that it bumps up /
+> down a simple reference count automatically.  That count is now checked
+> before calling the dtor/removal of any matching shadow variable.  So far
+> so good.
+> 
+> How does this play out for the following scenario:
+> 
+> - atomic replace livepatches, accumulative versions
+> - livepatch v1 : registers a klp_shadow_type (id=1), creates a few
+> shadow vars
+> - livepatch v2 : also uses klp_shadow_type (id=1) and creates a few
+> shadow vars
+> 
+> Since the first livepatch registered the klp_shadow_type, its ctor/dtor
+> pair will be used for all id=1 shadow variables, including those created
+> by the subsequent livepatches, right?
 
-Great question!
+The klp_shadow_*alloc() and klp_shdow_free*() APIs pass
+struct *klp_shadow_type instead of the ID. The structure is
+defined in each livepatch that is using this shadow variable.
+As a result, each livepatch code is using @ctor/@dtor defined
+in its own livepatch module. It actually behaves the same as before.
 
-> Ah n/m, I think I see now that I'm reading patch 4/4, it's
-> klp_shadow_type_get_reg() is going to look for an existing
-> shadow_type_reg->id first.
+I though about storing pointers to @ctors/@dtors of all
+registered klp_shadow_types from all livepatches. But it
+would hard to choose which one should be used.
 
-The purpose of klp_shadow_type_get_reg() is a bit different.
-It decides whether the given klp_shadow_type is registered
-for the first time or we just need to increase the refcount.
+Note that some implementation might disappear when the livepatch
+is replaced and the module removed.
 
-It means that it is actually possible to register two
-different klp_shadow_types using the same ID.
+So, it is easier when each caller passes its own structure
+with its own implementation. They should be compatible anyway.
 
-Well, I am not sure if we could do better. We could not compare
-pointers of @ctor and @dtor callbacks. The very same klp_shadow_type
-can be registered from more livepatches and each livepatch need
-to have its own implementation of @ctor and @dtor. It is the purpose
-of the refcounting.
+> 
+> > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> > Signed-off-by: Petr Mladek <pmladek@suse.com>
+> > ---
+> >  include/linux/livepatch.h                 |  21 ++++
+> >  kernel/livepatch/core.c                   |  39 +++++++
+> >  kernel/livepatch/core.h                   |   1 +
+> >  kernel/livepatch/shadow.c                 | 124 ++++++++++++++++++++++
+> >  kernel/livepatch/transition.c             |   4 +-
+> >  lib/livepatch/test_klp_shadow_vars.c      |  18 +++-
+> >  samples/livepatch/livepatch-shadow-fix1.c |   8 +-
+> >  samples/livepatch/livepatch-shadow-fix2.c |   9 +-
+> >  8 files changed, 214 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+> > index 79e7bf3b35f6..cb65de831684 100644
+> > --- a/include/linux/livepatch.h
+> > +++ b/include/linux/livepatch.h
+> > @@ -100,11 +100,14 @@ struct klp_callbacks {
+> >  	bool post_unpatch_enabled;
+> >  };
+> >  
+> > +struct klp_shadow_type;
+> > +
+> >  /**
+> >   * struct klp_object - kernel object structure for live patching
+> >   * @name:	module name (or NULL for vmlinux)
+> >   * @funcs:	function entries for functions to be patched in the object
+> >   * @callbacks:	functions to be executed pre/post (un)patching
+> > + * @shadow_types: shadow variable types used by the livepatch for the klp_object
+> >   * @kobj:	kobject for sysfs resources
+> >   * @func_list:	dynamic list of the function entries
+> >   * @node:	list node for klp_patch obj_list
+> > @@ -118,6 +121,7 @@ struct klp_object {
+> >  	const char *name;
+> >  	struct klp_func *funcs;
+> >  	struct klp_callbacks callbacks;
+> > +	struct klp_shadow_type **shadow_types;
+> >  
+> 
+> Hmm.  The implementation of shadow_types inside klp_object might be
+> difficult to integrate into kpatch-build.  For kpatches, we do utilize
+> the kernel's shadow variable API directly, but at kpatch author time we
+> don't have any of klp_patch objects in hand -- those are generated by
+> template after the binary before/after comparison is completed.
 
-In each case, it does not make things worse. The previous API
-allowed to combine any ID with any @ctor or @dtor.
+I am sorry but I am not much familiar with kPatch. But I am surprised.
+It should be similar to klp_callbacks. If it was possible to define
+struct klp_callbacks for a particular struct klp_object then it
+should be possible to define struct klp_shadow_types ** similar way.
 
-One idea. We could define the type by "name" and "id". The @name
-might be created by stringification of the structure that defines
-the klp_shadow_type. It might be checked during registration
-and unregistration. But I am not sure if it is worth the effort.
+> My first thought is that kpatch-build might associate any shadow
+> variables in foo.c with its parent object (vmlinux, foo.ko, etc.),
+> however that may not always be 100% accurate.
+
+I think that I would need to get more familiar with kPatch...
+
+> In fact, we have occasionally used shadow variables with <id, 0> to
+> create one off variables not associated with specific code or data
+> structures, but rather the presence of livepatch.  This is (too) briefly
+> mentioned in "Other use-cases" section of the shadow variable Documentation.
+
+I think that we do this as well. AFAIK, we are going to associate them
+with the klp_object for "vmlinux".
 
 Best Regards,
 Petr
