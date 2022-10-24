@@ -2,107 +2,96 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24EBD60493B
-	for <lists+live-patching@lfdr.de>; Wed, 19 Oct 2022 16:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D175E60ADC5
+	for <lists+live-patching@lfdr.de>; Mon, 24 Oct 2022 16:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiJSO3N (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 19 Oct 2022 10:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        id S232547AbiJXOeQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 24 Oct 2022 10:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231503AbiJSO2s (ORCPT
+        with ESMTP id S237178AbiJXOeC (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 19 Oct 2022 10:28:48 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88165149DEA;
-        Wed, 19 Oct 2022 07:13:15 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Mssz81K3YzpVgY;
-        Wed, 19 Oct 2022 22:08:52 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 19 Oct 2022 22:12:10 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 19 Oct 2022 22:12:09 +0800
-Subject: Re: [PATCH v7 00/11] kallsyms: Optimizes the performance of lookup
- symbols
-To:     Luis Chamberlain <mcgrof@kernel.org>
-CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        <linux-modules@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Ingo Molnar" <mingo@redhat.com>
-References: <20221017064950.2038-1-thunder.leizhen@huawei.com>
- <Y0/nEngJF6bbINEx@bombadil.infradead.org>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <ad9e51c6-f77d-d9e9-9c13-42fcbbde7147@huawei.com>
-Date:   Wed, 19 Oct 2022 22:11:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Mon, 24 Oct 2022 10:34:02 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611029DDB8
+        for <live-patching@vger.kernel.org>; Mon, 24 Oct 2022 06:09:08 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id AA2F21FD92;
+        Mon, 24 Oct 2022 12:59:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1666616374; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pN1heeaLFpPg/ZBDZe4BcH3XBZUjLc6e8rJPSmQsDEU=;
+        b=PoL/fBmFXb6KN4l/Qlho0qFF9VKO+PynOA7kfR1D6YJ+4tqHXlXJDb0QgnpKaInEOragmJ
+        kRpugBxwo6XODyX/JvKh7z44pSz+Qkh/4pbkVrsmnhMv99meJYuJ7Jvj+aLnDd6tW75b3+
+        pOIUPALlZcb2igg1hMT1I6Xdf4nGVao=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 8C7862C141;
+        Mon, 24 Oct 2022 12:59:34 +0000 (UTC)
+Date:   Mon, 24 Oct 2022 14:59:31 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
+        live-patching@vger.kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
+        nstange@suse.de
+Subject: Re: [PATCH 3/4] livepatch/shadow: Introduce klp_shadow_type structure
+Message-ID: <Y1aMMxCPCEjP5Lc8@alley>
+References: <20220701194817.24655-1-mpdesouza@suse.com>
+ <20220701194817.24655-4-mpdesouza@suse.com>
+ <a0daa94e-a66d-ad14-339c-ed08b3914469@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <Y0/nEngJF6bbINEx@bombadil.infradead.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a0daa94e-a66d-ad14-339c-ed08b3914469@redhat.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-
-
-On 2022/10/19 20:01, Luis Chamberlain wrote:
-> On Mon, Oct 17, 2022 at 02:49:39PM +0800, Zhen Lei wrote:
->> Currently, to search for a symbol, we need to expand the symbols in
->> 'kallsyms_names' one by one, and then use the expanded string for
->> comparison. This is very slow.
->>
->> In fact, we can first compress the name being looked up and then use
->> it for comparison when traversing 'kallsyms_names'.
->>
->> This patch series optimizes the performance of function kallsyms_lookup_name(),
->> and function klp_find_object_symbol() in the livepatch module. Based on the
->> test results, the performance overhead is reduced to 5%. That is, the
->> performance of these functions is improved by 20 times.
+On Thu 2022-08-25 10:50:20, Joe Lawrence wrote:
+> On 7/1/22 3:48 PM, Marcos Paulo de Souza wrote:
+> > The shadow variable type will be used in klp_shadow_alloc/get/free
+> > functions instead of id/ctor/dtor parameters. As a result, all callers
+> > use the same callbacks consistently[*][**].
+> > 
+> > The structure will be used in the next patch that will manage the
+> > lifetime of shadow variables and execute garbage collection automatically.
+> > 
+> > [*] From the user POV, it might have been easier to pass $id instead
+> >     of pointer to struct klp_shadow_type.
+> > 
+> >     The problem is that each livepatch registers its own struct
+> >     klp_shadow_type and defines its own @ctor/@dtor callbacks. It would
+> >     be unclear what callback should be used. They should be compatible.
+> > 
+> >     This problem is gone when each livepatch explicitly uses its
+> >     own struct klp_shadow_type pointing to its own callbacks.
+> > 
+> > [**] test_klp_shadow_vars.c uses a custom @dtor to show that it was called.
+> >     The message must be disabled when called via klp_shadow_free_all()
+> >     because the ordering of freed variables is not well defined there.
+> >     It has to be done using another hack after switching to
+> >     klp_shadow_types.
+> > 
 > 
-> Stupid question, is a hash table in order?
+> Is the ordering problem new to this patchset?  Shadow variables are
+> still saved in klp_shadow_hash and I think the only change in this patch
+> is that we need to compare through shadow_type and not id directly.  Or
+> does patch 4/4 change behavior here?  Just curious, otherwise this patch
+> is pretty straightforward.
 
-No hash table.
+The problem is old. klp_shadow_free_all() uses hash_for_each(). It
+iterates the hashes sorted by the hash value. The tested arrays are
+on stack. The address of the stack is different in every run.
+As a result, the hash is always different and the pointers
+are sorted in different order.
 
-All symbols are arranged in ascending order of address. For example: cat /proc/kallsyms
-
-The addresses of all symbols are stored in kallsyms_addresses[], and names of all symbols
-are stored in kallsyms_names[]. The elements in these two arrays are in a one-to-one
-relationship. For any symbol, it has the same index in both arrays.
-
-Therefore, when we look up a symbolic name based on an address, we use a binary lookup.
-However, when we look up an address based on a symbol name, we can only traverse array
-kallsyms_names[] in sequence. I think the reason why hash is not used is to save memory.
-
-> 
->   Luis
-> .
-> 
-
--- 
-Regards,
-  Zhen Lei
+Best Regards,
+Petr
