@@ -2,31 +2,33 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1C2612306
-	for <lists+live-patching@lfdr.de>; Sat, 29 Oct 2022 14:49:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CDA3612F26
+	for <lists+live-patching@lfdr.de>; Mon, 31 Oct 2022 03:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbiJ2MtX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 29 Oct 2022 08:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
+        id S229549AbiJaCzI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 30 Oct 2022 22:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbiJ2MtW (ORCPT
+        with ESMTP id S229536AbiJaCzH (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sat, 29 Oct 2022 08:49:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845E95EDF8
-        for <live-patching@vger.kernel.org>; Sat, 29 Oct 2022 05:49:21 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-252-8G--BZdzMhu3J2EzxiGSXw-1; Sat, 29 Oct 2022 13:49:18 +0100
-X-MC-Unique: 8G--BZdzMhu3J2EzxiGSXw-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sat, 29 Oct
- 2022 13:49:17 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.042; Sat, 29 Oct 2022 13:49:17 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Leizhen (ThunderTown)'" <thunder.leizhen@huawei.com>,
+        Sun, 30 Oct 2022 22:55:07 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA9D6564;
+        Sun, 30 Oct 2022 19:55:03 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N0yN25sj5zpW2f;
+        Mon, 31 Oct 2022 10:51:30 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 31 Oct 2022 10:55:01 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 31 Oct 2022 10:55:00 +0800
+Subject: Re: [PATCH v7 00/11] kallsyms: Optimizes the performance of lookup
+ symbols
+To:     David Laight <David.Laight@ACULAB.COM>,
         Luis Chamberlain <mcgrof@kernel.org>
 CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -43,13 +45,6 @@ CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
         "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
         "Steven Rostedt" <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>
-Subject: RE: [PATCH v7 00/11] kallsyms: Optimizes the performance of lookup
- symbols
-Thread-Topic: [PATCH v7 00/11] kallsyms: Optimizes the performance of lookup
- symbols
-Thread-Index: AQHY623+53cs6bIWsU+vWlwnXrR/Ha4lTb6Q
-Date:   Sat, 29 Oct 2022 12:49:17 +0000
-Message-ID: <9e4892b540584b25aa5481cc40f1fb42@AcuMS.aculab.com>
 References: <20221017064950.2038-1-thunder.leizhen@huawei.com>
  <Y0/nEngJF6bbINEx@bombadil.infradead.org>
  <ad9e51c6-f77d-d9e9-9c13-42fcbbde7147@huawei.com>
@@ -59,49 +54,138 @@ References: <20221017064950.2038-1-thunder.leizhen@huawei.com>
  <4f06547b-456f-e1ec-c535-16577f502ff1@huawei.com>
  <d7393d45-84bb-9e7b-99f4-412eb9223208@huawei.com>
  <712fae84-aadc-7d29-f311-a3352bab6346@huawei.com>
-In-Reply-To: <712fae84-aadc-7d29-f311-a3352bab6346@huawei.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+ <9e4892b540584b25aa5481cc40f1fb42@AcuMS.aculab.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <842f626a-6d87-72c0-49ed-d66c1ad9534b@huawei.com>
+Date:   Mon, 31 Oct 2022 10:55:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+In-Reply-To: <9e4892b540584b25aa5481cc40f1fb42@AcuMS.aculab.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-PiA+PiBPbiAyMDIyLzEwLzI3IDM6MDMsIEx1aXMgQ2hhbWJlcmxhaW4gd3JvdGU6DQo+ID4+PiBP
-biBXZWQsIE9jdCAyNiwgMjAyMiBhdCAwMjo0NDozNlBNICswODAwLCBMZWl6aGVuIChUaHVuZGVy
-VG93bikgd3JvdGU6DQo+ID4+Pj4gT24gMjAyMi8xMC8yNiAxOjUzLCBMdWlzIENoYW1iZXJsYWlu
-IHdyb3RlOg0KPiA+Pj4+PiBUaGlzIGFuc3dlcnMgaG93IHdlIGRvbid0IHVzZSBhIGhhc2ggdGFi
-bGUsIHRoZSBxdWVzdGlvbiB3YXMgKnNob3VsZCogd2UNCj4gPj4+Pj4gdXNlIG9uZT8NCg0KKFBy
-b2JhYmx5IGJyYWluZmFydCkgdGhvdWdodC4uLg0KDQpJcyB0aGUgY3VycmVudCB0YWJsZSAoZWZm
-ZWN0aXZlbHkpIGEgc29ydGVkIGxpc3Qgb2Ygc3RyaW5ncz8NClNvIHRoZSBsb29rdXAgaXMgYSBi
-aW5hcnkgY2hvcCAtIHNvIE8obG9nKG4pKS4NCg0KQnV0IHlvdXIgaGFzaGVzIGFyZSBoYXZpbmcg
-J3Ryb3VibGUnIHN0b3BwaW5nIG9uZSBjaGFpbg0KYmVpbmcgdmVyeSBsb25nPw0KU28gYSBsaW5l
-YXIgc2VhcmNoIG9mIHRoYXQgaGFzaCBjaGFpbiBpcyBzbG93Lg0KSW4gZmFjdCB0aGF0IHNvcnQg
-b2YgaGFzaGVkIGxvb2t1cCBpbiBPKG4pLg0KDQpXaGF0IGlmIHRoZSBzeW1ib2xzIHdlcmUgc29y
-dGVkIGJ5IGhhc2ggdGhlbiBuYW1lPw0KKFdpdGhvdXQgcHV0dGluZyB0aGUgaGFzaCBpbnRvIGVh
-Y2ggZW50cnkuKQ0KVGhlbiB0aGUgY29kZSBjb3VsZCBkbyBhIGJpbmFyeSBjaG9wIHNlYXJjaCBv
-dmVyDQp0aGUgc3ltYm9scyB3aXRoIHRoZSBzYW1lIGhhc2ggdmFsdWUuDQpUaGUgYWRkaXRpb25h
-bCBkYXRhIGlzIHRoZW4gYW4gYXJyYXkgb2Ygc3ltYm9sIG51bWJlcnMNCmluZGV4ZWQgYnkgdGhl
-IGhhc2ggLSAzMiBiaXRzIGZvciBlYWNoIGJ1Y2tldC4NCg0KSWYgdGhlIGhhc2ggdGFibGUgaGFz
-IDB4MTAwMCBlbnRyaWVzIGl0IHNhdmVzIDEyIGNvbXBhcmVzLg0KKEFsbCBvZiB3aGljaCBhcmUg
-bGlrZWx5IHRvIGJlIGRhdGEgY2FjaGUgbWlzc2VzLikNCg0KSWYgeW91IGFkZCB0aGUgaGFzaCB0
-byBlYWNoIHRhYmxlIGVudHJ5IHRoZW4geW91IGNhbiBkbw0KYSBiaW5hcnkgY2hvcCBzZWFyY2gg
-Zm9yIHRoZSBoYXNoIGl0c2VsZi4NCldoaWxlIHRoaXMgaXMgdGhlIHNhbWUgc2VhcmNoIGFzIGlz
-IGRvbmUgZm9yIHRoZSBzdHJpbmdzDQp0aGUgY29tcGFyaXNvbiAoanVzdCBhIG51bWJlcikgd2ls
-bCBiZSBmYXN0ZXIgdGhhbiBhDQpzdHJpbmcgY29tcGFyZS4NCg0KCURhdmlkDQoNCi0NClJlZ2lz
-dGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24g
-S2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
+
+On 2022/10/29 20:49, David Laight wrote:
+>>>> On 2022/10/27 3:03, Luis Chamberlain wrote:
+>>>>> On Wed, Oct 26, 2022 at 02:44:36PM +0800, Leizhen (ThunderTown) wrote:
+>>>>>> On 2022/10/26 1:53, Luis Chamberlain wrote:
+>>>>>>> This answers how we don't use a hash table, the question was *should* we
+>>>>>>> use one?
+> 
+> (Probably brainfart) thought...
+> 
+> Is the current table (effectively) a sorted list of strings?
+> So the lookup is a binary chop - so O(log(n)).
+
+Currently not sorted.
+
+> 
+> But your hashes are having 'trouble' stopping one chain
+> being very long?
+> So a linear search of that hash chain is slow.
+> In fact that sort of hashed lookup in O(n).
+
+You've analyzed it very well. The hash method is not good for sorting names
+and then searching in binary mode. I figured it out when I was working on
+the design these days.
+
+Current Implementation:
+---------------------------------------
+| idx | addresses | markers |  names  |
+---------------------------------------
+|  0  |    addr0  |         |  name0  |
+|  1  |    addr1  |         |  name1  |
+| ... |    addrx  |   [0]   |  namex  |
+| 255 |    addrx  |         |  name255|
+---------------------------------------
+| 256 |  addr256  |         |  name256|
+| ... |    addrx  |   [1]   |  namex  |
+| 511 |  addr511  |         |  name511|
+---------------------------------------
+
+markers[0] = offset_of(name0)
+markers[1] = offset_of(name256)
+
+1. Find name by address
+   binary search addresses[], get idx, traverse names[] from  markers[idx>>8] to markers[(idx>>8) + 1], return name
+
+2. Find address by name
+   traverse names[], get idx, return addresses[idx]
+
+Hash Implementation:
+Add two new arrays: hash_table[] and names_offsets[]
+
+-----------------------------------------------------------------
+| key |      hash_table       |         names_offsets           |
+|---------------------------------------------------------------|
+|  0  |  names_offsets[key=0] | offsets of all names with key=0 |
+|  1  |  names_offsets[key=1] | offsets of all names with key=1 |
+| ... |          ...          | offsets of all names with key=k |
+|---------------------------------------------------------------|
+
+hash_table[0] = 0
+hash_table[1] = hash_table[0] + sizeof(names_offsets[0]) * number_of_names(key=0)
+hash_table[2] = hash_table[1] + sizeof(names_offsets[0]) * number_of_names(key=1)
+
+1. Find address by name
+   hash name, get key, traverse names_offsets[] from index=hash_table[key] to
+   index=hash_table[key+1], get the offset of name in names[]. binary search markers[],
+   get index, then traverse names[] from  markers[index] to markers[index + 1], until
+   match the offset of name, return addresses[idx].
+2. Find address by name
+   No change.
+
+Sorted names Implementation:
+Add two new arrays: offsets_of_addr_to_name[] and offsets_of_name[]
+
+offsets_of_addr_to_name[i] = offset of name i in names[]
+offsets_of_name[i]         = offset of sorted name i in names[]
+
+1. Find name by address
+   binary search addresses[], get idx, return names[offsets_of_addr_to_name[idx]]
+
+2. Find address by name
+   binary search offsets_of_name[], get idx, return addresses[idx]
+
+> 
+> What if the symbols were sorted by hash then name?
+> (Without putting the hash into each entry.)
+> Then the code could do a binary chop search over
+> the symbols with the same hash value.
+> The additional data is then an array of symbol numbers
+> indexed by the hash - 32 bits for each bucket.
+> 
+> If the hash table has 0x1000 entries it saves 12 compares.
+> (All of which are likely to be data cache misses.)
+> 
+> If you add the hash to each table entry then you can do
+> a binary chop search for the hash itself.
+> While this is the same search as is done for the strings
+> the comparison (just a number) will be faster than a
+> string compare.
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
+
+-- 
+Regards,
+  Zhen Lei
