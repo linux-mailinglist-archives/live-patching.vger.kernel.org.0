@@ -2,49 +2,48 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF3CB613AEF
-	for <lists+live-patching@lfdr.de>; Mon, 31 Oct 2022 17:02:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEFD56147DB
+	for <lists+live-patching@lfdr.de>; Tue,  1 Nov 2022 11:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbiJaQCw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 31 Oct 2022 12:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
+        id S229533AbiKAKny (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 1 Nov 2022 06:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiJaQCv (ORCPT
+        with ESMTP id S229457AbiKAKnx (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 31 Oct 2022 12:02:51 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DB41261E;
-        Mon, 31 Oct 2022 09:02:49 -0700 (PDT)
+        Tue, 1 Nov 2022 06:43:53 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B440E12614;
+        Tue,  1 Nov 2022 03:43:52 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A5C9A1F8BF;
-        Mon, 31 Oct 2022 16:02:48 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 558E922440;
+        Tue,  1 Nov 2022 10:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1667232168; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1667299431; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=5f0KAVsFXb/ej/un0lRY1Csig49umoppXqYjY155Z6g=;
-        b=eZsV82B+J19cWmH9zItt2iMfa9634CyuWIIGXCQaxVv/7DIedpBQ9a2pbA6Vte67mdjjDM
-        ofz02mVR7oIkhDVTyai57snwO48I4si2YtrlXCYJvSz2S2MR4ItCZoTTSvOZa0c1yWW/Zl
-        ZZJ1KZTiYMrMlER9BMd24A1Kmljs+X8=
-Received: from suse.cz (unknown [10.100.201.202])
+        bh=8oJxxcmO28PQHt/0hxyUpAk79tFXJYnw+3OkYY0JtL4=;
+        b=Ki40gG0Q5SYTkAmTCZDICNIxY49rfjjr0HFqtJClejPmWI80oUWSlv4FqSyLGRcgfJd55L
+        l5jZYWM1rld+Px76vBwyJnC4I15R9ctmNF4gKNd66MRs3TexScjIjzCvaMxRIVAltWpt1k
+        XeDHN2VtdH1hVnQEI6mU2CWJB3hppHc=
+Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 766DD2C141;
-        Mon, 31 Oct 2022 16:02:48 +0000 (UTC)
-Date:   Mon, 31 Oct 2022 17:02:47 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id 349AB2C141;
+        Tue,  1 Nov 2022 10:43:51 +0000 (UTC)
+Date:   Tue, 1 Nov 2022 11:43:50 +0100
 From:   Petr Mladek <pmladek@suse.com>
 To:     Marcos Paulo de Souza <mpdesouza@suse.com>
 Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
         jpoimboe@redhat.com, joe.lawrence@redhat.com
-Subject: Re: [PATCH v2 3/4] livepatch/shadow: Introduce klp_shadow_type
- structure
-Message-ID: <Y1/xp7OBgu3qGUKz@alley>
+Subject: Re: [PATCH v2 0/4] livepatch: Add garbage collection for shadow
+ variables
+Message-ID: <Y2D4ZgWqB0E9viPy@alley>
 References: <20221026194122.11761-1-mpdesouza@suse.com>
- <20221026194122.11761-4-mpdesouza@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221026194122.11761-4-mpdesouza@suse.com>
+In-Reply-To: <20221026194122.11761-1-mpdesouza@suse.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -54,66 +53,47 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2022-10-26 16:41:21, Marcos Paulo de Souza wrote:
-> The shadow variable type will be used in klp_shadow_alloc/get/free
-> functions instead of id/ctor/dtor parameters. As a result, all callers
-> use the same callbacks consistently[*][**].
+On Wed 2022-10-26 16:41:18, Marcos Paulo de Souza wrote:
+> Hello,
 > 
-> The structure will be used in the next patch that will manage the
-> lifetime of shadow variables and execute garbage collection automatically.
+> This is the v2 of the livepatch shadow GC patches. The changes are minor since
+> nobody asked for for big code changes.
 > 
-> [*] From the user POV, it might have been easier to pass $id instead
->     of pointer to struct klp_shadow_type.
+> Changes from v1:
+> * Reworked commit messages (Petr)
+> * Added my SoB which was missing in some patches, or the ordering was wrong. (Josh)
+> * Change __klp_shadow_get_or_use to __klp_shadow_get_or_add_locked and add a comment (Petr)
+> * Add lockdep_assert_held on __klp_shadow_get_or_add_locked (Petr)
+>   about it's meaning (Petr)
+> * CCing LKML (Josh)
 > 
->     It would require registering the klp_shadow_type so that
->     the klp_shadow API could find ctor/dtor for the given id.
->     It actually will be needed for the garbage collection anyway
->     because it will define the lifetime of the variables.
+> Some observations:
+> * Petr has reviewed some of the patches that we created. I kept the Reviewed-by
+>   tags since he wrote the patches some time ago and now he reviewed them again
+>   on the ML.
+> * There were questions about possible problems about using klp_shadow_types
+>   instead of using ids, but Petr already explained that internally it still uses
+>   the id to find the correct livepatch.
+> * Regarding the possibility of multiple patches use the same ID, the problem
+>   already existed before. Petr suggested using a "stringified" version using
+>   name and id, but nobody has commented yet. I can implement such feature in a
+>   v3 if necessary.
 > 
->     The bigger problem is that the same klp_shadow_type might be
->     used by more livepatch modules. Each livepatch module need
->     to duplicate the definition of klp_shadow_type and ctor/dtor
->     callbacks. The klp_shadow API would need to choose one registered
->     copy.
+> Marcos Paulo de Souza (2):
+>   livepatch/shadow: Introduce klp_shadow_type structure
+>   livepatch/shadow: Add garbage collection of shadow variables
 > 
->     The definitions should be compatible and they should stay as long
->     as the type is registered. But it still feels more safe when
->     klp_shadow API callers use struct klp_shadow_type and ctor/dtor
->     callbacks defined in the same livepatch module.
-> 
->     This problem is gone when each livepatch explicitly uses its
->     own struct klp_shadow_type pointing to its own callbacks.
+> Petr Mladek (2):
+>   livepatch/shadow: Separate code to get or use pre-allocated shadow
+>     variable
+>   livepatch/shadow: Separate code removing all shadow variables for a
+>     given id
 
-This paragraph seems redundant. It more or less repeats what
-is said in the previous one.
+From my POV, the patchset is ready for pushing upstream.
 
-
-> [**] test_klp_shadow_vars.c uses a custom @dtor to show that it was called.
->     The message must be disabled when called via klp_shadow_free_all()
->     because the ordering of freed variables is not well defined there.
->     It has to be done using another hack after switching to
->     klp_shadow_types.
-> 
-> Co-developed-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-
-I am never sure how the co-authoring should be done ;-) But I believe
-that the author should always be the first one. And the other author
-should be listed either by Co-developer-by: or by Signed-off-by: but
-not by both tags. So, it should be:
-
-Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-Co-developed-by: Petr Mladek <pmladek@suse.com>
-
-
-With the removed paragraph and updated tags:
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Well, we need to get approval from kpatch-build users. Joe described
+possible problems in replay for v3, see
+https://lore.kernel.org/r/b5fc2891-2fb0-4aa7-01dd-861da22bb7ea@redhat.com
 
 Best Regards,
 Petr
-
-
-PS: No need to resend the patch. I could do the two changes
-    when pushing it.
