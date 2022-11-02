@@ -2,143 +2,174 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 369E6614820
-	for <lists+live-patching@lfdr.de>; Tue,  1 Nov 2022 12:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6716F615E40
+	for <lists+live-patching@lfdr.de>; Wed,  2 Nov 2022 09:50:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229475AbiKALDR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 1 Nov 2022 07:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S230005AbiKBIu3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 2 Nov 2022 04:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiKALDQ (ORCPT
+        with ESMTP id S229457AbiKBIu2 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 1 Nov 2022 07:03:16 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877D71705D
-        for <live-patching@vger.kernel.org>; Tue,  1 Nov 2022 04:03:15 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id E44CD338A1;
-        Tue,  1 Nov 2022 11:02:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1667300575; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FLjYalIogy8Un073gAhCFss8D7/W/LvbvGKS5jUz0fQ=;
-        b=rloeW1xOmOPvwPAKemCgC9FwwTOi0YPVtNqFLKo+ZlMxPLZiwfa93EOqm+8QNtpOh4V0us
-        VmVm4HOxqouaHloqBinsTqTmYTQ07aWyHxZCtwzFRHj2NS6aBYFRi0rtsnVAElisvjoVt2
-        tlInenQnqsEE0EMVewl3u+6ddr9ejuI=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C68A82C141;
-        Tue,  1 Nov 2022 11:02:55 +0000 (UTC)
-Date:   Tue, 1 Nov 2022 12:02:55 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
-        live-patching@vger.kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
-        nstange@suse.de
-Subject: Re: [PATCH 4/4] livepatch/shadow: Add garbage collection of shadow
- variables
-Message-ID: <Y2D83wFbIcBoknQL@alley>
-References: <20220701194817.24655-1-mpdesouza@suse.com>
- <20220701194817.24655-5-mpdesouza@suse.com>
- <b5fc2891-2fb0-4aa7-01dd-861da22bb7ea@redhat.com>
- <Y1aqkxKWnzVo7pfP@alley>
+        Wed, 2 Nov 2022 04:50:28 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E083C25289;
+        Wed,  2 Nov 2022 01:50:26 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N2L7W21KpzRntq;
+        Wed,  2 Nov 2022 16:45:27 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 16:50:24 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 16:50:23 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Luis Chamberlain" <mcgrof@kernel.org>,
+        <linux-modules@vger.kernel.org>,
+        "Steven Rostedt" <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>,
+        David Laight <David.Laight@ACULAB.COM>
+Subject: [PATCH v8 0/9] kallsyms: Optimizes the performance of lookup symbols
+Date:   Wed, 2 Nov 2022 16:49:12 +0800
+Message-ID: <20221102084921.1615-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.37.3.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y1aqkxKWnzVo7pfP@alley>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,HEXHASH_WORD,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon 2022-10-24 17:09:08, Petr Mladek wrote:
-> On Thu 2022-08-25 12:26:25, Joe Lawrence wrote:
-> > On 7/1/22 3:48 PM, Marcos Paulo de Souza wrote:
-> > > The life of shadow variables is not completely trivial to maintain.
-> > > They might be used by more livepatches and more livepatched objects.
-> > > They should stay as long as there is any user.
-> > > 
-> > > In practice, it requires to implement reference counting in callbacks
-> > > of all users. They should register all the user and remove the shadow
-> > > variables only when there is no user left.
-> > > 
-> > > This patch hides the reference counting into the klp_shadow API.
-> > > The counter is connected with the shadow variable @id. It requires
-> > > an API to take and release the reference. The release function also
-> > > calls the related dtor() when defined.
-> > > 
-> > > An easy solution would be to add some get_ref()/put_ref() API.
-> > > But it would need to get called from pre()/post_un() callbacks.
-> > > It might be easy to forget a callback and make it wrong.
-> > > 
-> > > A more safe approach is to associate the klp_shadow_type with
-> > > klp_objects that use the shadow variables. The livepatch core
-> > > code might then handle the reference counters on background.
-> > > 
-> > > The shadow variable type might then be added into a new @shadow_types
-> > > member of struct klp_object. They will get then automatically registered
-> > > and unregistered when the object is being livepatched. The registration
-> > > increments the reference count. Unregistration decreases the reference
-> > > count. All shadow variables of the given type are freed when the reference
-> > > count reaches zero.
-> > > 
-> > > All klp_shadow_alloc/get/free functions also checks whether the requested
-> > > type is registered. It will help to catch missing registration and might
-> > > also help to catch eventual races.
-> > > 
-> > > --- a/include/linux/livepatch.h
-> > > +++ b/include/linux/livepatch.h
-> > > @@ -100,11 +100,14 @@ struct klp_callbacks {
-> > >  	bool post_unpatch_enabled;
-> > >  };
-> > >  
-> > > +struct klp_shadow_type;
-> > > +
-> > >  /**
-> > >   * struct klp_object - kernel object structure for live patching
-> > >   * @name:	module name (or NULL for vmlinux)
-> > >   * @funcs:	function entries for functions to be patched in the object
-> > >   * @callbacks:	functions to be executed pre/post (un)patching
-> > > + * @shadow_types: shadow variable types used by the livepatch for the klp_object
-> > >   * @kobj:	kobject for sysfs resources
-> > >   * @func_list:	dynamic list of the function entries
-> > >   * @node:	list node for klp_patch obj_list
-> > > @@ -118,6 +121,7 @@ struct klp_object {
-> > >  	const char *name;
-> > >  	struct klp_func *funcs;
-> > >  	struct klp_callbacks callbacks;
-> > > +	struct klp_shadow_type **shadow_types;
-> > >  
-> > 
-> > Hmm.  The implementation of shadow_types inside klp_object might be
-> > difficult to integrate into kpatch-build.  For kpatches, we do utilize
-> > the kernel's shadow variable API directly, but at kpatch author time we
-> > don't have any of klp_patch objects in hand -- those are generated by
-> > template after the binary before/after comparison is completed.
-> 
-> I am sorry but I am not much familiar with kPatch. But I am surprised.
-> It should be similar to klp_callbacks. If it was possible to define
-> struct klp_callbacks for a particular struct klp_object then it
-> should be possible to define struct klp_shadow_types ** similar way.
+v7 --> v8:
+Sort the symbols by name and implement kallsyms_lookup_name() using a binary
+search. The performance is more than 20 times higher than that of v7. Of course,
+the memory overhead is also extended to (3 * kallsyms_num_syms) bytes. Discard
+all implementations of compression and then comparison in v7.
 
-Note that adding the used klp_shadow_types into struct klp_object
-is not strictly required.
+In addition, all sparse warnings about kallsyms_selftest.c are cleared.
 
-Alternative solution is to register/unregister the used types using
-klp_callbacks or module init()/exit() callbacks. This approach
-is used in lib/livepatch/test_klp_shadow_vars.c.
 
-I believe that this would be usable for kpatch-build.
-You needed to remove not-longer used shadow variables
-using these callbacks even before this patchset. I would
-consider it a bug if you did not remove them. The new API
-just allows to do this a safe way.
+v6 --> v7:
+1. Improve the performance of kallsyms_lookup_name() when CONFIG_LTO_CLANG=y
+   To achieve this, restrict '.' to be at the beginning of a substring, not in
+   the middle or end.
+2. kallsyms_selftest.c adds support for CONFIG_LTO_CLANG=y.
+3. Patches 4-6 are rearranged, centralize implementations of the same
+   functionality in one patch, rather than split it based on whether it
+   belongs to the tool or kernel.
+4. Due to the impact of the following patches, some adaptations are made.
+   aa221f2ea58655f kallsyms: take the input file instead of reading stdin
+   73bbb94466fd3f8 kallsyms: support "big" kernel symbols
+   dfb352ab1162f73 kallsyms: Drop CONFIG_CFI_CLANG workarounds
 
-Best Regards,
-Petr
+
+v5 --> v6:
+1. Add patch 6/11, kallsyms: Add helper kallsyms_lookup_clang_name()
+2. Update commit message of patch 9/11.
+
+v4 --> v5:
+1. In scripts/kallsyms.c, we use an extra field to hold type and eventually
+   put it together with name in write_src().
+2. Generate a new table kallsyms_best_token_table[], so that we compress a
+   symbol in the kernel using a process similar to compress_symbol().
+3. Remove helper sym_name(), and rename field 'sym[]' to 'name[]' in
+   scripts/kallsyms.c
+4. Add helper __kallsyms_lookup_compressed_name() to avoid duplicate code in
+   functions kallsyms_lookup_name() and kallsyms_on_each_match_symbol().
+5. Add a new parameter "const char *modname" to module_kallsyms_on_each_symbol(),
+   this makes the code logic clearer.
+6. Delete the parameter 'struct module *' in the hook function associated with
+   kallsyms_on_each_symbol(), it's unused now.
+
+v3 --> v4:
+1. Move the declaration of function kallsyms_sym_address() to linux/kallsyms.h,
+   fix a build warning.
+
+v2 --> v3:
+1. Improve test cases, perform complete functional tests on functions
+   kallsyms_lookup_name(), kallsyms_on_each_symbol() and
+   kallsyms_on_each_match_symbol().
+2. Add patch [PATCH v3 2/8] scripts/kallsyms: ensure that all possible
+   combinations are compressed.
+3. The symbol type is not compressed regardless of whether
+   CONFIG_KALLSYMS_ALL is set or not. The memory overhead is increased
+   by less than 20KiB if CONFIG_KALLSYMS_ALL=n.
+4. Discard [PATCH v2 3/8] kallsyms: Adjust the types of some local variables
+
+v1 --> v2:
+Add self-test facility
+
+v1:
+Currently, to search for a symbol, we need to expand the symbols in
+'kallsyms_names' one by one, and then use the expanded string for
+comparison. This is very slow.
+
+In fact, we can first compress the name being looked up and then use
+it for comparison when traversing 'kallsyms_names'.
+
+This patch series optimizes the performance of function kallsyms_lookup_name(),
+and function klp_find_object_symbol() in the livepatch module. Based on the
+test results, the performance overhead is reduced to 5%. That is, the
+performance of these functions is improved by 20 times.
+
+To avoid increasing the kernel size in non-debug mode, the optimization is only
+for the case CONFIG_KALLSYMS_ALL=y.
+
+
+Zhen Lei (9):
+  scripts/kallsyms: rename build_initial_tok_table()
+  kallsyms: Improve the performance of kallsyms_lookup_name()
+  kallsyms: Correctly sequence symbols when CONFIG_LTO_CLANG=y
+  kallsyms: Reduce the memory occupied by kallsyms_seqs_of_names[]
+  kallsyms: Add helper kallsyms_on_each_match_symbol()
+  livepatch: Use kallsyms_on_each_match_symbol() to improve performance
+  livepatch: Improve the search performance of
+    module_kallsyms_on_each_symbol()
+  kallsyms: Delete an unused parameter related to
+    kallsyms_on_each_symbol()
+  kallsyms: Add self-test facility
+
+ include/linux/kallsyms.h   |  12 +-
+ include/linux/module.h     |   4 +-
+ init/Kconfig               |  13 +
+ kernel/Makefile            |   1 +
+ kernel/kallsyms.c          | 121 +++++++--
+ kernel/kallsyms_internal.h |   1 +
+ kernel/kallsyms_selftest.c | 485 +++++++++++++++++++++++++++++++++++++
+ kernel/kallsyms_selftest.h |  13 +
+ kernel/livepatch/core.c    |  31 ++-
+ kernel/module/kallsyms.c   |  15 +-
+ kernel/trace/ftrace.c      |   3 +-
+ scripts/kallsyms.c         |  78 +++++-
+ scripts/link-vmlinux.sh    |   4 +
+ 13 files changed, 743 insertions(+), 38 deletions(-)
+ create mode 100644 kernel/kallsyms_selftest.c
+ create mode 100644 kernel/kallsyms_selftest.h
+
+-- 
+2.25.1
+
