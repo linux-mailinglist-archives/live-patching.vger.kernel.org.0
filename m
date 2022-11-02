@@ -2,112 +2,97 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01030615F6D
-	for <lists+live-patching@lfdr.de>; Wed,  2 Nov 2022 10:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2204616263
+	for <lists+live-patching@lfdr.de>; Wed,  2 Nov 2022 13:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231194AbiKBJUx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 2 Nov 2022 05:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        id S230396AbiKBMBT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>); Wed, 2 Nov 2022 08:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231463AbiKBJUi (ORCPT
+        with ESMTP id S231168AbiKBMBB (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 2 Nov 2022 05:20:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEE3225;
-        Wed,  2 Nov 2022 02:18:28 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N2LnT481WzpW9X;
-        Wed,  2 Nov 2022 17:14:53 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 17:18:26 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 17:18:25 +0800
-Subject: Re: [PATCH v7 00/11] kallsyms: Optimizes the performance of lookup
- symbols
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Wed, 2 Nov 2022 08:01:01 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ED7220C4
+        for <live-patching@vger.kernel.org>; Wed,  2 Nov 2022 05:00:56 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-258-1yQNw3MuPJOLWPGjyRulkQ-1; Wed, 02 Nov 2022 12:00:53 +0000
+X-MC-Unique: 1yQNw3MuPJOLWPGjyRulkQ-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 2 Nov
+ 2022 12:00:51 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.042; Wed, 2 Nov 2022 12:00:51 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Zhen Lei' <thunder.leizhen@huawei.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Jiri Olsa <jolsa@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        <linux-modules@vger.kernel.org>,
+        "Luis Chamberlain" <mcgrof@kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         "Ingo Molnar" <mingo@redhat.com>
-References: <20221017064950.2038-1-thunder.leizhen@huawei.com>
- <Y0/nEngJF6bbINEx@bombadil.infradead.org>
- <ad9e51c6-f77d-d9e9-9c13-42fcbbde7147@huawei.com>
- <Y1gisUFzgt1D1Jle@bombadil.infradead.org>
- <77f1c8f0-5e67-0e57-9285-15ba613044fb@huawei.com>
- <Y1mEiIvbld4SX1lx@bombadil.infradead.org>
- <4f06547b-456f-e1ec-c535-16577f502ff1@huawei.com>
- <d7393d45-84bb-9e7b-99f4-412eb9223208@huawei.com>
- <712fae84-aadc-7d29-f311-a3352bab6346@huawei.com>
- <b7215b83-11ab-6db6-bd7f-9729725eaaeb@huawei.com>
- <b30a540b-019d-4466-19d9-33900b1a89b1@huawei.com>
-Message-ID: <d059c054-1ef9-f89b-fcb2-7387770d2ec7@huawei.com>
-Date:   Wed, 2 Nov 2022 17:18:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+Subject: RE: [PATCH v8 4/9] kallsyms: Reduce the memory occupied by
+ kallsyms_seqs_of_names[]
+Thread-Topic: [PATCH v8 4/9] kallsyms: Reduce the memory occupied by
+ kallsyms_seqs_of_names[]
+Thread-Index: AQHY7pgsdRO9dUiW6k27i3NhSmpxX64riAdg
+Date:   Wed, 2 Nov 2022 12:00:51 +0000
+Message-ID: <bd30cbc9b7594261a7b9da26e9c98da4@AcuMS.aculab.com>
+References: <20221102084921.1615-1-thunder.leizhen@huawei.com>
+ <20221102084921.1615-5-thunder.leizhen@huawei.com>
+In-Reply-To: <20221102084921.1615-5-thunder.leizhen@huawei.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <b30a540b-019d-4466-19d9-33900b1a89b1@huawei.com>
-Content-Type: text/plain; charset="utf-8"
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+From: Zhen Lei
+> Sent: 02 November 2022 08:49
+> 
+> kallsyms_seqs_of_names[] records the symbol index sorted by address, the
+> maximum value in kallsyms_seqs_of_names[] is the number of symbols. And
+> 2^24 = 16777216, which means that three bytes are enough to store the
+> index. This can help us save (1 * kallsyms_num_syms) bytes of memory.
 
+You can get the compiler to do the 'heavy lifting' for you.
 
-On 2022/10/31 23:04, Leizhen (ThunderTown) wrote:
-> Now, we need to make a decision. Choose one of the two:
-> 1. Continue with my current approach. Improve the average performance of
->    kallsyms_lookup_name() by 20 to 30 times. The memory overhead is increased by:
->    arm64 (defconfig):
->      73.5KiB and 4.0% if CONFIG_KALLSYMS_ALL=y.
->      19.8KiB and 2.8% if CONFIG_KALLSYMS_ALL=n.
->    x86 (defconfig):
->      49.0KiB and 3.0% if CONFIG_KALLSYMS_ALL=y.
->      16.8KiB and 2.3% if CONFIG_KALLSYMS_ALL=n.
-> 2. Sort names, binary search (The static function causes duplicate names. Additional work is required）
->    2^18=262144, only up to 18 symbol expansions and comparisons are required.
->    The performance is definitely excellent, although I haven't tested it yet.
->    The memory overhead is increased by: 6 * kallsyms_num_syms
->    arm64 (defconfig):
->        1MiB if CONFIG_KALLSYMS_ALL=y.
->      362KiB if CONFIG_KALLSYMS_ALL=n.
->    x86 (defconfig):
->      770KiB if CONFIG_KALLSYMS_ALL=y.
->      356KiB if CONFIG_KALLSYMS_ALL=n.
+struct uint24 {
+    unsigned int val24:24;
+} __attribute__((packed));
 
-Hi, Luis:
-  I've implemented v8 based on method 2(Sort names, binary search).
-The memory overhead is increased by: 3 * kallsyms_num_syms.
-kallsyms_offsets_of_names[] is not added in v8 because it does not help
-much in performance improvement, so save (3 * kallsyms_num_syms) bytes.
-For details about the performance data, please see the commit message.
+struct uint24 table[1024];
 
+works fine.
 
--- 
-Regards,
-  Zhen Lei
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
