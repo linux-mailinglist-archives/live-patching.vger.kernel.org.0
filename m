@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3C3E615E4A
-	for <lists+live-patching@lfdr.de>; Wed,  2 Nov 2022 09:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B0D615E5A
+	for <lists+live-patching@lfdr.de>; Wed,  2 Nov 2022 09:51:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231174AbiKBIuv (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 2 Nov 2022 04:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53686 "EHLO
+        id S231202AbiKBIva (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 2 Nov 2022 04:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbiKBIud (ORCPT
+        with ESMTP id S231204AbiKBIu6 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 2 Nov 2022 04:50:33 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2306927DCD;
-        Wed,  2 Nov 2022 01:50:32 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N2LB041PXzJnKw;
-        Wed,  2 Nov 2022 16:47:36 +0800 (CST)
+        Wed, 2 Nov 2022 04:50:58 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAE127DDF;
+        Wed,  2 Nov 2022 01:50:55 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N2LFR329DzHvXx;
+        Wed,  2 Nov 2022 16:50:35 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 16:50:30 +0800
+ 15.1.2375.31; Wed, 2 Nov 2022 16:50:31 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 16:50:29 +0800
+ 15.1.2375.31; Wed, 2 Nov 2022 16:50:30 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -44,9 +44,9 @@ To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Ingo Molnar <mingo@redhat.com>
 CC:     Zhen Lei <thunder.leizhen@huawei.com>,
         David Laight <David.Laight@ACULAB.COM>
-Subject: [PATCH v8 5/9] kallsyms: Add helper kallsyms_on_each_match_symbol()
-Date:   Wed, 2 Nov 2022 16:49:17 +0800
-Message-ID: <20221102084921.1615-6-thunder.leizhen@huawei.com>
+Subject: [PATCH v8 6/9] livepatch: Use kallsyms_on_each_match_symbol() to improve performance
+Date:   Wed, 2 Nov 2022 16:49:18 +0800
+Message-ID: <20221102084921.1615-7-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.37.3.windows.1
 In-Reply-To: <20221102084921.1615-1-thunder.leizhen@huawei.com>
 References: <20221102084921.1615-1-thunder.leizhen@huawei.com>
@@ -65,84 +65,53 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Function kallsyms_on_each_symbol() traverses all symbols and submits each
-symbol to the hook 'fn' for judgment and processing. For some cases, the
-hook actually only handles the matched symbol, such as livepatch.
-
-Because all symbols are currently sorted by name, all the symbols with the
-same name are clustered together. Function kallsyms_lookup_names() gets
-the start and end positions of the set corresponding to the specified
-name. So we can easily and quickly traverse all the matches.
-
-The test results are as follows (twice): (x86)
-kallsyms_on_each_match_symbol:     7454,     7984
-kallsyms_on_each_symbol      : 11733809, 11785803
-
-kallsyms_on_each_match_symbol() consumes only 0.066% of
-kallsyms_on_each_symbol()'s time. In other words, 1523x better
-performance.
+Based on the test results of kallsyms_on_each_match_symbol() and
+kallsyms_on_each_symbol(), the average performance can be improved by
+more than 1500 times.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- include/linux/kallsyms.h |  8 ++++++++
- kernel/kallsyms.c        | 18 ++++++++++++++++++
- 2 files changed, 26 insertions(+)
+ kernel/livepatch/core.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index 649faac31ddb162..0cd33be7142ad0d 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -69,6 +69,8 @@ static inline void *dereference_symbol_descriptor(void *ptr)
- int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
- 				      unsigned long),
- 			    void *data);
-+int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
-+				  const char *name, void *data);
- 
- /* Lookup the address for a symbol. Returns 0 if not found. */
- unsigned long kallsyms_lookup_name(const char *name);
-@@ -168,6 +170,12 @@ static inline int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct
- {
- 	return -EOPNOTSUPP;
- }
-+
-+static inline int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
-+						const char *name, void *data)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif /*CONFIG_KALLSYMS*/
- 
- static inline void print_ip_sym(const char *loglvl, unsigned long ip)
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 48f36fd7e10b95e..0008ada2b135bef 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -307,6 +307,24 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 9ada0bc5247be5d..50bfc3481a4ee38 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -153,6 +153,24 @@ static int klp_find_callback(void *data, const char *name,
  	return 0;
  }
  
-+int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
-+				  const char *name, void *data)
++static int klp_match_callback(void *data, unsigned long addr)
 +{
-+	int ret;
-+	unsigned int i, start, end;
++	struct klp_find_arg *args = data;
 +
-+	ret = kallsyms_lookup_names(name, &start, &end);
-+	if (ret)
-+		return 0;
++	args->addr = addr;
++	args->count++;
 +
-+	for (i = start; !ret && i <= end; i++) {
-+		ret = fn(data, kallsyms_sym_address(get_symbol_seq(i)));
-+		cond_resched();
-+	}
++	/*
++	 * Finish the search when the symbol is found for the desired position
++	 * or the position is not defined for a non-unique symbol.
++	 */
++	if ((args->pos && (args->count == args->pos)) ||
++	    (!args->pos && (args->count > 1)))
++		return 1;
 +
-+	return ret;
++	return 0;
 +}
 +
- static unsigned long get_symbol_pos(unsigned long addr,
- 				    unsigned long *symbolsize,
- 				    unsigned long *offset)
+ static int klp_find_object_symbol(const char *objname, const char *name,
+ 				  unsigned long sympos, unsigned long *addr)
+ {
+@@ -167,7 +185,7 @@ static int klp_find_object_symbol(const char *objname, const char *name,
+ 	if (objname)
+ 		module_kallsyms_on_each_symbol(klp_find_callback, &args);
+ 	else
+-		kallsyms_on_each_symbol(klp_find_callback, &args);
++		kallsyms_on_each_match_symbol(klp_match_callback, name, &args);
+ 
+ 	/*
+ 	 * Ensure an address was found. If sympos is 0, ensure symbol is unique;
 -- 
 2.25.1
 
