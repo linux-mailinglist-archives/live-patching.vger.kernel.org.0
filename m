@@ -2,136 +2,122 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E21F619469
-	for <lists+live-patching@lfdr.de>; Fri,  4 Nov 2022 11:25:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEF41619A69
+	for <lists+live-patching@lfdr.de>; Fri,  4 Nov 2022 15:45:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbiKDKZo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 4 Nov 2022 06:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S231334AbiKDOpK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 4 Nov 2022 10:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbiKDKZn (ORCPT
+        with ESMTP id S230008AbiKDOpI (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 4 Nov 2022 06:25:43 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84C426116;
-        Fri,  4 Nov 2022 03:25:40 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 71B261F8C1;
-        Fri,  4 Nov 2022 10:25:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1667557539; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Fri, 4 Nov 2022 10:45:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AE8D7F
+        for <live-patching@vger.kernel.org>; Fri,  4 Nov 2022 07:44:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667573048;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=umYuvfSYpaOMnHXO5/tfa93Xw+i4utk39bFTOZA4b+Y=;
-        b=C1BmFJHcUygzu8U07Eaj/sxsK4vonaAfIucig1+vGHHold/zZg8FC6Z2ww+uWI9HPyHVUV
-        h+bcttMF4LfMcjIgvZ76XquF9FacVQpStk+LN06iSih2nZzoL2862fSJWyIW+u/f8K4yS2
-        6t0GXEY7eLJCfiodA5yy2YDcp7CmNfA=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 53DE32C141;
-        Fri,  4 Nov 2022 10:25:39 +0000 (UTC)
-Date:   Fri, 4 Nov 2022 11:25:38 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Nicolai Stange <nstange@suse.de>
+        bh=cWbQ4srh1ZbMWJ3y2/Y3jfOfBLZVj52Dtk9Wv7SX37I=;
+        b=Ti3OM+Z1WEWaXlXY6vM+/O0dW8XL/feBdXnCIHTD9vR7zGTKSc8JglB73bx/z/2HIAu/Oi
+        UUkVcwS501qJXZ85ZbHiqxlE7U5fGoWpez1mZZcVqzNT59IkHw8u26V556obxZM4EDdTLX
+        a0Ho9+G2AEEPJsCOceSMWL94o0Mu7fc=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-675-_wSJUwiwPnGbcVEZGC1ZDA-1; Fri, 04 Nov 2022 10:44:06 -0400
+X-MC-Unique: _wSJUwiwPnGbcVEZGC1ZDA-1
+Received: by mail-qt1-f199.google.com with SMTP id ff5-20020a05622a4d8500b003a526107477so3881716qtb.9
+        for <live-patching@vger.kernel.org>; Fri, 04 Nov 2022 07:44:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:subject:references:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cWbQ4srh1ZbMWJ3y2/Y3jfOfBLZVj52Dtk9Wv7SX37I=;
+        b=zQ8JIqx1tWQUCFVVVN9kibD8IdATkIUGpNb1uxmdMm5VuKlgYAiKz20/4nzbFPqiIR
+         N/AkTo2ySWfwLlxAQ0OSIDEIbLOPc1hYMNMo8bnAD0BR3RqoWuMGsD0gxbwDXG8bOerr
+         cDFtpu04HLeeeXub06e3R1I8b/heRxbnVur3FWNE49JlwEU0Y3xcc+9pgvTtoUIFDN+b
+         EShnJyBa+GqkP5yHMPRahxsQi8D7QQLKURfLXoPjDT7iPXGVCGM+Aor6YEiXF8IxaffF
+         M6coTryQOx+GNcB5eeD6+mLYOru3IhCBjL8TyJ1FdIBLgMcWgIwBkqX2MqAholzGYpYg
+         /faA==
+X-Gm-Message-State: ACrzQf2ECgqrjcIqzubCVosyXqDJJWlTVpS42VJmsKJ9/dQjE0L0gmgX
+        EHYU6On+L5gBdpTJedK5nTZ/TH/byPF1m5vOsrSS3My41gBCttWZRidhTVfmWRxQhaZ2NEE1sUJ
+        WfgHrG9Zp5Ic1PXnNrT9UBJrSvg==
+X-Received: by 2002:a05:6214:21e9:b0:4be:3ae1:f17f with SMTP id p9-20020a05621421e900b004be3ae1f17fmr8219742qvj.121.1667573046219;
+        Fri, 04 Nov 2022 07:44:06 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7d7ArrXrn3R4ypo2bZhEzcfYOCJRRbfhFT3M+jRnvhRddiWe5+Expp8jf+KFl8nVxf+afvEw==
+X-Received: by 2002:a05:6214:21e9:b0:4be:3ae1:f17f with SMTP id p9-20020a05621421e900b004be3ae1f17fmr8219715qvj.121.1667573045954;
+        Fri, 04 Nov 2022 07:44:05 -0700 (PDT)
+Received: from [192.168.1.77] ([209.104.230.86])
+        by smtp.gmail.com with ESMTPSA id i18-20020a05620a405200b006fa8299b4d5sm2622509qko.100.2022.11.04.07.44.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Nov 2022 07:44:05 -0700 (PDT)
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+To:     Petr Mladek <pmladek@suse.com>
 Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        jpoimboe@redhat.com, joe.lawrence@redhat.com
-Subject: Re: [PATCH v2 4/4] livepatch/shadow: Add garbage collection of
- shadow variables
-Message-ID: <Y2TooogxxLTIkBcj@alley>
-References: <20221026194122.11761-1-mpdesouza@suse.com>
- <20221026194122.11761-5-mpdesouza@suse.com>
- <20221104010327.wa256pos75dczt4x@treble>
+        live-patching@vger.kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
+        nstange@suse.de
+References: <20220701194817.24655-1-mpdesouza@suse.com>
+ <20220701194817.24655-5-mpdesouza@suse.com>
+ <b5fc2891-2fb0-4aa7-01dd-861da22bb7ea@redhat.com> <Y1aqkxKWnzVo7pfP@alley>
+ <Y2D83wFbIcBoknQL@alley> <a0a03167-1d49-1c58-12c3-4a881e924224@redhat.com>
+Subject: Re: [PATCH 4/4] livepatch/shadow: Add garbage collection of shadow
+ variables
+Message-ID: <528e9eba-9d97-b8b8-be1d-4f7323dac89f@redhat.com>
+Date:   Fri, 4 Nov 2022 10:44:06 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221104010327.wa256pos75dczt4x@treble>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <a0a03167-1d49-1c58-12c3-4a881e924224@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2022-11-03 18:03:27, Josh Poimboeuf wrote:
-> On Wed, Oct 26, 2022 at 04:41:22PM -0300, Marcos Paulo de Souza wrote:
-> > The life of shadow variables is not completely trivial to maintain.
-> > They might be used by more livepatches and more livepatched objects.
-> > They should stay as long as there is any user.
-> > 
-> > In practice, it requires to implement reference counting in callbacks
-> > of all users. They should register all the user and remove the shadow
-> > variables only when there is no user left.
-> > 
-> > This patch hides the reference counting into the klp_shadow API.
-> > The counter is connected with the shadow variable @id. It requires
-> > an API to take and release the reference. The release function also
-> > calls the related dtor() when defined.
-> > 
-> > An easy solution would be to add some get_ref()/put_ref() API.
-> > But it would need to get called from pre()/post_un() callbacks.
-> > It might be easy to forget a callback and make it wrong.
-> > 
-> > A more safe approach is to associate the klp_shadow_type with
-> > klp_objects that use the shadow variables. The livepatch core
-> > code might then handle the reference counters on background.
-> > 
-> > The shadow variable type might then be added into a new @shadow_types
-> > member of struct klp_object. They will get then automatically registered
-> > and unregistered when the object is being livepatched. The registration
-> > increments the reference count. Unregistration decreases the reference
-> > count. All shadow variables of the given type are freed when the reference
-> > count reaches zero.
-> > 
-> > All klp_shadow_alloc/get/free functions also checks whether the requested
-> > type is registered. It will help to catch missing registration and might
-> > also help to catch eventual races.
+On 11/2/22 8:51 AM, Joe Lawrence wrote:
+> On 11/1/22 7:02 AM, Petr Mladek wrote:
+>> Note that adding the used klp_shadow_types into struct klp_object
+>> is not strictly required.
+>>
+>> Alternative solution is to register/unregister the used types using
+>> klp_callbacks or module init()/exit() callbacks. This approach
+>> is used in lib/livepatch/test_klp_shadow_vars.c.
+>>
+>> I believe that this would be usable for kpatch-build.
+>> You needed to remove not-longer used shadow variables
+>> using these callbacks even before this patchset. I would
+>> consider it a bug if you did not remove them. The new API
+>> just allows to do this a safe way.
+>>
 > 
-> Is there a reason the shadow variable lifetime is tied to klp_object
-> rather than klp_patch?
+> Ah, let me dig into that example for alternative usage.  At first
+> glance, it looks like you're right -- kpatch already supports callbacks,
+> so just (un)register the shadow variables here.  I'll be back with more
+> info hopefully later this week.
+> 
 
-Good question!
+(Un)registering the shadow types from the callbacks worked out fine.  It
+adds some verbosity to our shadow variable usage, but I think most of
+that is unavoidable as the API is changing anyway.
 
-My thinking was that shadow variables might be tight to variables
-from a particular livepatched module. It would make sense to free them
-when the only user (livepatched module) is removed.
+Adding the shadow type into kpatch klp_objects (or the klp_patch) would
+require a bit more work on our part, but doesn't need to hold up
+upstream review up this patchset.
 
-The question is if it is really important. I did re-read the original
-issue and the real problem was when the livepatch was reloaded.
-The related variables were handled using livepatched code, then
-without the livepatched code, and then with the livepatched code
-again.
+Thanks,
 
-The variable was modified with the original code that was not aware of
-the shadow variable. As a result the state of the shadow variable was
-not in sync when it was later used again.
+-- 
+Joe
 
-Nicolai, your have the practical experience. Should the reference
-counting be per-livepatched object or per-livepatch, please?
-
-> I get the feeling the latter would be easier to implement (no reference
-> counting; also maybe can be auto-detected with THIS_MODULE?) and harder
-> for the patch author to mess up (by accidentally omitting an object
-> which uses it).
-
-I am not sure how you mean it. I guess that you suggest to store
-the name of the livepatch module into the shadow variable.
-And use the variable only when the livepatch module is still loaded.
-
-This would not help.
-
-We use the reference counting because the shadow variables should
-survive an atomic replace of the lifepatch. In this case, the related
-variables are still handled using a livepatched code that is aware
-of the shadow variables.
-
-Also it does not solve the problem that the shadow variable might
-get out of sync with the related variable when the same
-livepatch gets reloaded.
-
-Best Regards,
-Petr
