@@ -2,74 +2,111 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7147961DA09
-	for <lists+live-patching@lfdr.de>; Sat,  5 Nov 2022 13:39:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F17A461EC87
+	for <lists+live-patching@lfdr.de>; Mon,  7 Nov 2022 09:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiKEMjI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 5 Nov 2022 08:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
+        id S231485AbiKGIBd (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 7 Nov 2022 03:01:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiKEMiy (ORCPT
+        with ESMTP id S231304AbiKGIBc (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sat, 5 Nov 2022 08:38:54 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1877E17E2B
-        for <live-patching@vger.kernel.org>; Sat,  5 Nov 2022 05:38:52 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id c15-20020a17090a1d0f00b0021365864446so6661691pjd.4
-        for <live-patching@vger.kernel.org>; Sat, 05 Nov 2022 05:38:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=c8XA1N0uaxkLO/wKHErNWHaSuu64k5Pjb5u9dmcZrOc=;
-        b=ZV2TcGDoVIbq1v5Mx1L1rUnUNhUQbze72wuOuh+wa69lbnQcoFfWFbkhfb7gZAMr2W
-         ByUyHxmNJ+EgAzfkEbgt2p4DOLQzRBGtUuogzeUQqAM9RqI4JEUvU9sSGNzhT5Afew3Q
-         d4OngWwLOFgISkd6x5vooHRKK9Az4aJczFzroYPLH7Dt+vGVCRowVZ5uZAV52Cgy+A2F
-         D3j8/lIwVLi3bxecncjVVFxwzOJ1xg3DK6jhFVflm1wFbGzu0e/ikP7247t4mqip1Jkf
-         Njk6WVMatLJ/Jf10pKJi5H9vXXx7mlCmIY7ZKhF8dEeWXppRLVuVdsqFZujt6LQJeXIn
-         5+hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c8XA1N0uaxkLO/wKHErNWHaSuu64k5Pjb5u9dmcZrOc=;
-        b=a4ecxK7eRlzmO8Vpyz3Pk1gbEAyVxpxK6zx3ZgAginEERScaRyjxy6zSri+FOmZTKE
-         6AAUVlNbk+ivPH5jXelLi81e6xWvoea0qAwPsPSO8q2fNnVz9mhC76Y9IgKE2CnMvJJg
-         r78GAf8bhjdxFX9eOu7qp2uHscdNZaJpKmdeUn5xNt9Rxv0ZaNip88omxfEONWkmzyjS
-         i5EoPcH7CiM+VutD3WRmAvYYnMhlomNcIARjnpRD84pOWY7fqWwKdMNkm2NPSDaPIvhV
-         pfn1EDdSPvAPiP5diLJo9dyOsjvlazaIU5PS9JXjnVnzIbGUIFgiW9OcHGaQ2T6P11Al
-         qqtg==
-X-Gm-Message-State: ACrzQf1j1TCa8g4B0+kNAGwWxlxD7TWKtqBUyQ10A6ZxbR9iQxrl2bG9
-        Q+rL3DdnqU+TpHE6xgQJMMAioawMSi70eYitlfk=
-X-Google-Smtp-Source: AMsMyM4kXiQfEHD7xTnbuAFjuPJHm46vGSi/KRiuWhPRjTwiHbLpMEWmL5EuXvVkMsm5T5CXDTvs4U+iY+YcWl58B1s=
-X-Received: by 2002:a17:90b:4ac3:b0:213:3918:f276 with SMTP id
- mh3-20020a17090b4ac300b002133918f276mr57019553pjb.19.1667651930232; Sat, 05
- Nov 2022 05:38:50 -0700 (PDT)
+        Mon, 7 Nov 2022 03:01:32 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1270613E87;
+        Mon,  7 Nov 2022 00:01:30 -0800 (PST)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N5Nw1689NzHvjr;
+        Mon,  7 Nov 2022 16:01:05 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 7 Nov 2022 16:01:28 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 7 Nov 2022 16:01:28 +0800
+Subject: Re: [PATCH v8 4/9] kallsyms: Reduce the memory occupied by
+ kallsyms_seqs_of_names[]
+To:     David Laight <David.Laight@ACULAB.COM>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Luis Chamberlain" <mcgrof@kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Ingo Molnar" <mingo@redhat.com>
+References: <20221102084921.1615-1-thunder.leizhen@huawei.com>
+ <20221102084921.1615-5-thunder.leizhen@huawei.com>
+ <bd30cbc9b7594261a7b9da26e9c98da4@AcuMS.aculab.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <59edf022-45a7-3cee-a7e7-4b6480e9b679@huawei.com>
+Date:   Mon, 7 Nov 2022 16:01:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Received: by 2002:a05:7301:2e91:b0:83:922d:c616 with HTTP; Sat, 5 Nov 2022
- 05:38:49 -0700 (PDT)
-Reply-To: stefanopessia755@hotmail.com
-From:   Stefano Pessina <wamathaibenard@gmail.com>
-Date:   Sat, 5 Nov 2022 15:38:49 +0300
-Message-ID: <CAN7bvZJ4rp_NOu942tGepXyrWhRuYBiZxGOwGAGice4B=GS3aA@mail.gmail.com>
-Subject: Geldspende
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=4.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+In-Reply-To: <bd30cbc9b7594261a7b9da26e9c98da4@AcuMS.aculab.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
---=20
-Die Summe von 500.000,00 =E2=82=AC wurde Ihnen von STEFANO PESSINA gespende=
-t.
-Bitte kontaktieren Sie uns f=C3=BCr weitere Informationen =C3=BCber
-stefanopessia755@hotmail.com
+
+
+On 2022/11/2 20:00, David Laight wrote:
+> From: Zhen Lei
+>> Sent: 02 November 2022 08:49
+>>
+>> kallsyms_seqs_of_names[] records the symbol index sorted by address, the
+>> maximum value in kallsyms_seqs_of_names[] is the number of symbols. And
+>> 2^24 = 16777216, which means that three bytes are enough to store the
+>> index. This can help us save (1 * kallsyms_num_syms) bytes of memory.
+> 
+> You can get the compiler to do the 'heavy lifting' for you.
+> 
+> struct uint24 {
+>     unsigned int val24:24;
+> } __attribute__((packed));
+
+This method depends on byte order. If the byte order of the tool is
+different from that of the kernel, it's a problem. For example,
+cross-compile PowerPC kernel on x86.
+
+> 
+> struct uint24 table[1024];
+> 
+> works fine.
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
+> 
+> .
+> 
+
+-- 
+Regards,
+  Zhen Lei
