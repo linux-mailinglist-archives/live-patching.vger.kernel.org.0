@@ -2,129 +2,105 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1305561F03A
-	for <lists+live-patching@lfdr.de>; Mon,  7 Nov 2022 11:21:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0853B62061D
+	for <lists+live-patching@lfdr.de>; Tue,  8 Nov 2022 02:33:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231450AbiKGKVz (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 7 Nov 2022 05:21:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
+        id S233311AbiKHBda (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 7 Nov 2022 20:33:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231489AbiKGKVr (ORCPT
+        with ESMTP id S233350AbiKHBdO (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 7 Nov 2022 05:21:47 -0500
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E168618B2B
-        for <live-patching@vger.kernel.org>; Mon,  7 Nov 2022 02:21:25 -0800 (PST)
-Received: by mail-oi1-x242.google.com with SMTP id t62so11597618oib.12
-        for <live-patching@vger.kernel.org>; Mon, 07 Nov 2022 02:21:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=AOmtRIzmF5dcnWrT0j3skK83MYTC+QvduwZ6ndeN2Ks=;
-        b=L9okY7Icb0Gf5ctoFsS3m7Ms6FyffuhIG/wumllqb99pGSDM0eKoVdXRomu4k2Vvje
-         vaAAA5b5CG4T9vL3DYzTbt6i7ilTYVRiZHeAf51qWroCKMi/06UV8twkwYbbvcb58b0c
-         O8aiXYIeKLPGKFxD8AeTNjdm9XiiwAwYXXYnxXnBzQtt4ZaPQYbu2mn3d4/wBF5dq0sI
-         fYgKey8dWac3TMQ3pm+aZLL8XgADS0c8wc9DQhJYDoGLimjkDspSigMMA/pe1/be4Mmf
-         FTMTprRtatoAeN10/4e16TIuQYPcJ6zZ7AsqjnUqg8Bde3BWUPkO4V20s/KjpolOjYbD
-         1dVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AOmtRIzmF5dcnWrT0j3skK83MYTC+QvduwZ6ndeN2Ks=;
-        b=4B3nB+GaPXMUoOEokdNmO6kOZO7m/JsWuaRaYFjHBZmJCU9Hg3h9tfqED0OUX+6mjE
-         wC0kvnwl0+yW0VEDLNx6fTtwPgeb0Jk0vhJLRo9QtOJF+5bdEPIISbhMqsSZp6PamtaZ
-         L+2LwQpLGeRdqdoTS4luDJ7gGhlIoliunZGlNFKsjMbH/MiiT5bDfCNGmkfAhr0RTc/A
-         MHsVAE2/lPLaBvgMfFSp2E2NfCX3nORj6lrxeSSdBkMNSsIDTPwuxBhLeE6QKhAZnfAe
-         7hgq+KoMAHISZxv9JIl84Ea3LJRoN/36+JwJlVRQT9351JNDeximLeaUFTgN9mzWnegA
-         l/vg==
-X-Gm-Message-State: ACrzQf2HFExpyogvrmm24MnoBijDk+RRh9H5VM5OD2isXD3qEbRpQabN
-        gMm8MHU3HAswyD9xOVMy0oSWqF49l3TsErtu9UNLkjvU+8A=
-X-Google-Smtp-Source: AMsMyM4Z92xjGZXgCyg2wym9Bu3/u65n6EL2ZpWI9kWf7s8xWZden0QG/zdZVfFd3uCVmOfceIs+YigxV7lXSF4Af+Y=
-X-Received: by 2002:a17:90b:2393:b0:213:ecb2:2e04 with SMTP id
- mr19-20020a17090b239300b00213ecb22e04mr38944517pjb.100.1667816475223; Mon, 07
- Nov 2022 02:21:15 -0800 (PST)
+        Mon, 7 Nov 2022 20:33:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBA111A;
+        Mon,  7 Nov 2022 17:32:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A176B61374;
+        Tue,  8 Nov 2022 01:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC968C433C1;
+        Tue,  8 Nov 2022 01:32:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667871131;
+        bh=ED313/aaAI+lz49lB29Wmv20Z3nVuXhp1WXomGj7JMo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YAIosAcx5ddEnbPE5VGv5y5o955A5t4+cQY/gyHGTJb2+jU4Xgk+ldbnQy+yCjVaE
+         5krArbp38G8pflcWUNemKsugI8PO9LdPYSMuz/+Gd2lSj/GfKQOto9bx8iq7j+JKXa
+         OYcGdSVe75nEOCI9UPNjwTNostb54PggF6ZUx9KclSfFXkad654d4ClVdjGkXMtnVU
+         jAGODql/ITbX5DrOVIRUYhciEP8BAqxrg3vGFSgEgJ7yPtcxORm+uh+sQG+3doZiiN
+         vQyXK/4Vap7NgMgsZiVAxqDFlJPezuHWO8ewYH+0ERYeRjdNRdR5QYqCBWqVhUwVYd
+         Mazsa0qZjMX2A==
+Date:   Mon, 7 Nov 2022 17:32:09 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Nicolai Stange <nstange@suse.de>,
+        Marcos Paulo de Souza <mpdesouza@suse.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        jpoimboe@redhat.com, joe.lawrence@redhat.com
+Subject: Re: [PATCH v2 4/4] livepatch/shadow: Add garbage collection of
+ shadow variables
+Message-ID: <20221108013209.eqrxs3xqtat6kksm@treble>
+References: <20221026194122.11761-1-mpdesouza@suse.com>
+ <20221026194122.11761-5-mpdesouza@suse.com>
+ <20221104010327.wa256pos75dczt4x@treble>
+ <Y2TooogxxLTIkBcj@alley>
 MIME-Version: 1.0
-Received: by 2002:a05:6a06:925:b0:587:19e0:c567 with HTTP; Mon, 7 Nov 2022
- 02:21:14 -0800 (PST)
-Reply-To: contact@ammico.it
-From:   =?UTF-8?Q?Mrs=2E_Monika_Everenov=C3=A1?= <977638ib@gmail.com>
-Date:   Mon, 7 Nov 2022 11:21:14 +0100
-Message-ID: <CAHAXD+Z_SoFK+TjW_6apBCCLtc_awXEjaqOdf77jdLRxxup3TA@mail.gmail.com>
-Subject: Re:
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=6.6 required=5.0 tests=ADVANCE_FEE_2_NEW_MONEY,
-        BAYES_50,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_FROM,FROM_STARTS_WITH_NUMS,LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:242 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.7 FROM_STARTS_WITH_NUMS From: starts with several numbers
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [977638ib[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  3.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-        *  2.0 ADVANCE_FEE_2_NEW_MONEY Advance Fee fraud and lots of money
-X-Spam-Level: ******
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y2TooogxxLTIkBcj@alley>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hei ja miten voit?
-Nimeni on rouva Evereen, l=C3=A4het=C3=A4n t=C3=A4m=C3=A4n viestin suurella=
- toivolla
-v=C3=A4lit=C3=B6n vastaus, koska minun on teht=C3=A4v=C3=A4 uusi syd=C3=A4n=
-leikkaus
-t=C3=A4ll=C3=A4 hetkell=C3=A4 huonokuntoinen ja v=C3=A4h=C3=A4iset mahdolli=
-suudet selviyty=C3=A4.
-Mutta ennen kuin min=C3=A4
-Tee toinen vaarallinen operaatio, annan sen sinulle
-Minulla on 6 550 000 dollaria yhdysvaltalaisella pankkitilill=C3=A4
-sijoittamista, hallinnointia ja k=C3=A4ytt=C3=B6=C3=A4 varten
-voittoa hyv=C3=A4ntekev=C3=A4isyysprojektin toteuttamiseen. Tarkoitan saira=
-iden auttamista
-ja k=C3=B6yh=C3=A4t ovat viimeinen haluni maan p=C3=A4=C3=A4ll=C3=A4, sill=
-=C3=A4 minulla ei ole niit=C3=A4
-kenelt=C3=A4 perii rahaa.
-Vastaa minulle nopeasti
-terveisi=C3=A4
-Rouva Monika Evereen
-Florida, Amerikan Yhdysvallat
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-Hi and how are you?
-My name is Mrs. Evereen, I am sending this message with great hope for
-an immediate response, as I have to undergo heart reoperation in my
-current poor health with little chance of survival. But before I
-undertake the second dangerous operation, I will give you the
-$6,550,000 I have in my US bank account to invest well, manage and use
-the profits to run a charity project for me. I count helping the sick
-and the poor as my last wish on earth, because I have no one to
-inherit money from.
-Please give me a quick reply
-regards
-Mrs. Monika Evereen
-Florida, United States of America
+On Fri, Nov 04, 2022 at 11:25:38AM +0100, Petr Mladek wrote:
+> > I get the feeling the latter would be easier to implement (no reference
+> > counting; also maybe can be auto-detected with THIS_MODULE?) and harder
+> > for the patch author to mess up (by accidentally omitting an object
+> > which uses it).
+> 
+> I am not sure how you mean it. I guess that you suggest to store
+> the name of the livepatch module into the shadow variable.
+> And use the variable only when the livepatch module is still loaded.
+
+Actually I was thinking the klp_patch could have references to all the
+shadow variables (or shadow variable types?) it owns.
+
+Instead of reference counting, the livepatch atomic replace code could
+just migrate any previously owned shadow variables to the new klp_patch.
+
+This of course adds the restriction that such garbage-collected shadow
+variables couldn't be shared across non-replace livepatches.  But I
+wouldn't expect that to be much of a problem.
+
+Additionally, I was wondering if "which klp_patch owns which shadow
+variables" could be auto-detected somehow.
+
+For example:
+
+1) add 'struct module *owner' or 'struct klp_patch *owner' to klp_shadow
+
+2) add klp_shadow_alloc_gc() and klp_shadow_get_or_alloc_gc(), which are
+   similar to their non-gc counterparts, with a few additional
+   arguments: the klp module owner (THIS_MODULE for the caller); and a
+   destructor to be used later for the garbage collection
+
+3) When atomic replacing a patch, iterate through the klp_shadow_hash
+   and, for each klp_shadow which previously had an owner, change it to
+   be owned by the new patch
+
+4) When unloading/freeing a patch, free all its associated klp_shadows
+   (also calling destructors where applicable)
+
+
+I'm thinking this would be easier for the patch author, and also simpler
+overall.  I could work up a patch.
+
+-- 
+Josh
