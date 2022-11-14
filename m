@@ -2,87 +2,103 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52133628447
-	for <lists+live-patching@lfdr.de>; Mon, 14 Nov 2022 16:46:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4DEB6288E4
+	for <lists+live-patching@lfdr.de>; Mon, 14 Nov 2022 20:07:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237000AbiKNPqW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 14 Nov 2022 10:46:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35658 "EHLO
+        id S236432AbiKNTHr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 14 Nov 2022 14:07:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236881AbiKNPqV (ORCPT
+        with ESMTP id S230520AbiKNTHr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 14 Nov 2022 10:46:21 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1651B1FC;
-        Mon, 14 Nov 2022 07:46:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=9x5vXUVS9j7zcrrLvHEbPU1jldRv2IvumkmALbT7WOQ=; b=es7sY5YByhCNY/0aNK9ItyqSFW
-        heM0jdDRk/pJ2hhroBLOqWSlW46Kyz72Pw+PW67G8LoByWH8a4yt3Ay5saODhqzIVVtiA+k+mKHwx
-        2pBNIS4Gqt8B+xdgXO1KTB+PW984kOwaktN0TJgB/kFwsl1NZBTleucG0AXW/pbPXIO39LliJcQ1g
-        OK82pnhzy89Uc1vOVwsS2CP/LZ/a0A0kTzbmVSpZX6lsfdAh+ILp9ARIcsNtG50/Wxk5xD4dL4blk
-        5l38X1jX0wDkI32rfJIoIAj5fEr+Ey/wkGVectJwkguxZO0UR0tj7565qZdgi2rjc40DzMrFeJ85R
-        UXpyRg6w==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oubeu-002Pla-6A; Mon, 14 Nov 2022 15:46:04 +0000
-Date:   Mon, 14 Nov 2022 07:46:04 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Mon, 14 Nov 2022 14:07:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F54160F9;
+        Mon, 14 Nov 2022 11:07:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C753361377;
+        Mon, 14 Nov 2022 19:07:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7627C433D6;
+        Mon, 14 Nov 2022 19:07:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668452865;
+        bh=l7A49gjr9j/uZ82ZG9hzVk62CqZLvcwywWGZev/QKic=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DKfzM7/rjpcyi8gIgsAQem4d1cpWYgcafF5af6FRh9jofVnTGykIjZHja/FpkIr3F
+         9An2y1RKngLWeKF2P4DD9bAGSa1MdbMU15cQOX7p7AA4s9tEoi/RWhr6tN/9owIP+U
+         oUG8Lnv6uq1TDwO3OlKLZuhy87+x6tcbfUIXmhT0yDvxUG0jZi74tVnOol7yDP4Gpw
+         d/q2am5OKmOh2s8yelDoHoEw5R5jwZuiTqeJD2VQ5ZU3bKoLTXVBBdLQF0Hpo/Yq0F
+         kUykU8aIQ3toDFzet760xoTSa5Wu9vQLAglXnWIWDu7ti+F+HPP/rKstqQ/JiP+ldq
+         neX7L/oLNT9Cg==
+Date:   Mon, 14 Nov 2022 11:07:42 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-modules@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH v8 7/9] livepatch: Improve the search performance of
- module_kallsyms_on_each_symbol()
-Message-ID: <Y3JivLcvbHNcIcSB@bombadil.infradead.org>
-References: <20221102084921.1615-1-thunder.leizhen@huawei.com>
- <20221102084921.1615-8-thunder.leizhen@huawei.com>
- <Y3HyrIwlZPYM8zYd@krava>
- <050b7513-4a20-75c7-0574-185004770329@huawei.com>
- <Y3IJ5GjrXBYDbfnA@krava>
- <ad637488-930e-33c1-558c-fc03d848afa8@huawei.com>
- <Y3IY6gzDtk1ze3u7@krava>
- <955eebae-0b36-d13f-0199-2f1b32af7da6@huawei.com>
- <Y3JB++KOXxMWWX35@krava>
+        live-patching@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
+        Martin Liska <mliska@suse.cz>, Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 40/46] x86/livepatch, lto: Disable live patching with gcc
+ LTO
+Message-ID: <20221114190742.qekt42gvsv2ia3ng@treble>
+References: <20221114114344.18650-1-jirislaby@kernel.org>
+ <20221114114344.18650-41-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Y3JB++KOXxMWWX35@krava>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221114114344.18650-41-jirislaby@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 02:26:19PM +0100, Jiri Olsa wrote:
-> I'll check on that, meanwhile if we could keep the module argument,
-> that'd be great
+On Mon, Nov 14, 2022 at 12:43:38PM +0100, Jiri Slaby (SUSE) wrote:
+> From: Andi Kleen <andi@firstfloor.org>
+> 
+> It is not supported by gcc 12 so far, so it causes compiler "sorry"
+> messages.
 
-As Leizhen suggested I could just drop patches:
+What specifically is not supported by GCC 12?  What are the "sorry"
+messages?
 
-7/9 livepatch: Improve the search performance of module_kallsyms_on_each_symbol()
-8/9 kallsyms: Delete an unused parameter related to kallsyms_on_each_symbol()
+> Other than the compiler support, there shouldn't be any barriers for
+> live patching LTOed kernels, although it might be more difficult to
+> create patches for larger functions.
 
-Then after the next kernel is released this can be relooked at.
-If this is agreeable let me know.
+This seems to conflict with the documentation.
 
-  Luis
+> Cc: Josh Poimboeuf <jpoimboe@kernel.org>
+> Cc: Jiri Kosina <jikos@kernel.org>
+> Cc: Miroslav Benes <mbenes@suse.cz>
+> Cc: Petr Mladek <pmladek@suse.com>
+> Cc: Joe Lawrence <joe.lawrence@redhat.com>
+> Cc: live-patching@vger.kernel.org
+> Signed-off-by: Andi Kleen <ak@linux.intel.com>
+> Signed-off-by: Martin Liska <mliska@suse.cz>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
+>  kernel/livepatch/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/kernel/livepatch/Kconfig b/kernel/livepatch/Kconfig
+> index 53d51ed619a3..22699adc39a6 100644
+> --- a/kernel/livepatch/Kconfig
+> +++ b/kernel/livepatch/Kconfig
+> @@ -12,6 +12,7 @@ config LIVEPATCH
+>  	depends on KALLSYMS_ALL
+>  	depends on HAVE_LIVEPATCH
+>  	depends on !TRIM_UNUSED_KSYMS
+> +	depends on !LTO_GCC # not supported in gcc
+
+The comment doesn't help.
+
+-- 
+Josh
