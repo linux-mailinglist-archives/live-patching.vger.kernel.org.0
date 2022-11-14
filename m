@@ -2,143 +2,97 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C66C627C56
-	for <lists+live-patching@lfdr.de>; Mon, 14 Nov 2022 12:30:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07930627CD6
+	for <lists+live-patching@lfdr.de>; Mon, 14 Nov 2022 12:48:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236154AbiKNLaf (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 14 Nov 2022 06:30:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57832 "EHLO
+        id S236882AbiKNLsp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 14 Nov 2022 06:48:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236446AbiKNLaV (ORCPT
+        with ESMTP id S236804AbiKNLsE (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 14 Nov 2022 06:30:21 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6579E1F9E6;
-        Mon, 14 Nov 2022 03:30:19 -0800 (PST)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N9n7q4jPzzqSRM;
-        Mon, 14 Nov 2022 19:26:31 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 19:30:17 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 19:30:16 +0800
-Subject: Re: [PATCH v8 7/9] livepatch: Improve the search performance of
- module_kallsyms_on_each_symbol()
-To:     Jiri Olsa <olsajiri@gmail.com>
-CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Mon, 14 Nov 2022 06:48:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735442252F;
+        Mon, 14 Nov 2022 03:45:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10D0D61045;
+        Mon, 14 Nov 2022 11:45:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2416DC433C1;
+        Mon, 14 Nov 2022 11:45:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668426334;
+        bh=E5uKKkSwNTVS2fkyiUTAmxhhGrPiE6X9sXCDPf3qXro=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lKwgXStSf5BKGYokF2vP5wwXHZ8kyH6GC/7CZR735e0tt2uwibnhyjRwidpNrhuRE
+         7wuYoAIM8NIoLhYgNKKhSlEpLOC/wLxgTmxgY8cwmO7xq+/ybN6O7NLZPiuWVMnCQ8
+         n4+5Kt1SqPDbdFIdpVt6Jo7l8QuHjozrEkB2L0nO5sylYBZasNhS4FMUoWA5OV687r
+         7PENiN1LQelH6MSTfsfI+cV9z3s3l/tJn1FdHWODV5Ho42JMu8/L6I0LAn55fU2a/f
+         PKdOKJM1aAPdAnxda4OdISiVeDjVBHrkOyOMeuiHuD661PbY2u5nzkadl/hRLPd3dM
+         mVTEojYb5NrqQ==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andi Kleen <andi@firstfloor.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        <linux-modules@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <20221102084921.1615-1-thunder.leizhen@huawei.com>
- <20221102084921.1615-8-thunder.leizhen@huawei.com> <Y3HyrIwlZPYM8zYd@krava>
- <050b7513-4a20-75c7-0574-185004770329@huawei.com> <Y3IJ5GjrXBYDbfnA@krava>
- <ad637488-930e-33c1-558c-fc03d848afa8@huawei.com> <Y3IY6gzDtk1ze3u7@krava>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <955eebae-0b36-d13f-0199-2f1b32af7da6@huawei.com>
-Date:   Mon, 14 Nov 2022 19:30:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        live-patching@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
+        Martin Liska <mliska@suse.cz>, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 40/46] x86/livepatch, lto: Disable live patching with gcc LTO
+Date:   Mon, 14 Nov 2022 12:43:38 +0100
+Message-Id: <20221114114344.18650-41-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221114114344.18650-1-jirislaby@kernel.org>
+References: <20221114114344.18650-1-jirislaby@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <Y3IY6gzDtk1ze3u7@krava>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+From: Andi Kleen <andi@firstfloor.org>
 
+It is not supported by gcc 12 so far, so it causes compiler "sorry"
+messages.
 
-On 2022/11/14 18:31, Jiri Olsa wrote:
-> On Mon, Nov 14, 2022 at 06:00:38PM +0800, Leizhen (ThunderTown) wrote:
->>
->>
->> On 2022/11/14 17:27, Jiri Olsa wrote:
->>> On Mon, Nov 14, 2022 at 04:50:25PM +0800, Leizhen (ThunderTown) wrote:
->>>>
->>>> On 2022/11/14 15:47, Jiri Olsa wrote:
->>>>> On Wed, Nov 02, 2022 at 04:49:19PM +0800, Zhen Lei wrote:
->>>>>> Currently we traverse all symbols of all modules to find the specified
->>>>>> function for the specified module. But in reality, we just need to find
->>>>>> the given module and then traverse all the symbols in it.
->>>>> hi,
->>>>> sorry for delayed answer, I did not notice this until Stephen's email
->>>>> about merge issue with recent bpf change [1]
->>>>>
->>>>>> Let's add a new parameter 'const char *modname' to function
->>>>>> module_kallsyms_on_each_symbol(), then we can compare the module names
->>>>> we have use case for iterating all modules and their symbols when we
->>>>> want to resolve passed addresses for tracing
->>>>>
->>>>> we don't have 'modname' that we could pass, we need to iterate all modules
->>>>>
->>>>> so perhaps this could be made optional like with passing NULL for modname?
->>>> The deletion of modname was suggested by Petr Mladek. The reason is that
->>>> everyone passes modname as NULL, there was no actual demand at the time.
->>>> https://lkml.org/lkml/2022/9/20/682
->>>>
->>>>>> directly in this function and call hook 'fn' after matching. And the
->>>>>> parameter 'struct module *' in the hook 'fn' can also be deleted.
->>>>> we need 'struct module *' argument in the callback as well because we are
->>>>> taking the module reference if we trace function in it, so it wont get
->>>>> unloaded
->>>>>
->>>>> please let me know if I should do the change or can help in any way
->>>> It seems that we should take the module reference before invoking callback
->>>> and put it after it is called, without passing modname.
->>> we take the module ref only if we (callback) find the traced address in
->>> the module, we don't have the module object before
->>>
->>> jirka
->>>
->>
->> Do it in function module_kallsyms_on_each_symbol()?
->>
->> But I just saw that mutex_lock(&module_mutex) protection is already
->> provided in this function. So reference counting protection may not
->> be required.
-> 
-> we take the module ref so it won't unload even outside of the
-> module_kallsyms_on_each_symbol function
+Other than the compiler support, there shouldn't be any barriers for
+live patching LTOed kernels, although it might be more difficult to
+create patches for larger functions.
 
-There's another way to do it, but it's more time consuming.
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Miroslav Benes <mbenes@suse.cz>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Joe Lawrence <joe.lawrence@redhat.com>
+Cc: live-patching@vger.kernel.org
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Martin Liska <mliska@suse.cz>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ kernel/livepatch/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-struct module *__module_text_address(unsigned long addr);
-struct module *__module_address(unsigned long addr);
-
-Which way do you think is more appropriate?
-
-
-> 
-> jirka
-> .
-> 
-
+diff --git a/kernel/livepatch/Kconfig b/kernel/livepatch/Kconfig
+index 53d51ed619a3..22699adc39a6 100644
+--- a/kernel/livepatch/Kconfig
++++ b/kernel/livepatch/Kconfig
+@@ -12,6 +12,7 @@ config LIVEPATCH
+ 	depends on KALLSYMS_ALL
+ 	depends on HAVE_LIVEPATCH
+ 	depends on !TRIM_UNUSED_KSYMS
++	depends on !LTO_GCC # not supported in gcc
+ 	help
+ 	  Say Y here if you want to support kernel live patching.
+ 	  This option has no runtime impact until a kernel "patch"
 -- 
-Regards,
-  Zhen Lei
+2.38.1
+
