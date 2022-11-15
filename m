@@ -2,126 +2,110 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2D4629380
-	for <lists+live-patching@lfdr.de>; Tue, 15 Nov 2022 09:44:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDFAE629A8B
+	for <lists+live-patching@lfdr.de>; Tue, 15 Nov 2022 14:33:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232940AbiKOIoF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 15 Nov 2022 03:44:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        id S238225AbiKONd2 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 15 Nov 2022 08:33:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232939AbiKOIoD (ORCPT
+        with ESMTP id S238300AbiKONdK (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 15 Nov 2022 03:44:03 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C72F12091;
-        Tue, 15 Nov 2022 00:44:01 -0800 (PST)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NBKPS5bH9zqSQQ;
-        Tue, 15 Nov 2022 16:40:12 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 15 Nov 2022 16:43:59 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 15 Nov 2022 16:43:58 +0800
-Subject: Re: [PATCH v9] kallsyms: Add self-test facility
+        Tue, 15 Nov 2022 08:33:10 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149CA29808;
+        Tue, 15 Nov 2022 05:32:30 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C7036224F3;
+        Tue, 15 Nov 2022 13:32:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1668519148; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oSNaoSAKel5Q3dXgaMtogEqroYGrlcXcisT9sIHHdq8=;
+        b=DyQ2C3DTqc2uNz2fOZ8EdKfLVZbPAJFTSPTx3R9PbjbOsZFt97huERNVS7ZAYQv+1v4aX2
+        fdIsgxYHuZLrFZj7heAgcVU16pjh7l2lVt4ieWUrEy02sOHEYrabrBE5zBDHqmCrh6s0zM
+        kfJJEUQ6EeSkpew5G9TkMpWNTxdNgPQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1668519148;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oSNaoSAKel5Q3dXgaMtogEqroYGrlcXcisT9sIHHdq8=;
+        b=mmkBCeK8KnUhJEkcknxdDzcvwCPRfU4yfvkPNHBHwOQoat8Cc9jEAhIaLMcwBpdc9n1eR7
+        gvmx4jBKUdyCYVDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9453C13273;
+        Tue, 15 Nov 2022 13:32:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id nX1tI+yUc2OmZQAAMHmgww
+        (envelope-from <mliska@suse.cz>); Tue, 15 Nov 2022 13:32:28 +0000
+Message-ID: <0a0a3922-dc42-0c42-ecac-b63641ee07d6@suse.cz>
+Date:   Tue, 15 Nov 2022 14:32:28 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 40/46] x86/livepatch, lto: Disable live patching with gcc
+ LTO
+Content-Language: en-US
 To:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
+        Andi Kleen <andi@firstfloor.org>
+Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Luis Chamberlain" <mcgrof@kernel.org>,
-        <linux-modules@vger.kernel.org>,
-        "Steven Rostedt" <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-CC:     David Laight <David.Laight@ACULAB.COM>
-References: <20221115083349.1662-1-thunder.leizhen@huawei.com>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <f21eb27b-4c7f-5136-85ab-61a8ca762496@huawei.com>
-Date:   Tue, 15 Nov 2022 16:43:57 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20221115083349.1662-1-thunder.leizhen@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        live-patching@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
+        Jiri Slaby <jslaby@suse.cz>
+References: <20221114114344.18650-1-jirislaby@kernel.org>
+ <20221114114344.18650-41-jirislaby@kernel.org>
+ <20221114190742.qekt42gvsv2ia3ng@treble>
+ <20221114202808.2avu7bscqcyefbpx@two.firstfloor.org>
+ <20221114220059.m44nykrau2eata42@treble>
+From:   =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>
+In-Reply-To: <20221114220059.m44nykrau2eata42@treble>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-
-
-On 2022/11/15 16:33, Zhen Lei wrote:
-> Added test cases for basic functions and performance of functions
-> kallsyms_lookup_name(), kallsyms_on_each_symbol() and
-> kallsyms_on_each_match_symbol(). It also calculates the compression rate
-> of the kallsyms compression algorithm for the current symbol set.
+On 11/14/22 23:00, Josh Poimboeuf wrote:
+> On Mon, Nov 14, 2022 at 12:28:09PM -0800, Andi Kleen wrote:
+>> On Mon, Nov 14, 2022 at 11:07:42AM -0800, Josh Poimboeuf wrote:
+>>> On Mon, Nov 14, 2022 at 12:43:38PM +0100, Jiri Slaby (SUSE) wrote:
+>>>> From: Andi Kleen <andi@firstfloor.org>
+>>>>
+>>>> It is not supported by gcc 12 so far, so it causes compiler "sorry"
+>>>> messages.
+>>>
+>>> What specifically is not supported by GCC 12? 
+>>
+>> -fwhole-program and the live patching options are mutually exclusive.
 > 
-> The basic functions test begins by testing a set of symbols whose address
-> values are known. Then, traverse all symbol addresses and find the
-> corresponding symbol name based on the address. It's impossible to
-> determine whether these addresses are correct, but we can use the above
-> three functions along with the addresses to test each other. Due to the
-> traversal operation of kallsyms_on_each_symbol() is too slow, only 60
-> symbols can be tested in one second, so let it test on average once
-> every 128 symbols. The other two functions validate all symbols.
+> What live patching options are you referring to?
 > 
-> If the basic functions test is passed, print only performance test
-> results. If the test fails, print error information, but do not perform
-> subsequent performance tests.
-> 
-> Start self-test automatically after system startup if
-> CONFIG_KALLSYMS_SELFTEST=y.
-> 
-> Example of output content: (prefix 'kallsyms_selftest:' is omitted
->  start
->   ---------------------------------------------------------
->  | nr_symbols | compressed size | original size | ratio(%) |
->  |---------------------------------------------------------|
->  |     107543 |       1357912   |      2407433  |  56.40   |
->   ---------------------------------------------------------
->  kallsyms_lookup_name() looked up 107543 symbols
->  The time spent on each symbol is (ns): min=630, max=35295, avg=7353
->  kallsyms_on_each_symbol() traverse all: 11782628 ns
->  kallsyms_on_each_match_symbol() traverse all: 9261 ns
->  finish
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  include/linux/kallsyms.h   |   1 +
->  init/Kconfig               |  13 +
->  kernel/Makefile            |   1 +
->  kernel/kallsyms.c          |   2 +-
->  kernel/kallsyms_selftest.c | 485 +++++++++++++++++++++++++++++++++++++
->  kernel/kallsyms_selftest.h |  13 +
->  6 files changed, 514 insertions(+), 1 deletion(-)
->  create mode 100644 kernel/kallsyms_selftest.c
->  create mode 100644 kernel/kallsyms_selftest.h
 
-v8 --> v9:
-[v8] https://lkml.org/lkml/2022/11/2/225
+As mentioned in the reply to the next email, we speak about:
+https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#index-flive-patching
+option:
 
-Adjust the prototype of some callback functions. Because 7/9 and 8/9
-in v8 are dropped.
+gcc -flto -flive-patching=inline-clone a.c
+cc1: sorry, unimplemented: live patching is not supported with LTO
 
--- 
-Regards,
-  Zhen Lei
+Cheers,
+Martin
