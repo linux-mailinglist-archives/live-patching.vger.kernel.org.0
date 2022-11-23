@@ -2,105 +2,121 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3113C632984
-	for <lists+live-patching@lfdr.de>; Mon, 21 Nov 2022 17:32:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D55263602F
+	for <lists+live-patching@lfdr.de>; Wed, 23 Nov 2022 14:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbiKUQce (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 21 Nov 2022 11:32:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
+        id S238385AbiKWNlE (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 23 Nov 2022 08:41:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiKUQca (ORCPT
+        with ESMTP id S238421AbiKWNki (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 21 Nov 2022 11:32:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D480B26;
-        Mon, 21 Nov 2022 08:32:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 23 Nov 2022 08:40:38 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683E231350;
+        Wed, 23 Nov 2022 05:28:26 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 2564B21D6D;
+        Wed, 23 Nov 2022 13:28:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1669210105; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lftKQS0Jx+lLFwwtA+DmuDztJ+B9DLUPYk915WjeBA4=;
+        b=B97cnp1olHh4IxfqkO4dLSxqBoHic9dqoTxF2c3pKfHMrpiwjrGLLLArmu+b1JNqiQeKQi
+        BfSKAsomMoixcyHjxfvBHC0/f6zMTb+XdBJjxyYoIAMVqeX/TmOFPYUaZr2hkLfyDT35/5
+        n7+0xEsm76a01RB2ojwkped74N2mrPw=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7BF5B8114D;
-        Mon, 21 Nov 2022 16:32:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A655BC433C1;
-        Mon, 21 Nov 2022 16:32:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669048345;
-        bh=iTyQ6oW9PS2870YEdN16DxwGc5vOzwMA9nRCe4hOR0Q=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qZ4jSJx1uAC8xWkW9Zvu8I8CQWPMG89KTNIqXU3xnN97M85BCmZHEgQnwwIIFkTmy
-         wKX7rq56fkxprAwVQwdtam8mUSeuFSKNPGsVL+L8ZQ9Sg83SoaqMdN8HDAta41v8No
-         quZNL7c9hj8NdHl5sQ2n6WZhIUyFaTLoeCL3OqtnvrtnqzUpBDuLu6s66fWUbyhAuj
-         AprDzf27Fbm31vLxFfJ/jT29hRLiixOoxUnxdti8W3g/T8UyS2audVYfVKTNuAwzHB
-         lq1rf8pUH5nvsziXsGxAJcNl5RNVIr2+NEiT5y8CI4+jQsCOX5vxHqLa0Fq+KZum/z
-         3LKBB/DGBLAwA==
-Received: by mail-ed1-f54.google.com with SMTP id v8so5995871edi.3;
-        Mon, 21 Nov 2022 08:32:25 -0800 (PST)
-X-Gm-Message-State: ANoB5pmIiCimyJ9je1F8jVw/f6PbL3WQNAJ/biG1qhLpU8go0g/Epl4I
-        BBK3ZmX1/1yGc+wWLwmqob1MTQmL4O9DYwH2NH8=
-X-Google-Smtp-Source: AA0mqf59hdeFp3pfAA6MPvqNEA/WxDhlx0M4qlJP7fkbFsr3sIG7IKu3IWfapn6h1JA3P61AE5bZKmmM04cQpaXJIhw=
-X-Received: by 2002:aa7:ccd3:0:b0:468:f345:aa4a with SMTP id
- y19-20020aa7ccd3000000b00468f345aa4amr16363516edt.412.1669048343933; Mon, 21
- Nov 2022 08:32:23 -0800 (PST)
+        by relay2.suse.de (Postfix) with ESMTPS id C6A402C141;
+        Wed, 23 Nov 2022 13:28:24 +0000 (UTC)
+Date:   Wed, 23 Nov 2022 14:28:24 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Laight <David.Laight@aculab.com>
+Subject: Re: [PATCH v8 6/9] livepatch: Use kallsyms_on_each_match_symbol() to
+ improve performance
+Message-ID: <Y34f+IqqSGbtC82V@alley>
+References: <20221102084921.1615-1-thunder.leizhen@huawei.com>
+ <20221102084921.1615-7-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-References: <20220901171252.2148348-1-song@kernel.org> <Y3expGRt4cPoZgHL@alley>
- <CAPhsuW4MaiJBTNnwVhqkmxPxBn8e1cn9PPGm9PkgF6YaO0AWKQ@mail.gmail.com> <09ac46a0-45fe-e280-cabb-682e05c7fddc@redhat.com>
-In-Reply-To: <09ac46a0-45fe-e280-cabb-682e05c7fddc@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 21 Nov 2022 09:32:11 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4OTB+_nq6oRuyY1=sA00ik7X19W2TwoYL7WVDBccZxrw@mail.gmail.com>
-Message-ID: <CAPhsuW4OTB+_nq6oRuyY1=sA00ik7X19W2TwoYL7WVDBccZxrw@mail.gmail.com>
-Subject: Re: [PATCH v6] livepatch: Clear relocation targets on a module removal
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-        x86@kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Petr Mladek <pmladek@suse.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221102084921.1615-7-thunder.leizhen@huawei.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 8:32 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
->
-> On 11/18/22 12:14 PM, Song Liu wrote:
-> > Hi Petr,
-> >
-> > On Fri, Nov 18, 2022 at 8:24 AM Petr Mladek <pmladek@suse.com> wrote:
-> >>
-> >> On Thu 2022-09-01 10:12:52, Song Liu wrote:
-> > [...]
-> >>>
-> >>>  arch/powerpc/kernel/module_32.c |  10 ++++
-> >>>  arch/powerpc/kernel/module_64.c |  49 +++++++++++++++
-> >>>  arch/s390/kernel/module.c       |   8 +++
-> >>>  arch/x86/kernel/module.c        | 102 +++++++++++++++++++++++---------
-> >>>  include/linux/moduleloader.h    |   7 +++
-> >>>  kernel/livepatch/core.c         |  41 ++++++++++++-
-> >>
-> >> First, thanks a lot for working on this.
-> >>
-> >> I can't check or test the powerpc and s390 code easily.
-> >>
-> >> I am going to comment only x86 and generic code. It looks good
-> >> but it needs some changes to improve maintainability.
-> >
-> > Thanks for these comments and suggestions. I will work on them
-> > and send v4.
-> >
->
-> Hi Song,
->
-> I'll help with testing the arches (at least ppc64le and s390x, I can
-> only cross-build ppc32).  I can either pick up the patches from the list
-> when you post, or if you want to run them through testing first, lmk.
+Hi,
 
-Thanks Joe!
+I am sorry for the late review. I have been snowed under another
+tasks.
 
-I am on vacation this week. I will pick this up next week.
+On Wed 2022-11-02 16:49:18, Zhen Lei wrote:
+> Based on the test results of kallsyms_on_each_match_symbol() and
+> kallsyms_on_each_symbol(), the average performance can be improved by
+> more than 1500 times.
 
-Song
+Sounds great.
+
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -153,6 +153,24 @@ static int klp_find_callback(void *data, const char *name,
+>  	return 0;
+>  }
+>  
+> +static int klp_match_callback(void *data, unsigned long addr)
+> +{
+> +	struct klp_find_arg *args = data;
+> +
+> +	args->addr = addr;
+> +	args->count++;
+> +
+> +	/*
+> +	 * Finish the search when the symbol is found for the desired position
+> +	 * or the position is not defined for a non-unique symbol.
+> +	 */
+> +	if ((args->pos && (args->count == args->pos)) ||
+> +	    (!args->pos && (args->count > 1)))
+> +		return 1;
+> +
+> +	return 0;
+
+This duplicates most of the klp_find_callback(). Please, call this
+new function in klp_find_callback() instead of the duplicated code.
+I mean to do:
+
+static int klp_find_callback(void *data, const char *name, unsigned long addr)
+{
+	struct klp_find_arg *args = data;
+
+	if (strcmp(args->name, name))
+		return 0;
+
+	return klp_match_callback(data, addr);
+}
+
+Otherwise, it looks good.
+
+Best Regards,
+Petr
