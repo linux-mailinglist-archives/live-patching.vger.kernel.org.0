@@ -2,64 +2,68 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9682F6373E0
-	for <lists+live-patching@lfdr.de>; Thu, 24 Nov 2022 09:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 702E86379A9
+	for <lists+live-patching@lfdr.de>; Thu, 24 Nov 2022 14:05:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229666AbiKXI3Y (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 24 Nov 2022 03:29:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
+        id S229840AbiKXNFy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 24 Nov 2022 08:05:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiKXI3X (ORCPT
+        with ESMTP id S229698AbiKXNFx (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 24 Nov 2022 03:29:23 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CB587DEF8;
-        Thu, 24 Nov 2022 00:29:22 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 2CF3C1F8C0;
-        Thu, 24 Nov 2022 08:29:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1669278561; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        Thu, 24 Nov 2022 08:05:53 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3B412D32;
+        Thu, 24 Nov 2022 05:05:52 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 874F11F74A;
+        Thu, 24 Nov 2022 13:05:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1669295151; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=d4emVWBJUhe5u0uHQ5OQewGttkQp0KoCl0jT+rAfSO0=;
-        b=Qzx6KpGIfSLmpQsi4jHmXhINPjMrw8ki9woHMvzYWM1HIvJ800Lnk+0LO5CCd9Qvt3zM7X
-        bUYsCC7OYJlTVwXo6VhudFlz2l5mMVhlYPyWfVgyaUNhByPNJZYHq8txzwqX4qvl9INksX
-        ATLQP8+12tg1YTAv4zdF6z5fJ9Tc94A=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        bh=v91GzwlaUPjJuAfOTl7gXRikD0EHCncjtrGWvP5ZMD0=;
+        b=ZEV0CVRRORp894sCNJUsBfBehybYtMM8av2KmRF6QxawMITaihrqkA/t4sI1kmPp1DCsZr
+        K22aZB6FsXl4mOPqIo5OMFA0bEWd1jaBW/hhmrxiXmzt9R+rPF0UQsIjuot51/PQfFHh78
+        bXPvMmSBd2Eqcva6nE6EdFZl5Jiz/Aw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1669295151;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=v91GzwlaUPjJuAfOTl7gXRikD0EHCncjtrGWvP5ZMD0=;
+        b=kisy9PlKnobjTxadB2sG32zOCmVNrUYaj/d/dEupCkeOMf0Ektuiq43GHvlAOIXNVI0o1O
+        FCyqLiqOAy89jJAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DD98A2C141;
-        Thu, 24 Nov 2022 08:29:20 +0000 (UTC)
-Date:   Thu, 24 Nov 2022 09:29:20 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH v8 6/9] livepatch: Use kallsyms_on_each_match_symbol() to
- improve performance
-Message-ID: <Y38rYMTSQLrPxz4u@alley>
-References: <20221102084921.1615-1-thunder.leizhen@huawei.com>
- <20221102084921.1615-7-thunder.leizhen@huawei.com>
- <Y34f+IqqSGbtC82V@alley>
- <45a28bcf-c6e1-8d39-613a-d30bd7b685f0@huawei.com>
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 363F713488;
+        Thu, 24 Nov 2022 13:05:48 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id LzyCOyxsf2M6GgAAMHmgww
+        (envelope-from <mpdesouza@suse.de>); Thu, 24 Nov 2022 13:05:48 +0000
+Date:   Thu, 24 Nov 2022 10:05:45 -0300
+From:   Marcos Paulo de Souza <mpdesouza@suse.de>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
+        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        shuah@kernel.org, jpoimboe@redhat.com, mbenes@suse.cz,
+        pmladek@suse.com
+Subject: Re: [PATCH v2 2/2] selftests: livepatch: Test livepatching a heavily
+ called syscall
+Message-ID: <20221124130545.2f7cpc5xkzqiybsw@daedalus>
+References: <20220630141226.2802-1-mpdesouza@suse.com>
+ <20220630141226.2802-3-mpdesouza@suse.com>
+ <Ys2Li9ilYtpmJhN3@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <45a28bcf-c6e1-8d39-613a-d30bd7b685f0@huawei.com>
+In-Reply-To: <Ys2Li9ilYtpmJhN3@redhat.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -69,61 +73,103 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2022-11-24 10:36:23, Leizhen (ThunderTown) wrote:
-> On 2022/11/23 21:28, Petr Mladek wrote:
-> > Hi,
-> > 
-> > I am sorry for the late review. I have been snowed under another
-> > tasks.
-> > 
-> > On Wed 2022-11-02 16:49:18, Zhen Lei wrote:
-> >> Based on the test results of kallsyms_on_each_match_symbol() and
-> >> kallsyms_on_each_symbol(), the average performance can be improved by
-> >> more than 1500 times.
-> > 
-> > Sounds great.
-> > 
-> >> --- a/kernel/livepatch/core.c
-> >> +++ b/kernel/livepatch/core.c
-> >> @@ -153,6 +153,24 @@ static int klp_find_callback(void *data, const char *name,
-> >>  	return 0;
-> >>  }
-> >>  
-> >> +static int klp_match_callback(void *data, unsigned long addr)
-> >> +{
-> >> +	struct klp_find_arg *args = data;
-> >> +
-> >> +	args->addr = addr;
-> >> +	args->count++;
-> >> +
-> >> +	/*
-> >> +	 * Finish the search when the symbol is found for the desired position
-> >> +	 * or the position is not defined for a non-unique symbol.
-> >> +	 */
-> >> +	if ((args->pos && (args->count == args->pos)) ||
-> >> +	    (!args->pos && (args->count > 1)))
-> >> +		return 1;
-> >> +
-> >> +	return 0;
-> > 
-> > This duplicates most of the klp_find_callback(). Please, call this
-> > new function in klp_find_callback() instead of the duplicated code.
-> > I mean to do:
-> > 
-> > static int klp_find_callback(void *data, const char *name, unsigned long addr)
-> > {
-> > 	struct klp_find_arg *args = data;
-> > 
-> > 	if (strcmp(args->name, name))
-> > 		return 0;
-> > 
-> > 	return klp_match_callback(data, addr);
-> > }
+On Tue, Jul 12, 2022 at 10:56:11AM -0400, Joe Lawrence wrote:
+> On Thu, Jun 30, 2022 at 11:12:26AM -0300, Marcos Paulo de Souza wrote:
+...
+> nit: no need to init global to 0
 > 
-> Good idea. But these patches have been merged into linux-next, how about I post
-> a new cleanup patch after v6.2-rc1?
+> > +static int sig_int;
+> > +
+> > +void hup_handler(int signum)
+> > +{
+> > +	stop = 1;
+> > +}
+> > +
+> > +void int_handler(int signum)
+> > +{
+> > +	stop = 1;
+> > +	sig_int = 1;
+> > +}
+> > +
+> > +int main(int argc, char *argv[])
+> > +{
+> > +	pid_t orig_pid, pid;
+> > +	long count = 0;
+> > +
+> > +	signal(SIGHUP, &hup_handler);
+> > +	signal(SIGINT, &int_handler);
+> > +
+> > +	orig_pid = syscall(SYS_getpid);
+> > +
+> > +	while (!stop) {
+> > +		pid = syscall(SYS_getpid);
+> > +		if (pid != orig_pid)
+> > +			return 1;
+> 
+> This test doesn't care about the user program return code, but I wonder
+> if the status should be flipped -- this is the desired code path, not
+> the one at the end of main(), right?
+> 
+...
+> > +	 */
+> > +	mutex_lock(&kpid_mutex);
+> > +	list_for_each_entry_safe(kpid, temp, &klp_pid_list, list) {
+> > +		if (current->pid == kpid->pid) {
+> > +			list_del(&kpid->list);
+> > +			kfree(kpid);
+> > +			npids--;
+> > +			break;
+> 
+> I think it would be safer to return task_tgid_vnr() here, but ...
+> 
+> > +		}
+> > +	}
+> > +	mutex_unlock(&kpid_mutex);
+> > +
+> > +	return task_tgid_vnr(current);
+> 
+> task_pid_vnr() here.  That way we're only changing behavior for the
+> processes in the list and not all programs across the system.
 
-I am fine with it.
+I believe that these two suggestions can be linked per your answer. First of
+all, I didn't write the original test program, but I agree that we can make it
+better.
 
-Best Regards,
-Petr
+My intent by upstreaming the test was to ensure that test programs
+would keep working even when livepatching getpid while having processes calling
+getpid nonstop. For the purpose of the test, the test module livepatches getpid,
+but keeping the same behavior as before. The only change is to keep track of the
+test programs that need to transition to livepatched state.
+
+Per your comment on the test program it seems that we expected to receive a
+different value from getpid, but it's not the case here. I believe the chec on
+test program is confusing and doesn't bring any benefit, so maybe it's better to
+remove it and keep the test even simpler:
+
+  --- a/tools/testing/selftests/livepatch/test_programs/test_klp-call_getpid.c
+  +++ b/tools/testing/selftests/livepatch/test_programs/test_klp-call_getpid.c
+  @@ -26,18 +26,13 @@ void int_handler(int signum)
+
+   int main(int argc, char *argv[])
+   {
+  -   pid_t orig_pid, pid;
+      long count = 0;
+
+      signal(SIGHUP, &hup_handler);
+      signal(SIGINT, &int_handler);
+
+  -   orig_pid = syscall(SYS_getpid);
+  -
+      while (!stop) {
+  -       pid = syscall(SYS_getpid);
+  -       if (pid != orig_pid)
+  -           return 1;
+  +       (void)syscall(SYS_getpid);
+          count++;
+      }
+
+As as only care about the processes transitioning to the livepatched state, we
+really don't care about the getpid return value (as it should be the same from patches
+and unpatched state).
+
+I believe this resolves both issues. What do you think?
