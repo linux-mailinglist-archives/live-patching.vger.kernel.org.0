@@ -2,121 +2,79 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C20640FC5
-	for <lists+live-patching@lfdr.de>; Fri,  2 Dec 2022 22:06:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6208642DD0
+	for <lists+live-patching@lfdr.de>; Mon,  5 Dec 2022 17:51:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229500AbiLBVGQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 2 Dec 2022 16:06:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
+        id S232553AbiLEQvH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 5 Dec 2022 11:51:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234139AbiLBVGP (ORCPT
+        with ESMTP id S231834AbiLEQuS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 2 Dec 2022 16:06:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68958EAB51
-        for <live-patching@vger.kernel.org>; Fri,  2 Dec 2022 13:05:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670015116;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cFFC8DQP235KAQhynGslmUAEiqukq9bbJSq7ImsePcg=;
-        b=Z97EgXADZwa6PrU7do8DlVOEDgfUJ+dfNvmMu/okE9KnGtqQ4HAFDmOV/8AyBZkAvt/YTU
-        tbwy+NVyWmFAALCbCIEMm7+08L0RFEcBgBqBEZM4UikcRaiWD9BbdBnWBkBxr7ISxBy00N
-        zftoCW1PNhBw+MdGKkeQ832IFYuB6eI=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-18-qEmT4WjzMyCgVOjzt6K1kw-1; Fri, 02 Dec 2022 16:05:15 -0500
-X-MC-Unique: qEmT4WjzMyCgVOjzt6K1kw-1
-Received: by mail-qv1-f69.google.com with SMTP id ng1-20020a0562143bc100b004bb706b3a27so20032518qvb.20
-        for <live-patching@vger.kernel.org>; Fri, 02 Dec 2022 13:05:15 -0800 (PST)
+        Mon, 5 Dec 2022 11:50:18 -0500
+Received: from mail-oa1-x44.google.com (mail-oa1-x44.google.com [IPv6:2001:4860:4864:20::44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D602182D
+        for <live-patching@vger.kernel.org>; Mon,  5 Dec 2022 08:49:19 -0800 (PST)
+Received: by mail-oa1-x44.google.com with SMTP id 586e51a60fabf-143ffc8c2b2so14151115fac.2
+        for <live-patching@vger.kernel.org>; Mon, 05 Dec 2022 08:49:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=O4WPtqOs6pYDke8VCfpzwsIX+8zN33o8tLS2XMy/lFU=;
+        b=JqPOhlxjav40zQ8KEP4KTU0OPx7Lt4PHyhZKP19nsc1s2nwKZSv5HlcijwyiSZs78H
+         dkSTYYx8uEtxZcKLrVxEYSCdc2zovoDHNg1p+HhNY47MD4MIOSWNu07vX2rB+PgyJfKl
+         zVc1Q/Ec75Tg7o4InQvqCPpaJSHjRgoeOF+ud7tOktSHhG/wDzQrY3AmjkXXMjRtw0s4
+         hMC5kQFHJlkQbvIkBXkR4e3Uxyz2Feapkqgsz2WdnjibG1uC/BUlcvk+tPGCLlGbqNNH
+         V0SxUnpHzIXg2rFlrLdSzhzsDv33teQm+nnA7c67P0CCLTTpWqd47C+ad+WJ4kg0474J
+         /1WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:subject:from:references:cc:to
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cFFC8DQP235KAQhynGslmUAEiqukq9bbJSq7ImsePcg=;
-        b=5cMJaog5tPC0ypRf7VboS7bY3jElVQRU4dU6kZrbnNphNR4J8xjGVF90eFBZ5sVlvv
-         sQaYfpjO0Qw1qGtNWQP/l0Cqk4lTing5xeEom4nFRlB5ohHWeskrEVs7FK/nDWiZSnly
-         Dxa6PkKTH7EE67YvQ/1B2iFfjXuyGp9EhchDeMvyAJHU1XyO4m2hzdR00in+cqgBT/Ik
-         7Pixdu7yDRCvj1cefpu/O3mOxYOPy/pnwZGdyjO0GzPYbdNJdGm6egjoJ/O+uTTbbFmJ
-         3Dc1W5mVMyg3h0YngnTkrFitg9KUXqZTinvCo9wexezt3FmR+iubss+j5Pcr/jqw4D8h
-         c7Aw==
-X-Gm-Message-State: ANoB5pkTnEWwqTVb3NDNwFRtj6a4T1TDh/8siW3jWT7FnhVdRf81vHPM
-        zaEmG4t6x9lGj8uIIeZUeJDP2DuHWI8vX6WGkTKbV0AnHq5qGuYE1K572kNvyoE0RVPGIpxF9bk
-        SxZZsYYEbFruv6C4Exiy83fVndw==
-X-Received: by 2002:a05:622a:249:b0:39c:b5a2:5eb2 with SMTP id c9-20020a05622a024900b0039cb5a25eb2mr67826956qtx.39.1670015114801;
-        Fri, 02 Dec 2022 13:05:14 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7vp3IqAgQ6ZMG3YOqX9iv6KuZoBk5uX+Ua75WkVAW8bb9j7DfCTCTUCSehg/cIXkMvDfHQgw==
-X-Received: by 2002:a05:622a:249:b0:39c:b5a2:5eb2 with SMTP id c9-20020a05622a024900b0039cb5a25eb2mr67826934qtx.39.1670015114551;
-        Fri, 02 Dec 2022 13:05:14 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id u6-20020a05620a430600b006fc5a1d9cd4sm6305004qko.34.2022.12.02.13.05.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Dec 2022 13:05:14 -0800 (PST)
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        Marcos Paulo de Souza <mpdesouza@suse.com>,
-        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        shuah@kernel.org, jpoimboe@redhat.com
-References: <20220630141226.2802-1-mpdesouza@suse.com>
- <3f9f91a3-4c08-52f4-1d3c-79f835271222@linuxfoundation.org>
- <alpine.LSU.2.21.2207010931270.13603@pobox.suse.cz>
- <8ff95ef5-db76-171d-4c4c-a84d9981290d@linuxfoundation.org>
- <20220715144526.GF2737@pathway.suse.cz>
- <aae71b0b-74e3-5874-b12f-bf0d42d851e4@redhat.com>
- <c5a6cb8a-7b99-249e-5ba4-732fc0ed2e30@linuxfoundation.org>
- <Y4nEhb7yPK5l54IX@alley>
- <21025073-0ed6-427e-219e-99e9731f6688@linuxfoundation.org>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH v2 0/2] livepatch: Move tests from lib/livepatch to
- selftests/livepatch
-Message-ID: <ed5a1f19-1e2e-7a04-7cc8-1a0324b2d508@redhat.com>
-Date:   Fri, 2 Dec 2022 16:05:25 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=O4WPtqOs6pYDke8VCfpzwsIX+8zN33o8tLS2XMy/lFU=;
+        b=ux83MSy5AYhOYk6mX/NBZ5GUBx13uv/MlC0KYb2xeqXRwyTRaga9oKVoWWiwOq8BPQ
+         Grnr3zDLKj3Uo8WWd6dgZYQWr/SYuQR4BnikY4GLmzMivA4o1Ml0U74mySzyDjU4CIjZ
+         Ks6lwxbJXV2qFYp9yUjHpMdEuoWVzHWz9NfdxuV+HsLCTKsr+QYzbjhZYdNS+fz5qxrR
+         F6KnYZjl9z6Bz6ibYko3Wlm4DLL2UjZhUrRawyYRARXtpNgN1Baz6I7RWLTICaZWeCZY
+         h6aOnR6wYBK3fAoJMh1YKMedCixMi9pluTx+rMNDzfdv+0sxXfoXglCC6iy2aUA1i5KC
+         eZQg==
+X-Gm-Message-State: ANoB5pmlgGzTK0wgmQYAwPWKBLXsmPCmXWIpfaBKO7U49wuX1nFK4PZ5
+        sEkhkcAStisf7BwzmumAmMQs7cgJhDKodu6NrpS0MtSzjGe+kA==
+X-Google-Smtp-Source: AA0mqf4emqsULQaWmlSvzix3i4WPOQ5LTbG2PI8kUo1Hf6UAHEw3W5fxwASTJvSySPdeDJOXsy5airQW+HaiYULiN7A=
+X-Received: by 2002:a05:6870:c895:b0:13a:dd7e:7bda with SMTP id
+ er21-20020a056870c89500b0013add7e7bdamr48365915oab.222.1670258958925; Mon, 05
+ Dec 2022 08:49:18 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <21025073-0ed6-427e-219e-99e9731f6688@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6358:7211:b0:dd:1fa2:ef73 with HTTP; Mon, 5 Dec 2022
+ 08:49:18 -0800 (PST)
+Reply-To: plml47@hotmail.com
+From:   Philip Manul <lometogo1999@gmail.com>
+Date:   Mon, 5 Dec 2022 08:49:18 -0800
+Message-ID: <CAFtqZGE4FPE5M8+dW=jfhZ3frvv81QiB1qFGpQtYDHEJN7gOzw@mail.gmail.com>
+Subject: REP:
+To:     in <in@proposal.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=2.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 12/2/22 3:03 PM, Shuah Khan wrote:
-> On 12/2/22 02:25, Petr Mladek wrote:
->>
->> Yes, kABI is not backward compatible. But building the tests
->> modules out-of-tree way would allow to build test modules with
->> different kABI from the same sources.
->>
-> 
-> Okay. This is a solid reason for livepatch modules to live under
-> sefltests. Let's capture this in README and the other updates that
-> need to be made to it in v3.
-> 
-
-One additional benefit, however small, is that I think everyone is
-building production livepatches, source based or via kpatch-build, as
-out-of-tree modules.  (Miroslav/Petr/Marcos please correct me if I'm
-wrong about source based.)
-
-Having the livepatch selftests live under selftests/ would imply that
-new subsystem (build) features would have to support the production
-build use case from the get go.
-
-Regards,
-
--- 
-Joe
-
+--=20
+Guten tag,
+Mein Name ist Philip Manul. Ich bin von Beruf Rechtsanwalt. Ich habe
+einen verstorbenen Kunden, der zuf=C3=A4llig denselben Namen mit Ihnen
+teilt. Ich habe alle Papierdokumente in meinem Besitz. Ihr Verwandter,
+mein verstorbener Kunde, hat hier in meinem Land einen nicht
+beanspruchten Fonds zur=C3=BCckgelassen. Ich warte auf Ihre Antwort zum
+Verfahren.
+Philip Manul.
