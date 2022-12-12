@@ -2,89 +2,82 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C204648C30
-	for <lists+live-patching@lfdr.de>; Sat, 10 Dec 2022 02:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5626499EF
+	for <lists+live-patching@lfdr.de>; Mon, 12 Dec 2022 09:16:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbiLJBJt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 9 Dec 2022 20:09:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47672 "EHLO
+        id S229681AbiLLIQC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 12 Dec 2022 03:16:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiLJBJs (ORCPT
+        with ESMTP id S229496AbiLLIQB (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 9 Dec 2022 20:09:48 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58CB7F010;
-        Fri,  9 Dec 2022 17:09:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=MUb4yQoHyZ6YBjsxLLL/BLZnhDgIi+qZpS97jRSQv/s=; b=RyB09IfH8GMuhNGE4qhj3s11XX
-        Gh48husrdvAU3Nq/AusbekicUXfnBsLWplnp3iq8CH/Q6NYDXhPtP5EZUphDlpbmZ/sH6d2VplG/9
-        nK/LAAqwsagN7OXoCAcL7SiyiTJB1GVMAsH4BZm3YQdG+JQ2Aa1J4XC53KSa9Pm5U4XulnbLaQcD5
-        VnKQ1Lksb2zdm5MlPcidD3yjZgQ/J2xCTgzjEKNOQwu5P2KrRMHOW41FAfn/sIxp4v2LeK0ZpBXip
-        00gUhC537DhMlOCiO0BQIyzw3Yj+bPUkViRV9qrlfjxllKyrnm0Pso+eGHsf0O1ftJnN+skBMIfRr
-        v298eRdQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1p3oN0-00CzOy-0z; Sat, 10 Dec 2022 01:09:38 +0000
-Date:   Fri, 9 Dec 2022 17:09:37 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-modules@vger.kernel.org
-Subject: Re: [PATCH] livepatch: Call klp_match_callback() in
- klp_find_callback() to avoid code duplication
-Message-ID: <Y5PcUYXGY4ct/FXL@bombadil.infradead.org>
-References: <20221207032304.2017-1-thunder.leizhen@huawei.com>
- <Y5L75x+W1NrWCOcm@alley>
- <aed3ca41-0f27-b44e-b95c-f7ed0a8ef468@huawei.com>
+        Mon, 12 Dec 2022 03:16:01 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357E7C745;
+        Mon, 12 Dec 2022 00:15:59 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9C10E337F2;
+        Mon, 12 Dec 2022 08:15:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1670832958; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Fkpn+tZcJeudANWrekmNzhJ9sWWRStUcNOk75TUGVOA=;
+        b=SJ/+WWdzMjwNVHUSzgOqB/oaFKfchvGfon2Thz64qkaYhD47mzXyBL4U+yxHRN4klzl0+B
+        1rUsmxeY/vPKxv9IZtKM/cmn+Yjl4+R9Krt9ssu3+AI9SnyImRzataysig3eXvO2zAJ9Yq
+        7ksf3UtdkMkA0dGmk40TEHXOdfTuvkQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1670832958;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Fkpn+tZcJeudANWrekmNzhJ9sWWRStUcNOk75TUGVOA=;
+        b=NWtmdhrlM4aNQ/hGXkEvMQzIyNYUxlqdwMKG7pGo9kSYOvG0zhzfbTl9AxBXhMIbsvLxb0
+        q3pFWmUqQYmxcPCw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4CD622C141;
+        Mon, 12 Dec 2022 08:15:58 +0000 (UTC)
+Date:   Mon, 12 Dec 2022 09:16:01 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Song Liu <song@kernel.org>
+cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@kernel.org, jikos@kernel.org, pmladek@suse.com,
+        x86@kernel.org, joe.lawrence@redhat.com,
+        linuxppc-dev@lists.ozlabs.org, Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v6] livepatch: Clear relocation targets on a module
+ removal
+In-Reply-To: <CAPhsuW53njtTrL=w33QBY5AiSftNxZ=UOQ1_qZ+qsp5VL1vU0g@mail.gmail.com>
+Message-ID: <alpine.LSU.2.21.2212120912270.4964@pobox.suse.cz>
+References: <20220901171252.2148348-1-song@kernel.org> <alpine.LSU.2.21.2212091352370.18933@pobox.suse.cz> <CAPhsuW53njtTrL=w33QBY5AiSftNxZ=UOQ1_qZ+qsp5VL1vU0g@mail.gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aed3ca41-0f27-b44e-b95c-f7ed0a8ef468@huawei.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Dec 09, 2022 at 07:29:56PM +0800, Leizhen (ThunderTown) wrote:
+> > Petr has commented on the code aspects. I will just add that s390x was not
+> > dealt with at the time because there was no live patching support for
+> > s390x back then if I remember correctly and my notes do not lie. The same
+> > applies to powerpc32. I think that both should be fixed as well with this
+> > patch. It might also help to clean up the ifdeffery in the patch a bit.
 > 
-> 
-> On 2022/12/9 17:12, Petr Mladek wrote:
-> > On Wed 2022-12-07 11:23:04, Zhen Lei wrote:
-> >> The implementation of function klp_match_callback() is identical to the
-> >> partial implementation of function klp_find_callback(). So call function
-> >> klp_match_callback() in function klp_find_callback() instead of the
-> >> duplicated code.
-> >>
-> >> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> > 
-> > Thanks for cleaning this.
-> > 
-> > Reviewed-by: Petr Mladek <pmladek@suse.com>
-> 
-> Oh, sorry, I realized that I had forgotten to add:
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> 
-> Hi Luis:
->   Can you help me add it?
+> I don't have test environments for s390 and powerpc, so I really don't know
+> whether I am doing something sane for them.
 
-Done!
+I would say that if you implement it, there are people here who would be 
+able help with the testing and reviewing the changes if CCed.
 
-  Luis
+> Would you have time to finish these parts? (Or maybe the whole patch..)
+
+Unfortunately I cannot promise anything at the moment. I am really sorry 
+about that.
+
+Miroslav
