@@ -2,59 +2,52 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B685464B630
-	for <lists+live-patching@lfdr.de>; Tue, 13 Dec 2022 14:29:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A53964B788
+	for <lists+live-patching@lfdr.de>; Tue, 13 Dec 2022 15:37:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234861AbiLMN3k (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 13 Dec 2022 08:29:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45480 "EHLO
+        id S229786AbiLMOhh (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 13 Dec 2022 09:37:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234855AbiLMN3i (ORCPT
+        with ESMTP id S235954AbiLMOhg (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 13 Dec 2022 08:29:38 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB75C2;
-        Tue, 13 Dec 2022 05:29:37 -0800 (PST)
+        Tue, 13 Dec 2022 09:37:36 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE75B13CE5;
+        Tue, 13 Dec 2022 06:37:33 -0800 (PST)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id EDD0F1F8B4;
-        Tue, 13 Dec 2022 13:29:35 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8ADEE1FDB8;
+        Tue, 13 Dec 2022 14:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1670938175; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1670942252; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=hyr4c+SKac14wkta1jaSfJl4YQdl4MmgZCTJffcE5qg=;
-        b=ITNcM/OPJCUsyRzFdas/Pg/f0lW4KGl5uuFBgsWNjbWdKHS0k/RIR21Se6GDKWu9DRrWEh
-        UwNhLpsGVMgrtk8DLrh/z2yIlafJRG1MESQxDTCP3PWLfUEIed0qzwv4ueMPEkVjACwiJA
-        mpdm+p2jF/AWUfeTzYoYM2RFWqB28Xk=
+        bh=yCoPhJw+GKmzrg8p4DH4Ya6d+PQIKemaInJPhpeXlHU=;
+        b=eMnP3IdpmRft/ER7oin2HnZdMR5P7VHO5Sw/nEemsxB2Ij/yJwJfX7Qw5GQMBH5u6Fzp9j
+        B/k+nQ8blMON5hd8beazuYDg55xA4qnleqSX2yPUaX1FJkK9+lFf9Ix1dIM9V3mpRRdKVk
+        2q5tMlDY577z7rViBRwn73TM11qdHPY=
 Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 13C4B2C141;
-        Tue, 13 Dec 2022 13:29:34 +0000 (UTC)
-Date:   Tue, 13 Dec 2022 14:29:33 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id 6DB002C142;
+        Tue, 13 Dec 2022 14:37:32 +0000 (UTC)
+Date:   Tue, 13 Dec 2022 15:37:32 +0100
 From:   Petr Mladek <pmladek@suse.com>
 To:     Song Liu <song@kernel.org>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-        x86@kernel.org, joe.lawrence@redhat.com,
-        linuxppc-dev@lists.ozlabs.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: powerpc-part: was: Re: [PATCH v6] livepatch: Clear relocation
- targets on a module removal
-Message-ID: <Y5h+PX6a1a9yjQPp@alley>
+Cc:     Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jpoimboe@kernel.org,
+        jikos@kernel.org, x86@kernel.org, joe.lawrence@redhat.com,
+        linuxppc-dev@lists.ozlabs.org, Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v6] livepatch: Clear relocation targets on a module
+ removal
+Message-ID: <Y5iOLMTLaMyqsgbL@alley>
 References: <20220901171252.2148348-1-song@kernel.org>
- <Y3expGRt4cPoZgHL@alley>
- <CAPhsuW4qYpX7wzHn5J5Hn9cnOFSZwwQPCjTM_HPTt_zbBS03ww@mail.gmail.com>
- <Y5Me5dTGv+GznvtO@alley>
- <CAPhsuW4pt7vfHTj8KorTRCx5zJaoUiyYUOLy8uXZDbTbur4RRA@mail.gmail.com>
- <Y5dg25LV24mBRf4t@alley>
- <CAPhsuW7y1GzT8+quk4vJEqM6SagqDqc=HXA3jtdmfTfC=Gsv-Q@mail.gmail.com>
+ <alpine.LSU.2.21.2212091352370.18933@pobox.suse.cz>
+ <CAPhsuW5xb2T5FBXUqG2S+AXBvDYSkLVVvUyDamjrbLQwe-3kVQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPhsuW7y1GzT8+quk4vJEqM6SagqDqc=HXA3jtdmfTfC=Gsv-Q@mail.gmail.com>
+In-Reply-To: <CAPhsuW5xb2T5FBXUqG2S+AXBvDYSkLVVvUyDamjrbLQwe-3kVQ@mail.gmail.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -64,157 +57,89 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue 2022-12-13 00:13:46, Song Liu wrote:
-> )() ()On Mon, Dec 12, 2022 at 9:12 AM Petr Mladek <pmladek@suse.com> wrote:
+On Tue 2022-12-13 00:28:34, Song Liu wrote:
+> On Fri, Dec 9, 2022 at 4:55 AM Miroslav Benes <mbenes@suse.cz> wrote:
 > >
-> > On Fri 2022-12-09 11:59:35, Song Liu wrote:
-> > > On Fri, Dec 9, 2022 at 3:41 AM Petr Mladek <pmladek@suse.com> wrote:
-> > > > On Mon 2022-11-28 17:57:06, Song Liu wrote:
-> > > > > On Fri, Nov 18, 2022 at 8:24 AM Petr Mladek <pmladek@suse.com> wrote:
-> > > > > >
-> > > > > > > --- a/arch/powerpc/kernel/module_64.c
-> > > > > > > +++ b/arch/powerpc/kernel/module_64.c
-> > > > > > > +#ifdef CONFIG_LIVEPATCH
-> > > > > > > +void clear_relocate_add(Elf64_Shdr *sechdrs,
-> > > > > > > +                    const char *strtab,
-> > > > > > > +                    unsigned int symindex,
-> > > > > > > +                    unsigned int relsec,
-> > > > > > > +                    struct module *me)
-> > > > > > > +{
+> > Hi,
 > >
-> > [...]
+> > first thank you for taking over and I also appologize for not replying
+> > much sooner.
 > >
-> > > > > > > +
-> > > > > > > +             instruction = (u32 *)location;
-> > > > > > > +             if (is_mprofile_ftrace_call(symname))
-> > > > > > > +                     continue;
-> > > >
-> > > > Why do we ignore these symbols?
-> > > >
-> > > > I can't find any counter-part in apply_relocate_add(). It looks super
-> > > > tricky. It would deserve a comment.
-> > > >
-> > > > And I have no idea how we could maintain these exceptions.
-> > > >
-> > > > > > > +             if (!instr_is_relative_link_branch(ppc_inst(*instruction)))
-> > > > > > > +                     continue;
-> > > >
-> > > > Same here. It looks super tricky and there is no explanation.
+> > On Thu, 1 Sep 2022, Song Liu wrote:
+> >
+> > > From: Miroslav Benes <mbenes@suse.cz>
 > > >
-> > > The two checks are from restore_r2(). But I cannot really remember
-> > > why we needed them. It is probably an updated version from an earlier
-> > > version (3 year earlier..).
+> > > Josh reported a bug:
+> > >
+> > >   When the object to be patched is a module, and that module is
+> > >   rmmod'ed and reloaded, it fails to load with:
+> > >
+> > >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > >
+> > >   The livepatch module has a relocation which references a symbol
+> > >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> > >   tries to replace the old relocation with a new one, it sees that
+> > >   the previous one is nonzero and it errors out.
+> > >
+> > >   On ppc64le, we have a similar issue:
+> > >
+> > >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+> > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > >
+> > > He also proposed three different solutions. We could remove the error
+> > > check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> > > ("x86/module: Detect and skip invalid relocations"). However the check
+> > > is useful for detecting corrupted modules.
+> > >
+> > > We could also deny the patched modules to be removed. If it proved to be
+> > > a major drawback for users, we could still implement a different
+> > > approach. The solution would also complicate the existing code a lot.
+> > >
+> > > We thus decided to reverse the relocation patching (clear all relocation
+> > > targets on x86_64). The solution is not
+> > > universal and is too much arch-specific, but it may prove to be simpler
+> > > in the end.
+> > >
+> > > Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> > > Signed-off-by: Song Liu <song@kernel.org>
 > >
-> > This is a good sign that it has to be explained in a comment.
-> > Or even better, it should not by copy pasted.
-> >
-> > > > > > > +             instruction += 1;
-> > > > > > > +             patch_instruction(instruction, ppc_inst(PPC_RAW_NOP()));
-> >
-> > I believe that this is not enough. apply_relocate_add() does this:
-> >
-> > int apply_relocate_add(Elf64_Shdr *sechdrs,
-> > [...]
-> >                        struct module *me)
-> > {
-> > [...]
-> >                 case R_PPC_REL24:
-> >                         /* FIXME: Handle weak symbols here --RR */
-> >                         if (sym->st_shndx == SHN_UNDEF ||
-> >                             sym->st_shndx == SHN_LIVEPATCH) {
-> > [...]
-> >                         if (!restore_r2(strtab + sym->st_name,
-> >                                                         (u32 *)location + 1, me))
-> > [...]                                   return -ENOEXEC;
-> >
-> > --->                    if (patch_instruction((u32 *)location, ppc_inst(value)))
-> >                                 return -EFAULT;
-> >
-> > , where restore_r2() does:
-> >
-> > static int restore_r2(const char *name, u32 *instruction, struct module *me)
-> > {
-> > [...]
-> >         /* ld r2,R2_STACK_OFFSET(r1) */
-> > --->    if (patch_instruction(instruction, ppc_inst(PPC_INST_LD_TOC)))
-> >                 return 0;
-> > [...]
-> > }
-> >
-> > By other words, apply_relocate_add() modifies two instructions:
-> >
-> >    + patch_instruction() called in restore_r2() writes into "location + 1"
-> >    + patch_instruction() called in apply_relocate_add() writes into "location"
-> >
-> > IMHO, we have to clear both.
-> >
-> > IMHO, we need to implement a function that reverts the changes done
-> > in restore_r2(). Also we need to revert the changes done in
-> > apply_relocate_add().
+> > Petr has commented on the code aspects. I will just add that s390x was not
+> > dealt with at the time because there was no live patching support for
+> > s390x back then if I remember correctly and my notes do not lie. The same
+> > applies to powerpc32. I think that both should be fixed as well with this
+> > patch. It might also help to clean up the ifdeffery in the patch a bit.
 > 
-> I finally got time to read all the details again and recalled what
-> happened with the code.
+> After reading the code (no testing), I think we don't need any logic for
+> ppc32 and s390.
 > 
-> The failure happens when we
-> 1) call apply_relocate_add() on klp load (or module first load,
->    if klp was loaded first);
-> 2) do nothing when the module is unloaded;
-> 3) call apply_relocate_add() on module reload, which failed.
+> We need clear_relocate_add() to handle module reload failure.
 > 
-> The failure happens at this check in restore_r2():
+> I don't think we have similar checks for ppc32 and s390, so
+> clear_relocate_add() is not needed for the two.
 > 
->         if (*instruction != PPC_RAW_NOP()) {
->                 pr_err("%s: Expected nop after call, got %08x at %pS\n",
->                         me->name, *instruction, instruction);
->                 return 0;
->         }
-> 
-> Therefore, apply_relocate_add only fails when "location + 1"
-> is not NOP. And to make it not fail, we only need to write NOP to
-> "location + 1" in clear_relocate_add().
+> OTOH, we can argue that clear_relocate_add() should undo
+> everything apply_relocate_add() did. But I do think that
+> will be an overkill.
 
-Yes, this should be enough to pass the existing check.
+It is true that we do not need to clear the relocations if the values
+are not checked in apply_relocated_add().
 
-> IIUC, you want clear_relocate_add() to undo everything we did
-> in apply_relocate_add(); while I was writing clear_relocate_add()
-> to make the next apply_relocate_add() not fail.
-> 
-> I agree that, based on the name, clear_relocate_add() should
-> undo everything by apply_relocate_add(). But I am not sure how
-> to handle some cases. For example, how do we undo
-> 
->                 case R_PPC64_ADDR32:
->                         /* Simply set it */
->                         *(u32 *)location = value;
->                        break;
->
-> Shall we just write zeros? I don't think this matters.
+I do not have strong opinion whether we should do it or not.
 
-I guess that it would be zeros as we do in x86_64.
+One one hand, the clearing code might introduce a bug if it modifies
+some wrong location. So, it might do more harm then good.
 
+One the other hand, it feels bad when a code is jumping to a
+non-existing address. I know, nobody should call this code.
+But it is still a kind of a security hole.
 
-> I think this is the question we should answer first:
-> What shall clear_relocate_add() do?
-> 1) undo everything by apply_relocate_add();
-> 2) only do things needed to make the next
->    apply_relocate_add succeed;
-> 3) something between 1) and 2).
-
-Good question.
-
-Hmm, the commit a443bf6e8a7674b86221f49 ("powerpc/modules: Add REL24
-relocation support of livepatch symbols") suggests that all symbols
-in the section SHN_LIVEPATCH have the type R_PPC_REL24. AFAIK, the
-kernel livepatches are the only user of the clear_relocate_add()
-feature.
-
-If the above is correct then it might be enough to clear only
-R_PPC_REL24 type. And it might be enough to warn when clear_relocate_add()
-is called for another type so that we know when the relocations
-were not cleared properly.
-
-Good question.  We might need some input from people familiar
-with the architecture and creating the livepatches.
+Well, I think that we could keep the clearing functions empty
+on ppc32 and s390 in this patch(set). It won't be worse than
+it is now. And perfection is the enemy of good.
 
 Best Regards,
 Petr
