@@ -2,269 +2,71 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6743E64BF3F
-	for <lists+live-patching@lfdr.de>; Tue, 13 Dec 2022 23:20:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8A0464C9C1
+	for <lists+live-patching@lfdr.de>; Wed, 14 Dec 2022 14:09:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbiLMWUD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 13 Dec 2022 17:20:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
+        id S238532AbiLNNJF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 14 Dec 2022 08:09:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234940AbiLMWUC (ORCPT
+        with ESMTP id S238549AbiLNNJA (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 13 Dec 2022 17:20:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379461FCE6
-        for <live-patching@vger.kernel.org>; Tue, 13 Dec 2022 14:19:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670969953;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/CHoK2HpHhEEysAUZtzY/hl1zhUH9ZxpSfovvfrKLKw=;
-        b=elu8lDCvrJKFi8gXMBnZq8q+8wnq2iyiys6YHCxG3VsSR3SIGUid+NOK6jA6qUlIcpHV8T
-        E+wBGSlRx99dk3FeB61gTw9nTs43nMqfEufapLH0yJoNSC6+uz3h5yZbCIs7GVZui8hKtC
-        +EoAgu5PMjiEszjo73f+EeWPD8i9Q6Q=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-593-0Ql62q8iOF2CqYUG4NtB-w-1; Tue, 13 Dec 2022 17:19:12 -0500
-X-MC-Unique: 0Ql62q8iOF2CqYUG4NtB-w-1
-Received: by mail-qk1-f197.google.com with SMTP id w14-20020a05620a424e00b006fc46116f7dso1218315qko.12
-        for <live-patching@vger.kernel.org>; Tue, 13 Dec 2022 14:19:12 -0800 (PST)
+        Wed, 14 Dec 2022 08:09:00 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13DB165B0
+        for <live-patching@vger.kernel.org>; Wed, 14 Dec 2022 05:08:57 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id b13so10337880lfo.3
+        for <live-patching@vger.kernel.org>; Wed, 14 Dec 2022 05:08:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PedTboiFtvABud73ZD3U4hUNQIS0oeFWRBzeT0lU6t8=;
+        b=KxNdjgQBBMefpFtO1FEOgrggLT8o+qZDfroZw26F0Wv0Nxpn0xu9xNsdKWRy3Tw8bn
+         3uBMa/7AEqqjC/PMfuoqKWvVC5DOyip+tZtU9MJs5nl4fxwWT0YGm7OMC2MTSporlAgR
+         uNGX8CUL49SHU8ddhDx3ElaxyXbolwzGfnMMmldXQp7emry9hbmp/KuPRA9F0MjIiQ2Z
+         dSkIzopkbTiIVz4K7tlH0kGmyqbalMk02wZGbh3IlqwfrbR9rDnnd2pXSwUjeh/EtUjQ
+         +M9S8N5KIWGbu1MopCKi+Y+KYZHT6cDTVnC+/G9IM5GpspwyQ30hFg/66iuFDlheHyUP
+         TBPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:subject:from:references:cc:to
+        h=to:subject:message-id:date:from:reply-to:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/CHoK2HpHhEEysAUZtzY/hl1zhUH9ZxpSfovvfrKLKw=;
-        b=JTcwA978r4iTj9JF4l09LSOaoL7JSK8N5UqG4N1lvXazut6lTyTbKhrt64yP4KmEnw
-         mWiqLocdsuvnR0lFOlEX/KhjQy0y0QwD3P+6s1vIOdDTg4vETwWMivdGOXSCOexbsMw3
-         BzbD3NZcNroIfpjVEJEfSfptyIdXHf8ENjEtZ6IUBe/KvdQtcffGLbl1XNGt3yXxIn3u
-         nzT9Zu+Trr9si5iA8j4b+CrfWvDeAQ33OWqCKKul0i5iX6OMxKapCDAq9lO5/VqI/Iu5
-         y/6iLS1AnBBV6U4tzAXR13zgTnkWbP6BhTe/9dFJD4yz8TQBDsD5hvDy/Xv28bc8aiiG
-         yHQg==
-X-Gm-Message-State: ANoB5pnyte3gtfBK4EHHdLqWBsQ2EuRnEtbFCSFWka0jhwdgxpBhhK10
-        OhGdDpoQ4KfCEfGNPWH052Y5QZwDarPweje7LGTsst6x/IaSzpBL+cJaOfR9sPP3/Vua4Ky4DWB
-        tSf4aUae8Eab3aBJmdy+MLyIwjA==
-X-Received: by 2002:ac8:775c:0:b0:3a8:1c25:57fa with SMTP id g28-20020ac8775c000000b003a81c2557famr5875057qtu.42.1670969951507;
-        Tue, 13 Dec 2022 14:19:11 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6OhAgFQn7DTQvxgad+rjUjO0fppY7ZjavOoJKidh13WEzvYiqGgupHyqI/NwTf4duGAn323A==
-X-Received: by 2002:ac8:775c:0:b0:3a8:1c25:57fa with SMTP id g28-20020ac8775c000000b003a81c2557famr5875024qtu.42.1670969951098;
-        Tue, 13 Dec 2022 14:19:11 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id g11-20020ac8124b000000b003a57eb7f212sm616807qtj.10.2022.12.13.14.19.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Dec 2022 14:19:10 -0800 (PST)
-To:     Petr Mladek <pmladek@suse.com>, Song Liu <song@kernel.org>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-        x86@kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Russell Currey <ruscur@russell.cc>
-References: <20220901171252.2148348-1-song@kernel.org>
- <Y3expGRt4cPoZgHL@alley>
- <CAPhsuW4qYpX7wzHn5J5Hn9cnOFSZwwQPCjTM_HPTt_zbBS03ww@mail.gmail.com>
- <Y5Me5dTGv+GznvtO@alley>
- <CAPhsuW4pt7vfHTj8KorTRCx5zJaoUiyYUOLy8uXZDbTbur4RRA@mail.gmail.com>
- <Y5dg25LV24mBRf4t@alley>
- <CAPhsuW7y1GzT8+quk4vJEqM6SagqDqc=HXA3jtdmfTfC=Gsv-Q@mail.gmail.com>
- <Y5h+PX6a1a9yjQPp@alley>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: powerpc-part: was: Re: [PATCH v6] livepatch: Clear relocation
- targets on a module removal
-Message-ID: <21984193-f9a5-1a7d-ecb7-0ae74b8cf202@redhat.com>
-Date:   Tue, 13 Dec 2022 17:19:22 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        bh=PedTboiFtvABud73ZD3U4hUNQIS0oeFWRBzeT0lU6t8=;
+        b=dTr5aNfITz72Cg9m2KbHEex7OVv8ExTtE9i9yLEcfeaebWT93ilVy2r+y7X249OPjn
+         fisLcF2PxyyH0FKYzK4/WP1Y3n8cTTMdj0aoJMjECAMAkX8ar2XAOeHBc1G8kzxAfNdk
+         566ylGvEYr14Zyn2zfEWUAiQJbnjPG0DK5TU23B1vqAD18Kfrmfy9uICZ15WrOxUIjn6
+         AidQqKg0yuDeFKHN+1hhvQlbOmhDlU+T2foCFG94lQXc8el7c88WEpESVgBYl5vI75Xf
+         4IyNGXGHQBwB2fpFTcgiT97+fBwC7vteVqVTD0OfUBLHJ/2IPSMyGL7M2hlkzl0hJtRP
+         Nd4g==
+X-Gm-Message-State: ANoB5plWQMF46vjm9108igCBmvsoIipzHd/VPh063Uu+b93G/wuMoI+j
+        637GguGupiUra9R+wBP6PdSbCASj4a3ODZNTW8k=
+X-Google-Smtp-Source: AA0mqf7aqfGeGqDDOw+H/ntC+nwy73TSEmbwetV0rbXvZf5FsiA5pNXvyDL3eCkdfjVsC5t7TR7v31XEbh/l8BEoqhU=
+X-Received: by 2002:ac2:4563:0:b0:4b5:afc6:1f74 with SMTP id
+ k3-20020ac24563000000b004b5afc61f74mr1466029lfm.577.1671023336032; Wed, 14
+ Dec 2022 05:08:56 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <Y5h+PX6a1a9yjQPp@alley>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Received: by 2002:a05:651c:1597:0:0:0:0 with HTTP; Wed, 14 Dec 2022 05:08:55
+ -0800 (PST)
+Reply-To: a2udu@yahoo.com
+From:   "." <urri8344@gmail.com>
+Date:   Wed, 14 Dec 2022 14:08:55 +0100
+Message-ID: <CAKzm1Z4NTZFpkD10SG0cQ6+WLXF0_7ELoUXkkr9FewwDX5Z7SA@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 12/13/22 8:29 AM, Petr Mladek wrote:
-> On Tue 2022-12-13 00:13:46, Song Liu wrote:
->> )() ()On Mon, Dec 12, 2022 at 9:12 AM Petr Mladek <pmladek@suse.com> wrote:
->>>
->>> On Fri 2022-12-09 11:59:35, Song Liu wrote:
->>>> On Fri, Dec 9, 2022 at 3:41 AM Petr Mladek <pmladek@suse.com> wrote:
->>>>> On Mon 2022-11-28 17:57:06, Song Liu wrote:
->>>>>> On Fri, Nov 18, 2022 at 8:24 AM Petr Mladek <pmladek@suse.com> wrote:
->>>>>>>
->>>>>>>> --- a/arch/powerpc/kernel/module_64.c
->>>>>>>> +++ b/arch/powerpc/kernel/module_64.c
->>>>>>>> +#ifdef CONFIG_LIVEPATCH
->>>>>>>> +void clear_relocate_add(Elf64_Shdr *sechdrs,
->>>>>>>> +                    const char *strtab,
->>>>>>>> +                    unsigned int symindex,
->>>>>>>> +                    unsigned int relsec,
->>>>>>>> +                    struct module *me)
->>>>>>>> +{
->>>
->>> [...]
->>>
->>>>>>>> +
->>>>>>>> +             instruction = (u32 *)location;
->>>>>>>> +             if (is_mprofile_ftrace_call(symname))
->>>>>>>> +                     continue;
->>>>>
->>>>> Why do we ignore these symbols?
->>>>>
->>>>> I can't find any counter-part in apply_relocate_add(). It looks super
->>>>> tricky. It would deserve a comment.
->>>>>
->>>>> And I have no idea how we could maintain these exceptions.
->>>>>
->>>>>>>> +             if (!instr_is_relative_link_branch(ppc_inst(*instruction)))
->>>>>>>> +                     continue;
->>>>>
->>>>> Same here. It looks super tricky and there is no explanation.
->>>>
->>>> The two checks are from restore_r2(). But I cannot really remember
->>>> why we needed them. It is probably an updated version from an earlier
->>>> version (3 year earlier..).
->>>
->>> This is a good sign that it has to be explained in a comment.
->>> Or even better, it should not by copy pasted.
->>>
->>>>>>>> +             instruction += 1;
->>>>>>>> +             patch_instruction(instruction, ppc_inst(PPC_RAW_NOP()));
->>>
->>> I believe that this is not enough. apply_relocate_add() does this:
->>>
->>> int apply_relocate_add(Elf64_Shdr *sechdrs,
->>> [...]
->>>                        struct module *me)
->>> {
->>> [...]
->>>                 case R_PPC_REL24:
->>>                         /* FIXME: Handle weak symbols here --RR */
->>>                         if (sym->st_shndx == SHN_UNDEF ||
->>>                             sym->st_shndx == SHN_LIVEPATCH) {
->>> [...]
->>>                         if (!restore_r2(strtab + sym->st_name,
->>>                                                         (u32 *)location + 1, me))
->>> [...]                                   return -ENOEXEC;
->>>
->>> --->                    if (patch_instruction((u32 *)location, ppc_inst(value)))
->>>                                 return -EFAULT;
->>>
->>> , where restore_r2() does:
->>>
->>> static int restore_r2(const char *name, u32 *instruction, struct module *me)
->>> {
->>> [...]
->>>         /* ld r2,R2_STACK_OFFSET(r1) */
->>> --->    if (patch_instruction(instruction, ppc_inst(PPC_INST_LD_TOC)))
->>>                 return 0;
->>> [...]
->>> }
->>>
->>> By other words, apply_relocate_add() modifies two instructions:
->>>
->>>    + patch_instruction() called in restore_r2() writes into "location + 1"
->>>    + patch_instruction() called in apply_relocate_add() writes into "location"
->>>
->>> IMHO, we have to clear both.
->>>
->>> IMHO, we need to implement a function that reverts the changes done
->>> in restore_r2(). Also we need to revert the changes done in
->>> apply_relocate_add().
->>
->> I finally got time to read all the details again and recalled what
->> happened with the code.
->>
->> The failure happens when we
->> 1) call apply_relocate_add() on klp load (or module first load,
->>    if klp was loaded first);
->> 2) do nothing when the module is unloaded;
->> 3) call apply_relocate_add() on module reload, which failed.
->>
->> The failure happens at this check in restore_r2():
->>
->>         if (*instruction != PPC_RAW_NOP()) {
->>                 pr_err("%s: Expected nop after call, got %08x at %pS\n",
->>                         me->name, *instruction, instruction);
->>                 return 0;
->>         }
->>
->> Therefore, apply_relocate_add only fails when "location + 1"
->> is not NOP. And to make it not fail, we only need to write NOP to
->> "location + 1" in clear_relocate_add().
-> 
-> Yes, this should be enough to pass the existing check.
-> 
->> IIUC, you want clear_relocate_add() to undo everything we did
->> in apply_relocate_add(); while I was writing clear_relocate_add()
->> to make the next apply_relocate_add() not fail.
->>
->> I agree that, based on the name, clear_relocate_add() should
->> undo everything by apply_relocate_add(). But I am not sure how
->> to handle some cases. For example, how do we undo
->>
->>                 case R_PPC64_ADDR32:
->>                         /* Simply set it */
->>                         *(u32 *)location = value;
->>                        break;
->>
->> Shall we just write zeros? I don't think this matters.
-> 
-> I guess that it would be zeros as we do in x86_64.
-> 
-> 
->> I think this is the question we should answer first:
->> What shall clear_relocate_add() do?
->> 1) undo everything by apply_relocate_add();
->> 2) only do things needed to make the next
->>    apply_relocate_add succeed;
->> 3) something between 1) and 2).
-> 
-> Good question.
-> 
-> Hmm, the commit a443bf6e8a7674b86221f49 ("powerpc/modules: Add REL24
-> relocation support of livepatch symbols") suggests that all symbols
-> in the section SHN_LIVEPATCH have the type R_PPC_REL24. AFAIK, the
-> kernel livepatches are the only user of the clear_relocate_add()
-> feature.
-> 
-> If the above is correct then it might be enough to clear only
-> R_PPC_REL24 type. And it might be enough to warn when clear_relocate_add()
-> is called for another type so that we know when the relocations
-> were not cleared properly.
-> 
-> Good question.  We might need some input from people familiar
-> with the architecture and creating the livepatches.
-> 
-
-Adding Russell to the to CC list as he worked some of recent ppc64le
-livepatch klp-relocation threads [1] [2].
-
-Maybe it would simpler to first organize a cleanup of the code, then add
-the capability to undo the relocations?  According to [2] and the last
-comment on [3], it sounded like the Power folks had a "full"(er)
-solution in mind depending on our requirements.
-
-Finally, I'll try to finish my v6.1 rebase of the klp-convert patchset
-this week.  That includes a bunch of kselftests that generate all manner
-of klp-relocation types and sections.  (More than I've ever seen out of
-kpatch-build.)
-
-[1] https://lore.kernel.org/linuxppc-dev/YX9UUBeudSUuJs01@redhat.com/
-[2] https://lore.kernel.org/linuxppc-dev/YxAc87dTmclHGCUy@redhat.com/
-[3] https://github.com/linuxppc/issues/issues/375
-
 -- 
-Joe
+Hello
 
+The money is ready to be transferred, kindly acknowledge your interest.
