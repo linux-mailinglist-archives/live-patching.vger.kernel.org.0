@@ -2,55 +2,47 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5883364EC18
-	for <lists+live-patching@lfdr.de>; Fri, 16 Dec 2022 14:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7268264EC1C
+	for <lists+live-patching@lfdr.de>; Fri, 16 Dec 2022 14:31:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiLPNaI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 16 Dec 2022 08:30:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
+        id S230385AbiLPNbM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 16 Dec 2022 08:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbiLPNaG (ORCPT
+        with ESMTP id S230103AbiLPNbK (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 16 Dec 2022 08:30:06 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB3433C15
-        for <live-patching@vger.kernel.org>; Fri, 16 Dec 2022 05:30:04 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-59-7khLQNjFOCWNJyYbrxwnNQ-1; Fri, 16 Dec 2022 13:30:02 +0000
-X-MC-Unique: 7khLQNjFOCWNJyYbrxwnNQ-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 16 Dec
- 2022 13:29:59 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.044; Fri, 16 Dec 2022 13:29:59 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Leizhen (ThunderTown)'" <thunder.leizhen@huawei.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Fri, 16 Dec 2022 08:31:10 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11114EE0D;
+        Fri, 16 Dec 2022 05:31:08 -0800 (PST)
+Received: from dggpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NYVHp5R52zqTB8;
+        Fri, 16 Dec 2022 21:26:46 +0800 (CST)
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Fri, 16 Dec 2022 21:31:05 +0800
+Subject: Re: [PATCH v9] kallsyms: Add self-test facility
+To:     Andreas Schwab <schwab@linux-m68k.org>
+CC:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Jiri Olsa <jolsa@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        "Luis Chamberlain" <mcgrof@kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        <linux-modules@vger.kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
-        "Ingo Molnar" <mingo@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
         linux-m68k <linux-m68k@lists.linux-m68k.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: RE: [PATCH v9] kallsyms: Add self-test facility
-Thread-Topic: [PATCH v9] kallsyms: Add self-test facility
-Thread-Index: AQHZEUYmzV5WljPUpEGVjsixemOWL65wgKUg
-Date:   Fri, 16 Dec 2022 13:29:59 +0000
-Message-ID: <52450ec1da164d6d87587063c3b3d3d2@AcuMS.aculab.com>
 References: <20221115083349.1662-1-thunder.leizhen@huawei.com>
  <CAMuHMdWM6+pC3yUqy+hHRrAf1BCz2sz1KQv2zxS+Wz-639X-aA@mail.gmail.com>
  <ad09966d-9357-1c32-e491-a402af8dac6e@huawei.com>
@@ -61,59 +53,81 @@ References: <20221115083349.1662-1-thunder.leizhen@huawei.com>
  <e81710a9-2c45-0724-ec5f-727977202858@huawei.com>
  <CAMuHMdWAAQNJd21fhodDONb40LFMae3V_517iT22FykCqG90Og@mail.gmail.com>
  <4aaede14-8bd3-6071-f17b-7efcb5f0de42@huawei.com>
- <66ec4021-b633-09ba-73ee-b24cdb3fa25a@huawei.com>
- <CAMuHMdVUvPRvEvGNmB9WO0yg=w04g4q2_1hfOypqEnrYkFr6YQ@mail.gmail.com>
- <06345dca-0afb-00a5-c9e9-5ba830d8ad05@huawei.com>
-In-Reply-To: <06345dca-0afb-00a5-c9e9-5ba830d8ad05@huawei.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+ <66ec4021-b633-09ba-73ee-b24cdb3fa25a@huawei.com> <87h6xvk1dc.fsf@igel.home>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <1739960e-7f95-88ef-9b91-31c7504bb7fd@huawei.com>
+Date:   Fri, 16 Dec 2022 21:31:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+In-Reply-To: <87h6xvk1dc.fsf@igel.home>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-RnJvbTogTGVpemhlbiAoVGh1bmRlclRvd24pDQo+IFNlbnQ6IDE2IERlY2VtYmVyIDIwMjIgMTI6
-MDINCj4gDQouLg0KPiA+IE1vdmluZyB0aGUgbTY4ayB2ZXJzaW9uIGluc2lkZSBsaWIvc3RyaW5n
-LmMgbWFrZXMgdGhlIHRlc3QgcGFzcywgdG9vLg0KPiA+IFNvIGl0IG11c3QgYmUgcmVsYXRlZCB0
-byB0aGUgZnVuY3Rpb24gYmVpbmcgaW5saW5lLCBhbmQgZ2NjIG1ha2luZw0KPiA+IChpbmNvcnJl
-Y3QpIGFzc3VtcHRpb25zLi4uDQo+IA0KPiBZZXMsIGl0J3MgdGhlIGNvbXBpbGVyJ3MgZmF1bHQu
-IEkganVzdCByZXBsaWVkIERhdmlkIExhaWdodDoNCj4gDQo+IEkgYWRkZWQgJ3ZvbGF0aWxlJyB0
-byBwcmV2ZW50IGNvbXBpbGVyIG9wdGltaXphdGlvbnMsIGFuZCBpdCdzIE9LIG5vdy4NCj4gDQo+
-IGRpZmYgLS1naXQgYS9hcmNoL202OGsvaW5jbHVkZS9hc20vc3RyaW5nLmggYi9hcmNoL202OGsv
-aW5jbHVkZS9hc20vc3RyaW5nLmgNCj4gaW5kZXggZjc1OWQ5NDRjNDQ5OTQwLi4zZGI4MWU1YTc4
-M2M3MmEgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvbTY4ay9pbmNsdWRlL2FzbS9zdHJpbmcuaA0KPiAr
-KysgYi9hcmNoL202OGsvaW5jbHVkZS9hc20vc3RyaW5nLmgNCj4gQEAgLTQyLDkgKzQyLDkgQEAg
-c3RhdGljIGlubGluZSBjaGFyICpzdHJuY3B5KGNoYXIgKmRlc3QsIGNvbnN0IGNoYXIgKnNyYywg
-c2l6ZV90IG4pDQo+ICAjZGVmaW5lIF9fSEFWRV9BUkNIX1NUUkNNUA0KPiAgc3RhdGljIGlubGlu
-ZSBpbnQgc3RyY21wKGNvbnN0IGNoYXIgKmNzLCBjb25zdCBjaGFyICpjdCkNCj4gIHsNCj4gLSAg
-ICAgICBjaGFyIHJlczsNCj4gKyAgICAgICBzaWduZWQgY2hhciByZXM7DQo+IA0KPiAtICAgICAg
-IGFzbSAoIlxuIg0KPiArICAgICAgIGFzbSB2b2xhdGlsZSAoIlxuIg0KPiAgICAgICAgICAgICAg
-ICAgIjE6ICAgICBtb3ZlLmIgICglMCkrLCUyXG4iICAgICAvKiBnZXQgKmNzICovDQo+ICAgICAg
-ICAgICAgICAgICAiICAgICAgIGNtcC5iICAgKCUxKSssJTJcbiIgICAgIC8qIGNvbXBhcmUgYSBi
-eXRlICovDQo+ICAgICAgICAgICAgICAgICAiICAgICAgIGpuZSAgICAgMmZcbiIgICAgICAgICAg
-IC8qIG5vdCBlcXVhbCwgYnJlYWsgb3V0ICovDQoNCkFkZGluZyAndm9sYXRpbGUnIHRoZXJlIHNo
-b3VsZG4ndCBtYWtlIGFueSByZWFsIGRpZmZlcmVuY2UuDQoNCkknZCBkb3VibGUtY2hlY2sgdGhl
-IGFzbSBjb25zdHJhaW50cyBmb3IgdGhlIHR3byBwb2ludGVycy4NClRoZXkgYXJlIG1vZGlmaWVk
-IGJ5IHRoZSBhc20sIGJ1dCB0aGUgY2FsbGVyJ3MgdmFyaWFibGVzDQptdXN0IG5vdCBiZSBjaGFu
-Z2VkLg0KDQpJIHRoaW5rIHRoYXQgbWVhbnMgdGhleSBuZWVkIHRvIGJlIG5vcm1hbCAnaW5wdXQn
-IHBhcmFtZXRlcnMNCmFuZCB0aGUgcmVzdWx0IG11c3QgYmUgaW4gZGlmZmVyZW50IHJlZ2lzdGVy
-IChlYXJseSBjbG9iYmVyPykuDQpDdXJyZW50bHkgdGhlIHBvaW50ZXJzIGFyZSAiK3IiIC0gd2hp
-Y2ggSSB0aGluayBtZWFucyB0aGV5DQphcmUgaW5wdXQtb3V0cHV0IGFuZCBhbnkgY2FsbGVyLXN1
-cHBsaWVkIHZhcmlhYmxlIGlzDQpsaWtlbHkgdG8gZ2V0IGNoYW5nZWQuDQoNCglEYXZpZA0KDQoJ
-DQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBG
-YXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2
-IChXYWxlcykNCg==
 
+
+On 2022/12/16 19:57, Andreas Schwab wrote:
+> On Dez 16 2022, Leizhen (ThunderTown) wrote:
+> 
+>> It seems that the problem is still strcmp(). After I commented strcmp() in
+>> arch/m68k/include/asm/string.h, and force it to use the one in lib/string.c,
+>> it works well.
+> 
+> Does that help?
+
+It still needs to add 'volatile' to prevent compiler optimizations.
+Otherwise,
+Tested-by: Zhen Lei <thunder.leizhen@huawei.com>
+
+> 
+> diff --git a/arch/m68k/include/asm/string.h b/arch/m68k/include/asm/string.h
+> index f759d944c449..cdafd67774e0 100644
+> --- a/arch/m68k/include/asm/string.h
+> +++ b/arch/m68k/include/asm/string.h
+> @@ -42,18 +42,19 @@ static inline char *strncpy(char *dest, const char *src, size_t n)
+>  #define __HAVE_ARCH_STRCMP
+>  static inline int strcmp(const char *cs, const char *ct)
+>  {
+> -	char res;
+> +	int res = 0, tmp = 0;
+>  
+>  	asm ("\n"
+
+-       asm ("\n"
++       asm volatile ("\n"
+
+
+>  		"1:	move.b	(%0)+,%2\n"	/* get *cs */
+> -		"	cmp.b	(%1)+,%2\n"	/* compare a byte */
+> +		"	move.b	(%1)+,%3\n"	/* get *ct */
+> +		"	cmp.b	%3,%2\n"	/* compare a byte */
+>  		"	jne	2f\n"		/* not equal, break out */
+>  		"	tst.b	%2\n"		/* at end of cs? */
+>  		"	jne	1b\n"		/* no, keep going */
+>  		"	jra	3f\n"		/* strings are equal */
+> -		"2:	sub.b	-(%1),%2\n"	/* *cs - *ct */
+> +		"2:	sub.l	%3,%2\n"	/* *cs - *ct */
+>  		"3:"
+> -		: "+a" (cs), "+a" (ct), "=d" (res));
+> +		: "+a" (cs), "+a" (ct), "+d" (res), "+d" (tmp));
+>  	return res;
+>  }
+>  #endif /* CONFIG_COLDFIRE */
+> 
+
+-- 
+Regards,
+  Zhen Lei
