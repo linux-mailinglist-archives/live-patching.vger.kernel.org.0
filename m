@@ -2,27 +2,27 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D891464F03C
-	for <lists+live-patching@lfdr.de>; Fri, 16 Dec 2022 18:19:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E16E64F073
+	for <lists+live-patching@lfdr.de>; Fri, 16 Dec 2022 18:38:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbiLPRTy (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 16 Dec 2022 12:19:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38678 "EHLO
+        id S231835AbiLPRiN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 16 Dec 2022 12:38:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiLPRTx (ORCPT
+        with ESMTP id S230237AbiLPRiM (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 16 Dec 2022 12:19:53 -0500
+        Fri, 16 Dec 2022 12:38:12 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3799E29CAE;
-        Fri, 16 Dec 2022 09:19:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC544046A;
+        Fri, 16 Dec 2022 09:38:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5D70621B9;
-        Fri, 16 Dec 2022 17:19:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09401C433EF;
-        Fri, 16 Dec 2022 17:19:48 +0000 (UTC)
-Date:   Fri, 16 Dec 2022 12:19:47 -0500
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 776B3621C0;
+        Fri, 16 Dec 2022 17:38:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD48FC433D2;
+        Fri, 16 Dec 2022 17:38:08 +0000 (UTC)
+Date:   Fri, 16 Dec 2022 12:38:04 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     David Laight <David.Laight@ACULAB.COM>
 Cc:     'Andreas Schwab' <schwab@linux-m68k.org>,
@@ -46,10 +46,9 @@ Cc:     'Andreas Schwab' <schwab@linux-m68k.org>,
         linux-m68k <linux-m68k@lists.linux-m68k.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
 Subject: Re: [PATCH v9] kallsyms: Add self-test facility
-Message-ID: <20221216121947.7d03b651@gandalf.local.home>
-In-Reply-To: <ecf4939dbff84709a1782a8e8851b29f@AcuMS.aculab.com>
+Message-ID: <20221216123805.6eba002c@gandalf.local.home>
+In-Reply-To: <20221216121947.7d03b651@gandalf.local.home>
 References: <20221115083349.1662-1-thunder.leizhen@huawei.com>
-        <CAMuHMdWPSeieR-sGuozd3kWGjVw85EV40irqM9aErXufifzFNA@mail.gmail.com>
         <49070ac3-02bb-a3b3-b929-ede07e3b2c95@huawei.com>
         <e81710a9-2c45-0724-ec5f-727977202858@huawei.com>
         <CAMuHMdWAAQNJd21fhodDONb40LFMae3V_517iT22FykCqG90Og@mail.gmail.com>
@@ -67,6 +66,7 @@ References: <20221115083349.1662-1-thunder.leizhen@huawei.com>
         <819801284eb745d9a4189759bad297f5@AcuMS.aculab.com>
         <20221216115314.6120beb7@gandalf.local.home>
         <ecf4939dbff84709a1782a8e8851b29f@AcuMS.aculab.com>
+        <20221216121947.7d03b651@gandalf.local.home>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -80,22 +80,29 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, 16 Dec 2022 16:57:54 +0000
-David Laight <David.Laight@ACULAB.COM> wrote:
+On Fri, 16 Dec 2022 12:19:47 -0500
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-> > I don't know m68k assembly, but I'm guessing the (%O)+ and the (%1)+ only
-> > modifies the register being used, and no memory is being touched.  
-> 
-> Memory is being read so a clobber is needed to ensure that all pending
-> writes have been done.
-> Although, in this case, the memory being read is effectively
-> read only so nothing should be
+> I assumed that "memory" was for memory unrelated to the input constraints.
 
-I would think that if the memory being read is the address of what the
-input parameters being passed into it are, then the compiler should be
-smart enough to know that there's a relation. Especially if the input
-parameters are pointers.
+Well, it looks like you do need a "memory" barrier.
 
-I assumed that "memory" was for memory unrelated to the input constraints.
+  https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
+
+"memory"
+
+      The "memory" clobber tells the compiler that the assembly code
+      performs memory reads or writes to items other than those listed in
+      the input and output operands (for example, accessing the memory
+      pointed to by one of the input parameters). To ensure memory contains
+      correct values, GCC may need to flush specific register values to
+      memory before executing the asm. Further, the compiler does not
+      assume that any values read from memory before an asm remain
+      unchanged after that asm; it reloads them as needed. Using the
+      "memory" clobber effectively forms a read/write memory barrier for
+      the compiler.
+
+As the "(for example, accessing the memory pointed to by one of the input
+parameters)" is exactly this case.
 
 -- Steve
