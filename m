@@ -2,160 +2,111 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1229065F278
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jan 2023 18:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC0565F380
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jan 2023 19:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233948AbjAERUS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 5 Jan 2023 12:20:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38076 "EHLO
+        id S235075AbjAESKR (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 5 Jan 2023 13:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234439AbjAERTV (ORCPT
+        with ESMTP id S235460AbjAESKM (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 5 Jan 2023 12:19:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB693DBF0
-        for <live-patching@vger.kernel.org>; Thu,  5 Jan 2023 09:12:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C10E61B7C
-        for <live-patching@vger.kernel.org>; Thu,  5 Jan 2023 17:12:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B22AEC433F1
-        for <live-patching@vger.kernel.org>; Thu,  5 Jan 2023 17:12:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672938721;
-        bh=aDJnF7T3c0uOTm7NZm8qSU61C1/jfCjOUKFHgfjUOOY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uzN3GPACih1unrwkLSFg4LfpcbEiiFVjT5gZVs3QZ++R4l+HA906O2THb6ptPwuOD
-         fgFbN6sEPSGeBs8N6W1Hoj+r4sqwaTqobt74yPQhPjb/SwLO8LmxQnW/ckHrDsSpqA
-         UpgSNarEnbieMFuEGKt7ptX+ORgxp4bRyUlWInTTndCQUlKBezFAZX2QRWrWcFzDQn
-         kt58FcKmHx/4QRp/DW4mV9hL9k7VhouYrHGUs0FM1SgaXilaSLsdC9N92pZhfYVDe7
-         +yc2fsknMjAFa1+ROiAIxPnCf/prLBuBroznFOjFDtQOoaRimbDcYMOd5eJf3TeQ4v
-         Mp/GLEDSqwM1g==
-Received: by mail-lj1-f174.google.com with SMTP id bn6so29385483ljb.13
-        for <live-patching@vger.kernel.org>; Thu, 05 Jan 2023 09:12:01 -0800 (PST)
-X-Gm-Message-State: AFqh2kpeemiEFqjtWTw/2hz3ValMXJBEkHTeynUthCStGmjBaIBXq354
-        kkAqml8LBg8ZgTAxUSxgMmZRsLuNscMVPASXIAY=
-X-Google-Smtp-Source: AMrXdXu2lPYWMEFPKMudCKjFs2Zo94MIOB62Y3iyKqcwWRNJgj+EGGrbYTeLmOSlQqNo20gwc87vzfcofNuaYklfY+o=
-X-Received: by 2002:a2e:86cb:0:b0:27f:d510:1c19 with SMTP id
- n11-20020a2e86cb000000b0027fd5101c19mr1161714ljj.495.1672938719735; Thu, 05
- Jan 2023 09:11:59 -0800 (PST)
+        Thu, 5 Jan 2023 13:10:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA101C8
+        for <live-patching@vger.kernel.org>; Thu,  5 Jan 2023 10:09:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672942169;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=87XEr1ZkZNddS/Li1EdlQ6ISU69eehXodKLwNjG/wIY=;
+        b=W0pOd7cqUXGBJJ1fFPGJckmEWu2Hy1WldK4PisAOyOXojALE0NxQ5z5JHLsk51VToFnpqD
+        dmRrwZDwN0v4ADMOvT7XpW/KGj+dmX/6OmAKJ+nablkju1JgBzJ9Bh1VpGR3rheF2API+2
+        eBBd1mHAqHKw6jmVl9cQi0CfeRauUZM=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-20-iblRWe98OemTV7pVlKsyag-1; Thu, 05 Jan 2023 13:09:28 -0500
+X-MC-Unique: iblRWe98OemTV7pVlKsyag-1
+Received: by mail-qt1-f199.google.com with SMTP id g12-20020ac870cc000000b003a8112df2e9so13419806qtp.9
+        for <live-patching@vger.kernel.org>; Thu, 05 Jan 2023 10:09:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=87XEr1ZkZNddS/Li1EdlQ6ISU69eehXodKLwNjG/wIY=;
+        b=Go8H9V2eLi5Jd1VBYhEno9br3JuefnhZmoOwY4a64hM8HuGLwZr8+oDIucQ9oH5Wkq
+         NHZsq3OI0t9EtqRvlgJUdcW0i3rQrKYx8TgesI5bXyv2DnlqhYGh//Mk+IXMT4n5/btx
+         LGkmfYHKBL+B/rCZZUXC7zQjk7oNSmhZxQCRqfU/ubLTeGRtIuivmmEq2klbuShdtLzD
+         4AkiXEfOTN4wwsJPkvFMsmjpMpYSOJpEAnlcuGXoMTJbZimE3q+VrKg3PYnKRm31nyYP
+         nQ1eEyckJOvcGhx05TDCFxXXkH2KpBpJCr09WVHebNqs3Ir0kH2LkWZcdlpCQGPn0UbL
+         J8fw==
+X-Gm-Message-State: AFqh2kptVE3HXLevLOZUBsirY6xxKKi9GTq3w7OsmybRAyth1LSnkfk1
+        rAw7Link3xB/Odb0uIpO+/EBSRpS+9VD8vmuDvZwD/z9OqDaL4txEPzVGufs0gtheZop4wcucPJ
+        vQbULNgOsWyA3GXrFuquC9rDbhA==
+X-Received: by 2002:ac8:7ef8:0:b0:3a5:8688:89db with SMTP id r24-20020ac87ef8000000b003a5868889dbmr77063577qtc.48.1672942167685;
+        Thu, 05 Jan 2023 10:09:27 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXt+geZ9JEu1xNdVeR1O4//WJjIa4vv682XKhvpakNREv6dPEQINR7NLO9CJBGIi2IJ3cmUP1w==
+X-Received: by 2002:ac8:7ef8:0:b0:3a5:8688:89db with SMTP id r24-20020ac87ef8000000b003a5868889dbmr77063560qtc.48.1672942167449;
+        Thu, 05 Jan 2023 10:09:27 -0800 (PST)
+Received: from [192.168.1.13] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
+        by smtp.gmail.com with ESMTPSA id ch12-20020a05622a40cc00b00399fe4aac3esm22133229qtb.50.2023.01.05.10.09.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Jan 2023 10:09:26 -0800 (PST)
+Message-ID: <641c0330-163a-336b-081c-456e0be826b6@redhat.com>
+Date:   Thu, 5 Jan 2023 13:09:25 -0500
 MIME-Version: 1.0
-References: <20221214174035.1012183-1-song@kernel.org> <Y7VUPAEFFFougaoC@alley>
- <CAPhsuW7EAFgUUgh3Q6wbE-PNLGnSFFWmdQaYfOqVW6adM0+G4g@mail.gmail.com>
- <Y7YH7SwveCyNPxWC@redhat.com> <CAPhsuW6tje3AN+7mw73uQBO8N=cu=w=7a7wTJ5eeCMV-HS0KSg@mail.gmail.com>
- <bf670f87-e2a1-ff42-a88f-70eab78b4cd1@redhat.com>
-In-Reply-To: <bf670f87-e2a1-ff42-a88f-70eab78b4cd1@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 5 Jan 2023 09:11:47 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5NH6y_ywr5LG6PUy4Pai-6_693qNJxXHk_wUfERUgReA@mail.gmail.com>
-Message-ID: <CAPhsuW5NH6y_ywr5LG6PUy4Pai-6_693qNJxXHk_wUfERUgReA@mail.gmail.com>
-Subject: Re: [PATCH v7] livepatch: Clear relocation targets on a module removal
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Petr Mladek <pmladek@suse.com>, live-patching@vger.kernel.org,
-        jpoimboe@kernel.org, jikos@kernel.org,
-        Miroslav Benes <mbenes@suse.cz>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Content-Language: en-US
+To:     Song Liu <song@kernel.org>, Petr Mladek <pmladek@suse.com>
+Cc:     live-patching@vger.kernel.org, jpoimboe@kernel.org,
+        jikos@kernel.org, Miroslav Benes <mbenes@suse.cz>,
         Josh Poimboeuf <jpoimboe@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221214174035.1012183-1-song@kernel.org>
+ <Y7VUPAEFFFougaoC@alley>
+ <CAPhsuW7EAFgUUgh3Q6wbE-PNLGnSFFWmdQaYfOqVW6adM0+G4g@mail.gmail.com>
+ <Y7ayTvpxnDvX9Nfi@alley>
+ <CAPhsuW5E9m5tb_ZCknH4QfFMukqwZHkKxvkHxo5A-znt5tm0ow@mail.gmail.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH v7] livepatch: Clear relocation targets on a module
+ removal
+In-Reply-To: <CAPhsuW5E9m5tb_ZCknH4QfFMukqwZHkKxvkHxo5A-znt5tm0ow@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Jan 5, 2023 at 7:05 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
->
-> On 1/5/23 00:59, Song Liu wrote:
-> > On Wed, Jan 4, 2023 at 3:12 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
-> >>
-> >>
-> >> Stepping back, this feature is definitely foot-gun capable.
-> >> Kpatch-build would expect that klp-relocations would only ever be needed
-> >> in code that will patch the very same module that provides the
-> >> relocation destination -- that is, it was never intended to reference
-> >> through one of these klp-relocations unless it resolved to a live
-> >> module.
-> >>
-> >> On the other hand, when writing the selftests, verifying against NULL
-> >> [1] provided 1) a quick sanity check that something was "cleared" and 2)
-> >> protected the machine against said foot-gun.
-> >>
-> >> [1] https://github.com/joe-lawrence/klp-convert-tree/commit/643acbb8f4c0240030b45b64a542d126370d3e6c
-> >
-> > I don't quite follow the foot-gun here. What's the failure mode?
-> >
->
-> Kpatch-build, for better or worse, hides the potential problem.  A
-> typical kpatch scenario would be:
->
-> 1. A patch modifies module foo's function bar(), which references
-> symbols local to module foo
->
-> 2. Kpatch-build creates a livepatch .ko with klp-relocations in the
-> modified bar() to foo's symbols
->
-> 3. When loaded, modified bar() code that references through its
-> klp-relocations to module foo will only ever be active when foo is
-> loaded, i.e. when the original bar() redirects to the livepatch version.
->
-> However, writing source-based livepatches (like the kselftests) offers a
-> lot more freedom.  There is no implicit guarantee from (3) that the
-> module is loaded.  One could reference klp-relocations from anywhere in
-> the livepatch module.
->
-> For example, in my test_klp_convert1.c test case, I have a livepatch
-> module with a sysfs interface (print_debug_set()) that allows the test
-> bash script to force the module to references through its
-> klp-relocations (print_static_strings()):
->
-> ...
-> static void print_string(const char *label, const char *str)
-> {
->         if (str)
->                 pr_info("%s: %s\n", label, str);
-> }
-> ...
-> static noinline void print_static_strings(void)
-> {
->         print_string("klp_string.12345", klp_string_a);
->         print_string("klp_string.67890", klp_string_b);
-> }
->
-> /* provide a sysfs handle to invoke debug functions */
-> static int print_debug;
-> static int print_debug_set(const char *val, const struct kernel_param *kp)
-> {
->         print_static_strings();
->
->         return 0;
-> }
-> static const struct kernel_param_ops print_debug_ops = {
->         .set = print_debug_set,
->         .get = param_get_int,
-> };
->
->
-> When I first wrote test_klp_convert1.c, I did not have wrappers like
-> print_string(), I simply referenced the symbols directly and send them
-> to pr_info as "%s" string formatting options.
->
-> You can probably see where this is going when I unloaded the module that
-> provided klp_string_a, klp_string_b, etc. and invoked the sysfs handle.
-> The stale relocation values point to ... somewhere we shouldn't try to
-> reference any more.
+On 1/5/23 11:53, Song Liu wrote:
+> Btw: I am confused with this one:
+> 
+>                 case R_PPC64_REL16_HA:
+>                         /* Subtract location pointer */
+>                         value -= (unsigned long)location;
+>                         value = ((value + 0x8000) >> 16);
+>                         *((uint16_t *) location)
+>                                 = (*((uint16_t *) location) & ~0xffff)
+>                                 | (value & 0xffff);
+>                         break;
+> 
+> (*((uint16_t *) location) & ~0xffff) should always be zero, no?
 
-Thanks for the explanation.
+It looks like a lot of extra read/bit twiddling to do:
 
-> Perhaps I'm too paranoid about that possibility, but by actually
-> clearing the values in the relocations on module removal, one could
-> check them and try to guard against dangling pointer (dangling
-> relocation?) references.
+  *(uint16_t *) location = value;
 
-I personally don't worry too much about this issue. But clearing the
-relocations seems to be a good idea.
+or am I missing a corner case that this handles?
 
-Thanks,
-Song
+-- 
+Joe
+
