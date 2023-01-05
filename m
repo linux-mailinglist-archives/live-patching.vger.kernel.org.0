@@ -2,191 +2,242 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7453065E806
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jan 2023 10:40:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F170765E9AC
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jan 2023 12:20:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbjAEJkO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 5 Jan 2023 04:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
+        id S231948AbjAELUA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 5 Jan 2023 06:20:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230471AbjAEJkN (ORCPT
+        with ESMTP id S231958AbjAELTz (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 5 Jan 2023 04:40:13 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464A9544E1;
-        Thu,  5 Jan 2023 01:40:12 -0800 (PST)
+        Thu, 5 Jan 2023 06:19:55 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A4B479F5
+        for <live-patching@vger.kernel.org>; Thu,  5 Jan 2023 03:19:53 -0800 (PST)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id C97806BCE9;
-        Thu,  5 Jan 2023 09:32:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1672911154; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GfrBRkojWZ5wSAZVEYUzeElYRu2x1ZaqlGLpQM2iEDg=;
-        b=eJ9EewVVG17Zq1paOFU+Vxn1uYwM+B3pteGCxVy2WDcALlOBGhnSTbR3GqbQ97m9Spqdnf
-        Cr/0sZlPnsEW+W4uakHaFRcBJ+XRd/giFZhLF5b42ID3orqUXqNZDCe4LQrlGvsJpMQxYu
-        srnPtSlsEDFGzX7MrqGO5EOEiM67ew4=
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4603C2689B;
+        Thu,  5 Jan 2023 11:19:45 +0000 (UTC)
 Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 639952C16E;
-        Thu,  5 Jan 2023 09:32:34 +0000 (UTC)
-Date:   Thu, 5 Jan 2023 10:32:34 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id 1DFEB2C141;
+        Thu,  5 Jan 2023 11:19:45 +0000 (UTC)
+Date:   Thu, 5 Jan 2023 12:19:42 +0100
 From:   Petr Mladek <pmladek@suse.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
+To:     Song Liu <song@kernel.org>
+Cc:     live-patching@vger.kernel.org, jpoimboe@kernel.org,
+        jikos@kernel.org, joe.lawrence@redhat.com,
         Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, bpf@vger.kernel.org,
-        linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org
-Subject: Re: [PATCH 2/3] bpf: Optimize get_modules_for_addrs()
-Message-ID: <Y7aZMkgVgl28Jgmv@alley>
-References: <20221230112729.351-1-thunder.leizhen@huawei.com>
- <20221230112729.351-3-thunder.leizhen@huawei.com>
- <Y7WoZARt37xGpjXD@alley>
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v7] livepatch: Clear relocation targets on a module
+ removal
+Message-ID: <Y7ayTvpxnDvX9Nfi@alley>
+References: <20221214174035.1012183-1-song@kernel.org>
+ <Y7VUPAEFFFougaoC@alley>
+ <CAPhsuW7EAFgUUgh3Q6wbE-PNLGnSFFWmdQaYfOqVW6adM0+G4g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y7WoZARt37xGpjXD@alley>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAPhsuW7EAFgUUgh3Q6wbE-PNLGnSFFWmdQaYfOqVW6adM0+G4g@mail.gmail.com>
+X-Spamd-Bar: +++++
+Authentication-Results: smtp-out2.suse.de;
+        dkim=none;
+        dmarc=none;
+        spf=fail (smtp-out2.suse.de: domain of pmladek@suse.com does not designate 149.44.160.134 as permitted sender) smtp.mailfrom=pmladek@suse.com
+X-Rspamd-Server: rspamd2
+X-Spamd-Result: default: False [5.39 / 50.00];
+         ARC_NA(0.00)[];
+         R_SPF_FAIL(1.00)[-all];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         RWL_MAILSPIKE_GOOD(0.00)[149.44.160.134:from];
+         MIME_GOOD(-0.10)[text/plain];
+         DMARC_NA(0.20)[suse.com];
+         TO_MATCH_ENVRCPT_SOME(0.00)[];
+         VIOLATED_DIRECT_SPF(3.50)[];
+         MX_GOOD(-0.01)[];
+         RCPT_COUNT_SEVEN(0.00)[7];
+         RCVD_NO_TLS_LAST(0.10)[];
+         FROM_EQ_ENVFROM(0.00)[];
+         R_DKIM_NA(0.20)[];
+         MIME_TRACE(0.00)[0:+];
+         RCVD_COUNT_TWO(0.00)[2];
+         MID_RHS_NOT_FQDN(0.50)[]
+X-Spam-Score: 5.39
+X-Rspamd-Queue-Id: 4603C2689B
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2023-01-04 17:25:08, Petr Mladek wrote:
-> On Fri 2022-12-30 19:27:28, Zhen Lei wrote:
-> > Function __module_address() can quickly return the pointer of the module
-> > to which an address belongs. We do not need to traverse the symbols of all
-> > modules to check whether each address in addrs[] is the start address of
-> > the corresponding symbol, because register_fprobe_ips() will do this check
-> > later.
-> > 
-> > Assuming that there are m modules, each module has n symbols on average,
-> > and the number of addresses 'addrs_cnt' is abbreviated as K. Then the time
-> > complexity of the original method is O(K * log(K)) + O(m * n * log(K)),
-> > and the time complexity of current method is O(K * (log(m) + M)), M <= m.
-> > (m * n * log(K)) / (K * m) ==> n / log2(K). Even if n is 10 and K is 128,
-> > the ratio is still greater than 1. Therefore, the new method will
-> > generally have better performance.
-> > 
-> > Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> > ---
-> >  kernel/trace/bpf_trace.c | 101 ++++++++++++++++-----------------------
-> >  1 file changed, 40 insertions(+), 61 deletions(-)
-> > 
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index 5f3be4bc16403a5..0ff9037098bd241 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -2684,69 +2684,55 @@ static void symbols_swap_r(void *a, void *b, int size, const void *priv)
-> >  	}
-> >  }
-> >  
-> > -struct module_addr_args {
-> > -	unsigned long *addrs;
-> > -	u32 addrs_cnt;
-> > -	struct module **mods;
-> > -	int mods_cnt;
-> > -	int mods_cap;
-> > -};
-> > -
-> > -static int module_callback(void *data, const char *name,
-> > -			   struct module *mod, unsigned long addr)
-> > +static int get_modules_for_addrs(struct module ***out_mods, unsigned long *addrs, u32 addrs_cnt)
-> >  {
-> > -	struct module_addr_args *args = data;
-> > -	struct module **mods;
-> > -
-> > -	/* We iterate all modules symbols and for each we:
-> > -	 * - search for it in provided addresses array
-> > -	 * - if found we check if we already have the module pointer stored
-> > -	 *   (we iterate modules sequentially, so we can check just the last
-> > -	 *   module pointer)
-> > -	 * - take module reference and store it
-> > -	 */
-> > -	if (!bsearch(&addr, args->addrs, args->addrs_cnt, sizeof(addr),
-> > -		       bpf_kprobe_multi_addrs_cmp))
-> > -		return 0;
-> > +	int i, j, err;
-> > +	int mods_cnt = 0;
-> > +	int mods_cap = 0;
-> > +	struct module *mod;
-> > +	struct module **mods = NULL;
-> >  
-> > -	if (args->mods && args->mods[args->mods_cnt - 1] == mod)
-> > -		return 0;
-> > +	for (i = 0; i < addrs_cnt; i++) {
-> > +		mod = __module_address(addrs[i]);
+On Wed 2023-01-04 09:34:25, Song Liu wrote:
+> On Wed, Jan 4, 2023 at 2:26 AM Petr Mladek <pmladek@suse.com> wrote:
+> >
+> > On Wed 2022-12-14 09:40:35, Song Liu wrote:
+> > > From: Miroslav Benes <mbenes@suse.cz>
+> > >
+> > > Josh reported a bug:
+> > >
+> > >   When the object to be patched is a module, and that module is
+> > >   rmmod'ed and reloaded, it fails to load with:
+> > >
+> > >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > >
+> > >   The livepatch module has a relocation which references a symbol
+> > >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> > >   tries to replace the old relocation with a new one, it sees that
+> > >   the previous one is nonzero and it errors out.
+> > >
+> > > We thus decided to reverse the relocation patching (clear all relocation
+> > > targets on x86_64). The solution is not
+> > > universal and is too much arch-specific, but it may prove to be simpler
+> > > in the end.
+> > >
+> > > --- a/arch/powerpc/kernel/module_64.c
+> > > +++ b/arch/powerpc/kernel/module_64.c
+> > > @@ -739,6 +739,67 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+> > >       return 0;
+> > >  }
+> > >
+> > > +#ifdef CONFIG_LIVEPATCH
+> > > +void clear_relocate_add(Elf64_Shdr *sechdrs,
+> > > +                    const char *strtab,
+> > > +                    unsigned int symindex,
+> > > +                    unsigned int relsec,
+> > > +                    struct module *me)
+> > > +{
+> > > +     unsigned int i;
+> > > +     Elf64_Rela *rela = (void *)sechdrs[relsec].sh_addr;
+> > > +     Elf64_Sym *sym;
+> > > +     unsigned long *location;
+> > > +     const char *symname;
+> > > +     u32 *instruction;
+> > > +
+> > > +     pr_debug("Clearing ADD relocate section %u to %u\n", relsec,
+> > > +              sechdrs[relsec].sh_info);
+> > > +
+> > > +     for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rela); i++) {
+> > > +             location = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr
+> > > +                     + rela[i].r_offset;
+> > > +             sym = (Elf64_Sym *)sechdrs[symindex].sh_addr
+> > > +                     + ELF64_R_SYM(rela[i].r_info);
+> > > +             symname = me->core_kallsyms.strtab
+> > > +                     + sym->st_name;
+> > > +
+> > > +             if (ELF64_R_TYPE(rela[i].r_info) != R_PPC_REL24)
+> > > +                     continue;
+> >
+> > Is it OK to continue?
+> >
+> > IMHO, we should at least warn here. It means that the special elf
+> > section contains a relocation that we are not able to clear. It will
+> > most likely blow up when we try to load the livepatched module
+> > again.
+> >
+> > > +             /*
+> > > +              * reverse the operations in apply_relocate_add() for case
+> > > +              * R_PPC_REL24.
+> > > +              */
+> > > +             if (sym->st_shndx != SHN_UNDEF &&
+> > > +                 sym->st_shndx != SHN_LIVEPATCH)
+> > > +                     continue;
+> >
+> > Same here. IMHO, we should warn when the section contains something
+> > that we are not able to clear.
+> >
+> > > +             /* skip mprofile and ftrace calls, same as restore_r2() */
+> > > +             if (is_mprofile_ftrace_call(symname))
+> > > +                     continue;
+> >
+> > Is this correct? restore_r2() returns "1" in this case. As a result
+> > apply_relocate_add() returns immediately with -ENOEXEC. IMHO, we
+> > should print a warning and return as well.
+> >
+> > > +             instruction = (u32 *)location;
+> > > +             /* skip sibling call, same as restore_r2() */
+> > > +             if (!instr_is_relative_link_branch(ppc_inst(*instruction)))
+> > > +                     continue;
+> >
+> > Same here. restore_r2() returns '1' in this case...
+> >
+> > > +
+> > > +             instruction += 1;
+> > > +             /*
+> > > +              * Patch location + 1 back to NOP so the next
+> > > +              * apply_relocate_add() call (reload the module) will not
+> > > +              * fail the sanity check in restore_r2():
+> > > +              *
+> > > +              *         if (*instruction != PPC_RAW_NOP()) {
+> > > +              *             pr_err(...);
+> > > +              *             return 0;
+> > > +              *         }
+> > > +              */
+> > > +             patch_instruction(instruction, ppc_inst(PPC_RAW_NOP()));
+> > > +     }
+> >
+> > This seems incomplete. The above code reverts patch_instruction() called
+> > from restore_r2(). But there is another patch_instruction() called in
+> > apply_relocate_add() for case R_PPC_REL24. IMHO, we should revert this
+> > as well.
+> >
+> > > +}
+> > > +#endif
+> >
+> > IMHO, this approach is really bad. The function is not maintainable.
+> > It will be very hard to keep it in sync with apply_relocate_add().
+> > And all the mistakes are just a proof.
 > 
-> This must be called under module_mutex to make sure that the module
-> would not disappear.
+> I don't really think the above are mistakes. This should be the same
+> as the version that passed Joe's tests. (I didn't test it myself).
+
+I am not sure if Joe tested these situations.
+
+Anyway, we should make it as robust as possible. If we manipulate
+the addresses a wrong way then it might shoot-down the system.
+
+If the code reaches an non-expected situation, it should at
+least warn about it.
+
+The entire livepatching code tries to be as robust as possible.
+The main motivation for livepatching is to avoid reboot.
+
+> >
+> > IMHO, the only sane way is to avoid the code duplication.
 > 
-> > +		if (!mod)
-> > +			continue;
-> >  
-> > -	if (args->mods_cnt == args->mods_cap) {
-> > -		args->mods_cap = max(16, args->mods_cap * 3 / 2);
-> > -		mods = krealloc_array(args->mods, args->mods_cap, sizeof(*mods), GFP_KERNEL);
-> > -		if (!mods)
-> > -			return -ENOMEM;
-> > -		args->mods = mods;
-> > -	}
-> > +		/* check if we already have the module pointer stored */
-> > +		for (j = 0; j < mods_cnt; j++) {
-> > +			if (mods[j] == mod)
-> > +				break;
-> > +		}
-> 
-> This might get optimized like the original code.
-> 
-> My understanding is that the addresses are sorted in "addrs" array.
-> So, the address is either part of the last found module or it belongs
-> to a completely new module.
+> I think this falls back to the question that do we want
+> clear_relocate_add() to
+>    1) undo everything by apply_relocate_add();
+> or
+>    2) make sure the next apply_relocate_add() succeeds.
 
-I thought more about it and I think that I was wrong, see below.
+The ideal solution would be to add checks into apply_relocated_add().
+It would make it more robust. In that case, clear_relocated_add()
+would need to clear everything.
 
-> 	for (i = 0; i < addrs_cnt; i++) {
-> 		/*
-> 		 * The adresses are sorted. The adress either belongs
-> 		 * to the last found module or a new one.
-> 		 *
-> 		 * This is safe because we already have reference
-> 		 * on the found modules.
-> 		 */
-> 		 if (mods_cnt && within_module(addrs[i], mods[mods_cnt - 1]))
-> 			continue;
+But this is not the case on powerpc and s390 at the moment.
+In this case, I suggest to clear only relocations that
+are checked in apply_relocated_add().
 
-within_module() checks two sections (init and core). They are
-allocated separately, see module_alloc() called in move_module().
+But it should be done without duplicating the code.
 
-There might be a section from another modules between the init
-and core section of a module.
+It would actually make sense to compute the value that was
+used in apply_relocated_add() and check that we are clearing
+the value. If we try to clear some other value than we
+probably do something wrong.
 
-The optimization worked in the original code because
-module_kallsyms_on_each_symbol() always iterated over all
-symbols from a module.
+This might actually be a solution. We could compute
+the value in both situations. Then we could have
+a common function for writing.
 
-That said, I am not sure if bpf trace might be added for
-symbols in the module init section. But it might be
-better to stay on the safe side.
+This write function would check that it replaces zero
+with the value in apply_relocate_add() and that it replaces
+the value with zero in clear_relocate_add().
 
 Best Regards,
 Petr
