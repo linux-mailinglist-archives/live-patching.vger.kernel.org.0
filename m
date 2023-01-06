@@ -2,200 +2,157 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8313365FE48
-	for <lists+live-patching@lfdr.de>; Fri,  6 Jan 2023 10:49:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAE66600E9
+	for <lists+live-patching@lfdr.de>; Fri,  6 Jan 2023 14:03:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbjAFJrL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 6 Jan 2023 04:47:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
+        id S229547AbjAFNDH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 6 Jan 2023 08:03:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233742AbjAFJqT (ORCPT
+        with ESMTP id S234973AbjAFNC0 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 6 Jan 2023 04:46:19 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698D869B3B;
-        Fri,  6 Jan 2023 01:45:45 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id c65-20020a1c3544000000b003cfffd00fc0so3167204wma.1;
-        Fri, 06 Jan 2023 01:45:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=PN8//UfAoVwKaLm31eaWicz8hNpiTUFBXEnuGYY6upA=;
-        b=FlwDESQyeNbwEOF9phOaSdZuMcQArQruAlYMTIIZ6+wSGyki259+Z+Sbg2rCI+BVQt
-         sn9X3mES4FYL0nwejFeAt+UGU5KL6LpEanaT9TjhL8UDHNtgsndEgp/y8K1EIX3vxA3n
-         Z4RlkGCMmQa9J5f+NxM8mSeSlbHjY6+DRna3iodggUIwdycTIXd5f1/VV/VOMKpN4dh3
-         4HAHYShdm7RrVrqqnLISKJ9Mp+f0ysYmVu0Q5RJ39oG+0QOQMCFeTmNbH5ljcGBn7WTx
-         nOER6ELX9ikWuNZjskCtbq5SEpXtds8xMJ05K3DiU/V5OZy7YAob2+UaBkXAWzBuQVux
-         bA2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PN8//UfAoVwKaLm31eaWicz8hNpiTUFBXEnuGYY6upA=;
-        b=QRL2oqrjWWXNKZxBt/9+IJ0LvXHs4UYKnoysqqykq+rxLGfbVQGzr7BPZ6NYSWWE4u
-         VvAnLgyrRDrHOlS4derW8ACDjB+1wIAXKM+GgeJWwSLmTpAIzGQNmy1o76R8gN37MW8Q
-         pBgaQkH1qC5NQ6bSoEFuA8HDusjq5tAq8tt/ntqUzIGETfT6c0N4k/HQufEiRjSmYHq6
-         u1tNyHV08dJm67xxCcpBmWno7j2Pih1lRqo4u8DmK8XMbPm/N6PindTP2XmZs0y8KJ91
-         eDa5tSidOIwNXr/ZVSUiFzTeaAtFyGMSW6IIqjDe/t/n4xHcsU1Trl0LGhx6SLMT5nED
-         psdQ==
-X-Gm-Message-State: AFqh2krhoYSkvJPFBC7fQkrVWEKWZQ0THZ3q1l0K7quawcv+Jbp2He6u
-        QgAAS8p6mqZr0IgscFfrMw0=
-X-Google-Smtp-Source: AMrXdXvGEs46DZ+1Nu9hdjrmPn0yZt8DrEET0vDFvTytRbxXI3AghL6OK5+dJLdJNIH2WxrVI2eIew==
-X-Received: by 2002:a05:600c:3ca2:b0:3d9:a5a2:65fa with SMTP id bg34-20020a05600c3ca200b003d9a5a265famr17725332wmb.7.1672998343858;
-        Fri, 06 Jan 2023 01:45:43 -0800 (PST)
-Received: from krava (2001-1ae9-1c2-4c00-726e-c10f-8833-ff22.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:726e:c10f:8833:ff22])
-        by smtp.gmail.com with ESMTPSA id bg24-20020a05600c3c9800b003cfa3a12660sm13739987wmb.1.2023.01.06.01.45.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 01:45:43 -0800 (PST)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Fri, 6 Jan 2023 10:45:40 +0100
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, bpf@vger.kernel.org,
-        linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org
-Subject: Re: [PATCH 2/3] bpf: Optimize get_modules_for_addrs()
-Message-ID: <Y7ftxIiV35Wd75lZ@krava>
-References: <20221230112729.351-1-thunder.leizhen@huawei.com>
- <20221230112729.351-3-thunder.leizhen@huawei.com>
- <Y7WoZARt37xGpjXD@alley>
- <Y7dBoII5kZnHGFdL@krava>
+        Fri, 6 Jan 2023 08:02:26 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B86B736EE
+        for <live-patching@vger.kernel.org>; Fri,  6 Jan 2023 05:02:25 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8404B26B0A;
+        Fri,  6 Jan 2023 13:02:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1673010144; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SypHhDyOfFbTHEMpfPUoY/jS5ZcQeHXA+fK7EIDbKXg=;
+        b=ttOywpHjp0bFNdRoyCcGiFUBmA7g67iVfUd7MrXT7m6TknUClehhV2AU9x+hPdm3KCo49s
+        UvmbsGu7sp4oS38/pK4SbvYCW/2IppJqvaZs/R9v2DwtKDn3bIKpnEFRg9niX4xrILJ6IV
+        kz6rBztu8X2/hZzKf+BdjADdPZmDP6Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1673010144;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SypHhDyOfFbTHEMpfPUoY/jS5ZcQeHXA+fK7EIDbKXg=;
+        b=0QyedW/srMhT8d4BpRt4hNp00QRu4bM92rowko/PpN8VhCRh8FGYwqf0r6CBzDEAYuL5HS
+        g31RMoRTXyTxqlCg==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 5D1DE2C143;
+        Fri,  6 Jan 2023 13:02:24 +0000 (UTC)
+Date:   Fri, 6 Jan 2023 14:02:27 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+cc:     Song Liu <song@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        live-patching@vger.kernel.org, jpoimboe@kernel.org,
+        jikos@kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v7] livepatch: Clear relocation targets on a module
+ removal
+In-Reply-To: <bf670f87-e2a1-ff42-a88f-70eab78b4cd1@redhat.com>
+Message-ID: <alpine.LSU.2.21.2301061352050.6386@pobox.suse.cz>
+References: <20221214174035.1012183-1-song@kernel.org> <Y7VUPAEFFFougaoC@alley> <CAPhsuW7EAFgUUgh3Q6wbE-PNLGnSFFWmdQaYfOqVW6adM0+G4g@mail.gmail.com> <Y7YH7SwveCyNPxWC@redhat.com> <CAPhsuW6tje3AN+7mw73uQBO8N=cu=w=7a7wTJ5eeCMV-HS0KSg@mail.gmail.com>
+ <bf670f87-e2a1-ff42-a88f-70eab78b4cd1@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7dBoII5kZnHGFdL@krava>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 10:31:12PM +0100, Jiri Olsa wrote:
-> On Wed, Jan 04, 2023 at 05:25:08PM +0100, Petr Mladek wrote:
-> > On Fri 2022-12-30 19:27:28, Zhen Lei wrote:
-> > > Function __module_address() can quickly return the pointer of the module
-> > > to which an address belongs. We do not need to traverse the symbols of all
-> > > modules to check whether each address in addrs[] is the start address of
-> > > the corresponding symbol, because register_fprobe_ips() will do this check
-> > > later.
+Hi
+
+On Thu, 5 Jan 2023, Joe Lawrence wrote:
+
+> On 1/5/23 00:59, Song Liu wrote:
+> > On Wed, Jan 4, 2023 at 3:12 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
+> >>
+> >>
+> >> Stepping back, this feature is definitely foot-gun capable.
+> >> Kpatch-build would expect that klp-relocations would only ever be needed
+> >> in code that will patch the very same module that provides the
+> >> relocation destination -- that is, it was never intended to reference
+> >> through one of these klp-relocations unless it resolved to a live
+> >> module.
+> >>
+> >> On the other hand, when writing the selftests, verifying against NULL
+> >> [1] provided 1) a quick sanity check that something was "cleared" and 2)
+> >> protected the machine against said foot-gun.
+> >>
+> >> [1] https://github.com/joe-lawrence/klp-convert-tree/commit/643acbb8f4c0240030b45b64a542d126370d3e6c
+> > 
+> > I don't quite follow the foot-gun here. What's the failure mode?
+> > 
 > 
-> hum, for some reason I can see only replies to this patch and
-> not the actual patch.. I'll dig it out of the lore I guess
+> Kpatch-build, for better or worse, hides the potential problem.  A
+> typical kpatch scenario would be:
 > 
-> > > 
-> > > Assuming that there are m modules, each module has n symbols on average,
-> > > and the number of addresses 'addrs_cnt' is abbreviated as K. Then the time
-> > > complexity of the original method is O(K * log(K)) + O(m * n * log(K)),
-> > > and the time complexity of current method is O(K * (log(m) + M)), M <= m.
-> > > (m * n * log(K)) / (K * m) ==> n / log2(K). Even if n is 10 and K is 128,
-> > > the ratio is still greater than 1. Therefore, the new method will
-> > > generally have better performance.
+> 1. A patch modifies module foo's function bar(), which references
+> symbols local to module foo
 > 
-> could you try to benchmark that? I tried something similar but was not
-> able to get better performance
+> 2. Kpatch-build creates a livepatch .ko with klp-relocations in the
+> modified bar() to foo's symbols
+> 
+> 3. When loaded, modified bar() code that references through its
+> klp-relocations to module foo will only ever be active when foo is
+> loaded, i.e. when the original bar() redirects to the livepatch version.
+> 
+> However, writing source-based livepatches (like the kselftests) offers a
+> lot more freedom.  There is no implicit guarantee from (3) that the
+> module is loaded.  One could reference klp-relocations from anywhere in
+> the livepatch module.
 
-hm looks like I tried the smilar thing (below) like you did,
-but wasn't able to get better performace
-
-I guess your goal is to get rid of the module arg in
-module_kallsyms_on_each_symbol callback that we use?
-I'm ok with the change if the performace is not worse
-
-jirka
-
-
----
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 5b9008bc597b..3280c22009f1 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2692,23 +2692,16 @@ struct module_addr_args {
- 	int mods_cap;
- };
+Yes, on the other hand the approach you describe above seems to be the 
+only reasonable one in my opinion. The rest might be considered a bug. 
+Foot-gun as you say. I am not sure if we can do anything about it.
  
--static int module_callback(void *data, const char *name,
--			   struct module *mod, unsigned long addr)
-+static int add_module(struct module_addr_args *args, struct module *mod)
- {
--	struct module_addr_args *args = data;
- 	struct module **mods;
- 
--	/* We iterate all modules symbols and for each we:
--	 * - search for it in provided addresses array
--	 * - if found we check if we already have the module pointer stored
--	 *   (we iterate modules sequentially, so we can check just the last
--	 *   module pointer)
-+	/* We iterate sorted addresses and for each within module we:
-+	 * - check if we already have the module pointer stored for it
-+	 *   (we iterate sorted addresses sequentially, so we can check
-+	 *   just the last module pointer)
- 	 * - take module reference and store it
- 	 */
--	if (!bsearch(&addr, args->addrs, args->addrs_cnt, sizeof(addr),
--		       bpf_kprobe_multi_addrs_cmp))
--		return 0;
--
- 	if (args->mods && args->mods[args->mods_cnt - 1] == mod)
- 		return 0;
- 
-@@ -2734,10 +2727,24 @@ static int get_modules_for_addrs(struct module ***mods, unsigned long *addrs, u3
- 		.addrs     = addrs,
- 		.addrs_cnt = addrs_cnt,
- 	};
--	int err;
-+	u32 i, err = 0;
-+
-+	for (i = 0; !err && i < addrs_cnt; i++) {
-+		struct module *mod;
-+		bool found = false;
-+
-+		preempt_disable();
-+		mod = __module_text_address(addrs[i]);
-+		found = mod && try_module_get(mod);
-+		preempt_enable();
-+
-+		if (found) {
-+			err = add_module(&args, mod);
-+			module_put(mod);
-+		}
-+	}
- 
- 	/* We return either err < 0 in case of error, ... */
--	err = module_kallsyms_on_each_symbol(module_callback, &args);
- 	if (err) {
- 		kprobe_multi_put_modules(args.mods, args.mods_cnt);
- 		kfree(args.mods);
-@@ -2862,7 +2869,8 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 	} else {
- 		/*
- 		 * We need to sort addrs array even if there are no cookies
--		 * provided, to allow bsearch in get_modules_for_addrs.
-+		 * provided, to allow sequential address walk in
-+		 * get_modules_for_addrs.
- 		 */
- 		sort(addrs, cnt, sizeof(*addrs),
- 		       bpf_kprobe_multi_addrs_cmp, NULL);
+> > [...]
+> > 
+> >>> These approaches don't look better to me. But I am ok
+> >>> with any of them. Please just let me know which one is
+> >>> most preferable:
+> >>>
+> >>> a. current version;
+> >>> b. clear_ undo everything of apply_ (the sample code
+> >>>    above)
+> >>> c. clear_ undo R_PPC_REL24, but _redo_ everything
+> >>>    of apply_ for other ELF64_R_TYPEs. (should be
+> >>>   clearer code than option b).
+> >>>
+> >>
+> >> This was my attempt at combining and slightly refactoring the power64
+> >> version.  There is so much going on here I was tempted to split off it
+> >> into separate value assignment and write functions.  Some changes I
+> >> liked, but I wasn't all too happy with the result.  Also, as you
+> >> mention, completely undoing R_PPC_REL24 is less than trivial... for this
+> >> arch, there are basically three major tasks:
+> >>
+> >>   1) calculate the new value, including range checking
+> >>   2) special constructs created by restore_r2 / create_stub
+> >>   3) writing out the value
+> >>
+> >> and many cases are similar, but subtly different enough to avoid easy
+> >> code consolidation.
+> > 
+> > Thanks for exploring this direction. I guess this part won't be perfect
+> > anyway.
+> > 
+> > PS: While we discuss a solution for ppc64, how about we ship the
+> > fix for other archs first? I think there are only a few small things to
+> > be addressed.
+> > 
+> 
+> Yeah, the x86_64 version looks a lot simpler and closer to being done.
+> Though I believe that Petr would prefer a complete solution, but I'll
+> let him speak to that.
+
+I cannot speak for Petr, but I think it might be easier to split it given 
+the situation. Then we can involve arch maintainers for ppc64le because 
+they might have a preference with respect to a, b, c options above.
+
+Petr, what do you think?
+
+Miroslav
