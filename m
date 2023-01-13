@@ -2,53 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0013066A408
-	for <lists+live-patching@lfdr.de>; Fri, 13 Jan 2023 21:25:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 904FA66A40E
+	for <lists+live-patching@lfdr.de>; Fri, 13 Jan 2023 21:28:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbjAMUZU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 13 Jan 2023 15:25:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
+        id S229819AbjAMU2F (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 13 Jan 2023 15:28:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbjAMUZT (ORCPT
+        with ESMTP id S229570AbjAMU2E (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 13 Jan 2023 15:25:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6A1056C;
-        Fri, 13 Jan 2023 12:25:17 -0800 (PST)
+        Fri, 13 Jan 2023 15:28:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D3DD13C;
+        Fri, 13 Jan 2023 12:28:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4BF1B8206B;
-        Fri, 13 Jan 2023 20:25:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40C2CC433F1;
-        Fri, 13 Jan 2023 20:25:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E31AB821E5;
+        Fri, 13 Jan 2023 20:28:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FC6C433EF;
+        Fri, 13 Jan 2023 20:28:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673641514;
-        bh=0zuo2ReHk/qBisRDEsv6RcAlXByJD1MbSHCODEVSW64=;
+        s=k20201202; t=1673641680;
+        bh=czSgDiYekXN+p6xZa4QnIRmCZCAcWylVkXA/uzRLv/k=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=KEiVSPIGhwO2J/wfA2l7UGVqcXC8NfhvSqM2FM9pGefdfExYXhtZ90NsQhAGZwGRy
-         FcGyYQu/xIwjdJVE+avMbAWGaUdG/v56B3hj2gRaxRYw08VKibqiATci/y3Dp75HE/
-         GUjTDMXTFg/U2tNDZ3bbs2qC6O9Gk79/fJTlS/FJEdCK2bm+D9HPkOCxnu7GbMq0ZH
-         ABtKUbTa+0HgpSV8W9DkHLWFX93re7K7+pjCS9QfcPZikgGVfmzlhqDhEPRme8r3qF
-         uO4/BJh5VsMrQscFVN64xU2IAknG8m4fy6OkF+cf1IQvY6u27Xjth1IXg4uy7XPfQf
-         a4Padhf2Lr4Gw==
-Received: by mail-lf1-f46.google.com with SMTP id m6so34643830lfj.11;
-        Fri, 13 Jan 2023 12:25:14 -0800 (PST)
-X-Gm-Message-State: AFqh2kr4m47Ul1GzpLbgiXApDjDkhh+hrwZKNpYa+GPic/6zsPuqUSHG
-        9hN3fKxkFrmGgDwpIV33GA4NokOdQRxGNmbOZHg=
-X-Google-Smtp-Source: AMrXdXuxggMgAa9N8FObjsy0riYurZfI0hDzvhp5VDjzQJhi8XnFra8NZ6swkaqzZU0a8ouMMyNzt01Ecz+jz1/5Tb4=
-X-Received: by 2002:a05:6512:1152:b0:4c7:6601:e3b1 with SMTP id
- m18-20020a056512115200b004c76601e3b1mr3887868lfg.548.1673641512102; Fri, 13
- Jan 2023 12:25:12 -0800 (PST)
+        b=gYTHIA826ouDWpsNy4zCstPUzaCrXc5huZdb+QukNNq6OQ84cRqvJEYsQsj0ZnDe2
+         aavvCXAbUhyC2oLTQdrDni1AwFVTXAzAYHtuBITT08LNxPBC1aW6rxUnZpPd//mCt9
+         R5DpCam57CShhVCAlDu4PRjS1lBvdtEURhhFhui/llN1aqL+H/pgR+rFZnNz721GvF
+         UTCyQA6KX7ZlGy7K4hAF1I6vie8sKQ7O9edFuu7PftPHufw0sM2Hm+eGSSiLEQmsZf
+         av950dAw+z+r1olJCl/6a5QSRf+4ZfBHkinY/HGReKBq5VBJjhvg+PlWewBmdgx/Xj
+         ZEJSZpraLyP7Q==
+Received: by mail-lf1-f48.google.com with SMTP id g18so1807749lfh.0;
+        Fri, 13 Jan 2023 12:28:00 -0800 (PST)
+X-Gm-Message-State: AFqh2kq83oCkb4VhYZN2cWgsF/OxTjqMvUx1+yO9WYM9kR3E/uhyb7dZ
+        t4M22/CPtjXDOI6Waldrg1UNmweBzBw+2tAa8cQ=
+X-Google-Smtp-Source: AMrXdXszjjWIbBqkxgPVJu6+xD9kMTQCNfn6mrincoPEA79h/3lBVmIzC6M3t9YZGODRPh9xB93iarrIlZKv76DE6OA=
+X-Received: by 2002:a05:6512:a95:b0:4d1:3e32:5436 with SMTP id
+ m21-20020a0565120a9500b004d13e325436mr315336lfu.215.1673641678541; Fri, 13
+ Jan 2023 12:27:58 -0800 (PST)
 MIME-Version: 1.0
-References: <20230113143303.867580-1-jolsa@kernel.org> <20230113143303.867580-2-jolsa@kernel.org>
-In-Reply-To: <20230113143303.867580-2-jolsa@kernel.org>
+References: <20230113143303.867580-1-jolsa@kernel.org> <20230113143303.867580-3-jolsa@kernel.org>
+In-Reply-To: <20230113143303.867580-3-jolsa@kernel.org>
 From:   Song Liu <song@kernel.org>
-Date:   Fri, 13 Jan 2023 12:24:59 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4M0whQDMJ9eU4YF_r8ABsQe3thkhWePg6E3DFSk_3ruA@mail.gmail.com>
-Message-ID: <CAPhsuW4M0whQDMJ9eU4YF_r8ABsQe3thkhWePg6E3DFSk_3ruA@mail.gmail.com>
-Subject: Re: [PATCHv2 bpf-next 1/3] livepatch: Improve the search performance
- of module_kallsyms_on_each_symbol()
+Date:   Fri, 13 Jan 2023 12:27:46 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7PVXSgbn1+ZLRh1tZCoA85pAcfXMK-o_wkecGV6krhNA@mail.gmail.com>
+Message-ID: <CAPhsuW7PVXSgbn1+ZLRh1tZCoA85pAcfXMK-o_wkecGV6krhNA@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next 2/3] selftests/bpf: Add serial_test_kprobe_multi_bench_attach_kernel/module
+ tests
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -82,168 +82,92 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 On Fri, Jan 13, 2023 at 6:43 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> From: Zhen Lei <thunder.leizhen@huawei.com>
+> Add bench test for module portion of the symbols as well.
 >
-> Currently we traverse all symbols of all modules to find the specified
-> function for the specified module. But in reality, we just need to find
-> the given module and then traverse all the symbols in it.
+>   # ./test_progs -v -t kprobe_multi_bench_attach_module
+>   bpf_testmod.ko is already unloaded.
+>   Loading bpf_testmod.ko...
+>   Successfully loaded bpf_testmod.ko.
+>   test_kprobe_multi_bench_attach:PASS:get_syms 0 nsec
+>   test_kprobe_multi_bench_attach:PASS:kprobe_multi_empty__open_and_load 0 nsec
+>   test_kprobe_multi_bench_attach:PASS:bpf_program__attach_kprobe_multi_opts 0 nsec
+>   test_kprobe_multi_bench_attach: found 26620 functions
+>   test_kprobe_multi_bench_attach: attached in   0.182s
+>   test_kprobe_multi_bench_attach: detached in   0.082s
+>   #96      kprobe_multi_bench_attach_module:OK
+>   Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+>   Successfully unloaded bpf_testmod.ko.
 >
-> Let's add a new parameter 'const char *modname' to function
-> module_kallsyms_on_each_symbol(), then we can compare the module names
-> directly in this function and call hook 'fn' after matching. If 'modname'
-> is NULL, the symbols of all modules are still traversed for compatibility
-> with other usage cases.
+> It's useful for testing kprobe multi link modules resolving.
 >
-> Phase1: mod1-->mod2..(subsequent modules do not need to be compared)
->                 |
-> Phase2:          -->f1-->f2-->f3
->
-> Assuming that there are m modules, each module has n symbols on average,
-> then the time complexity is reduced from O(m * n) to O(m) + O(n).
->
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
 Acked-by: Song Liu <song@kernel.org>
 
 > ---
->  include/linux/module.h   |  6 ++++--
->  kernel/livepatch/core.c  | 10 +---------
->  kernel/module/kallsyms.c | 13 ++++++++++++-
->  kernel/trace/bpf_trace.c |  2 +-
->  kernel/trace/ftrace.c    |  2 +-
->  5 files changed, 19 insertions(+), 14 deletions(-)
+>  .../bpf/prog_tests/kprobe_multi_test.c        | 21 ++++++++++++++-----
+>  1 file changed, 16 insertions(+), 5 deletions(-)
 >
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index 8c5909c0076c..514bc81568c5 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -879,11 +879,13 @@ static inline bool module_sig_ok(struct module *module)
->  #endif /* CONFIG_MODULE_SIG */
->
->  #if defined(CONFIG_MODULES) && defined(CONFIG_KALLSYMS)
-> -int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
-> +int module_kallsyms_on_each_symbol(const char *modname,
-> +                                  int (*fn)(void *, const char *,
->                                              struct module *, unsigned long),
->                                    void *data);
->  #else
-> -static inline int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
-> +static inline int module_kallsyms_on_each_symbol(const char *modname,
-> +                                                int (*fn)(void *, const char *,
->                                                  struct module *, unsigned long),
->                                                  void *data)
->  {
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 201f0c0482fb..c973ed9e42f8 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -118,7 +118,6 @@ static struct klp_object *klp_find_object(struct klp_patch *patch,
+> diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> index c6f37e825f11..017a6996f3fa 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> @@ -322,7 +322,7 @@ static bool symbol_equal(long key1, long key2, void *ctx __maybe_unused)
+>         return strcmp((const char *) key1, (const char *) key2) == 0;
 >  }
 >
->  struct klp_find_arg {
-> -       const char *objname;
->         const char *name;
->         unsigned long addr;
->         unsigned long count;
-> @@ -148,15 +147,9 @@ static int klp_find_callback(void *data, const char *name,
+> -static int get_syms(char ***symsp, size_t *cntp)
+> +static int get_syms(char ***symsp, size_t *cntp, bool kernel)
 >  {
->         struct klp_find_arg *args = data;
+>         size_t cap = 0, cnt = 0, i;
+>         char *name = NULL, **syms = NULL;
+> @@ -349,8 +349,9 @@ static int get_syms(char ***symsp, size_t *cntp)
+>         }
 >
-> -       if ((mod && !args->objname) || (!mod && args->objname))
-> -               return 0;
-> -
->         if (strcmp(args->name, name))
->                 return 0;
->
-> -       if (args->objname && strcmp(args->objname, mod->name))
-> -               return 0;
-> -
->         return klp_match_callback(data, addr);
->  }
->
-> @@ -164,7 +157,6 @@ static int klp_find_object_symbol(const char *objname, const char *name,
->                                   unsigned long sympos, unsigned long *addr)
->  {
->         struct klp_find_arg args = {
-> -               .objname = objname,
->                 .name = name,
->                 .addr = 0,
->                 .count = 0,
-> @@ -172,7 +164,7 @@ static int klp_find_object_symbol(const char *objname, const char *name,
->         };
->
->         if (objname)
-> -               module_kallsyms_on_each_symbol(klp_find_callback, &args);
-> +               module_kallsyms_on_each_symbol(objname, klp_find_callback, &args);
->         else
->                 kallsyms_on_each_match_symbol(klp_match_callback, name, &args);
->
-> diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-> index 4523f99b0358..ab2376a1be88 100644
-> --- a/kernel/module/kallsyms.c
-> +++ b/kernel/module/kallsyms.c
-> @@ -494,7 +494,8 @@ unsigned long module_kallsyms_lookup_name(const char *name)
->         return ret;
->  }
->
-> -int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
-> +int module_kallsyms_on_each_symbol(const char *modname,
-> +                                  int (*fn)(void *, const char *,
->                                              struct module *, unsigned long),
->                                    void *data)
->  {
-> @@ -509,6 +510,9 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
->                 if (mod->state == MODULE_STATE_UNFORMED)
+>         while (fgets(buf, sizeof(buf), f)) {
+> -               /* skip modules */
+> -               if (strchr(buf, '['))
+> +               if (kernel && strchr(buf, '['))
+> +                       continue;
+> +               if (!kernel && !strchr(buf, '['))
 >                         continue;
 >
-> +               if (modname && strcmp(modname, mod->name))
-> +                       continue;
-> +
->                 /* Use rcu_dereference_sched() to remain compliant with the sparse tool */
->                 preempt_disable();
->                 kallsyms = rcu_dereference_sched(mod->kallsyms);
-> @@ -525,6 +529,13 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
->                         if (ret != 0)
->                                 goto out;
->                 }
-> +
-> +               /*
-> +                * The given module is found, the subsequent modules do not
-> +                * need to be compared.
-> +                */
-> +               if (modname)
-> +                       break;
->         }
->  out:
->         mutex_unlock(&module_mutex);
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 23ce498bca97..095f7f8d34a1 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -2735,7 +2735,7 @@ static int get_modules_for_addrs(struct module ***mods, unsigned long *addrs, u3
->         int err;
->
->         /* We return either err < 0 in case of error, ... */
-> -       err = module_kallsyms_on_each_symbol(module_callback, &args);
-> +       err = module_kallsyms_on_each_symbol(NULL, module_callback, &args);
->         if (err) {
->                 kprobe_multi_put_modules(args.mods, args.mods_cnt);
->                 kfree(args.mods);
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index 442438b93fe9..d249a55d9005 100644
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -8324,7 +8324,7 @@ int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *a
->         found_all = kallsyms_on_each_symbol(kallsyms_callback, &args);
->         if (found_all)
->                 return 0;
-> -       found_all = module_kallsyms_on_each_symbol(kallsyms_callback, &args);
-> +       found_all = module_kallsyms_on_each_symbol(NULL, kallsyms_callback, &args);
->         return found_all ? 0 : -ESRCH;
+>                 free(name);
+> @@ -404,7 +405,7 @@ static int get_syms(char ***symsp, size_t *cntp)
+>         return err;
 >  }
 >
+> -void serial_test_kprobe_multi_bench_attach(void)
+> +static void test_kprobe_multi_bench_attach(bool kernel)
+>  {
+>         LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
+>         struct kprobe_multi_empty *skel = NULL;
+> @@ -415,7 +416,7 @@ void serial_test_kprobe_multi_bench_attach(void)
+>         char **syms = NULL;
+>         size_t cnt = 0, i;
+>
+> -       if (!ASSERT_OK(get_syms(&syms, &cnt), "get_syms"))
+> +       if (!ASSERT_OK(get_syms(&syms, &cnt, kernel), "get_syms"))
+>                 return;
+>
+>         skel = kprobe_multi_empty__open_and_load();
+> @@ -453,6 +454,16 @@ void serial_test_kprobe_multi_bench_attach(void)
+>         }
+>  }
+>
+> +void serial_test_kprobe_multi_bench_attach_kernel(void)
+> +{
+> +       test_kprobe_multi_bench_attach(true);
+> +}
+> +
+> +void serial_test_kprobe_multi_bench_attach_module(void)
+> +{
+> +       test_kprobe_multi_bench_attach(false);
+> +}
+> +
+>  void test_kprobe_multi_test(void)
+>  {
+>         if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
 > --
 > 2.39.0
 >
