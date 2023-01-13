@@ -2,53 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 904FA66A40E
-	for <lists+live-patching@lfdr.de>; Fri, 13 Jan 2023 21:28:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3D7A66A434
+	for <lists+live-patching@lfdr.de>; Fri, 13 Jan 2023 21:42:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229819AbjAMU2F (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 13 Jan 2023 15:28:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52098 "EHLO
+        id S229834AbjAMUmJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 13 Jan 2023 15:42:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbjAMU2E (ORCPT
+        with ESMTP id S229570AbjAMUmI (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 13 Jan 2023 15:28:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D3DD13C;
-        Fri, 13 Jan 2023 12:28:03 -0800 (PST)
+        Fri, 13 Jan 2023 15:42:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEEF6C07A;
+        Fri, 13 Jan 2023 12:42:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E31AB821E5;
-        Fri, 13 Jan 2023 20:28:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FC6C433EF;
-        Fri, 13 Jan 2023 20:28:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D7C562325;
+        Fri, 13 Jan 2023 20:42:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF6BC4339B;
+        Fri, 13 Jan 2023 20:42:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673641680;
-        bh=czSgDiYekXN+p6xZa4QnIRmCZCAcWylVkXA/uzRLv/k=;
+        s=k20201202; t=1673642524;
+        bh=cOWsW9nKUXsxUCQsnLiBDmgLrf2dfGEbA185Yv8G/OM=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gYTHIA826ouDWpsNy4zCstPUzaCrXc5huZdb+QukNNq6OQ84cRqvJEYsQsj0ZnDe2
-         aavvCXAbUhyC2oLTQdrDni1AwFVTXAzAYHtuBITT08LNxPBC1aW6rxUnZpPd//mCt9
-         R5DpCam57CShhVCAlDu4PRjS1lBvdtEURhhFhui/llN1aqL+H/pgR+rFZnNz721GvF
-         UTCyQA6KX7ZlGy7K4hAF1I6vie8sKQ7O9edFuu7PftPHufw0sM2Hm+eGSSiLEQmsZf
-         av950dAw+z+r1olJCl/6a5QSRf+4ZfBHkinY/HGReKBq5VBJjhvg+PlWewBmdgx/Xj
-         ZEJSZpraLyP7Q==
-Received: by mail-lf1-f48.google.com with SMTP id g18so1807749lfh.0;
-        Fri, 13 Jan 2023 12:28:00 -0800 (PST)
-X-Gm-Message-State: AFqh2kq83oCkb4VhYZN2cWgsF/OxTjqMvUx1+yO9WYM9kR3E/uhyb7dZ
-        t4M22/CPtjXDOI6Waldrg1UNmweBzBw+2tAa8cQ=
-X-Google-Smtp-Source: AMrXdXszjjWIbBqkxgPVJu6+xD9kMTQCNfn6mrincoPEA79h/3lBVmIzC6M3t9YZGODRPh9xB93iarrIlZKv76DE6OA=
-X-Received: by 2002:a05:6512:a95:b0:4d1:3e32:5436 with SMTP id
- m21-20020a0565120a9500b004d13e325436mr315336lfu.215.1673641678541; Fri, 13
- Jan 2023 12:27:58 -0800 (PST)
+        b=EamK5LuKysSNTlprMypnnQYY0nKEllXUFv8OvOr3uXnTQRVTsJ2y95LRRer2I5qiR
+         WkGRwEpMZPxh3rUtRC3+04I5TEmzn2Aaoa8HmudaQQ6d7MMChkFMXd+jcN/E9oVV0+
+         pvxPQYDoXwtuv73xRpWBbsW89L2GrBFsAikxELeGfCxnSnvf6vJi8HL/IAH7b1ay24
+         xyJZ/f06Olfkr+cOOYYte0YLNY5Cxc6040LrCI4tgdEnrrqWYH1oxSD1wCyVauX5j/
+         SpgTtwIIiyX2fU1vkYI12VLFYWSrhYjX4YKA3mhW/uYidwGMxUwnnnZr9o0up6+V+/
+         eoKjt+9jdFqww==
+Received: by mail-lf1-f52.google.com with SMTP id d30so29796400lfv.8;
+        Fri, 13 Jan 2023 12:42:04 -0800 (PST)
+X-Gm-Message-State: AFqh2kovbS3qRsHGZyZhQeS/HzT3G8YYmaQCc5QtfAclJ7IdcIHwU+lU
+        j8fmtrxPv9VuR1Q0bMRs4/1iQGkIgUp5eaPmMYs=
+X-Google-Smtp-Source: AMrXdXtUxGGBxPDmt324svw/wEu8AD6SJCZg4y1IhBptsbul96Bb8AseeNQicd8hWXu0i6VLPki8OTtgziMrTsM3RPw=
+X-Received: by 2002:a05:6512:3f07:b0:4ca:f873:7cf3 with SMTP id
+ y7-20020a0565123f0700b004caf8737cf3mr6114773lfa.89.1673642522760; Fri, 13 Jan
+ 2023 12:42:02 -0800 (PST)
 MIME-Version: 1.0
-References: <20230113143303.867580-1-jolsa@kernel.org> <20230113143303.867580-3-jolsa@kernel.org>
-In-Reply-To: <20230113143303.867580-3-jolsa@kernel.org>
+References: <20230113143303.867580-1-jolsa@kernel.org> <20230113143303.867580-4-jolsa@kernel.org>
+In-Reply-To: <20230113143303.867580-4-jolsa@kernel.org>
 From:   Song Liu <song@kernel.org>
-Date:   Fri, 13 Jan 2023 12:27:46 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW7PVXSgbn1+ZLRh1tZCoA85pAcfXMK-o_wkecGV6krhNA@mail.gmail.com>
-Message-ID: <CAPhsuW7PVXSgbn1+ZLRh1tZCoA85pAcfXMK-o_wkecGV6krhNA@mail.gmail.com>
-Subject: Re: [PATCHv2 bpf-next 2/3] selftests/bpf: Add serial_test_kprobe_multi_bench_attach_kernel/module
- tests
+Date:   Fri, 13 Jan 2023 12:41:50 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5uHZxuhpEZ-_r8piRwUykx4+f9eumw8L8hqdAhmi5CvQ@mail.gmail.com>
+Message-ID: <CAPhsuW5uHZxuhpEZ-_r8piRwUykx4+f9eumw8L8hqdAhmi5CvQ@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next 3/3] bpf: Change modules resolving for kprobe
+ multi link
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -80,94 +80,141 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 6:43 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Fri, Jan 13, 2023 at 6:44 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Add bench test for module portion of the symbols as well.
+> We currently use module_kallsyms_on_each_symbol that iterates all
+> modules/symbols and we try to lookup each such address in user
+> provided symbols/addresses to get list of used modules.
 >
->   # ./test_progs -v -t kprobe_multi_bench_attach_module
->   bpf_testmod.ko is already unloaded.
->   Loading bpf_testmod.ko...
->   Successfully loaded bpf_testmod.ko.
->   test_kprobe_multi_bench_attach:PASS:get_syms 0 nsec
->   test_kprobe_multi_bench_attach:PASS:kprobe_multi_empty__open_and_load 0 nsec
->   test_kprobe_multi_bench_attach:PASS:bpf_program__attach_kprobe_multi_opts 0 nsec
->   test_kprobe_multi_bench_attach: found 26620 functions
->   test_kprobe_multi_bench_attach: attached in   0.182s
->   test_kprobe_multi_bench_attach: detached in   0.082s
->   #96      kprobe_multi_bench_attach_module:OK
->   Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
->   Successfully unloaded bpf_testmod.ko.
+> This fix instead only iterates provided kprobe addresses and calls
+> __module_address on each to get list of used modules. This turned
+> out to be simpler and also bit faster.
 >
-> It's useful for testing kprobe multi link modules resolving.
+> On my setup with workload being (executed 10 times):
+>
+>    # test_progs -t kprobe_multi_bench_attach_module
+>
+> Current code:
+>
+>  Performance counter stats for './test.sh' (5 runs):
+>
+>     76,081,161,596      cycles:k                   ( +-  0.47% )
+>
+>            18.3867 +- 0.0992 seconds time elapsed  ( +-  0.54% )
+>
+> With the fix:
+>
+>  Performance counter stats for './test.sh' (5 runs):
+>
+>     74,079,889,063      cycles:k                   ( +-  0.04% )
+>
+>            17.8514 +- 0.0218 seconds time elapsed  ( +-  0.12% )
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-
-Acked-by: Song Liu <song@kernel.org>
-
 > ---
->  .../bpf/prog_tests/kprobe_multi_test.c        | 21 ++++++++++++++-----
->  1 file changed, 16 insertions(+), 5 deletions(-)
+>  kernel/trace/bpf_trace.c | 95 +++++++++++++++++++++-------------------
+>  1 file changed, 49 insertions(+), 46 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-> index c6f37e825f11..017a6996f3fa 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-> @@ -322,7 +322,7 @@ static bool symbol_equal(long key1, long key2, void *ctx __maybe_unused)
->         return strcmp((const char *) key1, (const char *) key2) == 0;
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 095f7f8d34a1..90c5d5026831 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -2682,69 +2682,79 @@ static void symbols_swap_r(void *a, void *b, int size, const void *priv)
+>         }
 >  }
 >
-> -static int get_syms(char ***symsp, size_t *cntp)
-> +static int get_syms(char ***symsp, size_t *cntp, bool kernel)
+> -struct module_addr_args {
+> -       unsigned long *addrs;
+> -       u32 addrs_cnt;
+> +struct modules_array {
+>         struct module **mods;
+>         int mods_cnt;
+>         int mods_cap;
+>  };
+>
+> -static int module_callback(void *data, const char *name,
+> -                          struct module *mod, unsigned long addr)
+> +static int add_module(struct modules_array *arr, struct module *mod)
 >  {
->         size_t cap = 0, cnt = 0, i;
->         char *name = NULL, **syms = NULL;
-> @@ -349,8 +349,9 @@ static int get_syms(char ***symsp, size_t *cntp)
+> -       struct module_addr_args *args = data;
+>         struct module **mods;
+>
+> -       /* We iterate all modules symbols and for each we:
+> -        * - search for it in provided addresses array
+> -        * - if found we check if we already have the module pointer stored
+> -        *   (we iterate modules sequentially, so we can check just the last
+> -        *   module pointer)
+> -        * - take module reference and store it
+> -        */
+> -       if (!bsearch(&addr, args->addrs, args->addrs_cnt, sizeof(addr),
+> -                      bpf_kprobe_multi_addrs_cmp))
+> -               return 0;
+> -
+> -       if (args->mods && args->mods[args->mods_cnt - 1] == mod)
+> -               return 0;
+> -
+> -       if (args->mods_cnt == args->mods_cap) {
+> -               args->mods_cap = max(16, args->mods_cap * 3 / 2);
+> -               mods = krealloc_array(args->mods, args->mods_cap, sizeof(*mods), GFP_KERNEL);
+> +       if (arr->mods_cnt == arr->mods_cap) {
+> +               arr->mods_cap = max(16, arr->mods_cap * 3 / 2);
+> +               mods = krealloc_array(arr->mods, arr->mods_cap, sizeof(*mods), GFP_KERNEL);
+>                 if (!mods)
+>                         return -ENOMEM;
+> -               args->mods = mods;
+> +               arr->mods = mods;
 >         }
 >
->         while (fgets(buf, sizeof(buf), f)) {
-> -               /* skip modules */
-> -               if (strchr(buf, '['))
-> +               if (kernel && strchr(buf, '['))
+> -       if (!try_module_get(mod))
+> -               return -EINVAL;
+> -
+> -       args->mods[args->mods_cnt] = mod;
+> -       args->mods_cnt++;
+> +       arr->mods[arr->mods_cnt] = mod;
+> +       arr->mods_cnt++;
+>         return 0;
+>  }
+>
+> +static bool has_module(struct modules_array *arr, struct module *mod)
+> +{
+> +       int i;
+> +
+> +       if (!arr->mods)
+> +               return false;
+> +       for (i = arr->mods_cnt; i >= 0; i--) {
+
+This should be "i = arr->mods_cnt - 1", no?
+
+> +               if (arr->mods[i] == mod)
+> +                       return true;
+> +       }
+> +       return false;
+> +}
+> +
+>  static int get_modules_for_addrs(struct module ***mods, unsigned long *addrs, u32 addrs_cnt)
+>  {
+> -       struct module_addr_args args = {
+> -               .addrs     = addrs,
+> -               .addrs_cnt = addrs_cnt,
+> -       };
+> -       int err;
+> +       struct modules_array arr = {};
+> +       u32 i, err = 0;
+> +
+> +       for (i = 0; i < addrs_cnt; i++) {
+> +               struct module *mod;
+> +
+> +               preempt_disable();
+> +               mod = __module_address(addrs[i]);
+> +               /* Either no module or we it's already stored  */
+> +               if (!mod || (mod && has_module(&arr, mod))) {
+
+nit: This can be simplified:
+
+     if (!mod || has_module(&arr, mod)) {
+
+> +                       preempt_enable();
 > +                       continue;
-> +               if (!kernel && !strchr(buf, '['))
->                         continue;
->
->                 free(name);
-> @@ -404,7 +405,7 @@ static int get_syms(char ***symsp, size_t *cntp)
->         return err;
->  }
->
-> -void serial_test_kprobe_multi_bench_attach(void)
-> +static void test_kprobe_multi_bench_attach(bool kernel)
->  {
->         LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
->         struct kprobe_multi_empty *skel = NULL;
-> @@ -415,7 +416,7 @@ void serial_test_kprobe_multi_bench_attach(void)
->         char **syms = NULL;
->         size_t cnt = 0, i;
->
-> -       if (!ASSERT_OK(get_syms(&syms, &cnt), "get_syms"))
-> +       if (!ASSERT_OK(get_syms(&syms, &cnt, kernel), "get_syms"))
->                 return;
->
->         skel = kprobe_multi_empty__open_and_load();
-> @@ -453,6 +454,16 @@ void serial_test_kprobe_multi_bench_attach(void)
->         }
->  }
->
-> +void serial_test_kprobe_multi_bench_attach_kernel(void)
-> +{
-> +       test_kprobe_multi_bench_attach(true);
-> +}
-> +
-> +void serial_test_kprobe_multi_bench_attach_module(void)
-> +{
-> +       test_kprobe_multi_bench_attach(false);
-> +}
-> +
->  void test_kprobe_multi_test(void)
->  {
->         if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
-> --
-> 2.39.0
->
+> +               }
+
+[...]
