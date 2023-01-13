@@ -2,83 +2,132 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D858A668C13
-	for <lists+live-patching@lfdr.de>; Fri, 13 Jan 2023 07:02:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE4A06692D3
+	for <lists+live-patching@lfdr.de>; Fri, 13 Jan 2023 10:26:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239808AbjAMGCt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 13 Jan 2023 01:02:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
+        id S233125AbjAMJ0n (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 13 Jan 2023 04:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239955AbjAMGCQ (ORCPT
+        with ESMTP id S232678AbjAMJZr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 13 Jan 2023 01:02:16 -0500
-X-Greylist: delayed 587 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 Jan 2023 21:56:47 PST
-Received: from mp-relay-02.fibernetics.ca (mp-relay-02.fibernetics.ca [208.85.217.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBFD5FF8
-        for <live-patching@vger.kernel.org>; Thu, 12 Jan 2023 21:56:46 -0800 (PST)
-Received: from mailpool-fe-01.fibernetics.ca (mailpool-fe-01.fibernetics.ca [208.85.217.144])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Fri, 13 Jan 2023 04:25:47 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263E918B3F
+        for <live-patching@vger.kernel.org>; Fri, 13 Jan 2023 01:18:31 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 6238F3FEA2;
+        Fri, 13 Jan 2023 09:18:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1673601509; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NscoSNWLVGX6pZx+d/w/51/pGMDpuU/PeMsGBtDZckw=;
+        b=ULHihY+VIJumm2qH12kbub+PJHYrPhUrV92EoGCrIqNbiMPan4vtw+8remaYVoe0YU4MgO
+        wxqueISqyDObvz/sGI95WSCNbiPI9FY8eUhOyy/ofM/vUgueLVvQSPiAj3iyHcGDdSotLP
+        Fwb4vKky6PzuhorUoZPFWKTbPElZC+Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1673601509;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NscoSNWLVGX6pZx+d/w/51/pGMDpuU/PeMsGBtDZckw=;
+        b=FIQoT4Q5zkAIXfycZJdLO0EJ2rJkzXKF03vtXbKF0SPhO5y/Tkhnua2rGjeUDkzkl87hL3
+        IU3e7qbom8lxGKAw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mp-relay-02.fibernetics.ca (Postfix) with ESMTPS id BDA1D70529;
-        Fri, 13 Jan 2023 05:46:59 +0000 (UTC)
-Received: from localhost (mailpool-mx-01.fibernetics.ca [208.85.217.140])
-        by mailpool-fe-01.fibernetics.ca (Postfix) with ESMTP id 8BAC726892;
-        Fri, 13 Jan 2023 05:46:59 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at 
-X-Spam-Score: 3.651
-X-Spam-Level: *******
-X-Spam-Status: Yes, score=7.8 required=5.0 tests=BAYES_80,
-        FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,
-        MONEY_FREEMAIL_REPTO,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,UNDISC_MONEY
-        autolearn=no autolearn_force=no version=3.4.6
-Received: from mailpool-fe-01.fibernetics.ca ([208.85.217.144])
-        by localhost (mail-mx-01.fibernetics.ca [208.85.217.140]) (amavisd-new, port 10024)
-        with ESMTP id IOIz_1ee-aCF; Fri, 13 Jan 2023 05:46:59 +0000 (UTC)
-Received: from localhost (unknown [208.85.220.72])
-        by mail.ca.inter.net (Postfix) with ESMTP id 31F392688E;
-        Fri, 13 Jan 2023 05:46:52 +0000 (UTC)
-Received: from reverse.rain.network (reverse.rain.network [197.184.176.8])
- by webmail.ca.inter.net (Horde Framework) with HTTP; Fri, 13 Jan 2023
- 00:46:51 -0500
-Message-ID: <20230113004651.20356zwqcbnopiyz@webmail.ca.inter.net>
-Date:   Fri, 13 Jan 2023 00:46:51 -0500
-From:   INFO <boothg@istar.ca>
-Reply-to: s.g0392440821@gmail.com
-To:     undisclosed-recipients:;
-Subject: 3,500,000.00 EURO
+        by relay2.suse.de (Postfix) with ESMTPS id 356B42C141;
+        Fri, 13 Jan 2023 09:18:29 +0000 (UTC)
+Date:   Fri, 13 Jan 2023 10:18:33 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Song Liu <song@kernel.org>
+cc:     live-patching@vger.kernel.org, jpoimboe@kernel.org,
+        jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v8] livepatch: Clear relocation targets on a module
+ removal
+In-Reply-To: <20230106200109.2546997-1-song@kernel.org>
+Message-ID: <alpine.LSU.2.21.2301131012110.1565@pobox.suse.cz>
+References: <20230106200109.2546997-1-song@kernel.org>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=ISO-8859-1;
- DelSp="Yes";
- format="flowed"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Internet Messaging Program (IMP) H3 (4.3.7)
-X-Originating-User-Info: boothg@istar.ca 208.85.219.96
-X-Spam-Report: *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
-        *      [score: 0.8770]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [s.g0392440821[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
-        *  0.3 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  2.7 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+Hi,
 
+On Fri, 6 Jan 2023, Song Liu wrote:
 
-Sehr geehrter E-Mail-Begünstigter, Sie wurden für eine Spende in Höhe  
-von 3.500.000,00 ? ausgewählt. Wenden Sie sich an diese  
-E-Mail-Adresse: s.g0392440821@gmail.com, um weitere Informationen zum  
-Erhalt Ihrer Spende zu erhalten. Vielen Dank
+> From: Miroslav Benes <mbenes@suse.cz>
+> 
+> Josh reported a bug:
+> 
+>   When the object to be patched is a module, and that module is
+>   rmmod'ed and reloaded, it fails to load with:
+> 
+>   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> 
+>   The livepatch module has a relocation which references a symbol
+>   in the _previous_ loading of nfsd. When apply_relocate_add()
+>   tries to replace the old relocation with a new one, it sees that
+>   the previous one is nonzero and it errors out.
+> 
+>   On ppc64le, we have a similar issue:
+> 
+>   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> 
+> He also proposed three different solutions. We could remove the error
+> check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> ("x86/module: Detect and skip invalid relocations"). However the check
+> is useful for detecting corrupted modules.
+> 
+> We could also deny the patched modules to be removed. If it proved to be
+> a major drawback for users, we could still implement a different
+> approach. The solution would also complicate the existing code a lot.
+> 
+> We thus decided to reverse the relocation patching (clear all relocation
+> targets on x86_64). The solution is not
+> universal and is too much arch-specific, but it may prove to be simpler
+> in the end.
+> 
+> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> Signed-off-by: Song Liu <song@kernel.org>
+> Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
+I would be fine if you just claimed the authorship (and include my 
+Originally-by: tag for example), because you have reworked it quite a lot 
+since my first attempts.
+
+> +int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
+> +			     const char *shstrtab, const char *strtab,
+> +			     unsigned int symndx, unsigned int secndx,
+> +			     const char *objname)
+> +{
+> +	return klp_write_section_relocs(pmod, sechdrs, shstrtab, strtab, symndx,
+> +					secndx, objname, true);
+>  }
+
+Is this redirection needed somewhere? You could just replace 
+klp_apply_section_relocs() with klp_write_section_relocs() in 
+include/linux/livepatch.h and kernel/module/main.c.
+
+It may be cleaned up later.
+
+Acked-by: Miroslav Benes <mbenes@suse.cz>
+
+It would be nice to get an Acked-by from a x86 maintainter as well.
+
+Thanks
+Miroslav
