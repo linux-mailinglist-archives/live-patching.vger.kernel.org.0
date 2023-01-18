@@ -2,68 +2,67 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43EFF670ED7
-	for <lists+live-patching@lfdr.de>; Wed, 18 Jan 2023 01:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 685B5671013
+	for <lists+live-patching@lfdr.de>; Wed, 18 Jan 2023 02:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbjARAlt (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 17 Jan 2023 19:41:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
+        id S229652AbjARBfL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 17 Jan 2023 20:35:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbjARAlJ (ORCPT
+        with ESMTP id S229622AbjARBfJ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 17 Jan 2023 19:41:09 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CC7366BD;
-        Tue, 17 Jan 2023 16:17:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=utRFnR99NxpzDHlLUBWhedA5Z4Qq6S0lgjsdASsjQgw=; b=gLiHq7h9ZLBOPUCCcIFpEOUKme
-        G9Ezvqeq3LqMLnnKcumYSR9pJ5akTuu8CjhiUuTR25iQZOQ+woIQSjYTRJI/z/MFNA8cG7dMdpY/U
-        XUAbrdYMJwChjFf0WqZKDPJj6FOXZ0iwBejJVB6AJfFbLiqQPwluE5ObI06U6b9/Cd928fUWRhMAF
-        +0HpMcrHGNVbN4DeT06Q/s2jxahuNXnKegsqJgcdjNhKn2T1TGAMndDowJuGppFwPfA59qY69BW61
-        6li5vAr8fJJswsydGnqYHt/8WTEwAih4YzfmbUycdszkAdmx7r21yfp+yzRuw8P4pjET8T7YgT+EO
-        hcrqaZwg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pHw8b-00GKCk-PD; Wed, 18 Jan 2023 00:17:09 +0000
-Date:   Tue, 17 Jan 2023 16:17:09 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Tue, 17 Jan 2023 20:35:09 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55934ED2D;
+        Tue, 17 Jan 2023 17:35:07 -0800 (PST)
+Received: from dggpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NxSvm3jpbzJrTZ;
+        Wed, 18 Jan 2023 09:33:40 +0800 (CST)
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 18 Jan 2023 09:35:03 +0800
+Subject: Re: [PATCH v3] kallsyms: Remove the performance test from
+ kallsyms_selftest.c
+To:     Luis Chamberlain <mcgrof@kernel.org>
+CC:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Song Liu <song@kernel.org>, bpf@vger.kernel.org,
-        live-patching@vger.kernel.org, linux-modules@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nick Alcock <nick.alcock@oracle.com>
-Subject: Re: [PATCHv3 bpf-next 1/3] livepatch: Improve the search performance
- of module_kallsyms_on_each_symbol()
-Message-ID: <Y8c6hUswpwg7g83v@bombadil.infradead.org>
-References: <20230116101009.23694-1-jolsa@kernel.org>
- <20230116101009.23694-2-jolsa@kernel.org>
+        Mark Rutland <mark.rutland@arm.com>, <bpf@vger.kernel.org>,
+        <linux-trace-kernel@vger.kernel.org>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-modules@vger.kernel.org>
+References: <20230110130121.1279-1-thunder.leizhen@huawei.com>
+ <Y8Hn9Bd7XFGkBnWO@bombadil.infradead.org>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <fc4cd660-b01b-c02b-7bfb-64606bd4a247@huawei.com>
+Date:   Wed, 18 Jan 2023 09:34:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230116101009.23694-2-jolsa@kernel.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <Y8Hn9Bd7XFGkBnWO@bombadil.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,36 +70,21 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 11:10:07AM +0100, Jiri Olsa wrote:
-> From: Zhen Lei <thunder.leizhen@huawei.com>
-> 
-> Currently we traverse all symbols of all modules to find the specified
-> function for the specified module. But in reality, we just need to find
-> the given module and then traverse all the symbols in it.
-> 
-> Let's add a new parameter 'const char *modname' to function
-> module_kallsyms_on_each_symbol(), then we can compare the module names
-> directly in this function and call hook 'fn' after matching. If 'modname'
-> is NULL, the symbols of all modules are still traversed for compatibility
-> with other usage cases.
-> 
-> Phase1: mod1-->mod2..(subsequent modules do not need to be compared)
->                 |
-> Phase2:          -->f1-->f2-->f3
-> 
-> Assuming that there are m modules, each module has n symbols on average,
-> then the time complexity is reduced from O(m * n) to O(m) + O(n).
-> 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> Acked-by: Song Liu <song@kernel.org>
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
-Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
 
-I'm happy for folks to take this through another tree. I was merging
-kallsysm stuff on the modules tree to avoid conflicts with Nick Alcock's
-work but after reviewing his v10 series it is quite clear that's no where near
-ready now and I don't expect much conflicts even if it was.
+On 2023/1/14 7:23, Luis Chamberlain wrote:
+> On Tue, Jan 10, 2023 at 09:01:21PM +0800, Zhen Lei wrote:
+>> Suggested-by: Petr Mladek <pmladek@suse.com>
+> 
+> I've dropped this in favor of Nick's fix and pushed to Linus.
 
-  Luis
+OK, great. This problem finally landed before the Chinese New Year.
+
+> 
+>   Luis
+> .
+> 
+
+-- 
+Regards,
+  Zhen Lei
