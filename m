@@ -2,249 +2,166 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1B146710FF
-	for <lists+live-patching@lfdr.de>; Wed, 18 Jan 2023 03:16:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9D7F671E01
+	for <lists+live-patching@lfdr.de>; Wed, 18 Jan 2023 14:35:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbjARCQp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 17 Jan 2023 21:16:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        id S230167AbjARNfr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 18 Jan 2023 08:35:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbjARCQk (ORCPT
+        with ESMTP id S229705AbjARNfU (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 17 Jan 2023 21:16:40 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B793C51C66;
-        Tue, 17 Jan 2023 18:16:35 -0800 (PST)
-Received: from dggpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NxTqd3wWCzJrVT;
-        Wed, 18 Jan 2023 10:15:09 +0800 (CST)
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Wed, 18 Jan 2023 10:16:32 +0800
-Subject: Re: [PATCHv3 bpf-next 3/3] bpf: Change modules resolving for kprobe
- multi link
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-CC:     <bpf@vger.kernel.org>, <live-patching@vger.kernel.org>,
-        <linux-modules@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-References: <20230116101009.23694-1-jolsa@kernel.org>
- <20230116101009.23694-4-jolsa@kernel.org>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <85fedce4-cd27-02f4-7f8b-7aa7c0fb0780@huawei.com>
-Date:   Wed, 18 Jan 2023 10:16:20 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Wed, 18 Jan 2023 08:35:20 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7655EAA5CD
+        for <live-patching@vger.kernel.org>; Wed, 18 Jan 2023 05:02:51 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 2BD263F6FC;
+        Wed, 18 Jan 2023 13:02:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1674046970; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HDumPFkLRnjxKj5Eymq437UKAXQ3huCxhX35sk7YbpQ=;
+        b=cxGRjTG3cEMADgBSsgtUH6YbzBzHRfsjsIuf0GpoWLFVDVp+63cKnAV8p/qqI+w0gsMo8R
+        MheCySAnkWIQOaYwMB3go5QQRtB2M5vEQPqOFS3wYKnSnMpeaEr2K42eS2UcUsH2DrhCzn
+        wRSCuaazPf5hRXI5VhJed1uBjmDMbbY=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 098642C141;
+        Wed, 18 Jan 2023 13:02:50 +0000 (UTC)
+Date:   Wed, 18 Jan 2023 14:02:47 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Song Liu <song@kernel.org>
+Cc:     live-patching@vger.kernel.org, jpoimboe@kernel.org,
+        jikos@kernel.org, joe.lawrence@redhat.com,
+        Miroslav Benes <mbenes@suse.cz>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v8] livepatch: Clear relocation targets on a module
+ removal
+Message-ID: <Y8ft97xn7F92oWyn@alley>
+References: <20230106200109.2546997-1-song@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230116101009.23694-4-jolsa@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230106200109.2546997-1-song@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
+On Fri 2023-01-06 12:01:09, Song Liu wrote:
+> From: Miroslav Benes <mbenes@suse.cz>
+> 
+> Josh reported a bug:
+> 
+>   When the object to be patched is a module, and that module is
+>   rmmod'ed and reloaded, it fails to load with:
+> 
+>   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> 
+>   The livepatch module has a relocation which references a symbol
+>   in the _previous_ loading of nfsd. When apply_relocate_add()
+>   tries to replace the old relocation with a new one, it sees that
+>   the previous one is nonzero and it errors out.
+> 
+> We thus decided to reverse the relocation patching (clear all relocation
+> targets on x86_64). The solution is not
+> universal and is too much arch-specific, but it may prove to be simpler
+> in the end.
+> 
+> --- a/arch/x86/kernel/module.c
+> +++ b/arch/x86/kernel/module.c
+> @@ -162,56 +167,53 @@ static int __apply_relocate_add(Elf64_Shdr *sechdrs,
+>  
+>  		switch (ELF64_R_TYPE(rel[i].r_info)) {
+>  		case R_X86_64_NONE:
+> -			break;
+> +			continue;  /* nothing to write */
+>  		case R_X86_64_64:
+> -			if (*(u64 *)loc != 0)
+> -				goto invalid_relocation;
+> -			write(loc, &val, 8);
+> +			write_size = 8;
+>  			break;
+>  		case R_X86_64_32:
+> -			if (*(u32 *)loc != 0)
+> -				goto invalid_relocation;
+> -			write(loc, &val, 4);
+> -			if (val != *(u32 *)loc)
+> +			if (val != *(u32 *)&val)
+>  				goto overflow;
+>  			break;
+>  		case R_X86_64_32S:
+> -			if (*(s32 *)loc != 0)
+> -				goto invalid_relocation;
+> -			write(loc, &val, 4);
+> -			if ((s64)val != *(s32 *)loc)
+> +			if ((s64)val != *(s32 *)&val)
+>  				goto overflow;
+>  			break;
+>  		case R_X86_64_PC32:
+>  		case R_X86_64_PLT32:
+> -			if (*(u32 *)loc != 0)
+> -				goto invalid_relocation;
+> -			val -= (u64)loc;
+> -			write(loc, &val, 4);
+>  #if 0
+> -			if ((s64)val != *(s32 *)loc)
+> +			if ((s64)val != *(s32 *)&val)
+>  				goto overflow;
+
+This is supposed to check the to-be-written value.
+
+>  #endif
+> +			val -= (u64)loc;
+
+This is modifying the to-be-written value. It should be computed before
+the overflow check.
+
+I know that the check is not really compiled in but we should
+not break it.
 
 
-On 2023/1/16 18:10, Jiri Olsa wrote:
-> We currently use module_kallsyms_on_each_symbol that iterates all
-> modules/symbols and we try to lookup each such address in user
-> provided symbols/addresses to get list of used modules.
-> 
-> This fix instead only iterates provided kprobe addresses and calls
-> __module_address on each to get list of used modules. This turned
-> out ot be simpler and also bit faster.
+>  			break;
 
-ot --> to
+Otherwise, it looks fine.
 
-Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-> 
-> On my setup with workload (executed 10 times):
-> 
->    # test_progs -t kprobe_multi_bench_attach/modules
-> 
-> Current code:
-> 
->  Performance counter stats for './test.sh' (5 runs):
-> 
->     76,081,161,596      cycles:k                   ( +-  0.47% )
-> 
->            18.3867 +- 0.0992 seconds time elapsed  ( +-  0.54% )
-> 
-> With the fix:
-> 
->  Performance counter stats for './test.sh' (5 runs):
-> 
->     74,079,889,063      cycles:k                   ( +-  0.04% )
-> 
->            17.8514 +- 0.0218 seconds time elapsed  ( +-  0.12% )
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/trace/bpf_trace.c | 93 ++++++++++++++++++++--------------------
->  1 file changed, 47 insertions(+), 46 deletions(-)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 095f7f8d34a1..8124f1ad0d4a 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -2682,69 +2682,77 @@ static void symbols_swap_r(void *a, void *b, int size, const void *priv)
->  	}
->  }
->  
-> -struct module_addr_args {
-> -	unsigned long *addrs;
-> -	u32 addrs_cnt;
-> +struct modules_array {
->  	struct module **mods;
->  	int mods_cnt;
->  	int mods_cap;
->  };
->  
-> -static int module_callback(void *data, const char *name,
-> -			   struct module *mod, unsigned long addr)
-> +static int add_module(struct modules_array *arr, struct module *mod)
->  {
-> -	struct module_addr_args *args = data;
->  	struct module **mods;
->  
-> -	/* We iterate all modules symbols and for each we:
-> -	 * - search for it in provided addresses array
-> -	 * - if found we check if we already have the module pointer stored
-> -	 *   (we iterate modules sequentially, so we can check just the last
-> -	 *   module pointer)
-> -	 * - take module reference and store it
-> -	 */
-> -	if (!bsearch(&addr, args->addrs, args->addrs_cnt, sizeof(addr),
-> -		       bpf_kprobe_multi_addrs_cmp))
-> -		return 0;
-> -
-> -	if (args->mods && args->mods[args->mods_cnt - 1] == mod)
-> -		return 0;
-> -
-> -	if (args->mods_cnt == args->mods_cap) {
-> -		args->mods_cap = max(16, args->mods_cap * 3 / 2);
-> -		mods = krealloc_array(args->mods, args->mods_cap, sizeof(*mods), GFP_KERNEL);
-> +	if (arr->mods_cnt == arr->mods_cap) {
-> +		arr->mods_cap = max(16, arr->mods_cap * 3 / 2);
-> +		mods = krealloc_array(arr->mods, arr->mods_cap, sizeof(*mods), GFP_KERNEL);
->  		if (!mods)
->  			return -ENOMEM;
-> -		args->mods = mods;
-> +		arr->mods = mods;
->  	}
->  
-> -	if (!try_module_get(mod))
-> -		return -EINVAL;
-> -
-> -	args->mods[args->mods_cnt] = mod;
-> -	args->mods_cnt++;
-> +	arr->mods[arr->mods_cnt] = mod;
-> +	arr->mods_cnt++;
->  	return 0;
->  }
->  
-> +static bool has_module(struct modules_array *arr, struct module *mod)
-> +{
-> +	int i;
-> +
-> +	for (i = arr->mods_cnt - 1; i >= 0; i--) {
-> +		if (arr->mods[i] == mod)
-> +			return true;
-> +	}
-> +	return false;
-> +}
-> +
->  static int get_modules_for_addrs(struct module ***mods, unsigned long *addrs, u32 addrs_cnt)
->  {
-> -	struct module_addr_args args = {
-> -		.addrs     = addrs,
-> -		.addrs_cnt = addrs_cnt,
-> -	};
-> -	int err;
-> +	struct modules_array arr = {};
-> +	u32 i, err = 0;
-> +
-> +	for (i = 0; i < addrs_cnt; i++) {
-> +		struct module *mod;
-> +
-> +		preempt_disable();
-> +		mod = __module_address(addrs[i]);
-> +		/* Either no module or we it's already stored  */
-> +		if (!mod || has_module(&arr, mod)) {
-> +			preempt_enable();
-> +			continue;
-> +		}
-> +		if (!try_module_get(mod))
-> +			err = -EINVAL;
-> +		preempt_enable();
-> +		if (err)
-> +			break;
-> +		err = add_module(&arr, mod);
-> +		if (err) {
-> +			module_put(mod);
-> +			break;
-> +		}
-> +	}
->  
->  	/* We return either err < 0 in case of error, ... */
-> -	err = module_kallsyms_on_each_symbol(NULL, module_callback, &args);
->  	if (err) {
-> -		kprobe_multi_put_modules(args.mods, args.mods_cnt);
-> -		kfree(args.mods);
-> +		kprobe_multi_put_modules(arr.mods, arr.mods_cnt);
-> +		kfree(arr.mods);
->  		return err;
->  	}
->  
->  	/* or number of modules found if everything is ok. */
-> -	*mods = args.mods;
-> -	return args.mods_cnt;
-> +	*mods = arr.mods;
-> +	return arr.mods_cnt;
->  }
->  
->  int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
-> @@ -2857,13 +2865,6 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->  		       bpf_kprobe_multi_cookie_cmp,
->  		       bpf_kprobe_multi_cookie_swap,
->  		       link);
-> -	} else {
-> -		/*
-> -		 * We need to sort addrs array even if there are no cookies
-> -		 * provided, to allow bsearch in get_modules_for_addrs.
-> -		 */
-> -		sort(addrs, cnt, sizeof(*addrs),
-> -		       bpf_kprobe_multi_addrs_cmp, NULL);
->  	}
->  
->  	err = get_modules_for_addrs(&link->mods, addrs, cnt);
-> 
+Now, I agree with Miroslav that we should get an approval from x86
+maintainers. Sigh, I think that I have already asked for this earlier:
 
--- 
-Regards,
-  Zhen Lei
+!!! Please add x86@kernel.org and linux-kernel@vger.kernel.org at
+minimum into CC when sending V9 !!!
+
+The more people know about this change the better. And it is really
+important to make maintainers of the touched subsystem aware of
+proposed changes.
+
+It is a good practice to add people that are printed by
+./scripts/get_maintainer.pl. In this case, it is:
+
+$> ./scripts/get_maintainer.pl arch/x86/kernel/module.c 
+Thomas Gleixner <tglx@linutronix.de> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT),authored:2/12=17%,added_lines:24/74=32%,removed_lines:5/26=19%)
+Ingo Molnar <mingo@redhat.com> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
+Borislav Petkov <bp@alien8.de> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT),commit_signer:4/12=33%)
+Dave Hansen <dave.hansen@linux.intel.com> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
+x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
+"H. Peter Anvin" <hpa@zytor.com> (reviewer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
+Peter Zijlstra <peterz@infradead.org> (commit_signer:8/12=67%,authored:4/12=33%,added_lines:41/74=55%,removed_lines:8/26=31%)
+Kees Cook <keescook@chromium.org> (commit_signer:4/12=33%)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> (commit_signer:3/12=25%)
+"Jason A. Donenfeld" <Jason@zx2c4.com> (commit_signer:3/12=25%,authored:3/12=25%,removed_lines:3/26=12%)
+Julian Pidancet <julian.pidancet@oracle.com> (authored:1/12=8%,added_lines:5/74=7%,removed_lines:6/26=23%)
+Ard Biesheuvel <ardb@kernel.org> (authored:1/12=8%,removed_lines:3/26=12%)
+linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND 64-BIT))
+
+Best Regards,
+Petr
