@@ -2,50 +2,52 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D7F671E01
-	for <lists+live-patching@lfdr.de>; Wed, 18 Jan 2023 14:35:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C61CE671EB9
+	for <lists+live-patching@lfdr.de>; Wed, 18 Jan 2023 15:01:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbjARNfr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 18 Jan 2023 08:35:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
+        id S230017AbjAROB0 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 18 Jan 2023 09:01:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbjARNfU (ORCPT
+        with ESMTP id S230038AbjAROBG (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 18 Jan 2023 08:35:20 -0500
+        Wed, 18 Jan 2023 09:01:06 -0500
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7655EAA5CD
-        for <live-patching@vger.kernel.org>; Wed, 18 Jan 2023 05:02:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33B78728C
+        for <live-patching@vger.kernel.org>; Wed, 18 Jan 2023 05:35:01 -0800 (PST)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2BD263F6FC;
-        Wed, 18 Jan 2023 13:02:50 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id C840C3E8A6;
+        Wed, 18 Jan 2023 13:34:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1674046970; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1674048899; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=HDumPFkLRnjxKj5Eymq437UKAXQ3huCxhX35sk7YbpQ=;
-        b=cxGRjTG3cEMADgBSsgtUH6YbzBzHRfsjsIuf0GpoWLFVDVp+63cKnAV8p/qqI+w0gsMo8R
-        MheCySAnkWIQOaYwMB3go5QQRtB2M5vEQPqOFS3wYKnSnMpeaEr2K42eS2UcUsH2DrhCzn
-        wRSCuaazPf5hRXI5VhJed1uBjmDMbbY=
+        bh=QCnYNYnWqyOf6SsgnfN+3NvmiwWWWcMIPO/+zLa7vz8=;
+        b=CFL1Tbn+9B1XUEITTT5oqyp+CmA2J5JqKBwCRS9pg4ZArLGefr+ZV6I+rjFcFboUy0gxsO
+        WClhJ7GqlVADAX8akYZF1k5c5QDutQc3M/58VLg39UcK0VUCxmMv9ooD7cseFhMopA2sF0
+        G67mb6lPV0xBA5s5ZiEnqq+5FRhaj+o=
 Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 098642C141;
-        Wed, 18 Jan 2023 13:02:50 +0000 (UTC)
-Date:   Wed, 18 Jan 2023 14:02:47 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id A39D42C141;
+        Wed, 18 Jan 2023 13:34:59 +0000 (UTC)
+Date:   Wed, 18 Jan 2023 14:34:59 +0100
 From:   Petr Mladek <pmladek@suse.com>
 To:     Song Liu <song@kernel.org>
-Cc:     live-patching@vger.kernel.org, jpoimboe@kernel.org,
+Cc:     Miroslav Benes <mbenes@suse.cz>, X86 ML <x86@kernel.org>,
+        live-patching@vger.kernel.org, jpoimboe@kernel.org,
         jikos@kernel.org, joe.lawrence@redhat.com,
-        Miroslav Benes <mbenes@suse.cz>,
         Josh Poimboeuf <jpoimboe@redhat.com>
 Subject: Re: [PATCH v8] livepatch: Clear relocation targets on a module
  removal
-Message-ID: <Y8ft97xn7F92oWyn@alley>
+Message-ID: <Y8f1g62ouKsmjwpL@alley>
 References: <20230106200109.2546997-1-song@kernel.org>
+ <alpine.LSU.2.21.2301131012110.1565@pobox.suse.cz>
+ <CAPhsuW6JKSYjfPab9k_SCtoPQMGTX2ZXkSTMnZEOCMf-yo29rg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230106200109.2546997-1-song@kernel.org>
+In-Reply-To: <CAPhsuW6JKSYjfPab9k_SCtoPQMGTX2ZXkSTMnZEOCMf-yo29rg@mail.gmail.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,113 +57,94 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri 2023-01-06 12:01:09, Song Liu wrote:
-> From: Miroslav Benes <mbenes@suse.cz>
+On Fri 2023-01-13 11:55:25, Song Liu wrote:
+> On Fri, Jan 13, 2023 at 1:18 AM Miroslav Benes <mbenes@suse.cz> wrote:
+> >
+> > Hi,
+> >
+> > On Fri, 6 Jan 2023, Song Liu wrote:
+> >
+> > > From: Miroslav Benes <mbenes@suse.cz>
+> > >
+> > > Josh reported a bug:
+> > >
+> > >   When the object to be patched is a module, and that module is
+> > >   rmmod'ed and reloaded, it fails to load with:
+> > >
+> > >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > >
+> > >   The livepatch module has a relocation which references a symbol
+> > >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> > >   tries to replace the old relocation with a new one, it sees that
+> > >   the previous one is nonzero and it errors out.
+> > >
+> > >   On ppc64le, we have a similar issue:
+> > >
+> > >   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+> > >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> > >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > >
+> > > He also proposed three different solutions. We could remove the error
+> > > check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> > > ("x86/module: Detect and skip invalid relocations"). However the check
+> > > is useful for detecting corrupted modules.
+> > >
+> > > We could also deny the patched modules to be removed. If it proved to be
+> > > a major drawback for users, we could still implement a different
+> > > approach. The solution would also complicate the existing code a lot.
+> > >
+> > > We thus decided to reverse the relocation patching (clear all relocation
+> > > targets on x86_64). The solution is not
+> > > universal and is too much arch-specific, but it may prove to be simpler
+> > > in the end.
+> > >
+> > > Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> > > Signed-off-by: Song Liu <song@kernel.org>
+> > > Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> >
+> > I would be fine if you just claimed the authorship (and include my
+> > Originally-by: tag for example), because you have reworked it quite a lot
+> > since my first attempts.
 > 
-> Josh reported a bug:
+> I am ok with either way. Or maybe with
 > 
->   When the object to be patched is a module, and that module is
->   rmmod'ed and reloaded, it fails to load with:
+> Co-developed-by: Song Liu <song@kernel.org>
 > 
->   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
->   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
->   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> >
+> > > +int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
+> > > +                          const char *shstrtab, const char *strtab,
+> > > +                          unsigned int symndx, unsigned int secndx,
+> > > +                          const char *objname)
+> > > +{
+> > > +     return klp_write_section_relocs(pmod, sechdrs, shstrtab, strtab, symndx,
+> > > +                                     secndx, objname, true);
+> > >  }
+
+I think that I proposed this wrapper :-)
+
+> > Is this redirection needed somewhere? You could just replace
+> > klp_apply_section_relocs() with klp_write_section_relocs() in
+> > include/linux/livepatch.h and kernel/module/main.c.
+> >
+> > It may be cleaned up later.
 > 
->   The livepatch module has a relocation which references a symbol
->   in the _previous_ loading of nfsd. When apply_relocate_add()
->   tries to replace the old relocation with a new one, it sees that
->   the previous one is nonzero and it errors out.
-> 
-> We thus decided to reverse the relocation patching (clear all relocation
-> targets on x86_64). The solution is not
-> universal and is too much arch-specific, but it may prove to be simpler
-> in the end.
-> 
-> --- a/arch/x86/kernel/module.c
-> +++ b/arch/x86/kernel/module.c
-> @@ -162,56 +167,53 @@ static int __apply_relocate_add(Elf64_Shdr *sechdrs,
->  
->  		switch (ELF64_R_TYPE(rel[i].r_info)) {
->  		case R_X86_64_NONE:
-> -			break;
-> +			continue;  /* nothing to write */
->  		case R_X86_64_64:
-> -			if (*(u64 *)loc != 0)
-> -				goto invalid_relocation;
-> -			write(loc, &val, 8);
-> +			write_size = 8;
->  			break;
->  		case R_X86_64_32:
-> -			if (*(u32 *)loc != 0)
-> -				goto invalid_relocation;
-> -			write(loc, &val, 4);
-> -			if (val != *(u32 *)loc)
-> +			if (val != *(u32 *)&val)
->  				goto overflow;
->  			break;
->  		case R_X86_64_32S:
-> -			if (*(s32 *)loc != 0)
-> -				goto invalid_relocation;
-> -			write(loc, &val, 4);
-> -			if ((s64)val != *(s32 *)loc)
-> +			if ((s64)val != *(s32 *)&val)
->  				goto overflow;
->  			break;
->  		case R_X86_64_PC32:
->  		case R_X86_64_PLT32:
-> -			if (*(u32 *)loc != 0)
-> -				goto invalid_relocation;
-> -			val -= (u64)loc;
-> -			write(loc, &val, 4);
->  #if 0
-> -			if ((s64)val != *(s32 *)loc)
-> +			if ((s64)val != *(s32 *)&val)
->  				goto overflow;
+> It might be a good practice to keep _write_ static in this file, and
+> only expose _apply_ (maybe also _clear_ in the future)?
 
-This is supposed to check the to-be-written value.
+And I think that this was the reason. Also it looks better in
+kernel/module/main.c in apply_relocations() that calls few more
+*_apply_*reloc*() functions.
 
->  #endif
-> +			val -= (u64)loc;
-
-This is modifying the to-be-written value. It should be computed before
-the overflow check.
-
-I know that the check is not really compiled in but we should
-not break it.
+The idea is that functions with the same naming pattern do
+the same operation. Also it is supposed to hide the true/false
+parameter and self-explain the meaning by the function name.
 
 
->  			break;
+> I don't have a strong preference either way.
 
-Otherwise, it looks fine.
-
-
-Now, I agree with Miroslav that we should get an approval from x86
-maintainers. Sigh, I think that I have already asked for this earlier:
-
-!!! Please add x86@kernel.org and linux-kernel@vger.kernel.org at
-minimum into CC when sending V9 !!!
-
-The more people know about this change the better. And it is really
-important to make maintainers of the touched subsystem aware of
-proposed changes.
-
-It is a good practice to add people that are printed by
-./scripts/get_maintainer.pl. In this case, it is:
-
-$> ./scripts/get_maintainer.pl arch/x86/kernel/module.c 
-Thomas Gleixner <tglx@linutronix.de> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT),authored:2/12=17%,added_lines:24/74=32%,removed_lines:5/26=19%)
-Ingo Molnar <mingo@redhat.com> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
-Borislav Petkov <bp@alien8.de> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT),commit_signer:4/12=33%)
-Dave Hansen <dave.hansen@linux.intel.com> (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
-x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
-"H. Peter Anvin" <hpa@zytor.com> (reviewer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
-Peter Zijlstra <peterz@infradead.org> (commit_signer:8/12=67%,authored:4/12=33%,added_lines:41/74=55%,removed_lines:8/26=31%)
-Kees Cook <keescook@chromium.org> (commit_signer:4/12=33%)
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> (commit_signer:3/12=25%)
-"Jason A. Donenfeld" <Jason@zx2c4.com> (commit_signer:3/12=25%,authored:3/12=25%,removed_lines:3/26=12%)
-Julian Pidancet <julian.pidancet@oracle.com> (authored:1/12=8%,added_lines:5/74=7%,removed_lines:6/26=23%)
-Ard Biesheuvel <ardb@kernel.org> (authored:1/12=8%,removed_lines:3/26=12%)
-linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND 64-BIT))
+I would prefer to keep the wrapper. But I do not resist on it :-)
 
 Best Regards,
 Petr
