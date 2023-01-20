@@ -2,139 +2,141 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FB30675EF1
-	for <lists+live-patching@lfdr.de>; Fri, 20 Jan 2023 21:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C671675FF1
+	for <lists+live-patching@lfdr.de>; Fri, 20 Jan 2023 23:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbjATUdB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 20 Jan 2023 15:33:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        id S229949AbjATWMh (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 20 Jan 2023 17:12:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbjATUdB (ORCPT
+        with ESMTP id S229929AbjATWMg (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 20 Jan 2023 15:33:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967EB8A0F8;
-        Fri, 20 Jan 2023 12:32:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BF08B82A59;
-        Fri, 20 Jan 2023 20:32:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DEABC433D2;
-        Fri, 20 Jan 2023 20:32:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674246775;
-        bh=Mpd3ggMAesKvNDM2J5TjcadboGsqRMW6xSnwxTQzs9M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f/2YTssoLBjjzLSBf54MtKOiJn2xOGzgzBiDMuZYAA+cYBNvfT2kZfrIwQk+makKA
-         DBiADCIkkzpVrrbTdTON2aMMIHNjVvji6xB4w4j0vcNqrscNqhRC+a7rV1323TLN3O
-         jY7YwMuK25eZrsJv2k9kmZeC9o/pfJRNa0X4c3D0OfOL0MHzWfIS6OV6/7m9D/6iCS
-         E8PlUu/ztkOjzpjBAD9d7y8EbKMQtvjxwuxDiaSi8Cit+6y9XAfMAe2mbI9eox5dgv
-         QR4zjGRMd0RZ3roPzIXG3k99ph4S45ZAUwMqHYvO9QV8GQ65ObE9rI0LC5jPTiF1mh
-         jZPrE6AzyXK0w==
-Date:   Fri, 20 Jan 2023 12:32:53 -0800
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        live-patching@vger.kernel.org, x86@kernel.org, jikos@kernel.org,
-        pmladek@suse.com, joe.lawrence@redhat.com,
-        Miroslav Benes <mbenes@suse.cz>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH v9] livepatch: Clear relocation targets on a module
- removal
-Message-ID: <20230120203253.5r7dkge6x4vsx5ov@treble>
-References: <20230118204728.1876249-1-song@kernel.org>
- <20230120191642.7bmqt6t4qngisqep@treble>
- <CAPhsuW436=wRKLixWNtE9Rx=6A0gKrOCR8EUOdwTrPw5W6gddg@mail.gmail.com>
+        Fri, 20 Jan 2023 17:12:36 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BF036449
+        for <live-patching@vger.kernel.org>; Fri, 20 Jan 2023 14:12:34 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id y69so3110852iof.3
+        for <live-patching@vger.kernel.org>; Fri, 20 Jan 2023 14:12:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=cc:to:message-id:date:content-transfer-encoding:mime-version
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=U1Ao9NXaWgBOUiK+rj9v9X8Q1xZNi+V9uTD46WKKtdw=;
+        b=CP69oNJLnjiVV4tB0rYNSmBoYhq8zTAf5aeWGwBovXoy78p1YHNttTfFLpgUdkZt5y
+         CF6BkjRK5BXmetvzcOipE6ZWALHWD4fDKhxrzQDRZETLKzd8lYiiMlj8HPAiBZDkBq+1
+         Fjdww4iDsWbfzKLRwjC85+Yo6BGDTWL5y5Tv4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:message-id:date:content-transfer-encoding:mime-version
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=U1Ao9NXaWgBOUiK+rj9v9X8Q1xZNi+V9uTD46WKKtdw=;
+        b=16AXSckU+8K5kbk/Spw/MvDHGRGeYzOIRy2uiRV6Mgmt7A0Lgu52dqYT3zumQ1TPIr
+         rfaC79zqij/SWRNBBNMpuO13wwjEto1BVw23aGaeAWmjqbV5Q2IRA0wFHJ2duy6ku7fL
+         /Dx4sWzF3hyrAz88hNMlgmgodoz9HCC+jcUmQRqGPKnbwJwbdCoXsidagFgk19QDIj5h
+         Di6SowknVach2k8TSJ2IbEZv8bXyMe4wlEyrecfCmXtoesOdqkFCdyuWJkTl4TbzFtJH
+         miNJHX2qDfYpWd0vlN6TP9dFQtTrvpezzex+dGjJWT/Nx3lIpYhVXuswAx9vvVTlR0Ch
+         tgjg==
+X-Gm-Message-State: AFqh2krljOwOUsMEDNg9WEfMjiwT2l7J1xRpOF/pMqOHbtD4pw/RPoJ4
+        Yf/RhMfO2KBVl0XtC4sGyAdBig==
+X-Google-Smtp-Source: AMrXdXum9CTPzdCUTloBWrH1lZInZCJwTTZUYqpFqr+e9Y/2n3mTCcLg6hp+gsZAesCShxp7/GqsWA==
+X-Received: by 2002:a6b:500a:0:b0:705:5e1e:eb6e with SMTP id e10-20020a6b500a000000b007055e1eeb6emr9205488iob.11.1674252753715;
+        Fri, 20 Jan 2023 14:12:33 -0800 (PST)
+Received: from localhost ([136.37.131.79])
+        by smtp.gmail.com with ESMTPSA id cs8-20020a056638470800b003a7cadffda7sm1519487jab.2.2023.01.20.14.12.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jan 2023 14:12:33 -0800 (PST)
+From:   "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>
+X-Google-Original-From: "Seth Forshee (DigitalOcean)" <sforshee@kernel.org>
+Subject: [PATCH 0/2] vhost: improve livepatch switching for heavily loaded vhost worker kthreads
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW436=wRKLixWNtE9Rx=6A0gKrOCR8EUOdwTrPw5W6gddg@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-b4-tracking: H4sIAMQRy2MC/w3LOw6AIAwA0KuYzjZBWNTbFGykkVRD/QzGu8v4hveCcRU2mLsXKt9ismvD0HeQMu
+ nKKEszeOeDG7zDO+924lYOtEfOlEVXjDRRIA5jHAnajGSMsZKm3K5epXzfD5ena69qAAAA
+Date:   Fri, 20 Jan 2023 16:12:20 -0600
+Message-Id: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        "Seth Forshee (DigitalOcean)" <sforshee@kernel.org>,
+        netdev@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Mailer: b4 0.10.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2416; i=sforshee@kernel.org;
+ h=from:subject:message-id; bh=EZbjAIdznm3Oej+eWIGyRgmoqSdbR0GomfdbWyUvWuE=;
+ b=owEBbQGS/pANAwAKAVMDma7l9DHJAcsmYgBjyxHK47dK5XiK+U7PMs1DUY+EH512EmtrWsinE62O
+ st1NWfiJATMEAAEKAB0WIQSQnt+rKAvnETy4Hc9TA5mu5fQxyQUCY8sRygAKCRBTA5mu5fQxySm3B/
+ 9RzhyLuYXteP+GKtAYPSH91mkV9to22qctt0HVI4O7jF/xfnsSaW4H0H02HzXQL4C8vk9TICOgCpWM
+ pXpuuKMmpauwn5I88hvtmnChrAtfuwXV9F/UZOx/bcGLSB0XyBo6ZeZhGFtiBSptCzz8vAjY181OnP
+ DAN50d3RjfNYScU+jrA3MfX9R0/PfKs71zuNpV02R961kdFFUwIS/tPPHJHkElpqV/jm9BLIkCYle/
+ Bwg0bcI2xNiyjrSUqq5rr8jayRwWFBpLFlz3HgMSaIugOyfVtjr2ZTXwNjwmvhBPu7+KsrMWT/MUWO
+ 5AS2iykCZxhYrlFLHs79+KNjXkreR5
+X-Developer-Key: i=sforshee@kernel.org; a=openpgp;
+ fpr=2ABCA7498D83E1D32D51D3B5AB4800A62DB9F73A
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Jan 20, 2023 at 11:41:02AM -0800, Song Liu wrote:
-> > >   The livepatch module has a relocation which references a symbol
-> > >   in the _previous_ loading of nfsd. When apply_relocate_add()
-> > >   tries to replace the old relocation with a new one, it sees that
-> > >   the previous one is nonzero and it errors out.
-> >
-> > Should we add a selftest to make sure this problem doesn't come back?
-> 
-> IIRC, a selftest for this issue is not easy without Joe's klp-convert work.
-> At the moment I use kpatch-build for testing.
+We've fairly regularaly seen liveptches which cannot transition within kpatch's
+timeout period due to busy vhost worker kthreads. In looking for a solution the
+only answer I found was to call klp_update_patch_state() from a safe location.
+I tried adding this call to vhost_worker(), and it works, but this creates the
+potential for problems if a livepatch attempted to patch vhost_worker().
+Without a call to klp_update_patch_state() fully loaded vhost kthreads can
+never switch because vhost_worker() will always appear on the stack, but with
+the call these kthreads can switch but will still be running the old version of
+vhost_worker().
 
-Ah right, I remember that now.
+To avoid this situation I've added a new function, klp_switch_current(), which
+switches the current task only if its stack does not include any function being
+patched. This allows kthreads to safely attempt switching themselves if a patch
+is pending. There is at least one downside, however. Since there's no way for
+the kthread to track whether it has already tried to switch for a pending patch
+it can end up calling klp_switch_current() repeatedly when it can never be
+safely switched.
 
-> How about:
-> 
-> Signed-off-by: Song Liu <song@kernel.org>
-> Originally-by: Miroslav Benes <mbenes@suse.cz>
-> Acked-by: Miroslav Benes <mbenes@suse.cz>
-> Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+I don't know whether this is the right solution, and I'm happy to try out other
+suggestions. But in my testing these patches proved effective in consistently
+switching heavily loaded vhost kthreads almost immediately.
 
-Yes, but the ordering looks off, I think it should be more like:
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Jiri Kosina <jikos@kernel.org>
+To: Miroslav Benes <mbenes@suse.cz>
+To: Petr Mladek <pmladek@suse.com>
+To: Joe Lawrence <joe.lawrence@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: live-patching@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: kvm@vger.kernel.org
+Cc: virtualization@lists.linux-foundation.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Seth Forshee (DigitalOcean) <sforshee@kernel.org>
 
-Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Originally-by: Miroslav Benes <mbenes@suse.cz>
-Signed-off-by: Song Liu <song@kernel.org>
-Acked-by: Miroslav Benes <mbenes@suse.cz>
+---
+Seth Forshee (DigitalOcean) (2):
+      livepatch: add an interface for safely switching kthreads
+      vhost: check for pending livepatches from vhost worker kthreads
 
-And then make sure 'From:' is you.
+ drivers/vhost/vhost.c         |  4 ++++
+ include/linux/livepatch.h     |  2 ++
+ kernel/livepatch/transition.c | 11 +++++++++++
+ 3 files changed, 17 insertions(+)
+---
+base-commit: 5dc4c995db9eb45f6373a956eb1f69460e69e6d4
+change-id: 20230120-vhost-klp-switching-ba9a3ae38b8a
 
-BTW, this patch affects both livepatch and x86, so the subject prefix
-should have "x86" added, something like:
-
-  livepatch,x86: Clear relocations on module removal
-
-> > This code really needs to be removed anyway, it's been dead for at least
-> > 15 years.
-> 
-> Shall we remove it now? Within the same patch? Or with a preparation
-> patch?
-> 
-
-A preparatory patch sounds good.
-
-> > > +                                    (int)ELF64_R_TYPE(rel[i].r_info), loc, val);
-> > > +                             return -ENOEXEC;
-> > > +                     }
-> > > +                     write(loc, &val, write_size);
-> > > +             } else {
-> > > +                     if (memcmp(loc, &val, write_size)) {
-> > > +                             pr_warn("x86/modules: Clearing invalid relocation target, existing value does not match expected value for type %d, loc %p, val %Lx\n",
-> > > +                                     (int)ELF64_R_TYPE(rel[i].r_info), loc, val);
-> > > +                     }
-> > > +                     write(loc, &zero, write_size);
-> >
-> > If the value doesn't match then something has gone badly wrong.  Why go
-> > ahead with the clearing in that case?
-> 
-> We can pr_err() then return -ENOEXEC (?). But I guess we need to
-> handle the error case in:
->   klp_cleanup_module_patches_limited()
->   klp_module_coming()
->   klp_module_going()
-> and all the functions that call klp_module_going().
-> 
-> This seems a big overkill to me...
-> 
-> Or do you mean we just skip the write()?
-
-At the very least, skip the write.
-
-But I really think it should just break out of the loop and return an
-error, there's no point in trying to continue clearing the rest of the
-relocations if one of them failed.
-
-It's probably fine for the callers to ignore the error, the module's
-going to get unloaded regardless.
-
+Best regards,
 -- 
-Josh
+Seth Forshee (DigitalOcean) <sforshee@kernel.org>
