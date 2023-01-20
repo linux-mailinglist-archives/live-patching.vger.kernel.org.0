@@ -2,60 +2,61 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C671675FF1
-	for <lists+live-patching@lfdr.de>; Fri, 20 Jan 2023 23:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64164675FFB
+	for <lists+live-patching@lfdr.de>; Fri, 20 Jan 2023 23:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbjATWMh (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 20 Jan 2023 17:12:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
+        id S230018AbjATWMn (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 20 Jan 2023 17:12:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbjATWMg (ORCPT
+        with ESMTP id S229971AbjATWMh (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 20 Jan 2023 17:12:36 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BF036449
-        for <live-patching@vger.kernel.org>; Fri, 20 Jan 2023 14:12:34 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id y69so3110852iof.3
-        for <live-patching@vger.kernel.org>; Fri, 20 Jan 2023 14:12:34 -0800 (PST)
+        Fri, 20 Jan 2023 17:12:37 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE2D2686
+        for <live-patching@vger.kernel.org>; Fri, 20 Jan 2023 14:12:35 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id i17so3404249ila.9
+        for <live-patching@vger.kernel.org>; Fri, 20 Jan 2023 14:12:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=digitalocean.com; s=google;
-        h=cc:to:message-id:date:content-transfer-encoding:mime-version
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=U1Ao9NXaWgBOUiK+rj9v9X8Q1xZNi+V9uTD46WKKtdw=;
-        b=CP69oNJLnjiVV4tB0rYNSmBoYhq8zTAf5aeWGwBovXoy78p1YHNttTfFLpgUdkZt5y
-         CF6BkjRK5BXmetvzcOipE6ZWALHWD4fDKhxrzQDRZETLKzd8lYiiMlj8HPAiBZDkBq+1
-         Fjdww4iDsWbfzKLRwjC85+Yo6BGDTWL5y5Tv4=
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wbodpTKPKmmsf6sP0FY882Wjf4zzytHSiP84SDKBVQY=;
+        b=cBx1flC4qcgu9rrDuKrrO1mDCaZBSPWObcfiVypcdCKvHYtSrTfEce40+s+2J4zyI+
+         /gVtMyOF+lDW0t4v19/baQh3Pyc5u+wRFnQyhKRSMaQy3zxBme7NG1c5DDjp/LRecDSI
+         rpavxneoCsLF96wzrzdzqfisrzGoJBzZXI09M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:message-id:date:content-transfer-encoding:mime-version
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=U1Ao9NXaWgBOUiK+rj9v9X8Q1xZNi+V9uTD46WKKtdw=;
-        b=16AXSckU+8K5kbk/Spw/MvDHGRGeYzOIRy2uiRV6Mgmt7A0Lgu52dqYT3zumQ1TPIr
-         rfaC79zqij/SWRNBBNMpuO13wwjEto1BVw23aGaeAWmjqbV5Q2IRA0wFHJ2duy6ku7fL
-         /Dx4sWzF3hyrAz88hNMlgmgodoz9HCC+jcUmQRqGPKnbwJwbdCoXsidagFgk19QDIj5h
-         Di6SowknVach2k8TSJ2IbEZv8bXyMe4wlEyrecfCmXtoesOdqkFCdyuWJkTl4TbzFtJH
-         miNJHX2qDfYpWd0vlN6TP9dFQtTrvpezzex+dGjJWT/Nx3lIpYhVXuswAx9vvVTlR0Ch
-         tgjg==
-X-Gm-Message-State: AFqh2krljOwOUsMEDNg9WEfMjiwT2l7J1xRpOF/pMqOHbtD4pw/RPoJ4
-        Yf/RhMfO2KBVl0XtC4sGyAdBig==
-X-Google-Smtp-Source: AMrXdXum9CTPzdCUTloBWrH1lZInZCJwTTZUYqpFqr+e9Y/2n3mTCcLg6hp+gsZAesCShxp7/GqsWA==
-X-Received: by 2002:a6b:500a:0:b0:705:5e1e:eb6e with SMTP id e10-20020a6b500a000000b007055e1eeb6emr9205488iob.11.1674252753715;
-        Fri, 20 Jan 2023 14:12:33 -0800 (PST)
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wbodpTKPKmmsf6sP0FY882Wjf4zzytHSiP84SDKBVQY=;
+        b=OUpyfGi12BRp841pRpH8DDL124VsZB5UBfTMpczhylBto5uJ6lW14+zc2KviurKcN4
+         afMlWPnTOdDLC0/c8kofp9U6344vE/F/XsS4a/Zf1AVtEWrI7dra5qpqynxiQIS+8sHI
+         H27YmCjSBSD2nvSwo9FJ6IhWf+EoKG6jnaTZQikXCUSnUEsazFvCB/E1zEU/jmrxXknh
+         NjRzcdgLGoAPujC7qJMYlXPBl6Mk4X0PVtHoZD9H5SQS7L3mrElKbMCzYQL0VvM4f7xQ
+         L8TR8rjaBkLtg16991kQbYA2P9vu+0teR9DMlOuTqfbX5KGL4Y1IAZhA3eNU3dZk9V6b
+         J0Kg==
+X-Gm-Message-State: AFqh2koOxg/0lp5nuUfvq9kDyiaePqceZDfqHl7Gajw+kkaI00TNRfvi
+        CGTLQA3Qq+svtjcDYPfjZLPU5g==
+X-Google-Smtp-Source: AMrXdXsG6qJ68Trnd/19KnZDx2kv5FJ9ieIJaUYW/S7CKgPcoe0u5j0uZYANES+6SbM91sDCNgdrPw==
+X-Received: by 2002:a05:6e02:6cc:b0:30c:4846:57c3 with SMTP id p12-20020a056e0206cc00b0030c484657c3mr12392861ils.4.1674252754641;
+        Fri, 20 Jan 2023 14:12:34 -0800 (PST)
 Received: from localhost ([136.37.131.79])
-        by smtp.gmail.com with ESMTPSA id cs8-20020a056638470800b003a7cadffda7sm1519487jab.2.2023.01.20.14.12.33
+        by smtp.gmail.com with ESMTPSA id b7-20020a920b07000000b0030f04dcbc2fsm4679183ilf.66.2023.01.20.14.12.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 14:12:33 -0800 (PST)
+        Fri, 20 Jan 2023 14:12:34 -0800 (PST)
 From:   "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>
 X-Google-Original-From: "Seth Forshee (DigitalOcean)" <sforshee@kernel.org>
-Subject: [PATCH 0/2] vhost: improve livepatch switching for heavily loaded vhost worker kthreads
+Date:   Fri, 20 Jan 2023 16:12:21 -0600
+Subject: [PATCH 1/2] livepatch: add an interface for safely switching kthreads
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-b4-tracking: H4sIAMQRy2MC/w3LOw6AIAwA0KuYzjZBWNTbFGykkVRD/QzGu8v4hveCcRU2mLsXKt9ismvD0HeQMu
- nKKEszeOeDG7zDO+924lYOtEfOlEVXjDRRIA5jHAnajGSMsZKm3K5epXzfD5ena69qAAAA
-Date:   Fri, 20 Jan 2023 16:12:20 -0600
-Message-Id: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+Message-Id: <20230120-vhost-klp-switching-v1-1-7c2b65519c43@kernel.org>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+In-Reply-To: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
 To:     Petr Mladek <pmladek@suse.com>, Jason Wang <jasowang@redhat.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
@@ -67,15 +68,15 @@ Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
         netdev@vger.kernel.org, live-patching@vger.kernel.org,
         linux-kernel@vger.kernel.org
 X-Mailer: b4 0.10.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2416; i=sforshee@kernel.org;
- h=from:subject:message-id; bh=EZbjAIdznm3Oej+eWIGyRgmoqSdbR0GomfdbWyUvWuE=;
- b=owEBbQGS/pANAwAKAVMDma7l9DHJAcsmYgBjyxHK47dK5XiK+U7PMs1DUY+EH512EmtrWsinE62O
- st1NWfiJATMEAAEKAB0WIQSQnt+rKAvnETy4Hc9TA5mu5fQxyQUCY8sRygAKCRBTA5mu5fQxySm3B/
- 9RzhyLuYXteP+GKtAYPSH91mkV9to22qctt0HVI4O7jF/xfnsSaW4H0H02HzXQL4C8vk9TICOgCpWM
- pXpuuKMmpauwn5I88hvtmnChrAtfuwXV9F/UZOx/bcGLSB0XyBo6ZeZhGFtiBSptCzz8vAjY181OnP
- DAN50d3RjfNYScU+jrA3MfX9R0/PfKs71zuNpV02R961kdFFUwIS/tPPHJHkElpqV/jm9BLIkCYle/
- Bwg0bcI2xNiyjrSUqq5rr8jayRwWFBpLFlz3HgMSaIugOyfVtjr2ZTXwNjwmvhBPu7+KsrMWT/MUWO
- 5AS2iykCZxhYrlFLHs79+KNjXkreR5
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2403; i=sforshee@kernel.org;
+ h=from:subject:message-id; bh=r9mU45ndBE6+c+nVzo6X6SmMiX3LFRgk6Wk7Kz1IlfY=;
+ b=owEBbQGS/pANAwAKAVMDma7l9DHJAcsmYgBjyxHM7TI1pPLXBaX/blEl/AF4BuJfI3qcZu1Ba0Pi
+ 7RCvBguJATMEAAEKAB0WIQSQnt+rKAvnETy4Hc9TA5mu5fQxyQUCY8sRzAAKCRBTA5mu5fQxyQajCA
+ CQHOboQjqLYEklPYMzSh3LIcU+lmYlGq/PU5Tvw2uXXdt5OuZ4wKr1bfrXZpqEQQFOQ5GyQIs8TWme
+ 68r4FYf+XBDN8IA7Am+RvNbij9LDM0ErUGMkEMlMUK2XSI68SKL5/NbPtA12cLqwyqbrMtSU0V1lOS
+ eSDjz6e/IF+cCI3MRJJbXNn7lxroUBmuaxIeYS1ctnsDnBTdo+Q9+7o2kgP03u4T/S2KgzhrTilX6j
+ /2IzHtl3Yan7ZRmpHjyJHOjBbOK75ZYYBEdb8isQRJrPJDUfZru9Cy8XEYoGElACzFBHIrUhHU8zMH
+ BcKdbg7Z6g/u8WS7oj3yqkyZRxDEBW
 X-Developer-Key: i=sforshee@kernel.org; a=openpgp;
  fpr=2ABCA7498D83E1D32D51D3B5AB4800A62DB9F73A
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -88,55 +89,65 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-We've fairly regularaly seen liveptches which cannot transition within kpatch's
-timeout period due to busy vhost worker kthreads. In looking for a solution the
-only answer I found was to call klp_update_patch_state() from a safe location.
-I tried adding this call to vhost_worker(), and it works, but this creates the
-potential for problems if a livepatch attempted to patch vhost_worker().
-Without a call to klp_update_patch_state() fully loaded vhost kthreads can
-never switch because vhost_worker() will always appear on the stack, but with
-the call these kthreads can switch but will still be running the old version of
-vhost_worker().
+The only existing solution for transitioning a busy kernel thread is to
+call klp_update_patch_state() from a safe location. However, this does
+not account for the fact that even the main function of the kthread
+could potentially be patched, leaving the patch switched but still
+running the old version of a patched function.
 
-To avoid this situation I've added a new function, klp_switch_current(), which
-switches the current task only if its stack does not include any function being
-patched. This allows kthreads to safely attempt switching themselves if a patch
-is pending. There is at least one downside, however. Since there's no way for
-the kthread to track whether it has already tried to switch for a pending patch
-it can end up calling klp_switch_current() repeatedly when it can never be
-safely switched.
+To address this, add klp_switch_current() for use by kthreads to safely
+transition themselves. This is just a wrapper around
+klp_try_switch_task(), which can already transition the current task
+with stack checking.
 
-I don't know whether this is the right solution, and I'm happy to try out other
-suggestions. But in my testing these patches proved effective in consistently
-switching heavily loaded vhost kthreads almost immediately.
-
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Jiri Kosina <jikos@kernel.org>
-To: Miroslav Benes <mbenes@suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: live-patching@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: kvm@vger.kernel.org
-Cc: virtualization@lists.linux-foundation.org
-Cc: netdev@vger.kernel.org
 Signed-off-by: Seth Forshee (DigitalOcean) <sforshee@kernel.org>
-
 ---
-Seth Forshee (DigitalOcean) (2):
-      livepatch: add an interface for safely switching kthreads
-      vhost: check for pending livepatches from vhost worker kthreads
-
- drivers/vhost/vhost.c         |  4 ++++
  include/linux/livepatch.h     |  2 ++
  kernel/livepatch/transition.c | 11 +++++++++++
- 3 files changed, 17 insertions(+)
----
-base-commit: 5dc4c995db9eb45f6373a956eb1f69460e69e6d4
-change-id: 20230120-vhost-klp-switching-ba9a3ae38b8a
+ 2 files changed, 13 insertions(+)
 
-Best regards,
+diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+index 293e29960c6e..00b5981684a4 100644
+--- a/include/linux/livepatch.h
++++ b/include/linux/livepatch.h
+@@ -199,6 +199,7 @@ void klp_module_going(struct module *mod);
+ 
+ void klp_copy_process(struct task_struct *child);
+ void klp_update_patch_state(struct task_struct *task);
++void klp_switch_current(void);
+ 
+ static inline bool klp_patch_pending(struct task_struct *task)
+ {
+@@ -240,6 +241,7 @@ static inline int klp_module_coming(struct module *mod) { return 0; }
+ static inline void klp_module_going(struct module *mod) {}
+ static inline bool klp_patch_pending(struct task_struct *task) { return false; }
+ static inline void klp_update_patch_state(struct task_struct *task) {}
++static inline void klp_switch_current(void) {}
+ static inline void klp_copy_process(struct task_struct *child) {}
+ 
+ static inline
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index f1b25ec581e0..ff328b912916 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -455,6 +455,17 @@ void klp_try_complete_transition(void)
+ 		klp_free_replaced_patches_async(patch);
+ }
+ 
++/*
++ * Safely try to switch the current task to the target patch state. This can
++ * be used by kthreads to transition if no to-be-patched or to-be-unpatched
++ * functions are on the call stack.
++ */
++void klp_switch_current(void)
++{
++	klp_try_switch_task(current);
++}
++EXPORT_SYMBOL_GPL(klp_switch_current);
++
+ /*
+  * Start the transition to the specified target patch state so tasks can begin
+  * switching to it.
+
 -- 
-Seth Forshee (DigitalOcean) <sforshee@kernel.org>
+b4 0.10.1
