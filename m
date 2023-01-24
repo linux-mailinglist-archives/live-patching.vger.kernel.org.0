@@ -2,121 +2,75 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC3E678354
-	for <lists+live-patching@lfdr.de>; Mon, 23 Jan 2023 18:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41F796796C8
+	for <lists+live-patching@lfdr.de>; Tue, 24 Jan 2023 12:37:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232700AbjAWRfL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 23 Jan 2023 12:35:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        id S233488AbjAXLhu (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 24 Jan 2023 06:37:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233807AbjAWRe5 (ORCPT
+        with ESMTP id S233794AbjAXLhs (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 23 Jan 2023 12:34:57 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A4A2FCE3;
-        Mon, 23 Jan 2023 09:34:19 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 5D8F62184F;
-        Mon, 23 Jan 2023 17:33:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1674495216; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ro2DBmNZbamdtWM6haiWhuRN1QfFV7RGG2FGjrIg8aM=;
-        b=B0E16fqLvDIZc49JKXgQL1KMe/ZMdDf1geh0eLDSJpgE3iehTOteBtRWNmQXNHlzAd9Mp5
-        upoZmIC2c+wQl86xCM15+ELwNdr4p39JB8fTf0UH+u+0ld2rb68Kv0tGEZydJ5HDT2JmG3
-        WQuLYBaDSDbr21G8huC3rX1XK8dR6fQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1674495216;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ro2DBmNZbamdtWM6haiWhuRN1QfFV7RGG2FGjrIg8aM=;
-        b=PCa+aAoeZfChR2FcxE8ZZmBB5qnvAlp26qjdtNHRr9bOHwHSWj3OrG3oOKdfw82sq9yTBL
-        mSeAqIzzTwEe47CA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5845A1357F;
-        Mon, 23 Jan 2023 17:33:34 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id qJNYB+7EzmOYHgAAMHmgww
-        (envelope-from <mpdesouza@suse.de>); Mon, 23 Jan 2023 17:33:34 +0000
-Date:   Mon, 23 Jan 2023 14:33:31 -0300
-From:   Marcos Paulo de Souza <mpdesouza@suse.de>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        jpoimboe@redhat.com, joe.lawrence@redhat.com
-Subject: Re: [PATCH v2 0/4] livepatch: Add garbage collection for shadow
- variables
-Message-ID: <20230123173331.2rvelrrbkaitw56r@daedalus>
-References: <20221026194122.11761-1-mpdesouza@suse.com>
- <Y2D4ZgWqB0E9viPy@alley>
+        Tue, 24 Jan 2023 06:37:48 -0500
+X-Greylist: delayed 629 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 24 Jan 2023 03:37:45 PST
+Received: from outside12.canonet.ne.jp (outside12.canonet.ne.jp [210.134.168.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20A501BE0
+        for <live-patching@vger.kernel.org>; Tue, 24 Jan 2023 03:37:44 -0800 (PST)
+Received: from csp12.canonet.ne.jp (unknown [172.21.160.132])
+        by outside12.canonet.ne.jp (Postfix) with ESMTP id 000811E035C;
+        Tue, 24 Jan 2023 20:27:14 +0900 (JST)
+Received: from echeck12.canonet.ne.jp ([172.21.160.122])
+        by csp2 with ESMTP
+        id KHSMpC5oByh2rKHSMpgZk6; Tue, 24 Jan 2023 20:27:14 +0900
+Received: from echeck12.canonet.ne.jp (localhost [127.0.0.1])
+        by esets.canonet.ne.jp (Postfix) with ESMTP id 9EBB21C021C;
+        Tue, 24 Jan 2023 20:27:14 +0900 (JST)
+X-Virus-Scanner: This message was checked by ESET Mail Security
+        for Linux/BSD. For more information on ESET Mail Security,
+        please, visit our website: http://www.eset.com/.
+Received: from smtp12.canonet.ne.jp (unknown [172.21.160.102])
+        by echeck12.canonet.ne.jp (Postfix) with ESMTP id 791331C0255;
+        Tue, 24 Jan 2023 20:27:14 +0900 (JST)
+Received: from satutoku.jp (webmail.canonet.ne.jp [210.134.169.250])
+        by smtp12.canonet.ne.jp (Postfix) with ESMTPA id CDDE315F968;
+        Tue, 24 Jan 2023 20:27:13 +0900 (JST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y2D4ZgWqB0E9viPy@alley>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <20230124112713.00000B02.0921@satutoku.jp>
+Date:   Tue, 24 Jan 2023 20:27:13 +0900
+From:   "Chaoxiang Genghis" <2fkensa@satutoku.jp>
+To:     <gengh@cc.cc>
+Reply-To: <c-genghis0@yandex.com>
+Subject: Good day..., 
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+ORGANIZATION: UAE
+X-MAILER: Active! mail
+X-EsetResult: clean, %VIRUSNAME%
+X-ESET-AS: R=OK;S=0;OP=CALC;TIME=1674559634;VERSION=7944;MC=3924838938;TRN=0;CRV=0;IPC=210.134.169.250;SP=4;SIPS=1;PI=5;F=0
+X-I-ESET-AS: RN=0;RNP=
+X-ESET-Antispam: OK
+X-Spam-Status: No, score=4.4 required=5.0 tests=BAYES_50,
+        FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,SPF_HELO_NONE,
+        SPF_PASS,UNRESOLVED_TEMPLATE autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Nov 01, 2022 at 11:43:50AM +0100, Petr Mladek wrote:
-> On Wed 2022-10-26 16:41:18, Marcos Paulo de Souza wrote:
-> > Hello,
-> > 
-> > This is the v2 of the livepatch shadow GC patches. The changes are minor since
-> > nobody asked for for big code changes.
-> > 
-> > Changes from v1:
-> > * Reworked commit messages (Petr)
-> > * Added my SoB which was missing in some patches, or the ordering was wrong. (Josh)
-> > * Change __klp_shadow_get_or_use to __klp_shadow_get_or_add_locked and add a comment (Petr)
-> > * Add lockdep_assert_held on __klp_shadow_get_or_add_locked (Petr)
-> >   about it's meaning (Petr)
-> > * CCing LKML (Josh)
-> > 
-> > Some observations:
-> > * Petr has reviewed some of the patches that we created. I kept the Reviewed-by
-> >   tags since he wrote the patches some time ago and now he reviewed them again
-> >   on the ML.
-> > * There were questions about possible problems about using klp_shadow_types
-> >   instead of using ids, but Petr already explained that internally it still uses
-> >   the id to find the correct livepatch.
-> > * Regarding the possibility of multiple patches use the same ID, the problem
-> >   already existed before. Petr suggested using a "stringified" version using
-> >   name and id, but nobody has commented yet. I can implement such feature in a
-> >   v3 if necessary.
-> > 
-> > Marcos Paulo de Souza (2):
-> >   livepatch/shadow: Introduce klp_shadow_type structure
-> >   livepatch/shadow: Add garbage collection of shadow variables
-> > 
-> > Petr Mladek (2):
-> >   livepatch/shadow: Separate code to get or use pre-allocated shadow
-> >     variable
-> >   livepatch/shadow: Separate code removing all shadow variables for a
-> >     given id
-> 
-> From my POV, the patchset is ready for pushing upstream.
 
-Petr, what do you think about merging the first two patches, since they just
-cleanups and simplifications?
+Good day..., 
 
-> 
-> Well, we need to get approval from kpatch-build users. Joe described
-> possible problems in replay for v3, see
-> https://lore.kernel.org/r/b5fc2891-2fb0-4aa7-01dd-861da22bb7ea@redhat.com
-> 
-> Best Regards,
-> Petr
+How are you doing today, I hope this email finds you in good health. You have not responded to my previous emails to you regarding Mr. Husson.
+
+Kindly acknowledge my proposal and let me know what your decisions are, if you are taking the offer.
+
+Get back to me as soon as you can for further details.
+
+Best regards,
+Mr. Chaoxiang Genghis.
+
+
