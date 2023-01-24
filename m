@@ -2,58 +2,53 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D870667A006
-	for <lists+live-patching@lfdr.de>; Tue, 24 Jan 2023 18:21:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A46C67A00D
+	for <lists+live-patching@lfdr.de>; Tue, 24 Jan 2023 18:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234087AbjAXRVp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 24 Jan 2023 12:21:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        id S233990AbjAXRXY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 24 Jan 2023 12:23:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233704AbjAXRVo (ORCPT
+        with ESMTP id S234035AbjAXRXX (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 24 Jan 2023 12:21:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667134A20D;
-        Tue, 24 Jan 2023 09:21:43 -0800 (PST)
+        Tue, 24 Jan 2023 12:23:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED04402FD;
+        Tue, 24 Jan 2023 09:23:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 164B3B81603;
-        Tue, 24 Jan 2023 17:21:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CD47C433D2;
-        Tue, 24 Jan 2023 17:21:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 667B4B81606;
+        Tue, 24 Jan 2023 17:23:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1EEC433D2;
+        Tue, 24 Jan 2023 17:23:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674580900;
-        bh=5u0HAqsMO32meB1+2hDlQk/3mQeAC0aecbaZTWGuo+U=;
+        s=k20201202; t=1674580995;
+        bh=CwhLGT4zPksCsBdo0pja2APkkSpmb/azhcS8qSQ8vdU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QjXkTZ0idK5z1Ix6m1yf2oBxsdcJq94aU7EsrAkDisp/SxGulfBdNMOHDckBQCvRz
-         W6llnTDs0JyFfXUOfVaSTrQzHB06mjALwb4j+Phm8EDITPUQVpWD5IHsXkZkuoBPtv
-         RURIQy6zUHAvCnxo+xVec0gIbsGD27+BhiB5s6a+NXA37TUYzDYw69k0Ue/1GNZ5pA
-         e7XeoQuYn4y8JHNQWOTkXCt0qA/tsceHAidqLU0n+M/uxducs+tOJXNBbPy0iCuj6y
-         N0r2//PY2LaeDxixTQGxip8Sr7ZhPU0erQFPtHhNXN68HP/JMuxcj/3DvEDYW4dGN9
-         YTPE1btkwci6w==
-Date:   Tue, 24 Jan 2023 11:21:39 -0600
-From:   Seth Forshee <sforshee@kernel.org>
+        b=mgZ64qwjYOgIyo091c6otHRso9I0WRRCRaZYano/+2BgYp9hSi2I5EQ0mKaZLW9wm
+         KsTN2WKLW8bTf/hx+ETOD9EEHLX4MpDdMcX7TPnBBjnHcddDBlXKsWDGaAeeMDYQM3
+         hEifjrjMXQyRtsbis3Mohq004Vt9vyvntuFWWh79t5xZ8fWV5QXyqT3bZk8fuXx0xR
+         GFQwO9TtkdTwVLlNCE5DlZJTqSDNcs9gzbCQlGMRp1JaZvZt/0bQRVz7gs+KZaWQxc
+         rw6kaBiW98asAaNiYd7/9xl8aSzZ2+VeevGllrglHOE+X4gdCN/tqjaUrUNrWpVb7l
+         kOWPuvdO1wcAA==
+Date:   Tue, 24 Jan 2023 09:23:13 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
 To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] vhost: check for pending livepatches from vhost
- worker kthreads
-Message-ID: <Y9ATo5FukOhphwqT@do-x1extreme>
-References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
- <20230120-vhost-klp-switching-v1-2-7c2b65519c43@kernel.org>
- <Y8/ohzRGcOiqsh69@alley>
+Cc:     Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
+        x86@kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH v10 2/2] livepatch,x86: Clear relocation targets on a
+ module removal
+Message-ID: <20230124172313.extovg6ig7dimpgb@treble>
+References: <20230121004945.697003-1-song@kernel.org>
+ <20230121004945.697003-2-song@kernel.org>
+ <Y8/N7zMLUnMh259N@alley>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Y8/ohzRGcOiqsh69@alley>
+In-Reply-To: <Y8/N7zMLUnMh259N@alley>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,68 +58,76 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 03:17:43PM +0100, Petr Mladek wrote:
-> On Fri 2023-01-20 16:12:22, Seth Forshee (DigitalOcean) wrote:
-> > Livepatch relies on stack checking of sleeping tasks to switch kthreads,
-> > so a busy kthread can block a livepatch transition indefinitely. We've
-> > seen this happen fairly often with busy vhost kthreads.
-> 
-> To be precise, it would be "indefinitely" only when the kthread never
-> sleeps.
-> 
-> But yes. I believe that the problem is real. It might be almost
-> impossible to livepatch some busy kthreads, especially when they
-> have a dedicated CPU.
-> 
-> 
-> > Add a check to call klp_switch_current() from vhost_worker() when a
-> > livepatch is pending. In testing this allowed vhost kthreads to switch
-> > immediately when they had previously blocked livepatch transitions for
-> > long periods of time.
+On Tue, Jan 24, 2023 at 01:24:15PM +0100, Petr Mladek wrote:
+> On Fri 2023-01-20 16:49:45, Song Liu wrote:
+> > Josh reported a bug:
 > > 
-> > Signed-off-by: Seth Forshee (DigitalOcean) <sforshee@kernel.org>
-> > ---
-> >  drivers/vhost/vhost.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
+> >   When the object to be patched is a module, and that module is
+> >   rmmod'ed and reloaded, it fails to load with:
 > > 
-> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > index cbe72bfd2f1f..d8624f1f2d64 100644
-> > --- a/drivers/vhost/vhost.c
-> > +++ b/drivers/vhost/vhost.c
-> > @@ -366,6 +367,9 @@ static int vhost_worker(void *data)
-> >  			if (need_resched())
-> >  				schedule();
-> >  		}
-> > +
-> > +		if (unlikely(klp_patch_pending(current)))
-> > +			klp_switch_current();
+> >   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> >   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> > 
+> >   The livepatch module has a relocation which references a symbol
+> >   in the _previous_ loading of nfsd. When apply_relocate_add()
+> >   tries to replace the old relocation with a new one, it sees that
+> >   the previous one is nonzero and it errors out.
+> > 
+> > He also proposed three different solutions. We could remove the error
+> > check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> > ("x86/module: Detect and skip invalid relocations"). However the check
+> > is useful for detecting corrupted modules.
+> > 
+> > We could also deny the patched modules to be removed. If it proved to be
+> > a major drawback for users, we could still implement a different
+> > approach. The solution would also complicate the existing code a lot.
+> > 
+> > We thus decided to reverse the relocation patching (clear all relocation
+> > targets on x86_64). The solution is not
+> > universal and is too much arch-specific, but it may prove to be simpler
+> > in the end.
+> > 
+> > Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > Originally-by: Miroslav Benes <mbenes@suse.cz>
+> > Signed-off-by: Song Liu <song@kernel.org>
+> > Acked-by: Miroslav Benes <mbenes@suse.cz>
+> > 
+> > --- a/arch/x86/kernel/module.c
+> > +++ b/arch/x86/kernel/module.c
+> > @@ -129,22 +129,27 @@ int apply_relocate(Elf32_Shdr *sechdrs,
+> >  	return 0;
+> >  }
+> >  #else /*X86_64*/
+> > -static int __apply_relocate_add(Elf64_Shdr *sechdrs,
+> > +static int __write_relocate_add(Elf64_Shdr *sechdrs,
+> >  		   const char *strtab,
+> >  		   unsigned int symindex,
+> >  		   unsigned int relsec,
+> >  		   struct module *me,
+> > -		   void *(*write)(void *dest, const void *src, size_t len))
+> > +		   void *(*write)(void *dest, const void *src, size_t len),
+> > +		   bool apply)
+> >  {
+> >  	unsigned int i;
+> >  	Elf64_Rela *rel = (void *)sechdrs[relsec].sh_addr;
+> >  	Elf64_Sym *sym;
+> >  	void *loc;
+> >  	u64 val;
+> > +	u64 zero = 0ULL;
+> >  
+> > -	DEBUGP("Applying relocate section %u to %u\n",
+> > +	DEBUGP("%s relocate section %u to %u\n",
+> > +	       apply ? "Applying" : "Clearing",
+> >  	       relsec, sechdrs[relsec].sh_info);
+> >  	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
+> > +		int size = 0;
 > 
-> I suggest to use the following intead:
-> 
-> 		if (unlikely(klp_patch_pending(current)))
-> 			klp_update_patch_state(current);
-> 
-> We already use this in do_idle(). The reason is basically the same.
-> It is almost impossible to livepatch the idle task when a CPU is
-> very idle.
-> 
-> klp_update_patch_state(current) does not check the stack.
-> It switches the task immediately.
-> 
-> It should be safe because the kthread never leaves vhost_worker().
-> It means that the same kthread could never re-enter this function
-> and use the new code.
+> The value 0 should never be used. It is better to do not initialize
+> it at all so that the compiler would warn when the variable might be
+> used uninitialized.
 
-My knowledge of livepatching internals is fairly limited, so I'll accept
-it if you say that it's safe to do it this way. But let me ask about one
-scenario.
+Yes.  Also it can be unsigned, i.e. size_t.
 
-Let's say that a livepatch is loaded which replaces vhost_worker(). New
-vhost worker threads are started which use the replacement function. Now
-if the patch is disabled, these new worker threads would be switched
-despite still running the code from the patch module, correct? Could the
-module then be unloaded, freeing the memory containing the code these
-kthreads are executing?
-
-Thanks,
-Seth
+-- 
+Josh
