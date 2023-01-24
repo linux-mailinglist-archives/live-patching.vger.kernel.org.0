@@ -2,105 +2,129 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9CE679DF6
-	for <lists+live-patching@lfdr.de>; Tue, 24 Jan 2023 16:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D870667A006
+	for <lists+live-patching@lfdr.de>; Tue, 24 Jan 2023 18:21:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233061AbjAXPvM (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 24 Jan 2023 10:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
+        id S234087AbjAXRVp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 24 Jan 2023 12:21:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234359AbjAXPvL (ORCPT
+        with ESMTP id S233704AbjAXRVo (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 24 Jan 2023 10:51:11 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146E322789;
-        Tue, 24 Jan 2023 07:51:10 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id BC54B1FEB8;
-        Tue, 24 Jan 2023 15:51:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1674575468; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GaudxGhfRvuAuD1dm3IS6CoJ4eArs7knjMHOpN03ack=;
-        b=Pifqu3lAE0s2pMkLpizgAqCGTPRS9DA3X/CNqDF+xC12XRGHOE2ajexXllzccw9adGWFOx
-        fI+q0m2p19kvHrRBiqovmvAZYeu9lxEl3wmirAGZ4Ra2iUfCD6OPHjerywLfqcRqgDN9S9
-        Xw8PRdAsz6KSvuA3po2HBKBocN13Rzg=
-Received: from suse.cz (unknown [10.100.208.146])
+        Tue, 24 Jan 2023 12:21:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667134A20D;
+        Tue, 24 Jan 2023 09:21:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9C96D2C141;
-        Tue, 24 Jan 2023 15:51:08 +0000 (UTC)
-Date:   Tue, 24 Jan 2023 16:51:08 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Marcos Paulo de Souza <mpdesouza@suse.de>
-Cc:     Marcos Paulo de Souza <mpdesouza@suse.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        jpoimboe@redhat.com, joe.lawrence@redhat.com
-Subject: Re: [PATCH v2 0/4] livepatch: Add garbage collection for shadow
- variables
-Message-ID: <Y8/+bGqjHsi8LEfI@alley>
-References: <20221026194122.11761-1-mpdesouza@suse.com>
- <Y2D4ZgWqB0E9viPy@alley>
- <20230123173331.2rvelrrbkaitw56r@daedalus>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 164B3B81603;
+        Tue, 24 Jan 2023 17:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CD47C433D2;
+        Tue, 24 Jan 2023 17:21:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674580900;
+        bh=5u0HAqsMO32meB1+2hDlQk/3mQeAC0aecbaZTWGuo+U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QjXkTZ0idK5z1Ix6m1yf2oBxsdcJq94aU7EsrAkDisp/SxGulfBdNMOHDckBQCvRz
+         W6llnTDs0JyFfXUOfVaSTrQzHB06mjALwb4j+Phm8EDITPUQVpWD5IHsXkZkuoBPtv
+         RURIQy6zUHAvCnxo+xVec0gIbsGD27+BhiB5s6a+NXA37TUYzDYw69k0Ue/1GNZ5pA
+         e7XeoQuYn4y8JHNQWOTkXCt0qA/tsceHAidqLU0n+M/uxducs+tOJXNBbPy0iCuj6y
+         N0r2//PY2LaeDxixTQGxip8Sr7ZhPU0erQFPtHhNXN68HP/JMuxcj/3DvEDYW4dGN9
+         YTPE1btkwci6w==
+Date:   Tue, 24 Jan 2023 11:21:39 -0600
+From:   Seth Forshee <sforshee@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] vhost: check for pending livepatches from vhost
+ worker kthreads
+Message-ID: <Y9ATo5FukOhphwqT@do-x1extreme>
+References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
+ <20230120-vhost-klp-switching-v1-2-7c2b65519c43@kernel.org>
+ <Y8/ohzRGcOiqsh69@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230123173331.2rvelrrbkaitw56r@daedalus>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y8/ohzRGcOiqsh69@alley>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon 2023-01-23 14:33:31, Marcos Paulo de Souza wrote:
-> On Tue, Nov 01, 2022 at 11:43:50AM +0100, Petr Mladek wrote:
-> > On Wed 2022-10-26 16:41:18, Marcos Paulo de Souza wrote:
-> > > Hello,
-> > > 
-> > > This is the v2 of the livepatch shadow GC patches. The changes are minor since
-> > > nobody asked for for big code changes.
-> > > 
-> > > Changes from v1:
-> > > * Reworked commit messages (Petr)
-> > > * Added my SoB which was missing in some patches, or the ordering was wrong. (Josh)
-> > > * Change __klp_shadow_get_or_use to __klp_shadow_get_or_add_locked and add a comment (Petr)
-> > > * Add lockdep_assert_held on __klp_shadow_get_or_add_locked (Petr)
-> > >   about it's meaning (Petr)
-> > > * CCing LKML (Josh)
-> > > 
-> > > Some observations:
-> > > * Petr has reviewed some of the patches that we created. I kept the Reviewed-by
-> > >   tags since he wrote the patches some time ago and now he reviewed them again
-> > >   on the ML.
-> > > * There were questions about possible problems about using klp_shadow_types
-> > >   instead of using ids, but Petr already explained that internally it still uses
-> > >   the id to find the correct livepatch.
-> > > * Regarding the possibility of multiple patches use the same ID, the problem
-> > >   already existed before. Petr suggested using a "stringified" version using
-> > >   name and id, but nobody has commented yet. I can implement such feature in a
-> > >   v3 if necessary.
-> > > 
-> > > Marcos Paulo de Souza (2):
-> > >   livepatch/shadow: Introduce klp_shadow_type structure
-> > >   livepatch/shadow: Add garbage collection of shadow variables
-> > > 
-> > > Petr Mladek (2):
-> > >   livepatch/shadow: Separate code to get or use pre-allocated shadow
-> > >     variable
-> > >   livepatch/shadow: Separate code removing all shadow variables for a
-> > >     given id
-> > 
-> > From my POV, the patchset is ready for pushing upstream.
+On Tue, Jan 24, 2023 at 03:17:43PM +0100, Petr Mladek wrote:
+> On Fri 2023-01-20 16:12:22, Seth Forshee (DigitalOcean) wrote:
+> > Livepatch relies on stack checking of sleeping tasks to switch kthreads,
+> > so a busy kthread can block a livepatch transition indefinitely. We've
+> > seen this happen fairly often with busy vhost kthreads.
 > 
-> Petr, what do you think about merging the first two patches, since they just
-> cleanups and simplifications?
+> To be precise, it would be "indefinitely" only when the kthread never
+> sleeps.
+> 
+> But yes. I believe that the problem is real. It might be almost
+> impossible to livepatch some busy kthreads, especially when they
+> have a dedicated CPU.
+> 
+> 
+> > Add a check to call klp_switch_current() from vhost_worker() when a
+> > livepatch is pending. In testing this allowed vhost kthreads to switch
+> > immediately when they had previously blocked livepatch transitions for
+> > long periods of time.
+> > 
+> > Signed-off-by: Seth Forshee (DigitalOcean) <sforshee@kernel.org>
+> > ---
+> >  drivers/vhost/vhost.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index cbe72bfd2f1f..d8624f1f2d64 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -366,6 +367,9 @@ static int vhost_worker(void *data)
+> >  			if (need_resched())
+> >  				schedule();
+> >  		}
+> > +
+> > +		if (unlikely(klp_patch_pending(current)))
+> > +			klp_switch_current();
+> 
+> I suggest to use the following intead:
+> 
+> 		if (unlikely(klp_patch_pending(current)))
+> 			klp_update_patch_state(current);
+> 
+> We already use this in do_idle(). The reason is basically the same.
+> It is almost impossible to livepatch the idle task when a CPU is
+> very idle.
+> 
+> klp_update_patch_state(current) does not check the stack.
+> It switches the task immediately.
+> 
+> It should be safe because the kthread never leaves vhost_worker().
+> It means that the same kthread could never re-enter this function
+> and use the new code.
 
-Sounds reasonable to me. I am going to push them by the end of the
-week if nobody complained in the meantime.
+My knowledge of livepatching internals is fairly limited, so I'll accept
+it if you say that it's safe to do it this way. But let me ask about one
+scenario.
 
-Best Regards,
-Petr
+Let's say that a livepatch is loaded which replaces vhost_worker(). New
+vhost worker threads are started which use the replacement function. Now
+if the patch is disabled, these new worker threads would be switched
+despite still running the code from the patch module, correct? Could the
+module then be unloaded, freeing the memory containing the code these
+kthreads are executing?
+
+Thanks,
+Seth
