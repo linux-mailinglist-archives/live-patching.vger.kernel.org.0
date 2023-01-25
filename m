@@ -2,52 +2,58 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D081767BA20
-	for <lists+live-patching@lfdr.de>; Wed, 25 Jan 2023 20:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D31C867C0BE
+	for <lists+live-patching@lfdr.de>; Thu, 26 Jan 2023 00:22:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235952AbjAYTDm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 25 Jan 2023 14:03:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
+        id S229615AbjAYXWx (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 25 Jan 2023 18:22:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjAYTDl (ORCPT
+        with ESMTP id S229454AbjAYXWw (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 25 Jan 2023 14:03:41 -0500
+        Wed, 25 Jan 2023 18:22:52 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C5FDBCB;
-        Wed, 25 Jan 2023 11:03:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F7013DE4;
+        Wed, 25 Jan 2023 15:22:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94BBC6155F;
-        Wed, 25 Jan 2023 19:03:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAF3CC433EF;
-        Wed, 25 Jan 2023 19:03:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23798615B1;
+        Wed, 25 Jan 2023 23:22:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E4EC433EF;
+        Wed, 25 Jan 2023 23:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674673418;
-        bh=XeT3qSPMBwmHYZ4zvlYQg6u5mZJtG0QjkOeNOOP32w4=;
+        s=k20201202; t=1674688970;
+        bh=FFJ0hyIrsYxFkHwnENNIexxRtW9PwQ0miSR1xoMS4Dg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I3XZcPQfHwnAYUCtYNTwNlpXKTZnXyv7Q0IfVNLD+wYLAMooFQQBKesHIfGyRcIQx
-         trjuWggsnElsdzUdzrBCegOmeCsLwny9v6QHEeeWVO/21G8k9vx4sgxLYri3/QRT2l
-         i0bzshvQIZmJinOGyGOnUk4Nb9ikFMt1QIaeUYUoWzhskId0DONSp2iRB3gG8e0+4b
-         gq45KZrH+P4GHeCRQ8I6zGDvEIhqg0EkNl4rJUJf9i9PVYpxHcCwscZvBmbdNR02Kt
-         HHM5Hx/hOfcYAqVqrK8sCQYs0yOgC541MxtQjufjMjlQL8IFct8LR18DjsAav9I+/7
-         BCm3LT4abGHvA==
-Date:   Wed, 25 Jan 2023 11:03:36 -0800
+        b=WZ7cECplyCvOQ5TmV/fvsDFrh8BbuKzJlogToAgoLvGz804eaemx4AYL9jt5gG2xm
+         7NEMuKIq6O1E0pv3dllYvpCNRrRGt03R/9j8mlw4/UNdBqOh352K9YBb2kTegp17GY
+         O+hDrCMrmH5vglzbUt91xvCLawo1q16oLf+SNIIfHTfS/9ywSquYMatAyCunm2DY75
+         ukTd6u5fZv9+gSxHzY6fEpgl45m7QwVGOxjBanW9N/JjnYjMtQZV3u/DEFM+m1XOHe
+         WS8ktsxW5oJWfUxeklFrb1FyCBt4KwZJYSPDjNdlsme27epAn0+W5BZWZ3SbWqz/ZT
+         VwA+nliHddoUA==
+Date:   Wed, 25 Jan 2023 15:22:48 -0800
 From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        live-patching@vger.kernel.org, x86@kernel.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v11 2/2] livepatch,x86: Clear relocation targets on a
- module removal
-Message-ID: <20230125190336.utdb3tvyuy74vnap@treble>
-References: <20230125185401.279042-1-song@kernel.org>
- <20230125185401.279042-2-song@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Nicolai Stange <nstange@suse.de>,
+        Marcos Paulo de Souza <mpdesouza@suse.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        jpoimboe@redhat.com, joe.lawrence@redhat.com
+Subject: Re: [PATCH v2 4/4] livepatch/shadow: Add garbage collection of
+ shadow variables
+Message-ID: <20230125232248.inewq5tlpwfk3rny@treble>
+References: <20221026194122.11761-1-mpdesouza@suse.com>
+ <20221026194122.11761-5-mpdesouza@suse.com>
+ <20221104010327.wa256pos75dczt4x@treble>
+ <Y2TooogxxLTIkBcj@alley>
+ <878rkhyhhv.fsf@linux.fritz.box>
+ <Y24cGpeO8UHeiKGl@alley>
+ <20221113185138.oob2o3sevbgud5vs@treble>
+ <Y8a4ZQ0sm5AOnY7R@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230125185401.279042-2-song@kernel.org>
+In-Reply-To: <Y8a4ZQ0sm5AOnY7R@alley>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,42 +63,22 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 10:54:01AM -0800, Song Liu wrote:
-> Josh reported a bug:
+On Tue, Jan 17, 2023 at 04:01:57PM +0100, Petr Mladek wrote:
+> IMHO, this is the reason why we should make it per-object.
 > 
->   When the object to be patched is a module, and that module is
->   rmmod'ed and reloaded, it fails to load with:
-> 
->   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
->   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
->   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
-> 
->   The livepatch module has a relocation which references a symbol
->   in the _previous_ loading of nfsd. When apply_relocate_add()
->   tries to replace the old relocation with a new one, it sees that
->   the previous one is nonzero and it errors out.
-> 
-> He also proposed three different solutions. We could remove the error
-> check in apply_relocate_add() introduced by commit eda9cec4c9a1
-> ("x86/module: Detect and skip invalid relocations"). However the check
-> is useful for detecting corrupted modules.
-> 
-> We could also deny the patched modules to be removed. If it proved to be
-> a major drawback for users, we could still implement a different
-> approach. The solution would also complicate the existing code a lot.
-> 
-> We thus decided to reverse the relocation patching (clear all relocation
-> targets on x86_64). The solution is not
-> universal and is too much arch-specific, but it may prove to be simpler
-> in the end.
-> 
-> Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> Originally-by: Miroslav Benes <mbenes@suse.cz>
-> Signed-off-by: Song Liu <song@kernel.org>
-> Acked-by: Miroslav Benes <mbenes@suse.cz>
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> If the shadow variable was used by a livepatched module and we remove
+> this module then the shadow variables would get unmaintained. It would
+> results in the problem described in this paragraph.
 
-Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Yes, that makes sense.  Ok, I'm convinced.
+
+BTW, this is yet another unfortunate consequence of our decision many
+years ago to break the module dependency between a livepatch module and
+the modules it patches.  We already have a lot of technical debt as a
+result of that decision and it continues to pile up.
+
+In that vein see also Song's and my recent patches to fix module
+re-patching.
 
 -- 
 Josh
