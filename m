@@ -2,57 +2,60 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C5067E318
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jan 2023 12:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E217867E4DA
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jan 2023 13:14:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233172AbjA0LUo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 27 Jan 2023 06:20:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
+        id S233859AbjA0MOi (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 27 Jan 2023 07:14:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233188AbjA0LU2 (ORCPT
+        with ESMTP id S232859AbjA0MOZ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 27 Jan 2023 06:20:28 -0500
+        Fri, 27 Jan 2023 07:14:25 -0500
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3C714222;
-        Fri, 27 Jan 2023 03:19:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689C6206A7;
+        Fri, 27 Jan 2023 04:09:28 -0800 (PST)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2A3AD21889;
-        Fri, 27 Jan 2023 11:19:04 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 621CF218BB;
+        Fri, 27 Jan 2023 12:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1674818344; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1674821343; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Jg6tAtljWkLOtzvKkDNIoiHHgxanNXV1iXTx9cL+UQU=;
-        b=utmF3gy7DItB+OI2ZalxyBwjhN8ryT8raie78QEcmelb6Gaa27V6jEgklx42rzficIjadI
-        nu+HqyEOKtdYizLCOtQkNWx4S2VvGWugKipxH2r9HOc4bA9hB+YRcYXTY/zW8bW0QlDX7r
-        g41e96/5ttY1iEwr1MNKmU14WzKGC0w=
+        bh=a9faRZ/SxtgILFonZsHOQNT86YKAAhJwA/HSfiWSP6Y=;
+        b=sMvrKAeF1FXre3nEN+/+ZQQUn2ojiJ+7aDv42b1jHg+dbyaQVeZI/KWwHjy4mn/l0JBxj1
+        TWkdJ4D44Wv8rj+4VbfdLqDSTf/FSTUUZo0J01gqgOs5vQM+tfDOOpi5dgSjp/SsqZc754
+        mjK6oH+DAvMdmUOUe3KdLkt0Rzik/wc=
 Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A46122C141;
-        Fri, 27 Jan 2023 11:19:03 +0000 (UTC)
-Date:   Fri, 27 Jan 2023 12:19:03 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id 3C7932C141;
+        Fri, 27 Jan 2023 12:09:03 +0000 (UTC)
+Date:   Fri, 27 Jan 2023 13:09:02 +0100
 From:   Petr Mladek <pmladek@suse.com>
-To:     "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
+        Jason Wang <jasowang@redhat.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
         virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
         netdev@vger.kernel.org, live-patching@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
  loaded vhost worker kthreads
-Message-ID: <Y9OzJzHIASUeIrzO@alley>
+Message-ID: <Y9O+3jzH0PiG1qlJ@alley>
 References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
  <Y9KyVKQk3eH+RRse@alley>
  <Y9LswwnPAf+nOVFG@do-x1extreme>
+ <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y9LswwnPAf+nOVFG@do-x1extreme>
+In-Reply-To: <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,67 +65,106 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu 2023-01-26 15:12:35, Seth Forshee (DigitalOcean) wrote:
-> On Thu, Jan 26, 2023 at 06:03:16PM +0100, Petr Mladek wrote:
-> > On Fri 2023-01-20 16:12:20, Seth Forshee (DigitalOcean) wrote:
-> > > We've fairly regularaly seen liveptches which cannot transition within kpatch's
-> > > timeout period due to busy vhost worker kthreads.
+On Fri 2023-01-27 11:37:02, Peter Zijlstra wrote:
+> On Thu, Jan 26, 2023 at 08:43:55PM -0800, Josh Poimboeuf wrote:
+> > On Thu, Jan 26, 2023 at 03:12:35PM -0600, Seth Forshee (DigitalOcean) wrote:
+> > > On Thu, Jan 26, 2023 at 06:03:16PM +0100, Petr Mladek wrote:
+> > > > On Fri 2023-01-20 16:12:20, Seth Forshee (DigitalOcean) wrote:
+> > > > > We've fairly regularaly seen liveptches which cannot transition within kpatch's
+> > > > > timeout period due to busy vhost worker kthreads.
+> > > > 
+> > > > I have missed this detail. Miroslav told me that we have solved
+> > > > something similar some time ago, see
+> > > > https://lore.kernel.org/all/20220507174628.2086373-1-song@kernel.org/
+> > > 
+> > > Interesting thread. I had thought about something along the lines of the
+> > > original patch, but there are some ideas in there that I hadn't
+> > > considered.
 > > 
-> > I have missed this detail. Miroslav told me that we have solved
-> > something similar some time ago, see
-> > https://lore.kernel.org/all/20220507174628.2086373-1-song@kernel.org/
-> 
-> Interesting thread. I had thought about something along the lines of the
-> original patch, but there are some ideas in there that I hadn't
-> considered.
-
-Could you please provide some more details about the test system?
-Is there anything important to make it reproducible?
-
-The following aspects come to my mind. It might require:
-
-   + more workers running on the same system
-   + have a dedicated CPU for the worker
-   + livepatching the function called by work->fn()
-   + running the same work again and again
-   + huge and overloaded system
-
-
-> > Honestly, kpatch's timeout 1 minute looks incredible low to me. Note
-> > that the transition is tried only once per minute. It means that there
-> > are "only" 60 attempts.
+> > Here's another idea, have we considered this?  Have livepatch set
+> > TIF_NEED_RESCHED on all kthreads to force them into schedule(), and then
+> > have the scheduler call klp_try_switch_task() if TIF_PATCH_PENDING is
+> > set.
 > > 
-> > Just by chance, does it help you to increase the timeout, please?
+> > Not sure how scheduler folks would feel about that ;-)
 > 
-> To be honest my test setup reproduces the problem well enough to make
-> KLP wait significant time due to vhost threads, but it seldom causes it
-> to hit kpatch's timeout.
+> So, let me try and page all that back in.... :-)
 > 
-> Our system management software will try to load a patch tens of times in
-> a day, and we've seen real-world cases where patches couldn't load
-> within kpatch's timeout for multiple days. But I don't have such an
-> environment readily accessible for my own testing. I can try to refine
-> my test case and see if I can get it to that point.
-
-My understanding is that you try to load the patch repeatedly but
-it always fails after the 1 minute timeout. It means that it always
-starts from the beginning (no livepatched process).
-
-Is there any chance to try it with a longer timeout, for example, one
-hour? It should increase the chance if there are more problematic kthreads.
-
-> > This low timeout might be useful for testing. But in practice, it does
-> > not matter when the transition is lasting one hour or even longer.
-> > It takes much longer time to prepare the livepatch.
+> KLP needs to unwind the stack to see if any of the patched functions are
+> active, if not, flip task to new set.
 > 
-> Agreed. And to be clear, we cope with the fact that patches may take
-> hours or even days to get applied in some cases. The patches I sent are
-> just about improving the only case I've identified which has lead to
-> kpatch failing to load a patch for a day or longer.
+> Unwinding the stack of a task can be done when:
+> 
+>  - task is inactive (stable reg and stack) -- provided it stays inactive
+>    while unwinding etc..
+> 
+>  - task is current (guarantees stack doesn't dip below where we started
+>    due to being busy on top etc..)
+> 
+> Can NOT be done from interrupt context, because can hit in the middle of
+> setting up stack frames etc..
 
-If it is acceptable to wait hours or even days then the 1 minute
-timeout is quite contra-productive. We actually do not use any timeout
-at all in livepatches provided by SUSE.
+All the above seems correct.
+
+> The issue at hand is that some tasks run for a long time without passing
+> through an explicit check.
+
+There might actually be two possibilities why the transition fails
+too often:
+
+1. The task might be in the running state most of the time. Therefore
+   the backtrace is not reliable most of the time.
+
+   In this case, some cooperation with the scheduler would really
+   help. We would need to stop the task and check the stack
+   when it is stopped. Something like the patch you proposed.
+
+
+2. The task might be sleeping but almost always in a livepatched
+   function. Therefore it could not be transitioned.
+
+   It might be the case with vhost_worker(). The main loop is "tiny".
+   The kthread probaly spends most of the time with processing
+   a vhost_work. And if the "works" are livepatched...
+
+   In this case, it would help to call klp_try_switch_task(current)
+   in the main loop in vhost_worker(). It would always succeed
+   when vhost_worker() is not livepatched on its own.
+
+   Note that even this would not help with kPatch when a single
+   vhost_work might need more than the 1 minute timout to get proceed.
+
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index f1b25ec581e0..06746095a724 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/cpu.h>
+>  #include <linux/stacktrace.h>
+> +#include <linux/stop_machine.h>
+>  #include "core.h"
+>  #include "patch.h"
+>  #include "transition.h"
+> @@ -334,6 +335,16 @@ static bool klp_try_switch_task(struct task_struct *task)
+>  	return !ret;
+>  }
+>  
+> +static int __stop_try_switch(void *arg)
+> +{
+> +	return klp_try_switch_task(arg) ? 0 : -EBUSY;
+> +}
+> +
+> +static bool klp_try_switch_task_harder(struct task_struct *task)
+> +{
+> +	return !stop_one_cpu(task_cpu(task), __stop_try_switch, task);
+> +}
+> +
+>  /*
+>   * Sends a fake signal to all non-kthread tasks with TIF_PATCH_PENDING set.
+>   * Kthreads with TIF_PATCH_PENDING set are woken up.
+
+Nice. I am surprised that it can be implemented so easily.
 
 Best Regards,
 Petr
