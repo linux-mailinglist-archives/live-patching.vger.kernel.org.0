@@ -2,144 +2,185 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A458680A33
-	for <lists+live-patching@lfdr.de>; Mon, 30 Jan 2023 10:56:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFD77680DE9
+	for <lists+live-patching@lfdr.de>; Mon, 30 Jan 2023 13:40:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236090AbjA3J4Z (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 30 Jan 2023 04:56:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
+        id S235497AbjA3Mks (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 30 Jan 2023 07:40:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbjA3J4U (ORCPT
+        with ESMTP id S229769AbjA3Mkr (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 30 Jan 2023 04:56:20 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163ED30B3F;
-        Mon, 30 Jan 2023 01:55:49 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8ADDD21A3B;
-        Mon, 30 Jan 2023 09:55:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1675072531; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wW8PYSjbj1fhy1DHl5je08VWFBPjfFkiep3fm9ftfHQ=;
-        b=eHUFE3dP4kCVW2OfnU8v4jOJkOWrkHxqxK4gFtlKv2icSzUiJyeFQ3OYS3ZIadLRUXWOEv
-        rhCRsRIRAD5eh6Q3o+nbnyNl1fzrHwsBfh5gSz04qjRP7dmEWwXd2KbY8HwVDLgJIUGlhh
-        vWP8AVHea583RzvUzoRGge0KMOU5ntg=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 64E7E2C141;
-        Mon, 30 Jan 2023 09:55:31 +0000 (UTC)
-Date:   Mon, 30 Jan 2023 10:55:28 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Seth Forshee <sforshee@kernel.org>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Mon, 30 Jan 2023 07:40:47 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3947F135;
+        Mon, 30 Jan 2023 04:40:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=BFYWJkXqjJPJpFT0wydjtQXbF5F3b4P+HfuG4t2+TMg=; b=QkGJFOeWp2gXOe6u+zph8KHMLb
+        rUEhBDEFyUZk4EcT9oGZLIdZxF7YjnkwkWHpvbnke74J8GVbpFHFJjoXO18NdGalTTBsN5MwjjPHG
+        6pwDXBQRsqUEigvaGYU5Pc8I8ani9xlvbugcErUyu3yFyqEyHyl5dz9ncjiGtwbPXt0XBnENbIJcM
+        xCRGDvY9VuB6p7D0/ba+Hpqmr3kuHr1mhDq2zGrleo7GL131HPSQKgb+XbBVz7ExZoiK4/jvtUNOU
+        Df9wYUkjvVDPD9R2FvDO0TxmLUOeyUj/kE01k4wpD9KW7AKsJrLidNicO8w2NYvQaCQALeDwuuyN+
+        JeYAGvpQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1pMTRr-003wMy-2V;
+        Mon, 30 Jan 2023 12:39:48 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 39B2A3002BF;
+        Mon, 30 Jan 2023 13:40:19 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 14FA920BD2C90; Mon, 30 Jan 2023 13:40:19 +0100 (CET)
+Date:   Mon, 30 Jan 2023 13:40:18 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
+        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
 Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
  loaded vhost worker kthreads
-Message-ID: <Y9eUEGu+wC5dm0JI@alley>
+Message-ID: <Y9e6ssSHUt+MUvum@hirez.programming.kicks-ass.net>
 References: <20230120-vhost-klp-switching-v1-0-7c2b65519c43@kernel.org>
  <Y9KyVKQk3eH+RRse@alley>
  <Y9LswwnPAf+nOVFG@do-x1extreme>
- <Y9OzJzHIASUeIrzO@alley>
- <Y9PmZFBEwUBwV3s/@do-x1extreme>
+ <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
+ <20230127165236.rjcp6jm6csdta6z3@treble>
+ <20230127170946.zey6xbr4sm4kvh3x@treble>
+ <20230127221131.sdneyrlxxhc4h3fa@treble>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y9PmZFBEwUBwV3s/@do-x1extreme>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230127221131.sdneyrlxxhc4h3fa@treble>
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri 2023-01-27 08:57:40, Seth Forshee wrote:
-> On Fri, Jan 27, 2023 at 12:19:03PM +0100, Petr Mladek wrote:
-> > Could you please provide some more details about the test system?
-> > Is there anything important to make it reproducible?
-> > 
-> > The following aspects come to my mind. It might require:
-> > 
-> >    + more workers running on the same system
-> >    + have a dedicated CPU for the worker
-> >    + livepatching the function called by work->fn()
-> >    + running the same work again and again
-> >    + huge and overloaded system
-> 
-> I'm isolating a CPU, starting a KVM guest with a virtio-net device, and
-> setting the affinity of the vhost worker thread to only the isolated
-> CPU. Thus the vhost-worker thread has a dedicated CPU, as you say. (I'll
-> note that in real-world cases the systems have many CPUs, and while the
-> vhost threads aren't each given a dedicated CPU, if the system load is
-> light enough a thread can end up with exlusive use of a CPU).
-> 
-> Then all I do is run iperf between the guest and the host with several
-> parallel streams. I seem to be hitting the limits of the guest vCPUs
-> before the vhost thread is fully saturated, as this gets it to about 90%
-> CPU utilization by the vhost thread.
+On Fri, Jan 27, 2023 at 02:11:31PM -0800, Josh Poimboeuf wrote:
 
-Thanks for the info!
 
-> > > > Honestly, kpatch's timeout 1 minute looks incredible low to me. Note
-> > > > that the transition is tried only once per minute. It means that there
-> > > > are "only" 60 attempts.
-> > > > 
-> > > > Just by chance, does it help you to increase the timeout, please?
-> > > 
-> > > To be honest my test setup reproduces the problem well enough to make
-> > > KLP wait significant time due to vhost threads, but it seldom causes it
-> > > to hit kpatch's timeout.
-> > > 
-> > > Our system management software will try to load a patch tens of times in
-> > > a day, and we've seen real-world cases where patches couldn't load
-> > > within kpatch's timeout for multiple days. But I don't have such an
-> > > environment readily accessible for my own testing. I can try to refine
-> > > my test case and see if I can get it to that point.
-> > 
-> > My understanding is that you try to load the patch repeatedly but
-> > it always fails after the 1 minute timeout. It means that it always
-> > starts from the beginning (no livepatched process).
-> > 
-> > Is there any chance to try it with a longer timeout, for example, one
-> > hour? It should increase the chance if there are more problematic kthreads.
-> 
-> Yes, I can try it. But I think I already mentioned that we are somewhat
-> limited by our system management software and how livepatch loading is
-> currently implemented there. I'd need to consult with others about how
-> long we could make the timeout, but 1 hour is definitely too long under
-> our current system.
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index 4df2b3e76b30..fbcd3acca25c 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -36,6 +36,7 @@
+>  #include <linux/seqlock.h>
+>  #include <linux/kcsan.h>
+>  #include <linux/rv.h>
+> +#include <linux/livepatch_sched.h>
+>  #include <asm/kmap_size.h>
+>  
+>  /* task_struct member predeclarations (sorted alphabetically): */
+> @@ -2074,6 +2075,9 @@ DECLARE_STATIC_CALL(cond_resched, __cond_resched);
+>  
+>  static __always_inline int _cond_resched(void)
+>  {
+> +	//FIXME this is a bit redundant with preemption disabled
+> +	klp_sched_try_switch();
+> +
+>  	return static_call_mod(cond_resched)();
+>  }
 
-Another possibility is to do not wait at all. SUSE livepatch packages load
-the livepatch module, remove not longer used livepatch modules and are
-done with it.
+Right, I was thinking you'd do something like:
 
-Note that the module is loaded quickly. The transition is finished
-asynchronously using workqueues.
+	static_call_update(cond_resched, klp_cond_resched);
 
-Of course, there is a risk that the transition will never finish.
-It would prevent loading any newer livepatch. But it might be handled
-when the the newer livepatch is loaded. It might revert the pending
-transition, ...
+With:
 
-Of course, it would be great to make the transition more reliable.
-It would be nice to add the hook into the scheduler as discussed
-in another branch of this thread. But it might bring another problems,
-for example, affect the system performance. Well, it probably can
-be optimized or ratelimited.
+static int klp_cond_resched(void)
+{
+	klp_try_switch_task(current);
+	return __cond_resched();
+}
 
-Anyway, I wanted to say that there is a way to get rid of the timeout
-completely.
+That would force cond_resched() into doing the transition thing,
+irrespective of the preemption mode at hand. And then, when KLP be done,
+re-run sched_dynamic_update() to reset it to whatever it ought to be.
 
-Best Regards,
-Petr
+> @@ -401,8 +421,10 @@ void klp_try_complete_transition(void)
+>  	 */
+>  	read_lock(&tasklist_lock);
+>  	for_each_process_thread(g, task)
+> -		if (!klp_try_switch_task(task))
+> +		if (!klp_try_switch_task(task)) {
+> +			set_tsk_need_resched(task);
+>  			complete = false;
+> +		}
+
+Yeah, no, that's broken -- preemption state live in more than just the
+TIF bit.
+
+>  	read_unlock(&tasklist_lock);
+>  
+>  	/*
+> @@ -413,6 +435,7 @@ void klp_try_complete_transition(void)
+>  		task = idle_task(cpu);
+>  		if (cpu_online(cpu)) {
+>  			if (!klp_try_switch_task(task)) {
+> +				set_tsk_need_resched(task);
+>  				complete = false;
+>  				/* Make idle task go through the main loop. */
+>  				wake_up_if_idle(cpu);
+
+Idem.
+
+Also, I don't see the point of this and the __schedule() hook here:
+
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index 3a0ef2fefbd5..01e32d242ef6 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -6506,6 +6506,8 @@ static void __sched notrace __schedule(unsigned int sched_mode)
+>  	struct rq *rq;
+>  	int cpu;
+>  
+> +	klp_sched_try_switch();
+> +
+>  	cpu = smp_processor_id();
+>  	rq = cpu_rq(cpu);
+>  	prev = rq->curr;
+
+If it schedules, you'll get it with the normal switcheroo, because it'll
+be inactive some of the time. If it doesn't schedule, it'll run into
+cond_resched().
+
+> @@ -8500,8 +8502,10 @@ EXPORT_STATIC_CALL_TRAMP(might_resched);
+>  static DEFINE_STATIC_KEY_FALSE(sk_dynamic_cond_resched);
+>  int __sched dynamic_cond_resched(void)
+>  {
+> -	if (!static_branch_unlikely(&sk_dynamic_cond_resched))
+> +	if (!static_branch_unlikely(&sk_dynamic_cond_resched)) {
+> +		klp_sched_try_switch();
+>  		return 0;
+> +	}
+>  	return __cond_resched();
+>  }
+>  EXPORT_SYMBOL(dynamic_cond_resched);
+
+I would make the klp_sched_try_switch() not depend on
+sk_dynamic_cond_resched, because __cond_resched() is not a guaranteed
+pass through __schedule().
+
+But you'll probably want to check with Mark here, this all might
+generate crap code on arm64.
+
+Both ways this seems to make KLP 'depend' (or at least work lots better)
+when PREEMPT_DYNAMIC=y. Do we want a PREEMPT_DYNAMIC=n fallback for
+_cond_resched() too?
+
+
