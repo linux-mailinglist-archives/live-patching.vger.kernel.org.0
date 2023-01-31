@@ -2,141 +2,100 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 587366832A5
-	for <lists+live-patching@lfdr.de>; Tue, 31 Jan 2023 17:30:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 746DE6832D8
+	for <lists+live-patching@lfdr.de>; Tue, 31 Jan 2023 17:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231630AbjAaQaB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 31 Jan 2023 11:30:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39482 "EHLO
+        id S229776AbjAaQik (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 31 Jan 2023 11:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231998AbjAaQ3T (ORCPT
+        with ESMTP id S229480AbjAaQij (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 31 Jan 2023 11:29:19 -0500
+        Tue, 31 Jan 2023 11:38:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B0E56488;
-        Tue, 31 Jan 2023 08:29:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5811811648;
+        Tue, 31 Jan 2023 08:38:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F2E0B81DAE;
-        Tue, 31 Jan 2023 16:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727A2C433EF;
-        Tue, 31 Jan 2023 16:28:50 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>
-Cc:     Will Deacon <will@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Henrik Rydberg <rydberg@bitmath.org>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Len Brown <len.brown@intel.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>, alsa-devel@alsa-project.org,
-        coresight@lists.linaro.org, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, isdn4linux@listserv.isdn4linux.de,
-        keyrings@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-sgx@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org,
-        linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-mm@kvack.org,
-        openrisc@lists.librecores.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, linuxppc-dev@lists.ozlabs.org,
-        x86@kernel.org
-Subject: Re: (subset) [PATCH 00/35] Documentation: correct lots of spelling errors (series 1)
-Date:   Tue, 31 Jan 2023 16:28:48 +0000
-Message-Id: <167518251202.582976.5415495075435902323.b4-ty@arm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230127064005.1558-1-rdunlap@infradead.org>
-References: <20230127064005.1558-1-rdunlap@infradead.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id E48C3B81DAB;
+        Tue, 31 Jan 2023 16:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F12C9C433D2;
+        Tue, 31 Jan 2023 16:38:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675183115;
+        bh=248Wx21U7izZei4iGTQKUHGrKjUkjyIfMTBFMWa5b3I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TPQ6riY0fE5L5i4o3yhzKKCRoiq5WLnTGkDT+B7POeq2f7YR1bapJ6niuu4cTJKz/
+         MN6TXWa1FJxRjfx4eObVfj3+9H7lYnCs9yDI8qRLpyL+PnM+CCvuyStW21LjPyqpQj
+         OFn4wRFyYBIwpUYmonYGWEiwQZdt3p75bl6Rzj41dzvJ/K8xxlGBVkbupQqclLBY6d
+         rvIzpC2Rm3DP0erCk4QAOSC3jHQQ/xvCR0QgzhxjCgc2o0eEAjSeVjbME9Qb57W8dl
+         MRtnrquG/V8BR+7+A3rO5/Ck3zYaZdK50drlN5LPZEKZWHZ7eU7yjQcpHITd7HpP0B
+         fyIaWF4gWklpQ==
+Date:   Tue, 31 Jan 2023 08:38:32 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org,
+        Jiri Kosina <jikos@kernel.org>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Seth Forshee (DigitalOcean)" <sforshee@digitalocean.com>,
+        live-patching@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 0/2] vhost: improve livepatch switching for heavily
+ loaded vhost worker kthreads
+Message-ID: <20230131163832.z46ihurbmjcwuvck@treble>
+References: <Y9LswwnPAf+nOVFG@do-x1extreme>
+ <20230127044355.frggdswx424kd5dq@treble>
+ <Y9OpTtqWjAkC2pal@hirez.programming.kicks-ass.net>
+ <20230127165236.rjcp6jm6csdta6z3@treble>
+ <20230127170946.zey6xbr4sm4kvh3x@treble>
+ <20230127221131.sdneyrlxxhc4h3fa@treble>
+ <Y9e6ssSHUt+MUvum@hirez.programming.kicks-ass.net>
+ <Y9gOMCWGmoc5GQMj@FVFF77S0Q05N>
+ <20230130194823.6y3rc227bvsgele4@treble>
+ <Y9jr0fP7DtA9Of1L@FVFF77S0Q05N>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y9jr0fP7DtA9Of1L@FVFF77S0Q05N>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Thu, 26 Jan 2023 22:39:30 -0800, Randy Dunlap wrote:
-> Correct many spelling errors in Documentation/ as reported by codespell.
+On Tue, Jan 31, 2023 at 10:22:09AM +0000, Mark Rutland wrote:
+> > Hm, it might be nice if our out-of-line static call implementation would
+> > automatically do a static key check as part of static_call_cond() for
+> > NULL-type static calls.
+> > 
+> > But the best answer is probably to just add inline static calls to
+> > arm64.  Is the lack of objtool the only thing blocking that?
 > 
-> Maintainers of specific kernel subsystems are only Cc-ed on their
-> respective patches, not the entire series. [if all goes well]
-> 
-> These patches are based on linux-next-20230125.
-> 
-> [...]
+> The major issues were branch range limitations (and needing the linker to add
+> PLTs),
 
-Applied to arm64 (for-next/misc), thanks!
+Does the compiler do the right thing (e.g., force PLT) if the branch
+target is outside the translation unit?  I'm wondering if we could for
+example use objtool to help enforce such rules at the call site.
 
-[01/35] Documentation: arm64: correct spelling
-        https://git.kernel.org/arm64/c/a70f00e7f1a3
+> and painful instruction patching requirements (e.g. the architecture's
+> "CMODX" rules for Concurrent MODification and eXecution of instructions). We
+> went with the static key scheme above because that was what our assembled code
+> generation would devolve to anyway.
+> 
+> If we knew each call-site would only call a particular function or skip the
+> call, then we could do better (and would probably need something like objtool
+> to NOP that out at compile time), but since we don't know the callee at build
+> time we can't ensure we have a PLT in range when necessary.
+
+Unfortunately most static calls have multiple destinations.  And most
+don't have the option of being NULL.
 
 -- 
-Catalin
-
+Josh
