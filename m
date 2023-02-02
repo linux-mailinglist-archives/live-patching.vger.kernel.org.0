@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1646876A5
-	for <lists+live-patching@lfdr.de>; Thu,  2 Feb 2023 08:43:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6066876A7
+	for <lists+live-patching@lfdr.de>; Thu,  2 Feb 2023 08:43:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232113AbjBBHni (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 2 Feb 2023 02:43:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
+        id S232034AbjBBHnm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 Feb 2023 02:43:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232111AbjBBHnR (ORCPT
+        with ESMTP id S232119AbjBBHnS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 2 Feb 2023 02:43:17 -0500
+        Thu, 2 Feb 2023 02:43:18 -0500
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1E0E84B59;
-        Wed,  1 Feb 2023 23:42:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 894DF84B41;
+        Wed,  1 Feb 2023 23:42:44 -0800 (PST)
 Received: from x64host.home (unknown [47.187.213.40])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 99EFB20B2EE4;
-        Wed,  1 Feb 2023 23:42:42 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 99EFB20B2EE4
+        by linux.microsoft.com (Postfix) with ESMTPSA id 96F9F2086204;
+        Wed,  1 Feb 2023 23:42:43 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 96F9F2086204
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1675323763;
-        bh=CDc7R+oUQPek3aA1dFgOorPmCowQj3RJsL4UXFb2DgY=;
+        s=default; t=1675323764;
+        bh=syyTIiCMmSq1Y7SegNUoz2WcQt0ayamimN+gUTnents=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=goYLJgwf1YQT2czqCuodcUPHAsKPIdaqYhBPR9ytjVVj8gaYPMeDhCVeBL8t2owJr
-         JV228E1OZrBX/eS1A9h4wSLkcoKdieF6ov+xakMKTyBr36GEj/40Xj6Zl62UTYi5DJ
-         UYLoQukcEM4pHnPt2pQSqW8ZdBOWuMxcl7Plm5AU=
+        b=WNHp0Jg1XbGogtJLrp5HyBNcrB4/SAW3s5VtOmHsMAQedVtxDSEwAcbSowjtwErlN
+         GSCZM2JHP1+z7YnZ1dgrIIFYPPSuaZg/Lq4TQIZN3cFCowOpO2kthYr3V0zV+vKMhP
+         OHvRhwArCvYdD2JlUCNArkstF0j4ElJXLhrwIm5U=
 From:   madvenka@linux.microsoft.com
 To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v3 18/22] arm64: Build the kernel with ORC information
-Date:   Thu,  2 Feb 2023 01:40:32 -0600
-Message-Id: <20230202074036.507249-19-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v3 19/22] arm64: unwinder: Add a reliability check in the unwinder based on ORC
+Date:   Thu,  2 Feb 2023 01:40:33 -0600
+Message-Id: <20230202074036.507249-20-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230202074036.507249-1-madvenka@linux.microsoft.com>
 References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
@@ -54,228 +54,304 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Add code to scripts/Makefile.lib to define objtool options to generate
-ORC data for frame pointer validation.
+Introduce a reliability flag in struct unwind_state. This will be set to
+false if the PC does not have a valid ORC or if the frame pointer computed
+from the ORC does not match the actual frame pointer.
 
-Define kernel configs:
-	- to enable dynamic FRAME_POINTER_VALIDATION
-	- to enable the generation of ORC data using objtool
-
-When these configs are enabled, objtool is invoked on relocatable files
-during kernel build with the following command:
-
-	objtool --stackval --orc <object-file>
-
-Objtool creates special sections in the object files:
-
-.orc_unwind_ip	PC array.
-.orc_unwind	ORC structure table.
-.orc_lookup	ORC lookup table.
-
-Change arch/arm64/kernel/vmlinux.lds.S to include ORC_UNWIND_TABLE in
-the data section so that the special sections get included there. For
-modules, these sections will be added to the kernel during module load.
-
-In the future, the kernel can use these sections to find the ORC for a
-given instruction address. The unwinder can then compute the FP at an
-instruction address and validate the actual FP with that.
+Now that the unwinder can validate the frame pointer, introduce
+arch_stack_walk_reliable().
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/Kconfig              |  2 ++
- arch/arm64/Kconfig.debug        | 32 ++++++++++++++++++++++++++++++++
- arch/arm64/include/asm/module.h | 12 +++++++++++-
- arch/arm64/kernel/vmlinux.lds.S |  3 +++
- include/linux/objtool.h         |  2 ++
- scripts/Makefile                |  4 +++-
- scripts/Makefile.lib            |  9 +++++++++
- tools/include/linux/objtool.h   |  2 ++
- 8 files changed, 64 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/stacktrace/common.h |  15 ++
+ arch/arm64/kernel/stacktrace.c             | 167 ++++++++++++++++++++-
+ 2 files changed, 175 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 505c8a1ccbe0..73c3f30a37c7 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -230,6 +230,8 @@ config ARM64
- 	select TRACE_IRQFLAGS_SUPPORT
- 	select TRACE_IRQFLAGS_NMI_SUPPORT
- 	select HAVE_SOFTIRQ_ON_OWN_STACK
-+	select HAVE_STACK_VALIDATION	if FRAME_POINTER_VALIDATION
-+	select STACK_VALIDATION		if HAVE_STACK_VALIDATION
- 	help
- 	  ARM 64-bit (AArch64) Linux support.
+diff --git a/arch/arm64/include/asm/stacktrace/common.h b/arch/arm64/include/asm/stacktrace/common.h
+index 508f734de46e..064aaf5dc3a0 100644
+--- a/arch/arm64/include/asm/stacktrace/common.h
++++ b/arch/arm64/include/asm/stacktrace/common.h
+@@ -11,6 +11,7 @@
  
-diff --git a/arch/arm64/Kconfig.debug b/arch/arm64/Kconfig.debug
-index 265c4461031f..a50caabdb18e 100644
---- a/arch/arm64/Kconfig.debug
-+++ b/arch/arm64/Kconfig.debug
-@@ -20,4 +20,36 @@ config ARM64_RELOC_TEST
- 	depends on m
- 	tristate "Relocation testing module"
+ #include <linux/kprobes.h>
+ #include <linux/types.h>
++#include <linux/objtool.h>
  
-+config UNWINDER_ORC
-+	bool "ORC unwinder"
-+	depends on FRAME_POINTER_VALIDATION
-+	select HAVE_MOD_ARCH_SPECIFIC
-+	select OBJTOOL
-+	help
-+	  This option enables ORC (Oops Rewind Capability) for ARM64. This
-+	  allows the unwinder to look up ORC data for an instruction address
-+	  and compute the frame pointer at that address. The computed frame
-+	  pointer is used to validate the actual frame pointer.
-+
-+config UNWINDER_FRAME_POINTER
-+	bool "Frame pointer unwinder"
-+	depends on FRAME_POINTER_VALIDATION
-+	select FRAME_POINTER
-+	help
-+	  ARM64 already uses the frame pointer for unwinding kernel stack
-+	  traces. We need to enable this config to enable STACK_VALIDATION.
-+	  STACK_VALIDATION is needed to get objtool to do static analysis
-+	  of kernel code.
-+
-+config FRAME_POINTER_VALIDATION
-+	bool "Dynamic Frame pointer validation"
-+	select UNWINDER_FRAME_POINTER
-+	select UNWINDER_ORC
-+	help
-+		This invokes objtool on every object file causing it to
-+		generate ORC data for the object file. ORC data is in a custom
-+		data format which is a simplified version of the DWARF
-+		Call Frame Information standard. See UNWINDER_ORC for more
-+		details.
-+
- source "drivers/hwtracing/coresight/Kconfig"
-diff --git a/arch/arm64/include/asm/module.h b/arch/arm64/include/asm/module.h
-index 18734fed3bdd..4362f44aae61 100644
---- a/arch/arm64/include/asm/module.h
-+++ b/arch/arm64/include/asm/module.h
-@@ -6,6 +6,7 @@
- #define __ASM_MODULE_H
- 
- #include <asm-generic/module.h>
-+#include <asm/orc_types.h>
- 
- #ifdef CONFIG_ARM64_MODULE_PLTS
- struct mod_plt_sec {
-@@ -13,15 +14,24 @@ struct mod_plt_sec {
- 	int			plt_num_entries;
- 	int			plt_max_entries;
- };
-+#endif
- 
-+#ifdef CONFIG_HAVE_MOD_ARCH_SPECIFIC
- struct mod_arch_specific {
-+#ifdef CONFIG_ARM64_MODULE_PLTS
- 	struct mod_plt_sec	core;
- 	struct mod_plt_sec	init;
- 
- 	/* for CONFIG_DYNAMIC_FTRACE */
- 	struct plt_entry	*ftrace_trampolines;
--};
+ struct stack_info {
+ 	unsigned long low;
+@@ -23,6 +24,7 @@ struct stack_info {
+  * @fp:          The fp value in the frame record (or the real fp)
+  * @pc:          The lr value in the frame record (or the real lr)
+  *
++ * @prev_pc:     The lr value in the previous frame record.
+  * @kr_cur:      When KRETPROBES is selected, holds the kretprobe instance
+  *               associated with the most recently encountered replacement lr
+  *               value.
+@@ -32,10 +34,15 @@ struct stack_info {
+  * @stack:       The stack currently being unwound.
+  * @stacks:      An array of stacks which can be unwound.
+  * @nr_stacks:   The number of stacks in @stacks.
++ *
++ * @cfa:         The sp value at the call site of the current function.
++ * @unwind_type  The previous frame's unwind type.
++ * @reliable:    Stack trace is reliable.
+  */
+ struct unwind_state {
+ 	unsigned long fp;
+ 	unsigned long pc;
++	unsigned long prev_pc;
+ #ifdef CONFIG_KRETPROBES
+ 	struct llist_node *kr_cur;
  #endif
-+#ifdef CONFIG_UNWINDER_ORC
-+	unsigned int num_orcs;
-+	int *orc_unwind_ip;
-+	struct orc_entry *orc_unwind;
-+#endif
-+};
-+#endif /* CONFIG_HAVE_MOD_ARCH_SPECIFIC */
+@@ -44,6 +51,9 @@ struct unwind_state {
+ 	struct stack_info stack;
+ 	struct stack_info *stacks;
+ 	int nr_stacks;
++	unsigned long cfa;
++	int unwind_type;
++	bool reliable;
+ };
  
- u64 module_emit_plt_entry(struct module *mod, Elf64_Shdr *sechdrs,
- 			  void *loc, const Elf64_Rela *rela,
-diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
-index 45131e354e27..bf7b55ae10ee 100644
---- a/arch/arm64/kernel/vmlinux.lds.S
-+++ b/arch/arm64/kernel/vmlinux.lds.S
-@@ -61,6 +61,7 @@
- #define RUNTIME_DISCARD_EXIT
+ static inline struct stack_info stackinfo_get_unknown(void)
+@@ -70,11 +80,15 @@ static inline void unwind_init_common(struct unwind_state *state,
+ 				      struct task_struct *task)
+ {
+ 	state->task = task;
++	state->prev_pc = 0;
+ #ifdef CONFIG_KRETPROBES
+ 	state->kr_cur = NULL;
+ #endif
  
- #include <asm-generic/vmlinux.lds.h>
+ 	state->stack = stackinfo_get_unknown();
++	state->reliable = true;
++	state->cfa = 0;
++	state->unwind_type = UNWIND_HINT_TYPE_CALL;
+ }
+ 
+ static struct stack_info *unwind_find_next_stack(const struct unwind_state *state,
+@@ -167,6 +181,7 @@ unwind_next_frame_record(struct unwind_state *state)
+ 	/*
+ 	 * Record this frame record's values.
+ 	 */
++	state->prev_pc = state->pc;
+ 	state->fp = READ_ONCE(*(unsigned long *)(fp));
+ 	state->pc = READ_ONCE(*(unsigned long *)(fp + 8));
+ 
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index 634279b3b03d..fbcb14539816 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -5,6 +5,8 @@
+  * Copyright (C) 2012 ARM Ltd.
+  */
+ #include <linux/kernel.h>
++#include <asm/unwind_hints.h>
 +#include <asm-generic/orc_lookup.h>
- #include <asm/cache.h>
- #include <asm/kernel-pgtable.h>
- #include <asm/kexec.h>
-@@ -294,6 +295,8 @@ SECTIONS
- 		__mmuoff_data_end = .;
+ #include <linux/export.h>
+ #include <linux/ftrace.h>
+ #include <linux/sched.h>
+@@ -16,6 +18,122 @@
+ #include <asm/stack_pointer.h>
+ #include <asm/stacktrace.h>
+ 
++static inline bool unwind_completed(struct unwind_state *state)
++{
++	if (state->fp == (unsigned long)task_pt_regs(state->task)->stackframe) {
++		/* Final frame; nothing to unwind */
++		return true;
++	}
++	return false;
++}
++
++#ifdef CONFIG_FRAME_POINTER_VALIDATION
++
++static void unwind_check_reliable(struct unwind_state *state)
++{
++	unsigned long pc, fp;
++	struct orc_entry *orc;
++	bool adjust_pc = false;
++
++	if (unwind_completed(state))
++		return;
++
++	/*
++	 * If a previous frame was unreliable, the CFA cannot be reliably
++	 * computed anymore.
++	 */
++	if (!state->reliable)
++		return;
++
++	pc = state->pc;
++
++	/* Don't let modules unload while we're reading their ORC data. */
++	preempt_disable();
++
++	orc = orc_find(pc);
++	if (!orc || (!orc->fp_offset && orc->type == UNWIND_HINT_TYPE_CALL)) {
++		/*
++		 * If the final instruction in a function happens to be a call
++		 * instruction, the return address would fall outside of the
++		 * function. That could be the case here. This can happen, for
++		 * instance, if the called function is a "noreturn" function.
++		 * The compiler can optimize away the instructions after the
++		 * call. So, adjust the PC so it falls inside the function and
++		 * retry.
++		 *
++		 * We only do this if the current and the previous frames
++		 * are call frames and not hint frames.
++		 */
++		if (state->unwind_type == UNWIND_HINT_TYPE_CALL) {
++			pc -= 4;
++			adjust_pc = true;
++			orc = orc_find(pc);
++		}
++	}
++	if (!orc) {
++		state->reliable = false;
++		goto out;
++	}
++	state->unwind_type = orc->type;
++
++	if (!state->cfa) {
++		/* Set up the initial CFA and return. */
++		state->cfa = state->fp - orc->fp_offset;
++		goto out;
++	}
++
++	/* Compute the next CFA and FP. */
++	switch (orc->type) {
++	case UNWIND_HINT_TYPE_CALL:
++		/* Normal call */
++		state->cfa += orc->sp_offset;
++		fp = state->cfa + orc->fp_offset;
++		break;
++
++	case UNWIND_HINT_TYPE_REGS:
++		/*
++		 * pt_regs hint: The frame pointer points to either the
++		 * synthetic frame within pt_regs or to the place where
++		 * x29 and x30 are saved in the register save area in
++		 * pt_regs.
++		 */
++		state->cfa += orc->sp_offset;
++		fp = state->cfa + offsetof(struct pt_regs, stackframe) -
++		     sizeof(struct pt_regs);
++		if (state->fp != fp) {
++			fp = state->cfa + offsetof(struct pt_regs, regs[29]) -
++			     sizeof(struct pt_regs);
++		}
++		break;
++
++	case UNWIND_HINT_TYPE_IRQ_STACK:
++		/* Hint to unwind from the IRQ stack to the task stack. */
++		state->cfa = state->fp + orc->sp_offset;
++		fp = state->fp;
++		break;
++
++	default:
++		fp = 0;
++		break;
++	}
++
++	/* Validate the actual FP with the computed one. */
++	if (state->fp != fp)
++		state->reliable = false;
++out:
++	if (state->reliable && adjust_pc)
++		state->pc = pc;
++	preempt_enable();
++}
++
++#else /* !CONFIG_FRAME_POINTER_VALIDATION */
++
++static void unwind_check_reliable(struct unwind_state *state)
++{
++}
++
++#endif /* CONFIG_FRAME_POINTER_VALIDATION */
++
+ /*
+  * Start an unwind from a pt_regs.
+  *
+@@ -77,11 +195,9 @@ static inline void unwind_init_from_task(struct unwind_state *state,
+ static int notrace unwind_next(struct unwind_state *state)
+ {
+ 	struct task_struct *tsk = state->task;
+-	unsigned long fp = state->fp;
+ 	int err;
+ 
+-	/* Final frame; nothing to unwind */
+-	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
++	if (unwind_completed(state))
+ 		return -ENOENT;
+ 
+ 	err = unwind_next_frame_record(state);
+@@ -116,18 +232,23 @@ static int notrace unwind_next(struct unwind_state *state)
+ }
+ NOKPROBE_SYMBOL(unwind_next);
+ 
+-static void notrace unwind(struct unwind_state *state,
++static int notrace unwind(struct unwind_state *state, bool need_reliable,
+ 			   stack_trace_consume_fn consume_entry, void *cookie)
+ {
+-	while (1) {
+-		int ret;
++	int ret = 0;
+ 
++	while (1) {
++		if (need_reliable && !state->reliable)
++			return -EINVAL;
+ 		if (!consume_entry(cookie, state->pc))
+ 			break;
+ 		ret = unwind_next(state);
++		if (need_reliable && !ret)
++			unwind_check_reliable(state);
+ 		if (ret < 0)
+ 			break;
+ 	}
++	return ret;
+ }
+ NOKPROBE_SYMBOL(unwind);
+ 
+@@ -216,5 +337,37 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 		unwind_init_from_task(&state, task);
  	}
  
-+	ORC_UNWIND_TABLE
+-	unwind(&state, consume_entry, cookie);
++	unwind(&state, false, consume_entry, cookie);
++}
 +
- 	PECOFF_EDATA_PADDING
- 	__pecoff_data_rawsize = ABSOLUTE(. - __initdata_begin);
- 	_edata = .;
-diff --git a/include/linux/objtool.h b/include/linux/objtool.h
-index dcbd365944f6..c980522190f7 100644
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -31,7 +31,9 @@
- 
- #ifdef CONFIG_OBJTOOL
- 
-+#ifndef CONFIG_ARM64
- #include <asm/asm.h>
++noinline notrace int arch_stack_walk_reliable(
++				stack_trace_consume_fn consume_entry,
++				void *cookie, struct task_struct *task)
++{
++	struct stack_info stacks[] = {
++		stackinfo_get_task(task),
++		STACKINFO_CPU(irq),
++#if defined(CONFIG_VMAP_STACK)
++		STACKINFO_CPU(overflow),
 +#endif
- 
- #ifndef __ASSEMBLY__
- 
-diff --git a/scripts/Makefile b/scripts/Makefile
-index 1575af84d557..df3e4d90f195 100644
---- a/scripts/Makefile
-+++ b/scripts/Makefile
-@@ -23,8 +23,10 @@ HOSTLDLIBS_sign-file = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null |
- ifdef CONFIG_UNWINDER_ORC
- ifeq ($(ARCH),x86_64)
- ARCH := x86
--endif
- HOSTCFLAGS_sorttable.o += -I$(srctree)/tools/arch/x86/include
-+else
-+HOSTCFLAGS_sorttable.o += -I$(srctree)/tools/arch/$(ARCH)/include
-+endif
- HOSTCFLAGS_sorttable.o += -DUNWINDER_ORC_ENABLED
- endif
- 
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 3aa384cec76b..d364871a1046 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -252,6 +252,13 @@ ifdef CONFIG_OBJTOOL
- 
- objtool := $(objtree)/tools/objtool/objtool
- 
-+ifdef CONFIG_FRAME_POINTER_VALIDATION
-+
-+objtool-args-$(CONFIG_STACK_VALIDATION)			+= --stackval
-+objtool-args-$(CONFIG_UNWINDER_ORC)			+= --orc
-+
-+else
-+
- objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
- objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
- objtool-args-$(CONFIG_X86_KERNEL_IBT)			+= --ibt
-@@ -265,6 +272,8 @@ objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
- objtool-args-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
- objtool-args-$(CONFIG_GCOV_KERNEL)			+= --no-unreachable
- 
-+endif
-+
- objtool-args = $(objtool-args-y)					\
- 	$(if $(delay-objtool), --link)					\
- 	$(if $(part-of-module), --module)
-diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
-index dcbd365944f6..c980522190f7 100644
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -31,7 +31,9 @@
- 
- #ifdef CONFIG_OBJTOOL
- 
-+#ifndef CONFIG_ARM64
- #include <asm/asm.h>
++#if defined(CONFIG_VMAP_STACK) && defined(CONFIG_ARM_SDE_INTERFACE)
++		STACKINFO_SDEI(normal),
++		STACKINFO_SDEI(critical),
 +#endif
- 
- #ifndef __ASSEMBLY__
- 
++	};
++	struct unwind_state state = {
++		.stacks = stacks,
++		.nr_stacks = ARRAY_SIZE(stacks),
++	};
++	int ret;
++
++	if (task == current)
++		unwind_init_from_caller(&state);
++	else
++		unwind_init_from_task(&state, task);
++	unwind_check_reliable(&state);
++
++	ret = unwind(&state, true, consume_entry, cookie);
++
++	return ret == -ENOENT ? 0 : -EINVAL;
+ }
 -- 
 2.25.1
 
