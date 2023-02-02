@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A08A468769D
-	for <lists+live-patching@lfdr.de>; Thu,  2 Feb 2023 08:43:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D42468769F
+	for <lists+live-patching@lfdr.de>; Thu,  2 Feb 2023 08:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232128AbjBBHnT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 2 Feb 2023 02:43:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
+        id S231956AbjBBHnW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 Feb 2023 02:43:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232049AbjBBHmx (ORCPT
+        with ESMTP id S232058AbjBBHm5 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 2 Feb 2023 02:42:53 -0500
+        Thu, 2 Feb 2023 02:42:57 -0500
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ED1E84B45;
-        Wed,  1 Feb 2023 23:42:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD2E684B5D;
+        Wed,  1 Feb 2023 23:42:40 -0800 (PST)
 Received: from x64host.home (unknown [47.187.213.40])
-        by linux.microsoft.com (Postfix) with ESMTPSA id A2D4620B2EE0;
-        Wed,  1 Feb 2023 23:42:38 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A2D4620B2EE0
+        by linux.microsoft.com (Postfix) with ESMTPSA id A0C5E20B2EE1;
+        Wed,  1 Feb 2023 23:42:39 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A0C5E20B2EE1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1675323759;
-        bh=jNAeObYr1g94vg9HIxaKJNneDImCayRVcc8/ZI8nYbk=;
+        s=default; t=1675323760;
+        bh=y3qsADNio9+dY4UdeX2rS9vahgQ8I1RdPk9wpVWAKKk=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=E9qmkBC171byJFAPg/JByrrx9hcL68uTd/qai9oaoDmLm0tCmvAFBq2TX6t/yicvC
-         rtKPgYcBIXzeXXLw/9Oj5oe1//Fukn/nHcR/X+2aYF9a6I2RCDSvJdTU//O7x8VmQK
-         vh1Q6ZkqmZQqeezBJsKuqZyuOHwM5rXCTH/g7MEk=
+        b=QbCigbfUQUdYrfpoaBfqtidMu56nuRH8VwMDzxOyNicKedC4AWx9LpldEKyQxKxYE
+         mrudZPVymG6n0BhuyUinr0jgeJ1ftU9C8w3mCRm4yOaWtLQR6/rfCt+hB9JiQclgrU
+         OTmcCV9iRRFgQ6KhBHfjiw3/FbGTxWUucTHWyd7U=
 From:   madvenka@linux.microsoft.com
 To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v3 14/22] objtool: arm64: Generate ORC data from CFI for object files
-Date:   Thu,  2 Feb 2023 01:40:28 -0600
-Message-Id: <20230202074036.507249-15-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v3 15/22] objtool: arm64: Add unwind hint support
+Date:   Thu,  2 Feb 2023 01:40:29 -0600
+Message-Id: <20230202074036.507249-16-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230202074036.507249-1-madvenka@linux.microsoft.com>
 References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
@@ -54,367 +54,476 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Enable ORC data for ARM64.
+Implement the unwind hint macros for ARM64. Define the unwind hint types
+as well.
 
-Call orc_create() from check() in dcheck.c to generate the ORC sections in
-object files for dynamic frame pointer validation.
-
-Define support functions for ORC data creation.
+Process the unwind hints section for dynamic FP validation for ARM64.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- arch/arm64/include/asm/orc_types.h          | 35 +++++++++
- tools/arch/arm64/include/asm/orc_types.h    | 35 +++++++++
- tools/objtool/Makefile                      |  1 +
- tools/objtool/arch/arm64/Build              |  1 +
- tools/objtool/arch/arm64/include/arch/elf.h |  9 +++
- tools/objtool/arch/arm64/orc.c              | 86 +++++++++++++++++++++
- tools/objtool/dcheck.c                      |  5 +-
- tools/objtool/include/objtool/insn.h        |  1 +
- tools/objtool/include/objtool/objtool.h     |  1 +
- tools/objtool/insn.c                        | 20 +++++
- tools/objtool/orc_gen.c                     | 12 ++-
- tools/objtool/sync-check.sh                 |  7 ++
- 12 files changed, 210 insertions(+), 3 deletions(-)
- create mode 100644 arch/arm64/include/asm/orc_types.h
- create mode 100644 tools/arch/arm64/include/asm/orc_types.h
- create mode 100644 tools/objtool/arch/arm64/include/arch/elf.h
- create mode 100644 tools/objtool/arch/arm64/orc.c
+ arch/arm64/include/asm/unwind_hints.h       | 104 ++++++++++++++++++++
+ include/linux/objtool.h                     |   3 +
+ tools/arch/arm64/include/asm/unwind_hints.h | 104 ++++++++++++++++++++
+ tools/include/linux/objtool.h               |   3 +
+ tools/objtool/Build                         |   2 +-
+ tools/objtool/arch/arm64/decode.c           |  21 ++++
+ tools/objtool/arch/arm64/orc.c              |   4 +
+ tools/objtool/dcheck.c                      |   4 +
+ tools/objtool/include/objtool/endianness.h  |   1 +
+ tools/objtool/sync-check.sh                 |   1 +
+ tools/objtool/unwind_hints.c                |  24 +++--
+ 11 files changed, 260 insertions(+), 11 deletions(-)
+ create mode 100644 arch/arm64/include/asm/unwind_hints.h
+ create mode 100644 tools/arch/arm64/include/asm/unwind_hints.h
 
-diff --git a/arch/arm64/include/asm/orc_types.h b/arch/arm64/include/asm/orc_types.h
+diff --git a/arch/arm64/include/asm/unwind_hints.h b/arch/arm64/include/asm/unwind_hints.h
 new file mode 100644
-index 000000000000..c7bb690ca7d9
+index 000000000000..fb1b924d85bc
 --- /dev/null
-+++ b/arch/arm64/include/asm/orc_types.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
++++ b/arch/arm64/include/asm/unwind_hints.h
+@@ -0,0 +1,104 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _ASM_ARM64_UNWIND_HINTS_H
++#define _ASM_ARM64_UNWIND_HINTS_H
 +
-+#ifndef _ORC_TYPES_H
-+#define _ORC_TYPES_H
++#ifndef __ASSEMBLY__
 +
 +#include <linux/types.h>
-+#include <linux/compiler.h>
-+#include <linux/orc_entry.h>
 +
 +/*
-+ * The ORC_REG_* registers are base registers which are used to find other
-+ * registers on the stack.
-+ *
-+ * ORC_REG_PREV_SP, also known as DWARF Call Frame Address (CFA), is the
-+ * address of the previous frame: the caller's SP before it called the current
-+ * function.
-+ *
-+ * ORC_REG_UNDEFINED means the corresponding register's value didn't change in
-+ * the current frame.
-+ *
-+ * We only use base registers SP and FP -- which the previous SP is based on --
-+ * and PREV_SP and UNDEFINED -- which the previous FP is based on.
++ * This struct is used by asm and inline asm code to manually annotate the
++ * CFI for an instruction. We have to use s16 instead of s8 for some of these
++ * fields as 8-bit fields are not relocated by some assemblers.
 + */
-+#define ORC_REG_UNDEFINED		0
-+#define ORC_REG_PREV_SP			1
-+#define ORC_REG_SP			2
-+#define ORC_REG_FP			3
-+#define ORC_REG_MAX			4
++struct unwind_hint {
++	u32		ip;
++	s16		sp_offset;
++	s16		sp_reg;
++	s16		type;
++	s16		end;
++};
 +
-+#endif /* _ORC_TYPES_H */
-diff --git a/tools/arch/arm64/include/asm/orc_types.h b/tools/arch/arm64/include/asm/orc_types.h
-new file mode 100644
-index 000000000000..c7bb690ca7d9
---- /dev/null
-+++ b/tools/arch/arm64/include/asm/orc_types.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+
-+#ifndef _ORC_TYPES_H
-+#define _ORC_TYPES_H
-+
-+#include <linux/types.h>
-+#include <linux/compiler.h>
-+#include <linux/orc_entry.h>
-+
-+/*
-+ * The ORC_REG_* registers are base registers which are used to find other
-+ * registers on the stack.
-+ *
-+ * ORC_REG_PREV_SP, also known as DWARF Call Frame Address (CFA), is the
-+ * address of the previous frame: the caller's SP before it called the current
-+ * function.
-+ *
-+ * ORC_REG_UNDEFINED means the corresponding register's value didn't change in
-+ * the current frame.
-+ *
-+ * We only use base registers SP and FP -- which the previous SP is based on --
-+ * and PREV_SP and UNDEFINED -- which the previous FP is based on.
-+ */
-+#define ORC_REG_UNDEFINED		0
-+#define ORC_REG_PREV_SP			1
-+#define ORC_REG_SP			2
-+#define ORC_REG_FP			3
-+#define ORC_REG_MAX			4
-+
-+#endif /* _ORC_TYPES_H */
-diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
-index 92583b82eb78..14bb324d9385 100644
---- a/tools/objtool/Makefile
-+++ b/tools/objtool/Makefile
-@@ -47,6 +47,7 @@ ifeq ($(SRCARCH),x86)
- endif
- 
- ifeq ($(SRCARCH),arm64)
-+	BUILD_ORC := y
- 	DYNAMIC_CHECK := y
- endif
- 
-diff --git a/tools/objtool/arch/arm64/Build b/tools/objtool/arch/arm64/Build
-index 3ff1f00c6a47..8615abfb12cf 100644
---- a/tools/objtool/arch/arm64/Build
-+++ b/tools/objtool/arch/arm64/Build
-@@ -1 +1,2 @@
- objtool-y += decode.o
-+objtool-y += orc.o
-diff --git a/tools/objtool/arch/arm64/include/arch/elf.h b/tools/objtool/arch/arm64/include/arch/elf.h
-new file mode 100644
-index 000000000000..4ae6df2bd90c
---- /dev/null
-+++ b/tools/objtool/arch/arm64/include/arch/elf.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-+
-+#ifndef _OBJTOOL_ARCH_ELF
-+#define _OBJTOOL_ARCH_ELF
-+
-+#define R_NONE		R_AARCH64_NONE
-+#define R_PCREL		R_AARCH64_PREL32
-+
-+#endif /* _OBJTOOL_ARCH_ELF */
-diff --git a/tools/objtool/arch/arm64/orc.c b/tools/objtool/arch/arm64/orc.c
-new file mode 100644
-index 000000000000..cef14114e1ec
---- /dev/null
-+++ b/tools/objtool/arch/arm64/orc.c
-@@ -0,0 +1,86 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
-+ *
-+ * Copyright (C) 2022 Microsoft Corporation
-+ */
-+#include <string.h>
++#endif
 +
 +#include <linux/objtool.h>
 +
-+#include <objtool/insn.h>
-+#include <objtool/orc.h>
++#include "orc_types.h"
 +
-+int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
-+		   struct instruction *insn)
++#ifdef CONFIG_STACK_VALIDATION
++
++#ifndef __ASSEMBLY__
++
++#define UNWIND_HINT(sp_reg, sp_offset, type, end)		\
++	"987: \n\t"						\
++	".pushsection .discard.unwind_hints\n\t"		\
++	/* struct unwind_hint */				\
++	".long 987b - .\n\t"					\
++	".short " __stringify(sp_offset) "\n\t"			\
++	".short " __stringify(sp_reg) "\n\t"			\
++	".short " __stringify(type) "\n\t"			\
++	".short " __stringify(end) "\n\t"			\
++	".popsection\n\t"
++
++#else /* __ASSEMBLY__ */
++
++/*
++ * There are points in ASM code where it is useful to unwind through even
++ * though the ASM code itself may be unreliable from an unwind perspective.
++ * E.g., interrupt and exception handlers.
++ *
++ * These macros provide hints to objtool to compute the CFI information at
++ * such instructions.
++ */
++.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.Lunwind_hint_pc_\@:
++	.pushsection .discard.unwind_hints
++		/* struct unwind_hint */
++		.long .Lunwind_hint_pc_\@ - .
++		.short \sp_offset
++		.short \sp_reg
++		.short \type
++		.short \end
++	.popsection
++.endm
++
++#endif /* __ASSEMBLY__ */
++
++#else /* !CONFIG_STACK_VALIDATION */
++
++#ifndef __ASSEMBLY__
++
++#define UNWIND_HINT(sp_reg, sp_offset, type, end)	\
++	"\n\t"
++#else
++.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.endm
++#endif
++
++#endif /* CONFIG_STACK_VALIDATION */
++#ifdef __ASSEMBLY__
++
++.macro UNWIND_HINT_FTRACE, offset
++	.set sp_reg, ORC_REG_SP
++	.set sp_offset, \offset
++	.set type, UNWIND_HINT_TYPE_FTRACE
++	UNWIND_HINT sp_reg=sp_reg sp_offset=sp_offset type=type
++.endm
++
++.macro UNWIND_HINT_REGS, offset
++	.set sp_reg, ORC_REG_SP
++	.set sp_offset, \offset
++	.set type, UNWIND_HINT_TYPE_REGS
++	UNWIND_HINT sp_reg=sp_reg sp_offset=sp_offset type=type
++.endm
++
++.macro UNWIND_HINT_IRQ, offset
++	.set sp_reg, ORC_REG_SP
++	.set sp_offset, \offset
++	.set type, UNWIND_HINT_TYPE_IRQ_STACK
++	UNWIND_HINT sp_reg=sp_reg sp_offset=sp_offset type=type
++.endm
++
++#endif /* __ASSEMBLY__ */
++
++#endif /* _ASM_ARM64_UNWIND_HINTS_H */
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index 1af295efc12c..dcbd365944f6 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -17,6 +17,8 @@
+  * Useful for code which doesn't have an ELF function annotation.
+  *
+  * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
++ *
++ * UNWIND_HINT_TYPE_IRQ_STACK: Used to unwind through the IRQ stack.
+  */
+ #define UNWIND_HINT_TYPE_CALL		0
+ #define UNWIND_HINT_TYPE_REGS		1
+@@ -25,6 +27,7 @@
+ #define UNWIND_HINT_TYPE_ENTRY		4
+ #define UNWIND_HINT_TYPE_SAVE		5
+ #define UNWIND_HINT_TYPE_RESTORE	6
++#define UNWIND_HINT_TYPE_IRQ_STACK	7
+ 
+ #ifdef CONFIG_OBJTOOL
+ 
+diff --git a/tools/arch/arm64/include/asm/unwind_hints.h b/tools/arch/arm64/include/asm/unwind_hints.h
+new file mode 100644
+index 000000000000..fb1b924d85bc
+--- /dev/null
++++ b/tools/arch/arm64/include/asm/unwind_hints.h
+@@ -0,0 +1,104 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _ASM_ARM64_UNWIND_HINTS_H
++#define _ASM_ARM64_UNWIND_HINTS_H
++
++#ifndef __ASSEMBLY__
++
++#include <linux/types.h>
++
++/*
++ * This struct is used by asm and inline asm code to manually annotate the
++ * CFI for an instruction. We have to use s16 instead of s8 for some of these
++ * fields as 8-bit fields are not relocated by some assemblers.
++ */
++struct unwind_hint {
++	u32		ip;
++	s16		sp_offset;
++	s16		sp_reg;
++	s16		type;
++	s16		end;
++};
++
++#endif
++
++#include <linux/objtool.h>
++
++#include "orc_types.h"
++
++#ifdef CONFIG_STACK_VALIDATION
++
++#ifndef __ASSEMBLY__
++
++#define UNWIND_HINT(sp_reg, sp_offset, type, end)		\
++	"987: \n\t"						\
++	".pushsection .discard.unwind_hints\n\t"		\
++	/* struct unwind_hint */				\
++	".long 987b - .\n\t"					\
++	".short " __stringify(sp_offset) "\n\t"			\
++	".short " __stringify(sp_reg) "\n\t"			\
++	".short " __stringify(type) "\n\t"			\
++	".short " __stringify(end) "\n\t"			\
++	".popsection\n\t"
++
++#else /* __ASSEMBLY__ */
++
++/*
++ * There are points in ASM code where it is useful to unwind through even
++ * though the ASM code itself may be unreliable from an unwind perspective.
++ * E.g., interrupt and exception handlers.
++ *
++ * These macros provide hints to objtool to compute the CFI information at
++ * such instructions.
++ */
++.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.Lunwind_hint_pc_\@:
++	.pushsection .discard.unwind_hints
++		/* struct unwind_hint */
++		.long .Lunwind_hint_pc_\@ - .
++		.short \sp_offset
++		.short \sp_reg
++		.short \type
++		.short \end
++	.popsection
++.endm
++
++#endif /* __ASSEMBLY__ */
++
++#else /* !CONFIG_STACK_VALIDATION */
++
++#ifndef __ASSEMBLY__
++
++#define UNWIND_HINT(sp_reg, sp_offset, type, end)	\
++	"\n\t"
++#else
++.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.endm
++#endif
++
++#endif /* CONFIG_STACK_VALIDATION */
++#ifdef __ASSEMBLY__
++
++.macro UNWIND_HINT_FTRACE, offset
++	.set sp_reg, ORC_REG_SP
++	.set sp_offset, \offset
++	.set type, UNWIND_HINT_TYPE_FTRACE
++	UNWIND_HINT sp_reg=sp_reg sp_offset=sp_offset type=type
++.endm
++
++.macro UNWIND_HINT_REGS, offset
++	.set sp_reg, ORC_REG_SP
++	.set sp_offset, \offset
++	.set type, UNWIND_HINT_TYPE_REGS
++	UNWIND_HINT sp_reg=sp_reg sp_offset=sp_offset type=type
++.endm
++
++.macro UNWIND_HINT_IRQ, offset
++	.set sp_reg, ORC_REG_SP
++	.set sp_offset, \offset
++	.set type, UNWIND_HINT_TYPE_IRQ_STACK
++	UNWIND_HINT sp_reg=sp_reg sp_offset=sp_offset type=type
++.endm
++
++#endif /* __ASSEMBLY__ */
++
++#endif /* _ASM_ARM64_UNWIND_HINTS_H */
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index 1af295efc12c..dcbd365944f6 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -17,6 +17,8 @@
+  * Useful for code which doesn't have an ELF function annotation.
+  *
+  * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
++ *
++ * UNWIND_HINT_TYPE_IRQ_STACK: Used to unwind through the IRQ stack.
+  */
+ #define UNWIND_HINT_TYPE_CALL		0
+ #define UNWIND_HINT_TYPE_REGS		1
+@@ -25,6 +27,7 @@
+ #define UNWIND_HINT_TYPE_ENTRY		4
+ #define UNWIND_HINT_TYPE_SAVE		5
+ #define UNWIND_HINT_TYPE_RESTORE	6
++#define UNWIND_HINT_TYPE_IRQ_STACK	7
+ 
+ #ifdef CONFIG_OBJTOOL
+ 
+diff --git a/tools/objtool/Build b/tools/objtool/Build
+index fb0846b7d95e..2780e402babb 100644
+--- a/tools/objtool/Build
++++ b/tools/objtool/Build
+@@ -9,7 +9,7 @@ objtool-y += builtin-check.o
+ objtool-y += cfi.o
+ objtool-y += insn.o
+ objtool-y += decode.o
+-objtool-$(STATIC_CHECK) += unwind_hints.o
++objtool-y += unwind_hints.o
+ objtool-y += elf.o
+ objtool-y += objtool.o
+ 
+diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
+index f723be80c09a..570069ac68ae 100644
+--- a/tools/objtool/arch/arm64/decode.c
++++ b/tools/objtool/arch/arm64/decode.c
+@@ -17,6 +17,8 @@
+ #include <objtool/elf.h>
+ #include <objtool/warn.h>
+ 
++#include <asm/orc_types.h>
++
+ /* ARM64 instructions are all 4 bytes wide. */
+ #define INSN_SIZE	4
+ 
+@@ -47,6 +49,25 @@ unsigned long arch_jump_destination(struct instruction *insn)
+ 	return insn->offset + insn->immediate;
+ }
+ 
++int arch_decode_hint_reg(u8 sp_reg, int *base)
 +{
-+	struct cfi_reg *fp = &cfi->regs[CFI_FP];
-+
-+	memset(orc, 0, sizeof(*orc));
-+
-+	orc->sp_reg = ORC_REG_SP;
-+	orc->fp_reg = ORC_REG_PREV_SP;
-+
-+	if (!cfi || cfi->cfa.base == CFI_UNDEFINED ||
-+	    (cfi->type == UNWIND_HINT_TYPE_CALL && !fp->offset)) {
-+		/*
-+		 * The frame pointer has not been set up. This instruction is
-+		 * unreliable from an unwind perspective.
-+		 */
-+		return 0;
++	switch (sp_reg) {
++	case ORC_REG_UNDEFINED:
++		*base = CFI_UNDEFINED;
++		break;
++	case ORC_REG_SP:
++		*base = CFI_SP;
++		break;
++	case ORC_REG_FP:
++		*base = CFI_FP;
++		break;
++	default:
++		return -1;
 +	}
-+
-+	orc->sp_offset = cfi->cfa.offset;
-+	orc->fp_offset = fp->offset;
-+	orc->type = cfi->type;
-+	orc->end = cfi->end;
 +
 +	return 0;
 +}
 +
-+static const char *reg_name(unsigned int reg)
-+{
-+	switch (reg) {
-+	case ORC_REG_PREV_SP:
-+		return "cfa";
-+	case ORC_REG_FP:
-+		return "x29";
-+	case ORC_REG_SP:
-+		return "sp";
-+	default:
-+		return "?";
-+	}
-+}
-+
-+const char *orc_type_name(unsigned int type)
-+{
-+	switch (type) {
-+	case UNWIND_HINT_TYPE_CALL:
-+		return "call";
-+	default:
-+		return "?";
-+	}
-+}
-+
-+void orc_print_reg(unsigned int reg, int offset)
-+{
-+	if (reg == ORC_REG_UNDEFINED)
-+		printf("(und)");
-+	else
-+		printf("%s%+d", reg_name(reg), offset);
-+}
-+
-+void orc_print_sp(void)
-+{
-+	printf(" cfa:");
-+}
-+
-+void orc_print_fp(void)
-+{
-+	printf(" x29:");
-+}
-+
-+bool orc_ignore_section(struct section *sec)
-+{
-+	return !strcmp(sec->name, ".head.text");
-+}
+ /* --------------------- instruction decode structs ------------------------ */
+ 
+ struct decode_var {
+diff --git a/tools/objtool/arch/arm64/orc.c b/tools/objtool/arch/arm64/orc.c
+index cef14114e1ec..5b155585258a 100644
+--- a/tools/objtool/arch/arm64/orc.c
++++ b/tools/objtool/arch/arm64/orc.c
+@@ -57,6 +57,10 @@ const char *orc_type_name(unsigned int type)
+ 	switch (type) {
+ 	case UNWIND_HINT_TYPE_CALL:
+ 		return "call";
++	case UNWIND_HINT_TYPE_REGS:
++		return "regs";
++	case UNWIND_HINT_TYPE_IRQ_STACK:
++		return "irqstack";
+ 	default:
+ 		return "?";
+ 	}
 diff --git a/tools/objtool/dcheck.c b/tools/objtool/dcheck.c
-index 8b78cb608528..57499752c523 100644
+index 57499752c523..567f492b0e3e 100644
 --- a/tools/objtool/dcheck.c
 +++ b/tools/objtool/dcheck.c
-@@ -349,5 +349,8 @@ int check(struct objtool_file *file)
+@@ -349,6 +349,10 @@ int check(struct objtool_file *file)
  
  	walk_sections(file);
  
--	return 0;
-+	if (opts.orc)
-+		ret = orc_create(file);
++	ret = read_unwind_hints(file);
++	if (ret)
++		return ret;
 +
-+	return ret;
- }
-diff --git a/tools/objtool/include/objtool/insn.h b/tools/objtool/include/objtool/insn.h
-index 3a43a591b318..ac718f1e2d2f 100644
---- a/tools/objtool/include/objtool/insn.h
-+++ b/tools/objtool/include/objtool/insn.h
-@@ -84,6 +84,7 @@ struct instruction *next_insn_same_sec(struct objtool_file *file,
- struct instruction *next_insn_same_func(struct objtool_file *file,
- 					struct instruction *insn);
- struct reloc *insn_reloc(struct objtool_file *file, struct instruction *insn);
-+bool insn_can_reloc(struct instruction *insn);
- bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2,
- 		    bool print);
- bool same_function(struct instruction *insn1, struct instruction *insn2);
-diff --git a/tools/objtool/include/objtool/objtool.h b/tools/objtool/include/objtool/objtool.h
-index 7f2d1b095333..b7655ad3e402 100644
---- a/tools/objtool/include/objtool/objtool.h
-+++ b/tools/objtool/include/objtool/objtool.h
-@@ -46,5 +46,6 @@ void objtool_pv_add(struct objtool_file *file, int idx, struct symbol *func);
- int check(struct objtool_file *file);
- int orc_dump(const char *objname);
- int orc_create(struct objtool_file *file);
-+bool orc_ignore_section(struct section *sec);
+ 	if (opts.orc)
+ 		ret = orc_create(file);
  
- #endif /* _OBJTOOL_H */
-diff --git a/tools/objtool/insn.c b/tools/objtool/insn.c
-index be3617d55aea..af48319f2225 100644
---- a/tools/objtool/insn.c
-+++ b/tools/objtool/insn.c
-@@ -193,3 +193,23 @@ bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2,
- 
- 	return false;
- }
-+
-+/*
-+ * This is a hack for Clang. Clang is aggressive about removing section
-+ * symbols and then some. If we cannot find something to relocate an
-+ * instruction against, we must not generate CFI for it or the ORC
-+ * generation will fail later.
-+ */
-+bool insn_can_reloc(struct instruction *insn)
-+{
-+	struct section *insn_sec = insn->sec;
-+	unsigned long insn_off = insn->offset;
-+
-+	if (insn_sec->sym ||
-+	    find_symbol_containing(insn_sec, insn_off) ||
-+	    find_symbol_containing(insn_sec, insn_off - 1)) {
-+		/* See elf_add_reloc_to_insn(). */
-+		return true;
-+	}
-+	return false;
-+}
-diff --git a/tools/objtool/orc_gen.c b/tools/objtool/orc_gen.c
-index ea2e361ff7bc..bddf5889466f 100644
---- a/tools/objtool/orc_gen.c
-+++ b/tools/objtool/orc_gen.c
-@@ -14,6 +14,11 @@
- #include <objtool/warn.h>
- #include <objtool/endianness.h>
- 
-+bool __weak orc_ignore_section(struct section *sec)
-+{
-+	return false;
-+}
-+
- static int write_orc_entry(struct elf *elf, struct section *orc_sec,
- 			   struct section *ip_sec, unsigned int idx,
- 			   struct section *insn_sec, unsigned long insn_off,
-@@ -87,13 +92,16 @@ int orc_create(struct objtool_file *file)
- 		struct instruction *insn;
- 		bool empty = true;
- 
--		if (!sec->text)
-+		if (!sec->text || orc_ignore_section(sec))
- 			continue;
- 
- 		sec_for_each_insn(file, sec, insn) {
- 			struct alt_group *alt_group = insn->alt_group;
- 			int i;
- 
-+			if (!insn_can_reloc(insn))
-+				continue;
-+
- 			if (!alt_group) {
- 				if (init_orc_entry(&orc, insn->cfi, insn))
- 					return -1;
-@@ -137,7 +145,7 @@ int orc_create(struct objtool_file *file)
- 		}
- 
- 		/* Add a section terminator */
--		if (!empty) {
-+		if (!empty && sec->sym) {
- 			orc_list_add(&orc_list, &null, sec, sec->sh.sh_size);
- 			nr++;
- 		}
+diff --git a/tools/objtool/include/objtool/endianness.h b/tools/objtool/include/objtool/endianness.h
+index 10241341eff3..9a53ab421a19 100644
+--- a/tools/objtool/include/objtool/endianness.h
++++ b/tools/objtool/include/objtool/endianness.h
+@@ -29,6 +29,7 @@
+ 	case 8: __ret = __NEED_BSWAP ? bswap_64(val) : (val); break;	\
+ 	case 4: __ret = __NEED_BSWAP ? bswap_32(val) : (val); break;	\
+ 	case 2: __ret = __NEED_BSWAP ? bswap_16(val) : (val); break;	\
++	case 1: __ret = (val); break;					\
+ 	default:							\
+ 		BUILD_BUG(); break;					\
+ 	}								\
 diff --git a/tools/objtool/sync-check.sh b/tools/objtool/sync-check.sh
-index ef1acb064605..0d0656f6ce4a 100755
+index 0d0656f6ce4a..3742d1e2585c 100755
 --- a/tools/objtool/sync-check.sh
 +++ b/tools/objtool/sync-check.sh
-@@ -29,6 +29,13 @@ arch/x86/lib/insn.c
- '
- fi
+@@ -31,6 +31,7 @@ fi
  
-+if [ "$SRCARCH" = "arm64" ]; then
-+FILES="$FILES
-+arch/arm64/include/asm/orc_types.h
-+include/linux/orc_entry.h
-+"
-+fi
+ if [ "$SRCARCH" = "arm64" ]; then
+ FILES="$FILES
++arch/arm64/include/asm/unwind_hints.h
+ arch/arm64/include/asm/orc_types.h
+ include/linux/orc_entry.h
+ "
+diff --git a/tools/objtool/unwind_hints.c b/tools/objtool/unwind_hints.c
+index f2521659bae5..c51013c5d0b3 100644
+--- a/tools/objtool/unwind_hints.c
++++ b/tools/objtool/unwind_hints.c
+@@ -16,6 +16,7 @@ int read_unwind_hints(struct objtool_file *file)
+ 	struct unwind_hint *hint;
+ 	struct instruction *insn;
+ 	struct reloc *reloc;
++	u8 sp_reg, type;
+ 	int i;
+ 
+ 	sec = find_section_by_name(file->elf, ".discard.unwind_hints");
+@@ -38,6 +39,9 @@ int read_unwind_hints(struct objtool_file *file)
+ 	for (i = 0; i < sec->sh.sh_size / sizeof(struct unwind_hint); i++) {
+ 		hint = (struct unwind_hint *)sec->data->d_buf + i;
+ 
++		sp_reg = bswap_if_needed(hint->sp_reg);
++		type = bswap_if_needed(hint->type);
 +
- check_2 () {
-   file1=$1
-   file2=$2
+ 		reloc = find_reloc_by_dest(file->elf, sec, i * sizeof(*hint));
+ 		if (!reloc) {
+ 			WARN("can't find reloc for unwind_hints[%d]", i);
+@@ -52,18 +56,18 @@ int read_unwind_hints(struct objtool_file *file)
+ 
+ 		insn->hint = true;
+ 
+-		if (hint->type == UNWIND_HINT_TYPE_SAVE) {
++		if (type == UNWIND_HINT_TYPE_SAVE) {
+ 			insn->hint = false;
+ 			insn->save = true;
+ 			continue;
+ 		}
+ 
+-		if (hint->type == UNWIND_HINT_TYPE_RESTORE) {
++		if (type == UNWIND_HINT_TYPE_RESTORE) {
+ 			insn->restore = true;
+ 			continue;
+ 		}
+ 
+-		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
++		if (type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
+ 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
+ 
+ 			if (sym && sym->bind == STB_GLOBAL) {
+@@ -76,12 +80,12 @@ int read_unwind_hints(struct objtool_file *file)
+ 			}
+ 		}
+ 
+-		if (hint->type == UNWIND_HINT_TYPE_ENTRY) {
+-			hint->type = UNWIND_HINT_TYPE_CALL;
++		if (type == UNWIND_HINT_TYPE_ENTRY) {
++			type = UNWIND_HINT_TYPE_CALL;
+ 			insn->entry = 1;
+ 		}
+ 
+-		if (hint->type == UNWIND_HINT_TYPE_FUNC) {
++		if (type == UNWIND_HINT_TYPE_FUNC) {
+ 			insn->cfi = &func_cfi;
+ 			continue;
+ 		}
+@@ -89,15 +93,15 @@ int read_unwind_hints(struct objtool_file *file)
+ 		if (insn->cfi)
+ 			cfi = *(insn->cfi);
+ 
+-		if (arch_decode_hint_reg(hint->sp_reg, &cfi.cfa.base)) {
++		if (arch_decode_hint_reg(sp_reg, &cfi.cfa.base)) {
+ 			WARN_FUNC("unsupported unwind_hint sp base reg %d",
+-				  insn->sec, insn->offset, hint->sp_reg);
++				  insn->sec, insn->offset, sp_reg);
+ 			return -1;
+ 		}
+ 
+ 		cfi.cfa.offset = bswap_if_needed(hint->sp_offset);
+-		cfi.type = hint->type;
+-		cfi.end = hint->end;
++		cfi.type = type;
++		cfi.end = bswap_if_needed(hint->end);
+ 
+ 		insn->cfi = cfi_hash_find_or_add(&cfi);
+ 	}
 -- 
 2.25.1
 
