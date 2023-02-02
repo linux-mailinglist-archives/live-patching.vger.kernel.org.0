@@ -2,30 +2,30 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2940A68769C
-	for <lists+live-patching@lfdr.de>; Thu,  2 Feb 2023 08:43:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A08A468769D
+	for <lists+live-patching@lfdr.de>; Thu,  2 Feb 2023 08:43:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231883AbjBBHnS (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 2 Feb 2023 02:43:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
+        id S232128AbjBBHnT (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 Feb 2023 02:43:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbjBBHmx (ORCPT
+        with ESMTP id S232049AbjBBHmx (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
         Thu, 2 Feb 2023 02:42:53 -0500
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0FFD84952;
-        Wed,  1 Feb 2023 23:42:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ED1E84B45;
+        Wed,  1 Feb 2023 23:42:39 -0800 (PST)
 Received: from x64host.home (unknown [47.187.213.40])
-        by linux.microsoft.com (Postfix) with ESMTPSA id A4A8720861F6;
-        Wed,  1 Feb 2023 23:42:37 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A4A8720861F6
+        by linux.microsoft.com (Postfix) with ESMTPSA id A2D4620B2EE0;
+        Wed,  1 Feb 2023 23:42:38 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A2D4620B2EE0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1675323758;
-        bh=ZReeOzoTrtsb5LMSAI87dQm76FTp/hJZoPEJyZX88wA=;
+        s=default; t=1675323759;
+        bh=jNAeObYr1g94vg9HIxaKJNneDImCayRVcc8/ZI8nYbk=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=LoHhNNqfKNphpcEW3Qd8TKXIdVNy37/Cs3LLnduT4IgGh3B7pNL/KWbIOyStRmTZi
-         U94SYC1JoUa9b8XD8x6HHQygE5AhnhZWr747OMUR2UApiZ0yyL8dQr/Y7FXJmZa0KX
-         BHDkLPunEUG48UuAFm/Z0i0FAT5kmcaKOsQ5IFE4=
+        b=E9qmkBC171byJFAPg/JByrrx9hcL68uTd/qai9oaoDmLm0tCmvAFBq2TX6t/yicvC
+         rtKPgYcBIXzeXXLw/9Oj5oe1//Fukn/nHcR/X+2aYF9a6I2RCDSvJdTU//O7x8VmQK
+         vh1Q6ZkqmZQqeezBJsKuqZyuOHwM5rXCTH/g7MEk=
 From:   madvenka@linux.microsoft.com
 To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
         jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [RFC PATCH v3 13/22] objtool: arm64: Walk instructions and compute CFI for each instruction
-Date:   Thu,  2 Feb 2023 01:40:27 -0600
-Message-Id: <20230202074036.507249-14-madvenka@linux.microsoft.com>
+Subject: [RFC PATCH v3 14/22] objtool: arm64: Generate ORC data from CFI for object files
+Date:   Thu,  2 Feb 2023 01:40:28 -0600
+Message-Id: <20230202074036.507249-15-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230202074036.507249-1-madvenka@linux.microsoft.com>
 References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
@@ -54,490 +54,367 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Implement arch_initial_func_cfi_state() to initialize the CFI for a
-function.
+Enable ORC data for ARM64.
 
-Add code to check() in dcheck.c to walk the instructions in every function
-and compute the CFI information for each instruction.
+Call orc_create() from check() in dcheck.c to generate the ORC sections in
+object files for dynamic frame pointer validation.
 
-Perform the following checks to validate the CFI:
-
-	- Make sure that there is exactly one frame pointer prolog for
-	  an epilog.
-
-	- Make sure that the frame pointer register is initialized to
-	  the location at which the previous frame pointer is stored
-	  on the stack.
-
-	- Make sure that the frame pointer is restored in the epilog
-	  from the same location on stack where it was saved.
-
-	- Make sure that the return address is restored in the epilog
-	  from the same location on stack where it was saved.
-
-	- Make sure that the frame pointer and return address are saved
-	  on the stack adjacent to each other in the correct order as
-	  specified in the ABI.
-
-	- If an instruction can be reached via two different code paths,
-	  make sure that the CFIs computed from traversing each path match
-	  for the instruction.
-
-	- Every time the frame pointer or stack offset is changed, make sure
-	  the offsets have legal values.
-
-insn_cfi_match() is used to compare CFIs to see if they match. When there
-is a mismatch, the function emits error messages. With static checking,
-these errors result in failure. With dynamic checking, these errors
-only resulting in marking those instructions as unreliable for unwind.
-In the latter case, suppress the warning messages.
+Define support functions for ORC data creation.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 ---
- tools/objtool/arch/arm64/decode.c    |  15 ++
- tools/objtool/check.c                |   2 +-
- tools/objtool/dcheck.c               | 287 +++++++++++++++++++++++++++
- tools/objtool/include/objtool/insn.h |   3 +-
- tools/objtool/insn.c                 |  39 ++--
- 5 files changed, 329 insertions(+), 17 deletions(-)
+ arch/arm64/include/asm/orc_types.h          | 35 +++++++++
+ tools/arch/arm64/include/asm/orc_types.h    | 35 +++++++++
+ tools/objtool/Makefile                      |  1 +
+ tools/objtool/arch/arm64/Build              |  1 +
+ tools/objtool/arch/arm64/include/arch/elf.h |  9 +++
+ tools/objtool/arch/arm64/orc.c              | 86 +++++++++++++++++++++
+ tools/objtool/dcheck.c                      |  5 +-
+ tools/objtool/include/objtool/insn.h        |  1 +
+ tools/objtool/include/objtool/objtool.h     |  1 +
+ tools/objtool/insn.c                        | 20 +++++
+ tools/objtool/orc_gen.c                     | 12 ++-
+ tools/objtool/sync-check.sh                 |  7 ++
+ 12 files changed, 210 insertions(+), 3 deletions(-)
+ create mode 100644 arch/arm64/include/asm/orc_types.h
+ create mode 100644 tools/arch/arm64/include/asm/orc_types.h
+ create mode 100644 tools/objtool/arch/arm64/include/arch/elf.h
+ create mode 100644 tools/objtool/arch/arm64/orc.c
 
-diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
-index 81653ed3c323..f723be80c09a 100644
---- a/tools/objtool/arch/arm64/decode.c
-+++ b/tools/objtool/arch/arm64/decode.c
-@@ -22,6 +22,21 @@
- 
- /* --------------------- arch support functions ------------------------- */
- 
-+void arch_initial_func_cfi_state(struct cfi_init_state *state)
-+{
-+	int i;
+diff --git a/arch/arm64/include/asm/orc_types.h b/arch/arm64/include/asm/orc_types.h
+new file mode 100644
+index 000000000000..c7bb690ca7d9
+--- /dev/null
++++ b/arch/arm64/include/asm/orc_types.h
+@@ -0,0 +1,35 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
++ *
++ * Copyright (C) 2022 Microsoft Corporation
++ */
 +
-+	for (i = 0; i < CFI_NUM_REGS; i++) {
-+		state->regs[i].base = CFI_UNDEFINED;
-+		state->regs[i].offset = 0;
-+	}
-+	state->regs[CFI_FP].base = CFI_CFA;
++#ifndef _ORC_TYPES_H
++#define _ORC_TYPES_H
 +
-+	/* initial CFA (call frame address) */
-+	state->cfa.base = CFI_SP;
-+	state->cfa.offset = 0;
-+}
-+
- unsigned long arch_dest_reloc_offset(int addend)
- {
- 	return addend;
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index d14a2b7b8b37..94efe94a566e 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2863,7 +2863,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 
- 		visited = VISITED_BRANCH << state.uaccess;
- 		if (insn->visited & VISITED_BRANCH_MASK) {
--			if (!insn->hint && !insn_cfi_match(insn, &state.cfi))
-+			if (!insn->hint && !insn_cfi_match(insn, &state.cfi, true))
- 				return 1;
- 
- 			if (insn->visited & visited)
-diff --git a/tools/objtool/dcheck.c b/tools/objtool/dcheck.c
-index eb806a032a32..8b78cb608528 100644
---- a/tools/objtool/dcheck.c
-+++ b/tools/objtool/dcheck.c
-@@ -49,6 +49,283 @@ static void add_jump_destinations(struct objtool_file *file)
- 	}
- }
- 
-+static bool update_cfi_state(struct cfi_state *cfi, struct stack_op *op)
-+{
-+	struct cfi_reg *cfa = &cfi->cfa;
-+	struct cfi_reg *fp_reg = &cfi->regs[CFI_FP];
-+	struct cfi_reg *fp_val = &cfi->vals[CFI_FP];
-+	struct cfi_reg *ra_val = &cfi->vals[CFI_RA];
-+	enum op_src_type src_type = op->src.type;
-+	enum op_dest_type dest_type = op->dest.type;
-+	unsigned char dest_reg = op->dest.reg;
-+	int offset;
-+
-+	if (src_type == OP_SRC_ADD && dest_type == OP_DEST_REG) {
-+
-+		if (op->src.reg == CFI_SP) {
-+			if (op->dest.reg == CFI_SP) {
-+				cfa->offset -= op->src.offset;
-+			} else {
-+				if (fp_reg->offset) {
-+					/* FP is already set. */
-+					return false;
-+				}
-+				fp_reg->offset = -cfa->offset + op->src.offset;
-+				if (fp_reg->offset != fp_val->offset) {
-+					/*
-+					 * FP does not match the location
-+					 * where FP is stored on stack.
-+					 */
-+					return false;
-+				}
-+			}
-+		} else {
-+			if (op->dest.reg == CFI_SP) {
-+				cfa->offset =
-+					-(fp_reg->offset + op->src.offset);
-+			} else {
-+				/* Setting the FP from itself is unreliable. */
-+				return false;
-+			}
-+		}
-+		/*
-+		 * When the stack pointer is restored in the frame pointer
-+		 * epilog, forget where the FP and RA were stored.
-+		 */
-+		if (cfa->offset < -fp_val->offset)
-+			fp_val->offset = 0;
-+		if (cfa->offset < -ra_val->offset)
-+			ra_val->offset = 0;
-+		goto out;
-+	}
-+
-+	if (src_type == OP_SRC_REG_INDIRECT && dest_type == OP_DEST_REG) {
-+		offset = -cfa->offset + op->src.offset;
-+		if (dest_reg == CFI_FP) {
-+			if (!fp_val->offset || fp_val->offset != offset) {
-+				/*
-+				 * Loading the FP from a different place than
-+				 * where it is stored.
-+				 */
-+				return false;
-+			}
-+			if (!ra_val->offset ||
-+			    (ra_val->offset - fp_val->offset) != 8) {
-+				/* FP and RA must be adjacent in a frame. */
-+				return false;
-+			}
-+			fp_reg->offset = 0;
-+		}
-+		goto out;
-+	}
-+
-+	if (src_type == OP_SRC_REG && dest_type == OP_DEST_REG_INDIRECT) {
-+		offset = -cfa->offset + op->dest.offset;
-+		if (dest_reg == CFI_FP) {
-+			/* Record where the FP is stored on the stack. */
-+			fp_val->offset = offset;
-+		} else {
-+			/* Record where the RA is stored on the stack. */
-+			if (fp_val->offset && (offset - fp_val->offset) == 8)
-+				ra_val->offset = offset;
-+		}
-+		goto out;
-+	}
-+	return false;
-+out:
-+	if (cfa->offset < 0 || fp_reg->offset > 0 ||
-+	    fp_val->offset > 0 || ra_val->offset > 0) {
-+		/* Unexpected SP and FP offset values. */
-+		return false;
-+	}
-+	return true;
-+}
-+
-+static bool do_stack_ops(struct instruction *insn, struct insn_state *state)
-+{
-+	struct stack_op *op;
-+
-+	list_for_each_entry(op, &insn->stack_ops, list) {
-+		if (!update_cfi_state(&state->cfi, op))
-+			return false;
-+	}
-+	return true;
-+}
-+
-+static bool validate_branch(struct objtool_file *file, struct section *sec,
-+			    struct symbol *func, struct instruction *insn,
-+			    struct insn_state *state)
-+{
-+	struct symbol *insn_func = insn->func;
-+	struct instruction *dest;
-+	struct cfi_state save_cfi;
-+	struct cfi_reg *cfa;
-+	struct cfi_reg *regs;
-+	unsigned long start, end;
-+
-+	for (; insn; insn = next_insn_same_sec(file, insn)) {
-+
-+		if (insn->func != insn_func)
-+			return true;
-+
-+		if (insn->cfi)
-+			return insn_cfi_match(insn, &state->cfi, false);
-+
-+		insn->cfi = cfi_hash_find_or_add(&state->cfi);
-+		dest = insn->jump_dest;
-+
-+		if (!do_stack_ops(insn, state))
-+			return false;
-+
-+		switch (insn->type) {
-+		case INSN_BUG:
-+			return true;
-+
-+		case INSN_UNRELIABLE:
-+			return false;
-+
-+		case INSN_RETURN:
-+			cfa = &state->cfi.cfa;
-+			regs = state->cfi.regs;
-+			if (cfa->offset || regs[CFI_FP].offset) {
-+				/* SP and FP offsets should be 0 on return. */
-+				return false;
-+			}
-+			return true;
-+
-+		case INSN_CALL:
-+		case INSN_CALL_DYNAMIC:
-+			start = func->offset;
-+			end = start + func->len;
-+			/* Treat intra-function calls as jumps. */
-+			if (!dest || dest->sec != sec ||
-+			    dest->offset <= start || dest->offset >= end) {
-+				break;
-+			}
-+
-+		case INSN_JUMP_UNCONDITIONAL:
-+		case INSN_JUMP_CONDITIONAL:
-+		case INSN_JUMP_DYNAMIC:
-+			if (dest) {
-+				save_cfi = state->cfi;
-+				if (!validate_branch(file, sec, func, dest,
-+						     state)) {
-+					return false;
-+				}
-+				state->cfi = save_cfi;
-+			}
-+			if (insn->type == INSN_JUMP_UNCONDITIONAL ||
-+			    insn->type == INSN_JUMP_DYNAMIC) {
-+				return true;
-+			}
-+			break;
-+
-+		default:
-+			break;
-+		}
-+	}
-+	return true;
-+}
-+
-+static bool walk_reachable(struct objtool_file *file, struct section *sec,
-+			   struct symbol *func)
-+{
-+	struct instruction *insn = find_insn(file, sec, func->offset);
-+	struct insn_state state;
-+
-+	func_for_each_insn(file, func, insn) {
-+
-+		if (insn->offset != func->offset &&
-+		    (insn->type != INSN_START || insn->cfi)) {
-+			continue;
-+		}
-+
-+		init_insn_state(file, &state, sec);
-+		set_func_state(&state.cfi);
-+
-+		if (!validate_branch(file, sec, func, insn, &state))
-+			return false;
-+	}
-+	return true;
-+}
-+
-+static void remove_cfi(struct objtool_file *file, struct symbol *func)
-+{
-+	struct instruction *insn;
-+
-+	func_for_each_insn(file, func, insn) {
-+		insn->cfi = NULL;
-+	}
-+}
++#include <linux/types.h>
++#include <linux/compiler.h>
++#include <linux/orc_entry.h>
 +
 +/*
-+ * Instructions that were not visited by walk_reachable() would not have a
-+ * CFI. Try to initialize their CFI. For instance, there could be a table of
-+ * unconditional branches like for a switch statement. Or, code can be patched
-+ * by the kernel at runtime. After patching, some of the previously unreachable
-+ * code may become reachable.
++ * The ORC_REG_* registers are base registers which are used to find other
++ * registers on the stack.
 + *
-+ * This follows the same pattern as the DWARF info generated by the compiler.
++ * ORC_REG_PREV_SP, also known as DWARF Call Frame Address (CFA), is the
++ * address of the previous frame: the caller's SP before it called the current
++ * function.
++ *
++ * ORC_REG_UNDEFINED means the corresponding register's value didn't change in
++ * the current frame.
++ *
++ * We only use base registers SP and FP -- which the previous SP is based on --
++ * and PREV_SP and UNDEFINED -- which the previous FP is based on.
 + */
-+static bool walk_unreachable(struct objtool_file *file, struct section *sec,
-+			     struct symbol *func)
-+{
-+	struct instruction *insn, *prev;
-+	struct insn_state state;
++#define ORC_REG_UNDEFINED		0
++#define ORC_REG_PREV_SP			1
++#define ORC_REG_SP			2
++#define ORC_REG_FP			3
++#define ORC_REG_MAX			4
 +
-+	func_for_each_insn(file, func, insn) {
++#endif /* _ORC_TYPES_H */
+diff --git a/tools/arch/arm64/include/asm/orc_types.h b/tools/arch/arm64/include/asm/orc_types.h
+new file mode 100644
+index 000000000000..c7bb690ca7d9
+--- /dev/null
++++ b/tools/arch/arm64/include/asm/orc_types.h
+@@ -0,0 +1,35 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
++ *
++ * Copyright (C) 2022 Microsoft Corporation
++ */
 +
-+		if (insn->cfi)
-+			continue;
++#ifndef _ORC_TYPES_H
++#define _ORC_TYPES_H
 +
-+		prev = list_prev_entry(insn, list);
-+		if (!prev || prev->func != insn->func || !prev->cfi)
-+			continue;
++#include <linux/types.h>
++#include <linux/compiler.h>
++#include <linux/orc_entry.h>
 +
-+		if (prev->type != INSN_JUMP_UNCONDITIONAL &&
-+		    prev->type != INSN_JUMP_DYNAMIC &&
-+		    prev->type != INSN_BUG) {
-+			continue;
-+		}
++/*
++ * The ORC_REG_* registers are base registers which are used to find other
++ * registers on the stack.
++ *
++ * ORC_REG_PREV_SP, also known as DWARF Call Frame Address (CFA), is the
++ * address of the previous frame: the caller's SP before it called the current
++ * function.
++ *
++ * ORC_REG_UNDEFINED means the corresponding register's value didn't change in
++ * the current frame.
++ *
++ * We only use base registers SP and FP -- which the previous SP is based on --
++ * and PREV_SP and UNDEFINED -- which the previous FP is based on.
++ */
++#define ORC_REG_UNDEFINED		0
++#define ORC_REG_PREV_SP			1
++#define ORC_REG_SP			2
++#define ORC_REG_FP			3
++#define ORC_REG_MAX			4
 +
-+		/* Propagate the CFI. */
-+		state.cfi = *prev->cfi;
-+		if (!validate_branch(file, sec, func, insn, &state))
-+			return false;
-+	}
-+	return true;
-+}
-+
-+static void walk_section(struct objtool_file *file, struct section *sec)
-+{
-+	struct symbol *func;
-+
-+	list_for_each_entry(func, &sec->symbol_list, list) {
-+
-+		if (func->type != STT_FUNC || !func->len ||
-+		    func->pfunc != func || func->alias != func) {
-+			/* No CFI generated for this function. */
-+			continue;
-+		}
-+
-+		if (!walk_reachable(file, sec, func) ||
-+		    !walk_unreachable(file, sec, func)) {
-+			remove_cfi(file, func);
-+			continue;
-+		}
-+	}
-+}
-+
-+static void walk_sections(struct objtool_file *file)
-+{
-+	struct section *sec;
-+
-+	for_each_sec(file, sec) {
-+		if (sec->sh.sh_flags & SHF_EXECINSTR)
-+			walk_section(file, sec);
-+	}
-+}
-+
- int check(struct objtool_file *file)
- {
- 	int ret;
-@@ -56,11 +333,21 @@ int check(struct objtool_file *file)
- 	if (!opts.stackval)
- 		return 1;
++#endif /* _ORC_TYPES_H */
+diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
+index 92583b82eb78..14bb324d9385 100644
+--- a/tools/objtool/Makefile
++++ b/tools/objtool/Makefile
+@@ -47,6 +47,7 @@ ifeq ($(SRCARCH),x86)
+ endif
  
-+	arch_initial_func_cfi_state(&initial_func_cfi);
-+
-+	if (!cfi_hash_alloc(1UL << (file->elf->symbol_bits - 3)))
-+		return -1;
-+
- 	ret = decode_instructions(file);
- 	if (ret)
- 		return ret;
+ ifeq ($(SRCARCH),arm64)
++	BUILD_ORC := y
+ 	DYNAMIC_CHECK := y
+ endif
  
- 	add_jump_destinations(file);
- 
-+	if (list_empty(&file->insn_list))
+diff --git a/tools/objtool/arch/arm64/Build b/tools/objtool/arch/arm64/Build
+index 3ff1f00c6a47..8615abfb12cf 100644
+--- a/tools/objtool/arch/arm64/Build
++++ b/tools/objtool/arch/arm64/Build
+@@ -1 +1,2 @@
+ objtool-y += decode.o
++objtool-y += orc.o
+diff --git a/tools/objtool/arch/arm64/include/arch/elf.h b/tools/objtool/arch/arm64/include/arch/elf.h
+new file mode 100644
+index 000000000000..4ae6df2bd90c
+--- /dev/null
++++ b/tools/objtool/arch/arm64/include/arch/elf.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
++
++#ifndef _OBJTOOL_ARCH_ELF
++#define _OBJTOOL_ARCH_ELF
++
++#define R_NONE		R_AARCH64_NONE
++#define R_PCREL		R_AARCH64_PREL32
++
++#endif /* _OBJTOOL_ARCH_ELF */
+diff --git a/tools/objtool/arch/arm64/orc.c b/tools/objtool/arch/arm64/orc.c
+new file mode 100644
+index 000000000000..cef14114e1ec
+--- /dev/null
++++ b/tools/objtool/arch/arm64/orc.c
+@@ -0,0 +1,86 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Author: Madhavan T. Venkataraman (madvenka@linux.microsoft.com)
++ *
++ * Copyright (C) 2022 Microsoft Corporation
++ */
++#include <string.h>
++
++#include <linux/objtool.h>
++
++#include <objtool/insn.h>
++#include <objtool/orc.h>
++
++int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
++		   struct instruction *insn)
++{
++	struct cfi_reg *fp = &cfi->regs[CFI_FP];
++
++	memset(orc, 0, sizeof(*orc));
++
++	orc->sp_reg = ORC_REG_SP;
++	orc->fp_reg = ORC_REG_PREV_SP;
++
++	if (!cfi || cfi->cfa.base == CFI_UNDEFINED ||
++	    (cfi->type == UNWIND_HINT_TYPE_CALL && !fp->offset)) {
++		/*
++		 * The frame pointer has not been set up. This instruction is
++		 * unreliable from an unwind perspective.
++		 */
 +		return 0;
++	}
 +
-+	walk_sections(file);
++	orc->sp_offset = cfi->cfa.offset;
++	orc->fp_offset = fp->offset;
++	orc->type = cfi->type;
++	orc->end = cfi->end;
 +
- 	return 0;
++	return 0;
++}
++
++static const char *reg_name(unsigned int reg)
++{
++	switch (reg) {
++	case ORC_REG_PREV_SP:
++		return "cfa";
++	case ORC_REG_FP:
++		return "x29";
++	case ORC_REG_SP:
++		return "sp";
++	default:
++		return "?";
++	}
++}
++
++const char *orc_type_name(unsigned int type)
++{
++	switch (type) {
++	case UNWIND_HINT_TYPE_CALL:
++		return "call";
++	default:
++		return "?";
++	}
++}
++
++void orc_print_reg(unsigned int reg, int offset)
++{
++	if (reg == ORC_REG_UNDEFINED)
++		printf("(und)");
++	else
++		printf("%s%+d", reg_name(reg), offset);
++}
++
++void orc_print_sp(void)
++{
++	printf(" cfa:");
++}
++
++void orc_print_fp(void)
++{
++	printf(" x29:");
++}
++
++bool orc_ignore_section(struct section *sec)
++{
++	return !strcmp(sec->name, ".head.text");
++}
+diff --git a/tools/objtool/dcheck.c b/tools/objtool/dcheck.c
+index 8b78cb608528..57499752c523 100644
+--- a/tools/objtool/dcheck.c
++++ b/tools/objtool/dcheck.c
+@@ -349,5 +349,8 @@ int check(struct objtool_file *file)
+ 
+ 	walk_sections(file);
+ 
+-	return 0;
++	if (opts.orc)
++		ret = orc_create(file);
++
++	return ret;
  }
 diff --git a/tools/objtool/include/objtool/insn.h b/tools/objtool/include/objtool/insn.h
-index cfd1ae7e2e8e..3a43a591b318 100644
+index 3a43a591b318..ac718f1e2d2f 100644
 --- a/tools/objtool/include/objtool/insn.h
 +++ b/tools/objtool/include/objtool/insn.h
-@@ -84,7 +84,8 @@ struct instruction *next_insn_same_sec(struct objtool_file *file,
+@@ -84,6 +84,7 @@ struct instruction *next_insn_same_sec(struct objtool_file *file,
  struct instruction *next_insn_same_func(struct objtool_file *file,
  					struct instruction *insn);
  struct reloc *insn_reloc(struct objtool_file *file, struct instruction *insn);
--bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2);
-+bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2,
-+		    bool print);
++bool insn_can_reloc(struct instruction *insn);
+ bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2,
+ 		    bool print);
  bool same_function(struct instruction *insn1, struct instruction *insn2);
- bool is_first_func_insn(struct objtool_file *file, struct instruction *insn);
+diff --git a/tools/objtool/include/objtool/objtool.h b/tools/objtool/include/objtool/objtool.h
+index 7f2d1b095333..b7655ad3e402 100644
+--- a/tools/objtool/include/objtool/objtool.h
++++ b/tools/objtool/include/objtool/objtool.h
+@@ -46,5 +46,6 @@ void objtool_pv_add(struct objtool_file *file, int idx, struct symbol *func);
+ int check(struct objtool_file *file);
+ int orc_dump(const char *objname);
+ int orc_create(struct objtool_file *file);
++bool orc_ignore_section(struct section *sec);
  
+ #endif /* _OBJTOOL_H */
 diff --git a/tools/objtool/insn.c b/tools/objtool/insn.c
-index e570b46ad39e..be3617d55aea 100644
+index be3617d55aea..af48319f2225 100644
 --- a/tools/objtool/insn.c
 +++ b/tools/objtool/insn.c
-@@ -135,7 +135,8 @@ bool is_first_func_insn(struct objtool_file *file, struct instruction *insn)
+@@ -193,3 +193,23 @@ bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2,
+ 
  	return false;
  }
++
++/*
++ * This is a hack for Clang. Clang is aggressive about removing section
++ * symbols and then some. If we cannot find something to relocate an
++ * instruction against, we must not generate CFI for it or the ORC
++ * generation will fail later.
++ */
++bool insn_can_reloc(struct instruction *insn)
++{
++	struct section *insn_sec = insn->sec;
++	unsigned long insn_off = insn->offset;
++
++	if (insn_sec->sym ||
++	    find_symbol_containing(insn_sec, insn_off) ||
++	    find_symbol_containing(insn_sec, insn_off - 1)) {
++		/* See elf_add_reloc_to_insn(). */
++		return true;
++	}
++	return false;
++}
+diff --git a/tools/objtool/orc_gen.c b/tools/objtool/orc_gen.c
+index ea2e361ff7bc..bddf5889466f 100644
+--- a/tools/objtool/orc_gen.c
++++ b/tools/objtool/orc_gen.c
+@@ -14,6 +14,11 @@
+ #include <objtool/warn.h>
+ #include <objtool/endianness.h>
  
--bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2)
-+bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2,
-+		    bool print)
- {
- 	struct cfi_state *cfi1 = insn->cfi;
- 	int i;
-@@ -147,10 +148,12 @@ bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2)
++bool __weak orc_ignore_section(struct section *sec)
++{
++	return false;
++}
++
+ static int write_orc_entry(struct elf *elf, struct section *orc_sec,
+ 			   struct section *ip_sec, unsigned int idx,
+ 			   struct section *insn_sec, unsigned long insn_off,
+@@ -87,13 +92,16 @@ int orc_create(struct objtool_file *file)
+ 		struct instruction *insn;
+ 		bool empty = true;
  
- 	if (memcmp(&cfi1->cfa, &cfi2->cfa, sizeof(cfi1->cfa))) {
+-		if (!sec->text)
++		if (!sec->text || orc_ignore_section(sec))
+ 			continue;
  
--		WARN_FUNC("stack state mismatch: cfa1=%d%+d cfa2=%d%+d",
--			  insn->sec, insn->offset,
--			  cfi1->cfa.base, cfi1->cfa.offset,
--			  cfi2->cfa.base, cfi2->cfa.offset);
-+		if (print) {
-+			WARN_FUNC("stack state mismatch: cfa1=%d%+d cfa2=%d%+d",
-+				  insn->sec, insn->offset,
-+				  cfi1->cfa.base, cfi1->cfa.offset,
-+				  cfi2->cfa.base, cfi2->cfa.offset);
-+		}
+ 		sec_for_each_insn(file, sec, insn) {
+ 			struct alt_group *alt_group = insn->alt_group;
+ 			int i;
  
- 	} else if (memcmp(&cfi1->regs, &cfi2->regs, sizeof(cfi1->regs))) {
- 		for (i = 0; i < CFI_NUM_REGS; i++) {
-@@ -158,26 +161,32 @@ bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2)
- 				    sizeof(struct cfi_reg)))
- 				continue;
- 
--			WARN_FUNC("stack state mismatch: reg1[%d]=%d%+d reg2[%d]=%d%+d",
--				  insn->sec, insn->offset,
--				  i, cfi1->regs[i].base, cfi1->regs[i].offset,
--				  i, cfi2->regs[i].base, cfi2->regs[i].offset);
-+			if (print) {
-+				WARN_FUNC("stack state mismatch: reg1[%d]=%d%+d reg2[%d]=%d%+d",
-+					  insn->sec, insn->offset,
-+					  i, cfi1->regs[i].base, cfi1->regs[i].offset,
-+					  i, cfi2->regs[i].base, cfi2->regs[i].offset);
-+			}
- 			break;
++			if (!insn_can_reloc(insn))
++				continue;
++
+ 			if (!alt_group) {
+ 				if (init_orc_entry(&orc, insn->cfi, insn))
+ 					return -1;
+@@ -137,7 +145,7 @@ int orc_create(struct objtool_file *file)
  		}
  
- 	} else if (cfi1->type != cfi2->type) {
+ 		/* Add a section terminator */
+-		if (!empty) {
++		if (!empty && sec->sym) {
+ 			orc_list_add(&orc_list, &null, sec, sec->sh.sh_size);
+ 			nr++;
+ 		}
+diff --git a/tools/objtool/sync-check.sh b/tools/objtool/sync-check.sh
+index ef1acb064605..0d0656f6ce4a 100755
+--- a/tools/objtool/sync-check.sh
++++ b/tools/objtool/sync-check.sh
+@@ -29,6 +29,13 @@ arch/x86/lib/insn.c
+ '
+ fi
  
--		WARN_FUNC("stack state mismatch: type1=%d type2=%d",
--			  insn->sec, insn->offset, cfi1->type, cfi2->type);
-+		if (print) {
-+			WARN_FUNC("stack state mismatch: type1=%d type2=%d",
-+				  insn->sec, insn->offset, cfi1->type, cfi2->type);
-+		}
- 
- 	} else if (cfi1->drap != cfi2->drap ||
- 		   (cfi1->drap && cfi1->drap_reg != cfi2->drap_reg) ||
- 		   (cfi1->drap && cfi1->drap_offset != cfi2->drap_offset)) {
- 
--		WARN_FUNC("stack state mismatch: drap1=%d(%d,%d) drap2=%d(%d,%d)",
--			  insn->sec, insn->offset,
--			  cfi1->drap, cfi1->drap_reg, cfi1->drap_offset,
--			  cfi2->drap, cfi2->drap_reg, cfi2->drap_offset);
-+		if (print) {
-+			WARN_FUNC("stack state mismatch: drap1=%d(%d,%d) drap2=%d(%d,%d)",
-+				  insn->sec, insn->offset,
-+				  cfi1->drap, cfi1->drap_reg, cfi1->drap_offset,
-+				  cfi2->drap, cfi2->drap_reg, cfi2->drap_offset);
-+		}
- 
- 	} else
- 		return true;
++if [ "$SRCARCH" = "arm64" ]; then
++FILES="$FILES
++arch/arm64/include/asm/orc_types.h
++include/linux/orc_entry.h
++"
++fi
++
+ check_2 () {
+   file1=$1
+   file2=$2
 -- 
 2.25.1
 
