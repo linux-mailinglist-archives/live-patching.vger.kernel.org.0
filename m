@@ -2,63 +2,91 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E34368ADAC
-	for <lists+live-patching@lfdr.de>; Sun,  5 Feb 2023 01:47:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C1D68B0ED
+	for <lists+live-patching@lfdr.de>; Sun,  5 Feb 2023 17:22:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbjBEArb (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 4 Feb 2023 19:47:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50972 "EHLO
+        id S229510AbjBEQWF (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Sun, 5 Feb 2023 11:22:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbjBEAra (ORCPT
+        with ESMTP id S229472AbjBEQWE (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sat, 4 Feb 2023 19:47:30 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1D52529F;
-        Sat,  4 Feb 2023 16:47:28 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Sun, 5 Feb 2023 11:22:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6848A65A4;
+        Sun,  5 Feb 2023 08:22:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4P8W264VTwz4xxJ;
-        Sun,  5 Feb 2023 11:47:26 +1100 (AEDT)
-From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Song Liu <song@kernel.org>, live-patching@vger.kernel.org,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17B29B80C93;
+        Sun,  5 Feb 2023 16:22:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6072DC433EF;
+        Sun,  5 Feb 2023 16:21:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675614118;
+        bh=Ah7JsMso/gKSKfSDC+u0iMmehdce+I9oIrEIjZfxS0M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R8sbsyniUgXIUWBXc5BCiFKfBly8y1P9daSadDPzyWh0yLZxiCqNn4fvTcbigmqli
+         74h9cjYiPyc+sfvEguC8rT1B1y483Xo5ff7ktYgksIA7hP4VFbjte+aksSnPyr1TG4
+         gNunv0n5yKFUl3DkK/u48gu9c2rB5+Jb9mmEeLBQdbnqrNINyBQKlYzUXbE9ljurrW
+         VOXtnav+63pHox1hkL4UmBIk7tPlRRern9yUP/0kn74hspxZUuKcaeRbapzCuj8kT8
+         0fzX1ypuWSVUXqOa9wKmgNeSKQcaR8gCbE0W86Nf6tgRuKUw4ZLSI1wXQbU9PSf6mU
+         vjkkjDb2SCCNA==
+Date:   Sun, 5 Feb 2023 08:21:56 -0800
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     live-patching@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Nicholas Piggin <npiggin@gmail.com>
-In-Reply-To: <cover.1674617130.git.jpoimboe@kernel.org>
-References: <cover.1674617130.git.jpoimboe@kernel.org>
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Song Liu <song@kernel.org>
 Subject: Re: [PATCH 0/2] powerpc: Fix livepatch module re-patching issue
-Message-Id: <167555801712.1621279.10804935395824436485.b4-ty@ellerman.id.au>
-Date:   Sun, 05 Feb 2023 11:46:57 +1100
+Message-ID: <20230205162156.zganuowqio4kva6o@treble>
+References: <cover.1674617130.git.jpoimboe@kernel.org>
+ <20230204172357.mbudvbtv7tc7vhf3@treble>
+ <87357ley7f.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87357ley7f.fsf@mpe.ellerman.id.au>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, 24 Jan 2023 19:38:03 -0800, Josh Poimboeuf wrote:
-> Fix a livepatch bug seen when reloading a patched module.
+On Sun, Feb 05, 2023 at 11:46:12AM +1100, Michael Ellerman wrote:
+> Josh Poimboeuf <jpoimboe@kernel.org> writes:
+> > On Tue, Jan 24, 2023 at 07:38:03PM -0800, Josh Poimboeuf wrote:
+> >> Fix a livepatch bug seen when reloading a patched module.
+> >> 
+> >> This is the powerpc counterpart to Song Liu's fix for a similar issue on
+> >> x86:
+> >> 
+> >>   https://lkml.kernel.org/lkml/20230121004945.697003-2-song@kernel.org
+> >> 
+> >> Josh Poimboeuf (2):
+> >>   powerpc/module_64: Improve restore_r2() return semantics
+> >>   powerpc/module_64: Fix "expected nop" error on module re-patching
+> >> 
+> >>  arch/powerpc/kernel/module_64.c | 29 ++++++++++++++++++-----------
+> >>  1 file changed, 18 insertions(+), 11 deletions(-)
+> >
+> > Hi Michael,
+> >
+> > Ping?  Any objections to this?
+> >
+> > The x86 counterpart to this is queued for 6.3, it would be nice if this
+> > also landed.  We could take it through the livepatch tree if needed.
 > 
-> This is the powerpc counterpart to Song Liu's fix for a similar issue on
-> x86:
+> It's in my next since about a week. Sorry I forgot to send the
+> "accepted" emails (which I still don't have automated :/ ).
 > 
->   https://lkml.kernel.org/lkml/20230121004945.697003-2-song@kernel.org
-> 
-> [...]
+> 337251c7114e1 ("powerpc/module_64: Fix "expected nop" error on module re-patching")
 
-Applied to powerpc/next.
+Ah, I didn't think to look in -next.  Thanks!
 
-[1/2] powerpc/module_64: Improve restore_r2() return semantics
-      https://git.kernel.org/powerpc/c/bc2c6f5695ffa05c838b8b6fc5cd581a672151a1
-[2/2] powerpc/module_64: Fix "expected nop" error on module re-patching
-      https://git.kernel.org/powerpc/c/37251c7114e1b743b077ca74b93557c1ad92a97e
-
-cheers
+-- 
+Josh
