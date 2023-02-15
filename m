@@ -2,78 +2,72 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D38696D8F
-	for <lists+live-patching@lfdr.de>; Tue, 14 Feb 2023 20:05:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E42BF697958
+	for <lists+live-patching@lfdr.de>; Wed, 15 Feb 2023 10:57:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229506AbjBNTFr (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 14 Feb 2023 14:05:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
+        id S232124AbjBOJ5M (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 15 Feb 2023 04:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBNTFq (ORCPT
+        with ESMTP id S234096AbjBOJ5F (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 14 Feb 2023 14:05:46 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F977AF;
-        Tue, 14 Feb 2023 11:05:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 15 Feb 2023 04:57:05 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E251E1E8;
+        Wed, 15 Feb 2023 01:57:04 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id E83F4204B9;
+        Wed, 15 Feb 2023 09:57:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1676455022; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d+HwcuhFsgx+sD75HVVV9xfW4SXgRKhvh/BUKAa+rXU=;
+        b=YcaXRa9i1tsmj36ymBetzYuuXR1Ib5fYdy1RV8p+a39GBBZ3R8GtwQ95chjiPgaC0cv3as
+        fVSgkHFLQYwtGiV8j6z+nfDb0OAwLtJYY/2y7HU3rnE477Xlpr9TVatJsDEz9Oq5UKpgYS
+        5tYI+BLp203f9bvZc0WNrlQsL8fIZ6M=
+Received: from suse.cz (pmladek.tcp.ovpn2.prg.suse.de [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B2BFBCE21FC;
-        Tue, 14 Feb 2023 19:05:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71630C433D2;
-        Tue, 14 Feb 2023 19:05:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676401541;
-        bh=6CvhNlhlczrt07CSDD97YV9/+SY/oi147S3AKQHXDB4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z5XTXQWOjJ0n8gkG/RnphlIvcBWRnBHurpzJ3H0j02CxUUjGq8q+aDDQCWNPpBA3F
-         pqBAB7NqKRSDG55F0+bZIxue6tcvAwziZprRtFfP33Pyvj7nVZzfjYNsVITRQ3CMsE
-         lT7J0dmGxau7CoVoxkwuV3UopTTWV8MXgNfZudvSUY1zHr9eoN5JMXWDqEuBkIcQTx
-         7Gj3iuf78zIZ8uNhGgGV9K4tdG881Y+PP8Q5q6OM8Bh1wBBNEBNMXaFqjdC/Kl3S0A
-         3V+7DHzaM7hZc2lpPlk0JhqfuVb947Jcn8R9LQiJC3U0raD6T9bgOWr/qClobOQTyA
-         QMX7FUVWSdYLg==
-Date:   Tue, 14 Feb 2023 11:05:39 -0800
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
+        by relay2.suse.de (Postfix) with ESMTPS id 8A3AD2C141;
+        Wed, 15 Feb 2023 09:57:02 +0000 (UTC)
+Date:   Wed, 15 Feb 2023 10:56:58 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
 Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Seth Forshee <sforshee@digitalocean.com>,
+        Peter Zijlstra <peterz@infradead.org>,
         Song Liu <song@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        Petr Mladek <pmladek@suse.com>,
         Joe Lawrence <joe.lawrence@redhat.com>,
         Miroslav Benes <mbenes@suse.cz>,
         Jiri Kosina <jikos@kernel.org>, Ingo Molnar <mingo@redhat.com>
-Subject: Re: [PATCH 0/3] livepatch,sched: Add livepatch task switching to
- cond_resched()
-Message-ID: <20230214190539.6xw3djyma3zaw2ps@treble>
+Subject: Re: [PATCH 1/3] livepatch: Skip task_call_func() for current task
+Message-ID: <Y+ysamkjezbZr/Tr@alley>
 References: <cover.1675969869.git.jpoimboe@kernel.org>
- <Y+t5tmbmKaUwNzdJ@hirez.programming.kicks-ass.net>
+ <fe4deb491717279f6db8c58bfaf923d964b4a2ed.1675969869.git.jpoimboe@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y+t5tmbmKaUwNzdJ@hirez.programming.kicks-ass.net>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <fe4deb491717279f6db8c58bfaf923d964b4a2ed.1675969869.git.jpoimboe@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 01:08:22PM +0100, Peter Zijlstra wrote:
-> On Thu, Feb 09, 2023 at 11:17:46AM -0800, Josh Poimboeuf wrote:
-> > Fix patching stalls caused by busy kthreads.
-> > 
-> > Josh Poimboeuf (3):
-> >   livepatch: Skip task_call_func() for current task
-> >   livepatch,sched: Add livepatch task switching to cond_resched()
-> >   vhost: Fix livepatch timeouts in vhost_worker()
+On Thu 2023-02-09 11:17:47, Josh Poimboeuf wrote:
+> The current task doesn't need the scheduler's protection to unwind its
+> own stack.
 > 
-> Seems reasonable, you want me to take them through the sched tree?
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-That would be great, though first I'd like to get an ack from at least
-another livepatch maintainer.
+I do not see any problem with it:
 
--- 
-Josh
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Best Regards,
+Petr
