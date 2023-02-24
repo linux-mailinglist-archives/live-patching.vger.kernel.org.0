@@ -2,36 +2,36 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62E786A2000
+	by mail.lfdr.de (Postfix) with ESMTP id E13766A2001
 	for <lists+live-patching@lfdr.de>; Fri, 24 Feb 2023 17:50:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbjBXQuQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        id S229492AbjBXQuQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
         Fri, 24 Feb 2023 11:50:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49946 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbjBXQuP (ORCPT
+        with ESMTP id S230023AbjBXQuQ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 24 Feb 2023 11:50:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126F352DFD;
+        Fri, 24 Feb 2023 11:50:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6B54617A;
         Fri, 24 Feb 2023 08:50:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A21576193E;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 415F16194B;
+        Fri, 24 Feb 2023 16:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30298C433EF;
         Fri, 24 Feb 2023 16:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 839F4C433D2;
-        Fri, 24 Feb 2023 16:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1677257413;
-        bh=/eJtNjckHnQFplB3Qoe3dNHpdJc/ipL91nL41jMQZiw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TkEdBD95c8810I1jH9ym2fsI8woI1k7zAGhetcRLfUiUz5/urjNGtQY7+mcs17gVJ
-         v175HRfzKCk3/ybFcUewEoYHR5UN3ZwmRBnm2mBkdgIsQyGv1rX5lNYkX8v1Y/PNrd
-         j7+4E0mgjVIheduAok9GVwP8IeoXOU2M0HHoixW/ipITKsKBKysuI27E7ZcgEOa0Gv
-         Z1TizjRxg/tSTMSG3GeunMXcEPSNYPLDNzz7M0IU5TVSRpy+N47B8n1m7vRKYm+SS7
-         oISnGG6yFXpZc+Gs9+EOGBnUTSdCkNHiWGHuTv3jozWhG4zin04O+xhqL/gDPPwrU6
-         W6KdxeFz8oKpQ==
+        bh=nDYIubJTBPWH5ktJId6VhvPlAhhjbmackYfSKNUBnA8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CjuG2KvIvxcQ+B/eSRKm+PTo7G6vaKPGQgIU4hFyQs5wXnomIMM8b84GLT0O4Dnxe
+         QWNkVDuQ1LSFLD75KKIO2nbosAgOXkj7ZRn7zUfbJs9Us+nqb3WkGIsp0fwlnwVmb4
+         dziFmuO5RmZlg2XCPkckA6GTPkq/+V6lRfEVFGwnWxWXY2EGWu/RqRsfd2LVcnEUwJ
+         OvR8GULbhHEn7F9zn7ez5vg60FBy9A+cPDiw+ei2E+b1+FZcxvG/b/nQydeoRE3TWG
+         chzdnusNMa6FPIev2fEZjRfPq+laArTHe4isK2ASKzh1Je7tudeigh2zidFin6awuM
+         2Y9+HwyejfjbQ==
 From:   Josh Poimboeuf <jpoimboe@kernel.org>
 To:     live-patching@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Seth Forshee <sforshee@kernel.org>,
@@ -43,15 +43,17 @@ Cc:     linux-kernel@vger.kernel.org, Seth Forshee <sforshee@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Jiri Kosina <jikos@kernel.org>, Ingo Molnar <mingo@redhat.com>,
         Rik van Riel <riel@surriel.com>
-Subject: [PATCH v3 0/3] livepatch,sched: Add livepatch task switching to cond_resched()
-Date:   Fri, 24 Feb 2023 08:49:58 -0800
-Message-Id: <cover.1677257135.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 1/3] livepatch: Skip task_call_func() for current task
+Date:   Fri, 24 Feb 2023 08:49:59 -0800
+Message-Id: <4b92e793462d532a05f03767151fa29db3e68e13.1677257135.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <cover.1677257135.git.jpoimboe@kernel.org>
+References: <cover.1677257135.git.jpoimboe@kernel.org>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,31 +61,33 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-v3:
-- Add barriers (pmladek)
-- Update comments
+The current task doesn't need the scheduler's protection to unwind its
+own stack.
 
-v2:
-- Avoid calling klp_cond_resched_disable() in klp_cancel_transition()
-- Fix race in klp_reverse_transition()
+Tested-by: Seth Forshee (DigitalOcean) <sforshee@kernel.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+---
+ kernel/livepatch/transition.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Fix patching stalls caused by busy kthreads.
-
-Josh Poimboeuf (3):
-  livepatch: Skip task_call_func() for current task
-  livepatch,sched: Add livepatch task switching to cond_resched()
-  vhost: Fix livepatch timeouts in vhost_worker()
-
- drivers/vhost/vhost.c           |   3 +-
- include/linux/livepatch.h       |   1 +
- include/linux/livepatch_sched.h |  29 ++++++++
- include/linux/sched.h           |  20 ++++--
- kernel/livepatch/core.c         |   1 +
- kernel/livepatch/transition.c   | 113 +++++++++++++++++++++++++++-----
- kernel/sched/core.c             |  64 +++++++++++++++---
- 7 files changed, 200 insertions(+), 31 deletions(-)
- create mode 100644 include/linux/livepatch_sched.h
-
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index f1b25ec581e0..4d1f443778f7 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -307,7 +307,11 @@ static bool klp_try_switch_task(struct task_struct *task)
+ 	 * functions.  If all goes well, switch the task to the target patch
+ 	 * state.
+ 	 */
+-	ret = task_call_func(task, klp_check_and_switch_task, &old_name);
++	if (task == current)
++		ret = klp_check_and_switch_task(current, &old_name);
++	else
++		ret = task_call_func(task, klp_check_and_switch_task, &old_name);
++
+ 	switch (ret) {
+ 	case 0:		/* success */
+ 		break;
 -- 
 2.39.1
 
