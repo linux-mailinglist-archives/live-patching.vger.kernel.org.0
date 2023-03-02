@@ -2,67 +2,127 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9503B6A722E
-	for <lists+live-patching@lfdr.de>; Wed,  1 Mar 2023 18:35:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 553766A863F
+	for <lists+live-patching@lfdr.de>; Thu,  2 Mar 2023 17:23:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229463AbjCARfB (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 1 Mar 2023 12:35:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36866 "EHLO
+        id S229676AbjCBQXa (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 2 Mar 2023 11:23:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbjCARfA (ORCPT
+        with ESMTP id S229673AbjCBQX3 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 1 Mar 2023 12:35:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F042D457EF
-        for <live-patching@vger.kernel.org>; Wed,  1 Mar 2023 09:34:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 2 Mar 2023 11:23:29 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB2D17CC0;
+        Thu,  2 Mar 2023 08:23:26 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 740EE21FD2;
+        Thu,  2 Mar 2023 16:23:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1677774205; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TWP+794MyCIWP+G+s4FT51Bi2rDWxsLNhSxzg1q2+dk=;
+        b=AQXyAurahCpZQ/er1h3ERHbroqld5zzRgHyJzW3DsH7dcDqZctGiROLW6FOg95me3zhlVb
+        S6XAUPxmZyTVUgjyw6NGXwJaxPI9/Ls/OuWFqq0BzjANLaHPcVjsAaE6uKr0qAm3Nxyxht
+        BQNpi8MkN1fvH4koRYf1y2AN6N7u5C0=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74A8861449
-        for <live-patching@vger.kernel.org>; Wed,  1 Mar 2023 17:34:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32800C4339B;
-        Wed,  1 Mar 2023 17:34:38 +0000 (UTC)
-Date:   Wed, 1 Mar 2023 12:34:35 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     x86@kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH 6/6] x86,objtool: Split UNWIND_HINT_EMPTY in two
-Message-ID: <20230301123435.7acef48f@gandalf.local.home>
-In-Reply-To: <fd6212c8b450d3564b855e1cb48404d6277b4d9f.1677683419.git.jpoimboe@kernel.org>
-References: <cover.1677683419.git.jpoimboe@kernel.org>
-        <fd6212c8b450d3564b855e1cb48404d6277b4d9f.1677683419.git.jpoimboe@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by relay2.suse.de (Postfix) with ESMTPS id 73AEB2C141;
+        Thu,  2 Mar 2023 16:23:24 +0000 (UTC)
+Date:   Thu, 2 Mar 2023 17:23:18 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Tomohiro Misono (Fujitsu)" <misono.tomohiro@fujitsu.com>
+Cc:     "'madvenka@linux.microsoft.com'" <madvenka@linux.microsoft.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "chenzhongjin@huawei.com" <chenzhongjin@huawei.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "Keiya Nobuta (Fujitsu)" <nobuta.keiya@fujitsu.com>,
+        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "jamorris@linux.microsoft.com" <jamorris@linux.microsoft.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v3 00/22] arm64: livepatch: Use ORC for dynamic frame
+ pointer validation
+Message-ID: <ZADNdp5U+lP10Oqo@alley>
+References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
+ <20230202074036.507249-1-madvenka@linux.microsoft.com>
+ <TYCPR01MB69938E7E2E14697FCF166155E5AD9@TYCPR01MB6993.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <TYCPR01MB69938E7E2E14697FCF166155E5AD9@TYCPR01MB6993.jpnprd01.prod.outlook.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed,  1 Mar 2023 07:13:12 -0800
-Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+On Wed 2023-03-01 03:12:08, Tomohiro Misono (Fujitsu) wrote:
+> <snip>
+> > Testing
+> > =======
+> > 
+> > - I have run all of the livepatch selftests successfully. I have written a
+> >   couple of extra selftests myself which I will be posting separately
+> Hi,
+> 
+> What test configuration/environment you are using for test?
+> When I tried kselftest with fedora based config on VM, I got errors
+> because livepatch transition won't finish until signal is sent
+> (i.e. it takes 15s for every transition).
+> 
+> [excerpt from test result]
+>   ```
+>   $ sudo ./test-livepatch.sh
+>   TEST: basic function patching ... not ok
+>   
+>   --- expected
+>   +++ result
+>   @@ -2,11 +2,13 @@
+>    livepatch: enabling patch 'test_klp_livepatch'
+>    livepatch: 'test_klp_livepatch': initializing patching transition
+>    livepatch: 'test_klp_livepatch': starting patching transition
+>   +livepatch: signaling remaining tasks
+>    livepatch: 'test_klp_livepatch': completing patching transition
+>   ```
 
-> diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-> index 1265ad519249..0387732e9c3f 100644
-> --- a/arch/x86/kernel/ftrace_64.S
-> +++ b/arch/x86/kernel/ftrace_64.S
-> @@ -340,7 +340,7 @@ STACK_FRAME_NON_STANDARD_FP(__fentry__)
->  
->  #ifdef CONFIG_FUNCTION_GRAPH_TRACER
->  SYM_CODE_START(return_to_handler)
-> -	UNWIND_HINT_EMPTY
-> +	UNWIND_HINT_UNDEFINED
->  	ANNOTATE_NOENDBR
->  	subq  $16, %rsp
->  
+It might be interesting to see what process is blocking the
+transition. The transition state is visible in
+/proc/<pid>/patch_state.
 
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+The transition is blocked when a process is in KLP_UNPATCHED state.
+It is defined in include/linux/livepatch.h:
 
--- Steve
+#define KLP_UNPATCHED	 0
+
+Well, the timing against the transition is important. The following
+might help to see the blocking processes:
+
+$> modprobe livepatch-sample ; \
+   sleep 1; \
+   for proc_path in \
+       `grep "\-1"  /proc/*/patch_state | cut -d '/'  -f-3` ; \
+   do \
+       cat $proc_path/comm ; \
+       cat $proc_path/stack ; \
+       echo ===  ; \
+   done
+
+After this the livepatch has to be manualy disabled and removed
+
+$> echo 0 >/sys/kernel/livepatch/livepatch_sample/enabled
+$> rmmod livepatch_sample
+
+Best Regards,
+Petr
