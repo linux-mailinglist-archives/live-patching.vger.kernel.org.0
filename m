@@ -2,40 +2,41 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E5616ACC2B
-	for <lists+live-patching@lfdr.de>; Mon,  6 Mar 2023 19:14:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEEFC6AC960
+	for <lists+live-patching@lfdr.de>; Mon,  6 Mar 2023 18:09:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbjCFSNw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 6 Mar 2023 13:13:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
+        id S230315AbjCFRJX (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 6 Mar 2023 12:09:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbjCFSNd (ORCPT
+        with ESMTP id S230267AbjCFRJA (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 6 Mar 2023 13:13:33 -0500
+        Mon, 6 Mar 2023 12:09:00 -0500
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BEBE55A2;
-        Mon,  6 Mar 2023 10:12:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1545628855;
+        Mon,  6 Mar 2023 09:08:05 -0800 (PST)
 Received: from [192.168.254.32] (unknown [47.187.203.192])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 985FA205749B;
-        Mon,  6 Mar 2023 08:57:01 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 985FA205749B
+        by linux.microsoft.com (Postfix) with ESMTPSA id 1E820205749D;
+        Mon,  6 Mar 2023 08:58:19 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1E820205749D
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1678121822;
-        bh=i6l9g1ghHiwdY5t9KntYL9655PJdj/oTf5R90V8m63k=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=nPVOWCj+I7dKE2js3uhg45Vt7ZVHUntccn8shQ0DZg2Gq9JbtCZYAJhKppUNX5thC
-         rCbTc2DWMWDW42tnS56iErm35CnJqfGBR2dCjrUNX5+ZhY74r86M/DdDWqDJiPrQYK
-         Z/MuQ5PyBo2S1V5CyHxFS5ArMCZX9+sLmP8ZFKfk=
-Message-ID: <c2e5fa3a-6d5c-17a1-0245-876aa5182a70@linux.microsoft.com>
-Date:   Mon, 6 Mar 2023 10:57:00 -0600
+        s=default; t=1678121900;
+        bh=kWkGguzIxCy4GS4idzAr3kaaQwhr8ad9JFP9cqeJZZc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=G2XiKL0F+8KRP/0/o0hhWc9kFtD3WkrxYBRVizWFIxE2QpwDQPyP9MAY57wd5nOHx
+         63GWDVPQwsuJCkInTIadPfnIs+1UUulEj2LKbWvlmEWkvNeDbMckINcMyVfdWT7Enl
+         Spo+yTLWQPMQQIHHs0rzSuLCb2gx0B07PQMW6Z3s=
+Message-ID: <4d69eee8-5401-ea20-a063-79cf199fe1cc@linux.microsoft.com>
+Date:   Mon, 6 Mar 2023 10:58:18 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Subject: Re: [RFC PATCH v3 00/22] arm64: livepatch: Use ORC for dynamic frame
  pointer validation
 Content-Language: en-US
-To:     "Tomohiro Misono (Fujitsu)" <misono.tomohiro@fujitsu.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+To:     Petr Mladek <pmladek@suse.com>,
+        "Tomohiro Misono (Fujitsu)" <misono.tomohiro@fujitsu.com>
+Cc:     "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
         "peterz@infradead.org" <peterz@infradead.org>,
         "chenzhongjin@huawei.com" <chenzhongjin@huawei.com>,
         "mark.rutland@arm.com" <mark.rutland@arm.com>,
@@ -52,8 +53,9 @@ To:     "Tomohiro Misono (Fujitsu)" <misono.tomohiro@fujitsu.com>,
 References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
  <20230202074036.507249-1-madvenka@linux.microsoft.com>
  <TYCPR01MB69938E7E2E14697FCF166155E5AD9@TYCPR01MB6993.jpnprd01.prod.outlook.com>
+ <ZADNdp5U+lP10Oqo@alley>
 From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <TYCPR01MB69938E7E2E14697FCF166155E5AD9@TYCPR01MB6993.jpnprd01.prod.outlook.com>
+In-Reply-To: <ZADNdp5U+lP10Oqo@alley>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -68,53 +70,67 @@ X-Mailing-List: live-patching@vger.kernel.org
 
 
 
-On 2/28/23 21:12, Tomohiro Misono (Fujitsu) wrote:
-> <snip>
->> Testing
->> =======
+On 3/2/23 10:23, Petr Mladek wrote:
+> On Wed 2023-03-01 03:12:08, Tomohiro Misono (Fujitsu) wrote:
+>> <snip>
+>>> Testing
+>>> =======
+>>>
+>>> - I have run all of the livepatch selftests successfully. I have written a
+>>>   couple of extra selftests myself which I will be posting separately
+>> Hi,
 >>
->> - I have run all of the livepatch selftests successfully. I have written a
->>   couple of extra selftests myself which I will be posting separately
-> Hi,
+>> What test configuration/environment you are using for test?
+>> When I tried kselftest with fedora based config on VM, I got errors
+>> because livepatch transition won't finish until signal is sent
+>> (i.e. it takes 15s for every transition).
+>>
+>> [excerpt from test result]
+>>   ```
+>>   $ sudo ./test-livepatch.sh
+>>   TEST: basic function patching ... not ok
+>>   
+>>   --- expected
+>>   +++ result
+>>   @@ -2,11 +2,13 @@
+>>    livepatch: enabling patch 'test_klp_livepatch'
+>>    livepatch: 'test_klp_livepatch': initializing patching transition
+>>    livepatch: 'test_klp_livepatch': starting patching transition
+>>   +livepatch: signaling remaining tasks
+>>    livepatch: 'test_klp_livepatch': completing patching transition
+>>   ```
 > 
-> What test configuration/environment you are using for test?
-> When I tried kselftest with fedora based config on VM, I got errors
-> because livepatch transition won't finish until signal is sent
-> (i.e. it takes 15s for every transition).
+> It might be interesting to see what process is blocking the
+> transition. The transition state is visible in
+> /proc/<pid>/patch_state.
 > 
+> The transition is blocked when a process is in KLP_UNPATCHED state.
+> It is defined in include/linux/livepatch.h:
+> 
+> #define KLP_UNPATCHED	 0
+> 
+> Well, the timing against the transition is important. The following
+> might help to see the blocking processes:
+> 
+> $> modprobe livepatch-sample ; \
+>    sleep 1; \
+>    for proc_path in \
+>        `grep "\-1"  /proc/*/patch_state | cut -d '/'  -f-3` ; \
+>    do \
+>        cat $proc_path/comm ; \
+>        cat $proc_path/stack ; \
+>        echo ===  ; \
+>    done
+> 
+> After this the livepatch has to be manualy disabled and removed
+> 
+> $> echo 0 >/sys/kernel/livepatch/livepatch_sample/enabled
+> $> rmmod livepatch_sample
+> 
+> Best Regards,
+> Petr
 
-Sorry for not responding earlier. I was out sick.
-
-I tested on a bare metal system (thunderx) running Ubuntu. I will try to reproduce
-the error you are seeing on a VM running fedora.
+Thanks for the suggestion. I will try to reproduce the problem and look at what process(es) are holding up
+the livepatch.
 
 Madhavan
-
-> [excerpt from test result]
->   ```
->   $ sudo ./test-livepatch.sh
->   TEST: basic function patching ... not ok
->   
->   --- expected
->   +++ result
->   @@ -2,11 +2,13 @@
->    livepatch: enabling patch 'test_klp_livepatch'
->    livepatch: 'test_klp_livepatch': initializing patching transition
->    livepatch: 'test_klp_livepatch': starting patching transition
->   +livepatch: signaling remaining tasks
->    livepatch: 'test_klp_livepatch': completing patching transition
->   ```
-> 
-> Thanks,
-> Tomohiro
-> 
->>
->> - I have a test driver to induce a NULL pointer exception to make sure
->>   that unwinding through exception handlers is reliable.
->>
->> - I use the test driver to create a timer to make sure that unwinding through
->>   the timer IRQ is reliable.
->>
->> - I call the unwinder from different places during boot to make sure that
->>   the unwinding in each of those cases is reliable.
->>
