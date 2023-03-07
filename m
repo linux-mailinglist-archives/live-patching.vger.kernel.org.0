@@ -2,52 +2,52 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E41CD6ADDDA
-	for <lists+live-patching@lfdr.de>; Tue,  7 Mar 2023 12:45:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 064876ADDF5
+	for <lists+live-patching@lfdr.de>; Tue,  7 Mar 2023 12:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbjCGLph (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 Mar 2023 06:45:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        id S229922AbjCGLuY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 7 Mar 2023 06:50:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231567AbjCGLpP (ORCPT
+        with ESMTP id S230435AbjCGLtk (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 Mar 2023 06:45:15 -0500
+        Tue, 7 Mar 2023 06:49:40 -0500
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305F57D0B8;
-        Tue,  7 Mar 2023 03:42:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABC279B03;
+        Tue,  7 Mar 2023 03:48:39 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id CFE7721A20;
-        Tue,  7 Mar 2023 11:41:21 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 66C2B219CF;
+        Tue,  7 Mar 2023 11:48:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1678189281; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1678189690; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=+pemajQb8YP6fjdoGUmljNw7gqtlykEg8Ge5hYifXP4=;
-        b=2HzZLajkhO1VacYOeLd8PTuEQVTKSpWUM6VZuKovXS45ISnOFHN/9IXXZwn1IFJAznI7Ed
-        QgdVirHlYC+Lt2nv+vPwUU6nQsLSW6IB1qHtkweJJHsXC3eW4j0j31V6u7AEChDWUkzXDp
-        sike6KP0KmRZ0JaJs2tw8uzEgqObn1s=
+        bh=9hjD8LQcZYDIaD2cn2Ci7sCSCxSiYhDam8lrzoxeMEg=;
+        b=JQV3NjUl9nVYUQGlF7Eg0z8ZJbj04FsR0J30QBCd0jhe40fcqvVfNoN1JWnadMVMKFlUTt
+        WCL/xwTLzx/jhkkGO/46mzYqdfBCTHwMPK415gNK6F/TxBt81COL882jGHX7AJoAhh9RVt
+        Ovr2VZ3Xuak7qVSwWB1TW383c7e2M24=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1678189281;
+        s=susede2_ed25519; t=1678189690;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=+pemajQb8YP6fjdoGUmljNw7gqtlykEg8Ge5hYifXP4=;
-        b=8jFRF4nMk3jcjEjaS3YZJIGciSp2TFitvO2sY4rakybV2XPaICJZUbzUTdQz/7Lhz8u0Fz
-        GZnPWR7kIYbAzjCg==
+        bh=9hjD8LQcZYDIaD2cn2Ci7sCSCxSiYhDam8lrzoxeMEg=;
+        b=wB2CYFd/6/hMueFx8RJjQ7MpKHFJLORZerGd6O0/gfd6T+iW5CwI6r/FkLw/bps6ajzdPX
+        HHAkXq+XhBdMhJAw==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3012313440;
-        Tue,  7 Mar 2023 11:41:20 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BC75B13440;
+        Tue,  7 Mar 2023 11:48:09 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id 7D9hN+AiB2R7EgAAMHmgww
-        (envelope-from <mpdesouza@suse.com>); Tue, 07 Mar 2023 11:41:20 +0000
-Date:   Tue, 7 Mar 2023 08:41:18 -0300
+        id fi/wG3kkB2SCFgAAMHmgww
+        (envelope-from <mpdesouza@suse.com>); Tue, 07 Mar 2023 11:48:09 +0000
+Date:   Tue, 7 Mar 2023 08:48:06 -0300
 From:   Marcos Paulo de Souza <mpdesouza@suse.de>
 To:     Joe Lawrence <joe.lawrence@redhat.com>
 Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -55,14 +55,14 @@ Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Marcos Paulo de Souza <mpdesouza@suse.com>
-Subject: Re: [PATCH v7 01/10] livepatch: Create and include UAPI headers
-Message-ID: <20230307114118.igckixgcc5gmgyyy@daedalus>
+Subject: Re: [PATCH v7 05/10] documentation: Update on livepatch elf format
+Message-ID: <20230307114806.7pvqsjijnf2r42qh@daedalus>
 References: <20230306140824.3858543-1-joe.lawrence@redhat.com>
- <20230306140824.3858543-2-joe.lawrence@redhat.com>
+ <20230306140824.3858543-6-joe.lawrence@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230306140824.3858543-2-joe.lawrence@redhat.com>
+In-Reply-To: <20230306140824.3858543-6-joe.lawrence@redhat.com>
 X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
@@ -73,16 +73,10 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 09:08:15AM -0500, Joe Lawrence wrote:
-> Define klp prefixes in include/uapi/linux/livepatch.h, and use them for
-> replacing hard-coded values in kernel/livepatch/core.c.
+On Mon, Mar 06, 2023 at 09:08:19AM -0500, Joe Lawrence wrote:
+> Add a section to Documentation/livepatch/module-elf-format.rst
+> describing how klp-convert works for fixing relocations.
 > 
-> Update MAINTAINERS.
-> 
-> Note: Add defines to uapi as these are also to be used by a newly
-> introduced klp-convert script.
-> 
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 > Signed-off-by: Joao Moreira <jmoreira@suse.de>
 > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 
@@ -91,80 +85,91 @@ LGTM:
 Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
 > ---
->  MAINTAINERS                    |  1 +
->  include/linux/livepatch.h      |  1 +
->  include/uapi/linux/livepatch.h | 15 +++++++++++++++
->  kernel/livepatch/core.c        |  4 ++--
->  4 files changed, 19 insertions(+), 2 deletions(-)
->  create mode 100644 include/uapi/linux/livepatch.h
+>  Documentation/livepatch/livepatch.rst         |  3 ++
+>  Documentation/livepatch/module-elf-format.rst | 42 +++++++++++++++++--
+>  2 files changed, 42 insertions(+), 3 deletions(-)
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 135d93368d36..5bdf333fb1f3 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -12069,6 +12069,7 @@ F:	Documentation/ABI/testing/sysfs-kernel-livepatch
->  F:	Documentation/livepatch/
->  F:	arch/powerpc/include/asm/livepatch.h
->  F:	include/linux/livepatch.h
-> +F:	include/uapi/linux/livepatch.h
->  F:	kernel/livepatch/
->  F:	kernel/module/livepatch.c
->  F:	lib/livepatch/
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index 293e29960c6e..46da4c0df6c1 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -13,6 +13,7 @@
->  #include <linux/ftrace.h>
->  #include <linux/completion.h>
->  #include <linux/list.h>
-> +#include <uapi/linux/livepatch.h>
+> diff --git a/Documentation/livepatch/livepatch.rst b/Documentation/livepatch/livepatch.rst
+> index 68e3651e8af9..6b317a57c276 100644
+> --- a/Documentation/livepatch/livepatch.rst
+> +++ b/Documentation/livepatch/livepatch.rst
+> @@ -261,6 +261,9 @@ into three levels:
+>      absolute position in the database, but rather the order it has been found
+>      only for a particular object ( vmlinux or a kernel module ). Note that
+>      kallsyms allows for searching symbols according to the object name.
+> +    Uniquely named symbols may use a symbol position of 0.  Non-unique
+> +    symbols need to specify their object / kallsyms position, starting
+> +    at position 1.
 >  
->  #if IS_ENABLED(CONFIG_LIVEPATCH)
+>    - struct klp_object defines an array of patched functions (struct
+>      klp_func) in the same object. Where the object is either vmlinux
+> diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentation/livepatch/module-elf-format.rst
+> index 7347638895a0..72a072514581 100644
+> --- a/Documentation/livepatch/module-elf-format.rst
+> +++ b/Documentation/livepatch/module-elf-format.rst
+> @@ -2,7 +2,8 @@
+>  Livepatch module Elf format
+>  ===========================
 >  
-> diff --git a/include/uapi/linux/livepatch.h b/include/uapi/linux/livepatch.h
-> new file mode 100644
-> index 000000000000..e19430918a07
-> --- /dev/null
-> +++ b/include/uapi/linux/livepatch.h
-> @@ -0,0 +1,15 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +
-> +/*
-> + * livepatch.h - Kernel Live Patching Core
-> + *
-> + * Copyright (C) 2016 Josh Poimboeuf <jpoimboe@redhat.com>
-> + */
-> +
-> +#ifndef _UAPI_LIVEPATCH_H
-> +#define _UAPI_LIVEPATCH_H
-> +
-> +#define KLP_RELA_PREFIX		".klp.rela."
-> +#define KLP_SYM_PREFIX		".klp.sym."
-> +
-> +#endif /* _UAPI_LIVEPATCH_H */
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 201f0c0482fb..c565d33db582 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -234,7 +234,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+> -This document outlines the Elf format requirements that livepatch modules must follow.
+> +This document outlines the Elf format requirements that livepatch modules must
+> +follow.
 >  
->  		/* Format: .klp.sym.sym_objname.sym_name,sympos */
->  		cnt = sscanf(strtab + sym->st_name,
-> -			     ".klp.sym.%55[^.].%511[^,],%lu",
-> +			     KLP_SYM_PREFIX "%55[^.].%511[^,],%lu",
->  			     sym_objname, sym_name, &sympos);
->  		if (cnt != 3) {
->  			pr_err("symbol %s has an incorrectly formatted name\n",
-> @@ -305,7 +305,7 @@ int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
->  	 * See comment in klp_resolve_symbols() for an explanation
->  	 * of the selected field width value.
->  	 */
-> -	cnt = sscanf(shstrtab + sec->sh_name, ".klp.rela.%55[^.]",
-> +	cnt = sscanf(shstrtab + sec->sh_name, KLP_RELA_PREFIX "%55[^.]",
->  		     sec_objname);
->  	if (cnt != 1) {
->  		pr_err("section %s has an incorrectly formatted name\n",
+>  
+>  .. Table of Contents
+> @@ -259,7 +260,8 @@ Livepatch symbol names must conform to the following format::
+>    The position of the symbol in the object (as according to kallsyms)
+>    This is used to differentiate duplicate symbols within the same
+>    object. The symbol position is expressed numerically (0, 1, 2...).
+> -  The symbol position of a unique symbol is 0.
+> +  The symbol position of a unique symbol is 0.  The symbol position of
+> +  the first non-unique symbol is 1, the second is 2, etc.
+>  
+>  Examples:
+>  ---------
+> @@ -291,7 +293,41 @@ Examples:
+>    Note that the 'Ndx' (Section index) for these symbols is SHN_LIVEPATCH (0xff20).
+>    "OS" means OS-specific.
+>  
+> -5. Symbol table and Elf section access
+> +5. Automatic conversion of unresolved relocations
+> +=================================================
+> +Sometimes livepatches may operate on symbols which are not self-contained nor
+> +exported. When this happens, these symbols remain unresolved in the elf object
+> +and will trigger an error during the livepatch instantiation.
+> +
+> +Whenever possible, the kernel building infrastructure solves this problem
+> +automatically. First, a symbol database containing information on all compiled
+> +objects is built. Second, this database - a file named symbols.klp, placed in
+> +the kernel source root directory - is used to identify targets for unresolved
+> +relocations, converting them in the livepatch elf accordingly to the
+> +specifications above-described. While the first stage is fully handled by the
+> +building system, the second is done by a tool called klp-convert, which can be
+> +found in "scripts/livepatch".
+> +
+> +When an unresolved relocation has as target a symbol whose name is also used by
+> +different symbols throughout the kernel, the relocation cannot be resolved
+> +automatically. In these cases, the livepatch developer must add annotations to
+> +the livepatch, making it possible for the system to identify which is the
+> +correct target amongst multiple homonymous symbols. Such annotations must be
+> +done through a data structure as follows:::
+> +
+> +	struct KLP_MODULE_RELOC(object) data_structure_name[] = {
+> +		KLP_SYMPOS(symbol, pos)
+> +	};
+> +
+> +In the above example, object refers to the object file which contains the
+> +symbol, being vmlinux or a module; symbol refers to the symbol name that will
+> +be relocated and pos is its position in the object.
+> +
+> +When a data structure like this is added to the livepatch, the resulting elf
+> +will hold symbols that will be identified by klp-convert and used to solve name
+> +ambiguities.
+> +
+> +6. Symbol table and Elf section access
+>  ======================================
+>  A livepatch module's symbol table is accessible through module->symtab.
+>  
 > -- 
 > 2.39.2
 > 
