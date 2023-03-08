@@ -2,70 +2,54 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 064876ADDF5
-	for <lists+live-patching@lfdr.de>; Tue,  7 Mar 2023 12:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BBEF6AFFE4
+	for <lists+live-patching@lfdr.de>; Wed,  8 Mar 2023 08:39:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbjCGLuY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 7 Mar 2023 06:50:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54676 "EHLO
+        id S229662AbjCHHjH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 8 Mar 2023 02:39:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbjCGLtk (ORCPT
+        with ESMTP id S229614AbjCHHjG (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 7 Mar 2023 06:49:40 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABC279B03;
-        Tue,  7 Mar 2023 03:48:39 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 66C2B219CF;
-        Tue,  7 Mar 2023 11:48:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1678189690; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9hjD8LQcZYDIaD2cn2Ci7sCSCxSiYhDam8lrzoxeMEg=;
-        b=JQV3NjUl9nVYUQGlF7Eg0z8ZJbj04FsR0J30QBCd0jhe40fcqvVfNoN1JWnadMVMKFlUTt
-        WCL/xwTLzx/jhkkGO/46mzYqdfBCTHwMPK415gNK6F/TxBt81COL882jGHX7AJoAhh9RVt
-        Ovr2VZ3Xuak7qVSwWB1TW383c7e2M24=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1678189690;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9hjD8LQcZYDIaD2cn2Ci7sCSCxSiYhDam8lrzoxeMEg=;
-        b=wB2CYFd/6/hMueFx8RJjQ7MpKHFJLORZerGd6O0/gfd6T+iW5CwI6r/FkLw/bps6ajzdPX
-        HHAkXq+XhBdMhJAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BC75B13440;
-        Tue,  7 Mar 2023 11:48:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id fi/wG3kkB2SCFgAAMHmgww
-        (envelope-from <mpdesouza@suse.com>); Tue, 07 Mar 2023 11:48:09 +0000
-Date:   Tue, 7 Mar 2023 08:48:06 -0300
-From:   Marcos Paulo de Souza <mpdesouza@suse.de>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Wed, 8 Mar 2023 02:39:06 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E710A24485;
+        Tue,  7 Mar 2023 23:38:54 -0800 (PST)
+Received: from dggpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PWkdJ5zj8z16Nb6;
+        Wed,  8 Mar 2023 15:36:04 +0800 (CST)
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 8 Mar 2023 15:38:52 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
-        Marcos Paulo de Souza <mpdesouza@suse.com>
-Subject: Re: [PATCH v7 05/10] documentation: Update on livepatch elf format
-Message-ID: <20230307114806.7pvqsjijnf2r42qh@daedalus>
-References: <20230306140824.3858543-1-joe.lawrence@redhat.com>
- <20230306140824.3858543-6-joe.lawrence@redhat.com>
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        <linux-trace-kernel@vger.kernel.org>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-modules@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH] kallsyms: Delete an unused parameter related to {module_}kallsyms_on_each_symbol()
+Date:   Wed, 8 Mar 2023 15:38:46 +0800
+Message-ID: <20230308073846.1882-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.37.3.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230306140824.3858543-6-joe.lawrence@redhat.com>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,103 +57,171 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 09:08:19AM -0500, Joe Lawrence wrote:
-> Add a section to Documentation/livepatch/module-elf-format.rst
-> describing how klp-convert works for fixing relocations.
-> 
-> Signed-off-by: Joao Moreira <jmoreira@suse.de>
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+The parameter 'struct module *' in the hook function associated with
+{module_}kallsyms_on_each_symbol() is no longer used. Delete it.
 
-LGTM:
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ include/linux/kallsyms.h   | 7 +++----
+ include/linux/module.h     | 6 ++----
+ kernel/kallsyms.c          | 5 ++---
+ kernel/kallsyms_selftest.c | 6 +++---
+ kernel/livepatch/core.c    | 3 +--
+ kernel/module/kallsyms.c   | 5 ++---
+ kernel/trace/ftrace.c      | 3 +--
+ 7 files changed, 14 insertions(+), 21 deletions(-)
 
-Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
+index 0065209cc00424b..fe3c9993b5bfe47 100644
+--- a/include/linux/kallsyms.h
++++ b/include/linux/kallsyms.h
+@@ -67,8 +67,7 @@ static inline void *dereference_symbol_descriptor(void *ptr)
+ 
+ #ifdef CONFIG_KALLSYMS
+ unsigned long kallsyms_sym_address(int idx);
+-int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+-				      unsigned long),
++int kallsyms_on_each_symbol(int (*fn)(void *, const char *, unsigned long),
+ 			    void *data);
+ int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
+ 				  const char *name, void *data);
+@@ -166,8 +165,8 @@ static inline bool kallsyms_show_value(const struct cred *cred)
+ 	return false;
+ }
+ 
+-static inline int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+-					  unsigned long), void *data)
++static inline int kallsyms_on_each_symbol(int (*fn)(void *, const char *, unsigned long),
++					  void *data)
+ {
+ 	return -EOPNOTSUPP;
+ }
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 4435ad9439abba6..1de304e0b09c7f9 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -888,13 +888,11 @@ static inline bool module_sig_ok(struct module *module)
+ 
+ #if defined(CONFIG_MODULES) && defined(CONFIG_KALLSYMS)
+ int module_kallsyms_on_each_symbol(const char *modname,
+-				   int (*fn)(void *, const char *,
+-					     struct module *, unsigned long),
++				   int (*fn)(void *, const char *, unsigned long),
+ 				   void *data);
+ #else
+ static inline int module_kallsyms_on_each_symbol(const char *modname,
+-						 int (*fn)(void *, const char *,
+-						 struct module *, unsigned long),
++						 int (*fn)(void *, const char *, unsigned long),
+ 						 void *data)
+ {
+ 	return -EOPNOTSUPP;
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index 83f499182c9aa31..77747391f49b66c 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -288,8 +288,7 @@ unsigned long kallsyms_lookup_name(const char *name)
+  * Iterate over all symbols in vmlinux.  For symbols from modules use
+  * module_kallsyms_on_each_symbol instead.
+  */
+-int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+-				      unsigned long),
++int kallsyms_on_each_symbol(int (*fn)(void *, const char *, unsigned long),
+ 			    void *data)
+ {
+ 	char namebuf[KSYM_NAME_LEN];
+@@ -299,7 +298,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+ 
+ 	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
+ 		off = kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+-		ret = fn(data, namebuf, NULL, kallsyms_sym_address(i));
++		ret = fn(data, namebuf, kallsyms_sym_address(i));
+ 		if (ret != 0)
+ 			return ret;
+ 		cond_resched();
+diff --git a/kernel/kallsyms_selftest.c b/kernel/kallsyms_selftest.c
+index bfbc12da33267f8..a2e3745d15c471f 100644
+--- a/kernel/kallsyms_selftest.c
++++ b/kernel/kallsyms_selftest.c
+@@ -95,7 +95,7 @@ static struct test_item test_items[] = {
+ 
+ static char stub_name[KSYM_NAME_LEN];
+ 
+-static int stat_symbol_len(void *data, const char *name, struct module *mod, unsigned long addr)
++static int stat_symbol_len(void *data, const char *name, unsigned long addr)
+ {
+ 	*(u32 *)data += strlen(name);
+ 
+@@ -154,7 +154,7 @@ static void test_kallsyms_compression_ratio(void)
+ 	pr_info(" ---------------------------------------------------------\n");
+ }
+ 
+-static int lookup_name(void *data, const char *name, struct module *mod, unsigned long addr)
++static int lookup_name(void *data, const char *name, unsigned long addr)
+ {
+ 	u64 t0, t1, t;
+ 	struct test_stat *stat = (struct test_stat *)data;
+@@ -207,7 +207,7 @@ static bool match_cleanup_name(const char *s, const char *name)
+ 	return !strncmp(s, name, len);
+ }
+ 
+-static int find_symbol(void *data, const char *name, struct module *mod, unsigned long addr)
++static int find_symbol(void *data, const char *name, unsigned long addr)
+ {
+ 	struct test_stat *stat = (struct test_stat *)data;
+ 
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 4bd2d5e10f20a1c..1de2c40cc37841a 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -142,8 +142,7 @@ static int klp_match_callback(void *data, unsigned long addr)
+ 	return 0;
+ }
+ 
+-static int klp_find_callback(void *data, const char *name,
+-			     struct module *mod, unsigned long addr)
++static int klp_find_callback(void *data, const char *name, unsigned long addr)
+ {
+ 	struct klp_find_arg *args = data;
+ 
+diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
+index ab2376a1be88e7e..c4fe856e5052ff7 100644
+--- a/kernel/module/kallsyms.c
++++ b/kernel/module/kallsyms.c
+@@ -495,8 +495,7 @@ unsigned long module_kallsyms_lookup_name(const char *name)
+ }
+ 
+ int module_kallsyms_on_each_symbol(const char *modname,
+-				   int (*fn)(void *, const char *,
+-					     struct module *, unsigned long),
++				   int (*fn)(void *, const char *, unsigned long),
+ 				   void *data)
+ {
+ 	struct module *mod;
+@@ -525,7 +524,7 @@ int module_kallsyms_on_each_symbol(const char *modname,
+ 				continue;
+ 
+ 			ret = fn(data, kallsyms_symbol_name(kallsyms, i),
+-				 mod, kallsyms_symbol_value(sym));
++				 kallsyms_symbol_value(sym));
+ 			if (ret != 0)
+ 				goto out;
+ 		}
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 29baa97d0d53428..76caca8f496aaed 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -8391,8 +8391,7 @@ struct kallsyms_data {
+  * and returns 1 in case we resolved all the requested symbols,
+  * 0 otherwise.
+  */
+-static int kallsyms_callback(void *data, const char *name,
+-			     struct module *mod, unsigned long addr)
++static int kallsyms_callback(void *data, const char *name, unsigned long addr)
+ {
+ 	struct kallsyms_data *args = data;
+ 	const char **sym;
+-- 
+2.25.1
 
-> ---
->  Documentation/livepatch/livepatch.rst         |  3 ++
->  Documentation/livepatch/module-elf-format.rst | 42 +++++++++++++++++--
->  2 files changed, 42 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/livepatch/livepatch.rst b/Documentation/livepatch/livepatch.rst
-> index 68e3651e8af9..6b317a57c276 100644
-> --- a/Documentation/livepatch/livepatch.rst
-> +++ b/Documentation/livepatch/livepatch.rst
-> @@ -261,6 +261,9 @@ into three levels:
->      absolute position in the database, but rather the order it has been found
->      only for a particular object ( vmlinux or a kernel module ). Note that
->      kallsyms allows for searching symbols according to the object name.
-> +    Uniquely named symbols may use a symbol position of 0.  Non-unique
-> +    symbols need to specify their object / kallsyms position, starting
-> +    at position 1.
->  
->    - struct klp_object defines an array of patched functions (struct
->      klp_func) in the same object. Where the object is either vmlinux
-> diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentation/livepatch/module-elf-format.rst
-> index 7347638895a0..72a072514581 100644
-> --- a/Documentation/livepatch/module-elf-format.rst
-> +++ b/Documentation/livepatch/module-elf-format.rst
-> @@ -2,7 +2,8 @@
->  Livepatch module Elf format
->  ===========================
->  
-> -This document outlines the Elf format requirements that livepatch modules must follow.
-> +This document outlines the Elf format requirements that livepatch modules must
-> +follow.
->  
->  
->  .. Table of Contents
-> @@ -259,7 +260,8 @@ Livepatch symbol names must conform to the following format::
->    The position of the symbol in the object (as according to kallsyms)
->    This is used to differentiate duplicate symbols within the same
->    object. The symbol position is expressed numerically (0, 1, 2...).
-> -  The symbol position of a unique symbol is 0.
-> +  The symbol position of a unique symbol is 0.  The symbol position of
-> +  the first non-unique symbol is 1, the second is 2, etc.
->  
->  Examples:
->  ---------
-> @@ -291,7 +293,41 @@ Examples:
->    Note that the 'Ndx' (Section index) for these symbols is SHN_LIVEPATCH (0xff20).
->    "OS" means OS-specific.
->  
-> -5. Symbol table and Elf section access
-> +5. Automatic conversion of unresolved relocations
-> +=================================================
-> +Sometimes livepatches may operate on symbols which are not self-contained nor
-> +exported. When this happens, these symbols remain unresolved in the elf object
-> +and will trigger an error during the livepatch instantiation.
-> +
-> +Whenever possible, the kernel building infrastructure solves this problem
-> +automatically. First, a symbol database containing information on all compiled
-> +objects is built. Second, this database - a file named symbols.klp, placed in
-> +the kernel source root directory - is used to identify targets for unresolved
-> +relocations, converting them in the livepatch elf accordingly to the
-> +specifications above-described. While the first stage is fully handled by the
-> +building system, the second is done by a tool called klp-convert, which can be
-> +found in "scripts/livepatch".
-> +
-> +When an unresolved relocation has as target a symbol whose name is also used by
-> +different symbols throughout the kernel, the relocation cannot be resolved
-> +automatically. In these cases, the livepatch developer must add annotations to
-> +the livepatch, making it possible for the system to identify which is the
-> +correct target amongst multiple homonymous symbols. Such annotations must be
-> +done through a data structure as follows:::
-> +
-> +	struct KLP_MODULE_RELOC(object) data_structure_name[] = {
-> +		KLP_SYMPOS(symbol, pos)
-> +	};
-> +
-> +In the above example, object refers to the object file which contains the
-> +symbol, being vmlinux or a module; symbol refers to the symbol name that will
-> +be relocated and pos is its position in the object.
-> +
-> +When a data structure like this is added to the livepatch, the resulting elf
-> +will hold symbols that will be identified by klp-convert and used to solve name
-> +ambiguities.
-> +
-> +6. Symbol table and Elf section access
->  ======================================
->  A livepatch module's symbol table is accessible through module->symtab.
->  
-> -- 
-> 2.39.2
-> 
