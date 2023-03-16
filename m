@@ -2,210 +2,327 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D50DC6BBBD0
-	for <lists+live-patching@lfdr.de>; Wed, 15 Mar 2023 19:16:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A224B6BDB1F
+	for <lists+live-patching@lfdr.de>; Thu, 16 Mar 2023 22:51:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232286AbjCOSQm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 15 Mar 2023 14:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48536 "EHLO
+        id S230027AbjCPVvC (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 16 Mar 2023 17:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbjCOSQl (ORCPT
+        with ESMTP id S229712AbjCPVvB (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 15 Mar 2023 14:16:41 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0969B70432;
-        Wed, 15 Mar 2023 11:16:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678904200; x=1710440200;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=UoOLGCHElLJHE914g69hMuHVYDgaYmJxD786LnMTNxs=;
-  b=iOv06KshZv525NJj/uBVsHddL1J3eJ/86MfxhONT/qO/JxH94QkAQS9Q
-   tSeWRhYvFGrTUyjJygqvfWs3ZYCPtgRINnY3WXvi+XpV7O/isgxkz5fdQ
-   t3gzAK/1euxv/wEZNJrnjWHZm0UU0M1mxw6RL75EUIgpKObf79Pn0VSo+
-   qXwjVaTMIiAEQ4YRYxzHb70uojs0dbuYqVA0ee8LGqOzB9Nn2GdH57F3z
-   b1DF5bSSQrLeXd9Lkhr3GUWVlB7FxLuNVJuG5u/isnEWDCG9YkexkAlSY
-   w3MsjnPIIctYRcJ421nVi42Bgs7gSh+1SK0M9krC6xg+0ske67/l4qhl+
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="424058432"
-X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
-   d="scan'208";a="424058432"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 11:16:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="709770009"
-X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
-   d="scan'208";a="709770009"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga008.jf.intel.com with ESMTP; 15 Mar 2023 11:16:39 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 15 Mar 2023 11:16:39 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Wed, 15 Mar 2023 11:16:39 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.107)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Wed, 15 Mar 2023 11:16:38 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GrJ3LkhyIAekF++Qj5ye9RPnkJ5LpDV863AyXjbVR6sTSLHkjC/Y5RMpTLxgTAUz/xYxB8pd+nevQJWDcgD+Zh+o8OEnQDjlPF5Yg5UOEl9oZ+eAH0sOAtlb5cvVUOQtzG+7SWoRzgNVa5I816CNJpUZcGJUbUVzE68TjKZqQUJsn20EKyycAfqoUNYoPoZFZj61W5Sg2Yq8GjQgGKYLb9KIeqEHM8cZgV3/HPdPYBrZTNS1lAQ4UQda5DsrldnXxtD1/KGjDArHq6iWfDlRpYdaC9W9L3Hsr/4QeIAfOVTqBYAj2SNe+L2/GRrIDxlUs1dxSFB9dUUFWrD0rcVr9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wWlcTC/7MCDM5uFiCCPEH0VVVioGT/bM0uBWO+6CCmQ=;
- b=fl/XtjZHU3fLwHXCw7mdHQZkyavHywLqtgYg4rajfEyBI29XpUwirM3WYXO9bN8PMAfMPvID7ct+il+gyqn7po2cgZ5QD5OoSbj8W5la7ya2Nh5vayJisFH2X94wFNwgoA2iZuM+lTBsE4FAGLOG9zDQ7TXzTKoo49GJDXT2R9tnOWJ7zl18XtELlqVXTDDDfBDw2qv/Sso0DbzwuHG7Glt4HjxJk/VUEUeRaABQgmL8aInitkcq2lrsiT3d1YWfd4v283dcE8xqIr47eURHOk744KK6zx9mYG38zm5mWuDces7y2vRWkqV8ie+11ERe4Z7X6MZ/x3coZ0T2g1YvRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SA1PR11MB6733.namprd11.prod.outlook.com (2603:10b6:806:25c::17)
- by DM4PR11MB5390.namprd11.prod.outlook.com (2603:10b6:5:395::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26; Wed, 15 Mar
- 2023 18:16:36 +0000
-Received: from SA1PR11MB6733.namprd11.prod.outlook.com
- ([fe80::84dd:d3f2:6d99:d7ff]) by SA1PR11MB6733.namprd11.prod.outlook.com
- ([fe80::84dd:d3f2:6d99:d7ff%7]) with mapi id 15.20.6178.024; Wed, 15 Mar 2023
- 18:16:36 +0000
-Date:   Wed, 15 Mar 2023 11:16:31 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        "Daniel Thompson" <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Chris Down <chris@chrisdown.name>,
-        Nick Terrell <terrelln@fb.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, <linux-modules@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <kgdb-bugreport@lists.sourceforge.net>,
-        <live-patching@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <llvm@lists.linux.dev>
-CC:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Piotr Gorski <piotrgorski@cachyos.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: Re: [PATCH] module/decompress: Never use kunmap() for local
- un-mappings
-Message-ID: <64120b7f2e123_2513fa294a7@iweiny-mobl.notmuch>
-References: <20230315125256.22772-1-fmdefrancesco@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230315125256.22772-1-fmdefrancesco@gmail.com>
-X-ClientProxiedBy: SJ0PR13CA0136.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::21) To SA1PR11MB6733.namprd11.prod.outlook.com
- (2603:10b6:806:25c::17)
+        Thu, 16 Mar 2023 17:51:01 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9680B79F4;
+        Thu, 16 Mar 2023 14:50:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=MLDKgStUn6F5m9R7LuyIkeoD28uTYFHFpAKEMOimO40=; b=IWXp4MwneyPcK8Ew/eAKnjeaHt
+        ofYH0eCV+PHyH8uIduQBs+DJrSGF/RXvf8qUUMsqcjtlsVeZ7rN3iJRKk+vOD07dRkUKe82eH1U7r
+        ABoJ1o0DUY+XqmBgTeDvrv1N45OZX7jbSNDFn5YaWcek5n3ces31jTsWZ9nz1AKD8IiXThOk9bAaV
+        bPK3YtVzPYZVDoF4Z1Yqh5ul8TtwM0ZYEwjRTce4crIutUyYRm0iKFE9U4GRkRH8hxp3y5l+w2Dh8
+        JdsoB0mtswx0M5Wbru8hSdmJ2bbMmBGpXBfuLLUo9hm+kBga5SZUM5i65B81J5oUdKKvaWVPcP1Jw
+        JQpp3Lhg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
+        id 1pcvUt-0006rf-1f;
+        Thu, 16 Mar 2023 21:50:55 +0000
+Date:   Thu, 16 Mar 2023 14:50:55 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>, Song Liu <song@kernel.org>
+Cc:     patches@lists.linux.dev, linux-modules@vger.kernel.org,
+        live-patching@vger.kernel.org, mcgrof@kernel.org
+Subject: Re: mod->klp set on copy ok ?
+Message-ID: <ZBOPP4YWWhJRk2yn@bombadil.infradead.org>
+References: <CAB=NE6Vo4AXVrn1GPEoZWVF3NkXRoPwWOuUEJqJ35S9VMGTM2Q@mail.gmail.com>
+ <ZA8NBuXbVP+PRPp0@alley>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA1PR11MB6733:EE_|DM4PR11MB5390:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9c6d3333-c8f5-46c8-e567-08db258169e5
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vWChfBLao6nKEH7jMLaaPDg6QB5SzgaXfDsTwU3/82rd2s2IVLOrc7UN3dt/geEG8awyu7BNf1XzMoAmB4gOLOQlt9IAhrfemIuTozlmRI+VAnPQDUubVlxzKM4PNArj9eUExuXPgHPA3v7yws+7i+5puavToOpX/ujwNcJX5RU8nO1zQC6V4DsIwqFulNO9DkrZZ3lR1Iip8QrLDcHXyVDXnfkEDHoQhJx8FuZ18Flvbg9WaMzMDVnrg6Ym725VPJ3Og/MlTnq/eTZlDLJ+hUAztUF7lTn4jQWJiKBJFunw8Fc80m02IY4HD4Bfr710NRwS0qckE/uIPon+PYn8OZ4jMxb+SQkd9aHBlJ4x9FdhSwOmc+rzRtpJTWgPTK4G2NkdNjxk9GPFBIwB5iOB4TCEp7NltyfeadO3VrvJwH9ihICTzHAWEsSd8Hwl/8v9FGCZ7rAF58TNYFlFiXnXc28hyUeRORBl+mm+HDRSODmhKZw7hH8nxoGruSnPG7Z98tkSqEB3cXa1UO9iFmb5Lulnp6rTnywb1+0QRvKQcL8l1w8DRoNUNvJKpFEWuDqduciOGRvHEXnd7lj3YN/HCvu9bE6P+0/Rzc2AYGLkcg4+V9Fj4xopD2erm3HopVJtzuQePCxBFHPkBaWHk+vbjDK2Z5/PhCZwH/L8eAVWTO+CjKoVWbdzQzbiB2G8aAZ4
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR11MB6733.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(346002)(39860400002)(366004)(376002)(396003)(451199018)(7416002)(5660300002)(478600001)(2906002)(9686003)(6506007)(26005)(6512007)(6486002)(6666004)(107886003)(186003)(44832011)(86362001)(41300700001)(38100700002)(82960400001)(4326008)(66476007)(8676002)(8936002)(66946007)(921005)(316002)(66556008)(83380400001)(110136005)(54906003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GnncIWgTad5+W7x2yjuHWrHTc0pNMjmyOgA8c7bmDKKmCDZY4Be1qf8VO/Ze?=
- =?us-ascii?Q?3W+hzMuppVxAbSKPPEXA91VVjjmRp33BRDE3BKLo4OYZtni9XtNhIVyGixsy?=
- =?us-ascii?Q?l782MEw20UQhm4nNHSnOelhYLggwF9dzWlUGa5bBGHD6EESICmGaQDIjrKWX?=
- =?us-ascii?Q?E1Tjgjnfww8/0vhRWnH8LFdkm8c30xQ2rQcS5mB5jlVhgQCaPejnmBThLX3E?=
- =?us-ascii?Q?V9xjInpl1mMqkqGJTTlXAiyrAhhlUOojwj9OPsHTs3mCCNCVKUyqOn+bMH4P?=
- =?us-ascii?Q?ExNTW/G3LCGsMrFp/mV9hjuS/LHk5ZLWyoHxmnRuZ0Pf7QgBHtcrLcPQsE3b?=
- =?us-ascii?Q?dggjvV7zPYcHLONSEuA9j0/RqN0T2CcjIsJSgk842Qq1X70hPZKMPvG7nvDp?=
- =?us-ascii?Q?my7zzS6lAg6RcOTg7Na+9YR620PPSs+qRVeVU59mHjP8P0x76EVvzP+5jRIY?=
- =?us-ascii?Q?ZqkmeBaexanWpEtYLgQvJFSmUlQk7JG/hcb2vRDfko3CEvbFRaNP3cdu/WxH?=
- =?us-ascii?Q?mw/r3PY01qVsXIjVUh2stj/91twKWprRwSah/QiEJyKwsLw5uMngiy6jyHS8?=
- =?us-ascii?Q?zyiiMmQmeD72Wj1l2XzpaEDTg05xaE2cPCjWpUZfj1L6MS6yA7+Ij2EWPiV0?=
- =?us-ascii?Q?gtcfICm768SfLioahMmHddYw1cwCObIEZeyxmzenWMWe/P1hD1es0GX/cok7?=
- =?us-ascii?Q?P7x7iCrx5FTmlxb+obeiJxAsgUUv+QHhbOLy0fN9E9RsrcgdlHzTwEu5V5Dp?=
- =?us-ascii?Q?7D6PHTO+8R1LlrKFHBo/g73haZh1ETWHsYwqDVFZ7t5UHdYbMdu279XbmR74?=
- =?us-ascii?Q?j7mr1bF5h8UBmMeGGocts1JSNfbhmYGbawFx6S7FVxykH7wI8xkr1EaCDlqE?=
- =?us-ascii?Q?d1RPqvbP3YxBaJ0SrfznAYKCKwxWHVMd6Z0Nr7zRNFgCCF1HEp5fqF6INPlK?=
- =?us-ascii?Q?rYvntlxDKu2S70t/paYkyeNTOohwMLXg3FFofitxQk2PjWqJ7l39sz1LYxT4?=
- =?us-ascii?Q?K/Du5htsn8VL92nR+Nxztu0LJCzwV8Pxp3FbdsN7iMaUjRzcccHI78T7in6T?=
- =?us-ascii?Q?mOcqjBiTScp3JmUJ+trja02zySAEsv2po7R0tfiEl+kfNSwKofOM6HMM+wf2?=
- =?us-ascii?Q?lT4ez5eHmK5oJxfLn3H26cH1iuBgapu8NCqufS13Fcy/bVtKbmFi4gf5zhdR?=
- =?us-ascii?Q?8e6kafDeIPS3t3eDA+bilo9onAngm65C8NFOv1EAYGN3sGE0yIw2ZsN+CI4T?=
- =?us-ascii?Q?1Jsr9OupamEYLSCyvRDHt2dA6jDpKxogMTQ5sUgbM6ZOChjh43hOfjplsxWy?=
- =?us-ascii?Q?mkk0VC37Ha60R+pe+T/olFOruOWIgGwmCuXbqaZIfm/Xs77cB/etR1IsIX8Z?=
- =?us-ascii?Q?P0g0WfduhEplvunUwFYR3u37MbJqmSYlqm96Igh9uaF/9TilR5gn4AJjL4qK?=
- =?us-ascii?Q?5qGSUyAI3B3Sfbyjrjz2/INry4tXQ2MXyNIkirMLRs2+GqkXdDimr3xF4SQy?=
- =?us-ascii?Q?Wi04LlCfTxk9q59TzWy3qIiU85P1u3JMPPfwIqqM1UYV19Q2iAwLxm4iUMqu?=
- =?us-ascii?Q?hQfaMfBe+zNiJC62sbwrvfsp2jH2xKbfzfOTXtkM?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c6d3333-c8f5-46c8-e567-08db258169e5
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR11MB6733.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 18:16:36.5739
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: u3wWrCeSHDbz1hN6Q2lZoAjYMOiM+kyUR3VrwvnoiuSK2P+2+uTyCiXOyaUjx/cQlzy53OpKBzlaHDyuu8Rg+A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5390
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZA8NBuXbVP+PRPp0@alley>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Fabio M. De Francesco wrote:
-> Use kunmap_local() to unmap pages locally mapped with kmap_local_page().
-> 
-> kunmap_local() must be called on the kernel virtual address returned by
-> kmap_local_page(), differently from how we use kunmap() which instead
-> expects the mapped page as its argument.
-> 
-> In module_zstd_decompress() we currently map with kmap_local_page() and
-> unmap with kunmap(). This breaks the code and so it should be fixed.
-> 
-> Cc: Piotr Gorski <piotrgorski@cachyos.org>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Stephen Boyd <swboyd@chromium.org>
-> Cc: Ira Weiny <ira.weiny@intel.com>
+I had a hiccup evaluating if we copy or not over the mod->klp over from
+live patching to the new copy of the module we process, and so I cross
+checked with Petr on this.
 
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+I had jumped the gun on my analysis leading me to believe we could very
+well not be copying it over once we discard the copy of the module. I
+did a simple test and I see the mod->klp set to true propagated but
+understanding *why* is a pit perplexing and I frankly don't think I see it
+yet.  Eearlier  today I though I had clarity on this but as I review
+things more with patience, the more puzzling this seems.
 
-> Fixes: 169a58ad824d ("module/decompress: Support zstd in-kernel decompression")
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
->  kernel/module/decompress.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Given the lack of documentation on how this works I figured I'd cc
+linux-modules and live-patching to ensure others can review / so we
+can enhance this documentation and code to be made clearer. It's not
+clear to me yet where the copy of the data is coming from yet, I see
+where it should be, but the logic seems fragile and perhaps error prone
+so I'd love some more eyeballs on this now.
+
+Song is working on some of these areas as well, if we can also clean
+things up in a better way as we go along it's a good time to review
+that now too.
+
+Below code analysis as of linux-next today.
+
+On Mon, Mar 13, 2023 at 12:46:14PM +0100, Petr Mladek wrote:
+> On Sat 2023-03-11 18:16:35, Luis Chamberlain wrote:
+> > Hey Petr, while working on my V2 to reduce unnecessary memory pressure
+> > (with my fixes from V1 I'm seeing considerable savings) I came to realize
+> > that the place I put mod aliases was wrong as it works on the copy of the
+> > module, not the final thing.
 > 
-> diff --git a/kernel/module/decompress.c b/kernel/module/decompress.c
-> index bb79ac1a6d8f..7ddc87bee274 100644
-> --- a/kernel/module/decompress.c
-> +++ b/kernel/module/decompress.c
-> @@ -267,7 +267,7 @@ static ssize_t module_zstd_decompress(struct load_info *info,
->  		zstd_dec.size = PAGE_SIZE;
->  
->  		ret = zstd_decompress_stream(dstream, &zstd_dec, &zstd_buf);
-> -		kunmap(page);
-> +		kunmap_local(zstd_dec.dst);
->  		retval = zstd_get_error_code(ret);
->  		if (retval)
->  			break;
-> -- 
-> 2.39.2
+> I see.
 > 
+> > So I'm fixing that now so I allocate the aliases after
+> > layout_and_allocate(). However since mod->klp is set to true
+> > on the copy on check_mod_info() I started wondering if it's not propagated
+> > later. Code wise I think that true.
+> 
+> It seems to be propagated, see below. Well, I do not see it in the code.
 
+I didn't see where this could be propagated either at first glance. Now
+I  have some idea but it's still a bit obfuscated and I'm not quite sure
+of it to be frank. It seems that it should all happen because move_module()
+actually copies all the data we fudged on the copy into its final
+section header location. But the copy is constrained by the ELF section
+data it sees and length, and I don't see why we are getting more
+information than what modpost generates on the mod.c files for modules
+and it is minimal.
 
+Since its obscure let me elaborate on my explanation. If folks find
+issues please let me know.
+
+We have two ways to shove modules into the kernel, the old system call
+init_module() and then the new finit_module(). Both end up having a
+temporary buffer allocated with a copy of userspace module information
+in it, and set the struct load_info structure, passed to load_module().
+The non-decompression finit_module() has the simplest userspace copy
+example:
+
+SYSCALL_DEFINE3(finit_module, int, fd, const char __user *, uargs, int, flags)
+{
+	int len;
+	struct load_info info = { };
+	...
+	len = kernel_read_file_from_fd(fd, 0, &buf, INT_MAX, NULL, READING_MODULE);  
+	...
+	if (not_compression) {
+		info.len = len;
+		info.hdr = buf;
+	}
+	return load_module(&info, uargs, flags);
+}
+
+The call load_module() eventually will have to vfree(info->hdr), it
+eventually does this right before load_module() calls do_init_module(mod)
+at the very end.
+
+static int load_module(struct load_info *info, const char __user *uargs,
+                       int flags)
+{
+	...
+	/* Get rid of temporary copy. */
+	free_copy(info, flags); 
+
+	/* Done! */                                                             
+	trace_module_load(mod);                                                 
+
+	return do_init_module(mod);
+	...
+}
+
+So we have proof we get rid of it. How about the copy? First let's
+define the copy of the module as being on info->mod. This gets first
+initialized through setup_load_info() early on load_module().
+
+static int setup_load_info(struct load_info *info, int flags)
+{
+	...
+        /* This is temporary: point mod into copy of data. */                   
+	info->mod = (void *)info->hdr + info->sechdrs[info->index.mod].sh_offset;
+	...
+}
+
+Understanding this is key, as well as where and how the non-copy
+of mod pointer is set and what it points to.
+
+We know info->hdr is initialized to the copy of the user buffer (info.hdr = buf).
+So we just need now to look at info->sechdrs[info->index.mod].sh_offset.
+This is all set up on early on setup_load_info(). But first we must look
+for when the hell info->sechdrs is initialized. Sadly this is obfuscated
+in elf_validity_check() which is called right before setup_load_info():
+
+static int elf_validity_check(struct load_info *info)                           
+{
+	...
+	info->sechdrs = (void *)info->hdr + info->hdr->e_shoff;
+	...
+}
+
+So back to info->mod pointer. So now we know where info->sechdrs points to.
+It's just info->hdr + info->hdr->e_shoff. And the info->index.mod is set
+in setup_load_info:
+
+static int setup_load_info(struct load_info *info, int flags)
+{
+	...
+	info->index.mod = find_sec(info, ".gnu.linkonce.this_module");          
+	if (!info->index.mod) {
+		pr_warn("%s: No module found in object\n",                      
+			info->name ? : "(missing .modinfo section or name field)");
+		return -ENOEXEC;                                                
+	}
+	...
+}
+
+The nice thing is we can rest assured all modules have this section set.
+So mod just just points to the ELF section for ".gnu.linkonce.this_module"
+from the copy in userspace at first.
+
+That is generated for the module on the mod.c file by modpost, my fs/xfs/xfs.mod.c
+for example has:
+
+__visible struct module __this_module
+__section(".gnu.linkonce.this_module") = {
+	.name = KBUILD_MODNAME,
+	.init = init_module,
+#ifdef CONFIG_MODULE_UNLOAD
+	.exit = cleanup_module,
+#endif
+	.arch = MODULE_ARCH_INIT,
+};
+
+This is a nasty way to just define statically a struct module,
+using the variable name __this_module. But its just the same as:
+
+struct module __this_module = {
+	.name = KBUILD_MODNAME,
+	.init = init_module,
+	.exit = cleanup_module,
+	.arch = MODULE_ARCH_INIT,
+};
+
+But what I'm seeing is that if we grow the struct module in include/linux/module.h
+the section for .gnu.linkonce.this_module for my ELF modules does not grow.
+
+But let's look at how we copy this to the final mod that is used...
+
+Note that layout_and_allocate() sets the final mod as:
+
+static struct module *layout_and_allocate(struct load_info *info, int flags)
+{
+	...
+	/* Allocate and move to the final place */                              
+	err = move_module(info->mod, info);                                     
+	if (err)
+		goto err_out;
+
+	/* Module has been copied to its final place now: return it. */         
+	mod = (void *)info->sechdrs[info->index.mod].sh_addr;
+	...
+}
+
+We have to look at what move_module() does then. The
+layout_sections() stuff sets up the corresponding mod->mem stuff to
+correspond with the copy. Then move_module() allocates the the same
+mod->mem stuff and copies the data from the old module copy. The only
+difference is that now sections allocated with module_memory_alloc().
+The relevant parts:
+
+static int move_module(struct module *mod, struct load_info *info)              
+{
+	int i;
+	void *ptr; 
+	...
+	for_each_mod_mem_type(type) {
+		ptr = module_memory_alloc(mod->mem[type].size, type);
+		...
+		memset(ptr, 0, mod->mem[type].size);
+		mod->mem[type].base = ptr;
+	}
+	for (i = 0; i < info->hdr->e_shnum; i++) {
+		void *dest;
+		Elf_Shdr *shdr = &info->sechdrs[i];
+		...
+		dest = mod->mem[type].base + (shdr->sh_entsize & SH_ENTSIZE_OFFSET_MASK);
+		if (shdr->sh_type != SHT_NOBITS)
+			memcpy(dest, (void *)shdr->sh_addr, shdr->sh_size);
+		/* Update sh_addr to point to copy in image. */
+		shdr->sh_addr = (unsigned long)dest;
+		...
+	}
+	...
+}
+
+The comment for "Update sh_addr to point to copy in image." seems pretty
+misleading to me, what we are doing there is actually ensuring that we update
+the copy's ELF section address to point to our newly allocated memory.
+Do folks agree?
+
+And how about the size on the memcpy()? That's a shd->sh_size. No matter
+how much I increase my struct module in include/linux/module.h I see
+thes same sh_size. Do folks see same?
+
+nm --print-size --size-sort fs/xfs/xfs.ko | grep __this_module
+0000000000000000 0000000000000500 D __this_module
+
+This is what is supposed to make the final part of layout_and_allocate() work:
+
+	mod = (void *)info->sechdrs[info->index.mod].sh_addr;
+
+This works off of the copy of the module. Let's recall that
+setup_load_info() sets the copy mod to:
+
+	info->mod = (void *)info->hdr + info->sechdrs[info->index.mod].sh_offset;
+
+The memcpy() in move_module() is what *should* be copying over the entire
+mod stuff properly over, that includes the mod->klp for live patching
+but also any new data we muck with in-kernel as the new mod->mem stuff
+in layout_sections(). In short, anything in struct module should be
+shoved into an ELF section. But I'm not quite sure this is all right.
+
+My biggest fear is that as we work on the copy of the module we are
+actually overwriting data that the user provided.
+
+> > But we don't seem to need mod->klp to be true post settings up the
+> > module from my quick glance. We check for it on layout_symtab().
+> > So it seem just by chance and context that is_livepatch_module() works.
+> 
+> Hmm, is_livepatch_module() is called also from klp_enable_patch().
+> 
+> And klp_enable_patch() is called from the mod->init() callbacks,
+> for example, see samples/livepatch/livepatch-sample.c.
+> IMHO, it is done when the module is already on the final location.
+> 
+> It would be great if mod->klp is set correctly in the final struct
+> module. Otherwise, is_livepatch_module() would be error prone
+> and should not be in the global include/linux/module.h.
+
+Yeah, that's what I was thinking, but indeed we do need it for both
+layout_and_allocate() where we work with what userspace provided
+and after layout_and_allocate() where we are supposed to be just working
+with the new copy.
+
+> > I just wanted you to confirm before I continue my cleanup. I'll add a pre
+> > check and post check. All the taints for instance are wrong as they are
+> > used and called before we even know if we have memory to load the module.
+> > The taints are global though but still it's not accurate to call before we
+> > load the actual module successfully.
+> 
+> Thanks a lot for keeping livepatching in mind.
+
+Help me unravel the above special historic spaghetti code :)
+
+  Luis
