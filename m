@@ -2,278 +2,210 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74D126BF223
-	for <lists+live-patching@lfdr.de>; Fri, 17 Mar 2023 21:07:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93AF76BF2A4
+	for <lists+live-patching@lfdr.de>; Fri, 17 Mar 2023 21:34:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229981AbjCQUHo (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 17 Mar 2023 16:07:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59700 "EHLO
+        id S229480AbjCQUeA (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 17 Mar 2023 16:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229984AbjCQUHi (ORCPT
+        with ESMTP id S230137AbjCQUd7 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 17 Mar 2023 16:07:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766BADCF51
-        for <live-patching@vger.kernel.org>; Fri, 17 Mar 2023 13:06:19 -0700 (PDT)
+        Fri, 17 Mar 2023 16:33:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371F315173
+        for <live-patching@vger.kernel.org>; Fri, 17 Mar 2023 13:33:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679083578;
+        s=mimecast20190719; t=1679085183;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v+nprD01z1N5CeGZUpLv/tqCApb2AEnd4EOLkbIS8P0=;
-        b=NlArBgBtnbqMqlS9FuDHt0WrORYW43pxL7bjU30TVhrQc37iiAhUoh3CoriF2lhyDZz+b6
-        PCO+xBo79LqAFfN9hcydJY44/7BQSUIkyCM22Bx5gIrXm+zfXDnRqO7bwpthyUgdra1tnQ
-        Vu8S2UT8CFzeCi3gMVPaqjlq+BHKfQo=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-206-ZV2pNGcMO36aB4BHMbaCLw-1; Fri, 17 Mar 2023 16:06:17 -0400
-X-MC-Unique: ZV2pNGcMO36aB4BHMbaCLw-1
-Received: by mail-qv1-f70.google.com with SMTP id pp11-20020a056214138b00b0056c228fa15cso3334501qvb.4
-        for <live-patching@vger.kernel.org>; Fri, 17 Mar 2023 13:06:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679083577;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=v+nprD01z1N5CeGZUpLv/tqCApb2AEnd4EOLkbIS8P0=;
-        b=6pzLJ9uuccFJar0z3W+A3Y4WhaEnOI5A9yR7Jc4v8P1ns65yXi21VXU0FqjBIbaY0K
-         eSzU+Dce5CqfCs3mO/PDnkRWGrI9ItjgnI/6PGM9YUpmfARo5i4kxu1RUUyIHxTXPUEn
-         ygo0wBEwo+wkTigu3Q3Elnn8XHKUhIHEQaNOo8YCZcnK8qjJwJaHpnQaEtKzgHYTG2H+
-         5wEbvbO0S4hMiyB2iNscfVCAldZG/WIXHHK80nit491zQBfg7mvrRmASPz1ZQfA8zYyI
-         7fE/DJ8IEz9h5elRDDrutsQF5CnSIu+84GSdW408jId4LxdPlbKX/LNaerV+xyc4rjPc
-         UA8g==
-X-Gm-Message-State: AO0yUKU9tX+VPZpAl4n1/23AbiHDv6oXUkupkWtPRI3XYZW4FGKB/3rb
-        nDNI3J9pCO1ovKctSs8W6PbdYe/vhM0du1UIg2fJsVzMNvLCnVmapzY4kgjtcxBgLyVfcRv+nQZ
-        /sG+KHTguzn3kw3p5Qr1QgqHp+w==
-X-Received: by 2002:ac8:5a8d:0:b0:3bf:e375:cfb6 with SMTP id c13-20020ac85a8d000000b003bfe375cfb6mr14940297qtc.1.1679083576913;
-        Fri, 17 Mar 2023 13:06:16 -0700 (PDT)
-X-Google-Smtp-Source: AK7set81QuAnUOCEVj6K0ec+K2JX5nE9mxIjIs/3hgX5szW+C5Ut7K9o3Y8jNCAeuW4G3RNfLWryoA==
-X-Received: by 2002:ac8:5a8d:0:b0:3bf:e375:cfb6 with SMTP id c13-20020ac85a8d000000b003bfe375cfb6mr14940236qtc.1.1679083576451;
-        Fri, 17 Mar 2023 13:06:16 -0700 (PDT)
-Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id j13-20020a37ef0d000000b00729b7d71ac7sm2282132qkk.33.2023.03.17.13.06.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Mar 2023 13:06:16 -0700 (PDT)
-Message-ID: <b2a6784f-d928-19a8-365f-35fc1e6c617d@redhat.com>
-Date:   Fri, 17 Mar 2023 16:06:15 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Content-Language: en-US
+        bh=ZfI3A5lLUd+09/+y0z8qaJcUWRJWrslDGbCcJ6wExMU=;
+        b=N/W+3qTy92tKpd6FjuKkQWyKMmT7LpxufYJehJCUUTfyz43C4ldbRNu+e6Czcm19Gy7Gfh
+        SridTmXGsoD8XNTpC0jRWZ6PMCsqD1nBWaQsyC+aKPxSGYpzOgSBkK9QOEow3VZt7pKKRi
+        cNbvBagPQRn2Ox20WygMm/CiyDw3stI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-74-xz_omIicNESOkGk9Xc2xhw-1; Fri, 17 Mar 2023 16:29:51 -0400
+X-MC-Unique: xz_omIicNESOkGk9Xc2xhw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 383A885A588;
+        Fri, 17 Mar 2023 20:29:51 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.16.127])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BFEFA1121315;
+        Fri, 17 Mar 2023 20:29:50 +0000 (UTC)
+Date:   Fri, 17 Mar 2023 16:29:48 -0400
+From:   Joe Lawrence <joe.lawrence@redhat.com>
 To:     Marcos Paulo de Souza <mpdesouza@suse.de>
 Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kbuild@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: Re: [PATCH v7 00/10] livepatch: klp-convert tool
+Message-ID: <ZBTNvEPrCcRj3F1C@redhat.com>
 References: <20230306140824.3858543-1-joe.lawrence@redhat.com>
- <20230306140824.3858543-3-joe.lawrence@redhat.com>
- <20230314182621.tsh55pjeo6onb6ix@daedalus>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH v7 02/10] livepatch: Add klp-convert tool
-In-Reply-To: <20230314182621.tsh55pjeo6onb6ix@daedalus>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <20230314202356.kal22jracaw5442y@daedalus>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230314202356.kal22jracaw5442y@daedalus>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 3/14/23 14:26, Marcos Paulo de Souza wrote:
-> On Mon, Mar 06, 2023 at 09:08:16AM -0500, Joe Lawrence wrote:
->> Livepatches may use symbols which are not contained in its own scope,
->> and, because of that, may end up compiled with relocations that will
->> only be resolved during module load. Yet, when the referenced symbols
->> are not exported, solving this relocation requires information on the
->> object that holds the symbol (either vmlinux or modules) and its
->> position inside the object, as an object may contain multiple symbols
->> with the same name. Providing such information must be done accordingly
->> to what is specified in Documentation/livepatch/module-elf-format.txt.
->>
->> Currently, there is no trivial way to embed the required information as
->> requested in the final livepatch elf object. klp-convert solves this
->> problem in two different forms: (i) by relying on symbols.klp, which is
->> built during kernel compilation, to automatically infer the relocation
->> targeted symbol, and, when such inference is not possible (ii) by using
->> annotations in the elf object to convert the relocation accordingly to
->> the specification, enabling it to be handled by the livepatch loader.
->>
->> Given the above, create scripts/livepatch to hold tools developed for
->> livepatches and add source files for klp-convert there.
->>
->> The core file of klp-convert is scripts/livepatch/klp-convert.c, which
->> implements the heuristics used to solve the relocations and the
->> conversion of unresolved symbols into the expected format, as defined in
->> [1].
->>
->> klp-convert receives as arguments the symbols.klp file, an input
->> livepatch module to be converted and the output name for the converted
->> livepatch. When it starts running, klp-convert parses symbols.klp and
->> builds two internal lists of symbols, one containing the exported and
->> another containing the non-exported symbols. Then, by parsing the rela
->> sections in the elf object, klp-convert identifies which symbols must be
->> converted, which are those unresolved and that do not have a
->> corresponding exported symbol, and attempts to convert them accordingly
->> to the specification.
->>
->> By using symbols.klp, klp-convert identifies which symbols have names
->> that only appear in a single kernel object, thus being capable of
->> resolving these cases without the intervention of the developer. When
->> various homonymous symbols exist through kernel objects, it is not
->> possible to infer the right one, thus klp-convert falls back into using
->> developer annotations. If these were not provided, then the tool will
->> print a list with all acceptable targets for the symbol being processed.
->>
->> Annotations in the context of klp-convert are accessible as struct
->> klp_module_reloc entries in sections named .klp.module_relocs.<objname>.
->> These entries are pairs of symbol references and positions which are to
->> be resolved against definitions in <objname>.
->>
->> Define the structure klp_module_reloc in include/linux/uapi/livepatch.h
->> allowing developers to annotate the livepatch source code with it.
->>
->> klp-convert relies on libelf and on a list implementation. Add files
->> scripts/livepatch/elf.c and scripts/livepatch/elf.h, which are a libelf
->> interfacing layer and scripts/livepatch/list.h, which is a list
->> implementation.
->>
->> Update Makefiles to correctly support the compilation of the new tool,
->> update MAINTAINERS file and add a .gitignore file.
->>
->> [1] - Documentation/livepatch/module-elf-format.txt
+On Tue, Mar 14, 2023 at 05:23:56PM -0300, Marcos Paulo de Souza wrote:
+> On Mon, Mar 06, 2023 at 09:08:14AM -0500, Joe Lawrence wrote:
+> > Summary
+> > -------
+> > 
+> > Livepatches may use symbols which are not contained in its own scope,
+> > and, because of that, may end up compiled with relocations that will
+> > only be resolved during module load. Yet, when the referenced symbols
+> > are not exported, solving this relocation requires information on the
+> > object that holds the symbol (either vmlinux or modules) and its
+> > position inside the object, as an object may contain multiple symbols
+> > with the same name.  Providing such information must be done accordingly
+> > to what is specified in Documentation/livepatch/module-elf-format.txt.
+> > 
+> > Currently, there is no trivial way to embed the required information as
+> > requested in the final livepatch elf object. klp-convert solves this
+> > problem in two different forms: (i) by relying on a symbol map, which is
+> > built during kernel compilation, to automatically infer the relocation
+> > targeted symbol, and, when such inference is not possible (ii) by using
+> > annotations in the elf object to convert the relocation accordingly to
+> > the specification, enabling it to be handled by the livepatch loader.
+> > 
+> > Given the above, add support for symbol mapping in the form of a
+> > symbols.klp file; add klp-convert tool; integrate klp-convert tool into
+> > kbuild; make livepatch modules discernible during kernel compilation
+> > pipeline; add data-structure and macros to enable users to annotate
+> > livepatch source code; make modpost stage compatible with livepatches;
+> > update livepatch-sample and update documentation.
+> > 
+> > The patch was tested under three use-cases:
+> > 
+> > use-case 1: There is a relocation in the lp that can be automatically
+> > resolved by klp-convert.  For example. see the saved_command_line
+> > variable in lib/livepatch/test_klp_convert2.c.
+> > 
+> > use-case 2: There is a relocation in the lp that cannot be automatically
+> > resolved, as the name of the respective symbol appears in multiple
+> > objects. The livepatch contains an annotation to enable a correct
+> > relocation.  See the KLP_MODULE_RELOC / KLP_SYMPOS annotation sections
+> > in lib/livepatch/test_klp_convert{1,2}.c.
+> > 
+> > use-case 3: There is a relocation in the lp that cannot be automatically
+> > resolved similarly as 2, but no annotation was provided in the
+> > livepatch, triggering an error during compilation.  Reproducible by
+> > removing the KLP_MODULE_RELOC / KLP_SYMPOS annotation sections in
+> > lib/livepatch/test_klp_convert{1,2}.c.
+> > 
+> > Selftests have been added to exercise these klp-convert use-cases
+> > through several tests.
+> > 
+> > 
+> > Testing
+> > -------
+> > 
+> > The patchset selftests build and execute on x86_64, s390x, and ppc64le
+> > for both default config (with added livepatch dependencies) and a larger
+> > RHEL-9-ish config.
+> > 
+> > Using the Intel's Linux Kernel Performance tests's make.cross,
+> > klp-convert builds and processes livepatch .ko's for x86_64 ppc64le
+> > ppc32 s390 arm64 arches.
+> > 
+> > 
+> > Summary of changes in v7
+> > ------------------------
+> > 
+> > - rebase for v6.2
+> > - combine ("livepatch: Add klp-convert tool") with ("livepatch: Add
+> >   klp-convert annotation helpers")
+> > - combine ("kbuild: Support for symbols.klp creation") with ("modpost:
+> >   Integrate klp-convert") to simplify Kbuild magic [Petr, Nicolas]
+> > - klp-convert: add safe_snprintf() (-Wsign-compare)
+> > - klp-convert: fix -Wsign-compare warnings
+> > - klp-convert: use calloc() where appropriate
+> > - klp-convert: copy ELF e_flags
+> > - selftests: fix various build warnings
+> > - klp-convert: WARN msg simplification, failed sanity checks, and sympos
+> >   comment [Marcos]
+> > - klp-convert: fix elf_write_file() error paths [Petr]
 > 
-> LGTM:
+> Thanks for the new version Joe. I've run the ksefltests on my x86 laptop, and it
+> succeed as expected, so
 > 
-> Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> 
-> I only have two remarks:
-> 
->>
->> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
->> Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
->> Signed-off-by: Joao Moreira <jmoreira@suse.de>
->> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-> 
-> ...
-> 
-> 
->> +#if 0
->> +	/*
->> +	 * klp-relocations forbidden in sections that otherwise would
->> +	 * match in allowed_prefixes[]
->> +	 */
->> +	static const char * const not_allowed[] = {
->> +		".rela.data.rel.ro",
->> +		".rela.data.rel.ro.local",
->> +		".rela.data..ro_after_init",
->> +		NULL
->> +	};
->> +#endif
->> +
->> +	/* klp-relocations allowed in sections only for vmlinux */
->> +	static const char * const allowed_vmlinux[] = {
->> +		".rela__jump_table",
->> +		NULL
->> +	};
->> +
->> +	/* klp-relocations allowed in sections with prefixes */
->> +	static const char * const allowed_prefixes[] = {
->> +		".rela.data",
->> +		".rela.rodata",	// supported ???
->> +		".rela.sdata",
->> +		".rela.text",
->> +		".rela.toc",
->> +		NULL
->> +	};
->> +
->> +	const char * const *name;
->> +
->> +#if 0
->> +	for (name = not_allowed; *name; name++)
->> +		if (strcmp(sec->name, *name) == 0)
->> +			return false;
->> +#endif
->> +
-> 
-> Have you needed to enable the not_allowed checks when creating your livepatches?
-> Otherwise I believe that this can be removed and added again in the future is
-> needed.
+> Tested-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 > 
 
-Good question.
+Thanks for the testing and reviews, Marcos.
 
-I left the disabled blocks in the code as a bookmark for an outstanding
-question: should klp-convert avoid converting relocations in any
-read-only-ish section?
+The selftests are the first level of testing... we should probably
+tackle a real or simulated CVE fix to see how well the tooling fits
+larger livepatches.
 
-This becomes interesting in the late module loading case -- some arches
-(ppc64le IIRC) do not like the module loader tweaking these relocations
-post module load. [1]
+One complication that I can envision is symbol positioning.  Currently,
+the klp-convert annotations are a direct mirror of the kernel's
+<obj,symbol,pos> tuple.  It should be possible to make this a bit more
+user friendly for the livepatch developer if the annotations were
+<obj,file,symbol>, as derived from the vmlinux / module.tmp.ko symbol
+tables.
 
-In "[PATCH v7 09/10] livepatch/selftests: add data relocations test"
-test_klp_convert_data.c, you'll see a few "// .rela.data.rel.ro,
-.rela.rodata supported ??" comments.  Those would generate relocations
-in such sections.
+For example, the following code:
 
-Do they *need* to be supported?  AFAIK kpatch-build hasn't needed to
-create any of those.  That said, it's not too difficult for this
-patchset's self-tests to generate these.  klp-convert could easily
-detect this scenario.  The livepatch author could be advised to remove
-const or  __ro_after_init annotation to move the relocation out of the
-read-only-ish section.
+  KLP_MODULE_RELOC(test_klp_convert_mod, test_klp_convert_mod_b.c) test_klp_convert_mod_relocs_b[] = {
+        KLP_SYMPOS(homonym_string),
+        KLP_SYMPOS(get_homonym_string),
+  };
 
-[1] https://github.com/joe-lawrence/klp-convert-tree/issues/5
+could generate the following relocations:
 
->> +int main(int argc, const char **argv)
->> +{
->> +	const char *klp_in_module, *klp_out_module, *symbols_list;
-> 
-> ...
-> 
->> +
->> +/* Functions kept commented since they might be useful for future debugging */
->> +
->> +/* Dumps sympos list (useful for debugging purposes)
->> + * static void dump_sympos(void)
->> + * {
->> + *	struct sympos *sp;
->> + *
->> + *	fprintf(stderr, "BEGIN OF SYMPOS DUMP\n");
->> + *	list_for_each_entry(sp, &usr_symbols, list) {
->> + *		fprintf(stderr, "%s %s %d\n", sp->symbol_name, sp->object_name,
->> + *				sp->pos);
->> + *	}
->> + *	fprintf(stderr, "END OF SYMPOS DUMP\n");
->> + * }
->> + *
->> + *
->> + * / Dump symbols list for debugging purposes /
->> + * static void dump_symbols(void)
->> + * {
->> + *	struct symbol_entry *entry;
->> + *
->> + *	fprintf(stderr, "BEGIN OF SYMBOLS DUMP\n");
->> + *	list_for_each_entry(entry, &symbols, list)
->> + *		printf("%s %s\n", entry->object_name, entry->symbol_name);
->> + *	fprintf(stderr, "END OF SYMBOLS DUMP\n");
->> + * }
-> 
-> Same here. Have you used these functions recently when debugging klp-convert?
-> Othewise it can be removed as well.
-> 
+  Relocation section '.rela.klp.module_relocs.test_klp_convert_mod.test_klp_convert_mod_b.c' at offset 0x1dc0 contains 2 entries:
+      Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+  0000000000000000  0000003f00000001 R_X86_64_64            0000000000000000 homonym_string + 0
+  0000000000000008  0000004900000001 R_X86_64_64            0000000000000000 get_homonym_string + 0
 
-I was tinkering with an alternate sympos annotation (I'll describe it in
-a separate reply) and think that these debug routines could be activated
-with --debug cmdline flag(s).  They can be handy for debug/development,
-so better to make them always active rather than #if 0'd out.
+for which klp-convert looks up in symbols.klp:
 
--- 
-Joe
+  klp-convert-symbol-data.0.2
+  *vmlinux
+  ...
+  *test_klp_convert_mod
+  -test_klp_convert_mod_a.c             << added filenames to the format
+  test_klp_get_driver_name
+  driver_name
+  get_homonym_string                    << sympos = 1
+  homonym_string                        << sympos = 1
+  ...
+  -test_klp_convert_mod_b.c
+  get_homonym_string                    << sympos = 2
+  homonym_string                        << sympos = 2
+  ...
+
+and then generates the usual klp-relocations as currently defined.
+
+(Unfortunately full pathnames are not saved in the STT_FILE symbol table
+entries, so there will be a few non-unique <obj,file,symbol> entries.  I
+believe the last time this was discussed, we found that there were a
+relatively small number of such symbols.)
+
+Have you tried retrofitting klp-convert into any real-world livepatch?
+I'm curious as to your observations on the overall experience, or
+thoughts on the sympos annotation style noted above.
+
+Regards,
+
+-- Joe
 
