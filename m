@@ -2,128 +2,276 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1983C6C2181
-	for <lists+live-patching@lfdr.de>; Mon, 20 Mar 2023 20:32:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C786C21FB
+	for <lists+live-patching@lfdr.de>; Mon, 20 Mar 2023 20:54:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbjCTTcQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 20 Mar 2023 15:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42128 "EHLO
+        id S230116AbjCTTx6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 20 Mar 2023 15:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230185AbjCTTby (ORCPT
+        with ESMTP id S230225AbjCTTxz (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 20 Mar 2023 15:31:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DFC93F8
-        for <live-patching@vger.kernel.org>; Mon, 20 Mar 2023 12:24:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679340242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Mon, 20 Mar 2023 15:53:55 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5660E38E;
+        Mon, 20 Mar 2023 12:53:33 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5E9C821ABF;
+        Mon, 20 Mar 2023 19:53:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1679342012; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=I7Kpwgu4Yf7cURDUTXwMVWYDCxG6tP+A5kuxmrN7os8=;
-        b=hpZZWNgDaWLFTxDVUCtHQ/wew8P0wyLO+bvmibgrMHK4Az5v7OVXfZ+NOBE18UUjL4Cucn
-        p7+vewARuhcOpbv3qgpX7mtW+zC8VIkI1Lbdu8RRaDgN8n+xvPSqMtOD6Lhtc3W4/4qAE7
-        boEsufpQw0ln9b3iYo8k34ni3L16ZsE=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-93-ecWI2SeRMiq7TBCc6pKQiA-1; Mon, 20 Mar 2023 15:24:01 -0400
-X-MC-Unique: ecWI2SeRMiq7TBCc6pKQiA-1
-Received: by mail-qt1-f199.google.com with SMTP id f2-20020ac87f02000000b003dd98d8bea0so4008564qtk.6
-        for <live-patching@vger.kernel.org>; Mon, 20 Mar 2023 12:24:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679340240;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=I7Kpwgu4Yf7cURDUTXwMVWYDCxG6tP+A5kuxmrN7os8=;
-        b=qFCGm1HOFX2N306shrrfLLVwEPBP1qJmClIYp7JMHW1mwDJNPzZhLVj+wZcRKDdSNE
-         z8C+3UywEBttSzDdCtI2/bfm3vPW/DjBGJk+6z0mi1BfgXu1ui802K+icyq6efATGDtm
-         SxVOl1PZtdcTPLVMtcB2IxfdqWgigiIlJ1bUClmx6+vDMF0CsK8W1Rru2dyeTEX94Ai2
-         ka3UowwgPNKjUWOiTBZ2xZTItNqiu/51rWJtjOz2WKYq+z5pwXg0QxCBui9fhCcTwWH0
-         Gs+xXKG4fti0YzAoUiIl/XHlUhK2Z51oJzWyz/wTbZ/T2Q5WuuzTQ/sAeu2qmZDCKBHe
-         uo2A==
-X-Gm-Message-State: AO0yUKUc+xwb/qpqOKOX/Mpo8tS6wSCdWgfKSO7rGULHQD0VacH5/EpH
-        aQHN/ogBwY21O1uq4kpJHYlG0wpiqpnfECP2OE+N7LecPALy7Y4/DT9pNNRGi6lOLU0xMvZJ2Md
-        tJUpUmwm+BQ/8enzBrnPuvykobQ==
-X-Received: by 2002:a05:622a:1a9f:b0:3e1:59e8:7451 with SMTP id s31-20020a05622a1a9f00b003e159e87451mr694338qtc.14.1679340240553;
-        Mon, 20 Mar 2023 12:24:00 -0700 (PDT)
-X-Google-Smtp-Source: AK7set83KO4cEKnDwKlUlt9dZ8kwvPD5iKQCdo214mre68GtCKfC8+mx9R4t/hpl8WKMrNumolyMlA==
-X-Received: by 2002:a05:622a:1a9f:b0:3e1:59e8:7451 with SMTP id s31-20020a05622a1a9f00b003e159e87451mr694275qtc.14.1679340239914;
-        Mon, 20 Mar 2023 12:23:59 -0700 (PDT)
-Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id f30-20020ac86ede000000b003e2901e5f7dsm1636411qtv.55.2023.03.20.12.23.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Mar 2023 12:23:59 -0700 (PDT)
-Message-ID: <5ee478c9-efa2-60e5-fee5-ed9d5cbceb01@redhat.com>
-Date:   Mon, 20 Mar 2023 15:23:58 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v7 00/10] livepatch: klp-convert tool
-Content-Language: en-US
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Marcos Paulo de Souza <mpdesouza@suse.de>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>,
+        bh=EpUxLNmwTqpW0BLfBZKQROzzyyfZskZY+ODA7yDR4ts=;
+        b=qR5CpGZLQY/SCUQdt4yITkO5T2uYX9sLwpKzKsJeaW0X5Ld9eVytU1ukxQ24t0tmIf4fI0
+        uwxYvm1xkTXqUdlGN9GXAv6XCJ7MuBQYW7HgPWlLX+JhsHiSzbWj+fV6xqfMWhGRnf/D+g
+        bebXl8LmopGVi20cPt/BZ0Pg2eXjTPM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1679342012;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EpUxLNmwTqpW0BLfBZKQROzzyyfZskZY+ODA7yDR4ts=;
+        b=uF2A3CzqmZcv7MVfoV+Z7vxg3NbycpCcWhG4+gAX89upgjFIJbYjnQQBmeh+nremNWBcIU
+        pzWTfup7BsY3STBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D163C13A00;
+        Mon, 20 Mar 2023 19:53:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id V8rpJLu5GGSjUAAAMHmgww
+        (envelope-from <mpdesouza@suse.com>); Mon, 20 Mar 2023 19:53:31 +0000
+Date:   Mon, 20 Mar 2023 16:53:29 -0300
+From:   Marcos Paulo de Souza <mpdesouza@suse.de>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
         Petr Mladek <pmladek@suse.com>,
         Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: Re: [PATCH v7 02/10] livepatch: Add klp-convert tool
+Message-ID: <20230320195329.6iptay5bjoaapdvb@daedalus>
 References: <20230306140824.3858543-1-joe.lawrence@redhat.com>
- <20230314202356.kal22jracaw5442y@daedalus> <ZBTNvEPrCcRj3F1C@redhat.com>
- <20230317232010.7uq6tt4ty35eo5hm@treble>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-In-Reply-To: <20230317232010.7uq6tt4ty35eo5hm@treble>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+ <20230306140824.3858543-3-joe.lawrence@redhat.com>
+ <20230314182621.tsh55pjeo6onb6ix@daedalus>
+ <b2a6784f-d928-19a8-365f-35fc1e6c617d@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b2a6784f-d928-19a8-365f-35fc1e6c617d@redhat.com>
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 3/17/23 19:20, Josh Poimboeuf wrote:
-> On Fri, Mar 17, 2023 at 04:29:48PM -0400, Joe Lawrence wrote:
->> Have you tried retrofitting klp-convert into any real-world livepatch?
->> I'm curious as to your observations on the overall experience, or
->> thoughts on the sympos annotation style noted above.
+On Fri, Mar 17, 2023 at 04:06:15PM -0400, Joe Lawrence wrote:
+> On 3/14/23 14:26, Marcos Paulo de Souza wrote:
+> > On Mon, Mar 06, 2023 at 09:08:16AM -0500, Joe Lawrence wrote:
+> >> Livepatches may use symbols which are not contained in its own scope,
+> >> and, because of that, may end up compiled with relocations that will
+> >> only be resolved during module load. Yet, when the referenced symbols
+> >> are not exported, solving this relocation requires information on the
+> >> object that holds the symbol (either vmlinux or modules) and its
+> >> position inside the object, as an object may contain multiple symbols
+> >> with the same name. Providing such information must be done accordingly
+> >> to what is specified in Documentation/livepatch/module-elf-format.txt.
+> >>
+> >> Currently, there is no trivial way to embed the required information as
+> >> requested in the final livepatch elf object. klp-convert solves this
+> >> problem in two different forms: (i) by relying on symbols.klp, which is
+> >> built during kernel compilation, to automatically infer the relocation
+> >> targeted symbol, and, when such inference is not possible (ii) by using
+> >> annotations in the elf object to convert the relocation accordingly to
+> >> the specification, enabling it to be handled by the livepatch loader.
+> >>
+> >> Given the above, create scripts/livepatch to hold tools developed for
+> >> livepatches and add source files for klp-convert there.
+> >>
+> >> The core file of klp-convert is scripts/livepatch/klp-convert.c, which
+> >> implements the heuristics used to solve the relocations and the
+> >> conversion of unresolved symbols into the expected format, as defined in
+> >> [1].
+> >>
+> >> klp-convert receives as arguments the symbols.klp file, an input
+> >> livepatch module to be converted and the output name for the converted
+> >> livepatch. When it starts running, klp-convert parses symbols.klp and
+> >> builds two internal lists of symbols, one containing the exported and
+> >> another containing the non-exported symbols. Then, by parsing the rela
+> >> sections in the elf object, klp-convert identifies which symbols must be
+> >> converted, which are those unresolved and that do not have a
+> >> corresponding exported symbol, and attempts to convert them accordingly
+> >> to the specification.
+> >>
+> >> By using symbols.klp, klp-convert identifies which symbols have names
+> >> that only appear in a single kernel object, thus being capable of
+> >> resolving these cases without the intervention of the developer. When
+> >> various homonymous symbols exist through kernel objects, it is not
+> >> possible to infer the right one, thus klp-convert falls back into using
+> >> developer annotations. If these were not provided, then the tool will
+> >> print a list with all acceptable targets for the symbol being processed.
+> >>
+> >> Annotations in the context of klp-convert are accessible as struct
+> >> klp_module_reloc entries in sections named .klp.module_relocs.<objname>.
+> >> These entries are pairs of symbol references and positions which are to
+> >> be resolved against definitions in <objname>.
+> >>
+> >> Define the structure klp_module_reloc in include/linux/uapi/livepatch.h
+> >> allowing developers to annotate the livepatch source code with it.
+> >>
+> >> klp-convert relies on libelf and on a list implementation. Add files
+> >> scripts/livepatch/elf.c and scripts/livepatch/elf.h, which are a libelf
+> >> interfacing layer and scripts/livepatch/list.h, which is a list
+> >> implementation.
+> >>
+> >> Update Makefiles to correctly support the compilation of the new tool,
+> >> update MAINTAINERS file and add a .gitignore file.
+> >>
+> >> [1] - Documentation/livepatch/module-elf-format.txt
+> > 
+> > LGTM:
+> > 
+> > Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> > 
+> > I only have two remarks:
+> > 
+> >>
+> >> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> >> Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+> >> Signed-off-by: Joao Moreira <jmoreira@suse.de>
+> >> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> > 
+> > ...
+> > 
+> > 
+> >> +#if 0
+> >> +	/*
+> >> +	 * klp-relocations forbidden in sections that otherwise would
+> >> +	 * match in allowed_prefixes[]
+> >> +	 */
+> >> +	static const char * const not_allowed[] = {
+> >> +		".rela.data.rel.ro",
+> >> +		".rela.data.rel.ro.local",
+> >> +		".rela.data..ro_after_init",
+> >> +		NULL
+> >> +	};
+> >> +#endif
+> >> +
+> >> +	/* klp-relocations allowed in sections only for vmlinux */
+> >> +	static const char * const allowed_vmlinux[] = {
+> >> +		".rela__jump_table",
+> >> +		NULL
+> >> +	};
+> >> +
+> >> +	/* klp-relocations allowed in sections with prefixes */
+> >> +	static const char * const allowed_prefixes[] = {
+> >> +		".rela.data",
+> >> +		".rela.rodata",	// supported ???
+> >> +		".rela.sdata",
+> >> +		".rela.text",
+> >> +		".rela.toc",
+> >> +		NULL
+> >> +	};
+> >> +
+> >> +	const char * const *name;
+> >> +
+> >> +#if 0
+> >> +	for (name = not_allowed; *name; name++)
+> >> +		if (strcmp(sec->name, *name) == 0)
+> >> +			return false;
+> >> +#endif
+> >> +
+> > 
+> > Have you needed to enable the not_allowed checks when creating your livepatches?
+> > Otherwise I believe that this can be removed and added again in the future is
+> > needed.
+> > 
 > 
-> On a related note, the patch creation process (of which klp-convert
-> would be part of) needs to be documented.
+> Good question.
 > 
-> If I remember correctly, the proper safe usage of klp-convert requires a
-> kernel built with -flive-patching, plus some scripting and/or manual
-> processes.
+> I left the disabled blocks in the code as a bookmark for an outstanding
+> question: should klp-convert avoid converting relocations in any
+> read-only-ish section?
 > 
-> If nobody knows how to safely use it then there wouldn't be much value
-> in merging it.
+> This becomes interesting in the late module loading case -- some arches
+> (ppc64le IIRC) do not like the module loader tweaking these relocations
+> post module load. [1]
 > 
+> In "[PATCH v7 09/10] livepatch/selftests: add data relocations test"
+> test_klp_convert_data.c, you'll see a few "// .rela.data.rel.ro,
+> .rela.rodata supported ??" comments.  Those would generate relocations
+> in such sections.
+> 
+> Do they *need* to be supported?  AFAIK kpatch-build hasn't needed to
+> create any of those.  That said, it's not too difficult for this
+> patchset's self-tests to generate these.  klp-convert could easily
+> detect this scenario.  The livepatch author could be advised to remove
+> const or  __ro_after_init annotation to move the relocation out of the
+> read-only-ish section.
 
-I took a trip though my inbox and dug up a 2020 discussion on
-documenting livepatch and compiler considerations [1].  This led to the
-suggestion of a greater, end-to-end livepatch author guide, for which
-everyone agreed, but has since remained unwritten :/
+I'm not sure if it needs to be supported as well. Maybe other people could give
+their inputs in this regard? Suggesting the livepatch author about this case
+seems a good option either way.
 
-If we have a miniconf @ LPC this year, maybe we can volunteer to write
-sections, decide on an outline, or even better, have a rough draft to
-review and discuss?
+> 
+> [1] https://github.com/joe-lawrence/klp-convert-tree/issues/5
+> 
+> >> +int main(int argc, const char **argv)
+> >> +{
+> >> +	const char *klp_in_module, *klp_out_module, *symbols_list;
+> > 
+> > ...
+> > 
+> >> +
+> >> +/* Functions kept commented since they might be useful for future debugging */
+> >> +
+> >> +/* Dumps sympos list (useful for debugging purposes)
+> >> + * static void dump_sympos(void)
+> >> + * {
+> >> + *	struct sympos *sp;
+> >> + *
+> >> + *	fprintf(stderr, "BEGIN OF SYMPOS DUMP\n");
+> >> + *	list_for_each_entry(sp, &usr_symbols, list) {
+> >> + *		fprintf(stderr, "%s %s %d\n", sp->symbol_name, sp->object_name,
+> >> + *				sp->pos);
+> >> + *	}
+> >> + *	fprintf(stderr, "END OF SYMPOS DUMP\n");
+> >> + * }
+> >> + *
+> >> + *
+> >> + * / Dump symbols list for debugging purposes /
+> >> + * static void dump_symbols(void)
+> >> + * {
+> >> + *	struct symbol_entry *entry;
+> >> + *
+> >> + *	fprintf(stderr, "BEGIN OF SYMBOLS DUMP\n");
+> >> + *	list_for_each_entry(entry, &symbols, list)
+> >> + *		printf("%s %s\n", entry->object_name, entry->symbol_name);
+> >> + *	fprintf(stderr, "END OF SYMBOLS DUMP\n");
+> >> + * }
+> > 
+> > Same here. Have you used these functions recently when debugging klp-convert?
+> > Othewise it can be removed as well.
+> > 
+> 
+> I was tinkering with an alternate sympos annotation (I'll describe it in
+> a separate reply) and think that these debug routines could be activated
+> with --debug cmdline flag(s).  They can be handy for debug/development,
+> so better to make them always active rather than #if 0'd out.
 
+Seems a good plan.
 
-Aside: technically klp-convert doesn't require -flive-patching, but it's
-probably strongly recommended in order to use it safely.  And fwiw,
-kpatch-build could leverage the tool should it desire one day.  In the
-meantime, if kpatch-build doesn't need/want to use it, perhaps
-klp-convert should have its own CONFIG option?  (Or something in modinfo
-to key on.)
-
-
-[1]
-https://lore.kernel.org/live-patching/20200721161407.26806-1-joe.lawrence@redhat.com/
-
--- 
-Joe
-
+> 
+> -- 
+> Joe
+> 
