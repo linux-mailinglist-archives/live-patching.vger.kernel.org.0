@@ -2,58 +2,41 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF8F6C2C78
-	for <lists+live-patching@lfdr.de>; Tue, 21 Mar 2023 09:33:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F15B6C2C84
+	for <lists+live-patching@lfdr.de>; Tue, 21 Mar 2023 09:34:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbjCUIdO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 21 Mar 2023 04:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
+        id S230283AbjCUIeY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 21 Mar 2023 04:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbjCUIc6 (ORCPT
+        with ESMTP id S229629AbjCUId6 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 21 Mar 2023 04:32:58 -0400
+        Tue, 21 Mar 2023 04:33:58 -0400
 Received: from mail.ptr1337.dev (mail.ptr1337.dev [202.61.224.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580083C3C;
-        Tue, 21 Mar 2023 01:32:04 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 570FE2800C1;
-        Tue, 21 Mar 2023 09:23:08 +0100 (CET)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34234391C;
+        Tue, 21 Mar 2023 01:33:08 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C9F5F2800C1;
+        Tue, 21 Mar 2023 09:33:00 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cachyos.org; s=dkim;
-        t=1679386994; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+        t=1679387581; h=from:subject:date:message-id:to:mime-version:content-type:
          content-transfer-encoding:content-language:in-reply-to:references;
         bh=ETMQewYqFOxyEeyfz++LRASMN6UldVLdJx3vLdRJ+U8=;
-        b=mTDUcu6EONftfdBT/BsJcZJqtvG9Hk0H4pY103xW/8Mr82A+Qx85EGQ7yY0DlbFTzgcCDj
-        j/wcpNDwLJWATK8eozJ5mYt5NKPtlTaXEw2xOBWWYeglb6LqyZ5s3qNLNEnUjG1majMlRr
-        Cnl5tN4nJWK9dcY5BLw7UFgqCrpqR014t3U65ZDUf3/8uQAcX4yeoU9fVUVc6MlTn+gelG
-        XOm5xQ8cRcojI3L8pczOamv8AWo+L0SsKPxa/wHJvyQJ0bKsTG2bQ7TmR29UY2nqblZFC3
-        KRfSvqdqkLzvIXWmmeZb5ib31/IcuebKi/kZkw+Nxld2ZqwsUHz5furCUGKlug==
-Message-ID: <e30b31c9-9b18-80a3-8ff0-97b958ab0b8f@cachyos.org>
-Date:   Tue, 21 Mar 2023 09:23:07 +0100
+        b=p1bxi7UdLGQgXoohfOEhj5UeH0nPUxhEjR6JNUfRnQ91T3hS+ISjInI6ZN+ahMEhsMVjrs
+        bbMhYeudtfLB5fThe7V3AyrTrYTSwgnTD6+yynQ9JAcM3dJ0ybmS5cEJkxRW5//vSUPCuA
+        nxt4iH5WvfcYZ2NxX95ez2DakRMZ9tn8l1RGBjtZeD+bgT5zWQ+Ggl1UL8GESk+JLXEp0g
+        BBrWrkY4aPDNtXlCEAU0hZGvLecHYNT18+b1ACO+GcgCaebOnpFoCrsSPmKAnwANUs10bI
+        dELABGj5PoQUnjn3xrd5UJJXaiw6/gqz2dpUnL0ePPpHVneNc+TDs6c0OSAgbQ==
+Message-ID: <c0217d44-b13b-7126-8291-b2e9ee8c4db2@cachyos.org>
+Date:   Tue, 21 Mar 2023 09:33:00 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
 Subject: Re: [PATCH] module/decompress: Never use kunmap() for local
  un-mappings
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Chris Down <chris@chrisdown.name>,
-        Nick Terrell <terrelln@fb.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+To:     linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
         live-patching@vger.kernel.org, bpf@vger.kernel.org,
         llvm@lists.linux.dev
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Ira Weiny <ira.weiny@intel.com>
 References: <20230315125256.22772-1-fmdefrancesco@gmail.com>
 Content-Language: pl-PL, en-US
 From:   Piotr Gorski <piotrgorski@cachyos.org>
