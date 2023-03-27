@@ -2,190 +2,122 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98ECA6C6E87
-	for <lists+live-patching@lfdr.de>; Thu, 23 Mar 2023 18:17:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EFBA6C9F2E
+	for <lists+live-patching@lfdr.de>; Mon, 27 Mar 2023 11:16:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbjCWRRZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 23 Mar 2023 13:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
+        id S233144AbjC0JQ1 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 27 Mar 2023 05:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjCWRRY (ORCPT
+        with ESMTP id S233156AbjC0JQ0 (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 23 Mar 2023 13:17:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD00E2686C;
-        Thu, 23 Mar 2023 10:17:22 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 488942F4;
-        Thu, 23 Mar 2023 10:18:06 -0700 (PDT)
-Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.31.167])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4BE133F766;
-        Thu, 23 Mar 2023 10:17:20 -0700 (PDT)
-Date:   Thu, 23 Mar 2023 17:17:14 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     madvenka@linux.microsoft.com
-Cc:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
-        broonie@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v3 00/22] arm64: livepatch: Use ORC for dynamic frame
- pointer validation
-Message-ID: <ZByJmnc/XDcqQwoZ@FVFF77S0Q05N.cambridge.arm.com>
-References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
- <20230202074036.507249-1-madvenka@linux.microsoft.com>
+        Mon, 27 Mar 2023 05:16:26 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D3C44BE
+        for <live-patching@vger.kernel.org>; Mon, 27 Mar 2023 02:16:24 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id u20so5123244pfk.12
+        for <live-patching@vger.kernel.org>; Mon, 27 Mar 2023 02:16:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679908584;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HgMR0rh/4y7PUWkgjC5D1ZLTIu4Xe0fvcNc/5RhdQ/Y=;
+        b=Tf3VlODMFHBHv+1/ruZ9mzU/s9xIJ5lj6UCtpOOF778BZ/hXE+m/y0NHp81l/I16wo
+         oSAK6z22iwfXLjtc9TRRJQVTiDcM6BXDptxMtOy6Ke/gCW6MxAfjBv0eShsgq3aKheLz
+         0IcqfsS5oquDJ/S5Zl2Bv2yNsNxhCMu7FKhS/TiZeEJkZXZhi18Fg0K/aX19BKYKUgcf
+         ucN3OHRwIIbMbw3Em0Zo7WY27nut/4i3Jf+oFVg4mBSNl/fpwfEvy/Bn63oSpMtC29fI
+         QEu02R6/UIVLj8wRit6d3xl3MGuI/+uxUxAJ91/OHRcIZP660R5XrQGJI95AL67XZPH/
+         St+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679908584;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HgMR0rh/4y7PUWkgjC5D1ZLTIu4Xe0fvcNc/5RhdQ/Y=;
+        b=hD/JR85VuCDXpGnAa2ulVq6tM8niVupcgAXVIKGo60hPMRQUoWRDMV+BPy1zQQXKI/
+         hGNW+XgP/P4GmVYpzEkJEIlVAggisbGONlHWqDAntK4hgck8UU4oLbZ/m/UYMnZP4hu+
+         Tcythtyxus8Lp84qmH8ecAW8L9lQay6or1/zsyhtYN4Y/tM7Qu7bqbSAu81QUqo3wTQZ
+         1pnPmzUTnnl6ZWnru8X6xTBaoqsDUl9GiVzFIVteIis0ZDHUmcYfhzy9eTLGjNtfkg45
+         NmWOb1B0EOpnYVE4ISFt0DkzN6YgUJjxopFvn/Tz7IKBCUANRYMwQVXRQpajzbzHtYkL
+         w+bw==
+X-Gm-Message-State: AAQBX9cINM8oPeAzTPaw+t/M3MT6KGVpPmVCh/2vHwkCFOyGNxUBOQ9l
+        l5TzRUDNjxq4WsA72K9uFrlZvKyjL3hUg1htoCk=
+X-Google-Smtp-Source: AKy350b+2BjvoaB0h1h5RqdVuPNI4IheZ03EvkSuB5OrSam0bFfwHf6zKvERWVTVaMsqRMllge4H6b00STs3LUq8pUY=
+X-Received: by 2002:a05:6a00:2d27:b0:627:e677:bc54 with SMTP id
+ fa39-20020a056a002d2700b00627e677bc54mr5637021pfb.5.1679908583864; Mon, 27
+ Mar 2023 02:16:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202074036.507249-1-madvenka@linux.microsoft.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Received: by 2002:a05:7300:3db:b0:9f:d19a:fd79 with HTTP; Mon, 27 Mar 2023
+ 02:16:23 -0700 (PDT)
+Reply-To: annamalgorzata587@gmail.com
+From:   "Leszczynska Anna Malgorzata." <mrsstewartprisca@gmail.com>
+Date:   Mon, 27 Mar 2023 02:16:23 -0700
+Message-ID: <CAFoYun0pOf7h6MXemKOxx_VJ9qat6_H9Si4pXTKnow3m+j_=JA@mail.gmail.com>
+Subject: Mrs. Leszczynska Anna Malgorzata.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.8 required=5.0 tests=ADVANCE_FEE_5_NEW,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNDISC_FREEM,UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:42d listed in]
+        [list.dnswl.org]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [mrsstewartprisca[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [annamalgorzata587[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  0.8 ADVANCE_FEE_5_NEW Appears to be advance fee fraud (Nigerian
+        *      419)
+        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hi Madhavan,
+-- 
+I am Mrs. Leszczynska Anna Malgorzatafrom Germany . Presently admitted
+ in one of the hospitals here in Ivory Coast.
 
-At a high-level, I think this still falls afoul of our desire to not reverse
-engineer control flow from the binary, and so I do not think this is the right
-approach. I've expanded a bit on that below.
+I and my late husband do not have any child that is why I am donating
+this money to you having known my condition that I will join my late
+husband soonest.
 
-I do think it would be nice to have *some* of the objtool changes, as I do
-think we will want to use objtool for some things in future (e.g. some
-build-time binary patching such as table sorting).
+I wish to donate towards education and the less privileged I ask for
+your assistance. I am suffering from colon cancer I have some few
+weeks to live according to my doctor.
 
-On Thu, Feb 02, 2023 at 01:40:14AM -0600, madvenka@linux.microsoft.com wrote:
-> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-> 
-> Introduction
-> ============
-> 
-> The livepatch feature requires an unwinder that can provide a reliable stack
-> trace. General requirements for a reliable unwinder are described in this
-> document from Mark Rutland:
-> 
-> 	Documentation/livepatch/reliable-stacktrace.rst
-> 
-> The requirements have two parts:
-> 
-> 1. The unwinder must be enhanced with certain features. E.g.,
-> 
-> 	- Identifying successful termination of stack trace
-> 	- Identifying unwindable and non-unwindable code
-> 	- Identifying interrupts and exceptions occurring in the frame pointer
-> 	  prolog and epilog
-> 	- Identifying features such as kretprobe and ftrace graph tracing
-> 	  that can modify the return address stored on the stack
-> 	- Identifying corrupted/unreliable stack contents
-> 	- Architecture-specific items that can render a stack trace unreliable
-> 	  at certain points in code
-> 
-> 2. Validation of the frame pointer
-> 
-> 	This assumes that the unwinder is based on the frame pointer (FP).
-> 	The actual frame pointer that the unwinder uses cannot just be
-> 	assumed to be correct. It needs to be validated somehow.
-> 
-> This patch series is to address the following:
-> 
-> 	- Identifying unwindable and non-unwindable code
-> 	- Identifying interrupts and exceptions occurring in the frame pointer
-> 	  prolog and epilog
-> 	- Validation of the frame pointer
-> 
-> The rest are already in place AFAICT.
+The money should be used for this purpose.
+Motherless babies
+Children orphaned by aids.
+Destitute children
+Widows and Widowers.
+Children who cannot afford education.
 
-Just as a note: there are a few issues remaining (e.g. the kretprobe and fgraph
-PC recovery both have windows where they lose the original return address), and
-there are a few compiler-generated trampoline functions with non-AAPCS calling
-conventions that will need special care.
+My husband stressed the importance of education and the less
+privileged I feel that this is what he would have wanted me to do with
+the money that he left for charity.
 
-> Validation of the FP (aka FRAME_POINTER_VALIDATION)
-> ====================
-> 
-> The current approach in Linux is to use objtool, a build time tool, for this
-> purpose. When configured, objtool is invoked on every relocatable object file
-> during kernel build. It performs static analysis of the code in each file. It
-> walks the instructions in every function and notes the changes to the stack
-> pointer (SP) and the frame pointer (FP). It makes sure that the changes are in
-> accordance with the ABI rules. There are also a lot of other checks that
-> Objtool performs. Once objtool completes successfully, the kernel can then be
-> used for livepatch purposes.
-> 
-> Objtool can have uses other than just FP validation. For instance, it can check
-> control flow integrity during its analysis.
-> 
-> Problem
-> =======
-> 
-> Objtool is complex and highly architecture-dependent. There are a lot of
-> different checks in objtool that all of the code in the kernel must pass
-> before livepatch can be enabled. If a check fails, it must be corrected
-> before we can proceed. Sometimes, the kernel code needs to be fixed.
-> Sometimes, it is a compiler bug that needs to be fixed. The challenge is
-> also to prove that all the work is complete for an architecture.
-> 
-> As such, it presents a great challenge to enable livepatch for an
-> architecture.
+These services bring so much joy to the kids. Together we are
+transforming lives and building brighter futures - but without you, it
+just would not be possible.
 
-There's a more fundamental issue here in that objtool has to reverse-engineer
-control flow, and so even if the kernel code and compiled code generation is
-*perfect*, it's possible that objtool won't recognise the structure of the
-generated code, and won't be able to reverse-engineer the correct control flow.
+Sincerely,
 
-We've seen issues where objtool didn't understand jump tables, so support for
-that got disabled on x86. A key objection from the arm64 side is that we don't
-want to disable compile code generation strategies like this. Further, as
-compiles evolve, their code generation strategies will change, and it's likely
-there will be other cases that crop up. This is inherently fragile.
-
-The key objections from the arm64 side is that we don't want to
-reverse-engineer details from the binary, as this is complex, fragile, and
-unstable. This is why we've previously suggested that we should work with
-compiler folk to get what we need.
-
-I'll note that at the last Linux Plumbers Conference, there was a discussion
-about what is now called SFrame, which *might* give us sufficient information,
-but I have not had the time to dig into that as I have been chasing other
-problems and trying to get other infrastructure in place.
-
-> A different approach
-> ====================
-> 
-> I would like to propose a different approach for FP validation. I would
-> like to be able to enable livepatch for an architecture as is. That is,
-> without "fixing" the kernel or the compiler for it:
-> 
-> There are three steps in this:
-> 
-> 1. Objtool walks all the functions as usual. It computes the stack and
->    frame pointer offsets at each instruction as usual. It generates ORC
->    records and stores them in special sections as usual. This is simple
->    enough to do.
-
-This still requires reverse-engineering the forward-edge control flow in order
-to compute those offets, so the same objections apply with this approach. I do
-not think this is the right approach.
-
-I would *strongly* prefer that we work with compiler folk to get the
-information that we need.
-
-[...]
-
-> 		FWIW, I have also compared the CFI I am generating with DWARF
-> 		information that the compiler generates. The CFIs match a
-> 		100% for Clang. In the case of gcc, the comparison fails
-> 		in 1.7% of the cases. I have analyzed those cases and found
-> 		the DWARF information generated by gcc is incorrect. The
-> 		ORC generated by my Objtool is correct.
-
-
-Have you reported this to the GCC folk, and can you give any examples?
-I'm sure they would be interested in fixing this, regardless of whether we end
-up using it.
-
-Thanks,
-Mark.
+Mrs. Leszczynska Anna Malgorzata.
