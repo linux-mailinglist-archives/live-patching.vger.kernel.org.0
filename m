@@ -2,92 +2,109 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E0286CEF59
-	for <lists+live-patching@lfdr.de>; Wed, 29 Mar 2023 18:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B5F16D0463
+	for <lists+live-patching@lfdr.de>; Thu, 30 Mar 2023 14:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbjC2Q3C (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 29 Mar 2023 12:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
+        id S231384AbjC3MKJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 30 Mar 2023 08:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbjC2Q3B (ORCPT
+        with ESMTP id S230185AbjC3MKI (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 29 Mar 2023 12:29:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AF8126
-        for <live-patching@vger.kernel.org>; Wed, 29 Mar 2023 09:28:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680107295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xWkDus+pypkiVfiTbAz41QkVGzbGZjNdSpOWx1pXHgQ=;
-        b=BoVzShesqcFDq5ebVo6wTySVotSXFcJqAssL6qGc2D+WCbHFiqdrClKPMlIVydubnS6dv0
-        FYwAb/asLH6B3yPoS38XBiJ6AtyOIf0QpilPyNUBXbM0mO0NKrBl54CpVNCTEuOeBzgEUG
-        F/rUJs6kLEejeSZJYHm6XByyXr8D17A=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-468-rnlQH1pWP_eJp5xEgLGNcQ-1; Wed, 29 Mar 2023 12:28:14 -0400
-X-MC-Unique: rnlQH1pWP_eJp5xEgLGNcQ-1
-Received: by mail-qk1-f199.google.com with SMTP id q143-20020a374395000000b0074690a17414so7610609qka.7
-        for <live-patching@vger.kernel.org>; Wed, 29 Mar 2023 09:28:14 -0700 (PDT)
+        Thu, 30 Mar 2023 08:10:08 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2744202;
+        Thu, 30 Mar 2023 05:10:07 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id t10so75404019edd.12;
+        Thu, 30 Mar 2023 05:10:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680178206;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GiRnxJYGLZl9gkE3Btj0DPwx3kYOXRqdQVjP40JuFAY=;
+        b=F1ak3hFr6X15BX5WccChl/IPbvU4a7NsfyYFRjtDQM6zmbxrqsLndm7btSBas8MJug
+         5tYIT50GpNMwK+mHzCvXXbZVNnOXh5Kqlpiz7/pvAOPxajXyiqpMrZM/SUUkzgNZPvEf
+         cW1+Epw8vv8URa2lBH4luvQP9dCvDn+Nr/nENjnZdhJ136wYh7uJMEZvOUbZSDaCKf46
+         48uA6AavC3uxBWsja340ItGoXOtQjd5Is0gBDpjjpq39kHdTlu0bf1N4rgv/CrhMSoOT
+         WRdXGG89dDMtxDhnM4gY5A1A+ScbIebdypev6ZMAag0pkpColvlhIu3fXpXsfusDWI1O
+         mZ7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680107293;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20210112; t=1680178206;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xWkDus+pypkiVfiTbAz41QkVGzbGZjNdSpOWx1pXHgQ=;
-        b=2hEleLFijrvtinlfQCZvdmiHezNr/6A/f6b5uNPYlnBCal9S4QmB2l6tLbIQBIDBUY
-         SOZgwk4H0TnJZ5KLz7Fqzxn4jS7cpgoYOmPmju+GgakuPoIlDZMNHZTXvZ7Af0hiPul+
-         fSUoXvz1ab9fukQz4a9ShTEVl5N6OtP1WvSPEKHWGHF4YJljA2bCwEw/NHcuCAtzAsYh
-         r4+ymgKFDHF1U9U4R2b7ke5pikzcL5lhebZ1Hhtlvp4NdCfMr/ZKT39qTlSkEKqN5LjT
-         bAXiZ0O0msuB37z7ZugNTwppPkvOcRZC9Sxjxu/hiil8yZ1YTco/ppdr4eIevwtQ/Vfk
-         k7ag==
-X-Gm-Message-State: AAQBX9euVHN++HscE72wbDKr+ZOCIQY0By0E7Gm0CpLp+uDR85m1eOc+
-        FRhmwl3ri1dTl4QHMe2g6QjjMk7T+da1NjoaEAUdjrYCbSyvhlnVf1W+hbY1+FVyFyy5BhD03tE
-        PgWMi6Q3/xMl0ae128DVTW2BUFGDtR6b02A==
-X-Received: by 2002:a05:622a:188:b0:3e4:eb8f:8a7b with SMTP id s8-20020a05622a018800b003e4eb8f8a7bmr4007453qtw.29.1680107293656;
-        Wed, 29 Mar 2023 09:28:13 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZltJLuDFn8ui/rD204FdSAWgU3g+E9TI/Y3LobCPa/y1wV5WmD8nKXoAkGMWlWRHDSscPUhA==
-X-Received: by 2002:a05:622a:188:b0:3e4:eb8f:8a7b with SMTP id s8-20020a05622a018800b003e4eb8f8a7bmr4007432qtw.29.1680107293386;
-        Wed, 29 Mar 2023 09:28:13 -0700 (PDT)
-Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id z2-20020ac86b82000000b003e38e0d3e84sm6831764qts.72.2023.03.29.09.28.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Mar 2023 09:28:13 -0700 (PDT)
-Message-ID: <d90054d4-72d9-3725-8c75-bfe8554c7a0e@redhat.com>
-Date:   Wed, 29 Mar 2023 12:28:11 -0400
+        bh=GiRnxJYGLZl9gkE3Btj0DPwx3kYOXRqdQVjP40JuFAY=;
+        b=i8bCWKCf/kbGxxKQZ/hXz5Cra1hkj+7Ziq7bCehs0ZZyfkFbAEckWNcwpRxOCuWy97
+         th99z5Tmz8GICYfbWaHG3q5WEunBWXaKl2Zzvq1gCQXLP4N0QOT3424BHSObgnzFpp9H
+         DilCzRu5sYv4OGsk6QVF7bwoDwqdYlJcaM1e51w9zv7fIMks8ZPuXK7/bgRlvelZk+YI
+         kTc9t5AP44dFEcdcSBDl5N6CACm8xCeyG8wojOBHEqX2RZvXonuAa1FA+DwF+goDMAkt
+         +kn4+wScbmhDCdgouVOTpUZbzGT8Fp3XskqUNnoTZQBNojJ1C2wizxq9xfqvTHztOrnW
+         wVTQ==
+X-Gm-Message-State: AAQBX9de+xzZe30nhlOnWL9j7B8f0n66kWkGRqvdBKKPkIxj/5K8xFxZ
+        6jXG4QQcl/ZN6oaLBzpOjQ==
+X-Google-Smtp-Source: AKy350Zt+zKYRtASMyO2Hfp4ote3ijZixO0WLMsgGlHbfFsFILT/LFdYa7SPhV+hemG7ymdoyq/vEg==
+X-Received: by 2002:a17:907:9725:b0:93f:9594:d97d with SMTP id jg37-20020a170907972500b0093f9594d97dmr20670831ejc.14.1680178205762;
+        Thu, 30 Mar 2023 05:10:05 -0700 (PDT)
+Received: from p183 ([46.53.250.0])
+        by smtp.gmail.com with ESMTPSA id i11-20020a170906264b00b009255b14e91dsm17519658ejc.46.2023.03.30.05.10.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Mar 2023 05:10:05 -0700 (PDT)
+Date:   Thu, 30 Mar 2023 15:10:03 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: Re: [PATCH v7 00/10] livepatch: klp-convert tool
+Message-ID: <4ce29654-4e1e-4680-9c25-715823ff5e02@p183>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: Live Patching Microconference at Linux Plumbers
-Content-Language: en-US
-To:     Miroslav Benes <mbenes@suse.cz>, jpoimboe@kernel.org,
-        jikos@kernel.org, pmladek@suse.com, nstange@suse.de,
-        mpdesouza@suse.de, mark.rutland@arm.com, broonie@kernel.org
-Cc:     live-patching@vger.kernel.org
-References: <alpine.LSU.2.21.2303291339090.21599@pobox.suse.cz>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-In-Reply-To: <alpine.LSU.2.21.2303291339090.21599@pobox.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On 3/29/23 08:05, Miroslav Benes wrote:
-> Last but not least it would be nice to have a co-runner of the show. Josh, 
-> Joe, any volunteer? 😄
+Joe Lawrence wrote:
+> +static int update_strtab(struct elf *elf)
+> +{
+>
+> +	buf = malloc(new_size);
+> +	if (!buf) {
+> +		WARN("malloc failed");
+> +		return -1;
+> +	}
+> +	memcpy(buf, (void *)strtab->data, orig_size);
 
-Sure, lmk whatever help you need to co-run.
+This code is called realloc(). :-)
 
--- 
-Joe
+> +static int write_file(struct elf *elf, const char *file)
+> +{
+>
+> +	fd = creat(file, 0664);
+> +	e = elf_begin(fd, ELF_C_WRITE, NULL);
 
+elf_end() doesn't close descriptor, so there is potentially corrupted
+data. There is no unlink() call if writes fail as well.
+
+> +void elf_close(struct elf *elf)
+> +{
+> +
+> +	if (elf->fd > 0)
+> +		close(elf->fd);
+
+Techically, it is "fd >= 0".
+
+> +filechk_klp_map = \
+> +	echo "klp-convert-symbol-data.0.1";		\
+> +	echo "*vmlinux";				\
+> +	$(NM) -f posix vmlinux | cut -d\  -f1;		\
+> +	sort $(MODORDER) $(MODULES_LIVEPATCH) |		\
+
+This probably should be "LC_ALL=C sort" for speed and reproducibility (?).
