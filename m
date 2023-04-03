@@ -2,73 +2,68 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6416D2F91
-	for <lists+live-patching@lfdr.de>; Sat,  1 Apr 2023 11:59:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B04B6D54B8
+	for <lists+live-patching@lfdr.de>; Tue,  4 Apr 2023 00:26:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbjDAJ7a (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Sat, 1 Apr 2023 05:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        id S232364AbjDCW0y (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 3 Apr 2023 18:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjDAJ73 (ORCPT
+        with ESMTP id S230186AbjDCW0y (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Sat, 1 Apr 2023 05:59:29 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C35EE18F;
-        Sat,  1 Apr 2023 02:59:28 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id b20so99181546edd.1;
-        Sat, 01 Apr 2023 02:59:28 -0700 (PDT)
+        Mon, 3 Apr 2023 18:26:54 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEBC1731
+        for <live-patching@vger.kernel.org>; Mon,  3 Apr 2023 15:26:53 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id bm2so22964862oib.4
+        for <live-patching@vger.kernel.org>; Mon, 03 Apr 2023 15:26:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680343167;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8OwNskOq/WB2ogrPeVhoUbqDTcGZFk0KDKVEoD0eJvA=;
-        b=djYDNY7ILOyCIaQ3ynhdb6NTzFDRn4w512o8Dask1IPGpZOiVnFIAdGcyx0lZPUM1U
-         IRAEtiictVQDX7eFMUk/atoUBaZiei5Iq/EofIxpQjQfEKOZnVw3QfNSjqTjHSQdWHqm
-         wAufeUN0yVWRGCGxetpjp3kc6Nzal71vgK8Nd5yMItO8iYicCSOHu3ne20U0o6YSmssQ
-         IsVnsE/k6EXYg98Q7EBzZYlICzeJB/0UYFWXXHknMbDJAX6neirI6ChQiRcgqxrmHwK0
-         QR4HxTKyT6MforZCioaKdX77CN1eqQMKv1A16PAoKTUDcK8QHVw8mAjn/Pwvmn9DMi7C
-         jtmA==
+        d=google.com; s=20210112; t=1680560812;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=0H2b5vX2W/ngAUblsPfiPWQyDis8PRiu2qy0w7GKjAo=;
+        b=B1g/0uQTCTqs9ZraWmAEMrJHp/JAt/OZ3+aLfmFSWMo3K/0HUXX2W+ia8WLDF6BVtx
+         tRK2RiBgMcVwf1ZrEAF5vv2ta+Rrvc1V7qhdxvogZbcggAXOYq5Hmcj4hyjQSK1c+AEO
+         rnD4v14CjHKJIE842B7Lbs3gIHvrQrO32RhfhrG8B5kTiwUWgENtUj00B889IjyxCusY
+         tsyhaqNA/iUqdVwahS1LHc3qbQoVDHxQYBB7w3B3ycLPaazQ8grgNwXExycT9werv0yH
+         bjKD0qM3r3w0pUZhYZzWgzx9oS2oMFzPyQG0F7oh709ktOvC/+TpPkhPDt57r66top/K
+         0ZyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680343167;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8OwNskOq/WB2ogrPeVhoUbqDTcGZFk0KDKVEoD0eJvA=;
-        b=reP6SHsZVJQGGTu5ChTN3jgNsquOVEoqhoEkegXEXX7J83HpGw1NCN/ntiUEMHsn9r
-         uDFleeAy3dBZTKNUd5fIr5MDFIxuBrY8NrUieIydE3pxiTA7etFgoMdb3/VLakAeLsFf
-         4I3IKQNIFjj6cWOBivFoBzqEuk7V09FGeX58apnLJldGl845kjkhU3Zfoxsh1c0TqDDH
-         VPPJ/9T9XmXcqTZ+VBAPO0WaP7clCQqbDX6IIejT4z/vG/oOTK3eeA+qxLDeYO56lv7v
-         l0E0fl6vcIPNVOb0bGnabpJLiAg1bOk63K9K1vyNvkmPF2IfGMvTORSPhDua3LbrPjow
-         +aHA==
-X-Gm-Message-State: AAQBX9e90NwVp1aGpotTJjLRkiwOH7bP61sGrENG/a8LkSQwZcAMZ5se
-        +VkFeQsVa8UsewrivKPxZg==
-X-Google-Smtp-Source: AKy350bVO6kZfY8iIuqS/9CJdE3MTB4p2zmqEXb7GJrIrsIYW/qVqqViAsRJuq7xwOfxiA4X1cytyQ==
-X-Received: by 2002:a17:907:a586:b0:946:c60b:470b with SMTP id vs6-20020a170907a58600b00946c60b470bmr17147587ejc.63.1680343166687;
-        Sat, 01 Apr 2023 02:59:26 -0700 (PDT)
-Received: from p183 ([46.53.251.40])
-        by smtp.gmail.com with ESMTPSA id gl25-20020a170906e0d900b00929fc8d264dsm1957803ejb.17.2023.04.01.02.59.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Apr 2023 02:59:26 -0700 (PDT)
-Date:   Sat, 1 Apr 2023 12:59:24 +0300
-From:   Alexey Dobriyan <adobriyan@gmail.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Marcos Paulo de Souza <mpdesouza@suse.com>
-Subject: Re: [PATCH v7 00/10] livepatch: klp-convert tool
-Message-ID: <0d28af49-ff04-417c-9047-fc2c796a5040@p183>
-References: <4ce29654-4e1e-4680-9c25-715823ff5e02@p183>
- <683593a8-79db-4f3b-bc78-7917284683e4@p183>
- <f1351c5f-16aa-8407-753c-90049956123d@redhat.com>
+        d=1e100.net; s=20210112; t=1680560812;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0H2b5vX2W/ngAUblsPfiPWQyDis8PRiu2qy0w7GKjAo=;
+        b=KvVWMAr9vO72TBbtlE81yK4qSq+NEt3uhNUJ6gkCIr15CovxvwdTrgDNCIZJ+XO0NY
+         jpboQN62BtogM/J+g5RJ80frx+A95yC/syPMtPOlsJTy7Xshi6XYcPioeZo8L+hIw3Yb
+         XE/UbtIeM1wFZsApmnk1VgWP0BNRyJbd0vMHZWiTKzKE6cdToF7mDuXPuz3seWWMrzOc
+         WGROom9EQ2RmVgpU6tuY1PKqWkXlXNhWIryNuMx7+s5KH3w6tC9TRMSnbvQz6rhtze8C
+         ++WGDLX3JiHh/nzdMzzbCTA0dQX0KCWGgUTc/zTXhcmLgiuWoFnqZsylKZl5RSh0aUlt
+         Hr/Q==
+X-Gm-Message-State: AAQBX9c8Z/BNkNeWefK5fMdDqrej8woqm3itmMoG1dw5FJu4aYmvCGpB
+        0fNxGC55k3mMwGX9dFZwaAxtIQ3ulAAt3LxYkcBxUQ==
+X-Google-Smtp-Source: AKy350bYaoGraa1SOq4wyQyvp1GFGKkEVbd8IIKT2vXjlfeg7SEc1yWs1UYnVB4yQi2id6pdz4bDYPu+ce5hzCAbMZ0=
+X-Received: by 2002:aca:f14:0:b0:38b:40bf:4a12 with SMTP id
+ 20-20020aca0f14000000b0038b40bf4a12mr257327oip.1.1680560812137; Mon, 03 Apr
+ 2023 15:26:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <f1351c5f-16aa-8407-753c-90049956123d@redhat.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+From:   Dylan Hatch <dylanbhatch@google.com>
+Date:   Mon, 3 Apr 2023 15:26:41 -0700
+Message-ID: <CADBMgpxQ+oM_TrtKRiREcZoZSk=AfenV_bqOk_Vt-Ov5FPHMvw@mail.gmail.com>
+Subject: RE: [RFC PATCH v3 00/22] arm64: livepatch: Use ORC for dynamic frame
+ pointer validation
+To:     misono.tomohiro@fujitsu.com
+Cc:     broonie@kernel.org, catalin.marinas@arm.com,
+        chenzhongjin@huawei.com, jamorris@linux.microsoft.com,
+        jpoimboe@redhat.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        madvenka@linux.microsoft.com, mark.rutland@arm.com,
+        nobuta.keiya@fujitsu.com, peterz@infradead.org, pmladek@suse.com,
+        sjitindarsingh@gmail.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,23 +71,14 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 12:03:52PM -0400, Joe Lawrence wrote:
-> On 3/30/23 13:04, Alexey Dobriyan wrote:
-> > This patchset somehow breaks the build of the simplest livepatch module:
-> > 
-> > 	make -f linux/linux-1/scripts/Makefile.modfinal
-> > 	make[1]: *** No rule to make target 'linux/module-klp/main.tmp.ko', needed by 'linux/module-klp/main.ko'.  Stop.
-> > 
-> 
-> Thanks for testing.
-> 
-> Presumably this is an out-of-tree livepatch module?  If so, that is
-> still on the TODO list.  If not, that is weird as the patchset itself
-> includes updates to samples/ and lib/ livepatches that build and load fine.
+> Then, I noticed that invoke_syscall generates instructions to add random offset
+> in sp when RANDOMIZE_KSTACK_OFFSET=y, which is true in the above case.
 
-Yes, this is external module.
+I'm also seeing this behavior when compiling with
+RANDOMIZE_KSTACK_OFFSET=y. I wonder if a special hint type
+could/should be added to allow for skipping the reliability check for
+stack frames with this randomized offset? Forgive me if this is a
+naive suggestion.
 
-make doesn't see this implicit rule despite it is hiding in the open:
-
-	+%.tmp.ko: %.o %.mod.o symbols.klp FORCE
-	+	+$(call if_changed,ld_ko_o)
+Thanks,
+Dylan
