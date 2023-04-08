@@ -2,166 +2,244 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F816DB717
-	for <lists+live-patching@lfdr.de>; Sat,  8 Apr 2023 01:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A626DB89F
+	for <lists+live-patching@lfdr.de>; Sat,  8 Apr 2023 05:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbjDGXVY (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 7 Apr 2023 19:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49582 "EHLO
+        id S230013AbjDHDkN (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 7 Apr 2023 23:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjDGXVX (ORCPT
+        with ESMTP id S230027AbjDHDkM (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 7 Apr 2023 19:21:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF3B7ED0;
-        Fri,  7 Apr 2023 16:21:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB36564A2C;
-        Fri,  7 Apr 2023 23:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92007C433EF;
-        Fri,  7 Apr 2023 23:21:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680909681;
-        bh=GR8ZHhZhrWLr8Jm6fEQrZIKxqS1sTyT0Tzdp4I7epEs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fEwtIYaw7cjDKNLJtyxb1V9S9w87KlRmoLbJbhzd4IPYOed2hd2iLyrfoRJ04cRUy
-         q3Q1xDiGjPyThljSwASVEoEVXPX9HtejY+xkJqWPc8sDGAz0A/JcaQ2rRtJtEguYmF
-         ACvFFegwTDPN9APkiMH8vPTOwhF2Q+j7YjGwbTWW484mjBAnu3Kjh8SzmKID8FaIyb
-         GfBUL99QphgLyOUe6Ed6j39SLR3FX1pdhlm/GiPrb69vfNwwfj6AJQDQQvWS+qusAM
-         QCYBbUVHQvwAFcZnqi8M2RSNZ2qv8RH/IMCqSDg0vxA5qdDdDWM5Mxld4hHRYsbxXp
-         vat39tzq4gaJw==
-Date:   Fri, 7 Apr 2023 16:21:18 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Nick Alcock <nick.alcock@oracle.com>
-Cc:     mcgrof@kernel.org, masahiroy@kernel.org,
-        linux-modules@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, arnd@arndb.de,
-        akpm@linux-foundation.org, eugene.loh@oracle.com,
-        kris.van.hees@oracle.com, live-patching@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH modules-next v10 00/13] kallsyms: reliable
- symbol->address lookup with /proc/kallmodsyms
-Message-ID: <20230407232118.o2x5lakfgyzy56gz@treble>
-References: <20221205163157.269335-1-nick.alcock@oracle.com>
+        Fri, 7 Apr 2023 23:40:12 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BEC193C1;
+        Fri,  7 Apr 2023 20:40:10 -0700 (PDT)
+Received: from [192.168.254.32] (unknown [47.189.246.67])
+        by linux.microsoft.com (Postfix) with ESMTPSA id AEE80213B635;
+        Fri,  7 Apr 2023 20:40:08 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AEE80213B635
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1680925209;
+        bh=yu4L/pgWX5pNzUR0FHcUhBCU2kj8zE6++8P99CHGKEY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=aEFJhjE9CShP4mJEQMoazLtG0imOXB9kWveQoMXnUD0NSAhBwXNpcGeomZjc+iF9n
+         tyiIpCWB0gIRxiIYq6YdfHvvVyDSgJEx2aU+HoId+7FqtbM9cYUQcUkLlE7udR6OMV
+         7mqYxOOe+221I0eNe9XjAw2GFjpuP/OjJbONdUNM=
+Message-ID: <054ce0d6-70f0-b834-d4e5-1049c8df7492@linux.microsoft.com>
+Date:   Fri, 7 Apr 2023 22:40:07 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221205163157.269335-1-nick.alcock@oracle.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [RFC PATCH v3 00/22] arm64: livepatch: Use ORC for dynamic frame
+ pointer validation
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
+        broonie@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
+ <20230202074036.507249-1-madvenka@linux.microsoft.com>
+ <ZByJmnc/XDcqQwoZ@FVFF77S0Q05N.cambridge.arm.com>
+Content-Language: en-US
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <ZByJmnc/XDcqQwoZ@FVFF77S0Q05N.cambridge.arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-19.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Mon, Dec 05, 2022 at 04:31:44PM +0000, Nick Alcock wrote:
-> The whole point of symbols is that their names are unique: you can look up a
-> symbol and get back a unique address, and vice versa.  Alas, because
-> /proc/kallsyms (rightly) reports all symbols, even hidden ones, it does not
-> really satisfy this requirement.  Large numbers of symbols are duplicated
-> many times (just search for __list_del_entry!), and while usually these are
-> just out-of-lined things defined in header files and thus all have the same
-> implementation, it does make it needlessly hard to figure out which one is
-> which in stack dumps, when tracing, and such things.  Some configuration
-> options make things much worse: my test make allyesconfig runs introduced
-> thousands of text symbols named _sub_I_65535_1, one per compiler-generated
-> object file, and it was fairly easy to make them appear in ftrace output.
+Hi Mark,
+
+Sorry for the long delay in responding. Was caught up in many things.
+My responses inline..
+
+On 3/23/23 12:17, Mark Rutland wrote:
+> Hi Madhavan,
 > 
-> Right now the kernel has no way at all to tell such symbols apart, and nor
-> has the user: their address differs and that's all.  Which module did they
-> come from?  Which object file?  We don't know.  Figuring out which is which
-> when tracing needs a combination of guesswork and luck, and if there are
-> thousands of them that's not a pleasant prospect.  In discussions at LPC it
-> became clear that this is not just annoying me but Steve Rostedt and others,
-> so it's probably desirable to fix this.
+> At a high-level, I think this still falls afoul of our desire to not reverse
+> engineer control flow from the binary, and so I do not think this is the right
+> approach. I've expanded a bit on that below.
 > 
-> It turns out that the linker, and the kernel build system, can be made to
-> give us everything we need to resolve this once and for all.  This series
-> provides a new /proc/kallmodsyms which is like /proc/kallsyms except that it
-> annotates every (textual) symbol which comes from a built-in kernel module
-> with the module's name, in square brackets: if a symbol is used by multiple
-> modules, it gets [multiple] [names]; if a symbol is still ambiguous it gets
-> a cut-down {object file name}; the combination of symbol, [module] [names]
-> and {object file name} is unique (with one minor exception: the arm64 nvhe
-> module is pre-linked with ld -r, causing all symbols in it to appear to come
-> from the same object file: if it was reworked to use thin archives this
-> problem would go away).
+> I do think it would be nice to have *some* of the objtool changes, as I do
+> think we will want to use objtool for some things in future (e.g. some
+> build-time binary patching such as table sorting).
+> 
 
-Hi Nick,
+OK. I have been under the impression that the arm64 folks are basically OK with
+Objtool's approach of reverse engineering from the binary. I did not see
+any specific objections to previously submitted patches based on this approach
+including mine.
 
-Sorry for jumping in late on an old patch set.  I just saw the LWN
-article about the MODULE_LICENSE() patches and I have some comments
-about duplicate symbols and a question about the motivation for this
-patch set.
+So, if the community is not in agreement with this approach, I will go back to the
+drawing board for this one.
 
-For livepatch we have a solution for disambiguating duplicate local
-symbols called "sympos".  It works (for now) but there are some cases
-(like LTO) where it falls apart and it may not be the best long term
-solution.
+Are there any other opinions on this subject from others?
 
-The function granularity KASLR (fgkaslr) patches proposed a potentially
-better option: use the GNU linker -zunique_symbols flag which renames
-all duplicates to have unique names across the entire linked object.
+> On Thu, Feb 02, 2023 at 01:40:14AM -0600, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+>>
+>> Introduction
+>> ============
+>>
+>> The livepatch feature requires an unwinder that can provide a reliable stack
+>> trace. General requirements for a reliable unwinder are described in this
+>> document from Mark Rutland:
+>>
+>> 	Documentation/livepatch/reliable-stacktrace.rst
+>>
+>> The requirements have two parts:
+>>
+>> 1. The unwinder must be enhanced with certain features. E.g.,
+>>
+>> 	- Identifying successful termination of stack trace
+>> 	- Identifying unwindable and non-unwindable code
+>> 	- Identifying interrupts and exceptions occurring in the frame pointer
+>> 	  prolog and epilog
+>> 	- Identifying features such as kretprobe and ftrace graph tracing
+>> 	  that can modify the return address stored on the stack
+>> 	- Identifying corrupted/unreliable stack contents
+>> 	- Architecture-specific items that can render a stack trace unreliable
+>> 	  at certain points in code
+>>
+>> 2. Validation of the frame pointer
+>>
+>> 	This assumes that the unwinder is based on the frame pointer (FP).
+>> 	The actual frame pointer that the unwinder uses cannot just be
+>> 	assumed to be correct. It needs to be validated somehow.
+>>
+>> This patch series is to address the following:
+>>
+>> 	- Identifying unwindable and non-unwindable code
+>> 	- Identifying interrupts and exceptions occurring in the frame pointer
+>> 	  prolog and epilog
+>> 	- Validation of the frame pointer
+>>
+>> The rest are already in place AFAICT.
+> 
+> Just as a note: there are a few issues remaining (e.g. the kretprobe and fgraph
+> PC recovery both have windows where they lose the original return address), and
+> there are a few compiler-generated trampoline functions with non-AAPCS calling
+> conventions that will need special care.
+> 
 
-There are other components which also struggle with duplicate symbols:
-ftrace, kprobes, BPF, etc.  It would be good to come up with a kallsyms
-solution that works for everybody.
+OK.
 
-Anyway, I was nodding along with the above cover letter until I got to
-the third paragraph.
+>> Validation of the FP (aka FRAME_POINTER_VALIDATION)
+>> ====================
+>>
+>> The current approach in Linux is to use objtool, a build time tool, for this
+>> purpose. When configured, objtool is invoked on every relocatable object file
+>> during kernel build. It performs static analysis of the code in each file. It
+>> walks the instructions in every function and notes the changes to the stack
+>> pointer (SP) and the frame pointer (FP). It makes sure that the changes are in
+>> accordance with the ABI rules. There are also a lot of other checks that
+>> Objtool performs. Once objtool completes successfully, the kernel can then be
+>> used for livepatch purposes.
+>>
+>> Objtool can have uses other than just FP validation. For instance, it can check
+>> control flow integrity during its analysis.
+>>
+>> Problem
+>> =======
+>>
+>> Objtool is complex and highly architecture-dependent. There are a lot of
+>> different checks in objtool that all of the code in the kernel must pass
+>> before livepatch can be enabled. If a check fails, it must be corrected
+>> before we can proceed. Sometimes, the kernel code needs to be fixed.
+>> Sometimes, it is a compiler bug that needs to be fixed. The challenge is
+>> also to prove that all the work is complete for an architecture.
+>>
+>> As such, it presents a great challenge to enable livepatch for an
+>> architecture.
+> 
+> There's a more fundamental issue here in that objtool has to reverse-engineer
+> control flow, and so even if the kernel code and compiled code generation is
+> *perfect*, it's possible that objtool won't recognise the structure of the
+> generated code, and won't be able to reverse-engineer the correct control flow.
+> 
+> We've seen issues where objtool didn't understand jump tables, so support for
+> that got disabled on x86. A key objection from the arm64 side is that we don't
+> want to disable compile code generation strategies like this. Further, as
+> compiles evolve, their code generation strategies will change, and it's likely
+> there will be other cases that crop up. This is inherently fragile.
+> 
+> The key objections from the arm64 side is that we don't want to
+> reverse-engineer details from the binary, as this is complex, fragile, and
+> unstable. This is why we've previously suggested that we should work with
+> compiler folk to get what we need.
+> 
 
-A "built-in kernel module" is not actually a module, as it's built in to
-vmlinux.  I suspect the point is that if you rebuild with a different
-config, it might become a module.  But many other changes could also
-occur with a changed config, including changed inlining decisions and
-GCC IPA optimization function renaming, in which case the symbol might
-no longer exist with the new config.
+So, what exactly do you have in mind? What help can the compiler folk provide?
+By your own argument, we cannot rely on the compiler as compiler implementations,
+optimization strategies, etc can change in ways that are incompatible with any
+livepatch implementation. Also, there can always be bugs in the compiler
+implementations.
 
-Also I'm confused what it means for a symbol to be "used by multiple
-modules".  If the same TU or inline symbol is linked into two modules,
-it will be loaded twice at two different addresses, and the
-implementations could even differ.
+Can you please elaborate? Are we looking for a way for the compiler folks to
+provide us with something that we can use to implement reliable stack trace?
 
-It sounds like there are two problems being conflated:
+> I'll note that at the last Linux Plumbers Conference, there was a discussion
+> about what is now called SFrame, which *might* give us sufficient information,
+> but I have not had the time to dig into that as I have been chasing other
+> problems and trying to get other infrastructure in place.
+> 
 
-  1) how to uniquely identify symbols in the current kernel
+I will try to locate the link. If you can provide me a link, that would be greatly
+appreciated. I will study their SFrame proposal.
 
-     For this, all we really need is file+sym.
+>> A different approach
+>> ====================
+>>
+>> I would like to propose a different approach for FP validation. I would
+>> like to be able to enable livepatch for an architecture as is. That is,
+>> without "fixing" the kernel or the compiler for it:
+>>
+>> There are three steps in this:
+>>
+>> 1. Objtool walks all the functions as usual. It computes the stack and
+>>    frame pointer offsets at each instruction as usual. It generates ORC
+>>    records and stores them in special sections as usual. This is simple
+>>    enough to do.
+> 
+> This still requires reverse-engineering the forward-edge control flow in order
+> to compute those offets, so the same objections apply with this approach. I do
+> not think this is the right approach.
+> 
+> I would *strongly* prefer that we work with compiler folk to get the
+> information that we need.
+> 
 
-     Or, enable -zunique-symbols in the linker.
+I am willing to do this. But I am not clear on the kind of features we want
+from the compiler. Are you suggesting something for getting a reliable
+stack trace? Is there any kind of proposal out there that I need to study?
 
-  2) how to uniquely identify symbols across multiple kernels/configs
+> [...]
+> 
+>> 		FWIW, I have also compared the CFI I am generating with DWARF
+>> 		information that the compiler generates. The CFIs match a
+>> 		100% for Clang. In the case of gcc, the comparison fails
+>> 		in 1.7% of the cases. I have analyzed those cases and found
+>> 		the DWARF information generated by gcc is incorrect. The
+>> 		ORC generated by my Objtool is correct.
+> 
+> 
+> Have you reported this to the GCC folk, and can you give any examples?
+> I'm sure they would be interested in fixing this, regardless of whether we end
+> up using it.
+> 
 
-     This seems much trickier, as much can change across kernels and
-     configs, including compiler inlining and naming decisions, not to
-     mention actual code changes.
+I will try to get the data again and put something together and send it to the
+gcc folks.
 
-The problems are related, but distinct.
+Thanks for the suggestions.
 
-#2 seems significantly harder to implement properly.
-
-Would solving #1 give you most of what you need?
-
-Based on the difficulty of #2, it really needs a proper justification.
-I didn't see that in either of the patch sets.
-
-Can you share more details about what specific problem needs solved and
-why?  And how this would be used?  Examples would be helpful.
-
-The article linked to this brief explanation [1], but that doesn't
-clarify why "distinct notation used by users for things in named
-modules" would be important.
-
-Is there a reason the user can't just use whatever notation is
-appropriate for their specific kernel?  Or, once we have #1, couldn't
-tooling do an intermediate translation?
-
-[1] https://lwn.net/ml/linux-kernel/87h6z5wqlk.fsf@esperi.org.uk/
-
--- 
-Josh
+Madhavan
