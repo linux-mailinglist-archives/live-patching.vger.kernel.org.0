@@ -2,210 +2,183 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B19806DD777
-	for <lists+live-patching@lfdr.de>; Tue, 11 Apr 2023 12:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5307F6DDC05
+	for <lists+live-patching@lfdr.de>; Tue, 11 Apr 2023 15:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229485AbjDKKHL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 11 Apr 2023 06:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
+        id S229978AbjDKNZU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 11 Apr 2023 09:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbjDKKGv (ORCPT
+        with ESMTP id S229926AbjDKNZS (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 11 Apr 2023 06:06:51 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB4E30EB;
-        Tue, 11 Apr 2023 03:06:46 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id B40D721A0D;
-        Tue, 11 Apr 2023 10:06:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1681207604; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8n7ywmQ+awe973K1RiYMXZS6nrgeQ28SDo2b1f0miws=;
-        b=iQjAp5Plo1DxL4G3EAf2Uv9qUVPzx3RAeN44LQkAv7smbByu3MTFhOjI4+gHxLKJImd/eW
-        S+q3SjnKpG86/TkXPkfJJQON2FHhUmUzluJK5BeO6G8JIaB/UNyO9XZWIVe6hS3biBYtqJ
-        A15ah9wSpiteBOBddDbZl9Eqa0cncWI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1681207604;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8n7ywmQ+awe973K1RiYMXZS6nrgeQ28SDo2b1f0miws=;
-        b=ZbKtL1u5soy8hRk0Kk3VLkq9oiIES7TTj0sDzvYEh/IS+4YlcKjBfPtemhYJw7VUkaPzg+
-        gsCuIFjGO5iLO5Ag==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6C57D13638;
-        Tue, 11 Apr 2023 10:06:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id fSZ3GDQxNWR0PwAAMHmgww
-        (envelope-from <nstange@suse.de>); Tue, 11 Apr 2023 10:06:44 +0000
-From:   Nicolai Stange <nstange@suse.de>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Marcos Paulo de Souza <mpdesouza@suse.de>,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Marcos Paulo de Souza <mpdesouza@suse.com>,
-        Lukas Hruska <lhruska@suse.cz>
-Subject: Re: [PATCH v7 00/10] livepatch: klp-convert tool
-References: <20230306140824.3858543-1-joe.lawrence@redhat.com>
-        <20230314202356.kal22jracaw5442y@daedalus>
-        <ZBTNvEPrCcRj3F1C@redhat.com> <20230317232010.7uq6tt4ty35eo5hm@treble>
-Date:   Tue, 11 Apr 2023 12:06:43 +0200
-In-Reply-To: <20230317232010.7uq6tt4ty35eo5hm@treble> (Josh Poimboeuf's
-        message of "Fri, 17 Mar 2023 16:20:10 -0700")
-Message-ID: <873556ag24.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.2 (gnu/linux)
+        Tue, 11 Apr 2023 09:25:18 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E501558E;
+        Tue, 11 Apr 2023 06:25:16 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4C126D75;
+        Tue, 11 Apr 2023 06:26:00 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.20.166])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DA9283F6C4;
+        Tue, 11 Apr 2023 06:25:13 -0700 (PDT)
+Date:   Tue, 11 Apr 2023 14:25:11 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Cc:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
+        broonie@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v3 00/22] arm64: livepatch: Use ORC for dynamic frame
+ pointer validation
+Message-ID: <ZDVft9kysWMfTiZW@FVFF77S0Q05N>
+References: <0337266cf19f4c98388e3f6d09f590d9de258dc7>
+ <20230202074036.507249-1-madvenka@linux.microsoft.com>
+ <ZByJmnc/XDcqQwoZ@FVFF77S0Q05N.cambridge.arm.com>
+ <054ce0d6-70f0-b834-d4e5-1049c8df7492@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <054ce0d6-70f0-b834-d4e5-1049c8df7492@linux.microsoft.com>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Josh Poimboeuf <jpoimboe@kernel.org> writes:
+On Fri, Apr 07, 2023 at 10:40:07PM -0500, Madhavan T. Venkataraman wrote:
+> Hi Mark,
+> 
+> Sorry for the long delay in responding. Was caught up in many things.
+> My responses inline..
+> 
+> On 3/23/23 12:17, Mark Rutland wrote:
+> > Hi Madhavan,
+> > 
+> > At a high-level, I think this still falls afoul of our desire to not reverse
+> > engineer control flow from the binary, and so I do not think this is the right
+> > approach. I've expanded a bit on that below.
+> > 
+> > I do think it would be nice to have *some* of the objtool changes, as I do
+> > think we will want to use objtool for some things in future (e.g. some
+> > build-time binary patching such as table sorting).
+> 
+> OK. I have been under the impression that the arm64 folks are basically OK with
+> Objtool's approach of reverse engineering from the binary. I did not see
+> any specific objections to previously submitted patches based on this approach
+> including mine.
 
-> On Fri, Mar 17, 2023 at 04:29:48PM -0400, Joe Lawrence wrote:
->> Have you tried retrofitting klp-convert into any real-world livepatch?
->> I'm curious as to your observations on the overall experience, or
->> thoughts on the sympos annotation style noted above.
->
-> On a related note, the patch creation process (of which klp-convert
-> would be part of) needs to be documented.
->
-> If I remember correctly, the proper safe usage of klp-convert requires a
-> kernel built with -flive-patching, plus some scripting and/or manual
-> processes.
+This has admittedly changed over time, but the preference to avoid
+reverse-engineering control flow has been around for a while. For example,
+during LPC 2021's "objtool on arm64" session:
 
-Not always, I think: -flive-patching or IPA optimizations in general
-aren't a concern in the context of data symbols. From a quick glance, it
-seems like the selftests introduced as part of this patchset are
-all restricted to this usecase.
+  https://lpc.events/event/11/contributions/971/
 
+... where Will and I expressed strong desires to get the compiler to help,
+whether that's compiler-generated metadata, (agreed upon) restrictions on code
+generation, or something else.
 
-> If nobody knows how to safely use it then there wouldn't be much value
-> in merging it.
+[...]
 
-I tend to agree, but would put it a bit differently: the current
-implementation of klp-convert features quite some convenience logic,
-which, until the question of a documented livepatch preparation process
-has been settled, is not known yet to ever be of any use.
+> > There's a more fundamental issue here in that objtool has to reverse-engineer
+> > control flow, and so even if the kernel code and compiled code generation is
+> > *perfect*, it's possible that objtool won't recognise the structure of the
+> > generated code, and won't be able to reverse-engineer the correct control flow.
+> > 
+> > We've seen issues where objtool didn't understand jump tables, so support for
+> > that got disabled on x86. A key objection from the arm64 side is that we don't
+> > want to disable compile code generation strategies like this. Further, as
+> > compiles evolve, their code generation strategies will change, and it's likely
+> > there will be other cases that crop up. This is inherently fragile.
+> > 
+> > The key objections from the arm64 side is that we don't want to
+> > reverse-engineer details from the binary, as this is complex, fragile, and
+> > unstable. This is why we've previously suggested that we should work with
+> > compiler folk to get what we need.
+> > 
+> 
+> So, what exactly do you have in mind? What help can the compiler folk provide?
 
-For example, from [3/10]:
+There are several possibilities, e.g.
 
-  "For automatic resolution of livepatch relocations, a file called
-   symbols.klp is used. This file maps symbols within every compiled kernel
-   object allowing the identification of symbols whose name is unique, thus
-   relocation can be automatically inferred, or providing information that
-   helps developers when code annotation is required for solving the
-   matter."
+* Generate some simple metadata that tells us for each PC whether to start an
+  unwind from the LR or FP. My understanding was that SFrame *might* be
+  sufficient for this.
 
-For the source based approach to livepatch preparation we're using
-internally, this is not really needed: the entity generating the source
--- be it klp-ccp or the author doing it manually -- needs to examine the
-target objects long before link resp. klp-convert time for which symbols
-can be referenced from the livepatch and how (i.e. determine a potential
-sympos). I would expect it works similar for kpatch-build conceptually,
-albeit kpatch-build probably doesn't rely on any external utility like
-klp-convert for the .klp.* relas generation at all.
+  We might need some custom metadata for assembly (e.g. exception entry,
+  trampolines), but it'd be ok for that to be different.
 
-So with that, I agree that merging the klp-convert patchset in its
-current form with those potentially unused convenience features,
-presumably born out of certain assumptions about a manual livepatch
-preparation process, indeed can be argued about, probably.
+* Agree upon some restricted patterns for code generation (e.g. fixed
+  prologues/epilogues), so that we can identify whether to use LR or FP based
+  on the PC and a symbol lookup.
 
+> By your own argument, we cannot rely on the compiler as compiler implementations,
+> optimization strategies, etc can change in ways that are incompatible with any
+> livepatch implementation.
 
-However, OTOH, there's currently no means whatsoever to create those
-.klp.* relas (*) (**) and I would like to propose resorting to a more
-minimal utility doing only that single thing: to stubbornly create
-.klp.* relas out of certain "regular" ones using a very simple
-transformation rule and nothing else beyond that. The "stripped"
-klp-convert would have no knowledge of the symbols available in the
-livepatched target objects at all, i.e. there would be no symbols.klp
-file or alike anymore. Instead, it would simply walk through all of a
-livepatch object's SHN_UNDEF symbols of format
-".klp.sym.<loading-obj-name>.<foo-providing-mod>.some_foo,0" somewhen at
-modpost time and
-- rename the symbol to ".klp.sym.<foo-providing-mod>.some_foo,0" --
-  shortening the name should always be feasible as far as strtab is
-  concerned.
-- turn the symbol's SHN_UNDEF into SHN_LIVEPATCH
-- move any relocation (initially created by the compiler with source
-  based lp preparation approaches) against this symbol into a separate,
-  newly created rela section with flag SHF_RELA_LIVEPATCH set and whose
-  name is of format
-  .klp.rela.<loading-obj-name>.<livepatch-obj-dst-section-name>.
-  Furthermore, the new .klp.rela section's ->sh_info needs to be made to
-  refer to the destination section.
+That's not quite my argument.
 
-So, the only thing which would depend on the yet unspecified details of
-the livepatch preparation process would be the creation of those
-intermediate
-".klp.sym.<loading-obj-name>.<foo-providing-mod>.some_foo,0" SHN_UNDEF
-symbols to be processed by klp-convert. For source based livepatch
-preparation approaches, counting in the selftests, this can be easily
-controlled by means of asm("...") alias specifications at the respective
-declarations like in e.g.  extern int foo
-asm("\".klp.sym.<loading-obj-name>.<foo-providing-mod>.some_foo,0\"");
+My argument is that if we assume some set of properties that compiler folk
+never agreed to (and were never made aware of), then compiler folk are well
+within their rights to change the compiler such that it doesn't provide those
+properties, and it's very likely that such expectation will be broken. We've
+seen that happen before (e.g. with jump tables).
 
+Consequently I think we should be working with compiler folk to agree upon some
+solution, where compiler folk will actually try to maintain the properties we
+depend upon (and e.g. they could have tests for). That sort of co-design has
+worked well so far (e.g. with things like kCFI).
 
-I imagine the first ones to benefit from having such a "stripped"
-klp-convert available in the kernel tree would be new upstream selftests
-for .klp.* rela coverage (like introduced with this here patchset
-already) and for those some means of creating .klp.* relas would be
-needed anyway. We (SUSE), and perhaps others as well, could integrate
-this "stripped" klp-convert into our source based, production livepatch
-preparation workflows right away, of course, and so we're obviously keen
-on having it. Such a tool providing only the bare minimum would be
-pretty much self-contained -- it would only need to hook into the
-modpost Kbuild stage one way or the other -- and we could certainly
-maintain it downstream out-of-tree, but that would potentially only
-contribute to the current fragmentation around the livepatch creation
-processes even more and there still wouldn't have a solution for the
-upstream selftests.
+Ideally we'd have people in the same room to have a discussion (e.g. at LPC).
 
-What do you think, does it make sense to eventually have such a bare
-minimum klp-convert merged in-tree, independently of the ongoing
-discussion around the livepatch preparation processes, respectively (the
-lack of) documentation around it? If yes, Lukas, now on CC, is
-interested in this topic and would be willing to help out in any form
-desired: either by contributing to Joe's work here or, if deemed more
-feasible, to start out completely new from scratch -- dependent on your
-opinion on the proposed, more minimal approach as well as on Joe's plans
-around klp-convert.
+> Also, there can always be bugs in the compiler implementations.
 
-Looking forward to hearing your feedback!
+I don't disagree with that.
 
-Thanks,
+> Can you please elaborate? Are we looking for a way for the compiler folks to
+> provide us with something that we can use to implement reliable stack trace?
 
-Nicolai
+I tried to do so a bit above.
 
-(*) We've been experimenting with building the relocation records
-    manually by various means, e.g. with GNU as' .reloc directive as an
-    example, but this all turned out impractical for various
-    reasons. Most noteworthy, because the records' offsets wouldn't get
-    adjusted properly when linking AFAIR.
+I'm looking for some agreement between kernel folk and compiler folk on a
+reliable mechanism. That might be something that already exists, or something
+new. It might be metadata or some restrictions on code generation.
 
-(**) by some other means than directly with kpatch-build
+> > I'll note that at the last Linux Plumbers Conference, there was a discussion
+> > about what is now called SFrame, which *might* give us sufficient information,
+> > but I have not had the time to dig into that as I have been chasing other
+> > problems and trying to get other infrastructure in place.
+> 
+> I will try to locate the link. If you can provide me a link, that would be greatly
+> appreciated. I will study their SFrame proposal.
 
---=20
-SUSE Software Solutions Germany GmbH, Frankenstra=C3=9Fe 146, 90461 N=C3=BC=
-rnberg, Germany
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
-(HRB 36809, AG N=C3=BCrnberg)
+From looking around, that session was:
+
+  https://lpc.events/event/16/contributions/1177/
+
+At the time it was called CTF Frame, but got renamed to SFrame.
+
+I'm not sure where to find the most recent documentation. As I mentioned above
+I have not had the time to look in detail.
+
+> >> 		FWIW, I have also compared the CFI I am generating with DWARF
+> >> 		information that the compiler generates. The CFIs match a
+> >> 		100% for Clang. In the case of gcc, the comparison fails
+> >> 		in 1.7% of the cases. I have analyzed those cases and found
+> >> 		the DWARF information generated by gcc is incorrect. The
+> >> 		ORC generated by my Objtool is correct.
+> > 
+> > Have you reported this to the GCC folk, and can you give any examples?
+> > I'm sure they would be interested in fixing this, regardless of whether we end
+> > up using it.
+> 
+> I will try to get the data again and put something together and send it to the
+> gcc folks.
+
+Thanks for doing so; that's much appreciated!
+
+Thanks, 
+Mark.
