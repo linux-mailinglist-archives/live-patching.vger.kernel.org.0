@@ -2,76 +2,76 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D21A96EFBC7
-	for <lists+live-patching@lfdr.de>; Wed, 26 Apr 2023 22:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D0E56F493A
+	for <lists+live-patching@lfdr.de>; Tue,  2 May 2023 19:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239534AbjDZUij (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 26 Apr 2023 16:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
+        id S231839AbjEBRkp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 2 May 2023 13:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbjDZUii (ORCPT
+        with ESMTP id S233858AbjEBRko (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 26 Apr 2023 16:38:38 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25AD1BC
-        for <live-patching@vger.kernel.org>; Wed, 26 Apr 2023 13:38:37 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id af79cd13be357-74da25049e0so659329785a.0
-        for <live-patching@vger.kernel.org>; Wed, 26 Apr 2023 13:38:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682541517; x=1685133517;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JL3yT3Q33W5/BCQtgOVvz2cK4S2v0dqNTi6RS5aes9g=;
-        b=OvQqWKtnHE9ZYSOGWQiek75elK/AS5J2BUX9CwuSoKShoVo0Ise6FWhfma/gcRaI2r
-         4JFpmFRAaSg6hu/+VeLLx+9MW7RzVW35HL8C0/xkDeMi7k5l3LJbhZnF9vpSrFfRcZgx
-         E9RLvPuGgL/NZf1ni2UWzZPMEEfn6K6xfMAEaq/PuMr4f84ErGXbrf2b6qR6UNzx1FWf
-         GfyD1P15JXyIkDo2WuxInfMmiTNXfJLykGMlOOg5NvLAdljiDWZtRUddSi6ta9gx/d+w
-         PIH7qejQ8/7PhlZT/zMF6mAJE0u/qFTyo62sNwWd0mHXJ3VeKm+0gMQCIxYW4WoPFstR
-         2qkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682541517; x=1685133517;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JL3yT3Q33W5/BCQtgOVvz2cK4S2v0dqNTi6RS5aes9g=;
-        b=NXKmQoiOucu8kDYWROVm7Lf3Pf4bgZYROpp8J8//tvC6jALIlw8yINoN8XD0VeNuQr
-         wI56s93uZ0gBtm2eaSITL3aAVoXUo/+l46Zofufs+KvKvun6QJIUzmFInOX7AmZb0VdO
-         WzS1rZQ07bsqSMcfPgSOouxMldVDmKvtyrz06tIaslfhdyZQIdETIN4hwLyNLCGiPAMa
-         mMgu6/TPus2B22AIpRung+RighqbJK38OxW0Cpe7txOQque0+MT9D08o+vKADQd8qJXu
-         6AEd2EhcGFz6aM8dUjPbnSvGjKIMxWLmNC5VOzQB/c7xuzUNVR793UsXRnjhAE5pKDqa
-         FtXg==
-X-Gm-Message-State: AAQBX9e0PZNCSxqH7zeRIRHvnZAqAqHfKnufwUbew8xWJOEdktB/Oe25
-        u39Xadwp+63f7RDUeOhQHtG29kpErDzCV5AtjEk=
-X-Google-Smtp-Source: AKy350aahtT5urGRpRt0dmA3+1cGpPY1YEGq3M9gCFbNPtkMSZ2OjV05EO7SLcW4lSbkAUDp7UiNgM2A3R68/j5eVPQ=
-X-Received: by 2002:ac8:5812:0:b0:3ef:58f5:a001 with SMTP id
- g18-20020ac85812000000b003ef58f5a001mr35727525qtg.44.1682541516703; Wed, 26
- Apr 2023 13:38:36 -0700 (PDT)
+        Tue, 2 May 2023 13:40:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB54F114
+        for <live-patching@vger.kernel.org>; Tue,  2 May 2023 10:40:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58509621CC
+        for <live-patching@vger.kernel.org>; Tue,  2 May 2023 17:40:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFCBBC433EF
+        for <live-patching@vger.kernel.org>; Tue,  2 May 2023 17:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1683049242;
+        bh=hSNlmZG34nJnElMIlu0ravnV4E2D4HAVe3MCXh8CaFY=;
+        h=From:Date:Subject:To:From;
+        b=EN6jL75+UCMSgGgpWZooPDzaMetBC+8ZQrUQt8wWWd762P9K0D5tFl0mKCN2b+7+C
+         uT1FvCLodXYWLaDggRawW7WCzibvxKpYZqssdLty8oKYsW89e6eYrcNXaAsy6dij2O
+         e4pZf24b5InlyD6Uw1tZxVa/CRKQ2NxUtcL6PFkOduyUNQ0zPYzLnVk+UK0YFAVGCS
+         MVL06qB5x2uajJqF+KGtYxbLUwz3VntBZE1Bkao2WjEiTYWHK590km+/zQs3qd1vd4
+         TkZGvLi/z1Ody5rfpXVbjUG+b26suz+uVMtzEHqWrRRtqb3jwHyoG7JbdM0cVVSaVd
+         2Dhk6izWRgklg==
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2a8dd1489b0so39680751fa.3
+        for <live-patching@vger.kernel.org>; Tue, 02 May 2023 10:40:42 -0700 (PDT)
+X-Gm-Message-State: AC+VfDwDHj/ab6AcGk6aCmclEINeRTZZyIf2IRz+yWd70qxpRt8OzY8o
+        OhNuy3+v1CIKdVV9J6oxLagWNy+9TqO/PQPRDO4=
+X-Google-Smtp-Source: ACHHUZ6YL1Is3DhVORaMM68IhPp36emUGa3h8O5RwDrGFZbjp6Yi/aWxvmM+YikY1EIdtYaDWLHrg42Z+FE5kiyTrSo=
+X-Received: by 2002:a05:6512:11e2:b0:4eb:401e:1b76 with SMTP id
+ p2-20020a05651211e200b004eb401e1b76mr169581lfs.52.1683049240720; Tue, 02 May
+ 2023 10:40:40 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:622a:1391:b0:3b8:6d45:da15 with HTTP; Wed, 26 Apr 2023
- 13:38:36 -0700 (PDT)
-Reply-To: klassoumark@gmail.com
-From:   Mark Klassou <georgerown101@gmail.com>
-Date:   Wed, 26 Apr 2023 20:38:36 +0000
-Message-ID: <CAHmBb7tucZuQ0ROUiFYY3mxfmnDP64+Xz2so2JPVkRCM6-hvsw@mail.gmail.com>
-Subject: Re
-To:     undisclosed-recipients:;
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 2 May 2023 10:40:28 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW58LYU8iRCjoeChCyQ_7gqZvp6_U-fJr2Crf6gOniA51g@mail.gmail.com>
+Message-ID: <CAPhsuW58LYU8iRCjoeChCyQ_7gqZvp6_U-fJr2Crf6gOniA51g@mail.gmail.com>
+Subject: Question about inline, notrace, and livepatch
+To:     live-patching@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.9 required=5.0 tests=BAYES_40,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Good Morning,
+We hit the following hiccup a couple times in the past few months:
 
-I was only wondering if you got my previous email? I have been trying
-to reach you by email. Kindly get back to me swiftly, it is very
-important.
+A function is marked as "inline", but the compiler decided not to inline it.
+Since "inline" implies "notrace" since [1], this function doesn't have
+fentry/mcount. When we built livepatch for this function, kpatch-build
+failed with:
 
-Yours faithfully
-Mark Klassou.
+   xxx.o: function yyy has no fentry/mcount call, unable to patch
+
+This is not a deal breaker, as we can usually modify the patch to work
+around it. But I wonder whether we still need "inline" to imply "notrace".
+Can we remove this to make livepatch a little easier?
+
+Thanks,
+Song
+
+[1] 93b3cca1ccd3 ("ftrace: Make all inline tags also include notrace")
