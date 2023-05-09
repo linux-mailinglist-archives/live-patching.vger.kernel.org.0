@@ -2,80 +2,134 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B416FB62F
-	for <lists+live-patching@lfdr.de>; Mon,  8 May 2023 20:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1406FCF8F
+	for <lists+live-patching@lfdr.de>; Tue,  9 May 2023 22:34:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232428AbjEHSEO (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Mon, 8 May 2023 14:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
+        id S230064AbjEIUez (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 9 May 2023 16:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233450AbjEHSEN (ORCPT
+        with ESMTP id S229543AbjEIUey (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Mon, 8 May 2023 14:04:13 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D35F46AD
-        for <live-patching@vger.kernel.org>; Mon,  8 May 2023 11:04:08 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id af79cd13be357-75783ac48e7so97067085a.0
-        for <live-patching@vger.kernel.org>; Mon, 08 May 2023 11:04:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683569047; x=1686161047;
-        h=content-transfer-encoding:to:subject:message-id:date:from:sender
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=430ps2sqnmyOG7CkocvHHgo7LY5uawW1HIr8oL2FOAI=;
-        b=N3JiBoqtHOk8wtIE3COb3IiwwOK8XAMUrx0sWeYfu+ahh8Xell9rPu4v3dGGsU2CzY
-         1/2HbObh5DxHin3YWYxsdpeBia5+QgEI5kH697o4fkwXVLRbyRjj4kV/NFdS7XIAwguW
-         KMRu1kjT9OxfKUi/YkEWNPrHERgKCTaolmF5hFIcyWj2k8Bfwz8t96/Rtz5MQooKnVio
-         aWm7DY4UKMFg7Yd58NHN4s+xtfI/glXLNTPDanDe0W9BIBplr5Pc90gSiMz9BZImkGW0
-         pnBQZTcrjhQnz3xofZIMhGCMtHvT6AemUNYjVm2FI+7E41371c4dSfJO/YRJwlFRRorH
-         UcrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683569047; x=1686161047;
-        h=content-transfer-encoding:to:subject:message-id:date:from:sender
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=430ps2sqnmyOG7CkocvHHgo7LY5uawW1HIr8oL2FOAI=;
-        b=Jm/vYTOSfw/N8Xpp8+7J+uEL/Be6xDzJRc69XjRj+jVR1fulltQNHS6gwyERZgM9k9
-         J7lHVuLAKw1vxjUFQcdtEpFe0x8RyHJ6dDDQ/luBG/CoGIrX6y62tsbwDaRulIro8p7a
-         laCxknSQZbrHL0BsRTrzIU9SVXA2Oo7jiq1MJHkc9d55SdbBmwM3Y/nEMNgaZFjPyUND
-         QtPzYWK7aOTjPQnnklbb63oRnHN9jiltd4lKtrPKaECG2lXae73MsA51P9DEw+3Cxexm
-         /kP4tKxihZ6TWUt9lstrGZ4Nth8i+2Fs8mBTmwzekPwB4mNEB75y0mmmghMxpxtPO7g4
-         NJFA==
-X-Gm-Message-State: AC+VfDwRJ7QjV239Qh/62bmOBSLXczWtrA+2dOFwpu8cl0S4+GhC1dyd
-        f0NxBYqydcGsDRerBG2oKfJJAtGp8zEvgKFIrOM=
-X-Google-Smtp-Source: ACHHUZ6pRfTHSxRaPYwabQ2fSIzb/wXvmsVYMl+pggxM56X11uHDpgFlD7Nslp/4i6L0DUk7GbaObV6FgWlHw5PjB/U=
-X-Received: by 2002:a05:6214:48b:b0:5ef:486a:505e with SMTP id
- pt11-20020a056214048b00b005ef486a505emr17286500qvb.41.1683569047353; Mon, 08
- May 2023 11:04:07 -0700 (PDT)
+        Tue, 9 May 2023 16:34:54 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1239E10FE;
+        Tue,  9 May 2023 13:34:52 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5E63D1F749;
+        Tue,  9 May 2023 20:34:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1683664491; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=K3D8zA2tmAmIa323+7ZF/XLPZJO7JogZ7ToR1HtZFDM=;
+        b=0I8DhwtC7cuSTVHblvvoG/OReiK2L4AFZRelRMvJ2uoQMIB6Y6qLnvBiA1jityK88b9W7/
+        h7xhozNFf4FOIfajQRz+QVXKWApqTdPwVPfg9A/5nxCu3yZuT9rU6qWMwOu7Tfz/qn+T56
+        4dC1H/0CFpmohCdjxv2KWKGuzuB2eZk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1683664491;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=K3D8zA2tmAmIa323+7ZF/XLPZJO7JogZ7ToR1HtZFDM=;
+        b=xmiFJQDxWV48mWyA1idnEfNYHFeEYTbFAwbSkQBSpdzajM01VvE6m4M5IVdWqdg3Ovmy/0
+        5vbHjx/sDNnVmlBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D55E5139B3;
+        Tue,  9 May 2023 20:34:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Ai+bJmquWmQjRgAAMHmgww
+        (envelope-from <mpdesouza@suse.com>); Tue, 09 May 2023 20:34:50 +0000
+Date:   Tue, 9 May 2023 17:34:48 -0300
+From:   Marcos Paulo de Souza <mpdesouza@suse.de>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     Nicolai Stange <nstange@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Marcos Paulo de Souza <mpdesouza@suse.com>,
+        Lukas Hruska <lhruska@suse.cz>
+Subject: Re: [PATCH v7 00/10] livepatch: klp-convert tool
+Message-ID: <coxl6y2ivnp6tqxclpm54m4fpbf3ansil3abftbj4nv76vuheq@sxvagra4almd>
+References: <20230306140824.3858543-1-joe.lawrence@redhat.com>
+ <20230314202356.kal22jracaw5442y@daedalus>
+ <ZBTNvEPrCcRj3F1C@redhat.com>
+ <20230317232010.7uq6tt4ty35eo5hm@treble>
+ <873556ag24.fsf@suse.de>
+ <e41b041a-6a9e-210a-bf09-14db2b637e79@redhat.com>
 MIME-Version: 1.0
-Sender: fredadiyo@gmail.com
-Received: by 2002:a0c:db8a:0:b0:5f5:5adf:f93 with HTTP; Mon, 8 May 2023
- 11:04:07 -0700 (PDT)
-From:   Miss Marybeth <marybethmonson009@gmail.com>
-Date:   Mon, 8 May 2023 18:04:07 +0000
-X-Google-Sender-Auth: dYqR5Itgkyj9sIc5F0Bq7a1Gy2A
-Message-ID: <CAAS6DFn=f9fhqcFJ7ekjp8P6w-PG32K9AoX+sHqfnF-fUwTSWA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_20,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e41b041a-6a9e-210a-bf09-14db2b637e79@redhat.com>
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hallo,
+On Wed, May 03, 2023 at 03:54:47PM -0400, Joe Lawrence wrote:
+> On 4/11/23 06:06, Nicolai Stange wrote:
+> > Josh Poimboeuf <jpoimboe@kernel.org> writes:
+> > 
+> >> On Fri, Mar 17, 2023 at 04:29:48PM -0400, Joe Lawrence wrote:
+> >>> Have you tried retrofitting klp-convert into any real-world livepatch?
+> >>> I'm curious as to your observations on the overall experience, or
+> >>> thoughts on the sympos annotation style noted above.
+> >>
+> >> On a related note, the patch creation process (of which klp-convert
+> >> would be part of) needs to be documented.
+> >>
+> >> If I remember correctly, the proper safe usage of klp-convert requires a
+> >> kernel built with -flive-patching, plus some scripting and/or manual
+> >> processes.
+> > 
+> > Not always, I think: -flive-patching or IPA optimizations in general
+> > aren't a concern in the context of data symbols. From a quick glance, it
+> > seems like the selftests introduced as part of this patchset are
+> > all restricted to this usecase.
+> > 
+> 
+> IIRC there is nothing currently stopping klp-convert from converting
+> function symbol relocations.  That may be dangerous when taking
+> optimizations like sibling functions (and their sharing of stack) into
+> consideration.  This is about the point I stopped to turn and see what
+> the real use cases may be.
+> 
+> >> If nobody knows how to safely use it then there wouldn't be much value
+> >> in merging it.
+> > 
+> > I tend to agree, but would put it a bit differently: the current
+> > implementation of klp-convert features quite some convenience logic,
+> > which, until the question of a documented livepatch preparation process
+> > has been settled, is not known yet to ever be of any use.
+> > 
+> 
+> Good observation and perhaps something that Marcos could elaborate on
+> (pros and cons of klp-convert in his experiments).
+> 
 
-Sie haben meine vorherige Nachricht erhalten? Ich habe Sie schon
-einmal kontaktiert, aber die Nachricht ist fehlgeschlagen, also habe
-ich beschlossen, noch einmal zu schreiben. Bitte best=C3=A4tigen Sie, ob
-Sie dies erhalten, damit ich fortfahren kann.
+In my tests, I took the exact code generated by klp-ccp, and adapted it to not
+rely on kallsyms anymore, removing the symbol lookups. For data symbols, I
+changed it to be a extern variable instead of a pointer to it. For the function
+symbols, also removed the pointer lookup, and left only the function prototype,
+and it worked as expected.
 
-warte auf deine Antwort.
-
-Gr=C3=BC=C3=9Fe,
-Fr=C3=A4ulein Marybeth
+I was quite surprised that it worked quite well. But I agree with
+Nicolai that the tool itself could be shrunk into a smaller version. In our
+usage, klp-ccp knows all unexported functions and to which modules they belong,
+as it's currently used for the symbol lookup. I believe that kpatch-build also
+has similar information so all the symbols.klp and other Kbuild machinery could be
+avoided, making the tool responsible to only generate the klp relocations based
+on the undefined symbols, just as proposed by Nicolai.
