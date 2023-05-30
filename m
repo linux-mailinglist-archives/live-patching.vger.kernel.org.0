@@ -2,102 +2,79 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D664270F58E
-	for <lists+live-patching@lfdr.de>; Wed, 24 May 2023 13:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C54D71716E
+	for <lists+live-patching@lfdr.de>; Wed, 31 May 2023 01:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbjEXLq3 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 24 May 2023 07:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
+        id S233783AbjE3XQL (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 30 May 2023 19:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbjEXLq2 (ORCPT
+        with ESMTP id S231843AbjE3XQK (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 24 May 2023 07:46:28 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82603139
-        for <live-patching@vger.kernel.org>; Wed, 24 May 2023 04:46:23 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id 38308e7fff4ca-2af2db78b38so11261171fa.3
-        for <live-patching@vger.kernel.org>; Wed, 24 May 2023 04:46:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684928781; x=1687520781;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PlIvlh/Wu/Gdl3bc/cwkv0nvaIs0VGs7tRG/WiHzhks=;
-        b=gONwD/1DyEEl84bjbyW6hkwGonZs3RmtQn+9j8r/qZuO1brd0cBDaW3zzOwqNPl1jd
-         FXewDz4jcUdKK3hOV0KKWXyI3cHWdAHcIJ0YO2abpiIxhvzFkEs86ATSqdDAs7x2LDCt
-         71kYE+LmTlfvujzroBe2Ms4seRjadOTVHIi1rBQRTb5ACOvA6BIvHl3sLU4OiHMbUn7j
-         SlxxC2DN/NHYt08DyO2aOjqROyR4p/GYFeKjOXaOzLCqofLasvY/eGgTV92WsiVMmw/X
-         NwJ/FNo0Qsc/NOUlVxwnSIr55LPfMAeOg3uodlSZy1yXthT/zT6fU98lHvrWWkgSQfqy
-         X5IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684928781; x=1687520781;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PlIvlh/Wu/Gdl3bc/cwkv0nvaIs0VGs7tRG/WiHzhks=;
-        b=Vy71DESZu7gQ46L6hQgEKu2RV9p7PbUqcz44ClDJk2ByQhAGkaH0KdK3VUnVTsi7PI
-         NPs+lVz9NgaKQvDJeWIPKoskHZumv2G5FR6mnntbWAy59X6g+aBPWkkYPEBS6nUnW5Xa
-         +ZY01FkmaVhDg98X8YxLaNfymkM+rx+NLjDbGU4Dnp0waEPwyo8q88jyyMl5hbkSvuYn
-         diRSrGCbgJxrioIi16x2qHwXAYPNaBi8uwLC8VJxWmzPxZvJxyOYv2oHxA0zBLifPShM
-         1UZ9fdFev2iczjI7GhaHYgTjprNzu4mVg3cOo5oxs0H/UF2nF8pFiCZIkMjzQ71c8muF
-         sTww==
-X-Gm-Message-State: AC+VfDwtg9bLsCOOy3iVE/MN31Qc1gCVMe/aoLHF88O290ycQuo1r4vx
-        WMvsI6/bk2ypp1//nD7ZkEebJvbBKSXg5cX6eQ8=
-X-Google-Smtp-Source: ACHHUZ7PiqkEhrB9yPq5e+rs4Oi8EaXqIseWEM2LB42j7UALs4PDsHWJJ3x+dMtQQGshX4V1HB+B5PpF0jkXTS/sGP0=
-X-Received: by 2002:a2e:8601:0:b0:2a8:c858:fb9 with SMTP id
- a1-20020a2e8601000000b002a8c8580fb9mr6355970lji.29.1684928781297; Wed, 24 May
- 2023 04:46:21 -0700 (PDT)
+        Tue, 30 May 2023 19:16:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8724CAA;
+        Tue, 30 May 2023 16:16:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F05863508;
+        Tue, 30 May 2023 23:16:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04EE2C433EF;
+        Tue, 30 May 2023 23:16:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1685488568;
+        bh=e0CUxh2mVxfA/1Jqa3mCpXdqKlK7OJCF9M+9+uvD3e8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mtVhqmSh/FxtvcNO2dS318420LYe9zXJwprsV6aslB/NCw96f7b0j0eru+rU67Mmn
+         HYFvT37eIHSw7S1btjOwjDqDJ2Tf7fwuD8wlAm/Zc40ypVplZ3wIRwwq5aJk+/LWds
+         wyYdHvFoRSXpaPvsgK48yAMsvDqSpBwM1yI0FaIHkPV7LOPRqGNgS0q7TIwdYy4SQG
+         9g3D3pBo8lfGfDmsOArYDAmxPXqUL/jR4O5oJOjjib4r8i8gTNtw+kz5Y/efLjYs8r
+         5QQLnlirFWcv1lfmoYf/0Gyl33YBl87b/XVjlny1OIG23i5Epl/ofMCw3DP2gnxj4H
+         7vkBGDnLYyhkw==
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     live-patching@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: [PATCH] livepatch: Make 'klp_stack_entries' static
+Date:   Tue, 30 May 2023 16:15:58 -0700
+Message-Id: <5115752fca6537720700f4bf5b178959dfbca41a.1685488550.git.jpoimboe@kernel.org>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-Received: by 2002:a05:6520:3426:b0:263:eea5:5111 with HTTP; Wed, 24 May 2023
- 04:46:20 -0700 (PDT)
-Reply-To: wormer.amos@aol.com
-From:   wormer Amos <rolsbaraye@gmail.com>
-Date:   Wed, 24 May 2023 12:46:20 +0100
-Message-ID: <CAGkCXQibP29iMue_tpjESM4v0_dfLORr3r+gF6tV_JTnSs1ECw@mail.gmail.com>
-Subject: GOOD MORNING.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,UNDISC_MONEY autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:231 listed in]
-        [list.dnswl.org]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [rolsbaraye[at]gmail.com]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  2.8 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  2.7 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-My Dear. i just wanted to know if you're capable for handling investment
-project in
-your country because i
-need a serious business partnership with good background, kindly reply
-me to discuss details immediately. i will appreciate you to contact me
-on this same email?
+The 'klp_stack_entries' percpu array is only used in transition.c.  Make
+it static.
 
-Thanks and awaiting for your quick response,
+Fixes: e92606fa172f ("livepatch: Convert stack entries array to percpu")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202305171329.i0UQ4TJa-lkp@intel.com/
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+---
+ kernel/livepatch/transition.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Wormer?
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index e9fd83a02228..e54c3d60a904 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -15,7 +15,7 @@
+ #include "transition.h"
+ 
+ #define MAX_STACK_ENTRIES  100
+-DEFINE_PER_CPU(unsigned long[MAX_STACK_ENTRIES], klp_stack_entries);
++static DEFINE_PER_CPU(unsigned long[MAX_STACK_ENTRIES], klp_stack_entries);
+ 
+ #define STACK_ERR_BUF_SIZE 128
+ 
+-- 
+2.40.1
+
