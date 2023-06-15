@@ -2,106 +2,155 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C18B5731E90
-	for <lists+live-patching@lfdr.de>; Thu, 15 Jun 2023 18:58:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE811731E99
+	for <lists+live-patching@lfdr.de>; Thu, 15 Jun 2023 19:01:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbjFOQ6o (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 15 Jun 2023 12:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
+        id S234041AbjFORBS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 15 Jun 2023 13:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbjFOQ6l (ORCPT
+        with ESMTP id S232502AbjFORBQ (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 15 Jun 2023 12:58:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD68172A
-        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 09:58:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0944B60E9A
-        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 16:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE76C433CA
-        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 16:58:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1686848319;
-        bh=0SLC6TnhR5s8PKsOwQ5hJNrNX2IJGKkd8ceajvGVzcI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jV74LGSI/Cik2zyUlHh6EYI5g1+x1wourWCtrmdczC7livoewUxt3OIruAck1G0B1
-         eRa43Jq5l5a/9ELuX5N//+ngTXCUDwRFYmojOeso+tuLji7NwUW0B37eKeeNLP1cS9
-         B7kjxaxMSMzPV/vewbA0Ma2cZeQtHSVjG65R71XSoRiLzi6HeS7zeXxrTrpT+6Q+uM
-         ynRCvS194CN2zV4opa/3a3pYcl8s7C/JJWJiU1Ff0wZZaAkwfcYVhMYw4P+KrHSmB1
-         Uysyp454pg+YyKSTdfnbg9kI1IBhBD8zU86agXcqdKbLgkGkjGgR+SjkkSJKeV+8OC
-         L/r2Pr4wxX4VA==
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2b3500a1f2bso23568731fa.2
-        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 09:58:39 -0700 (PDT)
-X-Gm-Message-State: AC+VfDyRbY3v5ChEszXl78NhQArCLBEZBa/Zj3ZjEbslyqaw4snC5lCZ
-        EPMI4WRu3WlzhDcyIW1CrIuIzThmjRZHfb2Djnk=
-X-Google-Smtp-Source: ACHHUZ4GT3G4+cCe5rQIAjjNIILS/fTcImonVYGd+Kce3nBqxZ/hM3VMpM+c7BLNgWNzdGEfoYX/B2OZ2exI8KLtebE=
-X-Received: by 2002:a2e:99d9:0:b0:2ad:8929:e8f4 with SMTP id
- l25-20020a2e99d9000000b002ad8929e8f4mr7871ljj.43.1686848317348; Thu, 15 Jun
- 2023 09:58:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230602232401.3938285-1-song@kernel.org> <ZILQERU8CJQvn9ix@alley>
- <A4BB490E-42EE-4435-AAE7-2309E384C934@fb.com> <ZIiITvTMOimZ-t1z@alley>
-In-Reply-To: <ZIiITvTMOimZ-t1z@alley>
+        Thu, 15 Jun 2023 13:01:16 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9112695
+        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 10:01:02 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35FFpmRd024170
+        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 10:01:02 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3r85ncrjjb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 10:01:01 -0700
+Received: from twshared29562.14.frc2.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 15 Jun 2023 10:01:00 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id E18201F5A0EE3; Thu, 15 Jun 2023 10:00:49 -0700 (PDT)
 From:   Song Liu <song@kernel.org>
-Date:   Thu, 15 Jun 2023 09:58:25 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5TZPzzFefZ=d1OjVY7yBqge0XBnS9UE2xCWnoLmwj_Og@mail.gmail.com>
-Message-ID: <CAPhsuW5TZPzzFefZ=d1OjVY7yBqge0XBnS9UE2xCWnoLmwj_Og@mail.gmail.com>
-Subject: Re: [PATCH] livepatch: match symbols exactly in klp_find_object_symbol()
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Song Liu <songliubraving@meta.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Kernel Team <kernel-team@meta.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     <live-patching@vger.kernel.org>
+CC:     <jpoimboe@kernel.org>, <jikos@kernel.org>, <mbenes@suse.cz>,
+        <pmladek@suse.com>, <joe.lawrence@redhat.com>,
+        <kernel-team@meta.com>, <thunder.leizhen@huawei.com>,
+        <mcgrof@kernel.org>, Song Liu <song@kernel.org>
+Subject: [PATCH] kallsyms: let kallsyms_on_each_match_symbol match symbols exactly
+Date:   Thu, 15 Jun 2023 10:00:48 -0700
+Message-ID: <20230615170048.2382735-1-song@kernel.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: VGwh4_IXagXQJtLFAx7MbWr-Iqedugwv
+X-Proofpoint-ORIG-GUID: VGwh4_IXagXQJtLFAx7MbWr-Iqedugwv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-06-15_13,2023-06-15_01,2023-05-22_02
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Tue, Jun 13, 2023 at 8:16=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrot=
-e:
->
+With CONFIG_LTO_CLANG, kallsyms.c:cleanup_symbol_name() removes symbols
+suffixes during comparison. This is problematic for livepatch, as
+kallsyms_on_each_match_symbol may find multiple matches for the same
+symbol, and fail with:
 
-[...]
+  livepatch: unresolvable ambiguity for symbol 'xxx' in object 'yyy'
 
->
-> I agree that it is a slow path.
->
-> Well, Zhen put a lot of effort into the optimization. I am not sure
-> what was the primary motivation. But it would be harsh to remove it
-> without asking.
->
-> Zhen, what was the motivation for the speedup of kallsyms, please?
->
+Make kallsyms_on_each_match_symbol() to match symbols exactly. Since
+livepatch is the only user of kallsyms_on_each_match_symbol(), this
+change is safe.
 
-I took a closer look at the code. kallsyms_on_each_match_symbol()
-is only used by livepatch. So indeed it doesn't make sense to drop
-all the optimizations by Zhen.
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ kernel/kallsyms.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-I got another solution for this. Will send it shortly.
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index 77747391f49b..2ab459b43084 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -187,7 +187,7 @@ static bool cleanup_symbol_name(char *s)
+ 	return false;
+ }
+ 
+-static int compare_symbol_name(const char *name, char *namebuf)
++static int compare_symbol_name(const char *name, char *namebuf, bool match_exactly)
+ {
+ 	int ret;
+ 
+@@ -195,7 +195,7 @@ static int compare_symbol_name(const char *name, char *namebuf)
+ 	if (!ret)
+ 		return ret;
+ 
+-	if (cleanup_symbol_name(namebuf) && !strcmp(name, namebuf))
++	if (!match_exactly && cleanup_symbol_name(namebuf) && !strcmp(name, namebuf))
+ 		return 0;
+ 
+ 	return ret;
+@@ -213,7 +213,8 @@ static unsigned int get_symbol_seq(int index)
+ 
+ static int kallsyms_lookup_names(const char *name,
+ 				 unsigned int *start,
+-				 unsigned int *end)
++				 unsigned int *end,
++				 bool match_exactly)
+ {
+ 	int ret;
+ 	int low, mid, high;
+@@ -228,7 +229,7 @@ static int kallsyms_lookup_names(const char *name,
+ 		seq = get_symbol_seq(mid);
+ 		off = get_symbol_offset(seq);
+ 		kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+-		ret = compare_symbol_name(name, namebuf);
++		ret = compare_symbol_name(name, namebuf, match_exactly);
+ 		if (ret > 0)
+ 			low = mid + 1;
+ 		else if (ret < 0)
+@@ -245,7 +246,7 @@ static int kallsyms_lookup_names(const char *name,
+ 		seq = get_symbol_seq(low - 1);
+ 		off = get_symbol_offset(seq);
+ 		kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+-		if (compare_symbol_name(name, namebuf))
++		if (compare_symbol_name(name, namebuf, match_exactly))
+ 			break;
+ 		low--;
+ 	}
+@@ -257,7 +258,7 @@ static int kallsyms_lookup_names(const char *name,
+ 			seq = get_symbol_seq(high + 1);
+ 			off = get_symbol_offset(seq);
+ 			kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+-			if (compare_symbol_name(name, namebuf))
++			if (compare_symbol_name(name, namebuf, match_exactly))
+ 				break;
+ 			high++;
+ 		}
+@@ -277,7 +278,7 @@ unsigned long kallsyms_lookup_name(const char *name)
+ 	if (!*name)
+ 		return 0;
+ 
+-	ret = kallsyms_lookup_names(name, &i, NULL);
++	ret = kallsyms_lookup_names(name, &i, NULL, false);
+ 	if (!ret)
+ 		return kallsyms_sym_address(get_symbol_seq(i));
+ 
+@@ -312,7 +313,7 @@ int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
+ 	int ret;
+ 	unsigned int i, start, end;
+ 
+-	ret = kallsyms_lookup_names(name, &start, &end);
++	ret = kallsyms_lookup_names(name, &start, &end, true);
+ 	if (ret)
+ 		return 0;
+ 
+-- 
+2.34.1
 
-Thanks,
-Song
-
->
-> > OTOH, this version is simpler and should work just as
-> > well.
->
-> Sure. But we should double check Zhen's motivation.
->
-> Anyway, iterating over all symbols costs a lot. See also
-> the commit f5bdb34bf0c9314548f2d ("livepatch: Avoid CPU hogging
-> with cond_resched").
