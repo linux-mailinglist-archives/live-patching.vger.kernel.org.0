@@ -2,59 +2,68 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8906772FC7D
-	for <lists+live-patching@lfdr.de>; Wed, 14 Jun 2023 13:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C18B5731E90
+	for <lists+live-patching@lfdr.de>; Thu, 15 Jun 2023 18:58:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235578AbjFNLe7 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 14 Jun 2023 07:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
+        id S229811AbjFOQ6o (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 15 Jun 2023 12:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244046AbjFNLev (ORCPT
+        with ESMTP id S229903AbjFOQ6l (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 14 Jun 2023 07:34:51 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C87D199B;
-        Wed, 14 Jun 2023 04:34:48 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id E670A1FDE8;
-        Wed, 14 Jun 2023 11:34:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1686742486; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=XUS6LnF3QcGYPv+Pi9a6q4EMakth990haEuXywcllOE=;
-        b=FqYhHe1Uv6V54jBgYPolfRKycLgOt3S0kEFiYgCnDgo68eDCEwo5Y4ZKAxcVxp0rYVfDhA
-        XH1bmEek0qGf5QxBwcEJ65xc5evf59b7aP8CzLnYoWfUnGleVCYqR1FQ9KXQAy9xtjDAXN
-        Z6JQSYMOQKucpancAkGGbryY3a7AfcY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1686742486;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=XUS6LnF3QcGYPv+Pi9a6q4EMakth990haEuXywcllOE=;
-        b=CE/8gvggVW8S5pJU0ZTwoouLIdWvKWIpOa+wb/LXvMoKopdiwRVUH/VIsXGWUUeeleyfGa
-        JtkFiJd5n/Xyk8Dw==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 15 Jun 2023 12:58:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD68172A
+        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 09:58:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E46CC2C141;
-        Wed, 14 Jun 2023 11:34:45 +0000 (UTC)
-Date:   Wed, 14 Jun 2023 13:34:45 +0200 (CEST)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-cc:     joe.lawrence@redhat.com, jpoimboe@kernel.org, jikos@kernel.org,
-        pmladek@suse.com, nstange@suse.de, mpdesouza@suse.de,
-        mark.rutland@arm.com, broonie@kernel.org, ndesaulniers@google.com,
-        miguel.ojeda.sandonis@gmail.com, elena.zannoni@oracle.com,
-        indu.bhagat@oracle.com, peterz@infradead.org, jmorris@namei.org,
-        rostedt@goodmis.org, songliubraving@meta.com,
-        madvenka@linux.microsoft.com, mbenes@suse.cz
-Subject: [ANNOUNCE and CfP] Live Patching MC at LPC 2023
-Message-ID: <alpine.LSU.2.21.2306141313530.8054@pobox.suse.cz>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0944B60E9A
+        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 16:58:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE76C433CA
+        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 16:58:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1686848319;
+        bh=0SLC6TnhR5s8PKsOwQ5hJNrNX2IJGKkd8ceajvGVzcI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jV74LGSI/Cik2zyUlHh6EYI5g1+x1wourWCtrmdczC7livoewUxt3OIruAck1G0B1
+         eRa43Jq5l5a/9ELuX5N//+ngTXCUDwRFYmojOeso+tuLji7NwUW0B37eKeeNLP1cS9
+         B7kjxaxMSMzPV/vewbA0Ma2cZeQtHSVjG65R71XSoRiLzi6HeS7zeXxrTrpT+6Q+uM
+         ynRCvS194CN2zV4opa/3a3pYcl8s7C/JJWJiU1Ff0wZZaAkwfcYVhMYw4P+KrHSmB1
+         Uysyp454pg+YyKSTdfnbg9kI1IBhBD8zU86agXcqdKbLgkGkjGgR+SjkkSJKeV+8OC
+         L/r2Pr4wxX4VA==
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2b3500a1f2bso23568731fa.2
+        for <live-patching@vger.kernel.org>; Thu, 15 Jun 2023 09:58:39 -0700 (PDT)
+X-Gm-Message-State: AC+VfDyRbY3v5ChEszXl78NhQArCLBEZBa/Zj3ZjEbslyqaw4snC5lCZ
+        EPMI4WRu3WlzhDcyIW1CrIuIzThmjRZHfb2Djnk=
+X-Google-Smtp-Source: ACHHUZ4GT3G4+cCe5rQIAjjNIILS/fTcImonVYGd+Kce3nBqxZ/hM3VMpM+c7BLNgWNzdGEfoYX/B2OZ2exI8KLtebE=
+X-Received: by 2002:a2e:99d9:0:b0:2ad:8929:e8f4 with SMTP id
+ l25-20020a2e99d9000000b002ad8929e8f4mr7871ljj.43.1686848317348; Thu, 15 Jun
+ 2023 09:58:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+References: <20230602232401.3938285-1-song@kernel.org> <ZILQERU8CJQvn9ix@alley>
+ <A4BB490E-42EE-4435-AAE7-2309E384C934@fb.com> <ZIiITvTMOimZ-t1z@alley>
+In-Reply-To: <ZIiITvTMOimZ-t1z@alley>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 15 Jun 2023 09:58:25 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5TZPzzFefZ=d1OjVY7yBqge0XBnS9UE2xCWnoLmwj_Og@mail.gmail.com>
+Message-ID: <CAPhsuW5TZPzzFefZ=d1OjVY7yBqge0XBnS9UE2xCWnoLmwj_Og@mail.gmail.com>
+Subject: Re: [PATCH] livepatch: match symbols exactly in klp_find_object_symbol()
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Song Liu <songliubraving@meta.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Kernel Team <kernel-team@meta.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,25 +71,37 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello,
+On Tue, Jun 13, 2023 at 8:16=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrot=
+e:
+>
 
-the Live Patching Microconference for Linux Plumbers Conference 2023 has 
-been accepted.
+[...]
 
-It is possible to submit topic proposals and abstracts for the 
-microconference through Indico system linked at [1]. I welcome you to do 
-so. Submissions should then be published at [2].
+>
+> I agree that it is a slow path.
+>
+> Well, Zhen put a lot of effort into the optimization. I am not sure
+> what was the primary motivation. But it would be harsh to remove it
+> without asking.
+>
+> Zhen, what was the motivation for the speedup of kallsyms, please?
+>
 
-The rest still remains to be sorted out. Joe and I will share information 
-as it is available.
+I took a closer look at the code. kallsyms_on_each_match_symbol()
+is only used by livepatch. So indeed it doesn't make sense to drop
+all the optimizations by Zhen.
 
-The registration will open soon [3].
+I got another solution for this. Will send it shortly.
 
-See you in Richmond!
+Thanks,
+Song
 
-Miroslav
-
-[1] https://lpc.events/event/17/abstracts/
-[2] https://lpc.events/event/17/contributions/1405/
-[3] https://lpc.events/blog/current/index.php/2023/06/14/registration-for-lpc-2023-is-almost-here/
-
+>
+> > OTOH, this version is simpler and should work just as
+> > well.
+>
+> Sure. But we should double check Zhen's motivation.
+>
+> Anyway, iterating over all symbols costs a lot. See also
+> the commit f5bdb34bf0c9314548f2d ("livepatch: Avoid CPU hogging
+> with cond_resched").
