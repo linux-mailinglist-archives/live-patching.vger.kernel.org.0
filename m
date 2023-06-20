@@ -2,25 +2,25 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 557C2736548
-	for <lists+live-patching@lfdr.de>; Tue, 20 Jun 2023 09:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F08E736549
+	for <lists+live-patching@lfdr.de>; Tue, 20 Jun 2023 09:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbjFTHvH (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Tue, 20 Jun 2023 03:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49600 "EHLO
+        id S231534AbjFTHvJ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Tue, 20 Jun 2023 03:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjFTHus (ORCPT
+        with ESMTP id S231613AbjFTHut (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Tue, 20 Jun 2023 03:50:48 -0400
+        Tue, 20 Jun 2023 03:50:49 -0400
 Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4557171B;
-        Tue, 20 Jun 2023 00:50:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57EF11981;
+        Tue, 20 Jun 2023 00:50:30 -0700 (PDT)
 Received: from loongson.cn (unknown [113.200.148.30])
-        by gateway (Coremail) with SMTP id _____8Bxb+tEWpFkrxsHAA--.14646S3;
+        by gateway (Coremail) with SMTP id _____8Cx8OhEWpFkuRsHAA--.12665S3;
         Tue, 20 Jun 2023 15:50:28 +0800 (CST)
 Received: from bogon.localdomain (unknown [113.200.148.30])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8AxPMo+WpFkp2chAA--.19067S5;
-        Tue, 20 Jun 2023 15:50:27 +0800 (CST)
+        by localhost.localdomain (Coremail) with SMTP id AQAAf8AxPMo+WpFkp2chAA--.19067S6;
+        Tue, 20 Jun 2023 15:50:28 +0800 (CST)
 From:   Youling Tang <tangyouling@loongson.cn>
 To:     Josh Poimboeuf <jpoimboe@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -29,19 +29,18 @@ To:     Josh Poimboeuf <jpoimboe@kernel.org>,
 Cc:     chenzhongjin@huawei.com, WANG Xuerui <kernel@xen0n.name>,
         Xi Ruoyao <xry111@xry111.site>, live-patching@vger.kernel.org,
         linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
-        tangyouling00@gmail.com, youling.tang@outlook.com,
-        Jinyang He <hejinyang@loongson.cn>
-Subject: [RFC PATCH v1 13/23] objtool: Add next member in struct reloc
-Date:   Tue, 20 Jun 2023 15:50:09 +0800
-Message-Id: <1687247415-32057-4-git-send-email-tangyouling@loongson.cn>
+        tangyouling00@gmail.com, youling.tang@outlook.com
+Subject: [RFC PATCH v1 14/23] objtool: Add orc_print_dump() package
+Date:   Tue, 20 Jun 2023 15:50:10 +0800
+Message-Id: <1687247415-32057-5-git-send-email-tangyouling@loongson.cn>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1687247415-32057-1-git-send-email-tangyouling@loongson.cn>
 References: <1687247415-32057-1-git-send-email-tangyouling@loongson.cn>
-X-CM-TRANSID: AQAAf8AxPMo+WpFkp2chAA--.19067S5
+X-CM-TRANSID: AQAAf8AxPMo+WpFkp2chAA--.19067S6
 X-CM-SenderInfo: 5wdqw5prxox03j6o00pqjv00gofq/
-X-Coremail-Antispam: 1Uk129KBj93XoW7Zr4kGw1DZry8uFy5CF4rWFX_yoW8tw48pF
-        srC39rKFW8XryxJ3WavF48G3yYkwnruFyIyr47G340vrsrXrn0qF4ayF1jyFyjqrWYgFWa
-        qry5Kr40yr4UZagCm3ZEXasCq-sJn29KB7ZKAUJUUUU3529EdanIXcx71UUUUU7KY7ZEXa
+X-Coremail-Antispam: 1Uk129KBj93XoWxZw4DGw17Kw47Zw4UWr4xXwc_yoW5Zw48pr
+        nxGas7KrWUuF9xAw1kJanrC3y5Ganru34IkrnxC34Iyw1IqwnrXa1SyF1j9Fn5W3s5uasx
+        ZFZIqr1UKFs7tFXCm3ZEXasCq-sJn29KB7ZKAUJUUUU3529EdanIXcx71UUUUU7KY7ZEXa
         sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
         0xBIdaVrnRJUUUmIb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
         IYs7xG6rWj6s0DM7CIcVAFz4kK6r1Y6r17M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
@@ -66,73 +65,106 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-In LoongArch, there may be multiple relocation information in one location,
-so the next member is added to handle this situation.
+There is no functional change, only operations such as orc_print_{sp,fp}
+are encapsulated into orc_print_dump(). It is convenient to add LoongArch
+support later (because it needs to add orc_print_ra()).
 
-The following warning appears when the next member is not added,
-warning: objtool: unexpected relocation symbol type in .rela.discard.unreachable
-
-Relocation section '.rela.discard.unreachable' at offset 0x1a58 contains 4 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000032 R_LARCH_ADD32          0000000000000000 .text + 354
-0000000000000000  0000000900000037 R_LARCH_SUB32          0000000000000000 L0^A + 0
-
-Co-developed-by: Jinyang He <hejinyang@loongson.cn>
-Signed-off-by: Jinyang He <hejinyang@loongson.cn>
 Signed-off-by: Youling Tang <tangyouling@loongson.cn>
 ---
- tools/objtool/elf.c                 | 11 ++++++++++-
- tools/objtool/include/objtool/elf.h |  1 +
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ tools/objtool/arch/x86/orc.c        | 23 ++++++++++++++++++-----
+ tools/objtool/include/objtool/orc.h |  5 +----
+ tools/objtool/orc_dump.c            | 12 +-----------
+ 3 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 6806ce01d933..d345300d269b 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -895,7 +895,7 @@ static int read_relocs(struct elf *elf)
+diff --git a/tools/objtool/arch/x86/orc.c b/tools/objtool/arch/x86/orc.c
+index a0c00e136089..cf546b274a79 100644
+--- a/tools/objtool/arch/x86/orc.c
++++ b/tools/objtool/arch/x86/orc.c
+@@ -114,7 +114,7 @@ static const char *reg_name(unsigned int reg)
+ 	}
+ }
+ 
+-const char *orc_type_name(unsigned int type)
++static const char *orc_type_name(unsigned int type)
  {
- 	unsigned long nr_reloc, max_reloc = 0, tot_reloc = 0;
- 	struct section *sec;
--	struct reloc *reloc;
-+	struct reloc *reloc, *next_reloc;
- 	unsigned int symndx;
- 	struct symbol *sym;
- 	int i;
-@@ -915,6 +915,7 @@ static int read_relocs(struct elf *elf)
- 			return -1;
+ 	switch (type) {
+ 	case UNWIND_HINT_TYPE_CALL:
+@@ -128,7 +128,7 @@ const char *orc_type_name(unsigned int type)
+ 	}
+ }
+ 
+-void orc_print_reg(unsigned int reg, int offset)
++static void orc_print_reg(unsigned int reg, int offset)
+ {
+ 	if (reg == ORC_REG_BP_INDIRECT)
+ 		printf("(bp%+d)", offset);
+@@ -140,12 +140,25 @@ void orc_print_reg(unsigned int reg, int offset)
+ 		printf("%s%+d", reg_name(reg), offset);
+ }
+ 
+-void orc_print_sp(void)
++static void orc_print_sp(void)
+ {
+ 	printf(" sp:");
+ }
+-
+-void orc_print_fp(void)
++static void orc_print_fp(void)
+ {
+ 	printf(" bp:");
+ }
++
++void orc_print_dump(struct elf *dummy_elf, struct orc_entry *orc, int i)
++{
++	orc_print_sp();
++
++	orc_print_reg(orc[i].sp_reg, bswap_if_needed(dummy_elf, orc[i].sp_offset));
++
++	orc_print_fp();
++
++	orc_print_reg(orc[i].bp_reg, bswap_if_needed(dummy_elf, orc[i].bp_offset));
++
++	printf(" type:%s signal:%d end:%d\n",
++	       orc_type_name(orc[i].type), orc[i].signal, orc[i].end);
++}
+diff --git a/tools/objtool/include/objtool/orc.h b/tools/objtool/include/objtool/orc.h
+index bf141134c56f..53a037bdfc35 100644
+--- a/tools/objtool/include/objtool/orc.h
++++ b/tools/objtool/include/objtool/orc.h
+@@ -10,9 +10,6 @@
+ 
+ int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
+ 		   struct instruction *insn);
+-const char *orc_type_name(unsigned int type);
+-void orc_print_reg(unsigned int reg, int offset);
+-void orc_print_sp(void);
+-void orc_print_fp(void);
++void orc_print_dump(struct elf *dummy_elf, struct orc_entry *orc, int i);
+ 
+ #endif /* _OBJTOOL_ORC_H */
+diff --git a/tools/objtool/orc_dump.c b/tools/objtool/orc_dump.c
+index 82bdd33dbc39..c274c0577427 100644
+--- a/tools/objtool/orc_dump.c
++++ b/tools/objtool/orc_dump.c
+@@ -151,17 +151,7 @@ int orc_dump(const char *_objname)
+ 			printf("%llx:", (unsigned long long)(orc_ip_addr + (i * sizeof(int)) + orc_ip[i]));
  		}
  
-+		next_reloc = NULL;
- 		sec->base->reloc = sec;
+-
+-		orc_print_sp();
+-
+-		orc_print_reg(orc[i].sp_reg, bswap_if_needed(&dummy_elf, orc[i].sp_offset));
+-
+-		orc_print_fp();
+-
+-		orc_print_reg(orc[i].bp_reg, bswap_if_needed(&dummy_elf, orc[i].bp_offset));
+-
+-		printf(" type:%s signal:%d end:%d\n",
+-		       orc_type_name(orc[i].type), orc[i].signal, orc[i].end);
++		orc_print_dump(&dummy_elf, orc, i);
+ 	}
  
- 		nr_reloc = 0;
-@@ -946,6 +947,14 @@ static int read_relocs(struct elf *elf)
- 				return -1;
- 			}
- 
-+			if (next_reloc && reloc->offset == next_reloc->offset) {
-+				next_reloc->next = reloc;
-+				next_reloc = reloc;
-+				continue;
-+			}
-+
-+			next_reloc = reloc;
-+
- 			list_add_tail(&reloc->sym_reloc_entry, &sym->reloc_list);
- 			list_add_tail(&reloc->list, &sec->reloc_list);
- 			elf_hash_add(reloc, &reloc->hash, reloc_hash(reloc));
-diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index ad0024da262b..7877298fe401 100644
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -68,6 +68,7 @@ struct symbol {
- struct reloc {
- 	struct list_head list;
- 	struct hlist_node hash;
-+	struct reloc *next;
- 	union {
- 		GElf_Rela rela;
- 		GElf_Rel  rel;
+ 	elf_end(elf);
 -- 
 2.39.2
 
