@@ -2,57 +2,63 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1BAF738FEA
-	for <lists+live-patching@lfdr.de>; Wed, 21 Jun 2023 21:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76553739298
+	for <lists+live-patching@lfdr.de>; Thu, 22 Jun 2023 00:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbjFUTSQ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 21 Jun 2023 15:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
+        id S229505AbjFUWfK (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Wed, 21 Jun 2023 18:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbjFUTSM (ORCPT
+        with ESMTP id S229759AbjFUWfH (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 21 Jun 2023 15:18:12 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D11619A1
-        for <live-patching@vger.kernel.org>; Wed, 21 Jun 2023 12:18:07 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35LIjjdp006992
-        for <live-patching@vger.kernel.org>; Wed, 21 Jun 2023 12:18:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=s2048-2021-q4;
- bh=igg7x2bTPciQ/D5NE9czJjgq5urbtfam1RMDjiBiz/w=;
- b=P5kbVK/dzPZCyaRPPEnLzyBaAU6JP1/ecp6hhjZWufJOXCQwT7Aiia1dyWUwLLciu1QX
- EWtHBmdw7viDLzVWvHcVmtKBIUUIFBPUfHIBGJJZ67RDaNHRcZ+tuot7qZreT9yTz248
- Q+l+aaq5Dp6TOMCIG4IEBRD+6uQVRJ84Nju3wjXR417IdG1okk+KaU2tqdMWhNCgIulA
- 61PqXtbbQqRiFcXe7pb0ctaoX58E5rkgyJ7BbO8+LD0XRKuyUVKHgR6ex4/Sd+DG/ed/
- U2yTugybNLKXv3aPeVpmjk3wNnxRDVgl3UX6+qePQOSwXJBzpv9cXAToZNtbMFSKUXJc QA== 
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2173.outbound.protection.outlook.com [104.47.56.173])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3rc05hv2bj-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <live-patching@vger.kernel.org>; Wed, 21 Jun 2023 12:18:06 -0700
+        Wed, 21 Jun 2023 18:35:07 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247F61BC3
+        for <live-patching@vger.kernel.org>; Wed, 21 Jun 2023 15:34:55 -0700 (PDT)
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35LKFij4032465;
+        Wed, 21 Jun 2023 15:34:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=0qr6cg0boffKDUoEPJY4ZDxgXO58mFh8+3DvefFJMfE=;
+ b=k7EcqMm6sPAYHC9jTCTe7jFJqI54gO0wXrSTn/tgCvRrTpe2u+ny/lkCCpK3lZOw8Iu8
+ X6lbF2+Zr07Va0q4VSLcfvQD1qfvNBrV7UE/tRIonfQJ0EINjF7fS0BU9A4MGXCOwx97
+ wY420kNxQzfbPl6TqKgLr8ZUzvjQc3P6LyXk0eL5f0BvF/azE+0W03hjaT0EVKva3KQ8
+ 7AkfLjjb+5tYyD562Wkttam69dwOGZXBSlczwEharIPGtrU/3FXX1BbiPHJGzXzA8nsb
+ tkhLS1BWTAFEd8wHY/QQVKAMYJ6Okp2PuZ/SuiLc5/5GtVSPEAgYdq2OOcPFC2GC/Csn oQ== 
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2176.outbound.protection.outlook.com [104.47.56.176])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3rc832rx74-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 21 Jun 2023 15:34:33 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lIurnD8Lb5lvtDk7ih+FPyAk8el/zSuehawntMfhO1TWjQ+AZp4h8WvIK8qluJlElf2bK3ewsRWeOR3Rf7ugs4KXS1rzwcSTUwGaBq/INYRtG39SwOVweFFV/isy6Ef377+Lk9hE5Kovur7H2p83VHhDl6PLsBntS+HugHnwopqjtf8RDx+s8ja4mII+1E3Exc/fWIk59OTsd0yGSxemTvVcpbY6SCCaFUQ3/Z7+WflTnByraPuiX99x58Jgn6VZh3VYusl+MmCefID8L8j5xsOXujlGjGYL07LwAxdlWt1Z2fUDau1q9Q+weToZGUZepOS/2hHdhyiD90N1qphFPg==
+ b=kIfdzgdv//CCcYGskzSMFzR2HkDbbVmuJfLUrSZyyNKQLmOkL9avfRH3Lqt8eahnuvYbfiWi9pWQwpQlqup1cWRW1MCLLdebBGwUaWBIPchfLbKfxES1uA4rNNuUgdfSraiTE+0+ivjVn6FuQyl1CBUFAYGiuI7AXDsPyPPnAbwWLlHnl7hBQljkRR7xWmDWD6l9t1Er38oWI8nelLdYgi8XLpjwL/4+X87tbwT1lybXs+dSlpWCkwWzSGursx2SpGvGWX/JSrTxWkx1TmIevULPgnSjVdqjS/pGWGIiu+36ay1mO1qWuWjq1Kb328qrd4UrdBFGoPvL0c4pI7lAlw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=igg7x2bTPciQ/D5NE9czJjgq5urbtfam1RMDjiBiz/w=;
- b=NV5ajbAuG5arurjUb9e/MhcpJHeozfPFyyGXzI8nLy2wmYGTjzx3E+6v1D01E4OS28FTYX8wSO9MEbAsg+X/RzsHRw7uq1G/BWI8dW9llwC4G5dcD8w3ff/0ZQElzzXyMSkvXUltPHOs2H5frVrtvnh+ZRcMEUpbTyLpZS8qI0C4kDHQybCUDbvQPVvGrPmVjFQdSMaU4LMeh0LrZLnQJQeoqPEmkyjlOgY50koAY/7WVjc/WX3UfbMuIbCUEUEO/KFCCfzqubSVFEPs9kymYCd4nkHKJgHdNuFngx1VJAASNY+RCX7q+heWD+JfMB5B5sDpWORj7yjYc5wyisx/WA==
+ bh=0qr6cg0boffKDUoEPJY4ZDxgXO58mFh8+3DvefFJMfE=;
+ b=IcON7FfcJODzBwGWy2lBhpcuk1ZiiGTPFzUzwB0dxwQrnsfRif4MlXEY6uq9lozMo1exfPznFVJFaZxOFg3kcUuCscoNFVhLgloUmLoYCTnXpgiy6a3pcYLV9+Xu5Ob8D9apPhg9AyDgpRk3aFS4wM4Krmhsko0ksY7sWP1KqSWucTwqpE1XV6WpfQM0sses09xDdvh+OGSvcq6geHt+gt/8JPgS1KZ/W70NicVxWpmKiUbKg7oklUd2qLz8o3+hwMrqi3GiMrpufGVJNJn1GegJHl+azPO6D4YaJdhFmGUpFapUk60OUi7yKWL3hUfeFj4+zCZPMlJusXeTKq7nHA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
  dkim=pass header.d=meta.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by DM4PR15MB5961.namprd15.prod.outlook.com (2603:10b6:8:181::5) with
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by PH7PR15MB6131.namprd15.prod.outlook.com (2603:10b6:510:24a::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.21; Wed, 21 Jun
- 2023 19:18:03 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::a353:7e78:2a58:dac1]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::a353:7e78:2a58:dac1%7]) with mapi id 15.20.6500.040; Wed, 21 Jun 2023
- 19:18:03 +0000
-From:   Song Liu <songliubraving@meta.com>
-To:     Petr Mladek <pmladek@suse.com>
-CC:     Song Liu <songliubraving@meta.com>, Song Liu <song@kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.23; Wed, 21 Jun
+ 2023 22:34:31 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::428f:acec:2c1f:c812]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::428f:acec:2c1f:c812%7]) with mapi id 15.20.6521.023; Wed, 21 Jun 2023
+ 22:34:30 +0000
+Message-ID: <6df9b18c-d152-942a-b618-bb8417c7b8cd@meta.com>
+Date:   Wed, 21 Jun 2023 15:34:27 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.12.0
+Subject: Re: [PATCH] kallsyms: let kallsyms_on_each_match_symbol match symbols
+ exactly
+Content-Language: en-US
+To:     Song Liu <songliubraving@meta.com>, Petr Mladek <pmladek@suse.com>
+Cc:     Song Liu <song@kernel.org>,
         "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
         "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
         "jpoimboe@kernel.org" <jpoimboe@kernel.org>,
@@ -61,95 +67,86 @@ CC:     Song Liu <songliubraving@meta.com>, Song Liu <song@kernel.org>,
         "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
         Kernel Team <kernel-team@meta.com>,
         "mcgrof@kernel.org" <mcgrof@kernel.org>
-Subject: Re: [PATCH] kallsyms: let kallsyms_on_each_match_symbol match symbols
- exactly
-Thread-Topic: [PATCH] kallsyms: let kallsyms_on_each_match_symbol match
- symbols exactly
-Thread-Index: AQHZn6r1VuNYFv7wzUinZRrB36Nwc6+NK0aAgACH3YCAA8rIgIAAGgiAgABsKACAAkvAAIAArFmAgACumwA=
-Date:   Wed, 21 Jun 2023 19:18:03 +0000
-Message-ID: <E47B9D18-299C-4F95-B4F6-24DB6A54A79F@fb.com>
 References: <20230615170048.2382735-1-song@kernel.org>
  <3c0ea20b-fae7-af68-4c45-9539812ee198@huawei.com>
  <07E7B932-4FE1-4EEF-A7F7-ADA3EED5638F@fb.com>
  <b6af071b-ec26-850b-2652-b19b0b14bd4b@huawei.com>
  <CAPhsuW6nrQ-O3qL6TsR3rypEk03+X8z0-scGwO3Z5UAGz72Yzw@mail.gmail.com>
  <ZJA8yohmmf6fKsJQ@alley> <47E4EA81-717E-43A2-8D6D-E7E0F2569944@fb.com>
- <ZJK5tiO3wXHiBeBh@alley>
-In-Reply-To: <ZJK5tiO3wXHiBeBh@alley>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3731.600.7)
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SA1PR15MB5109:EE_|DM4PR15MB5961:EE_
-x-ms-office365-filtering-correlation-id: f581b263-9a52-4c10-ad09-08db728c3c0c
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gicFlmfI6mWCNf7LoUAz8adSXv07EQxb26TL5j8bLMIwdaDk6SGjhFOU/d/5YaD6Qltx0bZQMXCCrt2aJbPkBHWiY2PugzOGOuh2rR1+zqQjMd+vVsywHOAgxIVxaW1X5lMtDzrJjXMTic1F5Ndhz8Pw6sGwh7hH8TARV1AMUOD2+ssgbHbFiDHFYe3lmqBb9BvZ2qL/kl1aFMK7Vkrh1kPDfQlKHG+mAMmHchl0nZRD9/AZEls7Opb9Voaznwb6CuS5ak5NnwpRAgVWoMp53tCNbIvC+K876pDUE/lHKP7lHHAGw0wZ/iUv48CQLvuAQ5cLrM0tzVhrm7k0RtT0r4Hk0qCqKyKBS5o70fi57L8b9n0WRYaJ4qKPoHEmhPiTzPrNqe4nr+f0pENCIn4yJrR72K4MlBIPq3HINFKRHGSqXi0ua86YXK0g/XOInsQXFd5cW92sZakuy3D+xbftMzqcHZhNSuiuxNcKuNwqwL7cqA4UIt5qM7d08am+N4ir2As4Qv6aEIsJt4tD6XFIcAXKqUN6KMwkkCbzuH+bZjy1I4f8NaMtji8+KGV1FXuqu31sf8HJee3gmnCeGAt7yTkR/6FWHNnKe/RDVhshbxIJ8ODQoMozVQN1DXof9zEo
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(396003)(136003)(376002)(346002)(451199021)(66899021)(36756003)(33656002)(66476007)(5660300002)(86362001)(8936002)(6916009)(76116006)(8676002)(38070700005)(66446008)(41300700001)(66556008)(316002)(122000001)(38100700002)(91956017)(66946007)(4326008)(6486002)(2906002)(6512007)(9686003)(186003)(6506007)(53546011)(64756008)(71200400001)(54906003)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bDlQM0wrdGhXbkxudnE0YitXeCt5a1BybkN4WkhKenVKZWhkNDFreUl3ZWpW?=
- =?utf-8?B?a3lJQitadGxURFNTMVRWZXRXcU5ORDlMR1kwZytnWmNnMnU3WHR3S0lTQUZp?=
- =?utf-8?B?M29UeC9nV21PSWJ6VGJQVjdRaUF3c3pWV0pDTW5DanJaOHZrdDRHYjJaTDhB?=
- =?utf-8?B?QnprUVJIR0ZlWUs0SWxtTGlud0wrNWZuQWNoL2NySWlnZFZZUjQwYzFSRnZC?=
- =?utf-8?B?Q2lIbmk4c2cxcWcwc0hTeU1UZW84NisyWllQL0NQRVNMNmtoMmdBQ3lndVlD?=
- =?utf-8?B?UVBuSXU1TjZiRGtDNnN2UGpkSGhZa2wxRC9leUc0NDM2bnQxRTQvS0FIbzV0?=
- =?utf-8?B?Nm5IZ1Bub0pLdVJkUlZjMlBpQklpK253Zm1PamJqcjIxT0UxMDF3SUIrU1Jk?=
- =?utf-8?B?bjNLbTdUd1V2ZnBLNmJsZHEzZ3JqQURjMmUxUlNEcTVvNURHVm5OLzgyRmM0?=
- =?utf-8?B?M2VQN0JWdGRYOFhVSFlsMnJBa2JPYVhVeTFqRXAyd3NtMkg3c0NQQnRkZTJh?=
- =?utf-8?B?K200YlpKalpqNkdQTHQzYmdpd2JyNWZHSjhHeUFRbXdGRkhwUVRQODk0dncz?=
- =?utf-8?B?NjNzaU16Wk1QQUVpZnN4TkhJbjAwNDRQTzFTTXdJWEt3NzBBZEJpOVpQK2FN?=
- =?utf-8?B?WTZ0cDFDZGFXQ2hpZWlRcnh1bnp3U08velBRRVN6WkVZOThsZm9JUG1waDZR?=
- =?utf-8?B?YjIzU2NSTjNOZkV0cFZ5RGluM0ZxNW5FOU9kMS8zeE1NR0swdWhRcVJwaStq?=
- =?utf-8?B?ZWJQNExrNHZBWVJsMEtVdEthVVdDdmQ3VFhZdCsyQys0THJjWlBndjE2cDVh?=
- =?utf-8?B?bFBrd2szc3JmbnRjWXlvc3RKTmpTendhbGM5c1VxWGZDWXpkdU5EeWNBT1ly?=
- =?utf-8?B?Z3ZDZGpDV1JyNDVMaStneGR6N21kL0J0dkxMWWczcHNYMzJIcGQrcExQam1S?=
- =?utf-8?B?ellLSGpwSVhXNzI0bEtZZ2VpemNlNUk4NUJ0eWR0eWUrek00YUlKN0VZWmlC?=
- =?utf-8?B?cW94UFk3KzBhYWhTRFdScG1oazhPQklQdjlOQnJYU1BwZ3M4S2hEWHFKWFN2?=
- =?utf-8?B?QldKSU9aZ1BDMmpTbVZYNXM1K0NTSnhmdEt3ak8xbVVkakQzelAzTmJnQTM4?=
- =?utf-8?B?RHVEZGx1TWhmZjUvaFJ6RlJPa1FaeDFXeGgvMzZlZ0xQQThEU2NrK1FzbFAv?=
- =?utf-8?B?TjY2eFV4c0kwWG9Dek5Ld0ZSYTM5M2xHdy9WN3NEeFBva3RKYm1hbHBBQ3Ja?=
- =?utf-8?B?WWQzTGRLUUJDcThGbUltVk1lNk1lTHpWS2xmRDlGNHYyd2xVUG1rVEsvdlVk?=
- =?utf-8?B?ODMwYm5WeldxNDdTTHlnZHUvclRQSXdkblNQb0lVMUkxckdZUWNTUFZyZnJC?=
- =?utf-8?B?enNDMjIzWk0xT0l1QmEyNStqcjNwNXNxUk0vcVhsQWVmOEFNWDBmcE4xdFMy?=
- =?utf-8?B?RU0ra1R5QVlINFMyMzVZOGQxSXVvY3BNUElkOXNSTk9Dd0VBNzBkbzd3QzY1?=
- =?utf-8?B?dzJoeVlmTUJkTGZkbHhtVEFlRy9saXZ3bXRXV09BaUJ2WU9GRmhqK1d6Z1Fp?=
- =?utf-8?B?cU1PNmhpWmtvY25vUVR0ViszelRZcDdPQnpYU1daa1MyV1JmZGNDZ3BxdEgz?=
- =?utf-8?B?Uk5HMnVlcGN2dFliUjJxYkc3SXdKUGd1SWcrZ2FRYUtiVFFQR2Z3aDlycUJw?=
- =?utf-8?B?R3VKYVJITi85L0dCQ2VSeE16Q0RUTSs1dDBGZGlFWHZEOW9EYzlQazM4REZH?=
- =?utf-8?B?dTd0eFhwMWNVWjg3aVdBeXJ1UzNlbE5QaC96czlMNFU1SXBFKzF4QlZkcHFT?=
- =?utf-8?B?YWpMc1p0NDFGeEt5bTFPRzNzaUphby9KVmdwSStHUXc1elFwb1ZvK0ZnQ25Q?=
- =?utf-8?B?NTBKWjBidmpEOEVxeXBRc25KaUJSWHNhbGJmejdIVEF5UmR0aEFFK3JQOG5t?=
- =?utf-8?B?SitLQnJBcXhTODQ1Wk5iQU9pRHcwSmVVNGx5SGkyY1Y2b0xjWVpEUzZKRitx?=
- =?utf-8?B?MkJsN2Z5NEpMK3lyZndnamNsTXgwdzU2amhlYjYwVk9GdG1vbWJMeEFtOUc4?=
- =?utf-8?B?WVhOc0VNdStPcCtQd3JiRHJyd2RTYUlwc0d4UW9CbTRRRnZpZVBpeXJVdFkz?=
- =?utf-8?B?L1VjLy92OFZpc2VtOTZNSWY2QTMyWVFtMHFybGMwZDlvRGtOZnluVm95OUJl?=
- =?utf-8?Q?gjQl1tR1q1De0dOCYt301E4=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <58906C1A6C46574398729FB8A4939482@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ <ZJK5tiO3wXHiBeBh@alley> <E47B9D18-299C-4F95-B4F6-24DB6A54A79F@fb.com>
+From:   Yonghong Song <yhs@meta.com>
+In-Reply-To: <E47B9D18-299C-4F95-B4F6-24DB6A54A79F@fb.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BYAPR04CA0034.namprd04.prod.outlook.com
+ (2603:10b6:a03:40::47) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|PH7PR15MB6131:EE_
+X-MS-Office365-Filtering-Correlation-Id: 73f9141a-cf00-4366-4258-08db72a7adfe
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CtE4QSoowvlpPJHsAlHTbQFs/wGVsTdSnGnhbJh3xpA40ubou6OkZP4XTIYYqLEwP3Vn7zF73kqxfbzEtKsTdjxfAirJzfo9Dkn1g1RmsiJisKKtpNhsGiordfUQyN9JaoZEGJOqn9qEtllhB4hbU+jaUnvAucnUEo2dbcP6kAfNBH4iouJulvGWHwo5phCM8oE0KG0i3yiK83RBVr9Vym82ci4dDSMPp1HIuPGsTkPx8D0IIoJTInH7+ji4+y6URb/uTIl7+rBxGD2y4oXsZVqIomwto0a+Onj/SQ1m0eRtsVZoNOMZTLKCyCY6Os7vhGcwT7vBKC7OkHMqkgbzEP4g7bTUKeJvswJy5ZbpPHsv52DZXdIWF91N80zn/ipEqq54rvwRKbzUO9/BurI06R3YhsCp+42geWjTe0viA6jQoqCy8pJQU9aSIU2Zfx7vxhVaD6bSNL+1wyh0Q2hUz3ekDBqfZqUL+iB4ItBrzVW+4tyEzHVDL7RQqGFksb9XwENG7IJyfIPvhPaPFHKR+4W3MNSuqvJBWWe67fWhwpmJJkBvfXC7jmbdYha8mmKa5hlVkKP9kdqVJY5j1PzEJmfy4YR7BMBm7mPgf+uR449qMkb4aniH9Q8LRU5X2Xg4KfkeJFDvEXHvoFWvonFfdg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(366004)(136003)(346002)(376002)(451199021)(110136005)(54906003)(6666004)(6486002)(66946007)(66556008)(66476007)(478600001)(186003)(6512007)(2616005)(6506007)(53546011)(4326008)(66899021)(316002)(41300700001)(8676002)(5660300002)(8936002)(2906002)(38100700002)(36756003)(31696002)(31686004)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cXJWL2E1YXgrY0kxRlJhelVqMUplWEdNLzJEM1ZPQjNFbkpCbjdvNDRZVlpQ?=
+ =?utf-8?B?MHdLNlU1UGp1NGFodjAyNHVQVWo0SVVXS0U4S204aTVCdG5FNks1bFhjSDBn?=
+ =?utf-8?B?VHdXazd3SWRqbHFzSTNCVVllNWNsS3N4ZzdleXFia1NndllKWmEwdzJPN3k5?=
+ =?utf-8?B?TmxENS92anQwdy9ocnM2Y29yNFZLQkFhQmZhRUhFMXJBMEt5ajYwdkNWZFB2?=
+ =?utf-8?B?SU1tNUpRUVZ2ckJMU2JpUTBUN1pmVHRybjUwSlliT0VhekFvSi8rb1AyeENq?=
+ =?utf-8?B?U29hRFZlZnB4T25rQldSUm9aS01JZ3N5bEtRUUdWUFpQV1Jlb3pOYk5qR0Rz?=
+ =?utf-8?B?UjVzeWRvQ0Q4dmtjUzRodnZwUlV6MkVHOW94bHpJQjlqZVpxdkZTU1A4WXlR?=
+ =?utf-8?B?MW1FR2pKK3YyNGxTVVJkOGtnUHVPYzRQejZ0UVFDM2wrSUtCY05rOCtCbW01?=
+ =?utf-8?B?Rk1udkFCVGFLNU9TZ2tqK2wzRlVUeHRCYWhKRm5IVlBmU0lOa2g2VDBHQ3E1?=
+ =?utf-8?B?dS9OTGZiQ1NHdE1HKzUreU1FMysxWFRPNTN1YVhmaUJYTDhDa2FZL2FKVElI?=
+ =?utf-8?B?TDd4K0J5M2tGR2xoMlh4cjhyc3FIRU9KalY4R3E0YXlTWkljcndMR1NyWmFx?=
+ =?utf-8?B?czMzZENtSnRiKysxMG5EZHlqYzZ5Vll0ZWdKYVBGQkU4ZzhKYnliRE5kbzFG?=
+ =?utf-8?B?R2JMQlA4U2ZGSzFPUDVkT1FwZlc4VDkrY002OFN6VG40dmZFRU1RamgrMlUr?=
+ =?utf-8?B?SmZhWVFWYTZHV2gvSG5uNFUzaVZWOG9VY1l6aWhBK2NIbWZYZzUyMlRLZHd0?=
+ =?utf-8?B?VFUzQjdxZ2dNMDV4U2JsY3dPaEk0cVdLdGRRbG45QTNEU2gwSCtCanJpeCtu?=
+ =?utf-8?B?YXlTeEs0RkZrUUljM0NFUjNtdG1EcWxLUHU4YnNJa2ZqM3o4ZThNWkZ2RFVk?=
+ =?utf-8?B?eEUxQ1BwQ2x5c3AwSmFVOEp0ay9wSHlaYUpKaUZVaTF6QWxMZStKd0NIMnZw?=
+ =?utf-8?B?Zk5RZzVpbVNEOHhQSnVWa1hpd1lGZFI0TE5MNWNrenIrZEJCQ3BrazYxdlc2?=
+ =?utf-8?B?WUJpeGRjWGpjbjVMS2lINll2VHB2bTNxSk5ic012dTdiSy9rVVlFZGdZdkd4?=
+ =?utf-8?B?ZTFuZkJubnF6elFqTjNXTm9TcDBpaVk5Uy9HRnFLQTFtNDFWL1hKMnB0bkM5?=
+ =?utf-8?B?ZFdVWm45dzBoZThSaHk0RlQvT2dDbW5yUUJYT2J3ZGpmQVNVMmJvQkRRN2I0?=
+ =?utf-8?B?TE8xVHhSWG9nNW9LcWpxSVZudDRqaHdWZjkrY3gweXVSaWlxdjQ4cTkydU0v?=
+ =?utf-8?B?NXc4N1c4dmdpSnJ4aGtGVmZ3ZG5VcS9qNGJTRnQwSkJEbU94UityWE12dkpZ?=
+ =?utf-8?B?TDJnRWYyMGhiY1R2ZW5MZ3o2aDVoMER5TStQaEFML1pGQml4MWZPSFl6a29s?=
+ =?utf-8?B?emRRenNFRWRhMUNSdURJZGJOSEY5dExra1Y1ekpCK0xxTTFOa010bE5UN1pK?=
+ =?utf-8?B?T2JhSnY3Qlhna0RUT3V6cXc4YlNRaGp5a0RNTExmVDluQkQ3M0hSblJkUFVR?=
+ =?utf-8?B?eW5HNXVVVGtucE5MeVdxdDEycm9WMlpNcWdzSkkwQkpIYzFLclFnYTlNMGJT?=
+ =?utf-8?B?dVdqaXVTZWZyd0QrYXFCalB5b1Z4UXVIS21mU1VZZzRqajVGY2hNWGFid3k3?=
+ =?utf-8?B?QStFb2RkaGdtaDFQdkUyOXo3eDE2cFhOUWpBczhTVTBPVHgwZ2tvbmxlZmJh?=
+ =?utf-8?B?ODF0cUZqMmlLN2JMaVdYUnhHWGtaV0d0bHZiQUdMYmtlU2JmL1I5dnNBQVQ0?=
+ =?utf-8?B?L3pxKzg5Rm45MDVMZ3o1dTNlSjcydlNyWDF5NHpnU05Bay9BT3VTRnFPNGVM?=
+ =?utf-8?B?L253dHgybGkzNG00VHczWDN2anYzRnRZZkdWc0duS1crOEZTTkdJS1lCMDFn?=
+ =?utf-8?B?NVRFbHZmRU1mK2tBekFNelBjclFlTUFtbUVxS0FqOS9KZzcwMDdmMlk3WTdM?=
+ =?utf-8?B?cUFtdlFuV05jNWtCczFvTFovelRML1Y1b0gyaEJ5RC92RHhWNVRqY3J3alBJ?=
+ =?utf-8?B?WU5PdTExRkFUNVBIWm5aeE1vZnUxdzRETGJaRFViWmwxRnVuZGplWUQzY1Bx?=
+ =?utf-8?B?ZklScTZ0aFg2VHExdTdQK25XVDJPYTkvbGhLaWN5SWIvdERpWGozWjdFYjl5?=
+ =?utf-8?B?dkE9PQ==?=
 X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73f9141a-cf00-4366-4258-08db72a7adfe
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f581b263-9a52-4c10-ad09-08db728c3c0c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2023 19:18:03.0992
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jun 2023 22:34:30.8788
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sSyP4rzB3j78spCHb6e9/D9gwip2vEB3gK8PLoy8k43mzE6drBMnX24HH73bpQwPUv9s8KRz3B/ve1iCUqyK9Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR15MB5961
-X-Proofpoint-GUID: WdiLYsp5WPRokIP71Ev3T7o-HShXtmWA
-X-Proofpoint-ORIG-GUID: WdiLYsp5WPRokIP71Ev3T7o-HShXtmWA
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0qUj31Cm++U5AQGDhaV7dXwLOG9ldkrsJmm2dis3qB7tyHwL5NuS5M0GL0hlsKma
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR15MB6131
+X-Proofpoint-ORIG-GUID: 72T_ADiOzNoBn3MEgP5wUJUIazVQiVK6
+X-Proofpoint-GUID: 72T_ADiOzNoBn3MEgP5wUJUIazVQiVK6
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-06-21_11,2023-06-16_01,2023-05-22_02
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+ definitions=2023-06-21_12,2023-06-16_01,2023-05-22_02
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
@@ -159,69 +156,243 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-DQoNCj4gT24gSnVuIDIxLCAyMDIzLCBhdCAxOjUyIEFNLCBQZXRyIE1sYWRlayA8cG1sYWRla0Bz
-dXNlLmNvbT4gd3JvdGU6DQo+IA0KPiBPbiBUdWUgMjAyMy0wNi0yMCAyMjozNjoxNCwgU29uZyBM
-aXUgd3JvdGU6DQo+Pj4gT24gSnVuIDE5LCAyMDIzLCBhdCA0OjMyIEFNLCBQZXRyIE1sYWRlayA8
-cG1sYWRla0BzdXNlLmNvbT4gd3JvdGU6DQo+Pj4gDQo+Pj4gT24gU3VuIDIwMjMtMDYtMTggMjI6
-MDU6MTksIFNvbmcgTGl1IHdyb3RlOg0KPj4+PiBPbiBTdW4sIEp1biAxOCwgMjAyMyBhdCA4OjMy
-4oCvUE0gTGVpemhlbiAoVGh1bmRlclRvd24pDQo+Pj4+IDx0aHVuZGVyLmxlaXpoZW5AaHVhd2Vp
-LmNvbT4gd3JvdGU6DQo+PiANCj4+IFsuLi5dDQoNClsuLi5dDQoNCj4+IA0KPj4gSSBhbSBub3Qg
-cXVpdGUgZm9sbG93aW5nIHRoZSBkaXJlY3Rpb24gaGVyZS4gRG8gd2UgbmVlZCBtb3JlIA0KPj4g
-d29yayBmb3IgdGhpcyBwYXRjaD8NCj4gDQo+IEdvb2QgcXVlc3Rpb24uIEkgcHJpbWFyeSB0cmll
-ZCB0byBhZGQgbW9yZSBkZXRhaWxzIHNvIHRoYXQNCj4gd2UgYmV0dGVyIHVuZGVyc3RhbmQgdGhl
-IHByb2JsZW0uDQo+IA0KPiBIb25lc3RseSwgSSBkbyBub3Qga25vdyB0aGUgYW5zd2VyLiBJIGFt
-IG5laXRoZXIgZmFtaWxpYXIgd2l0aA0KPiBrcGF0Y2ggbm9yIHdpdGggY2xhbmcuIExldCBtZSB0
-aGluayBsb3VkbHkuDQo+IA0KPiBrcGF0Y2ggcHJvZHVjZSBsaXZlcGF0Y2hlcyBieSBjb21wYXJp
-bmcgYmluYXJpZXMgb2YgdGhlIG9yaWdpbmFsDQo+IGFuZCBmaXhlZCBrZXJuZWwuIEl0IGFkZHMg
-YSBzeW1ib2wgaW50byB0aGUgbGl2ZXBhdGNoIHdoZW4NCj4gdGhlIHNhbWUgc3ltYm9sIGhhcyBk
-aWZmZXJlbnQgY29kZSBpbiB0aGUgdHdvIGJpbmFyaWVzLg0KPiANCj4gU28gb25lIGltcG9ydGFu
-dCBxdWVzdGlvbiBpcyBob3cgY2xhbmcgZ2VuZXJhdGVzIHRoZSBzdWZmaXguDQo+IElzIHRoZSBz
-dWZmaXggdGhlIHNhbWUgaW4gZXZlcnkgYnVpbGQ/IElzIGl0IHRoZSBzYW1lIGV2ZW4NCj4gYWZ0
-ZXIgdGhlIGZ1bmN0aW9uIGdldHMgbW9kaWZpZWQgYnkgYSBmaXg/DQo+IA0KPiBJZiB0aGUgc3Vm
-Zml4IGlzIGFsd2F5cyB0aGUgc2FtZSB0aGVuIHRoZW4gdGhlIGZ1bGwgc3ltYm9sIG5hbWUNCj4g
-d291bGQgYmUgYmV0dGVyIGZvciBrcGF0Y2guIGtwYXRjaCB3b3VsZCBnZXQgaXQgZm9yIGZyZWUu
-DQo+IEFuZCBrcGF0Y2ggd291bGQgbm90IGxvbmdlciBuZWVkIHRvIHVzZSAib2xkX3N5bXBvcyIu
-DQoNClRoaXMgaXMgcHJldHR5IGNvbXBsaWNhdGVkLiANCg0KMS4gY2xhbmcgd2l0aCBMVE8gZG9l
-cyBub3QgdXNlIHRoZSBzdWZmaXggdG8gZWxpbWluYXRlZCBkdXBsaWNhdGVkDQprYWxsc3ltcywg
-c28gb2xkX3N5bXBvcyBpcyBzdGlsbCBuZWVkZWQuIEhlcmUgaXMgYW4gZXhhbXBsZToNCg0KIyBn
-cmVwIGluaXRfb25jZSAvcHJvYy9rYWxsc3ltcw0KZmZmZmZmZmY4MTIwYmE4MCB0IGluaXRfb25j
-ZS5sbHZtLjE0MTcyOTEwMjk2NjM2NjUwNTY2DQpmZmZmZmZmZjgxMjBiYTkwIHQgaW5vZGVfaW5p
-dF9vbmNlDQpmZmZmZmZmZjgxM2VhNWQwIHQgYnBmX3VzZXJfcm5kX2luaXRfb25jZQ0KZmZmZmZm
-ZmY4MTNmZDViMCB0IGluaXRfb25jZS5sbHZtLjE3OTEyNDk0MTU4Nzc4MzAzNzgyDQpmZmZmZmZm
-ZjgxM2ZmYmYwIHQgaW5pdF9vbmNlDQpmZmZmZmZmZjgxM2ZmYzYwIHQgaW5pdF9vbmNlDQpmZmZm
-ZmZmZjgxM2ZmYzcwIHQgaW5pdF9vbmNlDQpmZmZmZmZmZjgxM2ZmY2QwIHQgaW5pdF9vbmNlDQpm
-ZmZmZmZmZjgxM2ZmY2UwIHQgaW5pdF9vbmNlDQoNClRoZXJlIGFyZSB0d28gImluaXRfb25jZSIg
-d2l0aCBzdWZmaXgsIGJ1dCB0aGVyZSBhcmUgYWxzbyBvbmVzIA0Kd2l0aG91dCB0aGVtLiANCg0K
-Mi4ga3BhdGNoLWJ1aWxkIGRvZXMgIkJ1aWxkaW5nIG9yaWdpbmFsIHNvdXJjZSIsICJCdWlsZGlu
-ZyBwYXRjaGVkIA0Kc291cmNlIiwgYW5kIHRoZW4gZG8gYmluYXJ5IGRpZmYgb2YgdGhlIHR3by4g
-RnJvbSBvdXIgZXhwZXJpbWVudHMsIA0KdGhlIHN1ZmZpeCBkb2Vzbid0IGNoYW5nZSBiZXR3ZWVu
-IHRoZSB0d28gYnVpbGRzLiBIb3dldmVyLCB3ZSBuZWVkDQp0byBtYXRjaCB0aGUgYnVpbGQgZW52
-aXJvbm1lbnQgKHBhdGggb2Yga2VybmVsIHNvdXJjZSwgZXRjLikgdG8gDQptYWtlIHN1cmUgc3Vm
-Zml4IGZyb20ga3BhdGNoIG1hdGNoZXMgdGhlIGtlcm5lbC4gDQoNCjMuIFRoZSBnb2FsIG9mIHRo
-aXMgcGF0Y2ggaXMgTk9UIHRvIHJlc29sdmUgZGlmZmVyZW50IHN1ZmZpeCBieSANCmxsdm0gKC5s
-bHZtLlswLTldKykuIEluc3RlYWQsIHdlIGFyZSB0cnlpbmcgZml4IGlzc3VlcyBsaWtlOg0KDQoj
-ICBncmVwIGJwZl92ZXJpZmllcl92bG9nIC9wcm9jL2thbGxzeW1zDQpmZmZmZmZmZjgxNTQ5ZjYw
-IHQgYnBmX3ZlcmlmaWVyX3Zsb2cNCmZmZmZmZmZmODI2OGI0MzAgZCBicGZfdmVyaWZpZXJfdmxv
-Zy5fZW50cnkNCmZmZmZmZmZmODI4MmE5NTggZCBicGZfdmVyaWZpZXJfdmxvZy5fZW50cnlfcHRy
-DQpmZmZmZmZmZjgyZTEyYTFmIGQgYnBmX3ZlcmlmaWVyX3Zsb2cuX19hbHJlYWR5X2RvbmUNCg0K
-V2l0aCBleGlzdGluZyBjb2RlLCBjb21wYXJlX3N5bWJvbF9uYW1lKCkgd2lsbCBtYXRjaCANCmJw
-Zl92ZXJpZmllcl92bG9nIHRvIGFsbCB0aGVzZSB3aXRoIENPTkZJR19MVE9fQ0xBTkcuDQoNCldl
-IGNhbiBwcm9iYWJseSB0ZWFjaCBjb21wYXJlX3N5bWJvbF9uYW1lKCkgdG8gbm90IHRvIG1hdGNo
-DQp0aGVzZSBzdWZmaXgsIGFzIFpoZW4gc3VnZ2VzdGVkLiANCg0KSWYgdGhpcyBpcyBub3QgaWRl
-YWwsIEkgYW0gb3BlbiB0byBzdWdnZXN0aW9ucyB0aGF0IGNhbiBzb2x2ZQ0KdGhlIHByb2JsZW0u
-IA0KDQo+IEJ1dCBpZiB0aGUgc3VmZml4IGlzIGRpZmZlcmVudCB0aGVuIGtwYXRjaCBoYXMgYSBw
-cm9ibGVtLg0KPiBrcGF0Y2ggd291bGQgbmVlZCB0byBtYXRjaCBzeW1ib2xzIHdpdGggZGlmZmVy
-ZW50IHN1ZmZpeGVzLg0KPiBJdCB3b3VsZCBiZSBlYXN5IGZvciBzeW1ib2xzIHdoaWNoIGFyZSB1
-bmlxdWUgYWZ0ZXIgcmVtb3ZpbmcNCj4gdGhlIHN1ZmZpeC4gQnV0IGl0IHdvdWxkIGJlIHRyaWNr
-eSBmb3IgY29tcGFyaW5nIHN5bWJvbHMNCj4gd2hpY2ggZG8gbm90IGhhdmUgYW4gdW5pcXVlIG5h
-bWUuIGtwYXRjaCB3b3VsZCBuZWVkIHRvIGZpbmQNCj4gd2hpY2ggc3VmZml4IGluIHRoZSBvcmln
-aW5hbCBiaW5hcnkgbWF0Y2hlcyBhbiBvdGhlciBzdWZmaXgNCj4gaW4gdGhlIGZpeGVkIGJpbmFy
-eS4gSW4gdGhpcyBjYXNlLCBpdCBtaWdodCBiZSBlYXNpZXINCj4gdG8gdXNlIHRoZSBzdHJpcHBl
-ZCBzeW1ib2wgbmFtZXMuDQo+IA0KPiBBbmQgdGhlIHN1ZmZpeCBtaWdodCBiZSBwcm9ibGVtYXRp
-YyBhbHNvIGZvciBzb3VyY2UgYmFzZWQNCj4gbGl2ZXBhdGNoZXMuIFRoZXkgZGVmaW5lIHN0cnVj
-dCBrbHBfZnVuYyBpbiBzb3VyY2VzIHNvDQo+IHRoZXkgd291bGQgbmVlZCB0byBoYXJkY29kZSB0
-aGUgc3VmZml4IHRoZXJlLiBJdCBtaWdodA0KPiBiZSBlYXN5IHRvIGtlZXAgdXNpbmcgdGhlIHN0
-cmlwcGVkIG5hbWUgYW5kICJvbGRfc3ltcG9zIi4NCj4gDQo+IEkgZXhwZWN0IHRoYXQgdGhpcyBw
-YXRjaCBhY3R1YWxseSBicmVha3MgdGhlIGxpdmVwYXRjaA0KPiBzZWxmdGVzdHMgd2hlbiB0aGUg
-a2VybmVsIGlzIGNvbXBpbGVkIHdpdGggY2xhbmcgTFRPLg0KDQpOb3QgcmVhbGx5LiBUaGlzIHBh
-dGNoIHBhc3NlcyBsaXZlcGF0Y2ggc2VsZnRlc3RzLiANCg0KVGhhbmtzLA0KU29uZw0KDQo=
+
+
+On 6/21/23 12:18 PM, Song Liu wrote:
+> 
+> 
+>> On Jun 21, 2023, at 1:52 AM, Petr Mladek <pmladek@suse.com> wrote:
+>>
+>> On Tue 2023-06-20 22:36:14, Song Liu wrote:
+>>>> On Jun 19, 2023, at 4:32 AM, Petr Mladek <pmladek@suse.com> wrote:
+>>>>
+>>>> On Sun 2023-06-18 22:05:19, Song Liu wrote:
+>>>>> On Sun, Jun 18, 2023 at 8:32 PM Leizhen (ThunderTown)
+>>>>> <thunder.leizhen@huawei.com> wrote:
+>>>
+>>> [...]
+> 
+> [...]
+> 
+>>>
+>>> I am not quite following the direction here. Do we need more
+>>> work for this patch?
+>>
+>> Good question. I primary tried to add more details so that
+>> we better understand the problem.
+>>
+>> Honestly, I do not know the answer. I am neither familiar with
+>> kpatch nor with clang. Let me think loudly.
+>>
+>> kpatch produce livepatches by comparing binaries of the original
+>> and fixed kernel. It adds a symbol into the livepatch when
+>> the same symbol has different code in the two binaries.
+>>
+>> So one important question is how clang generates the suffix.
+>> Is the suffix the same in every build? Is it the same even
+>> after the function gets modified by a fix?
+>>
+>> If the suffix is always the same then then the full symbol name
+>> would be better for kpatch. kpatch would get it for free.
+>> And kpatch would not longer need to use "old_sympos".
+> 
+> This is pretty complicated.
+> 
+> 1. clang with LTO does not use the suffix to eliminated duplicated
+> kallsyms, so old_sympos is still needed. Here is an example:
+> 
+> # grep init_once /proc/kallsyms
+> ffffffff8120ba80 t init_once.llvm.14172910296636650566
+> ffffffff8120ba90 t inode_init_once
+> ffffffff813ea5d0 t bpf_user_rnd_init_once
+> ffffffff813fd5b0 t init_once.llvm.17912494158778303782
+> ffffffff813ffbf0 t init_once
+> ffffffff813ffc60 t init_once
+> ffffffff813ffc70 t init_once
+> ffffffff813ffcd0 t init_once
+> ffffffff813ffce0 t init_once
+> 
+> There are two "init_once" with suffix, but there are also ones
+> without them.
+
+This is correct. At LTO mode, when a static function/variable
+is promoted to the global. The '.llvm.<hash>' is added to the
+static function/variable name to form a global function name.
+The '<hash>' here is computed based on IR of the compiled file
+before LTO. So if one file is not modified, then <hash>
+won't change after additional code change in other files.
+
+> 
+> 2. kpatch-build does "Building original source", "Building patched
+> source", and then do binary diff of the two. From our experiments,
+> the suffix doesn't change between the two builds. However, we need
+> to match the build environment (path of kernel source, etc.) to
+> make sure suffix from kpatch matches the kernel.
+
+The goal here is to generate the same IR (hence <hash>) if
+file content is not changed. This way, <hash> value will
+change only for those changed files.
+
+> 
+> 3. The goal of this patch is NOT to resolve different suffix by
+> llvm (.llvm.[0-9]+). Instead, we are trying fix issues like:
+> 
+> #  grep bpf_verifier_vlog /proc/kallsyms
+> ffffffff81549f60 t bpf_verifier_vlog
+> ffffffff8268b430 d bpf_verifier_vlog._entry
+> ffffffff8282a958 d bpf_verifier_vlog._entry_ptr
+> ffffffff82e12a1f d bpf_verifier_vlog.__already_done
+
+Note that these symbols also exist non-LTO mode.
+
+For example, with my particular config, I have
+
+
+$ grep bpf_verifier_vlog System.map
+ffffffff812f9370 T bpf_verifier_vlog
+ffffffff82afa440 d bpf_verifier_vlog._entry
+ffffffff83404218 d bpf_verifier_vlog._entry_ptr
+$ grep bpf_output System.map
+ffffffff81359c70 t perf_event_bpf_output
+ffffffff821eeba0 t bpf_output
+ffffffff82eec720 d bpf_output._entry
+ffffffff83412c50 d bpf_output._entry_ptr
+ffffffff84b0f334 d bpf_output.__already_done
+
+bpf_output() is defined in net/core/lwt_bpf.c.
+
+The original function:
+
+static int bpf_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+         struct dst_entry *dst = skb_dst(skb);
+         struct bpf_lwt *bpf;
+         int ret;
+
+         bpf = bpf_lwt_lwtunnel(dst->lwtstate);
+         if (bpf->out.prog) {
+                 ret = run_lwt_bpf(skb, &bpf->out, dst, NO_REDIRECT);
+                 if (ret < 0)
+                         return ret;
+         }
+
+         if (unlikely(!dst->lwtstate->orig_output)) {
+                 pr_warn_once("orig_output not set on dst for prog %s\n",
+                              bpf->out.name);
+                 kfree_skb(skb);
+                 return -EINVAL;
+         }
+
+         return dst->lwtstate->orig_output(net, sk, skb);
+}
+
+
+The function after preprocess:
+
+static int bpf_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+  struct dst_entry *dst = skb_dst(skb);
+  struct bpf_lwt *bpf;
+  int ret;
+
+  bpf = bpf_lwt_lwtunnel(dst->lwtstate);
+  if (bpf->out.prog) {
+   ret = run_lwt_bpf(skb, &bpf->out, dst, false);
+   if (ret < 0)
+    return ret;
+  }
+
+  if (__builtin_expect(!!(!dst->lwtstate->orig_output), 0)) {
+   ({ bool __ret_do_once = !!(true); if (({ static bool 
+__attribute__((__section__(".data.once"))) __already_done; bool 
+__ret_cond = !!(__ret_do_once); bool __ret_once = false; if 
+(__builtin_expect(!!(__ret_cond && !__already_done), 0)) { 
+__already_done = true; __ret_once = true; } 
+__builtin_expect(!!(__ret_once), 0); })) ({ do { if 
+(__builtin_constant_p("\001" "4" "orig_output not set on dst for prog 
+%s\n") && __builtin_constant_p(((void *)0))) { static const struct 
+pi_entry _entry __attribute__((__used__)) = { .fmt = 
+__builtin_constant_p("\001" "4" "orig_output not set on dst for prog 
+%s\n") ? ("\001" "4" "orig_output not set on dst for prog %s\n") : 
+((void *)0), .func = __func__, .file = "net/core/lwt_bpf.c", .line = 
+154, .level = __builtin_constant_p(((void *)0)) ? (((void *)0)) : ((void 
+*)0), .subsys_fmt_prefix = ((void *)0), }; static const struct pi_entry 
+*_entry_ptr __attribute__((__used__)) 
+__attribute__((__section__(".printk_index"))) = &_entry; } } while (0); 
+_printk("\001" "4" "orig_output not set on dst for prog %s\n", 
+bpf->out.name); }); __builtin_expect(!!(__ret_do_once), 0); });
+
+   kfree_skb(skb);
+   return -22;
+  }
+
+  return dst->lwtstate->orig_output(net, sk, skb);
+}
+
+In the above particular case, pr_warn_once() introduced
+three static variables inside the funciton '__already_done',
+'_entry' and '_entry_ptr'. To differentiate from
+other potential static variables inside other functions,
+these static variables are renamed to
+<func_name>.<static_variable_name> in the above.
+
+> 
+> With existing code, compare_symbol_name() will match
+> bpf_verifier_vlog to all these with CONFIG_LTO_CLANG.
+> 
+> We can probably teach compare_symbol_name() to not to match
+> these suffix, as Zhen suggested.
+
+This might not be a scalable solution unless there is a
+way to capture usage of static variable inside the function
+with some tools and feed them into an auto generated table
+to be used by live patching.
+
+Current comment in cleanup_symbol_name():
+
+===
+         /*
+          * LLVM appends various suffixes for local functions and 
+variables that
+          * must be promoted to global scope as part of LTO.  This can break
+          * hooking of static functions with kprobes. '.' is not a valid
+          * character in an identifier in C. Suffixes observed:
+          * - foo.llvm.[0-9a-f]+
+          * - foo.[0-9a-f]+
+          */
+===
+
+Based on my earlier study from llvm15 and llvm17, I only
+observed 'foo.llvm.[0-9a-f]+'. Maybe earlier version of llvm
+lto generates 'foo.[0-9a-f]+' format.
+
+Note that CONFIG_CLANG_VERSION should be in the .config file
+if the kernel is built with clang, which could be used
+to further differentiate suffix format if necessary.
+
+> 
+> If this is not ideal, I am open to suggestions that can solve
+> the problem.
+> 
+>> But if the suffix is different then kpatch has a problem.
+>> kpatch would need to match symbols with different suffixes.
+>> It would be easy for symbols which are unique after removing
+>> the suffix. But it would be tricky for comparing symbols
+>> which do not have an unique name. kpatch would need to find
+>> which suffix in the original binary matches an other suffix
+>> in the fixed binary. In this case, it might be easier
+>> to use the stripped symbol names.
+>>
+>> And the suffix might be problematic also for source based
+>> livepatches. They define struct klp_func in sources so
+>> they would need to hardcode the suffix there. It might
+>> be easy to keep using the stripped name and "old_sympos".
+>>
+>> I expect that this patch actually breaks the livepatch
+>> selftests when the kernel is compiled with clang LTO.
+> 
+> Not really. This patch passes livepatch selftests.
+> 
+> Thanks,
+> Song
+> 
