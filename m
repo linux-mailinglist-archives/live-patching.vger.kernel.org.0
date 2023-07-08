@@ -2,75 +2,66 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E545574AFE6
-	for <lists+live-patching@lfdr.de>; Fri,  7 Jul 2023 13:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1208B74BB33
+	for <lists+live-patching@lfdr.de>; Sat,  8 Jul 2023 03:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231334AbjGGLeZ (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 7 Jul 2023 07:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42704 "EHLO
+        id S230044AbjGHB4k (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 7 Jul 2023 21:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbjGGLeY (ORCPT
+        with ESMTP id S229458AbjGHB4j (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 7 Jul 2023 07:34:24 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60429E
-        for <live-patching@vger.kernel.org>; Fri,  7 Jul 2023 04:34:23 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id 38308e7fff4ca-2b6ef64342aso27786301fa.3
-        for <live-patching@vger.kernel.org>; Fri, 07 Jul 2023 04:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1688729662; x=1691321662;
-        h=to:subject:message-id:date:from:sender:reply-to:mime-version:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=HB1ZBmrI8lJQ2iZKSS1/QjY2dlcegRSejhR78gpSgws=;
-        b=fesoF8e5faReTdBi4hjlI1+OvTvH5vK6l0maJFmWIuyW8hrBMJ4tD1TvCP0DLGzrrf
-         m8Ibb3T71RJ8V3+85cAuWx1DNPgbR/sQjKhODAUcuFpgamJvWLIcMw9IWm8ll+MoJXiz
-         WE4+0MjUDpmzPXYgnjILkvjzXgN2S/dq+wEHEFRdxS3rzalHnAKc6syJrRPi6tATsh2F
-         Mcq7n4rzcAB5AxPc1WruPJW7sj/q3R9g9bZRJqAhjGWGuBcWvx8YhA3rwAbUr1YAGPB6
-         ab2tjy1VsbjPWU8jUoNvXSrtq3iU4YSbZIp04EL/coy4LOr6RdFYlpHbfL4ovlxLwg2E
-         q/JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688729662; x=1691321662;
-        h=to:subject:message-id:date:from:sender:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HB1ZBmrI8lJQ2iZKSS1/QjY2dlcegRSejhR78gpSgws=;
-        b=kwMub51T8+p+In0M9vn6ra1egm6Jw/sagCC5JBfjkavIrNGvzed8A/5OPG+M39famC
-         r0HhxdxIibnTApxZCDfHLXGs9pfl22G4epYG/7i1WOQPmEF5pimlpLVn/rnTclBDUQs4
-         YJlQ/uwOwnmEsGQCbIXIBQLeG18zqlGtNvNkaWQv87Z03aQrkN4s1T5UjKX5Qem3g86V
-         RFnP5QJF3LFnvmqdM3JtjSD4MPnltd5mxpI/RFFFyLHc+IwM8EV7cpU9NfnX5ggmLd9p
-         Xakq+ppBWiJh4fb0qP5YrCQ8Hsk4LA9rFzUAnkvkATT6ichU698qhHWlnFNR7sfmse3F
-         x5Nw==
-X-Gm-Message-State: ABy/qLbdf6QauD2S//ihWseLU+v38AaeHHdxWishF1N8BGYK2n8ErX/c
-        EiEfBscHMX3oiXuez3bWNlJn7VjbHpZIsOXtepg=
-X-Google-Smtp-Source: APBJJlFvgE3XPnl2pUBXl+hLSjdn/0Ad0xrMugh3YZzi7Rv91sGAhmEDZHbsWpOE8CB+gBnDdLXFx8im1wGUMSO7pCg=
-X-Received: by 2002:a2e:9455:0:b0:2b7:29b:d5a5 with SMTP id
- o21-20020a2e9455000000b002b7029bd5a5mr3486874ljh.34.1688729661530; Fri, 07
- Jul 2023 04:34:21 -0700 (PDT)
+        Fri, 7 Jul 2023 21:56:39 -0400
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDDCC3;
+        Fri,  7 Jul 2023 18:56:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R791e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=ydzhang@linux.alibaba.com;NM=1;PH=DW;RN=7;SR=0;TI=W4_0.2.0_DEFAULT_210DF632_1688781163176_o7001c63l;
+Received: from WS-web (ydzhang@linux.alibaba.com[W4_0.2.0_DEFAULT_210DF632_1688781163176_o7001c63l]) at Sat, 08 Jul 2023 09:56:34 +0800
+Date:   Sat, 08 Jul 2023 09:56:34 +0800
+From:   "wardenjohn" <ydzhang@linux.alibaba.com>
+To:     "jpoimboe" <jpoimboe@kernel.org>
+Cc:     "jikos" <jikos@kernel.org>, "mbenes" <mbenes@suse.cz>,
+        "pmladek" <pmladek@suse.com>,
+        "joe.lawrence" <joe.lawrence@redhat.com>,
+        "live-patching" <live-patching@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Reply-To: "wardenjohn" <ydzhang@linux.alibaba.com>
+Message-ID: <931aaecf-66b1-469a-8bc3-7126871a8464.ydzhang@linux.alibaba.com>
+Subject: =?UTF-8?B?Rml4IE1BWF9TVEFDS19FTlRSSUVTIGZyb20gMTAwIHRvIDMy?=
+X-Mailer: [Alimail-Mailagent revision 85][W4_0.2.0][DEFAULT][Chrome]
 MIME-Version: 1.0
-Reply-To: dr.attorney25@gmail.com
-Sender: mmbbr2019@gmail.com
-Received: by 2002:a05:6022:338e:b0:42:f7b5:db61 with HTTP; Fri, 7 Jul 2023
- 04:34:21 -0700 (PDT)
-From:   Benjamin Addy <dr.attorney25@gmail.com>
-Date:   Thu, 6 Jul 2023 23:34:21 -1200
-X-Google-Sender-Auth: sjafDie3qXFW8YljWVASBZDYATI
-Message-ID: <CAD7Yj0674WSF0FRzr1i82OVOQ702Nvg-QKytDFGqDjSMA+WvZw@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
+x-aliyun-mail-creator: W4_0.2.0_DEFAULT_QvNTW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTVfNykgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzExNC4wLjAuMCBTYWZhcmkvNTM3LjM2La
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=1.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,HK_RANDOM_ENVFROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-Hello
-I sent you an email earlier.
-Please confirm if you received
-Yours sincerely
-Dr Ben
+VGhhbmtzIGZvciByZWFkaW5nIG15IHN1Z2dlc3Rpb24uIEkgZm91bmQgdGhhdCB0aGUgYXJyYXkg
+Zm9yIHRhc2sgc3RhY2sgZW50cmllcyB3aGVuCmRvaW5nIGxpdmVwYXRjaCBmdW5jdGlvbiBjaGVj
+ayBpcyB0b28gbGFyZ2Ugd2hpY2ggc2VlbXMgdG8gYmUgdW5uZWNlc3NhcnkuIFRoZXJlZm9yZSwK
+SSBzdWdnZXN0IHRvIGZpeCB0aGUgTUFYX1NUQUNLX0VOVFJJRVMgZnJvbSAxMDAgdG8gMzIuCgpU
+aGUgcGF0Y2ggaXMgYXMgZm9sbG93czoKCkZyb20gZWUyN2RhNWU2NGRhY2VkMTU5MjU3ZjU0MTcw
+YTMxMTQxZTk0MzcxMCBNb24gU2VwIDE3IDAwOjAwOjAwIDIwMDEKRnJvbTogWW9uZ2RlIFpoYW5n
+IDx5ZHpoYW5nQGxpbnV4LmFsaWJhYmEuY29tPgpEYXRlOiBTYXQsIDggSnVsIDIwMjMgMDk6NDA6
+NTAgKzA4MDAKU3ViamVjdDogW1BBVENIXSBGaXggTUFYX1NUQUNLX0VOVFJJRVMgdG8gMzIKCldo
+ZW4gY2hlY2tpbmcgdGhlIHRhc2sgc3RhY2ssIHVzaW5nIGFuIHN0YWNrIGFycmF5IG9mIHNpemUg
+MTAwIApzZWVtcyB0byBiZSB0byBsYXJnZSBmb3IgYSB0YXNrIHN0YWNrLiBUaGVyZWZvcmUsIEkg
+c3VnZ2VzdCB0bwpjaGFuZ2UgdGhlIHN0YWNrIHNpemUgZnJvbSAxMDAgdG8gMzIuIAoKU2lnbmVk
+LW9mZi1ieTogWW9uZ2RlIFpoYW5nIDx5ZHpoYW5nQGxpbnV4LmFsaWJhYmEuY29tPgotLS0KIGtl
+cm5lbC9saXZlcGF0Y2gvdHJhbnNpdGlvbi5jIHwgMiArLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5z
+ZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEva2VybmVsL2xpdmVwYXRjaC90
+cmFuc2l0aW9uLmMgYi9rZXJuZWwvbGl2ZXBhdGNoL3RyYW5zaXRpb24uYwppbmRleCBlNTRjM2Q2
+MGE5MDQuLjhkNjFjNjJiMGMyNyAxMDA2NDQKLS0tIGEva2VybmVsL2xpdmVwYXRjaC90cmFuc2l0
+aW9uLmMKKysrIGIva2VybmVsL2xpdmVwYXRjaC90cmFuc2l0aW9uLmMKQEAgLTE0LDcgKzE0LDcg
+QEAKICNpbmNsdWRlICJwYXRjaC5oIgogI2luY2x1ZGUgInRyYW5zaXRpb24uaCIKIAotI2RlZmlu
+ZSBNQVhfU1RBQ0tfRU5UUklFUyAgMTAwCisjZGVmaW5lIE1BWF9TVEFDS19FTlRSSUVTICAzMgog
+c3RhdGljIERFRklORV9QRVJfQ1BVKHVuc2lnbmVkIGxvbmdbTUFYX1NUQUNLX0VOVFJJRVNdLCBr
+bHBfc3RhY2tfZW50cmllcyk7CiAKICNkZWZpbmUgU1RBQ0tfRVJSX0JVRl9TSVpFIDEyOCAKLS0g
+CjIuMzcuMw==
