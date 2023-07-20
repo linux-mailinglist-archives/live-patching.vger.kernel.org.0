@@ -2,39 +2,45 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BEE175A8EF
-	for <lists+live-patching@lfdr.de>; Thu, 20 Jul 2023 10:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9606675AAFA
+	for <lists+live-patching@lfdr.de>; Thu, 20 Jul 2023 11:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230503AbjGTISU (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 20 Jul 2023 04:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
+        id S230122AbjGTJhI (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 20 Jul 2023 05:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231861AbjGTISN (ORCPT
+        with ESMTP id S230140AbjGTJgt (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 20 Jul 2023 04:18:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C622110;
-        Thu, 20 Jul 2023 01:18:12 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id DB4AA20591;
-        Thu, 20 Jul 2023 08:18:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1689841090; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bakGv9Jv+bdxPDti8XSEFYOJsCrMiKQKDta5ejzJogk=;
-        b=I9QdlyZZmePqAQ1F9P4UuEPE85g3jdZCE8ZbGSEneDoJEP00uQmgjNYWskzoymeaCrbtJd
-        u6U9uAQMEKJorM1jytlT6Jx+qv8s0pjidzjiOGxmgQ1blAw5ucYDCdirB+8X5iYScuGA4p
-        A40figLyPsCDnq6tEl1GRguutqPDXLI=
-Received: from suse.cz (pmladek.udp.ovpn2.prg.suse.de [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6039D2C142;
-        Thu, 20 Jul 2023 08:18:09 +0000 (UTC)
-Date:   Thu, 20 Jul 2023 10:18:05 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Brian Gerst <brgerst@gmail.com>, jpoimboe@kernel.org,
+        Thu, 20 Jul 2023 05:36:49 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2228C3A8D;
+        Thu, 20 Jul 2023 02:32:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=RZvdXjx1hZtcZSf74NvFvf8MQ6mexnlAJnPNEN00Cyo=; b=DKTvOeHtImBp0sx+QDcm4M4JsL
+        qsSH7Thf3bOAZW38uH+7ZGk+wggvENeAqtgEkqneCUryBAV60eSBqQAQFjBwVc37JLdR7zSULLWbF
+        9Y/7Jph8JzC9EpjTCGE1t/Jkris7QZt1pmKUndRam9oV4FcykVnINIbdkfUHbc2As82dvadGGUrDM
+        cLWcgSuHODpWt6eHikxFd4RWgMVeEMfbLmZsU5hO5ek+nsWjK5VCPcvLl4VVcXtPuiO74k3YixW3l
+        UqCRth0P1jmjFA2WpHeR9sAlifdsFwZmQKF1ijbxZClRfhWefrt8AsKrsraucwvRK9UBsnJopP40i
+        StxTQzYg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1qMPxB-00FSy1-1K;
+        Thu, 20 Jul 2023 09:30:09 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 699A5300342;
+        Thu, 20 Jul 2023 11:28:07 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 44F092B32666E; Thu, 20 Jul 2023 11:28:07 +0200 (CEST)
+Date:   Thu, 20 Jul 2023 11:28:07 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Petr Mladek <pmladek@suse.com>, Brian Gerst <brgerst@gmail.com>,
         linux-kernel@vger.kernel.org, x86@kernel.org,
         Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@alien8.de>,
@@ -44,19 +50,22 @@ Cc:     Brian Gerst <brgerst@gmail.com>, jpoimboe@kernel.org,
         joao@overdrivepizza.com, tim.c.chen@linux.intel.com,
         live-patching@vger.kernel.org
 Subject: Re: [PATCH v2 2/2] x86: Rewrite ret_from_fork() in C
-Message-ID: <ZLjtvSXVm4gBd-s_@alley>
+Message-ID: <20230720092807.GB3570477@hirez.programming.kicks-ass.net>
 References: <20230623225529.34590-1-brgerst@gmail.com>
  <20230623225529.34590-3-brgerst@gmail.com>
  <ZLf_Z5dCSm7zKDel@alley>
  <20230719200222.GD3529734@hirez.programming.kicks-ass.net>
  <20230719201538.GA3553016@hirez.programming.kicks-ass.net>
+ <20230719205050.GG3529734@hirez.programming.kicks-ass.net>
+ <20230719233111.kqafaqect4v2ehu6@treble>
+ <20230720052208.GO4253@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230719201538.GA3553016@hirez.programming.kicks-ass.net>
+In-Reply-To: <20230720052208.GO4253@hirez.programming.kicks-ass.net>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,65 +73,32 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2023-07-19 22:15:38, Peter Zijlstra wrote:
-> On Wed, Jul 19, 2023 at 10:02:22PM +0200, Peter Zijlstra wrote:
-> > On Wed, Jul 19, 2023 at 05:21:11PM +0200, Petr Mladek wrote:
-> > 
-> > > This patch broke livepatching. Kthreads never have a reliable stack.
-> > > It works when I revert it.
-> > 
-> > > > +SYM_CODE_START(ret_from_fork_asm)
-> > > > +	UNWIND_HINT_REGS
-> > 
-> > It works again when I change the above hint to UNWIND_HINT_END_OF_STACK,
-> > so yeah. Doing this makes objtool unhappy with something else though,
-> > so I'll go prod at things with something sharp...
+On Thu, Jul 20, 2023 at 07:22:08AM +0200, Peter Zijlstra wrote:
+
+> > I'm not sure that would be worth the trouble / cleverness.  The hint is
+> > straightforward IMO.
 > 
-> 
-> The below cures things; Josh, did I miss anything?
+> I tried, it doesn't work, clearly I missed something.
 
-I can confirm that it solved the problem. Feel free to use:
+FWIW, I tried the below. That should make user_mode() true for the
+kernel thread regset, and while the kernel did boot, it still fails the
+livepatch self-test.
 
-Tested-by: Petr Mladek <pmladek@suse.com>
+The difference seems to be that END_OF_STACK terminates it right there,
+while REGS thinks its a valid frame and only terminates on user_mode()
+when unwinding one more frame. The frame at REGS clearly isn't very
+sane.
 
-Thanks a lot for the quick fix.
 
-Best Regards,
-Petr
-
-> ---
->  arch/x86/entry/entry_64.S | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-> index 91f6818884fa..cfe7882ea9ae 100644
-> --- a/arch/x86/entry/entry_64.S
-> +++ b/arch/x86/entry/entry_64.S
-> @@ -285,7 +285,14 @@ SYM_FUNC_END(__switch_to_asm)
->   */
->  .pushsection .text, "ax"
->  SYM_CODE_START(ret_from_fork_asm)
-> -	UNWIND_HINT_REGS
-> +	/*
-> +	 * This is the start of the kernel stack; even through there's a regs
-> +	 * set at the top, there is no real exception frame and one cannot
-> +	 * unwind further. This is the end.
-> +	 *
-> +	 * This ensures stack unwinds of kernel threads hit a known good state.
-> +	 */
-> +	UNWIND_HINT_END_OF_STACK
->  	ANNOTATE_NOENDBR // copy_thread
->  	CALL_DEPTH_ACCOUNT
->  
-> @@ -295,6 +302,11 @@ SYM_CODE_START(ret_from_fork_asm)
->  	movq	%r12, %rcx		/* fn_arg */
->  	call	ret_from_fork
->  
-> +	/*
-> +	 * Set the stack state to what is expected for the target function
-> +	 * -- also it is not wrong.
-> +	 */
-> +	UNWIND_HINT_REGS
->  	jmp	swapgs_restore_regs_and_return_to_usermode
->  SYM_CODE_END(ret_from_fork_asm)
->  .popsection
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 72015dba72ab..45a400b16b80 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -232,6 +232,7 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
+ 		 * It does the same kernel frame setup to return to a kernel
+ 		 * function that a kernel thread does.
+ 		 */
++		childregs->cs = 3;
+ 		childregs->sp = 0;
+ 		childregs->ip = 0;
+ 		kthread_frame_init(frame, args->fn, args->fn_arg);
