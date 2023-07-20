@@ -2,259 +2,236 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9061875ABC9
-	for <lists+live-patching@lfdr.de>; Thu, 20 Jul 2023 12:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBAC875AEFB
+	for <lists+live-patching@lfdr.de>; Thu, 20 Jul 2023 15:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbjGTKSp (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Thu, 20 Jul 2023 06:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
+        id S230414AbjGTNBW (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Thu, 20 Jul 2023 09:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbjGTKSp (ORCPT
+        with ESMTP id S229983AbjGTNBV (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Thu, 20 Jul 2023 06:18:45 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E622A10CB
-        for <live-patching@vger.kernel.org>; Thu, 20 Jul 2023 03:18:42 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 762B820645;
-        Thu, 20 Jul 2023 10:18:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1689848321; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aC4EMf0YmVU/nLa4wYvP6njVwxOk++DLijA2AcIYsN0=;
-        b=RANIbq63ks++oZYz1gm2vIzYS9WL2BDay50CD8BwB7BB6jnCpD6s4S8/5G+hL4zZDlk8tF
-        MRmL9LQjj5vybyEtslcSloh0CiiEvzfOR0BCCvEc1QE2LJE9SE1krRacnbXUqKghi6tlid
-        jzTXcOzBCfPwsnYwPGr6DgQjVqxTK+M=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 06E072C142;
-        Thu, 20 Jul 2023 10:18:40 +0000 (UTC)
-Date:   Thu, 20 Jul 2023 12:18:40 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Stefano Stabellini <sstabellini@kernel.org>
-Cc:     boris.ostrovsky@oracle.com, jgross@suse.com,
-        xen-devel@lists.xenproject.org, Luca Miccio <lucmiccio@gmail.com>,
-        Stefano Stabellini <stefano.stabellini@xilinx.com>,
-        live-patching@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH LINUX v5 2/2] xen: add support for initializing xenstore
- later as HVM domain
-Message-ID: <ZLkKAO09DnM8quG-@alley>
-References: <alpine.DEB.2.22.394.2205131417320.3842@ubuntu-linux-20-04-desktop>
- <20220513211938.719341-2-sstabellini@kernel.org>
- <ZLgFmS4TQwGWA7o0@alley>
- <alpine.DEB.2.22.394.2307191841290.3118466@ubuntu-linux-20-04-desktop>
+        Thu, 20 Jul 2023 09:01:21 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486B110D2;
+        Thu, 20 Jul 2023 06:01:20 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36K94GGN032453;
+        Thu, 20 Jul 2023 13:01:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : references : date : in-reply-to : message-id : content-type :
+ mime-version; s=corp-2023-03-30;
+ bh=mSqTuZr1ONTscDvmcV4YoKIJ9qZJCYFEkfNTx9lEBRw=;
+ b=jBh6oIPKz4y5R4CvKlp3G80aG+GJkJj2OsTSDXH4xP3swlTiyaCTRFiHudg5yD2Rjpsq
+ b+gMOOZczAFvtlEs35yaRG+UeKbwieetgrR2MYGtdSXn1UScfWmFMLZvIAVXDnWJlIRp
+ QGvUOoeLNrUBHkPL6V/E/tS27EVUwzgE/IQdkx9rwltpNVKI7OXjRj3Ajy94ijZdq+Yr
+ yE1EmEa2NaPJTqkWBfsf2AlRonJW7lygSZGM5vK8HmuWASis+G+Mo2U3pqueKB/UlwrR
+ msjbyHVwdXovQjqw3YC8eJijyqzIGPBOXis55MV+MW93oat2eTP5L3XsW+yoIHbDpJXz Qw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3run8a9q7w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 20 Jul 2023 13:01:00 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 36KBQRF6038227;
+        Thu, 20 Jul 2023 13:00:59 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3ruhw8ma58-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 20 Jul 2023 13:00:59 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L1WhzPsfvXgRx4bO19a16BQyhR+a8OxRDkB1Cm6kXDUEA1uoxcWCN3DSuhnsws2vcGlK1IAqez+5B3LDSY5hlFjFHyxt6jgf7CoyzDczugEM24gcleBO4dA76j6anFRftuVxhMz7Ifyj1tTdMLDv+texfu+nTKOmb5NQltJ93DzsjdtJwYRUdpj5PUxPVZIhwokALJ9Qd2C47M8ReNF+vzZNeHhIW3aDudAmOqs//NiXqUeHC1BVvUbnmB3aSkGMZFhWj0Nr2LapoHasQp9pUdfGuAfdf0ns2oqyQdycwASG8noMkJLoeRVlDXJF2VF4f+Dk+uI9FQdNRmKnFN/J/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mSqTuZr1ONTscDvmcV4YoKIJ9qZJCYFEkfNTx9lEBRw=;
+ b=AxPxXFVfwbURZxi+XUNaxopwi3rF2JlJLMdMcd2RVXxNrH1aOng/VhIO7yWYDWdHdo6V4QF3mPNnQyLDlseDyLxhNiULDLKYPOLp/5bId4Pb0XCPcrC3qbLR+AvCahwHNi4WVPxUBGJ7QLPGMR8EXQ3A/+ivhS27w5PXegMFM5Z5Xba+oFt0i0Pt1AU1dZUVq91vkNu7/lf9LP4gDqKWX/nGjU6NKIfi512AT/hEw+DAGrhjvyHDaFJff0nKptDleeRXJDRK8AbL3x9ClwIOCT5doFdk7Km9MYjPu93h/1UHWJXSRLQ106n8P2CgIDmwnaGp2J8X2mODr+t1m0gInA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mSqTuZr1ONTscDvmcV4YoKIJ9qZJCYFEkfNTx9lEBRw=;
+ b=iX2lVNngUbvTvGJ6g/RiP1ZPIixGM+EAvgoSOfu1Iyd3DNwlUV16TAR5/Hsg9UjE5KOkSatvBCkh2PtJOEp8lkzLm6gSpztws9QfaQ1xj8YePTri/STdxJT9I02ChCixvJi38hPlCvkemN/sFtdKFUPs290J/Yr6jYUAAhSuWe8=
+Received: from DS0PR10MB6798.namprd10.prod.outlook.com (2603:10b6:8:13c::20)
+ by SJ0PR10MB5767.namprd10.prod.outlook.com (2603:10b6:a03:3ef::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.28; Thu, 20 Jul
+ 2023 13:00:54 +0000
+Received: from DS0PR10MB6798.namprd10.prod.outlook.com
+ ([fe80::d301:aff1:6e01:417d]) by DS0PR10MB6798.namprd10.prod.outlook.com
+ ([fe80::d301:aff1:6e01:417d%5]) with mapi id 15.20.6588.031; Thu, 20 Jul 2023
+ 13:00:54 +0000
+From:   Nick Alcock <nick.alcock@oracle.com>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Alessandro Carminati <alessandro.carminati@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Nick Desaulniers" <ndesaulniers@google.com>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Viktor Malik <vmalik@redhat.com>,
+        <linux-kernel@vger.kernel.org>, <linux-kbuild@vger.kernel.org>,
+        <linux-trace-kernel@vger.kernel.org>, <eugene.loh@oracle.com>,
+        <kris.van.hees@oracle.com>, <live-patching@vger.kernel.org>
+Subject: Re: [PATCH v2] scripts/link-vmlinux.sh: Add alias to duplicate
+ symbols for kallsyms
+References: <ZLVxUQiC5iF+xTPQ@bombadil.infradead.org>
+        <20230714150326.1152359-1-alessandro.carminati@gmail.com>
+        <20230717105240.3d986331@gandalf.local.home>
+        <874jm088ah.fsf@esperi.org.uk>
+        <6edbfe7b-aec4-2b3c-2f85-42e418ab3d99@intel.com>
+Emacs:  because extension languages should come with the editor built in.
+Date:   Thu, 20 Jul 2023 14:00:46 +0100
+In-Reply-To: <6edbfe7b-aec4-2b3c-2f85-42e418ab3d99@intel.com> (Alexander
+        Lobakin's message of "Wed, 19 Jul 2023 17:12:33 +0200")
+Message-ID: <87wmyu7n5t.fsf@esperi.org.uk>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.3 (gnu/linux)
+Content-Type: text/plain
+X-ClientProxiedBy: LO4P123CA0450.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a9::23) To DS0PR10MB6798.namprd10.prod.outlook.com
+ (2603:10b6:8:13c::20)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2307191841290.3118466@ubuntu-linux-20-04-desktop>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR10MB6798:EE_|SJ0PR10MB5767:EE_
+X-MS-Office365-Filtering-Correlation-Id: d8ec4dc5-14c7-4ef0-d5c7-08db892159c9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bXMMsjilORCnruVXS/bhqP1WcIvqEdzC6qQRQJJs5KIc2iOr9NpQMSfKtB3gY/bUq4YEUkzJANqfCBU/ThLDvw5l2jvC9g/cM9ILnh1HJwbXPkiP+PKC/3LfdVqtNPx0eMFGIjl+yywTkbJKlQTCf5dJ24YRwBHroXpx5FoL473xQOwPY7gidXxQwcwKzsRC9V5yTwNHs5W2N9zcsiLGx0ajo/EsouzFRe6FRvdIb71qCJdX4e+PF2jJdKl7S6b3RxzsRLfgquR/557Eb54s/xoxpDWFpfwHjz5TM1yGzROGBBhg/bQVA1ABZR8aKdi3M61Eta6faGPFHsrBFjNlT2cgnjPJYijrwe9mSY053hvqMflsWadqutN6rqq6wuYAyFgjOoEJmWeRWe2k/0kMGB0DtVlwN7gaFe8Al+v0usRxhzNOUDqlEU4VIEoEGk7uVMTA+m1eUf+M5p2BrodfdojztxgXW30UG0Zo/2kPfY/IDsDbupZsrEpqyKHMX9X+Ux6eD9oJVrFYE17eeBpYIe8PdTjUQSaNnICGty1Z1tGWXK+kGovdSVY5QnlObzap
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR10MB6798.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(136003)(366004)(39860400002)(376002)(346002)(451199021)(8936002)(2906002)(36756003)(44832011)(6666004)(186003)(83380400001)(6506007)(6512007)(9686003)(6486002)(5660300002)(54906003)(38100700002)(7416002)(478600001)(86362001)(8676002)(66556008)(316002)(6916009)(66476007)(66946007)(41300700001)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YTaVD0EhR0d1VRn/wwDYNUqlyfnAAQheIeEWIBg3cKlidxE98qUSLrEi1CvB?=
+ =?us-ascii?Q?TVv7uFfXd3BkPXI5qTDq2uFWj+A2sdMlrXaE/6QFDc31Ddhd3sl1q7EbEtr5?=
+ =?us-ascii?Q?QxUAlWsr3+UtEkiA+DXvMAmYosZCTlcOaaA8OBHK6VTu5m6sc85kc6TxYu6B?=
+ =?us-ascii?Q?ILpcXx1ke0ulxvS7MGhc+tomu1Tw+l4h8R+pswgVVTLjEpWIRqgdOEg8m+BJ?=
+ =?us-ascii?Q?RJU+t6GA1P8Wbwp1RYsZouLYbJmsqx1a48EBOci4QpXiQ3Da3oLUrlg2IbdI?=
+ =?us-ascii?Q?+LfRmrXW2AS1ORM79IthWnt1i0D1iWPrf0Dk+3EW6gmzV3aKnZR9rVIp3zWh?=
+ =?us-ascii?Q?CwInZp9vreL+V24bJ6oyHfkjzduiAs1Edgc2+/QgxDvWA0XcjKBkt+aMShIn?=
+ =?us-ascii?Q?WYFlomuZ4nBkRQlTOrL9f1EnjuDH1dsYjrNv6cLmlMA6g2OmgFYAo/VRoRHX?=
+ =?us-ascii?Q?H5oJitA7qoYE7inwBARyhtlst0bxIOhV1yDh91jiaJAQOnWzXyVz/sagHjwM?=
+ =?us-ascii?Q?GQkgzif279OKaTqacGD/6ARuglli4fxJSy1b0TLOaC5+aKmPOTRBCAvyQgKw?=
+ =?us-ascii?Q?x/wtCJ8O4WNKc9FXGTafYoPWexIx8eloaEqSb/77mQEuKsvZKmfhlrrGbuBZ?=
+ =?us-ascii?Q?8ykZZ0hrUg83noxEstyypJ4atSCaQp8S9jt1LsbkWoJCDmZ7A3xH3eEWTTK5?=
+ =?us-ascii?Q?JXifBoCVT8aL84cGRt49Kj78qzzGJSpZaoICQGqrU1qfMmbIayXF1cX242Mi?=
+ =?us-ascii?Q?7POUK6kiJLbPI7KKS9DFamZCgIJ1enkJ7zb2DST1JKcQgmmngjyHVuB4InM5?=
+ =?us-ascii?Q?UFZDFBUUE0UDOZ26EGKUU/iXN5FfB8698/OT9RRVKqm93Sc7J1uFjFIfwrfX?=
+ =?us-ascii?Q?N3k9mCfxlEHKowz6ML2o8kZwioZzjiQAWCopGhkDMDKGv/AJjx7Z7nEHo9V8?=
+ =?us-ascii?Q?24il9xKBjf/tp8VYznUR0MB3Gp2hCelfWA5nuP3b7ISWJiO7bakjy+kCKqbF?=
+ =?us-ascii?Q?MOYC2gRZWpbfbHbY9+p2skx2uGMI+pynv7q2r6+tmpnexqzoIlafU35J260J?=
+ =?us-ascii?Q?gLJM7FUFa9cNVUO5RraFjQEBIqW2l4ImxesPhGJd3PPviN6N2Vnkqsoype4d?=
+ =?us-ascii?Q?OvJ0tG64w+qyPfFsX4C4lQUHQXUSDZRmGnVsbDrX5fYA467iMzbyshCAn68i?=
+ =?us-ascii?Q?xO+psWBFU+JEBQSthMe0COovMxfmMGsAnjmCb/r+BmMqcwOBUerqxz69W6yz?=
+ =?us-ascii?Q?ObesMq8SqReVGy9mqvt1ed0CcC0p9h43RAK7x3acZ2SrXYHLOcMparCovcyR?=
+ =?us-ascii?Q?kEqyH5+frCN59Xb5nkDAhtPNW9xr9I8+PqCto8WZdbIoBqyvf0MbjsoC9vgx?=
+ =?us-ascii?Q?Hcn+KttNqjouqAvhX/PcZO3CNCdwavvwNdHFPaBJzwVzOsGGjVDINZIWJGlM?=
+ =?us-ascii?Q?uQC3St8CS2JG+jVjjbhgz89viQS3iJntHouS3Wtoodae9u5qkQ2ZT4rYSa+y?=
+ =?us-ascii?Q?TbDd1Aiqb1tZ380gCctrFuihEviMC3irTcY7Z7cHE+rSIQe5r3vvt4zKu8Bc?=
+ =?us-ascii?Q?mc/ATFLVVNzAIirRVoWNZ+WMJE6QeQjD6hY8Nr2/UEfg8TgGUIJrSP8XnoRo?=
+ =?us-ascii?Q?MQ=3D=3D?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?us-ascii?Q?3Jw6fZy5NSjdG1balrfXhv0c35I/4zRlo45IiYshXTWIrZMtzKUBXAEUKlpK?=
+ =?us-ascii?Q?f2jzkHZMJE3tRBQOo+5mKcCLMlWztCYhw2k3Y6lK/LfW4TtdG/DdDRGo5GUE?=
+ =?us-ascii?Q?/uSCB1AuGrGCHY340xdbYhSMLmv7M3BjX91QQ1JtLRQPdxoaSgUajURPgCts?=
+ =?us-ascii?Q?c3VD1tw7KKoWQu+rpnbBj78qRlWEvxGlYJ3gPdfPSo2MFdKHEhYAXjZTIg0E?=
+ =?us-ascii?Q?l+Qq3jk6PCplzeouaOyrzttiLjpiQ1jCBgR7uAoFK9jBknrzaGVowhjI78CR?=
+ =?us-ascii?Q?8x/WoH+iHTC9z7Ymfopq6YZc01hXuIg2UkiBFYaCzqWadxkwfKVb4c2XlKxR?=
+ =?us-ascii?Q?QeIwgvrgzvKnMNiKc69sVscc1Mj9C4Dbs3yEBlPi1w/MOD36CjA0uUw022hi?=
+ =?us-ascii?Q?2t6gQUU/8s5eSdKGmaUA4ANa20F6Zkzvs7gSaE0NAugh8MhhnstoCz2GGOc6?=
+ =?us-ascii?Q?u9fARxjNOSGk6jgmfHe7iYMfj/WNHYaPa++JLR4jEJPE3RFiQrcUJ7IJjOAY?=
+ =?us-ascii?Q?7pyBijpwjHHnSqdfphVm5R+0oU1luDEa4FMIMDeYaHaXLbctGk0CWM1UpHfC?=
+ =?us-ascii?Q?Jcr+WGNmwAMPAPlsrGRHJ8ZDZ6itcMWOvOmrSrzzQhBagrWyUf16F532nryA?=
+ =?us-ascii?Q?f0CPlGUmcapB2y8B5eCiJEsNDugRBLpQQf5IO/jsIVKOCsFTSFLMvtMzYF1E?=
+ =?us-ascii?Q?dsUsr5uZXGx18xnOu7+O0kcMHv+T1xCz7jHBMOBDSWbg4NXqtatwhK8fJW8B?=
+ =?us-ascii?Q?RUqFYh6Ckwf2TM1Wh1PpyoY0Kaq01YCHbF1Jhb66YLleQ6llDzL4/CP+1xXx?=
+ =?us-ascii?Q?bGuvGFD3Y4ZAB3B1ZMkrc8GxSEUnUEALfsmjIctlbJRGG6TzFGJCNuMI3Hlm?=
+ =?us-ascii?Q?72AqAL8WmM/TwPWR4+tmN8g0kYWR6DoEC5y4csbaROqrCAc3XJNMLSZWUeM6?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8ec4dc5-14c7-4ef0-d5c7-08db892159c9
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR10MB6798.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2023 13:00:54.1793
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ILZ7RxmU6lR+ziX//0RusUmLiIspHCTIgch3t4FFZMVOEXpG2Uuqnp8XSz4IiL9/wvcKmYfVmXRB8DOGRut1PA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5767
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-20_06,2023-07-20_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 phishscore=0
+ adultscore=0 spamscore=0 bulkscore=0 malwarescore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
+ definitions=main-2307200109
+X-Proofpoint-ORIG-GUID: 1xmZyaoXs1i1-qQKlSWS_jku6kc1nWhR
+X-Proofpoint-GUID: 1xmZyaoXs1i1-qQKlSWS_jku6kc1nWhR
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_BLOCKED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed 2023-07-19 18:46:08, Stefano Stabellini wrote:
-> On Wed, 19 Jul 2023, Petr Mladek wrote:
-> > On Fri 2022-05-13 14:19:38, Stefano Stabellini wrote:
-> > > From: Luca Miccio <lucmiccio@gmail.com>
-> > > 
-> > > When running as dom0less guest (HVM domain on ARM) the xenstore event
-> > > channel is available at domain creation but the shared xenstore
-> > > interface page only becomes available later on.
-> > > 
-> > > In that case, wait for a notification on the xenstore event channel,
-> > > then complete the xenstore initialization later, when the shared page
-> > > is actually available.
-> > > 
-> > > The xenstore page has few extra field. Add them to the shared struct.
-> > > One of the field is "connection", when the connection is ready, it is
-> > > zero. If the connection is not-zero, wait for a notification.
-> > 
-> > I see the following warning from free_irq() in 6.5-rc2 when running
-> > livepatching selftests. It does not happen after reverting this patch.
-> > 
-> > [  352.168453] livepatch: signaling remaining tasks
-> > [  352.173228] ------------[ cut here ]------------
-> > [  352.175563] Trying to free already-free IRQ 0
-> > [  352.177355] WARNING: CPU: 1 PID: 88 at kernel/irq/manage.c:1893 free_irq+0xbf/0x350
-> > [  352.179942] Modules linked in: test_klp_livepatch(EK)
-> > [  352.181621] CPU: 1 PID: 88 Comm: xenbus_probe Kdump: loaded Tainted: G            E K    6.5.0-rc2-default+ #535
-> > [  352.184754] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
-> > [  352.188214] RIP: 0010:free_irq+0xbf/0x350
-> > [  352.192211] Code: 7a 08 75 0e e9 36 02 00 00 4c 3b 7b 08 74 5a 48 89 da 48 8b 5a 18 48 85 db 75 ee 44 89 f6 48 c7 c7 58 b0 8b 86 e8 21 0a f5 ff <0f> 0b 48 8b 34 24 4c 89 ef e8 53 bb e3 00 
-> > 48 8b 45 40 48 8b 40 78
-> > [  352.200079] RSP: 0018:ffffaf0440b4be80 EFLAGS: 00010086
-> > [  352.201465] RAX: 0000000000000000 RBX: ffff99f105116c80 RCX: 0000000000000003
-> > [  352.203324] RDX: 0000000080000003 RSI: ffffffff8691d4bc RDI: 00000000ffffffff
-> > [  352.204989] RBP: ffff99f100052000 R08: 0000000000000000 R09: c0000000ffff7fff
-> > [  352.206253] R10: ffffaf0440b4bd18 R11: ffffaf0440b4bd10 R12: ffff99f1000521e8
-> > [  352.207451] R13: ffff99f1000520a8 R14: 0000000000000000 R15: ffffffff86f42360
-> > [  352.208787] FS:  0000000000000000(0000) GS:ffff99f15a400000(0000) knlGS:0000000000000000
-> > [  352.210061] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  352.210815] CR2: 00007f8415d56000 CR3: 0000000105e36003 CR4: 0000000000370ee0
-> > [  352.211867] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > [  352.212912] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > [  352.213951] Call Trace:
-> > [  352.214390]  <TASK>
-> > [  352.214717]  ? __warn+0x81/0x170
-> > [  352.215436]  ? free_irq+0xbf/0x350
-> > [  352.215906]  ? report_bug+0x10b/0x200
-> > [  352.216408]  ? prb_read_valid+0x17/0x20
-> > [  352.216926]  ? handle_bug+0x44/0x80
-> > [  352.217409]  ? exc_invalid_op+0x13/0x60
-> > [  352.217932]  ? asm_exc_invalid_op+0x16/0x20
-> > [  352.218497]  ? free_irq+0xbf/0x350
-> > [  352.218979]  ? __pfx_xenbus_probe_thread+0x10/0x10
-> > [  352.219600]  xenbus_probe+0x7a/0x80
-> > [  352.221030]  xenbus_probe_thread+0x76/0xc0
-> > [  352.221416]  ? __pfx_autoremove_wake_function+0x10/0x10
-> > [  352.221882]  kthread+0xfd/0x130
-> > [  352.222191]  ? __pfx_kthread+0x10/0x10
-> > [  352.222544]  ret_from_fork+0x2d/0x50
-> > [  352.222893]  ? __pfx_kthread+0x10/0x10
-> > [  352.223260]  ret_from_fork_asm+0x1b/0x30
-> > [  352.223629] RIP: 0000:0x0
-> > [  352.223931] Code: Unable to access opcode bytes at 0xffffffffffffffd6.
-> > [  352.224488] RSP: 0000:0000000000000000 EFLAGS: 00000000 ORIG_RAX: 0000000000000000
-> > [  352.225044] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > [  352.225571] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> > [  352.226106] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> > [  352.226632] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> > [  352.227171] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> > [  352.227710]  </TASK>
-> > [  352.227917] irq event stamp: 22
-> > [  352.228209] hardirqs last  enabled at (21): [<ffffffff854240be>] ___slab_alloc+0x68e/0xc80
-> > [  352.228914] hardirqs last disabled at (22): [<ffffffff85fe98fd>] _raw_spin_lock_irqsave+0x8d/0x90
-> > [  352.229546] softirqs last  enabled at (0): [<ffffffff850fc0ee>] copy_process+0xaae/0x1fd0
-> > [  352.230079] softirqs last disabled at (0): [<0000000000000000>] 0x0
-> > [  352.230503] ---[ end trace 0000000000000000 ]---
-> > 
-> > , where the message "livepatch: signaling remaining tasks" means that
-> > it might send fake signals to non-kthread tasks.
-> > 
-> > The aim is to force userspace tasks to enter and leave kernel space
-> > so that they might start using the new patched code. It is done
-> > this way:
-> > 
-> > /*
-> >  * Sends a fake signal to all non-kthread tasks with TIF_PATCH_PENDING set.
-> >  * Kthreads with TIF_PATCH_PENDING set are woken up.
-> >  */
-> > static void klp_send_signals(void)
-> > {
-> > [...]
-> > 
-> > 			/*
-> > 			 * Send fake signal to all non-kthread tasks which are
-> > 			 * still not migrated.
-> > 			 */
-> > 			set_notify_signal(task);
-> > [...]
-> > 
-> > The warning is most likely printed in this condition:
-> > 
-> > const void *free_irq(unsigned int irq, void *dev_id)
-> > {
-> > 	struct irq_desc *desc = irq_to_desc(irq);
-> > 	struct irqaction *action;
-> > 	const char *devname;
-> > 
-> > 	if (!desc || WARN_ON(irq_settings_is_per_cpu_devid(desc)))
-> > 		return NULL;
-> > 
-> > 
-> > See below.
-> > 
-> > > --- a/drivers/xen/xenbus/xenbus_probe.c
-> > > +++ b/drivers/xen/xenbus/xenbus_probe.c
-> > > @@ -750,6 +751,20 @@ static void xenbus_probe(void)
-> > >  {
-> > >  	xenstored_ready = 1;
-> > >  
-> > > +	if (!xen_store_interface) {
-> > > +		xen_store_interface = xen_remap(xen_store_gfn << XEN_PAGE_SHIFT,
-> > > +						XEN_PAGE_SIZE);
-> > > +		/*
-> > > +		 * Now it is safe to free the IRQ used for xenstore late
-> > > +		 * initialization. No need to unbind: it is about to be
-> > > +		 * bound again from xb_init_comms. Note that calling
-> > > +		 * unbind_from_irqhandler now would result in xen_evtchn_close()
-> > > +		 * being called and the event channel not being enabled again
-> > > +		 * afterwards, resulting in missed event notifications.
-> > > +		 */
-> > > +		free_irq(xs_init_irq, &xb_waitq);
-> > 
-> > Is it possbile that this free_irq(), the fake signal, and the warning
-> > are somehow related, please?
-> 
-> I don't know how the fake signal could relate to this,
+On 19 Jul 2023, Alexander Lobakin verbalised:
 
-In short, the fake signal sets TIF_NOTIFY_SIGNAL and wakes
-the kthread. It has special handling in signal_pending().
-It causes that wait_interruptible() and friends would prematurely
-stop waiting.
+> From: Nick Alcock <nick.alcock@oracle.com>
+> Date: Wed, 19 Jul 2023 12:12:06 +0100
+>>> Yes, please coordinate with Nick and review each other's work, now we
+>>> have two separate efforts with different reasons but hopefully we'll
+>
+> Three efforts[0] :D Mine went unnoticed unfortunately, so I switched to
+> other projects then.
 
-It is used primary to speedup/unblock livepatching and some io_uring
-operations.
+It's odd, nobody seems to have noticed these until recently and now
+suddenly people are crawling out of the woodwork wanting unique
+addresses :) maybe the ambiguous ones are just getting commonplace
+enough that they're biting people more often?
 
-I do not know where exactly it triggers the XEN code.
+> My idea was to give relative path from the kernel root to the objfile,
+> as we have a good bunch of non-unique "filename + symbol name" pairs.
 
-> but it would seem
-> that either:
-> 1) free_irq is called twice
-> 2) free_irq is called but xs_init_irq wasn't initialized before
-> 
-> For 2) I can see that xenbus_probe() is called in a few cases where
-> xs_init_irq wasn't set. Something like the below would make the warning
-> go away but it would be nice to figure out which one is the code path
-> taken that originally triggered the warning.
+I considered that, but unfortunately that has two problems to a raging
+perfectionist like me:
 
-I added some debugging messages and:
+ - the objfile probably won't exist except if you're actually doing
+   kernel development, since kernel build trees are big enough that a
+   lot of people delete them after building or ship kernels to other
+   machines: if someone else built your kernel (overwhelmingly common
+   among non-kernel-devs) the objfiles are sure to be absent. (But an
+   option to not truncate the names when you know they won't be absent
+   might be a good idea, though this pushes space requirements up by
+   hundreds of kilobytes so it should probably be off by default.)
 
-  + xenbus_probe() was called in xenbus_probe_thread().
+ - even giving a path to the kernel module on disk (much lower
+   resolution and vulnerable to ambiguity again) is unreliable because
+   there's absolutely no guarantee that any given process can see any of
+   them: they might be in a different fs namespace or the modules might
+   only be present in an initramfs (hell, I even know setups which
+   *compile* the modules needed for rootfs mounting in the initramfs!
+   Yes this is borderline insane, yes it happens). More commonly, they
+   might be compressed using any of a number of compressors, changing
+   the name, and the kernel has no idea which compressor might have been
+   used (not unless you want it to go and look, and, well, wandering
+   around over the fs hunting down .ko.* files from kernelspace to get
+   their names right is *not* my idea of a good time! It's hard enough
+   to get that right from userspace, honestly, even with kmod helping.)
 
-  + xenbus_init() returned early after xen_domain() check so that
-    xs_init_irq was never initialized.
+   The most you could do would be to provide a key you could use with
+   kmod to dig the real modules out from userspace. Partial names are as
+   good as anything for that :)
 
-Note that I use KVM and not XEN:
+So all the objfile names are, when it comes down to it, is names with no
+intrinsic meaning: even if they're filenames of some kind, tools can't
+rely on being able to access those files. (For my most common use case,
+using a tracer on an enterprise-built production kernel, they'd almost
+never be able to.)
 
-[    0.000000] Hypervisor detected: KVM
-[...]
-[    0.072150] Booting paravirtualized kernel on KVM
-
-Anyway, the warning is not longer printed with the patch below.
-
-> diff --git a/drivers/xen/xenbus/xenbus_probe.c b/drivers/xen/xenbus/xenbus_probe.c
-> index 58b732dcbfb8..b0a6d121f895 100644
-> --- a/drivers/xen/xenbus/xenbus_probe.c
-> +++ b/drivers/xen/xenbus/xenbus_probe.c
-> @@ -65,7 +65,7 @@
->  #include "xenbus.h"
->  
->  
-> -static int xs_init_irq;
-> +static int xs_init_irq = -1;
->  int xen_store_evtchn;
->  EXPORT_SYMBOL_GPL(xen_store_evtchn);
->  
-> @@ -762,7 +762,8 @@ static void xenbus_probe(void)
->  		 * being called and the event channel not being enabled again
->  		 * afterwards, resulting in missed event notifications.
->  		 */
-> -		free_irq(xs_init_irq, &xb_waitq);
-> +		if (xs_init_irq >= 0)
-> +			free_irq(xs_init_irq, &xb_waitq);
->  	}
->  
->  	/*
-
-Best Regards,
-Petr
+So you might as well treat the objfile names as arbitrary string keys
+that might be a memory-jogger for humans, which means you can chop
+boring bits off them to save space :)
