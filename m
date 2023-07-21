@@ -2,84 +2,32 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 496FD75CBE0
-	for <lists+live-patching@lfdr.de>; Fri, 21 Jul 2023 17:36:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F8FC75CCF1
+	for <lists+live-patching@lfdr.de>; Fri, 21 Jul 2023 18:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232033AbjGUPgG (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Fri, 21 Jul 2023 11:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
+        id S229652AbjGUQAw (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Fri, 21 Jul 2023 12:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232036AbjGUPgC (ORCPT
+        with ESMTP id S231709AbjGUQAv (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Fri, 21 Jul 2023 11:36:02 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0793D30E7;
-        Fri, 21 Jul 2023 08:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689953761; x=1721489761;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=6Wqod9LTZW2Bae8goPs3VGBb2s/oZouTBylKg04HChQ=;
-  b=U5cNaUbBoPzoLmdLaSh8Uy+KwTAod2dhhXZAiNkRBsxhzgGMc26vdLSj
-   3xAwZn15qMyfeaDBGi+soP/rIOZ7H3gVNZk1+O65n9upLbLxy5Q9xogoF
-   u/Yd+DQfxeMl1W9dQST0ClBqRtVrZLQ8N+7Ng7yiOSzzObCb7GJk39j7B
-   PsSgTDxXasNTyJ8BvFPv/kcy0DBfLZN5TIxw/Ht1U7L+ufNsydWP6q9cu
-   3I2Bi///6Qeykbjmh0/sWZlU6PXWPzu6cxQOVyUhgpt4zRQyE93twfEwJ
-   eohBpRbPV+hdDjPle+Wok/q99M9B6QZ/ToHNIx02W5rnIWXAEOKA9NqZa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="430841318"
-X-IronPort-AV: E=Sophos;i="6.01,222,1684825200"; 
-   d="scan'208";a="430841318"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2023 08:36:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10778"; a="728146347"
-X-IronPort-AV: E=Sophos;i="6.01,222,1684825200"; 
-   d="scan'208";a="728146347"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga007.fm.intel.com with ESMTP; 21 Jul 2023 08:35:59 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Fri, 21 Jul 2023 08:35:58 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Fri, 21 Jul 2023 08:35:58 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.41) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Fri, 21 Jul 2023 08:35:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nixad+aHsy+0My+Xu/F057YpyG8EQ8HSZZ36dlaXpV2xZ66pvdj1lVx8WLKMxU4/gTkcV94SN/8ObTtD/s6OSkd/fmA6f9JZxLV+1F3VIcKRnygioGwYxj6Ni9paO/SJwFkGTio+3K1aiDOIEDywo+0JT80BXfBUgKiDK6bt55aRgdWTtF3KW5330elK5L8gnv13pOaXs21Q12CQaFHCuctNU/5vC9Cv9PvtplXnIxOFsuvZZZOrhEv8G28B+fGXNRjFvQcrMYpiPlggVpQh6x+XKwlEb+w8R38JtqMVgGb1bQoMomjyD1mhXpFikaOU4SmGzxVvZHPNA56GosXnMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6nB3G3yjQ/X6UocWtw9I576wS3BrLgDQdwl3SFgCc84=;
- b=TIq12PYVC/Qk6ubeDRAr/QQYTSdwJ/V+e9NV36/tpB3G8+MCRAzW8R9PYgSLrGkFt8PggnxAlOczN62hlsVL4tY20Yj7o+cljS7HDSTX/CcQRXhdXs7HTwcjrLipcqSOehRP+1K9UGrhr6WSRET+xwJOJ7+myg1y3fR7UsxCwI4FiPxCKuociKBSeFIkZ2ig0Ke+O/H3wCtAkdWoKteZqeXxcKQESmzmNTsiCVbSqtuqdVZb53+37VW3cjKlmUU/EdQmO+t6pUINaMu8yOKHSmhu3eK8aaEVGFFt3l9feS/vv9Vv6PNATgIQQ7lObfcEuCDyTsWf8QXF+/QhBkArNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by CH3PR11MB8210.namprd11.prod.outlook.com (2603:10b6:610:163::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.28; Fri, 21 Jul
- 2023 15:35:53 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::44ff:6a5:9aa4:124a]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::44ff:6a5:9aa4:124a%7]) with mapi id 15.20.6609.026; Fri, 21 Jul 2023
- 15:35:52 +0000
-Message-ID: <1b402c0c-1beb-d93f-ff6d-955350995ca3@intel.com>
-Date:   Fri, 21 Jul 2023 17:34:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH] tracing: Have all levels of checks prevent recursion
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Peter Zijlstra <peterz@infradead.org>
-CC:     LKML <linux-kernel@vger.kernel.org>,
+        Fri, 21 Jul 2023 12:00:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5290F30DD;
+        Fri, 21 Jul 2023 09:00:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C07C361D26;
+        Fri, 21 Jul 2023 16:00:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2B74C433C7;
+        Fri, 21 Jul 2023 16:00:44 +0000 (UTC)
+Date:   Fri, 21 Jul 2023 12:00:40 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Ingo Molnar <mingo@redhat.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
@@ -105,153 +53,134 @@ CC:     LKML <linux-kernel@vger.kernel.org>,
         <live-patching@vger.kernel.org>,
         =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
         Guo Ren <guoren@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] tracing: Have all levels of checks prevent recursion
+Message-ID: <20230721120040.6ed2c02a@gandalf.local.home>
+In-Reply-To: <1b402c0c-1beb-d93f-ff6d-955350995ca3@intel.com>
 References: <20211015110035.14813389@gandalf.local.home>
- <20211015161702.GF174703@worktop.programming.kicks-ass.net>
- <20211015133504.6c0a9fcc@gandalf.local.home>
- <20211015135806.72d1af23@gandalf.local.home>
- <20211015180429.GK174703@worktop.programming.kicks-ass.net>
- <20211015142033.72605b47@gandalf.local.home>
- <20211015142541.4badd8a9@gandalf.local.home>
-Content-Language: en-US
-From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <20211015142541.4badd8a9@gandalf.local.home>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0178.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b4::6) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+        <20211015161702.GF174703@worktop.programming.kicks-ass.net>
+        <20211015133504.6c0a9fcc@gandalf.local.home>
+        <20211015135806.72d1af23@gandalf.local.home>
+        <20211015180429.GK174703@worktop.programming.kicks-ass.net>
+        <20211015142033.72605b47@gandalf.local.home>
+        <20211015142541.4badd8a9@gandalf.local.home>
+        <1b402c0c-1beb-d93f-ff6d-955350995ca3@intel.com>
+X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|CH3PR11MB8210:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5ad375fe-aea6-49cf-8af8-08db8a002ab0
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qIaxNZbB4YwGV27vEsszD2dWKg/d0iNiIqrs68njlcIzZZiURS97XLHLbaoz5J3zkbt3TPF/csMjKMulwDUmPqYfTGMB15m+KxY8P5nBjZcm4Zz+6xv9T1pXiDVUM//yYPo+lBLVun5PAsFkKrtqpz5MHhlEADhQzXZVGcVWS+p93D2Vq4y2qc01Zb9CPb32scnqjspnD/VXWCIHn6wTRSPgPl3p1WIZmjqTiE3vO3aWHfWqSbfsjOFuEoh2IYdka5pzu5w6VaMnYJNmytm73hc0Bz0FK0uS1gROCH9FQHcA4oP1i41mX0t4KGgXIs0Q4xAo6n4cEQC0mX2WqDVk2tgqJYd9aR7LJ4r/GlA1+oxOw3ch3L7NLh+6iOj99pYV2rUURTUiPoacBzKzWtSV+r30w/3jPhO4aAOi9rTv3S0RWpkWp+daObZSK61Sk/P+PLhvzSVJaRe9QSoqsA8aASGxLTIpKaFOCb6S/7hFN+NBz2M/kzKNw/+SIGwfcG6FBynkCdMQoWTskO0c4/xURD/WAHpgoPwKdy2sKnC1xUW8F/+ehsRmjIps1PV9rQpCVxhScfmRgTRJmuXVLv9zol8+fLxYItiiMWrITkX5J69COK7cSAvAJlM0i4B3SDwfwE6Ci0V3GdWYwqwd9jMe6w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(366004)(39860400002)(136003)(346002)(376002)(451199021)(186003)(6506007)(478600001)(26005)(31686004)(66476007)(66946007)(4326008)(316002)(41300700001)(66556008)(86362001)(966005)(7406005)(7416002)(8936002)(8676002)(54906003)(6666004)(6512007)(110136005)(6486002)(5660300002)(31696002)(36756003)(2616005)(82960400001)(83380400001)(2906002)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UCt4Nm9ROURHN2ZEc1V6Rks4eG5TOVY5SmcwN0pKU25pZGwraUxFaUdrMGlM?=
- =?utf-8?B?WU1TYWNhOE1jNVVKRmRTMzNyZU1vaU1ZTFlwb2ltZStZd3lnLzVBWm9NWFBB?=
- =?utf-8?B?TTNSVmFFNjRGNDJpcnZYMUgvejkyVW12dmxZK2VzNDZDT1p4MytWNmE0RVdh?=
- =?utf-8?B?b2lDQUZFdDVkZ0pHV3ZKRUFiTDJXKzNHaWtUSWlvWDVRb1AvSk4xdTBaYkRL?=
- =?utf-8?B?blFLT0dSL2lCRzhiMG45WXhway9CT2l1Umx4Nkg1MERZQ1c4cUVnaC9WWVZK?=
- =?utf-8?B?clRWSG5hZXhTVWNmTWdTdnBVZ2UySkplSGlMNk1zMUFWMkVvSlBHNzZTdlBw?=
- =?utf-8?B?bENWNE5ockpyYm5qTmFVK29JaVpvejkxVExsMmdoNEwyQmg2SS9zdERlckxF?=
- =?utf-8?B?dFFHc2NpaG93OWlBMjVIdGh2c2FNRUJsa1EyYmp4bkZGN3REVjdYK2pqd2JI?=
- =?utf-8?B?Q1ovd2hHYXYvVFlYUzRJN3ZJM2hqS0VLS3ZjZkU3bjhxUXBEUTJvRjZXdnVZ?=
- =?utf-8?B?ekJsVFZYaUJJNjl1ZjNOUWsxZThnZWlPMTl5MkVZOG5BNTZEZU5QbDJVKzRI?=
- =?utf-8?B?WFMzQS9IZEUyRExFQ0xGMi92SFBOQ0VrSFcrNEJSRjMzTEpPaThTc3EwbXNE?=
- =?utf-8?B?ZjZhc0RhQ0JiV0p6SlFudDFKbmE2QllwT0pXWGJkeEFJSXY2Z2krY1NTa0Mr?=
- =?utf-8?B?QzcweXZOMEs1L0ZwQXNid0hRNnI5YUhYOHNvcG9PVGdmVzhWYWMvYXVteEgx?=
- =?utf-8?B?YmhhMkEwOUh6eUtrUmkzdjBXSFQ1MmtkOUxUV0xJbFBPUzhiYjBSdmhvazdP?=
- =?utf-8?B?WWttUDdPaVA4V3k0YkwxdGgxdUVyUmRXWEpPelBVMjExTHcvaXF6OGN4bUly?=
- =?utf-8?B?QTArSGF1eXV3SVRpZGZDYkNOUndrenR6cEtCbDVwTjVycWRiWW9wOUtkUFFC?=
- =?utf-8?B?OHFQeE5kbHVPQlFDdmxSZUZrOHJNNlI3YTR3VHl2TmhsQkR4aUNZdE01ekJO?=
- =?utf-8?B?aERqR0drRU50T281THYxV2diMGxxNWZuNWJrZGtZN1FPMkZSWXNSZlp6MUR2?=
- =?utf-8?B?YWhQRkpYZ3J6RnNsTlNteGI1L0NyQi9VbEt6SFhseFRmMzNGdHgzSHFRYzZV?=
- =?utf-8?B?MWhFSEYvQ0FlQUZUczl0VEd4OHFIVFpGdDBKN1QzU25tR3pFdThIOGhiM1FT?=
- =?utf-8?B?cDUveVJ5anB0dXFUcVk0ZllMSnVZKzdEZVU3U0tGdHBXa1kyekRaekg0dHU0?=
- =?utf-8?B?OGMxaGFWa0JIbGlhbFhuanlRRnp0Ym5EVUNJVzhlOGo3aC8ybllzMWxraTJO?=
- =?utf-8?B?OWxEbmFCSVp6aHNaTVlGajNvckR1WVdzaEVYenNvS0ZLZEkzNWFmN1BsS0Zo?=
- =?utf-8?B?Nys5UWoyeFBhKyt2VHY2bUpnYzBhUzNCVlBsMVozVmNyUlVxa05XVHE1SVZk?=
- =?utf-8?B?RkVrajdOSmlUSjNQYjFaOU81MUV1eDQ0aXU5ZmNtTGtjVDQrUGYzYXU2NmN0?=
- =?utf-8?B?SHkrNTc1S3RXOU9aZ1FDekgwUEg0dUtvVmVUeTFjQXQ2L0RsN01jN293OUZq?=
- =?utf-8?B?NFNuWXhOOGhUMzU4VlhEcFhoQXdCM1FKWlFNbkpSb3lhNGhPakZ1dlNmZGdu?=
- =?utf-8?B?MTVvWkhBWVdvWjR6QW5ya2V0bXM0dlhUdjFlVXUvNnZ5MTV6emJoQjhzSFZK?=
- =?utf-8?B?aVFZNHlLNk5IRnpOZmRyREVCRDkwbUpLamwvcFA3OWxxVkRwWEpzeStONFY2?=
- =?utf-8?B?UVdGSXVFdlVmc1pvRWM1ZmhXQ3Q0bHNMUzZidlU0UEpJLzhMNUVnNXB6YjFU?=
- =?utf-8?B?TGRLVzllcHpEQWxPZGhzNlMxWkxyWSsyNURvaGt6ZFVtZTNGbGpoR3hXRHdE?=
- =?utf-8?B?V3VXYjdXenhPeE9tMzBmZ29OWVhlOHdWT2xVcStrZ3p2OSt5UFVzVit0enFN?=
- =?utf-8?B?cm9DMWVWRGlmWlNwYVZJWmFjakVhTXIvRGZ0dXVaTkRCSDE3VGxXd0NlYjlH?=
- =?utf-8?B?T3JmMjJzK2xKWHlCZ3JBZWQrM2JYNTJtdUtYTStZbTU1dVZ2U2xURHE3OWUw?=
- =?utf-8?B?UzF0M0RGM1FqRUNXSmFJZGRrOTAzSEpUV1NNNllQT2gzemhqdGIyc0FkdUdF?=
- =?utf-8?B?ZE1qR2ZLTkFjMTRpMWo5RmRQajdzUnNkNmg0d0lWOU5iTkg0MytEbG42SVY4?=
- =?utf-8?B?OHc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ad375fe-aea6-49cf-8af8-08db8a002ab0
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2023 15:35:52.7272
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tviXYHacr2sryYgwYX++sQOxqmA3Py3ugXyNwYZz1V8qqnsY6AEkhIxQ+X6y77X4u2nPCPCVJyiI7em+fTmvvDH44siSUn2inF2vYxtjbAU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8210
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_BLOCKED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_BLOCKED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-From: Steven Rostedt <rostedt@goodmis.org>
-Date: Fri, 15 Oct 2021 14:25:41 -0400
+On Fri, 21 Jul 2023 17:34:41 +0200
+Alexander Lobakin <aleksander.lobakin@intel.com> wrote:
 
-Sorry for such a necroposting :z
-Just wanted to know if this is a bug, so that I could send a fix, or
-intended behaviour.
-
-> On Fri, 15 Oct 2021 14:20:33 -0400
-> Steven Rostedt <rostedt@goodmis.org> wrote:
+> From: Steven Rostedt <rostedt@goodmis.org>
+> Date: Fri, 15 Oct 2021 14:25:41 -0400
 > 
->>> I think having one copy of that in a header is better than having 3
->>> copies. But yes, something along them lines.  
->>
->> I was just about to ask you about this patch ;-)
+> Sorry for such a necroposting :z
+> Just wanted to know if this is a bug, so that I could send a fix, or
+> intended behaviour.
 > 
-> Except it doesn't build :-p (need to move the inlined function down a bit)
+> > On Fri, 15 Oct 2021 14:20:33 -0400
+> > Steven Rostedt <rostedt@goodmis.org> wrote:
+> >   
+> >>> I think having one copy of that in a header is better than having 3
+> >>> copies. But yes, something along them lines.    
+> >>
+> >> I was just about to ask you about this patch ;-)  
+> > 
+> > Except it doesn't build :-p (need to move the inlined function down a bit)
+> > 
+> > diff --git a/include/linux/preempt.h b/include/linux/preempt.h
+> > index 4d244e295e85..b32e3dabe28b 100644
+> > --- a/include/linux/preempt.h
+> > +++ b/include/linux/preempt.h
+> > @@ -77,6 +77,27 @@
+> >  /* preempt_count() and related functions, depends on PREEMPT_NEED_RESCHED */
+> >  #include <asm/preempt.h>
+> >  
+> > +/**
+> > + * interrupt_context_level - return interrupt context level
+> > + *
+> > + * Returns the current interrupt context level.
+> > + *  0 - normal context
+> > + *  1 - softirq context
+> > + *  2 - hardirq context
+> > + *  3 - NMI context
+> > + */
+> > +static __always_inline unsigned char interrupt_context_level(void)
+> > +{
+> > +	unsigned long pc = preempt_count();
+> > +	unsigned char level = 0;
+> > +
+> > +	level += !!(pc & (NMI_MASK));
+> > +	level += !!(pc & (NMI_MASK | HARDIRQ_MASK));
+> > +	level += !!(pc & (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET));  
 > 
-> diff --git a/include/linux/preempt.h b/include/linux/preempt.h
-> index 4d244e295e85..b32e3dabe28b 100644
-> --- a/include/linux/preempt.h
-> +++ b/include/linux/preempt.h
-> @@ -77,6 +77,27 @@
->  /* preempt_count() and related functions, depends on PREEMPT_NEED_RESCHED */
->  #include <asm/preempt.h>
->  
-> +/**
-> + * interrupt_context_level - return interrupt context level
-> + *
-> + * Returns the current interrupt context level.
-> + *  0 - normal context
-> + *  1 - softirq context
-> + *  2 - hardirq context
-> + *  3 - NMI context
-> + */
-> +static __always_inline unsigned char interrupt_context_level(void)
-> +{
-> +	unsigned long pc = preempt_count();
-> +	unsigned char level = 0;
-> +
-> +	level += !!(pc & (NMI_MASK));
-> +	level += !!(pc & (NMI_MASK | HARDIRQ_MASK));
-> +	level += !!(pc & (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET));
+> This doesn't take into account that we can switch the context manually
+> via local_bh_disable() / local_irq_save() etc. During the testing of the
 
-This doesn't take into account that we can switch the context manually
-via local_bh_disable() / local_irq_save() etc. During the testing of the
-separate issue[0], I've found that the function returns 1 in both just
-softirq and softirq under local_irq_save().
-Is this intended? Shouldn't that be
+You cannot manually switch interrupt context.
 
-	level += !!(pc & (NMI_MASK));
-	level += !!(pc * (NMI_MASK | HARDIRQ_MASK)) || irqs_disabled();
-	level += !!(pc * (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET)) ||
-		 in_atomic();
+> separate issue[0], I've found that the function returns 1 in both just
+> softirq and softirq under local_irq_save().
+> Is this intended? Shouldn't that be
 
-?
-Otherwise, the result it returns is not really "context level".
+That is intended behavior.
 
-> +
-> +	return level;
-> +}
-> +
-[0]
-https://lore.kernel.org/netdev/b3884ff9-d903-948d-797a-1830a39b1e71@intel.com
+local_bh_disable() and local_irq_save() is not a context switch. It is just
+preventing that context from happening. The interrupt_context_level() is to
+tell us what context we are running in, not what context is disabled.
 
-Thanks,
-Olek
+> 
+> 	level += !!(pc & (NMI_MASK));
+> 	level += !!(pc * (NMI_MASK | HARDIRQ_MASK)) || irqs_disabled();
+> 	level += !!(pc * (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET)) ||
+> 		 in_atomic();
+> 
+> ?
+> Otherwise, the result it returns is not really "context level".
+
+local_bh_disable() use to (and perhaps still does in some configurations)
+confuse things. But read the comment in kernel/softirq.c
+
+/*
+ * SOFTIRQ_OFFSET usage:
+ *
+ * On !RT kernels 'count' is the preempt counter, on RT kernels this applies
+ * to a per CPU counter and to task::softirqs_disabled_cnt.
+ *
+ * - count is changed by SOFTIRQ_OFFSET on entering or leaving softirq
+ *   processing.
+ *
+ * - count is changed by SOFTIRQ_DISABLE_OFFSET (= 2 * SOFTIRQ_OFFSET)
+ *   on local_bh_disable or local_bh_enable.
+ *
+ * This lets us distinguish between whether we are currently processing
+ * softirq and whether we just have bh disabled.
+ */
+
+Just because you disable interrupts does not mean you are in interrupt
+context.
+
+-- Steve
+
+
+> 
+> > +
+> > +	return level;
+> > +}
+> > +  
+> [0]
+> https://lore.kernel.org/netdev/b3884ff9-d903-948d-797a-1830a39b1e71@intel.com
+> 
+> Thanks,
+> Olek
+
