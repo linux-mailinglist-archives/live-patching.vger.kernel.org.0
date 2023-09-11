@@ -2,71 +2,170 @@ Return-Path: <live-patching-owner@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E17EC793FED
-	for <lists+live-patching@lfdr.de>; Wed,  6 Sep 2023 17:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ED4179BB8D
+	for <lists+live-patching@lfdr.de>; Tue, 12 Sep 2023 02:13:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242336AbjIFPHD (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 6 Sep 2023 11:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        id S236112AbjIKWd6 (ORCPT <rfc822;lists+live-patching@lfdr.de>);
+        Mon, 11 Sep 2023 18:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242358AbjIFPHC (ORCPT
+        with ESMTP id S239696AbjIKO0h (ORCPT
         <rfc822;live-patching@vger.kernel.org>);
-        Wed, 6 Sep 2023 11:07:02 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B941990;
-        Wed,  6 Sep 2023 08:06:52 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F7DDC433CD;
-        Wed,  6 Sep 2023 15:06:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1694012811;
-        bh=8R4kzh3nTSqACHjy9Igl6y50DXqOQIL6KrU6Xizd5vw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=AhWcnUbZ+xiAHtObPOonQ+/3NaC1cqET1bOPJgIMdhVZyxeUDtximhNM1VeLq7jJO
-         WnDoh+ChzesxUgRi5ykHRvVdLBWFOGdUWnPjrryEYomWsbfusvvHlA1i83vtKsTuVf
-         O9w2nvS6DEojbkdATDQsk/fE7QZ8yg6rLJjsOdcn+4cUcL+aYiqxqzckDGluhSe99a
-         d3rXta069sDO3orkisIZR+unsGClW+oAJbgSUvK6bVcgm2R1EMAsl+d6bMKRwTnDbZ
-         cC6SL+MhYSdCQdGMILC4dnTWs52jBbJdujfzVSsSW+qQSiBENhmxlL+D8S6lijxtlS
-         y3yvYICVYFdVw==
-Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-5733bcf6eb6so2049257eaf.0;
-        Wed, 06 Sep 2023 08:06:51 -0700 (PDT)
-X-Gm-Message-State: AOJu0Yx+PRNKN3vmGnmbPuw3OUU3liDjPr3gWw1SCkP0vepCz8YMS/Cm
-        w/YhrAI0IhWNWADed5g6K407AVgkS3ltjVqL968=
-X-Google-Smtp-Source: AGHT+IHs9MYVYX/hL5BllUuyFYnsWzXobUhMf+WTR4jpf255UF4qgkKxgbZrXP3NqiWFcMlEU6SXSZNicl0p1mJq7Xo=
-X-Received: by 2002:a4a:6c11:0:b0:573:4e21:5d25 with SMTP id
- q17-20020a4a6c11000000b005734e215d25mr12858374ooc.9.1694012810670; Wed, 06
- Sep 2023 08:06:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230828080423.3539686-1-alessandro.carminati@gmail.com>
- <CAK7LNATf5zQH=qOX3HCcAoaccK1KTjoGNuXc-d2-FM-japABoQ@mail.gmail.com> <CAPp5cGQgn0kfxPc+pmLMEJmHzOJ2HQQbsWSE0LFsxi4bigHOdQ@mail.gmail.com>
-In-Reply-To: <CAPp5cGQgn0kfxPc+pmLMEJmHzOJ2HQQbsWSE0LFsxi4bigHOdQ@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 7 Sep 2023 00:06:14 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATRCcQ7yBjoBiq8remJtVA0hfSr=yW-oY1_m9WneQuvQQ@mail.gmail.com>
-Message-ID: <CAK7LNATRCcQ7yBjoBiq8remJtVA0hfSr=yW-oY1_m9WneQuvQQ@mail.gmail.com>
+        Mon, 11 Sep 2023 10:26:37 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E50F0;
+        Mon, 11 Sep 2023 07:26:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694442392; x=1725978392;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=C2kybuQ38v2BvoZNTZCWPzmku3gnusplbnu/mCilM4w=;
+  b=BvtLK3aRLdU2zyuTE27NNWUntnkH1xjJN5ZLXEWjlbTVRooTRT03Cs83
+   Y4wuTB7BnXGnC8gySndkSUQ8f3ztdcBjUW0692NN1Rr266DQFve52+vvQ
+   wKNSJ/huqJEQ7IeuqX4WoGlAVC/1Q1nAHdJWsVoLBDasj0IA0RrUuV8Rs
+   BdM4KlfpxMChtpYtbnOC1JJuwKxIcX3uBHcjiG29/QuilLOHSFJEHS8SD
+   1VQvt0kBbY46jrUise9GD3qF6Md+Ww+cOihKkZUkPWBqX7PYv3jRzTzvo
+   JDRKR+UPA1wWHeYuEIEzq61WzP2r9waf4nLZm/Tl6XGbxNeT2P1uq1L7F
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="378009308"
+X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
+   d="scan'208";a="378009308"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2023 07:22:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="866961648"
+X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
+   d="scan'208";a="866961648"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 11 Sep 2023 07:22:07 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Mon, 11 Sep 2023 07:22:07 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Mon, 11 Sep 2023 07:22:07 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Mon, 11 Sep 2023 07:22:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=D4N4++tMDgHMcwDUcQ4XWGqP0Gi2LbgCBAHWJJlSlwyaX1i/oF9AKh3F3BiIb08CD4m5RkiaMNWRedUUrcTeGRXJFjKImP8HkBJqjVz462sAvegEiIOJpXfdtwKkge6EosbMSkDenz+v+7HUzYCAuG7BPbzzFE3KQabI2XzM3ybf49g7FYyLcsib9nIJQ1R/Ak+3kCWEiNkZzhJna6Lpjq/n3raQI42tDEpTPa+EkQOMPjbF2vz2tkeJIg8NTbKvbd+jIfsAh549Yvr2kskXZUqeMWlZPp+JKdtCxo8ys8Be3CgwuTBPiUUzPuWgnYz3eik4esq6a6exzFdyNUDMPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Oebg/edzbiiJrL2eKNUYYEv+3y+urtsIGNp6r/2CGxE=;
+ b=S5I39jK3jD9Lnegc9SOUjdkMN+HJkizdt/xgi116lzR7HGiUdb+vL6ULU36bpqm12For0ImErPAibJgpxqK8N0iWTrczrqhhhPPiYnZ1OaitqAwo6Utv/Z2Nn9/3FVO1LlJKbI7QvUkXP+2TFjsKQqf0AeRWL2NMLfZ41z+Cn5JmWEuNhsFgtSU7gvFneB8ZPtKhjW9FkLlNcyEMgrAQq9BpPAGaeGvaUntMOB/RgrnLezSGJT1+3dx4a+pJX9jc7DxaoYcy3ajDhQuC3sCPDKcXWzUFNIAJgSqN58VlOCpjBBma+q71BS4YWf+CR3ZL+gKtOpsHsaGOkqnawOg7MQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by SA1PR11MB8374.namprd11.prod.outlook.com (2603:10b6:806:385::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.30; Mon, 11 Sep
+ 2023 14:21:58 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::bede:bd20:31e9:fcb4]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::bede:bd20:31e9:fcb4%7]) with mapi id 15.20.6768.029; Mon, 11 Sep 2023
+ 14:21:58 +0000
+Message-ID: <d385548e-9788-2814-05c9-bb0f275b233f@intel.com>
+Date:   Mon, 11 Sep 2023 16:21:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
 Subject: Re: [PATCH v3] scripts/link-vmlinux.sh: Add alias to duplicate
  symbols for kallsyms
-To:     Alessandro Carminati <alessandro.carminati@gmail.com>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+Content-Language: en-US
+To:     "Alessandro Carminati (Red Hat)" <alessandro.carminati@gmail.com>
+CC:     Masami Hiramatsu <mhiramat@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        "Josh Poimboeuf" <jpoimboe@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        "Luis Chamberlain" <mcgrof@kernel.org>,
         Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
+        "Nick Desaulniers" <ndesaulniers@google.com>,
         Nicolas Schier <nicolas@fjasle.eu>,
-        Alexander Lobakin <aleksander.lobakin@intel.com>,
         Nick Alcock <nick.alcock@oracle.com>,
         Kris Van Hees <kris.van.hees@oracle.com>,
         Eugene Loh <eugene.loh@oracle.com>,
-        Francis Laniel <flaniel@linux.microsoft.com>,
-        Viktor Malik <vmalik@redhat.com>, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org
+        "Francis Laniel" <flaniel@linux.microsoft.com>,
+        Viktor Malik <vmalik@redhat.com>,
+        <linux-kbuild@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-trace-kernel@vger.kernel.org>,
+        <live-patching@vger.kernel.org>
+References: <20230828080423.3539686-1-alessandro.carminati@gmail.com>
+From:   Alexander Lobakin <aleksander.lobakin@intel.com>
+In-Reply-To: <20230828080423.3539686-1-alessandro.carminati@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_BLOCKED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: DUZPR01CA0139.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:4bd::14) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|SA1PR11MB8374:EE_
+X-MS-Office365-Filtering-Correlation-Id: 129ca22d-950b-4253-c3ca-08dbb2d2755b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LYLgtxzGYo+RiisC4f/R4PejQR72teM68o9a5XtJoeIpA9DuzNBh+DalUdciq/yvZ6G7fYvE2j/vH9OQLyL04JxTIjLD+AXxpTTrCt5pg1ulm13rNbaP1TQZK/wuh7XBt5lSUc4zrhBHyTB8j6VjDOZplew8tTKlong6fLKoh4C5ib9zPqb34RKskkmUiQFalKf9FROe/hEiA7EfSPs26oC/LWht7PQh0yw+Ke9fySG9lwlLqWT5vjka2oN2YsapI8Mjnc8lyd1fBXfpjru/PmvpjWlHxvzUaowXf4cHRGbI7fc87BV8cXAINrn5hCGipTED8nvy/MFU+Q/v6W0qsaoAgzH5LWIJtyO/pNdo55sCVVnGiLBklQrEd2MeT2pEKnFmlPLCpLSXb57A+QnrSrLqLKRaaQsKnBt/8TXdRspK2e0es+JpKhNP+SWG5C97zp0QzYzwXv8FeJTuyxXYRAgH8QckspG9YX2ycjA5Y3J/ZLy6iGM0ePGcJ20s3LzilUOHbXmOCnu4zVtZPvRtYm/gnz8fcHcgx4RJA9oaHJKG2a++dPEDbabQzULxklk5pKJJRYxeyap1MINMdSwZAGAAkbP55h4Ib0qTFR6dDgzMaFwfDGlZSc15jFzdc2XI4PzDwBA3HydLJVJC/jEPjQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(136003)(39860400002)(346002)(376002)(366004)(451199024)(186009)(1800799009)(31686004)(66899024)(2906002)(82960400001)(38100700002)(36756003)(86362001)(31696002)(7416002)(2616005)(8676002)(8936002)(4326008)(6666004)(5660300002)(66476007)(66946007)(478600001)(66556008)(316002)(41300700001)(54906003)(6512007)(6916009)(6506007)(6486002)(26005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NFZpL25LaFdGclFNNUZBOE1SblVjangyR3FlYW1PbGdxZWNqUHoxam1WTTRI?=
+ =?utf-8?B?OUlmcVBwUkVXTWV5eHhuM0VCd3RuZTQ4ODhxVzNzajBKZlpnbzRoZlVSaWdB?=
+ =?utf-8?B?N0tKTk95cEhiYytCOXdjbW1xdjh6UDZjeTJ0NmdyendZbUl5UUdVT0psYlJN?=
+ =?utf-8?B?QlJRU3Z1OUJMaHlFM2NjZ2FwZi85THo2S0tjTEZ6dUhEUG1wSzNzMDJHR2Zk?=
+ =?utf-8?B?MkFMcW1tWDdIek5xYnhPZjllNGFCZ3QrbTJTditCTlgyMFhtTDVNTzhiL3NW?=
+ =?utf-8?B?ejM4RnhTajduWmJEMHEvQTBZVkFXdisrOTVURlJLcFQ2LzhJZ0xuU1ZwUGkw?=
+ =?utf-8?B?NHM0OWxFSUJhZ202ZVNLRWx1OE44ZEZRUzEvZUNnc0J2NXJoMWFGOXJ1VHZG?=
+ =?utf-8?B?THVqTis4Z1h3RmVTZ0VkT3A1NW02dFh2aGZyUjNuSGZoeEcxeUt0R243UVVW?=
+ =?utf-8?B?b1l2cTVqaDVXN0lDbGFHNFM4dDV2UUdRakN0L05Tdm1mT3BWOVV6ZW1CQU1s?=
+ =?utf-8?B?dVlhSEV5d0hoNzgyZGpMSDg1MDFNMjZOWmdKR1JobVIrZGMzb1RtZllGdUNR?=
+ =?utf-8?B?OFg5RnVZbEk0c0c1azYzRkVUczFQVkNEVDlxbURSQ1JYZUV2c2EwT2V1cndF?=
+ =?utf-8?B?S1NMN2pzNEVCWkxDTnIwVk9hTGV5MTNycmRqenk4bEJrdzB2UFZZSEFWQ1Nv?=
+ =?utf-8?B?S0RGdHd3dXRPMzU3R3VkZUh1dkNnUG1rbTZ3Uy9TdHVRdlhuZ2psczFnWFRF?=
+ =?utf-8?B?Z3o4MmZWMVpIWFRnMzFBNXQ5a2JkTlZtL2licFVtMlllSUhtV3FYT0dDV3BM?=
+ =?utf-8?B?NXJJS3F1WUY5bHk2NHhiL3hYRWdkbURpWXVWejVmUzZhUVlyell6VGJvbmxk?=
+ =?utf-8?B?b3JwN05RcGxlNUE2NFZWY0ZmSDFaNmhLOEtxUmo4OWdPY2FwWWUwSmdSTElz?=
+ =?utf-8?B?dGVRZzNjeGVFY3BtK0tIMzVvTk5tS0FRbnBoYytRbUhXamhsUkk1cnhxc04x?=
+ =?utf-8?B?dCtwTEM2ckhONkxBaU9tOUIwZ2gwK2hGZFNjSSsxUDFVcnNmMmsvMjVWS09T?=
+ =?utf-8?B?Y0xDNloydU1kays3YmFrd2FOdnJlRzN0OGJSKy9URHZEMm9nNXRwOTBHUlh6?=
+ =?utf-8?B?V2w0bEVYaTN2ZXc4RTNabE5raFplVUtLbmR6NmpwY2lkaEtjOXFiV2g2dmlm?=
+ =?utf-8?B?cEk0NElHZ2J5VWpvdCs4a1BSY293eEs1VDkxV0NkT1NPNStVWmpGNGNxRllM?=
+ =?utf-8?B?L1BsYXFOdzNXeGJJYk5GdnQ3VjNxbWovaU5waXVTREw0OHkyODRlcGowandi?=
+ =?utf-8?B?b3dDM3JKTFlVVVBGUWxwK3g3Y0xxZUVIeFV1RnVaODhvVUVCRjd1c0ZCeW5W?=
+ =?utf-8?B?LytkSy9oSHI4dnFhRFNXcHgvYVhNVHA1RnBoaG1qY1B3YVA0K0N3akUvVWVv?=
+ =?utf-8?B?ZEhMVDVlTGZZazNzL1gxT3RTenJYdDlhSlVCMG9rUGQ5V0tibVVwMkI2eWQ3?=
+ =?utf-8?B?YVVWMlQ5WFpkVlF0T3kycktmc283b1JiVFNuMzJIdG1nbDRlNndyQzdVYjZP?=
+ =?utf-8?B?MkM5WFpycEJhakxCdmVOWXZMam5SUzlzUDNFS1lUU2VPdWlqS0EzYm9vQVpV?=
+ =?utf-8?B?QjBPOENXNm9JeTdTaGh6S3dLT1JGeENNT3NxRU53Z2xOOWRzb0VMS0JiK094?=
+ =?utf-8?B?OENQdUtOZldYRjlWODkvQ2l6L3l6L2k5bkVIOGRRZmFYVnVvOXliTXZIRUFC?=
+ =?utf-8?B?bGJCQ1FkZGZ6amZERm10WWVXTWpZVFBDdEdRWUQ5ZjdCa3N2YnFmOU9CSUxJ?=
+ =?utf-8?B?d04rZTVGMTRMTDF6RkV5aXdyc3pVM2s0d3pyVFBlSVllYVVUOVdibkp2NE5o?=
+ =?utf-8?B?SEZMLzhkZGloNWV5NmZNVFpjbEM2TTNVWEpqVmJRQ2J5ekdaMjdqUGZHOXVB?=
+ =?utf-8?B?d1FJeENwYnFVaVBFa3UxTG10QTlqWi9iVUsvVWVKOTNiNklHNng3OUVkdFRt?=
+ =?utf-8?B?Z0hUUzZlc1U3c1QvVnB1S1FYWVBjbXNqaVRMMERONzhLdGRZOTdnb05naTFt?=
+ =?utf-8?B?Uk9pMDJ3LzM4SDVDRXdwOXVlNUlVMzVjYmRDd1hmaWZ4N3N5RmJIa1pzQnF0?=
+ =?utf-8?B?RWU4QU9sdy85TGlWalN5blNvdFlsZU5JNGdCcmVLWk5aVHgyUGk0b1QvUHJP?=
+ =?utf-8?B?M3c9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 129ca22d-950b-4253-c3ca-08dbb2d2755b
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2023 14:21:58.7517
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 66z0ab7vhhAmy1ru899ow2Ab0jj/izTgG8zGhh+lxv51fd0+jvs1FugFsc4seZgntDuEQxUL4R2qHTUjeSugIcNIApZegUiJD0HzSpSwikM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB8374
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_BLOCKED,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,259 +173,57 @@ Precedence: bulk
 List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
 
-On Wed, Sep 6, 2023 at 7:09=E2=80=AFPM Alessandro Carminati
-<alessandro.carminati@gmail.com> wrote:
->
-> Hello Masahiro,
->
-> Thank you for your suggestions,
-> Il giorno sab 2 set 2023 alle ore 08:36 Masahiro Yamada
-> <masahiroy@kernel.org> ha scritto:
-> >
-> > On Mon, Aug 28, 2023 at 8:45=E2=80=AFPM Alessandro Carminati (Red Hat)
-> > <alessandro.carminati@gmail.com> wrote:
-> > >
-> > > From: Alessandro Carminati <alessandro.carminati@gmail.com>
-> > >
-> > > It is not uncommon for drivers or modules related to similar peripher=
-als
-> > > to have symbols with the exact same name.
-> > > While this is not a problem for the kernel's binary itself, it become=
-s an
-> > > issue when attempting to trace or probe specific functions using
-> > > infrastructure like ftrace or kprobe.
-> > >
-> > > The tracing subsystem relies on the `nm -n vmlinux` output, which pro=
-vides
-> > > symbol information from the kernel's ELF binary. However, when multip=
-le
-> > > symbols share the same name, the standard nm output does not differen=
-tiate
-> > > between them. This can lead to confusion and difficulty when trying t=
-o
-> > > probe the intended symbol.
-> > >
-> > >  ~ # cat /proc/kallsyms | grep " name_show"
-> > >  ffffffff8c4f76d0 t name_show
-> > >  ffffffff8c9cccb0 t name_show
-> > >  ffffffff8cb0ac20 t name_show
-> > >  ffffffff8cc728c0 t name_show
-> > >  ffffffff8ce0efd0 t name_show
-> > >  ffffffff8ce126c0 t name_show
-> > >  ffffffff8ce1dd20 t name_show
-> > >  ffffffff8ce24e70 t name_show
-> > >  ffffffff8d1104c0 t name_show
-> > >  ffffffff8d1fe480 t name_show
-> > >
-> > > **kas_alias** addresses this challenge by extending the symbol names =
-with
-> > > unique suffixes during the kernel build process.
-> > > The newly created aliases for these duplicated symbols are unique nam=
-es
-> > > that can be fed to the ftracefs interface. By doing so, it enables
-> > > previously unreachable symbols to be probed.
-> > >
-> > >  ~ # cat /proc/kallsyms | grep " name_show"
-> > >  ffffffff974f76d0 t name_show
-> > >  ffffffff974f76d0 t name_show__alias__6340
-> > >  ffffffff979cccb0 t name_show
-> > >  ffffffff979cccb0 t name_show__alias__6341
-> > >  ffffffff97b0ac20 t name_show
-> > >  ffffffff97b0ac20 t name_show__alias__6342
-> > >  ffffffff97c728c0 t name_show
-> > >  ffffffff97c728c0 t name_show__alias__6343
-> > >  ffffffff97e0efd0 t name_show
-> > >  ffffffff97e0efd0 t name_show__alias__6344
-> > >  ffffffff97e126c0 t name_show
-> > >  ffffffff97e126c0 t name_show__alias__6345
-> > >  ffffffff97e1dd20 t name_show
-> > >  ffffffff97e1dd20 t name_show__alias__6346
-> > >  ffffffff97e24e70 t name_show
-> > >  ffffffff97e24e70 t name_show__alias__6347
-> > >  ffffffff981104c0 t name_show
-> > >  ffffffff981104c0 t name_show__alias__6348
-> > >  ffffffff981fe480 t name_show
-> > >  ffffffff981fe480 t name_show__alias__6349
-> > >  ~ # echo "p:kprobes/evnt1 name_show__alias__6349" \
-> > >  > >/sys/kernel/tracing/kprobe_events
-> > >  ~ # cat /sys/kernel/tracing/kprobe_events
-> > >  p:kprobes/evnt1 name_show__alias__6349
-> > >
-> > > Changes from v1:
-> > > - Integrated changes requested by Masami to exclude symbols with pref=
-ixes
-> > >   "_cfi" and "_pfx".
-> > > - Introduced a small framework to handle patterns that need to be exc=
-luded
-> > >   from the alias production.
-> > > - Excluded other symbols using the framework.
-> > > - Introduced the ability to discriminate between text and data symbol=
-s.
-> > > - Added two new config symbols in this version: CONFIG_KALLSYMS_ALIAS=
-_DATA,
-> > >   which allows data for data, and CONFIG_KALLSYMS_ALIAS_DATA_ALL, whi=
-ch
-> > >   excludes all filters and provides an alias for each duplicated symb=
-ol.
-> > >
-> > > https://lore.kernel.org/all/20230711151925.1092080-1-alessandro.carmi=
-nati@gmail.com/
-> > >
-> > > Changes from v2:
-> > > - Alias tags are created by querying DWARF information from the vmlin=
-ux.
-> > > - The filename + line number is normalized and appended to the origin=
-al name.
-> > > - The tag begins with '@' to indicate the symbol source.
-> > > - Not a change, but worth mentioning, since the alias is added to the=
- existing
-> > >   list, the old duplicated name is preserved, and the livepatch way o=
-f dealing
-> > >   with duplicates is maintained.
-> > > - Acknowledging the existence of scenarios where inlined functions de=
-clared in
-> > >   header files may result in multiple copies due to compiler behavior=
-, though
-> > >    it is not actionable as it does not pose an operational issue.
-> > > - Highlighting a single exception where the same name refers to diffe=
-rent
-> > >   functions: the case of "compat_binfmt_elf.c," which directly includ=
-es
-> > >   "binfmt_elf.c" producing identical function copies in two separate
-> > >   modules.
-> > >
-> > > sample from new v3
-> > >
-> > >  ~ # cat /proc/kallsyms | grep gic_mask_irq
-> > >  ffffd0b03c04dae4 t gic_mask_irq
-> > >  ffffd0b03c04dae4 t gic_mask_irq@_drivers_irqchip_irq-gic_c_167
-> > >  ffffd0b03c050960 t gic_mask_irq
-> > >  ffffd0b03c050960 t gic_mask_irq@_drivers_irqchip_irq-gic-v3_c_404
-> > >  ~ #
-> > >
-> > > https://lore.kernel.org/all/20230714150326.1152359-1-alessandro.carmi=
-nati@gmail.com/
-> > >
-> > > Signed-off-by: Alessandro Carminati (Red Hat) <alessandro.carminati@g=
-mail.com>
-> > > ---
-> > >  init/Kconfig                        |  36 ++++
-> > >  scripts/Makefile                    |   4 +
-> > >  scripts/kas_alias/Makefile          |   4 +
-> > >  scripts/kas_alias/a2l.c             | 268 ++++++++++++++++++++++++++=
-++
-> > >  scripts/kas_alias/a2l.h             |  32 ++++
-> > >  scripts/kas_alias/duplicates_list.c |  70 ++++++++
-> > >  scripts/kas_alias/duplicates_list.h |  15 ++
-> > >  scripts/kas_alias/item_list.c       | 230 ++++++++++++++++++++++++
-> > >  scripts/kas_alias/item_list.h       |  26 +++
-> > >  scripts/kas_alias/kas_alias.c       | 217 ++++++++++++++++++++++
-> > >  scripts/link-vmlinux.sh             |  11 +-
-> > >  11 files changed, 910 insertions(+), 3 deletions(-)
-> >
-> >
-> > I added some review comments in another thread, but
-> > one of the biggest concerns might be "910 insertions".
-> >
-> >
-> > What this program does is quite simple,
-> > "find duplicated names, and call addr2line".
-> >
-> >
-> >
-> > You wrote a lot of code to self-implement these:
-> >
-> >  - sort function
-> >  - parse PATH env variable to find addr2line
-> >  - fork addr2line to establish pipe communications
-> >
-> >
-> >
-> > Have you considered writing the code in Python (or Perl)?
-> > Is it too slow?
->
-> I have attempted to incorporate all your suggestions.
-> I refactored the C code to utilize hashing instead of sorting, and I
-> completely re-implemented the entire thing in Python for the purpose of
-> comparison.
->
-> You are correct;
-> the C version is indeed faster, but the difference is negligible when
-> considering the use case and code maintainability.
+From: Alessandro Carminati (Red Hat) <alessandro.carminati@gmail.com>
+Date: Mon, 28 Aug 2023 08:04:23 +0000
 
+> From: Alessandro Carminati <alessandro.carminati@gmail.com>
+> 
+> It is not uncommon for drivers or modules related to similar peripherals
+> to have symbols with the exact same name.
 
-Nice. Then, I prefer shorter code.
+[...]
 
-The Python implementation is 0.2 sec slower
-(given the script is executed three times, 0.6 sec cost in total)
-but it is not a big issue, I think.
+> Changes from v2:
+> - Alias tags are created by querying DWARF information from the vmlinux.
+> - The filename + line number is normalized and appended to the original name.
+> - The tag begins with '@' to indicate the symbol source.
+> - Not a change, but worth mentioning, since the alias is added to the existing
+>   list, the old duplicated name is preserved, and the livepatch way of dealing
+>   with duplicates is maintained.
+> - Acknowledging the existence of scenarios where inlined functions declared in
+>   header files may result in multiple copies due to compiler behavior, though
+>    it is not actionable as it does not pose an operational issue.
+> - Highlighting a single exception where the same name refers to different
+>   functions: the case of "compat_binfmt_elf.c," which directly includes
+>   "binfmt_elf.c" producing identical function copies in two separate
+>   modules.
 
-Thanks.
+Oh, I thought you managed to handle this in v3 since you didn't reply in
+the previous thread...
 
+> 
+> sample from new v3
+> 
+>  ~ # cat /proc/kallsyms | grep gic_mask_irq
+>  ffffd0b03c04dae4 t gic_mask_irq
+>  ffffd0b03c04dae4 t gic_mask_irq@_drivers_irqchip_irq-gic_c_167
+>  ffffd0b03c050960 t gic_mask_irq
+>  ffffd0b03c050960 t gic_mask_irq@_drivers_irqchip_irq-gic-v3_c_404
 
+BTW, why normalize them? Why not just
 
+gic_mask_irq@drivers/irqchip/...
 
+Aaaaand why line number? Line numbers break reproducible builds and also
+would make it harder to refer to a particular symbol by its path and
+name since we also have to pass its line number which may change once
+you add a debug print there, for example.
+OTOH there can't be 2 symbols with the same name within one file, so
+just path + name would be enough. Or not?
 
+(sorry if some of this was already discussed previously)
 
+[...]
 
-
-
->
-> Here's a direct comparison of the two.
-> ```
-> ~ $ time ./kas_alias.py -a /usr/bin/aarch64-linux-gnu-addr2line \
->                       -n linux-6.5/.tmp_vmlinux.kallsyms1.syms \
->                       -v linux-6.5/.tmp_vmlinux.kallsyms1 \
->                       -o output_py
->
-> real    0m1.626s
-> user    0m1.436s
-> sys     0m0.185s
-> $ cat kas_alias.py | wc -l
-> 133
-> ~ $ time ./kas_alias -a /usr/bin/aarch64-linux-gnu-addr2line \
->                    -v linux-6.5/.tmp_vmlinux.kallsyms1 \
->                    -n linux-6.5/.tmp_vmlinux.kallsyms1.syms \
->                    -o output_c
->
-> real    0m1.418s
-> user    0m1.262s
-> sys     0m0.162s
-> ~ $ cat a2l.c a2l.h conf.c conf.h item_list.c item_list.h kas_alias.c | w=
-c -l
-> 742
-> ~ $ diff output_py output_c
-> ~ $
-> ```
-> C version is 7/10% faster but is more than 5 times in terms of code size.
->
-> >
-> > Most of the functions you implemented are already
-> > available in script languages.
-> >
-> >
-> >
-> > I am not sure if "@<file-path>" is a good solution,
-> > but the amount of the added code looks too much to me.
->
-> I followed Francis's suggestion and made the separator between
-> <symbol name> and <normalized filename> an argument that you can select
-> using the command line. Since I'm not aware of a better choice, I set the
-> default value to '@'.
->
-> >
-> >
-> >
-> >
-> > --
-> > Best Regards
-> > Masahiro Yamada
->
-> Best regards
-> Alessandro Carminati
-
-
-
---=20
-Best Regards
-Masahiro Yamada
+Thanks,
+Olek
