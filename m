@@ -1,132 +1,88 @@
-Return-Path: <live-patching-owner@vger.kernel.org>
+Return-Path: <live-patching+bounces-1-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0836A7A8655
-	for <lists+live-patching@lfdr.de>; Wed, 20 Sep 2023 16:16:38 +0200 (CEST)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234533AbjITOQm (ORCPT <rfc822;lists+live-patching@lfdr.de>);
-        Wed, 20 Sep 2023 10:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234100AbjITOQl (ORCPT
-        <rfc822;live-patching@vger.kernel.org>);
-        Wed, 20 Sep 2023 10:16:41 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B492ECA
-        for <live-patching@vger.kernel.org>; Wed, 20 Sep 2023 07:16:32 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 645631FF2C;
-        Wed, 20 Sep 2023 14:16:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1695219391; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r92pwsodrWk5oBqS0cdXZqSV+7pX7kIETuIqrWvBLxw=;
-        b=mmU68D+oiMP6qLaksJbVOllJtvqq3pC6gnjPZrXOrfE1pwxFiR5I04VDxOur1T2CQDwUge
-        qALZqqcIWoAGIFzbq2D/px5SX0jXeHt7kGfZHgIn3e7nleqc04SrXlC2xr3KWvRcqTB2BF
-        oJbg+r9VMCXwSy1GVHr/ioG3gI2kCJU=
-Received: from suse.cz (pmladek.tcp.ovpn2.prg.suse.de [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A3EF32C142;
-        Wed, 20 Sep 2023 14:16:30 +0000 (UTC)
-Date:   Wed, 20 Sep 2023 16:16:30 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Joe Lawrence <joe.lawrence@redhat.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, live-patching@vger.kernel.org,
-        Ryan Sullivan <rysulliv@redhat.com>,
-        Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: Recent Power changes and stack_trace_save_tsk_reliable?
-Message-ID: <ZQr-vmBBQ66TRobQ@alley>
-References: <ZO4K6hflM/arMjse@redhat.com>
- <87o7ipxtdc.fsf@mail.lhotse>
- <87il8xxcg7.fsf@mail.lhotse>
- <cca0770c-1510-3a02-d0ba-82ee5a0ae4f2@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cca0770c-1510-3a02-d0ba-82ee5a0ae4f2@redhat.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 07FC57A8D29
+	for <lists+live-patching@lfdr.de>; Wed, 20 Sep 2023 21:53:02 +0200 (CEST)
+Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CE4011C20A6E
+	for <lists+live-patching@lfdr.de>; Wed, 20 Sep 2023 19:53:00 +0000 (UTC)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1C6F405C1;
+	Wed, 20 Sep 2023 19:52:19 +0000 (UTC)
+X-Original-To: live-patching@vger.kernel.org
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E3BF450CB
+	for <live-patching@vger.kernel.org>; Wed, 20 Sep 2023 19:52:18 +0000 (UTC)
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF37DC
+	for <live-patching@vger.kernel.org>; Wed, 20 Sep 2023 12:52:15 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-59bbdb435bfso2547267b3.3
+        for <live-patching@vger.kernel.org>; Wed, 20 Sep 2023 12:52:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google; t=1695239534; x=1695844334; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=i6XY8wIMD7LjGNpegRcCUKrZA0w1gq5GxQRY7mj2AIc=;
+        b=IBfe9QuYzIjLJoMieQ9UClN+pIjHMly/FiZINK7vZf8eX2tHxCJ/6Rb2NF4SAKW+hU
+         FpJ8BvtJWozoQfGKaFS2QpgBqZLNwutXOUeKjWt4xr2vzw1WXDbdzqEkOi9oFob2/miU
+         UjpHeeGdsXA+BfvdR9BaHw248Y7AGuZcMebM4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695239534; x=1695844334;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=i6XY8wIMD7LjGNpegRcCUKrZA0w1gq5GxQRY7mj2AIc=;
+        b=kqUA6KvaW/Ib8AvgGmwSAf2p94G9kHjCOKUfDJuNVpzYJFDHiWwhcWkxqoNoxDZ4J6
+         OoDdgebdClOIzq7yCAg9CjikObLBXquRKGN03z7uSX5Tojacajz3MkfdqwTMEJ9OnJqM
+         tE8Mof3vjuCvETQ73x1YBAQZOdoRmGetwtf8FIp7FFYrUMlkDrGAZKceKGDvzUA8c0DF
+         0SYB4s6s8q6L83mEaiDoXLgNZKkuBxU1qHWuhaJf4HfQQQDY3faYzNAQaDHGWOPbnldt
+         gbazCzRhWAvekoEUCdO1LxCJXPKSTvTKJdOzIe9yfGtVa5HzjFNrXjQvOitbX+IMapsG
+         5HiA==
+X-Gm-Message-State: AOJu0Yy2uaqPIAE2+Rby0v2qwiTIJK8b2OGOoO/szyYTowG+HvfNneA8
+	K7ngvf/Oio3tBQS7XbnuD3ejJA==
+X-Google-Smtp-Source: AGHT+IE34WLE4Cfpn3/mrrUYZ+NVqbx/9khGu7tOlXbwDv4JWUwVQmIsGV3ZOglYnX/uY5dff3oc1Q==
+X-Received: by 2002:a81:a087:0:b0:561:c5d4:ee31 with SMTP id x129-20020a81a087000000b00561c5d4ee31mr3955439ywg.38.1695239534737;
+        Wed, 20 Sep 2023 12:52:14 -0700 (PDT)
+Received: from meerkat.local ([209.226.106.110])
+        by smtp.gmail.com with ESMTPSA id t6-20020a05620a034600b0076ce061f44dsm5062450qkm.25.2023.09.20.12.52.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Sep 2023 12:52:14 -0700 (PDT)
+Date: Wed, 20 Sep 2023 15:52:05 -0400
+From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To: dwarves@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+	linux-rt-users@vger.kernel.org, linux-rtc@vger.kernel.org, linux-trace-devel@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: This list is being migrated to new infrastructure
+Message-ID: <20230920-uncouple-grime-729f33@meerkat>
 Precedence: bulk
-List-ID: <live-patching.vger.kernel.org>
 X-Mailing-List: live-patching@vger.kernel.org
+List-Id: <live-patching.vger.kernel.org>
+List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_20,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	RCVD_IN_DNSWL_BLOCKED,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
+	SUSPICIOUS_RECIPS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed 2023-08-30 17:47:35, Joe Lawrence wrote:
-> On 8/30/23 02:37, Michael Ellerman wrote:
-> > Michael Ellerman <mpe@ellerman.id.au> writes:
-> >> Joe Lawrence <joe.lawrence@redhat.com> writes:
-> >>> Hi ppc-dev list,
-> >>>
-> >>> We noticed that our kpatch integration tests started failing on ppc64le
-> >>> when targeting the upstream v6.4 kernel, and then confirmed that the
-> >>> in-tree livepatching kselftests similarly fail, too.  From the kselftest
-> >>> results, it appears that livepatch transitions are no longer completing.
-> >>
-> >> Hi Joe,
-> >>
-> >> Thanks for the report.
-> >>
-> >> I thought I was running the livepatch tests, but looks like somewhere
-> >> along the line my kernel .config lost CONFIG_TEST_LIVEPATCH=m, so I have
-> >> been running the test but it just skips. :/
-> >>
-> 
-> That config option is easy to drop if you use `make localmodconfig` to
-> try and expedite the builds :D  Been there, done that too many times.
-> 
-> >> I can reproduce the failure, and will see if I can bisect it more
-> >> successfully.
-> > 
-> > It's caused by:
-> > 
-> >   eed7c420aac7 ("powerpc: copy_thread differentiate kthreads and user mode threads")
-> > 
-> > Which is obvious in hindsight :)
-> > 
-> > The diff below fixes it for me, can you test that on your setup?
-> > 
-> 
-> Thanks for the fast triage of this one.  The proposed fix works well on
-> our setup.  I have yet to try the kpatch integration tests with this,
-> but I can verify that all of the kernel livepatching kselftests now
-> happily run.
+Hello, all:
 
-Have this been somehow handled, please? I do not see the proposed
-change in linux-next as of now.
+This list is being migrated to the new vger infrastructure. This should be a
+fully transparent process and you don't need to change anything about how you
+participate with the list or how you receive mail.
 
-> > A proper fix will need to be a bit bigger because the comments in there
-> > are all slightly wrong now since the above commit.
-> > 
-> > Possibly we can also rework that code more substantially now that
-> > copy_thread() is more careful about setting things up, but that would be
-> > a follow-up.
-> > 
-> > diff --git a/arch/powerpc/kernel/stacktrace.c b/arch/powerpc/kernel/stacktrace.c
-> > index 5de8597eaab8..d0b3509f13ee 100644
-> > --- a/arch/powerpc/kernel/stacktrace.c
-> > +++ b/arch/powerpc/kernel/stacktrace.c
-> > @@ -73,7 +73,7 @@ int __no_sanitize_address arch_stack_walk_reliable(stack_trace_consume_fn consum
-> >  	bool firstframe;
-> >  
-> >  	stack_end = stack_page + THREAD_SIZE;
-> > -	if (!is_idle_task(task)) {
-> > +	if (!(task->flags & PF_KTHREAD)) {
-> >  		/*
-> >  		 * For user tasks, this is the SP value loaded on
-> >  		 * kernel entry, see "PACAKSAVE(r13)" in _switch() and
+There will be a brief 20-minute delay with archives on lore.kernel.org. I will
+follow up once the archive migration has been completed.
 
-If I read the change in the commit eed7c420aac7fde ("powerpc: copy_thread
-differentiate kthreads and user mode threads") correctly then the
-above fix is correct.
+Best regards,
+Konstantin
 
-It is probably just enough to update the comment about that
-STACK_FRAME_MIN_SIZE is used by all kthreads.
-
-Best Regards,
-Petr
