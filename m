@@ -1,97 +1,92 @@
-Return-Path: <live-patching+bounces-2-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-3-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CA90B7A8DA9
-	for <lists+live-patching@lfdr.de>; Wed, 20 Sep 2023 22:16:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 082D97A9879
+	for <lists+live-patching@lfdr.de>; Thu, 21 Sep 2023 19:47:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D69D11C20BE6
-	for <lists+live-patching@lfdr.de>; Wed, 20 Sep 2023 20:16:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B5CAB28276C
+	for <lists+live-patching@lfdr.de>; Thu, 21 Sep 2023 17:47:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 75BB741233;
-	Wed, 20 Sep 2023 20:15:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3414416414;
+	Thu, 21 Sep 2023 17:22:32 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0275F4121C
-	for <live-patching@vger.kernel.org>; Wed, 20 Sep 2023 20:15:42 +0000 (UTC)
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C623DCC
-	for <live-patching@vger.kernel.org>; Wed, 20 Sep 2023 13:15:39 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id af79cd13be357-76ef80a503fso10086185a.1
-        for <live-patching@vger.kernel.org>; Wed, 20 Sep 2023 13:15:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1695240939; x=1695845739; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KjiggUyQYaXdrX5h9h6CEmaZNsBN7wNveaVEjl3faww=;
-        b=gzcneh+E/b39WZFZXupKfrJrFkgyKJK9LLcVsVadvicyjNcx3Oqe/r5Ae8yqn1Sqf6
-         aUlogDFXfVuZkuF13TiSBw9uZGqlk69veUO4L6dG75tVnFfk7zpzik86CadtK7IbzHO5
-         LWUP49N5s65Z48Fyi6pNFIOpU0lXEfIaWhOxc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695240939; x=1695845739;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KjiggUyQYaXdrX5h9h6CEmaZNsBN7wNveaVEjl3faww=;
-        b=aPP2H65IyapIda5iYaTXKfqw8NfX3LXXhJ8am1LrYAv9pjpwVUQrTmGTvj6fplsuyk
-         Ix9eK29wiiVR81st88eU9gfM4lpCl1ezF044o8Yc0MevyuGRpaOPgmwYELa529ypTVrv
-         eKDchkvPnPDCDxzLoZwvEiuhveRMyQruKvzUA7ntfh8DNH/vS/4drwNnVmaFiUwK/VfQ
-         D97goS7HZBIKlIq1DhcpeKdvalWYolCmaBRC5W0IChE1oUGwUyJ7tI4QUejT35k/V1dX
-         YEndoL4XVtdhSiYSvpPE7QWqjZyBX4JIYa1is5pIZIZrGUyPktm4Xcr2i0S53a1wwUh6
-         BZtA==
-X-Gm-Message-State: AOJu0YwthptatXItlp+NmnxDqlOHkRj0QbELed5tApGoMWBduOBhMOxz
-	jdeYrxN9L9BTJfXyFshJgDlMdA==
-X-Google-Smtp-Source: AGHT+IGzk01VxcNRtiMCm3IRpOiOofgFrIbB2ochwvXCEJnvd8LLC832yOxk2yPa78lhoBtatxrQnA==
-X-Received: by 2002:a05:620a:2943:b0:772:6419:89ab with SMTP id n3-20020a05620a294300b00772641989abmr4647613qkp.55.1695240938672;
-        Wed, 20 Sep 2023 13:15:38 -0700 (PDT)
-Received: from meerkat.local ([209.226.106.110])
-        by smtp.gmail.com with ESMTPSA id t2-20020a05620a034200b0076ce061f44dsm5369qkm.25.2023.09.20.13.15.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Sep 2023 13:15:38 -0700 (PDT)
-Date: Wed, 20 Sep 2023 16:15:29 -0400
-From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To: dwarves@vger.kernel.org, linux-perf-users@vger.kernel.org, 
-	linux-rt-users@vger.kernel.org, linux-rtc@vger.kernel.org, linux-trace-devel@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: This list is being migrated to new infrastructure
-Message-ID: <20230920-ligament-cortex-6344a0@meerkat>
-References: <20230920-uncouple-grime-729f33@meerkat>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89BAA14F76
+	for <live-patching@vger.kernel.org>; Thu, 21 Sep 2023 17:22:28 +0000 (UTC)
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C6F4F907
+	for <live-patching@vger.kernel.org>; Thu, 21 Sep 2023 10:15:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+	s=201909; t=1695299186;
+	bh=bC6X1py1SuoJtQxgFRw2Ryvn0wAzoIONYvfkgObrO/E=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=b687BW/TgpeWKwniyy7LJa+Q+crc7hK9dcN5nxIiKaTQwPR20r4+nJoMYJ7svqNCj
+	 /9RmYxIq7saR8Kb1/TIP2XEODSZ4i5hv8Q/hZeq7pF11pfpX5EG7q1Ib7+4WXf6b2Q
+	 8A7PwdhUfkL042R8T1EpbwTr+S5QU+MY4gwQ/D/+Jhje4RjhdUNe7v4w4rDLoIRrDx
+	 s08TCC0peYnEmH8y4ZL3QgHOv3QQcIu5t8azjGBN2Ko+2/C5eKQHnbVvMwhyhxAywb
+	 8wqnarIilxNt6r1mqCBJ+jahygWV0uJGWRAKev5Wx5qUJzMjPWTsO/6HidLroKFqhB
+	 RpNBBqLs/S+hw==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4RrvlP6nYLz4wy9;
+	Thu, 21 Sep 2023 22:26:25 +1000 (AEST)
+From: Michael Ellerman <mpe@ellerman.id.au>
+To: Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>
+Cc: linuxppc-dev@lists.ozlabs.org, live-patching@vger.kernel.org, Ryan
+ Sullivan <rysulliv@redhat.com>, Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: Recent Power changes and stack_trace_save_tsk_reliable?
+In-Reply-To: <ZQr-vmBBQ66TRobQ@alley>
+References: <ZO4K6hflM/arMjse@redhat.com> <87o7ipxtdc.fsf@mail.lhotse>
+ <87il8xxcg7.fsf@mail.lhotse>
+ <cca0770c-1510-3a02-d0ba-82ee5a0ae4f2@redhat.com> <ZQr-vmBBQ66TRobQ@alley>
+Date: Thu, 21 Sep 2023 22:26:22 +1000
+Message-ID: <8734z7ogpd.fsf@mail.lhotse>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230920-uncouple-grime-729f33@meerkat>
-X-Spam-Status: No, score=2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	RCVD_IN_DNSWL_BLOCKED,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-	SUSPICIOUS_RECIPS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Sep 20, 2023 at 03:52:05PM -0400, Konstantin Ryabitsev wrote:
-> Hello, all:
-> 
-> This list is being migrated to the new vger infrastructure. This should be a
-> fully transparent process and you don't need to change anything about how you
-> participate with the list or how you receive mail.
-> 
-> There will be a brief 20-minute delay with archives on lore.kernel.org. I will
-> follow up once the archive migration has been completed.
+Petr Mladek <pmladek@suse.com> writes:
+> On Wed 2023-08-30 17:47:35, Joe Lawrence wrote:
+>> On 8/30/23 02:37, Michael Ellerman wrote:
+>> > Michael Ellerman <mpe@ellerman.id.au> writes:
+>> >> Joe Lawrence <joe.lawrence@redhat.com> writes:
+>> >>> We noticed that our kpatch integration tests started failing on ppc64le
+>> >>> when targeting the upstream v6.4 kernel, and then confirmed that the
+>> >>> in-tree livepatching kselftests similarly fail, too.  From the kselftest
+>> >>> results, it appears that livepatch transitions are no longer completing.
+...
+>> > 
+>> > The diff below fixes it for me, can you test that on your setup?
+>> > 
+>> 
+>> Thanks for the fast triage of this one.  The proposed fix works well on
+>> our setup.  I have yet to try the kpatch integration tests with this,
+>> but I can verify that all of the kernel livepatching kselftests now
+>> happily run.
+>
+> Have this been somehow handled, please? I do not see the proposed
+> change in linux-next as of now.
 
-This work is now completed. I will monitor the performance to make
-sure that the new infrastructure is still successfully coping with the
-email traffic.
+I thought I was waiting for Joe to run the kpatch integration tests, but
+in hindsight maybe he was hinting that someone else should run them (ie. me) ;)
 
-If you notice any problems, please report them to helpdesk at kernel.org.
+Patch incoming.
 
--K
+cheers
 
