@@ -1,74 +1,67 @@
-Return-Path: <live-patching+bounces-8-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-9-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 338FF7ADF60
-	for <lists+live-patching@lfdr.de>; Mon, 25 Sep 2023 21:03:33 +0200 (CEST)
-Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sv.mirrors.kernel.org (Postfix) with ESMTP id B50A32812A2
-	for <lists+live-patching@lfdr.de>; Mon, 25 Sep 2023 19:03:31 +0000 (UTC)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 46D347C988B
+	for <lists+live-patching@lfdr.de>; Sun, 15 Oct 2023 12:03:39 +0200 (CEST)
+Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id C6875B20C03
+	for <lists+live-patching@lfdr.de>; Sun, 15 Oct 2023 10:03:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1053E1D6B0;
-	Mon, 25 Sep 2023 19:03:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A6072119;
+	Sun, 15 Oct 2023 10:03:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="iUrRrh8O"
 X-Original-To: live-patching@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49FD81C29A
-	for <live-patching@vger.kernel.org>; Mon, 25 Sep 2023 19:03:27 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E82093
-	for <live-patching@vger.kernel.org>; Mon, 25 Sep 2023 12:03:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1695668602;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fzBSf4JXBw9DG2ter3Ft2dbMxjnf+RIRHcyGZ86okTg=;
-	b=A4WpXTjABRadvROVqhefzL8HqvLDvHTTYPal5fRNCqBfc/qO7LMTKoDqK+XvGLn4gu+ZIr
-	Ywo3322vYUajnVNi+Z2j+f7FqIWj6g0a0r/ZVRceIXg7sDEW3f6DQfS5I+weqqguhgETgJ
-	ccD98Gk4iH0IL389InHvPlX6A1mNnWc=
-Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-NtUsmupsMqCxS1_LtyUfhw-1; Mon, 25 Sep 2023 15:03:14 -0400
-X-MC-Unique: NtUsmupsMqCxS1_LtyUfhw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5834A23AF
+	for <live-patching@vger.kernel.org>; Sun, 15 Oct 2023 10:03:29 +0000 (UTC)
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67CDDD
+	for <live-patching@vger.kernel.org>; Sun, 15 Oct 2023 03:03:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+	s=201909; t=1697364202;
+	bh=Mke0dnFejaTWMpzHUAbVKCThE3iF96U/Yymw0Fb3yp0=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=iUrRrh8OZ8qN1e3YI4DJZERCcjPE9UYJ8jGbqoUOGEXF7jbhutAV5IuP2akhFCyMf
+	 4+kYNuWprpdsy6SL6/9eQxgeR0EEoqZmmRyVonelnZthfwFErms68ZNQnKtJukAv7z
+	 u5wrC1CoqNT1lPvWw2yv2VShnDIe/SK/PNHT6mhauc/4D8EeLEVYXdYy/aQokxXAzX
+	 pw2IJ0fq5H9UjGeAtKi4Snnm3XvehrmwerJEZ2YergaxA//s0poMuID2w7F5Y/hKnC
+	 do3QW9cUp7p6o37iS1tKHWAXsBZYUERuZWyQVdRyazl9X/c+I64gMxcyXj+lMOewMF
+	 uAWjqwK0B+u+A==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 731C53C11A08;
-	Mon, 25 Sep 2023 19:02:52 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.8.202])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 3B30240C2064;
-	Mon, 25 Sep 2023 19:02:52 +0000 (UTC)
-Date: Mon, 25 Sep 2023 15:02:50 -0400
-From: Joe Lawrence <joe.lawrence@redhat.com>
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: linuxppc-dev@lists.ozlabs.org, npiggin@gmail.com, pmladek@suse.com,
-	live-patching@vger.kernel.org
-Subject: Re: [PATCH] powerpc/stacktrace: Fix arch_stack_walk_reliable()
-Message-ID: <ZRHZWpppf7iuA3Gs@redhat.com>
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4S7bRG1qdJz4wwG;
+	Sun, 15 Oct 2023 21:03:22 +1100 (AEDT)
+From: Michael Ellerman <mpe@ellerman.id.au>
+To: linuxppc-dev@lists.ozlabs.org, Michael Ellerman <mpe@ellerman.id.au>
+Cc: npiggin@gmail.com, joe.lawrence@redhat.com, pmladek@suse.com, live-patching@vger.kernel.org
+In-Reply-To: <20230921232441.1181843-1-mpe@ellerman.id.au>
 References: <20230921232441.1181843-1-mpe@ellerman.id.au>
+Subject: Re: [PATCH] powerpc/stacktrace: Fix arch_stack_walk_reliable()
+Message-Id: <169736402372.957740.3532327123925195902.b4-ty@ellerman.id.au>
+Date: Sun, 15 Oct 2023 21:00:23 +1100
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230921232441.1181843-1-mpe@ellerman.id.au>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	RCVD_IN_DNSWL_BLOCKED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-	RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no
-	version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_BLOCKED,
+	SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Sep 22, 2023 at 09:24:41AM +1000, Michael Ellerman wrote:
+On Fri, 22 Sep 2023 09:24:41 +1000, Michael Ellerman wrote:
 > The changes to copy_thread() made in commit eed7c420aac7 ("powerpc:
 > copy_thread differentiate kthreads and user mode threads") inadvertently
 > broke arch_stack_walk_reliable() because it has knowledge of the stack
@@ -79,70 +72,12 @@ On Fri, Sep 22, 2023 at 09:24:41AM +1000, Michael Ellerman wrote:
 > incorrect, rather than rephrasing them just refer the reader to
 > copy_thread().
 > 
-> Also the comment about the stack backchain is no longer true, since
-> commit edbd0387f324 ("powerpc: copy_thread add a back chain to the
-> switch stack frame"), so remove that as well.
-> 
-> Reported-by: Joe Lawrence <joe.lawrence@redhat.com>
-> Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-> Fixes: eed7c420aac7 ("powerpc: copy_thread differentiate kthreads and user mode threads")
-> ---
->  arch/powerpc/kernel/stacktrace.c | 27 +++++----------------------
->  1 file changed, 5 insertions(+), 22 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/stacktrace.c b/arch/powerpc/kernel/stacktrace.c
-> index b15f15dcacb5..e6a958a5da27 100644
-> --- a/arch/powerpc/kernel/stacktrace.c
-> +++ b/arch/powerpc/kernel/stacktrace.c
-> @@ -73,29 +73,12 @@ int __no_sanitize_address arch_stack_walk_reliable(stack_trace_consume_fn consum
->  	bool firstframe;
->  
->  	stack_end = stack_page + THREAD_SIZE;
-> -	if (!is_idle_task(task)) {
-> -		/*
-> -		 * For user tasks, this is the SP value loaded on
-> -		 * kernel entry, see "PACAKSAVE(r13)" in _switch() and
-> -		 * system_call_common().
-> -		 *
-> -		 * Likewise for non-swapper kernel threads,
-> -		 * this also happens to be the top of the stack
-> -		 * as setup by copy_thread().
-> -		 *
-> -		 * Note that stack backlinks are not properly setup by
-> -		 * copy_thread() and thus, a forked task() will have
-> -		 * an unreliable stack trace until it's been
-> -		 * _switch()'ed to for the first time.
-> -		 */
-> -		stack_end -= STACK_USER_INT_FRAME_SIZE;
-> -	} else {
-> -		/*
-> -		 * idle tasks have a custom stack layout,
-> -		 * c.f. cpu_idle_thread_init().
-> -		 */
-> +
-> +	// See copy_thread() for details.
-> +	if (task->flags & PF_KTHREAD)
->  		stack_end -= STACK_FRAME_MIN_SIZE;
-> -	}
-> +	else
-> +		stack_end -= STACK_USER_INT_FRAME_SIZE;
->  
->  	if (task == current)
->  		sp = current_stack_frame();
-> -- 
-> 2.41.0
-> 
-> 
+> [...]
 
-Reviewed-by: Joe Lawrence <joe.lawrence@redhat.com>
+Applied to powerpc/fixes.
 
-Thanks for posting, Michael.
+[1/1] powerpc/stacktrace: Fix arch_stack_walk_reliable()
+      https://git.kernel.org/powerpc/c/c5cc3ca707bc916a3f326364751a41f25040aef3
 
-Livepatching kselftests are happy now.  Minimal kpatch testing good, too
-(we have not rebased our full integration tests to latest upstreams just
-yet).
-
---
-Joe
-
+cheers
 
