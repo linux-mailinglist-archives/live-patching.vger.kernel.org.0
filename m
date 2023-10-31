@@ -1,52 +1,57 @@
-Return-Path: <live-patching+bounces-9-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-10-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 46D347C988B
-	for <lists+live-patching@lfdr.de>; Sun, 15 Oct 2023 12:03:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 37FCB7DD781
+	for <lists+live-patching@lfdr.de>; Tue, 31 Oct 2023 22:11:22 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id C6875B20C03
-	for <lists+live-patching@lfdr.de>; Sun, 15 Oct 2023 10:03:36 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6413D1C20BA1
+	for <lists+live-patching@lfdr.de>; Tue, 31 Oct 2023 21:11:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A6072119;
-	Sun, 15 Oct 2023 10:03:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E366225DE;
+	Tue, 31 Oct 2023 21:11:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="iUrRrh8O"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="h6lXcBST"
 X-Original-To: live-patching@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5834A23AF
-	for <live-patching@vger.kernel.org>; Sun, 15 Oct 2023 10:03:29 +0000 (UTC)
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67CDDD
-	for <live-patching@vger.kernel.org>; Sun, 15 Oct 2023 03:03:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-	s=201909; t=1697364202;
-	bh=Mke0dnFejaTWMpzHUAbVKCThE3iF96U/Yymw0Fb3yp0=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=iUrRrh8OZ8qN1e3YI4DJZERCcjPE9UYJ8jGbqoUOGEXF7jbhutAV5IuP2akhFCyMf
-	 4+kYNuWprpdsy6SL6/9eQxgeR0EEoqZmmRyVonelnZthfwFErms68ZNQnKtJukAv7z
-	 u5wrC1CoqNT1lPvWw2yv2VShnDIe/SK/PNHT6mhauc/4D8EeLEVYXdYy/aQokxXAzX
-	 pw2IJ0fq5H9UjGeAtKi4Snnm3XvehrmwerJEZ2YergaxA//s0poMuID2w7F5Y/hKnC
-	 do3QW9cUp7p6o37iS1tKHWAXsBZYUERuZWyQVdRyazl9X/c+I64gMxcyXj+lMOewMF
-	 uAWjqwK0B+u+A==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55C7979F8;
+	Tue, 31 Oct 2023 21:11:15 +0000 (UTC)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34AE83;
+	Tue, 31 Oct 2023 14:11:12 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
 	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4S7bRG1qdJz4wwG;
-	Sun, 15 Oct 2023 21:03:22 +1100 (AEDT)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: linuxppc-dev@lists.ozlabs.org, Michael Ellerman <mpe@ellerman.id.au>
-Cc: npiggin@gmail.com, joe.lawrence@redhat.com, pmladek@suse.com, live-patching@vger.kernel.org
-In-Reply-To: <20230921232441.1181843-1-mpe@ellerman.id.au>
-References: <20230921232441.1181843-1-mpe@ellerman.id.au>
-Subject: Re: [PATCH] powerpc/stacktrace: Fix arch_stack_walk_reliable()
-Message-Id: <169736402372.957740.3532327123925195902.b4-ty@ellerman.id.au>
-Date: Sun, 15 Oct 2023 21:00:23 +1100
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 999301F460;
+	Tue, 31 Oct 2023 21:11:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1698786671; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=HtRTJUL19dRqFjIt5OAV5FuQQtcrzutoDTZ1TOareeM=;
+	b=h6lXcBST6itQ2T4IOdb1gk7SRUSzZxRA9MVqUFE2th3wn9IQ8K6FwX8pQ9dVrp3trWRiSj
+	9zWvAZiLZRcz1auRrcoO03TXlZ+quIlkhPlyQgPDOG4B//sx9JqmqQUzXJ+H5Qya7O2Bvw
+	D8OCHcOs9cttVyL0pOsG61nh04XC1EE=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 15A44138EF;
+	Tue, 31 Oct 2023 21:11:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id O2cpM25tQWXOWgAAMHmgww
+	(envelope-from <mpdesouza@suse.com>); Tue, 31 Oct 2023 21:11:10 +0000
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: [PATCH v3 0/3] livepatch: Move modules to selftests and add a new
+ test
+Date: Tue, 31 Oct 2023 18:10:50 -0300
+Message-Id: <20231031-send-lp-kselftests-v3-0-2b1655c2605f@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -55,29 +60,143 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_BLOCKED,
-	SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+X-B4-Tracking: v=1; b=H4sIAFptQWUC/3WOyw6CMBBFf4V0bUk7LQ9d+R/GBbSDNCKQDhCV8
+ O+2bHTj8kzuuXdWRugdEjslK/O4OHJDH0AdEmbaqr8hdzYwAwFKCiU5YW95N/I7YddMSBNxbY6
+ ysMbqLM9YEOuKkNe+6k0b1XpsftMLxMzosXHPffhyDdw6mgb/2v9YZLzGSRB52NQKNKRlIbjkj
+ 9EiDfO7OtNMmJrhwaIeSr+KElJLgDyFUsAfZ9u2D+HrWSH8AAAA
+To: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+ Alexander Gordeev <agordeev@linux.ibm.com>, 
+ Christian Borntraeger <borntraeger@linux.ibm.com>, 
+ Sven Schnelle <svens@linux.ibm.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, 
+ Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>
+Cc: linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org, 
+ live-patching@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
+X-Mailer: b4 0.12.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1698786668; l=5672;
+ i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
+ bh=Iu0nYGt8cXjDqfv6B/47jTzt5usx1RM2VTTkkVRsSSs=;
+ b=ByHl8CTj1H+gJeuNdbdn/hvrEU2Cg4ynLwNzX7THcremf0HaASI5uXl1tH9kp7p4429pzdd25Z/t
+ zJkb+eNQBDHbzbdpa0q1z9zsalxyyAltsK4Qsj3WajRmYoLl4Al/
+X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
+ pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
 
-On Fri, 22 Sep 2023 09:24:41 +1000, Michael Ellerman wrote:
-> The changes to copy_thread() made in commit eed7c420aac7 ("powerpc:
-> copy_thread differentiate kthreads and user mode threads") inadvertently
-> broke arch_stack_walk_reliable() because it has knowledge of the stack
-> layout.
-> 
-> Fix it by changing the condition to match the new logic in
-> copy_thread(). The changes make the comments about the stack layout
-> incorrect, rather than rephrasing them just refer the reader to
-> copy_thread().
-> 
-> [...]
+This patchset moves the current kernel testing livepatch modules from
+lib/livepatches to tools/testing/selftest/livepatch/test_modules, and compiles
+them as out-of-tree modules before testing.
 
-Applied to powerpc/fixes.
+There is also a new test being added. This new test exercises multiple processes
+calling a syscall, while a livepatch patched the syscall.
 
-[1/1] powerpc/stacktrace: Fix arch_stack_walk_reliable()
-      https://git.kernel.org/powerpc/c/c5cc3ca707bc916a3f326364751a41f25040aef3
+Why this move is an improvement:
+* The modules are now compiled as out-of-tree modules against the current
+  running kernel, making them capable of being tested on different systems with
+  newer or older kernels.
+* Such approach now needs kernel-devel package to be installed, since they are
+  out-of-tree modules. These can be generated by running "make rpm-pkg" in the
+  kernel source.
 
-cheers
+What needs to be solved:
+* Currently gen_tar only packages the resulting binaries of the tests, and not
+  the sources. For the current approach, the newly added modules would be
+  compiled and then packaged. It works when testing on a system with the same
+  kernel version. But it will fail when running on a machine with different kernel
+  version, since module was compiled against the kernel currently running.
+
+  This is not a new problem, just aligning the expectations. For the current
+  approach to be truly system agnostic gen_tar would need to include the module
+  and program sources to be compiled in the target systems.
+
+I'm sending the patches now so it can be discussed before Plumbers.
+
+Thanks in advance!
+  Marcos
+
+To: Shuah Khan <shuah@kernel.org>
+To: Jonathan Corbet <corbet@lwn.net>
+To: Heiko Carstens <hca@linux.ibm.com>
+To: Vasily Gorbik <gor@linux.ibm.com>
+To: Alexander Gordeev <agordeev@linux.ibm.com>
+To: Christian Borntraeger <borntraeger@linux.ibm.com>
+To: Sven Schnelle <svens@linux.ibm.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Jiri Kosina <jikos@kernel.org>
+To: Miroslav Benes <mbenes@suse.cz>
+To: Petr Mladek <pmladek@suse.com>
+To: Joe Lawrence <joe.lawrence@redhat.com>
+Cc: linux-kselftest@vger.kernel.org
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-s390@vger.kernel.org
+Cc: live-patching@vger.kernel.org
+Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+
+Changes in v3:
+* Rebased on top of v6.6-rc5
+* The commits messages were improved (Thanks Petr!)
+* Created TEST_GEN_MODS_DIR variable to point to a directly that contains kernel
+  modules, and adapt selftests to build it before running the test.
+* Moved test_klp-call_getpid out of test_programs, since the gen_tar
+  would just copy the generated test programs to the livepatches dir,
+  and so scripts relying on test_programs/test_klp-call_getpid will fail.
+* Added a module_param for klp_pids, describing it's usage.
+* Simplified the call_getpid program to ignore the return of getpid syscall,
+  since we only want to make sure the process transitions correctly to the
+  patched stated
+* The test-syscall.sh not prints a log message showing the number of remaining
+  processes to transition into to livepatched state, and check_output expects it
+  to be 0.
+* Added MODULE_AUTHOR and MODULE_DESCRIPTION to test_klp_syscall.c
+
+The v2 can be seen here:
+https://lore.kernel.org/linux-kselftest/20220630141226.2802-1-mpdesouza@suse.com/
+
+---
+Marcos Paulo de Souza (3):
+      kselftests: lib.mk: Add TEST_GEN_MODS_DIR variable
+      livepatch: Move tests from lib/livepatch to selftests/livepatch
+      selftests: livepatch: Test livepatching a heavily called syscall
+
+ Documentation/dev-tools/kselftest.rst              |   4 +
+ arch/s390/configs/debug_defconfig                  |   1 -
+ arch/s390/configs/defconfig                        |   1 -
+ lib/Kconfig.debug                                  |  22 ----
+ lib/Makefile                                       |   2 -
+ lib/livepatch/Makefile                             |  14 ---
+ tools/testing/selftests/lib.mk                     |  20 +++-
+ tools/testing/selftests/livepatch/Makefile         |   5 +-
+ tools/testing/selftests/livepatch/README           |  17 +--
+ tools/testing/selftests/livepatch/config           |   1 -
+ tools/testing/selftests/livepatch/functions.sh     |  34 +++---
+ .../testing/selftests/livepatch/test-callbacks.sh  |  50 ++++-----
+ tools/testing/selftests/livepatch/test-ftrace.sh   |   6 +-
+ .../testing/selftests/livepatch/test-livepatch.sh  |  10 +-
+ .../selftests/livepatch/test-shadow-vars.sh        |   2 +-
+ tools/testing/selftests/livepatch/test-state.sh    |  18 ++--
+ tools/testing/selftests/livepatch/test-syscall.sh  |  53 ++++++++++
+ tools/testing/selftests/livepatch/test-sysfs.sh    |   6 +-
+ .../selftests/livepatch/test_klp-call_getpid.c     |  44 ++++++++
+ .../selftests/livepatch/test_modules/Makefile      |  20 ++++
+ .../test_modules}/test_klp_atomic_replace.c        |   0
+ .../test_modules}/test_klp_callbacks_busy.c        |   0
+ .../test_modules}/test_klp_callbacks_demo.c        |   0
+ .../test_modules}/test_klp_callbacks_demo2.c       |   0
+ .../test_modules}/test_klp_callbacks_mod.c         |   0
+ .../livepatch/test_modules}/test_klp_livepatch.c   |   0
+ .../livepatch/test_modules}/test_klp_shadow_vars.c |   0
+ .../livepatch/test_modules}/test_klp_state.c       |   0
+ .../livepatch/test_modules}/test_klp_state2.c      |   0
+ .../livepatch/test_modules}/test_klp_state3.c      |   0
+ .../livepatch/test_modules/test_klp_syscall.c      | 116 +++++++++++++++++++++
+ 31 files changed, 325 insertions(+), 121 deletions(-)
+---
+base-commit: 6489bf2e1df1c84e9bcd4694029ff35b39fd3397
+change-id: 20231031-send-lp-kselftests-4c917dcd4565
+
+Best regards,
+-- 
+Marcos Paulo de Souza <mpdesouza@suse.com>
+
 
