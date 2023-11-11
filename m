@@ -1,132 +1,130 @@
-Return-Path: <live-patching+bounces-39-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-40-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 744E87E851A
-	for <lists+live-patching@lfdr.de>; Fri, 10 Nov 2023 22:33:27 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0982E7E8701
+	for <lists+live-patching@lfdr.de>; Sat, 11 Nov 2023 01:55:04 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 769CCB20B55
-	for <lists+live-patching@lfdr.de>; Fri, 10 Nov 2023 21:33:24 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 9F4D11F20EFF
+	for <lists+live-patching@lfdr.de>; Sat, 11 Nov 2023 00:55:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBE5A3C691;
-	Fri, 10 Nov 2023 21:33:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 938FA386;
+	Sat, 11 Nov 2023 00:54:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OL3/gDVC"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nCnF+om0"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA20338DC2
-	for <live-patching@vger.kernel.org>; Fri, 10 Nov 2023 21:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3250C433C9;
-	Fri, 10 Nov 2023 21:33:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1699652000;
-	bh=2A5emeoFaW6SfVPuP6ICYHNdvN2k2OlVvkzhivtgSU0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OL3/gDVCDj0ENfFBpGtZ814MXkpUyTExFJpMM9gnCGmqHwRSL6tqMC+BSepg4WbAU
-	 FyZ6u4MvUFAEsBo7V4hxlY8DUOiwvMtjANO8o76vKvFAcx2WFdMo2CH1gQF0NCkDTA
-	 WJkXEzrxa0HqVqjfUu1jkrlgzv+54OoexhAhjv9ZB6e1/JTkpmcBoctBFB3OpuKzQB
-	 ezE+C+2l2HFOqd8nZqYw8wuao6Q9qt0VLR0fcmnb0dW2E+U/L/cIl5h2ngQctOfiM6
-	 SAEf6LG8sGlbQ5l6/Iez9FXi8OiBvKgUPxj6Ad1m6ssyOl0izyaQSOkLag6fEylZ51
-	 dItD/PQB2KwHg==
-Date: Fri, 10 Nov 2023 13:33:17 -0800
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Petr Mladek <pmladek@suse.com>
-Cc: Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B093137B
+	for <live-patching@vger.kernel.org>; Sat, 11 Nov 2023 00:54:56 +0000 (UTC)
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE334228;
+	Fri, 10 Nov 2023 16:54:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1699664096; x=1731200096;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4uIZuu0TuTDz28DR353gxEbj7Ysav5dxrUtDYZQ8g+U=;
+  b=nCnF+om0MoUKB9uV4TnZBfKNrbKuyALPK3TreoVSxA6M5On4xojHriOP
+   6KFo7A+nc+AxH5VWvyGYkf28fmOghQWug+9T1/Q/reCBb53dvk3paE+Jd
+   qe2M5tvfi7iLB4aGC1TpYMh3h/jTExPZHaMVk5FRcBazImePvDeHDFeYb
+   x/lIRQevg/hztAL/t6laRyNk+fn4M5etOLyAI9vFtATqShPPckKZyzlQN
+   QPHv6Ll6mqJ+//lc9DNcS82v9sRwVps/UNaCaUMfu/mTqgfnYpzYOitPQ
+   8a3Q4KDeJ+H/dImwkyL2fVuo6946ytRb86YrGPH/N2NATLLmHCmUSWPds
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10890"; a="11798467"
+X-IronPort-AV: E=Sophos;i="6.03,293,1694761200"; 
+   d="scan'208";a="11798467"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2023 16:54:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10890"; a="767442281"
+X-IronPort-AV: E=Sophos;i="6.03,293,1694761200"; 
+   d="scan'208";a="767442281"
+Received: from lkp-server01.sh.intel.com (HELO 17d9e85e5079) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Nov 2023 16:54:53 -0800
+Received: from kbuild by 17d9e85e5079 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1r1cGx-000A6D-29;
+	Sat, 11 Nov 2023 00:54:51 +0000
+Date: Sat, 11 Nov 2023 08:54:08 +0800
+From: kernel test robot <lkp@intel.com>
+To: Petr Mladek <pmladek@suse.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>
+Cc: oe-kbuild-all@lists.linux.dev, Joe Lawrence <joe.lawrence@redhat.com>,
 	Nicolai Stange <nstange@suse.de>, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [POC 0/7] livepatch: Make livepatch states, callbacks, and
- shadow variables work together
-Message-ID: <20231110213317.g4wz3j3flj7u2qg2@treble>
-References: <20231110170428.6664-1-pmladek@suse.com>
+	linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>
+Subject: Re: [POC 1/7] livepatch: Add callbacks for introducing and removing
+ states
+Message-ID: <202311110829.UKC9GiUG-lkp@intel.com>
+References: <20231110170428.6664-2-pmladek@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231110170428.6664-1-pmladek@suse.com>
+In-Reply-To: <20231110170428.6664-2-pmladek@suse.com>
 
-On Fri, Nov 10, 2023 at 06:04:21PM +0100, Petr Mladek wrote:
-> This POC is a material for the discussion "Simplify Livepatch Callbacks,
-> Shadow Variables, and States handling" at LPC 2013, see
-> https://lpc.events/event/17/contributions/1541/
-> 
-> It obsoletes the patchset adding the garbage collection of shadow
-> variables. This new solution is based on ideas from Nicolai Stange.
-> And it should also be in sync with Josh's ideas mentioned into
-> the thread about the garbage collection, see
-> https://lore.kernel.org/r/20230204235910.4j4ame5ntqogqi7m@treble
+Hi Petr,
 
-Nice!  I like how it brings the "features" together and makes them easy
-to use.  This looks like a vast improvement.
+kernel test robot noticed the following build warnings:
 
-Was there a reason to change the naming?  I'm thinking
+[auto build test WARNING on shuah-kselftest/next]
+[also build test WARNING on shuah-kselftest/fixes linus/master v6.6 next-20231110]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-  setup / enable / disable / release
+url:    https://github.com/intel-lab-lkp/linux/commits/Petr-Mladek/livepatch-Add-callbacks-for-introducing-and-removing-states/20231111-014906
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git next
+patch link:    https://lore.kernel.org/r/20231110170428.6664-2-pmladek%40suse.com
+patch subject: [POC 1/7] livepatch: Add callbacks for introducing and removing states
+config: x86_64-randconfig-006-20231111 (https://download.01.org/0day-ci/archive/20231111/202311110829.UKC9GiUG-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231111/202311110829.UKC9GiUG-lkp@intel.com/reproduce)
 
-is less precise than
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202311110829.UKC9GiUG-lkp@intel.com/
 
-  pre_patch / post_patch / pre_unpatch / post_unpatch.
+All warnings (new ones prefixed by >>):
 
-Also, I'm thinking "replaced" instead of "obsolete" would be more
-consistent with the existing terminology.
+>> kernel/livepatch/state.c:121:6: warning: no previous prototype for 'is_state_in_other_patches' [-Wmissing-prototypes]
+     121 | bool is_state_in_other_patches(struct klp_patch *patch, struct klp_state *state)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
 
-For example, in __klp_enable_patch():
 
-	ret = klp_setup_states(patch);
-	if (ret)
-		goto err;
+vim +/is_state_in_other_patches +121 kernel/livepatch/state.c
 
-	if (patch->replace)
-		klp_disable_obsolete_states(patch);
-
-it's not immediately clear why "disable obsolete" would be the "replace"
-counterpart to "setup".
-
-Similarly, in klp_complete_transition():
-
-	if (klp_transition_patch->replace && klp_target_state == KLP_PATCHED) {
-		klp_unpatch_replaced_patches(klp_transition_patch);
-		klp_discard_nops(klp_transition_patch);
-		klp_release_obsolete_states(klp_transition_patch);
-	}
-
-it's a little jarring to have "unpatch replaced" followed by "release
-obsolete".
-
-So instead of:
-
-  int  klp_setup_states(struct klp_patch *patch);
-  void klp_enable_states(struct klp_patch *patch);
-  void klp_disable_states(struct klp_patch *patch);
-  void klp_release_states(struct klp_patch *patch);
-
-  void klp_enable_obsolete_states(struct klp_patch *patch);
-  void klp_disable_obsolete_states(struct klp_patch *patch);
-  void klp_release_obsolete_states(struct klp_patch *patch);
-
-how about something like:
-
-  int  klp_states_pre_patch(void);
-  void klp_states_post_patch(void);
-  void klp_states_pre_unpatch(void);
-  void klp_states_post_unpatch(void);
-
-  void klp_states_post_patch_replaced(void);
-  void klp_states_pre_unpatch_replaced(void);
-  void klp_states_post_unpatch_replaced(void);
-
-?
-
-(note that passing klp_transition_patch might be optional since state.c
-already has visibility to it anyway)
+   120	
+ > 121	bool is_state_in_other_patches(struct klp_patch *patch, struct klp_state *state)
+   122	{
+   123		struct klp_patch *old_patch;
+   124		struct klp_state *old_state;
+   125	
+   126		klp_for_each_patch(old_patch) {
+   127			if (old_patch == patch)
+   128				continue;
+   129	
+   130			klp_for_each_state(old_patch, old_state) {
+   131				if (old_state->id == state->id)
+   132					return true;
+   133			}
+   134		}
+   135	
+   136		return false;
+   137	}
+   138	
 
 -- 
-Josh
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
