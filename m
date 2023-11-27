@@ -1,136 +1,125 @@
-Return-Path: <live-patching+bounces-42-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-43-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id DFF3B7E88EC
-	for <lists+live-patching@lfdr.de>; Sat, 11 Nov 2023 04:20:46 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 74B637FA58C
+	for <lists+live-patching@lfdr.de>; Mon, 27 Nov 2023 17:03:42 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 97F6C1F20F31
-	for <lists+live-patching@lfdr.de>; Sat, 11 Nov 2023 03:20:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2FD202817AF
+	for <lists+live-patching@lfdr.de>; Mon, 27 Nov 2023 16:03:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F090A3C0B;
-	Sat, 11 Nov 2023 03:20:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B202F34CFA;
+	Mon, 27 Nov 2023 16:03:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AOPVxStz"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YV2ORvXz"
 X-Original-To: live-patching@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A8FE5678
-	for <live-patching@vger.kernel.org>; Sat, 11 Nov 2023 03:20:41 +0000 (UTC)
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510152591;
-	Fri, 10 Nov 2023 19:20:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699672840; x=1731208840;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ARkRUyOLAIpmhjp2siRoxLvSfsSs3MBz/hMYy9pew/w=;
-  b=AOPVxStzq3WLv8dklIznsqvANgMNRoeoe/egCa3ClRsLuMEVgLMQs/Jj
-   e+4T7c3uEDQK4cF1aXzK7gRUVHruqks0BVQFCXCvHXf3kDOdxAkcS/sx5
-   5J1FL/6jau0pHgcZoYdKLpDiAOSnMtEDBLDZS9V6ECGKKPhczDYUUYCLU
-   4jMiIG8md9RTD8b/H0EeqTVOwhWwVEyfOFtEHWzjOkf9jLSgFM6DsvvnE
-   Lrnr1eGLjkFaGzfLr/X/5lTPG7NsFfi+i3C2enwcFoHWyGghM8tRseg2Y
-   lFxdZSqVP2jDWxs3LMu77kl3tCwPyLwW1VLvgF3KARmSudjKWSV1JZvzW
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10890"; a="375286638"
-X-IronPort-AV: E=Sophos;i="6.03,294,1694761200"; 
-   d="scan'208";a="375286638"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2023 19:20:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10890"; a="792980847"
-X-IronPort-AV: E=Sophos;i="6.03,294,1694761200"; 
-   d="scan'208";a="792980847"
-Received: from lkp-server01.sh.intel.com (HELO 17d9e85e5079) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 10 Nov 2023 19:20:37 -0800
-Received: from kbuild by 17d9e85e5079 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1r1eXy-000AAc-2V;
-	Sat, 11 Nov 2023 03:20:34 +0000
-Date: Sat, 11 Nov 2023 11:19:59 +0800
-From: kernel test robot <lkp@intel.com>
-To: Petr Mladek <pmladek@suse.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Nicolai Stange <nstange@suse.de>, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>
-Subject: Re: [POC 1/7] livepatch: Add callbacks for introducing and removing
- states
-Message-ID: <202311111107.avVIpRi2-lkp@intel.com>
-References: <20231110170428.6664-2-pmladek@suse.com>
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B348BCE;
+	Mon, 27 Nov 2023 08:03:35 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id d9443c01a7336-1cfc2d03b3aso9291245ad.1;
+        Mon, 27 Nov 2023 08:03:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1701101015; x=1701705815; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ovFrH1/AjRvHdNMB/VJzZliD8vmbG1p5UDUluMTuF88=;
+        b=YV2ORvXzh7l35zmejRS8FCx/Gp0ta6nYjxeLnvEmtB7Pc2eS7r5BOEpp5Us+R1OVz4
+         6rKDUFglNapdQbwUL9jSRU1Q5zWIJcY8h2/oRWskQDwYqD0bmKdwZaFXisQjlydfIdoe
+         ydqk1YjZDWqWtXkVK2VrwNDdndVTcd6orHlQPTZZBM7J64byN5AGGVkoKXMT/AAUI3xX
+         84CqDzU/pxr3DErSBCGvB5qVhN/n6pKsyqCQK0Mgpu1RQvHfl8HcxIOoYHxP/AasI3x5
+         zp+9dn4FcM6a1KQjn2YRRYCe1BTEiYZeyYn78mnF2J7tUQm1zdDSOqdq74b+n10tv0A5
+         2OPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701101015; x=1701705815;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ovFrH1/AjRvHdNMB/VJzZliD8vmbG1p5UDUluMTuF88=;
+        b=u3I6ToS6h8E4sHnle6Zrr/9D1pknySsSy6AvSDrUJdRcr+tsM1UpcUuZc4dUBeTd9W
+         OxrZqg1Yg0ddZBPJEFMQ/7vuVC3tqsRvbmJJ89inlMmrDgqHF1UpbFXO8BBeRm8o/a6M
+         UTxm114PiDDdErbKhLR7oGaXw6F4Wyjojl+hg/9ISSs4roPVQw6JNzsIoHVpWvqWFF7M
+         ITORovKb6DVE9E//pWu9A/eGuKKLUmad48Eff8QgcUfCzNgq0pKk8tAI4KqzuZcHxTyn
+         GoF2X8kC17NQT5qdGtIxMo69xVrplWCiUmBbm21GH//ErHo1VVAIo1MZxgKQe5utQy+F
+         MLJg==
+X-Gm-Message-State: AOJu0YxU1St3So7P364bRAT4XxyvKZkcqxS5vQ9dlKUGT4cktQno+AOE
+	UEzQzprkadXmMaqh7KBXkMs=
+X-Google-Smtp-Source: AGHT+IGnxD/CA9o+aJGc6sy/WMss+ZbwTeVZIqa0C9egy5zZUpC4NNFjbJIiL7xBxYNlaQK7er42SQ==
+X-Received: by 2002:a17:90b:1d09:b0:285:80d5:6e51 with SMTP id on9-20020a17090b1d0900b0028580d56e51mr10792245pjb.21.1701101015022;
+        Mon, 27 Nov 2023 08:03:35 -0800 (PST)
+Received: from attreyee-HP-Pavilion-Laptop-14-ec0xxx.. ([60.243.28.47])
+        by smtp.gmail.com with ESMTPSA id hg18-20020a17090b301200b002836c720713sm7470143pjb.24.2023.11.27.08.03.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Nov 2023 08:03:34 -0800 (PST)
+From: attreyee-muk <tintinm2017@gmail.com>
+To: jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	corbet@lwn.net
+Cc: attreyee-muk <tintinm2017@gmail.com>,
+	live-patching@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] Took care of some grammatical mistakes
+Date: Mon, 27 Nov 2023 21:27:59 +0530
+Message-Id: <20231127155758.33070-1-tintinm2017@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231110170428.6664-2-pmladek@suse.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Petr,
+Respected Maintainers, 
 
-kernel test robot noticed the following build warnings:
+I have made some grammatical changes in the livepatch.rst file where I
+felt that the sentence would have sounded more correct and would have become easy for
+beginners to understand by reading. 
+Requesting review of my proposed changes from the mainatiners. 
 
-[auto build test WARNING on shuah-kselftest/next]
-[also build test WARNING on shuah-kselftest/fixes linus/master v6.6 next-20231110]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Thank You
+Attreyee Mukherjee
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Petr-Mladek/livepatch-Add-callbacks-for-introducing-and-removing-states/20231111-014906
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git next
-patch link:    https://lore.kernel.org/r/20231110170428.6664-2-pmladek%40suse.com
-patch subject: [POC 1/7] livepatch: Add callbacks for introducing and removing states
-config: x86_64-rhel-8.3-rust (https://download.01.org/0day-ci/archive/20231111/202311111107.avVIpRi2-lkp@intel.com/config)
-compiler: clang version 16.0.4 (https://github.com/llvm/llvm-project.git ae42196bc493ffe877a7e3dff8be32035dea4d07)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231111/202311111107.avVIpRi2-lkp@intel.com/reproduce)
+Signed-off-by: attreyee-muk <tintinm2017@gmail.com>
+---
+ Documentation/livepatch/livepatch.rst | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202311111107.avVIpRi2-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> kernel/livepatch/state.c:121:6: warning: no previous prototype for function 'is_state_in_other_patches' [-Wmissing-prototypes]
-   bool is_state_in_other_patches(struct klp_patch *patch, struct klp_state *state)
-        ^
-   kernel/livepatch/state.c:121:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   bool is_state_in_other_patches(struct klp_patch *patch, struct klp_state *state)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/is_state_in_other_patches +121 kernel/livepatch/state.c
-
-   120	
- > 121	bool is_state_in_other_patches(struct klp_patch *patch, struct klp_state *state)
-   122	{
-   123		struct klp_patch *old_patch;
-   124		struct klp_state *old_state;
-   125	
-   126		klp_for_each_patch(old_patch) {
-   127			if (old_patch == patch)
-   128				continue;
-   129	
-   130			klp_for_each_state(old_patch, old_state) {
-   131				if (old_state->id == state->id)
-   132					return true;
-   133			}
-   134		}
-   135	
-   136		return false;
-   137	}
-   138	
-
+diff --git a/Documentation/livepatch/livepatch.rst b/Documentation/livepatch/livepatch.rst
+index 68e3651e8af9..a2d2317b7d6b 100644
+--- a/Documentation/livepatch/livepatch.rst
++++ b/Documentation/livepatch/livepatch.rst
+@@ -35,11 +35,11 @@ and livepatching:
+     compiler using the '-pg' gcc option.
+ 
+   - Livepatching typically needs to redirect the code at the very beginning
+-    of the function entry before the function parameters or the stack
++    of the function entry, before the function parameters or the stack
+     are in any way modified.
+ 
+ All three approaches need to modify the existing code at runtime. Therefore
+-they need to be aware of each other and not step over each other's toes.
++they need to be aware of each other and not step over each others' toes.
+ Most of these problems are solved by using the dynamic ftrace framework as
+ a base. A Kprobe is registered as a ftrace handler when the function entry
+ is probed, see CONFIG_KPROBES_ON_FTRACE. Also an alternative function from
+@@ -50,8 +50,8 @@ some limitations, see below.
+ 3. Consistency model
+ ====================
+ 
+-Functions are there for a reason. They take some input parameters, get or
+-release locks, read, process, and even write some data in a defined way,
++Functions are there for a reason. They take some input parameters, acquire or
++release locks, read, process, write some data in a defined way, and also
+ have return values. In other words, each function has a defined semantic.
+ 
+ Many fixes do not change the semantic of the modified functions. For
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
+
 
