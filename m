@@ -1,111 +1,103 @@
-Return-Path: <live-patching+bounces-51-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-53-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2FA447FD7FE
-	for <lists+live-patching@lfdr.de>; Wed, 29 Nov 2023 14:25:45 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 14C9C7FD8B5
+	for <lists+live-patching@lfdr.de>; Wed, 29 Nov 2023 14:53:36 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id CE31E1F20F9B
-	for <lists+live-patching@lfdr.de>; Wed, 29 Nov 2023 13:25:44 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 8D905B214DC
+	for <lists+live-patching@lfdr.de>; Wed, 29 Nov 2023 13:53:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1641220321;
-	Wed, 29 Nov 2023 13:25:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADFBB225D9;
+	Wed, 29 Nov 2023 13:53:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X57ZWKD1"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Bp9Ils0f"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B313D85;
-	Wed, 29 Nov 2023 05:25:37 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id d2e1a72fcca58-6cc02e77a9cso4103543b3a.0;
-        Wed, 29 Nov 2023 05:25:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701264336; x=1701869136; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0vTv5mAp98/8icvpcSLOM8ELBPrnb6MYULdP6ouAnvs=;
-        b=X57ZWKD1CvVnPxKdQWqPqML6oZGfUd5h+Lx2becBOZp2zJf73ZeU2ALbqjUpEXJqec
-         wPhRexLK6Idee//l+Qr/9jkpC1iK8uMTNyDfQoM+GV/bnI67njZi2YgSD/DJCiLPtTax
-         J2VD6FHDOWquScpc0EWOD7iPOgi2GFXr0YBo4+F+5iCAqxR+VjwRXv5N2bSDtdPLadXJ
-         W4GtyFR0RMRW/egdgmtP5ztmJtwELWQzwLf2BycO0qg9BC3jQDEK/v8FiH+gvvrRtQD0
-         rRFjL9AGFhz8g3+bFew7ErVyfbvt3c8aPKm2QXgBVeKkf9yJJdoHUTMy/wfrgwKLgToe
-         3UeA==
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF53C10E0
+	for <live-patching@vger.kernel.org>; Wed, 29 Nov 2023 05:53:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1701266005;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=fCRlZ8oiqaJTBcB7G2DHmy/vp26Z550XjGVY3C3y2Oo=;
+	b=Bp9Ils0fKZ2EoAPIbvNkEYO+UTkL9GZnYvtvkblh6i2jQZZG9Gqz3chpLjxWdg2DTktc6m
+	T8qSvLoOwChGOhqlNXbwdjYB8D+ehWhrn+994v2dRi8+RGCD2vL57mDxm057XIpUKUckGI
+	l1l9XKeGzGju1uNsk/ahLJnDTOqDFT0=
+Received: from mail-vs1-f71.google.com (mail-vs1-f71.google.com
+ [209.85.217.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-157-jMan9-KUNDS8uoJQ05w08w-1; Wed, 29 Nov 2023 08:53:24 -0500
+X-MC-Unique: jMan9-KUNDS8uoJQ05w08w-1
+Received: by mail-vs1-f71.google.com with SMTP id ada2fe7eead31-4644ca0a48aso156862137.2
+        for <live-patching@vger.kernel.org>; Wed, 29 Nov 2023 05:53:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701264336; x=1701869136;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0vTv5mAp98/8icvpcSLOM8ELBPrnb6MYULdP6ouAnvs=;
-        b=IIfT5VEciexLv/ZoSX/euzs+K0Z/mzgqRimA9xbW6tfZd8lQ3dMzB3IzAsVd5SZYVo
-         BJpr+EGb4WVXO0USSd9lqq9qNOcfVja+GAl5+ESeQb+TSGBn0WGn+XAW53Sg7eajwTyr
-         L28dhRZVUYkCqvJZlplF1+NzDETNgMH2Uu8gxd3BROg9Sbub13I/93TF4DudwJ/54pub
-         HDJ5td0nrCtRh4dEPlPXgqabZZf1nOshx6xXkhHR60q9rPutB3fC22JSoTlgz+W7Druo
-         Xoxq12782V5sMegO9/a9pgAhEfxyUUmLTanPE3YZrjhxCUewwYg8wofd5RJhmqbTgWHi
-         Dpqg==
-X-Gm-Message-State: AOJu0YwQrN1zEg52aQ7IZGcYiLo5p0l/fLjUGlZ1F82xoCTp4PBbvrkS
-	XkmLwi41lzpzrdr0clgAHjQ=
-X-Google-Smtp-Source: AGHT+IFUD28p6w/oFS/NlXkaF+l0N93slTVLGP0uMB13s2leDFOaQOOp2Jdfg/eSHMIb3tdsvjbuDg==
-X-Received: by 2002:a05:6a20:1581:b0:18c:c37:35d4 with SMTP id h1-20020a056a20158100b0018c0c3735d4mr21630421pzj.14.1701264336594;
-        Wed, 29 Nov 2023 05:25:36 -0800 (PST)
-Received: from archie.me ([103.131.18.64])
-        by smtp.gmail.com with ESMTPSA id y192-20020a638ac9000000b005c2967852c5sm11051185pgd.30.2023.11.29.05.25.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Nov 2023 05:25:35 -0800 (PST)
-Received: by archie.me (Postfix, from userid 1000)
-	id 4054B10206DD0; Wed, 29 Nov 2023 20:25:30 +0700 (WIB)
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Documentation <linux-doc@vger.kernel.org>,
-	Linux Kernel Livepatching <live-patching@vger.kernel.org>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Attreyee Mukherjee <tintinm2017@gmail.com>,
-	Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 2/2] Documentation: livepatch: Correct opposite of releasing locks
-Date: Wed, 29 Nov 2023 20:25:27 +0700
-Message-ID: <20231129132527.8078-3-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20231129132527.8078-1-bagasdotme@gmail.com>
-References: <20231129132527.8078-1-bagasdotme@gmail.com>
+        d=1e100.net; s=20230601; t=1701266004; x=1701870804;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fCRlZ8oiqaJTBcB7G2DHmy/vp26Z550XjGVY3C3y2Oo=;
+        b=wIelomNJkPnu3fej6EvbWGx+sIvI7xMwVH5GtoAJpJULnHfkgg/0D4mMe4n0Z+SFlv
+         q9B3Tg4D/QxDYCfyAJcKi1c5Eg/LwugcX/XSA7TN0vGK/6Shq9/HEjNJh5WfiBc1L/MC
+         gzpcsLBdnhA37PSnzon+8rXh5FpPo7krAZvp1MjBn9GKb5N5s0UmmE6g8lLBv6LsRM4z
+         dkbZajhlaeBaRtTSeBOssKO5yN8aIwD5WOEEzl2X2CF+z8hyh5uDIFekEghH9CHbVc8v
+         4zCOgGIMIGqMDlT++ZKPf83yNWvqmNQb7+/jc+8dlpK5ZLeFS/GUYppwvz3mzmIIrx4l
+         mPpw==
+X-Gm-Message-State: AOJu0YzL/XF3jpuvQHmgZTMdH6C2bP4fdrzsDDixyuFS9djUlT+KsUX/
+	yQ/7+L6AqRBpzhuH/UGxrFX524gj3bk7SRbsr+HcNPvgcEqw19uY0dVJRiwfOccfaf5fQZXvaRE
+	5NhaL+nTXNvGds1ooxUDHA85DJA==
+X-Received: by 2002:a05:6102:34d1:b0:464:4f99:67cd with SMTP id a17-20020a05610234d100b004644f9967cdmr898018vst.25.1701266003954;
+        Wed, 29 Nov 2023 05:53:23 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IG6XeoX3LySftJvfhNd92B8TROaD2k49rLLui+JpiO50N4F9wBA4UISs6o9ymk2BLyZlpB5+Q==
+X-Received: by 2002:a05:6102:34d1:b0:464:4f99:67cd with SMTP id a17-20020a05610234d100b004644f9967cdmr897999vst.25.1701266003740;
+        Wed, 29 Nov 2023 05:53:23 -0800 (PST)
+Received: from [192.168.1.9] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
+        by smtp.gmail.com with ESMTPSA id s7-20020a0cf647000000b0067a4396f9cdsm3018175qvm.8.2023.11.29.05.53.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Nov 2023 05:53:23 -0800 (PST)
+Message-ID: <ac7a90a7-4d29-059b-fbff-6b67e6f5c2d3@redhat.com>
+Date: Wed, 29 Nov 2023 08:53:22 -0500
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1019; i=bagasdotme@gmail.com; h=from:subject; bh=+sPWGCF2lgNx7PNzcgyT4hcPq66q7XIxYBrXPX3DPxw=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDKnp1ofsDrFMOvtBTnL+hHLFObXTupavXZAmI6Up67oqr 13495LdHaUsDGJcDLJiiiyTEvmaTu8yErnQvtYRZg4rE8gQBi5OAZjIrD8M/0Pf3fy0vH+Pt/E2 fsMJt5xtG56+qzia7dZw5NdJ5cPaYQsY/oc9XsbowWPjL5j6kNf0mEuCqPp+Rt25te4X3L4L/n7 exQwA
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Content-Language: en-US
+To: Bagas Sanjaya <bagasdotme@gmail.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Documentation <linux-doc@vger.kernel.org>,
+ Linux Kernel Livepatching <live-patching@vger.kernel.org>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+ Jonathan Corbet <corbet@lwn.net>, Attreyee Mukherjee <tintinm2017@gmail.com>
+References: <20231129132527.8078-1-bagasdotme@gmail.com>
+From: Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH 0/2] Minor grammatical fixup for livepatch docs
+In-Reply-To: <20231129132527.8078-1-bagasdotme@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The opposite action of releasing locks is acquiring them, not getting
-them (as in configuration options; the inverse of such action is
-setting options). Correct it.
+On 11/29/23 08:25, Bagas Sanjaya wrote:
+> I was prompted to write this little grammar fix series when reading
+> the fix from Attreyee [1], with review comments requesting changes
+> to that fix. So here's my version of the fix, with reviews from [1]
+> addressed (and distinct grammar fixes splitted).
+> 
 
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/livepatch/livepatch.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Typical kernel workflow would be for Attreyee to incorporate feedback
+and post their v2 after a day or two.  From the format they posted, it
+appears to be a first(ish) kernel contribution post.  Let's be kind and
+patient so they we all may benefit from the practice of iterating on
+their patch.
 
-diff --git a/Documentation/livepatch/livepatch.rst b/Documentation/livepatch/livepatch.rst
-index 000059b3cbde49..53b49dafd7ded8 100644
---- a/Documentation/livepatch/livepatch.rst
-+++ b/Documentation/livepatch/livepatch.rst
-@@ -50,7 +50,7 @@ some limitations, see below.
- 3. Consistency model
- ====================
- 
--Functions are there for a reason. They take some input parameters, get or
-+Functions are there for a reason. They take some input parameters, acquire or
- release locks, read, process, and even write some data in a defined way,
- have return values. In other words, each function has a defined semantic.
- 
 -- 
-An old man doll... just what I always wanted! - Clara
+Joe
 
 
