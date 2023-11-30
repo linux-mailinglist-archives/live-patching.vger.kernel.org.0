@@ -1,140 +1,220 @@
-Return-Path: <live-patching+bounces-63-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-64-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D4E307FEA2B
-	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 09:04:53 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4E2607FF05F
+	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 14:42:21 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 4308CB20DAD
-	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 08:04:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0461B281F5B
+	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 13:42:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF21020DF5;
-	Thu, 30 Nov 2023 08:04:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5014A482CE;
+	Thu, 30 Nov 2023 13:42:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hkc85nqZ"
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="zB/NxqsP";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="GHGLE5R1"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A412A3;
-	Thu, 30 Nov 2023 00:04:44 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id d9443c01a7336-1cc9b626a96so6584415ad.2;
-        Thu, 30 Nov 2023 00:04:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701331484; x=1701936284; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bgB6RoiFobLknzEtO8MoirvVaa88Hx4zUcBwWoGsM5M=;
-        b=hkc85nqZxyWeTZmix33vJMZGwli9+hCPe7VJIUw4DKH5c0Cqla8yawWXNXelM7tLdJ
-         buIUWH2KTFIrYGwIRQSRhZfRbvYE2T9tS9LXJSGwHW8JodouWhumdupGyIsSfuTRIrpa
-         BasjGRxz4ktiw0XFzMgLHhrrMC2BjobuTmNRNNNrUL7Yq4KWDZqU7fwV4Fyfwp7okk+9
-         hJA3VvDxCLsXejRk+erpjrjp5PbRWbrnGoO7xkUDbO0h9GWPzhesWSqT5H08Ui+41Xgb
-         hQuJvf98wdln+k9xbyNWJ8FJFo/tkrVkR5XT1ZskBQrh6BCIgdApDCQumw6/nStH0g5K
-         kEXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701331484; x=1701936284;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bgB6RoiFobLknzEtO8MoirvVaa88Hx4zUcBwWoGsM5M=;
-        b=R0wtYRH60ky1CAr5RLIn4LbH7Y9/u5WFlqEj0unYRaOu0/CBEEQu74Uzm/G4uWjsZx
-         532LU/KiF//Z/1/O10CVGHdjE0qAxP46fe4ZZRUgAc5t8XjXwuzeMJ09X9QC6dP80vtE
-         B5A8TXgQaIJAckIEZkR7IoUTIWFN7ppZ9Dnjl+4JDAgDxhJqw1jJ21m8MxSEm4eEpBUc
-         gmkMEpLr+SS+jlIEvpy6Ztrs17BHIRzf3P8SE8fN4yYK9WeKsvnsshttyAM797ceuhJY
-         YWzdsnpmxkLaYzTmDFrWcEbIElDHC+xKCWUIvlv6QfkbfPUuPivoClgEifiQjZQ7BL9h
-         fU1Q==
-X-Gm-Message-State: AOJu0Yyr5+bndC8i1ewoMoLhCV9uy3HG3fnddlXYqSh0FfMdgEZwBWTL
-	cc2mOjRBP6dexaQnU2DuZGI=
-X-Google-Smtp-Source: AGHT+IEGoOdRQFIyflKN6XFRtYjPec4rcSFOpDa2HyGuCnXvq+plqF4HG9/xF+7ogLVZ5KUFPMcqAA==
-X-Received: by 2002:a17:902:db06:b0:1cf:c376:6d8d with SMTP id m6-20020a170902db0600b001cfc3766d8dmr15663408plx.32.1701331483766;
-        Thu, 30 Nov 2023 00:04:43 -0800 (PST)
-Received: from archie.me ([103.131.18.64])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170902c20a00b001c9dac0fbbasm697119pll.63.2023.11.30.00.04.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Nov 2023 00:04:41 -0800 (PST)
-Received: by archie.me (Postfix, from userid 1000)
-	id F2BF610F63FA9; Thu, 30 Nov 2023 15:04:38 +0700 (WIB)
-Date: Thu, 30 Nov 2023 15:04:38 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Jonathan Corbet <corbet@lwn.net>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Documentation <linux-doc@vger.kernel.org>,
-	Linux Kernel Livepatching <live-patching@vger.kernel.org>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
-	Attreyee Mukherjee <tintinm2017@gmail.com>
-Subject: Re: [PATCH 0/2] Minor grammatical fixup for livepatch docs
-Message-ID: <ZWhCFic541YaYf4w@archie.me>
-References: <20231129132527.8078-1-bagasdotme@gmail.com>
- <ac7a90a7-4d29-059b-fbff-6b67e6f5c2d3@redhat.com>
- <a4da77c2-7a23-4988-b65a-a58c105d89a4@gmail.com>
- <87h6l4ksni.fsf@meer.lwn.net>
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DBCC4;
+	Thu, 30 Nov 2023 05:42:11 -0800 (PST)
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 206B621AF5;
+	Thu, 30 Nov 2023 13:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1701351730; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=HJ3BtxLgzZnCHwvpf+aHvGP/K4km0dFJAmq9DtIgU2w=;
+	b=zB/NxqsPb4FQwxJjJxl1MOOsAOHDie8kumUb37ozEpCxvbiQyCs8AaoYRXX5KMAr9ssmvG
+	NbEKge5awP7RKy0jl2G7OKty/LjAgMQUNmejbkXnqqtRyozSa7pxcICZfFIhHG0PlvaaY9
+	9hxUHU3+JKtu6OsvujHcCitwHYIaA4I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1701351730;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=HJ3BtxLgzZnCHwvpf+aHvGP/K4km0dFJAmq9DtIgU2w=;
+	b=GHGLE5R1J+bN9OgPKX0++/Rn+Js2t1WeDVOQLVXTaxAD6jkQDbCYmPiasshjPrXlEJTs+I
+	FdILPnoKk9pcvcBQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 95E3913AB1;
+	Thu, 30 Nov 2023 13:42:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 8DAfGDGRaGXJQwAAD6G6ig
+	(envelope-from <mpdesouza@suse.com>); Thu, 30 Nov 2023 13:42:09 +0000
+Date: Thu, 30 Nov 2023 10:42:06 -0300
+From: Marcos Paulo de Souza <mpdesouza@suse.de>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Sven Schnelle <svens@linux.ibm.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org, live-patching@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] livepatch: Move modules to selftests and add a
+ new test
+Message-ID: <idd6uyqhlx42pteruavjyviyhdy63q47bjes3zwgfdsndxofgp@jhfwrvktpkv4>
+References: <20231031-send-lp-kselftests-v3-0-2b1655c2605f@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="p+we3TKRNR7h2S1s"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87h6l4ksni.fsf@meer.lwn.net>
+In-Reply-To: <20231031-send-lp-kselftests-v3-0-2b1655c2605f@suse.com>
+Authentication-Results: smtp-out1.suse.de;
+	none
+X-Spam-Level: 
+X-Spam-Score: -3.20
+X-Spamd-Result: default: False [-3.20 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 BAYES_HAM(-3.00)[99.99%];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 MIME_GOOD(-0.10)[text/plain];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	 RCPT_COUNT_TWELVE(0.00)[18];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:email,suse.com:email];
+	 FORGED_SENDER(0.30)[mpdesouza@suse.de,mpdesouza@suse.com];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 MIME_TRACE(0.00)[0:+];
+	 MID_RHS_NOT_FQDN(0.50)[];
+	 FROM_NEQ_ENVFROM(0.10)[mpdesouza@suse.de,mpdesouza@suse.com];
+	 RCVD_TLS_ALL(0.00)[]
 
+Humble ping :)
 
---p+we3TKRNR7h2S1s
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Nov 29, 2023 at 05:10:25PM -0700, Jonathan Corbet wrote:
-> Bagas Sanjaya <bagasdotme@gmail.com> writes:
->=20
-> > On 11/29/23 20:53, Joe Lawrence wrote:
-> >> On 11/29/23 08:25, Bagas Sanjaya wrote:
-> >>> I was prompted to write this little grammar fix series when reading
-> >>> the fix from Attreyee [1], with review comments requesting changes
-> >>> to that fix. So here's my version of the fix, with reviews from [1]
-> >>> addressed (and distinct grammar fixes splitted).
-> >>>
-> >>=20
-> >> Typical kernel workflow would be for Attreyee to incorporate feedback
-> >> and post their v2 after a day or two.  From the format they posted, it
-> >> appears to be a first(ish) kernel contribution post.  Let's be kind and
-> >> patient so they we all may benefit from the practice of iterating on
-> >> their patch.
-> >>=20
-> >
-> > I do this posting because I thought the OP (Attreyee) didn't respond in
-> > timely manner (just like random Chinese contributors like @cdjrlc.com
-> > and @208suo.com people).
->=20
-> Seriously?  The original post was on Monday, yours came less than 48
-> hours later.  Not only can we not expect that kind of rapid turnaround
-> from anybody, but we actively discourage rapid resending of patches.
-> Rather than dig yourself in deeper, I suggest you simply apologize to
-> the original poster and find something more useful to do.
-
-Done, thanks!
-
-And yes, I'm also focusing on regression tracking and Bugzilla
-triaging.
-
-Ciao, Bagas.
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---p+we3TKRNR7h2S1s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZWhCBgAKCRD2uYlJVVFO
-o4KyAP9QAMwScjDOefXLk7AsKL3A93x/m/r/RPaaE04kNiQHzAEA2Wo/kuHugyoY
-7LAoCn4OIfARydmbZskeF2tkU8O70gU=
-=HZuv
------END PGP SIGNATURE-----
-
---p+we3TKRNR7h2S1s--
+On Tue, Oct 31, 2023 at 06:10:50PM -0300, Marcos Paulo de Souza wrote:
+> This patchset moves the current kernel testing livepatch modules from
+> lib/livepatches to tools/testing/selftest/livepatch/test_modules, and compiles
+> them as out-of-tree modules before testing.
+> 
+> There is also a new test being added. This new test exercises multiple processes
+> calling a syscall, while a livepatch patched the syscall.
+> 
+> Why this move is an improvement:
+> * The modules are now compiled as out-of-tree modules against the current
+>   running kernel, making them capable of being tested on different systems with
+>   newer or older kernels.
+> * Such approach now needs kernel-devel package to be installed, since they are
+>   out-of-tree modules. These can be generated by running "make rpm-pkg" in the
+>   kernel source.
+> 
+> What needs to be solved:
+> * Currently gen_tar only packages the resulting binaries of the tests, and not
+>   the sources. For the current approach, the newly added modules would be
+>   compiled and then packaged. It works when testing on a system with the same
+>   kernel version. But it will fail when running on a machine with different kernel
+>   version, since module was compiled against the kernel currently running.
+> 
+>   This is not a new problem, just aligning the expectations. For the current
+>   approach to be truly system agnostic gen_tar would need to include the module
+>   and program sources to be compiled in the target systems.
+> 
+> I'm sending the patches now so it can be discussed before Plumbers.
+> 
+> Thanks in advance!
+>   Marcos
+> 
+> To: Shuah Khan <shuah@kernel.org>
+> To: Jonathan Corbet <corbet@lwn.net>
+> To: Heiko Carstens <hca@linux.ibm.com>
+> To: Vasily Gorbik <gor@linux.ibm.com>
+> To: Alexander Gordeev <agordeev@linux.ibm.com>
+> To: Christian Borntraeger <borntraeger@linux.ibm.com>
+> To: Sven Schnelle <svens@linux.ibm.com>
+> To: Josh Poimboeuf <jpoimboe@kernel.org>
+> To: Jiri Kosina <jikos@kernel.org>
+> To: Miroslav Benes <mbenes@suse.cz>
+> To: Petr Mladek <pmladek@suse.com>
+> To: Joe Lawrence <joe.lawrence@redhat.com>
+> Cc: linux-kselftest@vger.kernel.org
+> Cc: linux-doc@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-s390@vger.kernel.org
+> Cc: live-patching@vger.kernel.org
+> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> 
+> Changes in v3:
+> * Rebased on top of v6.6-rc5
+> * The commits messages were improved (Thanks Petr!)
+> * Created TEST_GEN_MODS_DIR variable to point to a directly that contains kernel
+>   modules, and adapt selftests to build it before running the test.
+> * Moved test_klp-call_getpid out of test_programs, since the gen_tar
+>   would just copy the generated test programs to the livepatches dir,
+>   and so scripts relying on test_programs/test_klp-call_getpid will fail.
+> * Added a module_param for klp_pids, describing it's usage.
+> * Simplified the call_getpid program to ignore the return of getpid syscall,
+>   since we only want to make sure the process transitions correctly to the
+>   patched stated
+> * The test-syscall.sh not prints a log message showing the number of remaining
+>   processes to transition into to livepatched state, and check_output expects it
+>   to be 0.
+> * Added MODULE_AUTHOR and MODULE_DESCRIPTION to test_klp_syscall.c
+> 
+> The v2 can be seen here:
+> https://lore.kernel.org/linux-kselftest/20220630141226.2802-1-mpdesouza@suse.com/
+> 
+> ---
+> Marcos Paulo de Souza (3):
+>       kselftests: lib.mk: Add TEST_GEN_MODS_DIR variable
+>       livepatch: Move tests from lib/livepatch to selftests/livepatch
+>       selftests: livepatch: Test livepatching a heavily called syscall
+> 
+>  Documentation/dev-tools/kselftest.rst              |   4 +
+>  arch/s390/configs/debug_defconfig                  |   1 -
+>  arch/s390/configs/defconfig                        |   1 -
+>  lib/Kconfig.debug                                  |  22 ----
+>  lib/Makefile                                       |   2 -
+>  lib/livepatch/Makefile                             |  14 ---
+>  tools/testing/selftests/lib.mk                     |  20 +++-
+>  tools/testing/selftests/livepatch/Makefile         |   5 +-
+>  tools/testing/selftests/livepatch/README           |  17 +--
+>  tools/testing/selftests/livepatch/config           |   1 -
+>  tools/testing/selftests/livepatch/functions.sh     |  34 +++---
+>  .../testing/selftests/livepatch/test-callbacks.sh  |  50 ++++-----
+>  tools/testing/selftests/livepatch/test-ftrace.sh   |   6 +-
+>  .../testing/selftests/livepatch/test-livepatch.sh  |  10 +-
+>  .../selftests/livepatch/test-shadow-vars.sh        |   2 +-
+>  tools/testing/selftests/livepatch/test-state.sh    |  18 ++--
+>  tools/testing/selftests/livepatch/test-syscall.sh  |  53 ++++++++++
+>  tools/testing/selftests/livepatch/test-sysfs.sh    |   6 +-
+>  .../selftests/livepatch/test_klp-call_getpid.c     |  44 ++++++++
+>  .../selftests/livepatch/test_modules/Makefile      |  20 ++++
+>  .../test_modules}/test_klp_atomic_replace.c        |   0
+>  .../test_modules}/test_klp_callbacks_busy.c        |   0
+>  .../test_modules}/test_klp_callbacks_demo.c        |   0
+>  .../test_modules}/test_klp_callbacks_demo2.c       |   0
+>  .../test_modules}/test_klp_callbacks_mod.c         |   0
+>  .../livepatch/test_modules}/test_klp_livepatch.c   |   0
+>  .../livepatch/test_modules}/test_klp_shadow_vars.c |   0
+>  .../livepatch/test_modules}/test_klp_state.c       |   0
+>  .../livepatch/test_modules}/test_klp_state2.c      |   0
+>  .../livepatch/test_modules}/test_klp_state3.c      |   0
+>  .../livepatch/test_modules/test_klp_syscall.c      | 116 +++++++++++++++++++++
+>  31 files changed, 325 insertions(+), 121 deletions(-)
+> ---
+> base-commit: 6489bf2e1df1c84e9bcd4694029ff35b39fd3397
+> change-id: 20231031-send-lp-kselftests-4c917dcd4565
+> 
+> Best regards,
+> -- 
+> Marcos Paulo de Souza <mpdesouza@suse.com>
+> 
 
