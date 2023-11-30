@@ -1,90 +1,135 @@
-Return-Path: <live-patching+bounces-59-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-60-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5D2217FE495
-	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 01:10:36 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E5DB77FE4A9
+	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 01:13:15 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 579041C209A9
-	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 00:10:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A0BDE2821DB
+	for <lists+live-patching@lfdr.de>; Thu, 30 Nov 2023 00:13:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01021385;
-	Thu, 30 Nov 2023 00:10:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 751F3369;
+	Thu, 30 Nov 2023 00:13:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="ofNolQR8"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J8pzU8/M"
 X-Original-To: live-patching@vger.kernel.org
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FD3CA;
-	Wed, 29 Nov 2023 16:10:28 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:280:5e00:7e19::646])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by ms.lwn.net (Postfix) with ESMTPSA id 89BDE377;
-	Thu, 30 Nov 2023 00:10:26 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 89BDE377
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-	t=1701303026; bh=zIo8SV1c0ZhX3/iH2vn+LkvdDT3uPdZkOQTMoWU6W2U=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=ofNolQR8+2oE/pQInZdXqgK4Carg+5nVO8bylGqIbjVQkPjSjqUv9Qo7HLIWgQVhU
-	 XUqTrYucnZt4OaltEVa/rNRI5CNQ4ZPGUEqmn3V+0fg+eI3NJAqIph8REEa3xO9CJ9
-	 2XwclVX04py+M3rxTkJPLJAhkHBy2TOs18NtZeoEMKdFNnaecjQfctoCuSCNssrNam
-	 I/doTjl3KlTd5eGDoNP3FwZmGWpYFaicXQItdAcgiA8dutZ/R8Mq2xIve+HVLsA5Hi
-	 gPTAg0TnBWjoG/ESX9XQJBptGIrYXlisMABKf/lA0dvoGP5LCcU3yHR63l5xhgBtOC
-	 1W/PIIuiE9maQ==
-From: Jonathan Corbet <corbet@lwn.net>
-To: Bagas Sanjaya <bagasdotme@gmail.com>, Joe Lawrence
- <joe.lawrence@redhat.com>, Linux Kernel Mailing List
- <linux-kernel@vger.kernel.org>, Linux Documentation
- <linux-doc@vger.kernel.org>, Linux Kernel Livepatching
- <live-patching@vger.kernel.org>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, Attreyee
- Mukherjee <tintinm2017@gmail.com>
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE13F4;
+	Wed, 29 Nov 2023 16:13:08 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id d9443c01a7336-1cf7a8ab047so3867925ad.1;
+        Wed, 29 Nov 2023 16:13:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1701303188; x=1701907988; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=llp625eBHSklHYRyyFpz3DN5XNqEMa63GZO3UGUzFOc=;
+        b=J8pzU8/Md36jyKJ03/ZnQt1HxtgFeyxm8pC8oTNzsZVOY/jgmQztVSBpne6emmyRBL
+         dMc3ygkyN+7oGi0ZGYVqEsf3Z2ixsihu8fs77HT8Mx/92VZ+YdTl888806PC3F5rDZn5
+         P68Z4Duqy08H1s5v7GxZFcUKWfpolTEoPNuj5Unz/aIJ7kkqB5far2y5UqtKgTYUejXg
+         xvmg4h/UV0CKtWeqxymzs656tR9x/h6kSLMf0Y5ARN+ymqJ09P55b3xIEWpcrB274I6s
+         gYiGm5KOLjDtBIuciptA27p0fNyt+g3oVz+K7cfYHtJKlZOfUgjwfRLoKI6I3ocRpv9n
+         lKuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701303188; x=1701907988;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=llp625eBHSklHYRyyFpz3DN5XNqEMa63GZO3UGUzFOc=;
+        b=wtRgq2OsEevhVUORA7uftSw9bRi9ZFDWKC49NnjBhQhgzmyH/vTp40z+ZohXkE9Fhc
+         h6iWGsEavmpQVDohO9QeScDW+RsXp5rfsE67geDEZsUOG2EI/ePirAzUojR++W58xG1v
+         MAOA7qcVBlmc6f6LzTCYQFshGwLxZLPfXnMLgw1uv1EqGt4iTa8f/YVJdAyU42vOvD0w
+         5X1bUpiAHMk3o9M8T8i9YI73JOk65A0t4bcCR383BsSrAV5CJX5OawsFP+HZxT1UFpbd
+         lIdVt14386cc5d6d2EEGkrMBpY0TMqwM/GcX98Xz60wVVx1/DX2ayjFUcyPK/Xhcr8uH
+         EM8Q==
+X-Gm-Message-State: AOJu0YzI68cgbZZ1+IeyU3Ph3W+FlACulCHF2D8TJsB9VoJVy8fayIXw
+	8p2CCq1iWqBZHv3HzYo/+ls=
+X-Google-Smtp-Source: AGHT+IGV8y3JIQefxKXs91Nva16n7dSGeJRZST1APeuo5h+MlHpWqkDAfo5U2A1DEygfgAKvILIzKw==
+X-Received: by 2002:a17:902:8217:b0:1cc:49e7:ee1b with SMTP id x23-20020a170902821700b001cc49e7ee1bmr17994646pln.58.1701303188222;
+        Wed, 29 Nov 2023 16:13:08 -0800 (PST)
+Received: from archie.me ([103.131.18.64])
+        by smtp.gmail.com with ESMTPSA id n6-20020a170902d2c600b001cfcf3dd317sm6456123plc.61.2023.11.29.16.13.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Nov 2023 16:13:07 -0800 (PST)
+Received: by archie.me (Postfix, from userid 1000)
+	id 47C031141356B; Thu, 30 Nov 2023 07:13:03 +0700 (WIB)
+Date: Thu, 30 Nov 2023 07:13:02 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Matthew Wilcox <willy@infradead.org>, Jonathan Corbet <corbet@lwn.net>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Linux Documentation <linux-doc@vger.kernel.org>,
+	Linux Kernel Livepatching <live-patching@vger.kernel.org>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+	Petr Mladek <pmladek@suse.com>,
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	Attreyee Mukherjee <tintinm2017@gmail.com>,
+	Chandan Babu R <chandanbabu@kernel.org>
 Subject: Re: [PATCH 0/2] Minor grammatical fixup for livepatch docs
-In-Reply-To: <a4da77c2-7a23-4988-b65a-a58c105d89a4@gmail.com>
+Message-ID: <ZWfTjmL9RCUrqCqj@archie.me>
 References: <20231129132527.8078-1-bagasdotme@gmail.com>
- <ac7a90a7-4d29-059b-fbff-6b67e6f5c2d3@redhat.com>
- <a4da77c2-7a23-4988-b65a-a58c105d89a4@gmail.com>
-Date: Wed, 29 Nov 2023 17:10:25 -0700
-Message-ID: <87h6l4ksni.fsf@meer.lwn.net>
+ <874jh4pr8w.fsf@meer.lwn.net>
+ <ZWdYGrhTYFzG5BZq@casper.infradead.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="79WZgSpXvLpPvpaF"
+Content-Disposition: inline
+In-Reply-To: <ZWdYGrhTYFzG5BZq@casper.infradead.org>
 
-Bagas Sanjaya <bagasdotme@gmail.com> writes:
 
-> On 11/29/23 20:53, Joe Lawrence wrote:
->> On 11/29/23 08:25, Bagas Sanjaya wrote:
->>> I was prompted to write this little grammar fix series when reading
->>> the fix from Attreyee [1], with review comments requesting changes
->>> to that fix. So here's my version of the fix, with reviews from [1]
->>> addressed (and distinct grammar fixes splitted).
->>>
->> 
->> Typical kernel workflow would be for Attreyee to incorporate feedback
->> and post their v2 after a day or two.  From the format they posted, it
->> appears to be a first(ish) kernel contribution post.  Let's be kind and
->> patient so they we all may benefit from the practice of iterating on
->> their patch.
->> 
->
-> I do this posting because I thought the OP (Attreyee) didn't respond in
-> timely manner (just like random Chinese contributors like @cdjrlc.com
-> and @208suo.com people).
+--79WZgSpXvLpPvpaF
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Seriously?  The original post was on Monday, yours came less than 48
-hours later.  Not only can we not expect that kind of rapid turnaround
-from anybody, but we actively discourage rapid resending of patches.
-Rather than dig yourself in deeper, I suggest you simply apologize to
-the original poster and find something more useful to do.
+On Wed, Nov 29, 2023 at 03:26:18PM +0000, Matthew Wilcox wrote:
+> On Wed, Nov 29, 2023 at 07:29:35AM -0700, Jonathan Corbet wrote:
+> > Bagas Sanjaya <bagasdotme@gmail.com> writes:
+> >=20
+> > > I was prompted to write this little grammar fix series when reading
+> > > the fix from Attreyee [1], with review comments requesting changes
+> > > to that fix. So here's my version of the fix, with reviews from [1]
+> > > addressed (and distinct grammar fixes splitted).
+> >=20
+> > How is this helpful?  Why are you trying to push aside somebody who is
+> > working toward a first contribution to the kernel?  This is not the way
+> > to help somebody learn to work with the kernel community.
+>=20
+> This is not the first such "contribution" from Bagas recently.
+>=20
+> https://lore.kernel.org/linux-doc/20231121095658.28254-1-bagasdotme@gmail=
+=2Ecom/
+>=20
+> was as a result of
+> https://lore.kernel.org/linux-xfs/87r0klg8wl.fsf@debian-BULLSEYE-live-bui=
+lder-AMD64/
+>=20
+> I didn't say anything at the time, but clearly I should have squelched
+> this bad behaviour by Bagas before he did it to a newbie.
+>=20
+> Bagas, find your own project to work on.  Don't steal glory from others.
 
-Thanks,
+OK, thanks! I was in 'gabut mode' then...
 
-jon
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--79WZgSpXvLpPvpaF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZWfTigAKCRD2uYlJVVFO
+o1WRAQDjPyXAhXCE7w/Kb8phglapgtD0isoZyQ4PX7KDZuAN4AD/Sbgq4OKBu4e+
+ImjI03e2t4/pu2eUB/rOp2wbO//fxAQ=
+=zVHZ
+-----END PGP SIGNATURE-----
+
+--79WZgSpXvLpPvpaF--
 
