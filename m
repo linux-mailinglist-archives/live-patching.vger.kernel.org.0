@@ -1,144 +1,130 @@
-Return-Path: <live-patching+bounces-77-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-78-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC93F80A3AA
-	for <lists+live-patching@lfdr.de>; Fri,  8 Dec 2023 13:44:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id A6B8780DD93
+	for <lists+live-patching@lfdr.de>; Mon, 11 Dec 2023 22:53:21 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DE11D1C20B30
-	for <lists+live-patching@lfdr.de>; Fri,  8 Dec 2023 12:44:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D67D31C208BD
+	for <lists+live-patching@lfdr.de>; Mon, 11 Dec 2023 21:53:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0792B13FE7;
-	Fri,  8 Dec 2023 12:44:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D73954FB1;
+	Mon, 11 Dec 2023 21:53:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="La9eDmjE";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="9hZ8iyq8";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="La9eDmjE";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="9hZ8iyq8"
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="AuR9K+Om"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2a07:de40:b251:101:10:150:64:1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF71D1710;
-	Fri,  8 Dec 2023 04:44:09 -0800 (PST)
-Received: from pobox.suse.cz (unknown [10.100.2.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 5A52821C42;
-	Fri,  8 Dec 2023 12:44:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1702039448; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0n4maJTA6v/hJg+qYTmGFfPnnHUi3IlrWUXV9a2Jkcw=;
-	b=La9eDmjEtgE1tfkDvO3LLp4mDRDaXF3xKrwIFJFiMwHFHb6xlr+pMiycxsNkusq58GMart
-	zjFdME5/0AFg9O/qizY6ctZoB2A/swvLAc5NRKIjICjPPnPDaGDIPmvx9HaOiosY59X2lu
-	BwmBQP5W4xXRVQZkwGn2RykgTOiSKJg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1702039448;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0n4maJTA6v/hJg+qYTmGFfPnnHUi3IlrWUXV9a2Jkcw=;
-	b=9hZ8iyq8cl3swcssNyUm+DJlQP4sGp3Bm2m2sorlyfHdav5kl+tzMKuwFr1duEX0Ch98Ps
-	Cw79OFkvi7si5oCA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1702039448; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0n4maJTA6v/hJg+qYTmGFfPnnHUi3IlrWUXV9a2Jkcw=;
-	b=La9eDmjEtgE1tfkDvO3LLp4mDRDaXF3xKrwIFJFiMwHFHb6xlr+pMiycxsNkusq58GMart
-	zjFdME5/0AFg9O/qizY6ctZoB2A/swvLAc5NRKIjICjPPnPDaGDIPmvx9HaOiosY59X2lu
-	BwmBQP5W4xXRVQZkwGn2RykgTOiSKJg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1702039448;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0n4maJTA6v/hJg+qYTmGFfPnnHUi3IlrWUXV9a2Jkcw=;
-	b=9hZ8iyq8cl3swcssNyUm+DJlQP4sGp3Bm2m2sorlyfHdav5kl+tzMKuwFr1duEX0Ch98Ps
-	Cw79OFkvi7si5oCA==
-Date: Fri, 8 Dec 2023 13:44:09 +0100 (CET)
-From: Miroslav Benes <mbenes@suse.cz>
-To: John Hubbard <jhubbard@nvidia.com>
-cc: Andrew Morton <akpm@linux-foundation.org>, 
-    David Hildenbrand <david@redhat.com>, Peter Xu <peterx@redhat.com>, 
-    Shuah Khan <shuah@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
-    linux-mm@kvack.org, linux-kselftest@vger.kernel.org, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    Muhammad Usama Anjum <usama.anjum@collabora.com>, 
-    Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org, 
-    live-patching@vger.kernel.org
-Subject: Re: [PATCH v3 11/11] selftests: error out if kernel header files
- are not yet built
-In-Reply-To: <20230606071637.267103-12-jhubbard@nvidia.com>
-Message-ID: <alpine.LSU.2.21.2312081323570.19664@pobox.suse.cz>
-References: <20230606071637.267103-1-jhubbard@nvidia.com> <20230606071637.267103-12-jhubbard@nvidia.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C05CE
+	for <live-patching@vger.kernel.org>; Mon, 11 Dec 2023 13:53:14 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id ca18e2360f4ac-7b714a7835cso25812839f.0
+        for <live-patching@vger.kernel.org>; Mon, 11 Dec 2023 13:53:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google; t=1702331594; x=1702936394; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=J8wlwZcZfMgu62MtPSRryzCZiPJUNxKIn0JHd17fo+8=;
+        b=AuR9K+OmK3pUMtfDOPyYrKwqdhWPMvvVZeQAUv+8aos5dhTET8drE5mNAq5oafmI7Q
+         tUIUnfRcgVgIDf7Z34vuQoExUCHnaHiOPQN3BvJBzehmSMbyaAQzoGn1PQtozu/n1knW
+         0p9uWSTG79ePkskxijzFyMgR06Kd5uHbYURaY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702331594; x=1702936394;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=J8wlwZcZfMgu62MtPSRryzCZiPJUNxKIn0JHd17fo+8=;
+        b=pJZs+6z4ZabSsTnDJ1EUta0WTeBI8hmgSXUTrn4JM/WJsRF0eEo4w2WoTsJyt7x7jc
+         sG4EW0eLMndTYNms/Ih4Ovuz6IEkaWSLFUnN8jgdry5yuaUm+qYRN7z1WisH07nIw/TJ
+         u45lqSkI/g1sM58ZDiYN5/maisrLfISXAvC9Ij4TM6P9qN+Z4la+ATxzAS2fHW6dRRba
+         xSzy3uzzBwCOCZtNGd6LC5pYs6cm+d4+uSKLvcrVnn0Q/zdx1e3Q6TdGndion6tiWsCJ
+         9/TK7/SJks5oBv5t9H3ueNvsqz/GvS8TLo9agp80Ugu8QnsxIU3smDZT9Ty88V7JeWM1
+         4CCg==
+X-Gm-Message-State: AOJu0YyAQHejUys39ZhUL5WSjCRxpapXOL4TtnhBZK+RrBiv6mgYAuJV
+	bq/QNgpZ9GN+mtv+c9yV3fpGxQ==
+X-Google-Smtp-Source: AGHT+IHNXh53GeHIlmc9hQAoat+3wIYtfi4KMP437MU2mSbCYlghZVBb1fXt14Cen9PPHEHBoFg9Vg==
+X-Received: by 2002:a6b:c994:0:b0:7b7:365:924b with SMTP id z142-20020a6bc994000000b007b70365924bmr8423593iof.2.1702331594020;
+        Mon, 11 Dec 2023 13:53:14 -0800 (PST)
+Received: from [192.168.1.128] ([38.175.170.29])
+        by smtp.gmail.com with ESMTPSA id m35-20020a056638272300b0046926891d83sm2087680jav.103.2023.12.11.13.53.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Dec 2023 13:53:13 -0800 (PST)
+Message-ID: <2498bf91-8057-43e8-98f2-4ed93c53ce9f@linuxfoundation.org>
+Date: Mon, 11 Dec 2023 14:53:12 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Score: 1.79
-X-Spamd-Result: default: False [2.34 / 50.00];
-	 ARC_NA(0.00)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 NEURAL_SPAM_SHORT(2.44)[0.814];
-	 MIME_GOOD(-0.10)[text/plain];
-	 MID_RHS_MATCH_FROMTLD(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 RCPT_COUNT_TWELVE(0.00)[13];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 RCVD_COUNT_ZERO(0.00)[0];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 BAYES_HAM(-0.00)[15.61%]
-X-Spam-Flag: NO
-X-Spam-Score: 2.34
-Authentication-Results: smtp-out1.suse.de;
-	none
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/3] selftests: livepatch: Test livepatching a heavily
+ called syscall
+Content-Language: en-US
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: mpdesouza@suse.com, Marcos Paulo de Souza <mpdesouza@suse.de>,
+ Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
+ Joe Lawrence <joe.lawrence@redhat.com>, linux-kselftest@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-s390@vger.kernel.org, live-patching@vger.kernel.org,
+ Shuah Khan <skhan@linuxfoundation.org>
+References: <20231031-send-lp-kselftests-v3-0-2b1655c2605f@suse.com>
+ <20231031-send-lp-kselftests-v3-3-2b1655c2605f@suse.com>
+ <f9d82fa6-08d7-4ab6-badc-691987b37a82@linuxfoundation.org>
+ <unpg4z7eig6qbudgulnr6sog65fq7s2dy4u2vp2dgkdrq5csdw@dltnxuw6kw5b>
+ <8b95b96c-6aeb-4bf0-8ee9-2ba62330c672@linuxfoundation.org>
+ <12a9ec1bc84dc6d4b461e5c780ba7d3c3aa91740.camel@suse.com>
+ <76c4b967-1cb6-4f77-9402-f835b15adb10@linuxfoundation.org>
+ <alpine.LSU.2.21.2312061530470.13051@pobox.suse.cz>
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <alpine.LSU.2.21.2312061530470.13051@pobox.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi John, Muhammad,
-
-On Tue, 6 Jun 2023, John Hubbard wrote:
-
-> As per a discussion with Muhammad Usama Anjum [1], the following is how
-> one is supposed to build selftests:
+On 12/6/23 07:39, Miroslav Benes wrote:
+> Hi,
 > 
->     make headers && make -C tools/testing/selftests/mm
+> On Tue, 5 Dec 2023, Shuah Khan wrote:
 > 
-> Change the selftest build system's lib.mk to fail out with a helpful
-> message if that prerequisite "make headers" has not been done yet.
+>> On 12/5/23 05:52, mpdesouza@suse.com wrote:
+>>> On Fri, 2023-12-01 at 16:38 +0000, Shuah Khan wrote:
+>>
+>>> 0003-selftests-livepatch-Test-livepatching-a-heavily-call.patch has
+>>> style problems, please review.
+>>>
+>>> NOTE: If any of the errors are false positives, please report
+>>>         them to the maintainer, see CHECKPATCH in MAINTAINERS.
+>>>
+>>> I couldn't find any mention about "missing module name". Is your script
+>>> showing more warnings than these ones? Can you please share your
+>>> output?
+>>>
+>>> I'll fix MAINTAINERS file but I'll wait until I understand what's
+>>> missing in your checkpatch script to resend the patchset.
+>>>
+>>
+>> Looks like it is coming a script - still my question stands on
+>> whether or not you would need a module name for this module?
 > 
-> [1] https://lore.kernel.org/all/bf910fa5-0c96-3707-cce4-5bcc656b6274@collabora.com/
+> I admit I am also clueless here. The module name is given in Makefile. In
+> this case in test_modules/Makefile. I do not know of anything else. There
+> is no MODULE_NAME macro. Could you elaborate, please?
+> 
 
-could you, please, elaborate more on that one is supposed to build 
-selftests with 'make headers'? Yes, Documentation/dev-tools/kselftest.rst 
-mentions that because you might need headers but...
+I see that now.
 
-The common way how we test the kernel is to build the kernel, install it 
-somewhere and run selftests on top. The sequence basically being "make 
-rpm-pkg; rpm -ivh; cd tools/testing/selftest/livepatch/ in source tree; 
-sudo make run_tests" (or a similar variation of the procedure). The point 
-is that we want to test the running kernel with its respective environment 
-installed in /lib/modules/`uname -r`/ (if needed). This way we can run 
-newer selftests from the current mainline tree on older kernels among 
-others.
+thanks,
+-- Shuah
 
-The commit breaks the use case which worked for a long long time.
 
-It also breaks what Marcos proposed for livepatch selftests in 
-https://lore.kernel.org/all/20231031-send-lp-kselftests-v3-0-2b1655c2605f@suse.com/
 
-I guess we can always work around it by letting subsystem selftests to 
-override KHDR_DIR but I am not comfortable with the behaviour that your 
-commit introduced in the first place to be honest.
 
-Thank you,
-Miroslav
+
+
 
