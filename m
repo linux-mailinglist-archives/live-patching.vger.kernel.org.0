@@ -1,80 +1,116 @@
-Return-Path: <live-patching+bounces-101-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-102-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id DA57181B947
-	for <lists+live-patching@lfdr.de>; Thu, 21 Dec 2023 15:07:31 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 55FC281BF72
+	for <lists+live-patching@lfdr.de>; Thu, 21 Dec 2023 21:10:28 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 684C7B21161
-	for <lists+live-patching@lfdr.de>; Thu, 21 Dec 2023 14:07:29 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 6D727B235EC
+	for <lists+live-patching@lfdr.de>; Thu, 21 Dec 2023 20:10:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D232953A04;
-	Thu, 21 Dec 2023 14:06:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6B7C67319B;
+	Thu, 21 Dec 2023 20:10:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="ncGlqVgP"
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="htjTw8g8"
 X-Original-To: live-patching@vger.kernel.org
-Received: from out203-205-221-231.mail.qq.com (out203-205-221-231.mail.qq.com [203.205.221.231])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E888539FF
-	for <live-patching@vger.kernel.org>; Thu, 21 Dec 2023 14:06:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-	s=s201512; t=1703167568;
-	bh=H0VD4ujMeAECYBqTt5DeFaQoK1Z2Jl2kmKmUmcSv2HY=;
-	h=Subject:From:To:Date;
-	b=ncGlqVgPEm7GX69AjpelcIcX/xos2wKokgFiJitjJ3F6LiwxCaREmTAJeyVAQUjZe
-	 mRz1NF7nKyQk7LHht6dzsQcBOnDGzytjdySu6ugvRxFG5lPbea3sjVdIEdrsE4zmjA
-	 /PRHSC1SLc62VXPrBU1OzMU+i4S178fNeWy+nJc4=
-Received: from [192.168.216.104] ([60.17.2.135])
-	by newxmesmtplogicsvrszc5-1.qq.com (NewEsmtp) with SMTP
-	id 18711423; Thu, 21 Dec 2023 22:06:07 +0800
-X-QQ-mid: xmsmtpt1703167567tbpvxk7bw
-Message-ID: <tencent_8B36A9FCE07A8CA645DC6F3C3F039C52E407@qq.com>
-X-QQ-XMAILINFO: NGsJ5Fy+2UsSMtYjBzOd8r1ulDvhdJ94FdJvaeRlK/2LgIWGmnUFqgv+BKMcn/
-	 f01v31XS8q36xBxwuplhGtW6xNI7Vxi3EA/MvDwtHJztpc8eGeAEgTf7r1i2X3drQuXkMYKPGhAq
-	 Y2P6xWFN/1zEKLGTqKFBzaCg0lKkNA2zbg4H+VUSMIE9AA6F3hbOITIhRGpJPe0rnlCgT6dRJ0XF
-	 2WZn7sZSaIOTQh9K4ZC9Nf5hXX8lDfDketthKe2UTtAu8ymCM3adKjc4g3bQS9F7DrcPlmSUmYKZ
-	 9AZe5EkIuM/XhR4Nc+1VE9bciM0pu/gRnZAV8PYZUCVjt9fp5DGuHWfBapqlK4VrQduJBKsfmsdE
-	 x6Cu1BVTd3jBRn0wrI6C2er8a/GBwj87nDiQGEpb80e3sMZLoWkzd2Nfqs3PfhVpgEp6QSYmzakJ
-	 zcbyDTPFu+efPS+KNQT1km0WV0uYaUR4MVV7euzOBwHTBjPMx5Yw+U+FpbAgQc44H7a7LJanXuSc
-	 F5iBfltCSZiNcighNVc8IQLem1/TtQxQtHRZ7LHbEp/Q7Eu/XcpP8+OHtzF6xg3oJPsEyItcUtuX
-	 vja//bqlz6AYBVfopB802NfqnXLd2fNf8XGmOmgSIQkPIuVYuYcZCi8uGkDPlq2fZ9Ydr7t3TObO
-	 jKqqBNOibveKaoVxr//5gK614rDbrSu1idZF/c+CGZsvOgPB3tSEIK0AtqUsPzTGCjSdUMJQ+oeO
-	 Kw/fwj020ijGA/83QjLyd4NQ2U4zxG15HDJ/BFIIbSEaTJkcX5UDLcU0cyq1Fm5BdnlYVLt4ZGq9
-	 OIpFafCFzourDoRFfgWiFyAXoOZAuwktV7BR3exR7bnZPv2GH72e9CS3JAR0Ahv5rHs4WNg+BPId
-	 ApoFztW1n7qfyLUJ/SCriwI0ZuKSjb+vbWaeuDgBX3huW3oNjEk1GxYBZ5x1G0JjD7OOYbVx2i/a
-	 gDvVDumhEdp9JOp+zo2WSYpTeRRM0KVsa81kF9Gsc=
-X-QQ-XMRINFO: Mp0Kj//9VHAxr69bL5MkOOs=
-X-OQ-MSGID: <2c29eacc94fa584eeaa9b62fa25cbd6241d6ace2.camel@foxmail.com>
-Subject: RFC: another way to make livepatch
-From: laokz <laokz@foxmail.com>
-To: live-patching@vger.kernel.org
-Date: Thu, 21 Dec 2023 22:06:06 +0800
-Autocrypt: addr=laokz@foxmail.com; prefer-encrypt=mutual;
- keydata=mQINBFzLu4QBEADMp82/D9QivTnSQpsbqOe7pXEIc5faAsUeCIKOuR8aHPFU0ddUrKbQuJ+63lwET+qrSFgdPUUR7QM7TEQWL9Jgiymxn9zhzjOc6MP6AJ58If2MsDQdn5PoDAZC12ERgr9ntsXi+MwaA0VFL6pvROOePyCKmhBLUjUnM3gOUsPauYp3c4oYhRfoJMadESZOeDKUYINZ8UVm+YtL/tJuwMy6QunGPzywe5wQ+Lhncstis55dpWaklkWG6X84MUNk3kSUp8vXgWEWfeRWuLlyd41sHhOFuwpBqZh2nRxskTJmivkEKxifxO+CDXhzFCW8pLb/FVShBmJ+Y/6RKzq4Afl4TxKIGTzXF5zjWr4LwZtLQ0MKHfEB+htfiUGo4TlKx/6Vo5Aqdls1pjv1wzUrbfuDpWu+wf8zyRMV5ku+KAikFlrjFbLi2IleyqGxBRA1LWUUBSnlXDDAjCZOeSFJmeB37hxlOgRl3tCRFvnk3Yu0inlIQHfX4V5YtHrHP9YoRJUfnpuG41uhSf9nJokhW3vnhbH2CmQZBNoWBqvH/E8gCdRBOj0nwA8BNFptSvInUZDlzkjSqbGeGo5fHiBSNS2lGG7uI2BezNFEELA4/F8g0JKvP12SvuBLbo2J7kwqj7wUm/2Ghk8WqWun86kyOzCQCtMaQPIBuun8/Nw32wK3BwARAQABtBlsYW9reiA8bGFva3pAZm94bWFpbC5jb20+iQJXBBMBCABBAhsDBQkFo5qABQsJCAcDBRUKCQgLBRYCAwEAAh4BAheAFiEEm5KEDfHGbzo225HGBu2+68u+gbIFAlzNCScCGQEACgkQBu2+68u+gbIPqxAArF+Q2N38Wn+GFivx7xfXNyK5hMYWkqnre9TAG/++q/0txtwqI7WKuJ6GAWFJSWXvAsvy5Gp4mGGoE6IWs55tTtIdfvfJBcJkRZTZJE7wR8FywoCb7D/LWDEip5XMZipF6
-	ZZRlH1i87uQAZtW4Kq0EVmDOkGzCElzx34H83sk1FEjjAA20Q6KJSmad9xAytzCbZu1gJUQzKl9t9/zxgPWXeI+/6aFneN1Bv+Jde4kAgDviib68MUovQt5wSqZBwGE/5I3VdgQzPpC5bHWLj7/EycIHkK04C4ev1EAAk1mw94MsCIAcBnY7I7zTytNBbP15jS4RrgUCDbocS2o7H0WN/wz/EUBF4lKIlxcLGfwqSoGyzNNQ8rw6E7MkkTLJUZCavcYkDNr2ZAYW0EbBTsTBlh67ozExVQM1Dgo4N01RqFOe9uYCzCwpP1nlBzRa7mNb5O1F4L4hROs94f4hXje0cVd+W0PpNaR+iC05lvCVEyHV+dCWnK4cTLVWBuatJ1of6Oj0oF/s2boB35PFW4kD4/oFX7BUoA8U/Lf8NarOev3DIXkRNwOFL1lBClgMXFFoNFmj3xWrJaUAkil7FNEilZg/HVuTeaZNXZrGR9NWR6ZgDuyeS660XIEr3VqdTsplQF49nSUul64NNoRdgdXB2Or6SGq0egPx7FPthCXzi4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.2-1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110C8651AC
+	for <live-patching@vger.kernel.org>; Thu, 21 Dec 2023 20:10:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+Received: by mail-il1-f177.google.com with SMTP id e9e14a558f8ab-35fd4856abbso104625ab.0
+        for <live-patching@vger.kernel.org>; Thu, 21 Dec 2023 12:10:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google; t=1703189418; x=1703794218; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KuNcu+xSyjheqKIJeQgDsNTkefgj8XV+ZlyaXQLWUtQ=;
+        b=htjTw8g8ZMl5/1bCZWg7QJZ0R2bBW3H0bSln7Nk2PsHatqe4pZT9je6JGPKugqgeMB
+         1p2YJvrhC+ApTKUGcYyREZFb0dq3iVhJFoyCUcYItKd2rxxcfBSJXiUoqSdtgjLYjcnK
+         sadUeqkJ55d8+Dw/4ctRnY7fGXNQr4J59/yeA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1703189418; x=1703794218;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KuNcu+xSyjheqKIJeQgDsNTkefgj8XV+ZlyaXQLWUtQ=;
+        b=RSJJUeOOC7NvcBeK9DLX378lTbFUDBRba6QZ7FtFmO5CM1i8Gmd4vX9iy4BpKrRjSZ
+         p7W3veLCWycbOdgTKcSRh3ZpwpTPdclfYilvXpWYN/6FTP0HP2gYWfm4JFn4jSrHVvty
+         C5RVgJ28phmu33knpVh8l7Jfj5mlYIMANE7phl1pxog8Oe5yoKEiOUi/yXcXbcWCQs8i
+         k8r1UyAO+Z9jpxRDE+VPoaXJ1I8uo6pwJ0ao9nCSQfVgqi29FWFe9SGmpeLT+GDt7Pms
+         oi77hgLoETey/i9jOFKXq8hehd9gzwLWz7dCJF0hdFnZrNs41zRN7oIOI+HXR95+cyaF
+         IaLQ==
+X-Gm-Message-State: AOJu0YzixAHZo69OygxUjXEiGsK98yQ7NG02NjXcuQ/HyuiLtpxUR+uo
+	Mygwkbi9HhRGhpkjX5aaR6kn+OqShvOYfw==
+X-Google-Smtp-Source: AGHT+IF1UnXSpqilXx5/i0ZEyW2V9x9IQmgHrp0PwIlsARHqqwSbXr2zVL9aQML5DMWwebj2OtVrKg==
+X-Received: by 2002:a05:6e02:1cab:b0:35f:d862:e451 with SMTP id x11-20020a056e021cab00b0035fd862e451mr384657ill.2.1703189418192;
+        Thu, 21 Dec 2023 12:10:18 -0800 (PST)
+Received: from [192.168.1.128] ([38.175.170.29])
+        by smtp.gmail.com with ESMTPSA id f8-20020a056e020b4800b0035fc47d9014sm694293ilu.13.2023.12.21.12.10.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Dec 2023 12:10:17 -0800 (PST)
+Message-ID: <4fb5fac7-fa3a-4988-b5f4-8025864c4d37@linuxfoundation.org>
+Date: Thu, 21 Dec 2023 13:10:16 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RESEND v4 0/3] livepatch: Move modules to selftests and
+ add a new test
+Content-Language: en-US
+To: Marcos Paulo de Souza <mpdesouza@suse.com>, Shuah Khan
+ <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>
+Cc: linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+ live-patching@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+References: <20231220-send-lp-kselftests-v4-0-3458ec1b1a38@suse.com>
+ <55b717dba239f3bedf0da7e25925e390a63459f5.camel@suse.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <55b717dba239f3bedf0da7e25925e390a63459f5.camel@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi,
+On 12/21/23 05:17, Marcos Paulo de Souza wrote:
+> On Wed, 2023-12-20 at 13:53 -0300, Marcos Paulo de Souza wrote:
+>> Changes in v4:
+>> * Documented how to compile the livepatch selftests without running
+>> the
+>>    tests (Joe)
+>> * Removed the mention to lib/livepatch on MAINTAINERS file, reported
+>> by
+>>    checkpatch.
+>>
+> 
+> To clarify: this is not a resend, this is the v4 that people were
+> waiting for. I made a mistake with b4 tool, that first I sent the email
+> just to myself, for testing, and it bumped the version to v5, but I
+> asked it to "resend" the v4, but it ended up adding the "RESEND" to the
+> series.
+> 
+> Please review this patchset and ignore the RESEND word.
+> 
+> Thanks to Petr Mladek for spotting my mistake.
+> 
 
-Is it off-topic talking about livepatch making tool? I tried another way an=
-d
-want to get your expert opinion if there any fatal pitfall.
+Thank for the clarification. I was wondering why this is a RESEND :)
+I will wait for reviewers to comment on this before pulling them in
+for Linux 6.8-rc1.
 
-Thanks.
-
-laokz
+thanks,
+-- Shuah
 
 
