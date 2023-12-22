@@ -1,222 +1,73 @@
-Return-Path: <live-patching+bounces-103-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-104-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2AB3481C9F1
-	for <lists+live-patching@lfdr.de>; Fri, 22 Dec 2023 13:27:33 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5754B81CF51
+	for <lists+live-patching@lfdr.de>; Fri, 22 Dec 2023 21:35:48 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 9746C1F22BDD
-	for <lists+live-patching@lfdr.de>; Fri, 22 Dec 2023 12:27:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8984D1C21D99
+	for <lists+live-patching@lfdr.de>; Fri, 22 Dec 2023 20:35:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0ED5A1804E;
-	Fri, 22 Dec 2023 12:27:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C43EB1DDEC;
+	Fri, 22 Dec 2023 20:35:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WTmV8/F9"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dxBtVClU"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 123AA18035
-	for <live-patching@vger.kernel.org>; Fri, 22 Dec 2023 12:27:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-40d190044c5so17587485e9.2
-        for <live-patching@vger.kernel.org>; Fri, 22 Dec 2023 04:27:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1703248033; x=1703852833; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=x3DIgQDPNUxa7RZs2ySWTeSV2mkBPOsrUg4r0CjPEpY=;
-        b=WTmV8/F9lalJWwcB4nYTai/r3KpxegPUTatsZ4wAWIE39b4WtiYJ9YWH2BW+DGoxec
-         2yOClsW3+nUNYNCW8g4DpnY3XnQxq2v2spW8oqag2P1AhFu3EDPbXPaL5hsjYVaiwcdi
-         xmhu8M4X4ZIbDMLIwYe7rut50+nxHGuH1ChUPIR78jVmLzu/geQAC/jzUb0mdFVyqOBf
-         BhjrMpnox5LNgFjYu4liJl3rrLaFLAB+/Uz8xMWhmXGQ128oSDHOqit3XlP+FfXA1zfG
-         B/M2JMVpXSQIsn2jYjxEVNPo5F+TL2/6cVKYmt7tKzZjbr6EpkexEIKs+M9vxO2gPQi1
-         TxPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703248033; x=1703852833;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=x3DIgQDPNUxa7RZs2ySWTeSV2mkBPOsrUg4r0CjPEpY=;
-        b=eHV24Uaz2hXrkM6/fApTUj24c6C1XSa0h6w7xbyHqa5+hKubi+CyTYcCcNUqy5niii
-         0/Hwxz+Rkgas8uOuAskJrGH/cAnTjUW4WIiKPYmY3BMYZPf3N7UFOORpmz2IrieNgpiW
-         2WnJIllx9n7+N7D23TG1MyUD+VDFZbKH7R0ALO4Be10OcRJz74WJuNkamgbq043VHE5+
-         WOUf9g1efvqAiW8TFgiGE9WAWR3ZfoNJ0mna6pqTG7Vz8BU4R/HJ2+pxsC+YX/TXostu
-         dwuTHv1EsejiudQTa6c2PvtkMpYVzlNd796xdcPS5y7l9+0UeVGa7Vh7Wsof458pfSlH
-         ksNQ==
-X-Gm-Message-State: AOJu0Yw5kUOoKnCrq4ROOSwLd0QEuhqoVzf6BW8ERW4J/e0x8JRlrlxh
-	ScKhGSldNvqfQ5fmuDcuZ82G80+bUY/I1gasCTnEE/Y3C/A=
-X-Google-Smtp-Source: AGHT+IGFZG9RzTslIKByE8OsIbeGFMIcfeNY7ZzEx0oFHv/jTEByRHQmOvc283cFjKRR6SZqmF123Q==
-X-Received: by 2002:a05:600c:2986:b0:40b:5e21:e27a with SMTP id r6-20020a05600c298600b0040b5e21e27amr638243wmd.103.1703248033203;
-        Fri, 22 Dec 2023 04:27:13 -0800 (PST)
-Received: from ?IPv6:2804:30c:1668:b300:8fcd:588d:fb77:ed04? ([2804:30c:1668:b300:8fcd:588d:fb77:ed04])
-        by smtp.gmail.com with ESMTPSA id fj8-20020a05600c0c8800b004094e565e71sm6801715wmb.23.2023.12.22.04.27.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Dec 2023 04:27:13 -0800 (PST)
-Message-ID: <5d7989b6a5ecc483b63397c838edb7133c1620d3.camel@suse.com>
-Subject: Re: [PATCH] selftests/livepatch: fix and refactor new dmesg message
- code
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org, 
- linux-kselftest@vger.kernel.org, linux-s390@vger.kernel.org, Alexander
- Gordeev <agordeev@linux.ibm.com>, Petr Mladek <pmladek@suse.com>
-Date: Fri, 22 Dec 2023 09:27:06 -0300
-In-Reply-To: <20231220151151.267985-1-joe.lawrence@redhat.com>
-References: <20231220151151.267985-1-joe.lawrence@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A411DDC7;
+	Fri, 22 Dec 2023 20:35:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F214EC433C8;
+	Fri, 22 Dec 2023 20:35:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1703277342;
+	bh=iXKYtqMzVuHtlxTF0qfLDk0CULUFNn1jMRPwGx0uC14=;
+	h=From:To:In-Reply-To:References:Subject:Date:From;
+	b=dxBtVClU5CP6vF/PlVc04A9fZ3uEaCZ+yVqtibwuvN/j24xSM6R8aaXp0dORQ9wMG
+	 mN4rldr7PAt+zRsrymf88EQ2Ry7sM3qf7hNDfknc7aE9F95reGLs9vsu+wIlo4j3yK
+	 kt/iu8UW/L//tMin+vg38QqJlYkyl1s0+rpW42JfaxpNfa2zzTH2TrL+HgLbXLkd+N
+	 vLpSm7fqbhbSpkXHo1ZDR4OSfkSpJQmgj1Te5x9WXdGYpFbqvFb+FPwB6yn6/qNP50
+	 5KbsaYsaZ0EavRznf3f2sCgvTnupcr25mDX4eYgsiZlXzKW3TXICquKON5fU5SqmEr
+	 eOubaekmX2iyg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2F8DDD4EE0;
+	Fri, 22 Dec 2023 20:35:41 +0000 (UTC)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+From: "Kernel.org Bugbot" <bugbot@kernel.org>
+To: mpdesouza@suse.com, borntraeger@linux.ibm.com, shuah@kernel.org, 
+ linux-doc@vger.kernel.org, joe.lawrence@redhat.com, jpoimboe@kernel.org, 
+ live-patching@vger.kernel.org, mbenes@suse.cz, bugs@lists.linux.dev, 
+ linux-kselftest@vger.kernel.org, svens@linux.ibm.com, 
+ linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org, 
+ agordeev@linux.ibm.com, pmladek@suse.com, gor@linux.ibm.com, 
+ hca@linux.ibm.com, jikos@kernel.org, corbet@lwn.net
+Message-ID: <20231222-b218303-d272473600e9@bugzilla.kernel.org>
+In-Reply-To: <20231220-send-lp-kselftests-v4-0-3458ec1b1a38@suse.com>
+References: <20231220-send-lp-kselftests-v4-0-3458ec1b1a38@suse.com>
+Subject: Re: livepatch: Move modules to selftests and add a new test
+X-Bugzilla-Product: Linux
+X-Bugzilla-Component: Kernel
+X-Mailer: peebz 0.1
+Date: Fri, 22 Dec 2023 20:35:41 +0000 (UTC)
 
-On Wed, 2023-12-20 at 10:11 -0500, Joe Lawrence wrote:
-> The livepatching kselftests rely on comparing expected vs. observed
-> dmesg output.=C2=A0 After each test, new dmesg entries are determined by
-> the
-> 'comm' utility comparing a saved, pre-test copy of dmesg to post-test
-> dmesg output.
->=20
-> Alexander reports that the 'comm --nocheck-order -13' invocation used
-> by
-> the tests can be confused when dmesg entry timestamps vary in
-> magnitude
-> (ie, "[=C2=A0=C2=A0 98.820331]" vs. "[=C2=A0 100.031067]"), in which case=
-,
-> additional
-> messages are reported as new.=C2=A0 The unexpected entries then spoil the
-> test results.
->=20
-> Instead of relying on 'comm' or 'diff' to determine new testing dmesg
-> entries, refactor the code:
->=20
-> =C2=A0 - pre-test=C2=A0 : log a unique canary dmesg entry
-> =C2=A0 - test=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 : run tests, log messages
-> =C2=A0 - post-test : filter dmesg starting from pre-test message
->=20
-> Reported-by: Alexander Gordeev <agordeev@linux.ibm.com>
-> Closes:
-> https://lore.kernel.org/live-patching/ZYAimyPYhxVA9wKg@li-008a6a4c-3549-1=
-1b2-a85c-c5cc2836eea2.ibm.com/
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+Hello:
 
-I liked the solution. As I don't speak awk I had to do some manual
-testing to understand that the syntax you used "prints everything after
-the $last_dmesg_msg message on dmesg". Either way, it's better then
-using 'comm' utility. I tested on my x86_64 VM, and the tests passed as
-expected.
+This conversation is now tracked by Kernel.org Bugzilla:
+https://bugzilla.kernel.org/show_bug.cgi?id=218303
 
-LGTM, so
-
-Tested-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>=20
-
-> ---
-> =C2=A0.../testing/selftests/livepatch/functions.sh=C2=A0 | 37 +++++++++--=
-------
-> --
-> =C2=A01 file changed, 17 insertions(+), 20 deletions(-)
->=20
-> diff --git a/tools/testing/selftests/livepatch/functions.sh
-> b/tools/testing/selftests/livepatch/functions.sh
-> index c8416c54b463..b1fd7362c2fe 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -42,17 +42,6 @@ function die() {
-> =C2=A0	exit 1
-> =C2=A0}
-> =C2=A0
-> -# save existing dmesg so we can detect new content
-> -function save_dmesg() {
-> -	SAVED_DMESG=3D$(mktemp --tmpdir -t klp-dmesg-XXXXXX)
-> -	dmesg > "$SAVED_DMESG"
-> -}
-> -
-> -# cleanup temporary dmesg file from save_dmesg()
-> -function cleanup_dmesg_file() {
-> -	rm -f "$SAVED_DMESG"
-> -}
-> -
-> =C2=A0function push_config() {
-> =C2=A0	DYNAMIC_DEBUG=3D$(grep '^kernel/livepatch'
-> /sys/kernel/debug/dynamic_debug/control | \
-> =C2=A0			awk -F'[: ]' '{print "file " $1 " line " $2
-> " " $4}')
-> @@ -99,7 +88,6 @@ function set_ftrace_enabled() {
-> =C2=A0
-> =C2=A0function cleanup() {
-> =C2=A0	pop_config
-> -	cleanup_dmesg_file
-> =C2=A0}
-> =C2=A0
-> =C2=A0# setup_config - save the current config and set a script exit trap
-> that
-> @@ -280,7 +268,15 @@ function set_pre_patch_ret {
-> =C2=A0function start_test {
-> =C2=A0	local test=3D"$1"
-> =C2=A0
-> -	save_dmesg
-> +	# Dump something unique into the dmesg log, then stash the
-> entry
-> +	# in LAST_DMESG.=C2=A0 The check_result() function will use it to
-> +	# find new kernel messages since the test started.
-> +	local last_dmesg_msg=3D"livepatch kselftest timestamp: $(date
-> --rfc-3339=3Dns)"
-> +	log "$last_dmesg_msg"
-> +	loop_until 'dmesg | grep -q "$last_dmesg_msg"' ||
-> +		die "buffer busy? can't find canary dmesg message:
-> $last_dmesg_msg"
-> +	LAST_DMESG=3D$(dmesg | grep "$last_dmesg_msg")
-> +
-> =C2=A0	echo -n "TEST: $test ... "
-> =C2=A0	log "=3D=3D=3D=3D=3D TEST: $test =3D=3D=3D=3D=3D"
-> =C2=A0}
-> @@ -291,23 +287,24 @@ function check_result {
-> =C2=A0	local expect=3D"$*"
-> =C2=A0	local result
-> =C2=A0
-> -	# Note: when comparing dmesg output, the kernel log
-> timestamps
-> -	# help differentiate repeated testing runs.=C2=A0 Remove them
-> with a
-> -	# post-comparison sed filter.
-> -
-> -	result=3D$(dmesg | comm --nocheck-order -13 "$SAVED_DMESG" - |
-> \
-> +	# Test results include any new dmesg entry since LAST_DMESG,
-> then:
-> +	# - include lines matching keywords
-> +	# - exclude lines matching keywords
-> +	# - filter out dmesg timestamp prefixes
-> +	result=3D$(dmesg | awk -v last_dmesg=3D"$LAST_DMESG" 'p; $0 =3D=3D
-> last_dmesg { p=3D1 }' | \
-> =C2=A0		 grep -e 'livepatch:' -e 'test_klp' | \
-> =C2=A0		 grep -v '\(tainting\|taints\) kernel' | \
-> =C2=A0		 sed 's/^\[[ 0-9.]*\] //')
-> =C2=A0
-> =C2=A0	if [[ "$expect" =3D=3D "$result" ]] ; then
-> =C2=A0		echo "ok"
-> +	elif [[ "$result" =3D=3D "" ]] ; then
-> +		echo -e "not ok\n\nbuffer overrun? can't find canary
-> dmesg entry: $LAST_DMESG\n"
-> +		die "livepatch kselftest(s) failed"
-> =C2=A0	else
-> =C2=A0		echo -e "not ok\n\n$(diff -upr --label expected --
-> label result <(echo "$expect") <(echo "$result"))\n"
-> =C2=A0		die "livepatch kselftest(s) failed"
-> =C2=A0	fi
-> -
-> -	cleanup_dmesg_file
-> =C2=A0}
-> =C2=A0
-> =C2=A0# check_sysfs_rights(modname, rel_path, expected_rights) - check
-> sysfs
+There is no need to do anything else, just keep talking.
+-- 
+Deet-doot-dot, I am a bot.
+Kernel.org Bugzilla (peebz 0.1)
 
 
