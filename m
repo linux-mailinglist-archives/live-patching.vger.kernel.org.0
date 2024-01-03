@@ -1,198 +1,256 @@
-Return-Path: <live-patching+bounces-110-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-111-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1079B82363A
-	for <lists+live-patching@lfdr.de>; Wed,  3 Jan 2024 21:15:29 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A58382377A
+	for <lists+live-patching@lfdr.de>; Wed,  3 Jan 2024 23:09:30 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 28BE81C23CBB
-	for <lists+live-patching@lfdr.de>; Wed,  3 Jan 2024 20:15:28 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id A7EC71F25DD1
+	for <lists+live-patching@lfdr.de>; Wed,  3 Jan 2024 22:09:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 74C691D522;
-	Wed,  3 Jan 2024 20:15:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61D421DA36;
+	Wed,  3 Jan 2024 22:09:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="E7JnNaWU"
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NRDjHM81"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC81F1CFBB
-	for <live-patching@vger.kernel.org>; Wed,  3 Jan 2024 20:15:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1704312920;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MjXIKqvmrB+NT0qusC8GfWEtJexw+hWCpiVhSPvJDRk=;
-	b=E7JnNaWUjlgsEe68ICESXfCjyEm+4BQ+FOmdj70rtED7cEMi3XQqvdUGk8E6aS6TYoMLKR
-	78wgPPyVKnyd+xzb0mwORdXPwBCHxI89vn2FOG3pYKjK/RcQjuDBXsZJUt3uCv1pkBZlKE
-	iQGdERYuX160ihwiEOa426NRsbvdQKA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-347-FH2xjfZfO3OnJBefldRnWA-1; Wed, 03 Jan 2024 15:15:17 -0500
-X-MC-Unique: FH2xjfZfO3OnJBefldRnWA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 99AD7185A785;
-	Wed,  3 Jan 2024 20:15:16 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.9.153])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id CD6141121306;
-	Wed,  3 Jan 2024 20:15:15 +0000 (UTC)
-Date: Wed, 3 Jan 2024 15:15:14 -0500
-From: Joe Lawrence <joe.lawrence@redhat.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>, linux-kselftest@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-s390@vger.kernel.org, live-patching@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 0/3] livepatch: Move modules to selftests and
- add a new test
-Message-ID: <ZZXAUr3uH/iSTb/p@redhat.com>
-References: <20231220-send-lp-kselftests-v4-0-3458ec1b1a38@suse.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13BA51DDE0
+	for <live-patching@vger.kernel.org>; Wed,  3 Jan 2024 22:09:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-360412acf3fso1653455ab.0
+        for <live-patching@vger.kernel.org>; Wed, 03 Jan 2024 14:09:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google; t=1704319762; x=1704924562; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=te2PH2Kdt4cQrnvMOmJ454BBecoYeY1JOfYpAxEXWxY=;
+        b=NRDjHM81w/sZiM8JrKwggU2qq7U5V4q/crH6ON1yBYTp2vZZhLcgkLmmUv9mGCkTqQ
+         NOAUtvVjPVSJmK3wmDU5BnUXP9dHxDKOlvhhwrLcVk2gmrTFm1HyUj9H/hGEzoOdvyXd
+         zZ7QvoiOd617OtYbSpl8eMXtzaJnS7Xa5Gkaw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704319762; x=1704924562;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=te2PH2Kdt4cQrnvMOmJ454BBecoYeY1JOfYpAxEXWxY=;
+        b=s3tpuV4mqRAyNyc+oWWFB0pgM9eyiLgDpJ5lc9RFighFxurBzE0YrfxqHUt0nepMwz
+         Lkj+b9F3FVa/YTowjDnaClFYV07Go/P1P19jhQH16HGy8YwoDfY6e5TxvcQe0MdjUnQA
+         eFgmMXsrA3sZXbmJz4Mfg74j+kE8DpFs3PxpzXXFZMNIekKcMyJL3kMvfUjs2epI5nii
+         +BnKRNDXNjF4In4eeS//F4QWUa4CGkcSaIwCO7pdqQkv3nckFskHqZ/uzoS+vK26X9Hu
+         hLNhOj+TarrMcxRRvLjquRLxh0/We2BEMWpeqzGzG3KKCQjeRdScYYM6wNL7x/e+Tpii
+         VcPA==
+X-Gm-Message-State: AOJu0YzhC6MU16aXjtcVdDOCbFqQ37gAdi1r8Nfb7s7/Dn2LpmT4R2ed
+	YInnW/rd1ZJZLjwph0eJGRu1wLIwzyLy3g==
+X-Google-Smtp-Source: AGHT+IFaaY5Skh+o7ny4ui5W9ZhTFlM4FEgUH0yIGmZMDbedaycTOwiYk25gWja3CQeLGAKe5kxYVg==
+X-Received: by 2002:a05:6602:2190:b0:7ba:a0f9:7660 with SMTP id b16-20020a056602219000b007baa0f97660mr30672565iob.1.1704319762050;
+        Wed, 03 Jan 2024 14:09:22 -0800 (PST)
+Received: from [192.168.1.128] ([38.175.170.29])
+        by smtp.gmail.com with ESMTPSA id bq11-20020a056638468b00b0046dd22fd24csm1096998jab.87.2024.01.03.14.09.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Jan 2024 14:09:21 -0800 (PST)
+Message-ID: <4fb169fd-393c-441e-b0f7-32a3777c1d11@linuxfoundation.org>
+Date: Wed, 3 Jan 2024 15:09:20 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231220-send-lp-kselftests-v4-0-3458ec1b1a38@suse.com>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.3
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RESEND v4 1/3] kselftests: lib.mk: Add TEST_GEN_MODS_DIR
+ variable
+Content-Language: en-US
+To: Joe Lawrence <joe.lawrence@redhat.com>,
+ Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>, linux-kselftest@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-s390@vger.kernel.org, live-patching@vger.kernel.org,
+ Shuah Khan <skhan@linuxfoundation.org>
+References: <20231220-send-lp-kselftests-v4-0-3458ec1b1a38@suse.com>
+ <20231220-send-lp-kselftests-v4-1-3458ec1b1a38@suse.com>
+ <ZZSOtsbzpy2mvmUC@redhat.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <ZZSOtsbzpy2mvmUC@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Dec 20, 2023 at 01:53:11PM -0300, Marcos Paulo de Souza wrote:
-> Changes in v4:
-> * Documented how to compile the livepatch selftests without running the
->   tests (Joe)
-> * Removed the mention to lib/livepatch on MAINTAINERS file, reported by
->   checkpatch.
+On 1/2/24 15:31, Joe Lawrence wrote:
+> On Wed, Dec 20, 2023 at 01:53:12PM -0300, Marcos Paulo de Souza wrote:
+>> Add TEST_GEN_MODS_DIR variable for kselftests. It can point to
+>> a directory containing kernel modules that will be used by
+>> selftest scripts.
+>>
+>> The modules are built as external modules for the running kernel.
+>> As a result they are always binary compatible and the same tests
+>> can be used for older or newer kernels.
+>>
+>> The build requires "kernel-devel" package to be installed.
+>> For example, in the upstream sources, the rpm devel package
+>> is produced by "make rpm-pkg"
+>>
+>> The modules can be built independently by
+>>
+>>    make -C tools/testing/selftests/livepatch/
+>>
+>> or they will be automatically built before running the tests via
+>>
+>>    make -C tools/testing/selftests/livepatch/ run_tests
+>>
+>> Note that they are _not_ built when running the standalone
+>> tests by calling, for example, ./test-state.sh.
+>>
+>> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+>> ---
+>>   Documentation/dev-tools/kselftest.rst |  4 ++++
+>>   tools/testing/selftests/lib.mk        | 20 +++++++++++++++-----
+>>   2 files changed, 19 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/Documentation/dev-tools/kselftest.rst b/Documentation/dev-tools/kselftest.rst
+>> index ab376b316c36..7f3582a67318 100644
+>> --- a/Documentation/dev-tools/kselftest.rst
+>> +++ b/Documentation/dev-tools/kselftest.rst
+>> @@ -245,6 +245,10 @@ Contributing new tests (details)
+>>      TEST_PROGS, TEST_GEN_PROGS mean it is the executable tested by
+>>      default.
+>>   
+>> +   TEST_GEN_MODS_DIR should be used by tests that require modules to be built
+>> +   before the test starts. The variable will contain the name of the directory
+>> +   containing the modules.
+>> +
+>>      TEST_CUSTOM_PROGS should be used by tests that require custom build
+>>      rules and prevent common build rule use.
+>>   
+>> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
+>> index 118e0964bda9..6c7c5a0112cf 100644
+>> --- a/tools/testing/selftests/lib.mk
+>> +++ b/tools/testing/selftests/lib.mk
+>> @@ -70,12 +70,15 @@ KHDR_INCLUDES := -isystem $(KHDR_DIR)
+>>   # TEST_PROGS are for test shell scripts.
+>>   # TEST_CUSTOM_PROGS and TEST_PROGS will be run by common run_tests
+>>   # and install targets. Common clean doesn't touch them.
+>> +# TEST_GEN_MODS_DIR is used to specify a directory with modules to be built
+>> +# before the test executes. These modules are cleaned on the clean target as well.
+>>   TEST_GEN_PROGS := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS))
+>>   TEST_GEN_PROGS_EXTENDED := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS_EXTENDED))
+>>   TEST_GEN_FILES := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_FILES))
+>> +TEST_GEN_MODS_DIR := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_MODS_DIR))
+>>   
+>>   all: kernel_header_files $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) \
+>> -     $(TEST_GEN_FILES)
+>> +     $(TEST_GEN_FILES) $(if $(TEST_GEN_MODS_DIR),gen_mods_dir)
+>>   
+>>   kernel_header_files:
+>>   	@ls $(KHDR_DIR)/linux/*.h >/dev/null 2>/dev/null;                      \
+>> @@ -105,8 +108,8 @@ endef
+>>   
+>>   run_tests: all
+>>   ifdef building_out_of_srctree
+>> -	@if [ "X$(TEST_PROGS)$(TEST_PROGS_EXTENDED)$(TEST_FILES)" != "X" ]; then \
+>> -		rsync -aq --copy-unsafe-links $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES) $(OUTPUT); \
+>> +	@if [ "X$(TEST_PROGS)$(TEST_PROGS_EXTENDED)$(TEST_FILES)$(TEST_GEN_MODS_DIR)" != "X" ]; then \
+>> +		rsync -aq --copy-unsafe-links $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES) $(TEST_GEN_MODS_DIR) $(OUTPUT); \
+>>   	fi
+>>   	@if [ "X$(TEST_PROGS)" != "X" ]; then \
+>>   		$(call RUN_TESTS, $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) \
+>> @@ -118,6 +121,12 @@ else
+>>   	@$(call RUN_TESTS, $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_PROGS))
+>>   endif
+>>   
+>> +gen_mods_dir:
+>> +	$(Q)$(MAKE) -C $(TEST_GEN_MODS_DIR)
+>> +
+>> +clean_mods_dir:
+>> +	$(Q)$(MAKE) -C $(TEST_GEN_MODS_DIR) clean
+>> +
+>>   define INSTALL_SINGLE_RULE
+>>   	$(if $(INSTALL_LIST),@mkdir -p $(INSTALL_PATH))
+>>   	$(if $(INSTALL_LIST),rsync -a --copy-unsafe-links $(INSTALL_LIST) $(INSTALL_PATH)/)
+>> @@ -131,6 +140,7 @@ define INSTALL_RULE
+>>   	$(eval INSTALL_LIST = $(TEST_CUSTOM_PROGS)) $(INSTALL_SINGLE_RULE)
+>>   	$(eval INSTALL_LIST = $(TEST_GEN_PROGS_EXTENDED)) $(INSTALL_SINGLE_RULE)
+>>   	$(eval INSTALL_LIST = $(TEST_GEN_FILES)) $(INSTALL_SINGLE_RULE)
+>> +	$(eval INSTALL_LIST = $(TEST_GEN_MODS_DIR)) $(INSTALL_SINGLE_RULE)
 > 
-> Changes in v3:
-> * Rebased on top of v6.6-rc5
-> * The commits messages were improved (Thanks Petr!)
-> * Created TEST_GEN_MODS_DIR variable to point to a directly that contains kernel
->   modules, and adapt selftests to build it before running the test.
-> * Moved test_klp-call_getpid out of test_programs, since the gen_tar
->   would just copy the generated test programs to the livepatches dir,
->   and so scripts relying on test_programs/test_klp-call_getpid will fail.
-> * Added a module_param for klp_pids, describing it's usage.
-> * Simplified the call_getpid program to ignore the return of getpid syscall,
->   since we only want to make sure the process transitions correctly to the
->   patched stated
-> * The test-syscall.sh not prints a log message showing the number of remaining
->   processes to transition into to livepatched state, and check_output expects it
->   to be 0.
-> * Added MODULE_AUTHOR and MODULE_DESCRIPTION to test_klp_syscall.c
+> Hi Marcos,
 > 
-> - Link to v3: https://lore.kernel.org/r/20231031-send-lp-kselftests-v3-0-2b1655c2605f@suse.com
-> - Link to v2: https://lore.kernel.org/linux-kselftest/20220630141226.2802-1-mpdesouza@suse.com/
+> Sorry for the late reply on this, but I'm reviewing this version by
+> trying to retrofit it into our selftest packaging (pre-build the test
+> module .ko's and stash those into an rpm rather than building on the
+> test host).
 > 
-> This patchset moves the current kernel testing livepatch modules from
-> lib/livepatches to tools/testing/selftest/livepatch/test_modules, and compiles
-> them as out-of-tree modules before testing.
+> Since $TEST_GEN_MODS_DIR is treated as a directory, I found that the
+> selftest install target copies a bunch of intermediate object and kbuild
+> files:
 > 
-> There is also a new test being added. This new test exercises multiple processes
-> calling a syscall, while a livepatch patched the syscall.
+>    $ mkdir /tmp/test-install
+>    $ make KDIR=$(pwd) INSTALL_PATH=/tmp/test-install TARGETS=livepatch \
+>         -C tools/testing/selftests/ install
 > 
-> Why this move is an improvement:
-> * The modules are now compiled as out-of-tree modules against the current
->   running kernel, making them capable of being tested on different systems with
->   newer or older kernels.
-> * Such approach now needs kernel-devel package to be installed, since they are
->   out-of-tree modules. These can be generated by running "make rpm-pkg" in the
->   kernel source.
+>    [ ... builds livepatch selftests ... ]
 > 
-> What needs to be solved:
-> * Currently gen_tar only packages the resulting binaries of the tests, and not
->   the sources. For the current approach, the newly added modules would be
->   compiled and then packaged. It works when testing on a system with the same
->   kernel version. But it will fail when running on a machine with different kernel
->   version, since module was compiled against the kernel currently running.
+> the rsync in question:
 > 
->   This is not a new problem, just aligning the expectations. For the current
->   approach to be truly system agnostic gen_tar would need to include the module
->   and program sources to be compiled in the target systems.
+>    rsync -a --copy-unsafe-links /home/jolawren/src/kernel/tools/testing/selftests/livepatch/test_modules /tmp/test-install/livepatch/
+>    ...
 > 
-> Thanks in advance!
->   Marcos
+> and then looking at the destination:
 > 
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> ---
-> Marcos Paulo de Souza (3):
->       kselftests: lib.mk: Add TEST_GEN_MODS_DIR variable
->       livepatch: Move tests from lib/livepatch to selftests/livepatch
->       selftests: livepatch: Test livepatching a heavily called syscall
+>    $ tree -a /tmp/test-install/
+>    /tmp/test-install/
+>    ├── kselftest
+>    │   ├── module.sh
+>    │   ├── prefix.pl
+>    │   └── runner.sh
+>    ├── kselftest-list.txt
+>    ├── livepatch
+>    │   ├── config
+>    │   ├── functions.sh
+>    │   ├── settings
+>    │   ├── test-callbacks.sh
+>    │   ├── test-ftrace.sh
+>    │   ├── test_klp-call_getpid
+>    │   ├── test-livepatch.sh
+>    │   ├── test_modules
+>    │   │   ├── Makefile
+>    │   │   ├── modules.order
+>    │   │   ├── .modules.order.cmd
+>    │   │   ├── Module.symvers
+>    │   │   ├── .Module.symvers.cmd
+>    │   │   ├── test_klp_atomic_replace.c
+>    │   │   ├── test_klp_atomic_replace.ko
+>    │   │   ├── .test_klp_atomic_replace.ko.cmd
+>    │   │   ├── test_klp_atomic_replace.mod
+>    │   │   ├── test_klp_atomic_replace.mod.c
+>    │   │   ├── .test_klp_atomic_replace.mod.cmd
+>    │   │   ├── test_klp_atomic_replace.mod.o
+>    │   │   ├── .test_klp_atomic_replace.mod.o.cmd
+>    │   │   ├── test_klp_atomic_replace.o
+>    │   │   ├── .test_klp_atomic_replace.o.cmd
+>    ...
 > 
->  Documentation/dev-tools/kselftest.rst              |   4 +
->  MAINTAINERS                                        |   1 -
->  arch/s390/configs/debug_defconfig                  |   1 -
->  arch/s390/configs/defconfig                        |   1 -
->  lib/Kconfig.debug                                  |  22 ----
->  lib/Makefile                                       |   2 -
->  lib/livepatch/Makefile                             |  14 ---
->  tools/testing/selftests/lib.mk                     |  20 +++-
->  tools/testing/selftests/livepatch/Makefile         |   5 +-
->  tools/testing/selftests/livepatch/README           |  25 +++--
->  tools/testing/selftests/livepatch/config           |   1 -
->  tools/testing/selftests/livepatch/functions.sh     |  34 +++---
->  .../testing/selftests/livepatch/test-callbacks.sh  |  50 ++++-----
->  tools/testing/selftests/livepatch/test-ftrace.sh   |   6 +-
->  .../testing/selftests/livepatch/test-livepatch.sh  |  10 +-
->  .../selftests/livepatch/test-shadow-vars.sh        |   2 +-
->  tools/testing/selftests/livepatch/test-state.sh    |  18 ++--
->  tools/testing/selftests/livepatch/test-syscall.sh  |  53 ++++++++++
->  tools/testing/selftests/livepatch/test-sysfs.sh    |   6 +-
->  .../selftests/livepatch/test_klp-call_getpid.c     |  44 ++++++++
->  .../selftests/livepatch/test_modules/Makefile      |  20 ++++
->  .../test_modules}/test_klp_atomic_replace.c        |   0
->  .../test_modules}/test_klp_callbacks_busy.c        |   0
->  .../test_modules}/test_klp_callbacks_demo.c        |   0
->  .../test_modules}/test_klp_callbacks_demo2.c       |   0
->  .../test_modules}/test_klp_callbacks_mod.c         |   0
->  .../livepatch/test_modules}/test_klp_livepatch.c   |   0
->  .../livepatch/test_modules}/test_klp_shadow_vars.c |   0
->  .../livepatch/test_modules}/test_klp_state.c       |   0
->  .../livepatch/test_modules}/test_klp_state2.c      |   0
->  .../livepatch/test_modules}/test_klp_state3.c      |   0
->  .../livepatch/test_modules/test_klp_syscall.c      | 116 +++++++++++++++++++++
->  32 files changed, 334 insertions(+), 121 deletions(-)
-> ---
-> base-commit: 206ed72d6b33f53b2a8bf043f54ed6734121d26b
-> change-id: 20231031-send-lp-kselftests-4c917dcd4565
-> 
-> Best regards,
-> -- 
-> Marcos Paulo de Souza <mpdesouza@suse.com>
-> 
+> On the other hand, variables like $TEST_GEN_FILES specify individual
+> files, so only final binaries like test_klp-call_getpid (and not
+> test_klp-call_getpid.c) are copied to $INSTALL_PATH.
 
-Hi Marcos,
 
-I made it through retrofitting [1] to our current packaging scheme on
-top of the patchset, no big surprises found.
+Thank you Joe for finding this problem.
 
-With that, I'm happy to ack this version, unless you want to modify the
-TEST_GEN_MODS_DIR / rsync behavior as I reported in my reply yesterday.
-(Not a show stopper IMHO, but I'll leave that up to kselftest folks.)
+Copying source files and object files doesn't sound right. This isn't
+how the ksleftest installs work. Let's fix this.
 
-Reviewed-by: Joe Lawrence <joe.lawrence@redhat.com>
-
-[1] https://gitlab.com/cki-project/kernel-ark/-/merge_requests/2844/commits
-
---
-Joe
+thanks,
+--Shuah
 
 
