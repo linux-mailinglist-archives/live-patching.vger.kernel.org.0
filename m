@@ -1,69 +1,74 @@
-Return-Path: <live-patching+bounces-125-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-126-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id CA6A58299DC
-	for <lists+live-patching@lfdr.de>; Wed, 10 Jan 2024 12:54:29 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id ACEB6829B80
+	for <lists+live-patching@lfdr.de>; Wed, 10 Jan 2024 14:39:20 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 63EEA1F24696
-	for <lists+live-patching@lfdr.de>; Wed, 10 Jan 2024 11:54:29 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 5E0101F2199D
+	for <lists+live-patching@lfdr.de>; Wed, 10 Jan 2024 13:39:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5462481C6;
-	Wed, 10 Jan 2024 11:53:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF76448CD4;
+	Wed, 10 Jan 2024 13:39:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Gdl71Hfl"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="CFR5szVv"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6028847A74
-	for <live-patching@vger.kernel.org>; Wed, 10 Jan 2024 11:52:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3239A495C8
+	for <live-patching@vger.kernel.org>; Wed, 10 Jan 2024 13:39:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2cd1ca52f31so44793271fa.3
-        for <live-patching@vger.kernel.org>; Wed, 10 Jan 2024 03:52:59 -0800 (PST)
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2cca5d81826so55453061fa.2
+        for <live-patching@vger.kernel.org>; Wed, 10 Jan 2024 05:39:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1704887577; x=1705492377; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1704893948; x=1705498748; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8ascI3xEuxrf+bAlJwJVPOceO1Ba41fBXLhKR9/Lb0M=;
-        b=Gdl71Hflbb407enSn4alWalPSH5SsIQ0ZHIaaZe8D0u71yhZnbDkHrWE+PUL1owm2o
-         cjfTmFw9+XXgEYlcYdoe/eP7WCse1jBOeXk2BX7AHPycWdfljlKpqiHriUdQEEwDuXYT
-         y1MqCMy4HQakc+VpEdEXQ8dfGjKp09AQ+euLWSO+0igJ/4U7B/PHcvpYkklV1TMb4A9w
-         dn1bQcUSi6JCGyxU/EDFWdoeIvRRDoENvqEzFDQfTQGuxXBft8jnwBZ0x7wiPqA1FiL3
-         HCkUilfuJg1vb7HR+AOtbsegGL9siSg9G6L/1ZfhAqVc68x4qzjwKINFfdfu3Noz4y9P
-         XB2Q==
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=yYuHDlpeSQP0DPaCl1fybFBgm95cBWd/VxGoejBh4E8=;
+        b=CFR5szVvT4GLTgQKc+/5ugj56aQnmduy7ReUJE+MNeTENyCPIlcu+yPfgmsab52axM
+         5pn6F44RVAVVCNhyhEisGx/NLaRoHW2e0HS8lJwb3I++gitQNYLTmDXClQBDpBRYOw2o
+         NbRJyHODRkD+7OFRerhmdgfQHsXy/tVl9c2PeHQ1d9TvWTCM1go2AhOamo05BO1mawTs
+         tFDfwJrR0+6oYhWc4FgEw7wOKx9ObPaqFvVZoxqQU0K/2f9wX7lWXE57VYDLqUhlqaXC
+         wbrQq7bYcFQLbMdV6tLW7PEnhPiWxqGJI6affHeGy3ql3JS6LNtebF12PleIug7P9CRm
+         q0dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704887577; x=1705492377;
+        d=1e100.net; s=20230601; t=1704893948; x=1705498748;
         h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=8ascI3xEuxrf+bAlJwJVPOceO1Ba41fBXLhKR9/Lb0M=;
-        b=NGrwkAv1CCfXxQr9Yy0SD8gaqucZwfsG+YADbqSJ+5IvCCEirRGQE4E87nJWJlhah4
-         i40SRzrhFhKMBidqjfuipC4kg1TdgUx1A05gbaETxDYrjmzijtsURNCKYGYTzRvHL8wQ
-         jn/Dx9Wc7AZk1p92e5+S7vTmOBXI6e5aGwfAI8GE78GhIw6pf1nU1jpvnR1bKahRC8fk
-         fCfqcH1AEyvGy4WDaraMIyEEvahi5rzPrUu+qYl9FihnozoCCs34JB5Egivu64Co97lV
-         e/mtvngD96RH4GKMPVveqPtJ2cRJJHrl4RgAY7L0kQS0IxcmLIInT/Fm7HYSx5vrtt0+
-         8RuQ==
-X-Gm-Message-State: AOJu0YxvUgyYTiFkW+/4TQMa+cVVJzuYL0kXjuXG8hl7Zpa92+PkRkyz
-	7EPwJyv0svdYRYEPyWSveJxE+GhG2AUZFXi4IvemR3UgFpM=
-X-Google-Smtp-Source: AGHT+IFjRjXihoh86m+G3Yr5b8NvPJZa3SwH4ZNapMKpUeHWqNjgYy7MBcO323nu05pBRl0uC1fM4g==
-X-Received: by 2002:a2e:9bc5:0:b0:2cc:77b0:7655 with SMTP id w5-20020a2e9bc5000000b002cc77b07655mr490080ljj.8.1704887577374;
-        Wed, 10 Jan 2024 03:52:57 -0800 (PST)
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yYuHDlpeSQP0DPaCl1fybFBgm95cBWd/VxGoejBh4E8=;
+        b=vxhGeH1FgnW0IjYmNhgzSmYhvtIkiQsabLap97DTd6/IHIKFZ6pv+NWnN0KOikXR9H
+         9c9INb2WgA1JmWz5jM8B5Bu3QI1qh+zU1bslGHO8vacr0UURe7UsDnuEn895KYuwX8xD
+         qJhOHfI4kp6bQONRWQs5ZWPpnwGEq2CyQ4OuhQqP781Z6oI/TWUALDvigLFg51M5PC94
+         G1HMstzuBMfasWhwkyfx8/3DXlhueQwQHrA/8NmhF3yrAntADcpQ3XAyr8IrKqUeUfN3
+         RnfHpfb2RhKKKyhRxXJ7Ty9E7ObXhiFX5n98aasjr8JN6zVDnf86imdTUZxK6wsPXv9H
+         l/VA==
+X-Gm-Message-State: AOJu0YwGegmzaV1V3qeZWezX26aGUy39qyyyqEiR7mDEvSXGI7+rSR5U
+	u+/R5/NqmR/VzCc9M2cPMmVOHYL8bPBdYg==
+X-Google-Smtp-Source: AGHT+IFTc9I0KvBn1sBygc4Ur7jlswZ9AI9dvNPDhS34Y1In36k05J11/J0dpgN302dDT6zTczVmtA==
+X-Received: by 2002:a05:651c:2059:b0:2cd:1cb7:71d5 with SMTP id t25-20020a05651c205900b002cd1cb771d5mr619348ljo.48.1704893948266;
+        Wed, 10 Jan 2024 05:39:08 -0800 (PST)
 Received: from ?IPv6:2804:30c:1668:b300:8fcd:588d:fb77:ed04? ([2804:30c:1668:b300:8fcd:588d:fb77:ed04])
-        by smtp.gmail.com with ESMTPSA id t18-20020a5d81d2000000b007befc059cf2sm102410iol.6.2024.01.10.03.52.55
+        by smtp.gmail.com with ESMTPSA id az5-20020a170902a58500b001ca86a9caccsm3613547plb.228.2024.01.10.05.39.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jan 2024 03:52:56 -0800 (PST)
-Message-ID: <761e2fc21e72576a4704572b50d9fc5b4a1cb9e1.camel@suse.com>
-Subject: Re: RFC: another way to make livepatch
+        Wed, 10 Jan 2024 05:39:07 -0800 (PST)
+Message-ID: <96578fb7568a8c2a318c850e6979bbf8f58cc249.camel@suse.com>
+Subject: Re: [PATCH v1 1/5] livepatch: Create and include UAPI headers
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: laokz <laokz@foxmail.com>, live-patching@vger.kernel.org
-Date: Wed, 10 Jan 2024 08:52:49 -0300
-In-Reply-To: <tencent_8B36A9FCE07A8CA645DC6F3C3F039C52E407@qq.com>
-References: <tencent_8B36A9FCE07A8CA645DC6F3C3F039C52E407@qq.com>
+To: Lukas Hruska <lhruska@suse.cz>, Petr Mladek <pmladek@suse.com>, Miroslav
+	Benes <mbenes@suse.cz>, Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, Josh Poimboeuf
+	 <jpoimboe@redhat.com>
+Date: Wed, 10 Jan 2024 10:38:52 -0300
+In-Reply-To: <20231106162513.17556-2-lhruska@suse.cz>
+References: <20231106162513.17556-1-lhruska@suse.cz>
+	 <20231106162513.17556-2-lhruska@suse.cz>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.50.1 
@@ -74,25 +79,96 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-On Thu, 2023-12-21 at 22:06 +0800, laokz wrote:
-> Hi,
+On Mon, 2023-11-06 at 17:25 +0100, Lukas Hruska wrote:
+> From: Josh Poimboeuf <jpoimboe@redhat.com>
 >=20
-> Is it off-topic talking about livepatch making tool? I tried another
-> way and
-> want to get your expert opinion if there any fatal pitfall.
+> Define klp prefixes in include/uapi/linux/livepatch.h, and use them
+> for
+> replacing hard-coded values in kernel/livepatch/core.c.
+>=20
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Lukas Hruska <lhruska@suse.cz>
 
-I don't think it's out of scope, but what exactly you mean by "another
-way to make livepatch"? You would like to know about different
-approaches like source-based livepatch compared to kpatch, or you mean
-something different?
+Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-Thanks!
-
+> ---
+> =C2=A0MAINTAINERS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
+> =C2=A0include/uapi/linux/livepatch.h | 15 +++++++++++++++
+> =C2=A0kernel/livepatch/core.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=
+=C2=A0 5 +++--
+> =C2=A03 files changed, 19 insertions(+), 2 deletions(-)
+> =C2=A0create mode 100644 include/uapi/linux/livepatch.h
 >=20
-> Thanks.
->=20
-> laokz
->=20
->=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 4cc6bf79fdd8..11a2d84c1277 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12130,6 +12130,7 @@ F:	Documentation/ABI/testing/sysfs-
+> kernel-livepatch
+> =C2=A0F:	Documentation/livepatch/
+> =C2=A0F:	arch/powerpc/include/asm/livepatch.h
+> =C2=A0F:	include/linux/livepatch.h
+> +F:	include/uapi/linux/livepatch.h
+> =C2=A0F:	kernel/livepatch/
+> =C2=A0F:	kernel/module/livepatch.c
+> =C2=A0F:	lib/livepatch/
+> diff --git a/include/uapi/linux/livepatch.h
+> b/include/uapi/linux/livepatch.h
+> new file mode 100644
+> index 000000000000..e19430918a07
+> --- /dev/null
+> +++ b/include/uapi/linux/livepatch.h
+> @@ -0,0 +1,15 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +
+> +/*
+> + * livepatch.h - Kernel Live Patching Core
+> + *
+> + * Copyright (C) 2016 Josh Poimboeuf <jpoimboe@redhat.com>
+> + */
+> +
+> +#ifndef _UAPI_LIVEPATCH_H
+> +#define _UAPI_LIVEPATCH_H
+> +
+> +#define KLP_RELA_PREFIX		".klp.rela."
+> +#define KLP_SYM_PREFIX		".klp.sym."
+> +
+> +#endif /* _UAPI_LIVEPATCH_H */
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index 61328328c474..622f1916a5c8 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -20,6 +20,7 @@
+> =C2=A0#include <linux/completion.h>
+> =C2=A0#include <linux/memory.h>
+> =C2=A0#include <linux/rcupdate.h>
+> +#include <uapi/linux/livepatch.h>
+> =C2=A0#include <asm/cacheflush.h>
+> =C2=A0#include "core.h"
+> =C2=A0#include "patch.h"
+> @@ -226,7 +227,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs,
+> const char *strtab,
+> =C2=A0
+> =C2=A0		/* Format: .klp.sym.sym_objname.sym_name,sympos */
+> =C2=A0		cnt =3D sscanf(strtab + sym->st_name,
+> -			=C2=A0=C2=A0=C2=A0=C2=A0 ".klp.sym.%55[^.].%511[^,],%lu",
+> +			=C2=A0=C2=A0=C2=A0=C2=A0 KLP_SYM_PREFIX "%55[^.].%511[^,],%lu",
+> =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0 sym_objname, sym_name, &sympos);
+> =C2=A0		if (cnt !=3D 3) {
+> =C2=A0			pr_err("symbol %s has an incorrectly
+> formatted name\n",
+> @@ -305,7 +306,7 @@ static int klp_write_section_relocs(struct module
+> *pmod, Elf_Shdr *sechdrs,
+> =C2=A0	 * See comment in klp_resolve_symbols() for an explanation
+> =C2=A0	 * of the selected field width value.
+> =C2=A0	 */
+> -	cnt =3D sscanf(shstrtab + sec->sh_name, ".klp.rela.%55[^.]",
+> +	cnt =3D sscanf(shstrtab + sec->sh_name, KLP_RELA_PREFIX
+> "%55[^.]",
+> =C2=A0		=C2=A0=C2=A0=C2=A0=C2=A0 sec_objname);
+> =C2=A0	if (cnt !=3D 1) {
+> =C2=A0		pr_err("section %s has an incorrectly formatted
+> name\n",
 
 
