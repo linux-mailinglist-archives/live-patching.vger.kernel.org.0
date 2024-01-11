@@ -1,197 +1,128 @@
-Return-Path: <live-patching+bounces-135-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-136-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id A83BE82A197
-	for <lists+live-patching@lfdr.de>; Wed, 10 Jan 2024 20:55:27 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E4CB282AF48
+	for <lists+live-patching@lfdr.de>; Thu, 11 Jan 2024 14:14:40 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 039DFB25A18
-	for <lists+live-patching@lfdr.de>; Wed, 10 Jan 2024 19:55:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 17BAB1C233A1
+	for <lists+live-patching@lfdr.de>; Thu, 11 Jan 2024 13:14:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A1914F1E1;
-	Wed, 10 Jan 2024 19:54:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0CF2F171AB;
+	Thu, 11 Jan 2024 13:14:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="OKqsyv6v"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="UTZd9lDa"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 983E74F1E7
-	for <live-patching@vger.kernel.org>; Wed, 10 Jan 2024 19:54:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 010D816404
+	for <live-patching@vger.kernel.org>; Thu, 11 Jan 2024 13:14:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2cd7e348311so10906511fa.2
-        for <live-patching@vger.kernel.org>; Wed, 10 Jan 2024 11:54:54 -0800 (PST)
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a2c375d2430so105313466b.1
+        for <live-patching@vger.kernel.org>; Thu, 11 Jan 2024 05:14:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1704916492; x=1705521292; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=rpDfRf3Herj6H9nv9ttm39vJv2PeXPMa/nxjiDv/ci0=;
-        b=OKqsyv6vmnQyojZa1faP9iBTHEZXch9+EqQtoz49/gaVCrtRHzfoiv9fO5ppCi7XEV
-         5oUa0os+2NfLr/Ql+L4yW86hxXOBhzvG7KC6nNa2//6/3yJG71keQQuhx5Jkw3eaDjhv
-         9ry6CBpysLGdt9OQExzXRpLUCuRsBuSid0RF2/3L2KelH3XrWOSf+7KorT/HqBytYSXm
-         Q6MxAQxj57kOpeT3MRV6x0wc95fRbwJ4VA0OtLxbaMVO1ujR23ZEBYlryc/xo0l4M6PD
-         s+mEl1e4DR9QN7oEgOzc6r/C5ziKFxyWG7ha5nRlDqPKtwBF5xr2FlupgMoQNfRQwuNj
-         W8Uw==
+        d=suse.com; s=google; t=1704978863; x=1705583663; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YCNCVeMrlWJxf5qX+E5fJGrbwnZ87NzyDtVjQyYpgQk=;
+        b=UTZd9lDafTlUTQtNY6vQS/PQVO9sDK+3DpFc++J83gZ+R2H515eoPglREqAYxvqTna
+         HkMoIQI3TzyOob/RqNDNsgusv9WFsEjKaR+4jNlGzPvwInOnn2aEMBcFC3uV/PIxlneY
+         A6xzWOHB3oqdDD+pjZrpodZs7L1TJOH4M9NZAy/L89qSESAt24znxuAC31ApRNwF51Wo
+         OYBsc+FVsHWfx973FShGgNR0gRTL4SJ9srabe4bD9MhjAfozu16nDGyo6NwHBVC+UW2F
+         dQODLnXuUOSUhZjelytJNSK+dtVtIeXb9GRBgxRBECReTHLf1XB56mq/j/K7d9e3eTia
+         1d+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704916492; x=1705521292;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rpDfRf3Herj6H9nv9ttm39vJv2PeXPMa/nxjiDv/ci0=;
-        b=mJQ76u0cFkrlz1VZdZI3nz0XqWaae/GP/ZAnmjI3URdupyXHnTssdOQt/nGTHYxOqe
-         UEuLIL4rmeiulgvILzQAPJLaANBfPTts49bTn3+sOJG4y8fhrCNhTOly6P8XFm+Cp/Pl
-         mq/E6zBqpIV5Smoirt/PSYHwDgG1zJ7doEEqOFuqoaIw1PDgNumZEDU0jJ6VO/0CC7ME
-         OcX1s7LB6ztgHCjq6KBvnROWLdWogoG+m7f+CZPGrSfjIhGum9AUcU+7F64i0BXUIRzs
-         mEFCnZUACL3SCQL9VYGPBpqsO35qZyUHeHCZI6QoZ0HQXpbgk2DPA8xlCnY9zQ+OPZgk
-         BQsQ==
-X-Gm-Message-State: AOJu0YwJTgWrPV2EKSWmUlTQjQT3LGXZv3H5b3cwf8bA1k8uL9WyBngo
-	bG0WkDGLBqnf11YbK4IRU20JCj7GeQcEqA==
-X-Google-Smtp-Source: AGHT+IEDCughZVzw5wOMUKkSQKd4e1z2Jjt3ksK+z3TvQxPJcEhGbo2wdlnH+IgVa5aHDzORCm56JQ==
-X-Received: by 2002:a2e:bc14:0:b0:2cd:7e24:321d with SMTP id b20-20020a2ebc14000000b002cd7e24321dmr64210ljf.62.1704916492671;
-        Wed, 10 Jan 2024 11:54:52 -0800 (PST)
-Received: from ?IPv6:2804:30c:1668:b300:8fcd:588d:fb77:ed04? ([2804:30c:1668:b300:8fcd:588d:fb77:ed04])
-        by smtp.gmail.com with ESMTPSA id x9-20020a170902820900b001d4cad5bcf0sm4020511pln.237.2024.01.10.11.54.50
+        d=1e100.net; s=20230601; t=1704978863; x=1705583663;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YCNCVeMrlWJxf5qX+E5fJGrbwnZ87NzyDtVjQyYpgQk=;
+        b=d7/rLVOu5p2XWu6uF5jGh3xhiKy8Pf1OaHUqyc6McSH3ZHS62aRr5INxI7W6wrGyL1
+         unL5cxq7CO6JH3om824V5u16DxuzvmOFFyfYuERmja+TOz9rnQg3cx4tJODZLym5pOra
+         cElKftY5kL4rr1K0bbmJXrL4jAGwRxCo9WwPtMbkiSfLRFNiDlYmXX2h9+fh2Xxq2GQI
+         8w84yisDyB49DItQ7K7LGtHL+HRUb8ySUOOWl85IzoBiunQ3ras43m9aR9Qe0dD4pNWX
+         fs/QW+bPQnualqpllHD8H3ielH75neXcZGw9BfylECPi2I7KuSb0k9R/WuYgdIBbzb6a
+         qFmg==
+X-Gm-Message-State: AOJu0Yyqg0ECbCKrWprk1Ig7zOjbwYld+A0UpDZcPzHg5v1f4YhTkcdU
+	7GNLJluqOAWXFXjAA2c7ySCDyrkT+Diycw==
+X-Google-Smtp-Source: AGHT+IGBVw22W2OzEoJmEk9Elwj9ma9Il/3v/LVT8XzL3+C0bm8CX5rIyMF55d9KmXgQCByhP0JI3g==
+X-Received: by 2002:a17:906:6a05:b0:a28:ac84:5d52 with SMTP id qw5-20020a1709066a0500b00a28ac845d52mr782286ejc.2.1704978863223;
+        Thu, 11 Jan 2024 05:14:23 -0800 (PST)
+Received: from alley ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id u3-20020a1709064ac300b00a269b4692a9sm568895ejt.84.2024.01.11.05.14.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jan 2024 11:54:52 -0800 (PST)
-Message-ID: <3be436cf49b8850b95eb74ce7b7c45e05bc4ad82.camel@suse.com>
-Subject: Re: [PATCH v1 5/5] documentation: Update on livepatch elf format
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Lukas Hruska <lhruska@suse.cz>, Petr Mladek <pmladek@suse.com>, Miroslav
-	Benes <mbenes@suse.cz>, Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org
-Date: Wed, 10 Jan 2024 16:54:48 -0300
-In-Reply-To: <20231106162513.17556-6-lhruska@suse.cz>
-References: <20231106162513.17556-1-lhruska@suse.cz>
-	 <20231106162513.17556-6-lhruska@suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.1 
+        Thu, 11 Jan 2024 05:14:23 -0800 (PST)
+Date: Thu, 11 Jan 2024 14:14:20 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+	live-patching@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] kselftests: lib.mk: Add TEST_GEN_MODS_DIR variable
+Message-ID: <ZZ_phoS29aNXplC2@alley>
+References: <20240109-send-lp-kselftests-v5-0-364d59a69f12@suse.com>
+ <20240109-send-lp-kselftests-v5-1-364d59a69f12@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240109-send-lp-kselftests-v5-1-364d59a69f12@suse.com>
 
-On Mon, 2023-11-06 at 17:25 +0100, Lukas Hruska wrote:
-> Add a section to Documentation/livepatch/module-elf-format.rst
-> describing how klp-convert works for fixing relocations.
->=20
-> Signed-off-by: Lukas Hruska <lhruska@suse.cz>
+On Tue 2024-01-09 21:24:54, Marcos Paulo de Souza wrote:
+> Add TEST_GEN_MODS_DIR variable for kselftests. It can point to
+> a directory containing kernel modules that will be used by
+> selftest scripts.
+> 
+> The modules are built as external modules for the running kernel.
+> As a result they are always binary compatible and the same tests
+> can be used for older or newer kernels.
+> 
+> The build requires "kernel-devel" package to be installed.
+> For example, in the upstream sources, the rpm devel package
+> is produced by "make rpm-pkg"
+> 
+> The modules can be built independently by
+> 
+>   make -C tools/testing/selftests/livepatch/
+> 
+> or they will be automatically built before running the tests via
+> 
+>   make -C tools/testing/selftests/livepatch/ run_tests
+> 
+> Note that they are _not_ built when running the standalone
+> tests by calling, for example, ./test-state.sh.
+> 
+> Along with TEST_GEN_MODS_DIR, it was necessary to create a new install
+> rule. INSTALL_MODS_RULE is needed because INSTALL_SINGLE_RULE would
+> copy the entire TEST_GEN_MODS_DIR directory to the destination, even
+> the files created by Kbuild to compile the modules. The new install
+> rule copies only the .ko files, as we would expect the gen_tar to work.
+> 
+> Reviewed-by: Joe Lawrence <joe.lawrence@redhat.com>
+> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+I am not export on kbuild. But it looks reasonable and works for me.
 
-> ---
-> =C2=A0Documentation/livepatch/module-elf-format.rst | 67
-> +++++++++++++++++++
-> =C2=A01 file changed, 67 insertions(+)
->=20
-> diff --git a/Documentation/livepatch/module-elf-format.rst
-> b/Documentation/livepatch/module-elf-format.rst
-> index a03ed02ec57e..2aa9b11cd806 100644
-> --- a/Documentation/livepatch/module-elf-format.rst
-> +++ b/Documentation/livepatch/module-elf-format.rst
-> @@ -300,3 +300,70 @@ symbol table, and relocation section indices,
-> ELF information is preserved for
-> =C2=A0livepatch modules and is made accessible by the module loader
-> through
-> =C2=A0module->klp_info, which is a :c:type:`klp_modinfo` struct. When a
-> livepatch module
-> =C2=A0loads, this struct is filled in by the module loader.
-> +
-> +6. klp-convert tool
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +The livepatch relocation sections might be created using
-> +scripts/livepatch/klp-convert. It is called automatically during
-> +the build as part of a module post processing.
-> +
-> +The tool is not able to find the symbols and all the metadata
-> +automatically. Instead, all needed information must already be
-> +part of rela entry for the given symbol. Such a rela can
-> +be created easily by using KLP_RELOC_SYMBOL() macro after
-> +the symbol declaration.
-> +
-> +KLP_RELOC_SYMBOL causes that the relocation entries for
-> +the given symbol will be created in the following format::
-> +
-> +=C2=A0 .klp.sym.rela.lp_object.sym_object.sym_name,sympos
-> +=C2=A0 ^=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^ ^=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^ ^=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 ^ ^=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^=C2=A0=C2=A0 ^
-> +=C2=A0 |___________| |_______| |________| |______|=C2=A0=C2=A0 |
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 [A]=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 [B]=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 [C]=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 [D]=C2=A0=C2=A0=C2=A0 [E]
-> +
-> +[A]
-> +=C2=A0 The symbol name is prefixed with the string ".klp.sym.rela."
-> +
-> +[B]
-> +=C2=A0 The name of the object (i.e. "vmlinux" or name of module) which
-> +=C2=A0 is livepatched.
-> +
-> +[C]
-> +=C2=A0 The name of the object (i.e. "vmlinux" or name of module) to
-> +=C2=A0 which the symbol belongs follows immediately after the prefix.
-> +
-> +[D]
-> +=C2=A0 The actual name of the symbol.
-> +
-> +[E]
-> +=C2=A0 The position of the symbol in the object (as according to
-> kallsyms)
-> +=C2=A0 This is used to differentiate duplicate symbols within the same
-> +=C2=A0 object. The symbol position is expressed numerically (0, 1, 2...)=
-.
-> +=C2=A0 The symbol position of a unique symbol is 0.
-> +
-> +Example:
-> +--------
-> +**Livepatch source code:**
-> +
-> +::
-> +
-> +=C2=A0 extern char *saved_command_line \
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 KLP_RELOC_SYMBOL(vmlinux, vmlinux,
-> saved_command_line, 0);
-> +
-> +**`readelf -r -W` output of compiled module:**
-> +
-> +::
-> +
-> +=C2=A0 Relocation section '.rela.text' at offset 0x32e60 contains 10
-> entries:
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Offset=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Info=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Type=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
-> Symbol's Value=C2=A0 Symbol's Name + Addend
-> +=C2=A0 ...
-> +=C2=A0 0000000000000068=C2=A0 0000003c00000002 R_X86_64_PC32=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
-> 0000000000000000 .klp.sym.rela.vmlinux.vmlinux.saved_command_line,0 -
-> 4
-> +=C2=A0 ...
-> +
-> +**`readelf -r -W` output of transformed module by klp-convert:**
-> +
-> +::
-> +
-> +=C2=A0 Relocation section '.klp.rela.vmlinux.text' at offset 0x5cb60
-> contains 1 entry:
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Offset=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Info=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Type=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
-> Symbol's Value=C2=A0 Symbol's Name + Addend
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0000000000000068=C2=A0 0000003c00000002 R=
-_X86_64_PC32=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
-> 0000000000000000 .klp.sym.vmlinux.saved_command_line,0 - 4
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Best Regards,
+Petr
 
 
