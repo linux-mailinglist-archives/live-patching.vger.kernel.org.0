@@ -1,62 +1,62 @@
-Return-Path: <live-patching+bounces-136-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-137-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E4CB282AF48
-	for <lists+live-patching@lfdr.de>; Thu, 11 Jan 2024 14:14:40 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7CE6482AF9C
+	for <lists+live-patching@lfdr.de>; Thu, 11 Jan 2024 14:24:16 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 17BAB1C233A1
-	for <lists+live-patching@lfdr.de>; Thu, 11 Jan 2024 13:14:40 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 2E2101F21DE6
+	for <lists+live-patching@lfdr.de>; Thu, 11 Jan 2024 13:24:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0CF2F171AB;
-	Thu, 11 Jan 2024 13:14:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFEE916403;
+	Thu, 11 Jan 2024 13:23:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="UTZd9lDa"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="g4FcSt7e"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 010D816404
-	for <live-patching@vger.kernel.org>; Thu, 11 Jan 2024 13:14:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB12C15EB6
+	for <live-patching@vger.kernel.org>; Thu, 11 Jan 2024 13:23:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a2c375d2430so105313466b.1
-        for <live-patching@vger.kernel.org>; Thu, 11 Jan 2024 05:14:24 -0800 (PST)
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a28b0207c1dso420697366b.3
+        for <live-patching@vger.kernel.org>; Thu, 11 Jan 2024 05:23:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1704978863; x=1705583663; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1704979426; x=1705584226; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YCNCVeMrlWJxf5qX+E5fJGrbwnZ87NzyDtVjQyYpgQk=;
-        b=UTZd9lDafTlUTQtNY6vQS/PQVO9sDK+3DpFc++J83gZ+R2H515eoPglREqAYxvqTna
-         HkMoIQI3TzyOob/RqNDNsgusv9WFsEjKaR+4jNlGzPvwInOnn2aEMBcFC3uV/PIxlneY
-         A6xzWOHB3oqdDD+pjZrpodZs7L1TJOH4M9NZAy/L89qSESAt24znxuAC31ApRNwF51Wo
-         OYBsc+FVsHWfx973FShGgNR0gRTL4SJ9srabe4bD9MhjAfozu16nDGyo6NwHBVC+UW2F
-         dQODLnXuUOSUhZjelytJNSK+dtVtIeXb9GRBgxRBECReTHLf1XB56mq/j/K7d9e3eTia
-         1d+Q==
+        bh=B3N6N//FH5YjUxtiswqbQpXXpmb0SuS1hr7tKADDnR4=;
+        b=g4FcSt7ezoILoYKslIpzUx8N6rsF7zqnrTUxECheyEtPg0ZpCq0yenNC++Eai6BKJ9
+         3QrV1IvQSjzEBtbVzeKmW4NxWZ2DSMD5OdUytFIu0SR2gt4Jwjw4W8Z5YA4CciyBRJA3
+         Clz2rwuSMGcJNUUSG4NfZtCH+di+I1mlXvvcilNZw6MS9utxTszJ2hlHRqeyV31RDYDt
+         Udg0FO7QjScJ7d141ZiY/TLC44X7nqm6XocssNZBGgZ+SxRHJpLeh0RjrBpCMc1ZPUuf
+         2ISjZ/emNy/iWwOVHVjOqkbG4pakPlbhu8Ozd43LgO+rKkO/axv3BH/dEWc9CWrOUeJU
+         nPrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704978863; x=1705583663;
+        d=1e100.net; s=20230601; t=1704979426; x=1705584226;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YCNCVeMrlWJxf5qX+E5fJGrbwnZ87NzyDtVjQyYpgQk=;
-        b=d7/rLVOu5p2XWu6uF5jGh3xhiKy8Pf1OaHUqyc6McSH3ZHS62aRr5INxI7W6wrGyL1
-         unL5cxq7CO6JH3om824V5u16DxuzvmOFFyfYuERmja+TOz9rnQg3cx4tJODZLym5pOra
-         cElKftY5kL4rr1K0bbmJXrL4jAGwRxCo9WwPtMbkiSfLRFNiDlYmXX2h9+fh2Xxq2GQI
-         8w84yisDyB49DItQ7K7LGtHL+HRUb8ySUOOWl85IzoBiunQ3ras43m9aR9Qe0dD4pNWX
-         fs/QW+bPQnualqpllHD8H3ielH75neXcZGw9BfylECPi2I7KuSb0k9R/WuYgdIBbzb6a
-         qFmg==
-X-Gm-Message-State: AOJu0Yyqg0ECbCKrWprk1Ig7zOjbwYld+A0UpDZcPzHg5v1f4YhTkcdU
-	7GNLJluqOAWXFXjAA2c7ySCDyrkT+Diycw==
-X-Google-Smtp-Source: AGHT+IGBVw22W2OzEoJmEk9Elwj9ma9Il/3v/LVT8XzL3+C0bm8CX5rIyMF55d9KmXgQCByhP0JI3g==
-X-Received: by 2002:a17:906:6a05:b0:a28:ac84:5d52 with SMTP id qw5-20020a1709066a0500b00a28ac845d52mr782286ejc.2.1704978863223;
-        Thu, 11 Jan 2024 05:14:23 -0800 (PST)
+        bh=B3N6N//FH5YjUxtiswqbQpXXpmb0SuS1hr7tKADDnR4=;
+        b=NnlWrmb2WHJ01r5lVWsy+3jEScLs8DMTvOgiVvLClBM86+DbGSyc3qlWwtPdTJrssi
+         SGX+EH8RTOwiQRQLoYDm96gCdCgtX+DulDr6Ya5PivOQyoTcbA5RdoaVkralIrdFmUr6
+         Q7EtLxMLv0odE6zSkXnDd5vbzKyC97ZmB5WLOXNeeKKcNByicpzdVVDmxUIPWw3CdZ7l
+         T2Gju6TpTplGX1rTm/8eK/Tjr9ArTJtgTX/VRpkyyDCRNzwHfqBgBHN2rIEuthf+OB9e
+         XV/4ysTbUjphqsmyjZuonsPsTRsflbUgry+b31STwtZQ7RDYAOc4ZTVH1XQRVOLeUdZP
+         SRtA==
+X-Gm-Message-State: AOJu0Yz9pj5tSZCeeQcyAVi25jaQ0dMIXxgqI2+gfGwIucI0RH6sfvKS
+	Q5sLm64UmojlN5yk8sIrF/5qsj9Oa/+gBg==
+X-Google-Smtp-Source: AGHT+IFXOvSVDbjxPZh7mjSDt/GGARAM9PnQRsmytJ2pne0zYkgIye0VKsMq58SY5H1gxVIALugl9Q==
+X-Received: by 2002:a17:906:b2c7:b0:a2c:3596:b0c1 with SMTP id cf7-20020a170906b2c700b00a2c3596b0c1mr683185ejb.75.1704979426218;
+        Thu, 11 Jan 2024 05:23:46 -0800 (PST)
 Received: from alley ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id u3-20020a1709064ac300b00a269b4692a9sm568895ejt.84.2024.01.11.05.14.22
+        by smtp.gmail.com with ESMTPSA id d14-20020a170906c20e00b00a298e2f6b3csm565484ejz.213.2024.01.11.05.23.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jan 2024 05:14:23 -0800 (PST)
-Date: Thu, 11 Jan 2024 14:14:20 +0100
+        Thu, 11 Jan 2024 05:23:45 -0800 (PST)
+Date: Thu, 11 Jan 2024 14:23:43 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: Marcos Paulo de Souza <mpdesouza@suse.com>
 Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
@@ -71,10 +71,11 @@ Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
 	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
 	live-patching@vger.kernel.org
-Subject: Re: [PATCH v5 1/3] kselftests: lib.mk: Add TEST_GEN_MODS_DIR variable
-Message-ID: <ZZ_phoS29aNXplC2@alley>
+Subject: Re: [PATCH v5 2/3] livepatch: Move tests from lib/livepatch to
+ selftests/livepatch
+Message-ID: <ZZ_r3wtMLi10Li26@alley>
 References: <20240109-send-lp-kselftests-v5-0-364d59a69f12@suse.com>
- <20240109-send-lp-kselftests-v5-1-364d59a69f12@suse.com>
+ <20240109-send-lp-kselftests-v5-2-364d59a69f12@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -83,46 +84,23 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240109-send-lp-kselftests-v5-1-364d59a69f12@suse.com>
+In-Reply-To: <20240109-send-lp-kselftests-v5-2-364d59a69f12@suse.com>
 
-On Tue 2024-01-09 21:24:54, Marcos Paulo de Souza wrote:
-> Add TEST_GEN_MODS_DIR variable for kselftests. It can point to
-> a directory containing kernel modules that will be used by
-> selftest scripts.
+On Tue 2024-01-09 21:24:55, Marcos Paulo de Souza wrote:
+> The modules are being moved from lib/livepatch to
+> tools/testing/selftests/livepatch/test_modules.
 > 
-> The modules are built as external modules for the running kernel.
-> As a result they are always binary compatible and the same tests
-> can be used for older or newer kernels.
+> This code moving will allow writing more complex tests, like for example an
+> userspace C code that will call a livepatched kernel function.
 > 
-> The build requires "kernel-devel" package to be installed.
-> For example, in the upstream sources, the rpm devel package
-> is produced by "make rpm-pkg"
-> 
-> The modules can be built independently by
-> 
->   make -C tools/testing/selftests/livepatch/
-> 
-> or they will be automatically built before running the tests via
-> 
->   make -C tools/testing/selftests/livepatch/ run_tests
-> 
-> Note that they are _not_ built when running the standalone
-> tests by calling, for example, ./test-state.sh.
-> 
-> Along with TEST_GEN_MODS_DIR, it was necessary to create a new install
-> rule. INSTALL_MODS_RULE is needed because INSTALL_SINGLE_RULE would
-> copy the entire TEST_GEN_MODS_DIR directory to the destination, even
-> the files created by Kbuild to compile the modules. The new install
-> rule copies only the .ko files, as we would expect the gen_tar to work.
 > 
 > Reviewed-by: Joe Lawrence <joe.lawrence@redhat.com>
 > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-I am not export on kbuild. But it looks reasonable and works for me.
+Looks good and works for me.
 
 Reviewed-by: Petr Mladek <pmladek@suse.com>
 
 Best Regards,
 Petr
-
 
