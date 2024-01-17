@@ -1,382 +1,132 @@
-Return-Path: <live-patching+bounces-145-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-146-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 895BB82C4F5
-	for <lists+live-patching@lfdr.de>; Fri, 12 Jan 2024 18:44:51 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 85CD48309EB
+	for <lists+live-patching@lfdr.de>; Wed, 17 Jan 2024 16:41:49 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 0C8F31F2490F
-	for <lists+live-patching@lfdr.de>; Fri, 12 Jan 2024 17:44:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 39BE2287454
+	for <lists+live-patching@lfdr.de>; Wed, 17 Jan 2024 15:41:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C9031B594;
-	Fri, 12 Jan 2024 17:44:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C04832231A;
+	Wed, 17 Jan 2024 15:41:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="RcIv86ss"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECDFC1AAD4;
-	Fri, 12 Jan 2024 17:44:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 141B521BF3;
-	Fri, 12 Jan 2024 17:44:06 +0000 (UTC)
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 88F44136A4;
-	Fri, 12 Jan 2024 17:44:05 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id WA+3E2V6oWUNPgAAD6G6ig
-	(envelope-from <mpdesouza@suse.com>); Fri, 12 Jan 2024 17:44:05 +0000
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Fri, 12 Jan 2024 14:43:52 -0300
-Subject: [PATCH v6 3/3] selftests: livepatch: Test livepatching a heavily
- called syscall
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0839621A19;
+	Wed, 17 Jan 2024 15:41:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705506091; cv=none; b=UlodXNK2v/G8OGuxU+wGddkdg8NHpAVHd2fCxLpenilclVFC8ay8t0qz/rcxL0qpVEtTRkOp0K4cicDxvEULU/Hs3MtQ+nffwqEUFgkhhzheG4TQ4yt3+9vY5uHXtdjz5AtsvoHS5tS2ssJMJlLcpCmWQt3S3as1WYT7XS4BlgE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705506091; c=relaxed/simple;
+	bh=yhlyvGOVc0FW/SQnx8rcyUJVQv4hP/dALX7MtsQQ+R4=;
+	h=Received:DKIM-Signature:Received:Received:Received:Received:
+	 Received:Received:Received:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:X-TM-AS-GCONF:X-Proofpoint-GUID:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details; b=LWaJlM2tFzdXQfbT1QmX20yuKefnpVeGw/oSFKQOfVkhqUAJRty3A6lYjZy9OEQFJgEgWqcAUAR59+r4nIQW1z1dOeDmdS6J659SCOt9+vsZ+mSw0LX1GIURNBSS7gX2aylCjGGjvqxR8qqZ7QkzSQkC2z2/LlEBj779d6/j124=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=RcIv86ss; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 40HFHVnS022560;
+	Wed, 17 Jan 2024 15:41:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=yhlyvGOVc0FW/SQnx8rcyUJVQv4hP/dALX7MtsQQ+R4=;
+ b=RcIv86ssfGnwo+8vgXH6za/DtmLnkrlvEXx6WZga9f9lZ92qwOfSq5Z1kvLti7i7d9cH
+ o8vGYQvU2Y3Vz3iJJaex/O6H0RPcajgSsWIA/AUhQB23G7L/mgvC25GzQW7sDlqbu6Lk
+ enQ6GVqZCqqjB3ibRjLPTzwRE4srOO9w3Xods9rMuyLddMWxWrZ7dBprGr8LdjnBvas9
+ gLe1V/pkimbTwZJj8MjRgjea8Bq2+x25/bv1nKKkBzS9dXjIJrrhjsujVbZEN8Fui5D9
+ RUxAH4W9C5px0nBILGc6UwHVzCg/+QA29WCb+JkWig42jWRUZiSp/uJA97Uvm6t51Bmn 1w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vphdb0r3w-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 17 Jan 2024 15:41:18 +0000
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 40HFJdB0027609;
+	Wed, 17 Jan 2024 15:41:15 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vphdb0qqv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 17 Jan 2024 15:40:39 +0000
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 40HENKcQ005320;
+	Wed, 17 Jan 2024 15:40:38 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vm7j1wp6g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 17 Jan 2024 15:40:38 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 40HFeZ6k18678328
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 17 Jan 2024 15:40:35 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 97A6420043;
+	Wed, 17 Jan 2024 15:40:35 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5840E20040;
+	Wed, 17 Jan 2024 15:40:35 +0000 (GMT)
+Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.155.204.135])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Wed, 17 Jan 2024 15:40:35 +0000 (GMT)
+Date: Wed, 17 Jan 2024 16:40:34 +0100
+From: Alexander Gordeev <agordeev@linux.ibm.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v6 2/3] livepatch: Move tests from lib/livepatch to
+ selftests/livepatch
+Message-ID: <Zaf08hx8fBj6TW5/@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
+References: <20240112-send-lp-kselftests-v6-0-79f3e9a46717@suse.com>
+ <20240112-send-lp-kselftests-v6-2-79f3e9a46717@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240112-send-lp-kselftests-v6-3-79f3e9a46717@suse.com>
-References: <20240112-send-lp-kselftests-v6-0-79f3e9a46717@suse.com>
-In-Reply-To: <20240112-send-lp-kselftests-v6-0-79f3e9a46717@suse.com>
-To: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
- Alexander Gordeev <agordeev@linux.ibm.com>, 
- Christian Borntraeger <borntraeger@linux.ibm.com>, 
- Sven Schnelle <svens@linux.ibm.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
- Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, 
- Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>
-Cc: linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org, 
- live-patching@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
-X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1705081432; l=8828;
- i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=RTZLwPcysYYjqGyhNCZd2qFbhEmbrYx1yqlREbBKIAc=;
- b=IMZvbVtu+uI/HryLqcVJOcGI51Z1yk6I95oVs0vS+qoq7VqpM9qVe0MS3ZHWUK/G7fS8tl/Q3
- C9GazJxnxijBPt1b0TA3K95sjpSMFuRWXv4DNZf4Nco8CclX3DPiOxN
-X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
- pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
-Authentication-Results: smtp-out1.suse.de;
-	none
-X-Spamd-Result: default: False [-4.00 / 50.00];
-	 REPLY(-4.00)[]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Rspamd-Queue-Id: 141B521BF3
-X-Spam-Level: 
-X-Spam-Score: -4.00
-X-Spam-Flag: NO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240112-send-lp-kselftests-v6-2-79f3e9a46717@suse.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: _3iYNxT1FOrPnC60Y6LJUFeHWTv9eNKh
+X-Proofpoint-ORIG-GUID: ActasdkG0_3XDYGMQlVTCphXIluTp9p6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-17_09,2024-01-17_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
+ mlxlogscore=797 phishscore=0 mlxscore=0 spamscore=0 priorityscore=1501
+ impostorscore=0 adultscore=0 clxscore=1011 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311290000 definitions=main-2401170114
 
-The test proves that a syscall can be livepatched. It is interesting
-because syscalls are called a tricky way. Also the process gets
-livepatched either when sleeping in the userspace or when entering
-or leaving the kernel space.
+On Fri, Jan 12, 2024 at 02:43:51PM -0300, Marcos Paulo de Souza wrote:
 
-The livepatch is a bit tricky:
-  1. The syscall function name is architecture specific. Also
-     ARCH_HAS_SYSCALL_WRAPPER must be taken in account.
+Hi Marcos!
 
-  2. The syscall must stay working the same way for other processes
-     on the system. It is solved by decrementing a counter only
-     for PIDs of the test processes. It means that the test processes
-     has to call the livepatched syscall at least once.
+> Having the modules being built as out-of-modules requires changing the
+> currently used 'modprobe' by 'insmod' and adapt the test scripts that
+> check for the kernel message buffer.
 
-The test creates one userspace process per online cpu. The processes
-are calling getpid in a busy loop. The intention is to create random
-locations when the livepatch gets enabled. Nothing is guarantted.
-The magic is in the randomness.
+Please, correct me if I am wrong, but with this change one would
+require a configured build environment and kernel tree that matches
+running kernel in order to run tests. Is that correct?
 
-Reviewed-by: Joe Lawrence <joe.lawrence@redhat.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
----
- tools/testing/selftests/livepatch/Makefile         |   4 +-
- tools/testing/selftests/livepatch/test-syscall.sh  |  53 ++++++++++
- .../selftests/livepatch/test_klp-call_getpid.c     |  44 ++++++++
- .../selftests/livepatch/test_modules/Makefile      |   3 +-
- .../livepatch/test_modules/test_klp_syscall.c      | 116 +++++++++++++++++++++
- 5 files changed, 218 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
-index 119e2bbebe5d..35418a4790be 100644
---- a/tools/testing/selftests/livepatch/Makefile
-+++ b/tools/testing/selftests/livepatch/Makefile
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- 
-+TEST_GEN_FILES := test_klp-call_getpid
- TEST_GEN_MODS_DIR := test_modules
- TEST_PROGS_EXTENDED := functions.sh
- TEST_PROGS := \
-@@ -8,7 +9,8 @@ TEST_PROGS := \
- 	test-shadow-vars.sh \
- 	test-state.sh \
- 	test-ftrace.sh \
--	test-sysfs.sh
-+	test-sysfs.sh \
-+	test-syscall.sh
- 
- TEST_FILES := settings
- 
-diff --git a/tools/testing/selftests/livepatch/test-syscall.sh b/tools/testing/selftests/livepatch/test-syscall.sh
-new file mode 100755
-index 000000000000..b76a881d4013
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test-syscall.sh
-@@ -0,0 +1,53 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (C) 2023 SUSE
-+# Author: Marcos Paulo de Souza <mpdesouza@suse.com>
-+
-+. $(dirname $0)/functions.sh
-+
-+MOD_SYSCALL=test_klp_syscall
-+
-+setup_config
-+
-+# - Start _NRPROC processes calling getpid and load a livepatch to patch the
-+#   getpid syscall. Check if all the processes transitioned to the livepatched
-+#   state.
-+
-+start_test "patch getpid syscall while being heavily hammered"
-+
-+for i in $(seq 1 $(getconf _NPROCESSORS_ONLN)); do
-+	./test_klp-call_getpid &
-+	pids[$i]="$!"
-+done
-+
-+pid_list=$(echo ${pids[@]} | tr ' ' ',')
-+load_lp $MOD_SYSCALL klp_pids=$pid_list
-+
-+# wait for all tasks to transition to patched state
-+loop_until 'grep -q '^0$' /sys/kernel/test_klp_syscall/npids'
-+
-+pending_pids=$(cat /sys/kernel/test_klp_syscall/npids)
-+log "$MOD_SYSCALL: Remaining not livepatched processes: $pending_pids"
-+
-+for pid in ${pids[@]}; do
-+	kill $pid || true
-+done
-+
-+disable_lp $MOD_SYSCALL
-+unload_lp $MOD_SYSCALL
-+
-+check_result "% insmod test_modules/$MOD_SYSCALL.ko klp_pids=$pid_list
-+livepatch: enabling patch '$MOD_SYSCALL'
-+livepatch: '$MOD_SYSCALL': initializing patching transition
-+livepatch: '$MOD_SYSCALL': starting patching transition
-+livepatch: '$MOD_SYSCALL': completing patching transition
-+livepatch: '$MOD_SYSCALL': patching complete
-+$MOD_SYSCALL: Remaining not livepatched processes: 0
-+% echo 0 > /sys/kernel/livepatch/$MOD_SYSCALL/enabled
-+livepatch: '$MOD_SYSCALL': initializing unpatching transition
-+livepatch: '$MOD_SYSCALL': starting unpatching transition
-+livepatch: '$MOD_SYSCALL': completing unpatching transition
-+livepatch: '$MOD_SYSCALL': unpatching complete
-+% rmmod $MOD_SYSCALL"
-+
-+exit 0
-diff --git a/tools/testing/selftests/livepatch/test_klp-call_getpid.c b/tools/testing/selftests/livepatch/test_klp-call_getpid.c
-new file mode 100644
-index 000000000000..ce321a2d7308
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_klp-call_getpid.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2023 SUSE
-+ * Authors: Libor Pechacek <lpechacek@suse.cz>
-+ *          Marcos Paulo de Souza <mpdesouza@suse.com>
-+ */
-+
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <sys/syscall.h>
-+#include <sys/types.h>
-+#include <signal.h>
-+
-+static int stop;
-+static int sig_int;
-+
-+void hup_handler(int signum)
-+{
-+	stop = 1;
-+}
-+
-+void int_handler(int signum)
-+{
-+	stop = 1;
-+	sig_int = 1;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	long count = 0;
-+
-+	signal(SIGHUP, &hup_handler);
-+	signal(SIGINT, &int_handler);
-+
-+	while (!stop) {
-+		(void)syscall(SYS_getpid);
-+		count++;
-+	}
-+
-+	if (sig_int)
-+		printf("%ld iterations done\n", count);
-+
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/livepatch/test_modules/Makefile b/tools/testing/selftests/livepatch/test_modules/Makefile
-index 6f7c2103d27d..f5e880269bff 100644
---- a/tools/testing/selftests/livepatch/test_modules/Makefile
-+++ b/tools/testing/selftests/livepatch/test_modules/Makefile
-@@ -10,7 +10,8 @@ obj-m += test_klp_atomic_replace.o \
- 	test_klp_state.o \
- 	test_klp_state2.o \
- 	test_klp_state3.o \
--	test_klp_shadow_vars.o
-+	test_klp_shadow_vars.o \
-+	test_klp_syscall.o
- 
- modules:
- 	$(Q)$(MAKE) -C $(KDIR) modules KBUILD_EXTMOD=$(TESTMODS_DIR)
-diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-new file mode 100644
-index 000000000000..dd802783ea84
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-@@ -0,0 +1,116 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2017-2023 SUSE
-+ * Authors: Libor Pechacek <lpechacek@suse.cz>
-+ *          Nicolai Stange <nstange@suse.de>
-+ *          Marcos Paulo de Souza <mpdesouza@suse.com>
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/sched.h>
-+#include <linux/slab.h>
-+#include <linux/livepatch.h>
-+
-+#if defined(__x86_64__)
-+#define FN_PREFIX __x64_
-+#elif defined(__s390x__)
-+#define FN_PREFIX __s390x_
-+#elif defined(__aarch64__)
-+#define FN_PREFIX __arm64_
-+#else
-+/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER */
-+#define FN_PREFIX
-+#endif
-+
-+/* Protects klp_pids */
-+static DEFINE_MUTEX(kpid_mutex);
-+
-+static unsigned int npids, npids_pending;
-+static int klp_pids[NR_CPUS];
-+module_param_array(klp_pids, int, &npids_pending, 0);
-+MODULE_PARM_DESC(klp_pids, "Array of pids to be transitioned to livepatched state.");
-+
-+static ssize_t npids_show(struct kobject *kobj, struct kobj_attribute *attr,
-+			  char *buf)
-+{
-+	return sprintf(buf, "%u\n", npids_pending);
-+}
-+
-+static struct kobj_attribute klp_attr = __ATTR_RO(npids);
-+static struct kobject *klp_kobj;
-+
-+static asmlinkage long lp_sys_getpid(void)
-+{
-+	int i;
-+
-+	mutex_lock(&kpid_mutex);
-+	if (npids_pending > 0) {
-+		for (i = 0; i < npids; i++) {
-+			if (current->pid == klp_pids[i]) {
-+				klp_pids[i] = 0;
-+				npids_pending--;
-+				break;
-+			}
-+		}
-+	}
-+	mutex_unlock(&kpid_mutex);
-+
-+	return task_tgid_vnr(current);
-+}
-+
-+static struct klp_func vmlinux_funcs[] = {
-+	{
-+		.old_name = __stringify(FN_PREFIX) "sys_getpid",
-+		.new_func = lp_sys_getpid,
-+	}, {}
-+};
-+
-+static struct klp_object objs[] = {
-+	{
-+		/* name being NULL means vmlinux */
-+		.funcs = vmlinux_funcs,
-+	}, {}
-+};
-+
-+static struct klp_patch patch = {
-+	.mod = THIS_MODULE,
-+	.objs = objs,
-+};
-+
-+static int livepatch_init(void)
-+{
-+	int ret;
-+
-+	klp_kobj = kobject_create_and_add("test_klp_syscall", kernel_kobj);
-+	if (!klp_kobj)
-+		return -ENOMEM;
-+
-+	ret = sysfs_create_file(klp_kobj, &klp_attr.attr);
-+	if (ret) {
-+		kobject_put(klp_kobj);
-+		return ret;
-+	}
-+
-+	/*
-+	 * Save the number pids to transition to livepatched state before the
-+	 * number of pending pids is decremented.
-+	 */
-+	npids = npids_pending;
-+
-+	return klp_enable_patch(&patch);
-+}
-+
-+static void livepatch_exit(void)
-+{
-+	kobject_put(klp_kobj);
-+}
-+
-+module_init(livepatch_init);
-+module_exit(livepatch_exit);
-+MODULE_LICENSE("GPL");
-+MODULE_INFO(livepatch, "Y");
-+MODULE_AUTHOR("Libor Pechacek <lpechacek@suse.cz>");
-+MODULE_AUTHOR("Nicolai Stange <nstange@suse.de>");
-+MODULE_AUTHOR("Marcos Paulo de Souza <mpdesouza@suse.com>");
-+MODULE_DESCRIPTION("Livepatch test: syscall transition");
-
--- 
-2.42.1
-
+Thanks!
 
