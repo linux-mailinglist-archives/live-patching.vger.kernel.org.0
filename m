@@ -1,158 +1,179 @@
-Return-Path: <live-patching+bounces-148-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-149-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id B99BD831121
-	for <lists+live-patching@lfdr.de>; Thu, 18 Jan 2024 02:53:10 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 08EC7832A1D
+	for <lists+live-patching@lfdr.de>; Fri, 19 Jan 2024 14:11:40 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 5943DB22541
-	for <lists+live-patching@lfdr.de>; Thu, 18 Jan 2024 01:53:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2DFDF1C2321E
+	for <lists+live-patching@lfdr.de>; Fri, 19 Jan 2024 13:11:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 57250259D;
-	Thu, 18 Jan 2024 01:53:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9864E524BE;
+	Fri, 19 Jan 2024 13:11:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="W3m259+Y"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="eEkPtlKJ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6603A1FAF
-	for <live-patching@vger.kernel.org>; Thu, 18 Jan 2024 01:53:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D852F33CE9;
+	Fri, 19 Jan 2024 13:11:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705542782; cv=none; b=BQOr06o5uw7a/PHOGnMsAm29ugf0KY/j4cShyIM0SkFK9Cx0UaFpvxBxfjH5U6VLUL2G8FS8t/LVIAhOAQXf1N9Hj0IRrzWwq+cGeJkU1IAOZdAueYXtqLnEIWeDkdmfKvOC5tx37S7Kh/0l4Ky1jCOQDN/o48y7/LgiK0d0stg=
+	t=1705669882; cv=none; b=gM1hR1+NhGewmhRUGyLqYDiZo1SCFkevGyLgnU27EIP+Gtx9iT7gvk4PK7BwvNcp6ydBn8ECuGAkA8Bsw6cBKSwoILyR+J0DaGwn7oSaIK4TvcGs8AfQWUUmEp2tf/L1/WQZVunJXZ7qUWrY04YQogOaemJRX7JXh3u+ua/cKVU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705542782; c=relaxed/simple;
-	bh=TbGKo9XwnaWFRnDaGJQYGEDB3n+mODCRkk1sjg7BuRA=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
-	 Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:Content-Transfer-Encoding:User-Agent:MIME-Version; b=NofbQcXb/ap3kGIcwQqT8wJ8pKRWh+6uSJx+wrP6mHoMjJPjcVRsXhkS23M9axXLEpx7ssl4ZrQv8l9oNWN5oGGHdXibKfvupUT9eYUYG0YQxjHyrQ0we9qzgn0ozapgtonDx8ZT7G9AKQRgvvfFEORbdr0EAP969J8kLhoNWJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=W3m259+Y; arc=none smtp.client-ip=209.85.208.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2cdc1af60b2so45958221fa.1
-        for <live-patching@vger.kernel.org>; Wed, 17 Jan 2024 17:53:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1705542778; x=1706147578; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=taCIpUJqzL+JyTaiMa3v4bP+c2WFVuuQ9gZ9COs9zu8=;
-        b=W3m259+YmlnMuOAK6XKKmaoxzp5GGgx3fAtvpII5LF5lLztUFbWKPSw4hN78NgVby3
-         kT5w/VsyaCVOv4qT5OnPO8r0Gevcgxl91/k89Z9nY9E0r9Qfj/23hwnb+577gamTuwiY
-         4fpYgw+oVNniaB63cN/ZK8SclF6Ph3RZBkLdrn/AGFDwUj2cOuzkoxrNnpHBfhSUKrUc
-         jgnK75bXS2guTzpXzDVKqgDemgPEnQ/jYPT6EuoF9/FdybTtSmzis6tdW7Joia7XjPJo
-         F7e2HN73aiFt8eMRng1P5FYZfsj3wvMhWbiKfY4nqnbkw8bgI+reT1IVF9Nx4AjxkBN8
-         WWvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705542778; x=1706147578;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=taCIpUJqzL+JyTaiMa3v4bP+c2WFVuuQ9gZ9COs9zu8=;
-        b=lZBMIxKX0BpL6L2sjJ3GBEeyLPUV1WDLOd8KBEGyvJDcl02YxfQEiwPQaiIOzZwMcc
-         DlhHX6O3KsorObW18YH870mWa4lnWFX4osiS4r7oep8LkoYeGhsZBKmzmrs5ocqvEcGa
-         ADIEl6dmV0q2e/G8ug2+USQRDIsyByE3Orc3FbaRg03/5Mgbf0aFxgFZ2vBkoCZg+rdY
-         YHU3zp8wr384PFuE3Wy7hIynrX9SiLiC2c2YERioH7GMb85oa0Ic5bCWUtxsYM7muOX+
-         EcrysnI3F25mbaAGgyafrcV4/zP3xBR6EAf1ePQQ1vSFGBbT0GwRTu0c+HBaNiKgPRmC
-         8aiQ==
-X-Gm-Message-State: AOJu0Yy175XrmrAT2IAhJE36CFAvLrPzneiiDNydDtYMx5GaVhzRuZL3
-	HxU6H21DLe3yrrtRNmie2uVNm01ZVFnQh2GZgZJzrKRijbzyIGeR25vKHHMGCEU=
-X-Google-Smtp-Source: AGHT+IGvzTuyC7iVwlQOSofeR6dJpAULy5A1d7eEifJUQAx27DALwNdCqveNkTX/dJSr0C9xl0HxDg==
-X-Received: by 2002:a2e:9050:0:b0:2cc:a7b9:2fa0 with SMTP id n16-20020a2e9050000000b002cca7b92fa0mr66494ljg.12.1705542778479;
-        Wed, 17 Jan 2024 17:52:58 -0800 (PST)
-Received: from ?IPv6:2804:30c:974:ac00:1b02:e2fd:23be:79bc? ([2804:30c:974:ac00:1b02:e2fd:23be:79bc])
-        by smtp.gmail.com with ESMTPSA id y2-20020a63e242000000b005cd78f13608sm338946pgj.13.2024.01.17.17.52.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jan 2024 17:52:58 -0800 (PST)
-Message-ID: <4aaa05fb405e921f25c907ca09ea29976ca0707c.camel@suse.com>
+	s=arc-20240116; t=1705669882; c=relaxed/simple;
+	bh=0AgduXsuld70K/EMlbZrFK/ZLPaT4SXhbyZdDcrTuzk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZO18uSDivgHYs8Xl6/Qc2iMeNzBP0s6BgIXgYGB7P6f6dYGCELrzQxYXGWj/3NGtCb9nSNA7wN1/n4dx0eySgeBnmNLTVCNuHCuCAatQ48lGz5wrvdV9RWzNoFtlnhmZcBo1Z7pL+gdAuu29jhQa4HGZt8SrBDlUB4s/w73+sNo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=eEkPtlKJ; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0353722.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 40JD0OLp017291;
+	Fri, 19 Jan 2024 13:11:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=y3roZCLy1ySD+5Ai9Ht2UZyOzehoiSJRmh+F6cP6vxc=;
+ b=eEkPtlKJixGFZWrJc0a0cE7/OPuyE4AQNMvB4RD4MomJoWpHNtzULXT3rUj8Bra2BKac
+ qWF16GxsLGE+tcQpBJbTsD9hLj2TFWYRXspN1fLWKsBEkpL2qRoFNL0P6bAasmJTvX/S
+ nUNoHXi5RuFDeJD0n3RqZgDpwfuU0uH5Lp5ymvlZtkCaQAYPpDmQg8ES5pN24/7GIwEx
+ j4aLL3+RY3wMFdMYKE/YVrbzneQrqb157DazL2Qu0opFfdx/WIvpIoBFksIhDbyq9woI
+ g0FtlH6ZBgQeuk8FRX49KHKwrevYtIsW9m+3HnNITiorZkf0w4h+D//lLEfc0XZUfqX3 eA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vqs1jhcrg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 19 Jan 2024 13:11:05 +0000
+Received: from m0353722.ppops.net (m0353722.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 40JD0nHk018582;
+	Fri, 19 Jan 2024 13:11:05 GMT
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vqs1jhcr5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 19 Jan 2024 13:11:05 +0000
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 40JAM1gl030870;
+	Fri, 19 Jan 2024 13:11:04 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vm72khaks-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 19 Jan 2024 13:11:04 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 40JDB13E43188718
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 19 Jan 2024 13:11:01 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 585682004B;
+	Fri, 19 Jan 2024 13:11:01 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9E85B20040;
+	Fri, 19 Jan 2024 13:10:59 +0000 (GMT)
+Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.171.85.177])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Fri, 19 Jan 2024 13:10:59 +0000 (GMT)
+Date: Fri, 19 Jan 2024 14:10:57 +0100
+From: Alexander Gordeev <agordeev@linux.ibm.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        live-patching@vger.kernel.org
 Subject: Re: [PATCH v6 2/3] livepatch: Move tests from lib/livepatch to
  selftests/livepatch
-From: mpdesouza@suse.com
-To: Alexander Gordeev <agordeev@linux.ibm.com>
-Cc: Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Heiko
- Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian
- Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
- <svens@linux.ibm.com>, Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina
- <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,  Petr Mladek
- <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>,
- linux-kselftest@vger.kernel.org,  linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org,  linux-s390@vger.kernel.org,
- live-patching@vger.kernel.org
-Date: Wed, 17 Jan 2024 22:52:51 -0300
-In-Reply-To: <Zaf08hx8fBj6TW5/@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
+Message-ID: <Zap04ddls7ZvbL/U@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
 References: <20240112-send-lp-kselftests-v6-0-79f3e9a46717@suse.com>
-	 <20240112-send-lp-kselftests-v6-2-79f3e9a46717@suse.com>
-	 <Zaf08hx8fBj6TW5/@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.1 
+ <20240112-send-lp-kselftests-v6-2-79f3e9a46717@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240112-send-lp-kselftests-v6-2-79f3e9a46717@suse.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: p-8a8pwvXQe30bZjF8SmExCBArjrS_A1
+X-Proofpoint-ORIG-GUID: LtCFlP5IylQnTIoJja1a4g7w6R36SAxv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-19_07,2024-01-19_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 priorityscore=1501 spamscore=0 mlxlogscore=875
+ bulkscore=0 malwarescore=0 mlxscore=0 adultscore=0 impostorscore=0
+ suspectscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2311290000 definitions=main-2401190067
 
-On Wed, 2024-01-17 at 16:40 +0100, Alexander Gordeev wrote:
-> On Fri, Jan 12, 2024 at 02:43:51PM -0300, Marcos Paulo de Souza
-> wrote:
->=20
-> Hi Marcos!
+On Fri, Jan 12, 2024 at 02:43:51PM -0300, Marcos Paulo de Souza wrote:
+Hi Marcos,
+...
+>  arch/s390/configs/debug_defconfig                  |  1 -
+>  arch/s390/configs/defconfig                        |  1 -
+>  lib/Kconfig.debug                                  | 22 ----------
+...
+> diff --git a/arch/s390/configs/debug_defconfig b/arch/s390/configs/debug_defconfig
+> index 85490d9373fc..5948afeeb56c 100644
+> --- a/arch/s390/configs/debug_defconfig
+> +++ b/arch/s390/configs/debug_defconfig
+> @@ -884,4 +884,3 @@ CONFIG_ATOMIC64_SELFTEST=y
+>  CONFIG_STRING_SELFTEST=y
+>  CONFIG_TEST_BITOPS=m
+>  CONFIG_TEST_BPF=m
+> -CONFIG_TEST_LIVEPATCH=m
+> diff --git a/arch/s390/configs/defconfig b/arch/s390/configs/defconfig
+> index fb690fbbf54b..8d8c2989b6fe 100644
+> --- a/arch/s390/configs/defconfig
+> +++ b/arch/s390/configs/defconfig
+> @@ -813,4 +813,3 @@ CONFIG_KPROBES_SANITY_TEST=m
+>  CONFIG_PERCPU_TEST=m
+>  CONFIG_ATOMIC64_SELFTEST=y
+>  CONFIG_TEST_BPF=m
+> -CONFIG_TEST_LIVEPATCH=m
+> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> index 97ce28f4d154..c2147caa7da2 100644
+> --- a/lib/Kconfig.debug
+> +++ b/lib/Kconfig.debug
+> @@ -2853,28 +2853,6 @@ config TEST_MEMCAT_P
+>  
+>  	  If unsure, say N.
+>  
+> -config TEST_LIVEPATCH
+> -	tristate "Test livepatching"
+> -	default n
+> -	depends on DYNAMIC_DEBUG
+> -	depends on LIVEPATCH
+> -	depends on m
+> -	help
+> -	  Test kernel livepatching features for correctness.  The tests will
+> -	  load test modules that will be livepatched in various scenarios.
+> -
+> -	  To run all the livepatching tests:
+> -
+> -	  make -C tools/testing/selftests TARGETS=livepatch run_tests
+> -
+> -	  Alternatively, individual tests may be invoked:
+> -
+> -	  tools/testing/selftests/livepatch/test-callbacks.sh
+> -	  tools/testing/selftests/livepatch/test-livepatch.sh
+> -	  tools/testing/selftests/livepatch/test-shadow-vars.sh
+> -
+> -	  If unsure, say N.
+> -
+>  config TEST_OBJAGG
+>  	tristate "Perform selftest on object aggreration manager"
+>  	default n
 
-Hello!
+FWIW, for s390 part:
 
->=20
-> > Having the modules being built as out-of-modules requires changing
-> > the
-> > currently used 'modprobe' by 'insmod' and adapt the test scripts
-> > that
-> > check for the kernel message buffer.
->=20
-> Please, correct me if I am wrong, but with this change one would
-> require a configured build environment and kernel tree that matches
-> running kernel in order to run tests. Is that correct?
+Alexander Gordeev <agordeev@linux.ibm.com>
 
-You don't need a kernel tree in order to run the tests, you can build
-the modules and use gen_tar to pack them, setting KDIR to the currently
-built kernel:
-		make KDIR=3D$(pwd) TARGETS=3Dlivepatch -C
-tools/testing/selftests
-
-This can be used when packaging the tests, like Joe showed when
-reviewing the v4:
-
-	mkdir /tmp/test-install
-	make KDIR=3D$(pwd) INSTALL_PATH=3D/tmp/test-install
-TARGETS=3Dlivepatch -C tools/testing/selftests install
-
-In this case /tmp/test-install will contain the scripts and the modules
-compiled targeting the same kernel version from the kernel built from
-the kernel tree.
-
-You can also run the tests from the kernel tree but targeting your
-currently running system.
-Using this approach you can run the tests on machines without kernel
-tree and without build environment.
-
-You can also pick the kernel source and run
-	make kselftest TARGETS=3Dlivepatch
-
-As KDIR wasn't set it builds the livepatch test modules targeting
-/lib/modules/<current kernel version/build, and so you can run the
-tests against your currently running kernel. This would require kernel-
-devel package and gcc.
-
-I hope this answer your question, and provides some info about how to
-run the tests on different environments!
-
-Thanks,
-  Marcos
-
->=20
-> Thanks!
-
+Thanks!
 
