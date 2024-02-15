@@ -1,145 +1,144 @@
-Return-Path: <live-patching+bounces-156-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-157-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8023E83BDBE
-	for <lists+live-patching@lfdr.de>; Thu, 25 Jan 2024 10:46:37 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E13D6856C2E
+	for <lists+live-patching@lfdr.de>; Thu, 15 Feb 2024 19:13:01 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 200841F318ED
-	for <lists+live-patching@lfdr.de>; Thu, 25 Jan 2024 09:46:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1126F1C20F39
+	for <lists+live-patching@lfdr.de>; Thu, 15 Feb 2024 18:13:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C19111C6A6;
-	Thu, 25 Jan 2024 09:44:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FFE31386C4;
+	Thu, 15 Feb 2024 18:12:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="nZwCTEIi";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="wzs65i74";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="nZwCTEIi";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="wzs65i74"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="EwiE0K2O";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="EwiE0K2O"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECDDD1C6AF;
-	Thu, 25 Jan 2024 09:44:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944131386AA;
+	Thu, 15 Feb 2024 18:12:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706175884; cv=none; b=Q267VntX1Ic8z1vFZDjwnBjqLq3py+/yZJa4G9jlAit5hD2QzoDze9+p1l+RYpu1/OYljoClTk609KMh6dXVhKGS+RRwUwdeTKyAIGpiM/p9wXDNw2hY8SpjklPtCrImfjWwFzKrDLklRit981lRGZmuxT1dzRpt4oPq1WR3OMU=
+	t=1708020763; cv=none; b=ev8f1PbIG2DS+w2UnKEeCK8+WT/ZEiFCCDViasSlqA1+7nujqYGFWSh7iFv6S9jWP6z0Mj69xMgo0wq1H9qWv2quuEvMp66uhJPHBU4HW/27Bf80N/vN/BkTMX7j2BtjAYHDJBIFA/34wXymSq9ygEnCmVjOdpSM/kfec1wuGHA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706175884; c=relaxed/simple;
-	bh=XmRSbkIpywLmjj0zCQiVg5TA0KM3rSYgxhSTDBmH4dc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VPfSnAadnm9SnPw9tmcjfI7nVrNq8l0EHv1XgWoZhbpILKAla89uqzrZOLaxS1SGdpJt4nJqMUbDXe9DMDZEw8DIgGokFIqD2l6AoIDMvnMACZtnoW6zEMeT0z5Cbbs1A8ft7qjOcasGemYVaplzhqRa7W44jVoYCkZgTWUfZCM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=nZwCTEIi; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=wzs65i74; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=nZwCTEIi; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=wzs65i74; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	s=arc-20240116; t=1708020763; c=relaxed/simple;
+	bh=kTwshfoQak1CLS1xr5RDYhHCXHVCaUTqaWSSjq1FYO8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=H43CatjdH+cVZ8dGUWib4oxdr4e8s3kEGuledBuNYaBDM4n48lgHj1XxVMi13/FVwDg2rUIU7lt2L/n1lpVBTak7GPU7GsCt7eIChncBaTXQOeTlOyN3NDLhzKcxLNwYJi1XA4Nhe2FDOZqVhtP2DH5Ct5va9spKuz6mAA9VhGY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=EwiE0K2O; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=EwiE0K2O; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [10.150.64.98])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 351C22235C;
-	Thu, 25 Jan 2024 09:44:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1706175881; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 6CC5A21F3D;
+	Thu, 15 Feb 2024 18:12:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708020758; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oRo4+cA0mWp/kgVI4VrUT42ptptwgy4meaT1AtSPrzE=;
-	b=nZwCTEIiBk62Rc9dAJ6ScZKOC5SShGPu39+CPyTXzmB/RYuaNuZwnwU3SyNGUeQgd4RD5x
-	KJIDgwgphHw2jGYLoggab4FWVTGt5+12SOI+AklfsgDtNcUWtgjd+yMgwulHq9TvQ08eoO
-	Pue1N0tax/AlljXX0qYesvMvl5/u4DQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1706175881;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=j7vlg+mXthjoDP5TGpttL/27seM8QE8FtozgAP/kMH8=;
+	b=EwiE0K2Ow2LZeS7eXltqaLEj9SMPGfxJrNe2JVnWgYyvTo01hEuTbNT2lQZwvjA+eKchPB
+	la7mFQmQgCaTCJNelaLArsRt4UXxkPnqKZDn1CzJFcES5idTDpyjNUra0XkVjZf5aLPMkK
+	6SiDSaNw68slicU+EgqTYjlsPOt3gyE=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708020758; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oRo4+cA0mWp/kgVI4VrUT42ptptwgy4meaT1AtSPrzE=;
-	b=wzs65i743jm/cVjCTl9Iys2SvbIdGryFU62x7mokJEqNCOVurTqHGjj53O1MZa8MVffgcV
-	WBBs/nrCh2wCDDAw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1706175881; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oRo4+cA0mWp/kgVI4VrUT42ptptwgy4meaT1AtSPrzE=;
-	b=nZwCTEIiBk62Rc9dAJ6ScZKOC5SShGPu39+CPyTXzmB/RYuaNuZwnwU3SyNGUeQgd4RD5x
-	KJIDgwgphHw2jGYLoggab4FWVTGt5+12SOI+AklfsgDtNcUWtgjd+yMgwulHq9TvQ08eoO
-	Pue1N0tax/AlljXX0qYesvMvl5/u4DQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1706175881;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oRo4+cA0mWp/kgVI4VrUT42ptptwgy4meaT1AtSPrzE=;
-	b=wzs65i743jm/cVjCTl9Iys2SvbIdGryFU62x7mokJEqNCOVurTqHGjj53O1MZa8MVffgcV
-	WBBs/nrCh2wCDDAw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=j7vlg+mXthjoDP5TGpttL/27seM8QE8FtozgAP/kMH8=;
+	b=EwiE0K2Ow2LZeS7eXltqaLEj9SMPGfxJrNe2JVnWgYyvTo01hEuTbNT2lQZwvjA+eKchPB
+	la7mFQmQgCaTCJNelaLArsRt4UXxkPnqKZDn1CzJFcES5idTDpyjNUra0XkVjZf5aLPMkK
+	6SiDSaNw68slicU+EgqTYjlsPOt3gyE=
+Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 2BFD713649;
-	Thu, 25 Jan 2024 09:44:41 +0000 (UTC)
+	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id D40171346A;
+	Thu, 15 Feb 2024 18:12:37 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([10.150.64.162])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 3x60CoktsmVbVwAAD6G6ig
-	(envelope-from <lhruska@suse.cz>); Thu, 25 Jan 2024 09:44:41 +0000
-Date: Thu, 25 Jan 2024 10:44:40 +0100
-From: Lukas Hruska <lhruska@suse.cz>
-To: Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>,
-	Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH v1 3/5] kbuild/modpost: integrate klp-convert
-Message-ID: <ZbItbbsYrKdWT_Ma@dhcp182.suse.cz>
-References: <20231106162513.17556-1-lhruska@suse.cz>
- <20231106162513.17556-4-lhruska@suse.cz>
+	by imap2.dmz-prg2.suse.org with ESMTPSA
+	id bCyZJhVUzmXsVwAAn2gu4w
+	(envelope-from <mpdesouza@suse.com>); Thu, 15 Feb 2024 18:12:37 +0000
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: [PATCH 0/3] Improvements to livepatch kselftests on top of
+ kselftest-next
+Date: Thu, 15 Feb 2024 15:12:19 -0300
+Message-Id: <20240215-lp-selftests-fixes-v1-0-89f4a6f5cddc@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231106162513.17556-4-lhruska@suse.cz>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAANUzmUC/x3LQQqAIBBA0avIrBtQM4KuEi2yxhoQEyciiO6et
+ Hx8/gNChUlgUA8Uulj4SBWmUbDsc9oIea0Gq63T1nQYMwrFcJKcgoFvEuxX52ffLro3FuqYC/2
+ hfuP0vh9mpdCEZAAAAA==
+To: Shuah Khan <shuah@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>, 
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, 
+ Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>
+Cc: linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ live-patching@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
+X-Mailer: b4 0.13-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1708020755; l=902;
+ i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
+ bh=kTwshfoQak1CLS1xr5RDYhHCXHVCaUTqaWSSjq1FYO8=;
+ b=x//lwpiP6AjTZUOwc38wQtKsdeWY8fqUEr6j1Ojeo9McMSm2fUgZ4BNJuwJlBY+M03wUDk9Hs
+ HnlE82J0mdSBx2V3acBHxucz8S1SQ4UQreah5zg+uJ5vDLuuDdyXfis
+X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
+ pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
 Authentication-Results: smtp-out1.suse.de;
 	none
-X-Spamd-Result: default: False [-0.10 / 50.00];
+X-Spam-Level: 
+X-Spam-Score: -1.30
+X-Spamd-Result: default: False [-1.30 / 50.00];
 	 ARC_NA(0.00)[];
 	 RCVD_VIA_SMTP_AUTH(0.00)[];
 	 FROM_HAS_DN(0.00)[];
 	 TO_DN_SOME(0.00)[];
 	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
 	 MIME_GOOD(-0.10)[text/plain];
 	 RCVD_COUNT_THREE(0.00)[3];
-	 MID_RHS_MATCH_FROMTLD(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 RCPT_COUNT_SEVEN(0.00)[9];
+	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 NEURAL_HAM_SHORT(-0.20)[-1.000];
+	 RCPT_COUNT_SEVEN(0.00)[10];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
 	 FUZZY_BLOCKED(0.00)[rspamd.com];
 	 FROM_EQ_ENVFROM(0.00)[];
 	 MIME_TRACE(0.00)[0:+];
-	 RCVD_TLS_ALL(0.00)[]
-X-Spam-Level: 
+	 RCVD_TLS_ALL(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[]
 X-Spam-Flag: NO
-X-Spam-Score: -0.10
 
-There is also a typo in Makefile which causes a modules.livepatch file
-to be created in kernel sources even in case of building an external
-module.
+The changes doesn't change the current functionality. The changes on
+lib.mk are both for simplification and also clarification, like in the
+case of not handling TEST_GEN_MODS_DIR directly.
 
-> diff --git a/Makefile b/Makefile
-> index 2fdd8b40b7e0..459b9c9fe0a8 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1185,6 +1185,7 @@ PHONY += prepare0
->  export extmod_prefix = $(if $(KBUILD_EXTMOD),$(KBUILD_EXTMOD)/)
->  export MODORDER := $(extmod_prefix)modules.order
->  export MODULES_NSDEPS := $(extmod_prefix)modules.nsdeps
-> +export MODULES_LIVEPATCH := $(extmod-prefix)modules.livepatch
+These changes apply on top of the current kselftest-next branch. Please
+review!
 
-This should be `$(extmod_prefix)`.
+Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+---
+Marcos Paulo de Souza (3):
+      selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
+      selftests: lib.mk: Simplify TEST_GEN_MODS_DIR handling
+      selftests: livepatch: Add initial .gitignore
 
-Best Regards,
-Lukas
+ tools/testing/selftests/lib.mk               | 19 +++++++------------
+ tools/testing/selftests/livepatch/.gitignore |  1 +
+ 2 files changed, 8 insertions(+), 12 deletions(-)
+---
+base-commit: 345e8abe4c355bc24bab3f4a5634122e55be8665
+change-id: 20240215-lp-selftests-fixes-7d4bab3c0712
+
+Best regards,
+-- 
+Marcos Paulo de Souza <mpdesouza@suse.com>
+
 
