@@ -1,129 +1,159 @@
-Return-Path: <live-patching+bounces-163-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-164-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 274ED859CAE
-	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 08:17:37 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 51F9085A2FA
+	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 13:15:37 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B58451F2104E
-	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 07:17:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 08C52285F4F
+	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 12:15:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 954B8208C0;
-	Mon, 19 Feb 2024 07:17:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 62BF92DF9F;
+	Mon, 19 Feb 2024 12:15:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MrjLDMSp"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="RC5TooIH";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="RC5TooIH"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77A802033A;
-	Mon, 19 Feb 2024 07:17:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E3242D627;
+	Mon, 19 Feb 2024 12:15:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708327052; cv=none; b=ESYlMUl2IartOwmypdnqcf7TF3cXnW5Gq1lgVbag3n8CFVtAqWwsx76O5FVvp2395hlPDLTFETdp7iH4tRhwsHYlfqhYKFB/E4IeXZR1KzZgvXQPhpRC46rv+wzdRjSmeq10CLfWpSmyHPUym75t2ggzG/z1p7UI5CAl6KiJDDQ=
+	t=1708344933; cv=none; b=nRj8zWtbmJX7L9PVlqaGAz09hoRFa7UjAAIKlmOzJ7r3MdIoXgWcNOErEKF5MnGTWWtj50E2/OaUFXwX+DuDYdeBpCpKxk91ubvb/iOyMz1CHtD4ThekH7sCsE/OPKqyCn4kl/ARPaX9a9zH6GSDwG2TV1vvJeQJDg+dpP+K0Sg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708327052; c=relaxed/simple;
-	bh=GKXy53YYv0eSLU9kBkF29HbfUhSrEPdczZxj9bBvR7s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QRaPrWuT8cFy4/FHJDwh4U4vCJg0bswl+V2I24qsSpy7FjvxvmrdSBwz+y6wOLmG1Rm8zUUFT1FkRfifEmb/hZbRtgac7V049g2+Li4jHNe4RE04EeyPMMkKwVbzXPAKNH1ezKL9HwblINokGQCg7EKEqnLn0GEIP9AR/agRLFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MrjLDMSp; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708327051; x=1739863051;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GKXy53YYv0eSLU9kBkF29HbfUhSrEPdczZxj9bBvR7s=;
-  b=MrjLDMSpu1ZjnmDJJJH9noZqAVLG0RN2FBeJGGCqOHs/i/Y7JQ5dgFjc
-   TKjyT7L8NLMWoAMFW/XMLrHsuJ21cIWVwW0a71TcuPN4YjYLKxAR6UX8X
-   sBSC+D7NSJRMqfIcf7Ar1rkniaqaQO01EhGTiSSd2fJ7Wn9SGuv6o9qFe
-   kAQbt30XpjYOtK4lRd9IRisTvB9pp83p2L6mlm1mvnX+awwGWTgWZwMBl
-   Uwilt2lMhOv4j08Bh+yuAOHbQAOwQP8aHuYDA3m5TzRn0b5WO+z+rdqus
-   YVS3LxahTYwPEv9tg+/k5QoDQLGCyFRr1S33BssMMrHL5FsJ42C3ybjTJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2256901"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="2256901"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2024 23:17:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="35186430"
-Received: from lkp-server02.sh.intel.com (HELO 3c78fa4d504c) ([10.239.97.151])
-  by orviesa002.jf.intel.com with ESMTP; 18 Feb 2024 23:17:27 -0800
-Received: from kbuild by 3c78fa4d504c with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rbxtt-0003ba-1C;
-	Mon, 19 Feb 2024 07:17:22 +0000
-Date: Mon, 19 Feb 2024 15:16:51 +0800
-From: kernel test robot <lkp@intel.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>,
+	s=arc-20240116; t=1708344933; c=relaxed/simple;
+	bh=4/80kqu59ojPf2xu9XBas1zF7Yd9ILlbUXiuDiIiooI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=gRc5+reiG56n/XuWQtoeGOjWyKY4V5xQPFl66+Xq6v+N8+U6OQyg92jQtYiTbIiunCCtiAH7H8OZlsmVFyrdiHcK1RcF/oPLFttfH5+G4XschcDL4RyMVijCTYU4lJK240qiuluJqgBn7AqkPFdSyt3WsY/SerFXpb3WpwFfYxQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=RC5TooIH; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=RC5TooIH; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:98])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 1D0C8210F0;
+	Mon, 19 Feb 2024 12:15:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708344929; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+w8ujSvz1Ruvq/dzi3FKWELvzxTHBrWqsYdRFvTNrIQ=;
+	b=RC5TooIHv1XRqKQoF/oySItPCh3W+QScKH3c1jVaqUjFchYhMvJWRfKa5KDhZALezbdVt9
+	Ifv66E6JJLzq5S+EXjvrfZ7vjMJ7MwCsbRjUmAEV/vZtxBcAmZwrG1eCpggnRi9b40SfAY
+	9UwbEf8gpe6wW7wg3iuhBAxFTGdTy8Q=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708344929; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+w8ujSvz1Ruvq/dzi3FKWELvzxTHBrWqsYdRFvTNrIQ=;
+	b=RC5TooIHv1XRqKQoF/oySItPCh3W+QScKH3c1jVaqUjFchYhMvJWRfKa5KDhZALezbdVt9
+	Ifv66E6JJLzq5S+EXjvrfZ7vjMJ7MwCsbRjUmAEV/vZtxBcAmZwrG1eCpggnRi9b40SfAY
+	9UwbEf8gpe6wW7wg3iuhBAxFTGdTy8Q=
+Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id 9258313585;
+	Mon, 19 Feb 2024 12:15:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([10.150.64.162])
+	by imap2.dmz-prg2.suse.org with ESMTPSA
+	id kdXKFWBG02WtdAAAn2gu4w
+	(envelope-from <mpdesouza@suse.com>); Mon, 19 Feb 2024 12:15:28 +0000
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: kernel test robot <lkp@intel.com>
+Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Shuah Khan <skhan@linuxfoundation.org>,
 	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+	Jiri Kosina <jikos@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>
-Cc: oe-kbuild-all@lists.linux.dev, linux-kselftest@vger.kernel.org,
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-	Marcos Paulo de Souza <mpdesouza@suse.com>
-Subject: Re: [PATCH 2/3] selftests: lib.mk: Simplify TEST_GEN_MODS_DIR
- handling
-Message-ID: <202402191502.dALlSRz0-lkp@intel.com>
-References: <20240215-lp-selftests-fixes-v1-2-89f4a6f5cddc@suse.com>
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	oe-kbuild-all@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	live-patching@vger.kernel.org
+Subject: Re: [PATCH 1/3] selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
+Date: Mon, 19 Feb 2024 09:15:15 -0300
+Message-ID: <20240219121522.23480-1-mpdesouza@suse.com>
+X-Mailer: git-send-email 2.42.1
+In-Reply-To: <202402191417.XULH88Ct-lkp@intel.com>
+References: 
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240215-lp-selftests-fixes-v1-2-89f4a6f5cddc@suse.com>
+Content-Transfer-Encoding: 8bit
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=RC5TooIH
+X-Spamd-Result: default: False [4.69 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:98:from];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 R_MISSING_CHARSET(2.50)[];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 BROKEN_CONTENT_TYPE(1.50)[];
+	 DWL_DNSWL_BLOCKED(0.00)[suse.com:dkim];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 DKIM_TRACE(0.00)[suse.com:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_TWELVE(0.00)[12];
+	 MID_CONTAINS_FROM(1.00)[];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim,intel.com:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 RCVD_TLS_ALL(0.00)[];
+	 BAYES_HAM(-0.00)[10.18%]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Score: 4.69
+X-Rspamd-Queue-Id: 1D0C8210F0
+X-Spam-Level: ****
+X-Spam-Flag: NO
+X-Spamd-Bar: ++++
 
-Hi Marcos,
+On Mon, 19 Feb 2024 14:35:16 +0800 kernel test robot <lkp@intel.com> wrote:
 
-kernel test robot noticed the following build warnings:
+> Hi Marcos,
+> 
+> kernel test robot noticed the following build errors:
+> 
+> [auto build test ERROR on 345e8abe4c355bc24bab3f4a5634122e55be8665]
+> 
+> url:    https://github.com/intel-lab-lkp/linux/commits/Marcos-Paulo-de-Souza/selftests-lib-mk-Do-not-process-TEST_GEN_MODS_DIR/20240216-021601
+> base:   345e8abe4c355bc24bab3f4a5634122e55be8665
+> patch link:    https://lore.kernel.org/r/20240215-lp-selftests-fixes-v1-1-89f4a6f5cddc%40suse.com
+> patch subject: [PATCH 1/3] selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
+> compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240219/202402191417.XULH88Ct-lkp@intel.com/reproduce)
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Closes: https://lore.kernel.org/oe-kbuild-all/202402191417.XULH88Ct-lkp@intel.com/
+> 
+> All errors (new ones prefixed by >>):
+> 
+> >> make[3]: *** /lib/modules/5.9.0-2-amd64/build: No such file or directory.  Stop.
 
-[auto build test WARNING on 345e8abe4c355bc24bab3f4a5634122e55be8665]
+We should ask the kernel test robot machine owners to install kernel-devel
+package in order to have this fixed.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Marcos-Paulo-de-Souza/selftests-lib-mk-Do-not-process-TEST_GEN_MODS_DIR/20240216-021601
-base:   345e8abe4c355bc24bab3f4a5634122e55be8665
-patch link:    https://lore.kernel.org/r/20240215-lp-selftests-fixes-v1-2-89f4a6f5cddc%40suse.com
-patch subject: [PATCH 2/3] selftests: lib.mk: Simplify TEST_GEN_MODS_DIR handling
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240219/202402191502.dALlSRz0-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202402191502.dALlSRz0-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> Makefile:11: warning: overriding recipe for target 'all'
->> ../lib.mk:62: warning: ignoring old recipe for target 'all'
-   make[1]: *** [../lib.mk:62: all] Error 2
-   Makefile:65: warning: overriding recipe for target 'emit_tests'
-   ../lib.mk:120: warning: ignoring old recipe for target 'emit_tests'
-   make[1]: *** No targets.  Stop.
-   make[1]: *** No targets.  Stop.
-   make[1]: *** No targets.  Stop.
-
-
-vim +/all +11 Makefile
-
-^1da177e4c3f41 Linus Torvalds 2005-04-16   7  
-^1da177e4c3f41 Linus Torvalds 2005-04-16   8  # *DOCUMENTATION*
-^1da177e4c3f41 Linus Torvalds 2005-04-16   9  # To see a list of typical targets execute "make help"
-^1da177e4c3f41 Linus Torvalds 2005-04-16  10  # More info can be located in ./README
-^1da177e4c3f41 Linus Torvalds 2005-04-16 @11  # Comments in this file are targeted only to the developer, do not
-^1da177e4c3f41 Linus Torvalds 2005-04-16  12  # expect to learn how to build the kernel reading this file.
-^1da177e4c3f41 Linus Torvalds 2005-04-16  13  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
 
