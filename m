@@ -1,89 +1,89 @@
-Return-Path: <live-patching+bounces-165-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-166-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3AEED85A52D
-	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 14:54:08 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 92A1C85A59C
+	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 15:16:21 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id E51781F2366A
-	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 13:54:07 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id CCF891F2255E
+	for <lists+live-patching@lfdr.de>; Mon, 19 Feb 2024 14:16:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A99EA36AE5;
-	Mon, 19 Feb 2024 13:53:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BDBF374EA;
+	Mon, 19 Feb 2024 14:16:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="YXVvc6ki";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="KbJioyej"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="omZdShmf";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="omZdShmf"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B20E4364C6;
-	Mon, 19 Feb 2024 13:53:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5054437155;
+	Mon, 19 Feb 2024 14:16:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708350818; cv=none; b=F0VlmY7xVTMliSmc4wRJRedY2GFr3SU8JjvhLjGxe3FTOgNq+nuUOv+3B3o5/v65U3bsC7KJvqMUvp/ddKECSEPanAhKY6gEibGq/XPxEBoiUNpNHUlTNZoJ49mh5E9orpshlz8lF7KhHMpjXY8Hr79XmtheL4hAFMkrG2tJPOE=
+	t=1708352174; cv=none; b=HoFolU7A4Q7OZsAHeKFJmDng2GawqVbVkC2RW7ctTSR6XNgLyFUxCrPMijHKb1XX9W32GzN5sIg0WPjdQNBBtV3Qhhe092lFX+NT3EH9unlBCvv3F0mz9x9aDB1A3Ht2p1AMemkt4hHobXQ2ctaDQ3wDpNghbOi1OPfPAVL/xFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708350818; c=relaxed/simple;
-	bh=mjCeAIQZv6m3D3psvqDPNKm1MymqtEETfxNpQ8BvHoM=;
+	s=arc-20240116; t=1708352174; c=relaxed/simple;
+	bh=9/YVrENp5xo6smDoABPBOIy/2FWLNBFj5gykPLh6BAo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Z7AydNt/Tk/TgbBbUy1VfZrQg9q/03yEPRn/YjaaF7VbdIzYNz8E/bu+i5kgVS5YMh4iLrc3LdDXDXHgZtpNIMwarvku6nL9fwBwcQZ22IwAPIyyO/bp2DvUcnGIIhXJuuh8acmEqRN55nfoUrgOmeMolqxF7Gwy5aEntjtRMg8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=YXVvc6ki; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=KbJioyej; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version; b=K9PmpVohfxel3sZZJOoj3FbHDG3cLatq7GvLplTCbTfH6FPI7aNnE0e1bv5jx117PbuLbRu5JHjZUayEfQRnhHfGaMVJIfT2cMy/LEC/K96X7HgNs0QF46XHTyrWemgqRuX5+h9oNWcvWO3kQujketaDZNmYfVP+eNBY2othwWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=omZdShmf; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=omZdShmf; arc=none smtp.client-ip=195.135.223.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [10.150.64.98])
+Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:98])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id E53BE21747;
-	Mon, 19 Feb 2024 13:53:34 +0000 (UTC)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 3A66B1F800;
+	Mon, 19 Feb 2024 14:16:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708350815; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1708352170; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=iWgx8ZUrqNvRYMebTBHKWkfDEjmiK2tptdVH4AjyYtY=;
-	b=YXVvc6ki+BbBR0BE/vR1JOoFmujkPZDgv7Jk9X2GPIpfKcVZ5vrWKBkB0gDpOe+S1UMzEp
-	b17aNUQS6vTQJMI1mYRYLXxuRWLRxbVgIqocQj5v6ylGt1tcZZ4jj12X333DaSAd5NIorM
-	rzIS7CaoUW+ONHtuHCtA2kSkMRl0Ok4=
+	bh=RGi2qxr4MOWI0h/oxoHKd3Sk73dK3PGq7ebzjeQ1VJk=;
+	b=omZdShmfA+3Rc+7JR/eARuSL3Qn6Se6zyJIvOgveHB8j+Dt5Qbgw+MaYSAROjzCe9Zekwy
+	5jxK6ORrFOPk6CihITapc4gUKHY2re4OijPGDnqb3zghEJqbjvf8qfXrGKn78qD9SB5U26
+	WzXs0UQeNK0Qtbbg5/xAP05Q476XqLI=
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708350814; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1708352170; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=iWgx8ZUrqNvRYMebTBHKWkfDEjmiK2tptdVH4AjyYtY=;
-	b=KbJioyej9rk6fekZDPu2bjoJqFGs3fxeyhyM8L8IGb+vGbsMlvHLEDEiydaRp04KEdwjcq
-	HAzCVc/npxIV4qksMQy4OoBdTmQlQq6Fsm7Rf8d/7fXx1TiMjd+91t5mGO5glDBXcu/Yfd
-	HPf5zq5SEtZuwjusVCJ+SyBzRTdbE8A=
+	bh=RGi2qxr4MOWI0h/oxoHKd3Sk73dK3PGq7ebzjeQ1VJk=;
+	b=omZdShmfA+3Rc+7JR/eARuSL3Qn6Se6zyJIvOgveHB8j+Dt5Qbgw+MaYSAROjzCe9Zekwy
+	5jxK6ORrFOPk6CihITapc4gUKHY2re4OijPGDnqb3zghEJqbjvf8qfXrGKn78qD9SB5U26
+	WzXs0UQeNK0Qtbbg5/xAP05Q476XqLI=
 Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id 66CC513585;
-	Mon, 19 Feb 2024 13:53:34 +0000 (UTC)
+	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id 7DAA613585;
+	Mon, 19 Feb 2024 14:16:09 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([10.150.64.162])
 	by imap2.dmz-prg2.suse.org with ESMTPSA
-	id 3ETgCl5d02XgCwAAn2gu4w
-	(envelope-from <mpdesouza@suse.com>); Mon, 19 Feb 2024 13:53:34 +0000
+	id 1hEUEali02X9EAAAn2gu4w
+	(envelope-from <mpdesouza@suse.com>); Mon, 19 Feb 2024 14:16:09 +0000
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: kernel test robot <lkp@intel.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	oe-kbuild-all@lists.linux.dev,
+To: Shresth Prasad <shresthprasad7@gmail.com>
+Cc: jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	shuah@kernel.org,
+	live-patching@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	live-patching@vger.kernel.org
-Subject: Re: [PATCH 1/3] selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
-Date: Mon, 19 Feb 2024 10:53:22 -0300
-Message-ID: <20240219135325.2280-1-mpdesouza@suse.com>
+	linux-kernel-mentees@lists.linuxfoundation.org,
+	skhan@linuxfoundation.org
+Subject: Re: [PATCH]     Fix implicit cast warning in test_klp_state.c
+Date: Mon, 19 Feb 2024 11:16:03 -0300
+Message-ID: <20240219141606.6711-1-mpdesouza@suse.com>
 X-Mailer: git-send-email 2.42.1
-In-Reply-To: <20240219121522.23480-1-mpdesouza@suse.com>
+In-Reply-To: <20240216225126.454999-1-shresthprasad7@gmail.com>
 References: 
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -92,66 +92,106 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Authentication-Results: smtp-out1.suse.de;
-	none
-X-Spamd-Result: default: False [1.90 / 50.00];
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=omZdShmf
+X-Spamd-Result: default: False [4.66 / 50.00];
 	 ARC_NA(0.00)[];
 	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:98:from];
 	 FROM_HAS_DN(0.00)[];
 	 TO_DN_SOME(0.00)[];
+	 FREEMAIL_ENVRCPT(0.00)[gmail.com];
 	 R_MISSING_CHARSET(2.50)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
 	 MIME_GOOD(-0.10)[text/plain];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
 	 BROKEN_CONTENT_TYPE(1.50)[];
 	 RCVD_COUNT_THREE(0.00)[3];
 	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 DKIM_TRACE(0.00)[suse.com:+];
+	 MX_GOOD(-0.01)[];
 	 RCPT_COUNT_TWELVE(0.00)[12];
 	 MID_CONTAINS_FROM(1.00)[];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim];
+	 FREEMAIL_TO(0.00)[gmail.com];
 	 FUZZY_BLOCKED(0.00)[rspamd.com];
 	 FROM_EQ_ENVFROM(0.00)[];
 	 MIME_TRACE(0.00)[0:+];
 	 RCVD_TLS_ALL(0.00)[];
-	 BAYES_HAM(-3.00)[100.00%]
-X-Spam-Level: *
-X-Spam-Score: 1.90
+	 BAYES_HAM(-0.03)[56.20%]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Score: 4.66
+X-Rspamd-Queue-Id: 3A66B1F800
+X-Spam-Level: ****
 X-Spam-Flag: NO
+X-Spamd-Bar: ++++
 
-On Mon, 19 Feb 2024 09:15:15 -0300 Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
+On Sat, 17 Feb 2024 04:21:26 +0530 Shresth Prasad <shresthprasad7@gmail.com> wrote:
 
-> On Mon, 19 Feb 2024 14:35:16 +0800 kernel test robot <lkp@intel.com> wrote:
+>     The function `klp_get_state` returns an `int` value, but the variable
+>     `loglevel_state` is of type `struct klp_state *` and thus does an
+>     implicit cast. Explicitly casting these values fixes:
 > 
-> > Hi Marcos,
-> > 
-> > kernel test robot noticed the following build errors:
-> > 
-> > [auto build test ERROR on 345e8abe4c355bc24bab3f4a5634122e55be8665]
-> > 
-> > url:    https://github.com/intel-lab-lkp/linux/commits/Marcos-Paulo-de-Souza/selftests-lib-mk-Do-not-process-TEST_GEN_MODS_DIR/20240216-021601
-> > base:   345e8abe4c355bc24bab3f4a5634122e55be8665
-> > patch link:    https://lore.kernel.org/r/20240215-lp-selftests-fixes-v1-1-89f4a6f5cddc%40suse.com
-> > patch subject: [PATCH 1/3] selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
-> > compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-> > reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240219/202402191417.XULH88Ct-lkp@intel.com/reproduce)
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <lkp@intel.com>
-> > | Closes: https://lore.kernel.org/oe-kbuild-all/202402191417.XULH88Ct-lkp@intel.com/
-> > 
-> > All errors (new ones prefixed by >>):
-> > 
-> > >> make[3]: *** /lib/modules/5.9.0-2-amd64/build: No such file or directory.  Stop.
+>             - warning: assignment to \u2018struct klp_state *\u2019 from \u2018int\u2019
+> 	    makes pointer from integer without a cast [-Wint-conversion]
 > 
-> We should ask the kernel test robot machine owners to install kernel-devel
-> package in order to have this fixed.
+>     on lines 38, 55, 68 and 80 of test_klp_state.c
 
-Or maybe ask them to change the reproducer to specify KDIR to the git tree,
-instead of /lib/modules/?
+I was unable to find where you saw the klp_get_state returning int. I tried
+searching at the current master of live-patching repo[1], on linux-next. Can
+you point where do you saw it? For me, klp_get_state return a pointer to klp_state.
+
+Thanks,
+  Marcos
+
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git/tree/kernel/livepatch/state.c
 
 > 
-> > 
-> > -- 
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
+> Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
+> ---
+>  .../selftests/livepatch/test_modules/test_klp_state.c     | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_state.c b/tools/testing/selftests/livepatch/test_modules/test_klp_state.c
+> index 57a4253acb01..ae6b1ca15fc0 100644
+> --- a/tools/testing/selftests/livepatch/test_modules/test_klp_state.c
+> +++ b/tools/testing/selftests/livepatch/test_modules/test_klp_state.c
+> @@ -35,7 +35,7 @@ static int allocate_loglevel_state(void)
+>  {
+>  	struct klp_state *loglevel_state;
+>  
+> -	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+> +	loglevel_state = (struct klp_state *)klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+>  	if (!loglevel_state)
+>  		return -EINVAL;
+>  
+> @@ -52,7 +52,7 @@ static void fix_console_loglevel(void)
+>  {
+>  	struct klp_state *loglevel_state;
+>  
+> -	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+> +	loglevel_state = (struct klp_state *)klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+>  	if (!loglevel_state)
+>  		return;
+>  
+> @@ -65,7 +65,7 @@ static void restore_console_loglevel(void)
+>  {
+>  	struct klp_state *loglevel_state;
+>  
+> -	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+> +	loglevel_state = (struct klp_state *)klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+>  	if (!loglevel_state)
+>  		return;
+>  
+> @@ -77,7 +77,7 @@ static void free_loglevel_state(void)
+>  {
+>  	struct klp_state *loglevel_state;
+>  
+> -	loglevel_state = klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+> +	loglevel_state = (struct klp_state *)klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+>  	if (!loglevel_state)
+>  		return;
+>  
+> -- 
+> 2.43.1
 
