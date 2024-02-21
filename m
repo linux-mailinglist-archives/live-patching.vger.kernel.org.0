@@ -1,102 +1,134 @@
-Return-Path: <live-patching+bounces-170-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-171-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A12F585BD08
-	for <lists+live-patching@lfdr.de>; Tue, 20 Feb 2024 14:20:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0880285CCA5
+	for <lists+live-patching@lfdr.de>; Wed, 21 Feb 2024 01:20:05 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 3F476B20E9C
-	for <lists+live-patching@lfdr.de>; Tue, 20 Feb 2024 13:20:24 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 11FB4B21555
+	for <lists+live-patching@lfdr.de>; Wed, 21 Feb 2024 00:20:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC63A6A035;
-	Tue, 20 Feb 2024 13:20:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66044382;
+	Wed, 21 Feb 2024 00:19:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a9yd/bEW"
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ZGmgz4In"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CC5069E0E;
-	Tue, 20 Feb 2024 13:20:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26CEA40
+	for <live-patching@vger.kernel.org>; Wed, 21 Feb 2024 00:19:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708435218; cv=none; b=CJM58faPrVqamDLLfXrmtakZBzSszjH2lmTA0J6rw9yjrZeptd41jxTcXhaBI+5dhQQ8sFkzhE78oTC/H4iK03Vj4dCrHLDmCy5jMUFjtLoX79BHZOKhiML9kxOmYVeSPe/qbddKXcwy5uss16Nb1GdmqjySA6TEt1EoG4myWXk=
+	t=1708474798; cv=none; b=B2Hv4vBl/9aY1hDECPe5VrjFmIJlGGBYY9eNT19JqO17gA0QyGP60kTLcpsvBDZkqI+tdjDHbP/YIiPpcRVZfq+rZRyGluCyc9J8KhCEhRE7WYJ9dEVNWK2vH3gTa8SqotsKLZJ05qJnsk2ncAhM0CsGnOKgQUIUtCFgWl/IuHQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708435218; c=relaxed/simple;
-	bh=Fv9dyTtBP1/Lsb3Vbk1dXhdsNHDyoT8aBphxxfwrw5g=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:Subject:MIME-Version:
-	 Content-Type; b=VQOOylyAqqPk4715NmhpWS3fCX0lNDKFECuG6J61dSLC4OQj3/134801N39Kxj5glI4Z4HXpKUHQDDrSLwPvbEDyKOwBRf8G1v0OB0zetxqqORiIIGFfQ6zJeOqyoxlgp6ybnpAw1hbs4qU/xeI3J13UVA2yNbE34V5DBDwgDC4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a9yd/bEW; arc=none smtp.client-ip=209.85.210.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-6da4a923b1bso4547509b3a.2;
-        Tue, 20 Feb 2024 05:20:17 -0800 (PST)
+	s=arc-20240116; t=1708474798; c=relaxed/simple;
+	bh=K7QkEMeFgCEOBDdteVUHDL15AVxzWVVyz5SmmokOZXs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eOO9yoD0hFu1xXBzUZCydUNAB5NxUHNJjXhKx2cGt+PSnJQPeZcAlp/mA67QFXksycDco0dA5f9qiOrRQv/PKwZ57xsUfFMtFbXMICIOzO5hhuQwoUPRT7SasbsrO3/QSC0lYNu0kYHjhanD2zjyWDSj8u1wexEIhOats6GLkR4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ZGmgz4In; arc=none smtp.client-ip=209.85.166.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+Received: by mail-io1-f48.google.com with SMTP id ca18e2360f4ac-7bff8f21b74so54263239f.0
+        for <live-patching@vger.kernel.org>; Tue, 20 Feb 2024 16:19:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708435216; x=1709040016; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:subject:in-reply-to
-         :message-id:cc:to:from:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Fv9dyTtBP1/Lsb3Vbk1dXhdsNHDyoT8aBphxxfwrw5g=;
-        b=a9yd/bEWSl0IuucSu6giuHN/9vZGAxVOUV2GcETb4H48YrJ8VmufF+kxq6JO8VR8ZA
-         SnYdJpT+CKTjoaOm1DAyBY6rO+vQicV/33XbZo07qOjZhegZ7IOqcGSDh2tZANOU3s2p
-         TeNfeR/PtaP6edtN1sCtxxt8bC4WBSjHJ3CGYGvWXkPh6LfAQrQEuobDorvKJZCdpjOj
-         jS9AQ5RjIn8tXZP5jrQQZ9lM4jS9/tMG/SB3/t66JV9sjLtbsk61TFvRcB2vnbIGvY9x
-         8jYR05FWwpKTc0qkb3NuMNTclGDjnsoWgssjeKnp4w+2dw6X0ir4Y2T+0/gALXlTMNSy
-         Ne6Q==
+        d=linuxfoundation.org; s=google; t=1708474796; x=1709079596; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1SSchokFBeolQFf43F1Ki91lkNWxa302wO4DNZKIww8=;
+        b=ZGmgz4InfEOdPa4mtx0gqh8QkxsZbhOmJeVjxYaB+LKKYiQHYVu2v8wK0eki469hUp
+         sdh8TGch/eG9NHkPfsm8VVXCBDe7F27k46EpRzNErcdiNmkR/HSXhVmZVZHeAzv+MmFv
+         WjtKjbvDCcsUSg2hRfQTuRfDlrSbcexNclV88=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708435216; x=1709040016;
-        h=content-transfer-encoding:mime-version:subject:in-reply-to
-         :message-id:cc:to:from:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Fv9dyTtBP1/Lsb3Vbk1dXhdsNHDyoT8aBphxxfwrw5g=;
-        b=bnJhuNLUTaOk454y9dl/dFt2Vm6ap4+PMTE/icYYAhdt10VQ2IYUDd8upwvMN1CTNQ
-         uq0+PsapWtUuyKyUST/8kFEDuWDVvjaD9IuQwUO/iX4ZrtwLCvuODNSLNGhuKop5QoHI
-         46dqH7ErKPq4BUXyg+rehaOsqOVowBmcXmFKjpW7fzwaLADoUXRc+kqcvUNXu52pinyH
-         gQdKNmKnYziGLGRNcfjCh5PCYIBjHgXpv0MonY39RMnKVC70Kg2eJg2dtKJaY86omLpB
-         GUb9fIvktUMOJGGMUARKVL8TW6meTKp6a4xGllpZPwR6scc8Ts/WrViWcYCea0FbtAuA
-         3E3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWDCUtCuCwBnt9dBEHvvr5Nspbo1ry7vo09qE8DyictzDDemdI4y3DO/nYuWLKCDuOZsYBSVEDVr3PaGxc6pXeU18b6CIO9wfMau2s6abdgyh4OLcxqMVkden3LUiWrTfY6L7ignsY+c3V9bd+KBMLdxJB3hmPESZlyIw366APQzZtTOs/VJ6b4WFS34w==
-X-Gm-Message-State: AOJu0YznzKyordTamNNfxBdb8MGNHug7pJgzjeGzBPR+S5AXgYQ5q+aQ
-	4LUNdiFlzkW4UGBxFQncs+9QqsOHohFe+SQeWWe/uUrlVlZ4UvoU
-X-Google-Smtp-Source: AGHT+IEttk5iim0fojrJRidnAlSwPBQzCi5OkRgaS40jpL4zi8P4DwPAw/dTd8vJAIb7P1GvllVmgQ==
-X-Received: by 2002:a05:6a00:1b42:b0:6e4:5a01:1b4 with SMTP id o2-20020a056a001b4200b006e45a0101b4mr5402527pfv.8.1708435216508;
-        Tue, 20 Feb 2024 05:20:16 -0800 (PST)
-Received: from [127.0.0.1] ([106.221.238.187])
-        by smtp.gmail.com with ESMTPSA id n12-20020a63ee4c000000b005dc4b562f6csm6515293pgk.3.2024.02.20.05.20.11
+        d=1e100.net; s=20230601; t=1708474796; x=1709079596;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1SSchokFBeolQFf43F1Ki91lkNWxa302wO4DNZKIww8=;
+        b=GgjZOXZUm7TsrJ98yd5Bte+7dSt0J9tQ+Wvn6G6N3EnroYU+82A16bFW9yPRftAYv/
+         UBW0/Xn+JUrlXMxOY91TLWWsLDjrS09jmgijVl8YhVTQ91iYyI0/PRtEn9zLjDJh6ugm
+         rtlZsnEhO7h6tC7ZEkrzhV3pNQJEtsPion/staLr6ybz8MaUwSO/b9BGXhXOoDYw1nVY
+         Y2oLNE6NPAFp56/9jtUda7XlCqPJ9S77cuT6F4jC8RVKjPdmArgZz6jBMUR6X3uDr6uw
+         qfj8wvS6S2w5LZPohQnS3etemBo3mJNZgClFvUL3BVlHZY88Ia4PIo9+uyFxiidRS6XS
+         2q1A==
+X-Forwarded-Encrypted: i=1; AJvYcCWsW8h0FoKfYtxw2GyompEWgoaaypnXF601ObE2omy9zVFnK4mY6cPt/RKd0fhX0oxRlcELifekEXyVS5Xg/O0w2Njo/DcFWneKkuHufA==
+X-Gm-Message-State: AOJu0YwAGKp0EHBREMxLvCPB0giSUO79kJThNUbZSqwMjwxB1c29O4qB
+	31kBAXJcq4ZUecJyR5GA+0ZL5JRiL0wI+nK/PXBaQj33ooDJlLia0aM/hPUzW5k=
+X-Google-Smtp-Source: AGHT+IHjKllnuZm8GTJktzvD7k1+Fmvk1+TpjJvDUR7WXcS/dDJj3/rdo98ETt9VO7T5uUrGvECeJg==
+X-Received: by 2002:a05:6602:f15:b0:7c7:28f7:cc81 with SMTP id hl21-20020a0566020f1500b007c728f7cc81mr11052980iob.1.1708474795830;
+        Tue, 20 Feb 2024 16:19:55 -0800 (PST)
+Received: from [192.168.1.128] ([38.175.170.29])
+        by smtp.gmail.com with ESMTPSA id d5-20020a056602280500b007c73e9033fcsm1884269ioe.2.2024.02.20.16.19.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Feb 2024 05:20:15 -0800 (PST)
-Date: Tue, 20 Feb 2024 18:50:09 +0530 (GMT+05:30)
-From: Shresth Prasad <shresthprasad7@gmail.com>
-To: mpdesouza@suse.com
-Cc: jikos@kernel.org, joe.lawrence@redhat.com, jpoimboe@kernel.org,
-	linux-kernel-mentees@lists.linuxfoundation.org,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	live-patching@vger.kernel.org, mbenes@suse.cz, pmladek@suse.com,
-	shresthprasad7@gmail.com, shuah@kernel.org,
-	skhan@linuxfoundation.org, zhangwarden@gmail.com
-Message-ID: <6fcd7da4-f7c1-4f2c-9214-70ec77443572@gmail.com>
-In-Reply-To: <20240220120024.28694-1-mpdesouza@suse.com>
-Subject: Re: [PATCH]     Fix implicit cast warning in test_klp_state.c
+        Tue, 20 Feb 2024 16:19:55 -0800 (PST)
+Message-ID: <c3ee4083-fca7-43cc-b955-3b7e4faed2b0@linuxfoundation.org>
+Date: Tue, 20 Feb 2024 17:19:54 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
+Content-Language: en-US
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: kernel test robot <lkp@intel.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>,
+ oe-kbuild-all@lists.linux.dev, linux-kselftest@vger.kernel.org,
+ linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+ Shuah Khan <skhan@linuxfoundation.org>
+References: <20240219135325.2280-1-mpdesouza@suse.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <20240219135325.2280-1-mpdesouza@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Correlation-ID: <6fcd7da4-f7c1-4f2c-9214-70ec77443572@gmail.com>
 
->What compiler version and architecture? Are you >compiling using flags like W=1?
->I would advise you to always add more information >about how the problem
->manifests, and what you are executing. This can >help to nail down the issue quicker.
+On 2/19/24 06:53, Marcos Paulo de Souza wrote:
+> On Mon, 19 Feb 2024 09:15:15 -0300 Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
+> 
+>> On Mon, 19 Feb 2024 14:35:16 +0800 kernel test robot <lkp@intel.com> wrote:
+>>
+>>> Hi Marcos,
+>>>
+>>> kernel test robot noticed the following build errors:
+>>>
+>>> [auto build test ERROR on 345e8abe4c355bc24bab3f4a5634122e55be8665]
+>>>
+>>> url:    https://github.com/intel-lab-lkp/linux/commits/Marcos-Paulo-de-Souza/selftests-lib-mk-Do-not-process-TEST_GEN_MODS_DIR/20240216-021601
+>>> base:   345e8abe4c355bc24bab3f4a5634122e55be8665
+>>> patch link:    https://lore.kernel.org/r/20240215-lp-selftests-fixes-v1-1-89f4a6f5cddc%40suse.com
+>>> patch subject: [PATCH 1/3] selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
+>>> compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+>>> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240219/202402191417.XULH88Ct-lkp@intel.com/reproduce)
+>>>
+>>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>>> the same patch/commit), kindly add following tags
+>>> | Reported-by: kernel test robot <lkp@intel.com>
+>>> | Closes: https://lore.kernel.org/oe-kbuild-all/202402191417.XULH88Ct-lkp@intel.com/
+>>>
+>>> All errors (new ones prefixed by >>):
+>>>
+>>>>> make[3]: *** /lib/modules/5.9.0-2-amd64/build: No such file or directory.  Stop.
+>>
+>> We should ask the kernel test robot machine owners to install kernel-devel
+>> package in order to have this fixed.
+> 
+> Or maybe ask them to change the reproducer to specify KDIR to the git tree,
+> instead of /lib/modules/?
+> 
 
-I'll keep that in mind. I'm on an x86_64 system with gcc version 13.2.1 20230801.
+This would be a regression to automated test rings. Do you have any other
+solutions?
 
-I'm using the command `make -j15 -C tools/testing/selftests` with no additional flags.
+We could remove livepatch from default test until these changes are made
+to test ring environments?
 
-Regards,
-Shresth
+thanks,
+-- Shuah
+
 
