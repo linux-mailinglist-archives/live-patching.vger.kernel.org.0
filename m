@@ -1,126 +1,145 @@
-Return-Path: <live-patching+bounces-172-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-174-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8CE6685CE1F
-	for <lists+live-patching@lfdr.de>; Wed, 21 Feb 2024 03:40:20 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 46ED185D517
+	for <lists+live-patching@lfdr.de>; Wed, 21 Feb 2024 11:04:32 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 1CF0BB240C3
-	for <lists+live-patching@lfdr.de>; Wed, 21 Feb 2024 02:40:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 50B051C23DC0
+	for <lists+live-patching@lfdr.de>; Wed, 21 Feb 2024 10:04:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63F2E2837A;
-	Wed, 21 Feb 2024 02:39:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CD7F3D993;
+	Wed, 21 Feb 2024 09:59:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kmGXgnRR"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UVHjyzqL"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D345C38FB2;
-	Wed, 21 Feb 2024 02:39:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAB143D96B;
+	Wed, 21 Feb 2024 09:59:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708483177; cv=none; b=YPEb4xvw9xxJrme5GKqUrjX2Kr2XGKDg2USj3CfzkkwGiJ8XchOGV+bnc1UIUEUMgrIcVAna77Pf3U4kZ7bBMqykl2eDcCXxQiS/rTP+l+qaJoH0XBmwc2FXGsrb0JM8R3pAIS2R771Nli4bDrOIiIC+ttw7XgQT8pe+fcUPW/A=
+	t=1708509589; cv=none; b=lWQa+yW18hWtC/5UHQEftUoB1Uk3yEqXrFG5uCAY7dwhrzcJnSN/ckjjwzcp/5whPCDTCbJkljq80DAjSKOdMvDDiGJRXUNM2AIRGhEdOVB0uw8c/aW0lxZhqN2xoeK9Y+Jw53mscrQ/vWb+CpnRJf74+xEqDyt/GRCeM3fbRoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708483177; c=relaxed/simple;
-	bh=VPbKVByFJjX349MDKQOIWBVjQlbUtiYNqQqrR8+PYLk=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=OSfsxOf6zPGEenpz/cQ4HxFzxBhiPYIg1yOR2VayJRBBLwC/EqmVNAc3tZahJWeOfj5Wb1t65Mgjs8oOSwlU9yCr0P0NSsMWpDgVOMbszPTaM77AiqfVUMM0f9mwcdH3v6MJ0Jy677969xEcGScy9ftOCTCSrKTObmRwkQfoOPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kmGXgnRR; arc=none smtp.client-ip=209.85.166.171
+	s=arc-20240116; t=1708509589; c=relaxed/simple;
+	bh=5v3dtSCXtJMKznIfq4bOSd2Ajb7Xgfbqb6Og5lUaIsE=;
+	h=Date:From:To:Cc:Message-ID:In-Reply-To:Subject:MIME-Version:
+	 Content-Type; b=lr7cwgxVUqP7/+ysSs3zUlX2uq6r5AQgX4BJTufLKBKVj1biWIj19UcgmickCRp6heQ+Pau8LzydYE6hkuCsc9vTSnMSyYsflcKcnKaAVqyLG5frtYy1HqFa8Ju6jJszsyQ/ir7mBXxdQvqWFajnb3LvEY0CZuOiz6sgUayeE7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UVHjyzqL; arc=none smtp.client-ip=209.85.219.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-il1-f171.google.com with SMTP id e9e14a558f8ab-36519980c04so8834455ab.3;
-        Tue, 20 Feb 2024 18:39:35 -0800 (PST)
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dcbc6a6808fso6775895276.2;
+        Wed, 21 Feb 2024 01:59:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708483175; x=1709087975; darn=vger.kernel.org;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VPbKVByFJjX349MDKQOIWBVjQlbUtiYNqQqrR8+PYLk=;
-        b=kmGXgnRRXKEi+/FKxaU4bbQEsYsmwHpuK0jlsjXfQAJGDJz8RFkcfA/0lpZtjAhPcT
-         IS93gKZ+vRwm3o3QioFS87O8f8H9Fac83/UNtt4bBMeM+pHkngY+9iPchM5yAxuEKRIo
-         T+x4Hf5K2oOzj84hc+mUFsups/Ue1PkTktX0qa+r7dk39E2LzIYF4am/fxcc0nvjtTV2
-         CyUaM6a06N5wbUBGRhnp+pxjCB/Lfxpyv9bfvA+pDyQQRTii5nH8eseP2RPUVwLsTRjw
-         moSzAnj+jOYQ+0KPIBAZadnWgF7gnudSTgh1n2jAeGeL1z+rh0fAQNC/XINdLTMxKuS1
-         Ecng==
+        d=gmail.com; s=20230601; t=1708509586; x=1709114386; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:subject:in-reply-to
+         :message-id:cc:to:from:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5v3dtSCXtJMKznIfq4bOSd2Ajb7Xgfbqb6Og5lUaIsE=;
+        b=UVHjyzqL4FfMFP3qCrtJ0vbyQTpYTd4T6aWiJWU9qEolZ3ta9AQlaZ4Kf8nBiuR3A9
+         I0b88Stl7eHiGP7ofPTsbOHe9MXwWd69dkbda3P88wtmQ8eer2pZvVsS8l9rSz7OxvHS
+         wVfzvzXZ+16ulyziWLRIk7r5FLdnhJe1O5UOxflrYrpJ/B15BbvcckExDKd5bE96NhkV
+         V6T8KjxmLEKtbLpK1pgbhoPLZYmdVDSQejv3XDKgnaxucog2P7jr8TRoUMD7CQ3OYdp0
+         FptaXXA2Gof7kVYuk6/9W1FeZUkjaHruRSR5n2x0VpqlCQewXflHWZT9z9f+F0GDx0ZV
+         5rXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708483175; x=1709087975;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VPbKVByFJjX349MDKQOIWBVjQlbUtiYNqQqrR8+PYLk=;
-        b=Jyyky+t1Y6ZyJP3dsjiK5CtsGZO0zE5/fKMLWosWy6NL3urCQUPdRd1FUkDNuMk1X4
-         xVaFhRfJV8IOltqoJyBJs56zluzF6RBHXOOS7Rlv99qiWWHmD8Xstx3vMm+kuDLZhPny
-         toLIgl9vTNGFZg7RNebb3BmeWs46vVY6OH3XsN1hBHuSsczeTSGIfWdx4+xyIN5wXWkg
-         6PtaKKurz0TY5Yfo2u2RZ4NX/rVfTShzyobDTRnjVIne+uwkEbBT7y8ht6yzlmB+98bO
-         V4CLxDdRlEvOzMDArJxZ8i1lucNz/pjy+8VpApCrkTDXDVNi654B5SseeEjJOK72srON
-         sCjA==
-X-Forwarded-Encrypted: i=1; AJvYcCW3YnLoQ6IA9qLBeSklEIR78K6PA+lIH/pXuiN1HNy0OOq9HD9FWBk9CN7Ic702bnQB7EQ8d/vQ0LFDKg2mW6E2jjRgbwK+8xAANZIVOVLqkLTKa+ZTBC6fPMkpBwVfW/R2PELJKINltp5tU7rquaoj9XE2ludEQgAN/eaV+6pHwkS5xMu8AWCER8LfAQ==
-X-Gm-Message-State: AOJu0Yw72HyKKV2l0zOYKbypWW8OcDRmWSlwm9SPo2faXK4geJetgL1P
-	j7uyntxOCU6HJHuPQYPS/h6EgMJRQbTMJ8ph/smBdAUxNs3Sb5IM
-X-Google-Smtp-Source: AGHT+IGuUub5cu04oBsjpRwTFuIrjWyna9xErnVuVXETJA1DYvMTEPcDIDN+QO5gMxTkrhhgIabvrw==
-X-Received: by 2002:a05:6e02:1447:b0:365:2247:a04 with SMTP id p7-20020a056e02144700b0036522470a04mr11843477ilo.9.1708483174810;
-        Tue, 20 Feb 2024 18:39:34 -0800 (PST)
-Received: from smtpclient.apple ([47.254.32.37])
-        by smtp.gmail.com with ESMTPSA id b10-20020a056e020c8a00b00364f32170c8sm3186767ile.1.2024.02.20.18.39.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 20 Feb 2024 18:39:34 -0800 (PST)
-Content-Type: text/plain;
-	charset=us-ascii
+        d=1e100.net; s=20230601; t=1708509586; x=1709114386;
+        h=content-transfer-encoding:mime-version:subject:in-reply-to
+         :message-id:cc:to:from:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=5v3dtSCXtJMKznIfq4bOSd2Ajb7Xgfbqb6Og5lUaIsE=;
+        b=nQ80AofoWewdbdu0KTaF4VzwEKb8ZzjeWUuw08P6NRclwrFW8LDaaFOLkqoix3xh4/
+         EwPhEwauzXL8ddlooe8Yi9fkELKn1rEtJfnEhBNtVEf6ILiERjVD0Ox7LW9aLDACWJh3
+         3SQ3bT/pdj9fsE3E3LcP4WUH8AFNRuWmhLyCl+6WKGBKj9zYlpmn3jp/bZN/44U0qKmx
+         BcsnGgDIUiFPrtKnLAJiRr85vD8l/7I3p8ZW9ueXVXbiRz2dsB4erEtekoE+3RRq+z8h
+         CaXMra67f/80wpx/kWG2KZnyUcBDPp8/cVQ8NGzvw9rOgNakaDu9VaMjdV+B8i8chOWa
+         8mMw==
+X-Forwarded-Encrypted: i=1; AJvYcCVVBOa+ajhdaZiWOYpiwn2ih9P3KsmVj5Z0B1X8/iFp3jhDT7p9lhoAoFxTNQeNndeX4m2bsEkdCJdRns8XTEYe6pM8h66Ivw19eA/n2x4sqGBwFJhgv++y9yhOk6sQpyKUT5/yaeKJ9zJid2QjmSkTbUwGQ6FRV0YL397REoxgxA2mi8pizvhtaDK+7Q==
+X-Gm-Message-State: AOJu0Yz1LcIC/y+AZAemECrqSzbja0xx9R+KNEPwiSjykXghB9u7IWi5
+	hktAEKAaPoOwlci71/z0+reu9/f7pPzAOuPIPzYGSVoGEJ6P3z7a
+X-Google-Smtp-Source: AGHT+IGayboSSYCRSBTfKt/p8uzubL1dQkldpRG0mhTDMp+YvZDPIeXz2+mtkKwMRQEU2KIbrXXU8Q==
+X-Received: by 2002:a25:848d:0:b0:dc6:be64:cfd1 with SMTP id v13-20020a25848d000000b00dc6be64cfd1mr14423533ybk.36.1708509586648;
+        Wed, 21 Feb 2024 01:59:46 -0800 (PST)
+Received: from [127.0.0.1] ([106.221.238.184])
+        by smtp.gmail.com with ESMTPSA id u29-20020a056a00099d00b006e0e3e44f33sm8396473pfg.103.2024.02.21.01.59.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Feb 2024 01:59:46 -0800 (PST)
+Date: Wed, 21 Feb 2024 15:29:39 +0530 (GMT+05:30)
+From: Shresth Prasad <shresthprasad7@gmail.com>
+To: zhangwarden@gmail.com
+Cc: jikos@kernel.org, joe.lawrence@redhat.com, jpoimboe@kernel.org,
+	linux-kernel-mentees@lists.linuxfoundation.org,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	live-patching@vger.kernel.org, mbenes@suse.cz, mpdesouza@suse.com,
+	pmladek@suse.com, shresthprasad7@gmail.com, shuah@kernel.org,
+	skhan@linuxfoundation.org
+Message-ID: <ff1078b2-447d-4ae7-8287-d0affd23588d@gmail.com>
+In-Reply-To: <B052E4A4-3652-452F-B4F9-F36860143CC3@gmail.com>
+Subject: Re: [PATCH]     Fix implicit cast warning in test_klp_state.c
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.500.231\))
-Subject: Re: [PATCH]     Fix implicit cast warning in test_klp_state.c
-From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <6fcd7da4-f7c1-4f2c-9214-70ec77443572@gmail.com>
-Date: Wed, 21 Feb 2024 10:38:56 +0800
-Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
- jikos@kernel.org,
- joe.lawrence@redhat.com,
- jpoimboe@kernel.org,
- linux-kernel-mentees@lists.linuxfoundation.org,
- linux-kernel@vger.kernel.org,
- linux-kselftest@vger.kernel.org,
- live-patching@vger.kernel.org,
- mbenes@suse.cz,
- pmladek@suse.com,
- shuah@kernel.org,
- skhan@linuxfoundation.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <B052E4A4-3652-452F-B4F9-F36860143CC3@gmail.com>
-References: <6fcd7da4-f7c1-4f2c-9214-70ec77443572@gmail.com>
-To: Shresth Prasad <shresthprasad7@gmail.com>
-X-Mailer: Apple Mail (2.3731.500.231)
+X-Correlation-ID: <ff1078b2-447d-4ae7-8287-d0affd23588d@gmail.com>
 
-Would you please pasting the original warning of your complier?=20
-And did you check your source code if your source code is the the latest =
-version?
+I checked the source code and yes I am on the latest Linux next repo.
+
+Here's the warning:
+/home/shresthp/dev/linux_work/linux_next/tools/testing/selftests/livepatch/=
+test_modules/test_klp_state.c:38:24: warning: assignment to =E2=80=98struct=
+ klp_state *=E2=80=99 from =E2=80=98int=E2=80=99 makes pointer from integer=
+ without a cast [-Wint-conversion]
+=C2=A0=C2=A0 38 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 loglevel_=
+state =3D klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 ^
+/home/shresthp/dev/linux_work/linux_next/tools/testing/selftests/livepatch/=
+test_modules/test_klp_state.c: In function =E2=80=98fix_console_loglevel=E2=
+=80=99:
+/home/shresthp/dev/linux_work/linux_next/tools/testing/selftests/livepatch/=
+test_modules/test_klp_state.c:55:24: warning: assignment to =E2=80=98struct=
+ klp_state *=E2=80=99 from =E2=80=98int=E2=80=99 makes pointer from integer=
+ without a cast [-Wint-conversion]
+=C2=A0=C2=A0 55 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 loglevel_=
+state =3D klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 ^
+/home/shresthp/dev/linux_work/linux_next/tools/testing/selftests/livepatch/=
+test_modules/test_klp_state.c: In function =E2=80=98restore_console_logleve=
+l=E2=80=99:
+/home/shresthp/dev/linux_work/linux_next/tools/testing/selftests/livepatch/=
+test_modules/test_klp_state.c:68:24: warning: assignment to =E2=80=98struct=
+ klp_state *=E2=80=99 from =E2=80=98int=E2=80=99 makes pointer from integer=
+ without a cast [-Wint-conversion]
+=C2=A0=C2=A0 68 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 loglevel_=
+state =3D klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 ^
+/home/shresthp/dev/linux_work/linux_next/tools/testing/selftests/livepatch/=
+test_modules/test_klp_state.c: In function =E2=80=98free_loglevel_state=E2=
+=80=99:
+/home/shresthp/dev/linux_work/linux_next/tools/testing/selftests/livepatch/=
+test_modules/test_klp_state.c:80:24: warning: assignment to =E2=80=98struct=
+ klp_state *=E2=80=99 from =E2=80=98int=E2=80=99 makes pointer from integer=
+ without a cast [-Wint-conversion]
+=C2=A0=C2=A0 80 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 loglevel_=
+state =3D klp_get_state(&patch, CONSOLE_LOGLEVEL_STATE);
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 ^
+
+Thank you for your help so far.
 
 Regards,
-Warden
-
-> On Feb 20, 2024, at 21:20, Shresth Prasad <shresthprasad7@gmail.com> =
-wrote:
->=20
->> What compiler version and architecture? Are you >compiling using =
-flags like W=3D1?
->> I would advise you to always add more information >about how the =
-problem
->> manifests, and what you are executing. This can >help to nail down =
-the issue quicker.
->=20
-> I'll keep that in mind. I'm on an x86_64 system with gcc version =
-13.2.1 20230801.
->=20
-> I'm using the command `make -j15 -C tools/testing/selftests` with no =
-additional flags.
->=20
-> Regards,
-> Shresth
-
+Shresth
 
