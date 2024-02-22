@@ -1,96 +1,220 @@
-Return-Path: <live-patching+bounces-190-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-191-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id AA2F185F315
-	for <lists+live-patching@lfdr.de>; Thu, 22 Feb 2024 09:35:59 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 98B3C85F42E
+	for <lists+live-patching@lfdr.de>; Thu, 22 Feb 2024 10:22:14 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 4A6E11F2666C
-	for <lists+live-patching@lfdr.de>; Thu, 22 Feb 2024 08:35:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 49CC32856F0
+	for <lists+live-patching@lfdr.de>; Thu, 22 Feb 2024 09:22:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 73A1D24A0D;
-	Thu, 22 Feb 2024 08:35:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Qvpg2Y9/"
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BAEA6376F2;
+	Thu, 22 Feb 2024 09:22:09 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ED1A2375F;
-	Thu, 22 Feb 2024 08:35:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDD8636B04;
+	Thu, 22 Feb 2024 09:22:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708590950; cv=none; b=iGHCb48rVL5YXqqTCxLGlQ7SM51HTEts8uUwzCUaIqAhCzwExLOGaaW1NFYMxBXY3bnjoEPA4wpGBaf74AMt0zwtOC5wO/CANxqghACNcY/g+oCJ7ng6lnW8EtmRga5eEc7kNqw1Dx6vqvPLw3kVse/jYMyUMbJeB/66JhzKShg=
+	t=1708593729; cv=none; b=cXtJxxr9G/WFc9n3VOd9YI5zUOSRYz5N4RARjyqJlQeBdQ4cL6KZHrlf0gFtiQLluxt739KIOwFxlmmqdlKxLx07o+MTK6Xdv2lBOiawFRHgv+3XgoirdkT2zsp6mnZ88ir4twRgBHvctrd9EmB4+FDE6EHuaChxH/z63JEo2Ls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708590950; c=relaxed/simple;
-	bh=xHwbdjmZSqPrdWn6XHlNXr764e/on4qsQLoM4hWOqrE=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:Subject:MIME-Version:
-	 Content-Type; b=uJ5M9ymhevi95eLGAmdt+BEqv+5T2wqjfqUl/SQZ/M5zvuSWaE7f8IGvdXCLm5S55Mr4SLGcbM4jNy5Xo6rsK6KixEmEgzelJVCK0Y9oPHo0nQHFbzEUZEY7JkNM288KgHiV1TyuGwToEuid5gV1cvwRQ6JAIqmfyqjr8EFJra4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Qvpg2Y9/; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1d944e8f367so60603255ad.0;
-        Thu, 22 Feb 2024 00:35:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708590948; x=1709195748; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:subject:in-reply-to
-         :message-id:cc:to:from:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xHwbdjmZSqPrdWn6XHlNXr764e/on4qsQLoM4hWOqrE=;
-        b=Qvpg2Y9/Qt4oyOZKSioOURFPj2E0x2OQadKvbghhL8IFb+GKZiMgGfvHf0PdwqIn/7
-         4prX20dJnow8RGxmch/1mdYAy1frLDoYjyj+TftFVcDSR5zAKfyKdY7UlUrIwIZ+bm1R
-         4rlhLcaloIlTckmFoDJ+ComT1K28cT+cJawkIN7cMr7Jf/iI1HgPHGbFLoDKFOwtOrEC
-         YT5drpWoqTqH7M5x8inD3tMhaJbShpEuBgnv2ehcoa9IrLxS8SHMkiFzqmkqupaNV3wF
-         V/95srtXGlBAwYxUuuFCAkkNzFgKYQtbWbQLscV15YhfTJV7UDQ32V6JvzAdeX1AFTyC
-         2Xqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708590948; x=1709195748;
-        h=content-transfer-encoding:mime-version:subject:in-reply-to
-         :message-id:cc:to:from:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=xHwbdjmZSqPrdWn6XHlNXr764e/on4qsQLoM4hWOqrE=;
-        b=dsY8HzJz5ixDQlOzQwrJ3BTSN65Sdm7AwftUed6QeQmfsy/T3pKVCukn9VszSc40WA
-         ND+zlQQVWRELxcz4h4oF8H8ewmLeGqQsROfTYUeAKivsoBirg9TOu17qdyWMSl56yaCU
-         Bbdj9tgKpLp6LxFTfxOxqfiwRYtjV1p0FFr1B4E7SjP4W3y9ghBaZ6exuTRspyyrXa/3
-         h1FQkakcSJbFTrw4A8BfdRGHGEs0UDWFWtSleHYvwl86y7JhkqXPzAB8VvTpgrfs4VS+
-         5dBYFDXJWuLnX+nXAgX698K6DMyDVb3H8pJPbbdtaLMh/rwigzE5JeibI3dBedUD5YjW
-         zTAA==
-X-Forwarded-Encrypted: i=1; AJvYcCUYrZiM7LkVZgWF8T/f5uiOmuTsEqtLiYECf1Ym1aqXYyl4sEPrBFDwtsRQBTKx/Wn3joW1ZwJpQt9z5uq1H0XxxfTiUPImYe3J8y9hqyC2LDMIfm1dpqMznHezTROFYWdUkbHZR2hRHNPOXq27x4JLICLEbN12rRoshjhcjFHjFUAIdSpEgCJNG6YWUQ==
-X-Gm-Message-State: AOJu0YxidKGcgAyPauFRSItWPSlT2g7tkWeGG20iHJ+Puyh2PVhLvnNH
-	kK7gQ77FRMBrdOvIbFEGNZ+5E3NNzCT1jMIOV2SrZyGkV7/unIIb
-X-Google-Smtp-Source: AGHT+IHm40srSL4/lTs5Lqg+0oCFJuyeZcIBshsR0LQDg4eLG87gdBMW8WlA9ifb0M6JsjcbO1sPRA==
-X-Received: by 2002:a17:903:124b:b0:1d7:691e:2704 with SMTP id u11-20020a170903124b00b001d7691e2704mr24868491plh.35.1708590948183;
-        Thu, 22 Feb 2024 00:35:48 -0800 (PST)
-Received: from [127.0.0.1] ([106.221.232.11])
-        by smtp.gmail.com with ESMTPSA id jc13-20020a17090325cd00b001db6de983d3sm9421904plb.85.2024.02.22.00.35.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Feb 2024 00:35:47 -0800 (PST)
-Date: Thu, 22 Feb 2024 14:05:41 +0530 (GMT+05:30)
-From: Shresth Prasad <shresthprasad7@gmail.com>
-To: joe.lawrence@redhat.com
-Cc: jikos@kernel.org, jpoimboe@kernel.org,
-	linux-kernel-mentees@lists.linuxfoundation.org,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	live-patching@vger.kernel.org, mbenes@suse.cz, mpdesouza@suse.com,
-	nstange@suse.de, pmladek@suse.com, shresthprasad7@gmail.com,
-	shuah@kernel.org, skhan@linuxfoundation.org, zhangwarden@gmail.com
-Message-ID: <10876e08-a747-4ce7-bdc9-d80b61b3ba54@gmail.com>
-In-Reply-To: <88672d5a-1b12-a6f2-bf7b-8670eeddc711@redhat.com>
-Subject: Re: [PATCH] Fix implicit cast warning in test_klp_state.c
+	s=arc-20240116; t=1708593729; c=relaxed/simple;
+	bh=5v9yH/V+iT/XBq13O4b1uFWQSJMXaxAV6nRnWvjhvLg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fX0RkHX4kytmvB1aAs2WLCKVERpIaYiNwv4fgdFckUimcbSq1sifo+W4hAEMurndRK32jt7rZep8AgOsxsr+qwXsEng+tgvYbkrQjhs/6VeKYV6dvpA1sZBcAvohjbDC+OLQthDNgPUQbKFz0ohjuLwqqKEoKzkiLunfk7u/0PY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.162.112])
+	by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4TgSK54Lf4z1X3Cc;
+	Thu, 22 Feb 2024 17:19:53 +0800 (CST)
+Received: from kwepemd500009.china.huawei.com (unknown [7.221.188.237])
+	by mail.maildlp.com (Postfix) with ESMTPS id 9CD171400D9;
+	Thu, 22 Feb 2024 17:22:03 +0800 (CST)
+Received: from kwepemd100011.china.huawei.com (7.221.188.204) by
+ kwepemd500009.china.huawei.com (7.221.188.237) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.28; Thu, 22 Feb 2024 17:22:03 +0800
+Received: from M910t (10.110.54.157) by kwepemd100011.china.huawei.com
+ (7.221.188.204) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.1258.28; Thu, 22 Feb
+ 2024 17:22:02 +0800
+Date: Thu, 22 Feb 2024 17:21:19 +0800
+From: Changbin Du <changbin.du@huawei.com>
+To: Luis Chamberlain <mcgrof@kernel.org>
+CC: Changbin Du <changbin.du@huawei.com>, <live-patching@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, <linux-modules@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Xiaoyi Su <suxiaoyi@huawei.com>, "Eric
+ Chanudet" <echanude@redhat.com>
+Subject: Re: [PATCH v3] modules: wait do_free_init correctly
+Message-ID: <20240222092119.tp6kls4ycnsflcgm@M910t>
+References: <20240217081810.4155871-1-changbin.du@huawei.com>
+ <ZdY1oHl8L8wDEvlW@bombadil.infradead.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Correlation-ID: <10876e08-a747-4ce7-bdc9-d80b61b3ba54@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZdY1oHl8L8wDEvlW@bombadil.infradead.org>
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemd100011.china.huawei.com (7.221.188.204)
 
-That sequence of steps fixed the warnings. Thank you so much!
+On Wed, Feb 21, 2024 at 09:40:48AM -0800, Luis Chamberlain wrote:
+> + live-patching folks,
+> 
+> Finally, things are starting to be much clearer. Thanks for the time
+> for working on this, some more comments below and a question which
+> I think deserves some attention.
+> 
+> On Sat, Feb 17, 2024 at 04:18:10PM +0800, Changbin Du wrote:
+> > The synchronization here is just to ensure the module init's been freed
+> > before doing W+X checking. 
+> 
+> Some nits, this should read instead:
+> 
+> Fix the ordering of freeing of a module init so that it happens before
+> W+X checking.
+> 
+> > But the commit 1a7b7d922081 ("modules: Use
+> > vmalloc special flag") moves do_free_init() into a global workqueue
+> > instead of call_rcu(). So now rcu_barrier() can not ensure that do_free_init
+> > has completed. We should wait it via flush_work().
+> 
+> Remove "But" and adjust as:
+> 
+> Commit 1a7b7d922081 ("modules: Use vmalloc special flag") moved
+> calling do_free_init() into a global workqueue instead of relying on it
+> being called through call_rcu(..., do_free_init), which used to allowed us
+> call do_free_init() asynchronously after the end of a subsequent grace             
+> period. The move to a global workqueue broke the gaurantees for code
+> which needed to be sure the do_free_init() would complete with rcu_barrier().
+> To fix this callers which used to rely on rcu_barrier() must now instead
+> use flush_work(&init_free_wq).
+>
+Sure, thanks!
 
-Regards,
-Shresth
+> > Without this fix, we still could encounter false positive reports in
+> > W+X checking,
+> 
+> This is good thanks for the clarification.
+> 
+> I think it would be useful for the commit log then to describe also that
+> it is not that the freeing was not happening, it is just that our sanity
+> checkers raced against the permission checkers which assume init memory
+> is already gone.
+> 
+okay, I'll apend this detailed explanation.
+
+> > and the rcu synchronization is unnecessary which can
+> > introduce significant delay.
+> 
+> While this can be true, I am not sure if we can remove it. See below.
+> 
+> > Eric Chanudet reports that the rcu_barrier introduces ~0.1s delay on a
+> > PREEMPT_RT kernel.
+> 
+> That's a separate issue.
+> 
+> >   [    0.291444] Freeing unused kernel memory: 5568K
+> >   [    0.402442] Run /sbin/init as init process
+> > 
+> > With this fix, the above delay can be eliminated.
+> > 
+> > Fixes: 1a7b7d922081 ("modules: Use vmalloc special flag")
+> > Signed-off-by: Changbin Du <changbin.du@huawei.com>
+> > Cc: Xiaoyi Su <suxiaoyi@huawei.com>
+> > Cc: Eric Chanudet <echanude@redhat.com>
+> > 
+> > ---
+> > v3:
+> >   - amend comment in do_init_module() and update commit msg.
+> > v2:
+> >   - fix compilation issue for no CONFIG_MODULES found by 0-DAY.
+> > ---
+> >  include/linux/moduleloader.h | 8 ++++++++
+> >  init/main.c                  | 5 +++--
+> >  kernel/module/main.c         | 9 +++++++--
+> >  3 files changed, 18 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/include/linux/moduleloader.h b/include/linux/moduleloader.h
+> > index 001b2ce83832..89b1e0ed9811 100644
+> > --- a/include/linux/moduleloader.h
+> > +++ b/include/linux/moduleloader.h
+> > @@ -115,6 +115,14 @@ int module_finalize(const Elf_Ehdr *hdr,
+> >  		    const Elf_Shdr *sechdrs,
+> >  		    struct module *mod);
+> >  
+> > +#ifdef CONFIG_MODULES
+> > +void flush_module_init_free_work(void);
+> > +#else
+> > +static inline void flush_module_init_free_work(void)
+> > +{
+> > +}
+> > +#endif
+> > +
+> >  /* Any cleanup needed when module leaves. */
+> >  void module_arch_cleanup(struct module *mod);
+> >  
+> > diff --git a/init/main.c b/init/main.c
+> > index e24b0780fdff..f0b7e21ac67f 100644
+> > --- a/init/main.c
+> > +++ b/init/main.c
+> > @@ -99,6 +99,7 @@
+> >  #include <linux/init_syscalls.h>
+> >  #include <linux/stackdepot.h>
+> >  #include <linux/randomize_kstack.h>
+> > +#include <linux/moduleloader.h>
+> >  #include <net/net_namespace.h>
+> >  
+> >  #include <asm/io.h>
+> > @@ -1402,11 +1403,11 @@ static void mark_readonly(void)
+> >  	if (rodata_enabled) {
+> >  		/*
+> >  		 * load_module() results in W+X mappings, which are cleaned
+> > -		 * up with call_rcu().  Let's make sure that queued work is
+> > +		 * up with init_free_wq. Let's make sure that queued work is
+> >  		 * flushed so that we don't hit false positives looking for
+> >  		 * insecure pages which are W+X.
+> >  		 */
+> > -		rcu_barrier();
+> 
+> Was this the only source of waiters that used rcu_barrier() to sync ?
+> What about kallsyms, live-patching ?
+> 
+> This original source to the addition of this rcu_barrier() (in a slight
+> older modified form with with rcu_barrier_sched()) was commit
+> ae646f0b9ca13 ("init: fix false positives in W+X checking") since
+> v4.17 in 2018, 6 years ago. So I'm hoping we don't have any other
+> side-by new users which have grown dependent on this rcu_barrier() for
+> other call_rcu()'s they may have used, but it is hard to tell.
+> 
+Per the condtion 'rodata_enabled' and comments, I think the rcu_barrier() is
+only used to synchronize with freeing module init memory.
+
+> So while I agree that flush work is the right solution, removing the
+> rcu_barrier() is technically another change which could potentially
+> regress for other reasons now. It is perhaps safe, but I'm used to
+> surprises for minor changes like these. So I think it makes sense to
+> lift it now, and test it in the wild to see what could possibly break,
+> I'd much prefer to split this as two separate commits. One which does
+> the fix, and another that lifts the rcu_barrier() with the stated
+> rationale and savings on time of ~0.1s on PREEMPT_RT kernels.
+>
+But the only change in patch is to replace rcu_barrier() with flush_module_init_free_work().
+
+Do you mean that keep both flush_module_init_free_work() and rcu_barrier() here?
+It sounds a little bit weird IMHO.
+
+>   Luis
+
+-- 
+Cheers,
+Changbin Du
 
