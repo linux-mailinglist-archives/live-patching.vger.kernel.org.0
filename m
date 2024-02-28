@@ -1,187 +1,133 @@
-Return-Path: <live-patching+bounces-197-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-198-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id F30BB861FD7
-	for <lists+live-patching@lfdr.de>; Fri, 23 Feb 2024 23:34:11 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F031A86A449
+	for <lists+live-patching@lfdr.de>; Wed, 28 Feb 2024 01:10:29 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 7819A1F24848
-	for <lists+live-patching@lfdr.de>; Fri, 23 Feb 2024 22:34:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1F2B2289A70
+	for <lists+live-patching@lfdr.de>; Wed, 28 Feb 2024 00:10:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 051C014CAAB;
-	Fri, 23 Feb 2024 22:33:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A151364;
+	Wed, 28 Feb 2024 00:10:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="t7PTmVJa";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="t7PTmVJa"
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="D2Gb4ltS"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14A1F1419B3;
-	Fri, 23 Feb 2024 22:33:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB682366
+	for <live-patching@vger.kernel.org>; Wed, 28 Feb 2024 00:10:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708727638; cv=none; b=Q8qSg4dfV7QAabL7S+l5Y5MeefrfwUQVpR5hkIi2I8OvsG1ZM3cYHlSEqx47ze6qDsrrLRox9sb/C5TPcriqmvcDJhBIsagQmQpHz1ZyxS+5KWFqNRLtTEAVQhqyRCASLEAcZ3AVIjHlWxcmy5Oe4KeGnLUi0ug2b+72TlsGOV4=
+	t=1709079021; cv=none; b=Z3o8N1T5HAT1S3pD5x7UZwXJIIR1UwrRnmVDpiOA3VaHT3OqDWUZgOzeHKcH2Cv3iVVpyPRvS9/JWOqviEYZYFaXZPEN8SZbSEItvLSNsoruL82B4T6lUx2rPV6zY+XWouoLBZWzC0uer7Bv73u971uawHTNDTgbo2OD4Lqo2LQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708727638; c=relaxed/simple;
-	bh=kG5gIyiT7mXCo+bLuAIFsgfZm/MS6sIwZR95nfqKS00=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sG3j/tAMEhbT2hApdDuV+TNTKeEKIoy09TUHXiW6OdL6vmyJPWpfdblntzM7mwLGBhNzytcGxF41fqaMHpnUE4e5terxHJbrZqSSc52Fw0Y8Hlg48K2YOp/eMuBj9nW2Y9pEwgO/F1z7ogiSQaXJ9VgpVHsDzus/1zk2KbwwoYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=t7PTmVJa; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=t7PTmVJa; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [10.150.64.98])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 4FE4321E9F;
-	Fri, 23 Feb 2024 22:33:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708727635; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ncC4AZwMTanyhRFGNnHWUDxF2reJCIB1LsfOs3NCmHM=;
-	b=t7PTmVJamWd6pk/ZPQ4B8s1MQjb6Zdr79l6k0d7rDFdJmb9VGZ4bKQe/bS6TBxjTS9BPyC
-	49DO3cjjCTwLCyYBZFoFTI5PYmBnqMWvbFVoLa1br6l/VNdI+vsSXSoZQVkcUNipRpKqPG
-	G9BSq/JO3RwF6FNneD2hqrMORjERMZM=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708727635; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ncC4AZwMTanyhRFGNnHWUDxF2reJCIB1LsfOs3NCmHM=;
-	b=t7PTmVJamWd6pk/ZPQ4B8s1MQjb6Zdr79l6k0d7rDFdJmb9VGZ4bKQe/bS6TBxjTS9BPyC
-	49DO3cjjCTwLCyYBZFoFTI5PYmBnqMWvbFVoLa1br6l/VNdI+vsSXSoZQVkcUNipRpKqPG
-	G9BSq/JO3RwF6FNneD2hqrMORjERMZM=
-Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id CF14913419;
-	Fri, 23 Feb 2024 22:33:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([10.150.64.162])
-	by imap2.dmz-prg2.suse.org with ESMTPSA
-	id LMYVJVId2WVNWwAAn2gu4w
-	(envelope-from <mpdesouza@suse.com>); Fri, 23 Feb 2024 22:33:54 +0000
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Shuah Khan <shuah@kernel.org>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	linux-kselftest@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	live-patching@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] selftests: lib.mk: Simplify TEST_GEN_MODS_DIR handling
-Date: Fri, 23 Feb 2024 19:33:51 -0300
-Message-ID: <20240223223352.13784-1-mpdesouza@suse.com>
-X-Mailer: git-send-email 2.42.1
-In-Reply-To: <20240221-lp-selftests-fixes-v2-4-a19be1e029a7@suse.com>
-References: 
+	s=arc-20240116; t=1709079021; c=relaxed/simple;
+	bh=7Bibe+mApP2qw+Bwb89kIz1Vorq4HcJl2XyOfxCc+rI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EQBm3hg+4Hiqlh18IEsBzZAfgZYUK4MVt67/aVEOgYu2LFnbS0liTAr/MUsFirjb/Kz473XDLTZ3XW+hbTyddEURMZH55R6pS7Q2xCEaYXQnbbR7HdsRhekOB58ND+8MDd4uOrxe+fUAOkghZhj16eVvbc0bqXlnwjaQX2j0mQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=D2Gb4ltS; arc=none smtp.client-ip=209.85.166.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+Received: by mail-io1-f46.google.com with SMTP id ca18e2360f4ac-7bff8f21b74so46904139f.0
+        for <live-patching@vger.kernel.org>; Tue, 27 Feb 2024 16:10:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google; t=1709079019; x=1709683819; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3uNCkE/Y4bucRwr/vs7c1ruuOADEG13u7lr08BZ4VNA=;
+        b=D2Gb4ltSZBbw7GNcjBZZWXuvkDuJasDEjNQU6jiVVhbDbapAbLVi1ryZZx7vIM+Zhw
+         DBaNdui24vVhN05VovPFFOC3VWlaiuW37K4tgOhoAFGc/2tHOoiisBmZk6rGFd2AYnrY
+         7NlS96wYAGJd51AiEkVGeOB1wGejgP6BoGtfA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709079019; x=1709683819;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3uNCkE/Y4bucRwr/vs7c1ruuOADEG13u7lr08BZ4VNA=;
+        b=cPgj3GS6FGpQqB+2Y4kfU+8i+XdauCe4T0/DQrsU1I59Xk1HQ8HLSRItg0E4Sfiuan
+         Ns7AnJa3AREBqLHciGkyLXkQuALH3u9twta0C49nc5roy48SDONc58MuwqVVn4J97Ayq
+         HVtRQ35QZgNAAOwHk1rSJT0jF1jRmv6K/qTZUR/BOn03y62hey83jrLXXM5kMYIgYo4C
+         Ngiz8cxiJ+r5TIv5lN6wl9ckuYvIL/36mTZZ9i8By1JNYmMQDUY5FmT/lyrwz1AqxhCc
+         rawvKduN0ii5ubMCqoyHAclmhb3yi1C9d7WKhgIK6AmrSBONye46xkwyJaV6WzgGXzn/
+         Ye3g==
+X-Forwarded-Encrypted: i=1; AJvYcCVID7mwLfOnk8JLAPJye/eo82jU1QtfOgkFz+9QIsO/bOKpDkH8ci4Fj57FkFP5vHBFN9Jb6wj67kfseXDa0Io+XtwP5GllyAPINDyYoA==
+X-Gm-Message-State: AOJu0YwHkCamD7xwGecO7uZeAupBH2QhOZu6yifN4LK+PtdsMwxhGxi8
+	mMlVP8h71Qr+dj68+qFzzDGJMgztum23CsB+59kgeHuT0k1z42rYdpbtrQzR42c=
+X-Google-Smtp-Source: AGHT+IGrxhuv2/vozEcMAJsAG2BL6qpv5diYWB6ZxOntrxwP6jDQRasA2qEhpJhFBGgL0WngloEcfg==
+X-Received: by 2002:a05:6e02:20e4:b0:365:1967:e665 with SMTP id q4-20020a056e0220e400b003651967e665mr11415974ilv.2.1709079018924;
+        Tue, 27 Feb 2024 16:10:18 -0800 (PST)
+Received: from [192.168.1.128] ([38.175.170.29])
+        by smtp.gmail.com with ESMTPSA id x14-20020a056e020f0e00b00364b66eb5e3sm2427560ilj.24.2024.02.27.16.10.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Feb 2024 16:10:18 -0800 (PST)
+Message-ID: <76d006e1-aeb1-4622-aa9e-6bf4101a4e15@linuxfoundation.org>
+Date: Tue, 27 Feb 2024 17:10:18 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Authentication-Results: smtp-out1.suse.de;
-	none
-X-Spamd-Result: default: False [10.00 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 BAYES_SPAM(5.10)[100.00%];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 R_MISSING_CHARSET(2.50)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 BROKEN_CONTENT_TYPE(1.50)[];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	 RCPT_COUNT_SEVEN(0.00)[10];
-	 MID_CONTAINS_FROM(1.00)[];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 RCVD_TLS_ALL(0.00)[]
-X-Spam-Level: **********
-X-Spam-Score: 10.00
-X-Spam-Flag: NO
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/4] Improvements to livepatch kselftests on top of
+ kselftest-next
+Content-Language: en-US
+To: Marcos Paulo de Souza <mpdesouza@suse.com>, Shuah Khan
+ <shuah@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>
+Cc: linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+ live-patching@vger.kernel.org, kernel test robot <lkp@intel.com>,
+ Shuah Khan <skhan@linuxfoundation.org>
+References: <20240221-lp-selftests-fixes-v2-0-a19be1e029a7@suse.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <20240221-lp-selftests-fixes-v2-0-a19be1e029a7@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 21 Feb 2024 14:17:06 -0300 Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
-
-Shuah, please skip this one. The simplification is not worthy if it causes a new
-warning. This reply[1] explains what's going on.
-
-Thanks in advance,
-  Marcos
-
-[1]: https://lore.kernel.org/linux-kselftest/20240223161244.17709-1-mpdesouza@suse.com/
-
-> We don't need new targets only to run two make modules and make clean.
-> We can test if TEST_GEN_MODS_DIR is specified, and then run the
-> commands.
+On 2/21/24 10:17, Marcos Paulo de Souza wrote:
+> The changes on lib.mk are both for simplification and also
+> clarification, like in the case of not handling TEST_GEN_MODS_DIR
+> directly. There is a new patch to solve one issue reported by build bot.
+> 
+> These changes apply on top of the current kselftest-next branch. Please
+> review!
 > 
 > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 > ---
->  tools/testing/selftests/lib.mk | 16 +++++++---------
->  1 file changed, 7 insertions(+), 9 deletions(-)
+> Changes in v2:
+> - Added a new patch to avoid building the modules/running the tests if
+>    kernel-devel is not installed. Resolving an issue reported by the
+>    build bot.
+> - Reordered the patches, showing the more simple ones first. Besides
+>    patch 0002, all the other three didn't changed since v1.
+> - Link to v1: https://lore.kernel.org/r/20240215-lp-selftests-fixes-v1-0-89f4a6f5cddc@suse.com
 > 
-> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-> index 286ce0ee102b..eddcd4a849dc 100644
-> --- a/tools/testing/selftests/lib.mk
-> +++ b/tools/testing/selftests/lib.mk
-> @@ -58,8 +58,9 @@ TEST_GEN_PROGS := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS))
->  TEST_GEN_PROGS_EXTENDED := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS_EXTENDED))
->  TEST_GEN_FILES := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_FILES))
->  
-> -all: $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) \
-> -	$(if $(TEST_GEN_MODS_DIR),gen_mods_dir)
-> +all: $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES)
-> +	$(if $(TEST_GEN_MODS_DIR), \
-> +		$(Q)$(MAKE) -C $(TEST_GEN_MODS_DIR))
->  
->  define RUN_TESTS
->  	BASE_DIR="$(selfdir)";			\
-> @@ -85,11 +86,6 @@ else
->  	@$(call RUN_TESTS, $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_PROGS))
->  endif
->  
-> -gen_mods_dir:
-> -	$(Q)$(MAKE) -C $(TEST_GEN_MODS_DIR)
-> -
-> -clean_mods_dir:
-> -	$(Q)$(MAKE) -C $(TEST_GEN_MODS_DIR) clean
->  
->  define INSTALL_SINGLE_RULE
->  	$(if $(INSTALL_LIST),@mkdir -p $(INSTALL_PATH))
-> @@ -133,9 +129,11 @@ endif
->  
->  define CLEAN
->  	$(RM) -r $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(EXTRA_CLEAN)
-> +	$(if $(TEST_GEN_MODS_DIR), \
-> +		$(Q)$(MAKE) -C $(TEST_GEN_MODS_DIR) clean)
->  endef
->  
-> -clean: $(if $(TEST_GEN_MODS_DIR),clean_mods_dir)
-> +clean:
->  	$(CLEAN)
->  
->  # Enables to extend CFLAGS and LDFLAGS from command line, e.g.
-> @@ -166,4 +164,4 @@ $(OUTPUT)/%:%.S
->  	$(LINK.S) $^ $(LDLIBS) -o $@
->  endif
->  
-> -.PHONY: run_tests all clean install emit_tests gen_mods_dir clean_mods_dir
-> +.PHONY: run_tests all clean install emit_tests
+> ---
+> Marcos Paulo de Souza (4):
+>        selftests: livepatch: Add initial .gitignore
+>        selftests: livepatch: Avoid running the tests if kernel-devel is missing
+>        selftests: lib.mk: Do not process TEST_GEN_MODS_DIR
+>        selftests: lib.mk: Simplify TEST_GEN_MODS_DIR handling
 > 
-> -- 
-> 2.42.1
+>   tools/testing/selftests/lib.mk                        | 19 +++++++------------
+>   tools/testing/selftests/livepatch/.gitignore          |  1 +
+>   tools/testing/selftests/livepatch/functions.sh        | 13 +++++++++++++
+>   .../testing/selftests/livepatch/test_modules/Makefile |  6 ++++++
+>   4 files changed, 27 insertions(+), 12 deletions(-)
+> ---
+> base-commit: 6f1a214d446b2f2f9c8c4b96755a8f0316ba4436
+> change-id: 20240215-lp-selftests-fixes-7d4bab3c0712
+> 
+> Best regards,
+
+Applied all except the last patch to linux-kelftest next for Linux 6.9-rc1
+
+thanks,
+-- Shuah
+
 
