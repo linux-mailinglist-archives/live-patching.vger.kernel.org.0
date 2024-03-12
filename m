@@ -1,113 +1,234 @@
-Return-Path: <live-patching+bounces-199-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-200-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3513B872EDC
-	for <lists+live-patching@lfdr.de>; Wed,  6 Mar 2024 07:24:49 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 977EE8793DB
+	for <lists+live-patching@lfdr.de>; Tue, 12 Mar 2024 13:12:43 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id E07CA1F25E8A
-	for <lists+live-patching@lfdr.de>; Wed,  6 Mar 2024 06:24:48 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 0EBAFB21644
+	for <lists+live-patching@lfdr.de>; Tue, 12 Mar 2024 12:12:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B4EAB1F959;
-	Wed,  6 Mar 2024 06:24:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F137E79DCD;
+	Tue, 12 Mar 2024 12:12:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicklyemailsend77.com header.i=@quicklyemailsend77.com header.b="kBjtNcom"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="t4ONObyr";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="t4ONObyr"
 X-Original-To: live-patching@vger.kernel.org
-Received: from quicklyemailsend77.com (quicklyemailsend77.com [57.128.172.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F2AF1BDDC
-	for <live-patching@vger.kernel.org>; Wed,  6 Mar 2024 06:24:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.128.172.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B326D79B92;
+	Tue, 12 Mar 2024 12:12:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709706261; cv=none; b=ZTw1e9XGRRXPe71vFrafYifIO0wkRzixvGhA+JKT0v4Y6J5Z/F/U7rBcu24Tx02AoBX0JVMAYXi7hSF/AYfSksMX/7RKsHZ2j5IoPxBRCqmavMb9tolBWqpQjBJYENbf6BToPe0/3SJv2tzPOyZI2R2dSC1ctH6oGNmbh3JDVig=
+	t=1710245556; cv=none; b=FjWff7XIe182wl4eRR3m1YxIKzRoYxh4sHjePagE6JaW8YvQQRRZSw7G6kM3MFjlbXJTOGzTfsVmfQ/vxHTANn5mi1nmkyE2IRa4jJ6W32EdRD4DHvqotqvJw0efWecvqIu0oMQUOVwyKD37uTRLFBgmxdi+/zLhgPXn3r8uPIE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709706261; c=relaxed/simple;
-	bh=UkCnC3hxyWUR811IY5T5PlAQFaHotSY7xhHSl4hh88I=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=KVL9CYCzj+fbtaSPCFWvgmOm8fT764xVK0TisUbTgtGZowuDKAcEfpSYpbHjaRf0RnrSyTTucUj0G82SR0wrQqGhHitk0FWMgcP+2VcmMu0tZJBYD6q7BCJa7lEaZF9dQ1R8/0fA9Hovm1M5xzgDMkNRyGLY3UmwRBdjJeah1fY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicklyemailsend77.com; spf=pass smtp.mailfrom=quicklyemailsend77.com; dkim=pass (2048-bit key) header.d=quicklyemailsend77.com header.i=@quicklyemailsend77.com header.b=kBjtNcom; arc=none smtp.client-ip=57.128.172.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicklyemailsend77.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicklyemailsend77.com
-Received: from quicklyemailsend77.com (unknown [185.255.114.95])
-	by quicklyemailsend77.com (Postfix) with ESMTPA id B72663BF879
-	for <live-patching@vger.kernel.org>; Wed,  6 Mar 2024 03:52:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 quicklyemailsend77.com B72663BF879
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=quicklyemailsend77.com; s=default; t=1709697134;
-	bh=eefLZdwY5mr6nwq86b3d+rtsxGUHJntuGmXl+R35AcQ=;
-	h=Reply-To:From:To:Subject:Date:From;
-	b=kBjtNcomC0ed6U8Eg9ZMFZWO6ctTcwyXBMjP8mtAufWeeP/uypMXMYObnOZfGy2yV
-	 ouTG3ACOhLxbFbIVU0VqWwgHdwny2yJzUXLvpPJiqbleYpMgHyev216cIMK/89rQad
-	 tS4VzV+71riojSqgJHipQUXuj5jU1OWVTT9j35KJsRoi7Tmh2aQ2g9G+vouMFNlvpv
-	 SdyzFZcL/KdTQmxeoH08zLF2QvWUbpBKSl82iYt15mGPWM6cg9qgnxg1t4B82PDXTF
-	 9blgTJCJNWiNIhpYPI+a0akM5HaAy3UJtk3KP3+bs/BMwyo8mEK9o4OWEs0AE8qee9
-	 YKvWDjiAgGGmg==
-Reply-To: joakimlarson@skendiaelevator.com
-From: info@quicklyemailsend77.com
-To: live-patching@vger.kernel.org
-Subject: =?UTF-8?B?7YyQ66ekIOusuOydmCAyMDI0?=
-Date: 05 Mar 2024 19:52:13 -0800
-Message-ID: <20240305195213.53B734C1C06F73B2@quicklyemailsend77.com>
+	s=arc-20240116; t=1710245556; c=relaxed/simple;
+	bh=TCGQqF+18Os3C61odwkuSi1jlFApKK2G+8qPngHoerU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ueucj43gHUvwsRJqc5oKoNjD6yEmUukuezBjUq13m0Xnup7RLgpZlDCo9cTjC12zAn1kvdrliCB3f67xYwR1gzPgNlxDP3FrlQyyHgKRbJIci1X/CbleJxGpIMr+qf/Je8KYmbU8sOCWIojS2qrEAPIsblOw+88I70WySyUB2Qs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=t4ONObyr; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=t4ONObyr; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 8EF825D48F;
+	Tue, 12 Mar 2024 12:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1710245551; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=K16N6xfHk8sdlVr00y/RAqVmoBWADQMREpiQqIg7t24=;
+	b=t4ONObyr5++QAsGvG2nciQwD8Hmtahsr1LrTL4diIVIimxQa5tahC8VWGYSIi0BSgxYsVF
+	xf3vQmI/1L9n/fPmv6zfgWdWr4nMvIPT2fTmcUoj3VY4oWOKOcti20Lb2PuCZWCRxJAJ0W
+	JzxNmPyLso/f3vWK2HF3yGa6QJcoKgI=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1710245551; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=K16N6xfHk8sdlVr00y/RAqVmoBWADQMREpiQqIg7t24=;
+	b=t4ONObyr5++QAsGvG2nciQwD8Hmtahsr1LrTL4diIVIimxQa5tahC8VWGYSIi0BSgxYsVF
+	xf3vQmI/1L9n/fPmv6zfgWdWr4nMvIPT2fTmcUoj3VY4oWOKOcti20Lb2PuCZWCRxJAJ0W
+	JzxNmPyLso/f3vWK2HF3yGa6QJcoKgI=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 025B413795;
+	Tue, 12 Mar 2024 12:12:30 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([10.150.64.162])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id e0raKa5G8GUybwAAD6G6ig
+	(envelope-from <mpdesouza@suse.com>); Tue, 12 Mar 2024 12:12:30 +0000
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+Date: Tue, 12 Mar 2024 09:12:14 -0300
+Subject: [PATCH] selftests: livepatch: Test atomic replace against multiple
+ modules
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240312-lp-selftest-new-test-v1-1-9c843e25e38e@suse.com>
+X-B4-Tracking: v=1; b=H4sIAJ1G8GUC/x2MsQqAMAwFf0UyG6hBB/0VcRD7qgGp0ogK4r9b3
+ O6Gu4cMSWHUFQ8lnGq6xSxVWdC0jHEGq89O4qR2Ii2vOxvWcMAOjrj4B9QelbjQNlNDOd0Tgt7
+ /th/e9wN74hgqZgAAAA==
+To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+ Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
+ Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc: linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
+ linux-kselftest@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
+X-Mailer: b4 0.14-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1710245547; l=4155;
+ i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
+ bh=TCGQqF+18Os3C61odwkuSi1jlFApKK2G+8qPngHoerU=;
+ b=6I4T/Hq9iTuDvZav28jPnVOWoSOcY5/v9CIIdVWciio2q5+O0WHtfceAsRk/38QsKeD/du0qD
+ fe9yUsHkNcpDkEKJsG79NCf2pQVbCCVDPhWmUkl04bokw5XSXbHVR06
+X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
+ pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
+X-Spam-Level: 
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=t4ONObyr
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	 BAYES_HAM(-3.00)[100.00%];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 MIME_GOOD(-0.10)[text/plain];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 DKIM_TRACE(0.00)[suse.com:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_SEVEN(0.00)[10];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim,suse.com:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 NEURAL_HAM_SHORT(-0.20)[-1.000];
+	 RCVD_TLS_ALL(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[]
+X-Spam-Score: -4.51
+X-Rspamd-Queue-Id: 8EF825D48F
+X-Spam-Flag: NO
 
+This new test checks if a livepatch with replace attribute set replaces
+all previously applied livepatches.
 
-=EC=95=88=EB=85=95=ED=95=98=EC=84=B8=EC=9A=94
-=20
-=EC=8A=A4=EC=9B=A8=EB=8D=B4 =EC=8A=A4=EC=B9=B8=EB=94=94=EC=95=84 =EC=97=98=
-=EB=A0=88=EB=B0=94=ED=86=A0(Skandia Elevato)=EC=97=90=EC=84=9C =EC=98=A8 =
-=EC=9A=94=EC=95=84=ED=82=B4 =EB=9D=BC=EB=A5=B4=EC=86=90(JOAKIM LARSSON) .
-=20
-=EC=9A=B0=EB=A6=AC=EB=8A=94 =EA=B8=B4=EA=B8=89=ED=95=98=EA=B2=8C =EA=B7=80=
-=ED=95=98=EC=9D=98 =EC=A0=9C=ED=92=88=EC=9D=84 =ED=95=84=EC=9A=94=EB=A1=9C =
-=ED=95=98=EB=A9=B0 =EA=B0=80=EB=8A=A5=ED=95=9C =ED=95=9C =EB=B9=A8=EB=A6=AC=
- =EC=8B=9C=ED=97=98 =EC=A3=BC=EB=AC=B8=EC=9D=84 =ED=95=98=EA=B3=A0 =EC=8B=
-=B6=EC=8A=B5=EB=8B=88=EB=8B=A4. 
-=20
-=EC=98=A8=EB=9D=BC=EC=9D=B8=EC=9C=BC=EB=A1=9C =EC=A0=9C=ED=92=88=EC=97=90 =
-=EB=8C=80=ED=95=9C =EC=A0=95=EB=B3=B4=EB=A5=BC =EC=88=98=EC=A7=91=ED=95=98=
-=EA=B3=A0 =EC=9E=88=EC=8A=B5=EB=8B=88=EB=8B=A4. 
-=20
-=EA=B7=B8=EB=A6=AC=EA=B3=A0 =EB=82=B4 =EB=AA=A8=EC=9E=84=EC=97=90=EC=84=9C =
-=EB=82=98=EB=8A=94 =EC=9A=B0=EB=A6=AC=EA=B0=80 =EB=8B=B9=EC=8B=A0=EC=9D=98 =
-=EC=A0=9C=ED=92=88=EC=9D=84 =EC=A3=BC=EB=AC=B8=ED=95=A0 =EA=B2=83=EC=9D=B4=
-=EB=9D=BC=EA=B3=A0 =EC=83=9D=EA=B0=81=ED=95=A9=EB=8B=88=EB=8B=A4.
-=20
-1. =EC=B5=9C=EC=8B=A0 Catalouge=EB=A5=BC =EB=B3=B4=EB=82=BC =EC=88=98 =EC=
-=9E=88=EC=8A=B5=EB=8B=88=EA=B9=8C?
-=20
-2. =EC=9A=B0=EB=A6=AC=EA=B0=80 =EC=A3=BC=EB=AC=B8=ED=95=A0 =EC=88=98 =EC=9E=
-=88=EB=8A=94 =EC=B5=9C=EC=86=8C=ED=95=9C=EC=9D=80 =EB=AC=B4=EC=97=87=EC=9D=
-=B4=EA=B3=A0 =EB=98=90=ED=95=9C =EA=B8=B0=EA=B0=84=EC=9D=84 =EB=B3=B4=EB=82=
-=B4=EC=8B=AD=EC=8B=9C=EC=98=A4=20
-=EB=B0=8F =EC=A1=B0=EA=B1=B4.
-3. =EC=9A=B0=EB=A6=AC=EA=B0=80 =EC=A3=BC=EB=AC=B8=ED=95=98=EB=8A=94 =EA=B2=
-=BD=EC=9A=B0 =EC=A7=80=EB=B6=88=EC=9D=84 =EC=96=B4=EB=96=BB=EA=B2=8C =ED=95=
-=B4=EA=B2=B0=ED=95=98=EA=B8=B0=EB=A5=BC =EC=9B=90=ED=95=98=EC=8B=AD=EB=8B=
-=88=EA=B9=8C?
-=20
-=EA=B7=80=ED=95=98=EC=9D=98 =ED=9A=8C=EC=8B=A0 =EB=8C=80=EA=B8=B0 =EC=A4=91=
+Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+---
+ tools/testing/selftests/livepatch/Makefile         |  3 +-
+ .../selftests/livepatch/test-atomic-replace.sh     | 71 ++++++++++++++++++++++
+ 2 files changed, 73 insertions(+), 1 deletion(-)
 
+diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
+index 35418a4790be..e92f61208d35 100644
+--- a/tools/testing/selftests/livepatch/Makefile
++++ b/tools/testing/selftests/livepatch/Makefile
+@@ -10,7 +10,8 @@ TEST_PROGS := \
+ 	test-state.sh \
+ 	test-ftrace.sh \
+ 	test-sysfs.sh \
+-	test-syscall.sh
++	test-syscall.sh \
++	test-atomic-replace.sh
+ 
+ TEST_FILES := settings
+ 
+diff --git a/tools/testing/selftests/livepatch/test-atomic-replace.sh b/tools/testing/selftests/livepatch/test-atomic-replace.sh
+new file mode 100755
+index 000000000000..09a3dcdcb8de
+--- /dev/null
++++ b/tools/testing/selftests/livepatch/test-atomic-replace.sh
+@@ -0,0 +1,71 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Copyright (C) 2024 SUSE
++# Author: Marcos Paulo de Souza <mpdesouza@suse.com>
++
++. $(dirname $0)/functions.sh
++
++MOD_REPLACE=test_klp_atomic_replace
++
++setup_config
++
++# - Load three livepatch modules.
++# - Load one more livepatch with replace being set, and check that only one
++#   livepatch module is being listed.
++
++start_test "apply one liveptach to replace multiple livepatches"
++
++for mod in test_klp_livepatch test_klp_syscall test_klp_callbacks_demo; do
++	load_lp $mod
++done
++
++nmods=$(ls /sys/kernel/livepatch | wc -l)
++if [ $nmods -ne 3 ]; then
++	die "Expecting three modules listed, found $nmods"
++fi
++
++load_lp $MOD_REPLACE replace=1
++
++nmods=$(ls /sys/kernel/livepatch | wc -l)
++if [ $nmods -ne 1 ]; then
++	die "Expecting only one moduled listed, found $nmods"
++fi
++
++disable_lp $MOD_REPLACE
++unload_lp $MOD_REPLACE
++
++check_result "% insmod test_modules/test_klp_livepatch.ko
++livepatch: enabling patch 'test_klp_livepatch'
++livepatch: 'test_klp_livepatch': initializing patching transition
++livepatch: 'test_klp_livepatch': starting patching transition
++livepatch: 'test_klp_livepatch': completing patching transition
++livepatch: 'test_klp_livepatch': patching complete
++% insmod test_modules/test_klp_syscall.ko
++livepatch: enabling patch 'test_klp_syscall'
++livepatch: 'test_klp_syscall': initializing patching transition
++livepatch: 'test_klp_syscall': starting patching transition
++livepatch: 'test_klp_syscall': completing patching transition
++livepatch: 'test_klp_syscall': patching complete
++% insmod test_modules/test_klp_callbacks_demo.ko
++livepatch: enabling patch 'test_klp_callbacks_demo'
++livepatch: 'test_klp_callbacks_demo': initializing patching transition
++test_klp_callbacks_demo: pre_patch_callback: vmlinux
++livepatch: 'test_klp_callbacks_demo': starting patching transition
++livepatch: 'test_klp_callbacks_demo': completing patching transition
++test_klp_callbacks_demo: post_patch_callback: vmlinux
++livepatch: 'test_klp_callbacks_demo': patching complete
++% insmod test_modules/test_klp_atomic_replace.ko replace=1
++livepatch: enabling patch 'test_klp_atomic_replace'
++livepatch: 'test_klp_atomic_replace': initializing patching transition
++livepatch: 'test_klp_atomic_replace': starting patching transition
++livepatch: 'test_klp_atomic_replace': completing patching transition
++livepatch: 'test_klp_atomic_replace': patching complete
++% echo 0 > /sys/kernel/livepatch/test_klp_atomic_replace/enabled
++livepatch: 'test_klp_atomic_replace': initializing unpatching transition
++livepatch: 'test_klp_atomic_replace': starting unpatching transition
++livepatch: 'test_klp_atomic_replace': completing unpatching transition
++livepatch: 'test_klp_atomic_replace': unpatching complete
++% rmmod test_klp_atomic_replace"
++
++exit 0
 
-Mr Joakim larssonv(=EB=B6=80=EC=82=AC=EC=9E=A5/=EC=98=81=EC=97=85 =EA=B4=80=
-=EB=A6=AC=EC=9E=90)
+---
+base-commit: efb3b8b2308470f08266a9ac9cbf42a0fd9ea572
+change-id: 20240229-lp-selftest-new-test-e4de120f95c5
 
-=EB=B0=A9=EB=AC=B8=EC=9E=90 =EC=A3=BC=EC=86=8C: Kedumsv=C3=A4gen 14, SE-534=
- 94 Vara, Sweden
-
-=EB=B0=B0=EC=86=A1 =EC=A3=BC=EC=86=8C: Industriv=C3=A4gen, SE-534 94 Vara, =
-Sweden
-
-joakimlarson@skendiaelevator.com
-https://skandiaelevator.com
+Best regards,
+-- 
+Marcos Paulo de Souza <mpdesouza@suse.com>
 
 
