@@ -1,262 +1,242 @@
-Return-Path: <live-patching+bounces-203-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-204-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7487488AB7A
-	for <lists+live-patching@lfdr.de>; Mon, 25 Mar 2024 18:24:14 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 196858931B7
+	for <lists+live-patching@lfdr.de>; Sun, 31 Mar 2024 15:39:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id DD2D71F615ED
-	for <lists+live-patching@lfdr.de>; Mon, 25 Mar 2024 17:24:13 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 876491F215AA
+	for <lists+live-patching@lfdr.de>; Sun, 31 Mar 2024 13:39:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC5F853381;
-	Mon, 25 Mar 2024 16:15:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 920FA142E97;
+	Sun, 31 Mar 2024 13:39:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QYb/ne13"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gek/8PDz"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7397D762CD
-	for <live-patching@vger.kernel.org>; Mon, 25 Mar 2024 16:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05E2B77620;
+	Sun, 31 Mar 2024 13:39:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711383335; cv=none; b=uzNjmVpZm+KofeSI5l9B4W9OVM9JWWRDJQ7m/Jk5dxvuBISAEqY8Hu/86lG45OlPPMGZ3aklubgO52mHu4vVILEnAaPr2g5QTx0dAameIqW1fbHbYRniEOpGrMsHE1P/LsirAo7vUz3CH0YNJvFLeMzENHQ1VWcwzavwNRIvAxM=
+	t=1711892379; cv=none; b=DRxckm0FlUZGBAllw+lTy5KfhfhNG8gxLYxHQTEpwgmLZ8a9IxkLZyw9v0EGemb9eiIwZOcXn2gDJU+vD95+4t76pZy1wtRsMwY5oMZQuS8Je/iqeCrJ6um8Gniep1B9lqX57Jt6iqn3P9oRM2eIMd4eD71XLXjQ1AqfjzjBwbY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711383335; c=relaxed/simple;
-	bh=eDgom7jRq4Xcu2vT4SgmGX5Rou29zfDZbAIVqaruxos=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:From:Subject:
-	 In-Reply-To:Content-Type; b=NWpIqrzry/zV5Pgnv83p/ffCMVHrABLhyyz+/murHbSH7tXNc1+mjEyczar4aDQQw8SrtvS49jeyQFey6rNm0Ns1W9zpferX3A69l7saZ69O37NkqZRh4zZsplV/iDtK47k1cp9afB2PUREKfeR3tLcyjTGZvE7eKvFAHw0xwtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=QYb/ne13; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1711383332;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=y18CNMCvDOhmdaHugtFzaqnuQV+HwgBjYyd9+FwW44Q=;
-	b=QYb/ne138AjCouStY3BGR8vYVGIHqLhSgE6PXJ31DQ5k1J6uhetulep0/n6xkLvTvC9Ppd
-	2ERTm1ibje2S7cVw6rfA6b3fxlInpt8TJj4lnoON3Z18zhElEr2HHHgSzPVS4xadn3RZzG
-	1xUhXatpKxG0O9Sd9VRbIeIOO8IIVD4=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-574-KayxnRH1N7-Ox72IsPDNsQ-1; Mon, 25 Mar 2024 12:15:30 -0400
-X-MC-Unique: KayxnRH1N7-Ox72IsPDNsQ-1
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-789ec0e839eso575137085a.1
-        for <live-patching@vger.kernel.org>; Mon, 25 Mar 2024 09:15:30 -0700 (PDT)
+	s=arc-20240116; t=1711892379; c=relaxed/simple;
+	bh=InENMLyEVj8LDUl4O3ZdCqTFX1wjOTf3pldDMrk1Xp4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tUuqldESm5GaLXzmrWEd6gaMKtS8A7Q2gZGHEbtAcsIAlA3F2/aWGpxVUikZ3S4cnfYkYt2HOcn6hnWqi+OV6cL8FgOv1qAWvcbrzjM+xbgt/6LCzQI24tYPxbGedzPJSQs63VnbLv/M21NPyKaHbgNyy7glljRoqxSldQvNfIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gek/8PDz; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-6eaf7c97738so764200b3a.2;
+        Sun, 31 Mar 2024 06:39:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1711892377; x=1712497177; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=w9NaVh8gtRfzS1+NNHkWoqkIF1L86qwamtcfpVwuotk=;
+        b=Gek/8PDzPuHciILXm/4QlbAolaRQP76y60OTV4bSd2WystTnnzzjZFTeeM5UJeVxM6
+         Xk/JyZ9ka0weI2f4KwkOXdIowkYAoji4prbSIbP1+MUHV4pDO8mL2xQe+xCQmVwJNYIu
+         wkpV+wlFjmn64UGl70Qxf8WXrgEOmDgngL+aHPQDo2VMcUrrixKHTfKKHa8TQqvER//3
+         FUG1KiMQR/dB2TKlBCTUI3+D70oouvCvFO8VcVWCew2DcJE0a+uUlKVWNpKvxWzOtJ6k
+         OzOfSoZoc75Sz3fKsvMk894bXFiwXoTJUcuP3vI/RMe/fV3eXiWdjTgEQ1g8UkNdtza+
+         Ax0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711383329; x=1711988129;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=y18CNMCvDOhmdaHugtFzaqnuQV+HwgBjYyd9+FwW44Q=;
-        b=fhwF0tCG6iXzhPwmFLrtCVUwFr4I7MYjymI6GkztWLrGKfq8JuVirHDXAEfplBr0ZD
-         kvpelDwH/2ChQuVKlMxbbdOtpXi+3dctxFMxGrmSf3thFbUqLFQbVmO+XkF/AuBZ8jlN
-         tUPrhUMP/LbXIbJqM/Jamn3eKdPBCno8yXiAzZDtzX7oalWzY+02HoOnrT2sv6HnImt+
-         RL4JhMO7tEPvg7Iz2VKG0/TixyJjF9oeoR468jx72CgtkICq3IODRpI++Xo+zXszZK5X
-         MHB1V44TC1qwVzl3Uo7HOSEPS/rK8JXfPcCd4aoxuOcJbYy9z3Tj72FKwzMK8r7pIhVr
-         za/A==
-X-Forwarded-Encrypted: i=1; AJvYcCX9fXLLCg0dYLKBecCPLXX1e4T6URipNCrzt8lxJ3kjJqukXxfPLZ263FmESJP498hgjJLZQWMPCEq32S5i6mxBiO3wMKQT5hzkn3W04A==
-X-Gm-Message-State: AOJu0Yw10A/q0BftSa5aAK3nlxacJDdyzFObghGUrJCAvrQIi9cwd8ir
-	aI5niAfUoZFkkW7B7//D+KKT2rGJJi6uaLdDgMLeqh4aegc3GmCA1Zcp0QjshBsTdVZ+fd4ju2i
-	hKfwuOLy1E7yjgwZjdJ4afNPnquN8N7i3w2jh+ohKeXlCwui7Lv4EPy1qqBL5elQ=
-X-Received: by 2002:ac8:594d:0:b0:430:d6f0:206e with SMTP id 13-20020ac8594d000000b00430d6f0206emr8829741qtz.30.1711383328929;
-        Mon, 25 Mar 2024 09:15:28 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHUsb5Xdk9G1pl6Lam/czi3bThyEoglHXEf2y3LdV6Q5bGAeN6oRDpwi7biX/J1549NCVGziA==
-X-Received: by 2002:ac8:594d:0:b0:430:d6f0:206e with SMTP id 13-20020ac8594d000000b00430d6f0206emr8829712qtz.30.1711383328625;
-        Mon, 25 Mar 2024 09:15:28 -0700 (PDT)
-Received: from [192.168.1.27] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id v22-20020ac87296000000b004309f67c186sm2708577qto.82.2024.03.25.09.15.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Mar 2024 09:15:28 -0700 (PDT)
-Message-ID: <3b33196a-e0b8-d7a9-0fda-b028753a3d15@redhat.com>
-Date: Mon, 25 Mar 2024 12:15:26 -0400
+        d=1e100.net; s=20230601; t=1711892377; x=1712497177;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=w9NaVh8gtRfzS1+NNHkWoqkIF1L86qwamtcfpVwuotk=;
+        b=taAe/nAcyH209azUMqxiakME9bnGcEe32XtaYvBmjuzOaQvGtT3BSEvIk476LwlJ11
+         xtIuLKOgcGB+vfpKkQ40ZGOPSvVsdHuRmRxHXavtNnV9f7TehTKlhAVKoGOqiSFarNdg
+         He+dGj/R4fmEknbabKWZ6L8jejG3fCb/dC1pcAAJXXAR6pRSn6c7TiCP/jYd/oFzsPnj
+         GznNKqbWgv2qAgqqfulYFIrisBpWhObxHusnl9jnhwrITd2sdENQmHS5fsEzcuQRiYc1
+         3aDzuMOZcNHR3+WRCYqyZ/7U0UCwmsAXxc4fm4xuk4fKh69uo8HQINPvC5e34kAlRmOk
+         joZg==
+X-Forwarded-Encrypted: i=1; AJvYcCUiUvvTPMDxOk9D9FPt0COKyKV8zYCZdAW0v3K3p51Vw0DT9BrIZHKLGJinLIDQwoVV13kQdLFzkytTYeXAq4c1+kgj2RVUYGUEjkJ3UQ==
+X-Gm-Message-State: AOJu0YxaXmWn+dzea6U7iTk5Z2Fx5z/VDnXrmLVSjXf3nAUfdmtHnMed
+	Sbzj+cFOShlJKD/9ospIS/mhw0JT1owRWx7rrfgegQlZWDKOri3CBLGevoQRFxpBGA==
+X-Google-Smtp-Source: AGHT+IEn4VdXcwvYZjmd7FZg4r3bvVG4brdLf+U8Hh/U4QlQBjzuvZ8GB1KwVBX0u4QddEkx6ifdoA==
+X-Received: by 2002:a05:6a00:b4a:b0:6ea:b69a:7c48 with SMTP id p10-20020a056a000b4a00b006eab69a7c48mr8573072pfo.29.1711892377128;
+        Sun, 31 Mar 2024 06:39:37 -0700 (PDT)
+Received: from localhost.localdomain ([39.144.104.108])
+        by smtp.gmail.com with ESMTPSA id p37-20020a631e65000000b005df41b00ee9sm5772899pgm.68.2024.03.31.06.39.24
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 31 Mar 2024 06:39:36 -0700 (PDT)
+From: Yafang Shao <laoar.shao@gmail.com>
+To: jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	mcgrof@kernel.org
+Cc: live-patching@vger.kernel.org,
+	linux-modules@vger.kernel.org,
+	Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH] livepatch: Delete the associated module when replacing an old livepatch
+Date: Sun, 31 Mar 2024 21:38:39 +0800
+Message-Id: <20240331133839.18316-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Content-Language: en-US
-To: Marcos Paulo de Souza <mpdesouza@suse.com>,
- Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
- Shuah Khan <shuah@kernel.org>
-Cc: linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
- linux-kselftest@vger.kernel.org
-References: <20240312-lp-selftest-new-test-v1-1-9c843e25e38e@suse.com>
- <56bf6323-9e9b-a0e3-f505-d628aac793d4@redhat.com>
- <9d4c5c6bd5b7fd0305f9ec26038f4afbea5fc166.camel@suse.com>
-From: Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH] selftests: livepatch: Test atomic replace against
- multiple modules
-In-Reply-To: <9d4c5c6bd5b7fd0305f9ec26038f4afbea5fc166.camel@suse.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 3/22/24 16:31, Marcos Paulo de Souza wrote:
-> On Thu, 2024-03-21 at 10:08 -0400, Joe Lawrence wrote:
->> On 3/12/24 08:12, Marcos Paulo de Souza wrote:
->>> This new test checks if a livepatch with replace attribute set
->>> replaces
->>> all previously applied livepatches.
->>>
->>> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
->>> ---
->>>  tools/testing/selftests/livepatch/Makefile         |  3 +-
->>>  .../selftests/livepatch/test-atomic-replace.sh     | 71
->>> ++++++++++++++++++++++
->>>  2 files changed, 73 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/tools/testing/selftests/livepatch/Makefile
->>> b/tools/testing/selftests/livepatch/Makefile
->>> index 35418a4790be..e92f61208d35 100644
->>> --- a/tools/testing/selftests/livepatch/Makefile
->>> +++ b/tools/testing/selftests/livepatch/Makefile
->>> @@ -10,7 +10,8 @@ TEST_PROGS := \
->>>  	test-state.sh \
->>>  	test-ftrace.sh \
->>>  	test-sysfs.sh \
->>> -	test-syscall.sh
->>> +	test-syscall.sh \
->>> +	test-atomic-replace.sh
->>>  
->>>  TEST_FILES := settings
->>>  
->>> diff --git a/tools/testing/selftests/livepatch/test-atomic-
->>> replace.sh b/tools/testing/selftests/livepatch/test-atomic-
->>> replace.sh
->>> new file mode 100755
->>> index 000000000000..09a3dcdcb8de
->>> --- /dev/null
->>> +++ b/tools/testing/selftests/livepatch/test-atomic-replace.sh
->>> @@ -0,0 +1,71 @@
->>> +#!/bin/bash
->>> +# SPDX-License-Identifier: GPL-2.0
->>> +#
->>> +# Copyright (C) 2024 SUSE
->>> +# Author: Marcos Paulo de Souza <mpdesouza@suse.com>
->>> +
->>> +. $(dirname $0)/functions.sh
->>> +
->>> +MOD_REPLACE=test_klp_atomic_replace
->>> +
->>> +setup_config
->>> +
->>> +# - Load three livepatch modules.
->>> +# - Load one more livepatch with replace being set, and check that
->>> only one
->>> +#   livepatch module is being listed.
->>> +
->>> +start_test "apply one liveptach to replace multiple livepatches"
->>> +
->>> +for mod in test_klp_livepatch test_klp_syscall
->>> test_klp_callbacks_demo; do
->>> +	load_lp $mod
->>> +done
->>> +
->>> +nmods=$(ls /sys/kernel/livepatch | wc -l)
->>> +if [ $nmods -ne 3 ]; then
->>> +	die "Expecting three modules listed, found $nmods"
->>> +fi
->>> +
->>> +load_lp $MOD_REPLACE replace=1
->>> +
->>> +nmods=$(ls /sys/kernel/livepatch | wc -l)
->>> +if [ $nmods -ne 1 ]; then
->>> +	die "Expecting only one moduled listed, found $nmods"
->>> +fi
->>> +
->>> +disable_lp $MOD_REPLACE
->>> +unload_lp $MOD_REPLACE
->>> +
->>> +check_result "% insmod test_modules/test_klp_livepatch.ko
->>> +livepatch: enabling patch 'test_klp_livepatch'
->>> +livepatch: 'test_klp_livepatch': initializing patching transition
->>> +livepatch: 'test_klp_livepatch': starting patching transition
->>> +livepatch: 'test_klp_livepatch': completing patching transition
->>> +livepatch: 'test_klp_livepatch': patching complete
->>> +% insmod test_modules/test_klp_syscall.ko
->>> +livepatch: enabling patch 'test_klp_syscall'
->>> +livepatch: 'test_klp_syscall': initializing patching transition
->>> +livepatch: 'test_klp_syscall': starting patching transition
->>> +livepatch: 'test_klp_syscall': completing patching transition
->>> +livepatch: 'test_klp_syscall': patching complete
->>> +% insmod test_modules/test_klp_callbacks_demo.ko
->>> +livepatch: enabling patch 'test_klp_callbacks_demo'
->>> +livepatch: 'test_klp_callbacks_demo': initializing patching
->>> transition
->>> +test_klp_callbacks_demo: pre_patch_callback: vmlinux
->>> +livepatch: 'test_klp_callbacks_demo': starting patching transition
->>> +livepatch: 'test_klp_callbacks_demo': completing patching
->>> transition
->>> +test_klp_callbacks_demo: post_patch_callback: vmlinux
->>> +livepatch: 'test_klp_callbacks_demo': patching complete
->>> +% insmod test_modules/test_klp_atomic_replace.ko replace=1
->>> +livepatch: enabling patch 'test_klp_atomic_replace'
->>> +livepatch: 'test_klp_atomic_replace': initializing patching
->>> transition
->>> +livepatch: 'test_klp_atomic_replace': starting patching transition
->>> +livepatch: 'test_klp_atomic_replace': completing patching
->>> transition
->>> +livepatch: 'test_klp_atomic_replace': patching complete
->>> +% echo 0 > /sys/kernel/livepatch/test_klp_atomic_replace/enabled
->>> +livepatch: 'test_klp_atomic_replace': initializing unpatching
->>> transition
->>> +livepatch: 'test_klp_atomic_replace': starting unpatching
->>> transition
->>> +livepatch: 'test_klp_atomic_replace': completing unpatching
->>> transition
->>> +livepatch: 'test_klp_atomic_replace': unpatching complete
->>> +% rmmod test_klp_atomic_replace"
->>> +
->>> +exit 0
->>>
->>
->> Hi Marcos,
->>
->> I'm not against adding a specific atomic replace test, but for a
->> quick
->> tl/dr what is the difference between this new test and
->> test-livepatch.sh's "atomic replace livepatch" test?
->>
->> If this one provides better coverage, should we follow up with
->> removing
->> the existing one?
-> 
-> Hi Joe,
-> 
-> thanks for looking at it. To be honest I haven't checked the current
-> use of atomic replace on test-livepatch.sh =/
-> 
-> yes, that's mostly the same case, but in mine I load three modules and
-> then load the third one replacing the others, while in the test-
-> livepatch.sh we have only one module that is loaded, replaced, and then
-> we unload the replaced one.
-> 
-> Do you see value in extending the test at test-livepatch.sh to load
-> more than one LP moduled and the replace all of them with another one?
-> I believe that it adds more coverage, while keeping the number of tests
-> the same.
-> 
+Enhance the functionality of kpatch to automatically remove the associated
+module when replacing an old livepatch with a new one. This ensures that no
+leftover modules remain in the system. For instance:
 
-Yeah, it shouldn't be too hard to combine this test with the existing
-one by adding the 3 module load to the beginning of the test.
+- Load the first livepatch
+  $ kpatch load 6.9.0-rc1+/livepatch-test_0.ko
+  loading patch module: 6.9.0-rc1+/livepatch-test_0.ko
+  waiting (up to 15 seconds) for patch transition to complete...
+  transition complete (2 seconds)
 
-Verifying the livepatch count is an interesting new wrinkle.  (Do check
-out the shellcheck warning about leveraging the output of ls, though.)
-If atomic-replace was used throughout the test suite, I might say that
-load_mod should be aware and check accordingly, but it's not the default
-build mode, so counting the final livepatches in the test itself seems
-reasonable enough.
+  $ kpatch list
+  Loaded patch modules:
+  livepatch_test_0 [enabled]
 
+  $ lsmod |grep livepatch
+  livepatch_test_0       16384  1
+
+- Load a new livepatch
+  $ kpatch load 6.9.0-rc1+/livepatch-test_1.ko
+  loading patch module: 6.9.0-rc1+/livepatch-test_1.ko
+  waiting (up to 15 seconds) for patch transition to complete...
+  transition complete (2 seconds)
+
+  $ kpatch list
+  Loaded patch modules:
+  livepatch_test_1 [enabled]
+
+  $ lsmod |grep livepatch
+  livepatch_test_1       16384  1
+  livepatch_test_0       16384  0   <<<< leftover
+
+With this improvement, executing
+`kpatch load 6.9.0-rc1+/livepatch-test_1.ko` will automatically remove the
+livepatch-test_0.ko module.
+
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+---
+ include/linux/module.h  |  1 +
+ kernel/livepatch/core.c | 11 +++++++++--
+ kernel/module/main.c    | 43 ++++++++++++++++++++++++-----------------
+ 3 files changed, 35 insertions(+), 20 deletions(-)
+
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 1153b0d99a80..9a95174a919b 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -75,6 +75,7 @@ extern struct module_attribute module_uevent;
+ /* These are either module local, or the kernel's dummy ones. */
+ extern int init_module(void);
+ extern void cleanup_module(void);
++extern void delete_module(struct module *mod);
+ 
+ #ifndef MODULE
+ /**
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index ecbc9b6aba3a..f1edc999f3ef 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -711,6 +711,8 @@ static void klp_free_patch_start(struct klp_patch *patch)
+  */
+ static void klp_free_patch_finish(struct klp_patch *patch)
+ {
++	struct module *mod = patch->mod;
++
+ 	/*
+ 	 * Avoid deadlock with enabled_store() sysfs callback by
+ 	 * calling this outside klp_mutex. It is safe because
+@@ -721,8 +723,13 @@ static void klp_free_patch_finish(struct klp_patch *patch)
+ 	wait_for_completion(&patch->finish);
+ 
+ 	/* Put the module after the last access to struct klp_patch. */
+-	if (!patch->forced)
+-		module_put(patch->mod);
++	if (!patch->forced)  {
++		module_put(mod);
++		if (module_refcount(mod))
++			return;
++		mod->state = MODULE_STATE_GOING;
++		delete_module(mod);
++	}
+ }
+ 
+ /*
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index e1e8a7a9d6c1..e863e1f87dfd 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -695,12 +695,35 @@ EXPORT_SYMBOL(module_refcount);
+ /* This exists whether we can unload or not */
+ static void free_module(struct module *mod);
+ 
++void delete_module(struct module *mod)
++{
++	char buf[MODULE_FLAGS_BUF_SIZE];
++
++	/* Final destruction now no one is using it. */
++	if (mod->exit != NULL)
++		mod->exit();
++	blocking_notifier_call_chain(&module_notify_list,
++				     MODULE_STATE_GOING, mod);
++	klp_module_going(mod);
++	ftrace_release_mod(mod);
++
++	async_synchronize_full();
++
++	/* Store the name and taints of the last unloaded module for diagnostic purposes */
++	strscpy(last_unloaded_module.name, mod->name, sizeof(last_unloaded_module.name));
++	strscpy(last_unloaded_module.taints, module_flags(mod, buf, false),
++		sizeof(last_unloaded_module.taints));
++
++	free_module(mod);
++	/* someone could wait for the module in add_unformed_module() */
++	wake_up_all(&module_wq);
++}
++
+ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
+ 		unsigned int, flags)
+ {
+ 	struct module *mod;
+ 	char name[MODULE_NAME_LEN];
+-	char buf[MODULE_FLAGS_BUF_SIZE];
+ 	int ret, forced = 0;
+ 
+ 	if (!capable(CAP_SYS_MODULE) || modules_disabled)
+@@ -750,23 +773,7 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
+ 		goto out;
+ 
+ 	mutex_unlock(&module_mutex);
+-	/* Final destruction now no one is using it. */
+-	if (mod->exit != NULL)
+-		mod->exit();
+-	blocking_notifier_call_chain(&module_notify_list,
+-				     MODULE_STATE_GOING, mod);
+-	klp_module_going(mod);
+-	ftrace_release_mod(mod);
+-
+-	async_synchronize_full();
+-
+-	/* Store the name and taints of the last unloaded module for diagnostic purposes */
+-	strscpy(last_unloaded_module.name, mod->name, sizeof(last_unloaded_module.name));
+-	strscpy(last_unloaded_module.taints, module_flags(mod, buf, false), sizeof(last_unloaded_module.taints));
+-
+-	free_module(mod);
+-	/* someone could wait for the module in add_unformed_module() */
+-	wake_up_all(&module_wq);
++	delete_module(mod);
+ 	return 0;
+ out:
+ 	mutex_unlock(&module_mutex);
 -- 
-Joe
+2.39.1
 
 
