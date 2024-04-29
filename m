@@ -1,239 +1,119 @@
-Return-Path: <live-patching+bounces-228-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-229-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D3C0B8B08F4
-	for <lists+live-patching@lfdr.de>; Wed, 24 Apr 2024 14:09:49 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6BB648B5252
+	for <lists+live-patching@lfdr.de>; Mon, 29 Apr 2024 09:27:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0364C1C221A0
-	for <lists+live-patching@lfdr.de>; Wed, 24 Apr 2024 12:09:49 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 0C5841F21ACB
+	for <lists+live-patching@lfdr.de>; Mon, 29 Apr 2024 07:27:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9FEE515ADA0;
-	Wed, 24 Apr 2024 12:09:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE09013AEE;
+	Mon, 29 Apr 2024 07:27:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S8D4A0Q2"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l3d18lRD"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13A1615A4B0;
-	Wed, 24 Apr 2024 12:09:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6662D134BE;
+	Mon, 29 Apr 2024 07:27:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713960584; cv=none; b=iKJATSnJ+ydUZxLA6VVi/dSS/FC27Wno186XB5xGVfCsOVqFIKNCc1MEvv2o0BF1OAUxASwuEerqcChtD6eUoqqn9/hVEHdah8YdOZhSSEFrnfYjpFpQeS+SNYHElFJNGxH+qD7sRScstXJZB41V64T5RPh9rBawaa/U51Z2CxY=
+	t=1714375621; cv=none; b=gCfC6brGos7oKkhpsobll1OJC13iVU7tbB+LJXK+tjdES7acyBNsZ0Cs6bu4ZEFIJlp2RNRwRhSSLvmMLU5NidUHfTnOCSA47L0W0H9XFnxAPXdf3Gg3WqKkDu51IQz5M6j9f+ttaFlYmY0Qoxpen/aescNt9HwQetx1EDlWEnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713960584; c=relaxed/simple;
-	bh=IYr2ymtDnzRjoGBlAt7i6ZTSzxn7Op1cEuDB7evFyO4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=E9BSN3xna3b15j+rGA178F6ePFKzO9AAvEEFVKUgZ8MAVsNbhvMc87b7c8Wq+6zZiZOdAAYFMG4L+QVYCBPdPFNTW65+QHf9J5EFqXT3FBgUdAuP4Thev/dyA4DGv1W68k2MafUlmQeIIJs7mJJD7gSIEcdG0qFjam6tOn1guwo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S8D4A0Q2; arc=none smtp.client-ip=209.85.219.50
+	s=arc-20240116; t=1714375621; c=relaxed/simple;
+	bh=tUY7YOGv15eW67rwM1O0QPfv5E+4gJOUvH80Wpnfxu4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=bMSqELQR9Qod3gH27vEkM0KAOSngpmtzko5VnPhs49giFeZS20aR7h7zamUpPYwXFLhnPHCG6Z9OmGwJ+0UHaQg11y/8EOKTExU18hS3rB9dgPsA1l8j2oNzwEKHYBjz/KrOSxrhQyV+OAJzI7/Q5xS6LQ8H92WBO2iDgaBu1EA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l3d18lRD; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-6a077a861e7so26610776d6.2;
-        Wed, 24 Apr 2024 05:09:42 -0700 (PDT)
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1eb24e3a2d9so20447405ad.1;
+        Mon, 29 Apr 2024 00:27:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713960582; x=1714565382; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RoTyunRbk6WKbcDZzKg0fChldKgzN8TCsYu19OLDZgw=;
-        b=S8D4A0Q2j8m24hWY/16EZvlJft8Hvw//xlguWdP4QQ26AjGUeYnjs1bNCTQWodg917
-         7B39TbcXRl50HarsqMUkX7epGZVciXnyPkAsyC3stwCDZ1FcCekJX0bdtDNchf9pvpWe
-         qjF932Zw/vzEQTX5bScI6uZixKBeq64FZyjXguQaQ5IQrmKfT0fJ0Jr3/N/0aS9oZjE4
-         gDAm1yAsakd2jtFVH4NmaXdh+Opi4WqHGAF3OudHG9PVU7PTVjY5CydRaLqhyNs9Zg3k
-         VqR0qZZI9RX1gqRg5nmB79a9OaUzd7x+zAKI4xAOp0ExyCPQYVNnYmggNQi3Pqml0cgx
-         ZPAg==
+        d=gmail.com; s=20230601; t=1714375619; x=1714980419; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=plE/4ftCE6lXuzJzPfSuImu38o2csfGGp934wr7ZOZQ=;
+        b=l3d18lRDhwZJSX9Y5FZc2zV+HaMTg/IJa1wOiuYyUsSiLjbp4pEw9oxGjaLddVvfoZ
+         NEqIckxUcCbaINhTFwtBW3ovHHVXy14Qfju0x9jhZB+AZ/RCtRLSnpx3nOMDyKMjwrab
+         OCxxfsMCMkfKnif99MprBXnY+wa35EvCSjAEA4HQ2NcZyViY90FyN+rqqtLb2W1dOOz2
+         yRQPNNFS8MdYYwMejUGoZB877K+DcyvAWhinCEyfbZBzcpRPpJ10fxKML6h8GcNkI6yF
+         TSPKnayJU2QukDcvtd2KI61GoHM+CNQtPilMNSkU4abdsxAInHrT1oby12AM3llw/H5Q
+         5WQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713960582; x=1714565382;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RoTyunRbk6WKbcDZzKg0fChldKgzN8TCsYu19OLDZgw=;
-        b=qUvNGiYVmvNStrbhxFH0+0eIC18rHSbUn3dBGjW+AJGMSUNxij/vAgyzw/VxzX/tgE
-         a84FE3Xrq3ZYyKt5jcabXHUIhEnO4n/dF2ef3KYPXVex12LPoBREtpYHx/a/nM9ml8/R
-         EXXxHPmypxEq8fMMbVd7EBnPug5DtaaTSzPKNIEPkGVMNQRuiwuZ0Zn8rXsdH0GXX+XT
-         2JzWei3LJ29u/1pyWVQzeCMChkub8pVKfLOVxHidM6vFDyGPznuJ99mXy0Kcx6WRrXq/
-         33ovm+tfRx6Dv9jaSzfV9VN5omZPO7TA+vpC6VCTweO+B7BsM3QMZ0MoTgL7LTKqkEDE
-         s5wQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXLTKReK8213hKMtChN038csDD4YGG2B5NFkJV5lSlcc0azFiWd2Vlz8Rf9WBdfItlvblTYnNSgqrSxyeB/d7/F3PX2HSW3YAyGh6cJtA==
-X-Gm-Message-State: AOJu0Yz7vNcpIRQ4uavGlo6p+0xHo7pqq4G5wq4QGBSwR9kZGR6LmaaM
-	nYQUbfC1ZVSggK570/nVAZIW9SnJdPQH6b2kmDWTBp689mZeV3a+0Xud/LBFtFMnnVN8kUcyS+V
-	VkxwXluezZ5aTQ0Wo+XT+j1AVlag=
-X-Google-Smtp-Source: AGHT+IG6P5IOtP/IBR7tUT+Vmq3PxHxW08YKGSM7hoe5r+LPonprmr+xHcBxyNJLNSssJggvIKz0eFcT8E4l8guGNsA=
-X-Received: by 2002:a0c:e149:0:b0:6a0:8c9a:c74b with SMTP id
- c9-20020a0ce149000000b006a08c9ac74bmr2282787qvl.28.1713960581636; Wed, 24 Apr
- 2024 05:09:41 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1714375619; x=1714980419;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=plE/4ftCE6lXuzJzPfSuImu38o2csfGGp934wr7ZOZQ=;
+        b=kqQlPiQRzbfm8CNmh4ghzKFRM/zdin7JX/MAyJ5sg1XwhQUwSyEQMQWCWsrpgkehkJ
+         TArIPmXjdR8P4RB9cRNPvO7ay8r7HQU3A5n+tmBvJcZ9IZ4TKSIgdOkCboMOPNNxIMvq
+         ZI5xpa6RXVuCMUuCEyZMO/bkGSpMwqnvsf5AHCPCRE+BPWPoAFtC/EOfDMaoG5lzcEhp
+         JbLSz2n1OtMvFelu2U2YHiiYE6qaJobfmTMdI6IGlT8Y7dVAhtRHryTNt6dpKfl9Dw0q
+         DJcEWdHr58SnXbTflz84MeU3IJi5rqbZ/fdds/Fx0d6FaDtdlcu004TLG3v0NukbGYL3
+         DJcg==
+X-Forwarded-Encrypted: i=1; AJvYcCVLMyej410Xk1rQK+T7W7vUdpnXDbjlaNG+VrPGgs+HTAFwzC169XUaGKE0d8asfbEgqBsP1n7rzkHUt378GaeX4gyaf5FDw02tVETe
+X-Gm-Message-State: AOJu0Yw92M8AbypQaMmAo0P2md9GiYTMsvHoEZOe2R8g4olNJMKGlDfu
+	3qaFtd3xA5HxjtchewmDVikEVTaYTmlv5CeMnyI1LYV4sfdAghDh
+X-Google-Smtp-Source: AGHT+IFiTLs7V33QGQDaRhhm84AqOkJ7ce+sgAj/vEOsSn7h1vOnU8/cr7FY+Qp7x9nr9JMzqGfKcg==
+X-Received: by 2002:a17:902:7809:b0:1e4:19e3:56cb with SMTP id p9-20020a170902780900b001e419e356cbmr11933122pll.12.1714375619542;
+        Mon, 29 Apr 2024 00:26:59 -0700 (PDT)
+Received: from localhost.localdomain ([205.204.117.126])
+        by smtp.gmail.com with ESMTPSA id a4-20020a170902ecc400b001eac9aa55edsm6928331plh.250.2024.04.29.00.26.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Apr 2024 00:26:59 -0700 (PDT)
+From: zhangwarden@gmail.com
+To: jpoimboe@kernel.org,
+	mbenes@suse.cz,
+	jikos@kernel.org,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com
+Cc: live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Wardenjohn <zhangwarden@gmail.com>
+Subject: [PATCH] livepatch.h: Add comment to klp transition state
+Date: Mon, 29 Apr 2024 15:26:28 +0800
+Message-Id: <20240429072628.23841-1-zhangwarden@gmail.com>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240407035730.20282-1-laoar.shao@gmail.com> <20240407035730.20282-2-laoar.shao@gmail.com>
-In-Reply-To: <20240407035730.20282-2-laoar.shao@gmail.com>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Wed, 24 Apr 2024 20:09:05 +0800
-Message-ID: <CALOAHbDGcY5y6hWZgJp9ELrt_w4pfB-X3EqS3yu8k37pj3ZEcw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] module: Add a new helper delete_module()
-To: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, 
-	joe.lawrence@redhat.com, mcgrof@kernel.org, 
-	Greg KH <gregkh@linuxfoundation.org>
-Cc: live-patching@vger.kernel.org, linux-modules@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sun, Apr 7, 2024 at 11:58=E2=80=AFAM Yafang Shao <laoar.shao@gmail.com> =
-wrote:
->
-> Introduce a new helper function, delete_module(), designed to delete kern=
-el
-> modules from locations outside of the `kernel/module` directory.
->
-> No functional change.
->
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  include/linux/module.h |  1 +
->  kernel/module/main.c   | 82 ++++++++++++++++++++++++++++++++----------
->  2 files changed, 65 insertions(+), 18 deletions(-)
->
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index 1153b0d99a80..c24557f1b795 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -75,6 +75,7 @@ extern struct module_attribute module_uevent;
->  /* These are either module local, or the kernel's dummy ones. */
->  extern int init_module(void);
->  extern void cleanup_module(void);
-> +extern int delete_module(struct module *mod);
->
->  #ifndef MODULE
->  /**
-> diff --git a/kernel/module/main.c b/kernel/module/main.c
-> index e1e8a7a9d6c1..3b48ee66db41 100644
-> --- a/kernel/module/main.c
-> +++ b/kernel/module/main.c
-> @@ -695,12 +695,74 @@ EXPORT_SYMBOL(module_refcount);
->  /* This exists whether we can unload or not */
->  static void free_module(struct module *mod);
->
-> +static void __delete_module(struct module *mod)
-> +{
-> +       char buf[MODULE_FLAGS_BUF_SIZE];
-> +
-> +       WARN_ON_ONCE(mod->state !=3D MODULE_STATE_GOING);
-> +
-> +       /* Final destruction now no one is using it. */
-> +       if (mod->exit !=3D NULL)
-> +               mod->exit();
-> +       blocking_notifier_call_chain(&module_notify_list,
-> +                                    MODULE_STATE_GOING, mod);
-> +       klp_module_going(mod);
-> +       ftrace_release_mod(mod);
-> +
-> +       async_synchronize_full();
-> +
-> +       /* Store the name and taints of the last unloaded module for diag=
-nostic purposes */
-> +       strscpy(last_unloaded_module.name, mod->name, sizeof(last_unloade=
-d_module.name));
-> +       strscpy(last_unloaded_module.taints, module_flags(mod, buf, false=
-),
-> +               sizeof(last_unloaded_module.taints));
-> +
-> +       free_module(mod);
-> +       /* someone could wait for the module in add_unformed_module() */
-> +       wake_up_all(&module_wq);
-> +}
-> +
-> +int delete_module(struct module *mod)
-> +{
-> +       int ret;
-> +
-> +       mutex_lock(&module_mutex);
-> +       if (!list_empty(&mod->source_list)) {
-> +               /* Other modules depend on us: get rid of them first. */
-> +               ret =3D -EWOULDBLOCK;
-> +               goto out;
-> +       }
-> +
-> +       /* Doing init or already dying? */
-> +       if (mod->state !=3D MODULE_STATE_LIVE) {
-> +               ret =3D -EBUSY;
-> +               goto out;
-> +       }
-> +
-> +       /* If it has an init func, it must have an exit func to unload */
-> +       if (mod->init && !mod->exit) {
-> +               ret =3D -EBUSY;
-> +               goto out;
-> +       }
-> +
-> +       if (try_release_module_ref(mod) !=3D 0) {
-> +               ret =3D -EWOULDBLOCK;
-> +               goto out;
-> +       }
-> +       mod->state =3D MODULE_STATE_GOING;
-> +       mutex_unlock(&module_mutex);
-> +       __delete_module(mod);
-> +       return 0;
-> +
-> +out:
-> +       mutex_unlock(&module_mutex);
-> +       return ret;
-> +}
-> +
->  SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
->                 unsigned int, flags)
->  {
->         struct module *mod;
->         char name[MODULE_NAME_LEN];
-> -       char buf[MODULE_FLAGS_BUF_SIZE];
->         int ret, forced =3D 0;
->
->         if (!capable(CAP_SYS_MODULE) || modules_disabled)
-> @@ -750,23 +812,7 @@ SYSCALL_DEFINE2(delete_module, const char __user *, =
-name_user,
->                 goto out;
->
->         mutex_unlock(&module_mutex);
-> -       /* Final destruction now no one is using it. */
-> -       if (mod->exit !=3D NULL)
-> -               mod->exit();
-> -       blocking_notifier_call_chain(&module_notify_list,
-> -                                    MODULE_STATE_GOING, mod);
-> -       klp_module_going(mod);
-> -       ftrace_release_mod(mod);
-> -
-> -       async_synchronize_full();
-> -
-> -       /* Store the name and taints of the last unloaded module for diag=
-nostic purposes */
-> -       strscpy(last_unloaded_module.name, mod->name, sizeof(last_unloade=
-d_module.name));
-> -       strscpy(last_unloaded_module.taints, module_flags(mod, buf, false=
-), sizeof(last_unloaded_module.taints));
-> -
-> -       free_module(mod);
-> -       /* someone could wait for the module in add_unformed_module() */
-> -       wake_up_all(&module_wq);
-> +       __delete_module(mod);
->         return 0;
->  out:
->         mutex_unlock(&module_mutex);
-> --
-> 2.39.1
->
+From: Wardenjohn <zhangwarden@gmail.com>
 
-Luis, Greg,
+livepatch.h use KLP_UNDEFINED\KLP_UNPATCHED\KLP_PATCHED for klp transition state.
+When livepatch is ready but idle, using KLP_UNDEFINED seems very confusing.
+In order not to introduce potential risks to kernel, just update comment
+to these state.
+---
+ include/linux/livepatch.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Since the last version, there hasn't been any response. Would you mind
-taking a moment to review it and provide your feedback on the
-kernel/module changes?
+diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+index 9b9b38e89563..b6a214f2f8e3 100644
+--- a/include/linux/livepatch.h
++++ b/include/linux/livepatch.h
+@@ -18,9 +18,9 @@
+ #if IS_ENABLED(CONFIG_LIVEPATCH)
+ 
+ /* task patch states */
+-#define KLP_UNDEFINED	-1
+-#define KLP_UNPATCHED	 0
+-#define KLP_PATCHED	 1
++#define KLP_UNDEFINED	-1 /* idle, no transition in progress */
++#define KLP_UNPATCHED	 0 /* transitioning to unpatched state */
++#define KLP_PATCHED	 1 /* transitioning to patched state */
+ 
+ /**
+  * struct klp_func - function structure for live patching
+-- 
+2.37.3
 
---=20
-Regards
-Yafang
 
