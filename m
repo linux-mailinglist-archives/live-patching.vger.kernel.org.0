@@ -1,99 +1,113 @@
-Return-Path: <live-patching+bounces-247-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-248-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C2E398BD9BA
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 05:29:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7A3388BDA75
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 07:01:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7DBF3284793
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 03:29:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AB5BC1C20FF4
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 05:01:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A3E781EB3E;
-	Tue,  7 May 2024 03:29:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E7A54EB5F;
+	Tue,  7 May 2024 05:01:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AYJOtp55"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E3lDdNpL"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1994C94;
-	Tue,  7 May 2024 03:29:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3459A4A12;
+	Tue,  7 May 2024 05:01:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715052567; cv=none; b=O/8JjvIRT9NT9WENTWLn/SnAfzYMf22jgrkeYNpHdYQBwFWlJrDEJgnunLeVF4eHMidU0pBkCbn3kz5HxY9HhXECIYwTxc2se/myYqMpwZMeQuAv4H+I//QVAU/Du+O0Lugn8NCCWWsUgIh1IKianG7jKX0IYx7cedxRlmUB8Ek=
+	t=1715058090; cv=none; b=rM8bIW0TIH04C/5eHDY7SbCCh/GKDTLwvxsGhsDqbFS1nlvBzwGOIFfo2YPtiZ866rsNeMz5R+Q44TJGQ/XlSeJYx4nBGbz4gs5/17ugLZZSV+n8NaYPL3d3bfIPjiqkxm9VFuyEnikLWchHlLK4/t5Og5fHB5+wDXrO8nZww28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715052567; c=relaxed/simple;
-	bh=CCU+3G3786o55uqluG43dyB9AWpsNTLLpCXa6nXoX/g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bQxy+AyGeWnbJS09BVkR1iYJuN9Hfk5HNyw8+NemaGGS2LZZ79c2CPmVxwWkJbqop31X2ut3npOfdiX+i52o8RyTTwiyrHy3bB9mTvX5+P8R17ULq8FG3CVJoD3qsxBDuRUCeRvoOvpfkeXhCHdzXSHOtN6As16BeTX063Myjh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AYJOtp55; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5D9DC2BBFC;
-	Tue,  7 May 2024 03:29:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1715052567;
-	bh=CCU+3G3786o55uqluG43dyB9AWpsNTLLpCXa6nXoX/g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AYJOtp55CqE+SveBfADLzWSgb58zzrIQXHHvlGCTvVonRszQRzc1uAShBreXBxRiJ
-	 Y7FtBIIOrCHjoxLGYxCUOZJ7XD7B6pyiGg25IsZPCSlWur1VooUNaMBrI53kqInwZf
-	 FnoTYIHI3l6umoIVVv4qvZQG1E1OxROasWJG8TIee/4h4wVp8KS0H7NqcIW3tj2eVe
-	 o5hn1PRuByrKZFXYHioKdGnPCraKixGIn44BJTY7v3DdckFIYPf7lCZbB6m+VV9wEz
-	 XKQYg9a+EyNCsag+rKJK9EL3MzhFXLU8ALXB7JvRyLb2IXU6kwn9GoI1QQwu6PxTBN
-	 KuDbtGPFZ9cvw==
-Date: Mon, 6 May 2024 20:29:25 -0700
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: zhang warden <zhangwarden@gmail.com>
-Cc: mbenes@suse.cz, jikos@kernel.org, Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/1] *** Replace KLP_* to KLP_TRANSITION_* ***
-Message-ID: <20240507032925.fva2jalnshp44k2p@treble>
-References: <20240507021714.29689-1-zhangwarden@gmail.com>
- <0E399FCD-396E-448B-A974-6034F4CF2B53@gmail.com>
- <20240507024151.6jto4zraqfbqxcw2@treble>
- <4010C687-88C9-43FC-B8C9-80981B04807F@gmail.com>
+	s=arc-20240116; t=1715058090; c=relaxed/simple;
+	bh=SIZ4RUFpeEy6dUng6YTjlC6V/F+L/k9rZ8iSxv56ZBM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=FQ+e/6Fu7MdITtMat88o7tqKNxCQIsAJLuvGL2qsJ13SubxsDnMc4sT334KO3N9S1NWdZ9k6xU5tRrTEUKoaV1MgFZtOh/rmW9GG2YCdc57e6gQEc7NgJ2MZyElmdPGaJ0dQeUTnHOcbTsVyt8HOoX5n2POx+hfQGfN+yWD5lbo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E3lDdNpL; arc=none smtp.client-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2b4952a1aecso1788782a91.3;
+        Mon, 06 May 2024 22:01:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1715058088; x=1715662888; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qJoeyqTnvdZcycQDt8RgILBB3Kj0RpbWdZGFFslKSiE=;
+        b=E3lDdNpLNX3xsR+qV6YfolNFnHfi2VEs43ulucBAoTHdyg/rOi2dRw2ouz/RBG3lsf
+         4qBvyZbAYYHiWFg/YP3rVoGL8hjVQU73X5CpFxRkO8q2kCsQBJk7sp2+6qriH8Xa8CWX
+         RJqpzrvbOuAqQIuHWbLxzRBN2vhBWCjy42PixaKgewJfpqQYKbp+w7uDIiskPZSMbOnP
+         lSn7FFFYZNjRFdrFMcs0yqeNc1UwIfW/S/7XYOuqe3QhY5gMtlSfGW3lLdsAftJEFwDb
+         ySHEzTc2MEe3SxzSa0RvWJlM/z+1/bzWzPyF7rx3D2Qi7XjeCXlvgXksyDu0pHvxEJk3
+         U5eQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715058088; x=1715662888;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qJoeyqTnvdZcycQDt8RgILBB3Kj0RpbWdZGFFslKSiE=;
+        b=RMbvmHpiSduCzz6z56/1MxwJFbe8QALGR1HCqzN6A9vG6l0CSTkvmCB7dO9/mYDxcC
+         JwYKO/C+vWTS2WvbyVdZvAhjQ0+UWE8c337QUGVymYM1Ze4tsJuRPu508cfDoWzDB1MO
+         BGee/gHHbgltBfCOFPNUPLFLYCLk7W4Q18LXHkqqxfwrgZSW2mL9abrPhWWYHu5bAEvi
+         Z1TMe44H5s+RPs8+5udH7WCYuE09NmWduIlt1dzqcfPW0bBcKFwtvM6B2B6M1QV7r9Yt
+         4HOETtKUq2P2vS/DnQWn1d15AS4v/p/AS/X9361mQsDLm7NhHdm8KKnnRRr6ANfWIp66
+         mNDA==
+X-Forwarded-Encrypted: i=1; AJvYcCVpATawY3VPsKTBZrB58p+tQrkueWs5Po0HuHuYSZXp31i6jNSeTWDflUBhQeFr6FaJMRw3DgG+CURZqaRuhJtKnfOW3IP+gv34mae4
+X-Gm-Message-State: AOJu0Ywg3OvtfKdMVEXfol5crnts35+yDmV0Ks58T9siGUI95iWH62nu
+	QvM/7t7vZ62Gq36UPS0FsX6DNx4JyYB/xyLCPNkLRiDoSw8hyodk
+X-Google-Smtp-Source: AGHT+IFPuQJRD3mk58U1X23VC60LAi5Iv86kv4NFnad8anRF3g+lJmfohzkrzEqT8WuWE6TissPNYA==
+X-Received: by 2002:a17:90b:2396:b0:2b1:fce5:f308 with SMTP id mr22-20020a17090b239600b002b1fce5f308mr9456597pjb.49.1715058086943;
+        Mon, 06 May 2024 22:01:26 -0700 (PDT)
+Received: from localhost.localdomain ([205.204.117.126])
+        by smtp.gmail.com with ESMTPSA id nc15-20020a17090b37cf00b002b115be650bsm10894236pjb.10.2024.05.06.22.01.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 May 2024 22:01:26 -0700 (PDT)
+From: zhangwarden@gmail.com
+To: jpoimboe@kernel.org,
+	mbenes@suse.cz,
+	jikos@kernel.org,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com
+Cc: live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Wardenjohn <zhangwarden@gmail.com>
+Subject: [PATCH 0/1] *** Rename KLP_* to KLP_TRANSITION_* ***
+Date: Tue,  7 May 2024 13:01:10 +0800
+Message-Id: <20240507050111.38195-1-zhangwarden@gmail.com>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4010C687-88C9-43FC-B8C9-80981B04807F@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 07, 2024 at 10:56:09AM +0800, zhang warden wrote:
-> 
-> 
-> > On May 7, 2024, at 10:41, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> > 
-> > On Tue, May 07, 2024 at 10:21:40AM +0800, zhang warden wrote:
-> >> 
-> >> 
-> >>> 
-> >>> transition state. With this marcos renamed, comments are not 
-> >>> necessary at this point.
-> >>> 
-> >> Sorry for my careless, the comment still remains in the code. However,
-> >> comment in the code do no harms here. Maybe it can be kept.
-> > 
-> > The comments aren't actually correct.
-> > 
-> > For example, KLP_TRANSITION_UNPATCHED doesn't always mean "transitioning
-> > to unpatched state".  Sometimes it means "transitioning *from* unpatched
-> > state".
-> > 
-> > -- 
-> > Josh
-> 
-> OK, I got it. I will remove the comment later. After all, comment is
-> not necessary at this point after we rename the macros.
+From: Wardenjohn <zhangwarden@gmail.com>
 
-Yeah, removing them altogether might be best, as the meaning of these
-can vary slightly depending on the operation (patching vs unpatching),
-and also depending on where it's stored (task->patch_state vs klp_target_state).
+This is the v3 of commit " livepatch: Rename KLP_* to KLP_TRANSITION_* "
+with the suggestion of @Josh
+
+v1 -> v2 : 
+Use KLP_TRANSITION_* to replace marcos KLP_*
+
+v2 -> v3 :
+Remove the unnecessary comment and fix one typo in the code.
+
+Wardenjohn (1):
+  livepatch: Rename KLP_* to KLP_TRANSITION_*
+
+ include/linux/livepatch.h     |  6 ++--
+ init/init_task.c              |  2 +-
+ kernel/livepatch/core.c       |  4 +--
+ kernel/livepatch/patch.c      |  4 +--
+ kernel/livepatch/transition.c | 54 +++++++++++++++++------------------
+ 5 files changed, 35 insertions(+), 35 deletions(-)
 
 -- 
-Josh
+2.37.3
+
 
