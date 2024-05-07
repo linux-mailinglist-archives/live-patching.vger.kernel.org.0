@@ -1,105 +1,134 @@
-Return-Path: <live-patching+bounces-250-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-251-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 833268BE23A
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 14:35:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 218B78BE51A
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 16:04:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 383AF1F263A9
-	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 12:35:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CD5232880AA
+	for <lists+live-patching@lfdr.de>; Tue,  7 May 2024 14:04:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CB0915D5A1;
-	Tue,  7 May 2024 12:34:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A710D15EFD3;
+	Tue,  7 May 2024 14:04:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="fcmKxLe1"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lBenVZPR"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A99415ADB8
-	for <live-patching@vger.kernel.org>; Tue,  7 May 2024 12:34:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AAA115E5C4;
+	Tue,  7 May 2024 14:04:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715085288; cv=none; b=ZlcKxSs8yVJqX/1BYj8zPa0e61l3KA9q0K2WF5rDfeqV94OMLYA9Vfgo2cYj/OE4CNz+U9JG6GOeHFti+RLdXRNcKm3r0CGh6pCl4QnVB2Qyas5zGZXsZ4Mm8T/RV12vFgEMP+y3F8oWSLXQNh1K+E0y00qBAHJY9gasBMGCwWA=
+	t=1715090678; cv=none; b=kgrY/33OmlPIpe+0VNrgugU33MLQDIe+JKSF9ok1RwlwqyXjoiarEMM0jHzgfuUHdihfjUof1opXhakZW1ZX9eV1gJgZ6NNNi0WLFZ0ItBOU5/teTLqzr/WZahdjWMmIXMUiBRtQUy0jk2A29zeWSO/GW5JL4CDhvgKVflCwxto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715085288; c=relaxed/simple;
-	bh=4qhhVrDLgvjiR3qGhTOs9uM3suWa+tgK/JAtQej9lNE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lo5r9aJCkPP80B6OsHlT3s7HR9+UmhwHiqJEVdTfeIWgM1Sg3ySgZTTXbPeqxBzp7468rpIsB/ysNjxgCq3LQA8NPltsbzBY4rolrOskoZzqdI6Wpf8NbCevXFbmmjpzTtwFoU9HL3+f1GQBajZNtlYlPwSxAu2zrk2jZRnB/d0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=fcmKxLe1; arc=none smtp.client-ip=209.85.167.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-51f29e80800so3373958e87.2
-        for <live-patching@vger.kernel.org>; Tue, 07 May 2024 05:34:45 -0700 (PDT)
+	s=arc-20240116; t=1715090678; c=relaxed/simple;
+	bh=nlaeZmL+KJJ2V177uLxHFZ29IrgSTAq0VC/0/V/HUIw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Gz1vVumZFnv2PWLabYqqhSIfJsTn4VqNCKCrHn/uQAo+2HOLEpTGyjhsoER+S/vElwaW4JZpmkr3MHIm+TOyYSjwK8dJB5Ufd88juJYxh0Ysq3SkSPXleRTXC61ZM1oKLq2UeiUJANl9kGDr9TLtZoXDz/UGC2oRgU8YnhCS/6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lBenVZPR; arc=none smtp.client-ip=209.85.219.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-6a0ff97a9c7so43040126d6.0;
+        Tue, 07 May 2024 07:04:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1715085284; x=1715690084; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Fb7T1C3RqLm2Zber0tc50ZaqTjghpLq4bIRrAurD6qU=;
-        b=fcmKxLe1yEnewMPMZr2Jz5huoki3cxRFB1ASj9i3UrylKgFQeMPskQlJR+HsMozAdA
-         BEOxvKgvw/XakEiklmC0WLDdBqVGBRIU/cO3JBIhqpKYBumsSSOJNHCtFpOfoZHpcwlq
-         lOBoMxCmgOX8I1brp+fnl7dx8lAwuR8TnNfnTAsUcl9VpOXHMTkVR5/rR1LdaFH6clT2
-         HX1RDLlopDkXQkKUSjKYIP7Bngj0S/k0ZXdIiq1sFJr+8kGvE0FLIGln2vPgfjUh2ZSx
-         /LRVzyrScZ5gZWX0rkHIhePHs0VSFZp4ZbEVIcWbXelnyTIU3wXB+G445ULtFydRT02S
-         o0dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715085284; x=1715690084;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1715090676; x=1715695476; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Fb7T1C3RqLm2Zber0tc50ZaqTjghpLq4bIRrAurD6qU=;
-        b=BGxJaXpxCSZNqAvWaBfP+dUTq+d2vL2+oTclRDKqjKYMrpC8ACH3DDLrW0yK9Tjl5s
-         4r5erj6tUiJpo9hi5K+M2/uXKNamTUxpmQFNfM4ybF0/xoi04Uss1wQgIYSUr7ZmcT3w
-         40I2kNO14R8Wgcax/ovlm1Mdw++PoFwdKDshnv2dRG2gL5/4kuTEk3FBLSqiu/tiwHHU
-         yOtANRdPqVrLGNOrAFPN6Jmabfbo7E0QOlCIi3biGg0ERY7fayxgd9gJ/P1XL+uZMyr8
-         u4iNVdOA6NXVS+AFHrU0A7likdQAZn2o0g9IZ94jV9Kk1vE4krZ560+9sZI4RtyAy0Gl
-         MHEA==
-X-Forwarded-Encrypted: i=1; AJvYcCXnc619RalsSiUWE6H2K/rzABnH0aGwaVP6iF/U0sThEXB7CWJbeLHBQ1QPxQWyw/A0NfUBvfKSHQq3etJvkSadUwBD5h6qz0q/vfj0uA==
-X-Gm-Message-State: AOJu0YxtSYjxhoy8DOQtu4A3GdcNGBkTInL0RF8kclxktKDq3wCKtNF7
-	9SHT4scRnDITOa4gRWSvdVwRrMMUzVAJTyQPRQqfcFHEay16wAMffJNgk+5wkZ8=
-X-Google-Smtp-Source: AGHT+IFuuNXxRqEhhogyMFo8s4Muv03vq4OxYhgbMjSC8e3E/QpWVHqtClYBhR+3fXlxPsxYgDYrZg==
-X-Received: by 2002:a19:2d51:0:b0:51a:e21c:109c with SMTP id t17-20020a192d51000000b0051ae21c109cmr7768074lft.14.1715085283574;
-        Tue, 07 May 2024 05:34:43 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id j15-20020a05600c190f00b0041bf512f85bsm23047532wmq.14.2024.05.07.05.34.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 May 2024 05:34:43 -0700 (PDT)
-Date: Tue, 7 May 2024 14:34:41 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: zhangwarden@gmail.com
-Cc: jpoimboe@kernel.org, mbenes@suse.cz, jikos@kernel.org,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] livepatch: Rename KLP_* to KLP_TRANSITION_*
-Message-ID: <Zjof4QzDQ2unnjVn@pathway.suse.cz>
-References: <20240507050111.38195-1-zhangwarden@gmail.com>
- <20240507050111.38195-2-zhangwarden@gmail.com>
+        bh=mBGToCMB6kGQ+VwKBgwLZvBpbX3sGXBJlbKQvazNkag=;
+        b=lBenVZPRzznHMARA/cALxRZps3j3WN26eJ0N1bWGsl1S1d0sOLb+yXVHCyYP7kqNij
+         tRpZLGrj0qv7R9LbhezbSYLX1N1qEq9gL3KVAm5SsZn+g+xwsYtYvEqCW4oCTcroyFqw
+         Ue5Qvmd52D4t7sRSD4hPdW1oylav2YEMEfeSfIRMRUpNz972QMT8BJnvsMfsIU8e2MBf
+         ORjJqv+B0GX9vB7qogWf/o3WQnP6//Zw3QFW9vRuTqDsofL5SW1kJrTMj4PacJ5qyU1m
+         8VFgFTWakgO1FzmynH+Gi7kgVPbR/I1CGtD/yB0E0J2TnvcrQdn2qVvocdg3ydqozGjt
+         i5MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715090676; x=1715695476;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mBGToCMB6kGQ+VwKBgwLZvBpbX3sGXBJlbKQvazNkag=;
+        b=suwnvO8NtPg8osKjnRViH9PG60Tk+j9Y0sD1geQpT/gwFBjw3Jd8Q9gDQnTGZFlE0j
+         bewckW5xmiI9qS5jNIf7RoDjFce0EiaFamYDeTf9cRu+QbS5OTuRvMRir6hQKNkr08mN
+         JE5Dtf9LhQ2R2Tf2dIUyRYA2BalLthZAAGWOfhYdoSEplUDvrdXhDSUAi/z2BSZZTWU0
+         +ez5/1LOcMaULp0dBMm1IPOhm70TCkHIZHXLd/VSjDCg3axBhqzinWACvPPJAtKMQbIH
+         /9y3h05sgcK4RkC9eFMFLsfpWn/BrPOqIVmGy4VRAvw5AoIAo9Vz+vvj+8cobI6QSSBa
+         fehw==
+X-Forwarded-Encrypted: i=1; AJvYcCUazzrEK2AX9T6l5V6pC8LYKbu8/74G7ou06UbxwKoY8rEPcg+wTELx5LRVKydWKbCO6YoXx0jMjdm5XxYf9MFGLgxXqfHkYLoWSs3/AyapZbrZDH7IUb+rGKh3mkkqLy0IjDa/vq2I6EBYu3k=
+X-Gm-Message-State: AOJu0YyFpQWq63JjlWSldbswng8WYgFO3bUB/ULfMblYQbFsn1oc44jw
+	t9IMlo4Zx8xGcapNwGwwxT6m15iCvf0vayOvh77DQdQEaA5yjjWtC/S3spy3Ufxz+WQb+FzTMU7
+	3lWlOGmMR+M5mP/UN3vx0T3EeXwQugsBCiKo=
+X-Google-Smtp-Source: AGHT+IGiSNwX2oRF7dtfcnU9xHgu+cAheggzUcyFac3OO2PogaW1cgJI/dNFidFeO7Q9jjbP9VElAFgbTMAHVYIAWOw=
+X-Received: by 2002:a05:6214:c84:b0:6a0:b3ec:9032 with SMTP id
+ r4-20020a0562140c8400b006a0b3ec9032mr4787351qvr.12.1715090675961; Tue, 07 May
+ 2024 07:04:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240507050111.38195-2-zhangwarden@gmail.com>
+References: <20240407035730.20282-1-laoar.shao@gmail.com> <20240407035730.20282-3-laoar.shao@gmail.com>
+ <20240503211434.wce2g4gtpwr73tya@treble> <Zji_w3dLEKMghMxr@pathway.suse.cz> <20240507023522.zk5xygvpac6gnxkh@treble>
+In-Reply-To: <20240507023522.zk5xygvpac6gnxkh@treble>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Tue, 7 May 2024 22:03:59 +0800
+Message-ID: <CALOAHbArS+WVnfU-RUzbgFJTH5_H=m_x44+GvXPS_C3AKj1j8w@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] livepatch: Delete the associated module of
+ disabled livepatch
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Petr Mladek <pmladek@suse.com>, jikos@kernel.org, mbenes@suse.cz, 
+	joe.lawrence@redhat.com, mcgrof@kernel.org, live-patching@vger.kernel.org, 
+	linux-modules@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue 2024-05-07 13:01:11, zhangwarden@gmail.com wrote:
-> From: Wardenjohn <zhangwarden@gmail.com>
-> 
-> The original macros of KLP_* is about the state of the transition.
-> Rename macros of KLP_* to KLP_TRANSITION_* to fix the confusing
-> description of klp transition state.
-> 
-> Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
+On Tue, May 7, 2024 at 10:35=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
+> wrote:
+>
+> On Mon, May 06, 2024 at 01:32:19PM +0200, Petr Mladek wrote:
+> > Also it would require adding an API to remove the sysfs files from the
+> > module_exit callback.
+>
+> Could the sysfs removal be triggered from klp_module_going() or a module
+> notifier?
+>
+> > I do not see any reasonable reason to keep the replaced livepatch
+> > module loaded. It is an unusable piece of code. IMHO, it would be
+> > really convenient if the kernel removed it.
+>
+> User space needs to be polling for the transition to complete so it can
+> reverse the patch if it stalls.  Otherwise the patch could stall forever
+> and go unnoticed.
+>
+> Can't user space just unload the replaced module after it detects the
+> completed transition?
 
-Looks good to me:
+Are you referring to polling the
+"/sys/kernel/livepatch/XXX/transition"? The challenge lies in the
+uncertainty regarding which livepatches will be replaced and how many.
+Even if we can poll the transition status, there's no guarantee that a
+livepatch will be replaced by this operation.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
+>
+> I'm not sure I see the benefit in complicating the kernel and possibly
+> introducing bugs, when unloading the module from user space seems to be
+> a perfectly valid option.
+>
+> Also, an error returned by delete_module() to the kernel would be
+> ignored and the module might remain in memory forever without being
+> noticed.
 
-Best Regards,
-Petr
+As Petr pointed out, we can enhance the functionality by checking the
+return value and providing informative error messages. This aligns
+with the user experience when deleting a module; if deletion fails,
+users have the option to try again. Similarly, if error messages are
+displayed, users can manually remove the module if needed.
+
+--=20
+Regards
+Yafang
 
