@@ -1,143 +1,156 @@
-Return-Path: <live-patching+bounces-258-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-259-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id ED1638C0B3C
-	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 07:54:06 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 003928C0E0B
+	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 12:16:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1BEF91C217D4
-	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 05:54:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A156A28328B
+	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 10:16:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 538EC1494B7;
-	Thu,  9 May 2024 05:53:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6293614B07E;
+	Thu,  9 May 2024 10:16:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b/R2geSR"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="OPPc9Lo8"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D00C51494B2;
-	Thu,  9 May 2024 05:53:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26148D528
+	for <live-patching@vger.kernel.org>; Thu,  9 May 2024 10:16:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715234037; cv=none; b=VSOjYmDp6pasg0r92ShdeLFu/wDyb6MIONCfTRF4D8g9K+kCF2Q63XeK3unNpqu7Kc3RmPwQHhiJeO/v0ElZMr5UukeIY7CBrdauO4fQk3iczpvJ5jqxg+ln/mM+Jfvld1QPB7zCVbbKsVw3U1yiqSFHwIlgN04qFeTgyb/AmuY=
+	t=1715249772; cv=none; b=mEWlpO06oyja4lVnrE2wXU0isyMAIGyFRLXefHi+d8xI+AbA96fh4KzxRc96+fEWIToGS+xCvRZsZztADw/FHA+6eT1Cktgj+MDz8POcGN9OjEn+5460T79AGvd/CaTwfkCmpDjCsIb8JxYz0MsZ+DQd6f9g6zAChN0nFH4kKqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715234037; c=relaxed/simple;
-	bh=AjV4HPIEm8zbNFZV+mZ+xQbZPYEN+O2vQcAM8KrhH84=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NUBr3C+E+dvk4e8J2CmKHf7BOmjActjPWxgvBa/1aN9AMtpXs984vrDPprSUtY/pKnAqW109WM5jbzp5SN/2DYQf8S+8vA216F5XCI064+f5bDocG2npivvW4bsWuDmdVaWu0/y197G13IC0BI6382wXJ5Q76GpD0nKPiatWkY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b/R2geSR; arc=none smtp.client-ip=209.85.219.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6a0ce3e823fso3047376d6.1;
-        Wed, 08 May 2024 22:53:55 -0700 (PDT)
+	s=arc-20240116; t=1715249772; c=relaxed/simple;
+	bh=BQTsY+QYWkqzuPo9ysu87ZBDzqxQ33iY2jNZGI1Qrq0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LpCsNKVgqPFferdAeco8UQ+V/0u52iCOFJOlMFrCCRkSy8M2hb7657KiUicFXKeLdtCfVjhUWmbYjbx1LzzvHnF1pddAyS/wwkPtCB10uLHPzxThZ30x70K6gBU3O2a8Hm7smCx1RSzB/ajWaR4KoFdIKX5xZFiyuxxzaSRoa8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=OPPc9Lo8; arc=none smtp.client-ip=209.85.167.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-51f174e316eso836773e87.0
+        for <live-patching@vger.kernel.org>; Thu, 09 May 2024 03:16:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1715234035; x=1715838835; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NisROruOOmEQz/yNJzjIKf5w2xFa1pbI+43xZbmizOE=;
-        b=b/R2geSR5yIR0rhQRvNBLhksTwBPsUTF68Pf6Vi+GSAtlmAy0rmmTahjqsdBecllmN
-         WXJbUcJ/cL6sfS6KykGcfBNybk4zSEfTSTQ8A7MwNTenlPY3rWtjVlpko697xGIjWntt
-         I0kKmoAT0AGPJo+dSAy6ly0dSJwrjgxFqoos2nteulkZmxyHloZcXEbpRMvMC+e3aF0L
-         La/BDyY9cY0G5/qLziXbnFW5vvKC69XIlmL4jogAv6hHA+RYXUXB0t8F/ODydwXuhv4V
-         gD7tpyl5axv/iTBikc2Yzc3BfCmWmrJQsnM3fUCPzgiMLLf4v/fR6V4RoS8OPmE85g0b
-         WZQw==
+        d=suse.com; s=google; t=1715249768; x=1715854568; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=FFO/jadRt4SPPUwoVVPLNioOizVZIMtK7I2U+xwwzps=;
+        b=OPPc9Lo8+UjwpAC7aKEka3WjsSDQ855sVBgUoOPavOIFpU75lIulpOSCdASvkrXQK6
+         6byXGxBHrpWEz7yP2KIhdxZ8T668RuJEzUI8t2dzt+oZQkgaOmgWZRNo/4eo81dnNjtL
+         w3L7YhuiuV/3FTf00wYb4L2glMZihQ6AHS1M61en1K5BPcMK8lHOq+3ugzE1UtPXj/Xu
+         SAn1WtdqlJ3zxUgL0HnI+dqzuuWgv3wYc2BjmgLiaryYzKoK4Vu227+BQbio5efArYFe
+         jqFQVidMLqAqeTbB70yGJIS2zF13k4LFTI26r3RjHYSXlD/dXIrBaO/osUoB/rSox0zV
+         6diQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715234035; x=1715838835;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NisROruOOmEQz/yNJzjIKf5w2xFa1pbI+43xZbmizOE=;
-        b=CZOXNNY+fG1x7SEdniP8JI3g9IzYCFuN+CiJ4oL2nZq4cB0m5H9PdjT92HXxDlMU0r
-         YlpGLlpQhergUaxpJ4b+o7wG2Xsdaa/Wc7VB2p8Kowt5eIB0V9/HVWUWErfBsD7o0GGW
-         nDRi16SuuAAI9c5CSCF4hhkR21fUvfyfPf8r234Wp5jxImUGMpXSWNlPcxu3XXbY61dG
-         3owJ94ytPcUWqtodhnt8y7kk0To9C+YrSZ0aebE2JzconsU6GloT72JXk9lcB5s42Svg
-         Xzj54jryjlEaSKxbYGBG/08ftiPH27hAWEosODY3tk3wGbNopON8sRNNAr6lsq5cIm+L
-         i7Dg==
-X-Forwarded-Encrypted: i=1; AJvYcCWIK3zIZ+fqptYJIJBMT/gExNwxZz2+sEbq5NwI2lghESf3Rl4b1NY6HDD+VkH7X7ImrstbaKzi3YDsmnjDgGH6BpgCcEefz5ZbEVYgVIshB8ieG5HquCtdJc6a7R+I3otstoEDohCXIwkL3wQ=
-X-Gm-Message-State: AOJu0Yz9GbxTCXDUPsXE/ejbr7HDxhzZVE/Hao4P71v4XXbQU4l6k1sT
-	Td8NUzd4EiTVlvyYV+eSZnEM5WWuqxEDxD9hIyvXb68z55YbgNsqVsHJZybG9KapGvNqyljGPf2
-	OrXJoKsIlyk3utnTnLEfpZyH4kHc=
-X-Google-Smtp-Source: AGHT+IHMVD6moGkYOoqfo8Tlo+PvXHFwpr1KdaRVtCyK2U7azpphEpDCyaAcQBmdSXaaaPXo5neMD/N491Slvc/IC/0=
-X-Received: by 2002:a05:6214:268a:b0:6a0:a55b:9539 with SMTP id
- 6a1803df08f44-6a1514e4e6bmr53922356d6.60.1715234034741; Wed, 08 May 2024
- 22:53:54 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1715249768; x=1715854568;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FFO/jadRt4SPPUwoVVPLNioOizVZIMtK7I2U+xwwzps=;
+        b=BMbEIuvJF28jORbe9/TTXDgiv351+Ux4oxtRXE8+85O8z/YwxCRE34Bm4ZLRiPYvPA
+         uCJkAhA+o8ymYdS+FbwyEHCTErCH689bturGT8chTw5Ztx2Fq/Wrsa0XQduso2GzOxMy
+         MMCxz68KKoH1+kscUcthUHvg7jBD1wtpA+eKrIU3XLMxpy2obZkHkEG0iO4XIbcdpmWC
+         STR6R4bwcgtBGLHClKeFlsIGo7SFe0lUO6TtLxngRHkAakF/4sssBbQFr0t0gwjl1G26
+         HpAmygJV9JpqLEAzNyJIQSxbYBgyWHczl6jzN/5KCVunBQlEHi9ZTCxmDwcHML9p7PUJ
+         6Alw==
+X-Forwarded-Encrypted: i=1; AJvYcCXqCmbaBx+KYXqxx7uWvaVH+jMSQRQcHFquuo56j3y6KPZW3mmlduQEHe8EA/2bfbA9OltSCAfyudS9NSD6/WYjDp9+qnbcBHiAlnZVWA==
+X-Gm-Message-State: AOJu0YzmeBT5ZaZ58yjTAvFmB+h0fn0vPOaOT2RakR0V9eKQXeqJvD99
+	Op2YLf2/rFaxqK5BSMGMEtXuQXOu3OF6VwrNQtzaPf2pNSL0L7cs7B5M09gpwA8=
+X-Google-Smtp-Source: AGHT+IFCnmf8QAgKAdd7zmv9M9NzKV5flwTJZfiv4SkELlgUMZ+kSlztAk6A1Z+RF/l+HsWms7knvQ==
+X-Received: by 2002:a19:8c4d:0:b0:51e:e703:d11c with SMTP id 2adb3069b0e04-5217c26e7e9mr2987242e87.12.1715249768301;
+        Thu, 09 May 2024 03:16:08 -0700 (PDT)
+Received: from pathway ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-41fd97e842csm10458755e9.24.2024.05.09.03.16.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 May 2024 03:16:07 -0700 (PDT)
+Date: Thu, 9 May 2024 12:16:05 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Yafang Shao <laoar.shao@gmail.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, jikos@kernel.org, mbenes@suse.cz,
+	joe.lawrence@redhat.com, mcgrof@kernel.org,
+	live-patching@vger.kernel.org, linux-modules@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] livepatch: Delete the associated module of
+ disabled livepatch
+Message-ID: <ZjyiZfC9GqQ4akVJ@pathway>
+References: <20240503211434.wce2g4gtpwr73tya@treble>
+ <Zji_w3dLEKMghMxr@pathway.suse.cz>
+ <20240507023522.zk5xygvpac6gnxkh@treble>
+ <CALOAHbArS+WVnfU-RUzbgFJTH5_H=m_x44+GvXPS_C3AKj1j8w@mail.gmail.com>
+ <20240508051629.ihxqffq2xe22hwbh@treble>
+ <CALOAHbDn=t7=Q9upg1MGwNcbo5Su9W5JTAc901jq2BAyNGSDrg@mail.gmail.com>
+ <20240508070308.mk7vnny5d27fo5l6@treble>
+ <CALOAHbCdO+myNZ899CQ6yD24k0xK6ZQtLYxqg4vU53c32Nha4w@mail.gmail.com>
+ <20240509052007.jhsnssdoaumxmkbs@treble>
+ <CALOAHbBAQ580+qjxYbc1bNJxZ8wxxDqP3ua__pqKzCg9An3yGA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240407035730.20282-1-laoar.shao@gmail.com> <20240407035730.20282-3-laoar.shao@gmail.com>
- <20240503211434.wce2g4gtpwr73tya@treble> <Zji_w3dLEKMghMxr@pathway.suse.cz>
- <20240507023522.zk5xygvpac6gnxkh@treble> <CALOAHbArS+WVnfU-RUzbgFJTH5_H=m_x44+GvXPS_C3AKj1j8w@mail.gmail.com>
- <20240508051629.ihxqffq2xe22hwbh@treble> <CALOAHbDn=t7=Q9upg1MGwNcbo5Su9W5JTAc901jq2BAyNGSDrg@mail.gmail.com>
- <20240508070308.mk7vnny5d27fo5l6@treble> <CALOAHbCdO+myNZ899CQ6yD24k0xK6ZQtLYxqg4vU53c32Nha4w@mail.gmail.com>
- <20240509052007.jhsnssdoaumxmkbs@treble>
-In-Reply-To: <20240509052007.jhsnssdoaumxmkbs@treble>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Thu, 9 May 2024 13:53:17 +0800
-Message-ID: <CALOAHbBAQ580+qjxYbc1bNJxZ8wxxDqP3ua__pqKzCg9An3yGA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] livepatch: Delete the associated module of
- disabled livepatch
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Petr Mladek <pmladek@suse.com>, jikos@kernel.org, mbenes@suse.cz, 
-	joe.lawrence@redhat.com, mcgrof@kernel.org, live-patching@vger.kernel.org, 
-	linux-modules@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALOAHbBAQ580+qjxYbc1bNJxZ8wxxDqP3ua__pqKzCg9An3yGA@mail.gmail.com>
 
-On Thu, May 9, 2024 at 1:20=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org>=
- wrote:
->
-> On Thu, May 09, 2024 at 10:17:43AM +0800, Yafang Shao wrote:
-> > On Wed, May 8, 2024 at 3:03=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.=
-org> wrote:
-> > >
-> > > On Wed, May 08, 2024 at 02:01:29PM +0800, Yafang Shao wrote:
-> > > > On Wed, May 8, 2024 at 1:16=E2=80=AFPM Josh Poimboeuf <jpoimboe@ker=
-nel.org> wrote:
-> > > > > If klp_patch.replace is set on the new patch then it will replace=
- all
-> > > > > previous patches.
-> > > >
-> > > > A scenario exists wherein a user could simultaneously disable a loa=
-ded
-> > > > livepatch, potentially resulting in it not being replaced by the ne=
-w
-> > > > patch. While theoretical, this possibility is not entirely
-> > > > implausible.
-> > >
-> > > Why does it matter whether it was replaced, or was disabled beforehan=
-d?
-> > > Either way the end result is the same.
+On Thu 2024-05-09 13:53:17, Yafang Shao wrote:
+> On Thu, May 9, 2024 at 1:20 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
 > >
-> > When users disable the livepatch, the corresponding kernel module may
-> > sometimes be removed, while other times it remains intact. This
-> > inconsistency has the potential to confuse users.
->
-> I'm afraid I don't understand.  Can you give an example scenario?
->
+> > On Thu, May 09, 2024 at 10:17:43AM +0800, Yafang Shao wrote:
+> > > On Wed, May 8, 2024 at 3:03 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> > > >
+> > > > On Wed, May 08, 2024 at 02:01:29PM +0800, Yafang Shao wrote:
+> > > > > On Wed, May 8, 2024 at 1:16 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> > > > > > If klp_patch.replace is set on the new patch then it will replace all
+> > > > > > previous patches.
+> > > > >
+> > > > > A scenario exists wherein a user could simultaneously disable a loaded
+> > > > > livepatch, potentially resulting in it not being replaced by the new
+> > > > > patch. While theoretical, this possibility is not entirely
+> > > > > implausible.
+> > > >
+> > > > Why does it matter whether it was replaced, or was disabled beforehand?
+> > > > Either way the end result is the same.
+> > >
+> > > When users disable the livepatch, the corresponding kernel module may
+> > > sometimes be removed, while other times it remains intact. This
+> > > inconsistency has the potential to confuse users.
+> >
+> > I'm afraid I don't understand.  Can you give an example scenario?
+> >
+> 
+> As previously mentioned, this scenario may occur if user-space tools
+> remove all pertinent kernel modules from /sys/livepatch/* while a user
+> attempts to load a new atomic-replace livepatch.
+> 
+> For instance:
+> 
+> User-A                                                       User-B
+> 
+> echo 0 > /sys/livepatch/A/enable              insmod atomic-replace-patch.ko
+> 
+> >From User-A's viewpoint, the A.ko module might sometimes be removed,
+> while at other times it remains intact. The reason is that User-B
+> removed a module that he shouldn't remove.
 
-As previously mentioned, this scenario may occur if user-space tools
-remove all pertinent kernel modules from /sys/livepatch/* while a user
-attempts to load a new atomic-replace livepatch.
+Why would User-A want to keep the module, please? The livepatches
+could not longer be re-enabled since the commit 958ef1e39d24d6
+("livepatch: Simplify API by removing registration step") which
+was added in v5.1-rc1.
 
-For instance:
+The only problem might be that User-A can't remove the module
+because it has already been removed by User-B or vice versa.
+Is this really a problem?
 
-User-A                                                       User-B
+Have you seen the problem in practice or is it just theoretical?
 
-echo 0 > /sys/livepatch/A/enable              insmod atomic-replace-patch.k=
-o
+Is anyone really combining livepatches with and without atomic
+replace?
 
-From User-A's viewpoint, the A.ko module might sometimes be removed,
-while at other times it remains intact. The reason is that User-B
-removed a module that he shouldn't remove.
-
---=20
-Regards
-Yafang
+Best Regards,
+Petr
 
