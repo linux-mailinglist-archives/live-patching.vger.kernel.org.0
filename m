@@ -1,140 +1,174 @@
-Return-Path: <live-patching+bounces-260-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-261-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 365FC8C0E8B
-	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 12:51:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C05718C0F0D
+	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 13:58:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 618F51C21FEE
-	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 10:51:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7330728118F
+	for <lists+live-patching@lfdr.de>; Thu,  9 May 2024 11:58:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E578130487;
-	Thu,  9 May 2024 10:51:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F531131729;
+	Thu,  9 May 2024 11:57:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="S4cL7h2J"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OOIYof+i"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AF7812FB3F
-	for <live-patching@vger.kernel.org>; Thu,  9 May 2024 10:51:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CCF914A90;
+	Thu,  9 May 2024 11:57:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715251882; cv=none; b=izoEDI2f16OFkmWXJOb9R7OMvzzAIrtQhQqHlfsa/cpnavh0mPjITwnUCCHeha0XPgJpW3mcOgCJPoiBwC66P38NcH9s9t4wYqsOYVOw03kYknsb3tt7AQtAPMBO4FebuKRj85oJ37J+izoYJqkcbQV8h6WrkZHdKQp1a62oTAE=
+	t=1715255877; cv=none; b=CsG21uJV3WpVb2YayupVh5n2gOEF5hHA0zeS9XK7TI/YYCVDo8MaIQ4HTq6SpzEFjbQcHh7Nb6KOtrUGPSxRx4K4ogNJHJCxRL82LDouz7jtxQwrasy87pWCajyameHhP2V33k8p68dy3G7/jlc39ZFT5hMgwyDcYEHv1SMUmyM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715251882; c=relaxed/simple;
-	bh=90Hq0FSuA9ZwYovzuyW3D43JnFMBkUN7xgexPFOARJk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r4faFnaE4qxSXwDt5vFucFJBcqj3W/bIYoMh1ojk4km9Uqre/h1J3/oTSpS0skdH4hT4+7AevS3tZoa3Fwc3YRng6G1NCbJdyWc0x5xFru8U1oNnJApicb+APaohKaVyVpV8STziKGkOAb4TgJ2lBUlCFEes7jmZmdBEVX4RZeQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=S4cL7h2J; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-41fd5dc0508so2509685e9.0
-        for <live-patching@vger.kernel.org>; Thu, 09 May 2024 03:51:20 -0700 (PDT)
+	s=arc-20240116; t=1715255877; c=relaxed/simple;
+	bh=5AxlzhOhqVgjA6GYj8uiwW2Vvpfcuid4NrOWihyKrjI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZII0fwtZ1ekJlUAKOcZQPtVSbVeK7yS3aBsLmqA7FSm/pZOw0OietXcqa+RWg9+v8iSJfFiGrSISwItODUqCyc+nxWCRolNOuO7J2LmiLXWRE1EGiRFWKU6n4c9udIHE051nc7Qcc0LA6kqRVxJLb3ZG5MqzwWVzqLUTiA94NM4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OOIYof+i; arc=none smtp.client-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-792c031ffdeso33263485a.2;
+        Thu, 09 May 2024 04:57:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1715251879; x=1715856679; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7PE/w319+RnELVg/gttqAl5h4DHnf11FqXh6NU9c/KU=;
-        b=S4cL7h2JTk0xb5xa1UspiAejzejoNfWseBcmUewD1U1CXgUcA6fMQf/2teJgR1ljQq
-         qw2lEyhBFIcm4CfxN7hovItFNmfD3tB178AAZe0N6ZkBI8yqSniFFZxR2IqoVdVM/pkO
-         H1DIBRB1ieb52pUkC/rGMg4lK9gD7ELValZc7eVkdnAS8UkViLc1d+BmoHZsE4wTKwr9
-         uZDEFDmWmL1z8UJdtkNLfYgE16yNnp92G+2W5AGXIJuGjW4lbOFDLB+8Hm04DEJrrSOw
-         pV75MXEZrCjVEEW1ztNghmzD/zmeEo+xV6vkKRw8aa5xwWbZyjk1aexUPTp34esdCKAk
-         Ffjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715251879; x=1715856679;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1715255874; x=1715860674; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7PE/w319+RnELVg/gttqAl5h4DHnf11FqXh6NU9c/KU=;
-        b=iAs25FCD1pNX88gauju9VV+3MuS/89GTTusLPD4uXOAPYRU7s/pnlICr6eF5NQHpsi
-         Xt6MYUeR1xsv0UwBlbAR1qi7m21fSoa3rJkLdXS1Og8PeVF+odacV3XxEG7Ra4cQDUkl
-         tb5w1MaQDKF6qsYiKyAsNJplFyWjX2IY48CQzmR6A+h3cHXakdIMY8SZlG2F7JfzJNyj
-         hB21mWFWIebU+jyPrGFbsEUEN0TsJzMAIoCWwLNji8JJbQ42/vsg3dq1twhvO+zV+WiC
-         K2mYEWgbvODaxFel3Ds6a2a+WNwUX0oXukZr3MsZj9BW3+Z/ngizqUL+FunEYlfirNOc
-         jZRw==
-X-Forwarded-Encrypted: i=1; AJvYcCWg+vcIxhyqIpuRDZmdhX3VH3egnL9rZXTKMZVnMHLvD3OH2f1K7ROOipF/9dL98S0g5SWnkVnk5VvbGswnCk+mVsk5lV3Ex2oJzDF6IA==
-X-Gm-Message-State: AOJu0YwOtSjr0c27pBR5/msNwSgEDE2tw0j21zz+j8hSqEwiifN624UN
-	46CrG47Mq8g+0f08Rkfd1GGyMLUv8m5OfI4EUh2m6ey83E8WqcGKtmUWZMkYwS8=
-X-Google-Smtp-Source: AGHT+IEyXDNBNsqAW1Z0YapSRbxhJ9/MFwmOUaz8zNaFt9G3InR6MOt+Opgve1XuXDXYfNwOYiy41A==
-X-Received: by 2002:a05:600c:3c83:b0:419:ec38:f34b with SMTP id 5b1f17b1804b1-41f714f6ea8mr39308995e9.20.1715251878877;
-        Thu, 09 May 2024 03:51:18 -0700 (PDT)
-Received: from pathway ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3502b79bd09sm1378238f8f.14.2024.05.09.03.51.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 May 2024 03:51:18 -0700 (PDT)
-Date: Thu, 9 May 2024 12:51:17 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Yafang Shao <laoar.shao@gmail.com>, jikos@kernel.org, mbenes@suse.cz,
-	joe.lawrence@redhat.com, mcgrof@kernel.org,
-	live-patching@vger.kernel.org, linux-modules@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] livepatch: Delete the associated module of
- disabled livepatch
-Message-ID: <ZjyqpXES5cHOl1Mg@pathway>
-References: <20240407035730.20282-1-laoar.shao@gmail.com>
- <20240407035730.20282-3-laoar.shao@gmail.com>
- <20240503211434.wce2g4gtpwr73tya@treble>
- <Zji_w3dLEKMghMxr@pathway.suse.cz>
- <20240507023522.zk5xygvpac6gnxkh@treble>
+        bh=QQPTd9P260wLT9KzRqd4LGGg2af0O+Fqtt4irMU5VOE=;
+        b=OOIYof+iaRMbrSh+BcWRnAD2o6KaAYPsV/6rgJKo1LHFerWllXdqB4cYeN+qxdhbLP
+         h6LH/ypTvMBAvyDkpAgk5nOvPtAaNpICs+OvyJk/s/UdAM5MqFKFLWdGThxb4ntM8s7F
+         I98S3QcxQT/OMVVe+eBVLVul1UONsCchCu0/BEOtG0eM+khNA2pT0ZYnH6akwix+u4XC
+         BRS7lcgeqtYxCqWnz56HLfKg379118ZBlMTY80vWpko39AT+/1hG8AuQTASz731CBXXJ
+         7R3+ptUornLOhcmEiSgiTaBh1NWk973LR+i2CWH2gVznPKmXlk+eE4huF59ZLqdaaAIq
+         COjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715255874; x=1715860674;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QQPTd9P260wLT9KzRqd4LGGg2af0O+Fqtt4irMU5VOE=;
+        b=rTHXFlaFctoZAZ3XXgborjHJzKf1NqQrQ3nyXnK0y9csypN3h+wre5VRVIK+5jZRxc
+         BvRmseEfmzPJloy/1A9G70IgXl0Us7d4s0/9T9JqAktTvOWIZF/UevXL+Fuj9WN39FkI
+         yOgg2OP4ksPNQUhmD72GHyxxsQw92V+mn4a0pJa1NtwR9JAG/pNklBvYPzc2NuNf8WqF
+         IGXPeAOrZ+oewgLg4dtCiPRxQlLJbbmGXRjadYJ5+Pj/otMkmvTL3M1iPhcyGALvSnk9
+         uouBEbLYj0TJyAHhJ7B0bjvXRoLHPpSLHPwFV6JGzApjDUB2sHilgIe7fJHdPsFCApUx
+         BfdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU7xcjHET+exdLJni74WuzBZDGjYtH6MMeQPqBijEyT6rp7ZEX0LU01B/GhiY+PLcFg2hpzffQ/nsQugexEAJ8u/S3vMjB5jAfTp1l36ncyHFM7Eeo5l1vgiEPRJDnG5Jrd/9Om39fBGVgHhfo=
+X-Gm-Message-State: AOJu0YyhZ3VWaeHcKSPqY3O5aogZQWCSfIh+mQyYu2XbpCV2BDRG0r+d
+	jXMH/c+EF8wvPEqYLZpdPNS/FFwtp7YNeccPYfPrrWp5bWP0ZC2ltbm7aOzdFyWMd5vdtvoYCRn
+	VVT0xdPPw7JBY4az0liUeRu48twQ=
+X-Google-Smtp-Source: AGHT+IF5kEh0TCJcKRT8f+Cj8XCW64w9RhHNH2OAKTj2RXyx0wzm6sq0URIOMeRVPL5gBi8EjioVgr3JZEM0vXGuU1M=
+X-Received: by 2002:a05:620a:2949:b0:78e:ccd6:be8a with SMTP id
+ af79cd13be357-792b285c22emr656685885a.57.1715255874366; Thu, 09 May 2024
+ 04:57:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240507023522.zk5xygvpac6gnxkh@treble>
+References: <20240503211434.wce2g4gtpwr73tya@treble> <Zji_w3dLEKMghMxr@pathway.suse.cz>
+ <20240507023522.zk5xygvpac6gnxkh@treble> <CALOAHbArS+WVnfU-RUzbgFJTH5_H=m_x44+GvXPS_C3AKj1j8w@mail.gmail.com>
+ <20240508051629.ihxqffq2xe22hwbh@treble> <CALOAHbDn=t7=Q9upg1MGwNcbo5Su9W5JTAc901jq2BAyNGSDrg@mail.gmail.com>
+ <20240508070308.mk7vnny5d27fo5l6@treble> <CALOAHbCdO+myNZ899CQ6yD24k0xK6ZQtLYxqg4vU53c32Nha4w@mail.gmail.com>
+ <20240509052007.jhsnssdoaumxmkbs@treble> <CALOAHbBAQ580+qjxYbc1bNJxZ8wxxDqP3ua__pqKzCg9An3yGA@mail.gmail.com>
+ <ZjyiZfC9GqQ4akVJ@pathway>
+In-Reply-To: <ZjyiZfC9GqQ4akVJ@pathway>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Thu, 9 May 2024 19:57:17 +0800
+Message-ID: <CALOAHbD3LLzC7JrYg+K1q-zCUfvdjv7DFYFwXTWUaik0b_aqfw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] livepatch: Delete the associated module of
+ disabled livepatch
+To: Petr Mladek <pmladek@suse.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, jikos@kernel.org, mbenes@suse.cz, 
+	joe.lawrence@redhat.com, mcgrof@kernel.org, live-patching@vger.kernel.org, 
+	linux-modules@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon 2024-05-06 19:35:22, Josh Poimboeuf wrote:
-> On Mon, May 06, 2024 at 01:32:19PM +0200, Petr Mladek wrote:
-> > Also it would require adding an API to remove the sysfs files from the
-> > module_exit callback.
-> 
-> Could the sysfs removal be triggered from klp_module_going() or a module
-> notifier?
-
-Great idea!
-
-> > I do not see any reasonable reason to keep the replaced livepatch
-> > module loaded. It is an unusable piece of code. IMHO, it would be
-> > really convenient if the kernel removed it.
-> 
-> User space needs to be polling for the transition to complete so it can
-> reverse the patch if it stalls.  Otherwise the patch could stall forever
-> and go unnoticed.
-
-Triggering the revert and removing the module are two asynchronous
-operations. User space might just trigger the revert when it detect
-the stall and assume that the module will get removed.
-
-Stalled revert is end of the game anyway.
-
-> Can't user space just unload the replaced module after it detects the
-> completed transition?
-> 
-> I'm not sure I see the benefit in complicating the kernel and possibly
-> introducing bugs, when unloading the module from user space seems to be
-> a perfectly valid option.
+On Thu, May 9, 2024 at 6:16=E2=80=AFPM Petr Mladek <pmladek@suse.com> wrote=
+:
 >
-> Also, an error returned by delete_module() to the kernel would be
-> ignored and the module might remain in memory forever without being
-> noticed.
+> On Thu 2024-05-09 13:53:17, Yafang Shao wrote:
+> > On Thu, May 9, 2024 at 1:20=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.=
+org> wrote:
+> > >
+> > > On Thu, May 09, 2024 at 10:17:43AM +0800, Yafang Shao wrote:
+> > > > On Wed, May 8, 2024 at 3:03=E2=80=AFPM Josh Poimboeuf <jpoimboe@ker=
+nel.org> wrote:
+> > > > >
+> > > > > On Wed, May 08, 2024 at 02:01:29PM +0800, Yafang Shao wrote:
+> > > > > > On Wed, May 8, 2024 at 1:16=E2=80=AFPM Josh Poimboeuf <jpoimboe=
+@kernel.org> wrote:
+> > > > > > > If klp_patch.replace is set on the new patch then it will rep=
+lace all
+> > > > > > > previous patches.
+> > > > > >
+> > > > > > A scenario exists wherein a user could simultaneously disable a=
+ loaded
+> > > > > > livepatch, potentially resulting in it not being replaced by th=
+e new
+> > > > > > patch. While theoretical, this possibility is not entirely
+> > > > > > implausible.
+> > > > >
+> > > > > Why does it matter whether it was replaced, or was disabled befor=
+ehand?
+> > > > > Either way the end result is the same.
+> > > >
+> > > > When users disable the livepatch, the corresponding kernel module m=
+ay
+> > > > sometimes be removed, while other times it remains intact. This
+> > > > inconsistency has the potential to confuse users.
+> > >
+> > > I'm afraid I don't understand.  Can you give an example scenario?
+> > >
+> >
+> > As previously mentioned, this scenario may occur if user-space tools
+> > remove all pertinent kernel modules from /sys/livepatch/* while a user
+> > attempts to load a new atomic-replace livepatch.
+> >
+> > For instance:
+> >
+> > User-A                                                       User-B
+> >
+> > echo 0 > /sys/livepatch/A/enable              insmod atomic-replace-pat=
+ch.ko
+> >
+> > >From User-A's viewpoint, the A.ko module might sometimes be removed,
+> > while at other times it remains intact. The reason is that User-B
+> > removed a module that he shouldn't remove.
+>
+> Why would User-A want to keep the module, please? The livepatches
+> could not longer be re-enabled since the commit 958ef1e39d24d6
+> ("livepatch: Simplify API by removing registration step") which
+> was added in v5.1-rc1.
+>
+> The only problem might be that User-A can't remove the module
+> because it has already been removed by User-B or vice versa.
+> Is this really a problem?
+>
+> Have you seen the problem in practice or is it just theoretical?
 
-The same error would happen even when it was called via the syscall.
-It is the same code.
+It is just theoretical.
 
-Well, user space might want to know when the module was removed.
-For example, it could not load the same livepatch module until
-it was removed. Explicit rmmod would be useful in this case.
+>
+> Is anyone really combining livepatches with and without atomic
+> replace?
 
-I agree that adding the auto deleting might create new problems
-and probably is not worth it.
+I don't know.
 
-Best Regards,
-Petr
+Previously, we utilized live patches without atomic-replace
+functionality. However, we've now transitioned all patches to support
+atomic-replace. It might be beneficial to introduce a
+/sys/kernel/livepatch/XXX/replace entry to indicate whether a patch
+supports atomic-replace or not
+
+
+--=20
+Regards
+Yafang
 
