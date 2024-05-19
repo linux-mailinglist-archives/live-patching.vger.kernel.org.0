@@ -1,113 +1,106 @@
-Return-Path: <live-patching+bounces-274-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-275-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 48ACB8C95C5
-	for <lists+live-patching@lfdr.de>; Sun, 19 May 2024 20:05:46 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id CE7DF8C9766
+	for <lists+live-patching@lfdr.de>; Mon, 20 May 2024 01:42:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 855E51C20DED
-	for <lists+live-patching@lfdr.de>; Sun, 19 May 2024 18:05:45 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 794D71F210EE
+	for <lists+live-patching@lfdr.de>; Sun, 19 May 2024 23:42:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F82B50241;
-	Sun, 19 May 2024 18:05:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 830EF73182;
+	Sun, 19 May 2024 23:42:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="T+ciulGu"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lEq1SIwD"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mout.web.de (mout.web.de [212.227.17.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00AF22233B;
-	Sun, 19 May 2024 18:05:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C584335C7;
+	Sun, 19 May 2024 23:42:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716141941; cv=none; b=Xn3K3talARnpIp0dRrLF/V9NnpoKhCE08Fr3uRIeERO4ttfOeVxGrlJBE+NZ9S/3XEGrLwodOTXsHufwM6bS0fMrwl48OVEP8U73D7yEOxH3XkOs95U/bFUbD5Q4FC95LtbdI2IF7jNe5pPAU2z2b4JQeduCz2yfaizvxAEf0jA=
+	t=1716162146; cv=none; b=mjgppmhooG63hjfxLtowfM76HpZonwAj5AMg6DbY5RMekIfqJ0ETzE+lu2I2r+xMq44+oQsVeMXXH57f7gLuGh1PbtAj7FIIyV+tnrkUbjhAGbp35fBP4+Oq97euwt6ZDczOwIZbWz1VbWBzd4dRtujVFn6QoCo6M7ZnjRtlMy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716141941; c=relaxed/simple;
-	bh=27zJDYQNrBc3/Hgn0QfIK4lLVEOUFVMA6YO0B6tgoeM=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
-	 In-Reply-To:Content-Type; b=ugHJvwf0dLbL8ZAaq0/Ykt0mCSSeBp0WxrxCCF8ak8ZqlMoGBZ+BAxHL3qzEDUhLofsbvtZ9+d+1SD1glxDowg+9G+LgFwu7nhcGmOPtVwm7yUN8qVIfUs4kTpvNtRGE4UO0gIU7YtvxKzo+zLJ78jpMlaIZm4F01Yk98DHwptI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=T+ciulGu; arc=none smtp.client-ip=212.227.17.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1716141928; x=1716746728; i=markus.elfring@web.de;
-	bh=9pY7nZaq1fyJ1tTGdLEQrtwNkEiGqx7yo3oChVDxHLw=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
-	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=T+ciulGuxb/TPkzLfXIxCqZ2o0nI6XR16AJkrXKJGT8XYJNCwyo3828sPsxG0ls3
-	 a1/W3Pt7uNMsZ5I/55eumefhoyeIqwsto4CbEA9JBn2bmrxineehLs2rqIeYJBw0q
-	 mjzm6gMS8B2kWqm2DgFIyJgoib0oJZb6dS2sbiieVbhUCRViRBBMfpWHpc4PpxAPG
-	 F2KVCmMZFYirz4nf8I3igUfloRyO/SypSMl3TSo/G3A/datAEhKVOQwX1XKk+45L6
-	 ztGNCQ/WU7Fp1kgbeREI4k4CitwrKeGXnjnWwiAmt1A+L22aenjKDMMtRVJy0icjO
-	 0INfHWHAFShSQbrz7A==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.82.95]) by smtp.web.de (mrweb106
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1N6JxT-1sbm2z2hM9-016izA; Sun, 19
- May 2024 20:05:28 +0200
-Message-ID: <0f78a187-5c64-4d95-a6e8-2b5c42f0c253@web.de>
-Date: Sun, 19 May 2024 20:05:22 +0200
+	s=arc-20240116; t=1716162146; c=relaxed/simple;
+	bh=MRLtAIxUxdbSkN7sNm3p+9MsecTxswlihueoor4HZEo=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=QJeYKgGhxkXUUkV1Ju6oPi8HetYsVKX+cErsd+8C6BtmJH8czrHUbnUm9MC7oQ4YaJSCD6EchfL0kO5HnArSIzE3HXMJ8QdMfPgI+thw9Ev+MyowIYd2Ex16CBRMgiKVD0fxw/wdNtHd7X11b4NMiIsrTdzWBx1gzpjOhIo2ZKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lEq1SIwD; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1ecd3867556so60783795ad.0;
+        Sun, 19 May 2024 16:42:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716162144; x=1716766944; darn=vger.kernel.org;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iLRcrBmm/JNzbHllRISeYqb+Gjt9Xm96VzYCUAqr+4o=;
+        b=lEq1SIwDxswVwnNlP3VynCvstaJ1tUtMXbdjE+C0UUyVdil1aiPDkHtJZI0dHbbA9X
+         pcoHUm6TtrqviIS6TUS5eAdD9v0kEpllNkPuN3OuN1/VUjaK/18kLUnq5hf0QUVbxHTU
+         WnmkOi1FLcK/JFbtHdqMo5DV1XXIM063GAohafF521TAWmd2slt6uoItnPNNQD4TvYIq
+         rGYpuf5g3csACPb6jMsDdMBUbEZ/chBztFlcvvk859yB7T4qwKE5T2evTD51LqK5C1VS
+         P/mUyyONE/YWN0kx+ISPGUbb/ZI/Bj7JnjgwSOTqw7dgG4a2+HFtzyYGXt+OMrel0sZo
+         IwYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716162144; x=1716766944;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=iLRcrBmm/JNzbHllRISeYqb+Gjt9Xm96VzYCUAqr+4o=;
+        b=HeaQVsiX5IFO6Lm7Y4IiyX7ljJwFl1/B7tSOWo/YA2M2JXltHFHmZdinzIoUv3GMaA
+         RarCWpPC93/qAxF6rBODUwTMJQtVXPFqp/TEi26UzNRqVO+7bZe758vRoMaItTMAVNtc
+         /fw4CScCTGY+4bHyGJFVG56QKb5hbSXzZWoaA4jP2TVFT2jn2OMCpjVUU65K6FErs3UY
+         7r+nd8q1qhE0EY6CiT1W+ntxRa5w4MdKqJ96U5+lKTT/9xNJ+SkWvz9A2UiP6ycyuwtQ
+         5ihvq75GFRR3YwDhq/KfbFIgUwLnwvMMDuqaWA91LitQOH7xu+oR1sk0yLJK/hg7Nfp6
+         j28Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVoU2mkaBNtTYxkSSnbZxlepXr0G+5jQdAFYAnBuAkXn74CbZvWY8ec7XLvU7of43+To+i2+RuQmc5kH+E6AUxGedG/PtzhHNN4oS4D2zRsIQKXNA/nYdileX0/FPJb3MS0uJNRZ330oGSqvhh+
+X-Gm-Message-State: AOJu0Yw2v/M3Jnl1NpbOBtR73BeWF6kYsmC17amVO2hrHPr793fw7yHK
+	/iDFWSVy6Qu3sV3wlkF58sPHeC/fO0iKshGdeqo0cDqP36MI9hlU/3FVQ+sDdYw=
+X-Google-Smtp-Source: AGHT+IEKF2ZABsZ3AtRKDb6oyc/rsvkCjgo/aLmta88PM2JCfnw03GunJZVajzG8z8yH5bZzaoc5ag==
+X-Received: by 2002:a05:6a00:2289:b0:6e5:43b5:953b with SMTP id d2e1a72fcca58-6f4e02ad963mr29305301b3a.14.1716162144322;
+        Sun, 19 May 2024 16:42:24 -0700 (PDT)
+Received: from smtpclient.apple ([59.37.8.157])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-6f4d2af2a77sm18675298b3a.144.2024.05.19.16.42.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 19 May 2024 16:42:23 -0700 (PDT)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Wardenjohn <zhangwarden@gmail.com>, live-patching@vger.kernel.org,
- kernel-janitors@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
- Joe Lawrence <joe.lawrence@redhat.com>, Josh Poimboeuf
- <jpoimboe@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
- Petr Mladek <pmladek@suse.com>
-Cc: LKML <linux-kernel@vger.kernel.org>
-References: <20240519074343.5833-1-zhangwarden@gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
 Subject: Re: [PATCH] livepatch: introduce klp_func called interface
-Content-Language: en-GB
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <20240519074343.5833-1-zhangwarden@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: zhang warden <zhangwarden@gmail.com>
+In-Reply-To: <0f78a187-5c64-4d95-a6e8-2b5c42f0c253@web.de>
+Date: Mon, 20 May 2024 07:42:07 +0800
+Cc: live-patching@vger.kernel.org,
+ kernel-janitors@vger.kernel.org,
+ Jiri Kosina <jikos@kernel.org>,
+ Joe Lawrence <joe.lawrence@redhat.com>,
+ Josh Poimboeuf <jpoimboe@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>,
+ LKML <linux-kernel@vger.kernel.org>
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:n1DLcPSd88hho6RTJCi/Ky4agc+v51xTm6fH0J9qsDGvMSA192g
- YH4M6HmPkcexPpMgU8+T3MvYMVK6WK+UGmlyFj5tSgSwgp+uctXpmsGRK9cbqbLm5fZP8t6
- Tc/mTk26VqY3KD7qBF0DiYfIFyZvaRKwL2k9vwOOQbzA24WuDco9C1wEyT9HX0M2hvE5EqQ
- QKxZej+3C7Vglx4kC8L4g==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:W9a7sCBMbpc=;fox0FO2AaYDVCTzkA2bWav5YlhG
- d7g8XG0CfKsejGDPLeB8/W7mPbph2E/XDTrW/R09X2X3Oo2AyhZ9fAhlywTgMDZbXs8AaWYDy
- gqdZEImiY9Cz58nipKQJGlfVSdWfRsXfnzo8G+CJd4BtpNtVLPHjm8neiasEF3RxZGvs1K/ae
- frEIfNhPJ2Wf2/KawV/JGg59iDpPldEtXENo2276YF8kRtHfixVl5K3l3AHWdW7fTVtgti7wT
- sHlL7TCNFnoIA7fWmz8xHyrRjKO4PdTx9jJxc49kvfADJLApwQkFIdqIX4ElqmNMq/oM/LmC7
- HKt/DBdU1ghg/5hQR0wviy6CdYoVLNx9PKkN5mPAPHwvZFy2VLSCvROlRu2/90/JhiFybRA1O
- Ap/zu6F/AJltQaj+Jmj5KRf41YdEe5HmFIIgdZ/j3ICzuKA/e1PWbf1xBkbBoodNcfn1543AL
- lmLUIh/zrsz5YZwFlQ1+tdfxVylQMMUfPJcL9YdhdzkSDy8UQ+Sl5srVNuqyeHCBSKnxyLr2p
- yhUjy7qA8frkhflT7uGeUZwHT90XRIP4N5GQauGm75kfdSKOz1PgCNHLWZqB9IllUUz/Rz2OB
- XwJrnfZoIusJK4v/kLQpwVb+Fl8oQaYEwDKXIsDMx9EZQriwynDtH0j7179N1JhwIXdFGR+fM
- T88+3GyGbEUNga1GmHbmHYO1MM1RmadEeJcz0b7zaLNmOKisdwUHNnekkL01hHFAPcxA1jUXV
- IvPNKsjyZaGtwZYMy9m7K6duj9qOFt1TbSRclD2sBPfJkl/tiWptCG23/jTMhMSs4fJzEHoeu
- 0yw2JWUN3pNGSvNHWAXT9Z4QzO2YkTVEycRRupXTmIr8A=
+Message-Id: <7DCD3D59-461E-4898-BDAA-FD40D168C243@gmail.com>
+References: <20240519074343.5833-1-zhangwarden@gmail.com>
+ <0f78a187-5c64-4d95-a6e8-2b5c42f0c253@web.de>
+To: Markus Elfring <Markus.Elfring@web.de>
+X-Mailer: Apple Mail (2.3774.500.171.1.1)
 
-=E2=80=A6
-> This commit introduce a read only interface of livepatch
+OK, I will optimize my patch=E2=80=99s changelog in my next patch.
 
-Please improve the changelog with an imperative wording.
+> On May 20, 2024, at 02:05, Markus Elfring <Markus.Elfring@web.de> =
+wrote:
+>=20
+>  I suggest to take preferred line lengths better into account
+>  also for such a change description.
 
 
-=E2=80=A6
-> find out which function is successfully called. Any testing process can =
-make sure they
-> have successfully cover all the patched function that changed with the h=
-elp of this interface.
-
-* I suggest to take preferred line lengths better into account
-  also for such a change description.
-
-* Please provide the tag =E2=80=9CSigned-off-by=E2=80=9D.
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/=
-Documentation/process/submitting-patches.rst?h=3Dv6.9#n398
-
-Regards,
-Markus
 
