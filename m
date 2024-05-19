@@ -1,190 +1,113 @@
-Return-Path: <live-patching+bounces-273-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-274-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DC8E68C93BA
-	for <lists+live-patching@lfdr.de>; Sun, 19 May 2024 09:44:02 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 48ACB8C95C5
+	for <lists+live-patching@lfdr.de>; Sun, 19 May 2024 20:05:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 826B4281712
-	for <lists+live-patching@lfdr.de>; Sun, 19 May 2024 07:44:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 855E51C20DED
+	for <lists+live-patching@lfdr.de>; Sun, 19 May 2024 18:05:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AA9B17C6A;
-	Sun, 19 May 2024 07:43:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F82B50241;
+	Sun, 19 May 2024 18:05:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hkzgk/z+"
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="T+ciulGu"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06E2517BA2;
-	Sun, 19 May 2024 07:43:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00AF22233B;
+	Sun, 19 May 2024 18:05:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716104637; cv=none; b=fQKgs5tW8Qz+1OkAusnqGy8U0qPXeifHp3vEMpma7cw9mvHv+9FA6TMQ+2hXLqdWcEaxzSLOUsCToQ+9SuX/DccDbrd0WlipUxAq/PPr9XVZPn1d+jRkGl56fr1NKY6XqAnU4ZtKP9kuik/wauYl9mhb1FpUOuzEj8jfQRMZPbs=
+	t=1716141941; cv=none; b=Xn3K3talARnpIp0dRrLF/V9NnpoKhCE08Fr3uRIeERO4ttfOeVxGrlJBE+NZ9S/3XEGrLwodOTXsHufwM6bS0fMrwl48OVEP8U73D7yEOxH3XkOs95U/bFUbD5Q4FC95LtbdI2IF7jNe5pPAU2z2b4JQeduCz2yfaizvxAEf0jA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716104637; c=relaxed/simple;
-	bh=BLS/3yqG+x+pmzxow4oCh/ZaClvha66n9SalV6XKyPI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nxgTMr9iF4IRRF+JsHHOHiHGwTCsB+3B8UR9+gVJVcMtZQNc3LughTr2Yxylppr4tfPAZga4z194SsBFx28SMi2Ko+4S8cuyHR/teRt5HoIkWrwyT72JT6it8UZEdpUi6WolC8+HW4rU7PVGzNKAyzY0a+BDZWR+4TAxHu2fdcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hkzgk/z+; arc=none smtp.client-ip=209.85.161.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-5b27bbcb5f0so867057eaf.3;
-        Sun, 19 May 2024 00:43:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716104635; x=1716709435; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=sxw0ppvwN68aKsYdrg7i/nk/Ahqb/+wiMV6TU4JTkq0=;
-        b=Hkzgk/z+sjGl3uGZ5/cN8u5niBaqdG6cwZ2yYp4ZHzL2Iz5bU/S3D4jgX9Q/gp59x8
-         n8c67saLryXiMGxsxNNZV4DJp2V1ORBgQt/fEoyc+h/oe3IRzXIoqaqvPsE2t7YE8+aj
-         SRA5sMpKnmSyuE1fwILppZ/JKQw4NyLqoc0VuhoZTVjKR64FjMOYDO7DX3RYZY8C++jj
-         KqtdXog21jsNEKQUKXTNWiyH+C7ZGDfBObsC69LzlT4U7cd+4Kw+tAhMBTWbkv2zbwqH
-         2WXy4wOHwOqWyKIVWcrSPEOtNZs8mNvA50vSLIewza6Np0t2fwM6ksdRoSX+GEXqBUa0
-         858Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716104635; x=1716709435;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sxw0ppvwN68aKsYdrg7i/nk/Ahqb/+wiMV6TU4JTkq0=;
-        b=sUIMdY8mTNquYl7xrMsM4s9lnE0exBIDOILxDnBbMvURyBA1VD9jIXMZlDBj/1c80R
-         fPUOp49Aya32bO9rjUKI4F+0sxuvQgdBZctlA58QONY+/pys110JjojBqq15Fjn+yAud
-         mTSIiHMYYQyaJN8HdCncg72/Nuq1I8chIJu+6OSh9DjTenXyAZ6w/WlZor0Yeg92yTH9
-         GNiicDhkE/EjlLdI08AxZuoS17EUs7F7eOuwgJvFQCytw5SFLOyFuGQgrzLqh60Edo75
-         wghJ7Ee+rmzRXykPpNKeivFgVE7eUNDQZMYyrTN9dxhbjaLpoViF9dP9iesJAPBo/CuS
-         lKKA==
-X-Forwarded-Encrypted: i=1; AJvYcCV8wSN8xOmg5zj1sczS80lHr1fLo9YTI7tljKE/NW708BRPtcuMc2rybJoXeza9A3skDtTgvXT6e5XHdpegg/RTmmiA+wKoO9bNVxbP
-X-Gm-Message-State: AOJu0Yw/s+4mNtnbW7Mb733vGXimdfMFXPkAyJAXkIKlyGuscdixafs3
-	nthZqO/qmHOQ2/tvIhD7ph+iTGd4KXiQLNWogTL5/H2gWa+a0csY
-X-Google-Smtp-Source: AGHT+IHNm6SmvyxfGJ2bBkTQkzP7Xrbf6qLP88jCweFCOqqbEpA3/8+5OaaoJ+k0I3HpDOHDqyfI/w==
-X-Received: by 2002:a05:6358:8093:b0:192:5510:e3ee with SMTP id e5c5f4694b2df-193bb623eb1mr3124570055d.13.1716104635013;
-        Sun, 19 May 2024 00:43:55 -0700 (PDT)
-Received: from localhost.localdomain ([120.229.27.58])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2b67126b666sm19735722a91.34.2024.05.19.00.43.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 May 2024 00:43:54 -0700 (PDT)
-From: Wardenjohn <zhangwarden@gmail.com>
-To: jpoimboe@kernel.org,
-	mbenes@suse.cz,
-	jikos@kernel.org,
-	pmladek@suse.com,
-	joe.lawrence@redhat.com
-Cc: live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Wardenjohn <zhangwarden@gmail.com>
-Subject: [PATCH] livepatch: introduce klp_func called interface
-Date: Sun, 19 May 2024 15:43:43 +0800
-Message-Id: <20240519074343.5833-1-zhangwarden@gmail.com>
-X-Mailer: git-send-email 2.37.3
+	s=arc-20240116; t=1716141941; c=relaxed/simple;
+	bh=27zJDYQNrBc3/Hgn0QfIK4lLVEOUFVMA6YO0B6tgoeM=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
+	 In-Reply-To:Content-Type; b=ugHJvwf0dLbL8ZAaq0/Ykt0mCSSeBp0WxrxCCF8ak8ZqlMoGBZ+BAxHL3qzEDUhLofsbvtZ9+d+1SD1glxDowg+9G+LgFwu7nhcGmOPtVwm7yUN8qVIfUs4kTpvNtRGE4UO0gIU7YtvxKzo+zLJ78jpMlaIZm4F01Yk98DHwptI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=T+ciulGu; arc=none smtp.client-ip=212.227.17.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1716141928; x=1716746728; i=markus.elfring@web.de;
+	bh=9pY7nZaq1fyJ1tTGdLEQrtwNkEiGqx7yo3oChVDxHLw=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
+	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=T+ciulGuxb/TPkzLfXIxCqZ2o0nI6XR16AJkrXKJGT8XYJNCwyo3828sPsxG0ls3
+	 a1/W3Pt7uNMsZ5I/55eumefhoyeIqwsto4CbEA9JBn2bmrxineehLs2rqIeYJBw0q
+	 mjzm6gMS8B2kWqm2DgFIyJgoib0oJZb6dS2sbiieVbhUCRViRBBMfpWHpc4PpxAPG
+	 F2KVCmMZFYirz4nf8I3igUfloRyO/SypSMl3TSo/G3A/datAEhKVOQwX1XKk+45L6
+	 ztGNCQ/WU7Fp1kgbeREI4k4CitwrKeGXnjnWwiAmt1A+L22aenjKDMMtRVJy0icjO
+	 0INfHWHAFShSQbrz7A==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.21] ([94.31.82.95]) by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1N6JxT-1sbm2z2hM9-016izA; Sun, 19
+ May 2024 20:05:28 +0200
+Message-ID: <0f78a187-5c64-4d95-a6e8-2b5c42f0c253@web.de>
+Date: Sun, 19 May 2024 20:05:22 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+To: Wardenjohn <zhangwarden@gmail.com>, live-patching@vger.kernel.org,
+ kernel-janitors@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+ Joe Lawrence <joe.lawrence@redhat.com>, Josh Poimboeuf
+ <jpoimboe@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>
+Cc: LKML <linux-kernel@vger.kernel.org>
+References: <20240519074343.5833-1-zhangwarden@gmail.com>
+Subject: Re: [PATCH] livepatch: introduce klp_func called interface
+Content-Language: en-GB
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20240519074343.5833-1-zhangwarden@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:n1DLcPSd88hho6RTJCi/Ky4agc+v51xTm6fH0J9qsDGvMSA192g
+ YH4M6HmPkcexPpMgU8+T3MvYMVK6WK+UGmlyFj5tSgSwgp+uctXpmsGRK9cbqbLm5fZP8t6
+ Tc/mTk26VqY3KD7qBF0DiYfIFyZvaRKwL2k9vwOOQbzA24WuDco9C1wEyT9HX0M2hvE5EqQ
+ QKxZej+3C7Vglx4kC8L4g==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:W9a7sCBMbpc=;fox0FO2AaYDVCTzkA2bWav5YlhG
+ d7g8XG0CfKsejGDPLeB8/W7mPbph2E/XDTrW/R09X2X3Oo2AyhZ9fAhlywTgMDZbXs8AaWYDy
+ gqdZEImiY9Cz58nipKQJGlfVSdWfRsXfnzo8G+CJd4BtpNtVLPHjm8neiasEF3RxZGvs1K/ae
+ frEIfNhPJ2Wf2/KawV/JGg59iDpPldEtXENo2276YF8kRtHfixVl5K3l3AHWdW7fTVtgti7wT
+ sHlL7TCNFnoIA7fWmz8xHyrRjKO4PdTx9jJxc49kvfADJLApwQkFIdqIX4ElqmNMq/oM/LmC7
+ HKt/DBdU1ghg/5hQR0wviy6CdYoVLNx9PKkN5mPAPHwvZFy2VLSCvROlRu2/90/JhiFybRA1O
+ Ap/zu6F/AJltQaj+Jmj5KRf41YdEe5HmFIIgdZ/j3ICzuKA/e1PWbf1xBkbBoodNcfn1543AL
+ lmLUIh/zrsz5YZwFlQ1+tdfxVylQMMUfPJcL9YdhdzkSDy8UQ+Sl5srVNuqyeHCBSKnxyLr2p
+ yhUjy7qA8frkhflT7uGeUZwHT90XRIP4N5GQauGm75kfdSKOz1PgCNHLWZqB9IllUUz/Rz2OB
+ XwJrnfZoIusJK4v/kLQpwVb+Fl8oQaYEwDKXIsDMx9EZQriwynDtH0j7179N1JhwIXdFGR+fM
+ T88+3GyGbEUNga1GmHbmHYO1MM1RmadEeJcz0b7zaLNmOKisdwUHNnekkL01hHFAPcxA1jUXV
+ IvPNKsjyZaGtwZYMy9m7K6duj9qOFt1TbSRclD2sBPfJkl/tiWptCG23/jTMhMSs4fJzEHoeu
+ 0yw2JWUN3pNGSvNHWAXT9Z4QzO2YkTVEycRRupXTmIr8A=
 
-Livepatch module usually used to modify kernel functions.
-If the patched function have bug, it may cause serious result
-such as kernel crash.
+=E2=80=A6
+> This commit introduce a read only interface of livepatch
 
-This commit introduce a read only interface of livepatch
-sysfs interface. If a livepatch function is called, this
-sysfs interface "called" of the patched function will
-set to be 1.
+Please improve the changelog with an imperative wording.
 
-/sys/kernel/livepatch/<patch>/<object>/<function,sympos>/called
 
-This value "called" is quite necessary for kernel stability assurance for livepatching
-module of a running system. Testing process is important before a livepatch module
-apply to a production system. With this interface, testing process can easily
-find out which function is successfully called. Any testing process can make sure they
-have successfully cover all the patched function that changed with the help of this interface.
----
- include/linux/livepatch.h |  2 ++
- kernel/livepatch/core.c   | 18 ++++++++++++++++++
- kernel/livepatch/patch.c  |  2 ++
- 3 files changed, 22 insertions(+)
+=E2=80=A6
+> find out which function is successfully called. Any testing process can =
+make sure they
+> have successfully cover all the patched function that changed with the h=
+elp of this interface.
 
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index 51a258c24ff5..026431825593 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -37,6 +37,7 @@
-  * @nop:        temporary patch to use the original code again; dyn. allocated
-  * @patched:	the func has been added to the klp_ops list
-  * @transition:	the func is currently being applied or reverted
-+ * @called:		the func is called
-  *
-  * The patched and transition variables define the func's patching state.  When
-  * patching, a func is always in one of the following states:
-@@ -75,6 +76,7 @@ struct klp_func {
- 	bool nop;
- 	bool patched;
- 	bool transition;
-+	bool called;
- };
- 
- struct klp_object;
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 52426665eecc..bc055b56dbe5 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -470,6 +470,22 @@ static struct attribute *klp_object_attrs[] = {
- };
- ATTRIBUTE_GROUPS(klp_object);
- 
-+static ssize_t called_show(struct kobject *kobj,
-+				struct kobj_attribute *attr, char *buf)
-+{
-+	struct klp_func *func;
-+	
-+	func = container_of(kobj, struct klp_func, kobj);
-+	return sysfs_emit(buf, "%d\n", func->called);
-+}
-+
-+static struct kobj_attribute called_kobj_attr = __ATTR_RO(called);
-+static struct attribute *klp_func_attrs[] = {
-+	&called_kobj_attr.attr,
-+	NULL,
-+};
-+ATTRIBUTE_GROUPS(klp_func);
-+
- static void klp_free_object_dynamic(struct klp_object *obj)
- {
- 	kfree(obj->name);
-@@ -631,6 +647,7 @@ static void klp_kobj_release_func(struct kobject *kobj)
- static const struct kobj_type klp_ktype_func = {
- 	.release = klp_kobj_release_func,
- 	.sysfs_ops = &kobj_sysfs_ops,
-+	.default_groups = klp_func_groups,
- };
- 
- static void __klp_free_funcs(struct klp_object *obj, bool nops_only)
-@@ -903,6 +920,7 @@ static int klp_init_object(struct klp_patch *patch, struct klp_object *obj)
- static void klp_init_func_early(struct klp_object *obj,
- 				struct klp_func *func)
- {
-+	func->called = 0;
- 	kobject_init(&func->kobj, &klp_ktype_func);
- 	list_add_tail(&func->node, &obj->func_list);
- }
-diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
-index 90408500e5a3..75b9603a183f 100644
---- a/kernel/livepatch/patch.c
-+++ b/kernel/livepatch/patch.c
-@@ -118,6 +118,8 @@ static void notrace klp_ftrace_handler(unsigned long ip,
- 	if (func->nop)
- 		goto unlock;
- 
-+	if (!func->called)
-+		func->called = true;
- 	ftrace_regs_set_instruction_pointer(fregs, (unsigned long)func->new_func);
- 
- unlock:
--- 
-2.37.3
+* I suggest to take preferred line lengths better into account
+  also for such a change description.
 
+* Please provide the tag =E2=80=9CSigned-off-by=E2=80=9D.
+  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/=
+Documentation/process/submitting-patches.rst?h=3Dv6.9#n398
+
+Regards,
+Markus
 
