@@ -1,162 +1,195 @@
-Return-Path: <live-patching+bounces-282-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-283-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 72B948CA994
-	for <lists+live-patching@lfdr.de>; Tue, 21 May 2024 10:04:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 65F2C8CBEF0
+	for <lists+live-patching@lfdr.de>; Wed, 22 May 2024 12:05:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id DC8EBB22870
-	for <lists+live-patching@lfdr.de>; Tue, 21 May 2024 08:04:43 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 122A6281F34
+	for <lists+live-patching@lfdr.de>; Wed, 22 May 2024 10:05:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23C714D9EA;
-	Tue, 21 May 2024 08:04:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7ECC98172A;
+	Wed, 22 May 2024 10:05:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="VMXUX7R6"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="SMlrFHX+"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E366A4CE04
-	for <live-patching@vger.kernel.org>; Tue, 21 May 2024 08:04:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 404B67E572
+	for <live-patching@vger.kernel.org>; Wed, 22 May 2024 10:05:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716278682; cv=none; b=EtDXJ5Cj0vj56YANccHSE5G4jn4PV6gIzz7Yb5bIci45MWDxTBHuO2eD72onGU+Mah2KLSI0RU6bXHNdJvp+YDQzUug11yrfUJUE8rbikpnbuCk8mraFwILm8NLZS+k+Q1c7yeUbsV1OsWOqC4NkelvB+j8n1ntIm0tient9qYU=
+	t=1716372332; cv=none; b=pwuO4HA7jq6e/uBPLtbHIYiFhtOTb08qDGN1tcopbtGL0LNbog3ZXMmsN8vDr2Y0d1AZMXVjvAeNBRKyiOJQ0swF/NPvWjDAqmkq4UlzlIHSqZAhj5QU/7ZSvyHFqIi4zEDq1FqLSStGrt+06jJpNxc9SUQXZDy82uRI1oNsRLg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716278682; c=relaxed/simple;
-	bh=H1pX/l/9zFJBqeC65WLx5xVkJ5/5BEYFzpClMZLFUWg=;
+	s=arc-20240116; t=1716372332; c=relaxed/simple;
+	bh=FzxcMdJRlw32pxc5qidtepX6vG4x8QIo99LwzafuDe4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KCXE2lzU6LJZIY8lY4n/Q986V/CxJ8K8LDzUZS19yWKqq0MsJYQl5RHJscmbohH/jEkg9XURlMIaNM4R84DI/yvvhk6Te0BLUH+IKgZKr4hoLuQNy3//4y8zxaHgCCeYXFgN8xrgOinykgZu0GjG7V7ANmGTlCuedXLlQjfRhK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=VMXUX7R6; arc=none smtp.client-ip=209.85.218.44
+	 Content-Type:Content-Disposition:In-Reply-To; b=qyXSOLUBEv7b8Kt+pccVoL1ehV/nZc/yeS3bsfOWXFVCwXpoacyOwqTjWe3Ni5n3JoTbI020crkrMXhrXqmfzNYLnOs/Ebfm5UAERjM6/F6V17jfpNgjaCVMeDNKiDIroMtIW6MR+WggiJcXm5xLtCoS4ifwCxjLWUQ/VEskPY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=SMlrFHX+; arc=none smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a5dcb5a0db4so324824166b.2
-        for <live-patching@vger.kernel.org>; Tue, 21 May 2024 01:04:39 -0700 (PDT)
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-56e1f3462caso10473459a12.3
+        for <live-patching@vger.kernel.org>; Wed, 22 May 2024 03:05:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1716278678; x=1716883478; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=L8zfwXAqu2uLm4XXNzPsYjNVm1x+e8a1p9Cw49ZRtk0=;
-        b=VMXUX7R6VP485JSuJUXNjJnN2RNrZCkXIUp69JKAmC2CjCIKXba1LS+EEFFGU3dU0p
-         on8P1XDa9vRgTHYwtR/4AtzaH7/u04BtpjCtzZPpFFtEKutxwBn1y1M8AmE/wZ5qE5p/
-         pQtc09yjbDUA1Nqozmb4VPKeWR3ub8vo2P6ddITeMmsEfZjnyS0tQOWrhCEzXxfmxb9U
-         /RYBJNyvrv6UqQmT8rfUJBc9jueMFgmOkZP5ZgOTZVML3HwifRlG8bBRUKiqM/04DirF
-         zP5PdZFaHbmFVsO4dPYF2V+T+QtB4C18b7j7av7BPS337sQaDjLotnWdK4A3YXsvhgWz
-         oQqA==
+        d=suse.com; s=google; t=1716372328; x=1716977128; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MAuT1CrGzLDbQfX5xdrNBQ8TlS884bMDX3/yN0VN0vA=;
+        b=SMlrFHX+KM9srHdfMMlhuHmyVbhrXRm0NMAA7qKQQcLew3iv8fbZJLCDabJbxp6rt6
+         AorBN1yGYLGpnqu7WAlmupYr8nMAALqQX3foi8xkwHImGtnLxCvhddTTMte1wmlgPHga
+         DIFUvzTCzbfxtG8DBtGprtvU3oSIlI/mrSJZgJGOV8hEAAjeuhXN2771dt+92G9EXE4e
+         gtgQwbvOnNkLto+jbgsL59mgAclpCU0/OpfTEgIB8UAY/uC2/xvxARg/yQo7wrh/cwn8
+         J3Hq4eXZnSaEqmU41McMhLhVQWbirFtWOzSjiYWPtRvOoZ4nGUXSV96Ft0uQHcQXtzxs
+         qHRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716278678; x=1716883478;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L8zfwXAqu2uLm4XXNzPsYjNVm1x+e8a1p9Cw49ZRtk0=;
-        b=UHAv857Evl2KACtzl/k+lyUO/gnvlhpJoKBEb8Bk9pnovIi7YYf+9p0Nwwc3JuLsS/
-         7KCaSG2iBpYK6MzARopDtls5vYyEKTX+EflS+LqO69ausqTPmzCfpmFFmU4zQ2afealW
-         1e/adMCoJ3QP8Bm38vr1ne9koFcMGLEGB8QMZ4YRxOP49BuVrI7OYC9nuYcmI3KuE3Db
-         lTuiLr4C4xpYHtSc961RWBIC3iMl9hJBL+bil539CoHtikWiApUQcA8m/yd1lCL/VSX/
-         5E6HWdw+SrZ7WbZu4K/NzF5icHtULFhpzGfUaMb7NQeLVnuYW0UyFXS3vOqQMMVUl8iw
-         0W+w==
-X-Forwarded-Encrypted: i=1; AJvYcCVfSm584Fc5eEWBOw8+603qf9x+xsKe4vICYGkJJYEPZAxSVUGjbMzA3wiv8St4QgMXGCCyzCxy62YHr2NUsPTAgn9T0swkjX5IJyOYhw==
-X-Gm-Message-State: AOJu0YzJkDjv0GG9NXYRaltAGtGFPJWTFPqJ4P7HN6nKj23n9KHlySbn
-	CwnWSgcGkszyttcDgWzFt6ft3M/VF8IcMZwwgvu9fanT6v16NdFcWM6Q51WAlew=
-X-Google-Smtp-Source: AGHT+IEwSwaoGXszRy/vlwCN9/gMLqSB6q4698CsQ2KEnbnUuauXnQjOqMjiZnb5tAm0Wcz3tAFUHA==
-X-Received: by 2002:a17:906:3184:b0:a5a:1579:9033 with SMTP id a640c23a62f3a-a5a2d53abacmr1834565866b.1.1716278678198;
-        Tue, 21 May 2024 01:04:38 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1716372328; x=1716977128;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MAuT1CrGzLDbQfX5xdrNBQ8TlS884bMDX3/yN0VN0vA=;
+        b=juVu6EwOAdI2zHLKmb5nXP7ezF5kWQl+HftJQeDdJTdTgqqRBtrR+OQGxT2bAyY/tO
+         RQ3a2iiRgTeCoJk9Qlcl0RCZQULXAr15vhz+H+VIgjc8kpkpPBrf7XDvuWkU9zAGY8vo
+         CyWH3UhrX1gD0xRUJ6Uz8oo0slHU0OsRVM31c4L5FlV5FOjp1ainHp5BtXwr40Yt/CEk
+         ZFiAsHJ5LCxrQzr+CSm7zPOrYq4WS/ABkhuq3pDLX/eEE6BqqxeDNlYlG9v+35h15HrM
+         Y8WNNArIZbAyX6/uqXbCfPZtZJSZpq4xmnIbOFfDZBy4lBsfUwwj9DzxnEVABGzZwCxo
+         roiA==
+X-Forwarded-Encrypted: i=1; AJvYcCVPhyuaUAscRMzrtp9ZCHL1O9uRMDkKdNT8XGmEJNTkseeyhzYhCzmbDOTAA1V6r31mB+m4D6eKKbD4qtvjUpPEMsZ2sswtXGeyyXrNBw==
+X-Gm-Message-State: AOJu0Yyt9EGPwvo8Eh6Rmnjs9rX8qU/b8aZW4ztQs6f5BOmrxSZNfXPb
+	Q/CXAmA48mw6swq+Yb01FKbj6mawDC0UYEeI4qsthi/CrwNKJ9O7pm9M/4DE0Gc=
+X-Google-Smtp-Source: AGHT+IFqDFgHKrPPybsbXgR9W6pXr6lzRXXb8Y6SzZTFgfvrdPD2EJsqc/1laDwrKtXZfHf421suaw==
+X-Received: by 2002:a50:9ec8:0:b0:56e:743:d4d9 with SMTP id 4fb4d7f45d1cf-57832c6c0c6mr724613a12.42.1716372328602;
+        Wed, 22 May 2024 03:05:28 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5ce048529asm708154266b.222.2024.05.21.01.04.37
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5782859f7ffsm1622311a12.83.2024.05.22.03.05.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 May 2024 01:04:37 -0700 (PDT)
-Date: Tue, 21 May 2024 10:04:36 +0200
+        Wed, 22 May 2024 03:05:28 -0700 (PDT)
+Date: Wed, 22 May 2024 12:05:26 +0200
 From: Petr Mladek <pmladek@suse.com>
-To: Miroslav Benes <mbenes@suse.cz>
-Cc: zhang warden <zhangwarden@gmail.com>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] livepatch: introduce klp_func called interface
-Message-ID: <ZkxVlIPj9VZ9NJC4@pathway.suse.cz>
-References: <20240520005826.17281-1-zhangwarden@gmail.com>
- <alpine.LSU.2.21.2405200845130.11413@pobox.suse.cz>
- <BBD2A553-6D44-4CD5-94DD-D8B2D5536F94@gmail.com>
- <alpine.LSU.2.21.2405210823590.4805@pobox.suse.cz>
+To: Lukas Hruska <lhruska@suse.cz>
+Cc: mbenes@suse.cz, jpoimboe@kernel.org, joe.lawrence@redhat.com,
+	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-kbuild@vger.kernel.org, mpdesouza@suse.com,
+	Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v2 2/6] livepatch: Add klp-convert tool
+Message-ID: <Zk3DZtIr4fWaukO9@pathway.suse.cz>
+References: <20240516133009.20224-1-lhruska@suse.cz>
+ <20240516133009.20224-3-lhruska@suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alpine.LSU.2.21.2405210823590.4805@pobox.suse.cz>
+In-Reply-To: <20240516133009.20224-3-lhruska@suse.cz>
 
-On Tue 2024-05-21 08:34:46, Miroslav Benes wrote:
-> Hello,
+On Thu 2024-05-16 15:30:05, Lukas Hruska wrote:
+> Livepatches need to access external symbols which can't be handled
+> by the normal relocation mechanism. It is needed for two types
+> of symbols:
 > 
-> On Mon, 20 May 2024, zhang warden wrote:
+>   + Symbols which can be local for the original livepatched function.
+>     The alternative implementation in the livepatch sees them
+>     as external symbols.
 > 
-> > 
-> > 
-> > > On May 20, 2024, at 14:46, Miroslav Benes <mbenes@suse.cz> wrote:
-> > > 
-> > > Hi,
-> > > 
-> > > On Mon, 20 May 2024, Wardenjohn wrote:
-> > > 
-> > >> Livepatch module usually used to modify kernel functions.
-> > >> If the patched function have bug, it may cause serious result
-> > >> such as kernel crash.
-> > >> 
-> > >> This is a kobject attribute of klp_func. Sysfs interface named
-> > >> "called" is introduced to livepatch which will be set as true
-> > >> if the patched function is called.
-> > >> 
-> > >> /sys/kernel/livepatch/<patch>/<object>/<function,sympos>/called
-> > >> 
-> > >> This value "called" is quite necessary for kernel stability
-> > >> assurance for livepatching module of a running system.
-> > >> Testing process is important before a livepatch module apply to
-> > >> a production system. With this interface, testing process can
-> > >> easily find out which function is successfully called.
-> > >> Any testing process can make sure they have successfully cover
-> > >> all the patched function that changed with the help of this interface.
-> > > 
-> > > Even easier is to use the existing tracing infrastructure in the kernel 
-> > > (ftrace for example) to track the new function. You can obtain much more 
-> > > information with that than the new attribute provides.
-> > > 
-> > > Regards,
-> > > Miroslav
-> > Hi Miroslav
-> > 
-> > First, in most cases, testing process is should be automated, which make 
-> > using existing tracing infrastructure inconvenient.
+>   + Symbols in modules which are exported via EXPORT_SYMBOL*(). They
+>     must be handled special way otherwise the livepatch module would
+>     depend on the livepatched one. Loading such livepatch would cause
+>     loading the other module as well.
 > 
-> could you elaborate, please? We use ftrace exactly for this purpose and 
-> our testing process is also more or less automated.
+> The address of these symbols can be found via kallsyms. Or they can
+> be relocated using livepatch specific relocation sections as specified
+> in Documentation/livepatch/module-elf-format.txt.
 > 
-> > Second, livepatch is 
-> > already use ftrace for functional replacement, I don’t think it is a 
-> > good choice of using kernel tracing tool to trace a patched function.
-> 
-> Why?
-> 
-> > At last, this attribute can be thought of as a state of a livepatch 
-> > function. It is a state, like the "patched" "transition" state of a 
-> > klp_patch.  Adding this state will not break the state consistency of 
-> > livepatch.
-> 
-> Yes, but the information you get is limited compared to what is available 
-> now. You would obtain the information that a patched function was called 
-> but ftrace could also give you the context and more.
+> --- /dev/null
+> +++ b/scripts/livepatch/klp-convert.c
+> +/* Converts rela symbol names */
+> +static bool convert_symbol(struct symbol *s)
+> +{
+> +	char lp_obj_name[MODULE_NAME_LEN];
+> +	char sym_obj_name[MODULE_NAME_LEN];
+> +	char sym_name[KSYM_NAME_LEN];
+> +	char *klp_sym_name;
+> +	unsigned long sym_pos;
+> +	int poslen;
+> +	unsigned int length;
+> +
+> +	static_assert(MODULE_NAME_LEN >= 56 && KSYM_NAME_LEN == 512,
+> +			"Update limit in the below sscanf()");
+> +
+> +	if (sscanf(s->name, KLP_SYM_RELA_PREFIX "%55[^.].%55[^.].%511[^,],%lu",
+> +			lp_obj_name, sym_obj_name, sym_name, &sym_pos) != 4) {
+> +		WARN("Invalid format of symbol (%s)\n", s->name);
+> +		return false;
+> +	}
+> +
+> +	poslen = calc_digits(sym_pos);
+> +
+> +	length = strlen(KLP_SYM_PREFIX) + strlen(sym_obj_name)
+> +		 + strlen(sym_name) + sizeof(poslen) + 3;
 
-Another motivation to use ftrace for testing is that it does not
-affect the performance in production.
+There should be "poslen" instead of "sizeof(poslen)".
 
-We should keep klp_ftrace_handler() as fast as possible so that we
-could livepatch also performance sensitive functions.
+> +
+> +	klp_sym_name = calloc(1, length);
+> +	if (!klp_sym_name) {
+> +		WARN("Memory allocation failed (%s%s.%s,%lu)\n", KLP_SYM_PREFIX,
+> +				sym_obj_name, sym_name, sym_pos);
+> +		return false;
+> +	}
+> +
+> +	if (safe_snprintf(klp_sym_name, length, KLP_SYM_PREFIX "%s.%s,%lu",
+> +			  sym_obj_name, sym_name, sym_pos)) {
+> +
+> +		WARN("Length error (%s%s.%s,%lu)", KLP_SYM_PREFIX,
+> +				sym_obj_name, sym_name, sym_pos);
+> +		free(klp_sym_name);
+> +		return false;
+> +	}
+> +
+> +	s->name = klp_sym_name;
+> +	s->sec = NULL;
+> +	s->sym.st_name = -1;
+> +	s->sym.st_shndx = SHN_LIVEPATCH;
+> +
+> +	return true;
+> +}
+> --- /dev/null
+> +++ b/scripts/livepatch/klp-convert.h
+> @@ -0,0 +1,23 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2016 Josh Poimboeuf <jpoimboe@redhat.com>
+> + * Copyright (C) 2017 Joao Moreira   <jmoreira@suse.de>
+> + *
+> + */
+> +
+> +#define SHN_LIVEPATCH		0xff20
+> +#define SHF_RELA_LIVEPATCH	0x00100000
+> +#define MODULE_NAME_LEN		(64 - sizeof(GElf_Addr))
+> +#define WARN(format, ...) \
+> +	fprintf(stderr, "klp-convert: " format "\n", ##__VA_ARGS__)
+
+Nit: I would remove "\n" here and add it to all callers. Half of the
+     callers already have it ;-)
+
+> +
+> +/*
+> + * klp-convert uses macros and structures defined in the linux sources
+> + * package (see include/uapi/linux/livepatch.h). To prevent the
+> + * dependency when building locally, they are defined below. Also notice
+> + * that these should match the definitions from the targeted kernel.
+> + */
+> +
+> +#define KLP_RELA_PREFIX			".klp.rela."
+> +#define KLP_SYM_RELA_PREFIX		".klp.sym.rela."
+> +#define KLP_SYM_PREFIX			".klp.sym."
+
+Otherwise, it looks good.
 
 Best Regards,
 Petr
