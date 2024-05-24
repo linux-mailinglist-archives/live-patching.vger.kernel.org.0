@@ -1,119 +1,116 @@
-Return-Path: <live-patching+bounces-287-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-288-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A6E308CD599
-	for <lists+live-patching@lfdr.de>; Thu, 23 May 2024 16:23:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D3CF08CE1FF
+	for <lists+live-patching@lfdr.de>; Fri, 24 May 2024 10:09:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D22961C210F0
-	for <lists+live-patching@lfdr.de>; Thu, 23 May 2024 14:23:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 876A6282E22
+	for <lists+live-patching@lfdr.de>; Fri, 24 May 2024 08:09:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EF5D14AD36;
-	Thu, 23 May 2024 14:22:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B99F882872;
+	Fri, 24 May 2024 08:09:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="q1TFSaaU"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UPYxb0eJ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A1314A62B
-	for <live-patching@vger.kernel.org>; Thu, 23 May 2024 14:22:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F7E17578;
+	Fri, 24 May 2024 08:09:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716474179; cv=none; b=bqIRfQMtVRgVW43sgzgfay0KMzKCjvs655ZmdFgw/fT8hmdYAb/yNyjxL38LLyUI6nXcO7GXwtLAHNuGI4JLdc6gQnMjRfyNg1o94hmH01d/rUUOpqn0kDOgrDvuuYY+BHKDP1KMlpp123Lknmjx3I8Xvt7i1ev9DNJ5bvoctwI=
+	t=1716538173; cv=none; b=gHSGXZQy4IqG9ENK7U/O3HE6+M2b5zhA/iugiQJMpLvQ7obKd3ZZjJt5iMyanxEqCZaEa8m9//1v+GRHv6R3YSkp1CMIYAFXaoN/ahqudVw01tfi0DLE5grcsYn0oGwfkodA/7DiXEkmgkaEJAlLz1hlagsQuQ7th110T2nUx08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716474179; c=relaxed/simple;
-	bh=wqnOUnUOf0fPZLabeDBniNGjx8W2FMJzThyw1j+5B7w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sbTT79CobLNAc/WqhB4kNkfOziC3g676pSuTBRQS6h+D13RvHnU2BoDBWnG3oPCQZgBdVJegJouG1Xm2OdIm4io6QBSSea8rPomOKLVTWl6LGDlb6lIu2sQp4X/nVkv0TpS/b+EmHm3pnwcnjTvOJT0Va+XfrfmPYdd10d+VOTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=q1TFSaaU; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-41fd5dc0439so21075345e9.0
-        for <live-patching@vger.kernel.org>; Thu, 23 May 2024 07:22:57 -0700 (PDT)
+	s=arc-20240116; t=1716538173; c=relaxed/simple;
+	bh=Zkj2JsIkfE+bq2wOsgBsTDSgz21PZZORITW3xZI1H74=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=RqL0mqTRnKGFLXbjhIseaiuJP+BOrwNbufMEUONkzEk2bFzGM6MJuXaG662Itl4owwMPIrIx9vmC1tm5YyFq5u6pudLz29yWtJqI8KdFqKmOZjicu1h0DTlmU3qbHbHaDafD75dw6McfYYWE4AHj6/UDfT2mtvN1eGv6q6YYdmw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UPYxb0eJ; arc=none smtp.client-ip=209.85.210.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-6f8ecafd661so574426b3a.3;
+        Fri, 24 May 2024 01:09:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1716474176; x=1717078976; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MTc+trNC04p2Tq6aVYf4Ac3pfBeHynrqpnO2Xxz5xys=;
-        b=q1TFSaaUNT31COyE1+ebcI2FIFUku8GKvHNanJLe8YZpEBWbcBm+59ifec5/ldzpLi
-         7sWeHUTLYQjauXiXfH+AO5l2uj8X2TZH+rwLQ2q0lYNAH7XfgAfDcKkaiSn6XNoS3AEr
-         GPhWztp2lZqoqke03M/VaS8fdIe1mt4RMsr/0jD3vVxeEV+Tzln7dqD16d7ls/q5WhUO
-         SU/KTOYoZCnasoNkAInpVueFMuKu8ExgU6ixAmg68D93qB3NIM+EIe25c33NEEh4/kqg
-         m+rK1zIlG979R/us6R4sjiS1DgpTIFhS17Cya6mWfz7y+EiCFLkC8lN2+lxnK5MHWsev
-         UJ1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716474176; x=1717078976;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1716538171; x=1717142971; darn=vger.kernel.org;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MTc+trNC04p2Tq6aVYf4Ac3pfBeHynrqpnO2Xxz5xys=;
-        b=GBu/bV+8uZ0dk3HihLEKzI3eKi8j5VFCbQ0XT4kOuFydG22Of+tyeF1rAUiVf608PF
-         w5ZQZjWavtVMhS8G90kDDsGKKYraiCbd6EDwliT7leW1RwJYqz9OGFlJq4K8dQeBDLMu
-         DWoK3alL3aL0mwa92B7mkCi3jdpQ8O3bBRYUMxcUjiBFTqeYqEDOIsBeLkSuMhSQMEA4
-         cVCIg9MMUfe8ummZt+1nzYyJZ5Blvu98vybgGsj5Xxdk8ynytLZ2Q0hC1Uv0oxYogJx3
-         2GJbIvlhfAp0obYbYZb/R8F4Iit1So42rcXQ0nLrRhhIQvKbz4tPjG9rhFMl/x3q+IUd
-         6XXg==
-X-Forwarded-Encrypted: i=1; AJvYcCX+aUcLva7xhbHlvSztgngqvO3Z7+LolHg/BheagQnYmJQKmKtz1Imz1mJy+NsHrRRjaxG74d6X+g3lr63lYuDRFc/xHXTODRw1Ywj3iA==
-X-Gm-Message-State: AOJu0Yxy/zuCOdQk/x5Q7vHPGJ85tVGEEQjOcn4C7ZNN31/nF2HT8oTh
-	5RDcAdGRhCNaP7o7sUR7MkXMyPMQWUNKibBPRV7+KpdNsVsISR6PIArpa0kRwDdUMPEV0191UmG
-	xxEw=
-X-Google-Smtp-Source: AGHT+IFewh1SR//zlACHmRoQYyPTabBPg36F2XOjYcunPUbJ9/EFmdtw996X1q1Bu4U7naUkTaKZPw==
-X-Received: by 2002:a05:600c:6a15:b0:420:1551:96a9 with SMTP id 5b1f17b1804b1-420fd37f192mr39985755e9.39.1716474175660;
-        Thu, 23 May 2024 07:22:55 -0700 (PDT)
-Received: from localhost ([102.222.70.76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100eeb962sm27050925e9.1.2024.05.23.07.22.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 May 2024 07:22:55 -0700 (PDT)
-Date: Thu, 23 May 2024 17:22:51 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Wardenjohn <zhangwarden@gmail.com>
-Cc: jpoimboe@kernel.org, mbenes@suse.cz, jikos@kernel.org, pmladek@suse.com,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] livepatch: introduce klp_func called interface
-Message-ID: <18994387-2d2f-41e5-9ef6-6541dd0015d2@moroto.mountain>
-References: <20240519074343.5833-1-zhangwarden@gmail.com>
+        bh=Zkj2JsIkfE+bq2wOsgBsTDSgz21PZZORITW3xZI1H74=;
+        b=UPYxb0eJWdjue9zhgYHawAOlmqAEwHCT7WSCYyh8CkYNkG2rKKLU6Sqbtz9ma99rGh
+         8XvC1rqEOjIShJX9lK59eIqxtuHUBUhse0p/8HhlALaVyo8szmEPLaH5rJgpcCR3774F
+         KMs8nc1B+fzCoPJGtueWHkkOJjxuB6wUpnikGDCcj2+VHkwQr67zyUajc73vIYSnexPP
+         iu3aKub1zvUsb/qolHCdGGg8yqhe48wnZqHB+0q22cSBYQvBEdLxvmhiCCI0de/u0Wxk
+         aUU1Hy3STdf1G5G0o2B9zj2xYZSuIb7BY7FIN/BO4K4G1J3q4eVdarp1WLj6hC3umJrO
+         wvLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716538171; x=1717142971;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Zkj2JsIkfE+bq2wOsgBsTDSgz21PZZORITW3xZI1H74=;
+        b=hBN+bRNeI8lUK+Cgf+TGSrbDvcYszL6+/74iXd1kY8wwTR2QdiOXE0vFvdulGwQXQw
+         uI7dAc4WBPUHou5atDPCJu6gLXLIZ0h/Vjye6pUboN7J8FaelMzIPCO263xL/XYo1KT1
+         /sNMWuL0l1WMRoSQrqix/uKSzH3s84oY2gytWLEqrB09bFdwN60+3Cx7AGUuv0SX87CO
+         ZkXIzwdexQXEeFCrrRQ+eDC4I56fIqUl4dXF5OSRaeA1wtTYDm1w+YlHe6iVm5nQPz6m
+         CGuJPTn9usgJBXmTPnDJnRaYA+U6Z4N9v6tocuFxmSwWWMtQpcFzNhLjWjeuDhSi9P4g
+         YH5g==
+X-Forwarded-Encrypted: i=1; AJvYcCWiNopqV8k0TqaucKH7v+M1Vb+QId/OKinjCyP+LG/WNRq6O3EXFaCnw2dJWtnSro0z/2+uRO/31LTyq8GFooqQgS8NRnBl94UnWJ+XWNovmVMhzZtDooygYE2eambyAcaa5TZkQi9v2q6S5w==
+X-Gm-Message-State: AOJu0YypgHYlflkqYqX51MSQ/6tDG8o3IL88kcklF6jJs36IItJ+CDpG
+	ZotkhO34uC9g0hQ890wxTq16lxjtrbAMsXBIYq3ZSVkLwxiwUk3ZNzWBW45e
+X-Google-Smtp-Source: AGHT+IF6YJAZ9Ra9s5FChAtubXnvhoRTT2zAP15GFcXYujj/VAOzbeTtpvpRUQ8FX2bzyrVGMHSiWg==
+X-Received: by 2002:a05:6a20:3d88:b0:1af:e151:a934 with SMTP id adf61e73a8af0-1b212e5c01emr2044559637.59.1716538171508;
+        Fri, 24 May 2024 01:09:31 -0700 (PDT)
+Received: from smtpclient.apple ([47.88.5.130])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2bdd9f4c604sm2739097a91.41.2024.05.24.01.09.27
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2024 01:09:31 -0700 (PDT)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240519074343.5833-1-zhangwarden@gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
+Subject: Re: [PATCH] livepatch: introduce klp_func called interface
+From: zhang warden <zhangwarden@gmail.com>
+In-Reply-To: <ZkxVlIPj9VZ9NJC4@pathway.suse.cz>
+Date: Fri, 24 May 2024 16:09:10 +0800
+Cc: Miroslav Benes <mbenes@suse.cz>,
+ Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>,
+ Joe Lawrence <joe.lawrence@redhat.com>,
+ live-patching@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <17CDE51B-D42D-471F-8E32-64C8D9C06413@gmail.com>
+References: <20240520005826.17281-1-zhangwarden@gmail.com>
+ <alpine.LSU.2.21.2405200845130.11413@pobox.suse.cz>
+ <BBD2A553-6D44-4CD5-94DD-D8B2D5536F94@gmail.com>
+ <alpine.LSU.2.21.2405210823590.4805@pobox.suse.cz>
+ <ZkxVlIPj9VZ9NJC4@pathway.suse.cz>
+To: Petr Mladek <pmladek@suse.com>
+X-Mailer: Apple Mail (2.3774.500.171.1.1)
 
-On Sun, May 19, 2024 at 03:43:43PM +0800, Wardenjohn wrote:
-> Livepatch module usually used to modify kernel functions.
-> If the patched function have bug, it may cause serious result
-> such as kernel crash.
-> 
-> This commit introduce a read only interface of livepatch
-> sysfs interface. If a livepatch function is called, this
-> sysfs interface "called" of the patched function will
-> set to be 1.
-> 
-> /sys/kernel/livepatch/<patch>/<object>/<function,sympos>/called
-> 
-> This value "called" is quite necessary for kernel stability assurance for livepatching
-> module of a running system. Testing process is important before a livepatch module
-> apply to a production system. With this interface, testing process can easily
-> find out which function is successfully called. Any testing process can make sure they
-> have successfully cover all the patched function that changed with the help of this interface.
-> ---
 
-Always run your patches through checkpatch.
 
-So this patch is so that testers can see if a function has been called?
-Can you not get the same information from gcov or ftrace?
+> On May 21, 2024, at 16:04, Petr Mladek <pmladek@suse.com> wrote:
+>=20
+> Another motivation to use ftrace for testing is that it does not
+> affect the performance in production.
+>=20
+> We should keep klp_ftrace_handler() as fast as possible so that we
+> could livepatch also performance sensitive functions.
+>=20
 
-There are style issues with the patch, but it's not so important until
-the design is agreed on.
+How about using unlikely() for branch testing? If we use unlikely, maybe =
+there is no negative effect to klp_ftrace_handler() once this function =
+is called.
 
-regards,
-dan carpenter
+Regards,
+Wardenjohn
 
 
