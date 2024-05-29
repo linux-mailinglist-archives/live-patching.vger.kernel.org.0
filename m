@@ -1,109 +1,156 @@
-Return-Path: <live-patching+bounces-291-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-292-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5F91F8D1F8B
-	for <lists+live-patching@lfdr.de>; Tue, 28 May 2024 17:04:15 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0DF978D3863
+	for <lists+live-patching@lfdr.de>; Wed, 29 May 2024 15:52:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8A8DA1C223E2
-	for <lists+live-patching@lfdr.de>; Tue, 28 May 2024 15:04:14 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 48A1DB271AD
+	for <lists+live-patching@lfdr.de>; Wed, 29 May 2024 13:52:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9AD9216FF49;
-	Tue, 28 May 2024 15:01:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1D641BDCF;
+	Wed, 29 May 2024 13:51:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="LGuNQzaa"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="GiSTHJ1C";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="GiSTHJ1C"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B3AB1649DA
-	for <live-patching@vger.kernel.org>; Tue, 28 May 2024 15:01:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993201CD2D;
+	Wed, 29 May 2024 13:51:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716908494; cv=none; b=eUvVRPQTentcinu559fj9J5zYlI22KlS4kPn5IeasollTS25MltL3zTw9B/X55n6Jx6AN1WoXpY3dcPIrnDFAXLeUyC2U4/XIdUi7I1yFlm2k8tYEUekmXj4NiKG3ErhCiH+YQz9VVs/8oOa6lyQ+3nlMs8tMqBQAt6Dpj+B7y4=
+	t=1716990699; cv=none; b=Zh6TiFEPZeHaHjqJJGeFrGClMLGfnfqJcnw4Ow+EG7SQQMM77x/lWHORSI+qd752jtpmQW+YuJAnGbfTDnbAO8YjnCxy35HtNevYSVNXnoNx8GKcBwLDAd6S9PqbZCBr4QelyQJsp2IYwckv9HPXT1yfWGtOAWp/V/B9cvogwj4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716908494; c=relaxed/simple;
-	bh=LlvRFJOILCzbgT7NNvYggBjSUHVYjQn217GQwoLyvGQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ucPBqZDfrgySe3Oq+7RFiqN2lLsvajuQxVCOFK3z5QwYdqcAmzFO2AyLHLmOotD1WbgKpMqlgobTJ6czh2opcvpLgcK884fTkuDJ8qD2plLy4y/AYL/b0ltvGUHl182hDJlrmayEBDXlWJd0vyxcPzZnTSPueaCIIBCVztJaqVs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=LGuNQzaa; arc=none smtp.client-ip=209.85.218.46
+	s=arc-20240116; t=1716990699; c=relaxed/simple;
+	bh=FlJgSMl3UTJvdZrHju59jcvP+4p0emxzVuYQnLdPvgY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=FHqwFgPbJXZRVlZRJ+fWyysDRMF4TASVFxAyN3G+ZdmH2R8Aa0QZhZOOdm1uVEcIYKVM33DQ/nxlWq+1Kd1TfWBKVqAsns2gKwdYXIZikkHWSNGsuVYLjNrM7VArP5f6V38mI2h/ndPk2R5bPis+J8nGUcyzxGjoz+6E36SeRXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=GiSTHJ1C; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=GiSTHJ1C; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a626919d19dso699026466b.0
-        for <live-patching@vger.kernel.org>; Tue, 28 May 2024 08:01:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1716908490; x=1717513290; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AZpXRomCophLuh4kP0Z7OM4gjJuOz191Vdv0Rm3MAJs=;
-        b=LGuNQzaaX9qwTzTPWDHCllYkFttcLNJqr8FAVGDK/ue0zZsCxbwkQrul0ApRu4y9Us
-         k/vc6S2Oo7gCifyIJEKByxkv5PY9t+xQMVIzbbyMXI93CwrV/lDgiB8JsOfVwa2yaix/
-         E7ZWv9pb0p5zW6IJ08DW+5Dg8aLena3i8+ZajwBrGdGzPHx7/0gK5Ili+aR7Ak9ketts
-         eMD/4dT1Setm+E5kZWpSjyuoyI5NdCJcojQfa15oevtQr96+ZKQ2hV2v0hySgHSzaPJm
-         jsNJXTEafCbgrsf43XbHXhmH4ZXnxEvklYSL4XVkYq3RuE/54q+2tt2Row6pmT7ANVqx
-         gDbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716908490; x=1717513290;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AZpXRomCophLuh4kP0Z7OM4gjJuOz191Vdv0Rm3MAJs=;
-        b=CuvfhXbw4OHjy8Z/Tii2yyA+NQMo8+g72aJ1DQQ5uHkQl2QcH6Sgfir/eWHsoEjchk
-         vMKCp0fgsp7vqQxlSc6gEjy5duyEBbFousxIPn6zkJebUsbFHN6ll8UApKmIK8PvoJV6
-         7Lthvuu2b4X7PXaPMGRNJq4x3W8A6QceChXkdeB7k5H4qr/Gbzm+CUrQF8CsM7jgJcHg
-         CwxNLY5Lwb1woeTbOtwUQZvi5YbLEOjHFPU1BHOwIPNzAdUkPwBaQDE2cxYLMQ4ABscP
-         fFH75eD2y7zngrC1MRcIjesWnwZvk+86KG1DEofzd1Pq9kzVtMwNlCl846W/IxYWcWQi
-         ZhSQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWhKofKpTcrcwsLl71dWGyciAJ1mBAuc9A8nKBGRoc8QmgTWq5p1jVJIyVM+pZ+E46dTSERB/mQDf1it7U+yelJKdhImHQROnzX9sn39g==
-X-Gm-Message-State: AOJu0Yz/AGAyh7Ix2w7taDDlXgmBJ7Js0aJMCj4HI8lYZoYr5NUegCMM
-	CVIkN6ZbbmjZJ9nmyrrLp1IJSpamd00FvNM6xrs0TWZXuxdqfzx2Q1y4TyrfAAQ=
-X-Google-Smtp-Source: AGHT+IGjXdR1wwIB/XQSuS/su8bySQhPGF1f9VfG551f27pX864NaKYfbnoT+xMu5gTVpvnmh+tb7A==
-X-Received: by 2002:a17:906:1f06:b0:a59:f2d2:49b1 with SMTP id a640c23a62f3a-a6261f91570mr1034023166b.9.1716908489852;
-        Tue, 28 May 2024 08:01:29 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a626cda6d74sm619241766b.201.2024.05.28.08.01.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 May 2024 08:01:29 -0700 (PDT)
-Date: Tue, 28 May 2024 17:01:28 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Shuah Khan <shuah@kernel.org>, live-patching@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] selftests: livepatch: Test atomic replace against
- multiple modules
-Message-ID: <ZlXxyIMNA64Wy395@pathway.suse.cz>
-References: <20240525-lp-atomic-replace-v2-1-142199bb65a1@suse.com>
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 8D045336AE;
+	Wed, 29 May 2024 13:51:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1716990694; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LNLWJbrRk7hFI6ZyyeUlyaH1ly9aS3REFE1/nnGspLg=;
+	b=GiSTHJ1C0KKUB3CncI1zXYl8Nco/8G/uYbnBtR3TrK7RTLTy1HlI3Ecih7h8ozmkVViWB7
+	o7JDGu5p7v0scVztXmPbn8V+PcOEAJsAim6RsJ5f8iUCkEcnms/C/fj1hX7DTi/Zd5mW2h
+	NGFnSXogTKR+eWEUntSfjuSjQ6FfXP0=
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1716990694; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LNLWJbrRk7hFI6ZyyeUlyaH1ly9aS3REFE1/nnGspLg=;
+	b=GiSTHJ1C0KKUB3CncI1zXYl8Nco/8G/uYbnBtR3TrK7RTLTy1HlI3Ecih7h8ozmkVViWB7
+	o7JDGu5p7v0scVztXmPbn8V+PcOEAJsAim6RsJ5f8iUCkEcnms/C/fj1hX7DTi/Zd5mW2h
+	NGFnSXogTKR+eWEUntSfjuSjQ6FfXP0=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 291FF13A6B;
+	Wed, 29 May 2024 13:51:33 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id NA0jOuUyV2Z8UwAAD6G6ig
+	(envelope-from <mpdesouza@suse.com>); Wed, 29 May 2024 13:51:33 +0000
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: Joe Lawrence <joe.lawrence@redhat.com>
+Cc: mpdesouza@suse.com,
+	live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] samples/livepatch: Add README.rst disclaimer
+Date: Wed, 29 May 2024 10:51:27 -0300
+Message-ID: <20240529135129.16373-1-mpdesouza@suse.com>
+X-Mailer: git-send-email 2.45.1
+In-Reply-To: <20200721161407.26806-3-joe.lawrence@redhat.com>
+References: 
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240525-lp-atomic-replace-v2-1-142199bb65a1@suse.com>
+Content-Transfer-Encoding: 8bit
+X-Spam-Level: 
+X-Spamd-Result: default: False [-2.80 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_CONTAINS_FROM(1.00)[];
+	R_MISSING_CHARSET(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MIME_TRACE(0.00)[0:+];
+	TO_DN_SOME(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ARC_NA(0.00)[];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_THREE(0.00)[4];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.com:email];
+	RCVD_TLS_ALL(0.00)[]
+X-Spam-Score: -2.80
+X-Spam-Flag: NO
 
-On Sat 2024-05-25 11:34:08, Marcos Paulo de Souza wrote:
-> Adapt the current test-livepatch.sh script to account the number of
-> applied livepatches and ensure that an atomic replace livepatch disables
-> all previously applied livepatches.
+From: mpdesouza@suse.com
+
+On   Tue, 21 Jul 2020 12:14:07 -0400   Joe Lawrence <joe.lawrence@redhat.com> wrote:
+
+> The livepatch samples aren't very careful with respect to compiler
+> IPA-optimization of target kernel functions.
 > 
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> Add a quick disclaimer and pointer to the compiler-considerations.rst
+> file to warn readers.
+> 
+> Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> ---
+>  samples/livepatch/README.rst | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+>  create mode 100644 samples/livepatch/README.rst
 
-I am not completely sure if it is a good idea to test so many
-aspects and use so many different test modules in a single test.
-It might be harder to maintain and analyze eventual problems.
+Acked-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-But the change will help to catch more problems which is good.
-I am fine with it:
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-Best Regards,
-Petr
+> 
+> diff --git a/samples/livepatch/README.rst b/samples/livepatch/README.rst
+> new file mode 100644
+> index 000000000000..2f8ef945f2ac
+> --- /dev/null
+> +++ b/samples/livepatch/README.rst
+> @@ -0,0 +1,15 @@
+> +.. SPDX-License-Identifier: GPL-2.0+
+> +
+> +==========
+> +Disclaimer
+> +==========
+> +
+> +The livepatch sample programs were written with idealized compiler
+> +output in mind. That is to say that they do not consider ways in which
+> +optimization may transform target kernel functions.
+> +
+> +The samples present only a simple API demonstration and should not be
+> +considered completely safe.
+> +
+> +See the Documentation/livepatching/compiler-considerations.rst file for
+> +more details on compiler optimizations and how they affect livepatching.
+> -- 
+> 2.21.3
 
