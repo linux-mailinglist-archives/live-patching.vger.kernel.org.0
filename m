@@ -1,86 +1,72 @@
-Return-Path: <live-patching+bounces-295-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-296-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 617AE8D38E7
-	for <lists+live-patching@lfdr.de>; Wed, 29 May 2024 16:14:18 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 30D298D3F79
+	for <lists+live-patching@lfdr.de>; Wed, 29 May 2024 22:19:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 812851C20AAC
-	for <lists+live-patching@lfdr.de>; Wed, 29 May 2024 14:14:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E349E287DA2
+	for <lists+live-patching@lfdr.de>; Wed, 29 May 2024 20:19:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F034F14534D;
-	Wed, 29 May 2024 14:13:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 717891C68AB;
+	Wed, 29 May 2024 20:19:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="ZHebotvB";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="ECZTtnEu"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MhBY0lvZ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9D261386A7;
-	Wed, 29 May 2024 14:13:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0FE51C689A
+	for <live-patching@vger.kernel.org>; Wed, 29 May 2024 20:19:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716991998; cv=none; b=ESAQO5A0mIbTCZTCHBXOQRzsHtJiDsDXmx1y4aRqDCYJFXdNzmvT0mlZQqBm+3hrMvJytfONb87qYHOvtGaljwshx1cG4TE309q3+6a0566GbtSQ+WoeSCtOilWGkoQiQqPJTPG8X6kVRYuBI2yQv8WVPAKFWZciKF4KKqapN2A=
+	t=1717013994; cv=none; b=uHFRIdkg5fy7GOvioYCGH+/f0/MsxW5pxIb6HAQgzy30PIptABSdLM21yEuet7eHADC3Km3FCTzpediYtwAa/puQlWJm2W76CGeeVNCszsEbJ8Uqo0eCtsD3E4oGba9Qjtt2nRnXqTog9hb+R7tP6LUFiht3Ynzp6D1PaDv/bvs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716991998; c=relaxed/simple;
-	bh=vhrBHK1oYqyYTQQ2KrX7GUmYkG+lYSlCKJrAJ9ciRt0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BG5DISSfZAOU8ITqywzwEVoghWypWyLRKroKGGqEtGRCc04cpoxtYZY3wRiDttO7423FuEoyqZU+cBsRPN7Mddv5MTVy0WwCK5oTEkR7w/jFUIXGrzYb8B+g227F66SWQI7YIE6WHBTxpbO8sHReC77KahZgguL/V1mDPt2qjxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=ZHebotvB; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=ECZTtnEu; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	s=arc-20240116; t=1717013994; c=relaxed/simple;
+	bh=y3GcMq9ZluqUW1sUBi+CcpJL5Dhf/CqcuOjLkAPEl0Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Jry2IfAAjIhDeEERJJvePprnpEfoFvtHFntoJBL2eshGj3JncGzSZLn2kwZPpp8z0l3EhZ9ysyzuNFgjALdOFVigtmxc9khU2B//amhHjYKT6JWw4xs32RPH/5stIdUCo7jI37hU9Kv2QD+8mTNhpU8nv2QljzPtFwp/iN6/38Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=MhBY0lvZ; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1717013990;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=NAmC2sHpZW/uyd30+ahP5F1fjRrkzir9nGwEyAcBFJ4=;
+	b=MhBY0lvZZst+XjClDjZSuNfyGqBu3rktVwGV9HeytkT97wZbt4wXa2J7Kjkhjn3omAkmFl
+	jZ/UAl6+znvk6N/dpCWgjERKJkjtaUXOcLPzBcoNPMTOcZRtYHQrT3R/TaEGVWBnBGKLBb
+	vdYTf/MecjXfCCvjkBzVflInZDfc3yQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-447-DmCdbomkPdiGAttvQvWPfQ-1; Wed, 29 May 2024 16:19:47 -0400
+X-MC-Unique: DmCdbomkPdiGAttvQvWPfQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id EDF1B336BB;
-	Wed, 29 May 2024 14:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1716991995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Obvm5kCvdEN1g3yJAksMyUYT29qKH1+PG1MggvgBEpc=;
-	b=ZHebotvBjTBb6ucKA+ydBuXs+AggyZZDheBcGKeOeGjbyOGDXHBHGvrndF4ROJsPxI+3eT
-	4iO7bs1BF8dSPGEA+N7ESs866pf70uQsDCUoD0b+Re0dPIysU9MzOmqmvxfqjWJWu/q1ol
-	dlbpuNn/gcm1+lJxt2oAQSOnWdrzfgA=
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.com header.s=susede1 header.b=ECZTtnEu
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1716991994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Obvm5kCvdEN1g3yJAksMyUYT29qKH1+PG1MggvgBEpc=;
-	b=ECZTtnEunVD07ng06cHfL2A3+ArV5U2ynd6mv1GQ8i+fFkNtsWVaDKyKbi3O02mgiAodI5
-	jGwiclY1fMCYP15PzmVppJeHVP2RpbarCa7RBQJJULondhpgQhCf7qRCOB1rddYH2L7MrX
-	77+l+KC3zI2npr+B79ofBX4QoDb20js=
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 89F461372E;
-	Wed, 29 May 2024 14:13:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id CP9UFvo3V2bvWgAAD6G6ig
-	(envelope-from <mpdesouza@suse.com>); Wed, 29 May 2024 14:13:14 +0000
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Miroslav Benes <mbenes@suse.cz>
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9E928101A52C;
+	Wed, 29 May 2024 20:19:46 +0000 (UTC)
+Received: from sullivan-work.redhat.com (unknown [10.22.9.146])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id DD32AC15BB1;
+	Wed, 29 May 2024 20:19:45 +0000 (UTC)
+From: Ryan Sullivan <rysulliv@redhat.com>
+To: live-patching@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Cc: mpdesouza@suse.com,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	nstange@suse.de
-Subject: Re: [PATCH 1/2] docs/livepatch: Add new compiler considerations doc
-Date: Wed, 29 May 2024 11:12:44 -0300
-Message-ID: <20240529141309.18902-1-mpdesouza@suse.com>
-X-Mailer: git-send-email 2.45.1
-In-Reply-To: <alpine.LSU.2.21.2009021452560.23200@pobox.suse.cz>
-References: 
+	jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	shuah@kernel.org
+Subject: [PATCH] tools/testing/selftests/livepatch: define max test-syscall processes
+Date: Wed, 29 May 2024 16:19:41 -0400
+Message-ID: <20240529201941.13968-1-rysulliv@redhat.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -88,184 +74,36 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Flag: NO
-X-Spam-Score: -3.01
-X-Rspamd-Action: no action
-X-Rspamd-Queue-Id: EDF1B336BB
-X-Spam-Level: 
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-3.01 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_CONTAINS_FROM(1.00)[];
-	R_MISSING_CHARSET(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	MIME_TRACE(0.00)[0:+];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_DN_SOME(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	FROM_HAS_DN(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.com:dkim,suse.com:email,suse.cz:email];
-	RCVD_TLS_ALL(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	RCPT_COUNT_FIVE(0.00)[6];
-	DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	DKIM_TRACE(0.00)[suse.com:+]
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.8
 
-From: mpdesouza@suse.com
+Define a maximum allowable number of pids that can be livepatched in
+test-syscall.sh as with extremely large machines the output from a
+large number of processes overflows the dev/kmsg "expect" buffer in
+the "check_result" function and causes a false error.
 
-On   Wed, 2 Sep 2020 15:45:33 +0200 (CEST)   Miroslav Benes <mbenes@suse.cz> wrote:
+Reported-by: CKI Project <cki-project@redhat.com>
+Signed-off-by: Ryan Sullivan <rysulliv@redhat.com>
+---
+ tools/testing/selftests/livepatch/test-syscall.sh | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-> Hi,
-> 
-> first, I'm sorry for the late reply. Thanks, Josh, for the reminder.
-> 
-> CCing Nicolai. Nicolai, could you take a look at the proposed 
-> documentation too, please? You have more up-to-date experience.
-> 
-> On Tue, 21 Jul 2020, Joe Lawrence wrote:
-> 
-> > +Examples
-> > +========
-> > +
-> > +Interprocedural optimization (IPA)
-> > +----------------------------------
-> > +
-> > +Function inlining is probably the most common compiler optimization that
-> > +affects livepatching.  In a simple example, inlining transforms the original
-> > +code::
-> > +
-> > +	foo() { ... [ foo implementation ] ... }
-> > +
-> > +	bar() { ...  foo() ...  }
-> > +
-> > +to::
-> > +
-> > +	bar() { ...  [ foo implementation ] ...  }
-> > +
-> > +Inlining is comparable to macro expansion, however the compiler may inline
-> > +cases which it determines worthwhile (while preserving original call/return
-> > +semantics in others) or even partially inline pieces of functions (see cold
-> > +functions in GCC function suffixes section below).
-> > +
-> > +To safely livepatch ``foo()`` from the previous example, all of its callers
-> > +need to be taken into consideration.  For those callers that the compiler had
-> > +inlined ``foo()``, a livepatch should include a new version of the calling
-> > +function such that it:
-> > +
-> > +  1. Calls a new, patched version of the inlined function, or
-> > +  2. Provides an updated version of the caller that contains its own inlined
-> > +     and updated version of the inlined function
-> 
-> I'm afraid the above could cause a confusion...
-> 
-> "1. Calls a new, patched version of the inlined function, or". The 
-> function is not inlined in this case. Would it be more understandable to 
-> use function names?
-> 
-> 1. Calls a new, patched version of function foo(), or
-> 2. Provides an updated version of bar() that contains its own inlined and 
->    updated version of foo() (as seen in the example above).
-> 
-> Not to say that it is again a call of the compiler to decide that, so one 
-> usually prepares an updated version of foo() and updated version of bar() 
-> calling to it. Updated foo() has to be there for non-inlined cases anyway.
-> 
-> > +
-> > +Other interesting IPA examples include:
-> > +
-> > +- *IPA-SRA*: removal of unused parameters, replace parameters passed by
-> > +  referenced by parameters passed by value.  This optimization basically
-> 
-> s/referenced/reference/
-> 
-> > +  violates ABI.
-> > +
-> > +  .. note::
-> > +     GCC changes the name of function.  See GCC function suffixes
-> > +     section below.
-> > +
-> > +- *IPA-CP*: find values passed to functions are constants and then optimizes
-> > +  accordingly Several clones of a function are possible if a set is limited.
-> 
-> "...accordingly. Several..."
-> 
-> [...]
-> 
-> > +  	void cdev_put(struct cdev *p)
-> > +  	{
-> > +  		if (p) {
-> > +  			struct module *owner = p->owner;
-> > +  			kobject_put(&p->kobj);
-> > +  			module_put(owner);
-> > +  		}
-> > +  	}
-> 
-> git am complained here about whitespace damage.
-> 
-> [...]
-> 
-> > +kgraft-analysis-tool
-> > +--------------------
-> > +
-> > +With the -fdump-ipa-clones flag, GCC will dump IPA clones that were created
-> > +by all inter-procedural optimizations in ``<source>.000i.ipa-clones`` files.
-> > +
-> > +kgraft-analysis-tool pretty-prints those IPA cloning decisions.  The full
-> > +list of affected functions provides additional updates that the source-based
-> > +livepatch author may need to consider.  For example, for the function
-> > +``scatterwalk_unmap()``:
-> > +
-> > +::
-> > +
-> > +  $ ./kgraft-ipa-analysis.py --symbol=scatterwalk_unmap aesni-intel_glue.i.000i.ipa-clones
-> > +  Function: scatterwalk_unmap/2930 (include/crypto/scatterwalk.h:81:60)
-> > +    isra: scatterwalk_unmap.isra.2/3142 (include/crypto/scatterwalk.h:81:60)
-> > +      inlining to: helper_rfc4106_decrypt/3007 (arch/x86/crypto/aesni-intel_glue.c:1016:12)
-> > +      inlining to: helper_rfc4106_decrypt/3007 (arch/x86/crypto/aesni-intel_glue.c:1016:12)
-> > +      inlining to: helper_rfc4106_encrypt/3006 (arch/x86/crypto/aesni-intel_glue.c:939:12)
-> > +
-> > +    Affected functions: 3
-> > +      scatterwalk_unmap.isra.2/3142 (include/crypto/scatterwalk.h:81:60)
-> > +      helper_rfc4106_decrypt/3007 (arch/x86/crypto/aesni-intel_glue.c:1016:12)
-> > +      helper_rfc4106_encrypt/3006 (arch/x86/crypto/aesni-intel_glue.c:939:12)
-> 
-> The example for the github is not up-to-date. The tool now expects 
-> file_list with *.ipa-clones files and the output is a bit different for 
-> the recent kernel.
-> 
-> $ echo arch/x86/crypto/aesni-intel_glue.c.000i.ipa-clones | kgraft-ipa-analysis.py --symbol=scatterwalk_unmap /dev/stdin
-> Parsing file (1/1): arch/x86/crypto/aesni-intel_glue.c.000i.ipa-clones
-> Function: scatterwalk_unmap/3935 (./include/crypto/scatterwalk.h:59:20) [REMOVED] [object file: arch/x86/crypto/aesni-intel_glue.c.000i.ipa-clones]
->   isra: scatterwalk_unmap.isra.8/4117 (./include/crypto/scatterwalk.h:59:20) [REMOVED]
->     inlining to: gcmaes_crypt_by_sg/4019 (arch/x86/crypto/aesni-intel_glue.c:682:12) [REMOVED] [edges: 4]
->       constprop: gcmaes_crypt_by_sg.constprop.13/4182 (arch/x86/crypto/aesni-intel_glue.c:682:12)
-> 
->   Affected functions: 3
->     scatterwalk_unmap.isra.8/4117 (./include/crypto/scatterwalk.h:59:20) [REMOVED]
->     gcmaes_crypt_by_sg/4019 (arch/x86/crypto/aesni-intel_glue.c:682:12) [REMOVED]
->     gcmaes_crypt_by_sg.constprop.13/4182 (arch/x86/crypto/aesni-intel_glue.c:682:12)
-> 
-> 
-> 
-> The rest looks great. Thanks a lot, Joe, for putting it together.
+diff --git a/tools/testing/selftests/livepatch/test-syscall.sh b/tools/testing/selftests/livepatch/test-syscall.sh
+index b76a881d4013..289eb7d4c4b3 100755
+--- a/tools/testing/selftests/livepatch/test-syscall.sh
++++ b/tools/testing/selftests/livepatch/test-syscall.sh
+@@ -15,7 +15,10 @@ setup_config
+ 
+ start_test "patch getpid syscall while being heavily hammered"
+ 
+-for i in $(seq 1 $(getconf _NPROCESSORS_ONLN)); do
++NPROC=$(getconf _NPROCESSORS_ONLN)
++MAXPROC=128
++
++for i in $(seq 1 $(($NPROC < $MAXPROC ? $NPROC : $MAXPROC))); do
+ 	./test_klp-call_getpid &
+ 	pids[$i]="$!"
+ done
+-- 
+2.44.0
 
-I think that we should start provinding a "Livepatch creation how-to", something
-similar, but for now I believe that some documentation is better than no
-documentation. This document can evolve to reach such point in the future, but
-for now, with Miroslav suggestions applied:
-
-Acked-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-
-> 
-> Miroslav
 
