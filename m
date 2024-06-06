@@ -1,125 +1,130 @@
-Return-Path: <live-patching+bounces-326-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-327-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7F56F8FF0C6
-	for <lists+live-patching@lfdr.de>; Thu,  6 Jun 2024 17:36:33 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 163A78FF438
+	for <lists+live-patching@lfdr.de>; Thu,  6 Jun 2024 20:04:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id C91E2B30FDC
-	for <lists+live-patching@lfdr.de>; Thu,  6 Jun 2024 15:17:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1089F1C2424B
+	for <lists+live-patching@lfdr.de>; Thu,  6 Jun 2024 18:04:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2DD7519AA66;
-	Thu,  6 Jun 2024 15:01:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEFBB19923F;
+	Thu,  6 Jun 2024 18:04:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IaaHFZPZ"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FP+oP4FE"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6AE71974F3
-	for <live-patching@vger.kernel.org>; Thu,  6 Jun 2024 15:01:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 334EE1974E7
+	for <live-patching@vger.kernel.org>; Thu,  6 Jun 2024 18:04:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717686093; cv=none; b=Q5rc7yhPAdc2sWEcfNAUrzoAtRtKrOi7WiJSLviGs7tFTekag5FB/OD2nzwqJ04NcohKFNx/JHi+pFMorSPR3vsbEiF5zWX9BC9rxe46mZ2NWugk8SGpcNHXZXuGGgDD72allbdO7gff1MDcnkJfl5ctPLY6FglKlzBBJ27NE1g=
+	t=1717697060; cv=none; b=Nc0OR7Fhd58iErDplGAjcITSd/IyWzcOwMPRQtb9NIsiKQcCQCwbDXqiib4tYKAgxF3xay/Nply4EFisT6H13euzgDo7UgjdvcsETMSAR5gSfwwb4lB2YloV26JZ0cBrIAcdyFCfzkouMGiFoZlN30tQNYi3IcD1G8fv7tgPbbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717686093; c=relaxed/simple;
-	bh=O9MAf9qzp98/4x7roDH1u7DUx23gngi6st1Jji4B+Kc=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:From:Subject:
-	 In-Reply-To:Content-Type; b=EDOpHApRO4xhWvQo54+w9SG4GMe1Eh2uZQNiuFqOyC5tnKUhxBM01FAqGTqnCjKBNGLLVkAhrJoyOFtesl3exStdL+5JHH2E38bCLiemHBV2Frk3DS7Skj6zuogofKpcMZt1fHhyU4YSUA0l9k0n0mK3dACOryemsLZFjj3jJAM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=IaaHFZPZ; arc=none smtp.client-ip=170.10.133.124
+	s=arc-20240116; t=1717697060; c=relaxed/simple;
+	bh=da+imw45i6WbUyYnjdn/vso5vMNu8F/aTdzRiRx0Jm8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LpVSH2QJk6ATRfQsgE++iMaAcLvMbV1NRSVY+vhTzPLPVQ62xwZmJ+y1cpQluLlfMYj194nt/usKdZNpH48WltIei1cT619JqbGmNo+3UMHa6RB/C5ouzqEFGRPRGzjqfU+MsdKEhHyTnbAdqm0TRC5NTakxY5sWoTnRw0t3BLk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=FP+oP4FE; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1717686090;
+	s=mimecast20190719; t=1717697058;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=jBb5kFou/O0zRv4ZHMlU4A8XTDPpz2EYXqLmgDRH8kA=;
-	b=IaaHFZPZjT+/8WhbaRC1FrQVDW9YgQBcmh0G5un7oKI1wIZ4JduS4hw77L4yhZmUO9f93T
-	jtlr6Ms666Qg9UE/CEHeg0FEhJ/mOug4m47nNNEH43vp+nUPS4vRTi4vEYw5ghN41iERAJ
-	lDW5X5vOYd7I1s9vCK0jzCXu/NrCiP8=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=6CO0g1e2iEYIKJ/eo72YLUJTNuT2OqKeA+f4WWAhCUA=;
+	b=FP+oP4FEDgh2HaiiWpZlKv9XuMtjsKEejf3C+FrrL9e1V2x8Qn2j7Tmzy8Vo9NR7nKcwKQ
+	39bbsofuPdJ5uoBmTB4QfUI5ha84g5ATk/1nrrXFlvEdZ59y2xJJJgdSlgfayg5N91NsVF
+	Jck9rfOvqCIn0B0e0e/cMh5igltyoV0=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-568---FEEjbpPGCpNcC96TnD-Q-1; Thu, 06 Jun 2024 11:01:28 -0400
-X-MC-Unique: --FEEjbpPGCpNcC96TnD-Q-1
-Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-6ae0dc954b2so15245066d6.0
-        for <live-patching@vger.kernel.org>; Thu, 06 Jun 2024 08:01:28 -0700 (PDT)
+ us-mta-493-nOjZuZL8O_Cl1t1cRzE9Lg-1; Thu, 06 Jun 2024 14:04:16 -0400
+X-MC-Unique: nOjZuZL8O_Cl1t1cRzE9Lg-1
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-3d200a9de76so1183296b6e.3
+        for <live-patching@vger.kernel.org>; Thu, 06 Jun 2024 11:04:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717686088; x=1718290888;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jBb5kFou/O0zRv4ZHMlU4A8XTDPpz2EYXqLmgDRH8kA=;
-        b=uGt0XlSloH22Z+8a7Hw1AZMRHf4+8tMzcBxvmWtcCbsYfXTq0Eo+CXwmhU/h0S4aCk
-         QJLouV22xVu7SYgp/ofVi5Tnypz4vm3ccNU6L9Q9qSfV4aZU0DkSt7EjCsWCYCGYBZdB
-         h5Fdzi3xzudayAEMSr8a7ddC1NOiEg0GrV7ImMyQlJIYTP2bkaCTNjd6RLjGDdVTb00/
-         y647/96WhHZg87WF4Cv5y3wiUZS6eRLMWaw+rKQyOxXpezQrr9j/VAfXZHKLChmUc+yI
-         rGXFyKFUE87DjWGyn/sJi5CJ2HmQOBA7mbol5HHDyo6W9u5BQbOoRZGsjX4MZLzsIOIi
-         IjPg==
-X-Forwarded-Encrypted: i=1; AJvYcCXrYIH9MmANborLPUtlob7WppVxnDQio6JzXFT0JrRV7QDBVNMxCPWftZ+sUrvXo4jHLuN0oWJmiLQBwx4uFuH0xHa+Hn0oHvGdDsG83Q==
-X-Gm-Message-State: AOJu0YyBNtkSOY+bg6troN6aKig+/zpPtjQhuiMWiiquL4Av8LIq8jzc
-	p/Q7mP3t4noGCf9HBScQIf3i469Q/KymmaYoKUQAM/yvrXx6IAWznCyzkSd/D4xLhT1ulEKelO3
-	0RJkQNJO6dAREprj5OHsJhfdk88/Euyt17SAKe6MTGm1j3bdeH2UBpRnqfShXcqs=
-X-Received: by 2002:a05:6214:53c2:b0:6ae:ba6:2136 with SMTP id 6a1803df08f44-6b030a1f207mr73502556d6.36.1717686087423;
-        Thu, 06 Jun 2024 08:01:27 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHRH7pcxj0JO5WLqrNYreesLzonwR/5WaCQB8j+jgwbAi0VAjzg+AL1oMiWygVgdyGzu8lrEg==
-X-Received: by 2002:a05:6214:53c2:b0:6ae:ba6:2136 with SMTP id 6a1803df08f44-6b030a1f207mr73502266d6.36.1717686087022;
-        Thu, 06 Jun 2024 08:01:27 -0700 (PDT)
-Received: from [192.168.1.19] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b056fd8b14sm1958356d6.132.2024.06.06.08.01.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Jun 2024 08:01:26 -0700 (PDT)
-Message-ID: <930d7361-64e9-a0fc-eb04-79d9bf9267fa@redhat.com>
-Date: Thu, 6 Jun 2024 11:01:25 -0400
+        d=1e100.net; s=20230601; t=1717697056; x=1718301856;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6CO0g1e2iEYIKJ/eo72YLUJTNuT2OqKeA+f4WWAhCUA=;
+        b=AlMehIxnEU8C+yEB8KgMOOgCljtnCV3xKIJ/GuZtCrCyTSaEDyquJfm3WZNCj6XH2z
+         aQ4FNQxlJ+k7ma/74Rb9lowzy3H+A1s/Y4bLEcxOuYE3h42IhGzHJGCGlxMvs56cLWgh
+         Sy6E46Q0JkHz+40kbg0NrSf+digb4w4CME13dYh5MS2EozICqdOEIybQnGnGH+Q30biS
+         91eLw5TrYGjEh2T47c7uFoExYr10ZfDwzJI37oGfwKbTwUkW+mggeXf711bkuoZU6PRr
+         m/235lJYtEBUMjSFUnjmGs2P2rtF87eOIut5PYtteTsl8owb/hgnbf80GTteBWwed8CL
+         3mtg==
+X-Gm-Message-State: AOJu0YznTfMT8d0mhPe0ZrynLnSiM1t7ZHUKauZBFBhPV0yfUBDkr/37
+	nVP7ST7h4Up4gg1jlyOT+ptqf1/DSiy7ElEuQHca/wzWf4Md+rG3dXrvsCJPcfm1ZUqk74Tdltv
+	IoLr+erI8/6SIoPN8R7S2/xqWuFWHvLaS2Lb7wUGbp3sf0szM8E11vpgTmTecnN8ZlJAD27M6qy
+	sLO5rvZ6VGv0pBvblkBbZwsvq9ond7oxDALhAnJg==
+X-Received: by 2002:a05:6808:f01:b0:3c9:c350:bd40 with SMTP id 5614622812f47-3d210c5c58dmr321900b6e.0.1717697055847;
+        Thu, 06 Jun 2024 11:04:15 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEMNpxDILxVYdYF+MIzB3EnzNYH3beUywsvqC9vv7lHss0Xq69PNun6Ju9dhGLMdY0RV9kmGV1cAXkq3BMPIBY=
+X-Received: by 2002:a05:6808:f01:b0:3c9:c350:bd40 with SMTP id
+ 5614622812f47-3d210c5c58dmr321852b6e.0.1717697055422; Thu, 06 Jun 2024
+ 11:04:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Content-Language: en-US
-To: zhang warden <zhangwarden@gmail.com>
-Cc: Miroslav Benes <mbenes@suse.cz>, Josh Poimboeuf <jpoimboe@kernel.org>,
- Jiri Kosina <jikos@kernel.org>, Petr Mladek <pmladek@suse.com>,
- live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20240520005826.17281-1-zhangwarden@gmail.com>
- <alpine.LSU.2.21.2405200845130.11413@pobox.suse.cz>
- <BBD2A553-6D44-4CD5-94DD-D8B2D5536F94@gmail.com>
- <alpine.LSU.2.21.2405210823590.4805@pobox.suse.cz>
- <Zloh/TbRFIX6UtA+@redhat.com>
- <4DE98E35-2D1F-4A4E-8689-35FD246606EF@gmail.com>
- <Zl8mqq6nFlZL+6sb@redhat.com>
- <92FCCE66-8CE5-47B4-A20C-31DC16EE3DE0@gmail.com>
-From: Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH] livepatch: introduce klp_func called interface
-In-Reply-To: <92FCCE66-8CE5-47B4-A20C-31DC16EE3DE0@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <alpine.LSU.2.21.2405311304250.8344@pobox.suse.cz> <20240606135348.4708-1-rysulliv@redhat.com>
+In-Reply-To: <20240606135348.4708-1-rysulliv@redhat.com>
+From: Joel Savitz <jsavitz@redhat.com>
+Date: Thu, 6 Jun 2024 14:03:59 -0400
+Message-ID: <CAL1p7m7oHwX_OqyUiXqKh=x24d9b9x9gqNA6YEec6s58adAE0A@mail.gmail.com>
+Subject: Re: [PATCH] selftests/livepatch: define max test-syscall processes
+To: Ryan Sullivan <rysulliv@redhat.com>
+Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, mpdesouza@suse.com, jpoimboe@kernel.org, 
+	jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, joe.lawrence@redhat.com, 
+	shuah@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Wardenjohn,
-
-To follow up, Red Hat kpatch QE pointed me toward this test:
-
-https://gitlab.com/redhat/centos-stream/tests/kernel/kernel-tests/-/tree/main/general/kpatch/kpatch-trace?ref_type=heads
-
-which reports a few interesting things via systemd service and ftrace:
-
-- Patched functions
-- Traced functions
-- Code that was modified, but didn't run
-- Other code that ftrace saw, but is not listed in the sysfs directory
-
-The code looks to be built on top of the same basic ftrace commands that
-I sent the other day.  You may be able to reuse/copy/etc bits from the
-scripts if they are handy.
-
---
-Joe
+On Thu, Jun 6, 2024 at 9:54=E2=80=AFAM Ryan Sullivan <rysulliv@redhat.com> =
+wrote:
+>
+> Define a maximum allowable number of pids that can be livepatched in
+> test-syscall.sh as with extremely large machines the output from a
+> large number of processes overflows the dev/kmsg "expect" buffer in
+> the "check_result" function and causes a false error.
+>
+> Reported-by: CKI Project <cki-project@redhat.com>
+> Signed-off-by: Ryan Sullivan <rysulliv@redhat.com>
+> ---
+>  tools/testing/selftests/livepatch/test-syscall.sh | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/livepatch/test-syscall.sh b/tools/te=
+sting/selftests/livepatch/test-syscall.sh
+> index b76a881d4013..289eb7d4c4b3 100755
+> --- a/tools/testing/selftests/livepatch/test-syscall.sh
+> +++ b/tools/testing/selftests/livepatch/test-syscall.sh
+> @@ -15,7 +15,10 @@ setup_config
+>
+>  start_test "patch getpid syscall while being heavily hammered"
+>
+> -for i in $(seq 1 $(getconf _NPROCESSORS_ONLN)); do
+> +NPROC=3D$(getconf _NPROCESSORS_ONLN)
+> +MAXPROC=3D128
+> +
+> +for i in $(seq 1 $(($NPROC < $MAXPROC ? $NPROC : $MAXPROC))); do
+>         ./test_klp-call_getpid &
+>         pids[$i]=3D"$!"
+>  done
+> --
+> 2.44.0
+>
+>
+Acked-by: Joel Savitz <jsavitz@redhat.com>
 
 
