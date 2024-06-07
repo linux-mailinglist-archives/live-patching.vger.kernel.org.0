@@ -1,140 +1,169 @@
-Return-Path: <live-patching+bounces-329-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-330-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 215418FF9ED
-	for <lists+live-patching@lfdr.de>; Fri,  7 Jun 2024 04:27:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 135448FFC8C
+	for <lists+live-patching@lfdr.de>; Fri,  7 Jun 2024 09:02:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B5B971F23F16
-	for <lists+live-patching@lfdr.de>; Fri,  7 Jun 2024 02:27:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9D7781C250B6
+	for <lists+live-patching@lfdr.de>; Fri,  7 Jun 2024 07:02:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C88ADDD9;
-	Fri,  7 Jun 2024 02:27:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A67F380600;
+	Fri,  7 Jun 2024 07:02:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Afh4I9jx"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MpjcuMUg"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9DCCDDAB;
-	Fri,  7 Jun 2024 02:27:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CDA51095B
+	for <live-patching@vger.kernel.org>; Fri,  7 Jun 2024 07:02:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717727228; cv=none; b=TkUt855CLqE9VlUY2tu5C0AztTII1O+85skTsnrjAhPyjiakQCb3fv4N+T20sfTbgzzYespMnuTEhonqS6kYu4sZPTEGS+vrVK5KqrIkU9o7n+TFoRqVlsYLp30OqhcUuA85ukHkSOoOKIcAogFMxEXhyMKLcrQJhrkUm6rN/LI=
+	t=1717743728; cv=none; b=gN35u447XyuJahc2AYTMS/z2CN93KgVbtadmbzXHwScOHpzVm1vwn9gkMdtGpFjdzbRKigY3Kmo+h5Yod0UVy/FR7Nsgb88II3X+WdOPdncnHtB1HqxlbqRv9BIudXCfbkS+Qg8DG7usrPURMooS4VqJ6Fe8d5YiVPY9Whp2IAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717727228; c=relaxed/simple;
-	bh=FMviLWiM9TAuVnien3DOdHoozNOjUgtoS3TQejc5Dsw=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=k5nr7x2rxRijUoCqP5lW4LJe4qlqfeXWQz1qylb5QRdLss71XpbRN36dd/+PGXHithYolzXGyu+E4xuhw0IX6Oo2yVunwUy+hVDZyWZxkJlf74MQvpmE3iqlzQWczxlVgcMERxdHdvD18xquU/1AH6BrQetcSO/GQM4UPryfqag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Afh4I9jx; arc=none smtp.client-ip=209.85.216.45
+	s=arc-20240116; t=1717743728; c=relaxed/simple;
+	bh=jg7JLaTh4CsAbv2pBV56pGeYtL0K2mhzUn8+cFjm1Ww=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=knirQ49OHIRd3ikBWJxKvHNikSLgbS78riU8ifxqiTotGepgrwHZQ7TugsiD9luz+AbcVVLjXAcXjPe+FVQSVHi9+Gu9mRs3GV2UseOXtgmCsC6fmjWOz0qCVgAtOw09Up4qu6OBNk/MtHzHngoArtrbFpUT1SmRi+90N3MgkRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MpjcuMUg; arc=none smtp.client-ip=209.85.210.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2c2bab8d69cso439431a91.0;
-        Thu, 06 Jun 2024 19:27:06 -0700 (PDT)
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-70413de08c7so157785b3a.0
+        for <live-patching@vger.kernel.org>; Fri, 07 Jun 2024 00:02:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1717727226; x=1718332026; darn=vger.kernel.org;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0PRTAWrhjr+QRdN9ZBsFIxqJeIplqLVctoeE5yPLMKA=;
-        b=Afh4I9jxNnEqCbp47P43mQ+JCNYok5cqTNlxHnNHDyXqlwPBd2kEtaXdUga+uec8Xd
-         fibr1kBL05LK6jgDb8FNWM3blQt0nq0NhoSmxmwvvpvDKUp93OVSB415hPnMwYVeDPSt
-         NJ2k3HqLbP02cDCZefoHCZzFNiQozGD1lXT8a25+SEOd0YPb7EOnYTZUhs7g5nnyfgw7
-         7eww/nrIBr2kdVBDsUvSxgeW6NLD/CH/KhCYmAUA+5vWD6XZ6OX+P+Hsu1hK5nihgjB3
-         /qUUI4HThCVJym1vD0+ZeUfI6KETAvvjX6aqOxrdxKqlGFAcQZM3dihkBbdBOH1LcFdY
-         mWLA==
+        d=gmail.com; s=20230601; t=1717743726; x=1718348526; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0ZGuYkiUkbI3m8PYrbJDYaedayOKhjMTcdEfvxG/gpQ=;
+        b=MpjcuMUgrGvKtei0aXpRnEF2X72NsKk3ttqyeyzhm3yjR3lobtlpZnkJVSXJOv+S5y
+         qmYaq+h1MGGh6VqS6zz4d5XhHoI70II79Wt9VuRY8XNmjwlwkulLZHyMgAtEJhBECTXm
+         ZfO7Hcvwz1HBcDnybue8kBjav5LHwEf93xUXBr6HqTrSIqjYGR66f2KS+HHRsSZZ2KcI
+         LZhab/hSh9k9LRqkQGNP5fNL6t/sfwXx9inWYfBBKbriQnX2HZIsjtMWRNxG9sBu92Pu
+         zuZorYwkbIn8Sl5JqR8/0ayAytTshFwzCsjLD5QUiDD9GtDOBmw++AUSpwx0MIkPgi+I
+         kWmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717727226; x=1718332026;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0PRTAWrhjr+QRdN9ZBsFIxqJeIplqLVctoeE5yPLMKA=;
-        b=bN7msbrloLvjg8kU9cfuH/ft+H5mHBigtw3k3MoD5+ZtYf+7ex79gIxuTq1//x66t9
-         OlKlcoj32c9bSrXwgKF+mCNXVQiM4JpxT/bmqG5JdANQXSizfZnxuuv0hxSgcHY07LZK
-         p+cjt1O6HD9/Fyc+e4qumie8fiX9YD5j/Iuthw4ZcYgwOTlgUteqhRcCRbwipV9Hcvqh
-         v3h2zxfBRMqovGyG1Be1BoVoNuMMqIF748pVlI9tmRTvdArT8yoTi5lM9QxYN7pDpcn3
-         1CPCnXBEp33bwzuULmGPNobdQQjvuKfz8PLeaUk7SKU7GTQ5+ZhxI9OT2aLME8l/1OFi
-         SZHg==
-X-Forwarded-Encrypted: i=1; AJvYcCX2Z35T48VVDMe7wSQpP+VjM3I2DyBQUxh87evjX5FF3DAx9VW/S9yfKgnMTZyXPC8yiCpWAQd/x6fuPf9GrPpBaWEUIbB/BLFHS3ibz+lkRYhXo/qJ54h/0PKCGAlt8KbRVz8HGS0ODqjovQ==
-X-Gm-Message-State: AOJu0YxUrAMyfADdOm7BbRLjmsID1bC2Wtcty5g36/ZGQtftqv3wSpen
-	fyaXQq8Ed6TuS1B+dCnftqMsyTCDsFKu3TZVVIOF5llNIiWIrBxH
-X-Google-Smtp-Source: AGHT+IFrzSv1SVs70dIStUa/t69Z7VUyPkuWZwNdij5/ygL0LC3+cC6DXCNw5z9wTu9xTAXSiKO42Q==
-X-Received: by 2002:a17:90a:1157:b0:2c1:9e9e:a751 with SMTP id 98e67ed59e1d1-2c2bcc0b514mr1242592a91.22.1717727225818;
-        Thu, 06 Jun 2024 19:27:05 -0700 (PDT)
-Received: from smtpclient.apple ([47.89.225.180])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2c2806398afsm4344667a91.1.2024.06.06.19.27.02
+        d=1e100.net; s=20230601; t=1717743726; x=1718348526;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0ZGuYkiUkbI3m8PYrbJDYaedayOKhjMTcdEfvxG/gpQ=;
+        b=QSqNp8xizQoZipJwWaETTQJbCxO1uVsI1omudXfJKvGx2tQmRQNIAbwFWX2WJA7JGB
+         lAqHUc1f6U0L+gszsSYEkgYK4Gm4yBakCSIWe63MumLb91/Zw7ImKGOqVJvuEwQmHEOn
+         A8SU5iGJ+oYhky3p1+vq73KKWmGfKYsDlIkJm53zyebBBE8KJIdUcdUyBBLdBvTugc9D
+         A2O5D5LTjxsoi0ody44dTbwzFn26PhFwgbBinhkE1KXxYi/1LSApeh5lqLehqgcCePDp
+         RKskhKKniN9RabzXUMrmdi+mao+jjtlJ9Xn4GdnCc+TnadQyc9/EN+KncyWLMkIlc/yb
+         MAkw==
+X-Gm-Message-State: AOJu0YzzVhWB/WBaRPTmL4o4ibh9HmahD0u2aBezWLFSY4Us0WjU9iqd
+	OGPkgCczjI+h+du3a+rBSJirumkJGwiDAQM0Y3Zm36oMbVTwteDe8fe9+9fR
+X-Google-Smtp-Source: AGHT+IE4q2zq+53oJNNiiXP4Oahm//fjN4fgezZv1G1ulPYVzwE93BCBIGrgBzQQlpimt19oDtNxMg==
+X-Received: by 2002:a05:6a20:4328:b0:1af:d1f0:b34e with SMTP id adf61e73a8af0-1b2f969ed0amr1928301637.7.1717743726436;
+        Fri, 07 Jun 2024 00:02:06 -0700 (PDT)
+Received: from localhost.localdomain ([39.144.104.9])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-703fd53438esm2015881b3a.220.2024.06.07.00.02.02
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2024 19:27:05 -0700 (PDT)
-Content-Type: text/plain;
-	charset=us-ascii
+        Fri, 07 Jun 2024 00:02:05 -0700 (PDT)
+From: Yafang Shao <laoar.shao@gmail.com>
+To: jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com
+Cc: live-patching@vger.kernel.org,
+	Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH] livepatch: Add a new sysfs interface replace
+Date: Fri,  7 Jun 2024 15:01:57 +0800
+Message-Id: <20240607070157.33828-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [PATCH] livepatch: introduce klp_func called interface
-From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <930d7361-64e9-a0fc-eb04-79d9bf9267fa@redhat.com>
-Date: Fri, 7 Jun 2024 10:26:49 +0800
-Cc: Miroslav Benes <mbenes@suse.cz>,
- Josh Poimboeuf <jpoimboe@kernel.org>,
- Jiri Kosina <jikos@kernel.org>,
- Petr Mladek <pmladek@suse.com>,
- live-patching@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <E4079557-7518-44E3-8C43-3DB055D541A4@gmail.com>
-References: <20240520005826.17281-1-zhangwarden@gmail.com>
- <alpine.LSU.2.21.2405200845130.11413@pobox.suse.cz>
- <BBD2A553-6D44-4CD5-94DD-D8B2D5536F94@gmail.com>
- <alpine.LSU.2.21.2405210823590.4805@pobox.suse.cz>
- <Zloh/TbRFIX6UtA+@redhat.com>
- <4DE98E35-2D1F-4A4E-8689-35FD246606EF@gmail.com>
- <Zl8mqq6nFlZL+6sb@redhat.com>
- <92FCCE66-8CE5-47B4-A20C-31DC16EE3DE0@gmail.com>
- <930d7361-64e9-a0fc-eb04-79d9bf9267fa@redhat.com>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-X-Mailer: Apple Mail (2.3774.500.171.1.1)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
+When building a livepatch, a user can set it to be either an atomic-replace
+livepatch or a non-atomic-replace livepatch. However, it is not easy to
+identify whether a livepatch is atomic-replace or not until it actually
+replaces some old livepatches. This can lead to mistakes in a mixed
+atomic-replace and non-atomic-replace environment, especially when
+transitioning all livepatches from non-atomic-replace to atomic-replace in
+a large fleet of servers.
 
+To address this issue, a new sysfs interface called 'replace' is introduced
+in this patch. The result after this change is as follows:
 
-> On Jun 6, 2024, at 23:01, Joe Lawrence <joe.lawrence@redhat.com> =
-wrote:
->=20
-> Hi Wardenjohn,
->=20
-> To follow up, Red Hat kpatch QE pointed me toward this test:
->=20
-> =
-https://gitlab.com/redhat/centos-stream/tests/kernel/kernel-tests/-/tree/m=
-ain/general/kpatch/kpatch-trace?ref_type=3Dheads
->=20
-> which reports a few interesting things via systemd service and ftrace:
->=20
-> - Patched functions
-> - Traced functions
-> - Code that was modified, but didn't run
-> - Other code that ftrace saw, but is not listed in the sysfs directory
->=20
-> The code looks to be built on top of the same basic ftrace commands =
-that
-> I sent the other day.  You may be able to reuse/copy/etc bits from the
-> scripts if they are handy.
->=20
-> --
-> Joe
->=20
+  $ cat /sys/kernel/livepatch/livepatch-non_replace/replace
+  0
 
-Thank you so much, you really helped me, Joe!
+  $ cat /sys/kernel/livepatch/livepatch-replace/replace
+  1
 
-I will try to learn the script and make it suitable for our system.
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-kernel-livepatch |  8 ++++++++
+ kernel/livepatch/core.c                          | 12 ++++++++++++
+ 2 files changed, 20 insertions(+)
 
-Again, thank you, Joe!
-
-Regards,
-Wardenjohn
+diff --git a/Documentation/ABI/testing/sysfs-kernel-livepatch b/Documentation/ABI/testing/sysfs-kernel-livepatch
+index a5df9b4910dc..3735d868013d 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-livepatch
++++ b/Documentation/ABI/testing/sysfs-kernel-livepatch
+@@ -47,6 +47,14 @@ Description:
+ 		disabled when the feature is used. See
+ 		Documentation/livepatch/livepatch.rst for more information.
+ 
++What:		/sys/kernel/livepatch/<patch>/replace
++Date:		Jun 2024
++KernelVersion:	6.11.0
++Contact:	live-patching@vger.kernel.org
++Description:
++		An attribute which indicates whether the patch supports
++		atomic-replace.
++
+ What:		/sys/kernel/livepatch/<patch>/<object>
+ Date:		Nov 2014
+ KernelVersion:	3.19.0
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 52426665eecc..0e9832f146f1 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -346,6 +346,7 @@ int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
+  * /sys/kernel/livepatch/<patch>/enabled
+  * /sys/kernel/livepatch/<patch>/transition
+  * /sys/kernel/livepatch/<patch>/force
++ * /sys/kernel/livepatch/<patch>/replace
+  * /sys/kernel/livepatch/<patch>/<object>
+  * /sys/kernel/livepatch/<patch>/<object>/patched
+  * /sys/kernel/livepatch/<patch>/<object>/<function,sympos>
+@@ -443,13 +444,24 @@ static ssize_t force_store(struct kobject *kobj, struct kobj_attribute *attr,
+ 	return count;
+ }
+ 
++static ssize_t replace_show(struct kobject *kobj,
++			    struct kobj_attribute *attr, char *buf)
++{
++	struct klp_patch *patch;
++
++	patch = container_of(kobj, struct klp_patch, kobj);
++	return snprintf(buf, PAGE_SIZE-1, "%d\n", patch->replace);
++}
++
+ static struct kobj_attribute enabled_kobj_attr = __ATTR_RW(enabled);
+ static struct kobj_attribute transition_kobj_attr = __ATTR_RO(transition);
+ static struct kobj_attribute force_kobj_attr = __ATTR_WO(force);
++static struct kobj_attribute replace_kobj_attr = __ATTR_RO(replace);
+ static struct attribute *klp_patch_attrs[] = {
+ 	&enabled_kobj_attr.attr,
+ 	&transition_kobj_attr.attr,
+ 	&force_kobj_attr.attr,
++	&replace_kobj_attr.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(klp_patch);
+-- 
+2.39.1
 
 
