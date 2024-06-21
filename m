@@ -1,142 +1,128 @@
-Return-Path: <live-patching+bounces-355-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-356-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CB76E910067
-	for <lists+live-patching@lfdr.de>; Thu, 20 Jun 2024 11:31:32 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 76FF8911874
+	for <lists+live-patching@lfdr.de>; Fri, 21 Jun 2024 04:27:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DA3D61C21DF9
-	for <lists+live-patching@lfdr.de>; Thu, 20 Jun 2024 09:31:31 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id D7CC4B2164A
+	for <lists+live-patching@lfdr.de>; Fri, 21 Jun 2024 02:27:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1961B1A4F1F;
-	Thu, 20 Jun 2024 09:31:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 588A884037;
+	Fri, 21 Jun 2024 02:27:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="EZGzaT/D";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="bWQe+dNr";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="EZGzaT/D";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="bWQe+dNr"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jrvhHW/h"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B1111A4F07;
-	Thu, 20 Jun 2024 09:31:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3E3883CDA
+	for <live-patching@vger.kernel.org>; Fri, 21 Jun 2024 02:27:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718875881; cv=none; b=rPOLBwrhzZeoCdfTpyXjzVsFjX1cn0F4EJw14goDh4dOSeeDMCqC4grEKTAQ2HUuSrafz6jon2hjXi44c3yaLTM994dAHniQCQbuosDs/S7XFzy6kacKlfF10LEQc1Yac6BI1s6QxHVuFvDKXQZcsrw9fOf9T5YwMFC933sagig=
+	t=1718936825; cv=none; b=ubfT913qWce+a3IXnTUC72o4d12uRYhzSAsrMqH91KEQXfpWikRKb2U9ysVo5Cim8vWzATYfhk79BETmPXbzErW4FQfOznTsseVh+zpnQMXNwRKLNkMT6wFan0859PhzJDrjBGhEFQhknDaQYFQ4I0Rm8OfnwNBbKXikcOoA3Bs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718875881; c=relaxed/simple;
-	bh=v0UMqDXC5+SAf4JfkVwnd+K8Z7UmpjaIhgRRAQXV928=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=GcL3RftHJTzWZJN1LyLLQ3PgC5wUiOYeICCVxaxfi3iVhIDecHx7WRTeG6tblcefHd39wtVWZ6v57WE0oDTEx8cPj0JrpOsvVyUP5832nNrvDVCM6rtar44EuXSZzagSPAjN0fVOYYUx/H9W02ihlmTok+m7bCPRlkB+EudvCLU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=EZGzaT/D; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=bWQe+dNr; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=EZGzaT/D; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=bWQe+dNr; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.100.2.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 70B6921AAD;
-	Thu, 20 Jun 2024 09:31:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1718875877; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=idixMQpR+HA90NjHITkoUM5azVKTe8F/f+cm+VdShII=;
-	b=EZGzaT/Dg4CNMYRRYXRwUcyafXj+bAN9ILaCA+hJYdgzmBMFw/ddds+msrxIGOJ15K4PE6
-	T4gUyMqteEuwpz0G/nexoHP0rbofssSlTvSkJzFnjXCsKokyQpuHhREr1nnBNIt+B5XmJH
-	7MKKB3vbruhciuGd8/vYEEY0tJFCn2c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1718875877;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=idixMQpR+HA90NjHITkoUM5azVKTe8F/f+cm+VdShII=;
-	b=bWQe+dNrVZHaDm2wRS24uwyyvf4In0B/wHWtJ5eKhnhcSi++q/GS+1N+93hl5rGDnm8ELf
-	jTH2sMlybqhzLrCA==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1718875877; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=idixMQpR+HA90NjHITkoUM5azVKTe8F/f+cm+VdShII=;
-	b=EZGzaT/Dg4CNMYRRYXRwUcyafXj+bAN9ILaCA+hJYdgzmBMFw/ddds+msrxIGOJ15K4PE6
-	T4gUyMqteEuwpz0G/nexoHP0rbofssSlTvSkJzFnjXCsKokyQpuHhREr1nnBNIt+B5XmJH
-	7MKKB3vbruhciuGd8/vYEEY0tJFCn2c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1718875877;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=idixMQpR+HA90NjHITkoUM5azVKTe8F/f+cm+VdShII=;
-	b=bWQe+dNrVZHaDm2wRS24uwyyvf4In0B/wHWtJ5eKhnhcSi++q/GS+1N+93hl5rGDnm8ELf
-	jTH2sMlybqhzLrCA==
-Date: Thu, 20 Jun 2024 11:31:15 +0200 (CEST)
-From: Miroslav Benes <mbenes@suse.cz>
-To: zhang warden <zhangwarden@gmail.com>
-cc: Song Liu <song@kernel.org>, Petr Mladek <pmladek@suse.com>, 
-    Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
-    Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] livepatch: introduce klp_func called interface
-In-Reply-To: <17FDEE20-A187-4493-BFA6-F09555B1EF6F@gmail.com>
-Message-ID: <alpine.LSU.2.21.2406201129130.5846@pobox.suse.cz>
-References: <20240520005826.17281-1-zhangwarden@gmail.com> <alpine.LSU.2.21.2405200845130.11413@pobox.suse.cz> <BBD2A553-6D44-4CD5-94DD-D8B2D5536F94@gmail.com> <alpine.LSU.2.21.2405210823590.4805@pobox.suse.cz> <ZkxVlIPj9VZ9NJC4@pathway.suse.cz>
- <CAPhsuW7bjyLvfQ-ysKE+S8x26Zv5b7jbJoyW8UiBaUfaRncKfg@mail.gmail.com> <alpine.LSU.2.21.2406071102420.29080@pobox.suse.cz> <17FDEE20-A187-4493-BFA6-F09555B1EF6F@gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	s=arc-20240116; t=1718936825; c=relaxed/simple;
+	bh=ij19oZE6XcqUcvN4sqEDc2GYoFxKeWYgBFgxTzmyWg8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FcnaMGypcAf8YOnX1jNWFzKkuR5BwqmYkiFwh/uYBH++Q8iwMGg7kgvM4x1+r4bHa3Jg5FA0gMCbq+U+eFm2bUJOhhw+L1K3QNw5KDYXe06t4AcSjz+3ihWiOsCeVareETly/J1lhyINKKIgWjroOCPAqS/1gGkJIDEMkCIyKz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jrvhHW/h; arc=none smtp.client-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-6325b04c275so15364687b3.3
+        for <live-patching@vger.kernel.org>; Thu, 20 Jun 2024 19:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1718936823; x=1719541623; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=g6ntMHNAjJ1iX2gfKda60hTlFXl004x68CBqXMNQ7JM=;
+        b=jrvhHW/h7ep1MPZ5wF9CKBzzV5rhZ0enX0zHkr+RV0SPFb44Oo2psGP2Y0as8yTEsV
+         W7rQEMF1x658xG0avYIFLzlJEN0RixNsZG5DmIoazhzY60Ifr3Z8w8uG6uRyLhS4ejvB
+         DP9ZlUZaFNLuVNk/PDnJM1pAsjMIG4qnMMn5x9v/41yLyoDgz1M5RIOxrwYBKKCkMMvi
+         Ys7HdfX51beuGYqEHX81r4TZ7bJuSkwMDPvwG3B6Mhxj6t5ez/AGsJZehhQ5qfzagu7F
+         q6BPEP05Cbh6DZEqg6ms962q+na+KJMsI/t8/7joZLHrXapVPLBNMkxQoVohmHRBwAfZ
+         uw+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718936823; x=1719541623;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=g6ntMHNAjJ1iX2gfKda60hTlFXl004x68CBqXMNQ7JM=;
+        b=l8R06GgZucnt+WPhieXTY+5YqgMiTDaYDO75YJJHK4892rCsUB7FsnouQTxzGHZ/a8
+         Gtb3YbGYzh0j9o0joAvw5r+UqJJWZL48TIbrBUSXpkyg880oNeQJmNGAlqaT7b4GFtXm
+         mN949EHnKxCSDK8EnTSbudrixLLCc71CmaxJandkDatdoZb5EcWyNzkJm/hbHtOGTOsK
+         WXjBxz6qNrEG2h2myi6mKUUJkYg6Dbr8Q03QG/B+YskBId0Q/+ZLcXGV0acpt9Byiu0r
+         K2AQzcRYosbuZhgDCTkSu1gGgSVcvHs/BmlvMR1SHnf+N/zDoTOGzkpAtfgqHXVN23sK
+         27Cw==
+X-Gm-Message-State: AOJu0Yz6nqGiHf6fjG/aW+f9sYnb25JvTvsxC7ukrH/7T8/B2Dy6dsmN
+	W6ZcTD6Fk7+j7vk8nJefziya1qW4BSWVVaxv2PCCnjV0xXP78oAQ+cQ2E+NrOVXP7dBemXrqDRJ
+	GLGf+6nYk7/+0Z8yXuG6q/8ZslV0=
+X-Google-Smtp-Source: AGHT+IGca2Qu833RI3wnuJIciw6K6eVMqxCG04QQeKZTBdmFAeVAkzD4G1ZOcT0SGvyd71dqUBfGPK0p4Ap3S64eXbQ=
+X-Received: by 2002:a81:84ce:0:b0:627:24d0:5037 with SMTP id
+ 00721157ae682-63a8ab6fedfmr73818637b3.0.1718936820414; Thu, 20 Jun 2024
+ 19:27:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Score: -4.29
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-4.29 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-0.99)[-0.992];
-	NEURAL_HAM_SHORT(-0.20)[-0.995];
-	MIME_GOOD(-0.10)[text/plain];
-	RCPT_COUNT_SEVEN(0.00)[8];
-	FREEMAIL_TO(0.00)[gmail.com];
-	MIME_TRACE(0.00)[0:+];
-	RCVD_COUNT_ZERO(0.00)[0];
-	ARC_NA(0.00)[];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:email]
+References: <20240610013237.92646-1-laoar.shao@gmail.com>
+In-Reply-To: <20240610013237.92646-1-laoar.shao@gmail.com>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Fri, 21 Jun 2024 10:26:22 +0800
+Message-ID: <CALOAHbDLYEqhBbHyAzQo+xPLmXy33WsNEkyvcn7WiCu61Cu_hQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] livepatch: Add "replace" sysfs attribute
+To: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, 
+	joe.lawrence@redhat.com
+Cc: live-patching@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Mon, Jun 10, 2024 at 9:33=E2=80=AFAM Yafang Shao <laoar.shao@gmail.com> =
+wrote:
+>
+> Add "replace" sysfs attribute to show whether a livepatch supports
+> atomic replace or not.
+>
+> A minor cleanup is also included in this patchset.
+>
+> v1->v2:
+> - Refine the subject (Miroslav)
+> - Use sysfs_emit() instead and replace other snprintf() as well (Miroslav=
+)
+> - Add selftests (Marcos)
+>
+> v1: https://lore.kernel.org/live-patching/20240607070157.33828-1-laoar.sh=
+ao@gmail.com/
+>
+> Yafang Shao (3):
+>   livepatch: Add "replace" sysfs attribute
+>   selftests/livepatch: Add selftests for "replace" sysfs attribute
+>   livepatch: Replace snprintf() with sysfs_emit()
+>
+>  .../ABI/testing/sysfs-kernel-livepatch        |  8 ++++
+>  kernel/livepatch/core.c                       | 17 +++++--
+>  .../testing/selftests/livepatch/test-sysfs.sh | 48 +++++++++++++++++++
+>  3 files changed, 70 insertions(+), 3 deletions(-)
+>
+> --
+> 2.39.1
+>
 
-On Thu, 20 Jun 2024, zhang warden wrote:
+Hi Maintainers,
 
-> 
-> 
-> > On Jun 7, 2024, at 17:07, Miroslav Benes <mbenes@suse.cz> wrote:
-> > 
-> > It would be better than this patch but given what was mentioned in the 
-> > thread I wonder if it is possible to use ftrace even for this. See 
-> > /sys/kernel/tracing/trace_stat/function*. It already gathers the number of 
-> > hits.
-> > 
-> 
-> Hi, Miroslav
-> 
-> Can ftrace able to trace the function which I added into kernel by livepatching?
+Just following up.
 
-yes, it should also work as is. I just generally recommend to use a 
-different name (prefixed for example) for the new replacement function to 
-avoid issues if you do not already do it.
+Would you be able to accept this series, or do you have any additional
+comments or feedback?
 
-Miroslav
+Thank you.
+
+--
+Regards
+Yafang
 
