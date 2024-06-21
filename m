@@ -1,175 +1,198 @@
-Return-Path: <live-patching+bounces-358-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-359-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id E843F911EF8
-	for <lists+live-patching@lfdr.de>; Fri, 21 Jun 2024 10:40:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DBE2E912177
+	for <lists+live-patching@lfdr.de>; Fri, 21 Jun 2024 12:04:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 5A7C9B220B2
-	for <lists+live-patching@lfdr.de>; Fri, 21 Jun 2024 08:40:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9074F281F2E
+	for <lists+live-patching@lfdr.de>; Fri, 21 Jun 2024 10:04:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39F5516D30C;
-	Fri, 21 Jun 2024 08:40:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 31DFC170858;
+	Fri, 21 Jun 2024 10:04:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BAcfJs6b"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Rjv/+wfX"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1D116D4DA
-	for <live-patching@vger.kernel.org>; Fri, 21 Jun 2024 08:40:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D672170857
+	for <live-patching@vger.kernel.org>; Fri, 21 Jun 2024 10:04:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718959220; cv=none; b=o4+RN6sYMD+RP1bQULbC1gT4gc1CqJxHNhpYUzHg4Hn902O3NEZaSmmPUNar/J+GrXsHolAlC18LdduBmy2oguOtqZo2KygLvpjkf/qHAht4B6LDiyzMGbDDd2HtlUCvbqfVqsmoC/gDF5yMTn2FRrj8ozYb2XlWchyZMLcUdl8=
+	t=1718964275; cv=none; b=J5rj4g97ES95Hue3EERDk/fkLM/FaJKJxvlr5vz+eI62SmjvPMq7MYaxEMFPEUzmaBovoL7+AyklPFqwSt4rdPpeRHaHjJRdGnVESOiRLx/7S9ZWVQ9sd+EyHep26AzcUQJ8wo6+PrBCAXcPgwEl3jcBU8AUpg5W4yseiI9jbH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718959220; c=relaxed/simple;
-	bh=kXpRAcHTq19HnoK7WkVNCZH1sMhpNwx0o5NA2UMv3GY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bl0JfAtJTILozXYdHd34thGHY+uqWhlNhyds87MK07nYz6hrLj8PpiHvvgz8mOM4dQn0tzjSjbvvDMAzy0RLgxmFBsW7bp+xxL06CXGdpy1dCLKMW+Hi2I7bNOpj6VFiJ1pZALzqhKdlKsMpOEmG7JfhXw4jXWLlGFGGhoUhtTM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BAcfJs6b; arc=none smtp.client-ip=209.85.219.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-6b505f11973so19386156d6.1
-        for <live-patching@vger.kernel.org>; Fri, 21 Jun 2024 01:40:17 -0700 (PDT)
+	s=arc-20240116; t=1718964275; c=relaxed/simple;
+	bh=okTH1fH2UE0eT0MwPoML2QCMiyCCQ4ppJSdmKy0RV90=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SrS2PnQ8IiDth7651q/Fo0OTyt/2OhrcPlyT5PQPbA+PUUBRxSQXKgvcrZGitkVBtqWO2PbDfQ+egwlhNvHgQ16hAC3Pi/WXfcNL8VV23GSUSLN0rws0AWNqfK5AujWmureE4Wt+I/Xo2tT2wjECLDcWbwV94gGafbQbg/DSNRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Rjv/+wfX; arc=none smtp.client-ip=209.85.208.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2eaae2a6dc1so34643961fa.0
+        for <live-patching@vger.kernel.org>; Fri, 21 Jun 2024 03:04:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718959217; x=1719564017; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kXpRAcHTq19HnoK7WkVNCZH1sMhpNwx0o5NA2UMv3GY=;
-        b=BAcfJs6behIF9695Ps+gi/iTLc7PEhdt+xgUWERaetC2TbpkdYtWnyZRkOi1NlWxTP
-         B/vGZb72+hNv5Y58WkwbHdvpWEaA5Wa7nDdPqlxbO3F+lD8oNGSbDpTuGjCsP19oH/XU
-         l+Tm2/WRb7yljMYIKWTih081bGPHr0RtzU8ouO8bblXKBF93NRpnAsGtvlO5pdHN8G6i
-         b2ery8aHhL9uJkICc+7WJyaQ3bRBv1EdVFSjhu5D6QN3hZ+lei/tmptHlvmSH785Pkw0
-         O27J1e03jH7I9vb+II4p8ZEV7+gH5UvFnLc1qpB/+iaZTvW1lteKH6gdF0U166UDnqCP
-         aB8w==
+        d=suse.com; s=google; t=1718964270; x=1719569070; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=pafgb2UT+GBPwdqDlzVHRIAZDopwv+DxBej/CtxKC6k=;
+        b=Rjv/+wfX7tx0i2FaNM2Z7J0mcuYAjuqcap2RC0AswMVSlvMBjk0SWAxGJqFMH4HBEs
+         QR5sOVAEZYKXidmiPE2xb+yDYEBu/NSjVFOBr9WqmMxfvSQahF4VG2PKzOImkoXorn16
+         lqrsBnE9p1MrCeBZ+X9FaQO59tjzRJKOGw/r+QJhPfIFhSKP5fWDqe9SRsc4+LtriHug
+         4wzKs5mDDV9Dj+RSWqf1jst2U9p9rSdF7dq2M9o8Wl2eAyVrRLQkz7Qif7Hwp6lIgHvD
+         3XUNP/LlH6flmSwNaqZ16QC29z3JoE8uttPje81KuUOHRKtwAY7NjiIsMejabi3mWxI6
+         IuGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718959217; x=1719564017;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kXpRAcHTq19HnoK7WkVNCZH1sMhpNwx0o5NA2UMv3GY=;
-        b=L4WhlxtrH5InRSepSvasJxIiZgjH6XGLj9ad80idO2aiNxbItenAnsqXTKsb2Em3mg
-         SQUKP+3MuA1SsbktrSYlrvMO5Po4BPiWjSRBWAuqFqAT0D3txR1YSVRPxKq1CD6gNidr
-         icdhJNI1tfdIOB/d4h4sop9acquE1dPUk3JP1EHt0I9MvrtK92YSPI5D7lPtFFJGgzIA
-         4q9lPNpnDTNShKGENXMY9JzdTSkIIeIY/BVBhW5G7vdnV2Fa0Q3L6YufVUHTH1zR0HRs
-         L+7q0Fou23R9NtHMUI1OZv05z2zdqGviIvhMfAplyg7zNcDZ9e4Oc+RshgrACGQf4R8y
-         Fezw==
-X-Forwarded-Encrypted: i=1; AJvYcCX5g1iXaL46+WRMskHTV33/2wh4qIgbr7P+HO1ElIFyE8PAq0zHmb3VS47ud2WrXsq0loEK8HvFWlnaGCx9Ekpe5qaU/Fuw3STr6ZK8VQ==
-X-Gm-Message-State: AOJu0YwneQ9dmmCnn91rtSLzYGwkY3dMDsRPdhxEsrz39Mzw3wQqJKla
-	ESdvvEsi1q/YlQUJZ2X+1QdLAJuH5AvRrfdwd+K2au99l6EYukWO6VqyzcsS66IcdKsh9XA/1OV
-	dRADywOkEphVMLmqcTMw90JgfWOU=
-X-Google-Smtp-Source: AGHT+IE4F1dXGLSkRkwHhnhn/Z0S8OzCy1GQq4kVNQNWQF79R6LuZYkcNWoKtgx1SF3tpvMZkcmdyYi/FembFPfolXE=
-X-Received: by 2002:a05:6214:761:b0:6b0:6625:135 with SMTP id
- 6a1803df08f44-6b2e2492236mr187481546d6.28.1718959216897; Fri, 21 Jun 2024
- 01:40:16 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1718964270; x=1719569070;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pafgb2UT+GBPwdqDlzVHRIAZDopwv+DxBej/CtxKC6k=;
+        b=JwYGrmqufP3G9OvE8t9aP6+M4YGbeG/X81KUc09leEAIPs//jWUKncxKwNK7GVaJ89
+         njYNmgaMWFqHEvUBakC/YcUmYA2ClxPBzh1oiXwuzgIwTRNiqCSDBxcCjdw3kG1GSO2x
+         iTHfz5bLR/gl0P3Vu5tqAUPvUhpWkb+IBP57K4P7hiQRpZD24PXSYMWcyy7520+qvoAT
+         Vn9nN4MNUj4M3MXNdhJIu6Dm9Qc2My1EfOLdeUf0yd/Zlywsqhga35njU8pELpuhUj6L
+         T2l5atTICTeM5H+sVpYcYQ9AN2wro3XsEtQ+OS4rCSJUp+M21YPDsv0ahxKuQkb4nGRN
+         3CVQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUlHTQSOTOiRxdlGOauK/HbAEejL4pN/hhUW/3RPlpw2FujvcooWxm5sfAORDrcDYASyfz2nKi7Uz9OGHReWt/BSBy9/9NFOpuGV0Stww==
+X-Gm-Message-State: AOJu0YwmAq31xUKp9txEJGBSsEXAQaz5Vk90s7/32gRS3HTLiGkEiR5n
+	QdocCcsIiMAj0IOT95oHQExqr5ypOv5oHvfKjcCULAs6VtOKIvYNWx3efsoK9lo=
+X-Google-Smtp-Source: AGHT+IFgdPaTZhub9nD5Lt3rSIEkV2+sM8ujfJaZBq3C+u2vOWAgM5eBAlEuaGs4NTAAcWX0Q26Rww==
+X-Received: by 2002:a2e:9bc3:0:b0:2ec:1f9f:2155 with SMTP id 38308e7fff4ca-2ec3cec0e1bmr61575861fa.15.1718964269224;
+        Fri, 21 Jun 2024 03:04:29 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2c819db97f8sm1170785a91.39.2024.06.21.03.04.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jun 2024 03:04:28 -0700 (PDT)
+Date: Fri, 21 Jun 2024 12:04:20 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Yafang Shao <laoar.shao@gmail.com>
+Cc: Song Liu <song@kernel.org>, jpoimboe@kernel.org, jikos@kernel.org,
+	mbenes@suse.cz, joe.lawrence@redhat.com,
+	live-patching@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] livepatch: Add "replace" sysfs attribute
+Message-ID: <ZnVQJEoXpaONuTNE@pathway.suse.cz>
+References: <20240610013237.92646-1-laoar.shao@gmail.com>
+ <CAPhsuW6MB8MgCtttk2QZDCF0Wu-r0c47kVk=a9o1_VUDPHOjVw@mail.gmail.com>
+ <CALOAHbDPXDZQJENvN-yZM-OyrTy94kE6wMLGHt83m_y3O23bRQ@mail.gmail.com>
+ <ZnUsYf1-Ue59Fjru@pathway.suse.cz>
+ <CALOAHbByr3UMy=xzP82LA=D3rW-uw+s3XfzHQMVYxu4RomAANg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240610013237.92646-1-laoar.shao@gmail.com> <CAPhsuW6MB8MgCtttk2QZDCF0Wu-r0c47kVk=a9o1_VUDPHOjVw@mail.gmail.com>
- <CALOAHbDPXDZQJENvN-yZM-OyrTy94kE6wMLGHt83m_y3O23bRQ@mail.gmail.com> <ZnUsYf1-Ue59Fjru@pathway.suse.cz>
-In-Reply-To: <ZnUsYf1-Ue59Fjru@pathway.suse.cz>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Fri, 21 Jun 2024 16:39:40 +0800
-Message-ID: <CALOAHbByr3UMy=xzP82LA=D3rW-uw+s3XfzHQMVYxu4RomAANg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] livepatch: Add "replace" sysfs attribute
-To: Petr Mladek <pmladek@suse.com>
-Cc: Song Liu <song@kernel.org>, jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, 
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALOAHbByr3UMy=xzP82LA=D3rW-uw+s3XfzHQMVYxu4RomAANg@mail.gmail.com>
 
-On Fri, Jun 21, 2024 at 3:31=E2=80=AFPM Petr Mladek <pmladek@suse.com> wrot=
-e:
->
-> On Tue 2024-06-11 10:46:47, Yafang Shao wrote:
-> > On Tue, Jun 11, 2024 at 1:19=E2=80=AFAM Song Liu <song@kernel.org> wrot=
-e:
-> > >
-> > > Hi Yafang,
-> > >
-> > > On Sun, Jun 9, 2024 at 6:33=E2=80=AFPM Yafang Shao <laoar.shao@gmail.=
-com> wrote:
+On Fri 2024-06-21 16:39:40, Yafang Shao wrote:
+> On Fri, Jun 21, 2024 at 3:31 PM Petr Mladek <pmladek@suse.com> wrote:
+> >
+> > On Tue 2024-06-11 10:46:47, Yafang Shao wrote:
+> > > On Tue, Jun 11, 2024 at 1:19 AM Song Liu <song@kernel.org> wrote:
 > > > >
-> > > > Add "replace" sysfs attribute to show whether a livepatch supports
-> > > > atomic replace or not.
+> > > > Hi Yafang,
+> > > >
+> > > > On Sun, Jun 9, 2024 at 6:33 PM Yafang Shao <laoar.shao@gmail.com> wrote:
+> > > > >
+> > > > > Add "replace" sysfs attribute to show whether a livepatch supports
+> > > > > atomic replace or not.
+> > > >
+> > > > I am curious about the use case here.
 > > >
-> > > I am curious about the use case here.
+> > > We will use this flag to check if there're both atomic replace
+> > > livepatch and non atomic replace livepatch running on a single server
+> > > at the same time. That can happen if we install a new non atomic
+> > > replace livepatch to a server which has already applied an atomic
+> > > replace livepatch.
+> > >
+> > > > AFAICT, the "replace" flag
+> > > > matters _before_ the livepatch is loaded. Once the livepatch is
+> > > > loaded, the "replace" part is already finished. Therefore, I think
+> > > > we really need a way to check the replace flag before loading the
+> > > > .ko file? Maybe in modinfo?
+> > >
+> > > It will be better if we can check it before loading it. However it
+> > > depends on how we build the livepatch ko, right? Take the
+> > > kpatch-build[0] for example, we have to modify the kpatch-build to add
+> > > support for it but we can't ensure all users will use it to build the
+> > > livepatch.
 > >
-> > We will use this flag to check if there're both atomic replace
-> > livepatch and non atomic replace livepatch running on a single server
-> > at the same time. That can happen if we install a new non atomic
-> > replace livepatch to a server which has already applied an atomic
-> > replace livepatch.
+> > > [0]. https://github.com/dynup/kpatch
 > >
-> > > AFAICT, the "replace" flag
-> > > matters _before_ the livepatch is loaded. Once the livepatch is
-> > > loaded, the "replace" part is already finished. Therefore, I think
-> > > we really need a way to check the replace flag before loading the
-> > > .ko file? Maybe in modinfo?
+> > I still do not understand how the sysfs attribute would help here.
+> > It will show the type of the currently used livepatches. But
+> > it won't say what the to-be-installed livepatch would do.
 > >
-> > It will be better if we can check it before loading it. However it
-> > depends on how we build the livepatch ko, right? Take the
-> > kpatch-build[0] for example, we have to modify the kpatch-build to add
-> > support for it but we can't ensure all users will use it to build the
-> > livepatch.
->
-> > [0]. https://github.com/dynup/kpatch
->
-> I still do not understand how the sysfs attribute would help here.
-> It will show the type of the currently used livepatches. But
-> it won't say what the to-be-installed livepatch would do.
->
-> Could you please describe how exactly you would use the information?
-> What would be the process/algorithm/logic which would prevent a mistake?
->
-> Honestly, it sounds like your processes are broken and you try
-> to fix them on the wrong end.
->
-> Allowing to load random livepatches which are built a random way
-> sounds like a hazard.
+> > Could you please describe how exactly you would use the information?
+> > What would be the process/algorithm/logic which would prevent a mistake?
+> >
+> > Honestly, it sounds like your processes are broken and you try
+> > to fix them on the wrong end.
+> >
+> > Allowing to load random livepatches which are built a random way
+> > sounds like a hazard.
+> 
+> They are not random live patches. Some system administrators maintain
+> their own livepatches tailored for specific workloads or develop
+> livepatches for A/B testing. Our company’s kernel team maintains the
+> general livepatches. This worked well in the past when all livepatches
+> were independent. However, the situation changed when we switched from
+> non atomic replace livepatches to atomic replace livepatches, causing
+> issues due to the uncertain behavior of mixed atomic replace and non
+> atomic replace livepatches.
 
-They are not random live patches. Some system administrators maintain
-their own livepatches tailored for specific workloads or develop
-livepatches for A/B testing. Our company=E2=80=99s kernel team maintains th=
-e
-general livepatches. This worked well in the past when all livepatches
-were independent. However, the situation changed when we switched from
-non atomic replace livepatches to atomic replace livepatches, causing
-issues due to the uncertain behavior of mixed atomic replace and non
-atomic replace livepatches.
+I think that the uncertain behavior has been even before you started
+using the atomic replace.
 
-To address this change, we need a robust solution. One approach we
-have identified is developing a CI build system for livepatches. All
-livepatches must be built through this CI system, where they will
-undergo CI tests to verify if they are atomic replace or not.
+How did the system administrators detect whether the livepatches were
+independent?
 
-Additionally, in our production environment, we need to ensure that
-there are no non atomic replace livepatches in use. For instance, some
-system administrators might still build livepatches outside of our CI
-system. Detecting whether a single livepatch is atomic replace or not
-is not easy. To simplify this, we propose adding a new sysfs attribute
-to facilitate this check.
-
-BTW, perhaps we could introduce a new sysctl setting to forcefully
-forbid all non atomic replace livepatches?
-
->
-> It should be possible to load only livepatches which passed some
-> testing (QA). And the testing (QA) should check if the livepatch
-> successfully replaced the previous version.
->
-> Or do you want to use the sysfs attribute in QA?
-> So that only livepatches witch "replace" flag set would pass QA?
->
+It looks to me that it worked only by luck. Well, I could imagine
+that it has worked for a long time.
 
 
---=20
-Regards
-Yafang
+> To address this change, we need a robust solution. One approach we
+> have identified is developing a CI build system for livepatches. All
+> livepatches must be built through this CI system, where they will
+> undergo CI tests to verify if they are atomic replace or not.
+
+The important part is that the livepatch authors have to see
+all already existing changes. They need to check that
+the new change would not break other livepatched code and
+vice versa.
+
+
+> Additionally, in our production environment, we need to ensure that
+> there are no non atomic replace livepatches in use. For instance, some
+> system administrators might still build livepatches outside of our CI
+> system. Detecting whether a single livepatch is atomic replace or not
+> is not easy. To simplify this, we propose adding a new sysfs attribute
+> to facilitate this check.
+> 
+> BTW, perhaps we could introduce a new sysctl setting to forcefully
+> forbid all non atomic replace livepatches?
+
+I like it. This looks like the most reliable solution. Would it
+solve your problem.
+
+Alternative solution would be to forbid installing non-replace
+livepatches when there is already installed a livepatch with
+the atomic replace. I could imagine that we enforce this for
+everyone (without sysctl knob). Would this work for you?
+
+That said, I am not completely against adding the sysfs attribute
+"replace". I could imagine that it might be useful when a more
+flexible solution is needed. But I think that it would be
+hard to make a more flexible solution safe, especially
+in your environment.
+
+Best Regards,
+Petr
 
