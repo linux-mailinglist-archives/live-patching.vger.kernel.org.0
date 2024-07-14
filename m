@@ -1,63 +1,73 @@
-Return-Path: <live-patching+bounces-391-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-392-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id C18C4930BEC
-	for <lists+live-patching@lfdr.de>; Mon, 15 Jul 2024 00:08:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5F569930C28
+	for <lists+live-patching@lfdr.de>; Mon, 15 Jul 2024 01:13:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 153011F211DF
-	for <lists+live-patching@lfdr.de>; Sun, 14 Jul 2024 22:08:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5FAEC1C20CD6
+	for <lists+live-patching@lfdr.de>; Sun, 14 Jul 2024 23:13:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 393AE3BB23;
-	Sun, 14 Jul 2024 22:08:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1B4213D28C;
+	Sun, 14 Jul 2024 23:13:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Q+7b26gi"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NkbZ5uEd"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8537E8495
-	for <live-patching@vger.kernel.org>; Sun, 14 Jul 2024 22:08:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4283027452
+	for <live-patching@vger.kernel.org>; Sun, 14 Jul 2024 23:13:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720994893; cv=none; b=uuhFrqWeGFXQsEX5nqJG+vVn2oahFBOKaiwkWWsWBN3VRt8nEAHDt6WmwPTZe5d4IxHv5VpD03ErpuTPF6njTzITfb+pb4XNTIHeZKNUSs/BwgV9wqXLXhFPhHP0sSeAMnXFIY2cK1PGkcDmgwS9NckhnQR9RrxRVLDmkYCMV4E=
+	t=1720998785; cv=none; b=ANPxzVMvfj2+Q8OFn/Vys/DfKHRY0iRH9R1suJWQxWyuroyJKM2Vu5EFC+0/fMXT4eC4GNavgrfouk5Gdg50qmd5D5ccNU+pL7aRrxZ7+w9pdCeHy7zwQfnZDyGYSc+MjYXgC/lrt0c7Eq77yi1+eMywwY8qNqtD01rSYMOcEIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720994893; c=relaxed/simple;
-	bh=Ml4ZI3GPvXuiwW3loMihRPLZxwAx2NOdPiaHixZBFb8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=tycnxg95EhXjb5Z2ItnBryAnprBra2/MZL7VI3xobQcZuuDkdBlQ/Gh/FeMEw9mm2B8+riEoQArZvVp41odNFCdWYGPV6/LYItn6Mh7i0uoVe0ZT6CJGsACmMKbb3QRlKJgKVBjF80vFtJQuXhQrlv7cwb/R+zjZslFp9vQNGw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Q+7b26gi; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46ELD0bO027179;
-	Sun, 14 Jul 2024 22:07:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	dpQmQ/jYrEU1Ju+XmTTJ9CPUCIaOX1IBtL9mcDpFpJU=; b=Q+7b26giWryWPhhh
-	Lv3+KQPOzpSU3ABY84hwyi9iGtlcT13aaRj2ndu+NrSHhNHL/RoNuN+fXmN6MCpA
-	UHOlD2fUpEhCfjvUJE/4z99L0yGgMdxFQXyqHkFkNob5XWhqYHzaUyTdJ8deUxwy
-	1x89gix01jVFyDTVLVWGLuQcmYu7BKvY5jLjc1gE4QTve+dTQlbk1LxLKZw8vJEk
-	/qgkwtdNgUSjLJL1hb/c3dwlPaoMUL+StXnelIsFN6TcEWJGWb98bb4BTIYF18Oh
-	uJtEEVB6gX0jYZ/aAdpyk1WDXvFnpgB31wMs+9knABZlC6tnXpa+fhREL2ibukE4
-	BSJozA==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 40bgwg2beq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 14 Jul 2024 22:07:55 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 46EM7sGn022964
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 14 Jul 2024 22:07:54 GMT
-Received: from [10.81.24.74] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Sun, 14 Jul
- 2024 15:07:53 -0700
-Message-ID: <b1a173a1-de6c-4959-b735-8171975d0d38@quicinc.com>
-Date: Sun, 14 Jul 2024 15:07:53 -0700
+	s=arc-20240116; t=1720998785; c=relaxed/simple;
+	bh=3pCbXD7DfVguYJddwVmMQ9JLn7zY/MlEsXgkfrLuo3E=;
+	h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type; b=c0fTbyKSu/KfZ6vHuyB8LrbnOvbs99wkJOEUilcVza7UemHPSVbv2hTXYfNP5CH9emhsrONdZ3ngYx6mwnUGSpP7C15IXHoC+6Mgx93pgoI0ELUErsQoq68iGAZXrMNNOP+WJhonDacOukVCnKzKa4gX0c6V5B3YRHYYHcRiCX4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NkbZ5uEd; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4266edee10cso23175395e9.2
+        for <live-patching@vger.kernel.org>; Sun, 14 Jul 2024 16:13:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1720998782; x=1721603582; darn=vger.kernel.org;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bLtPAfh2E+MA5JS7i0e6T7XOoE8ozctk2oYloQR64hU=;
+        b=NkbZ5uEdWwDK6m83VUseJHVl2QyG/H8UxlFi+Va2ZsEXcArtjwxHOwQCGF4opL6phF
+         3zCb64pi2BcO26YKtpcOjdh1zpOxY4kvXAfdCIwMPoT97oKyPbHmccHanEC/0++UuyBv
+         w91kQmvqe22JZALLQ+bHKzjmEA5XblBdLE+iNwImCkWg1Z2F3bCg0cj+1AbR7fUzBg9p
+         rGM+hdlH4VWBBSdILFOQhXMs635n5YglFzNJG4e/7kb7mgqYDcWaKwXfqivCF4cuKfCs
+         dCCZ35cmYlRV33Myc5W6t6cRKGGvSlJqYyanUK8guMkaX+uNB3mlOCGRVOvjD9idoqVH
+         lpow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720998782; x=1721603582;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=bLtPAfh2E+MA5JS7i0e6T7XOoE8ozctk2oYloQR64hU=;
+        b=Or+cGDsrsk3EuqRmZYg3bNA0EYAL4oeQeBROTY862IHdGuzdv0o2DIp3wr9Vwa8Xhb
+         nVUx/UrxUhg1Hdtcejhdw9ObwsFwgESrFWQWcei5o+qFeDpoRiR4Z1gi1oZ7uC5ZgoYY
+         Z17K07rXCDBtlBH6ec2oh6iAXn4haZKExC/jFr1OPbnNW7bqFUeR2uqXt6MxUtsO9dPD
+         3pVj7n7GAMpjV3aoTpmrZQGFIQzwQ/Kr7JIkdYnlUrY/RK94aP4mIreo+fD6jlRMubk2
+         ipXmsQWGI47fGrSDHfwbW7Vkw/7u0+Ib3szV6Q2htR/DmnDcrZMUgzHzglyjzh4NXtsW
+         u5+Q==
+X-Gm-Message-State: AOJu0Yy7un+02RsDa+xULOYSzWbfweU8wbQmCzm3JR9JK62h3LiUmYJr
+	n1v6nS3kxDCTCZiqQUO4fE6MKqZ7VxYT/YRaRhXCjmNWX+8oVS4/00nSz4pZC1Y=
+X-Google-Smtp-Source: AGHT+IETnNxnr8Mli4iF5r6ipnnncNYnHrcKS6Hx2QwlmYJ4+mxmcUFAdxcgm2H1a9EQc72h7+9fQw==
+X-Received: by 2002:a05:600c:4998:b0:426:5b21:9801 with SMTP id 5b1f17b1804b1-426708f2197mr93194615e9.27.1720998781763;
+        Sun, 14 Jul 2024 16:13:01 -0700 (PDT)
+Received: from [192.168.225.17] ([77.222.27.67])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-427a5edb478sm65328405e9.33.2024.07.14.16.13.01
+        for <live-patching@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Jul 2024 16:13:01 -0700 (PDT)
+Message-ID: <809917ce-f400-4f7b-9991-fd1089a7886b@gmail.com>
+Date: Mon, 15 Jul 2024 01:13:00 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -65,130 +75,51 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] [PATCH] livepatch: support of modifying refcount_t
- without underflow after unpatch.
-To: <raschupkin.ri@gmail.com>, <live-patching@vger.kernel.org>,
-        <joe.lawrence@redhat.com>, <pmladek@suse.com>, <mbenes@suse.cz>,
-        <jikos@kernel.org>, <jpoimboe@kernel.org>
-References: <20240714195958.692313-1-raschupkin.ri@gmail.com>
- <20240714195958.692313-2-raschupkin.ri@gmail.com>
 Content-Language: en-US
-From: Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <20240714195958.692313-2-raschupkin.ri@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: _J1kofPoLpaJtMdiKyHMZ8Kr6YTQrT4s
-X-Proofpoint-ORIG-GUID: _J1kofPoLpaJtMdiKyHMZ8Kr6YTQrT4s
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-14_15,2024-07-11_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
- adultscore=0 spamscore=0 priorityscore=1501 mlxscore=0 suspectscore=0
- mlxlogscore=999 lowpriorityscore=0 clxscore=1011 bulkscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2406140001 definitions=main-2407140176
+To: live-patching@vger.kernel.org
+From: Roman Rashchupkin <raschupkin.ri@gmail.com>
+Subject: [PATCH 1/2] livepatch: support of modifying refcount_t without
+ underflow after unpatch.
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 7/14/24 12:59, raschupkin.ri@gmail.com wrote:
-> From: Roman Rashchupkin <raschupkin.ri@gmail.com>
-> 
-> CVE fixes sometimes add refcount_inc/dec() pairs to the code with existing refcount_t.
-> Two problems arise when applying live-patch in this case:
-> 1) After refcount_t is being inc() during system is live-patched, after unpatch the counter value
-> will not be valid, as corresponing dec() would never be called.
-> 2) Underflows are possible in runtime in case dec() is called before
-> corresponding inc() in the live-patched code.
-> 
-> Proposed kprefcount_t functions are using following approach to solve these two problems:
-> 1) In addition to original refcount_t, temporary refcount_t is allocated, and after
-> unpatch it is just removed. This way system is safe with correct refcounting while patch is applied,
-> and no underflow would happend after unpatch.
-> 2) For inc/dec() added by live-patch code, one bit in reference-holder structure is used
-> (unsigned char *ref_holder, kprefholder_flag). In case dec() is called first, it is just ignored
-> as ref_holder bit would still not be initialized.
-> 
-> Signed-off-by: Roman Rashchupkin <raschupkin.ri@gmail.com>
-> ---
->   include/linux/livepatch_refcount.h | 19 +++++++
->   kernel/livepatch/Makefile          |  2 +-
->   kernel/livepatch/kprefcount.c      | 89 ++++++++++++++++++++++++++++++
->   3 files changed, 109 insertions(+), 1 deletion(-)
->   create mode 100644 include/linux/livepatch_refcount.h
->   create mode 100644 kernel/livepatch/kprefcount.c
-> 
-> diff --git a/include/linux/livepatch_refcount.h b/include/linux/livepatch_refcount.h
-> new file mode 100644
-> index 000000000000..02f9e7eeadb2
-> --- /dev/null
-> +++ b/include/linux/livepatch_refcount.h
-> @@ -0,0 +1,19 @@
-> +#ifndef __KP_REFCOUNT_T__
-> +#define __KP_REFCOUNT_T__
-> +
-> +#include <linux/refcount.h>
-> +
-> +typedef struct kprefcount_struct {
-> +	refcount_t *refcount;
-> +	refcount_t kprefcount;
-> +	spinlock_t lock;
-> +} kprefcount_t;
-> +
-> +kprefcount_t *kprefcount_alloc(refcount_t *refcount, gfp_t flags);
-> +void kprefcount_free(kprefcount_t *kp_ref);
-> +int kprefcount_read(kprefcount_t *kp_ref);
-> +void kprefcount_inc(kprefcount_t *kp_ref, unsigned char *ref_holder, int kprefholder_flag);
-> +void kprefcount_dec(kprefcount_t *kp_ref, unsigned char *ref_holder, int kprefholder_flag);
-> +bool kprefcount_dec_and_test(kprefcount_t *kp_ref, unsigned char *ref_holder, int kprefholder_flag);
-> +
-> +#endif
-> diff --git a/kernel/livepatch/Makefile b/kernel/livepatch/Makefile
-> index cf03d4bdfc66..8ff0926372c2 100644
-> --- a/kernel/livepatch/Makefile
-> +++ b/kernel/livepatch/Makefile
-> @@ -1,4 +1,4 @@
->   # SPDX-License-Identifier: GPL-2.0-only
->   obj-$(CONFIG_LIVEPATCH) += livepatch.o
->   
-> -livepatch-objs := core.o patch.o shadow.o state.o transition.o
-> +livepatch-objs := core.o patch.o shadow.o state.o transition.o kprefcount.o
-> diff --git a/kernel/livepatch/kprefcount.c b/kernel/livepatch/kprefcount.c
-> new file mode 100644
-> index 000000000000..6878033c5ddc
-> --- /dev/null
-> +++ b/kernel/livepatch/kprefcount.c
-> @@ -0,0 +1,89 @@
-> +#include <linux/init.h>
-> +#include <linux/module.h>
-> +#include <linux/kernel.h>
-> +#include <linux/version.h>
-> +#include <linux/types.h>
-> +#include <linux/slab.h>
-> +#include <linux/refcount.h>
-> +#include <linux/livepatch_refcount.h>
-> +
-> +MODULE_LICENSE("GPL");
-> +
+[Forwarding reply to quic_jjohnson@quicinc.com]
 
-Note that "make W=1" will generate a warning if a module doesn't have a 
-MODULE_DESCRIPTION().
+Thank you for interest in these patches. I've actually originally built 
+kprefcount as a module for testing, but do agree that it doesn't make 
+sense practically, and MODULE_LICENSE() should be removed from 
+kprefcount.c, as well as kprefcount_t API generally be improved.
 
-I've been fixing the existing warnings tree-wide and am hoping to 
-prevent new instances from appearing.
+Idea behind kprefcount_t algorithm is to facilitate creation of 
+live-patches for CVE fixes that add refcount_inc/dec() to existing code, 
+as this type of live-patches often cause problems because of runtime 
+ordering of refcount_inc()/refcount_dec()/patch/unpatch.
 
-One way I've been doing this is by searching lore for patches which add 
-a MODULE_LICENSE() but which do not add a MODULE_DESCRIPTION() since 
-that is a common sign of a missing description.
+If implementing such patches with kprefcount_t, only new live-patch code 
+would be modified, and also patching of  functions  that call 
+refcount_dec_and_test() is necessary to instead call 
+kprefcount_dec_and_test().
 
-But in this specific case it seems the MODULE_LICENSE() may be the issue 
-since I don't see how kprefcount.c could ever be built as a module. So 
-in this specific case it seems as if the MODULE_LICENSE() should be removed.
 
-Note that none of the other kernel/livepatch/*.c files have a 
-MODULE_LICENSE(), and CONFIG_LIVEPATCH is a bool and hence does not 
-support being built as a module.
+> Note that "make W=1" will generate a warning  if a module doesn't have a
+ > MODULE_DESCRIPTION().
+
+ > I've been fixing the existing warnings tree-wide and am hoping to
+ > prevent new instances from appearing.
+
+ > One way I've been doing this is by searching lore for patches which add
+ > a MODULE_LICENSE() but which do not add a MODULE_DESCRIPTION() since
+ > that is a common sign of a missing description.
+
+ > But in this specific case it seems the MODULE_LICENSE() may be the issue
+ > since I don't see how kprefcount.c could ever be built as a module. So
+ > in this specific case it seems as if the MODULE_LICENSE() should be 
+removed.
+
+ > Note that none of the other kernel/livepatch/*.c files have a
+ > MODULE_LICENSE(), and CONFIG_LIVEPATCH is a bool and hence does not
+ > support being built as a module.
 
 /jeff
+
 
