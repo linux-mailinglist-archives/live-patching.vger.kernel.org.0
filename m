@@ -1,222 +1,185 @@
-Return-Path: <live-patching+bounces-395-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-396-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D2369322D7
-	for <lists+live-patching@lfdr.de>; Tue, 16 Jul 2024 11:29:16 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id C6592932367
+	for <lists+live-patching@lfdr.de>; Tue, 16 Jul 2024 11:53:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id E1821B22E28
-	for <lists+live-patching@lfdr.de>; Tue, 16 Jul 2024 09:29:13 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 44F801F23A83
+	for <lists+live-patching@lfdr.de>; Tue, 16 Jul 2024 09:53:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9239E195B35;
-	Tue, 16 Jul 2024 09:29:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13F02195F17;
+	Tue, 16 Jul 2024 09:53:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VTnilfcM";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Qg894UjA";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="g7ijDT7x";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Y3NbvLg4"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KgGIOtYd"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA3341A87
-	for <live-patching@vger.kernel.org>; Tue, 16 Jul 2024 09:29:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CAF22E832
+	for <live-patching@vger.kernel.org>; Tue, 16 Jul 2024 09:53:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721122147; cv=none; b=p7lcuSDZqTp7s8P85+10fsO4YTl9xA0YFSoDFHZuJaOJKVMtWYuW7GLzZ8Ai8FIAvS/p5+k1rGObBosaPQ3EeN2t42GyQNdDzvAJKFCiUmJCUKO4U6khVMk7ErUm23aP70cC1UM24hRLsUDGy7duCaAitBGQMuPyapg1hlnOBv8=
+	t=1721123609; cv=none; b=uY1dGjwUw103rH1iCLYycuAvslfvENXeketDCrC19nw8vUv0DQmpSM0j/2Pm9cvjxH9xt3tF/e/Pd69F8oAwKFIt9uHZ9S3+9yhWhFviS1gBVZeLNpPQU864z7aHjB/WRkfW3BZSsDJzdkYxfMwzA3SPH5WCwXxe1FA7oIQUTWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721122147; c=relaxed/simple;
-	bh=fFnCHjcmDFxV/P+tNthkJ3g4vaHxwVXJU4W0xbCczKg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JPDDVTNIfgJ6pGvYKr1sa63PzIoLrfx0qMKz1QkHGRHK/aU9F+wK3TbxYK+DhHBZXlsyVTmc7034RrKzg9SkskwKtuo9UdWt3tZDVH4VRYWRyWwTfPH2lmCaZ0fHTLG5mAk5yIlBLFJAbfW6clGZfXoyf36XK96LvFmsztVWEMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VTnilfcM; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Qg894UjA; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=g7ijDT7x; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Y3NbvLg4; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id B94431F82D;
-	Tue, 16 Jul 2024 09:29:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1721122143; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SnmsKd92bmzpnFMO1WGBlrzh0RIVcYiwCWPOBX7R57M=;
-	b=VTnilfcMOiFJ9g01lYPfkxXvHjgL7iPMmS4GyNetVBI1ukpTDT8mve2/OFppYp2ngV/Vus
-	raA1aekxrDXM2jmdSgDOfnJYazk/Q8QZxbjmIqGbUOOhaBbuAu91zd5jHE5r/A80BGd+XN
-	DImdr0DZmoewUfzUu//MpYNqerTuWUY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1721122143;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SnmsKd92bmzpnFMO1WGBlrzh0RIVcYiwCWPOBX7R57M=;
-	b=Qg894UjA8EgeaABXsmxxk/xzJ3d+vinzevzLd6VijuBh3CR5hbnvv/hgM2HguAEVwo1USf
-	+7EncsJyOzN207DQ==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=g7ijDT7x;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=Y3NbvLg4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1721122142; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SnmsKd92bmzpnFMO1WGBlrzh0RIVcYiwCWPOBX7R57M=;
-	b=g7ijDT7x/9WTCwI/DK1nHadH6xesmfiPn3I90nZ5MlalLvUcGCptkzYooEgYfqoXmpcCnn
-	/4UMmLaOrzSezwvImijtPT0ff1XrKGBdDC/C1AIQCmYONe/JYU9HCiq5uRrzxF+v//9TGZ
-	r2J5L6tXDEH084jhumIqeas8ecrPO6E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1721122142;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SnmsKd92bmzpnFMO1WGBlrzh0RIVcYiwCWPOBX7R57M=;
-	b=Y3NbvLg4vY521w3swn4It9ACi6G+bItmA/SC159fW2he/Hr/iG+zE/c3E/jZ4mybynZDDa
-	03mLZO3fzz096cBg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 838D513795;
-	Tue, 16 Jul 2024 09:29:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Z0y/Hl49lmajHAAAD6G6ig
-	(envelope-from <nstange@suse.de>); Tue, 16 Jul 2024 09:29:02 +0000
-From: Nicolai Stange <nstange@suse.de>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: raschupkin.ri@gmail.com,  live-patching@vger.kernel.org,
-  pmladek@suse.com,  mbenes@suse.cz,  jikos@kernel.org,
-  jpoimboe@kernel.org
-Subject: Re: 
-In-Reply-To: <ZpWEifTpQ1vc1naA@redhat.com> (Joe Lawrence's message of "Mon, 15
-	Jul 2024 16:20:25 -0400")
-References: <20240714195958.692313-1-raschupkin.ri@gmail.com>
-	<ZpWEifTpQ1vc1naA@redhat.com>
-Date: Tue, 16 Jul 2024 11:28:57 +0200
-Message-ID: <877cdlsn1i.fsf@>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	s=arc-20240116; t=1721123609; c=relaxed/simple;
+	bh=n1ItywNCBtFF0nO7c05+oEsX8pHDW5WUJKtEZqgM4xY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XoReNfnnr4dGyC/XvzkThj0gLrdZPyaeDTDdOj6mqoFKo3+vdcAlklZMfk6vpP20xo+kZPMN7XaPm9dc0iF/dhU1lcsnb46QQ+3L/KN2FHlId2QrQtWT07F+aTuECBFJ2jSdetTyaCMAOhtZtrf0DuWFSRU6LdmWujCekwFlp/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KgGIOtYd; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-42793fc0a6dso35655325e9.0
+        for <live-patching@vger.kernel.org>; Tue, 16 Jul 2024 02:53:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1721123605; x=1721728405; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gOf2tPCV0PfnOAIsjc/7dsJtwUILuCK9qbAqpvx8fkA=;
+        b=KgGIOtYdlvA605cSGKOyHn+6+rkIQp0SqqYQ0C6up04APyzxyWSQCwK2C6P56GOXMt
+         W0ntizSU55XhRY5+ij2PcwxCzCfaCYZYfOSBkv570H6tanIr7ZVSpfePcXau+CdW3wVt
+         0trkv92dRCJQjo439r9rRqUK34O4y94+RvAqw0GRn91bnZmMe08ttEfrsH/Vzjuq2ckl
+         zfwvcuRGLvrOzgC7EBax/6VX581wtRann4pX9HNoLcROhh2caFKDcm2KMIIiodhgQZ4c
+         5of1KQtZXcCMCrOLpjlZneuwRXsSDUln51lzNgLTDPKPurp4ILcK1cKBQKlbmb/7RK6B
+         8MTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1721123605; x=1721728405;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gOf2tPCV0PfnOAIsjc/7dsJtwUILuCK9qbAqpvx8fkA=;
+        b=BU9xjHuBBux78BRu66yh3/++SYwSqXS/3wrKSvlV3NASuztuXq8u0E0P6GYs8YePwI
+         HE2i/MUVlrEZRm3BDrfN+51RDNHHJLYMKLy+SzrSonbfD4QDebAEIQQLa92SBMh9EqNg
+         Xe6eYLBXqfOVjVoSP7LSleS3IK4/jBs8M2J+OXZJ4YjSk9wm40cp+hr8GvW4m3KxnNj7
+         OFny3byWa4bDHCplUB6TC/ALvo2fIpp5MGpLT+bdSgxmp3WkvAjSR1TZEIBjQ2zZnJib
+         eNBolq7XXzy9CAlwxJB3d+srQeJdNOxFMgtRuXIkEhS1c86NqPs89AKpM2Olu7zYnhSy
+         sCpw==
+X-Gm-Message-State: AOJu0YwhdCs1EvdPw4PvPMcJPA8t30q5EaneXMeJPuxLLeqdO6zH2AID
+	R6BAVXxe6KasMnLkRQYRxAc8UOiA4/U62W3fxsnsbqqa35CpgNuA
+X-Google-Smtp-Source: AGHT+IHfiUfT8VnmCtECmBAmHWtfMuDqn7bRQfbnSCPxHU2/XZUQ/RIzrD8Jvf6vR1+MOgMxIml5Ww==
+X-Received: by 2002:a05:600c:3b92:b0:426:654e:16d0 with SMTP id 5b1f17b1804b1-427ba4a3da0mr11995105e9.0.1721123605251;
+        Tue, 16 Jul 2024 02:53:25 -0700 (PDT)
+Received: from [192.168.26.5] ([77.222.24.25])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4279f2d73bdsm153617875e9.43.2024.07.16.02.53.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Jul 2024 02:53:25 -0700 (PDT)
+Message-ID: <36e58ac7-3b38-4a67-b726-64886eaf20c6@gmail.com>
+Date: Tue, 16 Jul 2024 11:53:23 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Level: 
-X-Spamd-Bar: /
-X-Rspamd-Queue-Id: B94431F82D
-X-Spamd-Result: default: False [-0.31 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	INVALID_MSGID(1.70)[];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	SUBJECT_ENDS_SPACES(0.50)[];
-	MID_RHS_NOT_FQDN(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	ARC_NA(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	TO_DN_SOME(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	RCVD_TLS_ALL(0.00)[];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_CC(0.00)[gmail.com,vger.kernel.org,suse.com,suse.cz,kernel.org];
-	RCPT_COUNT_SEVEN(0.00)[7];
-	TAGGED_RCPT(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	DKIM_TRACE(0.00)[suse.de:+];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim]
-X-Spam-Flag: NO
-X-Spam-Score: -0.31
-X-Rspamd-Action: no action
+User-Agent: Mozilla Thunderbird
+Subject: Re:
+To: Nicolai Stange <nstange@suse.de>, Joe Lawrence <joe.lawrence@redhat.com>
+Cc: live-patching@vger.kernel.org, pmladek@suse.com, mbenes@suse.cz,
+ jikos@kernel.org, jpoimboe@kernel.org
+References: <20240714195958.692313-1-raschupkin.ri@gmail.com>
+ <ZpWEifTpQ1vc1naA@redhat.com>
+ <66963d60.170a0220.70a9a.8866SMTPIN_ADDED_BROKEN@mx.google.com>
+Content-Language: en-US
+From: Roman Rashchupkin <raschupkin.ri@gmail.com>
+In-Reply-To: <66963d60.170a0220.70a9a.8866SMTPIN_ADDED_BROKEN@mx.google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi all,
+ >> The first thing that comes to mind is that this might be solved using
+ >> the existing shadow variable API.
 
-Joe Lawrence <joe.lawrence@redhat.com> writes:
+ > Same.
 
-> On Sun, Jul 14, 2024 at 09:59:32PM +0200, raschupkin.ri@gmail.com wrote:
->>=20
-> But first, let me see if I understand the problem correctly.  Let's say
-> points A and A' below represent the original kernel code reference
-> get/put pairing in task execution flow.  A livepatch adds a new get/put
-> pair, B and B' in the middle like so:
+I just don't have enough experience using live-patch shadow-variables, 
+so I agree that probably that's a better general solution for problem 
+(1) of refcount underflow, than mine refholder flags.
+
+ > I can confirm that this scenario happens quite often with real world CVE
+ > fixes and there's currently no way to implement such changes safely from
+ > a livepatch. But I also believe this is an instance of a broader problem
+ > class we attempted to solve with that "enhanced" states API proposed and
+ > discussed at LPC ([1], there's a link to a recording at the bottom). For
+ > reference, see Petr's POC from [2].
+
+About (2) of incorrect refcount_t value left after unpatch, it seems as 
+a bit different and more special problem with counters, compared to the 
+support of live-patch states, which can be solved for refcount_t in a 
+simpler way.
+
+IMHO adding temporary kprefcount_t variable for the time of live-patch 
+being applied, modifying only this kprefcount_t variable by all added in 
+livepatch inc()/dec(), provides correct refcounting during live-patch is 
+applied. Then at the unpatch this temporaray variable can just safely be 
+discarded. This way the only additional code to live-patch would be 
+functions with original refcount_dec_and_test() calls.
+
+---
+
+Roman Rashchupkin
+
+On 7/16/24 11:28, Nicolai Stange wrote:
+> Hi all,
 >
->   ---  execution flow  --->
->   -- A  B       B'  A'  -->
+> Joe Lawrence <joe.lawrence@redhat.com> writes:
 >
-> There are potential issues if the livepatch is (de)activated
-> mid-sequence, between the new pairings:
+>> On Sun, Jul 14, 2024 at 09:59:32PM +0200, raschupkin.ri@gmail.com wrote:
+>> But first, let me see if I understand the problem correctly.  Let's say
+>> points A and A' below represent the original kernel code reference
+>> get/put pairing in task execution flow.  A livepatch adds a new get/put
+>> pair, B and B' in the middle like so:
+>>
+>>    ---  execution flow  --->
+>>    -- A  B       B'  A'  -->
+>>
+>> There are potential issues if the livepatch is (de)activated
+>> mid-sequence, between the new pairings:
+>>
+>>    problem 1:
+>>    -- A      .   B'  A'  -->                   'B, but no B =  extra put!
+>>              ^ livepatch is activated here
+>>
+>>    problem 2:
+>>    -- A  B   .       A'  -->                   B, but no B' =  extra get!
+>>              ^ livepatch is deactivated here
+> I can confirm that this scenario happens quite often with real world CVE
+> fixes and there's currently no way to implement such changes safely from
+> a livepatch. But I also believe this is an instance of a broader problem
+> class we attempted to solve with that "enhanced" states API proposed and
+> discussed at LPC ([1], there's a link to a recording at the bottom). For
+> reference, see Petr's POC from [2].
 >
->   problem 1:
->   -- A      .   B'  A'  -->                   'B, but no B =3D  extra put!
->             ^ livepatch is activated here
 >
->   problem 2:
->   -- A  B   .       A'  -->                   B, but no B' =3D  extra get!
->             ^ livepatch is deactivated here
-
-I can confirm that this scenario happens quite often with real world CVE
-fixes and there's currently no way to implement such changes safely from
-a livepatch. But I also believe this is an instance of a broader problem
-class we attempted to solve with that "enhanced" states API proposed and
-discussed at LPC ([1], there's a link to a recording at the bottom). For
-reference, see Petr's POC from [2].
-
-
-> The first thing that comes to mind is that this might be solved using
-> the existing shadow variable API.
-
-Same.
-
-
-> When the livepatch takes the new
-> reference (B), it could create a new <struct, NEW_REF> shadow variable
-> instance.  The livepatch code to return the reference (B') would then
-> check on the shadow variable existence before doing so.  This would
-> solve problem 1.
+>> The first thing that comes to mind is that this might be solved using
+>> the existing shadow variable API.
+> Same.
 >
-> The second problem is a little trickier.  Perhaps the shadow variable
-> approach still works as long as a pre-unpatch hook* were to iterate
-> through all the <*, NEW_REF> shadow variable instances and returned
-> their reference before freeing the shadow variable and declaring the
-> livepatch inactive.
-
-I think the problem of consistently maintaining shadowed reference
-counts (or anything shadowed for that matter) could be solved with the
-help of aforementioned states API enhancements, so I would propose to
-revive Petr's IMO more generic patchset as an alternative.
-
-Thoughts?
-
-Thanks,
-
-Nicolai
-
-[1] https://lpc.events/event/17/contributions/1541/
-[2] https://lore.kernel.org/r/20231110170428.6664-1-pmladek@suse.com
-
---=20
-SUSE Software Solutions Germany GmbH, Frankenstra=C3=9Fe 146, 90461 N=C3=BC=
-rnberg, Germany
-GF: Ivo Totev, Andrew McDonald, Werner Knoblich
-(HRB 36809, AG N=C3=BCrnberg)
+>
+>> When the livepatch takes the new
+>> reference (B), it could create a new <struct, NEW_REF> shadow variable
+>> instance.  The livepatch code to return the reference (B') would then
+>> check on the shadow variable existence before doing so.  This would
+>> solve problem 1.
+>>
+>> The second problem is a little trickier.  Perhaps the shadow variable
+>> approach still works as long as a pre-unpatch hook* were to iterate
+>> through all the <*, NEW_REF> shadow variable instances and returned
+>> their reference before freeing the shadow variable and declaring the
+>> livepatch inactive.
+> I think the problem of consistently maintaining shadowed reference
+> counts (or anything shadowed for that matter) could be solved with the
+> help of aforementioned states API enhancements, so I would propose to
+> revive Petr's IMO more generic patchset as an alternative.
+>
+> Thoughts?
+>
+> Thanks,
+>
+> Nicolai
+>
+> [1] https://lpc.events/event/17/contributions/1541/
+> [2] https://lore.kernel.org/r/20231110170428.6664-1-pmladek@suse.com
+>
 
