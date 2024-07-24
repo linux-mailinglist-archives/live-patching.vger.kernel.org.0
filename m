@@ -1,151 +1,183 @@
-Return-Path: <live-patching+bounces-404-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-405-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 665AB93B381
-	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2024 17:21:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 72C3C93B6BB
+	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2024 20:33:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 040A1B22705
-	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2024 15:20:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1668028517B
+	for <lists+live-patching@lfdr.de>; Wed, 24 Jul 2024 18:33:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D481E15B0FD;
-	Wed, 24 Jul 2024 15:20:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 797DC158871;
+	Wed, 24 Jul 2024 18:33:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jQIRQzfG"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="f5YXlRqC"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D5D383A9;
-	Wed, 24 Jul 2024 15:20:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50660481CE
+	for <live-patching@vger.kernel.org>; Wed, 24 Jul 2024 18:33:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721834452; cv=none; b=DG6MOBPgYRD8ynBTl9MWGJscIjPjjiT4CB6a+wDcBmSS7I6PAlmqGnv3pKm2MN5tn/4GHLwLok89wA2j1D2oRNLBN/wLrE8+uGfCiIKfjP2P/8GpC4bmy0Qz26BslAiaXZArW6Vzl8POqoYQKIDJ39Z4dbPPc4v4yLxgX7b2KKY=
+	t=1721846020; cv=none; b=WBeXJbQYFdRZM5XiQqoz3SyYdjiJZAAA7dmewTzSL8zU7bkhzEeaxXfryzyf0x3uB3lyQfsf6KQQiJ6AkSfJibcVNuuhE4AE3LKCKFGkkiYngAJV2Z8yH2q801MEAOGD47XyxaM3Ln84A7640wwh9MGeH4m23UWDHat4FcVmh9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721834452; c=relaxed/simple;
-	bh=VIQS1f4LLUtDz8L3mHiOANsnvpMpxB7gwYki6WUhQ5o=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=OEbK+pIet/cPmvJ8I0t0ylJ/UEiuXvb+LcqF5CCEq5J3/XaSWxSLrdH02ODWcvkkITCPMSkUoiDeqRbSmhuIrIAELli2/qdf3tdx9kC+nXIKmW7w2bbp3C91JtDpRcOUAr3ouHzcYspIrq3GO0jwlFKgzsMN3Okk4SKmow8dJDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jQIRQzfG; arc=none smtp.client-ip=209.85.210.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-70d2b921c48so2525290b3a.1;
-        Wed, 24 Jul 2024 08:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1721834451; x=1722439251; darn=vger.kernel.org;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WZgCYvZe74EjuwotEC/K0+ANqv3wqwQ9RBQVz46bO8s=;
-        b=jQIRQzfGVpGTQTmwLKT0uiWWGXoN9MkOMK5mINyJuFiznTViUS6RVG++W7q6JeD+HN
-         KWaxO8fg0Cugjd+IIF3dNy5WlL/+Pk/x2tZJU0HNR4mXBa3wGp5g8D3MDJpmMYwzv+B+
-         wxYAcXShqjTz8WJq1+cmDahs96pqPNyHBUP1b4LVujACN+9EpHrcnKBAZWNbEQckbsRE
-         eLeEQ0+Xe9tgx76tmLYLvJ2VotTR8RURA39CidCuWaF4fc4DEE1RvVZPEtQSIfwZU8nH
-         1/caSmAHjvXoapwqZEhieZ1lcSPBOOD1CwsdXiPcya6BkZSB5lY69TfbSlZ8ecTGH5zj
-         tt5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1721834451; x=1722439251;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WZgCYvZe74EjuwotEC/K0+ANqv3wqwQ9RBQVz46bO8s=;
-        b=A2FMQn1jrz1Jio8gV/e1dIHPH/xXIilRebMFN1Rt1GhzwEPjJ+JKRXtbCNJf6YpU5a
-         9tY7UaVCOjf5Q5MiVbRY1QG3GE6g4gkBYlrrDboBXkJ9xJPp7uUlNIfQfFAoQjStak6f
-         5kNeXNF+6s9EY7+PhEbIBKunMzw5b3gitExRccvlxcllAAAzL0vyGoLdp1VDyO5rIN4P
-         veT472sty2oTr3uaKThcRG+0LDD4eJvy+UxeDexqYP2f/ECCqfvbT1cS9JY4pmw00YWY
-         aVx/w0hO13B3q/JFAB150xIATh/XR6W4bUyKeVngnTsyVNTXaKEzP6vGMhqntK0mX6F+
-         4gSg==
-X-Forwarded-Encrypted: i=1; AJvYcCUvl5iHdHom3mMEEMbpfFSXn10rIe/Vl5IEPo2OVrXOMbLjnYKZ6vd11xsaKPlgdiW0Z8O6WG8aVFULpcjbWq6Y7GkRi2Kbh++/tnQHGCrULR9e7gym8fgcIosD/1/hcMDTgBz41pUKFgbPpw==
-X-Gm-Message-State: AOJu0Yx6hj8d2jsSMT60MX0UdZ6FjhIbyPHM/ByOwgWAtJgwlwWcXr3J
-	l1ZhgWD9q0dmPZ4IpJsiCw3cMrBDYIJdS/CHdzINso8x+H+APFo1
-X-Google-Smtp-Source: AGHT+IGAwk+DP14de0w6Ofep8xbTauqTQMNXVBkM2KthX23yjOHYOrVTk2bGjnwqWvpXoJr9r8UW/w==
-X-Received: by 2002:a05:6a20:3d81:b0:1c3:b20e:8bbf with SMTP id adf61e73a8af0-1c4727fb9ebmr172296637.14.1721834450568;
-        Wed, 24 Jul 2024 08:20:50 -0700 (PDT)
-Received: from smtpclient.apple ([198.11.178.15])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-70d2245f052sm5653630b3a.159.2024.07.24.08.20.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jul 2024 08:20:50 -0700 (PDT)
-Content-Type: text/plain;
-	charset=us-ascii
+	s=arc-20240116; t=1721846020; c=relaxed/simple;
+	bh=5VOvhhk3d0owmrP+ZgOHx/woNItd1Wg315tzbh5MT4c=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Nq3DM5lOHliYjsiBzf3E1EaKG+5rVRxq5HooaE5giiqwvVfU/IosWBD84CfDA8OvnQwlEJ/GvvzdtoCqfoBEZXPZ1a1GRH7Vln9ZdAt/13YEvAU0kgZweflLMT+qG69tLrBjUZH3ZDL9dCK+1lSOUtOZB5g4sX4GhQEDDR2Amms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=f5YXlRqC; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1721846017;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=MVEdeoQVSsbfd8EdbBodE9oloSS0jVMwnbQWLcufTxQ=;
+	b=f5YXlRqCUE6BtFTvJhteWnJtwg9+9+j6uMuCuD7129NcgMmGiIBaalLPQPkFoKn+bUiVa4
+	Ir5LGky76BgFyuDqQN/rJujBgBLFfsl2EgVTgZmJGRJUCfhMWnoJix7r9LrAAmAxKULdxQ
+	BCbRwwcP+urJJT/mZbG0Ie6Vtm0BWJs=
+Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-77-vpbCjpWoNgCUjm50ebDRrA-1; Wed,
+ 24 Jul 2024 14:33:34 -0400
+X-MC-Unique: vpbCjpWoNgCUjm50ebDRrA-1
+Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 2659E1955F43;
+	Wed, 24 Jul 2024 18:33:31 +0000 (UTC)
+Received: from sullivan-work.redhat.com (unknown [10.22.64.141])
+	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id DC35919560AE;
+	Wed, 24 Jul 2024 18:33:27 +0000 (UTC)
+From: Ryan Sullivan <rysulliv@redhat.com>
+To: live-patching@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org
+Cc: rysulliv@redhat.com,
+	joe.lawrence@redhat.com,
+	pmladek@suse.com,
+	mbenes@suse.cz,
+	jikos@kernel.org,
+	jpoimboe@kernel.org,
+	naveen.n.rao@linux.ibm.com,
+	christophe.leroy@csgroup.eu,
+	mpe@ellerman.id.au,
+	npiggin@gmail.com
+Subject: [PATCH] powerpc/ftrace: restore r2 to caller's stack on livepatch sibling call
+Date: Wed, 24 Jul 2024 14:33:21 -0400
+Message-ID: <20240724183321.9195-1-rysulliv@redhat.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [PATCH] livepatch: Add using attribute to klp_func for using func
- show
-From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <ZqEXC7NVStjPA9os@pathway.suse.cz>
-Date: Wed, 24 Jul 2024 23:20:34 +0800
-Cc: Miroslav Benes <mbenes@suse.cz>,
- Josh Poimboeuf <jpoimboe@kernel.org>,
- Jiri Kosina <jikos@kernel.org>,
- Joe Lawrence <joe.lawrence@redhat.com>,
- live-patching@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <1A0E6D0A-4245-4F44-8667-CDD86A925347@gmail.com>
-References: <20240718152807.92422-1-zhangyongde.zyd@alibaba-inc.com>
- <alpine.LSU.2.21.2407191402500.24282@pobox.suse.cz>
- <07DD1CA1-7E53-4E67-92DC-ECEC11424804@gmail.com>
- <ZqEXC7NVStjPA9os@pathway.suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-X-Mailer: Apple Mail (2.3774.500.171.1.1)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
 
+Currently, on PowerPC machines, sibling calls in livepatched functions
+cause the stack to be corrupted and are thus not supported by tools
+such as kpatch. Below is an example stack frame showing one such
+currupted stacks:
 
-Hi Petr!
+RHEL-7.6: Linux 3.10.0 ppc64le
 
-> The value is useless when the transition is in progress.
-> You simply do not know which variant is used in this case.
->=20
-Yes, I agree that if the patch is in transition, we can not know which =
-version of this function is running by one task.
+Livepatch applied:
 
-As my previous explanation, each patch have a state "transition" to show =
-if this patch is under transition state. If this function "using" is 1, =
-it shows that this function is going to become the version to be use, =
-but not all the task use this newest version because some task is under =
-transition (this is the "unknown" state from your opinion).
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index e008aefc3a9d..7c70e369390d 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2228,6 +2228,8 @@ static void xs_tcp_shutdown(struct rpc_xprt *xprt)
+ 	struct socket *sock = transport->sock;
+ 	int skst = transport->inet ? transport->inet->sk_state : TCP_CLOSE;
 
-> Which brings the question how exactly you use the value.
-> Could you please provide an example of decision which you make based
-> on the value?
->=20
++	asm("nop");
++
+ 	if (sock == NULL)
+ 		return;
+ 	switch (skst) {
 
-Here I can give you an example.
-We are going to fix a problem of io_uring.
-Our team made a livepatch of io_sq_offload_create.
-This livepatch module is deployed to some running servers.
+Context:
 
-Then, another team make some change to the same function and deployed it =
-to the same cluster.
+- The livepatch updates both xs_tcp_shutdown() and xs_reset_transport()
+in the sunrpc module. This causes the compiler to generate a tail call
+optimization for the patched instance of xs_tcp_shutdown() ->
+xs_reset_transport()
 
-Finally, they found that there are some livepatch module modifying the =
-same function io_sq_offload_create. But none of them can tell which =
-version of io_sq_offload_create is now exactly running in the system.
+Stack Frame:
 
-We can only use crash to debug /proc/kcore to see if we can get more =
-information from the kcore.
+ #4 [c000002fe4be7c00] __rpc_create_common at d000000026e118f4 [sunrpc]
+    c000002fe4be7c00: c000002fe4be7c40 0000000000000000
+    c000002fe4be7c10: c00000000000b054 d000000026fda3d8 < corrupted toc
+    c000002fe4be7c20: c00000000626cf00 c000002fe1a5f100
+    c000002fe4be7c30: c000003c79cbec48 c000003c79cbec50
+ #5 [c000002fe4be7c40] process_one_work at c00000000012333c
+    c000002fe4be7c40: c000002fe4be7ce0 c000000006260a00
+    c000002fe4be7c50: c00000000012333c c0000000013e4d00 < correct toc
+    c000002fe4be7c60: 0000000000000000 0000000000000000
+    c000002fe4be7c70: 0000000000000000 0000000000000000
+    c000002fe4be7c80: c000002fe4be7ce0 c0000000013510b0
+    c000002fe4be7c90: 0000000000000001 fffffffffffffef7
+    c000002fe4be7ca0: 0000000000000000 c000000006260980
+    c000002fe4be7cb0: c000002fe1a5f130 c000000001422280
+    c000002fe4be7cc0: c000000006260620 c000003c79cbec48
+    c000002fe4be7cd0: c000000006260600 c000002fe1a5f100
+ #6 [c000002fe4be7ce0] worker_thread at c000000000123980
+    c000002fe4be7ce0: c000002fe4be7d80 0000000000003300
+    c000002fe4be7cf0: c000000000123980 c000002fe8c8bb40
+    c000002fe4be7d00: 0000000000000000 0000000000000000
+    c000002fe4be7d10: 0000000000000000 0000000000000000
+    c000002fe4be7d20: 0000000000000000 0000000000000000
+    c000002fe4be7d30: 0000000000000000 0000000000000000
+    c000002fe4be7d40: 0000000000000000 0000000000000000
+    c000002fe4be7d50: c0000000001237e0 c000002fe1a5f100
+    c000002fe4be7d60: c000000000c894a0 c0000000016be410
+    c000002fe4be7d70: 0000000000000000 c000002fe8c8bb40
 
-If livepatch can tell which version of the function is now running or =
-going to run, it will be very useful.
-> If we agree that it makes sense then we should make it 3-state
-> where the meaning of values would be:
->=20
->   -1: unknown (transition in progress)
->   0: unused
->   1: used
->=20
+This is caused by the toc stub generated on a sibling call:
 
-Yeah, I agree with this state. I combine "transition" and "using" to =
-tell the unknown state. It can be better if this state can be shown in =
-using flag.
+0xd000000026fd0ad0 <xs_tcp_shutdown+816>:       addis   r11,r2,-1
+0xd000000026fd0ad4 <xs_tcp_shutdown+820>:       addi    r11,r11,26360
+0xd000000026fd0ad8 <xs_tcp_shutdown+824>:       std     r2,24(r1)
+                                                ^ corrupts stack frame
+0xd000000026fd0adc <xs_tcp_shutdown+828>:       ld      r12,32(r11)
+0xd000000026fd0ae0 <xs_tcp_shutdown+832>:       mtctr   r12
+0xd000000026fd0ae4 <xs_tcp_shutdown+836>:       bctr
 
-Thanks!
-Wardenjohn
+This ends up saving the livepatch toc to the caller's stack located in
+the sunrpc module so that since the stack is not popped, once the
+caller attempts to use the toc, a kernel panic results from being
+unable to handle the kernel paging request for data at that location
+outside the caller's module.
 
+This patch restores r2 value to caller's stack, on a sibling call this
+will uncorrupt the caller's stack and otherwise will be redundant.
+
+Signed-off-by: Ryan Sullivan <rysulliv@redhat.com>
+---
+ arch/powerpc/kernel/trace/ftrace_entry.S | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/powerpc/kernel/trace/ftrace_entry.S b/arch/powerpc/kernel/trace/ftrace_entry.S
+index 76dbe9fd2c0f..4dfbe6076ad1 100644
+--- a/arch/powerpc/kernel/trace/ftrace_entry.S
++++ b/arch/powerpc/kernel/trace/ftrace_entry.S
+@@ -244,6 +244,9 @@ livepatch_handler:
+ 	mtlr	r12
+ 	ld	r2,  -24(r11)
+ 
++	/* Restore toc to caller's stack in case of sibling call */
++	std	r2, 24(r1)
++
+ 	/* Pop livepatch stack frame */
+ 	ld	r12, PACA_THREAD_INFO(r13)
+ 	subi	r11, r11, 24
+-- 
+2.44.0
 
 
