@@ -1,139 +1,157 @@
-Return-Path: <live-patching+bounces-411-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-412-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C9DC393C3FD
-	for <lists+live-patching@lfdr.de>; Thu, 25 Jul 2024 16:22:30 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7D42C93C482
+	for <lists+live-patching@lfdr.de>; Thu, 25 Jul 2024 16:40:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8254E281CE9
-	for <lists+live-patching@lfdr.de>; Thu, 25 Jul 2024 14:22:29 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 05C9E1F2262A
+	for <lists+live-patching@lfdr.de>; Thu, 25 Jul 2024 14:40:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 77CC119D068;
-	Thu, 25 Jul 2024 14:22:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03B3719D88C;
+	Thu, 25 Jul 2024 14:40:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="v5lqmdeL";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="7Nj0AwXx";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="RVg2Mzyv";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="GuWnXYZY"
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="xixXHVn0";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="NdNaakYx";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="xixXHVn0";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="NdNaakYx"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7EE73FB3B;
-	Thu, 25 Jul 2024 14:22:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5360E19D086;
+	Thu, 25 Jul 2024 14:40:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721917345; cv=none; b=fEaCifi0wIW+B7h8fNo7S/rxM8ZJ06GBitdjHEcMOdC9W+TshVKZbyr+6zJ2TiC+oYpH6jOghzSQtzb83wjN2UevwhmGhQEVdry+ntDYwDAFgBmxKjCdXL3FFmYWk2sRIsBOvK1uHbOSXAym5tscEjg4dcN2nGqCJXLDxshAt0Q=
+	t=1721918424; cv=none; b=PzW7El1I0si3TgrgH9+BeoKHaQSQ12F3BXJC/EaVu4iRFNqpFcCvyD4ASe+pmr8gvXVBUwX/LmtV69OO1AQZIxWf7fPCZ30eJsc9Rx1OnByNTsfZPHwSEegnPQ0UnGlc3j6m1NLQSjupqdNYyzsTxYgGD85ncQ+KNRwzYEoXRnY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721917345; c=relaxed/simple;
-	bh=x6yaEcNXka7zLvCUrgE1GLUa/j6Jw8KxrmSLNIkNQBA=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Jf0FrXWTCnEUUYg3l82zWMErspCdmmci414hWWMPbvezfcUwlHaBJnguVb1/UV2RYp1Wjh8hCpxpHyTxPu9S2ttmMfAU6oV4uJQeI2yLkJZPgtFRuAMeT1u0wWoxt0z4bdtgwhG7Be0PzfEJLQX6cXrpBf5ju/qy1UZZpIPiKdI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=v5lqmdeL; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=7Nj0AwXx; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=RVg2Mzyv; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=GuWnXYZY; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.100.2.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	s=arc-20240116; t=1721918424; c=relaxed/simple;
+	bh=eh1AKUomluhAFQPgW3tWcJmZ0TY4nRL+ypQ4AWfheJI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=suffoWri/axgMt5QEFYJmxnOpbjyzF5veBCTkr0s9jFkHzPmvzo5u8gBUm8utJHPNnGDA+FgXrQmeaWp2cfjmbEbZoD3uomdStBGr4OY2VQKy0yI7VCbKYhtDYxsY0fTodZr64MFf1XxiguJSKTGIGI1F1I94hRyMi/LeynqxFk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=xixXHVn0; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=NdNaakYx; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=xixXHVn0; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=NdNaakYx; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id EDEE721A78;
-	Thu, 25 Jul 2024 14:22:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1721917342; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 876CF21A70;
+	Thu, 25 Jul 2024 14:40:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1721918421; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=C6YxQJSxttdUENcvV08MHKl8gDBGHZs+9QcV1B9xW9E=;
-	b=v5lqmdeLLVgjj3BJwYdvopkyHMWMx+8+0tbYlRH5e6V3Vy7mhY2pmpWU3NJzGfUfBlzHlB
-	WY0TUNbVgwiP7GI70JXKtb9QtTLwI5uoiM/uJY5hDtoA48RtGsDJajRJ+ZTsFL9O2ILpo1
-	GmZug1WLu+vvEEBQsDfuRdI00ikDCo4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1721917342;
+	bh=eh1AKUomluhAFQPgW3tWcJmZ0TY4nRL+ypQ4AWfheJI=;
+	b=xixXHVn00cPyZ0iKkqnImXiw3psqZiHekrgekEJdQWzBSSxy2Nf/hi7W7kXW7N5eQtyGhn
+	CGQVx52GK+udmgO3J8N3G4QXz3Aw3GXbpi4FPnbhvUbWKnSeoNyhV4awvtbJ6X/o0lt6Tk
+	CJLUO3GktYhHQ0vZTEH9ZlTAnrkVGiI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1721918421;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=C6YxQJSxttdUENcvV08MHKl8gDBGHZs+9QcV1B9xW9E=;
-	b=7Nj0AwXxNCfuJkyGpq5fUZYDnE621CUCk0qlshrCAHMbcy14l7guGcRRPF0jbdxE25DBv6
-	Aa2yxVbfdFcMY2Dw==
+	bh=eh1AKUomluhAFQPgW3tWcJmZ0TY4nRL+ypQ4AWfheJI=;
+	b=NdNaakYxTfLnPjQwTwVS8ZC8PJH1Q66OPb1465FCO+FhMtaDHDrHrYf5zOKXWdheZIsSXJ
+	709rV417LTLQsQCg==
 Authentication-Results: smtp-out1.suse.de;
 	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1721917341; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1721918421; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=C6YxQJSxttdUENcvV08MHKl8gDBGHZs+9QcV1B9xW9E=;
-	b=RVg2MzyvTlFkMeNuwuCAbdQJfiUZ2nXV8poeirQBCQoRfGlI/0UE7Lruf9GOOn/gyMywQr
-	gmbszJ5SpZe7xXMnMoVO1y72hDr9M9kC3hoCmdG2eUf8JVq/4QF6ULUY+5E7/fE63gKqK7
-	pfi+1qes1ImUApE3x8X3af+0t7aBXr8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1721917341;
+	bh=eh1AKUomluhAFQPgW3tWcJmZ0TY4nRL+ypQ4AWfheJI=;
+	b=xixXHVn00cPyZ0iKkqnImXiw3psqZiHekrgekEJdQWzBSSxy2Nf/hi7W7kXW7N5eQtyGhn
+	CGQVx52GK+udmgO3J8N3G4QXz3Aw3GXbpi4FPnbhvUbWKnSeoNyhV4awvtbJ6X/o0lt6Tk
+	CJLUO3GktYhHQ0vZTEH9ZlTAnrkVGiI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1721918421;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=C6YxQJSxttdUENcvV08MHKl8gDBGHZs+9QcV1B9xW9E=;
-	b=GuWnXYZY8CTDxpN6FCloE5ru2adBZRQdS1wxmywT43l2G+zV/zMizb2a9UH7Oan/8gVq4o
-	b8bE8xYm0DwQKxCg==
-Date: Thu, 25 Jul 2024 16:22:21 +0200 (CEST)
-From: Miroslav Benes <mbenes@suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-cc: Josh Poimboeuf <jpoimboe@kernel.org>, 
-    Joe Lawrence <joe.lawrence@redhat.com>, Nicolai Stange <nstange@suse.de>, 
-    live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [POC 0/7] livepatch: Make livepatch states, callbacks, and shadow
- variables work together
-In-Reply-To: <20231110170428.6664-1-pmladek@suse.com>
-Message-ID: <alpine.LSU.2.21.2407251619500.21729@pobox.suse.cz>
+	bh=eh1AKUomluhAFQPgW3tWcJmZ0TY4nRL+ypQ4AWfheJI=;
+	b=NdNaakYxTfLnPjQwTwVS8ZC8PJH1Q66OPb1465FCO+FhMtaDHDrHrYf5zOKXWdheZIsSXJ
+	709rV417LTLQsQCg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 134681368A;
+	Thu, 25 Jul 2024 14:40:21 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id +q8yA9VjomYcGgAAD6G6ig
+	(envelope-from <nstange@suse.de>); Thu, 25 Jul 2024 14:40:21 +0000
+From: Nicolai Stange <nstange@suse.de>
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: Petr Mladek <pmladek@suse.com>,  Josh Poimboeuf <jpoimboe@kernel.org>,
+  Joe Lawrence <joe.lawrence@redhat.com>,  Nicolai Stange
+ <nstange@suse.de>,  live-patching@vger.kernel.org,
+  linux-kernel@vger.kernel.org
+Subject: Re: [POC 0/7] livepatch: Make livepatch states, callbacks, and
+ shadow variables work together
+In-Reply-To: <alpine.LSU.2.21.2407251619500.21729@pobox.suse.cz> (Miroslav
+	Benes's message of "Thu, 25 Jul 2024 16:22:21 +0200 (CEST)")
 References: <20231110170428.6664-1-pmladek@suse.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	<alpine.LSU.2.21.2407251619500.21729@pobox.suse.cz>
+Date: Thu, 25 Jul 2024 16:40:20 +0200
+Message-ID: <874j8do7qj.fsf@>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spamd-Result: default: False [-4.10 / 50.00];
-	BAYES_HAM(-3.00)[99.99%];
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Level: 
+X-Spamd-Result: default: False [-1.90 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	INVALID_MSGID(1.70)[];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
 	MIME_GOOD(-0.10)[text/plain];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[7];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
 	MIME_TRACE(0.00)[0:+];
-	RCVD_COUNT_ZERO(0.00)[0];
 	ARC_NA(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	RCVD_TLS_ALL(0.00)[];
 	FUZZY_BLOCKED(0.00)[rspamd.com];
 	TO_DN_SOME(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	FROM_EQ_ENVFROM(0.00)[];
 	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCPT_COUNT_FIVE(0.00)[6]
-X-Spam-Level: 
+	RCVD_COUNT_TWO(0.00)[2];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo]
 X-Spam-Flag: NO
-X-Spam-Score: -4.10
+X-Spam-Score: -1.90
 
-Hi Petr,
+Miroslav Benes <mbenes@suse.cz> writes:
 
-On Fri, 10 Nov 2023, Petr Mladek wrote:
+>
+> Do we still need klp_state->data member? Now that it can be easily couple=
+d=20
+> with shadow variables, is there a reason to preserve it?
 
-> This POC is a material for the discussion "Simplify Livepatch Callbacks,
-> Shadow Variables, and States handling" at LPC 2013, see
-> https://lpc.events/event/17/contributions/1541/
-> 
-> It obsoletes the patchset adding the garbage collection of shadow
-> variables. This new solution is based on ideas from Nicolai Stange.
-> And it should also be in sync with Josh's ideas mentioned into
-> the thread about the garbage collection, see
-> https://lore.kernel.org/r/20230204235910.4j4ame5ntqogqi7m@treble
+I would say yes, it could point to e.g. some lock protecting an
+associated shadow variable's usage. Or be used to conveniently pass on
+any kind of data between subsequent livepatches.
 
-looks good to me. It is a huge improvement I would say.
+Thanks,
 
-As you mention elsewhere, it would also be nice to include some 
-documentation and samples in the next revision.
+Nicolai
 
-The selftests would need to be ported to the new infrastructure.
-
-Do we still need klp_state->data member? Now that it can be easily coupled 
-with shadow variables, is there a reason to preserve it?
-
-Miroslav
+--=20
+SUSE Software Solutions Germany GmbH, Frankenstra=C3=9Fe 146, 90461 N=C3=BC=
+rnberg, Germany
+GF: Ivo Totev, Andrew McDonald, Werner Knoblich
+(HRB 36809, AG N=C3=BCrnberg)
 
