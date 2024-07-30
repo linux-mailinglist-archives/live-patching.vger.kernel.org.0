@@ -1,45 +1,46 @@
-Return-Path: <live-patching+bounces-416-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-417-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 564BA9402CD
-	for <lists+live-patching@lfdr.de>; Tue, 30 Jul 2024 02:54:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BF2189402CF
+	for <lists+live-patching@lfdr.de>; Tue, 30 Jul 2024 02:55:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 0D0201F228EC
-	for <lists+live-patching@lfdr.de>; Tue, 30 Jul 2024 00:54:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F009F1C2196A
+	for <lists+live-patching@lfdr.de>; Tue, 30 Jul 2024 00:55:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A81461373;
-	Tue, 30 Jul 2024 00:54:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15BBD139D;
+	Tue, 30 Jul 2024 00:54:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WmsMjIP+"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nrX492Oo"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1B07464;
-	Tue, 30 Jul 2024 00:54:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5148C0B;
+	Tue, 30 Jul 2024 00:54:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722300884; cv=none; b=FsmDygTbuSnPVrq29QNGx1UlDxmyZbxvfuvLVqNC2Vrkv/oY4d2EE6XpzgoBf8BiRnaDsDQfzckFLyzlYTTmBHJe2HxJL9iF8H8feQjYxZEpU/TPQKWf7kOEhNLdOgbs2LxSZAYG55/yz1oTGhEx+jT0Ob1kHctKyIm98d6YKcY=
+	t=1722300892; cv=none; b=oIZvUcNTgujaBv/WQp+C5dvG6wkAFidLYnqvNyrcgNvBoqq4jBD4krW8R8cLIh9x96gey0+gawq0y5w2vCcEQNtd6Cy92Uve+qr2DeyRUPtu8lGCPPYxZgilPczJp/nDzlrzW8p453DhNd+E0ZSzQXMZ2844+dQy9pNf2vMLWgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722300884; c=relaxed/simple;
-	bh=Mg9VPmF3hpcgKy3QawKIGhZMvsuH7nxyRyTuwBFazQo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YtLSxXgT+LKNF5N5IaqIk74/IJBqXzUX9HwcHHFiUvXSWIAK0unem0AKewH+uV2QGGVivpMyJ6YfmzpuupJtRAh8CouU1URDUiftrkQ8Zc+jNqZULVlfXCHxf2ItYTZByN28fYThmkl13dqd7b6DdDhHf3vadEAjtqKCHHISqUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WmsMjIP+; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C848C32786;
-	Tue, 30 Jul 2024 00:54:41 +0000 (UTC)
+	s=arc-20240116; t=1722300892; c=relaxed/simple;
+	bh=pyBJdtxBPz3GxnxSNiZhE22PkJY5jWrFTCpJgLxoSPI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=bxIaeegNZSC9sKW7yxVLR0IrMgsenzvYPJwIaO2BIcYP1VLoPMLcADBPHG7NaJz5a2dJYjKf5ErQ1suFfIiI2yJpJgO7Z9CGPpDQxxzf5ycVlqTQBpCZqKr9Ei13u6UDPuVmavS3xxqsC0UAyxY2yYibY7C5ahSL1iJmR4ako5A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nrX492Oo; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F83C32786;
+	Tue, 30 Jul 2024 00:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722300884;
-	bh=Mg9VPmF3hpcgKy3QawKIGhZMvsuH7nxyRyTuwBFazQo=;
-	h=From:To:Cc:Subject:Date:From;
-	b=WmsMjIP+WllllCW/+Jgs1ydqS8bW24IfZrH9ZmWr5ZAH1A7YKST/jpRhWYG68cz8u
-	 YahMAnDKFzCZiraIB8XaSHr+E9bK9YWgcFIUZbg6jVvHMI86Jv0iClHJI8YzbwcJcS
-	 VmZ8TGaAkDZTwgSSITopB94AdmNo8HGOfdEgX9yut98kdb6ERFLjdG8S5M+PuSie4E
-	 iRxbkQiDLddptn56I54YgDR7coelVOWJrM3IVVoIFSYRSVSy5/gST/CPI0Epw9P86E
-	 bhefDgnqK4GD/zhVhq5kEvas3t3vvECKqJyJJs57U4MS97KGM37EHHNDOhZmDtwpIr
-	 9i8Rjx9vQzuGQ==
+	s=k20201202; t=1722300891;
+	bh=pyBJdtxBPz3GxnxSNiZhE22PkJY5jWrFTCpJgLxoSPI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=nrX492OoCnh9cqPzI2ECj3ndx2/kRnZovbDDylir8Resp4oovk1IcuXpQHtGrdn/g
+	 saNlq1qg8Cn2yptfoEMzSOBSE5nFLqBgxNibgwyt1syuBAbFNN+In/YbBIFw+2pDG9
+	 cHp8dySv0JIqJnjCRsa1MhAaOSQGgM1Pqa7T00K5iJaGoMQhYzIz/zoK1kBf69pAoS
+	 QoZPPijded91NMv8e+wK3EgtLnpatXyC7IXTFtKkmV7eQILbM9+kwBCY7ta5EhC5wN
+	 Pf6SXXtUStxJDnoBkcJrqGP6Eagk/8gvb7DaDpbW/sAwbozaq1p811m+HzOt+4b3j5
+	 lF1Tbm7crJZUQ==
 From: Song Liu <song@kernel.org>
 To: live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
@@ -61,10 +62,12 @@ Cc: jpoimboe@kernel.org,
 	samitolvanen@google.com,
 	mhiramat@kernel.org,
 	rostedt@goodmis.org
-Subject: [PATCH 0/3] Fix kallsyms with CONFIG_LTO_CLANG
-Date: Mon, 29 Jul 2024 17:54:30 -0700
-Message-ID: <20240730005433.3559731-1-song@kernel.org>
+Subject: [PATCH 1/3] kallsyms: Do not cleanup .llvm.<hash> suffix before sorting symbols
+Date: Mon, 29 Jul 2024 17:54:31 -0700
+Message-ID: <20240730005433.3559731-2-song@kernel.org>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240730005433.3559731-1-song@kernel.org>
+References: <20240730005433.3559731-1-song@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -73,32 +76,109 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-With CONFIG_LTO_CLANG, the compiler/linker adds .llvm.<hash> suffix to
-local symbols to avoid duplications. Existing scripts/kallsyms sorts
-symbols without .llvm.<hash> suffix. However, this causes quite some
-issues later on. Some users of kallsyms, such as livepatch, have to match
-symbols exactly; while other users, such as kprobe, would match symbols
-without the suffix.
+Cleaning up the symbols causes various issues afterwards. Let's sort
+the list based on original name and handle suffix later during the
+symbol lookup.
 
-Address this by sorting full symbols (with .llvm.<hash>) at build time, and
-split kallsyms APIs to explicitly match full symbols or without suffix.
-Specifically, exiting APIs will match symbols exactly. Two new APIs are
-added to match symbols with suffix. Use the new APIs in tracing/kprobes.
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ scripts/kallsyms.c      | 31 ++-----------------------------
+ scripts/link-vmlinux.sh |  4 ----
+ 2 files changed, 2 insertions(+), 33 deletions(-)
 
-Song Liu (3):
-  kallsyms: Do not cleanup .llvm.<hash> suffix before sorting symbols
-  kallsyms: Add APIs to match symbol without .llmv.<hash> suffix.
-  tracing/kprobes: Use APIs that matches symbols with .llvm.<hash>
-    suffix
-
- include/linux/kallsyms.h    | 14 +++++++
- kernel/kallsyms.c           | 83 ++++++++++++++++++++++++++-----------
- kernel/kallsyms_selftest.c  | 22 +---------
- kernel/trace/trace_kprobe.c | 10 ++++-
- scripts/kallsyms.c          | 30 +-------------
- scripts/link-vmlinux.sh     |  4 --
- 6 files changed, 83 insertions(+), 80 deletions(-)
-
---
+diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+index 0ed873491bf5..123dab0572f8 100644
+--- a/scripts/kallsyms.c
++++ b/scripts/kallsyms.c
+@@ -5,8 +5,7 @@
+  * This software may be used and distributed according to the terms
+  * of the GNU General Public License, incorporated herein by reference.
+  *
+- * Usage: kallsyms [--all-symbols] [--absolute-percpu]
+- *                         [--lto-clang] in.map > out.S
++ * Usage: kallsyms [--all-symbols] [--absolute-percpu]  in.map > out.S
+  *
+  *      Table compression uses all the unused char codes on the symbols and
+  *  maps these to the most used substrings (tokens). For instance, it might
+@@ -62,7 +61,6 @@ static struct sym_entry **table;
+ static unsigned int table_size, table_cnt;
+ static int all_symbols;
+ static int absolute_percpu;
+-static int lto_clang;
+ 
+ static int token_profit[0x10000];
+ 
+@@ -73,8 +71,7 @@ static unsigned char best_table_len[256];
+ 
+ static void usage(void)
+ {
+-	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] "
+-			"[--lto-clang] in.map > out.S\n");
++	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] in.map > out.S\n");
+ 	exit(1);
+ }
+ 
+@@ -344,25 +341,6 @@ static bool symbol_absolute(const struct sym_entry *s)
+ 	return s->percpu_absolute;
+ }
+ 
+-static void cleanup_symbol_name(char *s)
+-{
+-	char *p;
+-
+-	/*
+-	 * ASCII[.]   = 2e
+-	 * ASCII[0-9] = 30,39
+-	 * ASCII[A-Z] = 41,5a
+-	 * ASCII[_]   = 5f
+-	 * ASCII[a-z] = 61,7a
+-	 *
+-	 * As above, replacing the first '.' in ".llvm." with '\0' does not
+-	 * affect the main sorting, but it helps us with subsorting.
+-	 */
+-	p = strstr(s, ".llvm.");
+-	if (p)
+-		*p = '\0';
+-}
+-
+ static int compare_names(const void *a, const void *b)
+ {
+ 	int ret;
+@@ -526,10 +504,6 @@ static void write_src(void)
+ 	output_address(relative_base);
+ 	printf("\n");
+ 
+-	if (lto_clang)
+-		for (i = 0; i < table_cnt; i++)
+-			cleanup_symbol_name((char *)table[i]->sym);
+-
+ 	sort_symbols_by_name();
+ 	output_label("kallsyms_seqs_of_names");
+ 	for (i = 0; i < table_cnt; i++)
+@@ -807,7 +781,6 @@ int main(int argc, char **argv)
+ 		static const struct option long_options[] = {
+ 			{"all-symbols",     no_argument, &all_symbols,     1},
+ 			{"absolute-percpu", no_argument, &absolute_percpu, 1},
+-			{"lto-clang",       no_argument, &lto_clang,       1},
+ 			{},
+ 		};
+ 
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index f7b2503cdba9..22d0bc843986 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -156,10 +156,6 @@ kallsyms()
+ 		kallsymopt="${kallsymopt} --absolute-percpu"
+ 	fi
+ 
+-	if is_enabled CONFIG_LTO_CLANG; then
+-		kallsymopt="${kallsymopt} --lto-clang"
+-	fi
+-
+ 	info KSYMS "${2}.S"
+ 	scripts/kallsyms ${kallsymopt} "${1}" > "${2}.S"
+ 
+-- 
 2.43.0
+
 
