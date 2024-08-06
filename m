@@ -1,35 +1,35 @@
-Return-Path: <live-patching+bounces-444-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-445-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 308E79498B8
-	for <lists+live-patching@lfdr.de>; Tue,  6 Aug 2024 22:00:10 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id EDCA89498BE
+	for <lists+live-patching@lfdr.de>; Tue,  6 Aug 2024 22:01:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 91133B20CA1
-	for <lists+live-patching@lfdr.de>; Tue,  6 Aug 2024 20:00:07 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 8B5C1B23052
+	for <lists+live-patching@lfdr.de>; Tue,  6 Aug 2024 20:01:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 74A56154BFE;
-	Tue,  6 Aug 2024 20:00:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B2492155307;
+	Tue,  6 Aug 2024 20:01:03 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C8EA150990;
-	Tue,  6 Aug 2024 20:00:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 920731547DE;
+	Tue,  6 Aug 2024 20:01:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722974403; cv=none; b=vFjMv/xNFRMqpeNsydMLW7tHEIDbHGeM5iTPk1MCAisk0p5K1mXin3lzLCM7Elf4O3KkNudfk+8HC7LINYbUGX2louMNltPW5D66+U/uyYdEng3l5G+R6u/UDnFWoO74aeLJEnZH0YMbHlpruYhqfun+r4NTwClktDFNsb0FddA=
+	t=1722974463; cv=none; b=bMCa4dWsuMpdZfRZeeZv5E+XYzG/eUhDOVDr0PeySBC7YI9HIm8/O9Rr0iGTDd87bnSk5e4388JdQdHTssJnToG3vXUPtdSXt/UJdTkOU5L8dfmkqeuGVnmqe4KCh2nrbaBT38HETm9dCTIM+YhJpv5mb4SWMaH9j1L8QMo/nBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722974403; c=relaxed/simple;
-	bh=+x5ve0HRYkjcLiAz/qnvZdILQ43gdamPuiGt+Vf0EMA=;
+	s=arc-20240116; t=1722974463; c=relaxed/simple;
+	bh=LtvbirBLl/FBSBSTs2FebEYxe3x5raFLdt0tu1khpII=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=a1TcOyqO6XN7co0GVSkYkm/wF0GKCSoLYiN8Fjmyz3Gd9wFPX9undxQQdGU1/bZDTGtOwmySH+QbKhz6+gMYIm/PBpZMTPevr9LKd+pL/715CQfPQg7idF+u08dmBj0qBgb8HYbHRvOeKEFKSMUsDSGYvuJ9WIbQ8lDBeIQVeNg=
+	 MIME-Version:Content-Type; b=V5L+BbebHIQDBf6dTBs7ly3PshmkBEpqscE380E/yZ7KHgF5mWvOPHX4uCDowrCPljPQWfUT6reej0NmhNrqgaNL1gNEJVcOweLscL/gpFY2KbmROVOdQJ5XWMzXnm416yCNWKVN6V3ozB1Fg65EtR8QarDf/sc5/5Gt9d/kh/Y=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE363C32786;
-	Tue,  6 Aug 2024 20:00:00 +0000 (UTC)
-Date: Tue, 6 Aug 2024 16:00:49 -0400
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BC8C32786;
+	Tue,  6 Aug 2024 20:01:00 +0000 (UTC)
+Date: Tue, 6 Aug 2024 16:01:49 -0400
 From: Steven Rostedt <rostedt@goodmis.org>
 To: Song Liu <songliubraving@meta.com>
 Cc: Song Liu <song@kernel.org>, "live-patching@vger.kernel.org"
@@ -45,12 +45,13 @@ Cc: Song Liu <song@kernel.org>, "live-patching@vger.kernel.org"
  Tolvanen <samitolvanen@google.com>, Masami Hiramatsu <mhiramat@kernel.org>
 Subject: Re: [PATCH v2 3/3] tracing/kprobes: Use APIs that matches symbols
  without .XXX suffix
-Message-ID: <20240806160049.617500de@gandalf.local.home>
-In-Reply-To: <B53E6C7F-7FC4-4B4B-9F06-8D7F37B8E0EB@fb.com>
+Message-ID: <20240806160149.48606a0b@gandalf.local.home>
+In-Reply-To: <20240806160049.617500de@gandalf.local.home>
 References: <20240802210836.2210140-1-song@kernel.org>
 	<20240802210836.2210140-4-song@kernel.org>
 	<20240806144426.00ed349f@gandalf.local.home>
 	<B53E6C7F-7FC4-4B4B-9F06-8D7F37B8E0EB@fb.com>
+	<20240806160049.617500de@gandalf.local.home>
 X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -61,36 +62,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 6 Aug 2024 19:35:07 +0000
-Song Liu <songliubraving@meta.com> wrote:
+On Tue, 6 Aug 2024 16:00:49 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-> >> + if (IS_ENABLED(CONFIG_LTO_CLANG) && !addr)
-> >> + addr = kallsyms_lookup_name_without_suffix(trace_kprobe_symbol(tk));
-> >> +  
+> > >> + if (IS_ENABLED(CONFIG_LTO_CLANG) && !addr)
+> > >> + addr = kallsyms_lookup_name_without_suffix(trace_kprobe_symbol(tk));
+> > >> +    
+> > > 
+> > > So you do the lookup twice if this is enabled?
+> > > 
+> > > Why not just use "kallsyms_lookup_name_without_suffix()" the entire time,
+> > > and it should work just the same as "kallsyms_lookup_name()" if it's not
+> > > needed?    
 > > 
-> > So you do the lookup twice if this is enabled?
+> > We still want to give priority to full match. For example, we have:
 > > 
-> > Why not just use "kallsyms_lookup_name_without_suffix()" the entire time,
-> > and it should work just the same as "kallsyms_lookup_name()" if it's not
-> > needed?  
+> > [root@~]# grep c_next /proc/kallsyms
+> > ffffffff81419dc0 t c_next.llvm.7567888411731313343
+> > ffffffff81680600 t c_next
+> > ffffffff81854380 t c_next.llvm.14337844803752139461
+> > 
+> > If the goal is to explicitly trace c_next.llvm.7567888411731313343, the
+> > user can provide the full name. If we always match _without_suffix, all
+> > of the 3 will match to the first one. 
+> > 
+> > Does this make sense?  
 > 
-> We still want to give priority to full match. For example, we have:
-> 
-> [root@~]# grep c_next /proc/kallsyms
-> ffffffff81419dc0 t c_next.llvm.7567888411731313343
-> ffffffff81680600 t c_next
-> ffffffff81854380 t c_next.llvm.14337844803752139461
-> 
-> If the goal is to explicitly trace c_next.llvm.7567888411731313343, the
-> user can provide the full name. If we always match _without_suffix, all
-> of the 3 will match to the first one. 
-> 
-> Does this make sense?
+> Yes. Sorry, I missed the "&& !addr)" after the "IS_ENABLED()", which looked
+> like you did the command twice.
 
-Yes. Sorry, I missed the "&& !addr)" after the "IS_ENABLED()", which looked
-like you did the command twice.
-
-I blame jetlag ;-)
+But that said, does this only have to be for llvm? Or should we do this for
+even gcc? As I believe gcc can give strange symbols too.
 
 -- Steve
 
