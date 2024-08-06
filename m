@@ -1,145 +1,128 @@
-Return-Path: <live-patching+bounces-440-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-441-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id ED4DE9480AB
-	for <lists+live-patching@lfdr.de>; Mon,  5 Aug 2024 19:46:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B8F2E949460
+	for <lists+live-patching@lfdr.de>; Tue,  6 Aug 2024 17:21:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id A34DB1F21951
-	for <lists+live-patching@lfdr.de>; Mon,  5 Aug 2024 17:46:40 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 6830E1F2591F
+	for <lists+live-patching@lfdr.de>; Tue,  6 Aug 2024 15:21:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF92A15CD58;
-	Mon,  5 Aug 2024 17:46:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 976BA17BD9;
+	Tue,  6 Aug 2024 15:21:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aU0Hxp7W"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RA1988Mg"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80B22481A7;
-	Mon,  5 Aug 2024 17:46:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C98812E75;
+	Tue,  6 Aug 2024 15:21:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722879995; cv=none; b=dAjShRN0BIp8aV6uxpHCKJHXdLIeVQCejGwI3LpMSEQZR4O1S9QP0jxEzjbH061XF84I+FPOOBJVy4wTD9aSTnY341R7eFGYE4uYkGzVd7a8KOISXWJ5et7gUOrkYxi9ltGZo2S0fDEZgmcwuI1ghB89DRDIJgfzYfC6EOt1eec=
+	t=1722957691; cv=none; b=Jnif444sZmlDwQb27p/A80CKGS39otoBytJlS4eJi7wPVVrrwGeoyPXECFVC8GADEdJmqjhYqmRe5wjgSCcnHEXtyN049dZJhvNKTc4IqVXbL3w5cxPb5vzqicsLI9R+c20KazlYxeUcux4jffUNiQCypjNJ1gAKwBfyeM1yq6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722879995; c=relaxed/simple;
-	bh=Gx+4NhliD1/MYKaWvRPgeKiC8Ozr9TsuLJGZf7Sl7gk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Ttn4FVBwawrBUHzzUYHXHKgL1OQZXVO4VNPSD1Tmq6YT3kFIJXsuaf/tSTwZpA8tR8D0E6LIg+Pf25w1e6kj/KgkEnkgGPkfpQMJjEVaeFDMXuN7RErb9jgynj4/NC+PDkNQwSq+BKpMTsSty3pZ+IinUGDpbak4NBM6qLnSDFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aU0Hxp7W; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F26D3C4AF12;
-	Mon,  5 Aug 2024 17:46:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722879995;
-	bh=Gx+4NhliD1/MYKaWvRPgeKiC8Ozr9TsuLJGZf7Sl7gk=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=aU0Hxp7WYGPBt79fq/G1zNMFeWp4pEOTSLgWTye4U4GLssF1IkI8HcaFDQrZU6cMb
-	 Nfx69UwUFStApMMVK+1tICy6JbHpYkKuK9czhsq3P3+6xFWOhkhqrl+cEraBWYRScq
-	 vrA9p08uvFPoUn/Enct6x9loVbTcGGBV9T+ogf0hDSNqIjNz+GtMFk7bWAExlqAzat
-	 kckiXQN2JWW41RwmmptnZPwiLajRWFHmI+HWifKHe+XYvglptrw7t/M1SIMoLBxLAI
-	 6/G1LmNTfoWtE7+Ga4JYJ/73LJVSrm/jSYTrzmeyFA9WkbbvmalgNsY7Ek+3kEv9QB
-	 960/8cC0kQt1g==
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-530ae4ef29dso11517546e87.3;
-        Mon, 05 Aug 2024 10:46:34 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWhOUscwc6zo8Nf4p+0/Xc691GdshHYbR4PwSRXA6Z76bsMZY6d3kTeuywfPVCfJxMsmzQcn+8h1dc+FveaT/WEjBp+DVwCvhKcRdh2PZUMf2LR+rjFyneGLXv04la1x3aFQ5cNwRKXjQCQ4xTD/BpG
-X-Gm-Message-State: AOJu0YzKAjDdLEIqaejAVkymGPDQyRmR+l8wixBgONb4v6tpxCTRrsR1
-	zWPBeSyFUaQ5Kd50IIksWlu0lxpKaSKKCw0RSkCmmcx9IO9dOSDGtYLvK0Rtl4IQ1Lta36QQc9V
-	iKM+wiHjkFtm3+exf7AWfP0hxEZU=
-X-Google-Smtp-Source: AGHT+IG3yL9p3oXntJjAV6RufVVHtCDR8RPr8Pey/VmQyx+q/WuBdDKFYhg2gH+XnhoFAiL0xDOEsCTDYsBcMMEMijg=
-X-Received: by 2002:a05:6512:1593:b0:52d:582e:4111 with SMTP id
- 2adb3069b0e04-530bb3810c5mr11445282e87.18.1722879993290; Mon, 05 Aug 2024
- 10:46:33 -0700 (PDT)
+	s=arc-20240116; t=1722957691; c=relaxed/simple;
+	bh=yXypt64uF0w/ShLxbdnq16PrfyJcpZl0iWSpKlVTEjw=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=FvuMf1Ef8JCPNPGvGLAMd6SbLMzkTMn4kWrvLNsDyO5h+q4XA3O4tQQXyuPVzh6I0MgFVXvaHMdEaVUhX6Ed57W1xhIeVdoOZS9FWc+Cn9YIFBW4F/nitPg9f43uQZ1Ue17U1QvfKGBq20AuyarQX6X6ESfYtFj0VL5iP1pMKM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RA1988Mg; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-1fc5549788eso6429945ad.1;
+        Tue, 06 Aug 2024 08:21:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722957689; x=1723562489; darn=vger.kernel.org;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=L3oTpRyrb3abk0ueTizPKWSn8WwNP0gHjkntdPT2laM=;
+        b=RA1988Mg6FGNI0yMquN5YPKFqyxdP2vnu5KwJSRaEID5jxalXIGlncHA44yizzOk+O
+         vuiAU83iFBm4cQzlQDk63R89e+IOx0O4lHUCsdov1MuZLQIv8wBx3BxtyRWtVHqUy9E5
+         k5Db+gLxO+bYw5ONAXez8R6KRacGSfnqtnxq3e7hfgX/4GOvqzlRP3ZYruSGvlp1zoPO
+         k2/MMAeOcPbB8z7BPWM7hJ4l0KINRusImTjz91IOpZwuegnzirwXzPZ/LOFHKwhaXQY2
+         4AkGmIpNGr0E/rZ8z5hpdih73mq03Bde6080zZY//rbkOXUnFIfXinbfSMC5mYT2Vqmj
+         yUwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722957689; x=1723562489;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=L3oTpRyrb3abk0ueTizPKWSn8WwNP0gHjkntdPT2laM=;
+        b=N4+44DyIzq5+eIZ+4HnC52pJ5iNTAEjdGCL3IcrhU2273KawwQB7uA7eBcQe4CqN/r
+         DaWCx9VwmI+7lUaN7R5CPwj2v8QVwDGZSNDdvP617XOdmwm1uSuF4F+RJMYZAjyJK1f8
+         qElKJ0dFjtrv6VMThSPAK7QD9wUtKQN9cLjwKlTHq0XPlW3h693ErKV77CxxBCHS5c4P
+         2Vxgo6Fa2XYXzA+3eds/V1kuf+OkdyW9rA2kdZq2qPDdTyPkuvUYjD0fA7AOHRXsZ2vE
+         8OKE1L4t+hY7ls56JIdP2hULZA7AUfUX/v7t6dcYILSoqAJmCpqvMnTFY4zlj+Pitfyb
+         55SQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUBXiuBRKMstxSZ70d4uI34e29wfLcrFvQyAzuN7K+mQMbwsBlyB1nLSHFYk5GXpfVp7ib2Ip8Mzkge2UB6Inxr8iWH2F/HtF84BDf7
+X-Gm-Message-State: AOJu0YyeW14yjDHxwehmoPEdg9X43RL2NzPzaBu1B2od1fx+WE+u0e7O
+	hosfA6d1nIQTnVhzPrAOM1iy7O+q2+lF6hBQGTPQ33Yn0jSbNzpoqJx1dA==
+X-Google-Smtp-Source: AGHT+IEGxh6kPnY9wC4MAD9+3SC4BQ0LGo7bdy72buLv3bKeuSvvBJPxTtj7eAqkku941gB4DGSUjA==
+X-Received: by 2002:a17:903:1245:b0:1fb:3ce5:122d with SMTP id d9443c01a7336-1ff573bfe4amr217689025ad.41.1722957689376;
+        Tue, 06 Aug 2024 08:21:29 -0700 (PDT)
+Received: from smtpclient.apple ([47.89.225.180])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2007728d837sm17172925ad.84.2024.08.06.08.21.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 06 Aug 2024 08:21:28 -0700 (PDT)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20240802210836.2210140-1-song@kernel.org> <20240802210836.2210140-3-song@kernel.org>
- <20240805224544.e0a4277dff4ac41d867c6bc1@kernel.org>
-In-Reply-To: <20240805224544.e0a4277dff4ac41d867c6bc1@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Mon, 5 Aug 2024 10:46:20 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6Axj1LaK3D09KuevQo2Otg7U0toDEPjop1dEnrUFtzAA@mail.gmail.com>
-Message-ID: <CAPhsuW6Axj1LaK3D09KuevQo2Otg7U0toDEPjop1dEnrUFtzAA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] kallsyms: Add APIs to match symbol without .XXXX suffix.
-To: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org, 
-	mbenes@suse.cz, pmladek@suse.com, joe.lawrence@redhat.com, nathan@kernel.org, 
-	morbo@google.com, justinstitt@google.com, mcgrof@kernel.org, 
-	thunder.leizhen@huawei.com, kees@kernel.org, kernel-team@meta.com, 
-	mmaurer@google.com, samitolvanen@google.com, rostedt@goodmis.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
+Subject: Re: [PATCH v2 1/1] livepatch: Add using attribute to klp_func for
+ using function show
+From: zhang warden <zhangwarden@gmail.com>
+In-Reply-To: <20240805064656.40017-2-zhangyongde.zyd@alibaba-inc.com>
+Date: Tue, 6 Aug 2024 23:21:13 +0800
+Cc: live-patching@vger.kernel.org,
+ LKML <linux-kernel@vger.kernel.org>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <81AC0E7E-24D8-4768-B1A2-CD3688C1525D@gmail.com>
+References: <20240805064656.40017-1-zhangyongde.zyd@alibaba-inc.com>
+ <20240805064656.40017-2-zhangyongde.zyd@alibaba-inc.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>,
+ Jiri Kosina <jikos@kernel.org>,
+ Petr Mladek <pmladek@suse.com>,
+ Joe Lawrence <joe.lawrence@redhat.com>
+X-Mailer: Apple Mail (2.3774.500.171.1.1)
 
-Hi Masami,
 
-On Mon, Aug 5, 2024 at 6:45=E2=80=AFAM Masami Hiramatsu <mhiramat@kernel.or=
-g> wrote:
->
-> On Fri,  2 Aug 2024 14:08:34 -0700
-> Song Liu <song@kernel.org> wrote:
->
-> > With CONFIG_LTO_CLANG=3Dy, the compiler may add suffix to function name=
-s
-> > to avoid duplication. This causes confusion with users of kallsyms.
-> > On one hand, users like livepatch are required to match the symbols
-> > exactly. On the other hand, users like kprobe would like to match to
-> > original function names.
-> >
-> > Solve this by splitting kallsyms APIs. Specifically, existing APIs now
-> > should match the symbols exactly. Add two APIs that match only the part
-> > without .XXXX suffix. Specifically, the following two APIs are added.
-> >
-> > 1. kallsyms_lookup_name_without_suffix()
-> > 2. kallsyms_on_each_match_symbol_without_suffix()
-> >
-> > These APIs will be used by kprobe.
-> >
-> > Also cleanup some code and update kallsyms_selftests accordingly.
-> >
-> > Signed-off-by: Song Liu <song@kernel.org>
->
-> Looks good to me, but I have a nitpick.
->
->
-> > --- a/kernel/kallsyms.c
-> > +++ b/kernel/kallsyms.c
-> > @@ -164,30 +164,27 @@ static void cleanup_symbol_name(char *s)
-> >  {
-> >       char *res;
-> >
-> > -     if (!IS_ENABLED(CONFIG_LTO_CLANG))
-> > -             return;
-> > -
-> >       /*
-> >        * LLVM appends various suffixes for local functions and variable=
-s that
-> >        * must be promoted to global scope as part of LTO.  This can bre=
-ak
-> >        * hooking of static functions with kprobes. '.' is not a valid
-> > -      * character in an identifier in C. Suffixes only in LLVM LTO obs=
-erved:
-> > -      * - foo.llvm.[0-9a-f]+
-> > +      * character in an identifier in C, so we can just remove the
-> > +      * suffix.
-> >        */
-> > -     res =3D strstr(s, ".llvm.");
-> > +     res =3D strstr(s, ".");
->
-> nit: "strchr(s, '.')" ?
->
-> Anyway,
->
-> Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-Thanks for your kind review!
+> On Aug 5, 2024, at 14:46, zhangyongde.zyd <zhangwarden@gmail.com> =
+wrote:
+>=20
+> From: Wardenjohn <zhangwarden@gmail.com>
+>=20
+>=20
+> static void klp_init_func_early(struct klp_object *obj,
+> struct klp_func *func)
+> {
+> + func->using =3D false;
+> kobject_init(&func->kobj, &klp_ktype_func);
+> list_add_tail(&func->node, &obj->func_list);
+> }
 
-If we have another version, I will fold this change (and the one in
-kallsyms_selftest.c) in.
+I reviewed my mail again and found some typos and point them out first.
 
-Song
+func->using =3D false
+is a remaining mistake by the previous patch which will remove in the =
+next patch.
+
+>=20
+> + *=20
+> + * When this patch is in transition, all functions of this patch will
+> + * set to be unknown
+> */
+This comment is left and become useless, it will be removed	in the =
+next patch.
+
+Thanks!
+Wardenjohn.=
 
