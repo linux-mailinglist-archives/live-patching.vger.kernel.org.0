@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-462-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-463-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9B97C94B2B2
-	for <lists+live-patching@lfdr.de>; Thu,  8 Aug 2024 00:06:44 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E6A5C94B2B4
+	for <lists+live-patching@lfdr.de>; Thu,  8 Aug 2024 00:06:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 484DA1F220C7
-	for <lists+live-patching@lfdr.de>; Wed,  7 Aug 2024 22:06:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 14BFA1C213E9
+	for <lists+live-patching@lfdr.de>; Wed,  7 Aug 2024 22:06:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 520FF14EC5D;
-	Wed,  7 Aug 2024 22:06:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE597155336;
+	Wed,  7 Aug 2024 22:06:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f6DEQAIo"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="anquUQfp"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D5AB146599;
-	Wed,  7 Aug 2024 22:06:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A20DF146599;
+	Wed,  7 Aug 2024 22:06:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723068399; cv=none; b=eoADpEakWSjnHy3E7f0TDhABKj/5OYuMrBOhOr92EVl71n5UCCMwUvyE0DhOqaXscPE9U7ljqgF0T9dbqa2WfSGl5klbL/SAYCzJewJh+qyVaQFyhpQeHLKXeG/6vrkIRO2BmefbEOE12EXQLjx8MTyC60yxc+K+YjDviOwl7A0=
+	t=1723068405; cv=none; b=CUiqDHP8nwW8oXQCPDH3dnO5dlZzNIzV8UoZlNsvs7wOOP/aKGmjJ9Q3WTOD3A2vKGW4iawllpIKkSk/vptbMgkZw6/vT8784FINcaA/FzxvakTGrlKmbrqJNmT+iRdpSZcpBUWD+45+KIpPgovrKdu3EAHp7zVMsIffuhZJRWo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723068399; c=relaxed/simple;
-	bh=C15tDhSI3QPR1JBSkACmGrTRgJ4aWChur1EUXRjeLko=;
+	s=arc-20240116; t=1723068405; c=relaxed/simple;
+	bh=mo5cCI52YxBS4frh3l+KA2nX1q9ZcrMkE2ErnP/Qf8A=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gUj8QmapOyDtBijYyPkiAmaCTSQuPAVS4dBZV05VD++EQRLtOoBpiyE4MqHvDdXu3N7/9DtTzSTgAaFCuCUOPuVmna/CKqiJYK3e9YOUIHMeANkPKZSf5EX+3QY6+5jdqhUt6Bk7PappbW+GBo/vvjDynheHmfC0mXrKqS0oEZg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f6DEQAIo; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19766C32781;
-	Wed,  7 Aug 2024 22:06:35 +0000 (UTC)
+	 MIME-Version; b=PVQc+8cpWE1vexu5+9oNY6LKS1xOV50/MfoFgWJWYXZBZrHYzrIMZ0fjtm6VKfw8B0P9GXmVCgGPkXGWmfenJddB7ZGuLNlD+pZRtaiybT5iS3cdH3Q4WbXJetNO6VL1fegTnswaklpC19wM5DX/V3EhmFEW/aQ3iI41HHTsIWk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=anquUQfp; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6E2DC32782;
+	Wed,  7 Aug 2024 22:06:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723068398;
-	bh=C15tDhSI3QPR1JBSkACmGrTRgJ4aWChur1EUXRjeLko=;
+	s=k20201202; t=1723068405;
+	bh=mo5cCI52YxBS4frh3l+KA2nX1q9ZcrMkE2ErnP/Qf8A=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=f6DEQAIopy7kBA+7Gvmq1h4s5zsyP1FlsCEdOZYAdas2ba+PRSpUcRuDHl8gOKTfS
-	 naKxtCgAcq4dR54MA6XEvIsdqSR7nNQGhAI62bQnd6rNE/t1T+ScqdFWPejVxy+4vE
-	 QWbTkbeXIcQdIWYB1Bz83JgcfpyHruq2vTu2XGBJ1nxsWyM1at2nJYnHQW1HnkVPSb
-	 8hXS9I8Mu0ZQ9mj0SJYzB7wtya8N/CI1dW/pJTqbEwgt/Wq+mez/ZzSo9mo48bGAcm
-	 PQxm/pNsNeJROGQzdyIJwDQNPt0sR0Btu+/ermcQnO4BCgHq7yTic0wO6cUG4Or7Y8
-	 QiC4e0yXn4M8A==
+	b=anquUQfp0kf6tx02UCWUPtvNh6GCGXtww2I9YTVz824oDuszPrePU2Ji49Ubulszx
+	 3tx66uabjRqSP0u4NFANSYV4WE2EoVVy7pLGr63IC+ZdnXygWavMvmcqgSygvwyCDp
+	 so2pPGsXW0vEcBE0N6iEM+YXWPy38u+DcwqHJMikJhN1SsluzTSdITk+uXXtuylF4d
+	 xHRv4mrtm7AfPSFwiMBpmNbWA75O7EqYlZR3TVhpcsL7cTKxlPkPwtce4KoEJciy0D
+	 eExbV41HlFt7fA7JPJt1EOXYhMLTDXXquA9QxC6Dbfn4YX/goeTOwjmArqRU1K+zBQ
+	 s7pNICnJ6h5Tg==
 From: Song Liu <song@kernel.org>
 To: live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
@@ -62,9 +62,9 @@ Cc: jpoimboe@kernel.org,
 	samitolvanen@google.com,
 	mhiramat@kernel.org,
 	rostedt@goodmis.org
-Subject: [PATCH v3 1/2] kallsyms: Do not cleanup .llvm.<hash> suffix before sorting symbols
-Date: Wed,  7 Aug 2024 15:05:12 -0700
-Message-ID: <20240807220513.3100483-2-song@kernel.org>
+Subject: [PATCH v3 2/2] kallsyms: Match symbols exactly with CONFIG_LTO_CLANG
+Date: Wed,  7 Aug 2024 15:05:13 -0700
+Message-ID: <20240807220513.3100483-3-song@kernel.org>
 X-Mailer: git-send-email 2.43.5
 In-Reply-To: <20240807220513.3100483-1-song@kernel.org>
 References: <20240807220513.3100483-1-song@kernel.org>
@@ -76,106 +76,176 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Cleaning up the symbols causes various issues afterwards. Let's sort
-the list based on original name.
+With CONFIG_LTO_CLANG=y, the compiler may add .llvm.<hash> suffix to
+function names to avoid duplication. APIs like kallsyms_lookup_name()
+and kallsyms_on_each_match_symbol() tries to match these symbol names
+without the .llvm.<hash> suffix, e.g., match "c_stop" with symbol
+c_stop.llvm.17132674095431275852. This turned out to be problematic
+for use cases that require exact match, for example, livepatch.
+
+Fix this by making the APIs to match symbols exactly.
+
+Also cleanup kallsyms_selftests accordingly.
 
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- scripts/kallsyms.c      | 31 ++-----------------------------
- scripts/link-vmlinux.sh |  4 ----
- 2 files changed, 2 insertions(+), 33 deletions(-)
+ kernel/kallsyms.c          | 55 +++++---------------------------------
+ kernel/kallsyms_selftest.c | 22 +--------------
+ 2 files changed, 7 insertions(+), 70 deletions(-)
 
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 0ed873491bf5..123dab0572f8 100644
---- a/scripts/kallsyms.c
-+++ b/scripts/kallsyms.c
-@@ -5,8 +5,7 @@
-  * This software may be used and distributed according to the terms
-  * of the GNU General Public License, incorporated herein by reference.
-  *
-- * Usage: kallsyms [--all-symbols] [--absolute-percpu]
-- *                         [--lto-clang] in.map > out.S
-+ * Usage: kallsyms [--all-symbols] [--absolute-percpu]  in.map > out.S
-  *
-  *      Table compression uses all the unused char codes on the symbols and
-  *  maps these to the most used substrings (tokens). For instance, it might
-@@ -62,7 +61,6 @@ static struct sym_entry **table;
- static unsigned int table_size, table_cnt;
- static int all_symbols;
- static int absolute_percpu;
--static int lto_clang;
- 
- static int token_profit[0x10000];
- 
-@@ -73,8 +71,7 @@ static unsigned char best_table_len[256];
- 
- static void usage(void)
- {
--	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] "
--			"[--lto-clang] in.map > out.S\n");
-+	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] in.map > out.S\n");
- 	exit(1);
- }
- 
-@@ -344,25 +341,6 @@ static bool symbol_absolute(const struct sym_entry *s)
- 	return s->percpu_absolute;
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index fb2c77368d18..a9a0ca605d4a 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -160,38 +160,6 @@ unsigned long kallsyms_sym_address(int idx)
+ 	return kallsyms_relative_base - 1 - kallsyms_offsets[idx];
  }
  
 -static void cleanup_symbol_name(char *s)
 -{
--	char *p;
+-	char *res;
+-
+-	if (!IS_ENABLED(CONFIG_LTO_CLANG))
+-		return;
 -
 -	/*
--	 * ASCII[.]   = 2e
--	 * ASCII[0-9] = 30,39
--	 * ASCII[A-Z] = 41,5a
--	 * ASCII[_]   = 5f
--	 * ASCII[a-z] = 61,7a
--	 *
--	 * As above, replacing the first '.' in ".llvm." with '\0' does not
--	 * affect the main sorting, but it helps us with subsorting.
+-	 * LLVM appends various suffixes for local functions and variables that
+-	 * must be promoted to global scope as part of LTO.  This can break
+-	 * hooking of static functions with kprobes. '.' is not a valid
+-	 * character in an identifier in C. Suffixes only in LLVM LTO observed:
+-	 * - foo.llvm.[0-9a-f]+
 -	 */
--	p = strstr(s, ".llvm.");
--	if (p)
--		*p = '\0';
+-	res = strstr(s, ".llvm.");
+-	if (res)
+-		*res = '\0';
+-
+-	return;
 -}
 -
- static int compare_names(const void *a, const void *b)
+-static int compare_symbol_name(const char *name, char *namebuf)
+-{
+-	/* The kallsyms_seqs_of_names is sorted based on names after
+-	 * cleanup_symbol_name() (see scripts/kallsyms.c) if clang lto is enabled.
+-	 * To ensure correct bisection in kallsyms_lookup_names(), do
+-	 * cleanup_symbol_name(namebuf) before comparing name and namebuf.
+-	 */
+-	cleanup_symbol_name(namebuf);
+-	return strcmp(name, namebuf);
+-}
+-
+ static unsigned int get_symbol_seq(int index)
  {
- 	int ret;
-@@ -526,10 +504,6 @@ static void write_src(void)
- 	output_address(relative_base);
- 	printf("\n");
+ 	unsigned int i, seq = 0;
+@@ -219,7 +187,7 @@ static int kallsyms_lookup_names(const char *name,
+ 		seq = get_symbol_seq(mid);
+ 		off = get_symbol_offset(seq);
+ 		kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+-		ret = compare_symbol_name(name, namebuf);
++		ret = strcmp(name, namebuf);
+ 		if (ret > 0)
+ 			low = mid + 1;
+ 		else if (ret < 0)
+@@ -236,7 +204,7 @@ static int kallsyms_lookup_names(const char *name,
+ 		seq = get_symbol_seq(low - 1);
+ 		off = get_symbol_offset(seq);
+ 		kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+-		if (compare_symbol_name(name, namebuf))
++		if (strcmp(name, namebuf))
+ 			break;
+ 		low--;
+ 	}
+@@ -248,7 +216,7 @@ static int kallsyms_lookup_names(const char *name,
+ 			seq = get_symbol_seq(high + 1);
+ 			off = get_symbol_offset(seq);
+ 			kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
+-			if (compare_symbol_name(name, namebuf))
++			if (strcmp(name, namebuf))
+ 				break;
+ 			high++;
+ 		}
+@@ -407,8 +375,7 @@ static int kallsyms_lookup_buildid(unsigned long addr,
+ 		if (modbuildid)
+ 			*modbuildid = NULL;
  
--	if (lto_clang)
--		for (i = 0; i < table_cnt; i++)
--			cleanup_symbol_name((char *)table[i]->sym);
+-		ret = strlen(namebuf);
+-		goto found;
++		return strlen(namebuf);
+ 	}
+ 
+ 	/* See if it's in a module or a BPF JITed image. */
+@@ -422,8 +389,6 @@ static int kallsyms_lookup_buildid(unsigned long addr,
+ 		ret = ftrace_mod_address_lookup(addr, symbolsize,
+ 						offset, modname, namebuf);
+ 
+-found:
+-	cleanup_symbol_name(namebuf);
+ 	return ret;
+ }
+ 
+@@ -450,8 +415,6 @@ const char *kallsyms_lookup(unsigned long addr,
+ 
+ int lookup_symbol_name(unsigned long addr, char *symname)
+ {
+-	int res;
 -
- 	sort_symbols_by_name();
- 	output_label("kallsyms_seqs_of_names");
- 	for (i = 0; i < table_cnt; i++)
-@@ -807,7 +781,6 @@ int main(int argc, char **argv)
- 		static const struct option long_options[] = {
- 			{"all-symbols",     no_argument, &all_symbols,     1},
- 			{"absolute-percpu", no_argument, &absolute_percpu, 1},
--			{"lto-clang",       no_argument, &lto_clang,       1},
- 			{},
- 		};
+ 	symname[0] = '\0';
+ 	symname[KSYM_NAME_LEN - 1] = '\0';
  
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index f7b2503cdba9..22d0bc843986 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -156,10 +156,6 @@ kallsyms()
- 		kallsymopt="${kallsymopt} --absolute-percpu"
- 	fi
- 
--	if is_enabled CONFIG_LTO_CLANG; then
--		kallsymopt="${kallsymopt} --lto-clang"
--	fi
+@@ -462,16 +425,10 @@ int lookup_symbol_name(unsigned long addr, char *symname)
+ 		/* Grab name */
+ 		kallsyms_expand_symbol(get_symbol_offset(pos),
+ 				       symname, KSYM_NAME_LEN);
+-		goto found;
++		return 0;
+ 	}
+ 	/* See if it's in a module. */
+-	res = lookup_module_symbol_name(addr, symname);
+-	if (res)
+-		return res;
 -
- 	info KSYMS "${2}.S"
- 	scripts/kallsyms ${kallsymopt} "${1}" > "${2}.S"
+-found:
+-	cleanup_symbol_name(symname);
+-	return 0;
++	return lookup_module_symbol_name(addr, symname);
+ }
+ 
+ /* Look up a kernel symbol and return it in a text buffer. */
+diff --git a/kernel/kallsyms_selftest.c b/kernel/kallsyms_selftest.c
+index 2f84896a7bcb..873f7c445488 100644
+--- a/kernel/kallsyms_selftest.c
++++ b/kernel/kallsyms_selftest.c
+@@ -187,31 +187,11 @@ static void test_perf_kallsyms_lookup_name(void)
+ 		stat.min, stat.max, div_u64(stat.sum, stat.real_cnt));
+ }
+ 
+-static bool match_cleanup_name(const char *s, const char *name)
+-{
+-	char *p;
+-	int len;
+-
+-	if (!IS_ENABLED(CONFIG_LTO_CLANG))
+-		return false;
+-
+-	p = strstr(s, ".llvm.");
+-	if (!p)
+-		return false;
+-
+-	len = strlen(name);
+-	if (p - s != len)
+-		return false;
+-
+-	return !strncmp(s, name, len);
+-}
+-
+ static int find_symbol(void *data, const char *name, unsigned long addr)
+ {
+ 	struct test_stat *stat = (struct test_stat *)data;
+ 
+-	if (strcmp(name, stat->name) == 0 ||
+-	    (!stat->perf && match_cleanup_name(name, stat->name))) {
++	if (!strcmp(name, stat->name)) {
+ 		stat->real_cnt++;
+ 		stat->addr = addr;
  
 -- 
 2.43.5
