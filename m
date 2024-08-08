@@ -1,107 +1,144 @@
-Return-Path: <live-patching+bounces-465-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-466-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 700A294B704
-	for <lists+live-patching@lfdr.de>; Thu,  8 Aug 2024 09:00:44 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4787094BA03
+	for <lists+live-patching@lfdr.de>; Thu,  8 Aug 2024 11:49:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9023F1C23B68
-	for <lists+live-patching@lfdr.de>; Thu,  8 Aug 2024 07:00:43 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id CD7F11F22374
+	for <lists+live-patching@lfdr.de>; Thu,  8 Aug 2024 09:49:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BFD69187845;
-	Thu,  8 Aug 2024 07:00:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA3C718A6A8;
+	Thu,  8 Aug 2024 09:48:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="ORTtui13"
 X-Original-To: live-patching@vger.kernel.org
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3D0F185E73
-	for <live-patching@vger.kernel.org>; Thu,  8 Aug 2024 07:00:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64FBD189908
+	for <live-patching@vger.kernel.org>; Thu,  8 Aug 2024 09:48:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723100428; cv=none; b=UrsHfgnwqJsfGUHAaMXPDGQQg2QeCSHwy4tJMmQkgRL47xubGIWAg9kcFbhq2DH1bm7aW2Fxh1FB5PsmyT0nZIR/NB+NOQqpn5+i7/DNMenmM0E8HM7YAyiCRavQYbeG3xTTuOempGK8JZvuimOJh+PASubZ87UXZQ6I7c39XbY=
+	t=1723110519; cv=none; b=Hd77Chu6UQnJRM3zrjrrvgOA7utcjfZrvOT8tozUQxWFRjU9s37gakeNEmkzJYzYo7yTz5LsbWWRJyvvGZ2EwtLH+FRFFIS0Qckod9XcScT9c1DFpqYuGXLHg+nL7AFsiwL+lz9OCSU7ax0W5n8zTqSO1ygBGhdly9oIy7s5SSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723100428; c=relaxed/simple;
-	bh=5OlsLIs23Nw7JUsJjh4Fv1EMhb9ogWG3DeDeNx7OwvY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TkQbJj1phu1BmNtF2gnQggAssTIJqDUMARVK0nRH1pzll//77FBgxMZ20mRXMNInpMz3BZGtuvewopnmK/ZBp0MUJASA75lnwFWPlqBhHRREL3ZmKVgkQVg4AapeY0FnSaCf6ZD0BoVbs4+IDEb0aSHh/rG4+1sEe62WF+zZNNU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-	by localhost (Postfix) with ESMTP id 4WfdGZ54Sqz9sPd;
-	Thu,  8 Aug 2024 09:00:22 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FF_P4QsPbfUQ; Thu,  8 Aug 2024 09:00:22 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase2.c-s.fr (Postfix) with ESMTP id 4WfdGZ4BYXz9rvV;
-	Thu,  8 Aug 2024 09:00:22 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 7FC298B76C;
-	Thu,  8 Aug 2024 09:00:22 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id OS09V1Nd9zN9; Thu,  8 Aug 2024 09:00:22 +0200 (CEST)
-Received: from [192.168.234.168] (unknown [192.168.234.168])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 0259A8B763;
-	Thu,  8 Aug 2024 09:00:21 +0200 (CEST)
-Message-ID: <79fffe34-ce0b-4937-a85a-0ce566684887@csgroup.eu>
-Date: Thu, 8 Aug 2024 09:00:21 +0200
+	s=arc-20240116; t=1723110519; c=relaxed/simple;
+	bh=bl3bOi05m/h7JLmHIwyve6X2Hujnul+rZJ1BQOQv/5E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eljfM+78XatxmzOHHDmmh+4muxXYh2DM7WI4nX23GBjYSn6mTvZpNHRTi7m+MkC80esh6VrCE3fSIlBdEG7mpKSrBcs3T5wxxCivm0cetu5GUl2SSiiBKH6KseqY8ATlP++QMBJVmhaEJoG9wcgy38AE8dqUD8r5A1OTKmX91uw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=ORTtui13; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a7a843bef98so77211366b.2
+        for <live-patching@vger.kernel.org>; Thu, 08 Aug 2024 02:48:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1723110516; x=1723715316; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=UP7WYb2s6W/huDcH8KCmTjaOFF/lSa6GQFZ21g6l3D8=;
+        b=ORTtui135wiYry1wFosyPqxrXggzAsDeAKJeYcKg/jN4IGd/MylNaWu4g9gPsXt2O3
+         Zcglx70KwWYmvkVhw+Lv+bDW7VuRSz1v51DstSwIh1vSHj984Kt+OsRVyJX1pC2Klvf+
+         5FAyV9FK7qbyYHzqSA55DPhJ3SfyA4+VNUACtPuU3f76D4ScxTXTOky031hVZCrrYPpM
+         YlI2z/O6SLxHCOlIqyB29/WPdPrNMQ2v37rmrPgL0bLXbqb4cU1CXCdY3YT16dK+TKPl
+         JeKsBsezLLvZIevuTVTKDxwoCkPELu92Rox5uknpNJOrN6BuFsAIHOgnPRV0Xe3bNQ6k
+         uGLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723110516; x=1723715316;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UP7WYb2s6W/huDcH8KCmTjaOFF/lSa6GQFZ21g6l3D8=;
+        b=XFmun4NhXj07qsWskSQ7qdJJrCEZzJ4pBKEBYoBD+D+dj4rhpj29jZV9k5krN4HDyC
+         IGBiLeylLetX5ea5yVJbJzZ4lWChyuX5A2m8OjGhBGA/yU4nH3gw44BAlc4IPi4EfvIk
+         5S8Bo5ZHji3Evqa1N1ZmSpJ9pQdP5Gf71e60cDeq3RsVx2YWoi02xalgHkuWKKjGRnM7
+         9cOalcCbxlqbEYVVdSxElCl23aUwuQhWRdjJ+LmTms8teyF+ezoHh8mWZf1S+UC+D2Rm
+         AToE3AAdXN9mWAZnYUPeZArSDNrTKA7JCwrBpHri+Kc8H5vl4EAPRAzNHye1tkqz1+fP
+         eKlQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWCyRqgQ9s3uOtzNKcNoTh6f0xwtQpDHw1Ww5LGZbAuJo2t/Fum8R2H043fdNrxvN/9JflCj/IA81tqC0LgYf9PbwXDUjHsaNRXX0KfKw==
+X-Gm-Message-State: AOJu0YzJYat7YgbS4KVdb4FFquCzrUj2sHdJ4MnDcNRJOIm0FJ270NHq
+	tHHOLeLmNYUlvU3Mz6KIxCXE8yce+59M8D/O/5zASeZ9DIIcRABFDaaHtzVDlF8=
+X-Google-Smtp-Source: AGHT+IFixvHVqElBCp/LQrILvS+YLJTdWswh0h0/ODW6H+h6Way2eP9DERfLit0CUsvaDC6vb4y/lA==
+X-Received: by 2002:a17:906:f59f:b0:a7a:bae8:f299 with SMTP id a640c23a62f3a-a8090e3d151mr108104266b.51.1723110515536;
+        Thu, 08 Aug 2024 02:48:35 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9d426e6sm718153366b.122.2024.08.08.02.48.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Aug 2024 02:48:35 -0700 (PDT)
+Date: Thu, 8 Aug 2024 11:48:33 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Song Liu <songliubraving@meta.com>
+Cc: zhang warden <zhangwarden@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Song Liu <song@kernel.org>,
+	"live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	"morbo@google.com" <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Leizhen <thunder.leizhen@huawei.com>,
+	"kees@kernel.org" <kees@kernel.org>,
+	Kernel Team <kernel-team@meta.com>,
+	Matthew Maurer <mmaurer@google.com>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 3/3] tracing/kprobes: Use APIs that matches symbols
+ without .XXX suffix
+Message-ID: <ZrSUcbOtNc18D8ax@pathway.suse.cz>
+References: <20240802210836.2210140-1-song@kernel.org>
+ <20240802210836.2210140-4-song@kernel.org>
+ <20240806144426.00ed349f@gandalf.local.home>
+ <B53E6C7F-7FC4-4B4B-9F06-8D7F37B8E0EB@fb.com>
+ <20240806160049.617500de@gandalf.local.home>
+ <20240806160149.48606a0b@gandalf.local.home>
+ <6F6AC75C-89F9-45C3-98FF-07AD73C38078@fb.com>
+ <87F7024C-9049-4573-829B-79261FC87984@gmail.com>
+ <22D3CE6E-945B-43C4-A3A2-C57588B12BD0@fb.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] powerpc/ftrace: restore r2 to caller's stack on livepatch
- sibling call
-To: Ryan Sullivan <rysulliv@redhat.com>, live-patching@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
-Cc: joe.lawrence@redhat.com, pmladek@suse.com, mbenes@suse.cz,
- jikos@kernel.org, jpoimboe@kernel.org, naveen.n.rao@linux.ibm.com,
- mpe@ellerman.id.au, npiggin@gmail.com
-References: <20240724183321.9195-1-rysulliv@redhat.com>
-Content-Language: fr-FR
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-In-Reply-To: <20240724183321.9195-1-rysulliv@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <22D3CE6E-945B-43C4-A3A2-C57588B12BD0@fb.com>
 
-
-
-Le 24/07/2024 à 20:33, Ryan Sullivan a écrit :
-> [Vous ne recevez pas souvent de courriers de rysulliv@redhat.com. Découvrez pourquoi ceci est important à https://aka.ms/LearnAboutSenderIdentification ]
+On Wed 2024-08-07 19:46:31, Song Liu wrote:
 > 
-> Currently, on PowerPC machines, sibling calls in livepatched functions
-> cause the stack to be corrupted and are thus not supported by tools
-> such as kpatch. Below is an example stack frame showing one such
-> currupted stacks:
 > 
-> RHEL-7.6: Linux 3.10.0 ppc64le
+> > On Aug 7, 2024, at 7:58 AM, zhang warden <zhangwarden@gmail.com> wrote:
+> > 
+> > 
+> >> In my GCC built, we have suffixes like ".constprop.0", ".part.0", ".isra.0", 
+> >> and ".isra.0.cold".
+> > 
+> > A fresher's eye, I met sometime when try to build a livepatch module and found some mistake caused by ".constprop.0" ".part.0" which is generated by GCC.
+> > 
+> > These section with such suffixes is special and sometime the symbol st_value is quite different. What is these kind of section (or symbol) use for?
 > 
-
-...
-
 > 
-> This is caused by the toc stub generated on a sibling call:
+> IIUC, constprop means const propagation. For example, function 
+> "foo(int a, int b)" that is called as "foo(a, 10)" will be come 
+> "foo(int a)" with a hard-coded b = 10 inside. 
 > 
+> .part.0 is part of the function, as the other part is inlined in 
+> the caller. 
 
-...
+Hmm, we should not remove the suffixes like .constprop*, .part*,
+.isra*. They implement a special optimized variant of the function.
+It is not longer the original full-featured one.
 
-> 
-> This patch restores r2 value to caller's stack, on a sibling call this
-> will uncorrupt the caller's stack and otherwise will be redundant.
+This is a difference against adding a suffix for a static function.
+Such a symbol implements the original full-featured function.
 
-Be carefull. On powerpc/32, r2 contains the pointer to current struct. 
-When I first read the subject of the patch I was puzzled.
-
-You should say toc instead of r2, or make it explicit in the title that 
-it is for powerpc/64
-
-Christophe
+Best Regards,
+Petr
 
