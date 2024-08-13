@@ -1,258 +1,226 @@
-Return-Path: <live-patching+bounces-485-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-486-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3907D9509CD
-	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2024 18:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C88B6950F11
+	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2024 23:20:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id AE44C1F27887
-	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2024 16:07:15 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 514391F247E8
+	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2024 21:20:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39B301A2552;
-	Tue, 13 Aug 2024 16:05:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8631C1AD3F5;
+	Tue, 13 Aug 2024 21:15:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="PApheRYX"
+	dkim=pass (2048-bit key) header.d=meta.com header.i=@meta.com header.b="jsThv5IQ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5F211A2542
-	for <live-patching@vger.kernel.org>; Tue, 13 Aug 2024 16:05:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723565125; cv=none; b=KLd4EQsOPANR3IZyzd0DzRWCRHRyL022rTJ7YOBL/FG+eaCgF+u7jHqmmcx5l1WTUNXsM/XordoceK2NCnVwrtNdG+Q4ANdQXGjk1qnUZsT/YGqf4GM2+TYW7q9/f6r4RpYt5B3YTUiUGI12Vi7Qslf/p9xqsNP8cQjOlayCvW0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723565125; c=relaxed/simple;
-	bh=pE/JJsJwAZs7NmM5OlRmLlnWFQnfpSXYpFpeXH1hGrE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=boTeyoEvQGMvBV5aF1xXyqG6UJdPCH4CPPfXefGEGZZ98XXUvYFhNLwmJC90v4wAHhC5xnIsKXrBiF3DdnIElJlbr6LMVQO7HnglJ3jA3cDK1TzLb1iRs5Wn80QfjKPBEJxMNhUtZiTt7G1aF7ZjYgZkbdQAVZ3pMLGrdxRXUxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=PApheRYX; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5b8c2a6135eso23745a12.0
-        for <live-patching@vger.kernel.org>; Tue, 13 Aug 2024 09:05:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1723565120; x=1724169920; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=r6TUXGQw9LVl4ztxK/BZhTX+2pcevqPkKUrlJiDLRWU=;
-        b=PApheRYXYAHHQ6m3SBE/210nSXYiyffMdL6ybjtHi7KTMO1kcKOViEmvv26hSq7XGD
-         0HbA7V4KdapGOOXtjjWkV+BbAEUe1kDGB3SATLOTDxzzqdpw0gJYmLszd3JhK6Z0LAob
-         Tni2JkTqKhaRnp+ava8vMYeV0SzV3kkpVe43G1vK3z99lVc3xy4llPEngccdKSMwvBiN
-         ypZd+gk5xC7wTGhxVHms8DO6ZscwiP8E3P6p1Wb0gMfgcA6C7yn4L1EfRFtVBmSfUqD1
-         W5cIrf5nNZxYaZ8tcxA/8KK1tI93Ehxsoe2tw0n9i1rHKm1L1/vMB9hDIvEMwcH/Y/Mq
-         zxww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723565120; x=1724169920;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=r6TUXGQw9LVl4ztxK/BZhTX+2pcevqPkKUrlJiDLRWU=;
-        b=tPH7PM7JTAFInyEs4ccccMV+l8ZT2uWBkOtfD0e3Po9YXUwjaWvziv0Rn0JWl38UUF
-         g/Ngs2g2yvihoNuCgCseo+HHS7IW12Lax7SFLKWivC+RQ8NaU0NMTbsEGx/C/JPw5YzD
-         /tN7Y00dkf19U79Af7U5LCaksYqSoWq48m+69wEdnvz657DiQ01jXiSNqyhpyClO4eve
-         +t4cq2BtWrgPxuyI7ryw2WW/0YMWi7baTbTKTJI96owwx8PhurRlMLvcgjJXXPURUvFX
-         Xtq2hZgcm1s7X6HY2557bdBMrbjgYljtVeSEPl1NYiq9qP5tq+22yLIdtOpOdnGG3DLE
-         8fqw==
-X-Forwarded-Encrypted: i=1; AJvYcCV6Fwl1y/en46JZcWmln38LGI21iffKOKhle2KROfM/9Z6HKwNMBKXER40H3liaiJPnPIXJfkt/a142SgWYcrFZ61P1cN9GjzlW26poiA==
-X-Gm-Message-State: AOJu0Yy1ese/mWvBxPlPqnKY69tQeMI3SHoeBWe4b5V4TaJMIxxn3szU
-	55ufmr+vWf1EGmh3a2SfiPX26mJyFyNAFgyRIGnpWuRA6xNHcG99nJHb8pSTtNw=
-X-Google-Smtp-Source: AGHT+IE8bZvoNWekXnFDmPVltvx21KeribfH7wtwpDxLU1aDbLB72Ho09fmJhaygrlpzYUl+4P+d6A==
-X-Received: by 2002:a05:6402:354c:b0:57d:4409:4f48 with SMTP id 4fb4d7f45d1cf-5bd462178a9mr3176525a12.15.1723565120152;
-        Tue, 13 Aug 2024 09:05:20 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5bd187f4fe2sm3025709a12.9.2024.08.13.09.05.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Aug 2024 09:05:19 -0700 (PDT)
-Date: Tue, 13 Aug 2024 18:05:18 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: "zhangyongde.zyd" <zhangwarden@gmail.com>
-Cc: jpoimboe@kernel.org, mbenes@suse.cz, jikos@kernel.org,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] livepatch: Add using attribute to klp_func for
- using function show
-Message-ID: <ZruEPvstxgBQwN1K@pathway.suse.cz>
-References: <20240805064656.40017-1-zhangyongde.zyd@alibaba-inc.com>
- <20240805064656.40017-2-zhangyongde.zyd@alibaba-inc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7751AC44E;
+	Tue, 13 Aug 2024 21:15:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=67.231.145.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723583750; cv=fail; b=N71hEqvY1s95XyBbbza6UIuYBD9Js1YOOX75wU7/n9jIWxsbQBq+Pprkoab0iH7H+6qMzzXyFEgBMiUZ9i42NgdSsmLYI/W+cNQqbKpRSkw8IRkOe6KXZXIbk0aqnvb0c+Ipqz1tqyghTIgB4w+v+6BcUyAx6muwo0ZUGq8LNbo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723583750; c=relaxed/simple;
+	bh=N1D1MmZD9EviwzufyDjFcqwnk7npIIIeLDc7JtuiqRA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=WFVdvM+lxAPfrWZDJybdF/O597oi3OxoUs6ZeTqGnYnjUunxokvsqbXLYfEZpkDezrtUOru1czoEubFwfIG8vfy+46Jjb8WjBPv/87DXVgUm7sZfKwI2BUSgp5ees/lsNZc0Zy46ZLYYN/wvMFy4tC/BrWKl8qolvmW5n3U83WQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=meta.com; spf=pass smtp.mailfrom=meta.com; dkim=pass (2048-bit key) header.d=meta.com header.i=@meta.com header.b=jsThv5IQ; arc=fail smtp.client-ip=67.231.145.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=meta.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=meta.com
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+	by mx0a-00082601.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47DLDxYI007436;
+	Tue, 13 Aug 2024 14:15:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from
+	:to:cc:subject:date:message-id:references:in-reply-to
+	:content-type:content-id:content-transfer-encoding:mime-version;
+	 s=s2048-2021-q4; bh=N1D1MmZD9EviwzufyDjFcqwnk7npIIIeLDc7JtuiqRA
+	=; b=jsThv5IQyRLyt1IYQ8CohxLTeYtQhSnrys769sL0ccOubSy7UkoaAsLb4Oe
+	3upIS8gtfPEdYEKMySwGIrvFVFNcLLYmsnf0eJhIQ3qwjLjZSm1a6YaLMlSLvEqQ
+	yim0eAGZ7/ngTV+DV+Z4ZqKFBItN2+2PN6xaDmmf35AY9g9TnAS4xjRLfAmDcEG4
+	PUPLJ8n5aY49z0CrfEbbjzJsqQ0biaLNhdxnrMHnbEng8tPC34n8Jq62SE0ZtRGz
+	72L0y5kLgsIkrTt1mLNmRTHRvLA8fIMCc/andbH8uPSepfTkgPjw6ErO0e5TT4SP
+	eB5HancPalOaM4QAEA1pVdEWD8A==
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam02lp2040.outbound.protection.outlook.com [104.47.56.40])
+	by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 4103kcckas-2
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 13 Aug 2024 14:15:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=T96xDSBY8o4N9ZbBRpqIxnABye73G/QWX0S2FG4VeEJryCfpRUeY4a7inlkl1lCyViijCGgZGh/1d2Bztdy8Psy+sNXpSzJrwSFmixpP0fHEr5reUrGVHD1yOKgcJHF5JOjRPsWRiMT/lVRvkYcuQKbxT3WApz0yWKbxPXUm4djwt6Bf9ZPKwzjXCFCsyyvnoWxzr321ficN+0DTSgDUBLW0p99GHQMtHAk6H3WahAomhSuvotYbgxC1oMm9gShupgpt3NmSli1XcNwzh/c4h2T0RfTfYCmYNiL3sFdOnt9hx0y5iAr9uZQwITcvtEHJtQgi4GVXlQrsoWt1Q8dsZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=N1D1MmZD9EviwzufyDjFcqwnk7npIIIeLDc7JtuiqRA=;
+ b=BFhTvTm08ZwAAAQKqxqLnNYggL77WGZ4dKpbRsEYhK6Mjclc1A5EyqHBtK31oDX1nMGOW6tBTdBTAPsRYx7lct7UKTbSkGRTPksM0MPD4L0HbW25nQBi/e57Vj6rCVY62MBQVLyJIZn5mcRHQNKDrgPp7i52RT5BZsEyqkJ10R4xgPLKEIqmjtdWGhV3Zp9FmhZHH3CUJ1D02ObxZHBKhboQjEKtGhcj6Z0SsCq6SNJjMi+srNJ/ETCJrNxoGNrxbtBBOYy1wH8MF49WVao6lH37Ft/wymaqoyTN+sin1CblG7AB6KsvqEnqm836FAOKR6Hg5l5lKaji009N3JXwig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by MW4PR15MB5160.namprd15.prod.outlook.com (2603:10b6:303:187::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7849.22; Tue, 13 Aug
+ 2024 21:15:44 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::662b:d7bd:ab1b:2610]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::662b:d7bd:ab1b:2610%4]) with mapi id 15.20.7849.021; Tue, 13 Aug 2024
+ 21:15:43 +0000
+From: Song Liu <songliubraving@meta.com>
+To: Song Liu <song@kernel.org>
+CC: "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        LKML
+	<linux-kernel@vger.kernel.org>,
+        "linux-trace-kernel@vger.kernel.org"
+	<linux-trace-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, Petr Mladek
+	<pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Nathan Chancellor
+	<nathan@kernel.org>,
+        "morbo@google.com" <morbo@google.com>,
+        Justin Stitt
+	<justinstitt@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Leizhen
+	<thunder.leizhen@huawei.com>,
+        "kees@kernel.org" <kees@kernel.org>,
+        Kernel
+ Team <kernel-team@meta.com>,
+        Matthew Maurer <mmaurer@google.com>,
+        Sami
+ Tolvanen <samitolvanen@google.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH v3 1/2] kallsyms: Do not cleanup .llvm.<hash> suffix
+ before sorting symbols
+Thread-Topic: [PATCH v3 1/2] kallsyms: Do not cleanup .llvm.<hash> suffix
+ before sorting symbols
+Thread-Index: AQHa6RYWMtYCd61ONkGa/JznFx3CWLIlubGA
+Date: Tue, 13 Aug 2024 21:15:43 +0000
+Message-ID: <BE78D994-83E8-49E4-868E-8ECEDD39D580@fb.com>
+References: <20240807220513.3100483-1-song@kernel.org>
+ <20240807220513.3100483-2-song@kernel.org>
+In-Reply-To: <20240807220513.3100483-2-song@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-mailer: Apple Mail (2.3774.600.62)
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SA1PR15MB5109:EE_|MW4PR15MB5160:EE_
+x-ms-office365-filtering-correlation-id: c870c3ad-182e-4c94-39ca-08dcbbdd1787
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|366016|376014|7416014|38070700018;
+x-microsoft-antispam-message-info:
+ =?utf-8?B?UDZ2TDdHSlJSWkpham1FSldtY3RFSzA2T1NUUTk2cG9KaFhFV3dsRVQ3Yk8v?=
+ =?utf-8?B?cGR6WkxuTngzVWE1cmtSODVKS1M2L3UxZHlOVCsxbFYrU0tMU0dvQ3VpTDBV?=
+ =?utf-8?B?UU1uVjJDQS9ONDh4bE1WbVhKZVR2cW5lVHJoQ0Z2RG9YUWxMSXpqdkw4bU5I?=
+ =?utf-8?B?NHdwUVFVOUVCNi9Kak45ekJXT2w2ZFo5ek91SkhPWk5aaERqRjQ0cmwwL1ZL?=
+ =?utf-8?B?N2lzVWY5RW4rUkR6RFVzRDZ3YzVwOHAvYklqaEVBRkhWdGx0T2pjV0cwNlNM?=
+ =?utf-8?B?WksrQ3FUb1c4eVpXSlVralVNdktkS1JEVzNyQ21zandDVC9Qa0REUHcyYjg5?=
+ =?utf-8?B?c2dJd2ZCeldqa282cTNtL0FuN1ZFNzFNSGJ1WGpFSzRyTnh6R240amIzcUhH?=
+ =?utf-8?B?NXplYWtZcXFNaGF5emZXK2g1SlozQVNkY2tpWGhrdWc4WTRKMXdPVEQ1MGlh?=
+ =?utf-8?B?L0xlMWw2V09XaS8zczA2MkNtL1lCZkpXb2t1bitwdnd2Z3RKOW5PWmRwbkta?=
+ =?utf-8?B?bWc4UTY0NGNvVkR6RkNFVHJNTW9kYmZ2Y3NKanlxU2ExZ2xTak9vVGx1cXhN?=
+ =?utf-8?B?MXJNM05iUlc5SjBwKzQzZ015cjI3OG9zUXJRcGtYSC8rVFpBbjU0RDRLNzFk?=
+ =?utf-8?B?WnRBQzBvclBiME9TTWo4aStlOE5WSlVQN3NlblRKL3NLVkJyaEhEU0gveXJW?=
+ =?utf-8?B?cGJoRGVKYUhpcmxiUUJiS2R3eWFoZWdsUThDMGRSeHR0Z0hZODN6MCt6M2E1?=
+ =?utf-8?B?Q0pkMEsvYUVOdnEwWmtTWFVsNVdiRXRObUMvaFE1RE13U1dRRVNHOUozc3Ey?=
+ =?utf-8?B?RkcxMHRLWnhMRWtFRUtKcjdSSWcvclhDRmZMMWIxR1F6VDlTTml5YW0vWUR5?=
+ =?utf-8?B?RUZyM29FTHFINzNKMWh1Z1U5aGFOQUNkSE1iZ0hoY1NWcTFEcTVRdGxDVjVn?=
+ =?utf-8?B?WHZ4RUE5SytuQTRmRHNwa3hodTdNbTlVOE9IMit1MDdrblIxdnNSb1lzamR3?=
+ =?utf-8?B?Tk5hVVo4NHMwT1NtOURoSkJpdmIxelhJdkRJYU9GQ29MVDBRaUowZEF3bmhh?=
+ =?utf-8?B?c1RKQzZrWVdDcHphaEllVy9LU1hFMVNaajJmNEZmR3NMeFI1UHlXTHlmdEpR?=
+ =?utf-8?B?TTF5NGh6N2xNTERZYUJzY2krMHlsU3RGa3VoUHJNT1J6VWNrQUxQb2FzcmJE?=
+ =?utf-8?B?TzlubWtDY01pUUxmUzNtZFdLWEY0b2JnS2pNV1ZDSXJDQk1lTzJucVF3WWpP?=
+ =?utf-8?B?WkR6eTl3bWlkMXZrNXkwcE9oazhiRXU5aGJvZ213ekJTRE5zQWNxcm9qYkQx?=
+ =?utf-8?B?NzZPZkhtbXhWdmFpNmRPSzlITFphNmQraExZbGpwdVFTYUZMVjM0QnNkM3NI?=
+ =?utf-8?B?V0lXbXBZM0M3TXlGcUFtUmZ0Y3RHVkdXc20rUXVIZ0ZYeEhUcGhNK0dQMk5V?=
+ =?utf-8?B?QmNCcmFjQTVJUnVNMmpyS2doSm9Pck9UZDVsRktVakFXMUJHM0JxKytXTG9y?=
+ =?utf-8?B?MG4vYXN0ZEJpbUlyNkJxUFcrVTduL3I1K2d1dGNubGZHemlzNzdaR1NQWkhH?=
+ =?utf-8?B?WkcrdENoRUtBcnd3R0ZJT0pqT3BhakZUMHltbmE5Mk9JRCtMMGN5dm9hTklR?=
+ =?utf-8?B?ZGZYc1FwZ2wwZEN1NmNqNlI0Y3N3b0lnY01jYUFDd1NtaUJPMENOWmZpb0VN?=
+ =?utf-8?B?NHZjMTVsYnpMMXhmOEhQZVkrNC9QdmZNOGRidUlwU21YWWpCS2o0d2ZRb3FI?=
+ =?utf-8?B?LzBXUDRyZCtQYm8yY0NTbHdmc1QvS1kyUzUrNmlBWnJTK1VIR2RjdHQ3Sk85?=
+ =?utf-8?B?d3FQNHgxMVdFZzBKcHg3emVmRjlaWFNrUllZQmZpeVhJUlFoVEVaRXN3R2tO?=
+ =?utf-8?B?NWRjd1FUQWc2L1p4SjFDQVhld2xkTGZTc2FzS0poYWtVWFE9PQ==?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?aE82eHYyRG1pUGxHRU0wSTV0dTZ5SXVvQUJwMU9aMzhQNnN3RTVRM2QwVTZ5?=
+ =?utf-8?B?R1ExUGFpcGxLS29Ub29MVFFOdlRJQjRPUldvdkE3TDJISmFtZ2Q4ZnA2eHo3?=
+ =?utf-8?B?dEk4K3BDOERndTlwcEJvU1VFNTZKYklBV0g4VEp3SGxOS1hrUE1JVEhnRWFE?=
+ =?utf-8?B?OE04WUN3eGRRM2hMUVBKQzRld1NwMmlaZ2Mya2pqdUhRMlhMUWZzbUkyY08w?=
+ =?utf-8?B?U203UWRhR0ZkWUllcnVDY3BOaXUxM3d5dmE5MmswVEpLUUxCMXZvdDMrSEVU?=
+ =?utf-8?B?blY4UnJDOE1mYnJEdk1OSGNIdFEydmVrbWNQTmVRZ25Za0x3VS9KVVdrQ0Z6?=
+ =?utf-8?B?d3ZXWU84UnhLVzE3cmdSbVZTc1JkRWswUGdSdzRtVzZXY2w5RDNCbjNORUF0?=
+ =?utf-8?B?OXV4Si95cFhQbTAvalY2SWxURUs3SDQvVEIvMURVQWhzeFMxaWFveWpteEJm?=
+ =?utf-8?B?aGg0WmIwd2dEVUpxZDFOVW1LaVdST29LOEJjVEFjajlkY1hNeUx3LzVJYmwr?=
+ =?utf-8?B?dDZMSSt2SVFUZnh4VkozbDllYWhiL2pSbmFWVG1RTHJmcDRSR3d0aWYrTkZO?=
+ =?utf-8?B?a0N3SWhrRmJxRURremVjc1hQVElLcTBLNDc2OFhVdVlvZEMvNVdxR0RESnRF?=
+ =?utf-8?B?S1laQms3ckpJdVZwMFFpMGoxa2JYS3Q3MENVbFBhc1NhdGJ5NW5SUForWkNh?=
+ =?utf-8?B?RDNPWUloZUNYNFpjKzlNTlVFVFRZSE1HTnpIWHJ3aUNGcndLRThtWXR6M05y?=
+ =?utf-8?B?MElNYlZ5bmlqa0dWMkhwNytYT0krTFphR3NDK1RkS0xPRHVESDFOWnV3Z0tw?=
+ =?utf-8?B?Rk52b2ZoMlFibHdsNmI0UWthbGZUV1dpUS8rVXVSZDVXMDR5eVhiSS9kQlJt?=
+ =?utf-8?B?U25hNmhOeUNBQk42TVFvVGtaWVlUanFHTjRDVnZSUENKL2paSFlJVG9MNWZs?=
+ =?utf-8?B?eVQ3eFVBaFB3OFp0V3BUTUp6bFhTOWJjUjl4L3ZIa2Y3eWVpV0FYTUkwVXJM?=
+ =?utf-8?B?bzhYNGJXM1ppUUdieStKMVdkTTFHOVh1d2ZybVpEMTFOWkc1K3ZRVDdCajNK?=
+ =?utf-8?B?bWZtWnRhZ3ZxajZ6aHlWSGhoeDBNbHBDQUFNK25qZ0ExWUNacTZ1NU9CVkNO?=
+ =?utf-8?B?YUtUeHV2bWhPT2xHSHVqODJmQU5mRElWYmRpM3d6aW1EQ0xTMDZCVUlqL3hy?=
+ =?utf-8?B?TUJGbjZWWGh4WDlzdVVXc2NVWEIwY1N2MmhNaVI5ZEpWV2hQNUtaNkp6R285?=
+ =?utf-8?B?MTMvSk10dS9HTStHc0ZJMUtPcFJDWnpzSlpkWitNSVRkRHJPTlh0Z3lHOGNj?=
+ =?utf-8?B?bzduQTEzckR3NklRa0lETzhDeE40OFFrYmFqT0ZYVHhBSEc5dUxwLzFSZHQr?=
+ =?utf-8?B?V29GSEVOZ1hCcis1T1VpeUxXdkRydFliTUtvMHZ5dnFvbFR2TWZ2RTBTcEJn?=
+ =?utf-8?B?UWQ4dWRaRmMwVUdESEVZTEFwV1lGN2tkZllZOFV5eGVyUGJQUWpkN2lia1ZI?=
+ =?utf-8?B?aStXYnR5ZS94STd0MlY2WWFrVGNpRlVHd1lLK3lTVWtpcWdmVWgxeDhhTnl3?=
+ =?utf-8?B?UFd5TDV2azgxVmlQZk1PUHhoSVU1WFJYRm40ZWFRUW81djltTnhva3diak84?=
+ =?utf-8?B?Q0JRUCtnbTRxaVJKQ0ozS0lwamM1VnVzNkliTmpNbkRqQktRSjgrWGJIMHg1?=
+ =?utf-8?B?SGRWRTF4WUpEbEtEVDhMakRtbnlsekpCbjB6cUR5cWNtNEROakNORWJ0TU9t?=
+ =?utf-8?B?OS8wdXVHYzJyd1gwTlFxMEM3bWFQdGxKN3JZbWFRejg5L2JSaGxQamVTajlF?=
+ =?utf-8?B?emorUXovbHRuQTdMRE43Yi8wblR4OVY3S2wrMjVHQXNGdWd6ZHM4ckZwUGtR?=
+ =?utf-8?B?bHQxU3RTelNxczh5eGhManp0bnF6ZG41dm11N0UxQkUyTUsrQkNITENXVk1F?=
+ =?utf-8?B?Nmc5eFdGSkhmekRKeVJ5RFNqSWt4V0IwWERLUnVCY1VpYkVoSkR1d3YyOEl5?=
+ =?utf-8?B?T3hsd0dsUG9ubGFwVTNDSFk1R3hzMWd5Zm1pckhSSjRSNEk3Q2tmeWZOdGtN?=
+ =?utf-8?B?ai9ERGdiOHRpMEFEWGZsOE5xZFVTZ0JzREc3RVRJTTl1YWhFUXJkYUtUbnFK?=
+ =?utf-8?B?SDE4ZjZaSGw2TkF5cktGYzJ3TjNVUzlnVmhoakt0WVJkTE5mUXJjOU94YWF4?=
+ =?utf-8?Q?6+H19WNtcsRZ+2Dyx1oi0ik=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4D5ADBB13849B54DAF819C93AC0801A7@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240805064656.40017-2-zhangyongde.zyd@alibaba-inc.com>
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c870c3ad-182e-4c94-39ca-08dcbbdd1787
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2024 21:15:43.6488
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: K5mrMntoFCsdM3CNFaVv8b2p3f/ybBbtOc8pDmf/tWBNIXX5T2blNr7mMS7z/+Jr035T2riVieFxTJlkO3J9Vw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR15MB5160
+X-Proofpoint-GUID: 4ue7caAgOPEbiVVp14kwjF8Wzr9HXU4Z
+X-Proofpoint-ORIG-GUID: 4ue7caAgOPEbiVVp14kwjF8Wzr9HXU4Z
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-08-13_12,2024-08-13_02,2024-05-17_01
 
-On Mon 2024-08-05 14:46:56, zhangyongde.zyd wrote:
-> From: Wardenjohn <zhangwarden@gmail.com>
-> 
-> One system may contains more than one livepatch module. We can see
-> which patch is enabled. If some patches applied to one system
-> modifing the same function, livepatch will use the function enabled
-> on top of the function stack. However, we can not excatly know
-> which function of which patch is now enabling.
-> 
-> This patch introduce one sysfs attribute of "using" to klp_func.
-> For example, if there are serval patches  make changes to function
-> "meminfo_proc_show", the attribute "enabled" of all the patch is 1.
-> With this attribute, we can easily know the version enabling belongs
-> to which patch.
-> 
-> The "using" is set as three state. 0 is disabled, it means that this
-> version of function is not used. 1 is running, it means that this
-> version of function is now running. -1 is unknown, it means that
-> this version of function is under transition, some task is still
-> chaning their running version of this function.
-> 
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -773,6 +791,7 @@ static int klp_init_func(struct klp_object *obj, struct klp_func *func)
->  	INIT_LIST_HEAD(&func->stack_node);
->  	func->patched = false;
->  	func->transition = false;
-> +	func->using = 0;
->  
->  	/* The format for the sysfs directory is <function,sympos> where sympos
->  	 * is the nth occurrence of this symbol in kallsyms for the patched
-> @@ -903,6 +922,7 @@ static int klp_init_object(struct klp_patch *patch, struct klp_object *obj)
->  static void klp_init_func_early(struct klp_object *obj,
->  				struct klp_func *func)
->  {
-> +	func->using = false;
-
-It should be enough to initialize the value only one.
-klp_init_func() is the right place.
-klp_init_func_early() does only the bare minimum to allow freeing.
-
->  	kobject_init(&func->kobj, &klp_ktype_func);
->  	list_add_tail(&func->node, &obj->func_list);
->  }
-> diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
-> index 90408500e5a3..bf4a8edbd888 100644
-> --- a/kernel/livepatch/patch.c
-> +++ b/kernel/livepatch/patch.c
-> @@ -104,7 +104,7 @@ static void notrace klp_ftrace_handler(unsigned long ip,
->  			 * original function.
->  			 */
->  			func = list_entry_rcu(func->stack_node.next,
-> -					      struct klp_func, stack_node);
-> +						struct klp_func, stack_node);
-
-Looks like an unwanted change.
-
->  
->  			if (&func->stack_node == &ops->func_stack)
->  				goto unlock;
-> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-> index ba069459c101..12241dabce6f 100644
-> --- a/kernel/livepatch/transition.c
-> +++ b/kernel/livepatch/transition.c
-> @@ -119,9 +120,35 @@ static void klp_complete_transition(void)
->  		klp_synchronize_transition();
->  	}
->  
-> -	klp_for_each_object(klp_transition_patch, obj)
-> -		klp_for_each_func(obj, func)
-> -			func->transition = false;
-> +	/*
-> +	* The transition patch is finished. The stack top function is now truly
-> +	* running. The previous function should be set as 0 as none task is 
-> +	* using this function anymore.
-> +	* 
-> +	* If this is a patching patch, all function is using.
-> +	* if this patch is unpatching, all function of the func stack top is using
-> +	*/
-> +	if (klp_target_state == KLP_TRANSITION_PATCHED)
-> +		klp_for_each_object(klp_transition_patch, obj)
-> +			klp_for_each_func(obj, func){
-
-Missing space between "){'"
-
-You should check your patch with ./scripts/checkpatch.pl before sending.
-
-> +				func->using = 1;
-> +				func->transition = false;
-> +				next_func = list_entry_rcu(func->stack_node.next,
-> +								struct klp_func, stack_node);
-
-What if there is only one function on the stack?
-You could take inspiration in klp_ftrace_handler.
-
-> +				next_func->using = 0;
-> +			}
-
-Wrong indentation, see Documentation/process/coding-style.rst
-./scripts/checkpatch.pl would likely caught this.
-
-> +	else
-
-Please, always put multi-line code in { }. It helps to avoid mistakes
-and read the code.
-
-> +		// for the unpatch func, if ops exist, the top of this func is using
-> +		klp_for_each_object(klp_transition_patch, obj)
-> +			klp_for_each_func(obj, func){
-> +				func->transition = false;
-> +				ops = klp_find_ops(func->old_func);
-> +				if (ops){
-> +					stack_top_func = list_first_entry(&ops->func_stack, struct klp_func,
-> +							stack_node);
-> +					stack_top_func->using = 1;
-> +				}
-> +			}
->  
->  	/* Prevent klp_ftrace_handler() from seeing KLP_TRANSITION_IDLE state */
->  	if (klp_target_state == KLP_TRANSITION_PATCHED)
-> @@ -538,6 +565,7 @@ void klp_start_transition(void)
->  		  klp_transition_patch->mod->name,
->  		  klp_target_state == KLP_TRANSITION_PATCHED ? "patching" : "unpatching");
->  
-> +
-
-Extra line?
-
->  	/*
->  	 * Mark all normal tasks as needing a patch state update.  They'll
->  	 * switch either in klp_try_complete_transition() or as they exit the
-> @@ -633,6 +661,9 @@ void klp_init_transition(struct klp_patch *patch, int state)
->  	 *
->  	 * When unpatching, the funcs are already in the func_stack and so are
->  	 * already visible to the ftrace handler.
-> +	 * 
-> +	 * When this patch is in transition, all functions of this patch will
-> +	 * set to be unknown
-
-The sentence is not complete. It does not say what exactly is set to unknown.
-
->  	 */
->  	klp_for_each_object(patch, obj)
->  		klp_for_each_func(obj, func)
-
-
-Alternative solution:
-
-The patch adds a lot of extra complexity to maintain the information.
-
-Alternative solution would be to store the pointer of struct klp_ops
-*ops into struct klp_func. Then using_show() could just check if
-the related struct klp_func in on top of the stack.
-
-It would allow to remove the global list klp_ops and all the related
-code. klp_find_ops() would instead do:
-
-   for_each_patch
-     for_each_object
-       for_each_func
-
-The search would need more code. But it would be simple and
-straightforward. We do this many times all over the code.
-
-IMHO, it would actually remove some complexity and be a win-win solution.
-
-Best Regards,
-Petr
+DQoNCj4gT24gQXVnIDcsIDIwMjQsIGF0IDM6MDXigK9QTSwgU29uZyBMaXUgPHNvbmdAa2VybmVs
+Lm9yZz4gd3JvdGU6DQo+IA0KPiBDbGVhbmluZyB1cCB0aGUgc3ltYm9scyBjYXVzZXMgdmFyaW91
+cyBpc3N1ZXMgYWZ0ZXJ3YXJkcy4gTGV0J3Mgc29ydA0KPiB0aGUgbGlzdCBiYXNlZCBvbiBvcmln
+aW5hbCBuYW1lLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogU29uZyBMaXUgPHNvbmdAa2VybmVsLm9y
+Zz4NCg0KRml4ZXM6IDhjYzMyYTliYmYyOSAoImthbGxzeW1zOiBzdHJpcCBMVE8tb25seSBzdWZm
+aXhlcyBmcm9tIHByb21vdGVkIGdsb2JhbCBmdW5jdGlvbnMiKQ0KDQoNCg==
 
