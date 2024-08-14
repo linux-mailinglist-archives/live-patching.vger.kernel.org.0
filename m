@@ -1,114 +1,115 @@
-Return-Path: <live-patching+bounces-489-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-490-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9A656950F61
-	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2024 23:56:03 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id A5E56951280
+	for <lists+live-patching@lfdr.de>; Wed, 14 Aug 2024 04:33:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 41F131F23D30
-	for <lists+live-patching@lfdr.de>; Tue, 13 Aug 2024 21:56:03 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 310A9B24D95
+	for <lists+live-patching@lfdr.de>; Wed, 14 Aug 2024 02:33:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 246DB1AAE1F;
-	Tue, 13 Aug 2024 21:56:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 676691DA3D;
+	Wed, 14 Aug 2024 02:32:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IelEeAII"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LnxgfAZx"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 867D61AAE13
-	for <live-patching@vger.kernel.org>; Tue, 13 Aug 2024 21:55:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC9A156CE;
+	Wed, 14 Aug 2024 02:32:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723586161; cv=none; b=LttZrYILHmuQc6GZGIe9zyxg2YYc6Yt0MK48EO4IzBVYZHIoaai6g3ZlrhGjVI0haN3o4+GCNTUZcPHQuTS+EhSZpLgENVQcC2Al/IuW5/rXOQjQr3dlrYQRL51eyuYbdRaU/RifTWqxLpirxnD0Dzdtjlo4dFiiKK9rvvWJJG4=
+	t=1723602777; cv=none; b=QZ5rXAEN+xGdkAS8qqkWrLgVn3zUT5OAZuWUboNdsZoNgQbFDemZdfLzyEWb4TEbWCaQEabb6escTtioiA5Etu93s8/cd1BVyABm7OMH5e1UVMWjpcLI0BWTML35xlUGg4dplQLD3x8cB0MLypulfUYcNQymrmVwMispiSRRmgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723586161; c=relaxed/simple;
-	bh=sYf7AubHKLRPISUz3iaN4Z/uAM0QtxXN1uvk9ImBQQA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cpLMjcHiWs4KhVfK/pZCSJ5u/V8oGfZGzVmBxKtxTHFBlTxECM1TbzrUq4bFTo69dxMmP7RKgyhFVpW9oTmW3T8EC5ChSvQkzFrmx4IqP/nJ1XACCQZDI5s37wgOGH38PB92goKhVGEiCZkSoWbrqvH4gaLmnoKekWHGxc32bw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IelEeAII; arc=none smtp.client-ip=209.85.217.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-vs1-f46.google.com with SMTP id ada2fe7eead31-49299323d71so2252349137.1
-        for <live-patching@vger.kernel.org>; Tue, 13 Aug 2024 14:55:59 -0700 (PDT)
+	s=arc-20240116; t=1723602777; c=relaxed/simple;
+	bh=hZ83TaiSEwcU4VtxR/2B1jmN+sS7vC15fsg8VgsPg28=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=ZJgijhDnC76ZV3d18zaq9x8ugInnVOkHAJUq9fw5XjhRm+4wf6JU9ksJdzOOqNAQ7B2GmJ7ej6UJ3AU0ucb7dB1HLi/XnkRAbJ3j+j34bQruLuE5SPbBKqnG1fEHv6woAxDiXKk9h+H0FnED2lrmwCDdTF1uO5Oz2AZalFwOqBQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LnxgfAZx; arc=none smtp.client-ip=209.85.215.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-7aa7703cf08so4384063a12.2;
+        Tue, 13 Aug 2024 19:32:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1723586158; x=1724190958; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1723602775; x=1724207575; darn=vger.kernel.org;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sYf7AubHKLRPISUz3iaN4Z/uAM0QtxXN1uvk9ImBQQA=;
-        b=IelEeAIITogoo1SSJngz6zvknUJ23IORg0IIzoNgFQaInn6XdLBzk3zjG6skLppVPM
-         gZuMdKd/IHfJezdOBdq1BSQtiDM0CLhxEcc2hgTtKMejxIffJwHmHz+xlE1l86gD4sHi
-         BUt3LKrCBzkF/D5vnqjm6MpaE0ZHecrjK6xYAs0ycZG6Lnoo1AsyNMjLaSupNabxxVvT
-         r6q+UU2ooXyoN/YK2K5ekvlNQVWnA1QrxZq/xIT0ubLDLqA8f74xqG9ELIcgtUovxR6j
-         kRmtZf8oyWzEdk8Gc4dvAAcY/wmx13wlTJ0qiH0eT2wASvokQUYp9un55joVbGb0KRYO
-         sVgA==
+        bh=TFcvqY0bUqVzcSU28j2w5cZ7NDHjjb9SV7GO+AwGItg=;
+        b=LnxgfAZxjUcwlQbPE8zF90aL8IP7lDRBJZQTyp9JvzQip4obzxejirXQTuaA7K9LRC
+         AUaJG700JUrC9PYg8ZAvVwVoXqDn886AYqpdhLJrEz7e8RwA6UoN8uNXatmT7IKYEqwU
+         0uyTHha36DlPkalUNujRHTqAqElLLvngXyhWRiA/glnL+9k0gR4xedXjYUp4R86FFBCU
+         xc1Km93h2IgZJQwSklxzBKhxCy8fgnQGnL+eZ1fHtEvhHjNmu1lIGJYo/8woBUsWezGG
+         NWRTD2qFeV5u8p1DEly44mcw4OipAFDzhCzT1DJ9qBDzQk8o9JJhvXmliK2AjyOJAJJu
+         aQ7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723586158; x=1724190958;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1723602775; x=1724207575;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=sYf7AubHKLRPISUz3iaN4Z/uAM0QtxXN1uvk9ImBQQA=;
-        b=aM+XJjyE9BuAn1ia1iKY6UP9mZCPohBgEOjUzfYHgkagxUInY/HLxzW2rVSMyGuU3m
-         W4+pfMqtB+b6fGSlcSC7D6rhEMTncjAnchjm+C9jqkKMc5+VjvA2KpAuLqEQbd4M2KHK
-         0RwS0yXLs+w9y7elVBNHe+Lyio51TCUYjvfRv6fOVv0G77vUI1MHbwv77fgIeJn4/HVs
-         IczXSjHOP9RaTn4rpHnYXaJsybbBZMqCH1qm0wfFt9ttLPgeVvPx3tzZFszeK5fcNJ0K
-         Jj9XWQbTZ6085xddEwIh9Sm48WR64+rMgUjRqc94NeTPVRcIeZJGiCZpeLiWyk4b4XIP
-         DD/Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVlq5BjCheW0CYYdvvjp3J6XGFFkM9x85wpz1gbdMknmHP12MRUjJdSJmx0qCjnK36HEH2XS70UHVWdyUq9ePJzFLIygPuj3OJ8allJcg==
-X-Gm-Message-State: AOJu0YwlhNkbK+Vc78pV4xtdkZJsLUniLKz+OuSKXyJQrQpR9Uq3/CEG
-	I18daPhUixw5LgwSFfmCxVzX3QynwTWdoSzlUn5dnJODQWAH71E6k7lP3zFuoecK383zIBUJBxA
-	P3Ubcmhh/rIZOJOc7t5hVA/D8Iba672XkT8Em
-X-Google-Smtp-Source: AGHT+IEQaFW6VTjl/NN5Addyayq2vESbO77ln4J7ElHigTL7AZmOrMHtx/th7RP9aYyJh8HhQcoWsHroq+JpTV9PMHI=
-X-Received: by 2002:a05:6102:2ac1:b0:492:9adb:f4de with SMTP id
- ada2fe7eead31-497598af685mr1378119137.5.1723586158313; Tue, 13 Aug 2024
- 14:55:58 -0700 (PDT)
+        bh=TFcvqY0bUqVzcSU28j2w5cZ7NDHjjb9SV7GO+AwGItg=;
+        b=KwKEoq5z1Y13/r2hF8Fn4Op0cn/JSt+4KcdYC1KjUuzty+necOrF+fXzhXMRgfrawL
+         4K5gYqoS29PLYzB6y9fq5NDu6GfLk4iKIuL72I4zGBJrrndm4R7BXkqnDAT6WTDT3jsf
+         6ydnG3lcaBOywMs2lgh4MGK/1CYPDDj6fI1apr++bIT3Kc2OUWNe/+Hs6S0lP0oRpH9w
+         xL3HBjlXvsP1Bx5RTRFzzSmmuzaZD0WOrbPduaZptCSEArJ/sZyFWmPiYiAD0nGvAuLW
+         FPHXWUBKsKIvIFqc6rFUdUEGjDRvZIDXn5HFoy9YgLeUuh0dRJKNa9XaQ7nMHVMcnmLF
+         6MXA==
+X-Forwarded-Encrypted: i=1; AJvYcCXJUnbKH0tVKqXEgF1wBKDIiqu2mzuSd0mhnMH9RLJTUenSvHXLqjSbNPynZdF9qZsEEP8d0xZqNIExyVaEyUYym+DSnWk+16E0dSIExdXNZ1xzJLhxsn4N/uWYNudWfOI97z8zmytdk1FJdw==
+X-Gm-Message-State: AOJu0YxoYvva4N1AxKOlTN7qf5U/rnkFeF1QWGNVyjb12GMy7Ko2FJtj
+	l4oNu1CTOrSu8CZ6szYd0GgJOBqPtWq6ijLk2yWHprDta50QFEt7
+X-Google-Smtp-Source: AGHT+IEYoH+VLjoY31qTt9OHRshT6X3F8NAmOaUaxWbGhEeRkx+sDmxGAn9HOnkOaB0EQAdZmfRS7w==
+X-Received: by 2002:a05:6a20:c68e:b0:1c4:244c:ebc2 with SMTP id adf61e73a8af0-1c8eae97998mr2278414637.30.1723602775042;
+        Tue, 13 Aug 2024 19:32:55 -0700 (PDT)
+Received: from smtpclient.apple ([198.11.176.14])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-201cd1cfe86sm19991885ad.278.2024.08.13.19.32.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 13 Aug 2024 19:32:54 -0700 (PDT)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20240807220513.3100483-1-song@kernel.org> <20240813132907.e6f392ec38bcc08e6796a014@kernel.org>
- <0C1544B6-60CF-44DC-A10C-73F1504F81D1@fb.com>
-In-Reply-To: <0C1544B6-60CF-44DC-A10C-73F1504F81D1@fb.com>
-From: Sami Tolvanen <samitolvanen@google.com>
-Date: Tue, 13 Aug 2024 14:55:20 -0700
-Message-ID: <CABCJKudPg+5Q3Y3H7LVa0DmN8ARati_oREVUqsLSvQpAgE5hWQ@mail.gmail.com>
-Subject: Re: [PATCH v3 0/2] Fix kallsyms with CONFIG_LTO_CLANG
-To: Song Liu <songliubraving@meta.com>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>, Song Liu <song@kernel.org>, 
-	"live-patching@vger.kernel.org" <live-patching@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
-	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>, 
-	Jiri Kosina <jikos@kernel.org>, "mbenes@suse.cz" <mbenes@suse.cz>, "pmladek@suse.com" <pmladek@suse.com>, 
-	"joe.lawrence@redhat.com" <joe.lawrence@redhat.com>, "nathan@kernel.org" <nathan@kernel.org>, 
-	"morbo@google.com" <morbo@google.com>, "justinstitt@google.com" <justinstitt@google.com>, 
-	"mcgrof@kernel.org" <mcgrof@kernel.org>, 
-	"thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "kees@kernel.org" <kees@kernel.org>, 
-	Kernel Team <kernel-team@meta.com>, "mmaurer@google.com" <mmaurer@google.com>, 
-	"rostedt@goodmis.org" <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
+Subject: Re: [PATCH v2 1/1] livepatch: Add using attribute to klp_func for
+ using function show
+From: zhang warden <zhangwarden@gmail.com>
+In-Reply-To: <ZruEPvstxgBQwN1K@pathway.suse.cz>
+Date: Wed, 14 Aug 2024 10:32:39 +0800
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>,
+ Jiri Kosina <jikos@kernel.org>,
+ Joe Lawrence <joe.lawrence@redhat.com>,
+ live-patching@vger.kernel.org,
+ LKML <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <DBF78A85-D27D-4A77-9F37-9F5D69358E0D@gmail.com>
+References: <20240805064656.40017-1-zhangyongde.zyd@alibaba-inc.com>
+ <20240805064656.40017-2-zhangyongde.zyd@alibaba-inc.com>
+ <ZruEPvstxgBQwN1K@pathway.suse.cz>
+To: Petr Mladek <pmladek@suse.com>
+X-Mailer: Apple Mail (2.3774.500.171.1.1)
 
-Hi,
 
-On Tue, Aug 13, 2024 at 2:20=E2=80=AFPM Song Liu <songliubraving@meta.com> =
-wrote:
->
-> Hi Masami,
->
-> Thanks for your review and test!
->
-> @Sami, could you please also review the set?
+> The search would need more code. But it would be simple and
+> straightforward. We do this many times all over the code.
+> 
+> IMHO, it would actually remove some complexity and be a win-win solution.
+> 
+> Best Regards,
+> Petr
 
-As the kernel no longer uses the Clang feature combination that was
-the primary motivation for adding these kallsyms changes in the first
-place, this series looks reasonable to me. Thanks for cleaning this
-up!
+Hi Petr!
 
-Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+Thank you for taking the time to review my patch.
 
-Sami
+I will update this patch to next version with your suggestions!
+
+Regards,
+Wardenjohn.
+
 
