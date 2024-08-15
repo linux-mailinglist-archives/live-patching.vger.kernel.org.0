@@ -1,85 +1,84 @@
-Return-Path: <live-patching+bounces-493-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-494-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id EEB61952C05
-	for <lists+live-patching@lfdr.de>; Thu, 15 Aug 2024 12:26:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4FB31952C87
+	for <lists+live-patching@lfdr.de>; Thu, 15 Aug 2024 12:42:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 49C65B23EAD
-	for <lists+live-patching@lfdr.de>; Thu, 15 Aug 2024 10:26:19 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id D4C0FB29B16
+	for <lists+live-patching@lfdr.de>; Thu, 15 Aug 2024 10:41:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1686E1BF331;
-	Thu, 15 Aug 2024 09:20:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 959F71D27A4;
+	Thu, 15 Aug 2024 10:08:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="PQqMK1mr"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="eqcTj8du"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CEAD1BF32E
-	for <live-patching@vger.kernel.org>; Thu, 15 Aug 2024 09:20:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51FAA1B4C44
+	for <live-patching@vger.kernel.org>; Thu, 15 Aug 2024 10:08:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723713643; cv=none; b=dXOO5lu5SUdzTXr8yYH4V8GpkUQs3YgvIw6QSMLxHXnMllUX3YMZAfLdpBeBPA8/hszT//4KvgPIURJrNLATt50LrhWMqV74MZEWoRAEKtajE8gc/he3eMkNr7sK4FPI+HmQsC34xb36m7M906S/M7JeffXltno5KMvu3O/ruj0=
+	t=1723716532; cv=none; b=KmDa0B1Rf6SdOlcgdBDRoE1ostsfZIH5at8tRLmnGtyGEGLqgTx4ACIQYobvduhOMdpCwZt8AWYUc1n/QOqzP3kvxwZGHyslorV5b1vWOziiuvj5xblx3XCBAQVFqEo9JQyhsgT3bOWBjp/AHnw4jIfDKdrV4x4aF119ImCK7k8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723713643; c=relaxed/simple;
-	bh=Wpgw8IAzF7moxyWZ4DLwitTyfGNFshS+sDvJ99wrmk8=;
+	s=arc-20240116; t=1723716532; c=relaxed/simple;
+	bh=uTR97BbbQAWT+CeVZ0HO/QNDuU4jV4Y8/ioO9O/7x9c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DZLbw1lDnjyZsowhAZ5BAk2Bh3T3TzxXG5ixpTUWNBLx3JnlL1J1873c9tkLMZc25fhQ6Nq2hEU57HQAf3Goe2l5WpDDWShyxGcI1JANozyNhsycmdnkL3VN5csL5lmI1y1CRItFTje7wqfV1F/ekYDfpcXMI6PL5xQ1gDKC8eg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=PQqMK1mr; arc=none smtp.client-ip=209.85.218.49
+	 Content-Type:Content-Disposition:In-Reply-To; b=n8VhydV/XtAK3QKwgdVDwo2Euc1a9PiqCKSZTxMtWJgsFFRUa6BFhmz31I+HGcxtgFcs3Vw6WwVZnQMyoP8YHJ7rl+0Drz2NHvxECdeH76CWmFMrvQmHetm99HDdqI0bByVDQnI4ivHlbwpWi9T3L1M4cEXg55YeKm6CziVfz54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=eqcTj8du; arc=none smtp.client-ip=209.85.218.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a7a843bef98so93708266b.2
-        for <live-patching@vger.kernel.org>; Thu, 15 Aug 2024 02:20:40 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a7a94aa5080so94490666b.3
+        for <live-patching@vger.kernel.org>; Thu, 15 Aug 2024 03:08:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1723713639; x=1724318439; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1723716528; x=1724321328; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=P/GlGs8gPXiljJsbSUC3SWxa6wJC0t8b6kAqnPPHnvg=;
-        b=PQqMK1mr2RvXke2WUOPnAVfn9Ns9xGyCf44rGkwWg9UDnf2y9a2XOSt6kPvX59PeRs
-         //jMArodzD6ZKMJU+WJrc6CFdhBTD4qUeide4ztTzkKMle+P13DbERcxlCpHEJ2b5gBT
-         Ln4XgKtl/CJ3S6fxYvLeFSXPKcWnTJWdXFne4nQSxDbqvthAAe2Yv1OVXFDib/z7+EBY
-         cns5KuM7COU0hHYrG1wZFnLDShGtRC4RSKVqiDqMRVj41AWPR6/hm/uaORCQj1nEkYr0
-         IvncxvF6igp6kEhCDJgSRWmTdq0y0vCYESL+DSUtKqRv6q5ET44Yq6yu5FExsmL9Z+QV
-         j1TA==
+        bh=fCLAa07FCy9T95j3A3Rtzd3uQ1vEFK007f3m2CuwX40=;
+        b=eqcTj8dugIXp+Dh0ytfz6ivqpzTOssbmHuJ/cxbH8J3bQVroGlKoFatrrFGDm9gj4G
+         V/N7s8khHIBVr90bE65/ZNmGdeF/wGwto8LgYWwCM4uAzsFXd6oxBEYimiv+oxLTRvIT
+         4ir7Fhdl4Dq2xzQTIcKz7oOXuDVWDThAiR2J2bFPXVa4tm2JmG1pCCRFswyKc5YkM/6/
+         oU21r7N0mllv937p9NbHf/Y4GGgmv3h1YCxxT2SvjpyNExROx+/LD1i9OKcV0xolKQn8
+         0K05EZsjPA/R6tq33zpSykQOB9kRsDwFwLTjANCLZs3b1z0anxv0KCV7aw5iOXeEgEIo
+         V2JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723713639; x=1724318439;
+        d=1e100.net; s=20230601; t=1723716528; x=1724321328;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=P/GlGs8gPXiljJsbSUC3SWxa6wJC0t8b6kAqnPPHnvg=;
-        b=oqzVAwkSaOSTCjQYdkS6Jd64fJ9/ifqVlGRjxu7gFwjTipszFVUW/qKHx1gfMfl+QM
-         OSGY50wKD/thF8DR3TiqJMB78kEH+wloObJLYZLIMWyGHgh/TuEAKZnyIoa3l7AKJYWv
-         //SYPcBMxRivSj4Sk7tfpeDaPvVjoSK4PhwsPxaz/3cZVagrG7g4/0QnICZ1ERhu5gIO
-         kseeVjzbmkKVUThYYVuh4bJhwigFUhyoqBfyMGp5Yr/sMOe2D171oesSsGYGmhcjx/RM
-         XMmgfiiXlKqxcWY0aoNydg28sU/RvuFNf4HCEobQQ4JJzgwjFUuPOX3Qa4wsoxfjKJD5
-         CbVA==
-X-Forwarded-Encrypted: i=1; AJvYcCVZX6nXMSpgBKDWWqyCaVV7KStdd1DWzhdePDU3w1o/qWvRJNBY/gVYiQmh8yc1vO4ubx+qlmcRIhqsGtOjnmJjk3a5jSJlpcHg/LhDgw==
-X-Gm-Message-State: AOJu0YzgYF3iMdjHBxc370UKOWUVhCs+v1CHpHvgVd+Fh/XNBU6kh3WJ
-	Z0FMlWTBkovib+rq+gYs7L2DBk0buQm2n4hmYKNTBAklS6KcTEDIz9GSLy62Quw=
-X-Google-Smtp-Source: AGHT+IGIf0tHUTHAiN975hHhh6Mp8xXyGrE4WwTVPMNfJW1nQ1v4meDulrazycZekuiqSshjepPOHg==
-X-Received: by 2002:a17:907:1b19:b0:a80:f840:9004 with SMTP id a640c23a62f3a-a8366c1eca6mr410252966b.12.1723713639259;
-        Thu, 15 Aug 2024 02:20:39 -0700 (PDT)
+        bh=fCLAa07FCy9T95j3A3Rtzd3uQ1vEFK007f3m2CuwX40=;
+        b=n+bTIhza+VqAOC3cfywa7bD3uPl6Rl82do047zT51/RWm5lAspw0MfiUtkUNh3/4z6
+         IdiwuneWYFa0Ab0wdmtsDWli1CS8Jy5hB5VAa0FhtA8C/N0VgvMes7fCrsWdU2Hbp5hY
+         X6IEg0eqAMEzRWxcvE6+EetK/3A8aHcTcpDwBPc8kv/UN33M+pvlBC9WJXmsd01eqBu0
+         3hRo+gYLHIVRubqNrt694d46Bn6m0RXg8lp7YGjhwHzZ2j1XVtJFDZoqXnyScYBRnWy4
+         MTuf0zDsXRSOhRrSvyWRvqpxrGFYRqIA0BHKdRBPVubhDpoyJh2BsBilc/SRPQeHAif6
+         Sn2A==
+X-Forwarded-Encrypted: i=1; AJvYcCVtQ23UURD1NbLRqveiknYVjynPy+WvFbLe+nG57zemwkTp1Kjp2mYkGct6yVKjtn8BbhQ/UAKrko7wz0LAW/y7YGIkWIMbLxy7t2pkZw==
+X-Gm-Message-State: AOJu0YzPgM3QoWJQkUWbka92bnnkypaIcNC7uxQCrd6pAmqTd1nG1q9P
+	b0qOZBbcr/BfldbzrNjWD8CNvXIuYS4KB3o+WgP1mFJi2/5YAOGzE75TGvy1iNo=
+X-Google-Smtp-Source: AGHT+IEKQhQSqk73fX1nCH2OpoKfj2vRtk8iu7pihED4MbQNfL8ogsNZuSZH55WrUW7ceRlAcYseyA==
+X-Received: by 2002:a17:907:e661:b0:a77:bfca:da53 with SMTP id a640c23a62f3a-a8366d5a3aemr390489566b.30.1723716528516;
+        Thu, 15 Aug 2024 03:08:48 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a8383946967sm72340166b.172.2024.08.15.02.20.38
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a83838d023dsm77814866b.64.2024.08.15.03.08.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Aug 2024 02:20:39 -0700 (PDT)
-Date: Thu, 15 Aug 2024 11:20:37 +0200
+        Thu, 15 Aug 2024 03:08:48 -0700 (PDT)
+Date: Thu, 15 Aug 2024 12:08:46 +0200
 From: Petr Mladek <pmladek@suse.com>
-To: zhang warden <zhangwarden@gmail.com>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
-	Jiri Kosina <jikos@kernel.org>,
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] livepatch: Add using attribute to klp_func for
- using function show
-Message-ID: <Zr3IZTGnY-e-SHPy@pathway.suse.cz>
-References: <20240805064656.40017-1-zhangyongde.zyd@alibaba-inc.com>
- <20240805064656.40017-2-zhangyongde.zyd@alibaba-inc.com>
- <ZruEPvstxgBQwN1K@pathway.suse.cz>
- <0BFE862C-BD2B-43D1-B926-11A48BBC8C1B@gmail.com>
+	Nicolai Stange <nstange@suse.de>, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [POC 0/7] livepatch: Make livepatch states, callbacks, and
+ shadow variables work together
+Message-ID: <Zr3TrqIWrEvuj2-b@pathway.suse.cz>
+References: <20231110170428.6664-1-pmladek@suse.com>
+ <20231110213317.g4wz3j3flj7u2qg2@treble>
+ <alpine.LSU.2.21.2407251618220.21729@pobox.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -88,110 +87,77 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0BFE862C-BD2B-43D1-B926-11A48BBC8C1B@gmail.com>
+In-Reply-To: <alpine.LSU.2.21.2407251618220.21729@pobox.suse.cz>
 
-On Wed 2024-08-14 22:23:21, zhang warden wrote:
+On Thu 2024-07-25 16:19:30, Miroslav Benes wrote:
+> On Fri, 10 Nov 2023, Josh Poimboeuf wrote:
 > 
-> 
-> > On Aug 14, 2024, at 00:05, Petr Mladek <pmladek@suse.com> wrote:
+> > On Fri, Nov 10, 2023 at 06:04:21PM +0100, Petr Mladek wrote:
+> > > This POC is a material for the discussion "Simplify Livepatch Callbacks,
+> > > Shadow Variables, and States handling" at LPC 2013, see
+> > > https://lpc.events/event/17/contributions/1541/
+> > > 
+> > > It obsoletes the patchset adding the garbage collection of shadow
+> > > variables. This new solution is based on ideas from Nicolai Stange.
+> > > And it should also be in sync with Josh's ideas mentioned into
+> > > the thread about the garbage collection, see
+> > > https://lore.kernel.org/r/20230204235910.4j4ame5ntqogqi7m@treble
 > > 
-> > Alternative solution would be to store the pointer of struct klp_ops
-> > *ops into struct klp_func. Then using_show() could just check if
-> > the related struct klp_func in on top of the stack.
+> > Nice!  I like how it brings the "features" together and makes them easy
+> > to use.  This looks like a vast improvement.
 > > 
-> > It would allow to remove the global list klp_ops and all the related
-> > code. klp_find_ops() would instead do:
+> > Was there a reason to change the naming?  I'm thinking
 > > 
-> >   for_each_patch
-> >     for_each_object
-> >       for_each_func
+> >   setup / enable / disable / release
 > > 
-> > The search would need more code. But it would be simple and
-> > straightforward. We do this many times all over the code.
+> > is less precise than
 > > 
-> > IMHO, it would actually remove some complexity and be a win-win solution.
-> 
-> Hi Peter!
-> 
-> With your suggestions, it seems that you suggest move the klp_ops pinter into struct klp_func.
-> 
-> I may do this operation:
-> 
-> struct klp_func {
-> 
-> /* internal */
-> void *old_func;
-> struct kobject kobj;
-> struct list_head node;
-> struct list_head stack_node;
-> + struct klp_ops *ops;
-> unsigned long old_size, new_size;
-> bool nop;
-> bool patched;
-> bool transition;
-> };
+> >   pre_patch / post_patch / pre_unpatch / post_unpatch.
 
-Yes.
+I wanted to point out that the callbacks are called _only_ when
+the states are added or removed. They are not called when the state
+is preserved during the atomic replace.
 
-> With this operation, klp_ops global list will no longer needed. And if we want the ftrace_ops of a function, we just need to get the ops member of klp_func eg, func->ops. 
-> 
-> And klp_find_ops() will be replaced by `ops = func->ops`, which is more easy.
+The pre_patch... naming scheme might create an assumption that they
+are _always_ called during the livepatch transition.
 
-func->ops will work only when it is already assigned, for example, in
+But I see that the new names might be misleading in other ways.
 
-   + klp_check_stack_func()
-   + klp_unpatch_func()
-   + using_show()	/* the new sysfs callback */
+I am going to use the "pre_patch..." names in the next version of
+the patchset.
 
-But we will still need klp_find_ops() in klp_patch_func() to find
-whether an already registered livepatch has already attached
-the ftrace handled for the same function (func->old_func).
 
-The new version would need to go through all registred patches,
-something like:
+> > Also, I'm thinking "replaced" instead of "obsolete" would be more
+> > consistent with the existing terminology.
+> > 
+> > For example, in __klp_enable_patch():
+> > 
+> > 	ret = klp_setup_states(patch);
+> > 	if (ret)
+> > 		goto err;
+> > 
+> > 	if (patch->replace)
+> > 		klp_disable_obsolete_states(patch);
+> > 
+> > it's not immediately clear why "disable obsolete" would be the "replace"
+> > counterpart to "setup".
+> > 
+> > Similarly, in klp_complete_transition():
+> > 
+> > 	if (klp_transition_patch->replace && klp_target_state == KLP_PATCHED) {
+> > 		klp_unpatch_replaced_patches(klp_transition_patch);
+> > 		klp_discard_nops(klp_transition_patch);
+> > 		klp_release_obsolete_states(klp_transition_patch);
+> > 	}
+> > 
+> > it's a little jarring to have "unpatch replaced" followed by "release
+> > obsolete".
 
-struct klp_ops *klp_find_ops(void *old_func)
-{
-	struct klp_patch *patch;
-	struct klp_object *obj;
-	struct klp_func *func;
+I see.
 
-	klp_for_each_patch(patch) {
-		klp_for_each_object(patch, obj) {
-			klp_for_each_func(obj, func) {
-				/*
-				 * Ignore entry where func->ops has not been
-				 * assigned yet. It is most likely the one
-				 * which is about to be created/added.
-				 */
-				if (func->old_func == old_func && func->ops)
-					return func->ops
-			}
-		}
-	}
+> I agree. I would also stick to the existing naming. It is clearer to me.
 
-	return NULL;
-}
-
-BTW: It really looks useful. klp_check_stack_func() is called for_each_func()
-     also during task transition, even from the scheduler:
-
-       + klp_cond_resched()
-	 + __klp_sched_try_switch()
-	   + klp_try_switch_task()
-	     + klp_check_and_switch_task()
-	       + klp_check_stack()
-		 + klp_for_each_object()
-		   + klp_for_each_func()
-		     + klp_find_ops()
-
-      It would newly just use func->ops. It might be even noticeable
-      speedup.
-
-Please, implement this in a separate patch:
-
-  + 1st patch adds func->ops
-  + 2nd patch adds "using" sysfs interface.
+Fair enough.
 
 Best Regards,
 Petr
