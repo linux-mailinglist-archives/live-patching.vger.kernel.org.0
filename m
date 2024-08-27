@@ -1,81 +1,77 @@
-Return-Path: <live-patching+bounces-517-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-518-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 322F395F328
-	for <lists+live-patching@lfdr.de>; Mon, 26 Aug 2024 15:41:49 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1639F960781
+	for <lists+live-patching@lfdr.de>; Tue, 27 Aug 2024 12:32:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 649291C20473
-	for <lists+live-patching@lfdr.de>; Mon, 26 Aug 2024 13:41:48 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 63C70B20837
+	for <lists+live-patching@lfdr.de>; Tue, 27 Aug 2024 10:32:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8CEB2185956;
-	Mon, 26 Aug 2024 13:41:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3C0519E7E5;
+	Tue, 27 Aug 2024 10:32:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Eclcii3I"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Ww5ZNZD1"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8252353362
-	for <live-patching@vger.kernel.org>; Mon, 26 Aug 2024 13:41:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B40C182B2
+	for <live-patching@vger.kernel.org>; Tue, 27 Aug 2024 10:32:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724679704; cv=none; b=JXCaaiM0dZY2eLCfMOiKCOROhT7IDFHSZcNSkqS7Nlkn/MBPlLnNRxq753XIJYZAKd1d3RRRIHALH9znpKXh6pCXfw84GY2y2fjsRSncKJ9Rfn4AZ/7lt+LzGi6dViyWzzWUuLy4Yb+D5a/03x1oQoTp5x/OybbwtS/C8yb4UHY=
+	t=1724754735; cv=none; b=ek+tc8HkHWkzSQmHG5Hfiy18c9jjHegOmhSwu5iVPB5qa7xMEFzY7zuHeEC0Uyp7jx4roYEazM4AHj/rWK851Eag/pdZJWfLSWYA6DQq0azA5XFqoVsaMalbrjDK2iDUtXxByOAk8I1EX9UvCDv7139M1y9QeQ6N64ib4azEOu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724679704; c=relaxed/simple;
-	bh=Q/ItTynzx62/JZ3XoUKXF3vsnl0opiQXKjF1CL/u/z4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pDC1Cfa16N0MRuVKI+J5bfz29Zf1w6uVQy0klf8uY2PVx7fTlIOJafpqxtJAbo2Rayr/r2XT9sVNLRpnFeeW6rj6cpy+ilAEmrk77/YvOZ7yiMM2m0iZkRL8jAj62w65WOUU4hS0do/e/bs8O62VgqWhxSwKV/iZDvOfv447Dek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Eclcii3I; arc=none smtp.client-ip=209.85.208.46
+	s=arc-20240116; t=1724754735; c=relaxed/simple;
+	bh=ycrqlgO0UTaac+TLC39GdKqmUunZOnZ9hoUmX+4T+CA=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=gD0enhmBapybtryYzpjE4/F4aIu5tfARS7gNO5xCYPEJtrmPWIOewklJT2z8fJIbdJM98x36cxz1LSUQO3LexJ+yUR/4PGqslOZI78u56cAXII0ezM3abeGmoU0HC+Ntwxmcga/zxSnwRXePwMRCG1lwbhpf+yEsP7Cgga4OZNU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Ww5ZNZD1; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5c0aa376e15so538259a12.1
-        for <live-patching@vger.kernel.org>; Mon, 26 Aug 2024 06:41:42 -0700 (PDT)
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a83562f9be9so477829566b.0
+        for <live-patching@vger.kernel.org>; Tue, 27 Aug 2024 03:32:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1724679701; x=1725284501; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VS0k8aqmiTANe2tnPqYCFrEU6+kNk3H4jcm6bqcbGpw=;
-        b=Eclcii3IhdzCGRmw14IxbYm3uN1SSwDYyL1vEw12U9hFUEgXeEatU2vlx1in4jEOCK
-         DCXLQDlJfALGufyTnInjvdnl0N4JPqATKPRoXasVVNny4S1JP59G/3ERopzB1OwgD3DS
-         ZMLQNBP4kLJ7e78boSCpGN0CsUpJHuH8dB0cQpSP3ndRqmATgtgGtBETGBSH9Bu10noD
-         h+5guFQ8ZcNM9jkDUctkIH80JoslbTQq4p5VDeHDEa7DJlGcr3s2xpLegs03TkBbVn7s
-         kBZkWpq3GB0YGfa9nndTcrPlNrp0zLaqjhLPJdVQDxrkdZuKm5xudDY05QDy5QfPaHzk
-         alCA==
+        d=suse.com; s=google; t=1724754730; x=1725359530; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7DHuM/kQ41x/auDnPgxPJbUmKbon56f9GOtmDAVesmw=;
+        b=Ww5ZNZD1wh8cHxWbYc2DxpxaVV8iDwTiTUzgWkoyEVdvQmSI1CXV8WxRyoCAmQ6QHo
+         4qKlNGfTuZ48dnpmOHKZTpBa+7wojGZNzHaVYbpOdIofdjIP45eobB/EXZvkB0l2qdN1
+         khRvWcXYNLJ8XqwjHTkPiu2/HZqHgSHPVGVacQxQDtRyazquJRwl0HZBsl9iCxdTKp85
+         HvLwkIOQo1dut3zRkCiZadgvQxrJmtU0rf+b1vcnm88hOwwsnb8pjGBdgrzd1ZeD59sl
+         /7+qrhJ1uehS8tv5j1c3rLTGN+rk1MfnS9iw3d4mc/QgkdF+mWuPvtJ/gfZvID6teJ9N
+         tFPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724679701; x=1725284501;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VS0k8aqmiTANe2tnPqYCFrEU6+kNk3H4jcm6bqcbGpw=;
-        b=oak5lQn1/QvKnsV5YnjNUNITrBnILJ7Q4zZXI1gp0kBP1HeFwq64lob+5EsWYAbxyu
-         jlcIdE4EoGLGZE3TqSPSNYhEkitT7qRavi2Cnx69UML8ta7LQ5ETjX2vQp/hNpyo/b6x
-         tocF7DbqeWsQcWd7yMdqfW32wahyj4ZmiqH2jt3KGBRSL8+SpDZplJG9lfFkVVlFY5eq
-         k7rNk8cj7uUaUhyQ/hV7+SarHTdkAmzHAnlzLarvx7UuGJ/fUUjf7XJAFOBWiJM2dExR
-         pCcoHPvmzv/pIXFoGyX75HqOHHpE2pH0UBW48oMbe7DTswkJSnT9BpxnN+nH2Gcv/eKG
-         omRw==
-X-Gm-Message-State: AOJu0YwZk0mWo79GAZiOcSpUd35B1+Ko34CrMS9cWaKtWG3g79IHvM0q
-	rOAAkMhxDuXEadELeRKdIe/L0rhepZIus9eob/GibHWNVwbDnx0yL4oNGWmkOC4=
-X-Google-Smtp-Source: AGHT+IH5lH6WnT3G8aIJDp1bTHZX/1kCI67xuDJkYMM6PFurmYWQZLEQyWU4hlcuav9hrRwlBi0WgQ==
-X-Received: by 2002:a05:6402:3489:b0:5be:fe26:dac1 with SMTP id 4fb4d7f45d1cf-5c08915b2d5mr9869196a12.3.1724679700675;
-        Mon, 26 Aug 2024 06:41:40 -0700 (PDT)
-Received: from pathway.suse.cz ([193.86.92.181])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5c044ddbf27sm5668996a12.8.2024.08.26.06.41.40
+        d=1e100.net; s=20230601; t=1724754730; x=1725359530;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7DHuM/kQ41x/auDnPgxPJbUmKbon56f9GOtmDAVesmw=;
+        b=fAXE4NeAYPKOzL8Somd3R8j1YOgPqakFfziIdHxxvQN6xmo+2plrUQWgazhNxfXaNz
+         mRLOrxxdFp9r393Q7Am3oc+yXYZNY5g/pkOfPlQq7dqOEyKz4pGm72oHP/P0kmcOj0mc
+         Rpk4R2wkaB3z98b5hEU6WEeH48Vepwc3CJlz+YQp7l83gkrEvUWZkoMCXx75myZd8EL6
+         girBZMXMryw69orUdVC482BqHtMfav/pKbe0ReYXbqKmca/++yJelfd/tsfIUCdzpHrt
+         IWuI2RYlf/HHsMcd2QdYA0xjXd2tlFXcWVziZFdIVGcLIH0DHglgIJBDe8GozEyBvwJR
+         lHFA==
+X-Forwarded-Encrypted: i=1; AJvYcCVMXisg2490gYtYzbwwcHARkMoA8lCoxIRAyPN8D5J2gWLwTafBLpTLpfCwp8Gg+fUw2UHCEmsnG7UnwXXz@vger.kernel.org
+X-Gm-Message-State: AOJu0YxDQeUjTdp8ey8CysicHR47FSE45Q47JNnyv8rSnLiRjd5U81gL
+	lwHuT5ZIjemhNA+BgNn4n1QZRrQcNxewbo3uTl1NyQjssA69eSZepB3vZ5iDRw1R0TG5/aU6x/r
+	z
+X-Google-Smtp-Source: AGHT+IE6qWQu07aKfg9p33jCpIQAbmfOvhptok+ElZDeBxLPmDXF9+w33X0d3/Ez5qHSNqq4vjllpQ==
+X-Received: by 2002:a17:907:3da0:b0:a86:817e:d27b with SMTP id a640c23a62f3a-a86a54b05f3mr915301866b.43.1724754730362;
+        Tue, 27 Aug 2024 03:32:10 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a86e588adf2sm92890766b.173.2024.08.27.03.32.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Aug 2024 06:41:40 -0700 (PDT)
-Date: Mon, 26 Aug 2024 15:41:38 +0200
+        Tue, 27 Aug 2024 03:32:10 -0700 (PDT)
+Date: Tue, 27 Aug 2024 12:32:08 +0200
 From: Petr Mladek <pmladek@suse.com>
-To: "Ryan B. Sullivan" <rysulliv@redhat.com>
-Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-	joe.lawrence@redhat.com, shuah@kernel.org
-Subject: Re: [PATCH] selftests/livepatch: wait for atomic replace to occur
-Message-ID: <ZsyGEtrMiGTsJkZF@pathway.suse.cz>
-References: <20240822173122.14760-1-rysulliv@redhat.com>
- <Zsh51f3-n842TZHw@pathway.suse.cz>
- <ZsiKBlEQS0NsKlGR@sullivan-work>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: [GIT PULL] livepatching selftest fixup for 6.11-rc6
+Message-ID: <Zs2rKFzj-EhYoHa3@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -84,28 +80,21 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZsiKBlEQS0NsKlGR@sullivan-work>
 
-Hi,
+Hi Linus,
 
-JFYI, I have committed the patch into livepatching.git,
-branch for-6.11/selftests-fixup.
+please pull a regression fix in livepatching selftests from
 
-Few nits below :-)
+  git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching tags/livepatching-for-6.11-rc6
 
-On Fri 2024-08-23 09:09:26, Ryan B. Sullivan wrote:
-> Changes from v2:
-> 
-> Adds:
-> 	Reported-by: CKI Project <cki-project@redhat.com>
-> 	Closes: https://datawarehouse.cki-project.org/kcidb/tests/redhat:1413102084-x86_64-kernel_upt_28
+===================================================
 
-The "changelog" should have been added after the "---" line.
+- Fix a regression in a livepatching selftest.
 
-It allows to send the patch as the main part of the mail (no attachment).
-The lines below the "---" gets automatically removed when the "mail"
-gets applied using "git am".
+----------------------------------------------------------------
+Ryan Sullivan (1):
+      selftests/livepatch: wait for atomic replace to occur
 
-Best Regards,
-Petr
+ tools/testing/selftests/livepatch/test-livepatch.sh | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
