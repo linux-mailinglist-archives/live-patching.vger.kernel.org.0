@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-547-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-549-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 91BF5969284
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:02:51 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1DA4E969287
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:03:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 1205BB21677
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:02:49 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 8D33A1F23492
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:03:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0A961D1F45;
-	Tue,  3 Sep 2024 04:00:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 687D11D3195;
+	Tue,  3 Sep 2024 04:00:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N+VCAIIA"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PXoDzT2z"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 889661D1746;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 425791D2F52;
 	Tue,  3 Sep 2024 04:00:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725336036; cv=none; b=cQt9+3skACJySizmB84P3OZQ1ag5IH+NQ1WV4tv6aB1fTtIgNgUmyQH96QBhrPx68CITj3wqC6mVXN9Y/8ZqpADBSMpp7LhQnVDMO9o6jUxx5jqWJFmHILOmnE762mP2UUq5CLwVEolEcmQI709xBy0yO8QOY0Lp3vVR9z+6fxU=
+	t=1725336037; cv=none; b=M4BskPwOHQvEsFfi3+djGaqY2YVwKviWYcCoSdgUiGekx9/Foj9OpyLefezjtOvNeVy+JLJ6PBTFcY9LobvgUUllDo3DGyiBCgsCHWdI6nNGfB10Mh+3CVgrkew9drZdZXLjMrnTcXcipf6H3v4BhKOh9UGYM9nh5vopCT7bmXI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725336036; c=relaxed/simple;
-	bh=vtgBTd6vd/L2FWYI0DggGWm8tym7W/zSfl9sqau4xmw=;
+	s=arc-20240116; t=1725336037; c=relaxed/simple;
+	bh=VgC2+j0s9bIMK+3nuQz/1Q1o5SD9/C5KSNwbSBE0sEg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jP0v3qxLNuk9o4CZrzXvTYdB/6kBanoXKUmOKzQmPwlz7vgUmZo5ydgLaIHERinrXfIhaUQUWNOiucLakpl1k3IZg6JZPu/FxrWGJp+szXh4TVNXZiJOo08RU1cSnbGDIpl2oVKyb+PF4cM0r6JGtLjIH4COELS8CSCZ1ONDnkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N+VCAIIA; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9698C4CEDD;
-	Tue,  3 Sep 2024 04:00:35 +0000 (UTC)
+	 MIME-Version; b=f67M0jmXkpKpCkw7Er2e/dkAKo2OHN7F3ZxcqEALj1MKXw/Ikv0j/UAhfgFBdwN+yvmQp+rRSKLxBMDQXHxRrTg31wf8TX6CfuB4ghfx5PeghjqGYDpAw133Ju3LR/GFyFTAkyD/KXBC+Ns/YQ1KSJ6boHhrHkbalyefdUj8wjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PXoDzT2z; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E72BC4CEC9;
+	Tue,  3 Sep 2024 04:00:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1725336036;
-	bh=vtgBTd6vd/L2FWYI0DggGWm8tym7W/zSfl9sqau4xmw=;
+	bh=VgC2+j0s9bIMK+3nuQz/1Q1o5SD9/C5KSNwbSBE0sEg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=N+VCAIIAoMVWD+yTyCkDyZ3+nb7cVSghlmDVqbcYNurS5qGuguq+jwhtOHvCftrRY
-	 FyEGrGN47ecW1XXQbyDJZvJtX1sAbK9u0xmS6JncXbX8LYF1jVRkBFlEEfWsvTS3VE
-	 PADL1VkwjmpgXsAN7+G1onViFB8C29idwlRD869qfSEjA/iZQ1bnlqIjj+7r/FO3No
-	 M3dJQat/b21noJYdUnoaUBaGxzNOBy95fRQHN7J4tXZg8jBb9xFiNR5V3n0ztHToHK
-	 03LVcBt4MMr9goITh3dZseyg4RMfIPSkM0UUCN5DY92NRKZQyty0jBy2tMVWyoHRiX
-	 vAr9qHJesMAfA==
+	b=PXoDzT2zkdmushDDgZReQT6xPHxRasR8St4zk0vucHQ+XRZDd3DAaAJY2Ky6Ac69n
+	 2XnXTb7nnVKipAqEYu7PhDKfe0brC5Ae2SmhuTSvtUacfF2IHhBuRsT8Dhn/3uaM64
+	 lf5DzsVRvqJNumVIUmH90x26XDAcO6uZ+NF26hGJ77vaVhYxKAbsqnAafvNJzdpjQ8
+	 cOzaww1pE1MEjxiPiiSKum7SZRz4eTgqSbKqyzS387/KocH9GoxZc6bnTPQEXM9BSz
+	 lzXh/MSv0vD6/JST6IH9NWm64dONtwjUGSsHisCHxyK1k3YBT69+ImdlqTT8/ob+pa
+	 w9yP6QNZqWFBw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -52,9 +52,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Zijlstra <peterz@infradead.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
-Subject: [RFC 14/31] objtool: Refactor add_jump_destinations()
-Date: Mon,  2 Sep 2024 20:59:57 -0700
-Message-ID: <408f39264cbe936b397b59c0a28dc34b92c15703.1725334260.git.jpoimboe@kernel.org>
+Subject: [RFC 15/31] objtool: Interval tree cleanups
+Date: Mon,  2 Sep 2024 20:59:58 -0700
+Message-ID: <74b0bbc42dcbd778f14946ab600670f7d14c6c6f.1725334260.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <cover.1725334260.git.jpoimboe@kernel.org>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
@@ -66,307 +66,142 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The logic is a bit weird - simplify it.
+Change some comments and variable names to improve readability of the
+interval tree code.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c | 239 ++++++++++++++++++++----------------------
- 1 file changed, 114 insertions(+), 125 deletions(-)
+ tools/objtool/elf.c | 50 ++++++++++++++++++++++-----------------------
+ 1 file changed, 24 insertions(+), 26 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 9212b5edffc8..6490bc939892 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1479,9 +1479,14 @@ static void add_return_call(struct objtool_file *file, struct instruction *insn,
- }
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index 12dbcf425321..fc76692ced2c 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -103,7 +103,7 @@ INTERVAL_TREE_DEFINE(struct symbol, node, unsigned long, __subtree_last,
+ 	     _iter; _iter = __sym_iter_next(_iter, (_start), (_end)))
  
- static bool is_first_func_insn(struct objtool_file *file,
--			       struct instruction *insn, struct symbol *sym)
-+			       struct instruction *insn)
+ struct symbol_hole {
+-	unsigned long key;
++	unsigned long offset;
+ 	const struct symbol *sym;
+ };
+ 
+@@ -115,10 +115,10 @@ static int symbol_hole_by_offset(const void *key, const struct rb_node *node)
+ 	const struct symbol *s = rb_entry(node, struct symbol, node);
+ 	struct symbol_hole *sh = (void *)key;
+ 
+-	if (sh->key < s->offset)
++	if (sh->offset < s->offset)
+ 		return -1;
+ 
+-	if (sh->key >= s->offset + s->len) {
++	if (sh->offset >= s->offset + s->len) {
+ 		if (s->type != STT_SECTION)
+ 			sh->sym = s;
+ 		return 1;
+@@ -167,11 +167,11 @@ static struct symbol *find_symbol_by_index(struct elf *elf, unsigned int idx)
+ struct symbol *find_symbol_by_offset(struct section *sec, unsigned long offset)
  {
--	if (insn->offset == sym->offset)
-+	struct symbol *func = insn_func(insn);
-+
-+	if (!func)
-+		return false;
-+
-+	if (insn->offset == func->offset)
- 		return true;
+ 	struct rb_root_cached *tree = (struct rb_root_cached *)&sec->symbol_tree;
+-	struct symbol *iter;
++	struct symbol *sym;
  
- 	/* Allow direct CALL/JMP past ENDBR */
-@@ -1489,50 +1494,30 @@ static bool is_first_func_insn(struct objtool_file *file,
- 		struct instruction *prev = prev_insn_same_sym(file, insn);
- 
- 		if (prev && prev->type == INSN_ENDBR &&
--		    insn->offset == sym->offset + prev->len)
-+		    insn->offset == func->offset + prev->len)
- 			return true;
+-	__sym_for_each(iter, tree, offset, offset) {
+-		if (iter->offset == offset && !is_section_symbol(iter))
+-			return iter;
++	__sym_for_each(sym, tree, offset, offset) {
++		if (sym->offset == offset && !is_section_symbol(sym))
++			return sym;
  	}
  
- 	return false;
- }
- 
--/*
-- * A sibling call is a tail-call to another symbol -- to differentiate from a
-- * recursive tail-call which is to the same symbol.
-- */
--static bool jump_is_sibling_call(struct objtool_file *file,
--				 struct instruction *from, struct instruction *to)
--{
--	struct symbol *fs = from->sym;
--	struct symbol *ts = to->sym;
--
--	/* Not a sibling call if from/to a symbol hole */
--	if (!fs || !ts)
--		return false;
--
--	/* Not a sibling call if not targeting the start of a symbol. */
--	if (!is_first_func_insn(file, to, ts))
--		return false;
--
--	/* Disallow sibling calls into STT_NOTYPE */
--	if (is_notype_symbol(ts))
--		return false;
--
--	/* Must not be self to be a sibling */
--	return fs->pfunc != ts->pfunc;
--}
--
- /*
-  * Find the destination instructions for all jumps.
-  */
- static int add_jump_destinations(struct objtool_file *file)
+ 	return NULL;
+@@ -180,11 +180,11 @@ struct symbol *find_symbol_by_offset(struct section *sec, unsigned long offset)
+ struct symbol *find_func_by_offset(struct section *sec, unsigned long offset)
  {
--	struct instruction *insn, *jump_dest;
-+	struct instruction *insn;
- 	struct reloc *reloc;
--	struct section *dest_sec;
--	unsigned long dest_off;
+ 	struct rb_root_cached *tree = (struct rb_root_cached *)&sec->symbol_tree;
+-	struct symbol *iter;
++	struct symbol *sym;
  
- 	for_each_insn(file, insn) {
-+		struct instruction *dest_insn;
-+		struct section *dest_sec = NULL;
-+		struct symbol *dest_sym = NULL;
-+		unsigned long dest_off;
-+
-+		if (!is_static_jump(insn))
-+			continue;
-+
- 		if (insn->jump_dest) {
- 			/*
- 			 * handle_group_alt() may have previously set
-@@ -1540,114 +1525,118 @@ static int add_jump_destinations(struct objtool_file *file)
- 			 */
- 			continue;
- 		}
--		if (!is_static_jump(insn))
--			continue;
- 
- 		reloc = insn_reloc(file, insn);
- 		if (!reloc) {
- 			dest_sec = insn->sec;
- 			dest_off = arch_jump_destination(insn);
--		} else if (is_section_symbol(reloc->sym)) {
--			dest_sec = reloc->sym->sec;
--			dest_off = arch_dest_reloc_offset(reloc_addend(reloc));
--		} else if (reloc->sym->retpoline_thunk) {
--			add_retpoline_call(file, insn);
--			continue;
--		} else if (reloc->sym->return_thunk) {
--			add_return_call(file, insn, true);
--			continue;
--		} else if (insn_func(insn)) {
--			/*
--			 * External sibling call or internal sibling call with
--			 * STT_FUNC reloc.
--			 */
--			add_call_dest(file, insn, reloc->sym, true);
--			continue;
--		} else if (reloc->sym->sec->idx) {
-+		} else if (sym_has_section(reloc->sym)) {
- 			dest_sec = reloc->sym->sec;
- 			dest_off = reloc->sym->sym.st_value +
- 				   arch_dest_reloc_offset(reloc_addend(reloc));
- 		} else {
--			/* non-func asm code jumping to another file */
-+			/* External symbol (UNDEF) */
-+			dest_sec = NULL;
-+			dest_sym = reloc->sym;
-+		}
-+
-+		if (!dest_sym) {
-+			dest_insn = find_insn(file, dest_sec, dest_off);
-+
-+			if (!dest_insn) {
-+				struct symbol *sym = find_symbol_by_offset(dest_sec, dest_off);
-+
-+				/*
-+				 * This is a special case for retbleed_untrain_ret().
-+				 * It jumps to __x86_return_thunk(), but objtool
-+				 * can't find the thunk's starting RET
-+				 * instruction, because the RET is also in the
-+				 * middle of another instruction.  Objtool only
-+				 * knows about the outer instruction.
-+				 */
-+				if (sym && sym->embedded_insn) {
-+					add_return_call(file, insn, false);
-+					continue;
-+				}
-+
-+				WARN_INSN(insn, "can't find jump dest instruction at %s+0x%lx",
-+					  dest_sec->name, dest_off);
-+				return -1;
-+			}
-+
-+			dest_sym = dest_insn->sym;
-+			if (!dest_sym)
-+				goto set_jump_dest;
-+		}
-+
-+		if (dest_sym->retpoline_thunk) {
-+			add_retpoline_call(file, insn);
- 			continue;
- 		}
- 
--		jump_dest = find_insn(file, dest_sec, dest_off);
--		if (!jump_dest) {
--			struct symbol *sym = find_symbol_by_offset(dest_sec, dest_off);
--
--			/*
--			 * This is a special case for retbleed_untrain_ret().
--			 * It jumps to __x86_return_thunk(), but objtool
--			 * can't find the thunk's starting RET
--			 * instruction, because the RET is also in the
--			 * middle of another instruction.  Objtool only
--			 * knows about the outer instruction.
--			 */
--			if (sym && sym->embedded_insn) {
--				add_return_call(file, insn, false);
--				continue;
--			}
--
--			WARN_INSN(insn, "can't find jump dest instruction at %s+0x%lx",
--				  dest_sec->name, dest_off);
--			return -1;
--		}
--
--		/*
--		 * An intra-TU jump in retpoline.o might not have a relocation
--		 * for its jump dest, in which case the above
--		 * add_{retpoline,return}_call() didn't happen.
--		 */
--		if (jump_dest->sym && jump_dest->offset == jump_dest->sym->offset) {
--			if (jump_dest->sym->retpoline_thunk) {
--				add_retpoline_call(file, insn);
--				continue;
--			}
--			if (jump_dest->sym->return_thunk) {
--				add_return_call(file, insn, true);
--				continue;
--			}
--		}
--
--		/*
--		 * Cross-function jump.
--		 */
--		if (insn_func(insn) && insn_func(jump_dest) &&
--		    insn_func(insn) != insn_func(jump_dest)) {
--
--			/*
--			 * For GCC 8+, create parent/child links for any cold
--			 * subfunctions.  This is _mostly_ redundant with a
--			 * similar initialization in read_symbols().
--			 *
--			 * If a function has aliases, we want the *first* such
--			 * function in the symbol table to be the subfunction's
--			 * parent.  In that case we overwrite the
--			 * initialization done in read_symbols().
--			 *
--			 * However this code can't completely replace the
--			 * read_symbols() code because this doesn't detect the
--			 * case where the parent function's only reference to a
--			 * subfunction is through a jump table.
--			 */
--			if (!strstr(insn_func(insn)->name, ".cold") &&
--			    strstr(insn_func(jump_dest)->name, ".cold")) {
--				insn_func(insn)->cfunc = insn_func(jump_dest);
--				insn_func(jump_dest)->pfunc = insn_func(insn);
--			}
--		}
--
--		if (jump_is_sibling_call(file, insn, jump_dest)) {
--			/*
--			 * Internal sibling call without reloc or with
--			 * STT_SECTION reloc.
--			 */
--			add_call_dest(file, insn, insn_func(jump_dest), true);
-+		if (dest_sym->return_thunk) {
-+			add_return_call(file, insn, true);
- 			continue;
- 		}
- 
--		insn->jump_dest = jump_dest;
-+		if (!dest_sec) {
-+			/* External symbol */
-+			if (insn_func(insn)) {
-+				/* External sibling call */
-+				add_call_dest(file, insn, dest_sym, true);
-+				continue;
-+			}
-+
-+			/* Non-func asm code jumping to external symbol */
-+			continue;
-+		}
-+
-+		if (!insn_func(insn) && insn_func(dest_insn)) {
-+			/*
-+			 * Switching from non-func asm to func - force
-+			 * validate_branch() to stop.
-+			 */
-+			continue;
-+		}
-+
-+		if (!insn_func(insn) || !insn_func(dest_insn) ||
-+		    insn_func(insn) == insn_func(dest_insn))
-+			goto set_jump_dest;
-+
-+		/*
-+		 * Internal cross-function jump.
-+		 */
-+
-+		/*
-+		 * For GCC 8+, create parent/child links for any cold
-+		 * subfunctions.  This is _mostly_ redundant with a
-+		 * similar initialization in read_symbols().
-+		 *
-+		 * If a function has aliases, we want the *first* such
-+		 * function in the symbol table to be the subfunction's
-+		 * parent.  In that case we overwrite the
-+		 * initialization done in read_symbols().
-+		 *
-+		 * However this code can't completely replace the
-+		 * read_symbols() code because this doesn't detect the
-+		 * case where the parent function's only reference to a
-+		 * subfunction is through a jump table.
-+		 */
-+		if (!strstr(insn_func(insn)->name, ".cold") &&
-+		    strstr(insn_func(dest_insn)->name, ".cold")) {
-+			insn_func(insn)->cfunc = insn_func(dest_insn);
-+			insn_func(dest_insn)->pfunc = insn_func(insn);
-+			goto set_jump_dest;
-+		}
-+
-+		if (is_first_func_insn(file, dest_insn)) {
-+			/* Internal sibling call */
-+			add_call_dest(file, insn, insn_func(dest_insn), true);
-+			continue;
-+		}
-+
-+set_jump_dest:
-+		insn->jump_dest = dest_insn;
+-	__sym_for_each(iter, tree, offset, offset) {
+-		if (iter->offset == offset && is_function_symbol(iter))
+-			return iter;
++	__sym_for_each(sym, tree, offset, offset) {
++		if (sym->offset == offset && is_function_symbol(sym))
++			return sym;
  	}
  
- 	return 0;
+ 	return NULL;
+@@ -209,26 +209,24 @@ struct symbol *find_symbol_containing(const struct section *sec, unsigned long o
+ int find_symbol_hole_containing(const struct section *sec, unsigned long offset)
+ {
+ 	struct symbol_hole hole = {
+-		.key = offset,
++		.offset = offset,
+ 		.sym = NULL,
+ 	};
+ 	struct rb_node *n;
+ 	struct symbol *s;
+ 
+-	/*
+-	 * Find the rightmost symbol for which @offset is after it.
+-	 */
++	/* Find the last symbol before @offset */
+ 	n = rb_find(&hole, &sec->symbol_tree.rb_root, symbol_hole_by_offset);
+ 
+-	/* found a symbol that contains @offset */
++	/* found a symbol containing @offset */
+ 	if (n)
+ 		return 0; /* not a hole */
+ 
+-	/* didn't find a symbol for which @offset is after it */
++	/* no symbol before @offset */
+ 	if (!hole.sym)
+ 		return 0; /* not a hole */
+ 
+-	/* @offset >= sym->offset + sym->len, find symbol after it */
++	/* find first symbol after @offset */
+ 	n = rb_next(&hole.sym->node);
+ 	if (!n)
+ 		return -1; /* until end of address space */
+@@ -241,11 +239,11 @@ int find_symbol_hole_containing(const struct section *sec, unsigned long offset)
+ struct symbol *find_func_containing(struct section *sec, unsigned long offset)
+ {
+ 	struct rb_root_cached *tree = (struct rb_root_cached *)&sec->symbol_tree;
+-	struct symbol *iter;
++	struct symbol *sym;
+ 
+-	__sym_for_each(iter, tree, offset, offset) {
+-		if (is_function_symbol(iter))
+-			return iter;
++	__sym_for_each(sym, tree, offset, offset) {
++		if (is_function_symbol(sym))
++			return sym;
+ 	}
+ 
+ 	return NULL;
+@@ -393,7 +391,7 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
+ {
+ 	struct list_head *entry;
+ 	struct rb_node *pnode;
+-	struct symbol *iter;
++	struct symbol *s;
+ 
+ 	INIT_LIST_HEAD(&sym->pv_target);
+ 	sym->alias = sym;
+@@ -407,9 +405,9 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
+ 	sym->offset = sym->sym.st_value;
+ 	sym->len = sym->sym.st_size;
+ 
+-	__sym_for_each(iter, &sym->sec->symbol_tree, sym->offset, sym->offset) {
+-		if (iter->offset == sym->offset && iter->type == sym->type)
+-			iter->alias = sym;
++	__sym_for_each(s, &sym->sec->symbol_tree, sym->offset, sym->offset) {
++		if (s->offset == sym->offset && s->type == sym->type)
++			s->alias = sym;
+ 	}
+ 
+ 	__sym_insert(sym, &sym->sec->symbol_tree);
 -- 
 2.45.2
 
