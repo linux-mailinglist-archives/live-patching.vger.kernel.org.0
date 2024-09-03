@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-560-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-561-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3B23A96929E
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:05:11 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1B8D59692A0
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:05:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ECE01282D6D
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:05:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4F83A1C227EE
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:05:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC4C91D6DBA;
-	Tue,  3 Sep 2024 04:00:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6E4781DAC4A;
+	Tue,  3 Sep 2024 04:00:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZTd0fV8b"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rAdGF1dJ"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2FA41D6DB1;
-	Tue,  3 Sep 2024 04:00:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F2231D6DD4;
+	Tue,  3 Sep 2024 04:00:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725336042; cv=none; b=sHy7ZwbuonJOTljdD6AqPMOhzpj5rxAjmtcgCScd87cdtFxYA74S2uuWry0IipwVfxHRscUEi1XuzeqdUoTyEAz6faH5WWQSDc8OuhzvwFWq/j1tjFar3qHHFd8fQNvbdImYzSPjWhor3pqUhftK+QHOOXye2kFl7TwmWeerlB4=
+	t=1725336043; cv=none; b=fGN2/kUwTwugriaGHbZ1BjbmX40N52UoL0G05dGMGeU+H4CeTxZ4BO2GhyCcIloXmQoRQmO9ghwe81DsV02JgNTFL5zVKU9qcePyB/EfUfz+1Kl/hUZXlktDEefQxhFa8S8L+DFYCcb6yBKiNABqdLKx6qFXu3kew4DR9GCdBbM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725336042; c=relaxed/simple;
-	bh=aitFbO2kW3aH4lB1//9h+v3atK493HEbsCZmttf5L+M=;
+	s=arc-20240116; t=1725336043; c=relaxed/simple;
+	bh=MTklontumUzZpdX06cPRFX4LLGHwOyI3SJ4gnMlG+5A=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eWKW+lhLcyz8h6eBLZQI3QjTgNAi/RjZ+1fBFL/bhW9LSLh6MIJ/WivQYl03YIwgypKouKw5Ghauv9klIK5vkpIWn3L0HUbtQMfczubvNjQd1ZJFUqwv427naelajIuc660m5aU55gHE2LmFn35dcjt1LorQKGJXl5hKPxRLWOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZTd0fV8b; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E489C4CEC8;
+	 MIME-Version; b=EqwzY9xM7rafhHguzCaXBP4toq0YjqJaiP9uEZLx/o3peBda8mLwJQt8IOsbJO8F81+PANKNq2T7xDkStt8DonOwe1dkns65Hgie/R8TDUYEJiesyAFB0a76Y6dsb9kEZqdwFigcbVb4MsWY9BrJ3QLr108WENgbXRpvCUZ7HFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rAdGF1dJ; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B95CAC4CED0;
 	Tue,  3 Sep 2024 04:00:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725336042;
-	bh=aitFbO2kW3aH4lB1//9h+v3atK493HEbsCZmttf5L+M=;
+	s=k20201202; t=1725336043;
+	bh=MTklontumUzZpdX06cPRFX4LLGHwOyI3SJ4gnMlG+5A=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ZTd0fV8bpl8TJ1xemo40S/ioC5OMTo85cAwtGEFaE9Ehnpd+cxsc69EYUM6LrRS7n
-	 rpzNu9A43aQcut60QAnfdgpcpbWhWHWPGiF65ljGRb60toQU1Ms8FIpEf+PIGRnI0s
-	 psmEioof7Mhqrmm1CIrmUOpWko8ChtOQ+yV2BmOYNSO3JgSsEYzMdVXZevj2ygXFC7
-	 0KaAh87ZOfwcUDjUpOEvpUk1mUjn3EIeiiVzgNGnMQC9jcuAtmD2pM4ENegHvjvipi
-	 VU+bMmpECTvjz2G+FDBMA4f43gj1WxqgKx/2zTS1cYNw17w/C+Ppyi2rO9+Ha4Vcia
-	 OTF+HM4NxAEPg==
+	b=rAdGF1dJMDPP8zNlF+p8n1XV4xPxBRGG/Bv+Jb2iJvdB2xHaW56BCDxCYbIi7wPkB
+	 Zpdso/ZPTLOygEdTCJ0rYCQLE3bsbIj1G/V+e9CKbRgmH6OTf6gArRvo2pIKeRsfst
+	 +sLQyLP3qW6Wfm7ueZsVuLtwCDYSz8ykT/ZZ0r2Mm7qQ9joroZ3bnmuTUg+b1cUCb1
+	 pQmObfe8HyBxpZisGhJYtpgRWE+21KPuEZe9elZpOpfdCJ8dbHGDeoK8ui1lWd5Uly
+	 O78nrLS+ktGnjWK2S6oIZRSfBC9r8s3o0S+Ck5O9hdoruGb/wNStbZKK1j9Yh6ei6q
+	 VvXfGR1o+DDqw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -52,9 +52,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Zijlstra <peterz@infradead.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
-Subject: [RFC 26/31] objtool: Make interval tree functions "static inline"
-Date: Mon,  2 Sep 2024 21:00:09 -0700
-Message-ID: <cc24c70a22c329cf4fd3fe77a53ecf813a4d89f8.1725334260.git.jpoimboe@kernel.org>
+Subject: [RFC 27/31] objtool: Fix weak symbol detection
+Date: Mon,  2 Sep 2024 21:00:10 -0700
+Message-ID: <bcedaf8559e7e276e4d9ba511dab038ed70ebd6c.1725334260.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <cover.1725334260.git.jpoimboe@kernel.org>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
@@ -66,26 +66,74 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Otherwise the compiler warns if a function isn't used.
+find_symbol_hole_containing() fails to find a symbol hole (aka stripped
+weak symbol) if its section has no symbols before the hole.  This breaks
+weak symbol detection if -ffunction-sections is enabled.
 
+Fix it by allowing the interval tree to contain section symbols, which
+are always at offset zero for a given section.
+
+Fixes a bunch of (-ffunction-sections) warnings like:
+
+  vmlinux.o: warning: objtool: .text.__x64_sys_io_setup+0x10: unreachable instruction
+  vmlinux.o: warning: objtool: .text.__x64_sys_io_setup+0x14: unreachable instruction
+  vmlinux.o: warning: objtool: .text.__x64_sys_io_setup+0x19: unreachable instruction
+  vmlinux.o: warning: objtool: .text.__x64_sys_io_setup+0x20: unreachable instruction
+
+Fixes: 4adb23686795 ("objtool: Ignore extra-symbol code")
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/objtool/elf.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 42a657268306..471df0336aa7 100644
+index 471df0336aa7..3109277804cc 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -98,7 +98,7 @@ static inline unsigned long __sym_last(struct symbol *s)
+@@ -110,7 +110,7 @@ struct symbol_hole {
+ };
+ 
+ /*
+- * Find !section symbol where @offset is after it.
++ * Find the last symbol before @offset.
+  */
+ static int symbol_hole_by_offset(const void *key, const struct rb_node *node)
+ {
+@@ -121,8 +121,7 @@ static int symbol_hole_by_offset(const void *key, const struct rb_node *node)
+ 		return -1;
+ 
+ 	if (sh->offset >= s->offset + s->len) {
+-		if (s->type != STT_SECTION)
+-			sh->sym = s;
++		sh->sym = s;
+ 		return 1;
+ 	}
+ 
+@@ -416,7 +415,8 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
+ 	sym->len = sym->sym.st_size;
+ 
+ 	__sym_for_each(s, &sym->sec->symbol_tree, sym->offset, sym->offset) {
+-		if (s->offset == sym->offset && s->type == sym->type)
++		if (s->type == sym->type && s->offset == sym->offset &&
++		    s->len == sym->len)
+ 			s->alias = sym;
+ 	}
+ 
+@@ -433,9 +433,13 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
+ 	/*
+ 	 * Don't store empty STT_NOTYPE symbols in the rbtree.  They
+ 	 * can exist within a function, confusing the sorting.
++	 *
++	 * TODO: is this still true?
+ 	 */
+-	if (!sym->len)
++#if 0
++	if (sym->type == STT_NOTYPE && !sym->len)
+ 		__sym_remove(sym, &sym->sec->symbol_tree);
++#endif
  }
  
- INTERVAL_TREE_DEFINE(struct symbol, node, unsigned long, __subtree_last,
--		     __sym_start, __sym_last, static, __sym)
-+		     __sym_start, __sym_last, static inline, __sym)
- 
- #define __sym_for_each(_iter, _tree, _start, _end)			\
- 	for (_iter = __sym_iter_first((_tree), (_start), (_end));	\
+ static void read_symbols(struct elf *elf)
 -- 
 2.45.2
 
