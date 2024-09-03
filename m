@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-537-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-538-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 73A00969270
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:00:54 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 76B69969271
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:00:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 31AF5282C94
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:00:53 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id D9C81B2081B
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:00:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ABDEF1CE710;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC0F01CE711;
 	Tue,  3 Sep 2024 04:00:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ezFWIhFY"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QfNtunj0"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84C481CE702;
-	Tue,  3 Sep 2024 04:00:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84C981CE708;
+	Tue,  3 Sep 2024 04:00:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725336031; cv=none; b=CXUyP24s6PX003wCBbV2rsQ3PSLLK/F5FF2NBtCpJVjSmfh2FK19riBSPolCXy+ct+aykbaXpfeGLZHPFm0TlDw4WNhcKF7LGxMT7LeevIAiJnMvdlUCB2JAT/FOnxzJS/rpqOZ/IQCz5EfIxbsa0lOP7cAdPiqF5EdSyh905oM=
+	t=1725336031; cv=none; b=bii1qSSFVgrJJWLSK9VBNqNIjiq3WU3yIZCPW8i+P/39nX+SaLYWI1xPyoPpZgk/OpTzRL6FLWgJUz7x7jPXv0f4VolTNrvg9QcLuO5gEEDbtHVrpQpDEVTnLZcvxN2L+0kK+duc4xxBpZcq0D1Dmawq800zF0ISlGUdug8cVzI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1725336031; c=relaxed/simple;
-	bh=p+eNZnmbPNAzBwrF+DnHcCqKwjEEMYp4aw6pdpoU2q8=;
+	bh=eVWw//8hfsmd9PQaCYwE+A1M1gV4cGzk9SxhhPEd0cI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dgmdqMQvlKxRZwMBBNV98bftg6zJSQxp64m73lB/FcvlNBIkKoS2v6Wwnj08pjBmZquQZSg7dlZF0EP5X4/sqkQI1PnUlwvexDh0OMayUgrvqbUjh86Dms5Py7/hzeeAcNdve2Lp2D/Klab44yjamG8Y1YvIvZ4lZ5YrrxeOK6E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ezFWIhFY; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2921FC4CED1;
+	 MIME-Version; b=ZFLZai7SA7JsTlwbM5VyY/xHdxxDOKjsOCoJ03SEKm5E6Qg/Vw+K+hiJJQqJgwUP9PRfc/uZixSbsRHYQLFEgLOYqwHVp/DhJ8lUVFPpqNZ0dj0I0Ct2mU8pPbh2QLKMpqqvgX0X5kwM1oXDAYCP8isPh7EZ5cyiOT8hPOlq2Zw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QfNtunj0; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A57A9C4CECB;
 	Tue,  3 Sep 2024 04:00:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725336030;
-	bh=p+eNZnmbPNAzBwrF+DnHcCqKwjEEMYp4aw6pdpoU2q8=;
+	s=k20201202; t=1725336031;
+	bh=eVWw//8hfsmd9PQaCYwE+A1M1gV4cGzk9SxhhPEd0cI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ezFWIhFYecgcbF3EDR8Yup5jVRKouY6GLGQovs5q4c6ySWIEge1agxqTOrA8zQ3bW
-	 hx6YPjG/5JDQGWE0pq3wOuAVCWU8rIUgeF59306zNzQ8m2ZlgCV+xLlnrfFNxZyYrR
-	 QmVPCAQVWiBQJNPI9uj9adeAu5NUUZVfJ7b608V/73pY0z74Gp4/web9W461u/JLe+
-	 9w2gv7AO3nHCvKDAnGCIBFHwHihkcn0quGCbi2610A9oC944fAF8PghG0HUrTjIn80
-	 Vo099bVM+dG49OU23LDtQRcinPMB+2zibxxmL4KURHPokE894sogc8U6CyzXrPmjiZ
-	 cVINuU7h1Fz7Q==
+	b=QfNtunj0JiQlTj5nRdl/EOKKUfmzCi7EDtEUtA6/QChRPMb/ZaNnnH3aQ76aIhIl9
+	 UVEkM8pOuBNWGviqEULB+SAPZkhqlYdw/pwkXMZEKAHzJzKEg82xNfRFdQgYbcKo1s
+	 GXxGdQz7jNODyzs6raCTDjOp0RMcekvT3CZTsUGQ8dF7nCOdKCvjJIR7r8S/ZqHk7f
+	 sUwBVP/8VgXboRi1L+QbbukYqxf3+bDc8TPou2L6dLC/ML4UzyUYsE7OQMmjIthSYy
+	 6d78LcQZN51BTJMhG5l3KQZw/agihIy+Dk6sWOZmlCkfOaBli/nErogSbBW02x/6xk
+	 iu5566KYCbEiA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -52,9 +52,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Zijlstra <peterz@infradead.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
-Subject: [RFC 03/31] x86/kprobes: Remove STACK_FRAME_NON_STANDARD annotation
-Date: Mon,  2 Sep 2024 20:59:46 -0700
-Message-ID: <5902e2e9cfe2ed9224f165585d7e41f93bb04275.1725334260.git.jpoimboe@kernel.org>
+Subject: [RFC 04/31] kernel/sys: Don't reference UTS_RELEASE directly
+Date: Mon,  2 Sep 2024 20:59:47 -0700
+Message-ID: <203eaa28b60bef8f4396beed554358e3c2483a07.1725334260.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <cover.1725334260.git.jpoimboe@kernel.org>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
@@ -66,37 +66,37 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Since commit 877b145f0f47 ("x86/kprobes: Move trampoline code into
-RODATA"), the optprobe template code is no longer analyzed by objtool so
-it doesn't need to be ignored.
+Objtool will be getting a new feature to calculate build-time function
+checksums, so each function can be uniquely identified.  A function's
+checksum is calculated based on its instructions, jump/call targets,
+alternatives, string literals, and more.
+
+When there are any changes to the git working tree, UTS_RELEASE is
+suffixed with "+".  That can result in an undesired changed checksum for
+the functions which inline override_release() due to its direct
+reference of the UTS_RELEASE string literal.
+
+Convert the override_release() 'rest' variable to a static local so it
+won't affect function checksums.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/kernel/kprobes/opt.c | 4 ----
- 1 file changed, 4 deletions(-)
+ kernel/sys.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/kprobes/opt.c b/arch/x86/kernel/kprobes/opt.c
-index 36d6809c6c9e..e46d1710e785 100644
---- a/arch/x86/kernel/kprobes/opt.c
-+++ b/arch/x86/kernel/kprobes/opt.c
-@@ -103,7 +103,6 @@ static void synthesize_set_arg1(kprobe_opcode_t *addr, unsigned long val)
+diff --git a/kernel/sys.c b/kernel/sys.c
+index 3a2df1bd9f64..526464ea194b 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -1291,7 +1291,7 @@ static int override_release(char __user *release, size_t len)
+ 	int ret = 0;
  
- asm (
- 			".pushsection .rodata\n"
--			"optprobe_template_func:\n"
- 			".global optprobe_template_entry\n"
- 			"optprobe_template_entry:\n"
- #ifdef CONFIG_X86_64
-@@ -160,9 +159,6 @@ asm (
- 			"optprobe_template_end:\n"
- 			".popsection\n");
- 
--void optprobe_template_func(void);
--STACK_FRAME_NON_STANDARD(optprobe_template_func);
--
- #define TMPL_CLAC_IDX \
- 	((long)optprobe_template_clac - (long)optprobe_template_entry)
- #define TMPL_MOVE_IDX \
+ 	if (current->personality & UNAME26) {
+-		const char *rest = UTS_RELEASE;
++		static const char *rest = UTS_RELEASE;
+ 		char buf[65] = { 0 };
+ 		int ndots = 0;
+ 		unsigned v;
 -- 
 2.45.2
 
