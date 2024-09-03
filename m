@@ -1,120 +1,241 @@
-Return-Path: <live-patching+bounces-533-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-534-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8649D969189
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id A840696926A
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:00:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 31D291F21CAE
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 02:48:09 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 2DCEF1F233B5
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:00:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67F2113D8B1;
-	Tue,  3 Sep 2024 02:48:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B5A8F45003;
+	Tue,  3 Sep 2024 04:00:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i9bOTEqA"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lZ//cwH9"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00C161E49F;
-	Tue,  3 Sep 2024 02:48:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 887642A1CA;
+	Tue,  3 Sep 2024 04:00:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725331684; cv=none; b=SG2DxHbgxLBRrPtmPRr63Kl5iTZ/NE5GLWu+npEVFwNXF1TXNPn8TcxQcmRoumRwmeyCJnfRLFtUVgdxU3FNVNfymergTiyAJh1Gd8HRD+7M9QJBUD24uFmS/q+C1eU7xrxT7U3qSyyjI7K/RycruZzUxFsxCyNVwnrBnIwd1gQ=
+	t=1725336029; cv=none; b=Ye+IYzDGWbDmIN+g6Lfonydqf7OXyDjyuFG6klcFQ3/oyMazPZrzdSZKujDxEAK968xYmqgQwMkFm04jhcQ2cOHBRK7NCV8pKk8SClelwrim8loS9hY+aB2cAzpOnAMQVsY0URcs3wSRW6iVRwmrXbNz4nMwBXFkArB/RzLtve0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725331684; c=relaxed/simple;
-	bh=3e9BFcxGMyztGQkt2ajX1gaFZsKe1j90E8wXlDLqqBA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DNjOrgPSFg785+UQbLFEN3ccyiKZX/msqw7Qsf6GdMrorWRSZfWOGuDERhNpvayI/Va3oRP0Chk9OZEkjxsEtsvvzSNqtxknVSnvHYAzY+kOU9B54uBz8JG21zTWDQcnXLTMkEMjJulipMwKkRQV4jfRUIGEgbXZPWrIvIeb+88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i9bOTEqA; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-20543fdb7acso17854225ad.1;
-        Mon, 02 Sep 2024 19:48:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1725331682; x=1725936482; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=QL+Dy5jYOUZJ3ujUP+UZJfMT8uowfmg+5RGiW1rc9fQ=;
-        b=i9bOTEqAKZw9S4hhJdrfOinZKYop0ZfUkOepk0Ki3WPBKiSJt4ycSCmAFUCcU53w8p
-         FFNw8HgU2JA9czjo8OSiIRBhDlCOCBWkOFRDsmKsAqPrAlyy8NPPtWcFdIm0BrqWa2SI
-         EUSs44zzsuonqeiSWbD7ztLfxImvQtRfssNutKnHpnFshd22kIQU2JjVp1yh690OKJHA
-         giDQ6UTSU2G2CpSGlEOTobnT67wCQdhTjttiSkitsMMNBrVGi9uAaqJtyQnv3Q9JocQS
-         0erPDIpe1yiavif5GDJnk4neLnVqklI/MXkDGmAOxyKPPLCrM1yTPIhs63JvnGvbLBKz
-         VpUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725331682; x=1725936482;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QL+Dy5jYOUZJ3ujUP+UZJfMT8uowfmg+5RGiW1rc9fQ=;
-        b=Z4+Pf7N4QMBIIO2mXcTlqe6x0LUEMDE80UScyBGTidIpSDZM46NzqhHP6Q3Rc9Pruy
-         oXwCPMUPH913Ax/DgVM/IovkP79zdvGXdGXnZAsmJVpMl+OVlk7y3jHolMSUydz8GJIy
-         idIW0e/OqpSEBGdDlI+MRmIHlG73q7MPMStzOFVKpe5h2VnQZcvW4Q26BK6/md3zAxrs
-         eiRZp3oZgzgdwLbbhfXihMdhHlozg9q/Un3VrW5gERzB68FCL7iS/J91l0WxkbBaPPPZ
-         TM9/3ZUFooUKiiTQHFDDoGsWZz5sutMyWj9mR3vrtl+SyAPu23tLdxY5NtC5Qi1vPt7m
-         l8Bw==
-X-Forwarded-Encrypted: i=1; AJvYcCVGrI4F6tbEHCfeZwPIzQdmFsa/M6maSfNYb88UahVZL5fhs0Zun6ysS8vKNd0NwHtU/Mm/ETLiYug=@vger.kernel.org, AJvYcCWpeM3Q+A+7LzGqq6UU58wpu+uLNUgEVaX8xw711GxXdt+gWXkdcgxq2ZqyoIxh9BJaowdnjQhAOTczKBDDkg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyVGVnC+kvyWd6v7CynxiPZfx14xPcpRw0BB5AQAMddkIsgyBeQ
-	Pcyh1sRvxM9PFZJFu3loWHdpEKMvsDsEIOLu5cm+z+b4rvt0fAjmEtUXNA==
-X-Google-Smtp-Source: AGHT+IEoB0+9ktJiczooR9Okr3QAk/6WxwpYddp14Oem1sZYhwrOl+DTFGf3Woowfwqlabg3AqqMVA==
-X-Received: by 2002:a17:902:db03:b0:202:4b99:fd27 with SMTP id d9443c01a7336-2054c24a0a1mr83012095ad.51.1725331681939;
-        Mon, 02 Sep 2024 19:48:01 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2057f8c12c9sm19433855ad.176.2024.09.02.19.48.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Sep 2024 19:48:01 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id 86CB14936702; Tue, 03 Sep 2024 09:47:58 +0700 (WIB)
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Documentation <linux-doc@vger.kernel.org>,
-	Linux Kernel Livepatching <live-patching@vger.kernel.org>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
+	s=arc-20240116; t=1725336029; c=relaxed/simple;
+	bh=LQfg1VzcDwJ3gm6jVtsTgxwWpZDCtBC0zgWadHHdIq0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hSrF4Oo2q7bEq0//W6S5msjQ+vIb4CjZ91IXJqcBbUxiHlWU//r8kUat2L7wsLnjFVc+rlHcq2qFmlS0pmMuV9IZ0Qn1wxGKtK3NSE56ZhWtbgTNbB8WphcLlBmW/a33mzvDXgLIY1gMPsx3sayS6rxG+dcdcz3vLv+DHUgpgP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lZ//cwH9; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 900BFC4CEC5;
+	Tue,  3 Sep 2024 04:00:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725336029;
+	bh=LQfg1VzcDwJ3gm6jVtsTgxwWpZDCtBC0zgWadHHdIq0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=lZ//cwH98Ji3wXjofTtRQbcOaObGwLuVhWrW+HgkdwKWrzlHDXfLovHrWDeQFqouD
+	 IFlLh6BjFlXAwFAIGspqYhI3rflMgXc7DTGAC/SGp6JCuWP4PhsfFBM2ZpWfD/wGiW
+	 eaXxwDPbUgMWxkdnw4A/Ek/pxHFSVe3/AbAFTWB54ZlWprimmmPAUCb/Ew5DMUvnGd
+	 dVsmCL5u0g4NnvZSiUvp4EXuqZsX3tz/yGNPXYXV2ibqdw9OwJMO5ZGbtuepvMzL1N
+	 xocXBCdsvzrG0xom8aHuxKwZ3ncBT8nNrMcWv5sVM+xRvVQi2NHnBJtRgIrHkOB4br
+	 aQyGDNJzO73Qw==
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: live-patching@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	x86@kernel.org,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
-	Jonathan Corbet <corbet@lwn.net>,
+	Jiri Kosina <jikos@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH] Documentation: livepatch: Correct release locks antonym
-Date: Tue,  3 Sep 2024 09:47:53 +0700
-Message-ID: <20240903024753.104609-1-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.46.0
+	Song Liu <song@kernel.org>
+Subject: [RFC 00/31] objtool, livepatch: Livepatch module generation
+Date: Mon,  2 Sep 2024 20:59:43 -0700
+Message-ID: <cover.1725334260.git.jpoimboe@kernel.org>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=962; i=bagasdotme@gmail.com; h=from:subject; bh=3e9BFcxGMyztGQkt2ajX1gaFZsKe1j90E8wXlDLqqBA=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDGnXym+JuFv+4Gcr+s7IdLLaL6pr/6mXk8uWRfXEzl5sb MOTkjizo5SFQYyLQVZMkWVSIl/T6V1GIhfa1zrCzGFlAhnCwMUpABMxNGT4w82lpXgmutMpfs7s 1937rl2te+8ZrZDLE9q5o7xqwiGF5YwMh0OsFRN3aGl0FrPkpPwKuJW5+MGfMqm6SZP5dqmErOz lAgA=
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
 Content-Transfer-Encoding: 8bit
 
-"get" doesn't properly fit as an antonym for "release" in the context
-of locking. Correct it with "acquire".
+Hi,
 
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/livepatch/livepatch.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here's a new way to build livepatch modules called klp-build.
 
-diff --git a/Documentation/livepatch/livepatch.rst b/Documentation/livepatch/livepatch.rst
-index 68e3651e8af925..acb90164929e32 100644
---- a/Documentation/livepatch/livepatch.rst
-+++ b/Documentation/livepatch/livepatch.rst
-@@ -50,7 +50,7 @@ some limitations, see below.
- 3. Consistency model
- ====================
- 
--Functions are there for a reason. They take some input parameters, get or
-+Functions are there for a reason. They take some input parameters, acquire or
- release locks, read, process, and even write some data in a defined way,
- have return values. In other words, each function has a defined semantic.
- 
+I started working on it when I realized that objtool already does 99% of
+the work needed for detecting function changes.
+
+This is similar in concept to kpatch-build, but the implementation is
+much cleaner.
+
+Personally I still have reservations about the "source-based" approach
+(klp-convert and friends), including the fragility and performance
+concerns of -flive-patching.  I would submit that klp-build might be
+considered the "official" way to make livepatch modules.
+
+Please try it out and let me know what you think.  Based on v6.10.
+
+Also avaiable at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git klp-build-rfc
+
+More details (cribbed from the big final patch):
+
+------
+
+Add a klp-build script which makes use of a new "objtool klp" subcommand
+to generate livepatch modules using a source patch as input.
+
+The concept is similar to kpatch-build which has been a successful
+out-of-tree project for over a decade.  It takes a source .patch as an
+input, builds kernels before and after, does a binary diff, and copies
+any changed functions into a new object file which is then linked into a
+livepatch module.
+
+By making use of existing objtool functionality, and taking from lessons
+learned over the last decade of maintaining kpatch-build, the overall
+design is much simpler.  In fact, it's a complete redesign and has been
+written from scratch (no copied code).
+
+Advantages over kpatch-build:
+
+  - Runs on vmlinux.o, so it's compatible with late-linked features like
+    IBT and LTO
+
+  - Much simpler design: ~3k fewer LOC
+
+  - Makes use of existing objtool CFG functionality to create checksums
+    for trivially detecting changed functions
+
+  - Offset __LINE__ changes are no longer a problem thanks to the
+    adjust-patch-lines script
+
+  - In-tree means less cruft, easier maintenance, and a larger pool of
+    potential maintainers
+
+To use, run the following from the kernel source root:
+
+  scripts/livepatch/klp-build /path/to/my.patch
+
+If it succeeds, the patch module (livepatch.ko) will be created in the
+current directory.
+
+TODO:
+
+  - specify module name on cmdline
+  - handle edge cases like correlation of static locals
+  - support other arches (currently x86-64 only)
+  - support clang
+  - performance optimization
+  - automated testing
+  - documentation
+
+Josh Poimboeuf (31):
+  x86/alternative: Refactor INT3 call emulation selftest
+  x86/module: Improve relocation error messages
+  x86/kprobes: Remove STACK_FRAME_NON_STANDARD annotation
+  kernel/sys: Don't reference UTS_RELEASE directly
+  x86/compiler: Tweak __UNIQUE_ID naming
+  elfnote: Use __UNIQUE_ID() for note symbols
+  kbuild: Remove "kmod" prefix from __KBUILD_MODNAME
+  objtool: Remove .parainstructions reference
+  objtool: Const string cleanup
+  objtool: Use 'struct elf' in elf macros
+  objtool: Add section/symbol type helpers
+  objtool: 'objname' refactoring
+  objtool: Support references to all symbol types in special sections
+  objtool: Refactor add_jump_destinations()
+  objtool: Interval tree cleanups
+  objtool: Simplify fatal error handling
+  objtool: Open up the elf API
+  objtool: Disallow duplicate prefix symbols
+  objtool: Add elf_create_file()
+  objtool: Add UD1 detection
+  objtool: Fix x86 addend calcuation
+  objtool: Make find_symbol_containing() less arbitrary
+  objtool: Handle __pa_symbol() relocations
+  objtool: Make STACK_FRAME_NON_STANDARD consistent
+  objtool: Fix interval tree insertion for zero-length symbols
+  objtool: Make interval tree functions "static inline"
+  objtool: Fix weak symbol detection
+  x86/alternative: Create symbols for special section entries
+  objtool: Calculate function checksums
+  livepatch: Enable -ffunction-sections -fdata-sections
+  objtool, livepatch: Livepatch module generation
+
+ .gitignore                              |    3 +
+ Makefile                                |    9 +
+ arch/x86/include/asm/alternative.h      |   50 +-
+ arch/x86/include/asm/asm.h              |   24 +-
+ arch/x86/include/asm/bug.h              |    2 +
+ arch/x86/include/asm/cpufeature.h       |    2 +
+ arch/x86/include/asm/jump_label.h       |    2 +
+ arch/x86/kernel/alternative.c           |   51 +-
+ arch/x86/kernel/kprobes/opt.c           |    4 -
+ arch/x86/kernel/module.c                |   15 +-
+ include/asm-generic/vmlinux.lds.h       |    2 +-
+ include/linux/compiler.h                |    8 +-
+ include/linux/elfnote.h                 |   12 +-
+ include/linux/init.h                    |    3 +-
+ include/linux/livepatch.h               |   25 +-
+ include/linux/livepatch_ext.h           |   83 ++
+ include/linux/livepatch_patch.h         |   73 ++
+ include/linux/objtool.h                 |   38 +-
+ kernel/livepatch/core.c                 |    8 +-
+ kernel/sys.c                            |    2 +-
+ scripts/Makefile.lib                    |    5 +-
+ scripts/livepatch/adjust-patch-lines    |  181 +++
+ scripts/livepatch/klp-build             |  355 ++++++
+ scripts/livepatch/module.c              |  120 ++
+ scripts/module.lds.S                    |   22 +-
+ tools/include/linux/livepatch_ext.h     |   83 ++
+ tools/objtool/Build                     |    4 +-
+ tools/objtool/Makefile                  |   34 +-
+ tools/objtool/arch/loongarch/decode.c   |    6 +-
+ tools/objtool/arch/loongarch/orc.c      |   30 +-
+ tools/objtool/arch/powerpc/decode.c     |    6 +-
+ tools/objtool/arch/x86/decode.c         |  118 +-
+ tools/objtool/arch/x86/orc.c            |   27 +-
+ tools/objtool/arch/x86/special.c        |    2 +-
+ tools/objtool/builtin-check.c           |   66 +-
+ tools/objtool/check.c                   | 1414 ++++++++++-------------
+ tools/objtool/elf.c                     | 1059 +++++++++--------
+ tools/objtool/include/objtool/arch.h    |    5 +-
+ tools/objtool/include/objtool/builtin.h |    4 +-
+ tools/objtool/include/objtool/check.h   |    5 +-
+ tools/objtool/include/objtool/elf.h     |  156 ++-
+ tools/objtool/include/objtool/klp.h     |   25 +
+ tools/objtool/include/objtool/objtool.h |    6 +-
+ tools/objtool/include/objtool/orc.h     |   10 +-
+ tools/objtool/include/objtool/special.h |    2 +-
+ tools/objtool/include/objtool/warn.h    |   50 +-
+ tools/objtool/klp-diff.c                | 1112 ++++++++++++++++++
+ tools/objtool/klp-link.c                |  122 ++
+ tools/objtool/klp.c                     |   57 +
+ tools/objtool/objtool.c                 |   78 +-
+ tools/objtool/orc_dump.c                |  100 +-
+ tools/objtool/orc_gen.c                 |   48 +-
+ tools/objtool/special.c                 |   58 +-
+ tools/objtool/sync-check.sh             |    1 +
+ tools/objtool/weak.c                    |   11 +-
+ 55 files changed, 4076 insertions(+), 1722 deletions(-)
+ create mode 100644 include/linux/livepatch_ext.h
+ create mode 100644 include/linux/livepatch_patch.h
+ create mode 100755 scripts/livepatch/adjust-patch-lines
+ create mode 100755 scripts/livepatch/klp-build
+ create mode 100644 scripts/livepatch/module.c
+ create mode 100644 tools/include/linux/livepatch_ext.h
+ create mode 100644 tools/objtool/include/objtool/klp.h
+ create mode 100644 tools/objtool/klp-diff.c
+ create mode 100644 tools/objtool/klp-link.c
+ create mode 100644 tools/objtool/klp.c
+
 -- 
-An old man doll... just what I always wanted! - Clara
+2.45.2
 
 
