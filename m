@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-536-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-537-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 98FC696926E
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:00:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 73A00969270
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:00:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 56199282C26
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:00:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 31AF5282C94
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:00:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AACD91CDFD8;
-	Tue,  3 Sep 2024 04:00:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ABDEF1CE710;
+	Tue,  3 Sep 2024 04:00:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iLjARiSH"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ezFWIhFY"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8015F1CDFCD;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84C481CE702;
 	Tue,  3 Sep 2024 04:00:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725336030; cv=none; b=ZidGj+jBMIAdxtVLaFgM7xSN8EiVYTaaRD+CXZOAqNl6YdGAtJs89ylrkjFd5V7MYnucs/TtKxQcXT8+jOuM3m4vUi9UDOJFL6gAOpA0UZlrktGZ4Bj9FnzEWK/Jdq7e0YjDWL0iLcksxh0OWrJkw0uVFKIXbKYTqUp8WFp3vQs=
+	t=1725336031; cv=none; b=CXUyP24s6PX003wCBbV2rsQ3PSLLK/F5FF2NBtCpJVjSmfh2FK19riBSPolCXy+ct+aykbaXpfeGLZHPFm0TlDw4WNhcKF7LGxMT7LeevIAiJnMvdlUCB2JAT/FOnxzJS/rpqOZ/IQCz5EfIxbsa0lOP7cAdPiqF5EdSyh905oM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725336030; c=relaxed/simple;
-	bh=OdbgV1d6SagFMFieLlZ7F3BDtff8ypL3ANe3ldIaiP8=;
+	s=arc-20240116; t=1725336031; c=relaxed/simple;
+	bh=p+eNZnmbPNAzBwrF+DnHcCqKwjEEMYp4aw6pdpoU2q8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=baHn0axhe2l1LQup4VIG/JjMeFAS5zzGezsaYE1UmeAnszXcuRfSrcG9rHUeTABcTdRO6vgEimQWwW4TwdC0Bzh04mdXamft45rIBpgfidxLNZmLEgh+85PlhJiDMuQiiQwvEYfb1uBY1mgRO7boz8uAc5WfsRl2hLKgmURA0kw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iLjARiSH; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A014EC4CECC;
-	Tue,  3 Sep 2024 04:00:29 +0000 (UTC)
+	 MIME-Version; b=dgmdqMQvlKxRZwMBBNV98bftg6zJSQxp64m73lB/FcvlNBIkKoS2v6Wwnj08pjBmZquQZSg7dlZF0EP5X4/sqkQI1PnUlwvexDh0OMayUgrvqbUjh86Dms5Py7/hzeeAcNdve2Lp2D/Klab44yjamG8Y1YvIvZ4lZ5YrrxeOK6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ezFWIhFY; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2921FC4CED1;
+	Tue,  3 Sep 2024 04:00:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1725336030;
-	bh=OdbgV1d6SagFMFieLlZ7F3BDtff8ypL3ANe3ldIaiP8=;
+	bh=p+eNZnmbPNAzBwrF+DnHcCqKwjEEMYp4aw6pdpoU2q8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=iLjARiSHag+1IRFGydMoZumBS5I064mp+8QcARiPbQp6p79PuL0YJox2Mcqlf4YxU
-	 ne8H9PlSTx7FlVW2A5e2+UWJMw92YBK7er+t2bC0jypAwI4kvRVU/EajhVKUe1s/Uc
-	 1jnKaUZkNUEvBTqiKEgQrdymcx432i5RXNfEeZ5c6tuS+TtKyJCdg74V1q7dCELF2f
-	 gOEqgP0rcR7U0i3Pd8PWKqcsd5d0X+6bfN+BlSfaikZZIX5KquLAvL3gzfRytC/MCl
-	 O9dzo9Sx9yeQ7ZuOFhx7S5UIHsS53gt39DHNrjREEq5WdwIWBIINobKOfYHIxRrkVQ
-	 44TfmqWLWpsgw==
+	b=ezFWIhFYecgcbF3EDR8Yup5jVRKouY6GLGQovs5q4c6ySWIEge1agxqTOrA8zQ3bW
+	 hx6YPjG/5JDQGWE0pq3wOuAVCWU8rIUgeF59306zNzQ8m2ZlgCV+xLlnrfFNxZyYrR
+	 QmVPCAQVWiBQJNPI9uj9adeAu5NUUZVfJ7b608V/73pY0z74Gp4/web9W461u/JLe+
+	 9w2gv7AO3nHCvKDAnGCIBFHwHihkcn0quGCbi2610A9oC944fAF8PghG0HUrTjIn80
+	 Vo099bVM+dG49OU23LDtQRcinPMB+2zibxxmL4KURHPokE894sogc8U6CyzXrPmjiZ
+	 cVINuU7h1Fz7Q==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -52,9 +52,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Zijlstra <peterz@infradead.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
-Subject: [RFC 02/31] x86/module: Improve relocation error messages
-Date: Mon,  2 Sep 2024 20:59:45 -0700
-Message-ID: <0e89228c265405d9125a3630c127b51d04f80232.1725334260.git.jpoimboe@kernel.org>
+Subject: [RFC 03/31] x86/kprobes: Remove STACK_FRAME_NON_STANDARD annotation
+Date: Mon,  2 Sep 2024 20:59:46 -0700
+Message-ID: <5902e2e9cfe2ed9224f165585d7e41f93bb04275.1725334260.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <cover.1725334260.git.jpoimboe@kernel.org>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
@@ -66,75 +66,37 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the section number and reloc index to relocation error messages to
-help find the faulty relocation.
+Since commit 877b145f0f47 ("x86/kprobes: Move trampoline code into
+RODATA"), the optprobe template code is no longer analyzed by objtool so
+it doesn't need to be ignored.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/kernel/module.c | 15 +++++++++------
- kernel/livepatch/core.c  |  4 ++--
- 2 files changed, 11 insertions(+), 8 deletions(-)
+ arch/x86/kernel/kprobes/opt.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index 837450b6e882..c09651691dd6 100644
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -96,6 +96,7 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
- 	DEBUGP("%s relocate section %u to %u\n",
- 	       apply ? "Applying" : "Clearing",
- 	       relsec, sechdrs[relsec].sh_info);
-+
- 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
- 		size_t size;
+diff --git a/arch/x86/kernel/kprobes/opt.c b/arch/x86/kernel/kprobes/opt.c
+index 36d6809c6c9e..e46d1710e785 100644
+--- a/arch/x86/kernel/kprobes/opt.c
++++ b/arch/x86/kernel/kprobes/opt.c
+@@ -103,7 +103,6 @@ static void synthesize_set_arg1(kprobe_opcode_t *addr, unsigned long val)
  
-@@ -147,15 +148,17 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
+ asm (
+ 			".pushsection .rodata\n"
+-			"optprobe_template_func:\n"
+ 			".global optprobe_template_entry\n"
+ 			"optprobe_template_entry:\n"
+ #ifdef CONFIG_X86_64
+@@ -160,9 +159,6 @@ asm (
+ 			"optprobe_template_end:\n"
+ 			".popsection\n");
  
- 		if (apply) {
- 			if (memcmp(loc, &zero, size)) {
--				pr_err("x86/modules: Invalid relocation target, existing value is nonzero for type %d, loc %p, val %Lx\n",
--				       (int)ELF64_R_TYPE(rel[i].r_info), loc, val);
-+				pr_err("x86/modules: Invalid relocation target, existing value is nonzero for sec %u, idx %u, type %d, loc %lx, val %Lx\n",
-+				       relsec, i, (int)ELF64_R_TYPE(rel[i].r_info),
-+				       (unsigned long)loc, val);
- 				return -ENOEXEC;
- 			}
- 			write(loc, &val, size);
- 		} else {
- 			if (memcmp(loc, &val, size)) {
--				pr_warn("x86/modules: Invalid relocation target, existing value does not match expected value for type %d, loc %p, val %Lx\n",
--					(int)ELF64_R_TYPE(rel[i].r_info), loc, val);
-+				pr_warn("x86/modules: Invalid relocation target, existing value does not match expected value for sec %u, idx %u, type %d, loc %lx, val %Lx\n",
-+					relsec, i, (int)ELF64_R_TYPE(rel[i].r_info),
-+					(unsigned long)loc, val);
- 				return -ENOEXEC;
- 			}
- 			write(loc, &zero, size);
-@@ -164,8 +167,8 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
- 	return 0;
- 
- overflow:
--	pr_err("overflow in relocation type %d val %Lx\n",
--	       (int)ELF64_R_TYPE(rel[i].r_info), val);
-+	pr_err("overflow in relocation type %d val %Lx sec %u idx %d\n",
-+	       (int)ELF64_R_TYPE(rel[i].r_info), val, relsec, i);
- 	pr_err("`%s' likely not compiled with -mcmodel=kernel\n",
- 	       me->name);
- 	return -ENOEXEC;
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 52426665eecc..76ffe29934d4 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -219,8 +219,8 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
- 	for (i = 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
- 		sym = (Elf_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
- 		if (sym->st_shndx != SHN_LIVEPATCH) {
--			pr_err("symbol %s is not marked as a livepatch symbol\n",
--			       strtab + sym->st_name);
-+			pr_err("symbol %s at rela sec %u idx %d is not marked as a livepatch symbol\n",
-+			       strtab + sym->st_name, symndx, i);
- 			return -EINVAL;
- 		}
- 
+-void optprobe_template_func(void);
+-STACK_FRAME_NON_STANDARD(optprobe_template_func);
+-
+ #define TMPL_CLAC_IDX \
+ 	((long)optprobe_template_clac - (long)optprobe_template_entry)
+ #define TMPL_MOVE_IDX \
 -- 
 2.45.2
 
