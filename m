@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-552-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-553-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4108296928D
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:03:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 834BB96928F
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 06:03:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F2888283B7D
-	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:03:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3BAF9283951
+	for <lists+live-patching@lfdr.de>; Tue,  3 Sep 2024 04:03:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B4BDD1D47DB;
-	Tue,  3 Sep 2024 04:00:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 80B6A1D54EB;
+	Tue,  3 Sep 2024 04:00:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s05wWCXK"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fVYa7cBD"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85CE71D47C4;
-	Tue,  3 Sep 2024 04:00:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 559451D54DB;
+	Tue,  3 Sep 2024 04:00:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725336038; cv=none; b=hVWZ2evQEiFn5jLDcUcn+4wszHez3Zkagtl8E2+e6T3B8kpROcMnQ8Xb85SGeq4N4vv0Hl7NRBPV+ji0O6pnfM0GBNkKQ3P54hMOAn9RhgjJVJDLOvwGw9LgBOvYnwTzn25CCLwxL8y+fSRFT+ST1NC6zuTW8Ou2PnBxnVb0a8g=
+	t=1725336039; cv=none; b=u0F7mtUVl2wyiRR0E1Y8c33rI9C6WSpmPN9Y79vLuLsR9QGN3/vFRdKIZfMJA3/Gp7URWWwKHDJN+yu5GHSWKJn1QDP5sgMDw0SEJcG2PRbge4PLyg6IAuPPhZS4/LtxpHqG6hVjHq+MjyKwCHpabroumTmJOCFN/EVZovo3T3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725336038; c=relaxed/simple;
-	bh=R7lpTxC5zGA9gCmdCP81GjnhFXtOMx9okauDMWA62HQ=;
+	s=arc-20240116; t=1725336039; c=relaxed/simple;
+	bh=XEuuJCImEqHAJnZPhF5hOjypD7T7+zQrodOehIwpmB8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=K6lTU26kpn/ySnO+vy3yDXepwc85yurdSt8j6iHV1EspIM07+3LocO0q83k2N7oLZI8qf1smk0Go1SFMieMl/jFpu5AbrnhkpsG036doMIiz+OziL9ScaClfc3iN590mg4qRGU/WXGLsQOsn874eFBbkO08+juUtvyCEzAskWQ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s05wWCXK; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D2EDC4CED4;
+	 MIME-Version; b=FW3Ut3zNEaFM8Z1WYEB+OiRHc/oQeW4uBmc1w2YUA3Qmww4wLL2YZd7hM7zV/B7nstdX8CRnzvIl580kkTaGHuLRDN+KCv7uHvHypkVNP/TJiZkifhdUi6dpQUZUXtH1ryn3qqKXC0A0lOE/hef3aYX09B9DKiplNi7iGcw2wuI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fVYa7cBD; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88EBAC4CECE;
 	Tue,  3 Sep 2024 04:00:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1725336038;
-	bh=R7lpTxC5zGA9gCmdCP81GjnhFXtOMx9okauDMWA62HQ=;
+	bh=XEuuJCImEqHAJnZPhF5hOjypD7T7+zQrodOehIwpmB8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=s05wWCXKjhfihSR7WWAMeTdm/B/Jn9c76wduABCrAd9bF13ETnEUwbdFk4VkO9cLc
-	 JOXU/FcFF60DfP18JGZDLloSnbpxWd3+BKy4FS3tkgOxZ0vLDCnHhXq4QUvKjhUVvy
-	 LtbD9Sh7g9c8rOiR7JnTAkQZzOJYWwjEsHeHypRP3kItYk5glP1Zp3s7jnVtFtVlwl
-	 1xAs/UvZrfQ5fWDLfum//TJ/A52WOh9R4ACzEukUHV0O4n6bDGeDHBpYRTxNmak0hU
-	 fZ2m4D/IyMabxJqoixjz14dMQIoahGMVcEdrESKe906TRJkFF7VAPV49bh6lJtLgTo
-	 gQ63GLR4tbF0w==
+	b=fVYa7cBD/1ZimqvEz8IK6nx5SuH7FXyZfy2um+a0+TXvWg8OcStxPA+rsUJ9bOZhy
+	 E2RjopDBowpMIXJfsO56r94AWSZ6fEg+hVwxN0R5OyESVpTKdTaVmzIjntkZwC/kmd
+	 47quGtYfouqIERUS6xVFDsd72rBTyT/rXnjbPu54Nlm0cQlVwB65WCmIzzUgLlsrgL
+	 8KHBcmLSwLfLsL/ognmwpBRf3ZXwopbFbOMT78TeQPHC9xtQ3f2JPep1MeCCPl924h
+	 trX/BqzLfxEcyhHEc7J/FW0IEowDJCMD/o+uFucYPBWNokx4is7YzrlmXot9azXmGI
+	 /xA4WhL1HcdOw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -52,9 +52,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Zijlstra <peterz@infradead.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
-Subject: [RFC 18/31] objtool: Disallow duplicate prefix symbols
-Date: Mon,  2 Sep 2024 21:00:01 -0700
-Message-ID: <569ad57b4b74af51f806e624dea25b4c912533c8.1725334260.git.jpoimboe@kernel.org>
+Subject: [RFC 19/31] objtool: Add elf_create_file()
+Date: Mon,  2 Sep 2024 21:00:02 -0700
+Message-ID: <327dc97a71aea6e9e5fa51960e0da62188da27f9.1725334260.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <cover.1725334260.git.jpoimboe@kernel.org>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
@@ -66,77 +66,185 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Error out if a duplicate prefix symbol is attempted.
+Add interface to enable the creation of a new ELF file.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c               | 5 ++++-
- tools/objtool/elf.c                 | 9 +++++++++
- tools/objtool/include/objtool/elf.h | 3 +++
- 3 files changed, 16 insertions(+), 1 deletion(-)
+ tools/objtool/elf.c                 | 118 ++++++++++++++++++++++++++++
+ tools/objtool/include/objtool/elf.h |   3 +-
+ 2 files changed, 120 insertions(+), 1 deletion(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index af945854dd72..236dc7871f01 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -3866,6 +3866,7 @@ static void add_prefix_symbol(struct objtool_file *file, struct symbol *func)
- 	for (prev = prev_insn_same_sec(file, insn);
- 	     prev;
- 	     prev = prev_insn_same_sec(file, prev)) {
-+		struct symbol *sym_pfx;
- 		u64 offset;
- 
- 		if (prev->type != INSN_NOP)
-@@ -3879,7 +3880,9 @@ static void add_prefix_symbol(struct objtool_file *file, struct symbol *func)
- 		if (offset < opts.prefix)
- 			continue;
- 
--		elf_create_prefix_symbol(file->elf, func, opts.prefix);
-+		sym_pfx = elf_create_prefix_symbol(file->elf, func, opts.prefix);
-+		if (!sym_pfx)
-+			ERROR("duplicate prefix symbol for %s\n", func->name);
- 
- 		break;
- 	}
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 0c95d7cdf0f5..748c170b931a 100644
+index 748c170b931a..7f89b0a99886 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -767,11 +767,20 @@ elf_create_prefix_symbol(struct elf *elf, struct symbol *orig, size_t size)
- 	size_t namelen = strlen(orig->name) + sizeof("__pfx_");
- 	char name[SYM_NAME_LEN];
- 	unsigned long offset;
+@@ -16,6 +16,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <errno.h>
++#include <libgen.h>
+ #include <linux/interval_tree_generic.h>
+ #include <objtool/builtin.h>
+ #include <objtool/elf.h>
+@@ -926,6 +927,9 @@ struct elf *elf_open_read(const char *name, int flags)
+ 	elf->fd = open(name, flags);
+ 	ERROR_ON(elf->fd == -1, "can't open '%s': %s", name, strerror(errno));
+ 
++	elf->name = strdup(name);
++	ERROR_ON(!elf->name, "strdup");
++
+ 	if ((flags & O_ACCMODE) == O_RDONLY)
+ 		cmd = ELF_C_READ_MMAP;
+ 	else if ((flags & O_ACCMODE) == O_RDWR)
+@@ -949,6 +953,108 @@ struct elf *elf_open_read(const char *name, int flags)
+ 	return elf;
+ }
+ 
++struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name)
++{
++	struct section *null, *symtab, *strtab, *shstrtab;
++	char *dir, *base, *tmp_name;
 +	struct symbol *sym;
- 
- 	snprintf(name, namelen, "__pfx_%s", orig->name);
- 
-+	sym = orig;
- 	offset = orig->sym.st_value - size;
- 
-+	sec_for_each_sym_continue_reverse(orig->sec, sym) {
-+		if (sym->offset < offset)
-+			break;
-+		if (sym->offset == offset && !strcmp(sym->name, name))
-+			return NULL;
++	struct elf *elf;
++
++	elf_version(EV_CURRENT);
++
++	elf = calloc(1, sizeof(*elf));
++	ERROR_ON(!elf, "calloc");
++
++	INIT_LIST_HEAD(&elf->sections);
++
++	dir = strdup(name);
++	ERROR_ON(!dir, "strdup");
++	dir = dirname(dir);
++
++	base = strdup(name);
++	ERROR_ON(!base, "strdup");
++	base = basename(base);
++
++	tmp_name = malloc(256);
++	ERROR_ON(!tmp_name, "malloc");
++
++	snprintf(tmp_name, 256, "%s/%s.XXXXXX", dir, base);
++
++	elf->fd = mkstemp(tmp_name);
++	if (elf->fd == -1) {
++		fprintf(stderr, "objtool: Can't open '%s': %s\n",
++			elf->tmp_name, strerror(errno));
++		exit(1);
 +	}
 +
- 	return elf_create_symbol(elf, name, orig->sec,
- 				 GELF_ST_BIND(orig->sym.st_info),
- 				 GELF_ST_TYPE(orig->sym.st_info),
++	elf->tmp_name = tmp_name;
++
++	elf->name = strdup(name);
++	ERROR_ON(!elf->name, "strdup");
++
++	elf->elf = elf_begin(elf->fd, ELF_C_WRITE, NULL);
++	if (!elf->elf)
++		ERROR_ELF("elf_begin");
++
++	if (!gelf_newehdr(elf->elf, ELFCLASS64))
++		ERROR_ELF("gelf_newehdr");
++
++	memcpy(&elf->ehdr, ehdr, sizeof(elf->ehdr));
++
++	if (!gelf_update_ehdr(elf->elf, &elf->ehdr))
++		ERROR_ELF("gelf_update_ehdr");
++
++	INIT_LIST_HEAD(&elf->symbols);
++
++	elf_alloc_hash(section, 1000);
++	elf_alloc_hash(section_name, 1000);
++
++	elf_alloc_hash(symbol, 10000);
++	elf_alloc_hash(symbol_name, 10000);
++
++	elf_alloc_hash(reloc, 100000);
++
++	/*
++	 * NULL section: add it to the section list without actually adding it
++	 * to elf as we use it for some things (such as?)
++	 */
++	null		= elf_create_section(elf, NULL, 0, 0, SHT_NULL, 0, 0);
++	null->name	= "";
++
++	shstrtab	= elf_create_section(elf, NULL, 0, 0, SHT_STRTAB, 1, 0);
++	shstrtab->name	= ".shstrtab";
++
++	strtab		= elf_create_section(elf, NULL, 0, 0, SHT_STRTAB, 1, 0);
++	strtab->name	= ".strtab";
++
++	null->sh.sh_name	= elf_add_string(elf, shstrtab, null->name);
++	shstrtab->sh.sh_name	= elf_add_string(elf, shstrtab, shstrtab->name);
++	strtab->sh.sh_name	= elf_add_string(elf, shstrtab, strtab->name);
++
++	elf_hash_add(section_name, &null->name_hash,		str_hash(null->name));
++	elf_hash_add(section_name, &strtab->name_hash,		str_hash(strtab->name));
++	elf_hash_add(section_name, &shstrtab->name_hash,	str_hash(shstrtab->name));
++
++	elf_add_string(elf, strtab, "");
++
++	symtab = elf_create_section(elf, ".symtab", 0x18, 0x18, SHT_SYMTAB, 0x8, 0);
++	symtab->sh.sh_link = strtab->idx;
++	symtab->sh.sh_info = 1;
++
++	elf->ehdr.e_shstrndx = shstrtab->idx;
++	if (!gelf_update_ehdr(elf->elf, &elf->ehdr))
++		ERROR_ELF("gelf_update_ehdr");
++
++	sym = calloc(1, sizeof(*sym));
++	ERROR_ON(!sym, "calloc");
++
++	sym->name = "";
++	sym->sec = null;
++	elf_add_symbol(elf, sym);
++
++	return elf;
++}
++
+ unsigned long elf_add_string(struct elf *elf, struct section *strtab, const char *str)
+ {
+ 	unsigned long offset;
+@@ -1281,6 +1387,18 @@ void elf_write(struct elf *elf)
+ 		ERROR_ELF("elf_update");
+ 
+ 	elf->changed = false;
++
++	if (elf->tmp_name) {
++		int ret;
++
++		unlink(elf->name);
++
++		ret = linkat(AT_FDCWD, elf->tmp_name, AT_FDCWD, elf->name, 0);
++		ERROR_ON(ret, "linkat");
++
++		close(elf->fd);
++		unlink(elf->tmp_name);
++	}
+ }
+ 
+ void elf_close(struct elf *elf)
 diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index e91bbe7f07bf..5ac5e7cdddee 100644
+index 5ac5e7cdddee..f759686d46d7 100644
 --- a/tools/objtool/include/objtool/elf.h
 +++ b/tools/objtool/include/objtool/elf.h
-@@ -399,6 +399,9 @@ static inline void set_reloc_type(struct elf *elf, struct reloc *reloc, unsigned
- #define sec_for_each_sym(sec, sym)					\
- 	list_for_each_entry(sym, &sec->symbol_list, list)
+@@ -87,7 +87,7 @@ struct elf {
+ 	GElf_Ehdr ehdr;
+ 	int fd;
+ 	bool changed;
+-	const char *name;
++	const char *name, *tmp_name;
+ 	unsigned int num_files;
+ 	struct list_head sections;
+ 	unsigned long num_relocs;
+@@ -109,6 +109,7 @@ struct elf {
+ };
  
-+#define sec_for_each_sym_continue_reverse(sec, sym)			\
-+	list_for_each_entry_continue_reverse(sym, &sec->symbol_list, list)
-+
- #define for_each_sym(elf, sym)						\
- 	for (struct section *__sec, *__fake = (struct section *)1;	\
- 	     __fake; __fake = NULL)					\
+ struct elf *elf_open_read(const char *name, int flags);
++struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name);
+ 
+ struct section *elf_create_section(struct elf *elf, const char *name,
+ 				   size_t size, size_t entsize,
 -- 
 2.45.2
 
