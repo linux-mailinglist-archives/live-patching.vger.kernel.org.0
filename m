@@ -1,121 +1,121 @@
-Return-Path: <live-patching+bounces-589-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-590-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0D16E96B3E9
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 10:08:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AD09996B6F0
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 11:38:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B690E1F22A9C
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 08:08:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E06651C219C4
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 09:38:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69CB7155735;
-	Wed,  4 Sep 2024 08:08:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F9351CCECB;
+	Wed,  4 Sep 2024 09:38:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Rbap1gwj"
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="d/5+gz3/"
 X-Original-To: live-patching@vger.kernel.org
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from out162-62-58-211.mail.qq.com (out162-62-58-211.mail.qq.com [162.62.58.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F108F52F70;
-	Wed,  4 Sep 2024 08:08:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CF301CCB29;
+	Wed,  4 Sep 2024 09:37:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725437326; cv=none; b=oRMj/juFZNKZW00KMu6mi0aeOUawPSoWgf8A5t0PcFYNDAo6wxcUJETkH8g9oYu362eVSwtMWmmwxSS4c32H1lUGFLbS9gzFK2iATS27+qR7JwNWjNtEqBt5JZN7Fi9jUp1LGcS/PzSslM0pbOVvc+qr4xLpd7uCjm6j/EmRsdY=
+	t=1725442683; cv=none; b=S7beYfLAdo1qtCcT/0z+fKideO7EVJmUYux2qn3jWs2yqE52p6CQEUzHmk+JwmW/Nh5cdxRPjoww7h8ye2Z76/CgKw6cH9vxs1Lfe5OBryt4OPJqSzDzIjW4kGUB05VMK/cHvRMXo1gNeExF01H7+7VA+ixr1zJ7WQB8tkOhaL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725437326; c=relaxed/simple;
-	bh=60XKJBFQrNzMhkirdD2qis5gFKmyYkDScKZTst23+Pk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zbc5SoMp49EUkbV0/bm6tFhsMkXAfJopOGMAKOGrsBtGWRi7D8UKRHxOBcZ+EpSBZqQNkgehaEvUxxHyjWjozEMrzeB+oYGD/0yTybhwtyye1eUN0fiYPnJSWljCMXv0nAWhLCa/TvmF04Q82FY91GddYLfdK7Hh194aHKoZSd8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=Rbap1gwj; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=jda6kdkrlX1mijI27UzNrN49mCGupQmlGIn58DXJZPU=; b=Rbap1gwjxDKmEX54KIL3907rSS
-	tgC+gEqNWP6z7ut4FcRHXo9cnC6hsj3Jt0b/TfKgQIhfTjy14GvIpW1KUkDtWqKRLjzHZQPkec6hQ
-	QujMs7A9bnDzrPfSKrzUG/CgqQFA1V+15ShZuqjp1hZLAQ8avDvTwtAefVBHkAaqK2M2ezR+Q83Ro
-	EeytOF9clvS/T6qsaDsiTcmu6Jr7p/fPWDaC7KwUF3AeAsKVOEKLpOZ7WfaArR/C4mrI99+Lhtocu
-	HJPdLLQU4TekVx7yfy9tMCwVMhC+JMO/1XrB83oqLRz6Di8V/VyRY5Sbyp2b+iSueDaSWZ2QwQMrp
-	AqQQrB3w==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
-	id 1sll4D-00000000Xr3-1PmP;
-	Wed, 04 Sep 2024 08:08:42 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 3CB97300642; Wed,  4 Sep 2024 10:08:42 +0200 (CEST)
-Date: Wed, 4 Sep 2024 10:08:42 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Song Liu <song@kernel.org>
-Subject: Re: [RFC 28/31] x86/alternative: Create symbols for special section
- entries
-Message-ID: <20240904080842.GE4723@noisy.programming.kicks-ass.net>
+	s=arc-20240116; t=1725442683; c=relaxed/simple;
+	bh=xKGfFisBUlLlBC9V4tz/6if5ruOEIla+KA6DvV6jvc4=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=TUTQg5AgJd7iilTV+9q/kNpvqcW8i8V/50OopS+Ek6J/7WzfMj+ueZaPMwa9qq2wMt/dlBx/AShwEmD5/s8wJEue57H+jT2Xe/VkTd0WqN54KzDWM1MmGc0G/VnMpcoQsns6FuIT4taGyhnBKdME1/MNDY/nodCnkAfFqUBvKsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=d/5+gz3/; arc=none smtp.client-ip=162.62.58.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1725442676;
+	bh=xKGfFisBUlLlBC9V4tz/6if5ruOEIla+KA6DvV6jvc4=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References;
+	b=d/5+gz3/S9Hg4V6+K8omviN+NIQxASqhNTzwMbRvuUsmcZcuWHO4vFSgEEoIAENGn
+	 RiRXKFtoqIqCQwW+ASCKYL5v8YFqxKHtrapDhQqEXdRv6Bd0VgEfCrXR5WTKlauTcV
+	 cVOE37v6eU2NEHEUJSad5yxi5jxDU1HijCzWQgnE=
+Received: from [IPv6:2408:822e:28e:6c60:9a27:a20e:8078:6e28] ([2408:822e:28e:6c60:9a27:a20e:8078:6e28])
+	by newxmesmtplogicsvrszb16-1.qq.com (NewEsmtp) with SMTP
+	id 61631C94; Wed, 04 Sep 2024 17:24:22 +0800
+X-QQ-mid: xmsmtpt1725441862tza9uo2n8
+Message-ID: <tencent_65EFC9C0B6F4B36D24BFAFBEBEE912D71A05@qq.com>
+X-QQ-XMAILINFO: OQhZ3T0tjf0aGgKeyvuVyBUliCo4NoTRW6IV4kNy5yBaH+Z2LtZUEb5tudN6y+
+	 TCXTg1l0Hri5WxPI8BKQe+guVNw2PhUa7NQhs1B/Ib7M/WOxf7x+NpgurGNX6xT+IcZL04nKouWu
+	 aKKBOCEBtEm0aKGElMjA1PE5hcdiHxwBmLnNRamEiAhyx/lYW6lhZ9lmoUNS1DF73kvNTlpfwBmk
+	 Y/BiQQ/E4i5Oy4EN2i4OOr6hu/n0oa2RLS+FdvnCNEaQiluBVYoASBwsULGQ8OlKKZQxFbfZ76qv
+	 iJ0Bo4RIGn74Cm3bStSCaVe1uEha0SbzctOdlybLf72EE+sNMCqlFDJA6aogoI76HoCFy3KDayyj
+	 pmEp5hzTJ6tauconPgVIiLpQQXoOlou4M+D548w5pzW0FLSGceUlhGqPIZOCI6qmksTlwhVDXD+3
+	 1fSJKvB1LNFk59KbR3n0QFOYp53MhD9dGPz24CMkY1oxc+GqHMTZP3uf0gJcKBtxLtL4rj2RnhF+
+	 jauiUa3pRzY6+mJWHy8nwynpxqG4HN2jIaLl7BUUfUpPk2rcxAgSG536yCV+AKFeuD4oyn3k1tjZ
+	 +jfgDdEZetOjdFpkUbARKKFStE0q0jZ1YJSreAHBRZutAqpe/MAUU+PcDWw3LHUkY3Jf17wl0NKv
+	 jIbLZHwK6Wh2ehvgBoJlOOGQMwZxBTsrmSH6B1mJC1aKjLi+mfH1n1ecp3dP10u576oVv6c1v6YO
+	 WExM2gukbm0OiPf4g0o1aHa6hVHZlafEx8IC+l7dWFBukIh4qvIqn3PaXvQJuca2vLPzqvX94qwF
+	 llbGLbPVuEW5pZIGjbvw2hceU/DKhRnATvKca4GvO+Tvt0tH65tRCZE4S/EhrZ3NJ9w0GaMVKCil
+	 HO0a4tooCz+7APcG8Hl+2Md/J01Wpek35QRImcFzk3aWzxVl4cbLBQXCiGHFFwFXSuoOCjigVK
+X-QQ-XMRINFO: M/715EihBoGSf6IYSX1iLFg=
+X-OQ-MSGID: <79261beda62e69c379023b91140261ed73cf42ca.camel@foxmail.com>
+Subject: Re: [RFC 21/31] objtool: Fix x86 addend calcuation
+From: laokz <laokz@foxmail.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>, live-patching@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, x86@kernel.org, Miroslav Benes
+ <mbenes@suse.cz>,  Petr Mladek <pmladek@suse.com>, Joe Lawrence
+ <joe.lawrence@redhat.com>, Jiri Kosina <jikos@kernel.org>,  Peter Zijlstra
+ <peterz@infradead.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, Song
+ Liu <song@kernel.org>
+Date: Wed, 04 Sep 2024 17:24:21 +0800
+In-Reply-To: <43433a745f6db5afb513d015a6181bc40be12b4f.1725334260.git.jpoimboe@kernel.org>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
- <7bc1bcb1cd875350948f43c77c9895173bd22012.1725334260.git.jpoimboe@kernel.org>
- <20240903082909.GP4723@noisy.programming.kicks-ass.net>
- <20240904042829.tkcpql65cxgzvhpx@treble>
+	 <43433a745f6db5afb513d015a6181bc40be12b4f.1725334260.git.jpoimboe@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240904042829.tkcpql65cxgzvhpx@treble>
 
-On Tue, Sep 03, 2024 at 09:28:29PM -0700, Josh Poimboeuf wrote:
-> On Tue, Sep 03, 2024 at 10:29:09AM +0200, Peter Zijlstra wrote:
-> > On Mon, Sep 02, 2024 at 09:00:11PM -0700, Josh Poimboeuf wrote:
-> > > Create a symbol for each special section entry.  This helps objtool
-> > > extract needed entries.
-> > 
-> > A little more explanation would be nice,..
-> 
-> Indeed!
-> 
-> From: Josh Poimboeuf <jpoimboe@kernel.org>
-> Subject: [PATCH] x86/alternative: Create symbols for special section entries
-> 
-> The kernel has a myriad of special sections including __bug_table,
-> .altinstructions, etc.  Each has its own distinct format, though each is
-> more or less an array of structs or pointers.
-> 
-> When creating a livepatch module, objtool extracts a subset of functions
-> out of the original object file and into a new one.  For that to work
-> properly, it also needs to extract a subset of each special section's
-> entries.  Specifically, it should only extract those entries which
-> reference the extracted functions.
-> 
-> One way to achieve that would be to hardcode intimate knowledge about
-> each special section and its entry sizes.  That's less than ideal,
-> especially for cases like .altinstr_replacement which has variable-sized
-> "structs" which are described by another section.
-> 
-> Take a more generic approach: for the "array of structs" style sections,
-> annotate each struct entry with a symbol containing the entry.  This
-> makes it easy for tooling to parse the data and avoids the fragility of
-> hardcoding section details.
-> 
-> (For the "array of pointers" style sections, no symbol is needed, as the
-> format is already self-evident.)
+On Mon, 2024-09-02 at 21:00 -0700, Josh Poimboeuf wrote:
+> arch_dest_reloc_offset() hard-codes the addend adjustment to 4, which
+> isn't always true.=C2=A0 In fact it's dependent on the instruction itself=
+.
+>=20
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> ---
+> =C2=A0tools/objtool/arch/loongarch/decode.c |=C2=A0 4 ++--
+> =C2=A0tools/objtool/arch/powerpc/decode.c=C2=A0=C2=A0 |=C2=A0 4 ++--
+> =C2=A0tools/objtool/arch/x86/decode.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ | 15 +++++++++++++--
+> =C2=A0tools/objtool/check.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 13 ++++---------
+> =C2=A0tools/objtool/include/objtool/arch.h=C2=A0 |=C2=A0 2 +-
+> =C2=A05 files changed, 22 insertions(+), 16 deletions(-)
+>=20
+> diff --git a/tools/objtool/arch/loongarch/decode.c
+> b/tools/objtool/arch/loongarch/decode.c
+> index ef09996c772e..b5d44d7bce4e 100644
+> --- a/tools/objtool/arch/loongarch/decode.c
+> +++ b/tools/objtool/arch/loongarch/decode.c
+> @@ -20,9 +20,9 @@ unsigned long arch_jump_destination(struct
+> instruction *insn)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return insn->offset + (in=
+sn->immediate << 2);
+> =C2=A0}
+> =C2=A0
+> -unsigned long arch_dest_reloc_offset(int addend)
+> +s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc
+> *reloc)
+> =C2=A0{
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return addend;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return reloc_addend(addend);
 
-(so someone went and touched a ton of the alternative code recently,
-this is going to need a rebase)
+reloc_addend(reloc) ?
 
-This generates a metric ton of symbols and I'm not seeing you touch
-kallsyms.c, do we want to explicitly drop these from a --all-symbols
-build? I don't think it makes sense to have them in the final image,
-right?
+
 
 
