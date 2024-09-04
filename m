@@ -1,47 +1,47 @@
-Return-Path: <live-patching+bounces-575-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-576-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF87A96AE86
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 04:25:18 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id C18B496AF94
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 05:55:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6D70A286955
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 02:25:17 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 59DDE1F2422D
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 03:55:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9CB8335D3;
-	Wed,  4 Sep 2024 02:25:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5051757C8D;
+	Wed,  4 Sep 2024 03:55:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VDE8799W"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tF2S/Utd"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1617BE49;
-	Wed,  4 Sep 2024 02:25:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25E2133D5;
+	Wed,  4 Sep 2024 03:55:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725416712; cv=none; b=XqZUiPikmhiwxJyJm4OwNOTEvYkinpbe7Gj3whyDjVCeKUCd9NfKW8aSaF0XVwi5sr0zFitbJ8/jUctAl3Ojl8BF42b/+yj4Vlo4CcEIx3LoRD8MCvd1gTtdRUQ9obhpyPGcdaGXzR1RaUx86sfHrrx7kia+SvCAa+tK89aaR1Y=
+	t=1725422116; cv=none; b=WMmsf0H85/jZB6pJ8+Bc1CEgLKTtxCmuXmx6A05rTQ+6dFqWbSUGtH3u73oYa7e15GT10SgVSQaCN/3VLsKxgBbpxXNOTcfnJ69E3jwB5/ssklAY4GHun0IxIO4zXTvNijKQ7UQ4tjlrDyBmaofeh8aoov/eMH5W1QtJO4dZbVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725416712; c=relaxed/simple;
-	bh=S8VVGSChyr09gjPcr3VhpFJQ+BWJbA82d5f8YVfDUCw=;
+	s=arc-20240116; t=1725422116; c=relaxed/simple;
+	bh=DssF/4uqjfbKPUshyTRRC9EWX7NBO2tP4IqNZva2w8A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uFHPHTKMcugZcdV0v1dl4rvH2XFthwg3LfIvjZcyTWzkBcE7tlZnJaqKA/gd94I8h7YBomdXLkjzw86/f+1bUI4Xo56uX+y/XG/B//o9r76DpD6EQMiLE4bVQzxMEzL12ohUmxe/Mt/wPNJVBkYpdFECYtS15tzWir0yVuybdz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VDE8799W; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCAA1C4CEC4;
-	Wed,  4 Sep 2024 02:25:11 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=H+kYqxFtlKkirCeWQaVxuqmUMpVq+hCXNDDrNcWlMWOvDcMN8LG5zgVs+10LUGyKlVLky9eJC64KNdbayjO7Qg49YUezv23AUU8LYC4WIuraw7tX/YAd1iJeLJW4ny8L+A8YX8wvv+b/8lMWhDhqoFBG/Mi6KA/ic+T+H0wF/Rg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tF2S/Utd; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57DD8C4CEC2;
+	Wed,  4 Sep 2024 03:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725416712;
-	bh=S8VVGSChyr09gjPcr3VhpFJQ+BWJbA82d5f8YVfDUCw=;
+	s=k20201202; t=1725422115;
+	bh=DssF/4uqjfbKPUshyTRRC9EWX7NBO2tP4IqNZva2w8A=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VDE8799WS8lCqg47skM4z24dyLt4FlvQ36pJPVwRqG8ZjIenHvRUTcBzzZszGgjYx
-	 C7nam6gQ4oOQof3UliSrOgpCN7Rjpe25GUWjJfoVTKrbOjCw0ms+NbA1qZ5CMDxe+u
-	 aR1T+NBUYBG/9LPUxIl7x/hsHrCyGRUCdlEbdiv+9lYsq4XpJ6W+5FwR/ZIaQMaCBy
-	 Mv83q7oxjx9Ceu4c9ckW3DCOtnYqpJ3dkg7q/fRyGPh8RaAvfjTr8xgS1oTKW0tS2A
-	 s4V13z7t3F+7R7ckZtRSdQjHWjSgUFdAPqzyw6Q11LlRPdQuD8KFuSKMW35R41r85O
-	 YABGefvY38QwQ==
-Date: Tue, 3 Sep 2024 19:25:08 -0700
+	b=tF2S/UtdRcrngtknDuhhNrsCrAxOrRu6NpvhAnz/e9xDg7xz1bzaZBroZuEeI/S3Z
+	 TYWrUWBp4aZwm6CWgyZC+d9vMI5AOqDQlV4yze7dXHtP3O69pcztfZ+wlNJTn3et3J
+	 eXtO3vcw/0FkTE9Y7f+e7Cg1VaivkAA1G7Hmrf1CMgsA6siYrRnPmkLsBw+G+Qu6Xk
+	 xxhTWJGNcmaBb0dRZIASpamu3gqWTfG+KqsjiPgRKxeT5hbxlXhXs9Up5byncwSN0P
+	 Ty0Ey7tVphwwjqNKBxHTFksPfWpXtQmiP3e/sHzVwop7Qqc8/t82TnKnAzZWAsvqdQ
+	 P5ULoC05Xd3jw==
+Date: Tue, 3 Sep 2024 20:55:13 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Peter Zijlstra <peterz@infradead.org>
 Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -51,11 +51,11 @@ Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Jiri Kosina <jikos@kernel.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
-Subject: Re: [RFC 20/31] objtool: Add UD1 detection
-Message-ID: <20240904022508.lcn36ouu5ka6eken@treble>
+Subject: Re: [RFC 27/31] objtool: Fix weak symbol detection
+Message-ID: <20240904035513.cnbkivqibdklzpw2@treble>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
- <20e0e2662239a042a10196e8f240ce596b250ae8.1725334260.git.jpoimboe@kernel.org>
- <20240903081748.GN4723@noisy.programming.kicks-ass.net>
+ <bcedaf8559e7e276e4d9ba511dab038ed70ebd6c.1725334260.git.jpoimboe@kernel.org>
+ <20240903082645.GO4723@noisy.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -64,53 +64,26 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240903081748.GN4723@noisy.programming.kicks-ass.net>
+In-Reply-To: <20240903082645.GO4723@noisy.programming.kicks-ass.net>
 
-On Tue, Sep 03, 2024 at 10:17:48AM +0200, Peter Zijlstra wrote:
-> On Mon, Sep 02, 2024 at 09:00:03PM -0700, Josh Poimboeuf wrote:
-> > A UD1 isn't a BUG and shouldn't be treated like one.
-> > 
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > ---
-> >  tools/objtool/arch/x86/decode.c | 10 +++++++++-
-> >  1 file changed, 9 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-> > index 6b34b058a821..72d55dcd3d7f 100644
-> > --- a/tools/objtool/arch/x86/decode.c
-> > +++ b/tools/objtool/arch/x86/decode.c
-> > @@ -528,11 +528,19 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
-> >  			/* sysenter, sysret */
-> >  			insn->type = INSN_CONTEXT_SWITCH;
-> >  
-> > -		} else if (op2 == 0x0b || op2 == 0xb9) {
-> > +		} else if (op2 == 0x0b) {
-> >  
-> >  			/* ud2 */
-> >  			insn->type = INSN_BUG;
-> >  
-> > +		} else if (op2 == 0xb9) {
-> > +
-> > +			/*
-> > +			 * ud1 - only used for the static call trampoline to
-> > +			 * stop speculation.  Basically used like an int3.
-> > +			 */
-> > +			insn->type = INSN_TRAP;
-> > +
-> >  		} else if (op2 == 0x0d || op2 == 0x1f) {
-> >  
-> >  			/* nopl/nopw */
+On Tue, Sep 03, 2024 at 10:26:45AM +0200, Peter Zijlstra wrote:
+> On Mon, Sep 02, 2024 at 09:00:10PM -0700, Josh Poimboeuf wrote:
+> > @@ -433,9 +433,13 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
+> >  	/*
+> >  	 * Don't store empty STT_NOTYPE symbols in the rbtree.  They
+> >  	 * can exist within a function, confusing the sorting.
+> > +	 *
+> > +	 * TODO: is this still true?
 > 
-> We recently grew more UD1 usage...
+> a2e38dffcd93 ("objtool: Don't add empty symbols to the rbtree")
 > 
-> ---
-> commit 7424fc6b86c8980a87169e005f5cd4438d18efe6
-> Author: Gatlin Newhouse <gatlin.newhouse@gmail.com>
-> Date:   Wed Jul 24 00:01:55 2024 +0000
+> I don't think that changed.
 
-Interesting, thanks.  I'm having a senior moment as I can't remember why
-this patch exists -- maybe it was code inspection?  My patch desciption
-is awful.  I'll just drop it for now.
+But see two patches back where I fixed a bug in the insertion of
+zero-length symbols.
+
+I was thinking that might actually be the root cause of the above
+commit.
 
 -- 
 Josh
