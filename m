@@ -1,64 +1,62 @@
-Return-Path: <live-patching+bounces-597-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-598-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 94B3D96C44E
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 18:44:36 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id EDCA196C5F4
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 20:06:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 48B161F219C9
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 16:44:36 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 5ABDCB20BD0
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 18:06:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC50B1E0B60;
-	Wed,  4 Sep 2024 16:44:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CF811E0B8C;
+	Wed,  4 Sep 2024 18:06:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QvqhJEBn"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b8JXFX58"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C21F51E00BD;
-	Wed,  4 Sep 2024 16:44:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3208D2AE9F;
+	Wed,  4 Sep 2024 18:06:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725468271; cv=none; b=YbtHS2H2+lT2hCvdLip8nMA4aJMX6bWvsGMp0+AetWtgzYACmg6SBlV46gOCdycJvnPcjifHxUkbA1DGx+/mn/hnk4I7fzcskY0y2D/vev+0PRLS6z2Oe7h5N6/QyYlzdpu8A1mSPS9y91JVhJFFGFKRlLov9dB7QhkCErE3Mtw=
+	t=1725473211; cv=none; b=jFycqlN7hNX63MTbpWHBUfDrKZ8oEzwoXNlWgcATKGV5515oNxibx1kgosd3V9ZigX8Y4N7eXq83INC4XoEbIUij2h7Je827+t+s0yyEzUBehdvoG2Pj3ZWMZHQM6vi9HwblkbT6nPgcCI4c/MYOpicXRIUK8C/A4hHU/ioICfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725468271; c=relaxed/simple;
-	bh=b0/jVE3eF7SiKmjozMXjpT6kBCbEEbOS7Y/RJoB0Su4=;
+	s=arc-20240116; t=1725473211; c=relaxed/simple;
+	bh=ummQraPGr12Rbrv+T6vWh69Bxy+GGS3bvVUkuPzUlmU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VtEVcLiApV4WclI0s1o8dn+m/kpLhg7MOv61Bw57UY8TdardISkrg7sB6Kv6zYlPC8vCUAlzWfR2SrU4SQDnruWLaYW5hb8lXRoybu3Kc+bCzQDqutNlOkCtOyIwf34jOU2ou1QUP25MQYM0ZIPeaSTV5Cd60YKCo/TV0RuZ64A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QvqhJEBn; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D340AC4CEC2;
-	Wed,  4 Sep 2024 16:44:30 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=tfQzcJOU0rm9NAfEBr30kYf/uNlyPcSoSnr3ayN9nHCmAAyDlo6HsaSrLv80qqGfbJLDdRIKVEU6D/fsoOxmyyfab4kh3t6wZzwN4O8WuLmTzB2VCeyx60BilTbAhrk7uevWCE95TqpyqDroB55JDSxihVEiNDJ9T7PAvCt/XWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b8JXFX58; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B6B9C4CEC2;
+	Wed,  4 Sep 2024 18:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725468271;
-	bh=b0/jVE3eF7SiKmjozMXjpT6kBCbEEbOS7Y/RJoB0Su4=;
+	s=k20201202; t=1725473210;
+	bh=ummQraPGr12Rbrv+T6vWh69Bxy+GGS3bvVUkuPzUlmU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QvqhJEBnwQx3Xgm1qtXAowO8bX3g0DWICYCEGf3+k16QUlisAz5dMKhmHg6r31T42
-	 VFjc2khDY6cmOYCovmK4g3+V+HcadgoSB6OyX3xVDyxJEvuE57tMH7A8+vhhBpkc2+
-	 cgWmzvGuPAeatem8Szu7TIVhjDKQtM9OTL2xUP4g+o7gkrHN/VVB1yfGpX0Rj8s+bk
-	 fOpy7Wv0Y4S7mflW/OXXt7B7402KIs8JGwbOVpDeanrCi96uVcQiQjM2YBPjjP23Fz
-	 bdbPU9+FS//yAXi340FuVxSGkcwmCqmrI4jGioHuOjobBMJqhge8qLqpLgadJp1yWh
-	 9pexCC4PxADVQ==
-Date: Wed, 4 Sep 2024 09:44:29 -0700
+	b=b8JXFX58npgpm/y900lVxLSXxT764ydB0CfC39PNbTAgLRhxiCDeYoxCwKhmYrnRN
+	 mknI9zkgQ/5X3XJck81VMSfrBsoeYWruA49b2qFQ51jSO1iUEysiPvViz0uzmw/feV
+	 +fjY4ja6/NxFhKwNE8JhUVJgNdKwwlRScN4Hax3olZ6cJjW+3BoFbe5Yf4VUF7CMOh
+	 DU1h/aoTI/8yMYb4cXhgNEiF9sXNpZ76rvH+f17pFa6t+qrMNXrIsHi4T/D3JcLJzQ
+	 +yWBw6KmxKlRZ/JFAkd01OKxd/gupoh7W5b+fO3TV9DHlfI6Tn+Tcs0s9tlhArdOYj
+	 CGb4OBS94lM8A==
+Date: Wed, 4 Sep 2024 11:06:48 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: Peter Zijlstra <peterz@infradead.org>, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org, x86@kernel.org,
-	Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+To: zhang warden <zhangwarden@gmail.com>
+Cc: Miroslav Benes <mbenes@suse.cz>, Jiri Kosina <jikos@kernel.org>,
+	Petr Mladek <pmladek@suse.com>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Song Liu <song@kernel.org>
-Subject: Re: [RFC 28/31] x86/alternative: Create symbols for special section
- entries
-Message-ID: <20240904164429.hstbg5beejt32mlu@treble>
-References: <cover.1725334260.git.jpoimboe@kernel.org>
- <7bc1bcb1cd875350948f43c77c9895173bd22012.1725334260.git.jpoimboe@kernel.org>
- <20240903082909.GP4723@noisy.programming.kicks-ass.net>
- <20240904042829.tkcpql65cxgzvhpx@treble>
- <20240904123918.GCZthU9rOJLWUKBbsv@fat_crate.local>
+	live-patching@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 2/2] livepatch: Add using attribute to klp_func for
+ using function show
+Message-ID: <20240904180648.fni3xeqkdrvswgcx@treble>
+References: <20240828022350.71456-1-zhangwarden@gmail.com>
+ <20240828022350.71456-3-zhangwarden@gmail.com>
+ <20240904044807.nnfqlku5hnq5sx3m@treble>
+ <AAD198C9-210E-4E31-8FD7-270C39A974A8@gmail.com>
+ <20240904071424.lmonwdbq5clw7kb7@treble>
+ <1517E547-55C1-4962-9B6F-D9723FEC2BE0@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -67,38 +65,38 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240904123918.GCZthU9rOJLWUKBbsv@fat_crate.local>
+In-Reply-To: <1517E547-55C1-4962-9B6F-D9723FEC2BE0@gmail.com>
 
-On Wed, Sep 04, 2024 at 02:39:18PM +0200, Borislav Petkov wrote:
-> On Tue, Sep 03, 2024 at 09:28:29PM -0700, Josh Poimboeuf wrote:
-> > Take a more generic approach: for the "array of structs" style sections,
-> > annotate each struct entry with a symbol containing the entry.  This
-> > makes it easy for tooling to parse the data and avoids the fragility of
-> > hardcoding section details.
+On Wed, Sep 04, 2024 at 03:30:22PM +0800, zhang warden wrote:
+> > On Sep 4, 2024, at 15:14, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> > If there are multiple people applying patches independently from each
+> > other (to the same function even!), you are playing with fire, as there
+> > could easily be implicit dependencies and conflicts between the patches.
+> > 
+> > 
+> Yep, I agree with you. This is not a good practice.
 > 
-> This is more a question for my own understanding: so you want a generic
-> approach where objtool doesn't need to know each special section and what it
-> needs to copy there from but simply copy those new, special symbols over?
+> But we can work further, livepatch can tell which function is now running. This feature can do more than that.
 > 
-> Which you use as markers of sorts: "this is a relevant symbol, pls copy it"...
+> Afterall, users alway want to know if their newly patched function successfully enabled and using to fix the bug-existed kernel function.
 > 
-> I think you mean that but lemme confirm anyway.
+> With this feature, user can confirm their patch is successfully running instead of using crash to look into /proc/kcore to make sure this function is running now. (I always use this method to check my function patched ... lol).
+> 
+> And I think further, if we use kpatch-build[1], `kpatch list` can not only tell us which patch is enabled, but also tell us the relationship between running function and patched module.
+> I think this is an exciting feature...
 
-Yes, that's exactly it.  I should clarify a bit more.
+Most of this information is already available in sysfs, with the
+exception of patch stacking order.
 
-> Also, have you checked whether this can be done with some compiler switch
-> already?
+Every new feature adds maintenance burden.  It might not seem like much
+to you, but the features add up, and livepatch needs to be solid.
 
-Not that I know of, since the compiler usually doesn't have visibility
-to these sections.
+We want patches that fix real world, tangible problems, not theoretical
+problems that it *might* solve for a hypothetical user.
 
-It might be possible to specify "entsize" in the .pushsection flags,
-which is an ELF section header attribute which objtool could read.
-
-But that wouldn't work for .altinstr_replacement and other sections with
-variable-size entries.  Also, "objtool klp diff" works by copying
-symbols, so the current solution is definitely simpler as it fits in
-nicely with the rest of the implementation.
+What is the motiviation behind this patch?  What real world problem does
+it fix for you, or an actual user?  Have you considered other solutions,
+like more organized patch management in user space?
 
 -- 
 Josh
