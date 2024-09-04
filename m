@@ -1,62 +1,64 @@
-Return-Path: <live-patching+bounces-596-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-597-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id B0EA796C3CF
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 18:16:53 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 94B3D96C44E
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 18:44:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 5C4A21F26C71
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 16:16:53 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 48B161F219C9
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 16:44:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 86B7F1DEFD8;
-	Wed,  4 Sep 2024 16:15:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC50B1E0B60;
+	Wed,  4 Sep 2024 16:44:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sga6PWfW"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QvqhJEBn"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6004C1DB55E;
-	Wed,  4 Sep 2024 16:15:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C21F51E00BD;
+	Wed,  4 Sep 2024 16:44:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725466552; cv=none; b=DPdDEMLrLs60zsAJjYsvbn2hNhif5/IJM5NH6LyU0wg0CSToxBLaXJ7J9IQGLybrb5Cbg12HIS/oMwNNMxD8rH/mVryu2Q+S6RwHLECI8eraJd7ZYw3vEws35zYmocV2WH8PRRKYemEBEhpR351+R98G3+E9YpaZn7mCpXk80rI=
+	t=1725468271; cv=none; b=YbtHS2H2+lT2hCvdLip8nMA4aJMX6bWvsGMp0+AetWtgzYACmg6SBlV46gOCdycJvnPcjifHxUkbA1DGx+/mn/hnk4I7fzcskY0y2D/vev+0PRLS6z2Oe7h5N6/QyYlzdpu8A1mSPS9y91JVhJFFGFKRlLov9dB7QhkCErE3Mtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725466552; c=relaxed/simple;
-	bh=xCaWHSmBgBQ1hu7O2tST2ymPM4n+Wuz+5qgEwQQrVvg=;
+	s=arc-20240116; t=1725468271; c=relaxed/simple;
+	bh=b0/jVE3eF7SiKmjozMXjpT6kBCbEEbOS7Y/RJoB0Su4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BX9Am/TAN4lEG08Y00jEGJzzuE2pDIfTlflT8jaHCkBe9uoWPL7A0qweQX15XA1GWv0sBjK8Je9u6jD1EVLLW47jX9xRPcLPqClrIjVSvhWYRACT//47YJ9Ec2skeCalqWZEX3MiYrPxSiB9J4ufwYO8fI4glPN4JwZWUoS1RTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Sga6PWfW; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79672C4CEC5;
-	Wed,  4 Sep 2024 16:15:51 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=VtEVcLiApV4WclI0s1o8dn+m/kpLhg7MOv61Bw57UY8TdardISkrg7sB6Kv6zYlPC8vCUAlzWfR2SrU4SQDnruWLaYW5hb8lXRoybu3Kc+bCzQDqutNlOkCtOyIwf34jOU2ou1QUP25MQYM0ZIPeaSTV5Cd60YKCo/TV0RuZ64A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QvqhJEBn; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D340AC4CEC2;
+	Wed,  4 Sep 2024 16:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725466551;
-	bh=xCaWHSmBgBQ1hu7O2tST2ymPM4n+Wuz+5qgEwQQrVvg=;
+	s=k20201202; t=1725468271;
+	bh=b0/jVE3eF7SiKmjozMXjpT6kBCbEEbOS7Y/RJoB0Su4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Sga6PWfWxr0+FkmMcQuePtfL60XEWwJARFOnvQCsESAbyeaK+C29hKLdB/3qAWS82
-	 avRYeM0wYI6PnlaGOD2QWSGuRvX4RVyGaoZcK+yyNljmsMDSYqEkMtVBenLR7yOqMh
-	 0cYJk6WGprGiT6KRsQ6riBn1zQ1YNwIS1qhY4Oz5A2H+RRdWlOJQDC9iLMkURYte82
-	 +L1/xI/nqbpCgdXc8raqwCbPp0Ggp3vGtmsUnctT5LzUdjChfsa7JRjDPYcjLUZo/O
-	 Kf5Gub349RaS4i4nIQiEqgCC7oyYvtCae3gWQdPusipnRJrWc8U93t/rJQftjmEs8Q
-	 HtEuI8z9NnitQ==
-Date: Wed, 4 Sep 2024 09:15:49 -0700
+	b=QvqhJEBnwQx3Xgm1qtXAowO8bX3g0DWICYCEGf3+k16QUlisAz5dMKhmHg6r31T42
+	 VFjc2khDY6cmOYCovmK4g3+V+HcadgoSB6OyX3xVDyxJEvuE57tMH7A8+vhhBpkc2+
+	 cgWmzvGuPAeatem8Szu7TIVhjDKQtM9OTL2xUP4g+o7gkrHN/VVB1yfGpX0Rj8s+bk
+	 fOpy7Wv0Y4S7mflW/OXXt7B7402KIs8JGwbOVpDeanrCi96uVcQiQjM2YBPjjP23Fz
+	 bdbPU9+FS//yAXi340FuVxSGkcwmCqmrI4jGioHuOjobBMJqhge8qLqpLgadJp1yWh
+	 9pexCC4PxADVQ==
+Date: Wed, 4 Sep 2024 09:44:29 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: laokz <laokz@foxmail.com>
-Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
+To: Borislav Petkov <bp@alien8.de>
+Cc: Peter Zijlstra <peterz@infradead.org>, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org, x86@kernel.org,
+	Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
 	Jiri Kosina <jikos@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
-Subject: Re: [RFC 21/31] objtool: Fix x86 addend calcuation
-Message-ID: <20240904161549.y3gif5bnyj7reysa@treble>
+Subject: Re: [RFC 28/31] x86/alternative: Create symbols for special section
+ entries
+Message-ID: <20240904164429.hstbg5beejt32mlu@treble>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
- <43433a745f6db5afb513d015a6181bc40be12b4f.1725334260.git.jpoimboe@kernel.org>
- <tencent_65EFC9C0B6F4B36D24BFAFBEBEE912D71A05@qq.com>
+ <7bc1bcb1cd875350948f43c77c9895173bd22012.1725334260.git.jpoimboe@kernel.org>
+ <20240903082909.GP4723@noisy.programming.kicks-ass.net>
+ <20240904042829.tkcpql65cxgzvhpx@treble>
+ <20240904123918.GCZthU9rOJLWUKBbsv@fat_crate.local>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -65,30 +67,38 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <tencent_65EFC9C0B6F4B36D24BFAFBEBEE912D71A05@qq.com>
+In-Reply-To: <20240904123918.GCZthU9rOJLWUKBbsv@fat_crate.local>
 
-On Wed, Sep 04, 2024 at 05:24:21PM +0800, laokz wrote:
-> On Mon, 2024-09-02 at 21:00 -0700, Josh Poimboeuf wrote:
-> > +++ b/tools/objtool/arch/loongarch/decode.c
-> > @@ -20,9 +20,9 @@ unsigned long arch_jump_destination(struct
-> > instruction *insn)
-> >         return insn->offset + (insn->immediate << 2);
-> >  }
-> >  
-> > -unsigned long arch_dest_reloc_offset(int addend)
-> > +s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc
-> > *reloc)
-> >  {
-> > -       return addend;
-> > +       return reloc_addend(addend);
+On Wed, Sep 04, 2024 at 02:39:18PM +0200, Borislav Petkov wrote:
+> On Tue, Sep 03, 2024 at 09:28:29PM -0700, Josh Poimboeuf wrote:
+> > Take a more generic approach: for the "array of structs" style sections,
+> > annotate each struct entry with a symbol containing the entry.  This
+> > makes it easy for tooling to parse the data and avoids the fragility of
+> > hardcoding section details.
 > 
-> reloc_addend(reloc) ?
+> This is more a question for my own understanding: so you want a generic
+> approach where objtool doesn't need to know each special section and what it
+> needs to copy there from but simply copy those new, special symbols over?
+> 
+> Which you use as markers of sorts: "this is a relevant symbol, pls copy it"...
+> 
+> I think you mean that but lemme confirm anyway.
 
-Oops!
+Yes, that's exactly it.  I should clarify a bit more.
 
-As you can probably tell, I haven't tested (or compiled) anything other
-than x86 yet.
+> Also, have you checked whether this can be done with some compiler switch
+> already?
+
+Not that I know of, since the compiler usually doesn't have visibility
+to these sections.
+
+It might be possible to specify "entsize" in the .pushsection flags,
+which is an ELF section header attribute which objtool could read.
+
+But that wouldn't work for .altinstr_replacement and other sections with
+variable-size entries.  Also, "objtool klp diff" works by copying
+symbols, so the current solution is definitely simpler as it fits in
+nicely with the rest of the implementation.
 
 -- 
 Josh
