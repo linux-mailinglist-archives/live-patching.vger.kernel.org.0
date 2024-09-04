@@ -1,60 +1,57 @@
-Return-Path: <live-patching+bounces-578-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-579-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A386096AFCF
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 06:30:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 43FBB96B014
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 06:48:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D66541C2338D
-	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 04:30:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 01A6C28AADD
+	for <lists+live-patching@lfdr.de>; Wed,  4 Sep 2024 04:48:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8087C823AC;
-	Wed,  4 Sep 2024 04:30:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7188823DE;
+	Wed,  4 Sep 2024 04:48:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="acoIfdSe"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C/X1XCkk"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5709681AB6;
-	Wed,  4 Sep 2024 04:30:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F7CF823AC;
+	Wed,  4 Sep 2024 04:48:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725424237; cv=none; b=iIF3kg+9gF5kuvSZv32VIwhEvY5RjkKP+bPcOTiLl91sZnfSAUk7dtK1QHMyd0JsV3GvP2j0Cq1wgzQMEHHj6zrneSmtHWKlzIv1r7LCC/3UdQtTuN6dJxpQhXf+9Xdx6Gev9BZgEnkPJ95hcWBVUWm4a9vrandD07cIPWHuoTY=
+	t=1725425290; cv=none; b=PrxTD2p0KmNoPO9MIEXiMLBeJQ0n69dOIY5MYwPKTXgp5aUD9mST+EFrUYcilTAThJAU3Klb4wfNre10tA+SWl8JO9aM/LADXoN/YXonDTQGIbK14v3a3v1EIzGYGzcrz8D0rP8276GYImYMITqJs6TaB0Xg9G4gMuuO0mm2bu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725424237; c=relaxed/simple;
-	bh=MAdzDHHKtXun7pzXRpyY+whxZK66qwaWKm5RCmmf9iE=;
+	s=arc-20240116; t=1725425290; c=relaxed/simple;
+	bh=HAYsxipU8e9QPCgKAxzYKhFcQZURoMS7AbvtgJ2/AdY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MiwapvaUO0PMp4PaZ1gAY1giFl5zIwCmF34SXYWW5Ief/knOUu8Q8bzIbCK7cgJroVrfGw0hCO83jtrNoHvXd9sfApDwCcWhUAqoLyvcGKTIT0qr4VvVdiCw6v+JvBAePvz/YSeJzk7jstRTsrQ2tLacIDRACq5pzQt/D3BBGYM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=acoIfdSe; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7859AC4CEC8;
-	Wed,  4 Sep 2024 04:30:36 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=gZT0PTWAQTtEglYHlR5f8CLUqdlEftLlW2hUnJV9oa0T/8Gf5lAJ2jggNerf5JSlLPnVexj1RPUVuUbUeHZV1BIqg7wfyfQKVp0tOBzObu36CX3V0OFjiBMh9k8WatQWPrnroYZlCuEgFh1hRp72h62YCntKA4fdq8maqQ2CxjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C/X1XCkk; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BE1C4CEC2;
+	Wed,  4 Sep 2024 04:48:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725424236;
-	bh=MAdzDHHKtXun7pzXRpyY+whxZK66qwaWKm5RCmmf9iE=;
+	s=k20201202; t=1725425289;
+	bh=HAYsxipU8e9QPCgKAxzYKhFcQZURoMS7AbvtgJ2/AdY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=acoIfdSefqKxpBdky4UF5QEJG8BX97O2KdOLzq7slD3TrSOE3QRGZeAjxIa41hBXH
-	 +dOfbbKjDn88tJAclJ8MS6F/hW7BCJR/XktIE/vWlOLOwFobbXuYtQZYWM5p8CRuqB
-	 M68C7z1K++EGK7qM3X9U4dOGXrxpl8W5gIGWjO9IK4sZ+nrYnpx1t/+r6P0NhvLIjZ
-	 zeK0/sCOBdqdMipveX5RJe8uC7jn1B5RU6bVgu/sRAB2zKYMaU+RyLhDo8cgL+u3pJ
-	 Z9jlvX42slG922Ck8Y2cTnZIHoPlVXAP3n0FMtSl+SOpT92NsileTrP/uC6vSS/0Ei
-	 C+faS2uJ86JHw==
-Date: Tue, 3 Sep 2024 21:30:34 -0700
+	b=C/X1XCkk000AAYUTzS3yJTTwlztHCbxk1z/k04QlP7/C3w37PVmJMclRVp2vmi+A6
+	 wy3MRbNoTAjKXHUl64p8dH2R9/e4pYn8+cCquqEwmdZv/1eVJd05T4O0KC+gP2hbZq
+	 jMqEvZ/WwfC5Sf+KpD7+c07I+/fY7NWa+O7+GVFVJQ1IFUQzSw4FZeWat3J9GKJ45y
+	 TfZF/Ujzn145ex0jRB3OF43bSX597BDAts3IqFNToX4InuB4Ez24GfUni4BBzgel59
+	 z275LthfbfexgPnCap2GWER9J1ECIQ+yiENyGRUYkH4rOqJ7Vsk0Un37Vzedn3vdPz
+	 KEYIDbZDru8Gg==
+Date: Tue, 3 Sep 2024 21:48:07 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Song Liu <song@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>
-Subject: Re: [RFC 00/31] objtool, livepatch: Livepatch module generation
-Message-ID: <20240904043034.jwy4v2y4wkinjqe4@treble>
-References: <cover.1725334260.git.jpoimboe@kernel.org>
- <CAPhsuW6V-Scxv0yqyxmGW7e5XHmkSsHuSCdQ2qfKVbHpqu92xg@mail.gmail.com>
+To: Wardenjohn <zhangwarden@gmail.com>
+Cc: mbenes@suse.cz, jikos@kernel.org, pmladek@suse.com,
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] livepatch: Add using attribute to klp_func for
+ using function show
+Message-ID: <20240904044807.nnfqlku5hnq5sx3m@treble>
+References: <20240828022350.71456-1-zhangwarden@gmail.com>
+ <20240828022350.71456-3-zhangwarden@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -63,53 +60,35 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPhsuW6V-Scxv0yqyxmGW7e5XHmkSsHuSCdQ2qfKVbHpqu92xg@mail.gmail.com>
+In-Reply-To: <20240828022350.71456-3-zhangwarden@gmail.com>
 
-On Tue, Sep 03, 2024 at 10:32:00AM -0700, Song Liu wrote:
-> Hi Josh,
+On Wed, Aug 28, 2024 at 10:23:50AM +0800, Wardenjohn wrote:
+> One system may contains more than one livepatch module. We can see
+> which patch is enabled. If some patches applied to one system
+> modifing the same function, livepatch will use the function enabled
+> on top of the function stack. However, we can not excatly know
+> which function of which patch is now enabling.
 > 
-> Thanks for the patchset! We really need this work so that we can undo our
-> hack for LTO enabled kernels.
+> This patch introduce one sysfs attribute of "using" to klp_func.
+> For example, if there are serval patches  make changes to function
+> "meminfo_proc_show", the attribute "enabled" of all the patch is 1.
+> With this attribute, we can easily know the version enabling belongs
+> to which patch.
 > 
-> On Mon, Sep 2, 2024 at 9:00 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> >
-> > Hi,
-> >
-> > Here's a new way to build livepatch modules called klp-build.
-> >
-> > I started working on it when I realized that objtool already does 99% of
-> > the work needed for detecting function changes.
-> >
-> > This is similar in concept to kpatch-build, but the implementation is
-> > much cleaner.
-> >
-> > Personally I still have reservations about the "source-based" approach
-> > (klp-convert and friends), including the fragility and performance
-> > concerns of -flive-patching.  I would submit that klp-build might be
-> > considered the "official" way to make livepatch modules.
-> >
-> > Please try it out and let me know what you think.  Based on v6.10.
-> >
-> > Also avaiable at:
-> >
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git klp-build-rfc
-> 
-> I tried to compile the code in this branch with gcc-12 and llvm-18. Some
-> of these errors are easy to fix (attached below). But some are trickier, for
-> example:
-> 
-> with gcc-12:
->   ...
->   BTFIDS  vmlinux
->   NM      System.map
->   SORTTAB vmlinux
-> incomplete ORC unwind tables in file: vmlinux
-> Failed to sort kernel tables
+> The "using" is set as three state. 0 is disabled, it means that this
+> version of function is not used. 1 is running, it means that this
+> version of function is now running. -1 is unknown, it means that
+> this version of function is under transition, some task is still
+> chaning their running version of this function.
 
-Thanks for trying it!  If you share your config(s) I can look into it.
+I'm missing how this is actually useful in the real world.  It feels
+like a solution in search of a problem.  And it adds significant
+maintenance burden.  Why?
 
-I haven't tried clang yet, but will soon.
+Do you not have any control over what order your patches are applied?
+If not, that sounds dangerous and you have much bigger problems.
+
+This "problem" needs to be managed in user space.
 
 -- 
 Josh
