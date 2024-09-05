@@ -1,72 +1,72 @@
-Return-Path: <live-patching+bounces-608-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-609-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id CAAB996DB0D
-	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2024 16:04:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A092E96DB90
+	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2024 16:18:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id AFCE81F24988
-	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2024 14:04:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 59F5B28C0E5
+	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2024 14:18:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11E8619DF68;
-	Thu,  5 Sep 2024 14:04:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41A9519F408;
+	Thu,  5 Sep 2024 14:17:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G5mf1QRD"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H8o6q1Ai"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E84819D063;
-	Thu,  5 Sep 2024 14:04:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E5D19EED4;
+	Thu,  5 Sep 2024 14:17:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725545050; cv=none; b=UQeJ4qdBdcPgdZIFqeeqqmfv+NTO4XKUBTHp5ZSRro+CCmgKmsiNaRpvmGbf/XS28Nc1+Ti3rF2jznD5x7w5lz9/Jalwz7DsfD9p/wm3AIefpLFulYCGVg8cS/oCptZXgkBDQt2OLmjzx0CY2uwkffR1xm0hTK6ISTUiSu0+jDg=
+	t=1725545864; cv=none; b=UPG2z/f/lFu469flh0DNrzTOlB6w9J8fkK5rxhBWbwNluOI5Ir8mQ5UMKam+xxoNzk1KW0ppTooG14AMBj10s8L1Uu+kYkBt2gvqwXoufIDbneTfzeBmxJD+XZidwAZFcOxMvgedrWibn3kMmCNE0pYOYsNknuFX3jTYLhrO1+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725545050; c=relaxed/simple;
-	bh=gzhmBa26+EHZsl1gl1YKdKBHsUAHOOnf6c1Vi8oiMW0=;
+	s=arc-20240116; t=1725545864; c=relaxed/simple;
+	bh=h8zZ7hfh2rSqS2KNTIJtngjH3e5wPWm2Rh5d/8YY/1U=;
 	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=e08IrycayIxADr3ncaUDod+obuUeyjFLvPVEuWG4g5pTYs+7aG/D7F+Fasjr46QMQuV88mV+PQ5W7gkcG8ED1KvTuZN5sYT6MvIXiivK23qv1jLJHPkdhXEUlqM8SF0iFTYD5UwTBIJHuj2lI8t0giEONWwc9eo43RYbQ56YUC8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G5mf1QRD; arc=none smtp.client-ip=209.85.214.177
+	 Message-Id:References:To; b=JxPoSabdv6Ji4AKOaNH9iBt3sZVZbXm9GHlzTFQuxBKctra9CdsqibjMDfmE3hzIFszKul17gQpz2IvO3pKjbvaoV4miQg/bm5I0EwFzdD3a6lKCZaENw7Z4mOGObxL9sS7Sy79VBdUI04nHiAuEdHSjp+ijLDoiRFJjsvG5M6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H8o6q1Ai; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-205659dc63aso8433815ad.1;
-        Thu, 05 Sep 2024 07:04:08 -0700 (PDT)
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1fee6435a34so8313565ad.0;
+        Thu, 05 Sep 2024 07:17:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1725545048; x=1726149848; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1725545862; x=1726150662; darn=vger.kernel.org;
         h=to:references:message-id:content-transfer-encoding:cc:date
          :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cYNDaZPT4tF0L25ucvYmyrqe/wq83Pn5yG5NcXp+fHo=;
-        b=G5mf1QRDQGzdmSQkh+JtKU+NxYR0xk5bb1Iot+/zh7HeDuMuF1vSDxLnN4M4Pqiixe
-         WXOLXEPlj7+GvHjfXVsEULuOq/KQoxpZ0TZSfVJ9k4SEkqi/LX9SgmHoNYmn3Pjz1b5A
-         EtNToo5QeYZN0+FMc6zy6oEcY0JCDh33aedAsTZii3pLS1D9bZEgWd+VtlaWjFMLVpe+
-         khOGhj5kIUgd4DaUTnQJPSUGsel12JYqiV/PmG1S4w3QYQ+2OatwQqSnYM5d6USRPRg2
-         ouXZvEWUG0/iGAFMyHrXByAHCio5EcRls0zLLl/ZWIa8uMXGK1lIK7HSX5qp3+Vv8Iys
-         hkEA==
+        bh=h8zZ7hfh2rSqS2KNTIJtngjH3e5wPWm2Rh5d/8YY/1U=;
+        b=H8o6q1AilXYRVmmp98QGZE8SuujCkF7td6y97DtJKKTe9w3xtC+QR83i1WW09XiNo7
+         QBKWY2lLjNCkqA6aMEKCK8JFcUs20mksQDNi8yJsiSzdVj9wsF2gluh/hL3c9HQuf3VA
+         LRfvHo2A3DPvFlzFyK0zc0hHWh9CZGfWenaaMCGZ59DLsRo30tNly2pB05Qes78uBPZo
+         V2IDrMXIQLJIqgtMVDG2wxSX8plX6x0WcK5VPJsOEhgiLbT7s+cfRQ0Q2dQxo3KF4zXt
+         sSp0UzjpEhFA0v2pBOW/u2+dvHxohk1ie9nR32OBIXUotLKFgyslLsV18jqgxOtLsVBS
+         Am1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725545048; x=1726149848;
+        d=1e100.net; s=20230601; t=1725545862; x=1726150662;
         h=to:references:message-id:content-transfer-encoding:cc:date
          :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cYNDaZPT4tF0L25ucvYmyrqe/wq83Pn5yG5NcXp+fHo=;
-        b=w593WtgQ7QOL57yoxleGknV+VveYYrKpd+rmzLm1NOEQsxWFFd8DTAZ0SEHYcREzjB
-         pgTkBGReIc5DnrYfmSmnAUXDOm25E8rHeA0kg/+8qfY+IEHIbqivnnDYrHwLVm6KsEzi
-         V17ku1WKh7BsTzSoGwFHMC+w6iZtbc/SOT5adIqO2gxwiRn8sneML0O6mrfDX5wOJB3u
-         hvPklJsvCJc5qgPAj3h2mm23w8QKqDerVFTfb8PHRchh6NwL3mNF5uOHYneUw2HyrDaH
-         vpNeY6KBcHY3y7iLN+bNyl7kQrVUM1249zHC7nnBjwJ5wri9/aYaibIKPuvpjZ896bNQ
-         tdrA==
-X-Forwarded-Encrypted: i=1; AJvYcCUeYBnSLS77q0zmxEsIGlMPobe/KP7/iDZsK0sSVw1oPlgK1d5JU+trd6rVW1Ma5tdiqomc/bT9CulGSK0=@vger.kernel.org, AJvYcCX1L4u6uyiOLQIGCcTldFgzuEFy0MOPlW2UZKAQzQDQdvjLZSAnRA/gmi3hdxrvC/Yau2HNwTzxpBwIx4YsPA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwbiZN9ZZ9hYLw/j99akfAzU6AV4s4md19v6KmfeqhytIA+6Mo0
-	/b29Kkly3nBQIRDL424z035LsFcdtldSx5yOV1Y9qFW4hDHhIljkk05PpmzS
-X-Google-Smtp-Source: AGHT+IEamEZb7VdE1gnvDpAc/KUDDU8OeSItmzSJzq/5hVybb0LVoRW7CmsPunkWK9qCSj/fLM/WWw==
-X-Received: by 2002:a17:902:fc4c:b0:205:5547:92d2 with SMTP id d9443c01a7336-205554794bbmr177887405ad.48.1725545047543;
-        Thu, 05 Sep 2024 07:04:07 -0700 (PDT)
+        bh=h8zZ7hfh2rSqS2KNTIJtngjH3e5wPWm2Rh5d/8YY/1U=;
+        b=ry3ZqkfpwPmrk4ChzE6NEjBZmk4K2bU9Ghb3lM7GWXIZYhlnJaGcB4L+zeMTKJxT2j
+         9Zn9ImX/AFl0lnbTwlLl8aKS4oxaA6xx7ZjBx5xs+6TP8YfVOwye9ULMKTK/04EDdILu
+         KXURB7I3SYnsERmSrY/BqlC71TXA9ZEkcpJ+xeo9qzrZSMDmbsFN1Ry8BCbvz86ITFoK
+         dAxx/z7LnC2BCtLo0GcyftbsEb6Frs/7Qf4rX+z9afZ7mPVYaAi8741dXsx/NrpVZr90
+         SK8lHfjinVW8r15kUieCPefUVOhi9th9+TpW8cg3MkOgP3KwVUoOvCLAtVzGjAzxfsfL
+         f3vg==
+X-Forwarded-Encrypted: i=1; AJvYcCUJ9mxf4PndRkvoFFUDSt/ftKSh1xcYJJOWw1ZV3rrd8BRzR+0ahcLKK8nF64V+tx1lCax7fopWMgPVKEk=@vger.kernel.org, AJvYcCV6mBA4R+8sEfzlLLPEFKe1iwGrffx1zqcI0twZUfFoitFc3L7p9a/HYQA4FQxJE9jMvBpSBEP9HFVuuTC4Bg==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz2ITo3af4NJm0MchI/bCVJmbEps0Afh8D6JNfKfF8HJ3N9YeR5
+	Adu6NeKWOH2cR3TO+6ZL2MaeG0Td9bUaNUloWrrrEI4RV99Nr2tY
+X-Google-Smtp-Source: AGHT+IFKnQTIIWx7RGO9WFKBUE+9gSzHiEQBgbPGNsfc255oRzzvwwvzbs8bxN2YycHoN5Gt+sVqng==
+X-Received: by 2002:a17:902:f693:b0:205:7b04:ddf2 with SMTP id d9443c01a7336-20699af10b2mr96356295ad.29.1725545861915;
+        Thu, 05 Sep 2024 07:17:41 -0700 (PDT)
 Received: from smtpclient.apple ([198.11.178.15])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-206aea3933fsm29039345ad.171.2024.09.05.07.04.04
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-206bbc91323sm25023615ad.272.2024.09.05.07.17.38
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Sep 2024 07:04:06 -0700 (PDT)
+        Thu, 05 Sep 2024 07:17:41 -0700 (PDT)
 Content-Type: text/plain;
 	charset=us-ascii
 Precedence: bulk
@@ -78,95 +78,76 @@ Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
 Subject: Re: [PATCH v4 2/2] livepatch: Add using attribute to klp_func for
  using function show
 From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <20240904180648.fni3xeqkdrvswgcx@treble>
-Date: Thu, 5 Sep 2024 22:03:52 +0800
-Cc: Miroslav Benes <mbenes@suse.cz>,
+In-Reply-To: <alpine.LSU.2.21.2409051215140.8559@pobox.suse.cz>
+Date: Thu, 5 Sep 2024 22:17:26 +0800
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
  Jiri Kosina <jikos@kernel.org>,
  Petr Mladek <pmladek@suse.com>,
  Joe Lawrence <joe.lawrence@redhat.com>,
  live-patching@vger.kernel.org,
- LKML <linux-kernel@vger.kernel.org>
+ linux-kernel@vger.kernel.org
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <5B13628F-755E-4081-9E12-EB2F2441BBDF@gmail.com>
+Message-Id: <FF185094-10E0-4898-96C4-184F96D5B56C@gmail.com>
 References: <20240828022350.71456-1-zhangwarden@gmail.com>
  <20240828022350.71456-3-zhangwarden@gmail.com>
- <20240904044807.nnfqlku5hnq5sx3m@treble>
- <AAD198C9-210E-4E31-8FD7-270C39A974A8@gmail.com>
- <20240904071424.lmonwdbq5clw7kb7@treble>
- <1517E547-55C1-4962-9B6F-D9723FEC2BE0@gmail.com>
- <20240904180648.fni3xeqkdrvswgcx@treble>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
+ <alpine.LSU.2.21.2409051215140.8559@pobox.suse.cz>
+To: Miroslav Benes <mbenes@suse.cz>
 X-Mailer: Apple Mail (2.3774.500.171.1.1)
 
 
-Hi, Josh.
-> Most of this information is already available in sysfs, with the
-> exception of patch stacking order.
+Hi Miroslav,
 >=20
-Well, this is the problem my patch want to fix. But my patch is more =
-simpler, it just shows the stack top of the target function, which is =
-the only thing users care.
-
 >=20
-> We want patches that fix real world, tangible problems, not =
-theoretical
-> problems that it *might* solve for a hypothetical user.
+> I am not a fan. Josh wrote most of my objections already so I will not=20=
+
+> repeat them. I understand that the attribute might be useful but the=20=
+
+> amount of code it adds to sensitive functions like=20
+> klp_complete_transition() is no fun.
 >=20
-> What is the motiviation behind this patch?  What real world problem =
-does
-> it fix for you, or an actual user? =20
+OK, the point I make changes to klp_complete_transition is that when a =
+transition is going to be complete, we can make sure the function state =
+can go to an end state (0 or 1), which is the most easy way to do =
+so...lol...
 
-Here I can give you an example as I previous described:
+> Would it be possible to just use klp_transition_patch and implement =
+the=20
+> logic just in using_show()? I have not thought through it completely =
+but=20
+> klp_transition_patch is also an indicator that there is a transition =
+going=20
+> on. It is set to NULL only after all func->transition are false. So if =
+you=20
+> check that, you can assign -1 in using_show() immediately and then =
+just=20
+> look at the top of func_stack.
+>=20
 
->>Here I can give you an example.
-We are going to fix a problem of io_uring.
-Our team made a livepatch of io_sq_offload_create.
-This livepatch module is deployed to some running servers.
+I will consider it later. If you have any suggestions or other =
+solutions, please let me know.
 
-Then, another team make some change to the same function and deployed it =
-to the same cluster.
+> If possible (and there are corner cases everywhere. Just take a look =
+at=20
+> barriers in all those functions.) and the resulting code is much =
+simpler,=20
+> we might take it. But otherwise this should really be solved in =
+userspace=20
+> using some live patch management tool as Josh said. I mean generally=20=
 
-Finally, they found that there are some livepatch module modifying the =
-same function io_sq_offload_create. But none of them can tell which =
-version of io_sq_offload_create is now exactly running in the system.
+> because you have much more serious problems without it.
+>=20
 
-We can only use crash to debug /proc/kcore to see if we can get more =
-information from the kcore.
+I replied to Josh to explain my reason of not using user space tools to =
+maintain livepatch information. Of cause, I put my patch here and tell =
+you the problem I am facing, maybe there some people may face the same =
+problem as me...hah...
 
-If livepatch can tell which version of the function is now running or =
-going to run, it will be very useful.
+We can discuss it, if you have a better idea for that patch, please fell =
+free to tell me.
 
->>>>>>
-What's more, the scenario we easily face is that for the confidential =
-environment, the system maintenance mainly depends on SREs. Different =
-team may do bug fix or performance optimization to kernel function.=20
+Also, I forgot to sign at the end of the email I sent Josh, I'm sorry...
 
-Here usually some SREs comes to me and ask me how to make sure which =
-version is now actually active because tow teams make tow livepatch =
-modules, both of them make changes to one function.=20
-
-He wants to know if his system is under risk, he want the system run the =
-right version of the function because one module is a bug fix and the =
-other is just a performance optimization module, at this time, the bug =
-fix version is much more important. dmesg is too long, he find it hard =
-to find out the patch order from dmesg.
-
-With this patch, he can just cat =
-/sys/kernel/livepatch/<module>/<object>/<function>/using and get his =
-answer.
-
-> Have you considered other solutions,
-> like more organized patch management in user space?
-
-User space solutions seems unreliable. What we need is just the enabling =
-version of target function. The order of livepatch module enable mainly =
-from dmesg, which is easily flush away or being cleaned.
-
-If we use an user space program to maintain the information of patch =
-order, once the program is killed, the information is loss either.
-
-Neither of the previous user space solutions seems reliable. Only kernel =
-space will no one can change it. And it is the most accurate.
-
+Thanks.
+Wardenjohn.
 
 
