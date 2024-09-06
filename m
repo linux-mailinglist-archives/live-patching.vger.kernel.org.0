@@ -1,107 +1,114 @@
-Return-Path: <live-patching+bounces-613-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-614-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1B1AA96E523
-	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2024 23:34:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BDC3996EB02
+	for <lists+live-patching@lfdr.de>; Fri,  6 Sep 2024 08:51:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CD23F28AB2D
-	for <lists+live-patching@lfdr.de>; Thu,  5 Sep 2024 21:34:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E88E71C20C32
+	for <lists+live-patching@lfdr.de>; Fri,  6 Sep 2024 06:51:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 92FD41A0AF3;
-	Thu,  5 Sep 2024 21:34:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D797143871;
+	Fri,  6 Sep 2024 06:51:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rkp+2dAk"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NpDbag+T"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6968C19409A;
-	Thu,  5 Sep 2024 21:34:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4F1714264A
+	for <live-patching@vger.kernel.org>; Fri,  6 Sep 2024 06:51:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725572088; cv=none; b=YEMteUEXl1x7ms4kck+jjP6zT5GV6lOX4pUeVmmpXjGE+fKajwNOVgjXkRslw8jux0KeXV/lyJNd7GcPHa0XJyXWteYjlkRYUXCF8UyTVzPSDVPPAeYIT0PdjPteYu8RZC+MiDT38N9pPi8WXsOkk4zQAfr4V48NQbG629Jlu8o=
+	t=1725605495; cv=none; b=pmHp5IuKtFuGp8bCAlPUYzFeB5WSHl82MZPVwQ8SHla9iJVrVtJpcuyfHzljbBqImj2aq4pxTD+M9SpL2CMJYFBmMgHHh2zTrhpkzkYgxO+OuGkOrflAhF3gKEwCITqQDrU4qe7tbWncgVQLQtU+Hh72enmUdgznE4z7vKK/+lk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725572088; c=relaxed/simple;
-	bh=ZMiX4d3Z+IjEsCBW5abbhCxoH0/nkr4YNPtIffNTJZE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=vCCBaj63xQ3leASFEqG2YcBD5Yghe+wqxmDIwMVISaUJXjtrRgTmEf8Vi04geCnK+llQ3lBQ2HZvpTTB6o9fMNuLdrQPwPa3fWHhQOX4AcVkOYz0ruc7ayMsQvk+nQowa9lE3g83W30vZxe+186/V69F+vOhHR93WX09QHmVzd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rkp+2dAk; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FEE0C4CEC7;
-	Thu,  5 Sep 2024 21:34:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725572088;
-	bh=ZMiX4d3Z+IjEsCBW5abbhCxoH0/nkr4YNPtIffNTJZE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=rkp+2dAkfxMckcIMCMNp1YWDiG0x/azZKe1KnZ2Q1n66O+/1Gfe1B6EOyDBdTN/dF
-	 T3+ezI08cuNzKUk68w0no8krIb07CNat31W3PI9ehCx/qjkK5Gl4y3zqBh8sbB9cdR
-	 H7NNjoYjKXWM2CHuJGgPbOW0modCx00tflddqxbWecVsgn0KdFINHZh/QVhGSq9GTp
-	 UKwBlMzFVyUv3q1N3yVSi87U/Kk2H6CBvwvRHZWCH4FZ5mKhmtAa0TjReeFk/rQWAo
-	 0tFfnP+svsOCGmOLogbt+ae9dxEXgZxfPnSMAWB7snahLJtPCuoCi0O22/qk5towO1
-	 fwCkSRaQGq/yA==
-Received: by mail-il1-f172.google.com with SMTP id e9e14a558f8ab-39f54ab8e69so8259835ab.1;
-        Thu, 05 Sep 2024 14:34:48 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUmYxQLbEoA9rjqISQXX2HsgCemBLpgCTLBr/cnPNcB2PwJsJprE4djZqPTFqu9wglWAgQaTnTjKye5YOo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzMrqRH2eB5AR/8X3yTeka9kG4eXp5T1QrVlTY6YcBB1KfrLD4
-	BKTde562X9yVYKQWK75SIP3/8zysNrQFX6t/94AcVPD/9d1ryCaVs96dhkiaQcA9fisKzhs2CBA
-	kW8lqP6dPwPOqzlHY84NtVU70oos=
-X-Google-Smtp-Source: AGHT+IHhjtKp0fAXkW/Hb58rNk103UzmqcNkWzk8etRplvdQ0kPQKQxXwrQY97ppCC7sFl9V1PtNF2DpxyZDpWdoIFg=
-X-Received: by 2002:a05:6e02:18cc:b0:375:a3eb:bfcd with SMTP id
- e9e14a558f8ab-39f797b23a7mr73050795ab.8.1725572087479; Thu, 05 Sep 2024
- 14:34:47 -0700 (PDT)
+	s=arc-20240116; t=1725605495; c=relaxed/simple;
+	bh=SLxU/KchM9lZc2iifzYGl0ikYTYXfIHuX2seBA/+tVc=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=fJCzKZWCjXgtiYSx0+tQSpTqwnoh3xW7Z0E9fopttBibYCxrUkxeX17Dx04Jhxg3n4Bqp9RmWDxPN3aPHTzAGdpuY3LIz9k4dpS175w6WHI9UP3vve3KS1YoijHVJVlrB5BTcWdK5nAX+T7WBbG8RbahpJKuD/kCbDvQ85e8Hwo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NpDbag+T; arc=none smtp.client-ip=209.85.214.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2039ce56280so23534675ad.3
+        for <live-patching@vger.kernel.org>; Thu, 05 Sep 2024 23:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1725605494; x=1726210294; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zxPgcan/wlGxIATORmsnmNF0mblZEeZI51ZTLUgDKYk=;
+        b=NpDbag+TArpq1AhPCdiUFtwQWEGzVtDHR8tE+LVKBbjY7cb1krGqK2svuXU2z7QuKj
+         wZ7WxsMmQadyurdT5bDBy0y6hhAt0ZIrXQ5hLsLAXq5YhXv2/vKJ/Ea8jHALHxPUNNa6
+         YtsfL1eaBSo6b1mbDhvB54TUi2zVlXsgIIZt94Xrjw0s36cJwjTcji1ob36fatyu0kti
+         6kZwdySaa40Sg+80yBVMK36egrTh+SYJngQvNDha7YfXxngMtuNl325cETABeDtvfOLv
+         mnedCer2wR9JKzTbMqjSmB9eaoBzuqh2ZX4nZmsJ6tRs8p/2biWca8f4Iac9KApfxYxS
+         xbhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725605494; x=1726210294;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zxPgcan/wlGxIATORmsnmNF0mblZEeZI51ZTLUgDKYk=;
+        b=IHm6wQ1YUxZfHM4T0xbugJFMhqDq7B8o4uME6FO+eI5qMY3StWJwo253JgjJ8JT020
+         Ob8X1Bbr1NNcmEWivJ5pTuckf7oWGdHmFxV2VF5ol4T4Y8fu//4rjcez3JovpUSNS4tn
+         tcwt+FOsd1Fgm5/Y7boPWeSYyKN9JD8IKk8ZTckNcq4WjuB8qxXHcfKbpbb8VQvUmKx8
+         f2MTvVqHnJKgbPMS716/n48Jzi0Ji+p3XrAoA+m/HPUu8t17JZ3zXRpiBiPt+9FJThis
+         MHcKHirgkjapCgJ6NKLfOorGaFbW32QHyMtvjGIMLg4vN5c+aNStkchE2GDDQmjyTL83
+         pKPA==
+X-Forwarded-Encrypted: i=1; AJvYcCUZylWcM1v4H5akPt4vR3g9Gxh0F8ALziCMZYHCboDb77znYsPQTDkzDYMUUQulpcaL3LfWn8JU5nw48LYU@vger.kernel.org
+X-Gm-Message-State: AOJu0YzNWtyO6gwDGPTeZAVie+8OO7fRKvTS+pU0f0lWblsQsHWhaywY
+	fupzcbWeIiytodnjcy/2cuawUn2uzRz96cDmvOS5VXw4G5ZXgWSyuFMZ7guzKl3oJ5FNnZcLAg=
+	=
+X-Google-Smtp-Source: AGHT+IGmwK9ZlhpLJHzZyb89hyaIZmCCVBcaqPhtMO6n7z0xo7Bo5WKyL7fOirbZ9TqadWXU/2jE6TZH4A==
+X-Received: from wnliu.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:270f])
+ (user=wnliu job=sendgmr) by 2002:a17:903:41cf:b0:205:6a9b:7e3c with SMTP id
+ d9443c01a7336-206f0357b15mr663405ad.0.1725605493719; Thu, 05 Sep 2024
+ 23:51:33 -0700 (PDT)
+Date: Fri,  6 Sep 2024 06:51:32 +0000
+In-Reply-To: <7bc1bcb1cd875350948f43c77c9895173bd22012.1725334260.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <cover.1725334260.git.jpoimboe@kernel.org> <CAPhsuW6V-Scxv0yqyxmGW7e5XHmkSsHuSCdQ2qfKVbHpqu92xg@mail.gmail.com>
- <20240904043034.jwy4v2y4wkinjqe4@treble> <CAPhsuW6+6S5qBGEvFfVh7M-_-FntL=Rk=OqZzvQjpZ6MyDhNuA@mail.gmail.com>
- <20240904063736.c7ru2k5o7x35o2vy@treble> <20240904070952.kkafz2w5m7wnhblh@treble>
- <CAPhsuW6gy-OzjYH2u7gPceuphybP8Q43J9YjeUpkWTh5DBFRSQ@mail.gmail.com>
- <20240904205949.2dfmw6f7tcnza3rw@treble> <20240905041358.5vzb3rsklbvzx73e@treble>
- <20240905071352.shnm6pnjhdxa7yfl@treble>
-In-Reply-To: <20240905071352.shnm6pnjhdxa7yfl@treble>
-From: Song Liu <song@kernel.org>
-Date: Thu, 5 Sep 2024 14:34:36 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW432TUgzvHS7kQ0RhpzjMHhkdcrDTBV0S=+PuooVFd5WA@mail.gmail.com>
-Message-ID: <CAPhsuW432TUgzvHS7kQ0RhpzjMHhkdcrDTBV0S=+PuooVFd5WA@mail.gmail.com>
-Subject: Re: [RFC 00/31] objtool, livepatch: Livepatch module generation
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
-	Joe Lawrence <joe.lawrence@redhat.com>, Jiri Kosina <jikos@kernel.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Marcos Paulo de Souza <mpdesouza@suse.com>
+Mime-Version: 1.0
+References: <7bc1bcb1cd875350948f43c77c9895173bd22012.1725334260.git.jpoimboe@kernel.org>
+X-Mailer: git-send-email 2.46.0.469.g59c65b2a67-goog
+Message-ID: <20240906065132.35917-1-wnliu@google.com>
+Subject: Re: [RFC 28/31] x86/alternative: Create symbols for special section entrie
+From: Weinan Liu <wnliu@google.com>
+To: jpoimboe@kernel.org
+Cc: jikos@kernel.org, joe.lawrence@redhat.com, linux-kernel@vger.kernel.org, 
+	live-patching@vger.kernel.org, mbenes@suse.cz, mpdesouza@suse.com, 
+	peterz@infradead.org, pmladek@suse.com, song@kernel.org, x86@kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 5, 2024 at 12:13=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
-> wrote:
->
-> On Wed, Sep 04, 2024 at 09:14:00PM -0700, Josh Poimboeuf wrote:
->
-> > +     if (!!nr_objs) {
->             ^^
->             oops
->
-> Fixed version:
+I'm observing multiple compilation errors when using clang-16 after applying this particular patch.
 
-The fixed version works for the following cases with gcc-12:
+# CC      init/main.o
+<instantiation>:4:1: error: symbol '__bug_table_0' is already defined
+__bug_table_0:
+^
+<instantiation>:4:1: error: symbol '__bug_table_0' is already defined
+__bug_table_0:
+^
+<instantiation>:4:1: error: symbol '__jump_table_0' is already defined
+__jump_table_0:
+^
+<instantiation>:4:1: error: symbol '__bug_table_0' is already defined
+__bug_table_0:
+^
+<instantiation>:4:1: error: symbol '__bug_table_0' is already defined
+__bug_table_0:
+^
+<instantiation>:4:1: error: symbol '__jump_table_0' is already defined
+__jump_table_0:
+^
+<instantiation>:4:1: error: symbol '__jump_table_0' is already defined
+__jump_table_0:
+^
+7 errors generated.
 
-1. no BTF, no IBT;
-2. with BTF and CONFIG_MODULE_ALLOW_BTF_MISMATCH, no IBT;
-3. with BTF and CONFIG_MODULE_ALLOW_BTF_MISMATCH, with IBT;
-
-There is still some issue with BTF, so we need
-CONFIG_MODULE_ALLOW_BTF_MISMATCH here.
-
-But it appears to be mostly working.
-
-OTOH, there are still some issues with LLVM ("symbol 'xxx' already
-defined", etc.).
-
-Thanks,
-Song
+--
+Weinan
 
