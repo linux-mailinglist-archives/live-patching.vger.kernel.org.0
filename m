@@ -1,83 +1,86 @@
-Return-Path: <live-patching+bounces-621-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-622-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id EE4B496F90F
-	for <lists+live-patching@lfdr.de>; Fri,  6 Sep 2024 18:13:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9C21D96F976
+	for <lists+live-patching@lfdr.de>; Fri,  6 Sep 2024 18:40:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 6A2701F215EA
-	for <lists+live-patching@lfdr.de>; Fri,  6 Sep 2024 16:13:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C8BBF1C21B92
+	for <lists+live-patching@lfdr.de>; Fri,  6 Sep 2024 16:40:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 078361D31B4;
-	Fri,  6 Sep 2024 16:13:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 368881D365C;
+	Fri,  6 Sep 2024 16:40:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="SG5VoLbq"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QEwGQuVB"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCF601C9ECF
-	for <live-patching@vger.kernel.org>; Fri,  6 Sep 2024 16:13:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E1E6322A
+	for <live-patching@vger.kernel.org>; Fri,  6 Sep 2024 16:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725639220; cv=none; b=hGFMVVEQmNOYz3MUof3gD25QhgxGfdVcEpxReNKlRf+qNVm4Wb0/JKsb0k1DjUC7chTCflXu+a6mRDPkNvB1VaF0IQ5DRo2fH+SMNSlBYS2NCqejdwAYsLxFJlSMEqsEXxXCb3/fbTNSBJoSAb8lf9QiWr6VGXtT96f6yFxkzF4=
+	t=1725640802; cv=none; b=hfxPv0AMF0gkra+lCTUI/zTpJUwgMgJNyJX3Hravbb6p8JUPif/R3K+D5Owo+CZF46x0OkLZv832hA+p9pkzYpw/K2tFbGC90q/spnDdNfN2OWZunLvLLlSW7kf0JuZsCcPAVfuJPxjKFtSIQwZgorVLqwZyRGZP1777WywCg9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725639220; c=relaxed/simple;
-	bh=6qtHiDnxElIvPDVEWmhk2vdl1c+NLPGnxFLLq5CjDLs=;
+	s=arc-20240116; t=1725640802; c=relaxed/simple;
+	bh=P9Eryl5SCGSwf+/z7iLEZUpwtqsdlYrJ1wkIzKBU3SU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RZwh4yA7ukrQsfuoemqSxK9IDblF+KFL7oKm727MchyZv67lBkjbAEnX8FKsrYQsfk2NYNsGytdPf4TjcuyKQMIYRwqIMF39JnjIy2+H1zKIfNuvGRMgcOVch6wvpYPsY+042RQl0P4ztmFZBWz5QkEudK6krbpYuGrASKGJ71I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=SG5VoLbq; arc=none smtp.client-ip=209.85.167.46
+	 Content-Type:Content-Disposition:In-Reply-To; b=afW9fVAcwLRmqw1XOpe7EzGrD7BIHmpvwq/f9QsxhkLkcMcvUoPkg1zKaw69ds2B3btxMG8lGAalut6f1/3HV/vk354uyIdGcx9HMgVsKXVhYsZV0vYomm2Qb45mGk0sp67RwNpsTS5Kj7iIPZEMCUkffDPiSkfvsNdgOuxfwHg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QEwGQuVB; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5365b71a6bdso692952e87.2
-        for <live-patching@vger.kernel.org>; Fri, 06 Sep 2024 09:13:38 -0700 (PDT)
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a8a789c4fc5so305967666b.0
+        for <live-patching@vger.kernel.org>; Fri, 06 Sep 2024 09:40:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1725639217; x=1726244017; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1725640799; x=1726245599; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=adpXTAZO60azUV0Ob6AZV0dcnKEkcroMCFDVSYJYFSw=;
-        b=SG5VoLbqRYDJQD07r1Hwfp4+dy13rpG1sO2FnbynJL1FAquihFOxFdXhViCxcAiHGO
-         HPx9EB1Wjsy4UemusYDf+hsUl0cqNUo/nKQIwej8WDXRqpgrUITV750HvrlTT3yDkHLl
-         Y0iWuSVBc4UJYD+DWYajpekl2GHLtLBAYqaPMQCZ5Jd7J1oMXUxxixGoHNb8IieBAAQm
-         zwZ3NhR43bZsN0ueSsJJMJ517eyRnAgO+BN+Xw7Mo+znccAYwNhMg0jztylvWRanjiqT
-         Bt7q/TkPLL+4Ep5wIpuZqFTHVtPKLOtBVTAyxtj4vXoKo1pEP2ffbFH0MFA822AmAWII
-         YW5A==
+        bh=QF/ebzmzQk3Rvt7bUbW4XRiKYFS0zEetz6yd91MTpio=;
+        b=QEwGQuVBA3s49ZdxMgyOOQf2gPWUaWoq7zrgLSi/E3ViEFHP3Nc21Zc6zTmRA3/YNV
+         D3iTImKbxMwdYJtKQVjnXc5N2xZwJ7UMu+0P30gTR6P6TjYAniOaCwI/j5vsWVF8FXQo
+         N+Nx9VdEhvb+J+0FZWI4lXVNFxsjwUavnPGYigUzdwm5ZVIpJ8auYqsW/5gKeBCvGBFA
+         GLjzsg73G0KLjsb+9tqI2wr0u5c1SB6HUu2YOVUaW+j420hD4SM/FArSQPJT8yGQOxhi
+         N93KpMP2gLB1wbpcFFO9tKp9Qh1+kq7DjLsv/dEgQWGTMOOQXHKmRP3HK+oMSLdGe7SS
+         NQKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725639217; x=1726244017;
+        d=1e100.net; s=20230601; t=1725640799; x=1726245599;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=adpXTAZO60azUV0Ob6AZV0dcnKEkcroMCFDVSYJYFSw=;
-        b=q9HFVeBspzZhzuuyP7nvBrRconvV8QAG+guLzcBxgzEW6j3zMAG2NLSxUIRyxdSpse
-         6Nso+UNcxqcePdkjoqe2CYr5K6TrtNbeVgIcb7DOSqX5ybOYceJlaK9dfns76+4CCm2E
-         Q+c2QHpm653zuJ/WvE3XvyBwIrSqjGVBtvk78aPrfSdvcI6RlCo97U3iyu4txWNQ5gjp
-         1V02N0D+e3d55zl6P/SoVGNTz7at9P6e/kxC9bHJPitAAFQG7ulfgDaWZer+G/EHrYoB
-         P0oCFqw9dxsE26bvqj74lHzIcocUXJh3ICfNY4+i1mMEldNyNxoPLbaBAbAFkcbuS4YW
-         VW1A==
-X-Forwarded-Encrypted: i=1; AJvYcCUCSe7HM6UNcpALumomsgnd8b0vdTAG8zssBd7Rzw6HMV8ByoMdYO8SJaxKniri7ecvqu/hvUg++YqFfS0q@vger.kernel.org
-X-Gm-Message-State: AOJu0YywczUw3AIh2xtFSPGNNEibRfUcc8vKK8LX6Hn5PL78b+WzF1oQ
-	QlGGRejFnWb5F9SkU1YIllUPMMJ7lg85twrcIenxZ9OYxd+sn0DMd5BpYKYxYMI=
-X-Google-Smtp-Source: AGHT+IFajb+bsrzIRWA8ZFjiVGyZ+YpHk8riHh9kcXtlmaeSyrq2uJsF6Lk4kJ+PapFck/x8hOT71Q==
-X-Received: by 2002:a05:6512:1392:b0:533:809:a94d with SMTP id 2adb3069b0e04-536587ad9c5mr2317114e87.17.1725639216687;
-        Fri, 06 Sep 2024 09:13:36 -0700 (PDT)
+        bh=QF/ebzmzQk3Rvt7bUbW4XRiKYFS0zEetz6yd91MTpio=;
+        b=EX8hIWm7mmdD6hPiAwXUHaEvpJ6gFrlPuycws+6CqdC1nm31G0n77TqkbSbnR6gWgE
+         5GKPzrBWr697jcSnGa6uTIE8U4110UDqXP4PVE27iOaf4vDPWSIxJ4EmDwFu+0JmOg1y
+         rg3PEpHaDk82jXu1QZ21zxhP4H8dPcIdBd6IAglR1At9KaVSouyTXKlAb1nG7I3d67OT
+         6QaKbdNkynPINCcUx/TnxEgTN7LFjNaEZrXz93saj+NR6GD6XPqc7KuWIMyG09LqgDxi
+         QVD1utmLNaRT4vgVqdJKSu1AM/Luo2W+i6KSI+iIhOZueksjeIf+NXee8Q/EfUhVGRPw
+         HYIQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWRsIXnxzepTjum5mBLYr9vCsg/3hJ7sk3bSWuBRP1XjhJwxG/3XVYnNNvGPLRzQ5yi/+aR0B/qUekxjCDu@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx/hT50dU9ALm8xA8bwsuG4vFNwvx3skJkF0RJfvejrBSAplm03
+	97zIfCJ09lAysx/7IAktWMRIEZBSXxosgIlL0d0vLEut5Fu9XDyQ2UiQtajGM0E=
+X-Google-Smtp-Source: AGHT+IHBVZlr6HZWdZFnGdPIe/stiZVSdziTDEHho/C+HkkwlqCK9AL+pQ7P/fc4xWY+NVIYws13oQ==
+X-Received: by 2002:a17:906:ee8e:b0:a75:7a8:d70c with SMTP id a640c23a62f3a-a8a85f330a6mr394147566b.4.1725640798595;
+        Fri, 06 Sep 2024 09:39:58 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a8a61fbaf9esm294528466b.9.2024.09.06.09.13.35
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a8a61fbaf2dsm294998066b.30.2024.09.06.09.39.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Sep 2024 09:13:36 -0700 (PDT)
-Date: Fri, 6 Sep 2024 18:13:34 +0200
+        Fri, 06 Sep 2024 09:39:58 -0700 (PDT)
+Date: Fri, 6 Sep 2024 18:39:56 +0200
 From: Petr Mladek <pmladek@suse.com>
-To: Miroslav Benes <mbenes@suse.cz>
-Cc: Wardenjohn <zhangwarden@gmail.com>, jpoimboe@kernel.org,
-	jikos@kernel.org, joe.lawrence@redhat.com,
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+To: zhang warden <zhangwarden@gmail.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+	Jiri Kosina <jikos@kernel.org>,
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	live-patching@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v4 2/2] livepatch: Add using attribute to klp_func for
  using function show
-Message-ID: <ZtsqLiJPy5e70Ows@pathway.suse.cz>
+Message-ID: <ZtswXFD3xud0i6AO@pathway.suse.cz>
 References: <20240828022350.71456-1-zhangwarden@gmail.com>
  <20240828022350.71456-3-zhangwarden@gmail.com>
  <alpine.LSU.2.21.2409051215140.8559@pobox.suse.cz>
+ <20240905163449.ly6gbpizooqwwvt6@treble>
+ <285979BA-2A85-495F-8888-47EAFC061BE9@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -86,108 +89,58 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.2409051215140.8559@pobox.suse.cz>
+In-Reply-To: <285979BA-2A85-495F-8888-47EAFC061BE9@gmail.com>
 
-On Thu 2024-09-05 12:23:20, Miroslav Benes wrote:
-> Hi,
+On Fri 2024-09-06 17:39:46, zhang warden wrote:
+> Hi, John & Miroslav
 > 
-> On Wed, 28 Aug 2024, Wardenjohn wrote:
+> >> 
+> >> Would it be possible to just use klp_transition_patch and implement the 
+> >> logic just in using_show()?
+> > 
+> > Yes, containing the logic to the sysfs file sounds a lot better.
 > 
-> > One system may contains more than one livepatch module. We can see
-> > which patch is enabled. If some patches applied to one system
-> > modifing the same function, livepatch will use the function enabled
-> > on top of the function stack. However, we can not excatly know
-> > which function of which patch is now enabling.
-> > 
-> > This patch introduce one sysfs attribute of "using" to klp_func.
-> > For example, if there are serval patches  make changes to function
-> > "meminfo_proc_show", the attribute "enabled" of all the patch is 1.
-> > With this attribute, we can easily know the version enabling belongs
-> > to which patch.
-> > 
-> > The "using" is set as three state. 0 is disabled, it means that this
-> > version of function is not used. 1 is running, it means that this
-> > version of function is now running. -1 is unknown, it means that
-> > this version of function is under transition, some task is still
-> > chaning their running version of this function.
-> > 
-> > cat /sys/kernel/livepatch/<patch1>/<object1>/<function1,sympos>/using -> 0
-> > means that the function1 of patch1 is disabled.
-> > 
-> > cat /sys/kernel/livepatch/<patchN>/<object1>/<function1,sympos>/using -> 1
-> > means that the function1 of patchN is enabled.
-> > 
-> > cat /sys/kernel/livepatch/<patchN>/<object1>/<function1,sympos>/using -> -1
-> > means that the function1 of patchN is under transition and unknown.
-> > 
-> > Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
+> Maybe I can try to use the state of klp_transition_patch to update the function's state instead of changing code in klp_complete_transition?
 > 
-> I am not a fan. Josh wrote most of my objections already so I will not 
-> repeat them. I understand that the attribute might be useful but the 
-> amount of code it adds to sensitive functions like 
-> klp_complete_transition() is no fun.
-> 
-> Would it be possible to just use klp_transition_patch and implement the 
-> logic just in using_show()? I have not thought through it completely but 
-> klp_transition_patch is also an indicator that there is a transition going 
-> on. It is set to NULL only after all func->transition are false. So if you 
-> check that, you can assign -1 in using_show() immediately and then just 
-> look at the top of func_stack.
+> > 
+> >> I have not thought through it completely but 
+> >> klp_transition_patch is also an indicator that there is a transition going 
+> >> on. It is set to NULL only after all func->transition are false. So if you 
+> >> check that, you can assign -1 in using_show() immediately and then just 
+> >> look at the top of func_stack.
+> > 
+> > sysfs already has per-patch 'transition' and 'enabled' files so I don't
+> > like duplicating that information.
+> > 
+> > The only thing missing is the patch stack order.  How about a simple
+> > per-patch file which indicates that?
+> > 
+> >  /sys/kernel/livepatch/<patchA>/order => 1
+> >  /sys/kernel/livepatch/<patchB>/order => 2
+> > 
+> > The implementation should be trivial with the use of
+> > klp_for_each_patch() to count the patches.
+> > 
+> I think this is the second solution. It seems that adding an
+> interface to patch level is an acceptable way.
 
-The 1st patch adds the pointer to struct klp_ops into struct
-klp_func. We might check the state a similar way as klp_ftrace_handler().
+It seems to be the only acceptable idea at the moment.
 
-I had something like this in mind when I suggested to move the pointer:
+> And if patch order
+> is provided in /sys/kernel/livepatch/<patchA>/order, we should
+> make a user space tool to calculate the function that
+> is activate in the system. From my point to the original
+> problem, it is more look like a workaround.
 
-static ssize_t using_show(struct kobject *kobj,
-				struct kobj_attribute *attr, char *buf)
-{
-	struct klp_func *func, *using_func;
-	struct klp_ops *ops;
-	int using;
+It is always a compromise between the complexity and the benefit.
+Upstream will accept only changes which are worth it.
 
-	func = container_of(kobj, struct klp_func, kobj);
+Here, the main problem is that you do not have coordinated developement
+and installation of livepatches. This is dangerous and you should
+not do it! Upstream will never support such a wild approach.
 
-	rcu_read_lock();
-
-	if (func->transition) {
-		using = -1;
-		goto out;
-	}
-
-	# FIXME: This requires releasing struct klp_ops via call_rcu()
-	ops = func->ops;
-	if (!ops) {
-		using = 0;
-		goto out;
-	}
-
-	using_func = list_first_or_null_rcu(&ops->func_stack,
-					struct klp_func, stack_node);
-	if (func == using_func)
-		using = 1;
-	else
-		using = 0;
-
-out:
-	rcu_read_unlock();
-
-	return sysfs_emit(buf, "%d\n", func->using);
-}
-
-It is racy and tricky. We probably should add some memory barriers.
-And maybe even the ordering of reads should be different.
-
-We could not take klp_mutex because it might cause a deadlock when
-the sysfs file gets removed. kobject_put(&func->kobj) is called
-by __klp_free_funcs() under klp_mutex.
-
-It would be easier if we could take klp_mutex. But it would require
-decrementing the kobject refcout without of klp_mutex. It might
-be complicated.
-
-I am afraid that this approach is not worth the effort and
-is is not the way to go.
+You could get upstream some features which would make your life
+easier. But the features must be worth the effort.
 
 Best Regards,
 Petr
