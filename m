@@ -1,169 +1,150 @@
-Return-Path: <live-patching+bounces-634-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-635-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7FB409704E8
-	for <lists+live-patching@lfdr.de>; Sun,  8 Sep 2024 04:51:35 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id B909F97051C
+	for <lists+live-patching@lfdr.de>; Sun,  8 Sep 2024 07:04:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B15B01C2111D
-	for <lists+live-patching@lfdr.de>; Sun,  8 Sep 2024 02:51:34 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 4ADDB1F21A23
+	for <lists+live-patching@lfdr.de>; Sun,  8 Sep 2024 05:04:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAC7E19BBA;
-	Sun,  8 Sep 2024 02:51:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D7852C18C;
+	Sun,  8 Sep 2024 05:04:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F7at7MDs"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mw3sUb/l"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DC5933C5;
-	Sun,  8 Sep 2024 02:51:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51D7928FC;
+	Sun,  8 Sep 2024 05:04:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725763890; cv=none; b=jdVBA6fyQv9fILaxhxe4LtV8ioqKXhlR14LOZFlGge/YxLx9qOYQWmCiRzAztMiDvOie0yD/z1T2EcAz7EpdW9WrP/rcipBNZlub82pYzC17VlKudb9azKsZWn2CjbKuH678aVDAPRAN1YDM6NYF/xSE6ijKNAtYcAFX1nkXBrk=
+	t=1725771878; cv=none; b=Hw1l6FZiCReawNQRH2yZ74U7XxwxsnY1o+OLaA5SpX5j4lZ3qytTGZB9L/AMJIujxh4UOeu4hrvI38eZLWUyCeTBs2/I3qxsloEs6xED+i95uXbXo4q2LwtF3Qsv8ouzT3PkqmKKxW6j+p3hMkDe40VPTg/Rk9ZYZWIYdNWv28A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725763890; c=relaxed/simple;
-	bh=PC19EQHHckZ7VLKOX/zWu1TH3ZmhRGVbLVBCPb1cazQ=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=MzjFksJDw6lxWBmeHkKgxJBuuVZ2ABsC0yCCzx4cCYUxp+Yq+5GI/dQ52+hZlGYYEMDJcsp7kSu2b7oG9NicdhGyhZromLC5xCVp2bvs4tl6RkIPe+ZQ2+pcnxplpFjxih4K/cYxwi+CxbJrj1A2NsDmcdk+02wjuumbsknuGuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F7at7MDs; arc=none smtp.client-ip=209.85.215.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-7c3ebba7fbbso2616786a12.1;
-        Sat, 07 Sep 2024 19:51:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1725763889; x=1726368689; darn=vger.kernel.org;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=G+SrRojYLMRk4wDwyLPgg1lXpOo53TSxFv8f5gEP7IY=;
-        b=F7at7MDsD25BqVfMgQslKgaQ4C+J0deSmkKGN91mDq8REc0P56qBMe+PHvSN9F6QAx
-         eYYY1sDFgztYM82+ps7m+cQqAWAMYZxeQIN5+AHCb0bqHXiyHWzl0ozW2rKcKaYxntiy
-         i5wacCbGuESRp2b4cvgKuPcaZu09+DHsgvJAlkwTyrcwF/nt0EOWExcHAjnpdKak+uAK
-         0yuQQZ0z+kuvA4xEctCN7NmCMxfJWgiYXj3UWsku7G7pbxIfOXeX23X/03c8BQ4ECh9u
-         6aAonVCi4s8Y8X9CqLdS6V+i/Dnc0/H5iTF+KWoeTHTUVxKAYII/YmdO3G2rF73gXLNM
-         l+KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725763889; x=1726368689;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=G+SrRojYLMRk4wDwyLPgg1lXpOo53TSxFv8f5gEP7IY=;
-        b=U/tfQfiRoxz/q5N1TNBBHtlepspQ0N09fHoZLV44YeXyYrb/v6B+OgXx0oIjcljGWT
-         K6rORyO/avckvqiLGmjO6TF1SRnzchhyjwReZlZh4SxX1Z5sEsuBKO2xYwr0ag9Wx8uz
-         fLkxqqEDZI4cPw4U0b9eA+EKvnGqmRNuP+3G8oC9NACumgfG9ekH7j5HtFZt/3qjTAmV
-         cAHXf/w48x50P//M4P+3ANK9AI6LzBp/ZX3Fx/TSdS5P/Fzwp6Sc/pCB3WP48LNqYIAa
-         Ndcoh/1zusxxtDcboUQCVKt9kTgzrNgiVkY4f+7iOnYcajl03ntehsL6oecgWMbzU2RS
-         +w6A==
-X-Forwarded-Encrypted: i=1; AJvYcCWcV/0yFG9+3X1WejciADTCMgnZO/MFBfrPPiUkHF3RRlAe9tqkzXgzySyYanIiUWSZTcwZp5AUktxNzoHK5g==@vger.kernel.org, AJvYcCX2EsYiw1lzZCAXZQV8J36JVArw+JsQNsr5H/RR60HYUM2wrXFrnsnIYqbnb9FYLZwa/yNEo3MIHbwoY8U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyyUUQDhU+cPbwiZq2JL/WGbXMxBWQ6YEDje7ck8ZAbT2p9CCHK
-	LZPvnYD3Vd1Kv72FQH15cooEPEH2AmRFOpylwKXEcpGhu9p4RXcdE3jyHHRe9E0=
-X-Google-Smtp-Source: AGHT+IGZUM4Qg6dfdgj34NsClLbtcB2Jd1cHlugRVBl66oYhy7CMqLW1kzi16Pl53AQlPXYgVZtD1A==
-X-Received: by 2002:a17:902:e805:b0:206:c798:3cd8 with SMTP id d9443c01a7336-206f0624258mr88222585ad.54.1725763888781;
-        Sat, 07 Sep 2024 19:51:28 -0700 (PDT)
-Received: from smtpclient.apple ([47.88.5.130])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20710e0ec71sm14158185ad.25.2024.09.07.19.51.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 07 Sep 2024 19:51:28 -0700 (PDT)
-Content-Type: text/plain;
-	charset=us-ascii
+	s=arc-20240116; t=1725771878; c=relaxed/simple;
+	bh=gWTjenl//fl5JKTsIMMhtHISqWDl35YgXIHuX1nrkEc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VjJjZ3XFNzC8RdZ7xIZ6QQbjI/xidjN7HncAwazwGpRMP0HJfSgBe91Ijvzl1wLk+Kr10eMmI/ruGb+/Ief6cuzNO3+mv9IT8nimMDlEmMJuOykvQB26xb6dnTGN8I+99ML3PqW/8ibx9su7J8yPtYpswznWc7vBwV5UzsBkaKE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mw3sUb/l; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F4BC4CEC9;
+	Sun,  8 Sep 2024 05:04:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725771877;
+	bh=gWTjenl//fl5JKTsIMMhtHISqWDl35YgXIHuX1nrkEc=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=mw3sUb/liROHoWUPAWj1EtLJeKdpN1zJiP2PGPanqDThCo1D8twKCcj20bLy1rga5
+	 4un14C+zqwHtSKGc4KIpsQOHpD8tmL3xNkUaM7NamdSjAyQQN8wA9zUFzYYAGacd5m
+	 GC+NxBkH31Ymr5K6QeSa2BBbEF0sDQ1yZdmBd/becgOV1nCY6zNj6BbYtHa2sB0zha
+	 FqnrFrRtv9/v2PD3IusxSB/Jg8S/JbmPlsJsA8ZK7tG3FfM39iD4sRh8MOUrm0wj2z
+	 6a4TtEqBIpsojgB1d1OYTJUdrRWZGynZovLrKdrayyOWceuO0vHPallYK6/590ztO6
+	 Xj7uh5YypeyRg==
+Received: by mail-il1-f172.google.com with SMTP id e9e14a558f8ab-39e6a1e0079so13603985ab.0;
+        Sat, 07 Sep 2024 22:04:37 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVspTJofipVWmFAzogZI2+nzEQ7RQeb4ZvRxTZnmgtjXIxEyoU3dXf0AK/drxNRCsxzkemTiWu7fowfklM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxiCKPqHwK3xJKJSO6bN9UqakPlbAUwNvJh6KWtZm5EmTWMc4Fe
+	RCu7sQh9e4NEv6tr3IL8D853WM7ckbmzC1VkCGBWDqro4zKLLG3o4Ilb/GBd3V8T7F/H7EW2/QO
+	4//bCipCckAE1nAVcZiQH67ZfH7A=
+X-Google-Smtp-Source: AGHT+IGNOw8MvXM0Whm9t8FdBfBaTZLKRA0fGYNYR5KZyzHU8Bi6QdyP4nAFyDWziVw+MvIosQIwUVmkJ+aKmU9anQI=
+X-Received: by 2002:a92:cdab:0:b0:39f:7318:c1c6 with SMTP id
+ e9e14a558f8ab-3a04f0af164mr84296455ab.15.1725771877132; Sat, 07 Sep 2024
+ 22:04:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [PATCH v4 2/2] livepatch: Add using attribute to klp_func for
- using function show
-From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <ZtsqLiJPy5e70Ows@pathway.suse.cz>
-Date: Sun, 8 Sep 2024 10:51:14 +0800
-Cc: Miroslav Benes <mbenes@suse.cz>,
- Josh Poimboeuf <jpoimboe@kernel.org>,
- Jiri Kosina <jikos@kernel.org>,
- Joe Lawrence <joe.lawrence@redhat.com>,
- live-patching@vger.kernel.org,
- linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+References: <cover.1725334260.git.jpoimboe@kernel.org> <CAPhsuW6V-Scxv0yqyxmGW7e5XHmkSsHuSCdQ2qfKVbHpqu92xg@mail.gmail.com>
+ <20240907064656.bkefak6jqpwxffze@treble> <CAPhsuW4hNABZRWiUrWzA6kbiiU1+LpnsSCaor=Wi8hrCzHwONQ@mail.gmail.com>
+ <20240907201445.pzdgxcmqwusipwzh@treble>
+In-Reply-To: <20240907201445.pzdgxcmqwusipwzh@treble>
+From: Song Liu <song@kernel.org>
+Date: Sat, 7 Sep 2024 22:04:25 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4TyQSSnAR70cE8FChkkqX-3jFAP=GKS7cuaLSNxz00MA@mail.gmail.com>
+Message-ID: <CAPhsuW4TyQSSnAR70cE8FChkkqX-3jFAP=GKS7cuaLSNxz00MA@mail.gmail.com>
+Subject: Re: [RFC 00/31] objtool, livepatch: Livepatch module generation
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, Jiri Kosina <jikos@kernel.org>, 
+	Peter Zijlstra <peterz@infradead.org>, Marcos Paulo de Souza <mpdesouza@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <B250EB77-AFB0-4D32-BA4E-3B96976F8A82@gmail.com>
-References: <20240828022350.71456-1-zhangwarden@gmail.com>
- <20240828022350.71456-3-zhangwarden@gmail.com>
- <alpine.LSU.2.21.2409051215140.8559@pobox.suse.cz>
- <ZtsqLiJPy5e70Ows@pathway.suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-X-Mailer: Apple Mail (2.3774.500.171.1.1)
 
+On Sat, Sep 7, 2024 at 1:14=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org>=
+ wrote:
+>
+> On Sat, Sep 07, 2024 at 10:43:10AM -0700, Song Liu wrote:
+> > clang gives the following:
+> >
+> > elf.c:102:1: error: unused function '__sym_remove' [-Werror,-Wunused-fu=
+nction]
+> >   102 | INTERVAL_TREE_DEFINE(struct symbol, node, unsigned long, __subt=
+ree_last,
+> >       | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~~
+> >   103 |                      __sym_start, __sym_last, static inline, __=
+sym)
+> >       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~
+> > /data/users/songliubraving/kernel/linux-git/tools/include/linux/interva=
+l_tree_generic.h:65:15:
+> > note: expanded from macro 'INTERVAL_TREE_DEFINE'
+> >    65 | ITSTATIC void ITPREFIX ## _remove(ITSTRUCT *node,
+> >                \
+> >       |               ^~~~~~~~~~~~~~~~~~~
+> > <scratch space>:155:1: note: expanded from here
+> >   155 | __sym_remove
+> >       | ^~~~~~~~~~~~
+> > 1 error generated.
+>
+> Here's how __sym_remove() is created:
+>
+> #define INTERVAL_TREE_DEFINE(ITSTRUCT, ITRB, ITTYPE, ITSUBTREE,          =
+     \
+>                              ITSTART, ITLAST, ITSTATIC, ITPREFIX)        =
+     \
+> ...
+>
+> ITSTATIC void ITPREFIX ## _remove(ITSTRUCT *node,                        =
+     \
+>                                   struct rb_root_cached *root)           =
+     \
+>
+> INTERVAL_TREE_DEFINE(struct symbol, node, unsigned long, __subtree_last,
+>                      __sym_start, __sym_last, static inline, __sym)
+>
+> ITSTATIC is 'static inline' so it shouldn't be complaining about it
+> being unused, right?
 
-Hi, Petr
->=20
-> The 1st patch adds the pointer to struct klp_ops into struct
-> klp_func. We might check the state a similar way as =
-klp_ftrace_handler().
->=20
-> I had something like this in mind when I suggested to move the =
-pointer:
->=20
-> static ssize_t using_show(struct kobject *kobj,
-> struct kobj_attribute *attr, char *buf)
-> {
-> struct klp_func *func, *using_func;
-> struct klp_ops *ops;
-> int using;
->=20
-> func =3D container_of(kobj, struct klp_func, kobj);
->=20
-> rcu_read_lock();
->=20
-> if (func->transition) {
-> using =3D -1;
-> goto out;
-> }
->=20
-> # FIXME: This requires releasing struct klp_ops via call_rcu()
-> ops =3D func->ops;
-> if (!ops) {
-> using =3D 0;
-> goto out;
-> }
->=20
-> using_func =3D list_first_or_null_rcu(&ops->func_stack,
-> struct klp_func, stack_node);
-> if (func =3D=3D using_func)
-> using =3D 1;
-> else
-> using =3D 0;
->=20
-> out:
-> rcu_read_unlock();
->=20
-> return sysfs_emit(buf, "%d\n", func->using);
-> }
+I think gcc doesn't complain, but clang does:
 
-Bravo, I also have something like this in mind when Miroslav suggested =
-to implement the logic in using_show.=20
+$ cat ttt.c
+static inline void ret(void)
+{
+  return;
+}
 
->=20
-> It is racy and tricky. We probably should add some memory barriers.
-> And maybe even the ordering of reads should be different.
->=20
-> We could not take klp_mutex because it might cause a deadlock when
-> the sysfs file gets removed. kobject_put(&func->kobj) is called
-> by __klp_free_funcs() under klp_mutex.
->=20
-> It would be easier if we could take klp_mutex. But it would require
-> decrementing the kobject refcout without of klp_mutex. It might
-> be complicated.
->=20
-> I am afraid that this approach is not worth the effort and
-> is is not the way to go.
->=20
+int main(void)
+{
+  return 0;
+}
 
-But I don't think I've thought as deeply as you do and may not have =
-considered the possible risks. Therefore, I do need your help to make my =
-patch perfect.  ^_^
+$ gcc  ttt.c  -Werror -Wunused-function
+$ clang ttt.c  -Werror -Wunused-function
+ttt.c:1:20: error: unused function 'ret' [-Werror,-Wunused-function]
+    1 | static inline void ret(void)
+      |                    ^~~
+1 error generated.
 
-Thank you.
-Wardenjohn.=
+>
+> If you add -E to the cflags to get preprocessed output, can you confirm
+> __sym_remove() is 'static inline'?
+
+Yes, it is 'static inline'.
+
+Song
 
