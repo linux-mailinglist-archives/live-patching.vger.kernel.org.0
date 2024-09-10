@@ -1,104 +1,97 @@
-Return-Path: <live-patching+bounces-639-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-640-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0AE209724A1
-	for <lists+live-patching@lfdr.de>; Mon,  9 Sep 2024 23:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1B82B972A83
+	for <lists+live-patching@lfdr.de>; Tue, 10 Sep 2024 09:22:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B63DD1F24376
-	for <lists+live-patching@lfdr.de>; Mon,  9 Sep 2024 21:43:59 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id CC2181F22FDE
+	for <lists+live-patching@lfdr.de>; Tue, 10 Sep 2024 07:22:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C32618C035;
-	Mon,  9 Sep 2024 21:43:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CC5B17C21B;
+	Tue, 10 Sep 2024 07:22:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GA2n0SOM"
+	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="iphENexq"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6DB418030;
-	Mon,  9 Sep 2024 21:43:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6913017D374
+	for <live-patching@vger.kernel.org>; Tue, 10 Sep 2024 07:22:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725918234; cv=none; b=IA4KMZv4SKpW/b2g0uCNCsIseHD0t/lMh2rBKnIJIwaVHJfQycxV/ioA3bj4An42CO8K/fgeY6SasXyGavKlvnigy1+5/9fUcGzi3fLu8t2QCJclMSuSQIQBbVWt55oZEyTcyeaBeqz1uOGw1PX3r3DHPvFsaNFqA5Mz8XPpbw0=
+	t=1725952924; cv=none; b=TvzahKh9xza9vfHrsEO0Hhm0X/aV52z2ZW5lKoxq2Wdz3L7mk7IyfjPxDkEGhHj0SkRyrNBtwvDr5l7uhA7dsTl5FsHwxlBoZqe2FOpf66jK0zGiSgXBjnQSvrjUPYkE8z7tiHQnKMEBjMRaugjG8/D2/1xpNfGaLn85/hDK57c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725918234; c=relaxed/simple;
-	bh=79UI1RgdHCAz7Z4Iqu6nE2LQ79fwcuO4rH0u18JtymA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Ly0khxSMUyQ/X3/kAcOZ6GmQzALo3QepCySmqIaBQ+h+msmBhZSOhouqLtT3gRWH3jttD+B8Pss3Ast36sfcAphiNZx2V6Az38NJWUa80GK91Kghxd9mmaGbRsJ7XQxIJBLdh9mO0SQZXS2qiDjh2ed6gDvp0betGPNBKHPSpPM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GA2n0SOM; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66784C4CEC6;
-	Mon,  9 Sep 2024 21:43:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725918234;
-	bh=79UI1RgdHCAz7Z4Iqu6nE2LQ79fwcuO4rH0u18JtymA=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=GA2n0SOMH4q2t2GS53UIww9gKKloFkmIgxzq8pzRrLQ/0TNXGVhPtHwh1fi3bTeym
-	 z/6E/Q+VSdIVA4p7ssb/yy5Ol7NrLZi+kjC96z0CCK4/MWdB/837EJ6fpBx4Somj4S
-	 D5T4OXrt4n2c1K+ZAoUVSiQcGllte0JycmWqUBzA4ZflXrf7ZkQHPvUGmXczLd+LJk
-	 oeXb48lYoYmc4s9WHVxVLnvNCu/lFo8VqfAvqeeivd8kTe0nTlBm6rgHawkLMClOC1
-	 Nh57G6zl3Z6tmIVeRVZ9QIqopMYRUSTu+PwDubzNsxt+9cuObjMHkTRwJwePEAYX6d
-	 mRRgZT1DMzSSQ==
-Received: by mail-il1-f177.google.com with SMTP id e9e14a558f8ab-39d47a9ffd5so269045ab.2;
-        Mon, 09 Sep 2024 14:43:54 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVpTnf/qv2+jl8w+PJFdq+ZohBhR8YND7wPk4ujbMyckrmgLMkErekIyvAFI+yjTbIps6lno87P5X0EphI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwPeyRbI9/TkF6bIjkCdqHkanptyJ4Znn9tOInwxQFsGBl/SigF
-	FgVoVaUQYGkj4/T5AhRqhdDdSheQJK0LspAiH3p/+casWgHcy2W864SspHx1NqefzDacp5oOZjg
-	NUWK/E56fvW4jI4eaj1q6Y6euFhs=
-X-Google-Smtp-Source: AGHT+IHVQEP3XJMT3yC7dw9uKpb9nBVj4z60x9CU4JnXOwl2vUMuXJh4xOQ+oRQI5d3wSqa2dW6wrYC4KA8m2xc09Vs=
-X-Received: by 2002:a05:6e02:b43:b0:39a:eb57:dc7 with SMTP id
- e9e14a558f8ab-3a04f0734a1mr134054315ab.1.1725918233783; Mon, 09 Sep 2024
- 14:43:53 -0700 (PDT)
+	s=arc-20240116; t=1725952924; c=relaxed/simple;
+	bh=Qz+HWMixHr0TkuldBWJSnvho7DM/meoSWBHgTf1z3jg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=EiH9g1l6X1aBqbdT9puxy8VvtpRQB32awmmQ9o5al/9MDhyvV+wGCsprYHOo1AktSNHmv+ZXhW7qcggU6Vnvjms5R9IRSSFl6FoQlN7N98yjvw36h3797sFqNMhpg4ihFsKJ7ubaC2OJLx4OyxhVxqTTLlrAkeP8DyrV+TEejL4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=iphENexq; arc=none smtp.client-ip=150.107.74.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+	s=201909; t=1725952919;
+	bh=Qz+HWMixHr0TkuldBWJSnvho7DM/meoSWBHgTf1z3jg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=iphENexqZe9/ZJuQmHiRaEn0ojN/WywFBqLg8sghZ8XhuGjQ9EXmRMx7+AbHhZqju
+	 f/Yf0LMRKw2+SIsdbwjbWYA2ocrNG7N6yJerQ+bSOE+NjPIUI+8oWFe283TRV16piV
+	 aHcM5NcRL5NByW/PPK6u9OP1sldZ3VwUiqJLvarDWjprkTb8XMNyMfLpBwsqRQLpw2
+	 cVrKIQuslBo0GWuExk/LAStJrZOzEkiMRzCmp3cmiBIXdGJeN5nsK1WzoacDFyqKP1
+	 6KeF2fI+xxiXmD+E6oZgJEyQSxj5GLMJNNs7Eu0xqbeHWLRQVQFe6hwOTxsqolaqf8
+	 v7gUGXGMo3/+g==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4X2wBG43XYz4wc3;
+	Tue, 10 Sep 2024 17:21:58 +1000 (AEST)
+From: Michael Ellerman <mpe@ellerman.id.au>
+To: "Ryan B. Sullivan" <rysulliv@redhat.com>, Joe Lawrence
+ <joe.lawrence@redhat.com>
+Cc: live-patching@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ pmladek@suse.com, mbenes@suse.cz, jikos@kernel.org, jpoimboe@kernel.org,
+ naveen.n.rao@linux.ibm.com, christophe.leroy@csgroup.eu, npiggin@gmail.com
+Subject: Re: [PATCH] powerpc/ftrace: restore r2 to caller's stack on
+ livepatch sibling call
+In-Reply-To: <Zt8jaSQjpwtfJaVx@sullivan-work>
+References: <87ed6q13xk.fsf@mail.lhotse>
+ <20240815160712.4689-1-rysulliv@redhat.com>
+ <9ec85e72-85dd-e9bc-6531-996413014629@redhat.com>
+ <Zt8jaSQjpwtfJaVx@sullivan-work>
+Date: Tue, 10 Sep 2024 17:21:57 +1000
+Message-ID: <87bk0wrn1m.fsf@mail.lhotse>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1725334260.git.jpoimboe@kernel.org> <CAPhsuW6V-Scxv0yqyxmGW7e5XHmkSsHuSCdQ2qfKVbHpqu92xg@mail.gmail.com>
- <20240907064656.bkefak6jqpwxffze@treble> <CAPhsuW4hNABZRWiUrWzA6kbiiU1+LpnsSCaor=Wi8hrCzHwONQ@mail.gmail.com>
- <20240907201445.pzdgxcmqwusipwzh@treble> <CAPhsuW4TyQSSnAR70cE8FChkkqX-3jFAP=GKS7cuaLSNxz00MA@mail.gmail.com>
- <20240909211902.3tvzxp6wryqvbbhr@treble>
-In-Reply-To: <20240909211902.3tvzxp6wryqvbbhr@treble>
-From: Song Liu <song@kernel.org>
-Date: Mon, 9 Sep 2024 14:43:42 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7srL16mtEUKTaPPOvhrt1XAHMZGbtYbta1qeyWEmDpiA@mail.gmail.com>
-Message-ID: <CAPhsuW7srL16mtEUKTaPPOvhrt1XAHMZGbtYbta1qeyWEmDpiA@mail.gmail.com>
-Subject: Re: [RFC 00/31] objtool, livepatch: Livepatch module generation
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
-	Joe Lawrence <joe.lawrence@redhat.com>, Jiri Kosina <jikos@kernel.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Marcos Paulo de Souza <mpdesouza@suse.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-On Mon, Sep 9, 2024 at 2:19=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org>=
- wrote:
+"Ryan B. Sullivan" <rysulliv@redhat.com> writes:
+> Hello all,
 >
-> On Sat, Sep 07, 2024 at 10:04:25PM -0700, Song Liu wrote:
-> > I think gcc doesn't complain, but clang does:
-> >
-> > $ cat ttt.c
-> > static inline void ret(void)
-> > {
-> >   return;
-> > }
-> >
-> > int main(void)
-> > {
-> >   return 0;
-> > }
->
-> Ah...  That's probably why the kernel adds "__maybe_unused" to its
-> inline macro (which the tools don't have).
->
-> Does this fix?
+> Just wanted to ping and see if there was any further feedback or
+> questions regarding the patch?
 
-Yes! It fixes this problem.
+Hi Ryan,
 
-Thanks,
-Song
+I'd really like a selftest that triggers the sibling call behaviour.
+
+As I said upthread I tried writing one but failed. Which you later
+explained is because the cross-module sibling call is not generated by
+the compiler but rather by the code being objcopy'ed (or similar).
+
+I think it should be possible to trick the compiler into letting us do a
+cross-module sibling call by doing it in an inline asm block. Obviously
+that's non-standard, but I think it might work well enough for a test?
+
+We have an example of calling a function within an inline asm block in
+call_do_irq().
+
+I'll try to find time to get that done, but I can't promise when.
+
+cheers
 
