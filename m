@@ -1,73 +1,49 @@
-Return-Path: <live-patching+bounces-648-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-649-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id ABAEC9753E2
-	for <lists+live-patching@lfdr.de>; Wed, 11 Sep 2024 15:29:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D67AD975820
+	for <lists+live-patching@lfdr.de>; Wed, 11 Sep 2024 18:20:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6DD33285949
-	for <lists+live-patching@lfdr.de>; Wed, 11 Sep 2024 13:29:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9626A28B4EF
+	for <lists+live-patching@lfdr.de>; Wed, 11 Sep 2024 16:20:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95EBE19E973;
-	Wed, 11 Sep 2024 13:27:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 169991AD9FF;
+	Wed, 11 Sep 2024 16:20:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="fpCtCKo0"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CX03Q/vW"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 739C719CC10
-	for <live-patching@vger.kernel.org>; Wed, 11 Sep 2024 13:27:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E04DB187336;
+	Wed, 11 Sep 2024 16:20:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726061254; cv=none; b=q7MquZJUf1+5vsUIxl9QIKYrN4LIl2s6MpVMJDRGE7JpRVEuYMzbrktN0CR2cUHaNka7G4o3uWeSbuMKn6n5C7gk1mTx2At05W9kBzCsX8PKJKtpjux8YPqHR+0w7EWeCgE8R5nMXQWfqt5Vzmg2cc0nAOSCc1YrAyIL3ulZ2rY=
+	t=1726071608; cv=none; b=QYc388wQxYvfF1sdRGMmbwd+juTmCPeL+KBdot+SmL63pySEMHx7o1m6wavxao3nkjgz593ZkfMotAI1oA4J1Y0TElTWNFOsfhG/uNDAkNUjcZjHVWDWqe27IJhveTqPBBTYoRQBh0VI5Qv4TYmK4PwrMMwwXJlacYYXyw34zk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726061254; c=relaxed/simple;
-	bh=XYxNeP8foVOxU/usRXQZxtotm9g66tXsYnUJKvkGJxA=;
+	s=arc-20240116; t=1726071608; c=relaxed/simple;
+	bh=MBGdQo2cBzmQK5M6W3GuoGffk8uzIWlhJSuZ4hN+u7w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ko8aeprg8OJANlJ3jHq3HcUwIgrJ1xAaljeg7hUICHlmy4UuaVk+on3N+fT7eE30Oa4+kTUi9Q6r2iXNiz1vzVW7nJAQ9XsLAASFlMBtPZRrrfAzAlt2NswmsvF1Mx+1NAa7VBFFAcB4VbgwMC5jPjRws+kM6EvHAdtl/9EUbbM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=fpCtCKo0; arc=none smtp.client-ip=209.85.218.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a8d6d0fe021so444744866b.1
-        for <live-patching@vger.kernel.org>; Wed, 11 Sep 2024 06:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1726061250; x=1726666050; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WVbEz45p/3iQTTK+m24sTBRTlq90xKYlj6mKX8slWBQ=;
-        b=fpCtCKo0vJ01q2ar8/L8lmvu0ARdBUVmsEj9g7WwmhBQXxV4Dqju6BA2WcDSAXcG4O
-         KuBx2G1K3slW1mtWJlmolFH/FkP2/7UsMtvVUZs+viy13be6oixbCMYx9M1nD3DlGGHy
-         cWUYiCZetwSFhWGx+JZ1lbJqRNKHq13i2cY3dl5QTh8NykiMTb2SqKw1nqtIYcsGuGbQ
-         wp//pbAm8xyJSmeWyhgB7xZJMsLBHuVBxr00Ar/JoUzZSZ3t7ddBVQ4YiUa2p7aLIq9k
-         qMI5SbJ41e4VKgjKl2eep+Ki/19Edn8JOWO20PlfVInLsGNx7dwkJJGzSimVdf7DaMnr
-         rxhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726061250; x=1726666050;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WVbEz45p/3iQTTK+m24sTBRTlq90xKYlj6mKX8slWBQ=;
-        b=rcDATBpNCE7Xto1Kjl6fIfPgfBcxlZk/1b5GAMzjM1DO4vcyYPeJZ8UQbNwRRWl72x
-         38uwJTGSOzdAdOvrjz1lsKTBDIn76Kk8h7vKT3RzV4RnryzRWCVM3dFk1u+q2xFsF2lV
-         bAO71EV3RZefAc0viUzFRztsbezyMoGEjTVmc0TS+enxag5BowxVQ2+yLZah3dEMcMy5
-         KBu1F7wFdcTDvgFz2yiVqm0TnzHi6Yyy4D61k+pkAO7Sr7x8HYL6EhitUXeWYJ4GGGfo
-         HnWmL66Rc0vyh/SUuTAZxoM9AKD8wVXMFrqsRpHTlG7ZjAq+0HmLUmrbAoWj3+nojfXF
-         KsFA==
-X-Gm-Message-State: AOJu0Yxl/698Z9gXLwbZPu/hr75OUkwouT0KzurWBQDksg/HcelyKkeI
-	Vx3VtB71lCPcs7lZRA4FrkwSXQ4Z83LRHGrdEdNrLawlBlowHMf71tsk/3FhZ5A=
-X-Google-Smtp-Source: AGHT+IGYfcNuLrawZOMIrYxI2db5ueoD85qMReb1+UGl6v3E4qyn+S7fM6OswiHyrluW3lQ1c3Y7Xg==
-X-Received: by 2002:a17:907:3f07:b0:a8d:439d:5c44 with SMTP id a640c23a62f3a-a8ffaa978b6mr384717466b.1.1726061249509;
-        Wed, 11 Sep 2024 06:27:29 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a8d25d74e26sm617701866b.225.2024.09.11.06.27.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Sep 2024 06:27:29 -0700 (PDT)
-Date: Wed, 11 Sep 2024 15:27:27 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=oMRqJQVx+3gHlIbFjdmI2sHVO74ndkGTyZqr6ARL3QkB7dmlfzspDo9whnV5UEvUdn3rW8gEstQROPu2hmhSwdcLEf/7j0b2qRhhVpolGFCNzfN9XDHaGs5HyQZOCeUBzH+JUQYbx2M53Rnc+S6ZF88UupI1kpoGVrOUUcEF2Hc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CX03Q/vW; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DC3AC4CEC0;
+	Wed, 11 Sep 2024 16:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1726071607;
+	bh=MBGdQo2cBzmQK5M6W3GuoGffk8uzIWlhJSuZ4hN+u7w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CX03Q/vWDL6sfqLkIhCmNQu4tlxVAzqtioclDDC23UWWYH16+6YvRKAzePazsK9k/
+	 jjkdOLxx0jhzgxljymjBj7QwXW4U9hsCgBhSNdWjyWeMf2cymxBpRsDkViuS/THChX
+	 agGMwnAUcCKTJiWuly2T8keBonwb3Qw8ukkkz4dGPkheo4Z3oHFl/u/yEu0LTglcIZ
+	 Vj/8OCW36YoK5C57JHcS7bpvPfWzv6UsPnBCIaAklGrVWxhoYeiH9maF4048Eff4+o
+	 fW73n+IA9k/T6KGT3uPNiPlgKe7UlIZHOMAZqfaX70g7tLW6XDCsCny4oaKUm3aOj2
+	 m6YjieCzAVJ/Q==
+Date: Wed, 11 Sep 2024 09:20:05 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Petr Mladek <pmladek@suse.com>
 Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
 	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
@@ -76,146 +52,180 @@ Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Song Liu <song@kernel.org>
 Subject: Re: [RFC 00/31] objtool, livepatch: Livepatch module generation
-Message-ID: <ZuGav4txYowDpxqj@pathway.suse.cz>
+Message-ID: <20240911162005.2zbgqrxs3vbjatsv@treble>
 References: <cover.1725334260.git.jpoimboe@kernel.org>
+ <ZuGav4txYowDpxqj@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <cover.1725334260.git.jpoimboe@kernel.org>
+In-Reply-To: <ZuGav4txYowDpxqj@pathway.suse.cz>
 
-On Mon 2024-09-02 20:59:43, Josh Poimboeuf wrote:
-> Hi,
+Hi Petr,
+
+Thank you for trying it out and doing the research to compare it with
+kpatch-build.
+
+On Wed, Sep 11, 2024 at 03:27:27PM +0200, Petr Mladek wrote:
+> Without -ffunction-sections -fdata-sections:
 > 
-> Here's a new way to build livepatch modules called klp-build.
+> 	$> time make -j8
+> 	real    0m58.719s
+> 	user    3m25.925s
+> 	sys     0m21.895s
 > 
-> I started working on it when I realized that objtool already does 99% of
-> the work needed for detecting function changes.
+> With -ffunction-sections -fdata-sections:
 > 
-> This is similar in concept to kpatch-build, but the implementation is
-> much cleaner.
+> 	$> time make -j8
+> 	real    13m28.126s
+> 	user    15m43.944s
+> 	sys     0m29.142s
+
+That's bad.  We should figure out where those bottlenecks are in the
+toolchain.  I know objtool definitely needs improvements there.
+
+For kpatch-build, the production kernel is built *without*
+-ffunction-sections and -fdata-sections.  Then those flags get manually
+added to CLAGS by kpatch-build for the comparison builds.
+
+We rely on ccache to speed up the repeat builds during development.
+
+Maybe we should do that here as well: only add those flags temporarily
+during the klp-build.  That approach seems to work fine for kpatch, as
+optimizations are unaffected.
+
+> One obvious area is the support of more architectures. I guess that
+> this  code supports only x86_64 at the moment. While kPatch supports
+> x86_64, ppc64, and s390. I wonder how complicated it would be to
+> support more architectures.
+
+We'll find out soon, as I plan to start work on powerpc once x86 is
+done.
+
+I suspect most of the effort is in the objtool port.  However, I believe
+it doesn't need the full objtool reverse-engineering functionality, as
+it can just calculate the checksum for each instruction in order,
+without needing the control flow graph.  So it may be considerably
+easier than a full objtool port.
+
+Even if the checksum feature isn't 100% accurate, "almost perfect" is
+good enough (see below).
+
+> Also I tried to compare how kPatch and this code do the binary diff
+> and found the following:
 > 
-> Personally I still have reservations about the "source-based" approach
-> (klp-convert and friends), including the fragility and performance
-> concerns of -flive-patching.  I would submit that klp-build might be
-> considered the "official" way to make livepatch modules.
+>   a) It seems that kPatch compares the assembly by "memcmp" while
+>      klp-build uses checksum. This looks good.
 
-For me, it is not easy to compare the two approaches because I do not
-have any practical experience with binary-diff bases approach.
-I believe that it has its catches as well.
+Yes.
 
-Anyway, I do not want to open a fight about the two approaches.
-I would like to better understand the approach implemented by this
-patchset.
-
-First, I have been able to go it working by the extra fixes suggested
-in the replies to Song Liu. And it worked well.
-
-Second, I was surprised that the linking of vmlinux.o took much longer
-than usual. It seems to be caused by -ffunction-sections
--fdata-sections compiler flags.
-
-The difference is really huge. It might complicate kernel development.
-I have done the following test:
-
-	# finish build
-	$> make -j8
-	# touch a source file to simulate a change
-	$> touch include/linux/livepatch.h
-	# measure time need for the incremental build
-	$> time make -j8
-
-Without -ffunction-sections -fdata-sections:
-
-	$> time make -j8
-	real    0m58.719s
-	user    3m25.925s
-	sys     0m21.895s
-
-With -ffunction-sections -fdata-sections:
-
-	$> time make -j8
-	real    13m28.126s
-	user    15m43.944s
-	sys     0m29.142s
-
-=> Incremental build slowed down from 1min to 13.5min.
-
-Is this expected?
-
-Are you used to this when developing the kernel or do you use
-a workaround?
-
-
-> The concept is similar to kpatch-build which has been a successful
-> out-of-tree project for over a decade.  It takes a source .patch as an
-> input, builds kernels before and after, does a binary diff, and copies
-> any changed functions into a new object file which is then linked into a
-> livepatch module.
+>   b) Both tools have hacks for many special sections and details.
+>      I am not sure objtool handles all cases which are handled
+>      by kPatch.
 > 
-> By making use of existing objtool functionality, and taking from lessons
-> learned over the last decade of maintaining kpatch-build, the overall
-> design is much simpler.  In fact, it's a complete redesign and has been
-> written from scratch (no copied code).
+>      For example, it seems that kPatch ignores changes in line numbers
+>      generated by some macros, see kpatch_line_macro_change_only().
+>      I can't find a counter part in objtool.
+
+See scripts/livepatch/adjust-patch-lines which adds #line macros to the
+source patch to fix the line count to match the original.  This is both
+easier and a lot more robust than the kpatch way of trying to detect it
+in the binary.
+
+>   c) It seems that kPatch contains quite complicated code to correlate
+>      symbols.
 > 
-> Advantages over kpatch-build:
-> 
->   - Much simpler design: ~3k fewer LOC
+>      For example, it correlates local variables by comparing
+>      functions which reference them, see
+>      kpatch_correlate_static_local_variables().
 
-This brings the question how reliable and feature complete this code
-is in compare with kPatch which is used in production.
+Figuring out how to disambiguate the correlation of static local
+variables which have the same name is on the TODO list for klp-build.  I
+hope to come up with a simpler solution than what kpatch does.
 
-One obvious area is the support of more architectures. I guess that
-this  code supports only x86_64 at the moment. While kPatch supports
-x86_64, ppc64, and s390. I wonder how complicated it would be to
-support more architectures.
+For example, detect when a changed function uses a duplicate-named
+static local variable and require the user to manually correlate the
+variable somehow.
 
-Also I tried to compare how kPatch and this code do the binary diff
-and found the following:
+>      Or kPatch tries to correlate optimized .cold, and .part
+>      variants of the code via the parent code, see
+>      kpatch_detect_child_functions()
+>
+>      While klp-build seems to correlate symbols just be comparing
+>      the demangled/stripped names, see correlate_symbols().
+>      This seems to be quite error prone.
+>
+>      I actually do not understand how klp-build compares symbols
+>      with the same demangled/stripped names. I probably missed
+>      a trick somewhere.
 
-  a) It seems that kPatch compares the assembly by "memcmp" while
-     klp-build uses checksum. This looks good.
+A ".cold" variant is considered part of the "parent" function which
+jumps to it.  When the checksums are calculated in validate_branch(),
+objtool sees the parent jumping to the child, so the child instructions
+contribute to the parent's checksum.
 
+When the parent's checksum changes, that will be detected.  The ".cold"
+variant will be seen as a new function which is needed by the changed
+parent and will be added to the patch file.
 
-  b) Both tools have hacks for many special sections and details.
-     I am not sure objtool handles all cases which are handled
-     by kPatch.
-
-     For example, it seems that kPatch ignores changes in line numbers
-     generated by some macros, see kpatch_line_macro_change_only().
-     I can't find a counter part in objtool.
-
-
-  c) It seems that kPatch contains quite complicated code to correlate
-     symbols.
-
-     For example, it correlates local variables by comparing
-     functions which reference them, see
-     kpatch_correlate_static_local_variables().
-
-     Or kPatch tries to correlate optimized .cold, and .part
-     variants of the code via the parent code, see
-     kpatch_detect_child_functions()
-
-     While klp-build seems to correlate symbols just be comparing
-     the demangled/stripped names, see correlate_symbols().
-     This seems to be quite error prone.
-
-     I actually do not understand how klp-build compares symbols
-     with the same demangled/stripped names. I probably missed
-     a trick somewhere.
+At least that's how it works in theory, I need to test this :-)
 
 
-Do not get me wrong. I do not expect that the upstream variant would
-be feature complete from the beginning. I just want to get a picture
-how far it is. The code will be maintained only when it would have
-users. And it would have users only when it would be comparable or
-better then kPatch.
+For standalone mangled functions such as .part which are not branched to
+by parent functions:
 
-Best Regards,
-Petr
+While the correlation uses the demangled names without the suffix, it
+also takes into account what file they belong to, by looking at what
+FILE symbol they are beneath in the symbol table.  It also takes the
+function order into account.
+
+Since they're static functions, there can't be more than one function
+with the same name, though there might be more than one version of it
+(e.g., one mangled and one non-mangled).  This can change between the
+orig and patched versions, but the function comparisons will detect
+all this on the binary level.
+
+While this strategy isn't theoretically bulletproof, it always works in
+practice.  Which is good enough.
+
+
+In the end, there are two hypothetical modes of silent failure with
+regard to the correlation and comparison of functions:
+
+  1) Marking a function changed that hasn't changed.  This is mostly
+     harmless, as it results in a function getting patched
+     unnecessarily.
+
+  2) Missing a changed function.  This is obviously bad.
+
+Unless there's a bug, neither of these happens in practice.  Regardless,
+it must be stressed that klp-build is not a toy and the patch author
+must always confirm the printed list of changed/added functions matches
+exactly what they expect.  And of course they must test it.
+
+> Do not get me wrong. I do not expect that the upstream variant would
+> be feature complete from the beginning. I just want to get a picture
+> how far it is. The code will be maintained only when it would have
+> users. And it would have users only when it would be comparable or
+> better then kPatch.
+
+I agree it needs to be fully functional before merge, but only for x86.
+
+Red Hat (and Meta?) will start using it as soon as x86 support is ready,
+because IBT/LTO support is needed, which kpatch-build can't handle.
+
+Then there will be an intermediate period where both kpatch-build and
+klp-build are used and supported, until the other arches get ported
+over.
+
+So I think this should be merged once the x86 support is complete, as it
+will have users immediately for those who are running on x86 with IBT
+and/or LTO.
+
+-- 
+Josh
 
