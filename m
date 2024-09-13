@@ -1,263 +1,238 @@
-Return-Path: <live-patching+bounces-655-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-656-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C4A1B97809B
-	for <lists+live-patching@lfdr.de>; Fri, 13 Sep 2024 14:58:23 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id A57BC9782C5
+	for <lists+live-patching@lfdr.de>; Fri, 13 Sep 2024 16:39:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C883C1C20FEB
-	for <lists+live-patching@lfdr.de>; Fri, 13 Sep 2024 12:58:22 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 1A046B255D5
+	for <lists+live-patching@lfdr.de>; Fri, 13 Sep 2024 14:39:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 240301DA61C;
-	Fri, 13 Sep 2024 12:58:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5120910A0D;
+	Fri, 13 Sep 2024 14:39:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="Clelwtnv";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="oZbfwViO"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ES3VaV3K"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9BB1D86DC;
-	Fri, 13 Sep 2024 12:58:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88FA95228
+	for <live-patching@vger.kernel.org>; Fri, 13 Sep 2024 14:39:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726232299; cv=none; b=tp7aLww1C6PIUoaBXpalsgOiWK8+T0jJe6TSFWK6abbVvUDNZdSdiNJY0POaoKx1vnuUuj7mg3VKPADfyZn/i0n37HL22Q0zOSGbFXtWedYqvSR8yxfUXeA2uupWCjj2i/3gPG2m5Ykkp87WwVuPHZJfQSfW051INA61e0Ta+TA=
+	t=1726238371; cv=none; b=O5ol94FSnCVniUrPWBwqisR6SODPxhMW1Oq1tkZCxFPXLMBfEVnFcKh0CZiQW/3HZzw5HOV+oiRawlJJJ/hIl1C4+kP8JoDI+fXq+TvW3Un6H/woVOjAukJ9AiD1na4j4GFMVBfrg6C6dddbxNAWPGS+7IwdnUiAI8p64NLZyfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726232299; c=relaxed/simple;
-	bh=4vwtGD4yzne4fd3wxIdYe6RVC3k3AdOvPhNhb+z0Um4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gC6SW/uZXZzqlizl1/NUdh012nEcQWZVvO1R8uAqe2ZRIXCpeAj14d33+IfecxO5p2YUH8aftDlmYvoxllHKO2rxon0Zxne5m7gsvhKOqIc3wWw5B5gjXz2n3Te61ifaeGUfgZRxl3ePo5DszyzSaFqlxtImmnPTz2xxH6Zp0iA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=Clelwtnv; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=oZbfwViO; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	s=arc-20240116; t=1726238371; c=relaxed/simple;
+	bh=iF+OwMVzAxNrDmu6houQARtAsobEPYNKJexijboTY5o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Zyws58PV01YlYauoOyqsZnm1PsSRRCnkj2A+hJ663YDu0jT8AMttEzf6/BPxKyEaTSJIHCTdoKlO5y2II6ezQVxfm9Zlsv/HfZBlnR+bDNvk9gtvFjXSXVBhDjzS88FSxbpLuNVKK5BjmhHXDQexdJ4Pz2HsEWcq9pi1366JptU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ES3VaV3K; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1726238368;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=iaQbIDBF55GqS7IkFMCgMsaRgkbnRg9eREgwNo66+n0=;
+	b=ES3VaV3KdyF/Wt+AF/7mqjiSukMQw/Vi9WLgKMmNX5PlVdNWzf4GsI3KWQycUVbikTQPvb
+	KXLWe3NnooZGB8BM9O7hsWHssKIjelZSkp2bKmgNDmhcuXl/atepzKrhM8cfR5i8zdmmz1
+	FrHURoEw6YSXqXxISMflcLUQh5+AJns=
+Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-166-e0HL4IeGPTe1OLhcK9g9YQ-1; Fri,
+ 13 Sep 2024 10:39:25 -0400
+X-MC-Unique: e0HL4IeGPTe1OLhcK9g9YQ-1
+Received: from mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.15])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id DB7611F45E;
-	Fri, 13 Sep 2024 12:58:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1726232295; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-	bh=CK4taS9W1NPKU5v043D+Q3ycAtQ+7mI2j9dJHmLqz08=;
-	b=ClelwtnvLErTY/LtIKhFq/i9qu67ovt/vt4Vmis7rCVm156TIuk5mVSQFr2z8Mkou3qZDy
-	e3WcRe9uHyc8lFR8B3DnE0j1JlxXQe/nHkYYgv40ZW6I/VL4DYjdALW/HshfyejtmxmGAd
-	xZvqHqoboLDiqhSSjmyZaRPZRNWXZu0=
-Authentication-Results: smtp-out2.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1726232294; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-	bh=CK4taS9W1NPKU5v043D+Q3ycAtQ+7mI2j9dJHmLqz08=;
-	b=oZbfwViOzqA0ihYi5LJFGl0qnBBiXzWMfoqsXk303DpTRqJTAaAGhUHcKHs3LUMxwit7WG
-	Qf4J5RzRf4eo74dnp6I4WefPSuFx8+kcUXjKwR6RKwioUj5ON3n/mcjLefdl9TWYbF7nnH
-	DPjYq4NKIV1LCw46iOCLSQLxQR1l0ok=
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A2A2F13999;
-	Fri, 13 Sep 2024 12:58:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id L0aIJOY25Ga2GQAAD6G6ig
-	(envelope-from <mvetter@suse.com>); Fri, 13 Sep 2024 12:58:14 +0000
-From: Michael Vetter <mvetter@suse.com>
-To: linux-kselftest@vger.kernel.org,
-	live-patching@vger.kernel.org
-Cc: Michael Vetter <mvetter@suse.com>
-Subject: [PATCH] selftests: livepatch: test livepatching a kprobed function
-Date: Fri, 13 Sep 2024 14:58:11 +0200
-Message-ID: <20240913125811.116410-1-mvetter@suse.com>
-X-Mailer: git-send-email 2.46.0
+	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 7117F1955BC1;
+	Fri, 13 Sep 2024 14:39:23 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.8.105])
+	by mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 380051956086;
+	Fri, 13 Sep 2024 14:39:21 +0000 (UTC)
+Date: Fri, 13 Sep 2024 10:39:18 -0400
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+	x86@kernel.org, Miroslav Benes <mbenes@suse.cz>,
+	Petr Mladek <pmladek@suse.com>, Jiri Kosina <jikos@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Song Liu <song@kernel.org>
+Subject: Re: [RFC 00/31] objtool, livepatch: Livepatch module generation
+Message-ID: <ZuROlpVFO3OE9o1r@redhat.com>
+References: <cover.1725334260.git.jpoimboe@kernel.org>
+ <20240911073942.fem2kekg3f23hzf2@treble>
+ <ZuLwJIgt4nsQKvqZ@redhat.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Score: -2.80
-X-Spamd-Result: default: False [-2.80 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	MID_CONTAINS_FROM(1.00)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_MISSING_CHARSET(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TO_DN_SOME(0.00)[];
-	ARC_NA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	RCPT_COUNT_THREE(0.00)[3];
-	FROM_HAS_DN(0.00)[];
-	DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	FROM_EQ_ENVFROM(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	RCVD_TLS_ALL(0.00)[]
-X-Spam-Flag: NO
-X-Spam-Level: 
+In-Reply-To: <ZuLwJIgt4nsQKvqZ@redhat.com>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.15
 
-The test proves that a function that is being kprobed and uses a
-post_handler cannot be livepatched.
+On Thu, Sep 12, 2024 at 09:44:04AM -0400, Joe Lawrence wrote:
+> On Wed, Sep 11, 2024 at 12:39:42AM -0700, Josh Poimboeuf wrote:
+> > On Mon, Sep 02, 2024 at 08:59:43PM -0700, Josh Poimboeuf wrote:
+> > > Hi,
+> > > 
+> > > Here's a new way to build livepatch modules called klp-build.
+> > > 
+> > > I started working on it when I realized that objtool already does 99% of
+> > > the work needed for detecting function changes.
+> > > 
+> > > This is similar in concept to kpatch-build, but the implementation is
+> > > much cleaner.
+> > > 
+> > > Personally I still have reservations about the "source-based" approach
+> > > (klp-convert and friends), including the fragility and performance
+> > > concerns of -flive-patching.  I would submit that klp-build might be
+> > > considered the "official" way to make livepatch modules.
+> > > 
+> > > Please try it out and let me know what you think.  Based on v6.10.
+> > > 
+> > > Also avaiable at:
+> > > 
+> > >   git://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git klp-build-rfc
+> > 
+> > Here's an updated branch with a bunch of fixes.  It's still incompatible
+> > with BTF at the moment, otherwise it should (hopefully) fix the rest of
+> > the issues reported so far.
+> > 
+> > While the known bugs are fixed, I haven't finished processing all the
+> > review comments yet.  Once that happens I'll post a proper v2.
+> > 
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git klp-build-v1.5
+> 
+> Hi Josh,
+> 
+> I've had much better results with v1.5, thanks for collecting up those
+> fixes in a branch.
+>
 
-Only one ftrace_ops with FTRACE_OPS_FL_IPMODIFY set may be registered
-to any given function at a time.
+Today's experiment used the centos-stream-10's kernel config with
+CONFIG_MODULE_ALLOW_BTF_MISMATCH=y and cs-10's gcc (GCC) 14.2.1 20240801
+(Red Hat 14.2.1-1).
 
-Signed-off-by: Michael Vetter <mvetter@suse.com>
----
- tools/testing/selftests/livepatch/Makefile    |  3 +-
- .../selftests/livepatch/test-kprobe.sh        | 62 +++++++++++++++++++
- .../selftests/livepatch/test_modules/Makefile |  3 +-
- .../livepatch/test_modules/test_klp_kprobe.c  | 38 ++++++++++++
- 4 files changed, 104 insertions(+), 2 deletions(-)
- create mode 100755 tools/testing/selftests/livepatch/test-kprobe.sh
- create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_kprobe.c
+First, more gcc nits (running top-level `make`):
 
-diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
-index 35418a4790be..a080eb54a215 100644
---- a/tools/testing/selftests/livepatch/Makefile
-+++ b/tools/testing/selftests/livepatch/Makefile
-@@ -10,7 +10,8 @@ TEST_PROGS := \
- 	test-state.sh \
- 	test-ftrace.sh \
- 	test-sysfs.sh \
--	test-syscall.sh
-+	test-syscall.sh \
-+	test-kprobe.sh
+  check.c: In function ‘decode_instructions’:
+  check.c:410:54: error: ‘calloc’ sizes specified with ‘sizeof’ in the earlier argument and not in the later argument [-Werror=calloc-transposed-args]
+    410 |                                 insns = calloc(sizeof(*insn), INSN_CHUNK_SIZE);
+        |                                                      ^
+  check.c:410:54: note: earlier argument should specify number of elements, later size of each element
+  check.c: In function ‘init_pv_ops’:
+  check.c:551:38: error: ‘calloc’ sizes specified with ‘sizeof’ in the earlier argument and not in the later argument [-Werror=calloc-transposed-args]
+    551 |         file->pv_ops = calloc(sizeof(struct pv_state), nr);
+        |                                      ^~~~~~
+  check.c:551:38: note: earlier argument should specify number of elements, later size of each element
+
+-->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8--
+
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 63c2d6c06..c6f192859 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -407,7 +407,7 @@ static void decode_instructions(struct objtool_file *file)
  
- TEST_FILES := settings
+ 		for (offset = 0; offset < sec_size(sec); offset += insn->len) {
+ 			if (!insns || idx == INSN_CHUNK_MAX) {
+-				insns = calloc(sizeof(*insn), INSN_CHUNK_SIZE);
++				insns = calloc(INSN_CHUNK_SIZE, sizeof(*insn));
+ 				ERROR_ON(!insns, "calloc");
  
-diff --git a/tools/testing/selftests/livepatch/test-kprobe.sh b/tools/testing/selftests/livepatch/test-kprobe.sh
-new file mode 100755
-index 000000000000..0c62c6b81e18
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test-kprobe.sh
-@@ -0,0 +1,62 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (C) 2024 SUSE
-+# Author: Michael Vetter <mvetter@suse.com>
-+
-+. $(dirname $0)/functions.sh
-+
-+MOD_LIVEPATCH=test_klp_livepatch
-+MOD_KPROBE=test_klp_kprobe
-+
-+setup_config
-+
-+# Kprobe a function and verify that we can't livepatch that same function
-+# when it uses a post_handler since only one IPMODIFY maybe be registered
-+# to any given function at a time.
-+
-+start_test "livepatch interaction with kprobed function with post_handler"
-+
-+echo 1 > /sys/kernel/debug/kprobes/enabled
-+
-+load_mod $MOD_KPROBE has_post_handler=true
-+load_failing_mod $MOD_LIVEPATCH
-+unload_mod $MOD_KPROBE
-+
-+check_result "% insmod test_modules/test_klp_kprobe.ko has_post_handler=true
-+% insmod test_modules/$MOD_LIVEPATCH.ko
-+livepatch: enabling patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': initializing patching transition
-+livepatch: failed to register ftrace handler for function 'cmdline_proc_show' (-16)
-+livepatch: failed to patch object 'vmlinux'
-+livepatch: failed to enable patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': canceling patching transition, going to unpatch
-+livepatch: '$MOD_LIVEPATCH': completing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': unpatching complete
-+insmod: ERROR: could not insert module test_modules/$MOD_LIVEPATCH.ko: Device or resource busy
-+% rmmod test_klp_kprobe"
-+
-+start_test "livepatch interaction with kprobed function without post_handler"
-+
-+load_mod $MOD_KPROBE has_post_handler=false
-+load_lp $MOD_LIVEPATCH
-+
-+unload_mod $MOD_KPROBE
-+disable_lp $MOD_LIVEPATCH
-+unload_lp $MOD_LIVEPATCH
-+
-+check_result "% insmod test_modules/test_klp_kprobe.ko has_post_handler=false
-+% insmod test_modules/$MOD_LIVEPATCH.ko
-+livepatch: enabling patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': initializing patching transition
-+livepatch: '$MOD_LIVEPATCH': starting patching transition
-+livepatch: '$MOD_LIVEPATCH': completing patching transition
-+livepatch: '$MOD_LIVEPATCH': patching complete
-+% rmmod test_klp_kprobe
-+% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH/enabled
-+livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': starting unpatching transition
-+livepatch: '$MOD_LIVEPATCH': completing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': unpatching complete
-+% rmmod $MOD_LIVEPATCH"
-+
-+exit 0
-diff --git a/tools/testing/selftests/livepatch/test_modules/Makefile b/tools/testing/selftests/livepatch/test_modules/Makefile
-index e6e638c4bcba..4981d270f128 100644
---- a/tools/testing/selftests/livepatch/test_modules/Makefile
-+++ b/tools/testing/selftests/livepatch/test_modules/Makefile
-@@ -11,7 +11,8 @@ obj-m += test_klp_atomic_replace.o \
- 	test_klp_state2.o \
- 	test_klp_state3.o \
- 	test_klp_shadow_vars.o \
--	test_klp_syscall.o
-+	test_klp_syscall.o \
-+	test_klp_kprobe.o
+ 				idx = 0;
+@@ -548,7 +548,7 @@ static void init_pv_ops(struct objtool_file *file)
+ 		return;
  
- # Ensure that KDIR exists, otherwise skip the compilation
- modules:
-diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_kprobe.c b/tools/testing/selftests/livepatch/test_modules/test_klp_kprobe.c
-new file mode 100644
-index 000000000000..49b579ea1054
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_modules/test_klp_kprobe.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2024 Marcos Paulo de Souza <mpdesouza@suse.com>
-+// Copyright (C) 2024 Michael Vetter <mvetter@suse.com>
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/kprobes.h>
-+
-+static bool has_post_handler = true;
-+module_param(has_post_handler, bool, 0444);
-+
-+static void __kprobes post_handler(struct kprobe *p, struct pt_regs *regs,
-+				unsigned long flags)
-+{
-+}
-+
-+static struct kprobe kp = {
-+	.symbol_name = "cmdline_proc_show",
-+};
-+
-+static int __init kprobe_init(void)
-+{
-+	if (has_post_handler)
-+		kp.post_handler = post_handler;
-+
-+	return register_kprobe(&kp);
-+}
-+
-+static void __exit kprobe_exit(void)
-+{
-+	unregister_kprobe(&kp);
-+}
-+
-+module_init(kprobe_init)
-+module_exit(kprobe_exit)
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Michael Vetter <mvetter@suse.com>");
-+MODULE_DESCRIPTION("Livepatch test: livepatch kprobed function");
--- 
-2.46.0
+ 	nr = sym->len / sizeof(unsigned long);
+-	file->pv_ops = calloc(sizeof(struct pv_state), nr);
++	file->pv_ops = calloc(nr, sizeof(struct pv_state));
+ 	ERROR_ON(!file->pv_ops, "calloc");
+ 
+ 	for (idx = 0; idx < nr; idx++)
+
+-->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8--
+
+and now a happy build of objtool.
+
+
+The top-level `make` moves onto building all the kernel objects, but
+then objtool vmlinux.o crashes:
+
+  $ gdb --args ./tools/objtool/objtool --sym-checksum --hacks=jump_label --hacks=noinstr --hacks=skylake --ibt --orc --retpoline --rethunk --static-call --uaccess --prefix=16 --link vmlinux.o
+  
+  Program received signal SIGSEGV, Segmentation fault.
+  ignore_unreachable_insn (file=0x435ea0 <file>, insn=0x1cd928c0) at check.c:3980
+  3980            if (prev_insn->dead_end &&
+  
+  (gdb) bt
+  #0  ignore_unreachable_insn (file=0x435ea0 <file>, insn=0x1cd928c0) at check.c:3980
+  #1  validate_reachable_instructions (file=0x435ea0 <file>) at check.c:4452
+  #2  check (file=file@entry=0x435ea0 <file>) at check.c:4610
+  #3  0x0000000000412d4f in objtool_run (argc=<optimized out>, argc@entry=14, argv=argv@entry=0x7fffffffdd78) at builtin-check.c:206
+  #4  0x0000000000417f9b in main (argc=14, argv=0x7fffffffdd78) at objtool.c:131
+  
+  (gdb) p prev_insn
+  $1 = (struct instruction *) 0x0
+
+which I worked around by copying a similar conditional check on
+prev_insn after calling prev_insn_same_sec():
+
+-->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8--
+
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 63c2d6c06..c6f192859 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3977,7 +3977,7 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
+ 	 * It may also insert a UD2 after calling a __noreturn function.
+ 	 */
+ 	prev_insn = prev_insn_same_sec(file, insn);
+-	if (prev_insn->dead_end &&
++	if (prev_insn && prev_insn->dead_end &&
+ 	    (insn->type == INSN_BUG ||
+ 	     (insn->type == INSN_JUMP_UNCONDITIONAL &&
+ 	      insn->jump_dest && insn->jump_dest->type == INSN_BUG)))
+
+-->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8--
+
+and now a happy kernel build and boot.
+
+
+A klp-build of the usual cmdline.patch succeeds, however it generates
+some strange relocations:
+
+  Relocation section '.rela.text' at offset 0x238 contains 6 entries:
+      Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+  0000000000000016  0000004600000004 R_X86_64_PLT32         0000000000000000 __kmalloc_noprof - 4
+  0000000000000035  0000004e00000004 R_X86_64_PLT32         0000000000000000 __fentry__ - 4
+  000000000000003c  0000000000000000 R_X86_64_NONE                             -4
+  
+  Relocation section '.rela.klp.relocs' at offset 0x1168 contains 2 entries:
+      Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+  0000000000000000  0000000700000001 R_X86_64_64            0000000000000000 .text + 3c
+  0000000000000008  0000000000000001 R_X86_64_64                               -4
+  
+  Relocation section '.klp.rela.h..text' at offset 0x53f18 contains 1 entry: 
+      Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+  000000000000003c  0000000000000002 R_X86_64_PC32                             -4
+
+No bueno.  FWIW, Song's 0001-test-klp.patch does seem to build w/o odd
+relocations and it loads fine.
+
+--
+Joe
 
 
