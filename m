@@ -1,81 +1,99 @@
-Return-Path: <live-patching+bounces-659-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-660-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 39B48978BBD
-	for <lists+live-patching@lfdr.de>; Sat, 14 Sep 2024 01:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0075B97A45A
+	for <lists+live-patching@lfdr.de>; Mon, 16 Sep 2024 16:44:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id D6CDC1F262B8
-	for <lists+live-patching@lfdr.de>; Fri, 13 Sep 2024 23:16:32 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 7600B1F2117F
+	for <lists+live-patching@lfdr.de>; Mon, 16 Sep 2024 14:44:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A66F9155333;
-	Fri, 13 Sep 2024 23:16:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C77B615699D;
+	Mon, 16 Sep 2024 14:44:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OhUA3gij"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="USxARtL+"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7941F762DF;
-	Fri, 13 Sep 2024 23:16:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F6B3E47B
+	for <live-patching@vger.kernel.org>; Mon, 16 Sep 2024 14:44:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726269387; cv=none; b=o83Pp6bDGuX9zZQnlixcm3ONBf19YOTWCRDkKFv1i6M3nxasbUIOjpkHpWrWdt+FDTeO37cC3dJMiXKHchfzbPKo+Wjb82+pqKbS2GaVKt5MRC//lOH1cKFylSwOhuOFLGkLZ+jX2bV3kEAAeWRNMwqKRUDEGk3o1n7/cb7gTxA=
+	t=1726497847; cv=none; b=D0HtOkhh28f6d/8pNSkLgztRJvNrHfWt2LjYI2yNHCR7hUW1oCQ/ln+2ys9yCQMItjJjepYxq0XCzNohJxcWQQzhpVM3i/QwqUjcU90Ra/ZfnviEox9VA0zmG2wHYdj1gMvaffgX50Bngmw6LencES8L5LHd8cdSTeRJRLJ9LGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726269387; c=relaxed/simple;
-	bh=3a8aWpkzAl0PoKFm2ghjkav7sAK3XGdYsuU7/51Mb50=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ep2GN9BpJ6AKz/lu0bcsGG3Qedc6oV+yWAs0HSGdzhZm5ZzAJGIPAv3NOGU7rSr4q9+UmTT/gQ0JPPMWEydrM7sXXnYBZmOSk6snKPnXQO1xY+cJlOzZfxf7ERQVpqy3oYSMg8cPLXMpg3Xa2LD5DFRsnDi++y9yIbdqUHy6VIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OhUA3gij; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED6EC4CEC0;
-	Fri, 13 Sep 2024 23:16:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726269387;
-	bh=3a8aWpkzAl0PoKFm2ghjkav7sAK3XGdYsuU7/51Mb50=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OhUA3gij4XNbe2IwtN2mcDrFL4xI03lSJA2psN02zIZ95Fj3rJbczwasSSmLmQRKY
-	 wjeTYheKxcS/9/lH5N8IOM93h034tTuZnFb2CiTlqWnhX034HOkY0iN8KMV7rZUtWU
-	 RN7K8UwsDLzOCZF/68XhOtXjLo7PvluwpIVxQBYnA+x96/QlFaSyZ5lMQDqUKfuHMN
-	 Ya1pAJe4e7uP6SseEbZdfh7mh63ruRc0eQ4DDlGjSSvwe7W9EdNPB9eIIjzR0l8jdd
-	 6A5gbDu7zluW+R+dhZRR0MryN49mihFTiVfgpslxzpK1INGmS/Za97qdGQXhik4pOd
-	 Jx3TXaUC5frCw==
-Date: Fri, 13 Sep 2024 16:16:21 -0700
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: Lukas Hruska <lhruska@suse.cz>, pmladek@suse.com, mbenes@suse.cz,
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-kbuild@vger.kernel.org, mpdesouza@suse.com
-Subject: Re: [PATCH v3 0/6] livepatch: klp-convert tool - Minimal version
-Message-ID: <20240913231621.cksub3pycu4fzl3s@treble>
-References: <20240827123052.9002-1-lhruska@suse.cz>
- <ZuMFfJkCkZ4+9505@redhat.com>
+	s=arc-20240116; t=1726497847; c=relaxed/simple;
+	bh=Ewk3TLXnCpNI+iFuOMwZOsVETr/FOvqodSwSIESD6CM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=eWPdODGFkMplGFjIhbj3t1ecsyqqjEGYTMNvtn0ogZCyiMJ2YUTd6T8LrGvjbQBVi8LXOh8jcRHB2KHQnI5JYXhFT+vc9L1hv+3rP/MDryoAtycL6w36A3+Dp23RnM+wPWLokqYFY2+MvhUK/39YScSyzjIDWZE09FDBqP1wW8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=USxARtL+; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3780c8d689aso3427333f8f.0
+        for <live-patching@vger.kernel.org>; Mon, 16 Sep 2024 07:44:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1726497844; x=1727102644; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=of+zQqXun88QZo4C2kqE6fMMTayqSecJNXPWXYIMLPM=;
+        b=USxARtL+CH8RoNPOoOE41+vnYFn1nPRIV3OwEiy0SOh/hPsxTPeSM32ZhazzoRM6bk
+         8twoPTzUR1aKJy7cAVmC+Y7B7F/vBDhHpr/8YYGBILtBbIXI9b1sYLMWex5e0ZHvYKTn
+         BK0jViBJnGnMLZJmkdbQuu7hpfDOTQp8vF1yXyNuB4YVMi05WTSgPHLVEPizn14IZF4U
+         AegFTswfnRBMlV/PqkGSONDqG09e4F5F/yQbeVo6E8/ePEI7SXODd2dxIMG26C/LHuk/
+         +lKe5VTTvTj5PF5nl+qfACOG56BsyA9brRCEAxuNl46LaDDoxPIRfJpEDTt2QZpAoEdf
+         uRmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726497844; x=1727102644;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=of+zQqXun88QZo4C2kqE6fMMTayqSecJNXPWXYIMLPM=;
+        b=qyBcGXvIT+vfXpkNCz2R8s+TszId2bq2uuTC2V5ZCAK3G2P+juZJaQGDzi2VkYXezf
+         MkBhxH2CGYqEls64laeYjlSbEi2E+47m49BzSIvCwp3LZwd/A3p8eTRpTarkFN22QX+/
+         ZxRPx/bAatifddWMSeqjWHjK0V7uA5525EiptLyW4uMUKyJV4vaTbQCHuX+68/3KeOW0
+         4kj6bWeXrdcVcu7sW41yiFph7HjsOyCCJZwcmjYdt7DwIb0oTWKv7NIDV1vd6mQJRA32
+         cQzMBPkFTr07gqKNl77pbE2swh2CY9miwGPUw+UvPZ7ysBvXFjS9wA4IjK8tjJviZA8T
+         leWQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXWOiiO95VBdsrUAww5PyMpkqvhLIdoyI/c1/9KYNEUSEc630F4KGvQdPReoNy8ghzwoOrpKRVjD8Xv7azy@vger.kernel.org
+X-Gm-Message-State: AOJu0YzNwgPi3ZCstrnKdNRwah3bEl7Qxg29zseNbbN5OPqIsQwyj7id
+	gOUr2jvnX76ZdsS0OlZgjDCy351HZ0DZJ55lP86R1T4eADQTuNh0kmvuRmuu1Ro=
+X-Google-Smtp-Source: AGHT+IE7uH9HI38FaIBfrRVeek7PbiDkU9l+qzM6HpI7Y+JxaDT7QOZ2DcK7U9/xatJrF9LYeIt8CQ==
+X-Received: by 2002:adf:e94b:0:b0:374:c69c:2273 with SMTP id ffacd0b85a97d-378c2d6987amr7932346f8f.37.1726497843881;
+        Mon, 16 Sep 2024 07:44:03 -0700 (PDT)
+Received: from pathway.suse.cz ([193.86.92.181])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71944b7afbasm3781611b3a.135.2024.09.16.07.44.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Sep 2024 07:44:03 -0700 (PDT)
+Date: Mon, 16 Sep 2024 16:43:55 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Subject: [GIT PULL] livepatching for 6.12
+Message-ID: <ZuhEKz4pBXuNJDgX@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZuMFfJkCkZ4+9505@redhat.com>
 
-On Thu, Sep 12, 2024 at 11:15:08AM -0400, Joe Lawrence wrote:
-> Anyway, now we have two RFC / patchsets supporting in-tree creation of
-> klp-relocations (klp-convert and Josh's objtool patchset).  I think we
-> need to figure out whether one precludes the other, can they co-exist,
-> or does that even make sense.
+Hi Linus,
 
-I haven't really thought about it, but it *might* be possible for
-klp-build to use klp-convert.  I'll look at it more when I get a chance.
+please pull the latest changes for the kernel livepatching from
 
-> Since LPC is right around the corner, does it make sense for folks to
-> sync up at some point and talk pros/cons to various approaches?  We
-> don't have a microconference this year, but perhaps over lunch or beers?
+  git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git tags/livepatching-for-6.12
 
-Sure...  or maybe at one of the evening events.
+=======================================
 
--- 
-Josh
+- Small documentation improvement.
+
+----------------------------------------------------------------
+Bagas Sanjaya (1):
+      Documentation: livepatch: Correct release locks antonym
+
+ Documentation/livepatch/livepatch.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
