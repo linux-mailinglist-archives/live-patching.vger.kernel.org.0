@@ -1,72 +1,72 @@
-Return-Path: <live-patching+bounces-667-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-668-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3DC4697D348
-	for <lists+live-patching@lfdr.de>; Fri, 20 Sep 2024 11:04:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0154F97D34A
+	for <lists+live-patching@lfdr.de>; Fri, 20 Sep 2024 11:04:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 60DFB1C23A62
-	for <lists+live-patching@lfdr.de>; Fri, 20 Sep 2024 09:04:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 86762282706
+	for <lists+live-patching@lfdr.de>; Fri, 20 Sep 2024 09:04:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C57A4537FF;
-	Fri, 20 Sep 2024 09:04:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE760137932;
+	Fri, 20 Sep 2024 09:04:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PKiyl1Nh"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zv6Qpm/k"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C84B81AC8;
-	Fri, 20 Sep 2024 09:04:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7275481AC8;
+	Fri, 20 Sep 2024 09:04:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726823067; cv=none; b=rX8/LxbnArM8YYfrTJFisGoYvcAFjvgMRLprSmr/O+5fFNS2GCcRm9PJGruIdohJu3jjgaX8SWkhvAaUC06pEf5JMeBEmWkXgzs2XIBJ0klhI8WmL5ILRujAeitLpUtjpjDDrFd/Y+2kPEssB2aWkwbdejEAFcnPlhS16BvrboQ=
+	t=1726823072; cv=none; b=Kof0BsQUd96W7GXKGwOBVOnAKSa5Ef+Zn8aIBdCLpaz4ZRfT0W/r48QM+uPNdi5WEDkXCJpRl8dk3qZOuBF5armJf5G1NR2last8weL6ELUHUQA/l3yRMIKA81rqF8l0WxAdGnZiHTSRi/jeVH9cD2ksvYMu+6NRYXi5pc6Xn6E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726823067; c=relaxed/simple;
-	bh=9NJ5dr4515VjHxI4GujigX0TXiflOzrd6cWTobOJIaY=;
+	s=arc-20240116; t=1726823072; c=relaxed/simple;
+	bh=xWl3glfa+77O2PEoYwclwHdUxLwyrlo9U6k2GXGC/AE=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=rc7L9/tsR7xunoXhqZIBAg70/4b1JV/pxil6YtmFla6wRsh2jRbBXUY2gwvoKrPehmfzRzKGCiltWhP1bVhircQffifePv9RBR/+xNhj4KIBT9sC0Py8NOOKFRWimH3BjUf0xLQhJwOfxj6mKEZwS3O7WUfVHmP+ncQtu4aNXvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PKiyl1Nh; arc=none smtp.client-ip=209.85.216.43
+	 MIME-Version; b=YU8WyKkkVcyAZ3Ubc/x5/0pQ4jBpQlr6RRuVf2KNC9RqSo2nytnEvib4od9ALTQeUMf5RIatsOTSR/HIxRK22Udk+Rbx45kT2jE2VivwKcxQhFbAhwPaS4nPmOZGK3GnTg5/hZcH5IVr2+/xLU/I1EJ5798LF19i46NiqRldAyQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zv6Qpm/k; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-2d8818337a5so2156296a91.1;
-        Fri, 20 Sep 2024 02:04:25 -0700 (PDT)
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2068acc8a4fso18414175ad.1;
+        Fri, 20 Sep 2024 02:04:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1726823065; x=1727427865; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1726823071; x=1727427871; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3PsVc2JzGrOPcWfSBUJtiPHgH2cNuRTU0FBqsQOokmw=;
-        b=PKiyl1NhBLwPa0xbk6VoMJ/HxzyOOG6/J0KbwgtBQehuB0SotFOGcHco8/ryJSkbDz
-         pJ2qM3JDqDv+3u8k9JnQWo7aZHnc6bd9yuoiTZ1MaIPNi09SwXK/iuVz6QWj/9pp92VS
-         mmHnDWzUnVNn/cID4ru6EQtZyQuZXcwjx7LPB99YvnEiFTrUlwU/+1qO/3C4ZY/i5IJD
-         OwlhU/u0m9ZvWIkFaSLMnW7zQyFm25tkaO1SMpVoFbXFwdrJllV08H7DcPpWAbyZVagp
-         Rqqwfz1XgqYS1iXD/ZxEfFJ/ajNvBqKqmbRn0b5mR4hiRrcgtd+u8hTuo3qP1XN9sA+p
-         lfIA==
+        bh=780SsjLKTyN4z/bv2hI5xqQ2gIRVMpJg4AqmXrMJpqI=;
+        b=Zv6Qpm/kIHWnyHxsTseDly249WDhNeXGgEWiWyBfK72DgFX4LgwXx/D0pWjqmD6ZUt
+         jlK1rC4z3GjT4e3XY18rQD6MP3lLOfgLMcdJx179AKYjMM8AF5zP3OheU5azeKWwltZB
+         Vxlo+L4IsX3M6tHM8dCQRMfUpkgWo8fFzU2U1bAodgGjvd5oVBaCKYxhuueoAcf0F5Vu
+         uDfRT4/R1A8GbL8MU2xgEVqFFFAMWqZDpga/7j8puAIZzregD+txj8C7L+AAfHpgUf67
+         xTCFrjSp3WxtDu5sBoC82RELnWJkS3Kxj0PKpMoZSMvHuihToZ/tlHi98QWnoNwusixW
+         mgDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726823065; x=1727427865;
+        d=1e100.net; s=20230601; t=1726823071; x=1727427871;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=3PsVc2JzGrOPcWfSBUJtiPHgH2cNuRTU0FBqsQOokmw=;
-        b=KDhFqoTSUKwkCKn1W3JtdAKa9wly4W86DAh2kHDgwba9pTSo3C73/8VqfbbNg2NeD+
-         ntx0ZanKuRhrXDEVLa9dbM1MYUVHRm3G17LGX/BGznVVgY7/09McPlD7a0Nj5DizOjOK
-         7A4hd3tH5f4d8MI3heOmHGTX9+XoNfp3frxzaBCi57rNiHGESUKLNryo4CovdQIskjgd
-         irmwtVxPBV+iZGqNlGnPg63GsJJFJGCNHqI0ZZYFuNE3nX8GL6f7nhf160EidwRDreFA
-         MqYA++chZ/SqACLY+JBtlzHnnSOkhPOORvfdJlEXtQ73FhRRnvmC2s8UTk0dAE9wyPn5
-         kCcw==
-X-Forwarded-Encrypted: i=1; AJvYcCWZBLwnuokC0R65XXF278nm6eeJ18Y+tXYdOYGWBQj0xlzO1XbpOfXuwf1xRgI+01HKyI97bavw3lwJ6QU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8C6dx/7tgCjkyo1caguK2dznqrbVY6CXpwr9xsiw1Mqtoi7i4
-	A2rVTU6nQNYoZYMvm9Lf5XIKxt+yZPDvX29Bqp3cRXDs93GKhiwF
-X-Google-Smtp-Source: AGHT+IEgIhSazdyT/CQMBAEXmtMfp2ph9x4krZZ2KxGb9UVFyY6QgNzLk9GQHX0nyU79DXUnls0aww==
-X-Received: by 2002:a17:90a:cf09:b0:2c9:5a71:1500 with SMTP id 98e67ed59e1d1-2dd7ebce1d6mr3808247a91.0.1726823065196;
-        Fri, 20 Sep 2024 02:04:25 -0700 (PDT)
+        bh=780SsjLKTyN4z/bv2hI5xqQ2gIRVMpJg4AqmXrMJpqI=;
+        b=k8GWeJmFENTIHBoWIBA5AesJvP5WTicYmhIAK5N7rq8IovwbSz5icyaYv2mo6PjKJk
+         f/nzxtaC9kr9fp7nhXPCUCyyRG/3ubPZcLcljgHc6I7P8AN8dZ4gJnk97JEU1tWMePy0
+         X94a/feyJti5TTk5wC9t71qwefTEv7EbARxoof8bqUrTvnJVul/fFEJAX+d0lmMFO/gV
+         tIbSujcoT9GrI8Kl1qX6q9uJ7Pip5+stDcGn/aLfJgYgOeQSwa9/zE1nqbMG1NPVHz2b
+         t8pWbQeyFu5izLfpM2LaVkIeEVRJcm9b9h2Gi2BhQbRmL1G8lsZ2AZUgXyxSVzNW41A+
+         Zebw==
+X-Forwarded-Encrypted: i=1; AJvYcCWG7rpG5Mb3ZjEL7a8Jkq5Lu1H0vkUvcel3ZYjmud3YJML1FWw+rVi9/cLaVzwwPfUnpez3X+wWQGS6x/M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxuDMUlXe3wWJzHoyShwzVBvMqa+P0h+TEVeL1G2BsqumcR5Pz7
+	kt02B8PACD+spwIKWXE6PCjRUHTNwiRXsXdIvVCVudE/ouCcKxCi
+X-Google-Smtp-Source: AGHT+IE53COnOVEaKYnO2R1at+PVph9TPDE2aS9miHsQp/nr41PsWf30JiTDULEsADiPuPKBwzVM1g==
+X-Received: by 2002:a17:90b:2808:b0:2d8:7561:db6a with SMTP id 98e67ed59e1d1-2dd7f4604c1mr2703052a91.22.1726823070698;
+        Fri, 20 Sep 2024 02:04:30 -0700 (PDT)
 Received: from localhost.localdomain ([205.204.117.126])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2dd6ee9d8ffsm3483881a91.23.2024.09.20.02.04.22
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2dd6ee9d8ffsm3483881a91.23.2024.09.20.02.04.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Sep 2024 02:04:24 -0700 (PDT)
+        Fri, 20 Sep 2024 02:04:30 -0700 (PDT)
 From: Wardenjohn <zhangwarden@gmail.com>
 To: jpoimboe@kernel.org,
 	mbenes@suse.cz,
@@ -76,9 +76,9 @@ To: jpoimboe@kernel.org,
 Cc: live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Wardenjohn <zhangwarden@gmail.com>
-Subject: [PATCH 1/2] livepatch: introduce 'order' sysfs interface to klp_patch
-Date: Fri, 20 Sep 2024 17:04:03 +0800
-Message-Id: <20240920090404.52153-2-zhangwarden@gmail.com>
+Subject: [PATCH 2/2] Documentation: Add description to klp_patch order interface
+Date: Fri, 20 Sep 2024 17:04:04 +0800
+Message-Id: <20240920090404.52153-3-zhangwarden@gmail.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20240920090404.52153-1-zhangwarden@gmail.com>
 References: <20240920090404.52153-1-zhangwarden@gmail.com>
@@ -90,116 +90,30 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This feature can provide livepatch patch order information.
-With the order of sysfs interface of one klp_patch, we can
-use patch order to find out which function of the patch is
-now activate.
+Update description of klp_patch order sysfs interface to livepatch
+ABI documentation.
 
-After the discussion, we decided that patch-level sysfs
-interface is the only accaptable way to introduce this
-information.
-
-This feature is like:
-cat /sys/kernel/livepatch/livepatch_1/order -> 1
-means this livepatch_1 module is the 1st klp patch applied.
-
-cat /sys/kernel/livepatch/livepatch_module/order -> N
-means this lviepatch_module is the Nth klp patch applied
-to the system.
-
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Suggested-by: Miroslav Benes <mbenes@suse.cz>
-Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
 
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index 51a258c24ff5..0fbbc1636ebe 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -154,6 +154,7 @@ struct klp_state {
-  * @forced:	was involved in a forced transition
-  * @free_work:	patch cleanup from workqueue-context
-  * @finish:	for waiting till it is safe to remove the patch module
-+ * @order:	the order of this patch applied to the system
-  */
- struct klp_patch {
- 	/* external */
-@@ -170,6 +171,7 @@ struct klp_patch {
- 	bool forced;
- 	struct work_struct free_work;
- 	struct completion finish;
-+	int order;
- };
+diff --git a/Documentation/ABI/testing/sysfs-kernel-livepatch b/Documentation/ABI/testing/sysfs-kernel-livepatch
+index 3735d868013d..14218419b9ea 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-livepatch
++++ b/Documentation/ABI/testing/sysfs-kernel-livepatch
+@@ -55,6 +55,14 @@ Description:
+ 		An attribute which indicates whether the patch supports
+ 		atomic-replace.
  
- #define klp_for_each_object_static(patch, obj) \
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 3c21c31796db..024853aa43a8 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -347,6 +347,7 @@ int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
-  * /sys/kernel/livepatch/<patch>/transition
-  * /sys/kernel/livepatch/<patch>/force
-  * /sys/kernel/livepatch/<patch>/replace
-+ * /sys/kernel/livepatch/<patch>/order
-  * /sys/kernel/livepatch/<patch>/<object>
-  * /sys/kernel/livepatch/<patch>/<object>/patched
-  * /sys/kernel/livepatch/<patch>/<object>/<function,sympos>
-@@ -452,15 +453,26 @@ static ssize_t replace_show(struct kobject *kobj,
- 	return sysfs_emit(buf, "%d\n", patch->replace);
- }
- 
-+static ssize_t order_show(struct kobject *kobj,
-+			struct kobj_attribute *attr, char *buf)
-+{
-+	struct klp_patch *patch;
++What:           /sys/kernel/livepatch/<patch>/order
++Date:           Sep 2024
++KernelVersion:  6.12.0
++Contact:        live-patching@vger.kernel.org
++Description:
++		This attribute record the order of this livepatch module
++		applied to the running system.
 +
-+	patch = container_of(kobj, struct klp_patch, kobj);
-+	return sysfs_emit(buf, "%d\n", patch->order);
-+}
-+
- static struct kobj_attribute enabled_kobj_attr = __ATTR_RW(enabled);
- static struct kobj_attribute transition_kobj_attr = __ATTR_RO(transition);
- static struct kobj_attribute force_kobj_attr = __ATTR_WO(force);
- static struct kobj_attribute replace_kobj_attr = __ATTR_RO(replace);
-+static struct kobj_attribute order_kobj_attr = __ATTR_RO(order);
- static struct attribute *klp_patch_attrs[] = {
- 	&enabled_kobj_attr.attr,
- 	&transition_kobj_attr.attr,
- 	&force_kobj_attr.attr,
- 	&replace_kobj_attr.attr,
-+	&order_kobj_attr.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(klp_patch);
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index ba069459c101..73bce68d22f8 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -46,6 +46,15 @@ EXPORT_SYMBOL(klp_sched_try_switch_key);
- 
- #endif /* CONFIG_PREEMPT_DYNAMIC && CONFIG_HAVE_PREEMPT_DYNAMIC_CALL */
- 
-+static inline int klp_get_patch_order(struct klp_patch *patch)
-+{
-+	int order = 0;
-+
-+	klp_for_each_patch(patch)
-+		order = order + 1;
-+	return order;
-+}
-+
- /*
-  * This work can be performed periodically to finish patching or unpatching any
-  * "straggler" tasks which failed to transition in the first attempt.
-@@ -591,6 +600,8 @@ void klp_init_transition(struct klp_patch *patch, int state)
- 	pr_debug("'%s': initializing %s transition\n", patch->mod->name,
- 		 klp_target_state == KLP_TRANSITION_PATCHED ? "patching" : "unpatching");
- 
-+	patch->order = klp_get_patch_order(patch);
-+
- 	/*
- 	 * Initialize all tasks to the initial patch state to prepare them for
- 	 * switching to the target state.
+ What:		/sys/kernel/livepatch/<patch>/<object>
+ Date:		Nov 2014
+ KernelVersion:	3.19.0
 -- 
 2.18.2
 
