@@ -1,72 +1,72 @@
-Return-Path: <live-patching+bounces-682-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-683-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1FCCC985311
-	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 08:41:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 01ACF985312
+	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 08:41:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id A892FB229E5
-	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 06:41:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 32C941C22CA5
+	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 06:41:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7DC0015575D;
-	Wed, 25 Sep 2024 06:41:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10A97156649;
+	Wed, 25 Sep 2024 06:41:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KCRpoM68"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ex2WB3No"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF131553BB;
-	Wed, 25 Sep 2024 06:41:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D5E156872;
+	Wed, 25 Sep 2024 06:41:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727246472; cv=none; b=h4M+tatXbV0MNT8rEd20LmRQwOJEq3ilBgbJWbASoiR1S3/LHsQPwpOEgbTmy3OSX4gNl82lQ6QV/qFmayO4/Xzk5+Q8nAQfh5TgCcHSsxLCf+Z4Zd+gzSr4i1002YW/ZWAkj+8T1Mb8hI0PVxDIZzmwx8S4prE6DVbb2X2IPyg=
+	t=1727246477; cv=none; b=cfLSDN9FtRY2044KaPmzpc3IJztHTUXeRbE4fuie9BsWUgidwGH0CHALyExMq4M2/rocWIjRAcZcVA0VLV8LWSsfaKUOTxYRb9Yj0ZeawIC2JzCpukIx5MUUKv5l0Hrgns/1+RKAXb+rvEzXzbsNb2pIISzNixwa+umyUH2u9m8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727246472; c=relaxed/simple;
-	bh=pCLIxfYW5IBkkaUHIqU+ylfiwus7SaHuJakuwo+VRDE=;
+	s=arc-20240116; t=1727246477; c=relaxed/simple;
+	bh=Nw97WsesaxK9KAqNI/Wm7QXsl26QnGaico0tioFue1Y=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=dM6pmed5faBK8W8cY0OvFBJnJuqX+hGcANEdgBJYXxYE7axTZJZui+b0cvRmP51I0QHNGiq05cDnnmBulCvHMUOTpV45bOAthysAw/X8UfEvMqq4LQG7AjT3xZ86FXrpOMwBOfVgz6U9LKoiI3RdYBCNi7RXrPPRLvg2WOoyXP0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KCRpoM68; arc=none smtp.client-ip=209.85.210.49
+	 MIME-Version; b=bRz/5jMbsfuF9kAc9nWle4Rhem1UfP9ecrGs2tGXdTjRYXyKtGxPpmVGRuStWjhXDGkVN2rZFGyitV5zpgk6KQa5QmDzvIYkEQUJPKovaFjunOUcbD46quAIZU/0y2nG5Tboc07x11e6sSaHpL45lvTqQJH9FWUO+wXmRimFyT8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ex2WB3No; arc=none smtp.client-ip=209.85.210.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-71100987d1cso3779510a34.2;
-        Tue, 24 Sep 2024 23:41:10 -0700 (PDT)
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-7179802b8fcso4521048b3a.1;
+        Tue, 24 Sep 2024 23:41:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1727246470; x=1727851270; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1727246475; x=1727851275; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6mqpiVlblehgTvx0uzv7/HZu092AuDOFFDCGMF9SGbc=;
-        b=KCRpoM680OsFm12kiUa7OCIpxMld6sQwAjgW47DOYLv1/uuv1HE7UaDKWRWs2nPI4C
-         mjdn/M6hYvxyt7sR1a2nYLi84onNy6wkKI5YZOYAodiP8KP34eW1viMh1HCWukvmM0YK
-         itkWBwSvb2GdrBBxZ0YMRTbtNuOO54bJkeD/ehcuzs+HoIZso1ZGVE7d0TaK/OA37QAF
-         zuRzkX2bbyBD3a6DB0yJEgaAdTkSkcrvhFBoarR9HbjvQlu68zWE0K2clj5MilT05FLX
-         zE8O3Cr2RVySI96GJG+sP7dxAGBZpzOnB0SmTw+nsodnQOWjJjcMOWMNJbpQy8ph9p+m
-         CTIg==
+        bh=UudjcCFoYrSDJU9P72NdXY6ZjlpNEd3W29mVUFxsDU8=;
+        b=Ex2WB3NoaysV4sPyPic1cxWAaknkG5puoJkf3gaUsBxb9U4+RPB56ydgD5oX1flkQ/
+         CO/pIf83KKGxpPkqwjKCWaCuc7LgmEhGmh2l4yF7YY15KCurQav5+IdkVB5prl9nf1rt
+         bJFgeG3xuWipjQsLKqpw4cG4Rin/zzoII5nwkfQZ3We/Vr0XXZy2UHLnM00A47hE6NSI
+         q+U/Ylx8HwiXxohT2XISVe9oVovhPCaSacrdUjnHIZ7XyLts0LIUQzqY6gw6k/JGMwU1
+         CvOb97mQo3MTFhnt7JXGHTiXvYEmaMKfMtm6yXX/j5tdJQMYGtI1gNwje9+2duzEHQI6
+         Qjrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727246470; x=1727851270;
+        d=1e100.net; s=20230601; t=1727246475; x=1727851275;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6mqpiVlblehgTvx0uzv7/HZu092AuDOFFDCGMF9SGbc=;
-        b=cJRktOc2THyZua/hjVtIzmaUQFt+vRZ75WNgt35R9t5Z4l06LCmP3ajXjICI+UNqmk
-         AOSpwG0M/DaBEHOQrljE5XuWgduvpGTn6JOsTcDCXsHjyn88Ri+OIsdZLw/iok1XkMy/
-         NeFGZKiQBx4PD52nMcJy4C8CT+2FWkXLIoQ0Hf4lHhdrdNK/kOVMhb6XynZTPD48sYcm
-         hcDDJKKbhD5YRiybTsVV3Pc+4a1RJuW7UbUp8BbVdx357WYTdIgSD7FhiV3hxV7jBaoO
-         TXesvwQVxqIghIATaEbukQxUTNECIOCeEz+WmKqc7rBegUgSes3KjTyDw/EYP0C1SYKJ
-         m3Ig==
-X-Forwarded-Encrypted: i=1; AJvYcCVkU/J8/p4yxmlA5Nbow8+SAp4Kl/zu7YhYaJjA1/ZOALAGfEollab+BaS+aTw7ujgn75GF3RVynbxhgY4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwJe2u+XHy89u9IDJvG+dOZNAab9gJNrD82sHw6frjicwsnuGxu
-	k0ufEuWYSxwQSEAh4HF7WXwIfUMmxlBeOKBLIq+c5j7UR3SOqzGC
-X-Google-Smtp-Source: AGHT+IG0WtGE8svdsrWLNKx78r3GmDXgbfIVSMkyziVRUB1iikUxyvoSp556EWwTv2JwGukDpQsCIw==
-X-Received: by 2002:a05:6830:438f:b0:713:6f24:39b8 with SMTP id 46e09a7af769-713c7dcfa15mr1414462a34.19.1727246469784;
-        Tue, 24 Sep 2024 23:41:09 -0700 (PDT)
+        bh=UudjcCFoYrSDJU9P72NdXY6ZjlpNEd3W29mVUFxsDU8=;
+        b=DLc1QbsgFy3szt4Bju4xYZvxoD2XcYyJzX5HGeO5mqZzj4NibSUsTi36XkZtTCQzYL
+         qqTSX1tRl4lIr/m41gZPtWNg25SKqN/drCgNJmgZHGHmzUXFcunDcYxkgZkVhzUkwzZB
+         xgP9x9qr1AZrX4B2r/MeMuFo4SI6WxS26f9V+6XY78edLXSkWfuYMhmnQt/NdiGIkhq3
+         Fno1IwK6fetiHMLSb4pvtpxRk5mPLJBfl1SmEFAhPhdIqcbQ2zhGqd3uu77TGgjzOgPk
+         aqOJLM0S6Sd2SNCwNA4O9WDLYp8nP4qZdSUTi9ueFEyFjv4Mhq5wwDa7hlhsereVGxJ1
+         3k6g==
+X-Forwarded-Encrypted: i=1; AJvYcCW1gEL14+kcw1pVUimHUeBgv+KEBCJKuWz3EDzUjulU8m8XTiqtRjW6eQr3AeelkNVafSbw0mqFiYLrAac=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfndnhK5cbZKpxqmXntS5rrpzlWwgBRM+66Zenm8sEUFWJqfYU
+	6CP/B5KfTxrhI3iufS24KzvWkuyZ3179SdXl8Q4dTl8vjjzCPWPz
+X-Google-Smtp-Source: AGHT+IFNThAylM4apGV0UhSBzkshJeKDA5Rzu0aYIcPbldCyZetZmU8BAo6Z9hixWiRPx/1XbRVzww==
+X-Received: by 2002:a05:6a00:2e94:b0:718:e162:7374 with SMTP id d2e1a72fcca58-71b0aaa1c23mr2806110b3a.5.1727246474833;
+        Tue, 24 Sep 2024 23:41:14 -0700 (PDT)
 Received: from localhost.localdomain ([205.204.117.121])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71afc8443e0sm2139578b3a.62.2024.09.24.23.41.06
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71afc8443e0sm2139578b3a.62.2024.09.24.23.41.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Sep 2024 23:41:09 -0700 (PDT)
+        Tue, 24 Sep 2024 23:41:14 -0700 (PDT)
 From: Wardenjohn <zhangwarden@gmail.com>
 To: jpoimboe@kernel.org,
 	mbenes@suse.cz,
@@ -76,9 +76,9 @@ To: jpoimboe@kernel.org,
 Cc: live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Wardenjohn <zhangwarden@gmail.com>
-Subject: [PATCH] livepatch: introduce 'stack_order' sysfs interface to klp_patch
-Date: Wed, 25 Sep 2024 14:40:46 +0800
-Message-Id: <20240925064047.95503-2-zhangwarden@gmail.com>
+Subject: [PATCH] Documentation: Add description to stack_order interface
+Date: Wed, 25 Sep 2024 14:40:47 +0800
+Message-Id: <20240925064047.95503-3-zhangwarden@gmail.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20240925064047.95503-1-zhangwarden@gmail.com>
 References: <20240925064047.95503-1-zhangwarden@gmail.com>
@@ -90,78 +90,30 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This feature can provide livepatch patch order information.
-With the order of sysfs interface of one klp_patch, we can
-use patch order to find out which function of the patch is
-now activate.
+Update description of klp_patch stack_order sysfs interface to
+livepatch ABI documentation.
 
-After the discussion, we decided that patch-level sysfs
-interface is the only accaptable way to introduce this
-information.
-
-This feature is like:
-cat /sys/kernel/livepatch/livepatch_1/stack_order -> 1
-means this livepatch_1 module is the 1st klp patch applied.
-
-cat /sys/kernel/livepatch/livepatch_module/stack_order -> N
-means this lviepatch_module is the Nth klp patch applied
-to the system.
-
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Suggested-by: Miroslav Benes <mbenes@suse.cz>
-Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index ecbc9b6aba3a..914b7cabf8fe 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -346,6 +346,7 @@ int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
-  * /sys/kernel/livepatch/<patch>/enabled
-  * /sys/kernel/livepatch/<patch>/transition
-  * /sys/kernel/livepatch/<patch>/force
-+ * /sys/kernel/livepatch/<patch>/stack_order
-  * /sys/kernel/livepatch/<patch>/<object>
-  * /sys/kernel/livepatch/<patch>/<object>/patched
-  * /sys/kernel/livepatch/<patch>/<object>/<function,sympos>
-@@ -443,13 +444,37 @@ static ssize_t force_store(struct kobject *kobj, struct kobj_attribute *attr,
- 	return count;
- }
+diff --git a/Documentation/ABI/testing/sysfs-kernel-livepatch b/Documentation/ABI/testing/sysfs-kernel-livepatch
+index a5df9b4910dc..9cad725a69c7 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-livepatch
++++ b/Documentation/ABI/testing/sysfs-kernel-livepatch
+@@ -47,6 +47,14 @@ Description:
+ 		disabled when the feature is used. See
+ 		Documentation/livepatch/livepatch.rst for more information.
  
-+static ssize_t stack_order_show(struct kobject *kobj,
-+				struct kobj_attribute *attr, char *buf)
-+{
-+	struct klp_patch *patch, *this_patch;
-+	int stack_order = 0;
++What:           /sys/kernel/livepatch/<patch>/stack_order
++Date:           Sep 2024
++KernelVersion:  6.12.0
++Contact:        live-patching@vger.kernel.org
++Description:
++		This attribute record the stack order of this livepatch module
++		applied to the running system.
 +
-+	this_patch = container_of(kobj, struct klp_patch, kobj);
-+
-+	/* make sure the calculate of patch order correct */
-+	mutex_lock(&klp_mutex);
-+
-+	klp_for_each_patch(patch) {
-+		stack_order++;
-+		if (patch == this_patch)
-+			break;
-+	}
-+
-+	mutex_unlock(&klp_mutex);
-+	return sysfs_emit(buf, "%d\n", stack_order);
-+}
-+
-+
- static struct kobj_attribute enabled_kobj_attr = __ATTR_RW(enabled);
- static struct kobj_attribute transition_kobj_attr = __ATTR_RO(transition);
- static struct kobj_attribute force_kobj_attr = __ATTR_WO(force);
-+static struct kobj_attribute stack_order_kobj_attr = __ATTR_RO(stack_order);
- static struct attribute *klp_patch_attrs[] = {
- 	&enabled_kobj_attr.attr,
- 	&transition_kobj_attr.attr,
- 	&force_kobj_attr.attr,
-+	&stack_order_kobj_attr.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(klp_patch);
+ What:		/sys/kernel/livepatch/<patch>/<object>
+ Date:		Nov 2014
+ KernelVersion:	3.19.0
 -- 
 2.18.2
 
