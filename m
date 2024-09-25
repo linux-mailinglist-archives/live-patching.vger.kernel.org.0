@@ -1,120 +1,131 @@
-Return-Path: <live-patching+bounces-683-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-684-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 01ACF985312
-	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 08:41:30 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id B0291986087
+	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 16:25:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 32C941C22CA5
-	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 06:41:29 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 5CD661F23FA6
+	for <lists+live-patching@lfdr.de>; Wed, 25 Sep 2024 14:25:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10A97156649;
-	Wed, 25 Sep 2024 06:41:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D5B11AB6E0;
+	Wed, 25 Sep 2024 13:08:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ex2WB3No"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="T3I73COa"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D5E156872;
-	Wed, 25 Sep 2024 06:41:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876551AB6D1
+	for <live-patching@vger.kernel.org>; Wed, 25 Sep 2024 13:08:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727246477; cv=none; b=cfLSDN9FtRY2044KaPmzpc3IJztHTUXeRbE4fuie9BsWUgidwGH0CHALyExMq4M2/rocWIjRAcZcVA0VLV8LWSsfaKUOTxYRb9Yj0ZeawIC2JzCpukIx5MUUKv5l0Hrgns/1+RKAXb+rvEzXzbsNb2pIISzNixwa+umyUH2u9m8=
+	t=1727269713; cv=none; b=If/MOJgaelx9AwdogNxY6dRaY3uepvsBBQOL8rTbs3Ccf+V/kgR5N8SEeT9K9HFTPSvcwPImePd6JpWBrv7XAGDsAOIDkkoyP/UGV6Hy4cl017w9WoU9Ij/dtW8pO5i+msqVBb2SwAVBeQBNlm4l3+yVJxzwsy3vnF2bG706N4A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727246477; c=relaxed/simple;
-	bh=Nw97WsesaxK9KAqNI/Wm7QXsl26QnGaico0tioFue1Y=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=bRz/5jMbsfuF9kAc9nWle4Rhem1UfP9ecrGs2tGXdTjRYXyKtGxPpmVGRuStWjhXDGkVN2rZFGyitV5zpgk6KQa5QmDzvIYkEQUJPKovaFjunOUcbD46quAIZU/0y2nG5Tboc07x11e6sSaHpL45lvTqQJH9FWUO+wXmRimFyT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ex2WB3No; arc=none smtp.client-ip=209.85.210.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-7179802b8fcso4521048b3a.1;
-        Tue, 24 Sep 2024 23:41:15 -0700 (PDT)
+	s=arc-20240116; t=1727269713; c=relaxed/simple;
+	bh=oy4FjmWQhhsk5gZLF9a56ivnKadXTHvPmDY2gbMhqvo=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=mtTB+kswB2ybQKg4SLP+nBdLTSL9URvZmgjrCMPhw4pXTc8OO1gFN7RHqvubJsfp5ROHrao3CC/M4gsufaf0uSMoJkKk+EloGqKulNVxKZelvZAvGFRe+GOzerUqwwFEhkN1dGLCzqkMAuMIuWSTAWuHPIqrVaKFLiFPgW97I64=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=T3I73COa; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5365b6bd901so7991924e87.2
+        for <live-patching@vger.kernel.org>; Wed, 25 Sep 2024 06:08:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1727246475; x=1727851275; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UudjcCFoYrSDJU9P72NdXY6ZjlpNEd3W29mVUFxsDU8=;
-        b=Ex2WB3NoaysV4sPyPic1cxWAaknkG5puoJkf3gaUsBxb9U4+RPB56ydgD5oX1flkQ/
-         CO/pIf83KKGxpPkqwjKCWaCuc7LgmEhGmh2l4yF7YY15KCurQav5+IdkVB5prl9nf1rt
-         bJFgeG3xuWipjQsLKqpw4cG4Rin/zzoII5nwkfQZ3We/Vr0XXZy2UHLnM00A47hE6NSI
-         q+U/Ylx8HwiXxohT2XISVe9oVovhPCaSacrdUjnHIZ7XyLts0LIUQzqY6gw6k/JGMwU1
-         CvOb97mQo3MTFhnt7JXGHTiXvYEmaMKfMtm6yXX/j5tdJQMYGtI1gNwje9+2duzEHQI6
-         Qjrw==
+        d=suse.com; s=google; t=1727269708; x=1727874508; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=oy4FjmWQhhsk5gZLF9a56ivnKadXTHvPmDY2gbMhqvo=;
+        b=T3I73COapJbJgVYo1UhXp2YVW0gW9rHa9Y72ncJe4xpPvhYIVsqZTU/O7a8u9U9DKj
+         xxNFsixKhOamNd3YkkE28zkuyx3QTQmc8DH263s4cjk+1z0u9BVsvAM3ZNyab6LuUpMp
+         +/jEm6iVPuAR+TlhMqe8wJ9sX9zGV4WJ97dsR+X1oCp/BI6vcs/pSXpegYkpWybkW12C
+         muvbjSBn7M3+A8c+6xTeVaZxD3+Rq0mLDkXJFjSPKIT2ECzKqyOJ/S7p2kV6EnLSwYS1
+         cfr3FwgnXYACFUB9DYhUhSxIgAyjb83D2Ce+DR7Ji5CA1PRIPF9nqybNuTKAST3VWqWO
+         cVTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727246475; x=1727851275;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UudjcCFoYrSDJU9P72NdXY6ZjlpNEd3W29mVUFxsDU8=;
-        b=DLc1QbsgFy3szt4Bju4xYZvxoD2XcYyJzX5HGeO5mqZzj4NibSUsTi36XkZtTCQzYL
-         qqTSX1tRl4lIr/m41gZPtWNg25SKqN/drCgNJmgZHGHmzUXFcunDcYxkgZkVhzUkwzZB
-         xgP9x9qr1AZrX4B2r/MeMuFo4SI6WxS26f9V+6XY78edLXSkWfuYMhmnQt/NdiGIkhq3
-         Fno1IwK6fetiHMLSb4pvtpxRk5mPLJBfl1SmEFAhPhdIqcbQ2zhGqd3uu77TGgjzOgPk
-         aqOJLM0S6Sd2SNCwNA4O9WDLYp8nP4qZdSUTi9ueFEyFjv4Mhq5wwDa7hlhsereVGxJ1
-         3k6g==
-X-Forwarded-Encrypted: i=1; AJvYcCW1gEL14+kcw1pVUimHUeBgv+KEBCJKuWz3EDzUjulU8m8XTiqtRjW6eQr3AeelkNVafSbw0mqFiYLrAac=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwfndnhK5cbZKpxqmXntS5rrpzlWwgBRM+66Zenm8sEUFWJqfYU
-	6CP/B5KfTxrhI3iufS24KzvWkuyZ3179SdXl8Q4dTl8vjjzCPWPz
-X-Google-Smtp-Source: AGHT+IFNThAylM4apGV0UhSBzkshJeKDA5Rzu0aYIcPbldCyZetZmU8BAo6Z9hixWiRPx/1XbRVzww==
-X-Received: by 2002:a05:6a00:2e94:b0:718:e162:7374 with SMTP id d2e1a72fcca58-71b0aaa1c23mr2806110b3a.5.1727246474833;
-        Tue, 24 Sep 2024 23:41:14 -0700 (PDT)
-Received: from localhost.localdomain ([205.204.117.121])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71afc8443e0sm2139578b3a.62.2024.09.24.23.41.11
+        d=1e100.net; s=20230601; t=1727269708; x=1727874508;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=oy4FjmWQhhsk5gZLF9a56ivnKadXTHvPmDY2gbMhqvo=;
+        b=VPGQ7GN33uEVnTbO8SifchYXMwRDROx+3Lg74sckunPwdKXYuwVS8d0Wop5Y+xKFLD
+         qFA6uRzGk9uYPgCJmgEyJcMr3rnyqqsKYXpJ9vd8zqoEUhA2WxcYXVa1tggfudEbg41f
+         MNUWrDmyqRHoecLFHM773TtP3IRdDIHmrWsg1tFFzg8Qonps9vjIspaqMMpIpmjAlL9/
+         J285A4tZbQaLJNvyPBo6D2UqQHiBUwnqTfbpZJoiR8ZIZx+4oqEsuGyLsQbd3+6utxKH
+         HRaZGm1prXNZCY2AYxr+KGupx8LmGz1T312iDYtVknwWYBw/zybeWR83bkLEm1ZzSkyZ
+         /ywg==
+X-Gm-Message-State: AOJu0YzQ9BsF2h7iB7z4AI0fUJdsIVybuqi0p8T80/7sOzQ7n1H2tqJz
+	6a1SHE+1tsxZ0bDNzOzCeWOiWeJ8atpCEDn4eY3AEjy2nGrvFci6vm6NgvMx6V4=
+X-Google-Smtp-Source: AGHT+IEhmiM9PRXA9kCtpYEyjG2XjauKbi5RYBQYK5ElaZTVJYzszEWccWppxnF9+yJhAmG+NxP6Ig==
+X-Received: by 2002:a05:6512:400d:b0:530:ad7d:8957 with SMTP id 2adb3069b0e04-53877564917mr1761043e87.49.1727269708468;
+        Wed, 25 Sep 2024 06:08:28 -0700 (PDT)
+Received: from [192.168.3.3] (77.39.160.45.gramnet.com.br. [45.160.39.77])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5c5cf4c500dsm1797598a12.61.2024.09.25.06.08.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Sep 2024 23:41:14 -0700 (PDT)
-From: Wardenjohn <zhangwarden@gmail.com>
-To: jpoimboe@kernel.org,
-	mbenes@suse.cz,
-	jikos@kernel.org,
-	pmladek@suse.com,
-	joe.lawrence@redhat.com
-Cc: live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Wardenjohn <zhangwarden@gmail.com>
-Subject: [PATCH] Documentation: Add description to stack_order interface
-Date: Wed, 25 Sep 2024 14:40:47 +0800
-Message-Id: <20240925064047.95503-3-zhangwarden@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        Wed, 25 Sep 2024 06:08:28 -0700 (PDT)
+Message-ID: <0fe8f8d36fb5fc78c645b26c20b5ae365bb59991.camel@suse.com>
+Subject: Re: [PATCH 0/2] livepatch: introduce 'stack_order' sysfs interface
+ to klp_patch
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: Wardenjohn <zhangwarden@gmail.com>, jpoimboe@kernel.org, mbenes@suse.cz,
+  jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com
+Cc: live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Wed, 25 Sep 2024 10:08:22 -0300
 In-Reply-To: <20240925064047.95503-1-zhangwarden@gmail.com>
 References: <20240925064047.95503-1-zhangwarden@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (by Flathub.org) 
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Update description of klp_patch stack_order sysfs interface to
-livepatch ABI documentation.
+On Wed, 2024-09-25 at 14:40 +0800, Wardenjohn wrote:
+> As previous discussion, maintainers think that patch-level sysfs
+> interface is the
+> only acceptable way to maintain the information of the order that
+> klp_patch is=20
+> applied to the system.
+>=20
+> However, the previous patch introduce klp_ops into klp_func is a
+> optimization=20
+> methods of the patch introducing 'using' feature to klp_func.
+>=20
+> But now, we don't support 'using' feature to klp_func and make
+> 'klp_ops' patch
+> not necessary.
+>=20
+> Therefore, this new version is only introduce the sysfs feature of
+> klp_patch=20
+> 'stack_order'.
 
-Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
+The approach seems ok to me, but I would like to see selftests for this
+new attribute. We have been trying to add more and more selftests for
+existing known behavior, so IMO adding a new attribute should contain a
+new test to exercise the correct behavior.
 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-livepatch b/Documentation/ABI/testing/sysfs-kernel-livepatch
-index a5df9b4910dc..9cad725a69c7 100644
---- a/Documentation/ABI/testing/sysfs-kernel-livepatch
-+++ b/Documentation/ABI/testing/sysfs-kernel-livepatch
-@@ -47,6 +47,14 @@ Description:
- 		disabled when the feature is used. See
- 		Documentation/livepatch/livepatch.rst for more information.
- 
-+What:           /sys/kernel/livepatch/<patch>/stack_order
-+Date:           Sep 2024
-+KernelVersion:  6.12.0
-+Contact:        live-patching@vger.kernel.org
-+Description:
-+		This attribute record the stack order of this livepatch module
-+		applied to the running system.
-+
- What:		/sys/kernel/livepatch/<patch>/<object>
- Date:		Nov 2014
- KernelVersion:	3.19.0
--- 
-2.18.2
+Other than that, for the series:
+
+ Acked-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+
+>=20
+> V1 -> V2:
+> 1. According to the suggestion from Petr, to make the meaning more
+> clear, rename
+> 'order' to 'stack_order'.
+> 2. According to the suggestion from Petr and Miroslav, this patch now
+> move the=20
+> calculating process to stack_order_show function. Adding klp_mutex
+> lock protection.
+>=20
+> Regards.
+> Wardenjohn.
+>=20
 
 
