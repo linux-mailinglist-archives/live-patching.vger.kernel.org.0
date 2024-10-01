@@ -1,118 +1,81 @@
-Return-Path: <live-patching+bounces-701-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-702-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8154098B0D0
-	for <lists+live-patching@lfdr.de>; Tue,  1 Oct 2024 01:26:08 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9010F98B580
+	for <lists+live-patching@lfdr.de>; Tue,  1 Oct 2024 09:29:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B2E6B1C211A8
-	for <lists+live-patching@lfdr.de>; Mon, 30 Sep 2024 23:26:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4EB86281593
+	for <lists+live-patching@lfdr.de>; Tue,  1 Oct 2024 07:29:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 71437188A3B;
-	Mon, 30 Sep 2024 23:26:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 450C41BD017;
+	Tue,  1 Oct 2024 07:29:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mjtuF29l"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="IqqNLdh0"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48453188A0F;
-	Mon, 30 Sep 2024 23:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED3771ACDE3;
+	Tue,  1 Oct 2024 07:29:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727738763; cv=none; b=m24nXmkYrxoPjfJ6LOquyQLiqd2kNpfFnC/uNjG/W5PvAX97rpV2PFEsAlQ07T1+OojJP3SDFoRrib+6QDqzDkd7hlV+TXpqHMHr0omfm6Cofk8nspnAmbVKE+yHVpUdoIhirM8HwGvv0gwfRqdXB4ZbTK3wsZlmdM09KXcIeL0=
+	t=1727767760; cv=none; b=pXIdhQ3a4jkDiyWNXciq46CyKhTl0lGy/L3FAjFmlGN29FwF1/wrjNAU3Pu/rUp2P77WzjmXV4XVxmSzfgAOeji59EAjU8iEGlZgckazJhgOYfdw1LRGVoirl9iUiUPPVwkG37+moXZob4255uMYFKp/7HLCy89+3+Z5Hb40wzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727738763; c=relaxed/simple;
-	bh=9szOEi5fVKj2d7uoDIY9Cy6Ya4ofoJuayHwF0Qu8F+E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gnWYpdr6AI2Urrll7wPC4E9C8683YzNi0x/JTdnRMH8GlowhHx8tdZpLgmIWHSKu4g+dYHe8DFtM4JKnpA/2yCqeX//tpfb7WteHL7p73wBPJGf5wT5bfHk4/la2+tWWiuKoXMYnkd6MlM3mGDkAzoGHCLNXoA+u1a8EJliQrog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mjtuF29l; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BDAAC4CEC7;
-	Mon, 30 Sep 2024 23:26:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727738762;
-	bh=9szOEi5fVKj2d7uoDIY9Cy6Ya4ofoJuayHwF0Qu8F+E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mjtuF29lC6aAJIERVM3iep3K6LQZCY25ggNwc0j/iiP3JsMBcyThKP/56xTZqIlPI
-	 CWsmJw21KWeyLJOOeSX2nJf70spX+Br/5ygllLqe4s+fQ1AhGZ9lHKbJydDWIk1oCT
-	 60XG1ZBhIQyVDIfni+kgKIH27+VdHnxLK2n73SYaufTGyF36kUo+pkIC4r+PU8Pr+w
-	 lAG+MD+j9YpRHbRqzzeYhnc3rQVxr5BKs/eBi1HfQ49tLtd3jtbpgQ4pYdRXUE4l09
-	 2eTKmffSu0bN6ruazCwvCH1kUt3vZpedAS9QNKQEMKJVOYWuSM2baP6FWTyJrv3Iks
-	 XDEHWewxmttJA==
-Date: Mon, 30 Sep 2024 16:26:00 -0700
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Wardenjohn <zhangwarden@gmail.com>
-Cc: mbenes@suse.cz, jikos@kernel.org, pmladek@suse.com,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3 1/1] livepatch: Add "stack_order" sysfs attribute
-Message-ID: <20240930232600.ku2zkttvvkxngdmc@treble>
-References: <20240929144335.40637-1-zhangwarden@gmail.com>
- <20240929144335.40637-2-zhangwarden@gmail.com>
+	s=arc-20240116; t=1727767760; c=relaxed/simple;
+	bh=0W9UV8CdEjjTR2oX4DpQNMNnRgu++fVJZiVsFgEDEig=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IbXjFc0EPuFmAcRjgbUjFV3EoC5wGBzNYYuHUA4p0T1r8GsZjdl6xCUKQUrWyQYpUoXem7FvziJjolc1dERgnOus5PfsGPGWqd32CPwKEXSxVOT8jI2sMRiowMEe1auxZgbmBxkGjWvgqwQK+JEoq2QVL7jzIV5oga3xfl3GXqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=IqqNLdh0; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from [100.79.128.42] (unknown [4.194.122.170])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 9662D20CECB9;
+	Tue,  1 Oct 2024 00:29:07 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9662D20CECB9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1727767752;
+	bh=oV+M8wTtyeUDKHVuDlLOCywe4WnbTuQpdcGmY6cn7Hw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=IqqNLdh03H/R51q3QfpE0H8PUqNmomH+qr62Ryq9NuZ4mS8YysC43EVW1zlupjvaW
+	 9dECyKJKuljYipEF1KTRwpL3qLsTx2TbaOJ3JGVUJLYZhaBKqHPPrUuAuNMVl25dnq
+	 TdmlN6m+Qd4shboaK9W7nhK0hazpTlGAWeODULak=
+Message-ID: <5221728d-df48-4539-adb6-8c637c7596f2@linux.microsoft.com>
+Date: Tue, 1 Oct 2024 12:59:04 +0530
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20240929144335.40637-2-zhangwarden@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: ARM64 Livepatch based on SFrame
+Content-Language: en-GB
+To: Weinan Liu <wnliu@google.com>
+Cc: broonie@kernel.org, catalin.marinas@arm.com, chenzhongjin@huawei.com,
+ jamorris@linux.microsoft.com, jpoimboe@redhat.com, kpraveen.lkml@gmail.com,
+ kumarpraveen@microsoft.com, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+ madvenka@linux.microsoft.com, mark.rutland@arm.com,
+ nobuta.keiya@fujitsu.com, peterz@infradead.org, sjitindarsingh@gmail.com,
+ will@kernel.org
+References: <8e02ed1a-42a9-41ab-b1b4-cb5e66bf4018@linux.microsoft.com>
+ <20240927074141.71195-1-wnliu@google.com>
+From: Praveen Kumar <kumarpraveen@linux.microsoft.com>
+In-Reply-To: <20240927074141.71195-1-wnliu@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Sep 29, 2024 at 10:43:34PM +0800, Wardenjohn wrote:
-> Add "stack_order" sysfs attribute which holds the order in which a live
-> patch module was loaded into the system. A user can then determine an
-> active live patched version of a function.
+On 27-09-2024 13:11, Weinan Liu wrote:
+> We from Google are working on implementing SFrame unwinder for the Linux kernel, 
+> And we will be happy to collaborate with others for adding arm64 livepatch support
 > 
-> cat /sys/kernel/livepatch/livepatch_1/stack_order -> 1
-> 
-> means that livepatch_1 is the first live patch applied
-> 
-> cat /sys/kernel/livepatch/livepatch_module/stack_order -> N
-> 
-> means that livepatch_module is the Nth live patch applied
-> 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Suggested-by: Miroslav Benes <mbenes@suse.cz>
-> Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
-> ---
->  .../ABI/testing/sysfs-kernel-livepatch        |  8 ++++++
->  kernel/livepatch/core.c                       | 25 +++++++++++++++++++
->  2 files changed, 33 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-kernel-livepatch b/Documentation/ABI/testing/sysfs-kernel-livepatch
-> index a5df9b4910dc..2a60b49aa9a5 100644
-> --- a/Documentation/ABI/testing/sysfs-kernel-livepatch
-> +++ b/Documentation/ABI/testing/sysfs-kernel-livepatch
-> @@ -47,6 +47,14 @@ Description:
->  		disabled when the feature is used. See
->  		Documentation/livepatch/livepatch.rst for more information.
->  
-> +What:           /sys/kernel/livepatch/<patch>/stack_order
-> +Date:           Sep 2024
-> +KernelVersion:  6.12.0
 
-These will probably need to be updated (can probably be done by Petr when
-applying).
+Good to know Weinan!
 
-> +Contact:        live-patching@vger.kernel.org
-> +Description:
-> +		This attribute holds the stack order of a livepatch module applied
-> +		to the running system.
+Happy to collaborate, please let me know what I can focus on and help here. Thanks.
 
-It's probably a good idea to clarify what "stack order" means.  Also,
-try to keep the text under 80 columns for consistency.
+Regards,
 
-How about:
-
-		This attribute indicates the order the patch was applied
-		compared to other patches.  For example, a stack_order value of
-		'2' indicates the patch was applied after the patch with stack
-		order '1' and before any other currently applied patches.
-
--- 
-Josh
+~Praveen.
 
