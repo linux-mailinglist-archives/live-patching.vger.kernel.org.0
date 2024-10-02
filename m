@@ -1,88 +1,88 @@
-Return-Path: <live-patching+bounces-705-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-706-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6DD7998DED6
-	for <lists+live-patching@lfdr.de>; Wed,  2 Oct 2024 17:23:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B2CDE98DF2D
+	for <lists+live-patching@lfdr.de>; Wed,  2 Oct 2024 17:30:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id F33C51F22918
-	for <lists+live-patching@lfdr.de>; Wed,  2 Oct 2024 15:23:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CD7AB1C245FA
+	for <lists+live-patching@lfdr.de>; Wed,  2 Oct 2024 15:30:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A5ABF1D0DE5;
-	Wed,  2 Oct 2024 15:23:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A89871D0DD7;
+	Wed,  2 Oct 2024 15:29:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="C2TVKURS";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="uAMF9w3K";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0fw3LQ20";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="IkRJ1Q9X"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="b7Ci9Cpl";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="sI1fLzLo";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="T7uS2sD+";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ADWlWGVs"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B803B1D0DC4;
-	Wed,  2 Oct 2024 15:23:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D662B1D0977;
+	Wed,  2 Oct 2024 15:29:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727882611; cv=none; b=GmJAJc5mRZm1Q4OwsYCgBtp/3E+ESDUJuxH31KRFM5WD0jT5d/cEgHlxe++mRDoyy7QeFBnsPHA+h//mPNHIEKxQ5F3cHtnyfCp8egLxthPnovggN0KaRkgoLe9BWa8rkqxkibXCr/vAdmW9oR+71Cq+Eol1y/akDDm4xehKZ+w=
+	t=1727882945; cv=none; b=shTfLQqUQFICnjcYtpLmMLl89Uk66H/EKIpqCsKmVwUNsPSpmNKrm17WUvAmLPbUl0/RW1Lrub0FdECkDckdzSQjjoHPUzQXUlSBmtBYuvlhOPS9yQCIE9JT1rPNn4mCCM3BHZMn7HFwObLYGimKgW4kyTQH1La5w+z6mP+k9cU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727882611; c=relaxed/simple;
-	bh=/yXPrV1FR5GIsKRi85kOHNP3nlia8DKhJfPuC0DEKWA=;
+	s=arc-20240116; t=1727882945; c=relaxed/simple;
+	bh=tQtFzWGWGLIeg3feHBfHQqmvpku6sKX2gfyV988jgs4=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=OXThWwXffCf3rvxfKkADdxGPd9Cx+9RUmvMKAhkX1bfdtp6CPabzrwMytT7cmybHxClZ3nBigcJkVpeyLM3EVlz9fadUG6Mvnkh8mgkNelg4zUpKu/zNtLyCo0KK5pk0I9YwmPkqEQfLT4HlIPpI945m/nEyif7JSA41x+Sy0Cw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=C2TVKURS; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=uAMF9w3K; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0fw3LQ20; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=IkRJ1Q9X; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version:Content-Type; b=d89QNAHgP3Yms8HlFn6OUFugMTFRar84gAS8+sFCIysYuhBqqdWOV3TJ6cWRJg+jGbdzE4BmV4TD0DG+61HCGwuDaLnMRmk1N3jK5SPszEEEr3nW7BKOx+XNUk3NyDlKajfu9xpxCROb+9KS540yrmisNs/qdPr+huLP5Lg6ER4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=b7Ci9Cpl; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=sI1fLzLo; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=T7uS2sD+; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=ADWlWGVs; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Received: from pobox.suse.cz (unknown [10.100.2.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id E7B7B21C6B;
-	Wed,  2 Oct 2024 15:23:27 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id E7DB421C6F;
+	Wed,  2 Oct 2024 15:29:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1727882608; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1727882942; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YnIbF0VvYkqNimH9KKv4Ic76UBu3+W6XPzME/Ok1a3w=;
-	b=C2TVKURSpI1Wb6tUKl3MVuLSf6M4g6XRhROLU+HVpzasXRgSjleBDSofdXEnoZBhCAgDtm
-	lrsqhllvtQGHqWL7vTJ1Yosk6zWsP7voqG0nZIMbt8ul/fj/ExK0qZLCBbeL+nv/vT6Nk7
-	fUPZ6eQzbxPxhk8KcK+NgANwe6imSqk=
+	bh=YSgt+aBeUQZdrYwlwWCHJ4/usq6jRi1d3IFr2yfT9GI=;
+	b=b7Ci9CplGYIoV9VMgwQLW04YhSNjs56Z4tUNHL0L50Z18QS2KCry5+AqxcwDhYIC29tgt3
+	F+JWWJOENyezsc2/9wnodZC7SSeHLVF5C2ceJOnG9k2XGUruTIIxiB7zVA3rjBugf77DQA
+	MPjvr8Vec54ufCoRayMhDeKmUp23Z1g=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1727882608;
+	s=susede2_ed25519; t=1727882942;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YnIbF0VvYkqNimH9KKv4Ic76UBu3+W6XPzME/Ok1a3w=;
-	b=uAMF9w3KiypCZjuVMzbBcthXk74jaZtYed2CfaXNSh6uaxctECnEaWKNDpDaOE8CeCHyUD
-	xxcZQn7GjYBJu2Aw==
+	bh=YSgt+aBeUQZdrYwlwWCHJ4/usq6jRi1d3IFr2yfT9GI=;
+	b=sI1fLzLoa0ce0nUtNEc/odU9L48dpWfg1G1YEK/lifFOLWiOuysimWbC8OzuUoip0XKP55
+	2ZUqTjiw+tqDiFAA==
 Authentication-Results: smtp-out1.suse.de;
 	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1727882607; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1727882941; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YnIbF0VvYkqNimH9KKv4Ic76UBu3+W6XPzME/Ok1a3w=;
-	b=0fw3LQ20qmDoS9pjOxyOcR8PhBTGzTkhtYKzx+V2Yv77LPXp5oxDFajnQRM9t+H9mtocM0
-	3PyFfNV5E5ChZcC8KD3eYhpT3V10+t9IPfk2ovINn4jWZ+gy3sKkM1RSWoQL5sjsK7GcWK
-	FaSwzEWz/fByJF9H0pVgji/7kT4fz6U=
+	bh=YSgt+aBeUQZdrYwlwWCHJ4/usq6jRi1d3IFr2yfT9GI=;
+	b=T7uS2sD+czDLy+KN1Igf/AhTWzSsKa28B0cCvlzyo6D7MBvHiC/x9myr3YzBAKBrT9y4i/
+	Qe+isxgz/JtitHthNeJicdoRwPqi4/F8Xly3//aLOVsUY+Ktw9cbc47Xnicfz9q7kEtJ7O
+	T/axdsyhf4UBXxjSlrJAzMOv3TIVwdI=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1727882607;
+	s=susede2_ed25519; t=1727882941;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YnIbF0VvYkqNimH9KKv4Ic76UBu3+W6XPzME/Ok1a3w=;
-	b=IkRJ1Q9Xne/Aib6UHX53XiwKclbVYgTifpqiyLWeo3qRtZVdOUhSMr9XuXaQHA0YMMLlSi
-	Cx5o80f+y02UDNBg==
-Date: Wed, 2 Oct 2024 17:23:27 +0200 (CEST)
+	bh=YSgt+aBeUQZdrYwlwWCHJ4/usq6jRi1d3IFr2yfT9GI=;
+	b=ADWlWGVsm0pwzqBpPGn5T+mP4B4sMsHZ0FHZ9EO25rDsTNRkEHS8CJ1eB7nU9mbjri8pDe
+	s61P7q+MGdmJ83AQ==
+Date: Wed, 2 Oct 2024 17:29:01 +0200 (CEST)
 From: Miroslav Benes <mbenes@suse.cz>
 To: Michael Vetter <mvetter@suse.com>
 cc: linux-kselftest@vger.kernel.org, live-patching@vger.kernel.org, 
     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] selftests: livepatch: rename KLP_SYSFS_DIR to
- SYSFS_KLP_DIR
-In-Reply-To: <20240930093308.65103-2-mvetter@suse.com>
-Message-ID: <alpine.LSU.2.21.2410021720190.23724@pobox.suse.cz>
-References: <20240930093308.65103-1-mvetter@suse.com> <20240930093308.65103-2-mvetter@suse.com>
+Subject: Re: [PATCH v4 3/3] selftests: livepatch: test livepatching a kprobed
+ function
+In-Reply-To: <20240930093308.65103-4-mvetter@suse.com>
+Message-ID: <alpine.LSU.2.21.2410021724040.23724@pobox.suse.cz>
+References: <20240930093308.65103-1-mvetter@suse.com> <20240930093308.65103-4-mvetter@suse.com>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -91,9 +91,9 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-X-Spam-Level: 
+X-Spam-Score: -4.30
 X-Spamd-Result: default: False [-4.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
+	BAYES_HAM(-3.00)[99.99%];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
 	NEURAL_HAM_SHORT(-0.20)[-0.991];
 	MIME_GOOD(-0.10)[text/plain];
@@ -109,59 +109,30 @@ X-Spamd-Result: default: False [-4.30 / 50.00];
 	TO_MATCH_ENVRCPT_ALL(0.00)[];
 	FUZZY_BLOCKED(0.00)[rspamd.com];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email]
-X-Spam-Score: -4.30
 X-Spam-Flag: NO
+X-Spam-Level: 
 
 Hi,
 
 On Mon, 30 Sep 2024, Michael Vetter wrote:
 
-> This naming makes more sense according to the directory structure.
-> Especially when we later add more paths.
+> The test proves that a function that is being kprobed and uses a
+> post_handler cannot be livepatched.
+> 
+> Only one ftrace_ops with FTRACE_OPS_FL_IPMODIFY set may be registered
+> to any given function at a time.
 > 
 > Signed-off-by: Michael Vetter <mvetter@suse.com>
-> ---
->  tools/testing/selftests/livepatch/functions.sh | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-> index fc4c6a016d38..50361fceff06 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -6,7 +6,7 @@
->  
->  MAX_RETRIES=600
->  RETRY_INTERVAL=".1"	# seconds
-> -KLP_SYSFS_DIR="/sys/kernel/livepatch"
-> +SYSFS_KLP_DIR="/sys/kernel/livepatch"
->  
->  # Kselftest framework requirement - SKIP code is 4
->  ksft_skip=4
-> @@ -322,7 +322,7 @@ function check_sysfs_rights() {
->  	local rel_path="$1"; shift
->  	local expected_rights="$1"; shift
->  
-> -	local path="$KLP_SYSFS_DIR/$mod/$rel_path"
-> +	local path="$SYSFS_KLP_DIR/$mod/$rel_path"
->  	local rights=$(/bin/stat --format '%A' "$path")
->  	if test "$rights" != "$expected_rights" ; then
->  		die "Unexpected access rights of $path: $expected_rights vs. $rights"
-> @@ -338,7 +338,7 @@ function check_sysfs_value() {
->  	local rel_path="$1"; shift
->  	local expected_value="$1"; shift
->  
-> -	local path="$KLP_SYSFS_DIR/$mod/$rel_path"
-> +	local path="$SYSFS_KLP_DIR/$mod/$rel_path"
->  	local value=`cat $path`
->  	if test "$value" != "$expected_value" ; then
->  		die "Unexpected value in $path: $expected_value vs. $value"
 
-I am sorry I was not explicit enough previously. There are still 
-/sys/kernel/livepatch occurrences in tools/testing/selftest/livepatch/ 
-which can be replaced with this new variable. They are there for quite 
-some time but it would be really nice if you could replace them all to 
-make it consistent since you are touching it.
+since my memory is short, I wondered why you need a separate module to 
+register a kprobe for cmdline_proc_show() in vmlinux and why it cannot be 
+achieved through tracefs. So... the test ensures that 
+FTRACE_OPS_FL_IPMODIFY is exclusive. A kprobe sets FTRACE_OPS_FL_IPMODIFY 
+flag if and only if post_handler is not NULL which also indicates a 
+situation when regs->ip may be changed in that kprobe. This is something 
+which cannot be done in tracefs and hence the module.
 
-Thank you,
+It was not clear to me from the changelog.
+
 Miroslav
 
