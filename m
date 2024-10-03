@@ -1,72 +1,72 @@
-Return-Path: <live-patching+bounces-710-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-711-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6F40198F1EB
-	for <lists+live-patching@lfdr.de>; Thu,  3 Oct 2024 16:54:51 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 736D098F1FD
+	for <lists+live-patching@lfdr.de>; Thu,  3 Oct 2024 16:59:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 23A271C20EC8
-	for <lists+live-patching@lfdr.de>; Thu,  3 Oct 2024 14:54:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A55C71C216CD
+	for <lists+live-patching@lfdr.de>; Thu,  3 Oct 2024 14:59:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 958DD19ADA6;
-	Thu,  3 Oct 2024 14:54:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3692919F428;
+	Thu,  3 Oct 2024 14:59:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K+eE4+IV"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AKR/hXkY"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E5AA197A65;
-	Thu,  3 Oct 2024 14:54:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9200126C13;
+	Thu,  3 Oct 2024 14:59:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727967286; cv=none; b=JzRWIBOjSg4oSSz45yueuuwYi5LjRtBTbys/HDmvDHaqYBukxBUP7gay/H8bh1TP5/WeGWHNrly8bKnd5a5lkVCY9qvL8gPNn8XJQIf3F2KT8EeIHv/yMXrA2YjKqrlPOUGNoJmr5vJ8by/txbTTNXNidXFbV5dK3Y8t2dB6VE4=
+	t=1727967569; cv=none; b=ImIrDiSFxG4LJv8vkTtUTC2j79phL44eahl190zJCiYm0yPFnDLE7Mp9Y4Wf2RcklNPIzIdMdw9pEJr1fa7dbb+Z8lZTbQffGLgtyOpxOTg8qN9PkTuFxpCvyYKmGYzy94uONHaPAjmZYW4mL6y0Dlr3K5F48msl8cD9zzIwt2k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727967286; c=relaxed/simple;
-	bh=uZT04iLPoVH61EzFHUulkVfWq07rul/sIu7DgbW9cGM=;
+	s=arc-20240116; t=1727967569; c=relaxed/simple;
+	bh=nPIjl3iVLvtKYaE9EGYAmiDaJas/EGHupafTygNcNnA=;
 	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=BpO7az0o+i5bzuo5P95YdUaMzx8+nZNjuwELPybTFdienr4Bcd5KYtcNy3z3GVG3T76wsEPx2p89obLekXbN9zrNXc9GTxjQnVcXdBgUiGxrkBstkiQebs4ToXQZXiWyqNinMeVBlJcqoZCK25qMIqA2XihqKHSxoVVtimhx0z8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K+eE4+IV; arc=none smtp.client-ip=209.85.214.179
+	 Message-Id:References:To; b=CNMRslk4oKY5wuzV5besqAIuXmVsXf6LNh7l+uV1197v33TnShN/TJJ/Yi7qQDUazCWMeljRV/eD/rDLbEmqUlGFkQIX+UB8nJugwlar4jQiruOp4fiLJDnjzqmDiyUmhUyjWoMGEuetvBxuMlGq87V+PiVWO6qgLLQkNRRNOrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AKR/hXkY; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-20b90984971so11210615ad.3;
-        Thu, 03 Oct 2024 07:54:45 -0700 (PDT)
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-20ba8d92af9so7781775ad.3;
+        Thu, 03 Oct 2024 07:59:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1727967284; x=1728572084; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1727967567; x=1728572367; darn=vger.kernel.org;
         h=to:references:message-id:content-transfer-encoding:cc:date
          :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cg9f8AAouFbGggtUAeWVFr1axZNtUOVGqld4t64139o=;
-        b=K+eE4+IV0x3j2JnWuiVv3YWFzzVsSthE3gxjiuPWnieZXTC79OCu8OURoL+NGvY8N4
-         4tA9lJILe7JI9OWpGtaD43D/WI1NdXiClF1vLKNit+GytpthYOCO+p5bzicWDlTrm2R1
-         Mxxryffhg3NDnCpqq/VIGPLnhuEKw7ZDceJMU5Aq/ZIYbJR5QN77EeuWyEw8yNh1uR2u
-         Jsmp6jjZ+7jEvSJfzxfxVCn0sFtWvx3dKwSmLyHm6+18i+eejszdf9i7FdNwk/C+ZqXo
-         ppfD7fLjcGNNW8B2RPCaXhRI1ZAEDejVmedwUgO65wf4lA5PjqmdLW05gkVQTloO8xku
-         YrLw==
+        bh=Y8mqEgh1sAZ5ZRAlThlSZYqQFb4glRNTor4feadJ11g=;
+        b=AKR/hXkYioe2MrkiNReV3SnQ1bZNBm4Kvzg7WwKtLSdk2vSgM+3dGGiP+Hz/2iKokZ
+         hN73HII9uYhSxIY9Mblt8kI72uhRRgMdy0SZ5VOACwjfGdspMxFPMxU7+mUFTpWPyRr1
+         kr+UdUqmVO1bXkmw2E47hMwtO7xTI0roSBUgqe1yRAyHTT/9UwzvAWezrqdoJvTZXqEq
+         dw3oVW5uLwBh/13bMADgi/V10y/iLIrtd8DHiVB2MxTCclGLkkBHGTGplTs0Y+dioxHQ
+         Tps7cDlLBJDC5cWHcdtdArjGfMgNOX9QoSpv65LsH5DYQkNMuL8+mvGGGAs4Tb9O9aol
+         AETw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727967284; x=1728572084;
+        d=1e100.net; s=20230601; t=1727967567; x=1728572367;
         h=to:references:message-id:content-transfer-encoding:cc:date
          :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cg9f8AAouFbGggtUAeWVFr1axZNtUOVGqld4t64139o=;
-        b=bjL9cMhoAelmYUw0J5oXHIFWtOkZZxaHEzRRKw6xVN8fhzju/5R642PQgpsboG6g33
-         gn/3rnU1hi44BaaSzqvsyGmDcFYlybvzFU8+jmQXEdagWESH4F8s6uX7BmF/OhF1PkNk
-         dqLHr4U87Fg0wrR9JH5KuLPJ2OCeabKcov3JSI6sQrf6FJCJ7c4xkdsrihvJdIFHZ4qd
-         RSTbu3fDq9DRBWeC3WK8VOS7CelLMFkrVWgt0MLFHBi3FNlXYNJkY3CP3EF917sylgkW
-         jnEvLNuD8B6CkSpO478+nNp+a7PhoitnfWo4OmSD/HZpOjTQ7bxaQiS3wQWhbhSewuOE
-         tong==
-X-Forwarded-Encrypted: i=1; AJvYcCU6/1CRoJFb+5JTvh9TJNZ7o+e25WlW6mB8aQDvMWVdm+BzX8ZLm/3vGp7r9D4XOzT39pMMIplrlYXFHyU=@vger.kernel.org, AJvYcCXWOGPpPICc2lawEqNd8vPt9IPuwnrnzG7Lh79+iQZFd1Tq8ZRU5dSKzfkOS1K8vj0EVMnu6PWH2OZeRCsdUA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/Z2UUzSuf3esPvl54P5+azLqE0+fBrKzuSGYOc9UYNKANWdCQ
-	0667oSRGMDIuEu5Bb8xnV6ygMtXAM+UAILtIH0i8W2mvhDZprxFJ
-X-Google-Smtp-Source: AGHT+IG0BFSna3W4LN8wo1ab8T3hD+OjdQlWZUfyqNt9EsvJCBriV3EkgCXuAT4lco6B4hbUUAXT4w==
-X-Received: by 2002:a17:902:fac5:b0:20b:54cc:b34e with SMTP id d9443c01a7336-20bc5ae9657mr81941555ad.51.1727967284421;
-        Thu, 03 Oct 2024 07:54:44 -0700 (PDT)
-Received: from smtpclient.apple ([198.11.176.14])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20beef8ded5sm9900375ad.174.2024.10.03.07.54.40
+        bh=Y8mqEgh1sAZ5ZRAlThlSZYqQFb4glRNTor4feadJ11g=;
+        b=BgPSMEqzb4JhFEkOprdflLiJ75hOWvs6L0PSNoC5VGO6lTZeKXm89tBYydUlCdod8b
+         qviPmAv+QpluhHI+yBf0PUbQrppoIgIfVNhMvZEHXI9x4aGZkBW5dVBjdO7yKhNUhkPD
+         lltrOaCc501069eUi6eNGVyLjYODv27IxHqvKY8yNDzz339He3QusxNdSi5oZiQWEL38
+         Oh/H9/MBfDCpmnzQpW5F74C/IgLSxRm4qW2ourlVERMQauF/KI3H5OiE2Y0wiNRlxr2J
+         9+k4qoIYbHawcUweLHYMtsSec2n5ys/qmYWmiA8blDS1vLrfUns7Km7abmm3DjzoeE4y
+         aYiA==
+X-Forwarded-Encrypted: i=1; AJvYcCVSykvqweOR62wKkq5WhE7onahRD4+jegjfp/MJneS4LPoiDPgdINz515S/Cl8RCn4X2oRIDLNDDeVKUik=@vger.kernel.org, AJvYcCXSwoangz3qMqo2fq0gSJCaGm0M/YMbBRDAa3MHlnZkKfjPn6PKkoGObbFyxlMba1Ukz4ZPOghqJ7XdLB4j+A==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwoDwlDaFVn6QLNy3OkA88Y5fs1W2Jw+VNX7+J94jTp+r+El9oS
+	2EZzVEJnSwqfVRFIqqBRzSE7Z166UqVzv6gvwhv9Kh4uN7fwtEVG
+X-Google-Smtp-Source: AGHT+IGSpHNL8AOO4yQK2H9f2n1ik5Eu2gS4iKpcwDjZpSd4T+xceLVpbW3aryPLAIFxbWnMnl8NHw==
+X-Received: by 2002:a17:902:e743:b0:20b:7e1e:7337 with SMTP id d9443c01a7336-20bc5a0a46bmr111500225ad.13.1727967567023;
+        Thu, 03 Oct 2024 07:59:27 -0700 (PDT)
+Received: from smtpclient.apple ([198.11.178.15])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20beefad26fsm9764385ad.204.2024.10.03.07.59.24
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Oct 2024 07:54:43 -0700 (PDT)
+        Thu, 03 Oct 2024 07:59:26 -0700 (PDT)
 Content-Type: text/plain;
 	charset=us-ascii
 Precedence: bulk
@@ -75,37 +75,73 @@ List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [PATCH V3 0/1] livepatch: Add "stack_order" sysfs attribute
+Subject: Re: [PATCH V3 1/1] livepatch: Add "stack_order" sysfs attribute
 From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <alpine.LSU.2.21.2410021343570.19326@pobox.suse.cz>
-Date: Thu, 3 Oct 2024 16:09:23 +0800
+In-Reply-To: <Zv6FjZL1VgiRkyaP@pathway.suse.cz>
+Date: Thu, 3 Oct 2024 22:59:11 +0800
 Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>,
  Jiri Kosina <jikos@kernel.org>,
- Petr Mladek <pmladek@suse.com>,
  Joe Lawrence <joe.lawrence@redhat.com>,
  live-patching@vger.kernel.org,
- linux-kernel@vger.kernel.org
+ LKML <linux-kernel@vger.kernel.org>
 Content-Transfer-Encoding: 7bit
-Message-Id: <FD1037B2-3CF6-4518-92E9-F079A7598B0A@gmail.com>
+Message-Id: <A7799C9D-52EF-4C9A-9C22-1B98AAAD997A@gmail.com>
 References: <20240929144335.40637-1-zhangwarden@gmail.com>
- <alpine.LSU.2.21.2410021343570.19326@pobox.suse.cz>
-To: Miroslav Benes <mbenes@suse.cz>
+ <20240929144335.40637-2-zhangwarden@gmail.com>
+ <20240930232600.ku2zkttvvkxngdmc@treble>
+ <14D5E109-9389-47E7-A3D6-557B85452495@gmail.com>
+ <Zv6FjZL1VgiRkyaP@pathway.suse.cz>
+To: Petr Mladek <pmladek@suse.com>
 X-Mailer: Apple Mail (2.3774.500.171.1.1)
 
-Hi, Miroslav.
 
-> On Oct 2, 2024, at 19:44, Miroslav Benes <mbenes@suse.cz> wrote:
+Hi, Petr.
+> Also please rebase the patch on top of current Linus' master or
+> v6.11. There are conflicts with the commit adb68ed26a3e922
+> ("livepatch: Add "replace" sysfs attribute").
 > 
-> Hello,
-> 
-> could you also include the selftests as discussed before, please?
-> 
-> Miroslav
+OK, will fix it.
 
-Should I include selftests in one patch?
+>>>> +Contact:        live-patching@vger.kernel.org
+>>>> +Description:
+>>>> + This attribute holds the stack order of a livepatch module applied
+>>>> + to the running system.
+>>> 
+>>> It's probably a good idea to clarify what "stack order" means.  Also,
+>>> try to keep the text under 80 columns for consistency.
+>>> 
+>>> How about:
+>>> 
+>>> This attribute indicates the order the patch was applied
+>>> compared to other patches.  For example, a stack_order value of
+>>> '2' indicates the patch was applied after the patch with stack
+>>> order '1' and before any other currently applied patches.
+>>> 
+>> 
+>> Or how about:
+>> 
+>> This attribute indicates the order of the livepatch module 
+>> applied to the system. The stack_order value N means 
+>> that this module is the Nth applied to the system. If there
+>> are serval patches changing the same function, the function
+>> version of the biggest stack_order is enabling in the system.
+> 
+> The 2nd sentence looks superfluous. The 3rd sentence explains
+> the important effect.
+> 
+> Well, the part "is enabling in the system" is a bit cryptic.
+> I would write something like:
+> 
+> This attribute specifies the sequence in which live patch modules
+> are applied to the system. If multiple live patches modify the same
+> function, the implementation with the highest stack order is used,
+> unless a transition is currently in progress.
+
+This description looks good to me. What's the suggestion of 
+other maintainers ?
 
 Regards.
 Wardenjohn.
-
 
 
