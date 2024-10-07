@@ -1,56 +1,56 @@
-Return-Path: <live-patching+bounces-717-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-718-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 979E699352F
-	for <lists+live-patching@lfdr.de>; Mon,  7 Oct 2024 19:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A79C993553
+	for <lists+live-patching@lfdr.de>; Mon,  7 Oct 2024 19:47:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 485771F248D2
-	for <lists+live-patching@lfdr.de>; Mon,  7 Oct 2024 17:39:13 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id D13B71F2278B
+	for <lists+live-patching@lfdr.de>; Mon,  7 Oct 2024 17:47:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 976D41DD9D8;
-	Mon,  7 Oct 2024 17:39:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AC001D2229;
+	Mon,  7 Oct 2024 17:47:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="igoMOqCW"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M8JKvt1T"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7041E1DD9D3;
-	Mon,  7 Oct 2024 17:39:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56396156E4;
+	Mon,  7 Oct 2024 17:47:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728322751; cv=none; b=HzSsg5h45NBWsqWpyt1AfveyONZY4piRzmVYW0n2ZQSBy8afEYED34EIAhdcm7jndnwfRU/InASl83HflLlW8mtBbS4PlR9SPAr/FDd3mzrrfMHgcfybrHCaZ0Q9LXPOxh0/LoA0VozYjf5bNfEjiqv54xdHyrIvG2ES4hRJhsw=
+	t=1728323246; cv=none; b=brQrh3b+Vh9hT/VIhPbJSJeYeXq0tE3OEVnDhMkrS2dAzp1luMruhdvG0eDMYFW9xgraBFl6S8gNhRAeJPk9x68oUw2HWXePmoTNvYW3yEoxWJsvOd1P2rc+NOJy8ZVaqFdb0v8SbafddxMsDKFWsM9e4ZlsLiwjzmzC0YPwP1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728322751; c=relaxed/simple;
-	bh=UsQTWTTmOUQvjLn0FXOgtma+hJGzYMhIV5HoTnQzEbg=;
+	s=arc-20240116; t=1728323246; c=relaxed/simple;
+	bh=ff/z/zigLFkYNhiwnWrYtLR5miZ/jrOnAhIs4aV92IY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dFGfL08B0UC38SXPCa4H34Pil9+E/2Stgw0bWYoj1Cbyvjx7YG9cUYZW4Jp5bPvaa4gyiy8vtnhmmGFR+SMrPazczOpHYuByjnkvkIOL1Pt46jLWCePNoHkqe01Uq4RXmTUJuFqrlnITnZPSGYGvO+4I2lubnd33cL7yglYsbhY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=igoMOqCW; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC9FFC4CEC6;
-	Mon,  7 Oct 2024 17:39:10 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=S/LO1EKPap5BRbeJKHZXRr3T2HJKBqOfoh2IygYQ85oKAGIDKjx8ZgsqbMxPvkhoLTaJQJI71l4nMU7BT9RNfbesaNUTfJ0rtvi0rAMX1/ZzvdI3J0fMAgT3VzVQ/CFznIJiwGq5GjlrHs08lmwiayqdlBS+MM+lajmuyFBzgzs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M8JKvt1T; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6509C4CEC6;
+	Mon,  7 Oct 2024 17:47:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728322751;
-	bh=UsQTWTTmOUQvjLn0FXOgtma+hJGzYMhIV5HoTnQzEbg=;
+	s=k20201202; t=1728323246;
+	bh=ff/z/zigLFkYNhiwnWrYtLR5miZ/jrOnAhIs4aV92IY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=igoMOqCWu8ODxIM6O5oGy1iKBlCzoqE7xugmBWoDpYn+GQiQGhK/gEUrp0r5lHWTh
-	 qGgDzwbjzvaadZWTWutNbts0Z5EW200Fzp+EALxQDCH123A/S/mBeZKOtT7onn4wG1
-	 UWimbEf9pXf7x8wYo12dCyfp0IIyVACrf3WtJzkvlKMMmHMIZLOn+P338OuuK9jLWW
-	 GSBkEbXN4+sLkWplUSjD8hB3sWwnbvpoPW517Iz5mrBTnjWedCBw76TVVVWQcgY4QU
-	 nmBC1j7DetG1lz6IpbXHPAt8UW99/gm4Ft2zPsMcJ36OG4AQo5t/hxBlQhldmCVCpX
-	 VpqgNTJnMN3rQ==
-Date: Mon, 7 Oct 2024 10:39:09 -0700
+	b=M8JKvt1TCSsK8vqmTbTfMJBIkfrAZS6sGeF7zk7k3iCg+TvMtbQviUpJKdObRCmD+
+	 yzKpWnDLNVTByG5YtGieRrkIYVoKno9/XmJm/1FXjbY2aVVSfikkScB2YFa80EuvIU
+	 UfSspsZABPuaLhqBRmVvPL2KVObH2u66WAczG1pny9TOf514P6gvy151lxqgqXqHOu
+	 zT8rJ+VgdgPDEL1bs67ygqE1IcafeubtrDoLgCSM5spDvXmaLLWVJ3rLxQZSvfFuV1
+	 U997c1FW2v1/DGEdgzMgqaUPWjTuzhcrm8vc8MfgYmwjB2GscVmaiGsjgZeSd+AWcg
+	 jx9jwzIuMkTUw==
+Date: Mon, 7 Oct 2024 10:47:24 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Wardenjohn <zhangwarden@gmail.com>
 Cc: mbenes@suse.cz, jikos@kernel.org, pmladek@suse.com,
 	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests: livepatch: add test case of stack_order sysfs
- interface
-Message-ID: <20241007173909.klwdxcui6slmod2a@treble>
-References: <20241007141139.49171-1-zhangwarden@gmail.com>
+Subject: Re: [PATCH V4 1/1] livepatch: Add stack_order sysfs attribute
+Message-ID: <20241007174724.dxzm3vooewzkke7l@treble>
+References: <20241007140911.49053-1-zhangwarden@gmail.com>
+ <20241007140911.49053-2-zhangwarden@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -59,41 +59,25 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20241007141139.49171-1-zhangwarden@gmail.com>
+In-Reply-To: <20241007140911.49053-2-zhangwarden@gmail.com>
 
-On Mon, Oct 07, 2024 at 10:11:39PM +0800, Wardenjohn wrote:
-> Add test case of stack_order sysfs interface of livepatch.
-> 
-> Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
-> ---
->  .../testing/selftests/livepatch/test-sysfs.sh | 24 +++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/livepatch/test-sysfs.sh b/tools/testing/selftests/livepatch/test-sysfs.sh
-> index 05a14f5a7bfb..81776749a4e3 100755
-> --- a/tools/testing/selftests/livepatch/test-sysfs.sh
-> +++ b/tools/testing/selftests/livepatch/test-sysfs.sh
-> @@ -19,6 +19,7 @@ check_sysfs_rights "$MOD_LIVEPATCH" "enabled" "-rw-r--r--"
->  check_sysfs_value  "$MOD_LIVEPATCH" "enabled" "1"
->  check_sysfs_rights "$MOD_LIVEPATCH" "force" "--w-------"
->  check_sysfs_rights "$MOD_LIVEPATCH" "replace" "-r--r--r--"
-> +check_sysfs_rights "$MOD_LIVEPATCH" "stack_order" "-r--r--r--"
->  check_sysfs_rights "$MOD_LIVEPATCH" "transition" "-r--r--r--"
->  check_sysfs_value  "$MOD_LIVEPATCH" "transition" "0"
->  check_sysfs_rights "$MOD_LIVEPATCH" "vmlinux/patched" "-r--r--r--"
-> @@ -131,4 +132,27 @@ livepatch: '$MOD_LIVEPATCH': completing unpatching transition
->  livepatch: '$MOD_LIVEPATCH': unpatching complete
->  % rmmod $MOD_LIVEPATCH"
+On Mon, Oct 07, 2024 at 10:09:11PM +0800, Wardenjohn wrote:
+> +++ b/Documentation/ABI/testing/sysfs-kernel-livepatch
+> @@ -55,6 +55,15 @@ Description:
+>  		An attribute which indicates whether the patch supports
+>  		atomic-replace.
 >  
-> +start_test "sysfs test stack_order read"
-> +
-> +load_lp $MOD_LIVEPATCH
-> +
-> +check_sysfs_rights "$MOD_LIVEPATCH" "stack_order" "-r--r--r--"
-> +check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
+> +What:		/sys/kernel/livepatch/<patch>/stack_order
+> +Date:		Oct 2024
+> +KernelVersion:	6.13.0
+> +Description:
+> +		This attribute specifies the sequence in which live patch module
 
-At the very least this should load more than one module so it can verify
-the stack orders match the load order.
+"module" -> "modules"
+
+Otherwise, looks good to me.
+
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
 -- 
 Josh
