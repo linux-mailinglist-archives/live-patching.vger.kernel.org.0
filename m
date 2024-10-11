@@ -1,88 +1,81 @@
-Return-Path: <live-patching+bounces-732-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-733-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1EBDD999F22
-	for <lists+live-patching@lfdr.de>; Fri, 11 Oct 2024 10:36:41 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E7575999F65
+	for <lists+live-patching@lfdr.de>; Fri, 11 Oct 2024 10:55:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B4AB71F22398
-	for <lists+live-patching@lfdr.de>; Fri, 11 Oct 2024 08:36:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 235D71C20F46
+	for <lists+live-patching@lfdr.de>; Fri, 11 Oct 2024 08:55:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A5A6520C465;
-	Fri, 11 Oct 2024 08:36:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3899320C46B;
+	Fri, 11 Oct 2024 08:55:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Nc9IbjEY"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="HoUf0a9D"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A991F20B21F
-	for <live-patching@vger.kernel.org>; Fri, 11 Oct 2024 08:36:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35A4D20ADE7
+	for <live-patching@vger.kernel.org>; Fri, 11 Oct 2024 08:55:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728635779; cv=none; b=r8pH7MwBpbBQqTCywPZ+GvpYS08+Ju4p7ctK8xBgKofmCw7tjkhOB2cvm8QcnPBdwnVE8rERUmmenhAz7tI94MSKgcOpvMkYlCHBmrgtpHWucRt3Ff8T92E6xyDmPNzn6BlUQizc81SiokC2Q5qCrfBXRlwTnSG04p3BQKLV9T0=
+	t=1728636920; cv=none; b=mq/3ZUNyo3YxENKBXr0mDmjYzGE+yvrcyersTGqa1UkxwPMbORnbAk0ezW991EGu7d0guClHomCyAnwemp98av+zKNxH41BIvIMK6HACF/fDLCgovXbPWXcUtt7esK5+IRF7OXIJLobQ3F+MfRZDS3yjUqxrplmJjdk+C86gxKI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728635779; c=relaxed/simple;
-	bh=aBiqM8PVcm5Z7jP1wZPQDoMh/uEmbH4eGzzLry+D1WU=;
+	s=arc-20240116; t=1728636920; c=relaxed/simple;
+	bh=ZaZIZPL75FN7F2Xka8N1vKtFdsaNKv70SY2RDWflhuk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SAxuH0u5JEWYRjPKfh9po423aZsUvIHtK+Ux5ocKEY3AyHs1uUv0LIzMRgUbjL6v1Bau+i6gbMQ+gpXKs2HrEYpLy9pK4waYzn3zQIfBnQrkvdoA/bYSIIsGjPlhiLi3LKu6V8FEVjleYZXU42Gm077aW72uXE6zFfU2AFZE5jY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Nc9IbjEY; arc=none smtp.client-ip=209.85.218.42
+	 Content-Type:Content-Disposition:In-Reply-To; b=n/e+ohcDSOHS9YSAxiiVJvU5AOf3IWvYjkbM20Ct/vXO130zyp5FKDma8kfb0mA2rugA6Yy0YQMkv4ghvIwUE6WxEdccQtZVdJaWnvG5IO1rtgkFYc7teF6T0gM3fPqauQh6rzh9zXqN8mADmCwrkPvay1L4WV2bJXnwcG94OZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=HoUf0a9D; arc=none smtp.client-ip=209.85.208.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a83562f9be9so218768066b.0
-        for <live-patching@vger.kernel.org>; Fri, 11 Oct 2024 01:36:17 -0700 (PDT)
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2facf48166bso19098091fa.0
+        for <live-patching@vger.kernel.org>; Fri, 11 Oct 2024 01:55:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1728635776; x=1729240576; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1728636915; x=1729241715; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kOgl3CHUa2RGJfMMF6MlgKXjPoHKnNyo6jxvFHKTMkw=;
-        b=Nc9IbjEY/VwUuoJTSFKxn5pfj5/+yY0/o8jAPC2t/hpDIRSkibFew4tVgsuH82gZnI
-         fOFm6iARwph93eWymY9jpFFia9GAusuYTZgzE8DnMTye+M/hyMnntEfzkdL08NNquIHD
-         wmgJwId5jcJSDrOonFPqR9ZgPAqjvQedG43iYYh4+FqnGYvJ5dqVbD4FzxWapoMEC+Yw
-         AMCiftceONGfg09oTQgRp+k90vaJ6utX0L2Hx8NPzzg2Wp3b3OPHps/m/6RKoJnxnr69
-         Llys8ABqYqoQAyBx7+g6zZ//SZgjIOw6sTCH33EGjiiPoeZPXslSJ+0rhG3oT+Nh+Rfr
-         +mgg==
+        bh=X7wBNfh83lXnA+3o4O/+GyuwzB4d/XfOcAHO7ievXKU=;
+        b=HoUf0a9Dtc7XjwAxoZ+UrNfBF/f2x6stKUf/9oej7GGTjfurylQd1Wt208e/pLhfr/
+         oJOkbe8om3izCp8Ao2M8Xn1ELpXglGm3UPV4NiKcv1nvNEQcQHYAzK8lxsrrqnYcbNPo
+         VoflyiMnmaTcvqVzm5WLebfwMvIaDqkTMslmOsD1nIq9/zaOpZXfQX6gds0bhM8QF2Zb
+         CMjZoxcEhBZhBKQhaYdF/JH+xX1zk76Z1yHi/Cj9U7blijssbGByCQ5enHU2hXyI8cy4
+         VaT/QXDmitXfR9tG3otxacoldvva5FU9L9GmnmDqKh6f3nloMFPMpwENmF1iFZNXQGFF
+         W9Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728635776; x=1729240576;
+        d=1e100.net; s=20230601; t=1728636915; x=1729241715;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kOgl3CHUa2RGJfMMF6MlgKXjPoHKnNyo6jxvFHKTMkw=;
-        b=aQvP0wyIL3bZZ6IeUBaT/hsB38haINcM/l05duX+9IRTcz+9IowdVDq+O14NlbpGhM
-         DDXbOAqY+tPGEpjEJ7iezsEMEhVAfYPXtbxxrzdCQMlQTMX2WTcT8HvE4WhDnWuSkCK2
-         Nzl6dyZgaHMsImnZENS19Hlt2hW3KbmA7ZiOSqrvsy/2f3meLl3V38MluIyWTG/KN92c
-         bawfWSlCulAIMgQvZzRVzEYGZkMQcw3Ccxgs8P2tHO1CCBxMjESf9aFEcObSf2jcXwbe
-         tTUamOWOjnV3L428AQtM5dVfFJFWE/4bM5EsSLJjlKREAr6DBlz9f3lElYkJp442fJuf
-         mg8g==
-X-Forwarded-Encrypted: i=1; AJvYcCUh0H4cgg9VW06kxQWu/1ae2TTXrbQQG9DAOK4htw9o2Gy5139tAS/AtTgYSTgElRxkoqwNROuvMRV6r5lM@vger.kernel.org
-X-Gm-Message-State: AOJu0YyvPHTZRz9lvFJlPSfSgwPykSKVFIln4ukgmMmYYlEDEsTS8bJ0
-	Yew/xaE8kq8CMb+L59fDt/JuAK8d0tF2LAbAEJb/MTt0ByhRzu3T78pafqc8FBs=
-X-Google-Smtp-Source: AGHT+IFvJuP7SdsgtDUHmIDRgUFlExBbIuZjhbpGZ+W7e+tlcgqMvjbNUp15ebPcuj+Ssox222eLnQ==
-X-Received: by 2002:a17:907:7286:b0:a86:7ba9:b061 with SMTP id a640c23a62f3a-a99b975e6a0mr148209266b.64.1728635775968;
-        Fri, 11 Oct 2024 01:36:15 -0700 (PDT)
+        bh=X7wBNfh83lXnA+3o4O/+GyuwzB4d/XfOcAHO7ievXKU=;
+        b=CxiZ7ERwMVUetUb7Y9RJd+Dnn2GFXhuSFZMYPtwSuJotFC0bNT0GXs5ZnnitRGSDNm
+         N1UehAUqV5mioE+LeC1s9QomL64IhjjqIYXVMd9jsMqF2e/7Wv58uJKM+v+WEXaA+8C/
+         Srw8yRjsA8k24wd30mOUFXH0qMyPXBjCA7qb6pkGXmLk94KZPb7UPDnMEJ91B2fF2/Va
+         IylVWtf92u30pAEhNfq2LTULSmeETz/SMeiduEhBukczWs3XOEEz6mXBcmVmtP3UbKyH
+         PP3P3OirqCo6zNlx+VfceJPfMZfZIcrBOstTxl9IpkRu22TbGaO7uOfMVDicHxdZUF7K
+         CUDw==
+X-Forwarded-Encrypted: i=1; AJvYcCVTjmHkLH9n5J32L9qHMwahw6gSAyCvTVAc+CxgSlqP/s/J9PJ1eqAcb6tO2F44X6a/AK/NjzkF3xiE1QWJ@vger.kernel.org
+X-Gm-Message-State: AOJu0YwvNyXD+kz8csTb6xtDPcrT4yCHxHKtZyQiMcrCJktVOFWS5zZH
+	TOkPWO68RCL7F/uGlj9USbi4GHauyMD3dPYfmUM53jBf/MBg8/1VDMi33NskEEM=
+X-Google-Smtp-Source: AGHT+IH6smBqfgsJtAybZTxVKbMCj9FyiXCKYp1jarZHpl/dwusozZ/5eF82l5M+CGUTW/K/5X4FGQ==
+X-Received: by 2002:a2e:a988:0:b0:2fa:cf82:a1b2 with SMTP id 38308e7fff4ca-2fb327b22demr9136071fa.31.1728636915325;
+        Fri, 11 Oct 2024 01:55:15 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a99a7f24574sm185786766b.50.2024.10.11.01.36.15
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5c937118d39sm1700349a12.21.2024.10.11.01.55.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Oct 2024 01:36:15 -0700 (PDT)
-Date: Fri, 11 Oct 2024 10:36:14 +0200
+        Fri, 11 Oct 2024 01:55:15 -0700 (PDT)
+Date: Fri, 11 Oct 2024 10:55:13 +0200
 From: Petr Mladek <pmladek@suse.com>
-To: zhang warden <zhangwarden@gmail.com>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Miroslav Benes <mbenes@suse.cz>, Jiri Kosina <jikos@kernel.org>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] selftests: livepatch: add test cases of stack_order
- sysfs interface
-Message-ID: <Zwjjfpb0hSSE2Ap4@pathway.suse.cz>
-References: <20241008075203.36235-1-zhangwarden@gmail.com>
- <20241008075203.36235-2-zhangwarden@gmail.com>
- <0d554ea7bd3f672d80a2566f9cbe15a151372c32.camel@suse.com>
- <A35F0A92-8901-470C-8CDF-85DE89D2597F@gmail.com>
- <20241010155116.cuata6eg3lb7usvd@treble.attlocal.net>
- <CDB9AA87-5034-40BB-891B-CC846D7EEBDA@gmail.com>
+To: Wardenjohn <zhangwarden@gmail.com>
+Cc: jpoimboe@kernel.org, mbenes@suse.cz, jikos@kernel.org,
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V5 1/1] livepatch: Add stack_order sysfs attribute
+Message-ID: <Zwjn8YzCZFdoCDBB@pathway.suse.cz>
+References: <20241008014856.3729-1-zhangwarden@gmail.com>
+ <20241008014856.3729-2-zhangwarden@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -91,34 +84,35 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CDB9AA87-5034-40BB-891B-CC846D7EEBDA@gmail.com>
+In-Reply-To: <20241008014856.3729-2-zhangwarden@gmail.com>
 
-On Fri 2024-10-11 09:51:07, zhang warden wrote:
+On Tue 2024-10-08 09:48:56, Wardenjohn wrote:
+> Add "stack_order" sysfs attribute which holds the order in which a live
+> patch module was loaded into the system. A user can then determine an
+> active live patched version of a function.
 > 
+> cat /sys/kernel/livepatch/livepatch_1/stack_order -> 1
 > 
-> > On Oct 10, 2024, at 23:51, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> > 
-> > Maybe add a replace=[true|false] module parameter.
-> > 
+> means that livepatch_1 is the first live patch applied
 > 
-> How to do it? 
-> Isn't the way we build modules using make?
-> How to set this replace value?
+> cat /sys/kernel/livepatch/livepatch_module/stack_order -> N
+> 
+> means that livepatch_module is the Nth live patch applied
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Suggested-by: Miroslav Benes <mbenes@suse.cz>
+> Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
 
-You could find inspiration in
-tools/testing/selftests/livepatch/test-livepatch.sh, see
+Looks and works fine:
 
-load_lp $MOD_REPLACE replace=0
-
-vs.
-
-load_lp $MOD_REPLACE replace=1
-
-You could more or less copy the "multiple livepatches" and
-"atomic replace livepatch" self-tests. The new tests
-would check the "stack_order" sysfs value instread of checking
-whether /proc/cmdline and /proc/meminfo are livepatched.
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Tested-by: Petr Mladek <pmladek@suse.com>
 
 Best Regards,
 Petr
+
+PS: I'll wait for the selftest before pushing this change.
+    It would be nice to send both patches together in a single
+    thread.
 
