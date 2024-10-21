@@ -1,80 +1,80 @@
-Return-Path: <live-patching+bounces-741-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-742-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 57BC39A72AB
-	for <lists+live-patching@lfdr.de>; Mon, 21 Oct 2024 20:55:58 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7EFEC9A72BC
+	for <lists+live-patching@lfdr.de>; Mon, 21 Oct 2024 20:57:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 840881C224D8
-	for <lists+live-patching@lfdr.de>; Mon, 21 Oct 2024 18:55:57 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 1A283B20F04
+	for <lists+live-patching@lfdr.de>; Mon, 21 Oct 2024 18:57:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 860241FB3E0;
-	Mon, 21 Oct 2024 18:55:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E67591FBC98;
+	Mon, 21 Oct 2024 18:57:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="B5LcRR2R"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="a56qPINK"
 X-Original-To: live-patching@vger.kernel.org
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9017D1FB3C4
-	for <live-patching@vger.kernel.org>; Mon, 21 Oct 2024 18:55:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F33CB1FB3D4
+	for <live-patching@vger.kernel.org>; Mon, 21 Oct 2024 18:57:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729536951; cv=none; b=sVnyvcVGTNQklYuImoC/oJz4lYf7Hm11nskr9l57wB8a0h4dcWCWBQ8UJX+NLa5zKx/TGY7eq78vWN3SRVl/IgcJrON3dX9HszYB0Wi6IHXlaFED3Y869VOU7uV8w0mkXy748ZTZYJwdFXVyCR300VRwfjpmKLkKHpq/UqX0+JY=
+	t=1729537045; cv=none; b=CTc0HfO21SYoJS82/YPI8Hu79doiCmNR7ByQcgjfVNMsdr7Vg52P3RC1FaKjHhVxrKif2AP2lSMlajzOBe08WfibrfP/zrrqqaK+1zZhSZZZlELpB/ApMx5Nu091+eaHLgY6d3QmSmEgdVN+Mv44GTnX3ZH+Qcy+m0//gMOKl7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729536951; c=relaxed/simple;
-	bh=P94yeCZ1yUprg6wEzxiZ9AkuF/1MTkg1vdVbCLsHZ0k=;
-	h=Message-ID:Date:MIME-Version:To:References:From:Subject:
-	 In-Reply-To:Content-Type; b=BWEjZfhol9NsLXIPLeamRbounCV9MhBQpJPwPks8bvAoLx86PNR0njj4OJ8Hdxtr1XvzN7rF43ry1gmNeAK9gbFhWkEQVl+Cv7MFmqfTjse1A9Lv72mjAkBVbsIwwWdfvIXIUUZUNbVCCPMvktPtSr35ENHD++NhDpGSC3cXpXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=B5LcRR2R; arc=none smtp.client-ip=170.10.133.124
+	s=arc-20240116; t=1729537045; c=relaxed/simple;
+	bh=Poj40m4XWjZmZW67V/R29Zyaoz6g/1vZbJUcwa8dRBw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=OsWIh37r7tAoXltubIwnvE8LPn1QP0QM1SylrMOjrIxcpNcP4TWDpBDflCX0c5+URvGQ1KAs+/thIPj6xm1T2P1iIdmZSP+rL9svcbYerhxCWDPvWzD5cxdAz2I/g82F37DWlUuVdAYq4cr8B8BE1lGRL/gdCIbVBAdTD5pK70Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=a56qPINK; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1729536948;
+	s=mimecast20190719; t=1729537036;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=XBkJ6hUVM4B8eeUJkxTpyoBu12NtgYMeTdK6LmP0Sx4=;
-	b=B5LcRR2RrlE2C7ogZmzACH/UrZo9fH3WPy40GyB1Qmx9q/gfF1C8Tl7pFJSNwNZGMkW8+E
-	0owAMNXJLI/wae7kI+ZXfKLBilwHo1YaKE72m4a01NtVmjDA0i6kyjBgqkFeR4TpQI6wWu
-	Bp30LuzifY178TiGqbEfd4DZJAGGiz8=
-Received: from mail-ua1-f70.google.com (mail-ua1-f70.google.com
- [209.85.222.70]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=7JVcG4b9DpqHn6ILLTpsyd6A8EriJ9ALphdfVTy5yis=;
+	b=a56qPINK0Q2cPJ0pOUaiw3DRx+WSwszRfXnkyTnpOuveIhYFM7fXGRG2ZDOZhb9xtpu5z/
+	768rDncxYRZhPECVdPvBUcvYmxzLe/yuqMAAU+16ory1gJua/sdb/ZHanWmjzCjTQ5AJmQ
+	DkprC3ev2Qw+vZvSvMFu+xi187MAQ3g=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-128-P_3GynA0ORmOHcHPKC_3qg-1; Mon, 21 Oct 2024 14:55:47 -0400
-X-MC-Unique: P_3GynA0ORmOHcHPKC_3qg-1
-Received: by mail-ua1-f70.google.com with SMTP id a1e0cc1a2514c-84ffd8ea8a8so811887241.2
-        for <live-patching@vger.kernel.org>; Mon, 21 Oct 2024 11:55:47 -0700 (PDT)
+ us-mta-484-KhMR1BsINRCPHl1Yls7bmQ-1; Mon, 21 Oct 2024 14:57:15 -0400
+X-MC-Unique: KhMR1BsINRCPHl1Yls7bmQ-1
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-6cbd2cb2f78so104767866d6.0
+        for <live-patching@vger.kernel.org>; Mon, 21 Oct 2024 11:57:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729536945; x=1730141745;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:to
-         :content-language:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1729537035; x=1730141835;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XBkJ6hUVM4B8eeUJkxTpyoBu12NtgYMeTdK6LmP0Sx4=;
-        b=lesCtBqbSGpps7QUKkTzJ/vM3icgjswL8jHhDbNkOcmrBADZlcbvcO2mLG5tvlQP0Z
-         wlFoJlUH7NeOcMMHVsyKs9rz/bRWu5xk7jsDwfcCnMJLEelAAiLiWMzSYHmG/cmKMrtE
-         tj/v2htXt793ZEgG92PsHdQ2mmVn56RtSrlcgzdWByq/mj6mWmOyXOTCzvC0XflSSyk9
-         R/zSiQl59zx6NwFFvP1BnaNu7Cr6cTwjm86ejPaFpvn4OTHmQFg8OC0E1KZnmlQ8kjH9
-         x4ef45WtqQMA52QpiRGpKyAnGH3P1k6CHyNc8GAcF9ZfLV3IyZt1QOjnxA8n+y5nLSrQ
-         03Fg==
-X-Forwarded-Encrypted: i=1; AJvYcCVBynw3bRJlUE4vicTxgdRSE2A+z4ovdE24EDLRh+sriQWeZwAZnPhzanN8KHrQqEd0BHztk1G0QzEsQA/h@vger.kernel.org
-X-Gm-Message-State: AOJu0YxAFazO1oM8fs6T0LbTVVULfdRB6DQ+ffZwTtfM2NmfB+lqIwdb
-	SpV1+IyMI7ev/gglRWn4eLNlSJ7t2B0gg2AVKpM9/P4QWvmwEG5jSoftSmamqvUnh325zDbb34M
-	sX3OuVTidNxkrjRaqf4iFT5AAINMRvuM9CaVmZP0ZhC70uC2R5aC2inVjiA1hKEUJHQhp1ZE=
-X-Received: by 2002:a05:6102:38cb:b0:4a3:c516:3173 with SMTP id ada2fe7eead31-4a5d6ae510bmr9645983137.12.1729536945683;
-        Mon, 21 Oct 2024 11:55:45 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFidBydUUsOgzIfYFVhv13IqsAmtwVFb+t47/0xhYXC+BA6NbCa2gpPvYQ9JU6flUBkSbmWjA==
-X-Received: by 2002:a05:6102:38cb:b0:4a3:c516:3173 with SMTP id ada2fe7eead31-4a5d6ae510bmr9645967137.12.1729536945375;
-        Mon, 21 Oct 2024 11:55:45 -0700 (PDT)
+        bh=7JVcG4b9DpqHn6ILLTpsyd6A8EriJ9ALphdfVTy5yis=;
+        b=HqHEo6HyqJ23BEzM/w4OLPx6Mumm+SAV81IdGnDsRE2jJikpV835lg4RDyVB6qEcU5
+         xSrcy9SF99P21hWcQ8ecidIJ+fxQYCQgZPFcguB47ySGCTpaEXTD9amCqmRAAdTVGAgM
+         xb4NV3lLRPwWOflg4iHooTlR4cfLn7XbKk+z/eEFUpTClWFq2JVfbs7FCtlGWa997gkj
+         Z2WVfma721GSo2Ff5SZnS8CgDi5ovnKIlaTVyhwJICEvH53Oh1c07ZaOAqSbEELFNYWG
+         5x5R9jqRzeZpthD29o74NWlAaEFyeQmAFXK/nbUm1ykmuJw1ca2anIn3Xe9U4KKOIkbt
+         a2gg==
+X-Forwarded-Encrypted: i=1; AJvYcCVuq5D1HElH/wf4Cpe56N3FyXKZJmrPaq43oCAaDJLcNchLBPZkrwytdRyLAg6muHw7fwAgzp6IUCBrsB+A@vger.kernel.org
+X-Gm-Message-State: AOJu0YyeySfnQVwNJZSrR5xod5UgrmxNRvaQvaR5zcJ0fWlC3m3PANx5
+	0uqPKQDj6aLdChGcw/15p/66lMu3FfnFhEtg4wvgo+EUQjJCWwL3gKDPLvVjPefVfu+jHWZBECQ
+	9s5L84DHF1JM1unm1wAY2hvpRilPyZfMgLi/OuWyO6JmmdE+Xh68VJWUG8Z5SXY8=
+X-Received: by 2002:a05:6214:2dc7:b0:6cb:81ba:8ac1 with SMTP id 6a1803df08f44-6ce211dd0b9mr13770826d6.0.1729537033898;
+        Mon, 21 Oct 2024 11:57:13 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFhRNbKYg3FJuhV3JjrTQoeIMJwfDsagQ1cKT7l7Ble51qnCXFHBL3v35PoAgmawwvbY02KeA==
+X-Received: by 2002:a05:6214:2dc7:b0:6cb:81ba:8ac1 with SMTP id 6a1803df08f44-6ce211dd0b9mr13770476d6.0.1729537033558;
+        Mon, 21 Oct 2024 11:57:13 -0700 (PDT)
 Received: from [192.168.1.18] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-460d3c6398bsm20764881cf.30.2024.10.21.11.55.44
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6ce008fb90dsm20433686d6.43.2024.10.21.11.57.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Oct 2024 11:55:44 -0700 (PDT)
-Message-ID: <da00cde9-ca61-266d-2185-7664c1bade68@redhat.com>
-Date: Mon, 21 Oct 2024 14:55:43 -0400
+        Mon, 21 Oct 2024 11:57:13 -0700 (PDT)
+Message-ID: <94cddfbb-bbef-73cc-2bb6-ad7474df08bf@redhat.com>
+Date: Mon, 21 Oct 2024 14:57:12 -0400
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -83,33 +83,65 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.15.1
+Subject: Re: [PATCH v5 0/3] selftests: livepatch: test livepatching a kprobed
+ function
 Content-Language: en-US
 To: Michael Vetter <mvetter@suse.com>, linux-kselftest@vger.kernel.org,
  live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20241017200132.21946-1-mvetter@suse.com>
- <20241017200132.21946-2-mvetter@suse.com>
 From: Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [PATCH v5 1/3] selftests: livepatch: rename KLP_SYSFS_DIR to
- SYSFS_KLP_DIR
-In-Reply-To: <20241017200132.21946-2-mvetter@suse.com>
+In-Reply-To: <20241017200132.21946-1-mvetter@suse.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 10/17/24 16:01, Michael Vetter wrote:
-> @@ -246,12 +246,12 @@ function unload_lp() {
->  function disable_lp() {
->  	local mod="$1"
->  
-> -	log "% echo 0 > /sys/kernel/livepatch/$mod/enabled"
-> -	echo 0 > /sys/kernel/livepatch/"$mod"/enabled
-> +	log "% echo 0 > $SYSFS_KLP_DIR/$mod/enabled"
-> +	echo 0 > "$SYSFS_KLP_DIR"/mod"/enabled
+> Thanks for all the reviews.
+> 
+> V5:
+> Replace /sys/kernel/livepatch also in other/already existing tests.
+> Improve commit message of 3rd patch.
+> 
+> V4:
+> Use variable for /sys/kernel/debug.
+> Be consistent with "" around variables.
+> Fix path in commit message to /sys/kernel/debug/kprobes/enabled.
+> 
+> V3:
+> Save and restore kprobe state also when test fails, by integrating it
+> into setup_config() and cleanup().
+> Rename SYSFS variables in a more logical way.
+> Sort test modules in alphabetical order.
+> Rename module description.
+> 
+> V2:
+> Save and restore kprobe state.
+> 
+> Michael Vetter (3):
+>   selftests: livepatch: rename KLP_SYSFS_DIR to SYSFS_KLP_DIR
+>   selftests: livepatch: save and restore kprobe state
+>   selftests: livepatch: test livepatching a kprobed function
+> 
+>  tools/testing/selftests/livepatch/Makefile    |  3 +-
+>  .../testing/selftests/livepatch/functions.sh  | 29 +++++----
+>  .../selftests/livepatch/test-callbacks.sh     | 24 +++----
+>  .../selftests/livepatch/test-ftrace.sh        |  2 +-
+>  .../selftests/livepatch/test-kprobe.sh        | 62 +++++++++++++++++++
+>  .../selftests/livepatch/test-livepatch.sh     | 12 ++--
+>  .../testing/selftests/livepatch/test-state.sh |  8 +--
+>  .../selftests/livepatch/test-syscall.sh       |  2 +-
+>  .../testing/selftests/livepatch/test-sysfs.sh |  8 +--
+>  .../selftests/livepatch/test_modules/Makefile |  3 +-
+>  .../livepatch/test_modules/test_klp_kprobe.c  | 38 ++++++++++++
+>  11 files changed, 150 insertions(+), 41 deletions(-)
+>  create mode 100755 tools/testing/selftests/livepatch/test-kprobe.sh
+>  create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_kprobe.c
+> 
 
-Nit: syntax error here, should be (quotation fix and $mod is a variable):
+With the small syntax error fixed in unload_lp(),
 
-  echo 0 > "$SYSFS_KLP_DIR/$mod/enabled"
+Reviewed-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-With that, the test works for me.
+Thanks, Michael, this is a good test to add to the suite.
 
 -- 
 Joe
