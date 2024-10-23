@@ -1,107 +1,122 @@
-Return-Path: <live-patching+bounces-754-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-755-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 14D8F9ACBBF
-	for <lists+live-patching@lfdr.de>; Wed, 23 Oct 2024 15:55:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C27679AD2EE
+	for <lists+live-patching@lfdr.de>; Wed, 23 Oct 2024 19:29:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id C01781F220F1
-	for <lists+live-patching@lfdr.de>; Wed, 23 Oct 2024 13:55:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F29051C211BA
+	for <lists+live-patching@lfdr.de>; Wed, 23 Oct 2024 17:29:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 168BF1ABECF;
-	Wed, 23 Oct 2024 13:55:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 92E371CDFB9;
+	Wed, 23 Oct 2024 17:29:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KyX2Cz0Z"
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="a1i4A9yg"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A90831A7264;
-	Wed, 23 Oct 2024 13:55:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0177C1E51D;
+	Wed, 23 Oct 2024 17:29:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729691744; cv=none; b=ONYlJWPCSz5A0Kgs0kOV+vrJEb0HZ8q1eSn70xYhxKStxxz6+YYrd5K8+BuxZHVxCyLW2siwjoqvSd5BxibZESmAwtHSFJCD1YDTNwJBF19VPEGlHwQnKztnCu8DETLwko37m1NUyE1REf03JQBOGthDxELAb4pg4Stkigc+yiU=
+	t=1729704545; cv=none; b=FKGcoOhPH5jAXur/gvFtzlfZ6c5GNKmy1NN71oKzg4un23S/iPI9dXClWBqeRWZH1AKtEaMwrLy4rUwIfEJlTVQRHZZmS5mJuBoSihEdA0TWjut17Pcu/W6T2O5cTKk/mrOKqjfLfISuc+nZMsDcHn4ohJytxPcHSJFPiTbb8RE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729691744; c=relaxed/simple;
-	bh=DaS/TnXxKUc6HjMCIGd2U5rLKVmcwNq2jWsJ5Z7TkVc=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=p6M3Xrpv5XagBlGedOFWyg0idI3SltG/mxyoyTjQoWR9WEbyLEE7L5fw3BMAg61MX0C2iltzKrkor7L/SL5noptkmXnNC8vxu2FD2iiJsDz0XS3shd5Z957qtbuAacPZbLI/jy/1aSipPaEvQWd/pOvwJi3Q53FMCi3n+IGpPOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KyX2Cz0Z; arc=none smtp.client-ip=209.85.216.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-2e34a089cd3so5558136a91.3;
-        Wed, 23 Oct 2024 06:55:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729691742; x=1730296542; darn=vger.kernel.org;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Q/1eAoSFUi88G9yBoAUjeJHtlikszBn/3aVYB3y+C8I=;
-        b=KyX2Cz0Z7eXdadm1JOiqyLhuR3ZgJfurQCn/VsaNUjJGRXp/8ajhN5cql+nVNrjdsI
-         JxNRGxylL5s3zgzj0fsW+vaAlPX9OWKB3Ov+LLF2EonvPHhcT1GmzyTev8c0Rd6EpZB5
-         YRGc2CLBPDB2GFbD0Q4BIEeUvKTxBp4vcUUioewnA+rT48rPx7YxRFaJASsbOW4lih48
-         i897Ur2PffiwwOH+AP+JFuzH6DIdZXoHR7FsainprcEyeLuh5zJjydn7S3FJj5Z0xGb7
-         0yhdp1FTfdEWQk5AhtqjbNSNcxZ7DOW8wsJVseUu7fMi538Zwx9GzDDpZ4thnYMoHajW
-         HiEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729691742; x=1730296542;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Q/1eAoSFUi88G9yBoAUjeJHtlikszBn/3aVYB3y+C8I=;
-        b=vImQ7CV2XNxCcUjCXhiR1SUYNDVhjDkqVupkSdD3ZMP8mfvzYP3F47TcDGiCI8FOHY
-         1B0Wj72jOYebIMXh1cEGYKW0Rcjy5Dwo9DfFshEQPA3p+/SBnvayL7w7Ey3LKdT9IbyH
-         141shYQ4Jb0/A4B8oAmzdn4DBHmeHkKoD4gHOWb4iY3117/fmiWAy5jRoMQw6w6Pg0lm
-         xwgRcH3S5eqJTq+5Rf1V/xWp/xK3niODFqmGJGB5UJ6O9l4+uBXDlgASu5HyGL0LHKx/
-         OQ7dlanlYRAWshZdhFf16uYuypNvmNUkjR/d8tS2bDOyWlbYXpImxfBiVnFF/dNuTvBn
-         eQoQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXMbimQc7VpBvy9sPA8DYkZEy6a/ytF7AxjcmeKbW9aXD+Fl13EQEH+5uJ8e3C2fTZ1R4lRRSDOvKF7bZY=@vger.kernel.org, AJvYcCXQXDM2v694gEqO1ENQjg2lNv8/txv3tyNpdpel1mK8vlthcdBATqnBdGg1yzhI79q/wrCWOnJ1P1b/M1RQVg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxZM478tOeL3Iliok/1hqhfQJlC2wGegp7XwhmE04EU051QoXWo
-	C5p945Xg+EDOacDU18vRKPBGip0VEhqVMSkSj6qdoenGmQIhCBoT
-X-Google-Smtp-Source: AGHT+IGVvk5WyzHaifpVdeL22petjloJfnRcC8R+gbZ6y/Oqp5dvrRVC2JduDmXr0yv0cJ9BVoEbmg==
-X-Received: by 2002:a17:90a:e396:b0:2e2:f04d:9f0c with SMTP id 98e67ed59e1d1-2e76b5dbc24mr2976601a91.13.1729691742066;
-        Wed, 23 Oct 2024 06:55:42 -0700 (PDT)
-Received: from smtpclient.apple ([47.89.225.180])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e76df50b04sm1428055a91.17.2024.10.23.06.55.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Oct 2024 06:55:41 -0700 (PDT)
-Content-Type: text/plain;
-	charset=us-ascii
+	s=arc-20240116; t=1729704545; c=relaxed/simple;
+	bh=k2Bj3VXPR0ZuBfvyPjLK8zR/CYVAAN8k3ytdAnEmoWw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=c0omQgSM19gFIBg+gWI/vS7YSzh19ac/DcqQrUTJl7TMIrzGLQNdnNMgQd/z3TDL28y4ZTd2exTxfviinXYOm2/qS6So/oZqP4UfwkaZ9pRvNV3Jc1GbNj2u/Fm27u65PEW87Qb3+EjgJrbfrLT8cBWGy89ms3WFtjbW8XeYkNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=a1i4A9yg; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49N9xkfL025452;
+	Wed, 23 Oct 2024 17:28:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	3fD3aX3zs17RkkSDvbOeJ48quwFT5oEexv/xr8A200k=; b=a1i4A9ygluEtdPU8
+	j5d1F9tWSvBP2gnqPt7x2SrbEZDnVD3noHOF86qM2xlgYRlFspks/ewRHORBF1cg
+	8fvzZUeCM3xK8io/++eai+HQ8+xmKFIf5vaDr+VgmU7pFSazOjFzjTiwMSqKtsN6
+	JsBYs17BPyo8kLyxIFM4xwHSVpOq/z6ALTtWEErB47w8Lbz7E69zm61sDXJIPuDK
+	1M+69Nl85oUL8t3eZVeG1niMoH5X67fS6g8pJPue19ctEozw4DGoc0YahQ6fJ77t
+	OWV3C0hdmYY/+4l6Bf5dRAyRyQa1Ngg3vAmVTctDQH3YSIxEsoo6V8G/BStIhNwv
+	qfU/hw==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 42em41tyn8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 23 Oct 2024 17:28:51 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 49NHSnVG008769
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 23 Oct 2024 17:28:49 GMT
+Received: from [10.81.24.74] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 23 Oct
+ 2024 10:28:49 -0700
+Message-ID: <368aa911-7a88-4a00-8830-4a183fd6f352@quicinc.com>
+Date: Wed, 23 Oct 2024 10:28:49 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [PATCH] selftests: livepatch: add test cases of stack_order sysfs
- interface
-From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <ZxjuNBidriSwWw8L@pathway.suse.cz>
-Date: Wed, 23 Oct 2024 21:55:27 +0800
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>,
- Jiri Kosina <jikos@kernel.org>,
- Joe Lawrence <joe.lawrence@redhat.com>,
- live-patching@vger.kernel.org,
- linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] selftests: add new kallsyms selftests
+To: Luis Chamberlain <mcgrof@kernel.org>, <linux-modules@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <petr.pavlu@suse.com>,
+        <samitolvanen@google.com>, <da.gomez@samsung.com>
+CC: <masahiroy@kernel.org>, <deller@gmx.de>, <linux-arch@vger.kernel.org>,
+        <live-patching@vger.kernel.org>, <kris.van.hees@oracle.com>
+References: <20241021193310.2014131-1-mcgrof@kernel.org>
+From: Jeff Johnson <quic_jjohnson@quicinc.com>
+Content-Language: en-US
+In-Reply-To: <20241021193310.2014131-1-mcgrof@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <41DE05F9-9944-4BB0-8C17-5FE8939F9511@gmail.com>
-References: <20241011151151.67869-1-zhangwarden@gmail.com>
- <20241011151151.67869-2-zhangwarden@gmail.com>
- <ZxjuNBidriSwWw8L@pathway.suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-X-Mailer: Apple Mail (2.3774.500.171.1.1)
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: hOul45tTK3b2ScIrQNG3txmXPHvd1B2q
+X-Proofpoint-ORIG-GUID: hOul45tTK3b2ScIrQNG3txmXPHvd1B2q
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 clxscore=1011 mlxscore=0 suspectscore=0 phishscore=0
+ mlxlogscore=900 bulkscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410230109
 
+On 10/21/24 12:33, Luis Chamberlain wrote:
+...
+> +gen_template_module_exit()
+> +{
+> +	cat <<____END_MODULE
+> +static int __init auto_test_module_init(void)
+> +{
+> +	return auto_runtime_test();
+> +}
+> +module_init(auto_test_module_init);
+> +
+> +static void __exit auto_test_module_exit(void)
+> +{
+> +}
+> +module_exit(auto_test_module_exit);
+> +
+> +MODULE_AUTHOR("Luis Chamberlain <mcgrof@kernel.org>");
+> +MODULE_LICENSE("GPL");
+> +____END_MODULE
+> +}
 
-What's more, I have open a pull request of the user space tool kpatch[1] 
-to use this new kernel sysfs attribute 'stack_order'.
+Since commit 1fffe7a34c89 ("script: modpost: emit a warning when the
+description is missing"), a module without a MODULE_DESCRIPTION() will
+result in a warning when built with make W=1. Is that a concern here?
+Should we add a MODULE_DESCRIPTION()?
 
-Maintainers who feel interesting in this function can come for a look.
-
-Best Regards.
-Wardenjohn.
-
-[1]: https://github.com/dynup/kpatch/pull/1419
+/jeff
 
