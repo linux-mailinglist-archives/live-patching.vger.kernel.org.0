@@ -1,159 +1,194 @@
-Return-Path: <live-patching+bounces-760-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-761-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 070C19ADF10
-	for <lists+live-patching@lfdr.de>; Thu, 24 Oct 2024 10:24:16 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9C83F9ADF49
+	for <lists+live-patching@lfdr.de>; Thu, 24 Oct 2024 10:35:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 8A19AB210AD
-	for <lists+live-patching@lfdr.de>; Thu, 24 Oct 2024 08:24:13 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 2AF201F21411
+	for <lists+live-patching@lfdr.de>; Thu, 24 Oct 2024 08:35:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18781149013;
-	Thu, 24 Oct 2024 08:24:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B97E19DF7A;
+	Thu, 24 Oct 2024 08:35:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bDEND6vA"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NTUhlUG5"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18D061AB522;
-	Thu, 24 Oct 2024 08:24:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22566189BB3;
+	Thu, 24 Oct 2024 08:35:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729758249; cv=none; b=YJD9VJVEbET4/FEs/SANaLRNGRpBBwKAoOk56cBD58rTn9zVZatvr6/xarEfiG4zYBMnzPlgnmNvTeRYVQpTckd6iMNY00trrf/X5Et3NppxsTxq/qPY+5ccHpg2PGfLv2aq12fvDwZQxc+HhC/SSww6ZScqs7iVYpwqHlvyVsQ=
+	t=1729758948; cv=none; b=PqJvj+1yY+2YwZuCKH2fxQnwYVXNBGeZl+1hwn98g4/vrx5vYzbLYDW/LFwKbd3BsF4QnsPIwxe3y9m5LLN7lbJ9wo3WUyKMmbMdJu+5qEy/Jq7s9ijXjJQZU6nmcF9tqnUj9852JotsdxVbYj9u3hlIhAbCoVWdkX0d5SqIBAg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729758249; c=relaxed/simple;
-	bh=xJzaFngehew0ROGk8JU9U5XSHTCrxFB9RwRYMWIqsj4=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=Vc+w0i+jq2wJJDrR1U0WzHN5JkgsMv8q2RIkThyRpiclIo4KJO8Y1y/CufLASrj5WvAoCW10DZSAxd+6HKzWqne0vYerNSWeQ/lKWODXv2ewhd9z9O6RCdldq5J/zRmOYQv3qZ/47PqEUOl1ryp/q3Qllizc9FZgq6iI46mEoMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bDEND6vA; arc=none smtp.client-ip=209.85.215.182
+	s=arc-20240116; t=1729758948; c=relaxed/simple;
+	bh=+XWpmp0csatu8+IK8+JJJs92Lop968ewAxeK1biaZeM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ip77BlJFItfvikyrxw71CpX6CkPPezOV/4TKkp5OWyMrkwiLlrpD8HK4aW8yGw7BP5YlAgEEvXFq9NQkDW1RbQrLHxYsJilv3HTXJbQCXjc2gdqNlTETHUosYmysjSkSly/URDmfE76SOX2Q1dCokCblOIuP3gj9fyWiIN7ocJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NTUhlUG5; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-7db908c9c83so329529a12.2;
-        Thu, 24 Oct 2024 01:24:06 -0700 (PDT)
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-208cf673b8dso4777745ad.3;
+        Thu, 24 Oct 2024 01:35:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729758246; x=1730363046; darn=vger.kernel.org;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XQNtHPYi7IDVmIRJ5gs3p3G0OUGntsTWUVM054sbtbA=;
-        b=bDEND6vALCkE46f/SoSnwOeKrjmKION8ot5da/Vw1ChMkdqS8umWGtMkmUpqsL44qV
-         VludpRS55TuiIQHTiZUy71S1HEyI0G+S3r0cJkIEhX6gWa/SJjtPB7HJPhFnOOM23iN4
-         wrT7mCNan72jJVBJGQXRLC0uLcIT+VEUl4gRGjtyT4oB6cZfqL2u6o4RdggPfX+xf4QR
-         mFbnrDKpJYU1v4BlDFQ99YKpYZ8WJAkwz9CPDqbJRkX6pBqDAyELl2Dj1hlzcHFjN09t
-         0lqjsmSDFABLfpXOz2w0nKZxd+bfeNbHKkbDwkpkaWwTf5cjrkVRRBNg+S9OIcwny52W
-         J6AA==
+        d=gmail.com; s=20230601; t=1729758945; x=1730363745; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=k/UlxyhCVOV8IRM2oQpaNcL1Tbi1VmLpqeBuOkUbId0=;
+        b=NTUhlUG5WIQkypFFkQZYj56nIvKJqS+nKbCzvccGJJ2BkhCtaGtZmLnJP5EmL25nqi
+         8jbH/cbB9maz5+P0Pe64FGTptEHivezlt+OA1/lsgavmre8xjKGY3sP+qrD6zMlkLvd6
+         LvCCNOe2yNGyfAHozACNQo3bubO4CRPIi5pQ5E/TvzBng0/+g5rJ15Ye/refGEkwXBJD
+         9IsNuq32t6M6+rTieH5DF7bmfdagvRiY6Jh4DVxo0I+fkkOpXcr5M5zhVxqB7EY5c2WO
+         W51qr/8Jl+SyN5cnZnzPN3RbNycHDPpUQuvOrBOo9OG2rB/K+fShiGaWIsUQzGss9KzE
+         Bsjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729758246; x=1730363046;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XQNtHPYi7IDVmIRJ5gs3p3G0OUGntsTWUVM054sbtbA=;
-        b=XN2CroYviEst7JNSgaNkDFgthFY3QkOINdQ7TQWjOHP9wYkIf7bCtWsAnzKtcflVsx
-         YXhMvkkkYofUMylH3gAp4cKbUPj8jUSEERL2woUP1hG1T648O15nudd5kkFhIbs5V5ys
-         QcWBgWqb/fsMGxhivgC4XSSF78nKgo5sxLTnbzEuB4WQLsFH2kw4fYrfgnuY8txy6Ybx
-         rRzmFkH6X6f0nPatjGiY/TlWWYp2p6RCmhA2ssXBy/AiPliuweZPpIdZjc0NAaZRjoy2
-         +v5FHN1q45G+67I+eIrG8KBP0iiXRZXWcYIZJHv9odgENqwyoefBwCWxCFc3v33LwZ6B
-         Lt2g==
-X-Forwarded-Encrypted: i=1; AJvYcCU8BDiEROOipvvsftT3Xvw5ZqnV1rarQw2tBLZE3xVgEhUKhwveST7m1WJZyXLz3qCUzEeluqlqS+LIqkH5wA==@vger.kernel.org, AJvYcCWYzalwoLFrcG1fAjZH1G+xT4ImcyybEvI8tlZSH1+X+ResaugTTjSfK7KsHe/n7Cd+jN+pkLTjfq7SnF0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxe2bjE6I1b3QM71du/I9Uh9tsnwH7B6ZGeAVhV7/O0sVVJlAD5
-	tB5MG2j0uaif5Lr21m4hKzVi84E2itxzlE3NWOESWx8wB6hCw8rv
-X-Google-Smtp-Source: AGHT+IEpijEwb8s8p9DJc0Ib0aDLS6oX4qyUkr0Iviiih/JOW64EusPfuddR/duiGTOcHk10IQp9KQ==
-X-Received: by 2002:a05:6a21:3a84:b0:1d7:cc6:53d0 with SMTP id adf61e73a8af0-1d978ad5a5amr6641489637.5.1729758246231;
-        Thu, 24 Oct 2024 01:24:06 -0700 (PDT)
-Received: from smtpclient.apple ([198.11.178.15])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7eaeab583d9sm8104437a12.49.2024.10.24.01.24.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Oct 2024 01:24:05 -0700 (PDT)
-Content-Type: text/plain;
-	charset=us-ascii
+        d=1e100.net; s=20230601; t=1729758945; x=1730363745;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=k/UlxyhCVOV8IRM2oQpaNcL1Tbi1VmLpqeBuOkUbId0=;
+        b=omoBLi3vFmmSA9vz/xdA7UbW+HyGo8+4rndQRC7hmgxF88/oow+kAfTpSncZqtvRkN
+         lUzw1iBLmHL0gVJpqR0TBg/Zn8c7+5TeX45ohksYIT7JOVn68m3wSIMTy0VQlSo479SM
+         iIPLbAL5Sjxn7sJzgDvnUpWqt49cP3ZiAssMw/f9g8VCfAhuLMqH5hfie5GNU22PgTqw
+         FLM+ecK3oZBSSBMrNrN63ay61wgj5GuM5jEAmoBNnYy+lVpy5TzIKQ7YNi1qnipmPCOi
+         yGPeq9HQ38QyL6gkOsKxL62oaPoMi9FvyE5Uu75omJ7pBTighVMl0D7/OxyjfHxeYhVh
+         OLbg==
+X-Forwarded-Encrypted: i=1; AJvYcCWF00z+of2VAuAP62QNPrvJ6bcBAM4T9M0wIR0herkMhVuZp2D8Vq5opkZD6JET8q9TxkV31T7fyqeGDyA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxMtChqhpgDk8n0x08bwGfVCrMl8nEvYQa/a3XjApM9K0eL5l3V
+	4DG8/KxYnDUdtVS6VLz6LRd4CN5EjHiiVj+y9wVjY7kGrIRMKr/M
+X-Google-Smtp-Source: AGHT+IGVjMn0N+dRQFGhE7Bu5a8g2NkDHeviPsQKLPYnN2fxt1S84mkGyiNmnTUo/yeA1g66tT9bIA==
+X-Received: by 2002:a17:903:1ce:b0:20c:fb47:5c05 with SMTP id d9443c01a7336-20fb99f61f6mr11338655ad.46.1729758945274;
+        Thu, 24 Oct 2024 01:35:45 -0700 (PDT)
+Received: from localhost.localdomain ([205.204.117.124])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20e7ef0c439sm68827765ad.94.2024.10.24.01.35.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Oct 2024 01:35:44 -0700 (PDT)
+From: Wardenjohn <zhangwarden@gmail.com>
+To: jpoimboe@kernel.org,
+	mbenes@suse.cz,
+	jikos@kernel.org,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com
+Cc: live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Wardenjohn <zhangwarden@gmail.com>
+Subject: [PATCH V3] selftests: livepatch: add test cases of stack_order sysfs interface
+Date: Thu, 24 Oct 2024 16:35:30 +0800
+Message-Id: <20241024083530.58775-1-zhangwarden@gmail.com>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [PATCH V2] selftests: livepatch: add test cases of stack_order
- sysfs interface
-From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <ZxoDZhpEX_M-vuRP@pathway.suse.cz>
-Date: Thu, 24 Oct 2024 16:23:51 +0800
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>,
- Jiri Kosina <jikos@kernel.org>,
- Joe Lawrence <joe.lawrence@redhat.com>,
- live-patching@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <09DE904A-5DAE-40C0-9F03-A96D0F80E1D4@gmail.com>
-References: <20241024044317.46666-1-zhangwarden@gmail.com>
- <20241024044317.46666-2-zhangwarden@gmail.com>
- <ZxoDZhpEX_M-vuRP@pathway.suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-X-Mailer: Apple Mail (2.3774.500.171.1.1)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
+Add selftest test cases to sysfs attribute 'stack_order'.
 
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
+---
+ .../testing/selftests/livepatch/test-sysfs.sh | 71 +++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
-> On Oct 24, 2024, at 16:20, Petr Mladek <pmladek@suse.com> wrote:
->=20
-> On Thu 2024-10-24 12:43:17, Wardenjohn wrote:
->> Add selftest test cases to sysfs attribute 'stack_order'.
->>=20
->> Suggested-by: Petr Mladek <pmladek@suse.com>
->> Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
->> ---
->> .../testing/selftests/livepatch/test-sysfs.sh | 71 =
-+++++++++++++++++++
->> 1 file changed, 71 insertions(+)
->>=20
->> diff --git a/tools/testing/selftests/livepatch/test-sysfs.sh =
-b/tools/testing/selftests/livepatch/test-sysfs.sh
->> index 05a14f5a7bfb..718027cc3aba 100755
->> --- a/tools/testing/selftests/livepatch/test-sysfs.sh
->> +++ b/tools/testing/selftests/livepatch/test-sysfs.sh
->> @@ -5,6 +5,8 @@
->> . $(dirname $0)/functions.sh
->>=20
->> MOD_LIVEPATCH=3Dtest_klp_livepatch
->> +MOD_LIVEPATCH2=3Dtest_klp_callbacks_demo
->> +MOD_LIVEPATCH3=3Dtest_klp_syscall
->>=20
->> setup_config
->>=20
->> @@ -21,6 +23,8 @@ check_sysfs_rights "$MOD_LIVEPATCH" "force" =
-"--w-------"
->> check_sysfs_rights "$MOD_LIVEPATCH" "replace" "-r--r--r--"
->=20
-> Sigh, you moved it from some reason. My proposed diff added
-> "stack_order" here between "replace" and "transition" to follow
-> the alphabetical order.
->=20
->> check_sysfs_rights "$MOD_LIVEPATCH" "transition" "-r--r--r--"
->> check_sysfs_value  "$MOD_LIVEPATCH" "transition" "0"
->> +check_sysfs_rights "$MOD_LIVEPATCH" "stack_order" "-r--r--r--"
->> +check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
->> check_sysfs_rights "$MOD_LIVEPATCH" "vmlinux/patched" "-r--r--r--"
->> check_sysfs_value  "$MOD_LIVEPATCH" "vmlinux/patched" "1"
->=20
-> After fixing the alphabetical order:
->=20
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> Tested-by: Petr Mladek <pmladek@suse.com>
->=20
-> I could fix the ordering when pushing the patch.
->=20
-> Best Regards,
-> Petr
-
-OK, I use this order just according to the order added to this=20
-test case. Didn't consider the alphabetical order.
-
-If necessary, I can resent a V3 patch.
-
-Best Regards.
-Wardenjohn.
-
+diff --git a/tools/testing/selftests/livepatch/test-sysfs.sh b/tools/testing/selftests/livepatch/test-sysfs.sh
+index 05a14f5a7bfb..e44a051be307 100755
+--- a/tools/testing/selftests/livepatch/test-sysfs.sh
++++ b/tools/testing/selftests/livepatch/test-sysfs.sh
+@@ -5,6 +5,8 @@
+ . $(dirname $0)/functions.sh
+ 
+ MOD_LIVEPATCH=test_klp_livepatch
++MOD_LIVEPATCH2=test_klp_callbacks_demo
++MOD_LIVEPATCH3=test_klp_syscall
+ 
+ setup_config
+ 
+@@ -19,6 +21,8 @@ check_sysfs_rights "$MOD_LIVEPATCH" "enabled" "-rw-r--r--"
+ check_sysfs_value  "$MOD_LIVEPATCH" "enabled" "1"
+ check_sysfs_rights "$MOD_LIVEPATCH" "force" "--w-------"
+ check_sysfs_rights "$MOD_LIVEPATCH" "replace" "-r--r--r--"
++check_sysfs_rights "$MOD_LIVEPATCH" "stack_order" "-r--r--r--"
++check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
+ check_sysfs_rights "$MOD_LIVEPATCH" "transition" "-r--r--r--"
+ check_sysfs_value  "$MOD_LIVEPATCH" "transition" "0"
+ check_sysfs_rights "$MOD_LIVEPATCH" "vmlinux/patched" "-r--r--r--"
+@@ -131,4 +135,71 @@ livepatch: '$MOD_LIVEPATCH': completing unpatching transition
+ livepatch: '$MOD_LIVEPATCH': unpatching complete
+ % rmmod $MOD_LIVEPATCH"
+ 
++start_test "sysfs test stack_order value"
++
++load_lp $MOD_LIVEPATCH
++
++check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
++
++load_lp $MOD_LIVEPATCH2
++
++check_sysfs_value  "$MOD_LIVEPATCH2" "stack_order" "2"
++
++load_lp $MOD_LIVEPATCH3
++
++check_sysfs_value  "$MOD_LIVEPATCH3" "stack_order" "3"
++
++disable_lp $MOD_LIVEPATCH2
++unload_lp $MOD_LIVEPATCH2
++
++check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
++check_sysfs_value  "$MOD_LIVEPATCH3" "stack_order" "2"
++
++disable_lp $MOD_LIVEPATCH3
++unload_lp $MOD_LIVEPATCH3
++
++disable_lp $MOD_LIVEPATCH
++unload_lp $MOD_LIVEPATCH
++
++check_result "% insmod test_modules/$MOD_LIVEPATCH.ko
++livepatch: enabling patch '$MOD_LIVEPATCH'
++livepatch: '$MOD_LIVEPATCH': initializing patching transition
++livepatch: '$MOD_LIVEPATCH': starting patching transition
++livepatch: '$MOD_LIVEPATCH': completing patching transition
++livepatch: '$MOD_LIVEPATCH': patching complete
++% insmod test_modules/$MOD_LIVEPATCH2.ko
++livepatch: enabling patch '$MOD_LIVEPATCH2'
++livepatch: '$MOD_LIVEPATCH2': initializing patching transition
++$MOD_LIVEPATCH2: pre_patch_callback: vmlinux
++livepatch: '$MOD_LIVEPATCH2': starting patching transition
++livepatch: '$MOD_LIVEPATCH2': completing patching transition
++$MOD_LIVEPATCH2: post_patch_callback: vmlinux
++livepatch: '$MOD_LIVEPATCH2': patching complete
++% insmod test_modules/$MOD_LIVEPATCH3.ko
++livepatch: enabling patch '$MOD_LIVEPATCH3'
++livepatch: '$MOD_LIVEPATCH3': initializing patching transition
++livepatch: '$MOD_LIVEPATCH3': starting patching transition
++livepatch: '$MOD_LIVEPATCH3': completing patching transition
++livepatch: '$MOD_LIVEPATCH3': patching complete
++% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH2/enabled
++livepatch: '$MOD_LIVEPATCH2': initializing unpatching transition
++$MOD_LIVEPATCH2: pre_unpatch_callback: vmlinux
++livepatch: '$MOD_LIVEPATCH2': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH2': completing unpatching transition
++$MOD_LIVEPATCH2: post_unpatch_callback: vmlinux
++livepatch: '$MOD_LIVEPATCH2': unpatching complete
++% rmmod $MOD_LIVEPATCH2
++% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH3/enabled
++livepatch: '$MOD_LIVEPATCH3': initializing unpatching transition
++livepatch: '$MOD_LIVEPATCH3': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH3': completing unpatching transition
++livepatch: '$MOD_LIVEPATCH3': unpatching complete
++% rmmod $MOD_LIVEPATCH3
++% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH/enabled
++livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
++livepatch: '$MOD_LIVEPATCH': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH': completing unpatching transition
++livepatch: '$MOD_LIVEPATCH': unpatching complete
++% rmmod $MOD_LIVEPATCH"
++
+ exit 0
+-- 
+2.43.5
 
 
