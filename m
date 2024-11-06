@@ -1,64 +1,84 @@
-Return-Path: <live-patching+bounces-765-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-766-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD10F9BDA40
-	for <lists+live-patching@lfdr.de>; Wed,  6 Nov 2024 01:24:13 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id D028B9BF470
+	for <lists+live-patching@lfdr.de>; Wed,  6 Nov 2024 18:42:02 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 36C04B207D5
-	for <lists+live-patching@lfdr.de>; Wed,  6 Nov 2024 00:24:11 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 886AC1F23507
+	for <lists+live-patching@lfdr.de>; Wed,  6 Nov 2024 17:42:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18005BA3F;
-	Wed,  6 Nov 2024 00:24:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4CF1206E9D;
+	Wed,  6 Nov 2024 17:41:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="MXBuRK3M"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MkGQ8JLj"
 X-Original-To: live-patching@vger.kernel.org
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4764480B;
-	Wed,  6 Nov 2024 00:24:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52176645;
+	Wed,  6 Nov 2024 17:41:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730852645; cv=none; b=cpdiWxmpOL3IbVHxLk/6+ywpobHWnDlfIC1OiSSYLZbtACg96EtUTfIYkX6yveeoZzuDaJp0z1pgFAs1IUmxTYhFKxDmdTXA5vDG0de31tlW5kFogKeiJ8NjGkq02T2BbCkweudGoqEVCZ9pIrXdm4CF2DGvHFLhy5FXqopIIus=
+	t=1730914917; cv=none; b=PXtOw2MMhOjiyY98TIv6i5RBcciOPVDNuuoUcktf6Y2OWQRiN8VhFNPAtjjN8IGz25CxZNGRJzsI06XKZHbrEgRaNC8hfgG2YQWwja+Gxr3kTGV1RlXC/sr6nJq1xTYS5lApUxh0wY0tcNucFj3MwnDx/jh4mbJVpNp0iN1Lf+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730852645; c=relaxed/simple;
-	bh=G0k7IzF9dLPlR9PDUGCdsLOeHCsgQsAhWQwXJpt41Y8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DGg5f5rNFfdawc4YL4BXYPiH4k+9WnS7J7uFe+xGck35lWSFUM/rc3kRf8kaUvBhGzF83ECPWBhptQmyisEaCgASeZo3T5i692brqnaiUffzcOuddfV2OZdRmnU4O375ttWs1uYLwQV2ZPAFez5amqzPCcvkr1Fel4gmfCsU19E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=MXBuRK3M; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Sender:Content-Transfer-Encoding:
-	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=wCXrHMalIEDrFVtUAawVAtx3gdISoe3nHLfr7A9qW8M=; b=MXBuRK3MCxQRrsvHkKyHSKbl9F
-	UxoR0sl/b2q67F0JygZBdHMgXuf5Fw22eicfrVYFapz9l2gA7xMs5XrdDTn1s2z+Z6bYa/cLz0fUm
-	v36U02GJPeDo9X4bW+XpZ4n2Teo40RD4MrfjfMZJ/uhWqcHLMtz19FqoEa5Mm6RM59oosHz00lC9W
-	spFRMAGwf7Zmbb5uf2ynFH4oXw9ZUtFO4O2ESEXyCA/0U+DZtr2YHcUDL5tJmzwqAbUhYrkCyoJ+k
-	8/xVkrWPsrQJyEdU3cUqQVE1PFETeiI07LS5EYrO8g84BLZUzGyFdHK3ow9mCZ3npZTYXwypToy1y
-	eqjtB5gA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
-	id 1t8Tq5-00000001Bl1-3Q88;
-	Wed, 06 Nov 2024 00:24:01 +0000
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: linux-modules@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	petr.pavlu@suse.com,
-	samitolvanen@google.com,
-	da.gomez@samsung.com
-Cc: masahiroy@kernel.org,
-	deller@gmx.de,
-	linux-arch@vger.kernel.org,
+	s=arc-20240116; t=1730914917; c=relaxed/simple;
+	bh=sIrAmIJ4TorY1A1s2YwJ051nt+86a8G/2pKO0f9HgmQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=TOLSQmJcF7oMoDGxAtRE7rvDteYTbIYCe9dyOpxWINRfAdAA96heYjUW0MNGWkAQb5wcchW4Et2SSgiVRUt0B+OgvOL9UFfcZYrnJR5llX0i+OdO6OqszZ5RMJ57CkVTtSOexfy6Ec5rb+48w3pGff7LEL1Tfc2o9RwBHBHyVQo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MkGQ8JLj; arc=none smtp.client-ip=209.85.215.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-7e9e38dd5f1so103100a12.0;
+        Wed, 06 Nov 2024 09:41:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1730914915; x=1731519715; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Bm3BtEti0bBgX9dhuIDWg9VG8nhnA6KHMWpcip8W1Lc=;
+        b=MkGQ8JLj1kwvrXsLaeXTZfibmw7kcQe4osGrWadPcwfo2IA7vhHGacBvx8hdxreQOb
+         HbtQPQJ3CWPmDTA3GgYFXXuxIK8NF1AwdXhlWF4pelfT14HPnxkMvdu3sOdn8FjskkB7
+         T1zctPCtRijZAmWL2XHNa83fps3yCUVRBOkFkldQqVj7rOmUmH/FUYwDNZ9WWWFLmq8/
+         +fffW40soIcaBg7nq2JK6U92myRrQkYMr1rybk3WuCN0u5B49LT/okmpLYAn9bxUMvG9
+         bSE+AU7gb0sBbzNNlPxRCQ4BMF2YmCm2DiUJgUkgPd55ZC1Qtkbx2T1YPLq8nwvgLm7R
+         jV1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730914915; x=1731519715;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Bm3BtEti0bBgX9dhuIDWg9VG8nhnA6KHMWpcip8W1Lc=;
+        b=peMYgTLe6m5c1pG7XTL2uPo9tGZ5fr8fgj0GwPq5iz9zHqASe50uzDwvaPG/UHeCVF
+         IZ+fIaCJsw5BeR6TRlueANTm0ldULTBC79LGkMUZjUrW2QP3INbqNYxXnQYGRtgfSnpX
+         GERYJ/oGuRKSQB13fzkdaTVLfkwPv/olKVpO8m8ivkxF9KmOl4PlevnZPL+7+uNjpXzR
+         CEWMEHbz1zCO+Ri1MxSKoxHtUiDJfHFB3qVrzr7/no45xxAI3An1x0yzCJ+0mvoQM0f4
+         JdiyHPdGaXE/eqod2fY43XV0K6NcndNpJoBrIrJCSzpRpX8wsw8ZpM8acx3ZD5yo2QgZ
+         l+Yg==
+X-Forwarded-Encrypted: i=1; AJvYcCV4Pclfre6FCHNejjS4YtCjlTubRHGbokNkYlWdOLCvBbeBQyKbhTWe9wC7Ve3fk8OVGvAW/EK6u89aWZ95lg==@vger.kernel.org, AJvYcCXy0aDkaC8gmWwYjwQPoDleko82+2N5cpO/CnySe4I5zv+feTwY37bgiLIPH4N8wU6N/xN57cRrjO3vbQsbgXc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwzkBgnrU13bK6zqo9j9DJRTdUpEzVdRqW4yDq7ZhF/E+ljST5g
+	k/IOeM4ibK22W36/A4cXpNB7iyXjRddD2IZPPYrb6TKIjL487vc1
+X-Google-Smtp-Source: AGHT+IE/Q9qbNqnJklGog/4T2SZLIgY8UPzGyaHikSI4++792sigksVQKwo4PcRRBGFE19HOTVDl0A==
+X-Received: by 2002:a17:902:fc45:b0:20b:9f8c:e9d3 with SMTP id d9443c01a7336-210c6ccfa73mr584037495ad.55.1730914915417;
+        Wed, 06 Nov 2024 09:41:55 -0800 (PST)
+Received: from BiscuitBobby.am.students.amrita.edu ([175.184.253.10])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21105706933sm98949335ad.83.2024.11.06.09.41.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2024 09:41:55 -0800 (PST)
+From: Siddharth Menon <simeddon@gmail.com>
+To: shuah@kernel.org,
+	jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com
+Cc: Siddharth Menon <simeddon@gmail.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
 	live-patching@vger.kernel.org,
-	mcgrof@kernel.org,
-	kris.van.hees@oracle.com
-Subject: [PATCH] tests/module/gen_test_kallsyms.sh: use 0 value for variables
-Date: Tue,  5 Nov 2024 16:24:00 -0800
-Message-ID: <20241106002401.283517-1-mcgrof@kernel.org>
-X-Mailer: git-send-email 2.46.2
+	linux-kselftest@vger.kernel.org
+Subject: [PATCH] selftests/livepatch: Check if CONFIG_LIVEPATCH is enabled
+Date: Wed,  6 Nov 2024 23:11:20 +0530
+Message-Id: <20241106174120.5602-1-simeddon@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -66,68 +86,47 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Sender: Luis Chamberlain <mcgrof@infradead.org>
 
-Use 0 for the values as we use them for the return value on init
-to keep the test modules simple. This fixes a splat reported
+When CONFIG_LIVEPATCH is disabled, compilation fails due to the
+required structs from the livepatch header file being undefined.
+This checks for CONFIG_LIVEPATCH in order to verify that
+it is enabled before compiling livepatch self-tests.
 
-do_init_module: 'test_kallsyms_b'->init suspiciously returned 255, it should follow 0/-E convention
-do_init_module: loading module anyway...
-CPU: 5 UID: 0 PID: 1873 Comm: modprobe Not tainted 6.12.0-rc3+ #4
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.08-1 09/18/2024
-Call Trace:
- <TASK>
- dump_stack_lvl+0x56/0x80
- do_init_module.cold+0x21/0x26
- init_module_from_file+0x88/0xf0
- idempotent_init_module+0x108/0x300
- __x64_sys_finit_module+0x5a/0xb0
- do_syscall_64+0x4b/0x110
- entry_SYSCALL_64_after_hwframe+0x76/0x7e
-RIP: 0033:0x7f4f3a718839
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff>
-RSP: 002b:00007fff97d1a9e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-RAX: ffffffffffffffda RBX: 000055b94001ab90 RCX: 00007f4f3a718839
-RDX: 0000000000000000 RSI: 000055b910e68a10 RDI: 0000000000000004
-RBP: 0000000000000000 R08: 00007f4f3a7f1b20 R09: 000055b94001c5b0
-R10: 0000000000000040 R11: 0000000000000246 R12: 000055b910e68a10
-R13: 0000000000040000 R14: 000055b94001ad60 R15: 0000000000000000
- </TASK>
-do_init_module: 'test_kallsyms_b'->init suspiciously returned 255, it should follow 0/-E convention
-do_init_module: loading module anyway...
-CPU: 1 UID: 0 PID: 1884 Comm: modprobe Not tainted 6.12.0-rc3+ #4
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.08-1 09/18/2024
-Call Trace:
- <TASK>
- dump_stack_lvl+0x56/0x80
- do_init_module.cold+0x21/0x26
- init_module_from_file+0x88/0xf0
- idempotent_init_module+0x108/0x300
- __x64_sys_finit_module+0x5a/0xb0
- do_syscall_64+0x4b/0x110
- entry_SYSCALL_64_after_hwframe+0x76/0x7e
-RIP: 0033:0x7ffaa5d18839
-
-Reported-by: Sami Tolvanen <samitolvanen@google.com>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Siddharth Menon <simeddon@gmail.com>
 ---
- lib/tests/module/gen_test_kallsyms.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/livepatch/test_modules/Makefile | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/lib/tests/module/gen_test_kallsyms.sh b/lib/tests/module/gen_test_kallsyms.sh
-index ae5966f1f904..3f2c626350ad 100755
---- a/lib/tests/module/gen_test_kallsyms.sh
-+++ b/lib/tests/module/gen_test_kallsyms.sh
-@@ -32,7 +32,7 @@ gen_num_syms()
- 	PREFIX=$1
- 	NUM=$2
- 	for i in $(seq 1 $NUM); do
--		printf "int auto_test_%s_%010d = 0xff;\n" $PREFIX $i
-+		printf "int auto_test_%s_%010d = 0;\n" $PREFIX $i
- 		printf "EXPORT_SYMBOL_GPL(auto_test_%s_%010d);\n" $PREFIX $i
- 	done
- 	echo
+diff --git a/tools/testing/selftests/livepatch/test_modules/Makefile b/tools/testing/selftests/livepatch/test_modules/Makefile
+index e6e638c4bcba..b34b80544709 100644
+--- a/tools/testing/selftests/livepatch/test_modules/Makefile
++++ b/tools/testing/selftests/livepatch/test_modules/Makefile
+@@ -1,5 +1,6 @@
+ TESTMODS_DIR := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+ KDIR ?= /lib/modules/$(shell uname -r)/build
++CONFIG_LIVEPATCH := $(shell cd $(KDIR) && scripts/config --state CONFIG_LIVEPATCH)
+ 
+ obj-m += test_klp_atomic_replace.o \
+ 	test_klp_callbacks_busy.o \
+@@ -13,10 +14,15 @@ obj-m += test_klp_atomic_replace.o \
+ 	test_klp_shadow_vars.o \
+ 	test_klp_syscall.o
+ 
+-# Ensure that KDIR exists, otherwise skip the compilation
++
++# Ensure that KDIR exists and CONFIG_LIVEPATCH is enabled, else skip compilation
+ modules:
+ ifneq ("$(wildcard $(KDIR))", "")
++ifneq ($(filter y m,$(CONFIG_LIVEPATCH)),)
+ 	$(Q)$(MAKE) -C $(KDIR) modules KBUILD_EXTMOD=$(TESTMODS_DIR)
++else
++    $(warning CONFIG_LIVEPATCH is not enabled in the kernel config file.)
++endif
+ endif
+ 
+ # Ensure that KDIR exists, otherwise skip the clean target
 -- 
-2.45.2
+2.39.5
 
 
