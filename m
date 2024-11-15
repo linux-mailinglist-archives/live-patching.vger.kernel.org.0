@@ -1,53 +1,53 @@
-Return-Path: <live-patching+bounces-821-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-822-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 54E749CFACB
-	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 00:03:57 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3351A9CFADA
+	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 00:07:30 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 0BDAFB303AB
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:35:28 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 5ECFCB39A5C
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:39:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D9BC1917EE;
-	Fri, 15 Nov 2024 22:35:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC827192B6D;
+	Fri, 15 Nov 2024 22:38:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b="TBKjQ+jw"
+	dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b="dvqBU9n8"
 X-Original-To: live-patching@vger.kernel.org
 Received: from mail.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9771D19006F;
-	Fri, 15 Nov 2024 22:35:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C64561922F2;
+	Fri, 15 Nov 2024 22:38:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731710120; cv=none; b=JXptJlHi1Id4KP80J8CTqzdHVs0dG0JCgUvB8IQSqRibCsUxarLYK+325NViLMK6sHpLuJg8tlAAFJXNyaBg2oqKEZAwCZAZ3GvK0J1hjuxwU/Ta95gbs2lHgOA8PQui2ibYD96y2PvRX8EzeDPTRCY5bTpgXX2iKKz3eSoI1QQ=
+	t=1731710303; cv=none; b=HhfHsmArJNanRAUmijSLAIvEcCP1HFP59q11rn84rq5oasfJItCfWUJjilMH8AaGzz1aYIAfHgTC5Y77UKbzZlVsGy1F6PD709TbzpyGHkQbdLCfzOhiF02SsHyipazFmf+IqGGVYmYor6Wi5tEuC6nYhLcbtNkBrXNVNL9Lm2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731710120; c=relaxed/simple;
-	bh=+t6HMsXZCpufnx+SeJ8pzSOk6H3+rWVdCSUVuVIaTEM=;
+	s=arc-20240116; t=1731710303; c=relaxed/simple;
+	bh=RIiFqJrXkrJVjomDZYuASdyvOtyrcrIuEW8LyVF0TSA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FS2hjeJxt2JXk9huM2INrZyX24ivyUGGGixjPNUsDH10asr065PjrdWeMKSaH2J1AFBGVDO9e0ZV3Ndj6mat/UCI2TVn4HCtyJFrejml8qnrspn9VirQl1YVi09vfyXZ95s6YKQHOQO4A97pEod2DqXi/kSvc+2bYi+g+pJZ3qw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canb.auug.org.au; spf=pass smtp.mailfrom=canb.auug.org.au; dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b=TBKjQ+jw; arc=none smtp.client-ip=150.107.74.76
+	 MIME-Version:Content-Type; b=Kzuta5QUxcyt4z5kO5d3RniH9lqVO4O34pKdRr+VMtDDY9jFnus1j+L8Sbrkxf6NoPp8gXlV0EDBTJ1hspXBp46tyededWFk0tnmIN1MiFWvmLwPTefZYfUXMQEJgS33zzyb+z952z8RSPgygJkJlN2iyiy4gudz2L31v+8soQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canb.auug.org.au; spf=pass smtp.mailfrom=canb.auug.org.au; dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b=dvqBU9n8; arc=none smtp.client-ip=150.107.74.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canb.auug.org.au
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canb.auug.org.au
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-	s=201702; t=1731710109;
-	bh=8q2Y3qiG3ZOOjZQQW66Agp5RO04F9uaeWnu9irwI8zs=;
+	s=201702; t=1731710297;
+	bh=2Oo8tuThL69UywoHNtNWphGeN1l/Ks7ZdfhLn6nu8Ts=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=TBKjQ+jwynGqippSpjmesy2LJHz5G28IT7vT4TaT88JCuw46fBO3BDRAIPv6hRM7/
-	 XbOWv6yTpIGUBOHVpD+GgH5bOcDzYCKCOUCxtFJITpudgYieUI+GdoU8psZqrHYs9B
-	 plWGzIOASib2U9DXo1e9xJXfQHkgKNH8Cirh/o/LRzKV85o+Cp3r3eBc9AZ3AQZa0F
-	 DYP1RPyQiMfC70ZKaMZkgpPnHyLFqXq1SQIh8oIfiAurmRjt4FWX01yMlsvyocz2uk
-	 oad7uD2rsh8nj5e0aZSH5jUluHbC7REOnBIrLNo1QEsXfDYgF3levquGraIQNcBhLm
-	 5y9gdjsr1Cmwg==
+	b=dvqBU9n8wyesGOM7wAJUVL4V50umalSR9AGyHvO50R9rHL4dRlvqV2fKiGIxclon7
+	 dHEpXPpW9NVhcbFtMBHzRNkcGVSkeVB/y2szbGMNYINCZkHzmLDf1115Jxe24OTeOk
+	 GNv8daj8Y6W/lBqt6k/toExNrcSvGF2/nzg0QTmOQX9jzDpl13KzERpvnsypqwk14l
+	 Jr2Y6hhhHGQcduaub5tIB8ldj0pYnhXmYJw4zK368Q9lExm0iQorTgylYyIdDuEGMp
+	 WagrfQz4Kwg8LTMJpR3GyN8L1t3g91kYKCDixQ+vf1WORv4sLKKi8JfCCFjRz+Eeni
+	 +eMZUx+2BK6mA==
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4XqsKD5FnLz4x3p;
-	Sat, 16 Nov 2024 09:34:56 +1100 (AEDT)
-Date: Sat, 16 Nov 2024 09:34:58 +1100
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4XqsP22nY1z4x8v;
+	Sat, 16 Nov 2024 09:38:14 +1100 (AEDT)
+Date: Sat, 16 Nov 2024 09:38:15 +1100
 From: Stephen Rothwell <sfr@canb.auug.org.au>
 To: Easwar Hariharan <eahariha@linux.microsoft.com>
 Cc: Pablo Neira Ayuso <pablo@netfilter.org>, Jozsef Kadlecsik
@@ -104,70 +104,64 @@ Cc: Pablo Neira Ayuso <pablo@netfilter.org>, Jozsef Kadlecsik
  etnaviv@lists.freedesktop.org, oss-drivers@corigine.com,
  linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen
  <anna-maria@linutronix.de>
-Subject: Re: [PATCH v2 01/21] netfilter: conntrack: Cleanup timeout
- definitions
-Message-ID: <20241116093458.4aa19a0e@canb.auug.org.au>
-In-Reply-To: <20241115-converge-secs-to-jiffies-v2-1-911fb7595e79@linux.microsoft.com>
-References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
-	<20241115-converge-secs-to-jiffies-v2-1-911fb7595e79@linux.microsoft.com>
+Subject: Re: [PATCH 03/22] arm: pxa: Convert timeouts to use
+ secs_to_jiffies()
+Message-ID: <20241116093815.5d37eb43@canb.auug.org.au>
+In-Reply-To: <20241115-converge-secs-to-jiffies-v1-3-19aadc34941b@linux.microsoft.com>
+References: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
+	<20241115-converge-secs-to-jiffies-v1-3-19aadc34941b@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/gpyLfQXA_rG=N5QDCu3kL6w";
+Content-Type: multipart/signed; boundary="Sig_/4rVE82Kt6y+3_PbwMmwogMj";
  protocol="application/pgp-signature"; micalg=pgp-sha256
 
---Sig_/gpyLfQXA_rG=N5QDCu3kL6w
+--Sig_/4rVE82Kt6y+3_PbwMmwogMj
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
 Hi Easwar,
 
-On Fri, 15 Nov 2024 21:26:18 +0000 Easwar Hariharan <eahariha@linux.microso=
+On Fri, 15 Nov 2024 21:22:33 +0000 Easwar Hariharan <eahariha@linux.microso=
 ft.com> wrote:
 >
->  static const unsigned int sctp_timeouts[SCTP_CONNTRACK_MAX] =3D {
-> -	[SCTP_CONNTRACK_CLOSED]			=3D 10 SECS,
-> -	[SCTP_CONNTRACK_COOKIE_WAIT]		=3D 3 SECS,
-> -	[SCTP_CONNTRACK_COOKIE_ECHOED]		=3D 3 SECS,
-> -	[SCTP_CONNTRACK_ESTABLISHED]		=3D 210 SECS,
-> -	[SCTP_CONNTRACK_SHUTDOWN_SENT]		=3D 3 SECS,
-> -	[SCTP_CONNTRACK_SHUTDOWN_RECD]		=3D 3 SECS,
-> -	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	=3D 3 SECS,
-> -	[SCTP_CONNTRACK_HEARTBEAT_SENT]		=3D 30 SECS,
-> +	[SCTP_CONNTRACK_CLOSED]			=3D secs_to_jiffies(10),
-> +	[SCTP_CONNTRACK_COOKIE_WAIT]		=3D secs_to_jiffies(3),
-> +	[SCTP_CONNTRACK_COOKIE_ECHOED]		=3D secs_to_jiffies(3),
-> +	[SCTP_CONNTRACK_ESTABLISHED]		=3D secs_to_jiffies(210),
-> +	[SCTP_CONNTRACK_SHUTDOWN_SENT]		=3D secs_to_jiffies(3),
-> +	[SCTP_CONNTRACK_SHUTDOWN_RECD]		=3D secs_to_jiffies(3),
-> +	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	=3D secs_to_jiffies(3),
-> +	[SCTP_CONNTRACK_HEARTBEAT_SENT]		=3D secs_to_jiffies(3),
+> -#define SHARPSL_CHARGE_ON_TIME_INTERVAL        (msecs_to_jiffies(1*60*10=
+00))  /* 1 min */
+> -#define SHARPSL_CHARGE_FINISH_TIME             (msecs_to_jiffies(10*60*1=
+000)) /* 10 min */
+> -#define SHARPSL_BATCHK_TIME                    (msecs_to_jiffies(15*1000=
+))    /* 15 sec */
+> +#define SHARPSL_CHARGE_ON_TIME_INTERVAL        (secs_to_jiffies(60))  /*=
+ 1 min */
+> +#define SHARPSL_CHARGE_FINISH_TIME             (secs_to_jiffies(10*60)) =
+/* 10 min */
+> +#define SHARPSL_BATCHK_TIME                    (secs_to_jiffies(15))    =
+/* 15 sec */
 
-You have changed this last timeout from 30 seconds to 3 (presumably
-just a copy and paste error).
+It might be nice to keep the alignment of the comments here.
 
 --=20
 Cheers,
 Stephen Rothwell
 
---Sig_/gpyLfQXA_rG=N5QDCu3kL6w
+--Sig_/4rVE82Kt6y+3_PbwMmwogMj
 Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmc3zJIACgkQAVBC80lX
-0Gw+jggAlx/FpdCsBUGWHj/3D1FyMKcJOE8x+VIKqw9c10Hqa/DPZEAcUaXlmvJJ
-1NS+WrDFLS34ZiI4SbtosexC7tobHh/TkpamqrN+fG8STjNbtTVLYQ8QiWT/NCDx
-IeMkpH/EiSg0ow+0U1XenGHORnkKPdtLr7lxlRq1R7ylUYNZK0eDlX4r2dwmOLYg
-r0lFld/TwA434BDqTqj8KzVt9p1k2QiHm+LUntdk7Xu/Rlami4y/+Bahn9gmN3ji
-wRFxXLzm6upqhGxP5RYNyz3FB0oQgUvILDpklyPzzLTZW+L+bPkhgY5RZTFXpk9k
-KeR+GZcOjbCNU/RaWT8zDXVC32LJaw==
-=DzpI
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmc3zVcACgkQAVBC80lX
+0GyUXgf+Ii9yOHf1vRadjfzExIFyJR4I0mG1VXDEBH24ASdL/jVIFlfW31h/JIe9
+7JJFAL5Aa+C8Xw22mmq/8e0wbWCe+DqEq+SLtggkTN8kHtwf7Glda0a/aIix0pNM
+s9nQXwrTFFvaCt2ocRmPUcm7K/jwiG3YxWawYBvIoSF9l/TfQXwD4LBbP2glFEL2
+BkTvGG0/asLCHZK2LHwDsWsZ5XskgJmmQfbYEdygcm9C3bP40tFYUM22B6iEYNez
+WKquyY7lAmwUJQsIAWZig/PKPz8e6uux6ghIdGbwFC0ezQqIOAz8ZqllWy1Dpa87
+vCjZSu4lRCFBg5npBBL5wIOagKFSCw==
+=vmyn
 -----END PGP SIGNATURE-----
 
---Sig_/gpyLfQXA_rG=N5QDCu3kL6w--
+--Sig_/4rVE82Kt6y+3_PbwMmwogMj--
 
