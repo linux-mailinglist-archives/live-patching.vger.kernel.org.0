@@ -1,48 +1,48 @@
-Return-Path: <live-patching+bounces-771-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-773-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id D21BC9CF70F
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:23:10 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 823099CF72A
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:23:38 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id B489EB2F588
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:22:56 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 1EBA21F22400
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:23:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A85F01E2018;
-	Fri, 15 Nov 2024 21:22:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A2AC1E5709;
+	Fri, 15 Nov 2024 21:22:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="TpPSBC6Q"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Oh5o3W+Q"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F248818B463;
-	Fri, 15 Nov 2024 21:22:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C0EF18C345;
+	Fri, 15 Nov 2024 21:22:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731705764; cv=none; b=bARVhpoO88P9F3P6zhHQq2MDn1B2WrW119xpPvSU+/fyTwdajIaddGIJnua4pn3k04UPNAQNE6WYfPG/UlfRtymeL0sF+t9FJtiUaWEKHJ64Nep6uIjmEMYxnM+xypm5bohy2bxn/Qf274Z4IwTBVw7F0GABbs7EHcapAOn3fWA=
+	t=1731705765; cv=none; b=lgfOTSqiXQdez7fr8NW5lYYw9KOkE7AyajotUhoKg721s7hA6KkcaevElTC8qluFuOS2sLSLkaOpSvq/OvE5rwSCGVljy28uMB9Rf4vHgFMivPx0fsxkpwqoE25lhueA70EyDQVoHlIbJGqriO7O+EtM7evLHtbBRdI2NEqOWzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731705764; c=relaxed/simple;
-	bh=2iWwhGMiOXyDUdwM0ZnOEDU3u4Uun5dVYtqdWB2sR+Q=;
+	s=arc-20240116; t=1731705765; c=relaxed/simple;
+	bh=+AJoiDz7f8S/b69fewi17xIZkcs5Ou5v96ZWv9K9M5Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=TnGjljdAd3L8mx8BYGads/9PFgCqdElZZ9Ao3+O2A/NV8GyOo7RTQyJD7CHfIqk0XAQH59nuShHdLqRYuU8GpHIpt3yC5Q4jTNFt/D4/YBrNkyTLYSjJqxj4sgJtbdEV6tY5jYzI9kynjUfBIY1JT4nCcGvYSfDJAfHBwDEMJ/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=TpPSBC6Q; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=cVfcmNwxXfmk2wO2Q/bUtFJ6ZAQrYW0DnS/3d/+2Y2PC7cDwGQG1ZDn3egMNY0XBkpjeEk64k08iFqHqAtkQQ4oaqWM38foFoJJ6auC3npgPX+6EDmR7eHeo9/giOO23sEE2w4OG5l5bIktb5dSC9CPuT8FzZDQ4wGhG+fRdInA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Oh5o3W+Q; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1682D206BCE4;
+	by linux.microsoft.com (Postfix) with ESMTPSA id 49A20206BCE5;
 	Fri, 15 Nov 2024 13:22:42 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1682D206BCE4
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 49A20206BCE5
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1731705762;
-	bh=Q64Lap8gGilYnZS8wBYuXVtg6CkDWFgIDR5hpRb/qKY=;
+	bh=mjGmNlPTDeXtBIVnBruZVxnncRcSbkg/ti9M5w2fu78=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=TpPSBC6Q0pyCMIPKcOfsvZX/wWIHu4+ejmKY8xw+0GecDvIAUfgwshz01AoOkZ0WD
-	 k4gHIei/egZSo7W0NlMAlHYHatQ5bzRsbZtX1NOQvIcE9aFKMDcUHtqmglM484AIGB
-	 /3Fdhfw7EN1qT/zCvUp8095p9P9VmicZ+TZgDM0I=
+	b=Oh5o3W+QiJRTTPFI9dpb9A1AWSAOLDDOB8sqUPea54Qx6kUKHNmkqaArwACWjQxKB
+	 D55Uc4+WAewzxsbEk8laNjMjSMPfVawB+Zi45VRw0skgegejDy9IgBYr/0jKgvvqvH
+	 DeGMefeFQkwrmneQNUkhORZAjpQMci1rsg92zUBA=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Fri, 15 Nov 2024 21:22:31 +0000
-Subject: [PATCH 01/22] netfilter: conntrack: Cleanup timeout definitions
+Date: Fri, 15 Nov 2024 21:22:32 +0000
+Subject: [PATCH 02/22] coccinelle: misc: Add secs_to_jiffies script
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -51,7 +51,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241115-converge-secs-to-jiffies-v1-1-19aadc34941b@linux.microsoft.com>
+Message-Id: <20241115-converge-secs-to-jiffies-v1-2-19aadc34941b@linux.microsoft.com>
 References: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
 In-Reply-To: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -121,48 +121,39 @@ Cc: netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
  Easwar Hariharan <eahariha@linux.microsoft.com>
 X-Mailer: b4 0.14.2
 
-None of the higher order definitions are used anymore, so remove
-definitions for minutes, hours, and days timeouts. Convert the seconds
-denominated timeouts to secs_to_jiffies()
-
+Suggested-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- net/netfilter/nf_conntrack_proto_sctp.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+ scripts/coccinelle/misc/secs_to_jiffies.cocci | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index 4cc97f971264ed779434ab4597dd0162586b3736..6c95ac96fa42a39acafb5b88a7cf8898010e911c 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -39,20 +39,15 @@ static const char *const sctp_conntrack_names[] = {
- 	[SCTP_CONNTRACK_HEARTBEAT_SENT]		= "HEARTBEAT_SENT",
- };
- 
--#define SECS  * HZ
--#define MINS  * 60 SECS
--#define HOURS * 60 MINS
--#define DAYS  * 24 HOURS
--
- static const unsigned int sctp_timeouts[SCTP_CONNTRACK_MAX] = {
--	[SCTP_CONNTRACK_CLOSED]			= 10 SECS,
--	[SCTP_CONNTRACK_COOKIE_WAIT]		= 3 SECS,
--	[SCTP_CONNTRACK_COOKIE_ECHOED]		= 3 SECS,
--	[SCTP_CONNTRACK_ESTABLISHED]		= 210 SECS,
--	[SCTP_CONNTRACK_SHUTDOWN_SENT]		= 3 SECS,
--	[SCTP_CONNTRACK_SHUTDOWN_RECD]		= 3 SECS,
--	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	= 3 SECS,
--	[SCTP_CONNTRACK_HEARTBEAT_SENT]		= 30 SECS,
-+	[SCTP_CONNTRACK_CLOSED]			= secs_to_jiffies(10),
-+	[SCTP_CONNTRACK_COOKIE_WAIT]		= secs_to_jiffies(3),
-+	[SCTP_CONNTRACK_COOKIE_ECHOED]		= secs_to_jiffies(3),
-+	[SCTP_CONNTRACK_ESTABLISHED]		= secs_to_jiffies(210),
-+	[SCTP_CONNTRACK_SHUTDOWN_SENT]		= secs_to_jiffies(3),
-+	[SCTP_CONNTRACK_SHUTDOWN_RECD]		= secs_to_jiffies(3),
-+	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	= secs_to_jiffies(3),
-+	[SCTP_CONNTRACK_HEARTBEAT_SENT]		= secs_to_jiffies(3),
- };
- 
- #define	SCTP_FLAG_HEARTBEAT_VTAG_FAILED	1
+diff --git a/scripts/coccinelle/misc/secs_to_jiffies.cocci b/scripts/coccinelle/misc/secs_to_jiffies.cocci
+new file mode 100644
+index 0000000000000000000000000000000000000000..af762b1c0aac8f044f21150bfaafd9efc834ee87
+--- /dev/null
++++ b/scripts/coccinelle/misc/secs_to_jiffies.cocci
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0-only
++///
++/// Find usages of:
++/// - msecs_to_jiffies(value*1000)
++/// - msecs_to_jiffies(value*MSEC_PER_SEC)
++///
++// Confidence: High
++// Copyright: (C) 2024 Easwar Hariharan Microsoft
++//
++// Keywords: secs, seconds, jiffies
++//
++
++@@ constant C; @@
++
++- msecs_to_jiffies(C * 1000)
+++ secs_to_jiffies(C)
++
++@@ constant C; @@
++
++- msecs_to_jiffies(C * MSEC_PER_SEC)
+++ secs_to_jiffies(C)
 
 -- 
 2.34.1
