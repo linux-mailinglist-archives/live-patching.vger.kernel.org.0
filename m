@@ -1,139 +1,148 @@
-Return-Path: <live-patching+bounces-768-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-769-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id B7A099C11DD
-	for <lists+live-patching@lfdr.de>; Thu,  7 Nov 2024 23:35:40 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1A7FB9CDC3A
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 11:13:46 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 5F2E2B23485
-	for <lists+live-patching@lfdr.de>; Thu,  7 Nov 2024 22:35:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D0EBB282DDD
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 10:13:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AB8C2194BD;
-	Thu,  7 Nov 2024 22:33:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 984D71B21BA;
+	Fri, 15 Nov 2024 10:13:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kLLQjJsu"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="X3dWkFpq";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="qR6LsGMN";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="VcHcjCHG";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="fGMorJSa"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54825218D99;
-	Thu,  7 Nov 2024 22:33:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9819F17E44A;
+	Fri, 15 Nov 2024 10:13:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731018802; cv=none; b=aHruMmd+MH/rZLqN3xAwYBqGQx5Lni9l2XUFPc922Mi0bgscmiGTFFfLL8fh1MKyexJEu/4bahVCiU7oGjz7xw0c6XzAbIyaJSFzA3bojXmN7otFn0IGaQpLEgRozkeuR91sl6q5hC2luBpDQ3hOFGvZZRgPGoUV9r6xetzsBMY=
+	t=1731665619; cv=none; b=SfI5bJtCuW1XczmzOIU4wogG6g6IfJd6L6u5yH7Jbc5rGdDkI+s7a/qBvz6O+b6mtWC4ZueiSW8F/GNfIfs5JMxMfu18zqMB8mY+qgoFfL+78BdwDeoyNu7IuPJlVNIf/BeWKOxYH3IiVVK/ln+m5oIezeLOfOPARRFTWB9DfSs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731018802; c=relaxed/simple;
-	bh=u+y+ZgnzSc1JBFX0IBWulkzQvEr1r5XByDl3smbKDig=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TH2mBDl5BTKXdwrd1LMPLHbdOQIPXnUwMIqWoWdeYqFyqZm2ARSrtC5b8UadztfmtGgO3EdYwKSqqqS2lxzdDrgrXpWxhh9E9ntYceQRn9YN+0b+FF6kCplwFdSHBpKAkBELyMzoVBxgh22JPeZAFIJuO03A/QpcuNPlfCIMd04=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kLLQjJsu; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8044CC4CECC;
-	Thu,  7 Nov 2024 22:33:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731018801;
-	bh=u+y+ZgnzSc1JBFX0IBWulkzQvEr1r5XByDl3smbKDig=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kLLQjJsu9fyqP8yzMFHBWd5h5WM1jNHoZXNwdDGFgsG3Vd7u1wj2XANhEwRes0GWU
-	 YoqCc5J+/7r2hYKc7JR/ZtEn3JeqA2orhLEFcZAVUcBGyMmMMLnGgE5XM70EFeu3Gw
-	 iktSCrppCV7agn9jxuD6YN2xxrMiHZFiJbxWqp9/jkbGQPRuh9ukrdBuSZXnFxBLVy
-	 sG/cngVuAEsKTbwAG0+n4rb7Q1DS7r/+IHP0nmK2dxQd19hyIhDqf1HlooLqcCOPb1
-	 L0WUD0s2uP7NirQbhLF3So9usIuX3ReuVM9bJ25Owkey9CxcdazXidspl1yWJTv2ss
-	 0lKimBvWDHZBQ==
-Date: Thu, 7 Nov 2024 14:33:20 -0800
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Sami Tolvanen <samitolvanen@google.com>
-Cc: linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
-	petr.pavlu@suse.com, da.gomez@samsung.com, masahiroy@kernel.org,
-	deller@gmx.de, linux-arch@vger.kernel.org,
-	live-patching@vger.kernel.org, kris.van.hees@oracle.com
-Subject: Re: [PATCH] tests/module/gen_test_kallsyms.sh: use 0 value for
- variables
-Message-ID: <Zy1AMPMYfE5tKJYz@bombadil.infradead.org>
-References: <20241106002401.283517-1-mcgrof@kernel.org>
- <CABCJKueDJuAz30=Wat5D1-V9eYzAbP7wAY61Fgzw_KZJcHWiSw@mail.gmail.com>
+	s=arc-20240116; t=1731665619; c=relaxed/simple;
+	bh=dllOzNYBZCycekP+E/MGT4e9VWkyWh/yT0kAE4dCQFw=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=hVP9wkcj7BDBvzI5thY3NFh0bL++5ikCjmQwtRlOxh9QGMmEznP30434uFHvIhmS4gpqp/DqfJDBtHpNbFqQ8Py1etV2KrZFOwqnpLRYaTl4oj4a+ugPUzrk0jAq91uweyc2OnUXyt180pUwQpLG+7MCbkXg+8EX/7gdxhojoZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=X3dWkFpq; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=qR6LsGMN; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=VcHcjCHG; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=fGMorJSa; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from pobox.suse.cz (unknown [10.100.2.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 8912E21264;
+	Fri, 15 Nov 2024 10:13:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1731665615; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=NF8NPKAP944NqrTfLoKuxMXQJTChdjIevG2xbsMT28k=;
+	b=X3dWkFpqissXEX0/tk/C+3fApBuFaJMHKT/oLA7Yx04fPj89AbanRp8kH0JwsghTICmgDu
+	sPJH4AFl6yIIhB4aGwSjaxJj3W6AvbDitpksfD/rQKlT3AeZjWCCQ2V5H8H+6n53avj/aC
+	n3GX/lKUMzo8Jw6xGcx46eUJiwKdI28=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1731665615;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=NF8NPKAP944NqrTfLoKuxMXQJTChdjIevG2xbsMT28k=;
+	b=qR6LsGMNCDBV/LQf9WONK9wXinvk7IDkYWuZur59nEPfs1xGF5MIpOrtiNzDzTyoAgZ7qJ
+	rrmVDYk2uK0iHqBA==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1731665614; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=NF8NPKAP944NqrTfLoKuxMXQJTChdjIevG2xbsMT28k=;
+	b=VcHcjCHG5uqNQRQKIGzmRVVEVv9LPBdMWjB723GBrmrBmURQforIjFXZXXTOkn+RQLYnC2
+	sTiz+CCpUa+dxBP2rYsy6xzTcwHGvQoSjLpfxnSBNJz6sYY3YYYKjzjCm85TyoOMDUR1lh
+	Ijr96X4fOeMg/+8Da873ZYt5cDolpQw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1731665614;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=NF8NPKAP944NqrTfLoKuxMXQJTChdjIevG2xbsMT28k=;
+	b=fGMorJSalk4gRP42ukuriysS434dzUJSNf8rZPQU2DXnlj1XstffwB4aZmUcgA4qJRWskj
+	hA118j+uHTnTt6CQ==
+Date: Fri, 15 Nov 2024 11:13:34 +0100 (CET)
+From: Miroslav Benes <mbenes@suse.cz>
+To: Siddharth Menon <simeddon@gmail.com>
+cc: shuah@kernel.org, jpoimboe@kernel.org, jikos@kernel.org, pmladek@suse.com, 
+    Shuah Khan <skhan@linuxfoundation.org>, live-patching@vger.kernel.org, 
+    linux-kselftest@vger.kernel.org, mpdesouza@suse.com
+Subject: Re: [PATCH] selftests/livepatch: Check if CONFIG_LIVEPATCH is
+ enabled
+In-Reply-To: <20241106174120.5602-1-simeddon@gmail.com>
+Message-ID: <alpine.LSU.2.21.2411151104500.5135@pobox.suse.cz>
+References: <20241106174120.5602-1-simeddon@gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CABCJKueDJuAz30=Wat5D1-V9eYzAbP7wAY61Fgzw_KZJcHWiSw@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Score: -4.29
+X-Spamd-Result: default: False [-4.29 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-0.999];
+	NEURAL_HAM_SHORT(-0.19)[-0.952];
+	MIME_GOOD(-0.10)[text/plain];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	FREEMAIL_TO(0.00)[gmail.com];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_COUNT_ZERO(0.00)[0];
+	ARC_NA(0.00)[];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[pobox.suse.cz:mid,pobox.suse.cz:helo,linuxfoundation.org:email]
+X-Spam-Flag: NO
+X-Spam-Level: 
 
-On Wed, Nov 06, 2024 at 06:46:48PM +0000, Sami Tolvanen wrote:
-> Hi Luis,
-> 
-> On Wed, Nov 6, 2024 at 12:24 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
-> >
-> > Use 0 for the values as we use them for the return value on init
-> > to keep the test modules simple. This fixes a splat reported
-> >
-> > do_init_module: 'test_kallsyms_b'->init suspiciously returned 255, it should follow 0/-E convention
-> > do_init_module: loading module anyway...
-> > CPU: 5 UID: 0 PID: 1873 Comm: modprobe Not tainted 6.12.0-rc3+ #4
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.08-1 09/18/2024
-> > Call Trace:
-> >  <TASK>
-> >  dump_stack_lvl+0x56/0x80
-> >  do_init_module.cold+0x21/0x26
-> >  init_module_from_file+0x88/0xf0
-> >  idempotent_init_module+0x108/0x300
-> >  __x64_sys_finit_module+0x5a/0xb0
-> >  do_syscall_64+0x4b/0x110
-> >  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> > RIP: 0033:0x7f4f3a718839
-> > Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff>
-> > RSP: 002b:00007fff97d1a9e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-> > RAX: ffffffffffffffda RBX: 000055b94001ab90 RCX: 00007f4f3a718839
-> > RDX: 0000000000000000 RSI: 000055b910e68a10 RDI: 0000000000000004
-> > RBP: 0000000000000000 R08: 00007f4f3a7f1b20 R09: 000055b94001c5b0
-> > R10: 0000000000000040 R11: 0000000000000246 R12: 000055b910e68a10
-> > R13: 0000000000040000 R14: 000055b94001ad60 R15: 0000000000000000
-> >  </TASK>
-> > do_init_module: 'test_kallsyms_b'->init suspiciously returned 255, it should follow 0/-E convention
-> > do_init_module: loading module anyway...
-> > CPU: 1 UID: 0 PID: 1884 Comm: modprobe Not tainted 6.12.0-rc3+ #4
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.08-1 09/18/2024
-> > Call Trace:
-> >  <TASK>
-> >  dump_stack_lvl+0x56/0x80
-> >  do_init_module.cold+0x21/0x26
-> >  init_module_from_file+0x88/0xf0
-> >  idempotent_init_module+0x108/0x300
-> >  __x64_sys_finit_module+0x5a/0xb0
-> >  do_syscall_64+0x4b/0x110
-> >  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> > RIP: 0033:0x7ffaa5d18839
-> >
-> > Reported-by: Sami Tolvanen <samitolvanen@google.com>
-> > Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> > ---
-> >  lib/tests/module/gen_test_kallsyms.sh | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/lib/tests/module/gen_test_kallsyms.sh b/lib/tests/module/gen_test_kallsyms.sh
-> > index ae5966f1f904..3f2c626350ad 100755
-> > --- a/lib/tests/module/gen_test_kallsyms.sh
-> > +++ b/lib/tests/module/gen_test_kallsyms.sh
-> > @@ -32,7 +32,7 @@ gen_num_syms()
-> >         PREFIX=$1
-> >         NUM=$2
-> >         for i in $(seq 1 $NUM); do
-> > -               printf "int auto_test_%s_%010d = 0xff;\n" $PREFIX $i
-> > +               printf "int auto_test_%s_%010d = 0;\n" $PREFIX $i
-> >                 printf "EXPORT_SYMBOL_GPL(auto_test_%s_%010d);\n" $PREFIX $i
-> >         done
-> >         echo
-> 
-> Looks good to me. Thanks!
-> 
-> Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+Hi,
 
-Merged, thanks.
+On Wed, 6 Nov 2024, Siddharth Menon wrote:
 
-  Luis
+> When CONFIG_LIVEPATCH is disabled, compilation fails due to the
+> required structs from the livepatch header file being undefined.
+> This checks for CONFIG_LIVEPATCH in order to verify that
+> it is enabled before compiling livepatch self-tests.
+> 
+> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+> Signed-off-by: Siddharth Menon <simeddon@gmail.com>
+> ---
+>  tools/testing/selftests/livepatch/test_modules/Makefile | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+
+thank you for the patch.
+
+tools/testing/selftests/livepatch/config contains
+
+CONFIG_LIVEPATCH=y
+CONFIG_DYNAMIC_DEBUG=y
+
+I assumed that these prerequisites are respected but apparently not for 
+building the test modules if I understand it correctly.
+
+Is it possible to fix it in the way that the config file is respected? Or 
+how do kselftests work with that?
+
+Regards,
+Miroslav
 
