@@ -1,48 +1,48 @@
-Return-Path: <live-patching+bounces-815-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-809-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2B51A9CF8D3
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:57:32 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 073F99CF8D9
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:58:45 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id D76421F23E3A
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:57:31 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id D31B3B32355
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:53:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69476220D5F;
-	Fri, 15 Nov 2024 21:26:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67D1D21A4C5;
+	Fri, 15 Nov 2024 21:26:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="oGb2YPV5"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="OvSN4ExT"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EABCF215F56;
-	Fri, 15 Nov 2024 21:26:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 70BC9216421;
+	Fri, 15 Nov 2024 21:26:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731706015; cv=none; b=uJFusOWoBDM34ef93bbUmPuW3XfbqdJgd3QpD6GvfYsDj9fyGADHbtAbcS11EZqsyOWNuvUkcZhRTVuXF+ZkALRvvmC8Wahgl67GkqTVQ42ad/8x3RBHsWL3ZG+IhHwuLiF8qioTZvHilJHr0NMRur6+/mNUjJSmbcmowXbshf8=
+	t=1731706013; cv=none; b=Edojg5JCDRC4aFIDaFbJJogL1gtHDvJRwtabVGrbnN9zZ/klIgt/FrToOw0dbW0s68ItLsngU6/z79x+rmHR8ueW4TcxKx+Z/BzN8k7CILL7GT5A8fBFVgB6vm5FQbA9L8hnS+P4S5L6m7wUrSLsIwgo5rx6I6DcZz5lkeLcyA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731706015; c=relaxed/simple;
-	bh=ouZH/eqLcI05kQ2bWTH1hWKo7+EXHrUIZkYnBfgk4Pg=;
+	s=arc-20240116; t=1731706013; c=relaxed/simple;
+	bh=ZxuWs+0v/Sd0Nuyk06qwYw5CknEKsfv2byFcGFvpDQI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gz2EZElAAt3Z3aOzdEwn+JUlT72Qe/adU/SnAg5zJQT3AYAiUg5A/O3Meb63hLo7zcLskmb0/Tvx0aO2V/Rda6Vd2tcOfZHjPE1jJyyYDEWdU8GYP2eEgB9bTS3aWImH6cG9+3oHL/HFz3EHmqM2qvt3TfKVIVV3JOBaBWHkNW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=oGb2YPV5; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=Ie3bLziOXsg23C+NeYUId22ghoaRRlcjQpqzmf7M83Pmq0mcHNq0T0DYu9/XHzUsCAsR1VQlzDvG3w5qmoPF7YGvlNgrZ7utlRn4OaghbtIu9qrbeXM3SH8cZUhF0po8pI86hxLOoadzY9G+p7pzmezakAXsv67g+lwhksvgH1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=OvSN4ExT; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A9C08238AF4D;
+	by linux.microsoft.com (Postfix) with ESMTPSA id E068E2064AE1;
 	Fri, 15 Nov 2024 13:26:44 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A9C08238AF4D
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E068E2064AE1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1731706004;
-	bh=DTjXQ8JEnxKHPkRfiey8gv8xkSCkh1L+oMakOx6bumQ=;
+	s=default; t=1731706005;
+	bh=kyIMdoD81WSCHIuRs3t1IxAuP6vGJ5R59VD+r/6KKK0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=oGb2YPV5HdUkrLc8aXXGxz7j6fdC94ISGz/3Z3JDkeGMzqfQOdm/os+DxRfbZJSZm
-	 Sm8lyg5zbYiuzLJMaRkj7E/23RBdauVbVu8dNvl0Gp3UJGc2WZ7231aTsociCQa1Qd
-	 Z6HMNGoW3/gYR/l/pPCt55x0CtSvKcJxm9RO1wp8=
+	b=OvSN4ExTI3ztYwv8z22+okCfYqet5Vamjrrd8DLniE8bXBLrrqlExhm9XqqhqVQAv
+	 K9X4eAD6Lklhy7dtiZRCgteR1YNNFWOyXJy0qOlBw+SNmEx9GYlOniMke213AVuk1H
+	 UgCfCoB89XARJTc4CqTz96UEBf2hkM8Effwv9vsg=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Fri, 15 Nov 2024 21:26:33 +0000
-Subject: [PATCH v2 16/21] Bluetooth: MGMT: Convert timeouts to
+Date: Fri, 15 Nov 2024 21:26:34 +0000
+Subject: [PATCH v2 17/21] staging: vc04_services: Convert timeouts to
  secs_to_jiffies()
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -52,7 +52,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241115-converge-secs-to-jiffies-v2-16-911fb7595e79@linux.microsoft.com>
+Message-Id: <20241115-converge-secs-to-jiffies-v2-17-911fb7595e79@linux.microsoft.com>
 References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
 In-Reply-To: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -136,22 +136,22 @@ Changes made with the following Coccinelle rules:
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- net/bluetooth/mgmt.c | 2 +-
+ drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index a429661b676a83ec2d34ed7e228195f39a153f9f..ca89c26d04ec64869e6b99de099d343f4c548ce5 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -209,7 +209,7 @@ static const u16 mgmt_untrusted_events[] = {
- 	MGMT_EV_EXP_FEATURE_CHANGED,
- };
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+index 133ed15f3dbcc07dc353c22d8522e11a08ee6f46..6bb2562e071c4e623e51852860c682e047f823df 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+@@ -59,7 +59,7 @@ static int bcm2835_audio_send_msg_locked(struct bcm2835_audio_instance *instance
  
--#define CACHE_TIMEOUT	msecs_to_jiffies(2 * 1000)
-+#define CACHE_TIMEOUT	secs_to_jiffies(2)
- 
- #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
- 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
+ 	if (wait) {
+ 		if (!wait_for_completion_timeout(&instance->msg_avail_comp,
+-						 msecs_to_jiffies(10 * 1000))) {
++						 secs_to_jiffies(10))) {
+ 			dev_err(instance->dev,
+ 				"vchi message timeout, msg=%d\n", m->type);
+ 			return -ETIMEDOUT;
 
 -- 
 2.34.1
