@@ -1,49 +1,48 @@
-Return-Path: <live-patching+bounces-787-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-789-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2E7879CF7D2
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:35:30 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id F315A9CF818
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:42:04 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA40328215D
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:35:28 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 9DB0AB390CF
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:35:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4CC29204F76;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D46CF205E2D;
 	Fri, 15 Nov 2024 21:22:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="hCMeIw/D"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="LFvj1omr"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49E0E1FF05F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E16BE1DDA0E;
 	Fri, 15 Nov 2024 21:22:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731705775; cv=none; b=KTRXmSjosdPUZz/ETqt44rTTsX3a+8hdjsC9NrMQljA0RGP/Vfr97z0Iof0l150BNpHrKfO2isGDHpAcoBYprSb6Cvqfg7sLtbzkif/lbajDzQr8gcZXf+LPr7dJ7A/IXA2fzWzVRrt50YdYdQIMy9lGiHFiD7WeBZHzTJVujKQ=
+	t=1731705776; cv=none; b=T7ENfcC4LRIIBIqtkYplcnuZUhXH9FwMRzmbU0Inor37nk64mlYXMs3/qfTHLFTGAUndG7fe3rBen7LHlgaJxVro22A1vzR1YimkMiKfs0O8fE6Q/K702H5rAigZJuVmlUGnEj8/u0s9GuxpFUFx4pHS6Ap/8Na+swh8eHh9Ic4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731705775; c=relaxed/simple;
-	bh=ZxuWs+0v/Sd0Nuyk06qwYw5CknEKsfv2byFcGFvpDQI=;
+	s=arc-20240116; t=1731705776; c=relaxed/simple;
+	bh=PGTKzE2OLedyrb1pEhlcviJeQ6l9AViRa7x8F6q0TSU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SzDu9zt8nskhwoNimd3piVK9VMwJ/ZJyPnL5duIBYIkv4f1gT69xSj1NyEZRPquDCBISb6PlmsJyYJdK4GJE0nOQkE7wqJS32yh4eq2T2xKZG6/K7QNa0VQJUFTVxypDv+oIC5OIE/vQfkeVNgNmhRo1+9YH9SLycBp9kidLCAs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=hCMeIw/D; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=Qr3+OziNJFuswsPvArBluiwrudRLIca8nTdhj9o74757rJLQo3/L+3RIp2Auc2Da0GxKXX6R+nT/qfENDQWkpmtUlzxo9W42Kk2Y6Z/bbyuw2ujkb3mre2LgJB18j1Uj8mxCbg98NxTn+MFZQG9OOuMdM3FoFvjTRoANso4R/Hc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=LFvj1omr; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 88E5C20BEBD8;
+	by linux.microsoft.com (Postfix) with ESMTPSA id C5D5B20BEBF7;
 	Fri, 15 Nov 2024 13:22:45 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 88E5C20BEBD8
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C5D5B20BEBF7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1731705765;
-	bh=kyIMdoD81WSCHIuRs3t1IxAuP6vGJ5R59VD+r/6KKK0=;
+	bh=7RgevXzVOF2wd0QHaqg8sKSXBh3tNnxEZNLAJYHO4/0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=hCMeIw/D2+NTRMQJ3FRDpZj2qT/7FbCaDMS9+XIuVvW9RIzS37PIUIxd4jF3sKpOq
-	 ONruuQqONZh6MCBIYTovcefPeKanNMMCVBGfAbtnor6PdXfG/kDS1Iyd6np+7CKiaV
-	 BV9SmXmoDsx8kPuPU+1F4sBj6APCWtu0lORTDJ94=
+	b=LFvj1omrNM0zZtGffox7sgW5nc9dJZdVTA81Dj/wcPv/4s/wuIVOvUvfZbveDvw4y
+	 FuotwM7kePQ1S+NtqBMYs5hCFuKfxjTKCfLm2hLOBes2vr8zw1wp6TV7hkDlej16jx
+	 Fb+baeYINJlZ9BwwcItDzf5jhfC0bccWbyd+vUuI=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Fri, 15 Nov 2024 21:22:47 +0000
-Subject: [PATCH 17/22] staging: vc04_services: Convert timeouts to
- secs_to_jiffies()
+Date: Fri, 15 Nov 2024 21:22:48 +0000
+Subject: [PATCH 18/22] ceph: Convert timeouts to secs_to_jiffies()
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -52,7 +51,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241115-converge-secs-to-jiffies-v1-17-19aadc34941b@linux.microsoft.com>
+Message-Id: <20241115-converge-secs-to-jiffies-v1-18-19aadc34941b@linux.microsoft.com>
 References: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
 In-Reply-To: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -136,22 +135,22 @@ Changes made with the following Coccinelle rules:
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c | 2 +-
+ fs/ceph/quota.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
-index 133ed15f3dbcc07dc353c22d8522e11a08ee6f46..6bb2562e071c4e623e51852860c682e047f823df 100644
---- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
-+++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
-@@ -59,7 +59,7 @@ static int bcm2835_audio_send_msg_locked(struct bcm2835_audio_instance *instance
- 
- 	if (wait) {
- 		if (!wait_for_completion_timeout(&instance->msg_avail_comp,
--						 msecs_to_jiffies(10 * 1000))) {
-+						 secs_to_jiffies(10))) {
- 			dev_err(instance->dev,
- 				"vchi message timeout, msg=%d\n", m->type);
- 			return -ETIMEDOUT;
+diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
+index 06ee397e0c3a6172592e62dba95cd267cfff0db1..d90eda19bcc4618f98bfed833c10a6071cf2e2ac 100644
+--- a/fs/ceph/quota.c
++++ b/fs/ceph/quota.c
+@@ -166,7 +166,7 @@ static struct inode *lookup_quotarealm_inode(struct ceph_mds_client *mdsc,
+ 	if (IS_ERR(in)) {
+ 		doutc(cl, "Can't lookup inode %llx (err: %ld)\n", realm->ino,
+ 		      PTR_ERR(in));
+-		qri->timeout = jiffies + msecs_to_jiffies(60 * 1000); /* XXX */
++		qri->timeout = jiffies + secs_to_jiffies(60); /* XXX */
+ 	} else {
+ 		qri->timeout = 0;
+ 		qri->inode = in;
 
 -- 
 2.34.1
