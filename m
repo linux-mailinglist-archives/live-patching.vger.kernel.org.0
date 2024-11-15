@@ -1,48 +1,48 @@
-Return-Path: <live-patching+bounces-797-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-798-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D96D49CF83B
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:45:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 360A59CF841
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:45:52 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 816E828222E
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:45:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D15CF282D1A
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:45:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EBE51F9425;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 94402209F49;
 	Fri, 15 Nov 2024 21:26:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="pxyipjBG"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="iVvLyPnz"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DF1B1E7643;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99F531E8826;
 	Fri, 15 Nov 2024 21:26:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731706005; cv=none; b=HbSZmHhn1NDm6IrxAmO2oNch/UNcrVeIHa4Jf++DtZtCIlwtumc/xKRPH9DFl9kltY4c9mPSWcamGw8NIwdCdrnruBfpsf6JkgATvRQNy+BoBSgkoZFi4eGEuVfkDZHs++5+KOY0tA0O4/bhKvoPruPvfMjIKi6NVO/qJzJbJ90=
+	t=1731706005; cv=none; b=lrOBiJ0A1+KG3FRJH55/vmbC63YvSlX6PbEDIckYwKNIAmAdnjcvPBK/Uhz3L8nAKNW7D22Zs5RM5t/cUnBp7uUG8Tu8FQcEA4JvtOswadjDjG4UlmmdzQiFAo4yfXHy+Xf4j0a0IImPOzR/DEGcVbnm/ePoE9BDRUpdsFb1MK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1731706005; c=relaxed/simple;
-	bh=afxpZzVgZd4OpaQnlgpG46sHDPegv6Vj3MhPh7Vp4Mk=;
+	bh=mKO8y4ZZgJGBLAdgGGQTJcQYe08GpXaDA1So8dyKDWE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MPOtx1CLUMWmZaN8WS0xKKgzjcgEeMZtIWiIMQY2TbW1Kdanw9CAWwHhkNTyr4FeIgVz8GU8QKC7usyLdBsIDandiCoLi4FManZazeONvyMafZz98VvFwxP8Cn7ZOH1fRM/ASUulorFT0j8M7kmM2zKrvtBeWfL+UD/pcZUnqPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=pxyipjBG; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=I4sqU5ZJ+A1zAh6/8ZqFNczhcQZG4tzBj4vlmjQzW3zanDZM3UoXYoQza8YeIGW71J1sJGgQu4L4aV1rD3/Bju59DyanJAwYXlEWt7QHt/JGKK/dV2jMdUP9sTmgH+QuNF/iJUYBjLBexcVhU4vnTk2C4bHnjOwdLJoCXpPltjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=iVvLyPnz; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 9987D206BCF6;
+	by linux.microsoft.com (Postfix) with ESMTPSA id CEC70206BCF9;
 	Fri, 15 Nov 2024 13:26:41 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9987D206BCF6
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CEC70206BCF9
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1731706001;
-	bh=3U0Zq8t5krsiKxal+ZZuXq1UdnH4Ui7697JSzYEOhjI=;
+	s=default; t=1731706002;
+	bh=2qNmVTIUPIQHjxG6U+oz3oOJorUpDTvltiEua1kgDGM=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=pxyipjBG4pPbUUX4B02FM3/ZsXqd5TTFM1LiraDNsXkdoszGq2MjH9IQsJybMvID+
-	 4YKAHyn2fCEWP25moqNhPglaJ0cda8qqzueRkUNy6p2auJAmaCiugYo3dL3clU9ruD
-	 egDpjyzKcS59GHsuj7I2I/nCPTxfw5Z4JYIS26Qg=
+	b=iVvLyPnzqMDnIVqCr8TaID7h6/EcvZ4uGITdugla/Mpc21N0a+zSOXosYGRpfd2vu
+	 d1MyMoy9U+Z9sd1VeqqtG/myJ7CKMnsPLRLQ8NuKd0YjVEIqU9hZB6KsELpQ9xGs8R
+	 v7zo22n2+S5uyzdobRgvEalMR5SyEYAxTB4IIGU8=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Fri, 15 Nov 2024 21:26:20 +0000
-Subject: [PATCH v2 03/21] arm: pxa: Convert timeouts to use
+Date: Fri, 15 Nov 2024 21:26:21 +0000
+Subject: [PATCH v2 04/21] s390: kernel: Convert timeouts to use
  secs_to_jiffies()
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -52,7 +52,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241115-converge-secs-to-jiffies-v2-3-911fb7595e79@linux.microsoft.com>
+Message-Id: <20241115-converge-secs-to-jiffies-v2-4-911fb7595e79@linux.microsoft.com>
 References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
 In-Reply-To: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -136,26 +136,57 @@ Changes made with the following Coccinelle rules:
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- arch/arm/mach-pxa/sharpsl_pm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/s390/kernel/lgr.c      | 3 ++-
+ arch/s390/kernel/time.c     | 4 ++--
+ arch/s390/kernel/topology.c | 2 +-
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/mach-pxa/sharpsl_pm.c b/arch/arm/mach-pxa/sharpsl_pm.c
-index 72fa2e3fd35318e5a63c121ed7990a56a56b134c..bbbd06bc79bbb94fb258562e5a382acaf3c277b3 100644
---- a/arch/arm/mach-pxa/sharpsl_pm.c
-+++ b/arch/arm/mach-pxa/sharpsl_pm.c
-@@ -31,9 +31,9 @@
- /*
-  * Constants
+diff --git a/arch/s390/kernel/lgr.c b/arch/s390/kernel/lgr.c
+index 6652e54cf3db9fbdd8cfb06f8a0dc1d4c05ae7d7..68021cb38574b122bbe3d9f70e9168305360017b 100644
+--- a/arch/s390/kernel/lgr.c
++++ b/arch/s390/kernel/lgr.c
+@@ -166,7 +166,8 @@ static struct timer_list lgr_timer;
   */
--#define SHARPSL_CHARGE_ON_TIME_INTERVAL        (msecs_to_jiffies(1*60*1000))  /* 1 min */
--#define SHARPSL_CHARGE_FINISH_TIME             (msecs_to_jiffies(10*60*1000)) /* 10 min */
--#define SHARPSL_BATCHK_TIME                    (msecs_to_jiffies(15*1000))    /* 15 sec */
-+#define SHARPSL_CHARGE_ON_TIME_INTERVAL        (secs_to_jiffies(60))  /* 1 min */
-+#define SHARPSL_CHARGE_FINISH_TIME             (secs_to_jiffies(10*60)) /* 10 min */
-+#define SHARPSL_BATCHK_TIME                    (secs_to_jiffies(15))    /* 15 sec */
- #define SHARPSL_BATCHK_TIME_SUSPEND            (60*10)                        /* 10 min */
+ static void lgr_timer_set(void)
+ {
+-	mod_timer(&lgr_timer, jiffies + msecs_to_jiffies(LGR_TIMER_INTERVAL_SECS * MSEC_PER_SEC));
++	mod_timer(&lgr_timer,
++		  jiffies + secs_to_jiffies(LGR_TIMER_INTERVAL_SECS));
+ }
  
- #define SHARPSL_WAIT_CO_TIME                   15  /* 15 sec */
+ /*
+diff --git a/arch/s390/kernel/time.c b/arch/s390/kernel/time.c
+index b713effe057967623f64da8297314fcc42ff1af2..e28c61d39d27c6e89f490e779ff674ba2fe21d3e 100644
+--- a/arch/s390/kernel/time.c
++++ b/arch/s390/kernel/time.c
+@@ -656,12 +656,12 @@ static void stp_check_leap(void)
+ 		if (ret < 0)
+ 			pr_err("failed to set leap second flags\n");
+ 		/* arm Timer to clear leap second flags */
+-		mod_timer(&stp_timer, jiffies + msecs_to_jiffies(14400 * MSEC_PER_SEC));
++		mod_timer(&stp_timer, jiffies + secs_to_jiffies(14400));
+ 	} else {
+ 		/* The day the leap second is scheduled for hasn't been reached. Retry
+ 		 * in one hour.
+ 		 */
+-		mod_timer(&stp_timer, jiffies + msecs_to_jiffies(3600 * MSEC_PER_SEC));
++		mod_timer(&stp_timer, jiffies + secs_to_jiffies(3600));
+ 	}
+ }
+ 
+diff --git a/arch/s390/kernel/topology.c b/arch/s390/kernel/topology.c
+index 813e5da9a9737e05ec3ef85a495fe38cbb40c49b..99095ff3897c1b5337f7e2abcf10f3fe8219ad7c 100644
+--- a/arch/s390/kernel/topology.c
++++ b/arch/s390/kernel/topology.c
+@@ -370,7 +370,7 @@ static void set_topology_timer(void)
+ 	if (atomic_add_unless(&topology_poll, -1, 0))
+ 		mod_timer(&topology_timer, jiffies + msecs_to_jiffies(100));
+ 	else
+-		mod_timer(&topology_timer, jiffies + msecs_to_jiffies(60 * MSEC_PER_SEC));
++		mod_timer(&topology_timer, jiffies + secs_to_jiffies(60));
+ }
+ 
+ void topology_expect_change(void)
 
 -- 
 2.34.1
