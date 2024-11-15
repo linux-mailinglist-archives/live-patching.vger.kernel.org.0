@@ -1,48 +1,48 @@
-Return-Path: <live-patching+bounces-791-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-792-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F10C59CF7EA
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:37:24 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id A2D589CF807
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:40:02 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8EB0F289520
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:37:23 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id CEFA7B35C2C
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:38:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C35DE206E8E;
-	Fri, 15 Nov 2024 21:22:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D49F20821F;
+	Fri, 15 Nov 2024 21:22:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="SFgsUzV2"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="PgOujrsx"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F302202F7E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C48EE20400E;
 	Fri, 15 Nov 2024 21:22:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731705777; cv=none; b=R5bHB+ZZNqws97OlRNeAdraY6HhUr7y/xF0M6D+7L3CcP03KxvBksagCzACFM0jibeF52r9YuCV/W2V9zWWL9GvsXfvE30yG9NcGvqV0SzV/GbGS9cru5yEdgmJIQDstMghPXtU1r9Pgd8MGVwLxPYfRy4D10Bn+YRQ4XE/iJPU=
+	t=1731705778; cv=none; b=t3i0GNcMbYRni8lcyhR2zD41nYy5G4Gj+J06+X3cSXefHVM0oCNdYU1sX/lRLeLIYBkjJjXJJZcsQQnjTA4/6ynj2YWPRwfXX5jSIyo4uwPmvh8Aee3147JiND+lDtLXgNV2t+pZ7sFRt5liNaxtZ2PwPelk5J3KWwe1EzOZsnY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731705777; c=relaxed/simple;
-	bh=kd8m5Fkh+RCrm1/6q/g2xlfYUzdWXOZRTZSgnA96OPo=;
+	s=arc-20240116; t=1731705778; c=relaxed/simple;
+	bh=ljBwxM/5o+6XMjhfz+VeOPJwTB8D67s5tBfs+GUmAGM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gcXC8WUotnUvyPjOG3Fr9pRMJIdGDFoicHw6VZAwLH5/QBdDmPEmneOxM4W0qrItiqZyL87tL4h1WA6jVlW201megphhwk7XUyO6UcVlNKIztn0QbKp18D0SEgtr2orHpKjVm6sf13Ztnw+LfKbQLMpO4Bb3BRaFrLkredGr7gE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=SFgsUzV2; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=gyNJZ41SuBCzkb3us8p4Qf/kn2EZlvc6YDdtqVLH53hCVNeh0Uhj+ihDwKlghe0hkWOFo7DdOIwQvodJkUyeu3PpMYdepgZzj24DSMyEk21tI+y1PwkpasmVKFLZURYe20fYTREM7wrDwB8wMq4H4FNRpCrXO2JIZXp1zRkzcgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=PgOujrsx; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 391A4206BCED;
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6D0F7206BCEF;
 	Fri, 15 Nov 2024 13:22:46 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 391A4206BCED
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6D0F7206BCEF
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1731705766;
-	bh=94UWkQUgIE+TIBJCr3TB9bjXju243wFFlCrw1pjugTo=;
+	bh=C//qZdfJfhN40N7nu/AQ5wmq+hj+onzvFzX2KrlsiOc=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=SFgsUzV2pr+7sgkN9ckclI41KlvZ5rbgTJNvcYfQiJkXt/zfibxMELK/nTIaeiHDO
-	 ea+s5uVXRp6XFAaIO7MmvRCgTW3Xe5hl6IpUNHPKOVjiYfv0tTkJJCNkRHRjEL8vOu
-	 pgAUpMsv2jfhmvY7krwkZWjWRsRmTp18YKKkcVMM=
+	b=PgOujrsxbS3CIW2HtLS/dd5ya7VtRG8QHhCZQdBAsTM3cx+kDkUAOUPnWwMnerztw
+	 8X+Y81upKcxyh16cr7IomUwsyHP2XT7qOxm2nnfHsDBJOEcmEz0gtoHQc1mKP3Fi67
+	 1u154eT7RN/hsmnSsi2wJWAYt//zpJk5MiSg9/YM=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Fri, 15 Nov 2024 21:22:50 +0000
-Subject: [PATCH 20/22] ALSA: line6: Convert timeouts to secs_to_jiffies()
+Date: Fri, 15 Nov 2024 21:22:51 +0000
+Subject: [PATCH 21/22] nfp: Convert timeouts to secs_to_jiffies()
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -51,7 +51,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241115-converge-secs-to-jiffies-v1-20-19aadc34941b@linux.microsoft.com>
+Message-Id: <20241115-converge-secs-to-jiffies-v1-21-19aadc34941b@linux.microsoft.com>
 References: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
 In-Reply-To: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -135,22 +135,22 @@ Changes made with the following Coccinelle rules:
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- sound/usb/line6/toneport.c | 2 +-
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/usb/line6/toneport.c b/sound/usb/line6/toneport.c
-index ca2c6f5de407ece21ab69a39ed603e3f10069039..c073b38cd6738176fc6a276d05ed553526573341 100644
---- a/sound/usb/line6/toneport.c
-+++ b/sound/usb/line6/toneport.c
-@@ -386,7 +386,7 @@ static int toneport_setup(struct usb_line6_toneport *toneport)
- 		toneport_update_led(toneport);
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index 6e0929af0f725b2b3855c69bbe894e6626c566b3..6925ad985fc9e2d5641feea41ff277107a8dee9c 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -2779,7 +2779,7 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
+ 		break;
+ 	}
  
- 	schedule_delayed_work(&toneport->line6.startup_work,
--			      msecs_to_jiffies(TONEPORT_PCM_DELAY * 1000));
-+			      secs_to_jiffies(TONEPORT_PCM_DELAY));
- 	return 0;
- }
+-	netdev->watchdog_timeo = msecs_to_jiffies(5 * 1000);
++	netdev->watchdog_timeo = secs_to_jiffies(5);
  
+ 	/* MTU range: 68 - hw-specific max */
+ 	netdev->min_mtu = ETH_MIN_MTU;
 
 -- 
 2.34.1
