@@ -1,48 +1,48 @@
-Return-Path: <live-patching+bounces-806-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-810-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A3AD39CF882
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:50:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 69CDC9CF89D
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 22:53:29 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4BF1F283CE5
-	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:50:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0FA7B281817
+	for <lists+live-patching@lfdr.de>; Fri, 15 Nov 2024 21:53:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FE64216215;
-	Fri, 15 Nov 2024 21:26:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8676D21B45D;
+	Fri, 15 Nov 2024 21:26:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="osivBUZm"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="eAVIrYLN"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4F50212F1F;
-	Fri, 15 Nov 2024 21:26:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 795E8213ED9;
+	Fri, 15 Nov 2024 21:26:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731706010; cv=none; b=cvh/ZB4qjRcSd/V9nM0PZCWfoitBbeKYgJjHZ55jBhDDSbcBL9/IfLN2vYQr8ut/ILf33wXY3p+Xh1Htvt97zdSA6SV1PnlPCtAcBpFWpiIc7uBVek6TCROUbNBysyr/gQfH66woM9yW8mQ1uqVHHsO8m5aXTeOLLOyXmJS0jDg=
+	t=1731706013; cv=none; b=EIzh7K0sit5MrJsI8E1Ziz1LgLSAK7GtAWGuFJd8tlPkTHZspVJKWJ0b4LEpBXZmBgW9mizM81D+UhS6i0b3XGXy8lu02zSK8evON9LJBlC3atJayhJ1E2hHYABw/JLw68FsxHU1PWZ/lJnLdeLTUylhdLEL8gqpM28CJX7V760=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731706010; c=relaxed/simple;
-	bh=4w4rAR4CgE6B3eiy3iXFgXHTOyKzk1gy2vY+GRzIPZo=;
+	s=arc-20240116; t=1731706013; c=relaxed/simple;
+	bh=rc9ZC19HIInirsSIXiQaedvTTkyvfoYETKmf3YmX0tI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mXse2Ps634PB0gY+ZD4O+DlPPy3IdZMGsLhagzhYpZzIiknAxdn/f82srl8gbcokOhQWQpMz+7knykPQ4dJTH8WnRd7TDCzMzdkWBw67conyVSqoKXnROXvFDFUqVAoxd8xS32XXODVuipzMT0o8i6gBGCI/IKghhyVheJbqhKI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=osivBUZm; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=c+7//HnSyFN0gET4oBOUIhALEdUYkiUXKw8ASXjjaYj71jQc7fDp0yTQCIZ1ARGJTNUC1DGMz+bxRZhJ6LH+p4BriqoPmcbRCRbMDesiVvHG0/CS4ikX5szIbmI8InYsfLMzJqAdVao467mwBhlqPNEDKvvXJ6g7/0F1JdyeqF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=eAVIrYLN; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id B08AC2174E41;
+	by linux.microsoft.com (Postfix) with ESMTPSA id E651E23718AC;
 	Fri, 15 Nov 2024 13:26:43 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B08AC2174E41
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E651E23718AC
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1731706003;
-	bh=KRAKVqkmYHFKsYpIbPFWmWMGYVvfzvIpOOiOmhExdwo=;
+	s=default; t=1731706004;
+	bh=pCX0EpdqmyNkdZPLk4Z0q7m89NufhvHb1Y+2Mrmnnrk=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=osivBUZmIsQLl2jL+ZDQlIu+P5dhzLcQCyWk2W1AvFXRp9qFe1ScWwkuHagBoxYIx
-	 W4f74U2umtM+/izGX31p0lh8kwNEI1l5coBYaWK3pMcVhuLLHE4asQeuLREQ90Mb9z
-	 ups8j6Ezd0JumeEqkyYkZ8sddPZGhvHCQNewXQdE=
+	b=eAVIrYLNHkRW1opV+l10sI01k9fp5RPobV2nEm7OQtZTXvL1OZpViQrABNURt8i3R
+	 Lt5oz4EgCq0BgTDEpnRIgtHazGUHt44mhOWeQa6X66HXQwFE3odFdSj0nTsElRySJE
+	 uoqOVSbVkxhvj88d1jkAwyWIgOOXRrS//ir9JXro=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Fri, 15 Nov 2024 21:26:29 +0000
-Subject: [PATCH v2 12/21] scsi: pm8001: Convert timeouts to
+Date: Fri, 15 Nov 2024 21:26:30 +0000
+Subject: [PATCH v2 13/21] xen/blkback: Convert timeouts to
  secs_to_jiffies()
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -52,7 +52,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241115-converge-secs-to-jiffies-v2-12-911fb7595e79@linux.microsoft.com>
+Message-Id: <20241115-converge-secs-to-jiffies-v2-13-911fb7595e79@linux.microsoft.com>
 References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
 In-Reply-To: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -136,22 +136,22 @@ Changes made with the following Coccinelle rules:
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- drivers/scsi/pm8001/pm8001_init.c | 2 +-
+ drivers/block/xen-blkback/blkback.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_init.c b/drivers/scsi/pm8001/pm8001_init.c
-index 33e1eba62ca12c2555419197ecdbebad817e4a6d..be88890716cc152b4687edf5e204d14bd177e188 100644
---- a/drivers/scsi/pm8001/pm8001_init.c
-+++ b/drivers/scsi/pm8001/pm8001_init.c
-@@ -734,7 +734,7 @@ static int pm8001_init_sas_add(struct pm8001_hba_info *pm8001_ha)
- 		return -EIO;
- 	}
- 	time_remaining = wait_for_completion_timeout(&completion,
--				msecs_to_jiffies(60*1000)); // 1 min
-+				secs_to_jiffies(60)); // 1 min
- 	if (!time_remaining) {
- 		kfree(payload.func_specific);
- 		pm8001_dbg(pm8001_ha, FAIL, "get_nvmd_req timeout\n");
+diff --git a/drivers/block/xen-blkback/blkback.c b/drivers/block/xen-blkback/blkback.c
+index 838064593f62b75f3d937c0c041ea78dedbbaf84..a7c2b04ab943de9cbd69b596aad177a0534f7762 100644
+--- a/drivers/block/xen-blkback/blkback.c
++++ b/drivers/block/xen-blkback/blkback.c
+@@ -544,7 +544,7 @@ static void print_stats(struct xen_blkif_ring *ring)
+ 		 ring->st_rd_req, ring->st_wr_req,
+ 		 ring->st_f_req, ring->st_ds_req,
+ 		 ring->persistent_gnt_c, max_pgrants);
+-	ring->st_print = jiffies + msecs_to_jiffies(10 * 1000);
++	ring->st_print = jiffies + secs_to_jiffies(10);
+ 	ring->st_rd_req = 0;
+ 	ring->st_wr_req = 0;
+ 	ring->st_oo_req = 0;
 
 -- 
 2.34.1
