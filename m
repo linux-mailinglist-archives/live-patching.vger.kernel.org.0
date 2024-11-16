@@ -1,56 +1,56 @@
-Return-Path: <live-patching+bounces-832-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-833-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1C21F9CFDC5
-	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 11:07:16 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id E40459CFDCF
+	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 11:11:11 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 8D6FFB26759
-	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 10:07:13 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 749231F2638D
+	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 10:11:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE977194C7D;
-	Sat, 16 Nov 2024 10:07:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AFCC1957E2;
+	Sat, 16 Nov 2024 10:11:02 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19E8218FC7E;
-	Sat, 16 Nov 2024 10:07:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0FF192B77;
+	Sat, 16 Nov 2024 10:10:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731751622; cv=none; b=itQSVSnF5LC8O15aS3eTvvWkPoZF4aoy/B5Oe6xYIMQbNS/Yk/+QKz4RIHQjjpqjCQEqIeT3HUPf99eQzLGwlakvkRuaDHTltadSUASderiMJE0WVKdzxM+RoEJ97aSbcoh1mq2fb2X9crozubPqRBftBEyCxe6Ch7vLvWnMiFc=
+	t=1731751862; cv=none; b=byE3vDuZxG/AvnPfZLsBAxnDm3kx2SlaMcJwMfyNAMCsvXxHjkOL5cCJVLG2hROiNmJNMgSk1SUrOsP1RkMIQmxAVpp+UoFItGE2NkeAOXTpjuLKYQ/EPR5wvPQEU3OSa1v8lkKzLmLhjV44hN0fQKHA0pKPI8qzC6UHP4D60CE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731751622; c=relaxed/simple;
-	bh=/hDc1/waL6f66GbgsvvZdoFgtSGIcddOihZj3VZBNV4=;
+	s=arc-20240116; t=1731751862; c=relaxed/simple;
+	bh=xksNnw+gkMp5XjS+cpaBCLtGghYgnvoCGMV+G6vSmdk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NmR+owoljJNf2M08pHpkwOkrEGhuA5w99tnbKNz0pdSBf+anFfDvipSpQkp/wOgoovLaYX/MGL+rh5m5tHnOTz+rq2EoItEYDl0+izSNsEpjfRwyYU0/NMP21eJtCZej/96ThTWn+WoxwkfJO2BfbtsGAyLZ7N3UEmUKp5tePlk=
+	 In-Reply-To:Content-Type; b=VWc/gT0u7Bs5Qm46shG5suhjdrgILtCz/Cq3O0jsUZdz21wIx3koDtbdXkWDLEXMUJwVcVa7J1vv1134UNYAAnQaek/hv13k4BvgRubzVHZnt+e2tuzs65G/VY74ub3xz+exSuAYjDwtpUnVixKBYlenipZfVbW8AqHuhDeod14=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-	by localhost (Postfix) with ESMTP id 4Xr8gl1ry9z9sSX;
-	Sat, 16 Nov 2024 11:06:59 +0100 (CET)
+	by localhost (Postfix) with ESMTP id 4Xr8mL1R16z9sSd;
+	Sat, 16 Nov 2024 11:10:58 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
 	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GiuJ5kFiF1NH; Sat, 16 Nov 2024 11:06:59 +0100 (CET)
+	with ESMTP id sS8O0LnxtKc7; Sat, 16 Nov 2024 11:10:58 +0100 (CET)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase2.c-s.fr (Postfix) with ESMTP id 4Xr8gl0b48z9sST;
-	Sat, 16 Nov 2024 11:06:59 +0100 (CET)
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4Xr8mJ5rw4z9sSb;
+	Sat, 16 Nov 2024 11:10:56 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id ECAD08B7A0;
-	Sat, 16 Nov 2024 11:06:58 +0100 (CET)
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id ABE338B7A0;
+	Sat, 16 Nov 2024 11:10:56 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
 	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id xw5jQJJ7h8Zy; Sat, 16 Nov 2024 11:06:58 +0100 (CET)
+	with ESMTP id F1qWTVabQRIL; Sat, 16 Nov 2024 11:10:56 +0100 (CET)
 Received: from [192.168.232.159] (POS169858.IDSI0.si.c-s.fr [192.168.232.159])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 7AEB48B763;
-	Sat, 16 Nov 2024 11:06:55 +0100 (CET)
-Message-ID: <b6a059d8-7b23-455d-9ecd-eb3cdddd22a2@csgroup.eu>
-Date: Sat, 16 Nov 2024 11:06:55 +0100
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 35D3D8B763;
+	Sat, 16 Nov 2024 11:10:53 +0100 (CET)
+Message-ID: <718febc4-59ee-4701-ad62-8b7a8fa7a910@csgroup.eu>
+Date: Sat, 16 Nov 2024 11:10:52 +0100
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -58,8 +58,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 05/21] powerpc/papr_scm: Convert timeouts to
- secs_to_jiffies()
+Subject: Re: [PATCH v2 19/21] livepatch: Convert timeouts to secs_to_jiffies()
 To: Easwar Hariharan <eahariha@linux.microsoft.com>,
  Pablo Neira Ayuso <pablo@netfilter.org>,
  Jozsef Kadlecsik <kadlec@netfilter.org>,
@@ -122,10 +121,10 @@ Cc: netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
  etnaviv@lists.freedesktop.org, oss-drivers@corigine.com,
  linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen <anna-maria@linutronix.de>
 References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
- <20241115-converge-secs-to-jiffies-v2-5-911fb7595e79@linux.microsoft.com>
+ <20241115-converge-secs-to-jiffies-v2-19-911fb7595e79@linux.microsoft.com>
 Content-Language: fr-FR
 From: Christophe Leroy <christophe.leroy@csgroup.eu>
-In-Reply-To: <20241115-converge-secs-to-jiffies-v2-5-911fb7595e79@linux.microsoft.com>
+In-Reply-To: <20241115-converge-secs-to-jiffies-v2-19-911fb7595e79@linux.microsoft.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
@@ -145,50 +144,104 @@ Le 15/11/2024 à 22:26, Easwar Hariharan a écrit :
 > 
 > - msecs_to_jiffies(C * MSEC_PER_SEC)
 > + secs_to_jiffies(C)
-
-Is it a special script or is it done with the script in patch 2.
-
-That's nice to say how it is done, but you also have to say _what_ and 
-_why_ you do it. This is even more important as you plan to get it 
-merged independently in each tree instead of merging it as a single series.
-
-It could be something like:
-
-Commit b35108a51cf7 ("jiffies: Define secs_to_jiffies()") introduced 
-secs_to_jiffies(). As the value here is a multiple of 1000, use 
-secs_to_jiffies() instead of msecs_to_jiffies to avoid the multiplication.
-
-This is converted using scripts/coccinelle/misc/secs_to_jiffies.cocci
-
 > 
 > Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 > ---
->   arch/powerpc/platforms/pseries/papr_scm.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>   samples/livepatch/livepatch-callbacks-busymod.c |  2 +-
+>   samples/livepatch/livepatch-shadow-fix1.c       |  2 +-
+>   samples/livepatch/livepatch-shadow-mod.c        | 10 +++++-----
+>   3 files changed, 7 insertions(+), 7 deletions(-)
 > 
-> diff --git a/arch/powerpc/platforms/pseries/papr_scm.c b/arch/powerpc/platforms/pseries/papr_scm.c
-> index 9e297f88adc5d97d4dc7b267b0bfebd58e5cf193..9e8086ec66e0f0e555ac27933854c06cfcf91a04 100644
-> --- a/arch/powerpc/platforms/pseries/papr_scm.c
-> +++ b/arch/powerpc/platforms/pseries/papr_scm.c
-> @@ -543,7 +543,7 @@ static int drc_pmem_query_health(struct papr_scm_priv *p)
+> diff --git a/samples/livepatch/livepatch-callbacks-busymod.c b/samples/livepatch/livepatch-callbacks-busymod.c
+> index 378e2d40271a9717d09eff51d3d3612c679736fc..d0fd801a7c21b7d7939c29d83f9d993badcc9aba 100644
+> --- a/samples/livepatch/livepatch-callbacks-busymod.c
+> +++ b/samples/livepatch/livepatch-callbacks-busymod.c
+> @@ -45,7 +45,7 @@ static int livepatch_callbacks_mod_init(void)
+>   {
+>          pr_info("%s\n", __func__);
+>          schedule_delayed_work(&work,
+> -               msecs_to_jiffies(1000 * 0));
+> +               secs_to_jiffies(0));
+
+Using secs_to_jiffies() is pointless, 0 is universal, should become 
+schedule_delayed_work(&work, 0);
+
+>          return 0;
+>   }
 > 
->          /* Jiffies offset for which the health data is assumed to be same */
->          cache_timeout = p->lasthealth_jiffies +
-> -               msecs_to_jiffies(MIN_HEALTH_QUERY_INTERVAL * 1000);
-> +               secs_to_jiffies(MIN_HEALTH_QUERY_INTERVAL);
+> diff --git a/samples/livepatch/livepatch-shadow-fix1.c b/samples/livepatch/livepatch-shadow-fix1.c
+> index 6701641bf12d454a770e49abeeb0dea92560e55e..948ea1f5760fed2fa27baf478c97cf98ad5c99a8 100644
+> --- a/samples/livepatch/livepatch-shadow-fix1.c
+> +++ b/samples/livepatch/livepatch-shadow-fix1.c
+> @@ -73,7 +73,7 @@ static struct dummy *livepatch_fix1_dummy_alloc(void)
+>                  return NULL;
+> 
+>          d->jiffies_expire = jiffies +
+> -               msecs_to_jiffies(1000 * EXPIRE_PERIOD);
+> +               secs_to_jiffies(EXPIRE_PERIOD);
+> 
+>          /*
+>           * Patch: save the extra memory location into a SV_LEAK shadow
+> diff --git a/samples/livepatch/livepatch-shadow-mod.c b/samples/livepatch/livepatch-shadow-mod.c
+> index 7e753b0d2fa611524c9e2adbe02c8fa3e9b6015e..79296e6ccb119f521e86a121623855d841c9fc5e 100644
+> --- a/samples/livepatch/livepatch-shadow-mod.c
+> +++ b/samples/livepatch/livepatch-shadow-mod.c
+> @@ -102,7 +102,7 @@ static __used noinline struct dummy *dummy_alloc(void)
+>                  return NULL;
+> 
+>          d->jiffies_expire = jiffies +
+> -               msecs_to_jiffies(1000 * EXPIRE_PERIOD);
+> +               secs_to_jiffies(EXPIRE_PERIOD);
 
-Wouldn't it now fit on a single line ?
-
-	cache_timeout = p->lasthealth_jiffies + 
-secs_to_jiffies(MIN_HEALTH_QUERY_INTERVAL);
-
-
-Also I'm not sure it is worth the MIN_HEALTH_QUERY_INTERVAL macro as it 
-is defined localy and used only once, but that's another story.
+Should fit on a single line, avoid multiple lines when possible.
 
 > 
->          /* Fetch new health info is its older than MIN_HEALTH_QUERY_INTERVAL */
->          if (time_after(jiffies, cache_timeout))
+>          /* Oops, forgot to save leak! */
+>          leak = kzalloc(sizeof(*leak), GFP_KERNEL);
+> @@ -153,7 +153,7 @@ static void alloc_work_func(struct work_struct *work)
+>          mutex_unlock(&dummy_list_mutex);
+> 
+>          schedule_delayed_work(&alloc_dwork,
+> -               msecs_to_jiffies(1000 * ALLOC_PERIOD));
+> +               secs_to_jiffies(ALLOC_PERIOD));
+
+Should fit on a single line, avoid multiple lines when possible.
+
+
+>   }
+> 
+>   /*
+> @@ -185,15 +185,15 @@ static void cleanup_work_func(struct work_struct *work)
+>          mutex_unlock(&dummy_list_mutex);
+> 
+>          schedule_delayed_work(&cleanup_dwork,
+> -               msecs_to_jiffies(1000 * CLEANUP_PERIOD));
+> +               secs_to_jiffies(CLEANUP_PERIOD));
+
+Should fit on a single line, avoid multiple lines when possible.
+
+
+>   }
+> 
+>   static int livepatch_shadow_mod_init(void)
+>   {
+>          schedule_delayed_work(&alloc_dwork,
+> -               msecs_to_jiffies(1000 * ALLOC_PERIOD));
+> +               secs_to_jiffies(ALLOC_PERIOD));
+
+Should fit on a single line, avoid multiple lines when possible.
+
+
+>          schedule_delayed_work(&cleanup_dwork,
+> -               msecs_to_jiffies(1000 * CLEANUP_PERIOD));
+> +               secs_to_jiffies(CLEANUP_PERIOD));
+
+Should fit on a single line, avoid multiple lines when possible.
+
+
+> 
+>          return 0;
+>   }
 > 
 > --
 > 2.34.1
