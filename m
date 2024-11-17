@@ -1,180 +1,102 @@
-Return-Path: <live-patching+bounces-840-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-841-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B5C1D9CFE74
-	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 12:26:19 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 855349D04A8
+	for <lists+live-patching@lfdr.de>; Sun, 17 Nov 2024 17:18:49 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 49ED62861E7
-	for <lists+live-patching@lfdr.de>; Sat, 16 Nov 2024 11:26:18 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 86F45B21C76
+	for <lists+live-patching@lfdr.de>; Sun, 17 Nov 2024 16:18:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC487199FD0;
-	Sat, 16 Nov 2024 11:26:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B6DF1D9A7D;
+	Sun, 17 Nov 2024 16:18:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=inria.fr header.i=@inria.fr header.b="e6HMrvPi"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bD4ZbrRq"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A986D74E09;
-	Sat, 16 Nov 2024 11:26:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.134.164.104
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28DE4CA64;
+	Sun, 17 Nov 2024 16:18:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731756370; cv=none; b=mCA2+79yaTCe8jqTba2wBQK9qzEkdsLHkPc3W2Lpsidk4c0MrW+vRcs0rHdCPC1YiXjI9jqrQyzjrXklVWUjYMW15zln5a4paxsNqHUILEWCEGYpky1Hi5Vh6wHolQznk3OrmUhCIVDYdxxLmXBuV00zWoBmTrl+eCYVLVMr6DI=
+	t=1731860320; cv=none; b=u5/6llm+Mzj8ubZwTnM2jfiEBnP7Eewq+OaVp82wSK2rVX1/TVUvRs61HLb6sLmIjqs/tANllxJ2SUI9W5IN7GJ1ne3Wjrj5zE3jaGBOlmE38DJyOOgs/OdVTM8fdGpPHjeCFuA/VfoznWIVj1jDf9LXTPEYOwWWfFpZAsb2Rtg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731756370; c=relaxed/simple;
-	bh=sHo8qF+AvE8oVJvwFjFrtdRWHM4ZdMC/331/xYQY13M=;
-	h=Content-Type:From:Mime-Version:Subject:Date:Message-Id:References:
-	 Cc:In-Reply-To:To; b=Y3VriLnM/AXjiNMpHe2hEinCnXV/BaqfqfZ8j9b/yQeTrzE3GoNBl/ICJbWah4edlQugzrEbZ9dQIfZLSAdWIGJEnc9xRU3GAdtd9g9S9Rye86YDUJxKtbH9P7ZEnBAgHUZVO4OQsBODXCbxNcZkTJNDCzFbl9o+yd+tDFn4h4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inria.fr; spf=pass smtp.mailfrom=inria.fr; dkim=pass (1024-bit key) header.d=inria.fr header.i=@inria.fr header.b=e6HMrvPi; arc=none smtp.client-ip=192.134.164.104
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inria.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inria.fr
+	s=arc-20240116; t=1731860320; c=relaxed/simple;
+	bh=cj2WMLa6n2bzXl/93dVVlxdM9318gqW6/etyu7hE4MU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cQxkZtk9C9+rmLQBRhWPFL5Z+LRogjC5DvLVN1apBZGSYfiKMwz5hwgNsYUTft2/Tedf2r7QWryJ9BpDWSLZUjJfMvK+r5/gOCbyqTRWTOtWKTDLx2rXhFpoSgWxbq+Bmz3/28p8DQ3LJ9W9OmanN3vCeJvWfIRi/wR3xkLE3tQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bD4ZbrRq; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-6ee8e894deeso1576997b3.0;
+        Sun, 17 Nov 2024 08:18:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=content-transfer-encoding:from:mime-version:subject:date:
-   message-id:references:cc:in-reply-to:to;
-  bh=anlUiHWGDGyJ8xswjmMdLXKoB6PZ+VXioMuGFa77dbg=;
-  b=e6HMrvPibM0Fbpr/ONm0hFVcMKT8wC0+mQJzKmTLL/6XVEyPLKe8HZWV
-   9C9LRPkcO6Hd6rCjzjqag+sCK6WeODO+KGVznFmYkAs5A6UnqgiSZB6Nc
-   xXNWMuA+9KGLx3MmUi1yOamiphAXkkAK5LOz38Lay2oYzEJOtPfPHDOwT
-   E=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="6.12,159,1728943200"; 
-   d="scan'208";a="101793166"
-Received: from 105.39.22.93.rev.sfr.net (HELO smtpclient.apple) ([93.22.39.105])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2024 12:24:33 +0100
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From: Julia Lawall <Julia.Lawall@inria.fr>
+        d=gmail.com; s=20230601; t=1731860318; x=1732465118; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=cj2WMLa6n2bzXl/93dVVlxdM9318gqW6/etyu7hE4MU=;
+        b=bD4ZbrRqQrkCld8UuTbtvGgvgPOe5TNlojRWHcdqu5ThbjwXNCSoGrMqOcAHM0yvnZ
+         wgSUidFIsQXm1qX5G+vv7PYQ99wM/2jIzLDrEDZSC0kUMUBQ6a/XsTIO2+C4UgI0CC/I
+         ABSjuU1/q3JpV2Zh5yb1McFthaWTskyqMI9Hr4ZxbZZh91NzVOrMwcCr0L7yEsPafg7x
+         /y2BBlmnK582DqtJKIRzxC6x11IHH/MBMfbPPSpa8pmKU00+IErEKH9/Y05UV4iaY50V
+         ewNqgb8YbcJRpoQry2rTbhBJDs45ibORyGUuJowNN5+9BecV9Sip+anLvXQMZ5mVXhpi
+         hFeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731860318; x=1732465118;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cj2WMLa6n2bzXl/93dVVlxdM9318gqW6/etyu7hE4MU=;
+        b=iIXwYjXaKDKD9c2USIi+eu+GtfVUdmeQesqDYJe2riFYkbrUlbRmLxYV9mzMje2NkC
+         a8rlwi7MvbPPQDVttxCyJ3guwV9ZczMywTZHr6E95g2vXju/6ia28hGhMeMG/2ssC/yO
+         EW9m61vFRw3tBqtu1s23UOQBzFQoi8O23b+5Hu4OBgCB8HCcFlfxmhbyIhZy7I2hBxya
+         Mwg6dc8iUCpk07VNxAYqGejKqzMH+Ust5s6OFy6bCGUtM7ERxMBVz5bETglnh5390XmK
+         B7c0ZDv0fmEOQb8h7jSzZ3H7dxDZSoIYc3HtS4ObzdqjdhKLH0/MMyhUlHcTpKcHPcRA
+         m2Hw==
+X-Forwarded-Encrypted: i=1; AJvYcCUJMh851C6aCjC2mVqMwkXwbleL+rzmowUc9iJ/tzg6K2SQ67gwoJA5GXGMuzrnqa9qnv5jN5IHq892Fkasv9Y=@vger.kernel.org, AJvYcCW/ZBHaPx87Y0UzdeDb3RtZ733smNuX8ReWy2bFiliBX87rBWEA4lxeUwZTEk7zJKvuxvjMKWoFBG2r7WeGIQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwXFtSbuCX+MiwFcHxKn4GAEzEr7+152Y22pkptIDD8x4Pv51DN
+	gEYE7hiNFa0wvMY8hI7bwxksiva4W5kEwK4FVahGfO2FPitsHfOJ+LTxMezKpcaJfAOstQASjEY
+	mxzF8oOTGaR2f+z0eDLk1gUx3B1X9GtTTdwI=
+X-Google-Smtp-Source: AGHT+IEw0CrHba5JlFuIZxH22Gmts5ZBHlZ0sz/1ixGFM49N2+675+G0gr94cmdo4W/eRnYNjtVFV7hzDV5XJMtySGc=
+X-Received: by 2002:a05:690c:6206:b0:6e5:9d3c:f9d3 with SMTP id
+ 00721157ae682-6ee55c888a2mr99088157b3.41.1731860317913; Sun, 17 Nov 2024
+ 08:18:37 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 05/21] powerpc/papr_scm: Convert timeouts to secs_to_jiffies()
-Date: Sat, 16 Nov 2024 06:24:20 -0500
-Message-Id: <272B86FC-5CC9-4A3A-ACE0-F268E4E61C3D@inria.fr>
-References: <e4872a15-ff3d-4619-9b03-c7f0b6230934@stanley.mountain>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>,
- Easwar Hariharan <eahariha@linux.microsoft.com>,
- Pablo Neira Ayuso <pablo@netfilter.org>,
- Jozsef Kadlecsik <kadlec@netfilter.org>,
- "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Nicolas Palix <nicolas.palix@imag.fr>, Daniel Mack <daniel@zonque.org>,
- Haojian Zhuang <haojian.zhuang@gmail.com>,
- Robert Jarzmik <robert.jarzmik@free.fr>,
- Russell King <linux@armlinux.org.uk>, Heiko Carstens <hca@linux.ibm.com>,
- Vasily Gorbik <gor@linux.ibm.com>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, Ofir Bitton <obitton@habana.ai>,
- Oded Gabbay <ogabbay@kernel.org>,
- Lucas De Marchi <lucas.demarchi@intel.com>,
- =?utf-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>, Jeroen de Borst <jeroendb@google.com>,
- Praveen Kaligineedi <pkaligineedi@google.com>,
- Shailend Chand <shailend@google.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
- James Smart <james.smart@broadcom.com>,
- Dick Kennedy <dick.kennedy@broadcom.com>,
- "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- =?utf-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>,
- Jens Axboe <axboe@kernel.dk>, Kalle Valo <kvalo@kernel.org>,
- Jeff Johnson <jjohnson@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Jack Wang <jinpu.wang@cloud.ionos.com>,
- Marcel Holtmann <marcel@holtmann.org>,
- Johan Hedberg <johan.hedberg@gmail.com>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
- Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>,
- Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
- Joe Lawrence <joe.lawrence@redhat.com>, Jaroslav Kysela <perex@perex.cz>,
- Takashi Iwai <tiwai@suse.com>, Lucas Stach <l.stach@pengutronix.de>,
- Russell King <linux+etnaviv@armlinux.org.uk>,
- Christian Gmeiner <christian.gmeiner@gmail.com>,
- Louis Peens <louis.peens@corigine.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Naveen N Rao <naveen@kernel.org>,
- Madhavan Srinivasan <maddy@linux.ibm.com>, netfilter-devel@vger.kernel.org,
- coreteam@netfilter.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- cocci@inria.fr, linux-arm-kernel@lists.infradead.org,
- linux-s390@vger.kernel.org, dri-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, linux-scsi@vger.kernel.org,
- xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
- linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
- linux-mm@kvack.org, linux-bluetooth@vger.kernel.org,
- linux-staging@lists.linux.dev, linux-rpi-kernel@lists.infradead.org,
- ceph-devel@vger.kernel.org, live-patching@vger.kernel.org,
- linux-sound@vger.kernel.org, etnaviv@lists.freedesktop.org,
- oss-drivers@corigine.com, linuxppc-dev@lists.ozlabs.org,
- Anna-Maria Behnsen <anna-maria@linutronix.de>
-In-Reply-To: <e4872a15-ff3d-4619-9b03-c7f0b6230934@stanley.mountain>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-X-Mailer: iPhone Mail (21E236)
+MIME-Version: 1.0
+References: <20241106174120.5602-1-simeddon@gmail.com> <ZzeBXRjWq4vBdaCE@pathway.suse.cz>
+In-Reply-To: <ZzeBXRjWq4vBdaCE@pathway.suse.cz>
+From: Sid <simeddon@gmail.com>
+Date: Sun, 17 Nov 2024 21:48:01 +0530
+Message-ID: <CAGd6pzNWF189+yFCi6qEON=WD4akwpdr41-UQ26tB=z888EXpg@mail.gmail.com>
+Subject: Re: [PATCH] selftests/livepatch: Check if CONFIG_LIVEPATCH is enabled
+To: Petr Mladek <pmladek@suse.com>
+Cc: shuah@kernel.org, jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, 
+	Shuah Khan <skhan@linuxfoundation.org>, live-patching@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
+On Fri, 15 Nov 2024 at 22:44, Petr Mladek <pmladek@suse.com> wrote:
+>
+> I like idea mentioned in Miroslav's reply. I wonder if the check
+> could take into account all CONFIG_* variables mentioned
+> in tools/testing/selftests/livepatch/config.
 
-Sent from my iPhone
+Thanks for the feedback, I will create a new patch as suggested by Miroslav
 
-> On 16 Nov 2024, at 05:40, Dan Carpenter <dan.carpenter@linaro.org> wrote:
->=20
-> =EF=BB=BFOn Sat, Nov 16, 2024 at 11:06:55AM +0100, Christophe Leroy wrote:=
+> And if it could be generic so that it works for all
+> tools/testing/selftests/<project> directories.
+>
+> And for both build and run_tests.
 
->>> diff --git a/arch/powerpc/platforms/pseries/papr_scm.c b/arch/powerpc/pl=
-atforms/pseries/papr_scm.c
->>> index 9e297f88adc5d97d4dc7b267b0bfebd58e5cf193..9e8086ec66e0f0e555ac2793=
-3854c06cfcf91a04 100644
->>> --- a/arch/powerpc/platforms/pseries/papr_scm.c
->>> +++ b/arch/powerpc/platforms/pseries/papr_scm.c
->>> @@ -543,7 +543,7 @@ static int drc_pmem_query_health(struct papr_scm_pri=
-v *p)
->>>=20
->>>         /* Jiffies offset for which the health data is assumed to be sam=
-e */
->>>         cache_timeout =3D p->lasthealth_jiffies +
->>> -               msecs_to_jiffies(MIN_HEALTH_QUERY_INTERVAL * 1000);
->>> +               secs_to_jiffies(MIN_HEALTH_QUERY_INTERVAL);
->>=20
->> Wouldn't it now fit on a single line ?
->>=20
->=20
-> Some maintainers still prefer to put a line break at 80 characters. =20
+I will look into it
 
-Coccinelle tries for 80 chars. It may have a command line option to specify s=
-omething else.
-
-Julia
-
-> It's kind
-> of a nightmare for an automated script like this to figure out everyone's
-> preferences.  In this particular
-> file, there are some lines which go over 80
-> characters so sure.  Earlier in the patchset one of these introduced a lin=
-e
-> break that wasn't there before so I think maybe Coccinelle is applying the=
- 80
-> character line break rule?
->=20
-> There are sometimes where the 80 character rule really hurts readability, b=
-ut
-> here it doesn't make any difference.
->=20
-> regards,
-> dan carpenter
->=20
-
+Sincerely,
+Siddharth Menon
 
