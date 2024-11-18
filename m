@@ -1,114 +1,169 @@
-Return-Path: <live-patching+bounces-845-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-846-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4BAA49D1160
-	for <lists+live-patching@lfdr.de>; Mon, 18 Nov 2024 14:06:45 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7E0549D1794
+	for <lists+live-patching@lfdr.de>; Mon, 18 Nov 2024 19:07:41 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 11A18283E22
-	for <lists+live-patching@lfdr.de>; Mon, 18 Nov 2024 13:06:44 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id D36CFB225ED
+	for <lists+live-patching@lfdr.de>; Mon, 18 Nov 2024 18:07:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0AEDF1B394F;
-	Mon, 18 Nov 2024 13:04:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6D271DED4D;
+	Mon, 18 Nov 2024 18:07:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="I4xI+4NR"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="U8YJ5MEB"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CF119AD7E
-	for <live-patching@vger.kernel.org>; Mon, 18 Nov 2024 13:04:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F40981D95A3;
+	Mon, 18 Nov 2024 18:07:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731935066; cv=none; b=I42nARWoHQfyOfc9vLatY6AkYsRvlEW551qEEry92LNqPA2rlDOdXNhh8H9UGRoLYfe2h8jvs09UGDxVaaY8GBdf4ELaP0rGMqjEy/afpGZIiYxYMGZmNcZa2fx6XM2ZbJAbQnCCQbPBA+3YVtkPY7b4DzkJBzgEACfnGmx9gFY=
+	t=1731953249; cv=none; b=PIofbW5CZnw/CJoLL9XdLRfeytph4cTfbV7sPy4DH+Hh+YYxJbRRgjC06aw30MmQoAzk1/aOmWLrBUZ1s63VOVt8Ej0yAqbp19t239ZATNsTvoXCmFHUieUpwXDDvTGhb9Xa0VS/8EG2WZZ7yOPsW9SLadraqeEaI19eb6qEqcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731935066; c=relaxed/simple;
-	bh=6FWzUYWFCrsnvBdRA5DjNCEJdOaye5Th9KK3CZXgcSI=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=ZdtyD4Ydm8oRpYDVtc3R765nPiJ9xCXS+3M94GCehNpYdym/DuKBonoYJVxrfkxuqGtL1QveDdm6sA1sAh1KAlulRcI+H6LVFlC30LoG5Wr8t/RffTN15T7gdFu2TQhfqkoC8v6PlzcbrF9ImCeXcfGSsHyfSHRXdCtSetrWPK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=I4xI+4NR; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-43162cf1eaaso29456045e9.0
-        for <live-patching@vger.kernel.org>; Mon, 18 Nov 2024 05:04:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1731935062; x=1732539862; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GxWmoEeugVS1v5FyiW6L+8vxmWvgvGVYr+32bhSNYVY=;
-        b=I4xI+4NRNwIdqEl4aflVO7Kmj0AcLq/HsTkPdfNSTzP/xkuJTfQaW0ozzMQWPVtMrm
-         /phHSN7AC2S3XrUHAFRlKqK0UVzBM0fS4t4KUXcol1Pp8PChXmX3A3V8eSSvRQqHO/kf
-         owQ1Hiaqep96yfg3F+hPCYjOs/OmlLVant5SicgiwXt0a5kOgTBPDfYAu8QOre9PRqcB
-         qrLYcmIkN7U9BgRB8QzTSSXJ5Zru26knyWezZAfrAhBonrCj2uD2v5IEEULTbpdHqHuB
-         8GDP8F5+QNobc9LalJArdeO/8kzv5O0I+9bQug0bxmmjdNSJQGSvaBP1KOqCP1pzC3iK
-         4alA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731935062; x=1732539862;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GxWmoEeugVS1v5FyiW6L+8vxmWvgvGVYr+32bhSNYVY=;
-        b=kNae0mEF1Rh+mNYbxPcey2EZpeQCJfBzsH2PEO8YtEKqOlPehogIENsXXVYLt5zitk
-         ca6iTJoLwtwd7KQxFzYFskc9YWD+fv2jFzL+cHAYz7kFrBLZGGKMp188+HgzwbO9qnD1
-         O146mfMJ2ZUR79bMtTynmgarqizncOZ7jqSDjQmuH4QKZ7Wvn7hsb0oPKmKzsrqvunwg
-         lZbYtnGSPPiSIrP7Q9bJQptn8vGon1XhNTZz0AfNtjKjNqwHfUJt+P3B6xdH0G0j4QTj
-         umK4WdtVspIpDU1h4kQitLn8wnCrtuOhewj7c1MvklybPSnyQf3aEWPwvJfVYF5Od6+t
-         0Qvg==
-X-Forwarded-Encrypted: i=1; AJvYcCWXoemaLKdO+YHopyg2aRSjcuEW46HCPTrqVOcD1nSZ8AwfMqy0CkIUOWBTcpIIxTVeLPG4d/SZZ6cT2k5c@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw0LNSlad4UzON3/zpxZT3A6dqmIODpvoaFgKrWwbhvyEWslyxV
-	8iR1Qd6xRFdGqXGxj5fQ6DIHydlkVwS/Mn1yV/xWVhb3wsQvcH9J+caPgUaqMLd06OYXtiWdMSI
-	cL5w=
-X-Google-Smtp-Source: AGHT+IHy/xNjbMBwdkC38nxZZYbLABoxkMezarb7il7wix1uC6BXNWVekYNhmn0yGD3yIBODDTuVhA==
-X-Received: by 2002:a5d:5850:0:b0:382:24b1:e762 with SMTP id ffacd0b85a97d-38225ac4bb6mr12329038f8f.56.1731935062634;
-        Mon, 18 Nov 2024 05:04:22 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-382455820absm3879797f8f.84.2024.11.18.05.04.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2024 05:04:22 -0800 (PST)
-Date: Mon, 18 Nov 2024 14:04:19 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Subject: [GIT PULL] livepatching for 6.13
-Message-ID: <Zzs7U8VsO8YmxxD4@pathway.suse.cz>
+	s=arc-20240116; t=1731953249; c=relaxed/simple;
+	bh=I8/ZSP3TbGLzfnlA4nKLHy+XyARP+KJTYkdkSH9CGew=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=LW+oX7kdsdsnwJV6bMmkIXn/6OX1o7kxOhVWSkU/+57ASZuj8D+2Csj2hx9Xzi7jbg8HWWSS2mLoxwdXG/V8qAPkONix8TMXdNLDWANmuwX1CHstaFb2CpMvsHTHSSDdwDVFP+u7HLW774r3lj9MyVVtcgwIWOtCSTCsRH3rTuw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=U8YJ5MEB; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from [192.168.35.166] (c-73-118-245-227.hsd1.wa.comcast.net [73.118.245.227])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3DD17206BCF9;
+	Mon, 18 Nov 2024 10:07:25 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3DD17206BCF9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1731953247;
+	bh=lP0Zntp+HRWENCbPjrc9G2lDoefH/1cMkwirwj5j8Pw=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=U8YJ5MEB+lC4gUMBqZ4Gz30eL5pByQSSZkvP1DxkMnTP1qlIes9QjQ3oHvl0/spjY
+	 zaV4G+9kqg2wB6l6cY05sRrhV/1+2NwT0Di3E3r4OqgFDSinGSRYQd2YjZAhmOdf7k
+	 pgtoi2CJWleSz5F2PF0YMgIK9D4gDdAFvwZB2ktQ=
+Message-ID: <4a3e6cfe-35ef-4865-8b43-c002679455f3@linux.microsoft.com>
+Date: Mon, 18 Nov 2024 10:07:24 -0800
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>,
+ Jozsef Kadlecsik <kadlec@netfilter.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, Julia Lawall <Julia.Lawall@inria.fr>,
+ Nicolas Palix <nicolas.palix@imag.fr>, Daniel Mack <daniel@zonque.org>,
+ Haojian Zhuang <haojian.zhuang@gmail.com>,
+ Robert Jarzmik <robert.jarzmik@free.fr>, Russell King
+ <linux@armlinux.org.uk>, Heiko Carstens <hca@linux.ibm.com>,
+ Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
+ <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Ofir Bitton <obitton@habana.ai>,
+ Oded Gabbay <ogabbay@kernel.org>, Lucas De Marchi
+ <lucas.demarchi@intel.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Jeroen de Borst <jeroendb@google.com>,
+ Praveen Kaligineedi <pkaligineedi@google.com>,
+ Shailend Chand <shailend@google.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ James Smart <james.smart@broadcom.com>,
+ Dick Kennedy <dick.kennedy@broadcom.com>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>,
+ Jens Axboe <axboe@kernel.dk>, Kalle Valo <kvalo@kernel.org>,
+ Jeff Johnson <jjohnson@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>,
+ Jack Wang <jinpu.wang@cloud.ionos.com>, Marcel Holtmann
+ <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>,
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Xiubo Li <xiubli@redhat.com>,
+ Ilya Dryomov <idryomov@gmail.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ Lucas Stach <l.stach@pengutronix.de>,
+ Russell King <linux+etnaviv@armlinux.org.uk>,
+ Christian Gmeiner <christian.gmeiner@gmail.com>,
+ Louis Peens <louis.peens@corigine.com>, Michael Ellerman
+ <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Naveen N Rao <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>,
+ eahariha@linux.microsoft.com,
+ "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+ "coreteam@netfilter.org" <coreteam@netfilter.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "cocci@inria.fr" <cocci@inria.fr>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+ "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+ "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+ "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+ "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+ "linux-rpi-kernel@lists.infradead.org"
+ <linux-rpi-kernel@lists.infradead.org>,
+ "ceph-devel@vger.kernel.org" <ceph-devel@vger.kernel.org>,
+ "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+ "linux-sound@vger.kernel.org" <linux-sound@vger.kernel.org>,
+ "etnaviv@lists.freedesktop.org" <etnaviv@lists.freedesktop.org>,
+ "oss-drivers@corigine.com" <oss-drivers@corigine.com>,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+ Anna-Maria Behnsen <anna-maria@linutronix.de>
+Subject: Re: [PATCH v2 00/21] Converge on using secs_to_jiffies()
+To: LEROY Christophe <christophe.leroy2@cs-soprasteria.com>
+References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
+ <fb97b58c-4d77-43d1-88a0-d838d5030d3e@cs-soprasteria.com>
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <fb97b58c-4d77-43d1-88a0-d838d5030d3e@cs-soprasteria.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Linus,
+On 11/16/2024 2:23 AM, LEROY Christophe wrote:
+> 
+> 
+> Le 15/11/2024 à 22:26, Easwar Hariharan a écrit :
+>> [Vous ne recevez pas souvent de courriers de eahariha@linux.microsoft.com. Découvrez pourquoi ceci est important à https://aka.ms/LearnAboutSenderIdentification ]
+>>
+>> This is a series that follows up on my previous series to introduce
+>> secs_to_jiffies() and convert a few initial users.[1] In the review for
+>> that series, Anna-Maria requested converting other users with
+>> Coccinelle. This is part 1 that converts users of msecs_to_jiffies()
+>> that use the multiply pattern of either of:
+>> - msecs_to_jiffies(N*1000), or
+>> - msecs_to_jiffies(N*MSEC_PER_SEC)
+> 
+> After applying this series on top of tip/timers/core tree, I still find
+> a lot of candidates to the conversion:
+> 
 
-please pull the latest changes for the kernel livepatching from
+Thanks for looking, that pattern of seconds-denominated
+msecs_to_jiffies() calls will be addressed in a later part. As mentioned
+in my reply to Anna-Maria[1], I'm not super-familiar with Coccinelle. I
+sent this out as part 1 as mentioned in the cover letter above to make
+incremental progress as much as I could. Julia has sent me a message
+with a rule that could possibly address the pattern you point out.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git tags/livepatching-for-6.13
+I also see there are some instances in the grep results that appear to
+be expression * 1000 rather than constant * 1000. I'll address those in
+one of the later parts as well.
 
-=============================================
-
-- A new selftest for livepatching of a kprobed function.
-
-----------------------------------------------------------------
-Michael Vetter (3):
-      selftests: livepatch: rename KLP_SYSFS_DIR to SYSFS_KLP_DIR
-      selftests: livepatch: save and restore kprobe state
-      selftests: livepatch: test livepatching a kprobed function
-
- tools/testing/selftests/livepatch/Makefile         |  3 +-
- tools/testing/selftests/livepatch/functions.sh     | 29 ++++++----
- .../testing/selftests/livepatch/test-callbacks.sh  | 24 ++++-----
- tools/testing/selftests/livepatch/test-ftrace.sh   |  2 +-
- tools/testing/selftests/livepatch/test-kprobe.sh   | 62 ++++++++++++++++++++++
- .../testing/selftests/livepatch/test-livepatch.sh  | 12 ++---
- tools/testing/selftests/livepatch/test-state.sh    |  8 +--
- tools/testing/selftests/livepatch/test-syscall.sh  |  6 +--
- tools/testing/selftests/livepatch/test-sysfs.sh    |  8 +--
- .../selftests/livepatch/test_modules/Makefile      |  3 +-
- .../livepatch/test_modules/test_klp_kprobe.c       | 38 +++++++++++++
- 11 files changed, 152 insertions(+), 43 deletions(-)
- create mode 100755 tools/testing/selftests/livepatch/test-kprobe.sh
- create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_kprobe.c
+Thanks,
+Easwar
 
