@@ -1,102 +1,206 @@
-Return-Path: <live-patching+bounces-841-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-842-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 855349D04A8
-	for <lists+live-patching@lfdr.de>; Sun, 17 Nov 2024 17:18:49 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CE6DA9D0AE6
+	for <lists+live-patching@lfdr.de>; Mon, 18 Nov 2024 09:29:26 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 86F45B21C76
-	for <lists+live-patching@lfdr.de>; Sun, 17 Nov 2024 16:18:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8FC302825C5
+	for <lists+live-patching@lfdr.de>; Mon, 18 Nov 2024 08:29:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B6DF1D9A7D;
-	Sun, 17 Nov 2024 16:18:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 92483188014;
+	Mon, 18 Nov 2024 08:27:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bD4ZbrRq"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="pVJ5a4Sb"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28DE4CA64;
-	Sun, 17 Nov 2024 16:18:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCF6317BEA2;
+	Mon, 18 Nov 2024 08:27:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731860320; cv=none; b=u5/6llm+Mzj8ubZwTnM2jfiEBnP7Eewq+OaVp82wSK2rVX1/TVUvRs61HLb6sLmIjqs/tANllxJ2SUI9W5IN7GJ1ne3Wjrj5zE3jaGBOlmE38DJyOOgs/OdVTM8fdGpPHjeCFuA/VfoznWIVj1jDf9LXTPEYOwWWfFpZAsb2Rtg=
+	t=1731918440; cv=none; b=T7HQ/l74ZOipqG0NwEmR4b6iFQKq4dvsoTx6V7vgzq2qmFRWWa0QN0LTQYxW59tEd5vhcw1PW2Qq5PI+pyt5famgM2pR129QfQVVTejJggt5CS/oIOWdSNgqG9EmcVR/furP707OMnLXvC9vEkN/kR16AfAI1ufkei36q2Szx9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731860320; c=relaxed/simple;
-	bh=cj2WMLa6n2bzXl/93dVVlxdM9318gqW6/etyu7hE4MU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cQxkZtk9C9+rmLQBRhWPFL5Z+LRogjC5DvLVN1apBZGSYfiKMwz5hwgNsYUTft2/Tedf2r7QWryJ9BpDWSLZUjJfMvK+r5/gOCbyqTRWTOtWKTDLx2rXhFpoSgWxbq+Bmz3/28p8DQ3LJ9W9OmanN3vCeJvWfIRi/wR3xkLE3tQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bD4ZbrRq; arc=none smtp.client-ip=209.85.128.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-6ee8e894deeso1576997b3.0;
-        Sun, 17 Nov 2024 08:18:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1731860318; x=1732465118; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=cj2WMLa6n2bzXl/93dVVlxdM9318gqW6/etyu7hE4MU=;
-        b=bD4ZbrRqQrkCld8UuTbtvGgvgPOe5TNlojRWHcdqu5ThbjwXNCSoGrMqOcAHM0yvnZ
-         wgSUidFIsQXm1qX5G+vv7PYQ99wM/2jIzLDrEDZSC0kUMUBQ6a/XsTIO2+C4UgI0CC/I
-         ABSjuU1/q3JpV2Zh5yb1McFthaWTskyqMI9Hr4ZxbZZh91NzVOrMwcCr0L7yEsPafg7x
-         /y2BBlmnK582DqtJKIRzxC6x11IHH/MBMfbPPSpa8pmKU00+IErEKH9/Y05UV4iaY50V
-         ewNqgb8YbcJRpoQry2rTbhBJDs45ibORyGUuJowNN5+9BecV9Sip+anLvXQMZ5mVXhpi
-         hFeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731860318; x=1732465118;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cj2WMLa6n2bzXl/93dVVlxdM9318gqW6/etyu7hE4MU=;
-        b=iIXwYjXaKDKD9c2USIi+eu+GtfVUdmeQesqDYJe2riFYkbrUlbRmLxYV9mzMje2NkC
-         a8rlwi7MvbPPQDVttxCyJ3guwV9ZczMywTZHr6E95g2vXju/6ia28hGhMeMG/2ssC/yO
-         EW9m61vFRw3tBqtu1s23UOQBzFQoi8O23b+5Hu4OBgCB8HCcFlfxmhbyIhZy7I2hBxya
-         Mwg6dc8iUCpk07VNxAYqGejKqzMH+Ust5s6OFy6bCGUtM7ERxMBVz5bETglnh5390XmK
-         B7c0ZDv0fmEOQb8h7jSzZ3H7dxDZSoIYc3HtS4ObzdqjdhKLH0/MMyhUlHcTpKcHPcRA
-         m2Hw==
-X-Forwarded-Encrypted: i=1; AJvYcCUJMh851C6aCjC2mVqMwkXwbleL+rzmowUc9iJ/tzg6K2SQ67gwoJA5GXGMuzrnqa9qnv5jN5IHq892Fkasv9Y=@vger.kernel.org, AJvYcCW/ZBHaPx87Y0UzdeDb3RtZ733smNuX8ReWy2bFiliBX87rBWEA4lxeUwZTEk7zJKvuxvjMKWoFBG2r7WeGIQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwXFtSbuCX+MiwFcHxKn4GAEzEr7+152Y22pkptIDD8x4Pv51DN
-	gEYE7hiNFa0wvMY8hI7bwxksiva4W5kEwK4FVahGfO2FPitsHfOJ+LTxMezKpcaJfAOstQASjEY
-	mxzF8oOTGaR2f+z0eDLk1gUx3B1X9GtTTdwI=
-X-Google-Smtp-Source: AGHT+IEw0CrHba5JlFuIZxH22Gmts5ZBHlZ0sz/1ixGFM49N2+675+G0gr94cmdo4W/eRnYNjtVFV7hzDV5XJMtySGc=
-X-Received: by 2002:a05:690c:6206:b0:6e5:9d3c:f9d3 with SMTP id
- 00721157ae682-6ee55c888a2mr99088157b3.41.1731860317913; Sun, 17 Nov 2024
- 08:18:37 -0800 (PST)
+	s=arc-20240116; t=1731918440; c=relaxed/simple;
+	bh=u+X9RPFT3w+sPXWt7gaBbAtIUXtN5oRIXDWvsAzav18=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FbBt4xOCG9BMTNQZuGic69z+MhyZuokfAEB+6GlYz12sXOuUSWKDln3gnYSh5QTqD7rv1Yy3chmgh64k2bg+bdfDE27Dwn3m40s5FjIFr/ieDjPQU/V3Y8h7vSBFqEwaUYSpYZyhwgppObM8tKy9wDlawbnlbNy+HU+rIdnnaeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=pVJ5a4Sb; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AHJiO3Y023687;
+	Mon, 18 Nov 2024 08:26:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=pofVBIDpbmPXxKdXBZzlW6SKJ1mpQg
+	5f+nyOC0P54ZU=; b=pVJ5a4SbiQLc7KmL6NMVUat1TeAb+E4P6v1BT086o1mEhk
+	asPz+d9pnH3oUetVu+XCwbjmIJgCChQ2Yg76ElBtpMc3MPIe4GEIJkdBOh3EDOTs
+	BshLlGoNMECAtRDAXjrNjk0/DJ4p9T1LW6K46OwdwtMNuLDXUx7tw7C0oS59z+J9
+	QShMh32WGNHKvTgEgpik3EK5hVK4TsghRPVpOZt4uDmXgH2LYgfrkGGFgYTal2qH
+	dz0ScnJgPbYohwDb0fe9yXNM0o6w8EzUNqyOgMmUN0w1gT6xXC0tgw+yBkjkz/Fh
+	q242Ut9KG7OxmdBC6tktol2tQuFTw331MM4YUGlg==
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42xgtt0eh7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Nov 2024 08:26:15 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4AI73j1E030931;
+	Mon, 18 Nov 2024 08:26:14 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 42y63y27mu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Nov 2024 08:26:14 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4AI8QAR549479982
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 18 Nov 2024 08:26:10 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BD6AD20043;
+	Mon, 18 Nov 2024 08:26:10 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A867E20040;
+	Mon, 18 Nov 2024 08:26:06 +0000 (GMT)
+Received: from osiris (unknown [9.171.77.223])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Mon, 18 Nov 2024 08:26:06 +0000 (GMT)
+Date: Mon, 18 Nov 2024 09:26:05 +0100
+From: Heiko Carstens <hca@linux.ibm.com>
+To: Easwar Hariharan <eahariha@linux.microsoft.com>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>, Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Russell King <linux@armlinux.org.uk>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>, Ofir Bitton <obitton@habana.ai>,
+        Oded Gabbay <ogabbay@kernel.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Praveen Kaligineedi <pkaligineedi@google.com>,
+        Shailend Chand <shailend@google.com>,
+        Andrew Lunn <andrew+netdev@lunn.ch>,
+        James Smart <james.smart@broadcom.com>,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Roger Pau =?iso-8859-1?Q?Monn=E9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>, Kalle Valo <kvalo@kernel.org>,
+        Jeff Johnson <jjohnson@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jack Wang <jinpu.wang@cloud.ionos.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+        Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Russell King <linux+etnaviv@armlinux.org.uk>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Naveen N Rao <naveen@kernel.org>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, cocci@inria.fr,
+        linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+        linux-scsi@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-block@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ath11k@lists.infradead.org, linux-mm@kvack.org,
+        linux-bluetooth@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org, ceph-devel@vger.kernel.org,
+        live-patching@vger.kernel.org, linux-sound@vger.kernel.org,
+        etnaviv@lists.freedesktop.org, oss-drivers@corigine.com,
+        linuxppc-dev@lists.ozlabs.org,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>
+Subject: Re: [PATCH v2 04/21] s390: kernel: Convert timeouts to use
+ secs_to_jiffies()
+Message-ID: <20241118082605.17002-A-hca@linux.ibm.com>
+References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
+ <20241115-converge-secs-to-jiffies-v2-4-911fb7595e79@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241106174120.5602-1-simeddon@gmail.com> <ZzeBXRjWq4vBdaCE@pathway.suse.cz>
-In-Reply-To: <ZzeBXRjWq4vBdaCE@pathway.suse.cz>
-From: Sid <simeddon@gmail.com>
-Date: Sun, 17 Nov 2024 21:48:01 +0530
-Message-ID: <CAGd6pzNWF189+yFCi6qEON=WD4akwpdr41-UQ26tB=z888EXpg@mail.gmail.com>
-Subject: Re: [PATCH] selftests/livepatch: Check if CONFIG_LIVEPATCH is enabled
-To: Petr Mladek <pmladek@suse.com>
-Cc: shuah@kernel.org, jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, 
-	Shuah Khan <skhan@linuxfoundation.org>, live-patching@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241115-converge-secs-to-jiffies-v2-4-911fb7595e79@linux.microsoft.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QBYvLy3JNa8evFseixOVfcUMyMppMmNG
+X-Proofpoint-ORIG-GUID: QBYvLy3JNa8evFseixOVfcUMyMppMmNG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 phishscore=0
+ mlxscore=0 malwarescore=0 mlxlogscore=858 adultscore=0 priorityscore=1501
+ bulkscore=0 impostorscore=0 spamscore=0 lowpriorityscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
+ definitions=main-2411180066
 
-On Fri, 15 Nov 2024 at 22:44, Petr Mladek <pmladek@suse.com> wrote:
->
-> I like idea mentioned in Miroslav's reply. I wonder if the check
-> could take into account all CONFIG_* variables mentioned
-> in tools/testing/selftests/livepatch/config.
+On Fri, Nov 15, 2024 at 09:26:21PM +0000, Easwar Hariharan wrote:
+> Changes made with the following Coccinelle rules:
+> 
+> @@ constant C; @@
+> 
+> - msecs_to_jiffies(C * 1000)
+> + secs_to_jiffies(C)
+> 
+> @@ constant C; @@
+> 
+> - msecs_to_jiffies(C * MSEC_PER_SEC)
+> + secs_to_jiffies(C)
+> 
+> Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
+> ---
+>  arch/s390/kernel/lgr.c      | 3 ++-
+>  arch/s390/kernel/time.c     | 4 ++--
+>  arch/s390/kernel/topology.c | 2 +-
+>  3 files changed, 5 insertions(+), 4 deletions(-)
 
-Thanks for the feedback, I will create a new patch as suggested by Miroslav
+...
 
-> And if it could be generic so that it works for all
-> tools/testing/selftests/<project> directories.
->
-> And for both build and run_tests.
+> diff --git a/arch/s390/kernel/lgr.c b/arch/s390/kernel/lgr.c
+> index 6652e54cf3db9fbdd8cfb06f8a0dc1d4c05ae7d7..68021cb38574b122bbe3d9f70e9168305360017b 100644
+> --- a/arch/s390/kernel/lgr.c
+> +++ b/arch/s390/kernel/lgr.c
+> @@ -166,7 +166,8 @@ static struct timer_list lgr_timer;
+>   */
+>  static void lgr_timer_set(void)
+>  {
+> -	mod_timer(&lgr_timer, jiffies + msecs_to_jiffies(LGR_TIMER_INTERVAL_SECS * MSEC_PER_SEC));
+> +	mod_timer(&lgr_timer,
+> +		  jiffies + secs_to_jiffies(LGR_TIMER_INTERVAL_SECS));
+>  }
 
-I will look into it
-
-Sincerely,
-Siddharth Menon
+Please don't add a new line break, especially not if the new line
+would be shorter than the old one.
 
