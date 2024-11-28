@@ -1,186 +1,269 @@
-Return-Path: <live-patching+bounces-868-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-869-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D08409DB7A5
-	for <lists+live-patching@lfdr.de>; Thu, 28 Nov 2024 13:29:58 +0100 (CET)
-Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 062CA16387C
-	for <lists+live-patching@lfdr.de>; Thu, 28 Nov 2024 12:29:41 +0000 (UTC)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 114AA19D06A;
-	Thu, 28 Nov 2024 12:29:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="X0g1wvKo"
-X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 639DE9DB949
+	for <lists+live-patching@lfdr.de>; Thu, 28 Nov 2024 15:10:57 +0100 (CET)
+Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D251D19D086
-	for <live-patching@vger.kernel.org>; Thu, 28 Nov 2024 12:29:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id CC5D8B20D6D
+	for <lists+live-patching@lfdr.de>; Thu, 28 Nov 2024 14:10:54 +0000 (UTC)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C548B1AB533;
+	Thu, 28 Nov 2024 14:10:50 +0000 (UTC)
+X-Original-To: live-patching@vger.kernel.org
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9692E145A0F;
+	Thu, 28 Nov 2024 14:10:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732796958; cv=none; b=Vpcmwu3Lhp6+SaxKFDhL4kgroDLXKbY4abfYbRcmDRtqdnM0PGUI9ZqqhpfSNiNrExQqYX2u7PmwBTA0jaXiDylaIa/cMGS+EH4J9+WV+1YVx516E+vQdFwUVVAXZd4d0Zt1X3kWy8TJcMSBorgNgANSSjMSoXjcr0rIrWG2BYQ=
+	t=1732803050; cv=none; b=MfIo8drNPQNGdF2E7uf1jIEkDJYnFfPo/UDXgy8+1ImB/3FCPj8lY6QxF/2esvHw60tRgUSzsR7L04B9dyhfG7ZUQW0OXmZWeS5tfYY5QlBN6SbU3THU1PbePeJMj57bz6teLD6SQn+KAs4QN8xXqT5wPA06V3wYfAsT/sOTd9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732796958; c=relaxed/simple;
-	bh=JpPbSJkGmB+FiXHSVu+2bxdWkGhcoXfBF30rmHgjyGg=;
+	s=arc-20240116; t=1732803050; c=relaxed/simple;
+	bh=TPkj8f0whqyLQuQTvYnvccsf/vxHrPGNeb4NS+LUtcs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Dn8Mr2Y4e6PWcPYEea0pTTUepHAkj40iK1BEZSFN19Gs4F7TfGzca02tr6v99p2YAUtQ4H6mt9dEomJQXyosi7XEMMnVv+gHmbbzPsz9Y/ZtDO+ETel/qpKFOTXnJEU7W294u0XvIqIzSEPz76tujHgaABKJBA36cwkUip2AieM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=X0g1wvKo; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1732796955;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0Nxf6CkGK3NslY+JLgqPcTLt32q1OCumzkrHYUKQkbE=;
-	b=X0g1wvKo1KD2HtnbqEDPWQbnLBHxs627+Ksu5II3Tf0tG0Bin3Ggr6/WHA0lQdmwHDHi+q
-	zToRtRbVKXYVqtSXSdxkeC4U3VjwU6gm6YSNGmxzNY16h3BajM5Ord1sIifq+amvGZ8iKv
-	pm5xZTiJEeOIxdf2Lt6QrqMZxHDVYYY=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-111-fajL-_GGP1OkU8oOpC20JA-1; Thu, 28 Nov 2024 07:29:13 -0500
-X-MC-Unique: fajL-_GGP1OkU8oOpC20JA-1
-X-Mimecast-MFC-AGG-ID: fajL-_GGP1OkU8oOpC20JA
-Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-aa50cf10593so50293166b.0
-        for <live-patching@vger.kernel.org>; Thu, 28 Nov 2024 04:29:13 -0800 (PST)
+	 To:Cc:Content-Type; b=uhnRn4l5+DbBTIELMVAU95AiyqrAJdvbJdYJvgmyjBHNVWvwrp7kiRbqWIT8ntVFv/xmJtqgZ6DHZAX65gvBuflBhGkKjU4LK6SQtJ0ii0yvyqnYimj+Hn/5zllQIcoGkfTiwvnZtvb53BKg9yDStQ75jwEoY0T2vA9RMY+8nUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-6d41dbf6cfbso7143806d6.3;
+        Thu, 28 Nov 2024 06:10:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732796952; x=1733401752;
+        d=1e100.net; s=20230601; t=1732803046; x=1733407846;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0Nxf6CkGK3NslY+JLgqPcTLt32q1OCumzkrHYUKQkbE=;
-        b=bWEPQtIYtgzQnt9SA0V/suo0b6mGOSxaOaLv/EznraRTM92hFf0IU5apKjvNfrAiqs
-         jB+oQfjVo+ZFmpidfdWTmN4fzWux5gOyjDeGyP6LSf8heSau22QELLcZNvRBVTTWm7Rn
-         Ju4TWAJ8QmjOZmAdgTUBUKlrB/fY1NyKfBPgltbnmEdnQTACv5DLtY6sXkKOSydV1SLm
-         TESe/7vDX9pGWetOlgkXfAOaAYqCyYhXW6mG/b9sLt5diaVsk4DIhzZkrpxb1s8LhJdu
-         eKEBRBZdVRgbk6HhqddCfdvY8jd1KZB8BndcoGsDusvR3SBu4WoIaOIRxxaGcvdVOgZ2
-         Qx8g==
-X-Forwarded-Encrypted: i=1; AJvYcCX/XGupDTCYtz7YEqurJERzDfFtVh0LVbOEh3OBdLGKGoVrW2USYqQgvgNriIRSbVSPP2H3QQJwHUrxhG5U@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywkj4a2l3LbM50oC5hoBoYy8IdotifIR/imsPsWE8fFzZ9jthzb
-	uY4uemUy3/r89jbkCty6UZR+c5VqSvtVzfJsTF9hLlCHt6arwBYt8ykZvHM6yPORxg6mUXraFjv
-	bPA+/LCMZ3Qj3XcUctVb4MASiEpPfeY6njVIrdYVM/XlgRbszcNirEsCS1QCVFXPM+y39XXIQQs
-	obzBX/fuVfhdbR+jURIumkTu6woPmJSuofflNLLg==
-X-Gm-Gg: ASbGncsvFBq2v8lk75GewwGpsa9e8J+9eNeu+iDmTqN4Q/p1jl4h6KQwTQ8XiLkvqZ1
-	c7k3LOEbd91dqKPwpjzJLveeZqYo6Z6I=
-X-Received: by 2002:a05:6402:5243:b0:5cf:e26b:9797 with SMTP id 4fb4d7f45d1cf-5d080c604fcmr5605167a12.29.1732796951979;
-        Thu, 28 Nov 2024 04:29:11 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGuE0zkJ6zJza+fGet7qX+06h7Jmet7/bu0xRwgqC9A06SMAgod8PaoQJd1k5pY7KRDfw0cJAGqmNIglvOyUZo=
-X-Received: by 2002:a05:6402:5243:b0:5cf:e26b:9797 with SMTP id
- 4fb4d7f45d1cf-5d080c604fcmr5605060a12.29.1732796951475; Thu, 28 Nov 2024
- 04:29:11 -0800 (PST)
+        bh=BcNeZHrwbqkxcgrPCAgiwFwsNQS+3ExgxT8WA27fqnE=;
+        b=qFGdxPcgywZyHeyHn7wofjXjrVvN/VdOTx7ig6u+qfDfpBxz9KmkVZX36tGwBeRiNc
+         Ua+Nw4QSqrhP0npwLNgz+FvDKGb/cuBS1NpMMk0gRjyO3bmx6Zkem03smvClAMPyUROk
+         VA6agrWsBOsob+tcl7epGFzFnJn14CDeyYw+y6gR5RHkRU+OehoMVjtDLAY41qQQSmrG
+         BPrykluLfqEAEkBSB9Cu/9mRL+RioA4pJhpaI843rE20WDP8cAVC56YsEq7CBwsbfJ0P
+         L8ZaSqO1i6jQ7aEQ4BGlfKZh0ghP08eqd1fi93zbNYnDUXBeAO04yICO8wkXci+Pdx/2
+         ZZUg==
+X-Forwarded-Encrypted: i=1; AJvYcCUYTgEoSgXVlhXPWL6OGhLKd8r3ZvlM/SMGFa+8AZmmCeh6yjvvkERunmq9r75EodD1Df8LVhMmhHU0IYqG/g==@vger.kernel.org, AJvYcCUfjqx4DmTVaYBVN4WG3FoazpDVl1pRigbWMqCa/bpTL1B/0U5DlPq/mJEoLaIkHjd2yreG9mccl+ClN2UE@vger.kernel.org, AJvYcCWybBIlE4I6kflwtObW73QgxQNb6aOOEJOlM2HcekbXAfMxj/Ne0k+kj1MqPPt9OR7bkrXvQ19b4OdD@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy0vBaWnSgaLLuUnj7aDJZn/6U9hRYj2VSKm0yfpc2GKI7e/P1a
+	S7kFCjeSP6JoH0bvvmfG4jmnRhwcT09U2jKDQRofY8HWFPFCwbB91P4wwxdOVVg=
+X-Gm-Gg: ASbGncvp9U6DST190vi5+kC5CTrpSfiBckT1n0EQOeDxTgmYFUQsVXq+EgE7sdWQvE1
+	i+p5xg6qMjVZkIAdhe8RagFmaEZtJ/XBx4IiYD1qv0VjwWJpMZqcV1DxVy/Yfef7Zwctu24vjmU
+	C+NDR92FbDyiuDiAApYhDthHD20V8MhNYYdLevUu5BhBLuvU5ffAdpvhn7Zp0LkUcxYWi0uDKdM
+	VqWuRRKM2lnJV8tjaM7tUdlVZBhDf9z/UYO5LmyElSHjMalmvSy9F7r5yoUyUKxurkvVFNX/t7K
+	I5BgDt7MZnSYEVZ3
+X-Google-Smtp-Source: AGHT+IGvG2w9z0wELJhi1eSPfAZxIEDUfytCfcGHHrZl1keh+xOvpqvYA3ngSf9W5Faki32hbNC3WA==
+X-Received: by 2002:a05:6214:2123:b0:6d3:dcce:a2d3 with SMTP id 6a1803df08f44-6d864db33a3mr127644726d6.47.1732803046495;
+        Thu, 28 Nov 2024 06:10:46 -0800 (PST)
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com. [209.85.160.177])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6d8752224d1sm6743966d6.98.2024.11.28.06.10.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Nov 2024 06:10:46 -0800 (PST)
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4668486df76so8086101cf.3;
+        Thu, 28 Nov 2024 06:10:46 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUSuSrEaRSU4ffqDaZKGiN1i90V/z3qhV7HplqVxWQrujxaj+KZX7iokt7187L9KhpY0Hck1r3Nj1FSMsFtgw==@vger.kernel.org, AJvYcCXK/A0RhN5mbxKWqGTh6vj42MMaVovNAYx6kpAm9KYM77ExoCXmU6sk3nCMg4X3fYHZaXBWXPjjBGJhsA6X@vger.kernel.org, AJvYcCXlcroRLRVrTYOatJIkp+DHx019D8XhuK8RASu6fuWCCxAOcPPhQ2VHHeDrMU1OpGqwA65nehC9E4M8@vger.kernel.org
+X-Received: by 2002:a05:620a:2902:b0:7ac:c348:6a52 with SMTP id
+ af79cd13be357-7b67c30c5cfmr1013596985a.34.1732803045800; Thu, 28 Nov 2024
+ 06:10:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241115-converge-secs-to-jiffies-v1-0-19aadc34941b@linux.microsoft.com>
- <20241115-converge-secs-to-jiffies-v1-18-19aadc34941b@linux.microsoft.com>
-In-Reply-To: <20241115-converge-secs-to-jiffies-v1-18-19aadc34941b@linux.microsoft.com>
-From: Alex Markuze <amarkuze@redhat.com>
-Date: Thu, 28 Nov 2024 14:29:00 +0200
-Message-ID: <CAO8a2SjKS2nWWVkAcqXkZhR+Q1TocULkwRk09ABf8XQjjzwJPQ@mail.gmail.com>
-Subject: Re: [PATCH 18/22] ceph: Convert timeouts to secs_to_jiffies()
-To: Easwar Hariharan <eahariha@linux.microsoft.com>
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>, Jozsef Kadlecsik <kadlec@netfilter.org>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
-	Julia Lawall <Julia.Lawall@inria.fr>, Nicolas Palix <nicolas.palix@imag.fr>, 
-	Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, 
-	Robert Jarzmik <robert.jarzmik@free.fr>, Russell King <linux@armlinux.org.uk>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Ofir Bitton <obitton@habana.ai>, 
-	Oded Gabbay <ogabbay@kernel.org>, Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>, 
-	Shailend Chand <shailend@google.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
-	James Smart <james.smart@broadcom.com>, Dick Kennedy <dick.kennedy@broadcom.com>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
-	"Martin K. Petersen" <martin.petersen@oracle.com>, =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>, 
-	Jens Axboe <axboe@kernel.dk>, Kalle Valo <kvalo@kernel.org>, Jeff Johnson <jjohnson@kernel.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Jack Wang <jinpu.wang@cloud.ionos.com>, Marcel Holtmann <marcel@holtmann.org>, 
-	Johan Hedberg <johan.hedberg@gmail.com>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui <rjui@broadcom.com>, 
-	Scott Branden <sbranden@broadcom.com>, 
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Xiubo Li <xiubli@redhat.com>, 
-	Ilya Dryomov <idryomov@gmail.com>, Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
-	Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
-	Joe Lawrence <joe.lawrence@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, 
-	Lucas Stach <l.stach@pengutronix.de>, Russell King <linux+etnaviv@armlinux.org.uk>, 
-	Christian Gmeiner <christian.gmeiner@gmail.com>, Louis Peens <louis.peens@corigine.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, Naveen N Rao <naveen@kernel.org>, 
-	Madhavan Srinivasan <maddy@linux.ibm.com>, netfilter-devel@vger.kernel.org, 
-	coreteam@netfilter.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	cocci@inria.fr, linux-arm-kernel@lists.infradead.org, 
-	linux-s390@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	intel-xe@lists.freedesktop.org, linux-scsi@vger.kernel.org, 
-	xen-devel@lists.xenproject.org, linux-block@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, ath11k@lists.infradead.org, 
-	linux-mm@kvack.org, linux-bluetooth@vger.kernel.org, 
-	linux-staging@lists.linux.dev, linux-rpi-kernel@lists.infradead.org, 
-	ceph-devel@vger.kernel.org, live-patching@vger.kernel.org, 
-	linux-sound@vger.kernel.org, etnaviv@lists.freedesktop.org, 
-	oss-drivers@corigine.com, linuxppc-dev@lists.ozlabs.org, 
-	Anna-Maria Behnsen <anna-maria@linutronix.de>
+References: <20241021193310.2014131-1-mcgrof@kernel.org>
+In-Reply-To: <20241021193310.2014131-1-mcgrof@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 28 Nov 2024 15:10:34 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVG3Z63BruhrnQtSadCnaKZ+hpwFDJDnitXST8fRNYoLQ@mail.gmail.com>
+Message-ID: <CAMuHMdVG3Z63BruhrnQtSadCnaKZ+hpwFDJDnitXST8fRNYoLQ@mail.gmail.com>
+Subject: Re: [PATCH v3] selftests: add new kallsyms selftests
+To: Luis Chamberlain <mcgrof@kernel.org>
+Cc: linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	petr.pavlu@suse.com, samitolvanen@google.com, da.gomez@samsung.com, 
+	masahiroy@kernel.org, deller@gmx.de, linux-arch@vger.kernel.org, 
+	live-patching@vger.kernel.org, kris.van.hees@oracle.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-looks good
+Hi Luis,
 
-On Fri, Nov 15, 2024 at 11:35=E2=80=AFPM Easwar Hariharan
-<eahariha@linux.microsoft.com> wrote:
+On Mon, Oct 21, 2024 at 9:33=E2=80=AFPM Luis Chamberlain <mcgrof@kernel.org=
+> wrote:
+> We lack find_symbol() selftests, so add one. This let's us stress test
+> improvements easily on find_symbol() or optimizations. It also inherently
+> allows us to test the limits of kallsyms on Linux today.
 >
-> Changes made with the following Coccinelle rules:
+> We test a pathalogical use case for kallsyms by introducing modules
+> which are automatically written for us with a larger number of symbols.
+> We have 4 kallsyms test modules:
 >
-> @@ constant C; @@
+> A: has KALLSYSMS_NUMSYMS exported symbols
+> B: uses one of A's symbols
+> C: adds KALLSYMS_SCALE_FACTOR * KALLSYSMS_NUMSYMS exported
+> D: adds 2 * the symbols than C
 >
-> - msecs_to_jiffies(C * 1000)
-> + secs_to_jiffies(C)
+> By using anything much larger than KALLSYSMS_NUMSYMS as 10,000 and
+> KALLSYMS_SCALE_FACTOR of 8 we segfault today. So we're capped at
+> around 160000 symbols somehow today. We can inpsect that issue at
+> our leasure later, but for now the real value to this test is that
+> this will easily allow us to test improvements on find_symbol().
 >
-> @@ constant C; @@
+> We want to enable this test on allyesmodconfig builds so we can't
+> use this combination, so instead just use a safe value for now and
+> be informative on the Kconfig symbol documentation about where our
+> thresholds are for testers. We default then to KALLSYSMS_NUMSYMS of
+> just 100 and KALLSYMS_SCALE_FACTOR of 8.
 >
-> - msecs_to_jiffies(C * MSEC_PER_SEC)
-> + secs_to_jiffies(C)
+> On x86_64 we can use perf, for other architectures we just use 'time'
+> and allow for customizations. For example a future enhancements could
+> be done for parisc to check for unaligned accesses which triggers a
+> special special exception handler assembler code inside the kernel.
+> The negative impact on performance is so large on parisc that it
+> keeps track of its accesses on /proc/cpuinfo as UAH:
 >
-> Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
-> ---
->  fs/ceph/quota.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> IRQ:       CPU0       CPU1
+> 3:       1332          0         SuperIO  ttyS0
+> 7:    1270013          0         SuperIO  pata_ns87415
+> 64:  320023012  320021431             CPU  timer
+> 65:   17080507   20624423             CPU  IPI
+> UAH:   10948640      58104   Unaligned access handler traps
 >
-> diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
-> index 06ee397e0c3a6172592e62dba95cd267cfff0db1..d90eda19bcc4618f98bfed833=
-c10a6071cf2e2ac 100644
-> --- a/fs/ceph/quota.c
-> +++ b/fs/ceph/quota.c
-> @@ -166,7 +166,7 @@ static struct inode *lookup_quotarealm_inode(struct c=
-eph_mds_client *mdsc,
->         if (IS_ERR(in)) {
->                 doutc(cl, "Can't lookup inode %llx (err: %ld)\n", realm->=
-ino,
->                       PTR_ERR(in));
-> -               qri->timeout =3D jiffies + msecs_to_jiffies(60 * 1000); /=
-* XXX */
-> +               qri->timeout =3D jiffies + secs_to_jiffies(60); /* XXX */
->         } else {
->                 qri->timeout =3D 0;
->                 qri->inode =3D in;
+> While at it, this tidies up lib/ test modules to allow us to have
+> a new directory for them. The amount of test modules under lib/
+> is insane.
 >
-> --
-> 2.34.1
+> This should also hopefully showcase how to start doing basic
+> self module writing code, which may be more useful for more complex
+> cases later in the future.
 >
->
+> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 
+Thanks for your patch, which is now commit 84b4a51fce4ccc66
+("selftests: add new kallsyms selftests") upstream.
+
+> @@ -2903,6 +2903,111 @@ config TEST_KMOD
+>
+>           If unsure, say N.
+>
+> +config TEST_RUNTIME
+> +       bool
+> +
+> +config TEST_RUNTIME_MODULE
+> +       bool
+> +
+> +config TEST_KALLSYMS
+> +       tristate "module kallsyms find_symbol() test"
+> +       depends on m
+> +       select TEST_RUNTIME
+> +       select TEST_RUNTIME_MODULE
+> +       select TEST_KALLSYMS_A
+> +       select TEST_KALLSYMS_B
+> +       select TEST_KALLSYMS_C
+> +       select TEST_KALLSYMS_D
+> +       help
+> +         This allows us to stress test find_symbol() through the kallsym=
+s
+> +         used to place symbols on the kernel ELF kallsyms and modules ka=
+llsyms
+> +         where we place kernel symbols such as exported symbols.
+> +
+> +         We have four test modules:
+> +
+> +         A: has KALLSYSMS_NUMSYMS exported symbols
+> +         B: uses one of A's symbols
+> +         C: adds KALLSYMS_SCALE_FACTOR * KALLSYSMS_NUMSYMS exported
+> +         D: adds 2 * the symbols than C
+> +
+> +         We stress test find_symbol() through two means:
+> +
+> +         1) Upon load of B it will trigger simplify_symbols() to look fo=
+r the
+> +         one symbol it uses from the module A with tons of symbols. This=
+ is an
+> +         indirect way for us to have B call resolve_symbol_wait() upon m=
+odule
+> +         load. This will eventually call find_symbol() which will eventu=
+ally
+> +         try to find the symbols used with find_exported_symbol_in_secti=
+on().
+> +         find_exported_symbol_in_section() uses bsearch() so a binary se=
+arch
+> +         for each symbol. Binary search will at worst be O(log(n)) so th=
+e
+> +         larger TEST_MODULE_KALLSYSMS the worse the search.
+> +
+> +         2) The selftests should load C first, before B. Upon B's load t=
+owards
+> +         the end right before we call module B's init routine we get
+> +         complete_formation() called on the module. That will first chec=
+k
+> +         for duplicate symbols with the call to verify_exported_symbols(=
+).
+> +         That is when we'll force iteration on module C's insane symbol =
+list.
+> +         Since it has 10 * KALLSYMS_NUMSYMS it means we can first test
+> +         just loading B without C. The amount of time it takes to load C=
+ Vs
+> +         B can give us an idea of the impact growth of the symbol space =
+and
+> +         give us projection. Module A only uses one symbol from B so to =
+allow
+> +         this scaling in module C to be proportional, if it used more sy=
+mbols
+> +         then the first test would be doing more and increasing just the
+> +         search space would be slightly different. The last module, modu=
+le D
+> +         will just increase the search space by twice the number of symb=
+ols in
+> +         C so to allow for full projects.
+> +
+> +         tools/testing/selftests/module/find_symbol.sh
+> +
+> +         The current defaults will incur a build delay of about 7 minute=
+s
+> +         on an x86_64 with only 8 cores. Enable this only if you want to
+> +         stress test find_symbol() with thousands of symbols. At the sam=
+e
+> +         time this is also useful to test building modules with thousand=
+s of
+> +         symbols, and if BTF is enabled this also stress tests adding BT=
+F
+> +         information for each module. Currently enabling many more symbo=
+ls
+> +         will segfault the build system.
+
+Despite the warning, I gave this a try on m68k (cross-compiled on i7 ;-).
+However, I didn't notice any extra-ordinary build times.
+
+Also, when running the test manually on ARAnyM, everything runs
+in the blink of an eye.  I didn't use the script, but ran all commands
+manually.  I tried insmodding a/b/c/d, c/a/b, a/c/d/b.
+
+Is this expected?
+Thanks!
+
+$ wc -l lib/tests/module/test_kallsyms_*.c
+   233 lib/tests/module/test_kallsyms_a.c
+    22 lib/tests/module/test_kallsyms_a.mod.c
+    35 lib/tests/module/test_kallsyms_b.c
+    21 lib/tests/module/test_kallsyms_b.mod.c
+  1633 lib/tests/module/test_kallsyms_c.c
+    21 lib/tests/module/test_kallsyms_c.mod.c
+  3233 lib/tests/module/test_kallsyms_d.c
+    21 lib/tests/module/test_kallsyms_d.mod.c
+  5219 total
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
 
