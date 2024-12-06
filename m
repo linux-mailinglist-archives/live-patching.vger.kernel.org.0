@@ -1,121 +1,118 @@
-Return-Path: <live-patching+bounces-878-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-879-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8F0E39E548B
-	for <lists+live-patching@lfdr.de>; Thu,  5 Dec 2024 12:49:54 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3764F9E7A43
+	for <lists+live-patching@lfdr.de>; Fri,  6 Dec 2024 21:58:33 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 69655161E02
-	for <lists+live-patching@lfdr.de>; Thu,  5 Dec 2024 11:49:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 23840163264
+	for <lists+live-patching@lfdr.de>; Fri,  6 Dec 2024 20:58:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CCE82212B0A;
-	Thu,  5 Dec 2024 11:49:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 073391AAA27;
+	Fri,  6 Dec 2024 20:58:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hXocpIsr"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="opdIpAAC"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 556E2211701;
-	Thu,  5 Dec 2024 11:49:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5EADF1F236B;
+	Fri,  6 Dec 2024 20:58:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733399388; cv=none; b=NIWivpc/h9FEWKZRP/2pQ0pSe7ErF8rMBHEq8iHZgTldc8sdXrnVZe9YcAvgaelXBk4yyQS+Sa+daRpl72ktTKIUbE2hQ43wKXFF2vuSW3tvYvuX7M+iH9y7yN/JUOwSjv68cG6iMsazjAh0gpIii5uelRNGwoeEbv0O593wWfg=
+	t=1733518706; cv=none; b=Y1RwqErzoq6ACEd300/kcYN3oX4EV5lZ9B8De2uIPS4LgjuYgwDRaFZnzklNFrK+KbfurHan5GJVEya2SDUSzvO2Cj6o3jbtAcrZAQP81ZPaXqc+BmjlIq7Z+pkJ5vfl+yMvH4PGkY6m+0W6qTSMCVFYiqXtslZa4KvuT/fso3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733399388; c=relaxed/simple;
-	bh=9OSjcPCO5Mbw3u+bSIQigrlr/jYsixpKH8Kkud4vmDo=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=iz0GAg6WWob03aC0HYh7ZoQG2EjexhlS7xO+oGAG2AMWDcQOzncecVcxP5VoSEe4LchS4nxxg/rxz/cgM5Z+J/adKGd+xc29cGQmEimejjvkscLtBEgjnaA/O3wacNOXjPtdboWwEGPO+qBdvakvdUwk7C7MUgdGLnUQaZYI7z4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hXocpIsr; arc=none smtp.client-ip=209.85.210.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-7242f559a9fso855137b3a.1;
-        Thu, 05 Dec 2024 03:49:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733399387; x=1734004187; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=y8FAgB+dYFBwjAJ2SHtf/hi5z8cV2SIHrjso538Ujis=;
-        b=hXocpIsrSMnKbZpvTaj8mrs12THzWQ6vNHPmRaeXbLvGB3UcQ07WoqT1X3EpzewD8L
-         nva+wj1/yDEGugVnOUF5fTPj2we72odgHt1NpV3VciIcM+SRO5M0I2h3JNAwAN3BJkzK
-         zxyWOXB91VnhvampCdjoNW58NNWgBmPuaMYDwWdrHa2fU/OwBcu6t4RBOyqQGB46Z9Yp
-         sLhCdhtsM+Tysw19m3STImt6ZCv40QxdMpVADAPDMSltXiFkAjVWuTTdjJVPLF6cDmGK
-         i0l4zu1scqY1temDCdJjoBgJD0T3+6cSA40IuDkwtpgeRpboEeInIoW36w23AMK/lfyI
-         vCVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733399387; x=1734004187;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=y8FAgB+dYFBwjAJ2SHtf/hi5z8cV2SIHrjso538Ujis=;
-        b=omeU9IiJSESERfOQ+Rg6wT2OEYOwr4xviNKonhPvztdCOJqFBrJ2RAtcneSkTer+ss
-         Va/e+aAu3LiR+I3+87j5UTUP2tJ/CUO5izgb80XuQBX0ylkvMjUQl1eYTqnaC4JPhpvE
-         s594RtD1YQuaC3iqmXjUf6q5TfVz67/1WXHG6lEl0KOTGNpg5Le9ALHhDBVG8kYeXKQB
-         Iim5+xujXJwPCiLadIwXUlMzFsSgvFtRBhMoupKOnVD0r0zWvU4WONPQ18FtzbhUD5N6
-         CfxqZ2q5r5QJ5c4GGFuxi1uCkY2Hw7Rbp1nkvKij416Emr8WW5gQTZHa6vbgHzoXcEj8
-         aJOA==
-X-Forwarded-Encrypted: i=1; AJvYcCXsV/BkBL8ODGF7So0zIe5uahbz/AVvYARTWL/qjVEzvwdxFi25rsY0Yoe0n+d3a9BFPGXpOtvZt3lqWBk9V1Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzwl1sdcSM5vnjrpdD9Q4907FDj+ivZx0858tgDYPCO4EKdUx9g
-	NvTA9IoWrfm1uWu4dfrbC3mob8XpPvZmKLkwcWpYnNXnA9k7dyEf
-X-Gm-Gg: ASbGnct6qbfzINewXf3baIzX6xFT4JGwJyXDEJsj/ddZGQAgYH2QPehLuHrndKpSOpw
-	VEwvBwulWzY8ye49Bhps/Umr6mEi+a/C38yj4xC4RQUPjw8LPCcA3OwIIj5NxAQd/YP2yHEpH3t
-	GxPq3EZApnxnKvE0pERO+/x90sc2psa6PU8xC0MRqTpXNBj6M4BrmMymfJRS+7FXpeilLTT2udN
-	ISe8TB/jRhtsm3NZMC50dnD2F5DrNMH5Gq/x4ma2gSKkAoRMNO3rMwIVw6Ll2fKq6hEACq5iAs=
-X-Google-Smtp-Source: AGHT+IEJm/6y8y+puoS/wfQmfMSA0/Sy9yyfdJPJxEYupMGsXKLAgOrTM2SIv31v+BZdP0uPQY9lzg==
-X-Received: by 2002:a17:902:e743:b0:215:4f98:da0d with SMTP id d9443c01a7336-215bd0d8968mr140384575ad.15.1733399386728;
-        Thu, 05 Dec 2024 03:49:46 -0800 (PST)
-Received: from BiscuitBobby.am.students.amrita.edu ([123.63.2.2])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-215f8e41e52sm10965545ad.3.2024.12.05.03.49.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2024 03:49:46 -0800 (PST)
-From: Siddharth Menon <simeddon@gmail.com>
-To: simeddon@gmail.com,
-	jpoimboe@kernel.org,
-	jikos@kernel.org,
-	mbenes@suse.cz,
-	pmladek@suse.com,
-	shuah@kernel.org
-Cc: live-patching@vger.kernel.org,
-	linux-kselftest@vger.kernel.org
-Subject: [PATCH 3/3] selftests/livepatch: Check if required config options are enabled
-Date: Thu,  5 Dec 2024 17:17:57 +0530
-Message-Id: <20241205114757.5916-4-simeddon@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20241205114757.5916-1-simeddon@gmail.com>
-References: <20241205114757.5916-1-simeddon@gmail.com>
+	s=arc-20240116; t=1733518706; c=relaxed/simple;
+	bh=AoYJEduDKAfmUXw66punVqpLvMHGpz/t+LVYPT/z7pE=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=PTE0LzgcEYhomE5+EfGy48xWLh+cLZxNq/uwTh6WHo6tb9XM1IEmlg6u+0XGOJLMFhShkwNNrnNwypY5CtJyUJCH1WfybwbICchqnIEwswWtdePDXwWQzRero4wKc5NeTVo0coPRFPDKgTxf35um/u/bVOhntIbNICecjFd5/s4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=opdIpAAC; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from [100.65.128.154] (unknown [20.236.11.102])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 8B63620ACD7A;
+	Fri,  6 Dec 2024 12:58:18 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8B63620ACD7A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1733518699;
+	bh=M9PuEUd7fHK0twjnpmT4sQ2WiGKSyXN5nPrU+06sRxI=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=opdIpAACnQeStJ33oACe6p52ZM8f0Sws7Fv8oVZEtnJ34oxYkj2Ifncn0UBE7+8VM
+	 /Rer5IHWNKL+Om4cBhthsawIs+kQdevr3ykVw21CBvfVnNLhAZ1lcWLQbVr0aJDoH2
+	 0Lv+tHrW7mbf2ysXMzyMfTT7x/zNVB+cEVkkvmJU=
+Message-ID: <dab77729-682f-4182-9fb2-cd522ac29b5f@linux.microsoft.com>
+Date: Fri, 6 Dec 2024 12:58:17 -0800
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: eahariha@linux.microsoft.com, netfilter-devel@vger.kernel.org,
+ coreteam@netfilter.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, cocci@inria.fr,
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+ linux-scsi@vger.kernel.org, xen-devel@lists.xenproject.org,
+ linux-block@vger.kernel.org, linux-wireless@vger.kernel.org,
+ ath11k@lists.infradead.org, linux-mm@kvack.org,
+ linux-bluetooth@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-rpi-kernel@lists.infradead.org, ceph-devel@vger.kernel.org,
+ live-patching@vger.kernel.org, linux-sound@vger.kernel.org,
+ etnaviv@lists.freedesktop.org, oss-drivers@corigine.com,
+ linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen <anna-maria@linutronix.de>
+Subject: Re: [PATCH v2 00/21] Converge on using secs_to_jiffies()
+To: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
+ <b9fcb12a-b7a4-4c33-836e-67109ce07deb@intel.com>
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <b9fcb12a-b7a4-4c33-836e-67109ce07deb@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-When CONFIG_LIVEPATCH is disabled, compilation fails due to the
-required structs from the livepatch header file being undefined.
-This checks for whether CONFIG_LIVEPATCH and CONFIG_DYNAMIC_DEBUG
-are enabled before compiling livepatch self-tests.
+On 11/29/2024 4:57 AM, Przemek Kitszel wrote:
+> 
+> [removed most non-list recipients, it's just too much]
+> 
+> On 11/15/24 10:26 PM, Easwar Hariharan wrote:
+<snip>
+>>
+>> ---
+>> Changes in v2:
+>> - EDITME: describe what is new in this series revision.
+>> - EDITME: use bulletpoints and terse descriptions.
+>> - Link to v1: https://lore.kernel.org/r/20241115-converge-secs-to-
+>> jiffies-v1-0-19aadc34941b@linux.microsoft.com
+> 
+> that is not a proper changelog, you were supposed to edit those
+> placeholder entries; please look around for examples
+> 
+> There is also just too much recipients. Please split up your patches
+> into smaller pieces. You will also learn the process on a smaller
+> sample.
+> 
+> And definitively please wait for 48h before reposting such big series.
 
-Signed-off-by: Siddharth Menon <simeddon@gmail.com>
----
- tools/testing/selftests/livepatch/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+Yes, sorry, I sent out a v2 in a moment of panic on including the
+already accepted patch in v1. I failed to edit the changelog in that
+same panic. I'll try to not panic and do better in the future.
 
-diff --git a/tools/testing/selftests/livepatch/Makefile b/tools/testing/selftests/livepatch/Makefile
-index a080eb54a215..14b5c60663cd 100644
---- a/tools/testing/selftests/livepatch/Makefile
-+++ b/tools/testing/selftests/livepatch/Makefile
-@@ -14,5 +14,6 @@ TEST_PROGS := \
- 	test-kprobe.sh
- 
- TEST_FILES := settings
-+TEST_CONFIG_DEPS := CONFIG_LIVEPATCH CONFIG_DYNAMIC_DEBUG
- 
- include ../lib.mk
--- 
-2.39.5
+> 
+> Regarding code - you could also convert msecs_to_jiffies(const * HZ),
+> there are 10 that are greppable.
+> 
 
+Those seem to be mistakes. const*HZ is a seconds-denominated timeout,
+being passed to msecs_to_jiffies() which will treat it as a
+millisecond-denominated timeout resulting in an excessively long
+timeout. I suppose that's better than a too-short timeout, and
+apparently it's been working fine all along since hardware responds
+before the too-long timeout expires. Half of them are in
+drivers/scsi/arcmsr/arcmsr_hba.c and the pattern has apparently been
+there since 2010.
+
+Thanks,
+Easwar
 
