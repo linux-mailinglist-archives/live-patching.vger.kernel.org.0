@@ -1,109 +1,131 @@
-Return-Path: <live-patching+bounces-884-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-885-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id A659F9E943B
-	for <lists+live-patching@lfdr.de>; Mon,  9 Dec 2024 13:34:50 +0100 (CET)
-Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 487829E94A5
+	for <lists+live-patching@lfdr.de>; Mon,  9 Dec 2024 13:45:29 +0100 (CET)
+Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 3AE941888230
-	for <lists+live-patching@lfdr.de>; Mon,  9 Dec 2024 12:34:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EE9BE280C22
+	for <lists+live-patching@lfdr.de>; Mon,  9 Dec 2024 12:45:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1FEB22A1C5;
-	Mon,  9 Dec 2024 12:32:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="hD8xq5UD"
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8383A224B01;
+	Mon,  9 Dec 2024 12:45:22 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B97F6229B3B
-	for <live-patching@vger.kernel.org>; Mon,  9 Dec 2024 12:32:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BB8E221D86;
+	Mon,  9 Dec 2024 12:45:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733747568; cv=none; b=Z9qdEesq/MLIUTI8/DwrRGQGbMDkQngdFbKFnAw0GebW99355I3W+KAG4dzjXCiGA8TmBsP3rFqsUjUPoyh/0oNsreASAvVvo/N7uC99DLkXj4UT24NeYdvk7FQLMUNJ6fcLenTya1HMuA5jON7YO2yOlMYLeQBF7EVyWLEtPPs=
+	t=1733748322; cv=none; b=TAHtoVwD4vAR5+UBe9t0NrBgiiBeB6T/W63ZzpT/MIBiA2dLXWHQtWP8VXtzN6RD64W6KXkp7K2feKndl2GK3QMTkoeE/rwkK4Ma/+6pqXRn/E3RQys5y+IKBL/2+ojqZjspO+L772nCFuzSwmiDxmu35DQzm/EIxoFTgL+Iruk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733747568; c=relaxed/simple;
-	bh=ojkIf+NJwH2pcMn4s5pw7xVqm1AtSmgfJH/UKFJ2AUM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=czCdHnuRFvz+44G9T/mgucqqn41lJRck1T+gcnKEjRrfpNXfYDKyICJpQFW2SWcm3W3mHJSzOkJiiY2VFDhGV+bb1Sscr6OcTYe9Q9wOoH2e5ANmfOn2ZzWpJSYcdZxjaB0WShkc9rNePAViGFRQkGZTgJxNa6FV7J3Z8bXSe0M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=hD8xq5UD; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-434f4ccddbdso13342505e9.1
-        for <live-patching@vger.kernel.org>; Mon, 09 Dec 2024 04:32:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1733747565; x=1734352365; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Njj/2vIxm5FJWzit5BXmu7RICqBEVd7qNdhzquAV+XY=;
-        b=hD8xq5UDhCn6nSE0sOsojROYW8s9rftZr4s47l2KZbLXJBSe5x9sNl6h/esYwWp2EI
-         9+xbNXZGqYpB7fcb23YTxA9qRQx9gX6NP7nK6Mc9TgatCCNXtunH1PcOs2jlzS+OwqPF
-         8Q8KQs0/aqwBSDUbeIEpjL26wpfCRuCsGkrwvAsjHyCJDAJlk4u+jXRKyvlPlADtsaN1
-         IHJCkSBYM1uxyb9dkiCPrTBLQPZV1H64Y5y+ePQpt5SmVRXNzaHsNTLVtEafKzt0DDvT
-         7Ljnht58tzuinlr5dW2EG6aw6Z2MlYzgzeKij7DynpKOFSp2qpMcvCeb5+qONY1DmRd4
-         4ptQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733747565; x=1734352365;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Njj/2vIxm5FJWzit5BXmu7RICqBEVd7qNdhzquAV+XY=;
-        b=k8AQVRsPv6gig18HxBh9zGgdg/tqMBfGDUBKa2lLJLGhGgUvN7kV6kHFH4sIU1UA5H
-         QIGbAVSyOuuihIcufL+ucQ6MOgtNiQthc4JiOBMhgOBTmGVrotj9fQ6Wc+ml1tLyTNCk
-         PhVJY4p7T9IwU9uVCMSFY511EyStU6gllyJeI2CYnVFU03iBR4Qqs070YQwxhrBXH4BC
-         bAy8NwTMxCfaxkCc1Aavked3ufJ+b9hxsmAo6IMmPzgoyIYHRY5mWGFXOQ/eLH+AY27L
-         044w+cZTIEFmkJ6/XOaR9+G0blHIY0/RsOd2ehIi7AWXYch6fzkknbSJ2JLpaY0VgC8z
-         2KdA==
-X-Forwarded-Encrypted: i=1; AJvYcCWS0Hg2VQe7j0qktESZ9F5+7sRPL1/T/jppi/txjhkmr35/kFwg/XqNHjHnKQSDeMbDGL8ulqSeFu3if47q@vger.kernel.org
-X-Gm-Message-State: AOJu0YyUbP2rYnUfwZ+XOcFq7ENWK4PW64w7mjiiGsJvxFZhRNtO1ksQ
-	3Bna/l14pbym50DhTUD+KqfXFXv7bb2L7uHadRCXs959+PeZs5Hiv11J9RQeDD3viRhAu1BdHz7
-	y
-X-Gm-Gg: ASbGncs48b6h3v9njm027+U7ikJlZEDhexm+jCM2TYAFT6VX53ycssWrUyj52ZmrxmQ
-	c9NdsjEpDMPy0PgYLvQyAlbhzEkKhGvCuU9sATwBgy/faWUOuN2WG5FscWm7ePwEdlNJoLRzisV
-	yFtUciUvJIdyFY34UJN0ndPc6DujmyP9n9wvQVAHqaobXB5LqqonEAP6fhsz16M1zLiNJyl0tzp
-	9Gpe6yz1AeFRzhsMgzBWlRl9GTiy2Iq4IvfmoaU/aYTeMV8hOY=
-X-Google-Smtp-Source: AGHT+IHnmQQkF/LPk9+MyUY9bTIlrMV1gwhUOk65jH2TYml3ABaVJ5nzEP6I6U7EmySutmHU06Ubmw==
-X-Received: by 2002:a5d:588f:0:b0:385:e37a:2a56 with SMTP id ffacd0b85a97d-3862b3e63efmr7362064f8f.52.1733747565141;
-        Mon, 09 Dec 2024 04:32:45 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21628b6f47esm41089055ad.35.2024.12.09.04.32.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Dec 2024 04:32:44 -0800 (PST)
-Date: Mon, 9 Dec 2024 13:32:37 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Wardenjohn <zhangwarden@gmail.com>
-Cc: jpoimboe@kernel.org, mbenes@suse.cz, jikos@kernel.org,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3] selftests: livepatch: add test cases of stack_order
- sysfs interface
-Message-ID: <Z1bjZbgj3JjuJZS-@pathway.suse.cz>
-References: <20241024083530.58775-1-zhangwarden@gmail.com>
+	s=arc-20240116; t=1733748322; c=relaxed/simple;
+	bh=A5ejJ/BX/PS60+9iiR3WDF+uIu660h9qKllHzZGc5G4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=aja6EPjtZHUpZZmSplvcLsW0eIEjuh1rJTC6a/b8nIUMdqAY/pAmZexUdHl+LDK+4rEX7PDTSn1KPfbY+5Jxnl3hi4nsl4AK4UMu9cjwAxR7BBGP/CY+6Jb/8MQbmEvKa5M2RlTWoTYIqLyfbw3UjdLwwzGu0HYYxyvOCdFKUk0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+	by localhost (Postfix) with ESMTP id 4Y6M5p179vz9tBf;
+	Mon,  9 Dec 2024 13:45:18 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ad8aC7rBW98b; Mon,  9 Dec 2024 13:45:18 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4Y6M5p0DxHz9tBd;
+	Mon,  9 Dec 2024 13:45:18 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id E8A068B766;
+	Mon,  9 Dec 2024 13:45:17 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id OUa8UHFVNS_8; Mon,  9 Dec 2024 13:45:17 +0100 (CET)
+Received: from [10.25.209.139] (unknown [10.25.209.139])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id A70C18B763;
+	Mon,  9 Dec 2024 13:45:17 +0100 (CET)
+Message-ID: <95a461ca-3ed6-4380-ad1a-da12e1109675@csgroup.eu>
+Date: Mon, 9 Dec 2024 13:45:17 +0100
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241024083530.58775-1-zhangwarden@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/21] Converge on using secs_to_jiffies()
+To: Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+ Easwar Hariharan <eahariha@linux.microsoft.com>
+Cc: netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org, cocci@inria.fr,
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+ linux-scsi@vger.kernel.org, xen-devel@lists.xenproject.org,
+ linux-block@vger.kernel.org, linux-wireless@vger.kernel.org,
+ ath11k@lists.infradead.org, linux-mm@kvack.org,
+ linux-bluetooth@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-rpi-kernel@lists.infradead.org, ceph-devel@vger.kernel.org,
+ live-patching@vger.kernel.org, linux-sound@vger.kernel.org,
+ etnaviv@lists.freedesktop.org, oss-drivers@corigine.com,
+ linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen <anna-maria@linutronix.de>
+References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
+ <b9fcb12a-b7a4-4c33-836e-67109ce07deb@intel.com>
+ <dab77729-682f-4182-9fb2-cd522ac29b5f@linux.microsoft.com>
+ <72c8eb66-eb67-4f8b-b0c0-13f1aa001698@intel.com>
+Content-Language: fr-FR
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+In-Reply-To: <72c8eb66-eb67-4f8b-b0c0-13f1aa001698@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu 2024-10-24 16:35:30, Wardenjohn wrote:
-> Add selftest test cases to sysfs attribute 'stack_order'.
+
+
+Le 09/12/2024 à 13:01, Przemek Kitszel a écrit :
+> On 12/6/24 9:58 PM, Easwar Hariharan wrote:
+>> On 11/29/2024 4:57 AM, Przemek Kitszel wrote:
+>>>
+>>> [removed most non-list recipients, it's just too much]
+>>>
+>>> On 11/15/24 10:26 PM, Easwar Hariharan wrote:
+>> <snip>
 > 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Wardenjohn <zhangwarden@gmail.com>
+>>>
+>>> Regarding code - you could also convert msecs_to_jiffies(const * HZ),
+>>> there are 10 that are greppable.
+>>>
+>>
+>> Those seem to be mistakes. const*HZ is a seconds-denominated timeout,
+>> being passed to msecs_to_jiffies() which will treat it as a
+>> millisecond-denominated timeout resulting in an excessively long
+>> timeout. I suppose that's better than a too-short timeout, and
+>> apparently it's been working fine all along since hardware responds
+>> before the too-long timeout expires. Half of them are in
+>> drivers/scsi/arcmsr/arcmsr_hba.c and the pattern has apparently been
+>> there since 2010.
+> 
+> my point was that, the default value of HZ is 1000, and most of the code
+> that is just `$value*HZ` was meant as "$value seconds, in ms unit".
 
-JFYI, I have pushed this patch into livepatching.git,
-branch for-6.14/stack-order.
+I can't follow you here. The default value of HZ is 250 as far as I can see.
 
-Note that I have substituted /sys/kernel/livepatch with
-$SYSFS_KLP_DIR. The SYSFS_KLP_DIR variable has been
-introduced in 6.13.
+Regardless, HZ is the number of jiffies per second, nothing else.
 
-Best Regards,
-Petr
+> 
+> Same for HZ/const, HZ/2 being 500ms.
+> 
+> HZ is awful in that it is not 1s but 1/s, but it was easy to abuse the
+> value in simple context.
+
+Why is that awful ?
+
+HZ is a nice macro that gives you the number of ticks per second, so 
+that you are able to easily calculate the number of ticks for a given 
+duration, regardless of the configured number of ticks per second.
+
+Christophe
 
