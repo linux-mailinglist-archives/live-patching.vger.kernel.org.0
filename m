@@ -1,48 +1,48 @@
-Return-Path: <live-patching+bounces-901-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-906-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 29D599EBD02
-	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 23:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 64E4B9EBD3C
+	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 23:09:27 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 93961162BE6
-	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 22:06:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6559E16488F
+	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 22:09:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF7D6246F53;
-	Tue, 10 Dec 2024 22:02:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A478229122;
+	Tue, 10 Dec 2024 22:02:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="VsljeNAY"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="e/J9gwCA"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9DA224037A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9E4A24037B;
 	Tue, 10 Dec 2024 22:02:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733868171; cv=none; b=PkrPoIBLWPhSHkut0Na5Ggol9taF+gOcFSncIi/JdACgqaEHc6MSbsfI+oeny913AbE0WyoTJNRoGwRai4o8+Z/3F55Xg7i8H/3SSW+vgw+81gXNwT24KhI2OtN5UkB1r9WNmlfRo1v5FjWOlc9iMr62ri4vVV1fdISafRSx29g=
+	t=1733868172; cv=none; b=BprrbBR4otn74l6UP8Wwjx+xqvVHwlrENLdIOHVUg6EkRP2B52QXx33qIp6fbMhQknyM4mnyh7OTwUBFl2Eopcy53CJ14EJuUCsF2HY9u2S1FXfqgOG33VguS6ed1nifHUQQtIaevA1sYPJFNQMqep46XOwkbANupwTYkPtSsmM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733868171; c=relaxed/simple;
-	bh=siPScLtqpZlGpP8htPBFN6m6C31j8AmD1yYypWDBtIs=;
+	s=arc-20240116; t=1733868172; c=relaxed/simple;
+	bh=8M8tI83jERsUzY8R+Kb09XTlALhu0Mh9yRr+lGLrynU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=XwsJ5kBzIDhZ3KfTC5Xqo2ieVPUdy4frQet2PVSw/H1ExCFfSIS5E/ErJOYoOS6hr7U1+ZrT15Q9EIi4U0I9fxjgRAbRuaAtgbQOk35cdRwotNmC8UqKL2Ag9tRbNqzxIZ2RxBWvFN5cf91KMxP9CRLhwaVAan4WT3b9xC/mBMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=VsljeNAY; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=AApdSqcClE5usQVOgtiDWyq85Zf2hOvqkYMtlRzWbiejjjFwuold78Rz9ugrO80q5fcpTZVkIr8dnz4QxQvH6k0Y2u5TALU3jsww3cYAtfybvJuW4H+8K7V8s0/3lCxNGBLsD2zDchHHfDbM6Tt6d6353W60yY/UzP2+OI0hvqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=e/J9gwCA; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 93EFE20ACD6D;
+	by linux.microsoft.com (Postfix) with ESMTPSA id C173C20ACD6E;
 	Tue, 10 Dec 2024 14:02:39 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 93EFE20ACD6D
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C173C20ACD6E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1733868159;
-	bh=2Yxce1Hb0/0P5cE6q+zb1yt8qEYqdCG+5Hx3X7W7CLE=;
+	bh=RbQWNnMSFMFriUk4NuHYTwiGcsEx+EnrYdZ9JaogvX4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=VsljeNAYadFajIAeGJ9FMKFBGspy6ozrhBqU582XvcWkNMj13LfQdRwOadXZG5Pxf
-	 Argps4EtZvFIc7JynbCTgqDrOVF3u5K7Ah2l9+nekqV0coL2L+cEZsIcBHPG5GDao7
-	 B4HNxmwT4io4VbogtubQ+pF0xj14MXNsqvxe10Z0=
+	b=e/J9gwCA4uBKGknzsmiO3oet8slWv1kdiClhfZ9LTUvDcAr8km71ONqn/wjRdmpri
+	 4EyHjbbYG4CKX/8T2eN5ATCPWVrLNipH5jKYYefAMdH+qlSBTJn1LIV6HX/UxzfdGn
+	 9DHlxQpHUKnw1xm9c/b/XukYCVTGP1/9SF9qgehM=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Tue, 10 Dec 2024 22:02:48 +0000
-Subject: [PATCH v3 17/19] ceph: Convert timeouts to secs_to_jiffies()
+Date: Tue, 10 Dec 2024 22:02:49 +0000
+Subject: [PATCH v3 18/19] livepatch: Convert timeouts to secs_to_jiffies()
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -51,7 +51,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241210-converge-secs-to-jiffies-v3-17-ddfefd7e9f2a@linux.microsoft.com>
+Message-Id: <20241210-converge-secs-to-jiffies-v3-18-ddfefd7e9f2a@linux.microsoft.com>
 References: <20241210-converge-secs-to-jiffies-v3-0-ddfefd7e9f2a@linux.microsoft.com>
 In-Reply-To: <20241210-converge-secs-to-jiffies-v3-0-ddfefd7e9f2a@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -136,22 +136,83 @@ the following Coccinelle rules:
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- fs/ceph/quota.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ samples/livepatch/livepatch-callbacks-busymod.c |  3 +--
+ samples/livepatch/livepatch-shadow-fix1.c       |  3 +--
+ samples/livepatch/livepatch-shadow-mod.c        | 15 +++++----------
+ 3 files changed, 7 insertions(+), 14 deletions(-)
 
-diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
-index 06ee397e0c3a6172592e62dba95cd267cfff0db1..d90eda19bcc4618f98bfed833c10a6071cf2e2ac 100644
---- a/fs/ceph/quota.c
-+++ b/fs/ceph/quota.c
-@@ -166,7 +166,7 @@ static struct inode *lookup_quotarealm_inode(struct ceph_mds_client *mdsc,
- 	if (IS_ERR(in)) {
- 		doutc(cl, "Can't lookup inode %llx (err: %ld)\n", realm->ino,
- 		      PTR_ERR(in));
--		qri->timeout = jiffies + msecs_to_jiffies(60 * 1000); /* XXX */
-+		qri->timeout = jiffies + secs_to_jiffies(60); /* XXX */
- 	} else {
- 		qri->timeout = 0;
- 		qri->inode = in;
+diff --git a/samples/livepatch/livepatch-callbacks-busymod.c b/samples/livepatch/livepatch-callbacks-busymod.c
+index 378e2d40271a9717d09eff51d3d3612c679736fc..69105596e72e6826aa2815cb2599eea56a0055ba 100644
+--- a/samples/livepatch/livepatch-callbacks-busymod.c
++++ b/samples/livepatch/livepatch-callbacks-busymod.c
+@@ -44,8 +44,7 @@ static void busymod_work_func(struct work_struct *work)
+ static int livepatch_callbacks_mod_init(void)
+ {
+ 	pr_info("%s\n", __func__);
+-	schedule_delayed_work(&work,
+-		msecs_to_jiffies(1000 * 0));
++	schedule_delayed_work(&work, 0);
+ 	return 0;
+ }
+ 
+diff --git a/samples/livepatch/livepatch-shadow-fix1.c b/samples/livepatch/livepatch-shadow-fix1.c
+index 6701641bf12d454a770e49abeeb0dea92560e55e..f3f153895d6ce751fc91ae1224d91b220cba3e37 100644
+--- a/samples/livepatch/livepatch-shadow-fix1.c
++++ b/samples/livepatch/livepatch-shadow-fix1.c
+@@ -72,8 +72,7 @@ static struct dummy *livepatch_fix1_dummy_alloc(void)
+ 	if (!d)
+ 		return NULL;
+ 
+-	d->jiffies_expire = jiffies +
+-		msecs_to_jiffies(1000 * EXPIRE_PERIOD);
++	d->jiffies_expire = jiffies + secs_to_jiffies(EXPIRE_PERIOD);
+ 
+ 	/*
+ 	 * Patch: save the extra memory location into a SV_LEAK shadow
+diff --git a/samples/livepatch/livepatch-shadow-mod.c b/samples/livepatch/livepatch-shadow-mod.c
+index 7e753b0d2fa611524c9e2adbe02c8fa3e9b6015e..5d83ad5a8118dbbac897dfcbb92e6d5f399d1dc3 100644
+--- a/samples/livepatch/livepatch-shadow-mod.c
++++ b/samples/livepatch/livepatch-shadow-mod.c
+@@ -101,8 +101,7 @@ static __used noinline struct dummy *dummy_alloc(void)
+ 	if (!d)
+ 		return NULL;
+ 
+-	d->jiffies_expire = jiffies +
+-		msecs_to_jiffies(1000 * EXPIRE_PERIOD);
++	d->jiffies_expire = jiffies + secs_to_jiffies(EXPIRE_PERIOD);
+ 
+ 	/* Oops, forgot to save leak! */
+ 	leak = kzalloc(sizeof(*leak), GFP_KERNEL);
+@@ -152,8 +151,7 @@ static void alloc_work_func(struct work_struct *work)
+ 	list_add(&d->list, &dummy_list);
+ 	mutex_unlock(&dummy_list_mutex);
+ 
+-	schedule_delayed_work(&alloc_dwork,
+-		msecs_to_jiffies(1000 * ALLOC_PERIOD));
++	schedule_delayed_work(&alloc_dwork, secs_to_jiffies(ALLOC_PERIOD));
+ }
+ 
+ /*
+@@ -184,16 +182,13 @@ static void cleanup_work_func(struct work_struct *work)
+ 	}
+ 	mutex_unlock(&dummy_list_mutex);
+ 
+-	schedule_delayed_work(&cleanup_dwork,
+-		msecs_to_jiffies(1000 * CLEANUP_PERIOD));
++	schedule_delayed_work(&cleanup_dwork, secs_to_jiffies(CLEANUP_PERIOD));
+ }
+ 
+ static int livepatch_shadow_mod_init(void)
+ {
+-	schedule_delayed_work(&alloc_dwork,
+-		msecs_to_jiffies(1000 * ALLOC_PERIOD));
+-	schedule_delayed_work(&cleanup_dwork,
+-		msecs_to_jiffies(1000 * CLEANUP_PERIOD));
++	schedule_delayed_work(&alloc_dwork, secs_to_jiffies(ALLOC_PERIOD));
++	schedule_delayed_work(&cleanup_dwork, secs_to_jiffies(CLEANUP_PERIOD));
+ 
+ 	return 0;
+ }
 
 -- 
 2.43.0
