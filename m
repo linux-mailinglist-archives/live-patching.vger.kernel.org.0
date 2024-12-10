@@ -1,48 +1,49 @@
-Return-Path: <live-patching+bounces-887-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-890-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C6B8F9EBC77
-	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 23:02:57 +0100 (CET)
-Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D2A7F9EBCA9
+	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 23:03:46 +0100 (CET)
+Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 42E611624AE
-	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 22:02:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C7BFB283378
+	for <lists+live-patching@lfdr.de>; Tue, 10 Dec 2024 22:03:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2E1623A56C;
-	Tue, 10 Dec 2024 22:02:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E26723EBFA;
+	Tue, 10 Dec 2024 22:02:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="D0ztEAtB"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="qVCIV9cf"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F5AC2397A5;
-	Tue, 10 Dec 2024 22:02:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBA6C2397B6;
+	Tue, 10 Dec 2024 22:02:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733868164; cv=none; b=NOzVcnJ0WKnWPOrShNpLkVYOYVxQ4xohnpJm/uGXwNclBzzrb99D9q+Fxn7Nd5Cx4IkaTi2QS98A+teOKtXkYSpL3wOU8AW7zQ2/t1m3GfttxYmahtmwXTyH7Y6dOWqt0NJGs1m/rXPOstPKi7sPVIj5rMooeOMSjnZKbwb79cg=
+	t=1733868166; cv=none; b=tM6cCZm1kIfzPzLGpbJmRyfMhD6X0IVqZh3aoZAJss0oazV4CCSCfutbgLvh2zcc39/TW9DZJc7WvyPFq2U69jR9CYnGndYw3snwUV8mswxELZQbO2dCEVLo54OrYKDyP/bL5l4iPmdSVsfrcXydldtolc+k/CWrUEz5EUIGD2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733868164; c=relaxed/simple;
-	bh=u09CnohGmZhgZmVWK3D3VhRZAlg6uIpt8CXcoyq628k=;
+	s=arc-20240116; t=1733868166; c=relaxed/simple;
+	bh=nniDws7itELJemCoz5vvfn51FZhwQieAw+a8XhFQj+8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SrEQeExl408Ax+36Oja+X4/yjRWqtakiqWnyAdxV9Qcfvg6oYgRQmykvtxlaCNK3LngKVMPQr0ZYJ29vj8z74Nstdeftapa4NfSIicBnbyyCQnZjOr5WZjhgUuBA1BBE+Vwt8AUypt6rOAnAe40Bs0qAdpqcFDeahXuB95abjVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=D0ztEAtB; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:To:Cc; b=TJ/goJLD8Sa1LETfIA9JLjjvKnPKQErTFOdzQvrRumciCJHsV0I/lhtqfO9LkjQBVv4U7mc+gHMo/tez0A1L7B9X0BxSv1ZYiSDnmWAwe/akqw8JmnB6hb/GUkJXs1kA163OPjGFgnVQhw9sDQLyXYsnt225aQb1boIYPuWYe4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=qVCIV9cf; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id B8E722047229;
+	by linux.microsoft.com (Postfix) with ESMTPSA id E562F204722A;
 	Tue, 10 Dec 2024 14:02:36 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B8E722047229
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E562F204722A
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1733868156;
-	bh=p+8g58BSBlt5b8YhFCU18nddw3DZx2oHU0RyK/mdTxg=;
+	s=default; t=1733868157;
+	bh=c41QzYd4hhSXlS6Xp2pgWqH2EB3T3v3i9Pb37cjnO/o=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=D0ztEAtB7CqvQGSZsYp+tRN4xkI1U+Pf0qGPT6ILcEXORWxv5WkL8NhY8sec+1ep2
-	 o0YIUC89qlYyBwdj7sp7PypSXEaSKBYajv+HMKS2o/OP0mphIdTsuM5S4VkeWurXmd
-	 SYBz6bHa118hfuIgWOgwAoVQLPZwu51P6o2dfTvU=
+	b=qVCIV9cfYQFUEbAPN5oHTbVOOCMPtJTRnplX1niaLB3lEuL2MM5F44Gr4RM6lOTTS
+	 WXCIz2JA6aYjhurN56TEZJEQV0OG8AVSPHDGlGJRGWabTGSgGWE+1I7d1M8c078PhJ
+	 k5GeR3RvYMN/zDxLHn2xchQHWB1a1MyycuJ1TrJU=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Tue, 10 Dec 2024 22:02:33 +0000
-Subject: [PATCH v3 02/19] coccinelle: misc: Add secs_to_jiffies script
+Date: Tue, 10 Dec 2024 22:02:34 +0000
+Subject: [PATCH v3 03/19] arm: pxa: Convert timeouts to use
+ secs_to_jiffies()
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -51,7 +52,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241210-converge-secs-to-jiffies-v3-2-ddfefd7e9f2a@linux.microsoft.com>
+Message-Id: <20241210-converge-secs-to-jiffies-v3-3-ddfefd7e9f2a@linux.microsoft.com>
 References: <20241210-converge-secs-to-jiffies-v3-0-ddfefd7e9f2a@linux.microsoft.com>
 In-Reply-To: <20241210-converge-secs-to-jiffies-v3-0-ddfefd7e9f2a@linux.microsoft.com>
 To: Pablo Neira Ayuso <pablo@netfilter.org>, 
@@ -117,44 +118,47 @@ Cc: netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
  Easwar Hariharan <eahariha@linux.microsoft.com>
 X-Mailer: b4 0.14.2
 
-This script finds and suggests conversions of timeout patterns that
-result in seconds-denominated timeouts to use the new secs_to_jiffies()
-API in include/linux/jiffies.h for better readability.
+Commit b35108a51cf7 ("jiffies: Define secs_to_jiffies()") introduced
+secs_to_jiffies(). As the value here is a multiple of 1000, use
+secs_to_jiffies() instead of msecs_to_jiffies to avoid the multiplication.
 
-Suggested-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
+This is converted using scripts/coccinelle/misc/secs_to_jiffies.cocci with
+the following Coccinelle rules:
+
+@@ constant C; @@
+
+- msecs_to_jiffies(C * 1000)
++ secs_to_jiffies(C)
+
+@@ constant C; @@
+
+- msecs_to_jiffies(C * MSEC_PER_SEC)
++ secs_to_jiffies(C)
+
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- scripts/coccinelle/misc/secs_to_jiffies.cocci | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ arch/arm/mach-pxa/sharpsl_pm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/scripts/coccinelle/misc/secs_to_jiffies.cocci b/scripts/coccinelle/misc/secs_to_jiffies.cocci
-new file mode 100644
-index 0000000000000000000000000000000000000000..8bbb2884ea5db939c63fd4513cf5ca8c977aa8cb
---- /dev/null
-+++ b/scripts/coccinelle/misc/secs_to_jiffies.cocci
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+///
-+/// Find usages of:
-+/// - msecs_to_jiffies(value*1000)
-+/// - msecs_to_jiffies(value*MSEC_PER_SEC)
-+///
-+// Confidence: High
-+// Copyright: (C) 2024 Easwar Hariharan, Microsoft
-+// Keywords: secs, seconds, jiffies
-+//
-+
-+virtual patch
-+
-+@depends on patch@ constant C; @@
-+
-+- msecs_to_jiffies(C * 1000)
-++ secs_to_jiffies(C)
-+
-+@depends on patch@ constant C; @@
-+
-+- msecs_to_jiffies(C * MSEC_PER_SEC)
-++ secs_to_jiffies(C)
+diff --git a/arch/arm/mach-pxa/sharpsl_pm.c b/arch/arm/mach-pxa/sharpsl_pm.c
+index 0c8d9000df5a6384d615cf231ff986c0c6b71681..dd930e3a61a493293597815782d2ffd36605a700 100644
+--- a/arch/arm/mach-pxa/sharpsl_pm.c
++++ b/arch/arm/mach-pxa/sharpsl_pm.c
+@@ -31,10 +31,10 @@
+ /*
+  * Constants
+  */
+-#define SHARPSL_CHARGE_ON_TIME_INTERVAL        (msecs_to_jiffies(1*60*1000))  /* 1 min */
+-#define SHARPSL_CHARGE_FINISH_TIME             (msecs_to_jiffies(10*60*1000)) /* 10 min */
+-#define SHARPSL_BATCHK_TIME                    (msecs_to_jiffies(15*1000))    /* 15 sec */
+-#define SHARPSL_BATCHK_TIME_SUSPEND            (60*10)                        /* 10 min */
++#define SHARPSL_CHARGE_ON_TIME_INTERVAL        (secs_to_jiffies(60))
++#define SHARPSL_CHARGE_FINISH_TIME             (secs_to_jiffies(10*60))
++#define SHARPSL_BATCHK_TIME                    (secs_to_jiffies(15))
++#define SHARPSL_BATCHK_TIME_SUSPEND            (60*10) /* 10 min */
+ 
+ #define SHARPSL_WAIT_CO_TIME                   15  /* 15 sec */
+ #define SHARPSL_WAIT_DISCHARGE_ON              100 /* 100 msec */
 
 -- 
 2.43.0
