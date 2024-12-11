@@ -1,46 +1,49 @@
-Return-Path: <live-patching+bounces-914-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-915-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 41F369EC27D
-	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 03:50:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id B573B9EC2AF
+	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 04:01:46 +0100 (CET)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9F05128101F
-	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 02:50:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AC1682840FB
+	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 03:01:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 598931FCD04;
-	Wed, 11 Dec 2024 02:50:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFD161FCF78;
+	Wed, 11 Dec 2024 03:01:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="u5fZ/gpW"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EmcE4/lj"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6BD41BD9E6;
-	Wed, 11 Dec 2024 02:50:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50F7D195;
+	Wed, 11 Dec 2024 03:01:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733885444; cv=none; b=pn0WVvLZoAl24AxUjaLzw+f8yVwoiSyTgpZKpYsr3tj3/Z012+P9R64tLHpVitSjU7kQbddu4/Voztt2+FF9XbCkXMQ4hO7owvJ1lWlZFX2ILHzy2PXIEfDGfisLVSkuN3+iIB8Y82XjbNJ9RR8dNi3Eoj3osVx7LV2xRG9HK48=
+	t=1733886098; cv=none; b=ZQpQk5iefKYSH4lEV1e7TEkKZp4ymeRcFYp6v3PymiIrw7XdbgWvaeuzhupCMlC/jvuNZ9HB/QA7sZZk7+NqjT9MhQFjF8HcNsiWV+xqaveFHWb9FhpBtLbMvYvRqJQsUL8RUzrHuyBBVPFsjlNIwxt1qifUHDV1to0JvT5rWk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733885444; c=relaxed/simple;
-	bh=C1p1Ur5QCo63c2pabe6pdtPHc4DXD/edWuUg2c5W1rI=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=FoD1Hs1fPmeiydzmUy2Iv13C0gOX9ahJzOzwQ11C9Fu+jQxoM1KQw2D3+Oet9XIW+AX6ELYf/hcHZv1NrA3QcBhVwktT1odTyV+um2aBqcycp5F/k/nZlLsQZZJSp87Y6EooD4Kwf1zEb5LMENSqM+bXTSp8YTZs9COsm/1zzIw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=u5fZ/gpW; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2F66C4CEDF;
-	Wed, 11 Dec 2024 02:50:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-	s=korg; t=1733885443;
-	bh=C1p1Ur5QCo63c2pabe6pdtPHc4DXD/edWuUg2c5W1rI=;
+	s=arc-20240116; t=1733886098; c=relaxed/simple;
+	bh=08Gv+rg+muCd4b+QXxh4lSp3ciy5sU1jyZsQ2rNGCQs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=qexHXYE5iMTL/9RBIRlxKnZ36TRzcGRdBz+8OOPsDeI9VH9lqz7NMWj0lylpamMDnulUoJZWydJfCMilRXrFweN0gC/1fGUGBkIBlD1ypvHjxhJqYjvGzuLEzLPmbV1ltTRWfThEiCoLVD8yfR3M3AOOYe5MCSNztrViL46LtHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EmcE4/lj; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097C6C4CED6;
+	Wed, 11 Dec 2024 03:01:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733886097;
+	bh=08Gv+rg+muCd4b+QXxh4lSp3ciy5sU1jyZsQ2rNGCQs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=u5fZ/gpW5jFRGO7MUBQaaZ7EgRL5SbKSrvY7yk4XgnrXQ7iTXlQdgNQuxkXW8XsEU
-	 DrSY2RvgO3myem+8+0r+fPnEVkJ622gxoAvBGZmHq1GHcjqcIgbi0UiHZMQHG1FvHq
-	 abSWtb/hxC5Xk4n2V4Wr5FYMY7W0R77+cgVDL+GA=
-Date: Tue, 10 Dec 2024 18:50:40 -0800
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Jakub Kicinski <kuba@kernel.org>
+	b=EmcE4/ljfCRY3RJanBjxtPhT62/nJjxk7ELO0ZGNbc2mhHWfd391knNb2HOuZGhSx
+	 1e9fTFNcZABywOnqpoRKAEZbgjlix3qU4Qd2lcLQX3AgcLKJ4vrIgfKpyVm37bJMAM
+	 wiwQScSc5AP2YRJa64ls0Q4PrRlmeIvzeFuzlqiXSS0E4b38+g1f5LgHQjP+e4bxxF
+	 EWfJBUd/sx64BPsSVOGtlrnzPfoqLHGXyBoBKFxBYI5CCDVF2OYRXR0K/LPrQzVMJu
+	 IZkEdyC65OkC/1hbUFTVO1xckc1Src7rjo3nhww+SaTgc+dkPD8qefo1Jh9IYKWx27
+	 gFWQHpinQ+82w==
+Date: Tue, 10 Dec 2024 19:01:33 -0800
+From: Jakub Kicinski <kuba@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
 Cc: Easwar Hariharan <eahariha@linux.microsoft.com>, Jeff Johnson
  <jeff.johnson@oss.qualcomm.com>, Pablo Neira Ayuso <pablo@netfilter.org>,
  Jozsef Kadlecsik <kadlec@netfilter.org>, "David S. Miller"
@@ -53,7 +56,7 @@ Cc: Easwar Hariharan <eahariha@linux.microsoft.com>, Jeff Johnson
  Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger
  <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Ofir
  Bitton <obitton@habana.ai>, Oded Gabbay <ogabbay@kernel.org>, Lucas De
- Marchi <lucas.demarchi@intel.com>, Thomas =?ISO-8859-1?Q?Hellstr=F6m?=
+ Marchi <lucas.demarchi@intel.com>, Thomas =?UTF-8?B?SGVsbHN0csO2bQ==?=
  <thomas.hellstrom@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
  Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
  <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
@@ -63,7 +66,7 @@ Cc: Easwar Hariharan <eahariha@linux.microsoft.com>, Jeff Johnson
  James Smart <james.smart@broadcom.com>, Dick Kennedy
  <dick.kennedy@broadcom.com>, "James E.J. Bottomley"
  <James.Bottomley@HansenPartnership.com>, "Martin K. Petersen"
- <martin.petersen@oracle.com>, Roger Pau =?ISO-8859-1?Q?Monn=E9?=
+ <martin.petersen@oracle.com>, Roger Pau =?UTF-8?B?TW9ubsOp?=
  <roger.pau@citrix.com>, Jens Axboe <axboe@kernel.dk>, Kalle Valo
  <kvalo@kernel.org>, Jeff Johnson <jjohnson@kernel.org>, Catalin Marinas
  <catalin.marinas@arm.com>, Jack Wang <jinpu.wang@cloud.ionos.com>, Marcel
@@ -94,39 +97,35 @@ Cc: Easwar Hariharan <eahariha@linux.microsoft.com>, Jeff Johnson
  oss-drivers@corigine.com, linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen
  <anna-maria@linutronix.de>
 Subject: Re: [PATCH v3 00/19] Converge on using secs_to_jiffies()
-Message-Id: <20241210185040.96c81a25f098f59191223c9f@linux-foundation.org>
-In-Reply-To: <20241210184129.41aaf371@kernel.org>
+Message-ID: <20241210190133.44818a76@kernel.org>
+In-Reply-To: <20241210185040.96c81a25f098f59191223c9f@linux-foundation.org>
 References: <20241210-converge-secs-to-jiffies-v3-0-ddfefd7e9f2a@linux.microsoft.com>
 	<315e9178-5b10-4de0-bdcf-7243e0e355bb@oss.qualcomm.com>
 	<20241210153604.cf99699f264f12740ffce5c7@linux-foundation.org>
 	<20241210173548.5d32efe0@kernel.org>
 	<20241210183130.81111d05148c41278a299aad@linux-foundation.org>
 	<20241210184129.41aaf371@kernel.org>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	<20241210185040.96c81a25f098f59191223c9f@linux-foundation.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 10 Dec 2024 18:41:29 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
-
-> On Tue, 10 Dec 2024 18:31:30 -0800 Andrew Morton wrote:
-> > > > I'll just grab everything and see if anyone complains ;)  
-> > > 
-> > > I may, if this leads to a conflict :(  
+On Tue, 10 Dec 2024 18:50:40 -0800 Andrew Morton wrote:
+> > > Very unlikely, and any such conflict will be trivial.  
 > > 
-> > Very unlikely, and any such conflict will be trivial.
+> > Agreed, mainly I don't understand why we'd make an exception
+> > and take the patchset via a special tree.  
 > 
-> Agreed, mainly I don't understand why we'd make an exception
-> and take the patchset via a special tree.
+> It saves work for everyone?
+> 
+> The patches are super-simple.  If a maintainer chooses to merge one of
+> them, Stephen tells us and I drop the mm.git copy.  It's all so easy.
 
-It saves work for everyone?
-
-The patches are super-simple.  If a maintainer chooses to merge one of
-them, Stephen tells us and I drop the mm.git copy.  It's all so easy.
-
+If it's just to save work - we're fine.
+Please don't apply the networking changes.
 
