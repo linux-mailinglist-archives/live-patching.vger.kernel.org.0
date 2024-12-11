@@ -1,47 +1,56 @@
-Return-Path: <live-patching+bounces-916-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-917-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A5899EC407
-	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 05:34:56 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 97E0E9EC538
+	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 08:00:27 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 91701168462
-	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 04:34:52 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 3EF17188839A
+	for <lists+live-patching@lfdr.de>; Wed, 11 Dec 2024 07:00:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEE501BFDE7;
-	Wed, 11 Dec 2024 04:34:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="IJPud503"
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF42A1C5CB1;
+	Wed, 11 Dec 2024 07:00:17 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 19F1D2451C1;
-	Wed, 11 Dec 2024 04:34:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A6571BEF75;
+	Wed, 11 Dec 2024 07:00:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733891688; cv=none; b=C/RT1NeRrsxI8j+7E82VjPWVfZzrZSZFLHa0IgU56Bo8P3SZ1ovI3qWiIdbV65+sQ+BpyyDE0vQTIp7O+aS4iomNcXVYjl2t1OFnT/VcRt1EQUsZjQtinBeE01DmOLyUiWQFgM6JmTilsXNB3FYBPvHFWYDGWAXfw/TFBnZRVeM=
+	t=1733900417; cv=none; b=f0dT4/voX78QtJDqOhY9/1RLKtX564bXHfl0GFtf8hzOqspGM2GSJcCrxgwju3Oop0Mc9CX6uwuRcqlkamJO4VVvfzIg6yKJO/48yB/FQ/phVAZJjw0bPY43woCUsD5v7YKgkDpyOv9QkUxFpFcCXWJCT3XKwhqSKAGREt4uIu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733891688; c=relaxed/simple;
-	bh=+6iom3xS2EcNM1rvfQkOHsuFsgIrc5Jo/yPosMOw+8I=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=OtnXlDmr7igFEUBRJuCxlaqmgfdxzQ578452dcmzngwKGPo7O9rVrs3nJveZIXhWD7Ccgn+2QdMy1GLtpi+swbYr9kqQ8W8notJT5v5pTpgc+wKNsKJcMFK5KiXS+PqUZ1oSJZar8/HNt8U8Rep4y3noWnG0rzNZrctz6OKbHPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=IJPud503; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Received: from [100.65.208.14] (unknown [20.236.11.185])
-	by linux.microsoft.com (Postfix) with ESMTPSA id C44BD204722B;
-	Tue, 10 Dec 2024 20:34:43 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C44BD204722B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1733891686;
-	bh=SKADluaoUiTETH1UwG/V5DVCwgNdNCuMvx/YiXR3rAc=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=IJPud503TZQ7qC+nAh33r29ZAguv/DZaDYDmYDAbJHqsXv7vFEisx4C+2Bx4/X0Ny
-	 QNmGT6WWiLLDSDyIxMX24BlKcPvLa2DRjFmS0GhpoB9JmvKOYeEniEHPcKfYI5Rx3Y
-	 UFvay1FmNXEMmTdeKu7+xEJKV27TsW4+ndYHIugA=
-Message-ID: <d93e388c-ed18-400c-b6cf-ec00a5979457@linux.microsoft.com>
-Date: Tue, 10 Dec 2024 20:34:43 -0800
+	s=arc-20240116; t=1733900417; c=relaxed/simple;
+	bh=B1wGhrvFoDOmFrhgO6ctmjhLDhnpcrjN7YBDBIx3Y40=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Zbkfh3dL1b7iasJkAfL69EL8Qe3d8Q2Sz9+hV9kejnq/UWQXhvsbJlBQIkHRGJUoxh3iycHwuVm2cU5z6INBgR0lUR/QvN1ug4eEh8BN/Ljsj4LlPJ0pO94qkylEnLKlbWi1RGM0oiy5GEVfhBFWEFd7icP5yUEmhUCitxwLwfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+	by localhost (Postfix) with ESMTP id 4Y7RLj3GV8z9t4d;
+	Wed, 11 Dec 2024 08:00:13 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id c0Dk1hMGM9_h; Wed, 11 Dec 2024 08:00:13 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4Y7RLY2gbNz9t4Z;
+	Wed, 11 Dec 2024 08:00:05 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 3FA418B76E;
+	Wed, 11 Dec 2024 08:00:05 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id lblUBnLQKeTT; Wed, 11 Dec 2024 08:00:05 +0100 (CET)
+Received: from [10.25.209.139] (unknown [10.25.209.139])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id A13268B763;
+	Wed, 11 Dec 2024 08:00:03 +0100 (CET)
+Message-ID: <07784753-6874-4dda-a080-2d2812f4a10a@csgroup.eu>
+Date: Wed, 11 Dec 2024 08:00:02 +0100
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -49,14 +58,15 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: Andrew Morton <akpm@linux-foundation.org>, eahariha@linux.microsoft.com,
- Jeff Johnson <jeff.johnson@oss.qualcomm.com>,
+Subject: Re: [PATCH v3 18/19] livepatch: Convert timeouts to secs_to_jiffies()
+To: Easwar Hariharan <eahariha@linux.microsoft.com>,
  Pablo Neira Ayuso <pablo@netfilter.org>,
  Jozsef Kadlecsik <kadlec@netfilter.org>,
  "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Julia Lawall <Julia.Lawall@inria.fr>, Nicolas Palix <nicolas.palix@imag.fr>,
- Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, Julia Lawall <Julia.Lawall@inria.fr>,
+ Nicolas Palix <nicolas.palix@imag.fr>, Daniel Mack <daniel@zonque.org>,
+ Haojian Zhuang <haojian.zhuang@gmail.com>,
  Robert Jarzmik <robert.jarzmik@free.fr>, Russell King
  <linux@armlinux.org.uk>, Heiko Carstens <hca@linux.ibm.com>,
  Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
@@ -79,9 +89,9 @@ Cc: Andrew Morton <akpm@linux-foundation.org>, eahariha@linux.microsoft.com,
  =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>,
  Jens Axboe <axboe@kernel.dk>, Kalle Valo <kvalo@kernel.org>,
  Jeff Johnson <jjohnson@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Jack Wang <jinpu.wang@cloud.ionos.com>,
- Marcel Holtmann <marcel@holtmann.org>,
- Johan Hedberg <johan.hedberg@gmail.com>,
+ <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>,
+ Jack Wang <jinpu.wang@cloud.ionos.com>, Marcel Holtmann
+ <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>,
  Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
@@ -94,9 +104,8 @@ Cc: Andrew Morton <akpm@linux-foundation.org>, eahariha@linux.microsoft.com,
  Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
  Louis Peens <louis.peens@corigine.com>, Michael Ellerman
  <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Naveen N Rao <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>,
- netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+ Naveen N Rao <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
  netdev@vger.kernel.org, linux-kernel@vger.kernel.org, cocci@inria.fr,
  linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
  dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
@@ -108,45 +117,60 @@ Cc: Andrew Morton <akpm@linux-foundation.org>, eahariha@linux.microsoft.com,
  live-patching@vger.kernel.org, linux-sound@vger.kernel.org,
  oss-drivers@corigine.com, linuxppc-dev@lists.ozlabs.org,
  Anna-Maria Behnsen <anna-maria@linutronix.de>
-Subject: Re: [PATCH v3 00/19] Converge on using secs_to_jiffies()
-To: Jakub Kicinski <kuba@kernel.org>
 References: <20241210-converge-secs-to-jiffies-v3-0-ddfefd7e9f2a@linux.microsoft.com>
- <315e9178-5b10-4de0-bdcf-7243e0e355bb@oss.qualcomm.com>
- <20241210153604.cf99699f264f12740ffce5c7@linux-foundation.org>
- <20241210173548.5d32efe0@kernel.org>
- <20241210183130.81111d05148c41278a299aad@linux-foundation.org>
- <20241210184129.41aaf371@kernel.org>
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Content-Language: en-US
-In-Reply-To: <20241210184129.41aaf371@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <20241210-converge-secs-to-jiffies-v3-18-ddfefd7e9f2a@linux.microsoft.com>
+Content-Language: fr-FR
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+In-Reply-To: <20241210-converge-secs-to-jiffies-v3-18-ddfefd7e9f2a@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 12/10/2024 6:41 PM, Jakub Kicinski wrote:
-> On Tue, 10 Dec 2024 18:31:30 -0800 Andrew Morton wrote:
->>>> I'll just grab everything and see if anyone complains ;)  
->>>
->>> I may, if this leads to a conflict :(  
->>
->> Very unlikely, and any such conflict will be trivial.
-> 
-> Agreed, mainly I don't understand why we'd make an exception
-> and take the patchset via a special tree.
-> 
->>> Easwar, please break this up per subsystem.  
->>
->> The series is already one-patch-per-changed-file.
-> 
-> More confusingly still, they did send one standalone patch for 
-> an Ethernet driver:
-> https://lore.kernel.org/all/20241210-converge-secs-to-jiffies-v3-20-59479891e658@linux.microsoft.com/
-> And yet another Ethernet driver (drivers/net/ethernet/google/gve/) 
-> is converted in this series.
 
-Sorry about the confusion, I missed pulling the gve patch from this
-series. I'll send that (and ath11k) separately as well. I'll pull all
-these together into a series so you can merge them together if you prefer.
 
-Thanks,
-Easwar
+Le 10/12/2024 à 23:02, Easwar Hariharan a écrit :
+> Commit b35108a51cf7 ("jiffies: Define secs_to_jiffies()") introduced
+> secs_to_jiffies(). As the value here is a multiple of 1000, use
+> secs_to_jiffies() instead of msecs_to_jiffies to avoid the multiplication.
+> 
+> This is converted using scripts/coccinelle/misc/secs_to_jiffies.cocci with
+> the following Coccinelle rules:
+> 
+> @@ constant C; @@
+> 
+> - msecs_to_jiffies(C * 1000)
+> + secs_to_jiffies(C)
+> 
+> @@ constant C; @@
+> 
+> - msecs_to_jiffies(C * MSEC_PER_SEC)
+> + secs_to_jiffies(C)
+> 
+> Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
+> ---
+>   samples/livepatch/livepatch-callbacks-busymod.c |  3 +--
+>   samples/livepatch/livepatch-shadow-fix1.c       |  3 +--
+>   samples/livepatch/livepatch-shadow-mod.c        | 15 +++++----------
+>   3 files changed, 7 insertions(+), 14 deletions(-)
+> 
+> diff --git a/samples/livepatch/livepatch-callbacks-busymod.c b/samples/livepatch/livepatch-callbacks-busymod.c
+> index 378e2d40271a9717d09eff51d3d3612c679736fc..69105596e72e6826aa2815cb2599eea56a0055ba 100644
+> --- a/samples/livepatch/livepatch-callbacks-busymod.c
+> +++ b/samples/livepatch/livepatch-callbacks-busymod.c
+> @@ -44,8 +44,7 @@ static void busymod_work_func(struct work_struct *work)
+>   static int livepatch_callbacks_mod_init(void)
+>   {
+>   	pr_info("%s\n", __func__);
+> -	schedule_delayed_work(&work,
+> -		msecs_to_jiffies(1000 * 0));
+> +	schedule_delayed_work(&work, 0);
+
+This hunk is not in line with the patch description.
+
+This is probably OK to have in this patch, but you should add additional 
+description to mention that special case with a 0 delay.
+
+Allthough you should probably change it to schedule_work() instead of 
+using a 0 delay.
+
+Christophe
 
