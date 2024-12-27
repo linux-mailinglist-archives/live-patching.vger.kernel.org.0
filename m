@@ -1,223 +1,165 @@
-Return-Path: <live-patching+bounces-936-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-937-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 84EAD9F98E6
-	for <lists+live-patching@lfdr.de>; Fri, 20 Dec 2024 19:00:21 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8107A9FD12F
+	for <lists+live-patching@lfdr.de>; Fri, 27 Dec 2024 08:28:51 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 54F157A121B
-	for <lists+live-patching@lfdr.de>; Fri, 20 Dec 2024 17:58:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1276D163A41
+	for <lists+live-patching@lfdr.de>; Fri, 27 Dec 2024 07:28:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAA4C224AF0;
-	Fri, 20 Dec 2024 17:47:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18C2B145B2E;
+	Fri, 27 Dec 2024 07:28:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="JmPnU7Sr";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="w9swUvbu"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VWflVN7V"
 X-Original-To: live-patching@vger.kernel.org
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9AEB223E85;
-	Fri, 20 Dec 2024 17:47:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D077513DDD3;
+	Fri, 27 Dec 2024 07:28:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734716863; cv=none; b=MpdVYH1K3vCjVi3mEiV6wJpofY3JA6vHydUNv7QtEi3FQ1KFyFCCGdYho6Ilo8lczXPX2PV0oR3k37FWlS5WHqXO336RhoJmtzp7tn3f9IMiRFlPD+6zvFwTqBYX9J3Q9nXKwhnvvdtbW4qoO+2Hc62XygrAglsExPra2QxcwkM=
+	t=1735284526; cv=none; b=S6Ba99Hcy970ECNLXm9NlgyzNBJmKB/z21e/wE0gMzHbeD/xFzmg4lZ0XuD3+al+TVL78vTvhU7KpMRaEdv3Cxt9DXI9n0A6kRae21h3l0HzWyIhtN2ia1XWM96aLGvpoQnaD61NJ5/HICKv2VVNVQRlF/ZtQOXH5mVua/3ANA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734716863; c=relaxed/simple;
-	bh=J9y/1aSSXq1tZhT6PnlsnHYagJsUv+gTorVH8FTXEts=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NWy3nsVW6Hp9xjNe0Zio37s8037udxUmStLvWttxdSnCggHPE7RBxJY8EyIzRbQet1L9OCprbhdY5P90lWjvdz+45nzcWdroErixKAKKgUpflxOg6bvQT7O79GPJjFWT6L/NSG/3O7S+LeU89ipFs5oA7hJFWJbWbsZy2u20EKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=JmPnU7Sr; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=w9swUvbu; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1734716859;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9g6lXeoRfGQe6QicLk0OYONPG5zsQWqzIwVn4RNwwbs=;
-	b=JmPnU7SrCtKZo77aBtLgCa1NQyUmL2SR080UfpWQosR6W6mnbJ1Kgf9ZH2dGQm5/Sbp4U8
-	lMl7V4vGVA+koLi4+5/L8rqNkltgt7WzXljT3OFDVGM11yRsKd0UusOY1/FZabpESRwEz3
-	n8/Hxt2Ey9eaiUAlDCDf8aGrunCqo/UMPxlbRTDWgTa9y6mbsxuGrIzNQVJv5K+iCt/Yb9
-	4ig06to82lx9z5I713odCAT/JhKIJ9UofSZuUNn4mxc9NzI57ETFBtxi6BL+VRNQR1AuaN
-	WCwU30x2k0zPFTx1BAYQjCSrg+dG5VE3k/eTa+VmP7UNDVlLt9ZimkdIQPL3kQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1734716859;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9g6lXeoRfGQe6QicLk0OYONPG5zsQWqzIwVn4RNwwbs=;
-	b=w9swUvbuaxMF6akzq9NHRE0kOx5Z/RjiMuatUG+i1zNe0ZUOgdS6jY1IgigUtxXDpmOey6
-	V94k4flLzbVHsxAQ==
-To: linux-modules@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Daniel Gomez <da.gomez@samsung.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	"Paul E . McKenney" <paulmck@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Pavlu <petr.pavlu@suse.com>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	s=arc-20240116; t=1735284526; c=relaxed/simple;
+	bh=jbs+82vTwYkxQ3EpjI+1yvm0nBPBr9HhcF8xhKMgyb4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Sryd9bmshc9uGklD1hy/cCeXzwuudDVAqYTBr2h/FF3nkaO2bxTqKTlf4SpAnIVm3sfr1yKHcaILypQaL3MBH5RwZvGzJaIo7wLNrBRB+cmcGZOUdEH6lY401p9DCiltyMS8sCHsbmrMoiilfz58KbZTGpcejaOh6S+cJC27kW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VWflVN7V; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BECBC4CED0;
+	Fri, 27 Dec 2024 07:28:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735284525;
+	bh=jbs+82vTwYkxQ3EpjI+1yvm0nBPBr9HhcF8xhKMgyb4=;
+	h=From:To:Cc:Subject:Date:From;
+	b=VWflVN7Vf0mMrePAw/GmezMrZdtva3K3h36HGmBxa/KroU575WF5NJHeh0C6TXNjF
+	 qQhJ4X9PGAqzjrUVpQRiVvwIGMd+mISM5MQXFvk45sfhmzlny3nUqVMIbeY6kdii/w
+	 zWWKCDoOIlTrr71quUFFRbqLg+DHcfKtQtVHdMmb1lnaMhGLAzyiY7V3autquhweL9
+	 gpxz7kV3lQ4EAySR1yDZ2syQZsNyGHLgB/w6HxDmV2RAqrWKXeYkMQOMk5oc3c8Pn5
+	 sSBAIqOuQ0ZL0h2iDfLAfuFMjvlnSpx46Mfk1CVcx/gQmlnCTUUVbl2c6KeEM5cwGT
+	 y+LUWaqHdI5Jg==
+From: Mike Rapoport <rppt@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Brendan Higgins <brendan.higgins@linux.dev>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Gow <davidgow@google.com>,
+	Douglas Anderson <dianders@chromium.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jason Wessel <jason.wessel@windriver.com>,
 	Jiri Kosina <jikos@kernel.org>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
 	Josh Poimboeuf <jpoimboe@kernel.org>,
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
 	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Mike Rapoport <rppt@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Peter Zijlstra <peterz@infradead.org>,
 	Petr Mladek <pmladek@suse.com>,
+	Petr Pavlu <petr.pavlu@suse.com>,
+	Rae Moar <rmoar@google.com>,
+	Richard Weinberger <richard@nod.at>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Song Liu <song@kernel.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	kgdb-bugreport@lists.sourceforge.net,
+	kunit-dev@googlegroups.com,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-modules@vger.kernel.org,
 	linux-trace-kernel@vger.kernel.org,
-	live-patching@vger.kernel.org
-Subject: [PATCH v2 06/28] module: Use RCU in find_module_all().
-Date: Fri, 20 Dec 2024 18:41:20 +0100
-Message-ID: <20241220174731.514432-7-bigeasy@linutronix.de>
-In-Reply-To: <20241220174731.514432-1-bigeasy@linutronix.de>
-References: <20241220174731.514432-1-bigeasy@linutronix.de>
+	linux-um@lists.infradead.org,
+	live-patching@vger.kernel.org,
+	x86@kernel.org
+Subject: [PATCH 0/8] x86/module: rework ROX cache to avoid writable copy
+Date: Fri, 27 Dec 2024 09:28:17 +0200
+Message-ID: <20241227072825.1288491-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-The modules list and module::kallsyms can be accessed under RCU
-assumption.
+From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
 
-Remove module_assert_mutex_or_preempt() from find_module_all() so it can
-be used under RCU protection without warnings. Update its callers to use
-RCU protection instead of preempt_disable().
+Hi,
 
-Cc: Jiri Kosina <jikos@kernel.org>
-Cc: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Miroslav Benes <mbenes@suse.cz>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: linux-trace-kernel@vger.kernel.org
-Cc: live-patching@vger.kernel.org
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- include/linux/module.h      | 2 +-
- kernel/livepatch/core.c     | 4 +---
- kernel/module/kallsyms.c    | 1 +
- kernel/module/main.c        | 6 ++----
- kernel/trace/trace_kprobe.c | 9 +++------
- 5 files changed, 8 insertions(+), 14 deletions(-)
+Following Peter's comments [1] these patches rework handling of ROX caches
+for module text allocations. 
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 94acbacdcdf18..5c1f7ea76c8cb 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -663,7 +663,7 @@ static inline bool within_module(unsigned long addr, co=
-nst struct module *mod)
- 	return within_module_init(addr, mod) || within_module_core(addr, mod);
- }
-=20
--/* Search for module by name: must be in a RCU-sched critical section. */
-+/* Search for module by name: must be in a RCU critical section. */
- struct module *find_module(const char *name);
-=20
- extern void __noreturn __module_put_and_kthread_exit(struct module *mod,
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 3c21c31796db0..f8932c63b08e3 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -59,7 +59,7 @@ static void klp_find_object_module(struct klp_object *obj)
- 	if (!klp_is_module(obj))
- 		return;
-=20
--	rcu_read_lock_sched();
-+	guard(rcu)();
- 	/*
- 	 * We do not want to block removal of patched modules and therefore
- 	 * we do not take a reference here. The patches are removed by
-@@ -75,8 +75,6 @@ static void klp_find_object_module(struct klp_object *obj)
- 	 */
- 	if (mod && mod->klp_alive)
- 		obj->mod =3D mod;
--
--	rcu_read_unlock_sched();
- }
-=20
- static bool klp_initialized(void)
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-index 4eef518204eb5..3cba9f933b24f 100644
---- a/kernel/module/kallsyms.c
-+++ b/kernel/module/kallsyms.c
-@@ -450,6 +450,7 @@ unsigned long module_kallsyms_lookup_name(const char *n=
-ame)
- 	unsigned long ret;
-=20
- 	/* Don't lock: we're in enough trouble already. */
-+	guard(rcu)();
- 	preempt_disable();
- 	ret =3D __module_kallsyms_lookup_name(name);
- 	preempt_enable();
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 5cce4a92d7ba3..5aa56ec8e203e 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -374,16 +374,14 @@ bool find_symbol(struct find_symbol_arg *fsa)
- }
-=20
- /*
-- * Search for module by name: must hold module_mutex (or preempt disabled
-- * for read-only access).
-+ * Search for module by name: must hold module_mutex (or RCU for read-only
-+ * access).
-  */
- struct module *find_module_all(const char *name, size_t len,
- 			       bool even_unformed)
- {
- 	struct module *mod;
-=20
--	module_assert_mutex_or_preempt();
--
- 	list_for_each_entry_rcu(mod, &modules, list,
- 				lockdep_is_held(&module_mutex)) {
- 		if (!even_unformed && mod->state =3D=3D MODULE_STATE_UNFORMED)
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index 263fac44d3ca3..c7db326f4e88e 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -123,9 +123,8 @@ static nokprobe_inline bool trace_kprobe_module_exist(s=
-truct trace_kprobe *tk)
- 	if (!p)
- 		return true;
- 	*p =3D '\0';
--	rcu_read_lock_sched();
--	ret =3D !!find_module(tk->symbol);
--	rcu_read_unlock_sched();
-+	scoped_guard(rcu)
-+		ret =3D !!find_module(tk->symbol);
- 	*p =3D ':';
-=20
- 	return ret;
-@@ -800,12 +799,10 @@ static struct module *try_module_get_by_name(const ch=
-ar *name)
- {
- 	struct module *mod;
-=20
--	rcu_read_lock_sched();
-+	guard(rcu)();
- 	mod =3D find_module(name);
- 	if (mod && !try_module_get(mod))
- 		mod =3D NULL;
--	rcu_read_unlock_sched();
--
- 	return mod;
- }
- #else
---=20
+Instead of using a writable copy that really complicates alternatives
+patching, temporarily remap parts of a large ROX page as RW for the time of
+module formation and then restore it's ROX protections when the module is
+ready.
+
+To keep the ROX memory mapped with large pages, make set_memory code
+capable of restoring large pages (more details are in patch 3).
+
+The patches also available in git
+https://git.kernel.org/rppt/h/execmem/x86-rox/v8
+
+[1] https://lore.kernel.org/all/20241209083818.GK8562@noisy.programming.kicks-ass.net
+
+Kirill A. Shutemov (1):
+  x86/mm/pat: Restore large pages after fragmentation
+
+Mike Rapoport (Microsoft) (7):
+  x86/mm/pat: cpa-test: fix length for CPA_ARRAY test
+  x86/mm/pat: drop duplicate variable in cpa_flush()
+  execmem: add API for temporal remapping as RW and restoring ROX
+    afterwards
+  module: introduce MODULE_STATE_GONE
+  modules: switch to execmem API for remapping as RW and restoring ROX
+  Revert "x86/module: prepare module loading for ROX allocations of
+    text"
+  module: drop unused module_writable_address()
+
+ arch/um/kernel/um_arch.c                      |  11 +-
+ arch/x86/entry/vdso/vma.c                     |   3 +-
+ arch/x86/include/asm/alternative.h            |  14 +-
+ arch/x86/include/asm/pgtable_types.h          |   2 +
+ arch/x86/kernel/alternative.c                 | 181 ++++++---------
+ arch/x86/kernel/ftrace.c                      |  30 ++-
+ arch/x86/kernel/module.c                      |  45 ++--
+ arch/x86/mm/pat/cpa-test.c                    |   2 +-
+ arch/x86/mm/pat/set_memory.c                  | 216 +++++++++++++++++-
+ include/linux/execmem.h                       |  31 +++
+ include/linux/module.h                        |  21 +-
+ include/linux/moduleloader.h                  |   4 -
+ include/linux/vm_event_item.h                 |   2 +
+ kernel/module/kallsyms.c                      |   8 +-
+ kernel/module/kdb.c                           |   2 +-
+ kernel/module/main.c                          |  86 ++-----
+ kernel/module/procfs.c                        |   2 +-
+ kernel/module/strict_rwx.c                    |   9 +-
+ kernel/tracepoint.c                           |   2 +
+ lib/kunit/test.c                              |   2 +
+ mm/execmem.c                                  | 118 ++++++++--
+ mm/vmstat.c                                   |   2 +
+ samples/livepatch/livepatch-callbacks-demo.c  |   1 +
+ .../test_modules/test_klp_callbacks_demo.c    |   1 +
+ .../test_modules/test_klp_callbacks_demo2.c   |   1 +
+ .../livepatch/test_modules/test_klp_state.c   |   1 +
+ .../livepatch/test_modules/test_klp_state2.c  |   1 +
+ 27 files changed, 511 insertions(+), 287 deletions(-)
+
+-- 
 2.45.2
 
 
