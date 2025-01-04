@@ -1,109 +1,113 @@
-Return-Path: <live-patching+bounces-955-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-956-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D3D68A0088A
-	for <lists+live-patching@lfdr.de>; Fri,  3 Jan 2025 12:20:38 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 408BDA011BA
+	for <lists+live-patching@lfdr.de>; Sat,  4 Jan 2025 03:07:31 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AF9C4160A14
-	for <lists+live-patching@lfdr.de>; Fri,  3 Jan 2025 11:20:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 10C983A477C
+	for <lists+live-patching@lfdr.de>; Sat,  4 Jan 2025 02:07:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B15E11F9427;
-	Fri,  3 Jan 2025 11:20:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40E087A13A;
+	Sat,  4 Jan 2025 02:07:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="DaRgJ6Ze"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="joD0NAbR"
 X-Original-To: live-patching@vger.kernel.org
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9401D1527AC;
-	Fri,  3 Jan 2025 11:20:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B57035280;
+	Sat,  4 Jan 2025 02:07:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735903233; cv=none; b=L8/ASUXvVThDtkM6oxXVi+nCkpCF4pNOEC9SsyA+HaAPdiasimdHJlcwhGEmdplyvfER4eUxN/oGZ6OPpLlAKbMFezfohGn6Jj65ZIJOexJD4deXvjjk4gb3MTjJb17v6VB16ipjxbtLCdfaTS9lhwEsiZw3nQGxhPIo5A9u79o=
+	t=1735956446; cv=none; b=Hb9DidHAdgz16eeqc5annIYFn48Zqa0pLHfrOE4BjbMGed4YszkTjqLeIrS9vjyQF3pNX5w7io1x2quJfVX0GX3yKhoGzcRqOaqik834mn7U1H/hw2R0em+RJoj5NLrDqgZR/hofku4kyw0P+aAcuVpfw/jRed4pwmLRycuSmxo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735903233; c=relaxed/simple;
-	bh=5MGbxOku246M5y/dHAEZXhGTv+90s60izXW9ASoKzic=;
+	s=arc-20240116; t=1735956446; c=relaxed/simple;
+	bh=5+k5XIDfmklKhyQNZnytCq6Wbtr3vAtBCZfKfKHl6CA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UTyQ1pFeJJ15pcwgKlHB4xSSWUEP/W0l1xwNLe5Wv4v2ESSY3ceH6WMojxYbg8Ya/Dj5aAe4Wjp8neDFZQRogl3iFrkPqfBCjAQ2Js2KU0l+XTrpG6CWZ2RBXIBqrnnmsExH728I1IxuuIZigwFynLinIia1w7xcBYI4mSPN0T4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=DaRgJ6Ze; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=+e20JDJu3VwrmlmlVVpxrvFlU6CuxSxftw52pQXGnog=; b=DaRgJ6ZeouUFnjZ11up8spR4oW
-	o3qngr9xYj85lxVEWvhjfekmFNWYSpBpnDXfgrnmBcXz21BVnbWSjwF7FJpVqC3515Zz7xoNghOSN
-	DH+Y2PmIRLQ12UwBno8GZvcaEK1tyJyBcOeuOEqZZDyo61EUcCWq7+pFRb99cLZH0ChNWFaY8ue4g
-	z8w5w37xbByYWZ1U79CbSnvZ1WHPtTWr6jtlQX4rjTXRfc9uIqBUMMP6yizCWyO7qbPQ54fvQbCrO
-	XqWipiJzxMZluWZYjJQzRjkUSapDbZoOBeoCu74phuj0VrMCuywG6Sfo3qD6+BsfXkShHAV3onqo/
-	yYIJfPJw==;
-Received: from 77-249-17-89.cable.dynamic.v4.ziggo.nl ([77.249.17.89] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
-	id 1tTfih-00000008NOv-2fvw;
-	Fri, 03 Jan 2025 11:19:59 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 3A6C93003AF; Fri,  3 Jan 2025 12:19:59 +0100 (CET)
-Date: Fri, 3 Jan 2025 12:19:59 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Brendan Higgins <brendan.higgins@linux.dev>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	David Gow <davidgow@google.com>,
-	Douglas Anderson <dianders@chromium.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>, "H. Peter Anvin" <hpa@zytor.com>,
-	Petr Mladek <pmladek@suse.com>, Petr Pavlu <petr.pavlu@suse.com>,
-	Rae Moar <rmoar@google.com>, Richard Weinberger <richard@nod.at>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Shuah Khan <shuah@kernel.org>, Song Liu <song@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	kgdb-bugreport@lists.sourceforge.net, kunit-dev@googlegroups.com,
+	 Content-Type:Content-Disposition:In-Reply-To; b=T5hL11w7Xod8pldHAPy55U10eS9edtfP+HEbTG9YH8knh29nCHebnVgO/pShEJPimq17w3mueHowuyLwz3DB5Ql7dDS1R/Lo7LMpHQrou9hcBmNo2h78hip12bxd+8sKHazBtbhgIhQy+SbT80PdI8Bu4g04vJMUhHgaaL37VW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=joD0NAbR; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56E24C4CED6;
+	Sat,  4 Jan 2025 02:07:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735956445;
+	bh=5+k5XIDfmklKhyQNZnytCq6Wbtr3vAtBCZfKfKHl6CA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=joD0NAbRBPE0lezKTTDP1O/kr2E6iJf9COWb+q26eFjVoffuI5L/uXxAbsoYlryoQ
+	 fYP/yaVyXmntFcDd1a3Fy5BzamjHbURSTyP3IdaXyhV79hmDEblPiZtS6iVgzwGlo3
+	 Kx4vTa/nHoqIBT7WaRKz0y7zXQ0mNg/SZWWNqb701SX3cdNH0ZRCTN14xhyhSGJ8Pg
+	 cXiLSChUUEnHpXT+4yMfzWCREm/wGuuwBvwu0rahfPZ8BSGvXEuUhX3QReboXWGoBI
+	 95VoZXg6cVJmIgpcGSWX14DR8XQkeIf/4vXIKDW+eMgmO5cxqmChke6AdKsiTp7rM/
+	 m8eDNhFD+TAEA==
+Date: Fri, 3 Jan 2025 18:07:22 -0800
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: =?iso-8859-1?Q?J=FCrgen_Gro=DF?= <jgross@suse.com>,
+	Marek =?utf-8?B?TWHFm2xhbmth?= <mmaslanka@google.com>,
+	Adam Williamson <awilliam@redhat.com>
+Cc: Andrew Cooper <andrew.cooper3@citrix.com>, lorenzo.stoakes@oracle.com,
+	akpm@linux-foundation.org, anton.ivanov@cambridgegreys.com,
+	bp@alien8.de, brendan.higgins@linux.dev, da.gomez@samsung.com,
+	danielt@kernel.org, dave.hansen@linux.intel.com,
+	davidgow@google.com, dianders@chromium.org, hpa@zytor.com,
+	jason.wessel@windriver.com, jikos@kernel.org,
+	joe.lawrence@redhat.com, johannes@sipsolutions.net,
+	jpoimboe@kernel.org, kgdb-bugreport@lists.sourceforge.net,
+	kirill.shutemov@linux.intel.com, kunit-dev@googlegroups.com,
 	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
 	linux-mm@kvack.org, linux-modules@vger.kernel.org,
 	linux-trace-kernel@vger.kernel.org, linux-um@lists.infradead.org,
-	live-patching@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH 1/8] x86/mm/pat: cpa-test: fix length for CPA_ARRAY test
-Message-ID: <20250103111959.GD22934@noisy.programming.kicks-ass.net>
-References: <20241227072825.1288491-1-rppt@kernel.org>
- <20241227072825.1288491-2-rppt@kernel.org>
+	live-patching@vger.kernel.org, luto@kernel.org,
+	mark.rutland@arm.com, mbenes@suse.cz, mhiramat@kernel.org,
+	mingo@redhat.com, peterz@infradead.org, petr.pavlu@suse.com,
+	pmladek@suse.com, richard@nod.at, rmoar@google.com,
+	rostedt@goodmis.org, rppt@kernel.org, samitolvanen@google.com,
+	shuah@kernel.org, song@kernel.org, tglx@linutronix.de,
+	x86@kernel.org,
+	Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= <marmarek@invisiblethingslab.com>
+Subject: Re: [PATCH 6/8] modules: switch to execmem API for remapping as RW
+ and restoring ROX
+Message-ID: <Z3iX2mNtqSYrvYPT@bombadil.infradead.org>
+References: <86eba318-464b-4b9b-a79e-64039b17be34@lucifer.local>
+ <d48193a3-65fe-4aa9-98f6-dd5869bd9127@citrix.com>
+ <9878d90f-faf3-4853-9a79-a21b4f58ab4c@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20241227072825.1288491-2-rppt@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <9878d90f-faf3-4853-9a79-a21b4f58ab4c@suse.com>
 
-On Fri, Dec 27, 2024 at 09:28:18AM +0200, Mike Rapoport wrote:
-> From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
-> 
-> The CPA_ARRAY test always uses len[1] as numpages argument to
-> change_page_attr_set() although the addresses array is different each
-> iteration of the test loop.
-> 
-> Replace len[1] with len[i] to have numpages matching the addresses array.
+On Fri, Jan 03, 2025 at 07:58:13AM +0100, J=FCrgen Gro=DF wrote:
+> On 03.01.25 03:06, Andrew Cooper wrote:
+> > > Hi Mike,
+> > >=20
+> > > This commit is making my intel box not boot in mm-unstable :>) I bise=
+cted it to
+> > > this commit.
+> >=20
+> > For what it's worth, we've found the same under Xen too.
+> >=20
+> > There's one concrete bug in the series, failing to cope with the absence
+> > of superpages (fix in
+> > https://lore.kernel.org/xen-devel/6bb03333-74ca-4c2c-85a8-72549b85a5b4@=
+suse.com/
+> > but not formally posted yet AFAICT).
+>=20
+> Now sent out:
+>=20
+> https://lore.kernel.org/lkml/20250103065631.26459-1-jgross@suse.com/T/#u
 
-D'oh..
+Thanks,=20
+
+Marek, Adam, can you try this patch? Although the reply here is for
+another future series being worked on the fix is for commit
+2e45474ab14f ("execmem: add support for cache of large ROX pages").
+
+  Luis
 
