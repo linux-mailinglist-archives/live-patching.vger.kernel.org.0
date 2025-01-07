@@ -1,195 +1,181 @@
-Return-Path: <live-patching+bounces-960-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-961-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id BAFD7A044C7
-	for <lists+live-patching@lfdr.de>; Tue,  7 Jan 2025 16:37:07 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 34C40A045EE
+	for <lists+live-patching@lfdr.de>; Tue,  7 Jan 2025 17:23:59 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B038A188751F
-	for <lists+live-patching@lfdr.de>; Tue,  7 Jan 2025 15:36:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2CCBF165D6E
+	for <lists+live-patching@lfdr.de>; Tue,  7 Jan 2025 16:23:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B8D21F37A2;
-	Tue,  7 Jan 2025 15:35:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A8C31F4704;
+	Tue,  7 Jan 2025 16:23:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="F38w/WAw"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cDb80khU"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C28F91EE003
-	for <live-patching@vger.kernel.org>; Tue,  7 Jan 2025 15:35:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55621DF995
+	for <live-patching@vger.kernel.org>; Tue,  7 Jan 2025 16:23:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736264150; cv=none; b=DqZOBmCVdQoWM5HCsCmf2PfIeWh2yw5QgQ2oTihweUJOPlwwvjsgKxuhPp/xCsVttvbmRSkrWWAa4I5agJnF5KwMR1rhjLcDFAiVOpezoUOs9/hKwu13pp5yYphqZVqG/RI65I+5FqD2yLw0ZyCALJx6nJeb8eCUAOL2EiQHKzI=
+	t=1736267029; cv=none; b=W/uB+Rl58g/+154QxMVnp7soEbxbs2qAytsdeNRkQOLlQtXS/usMygc2lBpgHxcxEHWAJa00vT+6SffdfKMutdNBac6zEQt9jiLX5Dcv/CZymSQgOC0+ri3+ZL+kBjR8l0idcsAfi6OG3P1jcQ16OE/8GZHPrjFWkWcoS37ns6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736264150; c=relaxed/simple;
-	bh=8m+4KRHGoTieA8CvCwunlUTmUJfNG8C6GYQjAJmMtP8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dAQV+cs8iqYaAQTgcUOQ4u1oWsthntAzjpp5yveATSrcww+ShPUN0SN1KTub7pCSEgYkIIAPyi+axEcCQkwf5plXlIPcxaJAH7MaF4JObuQz/FLWO45lEupPQ0ZkXqsB9Uxi8FlONYs6nCktwLMmuGt7b4daRZgmLoFOSlvj44U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=F38w/WAw; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4368a293339so124740975e9.3
-        for <live-patching@vger.kernel.org>; Tue, 07 Jan 2025 07:35:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1736264144; x=1736868944; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XZbzK7gNJ8VfH7wLPW3weuF06YbkZOBy++EFlcgPDK4=;
-        b=F38w/WAwJoX3pcVnGjV8J7XlWalcURR2MEWSG9HN34S+4I8Pq3+g4PNgHEynT7fQ9V
-         ymN+1ivU0YRCbJU6HQRf7gj9XSaeqKyX7WV2r8RcAfk0Mtio0d6uicYeyZe7kJzFn3co
-         bsbksRREl1AOGmIkVTMBGbhJT+5srnOqm1dIhmDO6YP7wdRODj0ERX6PJG1U0lgYYHEh
-         zYAeYubDERYVtAroJxeqJYEmGcNOwu3ksHppr732kW11lSpb3BFi0kVoDhlEImHV8Fpf
-         BdyXVVEx/4Iwuy8woMzUKr+mLiejpnUsnEAOUFiDfOmUy/W3wrIq2kzzHNVZdymAC5+u
-         oZnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736264144; x=1736868944;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XZbzK7gNJ8VfH7wLPW3weuF06YbkZOBy++EFlcgPDK4=;
-        b=NuLg/6waybJbsQbqLS4KVMAnvEoRRI5OGfBoh7OX4jNhX7OE5kYfclR2pbDy+0INM6
-         RHgeZ44kkcJBFS/B0cKfwGWD8h7B8QSOovqyeaOhr4v8r6DiKRsFc6guM1NnGlcy6jk5
-         f2C251j5yzXPYYvUncoGG+3XnA95Uer2LaPBLnm5SI0peLmXQSRLqCTD4aj6PyYnG78M
-         LzehzuCZOSM846idFywH7G7DU4Ih2cyvh0G2hQv6kHznN1bB3MCtEN/udsfvkHQlHXCo
-         zOgWfUNloKFnNL9BY096D3RHRruwj0Yn5gNyNh5UUqvCp2hZHt6HhNoACkJ3jNH2H45g
-         JfJw==
-X-Forwarded-Encrypted: i=1; AJvYcCU+mbuzkrsL3QuZGPHinKT4KBl3qCgPcD04eFr+6nfMj/ltVsVaT4r4eMtCY7qdAluxTlXipNbFoi1vw8Da@vger.kernel.org
-X-Gm-Message-State: AOJu0YyHLTA9932TiLhfX1mzajgtVH02fMS9rTN7YU2PTDpu2/7/4DBB
-	BWht/WD5ftLoT9okuCgSPLevRxNPdwBbfNHAQWuL2Jm1w4xjatmfw/7d+Flmrk0=
-X-Gm-Gg: ASbGncsdX9v+OxBALtcWDbCLKjl/PwCXOeLYZA83pfmM9/IHfQklvzmogaMztOl1SeZ
-	0LJWYa/NqMJQ7pc4sEr6gweRo/y/KOFpmQvEdBpyPtd4kB2uiybKImZHhbo3hWc7GOYdwYO2gkJ
-	RtI1LpKfbt6myE01n7Ro37X+s7bS9IVfBR4N7M3ogWHDKWqnVxHIOvX/ZYeyaOR+gDwO2FXpvnW
-	bpTdXTDFUjCc7HH0knsvophvTQw9bHws7KaYV9Xbl9RbQLwY0Xtyy7QTYnh
-X-Google-Smtp-Source: AGHT+IHT+uGKdYWP32nNdYuxCzKEUEtl7jwYI4PJVc6e7CGReWgq+hVxrrrOXvulnKWZaYLl+U73CA==
-X-Received: by 2002:a05:600c:4f84:b0:434:f7ea:fb44 with SMTP id 5b1f17b1804b1-43668644255mr533777585e9.14.1736264144046;
-        Tue, 07 Jan 2025 07:35:44 -0800 (PST)
-Received: from dhcp161.suse.cz ([193.86.92.181])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a1c833149sm50170082f8f.39.2025.01.07.07.35.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jan 2025 07:35:43 -0800 (PST)
-From: Petr Pavlu <petr.pavlu@suse.com>
-To: petr.pavlu@suse.com,
-	rppt@kernel.org,
-	akpm@linux-foundation.org
-Cc: mmaslanka@google.com,
-	mcgrof@kernel.org,
-	regressions@lists.linux.dev,
-	linux-modules@vger.kernel.org,
-	linux-mm@kvack.org,
-	live-patching@vger.kernel.org,
-	joe.lawrence@redhat.com,
-	jpoimboe@kernel.org,
-	pmladek@suse.com
-Subject: [PATCH] module: Fix writing of livepatch relocations in ROX text
-Date: Tue,  7 Jan 2025 16:34:57 +0100
-Message-ID: <20250107153507.14733-1-petr.pavlu@suse.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <0530eee7-f329-4786-bea3-c9c66d5f0bed@suse.com>
-References: <0530eee7-f329-4786-bea3-c9c66d5f0bed@suse.com>
+	s=arc-20240116; t=1736267029; c=relaxed/simple;
+	bh=W4KF39PABBH5ml2mGjKonNLqTB8qoU6Mmq6wPWwdFNM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZpEXNBH8/SDC5Cdt9NdYCNipBiPWWaQ3cGYHU/s/XaZ5/9yK6iOWe2qt1Iqmf0JH3joHnO0i22pz3XvwsP8tOCSntACnasMe8L28kbkUwGv+IRKWio8nPeFIEVSX8p4cc0nApsrmTu4wQcUj/kwECVt3afQdqtmpFAHLc3M1lrY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=cDb80khU; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1736267025;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=SML5E82jLDZPoDfWHBjc7GGkwKJX7zSEAE1HHyFwSy0=;
+	b=cDb80khUeGcpnMIIxrMP5zD8Xv9Z+THi4zsb36Elcs7FxsZkngReyTUPPsLU7KEo/I1NxE
+	AQDOl2LUCYziNPVFI9Y3ASakzwRrGjmA96jceVy7jrVh0M8zlUMvTv+RdtxQINy2G3q1B0
+	oNLH6364IHHs8K8cozIMKUHGZY562II=
+Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-519-ZinBM8BGPCO1rxzAVLBQ1A-1; Tue,
+ 07 Jan 2025 11:23:39 -0500
+X-MC-Unique: ZinBM8BGPCO1rxzAVLBQ1A-1
+X-Mimecast-MFC-AGG-ID: ZinBM8BGPCO1rxzAVLBQ1A
+Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id C74C71955E9D;
+	Tue,  7 Jan 2025 16:23:37 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.65.30])
+	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 518A81955F40;
+	Tue,  7 Jan 2025 16:23:35 +0000 (UTC)
+Date: Tue, 7 Jan 2025 11:23:32 -0500
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: Filipe Xavier <felipeaggger@gmail.com>
+Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+	Petr Mladek <pmladek@suse.com>, Shuah Khan <shuah@kernel.org>,
+	live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Felipe Xavier <felipe_life@live.com>
+Subject: Re: [PATCH] selftests: livepatch: test if ftrace can trace a
+ livepatched function
+Message-ID: <Z31VBN3zo47Ohr27@redhat.com>
+References: <20250102-ftrace-selftest-livepatch-v1-1-84880baefc1b@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250102-ftrace-selftest-livepatch-v1-1-84880baefc1b@gmail.com>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
 
-A livepatch module can contain a special relocation section
-.klp.rela.<objname>.<secname> to apply its relocations at the appropriate
-time and to additionally access local and unexported symbols. When
-<objname> points to another module, such relocations are processed
-separately from the regular module relocation process. For instance, only
-when the target <objname> actually becomes loaded.
+On Thu, Jan 02, 2025 at 03:42:10PM -0300, Filipe Xavier wrote:
+> This new test makes sure that ftrace can trace a
+> function that was introduced by a livepatch.
+>
 
-With CONFIG_STRICT_MODULE_RWX, when the livepatch core decides to apply
-these relocations, their processing results in the following bug:
+Hi Filipe,
 
-[   25.827238] BUG: unable to handle page fault for address: 00000000000012ba
-[   25.827819] #PF: supervisor read access in kernel mode
-[   25.828153] #PF: error_code(0x0000) - not-present page
-[   25.828588] PGD 0 P4D 0
-[   25.829063] Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
-[   25.829742] CPU: 2 UID: 0 PID: 452 Comm: insmod Tainted: G O  K    6.13.0-rc4-00078-g059dd502b263 #7820
-[   25.830417] Tainted: [O]=OOT_MODULE, [K]=LIVEPATCH
-[   25.830768] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-20220807_005459-localhost 04/01/2014
-[   25.831651] RIP: 0010:memcmp+0x24/0x60
-[   25.832190] Code: [...]
-[   25.833378] RSP: 0018:ffffa40b403a3ae8 EFLAGS: 00000246
-[   25.833637] RAX: 0000000000000000 RBX: ffff93bc81d8e700 RCX: ffffffffc0202000
-[   25.834072] RDX: 0000000000000000 RSI: 0000000000000004 RDI: 00000000000012ba
-[   25.834548] RBP: ffffa40b403a3b68 R08: ffffa40b403a3b30 R09: 0000004a00000002
-[   25.835088] R10: ffffffffffffd222 R11: f000000000000000 R12: 0000000000000000
-[   25.835666] R13: ffffffffc02032ba R14: ffffffffc007d1e0 R15: 0000000000000004
-[   25.836139] FS:  00007fecef8c3080(0000) GS:ffff93bc8f900000(0000) knlGS:0000000000000000
-[   25.836519] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   25.836977] CR2: 00000000000012ba CR3: 0000000002f24000 CR4: 00000000000006f0
-[   25.837442] Call Trace:
-[   25.838297]  <TASK>
-[   25.841083]  __write_relocate_add.constprop.0+0xc7/0x2b0
-[   25.841701]  apply_relocate_add+0x75/0xa0
-[   25.841973]  klp_write_section_relocs+0x10e/0x140
-[   25.842304]  klp_write_object_relocs+0x70/0xa0
-[   25.842682]  klp_init_object_loaded+0x21/0xf0
-[   25.842972]  klp_enable_patch+0x43d/0x900
-[   25.843572]  do_one_initcall+0x4c/0x220
-[   25.844186]  do_init_module+0x6a/0x260
-[   25.844423]  init_module_from_file+0x9c/0xe0
-[   25.844702]  idempotent_init_module+0x172/0x270
-[   25.845008]  __x64_sys_finit_module+0x69/0xc0
-[   25.845253]  do_syscall_64+0x9e/0x1a0
-[   25.845498]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-[   25.846056] RIP: 0033:0x7fecef9eb25d
-[   25.846444] Code: [...]
-[   25.847563] RSP: 002b:00007ffd0c5d6de8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   25.848082] RAX: ffffffffffffffda RBX: 000055b03f05e470 RCX: 00007fecef9eb25d
-[   25.848456] RDX: 0000000000000000 RSI: 000055b001e74e52 RDI: 0000000000000003
-[   25.848969] RBP: 00007ffd0c5d6ea0 R08: 0000000000000040 R09: 0000000000004100
-[   25.849411] R10: 00007fecefac7b20 R11: 0000000000000246 R12: 000055b001e74e52
-[   25.849905] R13: 0000000000000000 R14: 000055b03f05e440 R15: 0000000000000000
-[   25.850336]  </TASK>
-[   25.850553] Modules linked in: deku(OK+) uinput
-[   25.851408] CR2: 00000000000012ba
-[   25.852085] ---[ end trace 0000000000000000 ]---
+Thanks for adding a test!
 
-The problem is that the .klp.rela.<objname>.<secname> relocations are
-processed after the module was already formed and mod->rw_copy was reset.
-However, the code in __write_relocate_add() calls module_writable_address()
-which translates the target address 'loc' still to
-'loc + (mem->rw_copy - mem->base)', with mem->rw_copy now being 0.
-
-Fix the problem by returning directly 'loc' in module_writable_address()
-when the module is already formed. Function __write_relocate_add() knows to
-use text_poke() in such a case.
-
-Fixes: 0c133b1e78cd ("module: prepare to handle ROX allocations for text")
-Reported-by: Marek Maslanka <mmaslanka@google.com>
-Closes: https://lore.kernel.org/linux-modules/CAGcaFA2hdThQV6mjD_1_U+GNHThv84+MQvMWLgEuX+LVbAyDxg@mail.gmail.com/
-Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
----
- include/linux/module.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 94acbacdcdf1..b3a643435357 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -773,7 +773,8 @@ void *__module_writable_address(struct module *mod, void *loc);
+Aside: another similar test could verify that the original function, in
+this case cmdline_proc_show(), can still be traced despite it being
+livepatched.  That may be non-intuitive but it demonstrates how the
+ftrace handler works.
  
- static inline void *module_writable_address(struct module *mod, void *loc)
- {
--	if (!IS_ENABLED(CONFIG_ARCH_HAS_EXECMEM_ROX) || !mod)
-+	if (!IS_ENABLED(CONFIG_ARCH_HAS_EXECMEM_ROX) || !mod ||
-+	    mod->state != MODULE_STATE_UNFORMED)
- 		return loc;
- 	return __module_writable_address(mod, loc);
- }
+> Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
+> ---
+>  tools/testing/selftests/livepatch/test-ftrace.sh | 37 ++++++++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
+> index fe14f248913acbec46fb6c0fec38a2fc84209d39..5f0d5308c88669e84210393ce7b8aa138b694ebd 100755
+> --- a/tools/testing/selftests/livepatch/test-ftrace.sh
+> +++ b/tools/testing/selftests/livepatch/test-ftrace.sh
+> @@ -61,4 +61,41 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
+>  % rmmod $MOD_LIVEPATCH"
+>  
+>  
+> +# - verify livepatch can load
+> +# - check traces if have a patched function
 
-base-commit: 9d89551994a430b50c4fffcb1e617a057fa76e20
--- 
-2.43.0
+nit: wording?  "check if traces have a patched function" ?
+
+> +# - unload livepatch and reset trace
+> +
+> +start_test "livepatch trace patched function and check that the live patch remains in effect"
+
+nit: wording?  "trace livepatched function and check ..." ?
+
+> +
+> +TRACE_FILE="$SYSFS_DEBUG_DIR/tracing/trace"
+> +FUNCTION_NAME="livepatch_cmdline_proc_show"
+> +
+> +load_lp $MOD_LIVEPATCH
+> +
+> +echo $FUNCTION_NAME > $SYSFS_DEBUG_DIR/tracing/set_ftrace_filter
+> +echo "function" > $SYSFS_DEBUG_DIR/tracing/current_tracer
+> +echo "" > $TRACE_FILE
+
+A few suggestions:
+
+- The tracing is also dependent on the 'tracing_on' file, so if it
+  happens to be turned off, the test will fail.
+
+- See functions.sh :: push_config() and pop_config() for an example of
+  saving the existing values rather than turning them all off at the end
+  of the test.
+
+- Nitpick: shellcheck suggests wrapping filenames in double quotations,
+  applicable in several places.
+
+> +
+> +if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
+> +	echo -e "FAIL\n\n"
+> +	die "livepatch kselftest(s) failed"
+> +fi
+> +
+> +grep -q $FUNCTION_NAME $TRACE_FILE
+> +FOUND=$?
+> +
+> +disable_lp $MOD_LIVEPATCH
+> +unload_lp $MOD_LIVEPATCH
+> +
+> +# Reset tracing
+> +echo "nop" > $SYSFS_DEBUG_DIR/tracing/current_tracer
+> +echo "" > $SYSFS_DEBUG_DIR/tracing/set_ftrace_filter
+> +echo "" > $TRACE_FILE
+> +
+> +if [ "$FOUND" -eq 1 ]; then
+> +	echo -e "FAIL\n\n"
+> +	die "livepatch kselftest(s) failed"
+> +fi
+> +
+> +
+>  exit 0
+> 
+> ---
+> base-commit: fc033cf25e612e840e545f8d5ad2edd6ba613ed5
+> change-id: 20250101-ftrace-selftest-livepatch-161fb77dbed8
+> 
+> Best regards,
+> -- 
+> Filipe Xavier <felipeaggger@gmail.com>
+> 
+
+Thanks,
+--
+Joe
 
 
