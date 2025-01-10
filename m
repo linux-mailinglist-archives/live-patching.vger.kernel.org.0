@@ -1,87 +1,131 @@
-Return-Path: <live-patching+bounces-964-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-965-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0A728A06FAA
-	for <lists+live-patching@lfdr.de>; Thu,  9 Jan 2025 09:06:15 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B3925A08E24
+	for <lists+live-patching@lfdr.de>; Fri, 10 Jan 2025 11:37:27 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 9BAF67A0F57
-	for <lists+live-patching@lfdr.de>; Thu,  9 Jan 2025 08:06:06 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BA4E91693AF
+	for <lists+live-patching@lfdr.de>; Fri, 10 Jan 2025 10:37:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A8FD214811;
-	Thu,  9 Jan 2025 08:06:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B165920B1E8;
+	Fri, 10 Jan 2025 10:37:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="DfBLx4Nv"
+	dkim=pass (2048-bit key) header.d=shutemov.name header.i=@shutemov.name header.b="lF9l1Oxg";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="rD9VT4L+"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from flow-a1-smtp.messagingengine.com (flow-a1-smtp.messagingengine.com [103.168.172.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DC9C21481B
-	for <live-patching@vger.kernel.org>; Thu,  9 Jan 2025 08:06:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36EB20A5F2;
+	Fri, 10 Jan 2025 10:37:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736409968; cv=none; b=GxFOjifunkfqbAa2XccIy43st5EXBtrrg8inRL6FX4nNE/8s0Yq3Xndua2MQj0NULEHMFIQ5Hiy/itqJvdoQ3rXvndpebdFfQINmqnUHDNeQRnJ7kFt4Tc8kDl4+iNt6H+NKwGhwRJzwegY/UgPuWvVPwwMujWyPvKmRqvt46/Y=
+	t=1736505441; cv=none; b=igxpbWAD4FF1jSKKLB6Z4Qrfa3tLo4QbFZE8TRfe8cxezfRqSCQ3lQ6Z7V2aEwuDOBlPy1M019UvBuHbaaFCWj1QFBA7yud5/1lTxQZLNm4BPXvLgK61y8jGRdwlXFyWUpkcbvYNTF7aW7DN7g4vm2AT1TQTh4Xywe7Bv3mlB9g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736409968; c=relaxed/simple;
-	bh=KFUB25o9UQQJzS0Rib0+4wnoYyXJfqfqKywL0fnhTBY=;
+	s=arc-20240116; t=1736505441; c=relaxed/simple;
+	bh=I1oVtbaOlFFHu0DmV8zdRMs9cNx4ils+QPsuoigo9rI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZL1f6UsQh//MxOa+QjebwXlmXyHehINF9bFfRc0y2jN0JZ4MKb+cEfNbcJlr0LrO0uHg0TjrqBByy7xHaUCDPVepKRnjZIvI9mtrdm9Vh3CzFRe+DflIO0PL6QEBoFg0WTwb1Inlm8v0U2mLYMTngKrdXyZLq0ngoR9v1OQHd/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=DfBLx4Nv; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-38a8b17d7a7so296643f8f.2
-        for <live-patching@vger.kernel.org>; Thu, 09 Jan 2025 00:06:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1736409963; x=1737014763; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9ITqsiinxyZSSgCuY2qBILl0Bh+ReB71Q93l6wv0brE=;
-        b=DfBLx4NvXltpRH0jfAk8czOt7rHKMqlX7koR5SLwfD4X+6pwKFmV3ZoP7OE/fDJz4K
-         MrldMyzhlOCiMYhkgpzD7z6vw1yFlSKQTgoSQpeokQl2m76yWglQWcgH08/3NI4SpskM
-         eL0RdghK48k6x/xo/8hY2PUiU1qja18+STZ3Xm75pWOImfRvJj0e2aOWrq/EJ/uixjNR
-         IPqmpljPmn1wbOje80HXhx3DkYbiRUZo/oBPWJSOynn9StTVU9TdpxY2uLMbe4qK+lyi
-         +291+7E09NCiEevijGKqoaOpBp8xBS24H13j9aT745W7NInTlXkLL1C6xxbiUca0C1pN
-         CRlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736409963; x=1737014763;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9ITqsiinxyZSSgCuY2qBILl0Bh+ReB71Q93l6wv0brE=;
-        b=Ra/sq4+ZQPD9Z9U8Ywk+o+SFAai7i2lbpe6QiMF3irIxT22HGkz2TwFV/sKe4vl1C/
-         TLmofG97VXRCvXd0OgERy6VVcXXld53qb80plsHvDP01tjGNPjfRPA8+ypM1eBqtrFcw
-         uetpsz3+2KYCKeRIHaUBxBoF4VEgOxPhloU2J2vuaOmwIof1uzUSrr3LPRtO6IXQsRx+
-         Jxnx0TjrTYrmZypiixCB8s99HnrhpOtUqsZ02lAfS7Fz8cU6I09R3EP7AGzlvGDqgq54
-         AAveTj730FJuFXkE+6nC9zzRN07/VaKrt/PYH1jnk96Qihh2EBpmLP5Z+1sbOSVmLabg
-         5uqw==
-X-Forwarded-Encrypted: i=1; AJvYcCWlHEynHUa9bnsv1P5qV5Pq1IymkOYmeL311ZyQAdU4Lji+kuTzJ5gQ6BT8cEcp63vtwf/+nUNoMRhKA0fM@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw5RI+i4GI3R9QRD7dhvGQqHLwjXSty3oROJAXiGaGafx4Noqup
-	FBt84Pjqi0BU8Zm+0orSMvNZoJo2ZM60s7M8Y+lRUrSeZlprOBOqHlxbbxoIyR8=
-X-Gm-Gg: ASbGncsVmgP6McF0EgmcS3rDdsylniC0FuXr5di/3UIgloSV26SDjJv3GcfCvEyOGL4
-	/V09eBG7W5sc/uVjuRvEqT7zq1adK2Y7sEe7HVy2/ncyOhPRh6ejw8VaRUgPY+Z8ryJzQHdgR91
-	DIPeOxAaxHl7qYBI6RwcHeWlEBlB/u0xRO/hphQSp/NBVQPpheHGbXuOr2zEbZ83G1Ip+SG90pE
-	bWYnaZeUfxsN3BGCVbmRhYVxML4EpLVWK7RhdmhUAjhgLSCe+4/RQQLuA==
-X-Google-Smtp-Source: AGHT+IGIKmYup4HfNyvVOdshyFsmquudgwv4hp4j0NV3FCOB24xiS/Vj/WSSzxsQI5fRwQg1rXrPAw==
-X-Received: by 2002:adf:c08d:0:b0:38a:87cc:fb2c with SMTP id ffacd0b85a97d-38a87ccfc17mr3141056f8f.18.1736409963511;
-        Thu, 09 Jan 2025 00:06:03 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e4b7f79sm1074729f8f.69.2025.01.09.00.06.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2025 00:06:03 -0800 (PST)
-Date: Thu, 9 Jan 2025 09:06:00 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Petr Pavlu <petr.pavlu@suse.com>
-Cc: rppt@kernel.org, akpm@linux-foundation.org, mmaslanka@google.com,
-	mcgrof@kernel.org, regressions@lists.linux.dev,
-	linux-modules@vger.kernel.org, linux-mm@kvack.org,
-	live-patching@vger.kernel.org, joe.lawrence@redhat.com,
-	jpoimboe@kernel.org
-Subject: Re: [PATCH] module: Fix writing of livepatch relocations in ROX text
-Message-ID: <Z3-DaPKN7hrQl7Lz@pathway.suse.cz>
-References: <0530eee7-f329-4786-bea3-c9c66d5f0bed@suse.com>
- <20250107153507.14733-1-petr.pavlu@suse.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=NRMKgE2lREn7KtrSz7ie9gu5bdCswunhVPZ/ZmV+ttpFmqNgKwtARNTRuI2S+vPL7C5SaWLWKcbaK33n0jaAXgpA1qswLDQWFbFz8X2BTIwPc+J47dchTDdmhTkZIgSijxZaK67dXD5Lx4rP1W26k6QgfeRm5P6ROm/6efPf60s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name; spf=pass smtp.mailfrom=shutemov.name; dkim=pass (2048-bit key) header.d=shutemov.name header.i=@shutemov.name header.b=lF9l1Oxg; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=rD9VT4L+; arc=none smtp.client-ip=103.168.172.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shutemov.name
+Received: from phl-compute-08.internal (phl-compute-08.phl.internal [10.202.2.48])
+	by mailflow.phl.internal (Postfix) with ESMTP id D91B32010D6;
+	Fri, 10 Jan 2025 05:37:17 -0500 (EST)
+Received: from phl-mailfrontend-02 ([10.202.2.163])
+  by phl-compute-08.internal (MEProxy); Fri, 10 Jan 2025 05:37:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
+	 h=cc:cc:content-type:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm1; t=1736505437; x=
+	1736512637; bh=Km4XzsnzHBTNNJzmGN8m2TrMMSFreEGVyXvVDroQ2DY=; b=l
+	F9l1OxgwNCSVpVzHNp2jvRIgcZtfmBz/E4/CO27dbRnPpywlZHXNuQhSufjq09iR
+	0Q1ceb1IRZSS/fN6814PVfVlDFZc/EVLYl2vi58mWFhJp18o89cYZreU1XtVLRmD
+	19T4xnFzlXyyyMJOMNOqGvLHe6C60LN2xggK+JESVtgZPwAH5HJRI5xPshZSfrlZ
+	GcMXvirGEd1tDeBMy5m8L171rno7Opv+KWlrx+H6cbu757OIulT2KyrYFRI4HfHI
+	IeQFsKKAHooUKWsb04Ck1WkK+W3OgtdvrKfxU53JSObu8cpzKureitBsWxKiHuto
+	y3zwRAmHw1P1k+RSkV1RQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+	1736505437; x=1736512637; bh=Km4XzsnzHBTNNJzmGN8m2TrMMSFreEGVyXv
+	VDroQ2DY=; b=rD9VT4L+x6wScm0MmUZeIMvpHgMx8qAL83gowQ/aifn4QOfo3nw
+	18acnJdLdQvErdaVPbYP4SqjyKSQJGLB3E5eZzuJ9Dtxvp3QeH2dP/hfVmiAoRmf
+	GWim3pv96frkdHzWOHix2M5qmmBHHkE2E9qlP4U6LV/Ha5ZxKqk10JuNAvA27n30
+	qdxMfQmD+i4hm5mNMNftbXsWI4fysYE9pymAWInDaeeeVJifSUXB3JzOL2PwBEE2
+	azJQJpPCW1nC9N+YVplzgJm6rVTgPozOzsC1XEmejWeWoA3KkM4A98S8XvWF96jp
+	o69S196+kqgvwK+y07aXY0dqMcuZxp6uqiQ==
+X-ME-Sender: <xms:W_iAZ00nxgJw64svIet4IdZP3JkbK1OhjQjIlVOQzlhHOwiSX9jkow>
+    <xme:W_iAZ_EFoH6iwh3lMqZ8MhM0WyE1LksqHeyql6hCcSzFXriLt6zgQj9KcqBOVeqFR
+    14FSvtmUagZUhrYj1g>
+X-ME-Received: <xmr:W_iAZ85lBR8fS3KVrpwwP-tcfcdKyK7KrEupA9vygKO6KEH9a87CckaGqhGuGKt21qAemA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudegkedgudejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggujgesthdtsfdttddtvden
+    ucfhrhhomhepfdfmihhrihhllhcutedrucfuhhhuthgvmhhovhdfuceokhhirhhilhhlse
+    hshhhuthgvmhhovhdrnhgrmhgvqeenucggtffrrghtthgvrhhnpeeltedugedtgfehuddu
+    hfetleeiuedvtdehieejjedufeejfeegteetuddtgefgudenucffohhmrghinhepkhgvrh
+    hnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhf
+    rhhomhepkhhirhhilhhlsehshhhuthgvmhhovhdrnhgrmhgvpdhnsggprhgtphhtthhope
+    egfedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheprhhpphhtsehkvghrnhgvlhdr
+    ohhrghdprhgtphhtthhopegrkhhpmheslhhinhhugidqfhhouhhnuggrthhiohhnrdhorh
+    hgpdhrtghpthhtoheplhhuthhosehkvghrnhgvlhdrohhrghdprhgtphhtthhopegrnhht
+    ohhnrdhivhgrnhhovhestggrmhgsrhhiughgvghgrhgvhihsrdgtohhmpdhrtghpthhtoh
+    epsghpsegrlhhivghnkedruggvpdhrtghpthhtohepsghrvghnuggrnhdrhhhighhgihhn
+    sheslhhinhhugidruggvvhdprhgtphhtthhopegurgdrghhomhgviiesshgrmhhsuhhngh
+    drtghomhdprhgtphhtthhopegurghnihgvlhhtsehkvghrnhgvlhdrohhrghdprhgtphht
+    thhopegurghvvgdrhhgrnhhsvghnsehlihhnuhigrdhinhhtvghlrdgtohhm
+X-ME-Proxy: <xmx:W_iAZ93YjtGqyQ_KhyMe78rNVusaOBrYpJoPXwMLehTvKhN1WUbxyg>
+    <xmx:W_iAZ3GoqF6B8L2mTflFziY9ijfyGAomHfUPxnFZQ_ui45RQ_ik4tw>
+    <xmx:W_iAZ2_aN5wdvfhDfYaCp4mM9S-7Ff2DFoYQYHii7uiepbjsstVyLA>
+    <xmx:W_iAZ8lM-cSB7BXqi74IqSxpaazEX5g3lCuiI9gwh0GEiOvb_BC0bg>
+    <xmx:XfiAZ17mYS2-77H8F-lcSSO9soujJP_-GYVn8onu-R3c3sOdSsV828s5>
+Feedback-ID: ie3994620:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 10 Jan 2025 05:37:03 -0500 (EST)
+Date: Fri, 10 Jan 2025 12:36:59 +0200
+From: "Kirill A. Shutemov" <kirill@shutemov.name>
+To: Mike Rapoport <rppt@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ 	Andy Lutomirski <luto@kernel.org>,
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+ 	Borislav Petkov <bp@alien8.de>,
+ Brendan Higgins <brendan.higgins@linux.dev>,
+ 	Daniel Gomez <da.gomez@samsung.com>,
+ Daniel Thompson <danielt@kernel.org>,
+ 	Dave Hansen <dave.hansen@linux.intel.com>,
+ David Gow <davidgow@google.com>,
+ 	Douglas Anderson <dianders@chromium.org>,
+ Ingo Molnar <mingo@redhat.com>,
+ 	Jason Wessel <jason.wessel@windriver.com>,
+ Jiri Kosina <jikos@kernel.org>, 	Joe Lawrence <joe.lawrence@redhat.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ 	Josh Poimboeuf <jpoimboe@kernel.org>,
+ "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+ 	Luis Chamberlain <mcgrof@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>,
+ 	Masami Hiramatsu <mhiramat@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ 	"H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>,
+ 	Petr Mladek <pmladek@suse.com>, Petr Pavlu <petr.pavlu@suse.com>,
+ Rae Moar <rmoar@google.com>, 	Richard Weinberger <richard@nod.at>,
+ Sami Tolvanen <samitolvanen@google.com>, 	Shuah Khan <shuah@kernel.org>,
+ Song Liu <song@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+ 	Thomas Gleixner <tglx@linutronix.de>,
+ kgdb-bugreport@lists.sourceforge.net, kunit-dev@googlegroups.com,
+ 	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-mm@kvack.org, 	linux-modules@vger.kernel.org,
+ linux-trace-kernel@vger.kernel.org, linux-um@lists.infradead.org,
+ 	live-patching@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 3/8] x86/mm/pat: Restore large pages after fragmentation
+Message-ID: <jut35igb2kstpz24apqdeubv5rvyl3vmp2s43xtivpz54uiedj@wmd2onulv4xw>
+References: <20241227072825.1288491-1-rppt@kernel.org>
+ <20241227072825.1288491-4-rppt@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -90,91 +134,58 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250107153507.14733-1-petr.pavlu@suse.com>
+In-Reply-To: <20241227072825.1288491-4-rppt@kernel.org>
 
-On Tue 2025-01-07 16:34:57, Petr Pavlu wrote:
-> A livepatch module can contain a special relocation section
-> .klp.rela.<objname>.<secname> to apply its relocations at the appropriate
-> time and to additionally access local and unexported symbols. When
-> <objname> points to another module, such relocations are processed
-> separately from the regular module relocation process. For instance, only
-> when the target <objname> actually becomes loaded.
+On Fri, Dec 27, 2024 at 09:28:20AM +0200, Mike Rapoport wrote:
+> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 > 
-> With CONFIG_STRICT_MODULE_RWX, when the livepatch core decides to apply
-> these relocations, their processing results in the following bug:
+> Change of attributes of the pages may lead to fragmentation of direct
+> mapping over time and performance degradation as result.
 > 
-> [   25.827238] BUG: unable to handle page fault for address: 00000000000012ba
-> [   25.827819] #PF: supervisor read access in kernel mode
-> [   25.828153] #PF: error_code(0x0000) - not-present page
-> [   25.828588] PGD 0 P4D 0
-> [   25.829063] Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
-> [   25.829742] CPU: 2 UID: 0 PID: 452 Comm: insmod Tainted: G O  K    6.13.0-rc4-00078-g059dd502b263 #7820
-> [   25.830417] Tainted: [O]=OOT_MODULE, [K]=LIVEPATCH
-> [   25.830768] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-20220807_005459-localhost 04/01/2014
-> [   25.831651] RIP: 0010:memcmp+0x24/0x60
-> [   25.832190] Code: [...]
-> [   25.833378] RSP: 0018:ffffa40b403a3ae8 EFLAGS: 00000246
-> [   25.833637] RAX: 0000000000000000 RBX: ffff93bc81d8e700 RCX: ffffffffc0202000
-> [   25.834072] RDX: 0000000000000000 RSI: 0000000000000004 RDI: 00000000000012ba
-> [   25.834548] RBP: ffffa40b403a3b68 R08: ffffa40b403a3b30 R09: 0000004a00000002
-> [   25.835088] R10: ffffffffffffd222 R11: f000000000000000 R12: 0000000000000000
-> [   25.835666] R13: ffffffffc02032ba R14: ffffffffc007d1e0 R15: 0000000000000004
-> [   25.836139] FS:  00007fecef8c3080(0000) GS:ffff93bc8f900000(0000) knlGS:0000000000000000
-> [   25.836519] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   25.836977] CR2: 00000000000012ba CR3: 0000000002f24000 CR4: 00000000000006f0
-> [   25.837442] Call Trace:
-> [   25.838297]  <TASK>
-> [   25.841083]  __write_relocate_add.constprop.0+0xc7/0x2b0
-> [   25.841701]  apply_relocate_add+0x75/0xa0
-> [   25.841973]  klp_write_section_relocs+0x10e/0x140
-> [   25.842304]  klp_write_object_relocs+0x70/0xa0
-> [   25.842682]  klp_init_object_loaded+0x21/0xf0
-> [   25.842972]  klp_enable_patch+0x43d/0x900
-> [   25.843572]  do_one_initcall+0x4c/0x220
-> [   25.844186]  do_init_module+0x6a/0x260
-> [   25.844423]  init_module_from_file+0x9c/0xe0
-> [   25.844702]  idempotent_init_module+0x172/0x270
-> [   25.845008]  __x64_sys_finit_module+0x69/0xc0
-> [   25.845253]  do_syscall_64+0x9e/0x1a0
-> [   25.845498]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> [   25.846056] RIP: 0033:0x7fecef9eb25d
-> [   25.846444] Code: [...]
-> [   25.847563] RSP: 002b:00007ffd0c5d6de8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-> [   25.848082] RAX: ffffffffffffffda RBX: 000055b03f05e470 RCX: 00007fecef9eb25d
-> [   25.848456] RDX: 0000000000000000 RSI: 000055b001e74e52 RDI: 0000000000000003
-> [   25.848969] RBP: 00007ffd0c5d6ea0 R08: 0000000000000040 R09: 0000000000004100
-> [   25.849411] R10: 00007fecefac7b20 R11: 0000000000000246 R12: 000055b001e74e52
-> [   25.849905] R13: 0000000000000000 R14: 000055b03f05e440 R15: 0000000000000000
-> [   25.850336]  </TASK>
-> [   25.850553] Modules linked in: deku(OK+) uinput
-> [   25.851408] CR2: 00000000000012ba
-> [   25.852085] ---[ end trace 0000000000000000 ]---
+> With current code it's one way road: kernel tries to avoid splitting
+> large pages, but it doesn't restore them back even if page attributes
+> got compatible again.
 > 
-> The problem is that the .klp.rela.<objname>.<secname> relocations are
-> processed after the module was already formed and mod->rw_copy was reset.
-> However, the code in __write_relocate_add() calls module_writable_address()
-> which translates the target address 'loc' still to
-> 'loc + (mem->rw_copy - mem->base)', with mem->rw_copy now being 0.
+> Any change to the mapping may potentially allow to restore large page.
 > 
-> Fix the problem by returning directly 'loc' in module_writable_address()
-> when the module is already formed. Function __write_relocate_add() knows to
-> use text_poke() in such a case.
+> Hook up into cpa_flush() path to check if there's any pages to be
+> recovered in PUD_SIZE range around pages we've just touched.
 > 
-> Fixes: 0c133b1e78cd ("module: prepare to handle ROX allocations for text")
-> Reported-by: Marek Maslanka <mmaslanka@google.com>
-> Closes: https://lore.kernel.org/linux-modules/CAGcaFA2hdThQV6mjD_1_U+GNHThv84+MQvMWLgEuX+LVbAyDxg@mail.gmail.com/
-> Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
+> CPUs don't like[1] to have to have TLB entries of different size for the
+> same memory, but looks like it's okay as long as these entries have
+> matching attributes[2]. Therefore it's critical to flush TLB before any
+> following changes to the mapping.
+> 
+> Note that we already allow for multiple TLB entries of different sizes
+> for the same memory now in split_large_page() path. It's not a new
+> situation.
+> 
+> set_memory_4k() provides a way to use 4k pages on purpose. Kernel must
+> not remap such pages as large. Re-use one of software PTE bits to
+> indicate such pages.
+> 
+> [1] See Erratum 383 of AMD Family 10h Processors
+> [2] https://lore.kernel.org/linux-mm/1da1b025-cabc-6f04-bde5-e50830d1ecf0@amd.com/
+> 
+> [rppt@kernel.org:
+>  * s/restore/collapse/
+>  * update formatting per peterz
+>  * use 'struct ptdesc' instead of 'struct page' for list of page tables to
+>    be freed
+>  * try to collapse PMD first and if it succeeds move on to PUD as peterz
+>    suggested
+>  * flush TLB twice: for changes done in the original CPA call and after
+>    collapsing of large pages
+> ]
+> 
+> Link: https://lore.kernel.org/all/20200416213229.19174-1-kirill.shutemov@linux.intel.com
+> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Co-developed-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 
-The fix makes sense. I could confirm that it fixes the problem
-and the livepatch relocations works again.
+When I originally attempted this, the patch was dropped because of
+performance regressions. Was it addressed somehow?
 
-I have tested it on x86_64 with current Linus' origin/master
-and the selftest from the patchset adding klp-convert tool, see
-https://lore.kernel.org/r/20240827123052.9002-7-lhruska@suse.cz
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
-
-Best Regards,
-Petr
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
 
