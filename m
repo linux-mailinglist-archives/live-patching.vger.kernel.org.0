@@ -1,158 +1,144 @@
-Return-Path: <live-patching+bounces-967-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-968-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 998C1A09BB7
-	for <lists+live-patching@lfdr.de>; Fri, 10 Jan 2025 20:18:40 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 284E0A0A528
+	for <lists+live-patching@lfdr.de>; Sat, 11 Jan 2025 19:00:45 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B25383A5E07
-	for <lists+live-patching@lfdr.de>; Fri, 10 Jan 2025 19:18:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 32FB93A68E4
+	for <lists+live-patching@lfdr.de>; Sat, 11 Jan 2025 18:00:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5343D213E95;
-	Fri, 10 Jan 2025 19:18:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91DF61B424D;
+	Sat, 11 Jan 2025 18:00:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lVSbNBfB"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="AzB8vYm8"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D2AA24B248;
-	Fri, 10 Jan 2025 19:18:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFF8C1494CC
+	for <live-patching@vger.kernel.org>; Sat, 11 Jan 2025 18:00:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736536715; cv=none; b=CtK0z6iKeVRdQVCFrA7wQeWIEphwWEFLAbkSTvTEwBPqqmwukLQjHI3lYudgrVWvquAqjc9Eu8yjPPJnPlkAUqroKj9N5l759VZT29uq2ie7cgR0eupNsqeH7R21a1EmpmUwNPRm3LxqYkSYSt3ZHszNxhIMT7ewFGChCzGJJG8=
+	t=1736618440; cv=none; b=ml2b0ZEcFviN4YmIPNihWZS/dTVBTl0Tu2SMDYmm+V0RcMNYQc4Gn3C+CMzOECPKszx9eKbl+Mj/yol/fI4sE9+IdW+1OMGSANYNSvtj/aYV3R4icMoq907dF55/KYvlKQ0z1Jn8Fl3MWSJ2DMJoP/iqYr5iYS7sEeQEaCHBj0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736536715; c=relaxed/simple;
-	bh=2qtn/yN8KGnvKM4Be6ymIMRepfChNk260BsIzmavFNU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BcOx9WM7MED90MDfxMUQ/dAwQs8WXGn23K5YOIhd3gQPtA3x1TlfMPguVxVqdgdc9GF2d//U2dbZI+YrTb6Wqk8cYxFTico3veMUares8+ZcZMMDz2GoHv0GWopwOirMNijPAAjxhX837+s4OpU8HtgqKG5A5LZ9wegR3WNb9AE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lVSbNBfB; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D2BDC4CED6;
-	Fri, 10 Jan 2025 19:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736536714;
-	bh=2qtn/yN8KGnvKM4Be6ymIMRepfChNk260BsIzmavFNU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lVSbNBfBgiPxfs3j9J4+Q/Mm+va0HnyJJvJ511BIZPHoPIheFgi517TCooWsbBMUd
-	 WSTmKdJWe1UfTSlATsW95ACeJ+2Ll0h4BtuuaSFwVIFk0Wv0zZu3LZGeJRFeQJn0qe
-	 lg2p9xQs3O5V2HOaVWmRlOJx02Yzw7s7vpvz4fokLmZ7ey61g0GQZuRvribH6nHyqr
-	 xDH3Wpe0L5t74rdpA5UINqI4Hxxsp6lB+b5KVRB/rten4cAybUcKdl/88Oc2pCe2TE
-	 6b7kfjQEJbS5HJyWvsAtyyHoKwfXfP3N4KXgVgUwkJm645MDTdxDa3wPAeEVyf6U26
-	 meOgl0uiogQDw==
-Date: Fri, 10 Jan 2025 11:18:32 -0800
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc: Mike Rapoport <rppt@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Brendan Higgins <brendan.higgins@linux.dev>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	David Gow <davidgow@google.com>,
-	Douglas Anderson <dianders@chromium.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>, "H. Peter Anvin" <hpa@zytor.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Mladek <pmladek@suse.com>, Petr Pavlu <petr.pavlu@suse.com>,
-	Rae Moar <rmoar@google.com>, Richard Weinberger <richard@nod.at>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Shuah Khan <shuah@kernel.org>, Song Liu <song@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	kgdb-bugreport@lists.sourceforge.net, kunit-dev@googlegroups.com,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	linux-mm@kvack.org, linux-modules@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linux-um@lists.infradead.org,
-	live-patching@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH 3/8] x86/mm/pat: Restore large pages after fragmentation
-Message-ID: <Z4FyiALKwX-AIWtF@bombadil.infradead.org>
-References: <20241227072825.1288491-1-rppt@kernel.org>
- <20241227072825.1288491-4-rppt@kernel.org>
- <jut35igb2kstpz24apqdeubv5rvyl3vmp2s43xtivpz54uiedj@wmd2onulv4xw>
+	s=arc-20240116; t=1736618440; c=relaxed/simple;
+	bh=rl4tzMbjTVPrZL8vIZg0CsU+U4RCupZ142ByB8y5vNA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uMdq8MU7s8q5u9YiyMfgwyr889HuI3gXM9sndmTk4bwV8Cap3QPelFzvrfF42jPrXREfsQW2uCepSZFQJvr6AzcJmrRh15Qz2Fm7vxiC06IUPIxqD6sLtD+lIXAfOpoe7YR6PG+chSsEg12Mkb+61pS50CdnrkhIvNGwfgDBPMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=AzB8vYm8; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1736618437;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=65m01HXSlqOBQF0X6QUSrEpGfIBoOq9A2r6WX82xrgk=;
+	b=AzB8vYm8cdmWtbGHKFds9On9i3pwXYtAQGR46EywRC48ogFZICdX1FL6jn765G2AVtZ9lv
+	21CpJovhi7gd6M8euEA6kW/69MNAhM8ezNW/mpPEBJP3w7NqZPRJVFk4wkvLm7gLHrKX9i
+	9mVm6jBj1PohHX3FNa0MCZRSBNzsPDY=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-689-YebiG8oHN6OhKj8GndsfFw-1; Sat, 11 Jan 2025 13:00:36 -0500
+X-MC-Unique: YebiG8oHN6OhKj8GndsfFw-1
+X-Mimecast-MFC-AGG-ID: YebiG8oHN6OhKj8GndsfFw
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7b6e5c9ef38so509510685a.1
+        for <live-patching@vger.kernel.org>; Sat, 11 Jan 2025 10:00:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736618435; x=1737223235;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=65m01HXSlqOBQF0X6QUSrEpGfIBoOq9A2r6WX82xrgk=;
+        b=J8sJ8F8HbeK/N81Xz3bUXIy8zshV6M1nOgHbOXrMNLbxssEJTpiv7GxN0vm56o/g1o
+         D7RhzoyAz4v+Zbw1C1HmV7gaPvocXW/GIjH5NaGK4g06dJAKLR9iFAQ2KANG6R+NcCsQ
+         46MLZSVgS2q6XyRFkXIAIN+dbyNOu+7qcGQs1JEcLjFP/wfdAoW0B7KfKupiI8Kb0BrS
+         7JF1Z2jo8Q2fFTXj26azzN7+Z9cWo6aZL+9k8dsw2HJS70a3R+/3dGxtFVTJNca8xY0y
+         JV4o2BtIh7nll+8P/qf8olEbDk49GcWmd+wzZH2L/JC7rU+ZvWoek7hF5p6i6ZpZQI2h
+         hMqg==
+X-Forwarded-Encrypted: i=1; AJvYcCVJ3kpLgC/XxDDXo1ydlACN0jjLJEVVJR4P+laGbSjeegbsVE4hSM1As6zOqQLSiIoT9J7fDBqNh9bpTiZp@vger.kernel.org
+X-Gm-Message-State: AOJu0YxhfvxRrWgUdt/DFj3Mps4T+6IuRUJQ2JWu30FJ2gaWR5okDcAl
+	tKdHNmGRnA/g/4ZQXBBJFL6GT0ejwqbj9fK2TSTTPeYfsl5QM5i3Yh8Ojj34fSgbLf0OnUHqscA
+	X265a8/OAZzHlriVDFUgVPylkg1yRRGfASJeYdyTBq0wzBUHlpJGzOMnK+IsDO/o=
+X-Gm-Gg: ASbGncvLsnD+eoqcVgD973CT7z+kgacla1bzu/C6VgR50Q6ZZoSwL5cZvW5vtP3t/Yq
+	PmBNKUunyVaLENuRMo1ODjIME4K3LgJFgmD8EWCiUwgX89+QkrdfBUsVQBsLOxWjhtpxE92zkBs
+	uxO7xoEEF0XnGXO5eMan/w20Ka/cDCzjy9oaPPBewi1nxs3RXa0UdAtfach758sIR2HgC0AFCuF
+	AX/cIfjRwFMW91V5e3eX1JZYdH4mPn1sPUx1CK6nO4jZS0uuyzSuRRm9FYuq6dbc71KMgck4MMw
+	raqQDC4n0CJGSxb0mYpYj1fjZ41Xz+gowjadiHA=
+X-Received: by 2002:a05:620a:4e50:b0:7b6:d237:abfa with SMTP id af79cd13be357-7bcf3670440mr376712185a.21.1736618435655;
+        Sat, 11 Jan 2025 10:00:35 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGUdu/RdQiy62AcFdeOz8EqMSt9UG6Qp5/L1AaHX+TMZ/CBG16QzRl866a0rluy1MJWs1zVjw==
+X-Received: by 2002:a05:620a:4e50:b0:7b6:d237:abfa with SMTP id af79cd13be357-7bcf3670440mr376708085a.21.1736618435329;
+        Sat, 11 Jan 2025 10:00:35 -0800 (PST)
+Received: from [192.168.1.45] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7bce3238003sm303883985a.2.2025.01.11.10.00.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 11 Jan 2025 10:00:33 -0800 (PST)
+Message-ID: <20867ce3-901c-7821-fe02-ccd223fdcf17@redhat.com>
+Date: Sat, 11 Jan 2025 13:00:31 -0500
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <jut35igb2kstpz24apqdeubv5rvyl3vmp2s43xtivpz54uiedj@wmd2onulv4xw>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH] selftests: livepatch: test if ftrace can trace a
+ livepatched function
+Content-Language: en-US
+To: Filipe Xavier <felipeaggger@gmail.com>
+Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
+ Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+ Shuah Khan <shuah@kernel.org>, live-patching@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Felipe Xavier <felipe_life@live.com>
+References: <20250102-ftrace-selftest-livepatch-v1-1-84880baefc1b@gmail.com>
+ <Z31VBN3zo47Ohr27@redhat.com>
+ <9edd671a-be5e-41c9-a8dc-b1fd1d5e3375@gmail.com>
+From: Joe Lawrence <joe.lawrence@redhat.com>
+In-Reply-To: <9edd671a-be5e-41c9-a8dc-b1fd1d5e3375@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jan 10, 2025 at 12:36:59PM +0200, Kirill A. Shutemov wrote:
-> On Fri, Dec 27, 2024 at 09:28:20AM +0200, Mike Rapoport wrote:
-> > From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-> > 
-> > Change of attributes of the pages may lead to fragmentation of direct
-> > mapping over time and performance degradation as result.
-> > 
-> > With current code it's one way road: kernel tries to avoid splitting
-> > large pages, but it doesn't restore them back even if page attributes
-> > got compatible again.
-> > 
-> > Any change to the mapping may potentially allow to restore large page.
-> > 
-> > Hook up into cpa_flush() path to check if there's any pages to be
-> > recovered in PUD_SIZE range around pages we've just touched.
-> > 
-> > CPUs don't like[1] to have to have TLB entries of different size for the
-> > same memory, but looks like it's okay as long as these entries have
-> > matching attributes[2]. Therefore it's critical to flush TLB before any
-> > following changes to the mapping.
-> > 
-> > Note that we already allow for multiple TLB entries of different sizes
-> > for the same memory now in split_large_page() path. It's not a new
-> > situation.
-> > 
-> > set_memory_4k() provides a way to use 4k pages on purpose. Kernel must
-> > not remap such pages as large. Re-use one of software PTE bits to
-> > indicate such pages.
-> > 
-> > [1] See Erratum 383 of AMD Family 10h Processors
-> > [2] https://lore.kernel.org/linux-mm/1da1b025-cabc-6f04-bde5-e50830d1ecf0@amd.com/
-> > 
-> > [rppt@kernel.org:
-> >  * s/restore/collapse/
-> >  * update formatting per peterz
-> >  * use 'struct ptdesc' instead of 'struct page' for list of page tables to
-> >    be freed
-> >  * try to collapse PMD first and if it succeeds move on to PUD as peterz
-> >    suggested
-> >  * flush TLB twice: for changes done in the original CPA call and after
-> >    collapsing of large pages
-> > ]
-> > 
-> > Link: https://lore.kernel.org/all/20200416213229.19174-1-kirill.shutemov@linux.intel.com
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > Co-developed-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
-> > Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+On 1/10/25 12:13, Filipe Xavier wrote:
+> Em 07/01/2025 13:23, Joe Lawrence escreveu:
 > 
-> When I originally attempted this, the patch was dropped because of
-> performance regressions. Was it addressed somehow?
+>> On Thu, Jan 02, 2025 at 03:42:10PM -0300, Filipe Xavier wrote:
+>>> This new test makes sure that ftrace can trace a
+>>> function that was introduced by a livepatch.
+>>>
+>> Hi Filipe,
+>>
+>> Thanks for adding a test!
+>>
+>> Aside: another similar test could verify that the original function, in
+>> this case cmdline_proc_show(), can still be traced despite it being
+>> livepatched.  That may be non-intuitive but it demonstrates how the
+>> ftrace handler works.
+> 
+> Thanks for the review Joe!
+> 
+> I have fixed all points mentioned below,
+> 
+> and have a patch ready to submit.
+> 
+> Do you believe that this other similar test could be sent later,
+> 
+> or is it required in this patch?
 > 
 
-Also, the statement:
+The second test could be added later if you like, either way is fine w/me.
 
-"Change of attributes of the pages may lead to fragmentation of
-direct mapping over time and performance degradation as result.  "
+Thanks,
 
-Seems to contradict the findings reported at LSFMM by Mike before
-that direct map fragmentation does not incur performance penalty,
-so I don't see a point in contradicing those findings and confusing
-people further.
+-- 
+Joe
 
-  Luis
 
