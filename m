@@ -1,197 +1,160 @@
-Return-Path: <live-patching+bounces-969-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-970-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 51444A0A553
-	for <lists+live-patching@lfdr.de>; Sat, 11 Jan 2025 19:42:54 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 72CD0A0A7D1
+	for <lists+live-patching@lfdr.de>; Sun, 12 Jan 2025 09:55:16 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id EA2127A391F
-	for <lists+live-patching@lfdr.de>; Sat, 11 Jan 2025 18:42:45 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 69F761888A53
+	for <lists+live-patching@lfdr.de>; Sun, 12 Jan 2025 08:55:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 670361B4F1F;
-	Sat, 11 Jan 2025 18:42:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B25B618872A;
+	Sun, 12 Jan 2025 08:55:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S7pQfgF7"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bt//TFsj"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEBAA1B4253;
-	Sat, 11 Jan 2025 18:42:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74747BA3F;
+	Sun, 12 Jan 2025 08:55:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736620968; cv=none; b=eM/ZbwWubg02qsChjCW12nHClk/D8xxqj9Cf8LCQXHmobJ5QzDo9PvSK5gVyDQzvMJVBXoQ4Wk/JhsQxcVZ5IJ7TZALgT0VRNgsHgD1xkHwN5QvUCCNc5n9lOar2ZsBTWpexiR86cyPNDhJp+FlAMCTsgiSxjgoxTVgX7Blk8io=
+	t=1736672110; cv=none; b=EQDY3X1LxpfaUK/A8JEC10M7mS2YoOtTSavQ6/z2PJvpOZ+lnrBUyuu+wxbHpqHW5/sBRzYmhbLwOvo8cTkESajyXAlVAms4/pfIbFo7+lMJWqofQetqWGTjp3qnduv0lodX3cqnJ5W9/as8j7qyhfbzI4jKQNzcaZ0LCqoyukE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736620968; c=relaxed/simple;
-	bh=qHN6h7rUSVo5CIeTRnZQIDZR55pp4S6wi3KyOIE7X2Q=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Vu4Mnngk9HGZwyjO0zGo1UZySKpoz2F5t1fYIlPs+n7byVti8hv9mkrkhQTjnMVLhrmxsq/FwVL5MKcqc5hfVv/Ri6fkqrdiN8lAAVSuzoWhdUbnJJqGc8UCOQ99Q5Ns6DLXfAI5v0ztse+vcMIlyanWeJMXNwYhgWhKOEOZQ1s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S7pQfgF7; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-21628b3fe7dso51413345ad.3;
-        Sat, 11 Jan 2025 10:42:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736620966; x=1737225766; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=9fvGqwZAuw5vpQfQsA/WWi9Bqd1oJsgWApQ/uA7RLxw=;
-        b=S7pQfgF78RmKh2fvV8EuJQQxjJzoE4xXPv2R+TIu6WKLhmXVecpGMxDlK3Fo6/Xnp9
-         xtNIsqKi+eQ+/ntO2FHZfae2jbLAQddklJB58qXNg9ARxcnPSnFpzRt3e+MEZCWScPkG
-         ANIPh2pMd5vwxJ9sn4a5YL8HvJzXKYVhBFX5zXKNQWFUJAUdNcC0Kpvlj9pfEKhzFsUc
-         UHubHPHRvVXLuHKsg+teJ4yUTNfauMcFzC/CE7Pz5gG89x6yxjIuKTTEXP/FXz4YPdsA
-         fP9vctefmYngQ8uVKLLGPwfG3Gdc6H8u41NwmYLfKC2GSvpxfEI3FdQ+HZMupM/AIe35
-         YKtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736620966; x=1737225766;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9fvGqwZAuw5vpQfQsA/WWi9Bqd1oJsgWApQ/uA7RLxw=;
-        b=TGjq9XjyIJAyu6iZKzKw666OscXW0EV5e/KdMGL8HymXyk29ArtRTHoWHnjxfwkyJf
-         9pbkKMeTe2TaSPtjAm48hG5qs/IIc5UQZxMY5CVqrN0ArZCBiHNwD9w0HK1V3VbsUquR
-         dUen52hnYFXipuzCuWdmuKBMr3x0NOB/FsAiS08ExHuJ9rm2eVbb77kUNlxq+5Z2b45I
-         reIpT0PfjiXB/sHIIHcwTodhIPy5JpHx6HUlNccjrQSn5aSYEW80dSADFUYLJNZDrLpx
-         UDxLbUx8NmWK7+OXNkvEp5DaQDzBOyFTF0b464lo6w2tmn911oYlLhkAHAOumw/KCNcz
-         HtnA==
-X-Forwarded-Encrypted: i=1; AJvYcCUlrqXqmLz8XUZ594GptDE8RNp+m9gqLTv0JUxRVAl+SnvLWDfodidPPaTrPTB5lhveggaHQsqfhEEQZAE=@vger.kernel.org, AJvYcCXMgRR5Ur9RPmhGQY9y/VH6/m/6OPesooi9PrK0vpUxRIZD6wKRdWsg63+Y3wFFe0Ji0+AImP6P7o0zsExeJ1sN@vger.kernel.org
-X-Gm-Message-State: AOJu0YwwI/4JQ7BwfPYK+aqM7dhoyDuGiHpr2jZIEQ7e6/eMwvV+QCBo
-	WPmOcIBWv79Gl21vuJS2sJKYUy2acRqTKeXUnxH72zVhJfkL6yUDB9aWn19d29c=
-X-Gm-Gg: ASbGncsQDrcHLhPCW2PFuJzviS5Y6cJbpJzKNkMyUBM2cTnSF/vBFw7U1xJ/Jr3nBXY
-	SILixRPepZlcEOOfXGOnAobNJymz2ctWo6SLfHQO0jQpuK+8tq3m9XW7qFfvgVJ+uGSLuxcnWLU
-	dU65FuV5jv32pF+Ww7EH6iHVaarRsc5Ae73uH9eXAoX7O//R7hd4pHAPXoeVyZV8apxSbbkPkL1
-	OPqKEMSsDrVIQxnRZWNt7K/l3Y2vrU15Xh/qMxoTo9tk3rllvZjSXJcpIt1Lmfy
-X-Google-Smtp-Source: AGHT+IEBe/MCZn89f8LfBZ1StrWiBjS3xJcv0zgoqM72+sAAj8nA+48SpAnEkXV9/1mkDBJcX3farg==
-X-Received: by 2002:a17:902:ecc5:b0:215:7dbf:f3de with SMTP id d9443c01a7336-21a83f5e4e5mr228852025ad.28.1736620966091;
-        Sat, 11 Jan 2025 10:42:46 -0800 (PST)
-Received: from fedora.local ([2804:d57:4e50:a700:f33d:65d1:e22e:109b])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21a9f22c99csm30037235ad.164.2025.01.11.10.42.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jan 2025 10:42:45 -0800 (PST)
-From: Filipe Xavier <felipeaggger@gmail.com>
-Date: Sat, 11 Jan 2025 15:42:27 -0300
-Subject: [PATCH v2] selftests: livepatch: test if ftrace can trace a
- livepatched function
+	s=arc-20240116; t=1736672110; c=relaxed/simple;
+	bh=2OdLtNhpOzwVLBuyjT4Pmrh9g+J++anxIOyBzX8oFRo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HkjMZhR5L/feVFOhkqcEWoMNuSUZHG6EJsS0e7X7AxoycWZKSWsWpbs24+P9syEXDhHdSYcDDIEyw4Oc7OpUqPYcizKrsD7VIgBeZxKTl9SnTxdz72uN5zbJYCvZ0Xc3gLAc+aP/R0sTvhcItM3ROoxAdZDRYpSHq1wzzfzmqhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bt//TFsj; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78674C4CEDF;
+	Sun, 12 Jan 2025 08:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736672109;
+	bh=2OdLtNhpOzwVLBuyjT4Pmrh9g+J++anxIOyBzX8oFRo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bt//TFsjp7oBP/+mYKotPM1CCH/pvCViP9lReiFZD2VikywkhE1q0XvAzRMYgR9w/
+	 rDXqF5aM9MujwGkgmdrwVN+U9S/HNKSeUhH0oeUj1JklV0TXx4lQhSwaKnFu9xce32
+	 ftWG7NtXr9D1Marf2RroYue+KEiHc08VUhcxsxtgtvH/1RuSspxTlk/8FfWRwTUUWL
+	 GQrOHNuzVf53wyl/rIxgHT4G9jfVuY7AOydTBH62p6BSjVcKmEwo1PW/k1dMtwfkJE
+	 pWwQqokKV7JcLsi4Ix+zyeqNEodjirjOo+JMvLDH6LUhiX+SLLVYTId1lNsII6yjXH
+	 ekVDGfSuma34Q==
+Date: Sun, 12 Jan 2025 10:54:46 +0200
+From: Mike Rapoport <rppt@kernel.org>
+To: "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	Andy Lutomirski <luto@kernel.org>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Brendan Higgins <brendan.higgins@linux.dev>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Gow <davidgow@google.com>,
+	Douglas Anderson <dianders@chromium.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Jiri Kosina <jikos@kernel.org>,
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>, "H. Peter Anvin" <hpa@zytor.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Petr Mladek <pmladek@suse.com>, Petr Pavlu <petr.pavlu@suse.com>,
+	Rae Moar <rmoar@google.com>, Richard Weinberger <richard@nod.at>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Shuah Khan <shuah@kernel.org>, Song Liu <song@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	kgdb-bugreport@lists.sourceforge.net, kunit-dev@googlegroups.com,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	linux-mm@kvack.org, linux-modules@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linux-um@lists.infradead.org,
+	live-patching@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 3/8] x86/mm/pat: Restore large pages after fragmentation
+Message-ID: <Z4ODVmnC4fDnIUSN@kernel.org>
+References: <20241227072825.1288491-1-rppt@kernel.org>
+ <20241227072825.1288491-4-rppt@kernel.org>
+ <jut35igb2kstpz24apqdeubv5rvyl3vmp2s43xtivpz54uiedj@wmd2onulv4xw>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAJK7gmcC/32NywrCMBBFf6Vk7UgmqA2u/A/pIo9JO9AXSQhK6
- b8bC25dngP33E0kikxJ3JtNRCqceJkrqFMj3GDmnoB9ZaGkukqUCCFH4wgSjSFTyjByodVkNwD
- eMNi29Za8FnW/Rgr8OtrPrvLAKS/xfVwV/NpfVf2pFgQEfdFaWkPBoX30k+Hx7JZJdPu+fwAsp
- 0/YwgAAAA==
-X-Change-ID: 20250101-ftrace-selftest-livepatch-161fb77dbed8
-To: Marcos Paulo de Souza <mpdesouza@suse.com>, 
- Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
- Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Felipe Xavier <felipe_life@live.com>, 
- Filipe Xavier <felipeaggger@gmail.com>
-X-Mailer: b4 0.14.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <jut35igb2kstpz24apqdeubv5rvyl3vmp2s43xtivpz54uiedj@wmd2onulv4xw>
 
-This new test makes sure that ftrace can trace a
-function that was introduced by a livepatch.
+Hi Kirill,
 
-Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
----
-Changes in v2:
-- functions.sh: added reset tracing on push and pop_config.
-- test-ftrace.sh: enabled tracing_on before test init.
-- nitpick: added double quotations on filenames and fixed some wording. 
-- Link to v1: https://lore.kernel.org/r/20250102-ftrace-selftest-livepatch-v1-1-84880baefc1b@gmail.com
----
- tools/testing/selftests/livepatch/functions.sh   | 14 ++++++++++
- tools/testing/selftests/livepatch/test-ftrace.sh | 33 ++++++++++++++++++++++++
- 2 files changed, 47 insertions(+)
+On Fri, Jan 10, 2025 at 12:36:59PM +0200, Kirill A. Shutemov wrote:
+> On Fri, Dec 27, 2024 at 09:28:20AM +0200, Mike Rapoport wrote:
+> > From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+> > 
+> > Change of attributes of the pages may lead to fragmentation of direct
+> > mapping over time and performance degradation as result.
+> > 
+> > With current code it's one way road: kernel tries to avoid splitting
+> > large pages, but it doesn't restore them back even if page attributes
+> > got compatible again.
+> > 
+> > Any change to the mapping may potentially allow to restore large page.
+> > 
+> > Hook up into cpa_flush() path to check if there's any pages to be
+> > recovered in PUD_SIZE range around pages we've just touched.
+> > 
+> > CPUs don't like[1] to have to have TLB entries of different size for the
+> > same memory, but looks like it's okay as long as these entries have
+> > matching attributes[2]. Therefore it's critical to flush TLB before any
+> > following changes to the mapping.
+> > 
+> > Note that we already allow for multiple TLB entries of different sizes
+> > for the same memory now in split_large_page() path. It's not a new
+> > situation.
+> > 
+> > set_memory_4k() provides a way to use 4k pages on purpose. Kernel must
+> > not remap such pages as large. Re-use one of software PTE bits to
+> > indicate such pages.
+> > 
+> > [1] See Erratum 383 of AMD Family 10h Processors
+> > [2] https://lore.kernel.org/linux-mm/1da1b025-cabc-6f04-bde5-e50830d1ecf0@amd.com/
+> > 
+> > [rppt@kernel.org:
+> >  * s/restore/collapse/
+> >  * update formatting per peterz
+> >  * use 'struct ptdesc' instead of 'struct page' for list of page tables to
+> >    be freed
+> >  * try to collapse PMD first and if it succeeds move on to PUD as peterz
+> >    suggested
+> >  * flush TLB twice: for changes done in the original CPA call and after
+> >    collapsing of large pages
+> > ]
+> > 
+> > Link: https://lore.kernel.org/all/20200416213229.19174-1-kirill.shutemov@linux.intel.com
+> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> > Co-developed-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> > Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> 
+> When I originally attempted this, the patch was dropped because of
+> performance regressions. Was it addressed somehow?
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index e5d06fb402335d85959bafe099087effc6ddce12..e6c13514002dae5f8d7461f90b8241ab43024ea4 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -62,6 +62,9 @@ function push_config() {
- 			awk -F'[: ]' '{print "file " $1 " line " $2 " " $4}')
- 	FTRACE_ENABLED=$(sysctl --values kernel.ftrace_enabled)
- 	KPROBE_ENABLED=$(cat "$SYSFS_KPROBES_DIR/enabled")
-+	TRACING_ON=$(cat "$SYSFS_DEBUG_DIR/tracing/tracing_on")
-+	CURRENT_TRACER=$(cat "$SYSFS_DEBUG_DIR/tracing/current_tracer")
-+	FTRACE_FILTER=$(cat "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter")
- }
+I didn't realize the patch was dropped because of performance regressions,
+so I didn't address it.
+
+Do you remember where did the regressions show up?
  
- function pop_config() {
-@@ -74,6 +77,17 @@ function pop_config() {
- 	if [[ -n "$KPROBE_ENABLED" ]]; then
- 		echo "$KPROBE_ENABLED" > "$SYSFS_KPROBES_DIR/enabled"
- 	fi
-+	if [[ -n "$TRACING_ON" ]]; then
-+		echo "$TRACING_ON" > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-+	fi
-+	if [[ -n "$CURRENT_TRACER" ]]; then
-+		echo "$CURRENT_TRACER" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-+	fi
-+	if [[ "$FTRACE_FILTER" == *"#"* ]]; then
-+		echo > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-+	elif [[ -n "$FTRACE_FILTER" ]]; then
-+		echo "$FTRACE_FILTER" > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-+	fi
- }
- 
- function set_dynamic_debug() {
-diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-index fe14f248913acbec46fb6c0fec38a2fc84209d39..66af5d726c52e48e5177804e182b4ff31784d5ac 100755
---- a/tools/testing/selftests/livepatch/test-ftrace.sh
-+++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-@@ -61,4 +61,37 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
- % rmmod $MOD_LIVEPATCH"
- 
- 
-+# - verify livepatch can load
-+# - check if traces have a patched function
-+# - unload livepatch and reset trace
-+
-+start_test "trace livepatched function and check that the live patch remains in effect"
-+
-+TRACE_FILE="$SYSFS_DEBUG_DIR/tracing/trace"
-+FUNCTION_NAME="livepatch_cmdline_proc_show"
-+
-+load_lp $MOD_LIVEPATCH
-+
-+echo 1 > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-+echo $FUNCTION_NAME > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-+echo "function" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-+echo "" > "$TRACE_FILE"
-+
-+if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
-+	echo -e "FAIL\n\n"
-+	die "livepatch kselftest(s) failed"
-+fi
-+
-+grep -q $FUNCTION_NAME "$TRACE_FILE"
-+FOUND=$?
-+
-+disable_lp $MOD_LIVEPATCH
-+unload_lp $MOD_LIVEPATCH
-+
-+if [ "$FOUND" -eq 1 ]; then
-+	echo -e "FAIL\n\n"
-+	die "livepatch kselftest(s) failed"
-+fi
-+
-+
- exit 0
+> -- 
+>   Kiryl Shutsemau / Kirill A. Shutemov
+> 
 
----
-base-commit: fc033cf25e612e840e545f8d5ad2edd6ba613ed5
-change-id: 20250101-ftrace-selftest-livepatch-161fb77dbed8
-
-Best regards,
 -- 
-Filipe Xavier <felipeaggger@gmail.com>
-
+Sincerely yours,
+Mike.
 
