@@ -1,163 +1,285 @@
-Return-Path: <live-patching+bounces-973-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-974-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DE735A1096F
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 15:32:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id C7A7EA10D63
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 18:18:31 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 45EE43A34BE
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 14:32:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E6FFE3AC8FF
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 17:18:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FE90146D6E;
-	Tue, 14 Jan 2025 14:32:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81DE11FA17E;
+	Tue, 14 Jan 2025 17:18:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="AjLS4P50"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="AKw3t96T"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E94A313A879;
-	Tue, 14 Jan 2025 14:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 386831CEACB
+	for <live-patching@vger.kernel.org>; Tue, 14 Jan 2025 17:18:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736865145; cv=none; b=uTlrj9fsDZHKU/58qheTHFNS3lgCrwpwVss0cXvFieUi/YR/0DfUHvhPvm6vej3Na1GGWELMY2jpzCgYifbCHE/VETCcOd7I5P4yf+0xxKOQypNt0fRz0FBn606JezjQNePGlJsNob0aMqGIOaAL+Bf2SyHQLxH0XxD3C4MXF2w=
+	t=1736875091; cv=none; b=E4Rw5q0pihmO2ec0QFDv164fchB1OT2ThFuZ4afet466XaQzSCk+0oHwK0GYCSw6n3odw+R/9PGHqfXPPy5CtnbIKAIcGh0cHe99zD+R620yHPZEuzA1q4pfOjIHfJFWZbMrRA1U54QYPWZdNn+ZBLaZWSDI8G/YbgA9j8PHpKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736865145; c=relaxed/simple;
-	bh=kF0aFyyo7XaoEXlUuD7nHmdei0HxOgClY6gAvpRoQRE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IUmNJ+F6DMtTO/WmH6LrNEjoWix7syD3EJa3rHz4AkXz/8SC78EUVXDMPfDNWt1CPFI2a6dz+36S1nFeF388JJFxoI7a6T8rHLGat+n6Lx1v24fNOEM8TR/x5//FMOFEKh86nqKLPHxBwqNAP6DZbpnQUL+EmMyXCj9rssy2l7g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=AjLS4P50; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50E3s7DV005799;
-	Tue, 14 Jan 2025 14:32:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=pp1; bh=WuwNzSCv4EUuRn8dRTh7pIOxZia6gwwm11Bgq1t1C
-	Ak=; b=AjLS4P501IufRuKc92kDYkBUM694yB5w/MZlTC7+3X9c7BC+BgMMfBs/N
-	vitm9AUJcpmRlfYQtxRG04HyOkPUcQy9vxfJ6aUQyE2bqjrNYYISglkfK1Q4QgmH
-	qIBTC+QXuWShepkfFmZkHBaCgPpzJ6fV1WGfTC0CEJLWRWh9q/g3f/530INX32vb
-	PHjeBfAklyhJ5F9zeqTWnbeWMm5c+9PtdGd9ER+L5wn/ujIM9C4j/GvObFtHX5pf
-	jJO7f7rodkOa1Y5yhdSTjILTf7G0FXwSbF+z55S0yRI+yVoN+0JhpLEORdFf7Vdg
-	HWpZYoqFQ57sqNu9qhMkaEcnkJ7zQ==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 445gdjjaa2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 14 Jan 2025 14:32:02 +0000 (GMT)
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 50EETRnd029597;
-	Tue, 14 Jan 2025 14:32:02 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 445gdjja9v-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 14 Jan 2025 14:32:02 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 50EEJctk017014;
-	Tue, 14 Jan 2025 14:32:01 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4444fk3fc4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 14 Jan 2025 14:32:00 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 50EEVxHk29754032
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 14 Jan 2025 14:31:59 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id EDA5C20043;
-	Tue, 14 Jan 2025 14:31:58 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CA0D420040;
-	Tue, 14 Jan 2025 14:31:52 +0000 (GMT)
-Received: from li-c439904c-24ed-11b2-a85c-b284a6847472.ibm.com.com (unknown [9.43.0.219])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 14 Jan 2025 14:31:52 +0000 (GMT)
-From: Madhavan Srinivasan <maddy@linux.ibm.com>
-To: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
-        joe.lawrence@redhat.com, shuah@kernel.org
-Cc: mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu,
-        naveen@kernel.org, live-patching@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Madhavan Srinivasan <maddy@linux.ibm.com>
-Subject: [PATCH] selftests: livepatch: handle PRINTK_CALLER in check_result()
-Date: Tue, 14 Jan 2025 20:01:44 +0530
-Message-ID: <20250114143144.164250-1-maddy@linux.ibm.com>
-X-Mailer: git-send-email 2.47.0
+	s=arc-20240116; t=1736875091; c=relaxed/simple;
+	bh=wpqN1Cft3TcGdK334NFRNrhfQUADVPSA7qO0z3zoP2g=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=KKQhU6qAME4dM7WxmoV7fCwCbOsuR8pNZBwgDddSr13AjqA+E/XwXtwm+PTplYP2WBqOJbd9c4e2VRTcE1izcSh1VLo4UT43P3JVHUYyNO2m6ojwxU7MZUMP7OlbHrQNTSDgUDm4LSKSfcNH6e1fEcByfJSn5aQHOMnfCHKOZys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=AKw3t96T; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-aa679ad4265so224861866b.0
+        for <live-patching@vger.kernel.org>; Tue, 14 Jan 2025 09:18:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1736875087; x=1737479887; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=26cmflZb066/x6GO76FljjG7xVkAeMYqvCCcfNiU3Vc=;
+        b=AKw3t96TvBS6O75Tlfcu0FmWWZwOa7nPsgDLGt93By+SHoEpw3sg6Dzr5+mk9o7NGw
+         39ro7BSH1RF5yga5L+P4Gx28XnCBdkwDYSb61A8rUzq7BVGtVEB9K0mFq5JWugpjxbjq
+         iFc9IOEQehfdSnsTONQH8P1yajrdoTUoRgQQR1qijPJiNb5aQFbO8jDaQvkg6KWLbJ43
+         AEPITkGKgXoyswZsTEwthXKEGYtUOFdYXE37qgT9A71UdnYG0FgO+lSkos8dVAOWqFRK
+         EuCX++BxNk+IQ3Na3cryZdm761DV3R4l463qMS1JSPSJ6RZTf6zUYdD9PtdnOqFnsTth
+         ncOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736875087; x=1737479887;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=26cmflZb066/x6GO76FljjG7xVkAeMYqvCCcfNiU3Vc=;
+        b=L7vr8BbXjZPK2+MHR6YoPF/bKndXvctvlBJQMtdQ6+hVUjd/kQj/MlsEOYRD1BByqa
+         tTnkhj29GyTOhKDB+vlbz0ZRfe+wlFdfGZ1X8TTW+mWjL3SXMtJhWkukhEsZ0GqJ9Juh
+         eVncUPVU9prYdQ+HTfEc8JFQgADhldDSRM1jCNmEvEer/Mw3M8SqDm/oD6rbV97bWqLx
+         ya1Z4KzK+tnfqLqhpAeT6S0oQBBRjp4jhH5ARJ3vmkiyzuXBGGPsiOZCvHeENKqbpkZZ
+         h1zotmPAMWmYj+oJvgqyN62Z7v4GHumyjRy8lQad365mP49zat/kGkUmhp/eC2VWYg1C
+         sNQw==
+X-Gm-Message-State: AOJu0YybP52oFsQU8FLrICHWKyT5fLEgbADaB4piRH2j2m6AY9FPKxLj
+	Hjr/utLL7J13za8wfugti8xnhhlsjp+qioG+YmAk8zVKhjPGNqIZgwUDqeClUpA=
+X-Gm-Gg: ASbGncuIAI99V+xwBFpRfm8vw+lVysx+EPg0snMEhKnAUYkC5Yr+KLUdnWP+hUodYb1
+	dGOT3rR98X/aP4p9fBCfJ7+FluoFfjmXwVfld/fX3EvAAMgbeErd9QK40pf3H4DhaQrxMZhAIYv
+	e7PwDpP9AMYpvo9i4cdzJDCxyJq4DQ9iOgW8w1n8yc12htFJjEQ3QYNGAbSGOof7vyfvc2H+C3M
+	NtT3cYr/ASsu11aV1/jxbOdIOkoAVgOdgpW/rX4EX6YjOICyBp0SbhSMiAI8Y9iV60tex1idHvF
+	tk/xlTT/sT5Fv0dWxFs=
+X-Google-Smtp-Source: AGHT+IHTNDE6OFYqw/IC7av4Dymh/XxGZbIt/B/dtSZsBph45JtXr/urz+mZ5NLetZ2D+o4mK6riHg==
+X-Received: by 2002:a17:907:3d91:b0:ab2:c0b0:3109 with SMTP id a640c23a62f3a-ab2c3d4c85emr1680574566b.21.1736875087499;
+        Tue, 14 Jan 2025 09:18:07 -0800 (PST)
+Received: from ?IPv6:2804:5078:803:5200:58f2:fc97:371f:2? ([2804:5078:803:5200:58f2:fc97:371f:2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-723185484d5sm4726836a34.26.2025.01.14.09.18.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jan 2025 09:18:06 -0800 (PST)
+Message-ID: <12c6681e2d13994c2efd5d25372293b9f53a9f8a.camel@suse.com>
+Subject: Re: [PATCH v2] selftests: livepatch: test if ftrace can trace a
+ livepatched function
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: Filipe Xavier <felipeaggger@gmail.com>, Josh Poimboeuf
+ <jpoimboe@kernel.org>,  Jiri Kosina <jikos@kernel.org>, Miroslav Benes
+ <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, Joe Lawrence
+ <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Felipe Xavier <felipe_life@live.com>
+Date: Tue, 14 Jan 2025 14:18:02 -0300
+In-Reply-To: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
+References: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.2 (by Flathub.org) 
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: qnPN_SzONfNK6j-06uxQuxcWq8HlKsP6
-X-Proofpoint-ORIG-GUID: gCspiTx0ec9vkIAjl20tG56LdC5i68fC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=635
- suspectscore=0 malwarescore=0 bulkscore=0 clxscore=1011 phishscore=0
- priorityscore=1501 adultscore=0 impostorscore=0 spamscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2501140115
 
-Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER, which
-adds the caller id as part of the dmesg. Due to this, even though
-the expected vs observed are same, end testcase results are failed.
+On Sat, 2025-01-11 at 15:42 -0300, Filipe Xavier wrote:
+> This new test makes sure that ftrace can trace a
+> function that was introduced by a livepatch.
+>=20
+> Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
 
- -% insmod test_modules/test_klp_livepatch.ko
- -livepatch: enabling patch 'test_klp_livepatch'
- -livepatch: 'test_klp_livepatch': initializing patching transition
- -livepatch: 'test_klp_livepatch': starting patching transition
- -livepatch: 'test_klp_livepatch': completing patching transition
- -livepatch: 'test_klp_livepatch': patching complete
- -% echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
- -livepatch: 'test_klp_livepatch': initializing unpatching transition
- -livepatch: 'test_klp_livepatch': starting unpatching transition
- -livepatch: 'test_klp_livepatch': completing unpatching transition
- -livepatch: 'test_klp_livepatch': unpatching complete
- -% rmmod test_klp_livepatch
- +[   T3659] % insmod test_modules/test_klp_livepatch.ko
- +[   T3682] livepatch: enabling patch 'test_klp_livepatch'
- +[   T3682] livepatch: 'test_klp_livepatch': initializing patching transition
- +[   T3682] livepatch: 'test_klp_livepatch': starting patching transition
- +[    T826] livepatch: 'test_klp_livepatch': completing patching transition
- +[    T826] livepatch: 'test_klp_livepatch': patching complete
- +[   T3659] % echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
- +[   T3659] livepatch: 'test_klp_livepatch': initializing unpatching transition
- +[   T3659] livepatch: 'test_klp_livepatch': starting unpatching transition
- +[    T789] livepatch: 'test_klp_livepatch': completing unpatching transition
- +[    T789] livepatch: 'test_klp_livepatch': unpatching complete
- +[   T3659] % rmmod test_klp_livepatch
+Thanks for the new test Filipe!
 
-  ERROR: livepatch kselftest(s) failed
- not ok 1 selftests: livepatch: test-livepatch.sh # exit=1
+I have some nits below, but these don't need to be addressed for the
+test to be merged. Either way,
 
-Currently the check_result() handles the "[time]" removal from
-the dmesg. Enhance the check to handle removal of "[Tid]" also.
+Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+Tested-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-Signed-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>
----
- tools/testing/selftests/livepatch/functions.sh | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index e5d06fb40233..a1730c1864a4 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -306,7 +306,8 @@ function check_result {
- 	result=$(dmesg | awk -v last_dmesg="$LAST_DMESG" 'p; $0 == last_dmesg { p=1 }' | \
- 		 grep -e 'livepatch:' -e 'test_klp' | \
- 		 grep -v '\(tainting\|taints\) kernel' | \
--		 sed 's/^\[[ 0-9.]*\] //')
-+		 sed 's/^\[[ 0-9.]*\] //' | \
-+		 sed 's/^\[[ ]*T[0-9]*\] //')
- 
- 	if [[ "$expect" == "$result" ]] ; then
- 		echo "ok"
--- 
-2.47.0
+
+> ---
+> Changes in v2:
+> - functions.sh: added reset tracing on push and pop_config.
+> - test-ftrace.sh: enabled tracing_on before test init.
+> - nitpick: added double quotations on filenames and fixed some
+> wording.=20
+> - Link to v1:
+> https://lore.kernel.org/r/20250102-ftrace-selftest-livepatch-v1-1-84880ba=
+efc1b@gmail.com
+> ---
+> =C2=A0tools/testing/selftests/livepatch/functions.sh=C2=A0=C2=A0 | 14 +++=
++++++++
+> =C2=A0tools/testing/selftests/livepatch/test-ftrace.sh | 33
+> ++++++++++++++++++++++++
+> =C2=A02 files changed, 47 insertions(+)
+>=20
+> diff --git a/tools/testing/selftests/livepatch/functions.sh
+> b/tools/testing/selftests/livepatch/functions.sh
+> index
+> e5d06fb402335d85959bafe099087effc6ddce12..e6c13514002dae5f8d7461f90b8
+> 241ab43024ea4 100644
+> --- a/tools/testing/selftests/livepatch/functions.sh
+> +++ b/tools/testing/selftests/livepatch/functions.sh
+> @@ -62,6 +62,9 @@ function push_config() {
+> =C2=A0			awk -F'[: ]' '{print "file " $1 " line " $2
+> " " $4}')
+> =C2=A0	FTRACE_ENABLED=3D$(sysctl --values kernel.ftrace_enabled)
+> =C2=A0	KPROBE_ENABLED=3D$(cat "$SYSFS_KPROBES_DIR/enabled")
+> +	TRACING_ON=3D$(cat "$SYSFS_DEBUG_DIR/tracing/tracing_on")
+> +	CURRENT_TRACER=3D$(cat
+> "$SYSFS_DEBUG_DIR/tracing/current_tracer")
+> +	FTRACE_FILTER=3D$(cat
+> "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter")
+> =C2=A0}
+> =C2=A0
+> =C2=A0function pop_config() {
+> @@ -74,6 +77,17 @@ function pop_config() {
+> =C2=A0	if [[ -n "$KPROBE_ENABLED" ]]; then
+> =C2=A0		echo "$KPROBE_ENABLED" >
+> "$SYSFS_KPROBES_DIR/enabled"
+> =C2=A0	fi
+> +	if [[ -n "$TRACING_ON" ]]; then
+> +		echo "$TRACING_ON" >
+> "$SYSFS_DEBUG_DIR/tracing/tracing_on"
+> +	fi
+> +	if [[ -n "$CURRENT_TRACER" ]]; then
+> +		echo "$CURRENT_TRACER" >
+> "$SYSFS_DEBUG_DIR/tracing/current_tracer"
+> +	fi
+> +	if [[ "$FTRACE_FILTER" =3D=3D *"#"* ]]; then
+> +		echo > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
+> +	elif [[ -n "$FTRACE_FILTER" ]]; then
+> +		echo "$FTRACE_FILTER" >
+> "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
+> +	fi
+> =C2=A0}
+
+I believe that this could be a separate patch, since this is new
+functionality that's being added to functions.sh, and not exactly
+related to the new test.
+
+> =C2=A0
+> =C2=A0function set_dynamic_debug() {
+> diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh
+> b/tools/testing/selftests/livepatch/test-ftrace.sh
+> index
+> fe14f248913acbec46fb6c0fec38a2fc84209d39..66af5d726c52e48e5177804e182
+> b4ff31784d5ac 100755
+> --- a/tools/testing/selftests/livepatch/test-ftrace.sh
+> +++ b/tools/testing/selftests/livepatch/test-ftrace.sh
+> @@ -61,4 +61,37 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
+> =C2=A0% rmmod $MOD_LIVEPATCH"
+> =C2=A0
+> =C2=A0
+> +# - verify livepatch can load
+> +# - check if traces have a patched function
+> +# - unload livepatch and reset trace
+> +
+> +start_test "trace livepatched function and check that the live patch
+> remains in effect"
+> +
+> +TRACE_FILE=3D"$SYSFS_DEBUG_DIR/tracing/trace"
+> +FUNCTION_NAME=3D"livepatch_cmdline_proc_show"
+> +
+> +load_lp $MOD_LIVEPATCH
+> +
+> +echo 1 > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
+> +echo $FUNCTION_NAME > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
+> +echo "function" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
+> +echo "" > "$TRACE_FILE"
+> +
+> +if [[ "$(cat /proc/cmdline)" !=3D "$MOD_LIVEPATCH: this has been live
+> patched" ]] ; then
+> +	echo -e "FAIL\n\n"
+> +	die "livepatch kselftest(s) failed"
+> +fi
+> +
+> +grep -q $FUNCTION_NAME "$TRACE_FILE"
+> +FOUND=3D$?
+> +
+> +disable_lp $MOD_LIVEPATCH
+> +unload_lp $MOD_LIVEPATCH
+> +
+> +if [ "$FOUND" -eq 1 ]; then
+> +	echo -e "FAIL\n\n"
+> +	die "livepatch kselftest(s) failed"
+> +fi
+> +
+> +
+> =C2=A0exit 0
+
+The test works, and that's very cool. But when running locally, I find
+the if we miss check_result call it doesn't add a newline after the
+"ok":
+
+...
+# timeout set to 0                                                   =20
+# selftests: livepatch: test-ftrace.sh                               =20
+# TEST: livepatch interaction with ftrace_enabled sysctl ... ok      =20
+# TEST: trace livepatched function and check that the live patch
+remains in effect ... ok 5 selftests: livepatch: test-ftrace.sh      =20
+# timeout set to 0                                                   =20
+# selftests: livepatch: test-sysfs.sh =20
+...
+
+If the check_result below is added the output if sane again:
+
+...
+# selftests: livepatch: test-ftrace.sh
+# TEST: livepatch interaction with ftrace_enabled sysctl ... ok
+# TEST: trace livepatched function and check that the live patch
+remains in effect ... ok
+ok 5 selftests: livepatch: test-ftrace.sh
+...
+
+I checked and this would be the only one test without using
+check_result, so maybe we should add this either way? I'm not sure what
+you guys think about it.
+
+
+diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh
+b/tools/testing/selftests/livepatch/test-ftrace.sh
+index 66af5d726c52..135c0fb17a98 100755
+--- a/tools/testing/selftests/livepatch/test-ftrace.sh
++++ b/tools/testing/selftests/livepatch/test-ftrace.sh
+@@ -93,5 +93,18 @@ if [ "$FOUND" -eq 1 ]; then
+ 	die "livepatch kselftest(s) failed"
+ fi
+=20
++check_result "% insmod test_modules/$MOD_LIVEPATCH.ko
++livepatch: enabling patch '$MOD_LIVEPATCH'
++livepatch: '$MOD_LIVEPATCH': initializing patching transition
++livepatch: '$MOD_LIVEPATCH': starting patching transition
++livepatch: '$MOD_LIVEPATCH': completing patching transition
++livepatch: '$MOD_LIVEPATCH': patching complete
++% echo 0 > $SYSFS_KLP_DIR/$MOD_LIVEPATCH/enabled
++livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
++livepatch: '$MOD_LIVEPATCH': starting unpatching transition
++livepatch: '$MOD_LIVEPATCH': completing unpatching transition
++livepatch: '$MOD_LIVEPATCH': unpatching complete
++% rmmod $MOD_LIVEPATCH"
++
+=20
+ exit 0
+
+>=20
+> ---
+> base-commit: fc033cf25e612e840e545f8d5ad2edd6ba613ed5
+> change-id: 20250101-ftrace-selftest-livepatch-161fb77dbed8
+>=20
+> Best regards,
 
 
