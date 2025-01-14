@@ -1,178 +1,163 @@
-Return-Path: <live-patching+bounces-972-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-973-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C15AFA104E3
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 12:01:40 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE735A1096F
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 15:32:53 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 114E27A340A
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 11:01:32 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 45EE43A34BE
+	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 14:32:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C6E211ADC9B;
-	Tue, 14 Jan 2025 11:01:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FE90146D6E;
+	Tue, 14 Jan 2025 14:32:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MI/Onrdp"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="AjLS4P50"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9035720F96B;
-	Tue, 14 Jan 2025 11:01:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E94A313A879;
+	Tue, 14 Jan 2025 14:32:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736852492; cv=none; b=p+3cOoz7ClVfVDD9kS7x67aA6u1Usif06li0tVjrlFRStwT89Bc/xRKbViy5G/atDBOavFFjdpLtddNNsR2hoM0sTvFGcksCXhJP8d6iaPUxHSPKHH6CGlnt5PKIcTVmypKNhl+Qz/EdbWqXetLSoejka6bTBSgglZnkefPpkHM=
+	t=1736865145; cv=none; b=uTlrj9fsDZHKU/58qheTHFNS3lgCrwpwVss0cXvFieUi/YR/0DfUHvhPvm6vej3Na1GGWELMY2jpzCgYifbCHE/VETCcOd7I5P4yf+0xxKOQypNt0fRz0FBn606JezjQNePGlJsNob0aMqGIOaAL+Bf2SyHQLxH0XxD3C4MXF2w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736852492; c=relaxed/simple;
-	bh=mbHS99/jEJpIbZomuQgs7L8z3N8P/BZq6eKT12MfMQ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i2LQQEwKtgq8Pee2KopNVvgd/DKY+X19GqmZEKcRAlTI1LMkENYU1T+CvM9ay8dGrD3qz0nxlbXCjoRVyOqNSc7oFKqdLTStsWBsvRCU/TdPblimoYHlmzjWsqjazmKuqXOTDZEBwp2Tgmg+H8TBSFLGsHZ48E6gvEJ+jslKIDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MI/Onrdp; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 165CBC4CEDD;
-	Tue, 14 Jan 2025 11:01:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736852491;
-	bh=mbHS99/jEJpIbZomuQgs7L8z3N8P/BZq6eKT12MfMQ4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=MI/OnrdpyPjreb29TH1K7V92pcHREffE7EWvZPPD/CQnZx1Z2V//mN5/XO4rnjbEe
-	 woLKU+r4vDndmePFt/UZIgxmh04ThYr+z9+zfQj21ZNN0sl7KCp2Vl8WVb5SvZllou
-	 4etv5w5vUXrxnghs9U7tvjY3Mc+wDwzBs1zXG7Rvuizz8c5KbCSfqZS819UY64k+/Q
-	 H31n0Pp7yvSpueyJuMPlw2CrvcLTpEOUxOjLbaOuXtftRTndUinQPNSWPDgB+/nHR9
-	 1M3LhDFViqSxB+C7+9/3HG8tin4pDD8Gja9UlC/e1cGrVOu9nP1kn14oZvA5k7neLT
-	 OIf9MZ4k/uWTA==
-Date: Tue, 14 Jan 2025 13:01:09 +0200
-From: Mike Rapoport <rppt@kernel.org>
-To: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: "Kirill A. Shutemov" <kirill@shutemov.name>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Brendan Higgins <brendan.higgins@linux.dev>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	David Gow <davidgow@google.com>,
-	Douglas Anderson <dianders@chromium.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>, "H. Peter Anvin" <hpa@zytor.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Mladek <pmladek@suse.com>, Petr Pavlu <petr.pavlu@suse.com>,
-	Rae Moar <rmoar@google.com>, Richard Weinberger <richard@nod.at>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Shuah Khan <shuah@kernel.org>, Song Liu <song@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	kgdb-bugreport@lists.sourceforge.net, kunit-dev@googlegroups.com,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	linux-mm@kvack.org, linux-modules@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linux-um@lists.infradead.org,
-	live-patching@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH 3/8] x86/mm/pat: Restore large pages after fragmentation
-Message-ID: <Z4ZD9exBt-JQiuS6@kernel.org>
-References: <20241227072825.1288491-1-rppt@kernel.org>
- <20241227072825.1288491-4-rppt@kernel.org>
- <jut35igb2kstpz24apqdeubv5rvyl3vmp2s43xtivpz54uiedj@wmd2onulv4xw>
- <Z4ODVmnC4fDnIUSN@kernel.org>
- <sivhweds7p5sst2jpxanrj6qc7wlonqkod64nsr5cgttma7ntp@bhqespo3jdqz>
+	s=arc-20240116; t=1736865145; c=relaxed/simple;
+	bh=kF0aFyyo7XaoEXlUuD7nHmdei0HxOgClY6gAvpRoQRE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IUmNJ+F6DMtTO/WmH6LrNEjoWix7syD3EJa3rHz4AkXz/8SC78EUVXDMPfDNWt1CPFI2a6dz+36S1nFeF388JJFxoI7a6T8rHLGat+n6Lx1v24fNOEM8TR/x5//FMOFEKh86nqKLPHxBwqNAP6DZbpnQUL+EmMyXCj9rssy2l7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=AjLS4P50; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50E3s7DV005799;
+	Tue, 14 Jan 2025 14:32:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=WuwNzSCv4EUuRn8dRTh7pIOxZia6gwwm11Bgq1t1C
+	Ak=; b=AjLS4P501IufRuKc92kDYkBUM694yB5w/MZlTC7+3X9c7BC+BgMMfBs/N
+	vitm9AUJcpmRlfYQtxRG04HyOkPUcQy9vxfJ6aUQyE2bqjrNYYISglkfK1Q4QgmH
+	qIBTC+QXuWShepkfFmZkHBaCgPpzJ6fV1WGfTC0CEJLWRWh9q/g3f/530INX32vb
+	PHjeBfAklyhJ5F9zeqTWnbeWMm5c+9PtdGd9ER+L5wn/ujIM9C4j/GvObFtHX5pf
+	jJO7f7rodkOa1Y5yhdSTjILTf7G0FXwSbF+z55S0yRI+yVoN+0JhpLEORdFf7Vdg
+	HWpZYoqFQ57sqNu9qhMkaEcnkJ7zQ==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 445gdjjaa2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Jan 2025 14:32:02 +0000 (GMT)
+Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 50EETRnd029597;
+	Tue, 14 Jan 2025 14:32:02 GMT
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 445gdjja9v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Jan 2025 14:32:02 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 50EEJctk017014;
+	Tue, 14 Jan 2025 14:32:01 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4444fk3fc4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Jan 2025 14:32:00 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 50EEVxHk29754032
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 14 Jan 2025 14:31:59 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EDA5C20043;
+	Tue, 14 Jan 2025 14:31:58 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CA0D420040;
+	Tue, 14 Jan 2025 14:31:52 +0000 (GMT)
+Received: from li-c439904c-24ed-11b2-a85c-b284a6847472.ibm.com.com (unknown [9.43.0.219])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 14 Jan 2025 14:31:52 +0000 (GMT)
+From: Madhavan Srinivasan <maddy@linux.ibm.com>
+To: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
+        joe.lawrence@redhat.com, shuah@kernel.org
+Cc: mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu,
+        naveen@kernel.org, live-patching@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Madhavan Srinivasan <maddy@linux.ibm.com>
+Subject: [PATCH] selftests: livepatch: handle PRINTK_CALLER in check_result()
+Date: Tue, 14 Jan 2025 20:01:44 +0530
+Message-ID: <20250114143144.164250-1-maddy@linux.ibm.com>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <sivhweds7p5sst2jpxanrj6qc7wlonqkod64nsr5cgttma7ntp@bhqespo3jdqz>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qnPN_SzONfNK6j-06uxQuxcWq8HlKsP6
+X-Proofpoint-ORIG-GUID: gCspiTx0ec9vkIAjl20tG56LdC5i68fC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=635
+ suspectscore=0 malwarescore=0 bulkscore=0 clxscore=1011 phishscore=0
+ priorityscore=1501 adultscore=0 impostorscore=0 spamscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501140115
 
-On Mon, Jan 13, 2025 at 10:01:13AM +0200, Kirill A. Shutemov wrote:
-> On Sun, Jan 12, 2025 at 10:54:46AM +0200, Mike Rapoport wrote:
-> > Hi Kirill,
-> > 
-> > On Fri, Jan 10, 2025 at 12:36:59PM +0200, Kirill A. Shutemov wrote:
-> > > On Fri, Dec 27, 2024 at 09:28:20AM +0200, Mike Rapoport wrote:
-> > > > From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-> > > > 
-> > > > Change of attributes of the pages may lead to fragmentation of direct
-> > > > mapping over time and performance degradation as result.
-> > > > 
-> > > > With current code it's one way road: kernel tries to avoid splitting
-> > > > large pages, but it doesn't restore them back even if page attributes
-> > > > got compatible again.
-> > > > 
-> > > > Any change to the mapping may potentially allow to restore large page.
-> > > > 
-> > > > Hook up into cpa_flush() path to check if there's any pages to be
-> > > > recovered in PUD_SIZE range around pages we've just touched.
-> > > > 
-> > > > CPUs don't like[1] to have to have TLB entries of different size for the
-> > > > same memory, but looks like it's okay as long as these entries have
-> > > > matching attributes[2]. Therefore it's critical to flush TLB before any
-> > > > following changes to the mapping.
-> > > > 
-> > > > Note that we already allow for multiple TLB entries of different sizes
-> > > > for the same memory now in split_large_page() path. It's not a new
-> > > > situation.
-> > > > 
-> > > > set_memory_4k() provides a way to use 4k pages on purpose. Kernel must
-> > > > not remap such pages as large. Re-use one of software PTE bits to
-> > > > indicate such pages.
-> > > > 
-> > > > [1] See Erratum 383 of AMD Family 10h Processors
-> > > > [2] https://lore.kernel.org/linux-mm/1da1b025-cabc-6f04-bde5-e50830d1ecf0@amd.com/
-> > > > 
-> > > > [rppt@kernel.org:
-> > > >  * s/restore/collapse/
-> > > >  * update formatting per peterz
-> > > >  * use 'struct ptdesc' instead of 'struct page' for list of page tables to
-> > > >    be freed
-> > > >  * try to collapse PMD first and if it succeeds move on to PUD as peterz
-> > > >    suggested
-> > > >  * flush TLB twice: for changes done in the original CPA call and after
-> > > >    collapsing of large pages
-> > > > ]
-> > > > 
-> > > > Link: https://lore.kernel.org/all/20200416213229.19174-1-kirill.shutemov@linux.intel.com
-> > > > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > > > Co-developed-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
-> > > > Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
-> > > 
-> > > When I originally attempted this, the patch was dropped because of
-> > > performance regressions. Was it addressed somehow?
-> > 
-> > I didn't realize the patch was dropped because of performance regressions,
-> > so I didn't address it.
-> > 
-> > Do you remember where did the regressions show up?
-> 
-> https://github.com/zen-kernel/zen-kernel/issues/169
-> 
-> My understanding is if userspace somewhat frequently triggers set_memory_*
-> codepath we will get a performance hit.
+Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER, which
+adds the caller id as part of the dmesg. Due to this, even though
+the expected vs observed are same, end testcase results are failed.
 
-This version of the patch will cause smaller performance hit because it
-does not scan an entire PUD every time collapse_large_pages() is called.
+ -% insmod test_modules/test_klp_livepatch.ko
+ -livepatch: enabling patch 'test_klp_livepatch'
+ -livepatch: 'test_klp_livepatch': initializing patching transition
+ -livepatch: 'test_klp_livepatch': starting patching transition
+ -livepatch: 'test_klp_livepatch': completing patching transition
+ -livepatch: 'test_klp_livepatch': patching complete
+ -% echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
+ -livepatch: 'test_klp_livepatch': initializing unpatching transition
+ -livepatch: 'test_klp_livepatch': starting unpatching transition
+ -livepatch: 'test_klp_livepatch': completing unpatching transition
+ -livepatch: 'test_klp_livepatch': unpatching complete
+ -% rmmod test_klp_livepatch
+ +[   T3659] % insmod test_modules/test_klp_livepatch.ko
+ +[   T3682] livepatch: enabling patch 'test_klp_livepatch'
+ +[   T3682] livepatch: 'test_klp_livepatch': initializing patching transition
+ +[   T3682] livepatch: 'test_klp_livepatch': starting patching transition
+ +[    T826] livepatch: 'test_klp_livepatch': completing patching transition
+ +[    T826] livepatch: 'test_klp_livepatch': patching complete
+ +[   T3659] % echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
+ +[   T3659] livepatch: 'test_klp_livepatch': initializing unpatching transition
+ +[   T3659] livepatch: 'test_klp_livepatch': starting unpatching transition
+ +[    T789] livepatch: 'test_klp_livepatch': completing unpatching transition
+ +[    T789] livepatch: 'test_klp_livepatch': unpatching complete
+ +[   T3659] % rmmod test_klp_livepatch
 
-Still, when I tweaked cpa-test to take some time measurements I see about
-60% increase in the time it takes to perform set_memory operations.
+  ERROR: livepatch kselftest(s) failed
+ not ok 1 selftests: livepatch: test-livepatch.sh # exit=1
 
-Since we only really care about restoring large pages for ROX mapping, I'm
-going to update the patch so that we'll try to collapse large pages only
-from set_memory_rox().
+Currently the check_result() handles the "[time]" removal from
+the dmesg. Enhance the check to handle removal of "[Tid]" also.
+
+Signed-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>
+---
+ tools/testing/selftests/livepatch/functions.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+index e5d06fb40233..a1730c1864a4 100644
+--- a/tools/testing/selftests/livepatch/functions.sh
++++ b/tools/testing/selftests/livepatch/functions.sh
+@@ -306,7 +306,8 @@ function check_result {
+ 	result=$(dmesg | awk -v last_dmesg="$LAST_DMESG" 'p; $0 == last_dmesg { p=1 }' | \
+ 		 grep -e 'livepatch:' -e 'test_klp' | \
+ 		 grep -v '\(tainting\|taints\) kernel' | \
+-		 sed 's/^\[[ 0-9.]*\] //')
++		 sed 's/^\[[ 0-9.]*\] //' | \
++		 sed 's/^\[[ ]*T[0-9]*\] //')
  
-> -- 
->   Kiryl Shutsemau / Kirill A. Shutemov
-
+ 	if [[ "$expect" == "$result" ]] ; then
+ 		echo "ok"
 -- 
-Sincerely yours,
-Mike.
+2.47.0
+
 
