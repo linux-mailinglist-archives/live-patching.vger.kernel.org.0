@@ -1,89 +1,88 @@
-Return-Path: <live-patching+bounces-996-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-997-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8F7EAA12792
-	for <lists+live-patching@lfdr.de>; Wed, 15 Jan 2025 16:32:30 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2DF8FA127F7
+	for <lists+live-patching@lfdr.de>; Wed, 15 Jan 2025 16:57:16 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B885E188A439
-	for <lists+live-patching@lfdr.de>; Wed, 15 Jan 2025 15:32:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 50D10167542
+	for <lists+live-patching@lfdr.de>; Wed, 15 Jan 2025 15:57:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE62615688C;
-	Wed, 15 Jan 2025 15:31:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91EAC158527;
+	Wed, 15 Jan 2025 15:57:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="JWQ618aX"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="cNYlCxOi"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A18F7150980
-	for <live-patching@vger.kernel.org>; Wed, 15 Jan 2025 15:31:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C22624A7C4
+	for <live-patching@vger.kernel.org>; Wed, 15 Jan 2025 15:57:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736955118; cv=none; b=Fgy2IgdFVxrbfmhYReo/uxQcCE8B7HpBfP3/8sUCqnthvCVAk3gEJX3iMfdGQhUN6fOEVRCxkcBEMHijfuXuApeKHmHVoSewgg3+/kyfoQDEzkGiX69/1ktZ11jvbU4Vo/3jMqgvKlYTME5RKuEpn52OShcpLxc2rLeDq8Ubma8=
+	t=1736956632; cv=none; b=Dc7JDojM6xih5l3FoYddJco0sooq9diIAD7tF0PhaQa7rlWHoi5t7jB6pzAuqIWQGqU1aVmWYW0Z5enn0AE9/qLwkm1i0AlaVTEAv6GE/GfmObZKxoGVoEZNZ7e68j/ALXoyG0mWeNKPkca/UkvkGjiWPdFUUVue5MW3VL8+Q2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736955118; c=relaxed/simple;
-	bh=jXF89xKBnh+AD5qH+eCYzKNmJC1ZXvrRrlsJfnRr8Rg=;
+	s=arc-20240116; t=1736956632; c=relaxed/simple;
+	bh=xjbt0OvMA7EHXtFjfP47gzti2AhgAYfUD5JcHd0gxKY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CizqNd3zj2lXxUGai4EyWyF9z0v2zbFXCFfAOFAbPwPBJSubRACjuHzm9oL5x/SdyOUovRt2KqbNWzoJIKx/Mr7dCdLN44Jh0CTHd6c2cM4ttpcvDDt7OkVOSRZUuJ/7SdJpnF7Y2ULJecHD4uoYP6y1Yp7EyXwHxUrymJg4yxg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=JWQ618aX; arc=none smtp.client-ip=209.85.128.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=ktEdFegMyeyHoUQC3O3QoePPF3XMeCzH8DbE4vM1AEzg1F8Kqg2zDZwOimwt/lJxymfyT/A8gvOSKZpBb+dROwyTXLMPoipEjcPTLxK4cCViuiVTTvW7M/Xf2ZuIn+/QXa8tShCo+X3+AeULcp5sx3Otg91fjGJJZfwexMMCGL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=cNYlCxOi; arc=none smtp.client-ip=209.85.221.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4361f796586so72662355e9.3
-        for <live-patching@vger.kernel.org>; Wed, 15 Jan 2025 07:31:55 -0800 (PST)
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3862d6d5765so3669823f8f.3
+        for <live-patching@vger.kernel.org>; Wed, 15 Jan 2025 07:57:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1736955114; x=1737559914; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1736956629; x=1737561429; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1vqnrUKIh63ENHovv3lz9LwYLlI+FHwNt6f3V45tzuM=;
-        b=JWQ618aXAEspyOpvM8Q3paIWkEp5rYxuwHvdxzyYKmaYfSrhqN+YD/ri7Iulg0bgeJ
-         QUc7GTX5wqpYJbBMYL2k/n16FEhfutLg1NcJiLzY95/T82g1IFUImlxaU5I+uQpMz6Hf
-         An/BmGG11a/zaOEm/Koi8u9dFGDx68MYQNTsC0qEkBvtRkLKHpBhzyMvpampADg77lEh
-         MLgw8SW4d4j4HXSafbvAm94pdfc/0n9YBcXq6JbAKab4wP2yEyrjP/xjGibzTkYxqniY
-         gfWNmQDr5Jey2KWnk4H7oQhoqg2a0xDQ9dMIebJMUrozFFNvLrg7UiIjp7MlOD0+3uaq
-         iglQ==
+        bh=zO8SCDpb1PBc0evM90QDpIHT2aXA3uul1RObWQ/WFw4=;
+        b=cNYlCxOiizAQBgaN8fMXJOxF9sk1pA9VaB9Ph201qZHY/7uXeDQwdyIRKaZJ4cYv/3
+         SBrKUc5zGhPwlLo3REbyflp75KWVQgWafMKA0bVlE1nLa1YnPss1Xt5bcKDCwFHRf1lh
+         zMQTxgMr1Re/6FbRN55IHYtKIjL5ZJs+GfytBCmxFaXXMLHYNJDL05CFxVcrB3UgbdPY
+         4M3f1PT4J1sZreDMzyCPLHfFZv06CLQYDjaooVXGrMSWJ32dvxXC1PsIWnDOv0yrCaR7
+         RNlGmMuGfOcdELSrBWt07rXKNy6J6kd34L2txYp1U3Z+YWs88pCAfa8hsKwJQaPtj7ZL
+         /45A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736955114; x=1737559914;
+        d=1e100.net; s=20230601; t=1736956629; x=1737561429;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1vqnrUKIh63ENHovv3lz9LwYLlI+FHwNt6f3V45tzuM=;
-        b=ZuzBeSbp7kwzntsASPzBrvt2aKxQOLb+e/v4n4eteakYaybcP0oZ1VxuHiC1bL0VIG
-         KTqnStW/nAunZtJcTD7dKaR2E6QcsOVEP3ZxIDTJqDxjohetUkPKsM/ode+p25d6hk8c
-         Hgx45Gqq0HnhaLTk/DncNPmsDYtk0O1LauSZ0xl6ds0IPsxbp4P83uop1+cOYKcuhH56
-         srJaoajQfZ8UZx02G5q39q3ityMCbGca8PV5rsxeHEVHPgZM+GNexl4r5YKtsgsJLZTE
-         XtZc+9vPiAdjOrlq7BHoymJveZvS69TV67h/pOYFyYPAC7Tmcp5Qr66hO3WYLzYn4DTQ
-         pbMw==
-X-Forwarded-Encrypted: i=1; AJvYcCUcayUdS/FVaAliyMi4jwpiTPkOsYOQN/3YwLMgohj/NUHvbi0748kG6QNXsYg8yUDahULmPy6U85O5ojVu@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+j7+KnBgSCuHU1LeFdGDKmdlloq4x8KDsVMFYy7/EX2P1ZI3a
-	GDwIJ2+c+6sMzrORpmAyBGKoo30K3StGnlLNIDemKAs3cDg0BdgeSEBYkbEIn1s=
-X-Gm-Gg: ASbGncuH2CcewdEfZd+j+wFFrR1zE3m+6m2zvs7CCGKioM6bYpVSvdfaoj5l3N9pGyG
-	+yYzOdl7ur5yF7icz1/hLAn97OyItgNb6d2EhC2h7jwmDbFC6FTzpdtxJ+NIayRIqLkyQ5fXDHK
-	B3ehVU1TJyQxONQvW0k94PIFy+J5XkokLzdTcPDp/+2k9IAo9eEHdUXI2mC8VZ5lAp4ska+kPnn
-	rc+WX03MfvZiDjTb3dqW4q0MA9Cdv7IKWKdOabsSvj3cY1tTw1YeOG8FQ==
-X-Google-Smtp-Source: AGHT+IG3kHQwZtuC4Ysp3cANtbOTE9JmK3wljiHmMzPB4y66FwZUu7l+6M3B3NnDSAQBGnYagFcg4A==
-X-Received: by 2002:a05:6000:712:b0:385:ee3f:5cbf with SMTP id ffacd0b85a97d-38a87305369mr24469573f8f.20.1736955113748;
-        Wed, 15 Jan 2025 07:31:53 -0800 (PST)
+        bh=zO8SCDpb1PBc0evM90QDpIHT2aXA3uul1RObWQ/WFw4=;
+        b=FJ6IOqabYHDSm4Ila0k4hAFvfT963VbUXzLjdZPSDsCgaisO0ZKbeBT7hEtUzZ9oWZ
+         VzNz5apb90kpyw7mYgGWx7G6UYGKUa0fkB+kfem3ONbmx77RWd6EaPO3kBPv927U7qba
+         L/fQI94c1gM2kEAJPL6ltvhfkvOnsQlfKgbYhHTRcdkSxscJ9EbP2P2lF1nGsvsONYod
+         0NFTYX6cPjUdPJy9AXJRLiOdM2yfGWGTnQQcZ7sUBvdi5j7/9nQv8MeiP2coCrLI5xUL
+         8fa0kGykuv6TExKL6eMA9VefEHn9vYs13eIAqIvkc7Nevpjr+6Q4DK+simphjKEjO5lk
+         nkVA==
+X-Forwarded-Encrypted: i=1; AJvYcCUxtvsbz++BnHRYuJsixVEpVlmLRnVT7z24xyDUMD/Ximvv/2rj1MhC8FrFG7+w40cR9imn9iVOQ2/yrgqu@vger.kernel.org
+X-Gm-Message-State: AOJu0YzIjNr6hJmujzfl3rEVFmXA4j7epLk+7Xc3uhZ/mqG78JNlQZsb
+	w0KtJTVm0MFckKOr4HSuLjPrFbEtPbbxT9aEixipVXgpAHpI9b3Y9zU9hs94WC66UfuxFvVH6+/
+	u
+X-Gm-Gg: ASbGncvYZvtw3jPdpigpFE41KkZnAoq7wZapDLNqeYB1F4PdhPXSFc/5rp2lnYL4t9I
+	jcHrD6e9H7LgR0OkvPE28ANV4PSDACsTaF5ciHuxiPr+mBadSGcNZjz+Hi6n2kZBtczha1Dp9P3
+	MWFF96Q/vK6fy+EWc01AArWuDjavJMFN9wb5t1mcZ0PtV+lTkPdxU7yfaFKLl+YuUkIkRwp8UPT
+	65c4I63imPDyNcuqEepiKHLc0uzZFgcO/m4hCx8GsCHIqURtJ0YaqD9/w==
+X-Google-Smtp-Source: AGHT+IEcnR6Tnsd8j9q10IR/Lptj+DuUFWRk6nIXTRe7O/CtJh33Ud22yUyqXbWWro1ge/gLeoJt/Q==
+X-Received: by 2002:a05:6000:154a:b0:385:f6b9:e750 with SMTP id ffacd0b85a97d-38a872d2affmr23995936f8f.9.1736956628670;
+        Wed, 15 Jan 2025 07:57:08 -0800 (PST)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e383df8sm18236107f8f.38.2025.01.15.07.31.52
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e38325esm17880527f8f.27.2025.01.15.07.57.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2025 07:31:53 -0800 (PST)
-Date: Wed, 15 Jan 2025 16:31:51 +0100
+        Wed, 15 Jan 2025 07:57:08 -0800 (PST)
+Date: Wed, 15 Jan 2025 16:57:06 +0100
 From: Petr Mladek <pmladek@suse.com>
-To: Filipe Xavier <felipeaggger@gmail.com>
-Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+To: "laokz@foxmail.com" <laokz@foxmail.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
-	Shuah Khan <shuah@kernel.org>, live-patching@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Felipe Xavier <felipe_life@live.com>
-Subject: Re: [PATCH v2] selftests: livepatch: test if ftrace can trace a
- livepatched function
-Message-ID: <Z4fU57ir_IXGlsWq@pathway.suse.cz>
-References: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
+	"live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+Subject: Re: selftests/livepatch: question about dmesg "signaling remaining
+ tasks"
+Message-ID: <Z4fa0qCWsef0B_ze@pathway.suse.cz>
+References: <TYZPR01MB6878934C04B458FA6FEE011CA6192@TYZPR01MB6878.apcprd01.prod.exchangelabs.com>
+ <tencent_D03A5C20BC0603E8D2F936D37C97FAE62607@qq.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -92,210 +91,28 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
+In-Reply-To: <tencent_D03A5C20BC0603E8D2F936D37C97FAE62607@qq.com>
 
-Hi Filipe,
-
-first, thanks for the test. It is good. I just suggest a lot of clean
-up ;-)
-
-On Sat 2025-01-11 15:42:27, Filipe Xavier wrote:
-> This new test makes sure that ftrace can trace a
-> function that was introduced by a livepatch.
-> ---
-> Changes in v2:
-> - functions.sh: added reset tracing on push and pop_config.
-> - test-ftrace.sh: enabled tracing_on before test init.
-> - nitpick: added double quotations on filenames and fixed some wording. 
-> - Link to v1: https://lore.kernel.org/r/20250102-ftrace-selftest-livepatch-v1-1-84880baefc1b@gmail.com
-> ---
->  tools/testing/selftests/livepatch/functions.sh   | 14 ++++++++++
->  tools/testing/selftests/livepatch/test-ftrace.sh | 33 ++++++++++++++++++++++++
->  2 files changed, 47 insertions(+)
+On Wed 2025-01-15 08:32:12, laokz@foxmail.com wrote:
+> When do livepatch transition, kernel call klp_try_complete_transition() which in-turn might call klp_send_signals(). klp_send_signal() has the code:
 > 
-> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-> index e5d06fb402335d85959bafe099087effc6ddce12..e6c13514002dae5f8d7461f90b8241ab43024ea4 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -62,6 +62,9 @@ function push_config() {
->  			awk -F'[: ]' '{print "file " $1 " line " $2 " " $4}')
->  	FTRACE_ENABLED=$(sysctl --values kernel.ftrace_enabled)
->  	KPROBE_ENABLED=$(cat "$SYSFS_KPROBES_DIR/enabled")
-> +	TRACING_ON=$(cat "$SYSFS_DEBUG_DIR/tracing/tracing_on")
+>         if (klp_signals_cnt == SIGNALS_TIMEOUT)
+>                 pr_notice("signaling remaining tasks\n");
+> 
+> Do we need to match or filter out this message when check_result? And here klp_signals_cnt MUST EQUAL to SIGNALS_TIMEOUT, right?
 
-The $SYSFS_DEBUG_DIR/tracing directory is used many times. It would
-make sense to define:
+Good question. Have you seen this message when running the selftests, please?
 
-SYSFS_TRACING_DIR="$SYSFS_DEBUG_DIR/tracing"
+I wonder which test could trigger it. I do not recall any test
+livepatch where the transition might get blocked for too long.
 
-and use:
+There is the self test with a blocked transition ("busy target
+module") but the waiting is stopped much earlier there.
 
-	TRACING_ON=$(cat "$SYSFS_TRACING_DIR/tracing_on")
-
-> +	CURRENT_TRACER=$(cat "$SYSFS_DEBUG_DIR/tracing/current_tracer")
-> +	FTRACE_FILTER=$(cat "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter")
->  }
->  
->  function pop_config() {
-> @@ -74,6 +77,17 @@ function pop_config() {
->  	if [[ -n "$KPROBE_ENABLED" ]]; then
->  		echo "$KPROBE_ENABLED" > "$SYSFS_KPROBES_DIR/enabled"
->  	fi
-> +	if [[ -n "$TRACING_ON" ]]; then
-> +		echo "$TRACING_ON" > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-> +	fi
-> +	if [[ -n "$CURRENT_TRACER" ]]; then
-> +		echo "$CURRENT_TRACER" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-> +	fi
-> +	if [[ "$FTRACE_FILTER" == *"#"* ]]; then
-> +		echo > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-
-My understanding is that this is handling the situation when the
-filter is:
-
-   #### all functions enabled ####
-
-I was curious about the pattern *"#"*. The quotation looked pretty
-non-standard to me. It made me to read the bash documentation and
-the rules for extressions in [[ ]] looked quite complicated.
-
-I wonder if we could make this more for "dummies". The following
-seems to work:
-
-	if [[ -n "$FTRACE_FILTER" ]]; then
-		echo "$FTRACE_FILTER"
-			| sed -e "/#### all functions enabled ####/d"
-			> "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-	fi
-
-Note that the string "#### all functions enabled ####" is a very
-stable thing. It has never been modified since it was introduced
-by the commit 0c75a3ed633419d75d ("ftrace: state that all functions
-are enabled in set_ftrace_filter") in Feb 2009.
-
-The string is used also in ftrace selftests, see
-tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-
-> +	elif [[ -n "$FTRACE_FILTER" ]]; then
-> +		echo "$FTRACE_FILTER" > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-> +	fi
->  }
->  
->  function set_dynamic_debug() {
-> diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-> index fe14f248913acbec46fb6c0fec38a2fc84209d39..66af5d726c52e48e5177804e182b4ff31784d5ac 100755
-> --- a/tools/testing/selftests/livepatch/test-ftrace.sh
-> +++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-> @@ -61,4 +61,37 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
->  % rmmod $MOD_LIVEPATCH"
->  
->  
-> +# - verify livepatch can load
-> +# - check if traces have a patched function
-> +# - unload livepatch and reset trace
-> +
-> +start_test "trace livepatched function and check that the live patch remains in effect"
-> +
-> +TRACE_FILE="$SYSFS_DEBUG_DIR/tracing/trace"
-> +FUNCTION_NAME="livepatch_cmdline_proc_show"
-> +
-> +load_lp $MOD_LIVEPATCH
-> +
-> +echo 1 > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-> +echo $FUNCTION_NAME > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-
-The above mentioned ftrace selftest shows that the behavior gets
-more complicated when "traceoff" is used:
-
-  1. The "traceoff" entries are not cleared by the above command.
-  2. The "traceoff" entries might cause that the tracing will
-     stop before we finish this test.
-
-> +echo "function" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-> +echo "" > "$TRACE_FILE"
-
-I suggest to change the ordering and make sure that nothing is running
-before we start:
-
-# Start with the clean up
-echo 0 > "$SYSFS_TRACING_DIR/tracing_on"
-echo '!*:traceoff' > $SYSFS_TRACING_DIR/set_ftrace_filter
-echo "" > "$SYSFS_TRACING_DIR/current_tracer"
-echo "" > $SYSFS_TRACING_DIR/trace
-# Setup and start our tracing
-echo "function" > "$SYSFS_TRACING_DIR/current_tracer"
-echo $FUNCTION_NAME > "$SYSFS_TRACING_DIR/set_ftrace_filter"
-echo 1 > "$SYSFS_TRACING_DIR/tracing_on"
-
-I suggest to this into helper functions which might be used
-by more tests:
-
-# cleanup_tracing() - stop and clean up function tracing
-function cleanup_tracing() {
-	echo 0 > "$SYSFS_TRACING_DIR/tracing_on"
-	echo '!*:traceoff' > $SYSFS_TRACING_DIR/set_ftrace_filter
-	echo "" > "$SYSFS_TRACING_DIR/current_tracer"
-	echo "" > $SYSFS_TRACING_DIR/trace
-}
-
-# trace_function(function) - start tracing of a function
-#	function - to be traced function
-function trace_function() {
-	local function="$1"; shift
-
-	cleanup_tracing
-
-	echo "function" > "$SYSFS_TRACING_DIR/current_tracer"
-	echo "$functions" > $SYSFS_TRACING_DIR/set_ftrace_filter
-	echo 1 > "$SYSFS_TRACING_DIR/tracing_on"
-}
-
-# check_traced_function(function) - check whether function appeared in trace log
-#	function - to be traced function
-function check_trace_function() {
-	local function="$1"; shift
-
-	if ! grep -q "$function" $SYSFS_TRACING_DIR/trace" ; then
-		die "Function ($function) did not appear in the trace"
-	fi
-}
-
-As Marcos suggested, it would make sense to add the above mentioned
-helper functions in a separate patch.
-
-> +
-> +if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
-> +	echo -e "FAIL\n\n"
-> +	die "livepatch kselftest(s) failed"
-> +fi
-> +
-> +grep -q $FUNCTION_NAME "$TRACE_FILE"
-> +FOUND=$?
-
-We could replace this with the above proposed
-
-	check_traced_function "$FUNCTION_NAME"
-
-Also I would personally stop the tracing after this sub-test finishes.
-We might use the cleanup_tracing function here.
-
-	cleanup_tracing
-
-> +
-> +disable_lp $MOD_LIVEPATCH
-> +unload_lp $MOD_LIVEPATCH
-> +
-> +if [ "$FOUND" -eq 1 ]; then
-> +	echo -e "FAIL\n\n"
-> +	die "livepatch kselftest(s) failed"
-> +fi
-
-As mentioned by Marcos, we should also print "ok" on success.
-I would personally use the "check_result" function here. It
-could catch non-expected entries in dmesg.
-
-> +
->  exit 0
+The message probably might get printed when the selftests are
+called on a huge and very busy system. But then we might get
+into troubles also with other timeouts. So it would be nice
+to know more details about when this happens.
 
 Best Regards,
 Petr
