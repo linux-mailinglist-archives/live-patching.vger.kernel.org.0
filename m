@@ -1,285 +1,280 @@
-Return-Path: <live-patching+bounces-974-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-975-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C7A7EA10D63
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 18:18:31 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 40CD3A11BC3
+	for <lists+live-patching@lfdr.de>; Wed, 15 Jan 2025 09:24:53 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E6FFE3AC8FF
-	for <lists+live-patching@lfdr.de>; Tue, 14 Jan 2025 17:18:24 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 960CF7A03E9
+	for <lists+live-patching@lfdr.de>; Wed, 15 Jan 2025 08:24:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81DE11FA17E;
-	Tue, 14 Jan 2025 17:18:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C525C22FDF7;
+	Wed, 15 Jan 2025 08:24:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="AKw3t96T"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="BioyUxEE";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="BioyUxEE"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 386831CEACB
-	for <live-patching@vger.kernel.org>; Tue, 14 Jan 2025 17:18:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA511EBFE8;
+	Wed, 15 Jan 2025 08:24:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736875091; cv=none; b=E4Rw5q0pihmO2ec0QFDv164fchB1OT2ThFuZ4afet466XaQzSCk+0oHwK0GYCSw6n3odw+R/9PGHqfXPPy5CtnbIKAIcGh0cHe99zD+R620yHPZEuzA1q4pfOjIHfJFWZbMrRA1U54QYPWZdNn+ZBLaZWSDI8G/YbgA9j8PHpKA=
+	t=1736929486; cv=none; b=Ei2Xy0LxNAh6EchGftRPyui/7hzvozutyj9LfbTym3I0XOw6KVT8jh7xnQ5KkmkRx4I7w0LOF3riA1/QhRWupWfj3vguKmuE9RnHdMFgfVpkESqlPn45vMOrAFOXKoi7qtWu4vzEfu6tgbOGP4h5yKL74WEBCgwfu7KD7BRq/ts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736875091; c=relaxed/simple;
-	bh=wpqN1Cft3TcGdK334NFRNrhfQUADVPSA7qO0z3zoP2g=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=KKQhU6qAME4dM7WxmoV7fCwCbOsuR8pNZBwgDddSr13AjqA+E/XwXtwm+PTplYP2WBqOJbd9c4e2VRTcE1izcSh1VLo4UT43P3JVHUYyNO2m6ojwxU7MZUMP7OlbHrQNTSDgUDm4LSKSfcNH6e1fEcByfJSn5aQHOMnfCHKOZys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=AKw3t96T; arc=none smtp.client-ip=209.85.218.42
+	s=arc-20240116; t=1736929486; c=relaxed/simple;
+	bh=mPlPFKgHd7bB4pL07ZVZcuyY3Ykg/rR8vPGOTGsa+J8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=H8UExhAVH5GLyfbgdMpMaw2cE3CJtrgrkI5qehxkWB1Z5Wsprhjiacm98ouBnSSWcGsEWOGVyjOxH1Cv3LMzGv8AXvLIZjx1lk0p+2s9OgkDQ7w03Sg4E1wrdueWSbRREuULGzEgeA3M/dm0uWYAxT0sgNwa0MXTEdzNrxIQ0hE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=BioyUxEE; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=BioyUxEE; arc=none smtp.client-ip=195.135.223.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-aa679ad4265so224861866b.0
-        for <live-patching@vger.kernel.org>; Tue, 14 Jan 2025 09:18:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1736875087; x=1737479887; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=26cmflZb066/x6GO76FljjG7xVkAeMYqvCCcfNiU3Vc=;
-        b=AKw3t96TvBS6O75Tlfcu0FmWWZwOa7nPsgDLGt93By+SHoEpw3sg6Dzr5+mk9o7NGw
-         39ro7BSH1RF5yga5L+P4Gx28XnCBdkwDYSb61A8rUzq7BVGtVEB9K0mFq5JWugpjxbjq
-         iFc9IOEQehfdSnsTONQH8P1yajrdoTUoRgQQR1qijPJiNb5aQFbO8jDaQvkg6KWLbJ43
-         AEPITkGKgXoyswZsTEwthXKEGYtUOFdYXE37qgT9A71UdnYG0FgO+lSkos8dVAOWqFRK
-         EuCX++BxNk+IQ3Na3cryZdm761DV3R4l463qMS1JSPSJ6RZTf6zUYdD9PtdnOqFnsTth
-         ncOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736875087; x=1737479887;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=26cmflZb066/x6GO76FljjG7xVkAeMYqvCCcfNiU3Vc=;
-        b=L7vr8BbXjZPK2+MHR6YoPF/bKndXvctvlBJQMtdQ6+hVUjd/kQj/MlsEOYRD1BByqa
-         tTnkhj29GyTOhKDB+vlbz0ZRfe+wlFdfGZ1X8TTW+mWjL3SXMtJhWkukhEsZ0GqJ9Juh
-         eVncUPVU9prYdQ+HTfEc8JFQgADhldDSRM1jCNmEvEer/Mw3M8SqDm/oD6rbV97bWqLx
-         ya1Z4KzK+tnfqLqhpAeT6S0oQBBRjp4jhH5ARJ3vmkiyzuXBGGPsiOZCvHeENKqbpkZZ
-         h1zotmPAMWmYj+oJvgqyN62Z7v4GHumyjRy8lQad365mP49zat/kGkUmhp/eC2VWYg1C
-         sNQw==
-X-Gm-Message-State: AOJu0YybP52oFsQU8FLrICHWKyT5fLEgbADaB4piRH2j2m6AY9FPKxLj
-	Hjr/utLL7J13za8wfugti8xnhhlsjp+qioG+YmAk8zVKhjPGNqIZgwUDqeClUpA=
-X-Gm-Gg: ASbGncuIAI99V+xwBFpRfm8vw+lVysx+EPg0snMEhKnAUYkC5Yr+KLUdnWP+hUodYb1
-	dGOT3rR98X/aP4p9fBCfJ7+FluoFfjmXwVfld/fX3EvAAMgbeErd9QK40pf3H4DhaQrxMZhAIYv
-	e7PwDpP9AMYpvo9i4cdzJDCxyJq4DQ9iOgW8w1n8yc12htFJjEQ3QYNGAbSGOof7vyfvc2H+C3M
-	NtT3cYr/ASsu11aV1/jxbOdIOkoAVgOdgpW/rX4EX6YjOICyBp0SbhSMiAI8Y9iV60tex1idHvF
-	tk/xlTT/sT5Fv0dWxFs=
-X-Google-Smtp-Source: AGHT+IHTNDE6OFYqw/IC7av4Dymh/XxGZbIt/B/dtSZsBph45JtXr/urz+mZ5NLetZ2D+o4mK6riHg==
-X-Received: by 2002:a17:907:3d91:b0:ab2:c0b0:3109 with SMTP id a640c23a62f3a-ab2c3d4c85emr1680574566b.21.1736875087499;
-        Tue, 14 Jan 2025 09:18:07 -0800 (PST)
-Received: from ?IPv6:2804:5078:803:5200:58f2:fc97:371f:2? ([2804:5078:803:5200:58f2:fc97:371f:2])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-723185484d5sm4726836a34.26.2025.01.14.09.18.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jan 2025 09:18:06 -0800 (PST)
-Message-ID: <12c6681e2d13994c2efd5d25372293b9f53a9f8a.camel@suse.com>
-Subject: Re: [PATCH v2] selftests: livepatch: test if ftrace can trace a
- livepatched function
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Filipe Xavier <felipeaggger@gmail.com>, Josh Poimboeuf
- <jpoimboe@kernel.org>,  Jiri Kosina <jikos@kernel.org>, Miroslav Benes
- <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, Joe Lawrence
- <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Felipe Xavier <felipe_life@live.com>
-Date: Tue, 14 Jan 2025 14:18:02 -0300
-In-Reply-To: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
-References: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.2 (by Flathub.org) 
+Received: from pathway.suse.cz (unknown [10.100.201.202])
+	by smtp-out2.suse.de (Postfix) with ESMTP id 489461F37C;
+	Wed, 15 Jan 2025 08:24:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1736929482; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=5N46FHw8QKSsP/PkWerjSspiCBmroSt8n417oAPjWWw=;
+	b=BioyUxEE4FV0AOy+m2kChAtCVNWpJowkr1SXN/GjDG3TJLcjeYOzGOu6FpGWMj5TDIgPf6
+	XDWFTh1xaPp1vWhtTducBTF3Q4goYPBh4SiZWMUcy5MGoG8Vku7kco174m2XqvP8ac7kbN
+	fnvH/gHmet0BQMImcQob5W0eanW+hkc=
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1736929482; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=5N46FHw8QKSsP/PkWerjSspiCBmroSt8n417oAPjWWw=;
+	b=BioyUxEE4FV0AOy+m2kChAtCVNWpJowkr1SXN/GjDG3TJLcjeYOzGOu6FpGWMj5TDIgPf6
+	XDWFTh1xaPp1vWhtTducBTF3Q4goYPBh4SiZWMUcy5MGoG8Vku7kco174m2XqvP8ac7kbN
+	fnvH/gHmet0BQMImcQob5W0eanW+hkc=
+From: Petr Mladek <pmladek@suse.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>
+Cc: Joe Lawrence <joe.lawrence@redhat.com>,
+	Nicolai Stange <nstange@suse.de>,
+	live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Petr Mladek <pmladek@suse.com>
+Subject: [PATCH v1 00/19] livepatch: Better integrate callbacks and shadow variables with the states API
+Date: Wed, 15 Jan 2025 09:24:12 +0100
+Message-ID: <20250115082431.5550-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_COUNT_ZERO(0.00)[0];
+	ARC_NA(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[7];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:mid]
+X-Spam-Score: -3.30
+X-Spam-Flag: NO
 
-On Sat, 2025-01-11 at 15:42 -0300, Filipe Xavier wrote:
-> This new test makes sure that ftrace can trace a
-> function that was introduced by a livepatch.
->=20
-> Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
+Hi there,
 
-Thanks for the new test Filipe!
+this patchset is based on POC which I have sent before
+Linus Plumbers 2013 and presented it there, see
+https://lore.kernel.org/r/20231110170428.6664-1-pmladek@suse.com
 
-I have some nits below, but these don't need to be addressed for the
-test to be merged. Either way,
+The aim is to help maintaining lifetime of changes made by livepatch
+callbacks and shadow variables.
 
-Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-Tested-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+Key changes include:
 
-
-
-> ---
-> Changes in v2:
-> - functions.sh: added reset tracing on push and pop_config.
-> - test-ftrace.sh: enabled tracing_on before test init.
-> - nitpick: added double quotations on filenames and fixed some
-> wording.=20
-> - Link to v1:
-> https://lore.kernel.org/r/20250102-ftrace-selftest-livepatch-v1-1-84880ba=
-efc1b@gmail.com
-> ---
-> =C2=A0tools/testing/selftests/livepatch/functions.sh=C2=A0=C2=A0 | 14 +++=
-+++++++
-> =C2=A0tools/testing/selftests/livepatch/test-ftrace.sh | 33
-> ++++++++++++++++++++++++
-> =C2=A02 files changed, 47 insertions(+)
->=20
-> diff --git a/tools/testing/selftests/livepatch/functions.sh
-> b/tools/testing/selftests/livepatch/functions.sh
-> index
-> e5d06fb402335d85959bafe099087effc6ddce12..e6c13514002dae5f8d7461f90b8
-> 241ab43024ea4 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -62,6 +62,9 @@ function push_config() {
-> =C2=A0			awk -F'[: ]' '{print "file " $1 " line " $2
-> " " $4}')
-> =C2=A0	FTRACE_ENABLED=3D$(sysctl --values kernel.ftrace_enabled)
-> =C2=A0	KPROBE_ENABLED=3D$(cat "$SYSFS_KPROBES_DIR/enabled")
-> +	TRACING_ON=3D$(cat "$SYSFS_DEBUG_DIR/tracing/tracing_on")
-> +	CURRENT_TRACER=3D$(cat
-> "$SYSFS_DEBUG_DIR/tracing/current_tracer")
-> +	FTRACE_FILTER=3D$(cat
-> "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter")
-> =C2=A0}
-> =C2=A0
-> =C2=A0function pop_config() {
-> @@ -74,6 +77,17 @@ function pop_config() {
-> =C2=A0	if [[ -n "$KPROBE_ENABLED" ]]; then
-> =C2=A0		echo "$KPROBE_ENABLED" >
-> "$SYSFS_KPROBES_DIR/enabled"
-> =C2=A0	fi
-> +	if [[ -n "$TRACING_ON" ]]; then
-> +		echo "$TRACING_ON" >
-> "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-> +	fi
-> +	if [[ -n "$CURRENT_TRACER" ]]; then
-> +		echo "$CURRENT_TRACER" >
-> "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-> +	fi
-> +	if [[ "$FTRACE_FILTER" =3D=3D *"#"* ]]; then
-> +		echo > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-> +	elif [[ -n "$FTRACE_FILTER" ]]; then
-> +		echo "$FTRACE_FILTER" >
-> "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-> +	fi
-> =C2=A0}
-
-I believe that this could be a separate patch, since this is new
-functionality that's being added to functions.sh, and not exactly
-related to the new test.
-
-> =C2=A0
-> =C2=A0function set_dynamic_debug() {
-> diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh
-> b/tools/testing/selftests/livepatch/test-ftrace.sh
-> index
-> fe14f248913acbec46fb6c0fec38a2fc84209d39..66af5d726c52e48e5177804e182
-> b4ff31784d5ac 100755
-> --- a/tools/testing/selftests/livepatch/test-ftrace.sh
-> +++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-> @@ -61,4 +61,37 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
-> =C2=A0% rmmod $MOD_LIVEPATCH"
-> =C2=A0
-> =C2=A0
-> +# - verify livepatch can load
-> +# - check if traces have a patched function
-> +# - unload livepatch and reset trace
-> +
-> +start_test "trace livepatched function and check that the live patch
-> remains in effect"
-> +
-> +TRACE_FILE=3D"$SYSFS_DEBUG_DIR/tracing/trace"
-> +FUNCTION_NAME=3D"livepatch_cmdline_proc_show"
-> +
-> +load_lp $MOD_LIVEPATCH
-> +
-> +echo 1 > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-> +echo $FUNCTION_NAME > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-> +echo "function" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-> +echo "" > "$TRACE_FILE"
-> +
-> +if [[ "$(cat /proc/cmdline)" !=3D "$MOD_LIVEPATCH: this has been live
-> patched" ]] ; then
-> +	echo -e "FAIL\n\n"
-> +	die "livepatch kselftest(s) failed"
-> +fi
-> +
-> +grep -q $FUNCTION_NAME "$TRACE_FILE"
-> +FOUND=3D$?
-> +
-> +disable_lp $MOD_LIVEPATCH
-> +unload_lp $MOD_LIVEPATCH
-> +
-> +if [ "$FOUND" -eq 1 ]; then
-> +	echo -e "FAIL\n\n"
-> +	die "livepatch kselftest(s) failed"
-> +fi
-> +
-> +
-> =C2=A0exit 0
-
-The test works, and that's very cool. But when running locally, I find
-the if we miss check_result call it doesn't add a newline after the
-"ok":
-
-...
-# timeout set to 0                                                   =20
-# selftests: livepatch: test-ftrace.sh                               =20
-# TEST: livepatch interaction with ftrace_enabled sysctl ... ok      =20
-# TEST: trace livepatched function and check that the live patch
-remains in effect ... ok 5 selftests: livepatch: test-ftrace.sh      =20
-# timeout set to 0                                                   =20
-# selftests: livepatch: test-sysfs.sh =20
-...
-
-If the check_result below is added the output if sane again:
-
-...
-# selftests: livepatch: test-ftrace.sh
-# TEST: livepatch interaction with ftrace_enabled sysctl ... ok
-# TEST: trace livepatched function and check that the live patch
-remains in effect ... ok
-ok 5 selftests: livepatch: test-ftrace.sh
-...
-
-I checked and this would be the only one test without using
-check_result, so maybe we should add this either way? I'm not sure what
-you guys think about it.
+- Per-state callbacks replace per-object callbacks, invoked only when a
+  livepatch introduces or removes a state.
+- Shadow variable lifetime is now tied to the corresponding livepatch
+  state lifetime.
+- The "version" field in `struct klp_state` has been replaced with the
+  "block_disable" flag for improved compatibility handling.
+- The "data" field has been removed from `struct klp_state`; shadow
+  variables are now the recommended way to store state-related data.
 
 
-diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh
-b/tools/testing/selftests/livepatch/test-ftrace.sh
-index 66af5d726c52..135c0fb17a98 100755
---- a/tools/testing/selftests/livepatch/test-ftrace.sh
-+++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-@@ -93,5 +93,18 @@ if [ "$FOUND" -eq 1 ]; then
- 	die "livepatch kselftest(s) failed"
- fi
-=20
-+check_result "% insmod test_modules/$MOD_LIVEPATCH.ko
-+livepatch: enabling patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': initializing patching transition
-+livepatch: '$MOD_LIVEPATCH': starting patching transition
-+livepatch: '$MOD_LIVEPATCH': completing patching transition
-+livepatch: '$MOD_LIVEPATCH': patching complete
-+% echo 0 > $SYSFS_KLP_DIR/$MOD_LIVEPATCH/enabled
-+livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': starting unpatching transition
-+livepatch: '$MOD_LIVEPATCH': completing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': unpatching complete
-+% rmmod $MOD_LIVEPATCH"
-+
-=20
- exit 0
+Open question:
 
->=20
-> ---
-> base-commit: fc033cf25e612e840e545f8d5ad2edd6ba613ed5
-> change-id: 20250101-ftrace-selftest-livepatch-161fb77dbed8
->=20
-> Best regards,
+Shadow variables are connected with the state only when state.is_shadow
+is set. It might make sense to always connect shadow variables with
+the state using the same "id".
+
+It would simplify the semantic and use. But it might be error prone
+when shadow variables are connected with a state by mistake.
+
+It might get improved when we allow to create a shadow variable only
+when a patch supporting the state with the same "id" is (being)
+registered.
+
+
+Motivation:
+
+The basic livepatch functionality is to redirect problematic functions
+to a fixed or improved variants. In addition, there are two features
+helping with more problematic situations:
+
+  + pre_patch(), post_patch(), pre_unpatch(), post_unpatch() callbacks
+    might be called before and after the respective transitions.
+    For example, post_patch() callback might enable some functionality
+    at the end of the transition when the entire system is using
+    the new code.
+
+  + Shadow variables allow to add new items into structures or other
+    data objects.
+
+The practice has shown that these features were hard to use with the atomic
+replace feature. The new livepatch usually just adds more fixes. But it
+might also remove problematic ones.
+
+Originally, any version of the livepatch was allowed to replace any older
+or newer version of the patch. It was not clear how to handle the extra
+features. The new patch did not know whether to run the callbacks or
+if the changes were already done by the current livepatch. Or if it has
+to revert some changes or free shadow variables whey they would no longer
+be supported.
+
+It was even more complicated because only the callbacks from the newly
+installed livepatch were called. It means that older livepatch might
+not be able to revert changes supported only by newer livepatches.
+
+The above problems were supposed to be solved by adding livepatch
+states. Each livepatch might define which states are supported. The states
+are versioned. The livepatch core checks if the newly installed livepatch
+is able to handle all states used by the currently installed livepatch.
+
+Though the practice has shown that the states API was not easy to use
+either. It was not well connected with the callbacks and shadow variables.
+The states are per-patch. The callbacks are per-object. The livepatch
+does not know about the supported shadow variables at all.
+
+
+Changes against POC:
+
+  + Renamed callbacks back to pre_patch, post_patch, pre_unpatch,
+    and post_unpatch [Josh]
+  + Remove .version field completely [Miroslav]
+  + Removed .data field
+  + Fixed the use of "atomic replace" vs. "cumulative livepatch"
+    terms [Miroslav]
+  + Set .is_shadow in the test module modifying console_loglevel [Miroslav]
+  + Revert pre_unpatch() callbacks when the transition is reverted. [Petr]
+  + Improved and added selftests. Split into many patches [Petr]
+  + Updated documentation [Petr]
+
+[POC] https://lore.kernel.org/r/https://lore.kernel.org/r/20231110170428.6664-1-pmladek@suse.com
+
+Base commit: c45323b7560ec87c37c729b703c86ee65f136d75 (6.13-rc7+)
+
+Petr Mladek (19):
+  livepatch: Add callbacks for introducing and removing  states
+  livepatch: Allow to handle lifetime of shadow variables using the
+    livepatch state
+  selftests/livepatch: Use per-state callbacks in state API tests
+  livepatch: Add "block_disable" flag to per-state API and remove
+    versioning
+  livepatch: Remove "data" from struct klp_state
+  selftests/livepatch: Remove callbacks from sysfs interface testing
+  selftests/livepatch: Substitute hard-coded /sys/module path
+  selftests/livepatch: Move basic tests for livepatching modules
+  selftests/livepatch: Convert testing of multiple target modules
+  selftests/livepatch: Create a simple selftest for state callbacks
+  selftests/livepatch: Convert selftests for failing pre_patch callback
+  selftests/livepatch: Convert selftest with blocked transition
+  selftests/livepatch: Add more tests for state callbacks with blocked
+    transitions
+  selftests/livepatch: Convert selftests for testing callbacks with more
+    livepatches
+  selftests/livepatch: Do not use a livepatch with the obsolete
+    per-object callbacks in the basic selftests
+  selftests/livepatch: Remove obsolete test modules for per-object
+    callbacks
+  samples/livepatch: Replace sample module with obsolete per-object
+    callbacks
+  Documentation/livepatch: Update documentation for state, callbacks,
+    and shadow variables
+  livepatch: Remove obsolete per-object callbacks
+
+ Documentation/livepatch/api.rst               |   2 +-
+ Documentation/livepatch/callbacks.rst         | 166 +++---
+ Documentation/livepatch/index.rst             |   4 +-
+ Documentation/livepatch/shadow-vars.rst       |  47 +-
+ Documentation/livepatch/system-state.rst      | 208 +++----
+ include/linux/livepatch.h                     |  81 +--
+ kernel/livepatch/core.c                       |  43 +-
+ kernel/livepatch/core.h                       |  33 --
+ kernel/livepatch/state.c                      | 179 +++++-
+ kernel/livepatch/state.h                      |   9 +
+ kernel/livepatch/transition.c                 |  20 +-
+ samples/livepatch/Makefile                    |   5 +-
+ .../livepatch/livepatch-callbacks-busymod.c   |  60 --
+ samples/livepatch/livepatch-callbacks-demo.c  | 196 -------
+ samples/livepatch/livepatch-callbacks-mod.c   |  41 --
+ samples/livepatch/livepatch-speaker-fix.c     | 376 ++++++++++++
+ samples/livepatch/livepatch-speaker-mod.c     | 203 +++++++
+ samples/livepatch/livepatch-speaker.h         |  15 +
+ tools/testing/selftests/livepatch/Makefile    |   2 +
+ .../testing/selftests/livepatch/functions.sh  |  75 ++-
+ .../selftests/livepatch/test-callbacks.sh     | 553 ------------------
+ .../selftests/livepatch/test-livepatch.sh     |   4 +-
+ .../testing/selftests/livepatch/test-order.sh | 295 ++++++++++
+ .../livepatch/test-state-callbacks.sh         | 451 ++++++++++++++
+ .../testing/selftests/livepatch/test-state.sh |  86 ++-
+ .../testing/selftests/livepatch/test-sysfs.sh |  48 +-
+ .../selftests/livepatch/test_modules/Makefile |   8 +-
+ .../test_modules/test_klp_callbacks_busy.c    |  70 ---
+ .../test_modules/test_klp_callbacks_demo.c    | 121 ----
+ .../test_modules/test_klp_callbacks_demo2.c   |  93 ---
+ .../test_modules/test_klp_callbacks_mod.c     |  24 -
+ .../livepatch/test_modules/test_klp_speaker.c | 203 +++++++
+ .../livepatch/test_modules/test_klp_speaker.h |  15 +
+ .../test_modules/test_klp_speaker2.c          |   8 +
+ .../test_modules/test_klp_speaker_livepatch.c | 407 +++++++++++++
+ .../test_klp_speaker_livepatch2.c             |   5 +
+ .../livepatch/test_modules/test_klp_state.c   | 143 ++---
+ .../livepatch/test_modules/test_klp_state2.c  | 190 +-----
+ .../livepatch/test_modules/test_klp_state3.c  |   2 +-
+ 39 files changed, 2664 insertions(+), 1827 deletions(-)
+ delete mode 100644 samples/livepatch/livepatch-callbacks-busymod.c
+ delete mode 100644 samples/livepatch/livepatch-callbacks-demo.c
+ delete mode 100644 samples/livepatch/livepatch-callbacks-mod.c
+ create mode 100644 samples/livepatch/livepatch-speaker-fix.c
+ create mode 100644 samples/livepatch/livepatch-speaker-mod.c
+ create mode 100644 samples/livepatch/livepatch-speaker.h
+ delete mode 100755 tools/testing/selftests/livepatch/test-callbacks.sh
+ create mode 100755 tools/testing/selftests/livepatch/test-order.sh
+ create mode 100755 tools/testing/selftests/livepatch/test-state-callbacks.sh
+ delete mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_callbacks_busy.c
+ delete mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_callbacks_demo.c
+ delete mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_callbacks_demo2.c
+ delete mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_callbacks_mod.c
+ create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_speaker.c
+ create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_speaker.h
+ create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_speaker2.c
+ create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_speaker_livepatch.c
+ create mode 100644 tools/testing/selftests/livepatch/test_modules/test_klp_speaker_livepatch2.c
+
+-- 
+2.47.1
 
 
