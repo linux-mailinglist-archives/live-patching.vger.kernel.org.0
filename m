@@ -1,117 +1,155 @@
-Return-Path: <live-patching+bounces-1002-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1003-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0BF44A1369A
-	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 10:29:56 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B9538A13A8A
+	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 14:10:56 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8C62F3A69C9
-	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 09:29:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E08C51620EC
+	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 13:10:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A9101ACED3;
-	Thu, 16 Jan 2025 09:29:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0566D1EE01C;
+	Thu, 16 Jan 2025 13:10:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="d2sSU/zx"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PURTmw8v"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47815197A7F
-	for <live-patching@vger.kernel.org>; Thu, 16 Jan 2025 09:29:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 541F91DE4DF
+	for <live-patching@vger.kernel.org>; Thu, 16 Jan 2025 13:10:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737019792; cv=none; b=mzsZOIVdXXrPwcIES70CET3kFBHKvSmON3w5lIutyCOPiCq7FOHkMZ2Nafa2w6/+joFbmpP9zaKLjH3eIqHrP1hA0/LUkqQeoA/JL47KreUmXv3iG09byyRxNlaVEJdNmxyW+ezOMCYBnhzEJVaKfTn0HDUJGbZ8CIVuBkZJwag=
+	t=1737033053; cv=none; b=gohG+42tUKBfy+gMr/up3bMDNh9TvRXZh9oUc6qBBGTlmzxpMGFXtmBUgTOoF35uk6gBvovFiGJaE114mVNqbwbLsCEXtU1EY31HdPc+AEhffhP/cWb3KC0sbvUKZISqySTVXQuEaPmDdsozN83LYubCRgtuQtceCZQpMLaLOJc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737019792; c=relaxed/simple;
-	bh=ndOQe7iYVdafaQgYnE+41A58i1xptE9OdOrBo0S9x6g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FLmCOSikPvYv6otm1KafwLYvuMx70XcyE2l3e93MG2AXA/PEXStatzBdirZigM7xO4NkSDANZjPlWlisTavJPcQPX9j3Ex9qIYEfVT4YKH9e5hV5TyA415JSkSosId/V3whjj14YxAhpow+UZeM8KSuCxiQ33q1By+OsufySt7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=d2sSU/zx; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-3862b40a6e0so399829f8f.0
-        for <live-patching@vger.kernel.org>; Thu, 16 Jan 2025 01:29:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1737019788; x=1737624588; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ndOQe7iYVdafaQgYnE+41A58i1xptE9OdOrBo0S9x6g=;
-        b=d2sSU/zxhFB2TfWL9bcoZSLRQEz/Aw0/6tN3R03Lawd03W93fgwNIRTuk9i9qF7knj
-         hXUWoB2gfFsMPgaiHqXGy+EuLbEpRQJEeY/jg6GV+83zruJM4IrbPFudgS/A/BqmNmIn
-         qmdYlOcY4QJpVXhcPmtcIKYTcVfPsMpX5ZqlYlMBl3NICi8lbM5JV1R3B3H1lKAYumvv
-         DuTwY6tF+uoTb0qfTtIOpq/nj7GtsjZGXogL7mEM44+yTvCVZS+QzCe+GSCXfSb/U8HP
-         I25lRwF50lxRrs9IJs5QH4Sx6/dIA8EEulNwPeqfeRawTycbRxQJU2/6hkm6/gtcll2N
-         q+Rw==
+	s=arc-20240116; t=1737033053; c=relaxed/simple;
+	bh=+hFxKwknvMre/hP5tDMH/Cxc7Oez08BLSgcYveXDaas=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:From:Subject:
+	 In-Reply-To:Content-Type; b=W8+GkLjT3ltP+bUesC8CSlHc8iDXivCkjRH3u3ZFKRJ5LiaUfE4T1AkpU37aG44jTwQM5VmcNOgYubdNV7RvkMnjZHMPxAw0lmN304g0l7rfd7vQEOJ6VoNt2LCYApOZJs8/cjtB7PVLXx4z6c+PuMhge7SAiWMUnx/ao2Q6FcM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=PURTmw8v; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1737033051;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tJE6q01qSH3/mfQ6O3cCJzFIbn2hHMAntoS6R0p7Vw4=;
+	b=PURTmw8vfWQpVV2W4fAx7kAIdFiA3w3YZaq/XE2kE7W28SLb2nzvV/EyakgjGtTVz086rR
+	gVuH6/hjUcFFm50Kh9F8JJOPTZDOCLl0c9Y+G0Ki9C9SweZ3Qb7Dsg/ebrG9X/m7gg5ASX
+	O77VZPh76btLTkL1ZLcoPyooUfuW2cg=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-111-stVVEkLENAWnFeYzFtLHVQ-1; Thu, 16 Jan 2025 08:10:50 -0500
+X-MC-Unique: stVVEkLENAWnFeYzFtLHVQ-1
+X-Mimecast-MFC-AGG-ID: stVVEkLENAWnFeYzFtLHVQ
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-21681a2c0d5so18675145ad.2
+        for <live-patching@vger.kernel.org>; Thu, 16 Jan 2025 05:10:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737019788; x=1737624588;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ndOQe7iYVdafaQgYnE+41A58i1xptE9OdOrBo0S9x6g=;
-        b=Xg26dN/fYu1QvuRYoUynIDG6GEQ+DBCXOmgRCCjwbqo0EK+F4B/kVhXF5jcw9HIl90
-         /aVRxdn8HmgVV+pd6T8euVXL3z82bVXoiGW7mDuzcpH65Wo6W4AvOltij7g1nV3mETgM
-         y4mRhj8HqRiRbjnm9KMPA/hOkrx+o95whjNb2r8ItHd2o0YPDcI0JXqk/4x8CS+A1+HN
-         uLi4iZss/sPwwViD5HrnCqEni3B2V37v4hqhDyUTsd386tsG5LHDiF2aNNe4RA+5pg1V
-         CVfs3QQt3+dYmsZ4SK2sMA8AYN7PL2V25OylVGBBf0sWA02G+O0OKemZ1/3nQTx5DUx4
-         KLIA==
-X-Forwarded-Encrypted: i=1; AJvYcCXj/Gh/DeEJkbwOcYIzebL0ZSxAUstwcioMT8BokHk0r/XP9LDyJY71XWB7ZF33R5BasxdvieQ4b3J4ExN7@vger.kernel.org
-X-Gm-Message-State: AOJu0YzzjUc5nyrncc3WB2H+RPgXY3spYr1lcjcqFqC2ReqFcd3dGk2a
-	guWhI1vNH1+ZdWT5gR43defnDUN4EmBUZCj6S4w9+eEKuHIKVV/9hIzPjb3Zq6I=
-X-Gm-Gg: ASbGncsqWcWtr0oOyKhHjxQK7KtrSldfIa/jpdpVPp4jnE9McAKFJp4lYqI/oOYgkzp
-	h2q/hg5wda3LXrtAhqYaTy4qJfn5xT78SJHdPMoMLyfe8EYc8F/ucoqg6ms2qmCfD6RgiDutMR4
-	Eky2ClWwsH+coivToh8g9pta5tC5iwg15ZKlTaLYkn2aodDJ1DUucohYNW/QAnGpyZ5cnuZXRNN
-	ykX4sEVPW+I3drCw6nCy5vuRwa0EabhHn40cxUct+fZFX5JCA4vWT6rcA==
-X-Google-Smtp-Source: AGHT+IH5nuIBbL7/hc99gmUbXnHjV1QmVgQbVuzI8DIlS9I/l5k+cT/NveGuMhqp+ADX/0RVXMkBfA==
-X-Received: by 2002:a05:6000:4011:b0:385:f47b:1501 with SMTP id ffacd0b85a97d-38a87312d58mr26829937f8f.32.1737019788570;
-        Thu, 16 Jan 2025 01:29:48 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-437c73e370fsm53343725e9.0.2025.01.16.01.29.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2025 01:29:48 -0800 (PST)
-Date: Thu, 16 Jan 2025 10:29:46 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Madhavan Srinivasan <maddy@linux.ibm.com>
-Cc: jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
-	shuah@kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
-	christophe.leroy@csgroup.eu, naveen@kernel.org,
-	live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] selftests: livepatch: handle PRINTK_CALLER in
- check_result()
-Message-ID: <Z4jRisgTXOR5-gmv@pathway.suse.cz>
-References: <20250114143144.164250-1-maddy@linux.ibm.com>
+        d=1e100.net; s=20230601; t=1737033049; x=1737637849;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tJE6q01qSH3/mfQ6O3cCJzFIbn2hHMAntoS6R0p7Vw4=;
+        b=fcB/DYoUe02HlvwiIaU8ftYh6fks33MJRlWVgl+bz0DNWpPqTbfOyPuOr+/MOvmky1
+         ab1ivRcXIs94dsuOse8H0iAGZzngZztdGqzwZ/wVo2/sMmQaqXG/vt8z310E3sciB16x
+         YYGZ9b3YjBoZDZoyEoYw7dTWIprJV+EgPFGrsID8jiOtf8EJ/Q+lVfJF/UJXXam1tdZx
+         /fiOt7RHgWQfr4qWgdh7BS7REOMauufNTxCajcC+Q0kiBQPFVjb4yfg4HjZH3K1MugjS
+         dU70JwSJymX/9Wyjl0PscxJu8i7NHcK2UxY0VOfo7sn4iMIe+9EJxSvheZu8fDvoYgig
+         9Nzw==
+X-Forwarded-Encrypted: i=1; AJvYcCUDBTaUymZt+tUUB5wGS3uvPb7Xe4zqzEaj1YDVnsuwpBEF7XaOzSmHz/GRPx5+dh6M0cQFVZ6oxRC7EIe8@vger.kernel.org
+X-Gm-Message-State: AOJu0YxQB62OPvPqfQiUbQrFuVnC4YBE86fBxDMuDxt8VTWSZl0350RS
+	QCrBLKpXGE068dgma6Z/u4pW0x5wSQwoInTuXcv1UX79H6KwjDNFlUsT46QAkaTdI10j/wGU5Sc
+	9HWtkYjy4umrxm/0GyxhchffqS+EOKUmiqB3yignaj3+mQqR3z3JJtdSujuOgR90=
+X-Gm-Gg: ASbGnctdPlTo3mqOTKvepFLrWM7tG5AHCt7+kz5i0G2VOFXWR0PpOus+TYXOfQtZcv8
+	39gmCD5jgXQHHU/RIBSorTYjRs/dD1cEDi+zOG3PJyOaU7cIKpmq9M+97PuXnZQD8aGesUGIpIZ
+	NAlADpyRo5GZl+U/nTBLxAo2j7W8YApAT5jUttY9G0ft/jN1wihdLDHKWnKiZ9Sxfs/Peqn4oIV
+	FZyccW5BlCRjHmZWWTZdZeJn1d7quNkE7Lh5G+pLQ8zSx0RhT0DCZuKvkpi9QsTVk6by8UluH9N
+	DrigjT3Y5VWvLvFGKTiMGTuHqqSiiHECQzTQ5rg=
+X-Received: by 2002:a05:6a20:2d22:b0:1e0:d0c8:7100 with SMTP id adf61e73a8af0-1e88d0dfa37mr60732741637.7.1737033049098;
+        Thu, 16 Jan 2025 05:10:49 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHUGbKF+ol54jU0b50uVW9b4PehX8H1D/kojXZ6K7dXSPvbGWangj+PbIkDc2rYIOeEmnulwA==
+X-Received: by 2002:a05:6a20:2d22:b0:1e0:d0c8:7100 with SMTP id adf61e73a8af0-1e88d0dfa37mr60732683637.7.1737033048617;
+        Thu, 16 Jan 2025 05:10:48 -0800 (PST)
+Received: from [192.168.1.46] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72d40658c4bsm11140160b3a.100.2025.01.16.05.10.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jan 2025 05:10:48 -0800 (PST)
+Message-ID: <af77083e-2100-ea2e-ae14-dc5761456fef@redhat.com>
+Date: Thu, 16 Jan 2025 08:10:44 -0500
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250114143144.164250-1-maddy@linux.ibm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Content-Language: en-US
+To: Petr Mladek <pmladek@suse.com>, Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: jikos@kernel.org, mbenes@suse.cz, shuah@kernel.org, mpe@ellerman.id.au,
+ npiggin@gmail.com, christophe.leroy@csgroup.eu, naveen@kernel.org,
+ live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org
+References: <20250114143144.164250-1-maddy@linux.ibm.com>
+ <Z4jRisgTXOR5-gmv@pathway.suse.cz>
+From: Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH] selftests: livepatch: handle PRINTK_CALLER in
+ check_result()
+In-Reply-To: <Z4jRisgTXOR5-gmv@pathway.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue 2025-01-14 20:01:44, Madhavan Srinivasan wrote:
-> Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER, which
-> adds the caller id as part of the dmesg. Due to this, even though
-> the expected vs observed are same, end testcase results are failed.
+On 1/16/25 04:29, Petr Mladek wrote:
+> On Tue 2025-01-14 20:01:44, Madhavan Srinivasan wrote:
+>> Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER, which
+>> adds the caller id as part of the dmesg. Due to this, even though
+>> the expected vs observed are same, end testcase results are failed.
+> 
+> CONFIG_PRINTK_CALLER is not the only culprit. We (SUSE) have it enabled
+> as well and the selftests pass without this patch.
+> 
+> The difference might be in dmesg. It shows the caller only when
+> the messages are read via the syslog syscall (-S) option. It should
+> not show the caller when the messages are read via /dev/kmsg
+> which should be the default.
+> 
+> I wonder if you define an alias to dmesg which adds the "-S" option
+> or if /dev/kmsg is not usable from some reason.
+> 
 
-CONFIG_PRINTK_CALLER is not the only culprit. We (SUSE) have it enabled
-as well and the selftests pass without this patch.
+Hi Petr,
 
-The difference might be in dmesg. It shows the caller only when
-the messages are read via the syslog syscall (-S) option. It should
-not show the caller when the messages are read via /dev/kmsg
-which should be the default.
+To see the thread markers on a RHEL-9.6 machine, I built and installed
+the latest dmesg from:
 
-I wonder if you define an alias to dmesg which adds the "-S" option
-or if /dev/kmsg is not usable from some reason.
+  https://github.com/util-linux/util-linux
 
-That said, I am fine with the patch. But I would like to better
-understand and document why you need it. Also it would be nice
-to update the filter format as suggested by Joe.
+and ran Madhavan's tests.  I don't think there was any alias involved:
 
-Best Regards,
-Petr
+  $ alias | grep dmesg
+  (nothing)
+
+  $ ~/util-linux/dmesg | tail -n1
+  [ 4361.322790] [  T98877] % rmmod test_klp_livepatch
+
+From util-linux's 467a5b3192f1 ("dmesg: add caller_id support"):
+
+ The dmesg -S using the old syslog interface supports printing the
+ PRINTK_CALLER field but currently standard dmesg does not support
+ printing the field if present. There are utilities that use dmesg and
+ so it would be optimal if dmesg supported PRINTK_CALLER as well.
+
+does that imply that printing the thread IDs is now a (util-linux's)
+dmesg default?
+
+Regards,
+
+-- 
+Joe
+
 
