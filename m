@@ -1,82 +1,65 @@
-Return-Path: <live-patching+bounces-999-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1000-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8144BA131B7
-	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 04:21:43 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 44E07A13234
+	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 06:03:34 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 16E0A3A4AF3
-	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 03:21:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A930E3A6107
+	for <lists+live-patching@lfdr.de>; Thu, 16 Jan 2025 05:03:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CC9E74059;
-	Thu, 16 Jan 2025 03:21:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87EA126AF6;
+	Thu, 16 Jan 2025 05:03:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="AWunwoS1"
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="Z9ZpfxqP"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 898AE225D6;
-	Thu, 16 Jan 2025 03:21:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6245661
+	for <live-patching@vger.kernel.org>; Thu, 16 Jan 2025 05:03:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.235
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736997698; cv=none; b=bF/1e7250bRWuQS3XsVDg7R5t6DVvVHiTJfkWBMlkZMle4WFYnSPkQyI2AKr33bf3VSFfeR3+VLgO2ehXU64cIBMhmWbyGX0qbhihAefqfWL9UG9zfT7nPFb9kJASp3FCW6cCjffmAZUG4IhgI2ebgg49l+uIjHKArzLHafg1X0=
+	t=1737003810; cv=none; b=K/GJQgD2NI/tl/XeR/YPfHXrrYySqExXi4xbm4Y0b96l2hreEh224BVmZTktCWLjM9c37QES6sn64TZ+LnT4RYKgrcWBNnT13yhGkLGLDN2ZnQPH+85H6+y09Ja4D0+OULtpwy4yaxKyQMJxib4pAE6GWPnwZ8I9I84wmzMabJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736997698; c=relaxed/simple;
-	bh=1dhaLNGZsYPpOHgAFrejfhegf4kOj3M5etDsdaA1W4I=;
+	s=arc-20240116; t=1737003810; c=relaxed/simple;
+	bh=+xqF42oPKA5CXNHUYRJQPIl7lv0Bettg+YfPYcynUs8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BNvSnw9ZVUVv5zY5KWS0nFQg0v3STcJHX6zM735lSzDkVyM7pAKu7aso39iHq2wZrLFTakiVTG26jYjtmJ0pQZNeLUX1qTKZhSWcnkcYkNlBf/0HVKatFN2y6Sc/z/91dcvp4DXwrrt0q4pDVXikP9ydBeAo6OAM2HUojamJ3+E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=AWunwoS1; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50FNwbZb028601;
-	Thu, 16 Jan 2025 03:21:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=2+/JXF
-	F271n7zx/492hS24NZjkBavMO6mOxr6CQgAGw=; b=AWunwoS1RNu/nU+CGtjU4Z
-	DpaJenJpEiWoGnJGxSBvgy36n6NhiHKNIbRdgAW3WIE1hmlpxSoulmrt6B2rgEHk
-	8hNEgtEXS5aPc1tKDSEU5LPktnrGbgKJx618Sl+YMiYO/8YNBKHNJ57BsnTqrh7y
-	6BiomPIUtpZyMRsgedatNx77l1c5pxZRJEi02A8nxDsOA2WiU27jpEeDfFwk89ad
-	FeRGaChBnx9fkCEAgicun+JQDz9sOJQ/MEJOKcqXSeWMMsu9RiYrA0Oy4xQ1MAV2
-	CNKdOYTsnstMKCN9vpLEOphj4Y4yD9WcShyp15oM53PSyvijHZHoEuOXG0oc/W2A
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 446q5hrn6t-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Jan 2025 03:21:16 +0000 (GMT)
-Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 50G3HCt2023836;
-	Thu, 16 Jan 2025 03:21:16 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 446q5hrn6p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Jan 2025 03:21:16 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 50G1vNEI016994;
-	Thu, 16 Jan 2025 03:21:14 GMT
-Received: from smtprelay04.wdc07v.mail.ibm.com ([172.16.1.71])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4444fkbp4x-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Jan 2025 03:21:14 +0000
-Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
-	by smtprelay04.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 50G3LEmj64225776
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 16 Jan 2025 03:21:14 GMT
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1F42A5805C;
-	Thu, 16 Jan 2025 03:21:14 +0000 (GMT)
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7FFA458051;
-	Thu, 16 Jan 2025 03:21:07 +0000 (GMT)
-Received: from [9.43.32.49] (unknown [9.43.32.49])
-	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Thu, 16 Jan 2025 03:21:07 +0000 (GMT)
-Message-ID: <2808cfba-a7c8-420c-ba30-1bb8efca93e9@linux.ibm.com>
-Date: Thu, 16 Jan 2025 08:51:04 +0530
+	 In-Reply-To:Content-Type; b=A8APIWmdw+I1PafxoZLNrK4NTBwWc8wZR1XvYvdwO1ilDwk4nx7ZJx5AgBibpGDY6IksCMUvpnQfgtRzc8fg6DUBCYsevonWjTBL3gz1J9NS/fg5ncdARyHsY/CYV2SK7xLQK/Y0IvRPGx3N9jmPvOtnVUakn3XoaEaBtfLi+Sw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=Z9ZpfxqP; arc=none smtp.client-ip=203.205.221.235
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1737003795;
+	bh=JjDA7y8pKYpN7nyAQxsWkQ6LBC7+3xo5vNB1P1Subfc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=Z9ZpfxqP6USx5T0U4HdWUh9wUzzvZXUWKAUcp2o7cgKR2da0E/Ag0zo0F2p8/3lpL
+	 JtMtz1RboWcoy5C1f60eUn4o1bss5jSEpK3zIrxdUAPMm33vc738Ybf11iBWHtNwZT
+	 8mtdN1f8wGOqw1gUORLKEyUnMU2UUm9gE8f71Pi4=
+Received: from [IPV6:2408:822e:4b2:8541:b0be:e8c8:2d:a517] ([2408:822e:4b2:8541:b0be:e8c8:2d:a517])
+	by newxmesmtplogicsvrszc16-0.qq.com (NewEsmtp) with SMTP
+	id CD25480; Thu, 16 Jan 2025 13:03:13 +0800
+X-QQ-mid: xmsmtpt1737003793tq8gow1n3
+Message-ID: <tencent_FB39E787D4AB347DE10AE0811A00946EB40A@qq.com>
+X-QQ-XMAILINFO: MJf32pulH481lXwJhsvE/2S1sZUY4OZx6gGcANpSjfWs6aXQCr/CAwkT2XFMRL
+	 fHsOK4YrBxPjaZG/ooCMCwRbczNSCJB8tFFNaBPkQ7QtDIt2GkJkOsQ+XPf7YCcvdlRJYiK72S5H
+	 5QYGr6DLoVWxGX4FrAg2CXTmrjxbgSM9soC+4puQFH8m0OI3IAXrb9v18xwNVZlW+UzvtFJvjP8f
+	 IiJvFax307kOKzF8mauALuVg49lfdGGdrNqCh+ck9HvBlQLi7eszONl8tFuYft9azXy3UlcoKMrY
+	 6Qykp1lgGSxO7fC69SqG5DzhpTISSDqICsVc2HaGM/cyF6aSNafl1WGwI7REkAZeAQPY07I8NeVR
+	 sTgpZ+0HWaGuLnUzwODW7MDaOD8KTaJaZk0+XjzT1sL99Rd2GQE2stWWD9Ivtxrpv8S7TZcN0IgO
+	 25BMQ+gG7/ScO4ZdnpM8GvfmkiO29cTZULcYDJGuaIXfl1dwI/pq2r1Dt33Q88VCbN3bdMgoAknW
+	 XqnE2pLP5C3Ox0b84NiFLdeY4zl0k0rnAv7jmVRTZmfUr+oJuPWgMq8hcrIWeMmO5Nx6ykQF9tXg
+	 g6r2KXlHfuwUmDdjfbUYeYHuZcNR+Dki2o10v+TKmB/XxnjlCyGWPsbCrOEIkEhpKaQtC5MBX8c5
+	 UbgujqCeWFjLehIMtdJc70VhYyQONKkPKrOG7PP5hrz4SyOR4LCHKeUv71BQbyM1hw3a318OqZLo
+	 4YcJtfCDE+75MU+4wqJ8SXaxOG+JVN8ITCi5JtGE4xQX9MOzSGCLCSmxtqtNnbZanFESBqDg6sm5
+	 xKKdPYM4qOtE5hdZxxvQjF37KEg6sd6mXUXspLVx1EQSstc9gFg0PAaerYCJnY+vYmvfVzyxU0ql
+	 iQtgvYkiLAiyR1jZzUHp2QW6Ef4ud0fqMiKwxbDJ9akQttQrfGSN4uA2yZI8NxUvynefn29O7aBP
+	 rSefSTbY6u+YsW/Hvh8aETYeohqr05TYQ6nE1YKMyKv5CW8HAm7Q==
+X-QQ-XMRINFO: MSVp+SPm3vtS1Vd6Y4Mggwc=
+X-OQ-MSGID: <e9fcc41a-53ab-44e2-8f3b-c5ed70a49b94@foxmail.com>
+Date: Thu, 16 Jan 2025 13:03:16 +0800
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -84,115 +67,57 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] selftests: livepatch: handle PRINTK_CALLER in
- check_result()
-To: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, shuah@kernel.org,
-        mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu,
-        naveen@kernel.org, live-patching@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-References: <20250114143144.164250-1-maddy@linux.ibm.com>
- <Z4f6AbC7pQLIWuX+@redhat.com>
+Subject: Re: selftests/livepatch: question about dmesg "signaling remaining
+ tasks"
+To: Petr Mladek <pmladek@suse.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>,
+ "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+References: <TYZPR01MB6878934C04B458FA6FEE011CA6192@TYZPR01MB6878.apcprd01.prod.exchangelabs.com>
+ <tencent_D03A5C20BC0603E8D2F936D37C97FAE62607@qq.com>
+ <Z4fa0qCWsef0B_ze@pathway.suse.cz>
 Content-Language: en-US
-From: Madhavan Srinivasan <maddy@linux.ibm.com>
-In-Reply-To: <Z4f6AbC7pQLIWuX+@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+From: laokz <laokz@foxmail.com>
+In-Reply-To: <Z4fa0qCWsef0B_ze@pathway.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Epqa_ZMM6zL-u388jDocavZ2XPAu73Gj
-X-Proofpoint-GUID: dWNJxTh6M1dmt1Y8E-tyrLr16GqbcnTu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-01-15_11,2025-01-15_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- phishscore=0 suspectscore=0 spamscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 impostorscore=0 mlxscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2501160018
 
+Hi Petr,
 
+Thanks for the quick reply.
 
-On 1/15/25 11:40 PM, Joe Lawrence wrote:
-> On Tue, Jan 14, 2025 at 08:01:44PM +0530, Madhavan Srinivasan wrote:
->> Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER, which
->> adds the caller id as part of the dmesg. Due to this, even though
->> the expected vs observed are same, end testcase results are failed.
+On 1/15/2025 11:57 PM, Petr Mladek wrote:
+> On Wed 2025-01-15 08:32:12, laokz@foxmail.com wrote:
+>> When do livepatch transition, kernel call klp_try_complete_transition() which in-turn might call klp_send_signals(). klp_send_signal() has the code:
 >>
->>  -% insmod test_modules/test_klp_livepatch.ko
->>  -livepatch: enabling patch 'test_klp_livepatch'
->>  -livepatch: 'test_klp_livepatch': initializing patching transition
->>  -livepatch: 'test_klp_livepatch': starting patching transition
->>  -livepatch: 'test_klp_livepatch': completing patching transition
->>  -livepatch: 'test_klp_livepatch': patching complete
->>  -% echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
->>  -livepatch: 'test_klp_livepatch': initializing unpatching transition
->>  -livepatch: 'test_klp_livepatch': starting unpatching transition
->>  -livepatch: 'test_klp_livepatch': completing unpatching transition
->>  -livepatch: 'test_klp_livepatch': unpatching complete
->>  -% rmmod test_klp_livepatch
->>  +[   T3659] % insmod test_modules/test_klp_livepatch.ko
->>  +[   T3682] livepatch: enabling patch 'test_klp_livepatch'
->>  +[   T3682] livepatch: 'test_klp_livepatch': initializing patching transition
->>  +[   T3682] livepatch: 'test_klp_livepatch': starting patching transition
->>  +[    T826] livepatch: 'test_klp_livepatch': completing patching transition
->>  +[    T826] livepatch: 'test_klp_livepatch': patching complete
->>  +[   T3659] % echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
->>  +[   T3659] livepatch: 'test_klp_livepatch': initializing unpatching transition
->>  +[   T3659] livepatch: 'test_klp_livepatch': starting unpatching transition
->>  +[    T789] livepatch: 'test_klp_livepatch': completing unpatching transition
->>  +[    T789] livepatch: 'test_klp_livepatch': unpatching complete
->>  +[   T3659] % rmmod test_klp_livepatch
+>>          if (klp_signals_cnt == SIGNALS_TIMEOUT)
+>>                  pr_notice("signaling remaining tasks\n");
 >>
->>   ERROR: livepatch kselftest(s) failed
->>  not ok 1 selftests: livepatch: test-livepatch.sh # exit=1
->>
->> Currently the check_result() handles the "[time]" removal from
->> the dmesg. Enhance the check to handle removal of "[Tid]" also.
->>
->> Signed-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>
->> ---
->>  tools/testing/selftests/livepatch/functions.sh | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
->> index e5d06fb40233..a1730c1864a4 100644
->> --- a/tools/testing/selftests/livepatch/functions.sh
->> +++ b/tools/testing/selftests/livepatch/functions.sh
->> @@ -306,7 +306,8 @@ function check_result {
->>  	result=$(dmesg | awk -v last_dmesg="$LAST_DMESG" 'p; $0 == last_dmesg { p=1 }' | \
->>  		 grep -e 'livepatch:' -e 'test_klp' | \
->>  		 grep -v '\(tainting\|taints\) kernel' | \
->> -		 sed 's/^\[[ 0-9.]*\] //')
->> +		 sed 's/^\[[ 0-9.]*\] //' | \
->> +		 sed 's/^\[[ ]*T[0-9]*\] //')
-> 
-> Thanks for adding this to the filter.
-> 
-> If I read the PRINTK_CALLER docs correctly, there is a potential CPU
-> identifier as well.  Are there any instances where the livepatching code
-> will use the "[C$processor_id]" (out of task context) prefix?  Or would
-> it hurt to future proof with [CT][0-9]?
+>> Do we need to match or filter out this message when check_result? And here klp_signals_cnt MUST EQUAL to SIGNALS_TIMEOUT, right? 
 
-Thanks for the review.
+Oops, I misunderstood the 2nd question: (klp_signals_cnt % 
+SIGNALS_TIMEOUT == 0) not always mean equal.
 
-yeah, saw that case, but in my current build and boot test, seen only the Thread-id added,
-so sent out to fix that. I did not get to add a test to create "processor id" scenario,
-so cant test it at this point.
+> Good question. Have you seen this message when running the selftests, please?
+> 
+> I wonder which test could trigger it. I do not recall any test
+> livepatch where the transition might get blocked for too long.
+> 
+> There is the self test with a blocked transition ("busy target
+> module") but the waiting is stopped much earlier there.
+> 
+> The message probably might get printed when the selftests are
+> called on a huge and very busy system. But then we might get
+> into troubles also with other timeouts. So it would be nice
+> to know more details about when this happens.
 
-Maddy
+We're trying to port livepatch to RISC-V. In my qemu virt VM in a cloud 
+environment, all tests passed except test-syscall.sh. Mostly it 
+complained the missed dmesg "signaling remaining tasks". I want to 
+confirm from your experts that in theory the failure is expected, or if 
+we could filter out this potential dmesg completely.
 
-> 
-> Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
-> 
-> --
-> Joe
-> 
->>  
->>  	if [[ "$expect" == "$result" ]] ; then
->>  		echo "ok"
->> -- 
->> 2.47.0
->>
-> 
+Thanks,
+laokz
 
 
