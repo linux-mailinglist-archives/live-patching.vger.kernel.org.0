@@ -1,92 +1,89 @@
-Return-Path: <live-patching+bounces-1006-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1007-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF139A15002
-	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2025 14:04:08 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 434E7A1504E
+	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2025 14:11:46 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF8453A90F7
-	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2025 13:03:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7013B169532
+	for <lists+live-patching@lfdr.de>; Fri, 17 Jan 2025 13:11:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C931B1FFC40;
-	Fri, 17 Jan 2025 13:02:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B80FB1FFC74;
+	Fri, 17 Jan 2025 13:10:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="gB+0yLEX";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="fZo1H/BE";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="gB+0yLEX";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="fZo1H/BE"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="u+l2NRK4";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="G0Cpdy4Q";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Hciih/2T";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="0ho6LH42"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B18731FECC2;
-	Fri, 17 Jan 2025 13:02:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E50091FF7CB
+	for <live-patching@vger.kernel.org>; Fri, 17 Jan 2025 13:10:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737118928; cv=none; b=J2fmZ/yyyFL8NdLnTf3VjA6bme560HfolUy4qH9KCcdlxFNVecmMrUa0k8LqyI7/GuFsfLo000nfUz+kU7bD9nNcdIwieujrPwUHwYiiM9lQtwl2yGjJQuXQI2VB3q1jUPrb9Adv4pSAAGFk04atk6fqGkdfH+BS2OafVfMkhf4=
+	t=1737119411; cv=none; b=nO7vtzbqJJF/GZ8pm+7sjE1Qzww+HD2vtW91NQ+i281Eg6eXNchHRSz1KI8jxT7StgszEliLuT9pj16g+kEXLbF9xxv6yPVPjDzkY07BqrOBLzyP9+51Cv9fgbrQyN+v5FlFZv+WEVOIeHC8JUFlfSdCRA3Pvbsg7Pb70UNbhLI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737118928; c=relaxed/simple;
-	bh=/TGUIfympz2OKS1IPNCkcPWm5uZ53OTf55W1LHs+5bY=;
+	s=arc-20240116; t=1737119411; c=relaxed/simple;
+	bh=YRxQsvsgCt524s1ETEwKxTqwQla3qUVuArv0iASWiAI=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=ImPscL2r2db7Qz7gDybjWc8q287/ygwVPWC0IANn921MRSBCIARiNmqxi7Pd1K/b3wEIKoeu6ETCZLDiP+FbX3L40cb1+DAU1cR8ToYMsV9rTAOo3Mr66PfCCBYU+9MtIdaEUxpx86d64DZmjrss9G0YeS54Jwnhm57Qps1xLHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=gB+0yLEX; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=fZo1H/BE; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=gB+0yLEX; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=fZo1H/BE; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version:Content-Type; b=YxUnexDBJWQjaNF085Oi2x2QTIRJjuO5T+Q0GPRZtjqWbezg3qVUNVSvNU3eQMs9uopnpilnH2dlftMcWeT5nJw8L7jS5F74gOXYGc78xepuYWCeZZcdVrX/xfVOsmFsnR17antUTTEb1191vKj18A86Svi3BZx3EEX9wh3SDEk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=u+l2NRK4; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=G0Cpdy4Q; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Hciih/2T; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=0ho6LH42; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Received: from pobox.suse.cz (unknown [10.100.2.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id CDA1221177;
-	Fri, 17 Jan 2025 13:02:04 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id A514721174;
+	Fri, 17 Jan 2025 13:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1737118924; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1737119408; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JgSrgxATeLSMWrnRc+d58QJE+AgqKRYBqUdU25meeXM=;
-	b=gB+0yLEXF2s+dZ6ugNySFz7tUpEiyJU2ys49pfpdfHnwn8ZqxJNXCymKHvpf5/QGv4j8sD
-	/eKXq/ZXdqjugJz2j9eUyFWv/Fc3pR9l3CLfapeoXCt7YtO7PwIry/AVJNt2TjfUG4vLDY
-	wMz6CvhVegJqwY+qZIedRREjLp+Occw=
+	bh=XaHwtCM2ye1S11j64yLsSa/1AoHYpyt+gzL4bw1NHj4=;
+	b=u+l2NRK4QRU6tcZzuDMYK1drQ2Jphg1lFuM9ahy89TMpG3il5nRBc9RnekQH4PSmQtNquh
+	c/3XuHeQST5pVtAgto6V792RS37dUIWWipfzT+bGjBf3pzIUBsRwaZqyR5+sGt7FRHtEpJ
+	asjfmoDHjbN8uCAfFU5w30ymBYp/S4g=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1737118924;
+	s=susede2_ed25519; t=1737119408;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JgSrgxATeLSMWrnRc+d58QJE+AgqKRYBqUdU25meeXM=;
-	b=fZo1H/BEKSEaEFUQjYrAy7Ye9Zi6rB9/n8du7zJXp3hL9uZV0R6N5jzUAD0RflvIw7AQhz
-	Zeh1+dWrD+V8KxBg==
+	bh=XaHwtCM2ye1S11j64yLsSa/1AoHYpyt+gzL4bw1NHj4=;
+	b=G0Cpdy4Qfsm1Dbk/kEMH/4NoJ87xEe/FxxMoBh29GtbDtZu4y9sgELb3lbFvFsqOpQsBT+
+	Eb8evIubibFRG5DQ==
 Authentication-Results: smtp-out1.suse.de;
 	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1737118924; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1737119406; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JgSrgxATeLSMWrnRc+d58QJE+AgqKRYBqUdU25meeXM=;
-	b=gB+0yLEXF2s+dZ6ugNySFz7tUpEiyJU2ys49pfpdfHnwn8ZqxJNXCymKHvpf5/QGv4j8sD
-	/eKXq/ZXdqjugJz2j9eUyFWv/Fc3pR9l3CLfapeoXCt7YtO7PwIry/AVJNt2TjfUG4vLDY
-	wMz6CvhVegJqwY+qZIedRREjLp+Occw=
+	bh=XaHwtCM2ye1S11j64yLsSa/1AoHYpyt+gzL4bw1NHj4=;
+	b=Hciih/2TlsJbHC8Nxr322vrHaF5X618rEOHCjl11DTtvpFl680U3vzFn/w2MwY+9Y29R7e
+	AyZcovhFrRSgerOrVABrvaDOGpAD3BpqXE/Cw3wowWlx63sndWz7fvHu5gP6zJsZBl7RyT
+	D3QoAmoTL7nMWDvynDOpolwFApO1wE8=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1737118924;
+	s=susede2_ed25519; t=1737119406;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JgSrgxATeLSMWrnRc+d58QJE+AgqKRYBqUdU25meeXM=;
-	b=fZo1H/BEKSEaEFUQjYrAy7Ye9Zi6rB9/n8du7zJXp3hL9uZV0R6N5jzUAD0RflvIw7AQhz
-	Zeh1+dWrD+V8KxBg==
-Date: Fri, 17 Jan 2025 14:02:04 +0100 (CET)
+	bh=XaHwtCM2ye1S11j64yLsSa/1AoHYpyt+gzL4bw1NHj4=;
+	b=0ho6LH42XVn6TJyGA9AuAX1Mxr7onx33eaM7QRuSqyGs3dtEMrFFQa0FkypuY+BRskXR8m
+	tXHNQvkO/mXbCKBw==
+Date: Fri, 17 Jan 2025 14:10:06 +0100 (CET)
 From: Miroslav Benes <mbenes@suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-cc: Joe Lawrence <joe.lawrence@redhat.com>, 
-    Madhavan Srinivasan <maddy@linux.ibm.com>, jikos@kernel.org, 
-    shuah@kernel.org, mpe@ellerman.id.au, npiggin@gmail.com, 
-    christophe.leroy@csgroup.eu, naveen@kernel.org, 
-    live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-    linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] selftests: livepatch: handle PRINTK_CALLER in
- check_result()
-In-Reply-To: <Z4ktTdwl8aqqwZpf@pathway.suse.cz>
-Message-ID: <alpine.LSU.2.21.2501171401290.6283@pobox.suse.cz>
-References: <20250114143144.164250-1-maddy@linux.ibm.com> <Z4jRisgTXOR5-gmv@pathway.suse.cz> <af77083e-2100-ea2e-ae14-dc5761456fef@redhat.com> <Z4ktTdwl8aqqwZpf@pathway.suse.cz>
+To: laokz <laokz@foxmail.com>
+cc: Petr Mladek <pmladek@suse.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
+    Jiri Kosina <jikos@kernel.org>, Joe Lawrence <joe.lawrence@redhat.com>, 
+    "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
+Subject: Re: selftests/livepatch: question about dmesg "signaling remaining
+ tasks"
+In-Reply-To: <tencent_FB39E787D4AB347DE10AE0811A00946EB40A@qq.com>
+Message-ID: <alpine.LSU.2.21.2501171407520.6283@pobox.suse.cz>
+References: <TYZPR01MB6878934C04B458FA6FEE011CA6192@TYZPR01MB6878.apcprd01.prod.exchangelabs.com> <tencent_D03A5C20BC0603E8D2F936D37C97FAE62607@qq.com> <Z4fa0qCWsef0B_ze@pathway.suse.cz> <tencent_FB39E787D4AB347DE10AE0811A00946EB40A@qq.com>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -95,92 +92,59 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-X-Spam-Score: -8.30
-X-Spamd-Result: default: False [-8.30 / 50.00];
-	REPLY(-4.00)[];
-	BAYES_HAM(-3.00)[100.00%];
+X-Spam-Score: -4.30
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-0.996];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
 	MIME_GOOD(-0.10)[text/plain];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FREEMAIL_TO(0.00)[foxmail.com];
+	RCVD_COUNT_ZERO(0.00)[0];
 	MIME_TRACE(0.00)[0:+];
 	ARC_NA(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	FREEMAIL_CC(0.00)[redhat.com,linux.ibm.com,kernel.org,ellerman.id.au,gmail.com,csgroup.eu,vger.kernel.org,lists.ozlabs.org];
-	RCVD_COUNT_ZERO(0.00)[0];
-	FROM_HAS_DN(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[12];
-	FROM_EQ_ENVFROM(0.00)[];
+	TO_DN_EQ_ADDR_SOME(0.00)[];
 	MID_RHS_MATCH_FROMTLD(0.00)[];
-	TO_DN_SOME(0.00)[]
+	FREEMAIL_ENVRCPT(0.00)[foxmail.com];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCPT_COUNT_FIVE(0.00)[6]
 X-Spam-Flag: NO
 X-Spam-Level: 
 
 Hi,
 
-On Thu, 16 Jan 2025, Petr Mladek wrote:
-
-> On Thu 2025-01-16 08:10:44, Joe Lawrence wrote:
-> > On 1/16/25 04:29, Petr Mladek wrote:
-> > > On Tue 2025-01-14 20:01:44, Madhavan Srinivasan wrote:
-> > >> Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER, which
-> > >> adds the caller id as part of the dmesg. Due to this, even though
-> > >> the expected vs observed are same, end testcase results are failed.
-> > > 
-> > > CONFIG_PRINTK_CALLER is not the only culprit. We (SUSE) have it enabled
-> > > as well and the selftests pass without this patch.
-> > > 
-> > > The difference might be in dmesg. It shows the caller only when
-> > > the messages are read via the syslog syscall (-S) option. It should
-> > > not show the caller when the messages are read via /dev/kmsg
-> > > which should be the default.
-> > > 
-> > > I wonder if you define an alias to dmesg which adds the "-S" option
-> > > or if /dev/kmsg is not usable from some reason.
-> > > 
+> > Good question. Have you seen this message when running the selftests,
+> > please?
 > > 
-> > Hi Petr,
+> > I wonder which test could trigger it. I do not recall any test
+> > livepatch where the transition might get blocked for too long.
 > > 
-> > To see the thread markers on a RHEL-9.6 machine, I built and installed
-> > the latest dmesg from:
+> > There is the self test with a blocked transition ("busy target
+> > module") but the waiting is stopped much earlier there.
 > > 
-> >   https://github.com/util-linux/util-linux
-> > 
-> > and ran Madhavan's tests.  I don't think there was any alias involved:
-> > 
-> >   $ alias | grep dmesg
-> >   (nothing)
-> > 
-> >   $ ~/util-linux/dmesg | tail -n1
-> >   [ 4361.322790] [  T98877] % rmmod test_klp_livepatch
+> > The message probably might get printed when the selftests are
+> > called on a huge and very busy system. But then we might get
+> > into troubles also with other timeouts. So it would be nice
+> > to know more details about when this happens.
 > 
-> Good to know. I havn't seen this yet.
-> 
-> > >From util-linux's 467a5b3192f1 ("dmesg: add caller_id support"):
-> > 
-> >  The dmesg -S using the old syslog interface supports printing the
-> >  PRINTK_CALLER field but currently standard dmesg does not support
-> >  printing the field if present. There are utilities that use dmesg and
-> >  so it would be optimal if dmesg supported PRINTK_CALLER as well.
-> > 
-> > does that imply that printing the thread IDs is now a (util-linux's)
-> > dmesg default?
-> 
-> It looks like. The caller ID information is available also via
-> /dev/kmsg but the older dmesg version did not show it. I guess that
-> they just added support to parse and show it. It actually makes
-> sense to show the same output independently on whether the messages
-> are read via syslog or /dev/kmsg.
-> 
-> So, we need this patch, definitely ;-)
+> We're trying to port livepatch to RISC-V. In my qemu virt VM in a cloud
+> environment, all tests passed except test-syscall.sh. Mostly it complained the
+> missed dmesg "signaling remaining tasks". I want to confirm from your experts
+> that in theory the failure is expected, or if we could filter out this
+> potential dmesg completely.
 
-Yes.
+it might also mean that the implementation on risc-v is not complete yet. 
+If there are many unreliable stacktraces, for example, the live patching 
+infrastructure would retry many times which causes delays and you might 
+run into the message eventually. It pays off to enable dynamic_debug for 
+kernel/livepatch/ and see if there is anything suspicious in the output.
 
-Madhavan, could you add the above findings to the commit log when you 
-submit a new version, please?
-
-Thank you,
+Regards,
 Miroslav
+
+
 
