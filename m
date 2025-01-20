@@ -1,81 +1,87 @@
-Return-Path: <live-patching+bounces-1011-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1012-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 61193A16F3F
-	for <lists+live-patching@lfdr.de>; Mon, 20 Jan 2025 16:30:38 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 642A7A16FD3
+	for <lists+live-patching@lfdr.de>; Mon, 20 Jan 2025 17:07:08 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id DE95E188264C
-	for <lists+live-patching@lfdr.de>; Mon, 20 Jan 2025 15:30:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9568C160C30
+	for <lists+live-patching@lfdr.de>; Mon, 20 Jan 2025 16:07:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8CCB01E7678;
-	Mon, 20 Jan 2025 15:30:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 960A01E7C16;
+	Mon, 20 Jan 2025 16:07:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Uh1MZjHv"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="C1R8ISwS"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80B922AF0B
-	for <live-patching@vger.kernel.org>; Mon, 20 Jan 2025 15:30:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D2E710F9
+	for <live-patching@vger.kernel.org>; Mon, 20 Jan 2025 16:07:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737387031; cv=none; b=Dnspnu1GJkcdeUHiLzjsYm1brfUqnWPZCLoiXvAM+/huUIzOfw/0xOXCEkCKd6UrECuVNYYZyxWZLh32kIoQI/S2pIDN1iZAn0c9VyKpqR3m3wAnfvI8Rx5SnowyliX2oH2H0BGuPLPO/W2Z120Zf09U9iQnmD37xztLVL1j2X0=
+	t=1737389224; cv=none; b=V/Jhy5ZhX3JrPGnaMMxeA05BGbaHaO7ACWXnj7jTZYYLZ2XbW8aEOZeMmyqRNvBPGqPvVFCCHdpfs8ITqT45RgWjqg8LlkaiQdwp4UR+vvJDkTWADJblaeqRsbQ3pR+8FZTlvQXdMImtsnhxn5anZ1MfgEZtdXhyXZDfI2NCORs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737387031; c=relaxed/simple;
-	bh=/EVjmqsWnd96GA3fdZF2iK35jKE5yEZNZ3+dMALVT8k=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=fG03Z5p+1GhwvISzp2IScPsONn4eeCBWHwvps2AasGI0kJoIauao6b+Nr7iuXkLe3KShOi0fOJBLhDZYE6CRasR6bxf4DD4Gxoggo5pPILacaFl7LPBlIBvUsz3qzmx8+oDm33Ah/Stym0AGNRw8mETo+d3u21KYJ+lUIY2DYk4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Uh1MZjHv; arc=none smtp.client-ip=209.85.128.41
+	s=arc-20240116; t=1737389224; c=relaxed/simple;
+	bh=xJGsasntfSsdEyCTjSTe+dS44QgKBn6VDNudjx7WRPk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=c0+XqCXu3yHlmeeEY3bNty78uzN+kXgZBFQkV5Do0PU394shC2t3l1OOx6iGfT/pU/o3R4WKIhwKVmRuvTZTTAclfbSEf2Zq8v6aSKRkmvuvIu9eA9q5kiMwSgDKhfbt11s6q/gf+jaAGdIVF1xIhFMBAPXz33GlNJ1v5wqDcIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=C1R8ISwS; arc=none smtp.client-ip=209.85.221.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-436345cc17bso32970655e9.0
-        for <live-patching@vger.kernel.org>; Mon, 20 Jan 2025 07:30:28 -0800 (PST)
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-385e0e224cbso2452972f8f.2
+        for <live-patching@vger.kernel.org>; Mon, 20 Jan 2025 08:07:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1737387027; x=1737991827; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=egMhB3N2Rw9V5njLefv6j/Qf2GZQrYGzm8354CwabJc=;
-        b=Uh1MZjHvNQOsNeZk5co+yOkLU0A9B4x0fSHoebI26dusKSbkERVFxNyYqu4F70lI3h
-         hn/dugh145JXz3WcN918AQRuxZPsAkWdHWmbNN0dlJNAxYsieDPjdjMr1ha8R71DBtZf
-         9rW8ZOxl4KrQAD66ou0zRXqS+rz+pE94XqxRDY74r0Xa2RBuXHLPR2cUmepuTsTCTVF0
-         xNxDhK5JIZ2ACBny0fqPnoDTfaI115M9h2O6+VUWykFTGUkuvxOobhlrevVVy6WiE4sD
-         Af53ZV2CIb5SP2YoiGtEuKpM5Jk1DfMcJpyQSNN7QyWEUYLPZg7okAMydXELR6mP6a1a
-         J7Fg==
+        d=suse.com; s=google; t=1737389221; x=1737994021; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=w2kqVj/vNWaOIWjGL7Wo52uGPlsoab4Shov7lcOaDwM=;
+        b=C1R8ISwSBREaHKeq42QeJo3ZyNzXyGy9GljDtZ1MTiPH+aRC1PQMU6Pf+7K0Ebiv+d
+         jA3xan3LTWdgriimx+hDWQM+VkZOaB6gbyuw+aaWKU1oqH0OSjXEYlG2G8ACL2Bg02gt
+         qhPF788+1rnc3wCcUX4JjK2TWMzpESmUQs3pcWTLoP0hUv3CDcj+ApNFCtqdJt52k07s
+         1CoNF6bSXNcSXLG4MTe2IbogVU7oz03B4EcF+a+kCxU792Z3sSqmzn+IlDrgjY6bKdKA
+         x9bFPv1h7nCedZKRqc2mXEvPZAqiYrULyyen+/LDy1v9pKP0ltZYAzzOed+O1Bh+slAP
+         fd0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737387027; x=1737991827;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=egMhB3N2Rw9V5njLefv6j/Qf2GZQrYGzm8354CwabJc=;
-        b=wc/aw65mjI5VbV7o0Dgm+4lZfGldcKIRqI8HDH/SqDsG6vuLX8X4lbzi9e93pKjVkR
-         CEwSRH5gfs52/dXME44BF3x2+TvWHt/vp6bCD+Oh/bMVHFBa7eSYE1+ZQ8loQrcMUAmJ
-         XbIErhKwXfOAfOOt7mNZeqfdjwI+8z09FDyKO4zuXO+wAvjz/iRfMfFrBBLJwJnkMbQX
-         Mf82RlJRgPfuUB9eGWocmJbuDs9Q3rF5wqQ+8jJ4c4avSPjp6FqecLXey7iOU7jDcKAz
-         ycJtNCFGswtK8yqLotH/s11vLSCemdUsjoZg5zGG8BaBS+tc7IvmCl3GoEkgj/R0tBER
-         0Hig==
-X-Forwarded-Encrypted: i=1; AJvYcCVzdNyqp6ZcKRQncS7Z43TvVc039+nHyeS5/QkmjatXORmk96j3tOoztN2TmqqGQRNWMiiVLfcwkJtcUSeG@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzan27RoFo4liKnQVy/SVyu6guBWJJBgM+/pol7HQBlFEMvHIfE
-	hSW/IVMSEJc+eOouxfENYFFyXhO4b6SKXLahVX69GsfONdC0QU8K8nwWWl+7+aGdxgsHNp+h8mC
-	l
-X-Gm-Gg: ASbGncu2tOZWJTIP73JCtQHZD6Bmdrgjmj96dzDcDLufCxuyzxHFIlrtSilytOQCevE
-	H/B6fCVdxPuBcvU8Entz9yqGM96yWHxHmfT0WhkswXRR24rTCfnr+v2+R52k9mjHk+62Ne/Is4w
-	+SWyOHjJrzCisHXg1KWFzeuMgTrb+4FkGumeGON6Aa8PiaC4+O+DvUbUHmd5RksL5Yc8MhoHk4w
-	abVOZyTGna90vBQtHdBR1bIFHhcF/VcmIyaTDl5geVzdlkg2Km5lxGHOwSkFQHDrFIYaFc=
-X-Google-Smtp-Source: AGHT+IHvx+OdnmSr7btWugmYvV2hm+eDSftatsNePNUH9RxMXT57i5VFHaso7ytj5dVq7ad0SdDOqQ==
-X-Received: by 2002:a05:6000:186f:b0:386:373f:47c4 with SMTP id ffacd0b85a97d-38bf57c934fmr13677956f8f.49.1737387026810;
-        Mon, 20 Jan 2025 07:30:26 -0800 (PST)
+        d=1e100.net; s=20230601; t=1737389221; x=1737994021;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w2kqVj/vNWaOIWjGL7Wo52uGPlsoab4Shov7lcOaDwM=;
+        b=NXz/ezZOpOMhJVqIUjl8593Ec7qi9TIVR/iRllgUrSDlSKvA2tgGV1wnX7/7bVhmGj
+         DFydjkWAQWQQWzp9tfI4GJ0Gtsfyx9aVNg4kg4U/epLsV+Nstoa20KXZwT3Walq3+X7b
+         Whjz2Y/ASvlQlSdljU8FsIMtnDCeAvf2pcagLC35SRwW24aidPO50nC1yH4R/xz7kFKh
+         VuxB/32utuHPhrToxQNPVpKoYM1TjFC6kWOV2Mn1pG6iSsPKs3kg8k+86aeBIToVlA88
+         fxqSllm553jL8p1X37I82kZkTNEt+4bOtCZo+D3tT+v7P1s1mXeUO2UryJZx2PqbIlf6
+         +/5g==
+X-Forwarded-Encrypted: i=1; AJvYcCWyFz8f5sJYPpkLTnXfgqcUuX80990IhMmBUDqpeAd4KKpHqY9dSUDHSHIFkXabutS/2uhYK5gOncw8GTzj@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw5zNAz+PEkItHkftaJcfl6VX/R+TvJ3Cxh+YTw5tUlgnPsKDym
+	o4ce5M2gN6FFBvrLJwVHAkF5UqktGYIS1Z0oyiJoEAIqOxDvOrUzAdD+yQV39Qk=
+X-Gm-Gg: ASbGncv0txiwZ+QckFlha7k+CZoCEIF/s+rSFgJwfrNv0v98r1DkgryhZsZOUdmqt33
+	6RugplPD7af8sXKh2gi+JTHeruicCmYrGSYYmyFCyzausRFbcRSzrcYYNssnEc+TqXmYnv+GRFQ
+	2JoIh/JnecSV67xb9eREN34ZcoHmfmKmpIH9XE/lHJw6GGOClaHgF2HoOfli34xUq8C0K5phOv0
+	hQfT/cnBy2qV7UU9jhMWE0tA0n/JIHe7PGQ4C6tz+ARk4Hg/IUE43ckpSuN8izHoazWZSc=
+X-Google-Smtp-Source: AGHT+IHblmvdT66NUAONbYDv1+zr0khDyHKPPgNGnZvOkmFzzDFs2TXnIxu6R3PeoRXgYqp5XmXoeg==
+X-Received: by 2002:a05:6000:1548:b0:385:f19f:5a8f with SMTP id ffacd0b85a97d-38bf5655594mr10417912f8f.4.1737389220704;
+        Mon, 20 Jan 2025 08:07:00 -0800 (PST)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-437c7499b28sm212160695e9.8.2025.01.20.07.30.26
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-437c74c4751sm202802545e9.19.2025.01.20.08.06.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2025 07:30:26 -0800 (PST)
-Date: Mon, 20 Jan 2025 16:30:24 +0100
+        Mon, 20 Jan 2025 08:07:00 -0800 (PST)
+Date: Mon, 20 Jan 2025 17:06:58 +0100
 From: Petr Mladek <pmladek@suse.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Subject: [GIT PULL] livepatching for 6.14
-Message-ID: <Z45sEOihzNaOqGwO@pathway.suse.cz>
+To: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
+	shuah@kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
+	christophe.leroy@csgroup.eu, naveen@kernel.org,
+	live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v2] selftests: livepatch: handle PRINTK_CALLER in
+ check_result()
+Message-ID: <Z450ohzYtxVEMh1_@pathway.suse.cz>
+References: <20250119163238.749847-1-maddy@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -84,32 +90,64 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20250119163238.749847-1-maddy@linux.ibm.com>
 
-Hi Linus,
+On Sun 2025-01-19 22:02:38, Madhavan Srinivasan wrote:
+> Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER,
+> which adds the caller id as part of the dmesg. With recent
+> util-linux's update 467a5b3192f16 ('dmesg: add caller_id support')
+> the standard "dmesg" has been enhanced to print PRINTK_CALLER fields.
+> 
+> Due to this, even though the expected vs observed are same,
+> end testcase results are failed.
+> 
+>  -% insmod test_modules/test_klp_livepatch.ko
+>  -livepatch: enabling patch 'test_klp_livepatch'
+>  -livepatch: 'test_klp_livepatch': initializing patching transition
+>  -livepatch: 'test_klp_livepatch': starting patching transition
+>  -livepatch: 'test_klp_livepatch': completing patching transition
+>  -livepatch: 'test_klp_livepatch': patching complete
+>  -% echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
+>  -livepatch: 'test_klp_livepatch': initializing unpatching transition
+>  -livepatch: 'test_klp_livepatch': starting unpatching transition
+>  -livepatch: 'test_klp_livepatch': completing unpatching transition
+>  -livepatch: 'test_klp_livepatch': unpatching complete
+>  -% rmmod test_klp_livepatch
+>  +[   T3659] % insmod test_modules/test_klp_livepatch.ko
+>  +[   T3682] livepatch: enabling patch 'test_klp_livepatch'
+>  +[   T3682] livepatch: 'test_klp_livepatch': initializing patching transition
+>  +[   T3682] livepatch: 'test_klp_livepatch': starting patching transition
+>  +[    T826] livepatch: 'test_klp_livepatch': completing patching transition
+>  +[    T826] livepatch: 'test_klp_livepatch': patching complete
+>  +[   T3659] % echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
+>  +[   T3659] livepatch: 'test_klp_livepatch': initializing unpatching transition
+>  +[   T3659] livepatch: 'test_klp_livepatch': starting unpatching transition
+>  +[    T789] livepatch: 'test_klp_livepatch': completing unpatching transition
+>  +[    T789] livepatch: 'test_klp_livepatch': unpatching complete
+>  +[   T3659] % rmmod test_klp_livepatch
+> 
+>   ERROR: livepatch kselftest(s) failed
+>  not ok 1 selftests: livepatch: test-livepatch.sh # exit=1
+> 
+> Currently the check_result() handles the "[time]" removal from
+> the dmesg. Enhance the check to also handle removal of "[Thread Id]"
+> or "[CPU Id]".
+> 
+> Signed-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>
 
-please pull the latest changes for the kernel livepatching from
+Looks and works well:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git tags/livepatching-for-6.14
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Tested-by: Petr Mladek <pmladek@suse.com>
 
-==================================
+Best Regards,
+Petr
 
-- Add a sysfs attribute showing the livepatch ordering.
-- Some code clean up.
+PS: The merge window for 6.14 has started yesterday. Every change
+    should spend at least few days in linux-next and I have already
+    sent a pull request so it is kind of late for 6.14.
 
-----------------------------------------------------------------
-George Guo (1):
-      selftests/livepatch: Replace hardcoded module name with variable in test-callbacks.sh
-
-Petr Mladek (1):
-      Merge branch 'for-6.14/selftests-trivial' into for-linus
-
-Wardenjohn (2):
-      livepatch: Add stack_order sysfs attribute
-      selftests: livepatch: add test cases of stack_order sysfs interface
-
- Documentation/ABI/testing/sysfs-kernel-livepatch   |  9 +++
- kernel/livepatch/core.c                            | 24 ++++++++
- .../testing/selftests/livepatch/test-callbacks.sh  |  2 +-
- tools/testing/selftests/livepatch/test-sysfs.sh    | 71 ++++++++++++++++++++++
- 4 files changed, 105 insertions(+), 1 deletion(-)
+    If there is a demand, I could still queue it for 6.14 in the 2nd
+    half of the merge window or for rc2. There is only small group
+    of people interested into the livepatch selftests anyway.
 
