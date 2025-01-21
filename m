@@ -1,127 +1,178 @@
-Return-Path: <live-patching+bounces-1024-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1025-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 45505A17AE6
-	for <lists+live-patching@lfdr.de>; Tue, 21 Jan 2025 11:00:49 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 655A7A17CE1
+	for <lists+live-patching@lfdr.de>; Tue, 21 Jan 2025 12:19:17 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C3C7F16B41F
-	for <lists+live-patching@lfdr.de>; Tue, 21 Jan 2025 10:00:36 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8CE2C1601E5
+	for <lists+live-patching@lfdr.de>; Tue, 21 Jan 2025 11:19:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A79921F03C7;
-	Tue, 21 Jan 2025 09:59:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DC8A1EEA35;
+	Tue, 21 Jan 2025 11:19:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RtnsARiR"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ZElky2AB"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71C921E9B29;
-	Tue, 21 Jan 2025 09:59:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00B101BBBEA;
+	Tue, 21 Jan 2025 11:19:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737453579; cv=none; b=cKOiTYkln9S4YvKprLRABVtET96S5ueNQUaDOHjF0UJH2kr5Tp2vJ49DPuJUxA70J91GQPLgTvSrFen63qWtPUymAjUnIMS/vTwkmJPqivDE1to7oQ0+9UyxRIOXIJB0GQdiuxOPMKcrfuBBTgVEWKNYBfHUeRN4BtSuNSvw9Z0=
+	t=1737458352; cv=none; b=HKsTcA1s3P9yWxyfTT/Wge63uWmGoXPU1ijxfobsnsdfGDSWC9cF6AGh+FKBbc7mi+5PnoMr0Cly+kHAqvLhmopdb3EUNTJ754wsvwjfjn9YMVSfEU0O30PPmd3L05x3NC5mU2YdoU3dJJFPYZml4IAI35kF0v9oIfuyH8YTIA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737453579; c=relaxed/simple;
-	bh=iCOJADJJ/sFPbuOid5OXzq1M+MQ1WlHyV9KAisT6QLU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RWfDw3w1xLJlwKYBYbTWyJjabchKphi0qLcVq1jcjOnAmaVY/QDLWcjONlpthx75/3pVPImEwuawjTfOb9pSbOM7f7Y+vhQGk0ecICmk0IbbhcBxDzrd/b/XexUlZbxpfn7Wt/Z325Rr+AMpY9XBa68+dBNnTC9Ej1VO0dCLnbo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RtnsARiR; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 609A5C4CEDF;
-	Tue, 21 Jan 2025 09:59:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737453578;
-	bh=iCOJADJJ/sFPbuOid5OXzq1M+MQ1WlHyV9KAisT6QLU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=RtnsARiRHrenQWHrMnLuEAY7/eJ5WWknmOCHRtfZSkV3oFUmyozJVP5a4Shqstzg3
-	 Z3E6ToP2NZa2ayoQLxkfuTxTAcK84dX/5ut/OsAu0PZlp34UjLqKMLqfLPQxsyzPVD
-	 8QjGowjl6dMGqtqC1HEDEgE8n5NoPlzKoE6fyydZwid7WQ1Msc0Q4WXnelo39417IG
-	 eNQw19ghX0WQWwv5N6+onzWlI9S2+i3vTIwNmA5GD6H4FpAJ/uAQeDfVBpunl21d2w
-	 +3fQAgRw23aCdCr5+lQ0tXWAWIHQckUfsJaQrhRyjjuDJk+DO6cubGx+Ty6nWv9lQC
-	 1ZFmWGRBIU28g==
-From: Mike Rapoport <rppt@kernel.org>
-To: x86@kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Brendan Higgins <brendan.higgins@linux.dev>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	David Gow <davidgow@google.com>,
-	Douglas Anderson <dianders@chromium.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Petr Pavlu <petr.pavlu@suse.com>,
-	Rae Moar <rmoar@google.com>,
-	Richard Weinberger <richard@nod.at>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Shuah Khan <shuah@kernel.org>,
-	Song Liu <song@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	kgdb-bugreport@lists.sourceforge.net,
-	kunit-dev@googlegroups.com,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-modules@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org,
-	linux-um@lists.infradead.org,
-	live-patching@vger.kernel.org
-Subject: [PATCH v2 10/10] x86: re-enable EXECMEM_ROX support
-Date: Tue, 21 Jan 2025 11:57:39 +0200
-Message-ID: <20250121095739.986006-11-rppt@kernel.org>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20250121095739.986006-1-rppt@kernel.org>
-References: <20250121095739.986006-1-rppt@kernel.org>
+	s=arc-20240116; t=1737458352; c=relaxed/simple;
+	bh=nyOy1p/+xcdGeeSi7NzS3/iyIKFqr3VN06dLVeBz3Js=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lAMGbSPxocJaN2ByLYfKQylpMYc51NGakjrKwQ/v0jQ9mk203sTsnI1Z9dd4Snd3Z9OfKXbqiK4Me/ERoQgQc7+EcXVneSZSAA52esCtwtPwz28QwGxsmwAFtN5yaIqVAyb+amOJ8I4nSTUjKpTcgCeLvRl9lESN0fBy3CA8A7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=ZElky2AB; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50L2aR0l014177;
+	Tue, 21 Jan 2025 11:18:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=IWELNA
+	uwWpZU72QPN45qSAZrXijn1CPGu8HSJ/93Nfo=; b=ZElky2ABh9LLxpTMf+YbHu
+	3+FQLK4nYiYvA3PB8aY+psqqVDSQOdjDBWJ2FaPi5hjhTjxlNFoLIbPleO4kzc0B
+	2ptkzY7B65mHXS4POlER8lGXMNj70nSDZQsyrGDdYNgdlVgQLvIYk077FQV80QcF
+	4th/Wa02l5ozmputzlapYIm3F05tjjsjhOcbIog8cBeW+C9YO82tCLlLQiNmoAWk
+	N0mwDlF4cZ7dAG38j92q80jft+U7cH7rIGdhT1w7LgzcylgBHx+/vtm0g94RmfBx
+	H3y+zi7S/n32L1/d90iO4CofFjvD2cqaY2G/SSCT5EG/QxzobhOYN2krSI1v2Kjg
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 449sat43u6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Jan 2025 11:18:50 +0000 (GMT)
+Received: from m0356516.ppops.net (m0356516.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 50LAvBCK003696;
+	Tue, 21 Jan 2025 11:18:49 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 449sat43u4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Jan 2025 11:18:49 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 50LAtOMY021012;
+	Tue, 21 Jan 2025 11:18:48 GMT
+Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 448sb1aj15-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Jan 2025 11:18:48 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 50LBIl2S17105412
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 21 Jan 2025 11:18:47 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 14B7658043;
+	Tue, 21 Jan 2025 11:18:48 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6391858059;
+	Tue, 21 Jan 2025 11:18:40 +0000 (GMT)
+Received: from [9.43.71.201] (unknown [9.43.71.201])
+	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 21 Jan 2025 11:18:39 +0000 (GMT)
+Message-ID: <c91cc2c5-2f82-43e8-a726-bebc4134ad32@linux.ibm.com>
+Date: Tue, 21 Jan 2025 16:48:37 +0530
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] selftests: livepatch: handle PRINTK_CALLER in
+ check_result()
+To: Petr Mladek <pmladek@suse.com>
+Cc: jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
+        shuah@kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
+        christophe.leroy@csgroup.eu, naveen@kernel.org,
+        live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+References: <20250119163238.749847-1-maddy@linux.ibm.com>
+ <Z450ohzYtxVEMh1_@pathway.suse.cz>
+Content-Language: en-US
+From: Madhavan Srinivasan <maddy@linux.ibm.com>
+In-Reply-To: <Z450ohzYtxVEMh1_@pathway.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: xoAhS245gN5Sx9r3gf1mf511ast3Mvlo
+X-Proofpoint-ORIG-GUID: q3Nb3UwRvNy-RbDEw7KvBVwObWnBH6I8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-21_05,2025-01-21_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ priorityscore=1501 suspectscore=0 mlxlogscore=838 bulkscore=0 phishscore=0
+ clxscore=1015 impostorscore=0 mlxscore=0 adultscore=0 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501210091
 
-From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
 
-after rework of execmem ROX caches
 
-Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
----
- arch/x86/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+On 1/20/25 9:36 PM, Petr Mladek wrote:
+> On Sun 2025-01-19 22:02:38, Madhavan Srinivasan wrote:
+>> Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER,
+>> which adds the caller id as part of the dmesg. With recent
+>> util-linux's update 467a5b3192f16 ('dmesg: add caller_id support')
+>> the standard "dmesg" has been enhanced to print PRINTK_CALLER fields.
+>>
+>> Due to this, even though the expected vs observed are same,
+>> end testcase results are failed.
+>>
+>>  -% insmod test_modules/test_klp_livepatch.ko
+>>  -livepatch: enabling patch 'test_klp_livepatch'
+>>  -livepatch: 'test_klp_livepatch': initializing patching transition
+>>  -livepatch: 'test_klp_livepatch': starting patching transition
+>>  -livepatch: 'test_klp_livepatch': completing patching transition
+>>  -livepatch: 'test_klp_livepatch': patching complete
+>>  -% echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
+>>  -livepatch: 'test_klp_livepatch': initializing unpatching transition
+>>  -livepatch: 'test_klp_livepatch': starting unpatching transition
+>>  -livepatch: 'test_klp_livepatch': completing unpatching transition
+>>  -livepatch: 'test_klp_livepatch': unpatching complete
+>>  -% rmmod test_klp_livepatch
+>>  +[   T3659] % insmod test_modules/test_klp_livepatch.ko
+>>  +[   T3682] livepatch: enabling patch 'test_klp_livepatch'
+>>  +[   T3682] livepatch: 'test_klp_livepatch': initializing patching transition
+>>  +[   T3682] livepatch: 'test_klp_livepatch': starting patching transition
+>>  +[    T826] livepatch: 'test_klp_livepatch': completing patching transition
+>>  +[    T826] livepatch: 'test_klp_livepatch': patching complete
+>>  +[   T3659] % echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
+>>  +[   T3659] livepatch: 'test_klp_livepatch': initializing unpatching transition
+>>  +[   T3659] livepatch: 'test_klp_livepatch': starting unpatching transition
+>>  +[    T789] livepatch: 'test_klp_livepatch': completing unpatching transition
+>>  +[    T789] livepatch: 'test_klp_livepatch': unpatching complete
+>>  +[   T3659] % rmmod test_klp_livepatch
+>>
+>>   ERROR: livepatch kselftest(s) failed
+>>  not ok 1 selftests: livepatch: test-livepatch.sh # exit=1
+>>
+>> Currently the check_result() handles the "[time]" removal from
+>> the dmesg. Enhance the check to also handle removal of "[Thread Id]"
+>> or "[CPU Id]".
+>>
+>> Signed-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>
+> 
+> Looks and works well:
+> 
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Tested-by: Petr Mladek <pmladek@suse.com>
+> 
+> Best Regards,
+> Petr
+> 
+> PS: The merge window for 6.14 has started yesterday. Every change
+>     should spend at least few days in linux-next and I have already
+>     sent a pull request so it is kind of late for 6.14.
+> 
+>     If there is a demand, I could still queue it for 6.14 in the 2nd
+>     half of the merge window or for rc2. There is only small group
+>     of people interested into the livepatch selftests anyway.
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index ef6cfea9df73..9d7bd0ae48c4 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -83,6 +83,7 @@ config X86
- 	select ARCH_HAS_DMA_OPS			if GART_IOMMU || XEN
- 	select ARCH_HAS_EARLY_DEBUG		if KGDB
- 	select ARCH_HAS_ELF_RANDOMIZE
-+	select ARCH_HAS_EXECMEM_ROX		if X86_64
- 	select ARCH_HAS_FAST_MULTIPLIER
- 	select ARCH_HAS_FORTIFY_SOURCE
- 	select ARCH_HAS_GCOV_PROFILE_ALL
--- 
-2.45.2
+Thanks. No urgency from my end.
 
 
