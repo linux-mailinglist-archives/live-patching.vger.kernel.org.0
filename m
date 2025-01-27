@@ -1,147 +1,152 @@
-Return-Path: <live-patching+bounces-1061-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1062-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id EFA4BA1D563
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 12:36:01 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 27ED3A1D633
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 13:50:47 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 0897B18875B5
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 11:36:06 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 3318A7A25D6
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 12:50:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A83FD1FECBF;
-	Mon, 27 Jan 2025 11:35:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7F1F71FF5E6;
+	Mon, 27 Jan 2025 12:50:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="LHX4Pa2z"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="PyQZLNMp"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D35E1FDE20
-	for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 11:35:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 567CA4430
+	for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 12:50:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737977756; cv=none; b=hmW7CbnhVjQMjTHQ1dOjoi/KHWK3Vh/kYKzmVSFQ3SOayh3M/YYpH2pEwDPZdzBiLaGvVGHiLRAGSec1pb5wtIBbk3MNrTZwc5GxJL++Kqzw5UqswnsatTLVuRouMOYxlleetBM8UXKyB4k9mopQUZoTq82AYBQoMF84eMsWt0E=
+	t=1737982238; cv=none; b=dCOIVWIMHkElXZbzoJnIpzj68sVGZ/HGinAUU0jIkHI31UOtASybXgX9Yn7fLEJ43ipCsV9jTVr50BFDsygRm+WDK2cGnZKfFnfOp2DQUxcPPgfD3b03DIuLZz2DeUTOHGtD1A2Pnnt0Br3ARUGgD7+ZwwHwh7vJ31Woh89vGu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737977756; c=relaxed/simple;
-	bh=T8lXwYoK0x8G1t2lmU/P5kGh81LSYe5bQFAp3RP4o80=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=adgf55uCO0htaOQVr0plVvYgxW+ASpu1a2IfXgYEJYZg4PrAer9+p10ZfDHQgbGd3spEDF+1vKYBrDHh89NM0zMQTGGmfnF4oYmmT3e3RFMUmNPzieHOFwX5nS+Xka9cgW5YpbxFrsSGFuU1AOFBlsn+uQTZmv//yb4LBTzCsrw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=LHX4Pa2z; arc=none smtp.client-ip=209.85.218.43
+	s=arc-20240116; t=1737982238; c=relaxed/simple;
+	bh=HR4noXGU7w13ZIhOM/ucls8vVM3bhmVGGYLoZmvVDTY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PKTk4g0QVC+qOpIQrL2qOV4tnzDNQ/lYTaA/EkFWcNWu+WXP9vPqPQPW+YASU6zDBllPF0M9rHR8JwbMxdY2fAn/hQiX2SenWYp9kOXh1SySRaNEIqBk2zSK2lSOi1jOeSgEm+YPSsGpLsEfqdqC9D12x4d6l1ZwLIZA78kLFSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=PyQZLNMp; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-aa6a92f863cso908590566b.1
-        for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 03:35:54 -0800 (PST)
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4361c705434so30718585e9.3
+        for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 04:50:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1737977753; x=1738582553; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8zb5dDSWfAPbQtfcZhMyII0+GP9Q7wdaQN5r+kGdVO8=;
-        b=LHX4Pa2zARDIKSi8hn+/q6AhFQ/zEEjz0glbxYfLCjw0+rkoz82V0RQDN9MdoiU4vX
-         kC+O6XoarnhG2wTIsRYQ/viy8m2gtVNQGeeAFwsulxB7u8VbMEZwia2uzdfdXeK3pVjc
-         Yn7tEu+pUCZtnHHvZSE6sjkYQkPChgxtNmVBbeHa8csM+ZwM+Ruk5ObgMj9JqeTePrkv
-         LNz5j06PTbWqRJ5mLRGcOG9DSgdrqMkFgdTH4e+FpA5Hq303V2RlDuM4Sp4GO5JggeSM
-         38T/Q0XNsfcqWgioj7BdMRYJs2+Uh4d7OJyrj6PcT0P5WdqwtwsHe3lt554SNX/AAKqu
-         NeCw==
+        d=suse.com; s=google; t=1737982234; x=1738587034; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VG6M7E++/3Ce9GXj2tezC00IBdvh1kteyj5hzR0NwA8=;
+        b=PyQZLNMpcVv/C7aBWa3i52KmbAcnYmUFq8gKJojCHwVh04N4W5Jf8S5K0rmEWApHqN
+         X93gpvF1GQFkJ1DFtHAoBHJckiAP3RU9fie6Xbw0vXq7ylpjHiww6RoOzN89jXFRN32x
+         Q+wQXO+1zwxrvukDu9Bpe0dMNdQwux3a+D9Z7MeiiQ/3C2bb2wSSvV6EJfsbBYFcj3Ng
+         vm2o+LlIeCdP/lHC7e0qSOdAB7FLP/OdrT9oyujN4J2gy6UMr7LlRiG20LsWk3jw8mJa
+         cgtGJGcT5IRkhwdT7jYeDvhrlJzGBedfWqUbeGG8pNOlegM2Y/dhITi/KOJhQS2RQczD
+         RWBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737977753; x=1738582553;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8zb5dDSWfAPbQtfcZhMyII0+GP9Q7wdaQN5r+kGdVO8=;
-        b=VGQCUTUI3ExuBCTPRgjfSiPkXIEeQes8i1d8zgVTZS6xebfK3fkyC9eHe5eLqZTzzx
-         IgUeA687JeqwYi+8N7AYLUDRncxB+9mMihXfwlDgDBBdvpoKXk5/NUuaXXjjG9EJFpJB
-         jVVoQj7xZl/jXRkRny8PSihYaEJJj/y8QLZidYgFM4PPtpZIAawJ036MLfbPP1BC8LB6
-         ImB576qOU1Ha41LsTRN4cnfPKepS7NvLbhR16jvrM1j/0GHIN6kjMUJpNgabdZY4bLrR
-         VJQjg1LpHfL9f7NQPinkOSlGsaoNtzpTCCe138dos+pI6NNt5dPzNGkxpO5stMx2vfch
-         7kXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXSch436kNMkGzz0I6nPKMYMRrjLEzzEF5Z3bIe8sFJlosSdktyLEB7F6wQXCTe3wV28dCv6LSUgSmT8jLV@vger.kernel.org
-X-Gm-Message-State: AOJu0YwsdXHPnrDOGsHJ3I0U71FIsj+QIk66HYkAdvDqZMzFx+a50cAE
-	VbU+AJXfKMpCUfhKFAtWxPVdrdISgIrfJP0Febd8YX0rwYp74I39AoEhpVXHhcs=
-X-Gm-Gg: ASbGncsknOyMnCHYAVAPNavjUP/Np1SYIUvCFYCq8rRU7F0IIWSfbx8DUSa2Ls4eOFt
-	k/zCfOa1vtL+yoc6EFJ2UOvvywK2rkvEd17XJ9sZ6IRZTyNWSOXdRRMwC34JZqr21RoqzZiAEeX
-	E3s5WfNA6jSmmqOuQlzIMtwJjh9PdTklbiEwsYc19rwMxMh6QJrdCNPuyPOVgY/KZOo2RE4VWSm
-	QOutmZPRc1ds4r5St790mQ3aVXAvA5P+amYjgh1VoQrBSlUdqrU9WFA5y617+Miiv05LrkowoE7
-	bkSoprk=
-X-Google-Smtp-Source: AGHT+IES/sxEF+BZSWJQAk5rNdbZSsrSF6vi3KXJQiYSQuO9FLRRC5atvuAKwpmQ4GGZa33a2aw0kQ==
-X-Received: by 2002:a17:907:60cc:b0:aab:c35e:509b with SMTP id a640c23a62f3a-ab38b4bb44bmr3667711566b.55.1737977752859;
-        Mon, 27 Jan 2025 03:35:52 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab6760fbd46sm574262766b.135.2025.01.27.03.35.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2025 03:35:52 -0800 (PST)
-Date: Mon, 27 Jan 2025 12:35:50 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Madhavan Srinivasan <maddy@linux.ibm.com>
-Cc: jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
-	shuah@kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
-	christophe.leroy@csgroup.eu, naveen@kernel.org,
-	live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v2] selftests: livepatch: handle PRINTK_CALLER in
- check_result()
-Message-ID: <Z5dvluAy6miSNyw4@pathway.suse.cz>
-References: <20250119163238.749847-1-maddy@linux.ibm.com>
+        d=1e100.net; s=20230601; t=1737982234; x=1738587034;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VG6M7E++/3Ce9GXj2tezC00IBdvh1kteyj5hzR0NwA8=;
+        b=u4CnmEAOawFdpfVufMkMjVyY9L62RtzEnFVaeiXY5VJWvktGRatXr6gZymyqLsPhhp
+         356/Rw+7lTeJq28ZpoetxW4kDf8amti1aR68638sOkDwJLvp7WPY490Zo2jVkiFLJ2LO
+         t6V0IeaEYS3ATgjcDsNZKNJ587zalU9cybEofNvBbpy42MTwkJ1NApCRdMxQQlCNskh2
+         2YnkZxAf8zotB6CVOQeHYAXIv5GS99uGu7r5RaCN0/CqfRSeQzGR8nxv+5rEie6EUK/n
+         zvmMjfEXXCMcL0SVRbzMdxb1FoCXuAU+BhjJPAt4N6ZaS/I/cQ/EENpDDEcfe2j4CLH/
+         ELbg==
+X-Forwarded-Encrypted: i=1; AJvYcCX9iF1uc+Y04FdUn6rrXgEbgCHrBm6fsfCVrJ6IZPUDUP7KIqmZfgVPWO/ONdxsj0j92ldWsP2iHhcJRBZI@vger.kernel.org
+X-Gm-Message-State: AOJu0YxAYSo6MD6FzOm9joA7MoXlGO/XFmnb6zU27ZZCbp8FNkGhzIsg
+	RA2HWbpfP5x+LKTJ+NNLeeKZw40xHYwaEsAGuCanGnlxoEZunWt/dOBYa1opleM=
+X-Gm-Gg: ASbGncvjW/Weo8IR5/++XDflwiU0BnxUsNwUYL4DEZxmA344pp0q5fxVD6i4WG7ereq
+	OprFWfhohxMXW8b6+vZ8cd8UdhnTO3obdsyV3L6Jp79uQjAr6b6aiAFRQTvn0n6enGvt55RsRtY
+	0ZtYK35AfZBm4g7ON900aKg2WY9OimnokBgaGzablrj4j0QVY0Wajl7849ZzYnTu8/u4eJGVORv
+	8KwJu/sv0S97UOYji31VBxgCxeBvShsaILs1Zd0mrhjbxSVbO88GohrEp1Iu2OpejYXkmZClkNJ
+	kjH5ZYPB
+X-Google-Smtp-Source: AGHT+IHGKx5XPAjKkuM8tLdY/iEmI+lFN9vw68MEGkVKzufCkr8AVUadSDTJkGDjd3qRPKQy8gyy+g==
+X-Received: by 2002:a05:600c:46ca:b0:434:a367:2bd9 with SMTP id 5b1f17b1804b1-438913dfd7fmr435221995e9.14.1737982233635;
+        Mon, 27 Jan 2025 04:50:33 -0800 (PST)
+Received: from [10.100.51.161] ([193.86.92.181])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438bd54bfb0sm128676475e9.32.2025.01.27.04.50.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jan 2025 04:50:33 -0800 (PST)
+Message-ID: <021665c5-b017-415f-ad2b-0131dcc81068@suse.com>
+Date: Mon, 27 Jan 2025 13:50:31 +0100
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250119163238.749847-1-maddy@linux.ibm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 6/9] module: switch to execmem API for remapping as RW
+ and restoring ROX
+To: Mike Rapoport <rppt@kernel.org>
+Cc: x86@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+ Andy Lutomirski <luto@kernel.org>,
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+ Borislav Petkov <bp@alien8.de>, Brendan Higgins <brendan.higgins@linux.dev>,
+ Daniel Gomez <da.gomez@samsung.com>, Daniel Thompson <danielt@kernel.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, David Gow <davidgow@google.com>,
+ Douglas Anderson <dianders@chromium.org>, Ingo Molnar <mingo@redhat.com>,
+ Jason Wessel <jason.wessel@windriver.com>, Jiri Kosina <jikos@kernel.org>,
+ Joe Lawrence <joe.lawrence@redhat.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ Josh Poimboeuf <jpoimboe@kernel.org>,
+ "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ Luis Chamberlain <mcgrof@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Masami Hiramatsu <mhiramat@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ "H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>,
+ Petr Mladek <pmladek@suse.com>, Rae Moar <rmoar@google.com>,
+ Richard Weinberger <richard@nod.at>, Sami Tolvanen
+ <samitolvanen@google.com>, Shuah Khan <shuah@kernel.org>,
+ Song Liu <song@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+ Thomas Gleixner <tglx@linutronix.de>, kgdb-bugreport@lists.sourceforge.net,
+ kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+ linux-um@lists.infradead.org, live-patching@vger.kernel.org
+References: <20250126074733.1384926-1-rppt@kernel.org>
+ <20250126074733.1384926-7-rppt@kernel.org>
+Content-Language: en-US
+From: Petr Pavlu <petr.pavlu@suse.com>
+In-Reply-To: <20250126074733.1384926-7-rppt@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun 2025-01-19 22:02:38, Madhavan Srinivasan wrote:
-> Some arch configs (like ppc64) enable CONFIG_PRINTK_CALLER,
-> which adds the caller id as part of the dmesg. With recent
-> util-linux's update 467a5b3192f16 ('dmesg: add caller_id support')
-> the standard "dmesg" has been enhanced to print PRINTK_CALLER fields.
+On 1/26/25 08:47, Mike Rapoport wrote:
+> From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
 > 
-> Due to this, even though the expected vs observed are same,
-> end testcase results are failed.
+> Instead of using writable copy for module text sections, temporarily remap
+> the memory allocated from execmem's ROX cache as writable and restore its
+> ROX permissions after the module is formed.
 > 
->  -% insmod test_modules/test_klp_livepatch.ko
->  -livepatch: enabling patch 'test_klp_livepatch'
->  -livepatch: 'test_klp_livepatch': initializing patching transition
->  -livepatch: 'test_klp_livepatch': starting patching transition
->  -livepatch: 'test_klp_livepatch': completing patching transition
->  -livepatch: 'test_klp_livepatch': patching complete
->  -% echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
->  -livepatch: 'test_klp_livepatch': initializing unpatching transition
->  -livepatch: 'test_klp_livepatch': starting unpatching transition
->  -livepatch: 'test_klp_livepatch': completing unpatching transition
->  -livepatch: 'test_klp_livepatch': unpatching complete
->  -% rmmod test_klp_livepatch
->  +[   T3659] % insmod test_modules/test_klp_livepatch.ko
->  +[   T3682] livepatch: enabling patch 'test_klp_livepatch'
->  +[   T3682] livepatch: 'test_klp_livepatch': initializing patching transition
->  +[   T3682] livepatch: 'test_klp_livepatch': starting patching transition
->  +[    T826] livepatch: 'test_klp_livepatch': completing patching transition
->  +[    T826] livepatch: 'test_klp_livepatch': patching complete
->  +[   T3659] % echo 0 > /sys/kernel/livepatch/test_klp_livepatch/enabled
->  +[   T3659] livepatch: 'test_klp_livepatch': initializing unpatching transition
->  +[   T3659] livepatch: 'test_klp_livepatch': starting unpatching transition
->  +[    T789] livepatch: 'test_klp_livepatch': completing unpatching transition
->  +[    T789] livepatch: 'test_klp_livepatch': unpatching complete
->  +[   T3659] % rmmod test_klp_livepatch
+> This will allow removing nasty games with writable copy in alternatives
+> patching on x86.
 > 
->   ERROR: livepatch kselftest(s) failed
->  not ok 1 selftests: livepatch: test-livepatch.sh # exit=1
-> 
-> Currently the check_result() handles the "[time]" removal from
-> the dmesg. Enhance the check to also handle removal of "[Thread Id]"
-> or "[CPU Id]".
-> 
-> Signed-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>
+> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 
-JFYI, the patch has been committed into livepatch.git,
-branch for-6.14/selftests-dmesg.
+[...]
 
-I am going to create a pull request for Linus' master by
-the end of the week or next week.
+> +static void module_memory_restore_rox(struct module *mod)
+> +{
+> +	for_class_mod_mem_type(type, text) {
+> +		struct module_memory *mem = &mod->mem[type];
+> +
+> +		if (mem->is_rox)
+> +			execmem_restore_rox(mem->base, mem->size);
+> +	}
+> +}
+> +
 
-Best Regards,
+Can the execmem_restore_rox() call here fail? I realize that there isn't
+much that the module loader can do if that happens, but should it be
+perhaps logged as a warning?
+
+-- 
+Thanks,
 Petr
 
