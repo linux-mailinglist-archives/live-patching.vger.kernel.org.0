@@ -1,70 +1,70 @@
-Return-Path: <live-patching+bounces-1070-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1071-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DA064A1FFE7
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 22:34:03 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id CFE36A1FFE9
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 22:34:24 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 20991165354
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 21:34:02 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 880131884DE1
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 21:34:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE1941DACB8;
-	Mon, 27 Jan 2025 21:33:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C7921DB122;
+	Mon, 27 Jan 2025 21:33:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="4Wb2CZs3"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DZWUlv6T"
 X-Original-To: live-patching@vger.kernel.org
 Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18EB1DA31F
-	for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 21:33:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C652A1D8DFE
+	for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 21:33:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738013612; cv=none; b=HoQsqQ7YHUW2GNCIhcvf0nRo6EffNRfJRceAFUks/wn+EeuyOVXtI5uHMIoA/wpCRWrf9fKlMfxC2hRLSMlAs3nyeuOJVZmKdrBvBRQwVvWRwlQtp71GByh4Fllm0Uerdxzesu9JyRvpU7uq3nNmtm7bKaMC+DGqzRLSVlXrb08=
+	t=1738013617; cv=none; b=dzKI1zSVSNP39oiVKr6EwpnrfUq17oBLrnhhpKq+oq4jBSPrYtxm+7ch4pvYiwAhOQdfH1fV7ntjcVgiXLsKaC1Ipp4XEy/rnaJBMOtS1B0CDMDmiBDdgrSGUb+eiU14QKKqJO1UKooGpcCXUT/VkOxFwQ43xPUUreMr5o/j5HQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738013612; c=relaxed/simple;
-	bh=VZs7OdIz9ylWCusavl8KUiNFzj24khVzjcrXOvfKj7c=;
+	s=arc-20240116; t=1738013617; c=relaxed/simple;
+	bh=4qOdPw6hOBZxSpET+wd7E8BTc7x5s3vFgcr6W7+jzvI=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=sSgHXdDGzp6v6lN4ATBi8ZbGbtwv8Pwwl3kauxCaOGuhxuKTQcz35wfPoFCkHVIYvmWwBCBF8pr9XAht7vxYAIGhZdX8oDJYx7lPcmqSl/BcjGEJQNqVMVQelCX4Xq77B9HW831htF8b7JyHLJO2EYi3XE4s62eGU6ZRoD5GsvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=4Wb2CZs3; arc=none smtp.client-ip=209.85.216.74
+	 To:Cc:Content-Type; b=OK+Yy9twN1mWRLRQelpxJPRVLsJTleojLKH25En53EmPv6zsxx7LqoLVW/WXMuvRXJxTQyadjIaa0vr3Mox4XYrXt1tzi18H0cZzsyxLb2bbN/tVR4cMd55l2LLQFoDAFSlvwu/32kzD4xdqTLkvb+hc3qq9jmw3fmAP2H9zhEg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DZWUlv6T; arc=none smtp.client-ip=209.85.216.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2eebfd6d065so13830876a91.3
-        for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 13:33:30 -0800 (PST)
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2f780a3d6e5so9917078a91.0
+        for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 13:33:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738013610; x=1738618410; darn=vger.kernel.org;
+        d=google.com; s=20230601; t=1738013615; x=1738618415; darn=vger.kernel.org;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nDvBLRnKYJqb7wLRycvSsM5KYAbB3Uj/Gas8Bcx9QpY=;
-        b=4Wb2CZs3eTxCA/+G1p3hHwEEtp7WVr4gOS17eM/eDZ+ycKI4mY6YwSmdJwtT8Kvg8F
-         CR+ztuHpSnoqLjaezHQ7otpOagHo4t60x9L3KThyVlHK/JJ1RuA61Amt/nkj6iZ+lwwI
-         AQFd6Bg219yV8CrLobdSylTLNmcDptF4MHJeX71qCQd99UShixQQsRQUt7qDszwjTDXe
-         J1GQUAetFMFBKIgnXQ0VgoKaHPfHTbhoyfw2Ji0IKc2Pezh/qrhQxGqvohdNYwgm3KD0
-         2U8Q24BzM/LmwBGHxRXPXI7Ge0yuPaDQPZ2vMHapBwSucw1U6k/nUHUG4xUvKaU2gdf6
-         oHiQ==
+        bh=vFxyJQizGcViiMZLcjGdqbFKo+O4vKLRWZRU/ldO2O0=;
+        b=DZWUlv6TF2/2MW26VDsxa2TuwozQBrHsJsnW0UNCq1LyxFFgSg5KtccP6o7vPy+nvF
+         k2rKskMz1gU51W7T5QnBUg4Sk8opHXU9bEcWp84fHBkMnGYfnZ7aelo+sRMvMFEQF3BH
+         STCXSRCyV/5JnNsTKgKNX1xUll7weXlqfIorS+gLE9RakrQ9XLU55VSyclKsyBSOOrQZ
+         3qNSrBVEzbaSwzhgvGwp7Bpimcv8US/57mN/iq0QiUyNjZaRV3cDr8qa4O4CiprSIXdM
+         1M9vWoOb+ycLScelHwJkK5fNjacrtd13rk6mty6UO4zix1ELbUqtfzSaaZqtyRsgfiWD
+         yw+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738013610; x=1738618410;
+        d=1e100.net; s=20230601; t=1738013615; x=1738618415;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nDvBLRnKYJqb7wLRycvSsM5KYAbB3Uj/Gas8Bcx9QpY=;
-        b=Ae2ugWb6ZczT5h9tc5tClZN4JWfWZVQb8fzlo6PJearkhQIrmr0ua2vccgs6+8nQCQ
-         mnWFme4SYwqIT9MqCZk5ULtV+5jQrXTrRyspubtyhQEJ4RrJ2Z5B7chEiVe5se2Ir4Ob
-         KNw4iiUv20I9jo4wMCyaf79McemdpApCoFwWFYXt+UTTfZwBAuR5s0zwWjcJBYtC8qc3
-         jlvAJ93Z/Q6jEJAl/A3Jfw7EVO7rSzDpAdRhQVHWHnx/SzhipZu1IJeHORcaSCoYA1Ol
-         qxXyrpUyAmtRLDVaubtNIgNPHkk1WJy/eyGFg3tENvSNj8HiVnmxt6jsclQFlzHsjWEe
-         eTqg==
-X-Forwarded-Encrypted: i=1; AJvYcCUvked++iOCcJrwtWePK7H3BXKuKq83d479l/CI9zcvtaB8Wkz91JHnx2bJrCCZHSe2k+H5a85+yLaHLm4I@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy75In4R3tu3tGS1902hynWMDfG+ad60A//PmrQ8EKNT4qPwnWJ
-	iSUR4sHzpN3LJkRL6YsPwNCJpnlLS8OJeA+e6xC9XYwNsBnAmScVP8GBp80mNLzinYRgmQRM/g=
+        bh=vFxyJQizGcViiMZLcjGdqbFKo+O4vKLRWZRU/ldO2O0=;
+        b=xK8rVlHPjxSedwd0NIH24Iwr9Z8eMKxjooLv3wBofFPRWuVSxFqFOzWrvkVmU4Uq6b
+         SAt7cC9JsvoolDpF6LXyGcUlOsgWWjLizoivv4Gy3Z/QDLqmduw/ex0puBlT5ONsVvfk
+         DYckEZB0Y+qJ1iIx/R3ZA26WiJc3MQyJTSbnNQ9+uqA1oHCr6rB7T/itajsZXZhCnqV1
+         Mc3VoBPVsUjp6RlxL/xaexzZJDN020JY0dHHqz45oOlfw+BobM1NOfzWq+qVO5GcRyFA
+         r9nmBv04TKj3UoGE8Lb9xTedu2JGSekbGrVvHQoPu0hVFcgAEKfXl9HmV2yHvqEUU/qO
+         vYLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVGijqySYdJXFCIvBAlHr4RmybLug3lzVhh0g+XGsl9PPY6Ymo/Gf3wC8AfKWCU0DEoqDTePZ3NwWBQuajw@vger.kernel.org
+X-Gm-Message-State: AOJu0YwuQKGzot6A9yUKNK84tAeWaK9EQ5CYQPLGv1dx+CnjEntagsnf
+	/4G/XDYyuWCP1uWa8K9L6+yq46gAT1KKyhPur30CyYk/g93nzxstgB9R3Xux3qT84BQLECXB2g=
 	=
-X-Google-Smtp-Source: AGHT+IE7cBiyjRItliwSAg3VmD1SKevW9jTi2EfBECUlXP+PwVTan7NlAVSGrkNopkq3143PUhyvXE76zA==
-X-Received: from pfd10.prod.google.com ([2002:a05:6a00:a80a:b0:725:d350:a304])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:ad8a:b0:72a:bc54:84f7
- with SMTP id d2e1a72fcca58-72dafa03117mr57971799b3a.12.1738013610397; Mon, 27
- Jan 2025 13:33:30 -0800 (PST)
-Date: Mon, 27 Jan 2025 21:33:05 +0000
+X-Google-Smtp-Source: AGHT+IHHPT3SHafekGNUGDZsLxe9xIeZEZ7pS5XFwvuSD16m5Qqb3+3tw3GkG+JemAl3HyjyegOXze/WMg==
+X-Received: from pjbpa16.prod.google.com ([2002:a17:90b:2650:b0:2da:ac73:93e0])
+ (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2751:b0:2ee:f440:53ed
+ with SMTP id 98e67ed59e1d1-2f782d9a1d5mr60272909a91.31.1738013614965; Mon, 27
+ Jan 2025 13:33:34 -0800 (PST)
+Date: Mon, 27 Jan 2025 21:33:06 +0000
 In-Reply-To: <20250127213310.2496133-1-wnliu@google.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -74,8 +74,8 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 References: <20250127213310.2496133-1-wnliu@google.com>
 X-Mailer: git-send-email 2.48.1.262.g85cc9f2d1e-goog
-Message-ID: <20250127213310.2496133-4-wnliu@google.com>
-Subject: [PATCH 3/8] unwind: add sframe v2 header
+Message-ID: <20250127213310.2496133-5-wnliu@google.com>
+Subject: [PATCH 4/8] unwind: Implement generic sframe unwinder library
 From: Weinan Liu <wnliu@google.com>
 To: Josh Poimboeuf <jpoimboe@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
 	Indu Bhagat <indu.bhagat@oracle.com>, Peter Zijlstra <peterz@infradead.org>
@@ -86,242 +86,287 @@ Cc: Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev,
 	Weinan Liu <wnliu@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Add sframe header so that we know how to access the sframe section
-generated by compilers.
+This change introduces a kernel space unwinder using sframe table for
+architectures without ORC unwinder support.
 
-This is the sframe header file borrowed from the patchset [1]
-Josh Poimboeuf according to sframe v2 spec [2].
+The implementation is adapted from Josh's userspace sframe unwinder
+proposal[1] according to the sframe v2 spec[2].
 
-[1]: https://lore.kernel.org/lkml/42c0a99236af65c09c8182e260af7bcf5aa1e158.1730150953.git.jpoimboe@kernel.org/
-[2]: https://sourceware.org/binutils/docs/sframe-spec.html
+[1] https://lore.kernel.org/lkml/42c0a99236af65c09c8182e260af7bcf5aa1e158.1730150953.git.jpoimboe@kernel.org/
+[2] https://sourceware.org/binutils/docs/sframe-spec.html
 
 Signed-off-by: Weinan Liu <wnliu@google.com>
 ---
- kernel/sframe.h | 215 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 215 insertions(+)
- create mode 100644 kernel/sframe.h
+ include/linux/sframe_lookup.h |  43 ++++++++
+ kernel/Makefile               |   1 +
+ kernel/sframe_lookup.c        | 196 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 240 insertions(+)
+ create mode 100644 include/linux/sframe_lookup.h
+ create mode 100644 kernel/sframe_lookup.c
 
-diff --git a/kernel/sframe.h b/kernel/sframe.h
+diff --git a/include/linux/sframe_lookup.h b/include/linux/sframe_lookup.h
 new file mode 100644
-index 000000000000..11b9be7ad82e
+index 000000000000..1c26cf1f38d4
 --- /dev/null
-+++ b/kernel/sframe.h
-@@ -0,0 +1,215 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Copyright (C) 2023, Oracle and/or its affiliates.
-+ *
-+ * This file contains definitions for the SFrame stack tracing format, which is
-+ * documented at https://sourceware.org/binutils/docs
-+ */
-+#ifndef _SFRAME_H
-+#define _SFRAME_H
-+
-+#include <linux/types.h>
-+
-+#define SFRAME_VERSION_1	1
-+#define SFRAME_VERSION_2	2
-+#define SFRAME_MAGIC		0xdee2
-+
-+/* Function Descriptor Entries are sorted on PC. */
-+#define SFRAME_F_FDE_SORTED	0x1
-+/* Frame-pointer based stack tracing. Defined, but not set. */
-+#define SFRAME_F_FRAME_POINTER	0x2
-+
-+#define SFRAME_CFA_FIXED_FP_INVALID 0
-+#define SFRAME_CFA_FIXED_RA_INVALID 0
-+
-+/* Supported ABIs/Arch. */
-+#define SFRAME_ABI_AARCH64_ENDIAN_BIG	    1 /* AARCH64 big endian. */
-+#define SFRAME_ABI_AARCH64_ENDIAN_LITTLE    2 /* AARCH64 little endian. */
-+#define SFRAME_ABI_AMD64_ENDIAN_LITTLE	    3 /* AMD64 little endian. */
-+
-+/* SFrame FRE types. */
-+#define SFRAME_FRE_TYPE_ADDR1	0
-+#define SFRAME_FRE_TYPE_ADDR2	1
-+#define SFRAME_FRE_TYPE_ADDR4	2
-+
-+/*
-+ * SFrame Function Descriptor Entry types.
-+ *
-+ * The SFrame format has two possible representations for functions. The
-+ * choice of which type to use is made according to the instruction patterns
-+ * in the relevant program stub.
-+ */
-+
-+/* Unwinders perform a (PC >= FRE_START_ADDR) to look up a matching FRE. */
-+#define SFRAME_FDE_TYPE_PCINC	0
-+/*
-+ * Unwinders perform a (PC & FRE_START_ADDR_AS_MASK >= FRE_START_ADDR_AS_MASK)
-+ * to look up a matching FRE. Typical usecases are pltN entries, trampolines
-+ * etc.
-+ */
-+#define SFRAME_FDE_TYPE_PCMASK	1
++++ b/include/linux/sframe_lookup.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_SFRAME_LOOKUP_H
++#define _LINUX_SFRAME_LOOKUP_H
 +
 +/**
-+ * struct sframe_preamble - SFrame Preamble.
-+ * @magic: Magic number (SFRAME_MAGIC).
-+ * @version: Format version number (SFRAME_VERSION).
-+ * @flags: Various flags.
++ * struct sframe_ip_entry - sframe unwind info for given ip
++ * @cfa_offset: Offset for the Canonical Frame Address(CFA) from Frame
++ *              Pointer(FP) or Stack Pointer(SP)
++ * @ra_offset: Offset for the Return Address from CFA.
++ * @fp_offset: Offset for the Frame Pointer (FP) from CFA.
++ * @use_fp: Use FP to get next CFA or not
 + */
-+struct sframe_preamble {
-+	u16 magic;
-+	u8  version;
-+	u8  flags;
-+} __packed;
++struct sframe_ip_entry {
++	int32_t cfa_offset;
++	int32_t ra_offset;
++	int32_t fp_offset;
++	bool use_fp;
++};
 +
 +/**
-+ * struct sframe_header - SFrame Header.
-+ * @preamble: SFrame preamble.
-+ * @abi_arch: Identify the arch (including endianness) and ABI.
-+ * @cfa_fixed_fp_offset: Offset for the Frame Pointer (FP) from CFA may be
-+ *	  fixed for some ABIs ((e.g, in AMD64 when -fno-omit-frame-pointer is
-+ *	  used). When fixed, this field specifies the fixed stack frame offset
-+ *	  and the individual FREs do not need to track it. When not fixed, it
-+ *	  is set to SFRAME_CFA_FIXED_FP_INVALID, and the individual FREs may
-+ *	  provide the applicable stack frame offset, if any.
-+ * @cfa_fixed_ra_offset: Offset for the Return Address from CFA is fixed for
-+ *	  some ABIs. When fixed, this field specifies the fixed stack frame
-+ *	  offset and the individual FREs do not need to track it. When not
-+ *	  fixed, it is set to SFRAME_CFA_FIXED_FP_INVALID.
-+ * @auxhdr_len: Number of bytes making up the auxiliary header, if any.
-+ *	  Some ABI/arch, in the future, may use this space for extending the
-+ *	  information in SFrame header. Auxiliary header is contained in bytes
-+ *	  sequentially following the sframe_header.
-+ * @num_fdes: Number of SFrame FDEs in this SFrame section.
-+ * @num_fres: Number of SFrame Frame Row Entries.
-+ * @fre_len:  Number of bytes in the SFrame Frame Row Entry section.
-+ * @fdes_off: Offset of SFrame Function Descriptor Entry section.
-+ * @fres_off: Offset of SFrame Frame Row Entry section.
++ * struct sframe_table - sframe struct of a table
++ * @sfhdr_p: Pointer to sframe header
++ * @fde_p: Pointer to the first of sframe frame description entry(FDE).
++ * @fre_p: Pointer to the first of sframe frame row entry(FRE).
 + */
-+struct sframe_header {
-+	struct sframe_preamble preamble;
-+	u8  abi_arch;
-+	s8  cfa_fixed_fp_offset;
-+	s8  cfa_fixed_ra_offset;
-+	u8  auxhdr_len;
-+	u32 num_fdes;
-+	u32 num_fres;
-+	u32 fre_len;
-+	u32 fdes_off;
-+	u32 fres_off;
-+} __packed;
++struct sframe_table {
++	struct sframe_header *sfhdr_p;
++	struct sframe_fde *fde_p;
++	char *fre_p;
++};
 +
-+#define SFRAME_HDR_SIZE(sframe_hdr)	\
-+	((sizeof(struct sframe_header) + (sframe_hdr).auxhdr_len))
++#ifdef CONFIG_SFRAME_UNWINDER
++void init_sframe_table(void);
++int sframe_find_pc(unsigned long pc, struct sframe_ip_entry *entry);
++#else
++static inline void init_sframe_table(void) {}
++static inline int sframe_find_pc(unsigned long pc, struct sframe_ip_entry *entry)
++{
++	return -EINVAL;
++}
++#endif
 +
-+/* Two possible keys for executable (instruction) pointers signing. */
-+#define SFRAME_AARCH64_PAUTH_KEY_A    0 /* Key A. */
-+#define SFRAME_AARCH64_PAUTH_KEY_B    1 /* Key B. */
++#endif /* _LINUX_SFRAME_LOOKUP_H */
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 87866b037fbe..705c9277e5cd 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -131,6 +131,7 @@ obj-$(CONFIG_WATCH_QUEUE) += watch_queue.o
+ 
+ obj-$(CONFIG_RESOURCE_KUNIT_TEST) += resource_kunit.o
+ obj-$(CONFIG_SYSCTL_KUNIT_TEST) += sysctl-test.o
++obj-$(CONFIG_SFRAME_UNWINDER) += sframe_lookup.o
+ 
+ CFLAGS_stackleak.o += $(DISABLE_STACKLEAK_PLUGIN)
+ obj-$(CONFIG_GCC_PLUGIN_STACKLEAK) += stackleak.o
+diff --git a/kernel/sframe_lookup.c b/kernel/sframe_lookup.c
+new file mode 100644
+index 000000000000..846f1da95d89
+--- /dev/null
++++ b/kernel/sframe_lookup.c
+@@ -0,0 +1,196 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <linux/module.h>
++#include <linux/sort.h>
++#include <linux/sframe_lookup.h>
++#include <linux/kallsyms.h>
++#include "sframe.h"
 +
-+/**
-+ * struct sframe_fde - SFrame Function Descriptor Entry.
-+ * @start_addr: Function start address. Encoded as a signed offset,
-+ *	  relative to the current FDE.
-+ * @size: Size of the function in bytes.
-+ * @fres_off: Offset of the first SFrame Frame Row Entry of the function,
-+ *	  relative to the beginning of the SFrame Frame Row Entry sub-section.
-+ * @fres_num: Number of frame row entries for the function.
-+ * @info: Additional information for deciphering the stack trace
-+ *	  information for the function. Contains information about SFrame FRE
-+ *	  type, SFrame FDE type, PAC authorization A/B key, etc.
-+ * @rep_size: Block size for SFRAME_FDE_TYPE_PCMASK
-+ * @padding: Unused
-+ */
-+struct sframe_fde {
-+	s32 start_addr;
-+	u32 size;
-+	u32 fres_off;
-+	u32 fres_num;
-+	u8  info;
-+	u8  rep_size;
-+	u16 padding;
-+} __packed;
++#define pr_fmt(fmt)	"sframe: " fmt
 +
-+/*
-+ * 'func_info' in SFrame FDE contains additional information for deciphering
-+ * the stack trace information for the function. In V1, the information is
-+ * organized as follows:
-+ *   - 4-bits: Identify the FRE type used for the function.
-+ *   - 1-bit: Identify the FDE type of the function - mask or inc.
-+ *   - 1-bit: PAC authorization A/B key (aarch64).
-+ *   - 2-bits: Unused.
-+ * ---------------------------------------------------------------------
-+ * |  Unused  |  PAC auth A/B key (aarch64) |  FDE type |   FRE type   |
-+ * |          |        Unused (amd64)       |           |              |
-+ * ---------------------------------------------------------------------
-+ * 8          6                             5           4              0
-+ */
++extern char __start_sframe_header[];
++extern char __stop_sframe_header[];
 +
-+/* Note: Set PAC auth key to SFRAME_AARCH64_PAUTH_KEY_A by default.  */
-+#define SFRAME_FUNC_INFO(fde_type, fre_enc_type) \
-+	(((SFRAME_AARCH64_PAUTH_KEY_A & 0x1) << 5) | \
-+	 (((fde_type) & 0x1) << 4) | ((fre_enc_type) & 0xf))
++static bool sframe_init __ro_after_init;
++static struct sframe_table sftbl;
 +
-+#define SFRAME_FUNC_FRE_TYPE(data)	  ((data) & 0xf)
-+#define SFRAME_FUNC_FDE_TYPE(data)	  (((data) >> 4) & 0x1)
-+#define SFRAME_FUNC_PAUTH_KEY(data)	  (((data) >> 5) & 0x1)
++#define SFRAME_READ_TYPE(in, out, type)					\
++({									\
++	type __tmp;							\
++	memcpy(&__tmp, in, sizeof(__tmp));				\
++	in += sizeof(__tmp);						\
++	out = __tmp;							\
++})
 +
-+/*
-+ * Size of stack frame offsets in an SFrame Frame Row Entry. A single
-+ * SFrame FRE has all offsets of the same size. Offset size may vary
-+ * across frame row entries.
-+ */
-+#define SFRAME_FRE_OFFSET_1B	  0
-+#define SFRAME_FRE_OFFSET_2B	  1
-+#define SFRAME_FRE_OFFSET_4B	  2
++#define SFRAME_READ_ROW_ADDR(in_addr, out_addr, type)			\
++({									\
++	switch (type) {							\
++	case SFRAME_FRE_TYPE_ADDR1:					\
++		SFRAME_READ_TYPE(in_addr, out_addr, u8);		\
++		break;							\
++	case SFRAME_FRE_TYPE_ADDR2:					\
++		SFRAME_READ_TYPE(in_addr, out_addr, u16);		\
++		break;							\
++	case SFRAME_FRE_TYPE_ADDR4:					\
++		SFRAME_READ_TYPE(in_addr, out_addr, u32);		\
++		break;							\
++	default:							\
++		break;							\
++	}								\
++})
 +
-+/* An SFrame Frame Row Entry can be SP or FP based.  */
-+#define SFRAME_BASE_REG_FP	0
-+#define SFRAME_BASE_REG_SP	1
++#define SFRAME_READ_ROW_OFFSETS(in_addr, out_addr, size)		\
++({									\
++	switch (size) {							\
++	case 1:								\
++		SFRAME_READ_TYPE(in_addr, out_addr, s8);		\
++		break;							\
++	case 2:								\
++		SFRAME_READ_TYPE(in_addr, out_addr, s16);		\
++		break;							\
++	case 4:								\
++		SFRAME_READ_TYPE(in_addr, out_addr, s32);		\
++		break;							\
++	default:							\
++		break;							\
++	}								\
++})
 +
-+/*
-+ * The index at which a specific offset is presented in the variable length
-+ * bytes of an FRE.
-+ */
-+#define SFRAME_FRE_CFA_OFFSET_IDX   0
-+/*
-+ * The RA stack offset, if present, will always be at index 1 in the variable
-+ * length bytes of the FRE.
-+ */
-+#define SFRAME_FRE_RA_OFFSET_IDX    1
-+/*
-+ * The FP stack offset may appear at offset 1 or 2, depending on the ABI as RA
-+ * may or may not be tracked.
-+ */
-+#define SFRAME_FRE_FP_OFFSET_IDX    2
++static struct sframe_fde *find_fde(const struct sframe_table *tbl, unsigned long pc)
++{
++	int l, r, m, f;
++	int32_t ip;
++	struct sframe_fde *fdep;
 +
-+/*
-+ * 'fre_info' in SFrame FRE contains information about:
-+ *   - 1 bit: base reg for CFA
-+ *   - 4 bits: Number of offsets (N). A value of up to 3 is allowed to track
-+ *   all three of CFA, FP and RA (fixed implicit order).
-+ *   - 2 bits: information about size of the offsets (S) in bytes.
-+ *     Valid values are SFRAME_FRE_OFFSET_1B, SFRAME_FRE_OFFSET_2B,
-+ *     SFRAME_FRE_OFFSET_4B
-+ *   - 1 bit: Mangled RA state bit (aarch64 only).
-+ * ---------------------------------------------------------------
-+ * | Mangled-RA (aarch64) |  Size of   |   Number of  | base_reg |
-+ * |  Unused (amd64)      |  offsets   |    offsets   |          |
-+ * ---------------------------------------------------------------
-+ * 8                      7             5             1          0
-+ */
++	if (!tbl || !tbl->sfhdr_p || !tbl->fde_p)
++		return NULL;
 +
-+/* Note: Set mangled_ra_p to zero by default. */
-+#define SFRAME_FRE_INFO(base_reg_id, offset_num, offset_size) \
-+	(((0 & 0x1) << 7) | (((offset_size) & 0x3) << 5) | \
-+	 (((offset_num) & 0xf) << 1) | ((base_reg_id) & 0x1))
++	ip = (pc - (unsigned long)tbl->sfhdr_p);
 +
-+/* Set the mangled_ra_p bit as indicated. */
-+#define SFRAME_FRE_INFO_UPDATE_MANGLED_RA_P(mangled_ra_p, fre_info) \
-+	((((mangled_ra_p) & 0x1) << 7) | ((fre_info) & 0x7f))
++	/* Do a binary range search to find the rightmost FDE start_addr < ip */
++	l = m = f = 0;
++	r = tbl->sfhdr_p->num_fdes;
++	while (l < r) {
++		m = l + ((r - l) / 2);
++		fdep = tbl->fde_p + m;
++		if (fdep->start_addr > ip)
++			r = m;
++		else
++			l = m + 1;
++	}
++	/* use l - 1 because l will be the first item fdep->start_addr > ip */
++	f = l - 1;
++	if (f >= tbl->sfhdr_p->num_fdes || f < 0)
++		return NULL;
++	fdep = tbl->fde_p + f;
++	if (ip < fdep->start_addr || ip >= fdep->start_addr + fdep->size)
++		return NULL;
 +
-+#define SFRAME_FRE_CFA_BASE_REG_ID(data)	  ((data) & 0x1)
-+#define SFRAME_FRE_OFFSET_COUNT(data)		  (((data) >> 1) & 0xf)
-+#define SFRAME_FRE_OFFSET_SIZE(data)		  (((data) >> 5) & 0x3)
-+#define SFRAME_FRE_MANGLED_RA_P(data)		  (((data) >> 7) & 0x1)
++	return fdep;
++}
 +
-+#endif /* _SFRAME_H */
++static int find_fre(const struct sframe_table *tbl, unsigned long pc,
++		const struct sframe_fde *fdep, struct sframe_ip_entry *entry)
++{
++	int i, offset_size, offset_count;
++	char *fres, *offsets_loc;
++	int32_t ip_off;
++	uint32_t next_row_ip_off;
++	uint8_t fre_info, fde_type = SFRAME_FUNC_FDE_TYPE(fdep->info),
++			fre_type = SFRAME_FUNC_FRE_TYPE(fdep->info);
++
++	fres = tbl->fre_p + fdep->fres_off;
++
++	/*  Whether PCs in the FREs should be treated as masks or not */
++	if (fde_type == SFRAME_FDE_TYPE_PCMASK)
++		ip_off = pc % fdep->rep_size;
++	else
++		ip_off = (int32_t)(pc - (unsigned long)tbl->sfhdr_p) - fdep->start_addr;
++
++	if (ip_off < 0 || ip_off >= fdep->size)
++		return -EINVAL;
++
++	/*
++	 * FRE structure starts by address of the entry with variants length. Use
++	 * two pointers to track current head(fres) and the address of last
++	 * offset(offsets_loc)
++	 */
++	for (i = 0; i < fdep->fres_num; i++) {
++		SFRAME_READ_ROW_ADDR(fres, next_row_ip_off, fre_type);
++		if (ip_off < next_row_ip_off)
++			break;
++		SFRAME_READ_TYPE(fres, fre_info, u8);
++		offsets_loc = fres;
++		/*
++		 * jump to the start of next fre
++		 * fres += fre_offets_cnt*offset_size
++		 */
++		fres += SFRAME_FRE_OFFSET_COUNT(fre_info) << SFRAME_FRE_OFFSET_SIZE(fre_info);
++	}
++
++	offset_size = 1 << SFRAME_FRE_OFFSET_SIZE(fre_info);
++	offset_count = SFRAME_FRE_OFFSET_COUNT(fre_info);
++
++	if (offset_count > 0) {
++		SFRAME_READ_ROW_OFFSETS(offsets_loc, entry->cfa_offset, offset_size);
++		offset_count--;
++	}
++	if (offset_count > 0 && !entry->ra_offset) {
++		SFRAME_READ_ROW_OFFSETS(offsets_loc, entry->ra_offset, offset_size);
++		offset_count--;
++	}
++	if (offset_count > 0 && !entry->fp_offset) {
++		SFRAME_READ_ROW_OFFSETS(offsets_loc, entry->fp_offset, offset_size);
++		offset_count--;
++	}
++	if (offset_count)
++		return -EINVAL;
++
++	entry->use_fp = SFRAME_FRE_CFA_BASE_REG_ID(fre_info) == SFRAME_BASE_REG_FP;
++
++	return 0;
++}
++
++int sframe_find_pc(unsigned long pc, struct sframe_ip_entry *entry)
++{
++	struct sframe_fde *fdep;
++	struct sframe_table *sftbl_p = &sftbl;
++	int err;
++
++	if (!sframe_init)
++		return -EINVAL;
++
++	memset(entry, 0, sizeof(*entry));
++	entry->ra_offset = sftbl_p->sfhdr_p->cfa_fixed_ra_offset;
++	entry->fp_offset = sftbl_p->sfhdr_p->cfa_fixed_fp_offset;
++
++	fdep = find_fde(sftbl_p, pc);
++	if (!fdep)
++		return -EINVAL;
++	err = find_fre(sftbl_p, pc, fdep, entry);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++void __init init_sframe_table(void)
++{
++	size_t sframe_size = (void *)__stop_sframe_header - (void *)__start_sframe_header;
++	void *sframe_buf = __start_sframe_header;
++
++	if (sframe_size <= 0)
++		return;
++	sftbl.sfhdr_p = sframe_buf;
++	if (!sftbl.sfhdr_p || sftbl.sfhdr_p->preamble.magic != SFRAME_MAGIC ||
++	    sftbl.sfhdr_p->preamble.version != SFRAME_VERSION_2 ||
++	    !(sftbl.sfhdr_p->preamble.flags & SFRAME_F_FDE_SORTED)) {
++		pr_warn("WARNING: Unable to read sframe header.  Disabling unwinder.\n");
++		return;
++	}
++
++	sftbl.fde_p = (struct sframe_fde *)(__start_sframe_header + SFRAME_HDR_SIZE(*sftbl.sfhdr_p)
++						+ sftbl.sfhdr_p->fdes_off);
++	sftbl.fre_p = __start_sframe_header + SFRAME_HDR_SIZE(*sftbl.sfhdr_p)
++		+ sftbl.sfhdr_p->fres_off;
++	sframe_init = true;
++}
 -- 
 2.48.1.262.g85cc9f2d1e-goog
 
