@@ -1,77 +1,77 @@
-Return-Path: <live-patching+bounces-1058-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1059-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 668A3A1D0F1
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 07:35:58 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 52D8AA1D0F3
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 07:36:10 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 910037A2D2A
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 06:35:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AEBB63A33E8
+	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 06:36:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BEF441FC11A;
-	Mon, 27 Jan 2025 06:35:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBA2D1FC7ED;
+	Mon, 27 Jan 2025 06:35:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AKtlTFcz"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MGSaS00/"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C3451684B0;
-	Mon, 27 Jan 2025 06:35:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B6E1FC7DA;
+	Mon, 27 Jan 2025 06:35:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737959743; cv=none; b=deemSEB0zPFu9ogSrhczEIGqdL78wfhfxSNHmlQ4/BMgdjvJx+3MCLjXcZM26tHcGBSSY73+81Tu2QCuqkJ4fXERWqn74USIy+uG9R2jce9UHQ5gdRGcFBz0vpCEvdUwjwxHVQ6Jk18EJCsgO9Dag5vD97yDWniChIC676a2w0o=
+	t=1737959746; cv=none; b=ehnLnodt8eLuJgwv4wjGZzbAJtLdEMH1TqAiZZbRIKI6k3tn++FxALNLaDHdYh7hHY+gIB9PijHv3tRroh5Wb4W+wwHq+TRN87BF5jvLKR+721gRxQKHSJnB/6DdHQoFkEGRfHyhmj8sNh/zJXS3//mWvlY9Z5cQ/ZysfmETcK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737959743; c=relaxed/simple;
-	bh=ZMJNB8qcXvo7nLPXLs5dzsm3rGwbYUtNJ1DSr97OmLk=;
+	s=arc-20240116; t=1737959746; c=relaxed/simple;
+	bh=ngOmQ6OzWMqsTu+rZtKE4hNWrY+antlw+4RCpkNIXqs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=GyRbFEJzJ6zbT2Chl1QYka31CJc39jg4+kkEr4mytRy7bZ0mUUoZ4+0DUIggW3biQ9J3Q/hwuMgfyYHABlh4Q8XLcv/+c65TrzFG8k/krU3bZW7S80Yk4z/v8ATNR5GUQDUcA9/BhHZxR5nUZ8on7S/7Hfc+BpgpBcm6cI1EI1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AKtlTFcz; arc=none smtp.client-ip=209.85.214.178
+	 MIME-Version; b=iqrG0Jg8xuSyXboh6m9eSnIvjFjPqxpUJiiyLCDeRf+xHWAq9tl7A7lXEqDy8jB5ZZFlvCWI35OYMwi+g3uGnZxVWW4x4hMxKzd5//4nBpgMFsUD47clGNG98Iw3EPSYVsmj1Qw3apCyQdBUNIwj5zOSg80Onjo1CIxOqP98R7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MGSaS00/; arc=none smtp.client-ip=209.85.214.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2167141dfa1so70163925ad.1;
-        Sun, 26 Jan 2025 22:35:41 -0800 (PST)
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-21661be2c2dso67213165ad.1;
+        Sun, 26 Jan 2025 22:35:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737959741; x=1738564541; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1737959744; x=1738564544; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ez3tSvrde4/xlwnZmVuP+Fya4AZTGyJMn0fkkataWVU=;
-        b=AKtlTFczvbFD0o+ga2/5Rq0JRpPWeXfcgQAtCdSY6bW4vAeeiJkTzGki2c47oM2lrj
-         wZb46XO2HBeqofAR2jl8g7JpWPBNt8MI8DvO9XG8/mb+iAYc9ctSSS7bdSyP8BbGj6Vb
-         YEaRKWt7WjaTuMhruSE152v85UIqL4IDBANIupiGBHw9iu6XYlJi3wZLoxjLV+tedtmc
-         y03FSMRay7tahL0aPBEDwGLc3nb9q5PWSEiE/13vPAiG6bpdmhbOCotI7E5PUIUlwB0i
-         rWT+jVYRFMpZuKvRMkwaEiTeLcP/dUBVyqtipEFPT6OQusIb8lc61H6PP0k+LiP4mjq8
-         q9LQ==
+        bh=FXXs8kEF0fkqJQxTj5/JRMeBNEwSNU94DwPc2H43KG0=;
+        b=MGSaS00/vc6QfDeqiaG/7Box33TBIf0EeHUYQ1Be0uA+2z7YadxIzUWglpDE9zsB9G
+         Ua7u95/jKV7bS18g9sYeDnKpRp+F6bhqTQhHkRC9HYhop4qyUB+ZLEnlmecAWJvpnO2s
+         GGLuxUlHyOvD4lHvDUiG16zzoXZANf0UlyKS+tr81eB2padaUfRe76aM25lZeBHBh2kd
+         wUVI/f/OF79OCeOXgIcLk/fZCZnQF6FLlXSLNRFpDxf2TbO1CO0tto9T6IDjMsnD6nok
+         ZUL9QBXaB6/lpapeWIxVy0L2nGaxwC2CdNxYniEwjTfu1SxW1xjOvfr/nJnJ/PsXJX66
+         y9xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737959741; x=1738564541;
+        d=1e100.net; s=20230601; t=1737959744; x=1738564544;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ez3tSvrde4/xlwnZmVuP+Fya4AZTGyJMn0fkkataWVU=;
-        b=vumyz3LFpxKoyqWW9AgAUSQJX4n1/oa8C7mL5vlAZ8ZF8OVo05qPpJXbBUAh6JpiXT
-         SzBirYTuShTLWqeExYBjbd1kkVxL07AFywNeOLiGCi0IzXf7OZHi6kZFSSBwlsOJkxDn
-         9J6iMqdTrJIdB0mwpqAAGg1zEVu7WK9ADI2dhHcjiOcI1KIYpTfmIuNBJ3zLhTGjmEHz
-         MotpGwF+tA0Zh0oCatWfLTiaxhQPhhgj5F90hb1O/iATJyPLtRZcoGjBFS+0mFFP+k1K
-         1MSTzvGuIswEEjPjyCiJbkCgx8fRJiifU9OF7c8+n3tbWjT3mMCjxpUvzgMeZPVTXf2f
-         SZTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWIjjbQrBm+EEsGRahnDnPVhez8jZDRwEI2PC3IdrWe1WrDobVUKoied2QuO0WF7/FVWPUeEfoXVPFAYgU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxOD01oXyXFf15GxYewnvYhKeo6o1md31hSkDVrzf8xh3iPv+4O
-	Bn260l7xkPQuWqqktjkczwIYexW9yZoF+rcSC/bV0ravSXyf6EhI
-X-Gm-Gg: ASbGncuOxEPCJpNhZI99wuf8k+ATI3iHz6qUdpK2Ko8gQfbd3PMtj2+Jd1Cn+h3WCH+
-	7gfBFqnlcnZMaHeOmBI2IgHEPJb4cl+nbHSA3KeOs4vYOsQ358pxKIUcXt6PhBujmp09cfTU4Ds
-	hzwNzFT+/fCvTX+lRGs1GiJ3209SjDKbElsi+bWuDkljK9DGECwVUVjpYHBxyEi/a7cVCezQFmC
-	1y6VteuSCT8aY7Lsp8fUdq9nWDHsSNIismJS1V+3EgV9kKeXAMBpSB7sfy82LQEYynY5Ffu0QAK
-	gNToc6HYjVRyFW3zD4/YtLYhNgY=
-X-Google-Smtp-Source: AGHT+IGzGMI3t4zpaFFXPEQC5PEbkmuJ1vNmXDAEw9ZeDHwySjkS7/yGxVEraKAC9rMgzVcXVw/daw==
-X-Received: by 2002:a17:903:1206:b0:215:2d2c:dd0c with SMTP id d9443c01a7336-21da4a54381mr207318805ad.14.1737959741352;
-        Sun, 26 Jan 2025 22:35:41 -0800 (PST)
+        bh=FXXs8kEF0fkqJQxTj5/JRMeBNEwSNU94DwPc2H43KG0=;
+        b=e4TrlnHHC41BDL6YXsBRTQVIHlIQO80kLWkIQL2z2aI5Lp/qaAFEhvCSRf2Fk+0LqC
+         Eh++M42xbrRC63Nb2indj5nDrQn4zGgjFLTHOTujOcFcoc5mF9ZeVa4Wln/B09vMrdTb
+         EHvlUndv0LIuRuqRvWLr3UqTjWxP4ddtJUysWrpS4Nv3HvDDNwhTFSkFkbxYE6TmpjO5
+         1cPywVhV2Y/5wCQ8ZiN6N0y/nNb7ls2fj0pxKyfaDNoCmuT/nOBXPby5LQhcM65QipJC
+         gVjg8DtEYLGQIH6/utM0LtHXQ9pNL7qsgzFCOEg/feWNKJHkc+r6dfS3tLKdAACEP903
+         ceVQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXVFwHWDN8p/e38m8NnWYc/QZOnWFAkaKF/wH/Y7QB604IcYSPTCV8YFbTBe2/oUvhOj4kyTGFqGdKnE0o=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx9VzcHozkYSYurJW8BYObyBeVnP3aBy/D4BrU0J3KzR/cP1bmp
+	B776iTUiFSRRw2dN6SNsCkISuhe+Tz77xV0kv0yhUCkANNtBBxpt
+X-Gm-Gg: ASbGncs5XSuVfPBNMHi2Yqp5DunBO6x1/QOgOdEieY+j5j/huqGO78PCcSfKjVlGaGm
+	WG4wvXhh60PaukQ/j230m6Ie/HHOJtIcOSZ+tRVBmJVJUb91TVN9lJiWkxnuD44tRzdFfVLc4NC
+	2vcWVVS/XcTpQJtq73Siz773UaUI3PvjP9bEjXvSgJB5lRpQLJFj/j292mgbXGlMi5lpE5Dqn1J
+	KTyhLzcwG8VQLqAQ8YIsxzCYq6bTrPw/V03tIXkk/FTDGcHzTSIgRi018Lo3ka9FfNyO9t+0aZ/
+	XhvETt94t827RVCHUHCNfDf4c8o=
+X-Google-Smtp-Source: AGHT+IFcPnY3LHAjmFFF9hCaa+XhfDpLzY2CeqssfCQdd5kJbg2y/JLEdWbtRHo35qsTK2MLGvbFmw==
+X-Received: by 2002:a17:903:947:b0:216:5b64:90f6 with SMTP id d9443c01a7336-21c355fa2eamr556259435ad.45.1737959744546;
+        Sun, 26 Jan 2025 22:35:44 -0800 (PST)
 Received: from localhost.localdomain ([58.38.78.239])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21da3ea3076sm55875605ad.68.2025.01.26.22.35.39
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21da3ea3076sm55875605ad.68.2025.01.26.22.35.41
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 26 Jan 2025 22:35:40 -0800 (PST)
+        Sun, 26 Jan 2025 22:35:44 -0800 (PST)
 From: Yafang Shao <laoar.shao@gmail.com>
 To: jpoimboe@kernel.org,
 	jikos@kernel.org,
@@ -81,9 +81,9 @@ To: jpoimboe@kernel.org,
 Cc: live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Yafang Shao <laoar.shao@gmail.com>
-Subject: [RFC PATCH 1/2] livepatch: Add replaceable attribute
-Date: Mon, 27 Jan 2025 14:35:25 +0800
-Message-Id: <20250127063526.76687-2-laoar.shao@gmail.com>
+Subject: [RFC PATCH 2/2] livepatch: Implement livepatch hybrid mode
+Date: Mon, 27 Jan 2025 14:35:26 +0800
+Message-Id: <20250127063526.76687-3-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 In-Reply-To: <20250127063526.76687-1-laoar.shao@gmail.com>
 References: <20250127063526.76687-1-laoar.shao@gmail.com>
@@ -95,111 +95,100 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a new attribute "replaceable" to allow the coexsist of both atomic
-replace livepatch and non atomic replace livepatch. If the replaceable is
-set to 0, the livepatch won't be replaced by a atomic replace livepatch.
+The atomic replace livepatch mechanism was introduced to handle scenarios
+where we want to unload a specific livepatch without unloading others.
+However, its current implementation has significant shortcomings, making
+it less than ideal in practice. Below are the key downsides:
 
-This is a preparation for the followup patch.
+- It is expensive
 
+  During testing with frequent replacements of an old livepatch, random RCU
+  warnings were observed:
+
+  [19578271.779605] rcu_tasks_wait_gp: rcu_tasks grace period 642409 is 10024 jiffies old.
+  [19578390.073790] rcu_tasks_wait_gp: rcu_tasks grace period 642417 is 10185 jiffies old.
+  [19578423.034065] rcu_tasks_wait_gp: rcu_tasks grace period 642421 is 10150 jiffies old.
+  [19578564.144591] rcu_tasks_wait_gp: rcu_tasks grace period 642449 is 10174 jiffies old.
+  [19578601.064614] rcu_tasks_wait_gp: rcu_tasks grace period 642453 is 10168 jiffies old.
+  [19578663.920123] rcu_tasks_wait_gp: rcu_tasks grace period 642469 is 10167 jiffies old.
+  [19578872.990496] rcu_tasks_wait_gp: rcu_tasks grace period 642529 is 10215 jiffies old.
+  [19578903.190292] rcu_tasks_wait_gp: rcu_tasks grace period 642529 is 40415 jiffies old.
+  [19579017.965500] rcu_tasks_wait_gp: rcu_tasks grace period 642577 is 10174 jiffies old.
+  [19579033.981425] rcu_tasks_wait_gp: rcu_tasks grace period 642581 is 10143 jiffies old.
+  [19579153.092599] rcu_tasks_wait_gp: rcu_tasks grace period 642625 is 10188 jiffies old.
+  
+  This indicates that atomic replacement can cause performance issues,
+  particularly with RCU synchronization under frequent use.
+
+- Potential Risks During Replacement 
+
+  One known issue involves replacing livepatched versions of critical
+  functions such as do_exit(). During the replacement process, a panic
+  might occur, as highlighted in [0]. Other potential risks may also arise
+  due to inconsistencies or race conditions during transitions.
+
+- Temporary Loss of Patching 
+
+  During the replacement process, the old patch is set to a NOP (no-operation)
+  before the new patch is fully applied. This creates a window where the
+  function temporarily reverts to its original, unpatched state. If the old
+  patch fixed a critical issue (e.g., one that prevented a system panic), the
+  system could become vulnerable to that issue during the transition.
+
+The current atomic replacement approach replaces all old livepatches,
+even when such a sweeping change is unnecessary. This can be improved
+by introducing a hybrid mode, which allows the coexistence of both
+atomic replace and non atomic replace livepatches.
+
+In the hybrid mode:
+
+- Specific livepatches can be marked as "non-replaceable" to ensure they
+  remain active and unaffected during replacements.
+
+- Other livepatches can be marked as "replaceable," allowing targeted
+  replacements of only those patches.
+
+This selective approach would reduce unnecessary transitions, lower the
+risk of temporary patch loss, and mitigate performance issues during
+livepatch replacement.
+
+Link: https://lore.kernel.org/live-patching/CALOAHbA9WHPjeZKUcUkwULagQjTMfqAdAg+akqPzbZ7Byc=qrw@mail.gmail.com/ [0]
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- include/linux/livepatch.h |  2 ++
- kernel/livepatch/core.c   | 44 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 46 insertions(+)
+ kernel/livepatch/core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index 51a258c24ff5..f2e962aab5b0 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -147,6 +147,7 @@ struct klp_state {
-  * @objs:	object entries for kernel objects to be patched
-  * @states:	system states that can get modified
-  * @replace:	replace all actively used patches
-+ * @replaceable:	whether this patch can be replaced or not
-  * @list:	list node for global list of actively used patches
-  * @kobj:	kobject for sysfs resources
-  * @obj_list:	dynamic list of the object entries
-@@ -161,6 +162,7 @@ struct klp_patch {
- 	struct klp_object *objs;
- 	struct klp_state *states;
- 	bool replace;
-+	bool replaceable;
- 
- 	/* internal */
- 	struct list_head list;
 diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 0cd39954d5a1..5e0c2caa0af8 100644
+index 5e0c2caa0af8..f820b50c1b26 100644
 --- a/kernel/livepatch/core.c
 +++ b/kernel/livepatch/core.c
-@@ -347,6 +347,7 @@ int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
-  * /sys/kernel/livepatch/<patch>/transition
-  * /sys/kernel/livepatch/<patch>/force
-  * /sys/kernel/livepatch/<patch>/replace
-+ * /sys/kernel/livepatch/<patch>/replaceable
-  * /sys/kernel/livepatch/<patch>/stack_order
-  * /sys/kernel/livepatch/<patch>/<object>
-  * /sys/kernel/livepatch/<patch>/<object>/patched
-@@ -474,17 +475,60 @@ static ssize_t stack_order_show(struct kobject *kobj,
- 	return sysfs_emit(buf, "%d\n", stack_order);
- }
+@@ -658,6 +658,8 @@ static int klp_add_nops(struct klp_patch *patch)
+ 		klp_for_each_object(old_patch, old_obj) {
+ 			int err;
  
-+static ssize_t replaceable_store(struct kobject *kobj, struct kobj_attribute *attr,
-+				const char *buf, size_t count)
-+{
-+	struct klp_patch *patch;
-+	bool replaceable;
-+	int ret;
-+
-+	ret = kstrtobool(buf, &replaceable);
-+	if (ret)
-+		return ret;
-+
-+	patch = container_of(kobj, struct klp_patch, kobj);
-+
-+	mutex_lock(&klp_mutex);
-+
-+	if (patch->replaceable == replaceable)
-+		goto out;
-+
-+	if (patch == klp_transition_patch) {
-+		ret = -EAGAIN;
-+		goto out;
-+	}
-+
-+	patch->replaceable = replaceable;
-+
-+out:
-+	mutex_unlock(&klp_mutex);
-+
-+	if (ret)
-+		return ret;
-+	return count;
-+}
-+static ssize_t replaceable_show(struct kobject *kobj,
-+			       struct kobj_attribute *attr, char *buf)
-+{
-+	struct klp_patch *patch;
-+
-+	patch = container_of(kobj, struct klp_patch, kobj);
-+	return sysfs_emit(buf, "%d\n", patch->replaceable);
-+}
-+
- static struct kobj_attribute enabled_kobj_attr = __ATTR_RW(enabled);
- static struct kobj_attribute transition_kobj_attr = __ATTR_RO(transition);
- static struct kobj_attribute force_kobj_attr = __ATTR_WO(force);
- static struct kobj_attribute replace_kobj_attr = __ATTR_RO(replace);
- static struct kobj_attribute stack_order_kobj_attr = __ATTR_RO(stack_order);
-+static struct kobj_attribute replaceable_kobj_attr = __ATTR_RW(replaceable);
- static struct attribute *klp_patch_attrs[] = {
- 	&enabled_kobj_attr.attr,
- 	&transition_kobj_attr.attr,
- 	&force_kobj_attr.attr,
- 	&replace_kobj_attr.attr,
- 	&stack_order_kobj_attr.attr,
-+	&replaceable_kobj_attr.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(klp_patch);
++			if (!old_patch->replaceable)
++				continue;
+ 			err = klp_add_object_nops(patch, old_obj);
+ 			if (err)
+ 				return err;
+@@ -830,6 +832,8 @@ void klp_free_replaced_patches_async(struct klp_patch *new_patch)
+ 	klp_for_each_patch_safe(old_patch, tmp_patch) {
+ 		if (old_patch == new_patch)
+ 			return;
++		if (!old_patch->replaceable)
++			continue;
+ 		klp_free_patch_async(old_patch);
+ 	}
+ }
+@@ -1232,6 +1236,8 @@ void klp_unpatch_replaced_patches(struct klp_patch *new_patch)
+ 		if (old_patch == new_patch)
+ 			return;
+ 
++		if (!old_patch->replaceable)
++			continue;
+ 		old_patch->enabled = false;
+ 		klp_unpatch_objects(old_patch);
+ 	}
 -- 
 2.43.5
 
