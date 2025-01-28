@@ -1,118 +1,138 @@
-Return-Path: <live-patching+bounces-1075-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1076-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A3FA6A1FFF1
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 22:35:08 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 63B1CA2081F
+	for <lists+live-patching@lfdr.de>; Tue, 28 Jan 2025 11:04:19 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0F4D41655A8
-	for <lists+live-patching@lfdr.de>; Mon, 27 Jan 2025 21:35:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B2EE8162257
+	for <lists+live-patching@lfdr.de>; Tue, 28 Jan 2025 10:04:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 634491DDA35;
-	Mon, 27 Jan 2025 21:33:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 657611A0BCD;
+	Tue, 28 Jan 2025 10:01:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3C5M9N0x"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bx7V38So"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E00C71DDA0E
-	for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 21:33:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288731917D8;
+	Tue, 28 Jan 2025 10:01:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738013626; cv=none; b=DyleJNzaSho+gAJoyAn/oQedMBoZkVeoNBLrVHYqAk4Tm1lsl/1Eod8q7yfx0rORoSvwzTUNb44cEqf+PeDZl2Z+lbyoPAygibLi7ODyZ82toeco7Jf6PVQ+Hb05D7QGMx153A0aJ5VlYB5gP4KucHxS8w2K1iW75rxayirflzM=
+	t=1738058480; cv=none; b=ai5HqsCAiosQxnd7ds5zdVG9BMW0I1hfzfaaJYgrRwBdoZu6Ka2UkDEeBFcSGzteaDUEs9KvS8EAZ/p69P+J7dA95scaP3YdwSijqPbIWKJ06eKHg4pRUK1OTRjr/fG+8kIXG/JZwHvTWw7Mzd4B/9tFoaV+6lQWrZETu12XIkw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738013626; c=relaxed/simple;
-	bh=pI3FZDlF646LxEDSftCYlwDERzfFSfxkeBl5dFk7tWo=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=O+/gs0tNASyS/gV9l94HA/W9CVPP4bjDaAY2XiiUcXdSymaILjNTpzgEtQlkwNSU4TmuoekNEkSUQQJ2wD5uE4hSI7wXMRDrkRKdNAPhAeAAltbklHomQ4ZNbISgtKKbgOasVb5Y8etp3zDkFI/4DfMofeIv85jyWo3BkSOaQac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3C5M9N0x; arc=none smtp.client-ip=209.85.216.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2ef9204f898so9423219a91.2
-        for <live-patching@vger.kernel.org>; Mon, 27 Jan 2025 13:33:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738013624; x=1738618424; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rDc9oon22Zy8JtV6oJyK3eShWNaKTPBJnRLwhRmq6mE=;
-        b=3C5M9N0xNULISmGFd/fTiZuWZvO/EzaEtFt5ztUdecJEdBoWdTBi5fvE1RyO/zwA4q
-         L/43idHs/7qP0Ph292HIt6P4slCDb2UlNu5dTyeFH/U7Mo/GFmcBSjAOPPuaRPybwICy
-         t7QXoh5VAug70Veelhkm/QOWoIhuUCfTqAJnx9MtJT/hgOEBu8FAw/Osi4L6PAQUVud2
-         QmMieWtzGbmpKifrM0xAf/rGaBT8ddxZ6SeE8AsEpCyfppKDii+srQ4A4+yM+GsOKUD2
-         P5sVGTEbpn+mKL/wqi/IiEtEI/hxW6WjbZN4nAXfSwyWl0kEB3yJcfOQtap1IXPAMoye
-         VrKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738013624; x=1738618424;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rDc9oon22Zy8JtV6oJyK3eShWNaKTPBJnRLwhRmq6mE=;
-        b=g6U4O6rxQVw+MjBYJ+gzMG9KwDo90aZbS7R5+14vrcSLQzwBdVPZdQtuGptgffeEmN
-         7XZOD9zU+iYhVyx5bPPX3Mq9StTGCdkFXdWYXyDJixUoBdR5ASYw2yKxDLzK2+zVkWXk
-         qCY4arLGKHx8qW4Wcalo7dA+yIBewjBIhLL8YA4GQlesA2ZdInq6dQi2ld+yoGkxkRHE
-         /7Spvx+4WrIx7JlJOJv6ojPY6Aklnhjnv1pCR+z75G/EZbSEpJKKFnOuzvG5igxESISW
-         3PIkxS35Bvk+fE7DvFvyhJmZW/7FDzNVkNMYVytqEUTfPRJEJzblXM2gO4xMmZzpubvD
-         3UIQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVn1OjxHbJgEr3k5IcjFISPT/+S+80E/2Ud1F/9K31h4W2cS0sbRdWxyKyt7uJF/KYpMmChD9slDY9G7Qwf@vger.kernel.org
-X-Gm-Message-State: AOJu0YwbkPWXkuD5FomdncvfYtNfNUCv9KN+sKlWXD6g4XAQ8F7iLWU/
-	vv9vkmNGgUYV3Ip9kPIkeB+T5xfz3dyeUemU3/cWcAunc9paM8JlWbQbZglAbSpDWRhLRD8gRA=
-	=
-X-Google-Smtp-Source: AGHT+IEfHevdTTJtb6AigZBRpVD2FnhyEzVTYMnATEtYpNkPmzEcW9Tro1KWiXPv1Vj43sJ3+gY4o9DCZA==
-X-Received: from pjbqo13.prod.google.com ([2002:a17:90b:3dcd:b0:2f4:47fc:7f17])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2808:b0:2ee:5edc:4b2
- with SMTP id 98e67ed59e1d1-2f782cc0114mr60880084a91.20.1738013624271; Mon, 27
- Jan 2025 13:33:44 -0800 (PST)
-Date: Mon, 27 Jan 2025 21:33:10 +0000
-In-Reply-To: <20250127213310.2496133-1-wnliu@google.com>
+	s=arc-20240116; t=1738058480; c=relaxed/simple;
+	bh=H+G3TtSN5z2rPg9q7jaqw3zaBc0K+irN0EUiSSVdGVI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rlgwr2ARlBlobOsv5SLGd2jxUdG2/h+I1Z5YhPaAIN1romAdEsXrbHHeYMo0+GM2HKdiRFxHaxKgULW6qfWstfTqAU+lsWbx3vdEsDt+LUlnXHPpcvTX1jzujp3gv8KYm03w3bwaH4o2oT660g05yJfomlb6oBQsjHDCWDnVFyY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bx7V38So; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE0C8C4CED3;
+	Tue, 28 Jan 2025 10:01:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1738058478;
+	bh=H+G3TtSN5z2rPg9q7jaqw3zaBc0K+irN0EUiSSVdGVI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Bx7V38SoAhETd9sc3qxV33PkV4fbZ9U+nWfMSuyj7aAE4t36vZLBolyqeF4nbGBta
+	 XbN1Q+pDjEpEFtKJHmktZXdqMYusjeXUsBpMTU7b6k5chsugMb3GDVaN7OIdra9mNc
+	 LgS+jr+iGKrULxB2qPNZHewWubD6EIpyvgyZNsdxQFtO0jyXH5V+jnnZUMM6ltJCFZ
+	 S0bl1WgjGqJhnkUL6gVfjpKxam708lIRTpj76NinsW/OGobdYd4Lb21/LvZ8ubl/cT
+	 FoOzOIdBgb8magf0NcV37KSZIgUUV04fADb6slWXhE+UMBFk+i/daHvsFfa4nWGW8m
+	 oHJUjwuGUTj7g==
+Date: Tue, 28 Jan 2025 12:00:56 +0200
+From: Mike Rapoport <rppt@kernel.org>
+To: Petr Pavlu <petr.pavlu@suse.com>
+Cc: x86@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+	Andy Lutomirski <luto@kernel.org>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Brendan Higgins <brendan.higgins@linux.dev>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Gow <davidgow@google.com>,
+	Douglas Anderson <dianders@chromium.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Jiri Kosina <jikos@kernel.org>,
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>, "H. Peter Anvin" <hpa@zytor.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Petr Mladek <pmladek@suse.com>, Rae Moar <rmoar@google.com>,
+	Richard Weinberger <richard@nod.at>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Shuah Khan <shuah@kernel.org>, Song Liu <song@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	kgdb-bugreport@lists.sourceforge.net, kunit-dev@googlegroups.com,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	linux-mm@kvack.org, linux-modules@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linux-um@lists.infradead.org,
+	live-patching@vger.kernel.org
+Subject: Re: [PATCH v3 6/9] module: switch to execmem API for remapping as RW
+ and restoring ROX
+Message-ID: <Z5iq2GJKIdlB9APM@kernel.org>
+References: <20250126074733.1384926-1-rppt@kernel.org>
+ <20250126074733.1384926-7-rppt@kernel.org>
+ <021665c5-b017-415f-ad2b-0131dcc81068@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20250127213310.2496133-1-wnliu@google.com>
-X-Mailer: git-send-email 2.48.1.262.g85cc9f2d1e-goog
-Message-ID: <20250127213310.2496133-9-wnliu@google.com>
-Subject: [PATCH 8/8] arm64: Enable livepatch for ARM64
-From: Weinan Liu <wnliu@google.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Indu Bhagat <indu.bhagat@oracle.com>, Peter Zijlstra <peterz@infradead.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev, 
-	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-	joe.lawrence@redhat.com, linux-arm-kernel@lists.infradead.org, 
-	Weinan Liu <wnliu@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <021665c5-b017-415f-ad2b-0131dcc81068@suse.com>
 
-Since SFrame is considered as reliable stacktrace, enable livepatch in
-arch/arm64/Kconfig
+On Mon, Jan 27, 2025 at 01:50:31PM +0100, Petr Pavlu wrote:
+> On 1/26/25 08:47, Mike Rapoport wrote:
+> > From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
+> > 
+> > Instead of using writable copy for module text sections, temporarily remap
+> > the memory allocated from execmem's ROX cache as writable and restore its
+> > ROX permissions after the module is formed.
+> > 
+> > This will allow removing nasty games with writable copy in alternatives
+> > patching on x86.
+> > 
+> > Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> 
+> [...]
+> 
+> > +static void module_memory_restore_rox(struct module *mod)
+> > +{
+> > +	for_class_mod_mem_type(type, text) {
+> > +		struct module_memory *mem = &mod->mem[type];
+> > +
+> > +		if (mem->is_rox)
+> > +			execmem_restore_rox(mem->base, mem->size);
+> > +	}
+> > +}
+> > +
+> 
+> Can the execmem_restore_rox() call here fail? I realize that there isn't
+> much that the module loader can do if that happens, but should it be
+> perhaps logged as a warning?
 
-Signed-off-by: Weinan Liu <wnliu@google.com>
----
- arch/arm64/Kconfig | 3 +++
- 1 file changed, 3 insertions(+)
+It won't fail at this point. set_memory APIs may fail if they need to split
+a large page and could not allocate a new page table, but here all the
+splits were already done at module_memory_alloc() time.
+ 
+> -- 
+> Thanks,
+> Petr
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 100570a048c5..c292bc73b65c 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -271,6 +271,8 @@ config ARM64
- 	select HAVE_SOFTIRQ_ON_OWN_STACK
- 	select USER_STACKTRACE_SUPPORT
- 	select VDSO_GETRANDOM
-+	select HAVE_RELIABLE_STACKTRACE if SFRAME_UNWINDER
-+	select HAVE_LIVEPATCH		if HAVE_DYNAMIC_FTRACE_WITH_ARGS && HAVE_RELIABLE_STACKTRACE
- 	help
- 	  ARM 64-bit (AArch64) Linux support.
- 
-@@ -2498,3 +2500,4 @@ source "drivers/acpi/Kconfig"
- 
- source "arch/arm64/kvm/Kconfig"
- 
-+source "kernel/livepatch/Kconfig"
 -- 
-2.48.1.262.g85cc9f2d1e-goog
-
+Sincerely yours,
+Mike.
 
