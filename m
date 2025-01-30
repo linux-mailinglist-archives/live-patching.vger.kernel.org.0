@@ -1,47 +1,47 @@
-Return-Path: <live-patching+bounces-1083-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1084-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 00083A22AA0
-	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2025 10:45:11 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0FF23A22AEE
+	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2025 10:54:42 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5C143164F0B
-	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2025 09:45:10 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 094471888E01
+	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2025 09:54:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9687E1B4143;
-	Thu, 30 Jan 2025 09:45:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26DFF1BEF7D;
+	Thu, 30 Jan 2025 09:53:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="IsSf5FRF"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="gtzsMnkr"
 X-Original-To: live-patching@vger.kernel.org
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E8B9F1B4C35;
-	Thu, 30 Jan 2025 09:45:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 55CB61B85CA;
+	Thu, 30 Jan 2025 09:53:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738230308; cv=none; b=K4oR0+5g3fXujiwxXwywojiKCv1kSSBBNsSzMrXSVpfOEdSDqTWmnmfaUCoh5NqiuZz/SyMVFzy4c6Fp7OumwyA4W9CgnZgmWltgykp3BdDcCLR6/IltJDRIAdFenF7mj/S2yJ2An4CBHCXvfnz4TRutBghAEB9+7fCstdmV/IE=
+	t=1738230806; cv=none; b=LEJxZeD6cXnzfm5IZybN7OXKSj09qe0U+o6FIUU6QmTRcY4d7Ml+xx6J1LZ95NW1v2CQgglsjIPLYIhLGpyaYhN9uFNTyHfMNz1c4y53LaozieM68IQuTNE0nhogLFOnz/89oYnp3FXRYJ7maCu88ZSu9nPWazkE5SjJ8AoJ/J8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738230308; c=relaxed/simple;
-	bh=bNUQPhEn4wGDCDGlcPX0Dtsaf+qnmhjqp6HCYuyV7ps=;
+	s=arc-20240116; t=1738230806; c=relaxed/simple;
+	bh=vyvvFWCJPiszGlA9jXb+sS9KrOxg+WCmzPAQr9OxoRc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UIel817UqYfdnWe264OGL3lnilTkLysBSYsMa7lzDnsX6PVQiCIZN8Lr2tAx9UwW26p5x1pM08xn+wVQjmp6BiNjt/0ynOQeuKP1sSg2Qgwc1yjE9IoMviDx4x9ZiT5AKGD9DGl7FwRKurxRRv+P93TJ8opDzBTxaJmyzPZM5xs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=IsSf5FRF; arc=none smtp.client-ip=13.77.154.182
+	 In-Reply-To:Content-Type; b=u7XpmF7uz/rrF2sLOMCy+r6YpkyD4VVQCsilbDpZlt4QtRilvr0VdBvTNlZNRKa+MHqpGzhQ6nzSuxh8nVR51ez8QXPfVpwZVyRQ+sw/13q1klAckNAI/F20qarZXPwWLijXDP43ZXayZ0z1tbx4wW/4DzqcYTCNWVEIbW6TpRw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=gtzsMnkr; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Received: from [10.156.205.88] (unknown [167.220.238.88])
-	by linux.microsoft.com (Postfix) with ESMTPSA id EE9E72109CD7;
-	Thu, 30 Jan 2025 01:45:02 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EE9E72109CD7
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6FE8C2109CD7;
+	Thu, 30 Jan 2025 01:53:20 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6FE8C2109CD7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1738230306;
-	bh=NRGiBYGv+vKqDqDaesyuawX4ZPxUYYpwD/wnO7/ks+Y=;
+	s=default; t=1738230803;
+	bh=x973D1YtTSuerbgIqP0nPMvsl0lyHBrerW2rQqaj1Jw=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=IsSf5FRFEtFqA4+wMmOLBhT+u99GjlRyAoqK3hukAvyDf6BXvo1bzRR8Hxn03jmpN
-	 Lhz5KNPyeMWkhA3VAUsMLmnM3tbO6yKa8Mu1VW2YaE19FRA0sWqnZE1lAWq+I8921f
-	 m79XGe6iux/lhe6N2Ds11PSJQQp121cf/U9or2uc=
-Message-ID: <d7f69c61-8daf-4996-8c62-108589442604@linux.microsoft.com>
-Date: Thu, 30 Jan 2025 15:15:01 +0530
+	b=gtzsMnkrbY7Gw7uExDQbFAF48tutey2piJQfp8+YNhPN6rruZi0S1Y9EM6LLv4nFr
+	 gjfGLklVuqKn+ZzEe/uxv9vbIuohp8YpYQWKg0Wt7kpws3mcMIY9CFbg7lr5WYr1LO
+	 WCuYnHSDidOGwNhKVJgKmd8HBAb9uscz2bXQRPLU=
+Message-ID: <3be32c6e-0041-4087-953b-06356b7a3d65@linux.microsoft.com>
+Date: Thu, 30 Jan 2025 15:23:19 +0530
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -49,7 +49,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/8] unwind: build kernel with sframe info
+Subject: Re: [PATCH 3/8] unwind: add sframe v2 header
 To: Weinan Liu <wnliu@google.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
  Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>,
  Peter Zijlstra <peterz@infradead.org>
@@ -59,115 +59,253 @@ Cc: Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev,
  live-patching@vger.kernel.org, joe.lawrence@redhat.com,
  linux-arm-kernel@lists.infradead.org
 References: <20250127213310.2496133-1-wnliu@google.com>
- <20250127213310.2496133-2-wnliu@google.com>
+ <20250127213310.2496133-4-wnliu@google.com>
 Content-Language: en-US
 From: Prasanna Kumar T S M <ptsm@linux.microsoft.com>
-In-Reply-To: <20250127213310.2496133-2-wnliu@google.com>
+In-Reply-To: <20250127213310.2496133-4-wnliu@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 On 28-01-2025 03:03, Weinan Liu wrote:
-> Use the -Wa,--gsframe flags to build the code, so GAS will generate
-> a new .sframe section for the stack trace information.
-> Currently, the sframe format only supports arm64 and x86_64
-> architectures. Add this configuration on arm64 to enable sframe
-> unwinder in the future.
+> Add sframe header so that we know how to access the sframe section
+> generated by compilers.
+>
+> This is the sframe header file borrowed from the patchset [1]
+> Josh Poimboeuf according to sframe v2 spec [2].
+>
+> [1]: https://lore.kernel.org/lkml/42c0a99236af65c09c8182e260af7bcf5aa1e158.1730150953.git.jpoimboe@kernel.org/
+> [2]: https://sourceware.org/binutils/docs/sframe-spec.html
 >
 > Signed-off-by: Weinan Liu <wnliu@google.com>
 > ---
->   Makefile                          |  6 ++++++
->   arch/Kconfig                      |  8 ++++++++
->   arch/arm64/Kconfig.debug          | 10 ++++++++++
->   include/asm-generic/vmlinux.lds.h | 12 ++++++++++++
->   4 files changed, 36 insertions(+)
+>   kernel/sframe.h | 215 ++++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 215 insertions(+)
+>   create mode 100644 kernel/sframe.h
 >
-> diff --git a/Makefile b/Makefile
-> index b9464c88ac72..35200c39b98d 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1064,6 +1064,12 @@ ifdef CONFIG_CC_IS_GCC
->   KBUILD_CFLAGS   += -fconserve-stack
->   endif
->   
-> +# build with sframe table
-> +ifdef CONFIG_SFRAME_UNWIND_TABLE
-> +KBUILD_CFLAGS	+= -Wa,--gsframe
-> +KBUILD_AFLAGS	+= -Wa,--gsframe
-> +endif
+> diff --git a/kernel/sframe.h b/kernel/sframe.h
+> new file mode 100644
+> index 000000000000..11b9be7ad82e
+> --- /dev/null
+> +++ b/kernel/sframe.h
+> @@ -0,0 +1,215 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/*
+> + * Copyright (C) 2023, Oracle and/or its affiliates.
+> + *
+> + * This file contains definitions for the SFrame stack tracing format, which is
+> + * documented at https://sourceware.org/binutils/docs
+> + */
+> +#ifndef _SFRAME_H
+> +#define _SFRAME_H
 > +
->   # change __FILE__ to the relative path to the source directory
->   ifdef building_out_of_srctree
->   KBUILD_CPPFLAGS += $(call cc-option,-fmacro-prefix-map=$(srcroot)/=)
-> diff --git a/arch/Kconfig b/arch/Kconfig
-> index 6682b2a53e34..ae70f7dbe326 100644
-> --- a/arch/Kconfig
-> +++ b/arch/Kconfig
-> @@ -1736,4 +1736,12 @@ config ARCH_WANTS_PRE_LINK_VMLINUX
->   	  An architecture can select this if it provides arch/<arch>/tools/Makefile
->   	  with .arch.vmlinux.o target to be linked into vmlinux.
->   
-> +config AS_HAS_SFRAME_SUPPORT
-> +	# Detect availability of the AS option -Wa,--gsframe for generating
-> +	# sframe unwind table.
-> +	def_bool $(cc-option,-Wa$(comma)--gsframe)
+> +#include <linux/types.h>
 > +
-> +config SFRAME_UNWIND_TABLE
-> +	bool
+> +#define SFRAME_VERSION_1	1
+> +#define SFRAME_VERSION_2	2
+> +#define SFRAME_MAGIC		0xdee2
 > +
->   endmenu
-> diff --git a/arch/arm64/Kconfig.debug b/arch/arm64/Kconfig.debug
-> index 265c4461031f..ed619fcb18b3 100644
-> --- a/arch/arm64/Kconfig.debug
-> +++ b/arch/arm64/Kconfig.debug
-> @@ -20,4 +20,14 @@ config ARM64_RELOC_TEST
->   	depends on m
->   	tristate "Relocation testing module"
->   
-> +config SFRAME_UNWINDER
-> +	bool "Sframe unwinder"
-> +	depends on AS_HAS_SFRAME_SUPPORT
-> +	depends on 64BIT
-> +	select SFRAME_UNWIND_TABLE
-> +	help
-> +	  This option enables the sframe (Simple Frame) unwinder for unwinding
-> +	  kernel stack traces. It uses unwind table that is direclty generated
-> +	  by toolchain based on DWARF CFI information
+> +/* Function Descriptor Entries are sorted on PC. */
+> +#define SFRAME_F_FDE_SORTED	0x1
+> +/* Frame-pointer based stack tracing. Defined, but not set. */
+> +#define SFRAME_F_FRAME_POINTER	0x2
 > +
->   source "drivers/hwtracing/coresight/Kconfig"
-> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-> index 54504013c749..6a437bd084c7 100644
-> --- a/include/asm-generic/vmlinux.lds.h
-> +++ b/include/asm-generic/vmlinux.lds.h
-> @@ -469,6 +469,8 @@ defined(CONFIG_AUTOFDO_CLANG) || defined(CONFIG_PROPELLER_CLANG)
->   		*(.rodata1)						\
->   	}								\
->   									\
-> +	SFRAME								\
-> +									\
->   	/* PCI quirks */						\
->   	.pci_fixup        : AT(ADDR(.pci_fixup) - LOAD_OFFSET) {	\
->   		BOUNDED_SECTION_PRE_LABEL(.pci_fixup_early,  _pci_fixups_early,  __start, __end) \
-> @@ -886,6 +888,16 @@ defined(CONFIG_AUTOFDO_CLANG) || defined(CONFIG_PROPELLER_CLANG)
->   #define TRACEDATA
->   #endif
->   
-> +#ifdef CONFIG_SFRAME_UNWIND_TABLE
-> +#define SFRAME							\
-> +	/* sframe */						\
-> +	.sframe        : AT(ADDR(.sframe) - LOAD_OFFSET) {	\
-> +		BOUNDED_SECTION_BY(.sframe, _sframe_header)	\
-> +	}
-> +#else
-> +#define SFRAME
-> +#endif
+> +#define SFRAME_CFA_FIXED_FP_INVALID 0
+> +#define SFRAME_CFA_FIXED_RA_INVALID 0
 > +
->   #ifdef CONFIG_PRINTK_INDEX
->   #define PRINTK_INDEX							\
->   	.printk_index : AT(ADDR(.printk_index) - LOAD_OFFSET) {		\
+> +/* Supported ABIs/Arch. */
+> +#define SFRAME_ABI_AARCH64_ENDIAN_BIG	    1 /* AARCH64 big endian. */
+> +#define SFRAME_ABI_AARCH64_ENDIAN_LITTLE    2 /* AARCH64 little endian. */
+> +#define SFRAME_ABI_AMD64_ENDIAN_LITTLE	    3 /* AMD64 little endian. */
+> +
+> +/* SFrame FRE types. */
+> +#define SFRAME_FRE_TYPE_ADDR1	0
+> +#define SFRAME_FRE_TYPE_ADDR2	1
+> +#define SFRAME_FRE_TYPE_ADDR4	2
+> +
+> +/*
+> + * SFrame Function Descriptor Entry types.
+> + *
+> + * The SFrame format has two possible representations for functions. The
+> + * choice of which type to use is made according to the instruction patterns
+> + * in the relevant program stub.
+> + */
+> +
+> +/* Unwinders perform a (PC >= FRE_START_ADDR) to look up a matching FRE. */
+> +#define SFRAME_FDE_TYPE_PCINC	0
+> +/*
+> + * Unwinders perform a (PC & FRE_START_ADDR_AS_MASK >= FRE_START_ADDR_AS_MASK)
+> + * to look up a matching FRE. Typical usecases are pltN entries, trampolines
+> + * etc.
+> + */
+> +#define SFRAME_FDE_TYPE_PCMASK	1
+> +
+> +/**
+> + * struct sframe_preamble - SFrame Preamble.
+> + * @magic: Magic number (SFRAME_MAGIC).
+> + * @version: Format version number (SFRAME_VERSION).
+> + * @flags: Various flags.
+> + */
+> +struct sframe_preamble {
+> +	u16 magic;
+> +	u8  version;
+> +	u8  flags;
+> +} __packed;
+> +
+> +/**
+> + * struct sframe_header - SFrame Header.
+> + * @preamble: SFrame preamble.
+> + * @abi_arch: Identify the arch (including endianness) and ABI.
+> + * @cfa_fixed_fp_offset: Offset for the Frame Pointer (FP) from CFA may be
+> + *	  fixed for some ABIs ((e.g, in AMD64 when -fno-omit-frame-pointer is
+> + *	  used). When fixed, this field specifies the fixed stack frame offset
+> + *	  and the individual FREs do not need to track it. When not fixed, it
+> + *	  is set to SFRAME_CFA_FIXED_FP_INVALID, and the individual FREs may
+> + *	  provide the applicable stack frame offset, if any.
+> + * @cfa_fixed_ra_offset: Offset for the Return Address from CFA is fixed for
+> + *	  some ABIs. When fixed, this field specifies the fixed stack frame
+> + *	  offset and the individual FREs do not need to track it. When not
+> + *	  fixed, it is set to SFRAME_CFA_FIXED_FP_INVALID.
+> + * @auxhdr_len: Number of bytes making up the auxiliary header, if any.
+> + *	  Some ABI/arch, in the future, may use this space for extending the
+> + *	  information in SFrame header. Auxiliary header is contained in bytes
+> + *	  sequentially following the sframe_header.
+> + * @num_fdes: Number of SFrame FDEs in this SFrame section.
+> + * @num_fres: Number of SFrame Frame Row Entries.
+> + * @fre_len:  Number of bytes in the SFrame Frame Row Entry section.
+> + * @fdes_off: Offset of SFrame Function Descriptor Entry section.
+> + * @fres_off: Offset of SFrame Frame Row Entry section.
+> + */
+> +struct sframe_header {
+> +	struct sframe_preamble preamble;
+> +	u8  abi_arch;
+> +	s8  cfa_fixed_fp_offset;
+> +	s8  cfa_fixed_ra_offset;
+> +	u8  auxhdr_len;
+> +	u32 num_fdes;
+> +	u32 num_fres;
+> +	u32 fre_len;
+> +	u32 fdes_off;
+> +	u32 fres_off;
+> +} __packed;
+> +
+> +#define SFRAME_HDR_SIZE(sframe_hdr)	\
+> +	((sizeof(struct sframe_header) + (sframe_hdr).auxhdr_len))
+> +
+> +/* Two possible keys for executable (instruction) pointers signing. */
+> +#define SFRAME_AARCH64_PAUTH_KEY_A    0 /* Key A. */
+> +#define SFRAME_AARCH64_PAUTH_KEY_B    1 /* Key B. */
+> +
+> +/**
+> + * struct sframe_fde - SFrame Function Descriptor Entry.
+> + * @start_addr: Function start address. Encoded as a signed offset,
+> + *	  relative to the current FDE.
+> + * @size: Size of the function in bytes.
+> + * @fres_off: Offset of the first SFrame Frame Row Entry of the function,
+> + *	  relative to the beginning of the SFrame Frame Row Entry sub-section.
+> + * @fres_num: Number of frame row entries for the function.
+> + * @info: Additional information for deciphering the stack trace
+> + *	  information for the function. Contains information about SFrame FRE
+> + *	  type, SFrame FDE type, PAC authorization A/B key, etc.
+> + * @rep_size: Block size for SFRAME_FDE_TYPE_PCMASK
+> + * @padding: Unused
+> + */
+> +struct sframe_fde {
+> +	s32 start_addr;
+> +	u32 size;
+> +	u32 fres_off;
+> +	u32 fres_num;
+> +	u8  info;
+> +	u8  rep_size;
+> +	u16 padding;
+> +} __packed;
+> +
+> +/*
+> + * 'func_info' in SFrame FDE contains additional information for deciphering
+> + * the stack trace information for the function. In V1, the information is
+> + * organized as follows:
+> + *   - 4-bits: Identify the FRE type used for the function.
+> + *   - 1-bit: Identify the FDE type of the function - mask or inc.
+> + *   - 1-bit: PAC authorization A/B key (aarch64).
+> + *   - 2-bits: Unused.
+> + * ---------------------------------------------------------------------
+> + * |  Unused  |  PAC auth A/B key (aarch64) |  FDE type |   FRE type   |
+> + * |          |        Unused (amd64)       |           |              |
+> + * ---------------------------------------------------------------------
+> + * 8          6                             5           4              0
+> + */
+> +
+> +/* Note: Set PAC auth key to SFRAME_AARCH64_PAUTH_KEY_A by default.  */
+> +#define SFRAME_FUNC_INFO(fde_type, fre_enc_type) \
+> +	(((SFRAME_AARCH64_PAUTH_KEY_A & 0x1) << 5) | \
+> +	 (((fde_type) & 0x1) << 4) | ((fre_enc_type) & 0xf))
+> +
+> +#define SFRAME_FUNC_FRE_TYPE(data)	  ((data) & 0xf)
+> +#define SFRAME_FUNC_FDE_TYPE(data)	  (((data) >> 4) & 0x1)
+> +#define SFRAME_FUNC_PAUTH_KEY(data)	  (((data) >> 5) & 0x1)
+> +
+> +/*
+> + * Size of stack frame offsets in an SFrame Frame Row Entry. A single
+> + * SFrame FRE has all offsets of the same size. Offset size may vary
+> + * across frame row entries.
+> + */
+> +#define SFRAME_FRE_OFFSET_1B	  0
+> +#define SFRAME_FRE_OFFSET_2B	  1
+> +#define SFRAME_FRE_OFFSET_4B	  2
+> +
+> +/* An SFrame Frame Row Entry can be SP or FP based.  */
+> +#define SFRAME_BASE_REG_FP	0
+> +#define SFRAME_BASE_REG_SP	1
+> +
+> +/*
+> + * The index at which a specific offset is presented in the variable length
+> + * bytes of an FRE.
+> + */
+> +#define SFRAME_FRE_CFA_OFFSET_IDX   0
+> +/*
+> + * The RA stack offset, if present, will always be at index 1 in the variable
+> + * length bytes of the FRE.
+> + */
+> +#define SFRAME_FRE_RA_OFFSET_IDX    1
+> +/*
+> + * The FP stack offset may appear at offset 1 or 2, depending on the ABI as RA
+> + * may or may not be tracked.
+> + */
+> +#define SFRAME_FRE_FP_OFFSET_IDX    2
+> +
+> +/*
+> + * 'fre_info' in SFrame FRE contains information about:
+> + *   - 1 bit: base reg for CFA
+> + *   - 4 bits: Number of offsets (N). A value of up to 3 is allowed to track
+> + *   all three of CFA, FP and RA (fixed implicit order).
+> + *   - 2 bits: information about size of the offsets (S) in bytes.
+> + *     Valid values are SFRAME_FRE_OFFSET_1B, SFRAME_FRE_OFFSET_2B,
+> + *     SFRAME_FRE_OFFSET_4B
+> + *   - 1 bit: Mangled RA state bit (aarch64 only).
+> + * ---------------------------------------------------------------
+> + * | Mangled-RA (aarch64) |  Size of   |   Number of  | base_reg |
+> + * |  Unused (amd64)      |  offsets   |    offsets   |          |
+> + * ---------------------------------------------------------------
+> + * 8                      7             5             1          0
+> + */
+> +
+> +/* Note: Set mangled_ra_p to zero by default. */
+> +#define SFRAME_FRE_INFO(base_reg_id, offset_num, offset_size) \
+> +	(((0 & 0x1) << 7) | (((offset_size) & 0x3) << 5) | \
+> +	 (((offset_num) & 0xf) << 1) | ((base_reg_id) & 0x1))
+> +
+> +/* Set the mangled_ra_p bit as indicated. */
+> +#define SFRAME_FRE_INFO_UPDATE_MANGLED_RA_P(mangled_ra_p, fre_info) \
+> +	((((mangled_ra_p) & 0x1) << 7) | ((fre_info) & 0x7f))
+> +
+> +#define SFRAME_FRE_CFA_BASE_REG_ID(data)	  ((data) & 0x1)
+> +#define SFRAME_FRE_OFFSET_COUNT(data)		  (((data) >> 1) & 0xf)
+> +#define SFRAME_FRE_OFFSET_SIZE(data)		  (((data) >> 5) & 0x3)
+> +#define SFRAME_FRE_MANGLED_RA_P(data)		  (((data) >> 7) & 0x1)
+> +
+> +#endif /* _SFRAME_H */
 
 Looks good to me.
 
 Reviewed-by: Prasanna Kumar T S M <ptsm@linux.microsoft.com>.
-
 
