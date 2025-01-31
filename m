@@ -1,88 +1,88 @@
-Return-Path: <live-patching+bounces-1095-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1096-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 32872A23E1D
-	for <lists+live-patching@lfdr.de>; Fri, 31 Jan 2025 14:06:46 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id A78A8A23E3E
+	for <lists+live-patching@lfdr.de>; Fri, 31 Jan 2025 14:18:33 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D7B183A35FB
-	for <lists+live-patching@lfdr.de>; Fri, 31 Jan 2025 13:06:38 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 390E21888AD2
+	for <lists+live-patching@lfdr.de>; Fri, 31 Jan 2025 13:18:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FDF91C245C;
-	Fri, 31 Jan 2025 13:06:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 363CC1C2457;
+	Fri, 31 Jan 2025 13:18:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="WhXaTUho";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="TIBw2m4G";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="WhXaTUho";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="TIBw2m4G"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="DErOa52J";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Z4wPVc4I";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="DErOa52J";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Z4wPVc4I"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5820B4A24
-	for <live-patching@vger.kernel.org>; Fri, 31 Jan 2025 13:06:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55A7738DC0;
+	Fri, 31 Jan 2025 13:18:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738328803; cv=none; b=CyLovLs3fJdzSK2xNQQKNdEHkqWlPIwqqLU//1v+VelEjwlhQDtcE2YZ0qpK+dfVruiW6KKNgRot5mKAOJmDHi5TeTrmC/rKFt4XvmIzapXp0eHoXuFZ2UFMVyJTs/sBqikbAjLwhFUycXrz0q+nZqbfvq94oTavwUDeAEB3LSw=
+	t=1738329508; cv=none; b=X1QC6QLyZuiex80H8m9yBF5oJYjDQgL6UvHDEOdTi7D0MVT9zn14TYRW107n91lCJq1iNwlUHPVYTeBWmV5VRm9zvTLyGJLf1U3APRoXq58HPU267ZgPX02rfUIVFMkocxi+HMi5rVylG8hLRHXl+q0ZXQ3gPlSw8TPLszGaPu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738328803; c=relaxed/simple;
-	bh=TZ/WX4omUqg9D5frT1MUWEWLnsdRYx0DD3H7fsoNjlI=;
+	s=arc-20240116; t=1738329508; c=relaxed/simple;
+	bh=SHmchvTzp5ErkaanwpgmmNEFXq4VUAYvrF9mLrCeNBQ=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=pP2Vrcldf4WI+0Wte4PzvTWKGEWxxwHAqAba8AdXM8v7C6dp393e2jxw8WkvZ8kyF99OWlv2nSH+AYN/zVoBXUipitOk+lm9lrct5FOeIBDbJ+yreLsNZ9agjakvOJvi2ZNHXMwS/5YOqdQdF7IYulDXz8NLnRGC5ygMs3H20Q4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=WhXaTUho; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=TIBw2m4G; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=WhXaTUho; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=TIBw2m4G; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version:Content-Type; b=CLAN9zRN1Pz4c/aSNmGBWNnYbr/n/OycnPwtr7kywxQHq3NBP2JvEtYUJRx3rGK2RdcGV19ZTfoBA4uai/oFgJZNpeHUqzeg+7f74RxjAiXycPoZvwt+I0z31LMvmqVVvVpnxEpNdhwfyVW/GdVRvZOEdphdvK9jcxT+21Hq3l4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=DErOa52J; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Z4wPVc4I; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=DErOa52J; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Z4wPVc4I; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Received: from pobox.suse.cz (unknown [10.100.2.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 9757B2116A;
-	Fri, 31 Jan 2025 13:06:38 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 8A3752116B;
+	Fri, 31 Jan 2025 13:18:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1738328798; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1738329504; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
-	b=WhXaTUhoTWFGBxGJne2ZNMHVyI9tJ3+Dn2vqB6/EWX0TWefcoGvmjmxdKkNwEPf7SKRWzo
-	2A5MuqX/rQFtobzTSg+C90Pd7uW0IERqHLwQLwfEUGONwpqs8spaa2cnXaxotg6mWHtq85
-	i8tGaj+MoU7AKBeO6s5S9s2+OcZfhp0=
+	bh=7goyXTtkfKbdujajWMQAcFSGLzmABxiGYAPZ/poldkM=;
+	b=DErOa52JfiG1mii1hnBucroI7hWw54DW+p9RRLOMX0BUlUTFfvPIaD8nJmu+SsTsCHdbt6
+	5KVdIzUHjGzmkqyaJu+O8+416CYI+kTug6YkpaoWgy72IGibZR6Uy5V8McrjzmS771oqDi
+	WdhcT9IMUGLbNjoHY+cRlvoOtnEcOhw=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1738328798;
+	s=susede2_ed25519; t=1738329504;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
-	b=TIBw2m4GvUfy2hfVADBrNxhTMSH0wch4ZzrGQ/1P+TCMAFvYcfnLtmDAJebjHTe0h7D3Dm
-	mcpcVnWjyHUJ3OBg==
+	bh=7goyXTtkfKbdujajWMQAcFSGLzmABxiGYAPZ/poldkM=;
+	b=Z4wPVc4IJzNgDX5d1Jktkb7pgmtJMYLgf2HlZIirtHZ4YSWtsOnk7E0ybMXbAnY3zSCBvA
+	z2RniRLSfB2DEJCQ==
 Authentication-Results: smtp-out1.suse.de;
 	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1738328798; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1738329504; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
-	b=WhXaTUhoTWFGBxGJne2ZNMHVyI9tJ3+Dn2vqB6/EWX0TWefcoGvmjmxdKkNwEPf7SKRWzo
-	2A5MuqX/rQFtobzTSg+C90Pd7uW0IERqHLwQLwfEUGONwpqs8spaa2cnXaxotg6mWHtq85
-	i8tGaj+MoU7AKBeO6s5S9s2+OcZfhp0=
+	bh=7goyXTtkfKbdujajWMQAcFSGLzmABxiGYAPZ/poldkM=;
+	b=DErOa52JfiG1mii1hnBucroI7hWw54DW+p9RRLOMX0BUlUTFfvPIaD8nJmu+SsTsCHdbt6
+	5KVdIzUHjGzmkqyaJu+O8+416CYI+kTug6YkpaoWgy72IGibZR6Uy5V8McrjzmS771oqDi
+	WdhcT9IMUGLbNjoHY+cRlvoOtnEcOhw=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1738328798;
+	s=susede2_ed25519; t=1738329504;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
-	b=TIBw2m4GvUfy2hfVADBrNxhTMSH0wch4ZzrGQ/1P+TCMAFvYcfnLtmDAJebjHTe0h7D3Dm
-	mcpcVnWjyHUJ3OBg==
-Date: Fri, 31 Jan 2025 14:06:38 +0100 (CET)
+	bh=7goyXTtkfKbdujajWMQAcFSGLzmABxiGYAPZ/poldkM=;
+	b=Z4wPVc4IJzNgDX5d1Jktkb7pgmtJMYLgf2HlZIirtHZ4YSWtsOnk7E0ybMXbAnY3zSCBvA
+	z2RniRLSfB2DEJCQ==
+Date: Fri, 31 Jan 2025 14:18:24 +0100 (CET)
 From: Miroslav Benes <mbenes@suse.cz>
 To: Yafang Shao <laoar.shao@gmail.com>
 cc: Petr Mladek <pmladek@suse.com>, jpoimboe@kernel.org, jikos@kernel.org, 
-    joe.lawrence@redhat.com, live-patching@vger.kernel.org
-Subject: Re: [PATCH] livepatch: Avoid hard lockup caused by
- klp_try_switch_task()
-In-Reply-To: <CALOAHbCw5_ZxNuRkwzMqz7NFdnJWgt-n4R--oYiE+BtNGP_8aw@mail.gmail.com>
-Message-ID: <alpine.LSU.2.21.2501311405280.10231@pobox.suse.cz>
-References: <20250122085146.41553-1-laoar.shao@gmail.com> <Z5DpqC7sm5qCJFtj@pathway.suse.cz> <CALOAHbCw5_ZxNuRkwzMqz7NFdnJWgt-n4R--oYiE+BtNGP_8aw@mail.gmail.com>
+    joe.lawrence@redhat.com, live-patching@vger.kernel.org, 
+    linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
+In-Reply-To: <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com>
+Message-ID: <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz>
+References: <20250127063526.76687-1-laoar.shao@gmail.com> <Z5eOIQ4tDJr8N4UR@pathway.suse.cz> <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com>
 User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -96,46 +96,74 @@ X-Spamd-Result: default: False [-2.80 / 50.00];
 	BAYES_HAM(-3.00)[99.99%];
 	SUSPICIOUS_RECIPS(1.50)[];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-0.993];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
 	MIME_GOOD(-0.10)[text/plain];
+	RCPT_COUNT_SEVEN(0.00)[7];
 	FREEMAIL_TO(0.00)[gmail.com];
-	RCVD_COUNT_ZERO(0.00)[0];
-	MIME_TRACE(0.00)[0:+];
-	TAGGED_RCPT(0.00)[];
 	ARC_NA(0.00)[];
+	RCVD_COUNT_ZERO(0.00)[0];
+	TAGGED_RCPT(0.00)[];
 	MID_RHS_MATCH_FROMTLD(0.00)[];
 	FREEMAIL_ENVRCPT(0.00)[gmail.com];
 	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
 	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
+	MIME_TRACE(0.00)[0:+];
 	FROM_EQ_ENVFROM(0.00)[];
 	FUZZY_BLOCKED(0.00)[rspamd.com];
 	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCPT_COUNT_FIVE(0.00)[6]
+	TO_DN_SOME(0.00)[]
 X-Spam-Score: -2.80
 X-Spam-Flag: NO
 
-Hi,
-
-> $ cat log | grep do_exit | wc -l
-> 1061
-> 
-> It seems that there are simply too many threads executing do_exit() at
-> the moment.
-> 
 > >
-> > You might try to use printk_deferred() instead. Also you might need
-> > to disable interrupts around the read_lock()/read_unlock() to
-> > make sure that the console handling will be deferred after
-> > the tasklist_lock gets released.
-> >
-> > Anyway, I am against this patch.
+> >   + What exactly is meant by frequent replacements (busy loop?, once a minute?)
 > 
-> However, there is still a risk of triggering a hard lockup if a large
-> number of tasks are involved.
+> The script:
+> 
+> #!/bin/bash
+> while true; do
+>         yum install -y ./kernel-livepatch-6.1.12-0.x86_64.rpm
+>         ./apply_livepatch_61.sh # it will sleep 5s
+>         yum erase -y kernel-livepatch-6.1.12-0.x86_64
+>         yum install -y ./kernel-livepatch-6.1.6-0.x86_64.rpm
+>         ./apply_livepatch_61.sh  # it will sleep 5s
+> done
+ 
+A live patch application is a slowpath. It is expected not to run 
+frequently (in a relative sense). If you stress it like this, it is quite 
+expected that it will have an impact. Especially on a large busy system.
 
-And as Petr said, it is very likely caused by pr_debug() in this setup. 
-The proposed patch is not a fix and would make things only worse.
+> >
+> > > Other potential risks may also arise
+> > >   due to inconsistencies or race conditions during transitions.
+> >
+> > What inconsistencies and race conditions you have in mind, please?
+> 
+> I have explained it at
+> https://lore.kernel.org/live-patching/Z5DHQG4geRsuIflc@pathway.suse.cz/T/#m5058583fa64d95ef7ac9525a6a8af8ca865bf354
+> 
+>  klp_ftrace_handler
+>       if (unlikely(func->transition)) {
+>           WARN_ON_ONCE(patch_state == KLP_UNDEFINED);
+>   }
+> 
+> Why is WARN_ON_ONCE() placed here? What issues have we encountered in the past
+> that led to the decision to add this warning?
+
+A safety measure for something which really should not happen.
+
+> > The main advantage of the atomic replace is simplify the maintenance
+> > and debugging.
+> 
+> Is it worth the high overhead on production servers?
+
+Yes, because the overhead once a live patch is applied is negligible.
+
+> Can you provide examples of companies that use atomic replacement at
+> scale in their production environments?
+
+At least SUSE uses it as a solution for its customers. No many problems 
+have been reported since we started ~10 years ago.
 
 Regards,
 Miroslav
