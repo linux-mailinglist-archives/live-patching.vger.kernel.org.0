@@ -1,109 +1,142 @@
-Return-Path: <live-patching+bounces-1094-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1095-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id A5B3BA2348F
-	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2025 20:18:26 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 32872A23E1D
+	for <lists+live-patching@lfdr.de>; Fri, 31 Jan 2025 14:06:46 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 1829B1884BB8
-	for <lists+live-patching@lfdr.de>; Thu, 30 Jan 2025 19:18:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D7B183A35FB
+	for <lists+live-patching@lfdr.de>; Fri, 31 Jan 2025 13:06:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B99E6188938;
-	Thu, 30 Jan 2025 19:18:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FDF91C245C;
+	Fri, 31 Jan 2025 13:06:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mxts4S7A"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="WhXaTUho";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="TIBw2m4G";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="WhXaTUho";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="TIBw2m4G"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88C36B660;
-	Thu, 30 Jan 2025 19:18:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5820B4A24
+	for <live-patching@vger.kernel.org>; Fri, 31 Jan 2025 13:06:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738264701; cv=none; b=ZnpoJOf/27RTQSeb+lcbO5AbVSDjIedCVhR8VLTA+WfKjK2F5cS2I0M1SM+j+2jzDIfK+hbRZOuIZsNYUDbJi27pst4fvc8NLsSeRnn4O8qTlWBBq8Hu76p01Do/CiPaXZYGKtD1f3SAgn0DsDhcHOLmALnJ5qru8Gi4RsY5+50=
+	t=1738328803; cv=none; b=CyLovLs3fJdzSK2xNQQKNdEHkqWlPIwqqLU//1v+VelEjwlhQDtcE2YZ0qpK+dfVruiW6KKNgRot5mKAOJmDHi5TeTrmC/rKFt4XvmIzapXp0eHoXuFZ2UFMVyJTs/sBqikbAjLwhFUycXrz0q+nZqbfvq94oTavwUDeAEB3LSw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738264701; c=relaxed/simple;
-	bh=F5UGl/zyxdIAV/PnK3hvp6JjpBmI+QG3xWDiGJq3kkQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OUUd0NFBRYxPVxOYJP9PwQCSaugxAm+v1SxSVO2pY3jxNrLVw5fM40kDwliZAc2PTT/KTyRzrsBuLmf8cpPoj0+kJaQyfd+GvQ6jjwbJbThrzI48OtVbyPIj+CVJU5MKkVjb4R1cc22WOCkWHyq/FBQdY228otZggPWUvsdWnNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mxts4S7A; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F4DC4CEE5;
-	Thu, 30 Jan 2025 19:18:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738264701;
-	bh=F5UGl/zyxdIAV/PnK3hvp6JjpBmI+QG3xWDiGJq3kkQ=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=mxts4S7Asqr6bFnK/cRLSSQZiC6BwHs5f8TsYszYAMpuATd5EhwAEBBDyzWJ2IrT0
-	 G594T75mOh9bqW4/ErnJDNBfbMvw9QvBPVcKGX3yn9LwvBSuskDU0Qt4pxXKKGPkRL
-	 9TkVwAvv0nDqOuwNVBkejgpsCjiSm+JDy0VXIP0P29XdV73NmHQhPn9mZyWSGw/6TN
-	 elQwnXV4GfDmgtfa+0Wu/dE3G7BpnLbGp9OqnvfXp2F65KUQf1WPMTQjcbcaWeM6Ed
-	 So6O+DSjNRl3huYNpRdfspWIFEpHX2h5Naa2DLYKK08VK+DFwBtMbzwIr1Z5C3TKc/
-	 LRK36OU36l01Q==
-Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-3ce915a8a25so4390375ab.1;
-        Thu, 30 Jan 2025 11:18:20 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVp4m2jsLrrpUzI8Q0Jm+u5iLg1wST25Fnm0mJB/bbP6/p9A0cIlz0DeGA5VW9kuoBDqAfpN/b4lJWpM9M06RzOQw==@vger.kernel.org, AJvYcCWNlUKQ2jZdD9O4VYbFHYLmZxX366c0452IWl1Lanzk3n8BR2avk8BJAJXcxrtkBI4COK8914UaI+ozNJw=@vger.kernel.org, AJvYcCXVZX0OSZkKmCiwS5bF13oUPzXLhOzBvvjnW6kPLPExq+/gvmWBvtZkzE+2wTrKIOzmYkFhJ2D9EgnC3I1gaA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7TDbQYSbpPsH0QGkiCjUe+KU6YpRzJY/3Lvqof+wwlpjJ1B5d
-	FliWSL2QapeuZs6IYWoWQvcyqD03vmIpYUKVkQzYXpE+lapkzQQeCXf3GbdsI69sY3k3e3G8kWx
-	Ejp0jTlbYXBlTH72emtK28VV95ho=
-X-Google-Smtp-Source: AGHT+IHUAYnxNLSeDzHfkzX1E3E112OVV5uSNRIVJGtQAZwP0tGOWJ3I4OfIGX6ECRcDvvRqzClf1YSfKdpdBdzPRDY=
-X-Received: by 2002:a05:6e02:1fe4:b0:3cf:c8ec:d375 with SMTP id
- e9e14a558f8ab-3cffe2680cemr69771655ab.0.1738264700324; Thu, 30 Jan 2025
- 11:18:20 -0800 (PST)
+	s=arc-20240116; t=1738328803; c=relaxed/simple;
+	bh=TZ/WX4omUqg9D5frT1MUWEWLnsdRYx0DD3H7fsoNjlI=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=pP2Vrcldf4WI+0Wte4PzvTWKGEWxxwHAqAba8AdXM8v7C6dp393e2jxw8WkvZ8kyF99OWlv2nSH+AYN/zVoBXUipitOk+lm9lrct5FOeIBDbJ+yreLsNZ9agjakvOJvi2ZNHXMwS/5YOqdQdF7IYulDXz8NLnRGC5ygMs3H20Q4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=WhXaTUho; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=TIBw2m4G; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=WhXaTUho; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=TIBw2m4G; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from pobox.suse.cz (unknown [10.100.2.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 9757B2116A;
+	Fri, 31 Jan 2025 13:06:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1738328798; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
+	b=WhXaTUhoTWFGBxGJne2ZNMHVyI9tJ3+Dn2vqB6/EWX0TWefcoGvmjmxdKkNwEPf7SKRWzo
+	2A5MuqX/rQFtobzTSg+C90Pd7uW0IERqHLwQLwfEUGONwpqs8spaa2cnXaxotg6mWHtq85
+	i8tGaj+MoU7AKBeO6s5S9s2+OcZfhp0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1738328798;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
+	b=TIBw2m4GvUfy2hfVADBrNxhTMSH0wch4ZzrGQ/1P+TCMAFvYcfnLtmDAJebjHTe0h7D3Dm
+	mcpcVnWjyHUJ3OBg==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1738328798; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
+	b=WhXaTUhoTWFGBxGJne2ZNMHVyI9tJ3+Dn2vqB6/EWX0TWefcoGvmjmxdKkNwEPf7SKRWzo
+	2A5MuqX/rQFtobzTSg+C90Pd7uW0IERqHLwQLwfEUGONwpqs8spaa2cnXaxotg6mWHtq85
+	i8tGaj+MoU7AKBeO6s5S9s2+OcZfhp0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1738328798;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2imtWDOgf4MJpp23GV2tQk70uv+/Ghez/VQziH4ELkk=;
+	b=TIBw2m4GvUfy2hfVADBrNxhTMSH0wch4ZzrGQ/1P+TCMAFvYcfnLtmDAJebjHTe0h7D3Dm
+	mcpcVnWjyHUJ3OBg==
+Date: Fri, 31 Jan 2025 14:06:38 +0100 (CET)
+From: Miroslav Benes <mbenes@suse.cz>
+To: Yafang Shao <laoar.shao@gmail.com>
+cc: Petr Mladek <pmladek@suse.com>, jpoimboe@kernel.org, jikos@kernel.org, 
+    joe.lawrence@redhat.com, live-patching@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Avoid hard lockup caused by
+ klp_try_switch_task()
+In-Reply-To: <CALOAHbCw5_ZxNuRkwzMqz7NFdnJWgt-n4R--oYiE+BtNGP_8aw@mail.gmail.com>
+Message-ID: <alpine.LSU.2.21.2501311405280.10231@pobox.suse.cz>
+References: <20250122085146.41553-1-laoar.shao@gmail.com> <Z5DpqC7sm5qCJFtj@pathway.suse.cz> <CALOAHbCw5_ZxNuRkwzMqz7NFdnJWgt-n4R--oYiE+BtNGP_8aw@mail.gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250127213310.2496133-1-wnliu@google.com> <CAPhsuW4UrhaYKj6pbAC9Cq1ZW+igFrA284nnCFsVdKdOfRpi6w@mail.gmail.com>
- <CAPhsuW7f5--hzr0Y3eb1JNpfNqepJuE92yq3y8dzaL_mQF+U5w@mail.gmail.com> <Z5vMfxFSIEtPMrMi@google.com>
-In-Reply-To: <Z5vMfxFSIEtPMrMi@google.com>
-From: Song Liu <song@kernel.org>
-Date: Thu, 30 Jan 2025 11:18:09 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW76YZRBFgQf9PJ3OkaarbyDyWg=yXin9CXgNSwZYRnTZg@mail.gmail.com>
-X-Gm-Features: AWEUYZmLoMdmanvQBUPm_vYlT3JWc_8Gli-r02xY9oR7T0OMt03HFwtkZr0PplE
-Message-ID: <CAPhsuW76YZRBFgQf9PJ3OkaarbyDyWg=yXin9CXgNSwZYRnTZg@mail.gmail.com>
-Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
-To: Roman Gushchin <roman.gushchin@linux.dev>
-Cc: Weinan Liu <wnliu@google.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
-	Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, 
-	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-	joe.lawrence@redhat.com, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Level: 
+X-Spamd-Result: default: False [-2.80 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-0.993];
+	MIME_GOOD(-0.10)[text/plain];
+	FREEMAIL_TO(0.00)[gmail.com];
+	RCVD_COUNT_ZERO(0.00)[0];
+	MIME_TRACE(0.00)[0:+];
+	TAGGED_RCPT(0.00)[];
+	ARC_NA(0.00)[];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCPT_COUNT_FIVE(0.00)[6]
+X-Spam-Score: -2.80
+X-Spam-Flag: NO
 
-Hi Roman,
+Hi,
 
-On Thu, Jan 30, 2025 at 11:01=E2=80=AFAM Roman Gushchin
-<roman.gushchin@linux.dev> wrote:
->
-> On Thu, Jan 30, 2025 at 10:34:09AM -0800, Song Liu wrote:
-> > On Thu, Jan 30, 2025 at 9:59=E2=80=AFAM Song Liu <song@kernel.org> wrot=
-e:
-> > >
-> > > I missed this set before sending my RFC set. If this set works well, =
-we
-> > > won't need the other set. I will give this one a try.
+> $ cat log | grep do_exit | wc -l
+> 1061
+> 
+> It seems that there are simply too many threads executing do_exit() at
+> the moment.
+> 
 > >
-> > I just realized that llvm doesn't support sframe yet. So we (Meta) stil=
-l
-> > need some sframe-less approach before llvm supports sframe.
+> > You might try to use printk_deferred() instead. Also you might need
+> > to disable interrupts around the read_lock()/read_unlock() to
+> > make sure that the console handling will be deferred after
+> > the tasklist_lock gets released.
 > >
-> > IIRC, Google also uses llvm to compile the kernel. Weinan, would
-> > you mind share your thoughts on how we can adopt this before
-> > llvm supports sframe? (compile arm64 kernel with gcc?)
->
-> Hi Song,
->
-> the plan is to start the work on adding sframe support to llvm
-> in parallel to landing these changes upstream. From the initial
-> assessment it shouldn't be too hard.
+> > Anyway, I am against this patch.
+> 
+> However, there is still a risk of triggering a hard lockup if a large
+> number of tasks are involved.
 
-Thanks for the information!
+And as Petr said, it is very likely caused by pr_debug() in this setup. 
+The proposed patch is not a fix and would make things only worse.
 
-Song
+Regards,
+Miroslav
 
