@@ -1,119 +1,199 @@
-Return-Path: <live-patching+bounces-1102-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1103-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EC37EA24CBE
-	for <lists+live-patching@lfdr.de>; Sun,  2 Feb 2025 07:37:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8665EA25636
+	for <lists+live-patching@lfdr.de>; Mon,  3 Feb 2025 10:46:11 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AC0E53A5B2C
-	for <lists+live-patching@lfdr.de>; Sun,  2 Feb 2025 06:37:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E8CD33A99F7
+	for <lists+live-patching@lfdr.de>; Mon,  3 Feb 2025 09:45:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD1181D416B;
-	Sun,  2 Feb 2025 06:37:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D67E71FF7DA;
+	Mon,  3 Feb 2025 09:45:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qpMJ1YJv"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HWmu7Vzk"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 318FE1A270
-	for <live-patching@vger.kernel.org>; Sun,  2 Feb 2025 06:37:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CEBE1FF7A1;
+	Mon,  3 Feb 2025 09:45:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738478269; cv=none; b=H1Qae2mnq9TRezvj2JFzCuoes92ghOljzgb3iXCMsC0esXwEjuToJx4Lx3mcnT+WOE55mKQsOATciX41s1Fl3P0YWFBtQsO8HfM2IxIHtGq0z8i68DREPcGe8VG31gP1oPtrpmY3epvBTE+earJ5VIgCQ8B+QyRqpBipVMmAmgA=
+	t=1738575931; cv=none; b=FoE/L77Hm2XbN6VV2WZdzc1OItiIPsDhNxhl+8tqur6/librOw43ZWi/dzLqlGN84bODs0BBVHk3QUyzM/xNZiy8i1frBXNc85nILqKkNoJzdKVRVUs9WzyvTojJ7yMxynroVJ/MC4HJXmNFcX5ZbQZxCgHkxrvJBmDtLQVIk4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738478269; c=relaxed/simple;
-	bh=ZE141DfKW7Je97SuGuDXiTvEfzvyFvIIlvmWSKHBrSU=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=tIG4UIuC6MUmhBrIZclOmNif1xYkkG/6Th2sXYYlwVvd1GNtAOi9KCXp7VItITIRZhjlkQtP2KzT+mPmDn7tx4gW75xcrG9iNgiL11CXuU1UFagkQ7xhQwttNHP6XP9iYvy2SlCYU83AJvv9gSL5Fh4x07Nhopzk1hoXy+BbhGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qpMJ1YJv; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2163d9a730aso69666455ad.1
-        for <live-patching@vger.kernel.org>; Sat, 01 Feb 2025 22:37:47 -0800 (PST)
+	s=arc-20240116; t=1738575931; c=relaxed/simple;
+	bh=fIgcGBvqDbLq7kS0K19wxfiPZ79yRpz1C2hfr9gQqoI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=SsV9UT64tkWg+Jla8KmONuqVy1pEmhckhxnis8kMT9V3Hqu/krPWC6yREjo6PA+cBuVz4BZf0Echb4DBIIGOp/ICyxfpfzptmaBFOF1Oi/37IkRoLMi2nOrgwBIBxVapt4jS4RtBMIqx2xR328qpVPPYKTmJ5MfWjf21A2709/g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HWmu7Vzk; arc=none smtp.client-ip=209.85.219.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-6dd5c544813so42950246d6.1;
+        Mon, 03 Feb 2025 01:45:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1738478267; x=1739083067; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=A9NvLmW/A6uUOB760Lj7I76Wak9fBpOpnPabjMwc01o=;
-        b=qpMJ1YJvon2WPQJvkL1C2zLjBBKyp2zsPqOxqshF/mI2309D7CIhzanHZ9qjd3DNmy
-         G/VYsb9ssLGLa8ObnnTIcAdkScD3g/FMfze36UM88KS4qnQ1HiWZTuPxh0XwCM4b4JFo
-         hW2I/+kQzGtNdSOERNkg8pFB7zGWNTEBJJvZt+kgPFcszD1NmddllT4mjcIvxJvFg3Gy
-         CBJUw1M5rd1pd7uCscKRxaDjsjEm4rBicQSG87bjAWZlSje5/rfmFIhVGvmBgbQyFoUw
-         k+9Q7ycjlrjQeBlPQL2g6ZIdwQBK4PG3JskI2SNun91xq1toBucbHUrCP42j46AtZ4LY
-         kGpA==
+        d=gmail.com; s=20230601; t=1738575929; x=1739180729; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yI5g0smySPHHeVACX7JhK2ZoaTHZN0JQLDEIzqW27Mg=;
+        b=HWmu7VzkUk8pmA+qNa/Je0OsBBpX1C7823v52GwvU6nR3VRHPE6bplgMygKx1LggQJ
+         lMR0jZjzySOptUiBmAFw658Nwsqjrb6mFJ7O8UNBW1t5htNq8z4k82E793nvKwS+jNbF
+         LC2PCSIhj0ADc4Gif+5PRDNSeN1CwMmslPsr5DJlhRCX0p8NvF5sGMKi/1sj2e9bB0cH
+         cjIf5WlfaqeoNI6O6cemwUfFYSMpv2ERSuxEKLOqN5xZudP1FpgbMylYUKGvVQLEJVra
+         H+J0ehAnDjj2+9FpsCQYyI1OQBqIFmWhoy+zijwnfPEfhbrWRq1DLiJHWTNoAF+hs5qV
+         38Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738478267; x=1739083067;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=A9NvLmW/A6uUOB760Lj7I76Wak9fBpOpnPabjMwc01o=;
-        b=sUny9CAezExqCYDgu1UKkp6jErjrhdJTCMe8V+qCGxzAU3xlxlj88JjN3gz1RD/ZKG
-         hV6skfqNR0l25U//L97gafP26vKHip6ls4x3+Q2SXOsZRy1FcL4BNPMV9EGxHeqJvsrv
-         kkh83VLoylepSZMcaic8R/TOVzMkLxSG2OjzpN0weTAA3GXReeOS3xarvh1uMfbjZE6W
-         nMz+PLB96vLzNbJtq8NtT4lzIK0WRPhpPBbFhK5damH7oOOrCB2R3BE5btCYGv/gGvpA
-         +as96hGuOy+/cHmaY91sRUoL/oPwETnwLkRl+F9Xq6Bqp9q1MHQCQ3znr6O0WjbJA8j0
-         6AfQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUXV14Kj6RC7Va599oiE6W7jsnx+F7kXSgfxgz0vpE8SIrJklPjcwvB9b16kgwMk7FfZq0AfBMk5ECej3cK@vger.kernel.org
-X-Gm-Message-State: AOJu0YxIThNmNg1pQAazj/LJPsKQ0i3q28hnowFhsvv7cJvYgCZ15Lvq
-	zLLCJsSefPD/OEyUc5kejzQpfPbMsN+3s2M9VMZuLxAzdGnfJx8jaq2CH1mAT5ceR+Yd4N5k9g=
-	=
-X-Google-Smtp-Source: AGHT+IEViwf7ftDA47jzjJ4JIFfkYBeziUL/Uim6LKs1f/dyvgToTVzbkfLeuhfa6q0+31njXbcGNfqpzQ==
-X-Received: from pguy8.prod.google.com ([2002:a65:6c08:0:b0:8ae:4cf4:372])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:240c:b0:21a:87e8:3891
- with SMTP id d9443c01a7336-21edd7eba4fmr152671605ad.6.1738478267463; Sat, 01
- Feb 2025 22:37:47 -0800 (PST)
-Date: Sun,  2 Feb 2025 06:37:44 +0000
-In-Reply-To: <20250202062728.753686-1-wnliu@google.com>
+        d=1e100.net; s=20230601; t=1738575929; x=1739180729;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yI5g0smySPHHeVACX7JhK2ZoaTHZN0JQLDEIzqW27Mg=;
+        b=ljGuoXmidsTUunNWoYaJA00Tk+23mLWlxvarXxNb6/sfkBP/Gbhoi2QddrQ1tmw+Xi
+         FY2r7uqUr21626tm2/dwxuBjROFvcob4G3q7KLc+QPl/KsJ6UBGF0KDnMaSFgBj4gg5b
+         l97NmS4H2c3Qvuw7NR1dW8RfBzu1hSsEygX/LtHK6aCzSQuK/airRZfjUnuF4F1hEBdR
+         8hoob+DOB0G0YGqVujRiB77zhy323t1iineknkXTiPBldGJpAzYEkUVWMB91S1gOLzfX
+         UTUjByIOaovcVABxeV70Rv1Myqgwp/70pAjNmyJO2s+x1U4BYKoXELZuKH3g/tvoyC46
+         Xx3A==
+X-Forwarded-Encrypted: i=1; AJvYcCU9BONob8/7RaQhCF84bNO2JfuiOCd9/XR8vUdThvecKagQLXHdp80mms3Cpgu8eBicrIWbkXoDdAlC1HAa2A==@vger.kernel.org, AJvYcCXtd8UOzSBTx+Avpka2hSg4tGmsvlu8mRVJsMhKjef1GEPjNn/nwNVZbLJfw98IeOo+rYw1ZGF/r9slfyw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyVVDDpJ8WqOFoWpsGwS9GrAaHmyWwYieUfj9ARejdMOQce6doI
+	lk0i4uWbX76Ra05dXgZE/p/wo7pp96rF4VZ73M2YKk80BAv3FGQ57I2ufxsTn8VOUK8YH5DUnXG
+	zeEFc15LJ+DF3c3eBknzUSogWWvo=
+X-Gm-Gg: ASbGncsixFoKMnx6owF1Lp8nx4jrGj+OijG2wTzjKTEuAfxN9EPkaY2dTMiueJT7D+9
+	5byl5r48dQzI8Fbf3johJuedQbVnrUVj33nRuT3Z9drr3apFbhnLF5lhQHZoGVmShGvJUXZ7Obo
+	A=
+X-Google-Smtp-Source: AGHT+IGvMyY5kE20lb9+gjNPiN+ok4bJSat72WlIS8jV/PsJPNHLlUf8lp/DCJcxYGgnhJ7QrxM5+XhiWUOVzLO2aUM=
+X-Received: by 2002:ad4:5c63:0:b0:6d8:7ed4:3367 with SMTP id
+ 6a1803df08f44-6e243bfa9cbmr344740486d6.19.1738575928886; Mon, 03 Feb 2025
+ 01:45:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20250202062728.753686-1-wnliu@google.com>
-X-Mailer: git-send-email 2.48.1.362.g079036d154-goog
-Message-ID: <20250202063746.759828-1-wnliu@google.com>
-Subject: Re: [PATCH 4/8] unwind: Implement generic sframe unwinder library
-From: Weinan Liu <wnliu@google.com>
-To: wnliu@google.com
-Cc: indu.bhagat@oracle.com, irogers@google.com, joe.lawrence@redhat.com, 
-	jpoimboe@kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-toolchains@vger.kernel.org, 
-	live-patching@vger.kernel.org, mark.rutland@arm.com, peterz@infradead.org, 
-	ptsm@linux.microsoft.com, roman.gushchin@linux.dev, rostedt@goodmis.org, 
-	will@kernel.org
+MIME-Version: 1.0
+References: <20250127063526.76687-1-laoar.shao@gmail.com> <Z5eOIQ4tDJr8N4UR@pathway.suse.cz>
+ <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com> <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz>
+In-Reply-To: <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Mon, 3 Feb 2025 17:44:52 +0800
+X-Gm-Features: AWEUYZkgVAbCEEqv9xLAAam3naI3QqVSMewJrFrQ8C5LyjSMOMVLC7GGoXuY--I
+Message-ID: <CALOAHbDwsZqo9inSLNV1FQV3NYx2=eztd556rCZqbRvEu+DDFQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: Petr Mladek <pmladek@suse.com>, jpoimboe@kernel.org, jikos@kernel.org, 
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 30, 2025 at 2:29=E2=80=AFAM Prasanna Kumar T S M <ptsm@linux.mi=
-crosoft.com> wrote:
-> On 30-01-2025 15:52, Prasanna Kumar T S M wrote:
+On Fri, Jan 31, 2025 at 9:18=E2=80=AFPM Miroslav Benes <mbenes@suse.cz> wro=
+te:
+>
+> > >
+> > >   + What exactly is meant by frequent replacements (busy loop?, once =
+a minute?)
 > >
-> > On 28-01-2025 03:03, Weinan Liu wrote:
-> > > This change introduces a kernel space unwinder using sframe table for
-> > > architectures without ORC unwinder support.
-> > >
-> > > The implementation is adapted from Josh's userspace sframe unwinder
-> > > proposal[1] according to the sframe v2 spec[2].
-> > >
-> > > [1]
-> > > https://lore.kernel.org/lkml/42c0a99236af65c09c8182e260af7bcf5aa1e158=
-.1730150953.git.jpoimboe@kernel.org/
-> > > [2] https://sourceware.org/binutils/docs/sframe-spec.html
-> > >
-> > > Signed-off-by: Weinan Liu <wnliu@google.com>
-> > > ---
-> > >   include/linux/sframe_lookup.h |  43 ++++++++
-> > >   kernel/Makefile               |   1 +
-> > >   kernel/sframe_lookup.c        | 196 +++++++++++++++++++++++++++++++=
-+++
-> Nit: Can this file be placed inside lib/ instead of kernel/ folder?
-This could be integrated with Josh's proposal in the future.
-https://lore.kernel.org/lkml/cover.1737511963.git.jpoimboe@kernel.org/
+> > The script:
+> >
+> > #!/bin/bash
+> > while true; do
+> >         yum install -y ./kernel-livepatch-6.1.12-0.x86_64.rpm
+> >         ./apply_livepatch_61.sh # it will sleep 5s
+> >         yum erase -y kernel-livepatch-6.1.12-0.x86_64
+> >         yum install -y ./kernel-livepatch-6.1.6-0.x86_64.rpm
+> >         ./apply_livepatch_61.sh  # it will sleep 5s
+> > done
+>
+> A live patch application is a slowpath. It is expected not to run
+> frequently (in a relative sense).
 
-Either lib/ or kernel/unwind/ are ok to me.
+The frequency isn=E2=80=99t the main concern here; _scalability_ is the key=
+ issue.
+Running livepatches once per day (a relatively low frequency) across all of=
+ our
+production servers (hundreds of thousands) isn=E2=80=99t feasible. Instead,=
+ we need to
+periodically run tests on a subset of test servers.
+
+
+> If you stress it like this, it is quite
+> expected that it will have an impact. Especially on a large busy system.
+
+It seems you agree that the current atomic-replace process lacks scalabilit=
+y.
+When deploying a livepatch across a large fleet of servers, it=E2=80=99s im=
+possible to
+ensure that the servers are idle, as their workloads are constantly varying=
+ and
+are not deterministic.
+
+The challenges are very different when managing 1K servers versus 1M server=
+s.
+Similarly, the issues differ significantly between patching a single
+function and
+patching 100 functions, especially when some of those functions are critica=
+l.
+That=E2=80=99s what scalability is all about.
+
+Since we transitioned from the old livepatch mode to the new
+atomic-replace mode,
+our SREs have consistently reported that one or more servers become
+stalled during
+the upgrade (replacement).
+
+>
+> > >
+> > > > Other potential risks may also arise
+> > > >   due to inconsistencies or race conditions during transitions.
+> > >
+> > > What inconsistencies and race conditions you have in mind, please?
+> >
+> > I have explained it at
+> > https://lore.kernel.org/live-patching/Z5DHQG4geRsuIflc@pathway.suse.cz/=
+T/#m5058583fa64d95ef7ac9525a6a8af8ca865bf354
+> >
+> >  klp_ftrace_handler
+> >       if (unlikely(func->transition)) {
+> >           WARN_ON_ONCE(patch_state =3D=3D KLP_UNDEFINED);
+> >   }
+> >
+> > Why is WARN_ON_ONCE() placed here? What issues have we encountered in t=
+he past
+> > that led to the decision to add this warning?
+>
+> A safety measure for something which really should not happen.
+
+Unfortunately, this issue occurs during my stress tests.
+
+>
+> > > The main advantage of the atomic replace is simplify the maintenance
+> > > and debugging.
+> >
+> > Is it worth the high overhead on production servers?
+>
+> Yes, because the overhead once a live patch is applied is negligible.
+
+If you=E2=80=99re managing a large fleet of servers, this issue is far from=
+ negligible.
+
+>
+> > Can you provide examples of companies that use atomic replacement at
+> > scale in their production environments?
+>
+> At least SUSE uses it as a solution for its customers. No many problems
+> have been reported since we started ~10 years ago.
+
+Perhaps we=E2=80=99re running different workloads.
+Going back to the original purpose of livepatching: is it designed to addre=
+ss
+security vulnerabilities, or to deploy new features?
+If it=E2=80=99s the latter, then there=E2=80=99s definitely a lot of room f=
+or improvement.
+
+--=20
+Regards
+Yafang
 
