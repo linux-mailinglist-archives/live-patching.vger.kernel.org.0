@@ -1,258 +1,214 @@
-Return-Path: <live-patching+bounces-1108-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1109-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B817EA27322
-	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 14:47:36 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0AF2EA274DA
+	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 15:50:38 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 38DA83A79A0
-	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 13:47:28 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id C200D7A3BAD
+	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 14:49:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88FCF218EA0;
-	Tue,  4 Feb 2025 13:21:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A1AF9213E60;
+	Tue,  4 Feb 2025 14:50:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="djLIrm1/"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fQrmBLtV"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 303B5218AD3
-	for <live-patching@vger.kernel.org>; Tue,  4 Feb 2025 13:21:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513A52139D2;
+	Tue,  4 Feb 2025 14:50:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738675319; cv=none; b=ZY4MuLDEO79TTOA0d5MixhR4tDqkRmKc3Qfa1TcYD+NSWSXiPqi0SWMBY4XuBlAreGKuEzSPaTrrAeRWx7f/ocEzxlJEJLdnCbzSsf13xu0P1jLV+xRlvn7YNrLLc+kurhGFcg8PpTb+w2lq1K7cFjn+x+thsC3dgJ+4W+ybo04=
+	t=1738680608; cv=none; b=HHx3cW4W8qDuNsk5yAUhuigTsFSQ+nj4X7VzXCHMbdIXr+ov/hK9J//GT49q0yPsOkvpMH6/rlmWBe5fqgVnetn7YD7ALnYKX76PBgK6ZLm39smn3HsQ6H0nrAvw7jnJsyanLmEJ2ouj6kbgqM7c0eEZcSPqKiTdQFEhymlMDJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738675319; c=relaxed/simple;
-	bh=IF1zXuefYm5EPoZt4v+gsQ9Z3bt9qz4rG91VgAFndqI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MCTPyEVatdKWI06YkN3vkipAgGJLfqC+giFi7SmtxPSP4krGdRGFMm830Svsn4rhSYD/XNZ5XeDk+WXAnHbMv5NUR8/JPwVo1PyfbAlIM+filfB+TuikjnuCGty7h+atH/90nykpZjwbCsA0OU+Um+pQIzxGV0LMubG4bM5E5p4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=djLIrm1/; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5dcc38c7c6bso1463299a12.1
-        for <live-patching@vger.kernel.org>; Tue, 04 Feb 2025 05:21:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1738675315; x=1739280115; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=19dcwyLK6HxBt3Sl1K7BYugVtKLA9XCCs/I2A977sT8=;
-        b=djLIrm1/FQJS1ZQjK5e8+u/deqFLZcAE/ssEVSgRo5Y60LXlnjMIz2sOQvzdS0E7+y
-         st0qDQhPFetgwdODpkFLCnGOZzSPI4yW4+u77NyUF68C7wSwPafzVGLjVLrbBrv0IuTQ
-         DwTXr8Nb6w/wSrpda2WYMpW+VmgqKBEphrCIIs+E31wRwgc/nSSPISsv9uK+rdLwDGyf
-         cWW+TkrQhbNybQcgKnRVZOqZDi5HzybP2tTFmDHvy2we34WfQNR1/KgtTwOacTqiG475
-         4fPqQiOef8BG9FGI+prmgroIUcn2Id2iVZMEoUGghzZ0sUdDiWHDG20FKl+AXIduu83z
-         /4dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738675315; x=1739280115;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=19dcwyLK6HxBt3Sl1K7BYugVtKLA9XCCs/I2A977sT8=;
-        b=cLoigxALKkDRRXWBtKIL2imB5GkN8JO6KM5rxBV+btppkQ8+rDzZWTUljVqEgpyp/A
-         9grGq/wTLm0yyRXODqI5zd0FviDB5+O9jn/KK1UoVqz6O9Nq+1GS3AQO/N9ZH6OYRsiU
-         ddk7X8fmolnqSFIWhMdnjAGIKLT6bpXUlpxGa552rg9rusC6CbiD3v/yjdl0wsGARcHE
-         SSK9evijVCNCdlU3Xbb73YGUG6rK/CQ3OhcAVjRwQRAkkbzgAybtsxik9AVVMxgAZy7/
-         aKsNGJ0MoFV5MQfSL8kiGmu/IuWKkes8XAUkBzg4EjfB5wX7az4hjfzTjcAFK/+6Ucuj
-         7Jzw==
-X-Forwarded-Encrypted: i=1; AJvYcCW918/js+m95NPhYaSz3Jvg4c2fuEcqrimzs2M57icBOqB8d6EQBYuoTbfKsMbD7r/VI2HHqkvCu0UIWLdd@vger.kernel.org
-X-Gm-Message-State: AOJu0YxUWEBodT6nzqYmIrYy8Y2b0CelTHaNuA9eKWErfMA84MAQCWcC
-	4qSkfMr252zfpDDVpbiJumpnqtHqVH8khkZQeTikwEXp2LzUfxJbPhTvHLDSpR0=
-X-Gm-Gg: ASbGncsqHK7CHU1/Y7lFzIoaBs9CNAHl79NlH/kOcQNFzBVD2v4/eHiyaQ3OpQYt9HL
-	bZ6mFoQ3inSn5ZwOTHJ7WU8JFrLfijZQNN0KtKVyiapTzHJxruIV+HGZJMRmW5e68Oh5mDzZVag
-	MSu8swcaW4YyCCo9h2rIYfeH0T6pt3VgwpbSy55juPcpa/2/eUpqgudwXM1kHYK9YrWyv8xGkk2
-	u1hxK35ZINKL0e0dApT2zgyjppMgJyjO6diMCy1jUbtzRrOnoa/Xxa6aHa9VD3HPk2I5/A7qpAJ
-	gf/31hPzvhuJ0y71yA==
-X-Google-Smtp-Source: AGHT+IHo5NL/NiI3D81PFENm/glWsRlkC2C4A2oLyjusvgNEHIC8iCR7HCIqqnOROVR9nt6c7d2hQA==
-X-Received: by 2002:a17:907:6096:b0:ab6:d79f:abe6 with SMTP id a640c23a62f3a-ab6d79faf7amr2766102566b.15.1738675315328;
-        Tue, 04 Feb 2025 05:21:55 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab703fbcc0csm698691366b.53.2025.02.04.05.21.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Feb 2025 05:21:55 -0800 (PST)
-Date: Tue, 4 Feb 2025 14:21:53 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Yafang Shao <laoar.shao@gmail.com>
-Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] livepatch: Implement livepatch hybrid mode
-Message-ID: <Z6IUcbeCSAzlZEGP@pathway.suse.cz>
-References: <20250127063526.76687-1-laoar.shao@gmail.com>
- <20250127063526.76687-3-laoar.shao@gmail.com>
- <Z5eYzcF5JLR4o5Yl@pathway.suse.cz>
- <CALOAHbANtpY+ee9Wd+HV6-uPOw+Kq1JcU5UdOXjz8m_UJ_-XRA@mail.gmail.com>
+	s=arc-20240116; t=1738680608; c=relaxed/simple;
+	bh=6oUouKp7uR/JpMO1k+/4EobZmOrqM2qkaM9b819xH9A=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=h8nm5EWWFq1aCyco+mWOqEnLLtJVrRIJnNWqjawCoV7GbEMslHz5lPXRWJvH30PcOQVD3onpU23VlAbvB4mJybmF6ClryJ4BfrcBWfRebb8PZrJWV9N+d3906uo5W+kLNynBzj8MxRIfc4pPGrFo0WwvmhcHFXF7aU4tR6b/Zf4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fQrmBLtV; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 726C7C4CEDF;
+	Tue,  4 Feb 2025 14:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1738680607;
+	bh=6oUouKp7uR/JpMO1k+/4EobZmOrqM2qkaM9b819xH9A=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=fQrmBLtVaRu1YyNdrLfWKt47C2vhv7/FM52dr6hjnB2AAYXUvsL0A2OuTL3xcb7QG
+	 uyKXrNPDNRjnNQjdu2KznYONWo7qQWBcRGM4VqJwEo8CaP/StdUcSvI4Y7IRWr1bbK
+	 gRFzaZjzM3vEplbEAfolwp2WzgidqeF1Q5vxpsxsQcvOSZk2VCW5gtDLXIifJ04TXt
+	 3AT4EFJHyZasnzb/tf9YyE0AgNMwDiUxrxzusuQuJTlwVIuVsoEZQFqu5lTnXcLOiY
+	 EwaWYdHnPZ5A4iFRfDKTCkv2TCO9DZmF0ig3F9OzrwURTZKTmGCU6MaH4+siqFJGiy
+	 Lpb0JOt7U/pQA==
+From: Puranjay Mohan <puranjay@kernel.org>
+To: Weinan Liu <wnliu@google.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat
+ <indu.bhagat@oracle.com>, Peter Zijlstra <peterz@infradead.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev, Will
+ Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>,
+ linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org,
+ live-patching@vger.kernel.org, joe.lawrence@redhat.com,
+ linux-arm-kernel@lists.infradead.org, Weinan Liu <wnliu@google.com>
+Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
+In-Reply-To: <20250127213310.2496133-1-wnliu@google.com>
+References: <20250127213310.2496133-1-wnliu@google.com>
+Date: Tue, 04 Feb 2025 14:49:49 +0000
+Message-ID: <mb61pzfj169yq.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALOAHbANtpY+ee9Wd+HV6-uPOw+Kq1JcU5UdOXjz8m_UJ_-XRA@mail.gmail.com>
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha512; protocol="application/pgp-signature"
 
-On Mon 2025-01-27 23:34:50, Yafang Shao wrote:
-> On Mon, Jan 27, 2025 at 10:31 PM Petr Mladek <pmladek@suse.com> wrote:
-> >
-> > On Mon 2025-01-27 14:35:26, Yafang Shao wrote:
-> > > The atomic replace livepatch mechanism was introduced to handle scenarios
-> > > where we want to unload a specific livepatch without unloading others.
-> > > However, its current implementation has significant shortcomings, making
-> > > it less than ideal in practice. Below are the key downsides:
-> >
-> > [...]
-> >
-> > > In the hybrid mode:
-> > >
-> > > - Specific livepatches can be marked as "non-replaceable" to ensure they
-> > >   remain active and unaffected during replacements.
-> > >
-> > > - Other livepatches can be marked as "replaceable," allowing targeted
-> > >   replacements of only those patches.
-> > >
-> > > This selective approach would reduce unnecessary transitions, lower the
-> > > risk of temporary patch loss, and mitigate performance issues during
-> > > livepatch replacement.
-> > >
-> > > --- a/kernel/livepatch/core.c
-> > > +++ b/kernel/livepatch/core.c
-> > > @@ -658,6 +658,8 @@ static int klp_add_nops(struct klp_patch *patch)
-> > >               klp_for_each_object(old_patch, old_obj) {
-> > >                       int err;
-> > >
-> > > +                     if (!old_patch->replaceable)
-> > > +                             continue;
-> >
-> > This is one example where things might get very complicated.
-> 
-> Why does this example even exist in the first place?
-> If hybrid mode is enabled, this scenario could have been avoided entirely.
+--=-=-=
+Content-Type: text/plain
 
-How exactly this scenario could be avoided, please?
+Weinan Liu <wnliu@google.com> writes:
 
-In the real life, livepatches are used to fix many bugs.
-And every bug is fixed by livepatching several functions.
+> This patchset implements a generic kernel sframe-based [1] unwinder.
+> The main goal is to support reliable stacktraces on arm64.
+>
+> On x86 orc unwinder provides reliable stacktraces. But arm64 misses the
+> required support from objtool: it cannot generate orc unwind tables for
+> arm64.
+>
+> Currently, there's already a sframe unwinder proposed for userspace: [2].
+> Since the sframe unwind table algorithm is similar, these two proposal
+> could integrate common functionality in the future.
+>
+> There are some incomplete features or challenges:
+>   - The unwinder doesn't yet work with kernel modules. The `start_addr` of
+>     FRE from kernel modules doesn't appear correct, preventing us from
+>     unwinding functions from kernel modules.
+>   - Currently, only GCC supports sframe.
+>
+> Ref:
+> [1]: https://sourceware.org/binutils/docs/sframe-spec.html
+> [2]: https://lore.kernel.org/lkml/cover.1730150953.git.jpoimboe@kernel.org/
+>
 
-Fix1 livepatches: funcA
-Fix2 livepatches: funcA, funcB
-Fix3 livepatches: funcB
+Hi Weinan,
+Thanks for working on this.
 
-How would you handle this with the hybrid model?
+I tested this set on my setup and faced some issues, here are the
+details:
 
-Which fix will be handled by livepatches installed in parallel?
-Which fix will be handled by atomic replace?
-How would you keep it consistent?
+Here is my setup [on AWS c6gd.16xlarge instance]:
+-------------------------------------------------
 
-How would it work when there are hundreds of fixes and thousands
-of livepatched functions?
+[root@ip-172-31-32-86 linux-upstream]# uname -a
+Linux ip-172-31-32-86.ec2.internal 6.14.0-rc1+ #1 SMP Tue Feb  4 14:15:55 UTC 2025 aarch64 aarch64 aarch64 GNU/Linux
 
-Where exactly is the advantage of the hybrid model?
+[root@ip-172-31-32-86 linux-upstream]# git log --oneline
+e9a702365 (HEAD -> master) arm64: Enable livepatch for ARM64
+5dedc956e arm64: Define TIF_PATCH_PENDING for livepatch
+ba563b31a unwind: arm64: add reliable stacktrace support for arm64
+d807d392d unwind: arm64: Add sframe unwinder on arm64
+7872f050b unwind: Implement generic sframe unwinder library
+03d2ad003 unwind: add sframe v2 header
+5e95cc051 arm64: entry: add unwind info for various kernel entries
+faff6cbc3 unwind: build kernel with sframe info
+0de63bb7d (origin/master, origin/HEAD) Merge tag 'pull-fix' of git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs
+902e09c8a fix braino in "9p: fix ->rename_sem exclusion"
+f286757b6 Merge tag 'timers-urgent-2025-02-03' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+a360f3ffd (grafted) Merge tag 'irq-urgent-2025-02-03' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+bb2784d9a (grafted) jiffies: Cast to unsigned long in secs_to_jiffies() conversion
+30d61efe1 (grafted) 9p: fix ->rename_sem exclusion
 
-> >
-> > The same function might be livepatched by more livepatches, see
-> > ops->func_stack. For example, let's have funcA and three livepatches:
-> > a
-> >   + lp1:
-> >         .replace = false,
-> >         .non-replace = true,
-> >         .func = {
-> >                         .old_name = "funcA",
-> >                         .new_func = lp1_funcA,
-> >                 }, { }
-> >
-> >   + lp2:
-> >         .replace = false,
-> >         .non-replace = false,
-> >         .func = {
-> >                         .old_name = "funcA",
-> >                         .new_func = lp2_funcA,
-> >                 },{
-> >                         .old_name = "funcB",
-> >                         .new_func = lp2_funcB,
-> >                 }, { }
-> >
-> >
-> >   + lp3:
-> >         .replace = true,
-> >         .non-replace = false,
-> >         .func = {
-> >                         .old_name = "funcB",
-> >                         .new_func = lp3_funcB,
-> >                 }, { }
-> >
-> >
-> > Now, apply lp1:
-> >
-> >       + funcA() gets redirected to lp1_funcA()
-> >
-> > Then, apply lp2
-> >
-> >       + funcA() gets redirected to lp2_funcA()
-> >
-> > Finally, apply lp3:
-> >
-> >       + The proposed code would add "nop()" for
-> >         funcA() because it exists in lp2 and does not exist in lp3.
-> >
-> >       + funcA() will get redirected to the original code
-> >         because of the nop() during transition
-> >
-> >       + nop() will get removed in klp_complete_transition() and
-> >         funcA() will get suddenly redirected to lp1_funcA()
-> >         because it will still be on ops->func_stack even
-> >         after the "nop" and lp2_funcA() gets removed.
-> >
-> >            => The entire system will start using another funcA
-> >               implementation at some random time
-> >
-> >            => this would violate the consistency model
-> >
-> >
-> > The proper solution might be tricky:
-> >
-> > 1. We would need to detect this situation and do _not_ add
-> >    the "nop" for lp3 and funcA().
-> >
-> > 2. We would need a more complicate code for handling the task states.
-> >
-> >    klp_update_patch_state() sets task->patch_state using
-> >    the global "klp_target_state". But in the above example,
-> >    when enabling lp3:
-> >
-> >     + funcA would need to get transitioned _backward_:
-> >          KLP_TRANSITION_PATCHED -> KLP_TRANSITION_UNPATCHED
-> >       , so that it goes on ops->func_stack:
-> >          lp2_funcA -> lp1->funcA
-> >
-> >    while:
-> >
-> >     + funcA would need to get transitioned forward:
-> >          KLP_TRANSITION_UNPATCHED -> KLP_TRANSITION_PATCHED
-> >       , so that it goes on ops->func_stack:
-> >          lp2_funcB -> lp3->funcB
-> >
-> >
-> > => the hybrid mode would complicate the life for both livepatch
-> >    creators/maintainers and kernel code developers/maintainers.
-> >
-> 
-> I don’t believe they should be held responsible for poor
-> configurations. These settings could have been avoided from the start.
-> There are countless tunable knobs in the system—should we try to
-> accommodate every possible combination? No, that’s not how systems are
-> designed to operate. Instead, we should identify and follow best
-> practices to ensure optimal functionality.
+[root@ip-172-31-32-86 linux-upstream]# grep SFRAME .config
+CONFIG_AS_HAS_SFRAME_SUPPORT=y
+CONFIG_SFRAME_UNWIND_TABLE=y
+CONFIG_SFRAME_UNWINDER=y
+[root@ip-172-31-32-86 linux-upstream]# grep LIVEPATCH .config
+CONFIG_HAVE_LIVEPATCH=y
+CONFIG_LIVEPATCH=y
+CONFIG_SAMPLE_LIVEPATCH=m
 
-I am sorry but I do not understand the above paragraph at all.
+[root@ip-172-31-32-86 linux-upstream]# as --version
+GNU assembler version 2.41-50.al2023.0.2
+Copyright (C) 2023 Free Software Foundation, Inc.
+This program is free software; you may redistribute it under the terms of
+the GNU General Public License version 3 or later.
+This program has absolutely no warranty.
+This assembler was configured for a target of `aarch64-amazon-linux'.
 
-Livepatches modify functions.
-How is it related to system configuration or tunable knobs?
-What best practices are you talking, please?
+[root@ip-172-31-32-86 linux-upstream]# gcc --version
+gcc (GCC) 11.4.1 20230605 (Red Hat 11.4.1-2)
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-Best Regards,
-Petr
+Loading the livepatch-sameple module:
+-------------------------------------
+
+[root@ip-172-31-32-86 linux-upstream]# kpatch load /lib/modules/6.14.0-rc1+/kernel/samples/livepatch/livepatch-sample.ko
+loading patch module: /lib/modules/6.14.0-rc1+/kernel/samples/livepatch/livepatch-sample.ko
+waiting (up to 15 seconds) for patch transition to complete...
+patch transition has stalled!
+<4>kpatch: Livepatch process signaling is performed automatically on your system.
+<4>kpatch: Skipping manual process signaling.
+waiting (up to 60 seconds) for patch transition to complete...
+
+Stalled processes:
+340 kdevtmpfs
+stack:
+[<0>] devtmpfs_work_loop+0x2cc/0x2d8
+[<0>] devtmpfsd+0x4c/0x58
+[<0>] kthread+0xf0/0x100
+[<0>] ret_from_fork+0x10/0x20
+module livepatch_sample did not complete its transition, unloading...
+disabling patch module: livepatch_sample
+waiting (up to 15 seconds) for patch transition to complete...
+transition complete (3 seconds)
+unloading patch module: livepatch_sample
+<4>kpatch: error: failed to load module livepatch_sample (transition stalled)
+
+Useful messages from kernel log [pr_debug enabled]:
+---------------------------------------------------
+
+ livepatch: enabling patch 'livepatch_sample'
+ livepatch: 'livepatch_sample': initializing patching transition
+ livepatch: 'livepatch_sample': starting patching transition
+ livepatch: klp_try_switch_task: kdevtmpfs:340 has an unreliable stack
+ livepatch: klp_try_switch_task: insmod:9226 has an unreliable stack
+ livepatch: klp_try_switch_task: swapper/63:0 is running
+ [......SNIP.......]
+ livepatch: klp_try_switch_task: kdevtmpfs:340 has an unreliable stack
+ [......SNIP.......]
+ livepatch: signaling remaining tasks
+ livepatch: klp_try_switch_task: kdevtmpfs:340 has an unreliable stack
+ livepatch: 'livepatch_sample': reversing transition from patching to unpatching
+ livepatch: 'livepatch_sample': starting unpatching transition
+ livepatch: klp_try_switch_task: swapper/45:0 is running
+ livepatch: 'livepatch_sample': completing unpatching transition
+ livepatch: 'livepatch_sample': unpatching complete
+
+Please let me know if you are aware of this already or if this is
+expected behaviour with this version. I will try to debug this from my
+side as well. Also let me know if you need more details for debugging
+this.
+
+P.S. - I also saw multiple build warning like:
+ld: warning: orphan section `.eh_frame' from `arch/arm64/kernel/entry.o' being placed in section `.eh_frame'
+ld: warning: orphan section `.init.sframe' from `arch/arm64/kernel/pi/lib-fdt.pi.o' being placed in section `.init.sframe'
+
+
+Thanks,
+Puranjay
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iIoEARYKADIWIQQ3wHGvVs/5bdl78BKwwPkjG3B2nQUCZ6IpDhQccHVyYW5qYXlA
+a2VybmVsLm9yZwAKCRCwwPkjG3B2ncTKAPwMyQYhH9SeQE1efMJ3svM0mOSDNKQP
+sdWn5z6J5QcjHQD7BOPVMZoBRetNo0/gEu1kDe6zVoV+uma42/iOhGGvRgA=
+=oCKP
+-----END PGP SIGNATURE-----
+--=-=-=--
 
