@@ -1,90 +1,89 @@
-Return-Path: <live-patching+bounces-1107-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1108-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CA940A272C2
-	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 14:28:36 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B817EA27322
+	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 14:47:36 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 529A216059A
-	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 13:28:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 38DA83A79A0
+	for <lists+live-patching@lfdr.de>; Tue,  4 Feb 2025 13:47:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A672213E9F;
-	Tue,  4 Feb 2025 13:05:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88FCF218EA0;
+	Tue,  4 Feb 2025 13:21:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="P4ElE6Np"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="djLIrm1/"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A42E213239
-	for <live-patching@vger.kernel.org>; Tue,  4 Feb 2025 13:05:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 303B5218AD3
+	for <live-patching@vger.kernel.org>; Tue,  4 Feb 2025 13:21:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738674321; cv=none; b=V6J9Nnpqrznog3BeApSx6HYUU77PHUSft97ZHH9QAq9dG+3L8bc8i2OvjvbJi9w+KxpdXmyvMxCQe0uUlaEjAFyBeekR+Wqm6/aUU/2OR+RgNCt/kAXYFd4Up/p2n4L8DtNhUSHzrfIgGH6bkxcug4lnQ0dxoG/YoYMMbB3q0v0=
+	t=1738675319; cv=none; b=ZY4MuLDEO79TTOA0d5MixhR4tDqkRmKc3Qfa1TcYD+NSWSXiPqi0SWMBY4XuBlAreGKuEzSPaTrrAeRWx7f/ocEzxlJEJLdnCbzSsf13xu0P1jLV+xRlvn7YNrLLc+kurhGFcg8PpTb+w2lq1K7cFjn+x+thsC3dgJ+4W+ybo04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738674321; c=relaxed/simple;
-	bh=i+1q8Zzgvh2Mh3R1+FitBJPqR1dPHazu3ddiTGqitQ0=;
+	s=arc-20240116; t=1738675319; c=relaxed/simple;
+	bh=IF1zXuefYm5EPoZt4v+gsQ9Z3bt9qz4rG91VgAFndqI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=htMEEYCVTRO2LDtNUxTsR2/2bHUCeb5kymvXP1iSt2d4UxbtiUCwV7Ly8Lk0xLt4lr1KVA2n5qIKq9m95+DctjMgqn+1TvUc6b6ZIStxw000ROUM0sIPZp9j8brlgoRegwwC350MJ2AfC+5vIF0r54hb2qobK7fuy3mWVBKhi7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=P4ElE6Np; arc=none smtp.client-ip=209.85.218.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=MCTPyEVatdKWI06YkN3vkipAgGJLfqC+giFi7SmtxPSP4krGdRGFMm830Svsn4rhSYD/XNZ5XeDk+WXAnHbMv5NUR8/JPwVo1PyfbAlIM+filfB+TuikjnuCGty7h+atH/90nykpZjwbCsA0OU+Um+pQIzxGV0LMubG4bM5E5p4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=djLIrm1/; arc=none smtp.client-ip=209.85.208.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-ab737e5674bso312499266b.1
-        for <live-patching@vger.kernel.org>; Tue, 04 Feb 2025 05:05:18 -0800 (PST)
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5dcc38c7c6bso1463299a12.1
+        for <live-patching@vger.kernel.org>; Tue, 04 Feb 2025 05:21:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1738674317; x=1739279117; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1738675315; x=1739280115; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=3oOyfmyvxD2JRjb/GBBLy3vJNh6/Dw/oGTe4zC+nKbk=;
-        b=P4ElE6Np9zbljPbka/Z0X9bUA/VL9va5WQZt4+NqxyhO4U5D7f7MXQ2jy5sDvE82el
-         ym3EbSibw8A1jSj/QC3Ejxfew8A/7t7oDJIdcaQPqlw0YfrllrjadvpqvSfO+9TuO97H
-         obPsVwhcQg31L/YlG+vYr7aLBlMJzn7vQJzNdHu3PnIPDrNJmQzF7XdhKaiB6mHUpUup
-         KdZKyo/vN9/QDKh+jhQzBT9gABgMQ8JuZRh8CqnHXov+d8xWlgiBMJn1lOZL8lOFRJgv
-         xQ/KSY3LLmjJaIQ2HRSlbUteO15uB7U6zIhLnHwuHp4ZK7uAyfbw3zyTDmhHpoHtFQq+
-         SZ9w==
+        bh=19dcwyLK6HxBt3Sl1K7BYugVtKLA9XCCs/I2A977sT8=;
+        b=djLIrm1/FQJS1ZQjK5e8+u/deqFLZcAE/ssEVSgRo5Y60LXlnjMIz2sOQvzdS0E7+y
+         st0qDQhPFetgwdODpkFLCnGOZzSPI4yW4+u77NyUF68C7wSwPafzVGLjVLrbBrv0IuTQ
+         DwTXr8Nb6w/wSrpda2WYMpW+VmgqKBEphrCIIs+E31wRwgc/nSSPISsv9uK+rdLwDGyf
+         cWW+TkrQhbNybQcgKnRVZOqZDi5HzybP2tTFmDHvy2we34WfQNR1/KgtTwOacTqiG475
+         4fPqQiOef8BG9FGI+prmgroIUcn2Id2iVZMEoUGghzZ0sUdDiWHDG20FKl+AXIduu83z
+         /4dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738674317; x=1739279117;
+        d=1e100.net; s=20230601; t=1738675315; x=1739280115;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3oOyfmyvxD2JRjb/GBBLy3vJNh6/Dw/oGTe4zC+nKbk=;
-        b=TWnZ5Dynl+DUN52HIbQ3th43XcMJXBjTVs54wyh3W7YINAbzYZ1Sy1/8fCoDLLzQ4N
-         cea+oe+OGvQP9VsH/DWWAd+zW8mige1wO6Z33Z5xGh99Vmif91noY36L7BgckTaN4ZMM
-         sHaIl8iDmYNICzdNIWWVHk311QgLTjwxcV5IRHaQJhdjDhN8P9CVuGsPldxdKevCUEjI
-         MAeHexnZoIhVqiiIQ7YL1xhybS69DUo5cDbgxP5Cm+YsT1lTqKMHUlQRhHMqif/VnHiw
-         ClErZMRbbHrOay4pOS+HyG5+KWQxzohKyXnIAeEdT5HUM7muOqCPHPjBnBU4UY3Ubunb
-         R0Ng==
-X-Forwarded-Encrypted: i=1; AJvYcCWL7Nc4rCDniixPPQnn3wprnxHWuL7TDvSksKAqbv9zLRBJdnw6mQWBr+L0PM3GZyGvqEzFJVwMPMufOJKj@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw5OfJV8+ky5BnBxNC96Qef6198w/kEYaLbvLBf3mSTm5IxOK+2
-	cq7yZWDYxeVlTM8swZR1kFNvTo4KE/RZeu/b1p17l5H5TZzcAFzDJOvX8PHNaGo=
-X-Gm-Gg: ASbGncsYRCLXxMFPqpeBtq7GgPZC56dJjiPs0euFpv5gPyMEcUZhoGTi3M78TIcw/7M
-	ZEuCn2rN3YaDHK5oSAORM0fkPCbC+1ikOzdXYXlD6A2IPpCHibgMtQkEkgEEa3/ONcdFV7A4sOK
-	6fFU+4wqznKbVD0sVcz6TGk9Xo21zYRntZDSD6dF8WGChCVTMydR4ub9VXlzFiCB3htBvYPqF1e
-	iET1BSKi3BkEMNYbf958nVUB/83TPhQ0LpvBrs558XO1H7DzWbK0X4G5h8CZjGyCXn7iJbxpNQN
-	C6ZBllojkjuDRfhztg==
-X-Google-Smtp-Source: AGHT+IGBl7i7nXlso9tbhlV1G/QjiiNegMs2sz3oHixQqd+gL/Zatt/iwtDjc84jpzxmYuC601DOjA==
-X-Received: by 2002:a17:906:6a24:b0:aa6:aa8e:c89c with SMTP id a640c23a62f3a-ab6cfda42fbmr3356237366b.39.1738674317098;
-        Tue, 04 Feb 2025 05:05:17 -0800 (PST)
+        bh=19dcwyLK6HxBt3Sl1K7BYugVtKLA9XCCs/I2A977sT8=;
+        b=cLoigxALKkDRRXWBtKIL2imB5GkN8JO6KM5rxBV+btppkQ8+rDzZWTUljVqEgpyp/A
+         9grGq/wTLm0yyRXODqI5zd0FviDB5+O9jn/KK1UoVqz6O9Nq+1GS3AQO/N9ZH6OYRsiU
+         ddk7X8fmolnqSFIWhMdnjAGIKLT6bpXUlpxGa552rg9rusC6CbiD3v/yjdl0wsGARcHE
+         SSK9evijVCNCdlU3Xbb73YGUG6rK/CQ3OhcAVjRwQRAkkbzgAybtsxik9AVVMxgAZy7/
+         aKsNGJ0MoFV5MQfSL8kiGmu/IuWKkes8XAUkBzg4EjfB5wX7az4hjfzTjcAFK/+6Ucuj
+         7Jzw==
+X-Forwarded-Encrypted: i=1; AJvYcCW918/js+m95NPhYaSz3Jvg4c2fuEcqrimzs2M57icBOqB8d6EQBYuoTbfKsMbD7r/VI2HHqkvCu0UIWLdd@vger.kernel.org
+X-Gm-Message-State: AOJu0YxUWEBodT6nzqYmIrYy8Y2b0CelTHaNuA9eKWErfMA84MAQCWcC
+	4qSkfMr252zfpDDVpbiJumpnqtHqVH8khkZQeTikwEXp2LzUfxJbPhTvHLDSpR0=
+X-Gm-Gg: ASbGncsqHK7CHU1/Y7lFzIoaBs9CNAHl79NlH/kOcQNFzBVD2v4/eHiyaQ3OpQYt9HL
+	bZ6mFoQ3inSn5ZwOTHJ7WU8JFrLfijZQNN0KtKVyiapTzHJxruIV+HGZJMRmW5e68Oh5mDzZVag
+	MSu8swcaW4YyCCo9h2rIYfeH0T6pt3VgwpbSy55juPcpa/2/eUpqgudwXM1kHYK9YrWyv8xGkk2
+	u1hxK35ZINKL0e0dApT2zgyjppMgJyjO6diMCy1jUbtzRrOnoa/Xxa6aHa9VD3HPk2I5/A7qpAJ
+	gf/31hPzvhuJ0y71yA==
+X-Google-Smtp-Source: AGHT+IHo5NL/NiI3D81PFENm/glWsRlkC2C4A2oLyjusvgNEHIC8iCR7HCIqqnOROVR9nt6c7d2hQA==
+X-Received: by 2002:a17:907:6096:b0:ab6:d79f:abe6 with SMTP id a640c23a62f3a-ab6d79faf7amr2766102566b.15.1738675315328;
+        Tue, 04 Feb 2025 05:21:55 -0800 (PST)
 Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab6e49ff269sm914164166b.118.2025.02.04.05.05.16
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab703fbcc0csm698691366b.53.2025.02.04.05.21.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Feb 2025 05:05:16 -0800 (PST)
-Date: Tue, 4 Feb 2025 14:05:15 +0100
+        Tue, 04 Feb 2025 05:21:55 -0800 (PST)
+Date: Tue, 4 Feb 2025 14:21:53 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: Yafang Shao <laoar.shao@gmail.com>
-Cc: Miroslav Benes <mbenes@suse.cz>, jpoimboe@kernel.org, jikos@kernel.org,
+Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
 	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
-Message-ID: <Z6IQi4wpph0dnSD7@pathway.suse.cz>
+Subject: Re: [RFC PATCH 2/2] livepatch: Implement livepatch hybrid mode
+Message-ID: <Z6IUcbeCSAzlZEGP@pathway.suse.cz>
 References: <20250127063526.76687-1-laoar.shao@gmail.com>
- <Z5eOIQ4tDJr8N4UR@pathway.suse.cz>
- <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com>
- <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz>
- <CALOAHbDwsZqo9inSLNV1FQV3NYx2=eztd556rCZqbRvEu+DDFQ@mail.gmail.com>
+ <20250127063526.76687-3-laoar.shao@gmail.com>
+ <Z5eYzcF5JLR4o5Yl@pathway.suse.cz>
+ <CALOAHbANtpY+ee9Wd+HV6-uPOw+Kq1JcU5UdOXjz8m_UJ_-XRA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -94,157 +93,165 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALOAHbDwsZqo9inSLNV1FQV3NYx2=eztd556rCZqbRvEu+DDFQ@mail.gmail.com>
+In-Reply-To: <CALOAHbANtpY+ee9Wd+HV6-uPOw+Kq1JcU5UdOXjz8m_UJ_-XRA@mail.gmail.com>
 
-On Mon 2025-02-03 17:44:52, Yafang Shao wrote:
-> On Fri, Jan 31, 2025 at 9:18 PM Miroslav Benes <mbenes@suse.cz> wrote:
+On Mon 2025-01-27 23:34:50, Yafang Shao wrote:
+> On Mon, Jan 27, 2025 at 10:31 PM Petr Mladek <pmladek@suse.com> wrote:
 > >
-> > > >
-> > > >   + What exactly is meant by frequent replacements (busy loop?, once a minute?)
-> > >
-> > > The script:
-> > >
-> > > #!/bin/bash
-> > > while true; do
-> > >         yum install -y ./kernel-livepatch-6.1.12-0.x86_64.rpm
-> > >         ./apply_livepatch_61.sh # it will sleep 5s
-> > >         yum erase -y kernel-livepatch-6.1.12-0.x86_64
-> > >         yum install -y ./kernel-livepatch-6.1.6-0.x86_64.rpm
-> > >         ./apply_livepatch_61.sh  # it will sleep 5s
-> > > done
+> > On Mon 2025-01-27 14:35:26, Yafang Shao wrote:
+> > > The atomic replace livepatch mechanism was introduced to handle scenarios
+> > > where we want to unload a specific livepatch without unloading others.
+> > > However, its current implementation has significant shortcomings, making
+> > > it less than ideal in practice. Below are the key downsides:
 > >
-> > A live patch application is a slowpath. It is expected not to run
-> > frequently (in a relative sense).
-> 
-> The frequency isn’t the main concern here; _scalability_ is the key issue.
-> Running livepatches once per day (a relatively low frequency) across all of our
-> production servers (hundreds of thousands) isn’t feasible. Instead, we need to
-> periodically run tests on a subset of test servers.
-
-I am confused. The original problem was a system crash when
-livepatching do_exit() function, see
-https://lore.kernel.org/r/CALOAHbA9WHPjeZKUcUkwULagQjTMfqAdAg+akqPzbZ7Byc=qrw@mail.gmail.com
-
-The rcu watchdog warning was first mentioned in this patchset.
-Do you see rcu watchdog warning in production or just
-with this artificial test, please?
-
-
-> > If you stress it like this, it is quite
-> > expected that it will have an impact. Especially on a large busy system.
-> 
-> It seems you agree that the current atomic-replace process lacks scalability.
-> When deploying a livepatch across a large fleet of servers, it’s impossible to
-> ensure that the servers are idle, as their workloads are constantly varying and
-> are not deterministic.
-
-Do you see the scalability problem in production, please?
-And could you prove that it was caused by livepatching, please?
-
-
-> The challenges are very different when managing 1K servers versus 1M servers.
-> Similarly, the issues differ significantly between patching a single
-> function and
-> patching 100 functions, especially when some of those functions are critical.
-> That’s what scalability is all about.
-> 
-> Since we transitioned from the old livepatch mode to the new
-> atomic-replace mode,
-
-What do you mean with the old livepatch mode, please?
-
-Did you allow to install more livepatches in parallel?
-What was the motivation to switch to the atomic replace, please?
-
-> our SREs have consistently reported that one or more servers become
-> stalled during
-> the upgrade (replacement).
-
-What is SRE, please?
-Could you please show some log from a production system?
-
-
-> > > > > Other potential risks may also arise
-> > > > >   due to inconsistencies or race conditions during transitions.
-> > > >
-> > > > What inconsistencies and race conditions you have in mind, please?
-> > >
-> > > I have explained it at
-> > > https://lore.kernel.org/live-patching/Z5DHQG4geRsuIflc@pathway.suse.cz/T/#m5058583fa64d95ef7ac9525a6a8af8ca865bf354
-> > >
-> > >  klp_ftrace_handler
-> > >       if (unlikely(func->transition)) {
-> > >           WARN_ON_ONCE(patch_state == KLP_UNDEFINED);
-> > >   }
-> > >
-> > > Why is WARN_ON_ONCE() placed here? What issues have we encountered in the past
-> > > that led to the decision to add this warning?
+> > [...]
 > >
-> > A safety measure for something which really should not happen.
-> 
-> Unfortunately, this issue occurs during my stress tests.
-
-I am confused. Do you see the above WARN_ON_ONCE() during your
-stress test? Could you please provide a log?
-
-> > > > The main advantage of the atomic replace is simplify the maintenance
-> > > > and debugging.
+> > > In the hybrid mode:
 > > >
-> > > Is it worth the high overhead on production servers?
+> > > - Specific livepatches can be marked as "non-replaceable" to ensure they
+> > >   remain active and unaffected during replacements.
+> > >
+> > > - Other livepatches can be marked as "replaceable," allowing targeted
+> > >   replacements of only those patches.
+> > >
+> > > This selective approach would reduce unnecessary transitions, lower the
+> > > risk of temporary patch loss, and mitigate performance issues during
+> > > livepatch replacement.
+> > >
+> > > --- a/kernel/livepatch/core.c
+> > > +++ b/kernel/livepatch/core.c
+> > > @@ -658,6 +658,8 @@ static int klp_add_nops(struct klp_patch *patch)
+> > >               klp_for_each_object(old_patch, old_obj) {
+> > >                       int err;
+> > >
+> > > +                     if (!old_patch->replaceable)
+> > > +                             continue;
 > >
-> > Yes, because the overhead once a live patch is applied is negligible.
+> > This is one example where things might get very complicated.
 > 
-> If you’re managing a large fleet of servers, this issue is far from negligible.
-> 
+> Why does this example even exist in the first place?
+> If hybrid mode is enabled, this scenario could have been avoided entirely.
+
+How exactly this scenario could be avoided, please?
+
+In the real life, livepatches are used to fix many bugs.
+And every bug is fixed by livepatching several functions.
+
+Fix1 livepatches: funcA
+Fix2 livepatches: funcA, funcB
+Fix3 livepatches: funcB
+
+How would you handle this with the hybrid model?
+
+Which fix will be handled by livepatches installed in parallel?
+Which fix will be handled by atomic replace?
+How would you keep it consistent?
+
+How would it work when there are hundreds of fixes and thousands
+of livepatched functions?
+
+Where exactly is the advantage of the hybrid model?
+
 > >
-> > > Can you provide examples of companies that use atomic replacement at
-> > > scale in their production environments?
+> > The same function might be livepatched by more livepatches, see
+> > ops->func_stack. For example, let's have funcA and three livepatches:
+> > a
+> >   + lp1:
+> >         .replace = false,
+> >         .non-replace = true,
+> >         .func = {
+> >                         .old_name = "funcA",
+> >                         .new_func = lp1_funcA,
+> >                 }, { }
 > >
-> > At least SUSE uses it as a solution for its customers. No many problems
-> > have been reported since we started ~10 years ago.
+> >   + lp2:
+> >         .replace = false,
+> >         .non-replace = false,
+> >         .func = {
+> >                         .old_name = "funcA",
+> >                         .new_func = lp2_funcA,
+> >                 },{
+> >                         .old_name = "funcB",
+> >                         .new_func = lp2_funcB,
+> >                 }, { }
+> >
+> >
+> >   + lp3:
+> >         .replace = true,
+> >         .non-replace = false,
+> >         .func = {
+> >                         .old_name = "funcB",
+> >                         .new_func = lp3_funcB,
+> >                 }, { }
+> >
+> >
+> > Now, apply lp1:
+> >
+> >       + funcA() gets redirected to lp1_funcA()
+> >
+> > Then, apply lp2
+> >
+> >       + funcA() gets redirected to lp2_funcA()
+> >
+> > Finally, apply lp3:
+> >
+> >       + The proposed code would add "nop()" for
+> >         funcA() because it exists in lp2 and does not exist in lp3.
+> >
+> >       + funcA() will get redirected to the original code
+> >         because of the nop() during transition
+> >
+> >       + nop() will get removed in klp_complete_transition() and
+> >         funcA() will get suddenly redirected to lp1_funcA()
+> >         because it will still be on ops->func_stack even
+> >         after the "nop" and lp2_funcA() gets removed.
+> >
+> >            => The entire system will start using another funcA
+> >               implementation at some random time
+> >
+> >            => this would violate the consistency model
+> >
+> >
+> > The proper solution might be tricky:
+> >
+> > 1. We would need to detect this situation and do _not_ add
+> >    the "nop" for lp3 and funcA().
+> >
+> > 2. We would need a more complicate code for handling the task states.
+> >
+> >    klp_update_patch_state() sets task->patch_state using
+> >    the global "klp_target_state". But in the above example,
+> >    when enabling lp3:
+> >
+> >     + funcA would need to get transitioned _backward_:
+> >          KLP_TRANSITION_PATCHED -> KLP_TRANSITION_UNPATCHED
+> >       , so that it goes on ops->func_stack:
+> >          lp2_funcA -> lp1->funcA
+> >
+> >    while:
+> >
+> >     + funcA would need to get transitioned forward:
+> >          KLP_TRANSITION_UNPATCHED -> KLP_TRANSITION_PATCHED
+> >       , so that it goes on ops->func_stack:
+> >          lp2_funcB -> lp3->funcB
+> >
+> >
+> > => the hybrid mode would complicate the life for both livepatch
+> >    creators/maintainers and kernel code developers/maintainers.
+> >
 > 
-> Perhaps we’re running different workloads.
-> Going back to the original purpose of livepatching: is it designed to address
-> security vulnerabilities, or to deploy new features?
+> I don’t believe they should be held responsible for poor
+> configurations. These settings could have been avoided from the start.
+> There are countless tunable knobs in the system—should we try to
+> accommodate every possible combination? No, that’s not how systems are
+> designed to operate. Instead, we should identify and follow best
+> practices to ensure optimal functionality.
 
-We (SUSE) use livepatches only for fixing CVEs and serious bugs.
+I am sorry but I do not understand the above paragraph at all.
 
-
-> If it’s the latter, then there’s definitely a lot of room for improvement.
-
-You might be right. I am just not sure whether the hybrid mode would
-be the right solution.
-
-If you have problems with the atomic replace then you might stop using
-it completely and just install more livepatches in parallel.
-
-
-My view:
-
-More livepatches installed in parallel are more prone to
-inconsistencies. A good example is the thread about introducing
-stack order sysfs interface, see
-https://lore.kernel.org/all/AAD198C9-210E-4E31-8FD7-270C39A974A8@gmail.com/
-
-The atomic replace helps to keep the livepatched functions consistent.
-
-The hybrid model would allow to install more livepatches in parallel except
-that one livepatch could be replaced atomically. It would create even
-more scenarios than allowing all livepatches in parallel.
-
-What would be the rules, please?
-
-Which functionality will be livepatched by the atomic replace, please?
-
-Which functionality will be handled by the extra non-replaceable
-livepatches, please?
-
-How would you keep the livepatches consistent, please?
-
-How would you manage dependencies between livepatches, please?
-
-What is the advantage of the hybrid model over allowing
-all livepatches in parallel, please?
+Livepatches modify functions.
+How is it related to system configuration or tunable knobs?
+What best practices are you talking, please?
 
 Best Regards,
 Petr
