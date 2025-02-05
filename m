@@ -1,327 +1,348 @@
-Return-Path: <live-patching+bounces-1113-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1114-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 373AFA28235
-	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 03:55:31 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E9131A2842E
+	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 07:17:26 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9C1A43A06FC
-	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 02:55:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 528013A2989
+	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 06:17:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9EB0F2116EB;
-	Wed,  5 Feb 2025 02:55:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 426332165E0;
+	Wed,  5 Feb 2025 06:17:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BiubrqWP"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J1OE/RFg"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C324425A65E;
-	Wed,  5 Feb 2025 02:55:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5887120C02A;
+	Wed,  5 Feb 2025 06:17:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738724126; cv=none; b=ofW1ajTsQ9RFBA7bg5ht+7kN08zwvUbjyeAYjMwt3kUFSOi9LxlHquKmXASvF/kW7T2vT/o0oShj4QaYxQMBGNzqV3vOrd6//LMnDJR+KQtOccsg1mGS6i8D4lG0fltD2pUljjvvQ0bqcfMaWqN5EMTc5PTfCcTzyGavqdEqExo=
+	t=1738736241; cv=none; b=IpOdzV7Cwiscir466O1PprdEdglLn813Pw62zapnmzfSyaBF1F69Xdle67xvLDGFgTLx6vj66fMTrQgaqdHGeFm9Vd4EnSr0UNrdPsHdLcYmJWNWIGmnzAlkAhXZ3Fk225PrbKr4NDhXv1ZMbrNSpbDF8Vfk3FFYmqNeMiT1/o4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738724126; c=relaxed/simple;
-	bh=/V/Zjz8kIHTNtZepNSRxcBEK1+xm8jlcLRBoKPJwAJI=;
+	s=arc-20240116; t=1738736241; c=relaxed/simple;
+	bh=pZVAyrBiEeTA4e6lbI11nddgrixvFpxatCAbBKmYYPA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ap8Upq+1XKH62RvLYp0RbIzLVj39yTtvpydhwJBgZQH3+N0YqdeiHITdmDfmphdkXn2bir3+TsgQbPPRUk7+21zbqce5XxDvLCWPyjsICX4mnmp4Kay5+zf4iKDvkVM4CEbKxBz0dQha+JmR3ELdEDZlWivf0MADjlxg9Ulm1CA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BiubrqWP; arc=none smtp.client-ip=209.85.222.171
+	 To:Cc:Content-Type; b=kopMEIQBHFFBNpREu+2g6xkuoZFlbYNVlMw3ubVFWgu0t10dHq0CemnfpOONuLawaCaypt8oZgPPjJxt9Ez8XESfKBNijhKYoqscazojke3TBtzfRV80N3f5YdbQUJOdwPH6O+Cf7tz98MghanduaeanjiURmqLcw8e4NOI/uOY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J1OE/RFg; arc=none smtp.client-ip=209.85.222.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-7b6e9586b82so544900085a.1;
-        Tue, 04 Feb 2025 18:55:24 -0800 (PST)
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7b6fc3e9e4aso580949785a.2;
+        Tue, 04 Feb 2025 22:17:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738724123; x=1739328923; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1738736238; x=1739341038; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PtLKwDOyG5ssKF/2Ji6TsEWHluRVJXZzIL3UD18keGw=;
-        b=BiubrqWPbbOGJtGTga40E8q7ZE7Az24uFQF0RBuqOh4pZUFjKhBSHUvumDgUrTcwkb
-         LP9fIDQ6Vx+TyhiF/0NBweoo3au5u1c2ihVBPn6nHp3iNrRTcibrTU4aekt1M36Mhzj4
-         aT+jexvlDCpybbRUeRPob41mJVLf7RMAWxsFtjzjQdma+QuESQqw9HP6PsnQFVuON9Fk
-         ih+T4MxMFhuv+XaD7Pcj0yZ9jTrNBzYd8EvXh1Aq0tcpNVVFfDchSlLDI5k3n64GVmv/
-         1rr7cqZuVWLtKFrWuCbZ5AbF803z8VKb73d87SPpAmyr1tFuGqubBxIbFhsfzFjaCIOn
-         /q7g==
+        bh=cCRgINirE+iODNY3WTd2udcTDH1gjU7AElssx8SU6Gg=;
+        b=J1OE/RFgdUfYLtaixuMx9rZo6PrwIcC0BPCRdMm5Wv3e1qoTs8bkrNEjkkURZDWbT2
+         PseBmYo1D0YOfuW2r9KFwsRLCtD6Kw7qqpMATYkcDLyuqgDnrgqvwVFGTs0uqdpYXl2s
+         968x2pgs9sHqnQP1gr1jzsvceOb99HpuEL7dAZIEu5USQCGybFLdLo7aaRhBeU8Vr+sr
+         XaZO0CtPUsVyL/638nYCiNUzrBEKL98ztG5UJqon3pnIZzzT+cor+HAR78Z1ZidzwQpw
+         OeOmyO7MOmnwMsOkNRNx2dQ8RUfURmWgeEmHkun51c/0gvDIonVbihxZhZ6bGUUlPrdq
+         gwvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738724123; x=1739328923;
+        d=1e100.net; s=20230601; t=1738736238; x=1739341038;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PtLKwDOyG5ssKF/2Ji6TsEWHluRVJXZzIL3UD18keGw=;
-        b=eUSCfez/JNqpe0FNCFM9ImZZrcIf1AdTTHm8BNOqZg3FK+0XdIKjQHoDdca0WPdAQu
-         K9xbITuFQrMAe7m3Oj16uTcPs5TnXSY9/NdpDM6ef0Y5EpCKqYtXU/RP65gQFGqGyJ/R
-         QMa1P5ujnEU7T+BQ/wwbV4vqMqRfpYr7FKDLg7YXuLXrISEh/74eTzVWTQbh432Frp9y
-         ybGN48+GDzEXID8pRH2rZPt9DwwrvSNpTiMbfnVGflyK9hxJH12rRQivXWnuB0fJkR+Z
-         8VSfdhcW6kaIQuinwpJ8zA31awfaKHIlGU0lFK2VnCTY2LmVNvUNlteHJMnGopBhEIFx
-         TJtg==
-X-Forwarded-Encrypted: i=1; AJvYcCWptWv+Xkk7DqErhW9qkCE7bMVmpY4Yn2/dRztZPiRaxoMWnf1PMiQXBndmZFBGhAimdQpKw5Hm2+/B7brKFA==@vger.kernel.org, AJvYcCXOUS5PQixQAe6RR2fCtPrba5TRF/Q2U5NaA5v+sHGm3fJ5HfQ5HY90Ef2P90YidywnI3W9XiRBYqfIGU4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwWhPm7/yQcC67NelCwprZyoEXcU68R8tAEwImcd/KWglImgSgh
-	7Mso0PedrlonuAdRCSgpcVWYTcvyxTtWu2YIU2SagvRDzBIWzZZtZ8/ZBPJKBSvapC1nlUrTsDm
-	az7oUBZEZ3H1E2T+K8tmMXjCnf8E=
-X-Gm-Gg: ASbGncsTgc1QrFubxWy0wkCEMZ3H3z1Ut5gj9dfwTY6JJ8yVY4nHzwqq3oTOWzNbyGM
-	qn4v6FVVsF+tNULozvCur4dnhrbcMLm8T2A8O5YKZssfS97+oQnkMTiAbHj2z8w7iy3SXHhAcps
-	8=
-X-Google-Smtp-Source: AGHT+IHGCL4ookUzuGz8uWVm/jjfExcvqWstIF16/t1IbqN06yPmRlvLLgmV/lkGx91z+Pey2btDKbYBashYhwVdKg8=
-X-Received: by 2002:a05:620a:410e:b0:7b6:f34b:cdd2 with SMTP id
- af79cd13be357-7c03a04b810mr197896485a.53.1738724123511; Tue, 04 Feb 2025
- 18:55:23 -0800 (PST)
+        bh=cCRgINirE+iODNY3WTd2udcTDH1gjU7AElssx8SU6Gg=;
+        b=okdsoZJ8i3zfAtXQCzDZypX5uGPOsxFu9QGCbmtx8RfZsaIycgMlBJ3/1gJwj4MiRl
+         I+w5rRPFwAy36Nt2Ph4MO/OosGrv1SdOas7LRC/soBpOH/2/gCPsUpY55LGCJuQkViSX
+         Q+Y+JUPmG3xe7jxUEr79+4iX/M3KSVOhYWAANczqsPFrh4n9U/4J5iYiKohhzZldQyA2
+         DWIK8dNBxLhbj+QeSV9fVpxQSyQ+M+1sKF2KLkNRTnEpntg3LYsbNCNzdtI9beAaPLcn
+         rqojMDfj8RQRCjGXDc9D1gajB8sa6RWmdNTePeJZpGrN1Vt5riytIacvjPkegZndOWWK
+         YUbg==
+X-Forwarded-Encrypted: i=1; AJvYcCU1jmkmb2GRAdJZ2+Lz9NVbKsNRUEA/aoeXU0sW1GtQCvrEaWKeA6Q5Xhmmk3US2xztdv+wOE+EcSmI0gJIFg==@vger.kernel.org, AJvYcCUYPzi0h45tXusbujXBE0wQ6CaLpGtbK4x/ZUNDjXAS4FkQwyPBjwOUyDsdxsWIuxHjPf7M7v5NA5KP9kY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwUkRftWZaOTHZnc86Tj8zkKXvGzIn1Bqe0uy++W6SvTBETpW12
+	f6meOZ57g505V2yr2rRYgnQJejyvoTqjXUzgzClf4SrLdtETqfC8AVgNtVHuxTWoQJfhgYSr+We
+	i2GSZ15AQ9c+O6KlaerPTDhNTTT8=
+X-Gm-Gg: ASbGncsbxc34RIzSqEEnPFZjT6F8qA7YNFSdbp9ZtPoOsI6iIlzp9bmPmFH+T8KbRDP
+	R/PW7P4zKYKZ1xElNZul7WDBBRND2pJyMzaasY2VFVzdCi0vfkl/rCG2abbVedXIOxcd7qK15Up
+	4=
+X-Google-Smtp-Source: AGHT+IH/y2iclPbXaJW7mxStcSEO5pl9GdFXvnP9pmwhLakoL/fmL3EI5CUZY9HYaHfsWB2jMgn2Gc5QYj9XWZeXLNI=
+X-Received: by 2002:a05:620a:2401:b0:7b6:eed4:695c with SMTP id
+ af79cd13be357-7c039ff75c4mr293691385a.32.1738736238060; Tue, 04 Feb 2025
+ 22:17:18 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250127063526.76687-1-laoar.shao@gmail.com> <20250127063526.76687-3-laoar.shao@gmail.com>
- <Z5eYzcF5JLR4o5Yl@pathway.suse.cz> <CALOAHbANtpY+ee9Wd+HV6-uPOw+Kq1JcU5UdOXjz8m_UJ_-XRA@mail.gmail.com>
- <Z6IUcbeCSAzlZEGP@pathway.suse.cz>
-In-Reply-To: <Z6IUcbeCSAzlZEGP@pathway.suse.cz>
+References: <20250127063526.76687-1-laoar.shao@gmail.com> <Z5eOIQ4tDJr8N4UR@pathway.suse.cz>
+ <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com>
+ <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz> <CALOAHbDwsZqo9inSLNV1FQV3NYx2=eztd556rCZqbRvEu+DDFQ@mail.gmail.com>
+ <Z6IQi4wpph0dnSD7@pathway.suse.cz>
+In-Reply-To: <Z6IQi4wpph0dnSD7@pathway.suse.cz>
 From: Yafang Shao <laoar.shao@gmail.com>
-Date: Wed, 5 Feb 2025 10:54:47 +0800
-X-Gm-Features: AWEUYZnC4hhtTeL3gZNIEwfBI1_Hl4vmuI4VMUT9NQO--gGLqdOyyHp3CE42e_U
-Message-ID: <CALOAHbBWKL5MJz3DB+y02oqOrxy5xa3WZwTg0JPpqeQsMSVXmA@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] livepatch: Implement livepatch hybrid mode
+Date: Wed, 5 Feb 2025 14:16:42 +0800
+X-Gm-Features: AWEUYZlwxu766zS1EinatyqzFyllFw-NFGqizj8p3k56iZn2k_ASA6a0nvsxSzc
+Message-ID: <CALOAHbBktE_jYd5zSzvmbo_K7PkFDXrykTqV1-ZDQju64EYPyg@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
 To: Petr Mladek <pmladek@suse.com>
-Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, 
+Cc: Miroslav Benes <mbenes@suse.cz>, jpoimboe@kernel.org, jikos@kernel.org, 
 	joe.lawrence@redhat.com, live-patching@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 4, 2025 at 9:21=E2=80=AFPM Petr Mladek <pmladek@suse.com> wrote=
+On Tue, Feb 4, 2025 at 9:05=E2=80=AFPM Petr Mladek <pmladek@suse.com> wrote=
 :
 >
-> On Mon 2025-01-27 23:34:50, Yafang Shao wrote:
-> > On Mon, Jan 27, 2025 at 10:31=E2=80=AFPM Petr Mladek <pmladek@suse.com>=
+> On Mon 2025-02-03 17:44:52, Yafang Shao wrote:
+> > On Fri, Jan 31, 2025 at 9:18=E2=80=AFPM Miroslav Benes <mbenes@suse.cz>=
  wrote:
 > > >
-> > > On Mon 2025-01-27 14:35:26, Yafang Shao wrote:
-> > > > The atomic replace livepatch mechanism was introduced to handle sce=
-narios
-> > > > where we want to unload a specific livepatch without unloading othe=
-rs.
-> > > > However, its current implementation has significant shortcomings, m=
-aking
-> > > > it less than ideal in practice. Below are the key downsides:
+> > > > >
+> > > > >   + What exactly is meant by frequent replacements (busy loop?, o=
+nce a minute?)
+> > > >
+> > > > The script:
+> > > >
+> > > > #!/bin/bash
+> > > > while true; do
+> > > >         yum install -y ./kernel-livepatch-6.1.12-0.x86_64.rpm
+> > > >         ./apply_livepatch_61.sh # it will sleep 5s
+> > > >         yum erase -y kernel-livepatch-6.1.12-0.x86_64
+> > > >         yum install -y ./kernel-livepatch-6.1.6-0.x86_64.rpm
+> > > >         ./apply_livepatch_61.sh  # it will sleep 5s
+> > > > done
 > > >
-> > > [...]
-> > >
-> > > > In the hybrid mode:
-> > > >
-> > > > - Specific livepatches can be marked as "non-replaceable" to ensure=
- they
-> > > >   remain active and unaffected during replacements.
-> > > >
-> > > > - Other livepatches can be marked as "replaceable," allowing target=
-ed
-> > > >   replacements of only those patches.
-> > > >
-> > > > This selective approach would reduce unnecessary transitions, lower=
- the
-> > > > risk of temporary patch loss, and mitigate performance issues durin=
-g
-> > > > livepatch replacement.
-> > > >
-> > > > --- a/kernel/livepatch/core.c
-> > > > +++ b/kernel/livepatch/core.c
-> > > > @@ -658,6 +658,8 @@ static int klp_add_nops(struct klp_patch *patch=
-)
-> > > >               klp_for_each_object(old_patch, old_obj) {
-> > > >                       int err;
-> > > >
-> > > > +                     if (!old_patch->replaceable)
-> > > > +                             continue;
-> > >
-> > > This is one example where things might get very complicated.
+> > > A live patch application is a slowpath. It is expected not to run
+> > > frequently (in a relative sense).
 > >
-> > Why does this example even exist in the first place?
-> > If hybrid mode is enabled, this scenario could have been avoided entire=
-ly.
+> > The frequency isn=E2=80=99t the main concern here; _scalability_ is the=
+ key issue.
+> > Running livepatches once per day (a relatively low frequency) across al=
+l of our
+> > production servers (hundreds of thousands) isn=E2=80=99t feasible. Inst=
+ead, we need to
+> > periodically run tests on a subset of test servers.
 >
+> I am confused. The original problem was a system crash when
+> livepatching do_exit() function, see
+> https://lore.kernel.org/r/CALOAHbA9WHPjeZKUcUkwULagQjTMfqAdAg+akqPzbZ7Byc=
+=3Dqrw@mail.gmail.com
 
-You have many questions, but it seems you haven=E2=80=99t taken the time to=
- read even
-a single line of this patchset. I=E2=80=99ll try to address them to save yo=
-u some time.
-
-> How exactly this scenario could be avoided, please?
->
-> In the real life, livepatches are used to fix many bugs.
-> And every bug is fixed by livepatching several functions.
->
-> Fix1 livepatches: funcA
-> Fix2 livepatches: funcA, funcB
-> Fix3 livepatches: funcB
->
-> How would you handle this with the hybrid model?
-
-In your scenario, each Fix will replace the applied livepatches, so
-they must be set to replaceable.
-To clarify the hybrid model, I'll illustrate it with the following Fixes:
-
-Fix1 livepatches: funcA
-Fix2  livepatches: funcC
-Fix3 livepatches: funcA, funcB
-Fix4  livepatches: funcD
-Fix5 livepatches: funcB
-
-Each FixN represents a single /sys/kernel/livepatch/FixN.
-By default, all Fixes are set to non-replaceable.
-
-Step-by-step process:
-1. Loading Fix1
-   Loaded Fixes: Fix1
-2. Loading Fix2
-   Loaded Fixes: Fix1 Fix2
-3. Loading Fix3
-    Before loading, set Fix1 to replaceable and replace it with Fix3,
-which is a cumulative patch of Fix1 and Fix3.
-    Loaded Fixes:  Fix2 Fix3
-4. Loading Fix4
-    Loaded Fixes:  Fix2 Fix3 Fix4
-5. Loading Fix5
-    Similar to Step 3, set Fix3 to replaceable and replace it with Fix5.
-    Loaded Fixes:  Fix2 Fix4 Fix5
-
-This hybrid model ensures that irrelevant Fixes remain unaffected
-during replacements.
+Why do you view this patchset as a solution to the original problem?
 
 >
-> Which fix will be handled by livepatches installed in parallel?
-> Which fix will be handled by atomic replace?
-> How would you keep it consistent?
->
-> How would it work when there are hundreds of fixes and thousands
-> of livepatched functions?
+> The rcu watchdog warning was first mentioned in this patchset.
+> Do you see rcu watchdog warning in production or just
+> with this artificial test, please?
 
-The key point is that if a new Fix modifies a function already changed
-by previous Fixes, all the affected old Fixes should be set to
-replaceable, merged into the new Fix, and then the old Fixes should be
-replaced with the new one.
+So, we shouldn=E2=80=99t run any artificial tests on the livepatch, correct=
+?
+What exactly is the issue with these test cases?
 
 >
-> Where exactly is the advantage of the hybrid model?
-
-That can be seen as a form of "deferred replacement"=E2=80=94in other words=
-,
-only replacing the old Fixes when absolutely necessary. This approach
-can significantly reduce unnecessary work.
-
 >
-> > >
-> > > The same function might be livepatched by more livepatches, see
-> > > ops->func_stack. For example, let's have funcA and three livepatches:
-> > > a
-> > >   + lp1:
-> > >         .replace =3D false,
-> > >         .non-replace =3D true,
-> > >         .func =3D {
-> > >                         .old_name =3D "funcA",
-> > >                         .new_func =3D lp1_funcA,
-> > >                 }, { }
-> > >
-> > >   + lp2:
-> > >         .replace =3D false,
-> > >         .non-replace =3D false,
-> > >         .func =3D {
-> > >                         .old_name =3D "funcA",
-> > >                         .new_func =3D lp2_funcA,
-> > >                 },{
-> > >                         .old_name =3D "funcB",
-> > >                         .new_func =3D lp2_funcB,
-> > >                 }, { }
-> > >
-> > >
-> > >   + lp3:
-> > >         .replace =3D true,
-> > >         .non-replace =3D false,
-> > >         .func =3D {
-> > >                         .old_name =3D "funcB",
-> > >                         .new_func =3D lp3_funcB,
-> > >                 }, { }
-> > >
-> > >
-> > > Now, apply lp1:
-> > >
-> > >       + funcA() gets redirected to lp1_funcA()
-> > >
-> > > Then, apply lp2
-> > >
-> > >       + funcA() gets redirected to lp2_funcA()
-> > >
-> > > Finally, apply lp3:
-> > >
-> > >       + The proposed code would add "nop()" for
-> > >         funcA() because it exists in lp2 and does not exist in lp3.
-> > >
-> > >       + funcA() will get redirected to the original code
-> > >         because of the nop() during transition
-> > >
-> > >       + nop() will get removed in klp_complete_transition() and
-> > >         funcA() will get suddenly redirected to lp1_funcA()
-> > >         because it will still be on ops->func_stack even
-> > >         after the "nop" and lp2_funcA() gets removed.
-> > >
-> > >            =3D> The entire system will start using another funcA
-> > >               implementation at some random time
-> > >
-> > >            =3D> this would violate the consistency model
-> > >
-> > >
-> > > The proper solution might be tricky:
-> > >
-> > > 1. We would need to detect this situation and do _not_ add
-> > >    the "nop" for lp3 and funcA().
-> > >
-> > > 2. We would need a more complicate code for handling the task states.
-> > >
-> > >    klp_update_patch_state() sets task->patch_state using
-> > >    the global "klp_target_state". But in the above example,
-> > >    when enabling lp3:
-> > >
-> > >     + funcA would need to get transitioned _backward_:
-> > >          KLP_TRANSITION_PATCHED -> KLP_TRANSITION_UNPATCHED
-> > >       , so that it goes on ops->func_stack:
-> > >          lp2_funcA -> lp1->funcA
-> > >
-> > >    while:
-> > >
-> > >     + funcA would need to get transitioned forward:
-> > >          KLP_TRANSITION_UNPATCHED -> KLP_TRANSITION_PATCHED
-> > >       , so that it goes on ops->func_stack:
-> > >          lp2_funcB -> lp3->funcB
-> > >
-> > >
-> > > =3D> the hybrid mode would complicate the life for both livepatch
-> > >    creators/maintainers and kernel code developers/maintainers.
-> > >
+> > > If you stress it like this, it is quite
+> > > expected that it will have an impact. Especially on a large busy syst=
+em.
 > >
-> > I don=E2=80=99t believe they should be held responsible for poor
-> > configurations. These settings could have been avoided from the start.
-> > There are countless tunable knobs in the system=E2=80=94should we try t=
-o
-> > accommodate every possible combination? No, that=E2=80=99s not how syst=
-ems are
-> > designed to operate. Instead, we should identify and follow best
-> > practices to ensure optimal functionality.
+> > It seems you agree that the current atomic-replace process lacks scalab=
+ility.
+> > When deploying a livepatch across a large fleet of servers, it=E2=80=99=
+s impossible to
+> > ensure that the servers are idle, as their workloads are constantly var=
+ying and
+> > are not deterministic.
 >
-> I am sorry but I do not understand the above paragraph at all.
+> Do you see the scalability problem in production, please?
+
+Yes, the livepatch transition was stalled.
+
+
+> And could you prove that it was caused by livepatching, please?
+
+When the livepatch transition is stalled, running `kpatch list` will
+display the stalled information.
+
 >
-> Livepatches modify functions.
-> How is it related to system configuration or tunable knobs?
+>
+> > The challenges are very different when managing 1K servers versus 1M se=
+rvers.
+> > Similarly, the issues differ significantly between patching a single
+> > function and
+> > patching 100 functions, especially when some of those functions are cri=
+tical.
+> > That=E2=80=99s what scalability is all about.
+> >
+> > Since we transitioned from the old livepatch mode to the new
+> > atomic-replace mode,
+>
+> What do you mean with the old livepatch mode, please?
 
-/sys/kernel/livepatch/FixN/replaceable is a tunable knob.
+$ kpatch-build -R
 
-+static struct kobj_attribute replaceable_kobj_attr =3D __ATTR_RW(replaceab=
-le);
+>
+> Did you allow to install more livepatches in parallel?
 
-> What best practices are you talking, please?
+No.
 
-As mentioned earlier.
+> What was the motivation to switch to the atomic replace, please?
+
+This is the default behavior of kpatch [1] after upgrading to a new version=
+.
+
+[1].  https://github.com/dynup/kpatch/tree/master
+
+>
+> > our SREs have consistently reported that one or more servers become
+> > stalled during
+> > the upgrade (replacement).
+>
+> What is SRE, please?
+
+From the wikipedia : https://en.wikipedia.org/wiki/Site_reliability_enginee=
+ring
+
+> Could you please show some log from a production system?
+
+When the SREs initially reported that the livepatch transition was
+stalled, I simply advised them to try again. However, after
+experiencing these crashes, I dug deeper into the livepatch code and
+realized that scalability is a concern. As a result, periodically
+replacing an old livepatch triggers RCU warnings on our production
+servers.
+
+[Wed Feb  5 10:56:10 2025] livepatch: enabling patch 'livepatch_61_release6=
+'
+[Wed Feb  5 10:56:10 2025] livepatch: 'livepatch_61_release6':
+starting patching transition
+[Wed Feb  5 10:56:24 2025] rcu_tasks_wait_gp: rcu_tasks grace period
+1126113 is 10078 jiffies old.
+[Wed Feb  5 10:56:38 2025] rcu_tasks_wait_gp: rcu_tasks grace period
+1126117 is 10199 jiffies old.
+[Wed Feb  5 10:56:52 2025] rcu_tasks_wait_gp: rcu_tasks grace period
+1126121 is 10047 jiffies old.
+[Wed Feb  5 10:56:57 2025] livepatch: 'livepatch_61_release6': patching com=
+plete
+
+PS: You might argue again about the frequency. If you believe this is
+just a frequency issue, please suggest a suitable frequency.
+
+>
+>
+> > > > > > Other potential risks may also arise
+> > > > > >   due to inconsistencies or race conditions during transitions.
+> > > > >
+> > > > > What inconsistencies and race conditions you have in mind, please=
+?
+> > > >
+> > > > I have explained it at
+> > > > https://lore.kernel.org/live-patching/Z5DHQG4geRsuIflc@pathway.suse=
+.cz/T/#m5058583fa64d95ef7ac9525a6a8af8ca865bf354
+> > > >
+> > > >  klp_ftrace_handler
+> > > >       if (unlikely(func->transition)) {
+> > > >           WARN_ON_ONCE(patch_state =3D=3D KLP_UNDEFINED);
+> > > >   }
+> > > >
+> > > > Why is WARN_ON_ONCE() placed here? What issues have we encountered =
+in the past
+> > > > that led to the decision to add this warning?
+> > >
+> > > A safety measure for something which really should not happen.
+> >
+> > Unfortunately, this issue occurs during my stress tests.
+>
+> I am confused. Do you see the above WARN_ON_ONCE() during your
+> stress test? Could you please provide a log?
+
+Could you pls read my replyment seriously ?
+https://lore.kernel.org/live-patching/Z5DHQG4geRsuIflc@pathway.suse.cz/T/#m=
+5058583fa64d95ef7ac9525a6a8af8ca865bf354
+
+>
+> > > > > The main advantage of the atomic replace is simplify the maintena=
+nce
+> > > > > and debugging.
+> > > >
+> > > > Is it worth the high overhead on production servers?
+> > >
+> > > Yes, because the overhead once a live patch is applied is negligible.
+> >
+> > If you=E2=80=99re managing a large fleet of servers, this issue is far =
+from negligible.
+> >
+> > >
+> > > > Can you provide examples of companies that use atomic replacement a=
+t
+> > > > scale in their production environments?
+> > >
+> > > At least SUSE uses it as a solution for its customers. No many proble=
+ms
+> > > have been reported since we started ~10 years ago.
+> >
+> > Perhaps we=E2=80=99re running different workloads.
+> > Going back to the original purpose of livepatching: is it designed to a=
+ddress
+> > security vulnerabilities, or to deploy new features?
+>
+> We (SUSE) use livepatches only for fixing CVEs and serious bugs.
+>
+>
+> > If it=E2=80=99s the latter, then there=E2=80=99s definitely a lot of ro=
+om for improvement.
+>
+> You might be right. I am just not sure whether the hybrid mode would
+> be the right solution.
+>
+> If you have problems with the atomic replace then you might stop using
+> it completely and just install more livepatches in parallel.
+
+Why do we need to install livepatches in parallel if atomic replace is disa=
+bled?
+We only need to install the additional new livepatch. Parallel
+installation is only necessary at boot time.
+
+>
+>
+> My view:
+>
+> More livepatches installed in parallel are more prone to
+
+I=E2=80=99m confused as to why you consider this a parallel installation is=
+sue.
+
+> inconsistencies. A good example is the thread about introducing
+> stack order sysfs interface, see
+> https://lore.kernel.org/all/AAD198C9-210E-4E31-8FD7-270C39A974A8@gmail.co=
+m/
+>
+> The atomic replace helps to keep the livepatched functions consistent.
+>
+> The hybrid model would allow to install more livepatches in parallel exce=
+pt
+> that one livepatch could be replaced atomically. It would create even
+> more scenarios than allowing all livepatches in parallel.
+>
+> What would be the rules, please?
+>
+> Which functionality will be livepatched by the atomic replace, please?
+>
+> Which functionality will be handled by the extra non-replaceable
+> livepatches, please?
+>
+> How would you keep the livepatches consistent, please?
+>
+> How would you manage dependencies between livepatches, please?
+>
+> What is the advantage of the hybrid model over allowing
+> all livepatches in parallel, please?
+
+I can=E2=80=99t answer your questions if you insist on framing this as a
+parallel installation issue.
 
 --
 Regards
+
 Yafang
 
