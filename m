@@ -1,188 +1,306 @@
-Return-Path: <live-patching+bounces-1116-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1117-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF76EA291A3
-	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 15:53:55 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5237EA295AB
+	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 17:05:24 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6A9E23ABC26
-	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 14:51:21 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 5192B1886007
+	for <lists+live-patching@lfdr.de>; Wed,  5 Feb 2025 16:03:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91494193079;
-	Wed,  5 Feb 2025 14:43:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E3EB18CC1C;
+	Wed,  5 Feb 2025 16:03:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RNWiolF+"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="IBf4Ow/l"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE64616F8E9;
-	Wed,  5 Feb 2025 14:42:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75CA017C21C
+	for <live-patching@vger.kernel.org>; Wed,  5 Feb 2025 16:03:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738766581; cv=none; b=hijIQLtGmEHWBXkHywd5vpIpEryh5arElaZzFm0ms6f1Y5nQB1o6SumhQqAeC/slHZiEq3ZUi4Ay8Cp5sx1PZe5EkUfqN4a/BHOXhLixJuJZllm+PKQbUMXJQjSy3AIGCvdNax/Ntp71vB9gof+Iws38UeFY7NnU34L8WL3G1DE=
+	t=1738771398; cv=none; b=GQyqtiJj5hvxXpDphgGS1QPtzPRVp+ipBZND2pnPJyFSoC7SOw5lXU5yw3pSvT2gEMJVHNZIWia9dPsfh4uOtb+3tets+sm4rixsK496p7tjb/Ib9W+aOPiJf578D01j7VX51HiEg3VSntyEkQqUtr0uvg/rLuS6sIsZUu7E3xI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738766581; c=relaxed/simple;
-	bh=pxPrpQtSkz7WTkkbhF56Ah+Jjv3OOSaUrIduQSvxATw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EX8WIhjdhj8rDmWRete2gxNjmd3hRC3IMNtxbqoqnk9QuE4HIsKFnM+7R4WrId7R+PR9BuAqKX83MkBlH1xImo2bslEfO8iMHj7zEiy538LSUdXzrxlCF3m3uh4moB2qh44yz46TlhBQH0iE6X3LxXFmSIjMRspV87VNED060Bo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RNWiolF+; arc=none smtp.client-ip=209.85.219.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-6dd43b08674so55215936d6.3;
-        Wed, 05 Feb 2025 06:42:59 -0800 (PST)
+	s=arc-20240116; t=1738771398; c=relaxed/simple;
+	bh=/I9bodOOum1qi+yw5e6vSTcQvXL2vgNuqh105IqCHF4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PoMs0P3I36IY/ycTU3uSZAANpVWjltUzLNbuKVJYaH9yM0Uhhr0xfQoHL5SQINSY4eBITgdoRq1d+PTaJ98oFUy11LrZeuyaCD3s+bVLx0AEtjcYCy8AIj0NNmGV7FtEut8pt7i4QFI3R+7M19mXTYIDO8gm5F4OtSh6NnLfOug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=IBf4Ow/l; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-aaedd529ba1so924799866b.1
+        for <live-patching@vger.kernel.org>; Wed, 05 Feb 2025 08:03:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738766578; x=1739371378; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZFzsOPSraP8pWQ6hdTBusCwaArPsMDcf5Y8fnfjtPn8=;
-        b=RNWiolF+OObsY8+IkafvJ9TVoU71O6waqY17zMmaukZFyRRXdGYR9m7TGGnuNfG+PX
-         EiN2Tima1bOKOM48/UAy9hi6yIeUV+Q01sXygTG2WG4+P4dsgYxaGh0/gR56JhTLkDuD
-         2eb0TxhmsgKbZhRWYOHr7vZFtIUsCHgLhraJrYdEYHkOcIB2DVwPuyYU8v2szPej9S9C
-         5ZbFkGo7Zj4Eln8Wt/R6hkXHjQQrXJ0aPifiFr/oCuT85vmbix9KtIWDoBsIYUkdLruG
-         NiNcN5tTver7jOXOJ1f8vx2tk7wuyW37/I8NIUkrAkShI/JIp4Q5UaUc9UG95O4EGmbI
-         PaTg==
+        d=suse.com; s=google; t=1738771394; x=1739376194; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=b2Dnyw/RxLmsfabwG1syRfowM1VSlsvP6Um0OBGBw+A=;
+        b=IBf4Ow/lkljdyhLtk8ix1sZRwFMxOuqGo2ytbff7R+7WfpY5pz4hPGqcAWq5kXTzEO
+         DSefpq0prRTaGNWtZQHgl/EwqbVv0kzS+9i7mW5JIcJ3rlL0KYn+deUNiug9OrMv8Jsl
+         kk45290zKdV2SyDsKOK/32YJB1hItbEgrP4JcnqtaWpN8rUF4MkM0N9jlgrnDivUCKMw
+         WQs0RUnc24HkMCYYLmGExvmGePsIfU7VdJjRnXUuGDbrEjY/EkKrXm2+WYjAhiOgqgJb
+         3tcop2csJAni94vye/dPv7Rz/nV7Umt3sqHgwdw09P1lzeDMAcQLz9nKIwHZUO2oAr40
+         RLWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738766578; x=1739371378;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZFzsOPSraP8pWQ6hdTBusCwaArPsMDcf5Y8fnfjtPn8=;
-        b=rKMe7yjVhMTWL7goZ9irb7ySYAkOKPGEgQXwxFm238F8yCvi1vX8+LnobzCaEAKJhi
-         k6yUT48DaC4YbGdy8iaNXMTrY74t7W5nQWnREXl4Ejfger+v2wVTwHebOX4Ochhzkg55
-         6WVVRET1EA2ZhBMCGi/fTVgVOaaLT7t38AHzZaZKAT1Xrc524aLSUpzMSH95E/l0n++K
-         cph64qIHChD0dQxs2yQ8o8/FTEMZx+Bl/eeL3FJXXXsgWlAYp66qvIJgTEryCYBapIDR
-         0ZnX1jtwFpY9CroSiumT94wuL1VTtV0YMB1NH9G8TugXtGk7faR677wxO4CERMufPwxd
-         T23g==
-X-Forwarded-Encrypted: i=1; AJvYcCVTIBbhnhUDdEMdtrg/IsEvX2UZlMVBtGkd6yHQFPEPXli3t56UrbSC7vh6moOBEfpTYbI=@vger.kernel.org, AJvYcCVv0aI7XssPEYvzWnOKzEwsFTQeBK9Ttx/AMQkLJjAU69tsZYLbm4ofEPbp/mtaZSGBsv2nWyEZPcixODGpzA==@vger.kernel.org, AJvYcCWXTqtBWuhoBn0XjlltZ2Ot+RKwYjamCwy1U4QT95jpgt+KWOT+eFa+QZsor0G5Igw12h1s+IwB/2NoGoi4@vger.kernel.org
-X-Gm-Message-State: AOJu0YyFL/CL/7vPdbcHeOVBf/gBan+pAEOYRctpv5PZ2myhCyMmNH1V
-	tXv+hOnNnFnG+YeEu51lflaONJcyQZ8a9J5/TNi1VrRwzqQ2Jkc94w8T7vhvQTCvKUbKKWYBuOw
-	QKSX29hG1gWDzK3KohUwighRzur0=
-X-Gm-Gg: ASbGnct46InTbcjfzRxHL/ho/9iqzvbkDjDblKLBSXabbGrUxUHNVoDKqE9cc/v2Tz3
-	Y1VtH5/jX3Ln3NoJsEQjYPDWg25+Vctd+rvqV2OccF3iU0kj2GsYOHdOYMpNkiz4hOENXfniB+Z
-	E=
-X-Google-Smtp-Source: AGHT+IFKfZToqyEyoAVsrV43a7M2CwkfiKaSMz8lXrHMo8mub3uCrMmx0G7Lp4NNbnh3sttIBBFRb8dK0jdXnsLDgro=
-X-Received: by 2002:a05:6214:f65:b0:6d8:a39e:32a4 with SMTP id
- 6a1803df08f44-6e42fbd7774mr64739136d6.25.1738766578494; Wed, 05 Feb 2025
- 06:42:58 -0800 (PST)
+        d=1e100.net; s=20230601; t=1738771394; x=1739376194;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=b2Dnyw/RxLmsfabwG1syRfowM1VSlsvP6Um0OBGBw+A=;
+        b=gPdGcLq1HtpSrfLfJWh9kwwtXz+TYv6NzouxDBudRLdJ9EwdQS1GrCqk+jq1j8u/E5
+         vjcBr3MfwGBmJvWT68PllXu2AKJPPBj4CMWZ8Ah3xiXfiCoK3+eiFEvWF7lFFzH4BHP8
+         2Tnvm0DfLKMMdOh7AneW/TLavAIoWaG1O5nqiZG81QM+mK/bALRq7BAiJ7RY8VYzK4QV
+         /gO5ua3MCR8l9fIlVq52eJzvgrYfmqbQauguWvt85AtlzISkqBlruzouPru8MGLvCKfG
+         PH62qa3Hz/ubkOOy3Fnx6sD9MMxk3WgG1HX5UJq8MdHakNcMVkLTgz/NjqGn14Bp0kuA
+         pLJA==
+X-Forwarded-Encrypted: i=1; AJvYcCVL2Lh3FTc22qCyQXnnoc9gbJAJSoSwlGOaNro3iyMrzWsBlFUdCXLLuWQnX34e4Qy7BtjF1BGmsvMueAbz@vger.kernel.org
+X-Gm-Message-State: AOJu0YxOfjYROce63LXHoF0UORx9+M+u0iZvx2eCeJDkWz/otG/C5TlO
+	KSszmDw1trxXoZSzi2Nqj4RECgNT905ZDmussLdywtM0K4bDRigCYIwMg6Wq26Q=
+X-Gm-Gg: ASbGnctRVZjmPW10r1mY5s79kYgHH79OaySipNR/+uu8cNugqF13OaNCGNcOHaMVVsk
+	QWJPr5k67CHvFf3mzGgHu1c/nZIemKcPAMjyRdmaLgUhz894HnSylsulpCxD3jRf2zgGssXVnQ/
+	5oXeMDFMHk4L/2i/LRlKitj81xM2rdI6OVBF0zjxgplItbwZJdu4y7kXdgi5Sh/Kw3MHoGxD/TZ
+	w7pfeSyTAX/TAOctJYfSyE6Bo+VRVwAc8n+oCoBdHxGH7XLetaJeKQvJG2naYw4e43iypnkDl7o
+	PcDBj0h/dWVoTCJjHA==
+X-Google-Smtp-Source: AGHT+IEhzhth1iRS/5lDkEkc+uffYLvkJ/xTNnYqRTVOlBAddvX5E4aEuVGV7RFDknR6c/05kShn3Q==
+X-Received: by 2002:a05:6402:3216:b0:5db:e7eb:1b4c with SMTP id 4fb4d7f45d1cf-5dcdb71277bmr10890874a12.10.1738771392978;
+        Wed, 05 Feb 2025 08:03:12 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dc72405806sm11560551a12.36.2025.02.05.08.03.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Feb 2025 08:03:12 -0800 (PST)
+Date: Wed, 5 Feb 2025 17:03:09 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Yafang Shao <laoar.shao@gmail.com>
+Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 2/2] livepatch: Implement livepatch hybrid mode
+Message-ID: <Z6OLvQ6KlVeuOkoO@pathway.suse.cz>
+References: <20250127063526.76687-1-laoar.shao@gmail.com>
+ <20250127063526.76687-3-laoar.shao@gmail.com>
+ <Z5eYzcF5JLR4o5Yl@pathway.suse.cz>
+ <CALOAHbANtpY+ee9Wd+HV6-uPOw+Kq1JcU5UdOXjz8m_UJ_-XRA@mail.gmail.com>
+ <Z6IUcbeCSAzlZEGP@pathway.suse.cz>
+ <CALOAHbBWKL5MJz3DB+y02oqOrxy5xa3WZwTg0JPpqeQsMSVXmA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250127063526.76687-1-laoar.shao@gmail.com> <Z5eOIQ4tDJr8N4UR@pathway.suse.cz>
- <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com>
- <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz> <CALOAHbDwsZqo9inSLNV1FQV3NYx2=eztd556rCZqbRvEu+DDFQ@mail.gmail.com>
- <CAPhsuW4gYKHsmtHsBDUkx7a=apr_tSP_4aFWmmFNfqOJ+3GDGQ@mail.gmail.com>
-In-Reply-To: <CAPhsuW4gYKHsmtHsBDUkx7a=apr_tSP_4aFWmmFNfqOJ+3GDGQ@mail.gmail.com>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Wed, 5 Feb 2025 22:42:22 +0800
-X-Gm-Features: AWEUYZlYBaJ7_HWYEwzsSoc5umVv1UdxRh8C-Yzyz673yROmd2m8vXQhiJA83zA
-Message-ID: <CALOAHbDYFAntFbwMwGgnXkHh1audSoUwG1wFu_4e8P=c=hwZ0w@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
-To: Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>
-Cc: Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, jpoimboe@kernel.org, 
-	jikos@kernel.org, joe.lawrence@redhat.com, live-patching@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALOAHbBWKL5MJz3DB+y02oqOrxy5xa3WZwTg0JPpqeQsMSVXmA@mail.gmail.com>
 
-On Tue, Feb 4, 2025 at 5:53=E2=80=AFAM Song Liu <song@kernel.org> wrote:
->
-> On Mon, Feb 3, 2025 at 1:45=E2=80=AFAM Yafang Shao <laoar.shao@gmail.com>=
- wrote:
-> [...]
+On Wed 2025-02-05 10:54:47, Yafang Shao wrote:
+> On Tue, Feb 4, 2025 at 9:21 PM Petr Mladek <pmladek@suse.com> wrote:
 > >
-> > If you=E2=80=99re managing a large fleet of servers, this issue is far =
-from negligible.
-> >
+> > On Mon 2025-01-27 23:34:50, Yafang Shao wrote:
+> > > On Mon, Jan 27, 2025 at 10:31 PM Petr Mladek <pmladek@suse.com> wrote:
+> > > >
+> > > > On Mon 2025-01-27 14:35:26, Yafang Shao wrote:
+> > > > > The atomic replace livepatch mechanism was introduced to handle scenarios
+> > > > > where we want to unload a specific livepatch without unloading others.
+> > > > > However, its current implementation has significant shortcomings, making
+> > > > > it less than ideal in practice. Below are the key downsides:
+> > > >
+> > > > [...]
+> > > >
+> > > > > In the hybrid mode:
+> > > > >
+> > > > > - Specific livepatches can be marked as "non-replaceable" to ensure they
+> > > > >   remain active and unaffected during replacements.
+> > > > >
+> > > > > - Other livepatches can be marked as "replaceable," allowing targeted
+> > > > >   replacements of only those patches.
+> > > > >
+> > > > > This selective approach would reduce unnecessary transitions, lower the
+> > > > > risk of temporary patch loss, and mitigate performance issues during
+> > > > > livepatch replacement.
+> > > > >
+> > > > > --- a/kernel/livepatch/core.c
+> > > > > +++ b/kernel/livepatch/core.c
+> > > > > @@ -658,6 +658,8 @@ static int klp_add_nops(struct klp_patch *patch)
+> > > > >               klp_for_each_object(old_patch, old_obj) {
+> > > > >                       int err;
+> > > > >
+> > > > > +                     if (!old_patch->replaceable)
+> > > > > +                             continue;
+> > > >
+> > > > This is one example where things might get very complicated.
 > > >
-> > > > Can you provide examples of companies that use atomic replacement a=
-t
-> > > > scale in their production environments?
-> > >
-> > > At least SUSE uses it as a solution for its customers. No many proble=
-ms
-> > > have been reported since we started ~10 years ago.
->
-> We (Meta) always use atomic replacement for our live patches.
->
+> > > Why does this example even exist in the first place?
+> > > If hybrid mode is enabled, this scenario could have been avoided entirely.
 > >
-> > Perhaps we=E2=80=99re running different workloads.
-> > Going back to the original purpose of livepatching: is it designed to a=
-ddress
-> > security vulnerabilities, or to deploy new features?
-> > If it=E2=80=99s the latter, then there=E2=80=99s definitely a lot of ro=
-om for improvement.
->
-> We only use KLP to fix bugs and security vulnerabilities. We do not use
-> live patches to deploy new features.
+> 
+> You have many questions, but it seems you haven’t taken the time to read even
+> a single line of this patchset. I’ll try to address them to save you some time.
 
-+BPF
+What?
 
-Hello Song,
+> > How exactly this scenario could be avoided, please?
+> >
+> > In the real life, livepatches are used to fix many bugs.
+> > And every bug is fixed by livepatching several functions.
+> >
+> > Fix1 livepatches: funcA
+> > Fix2 livepatches: funcA, funcB
+> > Fix3 livepatches: funcB
+> >
+> > How would you handle this with the hybrid model?
+> 
+> In your scenario, each Fix will replace the applied livepatches, so
+> they must be set to replaceable.
+> To clarify the hybrid model, I'll illustrate it with the following Fixes:
+> 
+> Fix1 livepatches: funcA
+> Fix2  livepatches: funcC
+> Fix3 livepatches: funcA, funcB
 
-Since bpf_fexit also uses trampolines, I was curious about what would
-happen if I attached do_exit() to fexit. Unfortunately, it triggers a
-bug in BPF as well. The BPF program is as follows:
+How does look the livepatched FuncA here?
+Does it contain changes only for Fix3?
+Or is it cummulative livepatches_funA includes both Fix1 + Fix3?
 
-SEC("fexit/do_exit")
-int fexit_do_exit
-{
-    return 0;
-}
+> Fix4  livepatches: funcD
+> Fix5 livepatches: funcB
+> 
+> Each FixN represents a single /sys/kernel/livepatch/FixN.
+> By default, all Fixes are set to non-replaceable.
+> 
+> Step-by-step process:
+> 1. Loading Fix1
+>    Loaded Fixes: Fix1
+> 2. Loading Fix2
+>    Loaded Fixes: Fix1 Fix2
+> 3. Loading Fix3
+>     Before loading, set Fix1 to replaceable and replace it with Fix3,
+> which is a cumulative patch of Fix1 and Fix3.
 
-After the fexit program exits, the trampoline is still left over:
+Who will modify the "replaceable" flag of "Fix1"? Userspace or kernel?
 
-$ bpftool  link show  <<<< nothing output
-$ grep "bpf_trampoline_[0-9]" /proc/kallsyms
-ffffffffc04cb000 t bpf_trampoline_6442526459    [bpf]
+How the livepatch modules would get installed/removed to/from the
+filesystem?
 
-We could either add functions annotated as "__noreturn" to the deny
-list for fexit as follows, or we could explore a more generic
-solution, such as embedding the "noreturn" information into the BTF
-and extracting it when attaching fexit.
+We (SUSE) distribute the livepatches using RPM packages. Every new
+version of the livepatch module is packaged in a RPM package with
+the same name and higher version. A post install script loads
+the module into the kernel and removes disabled livepatch modules.
 
-Any thoughts?
+The package update causes that the new version of the livepatch module
+is enabled and the old version is removed. And also the old version
+of the module and is removed from the filesystem together with the old
+version of the RPM package.
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index d77abb87ffb1..37192888473c 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -22742,6 +22742,13 @@ BTF_ID(func, __rcu_read_unlock)
- #endif
- BTF_SET_END(btf_id_deny)
+This matches the behavior of the atomic replace. There is always only
+one version of the livepatch RPM package installed and only one
+livepatch module loaded/enabled. And when it works correcly then
+the version of the installed package matches the version of the loaded
+livepatch module.
 
-+BTF_SET_START(fexit_deny)
-+BTF_ID_UNUSED
-+/* do_exit never returns */
-+/* TODO: Add other functions annotated with __noreturn or figure out
-a generic solution */
-+BTF_ID(func, do_exit)
-+BTF_SET_END(fexit_deny)
-+
- static bool can_be_sleepable(struct bpf_prog *prog)
- {
-        if (prog->type =3D=3D BPF_PROG_TYPE_TRACING) {
-@@ -22830,6 +22837,9 @@ static int check_attach_btf_id(struct
-bpf_verifier_env *env)
-        } else if (prog->type =3D=3D BPF_PROG_TYPE_TRACING &&
-                   btf_id_set_contains(&btf_id_deny, btf_id)) {
-                return -EINVAL;
-+       } else if (prog->expected_attach_type =3D=3D BPF_TRACE_FEXIT &&
-+                  btf_id_set_contains(&fexit_deny, btf_id)) {
-+               return -EINVAL;
-        }
+This might be hard to achieve with the hybrid model. Every livepatch
+module would need to be packaged in a separate (different name)
+RPM package. And some userspace service would need to clean up both
+kernel modules and livepatch RPM packages (remove the unused ones).
 
-        key =3D bpf_trampoline_compute_key(tgt_prog,
-prog->aux->attach_btf, btf_id);
+This might add a lot of extra complexity.
+
+>     Loaded Fixes:  Fix2 Fix3
+> 4. Loading Fix4
+>     Loaded Fixes:  Fix2 Fix3 Fix4
+> 5. Loading Fix5
+>     Similar to Step 3, set Fix3 to replaceable and replace it with Fix5.
+>     Loaded Fixes:  Fix2 Fix4 Fix5
+
+Let's imagine another situation:
+
+Fix1 livepatches: funcA, funcB
+Fix2  livepatches: funcB, funcC
+Fix3 livepatches: funcA, funcC
+
+Variant A:
+
+ 1. Loading Fix1
+    Loaded Fixes: Fix1
+    In use:: funcA_fix1, funcB_fix1
+
+ 2. Loading Fix2
+    Loaded Fixes: Fix1 Fix2
+    In use: funcA_fix1, funcB_fix2, funcC_fix2
+
+ 3. Loading Fix3
+    Loaded Fixes: Fix2 Fix3
+    In use: funcA_fix3, funcB_fix2, funcC_fix3
+
+    This will be correct only when:
+
+	+ funcA_fix3 contains both changes from Fix1 and Fix3
+	+ funcC_fix3 contains both changes from Fix2 and Fix3
 
 
---
-Regards
-Yafang
+Variant B:
+
+ 1. Loading Fix1
+    Loaded Fixes: Fix1
+    In use:: funcA_fix1, funcB_fix1
+
+ 2. Loading Fix2 (fails from some reason or is skipped)
+    Loaded Fixes: Fix1
+    In use:: funcA_fix1, funcB_fix1
+
+ 3. Loading Fix3
+    Loaded Fixes: Fix1 Fix2
+    In use: funcA_fix3, funcB_fix1, funcC_fix3
+
+    This will be correct only when:
+
+	+ funcA_fix3 contains both changes from Fix1 and Fix3
+	    and stays funcB_fix1 is compatible with funcA_fix3
+	+ funcC_fix3 contains changes only from Fix3,
+	    it must be compatible with the original funcB because
+
+I want to say that this would work only when all livepatches
+are loaded in the right order. Otherwise, it might break
+the system.
+
+How do you want to ensure this?
+
+Is it really that easy?
+
+> 3. Loading Fix3
+>     Before loading, set Fix1 to replaceable and replace it with Fix3,
+
+> This hybrid model ensures that irrelevant Fixes remain unaffected
+> during replacements.
+
+It makes some some now. But IMHO, it is not as easy as it looks.
+The complexity is in details.
+
+> >
+> > Which fix will be handled by livepatches installed in parallel?
+> > Which fix will be handled by atomic replace?
+> > How would you keep it consistent?
+> >
+> > How would it work when there are hundreds of fixes and thousands
+> > of livepatched functions?
+> 
+> The key point is that if a new Fix modifies a function already changed
+> by previous Fixes, all the affected old Fixes should be set to
+> replaceable, merged into the new Fix, and then the old Fixes should be
+> replaced with the new one.
+
+As I tried to explain above. This might be hard to use in practice.
+
+We would either need to enforce loading all livepatches in the right
+order. It might be hard to make it user friendly.
+
+Or it would need a lot of extra code which would ensure that only
+compatible livepatches can be loaded.
+
+Best Regards,
+Petr
 
