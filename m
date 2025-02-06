@@ -1,186 +1,175 @@
-Return-Path: <live-patching+bounces-1120-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1121-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C457EA29EFF
-	for <lists+live-patching@lfdr.de>; Thu,  6 Feb 2025 03:55:31 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id AA41FA2AC09
+	for <lists+live-patching@lfdr.de>; Thu,  6 Feb 2025 16:02:25 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 17A8E3A6E16
-	for <lists+live-patching@lfdr.de>; Thu,  6 Feb 2025 02:55:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AE3293A74DA
+	for <lists+live-patching@lfdr.de>; Thu,  6 Feb 2025 15:02:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1CDC13B5B6;
-	Thu,  6 Feb 2025 02:55:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EFCA11EA7D1;
+	Thu,  6 Feb 2025 15:02:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d86ktGOu"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oqQ70vf1"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D90413CA93;
-	Thu,  6 Feb 2025 02:55:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A4251E5B91
+	for <live-patching@vger.kernel.org>; Thu,  6 Feb 2025 15:02:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738810527; cv=none; b=dPojTQkY18p2LKiJP2le82rj2LhiGaY4DGF9qNpZ4WcVZXnhUb6I9oHwLrDnOPkvpGAF8x61so8gJNyw9toQW1whotIBQye2INuN09Wa5pR7dTV95gGRkpn1k06DdcGyw+dw9xJ9cIZeKdLJaaToFgPia4xE+Yu+3s5uysEV/eI=
+	t=1738854136; cv=none; b=CQd2cJSB4NrTIfCpDLYsDmcPckO8fVf+CdJfyF9i2vLPGmTY0NIKSCxztbW4RPkwqDx/vRcJSaxaNaYVUDPXuvA1lrJJuTPhu3tuVAjmQgRl0aZa4+FnNRONJh1dpjjAL+4N/3EQQ88JfmDhxDfD5bGJ5l6qN/zVekyUuCckNBg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738810527; c=relaxed/simple;
-	bh=0IqMAB96D4GNBXwqFjKFMh2GI/bTFHwFxbm35HPqJeU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GwGkc7W38o5fsvBxGYYwuryBN4CQ0MWlZXKvfCepYKYpahefpr42pVA7TcfRMu37HC7nK1B3FUq7brr+JRfR5wzbD6gy4oX334QEAZrxgLUyP1QCGYIJEs1hTs/zcfhetNZBlWk66Yg4wnXR8UKGu+J/umYl69wXOaGIJVFoUmQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d86ktGOu; arc=none smtp.client-ip=209.85.219.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-6e43c9c8d08so170286d6.3;
-        Wed, 05 Feb 2025 18:55:25 -0800 (PST)
+	s=arc-20240116; t=1738854136; c=relaxed/simple;
+	bh=0C3us8bkwGCphww5CtGnGjWm5gBeMGmbRP1C44zKX5U=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=lzKqcWvWAuBRu8i9SEI0y6sR4HDKzi3NV50+mdTIcNrPiPhsCXY15WSvtuW2HzqOc/QvMYQZOc5N4yVi1+a+I+Ag2GUyCXYga346jjjPBO9KiClLT76fWV1Eq+GcqA5rnZJ7jXHsaje5SIxzAZVicFX2iH94yG2uysjlUAnbtkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oqQ70vf1; arc=none smtp.client-ip=209.85.214.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-21f4666364bso3938095ad.2
+        for <live-patching@vger.kernel.org>; Thu, 06 Feb 2025 07:02:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738810525; x=1739415325; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3GnVWEwVJuG/SEGSdqX/pIt9ooe9OSa2rMvMygSeYjU=;
-        b=d86ktGOudIvmJid4NrZ2YkU/sQRSZ0oWmPGiwkpI+4pqGxy04Pb4x5OGzVaBBjika0
-         eYOLVKAUcJkeoFWOm8eOpN9LPiBLXNM74RMSMV1MUzEdvR1lTWWaYhGjpJRjtVuVRO7P
-         eHNmucbK9YztGccSepx68csFTcwEiKWZKwAvWtn4lAu1n0qzTP3vbZ2dAriXo5C8VWFA
-         NSGcrnC1+H3PjB/sokl7/zMfcAY7AU1MdWXjfJ9+ZTQcUUy0J/1A7VivX1uhyZIxQSyX
-         DcKxzMUAu1zxfh2RefjzXDJ5+4/x0B0kD5jAi8Jje1p4VNsUGJu0FPyvzevWdLHdOU/I
-         QMjA==
+        d=google.com; s=20230601; t=1738854134; x=1739458934; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=r8JIB6d7R5kKl6+damfWRxYdrapnjk0INN1HmKYI0wY=;
+        b=oqQ70vf1087+FwoiOxKXnQgqEiYZG5KzHusbd89HlzHGu1+GjaSZ8evMIE0v0hW59K
+         7w5EMHaFwhToQLrTt3+YR36A1X+culwRbnr6POn2iAsrPomzPhBZ/Ost8wUitYI4rmuq
+         CW1wfoG1cbGSdTdoSXha5An9/2CSp9ZeyCwMzd2n2weCWUc22TwXkfUA0DPJANZO/TeG
+         C+5WX/oh9iiVR2FXbiYLFsEB3VA/yxSnrfvyT7qB2GJLfuTF1J+kMMDhAsa4slNAknNn
+         nqKSk5uyj3+yxZKaYCi9khRK+7644gO4cZCUX7OHEYfb4vDCNwQO7bcP+YbVQAAxlfOK
+         bXXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738810525; x=1739415325;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3GnVWEwVJuG/SEGSdqX/pIt9ooe9OSa2rMvMygSeYjU=;
-        b=r59m9tizaJEBPFukVWBgci7I626fUFruvCwY4NXJFjPa7OpHPr6+5Lde1p9cF5DiK4
-         C6sHHDN6VWVj+Oq7TjXeeeSf5MXqK+dXDXSx9bplIrNJASnboNVLg0E2BP67TQG18QO8
-         ukGD9zYwbIIegVbk6/BXm+mduLR67j2GIE46/x+YQyzvYOyHIYtOmLcD21tB0HW0zhRY
-         gN1FhsnX2lj4KlpF9+H2q2DnWFqn7/yHB82Tdt2kPq3b3l/8WBf4NvjwwMDIFhdOpneV
-         P2RpFC6PiSVGNjl1H1Em2h2XvN6RUHDPGNzPFmbF9XbJRpbKbCeeC732bDGEd1OKvWtm
-         Cckw==
-X-Forwarded-Encrypted: i=1; AJvYcCUaI99SXTy/1OK6PAcmlSUEY+FF1rChdRxtoW5JZ479Eqf49hN4WP4gucr5MDMXa1tpA3+CS2lFBldUlko=@vger.kernel.org, AJvYcCXQ1cDUKd/S45ykodrdJrOqOy/8up+0prrLaBiZ0aNWSo/EMbM3PG8KlM6Qmsb/MVUj3bNkTyD0DvrZKW2YVA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxr/S/0y5YNnrqUDXJ67CWVJVe9BMSaxI2/4QNIiB5CEiZ/FalV
-	kip6VdJuCVvv89dKx6JEt+KdUo4irJyv13TAOzyelDgzCEFlcl0hG/9vdwdHZf6Z8det1RP+azP
-	SlUTMubTGLDNMIW7vQW3gPMAP8gc=
-X-Gm-Gg: ASbGncuf31JMH28g28/6CAejTBPXr6Y0pd15GdpA5fplpqV/IpGwoi3I16zw6GFKciq
-	ytnxSSE+nKydEOpf9p3/I/03p6jwT0ixUOmSkVoSvsHsRKq1jfsRH+uYFzZqSta8X66nhKZQsII
-	g=
-X-Google-Smtp-Source: AGHT+IFnv9nwIe8WbvJxONCw6hGNFmT+1viZkV7PuwG+b/q0AG4Qdd1/cXv434UnBGYNHt+rihHL2okY+4imeF4Vfwo=
-X-Received: by 2002:a05:6214:3187:b0:6d8:7db7:1f2e with SMTP id
- 6a1803df08f44-6e42fb84041mr73343336d6.14.1738810525030; Wed, 05 Feb 2025
- 18:55:25 -0800 (PST)
+        d=1e100.net; s=20230601; t=1738854134; x=1739458934;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=r8JIB6d7R5kKl6+damfWRxYdrapnjk0INN1HmKYI0wY=;
+        b=iPU3/OAUG2xOrBfDhIqhfBlvCWleM7cbeHUuZvZDk9vlM3wSy3VckJ0cr3Ptor8vEP
+         9wME9ZYPk8kdJDVHYH/sF7/bIK3DRisj38L64PGeA0/4UO/9/qHMYfKT7OX6fPC6eRqF
+         7sVHMzHnHLwCNOdfrdc/wqrFzQGHPZLLc0DwtuQjad64Jg7h/tq78vIdcZKk8WwxvHln
+         U5LJH+enxvlAi1+lj49T0dxE+0pCkcXVeZlMyy5gsSAuhWi4bh7Ap39jPwS2mlvXmx61
+         Hdpft1QH4B9R6eXXM8ykuiEX6NDVa1x+ML2plRB34LNtM16Zd1CciV/zp87zMJH4wXSl
+         IQCA==
+X-Forwarded-Encrypted: i=1; AJvYcCVRazbeUXnkUdBcKS82msUV7WKywxEXRv/1Yj7ib49GsneaN82b7rEcxp7q7boG2fd9KgEWzvQV38+/zZSd@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz9fTIrA3t1YI4oo7DO19OROzhaCzP35OfBqG6Zn21JBRNfNiZX
+	/zhPndR1m2APLL0rDWeitXfqCcRd9+ZPPPyaXKdziRVRfGGR+BDG9onAdnS0qe7vd+CH3gynNw=
+	=
+X-Google-Smtp-Source: AGHT+IE/pkwOkH9gpTz/SBuNLKZB4tv6JFu6biVE5oxwhrNUKnmXYncr6SL+F14kZKDgOV7jBcW5hq8JMQ==
+X-Received: from pgbfq3.prod.google.com ([2002:a05:6a02:2983:b0:ad5:bda:6aef])
+ (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:d481:b0:21f:3abc:b9fc
+ with SMTP id d9443c01a7336-21f3abcbac0mr21818855ad.6.1738854133684; Thu, 06
+ Feb 2025 07:02:13 -0800 (PST)
+Date: Thu,  6 Feb 2025 15:02:12 +0000
+In-Reply-To: <mb61pwme55kuw.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20250127063526.76687-1-laoar.shao@gmail.com> <Z5eOIQ4tDJr8N4UR@pathway.suse.cz>
- <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com>
- <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz> <CALOAHbDwsZqo9inSLNV1FQV3NYx2=eztd556rCZqbRvEu+DDFQ@mail.gmail.com>
- <CAPhsuW4gYKHsmtHsBDUkx7a=apr_tSP_4aFWmmFNfqOJ+3GDGQ@mail.gmail.com>
- <CALOAHbDYFAntFbwMwGgnXkHh1audSoUwG1wFu_4e8P=c=hwZ0w@mail.gmail.com> <CAPhsuW4HsTab+w2r23bM52kcM1RBFBKP5ujVdDvxLE9OiqgMdA@mail.gmail.com>
-In-Reply-To: <CAPhsuW4HsTab+w2r23bM52kcM1RBFBKP5ujVdDvxLE9OiqgMdA@mail.gmail.com>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Thu, 6 Feb 2025 10:54:48 +0800
-X-Gm-Features: AWEUYZlSDMT40qCXMCOXCovx5qjIMu_uPCwIwpyaiGy-rEp5XExnQmswscAerxY
-Message-ID: <CALOAHbAJBwSYju3-XEQwy0O1DNPawuEgmhrV5ECTrL9J388yDw@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
-To: Song Liu <song@kernel.org>
-Cc: bpf <bpf@vger.kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
-	jpoimboe@kernel.org, jikos@kernel.org, joe.lawrence@redhat.com, 
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Mime-Version: 1.0
+References: <mb61pwme55kuw.fsf@kernel.org>
+X-Mailer: git-send-email 2.48.1.362.g079036d154-goog
+Message-ID: <20250206150212.2485132-1-wnliu@google.com>
+Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
+From: Weinan Liu <wnliu@google.com>
+To: puranjay@kernel.org
+Cc: indu.bhagat@oracle.com, irogers@google.com, joe.lawrence@redhat.com, 
+	jpoimboe@kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-toolchains@vger.kernel.org, 
+	live-patching@vger.kernel.org, mark.rutland@arm.com, peterz@infradead.org, 
+	roman.gushchin@linux.dev, rostedt@goodmis.org, will@kernel.org, 
+	wnliu@google.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 6, 2025 at 1:59=E2=80=AFAM Song Liu <song@kernel.org> wrote:
->
-> On Wed, Feb 5, 2025 at 6:43=E2=80=AFAM Yafang Shao <laoar.shao@gmail.com>=
- wrote:
-> >
-> > On Tue, Feb 4, 2025 at 5:53=E2=80=AFAM Song Liu <song@kernel.org> wrote=
-:
-> > >
-> > > On Mon, Feb 3, 2025 at 1:45=E2=80=AFAM Yafang Shao <laoar.shao@gmail.=
-com> wrote:
-> > > [...]
-> > > >
-> > > > If you=E2=80=99re managing a large fleet of servers, this issue is =
-far from negligible.
-> > > >
-> > > > >
-> > > > > > Can you provide examples of companies that use atomic replaceme=
-nt at
-> > > > > > scale in their production environments?
-> > > > >
-> > > > > At least SUSE uses it as a solution for its customers. No many pr=
-oblems
-> > > > > have been reported since we started ~10 years ago.
-> > >
-> > > We (Meta) always use atomic replacement for our live patches.
-> > >
-> > > >
-> > > > Perhaps we=E2=80=99re running different workloads.
-> > > > Going back to the original purpose of livepatching: is it designed =
-to address
-> > > > security vulnerabilities, or to deploy new features?
-> > > > If it=E2=80=99s the latter, then there=E2=80=99s definitely a lot o=
-f room for improvement.
-> > >
-> > > We only use KLP to fix bugs and security vulnerabilities. We do not u=
-se
-> > > live patches to deploy new features.
-> >
-> > +BPF
-> >
-> > Hello Song,
-> >
-> > Since bpf_fexit also uses trampolines, I was curious about what would
-> > happen if I attached do_exit() to fexit. Unfortunately, it triggers a
-> > bug in BPF as well. The BPF program is as follows:
-> >
-> > SEC("fexit/do_exit")
-> > int fexit_do_exit
-> > {
-> >     return 0;
-> > }
-> >
-> > After the fexit program exits, the trampoline is still left over:
-> >
-> > $ bpftool  link show  <<<< nothing output
-> > $ grep "bpf_trampoline_[0-9]" /proc/kallsyms
-> > ffffffffc04cb000 t bpf_trampoline_6442526459    [bpf]
->
-> I think we should first understand why the trampoline is not
-> freed.
+> After some debugging this is what I found:
+> 
+> devtmpfsd() calls devtmpfs_work_loop() which is marked '__noreturn' and has an
+> infinite loop. The compiler puts the `bl` to devtmpfs_work_loop() as the the
+> last instruction in devtmpfsd() and therefore on entry to devtmpfs_work_loop(),
+> LR points to an instruction beyond devtmpfsd() and this consfuses the unwinder.
+> 
+> ffff800080d9a070 <devtmpfsd>:
+> ffff800080d9a070:       d503201f        nop
+> ffff800080d9a074:       d503201f        nop
+> ffff800080d9a078:       d503233f        paciasp
+> ffff800080d9a07c:       a9be7bfd        stp     x29, x30, [sp, #-32]!
+> ffff800080d9a080:       910003fd        mov     x29, sp
+> ffff800080d9a084:       f9000bf3        str     x19, [sp, #16]
+> ffff800080d9a088:       943378e8        bl      ffff800081a78428 <devtmpfs_setup>
+> ffff800080d9a08c:       90006ca1        adrp    x1, ffff800081b2e000 <unique_processor_ids+0x3758>
+> ffff800080d9a090:       2a0003f3        mov     w19, w0
+> ffff800080d9a094:       912de021        add     x1, x1, #0xb78
+> ffff800080d9a098:       91002020        add     x0, x1, #0x8
+> ffff800080d9a09c:       97cd2a43        bl      ffff8000800e49a8 <complete>
+> ffff800080d9a0a0:       340000d3        cbz     w19, ffff800080d9a0b8 <devtmpfsd+0x48>
+> ffff800080d9a0a4:       2a1303e0        mov     w0, w19
+> ffff800080d9a0a8:       f9400bf3        ldr     x19, [sp, #16]
+> ffff800080d9a0ac:       a8c27bfd        ldp     x29, x30, [sp], #32
+> ffff800080d9a0b0:       d50323bf        autiasp
+> ffff800080d9a0b4:       d65f03c0        ret
+> ffff800080d9a0b8:       97f06526        bl      ffff8000809b3550 <devtmpfs_work_loop>
+> ffff800080d9a0bc:       00000000        udf     #0
+> ffff800080d9a0c0:       d503201f        nop
+> ffff800080d9a0c4:       d503201f        nop
+> 
+> find_fde() got pc=0xffff800080d9a0bc which is not in [sfde_func_start_address, sfde_func_size)
+> 
+> output for readelf --sframe for devtmpfsd()
+> 
+> func idx [51825]: pc = 0xffff800080d9a070, size = 76 bytes
+>     STARTPC           CFA       FP        RA
+>     ffff800080d9a070  sp+0      u         u
+>     ffff800080d9a07c  sp+0      u         u[s]
+>     ffff800080d9a080  sp+32     c-32      c-24[s]
+>     ffff800080d9a0b0  sp+0      u         u[s]
+>     ffff800080d9a0b4  sp+0      u         u
+>     ffff800080d9a0b8  sp+32     c-32      c-24[s]
+> 
+> The unwinder and all the related infra is assuming that the return address
+> will be part of a valid function which is not the case here.
+> 
+> I am not sure which component needs to be fixed here, but the following
+> patch(which is a hack) fixes the issue by considering the return address as
+> part of the function descriptor entry.
+> 
+> -- 8< --
+> 
+> diff --git a/kernel/sframe_lookup.c b/kernel/sframe_lookup.c
+> index 846f1da95..28bec5064 100644
+> --- a/kernel/sframe_lookup.c
+> +++ b/kernel/sframe_lookup.c
+> @@ -82,7 +82,7 @@ static struct sframe_fde *find_fde(const struct sframe_table *tbl, unsigned long
+>         if (f >= tbl->sfhdr_p->num_fdes || f < 0)
+>                 return NULL;
+>         fdep = tbl->fde_p + f;
+> -       if (ip < fdep->start_addr || ip >= fdep->start_addr + fdep->size)
+> +       if (ip < fdep->start_addr || ip > fdep->start_addr + fdep->size)
+>                 return NULL;
+> 
+>         return fdep;
+> @@ -106,7 +106,7 @@ static int find_fre(const struct sframe_table *tbl, unsigned long pc,
+>         else
+>                 ip_off = (int32_t)(pc - (unsigned long)tbl->sfhdr_p) - fdep->start_addr;
+> 
+> -       if (ip_off < 0 || ip_off >= fdep->size)
+> +       if (ip_off < 0 || ip_off > fdep->size)
+>                 return -EINVAL;
+> 
+>         /*
+> 
+> -- >8 --
+> 
+> Thanks,
+> Puranjay
 
-IIUC, the fexit works as follows,
+Thank you for reporting this issue.
+I just found out that Josh also intentionally uses '>' instead of '>=' for the same reason
+https://lore.kernel.org/lkml/20250122225257.h64ftfnorofe7cb4@jpoimboe/T/#m6d70a20ed9f5b3bbe5b24b24b8c5dcc603a79101
 
-  bpf_trampoline
-    + __bpf_tramp_enter
-       + percpu_ref_get(&tr->pcref);
-
-    + call do_exit()
-
-    + __bpf_tramp_exit
-       + percpu_ref_put(&tr->pcref);
-
-Since do_exit() never returns, the refcnt of the trampoline image is
-never decremented, preventing it from being freed.
-
->
-> > We could either add functions annotated as "__noreturn" to the deny
-> > list for fexit as follows, or we could explore a more generic
-> > solution, such as embedding the "noreturn" information into the BTF
-> > and extracting it when attaching fexit.
->
-> I personally don't think this is really necessary. It is good to have.
-> But a reasonable user should not expect noreturn function to
-> generate fexit events.
-
-If we don't plan to fix it, we should clearly document it to guide
-users and advise them against using it.
-
---
-Regards
-Yafang
+QQ, do we need to care the stacktrace after '__noreturn' function?
 
