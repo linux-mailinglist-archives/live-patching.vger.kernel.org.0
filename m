@@ -1,280 +1,114 @@
-Return-Path: <live-patching+bounces-1124-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1125-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 834A8A2B8C2
-	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 03:17:33 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7CA5BA2B918
+	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 03:31:23 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ADDC93A81F3
-	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 02:17:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 167E2166015
+	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 02:31:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 566F513B29F;
-	Fri,  7 Feb 2025 02:17:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B3307E0FF;
+	Fri,  7 Feb 2025 02:31:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dv6o8DO0"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FV2oqP0M"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E7772417D3
-	for <live-patching@vger.kernel.org>; Fri,  7 Feb 2025 02:17:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E367E9;
+	Fri,  7 Feb 2025 02:31:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738894643; cv=none; b=uYQQ4ZCTkRW1RF9RrDctHkEjsHRgp8FAXkgYI946J0k7xk8KFCyPk1X62AmVvEWf9FJtq3S+84EcNR6e1h5QfPjH8/f1Q99Fr0/kRd3w7U161bbmtZYGIGyD6Ew54kdbDK9dK3jZJ94Rtgsb0TzbSm3ISkrsCTDSAVp3qzF0Lp4=
+	t=1738895479; cv=none; b=cRfE1twlEN8kRDylhIe2NPSKeT3dArIr5gt/PYSFtVDsD0vQ+5fEZ4MkeQUDUDfzzgG93A391Vr8Aw8xI7tVFYxgA1CR1cHStuhPJKAOoHjg0cz1B/Zvoc71ue6x/SzzDdfG6Pt43AuPUGanz6dswPSdiT+3uImvLqC1yeDeC5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738894643; c=relaxed/simple;
-	bh=OK2f1GHVnPkQXWytQzK+OuMSuXq/qaQ3cDm9tJkms5g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FvNhW2a9teXdVHW4dv+yYvbNJkEkJq8JTiZ2WyzV6o+Dt7Qo3QyWpWYjWZtXZ1MUaV45ZzUl6Xhd0YGShu2RecsdsT6kuLbf2Yg6j/elRvOGemdvS6j1Qazyceh0K77moOgxvUkZ9jCFSRGKh1vLBfcPBRC7G5eRPnkiTzcLw3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dv6o8DO0; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-4679eacf2c5so15562081cf.0
-        for <live-patching@vger.kernel.org>; Thu, 06 Feb 2025 18:17:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738894639; x=1739499439; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mU8IVIT2unb4fCL4+F5hUPpSHuDlDzYBgB2+2Vs+ppM=;
-        b=Dv6o8DO0yUv7N3wHKc2pWjUgL+Fed/THRvMuvdK4v1Vetrk0eq1ZwCuXLH3GMyPX4I
-         noBPtGhTMLkjk3Ox6vVSaUSUOW0UMc0U0s8ZPU8+TDzWZnBmLHxyfFLILvSHdej8Wtsx
-         oAfoKgkb+gFaPrZ6UCxavPy35Okm+aM6pH46H743gcwMd8rLL8EdKN+h5luwWLPzN3sn
-         xtTzqPLqk0MDBN8suzFZd0zXVRretyvA44oAj/auzBx1yLZoyxjkvHtfq3l4Vh3nF8Av
-         JCYniHCz6sa/LPDsAhBDJWw1j8IUTuSFCZybfZQLEEeSxTJTspO3orNvt+S0BmCIxeTg
-         kVSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738894639; x=1739499439;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mU8IVIT2unb4fCL4+F5hUPpSHuDlDzYBgB2+2Vs+ppM=;
-        b=Tf/pu0Zd+zHX4LB2btr53s4Kz+Yj25JbniqUa3/q8EXLIzkBPxfDcgsJaX6T2lYhdS
-         44ZK3T2DgEfMc8Pa/j7Tej9iSSl3pregd1YXX6UM2cUZb7uaSl5WpDucgYUdor/WWJqW
-         IJ+v8hDAsoUqyf7WFbu0Rw9xGPgFC+N6Z+tuGVxxGwVg+X5v/Lumzmt8xhUk6ERnS+eX
-         CByTLjCvB/g7a0iNbDeCQdWLAzi1oQ5bIjZHIi5hmZEs8XbVQ7yofto05q5+TefLIb/3
-         k9SBGOGcF+/xqHeG/l/58rGt8Rshn3nbkNVUh5TWCqHOkb6BnrH15sjd1sTWuagsmqbs
-         e9WA==
-X-Forwarded-Encrypted: i=1; AJvYcCXb+1KlHrLqI1h3PdzBLV/18PSBBcF9qL5e4cQ34n7vuZulZEYbQngeMETv9ObZHWMncSvQ6ZsdKQUC1GpA@vger.kernel.org
-X-Gm-Message-State: AOJu0YzinUTw31gzYbBnQyGMrqXzhUI8NSOxv9vmWG6+9wVlqfPURb75
-	Q8N7yfLFO/9tC4DHMEQJ/K1QfoI/QsCfWgdYuYJf8xzxGLBRapsdKFQNQ6Iynfij6rCqJw7vK6W
-	y4KjkXZ/otU7n46u231vxIJuMxRI=
-X-Gm-Gg: ASbGncubuJxXtWJV8E96wYVDGgkjvNju4GM+XJR1v6QC8NLwFmCOw+GTj3AMf52Y4YL
-	NmPyZKrz9zRuuqiK60QNvf44lftutGqXZtWF1lI0NVQkNQVC9kVGvAHMW5M3klAEIIFNqk66zJy
-	c=
-X-Google-Smtp-Source: AGHT+IE1t5rPLSPv2Nx6aRf+aoUfSS5e84rmIbrwETl+zYA/ODQjxQmVpG6NbK3uDyeglt8XNsFTcOVZQCBHGYhNpTY=
-X-Received: by 2002:a05:6214:2621:b0:6d9:353b:a8e9 with SMTP id
- 6a1803df08f44-6e44561996dmr21827866d6.15.1738894639189; Thu, 06 Feb 2025
- 18:17:19 -0800 (PST)
+	s=arc-20240116; t=1738895479; c=relaxed/simple;
+	bh=v3Dwj5P8+6TcrtdFSb7zHWGNAfHPcBq2KJLBbk0zvfQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l9aFzNEtyPnJPL55jQNG0oFi4P0v6BRsxVt1gDJ1H92USoB4VcXeFXV7n2n8LrF9OxXnb5hvmjSo7oSH7pLgj4kB4h9w5oTmj9JwV3P2ilo8C2Fg1AN/fiigwsArNNyEdFWLT/vNTiYeNurEgnm7z9h0TPwtQuYIVMZi1zrue3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FV2oqP0M; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61EEDC4CEDD;
+	Fri,  7 Feb 2025 02:31:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1738895478;
+	bh=v3Dwj5P8+6TcrtdFSb7zHWGNAfHPcBq2KJLBbk0zvfQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FV2oqP0MBJ4++QdGDLK2ctjv8YQMU3FsbKmMVgqLKtwQ76eR1OO4+HAY3dK/lw6yQ
+	 p/nP+SprdEYINRhh32ZFYojju08I5b0DYJN6v90vr/5SIx294wtEXw6RvLf77FZbj/
+	 4ql5vhzi+HZPrtFB/QVFT4fCiBUVG0xfUJVXVIFvv8uk9Ogt9nsE/YT0nCb2u7M1bg
+	 kR3hXgKt23X4IYRVSBuO5fWnFStE+3EvXcO2B3WcJF7X81HvqpfR/6D/cCr/URsht0
+	 Q2BguXiK9odcjgXkU0ShiVd9kR6GOkR3S+M1fUFc+SgwlpwF/s3vB12WFeFYjN/CO3
+	 2j+YCS7iHERtg==
+Date: Thu, 6 Feb 2025 18:31:16 -0800
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Yafang Shao <laoar.shao@gmail.com>
+Cc: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 2/2] livepatch: Implement livepatch hybrid mode
+Message-ID: <20250207023116.wx4i3n7ks3q2hfpu@jpoimboe>
+References: <20250127063526.76687-1-laoar.shao@gmail.com>
+ <20250127063526.76687-3-laoar.shao@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250122085146.41553-1-laoar.shao@gmail.com> <Z5DpqC7sm5qCJFtj@pathway.suse.cz>
- <A250B752-FFBF-4A53-B981-FE6D9A9F5C14@gmail.com> <Z5zSmlRIv5qhuVja@pathway.suse.cz>
- <CALOAHbCjZFKS9enXhNF60uYckKT+LJcRJGYq4xU+RxawJm+eMw@mail.gmail.com> <Z6Tmqro6CSm0h-E3@pathway.suse.cz>
-In-Reply-To: <Z6Tmqro6CSm0h-E3@pathway.suse.cz>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Fri, 7 Feb 2025 10:16:43 +0800
-X-Gm-Features: AWEUYZkHt6_07G49WlouR51W5hH1sqSOvp7a-zigfJYgQoMlz6EVQjOdjZ2vpJQ
-Message-ID: <CALOAHbB=XF2+F3oGZqrGvP84DGaxWXREHbT_LNymgXR2OyNWzw@mail.gmail.com>
-Subject: Re: [PATCH] livepatch: Avoid hard lockup caused by klp_try_switch_task()
-To: Petr Mladek <pmladek@suse.com>
-Cc: zhang warden <zhangwarden@gmail.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
-	Jiri Kosina <jikos@kernel.org>, mbenes@suse.cz, joe.lawrence@redhat.com, 
-	live-patching@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20250127063526.76687-3-laoar.shao@gmail.com>
 
-On Fri, Feb 7, 2025 at 12:43=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrot=
-e:
->
-> On Wed 2025-02-05 16:39:11, Yafang Shao wrote:
-> > On Fri, Jan 31, 2025 at 9:39=E2=80=AFPM Petr Mladek <pmladek@suse.com> =
-wrote:
-> > >
-> > > On Fri 2025-01-31 21:22:13, zhang warden wrote:
-> > > >
-> > > >
-> > > > > On Jan 22, 2025, at 20:50, Petr Mladek <pmladek@suse.com> wrote:
-> > > > >
-> > > > > With this patch, any operation which takes the tasklist_lock migh=
-t
-> > > > > break klp_try_complete_transition(). I am afraid that this might
-> > > > > block the transition for a long time on huge systems with some
-> > > > > specific loads.
-> > > > >
-> > > > > And the problem is caused by a printk() added just for debugging.
-> > > > > I wonder if you even use a slow serial port.
-> > > > >
-> > > > > You might try to use printk_deferred() instead. Also you might ne=
-ed
-> > > > > to disable interrupts around the read_lock()/read_unlock() to
-> > > > > make sure that the console handling will be deferred after
-> > > > > the tasklist_lock gets released.
-> > > > >
-> > > > > Anyway, I am against this patch.
-> > > > >
-> > > > > Best Regards,
-> > > > > Petr
-> > > >
-> > > > Hi, Petr.
-> > > >
-> > > > I am unfamiliar with the function `rwlock_is_contended`, but it see=
-ms this function will not block and just only check the status of the rw_lo=
-ck.
-> > > >
-> > > > If I understand it right, the problem would raise from the `break` =
-which will stop the process of `for_each_process_thread`, right?
-> > >
-> > > You got it right. I am afraid that it might create a livelock
-> > > situation for the livepatch transition. I mean that the check
-> > > might almost always break on systems with thousands of processes
-> > > and frequently created/exited processes. It always has
-> > > to start from the beginning.
-> >
-> > It doesn=E2=80=99t start from the beginning, as tasks that have already
-> > switched over will be skipped.
->
-> To make it clear. The next klp_try_complete_transition() will start
-> from the beginning but it should be faster because it will quickly
-> skip already migrated processes. Right?
+On Mon, Jan 27, 2025 at 02:35:26PM +0800, Yafang Shao wrote:
+> The atomic replace livepatch mechanism was introduced to handle scenarios
+> where we want to unload a specific livepatch without unloading others.
+> However, its current implementation has significant shortcomings, making
+> it less than ideal in practice. Below are the key downsides:
+> 
+> - It is expensive
+> 
+>   During testing with frequent replacements of an old livepatch, random RCU
+>   warnings were observed:
+> 
+>   [19578271.779605] rcu_tasks_wait_gp: rcu_tasks grace period 642409 is 10024 jiffies old.
+>   [19578390.073790] rcu_tasks_wait_gp: rcu_tasks grace period 642417 is 10185 jiffies old.
+>   [19578423.034065] rcu_tasks_wait_gp: rcu_tasks grace period 642421 is 10150 jiffies old.
+>   [19578564.144591] rcu_tasks_wait_gp: rcu_tasks grace period 642449 is 10174 jiffies old.
+>   [19578601.064614] rcu_tasks_wait_gp: rcu_tasks grace period 642453 is 10168 jiffies old.
+>   [19578663.920123] rcu_tasks_wait_gp: rcu_tasks grace period 642469 is 10167 jiffies old.
+>   [19578872.990496] rcu_tasks_wait_gp: rcu_tasks grace period 642529 is 10215 jiffies old.
+>   [19578903.190292] rcu_tasks_wait_gp: rcu_tasks grace period 642529 is 40415 jiffies old.
+>   [19579017.965500] rcu_tasks_wait_gp: rcu_tasks grace period 642577 is 10174 jiffies old.
+>   [19579033.981425] rcu_tasks_wait_gp: rcu_tasks grace period 642581 is 10143 jiffies old.
+>   [19579153.092599] rcu_tasks_wait_gp: rcu_tasks grace period 642625 is 10188 jiffies old.
+>   
+>   This indicates that atomic replacement can cause performance issues,
+>   particularly with RCU synchronization under frequent use.
 
-Exactly, that=E2=80=99s precisely what I meant.
+Why does this happen?
 
->
-> It makes some sense. I agree that checking the stack is relatively
-> slow operation.
->
-> That said, beware that the full stack is checked only when the process
-> is in the kernel code: kthread or userspace process calling a syscall.
-> Other processes should be handled much faster. The ratio of these
-> processes depends on the type of the load. And I could imagine that
-> even checking the TIF_PATCH_PENDING might take a long time when
-> there are thousands of processes.
->
->
-> OK, let's make a step from a theory back to the practice:
->
-> You say that this patch helped and worked fine with your
-> workload.
->
-> It might be the best approach after all. It looks easier then
-> the hybrid model. And it might be needed even with the hybrid
-> model.
->
-> If I get it correctly, the email
-> https://lore.kernel.org/all/CALOAHbBZc6ORGzXwBRwe+rD2=3DYGf1jub5TEr989_Gp=
-K54P2o1A@mail.gmail.com/
-> says that you saw the hardlockup even with a relatively simple
-> livepatch. It modified "only" about 15 functions.
+> - Potential Risks During Replacement 
+> 
+>   One known issue involves replacing livepatched versions of critical
+>   functions such as do_exit(). During the replacement process, a panic
+>   might occur, as highlighted in [0]. Other potential risks may also arise
+>   due to inconsistencies or race conditions during transitions.
 
-That's correct. We=E2=80=99ve only modified 15 functions so far.
+That needs to be fixed.
 
->
-> My main concern is how to guarantee a forward progress. I would like
-> to make sure that klp_try_complete_transition() will eventually
-> check all processes.
->
-> I would modify the check to something like:
->
->         read_lock(&tasklist_lock);
->
->         timeout =3D jiffies + HZ;
->         proceed_pending_processes =3D 0;
->
->         for_each_process_thread(g, task) {
->                 /* check if this task has already switched over */
->                 if (task->patch_state =3D=3D klp_target_state)
->                         continue;
->
->                 proceed_pending_processes++;
->
->                 if (!klp_try_switch_task(task))
->                         complete =3D false;
->
->                 /*
->                  * Prevent hardlockup by not blocking tasklist_lock for t=
-oo long.
->                  * But guarantee the forward progress by making sure at l=
-east
->                  * some pending processes were checked.
->                  */
->                  if (rwlock_is_contended(&tasklist_lock) &&
->                     time_after(jiffies, timeout) &&
->                     proceed_pending_processes > 100) {
->                                 complete =3D false;
->                                 break;
->                 }
->         }
->
->         read_unlock(&tasklist_lock);
->
+> - Temporary Loss of Patching 
+> 
+>   During the replacement process, the old patch is set to a NOP (no-operation)
+>   before the new patch is fully applied. This creates a window where the
+>   function temporarily reverts to its original, unpatched state. If the old
+>   patch fixed a critical issue (e.g., one that prevented a system panic), the
+>   system could become vulnerable to that issue during the transition.
 
-Thanks for your suggestion. I'll deploy this change to our production
-servers and verify its effectiveness.
+Are you saying that atomic replace is not atomic?  If so, this sounds
+like another bug.
 
->
->
-> > Since the task->patch_state is set before the task is added to the
-> > task list and the child=E2=80=99s patch_state is inherited from the par=
-ent, I
-> > believe we can remove the tasklist_lock and use RCU instead, as
-> > follows:
-> >
-> > diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transitio=
-n.c
-> > index 30187b1d8275..1d022f983bbc 100644
-> > --- a/kernel/livepatch/transition.c
-> > +++ b/kernel/livepatch/transition.c
-> > @@ -399,11 +399,11 @@ void klp_try_complete_transition(void)
-> >          * Usually this will transition most (or all) of the tasks on a=
- system
-> >          * unless the patch includes changes to a very common function.
-> >          */
-> > -       read_lock(&tasklist_lock);
-> > +       read_rcu_lock();
-> >         for_each_process_thread(g, task)
-> >                 if (!klp_try_switch_task(task))
-> >                         complete =3D false;
-> > -       read_unlock(&tasklist_lock);
-> > +       read_rcu_unlock();
->
-> IMHO, this does not guarantee that we checked all processes in the
-> cycle.
->
-> I mean:
->
-> We already have a problem that tasklist_lock is not enough to
-> serialize livepatches modifying do_exit(). It creates a race window
-> when the process still might be scheduled but it is not longer visible
-> in the for_each_process_thread() cycle.
->
-> And using read_rcu_lock() will make the race window even bigger.
-> I mean:
->
->   + with read_lock(&tasklist_lock) the race window is limited by
->
->        + read_lock(&tasklist_lock) in klp_try_complete_transition()
->        + write_lock_irq(&tasklist_lock) in the middle of do_exit()
->
->   + with read_rcu_lock() the race window is unlimited
->
-> I mean that more processes might get removed from the list
-> when klp_try_complete_transition() is running when they
-> are not serialized via the tasklist_lock. As a result, more
-> processes might be scheduled without being seen
-> by for_each_process_thread() cycle.
->
-> Does it make sense?
-
-That makes sense. Thanks for the detailed explanation.
-
---
-Regards
-Yafang
+-- 
+Josh
 
