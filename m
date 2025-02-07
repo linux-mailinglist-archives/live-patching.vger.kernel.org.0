@@ -1,89 +1,93 @@
-Return-Path: <live-patching+bounces-1127-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1128-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B534AA2BF7C
-	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 10:36:54 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 12F8EA2C125
+	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 12:01:40 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 41B7E16461A
-	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 09:36:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4C39E3A72EE
+	for <lists+live-patching@lfdr.de>; Fri,  7 Feb 2025 11:01:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6D1A1DDC04;
-	Fri,  7 Feb 2025 09:36:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7732E1A2645;
+	Fri,  7 Feb 2025 11:01:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QbW8aKkx"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="PD45xRpi"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A88C81DDA31
-	for <live-patching@vger.kernel.org>; Fri,  7 Feb 2025 09:36:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2BC91A8F95
+	for <live-patching@vger.kernel.org>; Fri,  7 Feb 2025 11:01:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738920969; cv=none; b=FRH+Yf9Yan9kePNtDnocB72v2WVZFmJNZx8mhzbNxYCOXCllBwdj8MHFwXjFiknmCWuYvUDVn1xnrn2xg1COYwes+2U3WErMI5gNEeJN3dSdmHwWmVzTEemIA9gYNdjh/WHcTAAlA1+zANXgLZy+ovMkyek0SnIHt6qnJ7/nWf4=
+	t=1738926085; cv=none; b=bLjkcDWJl3qXFTF3iqxg3Gv7UMbbwuIgMPJUJwm5D9fy4E0uPUFhTbL7rf/5aANTvdLLeLV1tpkJS6oLkfLfLGbvmo9DVHoJIkbmw8V1xDhTHySynWn6n/wIRzCa6rjyA7siMvMC+mlwnwvY41CpIn3KawkqyicNA1nohOIOUCM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738920969; c=relaxed/simple;
-	bh=1NzutA7DJ1VwDjp8/CD7+1BalgjXyZf1dagvDXNqAPg=;
+	s=arc-20240116; t=1738926085; c=relaxed/simple;
+	bh=rmHBix0VMn7Pi7oBUbK00DY7eiej6iqdG6upOT1yMTE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NJDeV+ktBc+s/kWTIkRYs/jPVT26/FYQFlpLsIW6420EB9beZSU1GFFhyXWNMUmOF51C4XxfWzG4MwQ8dp89+V3iVR+nVnb0yDAfhZ85+2lqAFSMqXs11j+wtaQFbdp12k65uusrQaKUS8P9zvpWeZhBi7qCUHtcYkF3QCJ6hus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QbW8aKkx; arc=none smtp.client-ip=209.85.128.47
+	 Content-Type:Content-Disposition:In-Reply-To; b=VTtPZNbxAc9seKmLeRaumFl6v5u5Su1G4XWKEj9E1WbeuS8L5y5RWfPGhE0iQY3fgHIBNxCaaKeDcSzYlhU3eM+zr43k3EVSOX4f7YWARSFYTVuhfiQI9ru21HZyQlGaCaweSm/xRrUkzxOUGyiDQDd8r/5UEnlmHJVKNLog6hw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=PD45xRpi; arc=none smtp.client-ip=209.85.218.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-436341f575fso21247875e9.1
-        for <live-patching@vger.kernel.org>; Fri, 07 Feb 2025 01:36:07 -0800 (PST)
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-aaecf50578eso388009166b.2
+        for <live-patching@vger.kernel.org>; Fri, 07 Feb 2025 03:01:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1738920966; x=1739525766; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1738926081; x=1739530881; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=x4X06Qs9UvWbwZNdxFJb+Yx4PivfRYmx4jvXug+bNSc=;
-        b=QbW8aKkxCqk5dBrn5I2TAOCBtBrbfddxCoY0w7f1Q8bEP3VUJ9339ExE4aTWbS9z0U
-         QpXOQ2ODJAu2N2KaXbDO6Ond53+u8WST1XPN2CAv+DZfyTDUkxVESZQYgzDKjNxVDmQW
-         auxI5lyj4yJeHFrvy5FI9ZFE/+vI7FDnIWEKlf/MaoHgzFEGE9VQeb4sAuvkSooipD2H
-         Wb7JB9DAHlMDx7T7JvAZIR4eE80uM03qtqdXt/QpQPYtQb5EZxjDoAzI+tx6yC8QiGcv
-         9ZXuRGFHNNfe5xu2q06DiBhEELn87r4LxNvpnydEygo/NQ29JNqprd+Df2T6H9CZ0P8x
-         oikw==
+        bh=6h/5PIlrI9ky7BgA4zlnqX7ix8sdevWa3Gp0y4FQMFk=;
+        b=PD45xRpiPIN9emW0Og1Q+1PGVUmFoVaDcWHV8rpSHSVPZ/LgzYzyDYP1z7XGoAKnIq
+         CoH7eC2wIlA0dB2IYQZCnA6ts/PtClovWQT8yNXugrctbnYpj0hL5xMtWG6xO7yUZW4O
+         0SpN3PpBlBpjHl7FpmsZEByYj+YKOqvIN1wIYvkCdlm5GFVM77OBuk9cwrswTJf9V3nC
+         uFSWwpjWG7fFwjrXn42iDFm2rgTsvLmvO87Nz2ryjpN0NExErb1+tfnUhyiipCt/HSLF
+         7MEDKMurfyVHpAC+yknZN8+UNoFetGDNLaKiC5Q7qe63cceEhiHFRHNFGzoJ5iM9MDbF
+         ZbKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738920966; x=1739525766;
+        d=1e100.net; s=20230601; t=1738926081; x=1739530881;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=x4X06Qs9UvWbwZNdxFJb+Yx4PivfRYmx4jvXug+bNSc=;
-        b=rYptL3+VrVC4oehPvSrHYYHJKsLe5FdRkORBCNQ1dkQpV//AEXvmKLocW8p6x3PG9R
-         Jv+gJMofVqHczLV9jzVV/85Ikso1EfroEKBRD2IOUpD8AR6ioZC0leYR2v7IpPv2pYiv
-         9kef1+rmsNnwRTem+7RBY+/7uVPJrLAb28LchOAg+Dj0qv3ucICBzhyS9E4oGIJbGMw7
-         lBS5ROB8u3CwAam4Lh1sNTh5enFwel2n9V19uuJGG1scYQ0EpUxO+my88jHOgCcOmhru
-         aQrddoj8wdlDwkBC/Za+VZhtErGI9MYi0QQVZDCtmHSyqGc3WXixoPuONCP2OtrB1Kfl
-         PB8Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWNioCfYFeiDLOvlinmZFx0jP+OV4h2IMzyJRxbM+Cqs54VbG63eiMGRpQbhwYJRB9M4DE/vQiXPq0H2fAo@vger.kernel.org
-X-Gm-Message-State: AOJu0YyDSkNId0hEZFFpPewVUObBnitAc933QPKb+8cqwmtMtwWWkmS6
-	9faLWw+FubkFIPpOYqBMSUHxnYOw1M1/KK14xvANfVOY4ILTfxUJSmHBNz2p0LI=
-X-Gm-Gg: ASbGncuQmnJ6aKSqU2f9EocAIikjopV19d8zRM17unlPYbfLLiKU7DIy9w4C2cos+Mi
-	A0y+vYME7Kl2biAreSMowVRs7xtpKW5YPyu5FFnR2d9ts56PVTOvtI1aGH0VYBOq4JzVSS5X5It
-	BmNzcsFpFcULLV8YER4iaT/lvaLE1nMyrHxcc3oexJqTNm+C6IyP3iA1SguGVOUtDL0ousSoo7w
-	ciGiqhUQZh9+im7klX92+KCqRm8eYomGb8y5kfPbP9o9v+BBizdCyFkf51EpEFShqNP7KeXtRjN
-	6sS9C/1+rGOMlTTlAw==
-X-Google-Smtp-Source: AGHT+IH17/7eHOlSl4vMAf78uUWL2wft34rlCJFu4fOsZi2jI5IZNntK9gohDx77x/ddwWEyQw9tYA==
-X-Received: by 2002:a05:6000:1ac7:b0:38a:1ba4:d066 with SMTP id ffacd0b85a97d-38dc90f0e6fmr1849860f8f.27.1738920965911;
-        Fri, 07 Feb 2025 01:36:05 -0800 (PST)
+        bh=6h/5PIlrI9ky7BgA4zlnqX7ix8sdevWa3Gp0y4FQMFk=;
+        b=a22w5OEZjqAYtBm4Jh+ZTjCrJouUIjQpZ9GUkL5GsgIng1jGNpJGREuAySk1hOlFqc
+         +Y8ZrytxreHPzpOhGMzmMDvC1S/d7D1+1GSobaI8QEB6PINYSOQR2O+lG5IILLfnzJNt
+         PhN5sCNiR+0VfYxZ+HcMgMmiqFGO4PlDcRUUMZM9BaIcP0isCG7OueeetC/hTwJ7nKRw
+         tNEgcIEAE/iq9rntiO/496ReNZLVfCalecd/ESITh6i8NSsQVMPRdwLagJqiRSL7++zP
+         CeukG728+491TyQL2tEq39M85B+JZkgDg2MQkJmjfxDumumJe1ROLALLv5ECk9GmmP1q
+         sE4Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXoUL3wFDY+hv8zlIofmmFTNQwUiTId795lQruMN+TC2i2ZHom9J5Pr2Z7BdqouPh5HHk64Hxgqny5Vo/N3@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxf7N0WDMbiwGvjfqq7a+19pw9cCPDcMCpon51N+Ec86q3IJ/ip
+	Hvgf47sT/j7rjGg7tBhJivTEVQ6eSnhRLKhO4dMP0XZlnmjqi+X5o+YhYapGyVcEb2NXvSRH3ij
+	W
+X-Gm-Gg: ASbGncvns0Iw1vSKyf5JVYdzJUVNbO7WX0sMsEKBh72zyYpZw6HsrunEQyl2ePRoQfb
+	XwgDBc9ToPTSdkjsaJG/cPB5q7FLgCTk8ACSuW6MJMrx3nXyymgdA392JdsMm/USj6DFDsw7e81
+	reGEMAqP2z5nE1OjwUrl0BzrZkqTHAS+sWVeAjDppN0nNYffyjr3l2O9FFnvUVUW15FwURJclwq
+	9TOixTWMBjbIMT+VGYrkfeUKTmPs8H3mI0XCnDOHIs1Q7ZqAiPe79F3GMZuNf3FPLwMfhZwUJY2
+	XDko8WBJ3dnnyhbwMg==
+X-Google-Smtp-Source: AGHT+IHfEY78ODJ1x4v4fN69gtSMwD8+ryIikpRKJykDCfTez8UZVPsmZ/tL7lZWaKh8ITIQXGrmzQ==
+X-Received: by 2002:a17:907:3f90:b0:ab7:7c42:4381 with SMTP id a640c23a62f3a-ab789c3ae92mr259347066b.43.1738926080821;
+        Fri, 07 Feb 2025 03:01:20 -0800 (PST)
 Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38dbdd1af32sm4073697f8f.16.2025.02.07.01.36.05
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab78da1f953sm78536866b.59.2025.02.07.03.01.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Feb 2025 01:36:05 -0800 (PST)
-Date: Fri, 7 Feb 2025 10:36:03 +0100
+        Fri, 07 Feb 2025 03:01:20 -0800 (PST)
+Date: Fri, 7 Feb 2025 12:00:59 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: Yafang Shao <laoar.shao@gmail.com>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, jikos@kernel.org, mbenes@suse.cz,
+Cc: Miroslav Benes <mbenes@suse.cz>, jpoimboe@kernel.org, jikos@kernel.org,
 	joe.lawrence@redhat.com, live-patching@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] livepatch: Implement livepatch hybrid mode
-Message-ID: <Z6XUA7D0eU_YDMVp@pathway.suse.cz>
+Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
+Message-ID: <Z6Xn61Bjm8pMd8zX@pathway.suse.cz>
 References: <20250127063526.76687-1-laoar.shao@gmail.com>
- <20250127063526.76687-3-laoar.shao@gmail.com>
- <20250207023116.wx4i3n7ks3q2hfpu@jpoimboe>
- <CALOAHbB8j6RrpJAyRkzPx2U6YhjWEipRspoQQ_7cvQ+M0zgdXg@mail.gmail.com>
+ <Z5eOIQ4tDJr8N4UR@pathway.suse.cz>
+ <CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com>
+ <alpine.LSU.2.21.2501311414281.10231@pobox.suse.cz>
+ <CALOAHbDwsZqo9inSLNV1FQV3NYx2=eztd556rCZqbRvEu+DDFQ@mail.gmail.com>
+ <Z6IQi4wpph0dnSD7@pathway.suse.cz>
+ <CALOAHbBktE_jYd5zSzvmbo_K7PkFDXrykTqV1-ZDQju64EYPyg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -93,114 +97,298 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALOAHbB8j6RrpJAyRkzPx2U6YhjWEipRspoQQ_7cvQ+M0zgdXg@mail.gmail.com>
+In-Reply-To: <CALOAHbBktE_jYd5zSzvmbo_K7PkFDXrykTqV1-ZDQju64EYPyg@mail.gmail.com>
 
-On Fri 2025-02-07 11:16:45, Yafang Shao wrote:
-> On Fri, Feb 7, 2025 at 10:31 AM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> > On Mon, Jan 27, 2025 at 02:35:26PM +0800, Yafang Shao wrote:
-> > > - Temporary Loss of Patching
-> > >
-> > >   During the replacement process, the old patch is set to a NOP (no-operation)
-> > >   before the new patch is fully applied. This creates a window where the
-> > >   function temporarily reverts to its original, unpatched state. If the old
-> > >   patch fixed a critical issue (e.g., one that prevented a system panic), the
-> > >   system could become vulnerable to that issue during the transition.
+On Wed 2025-02-05 14:16:42, Yafang Shao wrote:
+> On Tue, Feb 4, 2025 at 9:05 PM Petr Mladek <pmladek@suse.com> wrote:
 > >
-> > Are you saying that atomic replace is not atomic?  If so, this sounds
-> > like another bug.
+> > On Mon 2025-02-03 17:44:52, Yafang Shao wrote:
+> > > On Fri, Jan 31, 2025 at 9:18 PM Miroslav Benes <mbenes@suse.cz> wrote:
+> > > >
+> > > > > >
+> > > > > >   + What exactly is meant by frequent replacements (busy loop?, once a minute?)
+> > > > >
+> > > > > The script:
+> > > > >
+> > > > > #!/bin/bash
+> > > > > while true; do
+> > > > >         yum install -y ./kernel-livepatch-6.1.12-0.x86_64.rpm
+> > > > >         ./apply_livepatch_61.sh # it will sleep 5s
+> > > > >         yum erase -y kernel-livepatch-6.1.12-0.x86_64
+> > > > >         yum install -y ./kernel-livepatch-6.1.6-0.x86_64.rpm
+> > > > >         ./apply_livepatch_61.sh  # it will sleep 5s
+> > > > > done
+> > > >
+> > > > A live patch application is a slowpath. It is expected not to run
+> > > > frequently (in a relative sense).
+> > >
+> > > The frequency isn’t the main concern here; _scalability_ is the key issue.
+> > > Running livepatches once per day (a relatively low frequency) across all of our
+> > > production servers (hundreds of thousands) isn’t feasible. Instead, we need to
+> > > periodically run tests on a subset of test servers.
+> >
+> > I am confused. The original problem was a system crash when
+> > livepatching do_exit() function, see
+> > https://lore.kernel.org/r/CALOAHbA9WHPjeZKUcUkwULagQjTMfqAdAg+akqPzbZ7Byc=qrw@mail.gmail.com
 > 
-> >From my understanding, there’s a window where the original function is
-> not patched.
+> Why do you view this patchset as a solution to the original problem?
 
-This is a misunderstanding.
+You discovered the hardlockup warnings when trying to reproduce the
+original problem. At least, you mentioned this at
+https://lore.kernel.org/r/20250122085146.41553-1-laoar.shao@gmail.com
 
-> klp_enable_patch
-> + klp_init_patch
->    + if (patch->replace)
->           klp_add_nops(patch);  <<<< set all old patches to nop
-
-1. The "nop" entry is added into the _new_ (to-be-enabled) livepatch,
-   see klp_add_nops(patch). The parameter is the _newly_ enabled patch.
-
-2. The "nop" entries are added only for functions which are currently
-   livepatched but they are not longer livepatched in the new
-   livepatch, see:
-
-static int klp_add_object_nops(struct klp_patch *patch,
-			       struct klp_object *old_obj)
-{
-[...]
-	klp_for_each_func(old_obj, old_func) {
-		func = klp_find_func(obj, old_func);
-		if (func)
-			continue;	<------ Do not allocate nop
-						when the fuction is
-						implemeted in the new
-						livepatch.
-
-		func = klp_alloc_func_nop(old_func, obj);
-		if (!func)
-			return -ENOMEM;
-	}
-
-	return 0;
-}
+And using the hybrid module would allow to livepatch do_exit() only
+once and do not touch it any longer. It is not the right solution
+but it would be a workaround.
 
 
-> + __klp_enable_patch
->    + klp_patch_object
->       + klp_patch_func
->          + ops = klp_find_ops(func->old_func);
->             + if (ops)
->                    // add the new patch to the func_stack list
->                    list_add_rcu(&func->stack_node, &ops->func_stack);
+> > The rcu watchdog warning was first mentioned in this patchset.
+> > Do you see rcu watchdog warning in production or just
+> > with this artificial test, please?
 > 
+> So, we shouldn’t run any artificial tests on the livepatch, correct?
+> What exactly is the issue with these test cases?
+
+Some tests might be too artificial. They might find problems which
+do not exist in practice.
+
+Disclaimer: I do not say that this is the case. You actually prove
+	later in this mail that the hardlockup warning happen
+	even in production.
+
+Anyway, if an artificial test finds a potential problem and the fix is
+complicated then we need to decide if it is worth it.
+
+It does not make sense to complicate the code too much when
+the fixed problem does not happen in practice.
+
+  + Too complicated code might introduce regressions which are
+    more serious than the original problem.
+
+  + Too complicated code increases the maintenance cost. It is
+    more complicated to add new features or fix bugs.
+
+
+> > > > If you stress it like this, it is quite
+> > > > expected that it will have an impact. Especially on a large busy system.
+> > >
+> > > It seems you agree that the current atomic-replace process lacks scalability.
+> > > When deploying a livepatch across a large fleet of servers, it’s impossible to
+> > > ensure that the servers are idle, as their workloads are constantly varying and
+> > > are not deterministic.
+> >
+> > Do you see the scalability problem in production, please?
 > 
-> klp_ftrace_handler
-> + func = list_first_or_null_rcu(&ops->func_stack, struct klp_func
+> Yes, the livepatch transition was stalled.
 
-3. You omitted this important part of the code:
+Good to know.
 
-	if (unlikely(func->transition)) {
-		patch_state = current->patch_state;
-		if (patch_state == KLP_TRANSITION_UNPATCHED) {
-			/*
----->			 * Use the previously patched version of the function.  
----->			 * If no previous patches exist, continue with the
----->			 * original function.
-			 */
-			func = list_entry_rcu(func->stack_node.next,
-					      struct klp_func, stack_node);
+> 
+> > And could you prove that it was caused by livepatching, please?
+> 
+> When the livepatch transition is stalled, running `kpatch list` will
+> display the stalled information.
+
+OK.
+
+> > > The challenges are very different when managing 1K servers versus 1M servers.
+> > > Similarly, the issues differ significantly between patching a single
+> > > function and
+> > > patching 100 functions, especially when some of those functions are critical.
+> > > That’s what scalability is all about.
+> > >
+> > > Since we transitioned from the old livepatch mode to the new
+> > > atomic-replace mode,
+> >
+> > What do you mean with the old livepatch mode, please?
+> 
+> $ kpatch-build -R
+
+I am not familiar with kpatch-build. OK, I see the following at
+https://github.com/dynup/kpatch/blob/master/kpatch-build/kpatch-build
+
+echo "		-R, --non-replace       Disable replace patch (replace is on by default)" >&2
+
+> >
+> > Did you allow to install more livepatches in parallel?
+> 
+> No.
+
+I guess that there is a misunderstanding. I am sorry my wording was
+not clear enough.
+
+By "installing" more livepatches in parallel I meant to "have enabled"
+more livepatches in parallel. It is possible only when you do not
+use the atomic replace.
+
+By other words, if you use "kpatch-build -R" then you could have
+enabled more livepatches in parallel.
 
 
-	The condition "patch_state == KLP_TRANSITION_UNPATCHED" might
-	be a bit misleading.
+> > What was the motivation to switch to the atomic replace, please?
+> 
+> This is the default behavior of kpatch [1] after upgrading to a new version.
+> 
+> [1].  https://github.com/dynup/kpatch/tree/master
 
-	The state "KLP_TRANSITION_UNPATCHED" means that it can't use
-	the code from the "new" livepatch => it has to fallback
-	to the previously used code => previous livepatch.
+OK. I wonder if the atomic replace simplified some actions for you.
+
+I ask because the proposed "hybrid" model is very similar to the "old"
+model which did not use the atomic replace.
+
+What are the advantages of the "hybrid" model over the "old" model, please?
 
 
-> + if (func->nop)
->        goto unlock;
-> + ftrace_regs_set_instruction_pointer(fregs, (unsigned long)func->new_func);
+> > > our SREs have consistently reported that one or more servers become
+> > > stalled during
+> > > the upgrade (replacement).
+> >
+> > What is SRE, please?
+> 
+> >From the wikipedia : https://en.wikipedia.org/wiki/Site_reliability_engineering
 
-> Before the new atomic replace patch is added to the func_stack list,
-> the old patch is already set to nop.
-      ^^^ 
-     
-     The nops are set in the _new_ patch for functions which will
-     not longer get livepatched, see the commit e1452b607c48c642
-     ("livepatch: Add atomic replace") for more details.
-     
-> If klp_ftrace_handler() is
-> triggered at this point, it will effectively do nothing—in other
-> words, it will execute the original function.
-> I might be wrong.
+Good to know.
 
-Fortunately, you are wrong. This would be a serious violation of
-the consistency model and livepatches modifying some semantic would
-blow up systems.
+> > Could you please show some log from a production system?
+> 
+> When the SREs initially reported that the livepatch transition was
+> stalled, I simply advised them to try again. However, after
+> experiencing these crashes, I dug deeper into the livepatch code and
+> realized that scalability is a concern. As a result, periodically
+> replacing an old livepatch triggers RCU warnings on our production
+> servers.
+> 
+> [Wed Feb  5 10:56:10 2025] livepatch: enabling patch 'livepatch_61_release6'
+> [Wed Feb  5 10:56:10 2025] livepatch: 'livepatch_61_release6':
+> starting patching transition
+> [Wed Feb  5 10:56:24 2025] rcu_tasks_wait_gp: rcu_tasks grace period
+> 1126113 is 10078 jiffies old.
+> [Wed Feb  5 10:56:38 2025] rcu_tasks_wait_gp: rcu_tasks grace period
+> 1126117 is 10199 jiffies old.
+> [Wed Feb  5 10:56:52 2025] rcu_tasks_wait_gp: rcu_tasks grace period
+> 1126121 is 10047 jiffies old.
+> [Wed Feb  5 10:56:57 2025] livepatch: 'livepatch_61_release6': patching complete
+
+I guess that this happens primary because there are many processes
+running in kernel code:
+
+       + many processes => long task list
+       + in kernel code => need to check stack
+
+I wondered how much it is caused by livepatching do_exit() which
+takes tasklist_lock. The idea was:
+
+	+ The processes calling do_exit() are blocked at
+	  write_lock_irq(&tasklist_lock) when
+	  klp_try_complete_transition() takes the tasklist_lock.
+
+	+ These processes can't be transitioned because do_exit()
+	  is on the stack => more klp_try_complete_transition()
+	  rounds is needed.
+
+	  => livepatching do_exit() reducess the chance of
+	     klp_try_complete_transition() succcess.
+
+	Well, it should not be that big problem because the next
+	 klp_try_complete_transition() should be much faster.
+	 It will skip already transitioned processes quickly.
+
+       Resume: I think that livepatching of do_exit() should not be the main
+	 	problem for the stall.
+
+
+> PS: You might argue again about the frequency. If you believe this is
+> just a frequency issue, please suggest a suitable frequency.
+
+I do not know. The livepatch transition might block some processes.
+It is a kind of stress for the system. Similar to another
+housekeeping operations.
+
+It depends on the load and the amount and type of livepatched
+functions. It might take some time until the system recovers
+from the stress and the system load drops back to normal.
+
+If you create the stress (livepatch transition) too frequently
+and the system does not get chance to recover in between the
+stress situations then the bad effects might accumulate
+and might be much worse.
+
+I have no idea if it is the case here. The rule of thumb would be:
+
+  + If you see the hardlockup warning _only_ when running the stress
+    test "while true: do apply_livepatch ; done;" then
+    the problem might be rather theoretical.
+
+  + If you see the hardlockup warning on production systems where
+    the you apply a livepatch only occasionally (one per day)
+    then the problem is real and we should fix it.
+
+
+> > > > > > > Other potential risks may also arise
+> > > > > > >   due to inconsistencies or race conditions during transitions.
+> > > > > >
+> > > > > > What inconsistencies and race conditions you have in mind, please?
+> > > > >
+> > > > > I have explained it at
+> > > > > https://lore.kernel.org/live-patching/Z5DHQG4geRsuIflc@pathway.suse.cz/T/#m5058583fa64d95ef7ac9525a6a8af8ca865bf354
+> > > > >
+> > > > >  klp_ftrace_handler
+> > > > >       if (unlikely(func->transition)) {
+> > > > >           WARN_ON_ONCE(patch_state == KLP_UNDEFINED);
+> > > > >   }
+> > > > >
+> > > > > Why is WARN_ON_ONCE() placed here? What issues have we encountered in the past
+> > > > > that led to the decision to add this warning?
+> > > >
+> > > > A safety measure for something which really should not happen.
+> > >
+> > > Unfortunately, this issue occurs during my stress tests.
+> >
+> > I am confused. Do you see the above WARN_ON_ONCE() during your
+> > stress test? Could you please provide a log?
+> 
+> Could you pls read my replyment seriously ?
+
+This is pretty hars and offending after so many details I have already
+provided!
+
+It is easy to miss a detail in a flood of long mails. Also I am
+working on many other things in parallel.
+
+> https://lore.kernel.org/live-patching/Z5DHQG4geRsuIflc@pathway.suse.cz/T/#m5058583fa64d95ef7ac9525a6a8af8ca865bf354
+
+Ah, I have missed that you triggered this exact WARNING. It is great.
+It confirms the theory about the race in do_exit(). I mean that
+the transition finishes early because the processes in do_exit()
+are not longer visible in the tasklist.
+
+
+> > > > > > The main advantage of the atomic replace is simplify the maintenance
+> > > > > > and debugging.
+> >
+> > If you have problems with the atomic replace then you might stop using
+> > it completely and just install more livepatches in parallel.
+> 
+> Why do we need to install livepatches in parallel if atomic replace is disabled?
+> We only need to install the additional new livepatch. Parallel
+> installation is only necessary at boot time.
+
+This is misunderstanding. By "installed" livepatches in parallel I
+mean "enabled" livepatches in parallel, aka, without atomic replace.
+
+If you have problems with atomic replace, you might stop using it.
+Honestly, I do not see that big advantage in the hybrid model
+over the non-atomic-replace model.
+
+That said, I think that the hybrid mode will not prevent the
+hardlockup warning. It seems that you have reproduced the hardlockup
+even with a relatively simple livepatch, see
+https://lore.kernel.org/all/CALOAHbBZc6ORGzXwBRwe+rD2=YGf1jub5TEr989_GpK54P2o1A@mail.gmail.com/
+
+IMHO, we should rather detect and break the stall in
+klp_try_complete_transition(). I mean to go the way explored in
+the thread
+https://lore.kernel.org/all/20250122085146.41553-1-laoar.shao@gmail.com/
 
 Best Regards,
 Petr
