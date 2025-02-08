@@ -1,73 +1,73 @@
-Return-Path: <live-patching+bounces-1139-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1140-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CC53BA2D449
-	for <lists+live-patching@lfdr.de>; Sat,  8 Feb 2025 07:42:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id AF803A2D705
+	for <lists+live-patching@lfdr.de>; Sat,  8 Feb 2025 16:47:31 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DAACA3AA8DD
-	for <lists+live-patching@lfdr.de>; Sat,  8 Feb 2025 06:42:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AADA83A7DC9
+	for <lists+live-patching@lfdr.de>; Sat,  8 Feb 2025 15:47:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7342F1A314C;
-	Sat,  8 Feb 2025 06:42:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 916CC2475F4;
+	Sat,  8 Feb 2025 15:47:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HvsqJvHC"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C7RUtNAF"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DECD7157E6B;
-	Sat,  8 Feb 2025 06:42:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB731ACEC2;
+	Sat,  8 Feb 2025 15:47:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738996925; cv=none; b=ukHx2G38CIrBbJVyJevTv97UQZR0Sbp79yc1ufzZTvODwXJ3U2QYEvj1GqXbmwuVL3O5uPa+iM+T51sjZBpwGsj3hEpIZYSJqCsD+IiMDhYqINlH3nl+O1uHx9KpsHxJH6drV6fdiFWPp1JHNgCNkd3FBa07D6owuIsN3mH112k=
+	t=1739029646; cv=none; b=hzkKhzJhaFZ1WQ+P+Uzza1bSqmogBqVgX7IZKU/EL/p0IBySRjEM7C1UawfQ46yljTeVKrQIO7JurWYRHX2yeh2aK5tbUMqQfgi2bkbsi7dxqxhZlHG34Jou+zLr5RhgRPiu7s2/egMTJU5suz/v7SsaXqDEjV7wgQx8zhqa2j0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738996925; c=relaxed/simple;
-	bh=wWMaU7kgqaQKoYCnX/AS8gqZVoCu0I4JE4OFgye+g8E=;
+	s=arc-20240116; t=1739029646; c=relaxed/simple;
+	bh=q+MDvtLlIi69K27ReX3lDDeT3LJLFUyE4Y1+7Huku2o=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WOo+Z7gIQIa+AHx7i1352f9D/JrU27ZYtThcuq/c0AjdapTbMqzKg7QCJZN1WlS9wRIcb05U9Ib3E+ybz+We0koV/rDB5WS+Z+INIWl1px4OWfWuff5wcdwz+2KEvGxam5tYOZunTopwryPMlggyEk84rAEnTutDRocFLmQEeHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HvsqJvHC; arc=none smtp.client-ip=209.85.219.45
+	 To:Cc:Content-Type; b=A3vPS6/sSl/UpJJQlEdsq2fKqpNcwdntG4vmuBDIEmFbkfJhL0UvnORgxgo7hcm/V0w8QllRumQK+0dGA21p68SGY5VfVrwBjYhUo4gmmeeVXRGs6QrJIzopR/foseQs8XLfEhPZZoomBEZivMdazOf8yRPHOjRu0nIAwDItFhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C7RUtNAF; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6e442b79de4so18806156d6.2;
-        Fri, 07 Feb 2025 22:42:03 -0800 (PST)
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4362f61757fso29297355e9.2;
+        Sat, 08 Feb 2025 07:47:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1738996923; x=1739601723; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1739029643; x=1739634443; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KNoF24EWj8YqX5r+Yb0JvKHiF3XwnsqNhDQYoay6GVM=;
-        b=HvsqJvHCYRRcgEhpZVy6X7g2H4ET4jp0UXf3e/O4cHeXbO1Ke51NDcsD4Y8t6Jts93
-         RTj1A4h63aGdha8NHOkDvw4LrHoUYOvahqJOrCaZw2EDZpFu85HYFZ18zAF297aIlBaY
-         V3Q5kG0GyyNSgfFR8JR6pV2hV6RhLbc2Ma35YqZZSUQRKVo97fX8Z7MIet81kAp2nfmX
-         a40yeTUl3aCTiIN7kaefhqeKyh+IG45GbMEXxkWYuirNnGEdGk86Mpi9XmnTc8JSqmdK
-         jojXLoXQcPNRpOKPFrDusUeLP3TGMz+/BLSEcMywRAu/qM8V0yPkOICOU/19oq1FLDEW
-         prbQ==
+        bh=4Ucm5nxe8cgExY3vq78pW2gU4Ws9xivfjS2fHeRhYTY=;
+        b=C7RUtNAF2QE3MngF0Ifhi9i9YnNw5keGDk0rF+wdb++ZIxVB0L/j3jSGahYbMUv6S9
+         MbKoNEi3u7W2VHOTlgm7EN5SeSa3ghAaJwAuv9uMtqmk36s6xygRi1funrIZsz79FY3j
+         I1sgDESFeCNEMs/M09vVusLUykilZubNxnJOt+XAGBQV1LGvYzMRp9cYDwHgGiScdAT2
+         x2o/VLxZmS8LRuKQ4vRgGVVNWgDnaalyvFmxO7ExSN6jt+BLiJ8oT8TupRHC7hkHopVn
+         w0+VK2cKjdQnxtnIjk9Bs3hHFGL7k+0ZDJHgzY2byYGQ6/Hj4v7MGlo7x+P31FwO8IY/
+         kaGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738996923; x=1739601723;
+        d=1e100.net; s=20230601; t=1739029643; x=1739634443;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=KNoF24EWj8YqX5r+Yb0JvKHiF3XwnsqNhDQYoay6GVM=;
-        b=rnbYILwK8v6Ax7f6su67vswc6h7RhuJQF+tH5kXDAfk5HW268k64I7S9hZATLzyoNA
-         O6Mtk2PLK0wsan4e8qKUMarX/yjBPN5++ecS8bAahoRE8EsxZrgNbjbf8g+qChnkXjNR
-         QfveaZiazqktsMwUaZcCXdnJ2Ou3nnQBVAcKSPRWrfLTf23M6Z8IfklRc9ycwo0wizDV
-         0CFL6DrN4+VyiWSlh9Qo+FdgqI6o/nnqEZIzurJ6wr1WZoh0ejqUndYb/2Nc43C9+g5F
-         SQruL7MtBptN9nm8m76HiBQpJ7Wnwxx6bpWaH0yV8p6PpxBSVHTtoSh3uHT1v1zn8Iwy
-         I+sQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVP0GQfukhZOG146+5VfTvJVpYjHwD+9gAzX5fJIIuizuWG5XJuljSGLEN4eTk369SoMmVkpi7CfsupEPItvg==@vger.kernel.org, AJvYcCVe/KQozHTLNBPHhU5DPQxC9am1O+8hClj0t6/xNQmAFrAZOsMxTrmQhypqxycC6uuX6Hz6MVtdaeJKsTM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfevUmOZ5YYyhXCIGBlxa8edjfv8MnqJ88oWf+0VVN405uBvLA
-	iTGq51iCMCHp11KowcgcBMYS4pEgoY2Q3F0PlWmedm3zLANhSCpK8zEM117AxJ52Au91efMz4wb
-	nwYSNuMVTMt7Ale06mHzBhW0AXpc=
-X-Gm-Gg: ASbGncuxwNC7K0ayhjln+w+1mpK11DBEQ8fIa90JyT5R6ro1s9594zXnlAquEypDjxO
-	Xazk/M2C5A1dXkrUnlpp+XEE2dNBhylmB4/Mg6krimwcDEEFjmwNkV+ik9vhmvDsquNf+Mlvcvk
-	M=
-X-Google-Smtp-Source: AGHT+IEs9HDzxbSnf4IuE2Us6jRZq5uN6GtBF34aMoCTWAhmW49kkqa8vONjcSMbO5sJv9M9Po/b4dEo6KUDYdx+FNc=
-X-Received: by 2002:a05:6214:c6e:b0:6d8:9e16:d08e with SMTP id
- 6a1803df08f44-6e445684b70mr70874766d6.26.1738996922769; Fri, 07 Feb 2025
- 22:42:02 -0800 (PST)
+        bh=4Ucm5nxe8cgExY3vq78pW2gU4Ws9xivfjS2fHeRhYTY=;
+        b=MGvZRlYPgLeLAbP0WXKmYqIsCjy/DOePz/3azZBXA6RQnWThfnYG7IucgogfqkbgSc
+         XyJkFudORRp+lRW1TuDjlNeSGwVStioJfh/Z5fCKfhJkwsQDG01QAKKZG4E+6B0nuE10
+         eRkMzEODOpmKK6OWpX65xxtl2w1Ws3dp9TAna+UQaKFX1eSpceOwXk/cAJNcLvw/rCbA
+         WEgks1RqTuKFg7eWOE0GHo0ur1b26fLsa2sIzXo2+FyDbsbM4kLT/SUIeNRpb2LeIF3l
+         aI0SJU4riDV0bl+d5VnicoLQPD8YvT60otdS5LXKnz8jbqo7xYdLIbvvEps37c6vyOAV
+         Wwrg==
+X-Forwarded-Encrypted: i=1; AJvYcCUZMNqFy8uuDtNTBHEMuwKUpM908gkeif3Dkn7VjpNxRxdjyr6FEi8cpIi0/soHcgONJeoVmejyGmvCh0YkAw==@vger.kernel.org, AJvYcCVnPggbLtR2UhxJbmeORsFaxVwSktfPSUD+SWIvbOjcRbf4VqACI3tL5LgkFZUWV1/GlS5YtqaITobkEaUX@vger.kernel.org, AJvYcCWgKCrUpP+s8IhtATWBAq5/zOSPXxRYQKx73aOaOeN03L0T2QGmqGGFjUI5KEYdLss/874=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwjemRxTIy9qUnyvsv5b4XOruhUoz5RMoYOQNnjIcVbwLiX97ny
+	1cGC8GcwAZZFbJoj+shIOf0hV7QuovROYx6m9FR3r5BQik32IQ3o5GyCoY9qkAdVlUKW9AsyLGu
+	1doA79psUayKKPNrNdkm1C+yxmhw=
+X-Gm-Gg: ASbGncsZmkr8xlh0NFQRtvrEyxOqzDxu5qLCpsFQlJNRhu5sTVcsS+jM88ktyqb8eKj
+	5uOgi2Qij3ogV4SQgfZhcLnUhwUtZIh04a8HL8X8HQrpBQGJN6PsKRWfpOwc5ETpKWlu252mzt0
+	rL7bUoYIeiOhUb6XEX50f1h7v+bCx3
+X-Google-Smtp-Source: AGHT+IHhaqyd4g185PU4eVAqjVQtrJsSiS+LXstK8Loa3UCPWLCPxC+cz3OYe2OCF/ugN6bwdBMmPNV9TnSir4OMJvg=
+X-Received: by 2002:a05:600c:3b8e:b0:42c:b9c8:2bb0 with SMTP id
+ 5b1f17b1804b1-4392497c946mr53277355e9.4.1739029642917; Sat, 08 Feb 2025
+ 07:47:22 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -80,51 +80,64 @@ References: <20250127063526.76687-1-laoar.shao@gmail.com> <Z5eOIQ4tDJr8N4UR@path
  <CAPhsuW4gYKHsmtHsBDUkx7a=apr_tSP_4aFWmmFNfqOJ+3GDGQ@mail.gmail.com>
  <CALOAHbDYFAntFbwMwGgnXkHh1audSoUwG1wFu_4e8P=c=hwZ0w@mail.gmail.com>
  <CAPhsuW4HsTab+w2r23bM52kcM1RBFBKP5ujVdDvxLE9OiqgMdA@mail.gmail.com>
- <CALOAHbAJBwSYju3-XEQwy0O1DNPawuEgmhrV5ECTrL9J388yDw@mail.gmail.com> <CAPhsuW51E4epDCrdNcQCG+SzHiyGhE+AocjmXoD-G0JExs9N1A@mail.gmail.com>
-In-Reply-To: <CAPhsuW51E4epDCrdNcQCG+SzHiyGhE+AocjmXoD-G0JExs9N1A@mail.gmail.com>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Sat, 8 Feb 2025 14:41:26 +0800
-X-Gm-Features: AWEUYZnkfqwAOyDcshbUwDrxk7zHdHKhEWMZwGV_f1rXNLE-APUdHuKjOXI0J5I
-Message-ID: <CALOAHbAaCbvr=F6PBJ+gnQa1WNidELzZW-P2_HmBsZ1tJd6FFg@mail.gmail.com>
+ <CALOAHbAJBwSYju3-XEQwy0O1DNPawuEgmhrV5ECTrL9J388yDw@mail.gmail.com>
+ <CAPhsuW51E4epDCrdNcQCG+SzHiyGhE+AocjmXoD-G0JExs9N1A@mail.gmail.com> <CALOAHbAaCbvr=F6PBJ+gnQa1WNidELzZW-P2_HmBsZ1tJd6FFg@mail.gmail.com>
+In-Reply-To: <CALOAHbAaCbvr=F6PBJ+gnQa1WNidELzZW-P2_HmBsZ1tJd6FFg@mail.gmail.com>
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Sat, 8 Feb 2025 07:47:12 -0800
+X-Gm-Features: AWEUYZlDgwJ7w9RtugurSHUaVGNWz4hZIXfuHiwIgOVVJOukfqJCOGpHVpr1kvs
+Message-ID: <CAADnVQJZCE-Rh4xghLrruY8DW00cRUq9-ct6d=qfKk8Yc+8=pQ@mail.gmail.com>
 Subject: Re: [RFC PATCH 0/2] livepatch: Add support for hybrid mode
-To: Song Liu <song@kernel.org>
-Cc: bpf <bpf@vger.kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
-	jpoimboe@kernel.org, jikos@kernel.org, joe.lawrence@redhat.com, 
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Yafang Shao <laoar.shao@gmail.com>
+Cc: Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>, 
+	Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
+	Jiri Kosina <jikos@kernel.org>, Joe Lawrence <joe.lawrence@redhat.com>, 
+	live-patching@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 7, 2025 at 2:01=E2=80=AFAM Song Liu <song@kernel.org> wrote:
+On Fri, Feb 7, 2025 at 10:42=E2=80=AFPM Yafang Shao <laoar.shao@gmail.com> =
+wrote:
 >
-> On Wed, Feb 5, 2025 at 6:55=E2=80=AFPM Yafang Shao <laoar.shao@gmail.com>=
- wrote:
-> [...]
-> > > I think we should first understand why the trampoline is not
-> > > freed.
+> On Fri, Feb 7, 2025 at 2:01=E2=80=AFAM Song Liu <song@kernel.org> wrote:
 > >
-> > IIUC, the fexit works as follows,
+> > On Wed, Feb 5, 2025 at 6:55=E2=80=AFPM Yafang Shao <laoar.shao@gmail.co=
+m> wrote:
+> > [...]
+> > > > I think we should first understand why the trampoline is not
+> > > > freed.
+> > >
+> > > IIUC, the fexit works as follows,
+> > >
+> > >   bpf_trampoline
+> > >     + __bpf_tramp_enter
+> > >        + percpu_ref_get(&tr->pcref);
+> > >
+> > >     + call do_exit()
+> > >
+> > >     + __bpf_tramp_exit
+> > >        + percpu_ref_put(&tr->pcref);
+> > >
+> > > Since do_exit() never returns, the refcnt of the trampoline image is
+> > > never decremented, preventing it from being freed.
 > >
-> >   bpf_trampoline
-> >     + __bpf_tramp_enter
-> >        + percpu_ref_get(&tr->pcref);
-> >
-> >     + call do_exit()
-> >
-> >     + __bpf_tramp_exit
-> >        + percpu_ref_put(&tr->pcref);
-> >
-> > Since do_exit() never returns, the refcnt of the trampoline image is
-> > never decremented, preventing it from being freed.
+> > Thanks for the explanation. In this case, I think it makes sense to
+> > disallow attaching fexit programs on __noreturn functions. I am not
+> > sure what is the best solution for it though.
 >
-> Thanks for the explanation. In this case, I think it makes sense to
-> disallow attaching fexit programs on __noreturn functions. I am not
-> sure what is the best solution for it though.
+> There is a tools/objtool/noreturns.h. Perhaps we could create a
+> similar noreturns.h under kernel/bpf and add all relevant functions to
+> the fexit deny list.
 
-There is a tools/objtool/noreturns.h. Perhaps we could create a
-similar noreturns.h under kernel/bpf and add all relevant functions to
-the fexit deny list.
+Pls avoid copy paste if possible.
+Something like:
 
---
-Regards
-Yafang
+BTF_SET_START(fexit_deny)
+#define NORETURN(fn) BTF_ID(func, fn)
+#include "../../tools/objtool/noreturns.h"
+
+Should work?
+
+Josh,
+maybe we should move noreturns.h to some common location?
 
