@@ -1,105 +1,142 @@
-Return-Path: <live-patching+bounces-1167-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1168-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 96E9EA335A0
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 03:52:09 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 13CB2A33789
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 06:50:00 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 42F9F166BF6
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 02:52:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE81A168450
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 05:49:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 913DA1F8EEF;
-	Thu, 13 Feb 2025 02:52:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69992206F3E;
+	Thu, 13 Feb 2025 05:49:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UIpuCeCm"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bl9XPFIH"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6177523BE;
-	Thu, 13 Feb 2025 02:52:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B80E7206F22
+	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 05:49:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739415124; cv=none; b=R1h8fsUp6faHDA1Dz9bWM4eoiedjlrGAG6cvo9rvLFmV5HcExNfeoiRctJUV6MGZ9KF/MsTgQvSHKF3P3j+RzvPECftgbyzUt8BwTVurOcEvZle0svIXT9ccbmn6O5krlK3Ka8tAYsM71KQawbx1P3nR1a8Cl0/Cql1KlcwPhzQ=
+	t=1739425792; cv=none; b=lN3v9jeJcdasK6CIW6uf59DEsEh3picZPTPNOgIMJZ6exoeAblCfxguFUEABhrflsTqmH4BXvYaHLvw3TRRiDT+CvpvtYq56StV/pAZhUl36gBIcVBTm6fZzq1aVpkOHhDF2t7OY6ND0iEbGsnpJdmSAEujU4sDA9Q6OS2wiP40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739415124; c=relaxed/simple;
-	bh=NVMAadp03PD66sbMdEmmFgCNxo+6578DA85rU6KYTFQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jJ9x+HG5b0uqKP6pjwq35NWMnZuOvXE4/L7MzhXwJHIlcviiYzFZp/DDqyGkzjO+jeAtFA7FzTt+0JIFS/SXxl6f43ZHxoPbdQADMpT1fUom532uxLBRy5zI/1vuqWouAccqFbzpRBJZMcPygSppTIuA8q86slE/hJ9LVFGxTB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UIpuCeCm; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35861C4CEDF;
-	Thu, 13 Feb 2025 02:52:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739415123;
-	bh=NVMAadp03PD66sbMdEmmFgCNxo+6578DA85rU6KYTFQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UIpuCeCmfDQNXF2h/LSrWpY3SgAnMNet4mDkuOZypViJd1h8MtN86CKN5X62zTvvv
-	 gN0VKC24fSoNgOGHgc8Dual8YCPopwfdKw0nSyq+eMglDZ5ny9V1eehxYworSgAH/m
-	 Q7gKblgjGszFiQBZiRMpjxdtmPUg6aQrDF6qIm8oWZ8h4i4K4D5XTyXVJFFSACwnVm
-	 Yxbwdh30hnb/2rr285EV91PUSlTRdt69OsPhf+Xy/JN/WmYhxeEzKKzj3GBiqQlqGI
-	 rAtXeCq/NfYb0J8kGaS9YpU1dj9gDSz0kn7JrZXRPnPJJn1pmppfIXXhmXwqQEBItB
-	 z53rdeuSTBzrQ==
-Date: Wed, 12 Feb 2025 18:52:01 -0800
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Song Liu <song@kernel.org>
-Cc: Indu Bhagat <indu.bhagat@oracle.com>, Weinan Liu <wnliu@google.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev,
-	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>,
-	linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org,
-	live-patching@vger.kernel.org, joe.lawrence@redhat.com,
-	linux-arm-kernel@lists.infradead.org,
-	Puranjay Mohan <puranjay@kernel.org>
-Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
-Message-ID: <20250213025201.tyo3jcp4gcivydyd@jpoimboe>
-References: <20250127213310.2496133-1-wnliu@google.com>
- <CAPhsuW6S1JPn0Dp+bhJiSVs9iUv7v7HThBSE85iaDAvw=_2TUw@mail.gmail.com>
- <00fa304d-84bf-4fca-9b9a-f3b56cd97424@oracle.com>
- <CAPhsuW4ct6W_4B0LFEjLePH1pAeNm4h8ePuQ3HcSoknXhQWN0w@mail.gmail.com>
+	s=arc-20240116; t=1739425792; c=relaxed/simple;
+	bh=X4/hY43lBe5BOzKs2/P88v79xDm8GMSdtwyv2lBpcIk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kfN7uqTrAnrso3ntDa4bwQ7NJwQqzo5SDHiI8NSwXjSMuPjVbstuUj/6VRpu15yTHu8yaj7odrlXDSXV/sTsGNdHykby+OV5yMAABXv512wEnBIZZB7Sd6CcVR4PpAJOYrZCZAMxzHElJUX093wukNLo9Zc1E8IJa3cwHukQRdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bl9XPFIH; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-6e65be7d86fso7009086d6.1
+        for <live-patching@vger.kernel.org>; Wed, 12 Feb 2025 21:49:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1739425789; x=1740030589; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7ySMiB3B+dSZmEmRFzXD0kwW7pQNBbBizRWZtHLRUJ0=;
+        b=Bl9XPFIH0NbZ5ATRzuquXCrPO/CgM5hx3S3Tz5soUp3JGr8X2nSvRZHlTrnICARxpB
+         MxBl2a9Bf+5mao4PIO+baoxMosG8l6DRrIGcacj5419fqCi5SxjiKJ4ZSwFmVN5FZJkF
+         fh10avq+CUQNmkeMc3fl3hayuMSgyI0fcBS2Dnv524A8h6ehvB1ktNKO7J99iAgASr+N
+         lHnDH2yNhhICwpj1Jca1bIKg4rO0luXef1X/B0DwDGnMSapTtKRm4l8rv4x5NI7FldXV
+         TIe23jgp9ldYfuURLeK8cWYlP28b/PdmCP4rYnCFNaPElo2rFsi/FwYoGU4zXfj9HXYh
+         SC5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739425789; x=1740030589;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7ySMiB3B+dSZmEmRFzXD0kwW7pQNBbBizRWZtHLRUJ0=;
+        b=B4Fgp1ctaBcAbsqfYZdZKgxPBt8QK0dfmo44s5rytgpyKDkmUwWy1vIWGBMLXN/TVf
+         ygjp9CxVo2uKzSP1Kf6Tf/5D+o4lRt2qfUerDxkReeE0cEOC2nEkEbFm61W4w9nYrWcb
+         ziF6tP4mT7wIuwpAlRYmKqZZxXHhnyAfkhoais/VFgsG+njZP+X6kHZHH+Gk4nWDWV89
+         mDCVjIgJaHW34K/hL4nRSwOghVOSwSuiblBwFTE8vrvqyWlLL1fnencFRtrkEHUMTVi0
+         HkVjVJLUw+84qHcMrDLbq1K0M9Xv/RD7hqPGmlddBjaT9eHYX9oyp+1v5DQLemu7Eiwe
+         /jEg==
+X-Forwarded-Encrypted: i=1; AJvYcCV+F9CIwhnxmQY85dIbl8BDaS6qCB48zRFf8YtBpJc1e1I7T00piqlXYM83SqNuGHUayH+DJh8RoDNTtzLS@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx9JYMbxtvN6z5NwhHfoXJHDNnM6jzQoURlqjSeSJQzpgxO6upd
+	jg3r6JKcsZFuAJbjHh/5Aq5BZvrPKK8gO3wINTlMyRdgNEZNRSA3dYFIxOsKaz4DyJYDZsQx8f7
+	lgAo0pMNwMCoTVDdZk15q80gYrxc=
+X-Gm-Gg: ASbGncsuZCWhu5Ju3cOj2UVJB1Ws9mueiSIkjaArTYNAxzgZEA+DEpH4vAcdAC0jp9V
+	GlxVOxOPuTbtw65vRlYixzetSwmRPFSl3lPfj9ALkDLtD2KSuQLda5v5PiA4FMwxkcns7RSSvT0
+	w=
+X-Google-Smtp-Source: AGHT+IGlMY2p5FMb0qBCklic0myYjveu+UawAF5MCP/36+6U5GPeQFw7YvyLA+6FQ9Dsc16VZSadzsdQbf97NqyElMQ=
+X-Received: by 2002:a05:6214:20cc:b0:6e6:5a83:dcf5 with SMTP id
+ 6a1803df08f44-6e65c9040acmr29300546d6.21.1739425789579; Wed, 12 Feb 2025
+ 21:49:49 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPhsuW4ct6W_4B0LFEjLePH1pAeNm4h8ePuQ3HcSoknXhQWN0w@mail.gmail.com>
+References: <20250211062437.46811-1-laoar.shao@gmail.com> <20250211062437.46811-2-laoar.shao@gmail.com>
+ <Z6yZSBxbLBktQaXP@pathway.suse.cz>
+In-Reply-To: <Z6yZSBxbLBktQaXP@pathway.suse.cz>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Thu, 13 Feb 2025 13:49:13 +0800
+X-Gm-Features: AWEUYZkGqd2hm3xKGfzu7_ghmR2QWMUCtKuHbJ30TNUIn_xGi1_gJrkvzSfMHZE
+Message-ID: <CALOAHbCBQQkNqB2Km2nD8d9GCZfh1gM+Cd0GdD0DSaWPXKZ-mw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] livepatch: Add comment to clarify klp_add_nops()
+To: Petr Mladek <pmladek@suse.com>
+Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, 
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 12, 2025 at 06:40:33PM -0800, Song Liu wrote:
-> On Wed, Feb 12, 2025 at 4:10 PM Indu Bhagat <indu.bhagat@oracle.com> wrote:
+On Wed, Feb 12, 2025 at 8:51=E2=80=AFPM Petr Mladek <pmladek@suse.com> wrot=
+e:
+>
+> On Tue 2025-02-11 14:24:35, Yafang Shao wrote:
+> > Add detailed comments to clarify the purpose of klp_add_nops() function=
+.
+> > These comments are based on Petr's explanation[0].
 > >
-> > On 2/12/25 3:32 PM, Song Liu wrote:
-> > > I run some tests with this set and my RFC set [1]. Most of
-> > > the test is done with kpatch-build. I tested both Puranjay's
-> > > version [3] and my version [4].
-> > >
-> > > For gcc 14.2.1, I have seen the following issue with this
-> > > test [2]. This happens with both upstream and 6.13.2.
-> > > The livepatch loaded fine, but the system spilled out the
-> > > following warning quickly.
-> > >
+> > Link: https://lore.kernel.org/all/Z6XUA7D0eU_YDMVp@pathway.suse.cz/ [0]
+> > Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Cc: Petr Mladek <pmladek@suse.com>
+> > ---
+> >  kernel/livepatch/core.c | 3 +++
+> >  1 file changed, 3 insertions(+)
 > >
-> > In presence of the issue
-> > https://sourceware.org/bugzilla/show_bug.cgi?id=32666, I'd expect bad
-> > data in SFrame section.  Which may be causing this symptom?
-> >
-> > To be clear, the issue affects loaded kernel modules.  I cannot tell for
-> > certain - is there module loading involved in your test ?
-> 
-> The KLP is a module, I guess that is also affected?
-> 
-> During kpatch-build, we added some logic to drop the .sframe section.
-> I guess this is wrong, as we need the .sframe section when we apply
-> the next KLP. However, I don't think the issue is caused by missing
-> .sframe section.
+> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> > index 0cd39954d5a1..5b2a52e7c2f6 100644
+> > --- a/kernel/livepatch/core.c
+> > +++ b/kernel/livepatch/core.c
+> > @@ -604,6 +604,9 @@ static int klp_add_object_nops(struct klp_patch *pa=
+tch,
+> >   * Add 'nop' functions which simply return to the caller to run
+> >   * the original function. The 'nop' functions are added to a
+> >   * patch to facilitate a 'replace' mode.
+> > + *
+> > + * The 'nop' entries are added only for functions which are currently
+> > + * livepatched but are no longer included in the new livepatch.
+> >   */
+>
+> The new comment makes perfect sense. But I would re-shuffle the text a bi=
+t
+> to to make it more clear that it is used only in the 'replace' mode.
+> Something like:
+>
+> /*
+>  * Add 'nop' functions which simply return to the caller to run the origi=
+nal
+>  * function.
+>  *
+>  * They are added only when the atomic replace mode is used and only for
+>  * functions which are currently livepatched but are no longer included
+>  * in the new livepatch.
+>  */
 
-Right, it looks like it unwound through the patch module just fine.
+Thanks for your suggestion. I=E2=80=99ll make the change in the next versio=
+n.
 
--- 
-Josh
+--
+Regards
+Yafang
 
