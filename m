@@ -1,58 +1,64 @@
-Return-Path: <live-patching+bounces-1166-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1167-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2A864A3359B
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 03:47:56 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 96E9EA335A0
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 03:52:09 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id AFB7C1887131
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 02:48:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 42F9F166BF6
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 02:52:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E56978F37;
-	Thu, 13 Feb 2025 02:47:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 913DA1F8EEF;
+	Thu, 13 Feb 2025 02:52:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NI471y76"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UIpuCeCm"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2790B35947
-	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 02:47:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6177523BE;
+	Thu, 13 Feb 2025 02:52:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739414871; cv=none; b=kgdXNMNoS1kLUl/zCj/hIiPqI8swUWc8X/y1P3hG6xSO1JXmc1qyV6QDDuajGlIuOyA9YXjrEYT59oNVRPLNOTi9FWqxtRwgeohHoI6PHt2nPGHuAZSMU/UuLAwKCfD6hc9Nn687qHmlWtC7QuoggH8l363xJw03i3g4+yjDN8E=
+	t=1739415124; cv=none; b=R1h8fsUp6faHDA1Dz9bWM4eoiedjlrGAG6cvo9rvLFmV5HcExNfeoiRctJUV6MGZ9KF/MsTgQvSHKF3P3j+RzvPECftgbyzUt8BwTVurOcEvZle0svIXT9ccbmn6O5krlK3Ka8tAYsM71KQawbx1P3nR1a8Cl0/Cql1KlcwPhzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739414871; c=relaxed/simple;
-	bh=agX7U1SPz0ruuJQdt696BsO/oGxHevg0jCSyDs326pk=;
+	s=arc-20240116; t=1739415124; c=relaxed/simple;
+	bh=NVMAadp03PD66sbMdEmmFgCNxo+6578DA85rU6KYTFQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s6MX1npZej2oDcHsR/nwohDHT8SMgnJqBBIb6y/cXd6wYsJgxV3e4/r2cwqXas2yuk294BLW7eaEPjVfGsMwL124798UqFg35Q0cItDQ4aSQ60Odt1gDLVbrlVIs87gMRtJFjruItPS25G2B8Z5y2tyGDjSdWHX+QIlofYdCxSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NI471y76; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C073C4CEDF;
-	Thu, 13 Feb 2025 02:47:50 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=jJ9x+HG5b0uqKP6pjwq35NWMnZuOvXE4/L7MzhXwJHIlcviiYzFZp/DDqyGkzjO+jeAtFA7FzTt+0JIFS/SXxl6f43ZHxoPbdQADMpT1fUom532uxLBRy5zI/1vuqWouAccqFbzpRBJZMcPygSppTIuA8q86slE/hJ9LVFGxTB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UIpuCeCm; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35861C4CEDF;
+	Thu, 13 Feb 2025 02:52:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739414870;
-	bh=agX7U1SPz0ruuJQdt696BsO/oGxHevg0jCSyDs326pk=;
+	s=k20201202; t=1739415123;
+	bh=NVMAadp03PD66sbMdEmmFgCNxo+6578DA85rU6KYTFQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NI471y76WdBPxdvR//yxzVqBxGxsLH8jlb069feNbzNPiXUB6pXfxavB4OmoqfujC
-	 NZr1vVxj8odh2BQPEWtCP2ZtTvmaPUYOtgYBAdco8MnVFjPNVMyflKiKYHebZnXODB
-	 x9r4X/eWvWyFctjM5GXfuTdvL41kPmcqf/SdJz7kibk3HQvD2YO4KuAeNa7QegWPVm
-	 D6GlRCnneF+4qPL8BHkaOME699daIIquxRdDs7ZR37AZqzjpl6Gh6oxLsYJCc7akpO
-	 NF4XWCLjCiobaxAIWE7VpovlqvX0RH81E/ufeThZB4glbVsvNop09eikhGjNc7IA3+
-	 hndQUFfQ7n1Tg==
-Date: Wed, 12 Feb 2025 18:47:48 -0800
+	b=UIpuCeCmfDQNXF2h/LSrWpY3SgAnMNet4mDkuOZypViJd1h8MtN86CKN5X62zTvvv
+	 gN0VKC24fSoNgOGHgc8Dual8YCPopwfdKw0nSyq+eMglDZ5ny9V1eehxYworSgAH/m
+	 Q7gKblgjGszFiQBZiRMpjxdtmPUg6aQrDF6qIm8oWZ8h4i4K4D5XTyXVJFFSACwnVm
+	 Yxbwdh30hnb/2rr285EV91PUSlTRdt69OsPhf+Xy/JN/WmYhxeEzKKzj3GBiqQlqGI
+	 rAtXeCq/NfYb0J8kGaS9YpU1dj9gDSz0kn7JrZXRPnPJJn1pmppfIXXhmXwqQEBItB
+	 z53rdeuSTBzrQ==
+Date: Wed, 12 Feb 2025 18:52:01 -0800
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Yafang Shao <laoar.shao@gmail.com>
-Cc: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org
-Subject: Re: [PATCH 2/3] livepatch: Avoid blocking tasklist_lock too long
-Message-ID: <20250213024748.2sgwoltfvinb5rop@jpoimboe>
-References: <20250211062437.46811-1-laoar.shao@gmail.com>
- <20250211062437.46811-3-laoar.shao@gmail.com>
- <20250212004009.ijs4bdbn6h55p7xd@jpoimboe>
- <CALOAHbDsSsMzuOaHX2ZzgD3bJTPgMEp1E_S=vERHaTV11KrVJQ@mail.gmail.com>
- <CALOAHbDEBqZyDvSSv+KTFVR3owkjfawCQ-fT9pC1fMHNGPnG+g@mail.gmail.com>
+To: Song Liu <song@kernel.org>
+Cc: Indu Bhagat <indu.bhagat@oracle.com>, Weinan Liu <wnliu@google.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev,
+	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>,
+	linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org,
+	live-patching@vger.kernel.org, joe.lawrence@redhat.com,
+	linux-arm-kernel@lists.infradead.org,
+	Puranjay Mohan <puranjay@kernel.org>
+Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
+Message-ID: <20250213025201.tyo3jcp4gcivydyd@jpoimboe>
+References: <20250127213310.2496133-1-wnliu@google.com>
+ <CAPhsuW6S1JPn0Dp+bhJiSVs9iUv7v7HThBSE85iaDAvw=_2TUw@mail.gmail.com>
+ <00fa304d-84bf-4fca-9b9a-f3b56cd97424@oracle.com>
+ <CAPhsuW4ct6W_4B0LFEjLePH1pAeNm4h8ePuQ3HcSoknXhQWN0w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -62,34 +68,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALOAHbDEBqZyDvSSv+KTFVR3owkjfawCQ-fT9pC1fMHNGPnG+g@mail.gmail.com>
+In-Reply-To: <CAPhsuW4ct6W_4B0LFEjLePH1pAeNm4h8ePuQ3HcSoknXhQWN0w@mail.gmail.com>
 
-On Wed, Feb 12, 2025 at 07:54:21PM +0800, Yafang Shao wrote:
-> Before the newly forked task is added to the task list, it doesn’t
-> execute any code and can always be considered safe during the KLP
-> transition. Therefore, we could replace klp_copy_process() with
-> klp_init_process(), where we simply set patch_state to
-> KLP_TRANSITION_IDLE, as shown below:
+On Wed, Feb 12, 2025 at 06:40:33PM -0800, Song Liu wrote:
+> On Wed, Feb 12, 2025 at 4:10 PM Indu Bhagat <indu.bhagat@oracle.com> wrote:
+> >
+> > On 2/12/25 3:32 PM, Song Liu wrote:
+> > > I run some tests with this set and my RFC set [1]. Most of
+> > > the test is done with kpatch-build. I tested both Puranjay's
+> > > version [3] and my version [4].
+> > >
+> > > For gcc 14.2.1, I have seen the following issue with this
+> > > test [2]. This happens with both upstream and 6.13.2.
+> > > The livepatch loaded fine, but the system spilled out the
+> > > following warning quickly.
+> > >
+> >
+> > In presence of the issue
+> > https://sourceware.org/bugzilla/show_bug.cgi?id=32666, I'd expect bad
+> > data in SFrame section.  Which may be causing this symptom?
+> >
+> > To be clear, the issue affects loaded kernel modules.  I cannot tell for
+> > certain - is there module loading involved in your test ?
 > 
-> --- a/kernel/fork.c
-> +++ b/kernel/fork.c
-> @@ -2544,7 +2544,9 @@ __latent_entropy struct task_struct *copy_process(
->                 p->exit_signal = args->exit_signal;
->         }
+> The KLP is a module, I guess that is also affected?
 > 
-> -       klp_copy_process(p);
-> +       // klp_init_process(p);
-> +       clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
-> +       child->patch_state = KLP_TRANSITION_IDLE;
-> 
->         sched_core_fork(p);
-> 
-> Some additional changes may be needed, such as removing
-> WARN_ON_ONCE(patch_state == KLP_TRANSITION_IDLE) in
-> klp_ftrace_handler().
+> During kpatch-build, we added some logic to drop the .sframe section.
+> I guess this is wrong, as we need the .sframe section when we apply
+> the next KLP. However, I don't think the issue is caused by missing
+> .sframe section.
 
-Oops, I managed to miss this email before my reply.  Looks like we had a
-similar idea :-)
+Right, it looks like it unwound through the patch module just fine.
 
 -- 
 Josh
