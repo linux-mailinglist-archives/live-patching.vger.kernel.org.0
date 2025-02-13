@@ -1,149 +1,166 @@
-Return-Path: <live-patching+bounces-1169-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1170-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3D37AA33792
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 06:52:29 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7E2BEA33797
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 06:54:41 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B9A483A1853
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 05:52:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F187167B51
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 05:54:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A587206F09;
-	Thu, 13 Feb 2025 05:52:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B453C206F3E;
+	Thu, 13 Feb 2025 05:54:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gYMvtdHB"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LYUTBNOl"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2DF6204F85
-	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 05:52:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F15FA2063D1
+	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 05:54:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739425945; cv=none; b=st5nOwOOU9KCwZKvWrtLoOWmWtr/FU5Zvv56apTeciGgWrQJJgOnfgSoNx1JjOXIGwKwiDzGlQ7oWzvmVzZFa3uhxhTEpmrTqLVs3Ip1zMU9/3clrMg+DT4H1lU59Dy/Ydu5N5WUEQdQmO9Ls3s0Gjc1Fo32elc2BbW7KqhBDOU=
+	t=1739426071; cv=none; b=qI4hpY8qt2hcUilosky0O08SJXemoZ+JIYBpEJcdgNpd9FMHTeqA0AzRNlY2WvYm57mMMjRi4kWhjq/1Brx1CGnkKU7xyk8ZdX4/Z5KnwLsKjBF1VnZel3pmzV4dEeyQx1RALWH5nPPy87Z6qkMzlmchkKYVqdcRkPY/TVls04A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739425945; c=relaxed/simple;
-	bh=j9gxxNP8fsiPrnRxrXQlj0bPEZV2bMg1ftCbO+HL1Do=;
+	s=arc-20240116; t=1739426071; c=relaxed/simple;
+	bh=vG7Put1/nIu5Yx0qCHeIwL+rcbmTyCt1OmCHm0H56b8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TKDx6FO6/12AYTqQHY6QVNQf2CYfQOYOa6MeihJiphz+p+8jrriadInX4oosO1jVPEmkixL9cZKQArBOZDK10ajDJPz3xoT23GqFN78J+AUe7Gb3hTztuoTcPIKkNj8yzdm/JQ3sEYw2vHj2bbuEHYksOvDu4Wf0l4Gaw5vtLA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gYMvtdHB; arc=none smtp.client-ip=209.85.219.42
+	 To:Cc:Content-Type; b=msFRy9BK46gTefi+W+UUadfjCTSSFG+siiHUAyCKG9et8bHATKuUQrwlcWCFIST+z/KXwMicHaljgtncuAj3VMN48ZeGjOSyC8clanrcbW8a+vzq5kG/G73F1L6rnuNRympbMP9slDT6+GTJY6g2Qw/HUXS9CfFJ1B1CRKvnNC8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LYUTBNOl; arc=none smtp.client-ip=209.85.219.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6e41e18137bso4801046d6.1
-        for <live-patching@vger.kernel.org>; Wed, 12 Feb 2025 21:52:23 -0800 (PST)
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-6e454a513a6so4740006d6.3
+        for <live-patching@vger.kernel.org>; Wed, 12 Feb 2025 21:54:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739425942; x=1740030742; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1739426069; x=1740030869; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=c/So+eA3NaNTQ/l4Kc9O3OFwA7bJxQieD/89HFvFz3Y=;
-        b=gYMvtdHBz+bd1WZBI1l1wU/0QhlcE46qdd2FDa9QkNM5gQ4GP7qa1oFrOCtJUhltHO
-         ky0S0oEBzfQIXHLun04jFCYfv5AkI0eX0YjqGvGn53yhZnteSywkaNWO6fn3ZZlju5Xi
-         rRLZkPuMzg75J1VmuQMWcUjcNr9spp3PRbltF6af8+4bhNnv8h04QWwQr1iFPCRPuwb2
-         XY3px3GYZ3Sz1kbReuWI6+LJa+XjEMV4/OI6Wx6pm94B8Cu13SCTsvlGXN8EMp+SJNEH
-         5jgr+nW+hCz946zbWXO6ylPJyEVmLtOMPGK4ldEaNNB8/NVmmB7A1Xi5IkP7pOegCjCb
-         cN8A==
+        bh=gVNC5UubF+CMFfORuOPfZD32CY5Lol6r8CZvTAQ2Uts=;
+        b=LYUTBNOldx4c0aukB7TRaWJwtMYwdvemMerFPmm1BDihwcG63quztU79SXzMeoZCRJ
+         N5aCUpljrZQgFm89dO6OSN6Elmdd+2JW3P0Rb8AQ/edJMRQYRQuRx2jQf0a7wy85LuaX
+         AB+ZQZB7vqxfHGCAsH6UKeCIY43VZWN4vtThvjgkMH39F4vc0ngJYaPTq4Zx4p6OeFE5
+         0ahogKS/un8Qzef+OE/x+OzyXNXPJ/vMmCkazNE5UrAqRsxa48XV5V1eXa4bhljPFv7t
+         oc43YWkINcHuS/kuJdihtzNhdIuss5PyE644mmjDzz7q7tBYqiCKDhYBPi74otxOZvOy
+         LSdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739425942; x=1740030742;
+        d=1e100.net; s=20230601; t=1739426069; x=1740030869;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=c/So+eA3NaNTQ/l4Kc9O3OFwA7bJxQieD/89HFvFz3Y=;
-        b=WbrK1n1BlcMDfONoc6YrvgIvhVMpKp3vjsdAoJS/Sm3Z7oCkSwiGRSYPo2wd5c296+
-         RywTBvF8KtFrETL7YL4eUu3K2gsxd5dxala/1Dd6m94d3XZ6UHLtJxdHmLW+a82k0FN4
-         8PiBbkUwlWmenh4V9sjtzGhFa37IcjRtJ86AuP4qxl6usnKgLbwLWvKtP+ZCIHzZ9+7F
-         xANP2JpoOSWUReE9tZlWMm9J9dkFInSeb4Hknc1yRN3pr/GelQ1Fp4KYmDxsxrZJ31+i
-         gcd/Z7sW6pP4HpsrBm7mI790Uh2hLPQLNtxKKjJq5wMNjqlJdCvri+I4W77klO8IwcdB
-         jxkQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV/sfJ+DtsXUr72rViywuLTCurCxOt9QzbvUyVomRNtHGV5pgNc2BlKw/+cdvMPKOZ4NcDBAQ51xrh75UuP@vger.kernel.org
-X-Gm-Message-State: AOJu0YzEx0DKAoIIhZ6qSUDP6QFDxGjfrPMrkDqyE2QljbnV12Cgegh6
-	ym6EcF1Xr8/agn/DqlBQesSHg2vDWv0Xif2p83ADowqtMQbwH/Ei95+Mknm6pb7nYcxO+re9uw6
-	X7/1bk3EWZJ/JXOcKhzoPTX5uOhI=
-X-Gm-Gg: ASbGncvIIgUfW1VJMi83MOeiO2LWLlQSANjOUr8bGMIoySOM4YhVMmJIF8x1/yXVQ0U
-	ySJFVXemGK75BjT9hs1rESqtrgFEBWOBcgNlQlcim6uDN3EiRuNy7w9DIE5cAcXhaM7XyNpfXdC
-	w=
-X-Google-Smtp-Source: AGHT+IF2wXCL+/04TEuXi+A+oZ2Clzxmgk8TtO1cwcbXG016NPxABj73Bre2EcbWWhMnKqVpAOiJR69e4ugnSHZ35pc=
-X-Received: by 2002:a05:6214:d4b:b0:6d8:a5da:3aba with SMTP id
- 6a1803df08f44-6e46ed8a83emr103877496d6.20.1739425942590; Wed, 12 Feb 2025
- 21:52:22 -0800 (PST)
+        bh=gVNC5UubF+CMFfORuOPfZD32CY5Lol6r8CZvTAQ2Uts=;
+        b=eEUG6QfiRrRn1Q+i8wIpHjeP8vPgo7ejO0URr9ut2TklUSRKFRRLMt1lD0dySANe3M
+         uyLneeZ9lLcqi3vTbAjpHdaCaMbicXBso13O4qYRcLsphSe0i7H+zFVtVCWnfNBpJyei
+         s2omiLMtUfCy2r+o7re+UYJTY0iRY8aHhiYFFjgRuw1WbUUeQDh1gZ/2kwxKNdPjrJVu
+         JKtqre4lVoYNOMI8x5yCfnmd39EugW8B5a6zCJCveiaDYHDj4c8epAEy1nSnD216Vi6K
+         jYxU6ZjEnAGkKRRZXMIrp5fgxdPbZGpnj4Eg+RcSy5MreTQf5fWBqMnNBQZv3N3jfpMw
+         jMRw==
+X-Forwarded-Encrypted: i=1; AJvYcCWJBTWaiKiLNElV/80mE8Ij9Qycky3mMBan4DI1undyT5qkqEEi8hq7phkKppVXTxXUINskNJq6vCASJpYF@vger.kernel.org
+X-Gm-Message-State: AOJu0YzZ00RLDoxjYjEsJGl+yfCDvC2fqdrQCzZvquRwU1yp6Qb7enI/
+	eHKzPWhtOAu59mbS0+1rsnXBmSWpgWZkSj8Tx+fnH2+nNFPhbPmn8seeBEdzG7GIZTkIJoZ/pbm
+	F4h0Ek+AOFiXnyF4yfPXethR5QNY=
+X-Gm-Gg: ASbGnct471a9Kw/jL3o1B6GuLYKqbfXbzFVkZtSNX+Zy3GpW3YCHvqYp2m5sUPfm4xp
+	5h7AxxWscMkAQZhoSD0eEEnrr2zVENfZH4QsSPy6uA/KejXCQFhGKVgzEPJqWbN/7JqJu/VarNJ
+	U=
+X-Google-Smtp-Source: AGHT+IFdzEp6RsAkxnTtyityzkgVAFMb49zutM+C2yBwkgglkGhrU4RTSvXk0Q9aYD12tlcqX1FqRSNdSlgFQydt1fI=
+X-Received: by 2002:a05:6214:c2e:b0:6e4:3478:b55a with SMTP id
+ 6a1803df08f44-6e46edacf8bmr95677246d6.35.1739426068786; Wed, 12 Feb 2025
+ 21:54:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250211062437.46811-1-laoar.shao@gmail.com> <20250211062437.46811-4-laoar.shao@gmail.com>
- <20250212005253.4d6wru5lsrvxch45@jpoimboe> <CALOAHbBZ6JGu=39ifyW9Jf8bUwpcBMhr2oe2K2K+wK8VFWo7QA@mail.gmail.com>
- <20250213015852.gtsfdwsz4on3i4x2@jpoimboe>
-In-Reply-To: <20250213015852.gtsfdwsz4on3i4x2@jpoimboe>
+References: <20250211062437.46811-1-laoar.shao@gmail.com> <20250211062437.46811-3-laoar.shao@gmail.com>
+ <20250212004009.ijs4bdbn6h55p7xd@jpoimboe> <CALOAHbDsSsMzuOaHX2ZzgD3bJTPgMEp1E_S=vERHaTV11KrVJQ@mail.gmail.com>
+ <CALOAHbDEBqZyDvSSv+KTFVR3owkjfawCQ-fT9pC1fMHNGPnG+g@mail.gmail.com>
+ <Z6zBb9GRkFC-R0RE@pathway.suse.cz> <20250213013603.i6uxtjvc3qxlsqwc@jpoimboe>
+In-Reply-To: <20250213013603.i6uxtjvc3qxlsqwc@jpoimboe>
 From: Yafang Shao <laoar.shao@gmail.com>
-Date: Thu, 13 Feb 2025 13:51:46 +0800
-X-Gm-Features: AWEUYZm7N4cO84GoijB23tPgSEjYSRDkISn3fYHmooMspO-y4T4upNovmv5zHvo
-Message-ID: <CALOAHbAFLaw2k-66W5hTKKD-c82sYpew=AmDoOTZGYbFTVDkaQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] livepatch: Avoid potential RCU stalls in klp transition
+Date: Thu, 13 Feb 2025 13:53:52 +0800
+X-Gm-Features: AWEUYZkdw5RRiCAOJYvz-tVUftgu-eNd1r2jRlzueIvfPC8TnMEowsoBUIVSi4M
+Message-ID: <CALOAHbD=5GzZt7Vczzie2CXxLavZgpwkj34o9EV1JdCE8ZoAgg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] livepatch: Avoid blocking tasklist_lock too long
 To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, 
+Cc: Petr Mladek <pmladek@suse.com>, jikos@kernel.org, mbenes@suse.cz, 
 	joe.lawrence@redhat.com, live-patching@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 13, 2025 at 9:58=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
+On Thu, Feb 13, 2025 at 9:36=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
 > wrote:
 >
-> On Wed, Feb 12, 2025 at 10:42:33AM +0800, Yafang Shao wrote:
-> > On Wed, Feb 12, 2025 at 8:52=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel=
-.org> wrote:
-> > >
-> > > On Tue, Feb 11, 2025 at 02:24:37PM +0800, Yafang Shao wrote:
-> > > > +++ b/kernel/livepatch/transition.c
-> > > > @@ -491,9 +491,18 @@ void klp_try_complete_transition(void)
-> > > >                       complete =3D false;
-> > > >                       break;
-> > > >               }
-> > > > +
-> > > > +             /* Avoid potential RCU stalls */
-> > > > +             if (need_resched()) {
-> > > > +                     complete =3D false;
-> > > > +                     break;
-> > > > +             }
-> > > >       }
-> > > >       read_unlock(&tasklist_lock);
-> > > >
-> > > > +     /* The above operation might be expensive. */
-> > > > +     cond_resched();
-> > > > +
-> > >
-> > > This is also nasty, yet another reason to use rcu_read_lock() if we c=
-an.
+> On Wed, Feb 12, 2025 at 04:42:39PM +0100, Petr Mladek wrote:
+> > CPU1                          CPU1
 > >
-> > The RCU stalls still happen even if we use rcu_read_lock() as it is
-> > still in the RCU read-side critical section.
+> >                               klp_try_complete_transition()
 > >
-> > >
-> > > Also, with the new lazy preemption model, I believe cond_resched() is
-> > > pretty much deprecated.
 > >
-> > I'm not familiar with the newly introduced PREEMPT_LAZY, but it
-> > appears to be a configuration option. Therefore, we still need this
-> > cond_resched() for users who don't have PREEMPT_LAZY set as the
-> > default.
+> > taskA:
+> >  + fork()
+> >    + klp_copy_process()
+> >       child->patch_state =3D KLP_PATCH_UNPATCHED
+> >
+> >                                 klp_try_switch_task(taskA)
+> >                                   // safe
+> >
+> >                               child->patch_state =3D KLP_PATCH_PATCHED
+> >
+> >                               all processes patched
+> >
+> >                               klp_finish_transition()
+> >
+> >
+> >       list_add_tail_rcu(&p->thread_node,
+> >                         &p->signal->thread_head);
+> >
+> >
+> > BANG: The forked task has KLP_PATCH_UNPATCHED so that
+> >       klp_ftrace_handler() will redirect it to the old code.
+> >
+> >       But CPU1 thinks that all tasks are migrated and is going
+> >       to finish the transition
 >
-> IIRC, the goal is to get rid of PREEMPT_NONE and PREEMPT_VOLUNTARY (and
-> PREEMPT_DYNAMIC) and to remove almost all the cond_resched() calls.  So
-> we should really avoid adding them at this point.
 >
-> The patch already breaks out of the loop for need_resched(), is the
-> cond_resched() really needed there?  For the PREEMPT_VOLUNTARY case I
-> think it should already get preempted anyway when it releases the lock.
->
-> And regardless, by that point it's fairly close to scheduling the
-> delayed work and returning back to the user.  That could happen even
-> sooner by skipping the "swapper" task loop.
+> Maybe klp_try_complete_transition() could iterate the tasks in two
+> passes?  The first pass would use rcu_read_lock().  Then if all tasks
+> appear to be patched, try again with tasklist_lock.
 
-You're correct. I=E2=80=99ve verified that it can avoid the RCU stalls even
-without the cond_resched().
+This option is much simpler, easier to understand, and more
+maintainable. I prefer this approach.
+
+>
+> Or, we could do something completely different.  There's no need for
+> klp_copy_process() to copy the parent's state: a newly forked task can
+> be patched immediately because it has no stack.
+>
+> So instead, just initialize it to KLP_TRANSITION_IDLE with
+> TIF_PATCH_PENDING cleared.  Then when klp_ftrace_handler() encounters a
+> KLP_TRANSITION_IDLE task, it considers its state to be 'klp_target_state'=
+.
+>
+> // called from copy_process()
+> void klp_init_task(struct task_struct *child)
+> {
+>         /* klp_ftrace_handler() will transition the task immediately */
+>         child->patch_state =3D KLP_TRANSITION_IDLE;
+>         clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
+> }
+>
+>
+> klp_ftrace_handler():
+>
+>                 patch_state =3D current->patch_state;
+>
+>                 if (patch_state =3D=3D KLP_TRANSITION_IDLE)
+>                         patch_state =3D klp_target_state;
+>                 ...
+>
+> Hm?
+
 
 --=20
 Regards
