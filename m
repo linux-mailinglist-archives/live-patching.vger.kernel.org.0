@@ -1,89 +1,97 @@
-Return-Path: <live-patching+bounces-1181-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1182-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3A183A33F54
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 13:40:56 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE296A34C04
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 18:34:42 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id C906A1886989
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 12:41:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B0F8416A41B
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 17:34:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4F93A221561;
-	Thu, 13 Feb 2025 12:40:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E91C23F42D;
+	Thu, 13 Feb 2025 17:32:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J33K9za5"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OlbtKuVz"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D59B6221541
-	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 12:40:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 382CD23A9AC
+	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 17:32:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739450451; cv=none; b=C4w8H1y7Wfyq39xfHaLCHsiKvsdbfZUeb894wJl4qCGpIEzyUsvVJiNUU+PuwEJ3z4FVpcyj4tMt+AmgAdbZF34ZPppVSwS6R05bfqkhZqP4rnt0jyRRTr1Lvw9QUGYvR24VWUOZ/cxAD5UofI6y7FU96kiJfH7CMo3A5VdQ9bs=
+	t=1739467976; cv=none; b=nyDJBMrQrAc2IzDuIP3XWysi45SmNT0O3Hbo+e6gkJpOUlKngMi4pqsEjoZGoNvHXR4Kn7wN7xpqjYQOeyHWlHduKk8X/VKzpotgj9BYGYmem+X+Nl6clZJ2F3TLUewriprHDsDhZ2MLu1WQ81ygXsr3D+ocxmJp17eXv21o4DQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739450451; c=relaxed/simple;
-	bh=wjunn4+x2QEs4HRrQcozT7INn2DM0lGSHIZkmkDz3T0=;
-	h=From:Content-Type:Mime-Version:Subject:Message-Id:Date:To; b=EbM3KbAKhqCK9Q63ikaQpe21A6ZxXZNR+qAfxrBi+Xv8D4ggE565o0fVuSUkGOtW8PDLpQffIFhz0z98f5tKMfndcpU94q34g08EUKcz/yDOt/gp2g72CpcuvSBjW+W437RZFfBraZeaMBW6pkn3Gbj5ww6aRE1jO7mATAJRh+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J33K9za5; arc=none smtp.client-ip=209.85.167.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-3f3bac262f9so487848b6e.1
-        for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 04:40:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739450448; x=1740055248; darn=vger.kernel.org;
-        h=to:date:message-id:subject:mime-version:content-transfer-encoding
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wjunn4+x2QEs4HRrQcozT7INn2DM0lGSHIZkmkDz3T0=;
-        b=J33K9za5UCr7TRsnamnzJ/j+GkczDSFRZo6iUViW/epDiz+sAWhUzBX+YibzKI6Znr
-         dNg7hQw5nVyd1BJ35thW/MIPcTcfLV6qyZRTXe6XSGjxOnxQhTK+Nab7YkUxTlixH9ic
-         CTFxF8HGQrkZ+SHWpCwGe8wliRoWK3ivDPneRW7BEc4bmXJkexKRDmzXcQ5jE2HZRzLU
-         LEs+wNrfOHZbzVzAAxNjLGMxX4Vbtvkl+YTYklXDgckLkBtnoig5lvIm4mGp687APTCE
-         mbIWWstN04WczdEG2o9TmquvjKIdxUGOEfOoqfPzdkQn4kKQnZbgblh1nBWDGeC+MiV6
-         5EFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739450448; x=1740055248;
-        h=to:date:message-id:subject:mime-version:content-transfer-encoding
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wjunn4+x2QEs4HRrQcozT7INn2DM0lGSHIZkmkDz3T0=;
-        b=EmTOBuElncTZPpElSCbY4YbUNEbDeYwAtwLXYG7ZxYxc8RcOO+L0/HBSF3yUrsyVFX
-         5zUkkGUQc+Gs8OR1R/2hQAUl6uOfGpV4PxHOfOtvfR5N9AjdiQGTB8yKDflGHeNe1syS
-         8q9SQaMfS82R9q5wNVqY9KK+6Jd5/FU7/D9iDh0tSOfRDrE2sxQqbCMGCet+vnSnYiRp
-         dMEsasTW/RZl4tAgizD4OiGBMb117Phz6sf8kk2+l9oLA/guWjs+pEdhTVa2HcVFuqSp
-         QQ2+e4xQZCMl+GYuWc5Ei3jV1o21TIyjm3UDtXrWfHAqT6QgLrCN1TPdCKKu5ewZb4gj
-         kWNA==
-X-Gm-Message-State: AOJu0YzawURk9OF4q4O6MpoXY5aMwB+UPby16DwNPPjfLCHZUZ7rgiuX
-	W/WhD+zx38CpU4UmGog1rotxgOaFinV2v9ZINwaUKRDG0fKU6Z9vn4aNC9vk
-X-Gm-Gg: ASbGncssX4dWxNuIGD+ClLY4eAtNmylN6zN7GFmf2Tc/2eG1cT+nxb6qUNz+bjampVF
-	82WK7mYlcHWr3uEzkC75k4qXIwo0p8brMzrJ9IGapE+R1XgpmEVIfC2mESWlQAwm/YxcT887Wak
-	9PpIzrbVCB3hYDE8moMHxpe+sWlNHFKzZBrJzND6SLaTyKfkqG0K6iQqQDFoBF7K3E4lU5OTd0D
-	uxFCrcVIQHj8y8WyyIGyQNw5xFromsnv0vaHBYIUgYqvHfawQwpebpDPMB97oTODi44zwz3Uc0G
-	7340VN2HoXf/B++8UwCftCPDw5DyZ30t/LYL8iko4rgLBeOobNO/rB4ShzdymUdEgdG7FZKD
-X-Google-Smtp-Source: AGHT+IHeI92UQRjT6gzXUs0UIgOH6j562/OURlMWEam0UEYzZICS/xC0ALdrii7iVlYX8JZnzWxb2A==
-X-Received: by 2002:a05:6808:2dc4:b0:3f3:ad65:e419 with SMTP id 5614622812f47-3f3cd71d0a1mr4739893b6e.28.1739450448416;
-        Thu, 13 Feb 2025 04:40:48 -0800 (PST)
-Received: from smtpclient.apple (syn-024-171-058-032.res.spectrum.com. [24.171.58.32])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-3f3daa19849sm418402b6e.44.2025.02.13.04.40.46
-        for <live-patching@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 13 Feb 2025 04:40:47 -0800 (PST)
-From: Matt Cassell <mcassell411@gmail.com>
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: 7bit
+	s=arc-20240116; t=1739467976; c=relaxed/simple;
+	bh=gd5QtCtvAEp1W60+sobsFyKrmTTTPST5JrcfQA/DO68=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fcK235+keEHEoX1d3eQL6EEvhIiMfHKD7j9eCpTsIj1S83q6Rm4qpVgbbFdxzGwHX04ucEIJujwBMrrkTKs0rMdpMdxVLza6utH+1gyEwENr/JnZHiCPb3yH75PKyti2ct1NJyqoK0nSJH2SyqamU8X0bVi00fPhWYIbGqfkjOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OlbtKuVz; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 602D2C4CED1;
+	Thu, 13 Feb 2025 17:32:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739467975;
+	bh=gd5QtCtvAEp1W60+sobsFyKrmTTTPST5JrcfQA/DO68=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OlbtKuVzjpAHDtsOndlYhF1hYivfK9E2wQ8AoVM2Z5UTnJVVJNYy4hmk+9t7TsrI5
+	 /p7z9KwI4qgRcM9xOq1LS+o9lZjx4iXSNvr+OE8Pn72C4IGbBBC8kHEUz6G4HpTa0O
+	 zA2b0VdhTTqf/lNkZK64aOLNEDtetrG+ObBZ3xmr2nM02J0RfwC0ztE4mkSajpyoPC
+	 S+8N7CiC/LERkBR3h1Ul1OORO4AYRHst9i809UrR/dQXBotzc1VF/S6P+Ti4mw+vAl
+	 0lOfzrIfsqLuVL0xu9Rxu0q4XbgB+a2qoAn5hUQtYJl/4G7rmhALXaGa0lqKwcPQRD
+	 IiVC/qPWM7nog==
+Date: Thu, 13 Feb 2025 09:32:53 -0800
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Yafang Shao <laoar.shao@gmail.com>, jikos@kernel.org, mbenes@suse.cz,
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org
+Subject: Re: [PATCH 2/3] livepatch: Avoid blocking tasklist_lock too long
+Message-ID: <20250213173253.ovivhuq2c5rmvkhj@jpoimboe>
+References: <20250211062437.46811-1-laoar.shao@gmail.com>
+ <20250211062437.46811-3-laoar.shao@gmail.com>
+ <20250212004009.ijs4bdbn6h55p7xd@jpoimboe>
+ <CALOAHbDsSsMzuOaHX2ZzgD3bJTPgMEp1E_S=vERHaTV11KrVJQ@mail.gmail.com>
+ <CALOAHbDEBqZyDvSSv+KTFVR3owkjfawCQ-fT9pC1fMHNGPnG+g@mail.gmail.com>
+ <Z6zBb9GRkFC-R0RE@pathway.suse.cz>
+ <20250213013603.i6uxtjvc3qxlsqwc@jpoimboe>
+ <Z62_6wDP894cAttk@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.400.131.1.6\))
-Subject: Unsubscribe
-Message-Id: <3D2345DC-93C0-4F6A-B7DA-8FBF2F347A8F@gmail.com>
-Date: Thu, 13 Feb 2025 06:40:34 -0600
-To: live-patching@vger.kernel.org
-X-Mailer: Apple Mail (2.3826.400.131.1.6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Z62_6wDP894cAttk@pathway.suse.cz>
 
-unsubscribe
+On Thu, Feb 13, 2025 at 10:48:27AM +0100, Petr Mladek wrote:
+> On Wed 2025-02-12 17:36:03, Josh Poimboeuf wrote:
+> > Or, we could do something completely different.  There's no need for
+> > klp_copy_process() to copy the parent's state: a newly forked task can
+> > be patched immediately because it has no stack.
+> 
+> Is this true, please?
+> 
+> If I get it correctly then copy_process() is used also by fork(2) where
+> the child continues from fork(2) call. I can't find it in the code
+> but I suppose that the child should use a copy of the parent's stack
+> in this case.
+
+The child's *user* stack is a copy, but the kernel stack is empty.
+
+On x86, before adding it to the task list, copy->process() ->
+copy_thread() sets the child's kernel stack pointer to empty (pointing
+to 'struct inactive_task_frame' adjacent to user pt_regs) and sets the
+saved instruction pointer (frame->ret_addr) to 'ret_from_fork_asm'.
+
+Then later when the child first gets scheduled, __switch_to_asm()
+switches to the new stack and pops most of the inactive_task_frame,
+except for the 'ret_from_fork_asm' return value which remains on the top
+of the stack.  Then it jumps to __switch_to() which then "returns" to
+ret_from_fork_asm().
+
+-- 
+Josh
 
