@@ -1,142 +1,151 @@
-Return-Path: <live-patching+bounces-1168-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1169-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 13CB2A33789
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 06:50:00 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3D37AA33792
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 06:52:29 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE81A168450
-	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 05:49:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B9A483A1853
+	for <lists+live-patching@lfdr.de>; Thu, 13 Feb 2025 05:52:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69992206F3E;
-	Thu, 13 Feb 2025 05:49:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A587206F09;
+	Thu, 13 Feb 2025 05:52:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bl9XPFIH"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gYMvtdHB"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B80E7206F22
-	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 05:49:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2DF6204F85
+	for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 05:52:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739425792; cv=none; b=lN3v9jeJcdasK6CIW6uf59DEsEh3picZPTPNOgIMJZ6exoeAblCfxguFUEABhrflsTqmH4BXvYaHLvw3TRRiDT+CvpvtYq56StV/pAZhUl36gBIcVBTm6fZzq1aVpkOHhDF2t7OY6ND0iEbGsnpJdmSAEujU4sDA9Q6OS2wiP40=
+	t=1739425945; cv=none; b=st5nOwOOU9KCwZKvWrtLoOWmWtr/FU5Zvv56apTeciGgWrQJJgOnfgSoNx1JjOXIGwKwiDzGlQ7oWzvmVzZFa3uhxhTEpmrTqLVs3Ip1zMU9/3clrMg+DT4H1lU59Dy/Ydu5N5WUEQdQmO9Ls3s0Gjc1Fo32elc2BbW7KqhBDOU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739425792; c=relaxed/simple;
-	bh=X4/hY43lBe5BOzKs2/P88v79xDm8GMSdtwyv2lBpcIk=;
+	s=arc-20240116; t=1739425945; c=relaxed/simple;
+	bh=j9gxxNP8fsiPrnRxrXQlj0bPEZV2bMg1ftCbO+HL1Do=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kfN7uqTrAnrso3ntDa4bwQ7NJwQqzo5SDHiI8NSwXjSMuPjVbstuUj/6VRpu15yTHu8yaj7odrlXDSXV/sTsGNdHykby+OV5yMAABXv512wEnBIZZB7Sd6CcVR4PpAJOYrZCZAMxzHElJUX093wukNLo9Zc1E8IJa3cwHukQRdU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bl9XPFIH; arc=none smtp.client-ip=209.85.219.41
+	 To:Cc:Content-Type; b=TKDx6FO6/12AYTqQHY6QVNQf2CYfQOYOa6MeihJiphz+p+8jrriadInX4oosO1jVPEmkixL9cZKQArBOZDK10ajDJPz3xoT23GqFN78J+AUe7Gb3hTztuoTcPIKkNj8yzdm/JQ3sEYw2vHj2bbuEHYksOvDu4Wf0l4Gaw5vtLA0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gYMvtdHB; arc=none smtp.client-ip=209.85.219.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-6e65be7d86fso7009086d6.1
-        for <live-patching@vger.kernel.org>; Wed, 12 Feb 2025 21:49:50 -0800 (PST)
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6e41e18137bso4801046d6.1
+        for <live-patching@vger.kernel.org>; Wed, 12 Feb 2025 21:52:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739425789; x=1740030589; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1739425942; x=1740030742; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7ySMiB3B+dSZmEmRFzXD0kwW7pQNBbBizRWZtHLRUJ0=;
-        b=Bl9XPFIH0NbZ5ATRzuquXCrPO/CgM5hx3S3Tz5soUp3JGr8X2nSvRZHlTrnICARxpB
-         MxBl2a9Bf+5mao4PIO+baoxMosG8l6DRrIGcacj5419fqCi5SxjiKJ4ZSwFmVN5FZJkF
-         fh10avq+CUQNmkeMc3fl3hayuMSgyI0fcBS2Dnv524A8h6ehvB1ktNKO7J99iAgASr+N
-         lHnDH2yNhhICwpj1Jca1bIKg4rO0luXef1X/B0DwDGnMSapTtKRm4l8rv4x5NI7FldXV
-         TIe23jgp9ldYfuURLeK8cWYlP28b/PdmCP4rYnCFNaPElo2rFsi/FwYoGU4zXfj9HXYh
-         SC5g==
+        bh=c/So+eA3NaNTQ/l4Kc9O3OFwA7bJxQieD/89HFvFz3Y=;
+        b=gYMvtdHBz+bd1WZBI1l1wU/0QhlcE46qdd2FDa9QkNM5gQ4GP7qa1oFrOCtJUhltHO
+         ky0S0oEBzfQIXHLun04jFCYfv5AkI0eX0YjqGvGn53yhZnteSywkaNWO6fn3ZZlju5Xi
+         rRLZkPuMzg75J1VmuQMWcUjcNr9spp3PRbltF6af8+4bhNnv8h04QWwQr1iFPCRPuwb2
+         XY3px3GYZ3Sz1kbReuWI6+LJa+XjEMV4/OI6Wx6pm94B8Cu13SCTsvlGXN8EMp+SJNEH
+         5jgr+nW+hCz946zbWXO6ylPJyEVmLtOMPGK4ldEaNNB8/NVmmB7A1Xi5IkP7pOegCjCb
+         cN8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739425789; x=1740030589;
+        d=1e100.net; s=20230601; t=1739425942; x=1740030742;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7ySMiB3B+dSZmEmRFzXD0kwW7pQNBbBizRWZtHLRUJ0=;
-        b=B4Fgp1ctaBcAbsqfYZdZKgxPBt8QK0dfmo44s5rytgpyKDkmUwWy1vIWGBMLXN/TVf
-         ygjp9CxVo2uKzSP1Kf6Tf/5D+o4lRt2qfUerDxkReeE0cEOC2nEkEbFm61W4w9nYrWcb
-         ziF6tP4mT7wIuwpAlRYmKqZZxXHhnyAfkhoais/VFgsG+njZP+X6kHZHH+Gk4nWDWV89
-         mDCVjIgJaHW34K/hL4nRSwOghVOSwSuiblBwFTE8vrvqyWlLL1fnencFRtrkEHUMTVi0
-         HkVjVJLUw+84qHcMrDLbq1K0M9Xv/RD7hqPGmlddBjaT9eHYX9oyp+1v5DQLemu7Eiwe
-         /jEg==
-X-Forwarded-Encrypted: i=1; AJvYcCV+F9CIwhnxmQY85dIbl8BDaS6qCB48zRFf8YtBpJc1e1I7T00piqlXYM83SqNuGHUayH+DJh8RoDNTtzLS@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx9JYMbxtvN6z5NwhHfoXJHDNnM6jzQoURlqjSeSJQzpgxO6upd
-	jg3r6JKcsZFuAJbjHh/5Aq5BZvrPKK8gO3wINTlMyRdgNEZNRSA3dYFIxOsKaz4DyJYDZsQx8f7
-	lgAo0pMNwMCoTVDdZk15q80gYrxc=
-X-Gm-Gg: ASbGncsuZCWhu5Ju3cOj2UVJB1Ws9mueiSIkjaArTYNAxzgZEA+DEpH4vAcdAC0jp9V
-	GlxVOxOPuTbtw65vRlYixzetSwmRPFSl3lPfj9ALkDLtD2KSuQLda5v5PiA4FMwxkcns7RSSvT0
+        bh=c/So+eA3NaNTQ/l4Kc9O3OFwA7bJxQieD/89HFvFz3Y=;
+        b=WbrK1n1BlcMDfONoc6YrvgIvhVMpKp3vjsdAoJS/Sm3Z7oCkSwiGRSYPo2wd5c296+
+         RywTBvF8KtFrETL7YL4eUu3K2gsxd5dxala/1Dd6m94d3XZ6UHLtJxdHmLW+a82k0FN4
+         8PiBbkUwlWmenh4V9sjtzGhFa37IcjRtJ86AuP4qxl6usnKgLbwLWvKtP+ZCIHzZ9+7F
+         xANP2JpoOSWUReE9tZlWMm9J9dkFInSeb4Hknc1yRN3pr/GelQ1Fp4KYmDxsxrZJ31+i
+         gcd/Z7sW6pP4HpsrBm7mI790Uh2hLPQLNtxKKjJq5wMNjqlJdCvri+I4W77klO8IwcdB
+         jxkQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV/sfJ+DtsXUr72rViywuLTCurCxOt9QzbvUyVomRNtHGV5pgNc2BlKw/+cdvMPKOZ4NcDBAQ51xrh75UuP@vger.kernel.org
+X-Gm-Message-State: AOJu0YzEx0DKAoIIhZ6qSUDP6QFDxGjfrPMrkDqyE2QljbnV12Cgegh6
+	ym6EcF1Xr8/agn/DqlBQesSHg2vDWv0Xif2p83ADowqtMQbwH/Ei95+Mknm6pb7nYcxO+re9uw6
+	X7/1bk3EWZJ/JXOcKhzoPTX5uOhI=
+X-Gm-Gg: ASbGncvIIgUfW1VJMi83MOeiO2LWLlQSANjOUr8bGMIoySOM4YhVMmJIF8x1/yXVQ0U
+	ySJFVXemGK75BjT9hs1rESqtrgFEBWOBcgNlQlcim6uDN3EiRuNy7w9DIE5cAcXhaM7XyNpfXdC
 	w=
-X-Google-Smtp-Source: AGHT+IGlMY2p5FMb0qBCklic0myYjveu+UawAF5MCP/36+6U5GPeQFw7YvyLA+6FQ9Dsc16VZSadzsdQbf97NqyElMQ=
-X-Received: by 2002:a05:6214:20cc:b0:6e6:5a83:dcf5 with SMTP id
- 6a1803df08f44-6e65c9040acmr29300546d6.21.1739425789579; Wed, 12 Feb 2025
- 21:49:49 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IF2wXCL+/04TEuXi+A+oZ2Clzxmgk8TtO1cwcbXG016NPxABj73Bre2EcbWWhMnKqVpAOiJR69e4ugnSHZ35pc=
+X-Received: by 2002:a05:6214:d4b:b0:6d8:a5da:3aba with SMTP id
+ 6a1803df08f44-6e46ed8a83emr103877496d6.20.1739425942590; Wed, 12 Feb 2025
+ 21:52:22 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250211062437.46811-1-laoar.shao@gmail.com> <20250211062437.46811-2-laoar.shao@gmail.com>
- <Z6yZSBxbLBktQaXP@pathway.suse.cz>
-In-Reply-To: <Z6yZSBxbLBktQaXP@pathway.suse.cz>
+References: <20250211062437.46811-1-laoar.shao@gmail.com> <20250211062437.46811-4-laoar.shao@gmail.com>
+ <20250212005253.4d6wru5lsrvxch45@jpoimboe> <CALOAHbBZ6JGu=39ifyW9Jf8bUwpcBMhr2oe2K2K+wK8VFWo7QA@mail.gmail.com>
+ <20250213015852.gtsfdwsz4on3i4x2@jpoimboe>
+In-Reply-To: <20250213015852.gtsfdwsz4on3i4x2@jpoimboe>
 From: Yafang Shao <laoar.shao@gmail.com>
-Date: Thu, 13 Feb 2025 13:49:13 +0800
-X-Gm-Features: AWEUYZkGqd2hm3xKGfzu7_ghmR2QWMUCtKuHbJ30TNUIn_xGi1_gJrkvzSfMHZE
-Message-ID: <CALOAHbCBQQkNqB2Km2nD8d9GCZfh1gM+Cd0GdD0DSaWPXKZ-mw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] livepatch: Add comment to clarify klp_add_nops()
-To: Petr Mladek <pmladek@suse.com>
-Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, 
+Date: Thu, 13 Feb 2025 13:51:46 +0800
+X-Gm-Features: AWEUYZm7N4cO84GoijB23tPgSEjYSRDkISn3fYHmooMspO-y4T4upNovmv5zHvo
+Message-ID: <CALOAHbAFLaw2k-66W5hTKKD-c82sYpew=AmDoOTZGYbFTVDkaQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] livepatch: Avoid potential RCU stalls in klp transition
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, 
 	joe.lawrence@redhat.com, live-patching@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 12, 2025 at 8:51=E2=80=AFPM Petr Mladek <pmladek@suse.com> wrot=
-e:
+On Thu, Feb 13, 2025 at 9:58=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
+> wrote:
 >
-> On Tue 2025-02-11 14:24:35, Yafang Shao wrote:
-> > Add detailed comments to clarify the purpose of klp_add_nops() function=
-.
-> > These comments are based on Petr's explanation[0].
+> On Wed, Feb 12, 2025 at 10:42:33AM +0800, Yafang Shao wrote:
+> > On Wed, Feb 12, 2025 at 8:52=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel=
+.org> wrote:
+> > >
+> > > On Tue, Feb 11, 2025 at 02:24:37PM +0800, Yafang Shao wrote:
+> > > > +++ b/kernel/livepatch/transition.c
+> > > > @@ -491,9 +491,18 @@ void klp_try_complete_transition(void)
+> > > >                       complete =3D false;
+> > > >                       break;
+> > > >               }
+> > > > +
+> > > > +             /* Avoid potential RCU stalls */
+> > > > +             if (need_resched()) {
+> > > > +                     complete =3D false;
+> > > > +                     break;
+> > > > +             }
+> > > >       }
+> > > >       read_unlock(&tasklist_lock);
+> > > >
+> > > > +     /* The above operation might be expensive. */
+> > > > +     cond_resched();
+> > > > +
+> > >
+> > > This is also nasty, yet another reason to use rcu_read_lock() if we c=
+an.
 > >
-> > Link: https://lore.kernel.org/all/Z6XUA7D0eU_YDMVp@pathway.suse.cz/ [0]
-> > Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > Cc: Petr Mladek <pmladek@suse.com>
-> > ---
-> >  kernel/livepatch/core.c | 3 +++
-> >  1 file changed, 3 insertions(+)
+> > The RCU stalls still happen even if we use rcu_read_lock() as it is
+> > still in the RCU read-side critical section.
 > >
-> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> > index 0cd39954d5a1..5b2a52e7c2f6 100644
-> > --- a/kernel/livepatch/core.c
-> > +++ b/kernel/livepatch/core.c
-> > @@ -604,6 +604,9 @@ static int klp_add_object_nops(struct klp_patch *pa=
-tch,
-> >   * Add 'nop' functions which simply return to the caller to run
-> >   * the original function. The 'nop' functions are added to a
-> >   * patch to facilitate a 'replace' mode.
-> > + *
-> > + * The 'nop' entries are added only for functions which are currently
-> > + * livepatched but are no longer included in the new livepatch.
-> >   */
+> > >
+> > > Also, with the new lazy preemption model, I believe cond_resched() is
+> > > pretty much deprecated.
+> >
+> > I'm not familiar with the newly introduced PREEMPT_LAZY, but it
+> > appears to be a configuration option. Therefore, we still need this
+> > cond_resched() for users who don't have PREEMPT_LAZY set as the
+> > default.
 >
-> The new comment makes perfect sense. But I would re-shuffle the text a bi=
-t
-> to to make it more clear that it is used only in the 'replace' mode.
-> Something like:
+> IIRC, the goal is to get rid of PREEMPT_NONE and PREEMPT_VOLUNTARY (and
+> PREEMPT_DYNAMIC) and to remove almost all the cond_resched() calls.  So
+> we should really avoid adding them at this point.
 >
-> /*
->  * Add 'nop' functions which simply return to the caller to run the origi=
-nal
->  * function.
->  *
->  * They are added only when the atomic replace mode is used and only for
->  * functions which are currently livepatched but are no longer included
->  * in the new livepatch.
->  */
+> The patch already breaks out of the loop for need_resched(), is the
+> cond_resched() really needed there?  For the PREEMPT_VOLUNTARY case I
+> think it should already get preempted anyway when it releases the lock.
+>
+> And regardless, by that point it's fairly close to scheduling the
+> delayed work and returning back to the user.  That could happen even
+> sooner by skipping the "swapper" task loop.
 
-Thanks for your suggestion. I=E2=80=99ll make the change in the next versio=
-n.
+You're correct. I=E2=80=99ve verified that it can avoid the RCU stalls even
+without the cond_resched().
 
---
+--=20
 Regards
 Yafang
 
