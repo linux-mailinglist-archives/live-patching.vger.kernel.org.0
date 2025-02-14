@@ -1,91 +1,92 @@
-Return-Path: <live-patching+bounces-1197-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1198-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A89EA35CAD
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 12:37:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 583C7A360BA
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 15:44:55 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 9CE961892452
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 11:37:38 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 1CBDE1894F2C
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 14:44:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 17C2F263C7C;
-	Fri, 14 Feb 2025 11:37:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46120266590;
+	Fri, 14 Feb 2025 14:44:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="XcUnyYH2"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="AMhSVpqK"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3680262D11
-	for <live-patching@vger.kernel.org>; Fri, 14 Feb 2025 11:37:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF0C8266EE7
+	for <live-patching@vger.kernel.org>; Fri, 14 Feb 2025 14:44:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739533039; cv=none; b=hCyEm81SACN/iuL3geyujIazT58K2Cj2dhvUA6+mfGgaY0h8o8exFy/8Gmop3DhP0UydVio3rVsJl4iNSh1ecTKIVPdbZiH3aRfl9ylEOi0/eforgbYcLgMRO6AoGERqsg+a27ulZ9QYfnN6X+BiYlMS9TbnszfXURzg6q+dA4I=
+	t=1739544256; cv=none; b=AvWT6BaV94JoBvj10R3aa/FizaZE6NaMUKtcDfknWU7ZYy935nCmGn53ZEeXIk6i6WjtAY6jaTR9SRZSwXLLEOOTXxb0qzJJvUY1GEzCipcPGjVs8DpsmSXjrwxt66PjsSFATAY9Q7Z7W6+iIgSwWMOCP/zyMU2sRIi5heXF/I4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739533039; c=relaxed/simple;
-	bh=QRuO1I8/cPbbmXLJq8QfXDR6PNbTSXSgQYPenj7sfZI=;
+	s=arc-20240116; t=1739544256; c=relaxed/simple;
+	bh=QZgp11yHjWSURR23Z6+mYbF4dlTwpSkZfMboEgwUGUw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uRVTbhYNsbLWi38VD4Db6Iwh/XkHmmnRGvX85FTEQAmyMpohonJQ1FQsPeH+t9vemEds3jX3enyMJMIBT7xXeBWsfDXUraFY3Rgmlu5S8D25izNIX0XUfNK50tzYIg8Jxn5v1d3I0NoO7rVYQGZWWfkYsuGuSCzFrFEYu9qpIc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=XcUnyYH2; arc=none smtp.client-ip=209.85.208.46
+	 Content-Type:Content-Disposition:In-Reply-To; b=PeSI/qNUmgBGK6ScyhGtB6XQBW01blcT1jxwyH/PJov7ttwvgN73sGP5ouBECQoYl4qbIuod1W1AAkD1S2EeCU9DqHk52jjYd+WdPA7V7cTh+k+++6PtuSVYGHMuXsB+hElJ1+LvaRBBUHMzLXJvA4O80gX5Dze17+w7/e6gGGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=AMhSVpqK; arc=none smtp.client-ip=209.85.208.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5ded1395213so2778806a12.2
-        for <live-patching@vger.kernel.org>; Fri, 14 Feb 2025 03:37:16 -0800 (PST)
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5dca468c5e4so3816531a12.1
+        for <live-patching@vger.kernel.org>; Fri, 14 Feb 2025 06:44:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1739533035; x=1740137835; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1739544252; x=1740149052; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=acMkvdPbwbDy99R6pSYIkOvUKxnq+jcBTCUtRoirGb0=;
-        b=XcUnyYH2QGEl0UX4q4M4+mZfQBB/6ki0Lo8uTNYPUukNZkpXQcS7voNtKGG52w1+fj
-         E3mqqVZ5N8ByJb5w06mnsxNV+bAmvck9Yd6VtXzAhcXAOofzohSmqDk/rHYsqRudXIip
-         dlOCj77zc2ryWky2xllWtUDnOsDePQrqUhYNDs6PTdq+2uTTQk9+WuunhLyEPHCCAGTp
-         Op2/CktwCFS0a9vEvrWK1jm1XocCB2miE2BMAbQC5cFXs/phYQRqJ9w1I/p0/bVOOrLy
-         5mtj5Es371WKyhUBANyPC5GoDxnLyy5cPMMQzT0hEbrvZAuW35Oe7DVnU7HuUjnaSv1E
-         P5/g==
+        bh=KgXBl6kfQe4WoakWk7TmVbhQT6wDBguGYyLw1VkJ2G8=;
+        b=AMhSVpqKoFIiLycNTOaBl9pSWqSovV/buRRccp4bbhwygbBtyqNV4ocePstr1UpwcD
+         9o3iUS2tWkTfJO6MxkX6yhsoNmCf4tMnHwHG6Xwzv/vnNumoIKoTUl+YBeGRuloUbX8a
+         +qSbUcIiEsav9UFp5VjONIjEAyy12pIPSls2+SETWg6Lt9XqDAWQBtf3DpWB87RiaAfG
+         EdHjwonyWCiFZ5qb6AJggmWBFeS5ri759S6RH0Of+8/+DvZtedp8ft/RpXvCqSzCTJCU
+         qPsxjYRAY0Qg8mF1tpW6Yyv2+9K3MRC9nBcgg+G7Mkf15KzOhPB/hXuJeArBma8iyOnI
+         Iq0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739533035; x=1740137835;
+        d=1e100.net; s=20230601; t=1739544252; x=1740149052;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=acMkvdPbwbDy99R6pSYIkOvUKxnq+jcBTCUtRoirGb0=;
-        b=valAaPyLvnYQgwGECro/DaQWZiR/iNTmHCmLeEt8Uh72i0tOdedSyCleeYdMG6b+Me
-         duuyiU1jcnkBwMF888DP/KVBtq9JPOLSqOWuaXbEU4Nto60+qdq7Gksj8Xzww9AqWMdg
-         f9H2coHvlayrWYwF+EHy1fcUztN7yqcctC3y5gX0MQ2vBG6np+xY0srEKIpMtEf9Hnr/
-         usxepctUR/cr9OSySVBfMEIcQW+8/84pSbvBZE0gBsxLmAyxs+NpJ6f+e+UANTNaOFyI
-         7MNMZQ7F7RaBGs5+9ZV8ABg/MybCVYn5AKvfShKaQPMeX300xEKmz1rC7C0o+urJrfSv
-         FZhw==
-X-Forwarded-Encrypted: i=1; AJvYcCUi0ftOBmF3VlMzviCcxztth9nLxlqndATtN5Ljejw1xtkyknfran5LVaBkxGX+rmOeBfsdtZGVU/UO1zb7@vger.kernel.org
-X-Gm-Message-State: AOJu0YzzwdnY22I/cCzNZKpJykkWfk/SyUttciOl2KtuT2V6xhdQeMkg
-	92RuCH8chZy6tP3MRKeKehMDDK8jja8EVenhxb9j8Gkxno5neXGr+RaXkt4i80Y=
-X-Gm-Gg: ASbGncuIiIWav4sUjsPpgqqxmUBdwLaWKeNtugMcN1L3zL3+gbBjvTgUvj8Eh10wRFi
-	3omOUsvEG+/6n4xrbITEP5uEydOZwuyu/OpCF7Y7FQLGUZo6osWPItn8jyMVPxqsFVVL0diErEK
-	Vka8SBSdoTPk4UubW7ytgrqjYD9ud+Q1lhY1fhZySk2TyklFjwBGsQ1UTSLN5jLyNspRDLrPXeu
-	6snmEC97t3xquweF8CpTGCvd6UZtnAPo2H+4oHlvsoHIF2bOcCVa10mISuiUtf9nT5GQZj6Qsfj
-	9551N3nUvZwPTR+CQg==
-X-Google-Smtp-Source: AGHT+IFXO0bc98TILisSLWFo9DMtGHe+NJnAu+3bVoZrVskI5Vwj+5fj8+osdoMG6pvRImmQlCvYfA==
-X-Received: by 2002:a05:6402:4494:b0:5de:4acc:8a97 with SMTP id 4fb4d7f45d1cf-5dec9e791dbmr6368709a12.8.1739533035167;
-        Fri, 14 Feb 2025 03:37:15 -0800 (PST)
+        bh=KgXBl6kfQe4WoakWk7TmVbhQT6wDBguGYyLw1VkJ2G8=;
+        b=rtyzadiaIQgRbHOwocHR8L3cr18ZfvcTFut889s7Tsy8jjoSQIq/Z+b8Tp5fsMyadq
+         Rj8bH0u4Sd2lOpVurjxevvNcO5o17adgwUFbrY4gZmeB1o0BVwJcjBCiW6xocpS9eFzq
+         Tp14egK5RTFJyqO8GSMDrYqBjour33HKgA+vH79X4BJEaXaa7vkMvFJqKH+80BW7R6F2
+         sR4JzPcL50v//lEduqAObg4Y2Ee740URBuQFYhyzuExUlW3K/OQGIW9vh/L7uBfbZox/
+         QxBxlNCgbGKaslKRyOit/vmIy7XX821wZAncLVyLwJiywQwYo6vJktnWu+w5RgMowZeJ
+         Ib5Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXihYsDq+Nt5tFQzuLVDt7UmD7vRp6K7PTgeJu/H8/G4/muZybAn0xMNX+WyAnVWPZKorvgmycGHuWRqeqc@vger.kernel.org
+X-Gm-Message-State: AOJu0YzXc3bNYsy3mfZ7gHrz7D10LgO65Mlvv9oZgTCh8OwD5L9ui9CT
+	fO5/cTF3wiGs2HMjOrn31VGcoCLpUX3fR7EkZX4+ZFSwWgCqBenZJBZzC9ZkmZI=
+X-Gm-Gg: ASbGncuc1wofh94bV8OoJqB88gO5cqR8kMDjKR4iYCN/jS2ltCxZd2q7iqIsWQV82Bx
+	6wFkq0YWE826SpueavZKAXRBH8O21hR0Ujbp6AjT/NbVF+PTzdRJ8GfUNHSZ4GZABFPUkYKmbSA
+	OrkTXvry6X8IYq8YBt+rjcvwb2N9wUpESg+tjqitANC9OF8nkh34gKro7VTfRLEsQd52Hpfeiw7
+	v9WgQdmZapD94Fll+GTwca90kmAEf5kNIpwNctZRwGF+BkqnIOH3z6wXK6ntnJ9ll9JUWZob714
+	BreZWP1w0gvh3RKMng==
+X-Google-Smtp-Source: AGHT+IGtaR2Lw7gIuJ6kRCKcLuFlDHl6GHCZSvkTrV0nNKx9yaTa5AuZOsws3UiVDj0dhY9qcsdevw==
+X-Received: by 2002:a05:6402:2788:b0:5db:f26d:fff8 with SMTP id 4fb4d7f45d1cf-5dec9ffa08emr6475629a12.22.1739544252116;
+        Fri, 14 Feb 2025 06:44:12 -0800 (PST)
 Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dece1c4692sm2773062a12.31.2025.02.14.03.37.14
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dece270a7fsm3025761a12.58.2025.02.14.06.44.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2025 03:37:14 -0800 (PST)
-Date: Fri, 14 Feb 2025 12:37:13 +0100
+        Fri, 14 Feb 2025 06:44:11 -0800 (PST)
+Date: Fri, 14 Feb 2025 15:44:10 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: Yafang Shao <laoar.shao@gmail.com>, jikos@kernel.org, mbenes@suse.cz,
 	joe.lawrence@redhat.com, live-patching@vger.kernel.org
-Subject: Re: Find root of the stall: was: Re: [PATCH 2/3] livepatch: Avoid
- blocking tasklist_lock too long
-Message-ID: <Z68q6TfUGpsmkHUD@pathway.suse.cz>
+Subject: Re: [PATCH 2/3] livepatch: Avoid blocking tasklist_lock too long
+Message-ID: <Z69Wuhve2vnsrtp_@pathway.suse.cz>
 References: <20250211062437.46811-1-laoar.shao@gmail.com>
  <20250211062437.46811-3-laoar.shao@gmail.com>
- <Z63VUsiaPsEjS9SR@pathway.suse.cz>
- <CALOAHbDEcUieW=AcBYHF1BUfQoAi540BNPEP5XR3CApu=3vMNQ@mail.gmail.com>
- <CALOAHbD+JYnC0fR=BaUvD9u0OitHM310ErzN8acPkFZZwH-dJQ@mail.gmail.com>
- <CALOAHbB46k0kqaH8BZk+iyL46bMbz03Z8sk7N+XuYM3kthTsNw@mail.gmail.com>
- <20250214083603.53roteiobbd5s4de@jpoimboe>
+ <20250212004009.ijs4bdbn6h55p7xd@jpoimboe>
+ <CALOAHbDsSsMzuOaHX2ZzgD3bJTPgMEp1E_S=vERHaTV11KrVJQ@mail.gmail.com>
+ <CALOAHbDEBqZyDvSSv+KTFVR3owkjfawCQ-fT9pC1fMHNGPnG+g@mail.gmail.com>
+ <Z6zBb9GRkFC-R0RE@pathway.suse.cz>
+ <20250213013603.i6uxtjvc3qxlsqwc@jpoimboe>
+ <Z62_6wDP894cAttk@pathway.suse.cz>
+ <20250213173253.ovivhuq2c5rmvkhj@jpoimboe>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -94,53 +95,52 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250214083603.53roteiobbd5s4de@jpoimboe>
+In-Reply-To: <20250213173253.ovivhuq2c5rmvkhj@jpoimboe>
 
-On Fri 2025-02-14 00:36:03, Josh Poimboeuf wrote:
-> On Fri, Feb 14, 2025 at 10:44:59AM +0800, Yafang Shao wrote:
-> > The longest duration of klp_try_complete_transition() ranges from 8.5
-> > to 17.2 seconds.
+On Thu 2025-02-13 09:32:53, Josh Poimboeuf wrote:
+> On Thu, Feb 13, 2025 at 10:48:27AM +0100, Petr Mladek wrote:
+> > On Wed 2025-02-12 17:36:03, Josh Poimboeuf wrote:
+> > > Or, we could do something completely different.  There's no need for
+> > > klp_copy_process() to copy the parent's state: a newly forked task can
+> > > be patched immediately because it has no stack.
 > > 
-> > It appears that the RCU stall is not only driven by num_processes *
-> > average_klp_try_switch_task, but also by contention within
-> > klp_try_complete_transition(), particularly around the tasklist_lock.
-> > Interestingly, even after replacing "read_lock(&tasklist_lock)" with
-> > "rcu_read_lock()", the RCU stall persists. My verification shows that
-> > the only way to prevent the stall is by checking need_resched() during
-> > each iteration of the loop.
+> > Is this true, please?
+> > 
+> > If I get it correctly then copy_process() is used also by fork(2) where
+> > the child continues from fork(2) call. I can't find it in the code
+> > but I suppose that the child should use a copy of the parent's stack
+> > in this case.
 > 
-> I'm confused... rcu_read_lock() shouldn't cause any contention, right?
-> So if klp_try_switch_task() isn't the problem, then what is?
+> The child's *user* stack is a copy, but the kernel stack is empty.
+> 
+> On x86, before adding it to the task list, copy->process() ->
+> copy_thread() sets the child's kernel stack pointer to empty (pointing
+> to 'struct inactive_task_frame' adjacent to user pt_regs) and sets the
+> saved instruction pointer (frame->ret_addr) to 'ret_from_fork_asm'.
+> 
+> Then later when the child first gets scheduled, __switch_to_asm()
+> switches to the new stack and pops most of the inactive_task_frame,
+> except for the 'ret_from_fork_asm' return value which remains on the top
+> of the stack.  Then it jumps to __switch_to() which then "returns" to
+> ret_from_fork_asm().
 
-I agree that it does not make much sense.
+Right. Only the *user* stack is a copy.
 
-> I wonder if those function timings might be misleading.  If
-> klp_try_complete_transition() gets preempted immediately when it
-> releases the lock, it could take a while before it eventually returns.
-> So that funclatency might not be telling the whole story.
+I guess that we really could consider the new task as migrated
+and clear TIF_PATCH_PENDING.
 
-The scheduling might be an explanation.
+But we can't set child->patch_state to KLP_TRANSITION_IDLE. It won't
+work when the transition gets reverted. [*]
 
-> Though 8.5 - 17.2 seconds is a bit excessive...
-
-If klp_try_complete_transition() scheduled out and we see this delay
-then the system likely had a pretty high load at the moment.
-Is it possible?
-
-Yafang, just to be sure. Have you seen these numbers with
-the original klp_try_complete_transition() code and with debug
-messages disabled?
-
-Or did you saw them with some extra debugging code or other
-modifications?
-
-Also just to be sure. Is this on bare metal?
-
-Finally, what preemption mode are you using? Which CONFIG_PREEMPT*?
-
-Best regards,
+Best Regards,
 Petr
 
-PS: JFYI, I have vacation the following week and won't have
-    access to mails...
+[*] I gave this few brain cycles but I did not find any elegant
+    way how to set this a safe way and allow using rcu_read_lock()
+    in klp_try_complete_transition().
+
+    It might be because it is Friday evening and I am leaving for
+    a trip tomorrow. Also I not motivated enough to think about it
+    because Yafang saw the RCU stall even with that rcu_read_lock().
+    So I send this just for record.
 
