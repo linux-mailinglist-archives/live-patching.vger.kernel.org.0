@@ -1,116 +1,115 @@
-Return-Path: <live-patching+bounces-1201-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1202-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A0FCA3657E
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 19:12:10 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 48CEFA36585
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 19:13:10 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 952DA7A6647
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 18:10:55 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F3DDD1732B9
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 18:12:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87151269807;
-	Fri, 14 Feb 2025 18:10:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4009268C7E;
+	Fri, 14 Feb 2025 18:12:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bZ4ckviD"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uDhVC6Ri"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A2402690ED;
-	Fri, 14 Feb 2025 18:10:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFBE82686B4
+	for <live-patching@vger.kernel.org>; Fri, 14 Feb 2025 18:12:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739556643; cv=none; b=O2TN9J5Bt3OCSBeoZebKsKQ8WIwGHuYM32Q6yRLm0heyvo4TMrk7tjqdRDtGM+YyT/yi6tpr33ErLBKswjR269WeFF0zkghsbSMN7Q/IXuGujO/yGDu3oUULxRkzKi9vxbrA4xwY6H/ZJr/VwLHuYL19R7bBBm13H6lu/PM8V5o=
+	t=1739556728; cv=none; b=CsYNeFQtah25N4MUYCUNAfOCtsMOu1CxokNMxstDK6Uh9CXl0sWur6PzF5WPliS2312txCsXB6YLWVgyD4TRrbzfN8LpdD1bqHtr/B8OwnLXqw1t905VLKp9Mbrr0D8nC3rFxwIfv2hY/w+99ZNhMmoGXMC8gwedmPnB0WOLVRE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739556643; c=relaxed/simple;
-	bh=qsZ3M7HjZdTjo5f5WrSVbOZM9SW596Y6SP7V0X9VgQ8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=utGzZqnjyW0RgRItz015M8vGLIhG5IYEHKe5WWl4ns5F5ZY8CSi+og81FzKV2k4TFbr9RaCrPcfz4cow7sWTm4ic2pnOvDjPFSun1fiEPbs5AcbrWgdo9dB8D1WF7I/V/NbKny8xx5pB+STBDnwvLstF1PQXD84yAZHrBIhWlyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bZ4ckviD; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE448C4AF09;
-	Fri, 14 Feb 2025 18:10:41 +0000 (UTC)
+	s=arc-20240116; t=1739556728; c=relaxed/simple;
+	bh=IE6AlM52FuUyZ9EJGSQYDKiCFQ3JI2Ju5oSerDTtN2A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RLr8f8h6tbr36Tp+EM4gw2R8grNlDnpxVBZcVGJtEY2fKoYj2UNhzX8CYEMn1q+r+FVNqO2vZ2Ca/73duuBnqmZntrOxs8pFyuYVTuW+Pal2I0wbwu64rywM4d4+AIftmNddErW1DOcFKFiSvWNrZ3NcV7MN0S4E8ZDjtZN4Kxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uDhVC6Ri; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD6DBC4CED1;
+	Fri, 14 Feb 2025 18:12:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739556641;
-	bh=qsZ3M7HjZdTjo5f5WrSVbOZM9SW596Y6SP7V0X9VgQ8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=bZ4ckviDNzJRoX58jtuwMBbs3xQ14eqGG8zrnD5z2qhjAnWh7XAbqnv24/noOLgLu
-	 olEqflJMzBqxLIEUyMVH3F4JxPU9p/38924gRExVw4lASKGNfh4Y0RKowlVmoMp+y9
-	 WrNx86OLMB/QPjzgAASBK3Cbi/Pz21kAMqpUQNneKoJPJUQ4/2UWGhc/0tYX1Ms1zp
-	 eB8cqCL00KIgU7sdFtDTngq0t2on1bw6LCWt1GzyeaCQkPVYQjfQv/nOu4ib+I40lY
-	 neKX0TUZmlPfSyUhUPHyxMw+0W8iXRWqAGjUL7JJhuY6e8NptBhrP7LztciXGJRnoD
-	 OdYj8zyXXbjPw==
-Received: by mail-il1-f172.google.com with SMTP id e9e14a558f8ab-3d18654e8d6so17688385ab.2;
-        Fri, 14 Feb 2025 10:10:41 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCU7T4+v5D4WCoJlBLnJ/0yPrhXNAm9893daDVUfLpRkewxsA7iZjQF6A+f3Qd3OPrqWg/Oxu8oq0nzIBGe5lw==@vger.kernel.org, AJvYcCV+HV9PdLRDRGYorpaTxTDIDaifGmvv0idAAzlN9b02u59ocGJITqvsiOe+vUPLsHAwZtKR2PJVy9TiYOA=@vger.kernel.org, AJvYcCVV7APkoCgPCFjf3E9j8hyQPiHg1j2FxVqUBkVN52/MbPTIo8Ma/LLPjis44FQZHclKAj89ABZuR/j6Yb7ZGopn0A==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7vZXdkUhAlFYM9GgpJwETlJFfPn+RXLAWWN92usJny2bD5ZEs
-	JOz3gY0iHr8LOJtwcdKzT7u9otR1prqaJqAHbMFA2qCu8EIHCO1DJWOIpLWahljcllGBMasRVt/
-	FkGrFNl/nBDfskSs0YLZwIOr35Dc=
-X-Google-Smtp-Source: AGHT+IG8JZIw5oJUYOuAL23YnIRiuk4cQKNQCcLNAYc2hmGsxchwTn9wwIBLREFhDO96qyScsuyGb1CQAAe2KZkUZEM=
-X-Received: by 2002:a05:6e02:3103:b0:3d0:4e0c:2c96 with SMTP id
- e9e14a558f8ab-3d280771b4cmr3760875ab.2.1739556641173; Fri, 14 Feb 2025
- 10:10:41 -0800 (PST)
+	s=k20201202; t=1739556728;
+	bh=IE6AlM52FuUyZ9EJGSQYDKiCFQ3JI2Ju5oSerDTtN2A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=uDhVC6RiO/WbZiHqcPn56S9E6YjvJG/E8mtoGeLaTqD4RMnyF+8NBjDvQLUhU0Xii
+	 jIiiwq/1h2kdStXwoIdkhlbXojrxpnay/AXnOKOUBoH4p72oQ46yiNUcM0s6e35HCk
+	 n630r4v69ZMFHgrm/R3TqNZXADZujbuU9m3QX3FLUiua/qM7ZQI5s7pSUP9wThR/1L
+	 n7NzI/UcNnKdjLvH5JrQweTkay2BhLJwKmyUv+UXfN82M5W9r7mwHZRyp9ZrR3lEHY
+	 vJmxOzBIzJ71nxBgGBEE6Kjgpx7cxVUYWENRHgtF5FUoCUIn+NQgv9sOe1h+E684nc
+	 iLjCvHq1ps/Vw==
+Date: Fri, 14 Feb 2025 10:12:06 -0800
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Yafang Shao <laoar.shao@gmail.com>, jikos@kernel.org, mbenes@suse.cz,
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org
+Subject: Re: [PATCH 2/3] livepatch: Avoid blocking tasklist_lock too long
+Message-ID: <20250214181206.xkvxohoc4ft26uhf@jpoimboe>
+References: <20250211062437.46811-1-laoar.shao@gmail.com>
+ <20250211062437.46811-3-laoar.shao@gmail.com>
+ <20250212004009.ijs4bdbn6h55p7xd@jpoimboe>
+ <CALOAHbDsSsMzuOaHX2ZzgD3bJTPgMEp1E_S=vERHaTV11KrVJQ@mail.gmail.com>
+ <CALOAHbDEBqZyDvSSv+KTFVR3owkjfawCQ-fT9pC1fMHNGPnG+g@mail.gmail.com>
+ <Z6zBb9GRkFC-R0RE@pathway.suse.cz>
+ <20250213013603.i6uxtjvc3qxlsqwc@jpoimboe>
+ <Z62_6wDP894cAttk@pathway.suse.cz>
+ <20250213173253.ovivhuq2c5rmvkhj@jpoimboe>
+ <Z69Wuhve2vnsrtp_@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250127213310.2496133-1-wnliu@google.com> <CAPhsuW6S1JPn0Dp+bhJiSVs9iUv7v7HThBSE85iaDAvw=_2TUw@mail.gmail.com>
- <00fa304d-84bf-4fca-9b9a-f3b56cd97424@oracle.com> <CAPhsuW4ct6W_4B0LFEjLePH1pAeNm4h8ePuQ3HcSoknXhQWN0w@mail.gmail.com>
- <mb61p1pw21f0v.fsf@kernel.org> <CAPhsuW5VCmuPLd8wwzBp_Divnu=uaZQcrRLsjsEOJ9GmA0TR5A@mail.gmail.com>
- <mb61pseoiz1cq.fsf@kernel.org> <CAPhsuW7bo4efVYb8uPkQ1v9TE95_CQ6+G3q4kVyt-8g-3JD6Cw@mail.gmail.com>
- <mb61pr0411o57.fsf@kernel.org> <CAPhsuW7fBkZaKQzLvBqsrxTvpJsfJfUBfco4i=-=C_on+GdpKg@mail.gmail.com>
- <mb61p7c5sdhv6.fsf@kernel.org>
-In-Reply-To: <mb61p7c5sdhv6.fsf@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Fri, 14 Feb 2025 10:10:29 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6vDYjiy1_tOhy--ULC8UWtpu4E_nd8uY8qg98eLuygQw@mail.gmail.com>
-X-Gm-Features: AWEUYZlpNf1avV1LJZl1tk2itoEk1uL2WdB4o2NSm5faGZWiZiU7f7T7DB78KCg
-Message-ID: <CAPhsuW6vDYjiy1_tOhy--ULC8UWtpu4E_nd8uY8qg98eLuygQw@mail.gmail.com>
-Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
-To: Puranjay Mohan <puranjay@kernel.org>
-Cc: Indu Bhagat <indu.bhagat@oracle.com>, Weinan Liu <wnliu@google.com>, 
-	Josh Poimboeuf <jpoimboe@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev, 
-	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-	joe.lawrence@redhat.com, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Z69Wuhve2vnsrtp_@pathway.suse.cz>
 
-Hi Puranjay,
+On Fri, Feb 14, 2025 at 03:44:10PM +0100, Petr Mladek wrote:
+> I guess that we really could consider the new task as migrated
+> and clear TIF_PATCH_PENDING.
+> 
+> But we can't set child->patch_state to KLP_TRANSITION_IDLE. It won't
+> work when the transition gets reverted. [*]
 
-Thanks for running the tests.
+Hm, why not?  I don't see any difference between patching or unpatching?
 
-On Fri, Feb 14, 2025 at 12:56=E2=80=AFAM Puranjay Mohan <puranjay@kernel.or=
-g> wrote:
-[...]
-> >
-> > I am really curious whether you have the same problem in your
-> > setup.
->
-> Hi Song,
->
-> I did this test and found the same issue as you (gdb assembly broken),
-> but I can see this issue even without the inlining. I think GDB tried to
-> load the debuginfo and that is somehow broken therefore it fails to
-> disassemblt properly.
+klp_init_transition() has a barrier to enforce the order of the
+klp_target_state and func->transition writes, as read by the
+klp_ftrace_handler().
 
-Yes, this matches my observations: gcc-11 generates the .ko that
-confuses gdb.
+So in the ftrace handler, if func->transition is set and the task is
+KLP_TRANSITION_IDLE, it can use klp_target_state to decide which
+function to use.  Its patch state would effectively be the same as any
+other already-transitioned task, whether it's patching or unpatching.
 
-I tested with two versions of gdb (10.2 and 14.2), both have the
-problem. OTOH, lldb is able to disassemble copy_process from a
-gcc-compiled .ko file properly.
+Then in klp_complete_transition(), after func->transition gets set to
+false, klp_synchronize_transition() flushes out any running ftrace
+handlers.  From that point on, func->transition is false, so the ftrace
+handler would no longer read klp_target_state.
 
-> But even with inlining, I couldn't see the warning about the refcount
-> with my setup.
+> [*] I gave this few brain cycles but I did not find any elegant
+>     way how to set this a safe way and allow using rcu_read_lock()
+>     in klp_try_complete_transition().
+> 
+>     It might be because it is Friday evening and I am leaving for
+>     a trip tomorrow. Also I not motivated enough to think about it
+>     because Yafang saw the RCU stall even with that rcu_read_lock().
+>     So I send this just for record.
 
-This also matches my observations. gcc-11 compiled livepatch
-works fine.
+Even if it doesn't fix the RCU stalls, I think we should still try to
+avoid holding the tasklist_lock.  It's a global lock which can be
+contended, and we want the livepatch transition to be as unobtrusive as
+possible.
 
-Thanks,
-Song
+If the system is doing a lot of forking across many CPUs, holding the
+lock could block all the forking tasks and trigger system-wide
+scheduling latencies.  And that could be compounded by the unnecessary
+transitioning of new tasks every time the delayed work runs.
+
+-- 
+Josh
 
