@@ -1,47 +1,47 @@
-Return-Path: <live-patching+bounces-1207-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1208-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 390BEA3663F
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 20:38:33 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0079AA3665B
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 20:44:14 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DAC3416E6D9
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 19:38:29 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 882C118923FD
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 19:44:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0ADE1B6CE3;
-	Fri, 14 Feb 2025 19:38:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF6461D7985;
+	Fri, 14 Feb 2025 19:42:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZnhThuL1"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="If1z8UYM"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 828371B3F3D;
-	Fri, 14 Feb 2025 19:38:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0DE91C84B3;
+	Fri, 14 Feb 2025 19:42:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739561902; cv=none; b=lrIfgih/BnwSe0iY7Kpc2SWCln+IX3OO1BriJ6NZEP1JiO+lcFttgTMjqdzhWmkVtjoxD7m89o1ytGICkbAvxZcorr6xY6Mn43Rl0RYzP8yIQ6z96REpqMjpJiqkiFeB5V3joHEqZ/mD8Ehcy0ihY0T+abZrHgkvuC+LYp289/o=
+	t=1739562164; cv=none; b=Z2t+PMMjExWMKlJVi32qMrNwvZ712gVafgS77ahtksRg00IaVsVoin6h/dcvn6Lzagliehg+Ed+TBhZZp8cTWqYoRrfU0O5DGLlcfqWiPuRvauBlNvbBR6Nwrongar48ddfBAS2X9xwhzDXwJJJTQdI0IKTJ0Vl9RILX5LDy/Mg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739561902; c=relaxed/simple;
-	bh=V9sAZVtvPpbSHwjX3+ZKyFuEV2FgXN7gDRROnOTXxIQ=;
+	s=arc-20240116; t=1739562164; c=relaxed/simple;
+	bh=j8RbUnTVR+Rmdyxe3mjujeaLymNY6BVjB/yjOURYHBI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MHoTW5TSQ843CxSI5VIIeuidcKP7Z6j+HHm0CQra5yr1DHvanERIKkD4421ZzQ03Xd6qPTiqZzGJVJ53Xkv+UikWHi0DjfnxKhKo/EtRTYZOdCk36+HRgvpKIaxLLHCLrpuFFuWd+w7iBjGmon8dxupP7vYE4z3G9nxyUZVpktw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZnhThuL1; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E2DFC4AF09;
-	Fri, 14 Feb 2025 19:38:21 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=tD+hhCrn2rwzzvf3zFmw8T65NFXLvn76XcJdc2mUm7GmuqO+s5GpJTxeGjySFUZICszrMo2YuXkX4amB5FNGzP6R3h1OA1duDvc7kWw16YvqxuJB/WJpMNFIvNvH0llEqev5ZZQ9elC3k1Vfd5ToZncANpLBPKHCsrkZBTAR9jA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=If1z8UYM; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA5BDC4CED1;
+	Fri, 14 Feb 2025 19:42:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739561902;
-	bh=V9sAZVtvPpbSHwjX3+ZKyFuEV2FgXN7gDRROnOTXxIQ=;
+	s=k20201202; t=1739562163;
+	bh=j8RbUnTVR+Rmdyxe3mjujeaLymNY6BVjB/yjOURYHBI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZnhThuL1rcyP/53Er7fRg9dl+i87uptxy5JQc7SC4U6VmxXJ+WDod5dQKlypT9FeX
-	 j84/E3srsPnLeibvW05a7qQd6yW7DfP9qhQY8kti0796mhX2AnWAK1N5CCbmk1ZJZm
-	 GLM6JpU50PhHU01Ab3frOCCpEWSIO8AsC0J8b82gmgQJJMebcU1WlIUapLTvpAjv5n
-	 m6KDXAL0CXO+GEqzCLB7T1yaudSUIhnp+00c3K4/EYEMTB83+DTP4onhooYBeG00hf
-	 LqMauNPIGSrgMOtWZxmc9Jp7NLCQlMQ9O65BXS/qRw2+4fmL4BK1vWGcT9ZkQ+o3K8
-	 gLVdiRpc9Jp8g==
-Date: Fri, 14 Feb 2025 11:38:19 -0800
+	b=If1z8UYMrV18l2O39VsnXxyaZX8j5zqCs7PfU7UiHofpUd0X0H+YHHVk1t/Zw+b4/
+	 eL+iiJzA1kIcgYiZQWhrjTrE8gm4hDWOkx1Xkziz4YBmkbRF6uSvpyObFlqsZ9+c4D
+	 4HfNbweBxiFFpugcKa++4K7rPMll4aqQB6BNnQlWlFXjYpQ+e3Q4lXOCtvCgFex/gj
+	 12AQ1FPMo7xdby/Gdbc00tsCjGcqjWxkbGzIUR67jveSRPnpVEzoE6ohrSxUjPxx8d
+	 SIlFCyr5xnX9Sx5EMfpt/w7xgyik+6soixxL8IXY16+k++w4OZI4PIGG1egPo/0zym
+	 5vltoOGyMwrhA==
+Date: Fri, 14 Feb 2025 11:42:41 -0800
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Puranjay Mohan <puranjay@kernel.org>
 Cc: Indu Bhagat <indu.bhagat@oracle.com>, Song Liu <song@kernel.org>,
@@ -53,9 +53,8 @@ Cc: Indu Bhagat <indu.bhagat@oracle.com>, Song Liu <song@kernel.org>,
 	live-patching@vger.kernel.org, joe.lawrence@redhat.com,
 	linux-arm-kernel@lists.infradead.org
 Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
-Message-ID: <20250214193819.22yet42umilpugv5@jpoimboe>
-References: <CAPhsuW6S1JPn0Dp+bhJiSVs9iUv7v7HThBSE85iaDAvw=_2TUw@mail.gmail.com>
- <20250212234946.yuskayyu4gx3ul7m@jpoimboe>
+Message-ID: <20250214194241.3aymq2kr6gky5zfv@jpoimboe>
+References: <20250212234946.yuskayyu4gx3ul7m@jpoimboe>
  <CAPhsuW5TeMXi_Mn8+jR9Qoa=rAWasMo7M3Hs=im6NT6=+CrxqA@mail.gmail.com>
  <20250213024507.mvjkalvyqsxihp54@jpoimboe>
  <CAPhsuW4iDuTBfZowJRhxLFyK=g=s+-pK2Eq4+SNj9uL99eNkmw@mail.gmail.com>
@@ -64,6 +63,7 @@ References: <CAPhsuW6S1JPn0Dp+bhJiSVs9iUv7v7HThBSE85iaDAvw=_2TUw@mail.gmail.com>
  <f8d93a1b-3ad0-4e19-846f-c08d9cb19f48@oracle.com>
  <d91eba9a-dbd1-488f-8e1b-bc5121c30cd1@oracle.com>
  <mb61p1pw0qrpi.fsf@kernel.org>
+ <20250214193819.22yet42umilpugv5@jpoimboe>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -72,18 +72,25 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <mb61p1pw0qrpi.fsf@kernel.org>
+In-Reply-To: <20250214193819.22yet42umilpugv5@jpoimboe>
 
-On Fri, Feb 14, 2025 at 06:58:01PM +0000, Puranjay Mohan wrote:
-> and the linker script has this line:
+On Fri, Feb 14, 2025 at 11:38:22AM -0800, Josh Poimboeuf wrote:
+> On Fri, Feb 14, 2025 at 06:58:01PM +0000, Puranjay Mohan wrote:
+> > and the linker script has this line:
+> > 
+> > .sframe : AT(ADDR(.sframe) - 0) { __start_sframe_header = .; KEEP(*(.sframe)) __stop_sframe_header = .; }
+> > 
+> > So, do can you suggest the best way to fix these warnings?
 > 
-> .sframe : AT(ADDR(.sframe) - 0) { __start_sframe_header = .; KEEP(*(.sframe)) __stop_sframe_header = .; }
+> Just add *(.init.sframe) like so:
 > 
-> So, do can you suggest the best way to fix these warnings?
+> .sframe : AT(ADDR(.sframe) - 0) { __start_sframe_header = .; KEEP(*(.sframe) *(.init.sframe)) __stop_sframe_header = .; }
 
-Just add *(.init.sframe) like so:
+Actually each probably needs its own KEEP:
 
-.sframe : AT(ADDR(.sframe) - 0) { __start_sframe_header = .; KEEP(*(.sframe) *(.init.sframe)) __stop_sframe_header = .; }
+...  KEEP(*(.sframe)) KEEP(*(.init.sframe)) ...
+
+or so.
 
 -- 
 Josh
