@@ -1,139 +1,431 @@
-Return-Path: <live-patching+bounces-1190-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1191-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 252A4A353F4
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 02:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id BB426A354FE
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 03:45:42 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id C5D64188FB6F
-	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 01:59:09 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 088F31891017
+	for <lists+live-patching@lfdr.de>; Fri, 14 Feb 2025 02:45:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49E1584FAD;
-	Fri, 14 Feb 2025 01:58:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C2BF970831;
+	Fri, 14 Feb 2025 02:45:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jIrX+yVY"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fDIKkTSQ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C641E502;
-	Fri, 14 Feb 2025 01:58:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA858275414
+	for <live-patching@vger.kernel.org>; Fri, 14 Feb 2025 02:45:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739498339; cv=none; b=ADE6urtNouMfyMKDfaO9F/gf/pNbHyYfwiOy1sa7YFotCFWoHwR53eC6gk0VyWHAAXuyvhXFItG8dgiiIc5hSrVy1a3sAe0Tp7TxZKZagykhZ+hxS2N9iYldaYSUVUyRyIXzK/W9ZOtyiF+fxETMKK0LSJkJ64XYgDN+JTuisIg=
+	t=1739501138; cv=none; b=jVOapgFNuEL2865IaJ5ERk8yVXXdQZAa5zDCk97hKs7Vthq9a0X9XcDs0/jNb/S6MQ8r67oiY9Ozpr18IrZ/jRbqedHGQEmrmzXj2VguMpJtRIdv3Y/eb/y0r4yrmTftxQ7EcdWAgaO24RMU5gTvUI5r/9850cBKcT7MZAdx704=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739498339; c=relaxed/simple;
-	bh=AtX4TcfqYpcyFBoqwkZl/9Tr2hyNSYfyQ73TsT0oaxY=;
+	s=arc-20240116; t=1739501138; c=relaxed/simple;
+	bh=EU53PLosLiEgpzKexqm+suuE9vmyp7+xnyyaUqJg6m0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UJLxJH05+g+fXBCl+Mcme2vfo7xRbTbHjI8Qwce/jtmT/q0KVrW/jx29wQRScoF6HbBPPHye8gnrwduKCIOj/2V3Fa9AnFoKwLtkuSsbcafNPCGLSzSaPvdR2eNDMaBq2OYdQe2bzKqOC0HcyvUSkcgRVj6QjuJiOccNzgFG9S8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jIrX+yVY; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85BE8C4AF09;
-	Fri, 14 Feb 2025 01:58:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739498338;
-	bh=AtX4TcfqYpcyFBoqwkZl/9Tr2hyNSYfyQ73TsT0oaxY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=jIrX+yVYWf1RwTCwUJj45RkaeiCeljgDw36fV1NgqYFjAkzl4tA844QxIw5V5h/8v
-	 2vMo389vb32CV0lTnK0lke6FeQOMPajW64imBOxkDerHs+CcZi+/TmETRwZhfut9yX
-	 GQEbgyQLD2hwF3WQmwJWpfE0I+EO0SOkySN2hIMRL9M5ytO2P5BVxxIHhXECx8zPTl
-	 L0O1ys9thxERhTMz0P1BVXn/aiyl2f2JO9389OYuLZNgsPcrLczEFu7MMJopqnFasm
-	 HKY8MVmp6bvwuJu4g9BfGmbZMM3eh7jQwg6B2PHm6RCxQBvlby5KOw5COjmqJ7vhEp
-	 ByCaRaveCOMhg==
-Received: by mail-io1-f41.google.com with SMTP id ca18e2360f4ac-8551c57cb8aso27379539f.3;
-        Thu, 13 Feb 2025 17:58:58 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCV76IAtzyPhTxaTGC8nHYJGgH3asPU4uTSwmFriJIHzzehUqMeejSak/zsPih5aLUkf9Hi4+rePyDbtjmFVcg==@vger.kernel.org, AJvYcCWdRUIjkdazyixJQyOfq8LfT/HCDClv3CMnJfWpFnlK+3Bl8+qHnepZFuCI9bpecXMPZ9pc4bAjZZs1/3avpEZBHw==@vger.kernel.org, AJvYcCXcVJLiUfwE8CE1+tDiU1F32pIPDlXO84CogcU7TFQu/K7gbgiHal1hOerH2bpCHnr+xaQxDZS5MeCcqCw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy56uhdRT/ZbjlUZW4uY5nvbWADontoHqm9nrbriEL/LTt7SVrq
-	3Esw7GdrBZUiecmScGQxQT4IVR+wq2nk0zT5zNat9Pd9lxlAGTRb44lShkShZbn4Y6kmfOUA9AR
-	nj3RGJD47O+Gi6kPesehaAJ+8bbg=
-X-Google-Smtp-Source: AGHT+IEqPgzO3lIvmSnLrOqQOZvaJ4xeAqJ3kVghhzVWZb4fCDChRFA3LLGruPGAyM1QQHijD9esbVZGX8Xo8nR1bnE=
-X-Received: by 2002:a05:6e02:184b:b0:3cf:cd3c:bdfd with SMTP id
- e9e14a558f8ab-3d18c23caa4mr42155035ab.12.1739498337729; Thu, 13 Feb 2025
- 17:58:57 -0800 (PST)
+	 To:Cc:Content-Type; b=D2HsaCsWoW9UFBc83qZLRYv0QbAiLqgBlils3XcMGMs+qiTE/pyj60xPwbSzPbfuXApdBDYit2O8PNgD6JyBr6N0oAuUCzNUsUY8+KPOWl/s14/DbEnnbyOTdsf0xhvpLuA6TpEUb4ZhVYTGXVDTEffiKKqp84jz777XWRpNy5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fDIKkTSQ; arc=none smtp.client-ip=209.85.219.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-6dcd4f1aaccso28839246d6.2
+        for <live-patching@vger.kernel.org>; Thu, 13 Feb 2025 18:45:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1739501136; x=1740105936; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=80yBFbxiLOXgUAzjqIMIVNP9KkxmF4uMHGCmfjSl5xs=;
+        b=fDIKkTSQfNakO0HSk/M/caFS5aNSdyJLrA734/nfmlukZPYWEeA+lnNv9vY4UeL8kA
+         XWuAVPUlh+aXmQLG04BH1FjLX+GUtrbSus0MQDTsVeXOk/uK0KBouS1iSizu3UXXyZFL
+         X9KluXUhLqXMsgczlJgY8x0+C3gIaadna5qV8pZ9UXGU6ZHyOleM4ieSNnNsqqV4p2bW
+         buHiDb8I6rdvSEC2pExAESeh0TssnLD7Q7zlAKLYmMwu9RAZJ0o/QOXF9wZLM/gERVL2
+         ZcdwjC7QA5Wk0F3LvcElVTLvG82MJGBqkJ/GaXdwWd593SYVOwhUY1LFRUTSqGXG3sFF
+         18vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739501136; x=1740105936;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=80yBFbxiLOXgUAzjqIMIVNP9KkxmF4uMHGCmfjSl5xs=;
+        b=BPTuV0RFNYLq2iABNNl3WxxHhdxazisdqYg5eJCLdbGzvptPsxqfz6q6MRcV5LOP4v
+         kE44W6R1xi/l7A1SB+fg6XzKbU+NqVT63dH9MUJdG9+af975CFXoperOmNK0dQeUh1U7
+         W5A4KGoSVZQpqi/ehUoC5HgOczXXij7d9EmEkk0VtxUhYoyIQ5dhaFgYQlTDkSfr2Auf
+         BC7hiX5Wn3PvgOpyQ+mw2eMndeYBtO9Ufp3cr9Pv7nrzZeJ/Wj+E0F5xZupPqg/n3k7w
+         vB4liaxN+/K40071Gl3l54E2kKjZNVjM9iBKNTN3OHluxFjVGPn6ILggTiuMhA4IaHkM
+         HRmg==
+X-Forwarded-Encrypted: i=1; AJvYcCXBn/0Ho+sm2xB2RtGB3tTS4si5+RYTXDb1nTabxH+FG+wXaRcZI7ZOyT/wdb+oRVUlm1drYs6LL+Y9ul2A@vger.kernel.org
+X-Gm-Message-State: AOJu0Yza2BRtpG9FIn7kt2hDDZtYOLl83ol4n0aesI8FmTdMGZupTU9O
+	aQXUh2ls5us+ZD5O/djKMYoZxrb+oMim6cwLvTAsRGvc33NULW6VYCwhfFEOYxCaoahfaoO3v3f
+	LGnalnsQG9k9cSh781ooZH3COrt0=
+X-Gm-Gg: ASbGncsBDMUSuLO4sZJ6VmkEuIYPtS4YBcLrCkbmbLI+maAee3muYSKkehnODkYKJkO
+	pjtud6YpNANZ6/GGAh4pGnp7wCfBs8HR0aI4Z3eqM0FuYqjQFzmMzqSlfK/iVB8SsvKlPwFrxe4
+	k=
+X-Google-Smtp-Source: AGHT+IF94kXY83F2uEmqF+RV5ZIBHgUd64wBaZUDmI47PUJhmDIf6d5b2CPY1hXxMsvR5TZEjjgIhTFrWzMS0U+fc0g=
+X-Received: by 2002:a05:6214:f0b:b0:6d8:932a:eaa3 with SMTP id
+ 6a1803df08f44-6e65bf20eaamr107048476d6.3.1739501135629; Thu, 13 Feb 2025
+ 18:45:35 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250127213310.2496133-1-wnliu@google.com> <CAPhsuW6S1JPn0Dp+bhJiSVs9iUv7v7HThBSE85iaDAvw=_2TUw@mail.gmail.com>
- <00fa304d-84bf-4fca-9b9a-f3b56cd97424@oracle.com> <CAPhsuW4ct6W_4B0LFEjLePH1pAeNm4h8ePuQ3HcSoknXhQWN0w@mail.gmail.com>
- <mb61p1pw21f0v.fsf@kernel.org> <CAPhsuW5VCmuPLd8wwzBp_Divnu=uaZQcrRLsjsEOJ9GmA0TR5A@mail.gmail.com>
- <mb61pseoiz1cq.fsf@kernel.org> <CAPhsuW7bo4efVYb8uPkQ1v9TE95_CQ6+G3q4kVyt-8g-3JD6Cw@mail.gmail.com>
- <mb61pr0411o57.fsf@kernel.org>
-In-Reply-To: <mb61pr0411o57.fsf@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Thu, 13 Feb 2025 17:58:46 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW7fBkZaKQzLvBqsrxTvpJsfJfUBfco4i=-=C_on+GdpKg@mail.gmail.com>
-X-Gm-Features: AWEUYZkpF5BMZbHzv8MzSiy1Gtx3WEyGX_vqexyd5VIB8KHI8VbVKVkNRfn3dfk
-Message-ID: <CAPhsuW7fBkZaKQzLvBqsrxTvpJsfJfUBfco4i=-=C_on+GdpKg@mail.gmail.com>
-Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
-To: Puranjay Mohan <puranjay@kernel.org>
-Cc: Indu Bhagat <indu.bhagat@oracle.com>, Weinan Liu <wnliu@google.com>, 
-	Josh Poimboeuf <jpoimboe@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev, 
-	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-	joe.lawrence@redhat.com, linux-arm-kernel@lists.infradead.org
+References: <20250211062437.46811-1-laoar.shao@gmail.com> <20250211062437.46811-3-laoar.shao@gmail.com>
+ <Z63VUsiaPsEjS9SR@pathway.suse.cz> <CALOAHbDEcUieW=AcBYHF1BUfQoAi540BNPEP5XR3CApu=3vMNQ@mail.gmail.com>
+ <CALOAHbD+JYnC0fR=BaUvD9u0OitHM310ErzN8acPkFZZwH-dJQ@mail.gmail.com>
+In-Reply-To: <CALOAHbD+JYnC0fR=BaUvD9u0OitHM310ErzN8acPkFZZwH-dJQ@mail.gmail.com>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Fri, 14 Feb 2025 10:44:59 +0800
+X-Gm-Features: AWEUYZlfGq4mYul-QSyujO969q7ZZMVTSaDe43fTI29wtjoLceGzWKSuXaXx3IE
+Message-ID: <CALOAHbB46k0kqaH8BZk+iyL46bMbz03Z8sk7N+XuYM3kthTsNw@mail.gmail.com>
+Subject: Re: Find root of the stall: was: Re: [PATCH 2/3] livepatch: Avoid
+ blocking tasklist_lock too long
+To: Petr Mladek <pmladek@suse.com>
+Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, 
+	joe.lawrence@redhat.com, live-patching@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 13, 2025 at 2:22=E2=80=AFPM Puranjay Mohan <puranjay@kernel.org=
+On Thu, Feb 13, 2025 at 8:39=E2=80=AFPM Yafang Shao <laoar.shao@gmail.com> =
+wrote:
+>
+> On Thu, Feb 13, 2025 at 8:32=E2=80=AFPM Yafang Shao <laoar.shao@gmail.com=
 > wrote:
->
-> Song Liu <song@kernel.org> writes:
->
-> > On Thu, Feb 13, 2025 at 12:38=E2=80=AFAM Puranjay Mohan <puranjay@kerne=
-l.org> wrote:
-> > [...]
-> >>
-> >> P.S. - The livepatch doesn't have copy_process() but only copy_signal(=
-),
-> >> yours had copy_process() somehow.
 > >
-> > In my build, copy_signal is inlined to copy_process, unless I add noinl=
-ine.
-> > If I do add noinline, the issue will not reproduce.
+> > On Thu, Feb 13, 2025 at 7:19=E2=80=AFPM Petr Mladek <pmladek@suse.com> =
+wrote:
+> > >
+> > > On Tue 2025-02-11 14:24:36, Yafang Shao wrote:
+> > > > I encountered a hard lockup when attempting to reproduce the panic =
+issue
+> > > > occurred on our production servers [0]. The hard lockup is as follo=
+ws,
+> > > >
+> > > > [15852778.150191] livepatch: klp_try_switch_task: grpc_executor:421=
+106 is sleeping on function do_exit
+> > > > [15852778.169471] livepatch: klp_try_switch_task: grpc_executor:421=
+244 is sleeping on function do_exit
+> > > > [15852778.188746] livepatch: klp_try_switch_task: grpc_executor:421=
+457 is sleeping on function do_exit
+> > > > [15852778.208021] livepatch: klp_try_switch_task: grpc_executor:422=
+407 is sleeping on function do_exit
+> > > > [15852778.227292] livepatch: klp_try_switch_task: grpc_executor:423=
+184 is sleeping on function do_exit
+> > > > [15852778.246576] livepatch: klp_try_switch_task: grpc_executor:423=
+582 is sleeping on function do_exit
+> > > > [15852778.265863] livepatch: klp_try_switch_task: grpc_executor:423=
+738 is sleeping on function do_exit
+> > > > [15852778.285149] livepatch: klp_try_switch_task: grpc_executor:423=
+739 is sleeping on function do_exit
+> > > > [15852778.304446] livepatch: klp_try_switch_task: grpc_executor:423=
+833 is sleeping on function do_exit
+> > > > [15852778.323738] livepatch: klp_try_switch_task: grpc_executor:423=
+893 is sleeping on function do_exit
+> > > > [15852778.343017] livepatch: klp_try_switch_task: grpc_executor:423=
+894 is sleeping on function do_exit
+> > > > [15852778.362292] livepatch: klp_try_switch_task: grpc_executor:423=
+976 is sleeping on function do_exit
+> > > > [15852778.381565] livepatch: klp_try_switch_task: grpc_executor:423=
+977 is sleeping on function do_exit
+> > > > [15852778.400847] livepatch: klp_try_switch_task: grpc_executor:424=
+610 is sleeping on function do_exit
+> > >
+> > > This message does not exist in vanilla kernel. It looks like an extra
+> > > debug message. And many extra messages might create stalls on its own=
+.
 > >
-> > I tried more combinations. The issue doesn't reproduce if I either
-> > 1) add noinline to copy_signal, so we are not patching the whole
-> >    copy_process function;
-> > or
-> > 2) Switch compiler from gcc 14.2.1 to gcc 11.5.0.
+> > Right, the dynamic_debug is enabled:
 > >
-> > So it appears something in gcc 14.2.1 is causing live patch to fail
-> > for copy_process().
+> >   $ echo 'file kernel/* +p' > /sys/kernel/debug/dynamic_debug/control
+> >
+> > >
+> > > AFAIK, your reproduced the problem even without these extra messages.
+> >
+> > There are two issues during the KLP transition:
+> > 1. RCU warnings
+> > 2. hard lockup
+> >
+> > RCU stalls can be easily reproduced without the extra messages.
+> > However, hard lockups cannot be reproduced unless dynamic debugging is
+> > enabled.
+> >
+> > > At least, I see the following at
+> > > https://lore.kernel.org/r/CALOAHbB8j6RrpJAyRkzPx2U6YhjWEipRspoQQ_7cvQ=
++M0zgdXg@mail.gmail.com
+> >
+> > That's correct, this is related to the RCU warnings issue.
+> >
+> > >
+> > > <paste>
+> > > [20329703.332453] livepatch: enabling patch 'livepatch_61_release6'
+> > > [20329703.340417] livepatch: 'livepatch_61_release6': starting
+> > > patching transition
+> > > [20329715.314215] rcu_tasks_wait_gp: rcu_tasks grace period 1109765 i=
+s
+> > > 10166 jiffies old.
+> > > [20329737.126207] rcu_tasks_wait_gp: rcu_tasks grace period 1109769 i=
+s
+> > > 10219 jiffies old.
+> > > [20329752.018236] rcu_tasks_wait_gp: rcu_tasks grace period 1109773 i=
+s
+> > > 10199 jiffies old.
+> > > [20329754.848036] livepatch: 'livepatch_61_release6': patching comple=
+te
+> > > </paste>
+> > >
+> > > Could you please confirm that this the original _non-filtered_ log?
+> >
+> > Right.
+> >
+> > > I mean that the debug messages were _not_ printed and later filtered?
+> >
+> > Right.
+> >
+> > >
+> > > I would like to know more about the system where RCU reported the
+> > > stall. How many processes are running there in average?
+> > > A rough number is enough. I wonder if it is about 1000, 10000, or
+> > > 50000?
+> >
+> > Most of the servers have between 5,000 and 10,000 threads.
+> >
+> > >
+> > > Also what is the CONFIG_HZ value, please?
+> >
+> > CONFIG_HZ_PERIODIC=3Dy
+> > CONFIG_HZ_1000=3Dy
+> > CONFIG_HZ=3D1000
+> >
+> > >
+> > > Also we should get some statistics how long klp_try_switch_task()
+> > > lasts in average. I have never did it but I guess that
+> > > it should be rather easy with perf. Or maybe just by looking
+> > > at function_graph trace.
+> >
+> > Currently, on one of my production servers, CPU usage is around 40%,
+> > and the number of threads is approximately 9,100. The livepatch is
+> > applied every 5 seconds. We can adjust the frequency, but the
+> > difference won't be significant, as RCU stalls are easy to reproduce
+> > even at very low frequencies.
+> > The duration of klp_try_switch_task() is as follows:
+> >
+> > $ /usr/share/bcc/tools/funclatency klp_try_switch_task.part.0 -d 60
+> > Tracing 1 functions for "klp_try_switch_task.part.0"... Hit Ctrl-C to e=
+nd.
+> >      nsecs               : count     distribution
+> >          0 -> 1          : 0        |                                  =
+      |
+> >          2 -> 3          : 0        |                                  =
+      |
+> >          4 -> 7          : 0        |                                  =
+      |
+> >          8 -> 15         : 0        |                                  =
+      |
+> >         16 -> 31         : 0        |                                  =
+      |
+> >         32 -> 63         : 0        |                                  =
+      |
+> >         64 -> 127        : 0        |                                  =
+      |
+> >        128 -> 255        : 0        |                                  =
+      |
+> >        256 -> 511        : 0        |                                  =
+      |
+> >        512 -> 1023       : 1        |                                  =
+      |
+> >       1024 -> 2047       : 26665    |***********                       =
+      |
+> >       2048 -> 4095       : 93834    |**********************************=
+******|
+> >       4096 -> 8191       : 2695     |*                                 =
+      |
+> >       8192 -> 16383      : 268      |                                  =
+      |
+> >      16384 -> 32767      : 24       |                                  =
+      |
+> >      32768 -> 65535      : 2        |                                  =
+      |
+> >
+> > avg =3D 2475 nsecs, total: 305745369 nsecs, count: 123489
+> >
+> > >
+> > > I would like to be more sure that klp_try_complete_transition() reall=
+y
+> > > could block RCU for that long. I would like to confirm that
+> > > the following is the reality:
+> > >
+> > >   num_processes * average_klp_try_switch_task > 10second
+> >
+> > 9100 * 2.475 / 1000 is around 22 second
 >
-> So, can you test your RFC set (without SFRAME) with gcc 14.2.1, so we
-> can be sure that it is not a sframe problem?
->
-> And about having the .sframe section in the livepatch module, I realised
-> that this set doesn't include support for reading/using sframe data from
-> any module(livepatches included), so the patch I added for generating
-> .sframe in kpatch is irrelevant because it is a no-op with the current se=
-tup.
+> It looks like I misread the nsec as usec, so the total average
+> duration is actually around 22ms. ;)
+> I=E2=80=99ll double-check it to confirm.
 
-Puranjay,
+I've confirmed that during RCU stalls, the average_klp_try_switch_task
+value isn't unusually large. However, the real issue lies in the
+extended duration of the klp_try_complete_transition().
 
-Could you please try the following?
+- The RCU stall
 
-1. Use gcc 11.4.1;
-2. Add __always_inline to copy_signal();
-3. Build kernel, and livepatch with the same test (we need to
-    add __always_inline to the .patch file).
-4. Run gdb livepatch-xxx.ko
-5. In gdb do disassemble copy_process.
+[Fri Feb 14 10:14:56 2025] livepatch: enabling patch 'livepatch_61_release6=
+'
+[Fri Feb 14 10:14:56 2025] livepatch: 'livepatch_61_release6':
+starting patching transition
+[Fri Feb 14 10:15:10 2025] rcu_tasks_wait_gp: rcu_tasks grace period
+32001 is 10073 jiffies old.
+[Fri Feb 14 10:15:14 2025] livepatch: 'livepatch_61_release6': patching com=
+plete
 
-In my tests, both gcc-14.2.1 and gcc-11.5.0 generated a .ko file
-that looks weird in gdb-disassemble. Specifically, readels shows
-copy_process is about 5.5kB, but gdb-disassemble only shows
-140 bytes or so for copy_process. clang doesn't seem to have
-this problem.
 
-I am really curious whether you have the same problem in your
-setup.
+- klp_try_switch_task
+10:17:50
+     nsecs               : count     distribution
+         0 -> 1          : 0        |                                      =
+  |
+         2 -> 3          : 0        |                                      =
+  |
+         4 -> 7          : 0        |                                      =
+  |
+         8 -> 15         : 0        |                                      =
+  |
+        16 -> 31         : 0        |                                      =
+  |
+        32 -> 63         : 0        |                                      =
+  |
+        64 -> 127        : 0        |                                      =
+  |
+       128 -> 255        : 2        |                                      =
+  |
+       256 -> 511        : 5        |                                      =
+  |
+       512 -> 1023       : 3        |                                      =
+  |
+      1024 -> 2047       : 806      |*                                     =
+  |
+      2048 -> 4095       : 30382    |**************************************=
+**|
+      4096 -> 8191       : 10806    |**************                        =
+  |
+      8192 -> 16383      : 65       |                                      =
+  |
+     16384 -> 32767      : 9        |                                      =
+  |
 
-Thanks,
-Song
+avg =3D 3562 nsecs, total: 149912461 nsecs, count: 42078
+
+The avg of klp_try_switch_task is only 3.5us.
+
+- number of threads
+
+Fri Feb 14 10:14:48
+12106
+Fri Feb 14 10:14:59
+11900
+Fri Feb 14 10:15:10
+12004
+Fri Feb 14 10:15:20
+11899
+Fri Feb 14 10:15:31
+12293
+Fri Feb 14 10:15:42
+11831
+
+At that point, the system has around 12,000 threads, so the total
+duration comes out to approximately 12,000 * 3.5=C2=B5s, or about 42ms=E2=
+=80=94well
+below the 10s threshold.
+However, the duration of klp_try_complete_transition() exceeds 10 seconds.
+
+10:15:41
+               nsecs                         : count     distribution
+                   0 -> 1                    : 0        |                  =
+  |
+                   2 -> 3                    : 0        |                  =
+  |
+                   4 -> 7                    : 0        |                  =
+  |
+                   8 -> 15                   : 0        |                  =
+  |
+                  16 -> 31                   : 0        |                  =
+  |
+                  32 -> 63                   : 0        |                  =
+  |
+                  64 -> 127                  : 0        |                  =
+  |
+                 128 -> 255                  : 0        |                  =
+  |
+                 256 -> 511                  : 0        |                  =
+  |
+                 512 -> 1023                 : 0        |                  =
+  |
+                1024 -> 2047                 : 0        |                  =
+  |
+                2048 -> 4095                 : 0        |                  =
+  |
+                4096 -> 8191                 : 0        |                  =
+  |
+                8192 -> 16383                : 0        |                  =
+  |
+               16384 -> 32767                : 0        |                  =
+  |
+               32768 -> 65535                : 0        |                  =
+  |
+               65536 -> 131071               : 0        |                  =
+  |
+              131072 -> 262143               : 0        |                  =
+  |
+              262144 -> 524287               : 0        |                  =
+  |
+              524288 -> 1048575              : 0        |                  =
+  |
+             1048576 -> 2097151              : 0        |                  =
+  |
+             2097152 -> 4194303              : 0        |                  =
+  |
+             4194304 -> 8388607              : 0        |                  =
+  |
+             8388608 -> 16777215             : 0        |                  =
+  |
+            16777216 -> 33554431             : 0        |                  =
+  |
+            33554432 -> 67108863             : 1        |******************=
+**|
+            67108864 -> 134217727            : 1        |******************=
+**|
+           134217728 -> 268435455            : 0        |                  =
+  |
+           268435456 -> 536870911            : 0        |                  =
+  |
+           536870912 -> 1073741823           : 0        |                  =
+  |
+          1073741824 -> 2147483647           : 0        |                  =
+  |
+          2147483648 -> 4294967295           : 0        |                  =
+  |
+          4294967296 -> 8589934591           : 1        |******************=
+**|
+          8589934592 -> 17179869183          : 1        |******************=
+**|
+
+avg =3D 5630258522 nsecs, total: 22521034091 nsecs, count: 4
+
+The longest duration of klp_try_complete_transition() ranges from 8.5
+to 17.2 seconds.
+
+It appears that the RCU stall is not only driven by num_processes *
+average_klp_try_switch_task, but also by contention within
+klp_try_complete_transition(), particularly around the tasklist_lock.
+Interestingly, even after replacing "read_lock(&tasklist_lock)" with
+"rcu_read_lock()", the RCU stall persists. My verification shows that
+the only way to prevent the stall is by checking need_resched() during
+each iteration of the loop.
+
+--
+Regards
+Yafang
 
