@@ -1,148 +1,125 @@
-Return-Path: <live-patching+bounces-1213-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1214-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1987EA390E1
-	for <lists+live-patching@lfdr.de>; Tue, 18 Feb 2025 03:37:50 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id CCA04A39229
+	for <lists+live-patching@lfdr.de>; Tue, 18 Feb 2025 05:39:01 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 0A83A7A23C6
-	for <lists+live-patching@lfdr.de>; Tue, 18 Feb 2025 02:36:52 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id C3E151882A23
+	for <lists+live-patching@lfdr.de>; Tue, 18 Feb 2025 04:38:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3AAD613B7A3;
-	Tue, 18 Feb 2025 02:37:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E212C1A4F2F;
+	Tue, 18 Feb 2025 04:38:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a5BvZu24"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MDx/axSo"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C62A4C9F
-	for <live-patching@vger.kernel.org>; Tue, 18 Feb 2025 02:37:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9765C81E;
+	Tue, 18 Feb 2025 04:38:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739846264; cv=none; b=rt+xEcBMHzKyepheA1uiyx5ZYN+qgKJ6ZbLhclb8t0ax75wj5ufDYShV9ensxOiki1WWZ7Bhi+f0PIxp5jkK5hZ+z2R7nSDm79DL3y8F33uXdMv8nPI12lQ1nf+ZCXMNGexXSNAlWJMkzGfvASd22ac40LtqrxZRhZqW06dIvOc=
+	t=1739853514; cv=none; b=hYQjcodOW8LNLog1sqaLq2YkrUfJmob5NHJsUyuWGDHp8VFzEd38VZ9mt+U6aAvIeHFckndfiI0byPjlGGk9kqdEBtJAs9LQAQyli86V7axOkOtKxADFGaHWky26ubtg/SdGvjR6rDvmnsrtZyY1Y8ZwjnkAklgZakq6W5Vp6Z4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739846264; c=relaxed/simple;
-	bh=tT6+HjaLgRfQzafu9scfWa2gN0DIxz9Zswgdbz4LG5Q=;
+	s=arc-20240116; t=1739853514; c=relaxed/simple;
+	bh=R5WL6l5L2lq8UY6+qmmUnEdnDls7MHkMUP7LdkFeDvc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Sb/D9kNanAKOJpRhDcraftY89HJPBnS+eWcuk/XE9v+N/x4LXVUNcssVCxMIFwEwBPReW97Lmc7S2+TGpimPiMf8QEF9q5o8RKcC7HP2htkOD8qTaE2PED6BYMFJbEVKi3m01OKjk1GVe2kfzqliDlXU+s3hi+eWjzOFnLvRZ+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a5BvZu24; arc=none smtp.client-ip=209.85.219.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6e67f377236so13485536d6.1
-        for <live-patching@vger.kernel.org>; Mon, 17 Feb 2025 18:37:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739846261; x=1740451061; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=h15lWJdql5HdpktTnNAK+VrzJAT/w4q07J3Wy8gIV4o=;
-        b=a5BvZu245yXtj/HRcnabwR1Hz8Yth64356n19GUdmnaWemQgKbaVqhZVZNEt4uf9KZ
-         eSnfqIVMN0YGiYQelhq3pEc6ZnWZ8NsIIB9bT1ZPBSchQabxawhFRGHwgZWkvjFbrL3A
-         4+bxf/brc0ls0E9AKAIyK229em9nD8sJAZus+9ng/HyXjwrEmnQg8cHkIGk3wQYC0QOf
-         alew9i9+v+W/GYaDfJ/NdvVT/IqpaUuGdr9wK75axQ6YIQzSzUAvCkT8mxoP2gYsqmaZ
-         8rV9anTt5bfYkr+zzSV/i/36UKtXoz/hlqfF2NkEqQiU4qcwmfw9QhmqaXI+ivO8qjag
-         ngwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739846261; x=1740451061;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=h15lWJdql5HdpktTnNAK+VrzJAT/w4q07J3Wy8gIV4o=;
-        b=wSBMjdojycSHcQs6eMJUN7wCuzdWIzvyK4jfZTTQ3ATKSTUHX20+LDOKkobYPH0/7K
-         JWeR3R7E8j3msXH5ut5SGJQPpIEQeLjU5Hzsp9hex9ADQ/SGRPF/Q66VLyBZA0Vp6obp
-         0Y4OzBFaJqsGQoV5gJZx5Rt7htiU/bmmQQG79ho9fI88TSUMni97gNit4rxlDK/7YeOf
-         JxNpho0xuchLGS7DFdne+mptdMBEFdX0fDdAQVEVu9AMgMQtP2k/mqRHD7Yn+GaM7NxZ
-         mErSKT6+2Yr5ch7m/1P+ynn240vBCIkjCJQbVgbdw2zlmsO+zxZnfvKe7rWo/fLtOAm/
-         0exg==
-X-Forwarded-Encrypted: i=1; AJvYcCUNDLyrpSvWGzuZ0JVNxhpBvr79KWzGRLSGFp8oOr4DaAYBbuJt3lv7XggqT4FiBmSUHt0p5Dz9bfV3Agks@vger.kernel.org
-X-Gm-Message-State: AOJu0YwDhqBjpBHhQw1BDrHFJ74lxSM6pPFbMt/y+wMHPsDfUSsTQfyz
-	B6biBiuRcX/cIjwOO3gMc7O8O/a1sVaxWwySEuD3zJOw1JIqo7F11qN9YEC3NA9ysd4sRkctdI0
-	GLLxvEBfLjNr8te+tgL1D0kTyMvlj+8YopHU=
-X-Gm-Gg: ASbGnctW+KLLcZh2EVcIykA0F/q4dpz6PBuIjDg9UZxQ02qMAGdgmGH1r9ueeFQz4h0
-	gPN1SOOn8ATVj1bH4TFLqSg2XWUtC3ndJ2+IldZOsLAMSZ1+VniBD0o+Wd9hFDGfCaO8Rflq8
-X-Google-Smtp-Source: AGHT+IGOzzezdLP1oRil/Rv/keNn4T+thYyzWh7NVO7RmtfQJxlwMwW4QQk7PMKkGsWOctddLbLy12MO4VRhTnnSxD8=
-X-Received: by 2002:ad4:5aed:0:b0:6e6:5d9a:9171 with SMTP id
- 6a1803df08f44-6e66ccd4bd0mr198673646d6.23.1739846261528; Mon, 17 Feb 2025
- 18:37:41 -0800 (PST)
+	 To:Cc:Content-Type; b=Ei+HNUaWM4/yx7isUwn2eabbzOo/JVkn16Y+9PWPgPMZ3F7Fe20h9A7AqlsAzCtcEgq7g0gTUtG6spxzVZQF5oOwQ2syIavEWkWJkia3cfAaAsVFsehtRQV/2l04+zvd3B6vkcAg+UNKD12mKHjW4f6E2fuNLCUVOpCm8EgTT6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MDx/axSo; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 072B1C4CEEA;
+	Tue, 18 Feb 2025 04:38:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739853514;
+	bh=R5WL6l5L2lq8UY6+qmmUnEdnDls7MHkMUP7LdkFeDvc=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=MDx/axSoG1prz9+kyo4nEpP9D55JWaxrotjmPAZnT8QuVLetWnvVjeI1lZDGZc7ZM
+	 RlhIqVOcN4sqHRSTr4BZx8hHhdJcTGifYhhiaW5xx7t1PQrtyV7GsnrA3ymyteFo2J
+	 Tv0cs6jLgJURZN6yiNHvdnLA15wSoZWbJB7qFQOpbIQlsERlvNUQWN0GDAYEwd5EPt
+	 /s0IOpV7JmPdD8Ovn9vxN+CpNqSkwXUY2N0o/KzbbQSTJ3ukeiYL63p3aLHHFPC0Vj
+	 7lh65v6iOOI4v5cwybsgjyqeIWktlyQWSXS1A2HaDwNU9Kxw9rtZ5Zls+jOSrvlq8Z
+	 fmTcX7kPkF9pA==
+Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-3d2a869d016so1742915ab.0;
+        Mon, 17 Feb 2025 20:38:34 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUu1yYEFLWqYC1gvY2PRaIKuk0SvkPEX9Fdns7nlmfGVFy/X0S0P8qdWxvOTvaWGp8zlYf+K1azzzIjHI8=@vger.kernel.org, AJvYcCXNb3hLqZcsMsbTaUJGqkjQ8rIyLeYrPnNEr8Ohftjgfwd9jt+VTHoo3nWGdtkZn1c+pvmKjIcNbgVmy3khJpj89Q==@vger.kernel.org, AJvYcCXg3QjKcIJX0v8udzknOY3b8QRSGZn11DXoGZRux0yMoKvnlYPzwjQKkKszufpETMeaRXXEBEPHnTkTpjbP5Q==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwN817UiEqtfrLmF0VjbGBfiHz6i9jbfhRgJxVPzGkYYOIF9OQc
+	5MFzgp4y1tERgbPQL+e0qGuWvGvgZgVgwdKzi86b4HRKAxmyPpfBnmVM91mjIQnI2BHYbyF17no
+	Ofonzvy+QNIfGpFR7CW1MxVmX8ro=
+X-Google-Smtp-Source: AGHT+IHyz3t4mh/Ma9CY3+OXJVqMZPpzgMvEGuwkF3lUwUVVyhQca1X5UObepfUOFyqcM4yMYaf+CNnYaOFacvt5kYo=
+X-Received: by 2002:a05:6e02:1c2d:b0:3d2:6768:c4fa with SMTP id
+ e9e14a558f8ab-3d280981aa8mr106151405ab.21.1739853513240; Mon, 17 Feb 2025
+ 20:38:33 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250211062437.46811-1-laoar.shao@gmail.com> <20250211062437.46811-3-laoar.shao@gmail.com>
- <20250212004009.ijs4bdbn6h55p7xd@jpoimboe> <CALOAHbDsSsMzuOaHX2ZzgD3bJTPgMEp1E_S=vERHaTV11KrVJQ@mail.gmail.com>
- <CALOAHbDEBqZyDvSSv+KTFVR3owkjfawCQ-fT9pC1fMHNGPnG+g@mail.gmail.com>
- <Z6zBb9GRkFC-R0RE@pathway.suse.cz> <20250213013603.i6uxtjvc3qxlsqwc@jpoimboe>
- <Z62_6wDP894cAttk@pathway.suse.cz> <20250213173253.ovivhuq2c5rmvkhj@jpoimboe>
- <Z69Wuhve2vnsrtp_@pathway.suse.cz> <20250214181206.xkvxohoc4ft26uhf@jpoimboe>
-In-Reply-To: <20250214181206.xkvxohoc4ft26uhf@jpoimboe>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Tue, 18 Feb 2025 10:37:04 +0800
-X-Gm-Features: AWEUYZmZ9uq0Rf9wfKSCa5CFPOaMj6_JPL2DQ-xLPNMzfWMN6kzGofrEqAtJK-g
-Message-ID: <CALOAHbBXkaTtO-h_+3Bzs9s5Hf6ErwcvutnEEiiz+qyUPzfxFw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] livepatch: Avoid blocking tasklist_lock too long
+References: <20250212234946.yuskayyu4gx3ul7m@jpoimboe> <CAPhsuW5TeMXi_Mn8+jR9Qoa=rAWasMo7M3Hs=im6NT6=+CrxqA@mail.gmail.com>
+ <20250213024507.mvjkalvyqsxihp54@jpoimboe> <CAPhsuW4iDuTBfZowJRhxLFyK=g=s+-pK2Eq4+SNj9uL99eNkmw@mail.gmail.com>
+ <mb61py0yaz3qq.fsf@kernel.org> <CAPhsuW7dV7UR3PsGVx_DLBH5-95DAmLMGTPuY0NfUwWLZMSTrQ@mail.gmail.com>
+ <20250214080848.5xpi2y2omk4vxyoj@jpoimboe> <CAPhsuW6dxPtgqZaHrZEVhQXwm2+sETreZnGybZXVKYKfG9H6tg@mail.gmail.com>
+ <20250214193400.j4hp45jlufihv5eh@jpoimboe> <CAPhsuW6q+yhn0pGQb0K+RhXHYDkjEgomZ2pu3P_MEeX+xNRe0g@mail.gmail.com>
+ <20250214232342.5m3hveygqb2qafpp@jpoimboe>
+In-Reply-To: <20250214232342.5m3hveygqb2qafpp@jpoimboe>
+From: Song Liu <song@kernel.org>
+Date: Mon, 17 Feb 2025 20:38:22 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW48h11yLuU7uHuPgYNCzwaxVKG+TaGOZeT7fR60+brTwA@mail.gmail.com>
+X-Gm-Features: AWEUYZmWVnAjpZHf_IwjSwk5YFuj0m13-R4_dyEqp579CYDqISJuAOjL8_IVNKE
+Message-ID: <CAPhsuW48h11yLuU7uHuPgYNCzwaxVKG+TaGOZeT7fR60+brTwA@mail.gmail.com>
+Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
 To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Petr Mladek <pmladek@suse.com>, jikos@kernel.org, mbenes@suse.cz, 
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org
+Cc: Puranjay Mohan <puranjay@kernel.org>, Weinan Liu <wnliu@google.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev, 
+	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
+	joe.lawrence@redhat.com, linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Feb 15, 2025 at 2:12=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
+On Fri, Feb 14, 2025 at 3:23=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
 > wrote:
 >
-> On Fri, Feb 14, 2025 at 03:44:10PM +0100, Petr Mladek wrote:
-> > I guess that we really could consider the new task as migrated
-> > and clear TIF_PATCH_PENDING.
+> On Fri, Feb 14, 2025 at 02:04:17PM -0800, Song Liu wrote:
+> > Hi Josh,
 > >
-> > But we can't set child->patch_state to KLP_TRANSITION_IDLE. It won't
-> > work when the transition gets reverted. [*]
->
-> Hm, why not?  I don't see any difference between patching or unpatching?
->
-> klp_init_transition() has a barrier to enforce the order of the
-> klp_target_state and func->transition writes, as read by the
-> klp_ftrace_handler().
->
-> So in the ftrace handler, if func->transition is set and the task is
-> KLP_TRANSITION_IDLE, it can use klp_target_state to decide which
-> function to use.  Its patch state would effectively be the same as any
-> other already-transitioned task, whether it's patching or unpatching.
->
-> Then in klp_complete_transition(), after func->transition gets set to
-> false, klp_synchronize_transition() flushes out any running ftrace
-> handlers.  From that point on, func->transition is false, so the ftrace
-> handler would no longer read klp_target_state.
->
-> > [*] I gave this few brain cycles but I did not find any elegant
-> >     way how to set this a safe way and allow using rcu_read_lock()
-> >     in klp_try_complete_transition().
+> > On Fri, Feb 14, 2025 at 11:34=E2=80=AFAM Josh Poimboeuf <jpoimboe@kerne=
+l.org> wrote:
+> > >
+> > > On Fri, Feb 14, 2025 at 09:51:41AM -0800, Song Liu wrote:
+> > > > > Ignorant arm64 question: is the module's text further away from s=
+lab
+> > > > > memory than vmlinux text, thus requiring a different instruction =
+(or
+> > > > > GOT/TOC) to access memory further away in the address space?
+> > > >
+> > > > It appears to me the module text is very close to vmlinux text:
+> > > >
+> > > > vmlinux: ffff8000800b4b68 T copy_process
+> > > > module: ffff80007b0f06d0 t copy_process [livepatch_always_inline_sp=
+ecial_static]
+> > >
+> > > Hm... the only other thing I can think of is that the klp relas might=
+ be
+> > > wrong somewhere.  If you share patched.o and .ko files from the same
+> > > build I could take a look.
 > >
-> >     It might be because it is Friday evening and I am leaving for
-> >     a trip tomorrow. Also I not motivated enough to think about it
-> >     because Yafang saw the RCU stall even with that rcu_read_lock().
-> >     So I send this just for record.
+> > A tarball with these files is available here:
+> >
+> > https://drive.google.com/file/d/1ONB1tC9oK-Z5ShmSXneqWLTjJgC5Xq-C/view?=
+usp=3Ddrive_link
 >
-> Even if it doesn't fix the RCU stalls, I think we should still try to
-> avoid holding the tasklist_lock.  It's a global lock which can be
-> contended, and we want the livepatch transition to be as unobtrusive as
-> possible.
+> Poking around the arm64 module code, arch/arm64/kernel/module-plts.c
+> is looking at all the relocations in order to set up the PLT.  That also
+> needs to be done for klp relas, or are your patches already doing that?
 
-I agree. Since it's feasible to eliminate this global lock, I think
-it's worth pursuing this optimization.
+I don't think either version (this set and my RFC) added logic for PLT.
+There is some rela logic on the kpatch-build side. But I am not sure
+whether it is sufficient.
 
->
-> If the system is doing a lot of forking across many CPUs, holding the
-> lock could block all the forking tasks and trigger system-wide
-> scheduling latencies.  And that could be compounded by the unnecessary
-> transitioning of new tasks every time the delayed work runs.
-
-
---
-Regards
-
-Yafang
+Thanks,
+Song
 
