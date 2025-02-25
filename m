@@ -1,177 +1,218 @@
-Return-Path: <live-patching+bounces-1224-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1225-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4A69BA431C2
-	for <lists+live-patching@lfdr.de>; Tue, 25 Feb 2025 01:14:14 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id EAFCAA43233
+	for <lists+live-patching@lfdr.de>; Tue, 25 Feb 2025 02:02:48 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 798693AE480
-	for <lists+live-patching@lfdr.de>; Tue, 25 Feb 2025 00:14:03 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 2027A7A5892
+	for <lists+live-patching@lfdr.de>; Tue, 25 Feb 2025 01:01:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB32436D;
-	Tue, 25 Feb 2025 00:14:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F0CD1CD2C;
+	Tue, 25 Feb 2025 01:02:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JSXg4Hv3"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="M4Oc6yQi"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D5A8EC0;
-	Tue, 25 Feb 2025 00:14:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 719942571A9
+	for <live-patching@vger.kernel.org>; Tue, 25 Feb 2025 01:02:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740442450; cv=none; b=YnI9W4fDztOnRdusn5jhonympxbhI7KSuDvIqxsv76qFyzn3BTv4FyKT6YE50kv6Z+BxeZHjLC+o7XkLIrdpOMiwXfKIpwwIs6EYqR56mbJHRkka3f7W5Zt2TAwcnHX1Om0gDUV7p9gMT23HZpEOkGFs74pQk0u1Vfke+qgbujo=
+	t=1740445352; cv=none; b=O0C+lG/eD9X4TUTxduSfa4gZlQbMk05cyTNXqqNBfKysRqkdVpwRRWaLAfLLJMUTYYcdWZamipzc+tt3vY0pZr1zg0YY3BGoyUk090Y02n23smvIXAZY9wo/QNqD9g75jJzBaRhCXA9inC1ik60UX8VDCcPncXLONyAOwD26N64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740442450; c=relaxed/simple;
-	bh=RrjZywtok7pmqjRXq+52Mw3aIZaqlkmt827OKazuRN8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Xy+mLPr2bnlK6bJRZayOYllshRH9DYTrRyOnXL+l1oF4MXSSNAFF8PW+T5ON7M2Ad6PCnPPm3ffyx1aofJlmE9b2q9gK02TbthuKLhMw5eHym2z1O+3qbBkApaDHOXZwyviIcA4dRNg9CCejDKj7bssiPbNzbsVhQc24Zix8gKs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JSXg4Hv3; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA89C4CEEA;
-	Tue, 25 Feb 2025 00:14:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740442450;
-	bh=RrjZywtok7pmqjRXq+52Mw3aIZaqlkmt827OKazuRN8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=JSXg4Hv3hAgWNZiLAcLwodBsvL355TD9HhBuHHgJxH64OhFw6QwjwpJi5/sRd2hnE
-	 bacx8UiqoRurkn5hnZjOe9ZkV3pcMJ1r5E1GbmEO0RuOgK9gKQFFWy8OEA2R/3C/Zz
-	 OsxVw8lNacqv2tIViGLMII/Tr1Pgfmky/feOJfXW3L76HFNGzBUJl5VvF+7tABbW4l
-	 SOkj6z6zrqAIe+S+ZkMZpcZcC1RQ59Ovi9r76EZme/hVAUn60+35VQzQEIKbJTIcVg
-	 tEniDvRB761XJK2VrxWbzz9ZrIH1WnT36lmUUlgsGcjut7uRal2T2dKXPi/CvX5F87
-	 82qwpNiXaZuUw==
-Received: by mail-io1-f50.google.com with SMTP id ca18e2360f4ac-855d73856f3so347941539f.1;
-        Mon, 24 Feb 2025 16:14:10 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUb8rPJ1/N9aO7tjvv2En3cfQVoQfPPxClvprG/l5RbN0sSeQ2vyIGWvXgskDnoKkGnNsAFp1fBUQhRTFFNFA==@vger.kernel.org, AJvYcCV/F7ZjbazXAovT5iCkBbHC8KlrcSxurz1yCUmFgOWeZUEIU2in6TQ3N/+qXNk8EoBjrR6SEeBmh/O1KF+xSsSRtA==@vger.kernel.org, AJvYcCX6p9BR2R4RQ8KHJXppywrSBx+TbsocnOqv7ACk2TozqFZ1mwhnyBs/NRUUnhZix+LmK9x2B2ZV0e1yMsc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx5dgqpOFKSceFZJJeM3Y+/QREDCcLPGMFagdf9GI882OPZ86YK
-	YLCOR5LrW2KHBH989n17AMLj3azR3EZL62d5uFpy08WUnxuqqQlAeU4VGA8i+lYrHgt9ov16On6
-	7Dmr6A8EeUJpKgftZpFHLsicoDNU=
-X-Google-Smtp-Source: AGHT+IEGfSMvQhcmxe+D0QwBwqdzpgzsf7C3s6D4Gjai2KF9IRKGDa/39Olkwm6B0VNAodvYcGSMocV0IYhoCmStwQE=
-X-Received: by 2002:a05:6e02:148e:b0:3d2:b7b6:e80d with SMTP id
- e9e14a558f8ab-3d2fc0c54a4mr18692795ab.3.1740442449607; Mon, 24 Feb 2025
- 16:14:09 -0800 (PST)
+	s=arc-20240116; t=1740445352; c=relaxed/simple;
+	bh=Mo37nMWc2E1LwezPKSvhNG/2wTFA2DkyTJqWyZNejzM=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=J8wkz/NCy6acsnP6d+j21yWcdrhN0c1mlSV1mKfhL5g9XofunO7T8Xl1VnzE2W4Iemr7OtpYHA53MlZxdPxAoHn6Io07mDfoWkiTpBcJIOCE8Ibp5FByqaoAOkBxKjUuc1Mw9e47ONzGHR/vEV4cjL5AN7hIbx3Nll/9jBL+gdM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=M4Oc6yQi; arc=none smtp.client-ip=209.85.214.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-220cad2206eso109743885ad.0
+        for <live-patching@vger.kernel.org>; Mon, 24 Feb 2025 17:02:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1740445351; x=1741050151; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Mo37nMWc2E1LwezPKSvhNG/2wTFA2DkyTJqWyZNejzM=;
+        b=M4Oc6yQiBsiRpTUHKAeAjJsBIk224YM1QwO2py01HLDfyDhmLkMAMuE0og+VYU07zF
+         Jt1Rta5s6JmaivD39ucdbFFI1ECEDp0LVx3v2kxy3rWhr5GW72h2Zbbhd3fVdKmHAMFI
+         Mr4ncEIbaRX6ocB63+j6usq6CEDjPbpOmN0B5+PMxfQhm5nPtGZvcd6aj5QrJYkgklzc
+         hWFgFTlbA/31Lmd+DI/CiPcZLUSDtog5rAmdTJzPoVhb3g37rpLKXzopYsesV2kvtjBg
+         hmjFZONYug8mGWtn+xphEnCOUbO7Z1aNYQYLt6gkGDkggDu3gOrw9+acjJpbuE7agLGK
+         uytA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740445351; x=1741050151;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Mo37nMWc2E1LwezPKSvhNG/2wTFA2DkyTJqWyZNejzM=;
+        b=Ot0DVY7IEwp61mxhJENWkPKcFKIRngBkxGKukAISiFimrZdneHcVaMb+GWPl0BLKe2
+         QEikYDsEd+ob8wwTUi6RL4fcd+GdtcRsQEvG53yjILfFUIa/0cpvVxcaIYTnGlgIKCET
+         N5rYrDk+7Ae6Mj3tDWZlYsmZ5ELxh+gyA3DqgQbw+15oopFN2heNgEZ4dNMJh9cDxpk7
+         oDazfG5yjr5CeoQuzIJejw8cprka4uB17aREaZ0NSdWmAczHpbj4vYokg2XJcV7h7yzX
+         zE1so1rFckFKMG4mbopKwL09k/EwyOqG5JDLtGam6C5AxaXEKDkHTT+6RHceOkj4i3NM
+         GITg==
+X-Forwarded-Encrypted: i=1; AJvYcCWw+nN3v6aoDeAfarjpzml0qy0Ko+zZT80sLZ3LPEuQmbXZRs43PxeJrILCI8T3rBveWBk1EMEo6LCPRX4r@vger.kernel.org
+X-Gm-Message-State: AOJu0YwWH9O+diYg2RDIdohd6PMymgIoeCTq321jb8WHlT2Z1o1d+chB
+	w5BxR3AjL6gR/3Y/SNVxIFiOvLP65VbveVhH3AaVrLWNvLj3E254TCGK1+7WONnrvEEf+P6APA=
+	=
+X-Google-Smtp-Source: AGHT+IGtpAtsGCPjB2f5j0E5FgCN/59sQH7uEbks2l54K32niqYIQGBiUJC1+FY38Cpr/+RR4wt4Jz9Ubg==
+X-Received: from pfbit4.prod.google.com ([2002:a05:6a00:4584:b0:732:770f:99fe])
+ (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:230b:b0:734:9cc:a6e4
+ with SMTP id d2e1a72fcca58-734791ab6bfmr2328539b3a.21.1740445350440; Mon, 24
+ Feb 2025 17:02:30 -0800 (PST)
+Date: Tue, 25 Feb 2025 01:02:24 +0000
+In-Reply-To: <20250210083017.280937-1-wnliu@google.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <CAPhsuW6dxPtgqZaHrZEVhQXwm2+sETreZnGybZXVKYKfG9H6tg@mail.gmail.com>
- <20250214193400.j4hp45jlufihv5eh@jpoimboe> <CAPhsuW6q+yhn0pGQb0K+RhXHYDkjEgomZ2pu3P_MEeX+xNRe0g@mail.gmail.com>
- <20250214232342.5m3hveygqb2qafpp@jpoimboe> <CAPhsuW48h11yLuU7uHuPgYNCzwaxVKG+TaGOZeT7fR60+brTwA@mail.gmail.com>
- <20250218063702.e2qrpjk4ylhnk5s7@jpoimboe> <CAPhsuW5ZauBrSz11cvVtG5qQBfNmbcwPgMf=BScHtyZfHvK4FQ@mail.gmail.com>
- <20250218184059.iysrvtaoah6e4bu4@jpoimboe> <CAPhsuW4pd8gEiRNj920kO8c4JuEWoXT=MhFK-nWvJZ9QseefaQ@mail.gmail.com>
- <CAPhsuW57xpR1YZqENvDr0vNZGVrq4+LUzPRA-wZipurTTy7MmA@mail.gmail.com>
- <20250220182221.vdmmnoyvc2do5mnn@jpoimboe> <CAPhsuW53DK2vFH-BZeUYN-eythX3NQEbcxrYf6jvBDtDmctRgw@mail.gmail.com>
-In-Reply-To: <CAPhsuW53DK2vFH-BZeUYN-eythX3NQEbcxrYf6jvBDtDmctRgw@mail.gmail.com>
-From: Song Liu <song@kernel.org>
-Date: Mon, 24 Feb 2025 16:13:58 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5Codoe2NViZJRE4JjM2Qc_v-qPzKZ1vOyr+9Oi0CxpAQ@mail.gmail.com>
-X-Gm-Features: AWEUYZlhFxBXD7xdQSvghIzbkdQB4xbhvgY6aZ3jRtXIkzKgZAdiM9UvB5WldRw
-Message-ID: <CAPhsuW5Codoe2NViZJRE4JjM2Qc_v-qPzKZ1vOyr+9Oi0CxpAQ@mail.gmail.com>
+Mime-Version: 1.0
+References: <20250210083017.280937-1-wnliu@google.com>
+X-Mailer: git-send-email 2.48.1.658.g4767266eb4-goog
+Message-ID: <20250225010228.223482-1-wnliu@google.com>
 Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Puranjay Mohan <puranjay@kernel.org>, Weinan Liu <wnliu@google.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, roman.gushchin@linux.dev, 
-	Will Deacon <will@kernel.org>, Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-	joe.lawrence@redhat.com, linux-arm-kernel@lists.infradead.org
+From: Weinan Liu <wnliu@google.com>
+To: wnliu@google.com
+Cc: indu.bhagat@oracle.com, irogers@google.com, joe.lawrence@redhat.com, 
+	jpoimboe@kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-toolchains@vger.kernel.org, 
+	live-patching@vger.kernel.org, mark.rutland@arm.com, peterz@infradead.org, 
+	puranjay@kernel.org, roman.gushchin@linux.dev, rostedt@goodmis.org, 
+	will@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 20, 2025 at 10:33=E2=80=AFAM Song Liu <song@kernel.org> wrote:
+On Mon, Feb 10, 2025 at 12:30=E2=80=AFAM Weinan Liu <wnliu@google.com> wrot=
+e:
+> I already have a WIP patch to add sframe support to the kernel module.
+> However, it is not yet working. I had trouble unwinding frames for the
+> kernel module using the current algorithm.
 >
+> Indu has likely identified the issue and will be addressing it from the
+> toolchain side.
 >
-> On Thu, Feb 20, 2025 at 10:22=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.=
-org> wrote:
->>
->> On Wed, Feb 19, 2025 at 08:50:09PM -0800, Song Liu wrote:
->> > Indu, is this behavior (symbols with same name are not in
->> > sorted order from readelf -s) expected? Or is this a bug?
->> > I am using this gcc:
->> >
->> > $ gcc --version
->> > gcc (GCC) 14.2.1 20240801 (Red Hat 14.2.1-1)
->> > Copyright (C) 2024 Free Software Foundation, Inc.
->> > This is free software; see the source for copying conditions.  There i=
-s NO
->> > warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PUR=
-POSE.
->>
->> Are you using different binutils versions as well?
->
->
-> I am using binutil 2.41, for both gcc -11 and gcc-14.
->
->>
->> It sounds like a linker "issue" to me.  I'm not sure if it qualifies as
->> a bug, the linker might be free to layout symbols how it wishes.
->
->
-> We can probably handle that in kpatch-build.
-
-OK, something like the following gets the proper sympos for
-gcc-14 built kernel.
-
-Thanks,
-Song
+> https://sourceware.org/bugzilla/show_bug.cgi?id=3D32666
 
 
-diff --git i/kpatch-build/lookup.c w/kpatch-build/lookup.c
-index bd2b732de910..87ac127184c5 100644
---- i/kpatch-build/lookup.c
-+++ w/kpatch-build/lookup.c
-@@ -479,13 +479,10 @@ static bool lookup_local_symbol(struct
-lookup_table *table,
-        struct object_symbol *sym;
-        unsigned long sympos =3D 0;
-        int i, in_file =3D 0;
-+       bool found =3D false;
+I have a working in progress patch that adds sframe support for kernel
+module.
+https://github.com/heuza/linux/tree/sframe_unwinder.rfc
 
-        memset(result, 0, sizeof(*result));
-        for_each_obj_symbol(i, sym, table) {
--               if (sym->bind =3D=3D STB_LOCAL && !strcmp(sym->name,
--                                       lookup_sym->name))
--                       sympos++;
--
-                if (lookup_sym->lookup_table_file_sym =3D=3D sym) {
-                        in_file =3D 1;
-                        continue;
-@@ -499,20 +496,29 @@ static bool lookup_local_symbol(struct
-lookup_table *table,
+According to the sframe table values I got during runtime testing, looks
+like the offsets are not correct .
 
-                if (sym->bind =3D=3D STB_LOCAL && !strcmp(sym->name,
-                                        lookup_sym->name)) {
--                       if (result->objname)
-+                       if (found)
-                                ERROR("duplicate local symbol found for %s"=
-,
-                                                lookup_sym->name);
+When unwind symbols init_module(0xffff80007b155048) from the kernel=20
+module(livepatch-sample.ko), the start_address of the FDE entries in the
+sframe table of the kernel modules appear incorrect.
+For instance, the first FDE's start_addr is reported as -20564. Adding
+this offset to the module's sframe section address (0xffff80007b15a040)
+yields 0xffff80007b154fec, which is not within the livepatch-sample.ko
+memory region(It should be larger than 0xffff80007b155000).
 
-                        result->objname         =3D table->objname;
-                        result->addr            =3D sym->addr;
-                        result->size            =3D sym->size;
--                       result->sympos          =3D sympos;
-                        result->global          =3D false;
-                        result->exported        =3D false;
-+                       found =3D true;
-                }
-        }
-+       if (!found)
-+               return false;
+Here are the sframe table values of the livepatch-samples.ko that I print
+by qemu + gdb.
 
--       return !!result->objname;
-+       for_each_obj_symbol(i, sym, table) {
-+               if (sym->bind =3D=3D STB_LOCAL &&
-+                   !strcmp(sym->name, lookup_sym->name) &&
-+                   sym->addr < result->addr)
-+                       sympos++;
-+       }
-+       result->sympos =3D sympos;
-+       return true;
- }
+```
+$ /usr/bin/aarch64-linux-gnu-objdump -L --sframe=3D.sframe ./samples/livepa=
+tch/livepatch-sample.ko
+./samples/livepatch/livepatch-sample.ko: =C2=A0 =C2=A0 file format elf64-li=
+ttleaarch64
 
- static bool lookup_exported_symbol(struct lookup_table *table, char *name,
+Contents of the SFrame section .sframe:
+=C2=A0 Header :
+
+=C2=A0 =C2=A0 Version: SFRAME_VERSION_2
+=C2=A0 =C2=A0 Flags: SFRAME_F_FDE_SORTED
+=C2=A0 =C2=A0 Num FDEs: 3
+=C2=A0 =C2=A0 Num FREs: 11
+
+=C2=A0 Function Index :
+
+=C2=A0 =C2=A0 func idx [0]: pc =3D 0x0, size =3D 12 bytes
+=C2=A0 =C2=A0 STARTPC =C2=A0 =C2=A0 =C2=A0 =C2=A0 CFA =C2=A0 =C2=A0 =C2=A0 =
+FP =C2=A0 =C2=A0 =C2=A0 =C2=A0RA
+=C2=A0 =C2=A0 0000000000000000 =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u
+
+=C2=A0 =C2=A0 func idx [1]: pc =3D 0x0, size =3D 44 bytes
+=C2=A0 =C2=A0 STARTPC =C2=A0 =C2=A0 =C2=A0 =C2=A0 CFA =C2=A0 =C2=A0 =C2=A0 =
+FP =C2=A0 =C2=A0 =C2=A0 =C2=A0RA
+=C2=A0 =C2=A0 0000000000000000 =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u
+=C2=A0 =C2=A0 000000000000000c =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u[s]
+=C2=A0 =C2=A0 0000000000000010 =C2=A0sp+16 =C2=A0 =C2=A0 c-16 =C2=A0 =C2=A0=
+ =C2=A0c-8[s]
+=C2=A0 =C2=A0 0000000000000024 =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u[s]
+=C2=A0 =C2=A0 0000000000000028 =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u
+
+=C2=A0 =C2=A0 func idx [2]: pc =3D 0x0, size =3D 56 bytes
+=C2=A0 =C2=A0 STARTPC =C2=A0 =C2=A0 =C2=A0 =C2=A0 CFA =C2=A0 =C2=A0 =C2=A0 =
+FP =C2=A0 =C2=A0 =C2=A0 =C2=A0RA
+=C2=A0 =C2=A0 0000000000000000 =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u
+=C2=A0 =C2=A0 000000000000000c =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u[s]
+=C2=A0 =C2=A0 0000000000000010 =C2=A0sp+16 =C2=A0 =C2=A0 c-16 =C2=A0 =C2=A0=
+ =C2=A0c-8[s]
+=C2=A0 =C2=A0 0000000000000030 =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u[s]
+=C2=A0 =C2=A0 0000000000000034 =C2=A0sp+0 =C2=A0 =C2=A0 =C2=A0u =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 u
+
+
+
+(gdb) bt
+#0 =C2=A0find_fde (tbl=3D0xffff80007b157708, pc=3D18446603338286190664) at =
+kernel/sframe_lookup.c:75
+#1 =C2=A00xffff80008031e260 in sframe_find_pc (pc=3D18446603338286190664, e=
+ntry=3D0xffff800086f83800) at kernel/sframe_lookup.c:175
+#2 =C2=A00xffff800080035a48 in unwind_next_frame_sframe (state=3D0xffff8000=
+86f83828) at arch/arm64/kernel/stacktrace.c:270
+#3 =C2=A0kunwind_next (state=3D0xffff800086f83828) at arch/arm64/kernel/sta=
+cktrace.c:332
+...
+
+(gdb) lx-symbols
+loading vmlinux
+scanning for modules in /home/wnliu/kernel
+loading @0xffff80007b155000: /home/wnliu/kernel/samples/livepatch/livepatch=
+-sample.ko
+loading @0xffff80007b14d000: /home/wnliu/kernel/fs/fat/vfat.ko
+loading @0xffff80007b130000: /home/wnliu/kernel/fs/fat/fat.ko
+
+(gdb) p/x *tbl->sfhdr_p
+$5 =3D {preamble =3D {magic =3D 0xdee2, version =3D 0x2, flags =3D 0x1}, ab=
+i_arch =3D 0x2, cfa_fixed_fp_offset =3D 0x0, cfa_fixed_ra_offset =3D 0x0, a=
+uxhdr_len =3D 0x0, num_fdes =3D 0x3, num_fres =3D 0xb, fre_len =3D 0x25, fd=
+es_off =3D 0x0, fres_off =3D 0x3c}
+
+(gdb) p/x tbl->sfhdr_p
+$6 =3D 0xffff80007b15a040
+
+(gdb) p *tbl->fde_p
+$7 =3D {start_addr =3D -20564, size =3D 12, fres_off =3D 0, fres_num =3D 1,=
+ info =3D 0 '\000', rep_size =3D 0 '\000', padding =3D 0}
+
+(gdb) p *(tbl->fde_p + 1)
+$11 =3D {start_addr =3D -20552, size =3D 44, fres_off =3D 3, fres_num =3D 5=
+, info =3D 0 '\000', rep_size =3D 0 '\000', padding =3D 0}
+
+(gdb) p *(tbl->fde_p + 2)
+$12 =3D {start_addr =3D -20508, size =3D 56, fres_off =3D 20, fres_num =3D =
+5, info =3D 0 '\000', rep_size =3D 0 '\000', padding =3D 0}
+
+/* -20564 + 0xffff80007b15a040 =3D 0xffff80007b154fec */
+(gdb) info symbol 0xffff80007b154fec
+No symbol matches 0xffff80007b154fec
+```
 
