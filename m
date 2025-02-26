@@ -1,179 +1,180 @@
-Return-Path: <live-patching+bounces-1232-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1233-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6B6A3A45422
-	for <lists+live-patching@lfdr.de>; Wed, 26 Feb 2025 04:47:33 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id AC172A45BA8
+	for <lists+live-patching@lfdr.de>; Wed, 26 Feb 2025 11:24:03 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 59CD816F8BF
-	for <lists+live-patching@lfdr.de>; Wed, 26 Feb 2025 03:47:32 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 12ECE1888B8F
+	for <lists+live-patching@lfdr.de>; Wed, 26 Feb 2025 10:23:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 07844266B6A;
-	Wed, 26 Feb 2025 03:47:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A59A23814F;
+	Wed, 26 Feb 2025 10:23:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HPX77T/5"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TNLGq8b8"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A2CE42AB4;
-	Wed, 26 Feb 2025 03:47:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C1DC226D1E;
+	Wed, 26 Feb 2025 10:23:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740541648; cv=none; b=NzRAyX/SL0KozDVX0yDrj823+Jk07mjz2tKxYhmNi7I+FyurskxuYcGyjJ93Msxy82UCDWL3aA/c+2Wq8uv2vT68xebY/B2qyhdazcJ4JCpUH8vyjTuUcFOmCebKrd6d69ubuS0QnAGx1miBZ3InVrOyQsyox3Lb/1rTJkEKEXE=
+	t=1740565422; cv=none; b=fpVp+s2pk6KCmVWRFpqnebbD0Ze3dwjgosWDg+1IXOH0x2WZvXYjeHlebnXeWOjnC75UzTaLnt2eSGQh20ueEyVM3sI1Mr4O/mZ3Xjb4nJEd8RHHJzcYw5ior0/FKE2MyStprHnr/eRaeGLOW4Bmyh7uIklgZpo6pganY3IECwo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740541648; c=relaxed/simple;
-	bh=kbzTfEFTc42i/4CW4iSA0pKghpwg4lWEx58lDd/Nxyc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZBUF0Td01MGO7TYElKKs7JAtQX/ugH6ouqwlEo5hMIlNH/B1eJcUdXAHPJ6pDMXKz6JxXRSfELL+mn4KseaQrlCSQkE7uUb4RgpZmMdgwgugf0TXgwRVHdKmWLnaRf/orutMxH3e41uVUlcTTsWSOHqHPDdTGOeswdDESUG3PYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HPX77T/5; arc=none smtp.client-ip=209.85.219.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-6e65d6e1f12so79430966d6.0;
-        Tue, 25 Feb 2025 19:47:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740541646; x=1741146446; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZSJhmAbNuFPvPvbPYk7L0OT8cajN6anynVXiM0Y3tPc=;
-        b=HPX77T/5PFMmp6BDYRFrHjbhqIY6lq7IedWsC9CYSjt30mLkKTeKgpOhMdIE6O6xLg
-         Db6Owobw/JyMkMg6NYCojWIlsK0kReXhEcc1Q/78X14gBan4T8duFM6nzLCOIs1b+2Nt
-         LWT7ffNzrWkBi4KdiMy0qsmgkmOQWqb+JLEVPxVkXX/BVjp75br/6HUJjNkmePBtDKGe
-         lKkytRT82tT+gAoZPVPta+GFjKPmkn4WS9njPbW/6L40m01iG6f7nfCVR4v0YPyoho+Y
-         +nVA8Jgy7CTVX0Xc+oTN0xyrW/IODk45hx9vLGdowAjlDDlwU9csGFoS6QSgNE1C93sv
-         HDgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740541646; x=1741146446;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZSJhmAbNuFPvPvbPYk7L0OT8cajN6anynVXiM0Y3tPc=;
-        b=ZNuApjboZFVyoDDyFxieUR7HjL4d5Ov04pj9Img90JvT3veMJOiaa5XmUfJqDkZApc
-         b+kLIenDFtNO8PR8I0Jhbnyb+9DD99LsxWo23gZoDkVzlpOSrDRZaXpi5s23VpJSVFw7
-         GMu1n6zSJLjtGT8EnohKcCkOhWAEk0sthxqHYOxbdB0PQFaOgLKhCEJENkiy+jdK5Clo
-         A5eKW/SHXByq8G7Lzpwe3jW/b4cuxX2BPUC10AKrwh3yjgl2ml9KJk0ejXQpc8qyCkWb
-         VpzKVqXESQfe4cgu1zU2JRy5CHDM3DAo2Nrlu01ep6XWtlkylqixq14PAaT8Jq9Z34LU
-         uPaQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUW6bK88F6+cMQTse9aokqrvwSruXxtLZX6WA4zbBV9Wo9VOPwXVELtFFS/jjDiuWf8CpiWXRUiGPVUMhel1A==@vger.kernel.org, AJvYcCVfORxPGjQvFyGsaDVXocBlE1CJfIFZdmCgyruVhxvxPjbyxkDX7b5xT9b43szAXMBFDlEPe1wckvU58tc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzURsZOchNfWrBBxvWLbrqTVcU5w7Vb122yJxWJcYfCSHpBHgos
-	9EVxXk1/bnmmvdEzIDsNDlO0Ag/AHN0FJq9wDa2RzSo18nkIPFmayI0fLz+71hx2kcQwAxi/QTE
-	joG4eIsP2gu8Qmw6WUPPtkzPNaHk=
-X-Gm-Gg: ASbGncunVbtZk+Fej6OPb35S0RCDgGu1s5Ax01yW4HD5HfKsPcqSLvMgnZjEL93HwqH
-	4dHFjbiH8eefFXiV1y6lgg4if0ju4tCqButEFlJoEwi8FLY0ZtQ9VnTafHjrMsijP6qvt6pYD3N
-	gIjlScO8hG
-X-Google-Smtp-Source: AGHT+IE4Gdw9CcFvSKMLJIzqS9mSmsmlvzZNg5/hmMPKSTuQrBW8M3Kd3gCQToYlIyQXlgD3CMI4THe4eN13hJd4ta4=
-X-Received: by 2002:a05:6214:402:b0:6d8:8466:d205 with SMTP id
- 6a1803df08f44-6e87ab14369mr82912316d6.6.1740541646358; Tue, 25 Feb 2025
- 19:47:26 -0800 (PST)
+	s=arc-20240116; t=1740565422; c=relaxed/simple;
+	bh=JUYF30zXLkCS1lAA8rBTYOxggTmbkwCo5KuReiWez2o=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=RLSzEo0Co8agMIpfLdxx7Xg47BuVUpvhQ043zc7NI/VJsJ+xTJCY4iUV0aH+xnbI+AEO91eSAbifttFxfOB0PSU5J0THyvh97kuDNJEcMEGJef4XLlD9aiwNZ7mqyoloGHn3tOZKNupowG0mJFJqwo3d2hsg24m8XwqJSJSuw8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TNLGq8b8; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E03AC4CED6;
+	Wed, 26 Feb 2025 10:23:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1740565419;
+	bh=JUYF30zXLkCS1lAA8rBTYOxggTmbkwCo5KuReiWez2o=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=TNLGq8b80js9FyHVPJjRXtMKtsdmapm9jAuzG5Hu8ao0CiQpzZkK0U1QubINKmTVx
+	 AcSAxsKGHycnY+Wacg1SZRuMsEcn1L/wiKM0Jtazx8N9rk56mqqidAYIwHOfVbO104
+	 7PPfufh538BcG64ZMbEYc+KviyAlj3E48I140tiVcn8b0R/khClmclunV6HdhBezTg
+	 JbQWHV7Y8GSzv//TPYb5RN2TnTdkh0VLpw3Qi10jpTX5BmjN++bNC4aEiTV1nj8vnF
+	 bzkH/yf4XagpI5UX/0L+pZmbfhiAHr7nkezIVAGOmOKcfN2b4HP0IzIAonw3MoDHuE
+	 zg11Pvxb405qA==
+From: Puranjay Mohan <puranjay@kernel.org>
+To: Indu Bhagat <indu.bhagat@oracle.com>, Weinan Liu <wnliu@google.com>
+Cc: irogers@google.com, joe.lawrence@redhat.com, jpoimboe@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org,
+ mark.rutland@arm.com, peterz@infradead.org, roman.gushchin@linux.dev,
+ rostedt@goodmis.org, will@kernel.org
+Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
+In-Reply-To: <da6aad99-3461-47fd-b9d8-65f8bb446ae1@oracle.com>
+References: <4356c17a-8dba-4da0-86dd-f65afb8145e2@oracle.com>
+ <20250225235455.655634-1-wnliu@google.com>
+ <da6aad99-3461-47fd-b9d8-65f8bb446ae1@oracle.com>
+Date: Wed, 26 Feb 2025 10:23:21 +0000
+Message-ID: <mb61ph64h9f8m.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250223062046.2943-1-laoar.shao@gmail.com> <20250223062046.2943-3-laoar.shao@gmail.com>
- <20250225183308.yjtgdl3esisvlhab@jpoimboe>
-In-Reply-To: <20250225183308.yjtgdl3esisvlhab@jpoimboe>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Wed, 26 Feb 2025 11:46:50 +0800
-X-Gm-Features: AQ5f1JqAkTcNbfvs-xt53XUJirI6BZqpqPgGmZ6moHy2ERZ2y4U6dOAqL9rwrLc
-Message-ID: <CALOAHbDcKoO4Wicva_qtNy4fNyS+ey7_PybbmXSk_xhKM=ZG=A@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] livepatch: Replace tasklist_lock with RCU
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, 
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha512; protocol="application/pgp-signature"
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 26, 2025 at 2:33=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
-> wrote:
->
-> On Sun, Feb 23, 2025 at 02:20:46PM +0800, Yafang Shao wrote:
-> > +++ b/kernel/livepatch/patch.c
-> > @@ -95,7 +95,12 @@ static void notrace klp_ftrace_handler(unsigned long=
- ip,
-> >
-> >               patch_state =3D current->patch_state;
-> >
-> > -             WARN_ON_ONCE(patch_state =3D=3D KLP_TRANSITION_IDLE);
-> > +             /* If the patch_state is KLP_TRANSITION_IDLE, it indicate=
-s the
-> > +              * task was forked after klp_init_transition(). For this =
-newly
-> > +              * forked task, it is safe to switch it to klp_target_sta=
-te.
-> > +              */
-> > +             if (patch_state =3D=3D KLP_TRANSITION_IDLE)
-> > +                     current->patch_state =3D klp_target_state;
->
-> Hm, but then the following line is:
->
-> >               if (patch_state =3D=3D KLP_TRANSITION_UNPATCHED) {
->
-> Shouldn't the local 'patch_state' variable be updated?
+Indu Bhagat <indu.bhagat@oracle.com> writes:
 
-Ah, I missed it.
+> On 2/25/25 3:54 PM, Weinan Liu wrote:
+>> On Tue, Feb 25, 2025 at 11:38=E2=80=AFAM Indu Bhagat <indu.bhagat@oracle=
+.com> wrote:
+>>>
+>>> On Mon, Feb 10, 2025 at 12:30=E2=80=AFAM Weinan Liu <wnliu@google.com> =
+wrote:
+>>>>> I already have a WIP patch to add sframe support to the kernel module.
+>>>>> However, it is not yet working. I had trouble unwinding frames for the
+>>>>> kernel module using the current algorithm.
+>>>>>
+>>>>> Indu has likely identified the issue and will be addressing it from t=
+he
+>>>>> toolchain side.
+>>>>>
+>>>>> https://sourceware.org/bugzilla/show_bug.cgi?id=3D32666
+>>>>
+>>>> I have a working in progress patch that adds sframe support for kernel
+>>>> module.
+>>>> https://github.com/heuza/linux/tree/sframe_unwinder.rfc
+>>>>
+>>>> According to the sframe table values I got during runtime testing, loo=
+ks
+>>>> like the offsets are not correct .
+>>>>
+>>>
+>>> I hope to sanitize the fix for 32666 and post upstream soon (I had to
+>>> address other related issues). =C2=A0Unless fixed, relocating .sframe
+>>> sections using the .rela.sframe is expected to generate incorrect outpu=
+t.
+>>>
+>>>> When unwind symbols init_module(0xffff80007b155048) from the kernel
+>>>> module(livepatch-sample.ko), the start_address of the FDE entries in t=
+he
+>>>> sframe table of the kernel modules appear incorrect.
+>>>
+>>> init_module will apply the relocations on the .sframe section, isnt it ?
+>>>
+>>>> For instance, the first FDE's start_addr is reported as -20564. Adding
+>>>> this offset to the module's sframe section address (0xffff80007b15a040)
+>>>> yields 0xffff80007b154fec, which is not within the livepatch-sample.ko
+>>>> memory region(It should be larger than 0xffff80007b155000).
+>>>>
+>>>
+>>> Hmm..something seems off here. =C2=A0Having tested a potential fix for =
+32666
+>>> locally, I do not expect the first FDE to show this symptom.
+>>>
+>>=20
 
->
-> It also seems unnecessary to update 'current->patch_state' here.
+Hi,
 
-Got it.
+Sorry for not responding in the past few days.  I was on PTO and was
+trying to improve my snowboarding technique, I am back now!!
 
->
-> > @@ -294,6 +294,13 @@ static int klp_check_and_switch_task(struct task_s=
-truct *task, void *arg)
-> >  {
-> >       int ret;
-> >
-> > +     /* If the patch_state remains KLP_TRANSITION_IDLE at this point, =
-it
-> > +      * indicates that the task was forked after klp_init_transition()=
-. For
-> > +      * this newly forked task, it is now safe to perform the switch.
-> > +      */
-> > +     if (task->patch_state =3D=3D KLP_TRANSITION_IDLE)
-> > +             goto out;
-> > +
->
-> This also seems unnecessary.  No need to transition the patch if the
-> ftrace handler is already doing the right thing.  klp_try_switch_task()
-> can just return early on !TIF_PATCH_PENDING.
+I think what we are seeing is expected behaviour:
 
-Good suggestion.
-
->
-> > @@ -466,11 +474,11 @@ void klp_try_complete_transition(void)
-> >        * Usually this will transition most (or all) of the tasks on a s=
-ystem
-> >        * unless the patch includes changes to a very common function.
-> >        */
-> > -     read_lock(&tasklist_lock);
-> > +     rcu_read_lock();
-> >       for_each_process_thread(g, task)
-> >               if (!klp_try_switch_task(task))
-> >                       complete =3D false;
-> > -     read_unlock(&tasklist_lock);
-> > +     rcu_read_unlock();
->
-> Can this also be done for the idle tasks?
-
-The cpus_read_lock() around the idle tasks is in place to protect
-against CPU hotplug operations. If we aim to eliminate this lock
-during the KLP transition, the CPU hotplug logic would need to be
-adjusted accordingly. For instance, we would need to address how to
-handle wake_up_if_idle() when a CPU is in the process of hotplugging.
-
-Given that the number of CPUs is unlikely to be large enough to create
-a bottleneck in the current implementation, optimizing this mechanism
-may not be a priority at the moment. It might be more practical to
-address this issue at a later stage.
+ | For instance, the first FDE's start_addr is reported as -20564. Adding
+ | this offset to the module's sframe section address (0xffff80007b15a040)
+ | yields 0xffff80007b154fec, which is not within the livepatch-sample.ko
+ | memory region(It should be larger than 0xffff80007b155000).
 
 
---
-Regards
-Yafang
+Let me explain using a __dummy__ example.
+
+Assume Memory layout before relocation:
+
+ | Address | Element                                 | Relocation
+ |  ....   | ....                                    |
+ |   60    | init_module (start address)             |
+ |   72    | init_module (end address)               |
+ |  ....   | .....                                   |
+ |   100   | Sframe section header start address     |
+ |   128   | First FDE's start address               | RELOC_OP_PREL -> Put=
+ init_module address (60) - current address (128)
+
+So, after relocation First FDE's start address has value 60 - 128 =3D -68
+
+Now, while doing unwinding we Try to add this value to the sframe
+section header's start address which is in this example 100,
+
+so 100 + (-68) =3D 32
+
+So, 32 is not within [60, 72], i.e. within init_module.
+
+You can see that it is possible for this value to be less than the start
+address of the module's memory region when this function's address is
+very close to the start of the memory region.
+
+The crux is that the offset in the FDE's start address is calculated
+based on the address of the FDE's start_address and not based on the
+address of the sframe section.
+
+
+Thanks,
+Puranjay
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iIoEARYKADIWIQQ3wHGvVs/5bdl78BKwwPkjG3B2nQUCZ77rmxQccHVyYW5qYXlA
+a2VybmVsLm9yZwAKCRCwwPkjG3B2ncczAP9XQv1qvG5QCEfqUBX3HHJF4cyv8eWB
+B49aFu+bqtdZ/wEArbSbRVLmpy9+45qoLpOywsiqw6sK+Dtw6vwAGxJX7ws=
+=hyPk
+-----END PGP SIGNATURE-----
+--=-=-=--
 
