@@ -1,226 +1,151 @@
-Return-Path: <live-patching+bounces-1238-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1239-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A9DECA4796C
-	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 10:38:35 +0100 (CET)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4EC6DA47D69
+	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 13:19:52 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A21CC3B2232
-	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 09:38:24 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 5F57A7A9ABC
+	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 12:12:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41810226534;
-	Thu, 27 Feb 2025 09:38:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B30C822ACFB;
+	Thu, 27 Feb 2025 12:10:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OEGzQbdL"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="ip1Jz9Iu";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="C7QCxcA5";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="ip1Jz9Iu";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="C7QCxcA5"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14FDE270024;
-	Thu, 27 Feb 2025 09:38:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE36022FF37
+	for <live-patching@vger.kernel.org>; Thu, 27 Feb 2025 12:10:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740649111; cv=none; b=iiwIYFAkigPAXQ+v06eQoKE2G6NdArL+/eb8R4E0n83H9pQJJmA906/MnMHv6BQhjWqdPAj3QY2hD4VboWi2vzxTmQLyDS1d8p4GhCONWuPJYwY47rs/WdE7I8x58JgrUseskSfz1sTvldW0/nnn3ScrEYv7e6NbQVOqwVWbs0Y=
+	t=1740658213; cv=none; b=LQ+k6lMwkyg24ou8HZfqPSceIg6SnCgDpF9DUCo2REW+YOECXK8vaLoNB/DEJZUFS9QmdavsFNsBES9lxNX+/zlsHX9kVvynfO2T5ki4sBOEyxFivHhztFh5/eoCn0um9OpmhmH4fhNsDKeQ3E3gjXc37UZ5ZHl4Yg1QKJbzNXc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740649111; c=relaxed/simple;
-	bh=kuUelbCc3mh5KwVn0L2IifL5eirbW8cOf0PVGvfIwfM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=DWGO1TZD4K6iTaCNGJ4nTLuf4GIoiHWtDS9RsuegEaFvx0so8yTsVuP2jHbSAPhDSFlJ0Mon4Cn8elI1HLUfARI6WN9fHM1WQMsPgyk8fuUmS+nq480FcwVKPhnlGM52uAFmdFWr7CGMhj9VM008CROQT0lzAHzWE9ev7H4ytpg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OEGzQbdL; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49661C4CEDD;
-	Thu, 27 Feb 2025 09:38:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740649110;
-	bh=kuUelbCc3mh5KwVn0L2IifL5eirbW8cOf0PVGvfIwfM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=OEGzQbdLP4sU0C751iv3CJOKm5AjF33WraZlCvE17HOBNTUg/0FIeocRFVJc7P69E
-	 9FtPiFuEn6iF8IGyn4S97hjGVQfePe2iesSo09ewwhHRu3lHOQd+aHISiU33ch7Gh/
-	 7DTJNNyLUQOtLpxL/E1dkZJvs0vA03DXU0k1exTcABBRa9VZzjAlYlceFE5FwesySH
-	 CP1gM3h2+qtX0BuFpkP2ouJ/zuSxX4ijSEho720RULkXkjMClQkE1g9BClhlFnCPoT
-	 r7rOki/bKHmDZs3n9gbZfNt+DKaYUmYA7c4mU36OwvBNtz2pGnEdW5102cpP+FGVEU
-	 lj7IMXCnw7v/g==
-From: Puranjay Mohan <puranjay@kernel.org>
-To: Indu Bhagat <indu.bhagat@oracle.com>, Weinan Liu <wnliu@google.com>
-Cc: irogers@google.com, joe.lawrence@redhat.com, jpoimboe@kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org,
- mark.rutland@arm.com, peterz@infradead.org, roman.gushchin@linux.dev,
- rostedt@goodmis.org, will@kernel.org
-Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
-In-Reply-To: <91fae2dc-4f52-4f38-9135-66935a421322@oracle.com>
-References: <4356c17a-8dba-4da0-86dd-f65afb8145e2@oracle.com>
- <20250225235455.655634-1-wnliu@google.com>
- <da6aad99-3461-47fd-b9d8-65f8bb446ae1@oracle.com>
- <mb61ph64h9f8m.fsf@kernel.org>
- <91fae2dc-4f52-4f38-9135-66935a421322@oracle.com>
-Date: Thu, 27 Feb 2025 09:38:16 +0000
-Message-ID: <mb61peczjybg7.fsf@kernel.org>
+	s=arc-20240116; t=1740658213; c=relaxed/simple;
+	bh=akxUv/7DKimh18nab4zYzcVHXlnTJtDLd+AduB8PjYI=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=ayLi87admEidNLS1KDzGMWoq6r9AsndH1BIvvdfNTv7RfAR/nioMNgmFLPnZoh5bvs+B+eMmkaQwOficemOLElu0UXsIu6OiZVjtaiIBGypRMCNPvmywqZx8g5eSfqFTsKaIeY5SqCWSgJWAlmMEurLiWMAq94CPkncP3Q8M798=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=ip1Jz9Iu; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=C7QCxcA5; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=ip1Jz9Iu; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=C7QCxcA5; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from pobox.suse.cz (unknown [10.100.2.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 2E94921179;
+	Thu, 27 Feb 2025 12:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1740658210; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Pkh4hhvitVpN0mKPmW0tH5YxKInmBYciLZFphhKj924=;
+	b=ip1Jz9IurwcOjzrHThzL3ETYe0y+abQ5eqK8IserEG6735aAbxFFnWlupVdUXOy+68ORds
+	64sI995sqxExnQr92i6ZUDtqB82nigpXMfQIXwHXA1XOcwHYwp8b/3LW8oK2d6z2AVSryM
+	yidfOTKEG5p8RLIwPbzY/wqQ9sOsHNk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1740658210;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Pkh4hhvitVpN0mKPmW0tH5YxKInmBYciLZFphhKj924=;
+	b=C7QCxcA51Gxrg6/yfdUJBm5QkTqTsKbY0IeIvcuSXc+YTJN9EynkZUmYBh5PTjxbe07otZ
+	e9owObibSiKc5FBw==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1740658210; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Pkh4hhvitVpN0mKPmW0tH5YxKInmBYciLZFphhKj924=;
+	b=ip1Jz9IurwcOjzrHThzL3ETYe0y+abQ5eqK8IserEG6735aAbxFFnWlupVdUXOy+68ORds
+	64sI995sqxExnQr92i6ZUDtqB82nigpXMfQIXwHXA1XOcwHYwp8b/3LW8oK2d6z2AVSryM
+	yidfOTKEG5p8RLIwPbzY/wqQ9sOsHNk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1740658210;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Pkh4hhvitVpN0mKPmW0tH5YxKInmBYciLZFphhKj924=;
+	b=C7QCxcA51Gxrg6/yfdUJBm5QkTqTsKbY0IeIvcuSXc+YTJN9EynkZUmYBh5PTjxbe07otZ
+	e9owObibSiKc5FBw==
+Date: Thu, 27 Feb 2025 13:10:10 +0100 (CET)
+From: Miroslav Benes <mbenes@suse.cz>
+To: Weinan Liu <wnliu@google.com>
+cc: Josh Poimboeuf <jpoimboe@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
+    Indu Bhagat <indu.bhagat@oracle.com>, 
+    Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, 
+    roman.gushchin@linux.dev, Will Deacon <will@kernel.org>, 
+    Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, 
+    linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
+    joe.lawrence@redhat.com, linux-arm-kernel@lists.infradead.org, 
+    "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>, 
+    Suraj Jitindar Singh <sjitindarsingh@gmail.com>
+Subject: Re: [PATCH 7/8] arm64: Define TIF_PATCH_PENDING for livepatch
+In-Reply-To: <20250127213310.2496133-8-wnliu@google.com>
+Message-ID: <alpine.LSU.2.21.2502271308390.25291@pobox.suse.cz>
+References: <20250127213310.2496133-1-wnliu@google.com> <20250127213310.2496133-8-wnliu@google.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.29 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.19)[-0.950];
+	MIME_GOOD(-0.10)[text/plain];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	ARC_NA(0.00)[];
+	RCVD_COUNT_ZERO(0.00)[0];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_TWELVE(0.00)[16];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	FREEMAIL_CC(0.00)[kernel.org,goodmis.org,oracle.com,infradead.org,arm.com,linux.dev,google.com,vger.kernel.org,redhat.com,lists.infradead.org,linux.microsoft.com,gmail.com];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_DN_SOME(0.00)[]
+X-Spam-Score: -4.29
+X-Spam-Flag: NO
 
---=-=-=
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Indu Bhagat <indu.bhagat@oracle.com> writes:
+> diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+> index b260ddc4d3e9..b537af333b42 100644
+> --- a/arch/arm64/kernel/entry-common.c
+> +++ b/arch/arm64/kernel/entry-common.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/context_tracking.h>
+>  #include <linux/kasan.h>
+>  #include <linux/linkage.h>
+> +#include <linux/livepatch.h>
+>  #include <linux/lockdep.h>
+>  #include <linux/ptrace.h>
+>  #include <linux/resume_user_mode.h>
+> @@ -144,6 +145,9 @@ static void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
+>  				       (void __user *)NULL, current);
+>  		}
+>  
+> +		if (thread_flags & _TIF_PATCH_PENDING)
+> +			klp_update_patch_state(current);
+> +
+>  		if (thread_flags & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL))
+>  			do_signal(regs);
 
-> On 2/26/25 2:23 AM, Puranjay Mohan wrote:
->> Indu Bhagat <indu.bhagat@oracle.com> writes:
->>=20
->>> On 2/25/25 3:54 PM, Weinan Liu wrote:
->>>> On Tue, Feb 25, 2025 at 11:38=E2=80=AFAM Indu Bhagat <indu.bhagat@orac=
-le.com> wrote:
->>>>>
->>>>> On Mon, Feb 10, 2025 at 12:30=E2=80=AFAM Weinan Liu <wnliu@google.com=
-> wrote:
->>>>>>> I already have a WIP patch to add sframe support to the kernel modu=
-le.
->>>>>>> However, it is not yet working. I had trouble unwinding frames for =
-the
->>>>>>> kernel module using the current algorithm.
->>>>>>>
->>>>>>> Indu has likely identified the issue and will be addressing it from=
- the
->>>>>>> toolchain side.
->>>>>>>
->>>>>>> https://sourceware.org/bugzilla/show_bug.cgi?id=3D32666
->>>>>>
->>>>>> I have a working in progress patch that adds sframe support for kern=
-el
->>>>>> module.
->>>>>> https://github.com/heuza/linux/tree/sframe_unwinder.rfc
->>>>>>
->>>>>> According to the sframe table values I got during runtime testing, l=
-ooks
->>>>>> like the offsets are not correct .
->>>>>>
->>>>>
->>>>> I hope to sanitize the fix for 32666 and post upstream soon (I had to
->>>>> address other related issues). =C2=A0Unless fixed, relocating .sframe
->>>>> sections using the .rela.sframe is expected to generate incorrect out=
-put.
->>>>>
->>>>>> When unwind symbols init_module(0xffff80007b155048) from the kernel
->>>>>> module(livepatch-sample.ko), the start_address of the FDE entries in=
- the
->>>>>> sframe table of the kernel modules appear incorrect.
->>>>>
->>>>> init_module will apply the relocations on the .sframe section, isnt i=
-t ?
->>>>>
->>>>>> For instance, the first FDE's start_addr is reported as -20564. Addi=
-ng
->>>>>> this offset to the module's sframe section address (0xffff80007b15a0=
-40)
->>>>>> yields 0xffff80007b154fec, which is not within the livepatch-sample.=
-ko
->>>>>> memory region(It should be larger than 0xffff80007b155000).
->>>>>>
->>>>>
->>>>> Hmm..something seems off here. =C2=A0Having tested a potential fix fo=
-r 32666
->>>>> locally, I do not expect the first FDE to show this symptom.
->>>>>
->>>>
->>=20
->> Hi,
->>=20
->> Sorry for not responding in the past few days.  I was on PTO and was
->> trying to improve my snowboarding technique, I am back now!!
->>=20
->> I think what we are seeing is expected behaviour:
->>=20
->>   | For instance, the first FDE's start_addr is reported as -20564. Addi=
-ng
->>   | this offset to the module's sframe section address (0xffff80007b15a0=
-40)
->>   | yields 0xffff80007b154fec, which is not within the livepatch-sample.=
-ko
->>   | memory region(It should be larger than 0xffff80007b155000).
->>=20
->>=20
->> Let me explain using a __dummy__ example.
->>=20
->> Assume Memory layout before relocation:
->>=20
->>   | Address | Element                                 | Relocation
->>   |  ....   | ....                                    |
->>   |   60    | init_module (start address)             |
->>   |   72    | init_module (end address)               |
->>   |  ....   | .....                                   |
->>   |   100   | Sframe section header start address     |
->>   |   128   | First FDE's start address               | RELOC_OP_PREL ->=
- Put init_module address (60) - current address (128)
->>=20
->> So, after relocation First FDE's start address has value 60 - 128 =3D -68
->>=20
->
-> For SFrame FDE function start address is :
->
-> "Signed 32-bit integral field denoting the virtual memory address of the=
-=20
-> described function, for which the SFrame FDE applies.  The value encoded=
-=20
-> in the =E2=80=98sfde_func_start_address=E2=80=99 field is the offset in b=
-ytes of the=20
-> function=E2=80=99s start address, from the SFrame section."
->
-> So, in your case, after applying the relocations, you will get:
-> S + A - P =3D 60 - 128 =3D -68
->
-> This is the distance of the function start address (60) from the current=
-=20
-> location in SFrame section (128)
->
-> But what we intend to store is the distance of the function start=20
-> address from the start of the SFrame section.  So we need to do an=20
-> additional step for SFrame FDE:  Value +=3D r_offset
+Just a remark so that it is recorded. Once arm64 is moved to generic 
+entry infra, the hunk will not be needed.
 
-Thanks for the explaination, now it makes sense.
-
-But I couldn't find a relocation type in AARCH64 that does this extra +=3D
-r_offset along with PREL32.
-
-The kernel's module loader is only doing the R_AARCH64_PREL32 which is
-why we see this issue.
-
-How is this working even for the kernel itself? or for that matter, any
-other binary compiled with sframe?
-
-From=20my limited undestanding, the way to fix this would be to hack the
-relocator to do this additional step while relocating .sframe sections.
-Or the 'addend' values in .rela.sframe should already have the +r_offset
-added to it, then no change to the relocator would be needed.
-
-> -68 + 28 =3D -40
-> Where 28 is the r_offset in the RELA.
->
-> So we really expect a -40 in the relocated SFrame section instead of -68=
-=20
-> above.  IOW, the RELAs of SFrame section will need an additional step=20
-> after relocation.
->
-
-Thanks,
-Puranjay
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iIoEARYKADIWIQQ3wHGvVs/5bdl78BKwwPkjG3B2nQUCZ8AyiRQccHVyYW5qYXlA
-a2VybmVsLm9yZwAKCRCwwPkjG3B2nc64AQCrImK/xT/H/sSJyKH/7xwB1DnkIwCd
-H+TAPuqrhqK6YwD/S/fgUeM06UgZceakvwwGL0B6KlZyow2qyPBm9thb3wI=
-=IByT
------END PGP SIGNATURE-----
---=-=-=--
+Regards,
+Miroslav
 
