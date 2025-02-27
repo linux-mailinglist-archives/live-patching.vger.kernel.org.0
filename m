@@ -1,261 +1,226 @@
-Return-Path: <live-patching+bounces-1236-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1238-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 94F35A4732E
-	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 03:48:02 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A9DECA4796C
+	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 10:38:35 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 2BAB2188C3CC
-	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 02:48:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A21CC3B2232
+	for <lists+live-patching@lfdr.de>; Thu, 27 Feb 2025 09:38:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67D0715E5DC;
-	Thu, 27 Feb 2025 02:47:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41810226534;
+	Thu, 27 Feb 2025 09:38:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sqi2jVil"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OEGzQbdL"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0D5818035
-	for <live-patching@vger.kernel.org>; Thu, 27 Feb 2025 02:47:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14FDE270024;
+	Thu, 27 Feb 2025 09:38:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740624478; cv=none; b=FMMerCMNyuhyMjc1rPVAuuSKLodhunM5KmD4gFz9vUq+oJ7ROBsJkypfkxXr4CTFhVAC2gncJ+8Ft/iNDcn9bEbKruJGUSVd/dW6ATF/0P2O49Gj8dsyx3b/NAvdr34Hyr6zCGh9XrBO8bNWr2YEGAdiH9yNup78sgl7+nq4bP0=
+	t=1740649111; cv=none; b=iiwIYFAkigPAXQ+v06eQoKE2G6NdArL+/eb8R4E0n83H9pQJJmA906/MnMHv6BQhjWqdPAj3QY2hD4VboWi2vzxTmQLyDS1d8p4GhCONWuPJYwY47rs/WdE7I8x58JgrUseskSfz1sTvldW0/nnn3ScrEYv7e6NbQVOqwVWbs0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740624478; c=relaxed/simple;
-	bh=dBYeTnQ2KezXEuLPj/I7aH0AmK/HEzM/HyKyNMvPp94=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PCvccLLciS7+j4KIQRPqcXFQEAbA2iXCQ0i5ceuR97+dzTx/lxxIvb5zOwzXqKxdCM3Zmjm6xjpLdkG3VzFdQYOMqlbHneo6qNcAj8W2/ixK4mfo0z5/YPewnrjqnrwq9tBihh1IzQrA0MHyovBW3UDWjdsf8I+ch/UFF2JGbMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Sqi2jVil; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-219f8263ae0so7216525ad.0
-        for <live-patching@vger.kernel.org>; Wed, 26 Feb 2025 18:47:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740624476; x=1741229276; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=x6Aypr33KkO0kAwBxOIdwjSHu0AqfEFCyeXZeQR9PkU=;
-        b=Sqi2jVilobkyGTr8mqURfVs9YK9KM21GlAvhbmuhacn4O2hs6cH8Y8360Gx5lA7MpU
-         xKMDcVwFndOU4oa4dmd3LVj57QkKosgcfIo8t20427mEiTVSBS3JkOutvvaHxUfNEwQu
-         cJvFtuo90zTD6inLXIi1koxBDo+wpn6SOli4XHxSQYkWXwWGrZ6FpOVnTmoakPJ3+MuJ
-         j5RNlPOvuZTjAt95q+Zbnd60eykT6cS79RQjBZ9KZ27jDk1pffASHd+VES4FOHTQoXMK
-         9fVyLZORck2Xt8g6QyH7HGEj2a84v8K2OesYQ0FxUMFce+K+ENIp/s35m+kgLizjdLom
-         iFYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740624476; x=1741229276;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=x6Aypr33KkO0kAwBxOIdwjSHu0AqfEFCyeXZeQR9PkU=;
-        b=NULe0TFmM675tpP4P3KPM48SkRvRtKZuUQE4tnMXkaQElXKAmYheyobCRXnkDyID6s
-         WwcBJMnH7kG9LDH4+VDICN5UaLKl4rVqvUE329XtZDEmPgRAISjJUwtEJgysrTQIKU2K
-         v8AMyw4QjAcaL+tMH12eaUbOWZyhOMIm1hxQc5JPJyR2IJKHDa8ilU6tNXpFrI+C9IDe
-         mG6pIsFSEffFL6zRoJq0jHgfwo3II7cq4lZUQxo8MLFLhd6fZdvuHnYOrq1L/snbp8Uy
-         kAb4THNvWobxwQmeNnISZ9D9K91kTbzejYmZs7ZPN6Kw45mRM5OtjaujQIrj7hK/HhMZ
-         DJvw==
-X-Gm-Message-State: AOJu0YxPdTLapkcE5I39m9XggXhfVr/WNNq3cGjV6Lpq/uTGPT4v1v+i
-	SoZR92snUP8Bg/x7qQGizSCpm3nglmPBkxOCeTCgXbKMu6jGrlFA
-X-Gm-Gg: ASbGncu8gSQ8kLfD253B4sjSf6+k8ctLmN18n1Wzn+C8v1934fksS5l/sAuR4vicKds
-	3/bQcGGnNwvwFlvx2STybFf/lksuVZh75x9w0zG86cpueky4JE0Oof97HKSNECd2BLeo2IQ8KJD
-	UrlHZFqlw4jeMazf9POoI5h3ikyqFdIWJ/Y/NrDcF6++eO+RH4ducOrdGMsdSswKmrBW7QsVIHB
-	/2XnkBOiBJ2sqmGaLTEdrcvSzKBvMGO4FlW3ZDz1RHZE0W2ra7Mm39YlUQqQ2rDV2QSZAWEdNqF
-	5rzSv/DTd8E4fwo+gSTB7ly2rSgxTFnVbJo8lAK9ciNKd7wTLQ==
-X-Google-Smtp-Source: AGHT+IFWwzW3S22hdf2HwVdaML40mlV5rajQgAJiyHzhwv+gqBpwcyWFsGoGSOgwWGjw2vWPUSl0Kw==
-X-Received: by 2002:a17:902:ebd1:b0:223:325c:89f6 with SMTP id d9443c01a7336-223325c8ef5mr65292445ad.10.1740624475828;
-        Wed, 26 Feb 2025 18:47:55 -0800 (PST)
-Received: from localhost.localdomain ([61.173.25.243])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2235050fdafsm3681905ad.214.2025.02.26.18.47.52
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 26 Feb 2025 18:47:55 -0800 (PST)
-From: Yafang Shao <laoar.shao@gmail.com>
-To: jpoimboe@kernel.org,
-	jikos@kernel.org,
-	mbenes@suse.cz,
-	pmladek@suse.com,
-	joe.lawrence@redhat.com
-Cc: live-patching@vger.kernel.org,
-	Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH v3 2/2] livepatch: Replace tasklist_lock with RCU
-Date: Thu, 27 Feb 2025 10:47:33 +0800
-Message-Id: <20250227024733.16989-3-laoar.shao@gmail.com>
-X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
-In-Reply-To: <20250227024733.16989-1-laoar.shao@gmail.com>
-References: <20250227024733.16989-1-laoar.shao@gmail.com>
+	s=arc-20240116; t=1740649111; c=relaxed/simple;
+	bh=kuUelbCc3mh5KwVn0L2IifL5eirbW8cOf0PVGvfIwfM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=DWGO1TZD4K6iTaCNGJ4nTLuf4GIoiHWtDS9RsuegEaFvx0so8yTsVuP2jHbSAPhDSFlJ0Mon4Cn8elI1HLUfARI6WN9fHM1WQMsPgyk8fuUmS+nq480FcwVKPhnlGM52uAFmdFWr7CGMhj9VM008CROQT0lzAHzWE9ev7H4ytpg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OEGzQbdL; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49661C4CEDD;
+	Thu, 27 Feb 2025 09:38:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1740649110;
+	bh=kuUelbCc3mh5KwVn0L2IifL5eirbW8cOf0PVGvfIwfM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=OEGzQbdLP4sU0C751iv3CJOKm5AjF33WraZlCvE17HOBNTUg/0FIeocRFVJc7P69E
+	 9FtPiFuEn6iF8IGyn4S97hjGVQfePe2iesSo09ewwhHRu3lHOQd+aHISiU33ch7Gh/
+	 7DTJNNyLUQOtLpxL/E1dkZJvs0vA03DXU0k1exTcABBRa9VZzjAlYlceFE5FwesySH
+	 CP1gM3h2+qtX0BuFpkP2ouJ/zuSxX4ijSEho720RULkXkjMClQkE1g9BClhlFnCPoT
+	 r7rOki/bKHmDZs3n9gbZfNt+DKaYUmYA7c4mU36OwvBNtz2pGnEdW5102cpP+FGVEU
+	 lj7IMXCnw7v/g==
+From: Puranjay Mohan <puranjay@kernel.org>
+To: Indu Bhagat <indu.bhagat@oracle.com>, Weinan Liu <wnliu@google.com>
+Cc: irogers@google.com, joe.lawrence@redhat.com, jpoimboe@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org,
+ mark.rutland@arm.com, peterz@infradead.org, roman.gushchin@linux.dev,
+ rostedt@goodmis.org, will@kernel.org
+Subject: Re: [PATCH 0/8] unwind, arm64: add sframe unwinder for kernel
+In-Reply-To: <91fae2dc-4f52-4f38-9135-66935a421322@oracle.com>
+References: <4356c17a-8dba-4da0-86dd-f65afb8145e2@oracle.com>
+ <20250225235455.655634-1-wnliu@google.com>
+ <da6aad99-3461-47fd-b9d8-65f8bb446ae1@oracle.com>
+ <mb61ph64h9f8m.fsf@kernel.org>
+ <91fae2dc-4f52-4f38-9135-66935a421322@oracle.com>
+Date: Thu, 27 Feb 2025 09:38:16 +0000
+Message-ID: <mb61peczjybg7.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha512; protocol="application/pgp-signature"
 
-The tasklist_lock in the KLP transition might result high latency under
-specific workload. We can replace it with RCU.
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-After a new task is forked, its kernel stack is always set to empty[0].
-Therefore, we can init these new tasks to KLP_TRANSITION_IDLE state
-after they are forked. If these tasks are forked during the KLP
-transition but before klp_check_and_switch_task(), they can be safely
-skipped during klp_check_and_switch_task(). Additionally, if
-klp_ftrace_handler() is triggered right after forking, the task can
-determine which function to use based on the klp_target_state.
+Indu Bhagat <indu.bhagat@oracle.com> writes:
 
-With the above change, we can safely convert the tasklist_lock to RCU.
+> On 2/26/25 2:23 AM, Puranjay Mohan wrote:
+>> Indu Bhagat <indu.bhagat@oracle.com> writes:
+>>=20
+>>> On 2/25/25 3:54 PM, Weinan Liu wrote:
+>>>> On Tue, Feb 25, 2025 at 11:38=E2=80=AFAM Indu Bhagat <indu.bhagat@orac=
+le.com> wrote:
+>>>>>
+>>>>> On Mon, Feb 10, 2025 at 12:30=E2=80=AFAM Weinan Liu <wnliu@google.com=
+> wrote:
+>>>>>>> I already have a WIP patch to add sframe support to the kernel modu=
+le.
+>>>>>>> However, it is not yet working. I had trouble unwinding frames for =
+the
+>>>>>>> kernel module using the current algorithm.
+>>>>>>>
+>>>>>>> Indu has likely identified the issue and will be addressing it from=
+ the
+>>>>>>> toolchain side.
+>>>>>>>
+>>>>>>> https://sourceware.org/bugzilla/show_bug.cgi?id=3D32666
+>>>>>>
+>>>>>> I have a working in progress patch that adds sframe support for kern=
+el
+>>>>>> module.
+>>>>>> https://github.com/heuza/linux/tree/sframe_unwinder.rfc
+>>>>>>
+>>>>>> According to the sframe table values I got during runtime testing, l=
+ooks
+>>>>>> like the offsets are not correct .
+>>>>>>
+>>>>>
+>>>>> I hope to sanitize the fix for 32666 and post upstream soon (I had to
+>>>>> address other related issues). =C2=A0Unless fixed, relocating .sframe
+>>>>> sections using the .rela.sframe is expected to generate incorrect out=
+put.
+>>>>>
+>>>>>> When unwind symbols init_module(0xffff80007b155048) from the kernel
+>>>>>> module(livepatch-sample.ko), the start_address of the FDE entries in=
+ the
+>>>>>> sframe table of the kernel modules appear incorrect.
+>>>>>
+>>>>> init_module will apply the relocations on the .sframe section, isnt i=
+t ?
+>>>>>
+>>>>>> For instance, the first FDE's start_addr is reported as -20564. Addi=
+ng
+>>>>>> this offset to the module's sframe section address (0xffff80007b15a0=
+40)
+>>>>>> yields 0xffff80007b154fec, which is not within the livepatch-sample.=
+ko
+>>>>>> memory region(It should be larger than 0xffff80007b155000).
+>>>>>>
+>>>>>
+>>>>> Hmm..something seems off here. =C2=A0Having tested a potential fix fo=
+r 32666
+>>>>> locally, I do not expect the first FDE to show this symptom.
+>>>>>
+>>>>
+>>=20
+>> Hi,
+>>=20
+>> Sorry for not responding in the past few days.  I was on PTO and was
+>> trying to improve my snowboarding technique, I am back now!!
+>>=20
+>> I think what we are seeing is expected behaviour:
+>>=20
+>>   | For instance, the first FDE's start_addr is reported as -20564. Addi=
+ng
+>>   | this offset to the module's sframe section address (0xffff80007b15a0=
+40)
+>>   | yields 0xffff80007b154fec, which is not within the livepatch-sample.=
+ko
+>>   | memory region(It should be larger than 0xffff80007b155000).
+>>=20
+>>=20
+>> Let me explain using a __dummy__ example.
+>>=20
+>> Assume Memory layout before relocation:
+>>=20
+>>   | Address | Element                                 | Relocation
+>>   |  ....   | ....                                    |
+>>   |   60    | init_module (start address)             |
+>>   |   72    | init_module (end address)               |
+>>   |  ....   | .....                                   |
+>>   |   100   | Sframe section header start address     |
+>>   |   128   | First FDE's start address               | RELOC_OP_PREL ->=
+ Put init_module address (60) - current address (128)
+>>=20
+>> So, after relocation First FDE's start address has value 60 - 128 =3D -68
+>>=20
+>
+> For SFrame FDE function start address is :
+>
+> "Signed 32-bit integral field denoting the virtual memory address of the=
+=20
+> described function, for which the SFrame FDE applies.  The value encoded=
+=20
+> in the =E2=80=98sfde_func_start_address=E2=80=99 field is the offset in b=
+ytes of the=20
+> function=E2=80=99s start address, from the SFrame section."
+>
+> So, in your case, after applying the relocations, you will get:
+> S + A - P =3D 60 - 128 =3D -68
+>
+> This is the distance of the function start address (60) from the current=
+=20
+> location in SFrame section (128)
+>
+> But what we intend to store is the distance of the function start=20
+> address from the start of the SFrame section.  So we need to do an=20
+> additional step for SFrame FDE:  Value +=3D r_offset
 
-Link: https://lore.kernel.org/all/20250213173253.ovivhuq2c5rmvkhj@jpoimboe/ [0]
-Link: https://lore.kernel.org/all/20250214181206.xkvxohoc4ft26uhf@jpoimboe/ [1]
-Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
----
- include/linux/livepatch.h     |  4 ++--
- kernel/fork.c                 |  2 +-
- kernel/livepatch/patch.c      |  8 +++++++-
- kernel/livepatch/transition.c | 35 ++++++++++++++---------------------
- kernel/livepatch/transition.h |  1 +
- 5 files changed, 25 insertions(+), 25 deletions(-)
+Thanks for the explaination, now it makes sense.
 
-diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index 51a258c24ff5..41c424120f49 100644
---- a/include/linux/livepatch.h
-+++ b/include/linux/livepatch.h
-@@ -198,7 +198,7 @@ int klp_enable_patch(struct klp_patch *);
- int klp_module_coming(struct module *mod);
- void klp_module_going(struct module *mod);
- 
--void klp_copy_process(struct task_struct *child);
-+void klp_init_process(struct task_struct *child);
- void klp_update_patch_state(struct task_struct *task);
- 
- static inline bool klp_patch_pending(struct task_struct *task)
-@@ -241,7 +241,7 @@ static inline int klp_module_coming(struct module *mod) { return 0; }
- static inline void klp_module_going(struct module *mod) {}
- static inline bool klp_patch_pending(struct task_struct *task) { return false; }
- static inline void klp_update_patch_state(struct task_struct *task) {}
--static inline void klp_copy_process(struct task_struct *child) {}
-+static inline void klp_init_process(struct task_struct *child) {}
- 
- static inline
- int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 735405a9c5f3..da247c4d5ec5 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -2544,7 +2544,7 @@ __latent_entropy struct task_struct *copy_process(
- 		p->exit_signal = args->exit_signal;
- 	}
- 
--	klp_copy_process(p);
-+	klp_init_process(p);
- 
- 	sched_core_fork(p);
- 
-diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
-index 90408500e5a3..3da98877c785 100644
---- a/kernel/livepatch/patch.c
-+++ b/kernel/livepatch/patch.c
-@@ -95,7 +95,13 @@ static void notrace klp_ftrace_handler(unsigned long ip,
- 
- 		patch_state = current->patch_state;
- 
--		WARN_ON_ONCE(patch_state == KLP_TRANSITION_IDLE);
-+		/* If the patch_state is KLP_TRANSITION_IDLE, it means the task
-+		 * was forked after klp_init_transition(). In this case, the
-+		 * newly forked task can determine which function to use based
-+		 * on the klp_target_state.
-+		 */
-+		if (patch_state == KLP_TRANSITION_IDLE)
-+			patch_state = klp_target_state;
- 
- 		if (patch_state == KLP_TRANSITION_UNPATCHED) {
- 			/*
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index ba069459c101..af76defca67a 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -23,7 +23,7 @@ static DEFINE_PER_CPU(unsigned long[MAX_STACK_ENTRIES], klp_stack_entries);
- 
- struct klp_patch *klp_transition_patch;
- 
--static int klp_target_state = KLP_TRANSITION_IDLE;
-+int klp_target_state = KLP_TRANSITION_IDLE;
- 
- static unsigned int klp_signals_cnt;
- 
-@@ -294,6 +294,14 @@ static int klp_check_and_switch_task(struct task_struct *task, void *arg)
- {
- 	int ret;
- 
-+	/*
-+	 * If the patch_state remains KLP_TRANSITION_IDLE at this point, it
-+	 * indicates that the task was forked after klp_init_transition().
-+	 * In this case, it is safe to skip the task.
-+	 */
-+	if (!test_tsk_thread_flag(task, TIF_PATCH_PENDING))
-+		return 0;
-+
- 	if (task_curr(task) && task != current)
- 		return -EBUSY;
- 
-@@ -466,11 +474,11 @@ void klp_try_complete_transition(void)
- 	 * Usually this will transition most (or all) of the tasks on a system
- 	 * unless the patch includes changes to a very common function.
- 	 */
--	read_lock(&tasklist_lock);
-+	rcu_read_lock();
- 	for_each_process_thread(g, task)
- 		if (!klp_try_switch_task(task))
- 			complete = false;
--	read_unlock(&tasklist_lock);
-+	rcu_read_unlock();
- 
- 	/*
- 	 * Ditto for the idle "swapper" tasks.
-@@ -694,25 +702,10 @@ void klp_reverse_transition(void)
- }
- 
- /* Called from copy_process() during fork */
--void klp_copy_process(struct task_struct *child)
-+void klp_init_process(struct task_struct *child)
- {
--
--	/*
--	 * The parent process may have gone through a KLP transition since
--	 * the thread flag was copied in setup_thread_stack earlier. Bring
--	 * the task flag up to date with the parent here.
--	 *
--	 * The operation is serialized against all klp_*_transition()
--	 * operations by the tasklist_lock. The only exceptions are
--	 * klp_update_patch_state(current) and __klp_sched_try_switch(), but we
--	 * cannot race with them because we are current.
--	 */
--	if (test_tsk_thread_flag(current, TIF_PATCH_PENDING))
--		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
--	else
--		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
--
--	child->patch_state = current->patch_state;
-+	clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
-+	child->patch_state = KLP_TRANSITION_IDLE;
- }
- 
- /*
-diff --git a/kernel/livepatch/transition.h b/kernel/livepatch/transition.h
-index 322db16233de..febcf1d50fc5 100644
---- a/kernel/livepatch/transition.h
-+++ b/kernel/livepatch/transition.h
-@@ -5,6 +5,7 @@
- #include <linux/livepatch.h>
- 
- extern struct klp_patch *klp_transition_patch;
-+extern int klp_target_state;
- 
- void klp_init_transition(struct klp_patch *patch, int state);
- void klp_cancel_transition(void);
--- 
-2.43.5
+But I couldn't find a relocation type in AARCH64 that does this extra +=3D
+r_offset along with PREL32.
 
+The kernel's module loader is only doing the R_AARCH64_PREL32 which is
+why we see this issue.
+
+How is this working even for the kernel itself? or for that matter, any
+other binary compiled with sframe?
+
+From=20my limited undestanding, the way to fix this would be to hack the
+relocator to do this additional step while relocating .sframe sections.
+Or the 'addend' values in .rela.sframe should already have the +r_offset
+added to it, then no change to the relocator would be needed.
+
+> -68 + 28 =3D -40
+> Where 28 is the r_offset in the RELA.
+>
+> So we really expect a -40 in the relocated SFrame section instead of -68=
+=20
+> above.  IOW, the RELAs of SFrame section will need an additional step=20
+> after relocation.
+>
+
+Thanks,
+Puranjay
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iIoEARYKADIWIQQ3wHGvVs/5bdl78BKwwPkjG3B2nQUCZ8AyiRQccHVyYW5qYXlA
+a2VybmVsLm9yZwAKCRCwwPkjG3B2nc64AQCrImK/xT/H/sSJyKH/7xwB1DnkIwCd
+H+TAPuqrhqK6YwD/S/fgUeM06UgZceakvwwGL0B6KlZyow2qyPBm9thb3wI=
+=IByT
+-----END PGP SIGNATURE-----
+--=-=-=--
 
