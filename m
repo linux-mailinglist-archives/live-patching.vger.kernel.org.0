@@ -1,86 +1,84 @@
-Return-Path: <live-patching+bounces-1252-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1253-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B3A2FA4E53C
-	for <lists+live-patching@lfdr.de>; Tue,  4 Mar 2025 17:13:37 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6196BA4E576
+	for <lists+live-patching@lfdr.de>; Tue,  4 Mar 2025 17:19:41 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BDECF17D2D1
-	for <lists+live-patching@lfdr.de>; Tue,  4 Mar 2025 16:06:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3CBB717EBFD
+	for <lists+live-patching@lfdr.de>; Tue,  4 Mar 2025 16:11:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BF2227816C;
-	Tue,  4 Mar 2025 15:48:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BD6227D786;
+	Tue,  4 Mar 2025 15:51:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="JnTDS2Ap"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="FcZrEQom"
 X-Original-To: live-patching@vger.kernel.org
 Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7653B24BCE8
-	for <live-patching@vger.kernel.org>; Tue,  4 Mar 2025 15:48:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A5A27D779
+	for <live-patching@vger.kernel.org>; Tue,  4 Mar 2025 15:51:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741103307; cv=none; b=DdSRcVKLHG9SJ7mZMoj/0T29OxATC6QD3UfWZfHiiYWhro/FJvuf2csY4vB2Sjn0RlgjlYNvvcgEbwlrlw3lsF8yMmD0WvpxmwGPYcj6Wn7V9E/skt+CGzeTk/ZdKo93n4TjzMpZsOurBlidHw4brifxON5JePWeti3tiM45tHI=
+	t=1741103466; cv=none; b=bIWAkxYhMzrYBE3wKLgLr7xzn+zmYcwE+tqwVr2laPcl1rm8AB/wuestzuhYEJaML0cDbwTSDmX2F88S8NzStf+fltRGh/2aYMlX2hd2K61zjZZPYYI5QLFuAObUzzYQ5z6tKly5vWKx2N1tsJQWwv26ZJjcJSKSmaabBOpD5Wg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741103307; c=relaxed/simple;
-	bh=Lv7IxLSzan4bEBeBpb5IJ8OPDcDeKbVELqnMeUvw8wA=;
+	s=arc-20240116; t=1741103466; c=relaxed/simple;
+	bh=k2Y27E8jBe6v83yy6OVDayltip9TmWM0y/2df87N2Wk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X+7E5kXSS1I1O8117pkg47xGLZ2OOhrI+57UjNImW1NHE4B6TyFfRZINtkVHE1DHPZOAahUXHbIyO/NqLi4KvLbJNYb2l6hnbpZ2STXctpN0rSKlhNfRWUufKf4CvSxr1dNL5Db79fVUeZ4N+45HWlq+JlFefxOoIYJv5LCv26s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=JnTDS2Ap; arc=none smtp.client-ip=209.85.221.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=T587XCE4/MY247ftkNx73sXoqP4WXyufhvDJqoc3sYFH2QCDhH+cwKPoscwB1pgChC3wVPlQVacBArmD+LHRugd1KbJ/EdELC2ZssKVN1KQbnlpNI2Md43+iyXMaNEsgdcyeJu7f8D4Y9yPmuGcFuK8P9t2lH1/Srd/0I8M1Q4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=FcZrEQom; arc=none smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-388cae9eb9fso3075362f8f.3
-        for <live-patching@vger.kernel.org>; Tue, 04 Mar 2025 07:48:24 -0800 (PST)
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-390f5556579so2350212f8f.1
+        for <live-patching@vger.kernel.org>; Tue, 04 Mar 2025 07:51:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1741103291; x=1741708091; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1741103462; x=1741708262; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EZdxOw8yk7OkoGsdvrHglMxlYbwsJWDI+4GGZADxWG8=;
-        b=JnTDS2Apkx2zy/+ms5rhakWh+XBaMqaIlsw8xgNOApcjZk4eJCZqz1WhXCbifqs1q8
-         ieOWB2xT99U+uom3HczdEYBWWCLj8xw9dUxnNOGu4yCzVL+K3VDPYuv+/TnM3rWRdfOO
-         UnS/QGrI8rB7r8zcb/BFK+rfhtmHW2xi9rFdg92y5SuAvoQryGXUzrGIB8bGk1+TD+Ue
-         EVHM+yxzqelU8yFdbN1JG+9EyTdDVbk08FmjecLYPyUy2Lvjnacl5FoVFgGRYSU4yWR2
-         295TrUTPWbGdvIYH2YWPAeXAa0WBoZ1U1f4JeBeWxP6plszx+PcW7gfzEKMxpqC+CTV9
-         f9eA==
+        bh=Ztij9sovDefPZ+JmP5z7McxB3M6gtn8pxDpq2Itdo0g=;
+        b=FcZrEQom3rzP6z093pcl2f9PYRpfDj2kSxp0utlBlAZ+tepjWwrw6vLG1mTMZ0tgq9
+         9hwgdW6biG8yyR7qb3U12rJHyzhi8B4kCb0qU6zLp1pKkiAUv0Kbn1sE5E6CPVNgmML6
+         glA0LJoCOSBnPckQtb548POvMBqHomz6SVXJR/xZ/qakb01gQ61mAtGPt5Hs8Vt8vUEx
+         VtROY2f/2ZeDhmTwpbvCgc7USsNiBvFQl8doZlLrs0PEKgnGrPJwt7vlBuCJ9cypII6I
+         Tjo08yc7D+CKnJ6RnrSwrAxLxi+t6QONXhlL/fLdaH6xOKzOu7BfEgJHKo5SHfwsq+mX
+         RYTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741103291; x=1741708091;
+        d=1e100.net; s=20230601; t=1741103462; x=1741708262;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EZdxOw8yk7OkoGsdvrHglMxlYbwsJWDI+4GGZADxWG8=;
-        b=fHGaZUdKimg3xIajaTr8Jx3Cnqzs4hS8SL9BLNAMvdTbvXxdlGei3ZUE8OboSYH/PU
-         TsWGX+IC47sXkRjPGTw+BVTVD7LfRf25xz+YWiNfnLHHZf37oiM62sCc2muVYM3jfCvI
-         XN9ySd5ELpQiIzNRhQjsCLbZE+cHZHeHHhcJjFM4li85eNOQTpld5gUsjRPkn3VONZu+
-         IwxcRcQ4OQY3yA4O3yX6zCfDYVR+zuo6XNWEuKpEqACfGdeZjCNKyWQROn+aal7Ce0j5
-         HD9wCKJRpWQbxzoBw7I+rwtSn+NtELV1YaOQdX0mcH0uyh3zpMIqIdDUKIityyaxGOrc
-         8ghA==
-X-Forwarded-Encrypted: i=1; AJvYcCXUFlSakHDsSMyO7FS3uljya3hDxxJY2mpGRvFT2txnJCuARVDiUo9ZmVehyKsi7bCyA3n7Iqhk6Om+TRfc@vger.kernel.org
-X-Gm-Message-State: AOJu0YxbUXUjiPeA8sI+d0Yiyq/0f5oMq4XtWLJvmunjX0lGZ9UJ4oKF
-	4l2VtygRRihfq7ZUMv+soXYaB3LF9lR8IyjJgrHFV7KOh+96ne0doP1lhqbCfd4=
-X-Gm-Gg: ASbGncswBOIeakRgbgr/dnYWXGT3tDAGM6jvusnQREBGD+W7HFfQ5erPavH/7ib6i27
-	rLTkZXJ9bfqN4eSneQjBoCiwsSLxPc0pKfa44/NZRJhy9a7fojBIrwrGyJ0stvO+z3PRMMBzQXs
-	Cg7Lh1QAG5v5dzOJT39nJGyCVkAJi3weiGw8NH1Lyzs02lrSnYBxYboJ7E+5zA2E0Wq1P4JJd2K
-	1/d0yHtnRA3p/f1/E+0xl+dBz6R2e89BQkxxAcM4NDxaUES/q2PZ5kpwjfiOFe2UC9VutfOOlSX
-	mJ8VtDuvwhHo4UCjKqcA4I/uipCau+kAYA==
-X-Google-Smtp-Source: AGHT+IFWTYnp6D/zkGSYVNm1FrSqQIpISfAHY79VVmNAFplt0tF48vwcInl3W5zDOjvns319vPabIQ==
-X-Received: by 2002:a05:6000:2101:b0:390:f750:40df with SMTP id ffacd0b85a97d-390f750412amr8249016f8f.34.1741103291282;
-        Tue, 04 Mar 2025 07:48:11 -0800 (PST)
+        bh=Ztij9sovDefPZ+JmP5z7McxB3M6gtn8pxDpq2Itdo0g=;
+        b=v/su75kreB6J7KDk6gjGSDaTErgvVMmd/C3ST/QBUwldxFDbiSmMswZQ+pzv1ShkLl
+         LqKItp45JU6Lfv1OW11ProFC1EkwV+f1VGxDAFXQkIVXmFc6lIJVCmtHD/V38ReQB/QD
+         Z5EZruFa2BafQe37VU+eRxF+qQ328iT8Uxq6ZglwXQDkt1YJrFTF6+HVM3uR0MGdSDTD
+         hweELYp15QG1GwhQlDuOItd95rZqvfCoaDtgYkn0yxB1jyMlz/5BpW72OQPiuiJEj2K3
+         H5fp5RwtHMXgLI7VZGfHvH+SwOccCaHVIOQf5eLur0SqqQastM4BveBin3MDZ6A9b7AC
+         w/2g==
+X-Gm-Message-State: AOJu0YwKG4TJq/p9ny0kZ6mu2nmb0wfo72xEhPWt7lgkQs2lnW5v9jcD
+	BmsUv2pBeJdBGboLW7UJ92fxCqKVUULyjz0AxdX1wltYQn3SOf1/TVnvO7yEUcE=
+X-Gm-Gg: ASbGncuQnhEgO9QJ4zJKTABaDZoqq9OsTlhuc+IpkR/sSCve3YTLSGGboIc46enwPBB
+	Exo3kOuCA6swnxzm4vzyzy14Yx/7TQlb2y1oIeiBHyWr85RE0eBII5dB2hIxpmjWUzN5nL0avu4
+	k9YT+vLeKo4qfwEdY9Z+BQqp8bc1eOTHGu9Ch9iSDg26mzMXNgiq+FZRnYkb96vXb+RvwBbEj4E
+	7pXrCneGF/gyUshCQgP82MRroES7N1ORh2DT4DN+8a/GA1N/rf488UQWxVLvnjFz3/ssYvd9Ux4
+	/3wSmMUXSW87HrX7XerSo6ov88SE+LI1ug==
+X-Google-Smtp-Source: AGHT+IEqw732r+HZ4NWu3JQYHrodjvDxnDB1NIugP9b50YqhrS6dPwVXDZpklzhnZ/WuAjHzoYGFCA==
+X-Received: by 2002:a05:6000:418a:b0:38f:32a7:b6f3 with SMTP id ffacd0b85a97d-390eca41867mr11311863f8f.40.1741103462172;
+        Tue, 04 Mar 2025 07:51:02 -0800 (PST)
 Received: from pathway ([193.86.92.181])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-390e47a6a9fsm18261441f8f.36.2025.03.04.07.48.10
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43bb767a977sm99979765e9.18.2025.03.04.07.51.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Mar 2025 07:48:10 -0800 (PST)
-Date: Tue, 4 Mar 2025 16:48:09 +0100
+        Tue, 04 Mar 2025 07:51:01 -0800 (PST)
+Date: Tue, 4 Mar 2025 16:51:00 +0100
 From: Petr Mladek <pmladek@suse.com>
-To: Yafang Shao <laoar.shao@gmail.com>
-Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-	joe.lawrence@redhat.com, live-patching@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] livepatch: Add comment to clarify klp_add_nops()
-Message-ID: <Z8cguQqYISkiRjnb@pathway>
-References: <20250227024733.16989-1-laoar.shao@gmail.com>
- <20250227024733.16989-2-laoar.shao@gmail.com>
- <Z8B6pXGtqSYxADg1@pathway.suse.cz>
+To: Vincenzo MEZZELA <vincenzo.mezzela@suse.com>
+Cc: live-patching@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org,
+	mbenes@suse.cz, joe.lawrence@redhat.com, corbet@lwn.net
+Subject: Re: [PATCH v2] docs: livepatch: move text out of code block
+Message-ID: <Z8chZIpQkrp1GZhy@pathway>
+References: <20250227163929.141053-1-vincenzo.mezzela@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -89,24 +87,16 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z8B6pXGtqSYxADg1@pathway.suse.cz>
+In-Reply-To: <20250227163929.141053-1-vincenzo.mezzela@suse.com>
 
-On Thu 2025-02-27 15:45:57, Petr Mladek wrote:
-> On Thu 2025-02-27 10:47:32, Yafang Shao wrote:
-> > Add detailed comments to clarify the purpose of klp_add_nops() function.
-> > These comments are based on Petr's explanation[0].
-> > 
-> > Link: https://lore.kernel.org/all/Z6XUA7D0eU_YDMVp@pathway.suse.cz/ [0]
-> > Suggested-by: Petr Mladek <pmladek@suse.com>
-> > Suggested-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+On Thu 2025-02-27 17:39:29, Vincenzo MEZZELA wrote:
+> Part of the documentation text is included in the readelf output code
+> block. Hence, split the code block and move the affected text outside.
 > 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Vincenzo MEZZELA <vincenzo.mezzela@suse.com>
 
-JFYI, I have pushed this patch into livepatching.git,
+JFYI, the patch has been comitted into livepatching.git,
 branch for-6.15/trivial.
-
-It is a trivial patch and is independent on the other problems.
 
 Best Regards,
 Petr
