@@ -1,214 +1,191 @@
-Return-Path: <live-patching+bounces-1257-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1258-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A0EF9A5596E
-	for <lists+live-patching@lfdr.de>; Thu,  6 Mar 2025 23:12:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 636A7A55A38
+	for <lists+live-patching@lfdr.de>; Thu,  6 Mar 2025 23:55:04 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CBFD716B66C
-	for <lists+live-patching@lfdr.de>; Thu,  6 Mar 2025 22:12:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8B0C116C981
+	for <lists+live-patching@lfdr.de>; Thu,  6 Mar 2025 22:55:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0D24276D16;
-	Thu,  6 Mar 2025 22:12:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AAFB27C85A;
+	Thu,  6 Mar 2025 22:55:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R3R2KCvb"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ACHmYmus"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29B1B155342;
-	Thu,  6 Mar 2025 22:12:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60FCB206F22
+	for <live-patching@vger.kernel.org>; Thu,  6 Mar 2025 22:54:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741299159; cv=none; b=pRhOIIkf+JvQDMRVBIJv6ZGFMMrTM7ZwqM7dckQsECqf7zf0Tal5QCDJRP1Ivu/FsDUN7dUffjkQDu0SjE3vWaxbg9CJS5lb5wHdrPyDkW8yHG/Hiz6xxBpsamaP24huF2ExwLIY3tjecz00SrjNB22w7XxV4z6r4RbFNVVomIc=
+	t=1741301700; cv=none; b=e/wW+OqbmEuEGLCe6t7Wnc5/uqL2shle6FC/7gXUpNc22O+Zb8elBbV9fsBb7TxQmhK7H6auldUwFry6MWEG0o76bxERH96gdJw2/l/1wBQQ+0e5eEXvPNRLkuigHiKNCOTa7Xr1tG4ygOXohqaNFtYeL4aqSprnAhnBDFF4v2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741299159; c=relaxed/simple;
-	bh=+sabWWNgYhqx08Z5grRAbwqNFekSBNSN06iAaMOFvBQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Fu7QwFnzJg2Tw9LNXZ4Cutt6FAedIyGrKuY7dwAo4mxogfPdshp7Qj8jHdXZEB5R9Of1cmekOY57DHK5Uka00vSTFTQy6rZDk/SzunM2RQDMF5ameQ7ucQuMzqc4m82rlLMDcrwGAArVQFOUk/mooLodTIZWUhuU6+iBDvTB6lw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R3R2KCvb; arc=none smtp.client-ip=209.85.214.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-219f8263ae0so23683685ad.0;
-        Thu, 06 Mar 2025 14:12:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741299157; x=1741903957; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=R+Jq5X4jSNDF11QdcBP4rcb9bMRR3aqNbsP12WYItBI=;
-        b=R3R2KCvbkTNWkilmSMUt7CXSeY2pm3SQZu0ONmO7m1qP1cAkfepHmyovYHDunZ9y0E
-         GqnKiP/S6ZXdRrgIVEomEKH9dpowo5Y6V3ehHwVAowNTgzOH66A7ffGWS96wlAPH/BcE
-         IAOuG7XYE7jjJ9eTdVdSzEzxJOp2/jm1HCLaKc7HzzmRyvmJgAHhkDsA861MTUsk5LKe
-         1bGTdUjdHKOKv+HhOFUKfPN0FsoJ4bQTlIxmV8tUzfayhIMPhE1vcYThI0Ni0JWxY8Cj
-         MEwqOAGZU+Rq8kUBmiLdF2UWWeH/1qQR+BriQjEJsXaQz1IPVA9be2Sq686tI3RL2zPp
-         wibw==
+	s=arc-20240116; t=1741301700; c=relaxed/simple;
+	bh=Ec2v/6+I2m2dMEutWSk/xRKfwD+T9KZtIxeor2olnSM=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:From:Subject:
+	 In-Reply-To:Content-Type; b=BjsXE832krcXsLpvHq8CrjnEe8xV7VNKO52+725vIIXWHMCa9eRHs3jFcOjxRD1RCYNI/5oM2/aFeZeituFH/WcfSYBjnv7SA2Qfs6GVCgm8bj+XiOtS9Mt5PCAbodm1Ezl2pHX5PE2omtSNM2sy/NrUDgGXxQRUXl7tRJZIuXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ACHmYmus; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1741301696;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WSX2Ub1CKLDkvugsqLVThWkv/Fyhg59pKvv3HTVRtQk=;
+	b=ACHmYmustdwRhCoo6/LknI7IzmefJOyY/HnwxJJ/JNryACokbRDkTk90SLrNBXZ7aCIb7V
+	j2tT0gWZhS7Qxj6zJtAQqDklWqy/bhgmZWiVUvhu0Rk9XGdKO7JfpSf39+pFTHQcPRhhCs
+	ObsUDMM/fUDdbCV0ZFGL6NdjsyL4jwU=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-283-SkFm9CrdNXKFgYpjH0Y66Q-1; Thu, 06 Mar 2025 17:54:45 -0500
+X-MC-Unique: SkFm9CrdNXKFgYpjH0Y66Q-1
+X-Mimecast-MFC-AGG-ID: SkFm9CrdNXKFgYpjH0Y66Q_1741301685
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-6e8f9450b19so21489676d6.1
+        for <live-patching@vger.kernel.org>; Thu, 06 Mar 2025 14:54:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741299157; x=1741903957;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1741301685; x=1741906485;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=R+Jq5X4jSNDF11QdcBP4rcb9bMRR3aqNbsP12WYItBI=;
-        b=jV+esP7+YFrIhJsWuq9htfyq/dmAGAxYDCfSbCmMkO6VPvq3mPFdbAlbbZoM/JaM6d
-         GI2reYxiET0qrpErzjZGcKq9pgd+hROBb5xh7oZlNHmDwi69mfujdL8sX5GBkRs/I089
-         2ss4Y02Xbyr4wYuvRJ4cqzafUfoIQekHT0Fcd5zUl23DjtxQXodpXp0+I4yPBUZ08j0m
-         KByscPw/4AP3h7zG+EMDDGg4zPY4qwTzjRfLjjD2W6LTioZ8oyJFNtkHAEbLtTEenBAV
-         6Lf9T17cpCJ/H1OntE+ltu+ecckWfHaYOCqpeJowfBplfbrNn0tTlI2gcYMcvyTiItyK
-         KACg==
-X-Forwarded-Encrypted: i=1; AJvYcCWwrBTi4wAUscKa20Zl22yzF2OtkX64ZC8vYi7D01jyefvSinLmkCAgVA3M9/UEZAcmz9aqnW6tDvQRNcC+wEwe@vger.kernel.org, AJvYcCX/rtBiEmFyrpHeYVgA9JHE0dAuvM+izXrmL1h/myGHmfidhOgAvD2LuWfHmsmvltObzkA1c+3SOUy9qyk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx1acbri7Rx1rhzg+NYO/z7t2Ss7v/cXJDy0dl95/8v8uLVZus4
-	40qELboySRFdVRaFfmilsfDa3hp7OCQg2oylrq7VslGWxbxeThF+
-X-Gm-Gg: ASbGncuXcSycaDadxmObgGY6nB/4WqEPM/YlNMKudJegtgjbPb0H6wjRTqAo+253b0G
-	v3N7K4tADFtzcWwueupMn5WacsfzHesSNymeMSpp4OaK/Rk7bAka8RdXWBH3KkPHz8gg8WhrvrK
-	1xbxtP45h8eQzyaSPI9TVh5UWMNfEOa1hMot7QeXVSjT+pjUj+2dXhqImRvUuXIWzmd4/G2OCK1
-	uCAvcwknCZHsDDMrYK7vqU+PUBAH8JoKEM6neXw1ylWOmBtAiZOIpYzxEQtiNLHB8+oTK4G/fvO
-	d9xa1LPZSDCC+rihMxSql9GYXr7TUuarxUqvrapt2nXFkKiCbBQf3Jcm5yvO/4sZc467Kgw/74q
-	MVDu+PT8OMKG/wbwmLlTF
-X-Google-Smtp-Source: AGHT+IFnZYQpL+b0CcPNlfmXqGPZImhe+OjZAVhs0wvS1ab8bHEg8OBP/DIAFWYcE+bU7/I+kFUEBg==
-X-Received: by 2002:a17:903:1b63:b0:223:3ef1:a30a with SMTP id d9443c01a7336-22428bd36demr14982035ad.45.1741299157307;
-        Thu, 06 Mar 2025 14:12:37 -0800 (PST)
-Received: from ?IPV6:2804:d57:4e50:a700:f33d:65d1:e22e:109b? ([2804:d57:4e50:a700:f33d:65d1:e22e:109b])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22410a91c50sm17466085ad.185.2025.03.06.14.12.34
+        bh=WSX2Ub1CKLDkvugsqLVThWkv/Fyhg59pKvv3HTVRtQk=;
+        b=AzA7o/9ShybMBVE/bXQLitJmySn61klUb6itjyjaScDUwjUvb2B+sv/5+ML1bntR6F
+         OrWZ7rTSl1N4cKq2q0L6s6SEU5LjkzNHN7nm93Jvjd7PCv2VVscPthaWod3r6eA7b8cb
+         75/qsMBWSZqXJlUEmnuz3D/7b01tjE4haGqgIsbQC6Dw8uSd/bH1KOtT00AOq5TIiKV8
+         4NE1DpMnY5MzynZRuc7mkCgsAO3nwVlKemBktTL9kebwVRdUuLrPfYU6Bc9li0Gd/hGP
+         2OA+HzqQNUps765KqVoQ3lX78tUrqRpiw6VLQFl4XSK6XgzKAORNHcmtQWAefxmGAai8
+         f9YQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXCO5ARoTrT/TPLqzSUa0ArlzrHcni0r5hZsZfl/JQJi94NBynmdJLSJ8zeS/oOji0b7hwP3R/Ry9CYFEqX@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz3FXPZXRnKqtl84s/OkSNC1TzrBx6UeasdRz6BJMc6ZcZKPapL
+	Rn9d2Uhv4fpOlLmL40sB4ZaV//Z16f1wlcUkTzkumX9ejpcqJDNQfPjzya7OTAGYA9YfuVVdKCt
+	0rrXOIFomkVylb4+UmikL2eQ9rSGUwaUDXbrJL4Sllmk1zsJJzhxPq19yb09VeXE=
+X-Gm-Gg: ASbGnctGzja984x/g3rblnMUGwFNfX//fXvZS4bj3ENVX0tk4UlDIYNSJgJdJ59XwIh
+	oB0KMp2eIAhJjbQwrje037n3etFBtvLZZBbjITKAkMd6klCvACsAyFHHVHhJSUkxa7hMDgMVqQa
+	EXKgLJmCCZrZsQp4ocAeV0VpimtPkftBV37hNXQBLP43WTmekNWIO3AzhdFMvjnCLw55iqHrU98
+	kZ2ZqSl1IPDARgcyp21f4s4V+7V7pVhE5FeRM4yjliFn9Fa1RlZQwuZE5sw8C1oFds1Ha9EfEi9
+	U6YoBVX2k1LcqSN9pIg557daKtXfDiMaLwuUhmES3H/rPxVLMXLUOj4QgIHk0epSx8C+YTab5g=
+	=
+X-Received: by 2002:a05:6214:da6:b0:6e1:715f:cdf5 with SMTP id 6a1803df08f44-6e8ff7c8320mr21742836d6.15.1741301685267;
+        Thu, 06 Mar 2025 14:54:45 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEvjp20tEDMblS/SX0z+fmGjibqY6SKFgG687G6r4tW6uVdNve7F0FARHWp0aDZcMETKqdTzw==
+X-Received: by 2002:a05:6214:da6:b0:6e1:715f:cdf5 with SMTP id 6a1803df08f44-6e8ff7c8320mr21742576d6.15.1741301684937;
+        Thu, 06 Mar 2025 14:54:44 -0800 (PST)
+Received: from [192.168.1.61] (pool-68-160-135-240.bstnma.fios.verizon.net. [68.160.135.240])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e8f707c721sm12227996d6.21.2025.03.06.14.54.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Mar 2025 14:12:36 -0800 (PST)
-Message-ID: <b2637bad-9022-496a-9b83-0d348a6350b4@gmail.com>
-Date: Thu, 6 Mar 2025 19:12:32 -0300
+        Thu, 06 Mar 2025 14:54:44 -0800 (PST)
+Message-ID: <c291e9ea-2e66-e9f5-216d-f27e01382bfe@redhat.com>
+Date: Thu, 6 Mar 2025 17:54:41 -0500
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] selftests: livepatch: test if ftrace can trace a
- livepatched function
-To: Marcos Paulo de Souza <mpdesouza@suse.com>,
- Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
- Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-kernel@vger.kernel.org, Felipe Xavier <felipe_life@live.com>
-References: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
 Content-Language: en-US
-From: Filipe Xavier <felipeaggger@gmail.com>
-In-Reply-To: <20250111-ftrace-selftest-livepatch-v2-1-9f4ff90f251a@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To: Petr Mladek <pmladek@suse.com>
+Cc: Nicolai Stange <nstange@suse.de>, live-patching@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Miroslav Benes <mbenes@suse.cz>
+References: <20250115082431.5550-1-pmladek@suse.com>
+ <20250115082431.5550-19-pmladek@suse.com>
+From: Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH v1 18/19] Documentation/livepatch: Update documentation
+ for state, callbacks, and shadow variables
+In-Reply-To: <20250115082431.5550-19-pmladek@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 1/11/25 3:42 PM, Filipe Xavier wrote:
+On 1/15/25 03:24, Petr Mladek wrote:
+> This commit updates the livepatch documentation to reflect recent changes
+> in the behavior of states, callbacks, and shadow variables.
+> 
+> Key changes include:
+> 
+> - Per-state callbacks replace per-object callbacks, invoked only when a
+>   livepatch introduces or removes a state.
+> - Shadow variable lifetime is now tied to the corresponding livepatch
+>   state lifetime.
+> - The "version" field in `struct klp_state` has been replaced with the
+>   "block_disable" flag for improved compatibility handling.
+> - The "data" field has been removed from `struct klp_state`; shadow
+>   variables are now the recommended way to store state-related data.
+> 
+> This update ensures the documentation accurately describes the current
+> livepatch functionality.
+> 
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-> This new test makes sure that ftrace can trace a
-> function that was introduced by a livepatch.
->
-> Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
-> ---
-> Changes in v2:
-> - functions.sh: added reset tracing on push and pop_config.
-> - test-ftrace.sh: enabled tracing_on before test init.
-> - nitpick: added double quotations on filenames and fixed some wording.
-> - Link to v1: https://lore.kernel.org/r/20250102-ftrace-selftest-livepatch-v1-1-84880baefc1b@gmail.com
-> ---
->   tools/testing/selftests/livepatch/functions.sh   | 14 ++++++++++
->   tools/testing/selftests/livepatch/test-ftrace.sh | 33 ++++++++++++++++++++++++
->   2 files changed, 47 insertions(+)
->
-> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-> index e5d06fb402335d85959bafe099087effc6ddce12..e6c13514002dae5f8d7461f90b8241ab43024ea4 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -62,6 +62,9 @@ function push_config() {
->   			awk -F'[: ]' '{print "file " $1 " line " $2 " " $4}')
->   	FTRACE_ENABLED=$(sysctl --values kernel.ftrace_enabled)
->   	KPROBE_ENABLED=$(cat "$SYSFS_KPROBES_DIR/enabled")
-> +	TRACING_ON=$(cat "$SYSFS_DEBUG_DIR/tracing/tracing_on")
-> +	CURRENT_TRACER=$(cat "$SYSFS_DEBUG_DIR/tracing/current_tracer")
-> +	FTRACE_FILTER=$(cat "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter")
->   }
->   
->   function pop_config() {
-> @@ -74,6 +77,17 @@ function pop_config() {
->   	if [[ -n "$KPROBE_ENABLED" ]]; then
->   		echo "$KPROBE_ENABLED" > "$SYSFS_KPROBES_DIR/enabled"
->   	fi
-> +	if [[ -n "$TRACING_ON" ]]; then
-> +		echo "$TRACING_ON" > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-> +	fi
-> +	if [[ -n "$CURRENT_TRACER" ]]; then
-> +		echo "$CURRENT_TRACER" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-> +	fi
-> +	if [[ "$FTRACE_FILTER" == *"#"* ]]; then
-> +		echo > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-> +	elif [[ -n "$FTRACE_FILTER" ]]; then
-> +		echo "$FTRACE_FILTER" > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-> +	fi
->   }
->   
->   function set_dynamic_debug() {
-> diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-> index fe14f248913acbec46fb6c0fec38a2fc84209d39..66af5d726c52e48e5177804e182b4ff31784d5ac 100755
-> --- a/tools/testing/selftests/livepatch/test-ftrace.sh
-> +++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-> @@ -61,4 +61,37 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
->   % rmmod $MOD_LIVEPATCH"
->   
->   
-> +# - verify livepatch can load
-> +# - check if traces have a patched function
-> +# - unload livepatch and reset trace
-> +
-> +start_test "trace livepatched function and check that the live patch remains in effect"
-> +
-> +TRACE_FILE="$SYSFS_DEBUG_DIR/tracing/trace"
-> +FUNCTION_NAME="livepatch_cmdline_proc_show"
-> +
-> +load_lp $MOD_LIVEPATCH
-> +
-> +echo 1 > "$SYSFS_DEBUG_DIR/tracing/tracing_on"
-> +echo $FUNCTION_NAME > "$SYSFS_DEBUG_DIR/tracing/set_ftrace_filter"
-> +echo "function" > "$SYSFS_DEBUG_DIR/tracing/current_tracer"
-> +echo "" > "$TRACE_FILE"
-> +
-> +if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
-> +	echo -e "FAIL\n\n"
-> +	die "livepatch kselftest(s) failed"
-> +fi
-> +
-> +grep -q $FUNCTION_NAME "$TRACE_FILE"
-> +FOUND=$?
-> +
-> +disable_lp $MOD_LIVEPATCH
-> +unload_lp $MOD_LIVEPATCH
-> +
-> +if [ "$FOUND" -eq 1 ]; then
-> +	echo -e "FAIL\n\n"
-> +	die "livepatch kselftest(s) failed"
-> +fi
-> +
-> +
->   exit 0
->
-> ---
-> base-commit: fc033cf25e612e840e545f8d5ad2edd6ba613ed5
-> change-id: 20250101-ftrace-selftest-livepatch-161fb77dbed8
->
-> Best regards,
+Hi Petr, I'm finally getting around to looking through these patches.
+I've made it as far as the selftest cleanups, then skipped ahead to the
+Documentation here.  Before diving into code review, I just wanted to
+clarify some things for my own understanding.  Please correct anything
+below that is incorrect.  IMHO it is easy to step off the intended path
+here :D
 
-Hi Folks, sorry for the delay... thanks everyone for the feedback's.
+The original livepatch system states operated with a numeric .version
+field.  New livepatches could only be loaded if providing a new set of
+states, or an equal-or-better version of states already loaded by
+existing livepatches.
 
-I applied almost all the requested adjustments, except this one:
+With that in mind, a livepatch state could be thought of as an
+indication of "a context needing special handling in a (versioned) way".
+ Livepatches claiming to deal with a particular state, needed to do so
+with its latest or current versioning.  A livepatch without a particular
+state was not bound to any restriction on that state, so nothing
+prevented subsequent atomic replace patches from blowing away existing
+states (those patches cleaned up their states on their disabling), or
+subsequent non-atomic replace patches from adding to the collective
+livepatch state.
 
- > echo '!*:traceoff' > "$SYSFS_TRACING_DIR/set_ftrace_filter"
-causes this error:  "echo: write error: no such device"
 
- > echo "" > "$SYSFS_TRACING_DIR/current_tracer"
-causes this error:  "echo: write error: invalid argument"
+This patchset does away with .version and adds .block_disable.  This is
+very different from versioning as prevents the associated state from
+ever going away.  In an atomic-replace series of livepatches, this means
+once a state is introduced, all following patches must contain that
+state.  In non-atomic-replace series, there is no restriction on
+subsequent patches, but the original patch introducing the state cannot
+ever be disabled/unloaded.  (I'm not going to consider future hybrid
+mixed atomic/not use cases as my brain is already full.)
 
-I sent a new patchSet(splited) to the list.
+Finally, the patchset adds .is_shadow and .callbacks.  A short sequence
+of livepatches may look like:
 
-Cheers,
+  klp_patch A               |  klp_patch B
+    .states[x]              |    .states[y]
+      .id            = 42   |      .id            = 42
+      .callbacks            |      .callbacks
+      .block_disable        |      .block_disable
+      .is_shadow            |      .is_shadow
 
-Filipe Xavier
+is there any harm or confusion if the two patches' state 42 contained
+disparate .callbacks, .block_disable, or .is_shadow contents?
+
+I /think/ this is allowed by the patchset (though I haven't gotten too
+deep in my understanding), but I feel that I'm starting to stretch my
+intuitive understanding of these livepatching states.  Applying them to
+a series of atomic-replace livepatches is fairly straightforward.  But
+then for a non-atomic-replace series, it starts getting weird as
+multiple callback sets will exist in multiple patches.
+
+In a perfect world, we could describe livepatching states absent
+callbacks and shadow variables.  The documentation is a bit circular as
+one needs to understand them before fully grasping the purpose of the
+states.  But to use them, you will first need to understand how to set
+them up in the states. :)  Maybe there is no better way, but first I
+need to correct my understanding.
+
+Thanks,
+
+-- 
+Joe
 
 
