@@ -1,181 +1,152 @@
-Return-Path: <live-patching+bounces-1272-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1273-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 13A19A5D4B0
-	for <lists+live-patching@lfdr.de>; Wed, 12 Mar 2025 04:17:46 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D6A22A5DE9A
+	for <lists+live-patching@lfdr.de>; Wed, 12 Mar 2025 15:05:27 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B8909189D9A8
-	for <lists+live-patching@lfdr.de>; Wed, 12 Mar 2025 03:17:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 61A333A4748
+	for <lists+live-patching@lfdr.de>; Wed, 12 Mar 2025 14:05:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E984D155C96;
-	Wed, 12 Mar 2025 03:17:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E81524BC05;
+	Wed, 12 Mar 2025 14:05:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V1VSJvVc"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="zBCuePux";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="vLPwFMwJ";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="knxQnRBs";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="G+RdLoCA"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 644F4208A7
-	for <live-patching@vger.kernel.org>; Wed, 12 Mar 2025 03:17:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD2C424BC1C
+	for <live-patching@vger.kernel.org>; Wed, 12 Mar 2025 14:05:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741749461; cv=none; b=W+9FwMYolLMQT0eIijDopfV7DYMUmm8q9dnIYwNRG5sc/gJxBfJO6aiSPEd+2xfyuyzfp0ZxqmogtAANQHUtVxaDB5ItXisQ5HIDQXdGPXvLZA+1sHOZaJE9S8bT5Ex6HWarGj/0p7YIfNcuVIBiSe/f5PUyTCjZGL8eIU7MPQo=
+	t=1741788324; cv=none; b=q/xNHEsqhuH8Fbi4nVubkGbmq4NjXLjRelCKfHyrTYTT4XdtPxpOD4AlWQTAK49JQ+qo++Jfj+X8KEY5nTWjny5vvSAE93tDZUz6/jjvzYIQowIm9HKOQYf5LHSZkBg6PyRfHNiTZPca+L3GY8PQjNGaYj/ubf36gC2Zr8p4rVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741749461; c=relaxed/simple;
-	bh=HpWJ/59NCnYSId4RH1/ZtxJeb4s8bIUM78tABQGI0Fs=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=jUc+qVJUbbI16FnnGqcsgdYqd/MMZtXh9aJRGgaaozwWi6p5cCNo3sqjV+6ftGP4vExGn5UGwYjZyz6o4Aj9fAUuVlTlQg8z3uq96JMZGTnmZUTLAkD5lcEh5DdsQGIDHhbzQmGJnEKLLhqXp07IJwDcEgfO6VysilnrMInfy9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V1VSJvVc; arc=none smtp.client-ip=209.85.216.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-2fef5c978ccso9409084a91.1
-        for <live-patching@vger.kernel.org>; Tue, 11 Mar 2025 20:17:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741749459; x=1742354259; darn=vger.kernel.org;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bguHidrSSuKxiVcQ5EMCLXuk1P3NqWkwDP0LparcwyE=;
-        b=V1VSJvVctiRyPhLdsjT89PNnm4mFBfnyQpolsywKQD0mx4UshVhzC6HtyOiw0ZFMar
-         RJBcLAnt3VRgBc2YDuKnwFWRmV0OQ+23Y+yUqFJN9jNTdZrt6bOruJX5kZGdkikV9Cr/
-         +wH6QGHRW/QSFpXf+q7da5VJr9CET6Pi0zir3UhIw0UmC8M0G+CjdBT8/8je/rW7eic7
-         cuM6OYNBgs0bIhWEB+6j6Os3BVhUrMqnCDY6Mt3fQ59fOq5xyZzWE5gPfYqe/UY9vJaG
-         WjBvf3Dc+CfbH2AfjQrNsmJ9VT6rwb7D73yImQzGpBgZXJ+cteSOBYikY2aP8Ii8bTXM
-         hlRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741749459; x=1742354259;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bguHidrSSuKxiVcQ5EMCLXuk1P3NqWkwDP0LparcwyE=;
-        b=aCxSrcZwgi7igt+6WQ6GXq6l7Flb9XIpnQWrxAGAmU0Tvag+rFfuFzv37iCj/j+r9o
-         9glrZEc5/5ilqHVxHnUAVhBaTOdxJxXBX/zLohl2LfxovI9+I28c5u9xdq9kmf3WdPTg
-         iLfEGnATUpPP60rjTBLTM+1lq4sc+CJTJCJnMlFYwjhlGZBbD23/fQyMVSwIJh1tSk0e
-         rllLfziFvzSMN/baLqARBYU2VW1tmVfDzexYsfgyFFSBNPCgnanBk5AmMlZztRF/KqBz
-         LeOGsNLlUq/AH4pvv/J3gd0cSm4vodN7/huSe8YkXOMQQXYSnIBdiZE6BMUIcVh6vEyH
-         OVxQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXGHws4g0W/UKUb5Sc7dku0ABXTH1eDC9PoKyjEtWKxLxZ9nc534Gg1wb5rF6JZD5ofXthRvB0tdh5aNpe/@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyam94Gy6aelpBuBzOP7rWCjE1/QwD6yxmGr3qYADK1OgtIIQWT
-	R1+xog5F1FG+SMiaNgVvZF6I6qX8YU3Plfe81T2f+16lldlKzd7p
-X-Gm-Gg: ASbGncv5Br/UUIfrnWiFgSgDgeI2+Fd6ILQyJBggfUZY57V3aimc/5PT3NuEL3dwz3R
-	VRGvDF+SdNoEGS8Om0xWmPbwTUb6v40mpR7lcFSSiwkKaD8c+rUBn42yk1X79u+fPQ85kbSt0T5
-	9vPm4PijXAvM7ZyXQ3SbHg/C2uwHJABvPhApgOG4q5S4lQC8eqHk5IlqLV+eBHxypFUPrfKpvN9
-	3gzXgwtTWl8t8Uah/jiL/UrdENVFV7Y5i6WG8TUbcN3ze2/mw1gEBhpvnacjGtUsqa+S1UAv60r
-	h67VwnV9BLCzDKMjKy8OEES98MyD3+5tEukK+daBlrIhzjizdbW8vRkkrIyFYKvykw==
-X-Google-Smtp-Source: AGHT+IG9CDMu04NSXi6PA26pknEMpmCNnSbwq9XA31GT4JSDdc5XfffZdctthNlXJIcMgpRTgjKWOQ==
-X-Received: by 2002:a17:90a:a009:b0:301:1d03:93cd with SMTP id 98e67ed59e1d1-3011d039a52mr564659a91.24.1741749459321;
-        Tue, 11 Mar 2025 20:17:39 -0700 (PDT)
-Received: from smtpclient.apple ([205.204.117.120])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3011824b998sm510080a91.25.2025.03.11.20.17.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Mar 2025 20:17:38 -0700 (PDT)
-Content-Type: text/plain;
-	charset=us-ascii
+	s=arc-20240116; t=1741788324; c=relaxed/simple;
+	bh=e3HyHXxDOgTjnjIKHqatzU2aXyCjyfmVii3KUOadhIA=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=p/tNiwyunzsFsu78ynqTLZY7yMvitDnz+FHEnEQhBZTkn3UZZ5rERMdNrBHdA50PZFdfzC/xXH/eC5xQsAyFOzIFhUQZYARrod+D4IZL2OpQhvHy+mzC0eM+SCpad/TJCjCIl+ypny7LmPSqGKIqhngtfmYaiWKxGSry+tP1HMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=zBCuePux; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=vLPwFMwJ; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=knxQnRBs; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=G+RdLoCA; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from pobox.suse.cz (unknown [10.100.2.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id EAD6C2118E;
+	Wed, 12 Mar 2025 14:05:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1741788312; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ttdCheo2ggrWYc5AfXbMLW3x5iUmEU3SoinUwhJvb+4=;
+	b=zBCuePuxTdL15mtda27hxhA44U5PtfaieYwLwbODqm5KLJjEwAVScmfhtq2JVBOftJnocU
+	MSSM0I2AcrsGcrqUHua+ss9OdmT3+E8jW2deuazu+Bqm65uMhxXg8RgtK/JmRFSMx5hNCJ
+	nGJy4aN8hPYPOpxxFED8A6JYb5LoZG4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1741788312;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ttdCheo2ggrWYc5AfXbMLW3x5iUmEU3SoinUwhJvb+4=;
+	b=vLPwFMwJwDhkQsUjgJlUKcs+MY+fb2GER5VC48PCCGFbiGeZl1fzkAwQhVuvLGkggeGpQC
+	ZBINYQH50ls20XBw==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1741788306; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ttdCheo2ggrWYc5AfXbMLW3x5iUmEU3SoinUwhJvb+4=;
+	b=knxQnRBsUB0eEuotZGQwivI4oVYfb1WhrWBcZ9mbITiIUpQhVA8nRAYNRVxCSqg01Wx3LB
+	kwUfe6xwVcBsxntre6sMb3eCWF3doyrKDvmZWrBWaMyTFzsjTUggoBXDAYRl9goNqwd3MC
+	9m0FsBvoJPGanOey4HH1raatlPnRkWA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1741788306;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ttdCheo2ggrWYc5AfXbMLW3x5iUmEU3SoinUwhJvb+4=;
+	b=G+RdLoCAe+HmkHrEpPsk7rA7GoPimKWfHbiC+29hoSniJwhP34hdGI8Yb8X8GhBkenF9fH
+	/a8Wofq2UY2qERBA==
+Date: Wed, 12 Mar 2025 15:05:07 +0100 (CET)
+From: Miroslav Benes <mbenes@suse.cz>
+To: Song Liu <song@kernel.org>
+cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+    linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org, 
+    indu.bhagat@oracle.com, puranjay@kernel.org, wnliu@google.com, 
+    irogers@google.com, joe.lawrence@redhat.com, jpoimboe@kernel.org, 
+    mark.rutland@arm.com, peterz@infradead.org, roman.gushchin@linux.dev, 
+    rostedt@goodmis.org, will@kernel.org, kernel-team@meta.com, 
+    Suraj Jitindar Singh <surajjs@amazon.com>, Torsten Duwe <duwe@suse.de>
+Subject: Re: [PATCH 2/2] arm64: Implement HAVE_LIVEPATCH
+In-Reply-To: <20250308012742.3208215-3-song@kernel.org>
+Message-ID: <alpine.LSU.2.21.2503121503340.12980@pobox.suse.cz>
+References: <20250308012742.3208215-1-song@kernel.org> <20250308012742.3208215-3-song@kernel.org>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.500.171.1.1\))
-Subject: Re: [RFC] Add target module check before livepatch module loading
-From: zhang warden <zhangwarden@gmail.com>
-In-Reply-To: <Z9ArueBi3cd3OLEo@pathway.suse.cz>
-Date: Wed, 12 Mar 2025 11:17:25 +0800
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
- Jiri Kosina <jikos@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>,
- Joe Lawrence <joe.lawrence@redhat.com>,
- live-patching@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <0742313B-8C99-4B70-A940-C6A1018F95C5@gmail.com>
-References: <C746373C-96ED-47EE-94F2-00E930BE2E8B@gmail.com>
- <Z8r6AKBU4WPkPlaq@pathway.suse.cz>
- <3524E557-77AD-427C-82BA-6CA06968AC5B@gmail.com>
- <Z88JxGTGMcBEeHVP@pathway.suse.cz>
- <911AD123-9CA6-405A-8D63-6F0806C12F84@gmail.com>
- <Z9ArueBi3cd3OLEo@pathway.suse.cz>
-To: Petr Mladek <pmladek@suse.com>
-X-Mailer: Apple Mail (2.3774.500.171.1.1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-0.991];
+	MIME_GOOD(-0.10)[text/plain];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	ARC_NA(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	RCPT_COUNT_TWELVE(0.00)[19];
+	MIME_TRACE(0.00)[0:+];
+	SEM_URIBL_UNKNOWN_FAIL(0.00)[suse.cz:server fail,test-kprobe.sh:server fail,suse.de:query timed out];
+	RCVD_COUNT_ZERO(0.00)[0];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	SEM_URIBL_FRESH15_UNKNOWN_FAIL(0.00)[test-kprobe.sh:server fail,suse.cz:query timed out];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:email,suse.de:email]
+X-Spam-Score: -4.30
+X-Spam-Flag: NO
 
+Hi,
 
+On Fri, 7 Mar 2025, Song Liu wrote:
 
-> On Mar 11, 2025, at 20:25, Petr Mladek <pmladek@suse.com> wrote:
->=20
-> On Tue 2025-03-11 11:53:59, zhang warden wrote:
->>> A single livepatch could modify more objects: vmlinux and several
->>> modules. The metadata for each modified object are in "struct
->>> klp_object". The related obect is currently identified only by =
-obj->name.
->>> And we could add more precision identification by setting
->>> also "obj->srcversion" and/or "obj->build_id".
->>>=20
->>=20
->> Yep, but how can we get the obj->srcversion? If we tring to store it=20=
+> This is largely based on [1] by Suraj Jitindar Singh.
+> 
+> Test coverage:
+> 
+> - Passed manual tests with samples/livepatch.
+> - Passed all but test-kprobe.sh in selftests/livepatch.
+>   test-kprobe.sh is expected to fail, because arm64 doesn't have
+>   KPROBES_ON_FTRACE.
 
->> in klp_object, the information should be carried when livepatch is =
-being build.
->> Otherwise, we don't know which srcversion is good to patch, isn't it?
->=20
-> I am not sure if I get the question correctly.
->=20
-> Anyway, struct klp_object must be defined in any livepatch, for =
-example, see
-> /prace/kernel/linux/samples/livepatch/livepatch-sample.c
->=20
-> I guess that you are using kPatch. I am not sure how it initializes
-> these klp_patch, klp_object, and klp_func structures.
-> But it has to create struct klp_object for the livepatched module
-> and initialize at least .name, .func items.
->=20
-> The srcversion of the livepatched module can be read by modinfo,
-> for example:
->=20
-> # modinfo test_printf
-> filename:       /lib/modules/6.13.0-default+/kernel/lib/test_printf.ko
-> license:        GPL
-> description:    Test cases for printf facility
-> author:         Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> test:           Y
-> srcversion:     AF319FC942A3220645E7E99
-> depends:       =20
-> intree:         Y
-> name:           test_printf
-> retpoline:      Y
-> vermagic:       6.13.0-default+ SMP preempt mod_unload modversions=20
->=20
-> You need to teach kPatch to read the srcversion of the livepatched
-> module and set it in the related struct klp_object.
->=20
-> Best Regards,
-> Petr
+Correct. The test should take into account and bail out.
 
-Oh,yeah.
+> - Passed tests with kpatch-build [2]. (This version includes commits that
+>   are not merged to upstream kpatch yet).
+> 
+> [1] https://lore.kernel.org/all/20210604235930.603-1-surajjs@amazon.com/
+> [2] https://github.com/liu-song-6/kpatch/tree/fb-6.13
+> Cc: Suraj Jitindar Singh <surajjs@amazon.com>
+> Cc: Torsten Duwe <duwe@suse.de>
+> Signed-off-by: Song Liu <song@kernel.org>
 
-You got the point. I am using kpatch[1] as userspace tool to build =
-livepatch
-module. Therefore, I am focusing on combining kPatch and kernel.
+Acked-by: Miroslav Benes <mbenes@suse.cz>
 
-So, I need to teach kpatch module to learn the srvcversion, that's why=20=
+Also as mentioned in the other thread, parts of this patch will go once 
+arm64 is converted to generic entry infrastructure.
 
-I am trying to put srcversion into elf file. This elf file I mentioned =
-is the=20
-livepatch module built by kPatch.
-
-So, maybe now you can understand why my livepatch module miss the =
-information
-of the target srcversion. Because this livepatch module is built by =
-kPatch, not building
-it manually.
-
-But now I think I have a mistake here. I should focus on the kernel =
-first. And then,
- make adjustment to kpatch[1] after this feature is ready in kernel.
-
-Regards
-Wardenjohn
-
-[1] kpatch: https://github.com/dynup/kpatch=
+Thank you,
+Miroslav
 
