@@ -1,162 +1,177 @@
-Return-Path: <live-patching+bounces-1279-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1280-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 71B2DA6469A
-	for <lists+live-patching@lfdr.de>; Mon, 17 Mar 2025 10:08:18 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 35F46A64C22
+	for <lists+live-patching@lfdr.de>; Mon, 17 Mar 2025 12:18:07 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 73A6B1894009
-	for <lists+live-patching@lfdr.de>; Mon, 17 Mar 2025 09:08:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E126F3A8E05
+	for <lists+live-patching@lfdr.de>; Mon, 17 Mar 2025 11:17:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2447A2222BE;
-	Mon, 17 Mar 2025 09:08:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91385236A99;
+	Mon, 17 Mar 2025 11:17:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="mdmwEFVO";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="34eQYoD0";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="mdmwEFVO";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="34eQYoD0"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="NKGCmiIR"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73500221F1F
-	for <live-patching@vger.kernel.org>; Mon, 17 Mar 2025 09:08:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A30E236A72
+	for <live-patching@vger.kernel.org>; Mon, 17 Mar 2025 11:17:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742202482; cv=none; b=FIlf4U/8psM8b6/1ddOJLlr/IuwhsjElNgWKkm4tR21J42z9aZV2YewfkEs+kBM/bwcqpWRSIFTU+pSMR5GnijU/KI6MtTtQgp0bm48uWjfCvH3LLQY0whdR3FjEMffECw6Mix9tjewCciMAILE9lEucHgyz2jeGBNwdDdZ85LI=
+	t=1742210266; cv=none; b=dJRI4z3oaNSRIjIPojI2LmDo8EhNuec7fi0pLkMTg1r+8WPe26DkbBGipaHWq5nfU7F3cMu0mM1T2Igp1IunCwoXF6HcrYc6mBAiNa89NFt6W7ciN3YYnyH9ONHupkBLO1jJhYDyWsPkJ+8FsFnU46da03E+fAUzdMJgNe4Rk7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742202482; c=relaxed/simple;
-	bh=UgPBZvjsFQmiYNA6znXuMhzjQ271ggAz4JFSOSvqvZ4=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=NpBHSM9u4YcW72BZHTyrN4KlYCS+x4NbvJFeLiW9GlFYUHTkzEIc7c7E6ix3CzGzFM8nvF/h85AMI9PtzI+Cgbnd3kd0MpUlIzDKhYqIJmPPsloqg9kRn+d6tQkW3QlfPkhEcMGzaOZ2OmI4XI1x0/V37eJCb+MCcZs5qVl9Tgk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=mdmwEFVO; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=34eQYoD0; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=mdmwEFVO; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=34eQYoD0; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.100.2.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id A9C0321D92;
-	Mon, 17 Mar 2025 09:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1742202478; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wnKFNLrLhAN97UeP+wzQU9edyI2DXXEOjOLsBP6B4eQ=;
-	b=mdmwEFVOvZgIbkhQEoa9slH513xeG7AGOURUICIl1Jp1Fdeh6vi5MxfuQG/2/rlt5ZrG4/
-	Tf5ea1HCt/QclEZrMFSWgbmODsbF78/k2BaRnKOZCXfKo9EcPL3WpfEdj7aOUo2BODlNYq
-	7e1qO1IA46lUQlj+Yp1PiVTnVtzAJRA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1742202478;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wnKFNLrLhAN97UeP+wzQU9edyI2DXXEOjOLsBP6B4eQ=;
-	b=34eQYoD0Q40srGmeBJ5kuXok7ZTv2bSKWLuqtLeeouHNL9TsGu4KbnrWwBXioFteWi9ZfU
-	JNZ5yfK6tXPri+Ag==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1742202478; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wnKFNLrLhAN97UeP+wzQU9edyI2DXXEOjOLsBP6B4eQ=;
-	b=mdmwEFVOvZgIbkhQEoa9slH513xeG7AGOURUICIl1Jp1Fdeh6vi5MxfuQG/2/rlt5ZrG4/
-	Tf5ea1HCt/QclEZrMFSWgbmODsbF78/k2BaRnKOZCXfKo9EcPL3WpfEdj7aOUo2BODlNYq
-	7e1qO1IA46lUQlj+Yp1PiVTnVtzAJRA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1742202478;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wnKFNLrLhAN97UeP+wzQU9edyI2DXXEOjOLsBP6B4eQ=;
-	b=34eQYoD0Q40srGmeBJ5kuXok7ZTv2bSKWLuqtLeeouHNL9TsGu4KbnrWwBXioFteWi9ZfU
-	JNZ5yfK6tXPri+Ag==
-Date: Mon, 17 Mar 2025 10:07:58 +0100 (CET)
-From: Miroslav Benes <mbenes@suse.cz>
-To: Filipe Xavier <felipeaggger@gmail.com>
-cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
-    Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>, 
-    Shuah Khan <shuah@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, 
-    live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-    linux-kernel@vger.kernel.org, felipe_life@live.com
-Subject: Re: [PATCH PATCH 2/2] selftests: livepatch: test if ftrace can trace
- a livepatched function
-In-Reply-To: <6d9b9394-690b-49a3-b8df-7ef510c96c00@gmail.com>
-Message-ID: <alpine.LSU.2.21.2503171006260.4236@pobox.suse.cz>
-References: <20250306-ftrace-sftest-livepatch-v1-0-a6f1dfc30e17@gmail.com> <20250306-ftrace-sftest-livepatch-v1-2-a6f1dfc30e17@gmail.com> <alpine.LSU.2.21.2503141411010.4442@pobox.suse.cz> <6d9b9394-690b-49a3-b8df-7ef510c96c00@gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	s=arc-20240116; t=1742210266; c=relaxed/simple;
+	bh=zBMrzjhDEoENG0cx7jVM5zbDjkh5Hafdqv8uGRyG+EM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kuAIQpvADlPLgUQglOuDUqEBWlCMPDIFLZE8AYplnFLO3Ee18SohxmwTRUQ8XufJkhMhtUn/ajZ2/Chgm5OV6g1lHxYozZkybhPY0MN34g9w4cX1K6eXr/UnGo8NpgSbQSrk8E2hJYhAK7v/7Yv95sGucL+Rb0hoZCsxBMxUaoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=NKGCmiIR; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4394a0c65fcso18143995e9.1
+        for <live-patching@vger.kernel.org>; Mon, 17 Mar 2025 04:17:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1742210262; x=1742815062; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sjO8wZhfLshl3t4eiJF/ZoYHpW+SANCczo4fSdh+4pM=;
+        b=NKGCmiIRO8cYqPbNv9ZpwvpBm3ZbjsHq44Vnni7Z5hVXAtel032Gn17kFPL5MNj3/T
+         iAI2PdsvVFCtcXkbfks8aKMdXXyK5DUwB+8ofKI6OahM9qdDI6ftMNTiIS/pVj5XZLd2
+         E4f7mOJeGrxEAOCFk3NG+JhMNthL/Z0N1z92bRegUwEoR7UFfpCglug6dCq2NS0nqeph
+         VahUgwH0pN5X888wJfqR9x36HYyX3mN8MSypSOqhmxDg2DqZX76/EZ91hC7Les4kzMFc
+         Dj6yGytHZQpLHbhsVttKBJ1Lu/n4lFQH9cmU5iTwIAbL8Bb+glLYDu/2OcteTs8iccYl
+         dRZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742210262; x=1742815062;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sjO8wZhfLshl3t4eiJF/ZoYHpW+SANCczo4fSdh+4pM=;
+        b=Zns7M32VY2dytIOhxBgb+w+J2H3RQg/EEVWsBoi7/sL4p5ewAD1WNiyivWpUe36T4T
+         NvonERyFQrfla1tOQ2foGOUhUtnWj2whDOU36WyUkpALGeSFzzZ3tD61eTByaXHbyZYr
+         fItSEvUUrHLHNRqX8btvmEVHowA6OfkUUD/ksrd6QgQgjQ6E1On4YRadFYgZeVzYLW9e
+         S5xqt6YqJnbpRsODD3ctbrsMS+baZqpH90+OIRllDu/DPxVD69BAqZr72ApPOgh6qYgY
+         fRov98qk1y0f8NHSjnWEYhSNtbPhVDlDJ0ae/vkWhB/Pm6x1wgQRr9b+rF+mBUSoEp2r
+         TzRQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXFdq4Y+dijmGeNcFl50VncPvc2iEOJHQfK6J5CRxWSZubXk60u2mg5skKYKcd2S4jjvVJ7+y6rMcr1NxRr@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/MM/b0QkUIBrqXbmfeZgWaf01lBTr0IpKeg0fJ3bGwO1kY/Xi
+	wVAxvbpIOLLc5CZEyh8cQdiv6xz7+4GstuF8wXXN/V00oxpYVek+9UZrQbypIdg=
+X-Gm-Gg: ASbGncuOqymQRLnmYhyfZHdIDi/yuxTnUyNnGnbE1aHLFJ2AQ4jGQshrpu9FMS7zjad
+	mmQArCtedCHyQjWfaPgDNKQBhmXrvKiOgF05YOgH391aYNPyJ3+MJO2prtz0wmXcr9TZwBKfy69
+	BDyZxRPtazSAw7zx+f5J7BDOMhjdbAAdK2HLCdXtI2s1f+BE0UOD5o1xRL0WVcsQnL2BaDhvAA0
+	ox+iN7q9F4/hi+GapnCJHh4jpIW100Vfs3mjuYS/sw1fbeBDxxrCdIBk9U4jpjqV6gzijGLM+kF
+	iF3bAxrZN0lUrH1zIvD50MJO+TWKZZAxcj4atK0nz7C/9qZ4MqbMTbro0w==
+X-Google-Smtp-Source: AGHT+IFRKO1J7Kmy3N9ZPTGo03XaSalHTdVs0NfUTHKX0BeDLIXyoYs7wREqe3Jxq+EOFVfXXugO9A==
+X-Received: by 2002:a05:600c:548e:b0:43c:fb95:c752 with SMTP id 5b1f17b1804b1-43d1ec74ec4mr122834825e9.3.1742210262577;
+        Mon, 17 Mar 2025 04:17:42 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43d1fe6a1c7sm101845505e9.39.2025.03.17.04.17.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Mar 2025 04:17:42 -0700 (PDT)
+Date: Mon, 17 Mar 2025 12:17:40 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Joe Lawrence <joe.lawrence@redhat.com>
+Cc: Nicolai Stange <nstange@suse.de>, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH v1 18/19] Documentation/livepatch: Update documentation
+ for state, callbacks, and shadow variables
+Message-ID: <Z9gE1B__mP6F0b9N@pathway.suse.cz>
+References: <20250115082431.5550-1-pmladek@suse.com>
+ <20250115082431.5550-19-pmladek@suse.com>
+ <c291e9ea-2e66-e9f5-216d-f27e01382bfe@redhat.com>
+ <Z8rmCritDCtNmw64@pathway.suse.cz>
+ <566cfe7c-d5df-6407-6058-b78de5519e04@redhat.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Score: -4.30
-X-Spamd-Result: default: False [-4.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	RCPT_COUNT_SEVEN(0.00)[11];
-	ARC_NA(0.00)[];
-	FREEMAIL_TO(0.00)[gmail.com];
-	RCVD_COUNT_ZERO(0.00)[0];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com,live.com];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_CC(0.00)[kernel.org,suse.com,redhat.com,vger.kernel.org,live.com];
-	MIME_TRACE(0.00)[0:+];
-	FROM_EQ_ENVFROM(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	TO_DN_SOME(0.00)[]
-X-Spam-Flag: NO
-X-Spam-Level: 
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <566cfe7c-d5df-6407-6058-b78de5519e04@redhat.com>
 
-On Fri, 14 Mar 2025, Filipe Xavier wrote:
+Hi,
 
-> On 3/14/25 10:14 AM, Miroslav Benes wrote:
-> 
-> > Hi,
-> >
-> >> +start_test "trace livepatched function and check that the live patch
-> >> remains in effect"
-> >> +
-> >> +FUNCTION_NAME="livepatch_cmdline_proc_show"
-> >> +
-> >> +load_lp $MOD_LIVEPATCH
-> >> +trace_function "$FUNCTION_NAME"
-> > trace_funtion() calls cleanup_ftrace() to prepare the test. Ok.
-> >
-> >> +if [[ "$(cat /proc/cmdline)" == "$MOD_LIVEPATCH: this has been live
-> >> patched" ]] ; then
-> >> +	log "livepatch: ok"
-> >> +fi
-> >> +
-> >> +check_traced_function "$FUNCTION_NAME"
-> >> +
-> >> +cleanup_tracing
-> > Here, I suppose, cleanup_tracing() is called to clean up after the check
-> > above so that nothing stays and more tests can be added later. Right?
-> > Would it make sense then to call cleanup_tracing() in
-> > check_traced_function()? I think it would less error prone.
-> > If needed, check_traced_function() can always be upgraded so that it
-> > checks for more traced functions.
-> 
-> In cases where we need to check two or more functions with
-> check_traced_function,
-> 
-> if there is cleanup_tracing, it will not be possible, make sense?
-> 
-> e.g: function1 call -> function2 call -> function3.
+I am sorry for the late reply. I have read the mail on Friday and then
+forgot to come back to it last Monday...
 
-I meant... check_traced_function() (or check_traced_functions() in this 
-case) can have multiple arguments. You would loop over them inside and 
-then clean up. Or did I misunderstood?
+On Fri 2025-03-07 10:50:42, Joe Lawrence wrote:
+> On 3/7/25 07:26, Petr Mladek wrote:
+> > On Thu 2025-03-06 17:54:41, Joe Lawrence wrote:
+> >> Finally, the patchset adds .is_shadow and .callbacks.  A short sequence
+> >> of livepatches may look like:
+> >>
+> >>   klp_patch A               |  klp_patch B
+> >>     .states[x]              |    .states[y]
+> >>       .id            = 42   |      .id            = 42
+> >>       .callbacks            |      .callbacks
+> >>       .block_disable        |      .block_disable
+> >>       .is_shadow            |      .is_shadow
+> >>
+> >> is there any harm or confusion if the two patches' state 42 contained
+> >> disparate .callbacks, .block_disable, or .is_shadow contents?
+> > 
+> > Yes, two incompatible states with the same .id would break things.
+> > The callbacks won't be called and the old shadow variables
+> > won't get freed during an atomic replace.
+> > 
+> > It is responsibility of the author of the livepatches to use
+> > different .id for different states.
+> > 
+> > I am not sure if we could prevent mistakes. Hmm, we might add
+> > a check that every .id is there only once in the patch.states[] array.
+> > Also we could add a human readable .name of the state and ensure
+> > that it is the same. Or something like this.
+> > 
+> 
+> Well, providing the same state twice in the same klp_patch seems highly
+> likely a bug by livepatch author.  That's worth a WARN?
 
-Miroslav
+Yes, I agree. I'll add the check and warning in the next revision of
+the patch set.
+
+
+> I'm not sure what to think about the same state id provided by two
+> klp_patches.  For a atomic-replace series of patches, if the state
+> content is the same, it's effectively like handing off cleanup
+> responsibility for that state to the incoming patch, right?
+
+Exactly. And I could imagine an usage of the same state even without
+the atomic replace. For example, more livepatches could share the same shadow
+variable. Or they might need the same semantic change of a data
+structure which would require updating the data by the state callbacks.
+
+
+> If the state content changes, that would mean that the incoming patch is
+> redefining the state... which could be ok?
+
+Using the same state .id for different purpose is _not_ ok.
+
+We could also imagine the state as a reference count of its users.
+The pre_patch/post_patch callbacks are called when it is introduced
+(refcount goes from 0 -> 1). And the pre_unpatch/post_unpatch
+callbacks are called when the state is being removed (refcount
+drops from 1 -> 0). [*]
+
+This won't work when two different states share the same .id.
+The callbacks won't be called when the 2nd one is added
+or when the 1st one is removed.
+
+That said, I do not know how to check that two states have different
+semantic when the atomic replace is _not_ used. We could prohibit it.
+But I think that there are valid use-cases, especially when
+using cumulative livepatches. So, I would keep it allowed.
+
+[*] Note that the current code does not count to refcount number.
+    It just checks whether the state is used in other enabled livepatches,
+    see is_state_in_other_patches().
+
+
+Best Regards,
+Petr
 
