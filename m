@@ -1,154 +1,100 @@
-Return-Path: <live-patching+bounces-1297-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1298-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 08F80A67E96
-	for <lists+live-patching@lfdr.de>; Tue, 18 Mar 2025 22:21:42 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 40F32A68037
+	for <lists+live-patching@lfdr.de>; Wed, 19 Mar 2025 00:00:40 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id CF07A7ACAE8
-	for <lists+live-patching@lfdr.de>; Tue, 18 Mar 2025 21:20:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A3B181770BC
+	for <lists+live-patching@lfdr.de>; Tue, 18 Mar 2025 23:00:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67BFA2139B0;
-	Tue, 18 Mar 2025 21:21:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1AFB81E832D;
+	Tue, 18 Mar 2025 23:00:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IMn9BBM5"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qaweLj0Q"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF7D12135B0;
-	Tue, 18 Mar 2025 21:21:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0C0C1FAA;
+	Tue, 18 Mar 2025 23:00:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742332868; cv=none; b=Caa4p7Z4V4VjZZeNjBTNcfJBP5cJB5ncCW6hjOYWxeqL5/t3YiwW7ANiuNK65aLBE0MOgGHQu5RlN1M3kc011+TBodfTsXoK8sGVwZZvl50ylWFtHIKI2lCh9ZFvQ+yOKuq+blRJJ/9/tgmlIYlBXxaoKUJer7oFo76cJuXklFI=
+	t=1742338836; cv=none; b=umk7BKVx783ZtCen5FTIlGSdDbA2sr4UZSsWRn820ekS81NWtioKMZPk4ZZhOBxxTDkzmaF1ijVQjM+LG7V2mDsGnOFEO5OT8ajnr0sHuZ1llmQL8tvnz8Ax54cy7g2P4gClgAfgoIczXk+RSjMDydT7NoJ43gu/giKGOOYdUFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742332868; c=relaxed/simple;
-	bh=GL4EtuyKf9kUHOkV7b4hHX4ryQgPIQE3G1XsfQEzaMs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=dvIdOM4UAv9jrPMFUzKYOH1oLhGxhqLqszqE6ceBDQiiteatmzcaoHIMWKPZzPLaqyTd78RUh2MOQGgSNeS5vCJ3kJEBG/AlLNOwtsxUJ9rEKgcd2dTZBwIIuuU4frIy1VbxcpOmmVuHU4M27QtodE7q/7506m1HkVFbFGnAbsk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IMn9BBM5; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-224171d6826so23680345ad.3;
-        Tue, 18 Mar 2025 14:21:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1742332866; x=1742937666; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vcPVC3BuIieClRSBg7nnlgbieJqM/uBxuytiend4ClE=;
-        b=IMn9BBM5pGZtN/Ztzn0+ZXlzY6GQRDZUsCUO/1o4iNQ1sKVNvlwfXIPd+EjXhqV9dN
-         ZYGyHYQkIt3vZeSLcaKlw6i5qNLSVoyYk4qH8s/GGr8HHQUUycCmwxyPTL1b1gVPGY9T
-         KehRYUKOodux1J0zlWU85UrgT5rfIoDT9o8DMwtgLo0KywP85I1kf59fDo2RwZKjYqJ9
-         djmy1Sub6ny05kF76zH+K9VDAGYv3DGvVrwUm8V4rb1FVJLygPE4MwzBoB28kM5AycgH
-         vm+wZoXbvi5ktTNQva0Qs8E+iBqzgSgMeEDI7cBcMoRPbKghHy2sYh2Djy0tldotBSFZ
-         onrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742332866; x=1742937666;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vcPVC3BuIieClRSBg7nnlgbieJqM/uBxuytiend4ClE=;
-        b=VA6+sH20lTKTnPHqhqjtiJKtm3fvHkr24Xa/NM5B1q3zJS6Ga2F7GICBPH25ChFSIB
-         pOCMxzhac/pcwVF5toFEkL1oGVLDN8ntt6sHR2e4M3lcrGKm/CL8933w1FOfFhf1H1jO
-         SdwaD688/syNraEtItAj0MU63vyvQpH+3z3pw7X/zX1JdC1QgCJCuB4M+gtLuk+aI5mL
-         r5O3ZsG3Pg2pTe6v+9cO/RspjTLaFOifj2aDe1E33ywTqp9AXPTwSRsoliVoyd3Tfe6o
-         UMsztyY2Ezk37aiCGDW8PmlSckEhwLcKNZr2sNTCyeQtj2T2axekffAgBBKqOC0m+s8j
-         cXQQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW5hquiWj/ik6pB68E5RrZY77Wb2ju5owezzlRp4RS4b5lJ/2xBu9yDMzQuqf+9ruhKg8Kq5rsL4ArBRw0=@vger.kernel.org, AJvYcCX9/y0OIQSHQzTxp/gri/koa7E8bxyl/BOz3SOtcddScbCV/EW1Y4pHbY30ltRfjlBcpzmAoP27jAvLaLdl1rbq@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyomr7BfoJACHkZ62wL2TQYMXOD7hwHViKJ8nBRhrbrnQe34/xR
-	sF3iHrQ6PDG83aR+/SCupnDymorjQQH7q97rBnwFci4IXe2EQHRS
-X-Gm-Gg: ASbGncumwDluXVWYOLd3A9dECazBI3iCo8Cy/fg30jn/hsqUQvKZFAm8CqDl5+AJ0lF
-	CkWYPewtF6gaPXeMCWnq6QblojYztCYZCBZC/KECinIpwthNz88UOnnP5Be5xI+ZWHz96VPeO6o
-	d+ACy0sr1aI7y0ekCNkqMiLM+YTCRgk72Tt7gAzqIC9gGC51dU9A65U9BwXfD6qGMOjQB9c+1bs
-	pBaCNZ9in2kYXbCln7rmsBOLGqaB72NtpZ8a4OX9iVPgUHHY/N0dgPOBtyvIayon+hyXXcV0sJR
-	5qoDdDc2tcr93o/V0wFlgJiyO/L04gGzyCCjtoqbN2ZrxaxD6Cyx
-X-Google-Smtp-Source: AGHT+IHOuyvtgKXpgxIO0eGzpjjF1K4mPR3b3EWMIu0A4RfQpFi2svHXNP4J5NKiI+G0qp0wEa08tg==
-X-Received: by 2002:a17:90b:3b49:b0:2f5:88bb:12f with SMTP id 98e67ed59e1d1-301bdf94105mr209130a91.21.1742332866252;
-        Tue, 18 Mar 2025 14:21:06 -0700 (PDT)
-Received: from fedora.local ([2804:d57:4e50:a700:f33d:65d1:e22e:109b])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30153afe74asm8771777a91.24.2025.03.18.14.21.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Mar 2025 14:21:05 -0700 (PDT)
-From: Filipe Xavier <felipeaggger@gmail.com>
-Date: Tue, 18 Mar 2025 18:20:36 -0300
-Subject: [PATCH v2 2/2] selftests: livepatch: test if ftrace can trace a
- livepatched function
+	s=arc-20240116; t=1742338836; c=relaxed/simple;
+	bh=Dr5JLgo/lrzaiY2c96lg9HAJ5ExgQ1teNDMLECNkAPQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Di7IpRCum4hijsjCOLQfKnftlfR3mASAU5wzUkaw79lUzRB+5R2PTJfDbNnjfS4wkXXOlzoW5B9OXm/3vx04SaOY2+KPG2gU2gsOhhOYO1MN1g1lZj7+5Ox/PaRLtyW0nSlGcE8j6yHzF59ySVV0Aqfy/J0Kh9BVQvoCjsohfTs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qaweLj0Q; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12D91C4CEDD;
+	Tue, 18 Mar 2025 23:00:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742338835;
+	bh=Dr5JLgo/lrzaiY2c96lg9HAJ5ExgQ1teNDMLECNkAPQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qaweLj0QPu0L9CSUDZXj53BHV7x204cZV4Je65s0qsvQgiV3LfKmgPTQcN6v6Ecmg
+	 8I+TT9ZvhQ9hfqB1u/wwGfg7gA//xpC5Uu9DFbvTI/rjyRZ7GvRFd/biXCqTPFu7Qc
+	 +s0G4yml9DQFIbkXF77D3qwGY4L/bB9R6Xo+zn1gErqhF72GSfVeo5iv3iOkx8vl4M
+	 KnQJMSgOuRXO1HranIi5nLgmQL1epTPYKu6b8Jsu9ImxUFrqJMvp+aiOIXoVZ14aM5
+	 MLg7jB8EVBzM5UxGS2/1cazgJSJZLTIGzNiQTIc+SJ+w+zmWVr8cx1+3geDmUhembm
+	 JrEOONPr7+Rcg==
+Date: Tue, 18 Mar 2025 16:00:32 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Song Liu <song@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org, indu.bhagat@oracle.com, 
+	puranjay@kernel.org, wnliu@google.com, irogers@google.com, joe.lawrence@redhat.com, 
+	mark.rutland@arm.com, peterz@infradead.org, roman.gushchin@linux.dev, 
+	rostedt@goodmis.org, will@kernel.org, kernel-team@meta.com
+Subject: Re: [PATCH 1/2] arm64: Implement arch_stack_walk_reliable
+Message-ID: <ox4c6flgu7mzkvyontbz2budummiu7e6icke7xl3msmuj2q2ii@xb5mvqcst2vg>
+References: <20250308012742.3208215-1-song@kernel.org>
+ <20250308012742.3208215-2-song@kernel.org>
+ <iajk7zuxy7fun7f7sv52ydhq7siqub3ec2lmguomdd3fhdw4s2@cwyfihj3gvpn>
+ <CAPhsuW4A73c0AjpUwSRJ4o-4E6wpA9c5L0xWaxvHkJ3m+BLGVA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250318-ftrace-sftest-livepatch-v2-2-60cb0aa95cca@gmail.com>
-References: <20250318-ftrace-sftest-livepatch-v2-0-60cb0aa95cca@gmail.com>
-In-Reply-To: <20250318-ftrace-sftest-livepatch-v2-0-60cb0aa95cca@gmail.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
- Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>, 
- Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
- linux-kernel@vger.kernel.org, felipe_life@live.com, 
- Filipe Xavier <felipeaggger@gmail.com>
-X-Mailer: b4 0.14.2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW4A73c0AjpUwSRJ4o-4E6wpA9c5L0xWaxvHkJ3m+BLGVA@mail.gmail.com>
 
-This new test makes sure that ftrace can trace a
-function that was introduced by a livepatch.
+On Tue, Mar 18, 2025 at 01:14:40PM -0700, Song Liu wrote:
+> >
+> > See for example all the error conditions in the x86 version of
+> > arch_stack_walk_reliable() and in arch/x86/kernel/unwind_frame.c.
+> 
+> I guess I missed this part:
+> 
+> diff --git i/arch/arm64/kernel/stacktrace.c w/arch/arm64/kernel/stacktrace.c
+> index 69d0567a0c38..3bb8e3ea4c4b 100644
+> --- i/arch/arm64/kernel/stacktrace.c
+> +++ w/arch/arm64/kernel/stacktrace.c
+> @@ -268,6 +268,8 @@ kunwind_next(struct kunwind_state *state)
+>         case KUNWIND_SOURCE_TASK:
+>         case KUNWIND_SOURCE_REGS_PC:
+>                 err = kunwind_next_frame_record(state);
+> +               if (err && err != -ENOENT)
+> +                       state->common.unreliable = true;
+>                 break;
+>         default:
+>                 err = -EINVAL;
 
-Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
----
- tools/testing/selftests/livepatch/test-ftrace.sh | 34 ++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+I still see some issues:
 
-diff --git a/tools/testing/selftests/livepatch/test-ftrace.sh b/tools/testing/selftests/livepatch/test-ftrace.sh
-index fe14f248913acbec46fb6c0fec38a2fc84209d39..4937c74de0e4d34e4e692f20ee2bbe3cd6f5a232 100755
---- a/tools/testing/selftests/livepatch/test-ftrace.sh
-+++ b/tools/testing/selftests/livepatch/test-ftrace.sh
-@@ -61,4 +61,38 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
- % rmmod $MOD_LIVEPATCH"
- 
- 
-+# - verify livepatch can load
-+# - check if traces have a patched function
-+# - reset trace and unload livepatch
-+
-+start_test "trace livepatched function and check that the live patch remains in effect"
-+
-+FUNCTION_NAME="livepatch_cmdline_proc_show"
-+
-+load_lp $MOD_LIVEPATCH
-+trace_function "$FUNCTION_NAME"
-+
-+if [[ "$(cat /proc/cmdline)" == "$MOD_LIVEPATCH: this has been live patched" ]] ; then
-+	log "livepatch: ok"
-+fi
-+
-+check_traced_functions "$FUNCTION_NAME"
-+
-+disable_lp $MOD_LIVEPATCH
-+unload_lp $MOD_LIVEPATCH
-+
-+check_result "% insmod test_modules/$MOD_LIVEPATCH.ko
-+livepatch: enabling patch '$MOD_LIVEPATCH'
-+livepatch: '$MOD_LIVEPATCH': initializing patching transition
-+livepatch: '$MOD_LIVEPATCH': starting patching transition
-+livepatch: '$MOD_LIVEPATCH': completing patching transition
-+livepatch: '$MOD_LIVEPATCH': patching complete
-+livepatch: ok
-+% echo 0 > /sys/kernel/livepatch/$MOD_LIVEPATCH/enabled
-+livepatch: '$MOD_LIVEPATCH': initializing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': starting unpatching transition
-+livepatch: '$MOD_LIVEPATCH': completing unpatching transition
-+livepatch: '$MOD_LIVEPATCH': unpatching complete
-+% rmmod $MOD_LIVEPATCH"
-+
- exit 0
+  - do_kunwind() -> kunwind_recover_return_address() can fail
+
+  - do_kunwind() -> consume_state() can fail
+
+  - even in the -ENOENT case the unreliable bit has already been set
+    right before the call to kunwind_next_frame_record_meta().
 
 -- 
-2.46.2
-
+Josh
 
