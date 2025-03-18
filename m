@@ -1,139 +1,128 @@
-Return-Path: <live-patching+bounces-1294-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1295-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 537F6A67DEB
-	for <lists+live-patching@lfdr.de>; Tue, 18 Mar 2025 21:16:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 64513A67E8E
+	for <lists+live-patching@lfdr.de>; Tue, 18 Mar 2025 22:21:07 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 06BD91B600E3
-	for <lists+live-patching@lfdr.de>; Tue, 18 Mar 2025 20:16:20 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id A6BF619C6A59
+	for <lists+live-patching@lfdr.de>; Tue, 18 Mar 2025 21:21:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E5BA2135A9;
-	Tue, 18 Mar 2025 20:14:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA2A61F869E;
+	Tue, 18 Mar 2025 21:21:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UE6e/o48"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f7QwMq8w"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2267E208970;
-	Tue, 18 Mar 2025 20:14:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49FC7DDAD;
+	Tue, 18 Mar 2025 21:20:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742328893; cv=none; b=T+h4sJh/AYbi6cb5xZz7Tku6a5HNh7/61tH/W1eRP7MWrEd5jCKGY7QRj9Z3m0mgmE7EldSqDkxb7PhxoYZeGu0DO+T4w/bikspJGYoEnXUUDPVSc0+M+lSU3UEDs9CLafHymU5MvjdH1z/qelPMEoE/+oMP/VrnR/mg2Exc8/w=
+	t=1742332860; cv=none; b=PwJYO9pv8XOg7ieyK5lX5UykwTmsOGyITcKrBLTc4qXSjZLvXQEySvBJMg1GG7kGRtOKOaIBi+pI9dIom8b4tD3H8n9LMH0Q+PreySkWUXV5CRdhuXUhdlmA4Fppu4Ci6P0HHG3z4tppaj21j+4LzvKj5qRrIIuxjq09m6Bs1ZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742328893; c=relaxed/simple;
-	bh=d/sSThcAJ1FNOkIt4xuEgK6TkWWhj5jMwQxg8sRwZlE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=t0GbGoXP/Fa0v8KNqunoa/s6f4Z/4pZtoO3lKOD3bylrgEzqMnIMlALz8+y74J3SW2Pd81QcYeP+2y9V2/CR71th4hOX/SeocEtTQbw6nLluQPd74cM7tXtKAj6ZUsirIlspcKHwAi5orFZKFS9sVqKNeYy42pEv5vJHHsV8YBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UE6e/o48; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 974E1C4CEF4;
-	Tue, 18 Mar 2025 20:14:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742328892;
-	bh=d/sSThcAJ1FNOkIt4xuEgK6TkWWhj5jMwQxg8sRwZlE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=UE6e/o48rc+ViKpLcaVyDCfILBmJtDpz8KCbN7dmodQqOvLotLDM80ntBrgYueOgo
-	 0U1Duo5oXb92E2LewBPDzIBfLATasvimDQujs05DxwkbTcjhwiqFJUoQdPE1a7rSUb
-	 5Edf/XqKiJHbbh7EblcAR+U/qXynAHeWUJ1OnxjHcTUJaipiOl/u4hijVPI8ucaHU9
-	 Q+rkLKmU+LVKrppoCcUqtby2bMvLLdoch3JoFm5WRk1b+0fio+RTBEGJe+TpViGf0c
-	 NTuzVJk4S2kT3Y/t1EygJ/Mh6aeUKFs3907OqJ+NMPSGK5Y0cqgGbr7m1knNRtbVrH
-	 bco6CQ1rpMjZg==
-Received: by mail-il1-f182.google.com with SMTP id e9e14a558f8ab-3d46aaf36a2so47379935ab.3;
-        Tue, 18 Mar 2025 13:14:52 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUXzRfr3CsX/7nhYbN35mgOuZ99xArEGOQw1NmVCMw5esTUlbDA0gHFm8n/CsktKiwPuyNcLdWUvlFUo14=@vger.kernel.org, AJvYcCWh/hPXj8tE12uHv3llpqVLlgRCWESW9aAm75WLQnFIaSk41+mMPw664Cqf9/7Uu1cwZNeyIYbOy3lyEv4BleBYAA==@vger.kernel.org, AJvYcCXj9GHrerXfI/DFo5GUdLKZQOTXNpKJNVWoup6t9+N583NcFs+kJfnSjyC1p+VhjOfA/sY2gqH4wF+hJjIlrA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfzFJb7ygG7DJ3JKIJGMRQYfTqYudo/8PqCbURvcmmGeSCgSdT
-	XldccSuE1H2QDl/Rl0UN0zJWfRhemgF12YivW/oKzhM8/U/zxOUsOddaytolSKaRKx4R1VXnlgL
-	bNU19Kr0hmJwskKnI7+kpTV6KGOs=
-X-Google-Smtp-Source: AGHT+IHtAfQRa5ygS0+xhQYljeYFtmhnJ0xVV7lJdlI0Pu/Z5ueR2htXv0YGBlFbTqjgA63bOgGEydLfCjMz7N9NFQw=
-X-Received: by 2002:a05:6e02:3312:b0:3d4:6f37:3748 with SMTP id
- e9e14a558f8ab-3d586bbcfcamr1456735ab.16.1742328891937; Tue, 18 Mar 2025
- 13:14:51 -0700 (PDT)
+	s=arc-20240116; t=1742332860; c=relaxed/simple;
+	bh=WiRT9bHs0N/tkHiTl/aOimeK19vJh3RSlWvepRaoyiU=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=aOR8aSG1cwY7wj3eAjDakv0I8JonffVNyTmRFMGoqDE+/fn4za+8s0LrNBvNC/HdQnr6kMUyP0ZqcNyXujk4YqjOaFoUl4nsZ9vUxtFe9lzsyjKRnCQD8r10NueYLPqp6EQ7/slR3dlcJkmzvt7cSX6il5Fdl4d7iVM6hYuoVEM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f7QwMq8w; arc=none smtp.client-ip=209.85.216.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2ff784dc055so6375989a91.1;
+        Tue, 18 Mar 2025 14:20:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1742332858; x=1742937658; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ardKmeM3FvhOwNbF6mEr8AJRagvXxY7Hl+ibLRknpfU=;
+        b=f7QwMq8w3TmrH4zzlGpsorJOeKmMevCGQLktozgMUbJEB9umVW+K3QaxCW6VkwkHLp
+         SwqyzJ4KFVQQt59fztHZ8XGsBLOjS0Z6+/mL+mJphPij375FOMiR+svCmCEQJfHrnF2r
+         OMfVOHkNXpnu9boE1GwTrYGtK9wJa2sezw4KlzF3pKJh8uJSMHlwYq8i2gBQFIvB/93S
+         pLXKAkDAi7Bj3J/kf0p3UtjNsPLqQFvVwcXQ2avD+GzXUj1AwTS17Ty/ukvTe/xn1QJi
+         R6RwivQgdvdGEejBTUlzSNoU5jQ3qSsnaKbk2LgFLVsTjpU8ufFn7GaJ2C43nyCpSD/9
+         dD2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742332858; x=1742937658;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ardKmeM3FvhOwNbF6mEr8AJRagvXxY7Hl+ibLRknpfU=;
+        b=vQhXqn/UgOI7FWoIR3dC89cN2gHw+vdV+3lfEe7Cd2vt3xLVQV/n/QtwTJNSMRp+if
+         DlfYLPR1wKQv7dOM2aX3IF2IX/ZOFv49fLQC8dl3wepXiVpyv0OgjPm9qJEN1vgtiAAo
+         SRlNoVzH4VnBIfMh/0lmEAsC+tPH8OiioZGd6y885a7OqNs2/a32eV6wPGQxo8/SWQjo
+         uJNQ3Znt8RWhWjGTmpFRa1qqZrABBXtUx7gXvCk3NXFntwbiiGAxj2I+a8grZq5LoUFE
+         JWKH0nO0EbWOXXVNhPr55prTvcSZufKbZXLvguIfvhqSBlgEt/l0h3sKC0UB8gd9bYv8
+         eppA==
+X-Forwarded-Encrypted: i=1; AJvYcCVauDEDzVMG5SrmivzGrZ2yl1PceuzdYTe5UodhsxgCBru6KgrVbRn8li7vi3mNj/pNpd+JQz4axZyTcuc=@vger.kernel.org, AJvYcCXPH3r9tInv/Em8f0gwipRT9pyKA+IXs8I55Swr2DaipuIhc2vq4dw+pa7IKcOp3eUjjDbCE/AWlArBT1AK8daz@vger.kernel.org
+X-Gm-Message-State: AOJu0YzskfwznIG8eFCzHuxQE/mkPa82acuyMz5IJifZhZ3yms2laj57
+	aniAJNGPEBLqPFoukbGSb54WERS9kOscc+5nC3ddhjdqEnL4IvNiS+YMo4807Gc=
+X-Gm-Gg: ASbGncvlfZXJM1z8MsgT0oiJSF6Mxbb51UtbPt3Q+12MDKqDSvRt/9/pG5O4KEch8L5
+	2qyYlc8ErAjjCZ96fck+cVELHfjq+q985yy0QnLwmG9QrVC1R1D83EKZU6Hyd7EdB5s/YRIXo6t
+	nGDk665rDRonYMYBe+Um7PUwh/oIoJq2ny3FOTuTUXSSPmubsX3ZFXUvKm1gLGGyiOVAMMYSHp1
+	PMDkGYy+Vrv13EYfn5AHRB6XEcEZVUPxlb4ENYd80zd9LoTgNpcNjac5otEjuil8k5LH4RMkG1H
+	dplPJiPERssV5sOgIqzK2AeMBLPVZk8hu6hf0ECyhqvj/ScRyGRv
+X-Google-Smtp-Source: AGHT+IG3Y3teF52oZyArtun7A7gMMONDj7HmQM4FW494dVh9pAErbe1aEiJVTuiPnP6t/fYPzeV0cw==
+X-Received: by 2002:a17:90b:2647:b0:2fa:157e:c790 with SMTP id 98e67ed59e1d1-301bde53851mr252773a91.5.1742332858535;
+        Tue, 18 Mar 2025 14:20:58 -0700 (PDT)
+Received: from fedora.local ([2804:d57:4e50:a700:f33d:65d1:e22e:109b])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30153afe74asm8771777a91.24.2025.03.18.14.20.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Mar 2025 14:20:58 -0700 (PDT)
+From: Filipe Xavier <felipeaggger@gmail.com>
+Subject: [PATCH v2 0/2] selftests: livepatch: test if ftrace can trace a
+ livepatched function
+Date: Tue, 18 Mar 2025 18:20:34 -0300
+Message-Id: <20250318-ftrace-sftest-livepatch-v2-0-60cb0aa95cca@gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250308012742.3208215-1-song@kernel.org> <20250308012742.3208215-2-song@kernel.org>
- <iajk7zuxy7fun7f7sv52ydhq7siqub3ec2lmguomdd3fhdw4s2@cwyfihj3gvpn>
-In-Reply-To: <iajk7zuxy7fun7f7sv52ydhq7siqub3ec2lmguomdd3fhdw4s2@cwyfihj3gvpn>
-From: Song Liu <song@kernel.org>
-Date: Tue, 18 Mar 2025 13:14:40 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4A73c0AjpUwSRJ4o-4E6wpA9c5L0xWaxvHkJ3m+BLGVA@mail.gmail.com>
-X-Gm-Features: AQ5f1JoxrCAHtT-wypdFb1RI64YEPNsCvi5X7wvvH2VhOFtJbGsL8mOcDVjXOYg
-Message-ID: <CAPhsuW4A73c0AjpUwSRJ4o-4E6wpA9c5L0xWaxvHkJ3m+BLGVA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] arm64: Implement arch_stack_walk_reliable
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org, 
-	indu.bhagat@oracle.com, puranjay@kernel.org, wnliu@google.com, 
-	irogers@google.com, joe.lawrence@redhat.com, mark.rutland@arm.com, 
-	peterz@infradead.org, roman.gushchin@linux.dev, rostedt@goodmis.org, 
-	will@kernel.org, kernel-team@meta.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKLj2WcC/4WNywrCMBBFf6XM2pE8bIuu/A/pIiSTZqAvkhCU0
+ n839gdcngP33B0SRaYEj2aHSIUTr0sFdWnABrOMhOwqgxKqFVp06HM0ljD5TCnjxIU2k23ATri
+ 7s7deKd1CXW+RPL/P8muoHDjlNX7OoyJ/9n+zSBRoOi+dt1qQ7J/jbHi62nWG4TiOLyuiADy+A
+ AAA
+X-Change-ID: 20250306-ftrace-sftest-livepatch-60d9dc472235
+To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+ Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
+ Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>, 
+ Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, felipe_life@live.com, 
+ Filipe Xavier <felipeaggger@gmail.com>
+X-Mailer: b4 0.14.2
 
-Hi Josh,
+This patchset add ftrace helpers functions and
+add a new test makes sure that ftrace can trace
+a function that was introduced by a livepatch.
 
-Thanks for the review!
+Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
+Suggested-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+Reviewed-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+---
+Changes in v2:
+- functions.sh: change check traced function to accept a list of functions.
+- Link to v1: https://lore.kernel.org/r/20250306-ftrace-sftest-livepatch-v1-0-a6f1dfc30e17@gmail.com
 
-On Tue, Mar 18, 2025 at 11:45=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.or=
-g> wrote:
->
-> On Fri, Mar 07, 2025 at 05:27:41PM -0800, Song Liu wrote:
-> > With proper exception boundary detection, it is possible to implment
-> > arch_stack_walk_reliable without sframe.
-> >
-> > Note that, arch_stack_walk_reliable does not guarantee getting reliable
-> > stack in all scenarios. Instead, it can reliably detect when the stack
-> > trace is not reliable, which is enough to provide reliable livepatching=
-.
-> >
-> > This version has been inspired by Weinan Liu's patch [1].
-> >
-> > [1] https://lore.kernel.org/live-patching/20250127213310.2496133-7-wnli=
-u@google.com/
-> > Signed-off-by: Song Liu <song@kernel.org>
->
-> This looks incomplete.  The reliable unwinder needs to be extra
-> paranoid.  There are several already-checked-for errors in the unwinder
-> that don't actually set the unreliable bit.
->
-> There are likely other failure modes it should also be checking for.
-> For example I don't see where it confirms that the unwind completed to
-> the end of the stack (which is typically at a certain offset).
+---
+Filipe Xavier (2):
+      selftests: livepatch: add new ftrace helpers functions
+      selftests: livepatch: test if ftrace can trace a livepatched function
 
-If I understand the comment correctly, this should be handled by the
-meta data type FRAME_META_TYPE_FINAL.
+ tools/testing/selftests/livepatch/functions.sh   | 49 ++++++++++++++++++++++++
+ tools/testing/selftests/livepatch/test-ftrace.sh | 34 ++++++++++++++++
+ 2 files changed, 83 insertions(+)
+---
+base-commit: 848e076317446f9c663771ddec142d7c2eb4cb43
+change-id: 20250306-ftrace-sftest-livepatch-60d9dc472235
 
->
-> See for example all the error conditions in the x86 version of
-> arch_stack_walk_reliable() and in arch/x86/kernel/unwind_frame.c.
+Best regards,
+-- 
+Filipe Xavier <felipeaggger@gmail.com>
 
-I guess I missed this part:
-
-diff --git i/arch/arm64/kernel/stacktrace.c w/arch/arm64/kernel/stacktrace.=
-c
-index 69d0567a0c38..3bb8e3ea4c4b 100644
---- i/arch/arm64/kernel/stacktrace.c
-+++ w/arch/arm64/kernel/stacktrace.c
-@@ -268,6 +268,8 @@ kunwind_next(struct kunwind_state *state)
-        case KUNWIND_SOURCE_TASK:
-        case KUNWIND_SOURCE_REGS_PC:
-                err =3D kunwind_next_frame_record(state);
-+               if (err && err !=3D -ENOENT)
-+                       state->common.unreliable =3D true;
-                break;
-        default:
-                err =3D -EINVAL;
-
-
-With this part, we should cover all these cases? Did I miss something
-else?
-
-Thanks,
-Song
 
