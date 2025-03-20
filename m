@@ -1,132 +1,131 @@
-Return-Path: <live-patching+bounces-1313-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1314-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8BE8CA6AC5D
-	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 18:46:50 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id CC162A6AC89
+	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 18:55:26 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 294863B0606
-	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 17:46:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AAC64487EF5
+	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 17:54:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 724A12236FC;
-	Thu, 20 Mar 2025 17:46:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1EAD3226161;
+	Thu, 20 Mar 2025 17:54:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Mm3G/HLm"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QUp8i5V0"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F33281E3772
-	for <live-patching@vger.kernel.org>; Thu, 20 Mar 2025 17:46:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60C62628C;
+	Thu, 20 Mar 2025 17:54:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742492806; cv=none; b=hV0HkHK0qa5SQyYoF11aAtb1Uyk9rAqKeRwW/Do15RPjpldo8CBoYtOQpeApuGynbAIluT6pOhSS3UakP198v4+g0oBzkY1h8qf/y7i8PJJD6GEHYb3Dcs96FmiTPTJBq7kQmEt9xjKOFPGKShtthh/a0biZATYy+Elz7x6qMbc=
+	t=1742493285; cv=none; b=WjAEBpvR6mfytjHIqzBvZY8NuCyGnej/HplOo9toqMwwtni48HqrVm29cMHFhprG/25Ob447n5MMcavwbgVmnhKBhevJq9CEH3tyEflz+rx/ps2JhNcwjVoyU36Hnac/NYzhx7vRQyG3uugl8ftyq+/xQHgSI9cgKWEDgIS5KC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742492806; c=relaxed/simple;
-	bh=gGkHIctrglz/x9mJyu8j4/TTt+kOTJGYHX62Xb6+X5U=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=GTxYHSYJvLFDl6C4f64+ovimR5qdyl9zBGn8IM+VJY7tOpbpgC+GPTuaL/E7/BVlMYMgr07Kc+N5oyjRHzM4tGH/ZWp7qVoqFMhUnjWgATTlK59I7XP7vmeEh4CoHK5DeBAtpWhzfLlhxG85SNzmzwrHRo+fyjHUFlHZ7lqcFV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Mm3G/HLm; arc=none smtp.client-ip=209.85.214.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-224192ff68bso13168245ad.1
-        for <live-patching@vger.kernel.org>; Thu, 20 Mar 2025 10:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1742492804; x=1743097604; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=C8sWmgtXc9A8SS+LZhHtZUXAexu8GgTmOedRrg1dhsA=;
-        b=Mm3G/HLmlEbyXaYf+bymb2so+kLmnoTzJNCbYQBMJx63ptNsDhuzIjeqKLViLQfccj
-         HdB6HZTVkG810qM+6vt5U9qpUz7mocbYOy/FnRSKitG+sEtLnml+ZVqLV0k+5ofFTjwI
-         krKlCPj2GPci43DvHxRt7JQ2TxYQtbTI7od/DQGJX08SvYV0y8im8Gpr53OafuBxgixI
-         Ao60A95+clA3l7LLVXA7+uokY4PI90Brj0laK2SGWyTMJFFI+k4qXBjfx3qjUhfmnDPZ
-         8yMCm9nAixU/J4NnpLtv6EAldzAv1qgWpMtMS53SOGohOJMSA53+6ewUVqKFIoMRkste
-         9CrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742492804; x=1743097604;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=C8sWmgtXc9A8SS+LZhHtZUXAexu8GgTmOedRrg1dhsA=;
-        b=YXcemE23LU7tfTtqryqHLQhPVk8mRB3fZAASfVuyaikDnp4+SYHmwhmJlU0wZjucgs
-         e9l3bT4bVl3oyIo2SNT21JN7FQEqujbQKW6gY0xnrGltpWT3tYshYMhariN/IY0olDQp
-         Xga78MasaeToA5cG8WLEnChNQpDI3qMJ2gCg+a32pwCUP4TdWjeSWYaIEj73bZ8SdM7q
-         FUP0CM4E4P1yAeC/ilX4LjS+wpzpVOIwz/RLWnRlMmAZtP+mqqahSP3VZimpa+4vxHt+
-         JrqzETLbRqMAju7b3myR350D9VhjP6YG3+aq3kE3hJ1l2rZwTMK9aQljGBWCe7jSBs70
-         t25g==
-X-Forwarded-Encrypted: i=1; AJvYcCWWk5ok6N4UFZNlcVsjfkKZ3ryUGszaXZCA9RxD+vqszt4o73MSOUK3cOkQd6hzudfU52ZFDpomrIVqt1c/@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8RrCPyvsUa1EOGA6CdzT9trXphW+/JsioYip0IJzImqb+w00C
-	AquShT+EbBAsk/jR1vUcMeD6r+FgpCuLt87BfnzgLMKN3gTeq/Z3kQ/1OH+mwntL501Nn6Brbg=
-	=
-X-Google-Smtp-Source: AGHT+IGkcvsUd+T1mc9VlLct3/yS/hr+HeuaSZ94iAFaq0agza5SWuSHmNHqalPgRdwW9LY8R0G3yzT4RA==
-X-Received: from pfbcg19.prod.google.com ([2002:a05:6a00:2913:b0:732:7e28:8f7d])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:3991:b0:732:535d:bb55
- with SMTP id d2e1a72fcca58-73905966850mr512059b3a.4.1742492804271; Thu, 20
- Mar 2025 10:46:44 -0700 (PDT)
-Date: Thu, 20 Mar 2025 17:46:41 +0000
-In-Reply-To: <20250320171559.3423224-2-song@kernel.org>
+	s=arc-20240116; t=1742493285; c=relaxed/simple;
+	bh=4sxwANhWgnEl6Kc/mFjYhiXrRcRqIQfKJad6QWXOhDw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Zb1hv5Pso6fbw0tszzh4uN7Ufnyxy+HI+srx7EXoayZ1c5fPDumS/V7/fdoxQhYtFDNNfD3qOepWtdqoSHnaoEzKMEwDPOqbEAzkHPjRngqTDTdq/o+bv3h20qpuCxL1oSE+e4xQeC/t/KAdgXoT61NkrDeUTNIjkZNwuICQz1g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QUp8i5V0; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50073C4CEEC;
+	Thu, 20 Mar 2025 17:54:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742493284;
+	bh=4sxwANhWgnEl6Kc/mFjYhiXrRcRqIQfKJad6QWXOhDw=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=QUp8i5V0XxsaORfuEEn/a57KcDTV8a25rLGsUgHFZRFoIqgJJsWSCiPptlojBtmmZ
+	 rCSdImJGPOMzjLbL56J2nU1YfCDQyK4GsVL+gHugqH+1u9PCu0gDF/sJCbAmKO53bE
+	 ozIxLLkitm+tNbDG8bY+S6/LfYz09Ge0uBv0fTIkLaI1l4uPtFG/ybtQG3tm+nMmbp
+	 v9dVQAY7Uhpou5IK3+bRTMnyd5AYxk71+S+8amCQicYjTHKxX0UhYnfjWOzAczTFMU
+	 r5WxD0/HTgEM1Kr8oEPXWnF0PTp7Uxj7PU/B/Mdvimu5c+FKrJeL1y1U6aFzC9XP57
+	 Rr7fnU8hNIA7g==
+Received: by mail-il1-f173.google.com with SMTP id e9e14a558f8ab-3d3db3b68a7so11664545ab.0;
+        Thu, 20 Mar 2025 10:54:44 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUOBpPjkpBUIjXQ3m9CPZeVW/4UBs7+yXOvZKXx+54tJaYWJmCarGJ+LMFHvDouy11d2o8uzx1h46CEonE=@vger.kernel.org, AJvYcCVUcn7qCg71PfaKjAuKEOs865wkqW6LQmGxHPIDY/xVSYayg+igIg6kk5CDQn+UvFcSoSmAQouqIs+qPUASI1a/zg==@vger.kernel.org, AJvYcCXgPbGk1Mbj3NfqGWEUWdsFPcf1RhhNPqZiP9acNaO5rKkxHFhyypBUbuFwOjlx7TBsIzG8XdBmKJlh0P7ZeQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzelCtGq4UNBhTHa8ViAmvEDUmTOZPTOS87d+X2U4sUTrI9hjCi
+	sCsSLBVR8T7b8GFLoo4hNE3lxcDbf3/bJC+vMgeopUer1Q09SxGyswswKvMkFGlVOcUJH063utE
+	GupLNVo5JCYvIdlZsigJbDbenoEg=
+X-Google-Smtp-Source: AGHT+IFWP8pfbwBl1chUhyuT+CmtDXuqo+7XO1cRO0Tzq74gsrngMMCJZXVSqHKZk5dQh66q7nufSFKxHTUARVoFyIM=
+X-Received: by 2002:a05:6e02:85:b0:3d0:4e0c:2c96 with SMTP id
+ e9e14a558f8ab-3d5960d2337mr5568995ab.2.1742493283619; Thu, 20 Mar 2025
+ 10:54:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20250320171559.3423224-2-song@kernel.org>
-X-Mailer: git-send-email 2.49.0.395.g12beb8f557-goog
-Message-ID: <20250320174642.855602-1-wnliu@google.com>
-Subject: [PATCH v3 1/2] arm64: Implement arch_stack_walk_reliable
-From: Weinan Liu <wnliu@google.com>
-To: song@kernel.org
+MIME-Version: 1.0
+References: <20250320171559.3423224-2-song@kernel.org> <20250320174642.855602-1-wnliu@google.com>
+In-Reply-To: <20250320174642.855602-1-wnliu@google.com>
+From: Song Liu <song@kernel.org>
+Date: Thu, 20 Mar 2025 10:54:32 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7RAXHRt3c+8DYqirPFRA+Sdw4ZNJ+Ad1uSiAHGOJ9RSA@mail.gmail.com>
+X-Gm-Features: AQ5f1JqKgmhQkJ9V_QiMvwS8pM3CeUzcisCl2Y1OPuDskAkxbNElxRHFu-VgG9M
+Message-ID: <CAPhsuW7RAXHRt3c+8DYqirPFRA+Sdw4ZNJ+Ad1uSiAHGOJ9RSA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] arm64: Implement arch_stack_walk_reliable
+To: Weinan Liu <wnliu@google.com>
 Cc: indu.bhagat@oracle.com, irogers@google.com, joe.lawrence@redhat.com, 
 	jpoimboe@kernel.org, kernel-team@meta.com, 
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
 	linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org, 
 	mark.rutland@arm.com, peterz@infradead.org, puranjay@kernel.org, 
-	roman.gushchin@linux.dev, rostedt@goodmis.org, will@kernel.org, 
-	wnliu@google.com
+	roman.gushchin@linux.dev, rostedt@goodmis.org, will@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 20, 2025 at 10:16=E2=80=AFAM Song Liu <song@kernel.org> wrote:
+On Thu, Mar 20, 2025 at 10:46=E2=80=AFAM Weinan Liu <wnliu@google.com> wrot=
+e:
 >
->  static __always_inline void
-> @@ -230,8 +231,26 @@ kunwind_next_frame_record(struct kunwind_state *stat=
-e)
->         new_fp =3D READ_ONCE(record->fp);
->         new_pc =3D READ_ONCE(record->lr);
+> On Thu, Mar 20, 2025 at 10:16=E2=80=AFAM Song Liu <song@kernel.org> wrote=
+:
+> >
+> >  static __always_inline void
+> > @@ -230,8 +231,26 @@ kunwind_next_frame_record(struct kunwind_state *st=
+ate)
+> >         new_fp =3D READ_ONCE(record->fp);
+> >         new_pc =3D READ_ONCE(record->lr);
+> >
+> > -       if (!new_fp && !new_pc)
+> > -               return kunwind_next_frame_record_meta(state);
+> > +       if (!new_fp && !new_pc) {
+> > +               int ret;
+> > +
+> > +               ret =3D kunwind_next_frame_record_meta(state);
 >
-> -       if (!new_fp && !new_pc)
-> -               return kunwind_next_frame_record_meta(state);
-> +       if (!new_fp && !new_pc) {
-> +               int ret;
-> +
-> +               ret =3D kunwind_next_frame_record_meta(state);
+> The exception case kunwind_next_regs_pc() will return 0 when unwind succe=
+ss.
+> Should we return a different value for the success case of kunwind_next_r=
+egs_pc()?
 
-The exception case kunwind_next_regs_pc() will return 0 when unwind success=
-.
-Should we return a different value for the success case of kunwind_next_reg=
-s_pc()?
+I am assuming once the unwinder hits an exception boundary, the stack is no=
+t
+100% reliable. This does mean we will return -EINVAL for some reliable stac=
+k
+walk, but this is safer and good enough for livepatch. IIUC, SFrame based
+unwinder should not have this limitation.
 
+Thanks,
+Song
 
-> +               if (ret < 0) {
-> +                       /*
-> +                        * This covers two different conditions:
-> +                        *  1. ret =3D=3D -ENOENT, unwinding is done.
-> +                        *  2. ret =3D=3D -EINVAL, unwinding hit error.
-> +                        */
-> +                       return ret;
-> +               }
-> +               /*
-> +                * Searching across exception boundaries. The stack is no=
-w
-> +                * unreliable.
-> +                */
-> +               if (state->end_on_unreliable)
-> +                       return -EINVAL;
-> +               return 0;
-> +       }
-
+>
+> > +               if (ret < 0) {
+> > +                       /*
+> > +                        * This covers two different conditions:
+> > +                        *  1. ret =3D=3D -ENOENT, unwinding is done.
+> > +                        *  2. ret =3D=3D -EINVAL, unwinding hit error.
+> > +                        */
+> > +                       return ret;
+> > +               }
+> > +               /*
+> > +                * Searching across exception boundaries. The stack is =
+now
+> > +                * unreliable.
+> > +                */
+> > +               if (state->end_on_unreliable)
+> > +                       return -EINVAL;
+> > +               return 0;
+> > +       }
+>
 
