@@ -1,105 +1,131 @@
-Return-Path: <live-patching+bounces-1309-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1310-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6A531A69E32
-	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 03:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3AA1BA6ABCC
+	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 18:16:32 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1C4E18A61E1
-	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 02:20:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 886DA981566
+	for <lists+live-patching@lfdr.de>; Thu, 20 Mar 2025 17:16:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 837991E98FC;
-	Thu, 20 Mar 2025 02:20:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99BDD2253AB;
+	Thu, 20 Mar 2025 17:16:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VzUjHydg"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TSJL1HWg"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52ED379F2;
-	Thu, 20 Mar 2025 02:20:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CAAA2253A4;
+	Thu, 20 Mar 2025 17:16:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742437241; cv=none; b=POmZ4cf6lGoKKbN2OMGtdl0jh8c7QLWx7o+pUzH5jTddPGQ8uQ5xsyTtgdsv3rbWi4234uD8uqfFfD7LrwAfQuzKj0xOnxKW3zVuEGS02xB7qxgdfkqVgNK/Vjc57ENMP+nswrH0FjOVLIybXdqDhJWm7DgS1tr393G/Ysdlr7s=
+	t=1742490968; cv=none; b=fWOxC01Zo1ne2GrY74pIbZu4aD2ZjomvnNYUSY64ZRpf/Jzi5neM3VT5bUfdwuJJ02P7rvpDowkXBHWO3j73o3ojwidtRAw5rI+AbOPT+p766XX8F2VBAISANGzAyvLvzQ5DhIZt1dE7zmsDFOIxCYt62mhet5Kw4Famr2L+MBc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742437241; c=relaxed/simple;
-	bh=B5xAUVdyEBI5NL4o0X34PUirmR2TMscmcGA1yOiYol8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Whn3GvzAhYzcZzvlt9dKe7pQVyoPElSclh6+ILINTG53CuUF6iSy1ug7XahN5nJhIXcj27ZsmYr6H1SoCa7TfkVHpEDhb3yx9HyCYznp3ysRZ6we25t5Gwl2ZMuA9eWecN/ucNpSiyrOB4DKZVZfH1Qr8qvcQxeVeCZjJjCb5qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VzUjHydg; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5139C4CEEA;
-	Thu, 20 Mar 2025 02:20:39 +0000 (UTC)
+	s=arc-20240116; t=1742490968; c=relaxed/simple;
+	bh=RBXQglLrnsSCMUyUpcMctHHkbTvdcAUfxAPc3DDrCJA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ka4vGBpIY8oiydEb3LOnY0CIgIIeR44k1V8Nj63pLpy/YaMUK7PlLTkKwzLaVnxtX/xVKHjk5JTkfTIuyxN/XM6DiwCtKyEATaGp8RUbFIQ+vsfJq9DnnjaPPVAh6O9n4u9aiHp4aJBBGAazJ84j6bH77W576/3ZDoLtn7Y4ShQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TSJL1HWg; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43CC3C4CEDD;
+	Thu, 20 Mar 2025 17:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742437239;
-	bh=B5xAUVdyEBI5NL4o0X34PUirmR2TMscmcGA1yOiYol8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=VzUjHydgqjH1fNZlmVcYri/7HKzDk2PNpb3Y2DbiKDMBFuKC+1NFmZjsDI4xwl5Vv
-	 tQpofyQKeRCKA+v0mtOhIaut90aBaJ/d2tAckjaluyVPD9ci5HkwixZXJLWNu8zg3m
-	 xq1vpORen7R4F3DegPqXkd8GpdvV1C1DIp1GbIwxaxwgwWu9FQQju7hTVATv1RjoLv
-	 zceW8XcfhfdhUiyFNy2aczvXddaJ2BhMhQTUkFs4WPg7sfDs6Em5Rhhdun2FoqFRo8
-	 88Hxd35WsFB/Q9AKmpzeQ9iY2xRQkhomckKggnxejPgnEgiF0x+IzIpn69SB721zdR
-	 /QPlAQv4vBsaQ==
-Received: by mail-il1-f170.google.com with SMTP id e9e14a558f8ab-3ce886a2d5bso2712425ab.1;
-        Wed, 19 Mar 2025 19:20:39 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVHbHIZ5gskjbV+DQmiLY4RQQs/+X6urb53hfxHEJQMCZnAsWrqscpxnZELk09uK13zJV7TV2RKDTglVhfOTg==@vger.kernel.org, AJvYcCVYyo8qPA/VD3Q3IjrDdt+e8JjTSULEQBFR5ni723mRKaqWeywjTG46GCol/LpPL3v0nfq4kD4235XZr8k=@vger.kernel.org, AJvYcCW6bbRvkBFEdTKH3cOCQBqd13P8+tVb4F2JixVK3OLFQzrOamLSw4ZrIFG1PT9RynLECXq/aLdoVbl6ROFnalATIw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxKGo6zwe0rXWW1sC4CTO3i6dG8uG4D465aW7gcxWZ5GCGNyvkl
-	yCiCTGWxx1bteoiL6TybC5lvZl0YYr80CMXfmukkE6mMS5fLpQhS7I0UWa69OpI44c0Gblm2TJU
-	qHWU1qbvmh13MyaXbJvYjAm4jwD4=
-X-Google-Smtp-Source: AGHT+IGhOnhAnh34kZ+zv/L2skY/lReqXGHns8jGUDumOrwPKhbRTO/xpPIr4I5A0Xo+tU3bg7S05AvFMM4K1Vc/JgM=
-X-Received: by 2002:a05:6e02:2183:b0:3d4:244b:db1d with SMTP id
- e9e14a558f8ab-3d58ebc0388mr17890885ab.6.1742437239151; Wed, 19 Mar 2025
- 19:20:39 -0700 (PDT)
+	s=k20201202; t=1742490967;
+	bh=RBXQglLrnsSCMUyUpcMctHHkbTvdcAUfxAPc3DDrCJA=;
+	h=From:To:Cc:Subject:Date:From;
+	b=TSJL1HWgOfQfnUivOeHQa0IadphqPzG8l6kOjkYDivl9hUxvFwc9n11YuzBC2/Rot
+	 vGhbLAFF8awTO3tTsDDOM0x+AXePTUnUmd67FGZPAESypwiA7Zg5+1vqDe70RGi8cw
+	 aBmvWiVsFWvNwLcP/fQLCXepYPQ+9HMnlBSw4RbatMHY6/fykB5gOw36o/lK0olLI1
+	 nN3EUjLZyfCu2PzXZ09Ra9MoQiIhLCJpXfh3kXGPS47NQ6FDxfV4ZAFUo6QsHjPVKu
+	 XRHAg7AWj0NxTin5K5vyqcwEzeRz1txEa87lJ9mNtWZGWVkQXO1QcZHIJtXoK5u0n5
+	 vlzz9Zv6Uw2xA==
+From: Song Liu <song@kernel.org>
+To: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-toolchains@vger.kernel.org,
+	live-patching@vger.kernel.org
+Cc: indu.bhagat@oracle.com,
+	puranjay@kernel.org,
+	wnliu@google.com,
+	irogers@google.com,
+	joe.lawrence@redhat.com,
+	jpoimboe@kernel.org,
+	mark.rutland@arm.com,
+	peterz@infradead.org,
+	roman.gushchin@linux.dev,
+	rostedt@goodmis.org,
+	will@kernel.org,
+	kernel-team@meta.com,
+	song@kernel.org
+Subject: [PATCH v3 0/2] arm64: livepatch: Enable livepatch without sframe
+Date: Thu, 20 Mar 2025 10:15:57 -0700
+Message-ID: <20250320171559.3423224-1-song@kernel.org>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250319213707.1784775-1-song@kernel.org> <20250319213707.1784775-2-song@kernel.org>
- <yrqgoc66te54tuffkrc74clsosiid2giw3gpc3kd3ddl4662tb@kiqh3ncfxwnl>
-In-Reply-To: <yrqgoc66te54tuffkrc74clsosiid2giw3gpc3kd3ddl4662tb@kiqh3ncfxwnl>
-From: Song Liu <song@kernel.org>
-Date: Wed, 19 Mar 2025 19:20:28 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6AUiu4CryCkskHxe=BEX=LA9P81MWX1aGSN4j0bqTFXw@mail.gmail.com>
-X-Gm-Features: AQ5f1Jri4qNGn9AAXiMELLGeAwcxC9xcx-0pWMyucSXtztpkXO4sg_80Fiu2hAc
-Message-ID: <CAPhsuW6AUiu4CryCkskHxe=BEX=LA9P81MWX1aGSN4j0bqTFXw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] arm64: Implement arch_stack_walk_reliable
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org, 
-	indu.bhagat@oracle.com, puranjay@kernel.org, wnliu@google.com, 
-	irogers@google.com, joe.lawrence@redhat.com, mark.rutland@arm.com, 
-	peterz@infradead.org, roman.gushchin@linux.dev, rostedt@goodmis.org, 
-	will@kernel.org, kernel-team@meta.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Wed, Mar 19, 2025 at 3:35=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
-> wrote:
->
-> On Wed, Mar 19, 2025 at 02:37:06PM -0700, Song Liu wrote:
-> > +noinline noinstr int arch_stack_walk_reliable(stack_trace_consume_fn c=
-onsume_entry,
-> > +                     void *cookie, struct task_struct *task)
-> > +{
-> > +     struct kunwind_consume_entry_data data =3D {
-> > +             .consume_entry =3D consume_entry,
-> > +             .cookie =3D cookie,
-> > +     };
-> > +     int ret;
-> > +
-> > +     ret =3D kunwind_stack_walk(arch_kunwind_consume_entry, &data, tas=
-k, NULL, true);
-> > +     if (ret =3D=3D -ENOENT)
-> > +             ret =3D 0;
->
-> Is this check redundant with the -ENOENT check in do_kunwind() which
-> already converts ret to zero?
+There are recent efforts to enable livepatch for arm64, with sframe [1] or
+without sframe [2]. This set tries to enable livepatch without sframe. Some
+of the code, however, are from [1].
 
-Indeed. This check is redundant.
+Although the sframe implementation is more promising in longer term, it
+suffers from the following issues:
 
-Thanks,
-Song
+  1. sframe is not yet supported in llvm;
+  2. There is still bug in binutil [3], so that we cannot yet use sframe
+     with gcc;
+  3. sframe unwinder hasn't been fully verified in the kernel.
+
+On the other hand, arm64 processors have become more and more important in
+the data center world. Therefore, it is getting critical to support
+livepatching of arm64 kernels.
+
+With recent change in arm64 unwinder [4], it is possible to reliably
+livepatch arm64 kernels without sframe. This is because we do not need
+arch_stack_walk_reliable() to get reliable stack trace in all scenarios.
+Instead, we only need arch_stack_walk_reliable() to detect when the
+stack trace is not reliable, then the livepatch logic can retry the patch
+transition at a later time.
+
+Given the increasing need of livepatching, and relatively long time before
+sframe is fully ready (for both gcc and clang), we would like to enable
+livepatch without sframe.
+
+Thanks!
+
+[1] https://lore.kernel.org/live-patching/20250127213310.2496133-1-wnliu@google.com/
+[2] https://lore.kernel.org/live-patching/20250129232936.1795412-1-song@kernel.org/
+[3] https://sourceware.org/bugzilla/show_bug.cgi?id=32589
+[4] https://lore.kernel.org/linux-arm-kernel/20241017092538.1859841-1-mark.rutland@arm.com/
+
+Changes v2 => v3:
+1. Remove a redundant check for -ENOENT. (Josh Poimboeuf)
+2. Add Tested-by and Acked-by on v1. (I forgot to add them in v2.)
+
+v2: https://lore.kernel.org/live-patching/20250319213707.1784775-1-song@kernel.org/
+
+Changes v1 => v2:
+
+1. Rework arch_stack_walk_reliable().
+
+v1: https://lore.kernel.org/live-patching/20250308012742.3208215-1-song@kernel.org/
+
+Song Liu (2):
+  arm64: Implement arch_stack_walk_reliable
+  arm64: Implement HAVE_LIVEPATCH
+
+ arch/arm64/Kconfig                   |  3 ++
+ arch/arm64/include/asm/thread_info.h |  4 +-
+ arch/arm64/kernel/entry-common.c     |  4 ++
+ arch/arm64/kernel/stacktrace.c       | 66 +++++++++++++++++++++-------
+ 4 files changed, 60 insertions(+), 17 deletions(-)
+
+--
+2.47.1
 
