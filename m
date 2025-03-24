@@ -1,155 +1,119 @@
-Return-Path: <live-patching+bounces-1319-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1320-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id CABA7A6E109
-	for <lists+live-patching@lfdr.de>; Mon, 24 Mar 2025 18:38:10 +0100 (CET)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id F03ACA6E1DD
+	for <lists+live-patching@lfdr.de>; Mon, 24 Mar 2025 18:59:27 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 9863C1892FB6
-	for <lists+live-patching@lfdr.de>; Mon, 24 Mar 2025 17:36:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EE72616A67E
+	for <lists+live-patching@lfdr.de>; Mon, 24 Mar 2025 17:57:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E31AF266F0A;
-	Mon, 24 Mar 2025 17:33:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 603A125F7B1;
+	Mon, 24 Mar 2025 17:57:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TTLmt0U0"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IXi63hB5"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACE82266F01;
-	Mon, 24 Mar 2025 17:33:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B7D92627E9
+	for <live-patching@vger.kernel.org>; Mon, 24 Mar 2025 17:57:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742837590; cv=none; b=c1vRnO051NTBUxyru4cco7QfQ0vXjerm0ojkPxCg4URZW9nSg1iSyl7vcBTlsmqNaWpNwPfYoGezRkLoqH0C2XA2/SdhRMQu6Jt9zgv5ImAWRltFs3hz9zslVDFo7w3dQ4Qaj7uJaLO+dM87cEd0BfeSalk6KS09eq+veL/ESO8=
+	t=1742839061; cv=none; b=jIp2+4dRdGIkHq1EPxQph5OBT5qWnDn+WIlinuO26aZUC90Q84jQKH7M6thzQquCTLr2mbYlvilNgYKLI4m96x/PTHc8PlXn1YqHSqmifZFC449GajD9FjJRf2MZmV9/xW8vr+EnBUCuamrysiUlQjMiZJbi0q1HV/mWd91zpzo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742837590; c=relaxed/simple;
-	bh=6z1jVV/yKXBtpI1jJEON4mBcVHyI6frM0d76FlbA/Cc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=iPvkWdYZmedSlKljKtscit7VkqrGVns9WDhP/pbTx0R7hZwq4ovl+dannSa95Eat88VI27koedLoClZuf/SUOExkoy3SLPiIjngziPYucGgFQRyJO1lTOXDfrp9kjrYCxJ0/ed1pqyEJf1AnRvCtJrPkFZGHHZubxCsO5Nbh0Jg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TTLmt0U0; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3094EC4CEED;
-	Mon, 24 Mar 2025 17:33:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742837590;
-	bh=6z1jVV/yKXBtpI1jJEON4mBcVHyI6frM0d76FlbA/Cc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=TTLmt0U0lb/WjNY3npIyMTIsK0uZkYSq5v4j3ttcma+yWik+b8gfSyRnC0SudDq1c
-	 lleOlzWq4F814O3jZPPFKDz9Guw8uzqcYKThypwFesTCb9NX9TJ+gxECoA9JDx6mBn
-	 m57z8frYgyQv0rLXGwagCrbZo4JcPGK5EA9L5hbrpYJ45TX+THcOmoXIIiChrcFF62
-	 /Pr9wXdZbYfZcGliCKARwh4ycVJtUOTz1BPu8E8wI8dMTQm+AVlsLnLasBiC8Diq39
-	 fF4MV1ew7is8TOnR+Yod+WNklpqmS9YWh7lvrch5zKMavSn5YavlOEENonT8End3vs
-	 FdLiawokJYNvg==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Jeff Johnson <jeff.johnson@oss.qualcomm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
-	linux-next@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>,
-	Joe Lawrence <joe.lawrence@redhat.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 03/10] samples/livepatch: add module descriptions
-Date: Mon, 24 Mar 2025 18:32:28 +0100
-Message-Id: <20250324173242.1501003-3-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250324173242.1501003-1-arnd@kernel.org>
-References: <20250324173242.1501003-1-arnd@kernel.org>
+	s=arc-20240116; t=1742839061; c=relaxed/simple;
+	bh=uKrhZa9TW3hgEjMb3gVsZ+f3LyjPZCZFiDmGQiKyRZg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JF0ZQwH5zGj9bjPGUBmdHNcM5p0m5ORhoR2pMw+xdPjU45RI623m/qo7oZLBkRwWvJG8mB0lp8LOBHsxCBueRrT8NbWR8/o4p7X22aZHY1mvNTo0DIaigfn1REaxFlMVaQbYl5zRbf/7HBq4fiOAzgRsVPoqGxsLhTXpbULNrA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=IXi63hB5; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1742839058;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=E8407IqMrph474SSCXLwBIBGrVJHjy5HgFZdjY8ZpvE=;
+	b=IXi63hB5roB4t9U98RXjipdLD89PpIs23R5LYzwvgrSQ1MuM9if5Hi/+rgFE0BYLZ+5wTj
+	h+uKhKbThGXD3IZtoPgN+HVfG5aCnmnxoDE9GdZ/h9Q4C3s1I6nwS+4sMAMwUyuOSxM6s7
+	QcOY9zmKsCeVxdNko8fM66B6/WalOCw=
+Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-593-QATyeUKdPBSWPYj8GZGfUQ-1; Mon,
+ 24 Mar 2025 13:57:36 -0400
+X-MC-Unique: QATyeUKdPBSWPYj8GZGfUQ-1
+X-Mimecast-MFC-AGG-ID: QATyeUKdPBSWPYj8GZGfUQ_1742839055
+Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 3A9DF196D2CF;
+	Mon, 24 Mar 2025 17:57:35 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.81.75])
+	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 5D53219560AB;
+	Mon, 24 Mar 2025 17:57:33 +0000 (UTC)
+Date: Mon, 24 Mar 2025 13:57:30 -0400
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: Song Liu <song@kernel.org>
+Cc: live-patching@vger.kernel.org, jpoimboe@kernel.org,
+	kernel-team@meta.com, jikos@kernel.org, mbenes@suse.cz,
+	pmladek@suse.com
+Subject: Re: [PATCH v2] selftest/livepatch: Only run test-kprobe with
+ CONFIG_KPROBES_ON_FTRACE
+Message-ID: <Z+GdCmrrUjOWYqAo@redhat.com>
+References: <20250318181518.1055532-1-song@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250318181518.1055532-1-song@kernel.org>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, Mar 18, 2025 at 11:15:18AM -0700, Song Liu wrote:
+> CONFIG_KPROBES_ON_FTRACE is required for test-kprobe. Skip test-kprobe
+> when CONFIG_KPROBES_ON_FTRACE is not set. Since some kernel may not have
+> /proc/config.gz, grep for kprobe_ftrace_ops from /proc/kallsyms to check
+> whether CONFIG_KPROBES_ON_FTRACE is enabled.
+> 
+> Signed-off-by: Song Liu <song@kernel.org>
+> 
+> ---
+> 
+> Changes v1 => v2:
+> 1. Grep for kprobe_ftrace_ops in /proc/kallsyms, as some systems may not
+>    have /proc/config.gz
+> ---
+>  tools/testing/selftests/livepatch/test-kprobe.sh | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/livepatch/test-kprobe.sh b/tools/testing/selftests/livepatch/test-kprobe.sh
+> index 115065156016..e514391c5454 100755
+> --- a/tools/testing/selftests/livepatch/test-kprobe.sh
+> +++ b/tools/testing/selftests/livepatch/test-kprobe.sh
+> @@ -5,6 +5,8 @@
+>  
+>  . $(dirname $0)/functions.sh
+>  
+> +grep kprobe_ftrace_ops /proc/kallsyms || skip "test-kprobe requires CONFIG_KPROBES_ON_FTRACE"
+> +
+>  MOD_LIVEPATCH=test_klp_livepatch
+>  MOD_KPROBE=test_klp_kprobe
+>  
 
-Every module should have a description, so add one for each of these modules.
+Super minor nit (maybe Petr can tweak on merging): this grep (without
+-q) will dump the resulting search lines to the terminal while all other
+existing tests only show "TEST: description .... ok" lines they pass.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- samples/livepatch/livepatch-callbacks-busymod.c | 1 +
- samples/livepatch/livepatch-callbacks-demo.c    | 1 +
- samples/livepatch/livepatch-callbacks-mod.c     | 1 +
- samples/livepatch/livepatch-sample.c            | 1 +
- samples/livepatch/livepatch-shadow-fix1.c       | 1 +
- samples/livepatch/livepatch-shadow-fix2.c       | 1 +
- 6 files changed, 6 insertions(+)
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-diff --git a/samples/livepatch/livepatch-callbacks-busymod.c b/samples/livepatch/livepatch-callbacks-busymod.c
-index 69105596e72e..4d6030739fcb 100644
---- a/samples/livepatch/livepatch-callbacks-busymod.c
-+++ b/samples/livepatch/livepatch-callbacks-busymod.c
-@@ -56,4 +56,5 @@ static void livepatch_callbacks_mod_exit(void)
- 
- module_init(livepatch_callbacks_mod_init);
- module_exit(livepatch_callbacks_mod_exit);
-+MODULE_DESCRIPTION("Live patching demo for (un)patching callbacks");
- MODULE_LICENSE("GPL");
-diff --git a/samples/livepatch/livepatch-callbacks-demo.c b/samples/livepatch/livepatch-callbacks-demo.c
-index 11c3f4357812..9e69d9caed25 100644
---- a/samples/livepatch/livepatch-callbacks-demo.c
-+++ b/samples/livepatch/livepatch-callbacks-demo.c
-@@ -192,5 +192,6 @@ static void livepatch_callbacks_demo_exit(void)
- 
- module_init(livepatch_callbacks_demo_init);
- module_exit(livepatch_callbacks_demo_exit);
-+MODULE_DESCRIPTION("Live patching demo for (un)patching callbacks");
- MODULE_LICENSE("GPL");
- MODULE_INFO(livepatch, "Y");
-diff --git a/samples/livepatch/livepatch-callbacks-mod.c b/samples/livepatch/livepatch-callbacks-mod.c
-index 2a074f422a51..d1851b471ad9 100644
---- a/samples/livepatch/livepatch-callbacks-mod.c
-+++ b/samples/livepatch/livepatch-callbacks-mod.c
-@@ -38,4 +38,5 @@ static void livepatch_callbacks_mod_exit(void)
- 
- module_init(livepatch_callbacks_mod_init);
- module_exit(livepatch_callbacks_mod_exit);
-+MODULE_DESCRIPTION("Live patching demo for (un)patching callbacks, support module");
- MODULE_LICENSE("GPL");
-diff --git a/samples/livepatch/livepatch-sample.c b/samples/livepatch/livepatch-sample.c
-index cd76d7ebe598..5263a2f31c48 100644
---- a/samples/livepatch/livepatch-sample.c
-+++ b/samples/livepatch/livepatch-sample.c
-@@ -66,5 +66,6 @@ static void livepatch_exit(void)
- 
- module_init(livepatch_init);
- module_exit(livepatch_exit);
-+MODULE_DESCRIPTION("Kernel Live Patching Sample Module");
- MODULE_LICENSE("GPL");
- MODULE_INFO(livepatch, "Y");
-diff --git a/samples/livepatch/livepatch-shadow-fix1.c b/samples/livepatch/livepatch-shadow-fix1.c
-index f3f153895d6c..cbf68ca40097 100644
---- a/samples/livepatch/livepatch-shadow-fix1.c
-+++ b/samples/livepatch/livepatch-shadow-fix1.c
-@@ -168,5 +168,6 @@ static void livepatch_shadow_fix1_exit(void)
- 
- module_init(livepatch_shadow_fix1_init);
- module_exit(livepatch_shadow_fix1_exit);
-+MODULE_DESCRIPTION("Live patching demo for shadow variables");
- MODULE_LICENSE("GPL");
- MODULE_INFO(livepatch, "Y");
-diff --git a/samples/livepatch/livepatch-shadow-fix2.c b/samples/livepatch/livepatch-shadow-fix2.c
-index 361046a4f10c..b99122cb221f 100644
---- a/samples/livepatch/livepatch-shadow-fix2.c
-+++ b/samples/livepatch/livepatch-shadow-fix2.c
-@@ -128,5 +128,6 @@ static void livepatch_shadow_fix2_exit(void)
- 
- module_init(livepatch_shadow_fix2_init);
- module_exit(livepatch_shadow_fix2_exit);
-+MODULE_DESCRIPTION("Live patching demo for shadow variables");
- MODULE_LICENSE("GPL");
- MODULE_INFO(livepatch, "Y");
--- 
-2.39.5
+-- Joe
 
 
