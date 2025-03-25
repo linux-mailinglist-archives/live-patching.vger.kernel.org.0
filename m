@@ -1,80 +1,87 @@
-Return-Path: <live-patching+bounces-1335-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1336-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7594AA7041C
-	for <lists+live-patching@lfdr.de>; Tue, 25 Mar 2025 15:46:32 +0100 (CET)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 28515A70480
+	for <lists+live-patching@lfdr.de>; Tue, 25 Mar 2025 16:03:16 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D8D9B16AB4F
-	for <lists+live-patching@lfdr.de>; Tue, 25 Mar 2025 14:46:31 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id CD1D9188B20A
+	for <lists+live-patching@lfdr.de>; Tue, 25 Mar 2025 15:03:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD60825B66B;
-	Tue, 25 Mar 2025 14:46:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6F36256C7A;
+	Tue, 25 Mar 2025 15:03:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lzHL+9nt"
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Y97GqSXP"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5281925A350;
-	Tue, 25 Mar 2025 14:46:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8626E208AD
+	for <live-patching@vger.kernel.org>; Tue, 25 Mar 2025 15:03:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742913979; cv=none; b=AeRHW/pOha+oP7t5l8+MJtzCFYgLCkXG7lciQUrF2nkiaUuohubJ1vwZsWs2HwvKPivvMOd5Uo77MSSD9GmGNHuWsaWoOGhiF2mSrooOguTGYzDM5E7NG/tHP2MynORo/YZH0gKLvjCGRqv9ZHuArbxo2W0RKa07llUXro1FEJg=
+	t=1742914990; cv=none; b=BJF3mttRq2yOr5KE4ZkAzxSRjty1H+rs0T1EalfUmfwW1eueOshEtZY5EDr4M0m22gJQki5evLe+RgJKG8XBX4BfeySiGp2+y7cvSts5UIDiKyG6yqN0V5eYaLTAc9tXBcCCgvgirk/5VwD1vGR/DF5ouVfvsQ2fG7BIJA6cVso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742913979; c=relaxed/simple;
-	bh=7HO4LfHgdUMbfSOwKtIo/xttp3NoZ8ybprysTSQ9FO0=;
+	s=arc-20240116; t=1742914990; c=relaxed/simple;
+	bh=7A7ZDiOqHnUbfvAS9wZIZIbSODMZmjd4GPAjhIJ24S4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aZizjxfd71XoaZ1ei84929yG7AHClOTzAKO4iNOIoCpFb9IFWHj59bTkKxTHH5lcEvyVM5mjuplkLQXRSd1OApc3V0e7zufTMQzdFrcMt7LzJlId8jj4tB/fQQvGuwcgvQOCkYuBFQ42NPiLXpo3Zh5CHYXYvpXXOIQW66BNG/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lzHL+9nt; arc=none smtp.client-ip=209.85.214.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-224100e9a5cso112536645ad.2;
-        Tue, 25 Mar 2025 07:46:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1742913976; x=1743518776; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7HO4LfHgdUMbfSOwKtIo/xttp3NoZ8ybprysTSQ9FO0=;
-        b=lzHL+9ntxXGwoWbzAR/R/WPEk/zdTKNxx3IQeN/s5dKVclD4RZ918VqbC0/B6WGxGJ
-         9p381WSSqXWUZPhLR0+t04Dbi/LI8UtY/xsuCvPO6HcXLtu0VZusYxE2lxQMNIATTzrz
-         hDNKkPekopNvE464RslKGcbCVSlGNGsB6Uk8UnqYHCpc/CAEVzMUuaV8s2Dnkk2zNwah
-         fjzJCac/xxsczQrTfUubb3FDcMf3wMwDafRHx28/dPNltvilqBlBQkAQqMN05MuMWNk2
-         246n8IdjY4b7r8RR4kGNWiBrQp9X58dRHIkVfVwY2nEQB72sNM4H4ENFrD9LPU2lsqag
-         fj4A==
+	 In-Reply-To:Content-Type; b=VkW9ypXRh0P8Kza0dZxXdAK/SmGdXNyX+A18aZU50AsfYY1h2pdVepxn+aF4B4cz0ncT+SAt6DxUoeQuRp5AM+9lZ19vlL42S6yy5f8k75tylLeTSl+Gsqn3qbHpx+YvCEvJ1eT0b3YAMWRMBgnizQgEyullffiWL9iYcboVN4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Y97GqSXP; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52PDG7fZ002939
+	for <live-patching@vger.kernel.org>; Tue, 25 Mar 2025 15:03:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	7A7ZDiOqHnUbfvAS9wZIZIbSODMZmjd4GPAjhIJ24S4=; b=Y97GqSXPdHOVcFGc
+	0ivk+KFR4Ltol1b4CCpfZF3wLEVhwNUrenO/s5RdyH9G0ESURNCgpO+744YI4c/b
+	1IWILmWtm1kMKeCVW4te/1m/uxOfHlIJ6sPwJKAF8VJGSrlwW2WIvwxV3uBhsn5S
+	fMiPEm82erfCBSgK1aLt+7JYIAQQAcZ+RUp+UNAtKdncbSs6LAqXL3qkgAjR4Qug
+	WHISKlpYZqtW90PSRsDrRMMewxgdUP1aU23FC3J4+qOAGlcrL/ArGr06oh0EKeHc
+	Cv/KQIIY15Ryk+MWor0yRdGMHwdpRjDq10xevjmRxku5twq7ZPkP09U0DwZ7JRt6
+	Q0wESQ==
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45kmd4hyu3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <live-patching@vger.kernel.org>; Tue, 25 Mar 2025 15:03:08 +0000 (GMT)
+Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-22403329f9eso82346565ad.3
+        for <live-patching@vger.kernel.org>; Tue, 25 Mar 2025 08:03:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742913976; x=1743518776;
-        h=content-transfer-encoding:in-reply-to:from:content-language
+        d=1e100.net; s=20230601; t=1742914987; x=1743519787;
+        h=content-transfer-encoding:in-reply-to:content-language:from
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7HO4LfHgdUMbfSOwKtIo/xttp3NoZ8ybprysTSQ9FO0=;
-        b=wJCHB3mKqPFoRMbImYPp7v5FmrSavyOf7VZW16Fi7JEVdj7yqHTGl2jCQVVyCoKyMS
-         ZOh0MlXnygoA7GC3DobchqYyTbZuRMX9h5R5XFedEoSqsDZuzLYvGyhkSmnF+v/q9V6b
-         veP/+VL4VnaXXBAAiW2HJCv/XtKiyZfZnJvqdzUNoH1+NqeA/O3Rv+SSzs6cjvZhZphW
-         TYAj4oiZcNacUIDhWr5bvRKmF+9ARu8HwjSRvLSKeRaDFJE5kQC42wTtDVcAS3icgYnu
-         4+Dk3c9279NaFRu4fu9mn7JV+M0L/+gabNe3IG4KaWbhErhiReh9GgWl+izY4+CU49GL
-         v2Mw==
-X-Forwarded-Encrypted: i=1; AJvYcCUWHub7LtDun/qEdse1O3fwjJmy9EkLhpd+jktP4JXvVVNit5FYRw6FO4wHbAnbcafXjQcSCwYw37pUElIPDZim@vger.kernel.org, AJvYcCUmqyvDVBB8JRX+4/HJvmXdxoyMupJRhsDUkQEKCvSpcFFW2B/pQY15AVV+8GmnBzvWHQLFomwUhGHcy5o/cA==@vger.kernel.org, AJvYcCWwXkr/Sbgn+ouO3QadCWr9W5CxyJ69F6FFEObL6cyLsPzIvAKsLmXjh4U9ISiktb2uCrqeyoRViDevYLg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz1Yx9VOsP1OileHbAui0tb/3eeMzPFFdkEUl52HlgZfUH3n1kK
-	nykvEiJurkUlkdArmFRBdg1VRfdKlquNdesPAexsO4CL62e4+CHk
-X-Gm-Gg: ASbGncvawLca11SO0W94Y6mAuRBfHUD5cgrUPKWouFRDq9hqnZMe6k8e2IWGLtLnMzE
-	ejFDXTWuPhhz1NGBVZVR3KyrBuy7G4fgM6Zwlk/oIJOEQ94lfYEfevwU1fVCoy7xrsd+f13l2Vg
-	S6agYuE5Fq5c/Fh75r1LNjG97B01E5mfHthFxclyKYNw2fmTLYo76XMRykg6UW5OYbmf4vd+t+6
-	7+zYCdRHLOMg7HRTYH6U/PS4aF4/q+hZbBNFvnIeVX+/AxPWPjMunzqM+pvXYb8T+siN3cq/cIi
-	LpZ29/SZO2mAxpK+YGLoZu2RJdkqrbrWZCt6uhBwpJ2UuliMLFndBQUnMIPZLDkkVqiiqPjzTxs
-	oQVOr/3Vjp+41Tsnhsz/i
-X-Google-Smtp-Source: AGHT+IFa2XSNVkCxARtKu+IwYbdQXmTFoM2Q3riEQ3/rLLdNaaJXokPqFNf3Ss3lT7dT44CZtb5WLA==
-X-Received: by 2002:a17:902:ecd0:b0:223:3b76:4e22 with SMTP id d9443c01a7336-22780c535demr211768695ad.6.1742913976347;
-        Tue, 25 Mar 2025 07:46:16 -0700 (PDT)
-Received: from ?IPV6:2804:d57:4e50:a700:f33d:65d1:e22e:109b? ([2804:d57:4e50:a700:f33d:65d1:e22e:109b])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-227811b2b1fsm90851765ad.144.2025.03.25.07.46.12
+        bh=7A7ZDiOqHnUbfvAS9wZIZIbSODMZmjd4GPAjhIJ24S4=;
+        b=gEXlNG6aAH9SQ5MN/aRvPer17kFSItfNGjHlN2D5lAbLXlo5sepg1NqjSk/QosNlcc
+         7Q0wHOtKgu2QfcKpfWjASoHGFNMRtzBpgh9kKIRTNg7irwd+p+BDZ+Pt573fqjJ0D7Uj
+         NAMlhbWFdJfFdaKQo4Gtc8a59yXfeQ6vo56IMaVdhBnzQLijLsBeJWcRp8zFNQ0NRNOW
+         98+102lQ1dRuKHyuJIB+g2Rj2eTFE/3omD6YWjFjrrtRmamlEimdAgY6SjsO255peli+
+         kkzu65qT/xUSDfAE4pREGdifrZ7p0kGbVHfPxfFIKmTmqjrfqB6kOZAalL4odrlQgoVq
+         5dDw==
+X-Forwarded-Encrypted: i=1; AJvYcCUzAKlO1BJvzKu9wOA53bTdI0pxX4AbguhWBtk8RtM/l+R8V+4e7vYmdziKSIUe2fNEj18WRnOJo/Zl4GM6@vger.kernel.org
+X-Gm-Message-State: AOJu0YyrR2vh/dA6ZQf+/EwI6Hd1QXD8FTwyQTBXpQwkeoL6HgGQnP4l
+	jWHlYljldBj1Ee8VrMfwPlzc7BhZIx/jCztZj9MsqYurn4a+Q+YRjQgR+/4BCbScSEkD+wQCMuo
+	GoQwFiAKeso5GN/Lc9VOGQdY5A0P/64zSgPS/FMG0gJNCfOffhB5yHftJG/W1XovQnQsmanWB
+X-Gm-Gg: ASbGnctyWCypOuoF2BZW54OzZAg0VWyb2y1AXiM0kuUbXpP9CnCkDWEJLahtcH4QhXr
+	SZggPP2oHHCrEpCM0o2t4qzVBZ2YOj3E3Jl3LEI78RmNOYTg5YSPCBgRcnq1wH6jNnCS+ukOAnc
+	XE5wKsBkm+6J5GIVaF9SS2JIM6IWN0qMmeOTnHmkOZh9saxrJApb4Aq1vDnyi0sKPW3OR0pSaxC
+	VYtGZxO4f/dNiwDmWAp8qcfX+ON2veScNw7g7m8v8AKGyN6I2NlGmd8ZLwHAzqbAtKuoQUKTTxn
+	tEug6crK5HAJHqPHF3wRDYKFdkq3RgieaoPB4LNNeJYSRNLKUlHUKDAZByRXtqaeZlmw8Yc=
+X-Received: by 2002:a17:902:f54a:b0:220:cb1a:da5 with SMTP id d9443c01a7336-22780e1a937mr232137255ad.40.1742914987429;
+        Tue, 25 Mar 2025 08:03:07 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFj0G17oKrsRqQ34Kky25D17MpTcUUHpiNy95lIxkySWp/0bWIokIF4DIpzUQhqilnLyTxDeg==
+X-Received: by 2002:a17:902:f54a:b0:220:cb1a:da5 with SMTP id d9443c01a7336-22780e1a937mr232136605ad.40.1742914986741;
+        Tue, 25 Mar 2025 08:03:06 -0700 (PDT)
+Received: from [10.227.110.203] (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-227811d9f1bsm91378175ad.166.2025.03.25.08.03.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Mar 2025 07:46:15 -0700 (PDT)
-Message-ID: <4602769a-6b5b-47f3-9505-d528ef2ae8de@gmail.com>
-Date: Tue, 25 Mar 2025 11:46:11 -0300
+        Tue, 25 Mar 2025 08:03:06 -0700 (PDT)
+Message-ID: <978e72a6-0da4-4eb2-9c18-5b42db543160@oss.qualcomm.com>
+Date: Tue, 25 Mar 2025 08:03:04 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -82,45 +89,44 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] selftests: livepatch: test if ftrace can trace a
- livepatched function
-To: Petr Mladek <pmladek@suse.com>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>,
- Shuah Khan <shuah@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>,
- live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-kernel@vger.kernel.org, felipe_life@live.com
-References: <20250324-ftrace-sftest-livepatch-v3-0-d9d7cc386c75@gmail.com>
- <Z-K3S4G5BtdP1Q-H@pathway.suse.cz>
+Subject: Re: [PATCH 03/10] samples/livepatch: add module descriptions
+To: Petr Mladek <pmladek@suse.com>, Arnd Bergmann <arnd@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Josh Poimboeuf
+ <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, Joe Lawrence <joe.lawrence@redhat.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Easwar Hariharan <eahariha@linux.microsoft.com>,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20250324173242.1501003-1-arnd@kernel.org>
+ <20250324173242.1501003-3-arnd@kernel.org> <Z-J--iv8LzgArWAX@pathway.suse.cz>
+From: Jeff Johnson <jeff.johnson@oss.qualcomm.com>
 Content-Language: en-US
-From: Filipe Xavier <felipeaggger@gmail.com>
-In-Reply-To: <Z-K3S4G5BtdP1Q-H@pathway.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <Z-J--iv8LzgArWAX@pathway.suse.cz>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: aRSdhC2mqz7aWc4qkH08ykT6ltxffYW7
+X-Proofpoint-GUID: aRSdhC2mqz7aWc4qkH08ykT6ltxffYW7
+X-Authority-Analysis: v=2.4 cv=QLZoRhLL c=1 sm=1 tr=0 ts=67e2c5ac cx=c_pps a=IZJwPbhc+fLeJZngyXXI0A==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=IkcTkHD0fZMA:10 a=Vs1iUdzkB0EA:10 a=qSXTfUft287E2HETxpAA:9 a=QEXdDO2ut3YA:10 a=uG9DUKGECoFWVXl0Dc02:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-25_06,2025-03-25_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ priorityscore=1501 adultscore=0 malwarescore=0 phishscore=0
+ mlxlogscore=899 mlxscore=0 clxscore=1011 lowpriorityscore=0 suspectscore=0
+ bulkscore=0 spamscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2503250106
 
-On 3/25/25 11:01 AM, Petr Mladek wrote:
+On 3/25/2025 3:01 AM, Petr Mladek wrote:
+> Arnd, should I push this via the livepatch tree or would you prefer to push
+> the entire patchset together? Both ways work for me.
 
-> On Mon 2025-03-24 19:50:17, Filipe Xavier wrote:
->> This patchset add ftrace helpers functions and
->> add a new test makes sure that ftrace can trace
->> a function that was introduced by a livepatch.
->>
->> Signed-off-by: Filipe Xavier <felipeaggger@gmail.com>
->> Acked-by: Miroslav Benes <mbenes@suse.cz>
-> JFYI, the patchset has been committed into livepatching.git,
-> branch for-6.15/ftrace-test.
->
-> I had a dilemma whether to push it for 6.15 or postpone it.
-> But it is a selftest and quite trivial. And it has been
-> reviewed by several people. And it seems to work well
-> so I think that we could push it for 6.15.
+My past experience was to let individual maintainers take the ones that apply
+to their trees, and then Andrew can pick up the stragglers.
 
-It sounds good to me, thank you all very much for the support.
-
-Cheers,
-
-Filipe
-
-> Best Regards,
-> Petr
+/jeff
 
