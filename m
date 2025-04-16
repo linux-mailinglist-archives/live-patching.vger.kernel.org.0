@@ -1,144 +1,258 @@
-Return-Path: <live-patching+bounces-1356-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1357-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6B21AA8478F
-	for <lists+live-patching@lfdr.de>; Thu, 10 Apr 2025 17:17:38 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8B92CA90C3D
+	for <lists+live-patching@lfdr.de>; Wed, 16 Apr 2025 21:24:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ACC6F8A3C65
-	for <lists+live-patching@lfdr.de>; Thu, 10 Apr 2025 15:17:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 96151460767
+	for <lists+live-patching@lfdr.de>; Wed, 16 Apr 2025 19:24:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EFB811E5B93;
-	Thu, 10 Apr 2025 15:17:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 898C7224B0F;
+	Wed, 16 Apr 2025 19:24:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Y3MQp1cb"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="tqq+QE+1"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15A1314884C
-	for <live-patching@vger.kernel.org>; Thu, 10 Apr 2025 15:17:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCA1A2248B0;
+	Wed, 16 Apr 2025 19:24:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744298249; cv=none; b=YpY9WdfAm6Nh9k0qqaTB5j97JlRDHLLT0lUcPNa87qGAgf8mOuTMqNX8KF7TR4n7y1jkyGBM4xvZP6F1jqGCynhakzGDsISRvjrXMtIu8ZfY1kqHiIDgInQ2tEHeReNgw18PSNL62opO2nxDANPacG0DpH36clQzS1ujVw/5xpI=
+	t=1744831490; cv=none; b=YVIrBuuuT/byfdrx4VZoJUiSj/LlgSzBmXUIdf/qU99O1jQWisWUcUVtMeQa2mdAF7h6xARXu1PxW1shsar7JNF23uoaEGec9sw9Bg6giZja5eHTgv4pz0ulvHchmJo4+27n6kW1Jr/EPO/I0u5YC/fixGQmxnVn2VV52RFlyas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744298249; c=relaxed/simple;
-	bh=hLk6XTKcmMABoUGjVeKBYfaEJiteVf593gjpM78Fd2s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oMkjlBknbrKBwByYiuozz+ZQaxPkOGutsE9lj6V2I89P5fyeHwn7amk8/FjAkQSmWmBwtkGIFdt9zX3lVoLQqDPUZ/v3n4PgJZQQzaAY8R9gNVF3c6q1AG0BagDK0RDodxSiA31XN4jdEiF/dAYaw2e1uQX5eLaY4W+y9+VWOTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Y3MQp1cb; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4394a823036so9686295e9.0
-        for <live-patching@vger.kernel.org>; Thu, 10 Apr 2025 08:17:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1744298245; x=1744903045; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=f6cj/et3tJLOi8nZABzE1bZ8So47tTX91IayHIgQTo4=;
-        b=Y3MQp1cb2Mc+wnp9DYt3+gTXVATPrVfdmgxgdIBd6HnHKn81edOxIdLyQBw9XkI/MA
-         X5Z6jp0hR3/7UtliArk2HJPIFqFnjoCdWyBK+ATL7VhItipOQygwcB9/HNdC20q8iDV4
-         nhTReiEPieyX/mjWs3c8Nyc/sgqP7UiY53VwT0xgMzyzlWrjuXrZOBELZPGzr/MFf2AX
-         QeOga/oPDJSFAWZeM9Al1TjE3dr2thJU3Fpl0z3vxfSR7pDIwGuCvBaV93pWJgtgSTjr
-         EnAs3ULgxXvJvoBzyF3X9lcrl9hvjQ0bjP19H3kww2p0vu/zYCSwch+WecbKIyn4na8Z
-         YMXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744298245; x=1744903045;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f6cj/et3tJLOi8nZABzE1bZ8So47tTX91IayHIgQTo4=;
-        b=dwflGGuPkl7emdn17XX2es16bbxQgKJ/EofqGVy/ZTGc4FDg0k120LNIKbVSKvWKxA
-         sviAaIW2EOhXQ6iTrQdXrMym73DOwVd9pjmoKVYi124suI8Ns+yxVcf3y/t21hS5zdmF
-         Op+Q4s/tE7kCj7bsWOhuvBAHhdEyeocMPZJChHptEddKsrUNGIDZqh7HqS4kcaVOGZIl
-         HLreNSnr8lWUNrCBPNHPYecpDPoyBa9k2Ptg2Kt8xoYThIqbxZCCx1BMkYtLANo8rKt9
-         UJxpvtjujyLuac97aIAmp7d8Os276bnUFDIEt1AXWW9qQhIP53tbsIWOQ9l4fzIGJv5p
-         7Rlw==
-X-Forwarded-Encrypted: i=1; AJvYcCV5KbrsMVzZR7R36acCihIcP0B9Aehv3GR99tA901m18kWfPZqnRDiny0cHC0BftVyVRmyrpZ8YQ6bTg+ak@vger.kernel.org
-X-Gm-Message-State: AOJu0YyGSMovgX7XfgXcSJEPua2EZGIsrge32+gUwsKzbuajsOxWvKe5
-	Ev44erpVmZmm1TkwHL3AI8bIlLZcEk4l0y+XC+TTGgt0bVftcgg1IYMCfVOI0xI=
-X-Gm-Gg: ASbGncvOHflgCh5YJpTa8jwUmT8o6SrIk5+LD4GpwXeBBeinjNzeZPIOQsUX0qs+OmF
-	xm4+ZR4rQFEqVRVZo54pNvtMGRBekBDuRlWtIx49wcjir9xFFNkyMw+n0S/I6CMmWvzfZMO0aZj
-	4zVmTiuXwkNQx3kSgi0QSAIOR3NuJSOGbazNVgBzlVUWd6WUeJioS5ORUk3wIvCGxw3r2a28Cx2
-	MvzE4W8Qf5wTOvz/3xw7P4BECCH+oL4/jDo+gpSO+5gSvTf/XEMZ0LM4wIDAivkP2stXv4yp/c6
-	uq1QbznQZEyNbqpQR5xBwFoqZoHeTo3U+QbwEkukxDKpBjKWhs5xbw==
-X-Google-Smtp-Source: AGHT+IG+NzZVvrmsCa4ZlEdd9DFX82PR77L8xEbBogXJLZfgAsJhybLCQSoboxlSlXUt/tEoUyKrwA==
-X-Received: by 2002:a05:600c:5023:b0:43c:f87c:24d3 with SMTP id 5b1f17b1804b1-43f2d9529aemr28961245e9.20.1744298245314;
-        Thu, 10 Apr 2025 08:17:25 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43f20625eeesm58156015e9.11.2025.04.10.08.17.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Apr 2025 08:17:24 -0700 (PDT)
-Date: Thu, 10 Apr 2025 17:17:23 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Song Liu <song@kernel.org>, mark.rutland@arm.com
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org,
-	indu.bhagat@oracle.com, puranjay@kernel.org, wnliu@google.com,
-	irogers@google.com, joe.lawrence@redhat.com, jpoimboe@kernel.org,
-	peterz@infradead.org, roman.gushchin@linux.dev, rostedt@goodmis.org,
-	will@kernel.org, kernel-team@meta.com
-Subject: Re: [PATCH v3 0/2] arm64: livepatch: Enable livepatch without sframe
-Message-ID: <Z_fhAyzPLNtPf5fG@pathway.suse.cz>
-References: <20250320171559.3423224-1-song@kernel.org>
+	s=arc-20240116; t=1744831490; c=relaxed/simple;
+	bh=xFZVWYzhCLeAtFnklnvSHAQjs0ozX8nCpx2s2TD445U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MSakIlWI2Tt3wlij55LKsqSg7BKTg5UVVfYyH9DYmwCwpGqeVtQVkG9UsfPCt2DeFiY0w5lXCPoKPyBYMX3slqODeTcNgb282VO+8aG3eeTHu53W0CmRqw/KmKhA6aIu1QDEBY+gZhx7N9jjV7cZvMR0FyPHtcwlOT7Y2VTA33Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=tqq+QE+1; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53GJAPJG028081;
+	Wed, 16 Apr 2025 19:24:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=ESx9ZW
+	YVOviol+gu5GvYE6oR3Czemj4YTpdoVBjfivQ=; b=tqq+QE+1bs1NNEGlMeSu3z
+	io3UDLsM8JzWosI5jAPs9RmMYH6RWPpQaLCK/U6koMFhxX/VnyAPrI1CofeCwCpt
+	N3fg5iNEA19wkR0MWEk7wIDePmGRxUiZDhONI1cxWGthRZP8LD9/a9DpgyD8laOl
+	Q7Z4II0vHIS8ulJZwjeo5tm1r69TrC8ioR9po3UEEifdrQ8/NoZI5QQukwxEUjmm
+	eHmoS4A0qaSDfKlqaEOHpx3Q9VN4iYyBvEEolZ2k0PlKbrZwg5kzsyyTUTi23O8B
+	aD9mzlnQlsrwniMNxhEBk8Q1XJjQRBx7zN2SvK1OLnwDdTbKQBHFIqmsHR7vWlxA
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 461ykt5hnv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 16 Apr 2025 19:24:13 +0000 (GMT)
+Received: from m0360072.ppops.net (m0360072.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 53GJN91l017855;
+	Wed, 16 Apr 2025 19:24:12 GMT
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 461ykt5hnq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 16 Apr 2025 19:24:12 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 53GIQxdf017204;
+	Wed, 16 Apr 2025 19:24:11 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 46040m1u6u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 16 Apr 2025 19:24:11 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 53GJO7tr36635100
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 16 Apr 2025 19:24:07 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B519920043;
+	Wed, 16 Apr 2025 19:24:07 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id F0B4E20040;
+	Wed, 16 Apr 2025 19:24:02 +0000 (GMT)
+Received: from [9.43.31.13] (unknown [9.43.31.13])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 16 Apr 2025 19:24:02 +0000 (GMT)
+Message-ID: <796f0cc9-a506-48e4-8c0e-f16e5af74a59@linux.ibm.com>
+Date: Thu, 17 Apr 2025 00:54:01 +0530
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250320171559.3423224-1-song@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [BUG?] ppc64le: fentry BPF not triggered after live patch (v6.14)
+To: Viktor Malik <vmalik@redhat.com>, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        "Naveen N. Rao" <naveen@kernel.org>, bpf@vger.kernel.org
+Cc: Michael Ellerman <mpe@ellerman.id.au>,
+        Mark Rutland
+ <mark.rutland@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Vishal Chourasia <vishalc@linux.ibm.com>,
+        Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org
+References: <rwmwrvvtg3pd7qrnt3of6dideioohwhsplancoc2gdrjran7bg@j5tqng6loymr>
+ <1aec4a9a-a30b-43fd-b303-7a351caeccb7@redhat.com>
+Content-Language: en-US
+From: Hari Bathini <hbathini@linux.ibm.com>
+In-Reply-To: <1aec4a9a-a30b-43fd-b303-7a351caeccb7@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: JJAZFXP6kaIp9kJeQ6dHn81nUA9Q_RDO
+X-Proofpoint-ORIG-GUID: BNinUJpqI94Ol0cDOhk9_8_wuVqysaFZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-16_07,2025-04-15_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ suspectscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0 adultscore=0
+ priorityscore=1501 phishscore=0 mlxlogscore=999 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502280000 definitions=main-2504160155
 
-On Thu 2025-03-20 10:15:57, Song Liu wrote:
-> There are recent efforts to enable livepatch for arm64, with sframe [1] or
-> without sframe [2]. This set tries to enable livepatch without sframe. Some
-> of the code, however, are from [1].
-> 
-> Although the sframe implementation is more promising in longer term, it
-> suffers from the following issues:
-> 
->   1. sframe is not yet supported in llvm;
->   2. There is still bug in binutil [3], so that we cannot yet use sframe
->      with gcc;
->   3. sframe unwinder hasn't been fully verified in the kernel.
-> 
-> On the other hand, arm64 processors have become more and more important in
-> the data center world. Therefore, it is getting critical to support
-> livepatching of arm64 kernels.
-> 
-> With recent change in arm64 unwinder [4], it is possible to reliably
-> livepatch arm64 kernels without sframe. This is because we do not need
-> arch_stack_walk_reliable() to get reliable stack trace in all scenarios.
-> Instead, we only need arch_stack_walk_reliable() to detect when the
-> stack trace is not reliable, then the livepatch logic can retry the patch
-> transition at a later time.
-> 
-> Given the increasing need of livepatching, and relatively long time before
-> sframe is fully ready (for both gcc and clang), we would like to enable
-> livepatch without sframe.
-> 
-> Thanks!
-> 
-> [1] https://lore.kernel.org/live-patching/20250127213310.2496133-1-wnliu@google.com/
-> [2] https://lore.kernel.org/live-patching/20250129232936.1795412-1-song@kernel.org/
-> [3] https://sourceware.org/bugzilla/show_bug.cgi?id=32589
-> [4] https://lore.kernel.org/linux-arm-kernel/20241017092538.1859841-1-mark.rutland@arm.com/
-> 
-> Changes v2 => v3:
-> 1. Remove a redundant check for -ENOENT. (Josh Poimboeuf)
-> 2. Add Tested-by and Acked-by on v1. (I forgot to add them in v2.)
 
-The approach and both patches look reasonable:
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+On 07/04/25 2:12 pm, Viktor Malik wrote:
+> On 3/31/25 15:19, Shung-Hsi Yu wrote:
+>> Hi all,
+>>
+>> On ppc64le (v6.14, kernel config attached), I've observed that fentry
+>> BPF programs stop being invoked after the target kernel function is live
+>> patched. This occurs regardless of whether the BPF program was attached
+>> before or after the live patch. I believe fentry/fprobe on ppc64le is
+>> added with [1].
+>>
+>> Steps to reproduce on ppc64le:
+>> - Use bpftrace (v0.10.0+) to attach a BPF program to cmdline_proc_show
+>>    with fentry (kfunc is the older name bpftrace used for fentry, used
+>>    here for max compatability)
+>>
+>>      bpftrace -e 'kfunc:cmdline_proc_show { printf("%lld: cmdline_proc_show() called by %s\n", nsecs(), comm) }'
+>>
+>> - Run `cat /proc/cmdline` and observe bpftrace output
+>>
+>> - Load samples/livepatch/livepatch-sample.ko
+>>
+>> - Run `cat /proc/cmdline` again. Observe "this has been live patched" in
+>>    output, but no new bpftrace output.
+>>
+>> Note: once the live patching module is disabled through the sysfs interface
+>> the BPF program invocation is restored.
+>>
+>> Is this the expected interaction between fentry BPF and live patching?
+>> On x86_64 it does _not_ happen, so I'd guess the behavior on ppc64le is
+>> unintended. Any insights appreciated.
+> 
+> I'm not sure if this is related but I found out that when a kernel is
+> compiled with KASAN=y (full config attached), the above steps without
+> the bpftrace part lead to a kernel panic upon running the second `cat
+> /proc/cmdline` command (the livepatched one).
+> 
+> Here's the relevant part of the kdump:
+> 
+> [  457.405298] BUG: Unable to handle kernel data access on write at 0xc0000000000f9078
+> [  457.405320] Faulting instruction address: 0xc0000000018ff958
+> [  457.405328] Oops: Kernel access of bad area, sig: 11 [#1]
+> [  457.405336] LE PAGE_SIZE=64K MMU=Hash  SMP NR_CPUS=8192 NUMA pSeries
+> [  457.405347] Modules linked in: livepatch_sample(K) bonding tls rfkill vmx_crypto ibmveth pseries_rng sg fuse loop nfnetlink vsock_loopback vmw_vsock_virtio_transport_common vsock xfs sd_mod ibmvscsi scsi_transport_srp dm_mirror dm_region_hash dm_log dm_mod
+> [  457.405410] CPU: 6 UID: 0 PID: 5141 Comm: cat Kdump: loaded Tainted: G              K     6.14.0+ #9 VOLUNTARY
+> [  457.405424] Tainted: [K]=LIVEPATCH
+> [  457.405430] Hardware name: IBM,9009-22A POWER9 (architected) 0x4e0202 0xf000005 of:IBM,FW910.00 (VL910_062) hv:phyp pSeries
+> [  457.405440] NIP:  c0000000018ff958 LR: c0000000018ff930 CTR: c0000000009c0790
+> [  457.405449] REGS: c00000005f2e7790 TRAP: 0300   Tainted: G              K      (6.14.0+)
+> [  457.405459] MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 2822880b  XER: 20040000
+> [  457.405484] CFAR: c0000000008addc0 DAR: c0000000000f9078 DSISR: 0a000000 IRQMASK: 1
+> GPR00: c0000000018f2584 c00000005f2e7a30 c00000000280a900 c000000017ffa488
+> GPR04: 0000000000000008 0000000000000000 c0000000018f24fc 000000000000000d
+> GPR08: fffffffffffe0000 000000000000000d 0000000000000000 0000000000008000
+> GPR12: c0000000009c0790 c000000017ffa480 c00000005f2e7c78 c0000000000f9070
+> GPR16: c00000005f2e7c90 0000000000000000 0000000000000000 0000000000000000
+> GPR20: 0000000000000000 c00000005f3efa80 c00000005f2e7c60 c00000005f2e7c88
+> GPR24: c00000005f2e7c60 0000000000000001 c0000000000f9078 0000000000000000
+> GPR28: 00007fff97960000 c000000017ffa480 0000000000000000 c0000000000f9078
+> [  457.405605] NIP [c0000000018ff958] _raw_spin_lock_irqsave+0x68/0x110
+> [  457.405619] LR [c0000000018ff930] _raw_spin_lock_irqsave+0x40/0x110
+> [  457.405630] Call Trace:
+> [  457.405635] [c00000005f2e7a30] [c000000000941804] check_heap_object+0x34/0x390 (unreliable)
+> [  457.405651] [c00000005f2e7a70] [c0000000018f2584] __mutex_unlock_slowpath.isra.0+0xe4/0x230
+> [  457.405665] [c00000005f2e7af0] [c0000000009c2f50] seq_read_iter+0x430/0xa90
+> [  457.405679] [c00000005f2e7c00] [c000000000aade04] proc_reg_read_iter+0xa4/0x200
+> [  457.405692] [c00000005f2e7c40] [c00000000095345c] vfs_read+0x41c/0x510
+> [  457.405705] [c00000005f2e7d30] [c0000000009545d4] ksys_read+0xa4/0x190
+> [  457.405716] [c00000005f2e7d90] [c00000000003a3f0] system_call_exception+0x1d0/0x440
+> [  457.405729] [c00000005f2e7e50] [c00000000000cedc] system_call_vectored_common+0x15c/0x2ec
+> [  457.405744] --- interrupt: 3000 at 0x7fff97e75044
+> [  457.405755] NIP:  00007fff97e75044 LR: 00007fff97e75044 CTR: 0000000000000000
+> [  457.405764] REGS: c00000005f2e7e80 TRAP: 3000   Tainted: G              K      (6.14.0+)
+> [  457.405773] MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 48222804  XER: 00000000
+> [  457.405805] IRQMASK: 0
+> GPR00: 0000000000000003 00007fffc1908930 00007fff97f87100 0000000000000003
+> GPR04: 00007fff97960000 0000000000040000 0000000000000000 00007fff97f80248
+> GPR08: 0000000000000002 0000000000000000 0000000000000000 0000000000000000
+> GPR12: 0000000000000000 00007fff9805a5a0 0000000000000000 0000000000000000
+> GPR16: 0000000000000000 0000000000040000 00007fffc19091c8 0000000000000000
+> GPR20: 0000000000000000 0000000000000000 0000000000000000 00007fff9804f470
+> GPR24: 0000000000000000 0000000000040000 00007fffc190f1c5 000000007ff00000
+> GPR28: 0000000000000003 00007fff97960000 0000000000040000 0000000000000003
+> [  457.405916] NIP [00007fff97e75044] 0x7fff97e75044
+> [  457.405924] LR [00007fff97e75044] 0x7fff97e75044
+> [  457.405932] --- interrupt: 3000
+> [  457.405938] Code: 386d0008 4afae43d 60000000 a13d0008 3d00fffe 5529083c 61290001 7d40f829 7d474079 40c20018 7d474038 7ce74b78 <7ce0f92d> 40c2ffe8 7c2004ac 794a03e1
+> [  457.405981] ---[ end trace 0000000000000000 ]---
+> [  457.419259] pstore: backend (nvram) writing error (-1)
+> 
+> Interestingly, the panic doesn't occur when the bpftrace process is
+> running. Then, running `cat /proc/cmdline` works (even prints the
+> expected livepatched message) but doesn't appear in bpftrace output, as
+> Shung-Hsi observed.
+> 
+> On a kernel with KASAN=n, no panic happens.
+> 
+> This panic doesn't seem to be related to BPF (as it happens when no BPF
+> programs are involved) but it involves livepatch and occurs for the same
+> sequence of commands, so the two cases may be related. In this case, I
+> suspect that the issue is caused by an incorrect interaction of
+> livepatch and the ftrace changes introduced for BPF trampolines [1].
+> 
+> FWIW, there is patch cfec8463d9a1 ("powerpc/ftrace: Fix ftrace bug with
+> KASAN=y") which is fixing a bug in [1] appearing on KASAN=y kernel but
+> I'm not sure if it's related to this issue.
 
-Is anyone, Arm people, Mark, against pushing this into linux-next,
-please?
+Thanks for reporting this, Viktor.
+There was a bug in how clobbered register was restored in livepatch path
+leading this failure. Posted the fix patch upstream [1]
 
-Best Regards,
-Petr
+FWIW, the problem Shung-Hsi observed still exists. Will try and get that
+working..
+
+- Hari
+
+[1] 
+https://lore.kernel.org/linuxppc-dev/20250416191227.201146-1-hbathini@linux.ibm.com/
+
+> 
+> Viktor
+> 
+> [1] https://lore.kernel.org/all/20241030070850.1361304-1-hbathini@linux.ibm.com/
+> 
+>>
+>>
+>> Thanks,
+>> Shung-Hsi Yu
+>>
+>> 1: https://lore.kernel.org/all/20241030070850.1361304-2-hbathini@linux.ibm.com/
+
 
