@@ -1,258 +1,415 @@
-Return-Path: <live-patching+bounces-1357-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1358-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8B92CA90C3D
-	for <lists+live-patching@lfdr.de>; Wed, 16 Apr 2025 21:24:54 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9EE83AB1252
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 13:37:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 96151460767
-	for <lists+live-patching@lfdr.de>; Wed, 16 Apr 2025 19:24:54 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 9101A1C41E11
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 11:37:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 898C7224B0F;
-	Wed, 16 Apr 2025 19:24:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 564E922F16E;
+	Fri,  9 May 2025 11:37:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="tqq+QE+1"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="1Fb1GzcD";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="O0YlHRfD"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCA1A2248B0;
-	Wed, 16 Apr 2025 19:24:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F38B828F95E;
+	Fri,  9 May 2025 11:37:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744831490; cv=none; b=YVIrBuuuT/byfdrx4VZoJUiSj/LlgSzBmXUIdf/qU99O1jQWisWUcUVtMeQa2mdAF7h6xARXu1PxW1shsar7JNF23uoaEGec9sw9Bg6giZja5eHTgv4pz0ulvHchmJo4+27n6kW1Jr/EPO/I0u5YC/fixGQmxnVn2VV52RFlyas=
+	t=1746790638; cv=none; b=METX9uGfioF2Cwmur1rKPRGTmUdls9SWgj3eb8eGUMrXhNbfapkiDqKgiZ1rNEcenk1x3FxPOJfi/bhBOrGU8thnS/sMGzivzrNJt5lTKCfmSvdHt0u38ZVPcWXDOoy3ruRcXN6ebglYDEPc1C+dxXqmYLB5TZLs1LogdYkmbGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744831490; c=relaxed/simple;
-	bh=xFZVWYzhCLeAtFnklnvSHAQjs0ozX8nCpx2s2TD445U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MSakIlWI2Tt3wlij55LKsqSg7BKTg5UVVfYyH9DYmwCwpGqeVtQVkG9UsfPCt2DeFiY0w5lXCPoKPyBYMX3slqODeTcNgb282VO+8aG3eeTHu53W0CmRqw/KmKhA6aIu1QDEBY+gZhx7N9jjV7cZvMR0FyPHtcwlOT7Y2VTA33Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=tqq+QE+1; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53GJAPJG028081;
-	Wed, 16 Apr 2025 19:24:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=ESx9ZW
-	YVOviol+gu5GvYE6oR3Czemj4YTpdoVBjfivQ=; b=tqq+QE+1bs1NNEGlMeSu3z
-	io3UDLsM8JzWosI5jAPs9RmMYH6RWPpQaLCK/U6koMFhxX/VnyAPrI1CofeCwCpt
-	N3fg5iNEA19wkR0MWEk7wIDePmGRxUiZDhONI1cxWGthRZP8LD9/a9DpgyD8laOl
-	Q7Z4II0vHIS8ulJZwjeo5tm1r69TrC8ioR9po3UEEifdrQ8/NoZI5QQukwxEUjmm
-	eHmoS4A0qaSDfKlqaEOHpx3Q9VN4iYyBvEEolZ2k0PlKbrZwg5kzsyyTUTi23O8B
-	aD9mzlnQlsrwniMNxhEBk8Q1XJjQRBx7zN2SvK1OLnwDdTbKQBHFIqmsHR7vWlxA
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 461ykt5hnv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Apr 2025 19:24:13 +0000 (GMT)
-Received: from m0360072.ppops.net (m0360072.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 53GJN91l017855;
-	Wed, 16 Apr 2025 19:24:12 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 461ykt5hnq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Apr 2025 19:24:12 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 53GIQxdf017204;
-	Wed, 16 Apr 2025 19:24:11 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 46040m1u6u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Apr 2025 19:24:11 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 53GJO7tr36635100
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 16 Apr 2025 19:24:07 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B519920043;
-	Wed, 16 Apr 2025 19:24:07 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id F0B4E20040;
-	Wed, 16 Apr 2025 19:24:02 +0000 (GMT)
-Received: from [9.43.31.13] (unknown [9.43.31.13])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 16 Apr 2025 19:24:02 +0000 (GMT)
-Message-ID: <796f0cc9-a506-48e4-8c0e-f16e5af74a59@linux.ibm.com>
-Date: Thu, 17 Apr 2025 00:54:01 +0530
+	s=arc-20240116; t=1746790638; c=relaxed/simple;
+	bh=BMMKmsh7jALcR9d8p8pcOqhFrG9V0KdUnyt27YcWkZ4=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=NuHYrbbuTv2G+hztolHa39M3K57HlckVt/+R8dYTzNTPQKL4LCxwCkTV/Y5ptZQWO0pomtzgxN8fQMbUZ//JwDcemiptrCB8gJVDARkXd25r7VpdGzatNeb8fSXU3ZteFWRyuMZCpQYZGcHT1QVthS6wfrxzGZlqgfXgBax7uhI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=1Fb1GzcD; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=O0YlHRfD; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Date: Fri, 9 May 2025 13:36:59 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1746790627;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=yvtS7kd50QsaqELn/OuDxgR43pdbT8W33w5y3DGqq7Y=;
+	b=1Fb1GzcDZId7FE75wc/vg9ARviSgbywT0LZwIKUKk8GsWuBqRznMD5bgSK9KPJ/uVjjnmJ
+	+h7e5bgDpI/xnAEBHaIosjj3QecjQkdao2oSrd7U/A7SpZv7N+1p8yRlJJ9a6qrNZtQ3zZ
+	3MzzyA+VRuMbPPAZv7RDbEZBYG/zU0bBB616zETOksqsAMEvwOVSapUw4M97ZWsa3m9zh6
+	6+bo0lgOUf79M0mlTT8iD3epRCL1rsVnQgz26+FDCHtwCoZpH8rNHWc4bBLX2Ol8tqU46Y
+	rCigUcfbeunXLBoK6Wqps3gSnTHkiIeG6u5lVAd2k9aE0OMTnVXuAWbjvaLpLw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1746790627;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=yvtS7kd50QsaqELn/OuDxgR43pdbT8W33w5y3DGqq7Y=;
+	b=O0YlHRfDgQvzS3KYU1OSvvJ8dRJJ4a3nb4znxs06f5B/yNdYl/ZEEsLhNO4ObYhL+gcDGs
+	EyxyYfe5EAGeHbCg==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Cc: Peter Zijlstra <peterz@infradead.org>,
+	Josh Poimboeuf <jpoimboe@redhat.com>, mingo@kernel.com,
+	juri.lelli@redhat.com, vincent.guittot@linaro.org,
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+	mgorman@suse.de, vschneid@redhat.com, jpoimboe@kernel.org,
+	jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
+	joe.lawrence@redhat.com, Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH v2] sched,livepatch: Untangle cond_resched() and live-patching
+Message-ID: <20250509113659.wkP_HJ5z@linutronix.de>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [BUG?] ppc64le: fentry BPF not triggered after live patch (v6.14)
-To: Viktor Malik <vmalik@redhat.com>, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        "Naveen N. Rao" <naveen@kernel.org>, bpf@vger.kernel.org
-Cc: Michael Ellerman <mpe@ellerman.id.au>,
-        Mark Rutland
- <mark.rutland@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Vishal Chourasia <vishalc@linux.ibm.com>,
-        Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org
-References: <rwmwrvvtg3pd7qrnt3of6dideioohwhsplancoc2gdrjran7bg@j5tqng6loymr>
- <1aec4a9a-a30b-43fd-b303-7a351caeccb7@redhat.com>
-Content-Language: en-US
-From: Hari Bathini <hbathini@linux.ibm.com>
-In-Reply-To: <1aec4a9a-a30b-43fd-b303-7a351caeccb7@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: JJAZFXP6kaIp9kJeQ6dHn81nUA9Q_RDO
-X-Proofpoint-ORIG-GUID: BNinUJpqI94Ol0cDOhk9_8_wuVqysaFZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-16_07,2025-04-15_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- suspectscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0 adultscore=0
- priorityscore=1501 phishscore=0 mlxlogscore=999 clxscore=1015
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502280000 definitions=main-2504160155
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+=46rom: Peter Zijlstra <peterz@infradead.org>
 
+With the goal of deprecating / removing VOLUNTARY preempt, live-patch
+needs to stop relying on cond_resched() to make forward progress.
 
-On 07/04/25 2:12 pm, Viktor Malik wrote:
-> On 3/31/25 15:19, Shung-Hsi Yu wrote:
->> Hi all,
->>
->> On ppc64le (v6.14, kernel config attached), I've observed that fentry
->> BPF programs stop being invoked after the target kernel function is live
->> patched. This occurs regardless of whether the BPF program was attached
->> before or after the live patch. I believe fentry/fprobe on ppc64le is
->> added with [1].
->>
->> Steps to reproduce on ppc64le:
->> - Use bpftrace (v0.10.0+) to attach a BPF program to cmdline_proc_show
->>    with fentry (kfunc is the older name bpftrace used for fentry, used
->>    here for max compatability)
->>
->>      bpftrace -e 'kfunc:cmdline_proc_show { printf("%lld: cmdline_proc_show() called by %s\n", nsecs(), comm) }'
->>
->> - Run `cat /proc/cmdline` and observe bpftrace output
->>
->> - Load samples/livepatch/livepatch-sample.ko
->>
->> - Run `cat /proc/cmdline` again. Observe "this has been live patched" in
->>    output, but no new bpftrace output.
->>
->> Note: once the live patching module is disabled through the sysfs interface
->> the BPF program invocation is restored.
->>
->> Is this the expected interaction between fentry BPF and live patching?
->> On x86_64 it does _not_ happen, so I'd guess the behavior on ppc64le is
->> unintended. Any insights appreciated.
-> 
-> I'm not sure if this is related but I found out that when a kernel is
-> compiled with KASAN=y (full config attached), the above steps without
-> the bpftrace part lead to a kernel panic upon running the second `cat
-> /proc/cmdline` command (the livepatched one).
-> 
-> Here's the relevant part of the kdump:
-> 
-> [  457.405298] BUG: Unable to handle kernel data access on write at 0xc0000000000f9078
-> [  457.405320] Faulting instruction address: 0xc0000000018ff958
-> [  457.405328] Oops: Kernel access of bad area, sig: 11 [#1]
-> [  457.405336] LE PAGE_SIZE=64K MMU=Hash  SMP NR_CPUS=8192 NUMA pSeries
-> [  457.405347] Modules linked in: livepatch_sample(K) bonding tls rfkill vmx_crypto ibmveth pseries_rng sg fuse loop nfnetlink vsock_loopback vmw_vsock_virtio_transport_common vsock xfs sd_mod ibmvscsi scsi_transport_srp dm_mirror dm_region_hash dm_log dm_mod
-> [  457.405410] CPU: 6 UID: 0 PID: 5141 Comm: cat Kdump: loaded Tainted: G              K     6.14.0+ #9 VOLUNTARY
-> [  457.405424] Tainted: [K]=LIVEPATCH
-> [  457.405430] Hardware name: IBM,9009-22A POWER9 (architected) 0x4e0202 0xf000005 of:IBM,FW910.00 (VL910_062) hv:phyp pSeries
-> [  457.405440] NIP:  c0000000018ff958 LR: c0000000018ff930 CTR: c0000000009c0790
-> [  457.405449] REGS: c00000005f2e7790 TRAP: 0300   Tainted: G              K      (6.14.0+)
-> [  457.405459] MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 2822880b  XER: 20040000
-> [  457.405484] CFAR: c0000000008addc0 DAR: c0000000000f9078 DSISR: 0a000000 IRQMASK: 1
-> GPR00: c0000000018f2584 c00000005f2e7a30 c00000000280a900 c000000017ffa488
-> GPR04: 0000000000000008 0000000000000000 c0000000018f24fc 000000000000000d
-> GPR08: fffffffffffe0000 000000000000000d 0000000000000000 0000000000008000
-> GPR12: c0000000009c0790 c000000017ffa480 c00000005f2e7c78 c0000000000f9070
-> GPR16: c00000005f2e7c90 0000000000000000 0000000000000000 0000000000000000
-> GPR20: 0000000000000000 c00000005f3efa80 c00000005f2e7c60 c00000005f2e7c88
-> GPR24: c00000005f2e7c60 0000000000000001 c0000000000f9078 0000000000000000
-> GPR28: 00007fff97960000 c000000017ffa480 0000000000000000 c0000000000f9078
-> [  457.405605] NIP [c0000000018ff958] _raw_spin_lock_irqsave+0x68/0x110
-> [  457.405619] LR [c0000000018ff930] _raw_spin_lock_irqsave+0x40/0x110
-> [  457.405630] Call Trace:
-> [  457.405635] [c00000005f2e7a30] [c000000000941804] check_heap_object+0x34/0x390 (unreliable)
-> [  457.405651] [c00000005f2e7a70] [c0000000018f2584] __mutex_unlock_slowpath.isra.0+0xe4/0x230
-> [  457.405665] [c00000005f2e7af0] [c0000000009c2f50] seq_read_iter+0x430/0xa90
-> [  457.405679] [c00000005f2e7c00] [c000000000aade04] proc_reg_read_iter+0xa4/0x200
-> [  457.405692] [c00000005f2e7c40] [c00000000095345c] vfs_read+0x41c/0x510
-> [  457.405705] [c00000005f2e7d30] [c0000000009545d4] ksys_read+0xa4/0x190
-> [  457.405716] [c00000005f2e7d90] [c00000000003a3f0] system_call_exception+0x1d0/0x440
-> [  457.405729] [c00000005f2e7e50] [c00000000000cedc] system_call_vectored_common+0x15c/0x2ec
-> [  457.405744] --- interrupt: 3000 at 0x7fff97e75044
-> [  457.405755] NIP:  00007fff97e75044 LR: 00007fff97e75044 CTR: 0000000000000000
-> [  457.405764] REGS: c00000005f2e7e80 TRAP: 3000   Tainted: G              K      (6.14.0+)
-> [  457.405773] MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 48222804  XER: 00000000
-> [  457.405805] IRQMASK: 0
-> GPR00: 0000000000000003 00007fffc1908930 00007fff97f87100 0000000000000003
-> GPR04: 00007fff97960000 0000000000040000 0000000000000000 00007fff97f80248
-> GPR08: 0000000000000002 0000000000000000 0000000000000000 0000000000000000
-> GPR12: 0000000000000000 00007fff9805a5a0 0000000000000000 0000000000000000
-> GPR16: 0000000000000000 0000000000040000 00007fffc19091c8 0000000000000000
-> GPR20: 0000000000000000 0000000000000000 0000000000000000 00007fff9804f470
-> GPR24: 0000000000000000 0000000000040000 00007fffc190f1c5 000000007ff00000
-> GPR28: 0000000000000003 00007fff97960000 0000000000040000 0000000000000003
-> [  457.405916] NIP [00007fff97e75044] 0x7fff97e75044
-> [  457.405924] LR [00007fff97e75044] 0x7fff97e75044
-> [  457.405932] --- interrupt: 3000
-> [  457.405938] Code: 386d0008 4afae43d 60000000 a13d0008 3d00fffe 5529083c 61290001 7d40f829 7d474079 40c20018 7d474038 7ce74b78 <7ce0f92d> 40c2ffe8 7c2004ac 794a03e1
-> [  457.405981] ---[ end trace 0000000000000000 ]---
-> [  457.419259] pstore: backend (nvram) writing error (-1)
-> 
-> Interestingly, the panic doesn't occur when the bpftrace process is
-> running. Then, running `cat /proc/cmdline` works (even prints the
-> expected livepatched message) but doesn't appear in bpftrace output, as
-> Shung-Hsi observed.
-> 
-> On a kernel with KASAN=n, no panic happens.
-> 
-> This panic doesn't seem to be related to BPF (as it happens when no BPF
-> programs are involved) but it involves livepatch and occurs for the same
-> sequence of commands, so the two cases may be related. In this case, I
-> suspect that the issue is caused by an incorrect interaction of
-> livepatch and the ftrace changes introduced for BPF trampolines [1].
-> 
-> FWIW, there is patch cfec8463d9a1 ("powerpc/ftrace: Fix ftrace bug with
-> KASAN=y") which is fixing a bug in [1] appearing on KASAN=y kernel but
-> I'm not sure if it's related to this issue.
+Instead, rely on schedule() with TASK_FREEZABLE set. Just like
+live-patching, the freezer needs to be able to stop tasks in a safe /
+known state.
 
-Thanks for reporting this, Viktor.
-There was a bug in how clobbered register was restored in livepatch path
-leading this failure. Posted the fix patch upstream [1]
+Compile tested only.
 
-FWIW, the problem Shung-Hsi observed still exists. Will try and get that
-working..
+[bigeasy: use likely() in __klp_sched_try_switch() and update comments]
 
-- Hari
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+v1=E2=80=A6v2: https://lore.kernel.org/all/20250324134909.GA14718@noisy.pro=
+gramming.kicks-ass.net/
+  - Updated comments in __klp_sched_try_switch()
+  - Replaced unlikely with likely in __klp_sched_try_switch()
+  - Dropped RFC
 
-[1] 
-https://lore.kernel.org/linuxppc-dev/20250416191227.201146-1-hbathini@linux.ibm.com/
+ include/linux/livepatch_sched.h | 14 ++++-----
+ include/linux/sched.h           |  6 ----
+ kernel/livepatch/transition.c   | 52 ++++++++++-----------------------
+ kernel/sched/core.c             | 50 +++++--------------------------
+ 4 files changed, 29 insertions(+), 93 deletions(-)
 
-> 
-> Viktor
-> 
-> [1] https://lore.kernel.org/all/20241030070850.1361304-1-hbathini@linux.ibm.com/
-> 
->>
->>
->> Thanks,
->> Shung-Hsi Yu
->>
->> 1: https://lore.kernel.org/all/20241030070850.1361304-2-hbathini@linux.ibm.com/
+diff --git a/include/linux/livepatch_sched.h b/include/linux/livepatch_sche=
+d.h
+index 013794fb5da08..065c185f27638 100644
+--- a/include/linux/livepatch_sched.h
++++ b/include/linux/livepatch_sched.h
+@@ -3,27 +3,23 @@
+ #define _LINUX_LIVEPATCH_SCHED_H_
+=20
+ #include <linux/jump_label.h>
+-#include <linux/static_call_types.h>
++#include <linux/sched.h>
+=20
+ #ifdef CONFIG_LIVEPATCH
+=20
+ void __klp_sched_try_switch(void);
+=20
+-#if !defined(CONFIG_PREEMPT_DYNAMIC) || !defined(CONFIG_HAVE_PREEMPT_DYNAM=
+IC_CALL)
+-
+ DECLARE_STATIC_KEY_FALSE(klp_sched_try_switch_key);
+=20
+-static __always_inline void klp_sched_try_switch(void)
++static __always_inline void klp_sched_try_switch(struct task_struct *curr)
+ {
+-	if (static_branch_unlikely(&klp_sched_try_switch_key))
++	if (static_branch_unlikely(&klp_sched_try_switch_key) &&
++	    READ_ONCE(curr->__state) & TASK_FREEZABLE)
+ 		__klp_sched_try_switch();
+ }
+=20
+-#endif /* !CONFIG_PREEMPT_DYNAMIC || !CONFIG_HAVE_PREEMPT_DYNAMIC_CALL */
+-
+ #else /* !CONFIG_LIVEPATCH */
+-static inline void klp_sched_try_switch(void) {}
+-static inline void __klp_sched_try_switch(void) {}
++static inline void klp_sched_try_switch(struct task_struct *curr) {}
+ #endif /* CONFIG_LIVEPATCH */
+=20
+ #endif /* _LINUX_LIVEPATCH_SCHED_H_ */
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index f96ac19828934..b98195991031c 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -44,7 +44,6 @@
+ #include <linux/seqlock_types.h>
+ #include <linux/kcsan.h>
+ #include <linux/rv.h>
+-#include <linux/livepatch_sched.h>
+ #include <linux/uidgid_types.h>
+ #include <linux/tracepoint-defs.h>
+ #include <asm/kmap_size.h>
+@@ -2089,9 +2088,6 @@ extern int __cond_resched(void);
+=20
+ #if defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC=
+_CALL)
+=20
+-void sched_dynamic_klp_enable(void);
+-void sched_dynamic_klp_disable(void);
+-
+ DECLARE_STATIC_CALL(cond_resched, __cond_resched);
+=20
+ static __always_inline int _cond_resched(void)
+@@ -2112,7 +2108,6 @@ static __always_inline int _cond_resched(void)
+=20
+ static inline int _cond_resched(void)
+ {
+-	klp_sched_try_switch();
+ 	return __cond_resched();
+ }
+=20
+@@ -2122,7 +2117,6 @@ static inline int _cond_resched(void)
+=20
+ static inline int _cond_resched(void)
+ {
+-	klp_sched_try_switch();
+ 	return 0;
+ }
+=20
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index ba069459c1017..25b9372a4b66f 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -29,22 +29,13 @@ static unsigned int klp_signals_cnt;
+=20
+ /*
+  * When a livepatch is in progress, enable klp stack checking in
+- * cond_resched().  This helps CPU-bound kthreads get patched.
++ * schedule().  This helps CPU-bound kthreads get patched.
+  */
+-#if defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC=
+_CALL)
+-
+-#define klp_cond_resched_enable() sched_dynamic_klp_enable()
+-#define klp_cond_resched_disable() sched_dynamic_klp_disable()
+-
+-#else /* !CONFIG_PREEMPT_DYNAMIC || !CONFIG_HAVE_PREEMPT_DYNAMIC_CALL */
+=20
+ DEFINE_STATIC_KEY_FALSE(klp_sched_try_switch_key);
+-EXPORT_SYMBOL(klp_sched_try_switch_key);
+=20
+-#define klp_cond_resched_enable() static_branch_enable(&klp_sched_try_swit=
+ch_key)
+-#define klp_cond_resched_disable() static_branch_disable(&klp_sched_try_sw=
+itch_key)
+-
+-#endif /* CONFIG_PREEMPT_DYNAMIC && CONFIG_HAVE_PREEMPT_DYNAMIC_CALL */
++#define klp_resched_enable() static_branch_enable(&klp_sched_try_switch_ke=
+y)
++#define klp_resched_disable() static_branch_disable(&klp_sched_try_switch_=
+key)
+=20
+ /*
+  * This work can be performed periodically to finish patching or unpatchin=
+g any
+@@ -365,27 +356,20 @@ static bool klp_try_switch_task(struct task_struct *t=
+ask)
+=20
+ void __klp_sched_try_switch(void)
+ {
++	/*
++	 * This function is called from __schedule() while a context switch is
++	 * about to happen. Preemption is already disabled and klp_mutex
++	 * can't be acquired.
++	 * Disabled preemption is used to prevent racing with other callers of
++	 * klp_try_switch_task(). Thanks to task_call_func() they won't be
++	 * able to switch to this task while it's running.
++	 */
++	lockdep_assert_preemption_disabled();
++
++	/* Make sure current didn't get patched */
+ 	if (likely(!klp_patch_pending(current)))
+ 		return;
+=20
+-	/*
+-	 * This function is called from cond_resched() which is called in many
+-	 * places throughout the kernel.  Using the klp_mutex here might
+-	 * deadlock.
+-	 *
+-	 * Instead, disable preemption to prevent racing with other callers of
+-	 * klp_try_switch_task().  Thanks to task_call_func() they won't be
+-	 * able to switch this task while it's running.
+-	 */
+-	preempt_disable();
+-
+-	/*
+-	 * Make sure current didn't get patched between the above check and
+-	 * preempt_disable().
+-	 */
+-	if (unlikely(!klp_patch_pending(current)))
+-		goto out;
+-
+ 	/*
+ 	 * Enforce the order of the TIF_PATCH_PENDING read above and the
+ 	 * klp_target_state read in klp_try_switch_task().  The corresponding
+@@ -395,11 +379,7 @@ void __klp_sched_try_switch(void)
+ 	smp_rmb();
+=20
+ 	klp_try_switch_task(current);
+-
+-out:
+-	preempt_enable();
+ }
+-EXPORT_SYMBOL(__klp_sched_try_switch);
+=20
+ /*
+  * Sends a fake signal to all non-kthread tasks with TIF_PATCH_PENDING set.
+@@ -508,7 +488,7 @@ void klp_try_complete_transition(void)
+ 	}
+=20
+ 	/* Done!  Now cleanup the data structures. */
+-	klp_cond_resched_disable();
++	klp_resched_disable();
+ 	patch =3D klp_transition_patch;
+ 	klp_complete_transition();
+=20
+@@ -560,7 +540,7 @@ void klp_start_transition(void)
+ 			set_tsk_thread_flag(task, TIF_PATCH_PENDING);
+ 	}
+=20
+-	klp_cond_resched_enable();
++	klp_resched_enable();
+=20
+ 	klp_signals_cnt =3D 0;
+ }
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index c81cf642dba05..2a973d0e414a3 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -66,6 +66,7 @@
+ #include <linux/vtime.h>
+ #include <linux/wait_api.h>
+ #include <linux/workqueue_api.h>
++#include <linux/livepatch_sched.h>
+=20
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+ # ifdef CONFIG_GENERIC_ENTRY
+@@ -6668,6 +6669,8 @@ static void __sched notrace __schedule(int sched_mode)
+ 	if (sched_feat(HRTICK) || sched_feat(HRTICK_DL))
+ 		hrtick_clear(rq);
+=20
++	klp_sched_try_switch(prev);
++
+ 	local_irq_disable();
+ 	rcu_note_context_switch(preempt);
+=20
+@@ -7328,7 +7331,6 @@ EXPORT_STATIC_CALL_TRAMP(might_resched);
+ static DEFINE_STATIC_KEY_FALSE(sk_dynamic_cond_resched);
+ int __sched dynamic_cond_resched(void)
+ {
+-	klp_sched_try_switch();
+ 	if (!static_branch_unlikely(&sk_dynamic_cond_resched))
+ 		return 0;
+ 	return __cond_resched();
+@@ -7500,7 +7502,6 @@ int sched_dynamic_mode(const char *str)
+ #endif
+=20
+ static DEFINE_MUTEX(sched_dynamic_mutex);
+-static bool klp_override;
+=20
+ static void __sched_dynamic_update(int mode)
+ {
+@@ -7508,8 +7509,7 @@ static void __sched_dynamic_update(int mode)
+ 	 * Avoid {NONE,VOLUNTARY} -> FULL transitions from ever ending up in
+ 	 * the ZERO state, which is invalid.
+ 	 */
+-	if (!klp_override)
+-		preempt_dynamic_enable(cond_resched);
++	preempt_dynamic_enable(cond_resched);
+ 	preempt_dynamic_enable(might_resched);
+ 	preempt_dynamic_enable(preempt_schedule);
+ 	preempt_dynamic_enable(preempt_schedule_notrace);
+@@ -7518,8 +7518,7 @@ static void __sched_dynamic_update(int mode)
+=20
+ 	switch (mode) {
+ 	case preempt_dynamic_none:
+-		if (!klp_override)
+-			preempt_dynamic_enable(cond_resched);
++		preempt_dynamic_enable(cond_resched);
+ 		preempt_dynamic_disable(might_resched);
+ 		preempt_dynamic_disable(preempt_schedule);
+ 		preempt_dynamic_disable(preempt_schedule_notrace);
+@@ -7530,8 +7529,7 @@ static void __sched_dynamic_update(int mode)
+ 		break;
+=20
+ 	case preempt_dynamic_voluntary:
+-		if (!klp_override)
+-			preempt_dynamic_enable(cond_resched);
++		preempt_dynamic_enable(cond_resched);
+ 		preempt_dynamic_enable(might_resched);
+ 		preempt_dynamic_disable(preempt_schedule);
+ 		preempt_dynamic_disable(preempt_schedule_notrace);
+@@ -7542,8 +7540,7 @@ static void __sched_dynamic_update(int mode)
+ 		break;
+=20
+ 	case preempt_dynamic_full:
+-		if (!klp_override)
+-			preempt_dynamic_disable(cond_resched);
++		preempt_dynamic_disable(cond_resched);
+ 		preempt_dynamic_disable(might_resched);
+ 		preempt_dynamic_enable(preempt_schedule);
+ 		preempt_dynamic_enable(preempt_schedule_notrace);
+@@ -7554,8 +7551,7 @@ static void __sched_dynamic_update(int mode)
+ 		break;
+=20
+ 	case preempt_dynamic_lazy:
+-		if (!klp_override)
+-			preempt_dynamic_disable(cond_resched);
++		preempt_dynamic_disable(cond_resched);
+ 		preempt_dynamic_disable(might_resched);
+ 		preempt_dynamic_enable(preempt_schedule);
+ 		preempt_dynamic_enable(preempt_schedule_notrace);
+@@ -7576,36 +7572,6 @@ void sched_dynamic_update(int mode)
+ 	mutex_unlock(&sched_dynamic_mutex);
+ }
+=20
+-#ifdef CONFIG_HAVE_PREEMPT_DYNAMIC_CALL
+-
+-static int klp_cond_resched(void)
+-{
+-	__klp_sched_try_switch();
+-	return __cond_resched();
+-}
+-
+-void sched_dynamic_klp_enable(void)
+-{
+-	mutex_lock(&sched_dynamic_mutex);
+-
+-	klp_override =3D true;
+-	static_call_update(cond_resched, klp_cond_resched);
+-
+-	mutex_unlock(&sched_dynamic_mutex);
+-}
+-
+-void sched_dynamic_klp_disable(void)
+-{
+-	mutex_lock(&sched_dynamic_mutex);
+-
+-	klp_override =3D false;
+-	__sched_dynamic_update(preempt_dynamic_mode);
+-
+-	mutex_unlock(&sched_dynamic_mutex);
+-}
+-
+-#endif /* CONFIG_HAVE_PREEMPT_DYNAMIC_CALL */
+-
+ static int __init setup_preempt_mode(char *str)
+ {
+ 	int mode =3D sched_dynamic_mode(str);
+--=20
+2.49.0
 
 
