@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1403-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1404-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D38ADAB1E27
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:26:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5D299AB1E28
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:26:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 97C4C1760E2
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:25:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 569C7500CC5
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:26:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4087B298CC3;
-	Fri,  9 May 2025 20:18:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0557C299922;
+	Fri,  9 May 2025 20:18:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tx+VTOuN"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UNg86nmL"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1843E298CBE;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF8A5298CDA;
 	Fri,  9 May 2025 20:18:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746821896; cv=none; b=ZN1egAaihfyLsc3zioLx8wlJ/15zm9KsXAREGXX2L6U4ftK2uIhdIExcxGtoSe++ZpWlnZjDnxMyPuPIIFby2yxKVCTHjSXKiws07gHfk7CmEPDsGJ/cYMfOxmLEzlUSiCBp8FAx+duuv41eV4e2x2AHCCge+kDfhksdTV09tbU=
+	t=1746821896; cv=none; b=OUiZDbVjb7sDAjgfP/ER1S+kHw1vHTtX1aCQA9i+tsDuTHjQvaYHHuRTmgB1mwYcmXEYD0Xs+iK+Vj1G55+B/eTiQ5TUDPj09r0tgGy1QqlMl3RP6r8i0LB0tehMm9MXKvEQqlCYvqHKewrCyeWO5RhdMPyqtMgPAmbxok1U278=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1746821896; c=relaxed/simple;
-	bh=WrGEyNHSSw7Wx3DQ3criX7+p62Pve6p0318/Ksge9cQ=;
+	bh=6Zot9E6ZFT2BtM6OWN9gJxNTDDNv77MxRe5bFHgepKA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jzKGUPZDP94oTjbzP97cYt18MyQJZiJQuHjFhFG1Fayr+N1yFj5PVLsA8koHe2hQtR6AbSgu7LPU3R7XDQWmpDgargSj3EHuOGKN1WJ8IyV8J6DOpuqHzacGElFteKbGBluRJMhhqbBHqnfhqpyO0DjKGZRdAPmu3YOQaNf7HFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tx+VTOuN; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F3EFC4CEEF;
-	Fri,  9 May 2025 20:18:15 +0000 (UTC)
+	 MIME-Version; b=gAcn9OhyUd98euABADiSzwzWc91cO49HqHWIxo9oknaR++9rND1xNnw8rjur7ECkpe+/T0zVcb79nitj53Bl6VM41IRrrmWxra9z4wLETTzKFDr0x8NpyDe7CTeJjPW0ReMAU4KhuI1pAL8RH8w8FtLl5/kMlPXWXLYaQ3mpAOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UNg86nmL; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 268FCC4CEEE;
+	Fri,  9 May 2025 20:18:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1746821896;
-	bh=WrGEyNHSSw7Wx3DQ3criX7+p62Pve6p0318/Ksge9cQ=;
+	bh=6Zot9E6ZFT2BtM6OWN9gJxNTDDNv77MxRe5bFHgepKA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=tx+VTOuNeOAdNveLRr8D1TBDpGlVVTpewtqyC5XNZaf65xWLv9JRKOVIQrQwl2BnS
-	 kZt7OsU+avOREH80V0YaZFvgP5suwYeruN5UtG9oJDRzTWEtpeBkSExPmirmza81yt
-	 KQMQSpYcIGLggP0DOAOTyuMltPXcUI0Vu7jih6D3C1LFafvON+dMy5TPGoN9i+iI1q
-	 4f9yS1wCDLWqv14zB/2+ZEpNgm0wZa8VUbZMNCY3AugEX2L7TK8pnOvUYWKVAjR/PK
-	 01rbpGbAcJpuzJblDPaQZjNE27p7ZTIxwYOZC6APKV7hAqqS20VhYAYRXSk1oFtgjG
-	 941II6UNRIcSQ==
+	b=UNg86nmLthG6r8CoN0b5Hoy+IMV+rcOoY2LVGBY0MLVhZvTXH72OSyuN98z/FqVBA
+	 gMwSKo1dVqlyPryIPmG6NjIs0RA20QEPuzTFUtIGqpUyoFehRtASOoDBNy61OMd4No
+	 RZy5oALjNtUSPleOD8S6IitH2exh/nqq3c4CKyD3LI64ID6h7+Q1nLIaDhWqE8uVik
+	 xqPoHm312cMoN4p/m3ohzxUv0wsH5qz9mgIcQaCP6fS99ejvF7PS7uh6pOpE/svjIQ
+	 YYRM78Gq1vTKvV70R+tI7n3noeax6MQ5wNI6dSA3eIw5WwUAjf0u76P9n1b7/dj0n4
+	 aiAUk5lFSor1g==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>
-Subject: [PATCH v2 44/62] x86/jump_label: Define ELF section entry size for jump table
-Date: Fri,  9 May 2025 13:17:08 -0700
-Message-ID: <e5a4ef67a5c65d1686e4d0ce1887e045d56ffa41.1746821544.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 45/62] x86/extable: Define ELF section entry size for exception tables
+Date: Fri,  9 May 2025 13:17:09 -0700
+Message-ID: <198cfbd12e54dfce1309828e146b90b1f7b200a5.1746821544.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1746821544.git.jpoimboe@kernel.org>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
@@ -71,134 +71,76 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 In preparation for the objtool klp diff subcommand, define the entry
-size for the __jump_table section in its ELF header.  This will allow
+size for the __ex_table section in its ELF header.  This will allow
 tooling to extract individual entries.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/include/asm/jump_label.h | 32 +++++++++++++++++--------------
- include/linux/jump_label.h        | 20 +++++++++++--------
- 2 files changed, 30 insertions(+), 22 deletions(-)
+ arch/x86/include/asm/asm.h | 20 ++++++++++++--------
+ kernel/extable.c           |  2 ++
+ 2 files changed, 14 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/jump_label.h b/arch/x86/include/asm/jump_label.h
-index cd21554b3675..6081c33e1566 100644
---- a/arch/x86/include/asm/jump_label.h
-+++ b/arch/x86/include/asm/jump_label.h
-@@ -12,29 +12,31 @@
- #include <linux/stringify.h>
- #include <linux/types.h>
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index f963848024a5..62dff336f206 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -138,15 +138,17 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
  
--#define JUMP_TABLE_ENTRY(key, label)			\
--	".pushsection __jump_table,  \"a\"\n\t"		\
--	_ASM_ALIGN "\n\t"				\
--	".long 1b - . \n\t"				\
--	".long " label " - . \n\t"			\
--	_ASM_PTR " " key " - . \n\t"			\
-+#define JUMP_TABLE_ENTRY(key, label, size)				\
-+	".pushsection __jump_table, \"aM\", @progbits, " size "\n\t"	\
-+	_ASM_ALIGN "\n\t"						\
-+	".long 1b - . \n\t"						\
-+	".long " label " - . \n\t"					\
-+	_ASM_PTR " " key " - . \n\t"					\
- 	".popsection \n\t"
+ # include <asm/extable_fixup_types.h>
  
- /* This macro is also expanded on the Rust side. */
- #ifdef CONFIG_HAVE_JUMP_LABEL_HACK
--#define ARCH_STATIC_BRANCH_ASM(key, label)		\
-+#define ARCH_STATIC_BRANCH_ASM(key, label, size)	\
- 	"1: jmp " label " # objtool NOPs this \n\t"	\
--	JUMP_TABLE_ENTRY(key " + 2", label)
-+	JUMP_TABLE_ENTRY(key " + 2", label, size)
- #else /* !CONFIG_HAVE_JUMP_LABEL_HACK */
--#define ARCH_STATIC_BRANCH_ASM(key, label)		\
-+#define ARCH_STATIC_BRANCH_ASM(key, label, size)	\
- 	"1: .byte " __stringify(BYTES_NOP5) "\n\t"	\
--	JUMP_TABLE_ENTRY(key, label)
-+	JUMP_TABLE_ENTRY(key, label, size)
- #endif /* CONFIG_HAVE_JUMP_LABEL_HACK */
- 
- static __always_inline bool arch_static_branch(struct static_key * const key, const bool branch)
- {
--	asm goto(ARCH_STATIC_BRANCH_ASM("%c0 + %c1", "%l[l_yes]")
--		: :  "i" (key), "i" (branch) : : l_yes);
-+	asm goto(ARCH_STATIC_BRANCH_ASM("%c[key] + %c[branch]", "%l[l_yes]", "%c[size]")
-+		 : : [key] "i" (key), [branch] "i" (branch),
-+		     [size] "i" (sizeof(struct jump_entry))
-+		 : : l_yes);
- 
- 	return false;
- l_yes:
-@@ -45,8 +47,10 @@ static __always_inline bool arch_static_branch_jump(struct static_key * const ke
- {
- 	asm goto("1:"
- 		"jmp %l[l_yes]\n\t"
--		JUMP_TABLE_ENTRY("%c0 + %c1", "%l[l_yes]")
--		: :  "i" (key), "i" (branch) : : l_yes);
-+		JUMP_TABLE_ENTRY("%c[key] + %c[branch]", "%l[l_yes]", "%c[size]")
-+		: : [key] "i" (key), [branch] "i" (branch),
-+		    [size] "i" (sizeof(struct jump_entry))
-+		: : l_yes);
- 
- 	return false;
- l_yes:
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index fdb79dd1ebd8..9ff1ecc8e7a8 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -110,16 +110,20 @@ struct static_key {
- #endif /* __ASSEMBLY__ */
- 
- #ifdef CONFIG_JUMP_LABEL
--#include <asm/jump_label.h>
--
--#ifndef __ASSEMBLY__
--#ifdef CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE
- 
-+#if defined(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE) && !defined(__ASSEMBLY__)
-+/* Must be defined before including <asm/jump_label.h> */
- struct jump_entry {
- 	s32 code;
- 	s32 target;
- 	long key;	// key may be far away from the core kernel under KASLR
- };
-+#endif
++#define EXTABLE_SIZE 12
 +
-+#include <asm/jump_label.h>
+ /* Exception table entry */
+ #ifdef __ASSEMBLER__
+ 
+-# define _ASM_EXTABLE_TYPE(from, to, type)			\
+-	.pushsection "__ex_table","a" ;				\
+-	.balign 4 ;						\
+-	.long (from) - . ;					\
+-	.long (to) - . ;					\
+-	.long type ;						\
++# define _ASM_EXTABLE_TYPE(from, to, type)				\
++	.pushsection "__ex_table", "aM", @progbits, EXTABLE_SIZE;	\
++	.balign 4 ;							\
++	.long (from) - . ;						\
++	.long (to) - . ;						\
++	.long type ;							\
+ 	.popsection
+ 
+ # ifdef CONFIG_KPROBES
+@@ -189,7 +191,8 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
+ 	".purgem extable_type_reg\n"
+ 
+ # define _ASM_EXTABLE_TYPE(from, to, type)			\
+-	" .pushsection \"__ex_table\",\"a\"\n"			\
++	" .pushsection __ex_table, \"aM\", @progbits, "		\
++		       __stringify(EXTABLE_SIZE) "\n"		\
+ 	" .balign 4\n"						\
+ 	" .long (" #from ") - .\n"				\
+ 	" .long (" #to ") - .\n"				\
+@@ -197,7 +200,8 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
+ 	" .popsection\n"
+ 
+ # define _ASM_EXTABLE_TYPE_REG(from, to, type, reg)				\
+-	" .pushsection \"__ex_table\",\"a\"\n"					\
++	" .pushsection __ex_table, \"aM\", @progbits, "				\
++		       __stringify(EXTABLE_SIZE) "\n"				\
+ 	" .balign 4\n"								\
+ 	" .long (" #from ") - .\n"						\
+ 	" .long (" #to ") - .\n"						\
+diff --git a/kernel/extable.c b/kernel/extable.c
+index 71f482581cab..0ae3ee2ef266 100644
+--- a/kernel/extable.c
++++ b/kernel/extable.c
+@@ -55,6 +55,8 @@ const struct exception_table_entry *search_exception_tables(unsigned long addr)
+ {
+ 	const struct exception_table_entry *e;
+ 
++	BUILD_BUG_ON(EXTABLE_SIZE != sizeof(struct exception_table_entry));
 +
-+#ifndef __ASSEMBLY__
-+#ifdef CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE
- 
- static inline unsigned long jump_entry_code(const struct jump_entry *entry)
- {
-@@ -138,7 +142,7 @@ static inline struct static_key *jump_entry_key(const struct jump_entry *entry)
- 	return (struct static_key *)((unsigned long)&entry->key + offset);
- }
- 
--#else
-+#else /* !CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE */
- 
- static inline unsigned long jump_entry_code(const struct jump_entry *entry)
- {
-@@ -155,7 +159,7 @@ static inline struct static_key *jump_entry_key(const struct jump_entry *entry)
- 	return (struct static_key *)((unsigned long)entry->key & ~3UL);
- }
- 
--#endif
-+#endif /* !CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE */
- 
- static inline bool jump_entry_is_branch(const struct jump_entry *entry)
- {
-@@ -184,8 +188,8 @@ static inline int jump_entry_size(struct jump_entry *entry)
- #endif
- }
- 
--#endif
--#endif
-+#endif /* !__ASSEMBLY__ */
-+#endif /* CONFIG_JUMP_LABEL */
- 
- #ifndef __ASSEMBLY__
- 
+ 	e = search_kernel_exception_table(addr);
+ 	if (!e)
+ 		e = search_module_extables(addr);
 -- 
 2.49.0
 
