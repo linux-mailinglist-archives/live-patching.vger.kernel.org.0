@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1386-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1388-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 43432AB1DFB
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:22:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B89F6AB1E01
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:23:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7A48AA077F3
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:22:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2D3CEA20597
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:22:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33D80278170;
-	Fri,  9 May 2025 20:18:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B895290BAC;
+	Fri,  9 May 2025 20:18:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="an0/2ltE"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bNpa9S0N"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09F3A276024;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3095D27A925;
 	Fri,  9 May 2025 20:18:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746821884; cv=none; b=u32Dfk4jGUyoDb/x5f3Sl0mdN6eFD6AbSIBnmLNib6VOnxYeOGIx1+RXFhkMiYy4AUat86H0p1YfxXQAHEDJqWNC9oRpBsuG3g9N7BVQsotDHqLkw0itflgssjofp9VQj6ftSkE7SsVpHMjBPftcTcJs3Lx6S+TCWKQXHeA8ZxQ=
+	t=1746821886; cv=none; b=KvfUcexMYAvQZwPUJDPlnE7ndfGWNLllFT45T9XmLl3sbxsdiKh70UhvHb09JGRbWEy7noaX7rq1YwUSkENg5uy8BJ2whmEddFaamM4GWcHPuoKKRDoRPtyIHqCH4XJsK9K99SiKLxIuTiF6imZz7PkYfnZ688qy/hgAitu61NI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746821884; c=relaxed/simple;
-	bh=nG0D1Th2MfRsPa/QSsPxSzVCpK+SaAFbpW1WnLuhvFw=;
+	s=arc-20240116; t=1746821886; c=relaxed/simple;
+	bh=Boy9wHA23OKqJtEN3bVTI2eRSSWNKeq4o2FdXbHxnqE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ulCEgOsTyAkazBkPheD+UpgvFL300lw0F7KD2vnTj4qYZ2SGyDlkHK/adPR86S6We28o+fe3+8iqmjgtA5zfHzpCJWkWCWnU4+PWrhrg79DR8WuC8POLi5Z037P3V4vS8VD/492Dtd4eiOu/geeuSl52H6qsJ9rXCFXTzAlWRWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=an0/2ltE; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CAF6C4CEE9;
-	Fri,  9 May 2025 20:18:03 +0000 (UTC)
+	 MIME-Version; b=I84SzgU/baYUPsuoclDLZ3qS6xI1EY2Nvb/Stojn/ELXBmjmXSpjqIAY9W6JGreKU0+pgKy6ekujWle+7hu5l1OaFn6QjSLOkA9oDwsOieRKHEdd5IvvZnE90Y9zOJIHznAqJaebG5gbAq7ITsfAxb/jtrH32lsh+dzmioDBvM4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bNpa9S0N; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12CFBC4CEEF;
+	Fri,  9 May 2025 20:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746821883;
-	bh=nG0D1Th2MfRsPa/QSsPxSzVCpK+SaAFbpW1WnLuhvFw=;
+	s=k20201202; t=1746821884;
+	bh=Boy9wHA23OKqJtEN3bVTI2eRSSWNKeq4o2FdXbHxnqE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=an0/2ltEMaxftommRLf1wOOrhLwoqcPyXA1fOgV7HMYo6xQU1YbrR24U9/6+g46xT
-	 ewWdvQwOo4DsURWQdhv/N3g6T8uaf3s1G19yAJG/ODSlT4DAwz5e0kvWm2rdWhF4Yu
-	 ctjyz4dzMo4PQFdKQBkCSi/G8jrxT8thNUoWDZcEhAs+cyl0gh3nTb+UmUSRXvrUea
-	 gSo7wgMAIpsB0No8KqRAIw5QNU3LQKGLY3guWOijVk3dJqwfMOwVKklzKc0PKM/zdI
-	 ZPlPO3oS2Qf3kmKLUUBRlgeEkJszVgQsBCWhoZJyknIGVh/xkRJDluzVQN5l6aZH7e
-	 JKnbFJXNDqnHg==
+	b=bNpa9S0NxvncHPr23Hfpe++saLBwT1acULEXarkyfD1eG7DHmkVBWC1x8n0SkmHfo
+	 b8PEuNe2vHeu9I0zy4hpIk1pvjU4aQOJIBmkEEI6rODk6HROy+gnEplGcMxUViP63p
+	 tYc6p2EV7joaAcjppe+Zx4UYo7gL9o9rvPHfHJvkwdFxEBtzmqLwNTLrmDZtHE8ETL
+	 jjS8vNKThHUz8GVvHa4qadYrDKCi/hl8RYwkNOhed05HnHMt27Bzud8lcG501HzMGP
+	 43aq5SFz/wuwHKqUYHXAr5wSnEl98Iko+6PVWwHMYCJ2nSd2HEJ784PrQb2PvmTN9g
+	 YUdZiCYU6sg+A==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>
-Subject: [PATCH v2 27/62] objtool: Mark .cold subfunctions
-Date: Fri,  9 May 2025 13:16:51 -0700
-Message-ID: <d67ebbcb2d1da07b08ba3e2d43339b857a874b40.1746821544.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 28/62] objtool: Fix weak symbol hole detection for .cold functions
+Date: Fri,  9 May 2025 13:16:52 -0700
+Message-ID: <8ae052ab65412c0fc0359e780dc382f9feb53ace.1746821544.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1746821544.git.jpoimboe@kernel.org>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
@@ -70,108 +70,150 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Introduce a flag to identify .cold subfunctions so they can be detected
-easier and faster.
+When ignore_unreachable_insn() looks for weak function holes which jump
+to their .cold functions, it assumes the parent function comes before
+the corresponding .cold function in the symbol table.  That's not
+necessarily the case with -ffunction-sections.
+
+Mark all the holes beforehand (including .cold functions) so the
+ordering of the discovery doesn't matter.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c               | 14 ++++++--------
- tools/objtool/elf.c                 | 19 ++++++++++---------
- tools/objtool/include/objtool/elf.h |  1 +
- 3 files changed, 17 insertions(+), 17 deletions(-)
+ tools/objtool/check.c                 | 84 ++++++++++++++-------------
+ tools/objtool/include/objtool/check.h |  3 +-
+ 2 files changed, 45 insertions(+), 42 deletions(-)
 
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index d53438865d68..043c36b70f26 100644
+index 043c36b70f26..a2a025ec57e8 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -1581,7 +1581,9 @@ static int add_jump_destinations(struct objtool_file *file)
- 		/*
- 		 * Cross-function jump.
- 		 */
--		if (func && insn_func(jump_dest) && func != insn_func(jump_dest)) {
-+
-+		if (func && insn_func(jump_dest) && !func->cold &&
-+		    insn_func(jump_dest)->cold) {
- 
- 			/*
- 			 * For GCC 8+, create parent/child links for any cold
-@@ -1598,11 +1600,8 @@ static int add_jump_destinations(struct objtool_file *file)
- 			 * case where the parent function's only reference to a
- 			 * subfunction is through a jump table.
- 			 */
--			if (!strstr(func->name, ".cold") &&
--			    strstr(insn_func(jump_dest)->name, ".cold")) {
--				func->cfunc = insn_func(jump_dest);
--				insn_func(jump_dest)->pfunc = func;
--			}
-+			func->cfunc = insn_func(jump_dest);
-+			insn_func(jump_dest)->pfunc = func;
- 		}
- 
- 		if (jump_is_sibling_call(file, insn, jump_dest)) {
-@@ -4066,9 +4065,8 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
- 			 * If this hole jumps to a .cold function, mark it ignore too.
- 			 */
- 			if (insn->jump_dest && insn_func(insn->jump_dest) &&
--			    strstr(insn_func(insn->jump_dest)->name, ".cold")) {
-+			    insn_func(insn->jump_dest)->cold)
- 				insn_func(insn->jump_dest)->ignore = true;
--			}
- 		}
- 
- 		return false;
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index d36c0d42fd7b..59568381486c 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -441,6 +441,10 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
- 	list_add(&sym->list, entry);
- 	elf_hash_add(symbol, &sym->hash, sym->idx);
- 	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
-+
-+	if (is_func_sym(sym) && strstr(sym->name, ".cold"))
-+		sym->cold = 1;
-+	sym->pfunc = sym->cfunc = sym;
+@@ -2527,6 +2527,44 @@ static void mark_rodata(struct objtool_file *file)
+ 	file->rodata = found;
  }
  
- static int read_symbols(struct elf *elf)
-@@ -527,18 +531,15 @@ static int read_symbols(struct elf *elf)
- 		sec_for_each_sym(sec, sym) {
- 			char *pname;
- 			size_t pnamelen;
--			if (!is_func_sym(sym))
++static void mark_holes(struct objtool_file *file)
++{
++	struct instruction *insn;
++	bool in_hole = false;
 +
-+			if (!sym->cold)
- 				continue;
++	if (!opts.link)
++		return;
++
++	/*
++	 * Whole archive runs might encounter dead code from weak symbols.
++	 * This is where the linker will have dropped the weak symbol in
++	 * favour of a regular symbol, but leaves the code in place.
++	 */
++	for_each_insn(file, insn) {
++		if (insn->sym || !find_symbol_hole_containing(insn->sec, insn->offset)) {
++			in_hole = false;
++			continue;
++		}
++
++		/* Skip function padding and pfx code */
++		if (!in_hole && insn->type == INSN_NOP)
++			continue;
++
++		in_hole = true;
++		insn->hole = 1;
++
++		/*
++		 * If this hole jumps to a .cold function, mark it ignore.
++		 */
++		if (insn->jump_dest) {
++			struct symbol *dest_func = insn_func(insn->jump_dest);
++
++			if (dest_func && dest_func->cold)
++				dest_func->ignore = true;
++		}
++	}
++}
++
+ static int decode_sections(struct objtool_file *file)
+ {
+ 	int ret;
+@@ -2592,6 +2630,9 @@ static int decode_sections(struct objtool_file *file)
+ 	if (ret)
+ 		return ret;
  
--			if (sym->pfunc == NULL)
--				sym->pfunc = sym;
--
--			if (sym->cfunc == NULL)
--				sym->cfunc = sym;
--
- 			coldstr = strstr(sym->name, ".cold");
--			if (!coldstr)
--				continue;
-+			if (!coldstr) {
-+				ERROR("%s(): cold subfunction without \".cold\"?", sym->name);
-+				return -1;
-+			}
++	/* Must be after add_jump_destinations() */
++	mark_holes(file);
++
+ 	/*
+ 	 * Must be after add_call_destinations() such that it can override
+ 	 * dead_end_function() marks.
+@@ -4021,7 +4062,8 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
+ 	struct instruction *prev_insn;
+ 	int i;
  
- 			pnamelen = coldstr - sym->name;
- 			pname = strndup(sym->name, pnamelen);
-diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index 0914dadece0b..f41496b0ad8f 100644
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -71,6 +71,7 @@ struct symbol {
- 	u8 local_label       : 1;
- 	u8 frame_pointer     : 1;
- 	u8 ignore	     : 1;
-+	u8 cold		     : 1;
- 	struct list_head pv_target;
- 	struct reloc *relocs;
- 	struct section *group_sec;
+-	if (insn->type == INSN_NOP || insn->type == INSN_TRAP || (func && func->ignore))
++	if (insn->type == INSN_NOP || insn->type == INSN_TRAP ||
++	    insn->hole || (func && func->ignore))
+ 		return true;
+ 
+ 	/*
+@@ -4032,46 +4074,6 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
+ 	    !strcmp(insn->sec->name, ".altinstr_aux"))
+ 		return true;
+ 
+-	/*
+-	 * Whole archive runs might encounter dead code from weak symbols.
+-	 * This is where the linker will have dropped the weak symbol in
+-	 * favour of a regular symbol, but leaves the code in place.
+-	 *
+-	 * In this case we'll find a piece of code (whole function) that is not
+-	 * covered by a !section symbol. Ignore them.
+-	 */
+-	if (opts.link && !func) {
+-		int size = find_symbol_hole_containing(insn->sec, insn->offset);
+-		unsigned long end = insn->offset + size;
+-
+-		if (!size) /* not a hole */
+-			return false;
+-
+-		if (size < 0) /* hole until the end */
+-			return true;
+-
+-		sec_for_each_insn_continue(file, insn) {
+-			/*
+-			 * If we reach a visited instruction at or before the
+-			 * end of the hole, ignore the unreachable.
+-			 */
+-			if (insn->visited)
+-				return true;
+-
+-			if (insn->offset >= end)
+-				break;
+-
+-			/*
+-			 * If this hole jumps to a .cold function, mark it ignore too.
+-			 */
+-			if (insn->jump_dest && insn_func(insn->jump_dest) &&
+-			    insn_func(insn->jump_dest)->cold)
+-				insn_func(insn->jump_dest)->ignore = true;
+-		}
+-
+-		return false;
+-	}
+-
+ 	if (!func)
+ 		return false;
+ 
+diff --git a/tools/objtool/include/objtool/check.h b/tools/objtool/include/objtool/check.h
+index 00fb745e7233..0f4e7ac929ef 100644
+--- a/tools/objtool/include/objtool/check.h
++++ b/tools/objtool/include/objtool/check.h
+@@ -64,7 +64,8 @@ struct instruction {
+ 	    noendbr		: 1,
+ 	    unret		: 1,
+ 	    visited		: 4,
+-	    no_reloc		: 1;
++	    no_reloc		: 1,
++	    hole		: 1;
+ 		/* 10 bit hole */
+ 
+ 	struct alt_group *alt_group;
 -- 
 2.49.0
 
