@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1365-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1366-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 68F72AB1DD2
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:18:33 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 31BDFAB1DD8
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:19:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2DD0EA230CE
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:18:14 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id E97851C207E9
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:19:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6983525FA29;
-	Fri,  9 May 2025 20:17:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C4922609F2;
+	Fri,  9 May 2025 20:17:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E7zilWZM"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qJhDkWKq"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4079525FA11;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E69FA2253B2;
 	Fri,  9 May 2025 20:17:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746821868; cv=none; b=I2Owb4e6/peu8BOvF6NV4uLvjr4p5+xwwSnWkPlpXBp9Ot/5J510RIMU7n8dQs+UmK5goCsaFAg+yDwgcdbKTCCGMb7X78aLshkOQn31LvU4TZSYBiDZef4JPwHBZv4iYkXhvS2m5RZ1s659qDWQNLyOF0LB7Sa9Fal6rmd8iG4=
+	t=1746821869; cv=none; b=H8ITegvrLNgH+lRdyJt0jUUdCCvlJjcuemJry40Rx0zWtdGSpqKXtZFE88dyMdSkgjwNmkz030WmK2R9VP41MEFu8cQVLCrCJ1DOFUWS9CCftN/C2PzpAUXwNQrxxakwvlSbc/5zbTbhaWI1vxDONmv9tZKy72TIoZ9cqv2Az/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746821868; c=relaxed/simple;
-	bh=3tlymgvkIpuX/jFV9LwurncZOXQItfZudGI+G+KrCR4=;
+	s=arc-20240116; t=1746821869; c=relaxed/simple;
+	bh=CzL97ppEFIAqWlaw5ziqGUhqojWDK7zAj1wMTi9L81o=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=XLJl2kjbvqyKgu/lQPJHfbCR9XKcPgDi0mFx0vfbPxCqCnu2ykZ7bSb7Lr44tVOv6VhpUn+B9t7ciHe1ff3iL5XNLLKwpevxcT20bve7aipZKwmtWMLkzpIAwBnDAl6DVVU7zro7j7+oB1I3RAuUDsMSCGdD1s5XSdy8u3a/yyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E7zilWZM; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 881C4C4CEF5;
-	Fri,  9 May 2025 20:17:47 +0000 (UTC)
+	 MIME-Version; b=IHkGjLxOqzuIkaVRz/SUxXU0hscltKeIuud8miMfdo+CI0pWaUmHTZDK/cofoEAGekaVAyfwhZHLhV8WaupQJaih3zlWoCpxTY2cZXBFu6VU4EeIlGl5pCbkP9tAAQAwewffz8fUAEWEKJRaja7EiObJwbF550O9RtHE9OBWM3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qJhDkWKq; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48192C4CEE9;
+	Fri,  9 May 2025 20:17:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1746821868;
-	bh=3tlymgvkIpuX/jFV9LwurncZOXQItfZudGI+G+KrCR4=;
+	bh=CzL97ppEFIAqWlaw5ziqGUhqojWDK7zAj1wMTi9L81o=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=E7zilWZMDyqkeZxOb8AHXNr5hpEKIS0O6+t5jLElB4bI/87rGlRjtuarUGKZ0Igvl
-	 uOjj4CshgSa+X2qRVY3RQcyGbtu9ni1dhoUIL02dHJsTygV4HhUfdT/cOnoHfSjvmS
-	 NLVtxIPNnv6boDruYmYC0UY2x7hymjA5iV3Q4fSh2S+yntZ0VHaJZxGb3OSOIqCI+x
-	 qUP5HYhNVeMSRdYRZaL2biEgNVdMSR3LLpREq5j94QsiyjD6Lh/tW16vgn/yHC7QkJ
-	 xERsk0I4oO8eWoZxaJz5u6MMVdwGdD3gngqv5f/3vQ1GSRsJWvAARpfrzFPCk7QAtD
-	 7IjsmlqxXbJQA==
+	b=qJhDkWKqUgHYWVYXXKx7Hih56KQo88qiJq9j5h6ll9U+mWnhJCF2hi0ellmWZelAl
+	 vQD/hIff0kzT/3HulQybXajooBX3k53HU/5CNcfPAATls8rCuRydcXAYwfaT7Mhh2C
+	 StfWE6SqYrVzKkacONPBvHKKXJZCNk39Axs4dv0rqJNsRFXudoIV8xwGuqgBCZ53D/
+	 lNDn2fsZYg7IZkoI6vgP17f9oFGBKKNS9c6OdBw9WDa3Iuq1Z/3OkpXDhZYBblbd8c
+	 ZKQ2fM6Z4JHyUT3O0jusG2IxdBdMYdR+IBj3Xs2tGhuvN3e9xcwKpUNRgvsfuIaIue
+	 4fVDcIsL0+DfQ==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>
-Subject: [PATCH v2 06/62] compiler.h: Make addressable symbols less of an eyesore
-Date: Fri,  9 May 2025 13:16:30 -0700
-Message-ID: <7a2ba63aa1d1d3a6a904dd31188d910a8b647ba1.1746821544.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 07/62] elfnote: Change ELFNOTE() to use __UNIQUE_ID()
+Date: Fri,  9 May 2025 13:16:31 -0700
+Message-ID: <3509a9a8896dfc3f9c54f8eeb36ed77326827564.1746821544.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1746821544.git.jpoimboe@kernel.org>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
@@ -70,35 +70,63 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Avoid underscore overload by changing:
+In preparation for the objtool klp diff subcommand, replace the custom
+unique symbol name generation in ELFNOTE() with __UNIQUE_ID().
 
-  __UNIQUE_ID___addressable_loops_per_jiffy_868
-
-to the following:
-
-  __UNIQUE_ID_addressable_loops_per_jiffy_868
-
-This matches the format used by other __UNIQUE_ID()-generated symbols
-and improves readability for those who stare at ELF symbol table dumps.
+This standardizes the naming format for all "unique" symbols, which will
+allow objtool to properly correlate them.  Note this also removes the
+"one ELF note per line" limitation.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- include/linux/compiler.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/elfnote.h | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index 0efcfa6dab0f..1390d5cb2359 100644
---- a/include/linux/compiler.h
-+++ b/include/linux/compiler.h
-@@ -287,7 +287,7 @@ static inline void *offset_to_ptr(const int *off)
-  */
- #define ___ADDRESSABLE(sym, __attrs)						\
- 	static void * __used __attrs						\
--	__UNIQUE_ID(__PASTE(__addressable_,sym)) = (void *)(uintptr_t)&sym;
-+	__UNIQUE_ID(__PASTE(addressable_,sym)) = (void *)(uintptr_t)&sym;
+diff --git a/include/linux/elfnote.h b/include/linux/elfnote.h
+index 69b136e4dd2b..bb3dcded055f 100644
+--- a/include/linux/elfnote.h
++++ b/include/linux/elfnote.h
+@@ -60,23 +60,21 @@
  
- #define __ADDRESSABLE(sym) \
- 	___ADDRESSABLE(sym, __section(".discard.addressable"))
+ #else	/* !__ASSEMBLER__ */
+ #include <uapi/linux/elf.h>
++#include <linux/compiler.h>
+ /*
+  * Use an anonymous structure which matches the shape of
+  * Elf{32,64}_Nhdr, but includes the name and desc data.  The size and
+  * type of name and desc depend on the macro arguments.  "name" must
+- * be a literal string, and "desc" must be passed by value.  You may
+- * only define one note per line, since __LINE__ is used to generate
+- * unique symbols.
++ * be a literal string, and "desc" must be passed by value.
+  */
+-#define _ELFNOTE_PASTE(a,b)	a##b
+-#define _ELFNOTE(size, name, unique, type, desc)			\
++#define ELFNOTE(size, name, type, desc)					\
+ 	static const struct {						\
+ 		struct elf##size##_note _nhdr;				\
+ 		unsigned char _name[sizeof(name)]			\
+ 		__attribute__((aligned(sizeof(Elf##size##_Word))));	\
+ 		typeof(desc) _desc					\
+ 			     __attribute__((aligned(sizeof(Elf##size##_Word)))); \
+-	} _ELFNOTE_PASTE(_note_, unique)				\
++	} __UNIQUE_ID(note)						\
+ 		__used							\
+ 		__attribute__((section(".note." name),			\
+ 			       aligned(sizeof(Elf##size##_Word)),	\
+@@ -89,11 +87,10 @@
+ 		name,							\
+ 		desc							\
+ 	}
+-#define ELFNOTE(size, name, type, desc)		\
+-	_ELFNOTE(size, name, __LINE__, type, desc)
+ 
+ #define ELFNOTE32(name, type, desc) ELFNOTE(32, name, type, desc)
+ #define ELFNOTE64(name, type, desc) ELFNOTE(64, name, type, desc)
++
+ #endif	/* __ASSEMBLER__ */
+ 
+ #endif /* _LINUX_ELFNOTE_H */
 -- 
 2.49.0
 
