@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1388-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1387-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B89F6AB1E01
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:23:19 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE5EFAB1DFF
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:23:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2D3CEA20597
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:22:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7E71EA07CDE
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:22:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B895290BAC;
-	Fri,  9 May 2025 20:18:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9370528ECFB;
+	Fri,  9 May 2025 20:18:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bNpa9S0N"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HKJV+B3B"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3095D27A925;
-	Fri,  9 May 2025 20:18:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A0EF28E59B;
+	Fri,  9 May 2025 20:18:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746821886; cv=none; b=KvfUcexMYAvQZwPUJDPlnE7ndfGWNLllFT45T9XmLl3sbxsdiKh70UhvHb09JGRbWEy7noaX7rq1YwUSkENg5uy8BJ2whmEddFaamM4GWcHPuoKKRDoRPtyIHqCH4XJsK9K99SiKLxIuTiF6imZz7PkYfnZ688qy/hgAitu61NI=
+	t=1746821885; cv=none; b=EzQEm+AMPbwDLrblywMoD3bmaJ+K5d8NjSS5eevQ8FrzfwAoASBtb/g84Jgf9vRCZKDUSUWJivqtXKAbsWZkCjyGRMXDKgooRHd5TQQ45B2zzX582MzMBETCx6BLxwb23xHG0wQD89xy2I1M5PFjbR1PkMaQWF+ivpUrQBIR5IE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746821886; c=relaxed/simple;
-	bh=Boy9wHA23OKqJtEN3bVTI2eRSSWNKeq4o2FdXbHxnqE=;
+	s=arc-20240116; t=1746821885; c=relaxed/simple;
+	bh=1NbDwtOv3dS3yl1dXnXeu8RsvtrlV1MtT1kj2eujlVo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=I84SzgU/baYUPsuoclDLZ3qS6xI1EY2Nvb/Stojn/ELXBmjmXSpjqIAY9W6JGreKU0+pgKy6ekujWle+7hu5l1OaFn6QjSLOkA9oDwsOieRKHEdd5IvvZnE90Y9zOJIHznAqJaebG5gbAq7ITsfAxb/jtrH32lsh+dzmioDBvM4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bNpa9S0N; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12CFBC4CEEF;
+	 MIME-Version; b=iIY8AK3s7J2ZeMpuNNi2ymasiS/4xXmE2XZa6RkNYnhkruMT4fZdZBTJvl/KsFo3MtDBYjo845X/VlBdIUYZKbcY7t2c7H5YsAl0Seouv1ZUgD3nohBETaE2g+0JYyd2NEKBwrO369BpDVNJz9ce253gptaL/nuJQ2aVEIBG2MU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HKJV+B3B; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD06BC4CEF0;
 	Fri,  9 May 2025 20:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746821884;
-	bh=Boy9wHA23OKqJtEN3bVTI2eRSSWNKeq4o2FdXbHxnqE=;
+	s=k20201202; t=1746821885;
+	bh=1NbDwtOv3dS3yl1dXnXeu8RsvtrlV1MtT1kj2eujlVo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=bNpa9S0NxvncHPr23Hfpe++saLBwT1acULEXarkyfD1eG7DHmkVBWC1x8n0SkmHfo
-	 b8PEuNe2vHeu9I0zy4hpIk1pvjU4aQOJIBmkEEI6rODk6HROy+gnEplGcMxUViP63p
-	 tYc6p2EV7joaAcjppe+Zx4UYo7gL9o9rvPHfHJvkwdFxEBtzmqLwNTLrmDZtHE8ETL
-	 jjS8vNKThHUz8GVvHa4qadYrDKCi/hl8RYwkNOhed05HnHMt27Bzud8lcG501HzMGP
-	 43aq5SFz/wuwHKqUYHXAr5wSnEl98Iko+6PVWwHMYCJ2nSd2HEJ784PrQb2PvmTN9g
-	 YUdZiCYU6sg+A==
+	b=HKJV+B3Buuf73rnysN7EBXD06v+LEqWPJQKH3PayyjPdZWCWS8Y9byr0yvA2h33mZ
+	 DCQuLYq9+yyX9AU8EYT/PsDYB289JmqhGoM+s/6PKgsISiOMVf1mR2KXoFVOrWXLEf
+	 Zww/r04mS76V42T4iMRfb8SFXmmWmIHQS8JU+yMIQD2QMcouCm40TUKzhlIAwYordI
+	 c5gxrzxBQNy53buyYQm+VfAxPkqiase6LEufgx1r28IP9jaj6DJzzvuL7OmFCRPRjK
+	 jJhTwB32bE/vRJKFh3s6V7bZ6GCwb9yigS/YdvSibuZ78BrcvOYqdH9xHSN7MLLXoh
+	 7SfF+wH0amUUw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>
-Subject: [PATCH v2 28/62] objtool: Fix weak symbol hole detection for .cold functions
-Date: Fri,  9 May 2025 13:16:52 -0700
-Message-ID: <8ae052ab65412c0fc0359e780dc382f9feb53ace.1746821544.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 29/62] objtool: Mark prefix functions
+Date: Fri,  9 May 2025 13:16:53 -0700
+Message-ID: <c4233972de0b0f2e6c94d4a225c953748d7c446b.1746821544.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1746821544.git.jpoimboe@kernel.org>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
@@ -70,150 +70,71 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When ignore_unreachable_insn() looks for weak function holes which jump
-to their .cold functions, it assumes the parent function comes before
-the corresponding .cold function in the symbol table.  That's not
-necessarily the case with -ffunction-sections.
-
-Mark all the holes beforehand (including .cold functions) so the
-ordering of the discovery doesn't matter.
+In preparation for the objtool klp diff subcommand, introduce a flag to
+identify __pfx_*() and __cfi_*() functions in advance so they don't need
+to be manually identified every time a check is needed.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c                 | 84 ++++++++++++++-------------
- tools/objtool/include/objtool/check.h |  3 +-
- 2 files changed, 45 insertions(+), 42 deletions(-)
+ tools/objtool/check.c               | 3 +--
+ tools/objtool/elf.c                 | 5 +++++
+ tools/objtool/include/objtool/elf.h | 6 ++++++
+ 3 files changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 043c36b70f26..a2a025ec57e8 100644
+index a2a025ec57e8..6b2e57d9aaf8 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -2527,6 +2527,44 @@ static void mark_rodata(struct objtool_file *file)
- 	file->rodata = found;
+@@ -3601,8 +3601,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 
+ 		if (func && insn_func(insn) && func != insn_func(insn)->pfunc) {
+ 			/* Ignore KCFI type preambles, which always fall through */
+-			if (!strncmp(func->name, "__cfi_", 6) ||
+-			    !strncmp(func->name, "__pfx_", 6))
++			if (is_prefix_func(func))
+ 				return 0;
+ 
+ 			if (file->ignore_unreachables)
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index 59568381486c..9a1fc0392b7f 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -442,6 +442,11 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
+ 	elf_hash_add(symbol, &sym->hash, sym->idx);
+ 	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
+ 
++	if (is_func_sym(sym) && sym->len == 16 &&
++	    (strstarts(sym->name, "__pfx") || strstarts(sym->name, "__cfi_")))
++		sym->prefix = 1;
++
++
+ 	if (is_func_sym(sym) && strstr(sym->name, ".cold"))
+ 		sym->cold = 1;
+ 	sym->pfunc = sym->cfunc = sym;
+diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
+index f41496b0ad8f..842faec1b9a9 100644
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -72,6 +72,7 @@ struct symbol {
+ 	u8 frame_pointer     : 1;
+ 	u8 ignore	     : 1;
+ 	u8 cold		     : 1;
++	u8 prefix	     : 1;
+ 	struct list_head pv_target;
+ 	struct reloc *relocs;
+ 	struct section *group_sec;
+@@ -229,6 +230,11 @@ static inline bool is_local_sym(struct symbol *sym)
+ 	return sym->bind == STB_LOCAL;
  }
  
-+static void mark_holes(struct objtool_file *file)
++static inline bool is_prefix_func(struct symbol *sym)
 +{
-+	struct instruction *insn;
-+	bool in_hole = false;
-+
-+	if (!opts.link)
-+		return;
-+
-+	/*
-+	 * Whole archive runs might encounter dead code from weak symbols.
-+	 * This is where the linker will have dropped the weak symbol in
-+	 * favour of a regular symbol, but leaves the code in place.
-+	 */
-+	for_each_insn(file, insn) {
-+		if (insn->sym || !find_symbol_hole_containing(insn->sec, insn->offset)) {
-+			in_hole = false;
-+			continue;
-+		}
-+
-+		/* Skip function padding and pfx code */
-+		if (!in_hole && insn->type == INSN_NOP)
-+			continue;
-+
-+		in_hole = true;
-+		insn->hole = 1;
-+
-+		/*
-+		 * If this hole jumps to a .cold function, mark it ignore.
-+		 */
-+		if (insn->jump_dest) {
-+			struct symbol *dest_func = insn_func(insn->jump_dest);
-+
-+			if (dest_func && dest_func->cold)
-+				dest_func->ignore = true;
-+		}
-+	}
++	return is_func_sym(sym) && sym->prefix;
 +}
 +
- static int decode_sections(struct objtool_file *file)
+ static inline bool is_reloc_sec(struct section *sec)
  {
- 	int ret;
-@@ -2592,6 +2630,9 @@ static int decode_sections(struct objtool_file *file)
- 	if (ret)
- 		return ret;
- 
-+	/* Must be after add_jump_destinations() */
-+	mark_holes(file);
-+
- 	/*
- 	 * Must be after add_call_destinations() such that it can override
- 	 * dead_end_function() marks.
-@@ -4021,7 +4062,8 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
- 	struct instruction *prev_insn;
- 	int i;
- 
--	if (insn->type == INSN_NOP || insn->type == INSN_TRAP || (func && func->ignore))
-+	if (insn->type == INSN_NOP || insn->type == INSN_TRAP ||
-+	    insn->hole || (func && func->ignore))
- 		return true;
- 
- 	/*
-@@ -4032,46 +4074,6 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
- 	    !strcmp(insn->sec->name, ".altinstr_aux"))
- 		return true;
- 
--	/*
--	 * Whole archive runs might encounter dead code from weak symbols.
--	 * This is where the linker will have dropped the weak symbol in
--	 * favour of a regular symbol, but leaves the code in place.
--	 *
--	 * In this case we'll find a piece of code (whole function) that is not
--	 * covered by a !section symbol. Ignore them.
--	 */
--	if (opts.link && !func) {
--		int size = find_symbol_hole_containing(insn->sec, insn->offset);
--		unsigned long end = insn->offset + size;
--
--		if (!size) /* not a hole */
--			return false;
--
--		if (size < 0) /* hole until the end */
--			return true;
--
--		sec_for_each_insn_continue(file, insn) {
--			/*
--			 * If we reach a visited instruction at or before the
--			 * end of the hole, ignore the unreachable.
--			 */
--			if (insn->visited)
--				return true;
--
--			if (insn->offset >= end)
--				break;
--
--			/*
--			 * If this hole jumps to a .cold function, mark it ignore too.
--			 */
--			if (insn->jump_dest && insn_func(insn->jump_dest) &&
--			    insn_func(insn->jump_dest)->cold)
--				insn_func(insn->jump_dest)->ignore = true;
--		}
--
--		return false;
--	}
--
- 	if (!func)
- 		return false;
- 
-diff --git a/tools/objtool/include/objtool/check.h b/tools/objtool/include/objtool/check.h
-index 00fb745e7233..0f4e7ac929ef 100644
---- a/tools/objtool/include/objtool/check.h
-+++ b/tools/objtool/include/objtool/check.h
-@@ -64,7 +64,8 @@ struct instruction {
- 	    noendbr		: 1,
- 	    unret		: 1,
- 	    visited		: 4,
--	    no_reloc		: 1;
-+	    no_reloc		: 1,
-+	    hole		: 1;
- 		/* 10 bit hole */
- 
- 	struct alt_group *alt_group;
+ 	return sec->sh.sh_type == SHT_RELA || sec->sh.sh_type == SHT_REL;
 -- 
 2.49.0
 
