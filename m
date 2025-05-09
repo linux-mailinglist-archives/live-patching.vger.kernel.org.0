@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1391-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1392-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0B743AB1E07
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:23:52 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 67002AB1E09
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:24:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E34AC527A99
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:23:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EFBBE98795A
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:23:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A51B3297B74;
-	Fri,  9 May 2025 20:18:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C039D2980A3;
+	Fri,  9 May 2025 20:18:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UP0j4VTY"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sqnNoE35"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BCE0296FBC;
-	Fri,  9 May 2025 20:18:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 977A4297B9F;
+	Fri,  9 May 2025 20:18:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746821887; cv=none; b=tiKKirYgdiZBBvzUn6/Ol1gO4qM1aoYc4uv+7LvueGA5YWlp4hLmu5O8dhgombJgR80/EUAYXodmEQhE7XgrDELXv4uxTaxST83Iqc1KkHXiOzAJTB8Iv0CYHsYabKUoFP29o3aNe7ZSiXnZdSBBH3zII+5TPDHHTqbiYv0pRcM=
+	t=1746821888; cv=none; b=B3BRVJnLCf1QUAFg0mxMT2tFDYSaolxxLdSxRPp1fuDF6aF1csYBdHLnJ3SlFeIFTV/zXPc4iv/xd7L58+O/NzKBEjl83ku5vzqTzLbIGYmCaGpc+KkjLiFp2Js+7xoL3LQh4G1/duz1T3wvCaXTRvZRPhr6dqPTBz7Q96uqSNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746821887; c=relaxed/simple;
-	bh=31ROD4LxAHEXgMf4J97V0RMD8+gDvAKgCY+5TpvyP/4=;
+	s=arc-20240116; t=1746821888; c=relaxed/simple;
+	bh=Kja++anVa4TZR4hAtZTrGisJVRyVD27NbML9IybK2mA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ftAden8pymQ1G0FA/1sFMBQNqrfcQItSOvsXmwGKC9zV6X2RKJ1GQEh/pcbnMkq5WmthbvIMgk8OolmVLvHPKiIkyDAEh6QBBUru9pBiYVfJX4is1zJOL3/QnShdL6FZnJIRRlw2RdjIl4VyYHz6Wy7zdWNWZSiXFAcNs527+Qc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UP0j4VTY; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BE5C4CEEE;
-	Fri,  9 May 2025 20:18:06 +0000 (UTC)
+	 MIME-Version; b=EazStoARMU+C4O7xW5U2vSULHFASxn57h3dcNOn3UWXY8hjE9b1s0icbY+PCNYWt577mKCS8m3txMUhcmI4eco+QN08WX4uk1aKTOcYT+U+B1X0H2QJdRYU038ZFcRJejcyyAotaR42YTEVIFzYSgjr3ElmJokbY8bYURy85waw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sqnNoE35; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852C0C4CEF0;
+	Fri,  9 May 2025 20:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746821887;
-	bh=31ROD4LxAHEXgMf4J97V0RMD8+gDvAKgCY+5TpvyP/4=;
+	s=k20201202; t=1746821888;
+	bh=Kja++anVa4TZR4hAtZTrGisJVRyVD27NbML9IybK2mA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=UP0j4VTYeX5hKxuNbS9jtkocy1sM0ptGI4ufTcutN3XEHnrSyB11xqAp7Zv/tTswp
-	 HMcUEA1Im1sZyE2m0ccrfH12imhXu9jXjsVfv4E1dwTPSXgKFuyZh3C74y5DZOUSCe
-	 wwREeNalMiIlUbuWqyK4f+k5vHv/acQNi6bO5GEj6YY1TSM7mjUCcOZZWhIlVwOUaf
-	 LnvOevtLPMUXWxHKkCGKwLmordOd4J/PAAY5SAqumHv+xnUsgDpkaK0Kn4hVZZHp25
-	 5ROZpPGPt5WnNa8SeCM/ZRhMoEq9GqeO0mzv1R4kDnAmOUUtfYHKLF41+fUIgqX2lQ
-	 zRk+mOg0lbMdQ==
+	b=sqnNoE3598sTsOxjNaC/uRmaDYK/WE8uBSPx6HUE1EKp4eP2xBiqFl/aXpkRlnBUo
+	 sIt0Wq/iE6zaxlbIPTOKubZcvoPoyGzGJwGSj7WLci2JapAkS+KFvhzgJXx4dB4zkO
+	 /qNcG9TSbPkJMADfX8OFK8reVFR+QL1rz+GyyVG2OhJeV+v8XvkdP/zwdC8Qrqyl0Q
+	 VJlcaPbQJI9BqaLyPkXg9Zh4X2hwRY88vqak0R+TwZjG5kdlPTy8fPSNcbhDzlm7wE
+	 fo2vQiz2859Blu3MFXXqKJDf6mR5AN05jx/YVKazaz7DsWY6wogSmdez9P2xoQU+yH
+	 sVRtAuCLXN7QQ==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>
-Subject: [PATCH v2 32/62] objtool: Suppress section skipping warnings with --dryrun
-Date: Fri,  9 May 2025 13:16:56 -0700
-Message-ID: <7eccdb0b09eff581377e5efab8377b6a37596992.1746821544.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 33/62] objtool: Rename --Werror to --werror
+Date: Fri,  9 May 2025 13:16:57 -0700
+Message-ID: <a6bcc11cf3957721ee604c3c4981d511f4f67ff8.1746821544.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1746821544.git.jpoimboe@kernel.org>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
@@ -70,95 +70,59 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-It's common to use --dryrun on binaries that have already been
-processed.  Don't print the section skipping warnings in that case.
+The objtool --Werror option name is stylistically inconsistent: halfway
+between GCC's single-dash capitalized -Werror and objtool's double-dash
+--lowercase convention, making it unnecessarily hard to remember.
+
+Make the 'W' lower case (--werror) for consistency with objtool's other
+options.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c | 28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+ scripts/Makefile.lib          | 2 +-
+ scripts/Makefile.vmlinux_o    | 2 +-
+ tools/objtool/builtin-check.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 3b9443b98fd5..66cbeebd16ea 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -637,7 +637,9 @@ static int create_static_call_sections(struct objtool_file *file)
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index fb94e1ed1092..bfd55a6ad8f1 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -272,7 +272,7 @@ objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
+ objtool-args-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
+ objtool-args-$(or $(CONFIG_GCOV_KERNEL),$(CONFIG_KCOV))	+= --no-unreachable
+ objtool-args-$(CONFIG_PREFIX_SYMBOLS)			+= --prefix=$(CONFIG_FUNCTION_PADDING_BYTES)
+-objtool-args-$(CONFIG_OBJTOOL_WERROR)			+= --Werror
++objtool-args-$(CONFIG_OBJTOOL_WERROR)			+= --werror
  
- 	sec = find_section_by_name(file->elf, ".static_call_sites");
- 	if (sec) {
--		WARN("file already has .static_call_sites section, skipping");
-+		if (!opts.dryrun)
-+			WARN("file already has .static_call_sites section, skipping");
-+
- 		return 0;
- 	}
+ objtool-args = $(objtool-args-y)					\
+ 	$(if $(delay-objtool), --link)					\
+diff --git a/scripts/Makefile.vmlinux_o b/scripts/Makefile.vmlinux_o
+index 938c7457717e..7562cdc73dc7 100644
+--- a/scripts/Makefile.vmlinux_o
++++ b/scripts/Makefile.vmlinux_o
+@@ -41,7 +41,7 @@ objtool-enabled := $(or $(delay-objtool),$(CONFIG_NOINSTR_VALIDATION))
+ ifeq ($(delay-objtool),y)
+ vmlinux-objtool-args-y					+= $(objtool-args-y)
+ else
+-vmlinux-objtool-args-$(CONFIG_OBJTOOL_WERROR)		+= --Werror
++vmlinux-objtool-args-$(CONFIG_OBJTOOL_WERROR)		+= --werror
+ endif
  
-@@ -719,7 +721,9 @@ static int create_retpoline_sites_sections(struct objtool_file *file)
+ vmlinux-objtool-args-$(CONFIG_NOINSTR_VALIDATION)	+= --noinstr \
+diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
+index 80239843e9f0..43139143edf8 100644
+--- a/tools/objtool/builtin-check.c
++++ b/tools/objtool/builtin-check.c
+@@ -100,7 +100,7 @@ static const struct option check_options[] = {
+ 	OPT_BOOLEAN(0,   "sec-address", &opts.sec_address, "print section addresses in warnings"),
+ 	OPT_BOOLEAN(0,   "stats", &opts.stats, "print statistics"),
+ 	OPT_BOOLEAN('v', "verbose", &opts.verbose, "verbose warnings"),
+-	OPT_BOOLEAN(0,   "Werror", &opts.werror, "return error on warnings"),
++	OPT_BOOLEAN(0,   "werror", &opts.werror, "return error on warnings"),
  
- 	sec = find_section_by_name(file->elf, ".retpoline_sites");
- 	if (sec) {
--		WARN("file already has .retpoline_sites, skipping");
-+		if (!opts.dryrun)
-+			WARN("file already has .retpoline_sites, skipping");
-+
- 		return 0;
- 	}
- 
-@@ -757,7 +761,9 @@ static int create_return_sites_sections(struct objtool_file *file)
- 
- 	sec = find_section_by_name(file->elf, ".return_sites");
- 	if (sec) {
--		WARN("file already has .return_sites, skipping");
-+		if (!opts.dryrun)
-+			WARN("file already has .return_sites, skipping");
-+
- 		return 0;
- 	}
- 
-@@ -795,7 +801,9 @@ static int create_ibt_endbr_seal_sections(struct objtool_file *file)
- 
- 	sec = find_section_by_name(file->elf, ".ibt_endbr_seal");
- 	if (sec) {
--		WARN("file already has .ibt_endbr_seal, skipping");
-+		if (!opts.dryrun)
-+			WARN("file already has .ibt_endbr_seal, skipping");
-+
- 		return 0;
- 	}
- 
-@@ -852,7 +860,9 @@ static int create_cfi_sections(struct objtool_file *file)
- 
- 	sec = find_section_by_name(file->elf, ".cfi_sites");
- 	if (sec) {
--		WARN("file already has .cfi_sites section, skipping");
-+		if (!opts.dryrun)
-+			WARN("file already has .cfi_sites section, skipping");
-+
- 		return 0;
- 	}
- 
-@@ -900,7 +910,9 @@ static int create_mcount_loc_sections(struct objtool_file *file)
- 
- 	sec = find_section_by_name(file->elf, "__mcount_loc");
- 	if (sec) {
--		WARN("file already has __mcount_loc section, skipping");
-+		if (!opts.dryrun)
-+			WARN("file already has __mcount_loc section, skipping");
-+
- 		return 0;
- 	}
- 
-@@ -944,7 +956,9 @@ static int create_direct_call_sections(struct objtool_file *file)
- 
- 	sec = find_section_by_name(file->elf, ".call_sites");
- 	if (sec) {
--		WARN("file already has .call_sites section, skipping");
-+		if (!opts.dryrun)
-+			WARN("file already has .call_sites section, skipping");
-+
- 		return 0;
- 	}
- 
+ 	OPT_END(),
+ };
 -- 
 2.49.0
 
