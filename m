@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1400-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1401-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D9F70AB1E22
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:26:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CEC6DAB1E19
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 22:25:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5C1815009E0
-	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:25:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA65B3B8EDB
+	for <lists+live-patching@lfdr.de>; Fri,  9 May 2025 20:25:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F8E4298C0A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D7176298C2D;
 	Fri,  9 May 2025 20:18:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sEKJXG8P"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tuWE7pU7"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08D85298C10;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE621298C1E;
 	Fri,  9 May 2025 20:18:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746821894; cv=none; b=Ui8Bftu4g0SOhy+2Mtm4OMtSSM0SZePg6szid7myRGW0dC7H3oyEG9jnlWPDSqUm7golzpRvgYVjoPcwbHQ607qPsS9wv7PyM/KE/TaBeWVC5+1GuPqtaLSeY/otTNymgIkZqAOk1nKrIClsBjx5WYTQt1GOUATzbqUV4mRPOGo=
+	t=1746821894; cv=none; b=Fp+C3oFW8pimjDOgtJ8+We3l4IzMOfYuwSHkpxjf9df5SQoxWQGoiY0VGg6putdi6jpkABOqqDiDv2V1cac7rH5eAUvjbDiiM09p7tVqDxbGMpyoeOUrjxAgqIn3g/F10QUcSCqcIgDiRCxhdy1KHMMpNyPYePPGQnNn2Wo7K+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1746821894; c=relaxed/simple;
-	bh=+noZmweQm+RBqECCFwqV789efebiB0bLMqaVRLOtst4=;
+	bh=IhnT+r49yQN4Y1vAs0J9seA0eXIHcLBZGuntccFA4aA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dSRD684/1ntwVX3rQdncqWKtEVfyEEVCNpHlujKQddY7WpSx/2o0Swggr8b5VclGvaZ4efPw64NykQR0StgQW6r00RyR75gAKyWGpAfWOxep0uNDb3WRy7pv8Vg3xXp7H2AYfliYP5VvO2NF/UiMhAAs4QgMlZlcHgIvgWb/PeQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sEKJXG8P; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50FCBC4CEEF;
+	 MIME-Version; b=FUvKaYeq2ca2RaUXdT4T2t1Dpyt97rCyMyyjd/GWrwSUvRIHX2j9Dtl3oH6QkpuHC6L/bIYiK2a3tOyZb5apVymr4HA/bSrK/oGvamzngu8UBYvMvzy7qOuW9I57TzYAe2yJWep4Rp6/VBloy8/hL3mP3o83amRZUog8oRoQMmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tuWE7pU7; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06959C4CEF0;
 	Fri,  9 May 2025 20:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746821893;
-	bh=+noZmweQm+RBqECCFwqV789efebiB0bLMqaVRLOtst4=;
+	s=k20201202; t=1746821894;
+	bh=IhnT+r49yQN4Y1vAs0J9seA0eXIHcLBZGuntccFA4aA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=sEKJXG8PyBv3iBH0rjIuwIWYtWKqU3VA+I0gXPwMB5h7AfqmZvFEA9IXncHe4VmJa
-	 OYjETr7+PBRUQhTvfKaoTOJUqbkfDvQW0WT6A0LTY01+d1DOi5DNmPGoxp9L2Kifx1
-	 J6hweJxuRuRAXpzXSPsv8FQVaS5neasZ85rIFTe/8h+RgMTB9bQxwBfBfd981T6hJa
-	 qMD+KuwevaFY9+DDrkU+nZmPqUgJxCYRfhfvdMZ2Nn4bsQ3HOZCqgiRQmgPQ2iMdMh
-	 FXa9BGxq82TggAHy5LThgQLZZYQPG2nkKq8M6UyO9GxlOo1Du7NllP0XNAZ5mhaQJV
-	 BXljUcS0+OgNw==
+	b=tuWE7pU7RSzZNmBvmhn00fdV48l53J+oBWohl4y6kQByZkjRlt49L1x502gQOmmBO
+	 h7dIaPfoECyINvXUuqViJSEJ7+ym3JCgO2dm/AZ4bc0uYXPoixpWBh/yGizKZ5nTPD
+	 9F6FDn9WGmIj9hD1cEDkxG8Qa5DBjCtn4OxiR2Kgx8g0lSQVdIp+H+mVd7S5Xx7WC7
+	 VmUWQSkZ1iadFN0EXXY/rc+mnZ/C2CItu5/lONm+PTO0WnTa22SQc6oyV86p2OgSKX
+	 xgv7BJQcMrg1hVqVLlU/IzgY9GaGfTEdlPKQQSTAHNwPtEHf4rmVLHjhusogyLZS6K
+	 +sU2yi5oXde+g==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -55,10 +55,11 @@ Cc: linux-kernel@vger.kernel.org,
 	Weinan Liu <wnliu@google.com>,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
-	Puranjay Mohan <puranjay@kernel.org>
-Subject: [PATCH v2 41/62] objtool: Add elf_create_file()
-Date: Fri,  9 May 2025 13:17:05 -0700
-Message-ID: <11abeda8e7cbb18f8c32acd4492f93c63049a646.1746821544.git.jpoimboe@kernel.org>
+	Puranjay Mohan <puranjay@kernel.org>,
+	Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH v2 42/62] kbuild,x86: Fix module permissions for __jump_table and __bug_table
+Date: Fri,  9 May 2025 13:17:06 -0700
+Message-ID: <9da1e9f592aadc8fbf48b7429e3fbcea4606a76a.1746821544.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1746821544.git.jpoimboe@kernel.org>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
@@ -70,241 +71,134 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add interface to enable the creation of a new ELF file.
+An upcoming patch will add the SHF_MERGE flag to x86 __jump_table and
+__bug_table so their entry sizes can be defined in inline asm.
 
+However, those sections have SHF_WRITE, which the Clang linker (lld)
+explicitly forbids combining with SHF_MERGE.
+
+Those sections are modified at runtime and must remain writable.  While
+SHF_WRITE is ignored by vmlinux, it's still needed for modules.
+
+To work around the linker interference, remove SHF_WRITE during
+compilation and restore it after linking the module.
+
+Cc: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/builtin-check.c       |   2 +-
- tools/objtool/elf.c                 | 144 +++++++++++++++++++++++++++-
- tools/objtool/include/objtool/elf.h |   5 +-
- 3 files changed, 147 insertions(+), 4 deletions(-)
+ arch/Kconfig                      |  3 +++
+ arch/x86/Kconfig                  |  1 +
+ arch/x86/include/asm/bug.h        |  4 ++--
+ arch/x86/include/asm/jump_label.h |  2 +-
+ scripts/Makefile.modfinal         | 18 +++++++++++++-----
+ 5 files changed, 20 insertions(+), 8 deletions(-)
 
-diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index 56388bb98785..c7bab6a39ca1 100644
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -330,5 +330,5 @@ int objtool_run(int argc, const char **argv)
- 	if (!opts.dryrun && file->elf->changed && elf_write(file->elf))
- 		return 1;
+diff --git a/arch/Kconfig b/arch/Kconfig
+index b0adb665041f..a413cd86f87c 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1314,6 +1314,9 @@ config HAVE_NOINSTR_HACK
+ config HAVE_NOINSTR_VALIDATION
+ 	bool
  
--	return 0;
-+	return elf_close(file->elf);
- }
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 8fc6e6c75b88..5e7620824136 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -16,6 +16,7 @@
- #include <string.h>
- #include <unistd.h>
- #include <errno.h>
-+#include <libgen.h>
- #include <linux/interval_tree_generic.h>
- #include <objtool/builtin.h>
- #include <objtool/elf.h>
-@@ -1063,6 +1064,12 @@ struct elf *elf_open_read(const char *name, int flags)
- 		goto err;
- 	}
++config NEED_MODULE_PERMISSIONS_FIX
++	bool
++
+ config HAVE_UACCESS_VALIDATION
+ 	bool
+ 	select OBJTOOL
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 4c33c644b92d..996d59e59e5d 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -309,6 +309,7 @@ config X86
+ 	select HOTPLUG_SPLIT_STARTUP		if SMP && X86_32
+ 	select IRQ_FORCED_THREADING
+ 	select LOCK_MM_AND_FIND_VMA
++	select NEED_MODULE_PERMISSIONS_FIX
+ 	select NEED_PER_CPU_EMBED_FIRST_CHUNK
+ 	select NEED_PER_CPU_PAGE_FIRST_CHUNK
+ 	select NEED_SG_DMA_LENGTH
+diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
+index f0e9acf72547..fb3534ddbea2 100644
+--- a/arch/x86/include/asm/bug.h
++++ b/arch/x86/include/asm/bug.h
+@@ -42,7 +42,7 @@
+ #define _BUG_FLAGS(ins, flags, extra)					\
+ do {									\
+ 	asm_inline volatile("1:\t" ins "\n"				\
+-		     ".pushsection __bug_table,\"aw\"\n"		\
++		     ".pushsection __bug_table,\"a\"\n"			\
+ 		     "2:\t" __BUG_REL(1b) "\t# bug_entry::bug_addr\n"	\
+ 		     "\t"  __BUG_REL(%c0) "\t# bug_entry::file\n"	\
+ 		     "\t.word %c1"        "\t# bug_entry::line\n"	\
+@@ -60,7 +60,7 @@ do {									\
+ #define _BUG_FLAGS(ins, flags, extra)					\
+ do {									\
+ 	asm_inline volatile("1:\t" ins "\n"				\
+-		     ".pushsection __bug_table,\"aw\"\n"		\
++		     ".pushsection __bug_table,\"a\"\n"			\
+ 		     "2:\t" __BUG_REL(1b) "\t# bug_entry::bug_addr\n"	\
+ 		     "\t.word %c0"        "\t# bug_entry::flags\n"	\
+ 		     "\t.org 2b+%c1\n"					\
+diff --git a/arch/x86/include/asm/jump_label.h b/arch/x86/include/asm/jump_label.h
+index 61dd1dee7812..cd21554b3675 100644
+--- a/arch/x86/include/asm/jump_label.h
++++ b/arch/x86/include/asm/jump_label.h
+@@ -13,7 +13,7 @@
+ #include <linux/types.h>
  
-+	elf->name = strdup(name);
-+	if (!elf->name) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
- 	if ((flags & O_ACCMODE) == O_RDONLY)
- 		cmd = ELF_C_READ_MMAP;
- 	else if ((flags & O_ACCMODE) == O_RDWR)
-@@ -1100,6 +1107,137 @@ struct elf *elf_open_read(const char *name, int flags)
- 	return NULL;
- }
+ #define JUMP_TABLE_ENTRY(key, label)			\
+-	".pushsection __jump_table,  \"aw\" \n\t"	\
++	".pushsection __jump_table,  \"a\"\n\t"		\
+ 	_ASM_ALIGN "\n\t"				\
+ 	".long 1b - . \n\t"				\
+ 	".long " label " - . \n\t"			\
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index 542ba462ed3e..878d0d25a461 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -28,12 +28,23 @@ ccflags-remove-y := $(CC_FLAGS_CFI)
+ .module-common.o: $(srctree)/scripts/module-common.c FORCE
+ 	$(call if_changed_rule,cc_o_c)
  
-+struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name)
-+{
-+	struct section *null, *symtab, *strtab, *shstrtab;
-+	char *dir, *base, *tmp_name;
-+	struct symbol *sym;
-+	struct elf *elf;
++ifdef CONFIG_NEED_MODULE_PERMISSIONS_FIX
++cmd_fix_mod_permissions =						\
++	$(OBJCOPY) --set-section-flags __jump_table=alloc,data		\
++		   --set-section-flags __bug_table=alloc,data $@
++endif
 +
-+	elf_version(EV_CURRENT);
-+
-+	elf = calloc(1, sizeof(*elf));
-+	if (!elf) {
-+		ERROR_GLIBC("calloc");
-+		return NULL;
-+	}
-+
-+	INIT_LIST_HEAD(&elf->sections);
-+
-+	dir = strdup(name);
-+	if (!dir) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
-+	dir = dirname(dir);
-+
-+	base = strdup(name);
-+	if (!base) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
-+	base = basename(base);
-+
-+	tmp_name = malloc(256);
-+	if (!tmp_name) {
-+		ERROR_GLIBC("malloc");
-+		return NULL;
-+	}
-+
-+	snprintf(tmp_name, 256, "%s/%s.XXXXXX", dir, base);
-+
-+	elf->fd = mkstemp(tmp_name);
-+	if (elf->fd == -1) {
-+		ERROR_GLIBC("can't create tmp file");
-+		exit(1);
-+	}
-+
-+	elf->tmp_name = tmp_name;
-+
-+	elf->name = strdup(name);
-+	if (!elf->name) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
-+	elf->elf = elf_begin(elf->fd, ELF_C_WRITE, NULL);
-+	if (!elf->elf) {
-+		ERROR_ELF("elf_begin");
-+		return NULL;
-+	}
-+
-+	if (!gelf_newehdr(elf->elf, ELFCLASS64)) {
-+		ERROR_ELF("gelf_newehdr");
-+		return NULL;
-+	}
-+
-+	memcpy(&elf->ehdr, ehdr, sizeof(elf->ehdr));
-+
-+	if (!gelf_update_ehdr(elf->elf, &elf->ehdr)) {
-+		ERROR_ELF("gelf_update_ehdr");
-+		return NULL;
-+	}
-+
-+	if (!elf_alloc_hash(section,		1000) ||
-+	    !elf_alloc_hash(section_name,	1000) ||
-+	    !elf_alloc_hash(symbol,		10000) ||
-+	    !elf_alloc_hash(symbol_name,	10000) ||
-+	    !elf_alloc_hash(reloc,		100000))
-+		return NULL;
-+
-+	null		= elf_create_section(elf, NULL, 0, 0, SHT_NULL, 0, 0);
-+	shstrtab	= elf_create_section(elf, NULL, 0, 0, SHT_STRTAB, 1, 0);
-+	strtab		= elf_create_section(elf, NULL, 0, 0, SHT_STRTAB, 1, 0);
-+
-+	if (!null || !shstrtab || !strtab)
-+		return NULL;
-+
-+	null->name	= "";
-+	shstrtab->name	= ".shstrtab";
-+	strtab->name	= ".strtab";
-+
-+	null->sh.sh_name	= elf_add_string(elf, shstrtab, null->name);
-+	shstrtab->sh.sh_name	= elf_add_string(elf, shstrtab, shstrtab->name);
-+	strtab->sh.sh_name	= elf_add_string(elf, shstrtab, strtab->name);
-+
-+	if (null->sh.sh_name == -1 || shstrtab->sh.sh_name == -1 || strtab->sh.sh_name == -1)
-+		return NULL;
-+
-+	elf_hash_add(section_name, &null->name_hash,		str_hash(null->name));
-+	elf_hash_add(section_name, &strtab->name_hash,		str_hash(strtab->name));
-+	elf_hash_add(section_name, &shstrtab->name_hash,	str_hash(shstrtab->name));
-+
-+	if (elf_add_string(elf, strtab, "") == -1)
-+		return NULL;
-+
-+	symtab = elf_create_section(elf, ".symtab", 0x18, 0x18, SHT_SYMTAB, 0x8, 0);
-+	if (!symtab)
-+		return NULL;
-+
-+	symtab->sh.sh_link = strtab->idx;
-+	symtab->sh.sh_info = 1;
-+
-+	elf->ehdr.e_shstrndx = shstrtab->idx;
-+	if (!gelf_update_ehdr(elf->elf, &elf->ehdr)) {
-+		ERROR_ELF("gelf_update_ehdr");
-+		return NULL;
-+	}
-+
-+	sym = calloc(1, sizeof(*sym));
-+	if (!sym) {
-+		ERROR_GLIBC("calloc");
-+		return NULL;
-+	}
-+
-+	sym->name = "";
-+	sym->sec = null;
-+	elf_add_symbol(elf, sym);
-+
-+	return elf;
-+}
-+
- unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char *str)
- {
- 	unsigned int offset;
-@@ -1545,7 +1683,7 @@ int elf_write(struct elf *elf)
- 	return 0;
- }
+ quiet_cmd_ld_ko_o = LD [M]  $@
+       cmd_ld_ko_o =							\
+ 	$(LD) -r $(KBUILD_LDFLAGS)					\
+ 		$(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)		\
+ 		-T $(objtree)/scripts/module.lds -o $@ $(filter %.o, $^)
  
--void elf_close(struct elf *elf)
-+int elf_close(struct elf *elf)
- {
- 	if (elf->elf)
- 		elf_end(elf->elf);
-@@ -1553,8 +1691,12 @@ void elf_close(struct elf *elf)
- 	if (elf->fd > 0)
- 		close(elf->fd);
- 
-+	if (elf->tmp_name && rename(elf->tmp_name, elf->name))
-+		return -1;
++define rule_ld_ko_o
++	$(call cmd_and_savecmd,ld_ko_o)
++	$(call cmd,fix_mod_permissions)
++endef
 +
- 	/*
- 	 * NOTE: All remaining allocations are leaked on purpose.  Objtool is
- 	 * about to exit anyway.
- 	 */
-+	return 0;
- }
-diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index 5c663e475890..a0fc252e1993 100644
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -93,7 +93,7 @@ struct elf {
- 	GElf_Ehdr ehdr;
- 	int fd;
- 	bool changed;
--	const char *name;
-+	const char *name, *tmp_name;
- 	unsigned int num_files;
- 	struct list_head sections;
- 	unsigned long num_relocs;
-@@ -115,6 +115,7 @@ struct elf {
- };
+ quiet_cmd_btf_ko = BTF [M] $@
+       cmd_btf_ko = 							\
+ 	if [ ! -f $(objtree)/vmlinux ]; then				\
+@@ -46,14 +57,11 @@ quiet_cmd_btf_ko = BTF [M] $@
+ # Same as newer-prereqs, but allows to exclude specified extra dependencies
+ newer_prereqs_except = $(filter-out $(PHONY) $(1),$?)
  
- struct elf *elf_open_read(const char *name, int flags);
-+struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name);
+-# Same as if_changed, but allows to exclude specified extra dependencies
+-if_changed_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),      \
+-	$(cmd);                                                              \
+-	printf '%s\n' 'savedcmd_$@ := $(make-cmd)' > $(dot-target).cmd, @:)
++if_changed_rule_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),$(rule_$(1)),@:)
  
- struct section *elf_create_section(struct elf *elf, const char *name,
- 				   size_t size, size_t entsize,
-@@ -164,7 +165,7 @@ int elf_write_insn(struct elf *elf, struct section *sec, unsigned long offset,
- 		   unsigned int len, const char *insn);
- 
- int elf_write(struct elf *elf);
--void elf_close(struct elf *elf);
-+int elf_close(struct elf *elf);
- 
- struct section *find_section_by_name(const struct elf *elf, const char *name);
- struct symbol *find_func_by_offset(struct section *sec, unsigned long offset);
+ # Re-generate module BTFs if either module's .ko or vmlinux changed
+ %.ko: %.o %.mod.o .module-common.o $(objtree)/scripts/module.lds $(and $(CONFIG_DEBUG_INFO_BTF_MODULES),$(KBUILD_BUILTIN),$(objtree)/vmlinux) FORCE
+-	+$(call if_changed_except,ld_ko_o,$(objtree)/vmlinux)
++	+$(call if_changed_rule_except,ld_ko_o,$(objtree)/vmlinux)
+ ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+ 	+$(if $(newer-prereqs),$(call cmd,btf_ko))
+ endif
 -- 
 2.49.0
 
