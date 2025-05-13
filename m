@@ -1,166 +1,118 @@
-Return-Path: <live-patching+bounces-1427-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1428-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3C604AB56B5
-	for <lists+live-patching@lfdr.de>; Tue, 13 May 2025 16:05:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 97AA8AB57B1
+	for <lists+live-patching@lfdr.de>; Tue, 13 May 2025 16:55:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6E34F3A419A
-	for <lists+live-patching@lfdr.de>; Tue, 13 May 2025 14:05:39 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E37123BE7D6
+	for <lists+live-patching@lfdr.de>; Tue, 13 May 2025 14:55:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76DDC28DB7C;
-	Tue, 13 May 2025 14:05:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7C871C84CE;
+	Tue, 13 May 2025 14:55:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="sSJ9GAbg";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="1mzpgkhu";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="24cqX4/N";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Qh4ZSxBa"
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="zr7WqQ6v"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out203-205-221-210.mail.qq.com (out203-205-221-210.mail.qq.com [203.205.221.210])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4D0428C84A
-	for <live-patching@vger.kernel.org>; Tue, 13 May 2025 14:05:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA0741A83E2;
+	Tue, 13 May 2025 14:55:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.210
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747145155; cv=none; b=RGvN1312qr8zxRlo1f0X4RtDvW58gwTEW5c4xkQNjIAzRFhmPh8X8eap7uGx6k7j5RfSDDcCyDsNb773OXtXJbO29BRQYayCGdgJTGGOKh28W40p4xNSzIt6yUlxiHbm27tLuwMHka+VdtpopZQRTA6UFfJfv4Tjeobq0hU62Ew=
+	t=1747148115; cv=none; b=uhtZZDS6NI8woztlbxcQZ4imwqOU9ArZJ7yCIT9jY41FElXit+yunS3J8Ooc2ZRmw4FIaIGcYVKgPP9/0VDo5EqrvhUFmq7D/d2U9/cTX3Wi0HtDndYrvF+iFp29O0UlAiLQP0cVBrypgwS1nxEncdd63oek5vJ+tEm2NoeDtXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747145155; c=relaxed/simple;
-	bh=n+VdClxaSoImHt6QTrO83vynMS5vjcfmMOYmNxH3Mns=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=IbcnCAh9e5OMUuGHrc6dBGa30/0flGjWyL6y4PMbY1+i7UqvbWX+N6sKpW85syMwdzAJgiMWiEG1Khi585b63exDIrcxx6SxIoKTsbXuQHG7+tn8qkjQ/jfBLKMg1BVxkwIhEz7OgrVAsZlvc/Qbcjl7NJH1Vwfahad+zdCmc6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=sSJ9GAbg; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=1mzpgkhu; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=24cqX4/N; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Qh4ZSxBa; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.100.2.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id E84E9211E0;
-	Tue, 13 May 2025 14:05:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1747145152; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CIQWasuI/5nFSHu2txE7aGa/G99P4UTJOWGIf1YUyEk=;
-	b=sSJ9GAbgcA0RBHE2l/pCXPAG3EUdURiSpwJhOqSEUkNI0EO2CGCPhRSF9Gkj7nkuNg22FG
-	p53pmik5kz0zudrt24hpK+Pq8p4KOfX3Arf272nTFrOw+dA0EN+bYgwq7yZGjC3sxmbQEh
-	hy0FdVqfN34C7lop7yAtBy6hZkNCqW0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1747145152;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CIQWasuI/5nFSHu2txE7aGa/G99P4UTJOWGIf1YUyEk=;
-	b=1mzpgkhuiApCHtX9ke9mMHFzfOkLIHONGwfIaO+MwAkp4K3ptBd8W+upKL3cuQUsIq45L+
-	YpTq2W456rml+jDg==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1747145151; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CIQWasuI/5nFSHu2txE7aGa/G99P4UTJOWGIf1YUyEk=;
-	b=24cqX4/Nv4i4V5EtjYOFUNJU6tNHI/Jr7DspZMyzvs+lQQRGKVVnlZdGwq7jbmQ9SW0qF5
-	rIvrpgQuw1d88JBe68vJNhE3uu2doFu7EkXtk2Ofkh4SgwKG/CAHMpzlnOSyR8piG1zQzC
-	b0MXy+lGop0oBGklGLcd/vf9lI40Jr8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1747145151;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CIQWasuI/5nFSHu2txE7aGa/G99P4UTJOWGIf1YUyEk=;
-	b=Qh4ZSxBag5YhIFVPUsgH/fuuEC/o2qX0SHLFWOO8slzKsEat/zXc8i1eqgQ9TeZcuotl7C
-	BR/GNmNfoiMhLQAA==
-Date: Tue, 13 May 2025 16:05:51 +0200 (CEST)
-From: Miroslav Benes <mbenes@suse.cz>
-To: Peter Zijlstra <peterz@infradead.org>
-cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
-    linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-    Josh Poimboeuf <jpoimboe@redhat.com>, mingo@kernel.com, 
-    juri.lelli@redhat.com, vincent.guittot@linaro.org, 
-    dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-    mgorman@suse.de, vschneid@redhat.com, jpoimboe@kernel.org, 
-    jikos@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com, 
-    Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v2] sched,livepatch: Untangle cond_resched() and
- live-patching
-In-Reply-To: <20250513140310.GA25639@noisy.programming.kicks-ass.net>
-Message-ID: <alpine.LSU.2.21.2505131604530.19621@pobox.suse.cz>
-References: <20250509113659.wkP_HJ5z@linutronix.de> <alpine.LSU.2.21.2505131529080.19621@pobox.suse.cz> <20250513140310.GA25639@noisy.programming.kicks-ass.net>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	s=arc-20240116; t=1747148115; c=relaxed/simple;
+	bh=xF0FR3rPcOBGp88yQz2/gAEWMOvIBDpTeMGj3UrPZoc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GNMInxchZ5Cj6np9ZlmQQiCv6YYLQxSqwJvQhTg9WUw3/PVBxt3CFNi6WfZ8aLBjXpferrCAKMl7k6nb9lzEau1rRLmsRH6ssyt8+yLiXFBr4pxmB/Dai3PXWKdGn+CEhNifXa3iKPcfH+7dEAfSCJ4+tSd6F9RdqtsCM2+HOZU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=zr7WqQ6v; arc=none smtp.client-ip=203.205.221.210
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1747147803;
+	bh=vBwPAS74bANjhaoHDiOSBCA9pMoLahUbwD6Y8CSTj64=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=zr7WqQ6vLFpyChvw7pDqeJaKGgmQdsWXKIpBq9BJoHvQDYkX1++U7xYKmEoRU4l0R
+	 ORzm+aEIE4T6CIVdeG7PBC2hj05r45S0eIindIO0YAMNvd4KyUovPbpuBVNr91phJQ
+	 nDnDTkZpuYdLTWPF4pi8rdFs+6u2n7NnuC8QwJFE=
+Received: from [192.168.3.9] ([221.200.22.204])
+	by newxmesmtplogicsvrsza36-0.qq.com (NewEsmtp) with SMTP
+	id C7BB22AA; Tue, 13 May 2025 22:49:59 +0800
+X-QQ-mid: xmsmtpt1747147799tw9xxxoiy
+Message-ID: <tencent_8AACB6DF7CFB7A9826455C093C0903B15207@qq.com>
+X-QQ-XMAILINFO: OIJV+wUmQOUAf2UFzEHsFZSYYq4PEi+fUZaybgZnx8ZUEF9jFksjOdQTSAf1Ig
+	 WRj7hd9aqX6VeNnen9UmrJOnrqGPuOZ9D1bXwIdM/1O0GEiSVndKRLE+bAPLd5xK/rLM37gb0uH7
+	 Xgk4uo3jDZl/DoqXK7sCPCJ9giUCAwi7ASHybmn4K/AUt4IKNq0SfF33lFRxLEO8Cs8XTC691mht
+	 bTwTtBMLbcmo0zu2WLEL+Uwz/KQrwA1+DjRRTV0uPkKSLd2EDXxr5qdGO3BpUzVg0qO+smbhYZUn
+	 hupDAxGHtGZ1wl3PB2VFBFnsbnvQIzbi9t/txyknnl1J7gJ8PHcl54OyY22lrzuLvgnNViByfEax
+	 1tWIIAqgQAJnWXSZ9NV4KFxoJUn2BLiIWyCHPuADj4sO/9IknAXtAss+94xMDkZmQogK2OqhhDau
+	 hVo5O6ZvR0iKBGdHMx7Pb1l/1rxBlEjRZPr1DgNVHOrncC8OxafOVtGM+GKINDpPCDCQ6B8bMYKL
+	 c+yLCUoh0YpS2DxJRZ/J0H/xLoyv+ioo79K3uM3WzaI22Sbmm510vwZMMPebKuutCctEQXNDjyxK
+	 NPQZvC/kWxxTd/twih84iuEo210v9khUWzDEUX/p/UViVUHGAcxEEvpgyBQRAVjqgiOo4pTz4EwV
+	 ApNo1sysQw8Gne8U5+VD0nxIbGpANqZ/9RlhL8fN3HMN5cT0lTNuykHoTRH/N091lIqcHXiEHKCI
+	 H0yJHSNeYXQn934qHif7MV2TqdONEEhApa+1edI/TiHaLAvt41afonpBvvbTWNS/BV/uJgHGzSvn
+	 B0WLdDgvtgw2ras0QFn3wv52nfQYbrKAbfZjMCluGifIXlDqFIaEo2rBqQAJMjOIIpkLMPqO/Rzi
+	 MDlE85HjjdmK+1vU0jffUiNX23VefUULmEcmbb2PPn7WTGm0H3XuJk3Z9chbnRy0YlczyeuBlgaF
+	 7y9wC6prmFKUOjWxLDxl4SxufDl8Wi
+X-QQ-XMRINFO: OD9hHCdaPRBwq3WW+NvGbIU=
+X-OQ-MSGID: <8b8d4368-286b-4f2a-a189-22591a99d1cb@foxmail.com>
+Date: Tue, 13 May 2025 22:49:59 +0800
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-4.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	ARC_NA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	RCPT_COUNT_TWELVE(0.00)[18];
-	RCVD_COUNT_ZERO(0.00)[0];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_EQ_ENVFROM(0.00)[];
-	TO_DN_SOME(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	URIBL_BLOCKED(0.00)[infradead.org:email,suse.cz:email,linutronix.de:email];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[linutronix.de:email,suse.cz:email]
-X-Spam-Score: -4.30
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 52/62] objtool/klp: Introduce klp diff subcommand for
+ diffing object files
+To: Josh Poimboeuf <jpoimboe@kernel.org>, x86@kernel.org
+Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+ Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>,
+ live-patching@vger.kernel.org, Song Liu <song@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>,
+ Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>,
+ Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay Mohan <puranjay@kernel.org>
+References: <cover.1746821544.git.jpoimboe@kernel.org>
+ <f6ffe58daf771670a6732fd0f741ca83b19ee253.1746821544.git.jpoimboe@kernel.org>
+Content-Language: en-US
+From: laokz <laokz@foxmail.com>
+In-Reply-To: <f6ffe58daf771670a6732fd0f741ca83b19ee253.1746821544.git.jpoimboe@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, 13 May 2025, Peter Zijlstra wrote:
+On 5/10/2025 4:17 AM, Josh Poimboeuf wrote:
+> +
+> +#define sym_for_each_reloc(elf, sym, reloc)				\
+> +	for (reloc = find_reloc_by_dest_range(elf, sym->sec,		\
+> +					      sym->offset, sym->len);	\
+> +	     reloc && reloc_offset(reloc) <  sym->offset + sym->len;	\
+> +	     reloc = rsec_next_reloc(sym->sec->rsec, reloc))
 
-> On Tue, May 13, 2025 at 03:34:50PM +0200, Miroslav Benes wrote:
-> > Hi,
-> > 
-> > thanks for the updated version.
-> > 
-> > On Fri, 9 May 2025, Sebastian Andrzej Siewior wrote:
-> > 
-> > > From: Peter Zijlstra <peterz@infradead.org>
-> > > 
-> > > With the goal of deprecating / removing VOLUNTARY preempt, live-patch
-> > > needs to stop relying on cond_resched() to make forward progress.
-> > > 
-> > > Instead, rely on schedule() with TASK_FREEZABLE set. Just like
-> > > live-patching, the freezer needs to be able to stop tasks in a safe /
-> > > known state.
-> > > 
-> > > Compile tested only.
-> > 
-> > livepatch selftests pass and I also ran some more.
-> >  
-> > > [bigeasy: use likely() in __klp_sched_try_switch() and update comments]
-> > > 
-> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > 
-> > Acked-by: Miroslav Benes <mbenes@suse.cz>
-> > 
-> > A nit below if there is an another version, otherwise Petr might fix it 
-> > when merging.
-> 
-> Petr or Peter?
-> 
-> That is, who are we expecting to merge this :-)
+This macro intents to walk through ALL relocations for the 'sym'. It 
+seems we have the assumption that, there is at most one single 
+relocation for the same offset and find_reloc_by_dest_range only needs 
+to do 'less than' offset comparison:
 
-Petr Mladek if it goes through the live patching tree, you if tip. Feel 
-free to pick it up :).
+	elf_hash_for_each_possible(reloc, reloc, hash,
+				   sec_offset_hash(rsec, o)) {
+		if (reloc->sec != rsec)
+			continue;
+		if (reloc_offset(reloc) >= offset &&
+		    reloc_offset(reloc) < offset + len) {
+less than ==>		if (!r || reloc_offset(reloc) < reloc_offset(r))
+					r = reloc;
 
-> Anyway, I've zapped the line in my copy.
+Because if there were multiple relocations for the same offset, the 
+returned one would be the last one in section entry order(hash list has 
+reverse order against section order), then broken the intention.
 
-Thanks!
+Right?
 
-Miroslav
+Thanks,
+laokz
+
 
