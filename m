@@ -1,82 +1,82 @@
-Return-Path: <live-patching+bounces-1431-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1432-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C5993AB67DC
-	for <lists+live-patching@lfdr.de>; Wed, 14 May 2025 11:45:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D0AF6AB67FE
+	for <lists+live-patching@lfdr.de>; Wed, 14 May 2025 11:51:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA72E3A4436
-	for <lists+live-patching@lfdr.de>; Wed, 14 May 2025 09:44:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 658504A4AA8
+	for <lists+live-patching@lfdr.de>; Wed, 14 May 2025 09:51:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCFD5231A21;
-	Wed, 14 May 2025 09:44:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C17525D8FB;
+	Wed, 14 May 2025 09:51:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QmlzMFpi"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QkKLksqX"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F8AC230278
-	for <live-patching@vger.kernel.org>; Wed, 14 May 2025 09:44:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3D3B253958
+	for <live-patching@vger.kernel.org>; Wed, 14 May 2025 09:51:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747215896; cv=none; b=hj13aQ4+80xlMIqIPlrjV3RblV/JDRGjb95Sdi+7WjGdwJwCMX99rwDazyNQVX2DT+IeNSrgETPU5m8xfU9GDpqk83IyzpfJM91+eK979WA9rjymSiXM6ILJtECYpXvBbhP/uv3atjT0NqYuCM1AoYMUA+L9tguvSd5AJ/vGQIg=
+	t=1747216311; cv=none; b=BmcnNDhwAK+VcS/Uv4WwZeccyMfPX/+8/Jx9t7hrRTuCuA6iflN24OrG+Kh7NnYRVyqzruwsJVL4pzQnMRMqdzumZ8Wxs0cAyp4W5HV7vt7+0Lo8mYy4AE64qQhfTg4iz1p8tlDO9pIZ59g0mE7A+IJSboeGXxKF3DVp505rGtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747215896; c=relaxed/simple;
-	bh=Zn4zpe0vq/Cog1u5FSWrBKwbijYy0b4wPlo2LEAa4BA=;
+	s=arc-20240116; t=1747216311; c=relaxed/simple;
+	bh=0UCu58qx5+r5o2FkoxTbEmZMlUiAS0WASZpHPgpTZJg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aq22Z+aSoUGxnJfKbNhJKpSRsfZ9FR4KGsoI3R9ROPuzGaDMLfyNUR75VqN5LfivgjeNt+0UIcR8MyDqIKn5p4/xPGmGuFHoabv4FoL3n8q9CC6PmRmuuLVycw6w8aKn1Ureph+JxsPxNWuMrXjrpmR2nF6SnGnS8kkC2GvZ34c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QmlzMFpi; arc=none smtp.client-ip=209.85.208.44
+	 Content-Type:Content-Disposition:In-Reply-To; b=q4btbfTA/Wm1FPAuklMrQHIshONj0EaoanhJvpMWypsWPAq7Ywh4KlX6WN99pz96GVkVlig7pRN6HNZj8U64DqipuOvwwWlWzAkRw0Il5tEBUqxklYlOsxQDgWQ4QfkqOaTBHawTcIFp6JxOI5DtPibiO/rvOd57f+lXJHOR0Pk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QkKLksqX; arc=none smtp.client-ip=209.85.218.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5fbf534f8dbso10073325a12.3
-        for <live-patching@vger.kernel.org>; Wed, 14 May 2025 02:44:54 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-ad21c5d9db2so884562066b.3
+        for <live-patching@vger.kernel.org>; Wed, 14 May 2025 02:51:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1747215893; x=1747820693; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1747216307; x=1747821107; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2q9R53V/fDMcpMH8guJFLg3icpz0ciPeizfC22LHQ0I=;
-        b=QmlzMFpijvPGx32siDe6hsh8cNyMuvXMDukDf/FPV5ZwkCgPYy4hGgCJTII9BZ1JLk
-         Rpj5MD23jFDZwb+3W9yuYkmhpr2rbr5AKo6wnkAatNjhz9DqHCMQGtSrHg4WR+Z8EJRz
-         GI2cKZm4TbIms/DdBfunPzVLG8umBhKZ2WVorxMklrFyngb/WO8HrQ3dOf51CV+21425
-         WaBZQ207R/Ne5/hmArbo71cywNPAe3kLrDZXuEqK2L9VKo+QXZhXJuhOtr4LuRrH/C8Q
-         6tQUnW0XahIeqSagZH0uk4P1OXnYeC2Ag/73iAPAE5MgoAhF0/DbAISAi+8+2vwkW2Tv
-         OOPg==
+        bh=BVybws1t+U40/vbtZIfwab2hNrCdVfeHjc91VuDwjDg=;
+        b=QkKLksqXEpMVIOBhNhrC+QEbTjfiONxRrVZwgNHrIAjEj87rzkusngGuuVit2oQV0n
+         mQGMNkgLtJ2KYt+MgC6TyU/N723i4jTxgSE55mgaOJMx6Ee3vc7ufV5IHNVcWSuBDswo
+         pEuXoBK84mROqaM5zCZ2O5dA4YNwbHIbxVFpz73NjsZoz90ATvZyexYxSTbtmxYzh8Op
+         lisp7QGm3A3XPl+OjJecziEeM6jgVGElBe7xlPvhOyYh9OhOGaabR+Vta9XCLUS/pdej
+         mlKQjJARDKunglS1Lvtvfn6yQ5d1CujD/2d8+nyy/3k0/2TcV3yHOk6UwHc5SBCtDy2+
+         8AlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747215893; x=1747820693;
+        d=1e100.net; s=20230601; t=1747216307; x=1747821107;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2q9R53V/fDMcpMH8guJFLg3icpz0ciPeizfC22LHQ0I=;
-        b=i7kKcLv0vD5ENwoTNUvuqXFZJ81Bv68ZPpClaVM2gjINdvdjVHzjJXIvPcdiNO8KuF
-         Y1qXhr4ihl9u1dBKFgeg2jTTEMUFIyBb83LgEbW73kRMgcvtoyO7FNkbqzk4k3mXHB2z
-         x3/+phygK4oALfJqLH5kQxD3OAqHwC7nGdTbiDCTJmuoHAvCan2ebi+bROGs6OyyfSk7
-         bY6zmto1SlY4V6WOs1wwuCtRBXkj+W8zAC9VldH82BUEye0vgGPqWOr+k5bO6ZqCcbSK
-         ypXtQIB1mrwo6RD1fPV8RxsjB+I1wynZk9D9XJ2cdzbKxVjXOlTwNnhpRVXkGfNDDQXo
-         hqCA==
-X-Forwarded-Encrypted: i=1; AJvYcCU99ZtzhEcDHQkxpAgrsBGqev+q2b88k8NY5ho14KrxYXx9lPU+9EZol+E+XRau8RdSrx/kbxYhc1tgwMp5@vger.kernel.org
-X-Gm-Message-State: AOJu0YxF5utpwcg8NlRt23cfRBdZqzfzl37wGP0iFL8GK6OsT5xqnSOD
-	/gzMXCiZYYDXY4gWxeR6IY1tHVKn2Pzw0aU3pBICMoytcChfgPEZkLaaFl3Jl3k=
-X-Gm-Gg: ASbGncv4LzuqVhETin9c+aj9ySEsjVQ3co6d61Fe8PkDzTOdkpaID05lVpSzYJSNa0f
-	ZRSwaXmz0qGvlTFRMVVwnHzlgfdhpYAPDr6bPHLYBZDOJJX0fLInfTFORyz+GjdBDG3k9hZ2rCS
-	VHTE77xHaLVGnswQyMRME9uyvvtZIkkmIOuqqh+zMigBMJviggp0eBYiKuhktmjOI5bEFVJO/p8
-	EG5JSeLv8txK9DGJzEhn5Aj/f2rQNJhZUM75ZEE7OtdSu25QUBOv5OLfqhhxZY69nZ8MyC+BMrU
-	im29fOelVr1FFSiHK626zP24wshD5klX28H+H4vC+6rj1TWvqSSMeg==
-X-Google-Smtp-Source: AGHT+IE96oxIRsIzDau62o1mwFDV6pP1y6bpVXTUnqkiWb6obYj5PC8SIj6KP+Uab5KGwnBB/dtV+Q==
-X-Received: by 2002:a05:6402:268f:b0:5f8:5672:69cb with SMTP id 4fb4d7f45d1cf-5ff986a37b1mr1905243a12.5.1747215892878;
-        Wed, 14 May 2025 02:44:52 -0700 (PDT)
+        bh=BVybws1t+U40/vbtZIfwab2hNrCdVfeHjc91VuDwjDg=;
+        b=JJmKXKWwoA86sFH69tRlrx1jL+V3+9/NVSwkFH2FM3ugAnfWVxQU0RVwsE4yU3Aqrt
+         00DnnBznDPcQj13AhbM1VQYkU7pcC/ynJkBLgyXZ3Q+Aj+Jc/uOhi0DWk45hoI80Aub+
+         9OGE8WTmFtCZxVpVBKy1rWtIrHp+9jGyBDu0xdwDg1oZ1TiyS6O9MmUu5e9nrdEaS8Rb
+         vTUbxNOcSITNJUzaxZjsakSSzbKHO5nJaiaTA8vRzv9nFWvFD8DPNI/tV3ETQPtbnYSF
+         q3JrfzpsNSGawEmcGIKkwiI6DDVBh6FyEoYxLkZDk5O6RTR1nCA5MMOKNXlU8pMUlrsn
+         Eydg==
+X-Forwarded-Encrypted: i=1; AJvYcCWCX3KKFWqtEPJGsKU0QMk+/bY2hUdFBPT319NwyxqIfwQDGajrI+UXWLbROYqv/rwvIbQj5cwZCS6ILk1k@vger.kernel.org
+X-Gm-Message-State: AOJu0YyiDl0CUW+K54L1Rf6pUHuB+RluEpt5kAN9olWwvtPJ6xYW82Xc
+	Fit22qj3+XMdKqM0C5KnudtedDlX6Ch3g/G8ZgyFFXIf0BPZj7tVuwZvHlxgsCY=
+X-Gm-Gg: ASbGncvfxKR0vTRpiD0EK5kDRbU/vuMs9RTmPxBiQQVys/iCmCfQ2A5PoW5jc3UdIBn
+	6na4iIOTpLRmJWgnYlMBaQ8YY8UM6mANd/ZcmDaBfCHWexj0l/QR4oqUUvfp2zB7G4e+UfvflWA
+	JJUBzU9wtYoaXMJKr5NJd+CfbaD9NZE0IxjOuTZXxXMw6qjtdGSGMuE9gIKYLHdiFUih8r1OZjf
+	wvRgMdrzk/qqD54zG+ZQNcHnl5g+99YRrI7AyRwDN5hFEHrVyx7XJa2FFxsR73g6YHqJpKBgjNq
+	OQBGkr/CVXFvfXmgUTkl2S92rtu7ULuQOEtlsEdHGCTfHPlkvr0k2A==
+X-Google-Smtp-Source: AGHT+IGSd1rvJVl8u3DfNMX7dhF6Gp8/xiI2G+noTAd6SIJPTmFef2VtUgYEzSt6Qp8SoVIvBvzS5Q==
+X-Received: by 2002:a17:907:9443:b0:ad2:1d1c:1c8e with SMTP id a640c23a62f3a-ad4f750e521mr279713966b.49.1747216307144;
+        Wed, 14 May 2025 02:51:47 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5ff9ab7e329sm822698a12.37.2025.05.14.02.44.51
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ad221288a91sm873089766b.15.2025.05.14.02.51.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 May 2025 02:44:52 -0700 (PDT)
-Date: Wed, 14 May 2025 11:44:49 +0200
+        Wed, 14 May 2025 02:51:46 -0700 (PDT)
+Date: Wed, 14 May 2025 11:51:44 +0200
 From: Petr Mladek <pmladek@suse.com>
 To: Miroslav Benes <mbenes@suse.cz>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+Cc: Peter Zijlstra <peterz@infradead.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
 	Josh Poimboeuf <jpoimboe@redhat.com>, mingo@kernel.com,
 	juri.lelli@redhat.com, vincent.guittot@linaro.org,
 	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
@@ -85,9 +85,11 @@ Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [PATCH v2] sched,livepatch: Untangle cond_resched() and
  live-patching
-Message-ID: <aCRl9h_p3Yu8Gxci@pathway.suse.cz>
+Message-ID: <aCRnsN-2x4vpjpCx@pathway.suse.cz>
 References: <20250509113659.wkP_HJ5z@linutronix.de>
  <alpine.LSU.2.21.2505131529080.19621@pobox.suse.cz>
+ <20250513140310.GA25639@noisy.programming.kicks-ass.net>
+ <alpine.LSU.2.21.2505131604530.19621@pobox.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -96,48 +98,61 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.2505131529080.19621@pobox.suse.cz>
+In-Reply-To: <alpine.LSU.2.21.2505131604530.19621@pobox.suse.cz>
 
-On Tue 2025-05-13 15:34:50, Miroslav Benes wrote:
-> On Fri, 9 May 2025, Sebastian Andrzej Siewior wrote:
+On Tue 2025-05-13 16:05:51, Miroslav Benes wrote:
+> On Tue, 13 May 2025, Peter Zijlstra wrote:
 > 
-> > From: Peter Zijlstra <peterz@infradead.org>
+> > On Tue, May 13, 2025 at 03:34:50PM +0200, Miroslav Benes wrote:
+> > > Hi,
+> > > 
+> > > thanks for the updated version.
+> > > 
+> > > On Fri, 9 May 2025, Sebastian Andrzej Siewior wrote:
+> > > 
+> > > > From: Peter Zijlstra <peterz@infradead.org>
+> > > > 
+> > > > With the goal of deprecating / removing VOLUNTARY preempt, live-patch
+> > > > needs to stop relying on cond_resched() to make forward progress.
+> > > > 
+> > > > Instead, rely on schedule() with TASK_FREEZABLE set. Just like
+> > > > live-patching, the freezer needs to be able to stop tasks in a safe /
+> > > > known state.
+> > > > 
+> > > > Compile tested only.
+> > > 
+> > > livepatch selftests pass and I also ran some more.
+> > >  
+> > > > [bigeasy: use likely() in __klp_sched_try_switch() and update comments]
+> > > > 
+> > > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > > > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > > 
+> > > Acked-by: Miroslav Benes <mbenes@suse.cz>
+> > > 
+> > > A nit below if there is an another version, otherwise Petr might fix it 
+> > > when merging.
 > > 
-> > With the goal of deprecating / removing VOLUNTARY preempt, live-patch
-> > needs to stop relying on cond_resched() to make forward progress.
+> > Petr or Peter?
 > > 
-> > Instead, rely on schedule() with TASK_FREEZABLE set. Just like
-> > live-patching, the freezer needs to be able to stop tasks in a safe /
-> > known state.
-> > 
-> > @@ -365,27 +356,20 @@ static bool klp_try_switch_task(struct task_struct *task)
-> >  
-> >  void __klp_sched_try_switch(void)
-> >  {
-> > +	/*
-> > +	 * This function is called from __schedule() while a context switch is
-> > +	 * about to happen. Preemption is already disabled and klp_mutex
-> > +	 * can't be acquired.
-> > +	 * Disabled preemption is used to prevent racing with other callers of
-> > +	 * klp_try_switch_task(). Thanks to task_call_func() they won't be
-> > +	 * able to switch to this task while it's running.
-> > +	 */
-> > +	lockdep_assert_preemption_disabled();
-> > +
-> > +	/* Make sure current didn't get patched */
-> >       if (likely(!klp_patch_pending(current)))
-> >                return;
+> > That is, who are we expecting to merge this :-)
 > 
-> This last comment is not precise. If !klp_patch_pending(), there is 
-> nothing to do. Fast way out. So if it was up to me, I would remove the 
-> line all together.
+> Petr Mladek if it goes through the live patching tree, you if tip. Feel 
+> free to pick it up :).
 
-I think that this is not just a speedup. Right below is a read memory
-barrier. It says that we need to read TIF_PATCH_PENDING here to
-make sure that klp_target_state is correct after the barrier.
+IMHO, it might be easier when it goes via tip. Peter, feel free to
+take it.
 
-Anyway, I agree that the comment is confusing and might be removed.
-The comment above the memory barrier might/should be enough.
+The patch does not create any conflict with the klp tree.
+But I guess that there might be some dependent patches in tip...
+
+That said, I could take it via the livepatch tree if Peter preferred
+it from some reasons.
+
+Anyway, the patch looks good and passes the tests. Feel free to use:
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Tested-by: Petr Mladek <pmladek@suse.com>
 
 Best Regards,
 Petr
