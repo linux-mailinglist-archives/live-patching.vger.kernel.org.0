@@ -1,73 +1,90 @@
-Return-Path: <live-patching+bounces-1441-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1442-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9C429ABC507
-	for <lists+live-patching@lfdr.de>; Mon, 19 May 2025 18:57:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6D622ABC54C
+	for <lists+live-patching@lfdr.de>; Mon, 19 May 2025 19:11:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id C7EBB7AD7DC
-	for <lists+live-patching@lfdr.de>; Mon, 19 May 2025 16:56:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 809503AA5C8
+	for <lists+live-patching@lfdr.de>; Mon, 19 May 2025 17:11:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C168286D76;
-	Mon, 19 May 2025 16:57:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 72AA6288C22;
+	Mon, 19 May 2025 17:11:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oNOIRe6l"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vA2bxeQ2"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12151FDA9E;
-	Mon, 19 May 2025 16:57:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D609720AF87
+	for <live-patching@vger.kernel.org>; Mon, 19 May 2025 17:11:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747673861; cv=none; b=hF0/U3HuMucdnpqsdPsHccvZ8LEIx3qZuQ9188eBlY+V8gI/v8DzVQrPsReJ+WUZ8MEB2yfxLgPRFCpTWMS/mvJ70co6x0cPYuOozrF8MOUmfE+Yak1TAR2BZFsQedqUrmbQnfatVyjf1U10lzNE2rT1Dbm+4b4pNclMbr7MDWs=
+	t=1747674679; cv=none; b=Mg0dDWrHUN190s/SrL1bTSLHnEKPU3hr0Iwn6emauGb+TAwrnW/NAJHyi/x4Myky3QlBtv7ZLhtYnh7kwqeppsSfLCyfzx6jacNGMYwynQAkbEDQezWFW/03RZtE7jurHDV3rUeMPuEtUFKmRE8YHixs+GV7L6NRSSlkIxjfzrI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747673861; c=relaxed/simple;
-	bh=IRKTNHfasU8+lo/XRIkxokS5HAPWIZgFKA1nHJYL56g=;
+	s=arc-20240116; t=1747674679; c=relaxed/simple;
+	bh=J9+AOPXxrsjtGniILsGnZjKCgDv3F7K2+yKjpaFrVAI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=P1vT1yfVy9aIDa5c68jfLrS4B2EMPssK/iHEeZmBaP/5lEvjqrdo8IyvIY6m5+GMAInyI+7QpfGRWowlM5cEGvFgjLDvCZHrrq6tqiCj4LgMp2kQkaMmMubYLUnLd8jjc8exi8BByZFZ4nPaYigH0Em6FHpVJFy4Sz/SHO10+Nk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oNOIRe6l; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A3C8C4CEF1;
-	Mon, 19 May 2025 16:57:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747673859;
-	bh=IRKTNHfasU8+lo/XRIkxokS5HAPWIZgFKA1nHJYL56g=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=oNOIRe6lZs7jzW6yF8dc/2pf+jxK9H6XJ6yGxQb7WUVmS4MBMBIoRoxO3s4tLxvPD
-	 qCHZUZ2TcZULip9ppmX4JKa47qerHL330KIOW2kCitvaolZyVZoQDvVma5aAmqOYmG
-	 HdHfhz5mWE6y5F3MGctO7ehNrUmrlRZ5JHwYNx1BPqruAzXBMDwCmQ7g5ZkLIlnszu
-	 osLehQG5He4sWXdVGHNWMRBBIcZLk7wVuV1ntYcwJXL7/9vjnlQrY2h01/azYxa7IE
-	 sXSHSicrNYXdHkzX+V3MgS6NNs5q2FsAjqCDhDYrOUiF2Y3O1qIYvAGYD7opo+I5PN
-	 6FPwDtjuo+3/g==
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-476977848c4so50816711cf.1;
-        Mon, 19 May 2025 09:57:39 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUAnCOvjP7dQjU+lz3ioOOIExI1+lkbPJfrkJswgdyclI9E8MRP+sj545zh3Bi3UfRO5TtGbTQE0X2f7SYyA5vXXg==@vger.kernel.org, AJvYcCVpBQJGAlbvuW05hAmzxOFFU8oDaUGbahPC13AJKwS47wn1pbGYJejXpZgnSkdX4b9AjViwZiFkZWtejbbFNQ==@vger.kernel.org, AJvYcCWvUg54kk8MNxBSN9dHZWYXjF6hElR/sNn5GnRUn+O9VH+FerSPS5q+J0ccfo7rnSZ3vrENxAdUpz7wsC0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyhJpBqJUj+pfVz007i6rbaiYQG/7uhwaiMn6DQKRzXmEEgRT73
-	6L+SB+67ldvYWfLoiyXx6/DMHWMprb6tneb7d0B3PV1/NXT1/RdM/2ByNSz+58IEGNHGNvipU+4
-	9HRNk89pIwwtwrPnG6Twcz5HalPkJbkE=
-X-Google-Smtp-Source: AGHT+IF4eIILYLE82QhVaFVC1hc40xNHoFgLB4h94upYDsq2OsAWvZWF03w5aHy3ywmb0cwEeuEgMULJtrLNil5Qb+Q=
-X-Received: by 2002:a05:622a:2610:b0:494:7c90:da18 with SMTP id
- d75a77b69052e-494ae47daf7mr251639231cf.38.1747673858027; Mon, 19 May 2025
- 09:57:38 -0700 (PDT)
+	 To:Cc:Content-Type; b=m5dDu0Yf1UEhhvQJpshzZufR4nvlKq+vS68x7bSJONkMypUiBN8ZcKcNmXHvcWdbvlFanYGgR6fKcSeikkFW0qPGu4Ei2NG3YrVquPVWajMIgNvkNAnatX5eHVg/viq1/tEYRslNwppAAj3bOdixzeJTUetEYX0oW4e7v9Pt3Xc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vA2bxeQ2; arc=none smtp.client-ip=209.85.167.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-3f6dccdcadaso3734874b6e.2
+        for <live-patching@vger.kernel.org>; Mon, 19 May 2025 10:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1747674676; x=1748279476; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J9+AOPXxrsjtGniILsGnZjKCgDv3F7K2+yKjpaFrVAI=;
+        b=vA2bxeQ2hxhxrjv579QWNYg9GDXb8fdMYCFA9URc94af113SsbNyv+30o7+SURKiIg
+         6zFMajDF17S87QgUndDl5EPnFqFtLptDbgBybksXAt8OkZOS4yxJyGIOMu3/5q56UYQM
+         Y0Ed5JQwjbAs3zdh5wwgLSttv+fvHO6whtpDTQVlnGTJHd+lBhlQBXlGdoZDvAn3HkSi
+         W0i5Nn9d7Y3mgWCvKFQJ+gNiKCx4dXq024tG+1A+8E4hcCJc8rFOD/sPYYB+ptxCYJgs
+         iY3hvRPnn4SVvm1i2y8XpP4GFWdebGDBRv1T1PKYdvdBd7s80J99akTaMByPt5s/79W+
+         qAkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747674676; x=1748279476;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=J9+AOPXxrsjtGniILsGnZjKCgDv3F7K2+yKjpaFrVAI=;
+        b=su4ZEGEOFQfKnPDVf0yAVv542tuYtVCWWoppnAJTFf8UWAOj0MeLiAaHJiMycrSdhr
+         unUSAhc5xXodsDVLi5JhMRxU8NTMuwOFpyqM4A7Ha45hjSw7qRsDZhr/f+OJiOH1NLJg
+         FIs/3+XzBQuNPUv4LDMpIPeKtzaUZIL/52pHh+fz3gfQJfTa3HQJRNKYcCuXOaLNnIXx
+         kzkXS2QdRQ3JEbQGe1KlvdmlRtb0x6Yc/jycOxifnKBjF+U4aBtFK8CkpBvuOwKCcneW
+         OquyeI8iO8pvKJIqW0y9gOV2qz1nJbQ6W3Ul9WrjVhgluD5e/ct3oMrXlvGQAvEPLr/4
+         lSqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVdm2NBpmMMHmmkbYOWcVYdnggC3au2pLAuH2HnIaea5+Hh3cnkGyXr4YkCYUTH/JQc01gMYCBk998zS2yl@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw8Gs/A35EB8x+YMj35ck1F0MZosZVldDTB1xPMr6UG2nhC7Vt6
+	Q0DtI2MhwkQ0iLR064zXQLBMAJtCFcCKVm/jC1+YwA1wgxySzMxRRS4zEDu4ki4O44p416G0TzB
+	b/qfzYtfgKov4WeUPcAD9WT0H3ec9DbEIts8FI1vX
+X-Gm-Gg: ASbGncvWzRi3sIEa1mSCtkhJvbCT/E+0Wqf7SXs94vixsqqLOoFRjVAaEhLFaBe8O55
+	OZbqT9l5gAhLAVW0QCTKMxV6/zcXRyKojXjhV6kXEX3epfqX07iNKLihspQ65+tvrNLb+ihm+Qv
+	vRb7A2djUig4FmXuu+wHwbsr7PCntCj9bwgtDG3I1YkUQ=
+X-Google-Smtp-Source: AGHT+IGbc3Cqvl0hgY9PsJO87Lm1XcEa46xCiiwbO5jWDmdGQWmCs6c23IP7AUXSBHo3+nusSu+IzZxGz9BjH90D83k=
+X-Received: by 2002:a05:6808:6c91:b0:404:df89:85d9 with SMTP id
+ 5614622812f47-404df8988e9mr6567361b6e.33.1747674675605; Mon, 19 May 2025
+ 10:11:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250320171559.3423224-1-song@kernel.org> <20250320171559.3423224-2-song@kernel.org>
- <aCs08i3u9C9MWy4M@J2N7QTR9R3>
-In-Reply-To: <aCs08i3u9C9MWy4M@J2N7QTR9R3>
-From: Song Liu <song@kernel.org>
-Date: Mon, 19 May 2025 09:57:26 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4UVkXdShpo2TvisPhr6S1jFPkS_BKXAjN9cT3=k5SAFg@mail.gmail.com>
-X-Gm-Features: AX0GCFuUA2XAT-QJ7wQt7Tq4_RFoArpXkaTjxNGeXw5LP4FBthHONfACFli45WE
-Message-ID: <CAPhsuW4UVkXdShpo2TvisPhr6S1jFPkS_BKXAjN9cT3=k5SAFg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] arm64: Implement arch_stack_walk_reliable
+References: <20250320171559.3423224-1-song@kernel.org> <Z_fhAyzPLNtPf5fG@pathway.suse.cz>
+ <CAPhsuW4MAcVpXmZVQauoaYe0o3tDvvZfgmCrYFFyFojYpNiWWg@mail.gmail.com> <aCtfAcg32kbczs-g@J2N7QTR9R3>
+In-Reply-To: <aCtfAcg32kbczs-g@J2N7QTR9R3>
+From: Dylan Hatch <dylanbhatch@google.com>
+Date: Mon, 19 May 2025 10:11:04 -0700
+X-Gm-Features: AX0GCFsWLG4-Bb9vmj3DbSo8XE63IQ1V3WuVgVTvtIAVe62z6XsrFewtIVMSBqU
+Message-ID: <CADBMgpzPyW+EnB3A1Hr=LQGhuen4pUuJ0QYa44nH0qfQ9TFaSQ@mail.gmail.com>
+Subject: Re: [PATCH v3 0/2] arm64: livepatch: Enable livepatch without sframe
 To: Mark Rutland <mark.rutland@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+Cc: Song Liu <song@kernel.org>, Petr Mladek <pmladek@suse.com>, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
 	linux-toolchains@vger.kernel.org, live-patching@vger.kernel.org, 
 	indu.bhagat@oracle.com, puranjay@kernel.org, wnliu@google.com, 
 	irogers@google.com, joe.lawrence@redhat.com, jpoimboe@kernel.org, 
@@ -76,40 +93,25 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Mark,
+> FWIW: I reviewed the patch above ([1]) already but didn't hear anything
+> back.
 
-Thanks for your review and the fixups!
+Sorry for the delay on this, last week was busier than expected on my
+end. I'm aiming to send the revised patch within the next couple of
+days.
 
-On Mon, May 19, 2025 at 6:41=E2=80=AFAM Mark Rutland <mark.rutland@arm.com>=
+On Mon, May 19, 2025 at 9:40=E2=80=AFAM Mark Rutland <mark.rutland@arm.com>=
  wrote:
+> I've had a quick look at [1], and IIUC that's a hard prerequisite for
+> livepatching, as without it the kernel *will* crash if it attempts a
+> late module relocation.
 >
-[...]
->
-> ... and then in future we can add anything spdecific to reliable
-> stacktrace there.
->
-> That aside, this generally looks good to me. The only thing that I note
-> is that we're lacking a check on the return value of
-> kretprobe_find_ret_addr(), and we should return -EINVAL when that is
-> NULL, but that should never happen in normal operation.
->
-> I've pushed a arm64/stacktrace-updates branch [1] with fixups for those
-> as two separate commits atop this one. If that looks good to you I
-> suggest we post that as a series and ask Will and Catalin to take that
-> as-is.
->
-> I'll look at the actual patching bits now.
->
-> Mark.
->
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/ arm64=
-/stacktrace-updates
 
-For the fixups:
+This is correct. In both module-patch scenarios (module is loaded
+first, or patch is loaded first) the relocations on the livepatch
+module occur after it is already RX-only, so a crash is inevitable
+with the current relocation code.
 
-Reviewed-and-tested-by: Song Liu <song@kernel.org>
-
-Tested with 2/2 of this set and samples/livepatch.
-
-Song
+Thanks,
+Dylan
 
