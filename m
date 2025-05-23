@@ -1,251 +1,339 @@
-Return-Path: <live-patching+bounces-1457-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1458-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id B47B9AC1CAC
-	for <lists+live-patching@lfdr.de>; Fri, 23 May 2025 07:56:34 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E25B5AC2223
+	for <lists+live-patching@lfdr.de>; Fri, 23 May 2025 13:46:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id E62CC1BA31B2
-	for <lists+live-patching@lfdr.de>; Fri, 23 May 2025 05:56:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F397A3AADD3
+	for <lists+live-patching@lfdr.de>; Fri, 23 May 2025 11:46:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BFEC223702;
-	Fri, 23 May 2025 05:56:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8F2523536B;
+	Fri, 23 May 2025 11:46:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b="M7nw1Rox"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="f5c4Ngdi"
 X-Original-To: live-patching@vger.kernel.org
-Received: from esa16.fujitsucc.c3s2.iphmx.com (esa16.fujitsucc.c3s2.iphmx.com [216.71.158.33])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADB9D1F3D52;
-	Fri, 23 May 2025 05:56:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=216.71.158.33
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747979790; cv=fail; b=rFw/ngam0oO6KhWdzGtyjx8NrnZ3DJ+kjFLi0TU6H/u83LwW2ggSrA7sMpppNSXhqhI27zgNrDb8J6K1fv8JOI9Q+sRuApXsWUSmkThIHfm5hN2iwmKwsaaLvT2SzG0KbFEPL2NnXs3chEIHZG1304NRVhmodLTSbObOwhIvTSY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747979790; c=relaxed/simple;
-	bh=Q5PR7TrMgxrOzHSpoJSES+yIz47Ts9rL3B9rjrXRMjQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=ec/xYwQguYkIzW2k1nrRhSxlqb6JPF0U2V/kmxbv7gkowm2IUnoPpIh+ld5GLDj8excnOoSb828E3bVm4rIQSJXkR2cklB3wbT/9Ua0jelKhGVm/Oo0/26PiQX1TkaTL+BFyyAfnMR7Nq8G7QBf088bnp+IoA5AYIlDFEHRSQhw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com; spf=pass smtp.mailfrom=fujitsu.com; dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b=M7nw1Rox; arc=fail smtp.client-ip=216.71.158.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
-  t=1747979788; x=1779515788;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Q5PR7TrMgxrOzHSpoJSES+yIz47Ts9rL3B9rjrXRMjQ=;
-  b=M7nw1RoxJKMXQUpafLK9bxdKZ81uTvO4KYpa1Tw9rmMPUHWAhc4SeCu1
-   pkAEhVo/B/6E3EVHP2UHQtdTuziVjGX4+f8wIRHN/jMs/NqYcJC7EauYW
-   QBgbnXWjXZXbBqB7FRyE8vqFlpn54/UDlbSnXUCTNN1NkfLjsbjvTVCxv
-   n66h5y85VB0sVkKfDSkt6BvfdxeM9aP/W1ptp2xSdFukFNnil35Dgw/HL
-   Awt2u41NPCRRQL2hFzTvzh9U0vYhXHOR9f8GWkmH5JEZmCYvYonLJY3HL
-   q/7SsXwStry69NwMybkVpDmRTbiCUaOSsJISJi2SLE2MJhVJoSiDGWSc3
-   g==;
-X-CSE-ConnectionGUID: vluo5Q+vTTqW278wVOUb4g==
-X-CSE-MsgGUID: QkeW0pJlTISVeyuCTfUd3A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11441"; a="156370235"
-X-IronPort-AV: E=Sophos;i="6.15,308,1739804400"; 
-   d="scan'208";a="156370235"
-Received: from mail-japaneastazlp17011029.outbound.protection.outlook.com (HELO TYVP286CU001.outbound.protection.outlook.com) ([40.93.73.29])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2025 14:55:11 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vGR5XT3IpBN4LVSxQK/p2FZz5J7Xf6FMBohlLMBy4/Y75DWGTvj6eeuMtv1oRr/qDzStz+82YKFNiaI4tOuoIwDk+puHabVKZIdoNUZMUX3VKOOGsvdJHYY1QkabgMVfqQuJScuQqBTAp2hutRdJ1WMnWnb+fsxIzSi+UyX88R7QjORLs92fyub/bpYkfXpCMLL7Rde1XZb/4DElxPE/wQXbbTEZTwv2ITG4u/433qxCoSJBrPob41pzzxUOZtHIND+TLgD5vxvYEZPaUBVne9XUfKuMLavQOf3C7QF2R9/gt2vbPlrgzUysHwGIEcx/863UUx9GpWZQk89ZHUuafw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q5PR7TrMgxrOzHSpoJSES+yIz47Ts9rL3B9rjrXRMjQ=;
- b=DAL2F7J6emGhtLDqmplcT3uIfwOumbLuoDOzmC4Kd+LJQJQ53pgKeeqiFvuaxjAV8Wvq5jy1JuqcbzAINVJG4h41Xbalx7YVT13J9hzadap7Ct2dv7p9I2Xdmv8i0DPojT/aWzI7cCJ5sob0QzOSOGa9vP9kXQB8iSrYG+TIkeXf8fLidlMaJzYK+dCNp+XkGhrhVg89CtPeeVAQD//C2iOSHhh6hs5d2XcyEnqmJS6RVk0R2JkzZ63kxge4iJyk2Olc4QH6TKa2eDbe/JWthxBT3sszh6qx/SK2rFMxc9NeAYSe6dRiNYats7onMKRRmKmyoDNnqsJWg4xuqRQpIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-Received: from TY4PR01MB13777.jpnprd01.prod.outlook.com (2603:1096:405:1f8::9)
- by TYWPR01MB9311.jpnprd01.prod.outlook.com (2603:1096:400:1a1::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.20; Fri, 23 May
- 2025 05:55:06 +0000
-Received: from TY4PR01MB13777.jpnprd01.prod.outlook.com
- ([fe80::60b7:270b:27c7:4fcc]) by TY4PR01MB13777.jpnprd01.prod.outlook.com
- ([fe80::60b7:270b:27c7:4fcc%7]) with mapi id 15.20.8769.021; Fri, 23 May 2025
- 05:55:06 +0000
-From: "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>
-To: 'Dylan Hatch' <dylanbhatch@google.com>
-CC: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
-	"x86@kernel.org" <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Josh
- Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, Miroslav
- Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, Joe Lawrence
-	<joe.lawrence@redhat.com>, Song Liu <song@kernel.org>, Ard Biesheuvel
-	<ardb@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Peter Zijlstra
-	<peterz@infradead.org>, "Mike Rapoport (Microsoft)" <rppt@kernel.org>, Andrew
- Morton <akpm@linux-foundation.org>, Dan Carpenter <dan.carpenter@linaro.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "live-patching@vger.kernel.org"
-	<live-patching@vger.kernel.org>, Roman Gushchin <roman.gushchin@linux.dev>,
-	"Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>
-Subject: RE: [PATCH v4 0/2] livepatch, arm64/module: Enable late module
- relocations.
-Thread-Topic: [PATCH v4 0/2] livepatch, arm64/module: Enable late module
- relocations.
-Thread-Index: AQHby1tudYCohoUJz0KMYCt5SP2jPLPffcBg
-Date: Fri, 23 May 2025 05:55:05 +0000
-Message-ID:
- <TY4PR01MB13777AB3A12DCA297E5642CEDD798A@TY4PR01MB13777.jpnprd01.prod.outlook.com>
-References: <20250522205205.3408764-1-dylanbhatch@google.com>
-In-Reply-To: <20250522205205.3408764-1-dylanbhatch@google.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- =?utf-8?B?TVNJUF9MYWJlbF8xZTkyZWY3My0wYWQxLTQwYzUtYWQ1NS00NmRlMzM5Njgw?=
- =?utf-8?B?MmZfQWN0aW9uSWQ9ZjM4YTMzYTMtNDc3Mi00MDU0LTg4NDUtOTViZmUyNDM0?=
- =?utf-8?B?MDI3O01TSVBfTGFiZWxfMWU5MmVmNzMtMGFkMS00MGM1LWFkNTUtNDZkZTMz?=
- =?utf-8?B?OTY4MDJmX0NvbnRlbnRCaXRzPTA7TVNJUF9MYWJlbF8xZTkyZWY3My0wYWQx?=
- =?utf-8?B?LTQwYzUtYWQ1NS00NmRlMzM5NjgwMmZfRW5hYmxlZD10cnVlO01TSVBfTGFi?=
- =?utf-8?B?ZWxfMWU5MmVmNzMtMGFkMS00MGM1LWFkNTUtNDZkZTMzOTY4MDJmX01ldGhv?=
- =?utf-8?B?ZD1Qcml2aWxlZ2VkO01TSVBfTGFiZWxfMWU5MmVmNzMtMGFkMS00MGM1LWFk?=
- =?utf-8?B?NTUtNDZkZTMzOTY4MDJmX05hbWU9RlVKSVRTVS1QVUJMSUPigIs7TVNJUF9M?=
- =?utf-8?B?YWJlbF8xZTkyZWY3My0wYWQxLTQwYzUtYWQ1NS00NmRlMzM5NjgwMmZfU2V0?=
- =?utf-8?B?RGF0ZT0yMDI1LTA1LTIzVDAyOjI4OjIyWjtNU0lQX0xhYmVsXzFlOTJlZjcz?=
- =?utf-8?B?LTBhZDEtNDBjNS1hZDU1LTQ2ZGUzMzk2ODAyZl9TaXRlSWQ9YTE5ZjEyMWQt?=
- =?utf-8?Q?81e1-4858-a9d8-736e267fd4c7;?=
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=fujitsu.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TY4PR01MB13777:EE_|TYWPR01MB9311:EE_
-x-ms-office365-filtering-correlation-id: ddd5373f-af55-4195-edb2-08dd99be5e32
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|376014|7416014|1800799024|1580799027|38070700018;
-x-microsoft-antispam-message-info:
- =?utf-8?B?TGtuVEZvSVo0SVdzUU92NC8wVGxHd1lXZDFNdHFGQkQ1SHJleXl0NlVVVUhF?=
- =?utf-8?B?TzJoRlkzMmJwY2RkMmp5WEFaQnpraTIwZmxqbGVjT3BxcGNMUUR4S1c0UGQ1?=
- =?utf-8?B?MVFnbCtHb0UrY1lYdGlQNW5lOU5GNmNHRmoxQ1BKaHlrQ216Mis3LzhpSEcz?=
- =?utf-8?B?SGgvMER3MzVSd0RMRW5WVU5RbEVtMUo2SzM4ZXVEbDFYTldSR3JQVEsycmFa?=
- =?utf-8?B?MVVtbVJaS1Mxd2FtZ2luN2RLbldya0w5NDlYMk5KOTlQME5LSStWM3Fxa1Mw?=
- =?utf-8?B?MndJVkpNQXVPNFRzVUo0NFVIQkFoamd0YnlpWW9WOE5GODJaWnV6a3BQdldO?=
- =?utf-8?B?NW5oZkhXVFlHT3pPRnArMFVWeWdUMVJpMFJSNm1DdjUxWTFTM2h5bFdFTm43?=
- =?utf-8?B?cXhZNitIWkFTaVJPUTA1dG14TWh2d0E1ZCswOWtnRHRDOFIyVFNmZzBwaEZk?=
- =?utf-8?B?QUc0bEJVemxMTUkzbzNtVlBpQUlRSFpIajdTamVSUnN0WTNHUlFRMzVxUHhS?=
- =?utf-8?B?K1pFSm1XUnVPVTJQY0JVUnFVd2IwTkV4dkxvSDJhV2ptZzNGSndpa0puSEM5?=
- =?utf-8?B?bzVRZEVJTERkNVBBNGFHVXRTSlBVRVFBVzgzUXgzckFZQUd1N3R4S2kzeG1i?=
- =?utf-8?B?UlRtTEp6ZW5CUHh4RTlRTUJVZjdRc0w0QXNSc044U1FMZEJ1NWpwZGZ0TUpF?=
- =?utf-8?B?Yit4K0V5bEJmUnFIc1ZvVHViQUl6clVvRk92LzV0aTBhNnBnbHJnZFdZMGdx?=
- =?utf-8?B?WVRHRjBidUF0TVgzWnhJK3dJdnJ3dXZPRDNoRjlGK2ppMkJqOVh1S1lXVkdH?=
- =?utf-8?B?VExQaEs2MWJuQWtldlI2ZXAwN3lFY0E4Zk9TM0hMb0N2T24yYWNsSWZkL0w0?=
- =?utf-8?B?VmQ3ZXNEMEhadW1uM0hldmgweUFtNUUxcDAxOXZVWGlVbUJZRWVnYUJhMllC?=
- =?utf-8?B?TklyL05nSVhKcTE3RUVMWXFZZi9yN1hDVk11WWU3NHl6RlNQajM1QWN1NWRz?=
- =?utf-8?B?Yy9jRGlmaTJCS2ZHaXRRL0V3VlVyTTBteTQrSkxtaEZoZ1g0Zm1jUVdVNGZS?=
- =?utf-8?B?cnVlTFZrSGIzUVV5c1F3WGl5RHZWSzdmOE1MRzVmOWk4bk9DYWdzbjk2Mlp1?=
- =?utf-8?B?RGxRNlBUeGQwc3dzT3dic2Uram15WmtoQjVhVkxUY2NCcFVWdFRBZUJBWGZV?=
- =?utf-8?B?emhFTExBV3ZzWFBKY210dStyWFh0UzMrZ0M4RXFpWGErRGtyZ2RaalNNYUNz?=
- =?utf-8?B?UHZMRzBtanRzeDVGSVNCZ29hRlJCNytKaisvbkJZdk9EbndPeEd3aDJmMTVT?=
- =?utf-8?B?bGRRbFJEY0E3U2M1KzZoZUhxWWU1NC9nMW90MGxzeEZaWURSNWpIZENiVnNP?=
- =?utf-8?B?NVBDakpsQ2dXWWNhWUNBOXJ1Zmh1K1RYOEhLNk9QQzBjZmdIVmVsdU1QWFNH?=
- =?utf-8?B?NXVqOFVTYmVQcHpiZDZsamZBcm5rcVVkWXdhY1ViTlJCdjlhY2U5YUg2RkVK?=
- =?utf-8?B?ZmVJSHoxMEZqUXlGRWlJUXd0cjJVMFp6ZWhBTmJUMktzeFNRM3NoVWprdVNX?=
- =?utf-8?B?RTdNZWVkT2dSNHRmSWdnRkJWSWFWMWJkU1hvY0swcmY0UTRjSFZSTmJyZ1NK?=
- =?utf-8?B?c05qbXltdnUveFRNL3lIdWRxWlFSWWQrUmJWUVNrSFNHM0xSaGpXK2tFTE1I?=
- =?utf-8?B?WWJzU2JjUFFRM2VJamdFbWthSzlhUUVBMWdBaFhGK05GdHlLMGpqeFQyU3N0?=
- =?utf-8?B?dFhaQ1AxTEZZUnNJK3BTTnptRjQrOFpsdC9YdWxhR3lXRGg1ekcyOU9yU1VK?=
- =?utf-8?B?b21iRDZYb2hia2F3K3QzQisvSWYrcUFMa0lYYytYSHo2VVpJQlNMaElkYnY3?=
- =?utf-8?B?RFVYTzV4OVA0SlNTMnNoSTZJMVEycWJaY0hmdlBMK1BRcTVTbFhFeXhMdmlE?=
- =?utf-8?B?OGxaSXdxZGdpanM0TVk0UUE5VUtreDJZS05UekV5UFNuMmlQNGtnaFd0aUpI?=
- =?utf-8?B?MjNEd0tJMmp3PT0=?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:ja;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY4PR01MB13777.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(1580799027)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?YWZwRk96blg3WXdwZldXK1AxQWE0S1Rta1ZuT3F5clN2L0lhWnNtK1ZyUmZI?=
- =?utf-8?B?aGFDekV1V1BqNFhPSFVzR0RoMEJmalRLV2VuZVIxbTVzOVFPNzV5dHlmcTZh?=
- =?utf-8?B?NVROTmRxYTNZU05ERHVUcjlKN2pGVEQ1MVdaTWlEQmMreFhlOEE5TFNmU3Zp?=
- =?utf-8?B?Y0RvNCtDUlNTWGJPSTF3ZFJtRkUvYlI4WWxkTHBjc2FBZkE2ZGtFSUNvWDdL?=
- =?utf-8?B?NXRWS3FGN2JJTDhHSVorUHRDbzZoT1p3L0cvRGlwRHMrMi9mTFJVRmdMN1Vl?=
- =?utf-8?B?RmVOWGNMd0lIbk5Bbm1abWdWK2ZVbmVGOVNaOC9kaFZ5WTJaNnphTEtPcTVJ?=
- =?utf-8?B?L2NUenZpOFhkODV5Tm5ON0N4MHhtVmlrU0U3MG5vZlhPQU5hNFpXU0FqUVZ2?=
- =?utf-8?B?bm5lZ2xMK05tT2E2VXd1ZUVpZy85TnNmNUJNeGVjbi9JYUF3OWhwUFVuOVBN?=
- =?utf-8?B?Tm10a1NONlZnY3Y2UkpXNERhMnRDemdxUzd1aHd5dDFhRlIyajMrSC9uK1pJ?=
- =?utf-8?B?aFFlUGFiNGsrRURSeGU1N0huWW92ZkFjWUs1dTh3dnRJZDl5NEZjdGRUVkxr?=
- =?utf-8?B?dmVMd2tyYTNLMWFGWTYxMnhTaWVLMml1MW1ubGNlNnY4cXIrRlE5Sm5zTlVq?=
- =?utf-8?B?cThsd2JqZjBvMnE0ZlZCdk90WlZmWTVCY3JNOWwzeDBoMTdRaW43bFNNK28z?=
- =?utf-8?B?M3RDaExZNjF1c0wwbzlZVExaNHErY0tVNEU4NEovcmhTanBxOXBLUFRmZDND?=
- =?utf-8?B?bDgzSm5mSTRqZnkzR3UwOFQxZWhjZzZYVkhrbzRJZWdnTjBoWEovdzlpRzRX?=
- =?utf-8?B?cFVVdnF6cFFOSU1GMHUxbCt6UFJmSlVvRVBZV01XTXc3Q0psdEJ4bXBVMGpN?=
- =?utf-8?B?SXBpUzVYQldUbWRkekIxYTByOXlwL2JYSFp4Q0N3U2JaWnZMTGhzcUlJUE9S?=
- =?utf-8?B?R2VUSkVnQ1JyUGoyUElwZmJGRk1Mb3FWZmhkVGtkTUpHM1FtVTJKaEF0ZU5S?=
- =?utf-8?B?ZWhxTVhvV2ZoaXlaeFVMemgzVDFEWjlSM2p5M0dReFhTdkhnVUpCNVNQQ2dH?=
- =?utf-8?B?dUpxVStXSjAveGluLzB5SVQrSEc2akFvTWwvRzk5eUl2K0ljM1BCeTI1bndW?=
- =?utf-8?B?ZzVZOUFWbWpIdkVuZ3YzcXorWVNEemNvMFFsd0QyWUNEQlhkb1NTbkZueE8v?=
- =?utf-8?B?TVVCenhTZEZEVDYxM2kyTDJBMXpkTGplZHB3YTZ0bDBUMStnK2ZpTkcrcEJB?=
- =?utf-8?B?TWpMbUlkQnJCTEU2WGkycHR4Tk03UzZWejdmVWw4WEhGeHR1SlkyaFJkN1Fa?=
- =?utf-8?B?L3RYd291WXd5Z3g5ZmRlVnRINStzYjl6dFArcTRZQndscEk1WFV1S2FGeThG?=
- =?utf-8?B?VUFia3dmdWVJbmc3WVRWTXlSeVF5czBRTVVKbWFid0NZdVBiMUp6dFE1MHZM?=
- =?utf-8?B?RW01MUdjSndaaWFobFZZOXFEcnVhVTBXc1ZGVkFPMlJON2U3S1BOdWlnOEp6?=
- =?utf-8?B?MVo5Z0dEZDZCTFhwaGpJL1p5SDVqYk9UYk9wUmRkQ2dVYlBrTm02aGpRWVFL?=
- =?utf-8?B?VDZZZFFZZnloYTNscU1yRElNWFludElKWjRRRDhLNzFDeitJTm5lVmNtbk5m?=
- =?utf-8?B?aFpXV2hhY2ZmOG9CbkRXbE5MTndFM1FHS2UydTEyYjF6WER4YVQvdmN5bXZS?=
- =?utf-8?B?V1pneXVCVzFXb0V5Ny9UYzR1amo4cHoxbzJjRGRGWEZWUGRkY1puek5BaTFB?=
- =?utf-8?B?US9EYWhKMmRrYmRhT2xuZnlSZWVvOU1Lc3B0cHVyR014ZUlTTUhwMVYwU05O?=
- =?utf-8?B?a2pjT3kwYkw2MjhFUUtKKzBKOTF6YTMwTkMzSGtKcGlrWG10RVpBQnhqQmN5?=
- =?utf-8?B?WUFkb1hkVXd2MXJaN1JHKzltcHg5U0lsSDJCMGRKRTRzeHQwTDJPa1FNVnlW?=
- =?utf-8?B?TkFqdXl4aUl4bXd6NkpTem82bDhtVmcrUStsYkpQakZoOTZJTW1sOEhMTzFM?=
- =?utf-8?B?RndtK1BVS3JJR2JkNlprTGRtdTVwa0lWa2drYkh6WUFxU1g4dkh3V0U1M2ZD?=
- =?utf-8?B?SnBCR0MvTFhPeVRDRXVpempOdk5oWWlYbStvM3BBS0NJK1VESThoMlMrRVpR?=
- =?utf-8?B?UGR2TU9WUk1hM2hjSjQxNGZESWpraTR5Q3R4YkVVVVpZcDdYMk56WGpGRHJC?=
- =?utf-8?B?enc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE88722A1CD
+	for <live-patching@vger.kernel.org>; Fri, 23 May 2025 11:46:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1748000790; cv=none; b=reTFl1zBpH79M8ihqXsfe30dgNGVFT6Apt7gM07moCYfJgbDsHMAExhF5b+3hhyrHs7683Q7UnUTYioA8vjD+7uLaOMsCTRxXEnL4qFCw9qNXUYpj7npzBI7Ydr6O9eYnawTmSF0iLMzeoGvRE7qPLUCSVyJ5N/a6130/iOPJYc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1748000790; c=relaxed/simple;
+	bh=tINtbMZwiyul1+s615FxcsqdDp4S0HiWbZTcY2k5exg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=siItlqKHNpxNH/Wm4kDUS6m+2pN5f2fihegpNIpotRt8mjhlNnuoF3x2PqmdBE+NKPz0aiXjT0OmPy3TfzfmyVVGF1hA81et+2EW8Ggh6mR8vvHfp7Lh1Ne/NrttMnQsObvPwAGDFT0t6HsV4tDtemNQleV7THW2m6ycbxcRSb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=f5c4Ngdi; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1748000787;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=+hWcM77IoP384h3TPLegN4v3sX3yuXb0odhYXhpeKHU=;
+	b=f5c4NgdiLAPLhCXc7sxFhfwcIDggL3ZxaCct4ynlLBqMpIIAnnYRqoukDQzKIRgd+2KjA/
+	cUGcyFvONGkXJFN5rt4jtxh1w7bqeUeTjJq5jG2lt/rCYZap3mTVVMQoRgwnmmIFd2jAws
+	43Oab1G1LwVHF9odAjaX5Ipf3vHrhO4=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-364-sWE-2y0_OE6XUUBFbm01Yg-1; Fri, 23 May 2025 07:46:24 -0400
+X-MC-Unique: sWE-2y0_OE6XUUBFbm01Yg-1
+X-Mimecast-MFC-AGG-ID: sWE-2y0_OE6XUUBFbm01Yg_1748000784
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-7c5e2872e57so1617359885a.0
+        for <live-patching@vger.kernel.org>; Fri, 23 May 2025 04:46:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748000784; x=1748605584;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+hWcM77IoP384h3TPLegN4v3sX3yuXb0odhYXhpeKHU=;
+        b=GZd6+VLcKQBsnG+IQG46RfWF//EMCik4rbW0bMwM/cv7zRZJYL3peDnfdoZtAEo9Gm
+         jRLyWQuTWat6RTjPH0ZTJqGRt9+1rqDwrd0lr/4fg/A0ihZzomx4eVt3kTeuQzTgs033
+         Yj7vNfGgqdDR7cuM39RK6Iw6z0xf0I+ymMQkKzbh6HG3Yp8Apd+/R91V/fptQlbHprTF
+         jA1ta+rzvOmUSHjt3QoKor+AZvpXK4jJFuN5P5A14MS1uu+jyjjmORlsnnXUPfuur/3z
+         xHeZm1q/H/7yB4f7s243ZxackwVgJBcFOkqj+MNbmKb8y/Mrz4TSc4HXItJsohJWq2PF
+         wAbw==
+X-Forwarded-Encrypted: i=1; AJvYcCXcY96QO9gDs117A91ATSJJRhXMS0C1BZwwomu+NtcCsHhMdNagX0RLZfI4XMhVTr6vWQIJqXav4SDrVlUa@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxe9Lz/m9XW6RK6zXzqZypipViNgiIRXGVum9Z6v7VIZD/l1WW6
+	vTEdVU6YopZ3HVfqwPvPOBNCuGaA+Mn0i01j05U7AMjAT/GeP/YNMpqx63ElEJy38HK1GMV2lqh
+	m/c0jyVR7c/AcD0l3r6uJ0w3WFgbEYVSzQVK8NAP70c78onlpIZSiM5Bht531mOSt2Oc=
+X-Gm-Gg: ASbGncueLq8beSmOL3mXsyV5okvdC7bEH/gu4Sx9YAniej/AZYema1aps1SY6OwUN88
+	CbL9cRmX+Z5m/EgXwox1tttwbv1xAtld6C+nwZWufBjTRgpO+Csr/PZpxFyfeef/eFxhfuDMkER
+	JzGIjmnOJe5k5uoGVznDqo9rCQFIsVBU7yNc9UgpXCAkBFSydKMgL/C8F/SYTvapJlYWPIAoraJ
+	oOyfm/zHcRCxOYASQV3aJl/9F6TgNMYXUy7RmLg2RochRBAr/7ci9OzgTA5sv+gVfKhGvKSJpSn
+	2wqNlQSpSGY2rXeQlp0+wiSqXUqelRr6gYi5BKeYzrg64fKTvxLDo34m88zwyXf2Udo=
+X-Received: by 2002:a05:622a:5c1b:b0:494:7c68:3c6e with SMTP id d75a77b69052e-49e1df237d9mr37122721cf.15.1748000783891;
+        Fri, 23 May 2025 04:46:23 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGh3nDU8DMvp2LUfvA1rvQXn+mK50bZw+xd7UbP2Ohi0mNvNMwTvTiS0vjD5CL+WdJ4AaPr6g==
+X-Received: by 2002:a05:622a:5c1b:b0:494:7c68:3c6e with SMTP id d75a77b69052e-49e1df237d9mr37122461cf.15.1748000783501;
+        Fri, 23 May 2025 04:46:23 -0700 (PDT)
+Received: from [192.168.1.17] (pool-68-160-160-85.bstnma.fios.verizon.net. [68.160.160.85])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7cd468ccd94sm1166694285a.109.2025.05.23.04.46.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 May 2025 04:46:22 -0700 (PDT)
+Message-ID: <29b3d533-94cf-4949-90a1-4a8c9d698a8a@redhat.com>
+Date: Fri, 23 May 2025 07:46:19 -0400
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	okBidSN819T/MTHXdYl1hYpENWnD5NshB8zF9FqqBUfwuOUuUE12YIwifUPajfP9SytYa2U/d1ss8NSELpQOrGK3YdJVzJJeKRrxHvvtH3nQSWyRaekQ2wrpjKf9QahfSjsAm56UZuEilmLWx7NkcaMU+X4a8ElQZ9k1CSy7WAtsEMJxzVqwzIkk1fQ5C4E3cb6TKBCWViDd12vDUsxihp+NpGJCsvtHWnZkcQ0rJU54jLsuxvZHtejnmlqDgQ8RoCex3+YxfkoUyQDsDVZg23+oyi33VTIcq1bX56vo6l1PLfduMEBLqQOG0l3+Bjm57lyz8w0zeRgxAr1jifB04qG+sW/YPhIGyp6os5eou5TJ6YIg2St7litLVZedrS/suROfydqvzS46fj/zMA0TDm8BVrRtXkrAjK7dVyFGR204qCPWAubgkC2VmTVA+osEP/1n+fWjMF+mEFuBOARjVVr6V2SpUN29+RIN9ShkZMgYtmqJwzkgbqptX+v9BBhZQGRMAxTCKknrU3vk0aOP2IcCyV0wLGNb1JRu8nRebBDXBboDfkbzwvedJGEWy8fQrYDQlkndE2lHQ+3xnmC9zCOQ9weUEImMqY6RtGfcnK7ccKY7qpcrDgyUY72/ALWw
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY4PR01MB13777.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ddd5373f-af55-4195-edb2-08dd99be5e32
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2025 05:55:05.9257
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9abhIgjZVwRH25syesTZ3j0LeDuzflT5oTiI1iCr4pcaUJ3TOCCN8ZPfS6/jJOgFsjvBh3tq73aW/Up7QY5ICizTC03zZbD72s03L3bHc0c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9311
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 35/62] objtool: Refactor add_jump_destinations()
+To: Josh Poimboeuf <jpoimboe@kernel.org>, x86@kernel.org
+Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+ Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
+ Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>,
+ Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>,
+ Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>,
+ Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay Mohan <puranjay@kernel.org>
+References: <cover.1746821544.git.jpoimboe@kernel.org>
+ <70bf4b499941a6b19c5f750f5c36afcd6ffd216f.1746821544.git.jpoimboe@kernel.org>
+Content-Language: en-US
+From: Joe Lawrence <joe.lawrence@redhat.com>
+Autocrypt: addr=joe.lawrence@redhat.com; keydata=
+ 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
+ pNzsRQ==
+In-Reply-To: <70bf4b499941a6b19c5f750f5c36afcd6ffd216f.1746821544.git.jpoimboe@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-SGkgRHlsYW4sDQoNCj4gTGF0ZSByZWxvY2F0aW9ucyAoYWZ0ZXIgdGhlIG1vZHVsZSBpcyBpbml0
-aWFsbHkgbG9hZGVkKSBhcmUgbmVlZGVkIHdoZW4NCj4gbGl2ZXBhdGNoZXMgY2hhbmdlIG1vZHVs
-ZSBjb2RlLiBUaGlzIGlzIHN1cHBvcnRlZCBieSB4ODYsIHBwYywgYW5kIHMzOTAuDQo+IFRoaXMg
-c2VyaWVzIGJvcnJvd3MgdGhlIHg4NiBtZXRob2RvbG9neSB0byByZWFjaCB0aGUgc2FtZSBsZXZl
-bCBvZiBzdXBwb3J0IG9uDQo+IGFybTY0LCBhbmQgbW92ZXMgdGhlIHRleHQtcG9rZSBsb2NraW5n
-IGludG8gdGhlIGNvcmUgbGl2ZXBhdGNoIGNvZGUgdG8gcmVkdWNlDQo+IHJlZHVuZGFuY3kuDQo+
-IA0KPiBEeWxhbiBIYXRjaCAoMik6DQo+ICAgbGl2ZXBhdGNoLCB4ODYvbW9kdWxlOiBHZW5lcmFs
-aXplIGxhdGUgbW9kdWxlIHJlbG9jYXRpb24gbG9ja2luZy4NCj4gICBhcm02NC9tb2R1bGU6IFVz
-ZSB0ZXh0LXBva2UgQVBJIGZvciBsYXRlIHJlbG9jYXRpb25zLg0KPiANCj4gIGFyY2gvYXJtNjQv
-a2VybmVsL21vZHVsZS5jIHwgMTEzDQo+ICsrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0t
-LS0tLS0NCj4gIGFyY2gveDg2L2tlcm5lbC9tb2R1bGUuYyAgIHwgICA4ICstLQ0KPiAga2VybmVs
-L2xpdmVwYXRjaC9jb3JlLmMgICAgfCAgMTggKysrKy0tDQo+ICAzIGZpbGVzIGNoYW5nZWQsIDg0
-IGluc2VydGlvbnMoKyksIDU1IGRlbGV0aW9ucygtKQ0KPiANCj4gLS0NCj4gMi40OS4wLjExNTEu
-Z2ExMjg0MTFjNzYtZ29vZw0KDQpUaGFua3MgZm9yIHBvc3RpbmcgdGhlIG5ldyBwYXRjaC4NCg0K
-SSByYW4ga3BhdGNoJ3MgaW50ZWdyYXRpb24gdGVzdHMgYW5kIG5vIGlzc3VlcyB3ZXJlIGRldGVj
-dGVkLg0KDQpUaGUgbGl2ZXBhdGNoIHBhdGNoZXMgWzFdWzJdIChNYW51YWxseSBhZGp1c3Rpbmcg
-YXJjaC9hcm02NC9LY29uZmlnKSBoYXZlIGJlZW4gYXBwbGllZCB0byB0aGUga2VybmVsICg2LjE1
-LXJjNykuDQpUaGUga3BhdGNoIHVzZXMgdGhlIHNhbWUgb25lIGFzIHRoZSBwcmV2aW91cyB0ZXN0
-IFszXVs0XS4NCg0KWzFdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDI1MDUyMTExMTAw
-MC4yMjM3NDcwLTEtbWFyay5ydXRsYW5kQGFybS5jb20vDQpbMl0gaHR0cHM6Ly9sb3JlLmtlcm5l
-bC5vcmcvYWxsLzIwMjUwMzIwMTcxNTU5LjM0MjMyMjQtMy1zb25nQGtlcm5lbC5vcmcvDQpbM10g
-aHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvYWxsL1RZNFBSMDFNQjEzNzc3MzlGMUNDMDg1NDlBNjE5
-Qzg2MzVEN0JBMkBUWTRQUjAxTUIxMzc3Ny5qcG5wcmQwMS5wcm9kLm91dGxvb2suY29tLw0KWzRd
-IGh0dHBzOi8vZ2l0aHViLmNvbS9keW51cC9rcGF0Y2gvcHVsbC8xNDM5DQoNClRlc3RlZC1ieTog
-VG9zaGl5dWtpIFNhdG8gPGZqNjYxMWllQGFhLmpwLmZ1aml0c3UuY29tPg0KDQpSZWdhcmRzLA0K
-VG9zaGl5dWtpIFNhdG8NCg0K
+On 5/9/25 4:16 PM, Josh Poimboeuf wrote:
+> The add_jump_destinations() logic is a bit weird and convoluted after
+> being incrementally tweaked over the years.  Refactor it to hopefully be
+> more logical and straightforward.
+> 
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> ---
+>  tools/objtool/check.c               | 227 +++++++++++++---------------
+>  tools/objtool/include/objtool/elf.h |   4 +-
+>  2 files changed, 104 insertions(+), 127 deletions(-)
+> 
+> diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+> index 66cbeebd16ea..e4ca5edf73ad 100644
+> --- a/tools/objtool/check.c
+> +++ b/tools/objtool/check.c
+> @@ -1439,9 +1439,14 @@ static void add_return_call(struct objtool_file *file, struct instruction *insn,
+>  }
+>  
+>  static bool is_first_func_insn(struct objtool_file *file,
+> -			       struct instruction *insn, struct symbol *sym)
+> +			       struct instruction *insn)
+>  {
+> -	if (insn->offset == sym->offset)
+> +	struct symbol *func = insn_func(insn);
+> +
+> +	if (!func)
+> +		return false;
+> +
+> +	if (insn->offset == func->offset)
+>  		return true;
+>  
+>  	/* Allow direct CALL/JMP past ENDBR */
+> @@ -1449,52 +1454,32 @@ static bool is_first_func_insn(struct objtool_file *file,
+>  		struct instruction *prev = prev_insn_same_sym(file, insn);
+>  
+>  		if (prev && prev->type == INSN_ENDBR &&
+> -		    insn->offset == sym->offset + prev->len)
+> +		    insn->offset == func->offset + prev->len)
+>  			return true;
+>  	}
+>  
+>  	return false;
+>  }
+>  
+> -/*
+> - * A sibling call is a tail-call to another symbol -- to differentiate from a
+> - * recursive tail-call which is to the same symbol.
+> - */
+> -static bool jump_is_sibling_call(struct objtool_file *file,
+> -				 struct instruction *from, struct instruction *to)
+> -{
+> -	struct symbol *fs = from->sym;
+> -	struct symbol *ts = to->sym;
+> -
+> -	/* Not a sibling call if from/to a symbol hole */
+> -	if (!fs || !ts)
+> -		return false;
+> -
+> -	/* Not a sibling call if not targeting the start of a symbol. */
+> -	if (!is_first_func_insn(file, to, ts))
+> -		return false;
+> -
+> -	/* Disallow sibling calls into STT_NOTYPE */
+> -	if (is_notype_sym(ts))
+> -		return false;
+> -
+> -	/* Must not be self to be a sibling */
+> -	return fs->pfunc != ts->pfunc;
+> -}
+> -
+>  /*
+>   * Find the destination instructions for all jumps.
+>   */
+>  static int add_jump_destinations(struct objtool_file *file)
+>  {
+> -	struct instruction *insn, *jump_dest;
+> +	struct instruction *insn;
+>  	struct reloc *reloc;
+> -	struct section *dest_sec;
+> -	unsigned long dest_off;
+>  	int ret;
+>  
+>  	for_each_insn(file, insn) {
+>  		struct symbol *func = insn_func(insn);
+> +		struct instruction *dest_insn;
+> +		struct section *dest_sec;
+> +		struct symbol *dest_sym;
+> +		unsigned long dest_off;
+> +		bool dest_undef = false;
+> +
+> +		if (!is_static_jump(insn))
+> +			continue;
+>  
+>  		if (insn->jump_dest) {
+>  			/*
+> @@ -1503,129 +1488,121 @@ static int add_jump_destinations(struct objtool_file *file)
+>  			 */
+>  			continue;
+>  		}
+> -		if (!is_static_jump(insn))
+> -			continue;
+>  
+>  		reloc = insn_reloc(file, insn);
+>  		if (!reloc) {
+>  			dest_sec = insn->sec;
+>  			dest_off = arch_jump_destination(insn);
+> -		} else if (is_sec_sym(reloc->sym)) {
+> +		} else if (is_undef_sym(reloc->sym)) {
+> +			dest_sym = reloc->sym;
+> +			dest_undef = true;
+> +		} else {
+>  			dest_sec = reloc->sym->sec;
+> -			dest_off = arch_insn_adjusted_addend(insn, reloc);
+> -		} else if (reloc->sym->retpoline_thunk) {
+> +			dest_off = reloc->sym->sym.st_value +
+> +				   arch_insn_adjusted_addend(insn, reloc);
+> +		}
+> +
+> +		if (!dest_undef) {
+> +			dest_insn = find_insn(file, dest_sec, dest_off);
+> +			if (!dest_insn) {
+> +				struct symbol *sym = find_symbol_by_offset(dest_sec, dest_off);
+> +
+> +				/*
+> +				 * retbleed_untrain_ret() jumps to
+> +				 * __x86_return_thunk(), but objtool can't find
+> +				 * the thunk's starting RET instruction,
+> +				 * because the RET is also in the middle of
+> +				 * another instruction.  Objtool only knows
+> +				 * about the outer instruction.
+> +				 */
+> +				if (sym && sym->embedded_insn) {
+> +					add_return_call(file, insn, false);
+> +					continue;
+> +				}
+> +
+> +				/*
+> +				 * GCOV/KCOV dead code can jump to the end of
+> +				 * the function/section.
+> +				 */
+> +				if (file->ignore_unreachables && func &&
+> +				    dest_sec == insn->sec &&
+> +				    dest_off == func->offset + func->len)
+> +					continue;
+> +
+> +				ERROR_INSN(insn, "can't find jump dest instruction at %s+0x%lx",
+> +					  dest_sec->name, dest_off);
+> +				return -1;
+> +			}
+> +
+> +			dest_sym = dest_insn->sym;
+> +			if (!dest_sym)
+> +				goto set_jump_dest;
+> +		}
+> +
+> +		if (dest_sym->retpoline_thunk) {
+>  			ret = add_retpoline_call(file, insn);
+>  			if (ret)
+>  				return ret;
+>  			continue;
+> -		} else if (reloc->sym->return_thunk) {
+> +		}
+> +
+> +		if (dest_sym->return_thunk) {
+>  			add_return_call(file, insn, true);
+>  			continue;
+> -		} else if (func) {
+> -			/*
+> -			 * External sibling call or internal sibling call with
+> -			 * STT_FUNC reloc.
+> -			 */
+> -			ret = add_call_dest(file, insn, reloc->sym, true);
+> -			if (ret)
+> -				return ret;
+> -			continue;
+> -		} else if (reloc->sym->sec->idx) {
+> -			dest_sec = reloc->sym->sec;
+> -			dest_off = reloc->sym->sym.st_value +
+> -				   arch_dest_reloc_offset(reloc_addend(reloc));
+
+Way back in ("[PATCH v2 18/62] objtool: Fix x86 addend calculation"),
+arch_dest_reloc_offset() was replaced with arch_insn_adjusted_addend(),
+so I think that patch missed this callsite and breaks bisectability.
+
+-- 
+Joe
+
 
