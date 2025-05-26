@@ -1,53 +1,53 @@
-Return-Path: <live-patching+bounces-1461-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1462-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id F2B9DAC3DF9
-	for <lists+live-patching@lfdr.de>; Mon, 26 May 2025 12:44:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BBDA4AC3E27
+	for <lists+live-patching@lfdr.de>; Mon, 26 May 2025 12:53:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id BE0697A29A9
-	for <lists+live-patching@lfdr.de>; Mon, 26 May 2025 10:42:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 82FEA3A2D67
+	for <lists+live-patching@lfdr.de>; Mon, 26 May 2025 10:52:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97FAE1C07C4;
-	Mon, 26 May 2025 10:44:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3712A1F7569;
+	Mon, 26 May 2025 10:52:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="FQ2fWIAK"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="F9+SzIYD"
 X-Original-To: live-patching@vger.kernel.org
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00C442566;
-	Mon, 26 May 2025 10:44:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB3001D63C0;
+	Mon, 26 May 2025 10:52:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748256246; cv=none; b=iaJqzRUAR0wF97zWdSNDR3nPpxT9j4YHkQ9Vzvi6m2GjvFflWfn9LnblK0HeDcosIOnqnU7PcqBeoQX3W9spiakLvJiGxyZhz/qI3NokSxwIADSgyCNtFTzGCrLMKRryPOohGAOGI6Q0ZAJ58HZxIHbW3gPtyWmjzn/iBvlwxt0=
+	t=1748256772; cv=none; b=XotMSKgned/zWi/s+76YGeWy0xlR8Rn27lC3Ptjod5Q/+YlOy6Q15W+PIFH2jZjkXilE8+947taCX9BkUDjC3O/5WNAGyi7+HFfGaGqI2ceBErSkmVJC/d3SRLpx5nXzBEDD+C756RY5OvXl/F7r6AZEXOHANRWmwmu7wBbFVSk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748256246; c=relaxed/simple;
-	bh=1I7PdYugHiRgLZ0cApCjHoC+bBN3bd/ZZQOkfdIeqQ0=;
+	s=arc-20240116; t=1748256772; c=relaxed/simple;
+	bh=/7jg7VkWiTT5oHSedXxFS3R0qLl8xBBSZBExtmj2NmA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qQbM9Xuu8ooY9UTmvGuPdBbWZnAKZtU35NEMW/OTlA/vXntl57nC0THvEGUrMinkriBfvZIwabDS1BBWutiaLxPSDNgghpGTKTydj3TsB7bNmvEjBO7yOcM+iTLjB78SJXz7z4MEl6QShQg5u/plCUOjbBmLoqKocG34wPqA2Nw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=FQ2fWIAK; arc=none smtp.client-ip=90.155.50.34
+	 Content-Type:Content-Disposition:In-Reply-To; b=bGrPF7gvrg3kzyT+fRGZjWjQ8Udg078X351xNV6rBnjSDLDfsi/13x1SLuITUSOJebUb3V+1Fvf3n/yVfd84vU6ZqNdPd4EDHVYe/jEGhd5Mea1vQCyAkDYSLxvuGIllk0b386liJdrc1JOjJ14vSKIXXzt195LEqjxoK2OX3ac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=F9+SzIYD; arc=none smtp.client-ip=90.155.92.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
 	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=5MSK+hCGwuICLk6ahEH9v1jcbgabrh3lw7OluZQ3VCY=; b=FQ2fWIAKlWxgWLdIgwUw6GJbhK
-	YU9bl3VGl3vjnMe1uqEWwqa8Lz5HYcHBO5qkjDNuqKtSN4bJYN5ij8CYTbuGgGrPcM/DmlHPfV43P
-	G06ubRAiH8xqRsNa1cwGzq5Ham89CI6HkGASwiMmQvdoPXo7PY9m6LNw3GDwLq+geoIXngAtmM1AG
-	HXVyZoujQxP6keCo/ocN+DObeP9unB/iS3iw1oxHqfl1c8N4vUGT/w0Typw8UyNOvqGCwbPax4yw5
-	ml6KyLl5eonXqTBvcS+L1ncON30ZjKgGMb18PTu30eOLJ1BOk0kpnANKVUjrWs+ho0LLbDsIGpm1N
-	92W8ImrQ==;
+	bh=BjNV+9klChm6GiHn/lfYnQtxdOsgnerlGz2cAgy0C9Y=; b=F9+SzIYDtkKFJjMd3hQ7rFPjTR
+	57ikJeeXgNw9MIFCqJL5oBv1OOdL7GyZvQCmPC0VJvBBhyxwlG4Td5qyq1/Ue4BciV4nsRIDWDl5d
+	94Y1/At6vMl1yVlGzmLf2SrTfHXVjZSRa7tH6LSVN1XbaRhdJz0jg5Ua6gzkqtJlYiH733bdmOO5T
+	sGF/nAl4Ql+Z3aQj4NpRPiuZ2bY+8xIM+F55/qfOuH/I0yQ06z90+k6Xj0QOupKMZ3K5CuanbTb1q
+	T7GLvWlbMvTIJbVjqSKGNuwNBczTNeeaVeXZN4KgaBQCEHvNBUY5ljjauzDPunsrod9kSXTRXQbCr
+	TuwwvRiw==;
 Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uJVJD-0000000BJxA-31tj;
-	Mon, 26 May 2025 10:43:55 +0000
+	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uJVRg-00000001s1k-3mt9;
+	Mon, 26 May 2025 10:52:41 +0000
 Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 4906C300472; Mon, 26 May 2025 12:43:55 +0200 (CEST)
-Date: Mon, 26 May 2025 12:43:55 +0200
+	id 78A97300472; Mon, 26 May 2025 12:52:40 +0200 (CEST)
+Date: Mon, 26 May 2025 12:52:40 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
@@ -60,10 +60,11 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>
-Subject: Re: [PATCH v2 29/62] objtool: Mark prefix functions
-Message-ID: <20250526104355.GM24938@noisy.programming.kicks-ass.net>
+Subject: Re: [PATCH v2 32/62] objtool: Suppress section skipping warnings
+ with --dryrun
+Message-ID: <20250526105240.GN24938@noisy.programming.kicks-ass.net>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
- <c4233972de0b0f2e6c94d4a225c953748d7c446b.1746821544.git.jpoimboe@kernel.org>
+ <7eccdb0b09eff581377e5efab8377b6a37596992.1746821544.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -72,55 +73,15 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c4233972de0b0f2e6c94d4a225c953748d7c446b.1746821544.git.jpoimboe@kernel.org>
+In-Reply-To: <7eccdb0b09eff581377e5efab8377b6a37596992.1746821544.git.jpoimboe@kernel.org>
 
-On Fri, May 09, 2025 at 01:16:53PM -0700, Josh Poimboeuf wrote:
-> In preparation for the objtool klp diff subcommand, introduce a flag to
-> identify __pfx_*() and __cfi_*() functions in advance so they don't need
-> to be manually identified every time a check is needed.
-> 
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> ---
->  tools/objtool/check.c               | 3 +--
->  tools/objtool/elf.c                 | 5 +++++
->  tools/objtool/include/objtool/elf.h | 6 ++++++
->  3 files changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-> index a2a025ec57e8..6b2e57d9aaf8 100644
-> --- a/tools/objtool/check.c
-> +++ b/tools/objtool/check.c
-> @@ -3601,8 +3601,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
->  
->  		if (func && insn_func(insn) && func != insn_func(insn)->pfunc) {
->  			/* Ignore KCFI type preambles, which always fall through */
-> -			if (!strncmp(func->name, "__cfi_", 6) ||
-> -			    !strncmp(func->name, "__pfx_", 6))
-> +			if (is_prefix_func(func))
->  				return 0;
->  
->  			if (file->ignore_unreachables)
-> diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-> index 59568381486c..9a1fc0392b7f 100644
-> --- a/tools/objtool/elf.c
-> +++ b/tools/objtool/elf.c
-> @@ -442,6 +442,11 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
->  	elf_hash_add(symbol, &sym->hash, sym->idx);
->  	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
->  
-> +	if (is_func_sym(sym) && sym->len == 16 &&
+On Fri, May 09, 2025 at 01:16:56PM -0700, Josh Poimboeuf wrote:
+> It's common to use --dryrun on binaries that have already been
+> processed.  Don't print the section skipping warnings in that case.
 
-Where did that 'sym->len == 16' thing come from? I mean, they are, but
-the old code didn't assert that.
+Ah, I rather like this warning, it gives me an easy check to see if the
+file has already been processed.
 
-I would rather objtool issue a warn if not 16, but still consider these
-as prefix.
-
-> +	    (strstarts(sym->name, "__pfx") || strstarts(sym->name, "__cfi_")))
-> +		sym->prefix = 1;
-> +
-> +
->  	if (is_func_sym(sym) && strstr(sym->name, ".cold"))
->  		sym->cold = 1;
->  	sym->pfunc = sym->cfunc = sym;
+I typically do a OBJTOOL_ARGS="--backup" build and run dryrun debug
+sessions against those .orig files.
 
