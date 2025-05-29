@@ -1,218 +1,326 @@
-Return-Path: <live-patching+bounces-1473-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1474-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BC307AC6C0E
-	for <lists+live-patching@lfdr.de>; Wed, 28 May 2025 16:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 15072AC752C
+	for <lists+live-patching@lfdr.de>; Thu, 29 May 2025 02:47:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7943C17CB73
-	for <lists+live-patching@lfdr.de>; Wed, 28 May 2025 14:45:35 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CAAA34E80F8
+	for <lists+live-patching@lfdr.de>; Thu, 29 May 2025 00:47:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E49141BC9F4;
-	Wed, 28 May 2025 14:45:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4F141482E8;
+	Thu, 29 May 2025 00:47:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HI6pUFuM"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UwD3waOm"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 419F72AD31
-	for <live-patching@vger.kernel.org>; Wed, 28 May 2025 14:45:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 083B752F99
+	for <live-patching@vger.kernel.org>; Thu, 29 May 2025 00:47:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748443529; cv=none; b=DFJQoz0XdpGHFuFOJY2sl9eDjRkChI6VpDOaKiackdoP4fM2xu5AlGJa/U19QVF0wlzkUX0rYPsGCHmwYpy2c6WFL6Za0O6AeVwkTh8TLb55lA0To9zr7jjxlgFJoxaXoU5DfUFK9tT7hZB8VUFJykj9Kaeib7VHq3BbdSf38sg=
+	t=1748479642; cv=none; b=F7g3RBB2wkfujZ5xF/rhBVnBpJ8Rngsl4zlvMFvkXVgnQXmlq7lsK5XJNM7yJv9Lsh0/QR90lZTWX1MNTDE/rKWQiKOYIlRWQwOjQJs7fKBUiB2dAyHJ3kZ7PEMd00WRWKB0YpX/PTqAam/O/EKFcJlBdPymVr3yKeLfsJM/n40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748443529; c=relaxed/simple;
-	bh=pmJnWyaWtacG4qA9MnSrkri+m0ZViEInoNhsLA5VOO8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ESH7kcVyWYKnL4VrY+n9p9v8wuAWEd8/AiY0W9URtWr6RklDl4MdRynlC37ha/rJSyPZ5e3n2OKfyufu1ctLK4EIQjPOaNIYSigbl/WnxnLMQQWTdK3E8c0YGgjkTcCbngSdHb+IK0y5dMh/V528Es10AUlBNQsoA8JLdeuLNdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=HI6pUFuM; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1748443527;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=8NsMEdT9aL0A0o+tflXH9VCdZUeVOkrNj4UYHGNir0U=;
-	b=HI6pUFuM+jKPLUR6IlTJ7TOlx2d1jJUoIeNVwCI+sCYO056Fu9ZxkPtQhwJHqC5PCF0gzD
-	T8MGsaGitOHHVjaV7I9wKfQW2aYtCdI5rt5J3HWYp2VzVAhWQm3jdyaCYoygqQlY3tVkSw
-	wAQgA5jYoJqHmZHGZR/K1JiFld2b/fI=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-154-adKFlnONMG26jsoArzeMjw-1; Wed, 28 May 2025 10:45:25 -0400
-X-MC-Unique: adKFlnONMG26jsoArzeMjw-1
-X-Mimecast-MFC-AGG-ID: adKFlnONMG26jsoArzeMjw_1748443525
-Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-6fab979413fso26719096d6.2
-        for <live-patching@vger.kernel.org>; Wed, 28 May 2025 07:45:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748443525; x=1749048325;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+	s=arc-20240116; t=1748479642; c=relaxed/simple;
+	bh=nMxYb8M8OaAeVFAVvCa0NWPJ0hqSKxbRHfrVdZuONdA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=r7Dt2m1G7mEnHF7o6D6LfX9xMW5Rvdbo/0M0EoMDsnDcvqmjmqLBcAJXWJPu3T6mnJDtBkDD23BtJymODbFcHKi+n3uPmdkkPe7ot18GjxvNgsjoFrEN4iWM3bwW+oPanIGWJ0HAekarS8kZy5N4LEBNi/KKE1A3SYFsI38yBn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UwD3waOm; arc=none smtp.client-ip=209.85.217.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-vs1-f45.google.com with SMTP id ada2fe7eead31-4c34dcdaf88so110129137.2
+        for <live-patching@vger.kernel.org>; Wed, 28 May 2025 17:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1748479640; x=1749084440; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8NsMEdT9aL0A0o+tflXH9VCdZUeVOkrNj4UYHGNir0U=;
-        b=wE1mz0si3tRwW1BUFKH9DkDTFnzPPXC6d8en8puikENwaZjHIc1Tpwdz0Md8GD9doq
-         rc770MeTlXZz6puiG3fliiE2RysSgGw7ZBWUK5r+8waSbhY6+Q0d6IQ+I+ZySLZ0jmv3
-         fn+cON4EtMZGlcxJ8Vav6MtrqSmRAumXwYxpVmshwX2xT/VVf9KTN3iJaZgMCQjaw2A0
-         bGsUqcAQr4NTmG2Z9i9trogotAEea2DmFJk4oUMu06gfrkfo4WhLLMeHQRIgzV/Un1Mc
-         Kuc+hl+mI5cfCpp44jB465zqYNxqUlvGHUI36DsqZVPODy2I4n2y38+15yFQFSB8EQ+4
-         2YNQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVPMUPu8t8WZn7hqMtriC0S5w3ZQqLx1/VwLMPEW3BDXmydXkhIaQqqZPX56aDhTLsc704plYew1TTjX+OC@vger.kernel.org
-X-Gm-Message-State: AOJu0YwnxSjK5aqQw3RXvuo2LfMY9wxzegXGMDw0j23bp7XvTAvDv/k2
-	9ytWygC4i8p8t6lofyWWID/xoUen2ZKFojw5rX51/70oKeMrrXR7qSPJn8VQtHYudvgjdRxDcBD
-	pVWJ+UrRTKt4SPQy/SuIr27cmc6uZD8D37DsCT7fuRk1LoE8ED/a59nyEvybWSrucyxo=
-X-Gm-Gg: ASbGnctRlVctLYFeTxR18nhyQgp2yOVhmgkgnC8v8aQRiOouSM2oiSM/Nfz1+MC+mFa
-	xduaInIOyYwiHAkUr0q+pFInT8x01WUl/us6hjcej21GdkDd3yIcB+JdKF43pZHNfU52DAT8JZD
-	UP6mzeGuPpJsYJ+T7BgrSRj9PLbFpOKjHMrIgoGGnDC0SlBss407AVgWu4F+RwZkRC9hjbtmKGm
-	JsJfVkOs+s6Ard+Jk2D9ididGdaWZell144izRbOjkPxU9kZ4f+C+vByrJFa+rcJpCvF9OceqRH
-	6nYiW0tLAmQoS6QkfW5+mwUzghg3vX4mC5KlSiEtEcy3ZTzeSGPhoa6roOGjQ6WHvOU=
-X-Received: by 2002:a05:6214:20e5:b0:6fa:9b5e:f1d1 with SMTP id 6a1803df08f44-6fa9d2954d2mr264243166d6.24.1748443524824;
-        Wed, 28 May 2025 07:45:24 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEjuC/6+FGCtr2tyOGkUY41luUxvRRwiJGQ2hOzrBdgImVPVlnSyRIaLJNcGzFhoJ53ssTsYA==
-X-Received: by 2002:a05:6214:20e5:b0:6fa:9b5e:f1d1 with SMTP id 6a1803df08f44-6fa9d2954d2mr264242576d6.24.1748443524365;
-        Wed, 28 May 2025 07:45:24 -0700 (PDT)
-Received: from [192.168.1.17] (pool-68-160-160-85.bstnma.fios.verizon.net. [68.160.160.85])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6fac0b22361sm7140546d6.2.2025.05.28.07.45.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 May 2025 07:45:23 -0700 (PDT)
-Message-ID: <88a28ee7-ec83-4925-9cae-085b0dcc78fe@redhat.com>
-Date: Wed, 28 May 2025 10:45:22 -0400
+        bh=NcJSuZLlEiXXGQNoUX9py5aoN4tofONoEJKG7XFVq38=;
+        b=UwD3waOmApEZO6iDEVTS07SrZJlEYSmPbic+sE0mI7fvinHYunNHcp+dB3uiOcZ+BE
+         Cobsv+0nGZ4T8AfRabNeF2zjZYH4C3zlUYTxHs+aABdtfzxtCKw5OzRRYPJPifJgGiqP
+         T8dURJL+To7g5kCe6b755s7MPI6tWy272W2KwAjN0IpnJ+RS5HZzCxSE9Wpv3xk5NSCT
+         DbPUN/ZCOM+Tak/xyESh5CKVmE86f5alYksqo0FbvuhBFMAZRo+co0eyWcBzhnP99kn/
+         ZVmdsn/dtROh2hjXchNr9NlTakRP2l1iKlAz3Wd6sWyCJP7qqTwb/8JU++ltqN/5RNcp
+         Ztbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748479640; x=1749084440;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NcJSuZLlEiXXGQNoUX9py5aoN4tofONoEJKG7XFVq38=;
+        b=WHKtwjCotLDrFSZoIQN/0nlbsuNC6nvD63o+UY7ncMKO5ek8oMHkw+MOvs8EayQ8Ny
+         Muw7FQQP+GajiYayIz6XbYoXMNrKs9vd+vtR8NECJ+zEdIg1X7Zy1j50Stf3CBId+5Ht
+         e9DUF5Oi6jcZHIykCAIVpYxL1WO0DYVcj8IhgooZbEpK3jvPAtN+W75SOQWFdauhyZY8
+         D0HIokE4GRnHRdY6mRW1FxwsgcJxpPCnoN8gKxUQ6TkdZl+49p9bHhOY7nCncK1pbu4f
+         FHoKVWJUfY6rjqdZI0HvynknG+YI4hVTfvZxh+eFG3C1+DdK35dP92fJI0RldFmLGmki
+         MwSw==
+X-Forwarded-Encrypted: i=1; AJvYcCWBYmoLat/5+dxitUOuBu95c6gRs7qwxKx7ihXsB2k9+xXB0vE3dcBmtKUovtJY0u5YY4PV4TSMAnY1bfOk@vger.kernel.org
+X-Gm-Message-State: AOJu0YxudZBhIK1NwjsBYpza7Awu+9jcFQHgPB4Rf1A1/JcxdRL8JLGK
+	GCzzk1JKswhLY5hxI0tTi7EPjX+vsxYl1h+Qkl+rG4usw1N8BqYc1mNKVco+Pyw43vibMEgTeh6
+	XOAF1Iv8TtiYMkDm3ueO3pprZn/f39tkFLIW+wf/2
+X-Gm-Gg: ASbGncsk0YX/sgUqc4UUClrVnhKvw3zHtyo2vE6mhN7fbMFsJVXPEjTUFEvooAQS4Nd
+	33fMfq2l3iGmuHVOGjnmlhzuBd4qV+QZKeczKC9VesEx0R55InoO9DTaoYyPlVOU5/xgUwcgXhD
+	+aXdWJ1X32+sNNdLz4tnOzeRRnDpmvchtP/iHMM05Kvqo=
+X-Google-Smtp-Source: AGHT+IEj9ymqfBXg6cFdB/Bj79VZBgVJSds2yTL3tVJMdz6WyDjPNGjPqLqwJ5g5XLlSN1N8famZpJNRS8BECNpItp4=
+X-Received: by 2002:a05:6102:2c0f:b0:4e5:9628:9e39 with SMTP id
+ ada2fe7eead31-4e59628a358mr6877728137.6.1748479639651; Wed, 28 May 2025
+ 17:47:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 49/62] kbuild,objtool: Defer objtool validation step
- for CONFIG_LIVEPATCH
-To: Josh Poimboeuf <jpoimboe@kernel.org>, x86@kernel.org
-Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
- Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
- Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>,
- Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>,
- Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>,
- Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay Mohan <puranjay@kernel.org>
-References: <cover.1746821544.git.jpoimboe@kernel.org>
- <0a12cca631dd6f4c55015e224acefb641b3824ce.1746821544.git.jpoimboe@kernel.org>
-Content-Language: en-US
-From: Joe Lawrence <joe.lawrence@redhat.com>
-Autocrypt: addr=joe.lawrence@redhat.com; keydata=
- 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
- pNzsRQ==
-In-Reply-To: <0a12cca631dd6f4c55015e224acefb641b3824ce.1746821544.git.jpoimboe@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20250522205205.3408764-1-dylanbhatch@google.com>
+ <20250522205205.3408764-2-dylanbhatch@google.com> <aDXQYMcLle2E_b2d@pathway.suse.cz>
+In-Reply-To: <aDXQYMcLle2E_b2d@pathway.suse.cz>
+From: Dylan Hatch <dylanbhatch@google.com>
+Date: Wed, 28 May 2025 17:47:08 -0700
+X-Gm-Features: AX0GCFst9YoNtP29t3lkS_hoyCgFJvPQXD1R7QrZslaZlG-dM0idmAI4vCWSU-M
+Message-ID: <CADBMgpzO36dP=bXQAL46_WnWZJK0TmdO9ZR5z6OBdvtXsHn4_g@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] livepatch, x86/module: Generalize late module
+ relocation locking.
+To: Petr Mladek <pmladek@suse.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>, Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+	Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>, 
+	Ard Biesheuvel <ardb@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, 
+	Peter Zijlstra <peterz@infradead.org>, "Mike Rapoport (Microsoft)" <rppt@kernel.org>, 
+	Andrew Morton <akpm@linux-foundation.org>, Dan Carpenter <dan.carpenter@linaro.org>, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	live-patching@vger.kernel.org, Roman Gushchin <roman.gushchin@linux.dev>, 
+	Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 5/9/25 4:17 PM, Josh Poimboeuf wrote:
-> In preparation for the objtool klp diff subcommand, defer objtool
-> validation for CONFIG_LIVEPATCH until the final pre-link archive (e.g.,
-> vmlinux.o, module-foo.o) is built.  This will simplify the process of
-> generating livepatch modules.
-> 
-> Delayed objtool is generally preferred anyway, and is already standard
-> for IBT and LTO.  Eventually the per-translation-unit mode will be
-> phased out.
-> 
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> ---
->  scripts/Makefile.lib    | 2 +-
->  scripts/link-vmlinux.sh | 3 ++-
->  2 files changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-> index bfd55a6ad8f1..a68390ff5cd9 100644
-> --- a/scripts/Makefile.lib
-> +++ b/scripts/Makefile.lib
-> @@ -278,7 +278,7 @@ objtool-args = $(objtool-args-y)					\
->  	$(if $(delay-objtool), --link)					\
->  	$(if $(part-of-module), --module)
->  
-> -delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
-> +delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT),$(CONFIG_LIVEPATCH))
->  
->  cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
->  cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index 51367c2bfc21..acffa3c935f2 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -60,7 +60,8 @@ vmlinux_link()
->  	# skip output file argument
->  	shift
->  
-> -	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT; then
-> +	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT ||
-> +	   is_enabled CONFIG_LIVEPATCH; then
->  		# Use vmlinux.o instead of performing the slow LTO link again.
->  		objs=vmlinux.o
->  		libs=
+Hi Petr,
 
-At this commit, I'm getting the following linker error on ppc64le:
+On Tue, May 27, 2025 at 7:46=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrot=
+e:
+>
+> As this patch suggests, the "text_mutex" has been used to
+> sychronize apply_relocate_add() only on x86_64 so far.
+>
+> s390x seems to rely on "s390_kernel_write_lock" taken by:
+>
+>   + apply_relocate_add()
+>     + s390_kernel_write()
+>       + __s390_kernel_write()
+>
+> And powerpc seems to rely on "pte" locking taken by
+>
+>   + apply_relocate_add()
+>     + patch_instruction()
+>       + patch_mem()
+>         + __do_patch_mem_mm()
+>           + get_locked_pte()
+>
 
-ld -EL -m elf64lppc -z noexecstack --no-warn-rwx-segments -pie -z notext
---build-id=sha1 -X --orphan-handling=error
---script=./arch/powerpc/kernel/vmlinux.lds -o .tmp_vmlinux1
---whole-archive vmlinux.o .vmlinux.export.o init/version-timestamp.o
---no-whole-archive --start-group --end-group .tmp_vmlinux0.kallsyms.o
-arch/powerpc/tools/vmlinux.arch.o
+Reading through these implementations, I see that the serialization
+happens only at the level of each individual write action. This is
+equivalent to the patch_lock already used by aarch64_insn_copy() and
+aarch64_insn_set(). I see now that this same serialization is achieved
+by x86 using text_mutex, and that text_poke uses
+'lockdep_assert_held(&text_mutex);' instead of grabbing the lock
+itself, which is why only the x86 apply_relocate_add() currently takes
+this mutex.
 
-vmlinux.o:(__ftr_alt_97+0x20): relocation truncated to fit:
-R_PPC64_REL14 against `.text'+4b54
-vmlinux.o:(__ftr_alt_97+0x270): relocation truncated to fit:
-R_PPC64_REL14 against `.text'+173ecc
+> I see two possibilities:
+>
+>   1. Either this change makes a false feeling that "text_mutex"
+>      sychronizes apply_relocate_add() on all architextures.
+>
+>      This does not seems to be the case on, for example, s390
+>      and powerpc.
+>
+>      =3D> The code is misleading and could lead to troubles.
+>
 
-* Note: I dropped ("[PATCH v2 45/62] x86/extable: Define ELF section
-entry size for exception tables") since it doesn't build as per the
-comment I left on that patch.
+My original intent with this change was to give the late relocations
+on arm64 the correct synchronization with respect to other
+text-patching code. From what you've shown above, it looks like the
+[PATCH 2/2] should work fine without this change since the arm64
+patching code already takes patch_lock.
 
--- 
-Joe
+>
+>    2. Or it actually provides some sychronization on all
+>       architectures, for example, against kprobe code.
+>
+>       In this case, it might actually fix an existing race.
+>       It should be described in the commit message
+>       and nominated for backporting to stable.
+>
 
+I hadn't really considered this. From what I can tell, kprobe is the
+only non-arch-specific code that takes this mutex when touching kernel
+text. Though my understanding of kprobe is very limited, I think there
+could be a risk due to the late relocations for livepatch:
+
+Suppose I apply a livepatch 'L' that touches some module 'M', but M
+isn't currently loaded. Between check_kprobe_address_safe() and
+__register_kprobe(), I don't see any check that would fail for a probe
+'P' registered on a function inside L. So it seems to me that it's
+possible for prepare_kprobe() on L to race with apply_relocate_add()
+for L if P is registered while M is being loaded.
+
+Perhaps more importantly, is it ever safe to kprobe an instruction
+that hasn't yet received relocation? This would probably only be
+possible in the case of late relocations for a livepatch, so maybe
+this scenario was overlooked. I wonder if check_kprobe_address_safe()
+can check for this case and cause the kprobe to fail, preventing the
+above race condition from ever being possible.
+
+In any case, synchronizing against kprobe wasn't the original intent
+of this patch series, so in my opinion it makes sense to resend it as
+a standalone patch (if it is to be resent at all).
+
+>
+> I am sorry if this has already been discussed. But I have been
+> in Cc only for v3 and v4. And there is no changelog in
+> the cover letter.
+>
+
+This patch was added to the series in v3, which is how you got added
+to CC. Sorry about not adding a changelog, I'm still learning the best
+practices for sending patches.
+
+> > +
+> > +     if (apply)
+> > +             ret =3D apply_relocate_add(sechdrs, strtab, symndx, secnd=
+x, pmod);
+> > +     else
+> > +             clear_relocate_add(sechdrs, strtab, symndx, secndx, pmod)=
+;
+> > +
+> > +     if (!early)
+> > +             mutex_unlock(&text_mutex);
+> > +     return ret;
+> >  }
+>
+> Best Regards,
+> Petr
+
+Thanks,
+Dylan
+
+On Tue, May 27, 2025 at 7:46=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrot=
+e:
+>
+> On Thu 2025-05-22 20:52:04, Dylan Hatch wrote:
+> > Late module relocations are an issue on any arch that supports
+> > livepatch, so move the text_mutex locking to the livepatch core code.
+> >
+> > Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
+> > Acked-by: Song Liu <song@kernel.org>
+> > ---
+> >  arch/x86/kernel/module.c |  8 ++------
+> >  kernel/livepatch/core.c  | 18 +++++++++++++-----
+> >  2 files changed, 15 insertions(+), 11 deletions(-)
+> >
+> > --- a/arch/x86/kernel/module.c
+> > +++ b/arch/x86/kernel/module.c
+> > @@ -197,18 +197,14 @@ static int write_relocate_add(Elf64_Shdr *sechdrs=
+,
+> >       bool early =3D me->state =3D=3D MODULE_STATE_UNFORMED;
+> >       void *(*write)(void *, const void *, size_t) =3D memcpy;
+> >
+> > -     if (!early) {
+> > +     if (!early)
+> >               write =3D text_poke;
+> > -             mutex_lock(&text_mutex);
+> > -     }
+> >
+> >       ret =3D __write_relocate_add(sechdrs, strtab, symindex, relsec, m=
+e,
+> >                                  write, apply);
+> >
+> > -     if (!early) {
+> > +     if (!early)
+> >               text_poke_sync();
+> > -             mutex_unlock(&text_mutex);
+> > -     }
+> >
+> >       return ret;
+> >  }
+> > diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> > index 0e73fac55f8eb..9968441f73510 100644
+> > --- a/kernel/livepatch/core.c
+> > +++ b/kernel/livepatch/core.c
+> > @@ -319,12 +320,19 @@ static int klp_write_section_relocs(struct module=
+ *pmod, Elf_Shdr *sechdrs,
+> >                                         sec, sec_objname);
+> >               if (ret)
+> >                       return ret;
+> > -
+> > -             return apply_relocate_add(sechdrs, strtab, symndx, secndx=
+, pmod);
+> >       }
+> >
+> > -     clear_relocate_add(sechdrs, strtab, symndx, secndx, pmod);
+> > -     return 0;
+> > +     if (!early)
+> > +             mutex_lock(&text_mutex);
+>
+> I understand why you do this but it opens some questions.
+>
+> As this patch suggests, the "text_mutex" has been used to
+> sychronize apply_relocate_add() only on x86_64 so far.
+>
+> s390x seems to rely on "s390_kernel_write_lock" taken by:
+>
+>   + apply_relocate_add()
+>     + s390_kernel_write()
+>       + __s390_kernel_write()
+>
+> And powerpc seems to rely on "pte" locking taken by
+>
+>   + apply_relocate_add()
+>     + patch_instruction()
+>       + patch_mem()
+>         + __do_patch_mem_mm()
+>           + get_locked_pte()
+>
+> I see two possibilities:
+>
+>   1. Either this change makes a false feeling that "text_mutex"
+>      sychronizes apply_relocate_add() on all architextures.
+>
+>      This does not seems to be the case on, for example, s390
+>      and powerpc.
+>
+>      =3D> The code is misleading and could lead to troubles.
+>
+>
+>    2. Or it actually provides some sychronization on all
+>       architectures, for example, against kprobe code.
+>
+>       In this case, it might actually fix an existing race.
+>       It should be described in the commit message
+>       and nominated for backporting to stable.
+>
+>
+> I am sorry if this has already been discussed. But I have been
+> in Cc only for v3 and v4. And there is no changelog in
+> the cover letter.
+>
+> > +
+> > +     if (apply)
+> > +             ret =3D apply_relocate_add(sechdrs, strtab, symndx, secnd=
+x, pmod);
+> > +     else
+> > +             clear_relocate_add(sechdrs, strtab, symndx, secndx, pmod)=
+;
+> > +
+> > +     if (!early)
+> > +             mutex_unlock(&text_mutex);
+> > +     return ret;
+> >  }
+>
+> Best Regards,
+> Petr
 
