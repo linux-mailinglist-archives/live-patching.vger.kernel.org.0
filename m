@@ -1,47 +1,47 @@
-Return-Path: <live-patching+bounces-1482-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1483-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 37048ACE790
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 02:36:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D5A2BACE8CD
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 06:01:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id A39B71895785
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 00:36:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9FF581736A2
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 04:01:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15B933FD4;
-	Thu,  5 Jun 2025 00:36:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E807386337;
+	Thu,  5 Jun 2025 04:01:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C3Bzi9Mp"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TE3SRtVn"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF04B8F58;
-	Thu,  5 Jun 2025 00:36:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62B536D;
+	Thu,  5 Jun 2025 04:01:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749083783; cv=none; b=J1Zg0qJwenflNlD64cAwBYAdt3qfwNZ6C6DQESWcj0mowBpXO0NK6QJ3yQfMxO77sWtrdklyGlxA4lTheLOzAhI8qu/9GBhCoUOrkx6IhNqEWKeOg7nZ9dJbJRTe+j2GDKyYwwP+Zg5FbXneyENdCLBsadGrUC+dSXVhz1zEyUE=
+	t=1749096061; cv=none; b=TXBlXUZ1u21I6BwTBLdGVSvtzjdyYLF2CD5yFZT2k5JWErdcATnok789278L93uvEPNNjBvSHLl/IdxQEqg+UHLAgNWeRx40XisBukg7oQgGcsaawyCCkT2t6t28Y4NBL6ddevL+t8CovyU59dP65W9YHamFbZ2uozr77PTk7Gs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749083783; c=relaxed/simple;
-	bh=OHW1wJwUb8eeUQj3pLMNMXmU/ef13yfus/mjf+oIA6I=;
+	s=arc-20240116; t=1749096061; c=relaxed/simple;
+	bh=FXBbPzAAhSovRjwex5dKZ+yjnaMLwgjnsSIoY9sDE1k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RVRnfmqsMNC5ifBV24zurBfbM1PV0n+HkiRFNRW/Y83RNUaLt1Iz/1/7/XYSz4ZOB2fUwFaKr9EAGBGtAFQgIRyASpkiYuAAUl31mXg/094u7XvNyV5avXMVnpsiTRxBN1y5r7smP+WlMQRqMU9FuNcUsk77fP4M9M1mLQBYXfA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C3Bzi9Mp; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07EC0C4CEE4;
-	Thu,  5 Jun 2025 00:36:16 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=qLn5EASLmFnAhyRTZaKoij4B3yRmumZhnD/5eiyf2QC+OiA1fquMWrKZ+h3KLEP/kngaqfaSojnyj8T03Y9idcoskz00Gctr7MWcYFhpZYJwXQnja0G11MUc3GHUp4mEQi+yw21sXYj0iUbrNcRHYTn/mDXQ/MhoMT2n+GYJ01s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TE3SRtVn; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B8AC4CEE7;
+	Thu,  5 Jun 2025 04:00:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749083778;
-	bh=OHW1wJwUb8eeUQj3pLMNMXmU/ef13yfus/mjf+oIA6I=;
+	s=k20201202; t=1749096061;
+	bh=FXBbPzAAhSovRjwex5dKZ+yjnaMLwgjnsSIoY9sDE1k=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=C3Bzi9MpIEs5tn1ScVIqYE3F3JiJ5d+t2ivp/pEX/mFotfw1ByKrR7p1TqfIPIhq0
-	 FKe6t+IiwkiTaXyDtNvr1Zv+dGFABc7w2hmMQPWkYi3kHzD8iz1+go1LvLSLBns7ko
-	 n8rufaR9KHRpoGBkzjpnx7bqRWNmRZj+ov3H3JG+Mo+SqEqL5lf+OrQ/Fz+KjCHzSA
-	 qrwtxjWVeZp242HCjavhpyDEBKCddeCpO7FatFTMtlWoW7fuY0e1o/01rRRYai2QAN
-	 3tdcV4DXo2vlwSNeTacjHLe4ftb0r3ZRy8BXpiFtJiBwlsYNqPSh8jf8M4hP+J3hMe
-	 ljOd31OjIYXBw==
-Date: Wed, 4 Jun 2025 17:36:15 -0700
+	b=TE3SRtVn/ST+6NYt67ULRZx7tLW0hM+eND8+c6xr+qyGpmaewhWnLTwJ27qjghKQK
+	 57GwktKqixOBYHWf7bTWA7bqVaaEq2wDr9YNXva+rIr4eplsrmGsedyY00N567BvPa
+	 DekU3wZEL5OImZrkEeCui9XbMAH6fnWt1yx5frXEpM++4mUAl46PR/8EhLURhc4azL
+	 /ctQkn9JztINDO49ZNJwVkbpUNG+3NxurCG990GJkwo8YZvYtGwJqNB1KhjMRm1jxj
+	 OTIn6gmUznXonsOsg9veOK70Z8zhobwNiwExdqMwe+jQpSc6JfCLnQCL1/PoVOtYuS
+	 7dGXV4AeYtWIw==
+Date: Wed, 4 Jun 2025 21:00:58 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Peter Zijlstra <peterz@infradead.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
@@ -50,13 +50,14 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
 	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
 	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
-	Puranjay Mohan <puranjay@kernel.org>
-Subject: Re: [PATCH v2 52/62] objtool/klp: Introduce klp diff subcommand for
- diffing object files
-Message-ID: <udmorf6ait6y2xeplz2wfid3xnyga3ahwv7gd7dl46c456auq3@54ym6kszzudy>
+	Puranjay Mohan <puranjay@kernel.org>, Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH v2 42/62] kbuild,x86: Fix module permissions for
+ __jump_table and __bug_table
+Message-ID: <bibraqfzt22adfii3emorei7lobdhjnmfrfv3n4cd7f22k73s4@jbxclgfc6fgi>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
- <f6ffe58daf771670a6732fd0f741ca83b19ee253.1746821544.git.jpoimboe@kernel.org>
- <20250526182259.GP24938@noisy.programming.kicks-ass.net>
+ <9da1e9f592aadc8fbf48b7429e3fbcea4606a76a.1746821544.git.jpoimboe@kernel.org>
+ <20250526110634.GO24938@noisy.programming.kicks-ass.net>
+ <cv2xosjolcau7n3poyymo3yodhl4cokwmju53d3rwfsqhkbqym@rsvd5oqqhczk>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -65,43 +66,42 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250526182259.GP24938@noisy.programming.kicks-ass.net>
+In-Reply-To: <cv2xosjolcau7n3poyymo3yodhl4cokwmju53d3rwfsqhkbqym@rsvd5oqqhczk>
 
-On Mon, May 26, 2025 at 08:22:59PM +0200, Peter Zijlstra wrote:
-> On Fri, May 09, 2025 at 01:17:16PM -0700, Josh Poimboeuf wrote:
+On Wed, Jun 04, 2025 at 05:22:15PM -0700, Josh Poimboeuf wrote:
+> On Mon, May 26, 2025 at 01:06:34PM +0200, Peter Zijlstra wrote:
+> > On Fri, May 09, 2025 at 01:17:06PM -0700, Josh Poimboeuf wrote:
+> > > An upcoming patch will add the SHF_MERGE flag to x86 __jump_table and
+> > > __bug_table so their entry sizes can be defined in inline asm.
+> > > 
+> > > However, those sections have SHF_WRITE, which the Clang linker (lld)
+> > > explicitly forbids combining with SHF_MERGE.
+> > > 
+> > > Those sections are modified at runtime and must remain writable.  While
+> > > SHF_WRITE is ignored by vmlinux, it's still needed for modules.
+> > > 
+> > > To work around the linker interference, remove SHF_WRITE during
+> > > compilation and restore it after linking the module.
+> > 
+> > *groan*
+> > 
+> > This and the following patches marking a whole bunch of sections M,
+> > seems to suggest you're going to rely on sh_entsize actually working.
+> > 
+> > There was an ld.lld bug, and IIRC you need to enforce llvm-20 or later
+> > if you want this to be so.
 > 
-> > Without '-ffunction-sections -fdata-sections', reliable object diffing
-> > would be infeasible due to toolchain limitations:
-> > 
-> >   - For intra-file+intra-section references, the compiler might
-> >     occasionally generated hard-coded instruction offsets instead of
-> >     relocations.
-> > 
-> >   - Section-symbol-based references can be ambiguous:
-> > 
-> >     - Overlapping or zero-length symbols create ambiguity as to which
-> >       symbol is being referenced.
-> > 
-> >     - A reference to the end of a symbol (e.g., checking array bounds)
-> >       can be misinterpreted as a reference to the next symbol, or vice
-> >       versa.
-> > 
-> > A potential future alternative to '-ffunction-sections -fdata-sections'
-> > would be to introduce a toolchain option that forces symbol-based
-> > (non-section) relocations.
-> 
-> Urgh.. So the first issue we can fix with objtool, but the ambiguous
-> cases are indeed very hard to fix up in post.
-> 
-> Did you already talk to toolchain people about this?
+> Hm, ISTR this working with clang 18, I'll go test that again.
 
-For now, I want to stick with -ffunction-sections -fdata-sections, as
-that's what kpatch has done for 10+ years and it works well.  That's the
-only option we have for current compilers anyway.
+You're right, looks like sh_entsize is getting cleared by the linker
+with my Clang 18.  I guess I tested with newer Clang.
 
-The above mentioned possibility of diffing without -ffunction-sections
--fdata-sections is theoretical, and needs more exploration.  If it
-indeed works then we can try to get toolchain support for that.
+"objtool klp diff" fails with:
+
+  vmlinux.o: error: objtool: .discard.annotate_insn: unknown entry size
+
+So yeah, non-buggy linker is already being enforced, though I should
+probably make the error more human friendly.
 
 -- 
 Josh
