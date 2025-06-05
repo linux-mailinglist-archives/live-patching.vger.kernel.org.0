@@ -1,47 +1,47 @@
-Return-Path: <live-patching+bounces-1483-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1484-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D5A2BACE8CD
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 06:01:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C2501ACEADB
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 09:32:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9FF581736A2
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 04:01:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4168F3ABAC7
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 07:31:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E807386337;
-	Thu,  5 Jun 2025 04:01:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23BE51ACEDC;
+	Thu,  5 Jun 2025 07:32:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TE3SRtVn"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QgwopTEx"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62B536D;
-	Thu,  5 Jun 2025 04:01:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC5DF4A0C;
+	Thu,  5 Jun 2025 07:32:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749096061; cv=none; b=TXBlXUZ1u21I6BwTBLdGVSvtzjdyYLF2CD5yFZT2k5JWErdcATnok789278L93uvEPNNjBvSHLl/IdxQEqg+UHLAgNWeRx40XisBukg7oQgGcsaawyCCkT2t6t28Y4NBL6ddevL+t8CovyU59dP65W9YHamFbZ2uozr77PTk7Gs=
+	t=1749108737; cv=none; b=apGcelofj8pmGmTqLreK9pvr6iun5+EYqDQKlTzgbKUv2lrWrM5XuYQaQXzyX9yGsZtBwrTEzxRs6wFr8iez32gO4wdX2OWjjOJH8fi1onIgQHa36dSLT0RDa4+hhFDcq7twzi2wvu1kUjsFcf3q54GaFlP/3ceLDvVN5l8VK2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749096061; c=relaxed/simple;
-	bh=FXBbPzAAhSovRjwex5dKZ+yjnaMLwgjnsSIoY9sDE1k=;
+	s=arc-20240116; t=1749108737; c=relaxed/simple;
+	bh=bMHg3raD+5uQA+KTE2j/LtkuDrtsjODaZj3S951KNQU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qLn5EASLmFnAhyRTZaKoij4B3yRmumZhnD/5eiyf2QC+OiA1fquMWrKZ+h3KLEP/kngaqfaSojnyj8T03Y9idcoskz00Gctr7MWcYFhpZYJwXQnja0G11MUc3GHUp4mEQi+yw21sXYj0iUbrNcRHYTn/mDXQ/MhoMT2n+GYJ01s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TE3SRtVn; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B8AC4CEE7;
-	Thu,  5 Jun 2025 04:00:59 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=V2GQ68qGEjeA9HEkE6+Otxz/1RM3IM835Dk9LGYlOsfJsjb0yO6U5puq9haSBgcFABIZ+54mVAMEtdLYTUBS/O4eBlsJGwwgsOaDBwJAItdevcxAsTnWJTc5gx9F3syVFVrrDDpG3kIXPszN1uLr0n5ZzCDXifKOTSGMHAj6uTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QgwopTEx; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECEE9C4CEE7;
+	Thu,  5 Jun 2025 07:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749096061;
-	bh=FXBbPzAAhSovRjwex5dKZ+yjnaMLwgjnsSIoY9sDE1k=;
+	s=k20201202; t=1749108735;
+	bh=bMHg3raD+5uQA+KTE2j/LtkuDrtsjODaZj3S951KNQU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TE3SRtVn/ST+6NYt67ULRZx7tLW0hM+eND8+c6xr+qyGpmaewhWnLTwJ27qjghKQK
-	 57GwktKqixOBYHWf7bTWA7bqVaaEq2wDr9YNXva+rIr4eplsrmGsedyY00N567BvPa
-	 DekU3wZEL5OImZrkEeCui9XbMAH6fnWt1yx5frXEpM++4mUAl46PR/8EhLURhc4azL
-	 /ctQkn9JztINDO49ZNJwVkbpUNG+3NxurCG990GJkwo8YZvYtGwJqNB1KhjMRm1jxj
-	 OTIn6gmUznXonsOsg9veOK70Z8zhobwNiwExdqMwe+jQpSc6JfCLnQCL1/PoVOtYuS
-	 7dGXV4AeYtWIw==
-Date: Wed, 4 Jun 2025 21:00:58 -0700
+	b=QgwopTExwft/mrlqO9iTL834QZXBE8BdISNJ/64R9MD0cGRNLq3eKRLdrKKMIFUvr
+	 zXefwCdvYbPSArnjrhCBuCT4fIvonHOrdKgT6SCXQMZd1fL59YciyLzB49e3a0amj/
+	 n1F6/HMIFEz2GEkAJedDsTHiszi3qJNhyziPn/TgbB2ubpZM4zBhA0AD8IT4HHPAna
+	 MOq5r8LBnGZ5t0MQVbNDA3gjJSQ1a3b55JGZpR+YLXzjceWw5WtP2jMKehnfqVvz5U
+	 AhaDO4p3owF2eiuPsOaxuuyxVm6Q8RsqtxfHGAr/LeW3OTEYq/zQJfDy94AROPEtEQ
+	 ScYgENgh7ef9A==
+Date: Thu, 5 Jun 2025 00:32:12 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Peter Zijlstra <peterz@infradead.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
@@ -50,14 +50,13 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
 	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
 	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
-	Puranjay Mohan <puranjay@kernel.org>, Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH v2 42/62] kbuild,x86: Fix module permissions for
- __jump_table and __bug_table
-Message-ID: <bibraqfzt22adfii3emorei7lobdhjnmfrfv3n4cd7f22k73s4@jbxclgfc6fgi>
+	Puranjay Mohan <puranjay@kernel.org>
+Subject: Re: [PATCH v2 52/62] objtool/klp: Introduce klp diff subcommand for
+ diffing object files
+Message-ID: <hfs4v4frscapujmbdgpsbhnuvsqu3s6gltquyioatyeysed64e@izldzwjqsvu4>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
- <9da1e9f592aadc8fbf48b7429e3fbcea4606a76a.1746821544.git.jpoimboe@kernel.org>
- <20250526110634.GO24938@noisy.programming.kicks-ass.net>
- <cv2xosjolcau7n3poyymo3yodhl4cokwmju53d3rwfsqhkbqym@rsvd5oqqhczk>
+ <f6ffe58daf771670a6732fd0f741ca83b19ee253.1746821544.git.jpoimboe@kernel.org>
+ <20250526182719.GR24938@noisy.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -66,42 +65,65 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <cv2xosjolcau7n3poyymo3yodhl4cokwmju53d3rwfsqhkbqym@rsvd5oqqhczk>
+In-Reply-To: <20250526182719.GR24938@noisy.programming.kicks-ass.net>
 
-On Wed, Jun 04, 2025 at 05:22:15PM -0700, Josh Poimboeuf wrote:
-> On Mon, May 26, 2025 at 01:06:34PM +0200, Peter Zijlstra wrote:
-> > On Fri, May 09, 2025 at 01:17:06PM -0700, Josh Poimboeuf wrote:
-> > > An upcoming patch will add the SHF_MERGE flag to x86 __jump_table and
-> > > __bug_table so their entry sizes can be defined in inline asm.
-> > > 
-> > > However, those sections have SHF_WRITE, which the Clang linker (lld)
-> > > explicitly forbids combining with SHF_MERGE.
-> > > 
-> > > Those sections are modified at runtime and must remain writable.  While
-> > > SHF_WRITE is ignored by vmlinux, it's still needed for modules.
-> > > 
-> > > To work around the linker interference, remove SHF_WRITE during
-> > > compilation and restore it after linking the module.
-> > 
-> > *groan*
-> > 
-> > This and the following patches marking a whole bunch of sections M,
-> > seems to suggest you're going to rely on sh_entsize actually working.
-> > 
-> > There was an ld.lld bug, and IIRC you need to enforce llvm-20 or later
-> > if you want this to be so.
+On Mon, May 26, 2025 at 08:27:19PM +0200, Peter Zijlstra wrote:
+> On Fri, May 09, 2025 at 01:17:16PM -0700, Josh Poimboeuf wrote:
+> > +static void scan_for_insn(struct section *sec, unsigned long offset,
+> > +			  unsigned long *insn_off, unsigned int *insn_len)
+> > +{
+> > +	unsigned long o = 0;
+> > +	struct insn insn;
+> > +
+> > +	while (1) {
+> > +
+> > +		insn_decode(&insn, sec->data->d_buf + o, sec_size(sec) - o,
+> > +			    INSN_MODE_64);
+> > +
+> > +		if (o + insn.length > offset) {
+> > +			*insn_off = o;
+> > +			*insn_len = insn.length;
+> > +			return;
+> > +		}
+> > +
+> > +		o += insn.length;
+> > +	}
+> > +}
+> > +
+> > +u64 arch_adjusted_addend(struct reloc *reloc)
+> > +{
+> > +	unsigned int type = reloc_type(reloc);
+> > +	s64 addend = reloc_addend(reloc);
+> > +	unsigned long insn_off;
+> > +	unsigned int insn_len;
+> > +
+> > +	if (type == R_X86_64_PLT32)
+> > +		return addend + 4;
+> > +
+> > +	if (type != R_X86_64_PC32 || !is_text_sec(reloc->sec->base))
+> > +		return addend;
+> > +
+> > +	scan_for_insn(reloc->sec->base, reloc_offset(reloc),
+> > +		      &insn_off, &insn_len);
+> > +
+> > +	return addend + insn_off + insn_len - reloc_offset(reloc);
+> > +}
 > 
-> Hm, ISTR this working with clang 18, I'll go test that again.
+> This looks like a rather expensive proposition; it will have to decode
+> the section nr_reloc times.
+> 
+> Does it not make more sense to fully decode the section like 'normal' ?
 
-You're right, looks like sh_entsize is getting cleared by the linker
-with my Clang 18.  I guess I tested with newer Clang.
+Yeah, I'm not crazy about it either, but it at least keeps the pain
+nicely localized to x86, and avoids pulling in struct instruction,
+struct objtool_file, etc.
 
-"objtool klp diff" fails with:
+Also this typically doesn't need to be all that fast as this is only
+done for changed functions, and only for a subset of relocations (those
+which might be references to non-bundled data in a text section).
 
-  vmlinux.o: error: objtool: .discard.annotate_insn: unknown entry size
-
-So yeah, non-buggy linker is already being enforced, though I should
-probably make the error more human friendly.
+To give a general idea, in one of my tests, for a patch with 22
+functions, it only calls scan_for_insn() 41 times.
 
 -- 
 Josh
