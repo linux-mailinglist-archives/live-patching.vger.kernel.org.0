@@ -1,47 +1,47 @@
-Return-Path: <live-patching+bounces-1480-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1481-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4CD8EACE774
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 02:20:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0E3D2ACE77C
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 02:22:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id B6DC91894D6A
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 00:20:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 73D463A94D8
+	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 00:21:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9094C4A33;
-	Thu,  5 Jun 2025 00:19:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE1BE7494;
+	Thu,  5 Jun 2025 00:22:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="srTo5u8b"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HTmnug0l"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66BF63FFD;
-	Thu,  5 Jun 2025 00:19:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3DB82F43;
+	Thu,  5 Jun 2025 00:22:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749082795; cv=none; b=n4Uutlz/y16GJ55gM8uHxv7biAUsXzNUYCWiLbiGNF4jLKGXtP2IhytaMALNZDzME8qfGrYlNJAtOZB5TKyi6cn5lVon6klaiS+JgiBRSzjhqzgI/Pwx579Bxqn3KAfl4J0IMD+TxJser50zSWqXMwPBPshKWXAVJ27uO0o9d0I=
+	t=1749082935; cv=none; b=INlYl1qNOTkB2lQ5Z+7kSVIZar/7k6UfX506WNNmIjmGOgB46UAgRxpkrY/wsIpjCxjzm20wE0MfIIxuWxbJZOHPDL8rJ2cW6Ll/WZ4T/1UkMAcQyZw1f41ydZb2W7Mc8NLwYYXkSCha0Uofi9sbtnvPZb/ddiAhkUwPJklc/+U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749082795; c=relaxed/simple;
-	bh=VlBPHKswdFhEZ3uF2RVOWoy66b5PdtafEBvGKyASFks=;
+	s=arc-20240116; t=1749082935; c=relaxed/simple;
+	bh=6/q73xe5zRQSNc9a93fuAwlkT85IVrJBXRq8AT/arok=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jSJmbVVqpCdfDSQrFP9u+NtA+jAPngE1bMDV25m8pCyIf+frp6WEoiZ8RyI/7VXyfvBA5w5eu490IIgSNO1JkiJGXFWpuepbqRflMrlTE2qJ3VLVuiKQmCqMfjC8jmGoCmCZk7aXi7fjFXvQjJdwoTI6TVocSv1bQOn2FoV0f8I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=srTo5u8b; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DF48C4CEE4;
-	Thu,  5 Jun 2025 00:19:53 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=MxaBvHGSIvoyRByBMafQ1jIi8U1TE2FzJC1nRbfBF7ILdvT9MJw+6fS2wqYkvdgI4wJpzY8+naECDKUaZ37rm4TfTEYwi0C6I/cEcOA1P9rPEUMo4dnWURihZ8pwZ8Lv5f6AdHhhrWZc+WqmKfgRJtD+YtNu75Y9kpVBfX+cpfM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HTmnug0l; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83EA0C4CEE4;
+	Thu,  5 Jun 2025 00:22:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749082794;
-	bh=VlBPHKswdFhEZ3uF2RVOWoy66b5PdtafEBvGKyASFks=;
+	s=k20201202; t=1749082935;
+	bh=6/q73xe5zRQSNc9a93fuAwlkT85IVrJBXRq8AT/arok=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=srTo5u8bdcK+mRQcTiVDZD2km4vcQ4GycZv4CBI3adRgnf1DO0xDM8Om2jPlybJ+m
-	 qYJqFTCGWGdlifjAPMssjw1uTNDSdy39U0AxafS2BgXt+aUNXtX3hPARxJlE903jy5
-	 WTZF12h+XLLBnCTbswDK5vN7jKEiKIftOxXVS+bujHAXy4hYe4O1BDZBKKI3ffpI4H
-	 BxAk+IBfo/6UJwcgO+MqVnueMOiUKnxpdFZZ+TFOeICBcp+AwYMjoFKRBmsAOfCjZp
-	 Ek4VOQzjhx+dxUW/UGlVHIxuYltVrIXjyTA5WaZyhaR+mI1+5XQQURTY1k9WlmxSIw
-	 XmShEl5rWP+6w==
-Date: Wed, 4 Jun 2025 17:19:51 -0700
+	b=HTmnug0l3MftKjinfBDulJrcGKbRxNQ0297A8tjDgtGxXhjLrJyeU8orTu13wiiVB
+	 y7T/4rdZwfcBt/aYavkk3wejw0kVJLf6+KBKX1ZRF1efQJs92CqEFUxsXkHJpt2WSk
+	 s6pYJooP58W9e7TLGt3C6wgWkLtkRFf8ExEwd1u+/Xe0dQ+U/vX3p92h2I3uGNVEtV
+	 awZByAbb4r7sVpAXVytyWGZW2XCkYTNTDLPQJuiKrfBJfTGdPl2DfEOaquV2XCnJ6x
+	 2zzUxfpzPWJGC3/mWjkQznX8T4acp06IxzB/oI9LcYryU1NA1GgzLAd0Vbc+Lk2KJe
+	 /fxfLw1rDwcWg==
+Date: Wed, 4 Jun 2025 17:22:11 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Peter Zijlstra <peterz@infradead.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
@@ -50,14 +50,13 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
 	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
 	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
-	Puranjay Mohan <puranjay@kernel.org>
-Subject: Re: [PATCH v2 32/62] objtool: Suppress section skipping warnings
- with --dryrun
-Message-ID: <ycpdd352wztjux4wgduvwb7jgvt6djcb57gdepzai2gv5zkl3e@3igne4ssrjdm>
+	Puranjay Mohan <puranjay@kernel.org>, Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH v2 42/62] kbuild,x86: Fix module permissions for
+ __jump_table and __bug_table
+Message-ID: <cv2xosjolcau7n3poyymo3yodhl4cokwmju53d3rwfsqhkbqym@rsvd5oqqhczk>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
- <7eccdb0b09eff581377e5efab8377b6a37596992.1746821544.git.jpoimboe@kernel.org>
- <20250526105240.GN24938@noisy.programming.kicks-ass.net>
- <20250528103453.GF31726@noisy.programming.kicks-ass.net>
+ <9da1e9f592aadc8fbf48b7429e3fbcea4606a76a.1746821544.git.jpoimboe@kernel.org>
+ <20250526110634.GO24938@noisy.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -66,32 +65,31 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250528103453.GF31726@noisy.programming.kicks-ass.net>
+In-Reply-To: <20250526110634.GO24938@noisy.programming.kicks-ass.net>
 
-On Wed, May 28, 2025 at 12:34:53PM +0200, Peter Zijlstra wrote:
-> On Mon, May 26, 2025 at 12:52:40PM +0200, Peter Zijlstra wrote:
-> > On Fri, May 09, 2025 at 01:16:56PM -0700, Josh Poimboeuf wrote:
-> > > It's common to use --dryrun on binaries that have already been
-> > > processed.  Don't print the section skipping warnings in that case.
+On Mon, May 26, 2025 at 01:06:34PM +0200, Peter Zijlstra wrote:
+> On Fri, May 09, 2025 at 01:17:06PM -0700, Josh Poimboeuf wrote:
+> > An upcoming patch will add the SHF_MERGE flag to x86 __jump_table and
+> > __bug_table so their entry sizes can be defined in inline asm.
 > > 
-> > Ah, I rather like this warning, it gives me an easy check to see if the
-> > file has already been processed.
+> > However, those sections have SHF_WRITE, which the Clang linker (lld)
+> > explicitly forbids combining with SHF_MERGE.
 > > 
-> > I typically do a OBJTOOL_ARGS="--backup" build and run dryrun debug
-> > sessions against those .orig files.
+> > Those sections are modified at runtime and must remain writable.  While
+> > SHF_WRITE is ignored by vmlinux, it's still needed for modules.
+> > 
+> > To work around the linker interference, remove SHF_WRITE during
+> > compilation and restore it after linking the module.
 > 
-> Turns out, you already broke this.. :-(
+> *groan*
 > 
-> I'm now having a case where objtool fails on vmlinux.o and make happily
-> deletes vmlinux.o and I'm left empty handed.
+> This and the following patches marking a whole bunch of sections M,
+> seems to suggest you're going to rely on sh_entsize actually working.
 > 
-> Let me go resurrect --backup
+> There was an ld.lld bug, and IIRC you need to enforce llvm-20 or later
+> if you want this to be so.
 
-Yeah, as I just mentioned in that other email, --verbose should give you
-what you need.  It also prints the cmdline args, which is nice.
-
-But also, feel free to resurrect --backup, or you can yell at me to do
-it as the backup code changed a bit.
+Hm, ISTR this working with clang 18, I'll go test that again.
 
 -- 
 Josh
