@@ -1,47 +1,47 @@
-Return-Path: <live-patching+bounces-1491-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1492-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 558B1ACF997
-	for <lists+live-patching@lfdr.de>; Fri,  6 Jun 2025 00:15:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 10ED8ACFA6E
+	for <lists+live-patching@lfdr.de>; Fri,  6 Jun 2025 02:38:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 0D3A37A3A4C
-	for <lists+live-patching@lfdr.de>; Thu,  5 Jun 2025 22:13:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6CE143AF605
+	for <lists+live-patching@lfdr.de>; Fri,  6 Jun 2025 00:37:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7276327FB35;
-	Thu,  5 Jun 2025 22:15:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B2DA8F4A;
+	Fri,  6 Jun 2025 00:38:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A8jDl6lq"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QkHwpp7U"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AAE72798F3;
-	Thu,  5 Jun 2025 22:15:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EEC1A41;
+	Fri,  6 Jun 2025 00:38:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749161703; cv=none; b=m7kJEZtKj0szfuqVjm7GMy33cwcyJbgV58BYpdhYqJJrr1CigUMzdVYHEf5MYElkoTotxWIeMmYs/+NHGU6XjUpZKfnBvYZq9gr210RElAfGPMcw7q5r2igoQkPvlvihARd3hpo6qqQUUvKw2Aic5ln6FtH2x6fpKpqZXeL0vxg=
+	t=1749170282; cv=none; b=DUhJDHxpkoK75K9gpauihuFhIgZUVKFpQBA2JwPSorpBxzErIqSmdW9uYuwKtKh0V/dcMFbcTHh/jjwfacC/2IccZVMCE3LSzqW7EowFYT2odivPAhkqSGgi4TIGPfew/kO0QD5oXrRI6zY29AU0rd4x3e9kgT4vS20KgGJDABc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749161703; c=relaxed/simple;
-	bh=mhsaYFQq7gy42/4PAcqHn5WEllGemv3pGkKXlEelSls=;
+	s=arc-20240116; t=1749170282; c=relaxed/simple;
+	bh=B/dxso+ZqVxyZ9L1DIu1f3mUQg5Khl1LHdcLnurBQE8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NwNt9+BankVZdgVnY3xz4aWLiIKJAe9aGqLrzQCAqnXnb9UD/6nx1QsSsds5cmlJyM2bKeOTKmiHW6pIfVZTK/DU0IuUVJx6ywo1ZduP1dh3jSoWhHqUcNq0NU2jqiquHtpE6SwBV0egRl7jv/K0G5mhNkYhYbjZY9fwvShTE9U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A8jDl6lq; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F383C4CEE7;
-	Thu,  5 Jun 2025 22:15:01 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=T+4Bv3UQ2nENeUL+xGsPvem90XjHbjzAoLpzgvtQgW4FBx9+mlKrTHaivtCoteGi9d/5Jo3ql7Kckzn3x4AS5cgfo51+XrUT6OCSlq6ETEAnO7uC27ZtB0iTMC5nIQwzVAjzTyvzjYsWnDuHKr2GB4cPmc1jn783JFItdOCfEx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QkHwpp7U; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978A1C4CEE7;
+	Fri,  6 Jun 2025 00:38:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749161702;
-	bh=mhsaYFQq7gy42/4PAcqHn5WEllGemv3pGkKXlEelSls=;
+	s=k20201202; t=1749170281;
+	bh=B/dxso+ZqVxyZ9L1DIu1f3mUQg5Khl1LHdcLnurBQE8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=A8jDl6lq2um5arpgpGf4i8zNTViFm7y8mv9dyap+T8+aTsv222UybuznvmbmWiXNi
-	 ZAwwlvL+od5iWk0Bc147zG35Y0vZdz5sElTVKQWG5U4YvdpS4MMpR9aLPD17kSy4dv
-	 DzJvF33wGIFntnT9878OHyYh23IePuRQ6FZMfFmd5ijA3I0lUt06OEfJCFFUEizKVm
-	 QBQuXyF+M8L+983PpxBUW5oNOAYeP5N3MlIXroPyV2V55wyxpTL/lUDKZ855LrAF5J
-	 B6QUv8zwIrnv7O1x209xlHx+tCLdzMXdKAlLQrvBW8sv6lO1PoGtdTeS1KSAIQhL2A
-	 Czn0EPZycXr1Q==
-Date: Thu, 5 Jun 2025 15:14:59 -0700
+	b=QkHwpp7UsfkA6/Z1jThFJru47Fzv9IFI38HaIN+mfkCqYYummTVtFnGR5P3KTobdl
+	 NsK0kAVrBt8Mq2NtNvl4EjfFvpXDKpc5uGgbj1jCWbcVKaATWH3NxkOFIVxrMdb3j7
+	 WH/eiAYcm4GR2LZDpytBwTrkJycBJv4yEfJxNaTh3AzZX/OTXBm9x+oQctFNyO8n6P
+	 cMtPoypN4WSk4Stah3oZSJjEseh5pQOCfEtUevxsMfUBrMkSmCGGbpxbxcdV/4SZK4
+	 msKP551IJTwOlGHaEwaguReM/7j6UuOxNhGHpZPDPSdB7r5sQRysdsGlJqRHU2nM50
+	 PBqxqagam1iXg==
+Date: Thu, 5 Jun 2025 17:37:58 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Joe Lawrence <joe.lawrence@redhat.com>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
@@ -50,12 +50,12 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
 	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
 	Puranjay Mohan <puranjay@kernel.org>
-Subject: Re: [PATCH v2 45/62] x86/extable: Define ELF section entry size for
- exception tables
-Message-ID: <qtaf3nlbje7xzrypzn2gevue2uhmrrx6tqvgp3kgzgmia77mmd@ofabxb75cydw>
+Subject: Re: [PATCH v2 49/62] kbuild,objtool: Defer objtool validation step
+ for CONFIG_LIVEPATCH
+Message-ID: <2i7cje4wsmbwa6qykuni3tiihzbkac2db4etcs5a5gjbelkqid@2hcjfnxqghnz>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
- <198cfbd12e54dfce1309828e146b90b1f7b200a5.1746821544.git.jpoimboe@kernel.org>
- <d6940b24-d78f-4da5-a8fa-6a408528822f@redhat.com>
+ <0a12cca631dd6f4c55015e224acefb641b3824ce.1746821544.git.jpoimboe@kernel.org>
+ <88a28ee7-ec83-4925-9cae-085b0dcc78fe@redhat.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -64,75 +64,94 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <d6940b24-d78f-4da5-a8fa-6a408528822f@redhat.com>
+In-Reply-To: <88a28ee7-ec83-4925-9cae-085b0dcc78fe@redhat.com>
 
-On Wed, May 28, 2025 at 10:40:55AM -0400, Joe Lawrence wrote:
-> On 5/9/25 4:17 PM, Josh Poimboeuf wrote:
-> > In preparation for the objtool klp diff subcommand, define the entry
-> > size for the __ex_table section in its ELF header.  This will allow
-> > tooling to extract individual entries.
-> > 
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > ---
-> >  arch/x86/include/asm/asm.h | 20 ++++++++++++--------
-> >  kernel/extable.c           |  2 ++
-> >  2 files changed, 14 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
-> > index f963848024a5..62dff336f206 100644
-> > --- a/arch/x86/include/asm/asm.h
-> > +++ b/arch/x86/include/asm/asm.h
-> > @@ -138,15 +138,17 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
-> >  
-> >  # include <asm/extable_fixup_types.h>
-> >  
-> > +#define EXTABLE_SIZE 12
-> >
-> > + > [ ... snip ... ]
-> >
+On Wed, May 28, 2025 at 10:45:22AM -0400, Joe Lawrence wrote:
+> > -	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT; then
+> > +	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT ||
+> > +	   is_enabled CONFIG_LIVEPATCH; then
+> >  		# Use vmlinux.o instead of performing the slow LTO link again.
+> >  		objs=vmlinux.o
+> >  		libs=
 > 
-> EXTABLE_SIZE defined in arch/x86/ ...
+> At this commit, I'm getting the following linker error on ppc64le:
 > 
-> > diff --git a/kernel/extable.c b/kernel/extable.c
-> > index 71f482581cab..0ae3ee2ef266 100644
-> > --- a/kernel/extable.c
-> > +++ b/kernel/extable.c
-> > @@ -55,6 +55,8 @@ const struct exception_table_entry *search_exception_tables(unsigned long addr)
-> >  {
-> >  	const struct exception_table_entry *e;
-> >  
-> > +	BUILD_BUG_ON(EXTABLE_SIZE != sizeof(struct exception_table_entry));
-> > +
+> ld -EL -m elf64lppc -z noexecstack --no-warn-rwx-segments -pie -z notext
+> --build-id=sha1 -X --orphan-handling=error
+> --script=./arch/powerpc/kernel/vmlinux.lds -o .tmp_vmlinux1
+> --whole-archive vmlinux.o .vmlinux.export.o init/version-timestamp.o
+> --no-whole-archive --start-group --end-group .tmp_vmlinux0.kallsyms.o
+> arch/powerpc/tools/vmlinux.arch.o
 > 
-> but referenced in kernel/ where a non-x86 build like ppc64le build won't
-> know what EXTABLE_SIZE is :(
+> vmlinux.o:(__ftr_alt_97+0x20): relocation truncated to fit:
+> R_PPC64_REL14 against `.text'+4b54
+> vmlinux.o:(__ftr_alt_97+0x270): relocation truncated to fit:
+> R_PPC64_REL14 against `.text'+173ecc
 
-Thanks, I'll move the BUILD_BUG_ON() to the x86 extable code:
+Looks like objtool is causing the the __ftr_alt_* sections to get placed
+far away from .text somehow.
 
-diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-index bf8dab18be97..d4aae98b3739 100644
---- a/arch/x86/mm/extable.c
-+++ b/arch/x86/mm/extable.c
-@@ -303,6 +303,8 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
- 	const struct exception_table_entry *e;
- 	int type, reg, imm;
- 
-+	BUILD_BUG_ON(EXTABLE_SIZE != sizeof(struct exception_table_entry));
+I guess objtool-on-vmlinux isn't quite ready for primetime on powerpc.
+Though my next TODO is to get all this working there.
+
+Until then, here's the fix:
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 996d59e59e5d..23269e8ee906 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -265,6 +265,7 @@ config X86
+ 	select HAVE_FUNCTION_ERROR_INJECTION
+ 	select HAVE_KRETPROBES
+ 	select HAVE_RETHOOK
++	select HAVE_KLP_BUILD			if X86_64
+ 	select HAVE_LIVEPATCH			if X86_64
+ 	select HAVE_MIXED_BREAKPOINTS_REGS
+ 	select HAVE_MOD_ARCH_SPECIFIC
+diff --git a/kernel/livepatch/Kconfig b/kernel/livepatch/Kconfig
+index 53d51ed619a3..4c0a9c18d0b2 100644
+--- a/kernel/livepatch/Kconfig
++++ b/kernel/livepatch/Kconfig
+@@ -18,3 +18,15 @@ config LIVEPATCH
+ 	  module uses the interface provided by this option to register
+ 	  a patch, causing calls to patched functions to be redirected
+ 	  to new function code contained in the patch module.
 +
- #ifdef CONFIG_PNPBIOS
- 	if (unlikely(SEGMENT_IS_PNP_CODE(regs->cs))) {
- 		extern u32 pnp_bios_fault_eip, pnp_bios_fault_esp;
-diff --git a/kernel/extable.c b/kernel/extable.c
-index 0ae3ee2ef266..71f482581cab 100644
---- a/kernel/extable.c
-+++ b/kernel/extable.c
-@@ -55,8 +55,6 @@ const struct exception_table_entry *search_exception_tables(unsigned long addr)
- {
- 	const struct exception_table_entry *e;
++config HAVE_KLP_BUILD
++	bool
++	help
++	  Arch supports klp-build
++
++config KLP_BUILD
++	def_bool y
++	depends on LIVEPATCH && HAVE_KLP_BUILD
++	select OBJTOOL
++	help
++	  Enable klp-build support
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index a68390ff5cd9..d9426fd4ab33 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -278,7 +278,7 @@ objtool-args = $(objtool-args-y)					\
+ 	$(if $(delay-objtool), --link)					\
+ 	$(if $(part-of-module), --module)
  
--	BUILD_BUG_ON(EXTABLE_SIZE != sizeof(struct exception_table_entry));
--
- 	e = search_kernel_exception_table(addr);
- 	if (!e)
- 		e = search_module_extables(addr);
+-delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT),$(CONFIG_LIVEPATCH))
++delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT),$(CONFIG_KLP_BUILD))
+ 
+ cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
+ cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index acffa3c935f2..59f875236292 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -61,7 +61,7 @@ vmlinux_link()
+ 	shift
+ 
+ 	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT ||
+-	   is_enabled CONFIG_LIVEPATCH; then
++	   is_enabled CONFIG_KLP_BUILD; then
+ 		# Use vmlinux.o instead of performing the slow LTO link again.
+ 		objs=vmlinux.o
+ 		libs=
 
