@@ -1,134 +1,242 @@
-Return-Path: <live-patching+bounces-1501-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1502-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C3F85AD0AD6
-	for <lists+live-patching@lfdr.de>; Sat,  7 Jun 2025 03:26:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1A7E2AD24B8
+	for <lists+live-patching@lfdr.de>; Mon,  9 Jun 2025 19:07:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8BAF61750C1
-	for <lists+live-patching@lfdr.de>; Sat,  7 Jun 2025 01:26:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CB31116D7DF
+	for <lists+live-patching@lfdr.de>; Mon,  9 Jun 2025 17:07:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D490246770;
-	Sat,  7 Jun 2025 01:26:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 32483217654;
+	Mon,  9 Jun 2025 17:07:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FfClw3hf"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vH2M/C69"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA9BE573;
-	Sat,  7 Jun 2025 01:26:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8D18633F;
+	Mon,  9 Jun 2025 17:07:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749259606; cv=none; b=hRd2AAYKEFJNC2IinWRLBWrFoulvg7Bg7FjHY8cAjyZO+BzPoV5cSnkDFudDSCTdLUO2lIcURR992zz/1/2cCs7NggyQnV7EhE+qcpqixw8aIy3ajeAHgqxPk+uQ+cxSuFAJcnofcneGgulFh0UmqKBYPuvb/m3gfCuYeAhGHzs=
+	t=1749488860; cv=none; b=WqnlBdEjXKhLWhNAfHl9q/fQK8kYArxaTvDlX9v7KRdNRk7K6QJqCkn6bpGjKL8tfe9zBnEGSalUyhM2A9gLWClnfNTmSRV9cNv2tlnWewdfzBwB6UsOpYPHW7oN8MrObOctc3ffy6vRi2TkGCxGal65vBbBfh6j+82nKyJzT8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749259606; c=relaxed/simple;
-	bh=Yicz8GuFLGdAIAInCGG5pCMOCKe7oQT5Kcq9sOuZqKc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ACu6fei2KKE5E661NIG31Wohfv3G1QR3fJS3uMyvdh7AKpuApHzOOer010i2lcpcmjsWtgZo2lsugy9T1LVzVLcQvBjbiKwgENIH6nhdfUWxWIKTcf3obQc0oL97KYJm9Xp41A8Edcl68KZA5LaMIWarw2C5GmVMy6xe4u6b7ic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FfClw3hf; arc=none smtp.client-ip=209.85.208.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-32925727810so22494571fa.0;
-        Fri, 06 Jun 2025 18:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1749259602; x=1749864402; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mhPP6x4Dv0yG5ixt2jdVXYmQ6rdJ1bVbjB/DIb5xUL4=;
-        b=FfClw3hfztR/nVzSD9rCDKCTKWeiRSoBcr/xj+jq9Pnr/4ExiiHIOgeNJiMh5MMLAK
-         2iADefzrNidguVwB+yG4OJO3IdPU/tpweo4So2J0XdOYeXab76vB0xJMbgZ0ij6jiU5+
-         aB4EO0ndL+nh3bLtL79CF/TSaxwFxUPfavrzLmcZzrqVtRH1jrL2jR7bHhn6ZQ2wTyRl
-         8+3hdYfb6KPTNllaKBN66StDRlc3LOfU/aNqCw8nYre67ogRo7CEZJif3HGuM4B/g+3H
-         RXFKrViOq0f0CmK1IOOnBdEZ2zuO+pfLjgsKteERzZCyYmutZLkTpMQEYsYTtx7JCG8c
-         02fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749259602; x=1749864402;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mhPP6x4Dv0yG5ixt2jdVXYmQ6rdJ1bVbjB/DIb5xUL4=;
-        b=qaorb6EScGKoBJXhpT6vz648DksvRdZPTtk/vLu3cIthAR+UoGzQN28rZuS3vg/6LK
-         OeTK8op9dwDlCuyEdb1v/fYO5fz+2d/MK1CrXaMXYC7M25OMZgn2eSJ5vx4bBa1oOBW9
-         PFii9RYCxwDncC6IgB3cmSyhAmR9RH/fH1wuZiSiiwournQi7acII39xlNHgH1/sqftf
-         6ai3o/kS5drc3y8/OXW7eXC/5Mt7LpxwW3VbrV4bCKg1QtKZqBO2aQNajY5VYmQ4HM0u
-         orSaP8DcuT4zBH8nKO305TQy6+moIfvjbq3BHb97a8ThNYsj4LXTjMudD6rwJZzhHKfQ
-         S6SQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUD6bdKkgo/nXTVPkTkbpjTybrpMQv5FBZNLipWpEw0oj9/PsUldD/Q/RkPy0Y74o7RAxqGvcGUkBiGig8=@vger.kernel.org, AJvYcCVLM4JAGywGRMut1oNOGioKl0YEDP5YCwhocGJomNIXPAbzNML6UaOJwtvZhAzKFBHhlghICzFScyMAmOA7iQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yynw+0w3C3vG8+hg1K8eKZ98dA8yDw42hque/mtCmwlVKa6SzQG
-	XNBgp7mFV+I9VQpJN+ykCzvKZNlp8mgJ0kbSIBAuKkUPYQJUhTlgWWQ0XPZkzLmkTw2KMGlFZle
-	+lNazBCQNx4LP3MrshxQOsXKHBA9Xbg==
-X-Gm-Gg: ASbGncv49+qbp/Izj+WUDISu5vWu0K411UL4j3pwjM7qHgq8sdDhfHhyW0AKT2Sc/I2
-	O6w3N/rDwu7+cgWjiZBAIjoTWb37raWMhdU1Q23hgqwWvTp94lrqsQOYkJG8ur/R57+FVfXR+LM
-	gd8eaJuuQdhC28ul+ysIgsU+y830XW5Ct+v+DAvXzKM7WDSew5KsR+/w0AaxbRLxf/9sif
-X-Google-Smtp-Source: AGHT+IFClGnAxeAsiHdUAgpzUMgtBR1ZJfKzTrFqV27+pR/Drz7trMzxc9WvzMNtHuLmh/0MNFoVFWkChmuAPgTneHM=
-X-Received: by 2002:a05:651c:2125:b0:32a:613b:270e with SMTP id
- 38308e7fff4ca-32adfbd6680mr13621761fa.31.1749259602101; Fri, 06 Jun 2025
- 18:26:42 -0700 (PDT)
+	s=arc-20240116; t=1749488860; c=relaxed/simple;
+	bh=Ch2C2f0dQROPaS1DTJtHEKlSNL+mBdUuhKgHhovymg0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I8P/X6WswUdw36e+GlI7zfZLoh/BaUVM1eB00uohXV2n9OIlcn+OLk1yU1j+uTqXdFtygxWTWCVqZThzJ/vVRLm7cLcHOpukkwScqm+03uoMu25Vq2cGo6vTtFvj0wuhysaztkC5JAIibSfa1V2vg51Ce7Z0CsJM/MYy7mgnu+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vH2M/C69; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8588DC4CEEB;
+	Mon,  9 Jun 2025 17:07:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1749488859;
+	bh=Ch2C2f0dQROPaS1DTJtHEKlSNL+mBdUuhKgHhovymg0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=vH2M/C69bemRwZtTpWGOQO2awZinpECNdTHXCQlGpERQVQ6kmFmQN5+pz02+kDsgd
+	 2HCOFM6A0azkIR5ASADe60WIgHthdjpUQU7NuHzBnOlaiwFHXkTWJjh+FcK/2eM12U
+	 k7QL7Tcsr04MeTTIbr50z4VWJ+TtmMQMZw9a6GBqNo5uQyJ8F4LSimavzvJ33FUeX+
+	 bTGg8dKujmfsNgFDFGfGXSAL+8uggG/EXuu1t15On7wT3/H9qx3sj/d7deeS0MfWFc
+	 cqGW3PyTcIoOWTEOjZcq+FRCIUfQUq4B0D7vRV7cl9GW3oLE2ZzFOjGtuPfgsVJT6c
+	 PZVop9vFKFJmA==
+Date: Mon, 9 Jun 2025 10:07:36 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Brian Gerst <brgerst@gmail.com>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
+	Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org, Song Liu <song@kernel.org>, 
+	laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
+	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
+	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
+	Puranjay Mohan <puranjay@kernel.org>
+Subject: Re: [PATCH v2 45/62] x86/extable: Define ELF section entry size for
+ exception tables
+Message-ID: <zsvgiietkr4qwrlnmvsov7xmgqe7khqmgluvr6f6hsqaw3sp4q@drakq47ntmhr>
+References: <cover.1746821544.git.jpoimboe@kernel.org>
+ <198cfbd12e54dfce1309828e146b90b1f7b200a5.1746821544.git.jpoimboe@kernel.org>
+ <CAMzpN2jbdRJWhAWOKWzYczMjXqadg_braRgaxyA080K9G=xp0g@mail.gmail.com>
+ <goiggh4js4t3g54fpcs6gugmp26uoumucszrx3e5cdrqdl7336@qijkbpy747jb>
+ <CAMzpN2gmbgts1fFm2x=Ao=X-9g0U000+fPk_i7mMA-f0AQsQYg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1746821544.git.jpoimboe@kernel.org> <198cfbd12e54dfce1309828e146b90b1f7b200a5.1746821544.git.jpoimboe@kernel.org>
- <CAMzpN2jbdRJWhAWOKWzYczMjXqadg_braRgaxyA080K9G=xp0g@mail.gmail.com> <goiggh4js4t3g54fpcs6gugmp26uoumucszrx3e5cdrqdl7336@qijkbpy747jb>
-In-Reply-To: <goiggh4js4t3g54fpcs6gugmp26uoumucszrx3e5cdrqdl7336@qijkbpy747jb>
-From: Brian Gerst <brgerst@gmail.com>
-Date: Fri, 6 Jun 2025 21:26:30 -0400
-X-Gm-Features: AX0GCFuHf8GgnjPOAdZ4H_TPbxnroj0Cb4HtVgwzVcOvyWsT-Cr_WKnpQT1bAmU
-Message-ID: <CAMzpN2gmbgts1fFm2x=Ao=X-9g0U000+fPk_i7mMA-f0AQsQYg@mail.gmail.com>
-Subject: Re: [PATCH v2 45/62] x86/extable: Define ELF section entry size for
- exception tables
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
-	Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>, 
-	Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org, 
-	Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
-	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
-	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
-	Puranjay Mohan <puranjay@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMzpN2gmbgts1fFm2x=Ao=X-9g0U000+fPk_i7mMA-f0AQsQYg@mail.gmail.com>
 
-On Fri, Jun 6, 2025 at 3:48=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org>=
- wrote:
->
-> On Thu, Jun 05, 2025 at 11:58:23PM -0400, Brian Gerst wrote:
-> > On Fri, May 9, 2025 at 4:51=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.=
-org> wrote:
-> > >
-> > > In preparation for the objtool klp diff subcommand, define the entry
-> > > size for the __ex_table section in its ELF header.  This will allow
-> > > tooling to extract individual entries.
-> > >
-> > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > > ---
-> > >  arch/x86/include/asm/asm.h | 20 ++++++++++++--------
-> > >  kernel/extable.c           |  2 ++
-> > >  2 files changed, 14 insertions(+), 8 deletions(-)
-> > >
-> > > diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
-> > > index f963848024a5..62dff336f206 100644
-> > > --- a/arch/x86/include/asm/asm.h
-> > > +++ b/arch/x86/include/asm/asm.h
-> > > @@ -138,15 +138,17 @@ static __always_inline __pure void *rip_rel_ptr=
-(void *p)
-> > >
-> > >  # include <asm/extable_fixup_types.h>
-> > >
-> > > +#define EXTABLE_SIZE 12
+On Fri, Jun 06, 2025 at 09:26:30PM -0400, Brian Gerst wrote:
+> On Fri, Jun 6, 2025 at 3:48 AM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
 > >
-> > Put this in asm-offsets.c instead.
->
-> But that's only for .S code right?  This is also needed for inline asm.
+> > On Thu, Jun 05, 2025 at 11:58:23PM -0400, Brian Gerst wrote:
+> > > On Fri, May 9, 2025 at 4:51 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> > > >
+> > > > In preparation for the objtool klp diff subcommand, define the entry
+> > > > size for the __ex_table section in its ELF header.  This will allow
+> > > > tooling to extract individual entries.
+> > > >
+> > > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> > > > ---
+> > > >  arch/x86/include/asm/asm.h | 20 ++++++++++++--------
+> > > >  kernel/extable.c           |  2 ++
+> > > >  2 files changed, 14 insertions(+), 8 deletions(-)
+> > > >
+> > > > diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+> > > > index f963848024a5..62dff336f206 100644
+> > > > --- a/arch/x86/include/asm/asm.h
+> > > > +++ b/arch/x86/include/asm/asm.h
+> > > > @@ -138,15 +138,17 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
+> > > >
+> > > >  # include <asm/extable_fixup_types.h>
+> > > >
+> > > > +#define EXTABLE_SIZE 12
+> > >
+> > > Put this in asm-offsets.c instead.
+> >
+> > But that's only for .S code right?  This is also needed for inline asm.
+> 
+> <asm/asm-offsets.h> can be used in C code too.  Normally it wouldn't
+> be needed but the inline asm case is a valid use.
 
-<asm/asm-offsets.h> can be used in C code too.  Normally it wouldn't
-be needed but the inline asm case is a valid use.
+Ah, nice.  This is much better.  Thanks!
 
+diff --git a/arch/x86/include/asm/alternative.h b/arch/x86/include/asm/alternative.h
+index e206e0f96568..eb24d9ba30d7 100644
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -16,8 +16,6 @@
+ #define ALT_DIRECT_CALL(feature) ((ALT_FLAG_DIRECT_CALL << ALT_FLAGS_SHIFT) | (feature))
+ #define ALT_CALL_ALWAYS		ALT_DIRECT_CALL(X86_FEATURE_ALWAYS)
+ 
+-#define ALTINSTR_SIZE		14
+-
+ #ifndef __ASSEMBLER__
+ 
+ #include <linux/stddef.h>
+@@ -200,7 +198,7 @@ static inline int alternatives_text_reserved(void *start, void *end)
+ 
+ #define ALTINSTR_ENTRY(ft_flags)					      \
+ 	".pushsection .altinstructions, \"aM\", @progbits, "		      \
+-		      __stringify(ALTINSTR_SIZE) "\n"			      \
++		      __stringify(ALT_INSTR_SIZE) "\n"			      \
+ 	" .long 771b - .\n"				/* label           */ \
+ 	" .long 774f - .\n"				/* new instruction */ \
+ 	" .4byte " __stringify(ft_flags) "\n"		/* feature + flags */ \
+@@ -363,7 +361,7 @@ void nop_func(void);
+ 741:									\
+ 	.skip -(((744f-743f)-(741b-740b)) > 0) * ((744f-743f)-(741b-740b)),0x90	;\
+ 742:									\
+-	.pushsection .altinstructions, "aM", @progbits, ALTINSTR_SIZE ;	\
++	.pushsection .altinstructions, "aM", @progbits, ALT_INSTR_SIZE ;\
+ 	altinstr_entry 740b,743f,flag,742b-740b,744f-743f ;		\
+ 	.popsection ;							\
+ 	.pushsection .altinstr_replacement,"ax"	;			\
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index 62dff336f206..eb0b33f02be3 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -138,7 +138,9 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
+ 
+ # include <asm/extable_fixup_types.h>
+ 
+-#define EXTABLE_SIZE 12
++#ifndef COMPILE_OFFSETS
++#include <asm/asm-offsets.h>
++#endif
+ 
+ /* Exception table entry */
+ #ifdef __ASSEMBLER__
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index d01ab5fa631f..4888e1c8be6a 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -593,8 +593,6 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
+ 	u8 *instr, *replacement;
+ 	struct alt_instr *a, *b;
+ 
+-	BUILD_BUG_ON(ALTINSTR_SIZE != sizeof(struct alt_instr));
+-
+ 	DPRINTK(ALT, "alt table %px, -> %px", start, end);
+ 
+ 	/*
+diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
+index 6259b474073b..805da27854ee 100644
+--- a/arch/x86/kernel/asm-offsets.c
++++ b/arch/x86/kernel/asm-offsets.c
+@@ -123,4 +123,8 @@ static void __used common(void)
+ 	OFFSET(ARIA_CTX_rounds, aria_ctx, rounds);
+ #endif
+ 
++	BLANK();
++	DEFINE(EXTABLE_SIZE,	 sizeof(struct exception_table_entry));
++	DEFINE(UNWIND_HINT_SIZE, sizeof(struct unwind_hint));
++	DEFINE(ALT_INSTR_SIZE,	 sizeof(struct alt_instr));
+ }
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 4624d6d916a2..977ee75e047c 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -199,8 +199,6 @@ static struct orc_entry *orc_find(unsigned long ip)
+ {
+ 	static struct orc_entry *orc;
+ 
+-	BUILD_BUG_ON(UNWIND_HINT_SIZE != sizeof(struct unwind_hint));
+-
+ 	if (ip == 0)
+ 		return &null_orc_entry;
+ 
+diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
+index d4aae98b3739..bf8dab18be97 100644
+--- a/arch/x86/mm/extable.c
++++ b/arch/x86/mm/extable.c
+@@ -303,8 +303,6 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
+ 	const struct exception_table_entry *e;
+ 	int type, reg, imm;
+ 
+-	BUILD_BUG_ON(EXTABLE_SIZE != sizeof(struct exception_table_entry));
+-
+ #ifdef CONFIG_PNPBIOS
+ 	if (unlikely(SEGMENT_IS_PNP_CODE(regs->cs))) {
+ 		extern u32 pnp_bios_fault_eip, pnp_bios_fault_esp;
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index d4137a46ee70..e93f0c28b54b 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -8,8 +8,6 @@
+ 
+ #include <asm/asm.h>
+ 
+-#define UNWIND_HINT_SIZE 12
+-
+ #ifndef __ASSEMBLY__
+ 
+ #define UNWIND_HINT(type, sp_reg, sp_offset, signal)		\
+diff --git a/kernel/bounds.c b/kernel/bounds.c
+index 29b2cd00df2c..02b619eb6106 100644
+--- a/kernel/bounds.c
++++ b/kernel/bounds.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #define __GENERATING_BOUNDS_H
++#define COMPILE_OFFSETS
+ /* Include headers that define the enum constants of interest */
+ #include <linux/page-flags.h>
+ #include <linux/mmzone.h>
+diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
+index d3d00e85edf7..ef2ffb68f69d 100644
+--- a/scripts/mod/devicetable-offsets.c
++++ b/scripts/mod/devicetable-offsets.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#define COMPILE_OFFSETS
+ #include <linux/kbuild.h>
+ #include <linux/mod_devicetable.h>
+ 
 
-Brian Gerst
 
