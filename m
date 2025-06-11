@@ -1,88 +1,88 @@
-Return-Path: <live-patching+bounces-1516-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1517-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 65E45AD5EEF
-	for <lists+live-patching@lfdr.de>; Wed, 11 Jun 2025 21:21:38 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 155AEAD61B8
+	for <lists+live-patching@lfdr.de>; Wed, 11 Jun 2025 23:44:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0FDAC16F631
-	for <lists+live-patching@lfdr.de>; Wed, 11 Jun 2025 19:21:39 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 2E5037AA936
+	for <lists+live-patching@lfdr.de>; Wed, 11 Jun 2025 21:43:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0657027CCF3;
-	Wed, 11 Jun 2025 19:21:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 22789244697;
+	Wed, 11 Jun 2025 21:44:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NsEdqaXV"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MgkmsIBn"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D826198A1A
-	for <live-patching@vger.kernel.org>; Wed, 11 Jun 2025 19:21:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C7FC244669
+	for <live-patching@vger.kernel.org>; Wed, 11 Jun 2025 21:44:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749669693; cv=none; b=uagrQY45Yi6LMZ5ywJJ+ntW2WhwJZM0Tth3FofmYAk6A/2QVyE25zKE2C6vBo/Id6MepvmdGLDq7a8c3b4N0QYqyd9zd31YWWaa0t5Kletz01BDxfTNUxW7c8/zfrlcEVwo8Sr7mjXuVm4VLq6ZmfmGTyWoR4x/582pIqXuD1M4=
+	t=1749678270; cv=none; b=Zkld/nEkX6sBplBO1/+vwBLQU/oy0lfYDB4ZToY6sajLarrEaUTwzoK88TTzTtllOga2TPhAFgvNz246ZIulQ/jhJSjAUyBfI9mLt3tuuhcluxIAZ+390bAnnrSd86PUrlSb4GC+FKuLRgUvlJ4jaB17adCktxDyTrIwov3LQ9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749669693; c=relaxed/simple;
-	bh=HMN2fi2TmhdHEV32HsDxSoAR5XfJc1qOe1LERRefehk=;
+	s=arc-20240116; t=1749678270; c=relaxed/simple;
+	bh=5iibx60+X4DCGlBZs5v7NCxPcgpAC/Wgvg/rfdqJWKY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EXHbhxVyRqVH64fOYWru2cqrPJkxXfENHObjpR5Y5RV6uG1aPVGLZ9tCqX4NQMhXcc4XFottwbheriTXGP4ROIcHTofUXAQxLourkgOwKuJmWqfi+ftgLfxLR3J7701CgARfymWUXe29B/JeNMSRFcvFSdKYj79zPKwU7iI7dLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NsEdqaXV; arc=none smtp.client-ip=170.10.133.124
+	 In-Reply-To:Content-Type; b=prfiVlE3YGP4ogu1UDgQdxM7FfkQpXfQSK1qQIKuMruPwce6qGIiiFOvt0a5pd4mNBY8KGu0au/UY4g7mXGe1mPLwJaEsPCWr7NdP3YYyRsKw2hwGb20dKIBjcMomHfA3Ue3hNq3r7VgkejDagJnjbThO5nwA+TxVSC84yxiwKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=MgkmsIBn; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1749669691;
+	s=mimecast20190719; t=1749678267;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=YWk6r3wX+x8EGIq9XU5abkxHWPirOn7mXEdF47KgwPI=;
-	b=NsEdqaXVnzZR6Fekhz5Nex3fVBl85PRYHU03Osm0B6IogDgfG9vwkpe7uq9bMfQHDu47XN
-	PXDc6QkDcfL9PgM16Sq3ikxVUXwnrH/KG1feyOHSr4y/+Ns+VnQlVw2RBo3S60gjkCz0Sn
-	DzO3NkvT+5lISOlngDeq8PoD6rPQnuM=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=YuNV+uFz+bCVOpICqXLxMO9nlU4x45XUkHUtMtKxB7Q=;
+	b=MgkmsIBnrOK9rVD0Jm/vSrK3BLeexM4u5VRf8e3IqC2decIsIj7bBAOFh+GseKeVh1WLlZ
+	8LL6mt1ITuAm1KlFMhj32EbW236+ABHZPTSW0RGrrL6Q+w6N2w1H4DVIu4qtwftYWv4Fyy
+	c7y+WXa0BycDA1PX5Q0Iw9V7zxIhQR0=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-584-HglCm0-CPui39bFmbobMFw-1; Wed, 11 Jun 2025 15:21:30 -0400
-X-MC-Unique: HglCm0-CPui39bFmbobMFw-1
-X-Mimecast-MFC-AGG-ID: HglCm0-CPui39bFmbobMFw_1749669689
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-7c793d573b2so30655285a.1
-        for <live-patching@vger.kernel.org>; Wed, 11 Jun 2025 12:21:29 -0700 (PDT)
+ us-mta-425-d29ZnItmO2y7NGMyLk3BWw-1; Wed, 11 Jun 2025 17:44:26 -0400
+X-MC-Unique: d29ZnItmO2y7NGMyLk3BWw-1
+X-Mimecast-MFC-AGG-ID: d29ZnItmO2y7NGMyLk3BWw_1749678266
+Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-4a441a769c7so8160821cf.3
+        for <live-patching@vger.kernel.org>; Wed, 11 Jun 2025 14:44:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749669689; x=1750274489;
+        d=1e100.net; s=20230601; t=1749678266; x=1750283066;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YWk6r3wX+x8EGIq9XU5abkxHWPirOn7mXEdF47KgwPI=;
-        b=d/Rh8fTXNaXCVYJYf8mviSppN06QYPOtZtpztXKsEbLr36lNwvYa6F67PfrQcSc+TH
-         0mOtSe5STQzyHmFqQGVoz618AFuaCYFi+PXXEz4/J1+5ffHPbzqOVjgpxClZ7jywR0uB
-         WULryMqS2koiCEov3kzraoXecSateaVl8hDvlF/AoJwwwhBiiN7PEWj1eQgCrz6mz+TA
-         HODsxolGwxNVknnLYx//tEPDA8i0AMDHzT0w0481QeKjee7P09M0HmO9/aOBb/fJKuNc
-         qAIwnH5CKCPi/s3OPowz+k62+BATeI+wU52zF+4SYvRx7kyq9NiNV86P9befpVSL5olf
-         /vsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU+Z4tWWx2R6VD7mkjqQO5mG8H9XMV+rQB2GLM36ZKFKyfk0Jc6c4HkVXN9RA2vp6Y1Pg3z9vZmxA5vAJMx@vger.kernel.org
-X-Gm-Message-State: AOJu0YzOxgley8j3+jT0ZqC75qIwLiByf0rE6V6VtaVD4i/LFPk4RHV/
-	OU8I0AiNJruV9o9aHxjIqQg5PGIed52H6oHf+v4de8P2JKwWxolBzpMBGYFFdNxzgyROWuZUaCx
-	ShnkZuCrnbMdIUbeZeTZ27xp/94sHQdPal4o0+MXjgrQRibhtGqzIfh6mlsUNV5UZw1k=
-X-Gm-Gg: ASbGncsSUNqb43YVI19plvv81xrLHA4uY723GhwEb1CDB4VXdDI+DH8qNMsxACKdkZN
-	onTMn051hXgbi13ZKVtS5+108mr7+hT24Rhzq7M8QeECgWE7z5a+fjxwSJTd3yZpLX6LwWSTbpn
-	a9FgVv0LGPI4wYVU5tKoJ7Tf+Sl5tTfXPWXHw/tL85asoFwjOe5ywZXK4z50G1JJmjQXr3tmWi2
-	s1q2oi7Jdt1R5ApNQac4qC8F6I20bTlHyLsZ8bWmwXmiqBV2Rq+MCNcn7EPkmPyj82fnqpqZkJC
-	8i/3icO/6/R0KsVy2jnzqBIQjGIY+g8iS8exiGZ0T+01Elvc405ePofkVGplfl5ET2QLjSQx8uG
-	4ig==
-X-Received: by 2002:a05:620a:4110:b0:7d3:8d1e:9703 with SMTP id af79cd13be357-7d3a88e40c8mr611380785a.33.1749669689170;
-        Wed, 11 Jun 2025 12:21:29 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGPmKMJwPRr4iSghVXRwPOrOjJvpMtoECu4tD1pD2f54epIlHFwj+Ns6F3NMx7ew6HvX5jS+Q==
-X-Received: by 2002:a05:620a:4110:b0:7d3:8d1e:9703 with SMTP id af79cd13be357-7d3a88e40c8mr611376885a.33.1749669688656;
-        Wed, 11 Jun 2025 12:21:28 -0700 (PDT)
+        bh=YuNV+uFz+bCVOpICqXLxMO9nlU4x45XUkHUtMtKxB7Q=;
+        b=CYdAP5EkhKY6nGNa70hahv+WCyRz2fIbinpK+AJnury5bwel4biz5Uzz5d+patFKpB
+         zUNOOj7dq/MXQ2gRqtgxfzfmjg1gvYmT6yhzDrxeExQz95BhoThJC+EpW8qfdESOwb+x
+         BMqh5gZ+zF03LUNRROGMLoZNU8C0UOVt50kpMRdPkOTKWqdtKjmgnv26jTft3qbPPT8h
+         GjmGUPfm4LqKJKp6QrB3VbAIpnmn/Q4mouzi12l559O8TqxZ3cC799XUQwDXaraOIKP0
+         tOXWAHiUFUu7/8WUtNDqAUv/AofsRclvMa59NFpD9zzLJJdfxaPIrbk9W3m2SunciVfY
+         mD5Q==
+X-Forwarded-Encrypted: i=1; AJvYcCX3btGP7xtYVWyERni9a4DcDRLObHmaBv08W5c93ROV+an5gNQlbjaET4+94+ObJttblS7XoWrmK9kQoJs4@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx1AKv0vvVm75VKXyluDfjsNQJORCw9I5wMCV9fgsR/HQc4AJ7f
+	QgFF3TPMowNyfGLmyUxrTEMruhQ1BeVddUFNEKoSA4KBpAoYzjo9mRbOSparnRlxhv6D1prrBLj
+	6dHHGrwagSnG/ZUQo5RbpUHXJxO0W6Elh/dz87wrzC0NJe4Goqv2Apv9OahdPuPYeDOI=
+X-Gm-Gg: ASbGncuredtllhMvSw1N5TcvHWOzls9rjU5hkjGLnApVd+axKslWzKFtTAnyMlNCXlm
+	1XkDs5SW+ZEOJOG0lu67702HVHK78jYZiwu8ya55o/hYgKQsc3HKhL3U4CdrwpkEal3d/xydkwp
+	u2hOowdwUJN3qxiW/1/aHwFtfA8PuI/iq98hkTcWtFDswm/uDlYAfsrQc9UVEHE9NhBIDHrLDN+
+	NkRxnz9NMyxXJSv6aflK/9Lg+GHpbA9qOL3jaA6Xu/hq1Vd7TcvZL0H/MqryyT3nLxGLQa1n+a0
+	KJVXqj2EKIXCP8yeENjBLqbIvbSlwFzz/mduC9CKVTSO0Z5L0EsJnyRKWAg1uxPfCJ7UfYYnH3E
+	KKQ==
+X-Received: by 2002:a05:622a:5a11:b0:4a3:ebbb:56e5 with SMTP id d75a77b69052e-4a713c48e92mr88441251cf.35.1749678265805;
+        Wed, 11 Jun 2025 14:44:25 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFK+oN9pOk8Jc36x5KXmXAsK0e2wgh+i0hQcs9RHkvSyWfAYwFBWvMduaJlRikotpIIOBo/Qw==
+X-Received: by 2002:a05:622a:5a11:b0:4a3:ebbb:56e5 with SMTP id d75a77b69052e-4a713c48e92mr88440901cf.35.1749678265473;
+        Wed, 11 Jun 2025 14:44:25 -0700 (PDT)
 Received: from [192.168.1.17] (pool-68-160-160-85.bstnma.fios.verizon.net. [68.160.160.85])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d2669b4900sm901765985a.109.2025.06.11.12.21.27
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a724740dbdsm1703301cf.17.2025.06.11.14.44.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Jun 2025 12:21:28 -0700 (PDT)
-Message-ID: <ba9ec5eb-8078-4780-a2bd-db53c12f437d@redhat.com>
-Date: Wed, 11 Jun 2025 15:21:26 -0400
+        Wed, 11 Jun 2025 14:44:25 -0700 (PDT)
+Message-ID: <305c6d06-ae85-4595-ba05-9aa7b93739bd@redhat.com>
+Date: Wed, 11 Jun 2025 17:44:23 -0400
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -92,18 +92,15 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 59/62] livepatch/klp-build: Introduce klp-build script
  for generating livepatch modules
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
- Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>,
- live-patching@vger.kernel.org, Song Liu <song@kernel.org>,
- laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>,
- Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>,
- Fazla Mehrab <a.mehrab@bytedance.com>,
+To: Josh Poimboeuf <jpoimboe@kernel.org>, x86@kernel.org
+Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+ Miroslav Benes <mbenes@suse.cz>, live-patching@vger.kernel.org,
+ Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>,
+ Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>,
+ Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>,
  Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay Mohan <puranjay@kernel.org>
 References: <cover.1746821544.git.jpoimboe@kernel.org>
  <10ccbeb0f4bcd7d0a10cc9b9bd12fdc4894f83ee.1746821544.git.jpoimboe@kernel.org>
- <8c79b86e-fc30-4f48-bdd2-91ef6f612bb5@redhat.com>
- <c7bifa7n7ybhqxxwbcl7o5743gl6ezd2odx63qc3nmqwcqpxiy@64oztd4qm3um>
 Content-Language: en-US
 From: Joe Lawrence <joe.lawrence@redhat.com>
 Autocrypt: addr=joe.lawrence@redhat.com; keydata=
@@ -150,44 +147,55 @@ Autocrypt: addr=joe.lawrence@redhat.com; keydata=
  zOpdA5nOdOrGzIu0D9IQD4+npnpSIL5IW9pwZMkkgoD47pdeekzG/xmnvU7CF6iDBzwuG3CC
  FPtyZxmwRVoS/YeBgzoyEDTwUJDzNGrkkNKnaUbDpg4TLRSCUUhmDUguj0QCa4n8kYoaAw9S
  pNzsRQ==
-In-Reply-To: <c7bifa7n7ybhqxxwbcl7o5743gl6ezd2odx63qc3nmqwcqpxiy@64oztd4qm3um>
+In-Reply-To: <10ccbeb0f4bcd7d0a10cc9b9bd12fdc4894f83ee.1746821544.git.jpoimboe@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 6/11/25 3:08 PM, Josh Poimboeuf wrote:
-> On Wed, Jun 11, 2025 at 02:44:35PM -0400, Joe Lawrence wrote:
->>> +get_patch_files() {
->>> +	local patch="$1"
->>> +
->>> +	grep0 -E '^(--- |\+\+\+ )' "$patch"			\
->>> +		| gawk '{print $2}'				\
->> If we split the rest of this line on the tab character and print the
->> first part of $2:
->>
->>   gawk '{ split($2, a, "\t"); print a[1] }'
->>
->> then it can additionally handle patches generated by `diff -Nupr` with a
->> timepstamp ("--- <filepath>\t<timestamp>").
-> Hm?  The default gawk behavior is to treat both tabs and groups of
-> spaces as field separators:
-> 
->   https://www.gnu.org/software/gawk/manual/html_node/Default-Field-
-> Splitting.html
-> 
-> And it works for me:
-> 
->   $ diff -Nupr /tmp/meminfo.c fs/proc/meminfo.c > /tmp/a.patch
->   $ grep -E '^(--- |\+\+\+ )' /tmp/a.patch | gawk '{print $2}'
->   /tmp/meminfo.c
->   fs/proc/meminfo.c
-> 
-> Or did I miss something?
+On 5/9/25 4:17 PM, Josh Poimboeuf wrote:
+> +revert_patches() {
+> +	local extra_args=("$@")
+> +	local patches=("${APPLIED_PATCHES[@]}")
+> +
+> +	for (( i=${#patches[@]}-1 ; i>=0 ; i-- )) ; do
+> +		revert_patch "${patches[$i]}" "${extra_args[@]}"
+> +	done
+> +
+> +	APPLIED_PATCHES=()
+> +
+> +	# Make sure git actually sees the patches have been reverted.
+> +	[[ -d "$SRC/.git" ]] && (cd "$SRC" && git update-index -q --refresh)
+> +}
 
-Ah hah, I fixed up the code in refresh_patch() with that double gawk,
-and then noticed it could have just called get_patch_files() instead.
+< warning: testing entropy field fully engaged :D >
 
-So yeah, you're right, the simple gawk '{print $2}' handles both cases
-already :)
+Minor usability nit: I had run `klp-build --help` while inside a VM that
+didn't seem to have r/w access to .git/.  Since the cleanup code is
+called unconditionally, it gave me a strange error when running this
+`git update-index` when I never supplied any patches to operate on. I
+just wanted to see the usage.
+
+Could this git update-index be made conditional?
+
+  if (( ${#APPLIED_PATCHES[@]} > 0 )); then
+      ([[ -d "$SRC/.git" ]] && cd "$SRC" && git update-index -q --refresh)
+      APPLIED_PATCHES=()
+  fi
+
+Another way to find yourself in this function is to move .git/ out of
+the way.  In that case, since it's the last line of revert_patches(), I
+think the failure of [[ -d "$SRC/.git" ]] causes the script to
+immediately exit:
+
+  - for foo.patch, at the validate_patches() -> revert_patches() call
+  - for --help, at the cleanup() -> revert_patches() call
+
+So if you don't like the conditional change above, should
+revert_patches() end with `true` to eat the [[ -d "$SRC/.git" ]] status?
+ Or does that interfere with other calls to that function throughout the
+script?
+
+FWIW, with either adjustment, the script seems happy to operate on a
+plain ol' kernel source tree without git.
 
 -- 
 Joe
