@@ -1,211 +1,199 @@
-Return-Path: <live-patching+bounces-1520-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1521-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 963B4AD7CB5
-	for <lists+live-patching@lfdr.de>; Thu, 12 Jun 2025 22:56:48 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 77489ADDAC4
+	for <lists+live-patching@lfdr.de>; Tue, 17 Jun 2025 19:37:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 795D21895E3E
-	for <lists+live-patching@lfdr.de>; Thu, 12 Jun 2025 20:57:03 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 545B47AD064
+	for <lists+live-patching@lfdr.de>; Tue, 17 Jun 2025 17:36:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3FC4B2D8790;
-	Thu, 12 Jun 2025 20:56:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F6742DFF1B;
+	Tue, 17 Jun 2025 17:37:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cPgG72MV"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WVwN0gYT"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16BE12BE7D7;
-	Thu, 12 Jun 2025 20:56:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441A3238D49;
+	Tue, 17 Jun 2025 17:37:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749761801; cv=none; b=sjC01dqdYyioOFdZR+kkjgqicpQGezFbCdYLoNCFxSsnqbE5TuADFSdUBDNcyDCTUkVDJu5GdbxrozU+yplT6RQDEUn0jGlG18fz+LvA/OqAl1x9SDsmwq4mGDyqwhd5cCZQFIIRXvPsfYOMbbbG5zLgJCTejwjq90YpSvJPsNI=
+	t=1750181867; cv=none; b=TJeaGNRZPJkBItw0uU0xPdOVKLs8B3h8SG+HC+1+ZZXGAS42s7XQIUJYOSY72vdQ5S2LunrtYGYCFgU1L1VY1Rke0uHhAjTFTJrv6m2O5ET7SBztWQ9i8UFedmwcs87/FWHOuWb9OkjtI0z6n2/qCEDsZtvEd9fwb2Ilsk1HP1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749761801; c=relaxed/simple;
-	bh=Q7/yCJU0sRWCWTU+gCQd77lWIP8Smikay90QqwpiGKk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A1VbTGG42qFEBcJeOTIheYp8iOevLkw2ncR0Jc6TGSA+skLWwYULDKuIWuO/gWe0lsUKsdPw9cJy3kasDRQ7+991ywDOa8LGoxymY7RmzAEuswQY3+4NW9X05hPGAuEr2Y4LHBJow8xm0r6A257MAgzJQaXrUgv4qT9dlIPb5JY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cPgG72MV; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6114FC4CEEA;
-	Thu, 12 Jun 2025 20:56:39 +0000 (UTC)
+	s=arc-20240116; t=1750181867; c=relaxed/simple;
+	bh=tPM1ERGTQDQ05aYoKr5NmEZeCXbd0I3kyp9i8yKwlzY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Mi9gRLXWetiWN4O1ghWwZ3wI+w2AlKnHOBnJTY0WDJqGCISLewSPo6TqH6W9lOENxrs3U5nU5vwuzXAb/LbX+HncGtuijCEKV+NQDqepPJmh0qvpdfzVF+GBFxW4qAJCsZzwtlI190HsbIGKolZhN6CIXxx9R/oAH3fDJvgETik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WVwN0gYT; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8AEC4CEE3;
+	Tue, 17 Jun 2025 17:37:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749761800;
-	bh=Q7/yCJU0sRWCWTU+gCQd77lWIP8Smikay90QqwpiGKk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cPgG72MVD0J43GOY3mJujBjh7d7uFTm2VTXww4ih8AdKUjB5JwKYbfrcMwVvRmwZE
-	 dLjCmQvqlD9XOz29qgBEH1o54cQvqbMj47yk3i3YiIzA2RhHmXZODjZUxrzVnVU9L/
-	 dnbffE3meVjq1tIzp2/azmVC2aOAEtoGcfDMW2fIxgoS9JhyEcRBAs50DJ1kpTGT1+
-	 bQbcXeVQFqJpcixzRCPgWI8NaGST1yfH8pcg3VnYufeep1+pK7UN8QVirnetFNsTiC
-	 pUnOfTdxd84BmL9zrIhh572ndFNAw7H/EGHLFfTBcddUqmARKWbnb7T/IknXfA1Vzk
-	 Tj+W6R4pLP3vA==
-Date: Thu, 12 Jun 2025 13:56:37 -0700
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: x86@kernel.org
-Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>, 
-	Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>, 
-	live-patching@vger.kernel.org, Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>, 
-	Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, 
-	Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>, 
-	Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay Mohan <puranjay@kernel.org>
-Subject: Re: [PATCH v2 00/62] objtool,livepatch: klp-build livepatch module
- generation
-Message-ID: <2mmkbpkj2b3a7qxrkk32vyg7hiwuo3dh2blispfgdb6u7wrysx@xbcthy36wx6q>
-References: <cover.1746821544.git.jpoimboe@kernel.org>
+	s=k20201202; t=1750181867;
+	bh=tPM1ERGTQDQ05aYoKr5NmEZeCXbd0I3kyp9i8yKwlzY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=WVwN0gYToBvYkX/rmMNJD8xgfFvc/Q30jaum38YjCkSNZRKxetIDFgIqKTmBOG+C1
+	 jskFy8ZebIdxD2NV2xsOat17ZcOgDG9UIoih9NvtcDUfG191p2Z/7RZSU4Hmdq24zi
+	 VVHCXMshVxgrEbntAZEobvgMJsTpv0rL2IDqLUxj5qh5wz9L4a/oN8WtQ1sRAc4QfP
+	 coc3BjIR8OKZ7SCc2hV6xGwu5tYjbOhxom7SfNMezYKPiv0nJMW5LSzXZera4ERl5R
+	 CKhaZ3+iZM4YRnge4MfV8gU3RHA580xhOz6/twIkbzLRJ3g01KDy0NymvJuZ62RHxB
+	 ic+SbtgXfWy5A==
+From: Song Liu <song@kernel.org>
+To: live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Cc: jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	dylanbhatch@google.com,
+	fj6611ie@aa.jp.fujitsu.com,
+	mark.rutland@arm.com,
+	kernel-team@meta.com,
+	Song Liu <song@kernel.org>,
+	Suraj Jitindar Singh <surajjs@amazon.com>,
+	Torsten Duwe <duwe@suse.de>,
+	Breno Leitao <leitao@debian.org>,
+	Andrea della Porta <andrea.porta@suse.com>
+Subject: [PATCH v4] arm64: Implement HAVE_LIVEPATCH
+Date: Tue, 17 Jun 2025 10:37:34 -0700
+Message-ID: <20250617173734.651611-1-song@kernel.org>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <cover.1746821544.git.jpoimboe@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Fri, May 09, 2025 at 01:16:24PM -0700, Josh Poimboeuf wrote:
-> I've tested with a variety of patches on defconfig and Fedora-config
-> kernels with both GCC and Clang.
-> 
-> These patches can also be found at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git klp-build-v2
-> 
-> Please test!
+This is largely based on [1] by Suraj Jitindar Singh.
 
-I found a nasty bug while trying to patch copy_process().  The wrong
-version of __refcount_add.constprop.0() was being called due to a bad
-klp rela sympos value, causing refcount overflow/UAF warnings and hangs.
+Test coverage:
 
-The problem was a mismatch between the sympos order of the vmlinux.o
-archive (which klp-diff uses) and the final vmlinux.
+- Passed manual tests with samples/livepatch.
+- Passed all but test-kprobe.sh in selftests/livepatch.
+  test-kprobe.sh is expected to fail, because arm64 doesn't have
+  KPROBES_ON_FTRACE.
+- Passed tests with kpatch-build [2]. (This version includes commits that
+  are not merged to upstream kpatch yet).
 
-The linker script manually emits .text.unlikely before .text instead of
-emitting in them in section table order.  So if a function name exists
-in both sections, the calculated sympos (based on vmlinux.o) is wrong.
+[1] https://lore.kernel.org/all/20210604235930.603-1-surajjs@amazon.com/
+[2] https://github.com/liu-song-6/kpatch/tree/fb-6.13
 
-In my test kernel with GCC 14, only 25 out of 136,931 functions (0.018%)
-have this problem.  It was my lucky day.
+Cc: Suraj Jitindar Singh <surajjs@amazon.com>
+Cc: Torsten Duwe <duwe@suse.de>
+Acked-by: Miroslav Benes <mbenes@suse.cz>
+Tested-by: Breno Leitao <leitao@debian.org>
+Tested-by: Andrea della Porta <andrea.porta@suse.com>
+Signed-off-by: Song Liu <song@kernel.org>
 
-The below hack fixes it by starting the sympos counting with
-.text.unlikely*.  It's a bit fragile, but it works fine for now.
+---
 
-I'm thinking the final fix would involve adding a checksum field to
-kallsyms.  Then sympos would no longer be needed.  But that will need to
-come later.
+Note: This patch depends on [3] and [4].
 
-diff --git a/tools/include/linux/string.h b/tools/include/linux/string.h
-index 8499f509f03e..51ad3cf4fa82 100644
---- a/tools/include/linux/string.h
-+++ b/tools/include/linux/string.h
-@@ -44,6 +44,20 @@ static inline bool strstarts(const char *str, const char *prefix)
- 	return strncmp(str, prefix, strlen(prefix)) == 0;
- }
+[3] https://lore.kernel.org/linux-arm-kernel/20250521111000.2237470-2-mark.rutland@arm.com/
+[4] https://lore.kernel.org/linux-arm-kernel/20250603223417.3700218-1-dylanbhatch@google.com/
+
+Changes v3 => v4:
+1. Only keep 2/2 from v3, as 1/2 is now included in [3].
+2. Change TIF_PATCH_PENDING from 7 to 13.
+
+v3: https://lore.kernel.org/linux-arm-kernel/20250320171559.3423224-1-song@kernel.org/
+
+Changes v2 => v3:
+1. Remove a redundant check for -ENOENT. (Josh Poimboeuf)
+2. Add Tested-by and Acked-by on v1. (I forgot to add them in v2.)
+
+v2: https://lore.kernel.org/live-patching/20250319213707.1784775-1-song@kernel.org/
+
+Changes v1 => v2:
+
+1. Rework arch_stack_walk_reliable().
+
+v1: https://lore.kernel.org/live-patching/20250308012742.3208215-1-song@kernel.org/
+---
+ arch/arm64/Kconfig                   | 3 +++
+ arch/arm64/include/asm/thread_info.h | 5 ++++-
+ arch/arm64/kernel/entry-common.c     | 4 ++++
+ 3 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index b7462424aa59..110218542920 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -280,6 +280,7 @@ config ARM64
+ 	select USER_STACKTRACE_SUPPORT
+ 	select VDSO_GETRANDOM
+ 	select HAVE_RELIABLE_STACKTRACE
++	select HAVE_LIVEPATCH
+ 	help
+ 	  ARM 64-bit (AArch64) Linux support.
  
-+/*
-+ * Checks if a string ends with another.
-+ */
-+static inline bool str_ends_with(const char *str, const char *substr)
-+{
-+	size_t len = strlen(str);
-+	size_t sublen = strlen(substr);
+@@ -2499,3 +2500,5 @@ endmenu # "CPU Power Management"
+ source "drivers/acpi/Kconfig"
+ 
+ source "arch/arm64/kvm/Kconfig"
 +
-+	if (sublen > len)
-+		return false;
-+
-+	return !strcmp(str + len - sublen, substr);
-+}
-+
- extern char * __must_check skip_spaces(const char *);
++source "kernel/livepatch/Kconfig"
+diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
+index 1269c2487574..f241b8601ebd 100644
+--- a/arch/arm64/include/asm/thread_info.h
++++ b/arch/arm64/include/asm/thread_info.h
+@@ -70,6 +70,7 @@ void arch_setup_new_exec(void);
+ #define TIF_SYSCALL_TRACEPOINT	10	/* syscall tracepoint for ftrace */
+ #define TIF_SECCOMP		11	/* syscall secure computing */
+ #define TIF_SYSCALL_EMU		12	/* syscall emulation active */
++#define TIF_PATCH_PENDING	13	/* pending live patching update */
+ #define TIF_MEMDIE		18	/* is terminating due to OOM killer */
+ #define TIF_FREEZE		19
+ #define TIF_RESTORE_SIGMASK	20
+@@ -96,6 +97,7 @@ void arch_setup_new_exec(void);
+ #define _TIF_SYSCALL_TRACEPOINT	(1 << TIF_SYSCALL_TRACEPOINT)
+ #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
+ #define _TIF_SYSCALL_EMU	(1 << TIF_SYSCALL_EMU)
++#define _TIF_PATCH_PENDING	(1 << TIF_PATCH_PENDING)
+ #define _TIF_UPROBE		(1 << TIF_UPROBE)
+ #define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
+ #define _TIF_32BIT		(1 << TIF_32BIT)
+@@ -107,7 +109,8 @@ void arch_setup_new_exec(void);
+ #define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY | \
+ 				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
+ 				 _TIF_UPROBE | _TIF_MTE_ASYNC_FAULT | \
+-				 _TIF_NOTIFY_SIGNAL | _TIF_SIGPENDING)
++				 _TIF_NOTIFY_SIGNAL | _TIF_SIGPENDING | \
++				 _TIF_PATCH_PENDING)
  
- extern char *strim(char *);
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index b5494b5ca78f..47ee010a7852 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -187,20 +187,6 @@ static bool is_sibling_call(struct instruction *insn)
- 	return (is_static_jump(insn) && insn_call_dest(insn));
- }
- 
--/*
-- * Checks if a string ends with another.
-- */
--static bool str_ends_with(const char *s, const char *sub)
--{
--	const int slen = strlen(s);
--	const int sublen = strlen(sub);
--
--	if (sublen > slen)
--		return 0;
--
--	return !memcmp(s + slen - sublen, sub, sublen);
--}
--
- /*
-  * Checks if a function is a Rust "noreturn" one.
-  */
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 5276964ef123..0290cbc90c16 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -439,6 +439,7 @@ static int correlate_symbols(struct elfs *e)
- /* "sympos" is used by livepatch to disambiguate duplicate symbol names */
- static unsigned long find_sympos(struct elf *elf, struct symbol *sym)
- {
-+	bool vmlinux = str_ends_with(objname, "vmlinux.o");
- 	unsigned long sympos = 0, nr_matches = 0;
- 	bool has_dup = false;
- 	struct symbol *s;
-@@ -446,13 +447,43 @@ static unsigned long find_sympos(struct elf *elf, struct symbol *sym)
- 	if (sym->bind != STB_LOCAL)
- 		return 0;
- 
--	for_each_sym(elf, s) {
--		if (!strcmp(s->name, sym->name)) {
--			nr_matches++;
--			if (s == sym)
--				sympos = nr_matches;
--			else
--				has_dup = true;
-+	if (vmlinux && sym->type == STT_FUNC) {
-+		/*
-+		 * HACK: Unfortunately, symbol ordering can differ between
-+		 * vmlinux.o and vmlinux due to the linker script emitting
-+		 * .text.unlikely* before .text*.  Count .text.unlikely* first.
-+		 *
-+		 * TODO: Disambiguate symbols more reliably (checksums?)
-+		 */
-+		for_each_sym(elf, s) {
-+			if (strstarts(s->sec->name, ".text.unlikely") &&
-+			    !strcmp(s->name, sym->name)) {
-+				nr_matches++;
-+				if (s == sym)
-+					sympos = nr_matches;
-+				else
-+					has_dup = true;
-+			}
-+		}
-+		for_each_sym(elf, s) {
-+			if (!strstarts(s->sec->name, ".text.unlikely") &&
-+			    !strcmp(s->name, sym->name)) {
-+				nr_matches++;
-+				if (s == sym)
-+					sympos = nr_matches;
-+				else
-+					has_dup = true;
-+			}
-+		}
-+	} else {
-+		for_each_sym(elf, s) {
-+			if (!strcmp(s->name, sym->name)) {
-+				nr_matches++;
-+				if (s == sym)
-+					sympos = nr_matches;
-+				else
-+					has_dup = true;
-+			}
+ #define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
+ 				 _TIF_SYSCALL_TRACEPOINT | _TIF_SECCOMP | \
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index 7c1970b341b8..a56878d7c733 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -8,6 +8,7 @@
+ #include <linux/context_tracking.h>
+ #include <linux/kasan.h>
+ #include <linux/linkage.h>
++#include <linux/livepatch.h>
+ #include <linux/lockdep.h>
+ #include <linux/ptrace.h>
+ #include <linux/resume_user_mode.h>
+@@ -144,6 +145,9 @@ static void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
+ 				       (void __user *)NULL, current);
  		}
- 	}
  
++		if (thread_flags & _TIF_PATCH_PENDING)
++			klp_update_patch_state(current);
++
+ 		if (thread_flags & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL))
+ 			do_signal(regs);
+ 
+-- 
+2.47.1
+
 
