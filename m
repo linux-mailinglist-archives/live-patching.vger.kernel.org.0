@@ -1,199 +1,127 @@
-Return-Path: <live-patching+bounces-1521-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1522-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77489ADDAC4
-	for <lists+live-patching@lfdr.de>; Tue, 17 Jun 2025 19:37:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1120DADF97F
+	for <lists+live-patching@lfdr.de>; Thu, 19 Jun 2025 00:38:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 545B47AD064
-	for <lists+live-patching@lfdr.de>; Tue, 17 Jun 2025 17:36:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C75A93BC724
+	for <lists+live-patching@lfdr.de>; Wed, 18 Jun 2025 22:38:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F6742DFF1B;
-	Tue, 17 Jun 2025 17:37:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 94FC427EFEE;
+	Wed, 18 Jun 2025 22:38:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WVwN0gYT"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kVxxHkCq"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441A3238D49;
-	Tue, 17 Jun 2025 17:37:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004B627E05E
+	for <live-patching@vger.kernel.org>; Wed, 18 Jun 2025 22:38:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750181867; cv=none; b=TJeaGNRZPJkBItw0uU0xPdOVKLs8B3h8SG+HC+1+ZZXGAS42s7XQIUJYOSY72vdQ5S2LunrtYGYCFgU1L1VY1Rke0uHhAjTFTJrv6m2O5ET7SBztWQ9i8UFedmwcs87/FWHOuWb9OkjtI0z6n2/qCEDsZtvEd9fwb2Ilsk1HP1A=
+	t=1750286301; cv=none; b=obfy5+K7qK8ckHYcQrWUoM0ekWqzPyADOrPaccnVBSndi6tDPC41X1ZKNwhA+8u/liLA/f8qWp/kTxri/kfIzrIPyBkdVWrMIwe05CauKwWeUNbMI1vVWjlZG1ZZmTF986dUKmIlfHC1IOCjWcVWds742A8it9nUwhOmH+M28QE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750181867; c=relaxed/simple;
-	bh=tPM1ERGTQDQ05aYoKr5NmEZeCXbd0I3kyp9i8yKwlzY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Mi9gRLXWetiWN4O1ghWwZ3wI+w2AlKnHOBnJTY0WDJqGCISLewSPo6TqH6W9lOENxrs3U5nU5vwuzXAb/LbX+HncGtuijCEKV+NQDqepPJmh0qvpdfzVF+GBFxW4qAJCsZzwtlI190HsbIGKolZhN6CIXxx9R/oAH3fDJvgETik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WVwN0gYT; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8AEC4CEE3;
-	Tue, 17 Jun 2025 17:37:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750181867;
-	bh=tPM1ERGTQDQ05aYoKr5NmEZeCXbd0I3kyp9i8yKwlzY=;
-	h=From:To:Cc:Subject:Date:From;
-	b=WVwN0gYToBvYkX/rmMNJD8xgfFvc/Q30jaum38YjCkSNZRKxetIDFgIqKTmBOG+C1
-	 jskFy8ZebIdxD2NV2xsOat17ZcOgDG9UIoih9NvtcDUfG191p2Z/7RZSU4Hmdq24zi
-	 VVHCXMshVxgrEbntAZEobvgMJsTpv0rL2IDqLUxj5qh5wz9L4a/oN8WtQ1sRAc4QfP
-	 coc3BjIR8OKZ7SCc2hV6xGwu5tYjbOhxom7SfNMezYKPiv0nJMW5LSzXZera4ERl5R
-	 CKhaZ3+iZM4YRnge4MfV8gU3RHA580xhOz6/twIkbzLRJ3g01KDy0NymvJuZ62RHxB
-	 ic+SbtgXfWy5A==
-From: Song Liu <song@kernel.org>
-To: live-patching@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: jpoimboe@kernel.org,
-	jikos@kernel.org,
-	mbenes@suse.cz,
-	pmladek@suse.com,
-	joe.lawrence@redhat.com,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	dylanbhatch@google.com,
-	fj6611ie@aa.jp.fujitsu.com,
-	mark.rutland@arm.com,
-	kernel-team@meta.com,
-	Song Liu <song@kernel.org>,
-	Suraj Jitindar Singh <surajjs@amazon.com>,
-	Torsten Duwe <duwe@suse.de>,
-	Breno Leitao <leitao@debian.org>,
-	Andrea della Porta <andrea.porta@suse.com>
-Subject: [PATCH v4] arm64: Implement HAVE_LIVEPATCH
-Date: Tue, 17 Jun 2025 10:37:34 -0700
-Message-ID: <20250617173734.651611-1-song@kernel.org>
-X-Mailer: git-send-email 2.47.1
+	s=arc-20240116; t=1750286301; c=relaxed/simple;
+	bh=TIR41IOuSunvaJR25QNHhYWA22u3V9nnI7bWi22GJFM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ddDbiMpaELWNAiT1Pbvq9As6uBY7pRfmA9hkg9RVfziTyI3FgIwaRQj2GvOLpQMC3Gtrj0RVh5yzPpr2JqsaxsyJQuPruQ5Zo8Txy5FUkBOuC3AtHa8xZnwg7cphi3/Jr8n9UqbCnrkPf2NDKj41/63q/8Kr66eOhi4Zs7DwZrE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kVxxHkCq; arc=none smtp.client-ip=209.85.221.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-528ce9730cfso41189e0c.3
+        for <live-patching@vger.kernel.org>; Wed, 18 Jun 2025 15:38:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750286299; x=1750891099; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gsHGAv3KLKvTQx3+E9vEHRVCKTx/eVy+7jBAKLwsTFk=;
+        b=kVxxHkCqXzO2khu3Ns4kF2I4i2pv1sww5VRDCwbPB9QOijZeTQI+af6tb2Mcw+fidd
+         2OXMcaK6VBz3q5EFEG5r1g/c0tOtKQDjSv8hTX1GkQDoRKv/9Gc+Ozic8WqKiZw2t0oR
+         CoWQ9vRg4TBKFySxXJtNMfXKQBu9BZi61pDBznlsEhNIfLGThLQLrZJc9RW5UnFoXulw
+         lPaYxoYyKy/JkPvk50kn/nZYb37fKBcFBnrFXiOX7P2f8/oXaDzwrSb1hMxDuRRJERY2
+         3JUBcszP8qWv6x6117BM1dNaNhnM0uSH1tmrqwFZcVbHZwSdFeNJnhE2jm6REGC3iB2w
+         s8AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750286299; x=1750891099;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gsHGAv3KLKvTQx3+E9vEHRVCKTx/eVy+7jBAKLwsTFk=;
+        b=k7WbDk21vIv1CHk1aCYgXZcOQUM9WXUJfvsv5xIiGA2Fvu3jzOku0WVa1tzQSSBDTo
+         mkNgnxm7+2Vw1FeAsmC75GAWwWu9X3WFinW8V+FZ8aR6Ptgd4CP7JnPTvQHVPLKorEG+
+         2F0Hj88JpWez2ZVEoxV4cXVe5l4v0Ry7ia3j90CQMDqh5chuBjXb0o5FQ+Tcwm+NRw3P
+         G8nVGrQv4vzEX50J9MnwDx9vo9wWSSf8j9VSAFsCjV+yAeOt2rqTtJSZ8dNu0wk/WLpt
+         6Q/mtoXe5C7/iCprxn1Wuc4d0mqITQvZ9Z7N+cryiAbonsRCyiDU6SYX8mqTZUT4N6Hz
+         tERg==
+X-Forwarded-Encrypted: i=1; AJvYcCVO00gg8MlpH3twPeAq4f/oJcJ20joamWjU7w4Pe0RbnJz5WQvxhwP+T5Jxn/bhF55+LptK7d+gaW3tUZhV@vger.kernel.org
+X-Gm-Message-State: AOJu0YzWgvkzHigIWLb4oHsr1A8YwD4g8Gp0b0M8VQHk2ja29DiknLc+
+	4fYERokIKMDGM5OIc7ehvetw6piji7hDB+umMz5Y1HBDHZLHOXkHMnjtJLT0W6Ij7Kk09OyU6Sp
+	LTfxWOp/Ufdeu5y/PsLYdkk47CyZehcGf6l3JH0//
+X-Gm-Gg: ASbGnct70uz9QgQ4HqxSAJgHPQOJqb8uyfsl3bcOvFBsByOzsIKJ/EI4yOwFkxc+1CH
+	71FARN1/S9G0/P7iNoMEHXnK1ADNmpmGxc1eWBA7K3aHAGtaQWV6m+kUVNbtuk47UQ1sQTTEjpG
+	mHHWPSfTn9B+FF6JVUzOVuMU9/KKT18gUfr6US/KOZWviQTDNRKq7GFfIQhABKVo/OhG9+Ie95c
+	fNWS1isNlRf
+X-Google-Smtp-Source: AGHT+IEYnKxZeMI22cVOqi2KgqbYGF7ATdIrfk1pS5aaosjaTntvjwtL7OmyjDPScNP/9EgIMAXTOOMt75dvMIeUqaE=
+X-Received: by 2002:a05:6122:8c19:b0:516:18cd:c1fc with SMTP id
+ 71dfb90a1353d-531498af39fmr12536842e0c.8.1750286298616; Wed, 18 Jun 2025
+ 15:38:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1746821544.git.jpoimboe@kernel.org> <10ccbeb0f4bcd7d0a10cc9b9bd12fdc4894f83ee.1746821544.git.jpoimboe@kernel.org>
+In-Reply-To: <10ccbeb0f4bcd7d0a10cc9b9bd12fdc4894f83ee.1746821544.git.jpoimboe@kernel.org>
+From: Dylan Hatch <dylanbhatch@google.com>
+Date: Wed, 18 Jun 2025 17:38:07 -0500
+X-Gm-Features: Ac12FXz8EY8EOZIyXs2WYExliGXD0DSkt01oqP4HIN5HacKUWBKwLvpl3N7gxLI
+Message-ID: <CADBMgpxP31YyRMXkHnCvjbb7D8OaUuGKbR9_66pRjGsBd57m8A@mail.gmail.com>
+Subject: Re: [PATCH v2 59/62] livepatch/klp-build: Introduce klp-build script
+ for generating livepatch modules
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
+	Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org, 
+	Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
+	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
+	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
+	Puranjay Mohan <puranjay@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This is largely based on [1] by Suraj Jitindar Singh.
+On Fri, May 9, 2025 at 1:30=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org>=
+ wrote:
+>
+> +
+> +# Make sure git re-stats the changed files
+> +git_refresh() {
+> +       local patch=3D"$1"
+> +       local files=3D()
+> +
+> +       [[ ! -d "$SRC/.git" ]] && return
 
-Test coverage:
+As a user of git worktrees, my $SRC/.git is a file containing a key:
+value pair "gitdir: <path>", causing this script to fail on a [[ ! -d
+"$SRC/.git" ]] check. Can this be handled, perhaps with a check if
+.git is a file?
 
-- Passed manual tests with samples/livepatch.
-- Passed all but test-kprobe.sh in selftests/livepatch.
-  test-kprobe.sh is expected to fail, because arm64 doesn't have
-  KPROBES_ON_FTRACE.
-- Passed tests with kpatch-build [2]. (This version includes commits that
-  are not merged to upstream kpatch yet).
+It seems like the check is just to confirm the $SRC directory is still
+a git tree, in which case maybe adding a -f check would fix this:
 
-[1] https://lore.kernel.org/all/20210604235930.603-1-surajjs@amazon.com/
-[2] https://github.com/liu-song-6/kpatch/tree/fb-6.13
+[[ ! -d "$SRC/.git" ]] && [[ ! -f "$SRC/.git" ]] && return
 
-Cc: Suraj Jitindar Singh <surajjs@amazon.com>
-Cc: Torsten Duwe <duwe@suse.de>
-Acked-by: Miroslav Benes <mbenes@suse.cz>
-Tested-by: Breno Leitao <leitao@debian.org>
-Tested-by: Andrea della Porta <andrea.porta@suse.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Or if the actual git directory is needed for something, maybe it can
+be located ahead of time:
 
----
+GITDIR=3D"$SRC/.git"
+[[ -f $GITDIR ]] && GITDIR=3D$(sed -n
+'s/^gitdir[[:space:]]*:[[:space:]]*//p' $GITDIR)
 
-Note: This patch depends on [3] and [4].
-
-[3] https://lore.kernel.org/linux-arm-kernel/20250521111000.2237470-2-mark.rutland@arm.com/
-[4] https://lore.kernel.org/linux-arm-kernel/20250603223417.3700218-1-dylanbhatch@google.com/
-
-Changes v3 => v4:
-1. Only keep 2/2 from v3, as 1/2 is now included in [3].
-2. Change TIF_PATCH_PENDING from 7 to 13.
-
-v3: https://lore.kernel.org/linux-arm-kernel/20250320171559.3423224-1-song@kernel.org/
-
-Changes v2 => v3:
-1. Remove a redundant check for -ENOENT. (Josh Poimboeuf)
-2. Add Tested-by and Acked-by on v1. (I forgot to add them in v2.)
-
-v2: https://lore.kernel.org/live-patching/20250319213707.1784775-1-song@kernel.org/
-
-Changes v1 => v2:
-
-1. Rework arch_stack_walk_reliable().
-
-v1: https://lore.kernel.org/live-patching/20250308012742.3208215-1-song@kernel.org/
----
- arch/arm64/Kconfig                   | 3 +++
- arch/arm64/include/asm/thread_info.h | 5 ++++-
- arch/arm64/kernel/entry-common.c     | 4 ++++
- 3 files changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index b7462424aa59..110218542920 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -280,6 +280,7 @@ config ARM64
- 	select USER_STACKTRACE_SUPPORT
- 	select VDSO_GETRANDOM
- 	select HAVE_RELIABLE_STACKTRACE
-+	select HAVE_LIVEPATCH
- 	help
- 	  ARM 64-bit (AArch64) Linux support.
- 
-@@ -2499,3 +2500,5 @@ endmenu # "CPU Power Management"
- source "drivers/acpi/Kconfig"
- 
- source "arch/arm64/kvm/Kconfig"
-+
-+source "kernel/livepatch/Kconfig"
-diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
-index 1269c2487574..f241b8601ebd 100644
---- a/arch/arm64/include/asm/thread_info.h
-+++ b/arch/arm64/include/asm/thread_info.h
-@@ -70,6 +70,7 @@ void arch_setup_new_exec(void);
- #define TIF_SYSCALL_TRACEPOINT	10	/* syscall tracepoint for ftrace */
- #define TIF_SECCOMP		11	/* syscall secure computing */
- #define TIF_SYSCALL_EMU		12	/* syscall emulation active */
-+#define TIF_PATCH_PENDING	13	/* pending live patching update */
- #define TIF_MEMDIE		18	/* is terminating due to OOM killer */
- #define TIF_FREEZE		19
- #define TIF_RESTORE_SIGMASK	20
-@@ -96,6 +97,7 @@ void arch_setup_new_exec(void);
- #define _TIF_SYSCALL_TRACEPOINT	(1 << TIF_SYSCALL_TRACEPOINT)
- #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
- #define _TIF_SYSCALL_EMU	(1 << TIF_SYSCALL_EMU)
-+#define _TIF_PATCH_PENDING	(1 << TIF_PATCH_PENDING)
- #define _TIF_UPROBE		(1 << TIF_UPROBE)
- #define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
- #define _TIF_32BIT		(1 << TIF_32BIT)
-@@ -107,7 +109,8 @@ void arch_setup_new_exec(void);
- #define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY | \
- 				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
- 				 _TIF_UPROBE | _TIF_MTE_ASYNC_FAULT | \
--				 _TIF_NOTIFY_SIGNAL | _TIF_SIGPENDING)
-+				 _TIF_NOTIFY_SIGNAL | _TIF_SIGPENDING | \
-+				 _TIF_PATCH_PENDING)
- 
- #define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
- 				 _TIF_SYSCALL_TRACEPOINT | _TIF_SECCOMP | \
-diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
-index 7c1970b341b8..a56878d7c733 100644
---- a/arch/arm64/kernel/entry-common.c
-+++ b/arch/arm64/kernel/entry-common.c
-@@ -8,6 +8,7 @@
- #include <linux/context_tracking.h>
- #include <linux/kasan.h>
- #include <linux/linkage.h>
-+#include <linux/livepatch.h>
- #include <linux/lockdep.h>
- #include <linux/ptrace.h>
- #include <linux/resume_user_mode.h>
-@@ -144,6 +145,9 @@ static void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
- 				       (void __user *)NULL, current);
- 		}
- 
-+		if (thread_flags & _TIF_PATCH_PENDING)
-+			klp_update_patch_state(current);
-+
- 		if (thread_flags & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL))
- 			do_signal(regs);
- 
--- 
-2.47.1
-
+Thanks,
+Dylan
 
