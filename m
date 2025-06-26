@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1573-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1574-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 18E83AEAB5C
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:04:32 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 672FAAEAB5E
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:04:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 6D3927AE79F
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:02:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6F3FF6A15C1
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:03:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5F05287266;
-	Thu, 26 Jun 2025 23:56:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9EA66288523;
+	Thu, 26 Jun 2025 23:56:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gN/QoBtx"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aenYQXsQ"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEDD028725A;
-	Thu, 26 Jun 2025 23:56:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 794852877CD;
+	Thu, 26 Jun 2025 23:56:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982201; cv=none; b=dniWNQKrIWmmzchNcNpCRfFIU9WuzrJwNjIIOwTsQR16ebOn5kDa/uxItqWWaoSKdOy6H/uxIwulaxU3Pj5FoeyOhXKk0GQ5MyZPXXztUYjhtAGxUkR20G3/5+m1YPdzZbNrqAtsU4LhtTQl8tcOSnzA5hnIGgaysx5pnJGiohk=
+	t=1750982202; cv=none; b=E6GXM3i2ZRcZV17vfd/WvJFxanKvoWJfsjia8uA2uAPB12vK30HiYXGHcmuhcLKtnyXm/cTx5WIRZjYR9FNeidJ+SrtOo3zQOXJXxDllNlPqPoQgbLgtsilv9Y58NS+c4xbMysh9GSWBkUO5H+EGPt8c6X89eQp0VtVrTYWG8X0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982201; c=relaxed/simple;
-	bh=XNadUm4w3TOd182HQ2jLUMQ5nZfFXy4kWo38Kr7zPQs=;
+	s=arc-20240116; t=1750982202; c=relaxed/simple;
+	bh=BWC/EK45R71tNPx18yWCdlmWvFn5ZQ50LPVV0EIh96c=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nO7v73ly2D17aixDuPpzG01iNOneuW5lsZuxBTDXoGXxQyr84GRsvgcAhkgSx7cZlkrexl32yXe8k800geoAR4f/pN3L1RElYrox7VEDAe7bWRmOT4pZkJLyiYo4r8ZFot6tFXmNCN24ioCoJp6xUeacmtVttW2weZdlYM2WkvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gN/QoBtx; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201F0C4CEEB;
+	 MIME-Version; b=CEDbqx9kNowODIbqnfTNSXmq0Rper2+w/5KQy9Jq3J+f7rEqLaKF2xwFPBy9dtdBbxgpivHmmIslvzDxjht0UYopVX1Tc81n6I4SVxXNligs4MUB1/r/rMujkBX5kx+eK+asS82jzglIcLwldYkwSEdLcwxzxhcavB3XVefMDG4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aenYQXsQ; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB65FC4CEEF;
 	Thu, 26 Jun 2025 23:56:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750982201;
-	bh=XNadUm4w3TOd182HQ2jLUMQ5nZfFXy4kWo38Kr7zPQs=;
+	s=k20201202; t=1750982202;
+	bh=BWC/EK45R71tNPx18yWCdlmWvFn5ZQ50LPVV0EIh96c=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gN/QoBtx3ZLPJhRZ2XanmsdXjEE8dboeEq4jH57XDCCi0u0jGDj8uypPsNPXq1xGg
-	 7e1LotlGf8BV6mwiVgdHyDxYJW1tTJcrlZStenBLsDE85kFCCiV8qmROKZC0fEQzYh
-	 Y8qNaosDTwaF+mgkfzUEVauNHDwung2aU8tSyV7pzRNqORfg8d2qgVl2/ZABGWPszb
-	 CdJjkoOo6auyigSU+A8pfiDt6W9xi5Q42eh3ySvBCndbVrHI0psJuRuR//7kH3od3W
-	 xJbIzSUiLSIhTbVdfUkzOfP4s8qn0Pgvcs4j1839xRAGzUpaqELvEfMLFiTIxVmYXP
-	 0H+4rHABOvOfg==
+	b=aenYQXsQGpTSXBi3k7fY7/qqaGYMod0vuBudCPJyb87jxC8jkqZWLiqmZzyR/Q9te
+	 LStbP+ql5FMRCgIro2s5o5658hSMqcrMmIHHMgJXkd5q3+sAHFYvr2hNgwSU4KIvg/
+	 Me1NBX5MoNuOMZTN7nylJi8/sJZV8gDkxF9rl0pWnJeB1TaSQSQJ2Md0//SAKgmXx8
+	 D/ysCsPZ3kFZO/e536Ne/UhDG0Q5bxpK2IuL5EQMHzE1KFMRdVSInFgRCuKij7lt10
+	 TWZb0PaHIu71k6HogLoA61LOZIChliUIdJgvkpOXDxGypDJBCtun/YyQitM5aNHavF
+	 R9PBgrtqgMUwg==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 43/64] x86/alternative: Define ELF section entry size for alternatives
-Date: Thu, 26 Jun 2025 16:55:30 -0700
-Message-ID: <e048e6afcb2022114ea908205f4e81b7a53eba48.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 44/64] x86/jump_label: Define ELF section entry size for jump labels
+Date: Thu, 26 Jun 2025 16:55:31 -0700
+Message-ID: <7217634a8158e56703dfe22199f1b9c08c501ae3.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -72,110 +72,64 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 In preparation for the objtool klp diff subcommand, define the entry
-size for the .altinstructions section in its ELF header.  This will
-allow tooling to extract individual entries.
+size for the __jump_table section in its ELF header.  This will allow
+tooling to extract individual entries.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/um/include/shared/common-offsets.h    | 2 ++
- arch/x86/include/asm/alternative.h         | 5 +++--
- arch/x86/include/asm/asm.h                 | 4 ++++
- arch/x86/kernel/asm-offsets.c              | 2 ++
- arch/x86/um/shared/sysdep/kernel-offsets.h | 1 +
- kernel/bounds.c                            | 1 +
- scripts/mod/devicetable-offsets.c          | 1 +
- 7 files changed, 14 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/jump_label.h | 17 +++++++++++------
+ kernel/bounds.c                   |  4 ++++
+ 2 files changed, 15 insertions(+), 6 deletions(-)
 
-diff --git a/arch/um/include/shared/common-offsets.h b/arch/um/include/shared/common-offsets.h
-index 8ca66a1918c3..4e19103afd71 100644
---- a/arch/um/include/shared/common-offsets.h
-+++ b/arch/um/include/shared/common-offsets.h
-@@ -18,3 +18,5 @@ DEFINE(UM_NSEC_PER_USEC, NSEC_PER_USEC);
- DEFINE(UM_KERN_GDT_ENTRY_TLS_ENTRIES, GDT_ENTRY_TLS_ENTRIES);
+diff --git a/arch/x86/include/asm/jump_label.h b/arch/x86/include/asm/jump_label.h
+index cd21554b3675..7a6b0e5d85c1 100644
+--- a/arch/x86/include/asm/jump_label.h
++++ b/arch/x86/include/asm/jump_label.h
+@@ -12,12 +12,17 @@
+ #include <linux/stringify.h>
+ #include <linux/types.h>
  
- DEFINE(UM_SECCOMP_ARCH_NATIVE, SECCOMP_ARCH_NATIVE);
-+
-+DEFINE(ALT_INSTR_SIZE, sizeof(struct alt_instr));
-diff --git a/arch/x86/include/asm/alternative.h b/arch/x86/include/asm/alternative.h
-index 15bc07a5ebb3..eb24d9ba30d7 100644
---- a/arch/x86/include/asm/alternative.h
-+++ b/arch/x86/include/asm/alternative.h
-@@ -197,7 +197,8 @@ static inline int alternatives_text_reserved(void *start, void *end)
- 	"773:\n"
- 
- #define ALTINSTR_ENTRY(ft_flags)					      \
--	".pushsection .altinstructions,\"a\"\n"				      \
-+	".pushsection .altinstructions, \"aM\", @progbits, "		      \
-+		      __stringify(ALT_INSTR_SIZE) "\n"			      \
- 	" .long 771b - .\n"				/* label           */ \
- 	" .long 774f - .\n"				/* new instruction */ \
- 	" .4byte " __stringify(ft_flags) "\n"		/* feature + flags */ \
-@@ -360,7 +361,7 @@ void nop_func(void);
- 741:									\
- 	.skip -(((744f-743f)-(741b-740b)) > 0) * ((744f-743f)-(741b-740b)),0x90	;\
- 742:									\
--	.pushsection .altinstructions,"a" ;				\
-+	.pushsection .altinstructions, "aM", @progbits, ALT_INSTR_SIZE ;\
- 	altinstr_entry 740b,743f,flag,742b-740b,744f-743f ;		\
- 	.popsection ;							\
- 	.pushsection .altinstr_replacement,"ax"	;			\
-diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
-index f963848024a5..1f26f90a57ce 100644
---- a/arch/x86/include/asm/asm.h
-+++ b/arch/x86/include/asm/asm.h
-@@ -136,6 +136,10 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
- 
- #ifdef __KERNEL__
- 
+-#define JUMP_TABLE_ENTRY(key, label)			\
+-	".pushsection __jump_table,  \"a\"\n\t"		\
+-	_ASM_ALIGN "\n\t"				\
+-	".long 1b - . \n\t"				\
+-	".long " label " - . \n\t"			\
+-	_ASM_PTR " " key " - . \n\t"			\
 +#ifndef COMPILE_OFFSETS
-+#include <asm/asm-offsets.h>
++#include <generated/bounds.h>
 +#endif
 +
- # include <asm/extable_fixup_types.h>
++#define JUMP_TABLE_ENTRY(key, label)				\
++	".pushsection __jump_table,  \"aM\", @progbits, "	\
++	__stringify(JUMP_ENTRY_SIZE) "\n\t"			\
++	_ASM_ALIGN "\n\t"					\
++	".long 1b - . \n\t"					\
++	".long " label " - . \n\t"				\
++	_ASM_PTR " " key " - . \n\t"				\
+ 	".popsection \n\t"
  
- /* Exception table entry */
-diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
-index 6259b474073b..b51625c3f64c 100644
---- a/arch/x86/kernel/asm-offsets.c
-+++ b/arch/x86/kernel/asm-offsets.c
-@@ -123,4 +123,6 @@ static void __used common(void)
- 	OFFSET(ARIA_CTX_rounds, aria_ctx, rounds);
- #endif
- 
-+	BLANK();
-+	DEFINE(ALT_INSTR_SIZE,	 sizeof(struct alt_instr));
- }
-diff --git a/arch/x86/um/shared/sysdep/kernel-offsets.h b/arch/x86/um/shared/sysdep/kernel-offsets.h
-index 6fd1ed400399..9f6d3d1a248c 100644
---- a/arch/x86/um/shared/sysdep/kernel-offsets.h
-+++ b/arch/x86/um/shared/sysdep/kernel-offsets.h
-@@ -1,4 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0 */
-+#define COMPILE_OFFSETS
- #include <linux/stddef.h>
- #include <linux/sched.h>
- #include <linux/elf.h>
+ /* This macro is also expanded on the Rust side. */
 diff --git a/kernel/bounds.c b/kernel/bounds.c
-index 29b2cd00df2c..02b619eb6106 100644
+index 02b619eb6106..e4c7ded3dc48 100644
 --- a/kernel/bounds.c
 +++ b/kernel/bounds.c
-@@ -6,6 +6,7 @@
-  */
- 
- #define __GENERATING_BOUNDS_H
-+#define COMPILE_OFFSETS
- /* Include headers that define the enum constants of interest */
- #include <linux/page-flags.h>
- #include <linux/mmzone.h>
-diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
-index d3d00e85edf7..ef2ffb68f69d 100644
---- a/scripts/mod/devicetable-offsets.c
-+++ b/scripts/mod/devicetable-offsets.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#define COMPILE_OFFSETS
+@@ -13,6 +13,7 @@
  #include <linux/kbuild.h>
- #include <linux/mod_devicetable.h>
+ #include <linux/log2.h>
+ #include <linux/spinlock_types.h>
++#include <linux/jump_label.h>
+ 
+ int main(void)
+ {
+@@ -29,6 +30,9 @@ int main(void)
+ #else
+ 	DEFINE(LRU_GEN_WIDTH, 0);
+ 	DEFINE(__LRU_REFS_WIDTH, 0);
++#endif
++#if defined(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE) && defined(CONFIG_JUMP_LABEL)
++	DEFINE(JUMP_ENTRY_SIZE, sizeof(struct jump_entry));
+ #endif
+ 	/* End of constants */
  
 -- 
 2.49.0
