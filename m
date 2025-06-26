@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1592-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1594-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4834BAEAB86
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:08:01 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id B87A8AEAB83
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:07:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E664A3AC6F7
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:06:53 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 892191C21696
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:08:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67F702EF653;
-	Thu, 26 Jun 2025 23:56:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3B0D2F19B8;
+	Thu, 26 Jun 2025 23:56:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dMpor2XT"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X1yviuqy"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C4A23B63F;
-	Thu, 26 Jun 2025 23:56:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C83C22F0E5F;
+	Thu, 26 Jun 2025 23:56:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982215; cv=none; b=KazlzfPgZUCS3emRNve6mSvNMA7jo2lrUpPTcbELMikF6RXPJ4uI+1KKB15/DFV2FPPrKxoTOHfDW2msSj6xBmGBQhwFMispTjBFHpMvycGPyZIeCcZvjjbaE2Ri+vFnc+89Gw3Gwv8MxILvIb7BIApW2GTpLDwloDY+1YOxvZE=
+	t=1750982217; cv=none; b=G8AcIoP7l1slpx/h8rdN2wduaR0zqU9ZyYrpqkRudwhhleftVXfCyG3TcQQHiuJ4wJJzXupgCQKMMM1NMJmD0Iu0oTurdWOaaKSdtb3qpjDTIeJ4uFna9f1bZ+ak2xPjHzh4kr5ve272K0jgqP3Fe6c3b3fTLKvtAAV2edQMB8A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982215; c=relaxed/simple;
-	bh=ym0NbDSX4B/iZLtsv9TDPNK9Jc/XifRA2u0nHW7RXVI=;
+	s=arc-20240116; t=1750982217; c=relaxed/simple;
+	bh=O0mdlcOLNvTMKkaQjDG/s/ezY+WH9kJUMCnIT7a05oQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hi6tzngoI3bHQGYlJ7h6+4+NfeLZvtlXSvdFEgEkeRuJ47tN2f196wJXkzp24ckZetjdnz0lSJ4xMWoxcOSFf/+LPSLksLhLAfvR5WORAyMe8udJi5Ja2R8ACvrqtRoiz0f0rHuXRwMz/AHxaBKbMohmf/Bwin3L4M3jLaEJmb0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dMpor2XT; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FA3C4CEF4;
-	Thu, 26 Jun 2025 23:56:54 +0000 (UTC)
+	 MIME-Version; b=R6y3LwxdjMOBIoywYCe9g/lx5GiqpAGoIee9p8HmKMFnZG2bJqilXatANfVhUX4Eq/QgRjfs9HxdlrA3yKEldcMGpLqXKFlZ3l+U9RurB9+Rt6JgFvT5fLlWbXliBHADNJ+7UGcBjOCgz9SPZ/FKfeyYqiNgEXdSqCkjOQQ1gN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X1yviuqy; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AE22C4CEF3;
+	Thu, 26 Jun 2025 23:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750982215;
-	bh=ym0NbDSX4B/iZLtsv9TDPNK9Jc/XifRA2u0nHW7RXVI=;
+	s=k20201202; t=1750982216;
+	bh=O0mdlcOLNvTMKkaQjDG/s/ezY+WH9kJUMCnIT7a05oQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=dMpor2XTgilsifBNbVKxsV07JD8LI/fjizLLk1aGLd8+lwsbDMDrjKYGqvRD2PdKV
-	 Qq3Uau4zPjRU6to+BDeQDFeenMgiBv8j2U4E6T/Iw7ZKql74TuuONI9iI+5yn5zODP
-	 DRrXAV9Du9Qv0bBFbCCkh6ErOPcjGvoOnjsaFWrDjXvrW2+wYko9jorBaq9jOAGFWQ
-	 ql84WQLitY6s/RDx2KwjBAqgAeoNXvCjFCK9Fua5UZqO6xNE7t2dhXT9ZUox5mJlqK
-	 716LlC7l28+OLGjJdzQH+QO9UjVEYbGgKtgWDshx7Fddm1Q8VD5yOeh3ccWEJ0LsII
-	 Hl30hCv5HRaYA==
+	b=X1yviuqyKxnSsD3mqHniG7HBh84Pc+gudChYAMWftwU2GMXSbnR+etyls7ij09ZeK
+	 ObTrqkKHtpXO5F2lBRGSMmVinApfjd2Kp1DvLMtlF3mWBbtf46nEaUkSY1m6PNsdrm
+	 sKea5cN1zLzC3dgpNXZKRVlKhaZydcYDNUiOrxP7dakqCpazOZXFAOPCdDDpmNi6AV
+	 2W5aqsYbYzws8chP73z0MUkAeTE5XlpBxPa+bAObG+eQL380zegXNIaUSf5ZOSxeS5
+	 CHB+10fRCIlZFJng+vFO5o/wYBGlgBPDjpur0CsHmv5aCMrMvLylcyedGjOIi25P5b
+	 lL0NJ8M1Ne6eg==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 62/64] livepatch/klp-build: Add --debug option to show cloning decisions
-Date: Thu, 26 Jun 2025 16:55:49 -0700
-Message-ID: <3cd69269e164baa39e3eb3dfb5294ddaf22858cc.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 63/64] livepatch/klp-build: Add --show-first-changed option to show function divergence
+Date: Thu, 26 Jun 2025 16:55:50 -0700
+Message-ID: <35e2ab14098362fc98aebb9ee08401c5f58d9f63.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -71,83 +71,168 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a --debug option which gets passed to "objtool klp diff" to enable
-debug output related to cloning decisions.
+Add a --show-first-changed option to identify where changed functions
+begin to diverge:
+
+  - Parse 'objtool klp diff' output to find changed functions.
+
+  - Run objtool again on each object with --debug-checksum=<funcs>.
+
+  - Diff the per-instruction checksum debug output to locate the first
+    differing instruction.
+
+This can be useful for quickly determining where and why a function
+changed.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- scripts/livepatch/klp-build | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ scripts/livepatch/klp-build | 82 +++++++++++++++++++++++++++++++++++--
+ 1 file changed, 78 insertions(+), 4 deletions(-)
 
 diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-index b54776fe3161..fe9af53a8476 100755
+index fe9af53a8476..e47056f75475 100755
 --- a/scripts/livepatch/klp-build
 +++ b/scripts/livepatch/klp-build
 @@ -20,7 +20,7 @@ set -o nounset
  # This helps keep execution in pipes so pipefail+errexit can catch errors.
  shopt -s lastpipe
  
--unset SKIP_CLEANUP XTRACE
-+unset DEBUG_CLONE SKIP_CLEANUP XTRACE
+-unset DEBUG_CLONE SKIP_CLEANUP XTRACE
++unset DEBUG_CLONE DIFF_CHECKSUM SKIP_CLEANUP XTRACE
  
  REPLACE=1
  SHORT_CIRCUIT=0
-@@ -120,6 +120,7 @@ Options:
-    -v, --verbose		Pass V=1 to kernel/module builds
+@@ -114,6 +114,7 @@ Usage: $SCRIPT [OPTIONS] PATCH_FILE(s)
+ Generate a livepatch module.
  
- Advanced Options:
-+   -d, --debug			Show symbol/reloc cloning decisions
-    -S, --short-circuit=STEP	Start at build step (requires prior --keep-tmp)
- 				   1|orig	Build original kernel (default)
- 				   2|patched	Build patched kernel
-@@ -140,8 +141,8 @@ process_args() {
+ Options:
++   -f, --show-first-changed	Show address of first changed instruction
+    -j, --jobs=<jobs>		Build jobs to run simultaneously [default: $JOBS]
+    -o, --output=<file.ko>	Output file [default: livepatch-<patch-name>.ko]
+        --no-replace		Disable livepatch atomic replace
+@@ -141,8 +142,8 @@ process_args() {
  	local long
  	local args
  
--	short="hj:o:vS:T"
--	long="help,jobs:,output:,no-replace,verbose,short-circuit:,keep-tmp"
-+	short="hj:o:vdS:T"
-+	long="help,jobs:,output:,no-replace,verbose,debug,short-circuit:,keep-tmp"
+-	short="hj:o:vdS:T"
+-	long="help,jobs:,output:,no-replace,verbose,debug,short-circuit:,keep-tmp"
++	short="hfj:o:vdS:T"
++	long="help,show-first-changed,jobs:,output:,no-replace,verbose,debug,short-circuit:,keep-tmp"
  
  	args=$(getopt --options "$short" --longoptions "$long" -- "$@") || {
  		echo; usage; exit
-@@ -174,6 +175,11 @@ process_args() {
- 				VERBOSE="V=1"
- 				shift
+@@ -155,6 +156,10 @@ process_args() {
+ 				usage
+ 				exit 0
  				;;
-+			-d | --debug)
-+				DEBUG_CLONE=1
-+				keep_tmp=1
++			-f | --show-first-changed)
++				DIFF_CHECKSUM=1
 +				shift
 +				;;
- 			-S | --short-circuit)
- 				[[ ! -d "$TMP_DIR" ]] && die "--short-circuit requires preserved klp-tmp dir"
- 				keep_tmp=1
-@@ -600,6 +606,7 @@ copy_patched_objects() {
- diff_objects() {
- 	local log="$KLP_DIFF_LOG"
- 	local files=()
-+	local opts=()
+ 			-j | --jobs)
+ 				JOBS="$2"
+ 				shift 2
+@@ -622,6 +627,7 @@ diff_objects() {
+ 		local orig_file="$rel_file"
+ 		local patched_file="$PATCHED_DIR/$rel_file"
+ 		local out_file="$DIFF_DIR/$rel_file"
++		local filter=()
+ 		local cmd=()
  
- 	rm -rf "$DIFF_DIR"
- 	mkdir -p "$DIFF_DIR"
-@@ -607,6 +614,8 @@ diff_objects() {
- 	find "$PATCHED_DIR" -type f -name "*.o" | mapfile -t files
- 	[[ ${#files[@]} -eq 0 ]] && die "no changes detected"
- 
-+	[[ -v DEBUG_CLONE ]] && opts=("--debug")
-+
- 	# Diff all changed objects
- 	for file in "${files[@]}"; do
- 		local rel_file="${file#"$PATCHED_DIR"/}"
-@@ -620,6 +629,7 @@ diff_objects() {
- 		cmd=("$SRC/tools/objtool/objtool")
- 		cmd+=("klp")
- 		cmd+=("diff")
-+		(( ${#opts[@]} > 0 )) && cmd+=("${opts[@]}")
- 		cmd+=("$orig_file")
+ 		mkdir -p "$(dirname "$out_file")"
+@@ -634,16 +640,80 @@ diff_objects() {
  		cmd+=("$patched_file")
  		cmd+=("$out_file")
+ 
++		if [[ -v DIFF_CHECKSUM ]]; then
++			filter=("grep0")
++			filter+=("-Ev")
++			filter+=("DEBUG: .*checksum: ")
++		else
++			filter=("cat")
++		fi
++
+ 		(
+ 			cd "$ORIG_DIR"
+ 			"${cmd[@]}"							\
+ 				1> >(tee -a "$log")					\
+-				2> >(tee -a "$log" >&2) ||				\
++				2> >(tee -a "$log" | "${filter[@]}" >&2) ||		\
+ 				die "objtool klp diff failed"
+ 		)
+ 	done
+ }
+ 
++# For each changed object, run objtool with --debug-checksum to get the
++# per-instruction checksums, and then diff those to find the first changed
++# instruction for each function.
++diff_checksums() {
++	local orig_log="$ORIG_DIR/checksum.log"
++	local patched_log="$PATCHED_DIR/checksum.log"
++	local -A funcs
++	local cmd=()
++	local line
++	local file
++	local func
++
++	gawk '/\.o: changed function: / {
++		sub(/:$/, "", $1)
++		print $1, $NF
++	}' "$KLP_DIFF_LOG" | mapfile -t lines
++
++	for line in "${lines[@]}"; do
++		read -r file func <<< "$line"
++		if [[ ! -v funcs["$file"] ]]; then
++			funcs["$file"]="$func"
++		else
++			funcs["$file"]+=" $func"
++		fi
++	done
++
++	cmd=("$SRC/tools/objtool/objtool")
++	cmd+=("--checksum")
++	cmd+=("--link")
++	cmd+=("--dry-run")
++
++	for file in "${!funcs[@]}"; do
++		local opt="--debug-checksum=${funcs[$file]// /,}"
++
++		(
++			cd "$ORIG_DIR"
++			"${cmd[@]}" "$opt" "$file" &> "$orig_log" || \
++				( cat "$orig_log" >&2; die "objtool --debug-checksum failed" )
++
++			cd "$PATCHED_DIR"
++			"${cmd[@]}" "$opt" "$file" &> "$patched_log" ||	\
++				( cat "$patched_log" >&2; die "objtool --debug-checksum failed" )
++		)
++
++		for func in ${funcs[$file]}; do
++			diff <( grep0 -E "^DEBUG: .*checksum: $func " "$orig_log"    | sed "s|$ORIG_DIR/||")	\
++			     <( grep0 -E "^DEBUG: .*checksum: $func " "$patched_log" | sed "s|$PATCHED_DIR/||")	\
++				| gawk '/^< DEBUG: / {
++					gsub(/:/, "")
++					printf "%s: %s: %s\n", $3, $5, $6
++					exit
++			}' || true
++		done
++	done
++}
++
+ # Build and post-process livepatch module in $KMOD_DIR
+ build_patch_module() {
+ 	local makefile="$KMOD_DIR/Kbuild"
+@@ -747,6 +817,10 @@ fi
+ if (( SHORT_CIRCUIT <= 3 )); then
+ 	status "Diffing objects"
+ 	diff_objects
++	if [[ -v DIFF_CHECKSUM ]]; then
++		status "Finding first changed instructions"
++		diff_checksums
++	fi
+ fi
+ 
+ if (( SHORT_CIRCUIT <= 4 )); then
 -- 
 2.49.0
 
