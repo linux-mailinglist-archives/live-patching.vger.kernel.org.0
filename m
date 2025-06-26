@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1572-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1573-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B0CB5AEAB53
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:03:59 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 18E83AEAB5C
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:04:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D57824A2DFC
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:03:50 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 6D3927AE79F
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:02:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C2B8285078;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5F05287266;
 	Thu, 26 Jun 2025 23:56:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I8JkOOXO"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gN/QoBtx"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14B3528504E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEDD028725A;
 	Thu, 26 Jun 2025 23:56:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982201; cv=none; b=qFOv4T9mApOzon3G81DFTAzUMigIQGyWQ0RgD/UsjVnPN4BXztBdIpj+HPp0Z7b6lzpohzl+bw/xc5guTtr3CjgeW2HUza10LMlmzQV38KZrkjqMCNMN6jTWdSwEMFrVVhQT5o6jRng5STOALuXfVQYdAhlNyUQ7llvrSkiZCNM=
+	t=1750982201; cv=none; b=dniWNQKrIWmmzchNcNpCRfFIU9WuzrJwNjIIOwTsQR16ebOn5kDa/uxItqWWaoSKdOy6H/uxIwulaxU3Pj5FoeyOhXKk0GQ5MyZPXXztUYjhtAGxUkR20G3/5+m1YPdzZbNrqAtsU4LhtTQl8tcOSnzA5hnIGgaysx5pnJGiohk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1750982201; c=relaxed/simple;
-	bh=cDSDfPuFviJZI1Tb44QI/RSgrjC4wn64JVLGOdgLNnQ=;
+	bh=XNadUm4w3TOd182HQ2jLUMQ5nZfFXy4kWo38Kr7zPQs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=t7q8WynlwaeUrhE6D0aSJnmbqHkrO6c3qVmzrDdjQ4fSIh9ocjBpQaNLItuS6ceieODqB3RD0dF/9t8a9a53mDcspX771QV5lMY73sgiJM+rovp+VZTfrkgD/BQJ5O2JgY+fvXMH6HeGUyXVG5qIAGfcnfNiaIax28mA1G7GkI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I8JkOOXO; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 614ACC4CEF1;
-	Thu, 26 Jun 2025 23:56:40 +0000 (UTC)
+	 MIME-Version; b=nO7v73ly2D17aixDuPpzG01iNOneuW5lsZuxBTDXoGXxQyr84GRsvgcAhkgSx7cZlkrexl32yXe8k800geoAR4f/pN3L1RElYrox7VEDAe7bWRmOT4pZkJLyiYo4r8ZFot6tFXmNCN24ioCoJp6xUeacmtVttW2weZdlYM2WkvU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gN/QoBtx; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201F0C4CEEB;
+	Thu, 26 Jun 2025 23:56:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1750982201;
-	bh=cDSDfPuFviJZI1Tb44QI/RSgrjC4wn64JVLGOdgLNnQ=;
+	bh=XNadUm4w3TOd182HQ2jLUMQ5nZfFXy4kWo38Kr7zPQs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=I8JkOOXOEsBVgbhrpHwfSzQxNn6mtCytNelvI2G8RNCxWEEEPkK739NslK7NbYE6/
-	 2dud3RmW9U0M+GTkzerMx4paG2zbFrFsdHEGLDUxBIVclkPt/YQQqloDnTfPJTMj8T
-	 ugRabkl+S4Y8eCVCQgB/qnqwIzKBbtXDf1tA0IrW0l+fslwEAXhjvLAeYep79+qEkX
-	 zaP+Yz7DtdMIMB8yKxrqohlMDwtRWOkiRZ5jHDBcPDyUT0I1mDNBk0Qlt0i/qVK9tK
-	 GpuNWAfU1hu4yF/MMiqapE+YnRnmOF7kTMz0hd66M1lxa+RUAmkrfSx13L5M0VR8wt
-	 PbdsA0UPS83vA==
+	b=gN/QoBtx3ZLPJhRZ2XanmsdXjEE8dboeEq4jH57XDCCi0u0jGDj8uypPsNPXq1xGg
+	 7e1LotlGf8BV6mwiVgdHyDxYJW1tTJcrlZStenBLsDE85kFCCiV8qmROKZC0fEQzYh
+	 Y8qNaosDTwaF+mgkfzUEVauNHDwung2aU8tSyV7pzRNqORfg8d2qgVl2/ZABGWPszb
+	 CdJjkoOo6auyigSU+A8pfiDt6W9xi5Q42eh3ySvBCndbVrHI0psJuRuR//7kH3od3W
+	 xJbIzSUiLSIhTbVdfUkzOfP4s8qn0Pgvcs4j1839xRAGzUpaqELvEfMLFiTIxVmYXP
+	 0H+4rHABOvOfg==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -56,11 +56,10 @@ Cc: linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
-	Dylan Hatch <dylanbhatch@google.com>,
-	Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH v3 42/64] kbuild,x86: Fix special section module permissions
-Date: Thu, 26 Jun 2025 16:55:29 -0700
-Message-ID: <cf1cfb9042005be7bf0a1c3f2bdbeebc769e3ee4.1750980517.git.jpoimboe@kernel.org>
+	Dylan Hatch <dylanbhatch@google.com>
+Subject: [PATCH v3 43/64] x86/alternative: Define ELF section entry size for alternatives
+Date: Thu, 26 Jun 2025 16:55:30 -0700
+Message-ID: <e048e6afcb2022114ea908205f4e81b7a53eba48.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -72,135 +71,112 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-An upcoming patch will add the SHF_MERGE flag to x86 __jump_table and
-__bug_table so their entry sizes can be defined in inline asm.
+In preparation for the objtool klp diff subcommand, define the entry
+size for the .altinstructions section in its ELF header.  This will
+allow tooling to extract individual entries.
 
-However, those sections have SHF_WRITE, which the Clang linker (lld)
-explicitly forbids combining with SHF_MERGE.
-
-Those sections are modified at runtime and must remain writable.  While
-SHF_WRITE is ignored by vmlinux, it's still needed for modules.
-
-To work around the linker interference, remove SHF_WRITE during
-compilation and restore it after linking the module.
-
-Cc: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/Kconfig                      |  3 +++
- arch/x86/Kconfig                  |  1 +
- arch/x86/include/asm/bug.h        |  4 ++--
- arch/x86/include/asm/jump_label.h |  2 +-
- scripts/Makefile.modfinal         | 19 ++++++++++++++-----
- 5 files changed, 21 insertions(+), 8 deletions(-)
+ arch/um/include/shared/common-offsets.h    | 2 ++
+ arch/x86/include/asm/alternative.h         | 5 +++--
+ arch/x86/include/asm/asm.h                 | 4 ++++
+ arch/x86/kernel/asm-offsets.c              | 2 ++
+ arch/x86/um/shared/sysdep/kernel-offsets.h | 1 +
+ kernel/bounds.c                            | 1 +
+ scripts/mod/devicetable-offsets.c          | 1 +
+ 7 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index a3308a220f86..350ea5df5e8d 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1314,6 +1314,9 @@ config HAVE_NOINSTR_HACK
- config HAVE_NOINSTR_VALIDATION
- 	bool
+diff --git a/arch/um/include/shared/common-offsets.h b/arch/um/include/shared/common-offsets.h
+index 8ca66a1918c3..4e19103afd71 100644
+--- a/arch/um/include/shared/common-offsets.h
++++ b/arch/um/include/shared/common-offsets.h
+@@ -18,3 +18,5 @@ DEFINE(UM_NSEC_PER_USEC, NSEC_PER_USEC);
+ DEFINE(UM_KERN_GDT_ENTRY_TLS_ENTRIES, GDT_ENTRY_TLS_ENTRIES);
  
-+config NEED_MODULE_PERMISSIONS_FIX
-+	bool
+ DEFINE(UM_SECCOMP_ARCH_NATIVE, SECCOMP_ARCH_NATIVE);
 +
- config HAVE_UACCESS_VALIDATION
- 	bool
- 	select OBJTOOL
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 71019b3b54ea..62faa62b5959 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -310,6 +310,7 @@ config X86
- 	select HOTPLUG_SPLIT_STARTUP		if SMP && X86_32
- 	select IRQ_FORCED_THREADING
- 	select LOCK_MM_AND_FIND_VMA
-+	select NEED_MODULE_PERMISSIONS_FIX
- 	select NEED_PER_CPU_EMBED_FIRST_CHUNK
- 	select NEED_PER_CPU_PAGE_FIRST_CHUNK
- 	select NEED_SG_DMA_LENGTH
-diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
-index 8593976b32cb..59e155ee3c76 100644
---- a/arch/x86/include/asm/bug.h
-+++ b/arch/x86/include/asm/bug.h
-@@ -42,7 +42,7 @@
- #define _BUG_FLAGS(cond_str, ins, flags, extra)				\
- do {									\
- 	asm_inline volatile("1:\t" ins "\n"				\
--		     ".pushsection __bug_table,\"aw\"\n"		\
-+		     ".pushsection __bug_table,\"a\"\n"			\
- 		     "2:\t" __BUG_REL(1b) "\t# bug_entry::bug_addr\n"	\
- 		     "\t"  __BUG_REL(%c0) "\t# bug_entry::file\n"	\
- 		     "\t.word %c1"        "\t# bug_entry::line\n"	\
-@@ -60,7 +60,7 @@ do {									\
- #define _BUG_FLAGS(cond_str, ins, flags, extra)				\
- do {									\
- 	asm_inline volatile("1:\t" ins "\n"				\
--		     ".pushsection __bug_table,\"aw\"\n"		\
-+		     ".pushsection __bug_table,\"a\"\n"			\
- 		     "2:\t" __BUG_REL(1b) "\t# bug_entry::bug_addr\n"	\
- 		     "\t.word %c0"        "\t# bug_entry::flags\n"	\
- 		     "\t.org 2b+%c1\n"					\
-diff --git a/arch/x86/include/asm/jump_label.h b/arch/x86/include/asm/jump_label.h
-index 61dd1dee7812..cd21554b3675 100644
---- a/arch/x86/include/asm/jump_label.h
-+++ b/arch/x86/include/asm/jump_label.h
-@@ -13,7 +13,7 @@
- #include <linux/types.h>
++DEFINE(ALT_INSTR_SIZE, sizeof(struct alt_instr));
+diff --git a/arch/x86/include/asm/alternative.h b/arch/x86/include/asm/alternative.h
+index 15bc07a5ebb3..eb24d9ba30d7 100644
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -197,7 +197,8 @@ static inline int alternatives_text_reserved(void *start, void *end)
+ 	"773:\n"
  
- #define JUMP_TABLE_ENTRY(key, label)			\
--	".pushsection __jump_table,  \"aw\" \n\t"	\
-+	".pushsection __jump_table,  \"a\"\n\t"		\
- 	_ASM_ALIGN "\n\t"				\
- 	".long 1b - . \n\t"				\
- 	".long " label " - . \n\t"			\
-diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
-index 542ba462ed3e..7a888e1ff70f 100644
---- a/scripts/Makefile.modfinal
-+++ b/scripts/Makefile.modfinal
-@@ -28,12 +28,24 @@ ccflags-remove-y := $(CC_FLAGS_CFI)
- .module-common.o: $(srctree)/scripts/module-common.c FORCE
- 	$(call if_changed_rule,cc_o_c)
+ #define ALTINSTR_ENTRY(ft_flags)					      \
+-	".pushsection .altinstructions,\"a\"\n"				      \
++	".pushsection .altinstructions, \"aM\", @progbits, "		      \
++		      __stringify(ALT_INSTR_SIZE) "\n"			      \
+ 	" .long 771b - .\n"				/* label           */ \
+ 	" .long 774f - .\n"				/* new instruction */ \
+ 	" .4byte " __stringify(ft_flags) "\n"		/* feature + flags */ \
+@@ -360,7 +361,7 @@ void nop_func(void);
+ 741:									\
+ 	.skip -(((744f-743f)-(741b-740b)) > 0) * ((744f-743f)-(741b-740b)),0x90	;\
+ 742:									\
+-	.pushsection .altinstructions,"a" ;				\
++	.pushsection .altinstructions, "aM", @progbits, ALT_INSTR_SIZE ;\
+ 	altinstr_entry 740b,743f,flag,742b-740b,744f-743f ;		\
+ 	.popsection ;							\
+ 	.pushsection .altinstr_replacement,"ax"	;			\
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index f963848024a5..1f26f90a57ce 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -136,6 +136,10 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
  
-+ifdef CONFIG_NEED_MODULE_PERMISSIONS_FIX
-+cmd_fix_mod_permissions =						\
-+	$(OBJCOPY) --set-section-flags __jump_table=alloc,data		\
-+		   --set-section-flags __bug_table=alloc,data $@	\
-+		   --set-section-flags .static_call_sites=alloc,data $@
-+endif
+ #ifdef __KERNEL__
+ 
++#ifndef COMPILE_OFFSETS
++#include <asm/asm-offsets.h>
++#endif
 +
- quiet_cmd_ld_ko_o = LD [M]  $@
-       cmd_ld_ko_o =							\
- 	$(LD) -r $(KBUILD_LDFLAGS)					\
- 		$(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)		\
- 		-T $(objtree)/scripts/module.lds -o $@ $(filter %.o, $^)
+ # include <asm/extable_fixup_types.h>
  
-+define rule_ld_ko_o
-+	$(call cmd_and_savecmd,ld_ko_o)
-+	$(call cmd,fix_mod_permissions)
-+endef
-+
- quiet_cmd_btf_ko = BTF [M] $@
-       cmd_btf_ko = 							\
- 	if [ ! -f $(objtree)/vmlinux ]; then				\
-@@ -46,14 +58,11 @@ quiet_cmd_btf_ko = BTF [M] $@
- # Same as newer-prereqs, but allows to exclude specified extra dependencies
- newer_prereqs_except = $(filter-out $(PHONY) $(1),$?)
+ /* Exception table entry */
+diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
+index 6259b474073b..b51625c3f64c 100644
+--- a/arch/x86/kernel/asm-offsets.c
++++ b/arch/x86/kernel/asm-offsets.c
+@@ -123,4 +123,6 @@ static void __used common(void)
+ 	OFFSET(ARIA_CTX_rounds, aria_ctx, rounds);
+ #endif
  
--# Same as if_changed, but allows to exclude specified extra dependencies
--if_changed_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),      \
--	$(cmd);                                                              \
--	printf '%s\n' 'savedcmd_$@ := $(make-cmd)' > $(dot-target).cmd, @:)
-+if_changed_rule_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),$(rule_$(1)),@:)
++	BLANK();
++	DEFINE(ALT_INSTR_SIZE,	 sizeof(struct alt_instr));
+ }
+diff --git a/arch/x86/um/shared/sysdep/kernel-offsets.h b/arch/x86/um/shared/sysdep/kernel-offsets.h
+index 6fd1ed400399..9f6d3d1a248c 100644
+--- a/arch/x86/um/shared/sysdep/kernel-offsets.h
++++ b/arch/x86/um/shared/sysdep/kernel-offsets.h
+@@ -1,4 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
++#define COMPILE_OFFSETS
+ #include <linux/stddef.h>
+ #include <linux/sched.h>
+ #include <linux/elf.h>
+diff --git a/kernel/bounds.c b/kernel/bounds.c
+index 29b2cd00df2c..02b619eb6106 100644
+--- a/kernel/bounds.c
++++ b/kernel/bounds.c
+@@ -6,6 +6,7 @@
+  */
  
- # Re-generate module BTFs if either module's .ko or vmlinux changed
- %.ko: %.o %.mod.o .module-common.o $(objtree)/scripts/module.lds $(and $(CONFIG_DEBUG_INFO_BTF_MODULES),$(KBUILD_BUILTIN),$(objtree)/vmlinux) FORCE
--	+$(call if_changed_except,ld_ko_o,$(objtree)/vmlinux)
-+	+$(call if_changed_rule_except,ld_ko_o,$(objtree)/vmlinux)
- ifdef CONFIG_DEBUG_INFO_BTF_MODULES
- 	+$(if $(newer-prereqs),$(call cmd,btf_ko))
- endif
+ #define __GENERATING_BOUNDS_H
++#define COMPILE_OFFSETS
+ /* Include headers that define the enum constants of interest */
+ #include <linux/page-flags.h>
+ #include <linux/mmzone.h>
+diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
+index d3d00e85edf7..ef2ffb68f69d 100644
+--- a/scripts/mod/devicetable-offsets.c
++++ b/scripts/mod/devicetable-offsets.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#define COMPILE_OFFSETS
+ #include <linux/kbuild.h>
+ #include <linux/mod_devicetable.h>
+ 
 -- 
 2.49.0
 
