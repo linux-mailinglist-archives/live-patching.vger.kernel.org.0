@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1588-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1590-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id F3D13AEAB7A
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:06:35 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 17931AEAB81
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:07:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 05B23189F943
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:06:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 736133A7501
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:06:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95C2329B8FB;
-	Thu, 26 Jun 2025 23:56:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A50052E973B;
+	Thu, 26 Jun 2025 23:56:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h/t7eQ+2"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iQYT0ksD"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B74E292B5D;
-	Thu, 26 Jun 2025 23:56:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF942E92A7;
+	Thu, 26 Jun 2025 23:56:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982212; cv=none; b=KJIZse+WyLJcL6J5JFxSmosE1VEiQy/wx5MiTgNze8I9bhh/9m28DtYhr9661H9loeXt6oY9nJCBMnlh3kQq3yO8+9qMihLBo+73oti4sxXwTLkwkPn4nfnq91ZkcHoty5w4gKEoeqiEnL0EwkGxT3F3cHLmZGHNfqxsvCG4H7M=
+	t=1750982214; cv=none; b=WZOXT4N0Bp5ysiwGhc0TQxeihXpopfP99qozN5YyS6BaAxZa5IIerM/SsoPFgGB4q+EeYGffbBVPmVPoqQ9ilfzVoO6zgWzQy/cEL89q8UmXkvmJG7RFyRxpIRHBR8UGB/gnW7TGvdQWTm0+XvjB/+jDW/Vv2RalGp7KfD/kK58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982212; c=relaxed/simple;
-	bh=C3hl/octZq4mZ1MaR7e5EA/59I5YP/4wR5GptOcc2VY=;
+	s=arc-20240116; t=1750982214; c=relaxed/simple;
+	bh=wtyF/MopiLNSY8OQ1lCxfuihtCDTzXFaLv3rp48jCvE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=s1zCdIKxtfvhOZumZQt5ZE0SrpAXmRpV3M8dRFIEQk5+8J2mJ+3mfG7S01/jtEJHNmDpsBRLbfIGWmYq2MERYI72cCVy4yzfLetLWq86JsVrgOS4Has8Zaw7pXcnIqcH2qgtTBFM8hPUQ68ZQfyUPDoNjwakf2GmHrdWlMhhTjg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h/t7eQ+2; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A62C4CEF2;
-	Thu, 26 Jun 2025 23:56:51 +0000 (UTC)
+	 MIME-Version; b=uAr7oRXs8I1bor2JivgVmh9K7Re/wIFmG/oRqzF4iyhsmxjQJugpUjP1z1JqSgWLY2tzYnuYYAX3kTgD5D0YYsNbjIMSlfFWAitJUr8mbCUSGCyr6Vd0dfLwbcX3MgdINmQGH44u/3lhj/UXF4czrqEoiXprYjRvRhsFexv3jn8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iQYT0ksD; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 770FAC4CEF1;
+	Thu, 26 Jun 2025 23:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750982212;
-	bh=C3hl/octZq4mZ1MaR7e5EA/59I5YP/4wR5GptOcc2VY=;
+	s=k20201202; t=1750982213;
+	bh=wtyF/MopiLNSY8OQ1lCxfuihtCDTzXFaLv3rp48jCvE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=h/t7eQ+2Z8qeo7bVcAzOCHHXYZK1yKXsiLvUHHLOGDeqwFu90QclsRX6a8yucVSlt
-	 VNpLhWSRgsRIQLbW0G0dc+OPvsg5xeWH/3yspo5smZUTHNRSJ/WNPRrePburBKYspN
-	 kfAtOWA7DcOl42X+rmDp8vU6yaKhk/dKpCkUFF8Mz46FEt8SfTuleY44C0yyOwgrrK
-	 4oYinsGT4WL6OGgQQy58w12xs/h+zVLFkoR05IRRj02JpzRxxJ2bV+jNY0hrjOoJ4e
-	 x6bx3P3EMOjnm7x9seyB1/CPbpTFfaIhhQkj2VOcIbfAo+Hwtgzu9mZ3qx9rjOOPDI
-	 PF9v9TJm80O9A==
+	b=iQYT0ksDDCDf8e0Y7SLw2qh9WshRgfh/V2x8rtZvLddoPvc8MzIn+yb3j5n3QUCKl
+	 Pnvc2K7ToshwWkjw7kEETwX7ZtCOhX4CnxHjpQYjKsp1+a0PTH6+OZFUfHnyx99Bqc
+	 3Kjf5dthss+3iCjrfaJKNWlFrRgASWCArY92Uh7EPQCkzUd0n/eo3nRjB5tZYxpBYI
+	 i1H9NM5J3ueSQqG1+eRHOjgC4iyiKXOb2uNjmiMqfSsG9ucFrs4Q+1qs8r3BoTG6rg
+	 YQWQF1zi0pOutdRqsggHa6d7+PUN7Y6deqrqaBLVSgVSMlihDVPPw5g8LjE666kZTa
+	 15XRCEp8pAxjQ==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 58/64] kbuild,objtool: Defer objtool validation step for CONFIG_KLP_BUILD
-Date: Thu, 26 Jun 2025 16:55:45 -0700
-Message-ID: <d83af9f86f2f7a24096d4ea0ddd78574fef9a5d3.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 59/64] livepatch/klp-build: Introduce fix-patch-lines script to avoid __LINE__ diff noise
+Date: Thu, 26 Jun 2025 16:55:46 -0700
+Message-ID: <6ec2a82b31a90f52040846dc9a713d69a658820c.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -71,48 +71,123 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In preparation for klp-build, defer objtool validation for
-CONFIG_KLP_BUILD kernels until the final pre-link archive (e.g.,
-vmlinux.o, module-foo.o) is built.  This will simplify the process of
-generating livepatch modules.
+The __LINE__ macro creates challenges for binary diffing.  When a .patch
+file adds or removes lines, it shifts the line numbers for all code
+below it.
 
-Delayed objtool is generally preferred anyway, and is already standard
-for IBT and LTO.  Eventually the per-translation-unit mode will be
-phased out.
+This can cause the code generation of functions using __LINE__ to change
+due to the line number constant being embedded in a MOV instruction,
+despite there being no semantic difference.
+
+Avoid such false positives by adding a fix-patch-lines script which can
+be used to insert a #line directive in each patch hunk affecting the
+line numbering.  This script will be used by klp-build, which will be
+introduced in a subsequent patch.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- scripts/Makefile.lib    | 2 +-
- scripts/link-vmlinux.sh | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ MAINTAINERS                       |  1 +
+ scripts/livepatch/fix-patch-lines | 79 +++++++++++++++++++++++++++++++
+ 2 files changed, 80 insertions(+)
+ create mode 100755 scripts/livepatch/fix-patch-lines
 
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 15fee73e9289..28a1c08e3b22 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -197,7 +197,7 @@ objtool-args = $(objtool-args-y)					\
- 	$(if $(delay-objtool), --link)					\
- 	$(if $(part-of-module), --module)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0298d9570ca8..dd622368d74b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14006,6 +14006,7 @@ F:	include/linux/livepatch*.h
+ F:	kernel/livepatch/
+ F:	kernel/module/livepatch.c
+ F:	samples/livepatch/
++F:	scripts/livepatch/
+ F:	tools/testing/selftests/livepatch/
  
--delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
-+delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT),$(CONFIG_KLP_BUILD))
- 
- cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
- cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 51367c2bfc21..59f875236292 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -60,7 +60,8 @@ vmlinux_link()
- 	# skip output file argument
- 	shift
- 
--	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT; then
-+	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT ||
-+	   is_enabled CONFIG_KLP_BUILD; then
- 		# Use vmlinux.o instead of performing the slow LTO link again.
- 		objs=vmlinux.o
- 		libs=
+ LLC (802.2)
+diff --git a/scripts/livepatch/fix-patch-lines b/scripts/livepatch/fix-patch-lines
+new file mode 100755
+index 000000000000..73c5e3dea46e
+--- /dev/null
++++ b/scripts/livepatch/fix-patch-lines
+@@ -0,0 +1,79 @@
++#!/usr/bin/awk -f
++# SPDX-License-Identifier: GPL-2.0
++#
++# Use #line directives to preserve original __LINE__ numbers across patches to
++# avoid unwanted compilation changes.
++
++BEGIN {
++	in_hunk = 0
++	skip    = 0
++}
++
++/^--- / {
++	skip = $2 !~ /\.(c|h)$/
++	print
++	next
++}
++
++/^@@/ {
++	if (skip) {
++		print
++		next
++	}
++
++	in_hunk = 1
++
++	# for @@ -1,3 +1,4 @@:
++	#   1: line number in old file
++	#   3: how many lines the hunk covers in old file
++	#   1: line number in new file
++	#   4: how many lines the hunk covers in new file
++
++	match($0, /^@@ -([0-9]+)(,([0-9]+))? \+([0-9]+)(,([0-9]+))? @@/, m)
++
++	# Set 'cur' to the old file's line number at the start of the hunk.  It
++	# gets incremented for every context line and every line removal, so
++	# that it always represents the old file's current line number.
++	cur = m[1]
++
++	# last = last line number of current hunk
++	last = cur + (m[3] ? m[3] : 1) - 1
++
++	need_line_directive = 0
++
++	print
++	next
++}
++
++{
++	if (skip || !in_hunk || $0 ~ /^\\ No newline at end of file/) {
++		print
++		next
++	}
++
++	# change line
++	if ($0 ~ /^[+-]/) {
++		# inject #line after this group of changes
++		need_line_directive = 1
++
++		if ($0 ~ /^-/)
++			cur++
++
++		print
++		next
++	}
++
++	# If this is the first context line after a group of changes, inject
++	# the #line directive to force the compiler to correct the line
++	# numbering to match the original file.
++	if (need_line_directive) {
++		print "+#line " cur
++		need_line_directive = 0
++	}
++
++	if (cur == last)
++		in_hunk = 0
++
++	cur++
++	print
++}
 -- 
 2.49.0
 
