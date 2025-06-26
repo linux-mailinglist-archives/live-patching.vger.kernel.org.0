@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1549-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1550-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 62496AEAB29
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 01:59:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DC070AEAB2D
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:00:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id CECC11C44BB5
-	for <lists+live-patching@lfdr.de>; Thu, 26 Jun 2025 23:59:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81122567283
+	for <lists+live-patching@lfdr.de>; Thu, 26 Jun 2025 23:59:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E120026CE12;
-	Thu, 26 Jun 2025 23:56:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1DEA26D4E8;
+	Thu, 26 Jun 2025 23:56:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DYBP5KGb"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nPnWkkJX"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6E6826C3BE;
-	Thu, 26 Jun 2025 23:56:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D7826D4D5;
+	Thu, 26 Jun 2025 23:56:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982184; cv=none; b=eNYerqW4JLYavANwkoI5EW4Ra51MQdsf1hP8WJOxCeCffDKxMoFlcA+i/HnRoMdRelRDm5DDd6ruguvY4txIZLFHrUrSBLHz5cC1co9EE2+CumoeuYEo2wr7kwQ9CR8WQfQw++IOgcvBCHCDnexVozMjyn8xKBqhZfjaCLU5tv8=
+	t=1750982185; cv=none; b=mC0xYUjNq/HCGQGvkyafrauqWcHhq7eqqI2ULYiRPh5xUgapbREbBHjtsk7MS+xfWhQHYr7Tojw2PtORIDqcZbBO2MmkW6nH+72Tp1p6vT/89GdBS5pCcgfL+n1NHPFhnX8fzaVciQ1crlCk+++SC3luG1LVoWnQqSKI6iSK4h4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982184; c=relaxed/simple;
-	bh=0M+19xTVOQq+SPVZVJtydW5ocDWMfmuRdwrFRsTmV2k=;
+	s=arc-20240116; t=1750982185; c=relaxed/simple;
+	bh=dwFCYWV+q/42xLwVEhtVpr+806iYAELTArkqZqjmqns=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=itwCWrbsbrRGnGPkeGBQFZfjailErN6yOjH8TgPK/F3JcLHq+MNbUCPWQLgxj7kTAHN4H0kvDeP42IdXsBi0Jry27DF+fPA0GGcqsFxofSYNHtF9boAbMDNyDY40KuxB4+CUnhRahZQ/GTvdznDCVPu3P1KZD1emQWd/nVGAshs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DYBP5KGb; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B29C4CEF1;
-	Thu, 26 Jun 2025 23:56:23 +0000 (UTC)
+	 MIME-Version; b=sVAl/QfUS0kGtvajR4b9rlK5bB6D9eSR/htVQHqqh5sH/gVuVLD/RmSNWWYhLk7qfhooaze20Tb+LGjOEkOll0mrY8Nrk0MRdEzitqqSyt/l4Mw6BHdBaQGTkoINRCnZUPTRw+1jD8uEEaYX3Ab+GZwlnejc9BOD7Q3+ngGoWgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nPnWkkJX; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E445C4CEEB;
+	Thu, 26 Jun 2025 23:56:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750982184;
-	bh=0M+19xTVOQq+SPVZVJtydW5ocDWMfmuRdwrFRsTmV2k=;
+	s=k20201202; t=1750982185;
+	bh=dwFCYWV+q/42xLwVEhtVpr+806iYAELTArkqZqjmqns=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=DYBP5KGbGQt/iJ0w0fwlWB0b4iWIyoCC4tz+uKbDEsMxL9LKwLhE1IOw3bpa6tIj2
-	 Ib/IR5yoYfsalbkZoZOLVUhV9EOXUzCMOLdHVFsZ4jAlVPOifeBdBBJqbXTYNsyZRC
-	 90mPh/fhmnQu7lWBLisPcGE7mLcpPqvXO/2VNd4m95JDUobswGqcOhSbb6Dm30grpT
-	 iP4BVik3Nz4Dwg2ZVoX3oDWcPq3PCxq8NYOfafG9Ye+twb2ttSbKsro7yGU4oMe3N8
-	 NnO0+h5DpkFXk6KV0nkmtoblCSBiGnqroaZZ1KFxUn/V2/WO9moLJLBo0Cok/DkVXZ
-	 bWQ8RiW/UwSfg==
+	b=nPnWkkJXNubD+Lt05Y0JG5f1mu+x+Pnq9bHMw2hewMRDWviA7zX4kO8CxWavHNX9A
+	 xbeybxvHLvIELG/uqSMH5MoFuMQejamS/z6TdoaaeX+YKXUhdOrnT4R0TzA2VXa4Tl
+	 cYTPWmPrtvJrhW9HWbqfBKynCCDyPkfVTWrTZAQX6ZKUNpCXojHiUzbWTo8wCec+KZ
+	 /657kqzakiqo7gxpdZhq8sGVW5pxKopAZiwVvwOatm9XSq7k4gdFc4656umgMF7kxK
+	 tV0vEb23tMLUZQt0OXmePfVv28Ei/ztynqbWRJ6ALduF1L8r88WwJEPAk8wUZE7ySP
+	 y+PS/sc4m9jzA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 19/64] objtool: Fix __pa_symbol() relocation handling
-Date: Thu, 26 Jun 2025 16:55:06 -0700
-Message-ID: <40dd3c7d6ad7b76efa7951cbaa78a5d01e4f173e.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 20/64] objtool: Fix "unexpected end of section" warning for alternatives
+Date: Thu, 26 Jun 2025 16:55:07 -0700
+Message-ID: <62942eb3702579d21fc916635173d3d8c9defb6c.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -71,45 +71,52 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-__pa_symbol() generates a relocation which refers to a physical address.
-Convert it to back its virtual form before calculating the addend.
+Due to the short circuiting logic in next_insn_to_validate(), control
+flow may silently transition from .altinstr_replacement to .text without
+a corresponding nested call to validate_branch().
+
+As a result the validate_branch() 'sec' variable doesn't get
+reinitialized, which can trigger a confusing "unexpected end of section"
+warning which blames .altinstr_replacement rather than the offending
+fallthrough function.
+
+Fix that by not caching the section.  There's no point in doing that
+anyway.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/arch/x86/decode.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ tools/objtool/check.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-index f29ab0f3d4a7..b10cfa9cd71e 100644
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -68,6 +68,17 @@ bool arch_callee_saved_reg(unsigned char reg)
- 	}
- }
- 
-+/* Undo the effects of __pa_symbol() if necessary */
-+static unsigned long phys_to_virt(unsigned long pa)
-+{
-+	s64 va = pa;
-+
-+	if (va > 0)
-+		va &= ~(0x80000000);
-+
-+	return va;
-+}
-+
- s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc *reloc)
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index fd93cae8b1b9..b5257a959458 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3508,15 +3508,12 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
  {
- 	s64 addend = reloc_addend(reloc);
-@@ -75,7 +86,7 @@ s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc *reloc)
- 	if (arch_pc_relative_reloc(reloc))
- 		addend += insn->offset + insn->len - reloc_offset(reloc);
+ 	struct alternative *alt;
+ 	struct instruction *next_insn, *prev_insn = NULL;
+-	struct section *sec;
+ 	u8 visited;
+ 	int ret;
  
--	return addend;
-+	return phys_to_virt(addend);
- }
+ 	if (func && func->ignore)
+ 		return 0;
  
- unsigned long arch_jump_destination(struct instruction *insn)
+-	sec = insn->sec;
+-
+ 	while (1) {
+ 		next_insn = next_insn_to_validate(file, insn);
+ 
+@@ -3754,7 +3751,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 
+ 			WARN("%s%sunexpected end of section %s",
+ 			     func ? func->name : "", func ? "(): " : "",
+-			     sec->name);
++			     insn->sec->name);
+ 			return 1;
+ 		}
+ 
 -- 
 2.49.0
 
