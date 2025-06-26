@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1556-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1557-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 358F1AEAB35
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:01:01 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id C12A0AEAB41
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:01:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 85F934E3E5C
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:01:01 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 9C3CF1C24D3C
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:01:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED2022727EA;
-	Thu, 26 Jun 2025 23:56:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4657272815;
+	Thu, 26 Jun 2025 23:56:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fn4Iupvg"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jytjy89x"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C52CB2727E4;
-	Thu, 26 Jun 2025 23:56:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D77B27280F;
+	Thu, 26 Jun 2025 23:56:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982189; cv=none; b=Ft1MiOURHvtd8PW2DkEJgKw94Wme/hTzFeb/YddMMJxA2Wbj7b6UuG5S/UgpuZTUS5SdI9vXTJpl00Z/bK/ru9ntsYPvsZL9bkQDTIk9DjVLSK9d8ekvISI7qaEw2Qt/qArrqJnR8dNveMhSsN9CXCrhavBJLlrZzDdYBhSWPDI=
+	t=1750982190; cv=none; b=QC/UrhwkmcoLWVV6CWZUNnstSl/DGQgJIFZ5/1wf8ffketFsct4RlBNB4vIgp9KPmcP9aQeTExuBkzfhNoupFqvgnmcNEBt5NZqSSLKsnwy47B13VIcZzkdKaJX5sFazm3/RvgHY7AVUA1t19S+9Ery/7Nh4CV2Ph7EjcUysaVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982189; c=relaxed/simple;
-	bh=azbZN8nCfx3rEQbmNBwLA/lMUJXX3bgQkVEQ+CdYCv8=;
+	s=arc-20240116; t=1750982190; c=relaxed/simple;
+	bh=0d7llqv3k52MPtqjIHzAdwvGvN3FdzhXn6Gr8nGOrsQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QCF4y9IwwNwaTtKDGJ/8q/Au3ChP/S9mzTiaClgic12E8CwUM0soUjfHf2/oZNtGVFeAuNwBKHED8KCmOFCX9X+A6VkER5/c2WlkwUUu+EjuJOMZ52iJjg+ZObo5Ty4Cl0BuKTcpqt+eGJB7fOKzuY9o81PTlGJhNJOYk7a8yFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fn4Iupvg; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D5E4C4CEF2;
+	 MIME-Version; b=qo6vEUAsW8rAbgdHn9Bqxiw4iWWXaQY71PwJiA4WujUEl8+FljS7tPkdOTlZuEjTqsN7eOZg0fwTonCa30446xYW3yGFTh0+EyHq42ED8vhuox6zOxDjSu9lCZVChCYyHbH8r6mdx7Hd8SlyiRXByYbiUarkhb3omIw9B29Eh/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jytjy89x; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2163C4CEF0;
 	Thu, 26 Jun 2025 23:56:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750982189;
-	bh=azbZN8nCfx3rEQbmNBwLA/lMUJXX3bgQkVEQ+CdYCv8=;
+	s=k20201202; t=1750982190;
+	bh=0d7llqv3k52MPtqjIHzAdwvGvN3FdzhXn6Gr8nGOrsQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=fn4IupvgmHZsJ0BNtJjiv4HqRmWDrgApz3rnqzP7Av2gxvHQvo6AbKclCzT1ymI9Q
-	 t7sV2gIX8HgtFfAgYp4o7guH9ALyUPQU59LmErs8hV/yq/sCaYjDHEsyJLi32AbTY8
-	 t9yaCGUDEsuaDAeedZrGOAwM7LbipGUCR2XfRlqAlxvIdjDHzX9XlCgM+ooQ3r34Qw
-	 I0SLM3CRcANIKzaz8tQeoCnKQgi4BqB4dt2JumWamA+WEFhWgrTryjYHvTt0wBbXRE
-	 CmcvgUFm/r6OGrEJ4H1jozMsQ7Ze96mVaFLmCswc2nWvvVwuG4n8t0SoR+gtzzkwaV
-	 fG7KNBREZIXdA==
+	b=jytjy89xZ4HJ5WNvTZVxSz0o8ZGnE4U7t2TwLkvBL933BkzqhIRdvKYMr56/hURA5
+	 G3SuMqfDPLKT6jRu7Cf1/+tbJcM5oZpXxRDeIPP9u8JzNTLBSoiJHp7AoKECRd5fvQ
+	 gGKauWLiZlDEP7NgDSJgrJbs9CfGUUf3ZJaYsBrkGVZ3j1L/wRW9gGlhmHZRSLuSce
+	 5m9hGbzaQDRW6N1mQJx0+abn+X63qYumBkNZmzrFEv77FS+ffzE5D/DjEUMjFeHUF4
+	 ije6hyn3C3n38GuaW7VCEnAgd8S7x/nfxgDYzOjxmJJQNXBATqTtTKIkuv39xK+6ZL
+	 bGRx+TGezWoEw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 26/64] objtool: Add section/symbol type helpers
-Date: Thu, 26 Jun 2025 16:55:13 -0700
-Message-ID: <c897dc0a55a84f9992b8c766214ff38b0f597583.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 27/64] objtool: Mark .cold subfunctions
+Date: Thu, 26 Jun 2025 16:55:14 -0700
+Message-ID: <dbba3d7d7bcf13f496f3ce6319fe5e55572b2225.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -71,479 +71,108 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add some helper macros to improve readability.
+Introduce a flag to identify .cold subfunctions so they can be detected
+easier and faster.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/arch/x86/special.c    |  2 +-
- tools/objtool/check.c               | 58 ++++++++++++-------------
- tools/objtool/elf.c                 | 20 ++++-----
- tools/objtool/include/objtool/elf.h | 66 +++++++++++++++++++++++++++++
- tools/objtool/special.c             |  4 +-
- 5 files changed, 108 insertions(+), 42 deletions(-)
+ tools/objtool/check.c               | 14 ++++++--------
+ tools/objtool/elf.c                 | 19 ++++++++++---------
+ tools/objtool/include/objtool/elf.h |  1 +
+ 3 files changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/tools/objtool/arch/x86/special.c b/tools/objtool/arch/x86/special.c
-index 06ca4a2659a4..09300761f108 100644
---- a/tools/objtool/arch/x86/special.c
-+++ b/tools/objtool/arch/x86/special.c
-@@ -89,7 +89,7 @@ struct reloc *arch_find_switch_table(struct objtool_file *file,
- 	/* look for a relocation which references .rodata */
- 	text_reloc = find_reloc_by_dest_range(file->elf, insn->sec,
- 					      insn->offset, insn->len);
--	if (!text_reloc || text_reloc->sym->type != STT_SECTION ||
-+	if (!text_reloc || !is_sec_sym(text_reloc->sym) ||
- 	    !text_reloc->sym->sec->rodata)
- 		return NULL;
- 
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index ec11fd29398b..b5b324bcc9fa 100644
+index b5b324bcc9fa..f76de990183d 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -260,7 +260,7 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
- 	if (!func)
- 		return false;
+@@ -1574,7 +1574,9 @@ static int add_jump_destinations(struct objtool_file *file)
+ 		/*
+ 		 * Cross-function jump.
+ 		 */
+-		if (func && insn_func(jump_dest) && func != insn_func(jump_dest)) {
++
++		if (func && insn_func(jump_dest) && !func->cold &&
++		    insn_func(jump_dest)->cold) {
  
--	if (func->bind == STB_GLOBAL || func->bind == STB_WEAK) {
-+	if (!is_local_sym(func)) {
- 		if (is_rust_noreturn(func))
- 			return true;
- 
-@@ -269,7 +269,7 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
- 				return true;
- 	}
- 
--	if (func->bind == STB_WEAK)
-+	if (is_weak_sym(func))
- 		return false;
- 
- 	if (!func->len)
-@@ -435,7 +435,7 @@ static int decode_instructions(struct objtool_file *file)
- 		u8 prev_len = 0;
- 		u8 idx = 0;
- 
--		if (!(sec->sh.sh_flags & SHF_EXECINSTR))
-+		if (!is_text_sec(sec))
- 			continue;
- 
- 		if (strcmp(sec->name, ".altinstr_replacement") &&
-@@ -458,7 +458,7 @@ static int decode_instructions(struct objtool_file *file)
- 		if (!strcmp(sec->name, ".init.text") && !opts.module)
- 			sec->init = true;
- 
--		for (offset = 0; offset < sec->sh.sh_size; offset += insn->len) {
-+		for (offset = 0; offset < sec_size(sec); offset += insn->len) {
- 			if (!insns || idx == INSN_CHUNK_MAX) {
- 				insns = calloc(INSN_CHUNK_SIZE, sizeof(*insn));
- 				if (!insns) {
-@@ -477,7 +477,7 @@ static int decode_instructions(struct objtool_file *file)
- 			insn->offset = offset;
- 			insn->prev_len = prev_len;
- 
--			if (arch_decode_instruction(file, sec, offset, sec->sh.sh_size - offset, insn))
-+			if (arch_decode_instruction(file, sec, offset, sec_size(sec) - offset, insn))
- 				return -1;
- 
- 			prev_len = insn->len;
-@@ -495,12 +495,12 @@ static int decode_instructions(struct objtool_file *file)
+ 			/*
+ 			 * For GCC 8+, create parent/child links for any cold
+@@ -1591,11 +1593,8 @@ static int add_jump_destinations(struct objtool_file *file)
+ 			 * case where the parent function's only reference to a
+ 			 * subfunction is through a jump table.
+ 			 */
+-			if (!strstr(func->name, ".cold") &&
+-			    strstr(insn_func(jump_dest)->name, ".cold")) {
+-				func->cfunc = insn_func(jump_dest);
+-				insn_func(jump_dest)->pfunc = func;
+-			}
++			func->cfunc = insn_func(jump_dest);
++			insn_func(jump_dest)->pfunc = func;
  		}
  
- 		sec_for_each_sym(sec, func) {
--			if (func->type != STT_NOTYPE && func->type != STT_FUNC)
-+			if (!is_notype_sym(func) && !is_func_sym(func))
- 				continue;
- 
--			if (func->offset == sec->sh.sh_size) {
-+			if (func->offset == sec_size(sec)) {
- 				/* Heuristic: likely an "end" symbol */
--				if (func->type == STT_NOTYPE)
-+				if (is_notype_sym(func))
- 					continue;
- 				ERROR("%s(): STT_FUNC at end of section", func->name);
- 				return -1;
-@@ -516,7 +516,7 @@ static int decode_instructions(struct objtool_file *file)
- 
- 			sym_for_each_insn(file, func, insn) {
- 				insn->sym = func;
--				if (func->type == STT_FUNC &&
-+				if (is_func_sym(func) &&
- 				    insn->type == INSN_ENDBR &&
- 				    list_empty(&insn->call_node)) {
- 					if (insn->offset == func->offset) {
-@@ -560,7 +560,7 @@ static int add_pv_ops(struct objtool_file *file, const char *symname)
- 		idx = (reloc_offset(reloc) - sym->offset) / sizeof(unsigned long);
- 
- 		func = reloc->sym;
--		if (func->type == STT_SECTION)
-+		if (is_sec_sym(func))
- 			func = find_symbol_by_offset(reloc->sym->sec,
- 						     reloc_addend(reloc));
- 		if (!func) {
-@@ -822,7 +822,7 @@ static int create_ibt_endbr_seal_sections(struct objtool_file *file)
- 		struct symbol *sym = insn->sym;
- 		*site = 0;
- 
--		if (opts.module && sym && sym->type == STT_FUNC &&
-+		if (opts.module && sym && is_func_sym(sym) &&
- 		    insn->offset == sym->offset &&
- 		    (!strcmp(sym->name, "init_module") ||
- 		     !strcmp(sym->name, "cleanup_module"))) {
-@@ -857,7 +857,7 @@ static int create_cfi_sections(struct objtool_file *file)
- 
- 	idx = 0;
- 	for_each_sym(file->elf, sym) {
--		if (sym->type != STT_FUNC)
-+		if (!is_func_sym(sym))
- 			continue;
- 
- 		if (strncmp(sym->name, "__cfi_", 6))
-@@ -873,7 +873,7 @@ static int create_cfi_sections(struct objtool_file *file)
- 
- 	idx = 0;
- 	for_each_sym(file->elf, sym) {
--		if (sym->type != STT_FUNC)
-+		if (!is_func_sym(sym))
- 			continue;
- 
- 		if (strncmp(sym->name, "__cfi_", 6))
-@@ -1462,7 +1462,7 @@ static bool jump_is_sibling_call(struct objtool_file *file,
- 		return false;
- 
- 	/* Disallow sibling calls into STT_NOTYPE */
--	if (ts->type == STT_NOTYPE)
-+	if (is_notype_sym(ts))
- 		return false;
- 
- 	/* Must not be self to be a sibling */
-@@ -1496,7 +1496,7 @@ static int add_jump_destinations(struct objtool_file *file)
- 		if (!reloc) {
- 			dest_sec = insn->sec;
- 			dest_off = arch_jump_destination(insn);
--		} else if (reloc->sym->type == STT_SECTION) {
-+		} else if (is_sec_sym(reloc->sym)) {
- 			dest_sec = reloc->sym->sec;
- 			dest_off = arch_insn_adjusted_addend(insn, reloc);
- 		} else if (reloc->sym->retpoline_thunk) {
-@@ -1656,12 +1656,12 @@ static int add_call_destinations(struct objtool_file *file)
- 				return -1;
- 			}
- 
--			if (func && insn_call_dest(insn)->type != STT_FUNC) {
-+			if (func && !is_func_sym(insn_call_dest(insn))) {
- 				ERROR_INSN(insn, "unsupported call to non-function");
- 				return -1;
- 			}
- 
--		} else if (reloc->sym->type == STT_SECTION) {
-+		} else if (is_sec_sym(reloc->sym)) {
- 			dest_off = arch_insn_adjusted_addend(insn, reloc);
- 			dest = find_call_destination(reloc->sym->sec, dest_off);
- 			if (!dest) {
-@@ -2145,7 +2145,7 @@ static int add_jump_table_alts(struct objtool_file *file)
- 		return 0;
- 
- 	for_each_sym(file->elf, func) {
--		if (func->type != STT_FUNC)
-+		if (!is_func_sym(func))
- 			continue;
- 
- 		mark_func_jump_tables(file, func);
-@@ -2184,14 +2184,14 @@ static int read_unwind_hints(struct objtool_file *file)
- 		return -1;
- 	}
- 
--	if (sec->sh.sh_size % sizeof(struct unwind_hint)) {
-+	if (sec_size(sec) % sizeof(struct unwind_hint)) {
- 		ERROR("struct unwind_hint size mismatch");
- 		return -1;
- 	}
- 
- 	file->hints = true;
- 
--	for (i = 0; i < sec->sh.sh_size / sizeof(struct unwind_hint); i++) {
-+	for (i = 0; i < sec_size(sec) / sizeof(struct unwind_hint); i++) {
- 		hint = (struct unwind_hint *)sec->data->d_buf + i;
- 
- 		reloc = find_reloc_by_dest(file->elf, sec, i * sizeof(*hint));
-@@ -2200,7 +2200,7 @@ static int read_unwind_hints(struct objtool_file *file)
- 			return -1;
+ 		if (jump_is_sibling_call(file, insn, jump_dest)) {
+@@ -4029,9 +4028,8 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
+ 			 * If this hole jumps to a .cold function, mark it ignore too.
+ 			 */
+ 			if (insn->jump_dest && insn_func(insn->jump_dest) &&
+-			    strstr(insn_func(insn->jump_dest)->name, ".cold")) {
++			    insn_func(insn->jump_dest)->cold)
+ 				insn_func(insn->jump_dest)->ignore = true;
+-			}
  		}
  
--		if (reloc->sym->type == STT_SECTION) {
-+		if (is_sec_sym(reloc->sym)) {
- 			offset = reloc_addend(reloc);
- 		} else if (reloc->sym->local_label) {
- 			offset = reloc->sym->offset;
-@@ -2236,7 +2236,7 @@ static int read_unwind_hints(struct objtool_file *file)
- 		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
- 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
- 
--			if (sym && sym->bind == STB_GLOBAL) {
-+			if (sym && is_global_sym(sym)) {
- 				if (opts.ibt && insn->type != INSN_ENDBR && !insn->noendbr) {
- 					ERROR_INSN(insn, "UNWIND_HINT_IRET_REGS without ENDBR");
- 					return -1;
-@@ -2449,10 +2449,10 @@ static int classify_symbols(struct objtool_file *file)
- 	struct symbol *func;
- 
- 	for_each_sym(file->elf, func) {
--		if (func->type == STT_NOTYPE && strstarts(func->name, ".L"))
-+		if (is_notype_sym(func) && strstarts(func->name, ".L"))
- 			func->local_label = true;
- 
--		if (func->bind != STB_GLOBAL)
-+		if (!is_global_sym(func))
- 			continue;
- 
- 		if (!strncmp(func->name, STATIC_CALL_TRAMP_PREFIX_STR,
-@@ -4142,11 +4142,11 @@ static int add_prefix_symbols(struct objtool_file *file)
- 	struct symbol *func;
- 
- 	for_each_sec(file->elf, sec) {
--		if (!(sec->sh.sh_flags & SHF_EXECINSTR))
-+		if (!is_text_sec(sec))
- 			continue;
- 
- 		sec_for_each_sym(sec, func) {
--			if (func->type != STT_FUNC)
-+			if (!is_func_sym(func))
- 				continue;
- 
- 			add_prefix_symbol(file, func);
-@@ -4190,7 +4190,7 @@ static int validate_section(struct objtool_file *file, struct section *sec)
- 	int warnings = 0;
- 
- 	sec_for_each_sym(sec, func) {
--		if (func->type != STT_FUNC)
-+		if (!is_func_sym(func))
- 			continue;
- 
- 		init_insn_state(file, &state, sec);
-@@ -4234,7 +4234,7 @@ static int validate_functions(struct objtool_file *file)
- 	int warnings = 0;
- 
- 	for_each_sec(file->elf, sec) {
--		if (!(sec->sh.sh_flags & SHF_EXECINSTR))
-+		if (!is_text_sec(sec))
- 			continue;
- 
- 		warnings += validate_section(file, sec);
-@@ -4415,7 +4415,7 @@ static int validate_ibt(struct objtool_file *file)
- 	for_each_sec(file->elf, sec) {
- 
- 		/* Already done by validate_ibt_insn() */
--		if (sec->sh.sh_flags & SHF_EXECINSTR)
-+		if (is_text_sec(sec))
- 			continue;
- 
- 		if (!sec->rsec)
+ 		return false;
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index c27edeed2dd0..d36c0d42fd7b 100644
+index d36c0d42fd7b..59568381486c 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -170,7 +170,7 @@ struct symbol *find_symbol_by_offset(struct section *sec, unsigned long offset)
- 	struct symbol *iter;
+@@ -441,6 +441,10 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
+ 	list_add(&sym->list, entry);
+ 	elf_hash_add(symbol, &sym->hash, sym->idx);
+ 	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
++
++	if (is_func_sym(sym) && strstr(sym->name, ".cold"))
++		sym->cold = 1;
++	sym->pfunc = sym->cfunc = sym;
+ }
  
- 	__sym_for_each(iter, tree, offset, offset) {
--		if (iter->offset == offset && iter->type != STT_SECTION)
-+		if (iter->offset == offset && !is_sec_sym(iter))
- 			return iter;
- 	}
- 
-@@ -183,7 +183,7 @@ struct symbol *find_func_by_offset(struct section *sec, unsigned long offset)
- 	struct symbol *iter;
- 
- 	__sym_for_each(iter, tree, offset, offset) {
--		if (iter->offset == offset && iter->type == STT_FUNC)
-+		if (iter->offset == offset && is_func_sym(iter))
- 			return iter;
- 	}
- 
-@@ -264,7 +264,7 @@ struct symbol *find_func_containing(struct section *sec, unsigned long offset)
- 	struct symbol *iter;
- 
- 	__sym_for_each(iter, tree, offset, offset) {
--		if (iter->type == STT_FUNC)
-+		if (is_func_sym(iter))
- 			return iter;
- 	}
- 
-@@ -373,14 +373,14 @@ static int read_sections(struct elf *elf)
- 			return -1;
- 		}
- 
--		if (sec->sh.sh_size != 0 && !is_dwarf_section(sec)) {
-+		if (sec_size(sec) != 0 && !is_dwarf_section(sec)) {
- 			sec->data = elf_getdata(s, NULL);
- 			if (!sec->data) {
- 				ERROR_ELF("elf_getdata");
- 				return -1;
- 			}
- 			if (sec->data->d_off != 0 ||
--			    sec->data->d_size != sec->sh.sh_size) {
-+			    sec->data->d_size != sec_size(sec)) {
- 				ERROR("unexpected data attributes for %s", sec->name);
- 				return -1;
- 			}
-@@ -420,7 +420,7 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
- 	sym->type = GELF_ST_TYPE(sym->sym.st_info);
- 	sym->bind = GELF_ST_BIND(sym->sym.st_info);
- 
--	if (sym->type == STT_FILE)
-+	if (is_file_sym(sym))
- 		elf->num_files++;
- 
- 	sym->offset = sym->sym.st_value;
-@@ -527,7 +527,7 @@ static int read_symbols(struct elf *elf)
+ static int read_symbols(struct elf *elf)
+@@ -527,18 +531,15 @@ static int read_symbols(struct elf *elf)
  		sec_for_each_sym(sec, sym) {
  			char *pname;
  			size_t pnamelen;
--			if (sym->type != STT_FUNC)
-+			if (!is_func_sym(sym))
+-			if (!is_func_sym(sym))
++
++			if (!sym->cold)
  				continue;
  
- 			if (sym->pfunc == NULL)
-@@ -929,7 +929,7 @@ struct reloc *elf_init_reloc_text_sym(struct elf *elf, struct section *sec,
- 	struct symbol *sym = insn_sec->sym;
- 	int addend = insn_off;
+-			if (sym->pfunc == NULL)
+-				sym->pfunc = sym;
+-
+-			if (sym->cfunc == NULL)
+-				sym->cfunc = sym;
+-
+ 			coldstr = strstr(sym->name, ".cold");
+-			if (!coldstr)
+-				continue;
++			if (!coldstr) {
++				ERROR("%s(): cold subfunction without \".cold\"?", sym->name);
++				return -1;
++			}
  
--	if (!(insn_sec->sh.sh_flags & SHF_EXECINSTR)) {
-+	if (!is_text_sec(insn_sec)) {
- 		ERROR("bad call to %s() for data symbol %s", __func__, sym->name);
- 		return NULL;
- 	}
-@@ -958,7 +958,7 @@ struct reloc *elf_init_reloc_data_sym(struct elf *elf, struct section *sec,
- 				      struct symbol *sym,
- 				      s64 addend)
- {
--	if (sym->sec && (sec->sh.sh_flags & SHF_EXECINSTR)) {
-+	if (is_text_sec(sec)) {
- 		ERROR("bad call to %s() for text symbol %s", __func__, sym->name);
- 		return NULL;
- 	}
-@@ -1287,7 +1287,7 @@ int elf_write_insn(struct elf *elf, struct section *sec,
-  */
- static int elf_truncate_section(struct elf *elf, struct section *sec)
- {
--	u64 size = sec->sh.sh_size;
-+	u64 size = sec_size(sec);
- 	bool truncated = false;
- 	Elf_Data *data = NULL;
- 	Elf_Scn *s;
+ 			pnamelen = coldstr - sym->name;
+ 			pname = strndup(sym->name, pnamelen);
 diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index fcea9338c687..0914dadece0b 100644
+index 0914dadece0b..f41496b0ad8f 100644
 --- a/tools/objtool/include/objtool/elf.h
 +++ b/tools/objtool/include/objtool/elf.h
-@@ -8,6 +8,7 @@
- 
- #include <stdio.h>
- #include <gelf.h>
-+#include <linux/string.h>
- #include <linux/list.h>
- #include <linux/hashtable.h>
- #include <linux/rbtree.h>
-@@ -177,11 +178,71 @@ static inline unsigned int elf_text_rela_type(struct elf *elf)
- 	return elf_addr_size(elf) == 4 ? R_TEXT32 : R_TEXT64;
- }
- 
-+static inline bool sym_has_sec(struct symbol *sym)
-+{
-+	return sym->sec->idx;
-+}
-+
-+static inline bool is_null_sym(struct symbol *sym)
-+{
-+	return !sym->idx;
-+}
-+
-+static inline bool is_sec_sym(struct symbol *sym)
-+{
-+	return sym->type == STT_SECTION;
-+}
-+
-+static inline bool is_object_sym(struct symbol *sym)
-+{
-+	return sym->type == STT_OBJECT;
-+}
-+
-+static inline bool is_func_sym(struct symbol *sym)
-+{
-+	return sym->type == STT_FUNC;
-+}
-+
-+static inline bool is_file_sym(struct symbol *sym)
-+{
-+	return sym->type == STT_FILE;
-+}
-+
-+static inline bool is_notype_sym(struct symbol *sym)
-+{
-+	return sym->type == STT_NOTYPE;
-+}
-+
-+static inline bool is_global_sym(struct symbol *sym)
-+{
-+	return sym->bind == STB_GLOBAL;
-+}
-+
-+static inline bool is_weak_sym(struct symbol *sym)
-+{
-+	return sym->bind == STB_WEAK;
-+}
-+
-+static inline bool is_local_sym(struct symbol *sym)
-+{
-+	return sym->bind == STB_LOCAL;
-+}
-+
- static inline bool is_reloc_sec(struct section *sec)
- {
- 	return sec->sh.sh_type == SHT_RELA || sec->sh.sh_type == SHT_REL;
- }
- 
-+static inline bool is_string_sec(struct section *sec)
-+{
-+	return sec->sh.sh_flags & SHF_STRINGS;
-+}
-+
-+static inline bool is_text_sec(struct section *sec)
-+{
-+	return sec->sh.sh_flags & SHF_EXECINSTR;
-+}
-+
- static inline bool sec_changed(struct section *sec)
- {
- 	return sec->_changed;
-@@ -222,6 +283,11 @@ static inline bool is_32bit_reloc(struct reloc *reloc)
- 	return reloc->sec->sh.sh_entsize < 16;
- }
- 
-+static inline unsigned long sec_size(struct section *sec)
-+{
-+	return sec->sh.sh_size;
-+}
-+
- #define __get_reloc_field(reloc, field)					\
- ({									\
- 	is_32bit_reloc(reloc) ?						\
-diff --git a/tools/objtool/special.c b/tools/objtool/special.c
-index c0beefb93b62..fc2cf8dba1c0 100644
---- a/tools/objtool/special.c
-+++ b/tools/objtool/special.c
-@@ -142,12 +142,12 @@ int special_get_alts(struct elf *elf, struct list_head *alts)
- 		if (!sec)
- 			continue;
- 
--		if (sec->sh.sh_size % entry->size != 0) {
-+		if (sec_size(sec) % entry->size != 0) {
- 			ERROR("%s size not a multiple of %d", sec->name, entry->size);
- 			return -1;
- 		}
- 
--		nr_entries = sec->sh.sh_size / entry->size;
-+		nr_entries = sec_size(sec) / entry->size;
- 
- 		for (idx = 0; idx < nr_entries; idx++) {
- 			alt = malloc(sizeof(*alt));
+@@ -71,6 +71,7 @@ struct symbol {
+ 	u8 local_label       : 1;
+ 	u8 frame_pointer     : 1;
+ 	u8 ignore	     : 1;
++	u8 cold		     : 1;
+ 	struct list_head pv_target;
+ 	struct reloc *relocs;
+ 	struct section *group_sec;
 -- 
 2.49.0
 
