@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1575-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1576-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1D248AEAB61
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:04:59 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E0099AEAB5D
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:04:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 43B506A1BD5
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:04:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 080CD16ECCE
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:04:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5651228B51E;
-	Thu, 26 Jun 2025 23:56:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11A6228C2C9;
+	Thu, 26 Jun 2025 23:56:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lKQ2sGuG"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W+RA9wEu"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C0A328A70A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D03C628C01A;
 	Thu, 26 Jun 2025 23:56:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982203; cv=none; b=XYZzESdr62e2OvPqLeWtu9JCez/t1t0VFM0fVNbXjeuZQ9fXiOrTTmQ3bJCvw2RWCNnEGwTri7/rF1I2ONoQRlvawHCx6nUQF0hxaEhLG/DIN5cUmjVqDCKFg74gpvoAUFwqqpgCp/HvqgIuW7LuB07NBN1NHpo9CczIIfmaM6g=
+	t=1750982203; cv=none; b=L7BFVsjIIfFbxwp7h1eBumCTOmwF8jAXiJ/NlPGhE1pJRqCsSmzP2rjxrAqXTUK6PqxlOt0kX0dHBUeFHxbqFTHl9ZX0kFBbXxVb3VhkEgIcpkmdX8NIEjGutntHFm3cZbXC9viQIPdIuD5u+l7EQfv/y8HbnC3nXMvL7VNlEWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1750982203; c=relaxed/simple;
-	bh=lKP9pcf5JLNshoXCNIFr0bPP37w/NqZ72Fam2hwYVs4=;
+	bh=PBM/iTiwWZaioDN0pY0/oaH5NWCKZ6CmHlpih2f76eA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jpQ4KNK7vh19RvwFgBfTLzPVyu2ZaJ0aZ5VT3qQm8xmT/PfLRkYKxTJLGC4RrZAGcBhJDias15LBzUUKuPSL/zPJdFY5SLTJ4v9bJkG6LE5juY/YrU0f2BdIzSra9EeDm/rQRMVejtvl/QaoULAeKYqVY6VA2/zJ0pCVQCwGbv4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lKQ2sGuG; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 826F2C4CEF0;
-	Thu, 26 Jun 2025 23:56:42 +0000 (UTC)
+	 MIME-Version; b=Ggtzzs/FWA6JnUyxDGj65Dq/teZK96vzdCp1OzGlRExdDU0gHWZ0Sr9QNP13pQ99wx/PaaS8Dr/2bFMTBQvgLg+jRo9A1r+HSoc0788Qvd4wWa7ZXf+RyNIPz0EA8YddRPg59Fz3+u8ZX/z0g3ZsRfpsZeruTVEPgqpzLIoqNfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W+RA9wEu; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34430C4CEF1;
+	Thu, 26 Jun 2025 23:56:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1750982203;
-	bh=lKP9pcf5JLNshoXCNIFr0bPP37w/NqZ72Fam2hwYVs4=;
+	bh=PBM/iTiwWZaioDN0pY0/oaH5NWCKZ6CmHlpih2f76eA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lKQ2sGuGrghTKHtsfpLr/vxsDlmjDoFMB9DkfpsWrhJxyGqXC7JJEuQmBsrdyLJTX
-	 oYM02TQngxOm19Ri4AbZP1oB4qa967m5CuHEheAeedKYaywUJneQh/ViaakHoTBuTI
-	 8zyOZBqXIk3VPclEDzsyWpCSxjXo1lxbL3fMznrUB4ZrW6p4bXvwNw0ltXfbBVG9Eh
-	 tM9lKYksWSE9DOjMRKsYcchaAxKHRw3Nk6zOA6/QDGMtj53N2Qbb5FhYQpJ2b67Ajv
-	 9+wNb3R7W568Z4BR/hZ0cDGLRekEdrw9vaxH9a4GA/cLQoGgbA/hJ8KjJDbhN9bwch
-	 8lfQFEfdIHVpA==
+	b=W+RA9wEuKsa4XOvMIGZhtd5xeGH37+B6bsrcfH9A4LjbYvd98Ect8C168u3xvl6R5
+	 tZyQvhDseTxUly3T8gH2T1Vv8T2dhmYr9M9mSqUj/kqzIWh0GLpJOzCr7+vTPAwbcN
+	 hIUGtITxHhULqk8bHrPxUEPcBGIcO97m85ZkbxHkT4L5OoKyRSYAa5z5wIvg0aQXA2
+	 nz0uTz3/S8DbEAD5V+HJSkG1wsT6zYGXuCjc9FLzCGCejQhV+naCjH+476Fc2/vzwS
+	 Nkt7ni+wJCHmmlch3hyFu73azjxheeLaLLUB0nxpEN/Sn+aZ9m/2T45cOZqlrQKiZS
+	 n3Ai6TTk+W/wA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 45/64] x86/static_call: Define ELF section entry size of static calls
-Date: Thu, 26 Jun 2025 16:55:32 -0700
-Message-ID: <6c3466449d8c721af903ccc5e16251e36f678236.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 46/64] x86/extable: Define ELF section entry size for exception table
+Date: Thu, 26 Jun 2025 16:55:33 -0700
+Message-ID: <1a53b6dcf236ce1fe0f0cd0d4441fc2bd9022cb3.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -72,128 +72,104 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 In preparation for the objtool klp diff subcommand, define the entry
-size for the .static_call_sites section in its ELF header.  This will
-allow tooling to extract individual entries.
+size for the __ex_table section in its ELF header.  This will allow
+tooling to extract individual entries.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/include/asm/static_call.h      |  3 ++-
- include/linux/static_call.h             |  6 ------
- include/linux/static_call_types.h       |  6 ++++++
- kernel/bounds.c                         |  4 ++++
- tools/include/linux/static_call_types.h |  6 ++++++
- tools/objtool/check.c                   | 11 +++++++++--
- 6 files changed, 27 insertions(+), 9 deletions(-)
+ arch/um/include/asm/Kbuild                 |  1 -
+ arch/um/include/shared/common-offsets.h    |  1 +
+ arch/x86/include/asm/asm.h                 | 18 ++++++++++--------
+ arch/x86/kernel/asm-offsets.c              |  1 +
+ arch/x86/um/shared/sysdep/kernel-offsets.h |  1 +
+ 5 files changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/include/asm/static_call.h b/arch/x86/include/asm/static_call.h
-index 41502bd2afd6..e03ad9bbbf59 100644
---- a/arch/x86/include/asm/static_call.h
-+++ b/arch/x86/include/asm/static_call.h
-@@ -58,7 +58,8 @@
- 	ARCH_DEFINE_STATIC_CALL_TRAMP(name, __static_call_return0)
+diff --git a/arch/um/include/asm/Kbuild b/arch/um/include/asm/Kbuild
+index 04ab3b653a48..1934fa0df888 100644
+--- a/arch/um/include/asm/Kbuild
++++ b/arch/um/include/asm/Kbuild
+@@ -5,7 +5,6 @@ generic-y += device.h
+ generic-y += dma-mapping.h
+ generic-y += emergency-restart.h
+ generic-y += exec.h
+-generic-y += extable.h
+ generic-y += ftrace.h
+ generic-y += hw_irq.h
+ generic-y += irq_regs.h
+diff --git a/arch/um/include/shared/common-offsets.h b/arch/um/include/shared/common-offsets.h
+index 4e19103afd71..a6f77cb6aa7e 100644
+--- a/arch/um/include/shared/common-offsets.h
++++ b/arch/um/include/shared/common-offsets.h
+@@ -20,3 +20,4 @@ DEFINE(UM_KERN_GDT_ENTRY_TLS_ENTRIES, GDT_ENTRY_TLS_ENTRIES);
+ DEFINE(UM_SECCOMP_ARCH_NATIVE, SECCOMP_ARCH_NATIVE);
  
- #define ARCH_ADD_TRAMP_KEY(name)					\
--	asm(".pushsection .static_call_tramp_key, \"a\"		\n"	\
-+	asm(".pushsection .static_call_tramp_key, \"aM\", @progbits, "	\
-+	    __stringify(STATIC_CALL_TRAMP_KEY_SIZE) "\n"		\
- 	    ".long " STATIC_CALL_TRAMP_STR(name) " - .		\n"	\
- 	    ".long " STATIC_CALL_KEY_STR(name) " - .		\n"	\
- 	    ".popsection					\n")
-diff --git a/include/linux/static_call.h b/include/linux/static_call.h
-index 78a77a4ae0ea..5210612817f2 100644
---- a/include/linux/static_call.h
-+++ b/include/linux/static_call.h
-@@ -172,12 +172,6 @@ struct static_call_mod {
- 	struct static_call_site *sites;
- };
+ DEFINE(ALT_INSTR_SIZE, sizeof(struct alt_instr));
++DEFINE(EXTABLE_SIZE,   sizeof(struct exception_table_entry));
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index 1f26f90a57ce..e9b6d2d006c6 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -145,12 +145,12 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
+ /* Exception table entry */
+ #ifdef __ASSEMBLER__
  
--/* For finding the key associated with a trampoline */
--struct static_call_tramp_key {
--	s32 tramp;
--	s32 key;
--};
--
- extern void __static_call_update(struct static_call_key *key, void *tramp, void *func);
- extern int static_call_mod_init(struct module *mod);
- extern int static_call_text_reserved(void *start, void *end);
-diff --git a/include/linux/static_call_types.h b/include/linux/static_call_types.h
-index 5a00b8b2cf9f..eb772df625d4 100644
---- a/include/linux/static_call_types.h
-+++ b/include/linux/static_call_types.h
-@@ -34,6 +34,12 @@ struct static_call_site {
- 	s32 key;
- };
+-# define _ASM_EXTABLE_TYPE(from, to, type)			\
+-	.pushsection "__ex_table","a" ;				\
+-	.balign 4 ;						\
+-	.long (from) - . ;					\
+-	.long (to) - . ;					\
+-	.long type ;						\
++# define _ASM_EXTABLE_TYPE(from, to, type)				\
++	.pushsection "__ex_table", "aM", @progbits, EXTABLE_SIZE;	\
++	.balign 4 ;							\
++	.long (from) - . ;						\
++	.long (to) - . ;						\
++	.long type ;							\
+ 	.popsection
  
-+/* For finding the key associated with a trampoline */
-+struct static_call_tramp_key {
-+	s32 tramp;
-+	s32 key;
-+};
-+
- #define DECLARE_STATIC_CALL(name, func)					\
- 	extern struct static_call_key STATIC_CALL_KEY(name);		\
- 	extern typeof(func) STATIC_CALL_TRAMP(name);
-diff --git a/kernel/bounds.c b/kernel/bounds.c
-index e4c7ded3dc48..21c37e3ea629 100644
---- a/kernel/bounds.c
-+++ b/kernel/bounds.c
-@@ -14,6 +14,7 @@
- #include <linux/log2.h>
- #include <linux/spinlock_types.h>
- #include <linux/jump_label.h>
-+#include <linux/static_call_types.h>
+ # ifdef CONFIG_KPROBES
+@@ -193,7 +193,8 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
+ 	".purgem extable_type_reg\n"
  
- int main(void)
- {
-@@ -33,6 +34,9 @@ int main(void)
- #endif
- #if defined(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE) && defined(CONFIG_JUMP_LABEL)
- 	DEFINE(JUMP_ENTRY_SIZE, sizeof(struct jump_entry));
-+#endif
-+#ifdef CONFIG_HAVE_STATIC_CALL_INLINE
-+	DEFINE(STATIC_CALL_TRAMP_KEY_SIZE, sizeof(struct static_call_tramp_key));
- #endif
- 	/* End of constants */
+ # define _ASM_EXTABLE_TYPE(from, to, type)			\
+-	" .pushsection \"__ex_table\",\"a\"\n"			\
++	" .pushsection __ex_table, \"aM\", @progbits, "		\
++		       __stringify(EXTABLE_SIZE) "\n"		\
+ 	" .balign 4\n"						\
+ 	" .long (" #from ") - .\n"				\
+ 	" .long (" #to ") - .\n"				\
+@@ -201,7 +202,8 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
+ 	" .popsection\n"
  
-diff --git a/tools/include/linux/static_call_types.h b/tools/include/linux/static_call_types.h
-index 5a00b8b2cf9f..eb772df625d4 100644
---- a/tools/include/linux/static_call_types.h
-+++ b/tools/include/linux/static_call_types.h
-@@ -34,6 +34,12 @@ struct static_call_site {
- 	s32 key;
- };
+ # define _ASM_EXTABLE_TYPE_REG(from, to, type, reg)				\
+-	" .pushsection \"__ex_table\",\"a\"\n"					\
++	" .pushsection __ex_table, \"aM\", @progbits, "				\
++		       __stringify(EXTABLE_SIZE) "\n"				\
+ 	" .balign 4\n"								\
+ 	" .long (" #from ") - .\n"						\
+ 	" .long (" #to ") - .\n"						\
+diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
+index b51625c3f64c..3d3eef7fae32 100644
+--- a/arch/x86/kernel/asm-offsets.c
++++ b/arch/x86/kernel/asm-offsets.c
+@@ -125,4 +125,5 @@ static void __used common(void)
  
-+/* For finding the key associated with a trampoline */
-+struct static_call_tramp_key {
-+	s32 tramp;
-+	s32 key;
-+};
-+
- #define DECLARE_STATIC_CALL(name, func)					\
- 	extern struct static_call_key STATIC_CALL_KEY(name);		\
- 	extern typeof(func) STATIC_CALL_TRAMP(name);
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 3afc748ba516..c3e1ca3dba06 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -650,8 +650,15 @@ static int create_static_call_sections(struct objtool_file *file)
- 	if (!sec)
- 		return -1;
+ 	BLANK();
+ 	DEFINE(ALT_INSTR_SIZE,	 sizeof(struct alt_instr));
++	DEFINE(EXTABLE_SIZE,	 sizeof(struct exception_table_entry));
+ }
+diff --git a/arch/x86/um/shared/sysdep/kernel-offsets.h b/arch/x86/um/shared/sysdep/kernel-offsets.h
+index 9f6d3d1a248c..8215a0200ddd 100644
+--- a/arch/x86/um/shared/sysdep/kernel-offsets.h
++++ b/arch/x86/um/shared/sysdep/kernel-offsets.h
+@@ -8,6 +8,7 @@
+ #include <linux/audit.h>
+ #include <asm/mman.h>
+ #include <asm/seccomp.h>
++#include <asm/extable.h>
  
--	/* Allow modules to modify the low bits of static_call_site::key */
--	sec->sh.sh_flags |= SHF_WRITE;
-+	/*
-+	 * Set SHF_MERGE to prevent tooling from stripping entsize.
-+	 *
-+	 * SHF_WRITE would also get set here to allow modules to modify the low
-+	 * bits of static_call_site::key, but the LLVM linker doesn't allow
-+	 * SHF_MERGE+SHF_WRITE for whatever reason.  That gets fixed up by the
-+	 * makefiles with CONFIG_NEED_MODULE_PERMISSIONS_FIX.
-+	 */
-+	sec->sh.sh_flags |= SHF_MERGE;
- 
- 	idx = 0;
- 	list_for_each_entry(insn, &file->static_call_list, call_node) {
+ /* workaround for a warning with -Wmissing-prototypes */
+ void foo(void);
 -- 
 2.49.0
 
