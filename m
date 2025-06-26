@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1578-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1579-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id A969FAEAB63
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:05:05 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 04453AEAB66
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:05:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 8F2A11898C46
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:05:21 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E0E3016C2ED
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:05:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D2DE928DB7A;
-	Thu, 26 Jun 2025 23:56:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B6F228ECDA;
+	Thu, 26 Jun 2025 23:56:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GysWhB0X"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g6u3gQTT"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7A928DB56;
-	Thu, 26 Jun 2025 23:56:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7564B28EA53;
+	Thu, 26 Jun 2025 23:56:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982205; cv=none; b=gthExBn12XZEaPg39TyGntQCSdN/8wZdrcL1ei7sP+HZvkmPhpR9c4CEKt5LrXD0mf84lHSOQP9UY4/cGLkznAv/0L+q7aL1XNLHWWK2HG774XQoTIz+uCwoUTH7fNyYgDOc16+/vCpphpPBgopzq64FyFROrIbt0cH2ZARoTMY=
+	t=1750982206; cv=none; b=JrT199QtenA6cy4QLaEc5aE8a7ZD4bCk5ka0nFWtTfbmhL/w6ENZvQZf+1mAenwEKWcmB0FfKXfky5WLHT2isdeu3cfcI9hC6ekGrw5qP/6Ox8pyRLwL924dViDG9kPMvV++WTyfs7lU/jv3FyX68YJizRMDVfDCy/L3HS51STw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982205; c=relaxed/simple;
-	bh=/vazAWpSQLKOVN2fQQJfvBRflRe4tIk8DyUCVqU/PSg=;
+	s=arc-20240116; t=1750982206; c=relaxed/simple;
+	bh=DfYbyyq6pedYFcxfgyY6J9FfqZ28OdxeeJQZ0L8Mf8Q=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jUmFLl9BP7EkIyrL2Y0XBgsSTNdP4LK1ThcwDvx0cbQk/cDsAmVroItkQH/dYYvpF6bGF1W/Sv4VKXgKgCHIyVI7Likb1eeASl36b3YKiTO7mIz2SAz6GvSrIBj5WgP4JdUij4JRCibzvThdwn2GXi8p9vWuAzjDtZ0OWfZ1IcY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GysWhB0X; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93EDCC4CEEF;
-	Thu, 26 Jun 2025 23:56:44 +0000 (UTC)
+	 MIME-Version; b=as4kSla5ofLkjMHAK3KU3a+uvQBPLNSOTxpXJhZ9PppjEma0sOUL7mqAOcVH699LZvv/j+jQNnwS+EWY8LjsW9IyLDkJYzOGgsKUggu6ftsaBhBYdmCxq17dZq+X8+Q0b9Pk6wMAC7N9KgOK29VKwEJBVSaO8+MUBgtwQHjtAiY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g6u3gQTT; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD4CC4CEF2;
+	Thu, 26 Jun 2025 23:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1750982205;
-	bh=/vazAWpSQLKOVN2fQQJfvBRflRe4tIk8DyUCVqU/PSg=;
+	bh=DfYbyyq6pedYFcxfgyY6J9FfqZ28OdxeeJQZ0L8Mf8Q=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=GysWhB0XMAt3fIGdGpkJeAtHd6/4hKbc4W6cbX9L69UK4G7CQ9aQ2M2LCSeur5EY/
-	 oL0KJC46H2H7ms8P/vf1eABotdvCBPc0ttB2mvxuMCFNPEXWRqh2RKq/ucdtuDmCoz
-	 OPwCF6MByq8scbP87jXFVjmptv+TAheWGpkmQ7/ekIGg/eXMnTU/DUKBbQGSGHXuVW
-	 SmBFkeHxNTNPc/C4dz3qO/fwRUMiLag8gXwWUQdOMwURv3tz/5ZMPIfiQSB887eOYo
-	 9rELFuGBFoQHaRePL6qCi9ACnjivfj9W081flhsKfLpoZBvuwmxqIq+O3dV5yVdWmM
-	 ZaMyWFKet3CYg==
+	b=g6u3gQTT8cHzfUvR4/mYgH+dhrTYB3K/yCeMLsYBAmVpX0GdbZ+gXxKz8wvngBJ9T
+	 YsZB5HF+NtK7FxS8owVX2PlvoX0Gr+QC93jbP8btD9gWzkvRjbR+lZdFpJ1T47xDLx
+	 TuSR/wNM+xMmwr0OHffbmknzrJ67oKzd3vCwbJYiV3BjAQH1fJV1cGzgeKKt3Pq30C
+	 hnhAEJv388JYsP1iH02hHrQgpUBOlV3GXa0/Mtf2demkQoUeTnIimjosA4xgPXrGoh
+	 HZFzzmg1GQ7990S41z5sFaC5w77ntI5UZG2Ac7GCFPhRqVP8ins2l1E/H0o4KwpfIF
+	 eczS2m3D5Najw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 48/64] x86/orc: Define ELF section entry size for unwind hints
-Date: Thu, 26 Jun 2025 16:55:35 -0700
-Message-ID: <edd9abc04a63d009d527a3dd69ebeb040236afb2.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 49/64] objtool: Unify STACK_FRAME_NON_STANDARD entry sizes
+Date: Thu, 26 Jun 2025 16:55:36 -0700
+Message-ID: <113d5ea267328c65a2220dbb94eb51a2084d3a27.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -71,74 +71,32 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In preparation for the objtool klp diff subcommand, define the entry
-size for the discard.unwind_hints section in its ELF header.  This will
-allow tooling to extract individual entries.
+The C implementation of STACK_FRAME_NON_STANDARD emits 8-byte entries,
+whereas the asm version's entries are only 4 bytes.
+
+Make them consistent by converting the asm version to 8-byte entries.
+
+This is much easier than converting the C version to 4-bytes, which
+would require awkwardly putting inline asm in a dummy function in order
+to pass the 'func' pointer to the asm.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- include/linux/objtool.h | 11 ++++++++---
- kernel/bounds.c         |  4 ++++
- 2 files changed, 12 insertions(+), 3 deletions(-)
+ include/linux/objtool.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/linux/objtool.h b/include/linux/objtool.h
-index 366ad004d794..c7a3851ae4ae 100644
+index c7a3851ae4ae..7d7bb7f1af69 100644
 --- a/include/linux/objtool.h
 +++ b/include/linux/objtool.h
-@@ -2,6 +2,10 @@
- #ifndef _LINUX_OBJTOOL_H
- #define _LINUX_OBJTOOL_H
+@@ -106,7 +106,7 @@
  
-+#ifndef COMPILE_OFFSETS
-+#include <generated/bounds.h>
-+#endif
-+
- #include <linux/objtool_types.h>
- 
- #ifdef CONFIG_OBJTOOL
-@@ -10,9 +14,10 @@
- 
- #ifndef __ASSEMBLY__
- 
--#define UNWIND_HINT(type, sp_reg, sp_offset, signal)	\
-+#define UNWIND_HINT(type, sp_reg, sp_offset, signal)		\
- 	"987: \n\t"						\
--	".pushsection .discard.unwind_hints\n\t"		\
-+	".pushsection .discard.unwind_hints, \"M\", @progbits, "\
-+		      __stringify(UNWIND_HINT_SIZE) "\n\t"	\
- 	/* struct unwind_hint */				\
- 	".long 987b - .\n\t"					\
- 	".short " __stringify(sp_offset) "\n\t"			\
-@@ -88,7 +93,7 @@
-  */
- .macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 signal=0
- .Lhere_\@:
--	.pushsection .discard.unwind_hints
-+	.pushsection .discard.unwind_hints, "M", @progbits, UNWIND_HINT_SIZE
- 		/* struct unwind_hint */
- 		.long .Lhere_\@ - .
- 		.short \sp_offset
-diff --git a/kernel/bounds.c b/kernel/bounds.c
-index 21c37e3ea629..f9bc13727721 100644
---- a/kernel/bounds.c
-+++ b/kernel/bounds.c
-@@ -15,6 +15,7 @@
- #include <linux/spinlock_types.h>
- #include <linux/jump_label.h>
- #include <linux/static_call_types.h>
-+#include <linux/objtool_types.h>
- 
- int main(void)
- {
-@@ -37,6 +38,9 @@ int main(void)
- #endif
- #ifdef CONFIG_HAVE_STATIC_CALL_INLINE
- 	DEFINE(STATIC_CALL_TRAMP_KEY_SIZE, sizeof(struct static_call_tramp_key));
-+#endif
-+#ifdef CONFIG_OBJTOOL
-+	DEFINE(UNWIND_HINT_SIZE, sizeof(struct unwind_hint));
- #endif
- 	/* End of constants */
+ .macro STACK_FRAME_NON_STANDARD func:req
+ 	.pushsection .discard.func_stack_frame_non_standard, "aw"
+-	.long \func - .
++	.quad \func
+ 	.popsection
+ .endm
  
 -- 
 2.49.0
