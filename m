@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1590-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1589-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 17931AEAB81
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:07:49 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 62FD7AEAB7F
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:07:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 736133A7501
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:06:41 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id D1F2C7B7D1D
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:05:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A50052E973B;
-	Thu, 26 Jun 2025 23:56:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F28182E888A;
+	Thu, 26 Jun 2025 23:56:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iQYT0ksD"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VLDX8LCc"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF942E92A7;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB82D2E7F1D;
 	Thu, 26 Jun 2025 23:56:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982214; cv=none; b=WZOXT4N0Bp5ysiwGhc0TQxeihXpopfP99qozN5YyS6BaAxZa5IIerM/SsoPFgGB4q+EeYGffbBVPmVPoqQ9ilfzVoO6zgWzQy/cEL89q8UmXkvmJG7RFyRxpIRHBR8UGB/gnW7TGvdQWTm0+XvjB/+jDW/Vv2RalGp7KfD/kK58=
+	t=1750982213; cv=none; b=AO3BXwWMQPYbVqYbkd7Edfp+avrbTdDXukflN2g0jU70i27e9Bj3vk5kuQKn8XbVD+6uuTsiy78dKdHKQr3aol+/KD20A4EiV1kKx6+DXGvsXi89i9Ftm3+ztCQPch1fW6CJIe1U0u1CMK8IKWizXU6TJMLpg5KHjOXZ/QlmtCg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982214; c=relaxed/simple;
-	bh=wtyF/MopiLNSY8OQ1lCxfuihtCDTzXFaLv3rp48jCvE=;
+	s=arc-20240116; t=1750982213; c=relaxed/simple;
+	bh=sUazod9fDHv6Y0sMdgofaAG7+zcMTxL59nufwr9DdXI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uAr7oRXs8I1bor2JivgVmh9K7Re/wIFmG/oRqzF4iyhsmxjQJugpUjP1z1JqSgWLY2tzYnuYYAX3kTgD5D0YYsNbjIMSlfFWAitJUr8mbCUSGCyr6Vd0dfLwbcX3MgdINmQGH44u/3lhj/UXF4czrqEoiXprYjRvRhsFexv3jn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iQYT0ksD; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 770FAC4CEF1;
-	Thu, 26 Jun 2025 23:56:52 +0000 (UTC)
+	 MIME-Version; b=ImIYgKw1mHGfqYC7gQHNX6Ie4FA5CNzI/YjCAVhss/u6qEBYSBKEZIvR/mUrxe8pitUmlyN7yGdO5mHqpMQw2gONrhRVvvzM6X/RUUxsjdhPoH2hKmvBTqqwNFs1wNhgv1Rcw9xuK1LckBbwlByr1mh9z8yxZTTONkjKMMJCDT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VLDX8LCc; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CEFDC4CEF2;
+	Thu, 26 Jun 2025 23:56:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1750982213;
-	bh=wtyF/MopiLNSY8OQ1lCxfuihtCDTzXFaLv3rp48jCvE=;
+	bh=sUazod9fDHv6Y0sMdgofaAG7+zcMTxL59nufwr9DdXI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=iQYT0ksDDCDf8e0Y7SLw2qh9WshRgfh/V2x8rtZvLddoPvc8MzIn+yb3j5n3QUCKl
-	 Pnvc2K7ToshwWkjw7kEETwX7ZtCOhX4CnxHjpQYjKsp1+a0PTH6+OZFUfHnyx99Bqc
-	 3Kjf5dthss+3iCjrfaJKNWlFrRgASWCArY92Uh7EPQCkzUd0n/eo3nRjB5tZYxpBYI
-	 i1H9NM5J3ueSQqG1+eRHOjgC4iyiKXOb2uNjmiMqfSsG9ucFrs4Q+1qs8r3BoTG6rg
-	 YQWQF1zi0pOutdRqsggHa6d7+PUN7Y6deqrqaBLVSgVSMlihDVPPw5g8LjE666kZTa
-	 15XRCEp8pAxjQ==
+	b=VLDX8LCc4khRSgYGajb4pcGE9yk/PfB0yCO0nAxjmy8xZVetm6Uk7aq2nOYVys3RQ
+	 t6fJdf0DTaskQ95BA4UhsqBzX6ZURgvVZkgxZ3KR6nzPl+rvThXjI98gKZuu/pBZM9
+	 GSSg2QBcXbiKp9MJ1BtPZ6gZ4wI+NCZ7A2DJ2tLc2gvPGT7lTMqWHljHa5tN95DZ4d
+	 vi7Z8NDUzR0lJzT5gCbwuepX1sRLNdvFGAij1KCJUCN7iBjyJsLhkfCfIT3wDoapro
+	 dtPE+EnND2CNjVk7ZYOKtbKWmVaB2I58NGXltmibbU3qDps+5sgwyZsQukWCPQ/29c
+	 DrPhBVdym0U8A==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 59/64] livepatch/klp-build: Introduce fix-patch-lines script to avoid __LINE__ diff noise
-Date: Thu, 26 Jun 2025 16:55:46 -0700
-Message-ID: <6ec2a82b31a90f52040846dc9a713d69a658820c.1750980517.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 60/64] livepatch/klp-build: Add stub init code for livepatch modules
+Date: Thu, 26 Jun 2025 16:55:47 -0700
+Message-ID: <47595fe6105e0eca4c219f1f9edbad4b0690a93d.1750980517.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
@@ -71,123 +71,129 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The __LINE__ macro creates challenges for binary diffing.  When a .patch
-file adds or removes lines, it shifts the line numbers for all code
-below it.
-
-This can cause the code generation of functions using __LINE__ to change
-due to the line number constant being embedded in a MOV instruction,
-despite there being no semantic difference.
-
-Avoid such false positives by adding a fix-patch-lines script which can
-be used to insert a #line directive in each patch hunk affecting the
-line numbering.  This script will be used by klp-build, which will be
-introduced in a subsequent patch.
+Add a module initialization stub which can be linked with binary diff
+objects to produce a livepatch module.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- MAINTAINERS                       |  1 +
- scripts/livepatch/fix-patch-lines | 79 +++++++++++++++++++++++++++++++
- 2 files changed, 80 insertions(+)
- create mode 100755 scripts/livepatch/fix-patch-lines
+ scripts/livepatch/init.c | 108 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 108 insertions(+)
+ create mode 100644 scripts/livepatch/init.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0298d9570ca8..dd622368d74b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14006,6 +14006,7 @@ F:	include/linux/livepatch*.h
- F:	kernel/livepatch/
- F:	kernel/module/livepatch.c
- F:	samples/livepatch/
-+F:	scripts/livepatch/
- F:	tools/testing/selftests/livepatch/
- 
- LLC (802.2)
-diff --git a/scripts/livepatch/fix-patch-lines b/scripts/livepatch/fix-patch-lines
-new file mode 100755
-index 000000000000..73c5e3dea46e
+diff --git a/scripts/livepatch/init.c b/scripts/livepatch/init.c
+new file mode 100644
+index 000000000000..2274d8f5a482
 --- /dev/null
-+++ b/scripts/livepatch/fix-patch-lines
-@@ -0,0 +1,79 @@
-+#!/usr/bin/awk -f
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Use #line directives to preserve original __LINE__ numbers across patches to
-+# avoid unwanted compilation changes.
++++ b/scripts/livepatch/init.c
+@@ -0,0 +1,108 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Init code for a livepatch kernel module
++ */
 +
-+BEGIN {
-+	in_hunk = 0
-+	skip    = 0
-+}
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 +
-+/^--- / {
-+	skip = $2 !~ /\.(c|h)$/
-+	print
-+	next
-+}
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/livepatch.h>
 +
-+/^@@/ {
-+	if (skip) {
-+		print
-+		next
-+	}
++extern struct klp_object_ext __start_klp_objects[];
++extern struct klp_object_ext __stop_klp_objects[];
 +
-+	in_hunk = 1
++static struct klp_patch *patch;
 +
-+	# for @@ -1,3 +1,4 @@:
-+	#   1: line number in old file
-+	#   3: how many lines the hunk covers in old file
-+	#   1: line number in new file
-+	#   4: how many lines the hunk covers in new file
-+
-+	match($0, /^@@ -([0-9]+)(,([0-9]+))? \+([0-9]+)(,([0-9]+))? @@/, m)
-+
-+	# Set 'cur' to the old file's line number at the start of the hunk.  It
-+	# gets incremented for every context line and every line removal, so
-+	# that it always represents the old file's current line number.
-+	cur = m[1]
-+
-+	# last = last line number of current hunk
-+	last = cur + (m[3] ? m[3] : 1) - 1
-+
-+	need_line_directive = 0
-+
-+	print
-+	next
-+}
-+
++static int __init livepatch_mod_init(void)
 +{
-+	if (skip || !in_hunk || $0 ~ /^\\ No newline at end of file/) {
-+		print
-+		next
++	struct klp_object *objs;
++	unsigned int nr_objs;
++	int ret;
++
++	nr_objs = __stop_klp_objects - __start_klp_objects;
++
++	if (!nr_objs) {
++		pr_err("nothing to patch!\n");
++		ret = -EINVAL;
++		goto err;
 +	}
 +
-+	# change line
-+	if ($0 ~ /^[+-]/) {
-+		# inject #line after this group of changes
-+		need_line_directive = 1
-+
-+		if ($0 ~ /^-/)
-+			cur++
-+
-+		print
-+		next
++	patch = kzalloc(sizeof(*patch), GFP_KERNEL);
++	if (!patch) {
++		ret = -ENOMEM;
++		goto err;
 +	}
 +
-+	# If this is the first context line after a group of changes, inject
-+	# the #line directive to force the compiler to correct the line
-+	# numbering to match the original file.
-+	if (need_line_directive) {
-+		print "+#line " cur
-+		need_line_directive = 0
++	objs = kzalloc(sizeof(struct klp_object) * (nr_objs + 1),  GFP_KERNEL);
++	if (!objs) {
++		ret = -ENOMEM;
++		goto err_free_patch;
 +	}
 +
-+	if (cur == last)
-+		in_hunk = 0
++	for (int i = 0; i < nr_objs; i++) {
++		struct klp_object_ext *obj_ext = __start_klp_objects + i;
++		struct klp_func_ext *funcs_ext = obj_ext->funcs;
++		unsigned int nr_funcs = obj_ext->nr_funcs;
++		struct klp_func *funcs = objs[i].funcs;
++		struct klp_object *obj = objs + i;
 +
-+	cur++
-+	print
++		funcs = kzalloc(sizeof(struct klp_func) * (nr_funcs + 1), GFP_KERNEL);
++		if (!funcs) {
++			ret = -ENOMEM;
++			for (int j = 0; j < i; j++)
++				kfree(objs[i].funcs);
++			goto err_free_objs;
++		}
++
++		for (int j = 0; j < nr_funcs; j++) {
++			funcs[j].old_name   = funcs_ext[j].old_name;
++			funcs[j].new_func   = funcs_ext[j].new_func;
++			funcs[j].old_sympos = funcs_ext[j].sympos;
++		}
++
++		obj->name = obj_ext->name;
++		obj->funcs = funcs;
++
++		memcpy(&obj->callbacks, &obj_ext->callbacks, sizeof(struct klp_callbacks));
++	}
++
++	patch->mod = THIS_MODULE;
++	patch->objs = objs;
++
++	/* TODO patch->states */
++
++#ifdef KLP_NO_REPLACE
++	patch->replace = false;
++#else
++	patch->replace = true;
++#endif
++
++	return klp_enable_patch(patch);
++
++err_free_objs:
++	kfree(objs);
++err_free_patch:
++	kfree(patch);
++err:
++	return ret;
 +}
++
++static void __exit livepatch_mod_exit(void)
++{
++	unsigned int nr_objs;
++
++	nr_objs = __stop_klp_objects - __start_klp_objects;
++
++	for (int i = 0; i < nr_objs; i++)
++		kfree(patch->objs[i].funcs);
++
++	kfree(patch->objs);
++	kfree(patch);
++}
++
++module_init(livepatch_mod_init);
++module_exit(livepatch_mod_exit);
++MODULE_LICENSE("GPL");
++MODULE_INFO(livepatch, "Y");
++MODULE_DESCRIPTION("Livepatch module");
 -- 
 2.49.0
 
