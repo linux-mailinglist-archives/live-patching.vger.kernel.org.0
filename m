@@ -1,53 +1,53 @@
-Return-Path: <live-patching+bounces-1598-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1599-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 61EBFAEB51B
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 12:38:01 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DF10FAEB54B
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 12:48:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 82E8964603C
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 10:33:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4D9CA3BDE2B
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 10:48:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4D4F1298CD7;
-	Fri, 27 Jun 2025 10:32:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0BD4A298CD2;
+	Fri, 27 Jun 2025 10:48:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="UoviRh7l"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="izQjjMRp"
 X-Original-To: live-patching@vger.kernel.org
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F5A29824B;
-	Fri, 27 Jun 2025 10:32:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75471298243;
+	Fri, 27 Jun 2025 10:48:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751020327; cv=none; b=iE/SrSTj4qsbOVWjILI2OuN76TSVtUhT8LPsi5AyFsnQZ+GhG47ROxbISIms0Fstae09Z+qSzW1lNBWjfZbfH1bId6fcmIWPFqJe4pX9w6lLo5W6mDIIGHQMBz6QgCG0v3EC3ILOBSIM1HvJ3MF96QjZrNCRDqPkjSQwJRbHoak=
+	t=1751021312; cv=none; b=FG0EKUHVszcKMHFvQu6LDqb664DHTfTuCP1OkXGFy+hfmKDzrEqHfO+Cyx1/pe/io/P2wjKfzOhghapgGNY2sThBrkuT6Z0YLOkPfvJXC7FWSBMntQ/SFqonQKjDZvCl5zpbfLCCmvdLAkDBDMuUkOrxj3LA24E5hTkw/gMlL6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751020327; c=relaxed/simple;
-	bh=dqWLPFhz8rc1ZTXlMaJumoRCie1NT15EY7+LO9HcNC8=;
+	s=arc-20240116; t=1751021312; c=relaxed/simple;
+	bh=zTaImzQvyCJ+Z/cogZQ7ixDMf1PZF1A8ODsuy+Dc06Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IaYCW9+YeGfFuf6ts201KsR8FY4N2mmYhb9X/rsus5xaT89c8YZeVuiWniRaym5tHLQlDY8B48ceCpZ4rZOQxktLywS+ZB2LT1e80RN2aZJrYF1if4Bh8r7meaA4sbrwxaG3VMz5zA/VqWsvuQe6oP+wg2H7WtwArXr2RudWHvM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=UoviRh7l; arc=none smtp.client-ip=90.155.50.34
+	 Content-Type:Content-Disposition:In-Reply-To; b=bO493XkEfH87/bipCTSWPar6BK93cZf8gFCEU6sCr50zPKEhS7EddSXLuu3AEau7YiimxS+Kkx9ztp0cdWs/eiKvZC0I3CxWwu5MjGAW6+E/BEeEJcgbT65LzmXd/AAYusJi+gcpjzchvCLhfRYwpTN7QTRD33habilbT14tKaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=izQjjMRp; arc=none smtp.client-ip=90.155.92.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
 	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=a5DbHwM2RC/F41mKJ6XtRMRcJqm5DzALFSyCg+z/++Y=; b=UoviRh7l6mtdS4pvSN45NIy1GS
-	Q1xm1CVZa0z5bPkHbwkuDfLXc0hMptb5m/xORqfEiqT7sBQP0QUe0sX2uRp5yoYVei+Y+qB+bIwxS
-	g4HTETlpY8Tb0RvGNptLJo52+FkJxz55DgWNclVcnXeAz+a1CPwG4ojcOkGivHp4yS3QOq9lq+yOJ
-	hnD4b8USppfLMAV5pcJ2McDMP3TtbthuEeRGT6eGb5EqzGjCG2vToYO840NZSX+m+rS6USYox+gRT
-	t5VtAg5Yq4uyhNV3iFAtxvl8ZkRkShBxsFEtCP0pThZOfyknCw31i3rSsY/8h+u876MCgicV9733n
-	2Z2pFScg==;
+	bh=BLbSDUVkOwlXKe5Iqrl5Hyd0R2s4vXLOwWtBUjFxWpA=; b=izQjjMRpe6V8jQkCAysNrKkrkV
+	nVxOADdvPxa6iSh1wym/acNjmdvxopPXyaA/Y9MsHyFq6wMrh8V4hdPqmSLPrShox6o08Fw4FNbSu
+	gcArQAut4Eq8nWh/w6ELSbTsTfTN030NMIG/eLV2GggjZcVOjwmKX06dMvHPl380UQE0JHE61JOmf
+	vDfgUjDLmg8UZPlILY0dRkpZ7HTeZtiRXLpEKLrkm7f8ov3OCAxn+D0NM3Tysm26YA0xTgLej0iFF
+	PuVeKunew8NTaNs58jDXJcw0s9UTfnkqRzQkbvmQRGpzrWaxbrJMNUAFxeQZTRliJOuXqpFskRRth
+	+V3H90bg==;
 Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uV6NC-0000000Dptg-3zkC;
-	Fri, 27 Jun 2025 10:31:59 +0000
+	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uV6d1-00000006Ifm-2mOg;
+	Fri, 27 Jun 2025 10:48:19 +0000
 Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 88146300192; Fri, 27 Jun 2025 12:31:58 +0200 (CEST)
-Date: Fri, 27 Jun 2025 12:31:58 +0200
+	id AE99E30023C; Fri, 27 Jun 2025 12:48:18 +0200 (CEST)
+Date: Fri, 27 Jun 2025 12:48:18 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
@@ -61,10 +61,11 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: Re: [PATCH v3 29/64] objtool: Mark prefix functions
-Message-ID: <20250627103158.GV1613200@noisy.programming.kicks-ass.net>
+Subject: Re: [PATCH v3 44/64] x86/jump_label: Define ELF section entry size
+ for jump labels
+Message-ID: <20250627104818.GW1613200@noisy.programming.kicks-ass.net>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
- <f277ca3e78d662268d6303637b1bba71c2a22b1f.1750980517.git.jpoimboe@kernel.org>
+ <7217634a8158e56703dfe22199f1b9c08c501ae3.1750980517.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -73,72 +74,77 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f277ca3e78d662268d6303637b1bba71c2a22b1f.1750980517.git.jpoimboe@kernel.org>
+In-Reply-To: <7217634a8158e56703dfe22199f1b9c08c501ae3.1750980517.git.jpoimboe@kernel.org>
 
-On Thu, Jun 26, 2025 at 04:55:16PM -0700, Josh Poimboeuf wrote:
-> In preparation for the objtool klp diff subcommand, introduce a flag to
-> identify __pfx_*() and __cfi_*() functions in advance so they don't need
-> to be manually identified every time a check is needed.
+On Thu, Jun 26, 2025 at 04:55:31PM -0700, Josh Poimboeuf wrote:
+> In preparation for the objtool klp diff subcommand, define the entry
+> size for the __jump_table section in its ELF header.  This will allow
+> tooling to extract individual entries.
 > 
 > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 > ---
->  tools/objtool/check.c               | 3 +--
->  tools/objtool/elf.c                 | 4 ++++
->  tools/objtool/include/objtool/elf.h | 6 ++++++
->  3 files changed, 11 insertions(+), 2 deletions(-)
+>  arch/x86/include/asm/jump_label.h | 17 +++++++++++------
+>  kernel/bounds.c                   |  4 ++++
+>  2 files changed, 15 insertions(+), 6 deletions(-)
 > 
-> diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-> index 80bafcdb42af..55cc3a2a21c9 100644
-> --- a/tools/objtool/check.c
-> +++ b/tools/objtool/check.c
-> @@ -3564,8 +3564,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+> diff --git a/arch/x86/include/asm/jump_label.h b/arch/x86/include/asm/jump_label.h
+> index cd21554b3675..7a6b0e5d85c1 100644
+> --- a/arch/x86/include/asm/jump_label.h
+> +++ b/arch/x86/include/asm/jump_label.h
+> @@ -12,12 +12,17 @@
+>  #include <linux/stringify.h>
+>  #include <linux/types.h>
 >  
->  		if (func && insn_func(insn) && func != insn_func(insn)->pfunc) {
->  			/* Ignore KCFI type preambles, which always fall through */
-> -			if (!strncmp(func->name, "__cfi_", 6) ||
-> -			    !strncmp(func->name, "__pfx_", 6))
-> +			if (is_prefix_func(func))
->  				return 0;
->  
->  			if (file->ignore_unreachables)
-> diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-> index 59568381486c..1bb86151243a 100644
-> --- a/tools/objtool/elf.c
-> +++ b/tools/objtool/elf.c
-> @@ -442,6 +442,10 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
->  	elf_hash_add(symbol, &sym->hash, sym->idx);
->  	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
->  
-> +	if (is_func_sym(sym) &&
-> +	    (strstarts(sym->name, "__pfx_") || strstarts(sym->name, "__cfi_")))
-> +		sym->prefix = 1;
+> -#define JUMP_TABLE_ENTRY(key, label)			\
+> -	".pushsection __jump_table,  \"a\"\n\t"		\
+> -	_ASM_ALIGN "\n\t"				\
+> -	".long 1b - . \n\t"				\
+> -	".long " label " - . \n\t"			\
+> -	_ASM_PTR " " key " - . \n\t"			\
+> +#ifndef COMPILE_OFFSETS
+> +#include <generated/bounds.h>
+> +#endif
 > +
->  	if (is_func_sym(sym) && strstr(sym->name, ".cold"))
->  		sym->cold = 1;
->  	sym->pfunc = sym->cfunc = sym;
-> diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-> index f41496b0ad8f..842faec1b9a9 100644
-> --- a/tools/objtool/include/objtool/elf.h
-> +++ b/tools/objtool/include/objtool/elf.h
-> @@ -72,6 +72,7 @@ struct symbol {
->  	u8 frame_pointer     : 1;
->  	u8 ignore	     : 1;
->  	u8 cold		     : 1;
-> +	u8 prefix	     : 1;
->  	struct list_head pv_target;
->  	struct reloc *relocs;
->  	struct section *group_sec;
-> @@ -229,6 +230,11 @@ static inline bool is_local_sym(struct symbol *sym)
->  	return sym->bind == STB_LOCAL;
->  }
+> +#define JUMP_TABLE_ENTRY(key, label)				\
+> +	".pushsection __jump_table,  \"aM\", @progbits, "	\
+> +	__stringify(JUMP_ENTRY_SIZE) "\n\t"			\
+
+Argh, can you please not do this line-break. Yes it'll be long, but this
+is most confusing.
+
+> +	_ASM_ALIGN "\n\t"					\
+> +	".long 1b - . \n\t"					\
+> +	".long " label " - . \n\t"				\
+> +	_ASM_PTR " " key " - . \n\t"				\
+>  	".popsection \n\t"
 >  
-> +static inline bool is_prefix_func(struct symbol *sym)
-> +{
-> +	return is_func_sym(sym) && sym->prefix;
-> +}
+>  /* This macro is also expanded on the Rust side. */
+> diff --git a/kernel/bounds.c b/kernel/bounds.c
+> index 02b619eb6106..e4c7ded3dc48 100644
+> --- a/kernel/bounds.c
+> +++ b/kernel/bounds.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/kbuild.h>
+>  #include <linux/log2.h>
+>  #include <linux/spinlock_types.h>
+> +#include <linux/jump_label.h>
+>  
+>  int main(void)
+>  {
+> @@ -29,6 +30,9 @@ int main(void)
+>  #else
+>  	DEFINE(LRU_GEN_WIDTH, 0);
+>  	DEFINE(__LRU_REFS_WIDTH, 0);
+> +#endif
+> +#if defined(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE) && defined(CONFIG_JUMP_LABEL)
 
-func_is_prefix() ?
+How is HAVE_ARCH_JUMP_LABEL_RELATIVE relevant here?
 
-Also, since we only ever set sym->prefix when is_func_sym(), this helper
-could avoid checking that again.
+> +	DEFINE(JUMP_ENTRY_SIZE, sizeof(struct jump_entry));
+>  #endif
+>  	/* End of constants */
+>  
+> -- 
+> 2.49.0
+> 
 
