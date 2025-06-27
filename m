@@ -1,172 +1,113 @@
-Return-Path: <live-patching+bounces-1593-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1595-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7CC84AEAB88
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 02:08:16 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 96E05AEB28F
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 11:19:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 751197B577E
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 00:06:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D97CF566F62
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 09:18:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DFAE2F0E4D;
-	Thu, 26 Jun 2025 23:56:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FA302C08BB;
+	Fri, 27 Jun 2025 09:13:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lU0R/nLA"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bwkUVUgA"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 364412F0E32;
-	Thu, 26 Jun 2025 23:56:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31CAB293C66;
+	Fri, 27 Jun 2025 09:13:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750982217; cv=none; b=Ubempcyh55tSlt/aAXJoWL3dOnnQ6Vf8NAZ/6ibkHYLYNjNAQz6hJrLPR+wLES8CNkGQCxydnQ1kzmktRpdBq6v2L+/LTP4w0urrN7fhOD3OY/SUWB98miCWLHtPkd76oBL3HZNKzb3pBbEmgdnM9Xb/gr4BhcVcEyZoXlkMGW4=
+	t=1751015606; cv=none; b=lUaE+VmLQcUE5lDcaztPsotj/pRamfEsViGnk7cZWn3QFGyvkmd8GN6wqLatdHVOqGpcR4xrQw2JM+cRKp82e733uv9uMXUjkdUALvz0MZoFQyWk7qR4XgH+wE8U92lIQDwYBX9ulTvABcfgN+W1F5MFyi5B9gz02MAuRgHSyJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750982217; c=relaxed/simple;
-	bh=DorFPQ5015ItCzQravZtk2SQC+7LD/D+QbPqRtGH9D4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WAxme4PA5r1n1DxsopvnYnXOoF1lvikFWCcMyNu5aXhvuEfPqM7DcuiVv6WSlb7Tolv0JOxT3pQ/YGS7ziAF4GcbIIeBgSRD1HEK9nTh7Hq5K+5pDoNFxdlpwB7O8Frrkju0wRxbtWiFpy8BQfR1BM4ogkjTFsK43A/e5opra0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lU0R/nLA; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8384FC4CEF2;
-	Thu, 26 Jun 2025 23:56:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750982217;
-	bh=DorFPQ5015ItCzQravZtk2SQC+7LD/D+QbPqRtGH9D4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lU0R/nLAilESod85HD4lH55CW10HvaJCGCeZCSooJHKD12coO87kUow2rclAECadv
-	 Y+KcCPwFcz4tlRf0s9i8DXs4jvCvALXsD+Ns+l4IJktr3z7HSqrYoTg+JTkV/V+nrf
-	 t+HU77C0U9mb3EbHCYlXXdWHmeD6stCuoiyN3d8G4F2TZu0xyqCtRh9CvwGmgX7NhG
-	 u90hppNvTEvjL3UgF8PScyBQ61Sp6bygH1c1EiG1qozLjbaSqtHFfhyeLCO2L8oAvk
-	 hsqH6TXzZECWsl6rB+xYdyKrD/GkzvxxJASahMcVpXcTDeKvpqFEocxdWKZNUbgo7G
-	 OGIzmF6iuYrBw==
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: x86@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Petr Mladek <pmladek@suse.com>,
-	Miroslav Benes <mbenes@suse.cz>,
+	s=arc-20240116; t=1751015606; c=relaxed/simple;
+	bh=poWVzOnHetZgZU7IdKfAmHG/waKkAXe7Ld6cd9s7APc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M5MK8fWV3iYfxFWXr6BF8btHtVb9jyjdbfpFjZOpabIDixcj76OVhTf7bkQbzWYcVeodwKZIQlfN8/lNgileu2d6U5PKk0Dxiw4x4m5ZsghUhV+LsN0d8TL0CJd7+6LfjLCOCNlS9domi2U1JuknW+hByOVvke3AYYSWgW0Vk4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=bwkUVUgA; arc=none smtp.client-ip=90.155.92.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=jm4R/gQ1agew1insNV1QFxJtrJoIL+kzIrLuWUHpbLw=; b=bwkUVUgA1yQ6yfsPR8uVtfI39r
+	KN4WCmC9f8s3NSJujCXr7Zi4Sk18FCbCBFmxt4XhBQbgPHlFdy3u5cUZVaEJuYAg9n40KyepMrbQK
+	RwYW/bObLrrdSsPZjZppOyfH+6jS1JqfO4qLsn2LvpmQXsLBIarS4i5Db3EF1PckJZdeneDwTPw8K
+	Rij7AoW/mHkOAzv4G6iUHGgNXiSDsRMGV5iHO68UsMnYpSu516bbEzebbtstDkhsRGheE5Wkzpi6T
+	zNm+yukOhGzytWL/l7BaWD9nHQqvsrhHECwXQ9GlIDk+dkmUVWoZaC5HojsVvDMKRVqt7x74dHgS3
+	DCVMovCQ==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uV58x-00000006HbP-3n0F;
+	Fri, 27 Jun 2025 09:13:12 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id B81ED300222; Fri, 27 Jun 2025 11:13:10 +0200 (CEST)
+Date: Fri, 27 Jun 2025 11:13:10 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
+	Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
-	live-patching@vger.kernel.org,
-	Song Liu <song@kernel.org>,
-	laokz <laokz@foxmail.com>,
-	Jiri Kosina <jikos@kernel.org>,
+	live-patching@vger.kernel.org, Song Liu <song@kernel.org>,
+	laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>,
 	Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Weinan Liu <wnliu@google.com>,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: [PATCH v3 64/64] livepatch: Introduce source code helpers for livepatch modules
-Date: Thu, 26 Jun 2025 16:55:51 -0700
-Message-ID: <2e8af547dd0aa9878f52806e1bf9b89e5d263ee2.1750980517.git.jpoimboe@kernel.org>
-X-Mailer: git-send-email 2.49.0
-In-Reply-To: <cover.1750980516.git.jpoimboe@kernel.org>
+Subject: Re: [PATCH v3 17/64] objtool: Fix weak symbol detection
+Message-ID: <20250627091310.GT1613200@noisy.programming.kicks-ass.net>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
+ <19b1efe3f1f6bac2268497e609d833903aa99599.1750980517.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <19b1efe3f1f6bac2268497e609d833903aa99599.1750980517.git.jpoimboe@kernel.org>
 
-Add some helper macros which can be used by livepatch source .patch
-files to register callbacks, convert static calls to regular calls where
-needed, and patch syscalls.
+On Thu, Jun 26, 2025 at 04:55:04PM -0700, Josh Poimboeuf wrote:
+> find_symbol_hole_containing() fails to find a symbol hole (aka stripped
+> weak symbol) if its section has no symbols before the hole.  This breaks
+> weak symbol detection if -ffunction-sections is enabled.
+> 
+> Fix that by allowing the interval tree to contain section symbols, which
+> are always at offset zero for a given section.
+> 
+> Fixes a bunch of (-ffunction-sections) warnings like:
+> 
+>   vmlinux.o: warning: objtool: .text.__x64_sys_io_setup+0x10: unreachable instruction
+> 
+> Fixes: 4adb23686795 ("objtool: Ignore extra-symbol code")
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> ---
+>  tools/include/linux/interval_tree_generic.h | 2 +-
+>  tools/objtool/elf.c                         | 8 ++++----
+>  2 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/tools/include/linux/interval_tree_generic.h b/tools/include/linux/interval_tree_generic.h
+> index aaa8a0767aa3..c0ec9dbdfbaf 100644
+> --- a/tools/include/linux/interval_tree_generic.h
+> +++ b/tools/include/linux/interval_tree_generic.h
+> @@ -77,7 +77,7 @@ ITSTATIC void ITPREFIX ## _remove(ITSTRUCT *node,			      \
+>   *   Cond2: start <= ITLAST(node)					      \
+>   */									      \
+>  									      \
+> -static ITSTRUCT *							      \
+> +ITSTATIC ITSTRUCT *							      \
+>  ITPREFIX ## _subtree_search(ITSTRUCT *node, ITTYPE start, ITTYPE last)	      \
+>  {									      \
+>  	while (true) {							      \
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
----
- include/linux/livepatch_helpers.h | 79 +++++++++++++++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 include/linux/livepatch_helpers.h
-
-diff --git a/include/linux/livepatch_helpers.h b/include/linux/livepatch_helpers.h
-new file mode 100644
-index 000000000000..337bee91d7da
---- /dev/null
-+++ b/include/linux/livepatch_helpers.h
-@@ -0,0 +1,79 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_LIVEPATCH_HELPERS_H
-+#define _LINUX_LIVEPATCH_HELPERS_H
-+
-+/*
-+ * Interfaces for use by livepatch patches
-+ */
-+
-+#include <linux/syscalls.h>
-+#include <linux/livepatch.h>
-+
-+#ifdef MODULE
-+#define KLP_OBJNAME __KBUILD_MODNAME
-+#else
-+#define KLP_OBJNAME vmlinux
-+#endif
-+
-+/* Livepatch callback registration */
-+
-+#define KLP_CALLBACK_PTRS ".discard.klp_callback_ptrs"
-+
-+#define KLP_PRE_PATCH_CALLBACK(func)						\
-+	klp_pre_patch_t __used __section(KLP_CALLBACK_PTRS)			\
-+		__PASTE(__KLP_PRE_PATCH_PREFIX, KLP_OBJNAME) = func
-+
-+#define KLP_POST_PATCH_CALLBACK(func)						\
-+	klp_post_patch_t __used __section(KLP_CALLBACK_PTRS)			\
-+		__PASTE(__KLP_POST_PATCH_PREFIX, KLP_OBJNAME) = func
-+
-+#define KLP_PRE_UNPATCH_CALLBACK(func)						\
-+	klp_pre_unpatch_t __used __section(KLP_CALLBACK_PTRS)			\
-+		__PASTE(__KLP_PRE_UNPATCH_PREFIX, KLP_OBJNAME) = func
-+
-+#define KLP_POST_UNPATCH_CALLBACK(func)						\
-+	klp_post_unpatch_t __used __section(KLP_CALLBACK_PTRS)			\
-+		__PASTE(__KLP_POST_UNPATCH_PREFIX, KLP_OBJNAME) = func
-+
-+/*
-+ * KLP_STATIC_CALL
-+ *
-+ * Replace static_call() usage with this macro when create-diff-object
-+ * recommends it due to the original static call key living in a module.
-+ *
-+ * This converts the static call to a regular indirect call.
-+ */
-+#define KLP_STATIC_CALL(name) \
-+	((typeof(STATIC_CALL_TRAMP(name))*)(STATIC_CALL_KEY(name).func))
-+
-+/* Syscall patching */
-+
-+#define KLP_SYSCALL_DEFINE1(name, ...) KLP_SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
-+#define KLP_SYSCALL_DEFINE2(name, ...) KLP_SYSCALL_DEFINEx(2, _##name, __VA_ARGS__)
-+#define KLP_SYSCALL_DEFINE3(name, ...) KLP_SYSCALL_DEFINEx(3, _##name, __VA_ARGS__)
-+#define KLP_SYSCALL_DEFINE4(name, ...) KLP_SYSCALL_DEFINEx(4, _##name, __VA_ARGS__)
-+#define KLP_SYSCALL_DEFINE5(name, ...) KLP_SYSCALL_DEFINEx(5, _##name, __VA_ARGS__)
-+#define KLP_SYSCALL_DEFINE6(name, ...) KLP_SYSCALL_DEFINEx(6, _##name, __VA_ARGS__)
-+
-+#define KLP_SYSCALL_DEFINEx(x, sname, ...)				\
-+	__KLP_SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
-+
-+#ifdef CONFIG_X86_64
-+// TODO move this to arch/x86/include/asm/syscall_wrapper.h and share code
-+#define __KLP_SYSCALL_DEFINEx(x, name, ...)			\
-+	static long __se_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__));	\
-+	static inline long __klp_do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__));\
-+	__X64_SYS_STUBx(x, name, __VA_ARGS__)				\
-+	__IA32_SYS_STUBx(x, name, __VA_ARGS__)				\
-+	static long __se_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__))	\
-+	{								\
-+		long ret = __klp_do_sys##name(__MAP(x,__SC_CAST,__VA_ARGS__));\
-+		__MAP(x,__SC_TEST,__VA_ARGS__);				\
-+		__PROTECT(x, ret,__MAP(x,__SC_ARGS,__VA_ARGS__));	\
-+		return ret;						\
-+	}								\
-+	static inline long __klp_do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
-+
-+#endif
-+
-+#endif /* _LINUX_LIVEPATCH_HELPERS_H */
--- 
-2.49.0
-
+IIRC this file is a direct copy from the kernel; this should probably be
+changed in both?
 
