@@ -1,53 +1,53 @@
-Return-Path: <live-patching+bounces-1599-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1600-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DF10FAEB54B
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 12:48:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4EC34AEB567
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 12:51:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4D9CA3BDE2B
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 10:48:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 90EC03A5C51
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 10:51:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0BD4A298CD2;
-	Fri, 27 Jun 2025 10:48:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A257B2980B2;
+	Fri, 27 Jun 2025 10:51:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="izQjjMRp"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Nmw6WcqH"
 X-Original-To: live-patching@vger.kernel.org
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75471298243;
-	Fri, 27 Jun 2025 10:48:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2311D224893;
+	Fri, 27 Jun 2025 10:51:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751021312; cv=none; b=FG0EKUHVszcKMHFvQu6LDqb664DHTfTuCP1OkXGFy+hfmKDzrEqHfO+Cyx1/pe/io/P2wjKfzOhghapgGNY2sThBrkuT6Z0YLOkPfvJXC7FWSBMntQ/SFqonQKjDZvCl5zpbfLCCmvdLAkDBDMuUkOrxj3LA24E5hTkw/gMlL6c=
+	t=1751021499; cv=none; b=MoOWkoK1Nl2sRve4sDY6c04jxq2qg1q/Kk55v///mPGNzIAKbcDJudOzT6oTd492xZQM0LJo3qeWn7gIm9XQfsiQ9IkaCDjkRYdtQC7JPTSdsKIYWghLtvMzyv+L/k5GdPQizpqsj+v3Lndrqcpi55pXVXUu6vhY+aq5F5PwwXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751021312; c=relaxed/simple;
-	bh=zTaImzQvyCJ+Z/cogZQ7ixDMf1PZF1A8ODsuy+Dc06Y=;
+	s=arc-20240116; t=1751021499; c=relaxed/simple;
+	bh=jdYC4qkQlpXy/vbbM74VX4/Gy52Ex+KIwLqtC2cGaxs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bO493XkEfH87/bipCTSWPar6BK93cZf8gFCEU6sCr50zPKEhS7EddSXLuu3AEau7YiimxS+Kkx9ztp0cdWs/eiKvZC0I3CxWwu5MjGAW6+E/BEeEJcgbT65LzmXd/AAYusJi+gcpjzchvCLhfRYwpTN7QTRD33habilbT14tKaE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=izQjjMRp; arc=none smtp.client-ip=90.155.92.199
+	 Content-Type:Content-Disposition:In-Reply-To; b=L9/yodFqJD0/xP7DAKQhw9FBr058Gk+LKRPMmrpzTEN8bU4HKJb8o5M7FR7aU6upFasFbDHBSBRDY/GpefYoubsGGgwKypujsfz2Pgp2Hadl5321VRjdGvRHALNiBwtpRGub73TfYZCfhnc6CY+xiluD68bB0pTztTXmkPiXBXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=Nmw6WcqH; arc=none smtp.client-ip=90.155.50.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
 	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=BLbSDUVkOwlXKe5Iqrl5Hyd0R2s4vXLOwWtBUjFxWpA=; b=izQjjMRpe6V8jQkCAysNrKkrkV
-	nVxOADdvPxa6iSh1wym/acNjmdvxopPXyaA/Y9MsHyFq6wMrh8V4hdPqmSLPrShox6o08Fw4FNbSu
-	gcArQAut4Eq8nWh/w6ELSbTsTfTN030NMIG/eLV2GggjZcVOjwmKX06dMvHPl380UQE0JHE61JOmf
-	vDfgUjDLmg8UZPlILY0dRkpZ7HTeZtiRXLpEKLrkm7f8ov3OCAxn+D0NM3Tysm26YA0xTgLej0iFF
-	PuVeKunew8NTaNs58jDXJcw0s9UTfnkqRzQkbvmQRGpzrWaxbrJMNUAFxeQZTRliJOuXqpFskRRth
-	+V3H90bg==;
+	bh=jqQw3L3y4X4QwIjNFZ0bS1J78cjAWZ3Xw0qp4ewaJR8=; b=Nmw6WcqH0R3LQ38gVD/bUVIW6p
+	9cCqI27TbG4yLizc6fXvtGcZg8uLHVAtx8V4DOEkZXDv9MMtmoXKDQYBsvVfibTs/5nSV/hAzidQ6
+	DBzPTSyQiVcIk7WP0rZAYnmdzHfVZwouvyj5Fkk8TIo7Q7EGLrltnSfoQMz3C7Tjq/OTitU+ALOb7
+	Zr0zKEV6xybJTY4xJo0nxTmi7HxnAkkcr8KWSgSQcSMpqpJLWoLpxA2uj9DdOuhocAiEcn0Chnasd
+	f9K5YAz2okek3KfybZTVej1jQOBpF3cnjodma2z9F6fTProeq5BtFRXAVbmGKEWdSBMVtdkj9v1NK
+	Wjxi5Fvw==;
 Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uV6d1-00000006Ifm-2mOg;
-	Fri, 27 Jun 2025 10:48:19 +0000
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uV6g2-0000000Drww-0LUu;
+	Fri, 27 Jun 2025 10:51:26 +0000
 Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id AE99E30023C; Fri, 27 Jun 2025 12:48:18 +0200 (CEST)
-Date: Fri, 27 Jun 2025 12:48:18 +0200
+	id 9598B30017D; Fri, 27 Jun 2025 12:51:25 +0200 (CEST)
+Date: Fri, 27 Jun 2025 12:51:25 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
@@ -61,11 +61,11 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>
-Subject: Re: [PATCH v3 44/64] x86/jump_label: Define ELF section entry size
- for jump labels
-Message-ID: <20250627104818.GW1613200@noisy.programming.kicks-ass.net>
+Subject: Re: [PATCH v3 45/64] x86/static_call: Define ELF section entry size
+ of static calls
+Message-ID: <20250627105125.GX1613200@noisy.programming.kicks-ass.net>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
- <7217634a8158e56703dfe22199f1b9c08c501ae3.1750980517.git.jpoimboe@kernel.org>
+ <6c3466449d8c721af903ccc5e16251e36f678236.1750980517.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -74,77 +74,38 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7217634a8158e56703dfe22199f1b9c08c501ae3.1750980517.git.jpoimboe@kernel.org>
+In-Reply-To: <6c3466449d8c721af903ccc5e16251e36f678236.1750980517.git.jpoimboe@kernel.org>
 
-On Thu, Jun 26, 2025 at 04:55:31PM -0700, Josh Poimboeuf wrote:
+On Thu, Jun 26, 2025 at 04:55:32PM -0700, Josh Poimboeuf wrote:
 > In preparation for the objtool klp diff subcommand, define the entry
-> size for the __jump_table section in its ELF header.  This will allow
-> tooling to extract individual entries.
+> size for the .static_call_sites section in its ELF header.  This will
+> allow tooling to extract individual entries.
 > 
 > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 > ---
->  arch/x86/include/asm/jump_label.h | 17 +++++++++++------
->  kernel/bounds.c                   |  4 ++++
->  2 files changed, 15 insertions(+), 6 deletions(-)
+>  arch/x86/include/asm/static_call.h      |  3 ++-
+>  include/linux/static_call.h             |  6 ------
+>  include/linux/static_call_types.h       |  6 ++++++
+>  kernel/bounds.c                         |  4 ++++
+>  tools/include/linux/static_call_types.h |  6 ++++++
+>  tools/objtool/check.c                   | 11 +++++++++--
+>  6 files changed, 27 insertions(+), 9 deletions(-)
 > 
-> diff --git a/arch/x86/include/asm/jump_label.h b/arch/x86/include/asm/jump_label.h
-> index cd21554b3675..7a6b0e5d85c1 100644
-> --- a/arch/x86/include/asm/jump_label.h
-> +++ b/arch/x86/include/asm/jump_label.h
-> @@ -12,12 +12,17 @@
->  #include <linux/stringify.h>
->  #include <linux/types.h>
+> diff --git a/arch/x86/include/asm/static_call.h b/arch/x86/include/asm/static_call.h
+> index 41502bd2afd6..e03ad9bbbf59 100644
+> --- a/arch/x86/include/asm/static_call.h
+> +++ b/arch/x86/include/asm/static_call.h
+> @@ -58,7 +58,8 @@
+>  	ARCH_DEFINE_STATIC_CALL_TRAMP(name, __static_call_return0)
 >  
-> -#define JUMP_TABLE_ENTRY(key, label)			\
-> -	".pushsection __jump_table,  \"a\"\n\t"		\
-> -	_ASM_ALIGN "\n\t"				\
-> -	".long 1b - . \n\t"				\
-> -	".long " label " - . \n\t"			\
-> -	_ASM_PTR " " key " - . \n\t"			\
-> +#ifndef COMPILE_OFFSETS
-> +#include <generated/bounds.h>
-> +#endif
-> +
-> +#define JUMP_TABLE_ENTRY(key, label)				\
-> +	".pushsection __jump_table,  \"aM\", @progbits, "	\
-> +	__stringify(JUMP_ENTRY_SIZE) "\n\t"			\
+>  #define ARCH_ADD_TRAMP_KEY(name)					\
+> -	asm(".pushsection .static_call_tramp_key, \"a\"		\n"	\
+> +	asm(".pushsection .static_call_tramp_key, \"aM\", @progbits, "	\
+> +	    __stringify(STATIC_CALL_TRAMP_KEY_SIZE) "\n"		\
 
-Argh, can you please not do this line-break. Yes it'll be long, but this
-is most confusing.
+More horrifically confusing indenting.
 
-> +	_ASM_ALIGN "\n\t"					\
-> +	".long 1b - . \n\t"					\
-> +	".long " label " - . \n\t"				\
-> +	_ASM_PTR " " key " - . \n\t"				\
->  	".popsection \n\t"
->  
->  /* This macro is also expanded on the Rust side. */
-> diff --git a/kernel/bounds.c b/kernel/bounds.c
-> index 02b619eb6106..e4c7ded3dc48 100644
-> --- a/kernel/bounds.c
-> +++ b/kernel/bounds.c
-> @@ -13,6 +13,7 @@
->  #include <linux/kbuild.h>
->  #include <linux/log2.h>
->  #include <linux/spinlock_types.h>
-> +#include <linux/jump_label.h>
->  
->  int main(void)
->  {
-> @@ -29,6 +30,9 @@ int main(void)
->  #else
->  	DEFINE(LRU_GEN_WIDTH, 0);
->  	DEFINE(__LRU_REFS_WIDTH, 0);
-> +#endif
-> +#if defined(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE) && defined(CONFIG_JUMP_LABEL)
-
-How is HAVE_ARCH_JUMP_LABEL_RELATIVE relevant here?
-
-> +	DEFINE(JUMP_ENTRY_SIZE, sizeof(struct jump_entry));
->  #endif
->  	/* End of constants */
->  
-> -- 
-> 2.49.0
-> 
+>  	    ".long " STATIC_CALL_TRAMP_STR(name) " - .		\n"	\
+>  	    ".long " STATIC_CALL_KEY_STR(name) " - .		\n"	\
+>  	    ".popsection					\n")
 
