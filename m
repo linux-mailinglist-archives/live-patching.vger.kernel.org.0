@@ -1,53 +1,53 @@
-Return-Path: <live-patching+bounces-1601-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1602-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D757AEB571
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 12:52:22 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E03F8AEB57E
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 12:53:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 711C83AF6CF
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 10:51:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5DEFC16A9CC
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 10:53:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 122B7298CAB;
-	Fri, 27 Jun 2025 10:52:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EF3A298CB0;
+	Fri, 27 Jun 2025 10:53:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="WoHOtl4o"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="N2fbB8AQ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95CB72980B2;
-	Fri, 27 Jun 2025 10:52:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC469298CAB;
+	Fri, 27 Jun 2025 10:53:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751021535; cv=none; b=QPXg9Nn2J1Bb/nRO3eE83F4yROYGUg9CdkX8muwwBMo+y9/H6f2qLwcgsCyu8iW7RsiSv8OjcqqXHNHItybpbTUzIA215YoWpQkjsZd20mrUwOgqnPhF05HicqlhEFkvjVnmj14wqOWRQxjpreBFIUJ8kQgsI+Ns+xvnDYA1Oeg=
+	t=1751021618; cv=none; b=D/D73PvdmTNYO4FQOLDBddowdFjCs27k5X5fDjMHKyrWPaCnrLbipRRvk5hEbTyIrAl007cghRDOgmKTv63FRYCn/iI1IHUJ72pmdFI1mnn8Urx23b7zQkryfOSAMu635zSIsv8Z+GYAmG8SXFgmOnJJywgkaGwfN4Z5v2CgCBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751021535; c=relaxed/simple;
-	bh=HbR6SPn3F0JueHJ4F/q6o4HfMOlQLCupl1O9Rireycc=;
+	s=arc-20240116; t=1751021618; c=relaxed/simple;
+	bh=pxfn6oqKdlWo0GE6HNa/lOA15Wgs5GoyzyY0cfYI/yY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qn/L+BrJGT9fnHLGzAP2dy0jaEyOZmRuIAHh8CciCJFP3yqdKL/cUf2POVpvko6ToHg4qo60vbnQM/JsNDSNEjAEa4CeXLhqM7kerK29DxIJ0zM2GB/xJLfQA6dBg2UCB1N3uvU2EMEuEftFfBImaRFbnq/hAcyeP6mEK51MO1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=WoHOtl4o; arc=none smtp.client-ip=90.155.50.34
+	 Content-Type:Content-Disposition:In-Reply-To; b=VBVaNU5LjAp9VK5chG86d3+vBvXYlPj8vIpWPLwYpjUoMrw6U0LISezQ2eCf/XvcUu/tm1cYTnHdmxoZmJgOFaDCuboQ8gXjgGrSGwy2m6AZQbqytu252/dkpFFueLB4wFRlHZQ7lRmal0Xnk084IhJQ+tQ0gQk1nIkAN8/JjOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=N2fbB8AQ; arc=none smtp.client-ip=90.155.92.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
 	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=v2XjhXXjoVlHC+MJiTSQDgatPB8bllHZZSaqdgyRjXI=; b=WoHOtl4oJO/nf79w7IeiTc6TGM
-	hKBTTlL/4/iJ6QpFOeoc1YgEv0UwX6m04qOF570CB3IHsrF/ijkLqx8QRWBpIM6BMlV5kK7mg5RiV
-	Xw9QPr95AJKnzwsRj8Y+K31dfWfeqspeQWeq8yl5fhT6DDVSToJzSqDFhlI4CdWhmcOUw/QyZtw0P
-	DDvM0tM42NLnVRL9p0Ah8/F3USUyCINfkS22XYt7AziL236EnZ1wudaTcqHzXXcY0CRLvpOdPA+Qq
-	c9At+Gh6x8nDRarHcf2Bfy6EB9vQ1cARCvQ6Aq49+OT71yz6133IHf91pyvas/uThAB+BNLMa/l/6
-	x02iFxsQ==;
+	bh=yCxgES6+AiHPFhHwzvZQriIUuOAhP73ey2SdBgFz/io=; b=N2fbB8AQAxXkgTuwSRm3lirbgY
+	Fr/CG3CxVovqXOyEBuQuoCvNL7ZrEEPq0MDA8nPN7C6lOfXmC035UazzdKQ33I/le4S7i4A/zMRHR
+	/BfH0T1GC8C3OWJLXHMHsb1gB46TxliXFBvsNAsA+OGhQ8lvbxKFeo8pzx4PTo69FBFUt+R288JNP
+	8k41oO+e45FzSn+NWw3Qo4goR1118JiUYo56O9WyuI3bKuPF61Nbs6ZfpPnj0TnDXjNaWdVsutCZA
+	mhKyPvcFFtE6HgDvfz7mvvKjsD7ygpivWkx1Q26bjc9OrO2x1BZHsc1g0R5woFGd7axMGMpBSsqL+
+	Naol2nfg==;
 Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uV6gg-0000000Ds10-0vfU;
-	Fri, 27 Jun 2025 10:52:06 +0000
+	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uV6i1-00000006J3B-00U4;
+	Fri, 27 Jun 2025 10:53:29 +0000
 Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id B5B1F30017D; Fri, 27 Jun 2025 12:52:05 +0200 (CEST)
-Date: Fri, 27 Jun 2025 12:52:05 +0200
+	id 911C1300222; Fri, 27 Jun 2025 12:53:28 +0200 (CEST)
+Date: Fri, 27 Jun 2025 12:53:28 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
@@ -60,12 +60,13 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	Fazla Mehrab <a.mehrab@bytedance.com>,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
-	Dylan Hatch <dylanbhatch@google.com>
-Subject: Re: [PATCH v3 46/64] x86/extable: Define ELF section entry size for
- exception table
-Message-ID: <20250627105205.GY1613200@noisy.programming.kicks-ass.net>
+	Dylan Hatch <dylanbhatch@google.com>,
+	Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH v3 42/64] kbuild,x86: Fix special section module
+ permissions
+Message-ID: <20250627105328.GZ1613200@noisy.programming.kicks-ass.net>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
- <1a53b6dcf236ce1fe0f0cd0d4441fc2bd9022cb3.1750980517.git.jpoimboe@kernel.org>
+ <cf1cfb9042005be7bf0a1c3f2bdbeebc769e3ee4.1750980517.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -74,30 +75,23 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1a53b6dcf236ce1fe0f0cd0d4441fc2bd9022cb3.1750980517.git.jpoimboe@kernel.org>
+In-Reply-To: <cf1cfb9042005be7bf0a1c3f2bdbeebc769e3ee4.1750980517.git.jpoimboe@kernel.org>
 
-On Thu, Jun 26, 2025 at 04:55:33PM -0700, Josh Poimboeuf wrote:
+On Thu, Jun 26, 2025 at 04:55:29PM -0700, Josh Poimboeuf wrote:
+> An upcoming patch will add the SHF_MERGE flag to x86 __jump_table and
+> __bug_table so their entry sizes can be defined in inline asm.
+> 
+> However, those sections have SHF_WRITE, which the Clang linker (lld)
+> explicitly forbids combining with SHF_MERGE.
+> 
+> Those sections are modified at runtime and must remain writable.  While
+> SHF_WRITE is ignored by vmlinux, it's still needed for modules.
+> 
+> To work around the linker interference, remove SHF_WRITE during
+> compilation and restore it after linking the module.
 
-> @@ -193,7 +193,8 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
->  	".purgem extable_type_reg\n"
->  
->  # define _ASM_EXTABLE_TYPE(from, to, type)			\
-> -	" .pushsection \"__ex_table\",\"a\"\n"			\
-> +	" .pushsection __ex_table, \"aM\", @progbits, "		\
-> +		       __stringify(EXTABLE_SIZE) "\n"		\
->  	" .balign 4\n"						\
->  	" .long (" #from ") - .\n"				\
->  	" .long (" #to ") - .\n"				\
-> @@ -201,7 +202,8 @@ static __always_inline __pure void *rip_rel_ptr(void *p)
->  	" .popsection\n"
->  
->  # define _ASM_EXTABLE_TYPE_REG(from, to, type, reg)				\
-> -	" .pushsection \"__ex_table\",\"a\"\n"					\
-> +	" .pushsection __ex_table, \"aM\", @progbits, "				\
-> +		       __stringify(EXTABLE_SIZE) "\n"				\
->  	" .balign 4\n"								\
->  	" .long (" #from ") - .\n"						\
->  	" .long (" #to ") - .\n"						\
+This is vile... but I'm not sure I have a better solution.
 
-This style is much better.
+Eventually we should get the toolchains fixed, but we can't very well
+mandate clang-21+ to build x86 just yet.
 
