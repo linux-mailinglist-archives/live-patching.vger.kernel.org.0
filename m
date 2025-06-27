@@ -1,99 +1,70 @@
-Return-Path: <live-patching+bounces-1596-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1597-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D6859AEB30E
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 11:35:24 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2DD40AEB4EE
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 12:34:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 8A77B7A8F52
-	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 09:34:00 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 58FC01C21C95
+	for <lists+live-patching@lfdr.de>; Fri, 27 Jun 2025 10:33:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8CF4C293C5B;
-	Fri, 27 Jun 2025 09:35:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15E642BDC1D;
+	Fri, 27 Jun 2025 10:29:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="hOECxpHa"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="OcdG1Gho"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13015293C59;
-	Fri, 27 Jun 2025 09:35:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031D0298996;
+	Fri, 27 Jun 2025 10:29:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751016917; cv=none; b=RlW7XLfwSS2MXrzgF1ewcljCIMbvpO4uLBGZF58/Rj4DUyBG9cM0dUUFUMs3ibqtyBSD22y9qSZPZAoCx+R73G99J/J5BhggwLF6MDvToOOCghXQVV6o/t5hjPl9alUCN4o1SBS3o0+IUOH4hTgYfdjQ845MaOjwEN8tfAlr+kY=
+	t=1751020186; cv=none; b=IBDgOc2dZoO3Z5nkO28vS3OuBBJPm0uEPbu0QV+L013ZMQffX6FsdiwIsCDMCsq+nIvL4aqSk7pTZ8rsKvR34HS4UzsuMkjtatplOQ+0ypCDXwys+1SGnexXA6UGYap2yPH6yJkV9kqd55q39NxFAw2ANQDyxrfL+Fa6JeFzAHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751016917; c=relaxed/simple;
-	bh=aYHAzugYLIyEa4ubHqJEW6Mwulpb4MIrhv4Bu5CACas=;
+	s=arc-20240116; t=1751020186; c=relaxed/simple;
+	bh=fxxnsqYVj44bqdTtrWf0Pa18mSdf5qVyV6pvT9Lt990=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JdSaMyFCwx3of3nY+/Nk7J9Rjgsh+6IwRiQ205B1j6sb2Yn6iDfSIGRgofogF3Ge/C97jq1zr2DxzNyJCkTpc86OAcV6PhAkD55qEATw9/5Q7BVNp+PGDMGpnvuGOYa62pQ8gPL0Cwx/G5Op+qcEyneOdbo4587hN5cQ7A1uH9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=hOECxpHa; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55R7isu9010455;
-	Fri, 27 Jun 2025 09:34:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=pp1; bh=G0u0oILqVCwN5YUicdQ8F58a/l2fSa
-	z5vBpoIL/fgcc=; b=hOECxpHab0pd1lQLbO94DDi+tVmhTcPM0YC/YmWzrIE5qW
-	CHsbryJViYWNX4TXY+EKOELPrfu3UWGZVfzEKXvef2vR2C9lvc/h5KhgwmvlIZTn
-	yeiSKz/etytIFC9UsRghFBSLtkCsoC/Ahy9MKy4XcMuMBSSXAYD7f9Tvr9QYs3pG
-	3xU7d3oS5H0dbNHyiCJ2zYA5E5BATpYlmQu8Tq+kBGzdNfWQti0iVNjbmTgcbg/O
-	lC63M487nFeAyGO76yj/nq1Ev0dc65wZgnZPBenCk7niia/rt2WBAb68IhWeaIvv
-	vBD/9bnLJe6O24COKHNZqYFaIvvx+jUghSo9X21A==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 47gspht8gy-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 27 Jun 2025 09:34:49 +0000 (GMT)
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 55R9UOCd020374;
-	Fri, 27 Jun 2025 09:34:49 GMT
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 47gspht8gt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 27 Jun 2025 09:34:48 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 55R96m62003994;
-	Fri, 27 Jun 2025 09:34:47 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 47e99m385d-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 27 Jun 2025 09:34:47 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 55R9YiWn59441650
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 27 Jun 2025 09:34:44 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2440920063;
-	Fri, 27 Jun 2025 09:34:44 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 428E920067;
-	Fri, 27 Jun 2025 09:34:43 +0000 (GMT)
-Received: from osiris (unknown [9.87.133.27])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Fri, 27 Jun 2025 09:34:43 +0000 (GMT)
-Date: Fri, 27 Jun 2025 11:34:41 +0200
-From: Heiko Carstens <hca@linux.ibm.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=ecSRIrWRBG4QwOCCcJpAYOjhmBL5lJqKyqzlv9Hq4NYcQ/ruKkorcOLfUk8NmnhVQh8vTMz5ET+nRRcWANQOH3rnFch2qJuXC+CUqp7AHcXA1PBafRA7j/m3huvwr/jnLmpMPcThHWzoXxQmhhXxNElZ1/KIyLAKq/L7xOPLFsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=OcdG1Gho; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=NTo9B/0JaMaJmJH7vjJ70ZwqNHFhkhkJqmR2lsO5Mc8=; b=OcdG1GhoheuSXY8Y8B7osPhahy
+	fX0QPohM57jQrYhywOaMTFT7l6XLyxy7tHXUoey5gSGe5XhBNJEffb8Izg+cEv/O8rJBtqOxMWoPX
+	rYZMIoFbVGlFfRFtI4Js0tW2pMUOjzTMM0eiPGMN8B4RM/Xv+Av4CKGFKpsm8DjhbFJz9WXos21M3
+	ofHnlwYtwtlJtmMzcmL7XaGHO9kvPOjvgq9uIIg/o7Yh67khTQ1yc19cskBONkJPj4tCVyB2DVBs5
+	WoJsNgD+ZZfYQHS/bJXTTXtZVeNlJ/nBwGJpAMtPFDWMktaRlt08dzdfoozgDxP9+4Kww4hZl3zjF
+	xPSNyrZg==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uV6Kp-0000000Dpdd-3u62;
+	Fri, 27 Jun 2025 10:29:32 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id B43A6300222; Fri, 27 Jun 2025 12:29:30 +0200 (CEST)
+Date: Fri, 27 Jun 2025 12:29:30 +0200
+From: Peter Zijlstra <peterz@infradead.org>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
-        Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>, live-patching@vger.kernel.org,
-        Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Marcos Paulo de Souza <mpdesouza@suse.com>,
-        Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Puranjay Mohan <puranjay@kernel.org>,
-        Dylan Hatch <dylanbhatch@google.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>
-Subject: Re: [PATCH v3 01/64] s390/vmlinux.lds.S: Prevent thunk functions
- from getting placed with normal text
-Message-ID: <20250627093441.13723Cc6-hca@linux.ibm.com>
+	Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>,
+	Joe Lawrence <joe.lawrence@redhat.com>,
+	live-patching@vger.kernel.org, Song Liu <song@kernel.org>,
+	laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>,
+	Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Weinan Liu <wnliu@google.com>,
+	Fazla Mehrab <a.mehrab@bytedance.com>,
+	Chen Zhongjin <chenzhongjin@huawei.com>,
+	Puranjay Mohan <puranjay@kernel.org>,
+	Dylan Hatch <dylanbhatch@google.com>
+Subject: Re: [PATCH v3 26/64] objtool: Add section/symbol type helpers
+Message-ID: <20250627102930.GU1613200@noisy.programming.kicks-ass.net>
 References: <cover.1750980516.git.jpoimboe@kernel.org>
- <aa748165bf9888b0a7bd36dc505dfe8b237f9c62.1750980517.git.jpoimboe@kernel.org>
+ <c897dc0a55a84f9992b8c766214ff38b0f597583.1750980517.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -102,51 +73,106 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aa748165bf9888b0a7bd36dc505dfe8b237f9c62.1750980517.git.jpoimboe@kernel.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: fe3LNM31hmI-ErQ5KLeZVwQYtEaINleh
-X-Proofpoint-ORIG-GUID: c13wTOi2JO6eUTq-HbyluyI3E9FBmqDF
-X-Authority-Analysis: v=2.4 cv=Hul2G1TS c=1 sm=1 tr=0 ts=685e65b9 cx=c_pps a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17 a=kj9zAlcOel0A:10 a=6IFa9wvqVegA:10 a=VnNF1IyMAAAA:8 a=VwQbUJbxAAAA:8 a=awXcams9sirMRC52x60A:9 a=CjuIK1q_8ugA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjI3MDA3NSBTYWx0ZWRfXxllruMVAWW6w KEi2biYzA3K0u+UNfuWl70ba+fUPbMx9FLt9ZqIZlFthnje/ctkWyYBwOSncozIOXRTG3hI++U9 O4SWtnRPC6BtPXRhZF77NAWTfAio/8xSE3ZweThFC252NuTUDz/xQT1lPI7D1Ifjyx6NfXUwMI7
- 5qf2pS42mKljBPp9/ccGMShOd6I5tmd2vwxQtIlojjfDybxnLKO2AZ7gPilVpoD5PHXi77q7DYY asN7Ik3Xq6tfAkcRvy5c2s8iY8ZbBHaftmp91qgK+vAn9Pxs0FKxejKBYCQteC4T+/HBLKgDbek NDAsWP4mELniCi395n0BOwAgkBTIQ3TJBM39e5eq/NFuonbz87fppct1cRnCPulnAzLZy2rSfpn
- KgiEOvB3wqufv+sHxVS16a9pqpKHULVmA8/0qflzWy0vCFdivnOWZe9UtfURUe8tNqHlb9Ek
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-06-27_03,2025-06-26_05,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=530 bulkscore=0 mlxscore=0 adultscore=0 spamscore=0
- impostorscore=0 clxscore=1011 priorityscore=1501 lowpriorityscore=0
- suspectscore=0 phishscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506270075
+In-Reply-To: <c897dc0a55a84f9992b8c766214ff38b0f597583.1750980517.git.jpoimboe@kernel.org>
 
-On Thu, Jun 26, 2025 at 04:54:48PM -0700, Josh Poimboeuf wrote:
-> The s390 indirect thunks are placed in the .text.__s390_indirect_jump_*
-> sections.
-> 
-> Certain config options which enable -ffunction-sections have a custom
-> version of the TEXT_TEXT macro:
-> 
->   .text.[0-9a-zA-Z_]*
-> 
-> That unintentionally matches the thunk sections, causing them to get
-> grouped with normal text rather than being handled by their intended
-> rule later in the script:
-> 
->   *(.text.*_indirect_*)
-> 
-> Fix that by adding another period to the thunk section names, following
-> the kernel's general convention for distinguishing code-generated text
-> sections from compiler-generated ones.
-> 
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> ---
->  arch/s390/include/asm/nospec-insn.h | 2 +-
->  arch/s390/kernel/vmlinux.lds.S      | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+On Thu, Jun 26, 2025 at 04:55:13PM -0700, Josh Poimboeuf wrote:
+> @@ -177,11 +178,71 @@ static inline unsigned int elf_text_rela_type(struct elf *elf)
+>  	return elf_addr_size(elf) == 4 ? R_TEXT32 : R_TEXT64;
+>  }
+>  
+> +static inline bool sym_has_sec(struct symbol *sym)
+> +{
+> +	return sym->sec->idx;
+> +}
+> +
+> +static inline bool is_null_sym(struct symbol *sym)
+> +{
+> +	return !sym->idx;
+> +}
+> +
+> +static inline bool is_sec_sym(struct symbol *sym)
+> +{
+> +	return sym->type == STT_SECTION;
+> +}
+> +
+> +static inline bool is_object_sym(struct symbol *sym)
+> +{
+> +	return sym->type == STT_OBJECT;
+> +}
+> +
+> +static inline bool is_func_sym(struct symbol *sym)
+> +{
+> +	return sym->type == STT_FUNC;
+> +}
+> +
+> +static inline bool is_file_sym(struct symbol *sym)
+> +{
+> +	return sym->type == STT_FILE;
+> +}
+> +
+> +static inline bool is_notype_sym(struct symbol *sym)
+> +{
+> +	return sym->type == STT_NOTYPE;
+> +}
+> +
+> +static inline bool is_global_sym(struct symbol *sym)
+> +{
+> +	return sym->bind == STB_GLOBAL;
+> +}
+> +
+> +static inline bool is_weak_sym(struct symbol *sym)
+> +{
+> +	return sym->bind == STB_WEAK;
+> +}
+> +
+> +static inline bool is_local_sym(struct symbol *sym)
+> +{
+> +	return sym->bind == STB_LOCAL;
+> +}
+> +
+>  static inline bool is_reloc_sec(struct section *sec)
+>  {
+>  	return sec->sh.sh_type == SHT_RELA || sec->sh.sh_type == SHT_REL;
+>  }
+>  
+> +static inline bool is_string_sec(struct section *sec)
+> +{
+> +	return sec->sh.sh_flags & SHF_STRINGS;
+> +}
+> +
+> +static inline bool is_text_sec(struct section *sec)
+> +{
+> +	return sec->sh.sh_flags & SHF_EXECINSTR;
+> +}
+> +
+>  static inline bool sec_changed(struct section *sec)
+>  {
+>  	return sec->_changed;
+> @@ -222,6 +283,11 @@ static inline bool is_32bit_reloc(struct reloc *reloc)
+>  	return reloc->sec->sh.sh_entsize < 16;
+>  }
+>  
+> +static inline unsigned long sec_size(struct section *sec)
+> +{
+> +	return sec->sh.sh_size;
+> +}
+> +
 
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
+
+Naming seems inconsistent, there are:
+
+  sym_has_sec(), sec_changed() and sec_size()
+
+which have the object first, but then most new ones are:
+
+  is_foo_sym() and is_foo_sec()
+
+which have the object last.
+
+
+Can we make this consistent and do something like:
+
+  s/is_\([^_]*\)_\(sym\|sec\)/\2_is_\1/
+
+?
 
