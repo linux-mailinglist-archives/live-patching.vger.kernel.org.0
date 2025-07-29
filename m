@@ -1,43 +1,43 @@
-Return-Path: <live-patching+bounces-1617-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1618-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1C01BB14BE4
-	for <lists+live-patching@lfdr.de>; Tue, 29 Jul 2025 12:06:06 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A7437B14BE6
+	for <lists+live-patching@lfdr.de>; Tue, 29 Jul 2025 12:06:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 685F21894145
-	for <lists+live-patching@lfdr.de>; Tue, 29 Jul 2025 10:06:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D379A3A62C8
+	for <lists+live-patching@lfdr.de>; Tue, 29 Jul 2025 10:05:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A44D72882AB;
-	Tue, 29 Jul 2025 10:06:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 405F128850F;
+	Tue, 29 Jul 2025 10:06:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="YlXQ+Cx6"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="la0MUjab"
 X-Original-To: live-patching@vger.kernel.org
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C80B418C928;
-	Tue, 29 Jul 2025 10:05:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87C532882D3;
+	Tue, 29 Jul 2025 10:06:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753783560; cv=none; b=oMLUsuR6mofA/DMyvYsz8NWh3jBr04Jt41uZr3mRq9wNjVI7JnniW1Q1n3nrL/K8edJWjxmDZcqELXw3xfYR5HLtNzz/DO5tW6wogog0v9j9MaPqKYifCpoZcDTysfD8UsfBagHTxZSqmI17NtgMSSsIz/8B7guPyBwtxIAIW0s=
+	t=1753783580; cv=none; b=NNGQo4woHqrqg8j7XC7suxPolBXZcZ3jVPHITdja6D49JDOCloYAvDfGOk+Iunm4KtcYQ0NQm9C+J6NoNn3s7O6NvBR4teGKCb+7FC2hYPJAZNWXdSqIJkIIYPOXwiuEnKrLqBRO9rEBjZDAdZ/pma/i34QrOIlFZqv1Mwyp1ok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753783560; c=relaxed/simple;
+	s=arc-20240116; t=1753783580; c=relaxed/simple;
 	bh=MY0JCpjwjPZ+YXgr6ol8Z+Cs9OCXA54cSBaHLgEo8q8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LLomy0qZtISIudcLRakkcO9ja07Nz7ie4qV4QfeVzJryhE6Y/oBo1iLa3W8FqspSBEADEHrHcOvoMP6QSxox5ZvHMM11VKP7zweUnm/8rHidltmAUrCCI5H5EwOFW3aFqSRUagrO6x0/MLgN9f4Jtet2y3f69AgfSRpSjeRx0NY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=YlXQ+Cx6; arc=none smtp.client-ip=220.197.31.5
+	 MIME-Version; b=T87gpXNsREUJ3SvBOMFPq/zcLdALwT07J2TBDQEUd5Ah+yhHyoZL8NcXV4my+FKPGzzLJR/3W4sywrHeHWq23uovi6d8iUg1GItqCvkddSc20nuWoAxm3Ik/6G2YlJ9WO7XFB/Pj6dB5wbZshsjaVkcio7gKHro6zgbx6Atigsw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=la0MUjab; arc=none smtp.client-ip=220.197.31.4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
 	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=MY
-	0JCpjwjPZ+YXgr6ol8Z+Cs9OCXA54cSBaHLgEo8q8=; b=YlXQ+Cx6bice4qlW37
-	ocYhneDrIrrbFvlM18T2i3LCVuIN9H6vIloDg5w44+Fqby6XVko28bFqijs0oo0E
-	JoSev3Kb/EkfMPbv+GxzPNK55wWksl5WMPobBNlitCuRC8d90oDl9huiUboQxZHl
-	KgkK7S/HR5BAdk0XqnMYE0KM4=
+	0JCpjwjPZ+YXgr6ol8Z+Cs9OCXA54cSBaHLgEo8q8=; b=la0MUjabezu8VtvCHy
+	iFBK1csNOLWZGVo4sUnyaMK9tiN7dBKa2n2BYolCDZEI8wm6mET0ooquaqjffj9h
+	9GlufAu0ciyqAptP8ja9uvheqYTM/J6bgC14zOwd9jSnoVPrK0ppzL8hJrjy5t/L
+	f+UCloLdxTTvtLyLXV3+4GAhg=
 Received: from vbox.. (unknown [])
-	by gzsmtp2 (Coremail) with SMTP id PSgvCgAXMGTjnIhoG+GYCQ--.297S2;
-	Tue, 29 Jul 2025 18:05:24 +0800 (CST)
+	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wAn7F3+nIhoBlqzIA--.61396S2;
+	Tue, 29 Jul 2025 18:05:51 +0800 (CST)
 From: Li kunyu <likunyu10@163.com>
 To: joe.lawrence@redhat.com
 Cc: jikos@kernel.org,
@@ -48,8 +48,8 @@ Cc: jikos@kernel.org,
 	mbenes@suse.cz,
 	pmladek@suse.com
 Subject: [PATCH] kernel/livepatch/core: Fixed the issue of parsing failure caused by symbols carrying '-' generated by the kpatch software
-Date: Tue, 29 Jul 2025 18:03:52 +0800
-Message-ID: <20250729100457.147981-2-likunyu10@163.com>
+Date: Tue, 29 Jul 2025 18:05:34 +0800
+Message-ID: <20250729100548.148038-1-likunyu10@163.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <fab6d382-fad4-4d91-90e0-2d0e9dfae216@redhat.com>
 References: <fab6d382-fad4-4d91-90e0-2d0e9dfae216@redhat.com>
@@ -60,10 +60,10 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PSgvCgAXMGTjnIhoG+GYCQ--.297S2
+X-CM-TRANSID:_____wAn7F3+nIhoBlqzIA--.61396S2
 X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUFYFCUUUUU
-X-CM-SenderInfo: poln30d1xriqqrwthudrp/xtbBzwqZpGiIlNWkwQAAs8
+	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUrCJmDUUUU
+X-CM-SenderInfo: poln30d1xriqqrwthudrp/1tbiNh6YpGiH87MxNwADs+
 
 
 After investigation, it was confirmed that the issue was indeed caused by
