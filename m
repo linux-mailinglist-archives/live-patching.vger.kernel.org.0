@@ -1,353 +1,138 @@
-Return-Path: <live-patching+bounces-1639-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1640-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4C176B528B1
-	for <lists+live-patching@lfdr.de>; Thu, 11 Sep 2025 08:27:46 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6BB85B53163
+	for <lists+live-patching@lfdr.de>; Thu, 11 Sep 2025 13:50:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 601F81B248CC
-	for <lists+live-patching@lfdr.de>; Thu, 11 Sep 2025 06:28:07 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 48AB07B171F
+	for <lists+live-patching@lfdr.de>; Thu, 11 Sep 2025 11:48:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 504F325B2F4;
-	Thu, 11 Sep 2025 06:27:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N9+wD8hB"
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49E5B2F0670;
+	Thu, 11 Sep 2025 11:49:58 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A75A11CBA
-	for <live-patching@vger.kernel.org>; Thu, 11 Sep 2025 06:27:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD8042C159A;
+	Thu, 11 Sep 2025 11:49:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757572051; cv=none; b=ML8ubILR1vfINEhMt4kKD3xIIXvGEGFUplrvrOZu//wt+/ts133XTRCMH3CyCCHk51dAFEzK43uf4onfD9mRqBeNUUoJB/LlhaD2btZ41qFEgZoQwn8SGzHI5Q00Mqp9AEvM5NLm/XKyaABmD9880582DoqNnCHSafZksfm7LlA=
+	t=1757591398; cv=none; b=X1VXZfbzVWjYDQOyQk//qqycNgNeACZs1s60Jn4Jf54z+oAn8fm6lbC9XbW5i4vxcKUtYdZYHCcXJSRhV09/85djYhLPcDg3xyrnseRHypvvQjQAIlzXDcIWM3S+6ghVCNvwyrN+nHzUUYm5HI9F2siTlkNA2d1w2UlorbChp+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757572051; c=relaxed/simple;
-	bh=GiD6aNzUkQxQxu4wU6ZzPj9lKhjZ7HN3YavWKw80EuM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZNH2z0JjcBj1so2rXD/lUGWKCMTyiu8xOrSLLpOycBRxtUl5RH/rmEMdDyFv4RxLxc+wZTfzFcRN2ZQfyUJHYEvQvuidrF7xvtEAUmmYiQ9aPfkc4HPBiwRSX+jRxYCshBurSLxEH64SB8N+kjQSaw2zLHYi/nar1TaJVVm9g5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N9+wD8hB; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 041ADC4CEF1;
-	Thu, 11 Sep 2025 06:27:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757572050;
-	bh=GiD6aNzUkQxQxu4wU6ZzPj9lKhjZ7HN3YavWKw80EuM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=N9+wD8hB1W1lBxRfTrTR6UnYCpKi5Z5GLUfrVbtLzs3JZ/QRtM3Q4bF0fktooQVkd
-	 CRIf5I5ZAXdY/SuRsMNVH4WxgTHn8rd0FgcV54O3bOi5SoW9QuwK0wui73E4p0xwXB
-	 rdA7Ale4ur3fRDJXNgxSvz9TyGeOPyfKkNfyc65nTlPbg4AW3uz7hsI7SYGJ0kyoGR
-	 cDsyJbTSxboAMtQPhWVruj2a1wR8kxnzCyndCMO1bv79l7k/xXZWXFXsSDF2FfwEcK
-	 2VeDqiGKtyJ4Si7/B2CxRMBGEqbgz9jEOf4P8ooOG61WmP4VP8ky+qxFCve9llQ0Dv
-	 zCDEPYIXTd20Q==
-Date: Thu, 11 Sep 2025 11:55:56 +0530
-From: Naveen N Rao <naveen@kernel.org>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: linuxppc-dev@lists.ozlabs.org, live-patching@vger.kernel.org, 
-	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH] powerpc64/modules: fix ool-ftrace-stub vs. livepatch
- relocation corruption
-Message-ID: <df7taxdxpbo4qfn7lniggj5o4ili6kweg4nytyb2fwwwgmnyo4@halp5gf244nn>
-References: <20250904022950.3004112-1-joe.lawrence@redhat.com>
- <aLj7c13wVPvkdNxc@redhat.com>
- <2tscft2yyndfbkl2a7ltndqfwx7phajkfma3m6o5phpm3xkme2@dcy6ohdbfhsk>
- <aMHKD_X97uu0tUyK@redhat.com>
+	s=arc-20240116; t=1757591398; c=relaxed/simple;
+	bh=jU7cQJWKbEmzN+FcnVCf5vLe/NA8j+GUwLOmZOFuYZ4=;
+	h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+	 In-Reply-To:Content-Type; b=Q48bbBZB/iln51+JGvWJPP5CEQ0L/nu07VVAjIY8U7JRwtAMUsbdj3orheyBYMSbBKN/mDFqHQK/rUhv+goyWDEypSit+OAFCJzeIWpYt8ceBFGE92KPHeCtHjCcihAPMcceerbzoCKSIE+Eq/pLIgsb6Aom6aS93iI/ZZmuEO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
+Received: from loongson.cn (unknown [113.200.148.30])
+	by gateway (Coremail) with SMTP id _____8CxbNJft8JoLDgJAA--.19746S3;
+	Thu, 11 Sep 2025 19:49:51 +0800 (CST)
+Received: from [10.130.10.66] (unknown [113.200.148.30])
+	by front1 (Coremail) with SMTP id qMiowJAxT+Zet8JoVPWNAA--.57205S3;
+	Thu, 11 Sep 2025 19:49:51 +0800 (CST)
+Subject: Re: [PATCH v1 2/2] LoongArch: Return 0 for user tasks in
+ arch_stack_walk_reliable()
+To: Jinyang He <hejinyang@loongson.cn>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Huacai Chen
+ <chenhuacai@kernel.org>, Xi Zhang <zhangxi@kylinos.cn>,
+ live-patching@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20250909113106.22992-1-yangtiezhu@loongson.cn>
+ <20250909113106.22992-3-yangtiezhu@loongson.cn>
+ <5e45a1a9-4ac3-56ee-1415-0b2128b4ed9a@loongson.cn>
+From: Tiezhu Yang <yangtiezhu@loongson.cn>
+Message-ID: <c3431ce4-0026-3a05-fa50-281cd34aba4e@loongson.cn>
+Date: Thu, 11 Sep 2025 19:49:50 +0800
+User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aMHKD_X97uu0tUyK@redhat.com>
+In-Reply-To: <5e45a1a9-4ac3-56ee-1415-0b2128b4ed9a@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qMiowJAxT+Zet8JoVPWNAA--.57205S3
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+X-Coremail-Antispam: 1Uk129KBj93XoW7trW7XF1fAFykCFW5ur43CFX_yoW8tr4rpr
+	95C3ZxKFyUtr9YgF9rGr1DXFy8Jw4kZw1DGF1rJ3W7ZF1Yqr1Fgw429ayj9rsxArWkJw4a
+	kr15trykua17JacCm3ZEXasCq-sJn29KB7ZKAUJUUUU5529EdanIXcx71UUUUU7KY7ZEXa
+	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
+	0xBIdaVrnRJUUUvjb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
+	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1Y6r17M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
+	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
+	0_Jr0_Gr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
+	GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2xF0cIa020Ex4CE44I27wAqx4
+	xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v2
+	6r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67
+	vIY487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAF
+	wI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc4
+	0Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AK
+	xVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr
+	1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxU7_MaUUUU
+	U
 
-On Wed, Sep 10, 2025 at 02:57:19PM -0400, Joe Lawrence wrote:
-> On Mon, Sep 08, 2025 at 04:33:24PM +0530, Naveen N Rao wrote:
-> > On Wed, Sep 03, 2025 at 10:37:39PM -0400, Joe Lawrence wrote:
-> > > On Wed, Sep 03, 2025 at 10:29:50PM -0400, Joe Lawrence wrote:
-> > > > The powerpc64 module .stubs section holds ppc64_stub_entry[] code
-> > > > trampolines that are generated at module load time. These stubs are
-> > > > necessary for function calls to external symbols that are too far away
-> > > > for a simple relative branch.
-> > > >
-> > > > Logic for finding an available ppc64_stub_entry has relied on a sentinel
-> > > > value in the funcdata member to indicate a used slot. Code iterates
-> > > > through the array, inspecting .funcdata to find the first unused (zeroed)
-> > > > entry:
-> > > >
-> > > >   for (i = 0; stub_func_addr(stubs[i].funcdata); i++)
-> > > >
-> > > > To support CONFIG_PPC_FTRACE_OUT_OF_LINE, a new setup_ftrace_ool_stubs()
-> > > > function extended the .stubs section by adding an array of
-> > > > ftrace_ool_stub structures for each patchable function. A side effect
-> > > > of writing these smaller structures is that the funcdata sentinel
-> > > > convention is not maintained.
-> >
-> > There is clearly a bug in how we are reserving the stubs as you point
-> > out further below, but once that is properly initialized, I don't think
-> > the smaller structure size for ftrace_ool_stub matters (in so far as
-> > stub->funcdata being non-NULL). We end up writing four valid powerpc
-> > instructions, along with a ftrace_ops pointer before those instructions
-> > which should also be non-zero (there is a bug here too, more on that
-> > below).  The whole function descriptor dance does complicate matters a
-> > bit though.
-> >
+On 2025/9/10 上午9:11, Jinyang He wrote:
+> On 2025-09-09 19:31, Tiezhu Yang wrote:
 > 
-> Hi Naveen,
-> 
-> Ah hah, I see now, given the other bug that you mention, we should have
-> had seen non-NULL entries in either ftrace_ool_stub.insn[] or .ftrace_op
-> fields such that when read as ppc64_stub_entry, .funcdata would indicate
-> that it's in use:
-> 
->         ppc64_stub_entry[]  ftrace_ool_stub[]
->   0x00  [0].jump[0]         [0].ftrace_op
->   0x04  [0].jump[1]         [0].ftrace_op
->   0x08  [0].jump[2]         [0].insn[0]
->   0x0C  [0].jump[3]         [0].insn[1]
->   0x10  [0].jump[4]         [0].insn[2]
->   0x14  [0].jump[5]         [0].insn[3]
->   0x18  [0].jump[6]         [1].ftrace_op
->   0x1C  [0].magic           [1].ftrace_op
->   0x20  [0].funcdata        [1].insn[0]    <<
->   0x24  [0].funcdata        [1].insn[1]    <<
->   0x28  [1].jump[0]         [1].insn[2]
->   0x2C  [1].jump[1]         [1].insn[3]
->   0x30  [1].jump[2]         [2].ftrace_op
->   0x34  [1].jump[3]         [2].ftrace_op
->   0x38  [1].jump[4]         [2].insn[0]
->   0x3C  [1].jump[5]         [2].insn[1]
->   0x40  [1].jump[6]         [2].insn[2]
->   0x44  [1].magic           [2].insn[3]
->   0x48  [1].funcdata        [3].ftrace_op  <<
->   0x4C  [1].funcdata        [3].ftrace_op  <<
-> 
-> If the commit msg for this patch would be clearer by rewording anything,
-> I'm happy to update.  (My understanding at the time of writing was that
-> the NULL funcdata vs. insn[]/ftrace_op was a valid sequence.)
-> 
+>> When testing the kernel live patching with "modprobe livepatch-sample",
+>> there is a timeout over 15 seconds from "starting patching transition"
+>> to "patching complete", dmesg shows "unreliable stack" for user tasks
+>> in debug mode. When executing "rmmod livepatch-sample", there exists
+>> the similar issue.
 
-Yes, please. But only just to point out the bug in how we are reserving 
-the stubs. 
+...
 
-> > > > @@ -1118,29 +1118,19 @@ int module_trampoline_target(struct 
-> > > > module *mod, unsigned long addr,
-> > > >  static int setup_ftrace_ool_stubs(const Elf64_Shdr *sechdrs, unsigned long addr, struct module *me)
-> > > >  {
-> > > >  #ifdef CONFIG_PPC_FTRACE_OUT_OF_LINE
-> > > > -	unsigned int i, total_stubs, num_stubs;
-> > > > +	unsigned int total_stubs, num_stubs;
-> > > >  	struct ppc64_stub_entry *stub;
-> > > >
-> > > >  	total_stubs = sechdrs[me->arch.stubs_section].sh_size / sizeof(*stub);
-> > > >  	num_stubs = roundup(me->arch.ool_stub_count * sizeof(struct ftrace_ool_stub),
-> > > >  			    sizeof(struct ppc64_stub_entry)) / sizeof(struct ppc64_stub_entry);
-> > > >
-> > > > -	/* Find the next available entry */
-> > > > -	stub = (void *)sechdrs[me->arch.stubs_section].sh_addr;
-> > > > -	for (i = 0; stub_func_addr(stub[i].funcdata); i++)
-> > > > -		if (WARN_ON(i >= total_stubs))
-> > > > -			return -1;
-> > > > -
-> > > > -	if (WARN_ON(i + num_stubs > total_stubs))
-> > > > +	if (WARN_ON(me->arch.stub_count + num_stubs > total_stubs))
-> > > >  		return -1;
-> > > >
-> > > > -	stub += i;
-> > > > -	me->arch.ool_stubs = (struct ftrace_ool_stub *)stub;
-> > > > -
-> > > > -	/* reserve stubs */
-> > > > -	for (i = 0; i < num_stubs; i++)
-> > > > -		if (patch_u32((void *)&stub->funcdata, PPC_RAW_NOP()))
-> > > > -			return -1;
-> > >
-> > > At first I thought the bug was that this loop was re-writting the same
-> > > PPC_RAW_NOP() to the same funcdata (i.e, should have been something
-> > > like: patch_u32((void *)stub[i]->funcdata, PPC_RAW_NOP())), but that
-> > > didn't work and seemed fragile anyway.
-> >
-> > D'uh - this path was clearly never tested. I suppose this should have
-> > been something like this:
-> > 	patch_ulong((void *)&stub[i]->funcdata, func_desc(local_paca))
-> >
-> > Still convoluted, but I think that should hopefully fix the problem you
-> > are seeing.
-> >
+>> @@ -57,9 +62,14 @@ int arch_stack_walk_reliable(stack_trace_consume_fn 
+>> consume_entry,
+>>       }
+>>       regs->regs[1] = 0;
+>>       regs->regs[22] = 0;
+>> +    regs->csr_prmd = task->thread.csr_prmd;
+>>       for (unwind_start(&state, task, regs);
+>>            !unwind_done(&state) && !unwind_error(&state); 
+>> unwind_next_frame(&state)) {
+>> +        /* Success path for user tasks */
+>> +        if (user_mode(regs))
+>> +            return 0;
+>> +
+>>           addr = unwind_get_return_address(&state);
+>>           /*
+> Hi, Tiezhu,
 > 
-> I can still try something like this if you prefer that solution (though
-> I think there may be some type massaging required in the second argument
-> to patch_ulong().)  LMK ...
+> We update stack info by get_stack_info when meet ORC_TYPE_REGS in
+> unwind_next_frame. And in arch_stack_walk(_reliable), we always
+> do unwind_done before unwind_next_frame. So is there anything
+> error in get_stack_info which causing regs is user_mode while
+> stack is not STACK_TYPE_UNKNOWN?
 
-That's alright -- it is better to rip this out and replace with the 
-changes in your patch.
+When testing the kernel live patching, the error code path in
+unwind_next_frame() is:
 
-> 
-> > >
-> > > > +	stub = (void *)sechdrs[me->arch.stubs_section].sh_addr;
-> > > > +	me->arch.ool_stubs = (struct ftrace_ool_stub *)(stub + me->arch.stub_count);
-> > > > +	me->arch.stub_count += num_stubs;
-> > > >  #endif
-> >
-> > Regardless of the above, your proposed change looks good to me and
-> > simplifies the logic. So:
-> > Acked-by: Naveen N Rao (AMD) <naveen@kernel.org>
-> >
-> 
-> 
-> 
-> > >   crash> dis 0xc008000007d70dd0 42
-> > >   ppc64[ ]   ftrace[0]    <xfs_stats_format+0x558>:    .long 0x0
-> > >                           <xfs_stats_format+0x55c>:    .long 0x0
-> > >                           <xfs_stats_format+0x560>:    mflr    r0
-> > >                           <xfs_stats_format+0x564>:    bl      0xc008000007d70d80 <xfs_stats_format+0x508>
-> > >                           <xfs_stats_format+0x568>:    mtlr    r0
-> > >                           <xfs_stats_format+0x56c>:    b       0xc008000007d70014 <patch_free_livepatch+0xc>
-> > >              ftrace[1]    <xfs_stats_format+0x570>:    .long 0x0
-> > >                           <xfs_stats_format+0x574>:    .long 0x0
-> > >                           <xfs_stats_format+0x578>:    mflr    r0
-> > >                           <xfs_stats_format+0x57c>:    bl      0xc008000007d70d80 <xfs_stats_format+0x508>
-> > >   ppc64[ ]                <xfs_stats_format+0x580>:    addis   r11,r2,4                                         << This looks like a full
-> > >                           <xfs_stats_format+0x584>:    addi    r11,r11,-29448                                   << ppc64_stub_entry
-> > >              ftrace[2]    <xfs_stats_format+0x588>:    std     r2,24(r1)                                        << dropped in the middle
-> > >                           <xfs_stats_format+0x58c>:    ld      r12,32(r11)                                      << of the ool_stubs array
-> > >                           <xfs_stats_format+0x590>:    mtctr   r12                                              << of ftrace_ool_stub[]
-> > >                           <xfs_stats_format+0x594>:    bctr                                                     <<
-> > >                           <xfs_stats_format+0x598>:    mtlr    r0                                               <<
-> > >                           <xfs_stats_format+0x59c>:    andi.   r20,r27,30050                                    <<
-> > >              ftrace[3]    <xfs_stats_format+0x5a0>:    .long 0x54e92b8                                          <<
-> > >                           <xfs_stats_format+0x5a4>:    lfs     f0,0(r8)                                         <<
-> > >   ppc64[ ]                <xfs_stats_format+0x5a8>:    mflr    r0
-> > >                           <xfs_stats_format+0x5ac>:    bl      0xc008000007d70d80 <xfs_stats_format+0x508>
-> > >                           <xfs_stats_format+0x5b0>:    mtlr    r0
-> > >                           <xfs_stats_format+0x5b4>:    b       0xc008000007d7037c <add_callbacks_to_patch_objects+0xc>
-> > >              ftrace[4]    <xfs_stats_format+0x5b8>:    .long 0x0
-> > >                           <xfs_stats_format+0x5bc>:    .long 0x0
-> >
-> > These NULL values are also problematic. I think those are NULL since we
-> > are not "reserving" the stubs properly, but those should point to some
-> > ftrace_op. I think we are missing a call to ftrace_rec_set_nop_ops() in
-> > ftrace_init_nop(), which would be good to do separately.
-> >
-> 
-> Very lightly tested, but were you thinking of something like:
-> 
-> diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
-> index 6dca92d5a..687371c64 100644
-> --- a/arch/powerpc/kernel/trace/ftrace.c
-> +++ b/arch/powerpc/kernel/trace/ftrace.c
-> @@ -488,8 +488,12 @@ int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec)
->  		return ret;
-> 
->  	/* Set up out-of-line stub */
-> -	if (IS_ENABLED(CONFIG_PPC_FTRACE_OUT_OF_LINE))
-> -		return ftrace_init_ool_stub(mod, rec);
-> +	if (IS_ENABLED(CONFIG_PPC_FTRACE_OUT_OF_LINE)) {
-> +		ret = ftrace_init_ool_stub(mod, rec);
-> +		if (ret)
-> +			return ret;
-> +		return ftrace_rec_set_nop_ops(rec);
-> +	}
+   switch (orc->fp_reg) {
+           case ORC_REG_PREV_SP:
+                   p = (unsigned long *)(state->sp + orc->fp_offset);
+                   if (!stack_access_ok(state, (unsigned long)p, 
+sizeof(unsigned long)))
+                           goto err;
 
-Minor nit: since ftrace_rec_set_nop_ops() has to be called regardless, I 
-would prefer to add a goto here. See below.
+for this case, get_stack_info() does not return 0 due to in_task_stack()
+is not true, then goto error, state->stack_info.type = STACK_TYPE_UNKNOWN
+and state->error = true. In arch_stack_walk_reliable(), the loop will be
+break and it returns -EINVAL, thus causing unreliable stack.
 
-> 
->  	/* Nop-out the ftrace location */
->  	new = ppc_inst(PPC_RAW_NOP());
-> @@ -520,7 +524,7 @@ int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec)
->  		return -EINVAL;
->  	}
-> 
-> -	return ret;
-> +	return ftrace_rec_set_nop_ops(rec);
->  }
-
-We will need to still check for ret here, so something like this?
-
-diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
-index 6dca92d5a6e8..841d077e2825 100644
---- a/arch/powerpc/kernel/trace/ftrace.c
-+++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -488,8 +488,10 @@ int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec)
-                return ret;
- 
-        /* Set up out-of-line stub */
--       if (IS_ENABLED(CONFIG_PPC_FTRACE_OUT_OF_LINE))
--               return ftrace_init_ool_stub(mod, rec);
-+       if (IS_ENABLED(CONFIG_PPC_FTRACE_OUT_OF_LINE)) {
-+               ret = ftrace_init_ool_stub(mod, rec);
-+               goto out;
-+       }
- 
-        /* Nop-out the ftrace location */
-        new = ppc_inst(PPC_RAW_NOP());
-@@ -520,6 +522,10 @@ int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec)
-                return -EINVAL;
-        }
- 
-+out:
-+       if (!ret)
-+               ret = ftrace_rec_set_nop_ops(rec);
-+
-        return ret;
- }
- 
-> 
->  int ftrace_update_ftrace_func(ftrace_func_t func)
-> 
-> 
-> In which case the ftrace-ool area looks like:
-> 
->   crash> mod | grep livepatch_module
->   c008000006350500  livepatch_module                   c008000009b90000   262144  (not loaded)  [CONFIG_KALLSYMS]
->   crash> struct module.arch.ool_stubs c008000006350500
->     arch.ool_stubs = 0xc008000009b90dd0 <xfs_stats_format+1368>,
->   crash> struct module.arch.ool_stub_count c008000006350500
->     arch.ool_stub_count = 7,
-> 
->   crash> struct ftrace_ool_stub 0xc008000009b90dd0 7
->   struct ftrace_ool_stub {
->     ftrace_op = 0xc00000000131d140 <ftrace_nop_ops>,
->     insn = {0x7c0802a6, 0x4bffffa5, 0x7c0803a6, 0x4bfff230}
->   }
-> 
->   struct ftrace_ool_stub {
->     ftrace_op = 0xc00000000131d140 <ftrace_nop_ops>,
->     insn = {0x7c0802a6, 0x4bffff8d, 0x7c0803a6, 0x4bfff304}
->   }
-> 
->   struct ftrace_ool_stub {
->     ftrace_op = 0xc00000000131d140 <ftrace_nop_ops>,
->     insn = {0x7c0802a6, 0x4bffff75, 0x7c0803a6, 0x4bfff430}
->   }
-> 
->   struct ftrace_ool_stub {
->     ftrace_op = 0xc00000000131d140 <ftrace_nop_ops>,
->     insn = {0x7c0802a6, 0x4bffff5d, 0x7c0803a6, 0x4bfff550}
->   }
-> 
->   struct ftrace_ool_stub {
->     ftrace_op = 0xc00000000131d140 <ftrace_nop_ops>,
->     insn = {0x7c0802a6, 0x4bffff45, 0x7c0803a6, 0x4bfff768}
->   }
-> 
->   struct ftrace_ool_stub {
->     ftrace_op = 0xc00000000131d140 <ftrace_nop_ops>,
->     insn = {0x7c0802a6, 0x4bffff2d, 0x7c0803a6, 0x4bfffa08}
->   }
-> 
->   struct ftrace_ool_stub {
->     ftrace_op = 0xc00000000131d140 <ftrace_nop_ops>,
->     insn = {0x7c0802a6, 0x4bffff15, 0x7c0803a6, 0x4bfffa10}
->   }
-
-LGTM.
-
+Maybe it can check whether the task is in userspace and set
+state->stack_info.type = STACK_TYPE_UNKNOWN in get_stack_info(),
+but I think no need to do that because it has similar effect with
+this patch.
 
 Thanks,
-- Naveen
+Tiezhu
 
 
