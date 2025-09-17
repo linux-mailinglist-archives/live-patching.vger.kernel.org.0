@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1698-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1699-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4E1FDB80E09
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:11:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BFA93B80E7B
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:15:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id ABEF91C269CF
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:12:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 562D32A2ACE
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:12:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7407C34DCFD;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D348336206D;
 	Wed, 17 Sep 2025 16:04:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZcxCO8L5"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EthIHSoW"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 452A234F48C;
-	Wed, 17 Sep 2025 16:04:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A94A635CEC9;
+	Wed, 17 Sep 2025 16:04:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125087; cv=none; b=dbEPQKSOjN0wsgs6XAl3YvuApMRoTwVg2qznWNzQG/ZPo6X8ExIbdAsD8jLlSUs+NTIUXVf1Havfs9aZNxFvBVUSV520XZQl28BIWQBS0JRWWTkrPT0hHe937VDUX6OVAqJtzNQYXC5NME3jET/aRXWYYYWa8nSs57z/9cmK8lI=
+	t=1758125087; cv=none; b=XHuMRoO977i4bmd6zOoMuVy51dyjnDpQY8eXeViWULTQHeFfcooeV8PBqmVU/JGsbMYKEQeMKMtXEOxxRM0N0aKR0a76GuE7jPh6aa14kdIYueBLbY19K+bU1sDl/6kGDbdkgTehroITlF3mWuNpJQk9Phx8DOYbNoKmFvoXLlI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758125087; c=relaxed/simple;
-	bh=v1mdlB/tJyu/IpXcPWeUywwS3HgCGqLPqm3xRqG0LoY=;
+	bh=XG/neY8Lsx5tZNRrMqxY/hqrjdtRd2zrKN4ICcu3A7E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uWfeToMUsrYnhJSiEo+6MmN3yHZoF7ka/2XWZ/xH9JQv5oZcPJ30ZAI2WAO6RuLxmLM8ei4/BMAHSmV3K8o+tbtoMF8UJrAB+C9eaItZuwuO9RJW+I6AqlRYKomT5sJ68lsPwg9ru22GhotPRr3CjkDxhLnEhysBPqQNfdV4/Zo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZcxCO8L5; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBCEC4CEE7;
+	 MIME-Version; b=I/I9ZwtCqJMSyluO+RhZ0cOk1UrgxsPeEip1Ct8x7HLDVst36KcW2vVVd1MEjVCkSkyasjcYbY+xHfL3Ubcemv3EEHQLKb6/HlxcVpRKoNleeiaJ7wHvUGd/3+vm3nfA9Df9JI5dRn1B5ex2OEMPAFXtjRvj547YjOY8abdHOnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EthIHSoW; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 049E1C4CEFB;
 	Wed, 17 Sep 2025 16:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125086;
-	bh=v1mdlB/tJyu/IpXcPWeUywwS3HgCGqLPqm3xRqG0LoY=;
+	s=k20201202; t=1758125087;
+	bh=XG/neY8Lsx5tZNRrMqxY/hqrjdtRd2zrKN4ICcu3A7E=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ZcxCO8L5e/itU+rEmLKBzpnwyanczeocJNyFXYIrduIpUddOBRMpKlFKbXSutXFs6
-	 2n3f5DJNOnRKP/lf7WmoQzw8EpiZbIiCsb1C8lntTkRank91iyxTBR/b/Z4o/QwGqN
-	 JBuB7z1xCRGclZ9Lrevqj02oJgYwozqMnqfFgabd7styrmQRb1PaBZMWEeq24tkEX5
-	 X7gV7LQPJn77ck/a7+c5dQHUEyT0IB8ZKdat772zVcYNo3e15KaQObVb6cDfxkRc0l
-	 klXAZ0gP2HzLqyqiWbFK5SHO3Ngp4H1SHXq500CmkJF6tIkKNE75RRmXiLmdDLw1n9
-	 6vPMYRxdFofhQ==
+	b=EthIHSoWcTz60z/SG3nBzxWABv7YIjCB7PbmHS1Lkt/FmUpQFBHYKqzwWyeggvnHl
+	 Lekc8hPRoLET+xrMeNX9/wupLtDzuMFxhaglXUTItIZrM9HA1H1QW9TVaavV6FuB0L
+	 erMJxl0QpIUMM58bnOgZD7jkPwziKzYi+Rkv4ijNujMCteOZjbeKw6fMh6H1KukWmU
+	 rfzsOQ7oLsSEY1AI86MQAyXATq7JnU9EhLyXn+VqnCC/QQlAuszvxq5+cy+z/I/HeZ
+	 UPqov1+rIcZZBcEGQHEV7YRsB7RhhuOcsSQBzWBXTyoBAvnR3NQEQGSgiDHTslyh/R
+	 oGDZjPdtsQR9w==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 43/63] objtool: Add elf_create_file()
-Date: Wed, 17 Sep 2025 09:03:51 -0700
-Message-ID: <5b4f56be12a14013e2b90f6767761abe5f69e4dd.1758067943.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 44/63] objtool: Add annotype() helper
+Date: Wed, 17 Sep 2025 09:03:52 -0700
+Message-ID: <6575e76e737521d3ff352dc9867613f33abd3116.1758067943.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,241 +72,197 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add interface to enable the creation of a new ELF file.
+... for reading annotation types.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/builtin-check.c       |   2 +-
- tools/objtool/elf.c                 | 144 +++++++++++++++++++++++++++-
- tools/objtool/include/objtool/elf.h |   5 +-
- 3 files changed, 147 insertions(+), 4 deletions(-)
+ tools/objtool/arch/loongarch/orc.c         |  1 -
+ tools/objtool/arch/powerpc/decode.c        |  1 -
+ tools/objtool/arch/x86/decode.c            |  1 -
+ tools/objtool/arch/x86/orc.c               |  1 -
+ tools/objtool/check.c                      |  5 +----
+ tools/objtool/include/objtool/elf.h        | 13 +++++++++++++
+ tools/objtool/include/objtool/endianness.h |  9 ++++-----
+ tools/objtool/orc_dump.c                   |  1 -
+ tools/objtool/orc_gen.c                    |  1 -
+ tools/objtool/special.c                    |  1 -
+ 10 files changed, 18 insertions(+), 16 deletions(-)
 
-diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index e7a8f58f5630c..07983cdeded0f 100644
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -329,5 +329,5 @@ int objtool_run(int argc, const char **argv)
- 	if (!opts.dryrun && file->elf->changed && elf_write(file->elf))
- 		return 1;
+diff --git a/tools/objtool/arch/loongarch/orc.c b/tools/objtool/arch/loongarch/orc.c
+index b58c5ff443c92..ffd3a3c858ae7 100644
+--- a/tools/objtool/arch/loongarch/orc.c
++++ b/tools/objtool/arch/loongarch/orc.c
+@@ -5,7 +5,6 @@
+ #include <objtool/check.h>
+ #include <objtool/orc.h>
+ #include <objtool/warn.h>
+-#include <objtool/endianness.h>
  
--	return 0;
-+	return elf_close(file->elf);
- }
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 8d01fc3b4f679..6095baba8e9c5 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -16,6 +16,7 @@
- #include <string.h>
- #include <unistd.h>
- #include <errno.h>
-+#include <libgen.h>
- #include <linux/interval_tree_generic.h>
+ int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi, struct instruction *insn)
+ {
+diff --git a/tools/objtool/arch/powerpc/decode.c b/tools/objtool/arch/powerpc/decode.c
+index d4cb02120a6bd..3a9b748216edc 100644
+--- a/tools/objtool/arch/powerpc/decode.c
++++ b/tools/objtool/arch/powerpc/decode.c
+@@ -7,7 +7,6 @@
+ #include <objtool/arch.h>
+ #include <objtool/warn.h>
  #include <objtool/builtin.h>
+-#include <objtool/endianness.h>
+ 
+ int arch_ftrace_match(const char *name)
+ {
+diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
+index 6bb46d9981533..b2c320f701f94 100644
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -19,7 +19,6 @@
  #include <objtool/elf.h>
-@@ -1067,6 +1068,12 @@ struct elf *elf_open_read(const char *name, int flags)
- 		goto err;
+ #include <objtool/arch.h>
+ #include <objtool/warn.h>
+-#include <objtool/endianness.h>
+ #include <objtool/builtin.h>
+ #include <arch/elf.h>
+ 
+diff --git a/tools/objtool/arch/x86/orc.c b/tools/objtool/arch/x86/orc.c
+index 7176b9ec5b058..735e150ca6b73 100644
+--- a/tools/objtool/arch/x86/orc.c
++++ b/tools/objtool/arch/x86/orc.c
+@@ -5,7 +5,6 @@
+ #include <objtool/check.h>
+ #include <objtool/orc.h>
+ #include <objtool/warn.h>
+-#include <objtool/endianness.h>
+ 
+ int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi, struct instruction *insn)
+ {
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 6d21b83b9377a..969a61766f4a6 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -14,7 +14,6 @@
+ #include <objtool/check.h>
+ #include <objtool/special.h>
+ #include <objtool/warn.h>
+-#include <objtool/endianness.h>
+ 
+ #include <linux/objtool_types.h>
+ #include <linux/hashtable.h>
+@@ -2273,9 +2272,7 @@ static int read_annotate(struct objtool_file *file,
  	}
  
-+	elf->name = strdup(name);
-+	if (!elf->name) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
- 	if ((flags & O_ACCMODE) == O_RDONLY)
- 		cmd = ELF_C_READ_MMAP;
- 	else if ((flags & O_ACCMODE) == O_RDWR)
-@@ -1104,6 +1111,137 @@ struct elf *elf_open_read(const char *name, int flags)
- 	return NULL;
- }
+ 	for_each_reloc(sec->rsec, reloc) {
+-		type = *(u32 *)(sec->data->d_buf + (reloc_idx(reloc) * sec->sh.sh_entsize) + 4);
+-		type = bswap_if_needed(file->elf, type);
+-
++		type = annotype(file->elf, sec, reloc);
+ 		offset = reloc->sym->offset + reloc_addend(reloc);
+ 		insn = find_insn(file, reloc->sym->sec, offset);
  
-+struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name)
-+{
-+	struct section *null, *symtab, *strtab, *shstrtab;
-+	char *dir, *base, *tmp_name;
-+	struct symbol *sym;
-+	struct elf *elf;
-+
-+	elf_version(EV_CURRENT);
-+
-+	elf = calloc(1, sizeof(*elf));
-+	if (!elf) {
-+		ERROR_GLIBC("calloc");
-+		return NULL;
-+	}
-+
-+	INIT_LIST_HEAD(&elf->sections);
-+
-+	dir = strdup(name);
-+	if (!dir) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
-+	dir = dirname(dir);
-+
-+	base = strdup(name);
-+	if (!base) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
-+	base = basename(base);
-+
-+	tmp_name = malloc(256);
-+	if (!tmp_name) {
-+		ERROR_GLIBC("malloc");
-+		return NULL;
-+	}
-+
-+	snprintf(tmp_name, 256, "%s/%s.XXXXXX", dir, base);
-+
-+	elf->fd = mkstemp(tmp_name);
-+	if (elf->fd == -1) {
-+		ERROR_GLIBC("can't create tmp file");
-+		exit(1);
-+	}
-+
-+	elf->tmp_name = tmp_name;
-+
-+	elf->name = strdup(name);
-+	if (!elf->name) {
-+		ERROR_GLIBC("strdup");
-+		return NULL;
-+	}
-+
-+	elf->elf = elf_begin(elf->fd, ELF_C_WRITE, NULL);
-+	if (!elf->elf) {
-+		ERROR_ELF("elf_begin");
-+		return NULL;
-+	}
-+
-+	if (!gelf_newehdr(elf->elf, ELFCLASS64)) {
-+		ERROR_ELF("gelf_newehdr");
-+		return NULL;
-+	}
-+
-+	memcpy(&elf->ehdr, ehdr, sizeof(elf->ehdr));
-+
-+	if (!gelf_update_ehdr(elf->elf, &elf->ehdr)) {
-+		ERROR_ELF("gelf_update_ehdr");
-+		return NULL;
-+	}
-+
-+	if (!elf_alloc_hash(section,		1000) ||
-+	    !elf_alloc_hash(section_name,	1000) ||
-+	    !elf_alloc_hash(symbol,		10000) ||
-+	    !elf_alloc_hash(symbol_name,	10000) ||
-+	    !elf_alloc_hash(reloc,		100000))
-+		return NULL;
-+
-+	null		= elf_create_section(elf, NULL, 0, 0, SHT_NULL, 0, 0);
-+	shstrtab	= elf_create_section(elf, NULL, 0, 0, SHT_STRTAB, 1, 0);
-+	strtab		= elf_create_section(elf, NULL, 0, 0, SHT_STRTAB, 1, 0);
-+
-+	if (!null || !shstrtab || !strtab)
-+		return NULL;
-+
-+	null->name	= "";
-+	shstrtab->name	= ".shstrtab";
-+	strtab->name	= ".strtab";
-+
-+	null->sh.sh_name	= elf_add_string(elf, shstrtab, null->name);
-+	shstrtab->sh.sh_name	= elf_add_string(elf, shstrtab, shstrtab->name);
-+	strtab->sh.sh_name	= elf_add_string(elf, shstrtab, strtab->name);
-+
-+	if (null->sh.sh_name == -1 || shstrtab->sh.sh_name == -1 || strtab->sh.sh_name == -1)
-+		return NULL;
-+
-+	elf_hash_add(section_name, &null->name_hash,		str_hash(null->name));
-+	elf_hash_add(section_name, &strtab->name_hash,		str_hash(strtab->name));
-+	elf_hash_add(section_name, &shstrtab->name_hash,	str_hash(shstrtab->name));
-+
-+	if (elf_add_string(elf, strtab, "") == -1)
-+		return NULL;
-+
-+	symtab = elf_create_section(elf, ".symtab", 0x18, 0x18, SHT_SYMTAB, 0x8, 0);
-+	if (!symtab)
-+		return NULL;
-+
-+	symtab->sh.sh_link = strtab->idx;
-+	symtab->sh.sh_info = 1;
-+
-+	elf->ehdr.e_shstrndx = shstrtab->idx;
-+	if (!gelf_update_ehdr(elf->elf, &elf->ehdr)) {
-+		ERROR_ELF("gelf_update_ehdr");
-+		return NULL;
-+	}
-+
-+	sym = calloc(1, sizeof(*sym));
-+	if (!sym) {
-+		ERROR_GLIBC("calloc");
-+		return NULL;
-+	}
-+
-+	sym->name = "";
-+	sym->sec = null;
-+	elf_add_symbol(elf, sym);
-+
-+	return elf;
-+}
-+
- unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char *str)
- {
- 	unsigned int offset;
-@@ -1568,7 +1706,7 @@ int elf_write(struct elf *elf)
- 	return 0;
- }
- 
--void elf_close(struct elf *elf)
-+int elf_close(struct elf *elf)
- {
- 	if (elf->elf)
- 		elf_end(elf->elf);
-@@ -1576,8 +1714,12 @@ void elf_close(struct elf *elf)
- 	if (elf->fd > 0)
- 		close(elf->fd);
- 
-+	if (elf->tmp_name && rename(elf->tmp_name, elf->name))
-+		return -1;
-+
- 	/*
- 	 * NOTE: All remaining allocations are leaked on purpose.  Objtool is
- 	 * about to exit anyway.
- 	 */
-+	return 0;
- }
 diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index 999fd9369cf59..9f135c262659e 100644
+index 9f135c262659e..814cfc0bbf16b 100644
 --- a/tools/objtool/include/objtool/elf.h
 +++ b/tools/objtool/include/objtool/elf.h
-@@ -94,7 +94,7 @@ struct elf {
- 	GElf_Ehdr ehdr;
- 	int fd;
- 	bool changed;
--	const char *name;
-+	const char *name, *tmp_name;
- 	unsigned int num_files;
- 	struct list_head sections;
- 	unsigned long num_relocs;
-@@ -116,6 +116,7 @@ struct elf {
- };
+@@ -13,10 +13,14 @@
+ #include <linux/hashtable.h>
+ #include <linux/rbtree.h>
+ #include <linux/jhash.h>
++
++#include <objtool/endianness.h>
+ #include <arch/elf.h>
  
- struct elf *elf_open_read(const char *name, int flags);
-+struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name);
+ #define SYM_NAME_LEN		512
  
- struct section *elf_create_section(struct elf *elf, const char *name,
- 				   size_t size, size_t entsize,
-@@ -165,7 +166,7 @@ int elf_write_insn(struct elf *elf, struct section *sec, unsigned long offset,
- 		   unsigned int len, const char *insn);
++#define bswap_if_needed(elf, val) __bswap_if_needed(&elf->ehdr, val)
++
+ #ifdef LIBELF_USE_DEPRECATED
+ # define elf_getshdrnum    elf_getshnum
+ # define elf_getshdrstrndx elf_getshstrndx
+@@ -401,6 +405,15 @@ static inline void set_reloc_type(struct elf *elf, struct reloc *reloc, unsigned
+ 	mark_sec_changed(elf, reloc->sec, true);
+ }
  
- int elf_write(struct elf *elf);
--void elf_close(struct elf *elf);
-+int elf_close(struct elf *elf);
++static inline unsigned int annotype(struct elf *elf, struct section *sec,
++				    struct reloc *reloc)
++{
++	unsigned int type;
++
++	type = *(u32 *)(sec->data->d_buf + (reloc_idx(reloc) * 8) + 4);
++	return bswap_if_needed(elf, type);
++}
++
+ #define RELOC_JUMP_TABLE_BIT 1UL
  
- struct section *find_section_by_name(const struct elf *elf, const char *name);
- struct symbol *find_func_by_offset(struct section *sec, unsigned long offset);
+ /* Does reloc mark the beginning of a jump table? */
+diff --git a/tools/objtool/include/objtool/endianness.h b/tools/objtool/include/objtool/endianness.h
+index 4d2aa9b0fe2fd..aebcd23386685 100644
+--- a/tools/objtool/include/objtool/endianness.h
++++ b/tools/objtool/include/objtool/endianness.h
+@@ -4,7 +4,6 @@
+ 
+ #include <linux/kernel.h>
+ #include <endian.h>
+-#include <objtool/elf.h>
+ 
+ /*
+  * Does a byte swap if target file endianness doesn't match the host, i.e. cross
+@@ -12,16 +11,16 @@
+  * To be used for multi-byte values conversion, which are read from / about
+  * to be written to a target native endianness ELF file.
+  */
+-static inline bool need_bswap(struct elf *elf)
++static inline bool need_bswap(GElf_Ehdr *ehdr)
+ {
+ 	return (__BYTE_ORDER == __LITTLE_ENDIAN) ^
+-	       (elf->ehdr.e_ident[EI_DATA] == ELFDATA2LSB);
++	       (ehdr->e_ident[EI_DATA] == ELFDATA2LSB);
+ }
+ 
+-#define bswap_if_needed(elf, val)					\
++#define __bswap_if_needed(ehdr, val)					\
+ ({									\
+ 	__typeof__(val) __ret;						\
+-	bool __need_bswap = need_bswap(elf);				\
++	bool __need_bswap = need_bswap(ehdr);				\
+ 	switch (sizeof(val)) {						\
+ 	case 8:								\
+ 		__ret = __need_bswap ? bswap_64(val) : (val); break;	\
+diff --git a/tools/objtool/orc_dump.c b/tools/objtool/orc_dump.c
+index 1dd9fc18fe624..5a979f52425ab 100644
+--- a/tools/objtool/orc_dump.c
++++ b/tools/objtool/orc_dump.c
+@@ -8,7 +8,6 @@
+ #include <objtool/objtool.h>
+ #include <objtool/orc.h>
+ #include <objtool/warn.h>
+-#include <objtool/endianness.h>
+ 
+ int orc_dump(const char *filename)
+ {
+diff --git a/tools/objtool/orc_gen.c b/tools/objtool/orc_gen.c
+index 9d380abc2ed35..1045e1380ffde 100644
+--- a/tools/objtool/orc_gen.c
++++ b/tools/objtool/orc_gen.c
+@@ -12,7 +12,6 @@
+ #include <objtool/check.h>
+ #include <objtool/orc.h>
+ #include <objtool/warn.h>
+-#include <objtool/endianness.h>
+ 
+ struct orc_list_entry {
+ 	struct list_head list;
+diff --git a/tools/objtool/special.c b/tools/objtool/special.c
+index fc2cf8dba1c03..e262af9171436 100644
+--- a/tools/objtool/special.c
++++ b/tools/objtool/special.c
+@@ -15,7 +15,6 @@
+ #include <objtool/builtin.h>
+ #include <objtool/special.h>
+ #include <objtool/warn.h>
+-#include <objtool/endianness.h>
+ 
+ struct special_entry {
+ 	const char *sec;
 -- 
 2.50.0
 
