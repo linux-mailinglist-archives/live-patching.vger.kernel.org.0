@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1669-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1670-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EFA66B80D7F
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:07:16 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0C47DB80D80
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:07:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 472817B8F53
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:05:03 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id ABFE81C220B7
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:07:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBFF72FCBEF;
-	Wed, 17 Sep 2025 16:04:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 315D62FD1A5;
+	Wed, 17 Sep 2025 16:04:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z8NXzAi0"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ush6UBoG"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94FAC2FC893;
-	Wed, 17 Sep 2025 16:04:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C7F22FCC17;
+	Wed, 17 Sep 2025 16:04:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125066; cv=none; b=PVZM1MFfu+/ler6wUtALwTsU5FkdyBnSTAKZEifTCrJbhexFb5mzAm6F8WofJqvEnjWc93tfbaw4j0d+pfeGOWpK9TMWjpgyAuqAHvuXeBF07go12BLegDTW38J7YaPDBwPX9RL0IXD3FuqjraMWR6j+xkj49Z5gUghbMJOepoU=
+	t=1758125067; cv=none; b=PXDolvOqcy61AnZEc6CL8mDGJXYCWThj+2QGYRrJKejabAvUSxKgVsRRxLQOWmjTw14HW4IDa8HYRLfRTXNjc0WgIZp0HNpKzGw/ab/hyuIOpO7ryqDrGRENo68yNAl1/bELzUfPBKFuCq/FIUQpiiFzPulq4yfrpvtIy40jXAU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125066; c=relaxed/simple;
-	bh=UAC7YfOY8kDiTF/m9XxVFIYLjPWX7E0ESYXVEJ+Kn1s=;
+	s=arc-20240116; t=1758125067; c=relaxed/simple;
+	bh=FEuGGqp7EQ+m4KSpW2oWnEg7GiC0+WGYaWwZBkAbIPw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=g8F7cIc7zGvdEZ4A+qbzAxkXbquGTR/k0pZQqRsu1wdgYAh918r7DqJm/BM4GwE5jp7SDszLhJmJD9t7sKH08ZjeCXYeozb4xA3UCvoNY8I2VnQ1KOgWpX9YJqaD74TtJtAdhgTW4Bg4pTJ+TqLK5biR2bhH+lCu28MrLaH7kME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z8NXzAi0; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A377DC4CEE7;
-	Wed, 17 Sep 2025 16:04:25 +0000 (UTC)
+	 MIME-Version; b=gotF6JB75wFx5O+uoYirW1rDOpJBxYaG0OWdUvsJ4kEgc1YLvc3nwYmWmR8oi/Pq3pAIvrqIu7I/kzRhJ8vT7xmUGhAJFO/YYXgAZCR5k5h3PFCHYwghOsxvUkfVrXZxt/Jh3auvsJRmwWU82Or0XRAw1Mq7rX1sKl8bEurS0N0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ush6UBoG; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD87C4CEF7;
+	Wed, 17 Sep 2025 16:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1758125066;
-	bh=UAC7YfOY8kDiTF/m9XxVFIYLjPWX7E0ESYXVEJ+Kn1s=;
+	bh=FEuGGqp7EQ+m4KSpW2oWnEg7GiC0+WGYaWwZBkAbIPw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Z8NXzAi0LzMDTXP7B54IAoZHfTuA0hGLA9mKZhKPGto2nJS7blwtASfAyP1gGEGcQ
-	 Ih9YbZlnr+/JESXMlTpBsr/hFmfC+SYKwFubvEV9l/qQCKZhQlwTOhlRXhOdwOMir0
-	 ntqesYTyePYKevss8ll52e1gcibVFAwXf86FQRIg1ongMl1D1CarzqyBynM3mktnoa
-	 jSckt487xqLttKWn2mzStx5UIUV96eGj8VirwPz4Z1hptPAhXTmZ43vTjQ0kztCGws
-	 Y7WD/JF6YsROYVHXJO397nnbg2E20RLOsLhLLhipYML8AIWBqs2yUyuVgPCONx/YrH
-	 bQUou5xVOQi9Q==
+	b=ush6UBoGzqYsE2nkRhe5CZsEZL/xz1nT68MTTu+fsmIkPQsJqnvq4n9KOPs9J40El
+	 JTE1NSJJ1eY8UyUzAiQoRbNgyyTryELMmlqrngtOQJo1cAh/NqctQO7MDk3T7FDO+p
+	 jwwfjDZpeMY9ibG+s+xUyn4ImGLlOOGVJq3JABcs0dwtdtPSiJ1iGaGA6PDkAmaaIO
+	 26HXRlPNCAJQR9EQqG1peCtLf7j0/vkWeRQaC+ga81Und4rt+mBsDIk08MOagoYOyp
+	 UsFppbAlwB9VmUr+oGT3a2TPZiiIfTEsMHbSKzRNJUSLwajSGZKz/MTXEEdAccTdAy
+	 eBbI8fmxLIfsQ==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 14/63] objtool: Fix broken error handling in read_symbols()
-Date: Wed, 17 Sep 2025 09:03:22 -0700
-Message-ID: <842152d67abf24d2b4f51eb7286c86d19639b06b.1758067942.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 15/63] objtool: Propagate elf_truncate_section() error in elf_write()
+Date: Wed, 17 Sep 2025 09:03:23 -0700
+Message-ID: <306f67f2f6762f80c9ff72afd363f97535b1a4b5.1758067942.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,60 +72,37 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The free(sym) call in the read_symbols() error path is fundamentally
-broken: 'sym' doesn't point to any allocated block.  If triggered,
-things would go from bad to worse.
-
-Remove the free() and simplify the error paths.  Freeing memory isn't
-necessary here anyway, these are fatal errors which lead to an immediate
-exit().
+Properly check and propagate the return value of elf_truncate_section()
+to avoid silent failures.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ tools/objtool/elf.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 1c1bb2cb960da..b009d9feed760 100644
+index b009d9feed760..19e249f4783cf 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -492,14 +492,14 @@ static int read_symbols(struct elf *elf)
- 		if (!gelf_getsymshndx(symtab->data, shndx_data, i, &sym->sym,
- 				      &shndx)) {
- 			ERROR_ELF("gelf_getsymshndx");
--			goto err;
-+			return -1;
- 		}
- 
- 		sym->name = elf_strptr(elf->elf, symtab->sh.sh_link,
- 				       sym->sym.st_name);
- 		if (!sym->name) {
- 			ERROR_ELF("elf_strptr");
--			goto err;
-+			return -1;
- 		}
- 
- 		if ((sym->sym.st_shndx > SHN_UNDEF &&
-@@ -511,7 +511,7 @@ static int read_symbols(struct elf *elf)
- 			sym->sec = find_section_by_index(elf, shndx);
- 			if (!sym->sec) {
- 				ERROR("couldn't find section for symbol %s", sym->name);
--				goto err;
-+				return -1;
- 			}
- 			if (GELF_ST_TYPE(sym->sym.st_info) == STT_SECTION) {
- 				sym->name = sym->sec->name;
-@@ -581,10 +581,6 @@ static int read_symbols(struct elf *elf)
- 	}
- 
- 	return 0;
+@@ -1307,7 +1307,6 @@ static int elf_truncate_section(struct elf *elf, struct section *sec)
+ 	for (;;) {
+ 		/* get next data descriptor for the relevant section */
+ 		data = elf_getdata(s, data);
 -
--err:
--	free(sym);
--	return -1;
- }
+ 		if (!data) {
+ 			if (size) {
+ 				ERROR("end of section data but non-zero size left\n");
+@@ -1343,8 +1342,8 @@ int elf_write(struct elf *elf)
  
- static int mark_group_syms(struct elf *elf)
+ 	/* Update changed relocation sections and section headers: */
+ 	list_for_each_entry(sec, &elf->sections, list) {
+-		if (sec->truncate)
+-			elf_truncate_section(elf, sec);
++		if (sec->truncate && elf_truncate_section(elf, sec))
++			return -1;
+ 
+ 		if (sec_changed(sec)) {
+ 			s = elf_getscn(elf->elf, sec->idx);
 -- 
 2.50.0
 
