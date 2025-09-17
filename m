@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1707-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1708-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A60A5B80E5D
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:14:39 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id AB6CCB80E48
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:14:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id D5A687A53B7
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:12:01 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 481881C26CDB
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:14:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF3123408DD;
-	Wed, 17 Sep 2025 16:04:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A6843408F2;
+	Wed, 17 Sep 2025 16:04:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qoVUExkW"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iB/AKL0n"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 862C63408D7;
-	Wed, 17 Sep 2025 16:04:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F0BD3408EA;
+	Wed, 17 Sep 2025 16:04:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125093; cv=none; b=qJBZFvutOSE28GdjQaib6A6Uty/MWLiT7MFBAE18QMurZM26l+7po++DN1h53Ikr3g2q/+HYlnHPYR3fpPxIvHuMwaE3Xz4c0vOew8S1xVTf8aP1HFJULuV6NV3payXkFAKTZkSslrJOLaOmMsga/SMPsskd1t9/VCc+LqwkaOg=
+	t=1758125094; cv=none; b=RMBZ8BZbS6RIgLkYap+waWRAtLEgB4Olb/Vl4wFnISXlihVer56tEsp89CYgfJx6U+gYXFRHd5ygPirbqECpN7ChiR6P9U/D5nTH+MGYV4P6KRINRFM45y0gZWe2anASvhvQsWWUgV5KF5glE+fzJOXAVLJ+QFD7bgrPjEz73Js=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125093; c=relaxed/simple;
-	bh=8+NTMa1b8wtu8CQL/cS+2igiTXSaohICt11piB7Oejg=;
+	s=arc-20240116; t=1758125094; c=relaxed/simple;
+	bh=f+d5/opUeHIzeWvAnntxRC6Lxf5pkrf2VMoZgb2M5UA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Pw29ZF/ezI9gPeoh30SRCpMR2q5ed+Rhu3BBoRGA08uRUBWM7iPZ3M0ZGRB/WozBK/WYPbUxPiFqtQWcdn5leoaB3TYRm49e1MVJZJvSYdeUZmjVS+HBmQlwlyHD9vCHRY0OYHQ0rVdfmZm9mG3AU0K00MeoESd309an21zwHG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qoVUExkW; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4799C4CEFC;
-	Wed, 17 Sep 2025 16:04:52 +0000 (UTC)
+	 MIME-Version; b=WAFVfAEJc8Q6kmkXbm0gPUJOHoXFBjNrrndzrBJM+RQiFGOxkbITVqr73G0yp/n3piy8saG1KIr/iv78OxoISx2ZL9klsKhqWWvfmuMtAetFPRPuRSG/twEGtFFyJgk56VXNY6OkDMz9SLV5xyqk0ivSLi0M86KzSQ7J8PGyEpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iB/AKL0n; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F4D0C4CEFA;
+	Wed, 17 Sep 2025 16:04:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125093;
-	bh=8+NTMa1b8wtu8CQL/cS+2igiTXSaohICt11piB7Oejg=;
+	s=k20201202; t=1758125094;
+	bh=f+d5/opUeHIzeWvAnntxRC6Lxf5pkrf2VMoZgb2M5UA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=qoVUExkWklMjqwOvhFD5dQv3YZpgkJAoOMK4eGfzoxPwGzNrTDZuf/T9RBUpZSI74
-	 /H/f/C1IcLIV/7dmryYB9dwpgh0hb8xqNwyICy4YwbieOBn2MutdJjB739ee98IwEM
-	 ibp/gCx4LSDa3IXluMrw+LSPfxtCvjOhzPIh0KLgp9xEXOXAXZaRqDlGmnH37J/0y8
-	 kR2GnllQde/NDVDET+Kq5eQYLanaEIoa1VRAbm3DLJkDEgj1Rqub/UDYoZcGAktwui
-	 fN/XTq30MTBUaKZv+YeGOM9EH3wIkuw1hWE1yc6Q/hXZXvISD1PTIRvMp9vk4vKSgZ
-	 iJVJEcZK212pw==
+	b=iB/AKL0nymjYpUNVqyUks3SpGdl1Qb6ZBDQ9Kpa2IHV5+RZxadkSNoQWqpS5WPnnE
+	 3xbI9CQADT9/AjUG/RBK2n74DxVgQsmF6WrZf0FaAuVBUEGcf6k/dCj3bNUBcIVhE7
+	 Ij9Co+7WbAqRJ593JHaKpre23teBFBfz0v7VfE0l0Vavz+jm+WWaLyqs4JWBq8w80b
+	 AC0VuYhcfKA47TRib/I1o2rXKt/aDLcqivwOFKLjKDL0yPXnc9mCd8AbXL64ax5SU+
+	 ReBF1Xem6HctITCfc5kqjOUKCIKE1QFW8/hx3BFkRl7yP2YAqAXshZt6YaYb38ytLR
+	 PefbHamOFnAqg==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 52/63] objtool/klp: Add --debug option to show cloning decisions
-Date: Wed, 17 Sep 2025 09:04:00 -0700
-Message-ID: <9c643860fcf37d9d00a3415ed5bb0cd48c1dd8cf.1758067943.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 53/63] objtool/klp: Add post-link subcommand to finalize livepatch modules
+Date: Wed, 17 Sep 2025 09:04:01 -0700
+Message-ID: <767ac75feefd72cb7644f317359b38389e941299.1758067943.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,205 +72,249 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a --debug option to klp diff which prints cloning decisions and an
-indented dependency tree for all cloned symbols and relocations.  This
-helps visualize which symbols and relocations were included and why.
+Livepatch needs some ELF magic which linkers don't like:
+
+  - Two relocation sections (.rela*, .klp.rela*) for the same text
+    section.
+
+  - Use of SHN_LIVEPATCH to mark livepatch symbols.
+
+Unfortunately linkers tend to mangle such things.  To work around that,
+klp diff generates a linker-compliant intermediate binary which encodes
+the relevant KLP section/reloc/symbol metadata.
+
+After module linking, the .ko then needs to be converted to an actual
+livepatch module.  Introduce a new klp post-link subcommand to do so.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/include/objtool/warn.h | 21 ++++++++
- tools/objtool/klp-diff.c             | 75 ++++++++++++++++++++++++++++
- tools/objtool/objtool.c              |  3 ++
- 3 files changed, 99 insertions(+)
+ tools/objtool/Build                 |   2 +-
+ tools/objtool/builtin-klp.c         |   1 +
+ tools/objtool/include/objtool/klp.h |   4 +
+ tools/objtool/klp-post-link.c       | 168 ++++++++++++++++++++++++++++
+ 4 files changed, 174 insertions(+), 1 deletion(-)
+ create mode 100644 tools/objtool/klp-post-link.c
 
-diff --git a/tools/objtool/include/objtool/warn.h b/tools/objtool/include/objtool/warn.h
-index 29173a1368d79..e88322d97573e 100644
---- a/tools/objtool/include/objtool/warn.h
-+++ b/tools/objtool/include/objtool/warn.h
-@@ -102,6 +102,10 @@ static inline char *offstr(struct section *sec, unsigned long offset)
- #define ERROR_FUNC(sec, offset, format, ...) __WARN_FUNC(ERROR_STR, sec, offset, format, ##__VA_ARGS__)
- #define ERROR_INSN(insn, format, ...) WARN_FUNC(insn->sec, insn->offset, format, ##__VA_ARGS__)
+diff --git a/tools/objtool/Build b/tools/objtool/Build
+index 0b01657671d7f..8cd71b9a5eef1 100644
+--- a/tools/objtool/Build
++++ b/tools/objtool/Build
+@@ -9,7 +9,7 @@ objtool-y += elf.o
+ objtool-y += objtool.o
  
-+extern bool debug;
-+extern int indent;
-+
-+static inline void unindent(int *unused) { indent--; }
+ objtool-$(BUILD_ORC) += orc_gen.o orc_dump.o
+-objtool-$(BUILD_KLP) += builtin-klp.o klp-diff.o
++objtool-$(BUILD_KLP) += builtin-klp.o klp-diff.o klp-post-link.o
  
- #define __dbg(format, ...)						\
- 	fprintf(stderr,							\
-@@ -110,6 +114,23 @@ static inline char *offstr(struct section *sec, unsigned long offset)
- 		objname ? ": " : "",					\
- 		##__VA_ARGS__)
+ objtool-y += libstring.o
+ objtool-y += libctype.o
+diff --git a/tools/objtool/builtin-klp.c b/tools/objtool/builtin-klp.c
+index 9b13dd1182af1..56d5a5b92f725 100644
+--- a/tools/objtool/builtin-klp.c
++++ b/tools/objtool/builtin-klp.c
+@@ -14,6 +14,7 @@ struct subcmd {
  
-+#define dbg(args...)							\
-+({									\
-+	if (unlikely(debug))						\
-+		__dbg(args);						\
-+})
-+
-+#define __dbg_indent(format, ...)					\
-+({									\
-+	if (unlikely(debug))						\
-+		__dbg("%*s" format, indent * 8, "", ##__VA_ARGS__);	\
-+})
-+
-+#define dbg_indent(args...)						\
-+	int __attribute__((cleanup(unindent))) __dummy_##__COUNTER__;	\
-+	__dbg_indent(args);						\
-+	indent++
-+
- #define dbg_checksum(func, insn, checksum)				\
- ({									\
- 	if (unlikely(insn->sym && insn->sym->pfunc &&			\
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 0d69b621a26cf..817d44394a78c 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -38,6 +38,8 @@ static const char * const klp_diff_usage[] = {
+ static struct subcmd subcmds[] = {
+ 	{ "diff",		"Generate binary diff of two object files",		cmd_klp_diff, },
++	{ "post-link",		"Finalize klp symbols/relocs after module linking",	cmd_klp_post_link, },
  };
  
- static const struct option klp_diff_options[] = {
-+	OPT_GROUP("Options:"),
-+	OPT_BOOLEAN('d', "debug", &debug, "enable debug output"),
- 	OPT_END(),
- };
+ static void cmd_klp_usage(void)
+diff --git a/tools/objtool/include/objtool/klp.h b/tools/objtool/include/objtool/klp.h
+index 07928fac059b5..ad830a7ce55b6 100644
+--- a/tools/objtool/include/objtool/klp.h
++++ b/tools/objtool/include/objtool/klp.h
+@@ -2,6 +2,9 @@
+ #ifndef _OBJTOOL_KLP_H
+ #define _OBJTOOL_KLP_H
  
-@@ -48,6 +50,38 @@ static inline u32 str_hash(const char *str)
- 	return jhash(str, strlen(str), 0);
- }
- 
-+static char *escape_str(const char *orig)
-+{
-+	size_t len = 0;
-+	const char *a;
-+	char *b, *new;
-+
-+	for (a = orig; *a; a++) {
-+		switch (*a) {
-+		case '\001': len += 5; break;
-+		case '\n':
-+		case '\t':   len += 2; break;
-+		default: len++;
-+		}
-+	}
-+
-+	new = malloc(len + 1);
-+	if (!new)
-+		return NULL;
-+
-+	for (a = orig, b = new; *a; a++) {
-+		switch (*a) {
-+		case '\001': memcpy(b, "<SOH>", 5); b += 5; break;
-+		case '\n': *b++ = '\\'; *b++ = 'n'; break;
-+		case '\t': *b++ = '\\'; *b++ = 't'; break;
-+		default:   *b++ = *a;
-+		}
-+	}
-+
-+	*b = '\0';
-+	return new;
-+}
-+
- static int read_exports(void)
- {
- 	const char *symvers = "Module.symvers";
-@@ -528,6 +562,28 @@ static struct symbol *__clone_symbol(struct elf *elf, struct symbol *patched_sym
- 	return out_sym;
- }
- 
-+static const char *sym_type(struct symbol *sym)
-+{
-+	switch (sym->type) {
-+	case STT_NOTYPE:  return "NOTYPE";
-+	case STT_OBJECT:  return "OBJECT";
-+	case STT_FUNC:    return "FUNC";
-+	case STT_SECTION: return "SECTION";
-+	case STT_FILE:    return "FILE";
-+	default:	  return "UNKNOWN";
-+	}
-+}
-+
-+static const char *sym_bind(struct symbol *sym)
-+{
-+	switch (sym->bind) {
-+	case STB_LOCAL:   return "LOCAL";
-+	case STB_GLOBAL:  return "GLOBAL";
-+	case STB_WEAK:    return "WEAK";
-+	default:	  return "UNKNOWN";
-+	}
-+}
++#define SHF_RELA_LIVEPATCH	0x00100000
++#define SHN_LIVEPATCH		0xff20
 +
  /*
-  * Copy a symbol to the output object, optionally including its data and
-  * relocations.
-@@ -540,6 +596,8 @@ static struct symbol *clone_symbol(struct elfs *e, struct symbol *patched_sym,
- 	if (patched_sym->clone)
- 		return patched_sym->clone;
+  * __klp_objects and __klp_funcs are created by klp diff and used by the patch
+  * module init code to build the klp_patch, klp_object and klp_func structs
+@@ -27,5 +30,6 @@ struct klp_reloc {
+ };
  
-+	dbg_indent("%s%s", patched_sym->name, data_too ? " [+DATA]" : "");
+ int cmd_klp_diff(int argc, const char **argv);
++int cmd_klp_post_link(int argc, const char **argv);
+ 
+ #endif /* _OBJTOOL_KLP_H */
+diff --git a/tools/objtool/klp-post-link.c b/tools/objtool/klp-post-link.c
+new file mode 100644
+index 0000000000000..c013e39957b11
+--- /dev/null
++++ b/tools/objtool/klp-post-link.c
+@@ -0,0 +1,168 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Read the intermediate KLP reloc/symbol representations created by klp diff
++ * and convert them to the proper format required by livepatch.  This needs to
++ * run last to avoid linker wreckage.  Linkers don't tend to handle the "two
++ * rela sections for a single base section" case very well, nor do they like
++ * SHN_LIVEPATCH.
++ *
++ * This is the final tool in the livepatch module generation pipeline:
++ *
++ *   kernel builds -> objtool klp diff -> module link -> objtool klp post-link
++ */
 +
- 	/* Make sure the prefix gets cloned first */
- 	if (is_func_sym(patched_sym) && data_too) {
- 		pfx = get_func_prefix(patched_sym);
-@@ -902,6 +960,8 @@ static int clone_reloc_klp(struct elfs *e, struct reloc *patched_reloc,
- 
- 	klp_sym = find_symbol_by_name(e->out, sym_name);
- 	if (!klp_sym) {
-+		__dbg_indent("%s", sym_name);
++#include <fcntl.h>
++#include <gelf.h>
++#include <objtool/objtool.h>
++#include <objtool/warn.h>
++#include <objtool/klp.h>
++#include <objtool/util.h>
++#include <linux/livepatch_external.h>
 +
- 		/* STB_WEAK: avoid modpost undefined symbol warnings */
- 		klp_sym = elf_create_symbol(e->out, sym_name, NULL,
- 					    STB_WEAK, patched_sym->type, 0, 0);
-@@ -950,6 +1010,17 @@ static int clone_reloc_klp(struct elfs *e, struct reloc *patched_reloc,
- 	return 0;
- }
- 
-+#define dbg_clone_reloc(sec, offset, patched_sym, addend, export, klp)			\
-+	dbg_indent("%s+0x%lx: %s%s0x%lx [%s%s%s%s%s%s]",				\
-+		   sec->name, offset, patched_sym->name,				\
-+		   addend >= 0 ? "+" : "-", labs(addend),				\
-+		   sym_type(patched_sym),						\
-+		   patched_sym->type == STT_SECTION ? "" : " ",				\
-+		   patched_sym->type == STT_SECTION ? "" : sym_bind(patched_sym),	\
-+		   is_undef_sym(patched_sym) ? " UNDEF" : "",				\
-+		   export ? " EXPORTED" : "",						\
-+		   klp ? " KLP" : "")
++static int fix_klp_relocs(struct elf *elf)
++{
++	struct section *symtab, *klp_relocs;
 +
- /* Copy a reloc and its symbol to the output object */
- static int clone_reloc(struct elfs *e, struct reloc *patched_reloc,
- 			struct section *sec, unsigned long offset)
-@@ -969,6 +1040,8 @@ static int clone_reloc(struct elfs *e, struct reloc *patched_reloc,
- 
- 	klp = klp_reloc_needed(patched_reloc);
- 
-+	dbg_clone_reloc(sec, offset, patched_sym, addend, export, klp);
++	klp_relocs = find_section_by_name(elf, KLP_RELOCS_SEC);
++	if (!klp_relocs)
++		return 0;
 +
- 	if (klp) {
- 		if (clone_reloc_klp(e, patched_reloc, sec, offset, export))
- 			return -1;
-@@ -1000,6 +1073,8 @@ static int clone_reloc(struct elfs *e, struct reloc *patched_reloc,
- 	if (is_string_sec(patched_sym->sec)) {
- 		const char *str = patched_sym->sec->data->d_buf + addend;
- 
-+		__dbg_indent("\"%s\"", escape_str(str));
++	symtab = find_section_by_name(elf, ".symtab");
++	if (!symtab) {
++		ERROR("missing .symtab");
++		return -1;
++	}
 +
- 		addend = elf_add_string(e->out, out_sym->sec, str);
- 		if (addend == -1)
- 			return -1;
-diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
-index c8f611c1320d1..3c26ed561c7ef 100644
---- a/tools/objtool/objtool.c
-+++ b/tools/objtool/objtool.c
-@@ -16,6 +16,9 @@
- #include <objtool/objtool.h>
- #include <objtool/warn.h>
- 
-+bool debug;
-+int indent;
++	for (int i = 0; i < sec_size(klp_relocs) / sizeof(struct klp_reloc); i++) {
++		struct klp_reloc *klp_reloc;
++		unsigned long klp_reloc_off;
++		struct section *sec, *tmp, *klp_rsec;
++		unsigned long offset;
++		struct reloc *reloc;
++		char sym_modname[64];
++		char rsec_name[SEC_NAME_LEN];
++		u64 addend;
++		struct symbol *sym, *klp_sym;
 +
- static struct objtool_file file;
- 
- struct objtool_file *objtool_open_read(const char *filename)
++		klp_reloc_off = i * sizeof(*klp_reloc);
++		klp_reloc = klp_relocs->data->d_buf + klp_reloc_off;
++
++		/*
++		 * Read __klp_relocs[i]:
++		 */
++
++		/* klp_reloc.sec_offset */
++		reloc = find_reloc_by_dest(elf, klp_relocs,
++					   klp_reloc_off + offsetof(struct klp_reloc, offset));
++		if (!reloc) {
++			ERROR("malformed " KLP_RELOCS_SEC " section");
++			return -1;
++		}
++
++		sec = reloc->sym->sec;
++		offset = reloc_addend(reloc);
++
++		/* klp_reloc.sym */
++		reloc = find_reloc_by_dest(elf, klp_relocs,
++					   klp_reloc_off + offsetof(struct klp_reloc, sym));
++		if (!reloc) {
++			ERROR("malformed " KLP_RELOCS_SEC " section");
++			return -1;
++		}
++
++		klp_sym = reloc->sym;
++		addend = reloc_addend(reloc);
++
++		/* symbol format: .klp.sym.modname.sym_name,sympos */
++		if (sscanf(klp_sym->name + strlen(KLP_SYM_PREFIX), "%55[^.]", sym_modname) != 1)
++			ERROR("can't find modname in klp symbol '%s'", klp_sym->name);
++
++		/*
++		 * Create the KLP rela:
++		 */
++
++		/* section format: .klp.rela.sec_objname.section_name */
++		if (snprintf_check(rsec_name, SEC_NAME_LEN,
++				   KLP_RELOC_SEC_PREFIX "%s.%s",
++				   sym_modname, sec->name))
++			return -1;
++
++		klp_rsec = find_section_by_name(elf, rsec_name);
++		if (!klp_rsec) {
++			klp_rsec = elf_create_section(elf, rsec_name, 0,
++						      elf_rela_size(elf),
++						      SHT_RELA, elf_addr_size(elf),
++						      SHF_ALLOC | SHF_INFO_LINK | SHF_RELA_LIVEPATCH);
++			if (!klp_rsec)
++				return -1;
++
++			klp_rsec->sh.sh_link = symtab->idx;
++			klp_rsec->sh.sh_info = sec->idx;
++			klp_rsec->base = sec;
++		}
++
++		tmp = sec->rsec;
++		sec->rsec = klp_rsec;
++		if (!elf_create_reloc(elf, sec, offset, klp_sym, addend, klp_reloc->type))
++			return -1;
++		sec->rsec = tmp;
++
++		/*
++		 * Fix up the corresponding KLP symbol:
++		 */
++
++		klp_sym->sym.st_shndx = SHN_LIVEPATCH;
++		if (!gelf_update_sym(symtab->data, klp_sym->idx, &klp_sym->sym)) {
++			ERROR_ELF("gelf_update_sym");
++			return -1;
++		}
++
++		/*
++		 * Disable the original non-KLP reloc by converting it to R_*_NONE:
++		 */
++
++		reloc = find_reloc_by_dest(elf, sec, offset);
++		sym = reloc->sym;
++		sym->sym.st_shndx = SHN_LIVEPATCH;
++		set_reloc_type(elf, reloc, 0);
++		if (!gelf_update_sym(symtab->data, sym->idx, &sym->sym)) {
++			ERROR_ELF("gelf_update_sym");
++			return -1;
++		}
++	}
++
++	return 0;
++}
++
++/*
++ * This runs on the livepatch module after all other linking has been done.  It
++ * converts the intermediate __klp_relocs section into proper KLP relocs to be
++ * processed by livepatch.  This needs to run last to avoid linker wreckage.
++ * Linkers don't tend to handle the "two rela sections for a single base
++ * section" case very well, nor do they appreciate SHN_LIVEPATCH.
++ */
++int cmd_klp_post_link(int argc, const char **argv)
++{
++	struct elf *elf;
++
++	argc--;
++	argv++;
++
++	if (argc != 1) {
++		fprintf(stderr, "%d\n", argc);
++		fprintf(stderr, "usage: objtool link <file.ko>\n");
++		return -1;
++	}
++
++	elf = elf_open_read(argv[0], O_RDWR);
++	if (!elf)
++		return -1;
++
++	if (fix_klp_relocs(elf))
++		return -1;
++
++	if (elf_write(elf))
++		return -1;
++
++	return elf_close(elf);
++}
 -- 
 2.50.0
 
