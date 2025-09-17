@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1660-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1661-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 345E0B80D31
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:04:47 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9E0B3B80D43
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:05:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E14893B380C
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:04:45 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 6539F7B1F88
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:03:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4ED2C2F998D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E98C72F9D89;
 	Wed, 17 Sep 2025 16:04:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NXy7YbeX"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="umLEAOgv"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 270882F9982;
-	Wed, 17 Sep 2025 16:04:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF8442F9C37;
+	Wed, 17 Sep 2025 16:04:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125060; cv=none; b=A6TLoXJtpW0/v7stJEZcfJfPU6fmk8alTDGB4MNmkb0XsG+vqqhdSGDCLfivTlN4Cf+rk8J/oFzzemRki8B+lDz+yQvyRQ4H3Vp4JLKK07Ad1qrsoKmsJY9TQwNeH1TKSdDZokF09zly83WlgrtWK6mHu6BKojtUqpK5RsYV8Pw=
+	t=1758125060; cv=none; b=ZotjaHqvS+YpUm25PmuWTzcYYrej7a/nzjsC47KI9JUy0DIjv4utZQn9Co+deH2ScD8qb4k4mImoNab7dNwwoTujH3zInnFiIf5f2LWVJqEWEZc2t2/+5OhdccSIWY3l5OrTa1VbczKSdpo7pZWajiFTg/pKr1ZboBDSu7LzeOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758125060; c=relaxed/simple;
-	bh=Rh5UBX0/1bsNQ3QSEsWQEOiS84/JDpiHxJE+dhFiXTI=;
+	bh=o1BDGEaFZhqOatmgUCrL7E7W4M4+Thr85scjOc3jDPQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Dh3Bz5zB1axWFRGUFr2VeoF8oQ5EhHId8hWp6fDhYWjNok0FdGmw6ti3aZsTQHJm4YOWS/Y67xEJBizVVLg3Gm8dzlWH3VlFDQB5k770CyFtA0tMFtjLM7xVPNCiJ2No+eyT5B9MVmz/7CxB53vHQV8MQ0ZfugZ0sALn2B/N1go=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NXy7YbeX; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2546BC4CEFF;
+	 MIME-Version; b=eDh3gU3GrbIVfUld1Ew2h3h0nPb+mRYfiycE2tyNfwZD4hE/KnildeYk8J81+tWuiDx4M+OCeMvURVdSKPv+D9aF4yR8XxKAa+x6S7OIYt5OSzObw4KhHLEdPedVBYXS/pgqM0GG/BKKlu8X9rjPL7bJX0I/TuGxg6fGfTL0754=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=umLEAOgv; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1B31C4CEE7;
 	Wed, 17 Sep 2025 16:04:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125059;
-	bh=Rh5UBX0/1bsNQ3QSEsWQEOiS84/JDpiHxJE+dhFiXTI=;
+	s=k20201202; t=1758125060;
+	bh=o1BDGEaFZhqOatmgUCrL7E7W4M4+Thr85scjOc3jDPQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=NXy7YbeX50cawaJIfrKycWL1MXot5L2iEi2ui2YBLm7EZ7nwAiuE9H02kf0zkv/ql
-	 MrjJ1JemiABFGkhrUNx0DHKgUJRxgkldoPgxR7nwV3Q87VAvR79QroEHKs3PrJqqjY
-	 CTwlXh2mNh3/sgb7CzKl0HFhpQj0V2WmmwopwD68OfmxaIFDu29lZNNihaWn136HUK
-	 6HDEauFtJlN74sZPots1a+BqyOrLRoyRo/F/oivvqPd4MknXTCpOTJ5asW1Dt9Ji0B
-	 0OkOhfNiUFciUF1UWmDMdKPnzFBDOOVNemw5leyAtpLYaB04NJprJkrmon3nkgzagq
-	 H5GeIJP98slCQ==
+	b=umLEAOgvTnvVDy7DIRRt+pFaqGa+8O2ofykQPFjrHZwOpuqAMzs4qKuX32dXCoJDE
+	 QP/wCxfcAXGibZHo+OMj2vaxhhx1YbbRX7jzB974g6CHt4ghDrDVghCh6aSzlehcPd
+	 2huZoqQkSluTB6utnNeZrUBH2gtLH69tO5D4sABHTrv45LlWpOV94zYk4iwTF5RIRt
+	 3QZdd2GQLKt2dKcbyKhGmEii9NXVz3HGOmfQJm2DErET9st14xN24dQAdmoJKhReYh
+	 2GM2v2VC8g6run2rAhCwyOnve0sxji3Gx7qp404nMCGZooNu57SA7iv5eRskSH5C7j
+	 ZeRdYOFXcuc+A==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 05/63] compiler: Tweak __UNIQUE_ID() naming
-Date: Wed, 17 Sep 2025 09:03:13 -0700
-Message-ID: <81e999dc82d0aa47585c06a9e66f70df4d7e9979.1758067942.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 06/63] compiler.h: Make addressable symbols less of an eyesore
+Date: Wed, 17 Sep 2025 09:03:14 -0700
+Message-ID: <adb8d082afa04d07607d38dfcc71c53412117835.1758067942.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,33 +72,35 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In preparation for the objtool klp diff subcommand, add an underscore
-between the name and the counter.  This will make it possible for
-objtool to distinguish between the non-unique and unique parts of the
-symbol name so it can properly correlate the symbols.
+Avoid underscore overload by changing:
+
+  __UNIQUE_ID___addressable_loops_per_jiffy_868
+
+to the following:
+
+  __UNIQUE_ID_addressable_loops_per_jiffy_868
+
+This matches the format used by other __UNIQUE_ID()-generated symbols
+and improves readability for those who stare at ELF symbol table dumps.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- include/linux/compiler.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ include/linux/compiler.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index 64ff73c533e54..db5796b8b0a71 100644
+index db5796b8b0a71..9bc690be60675 100644
 --- a/include/linux/compiler.h
 +++ b/include/linux/compiler.h
-@@ -163,7 +163,11 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
- 	__asm__ ("" : "=r" (var) : "0" (var))
- #endif
+@@ -287,7 +287,7 @@ static inline void *offset_to_ptr(const int *off)
+  */
+ #define ___ADDRESSABLE(sym, __attrs)						\
+ 	static void * __used __attrs						\
+-	__UNIQUE_ID(__PASTE(__addressable_,sym)) = (void *)(uintptr_t)&sym;
++	__UNIQUE_ID(__PASTE(addressable_, sym)) = (void *)(uintptr_t)&sym;
  
--#define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
-+/* Format: __UNIQUE_ID_<name>_<__COUNTER__> */
-+#define __UNIQUE_ID(name)					\
-+	__PASTE(__UNIQUE_ID_,					\
-+	__PASTE(name,						\
-+	__PASTE(_, __COUNTER__)))
- 
- /**
-  * data_race - mark an expression as containing intentional data races
+ #define __ADDRESSABLE(sym) \
+ 	___ADDRESSABLE(sym, __section(".discard.addressable"))
 -- 
 2.50.0
 
