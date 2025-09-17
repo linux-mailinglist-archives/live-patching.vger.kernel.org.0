@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1662-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1664-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id A7250B80D52
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:05:59 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 84E00B80D55
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:06:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 873CC1C20F4C
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:05:32 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id A24A07B3890
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:04:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BE0B2F90CC;
-	Wed, 17 Sep 2025 16:04:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7175C2FB619;
+	Wed, 17 Sep 2025 16:04:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R0XD/nQE"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cJ6w+b8u"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73AA52FA0DD;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4966E2FB60A;
 	Wed, 17 Sep 2025 16:04:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125061; cv=none; b=noUPvsBGeq6/n/xyHltf+/APz/NCyLaNsSMBqWYJbK0W3KTf4FdreYCfdzNva/DT3XFn+AaSNlo5UC5PNZQT1UwgnN/v7T6QnBDwxmBexYLnkCCr8GAAmacNxiWls9SSAVkx9yiPW3npabI+jOGVaHvvWgk7OLQB5HneQGbr0Io=
+	t=1758125063; cv=none; b=K/5jbIWwfpH08V3cLDc7GO8Puz7EsRvnrDeqNG2zmhYIk08aB0/QRlGqkdBsLstZ4xCUqJtgzH+gZ70S66Zh7bDejdn2G5rw3J+y3rH5EKWWA23qjUIZyEPx/n/e+5c7ryyjId7ZcuiVJVYBsRjzMK9qIt0Ajy/7gyuFfskIedA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125061; c=relaxed/simple;
-	bh=edjS2E9XX9ax1DMF/nNFhXZZs9mX8DK0OwXbIxiMZtY=;
+	s=arc-20240116; t=1758125063; c=relaxed/simple;
+	bh=p6t6SsnbM2chQrHSUF5FNb/6sSY2pvC9uU7Wbvcbwik=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Rx3j8XneyU/A2yz0rZHA2wCET2jzio392NXTsa7tmIxB5XPfgCZtFMLbFIhRhwu0Rhm031TqeImuBcckf3Fuo3nWDhRl2RdRcG+3RJ0TkcNZg9vnannMVutv8HPsJngno8X2cQLzE2m9NxdD7a8+grKmJ7EBpu84bicSkRdfHqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R0XD/nQE; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C3FFC4CEF7;
-	Wed, 17 Sep 2025 16:04:20 +0000 (UTC)
+	 MIME-Version; b=beswf7uBbl6MsWSRah2VXO7h8ak42QaKKn4AejPxEEYvzW7NL2wCeN1BX0VkpnoPiJuW5OCClVpqdXN+3Bfs0ZvQIRwc6UOupDwgjqfOoh6/MaVrbMJ7trXwdsBaP7cGOmy32xmtx3Kk2ZQCJ8vpTSkFSxUA45b+orYU0H94UWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cJ6w+b8u; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46E40C4CEE7;
+	Wed, 17 Sep 2025 16:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1758125061;
-	bh=edjS2E9XX9ax1DMF/nNFhXZZs9mX8DK0OwXbIxiMZtY=;
+	bh=p6t6SsnbM2chQrHSUF5FNb/6sSY2pvC9uU7Wbvcbwik=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=R0XD/nQExYCxBrAyGYtcLh56K19PHDyqTqVo4qdv2p3myqoYuJJbbM4R3Z/ciWTMj
-	 2nacItHg+SlXfO4aSALwC7GrY/ycuelGXm+GjO/DfgmTwHVGgqBN10lxnTqkxA+W8n
-	 vhhKxeZ0amRow+SxhAOzk/r/f06mXsEDd2HBh1xpyU7xxQfXVt7GYAusM5l3N94RQE
-	 uzHr210mfA3XI4ldxJmbyqOQGaBo+MfGJvrQrGmgMfYarkl4+a2urq9lQ0S93WVQq2
-	 w38BgY5amRe8V+uXyjupAlNuZc/4wXFD1R2hIco6BOvuIBOIpHfpwJsubdM1xJVwMx
-	 H8U+I1q3oRDhA==
+	b=cJ6w+b8uMonJXZTFS8twd57ImoiO505u6vr/tRHsxmEnpkGmorPRED77fd/O8XiBy
+	 K0XLVn1dINPW+ZWoQvOu/QceR68iaMXWrDkbwatzXGY8YL04CFt5Gvr1y4huV0mj5a
+	 Q/1Z4yMmP2bKAEteOypcCnp0rzwN7jgAcTstugMtvBRGcdxAue+/Z6lJjG6fXvZ8Bl
+	 lXxcsqp0JKG8ci8idGlN33aQCjLGbPuwnAG8hXbQcBPCZnArddU8uIopObXXkAohQ2
+	 mVGJHvgpHmzs2veRZNUXIyOz/UEm9EEjBlM0gXBPpOWBIN9RPepRrBx1wZCwaYBEho
+	 3KgU2uuJ2SBMA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,10 +57,11 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
-	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 07/63] elfnote: Change ELFNOTE() to use __UNIQUE_ID()
-Date: Wed, 17 Sep 2025 09:03:15 -0700
-Message-ID: <2cb558a895702dd74240516523324123b9933914.1758067942.git.jpoimboe@kernel.org>
+	Peter Zijlstra <peterz@infradead.org>,
+	Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH v4 08/63] kbuild: Remove 'kmod_' prefix from __KBUILD_MODNAME
+Date: Wed, 17 Sep 2025 09:03:16 -0700
+Message-ID: <f382dddad4b7c8079ce3dd91e5eaea921b03af72.1758067942.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,63 +73,54 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In preparation for the objtool klp diff subcommand, replace the custom
-unique symbol name generation in ELFNOTE() with __UNIQUE_ID().
+In preparation for the objtool klp diff subcommand, remove the arbitrary
+'kmod_' prefix from __KBUILD_MODNAME and instead add it explicitly in
+the __initcall_id() macro.
 
-This standardizes the naming format for all "unique" symbols, which will
-allow objtool to properly correlate them.  Note this also removes the
-"one ELF note per line" limitation.
+This change supports the standardization of "unique" symbol naming by
+ensuring the non-unique portion of the name comes before the unique
+part.  That will enable objtool to properly correlate symbols across
+builds.
 
+Cc: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- include/linux/elfnote.h | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ include/linux/init.h | 3 ++-
+ scripts/Makefile.lib | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/elfnote.h b/include/linux/elfnote.h
-index 69b136e4dd2b6..bb3dcded055fc 100644
---- a/include/linux/elfnote.h
-+++ b/include/linux/elfnote.h
-@@ -60,23 +60,21 @@
+diff --git a/include/linux/init.h b/include/linux/init.h
+index 17c1bc712e234..40331923b9f4a 100644
+--- a/include/linux/init.h
++++ b/include/linux/init.h
+@@ -200,12 +200,13 @@ extern struct module __this_module;
  
- #else	/* !__ASSEMBLER__ */
- #include <uapi/linux/elf.h>
-+#include <linux/compiler.h>
- /*
-  * Use an anonymous structure which matches the shape of
-  * Elf{32,64}_Nhdr, but includes the name and desc data.  The size and
-  * type of name and desc depend on the macro arguments.  "name" must
-- * be a literal string, and "desc" must be passed by value.  You may
-- * only define one note per line, since __LINE__ is used to generate
-- * unique symbols.
-+ * be a literal string, and "desc" must be passed by value.
-  */
--#define _ELFNOTE_PASTE(a,b)	a##b
--#define _ELFNOTE(size, name, unique, type, desc)			\
-+#define ELFNOTE(size, name, type, desc)					\
- 	static const struct {						\
- 		struct elf##size##_note _nhdr;				\
- 		unsigned char _name[sizeof(name)]			\
- 		__attribute__((aligned(sizeof(Elf##size##_Word))));	\
- 		typeof(desc) _desc					\
- 			     __attribute__((aligned(sizeof(Elf##size##_Word)))); \
--	} _ELFNOTE_PASTE(_note_, unique)				\
-+	} __UNIQUE_ID(note)						\
- 		__used							\
- 		__attribute__((section(".note." name),			\
- 			       aligned(sizeof(Elf##size##_Word)),	\
-@@ -89,11 +87,10 @@
- 		name,							\
- 		desc							\
- 	}
--#define ELFNOTE(size, name, type, desc)		\
--	_ELFNOTE(size, name, __LINE__, type, desc)
+ /* Format: <modname>__<counter>_<line>_<fn> */
+ #define __initcall_id(fn)					\
++	__PASTE(kmod_,						\
+ 	__PASTE(__KBUILD_MODNAME,				\
+ 	__PASTE(__,						\
+ 	__PASTE(__COUNTER__,					\
+ 	__PASTE(_,						\
+ 	__PASTE(__LINE__,					\
+-	__PASTE(_, fn))))))
++	__PASTE(_, fn)))))))
  
- #define ELFNOTE32(name, type, desc) ELFNOTE(32, name, type, desc)
- #define ELFNOTE64(name, type, desc) ELFNOTE(64, name, type, desc)
-+
- #endif	/* __ASSEMBLER__ */
+ /* Format: __<prefix>__<iid><id> */
+ #define __initcall_name(prefix, __iid, id)			\
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 1d581ba5df66f..b955602661240 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -20,7 +20,7 @@ name-fix-token = $(subst $(comma),_,$(subst -,_,$1))
+ name-fix = $(call stringify,$(call name-fix-token,$1))
+ basename_flags = -DKBUILD_BASENAME=$(call name-fix,$(basetarget))
+ modname_flags  = -DKBUILD_MODNAME=$(call name-fix,$(modname)) \
+-		 -D__KBUILD_MODNAME=kmod_$(call name-fix-token,$(modname))
++		 -D__KBUILD_MODNAME=$(call name-fix-token,$(modname))
+ modfile_flags  = -DKBUILD_MODFILE=$(call stringify,$(modfile))
  
- #endif /* _LINUX_ELFNOTE_H */
+ _c_flags       = $(filter-out $(CFLAGS_REMOVE_$(target-stem).o), \
 -- 
 2.50.0
 
