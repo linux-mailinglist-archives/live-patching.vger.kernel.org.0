@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1674-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1675-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5BB7EB80DB5
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:09:12 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6ACE1B80D8E
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:07:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7D1B8541DF9
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:07:31 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id B3F3B1C21EDE
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:08:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 162FE2FE565;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C57EA2FE593;
 	Wed, 17 Sep 2025 16:04:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A8mirm2a"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HK2LNZ9k"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34082FE077;
-	Wed, 17 Sep 2025 16:04:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA4F2FE578;
+	Wed, 17 Sep 2025 16:04:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125070; cv=none; b=uLX+gnFP5SLmagodQogi/sULFbvatC65PvqZE6HzRjqd5WpeCInpfJIQ8G756PMflaFtmLJHt5p886tBVwXHohI6P9BVxzf69u9KySh40CZjxx7DfLdLuDEhcXnrGCIx1Fdz/mm7gL/7utp+zVjgO/u+IEl01hBYdTIgxPP+pP0=
+	t=1758125070; cv=none; b=fM6Nd3PSj6Zx8czdUhoOxM2X4xRsTRWBNJXJ+2RAk4NCsQlrJh+HeNnvu+/d1RcV3dWEwnzeB2fiMfLjxd0RZO3T9+UdrddqcDHzjh0ptgLYzRNY5DfJav7fNrNh0czmjt17iPnxvz5Iyjblz+Ck343ZaoLIChpST5dQYOkn8cc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758125070; c=relaxed/simple;
-	bh=fqNYx9+NO/8GphX8rTDKtMRJSZgsgsbDmbQ0J4YjN5c=;
+	bh=tENY8UpReDpCrnzhzEcKFJHSyHeiXRre36scAd19kMg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=c26pBiLi+kcSUu2/1bjaMF8cM1Jckr18NmzpyLviolgvUJWQHnd3JCnm1rl8TwKaMo5Bzz03kZyhbDSNtaFlrmpQCmsftGtp+hdBQA8njyyndaWRQm9Yp6LKgYaaxkyp4h5rBAD2rrlgKxHbEPKfHHEZ97+N6di0thO8rFlC3GI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A8mirm2a; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E9BFC4CEFB;
+	 MIME-Version; b=WwdGi1txAcR6Rztr896bDsKtn50lM8Y1q3WWuvIzowfcKufXu0Jlsxfr9EpqD0FZN10A7lvrRUMq62hNl9wpD6Pdx04JrKmxqYh1NFqP3ATj6kw3FpDC2TI9JtV80X1QAPauDFft0jXMhnAKwWJFYJPRvUGj8YyzTGx81umh03A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HK2LNZ9k; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC667C4CEF7;
 	Wed, 17 Sep 2025 16:04:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125069;
-	bh=fqNYx9+NO/8GphX8rTDKtMRJSZgsgsbDmbQ0J4YjN5c=;
+	s=k20201202; t=1758125070;
+	bh=tENY8UpReDpCrnzhzEcKFJHSyHeiXRre36scAd19kMg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=A8mirm2a0Kw7AQWpEjx8vokEq/t1WDwcaDwL6F4vhwLQ7lk4LqYLoJdETItnKnhmr
-	 bk7I2KOE6dVrFCuRuinCUtdFW8cLPmlL70x/VXihRodpbBmF79IehP3gl/ijKgB0UM
-	 0MrUvKPYlg/KJ5fMHkzDrB7rPb4FDEDVzUuFii3pMqwsM7bHX5SHrRzhrjU4BCZQbH
-	 hCfdhiNsaXzxxV7mrAeMlUGVEelhRa+4AKM4iNMuyLIDLqK8jsMhrkYS1EnuCNIO7Z
-	 pdqtywGHZXRpLR8MYpkRf1Sg1akX+0ySdzRAkFdz2AKnzZfO6WOXP3BNnhamhChlEF
-	 jXQslMeHgyXRg==
+	b=HK2LNZ9kY5NyuBkPkrZc5+ez3LDIW44zLvWv6m3n1q1mWfy4g8vLic9+ZWA/qXUzJ
+	 bvbWCL+42eTwYo0XB4RMpn6GQzHunDsCS3j4Zyd+cK0axJdh1ZzSCizcIiKYnndK+2
+	 nMMxd2Zue00Dip0i1J3xSLZFN1lbu/vuSP6j3CylNOAyn76QQ3rFTukifVX9XF4EJa
+	 ROunF+GIF5sK+L2ZYlBQLZry4MIQt882Z1+n2xtFMc0h0qG9HWDpk23kpRStMYfo8K
+	 12xzz4VAWbV/zQt3ZKFAtTr2EMKEr43RxPQ7H0H9noB5PyyLy8B1zJ2iDzMG2du53c
+	 5SHF4vQgE+byA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 19/63] objtool: Fix weak symbol detection
-Date: Wed, 17 Sep 2025 09:03:27 -0700
-Message-ID: <e6667f985a2d93db64f24122822ea1ca95409530.1758067943.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 20/63] objtool: Fix x86 addend calculation
+Date: Wed, 17 Sep 2025 09:03:28 -0700
+Message-ID: <f17f8e7d1b666c2c548789ab456f58721cae6b88.1758067943.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,56 +72,139 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-find_symbol_hole_containing() fails to find a symbol hole (aka stripped
-weak symbol) if its section has no symbols before the hole.  This breaks
-weak symbol detection if -ffunction-sections is enabled.
+On x86, arch_dest_reloc_offset() hardcodes the addend adjustment to
+four, but the actual adjustment depends on the relocation type.  Fix
+that.
 
-Fix that by allowing the interval tree to contain section symbols, which
-are always at offset zero for a given section.
-
-Fixes a bunch of (-ffunction-sections) warnings like:
-
-  vmlinux.o: warning: objtool: .text.__x64_sys_io_setup+0x10: unreachable instruction
-
-Fixes: 4adb23686795 ("objtool: Ignore extra-symbol code")
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ tools/objtool/arch/loongarch/decode.c |  4 ++--
+ tools/objtool/arch/powerpc/decode.c   |  4 ++--
+ tools/objtool/arch/x86/decode.c       |  9 +++++++--
+ tools/objtool/check.c                 | 15 +++++----------
+ tools/objtool/include/objtool/arch.h  |  2 +-
+ 5 files changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index c024937eb12a2..d7fb3d0b05cf1 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -109,7 +109,7 @@ struct symbol_hole {
- };
+diff --git a/tools/objtool/arch/loongarch/decode.c b/tools/objtool/arch/loongarch/decode.c
+index b6fdc68053cc4..330671d88c590 100644
+--- a/tools/objtool/arch/loongarch/decode.c
++++ b/tools/objtool/arch/loongarch/decode.c
+@@ -17,9 +17,9 @@ unsigned long arch_jump_destination(struct instruction *insn)
+ 	return insn->offset + (insn->immediate << 2);
+ }
  
- /*
-- * Find !section symbol where @offset is after it.
-+ * Find the last symbol before @offset.
-  */
- static int symbol_hole_by_offset(const void *key, const struct rb_node *node)
+-unsigned long arch_dest_reloc_offset(int addend)
++s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc *reloc)
  {
-@@ -120,8 +120,7 @@ static int symbol_hole_by_offset(const void *key, const struct rb_node *node)
- 		return -1;
+-	return addend;
++	return reloc_addend(reloc);
+ }
  
- 	if (sh->key >= s->offset + s->len) {
--		if (s->type != STT_SECTION)
--			sh->sym = s;
-+		sh->sym = s;
- 		return 1;
+ bool arch_pc_relative_reloc(struct reloc *reloc)
+diff --git a/tools/objtool/arch/powerpc/decode.c b/tools/objtool/arch/powerpc/decode.c
+index c851c51d4bd35..9b17885e6cba6 100644
+--- a/tools/objtool/arch/powerpc/decode.c
++++ b/tools/objtool/arch/powerpc/decode.c
+@@ -14,9 +14,9 @@ int arch_ftrace_match(char *name)
+ 	return !strcmp(name, "_mcount");
+ }
+ 
+-unsigned long arch_dest_reloc_offset(int addend)
++s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc *reloc)
+ {
+-	return addend;
++	return reloc_addend(reloc);
+ }
+ 
+ bool arch_callee_saved_reg(unsigned char reg)
+diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
+index 0ad5cc70ecbe7..6742002a01f55 100644
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -68,9 +68,14 @@ bool arch_callee_saved_reg(unsigned char reg)
  	}
+ }
  
-@@ -428,7 +427,8 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
- 	sym->len = sym->sym.st_size;
+-unsigned long arch_dest_reloc_offset(int addend)
++s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc *reloc)
+ {
+-	return addend + 4;
++	s64 addend = reloc_addend(reloc);
++
++	if (arch_pc_relative_reloc(reloc))
++		addend += insn->offset + insn->len - reloc_offset(reloc);
++
++	return addend;
+ }
  
- 	__sym_for_each(iter, &sym->sec->symbol_tree, sym->offset, sym->offset) {
--		if (iter->offset == sym->offset && iter->type == sym->type)
-+		if (iter->offset == sym->offset && iter->type == sym->type &&
-+		    iter->len == sym->len)
- 			iter->alias = sym;
- 	}
+ unsigned long arch_jump_destination(struct instruction *insn)
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index dbdbbddd01ecb..1165dd1669f0b 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1499,7 +1499,7 @@ static int add_jump_destinations(struct objtool_file *file)
+ 			dest_off = arch_jump_destination(insn);
+ 		} else if (reloc->sym->type == STT_SECTION) {
+ 			dest_sec = reloc->sym->sec;
+-			dest_off = arch_dest_reloc_offset(reloc_addend(reloc));
++			dest_off = arch_insn_adjusted_addend(insn, reloc);
+ 		} else if (reloc->sym->retpoline_thunk) {
+ 			if (add_retpoline_call(file, insn))
+ 				return -1;
+@@ -1518,7 +1518,7 @@ static int add_jump_destinations(struct objtool_file *file)
+ 		} else if (reloc->sym->sec->idx) {
+ 			dest_sec = reloc->sym->sec;
+ 			dest_off = reloc->sym->sym.st_value +
+-				   arch_dest_reloc_offset(reloc_addend(reloc));
++				   arch_insn_adjusted_addend(insn, reloc);
+ 		} else {
+ 			/* non-func asm code jumping to another file */
+ 			continue;
+@@ -1663,7 +1663,7 @@ static int add_call_destinations(struct objtool_file *file)
+ 			}
  
+ 		} else if (reloc->sym->type == STT_SECTION) {
+-			dest_off = arch_dest_reloc_offset(reloc_addend(reloc));
++			dest_off = arch_insn_adjusted_addend(insn, reloc);
+ 			dest = find_call_destination(reloc->sym->sec, dest_off);
+ 			if (!dest) {
+ 				ERROR_INSN(insn, "can't find call dest symbol at %s+0x%lx",
+@@ -3324,7 +3324,7 @@ static bool pv_call_dest(struct objtool_file *file, struct instruction *insn)
+ 	if (!reloc || strcmp(reloc->sym->name, "pv_ops"))
+ 		return false;
+ 
+-	idx = (arch_dest_reloc_offset(reloc_addend(reloc)) / sizeof(void *));
++	idx = arch_insn_adjusted_addend(insn, reloc) / sizeof(void *);
+ 
+ 	if (file->pv_ops[idx].clean)
+ 		return true;
+@@ -4405,12 +4405,7 @@ static int validate_ibt_insn(struct objtool_file *file, struct instruction *insn
+ 					      reloc_offset(reloc) + 1,
+ 					      (insn->offset + insn->len) - (reloc_offset(reloc) + 1))) {
+ 
+-		off = reloc->sym->offset;
+-		if (reloc_type(reloc) == R_X86_64_PC32 ||
+-		    reloc_type(reloc) == R_X86_64_PLT32)
+-			off += arch_dest_reloc_offset(reloc_addend(reloc));
+-		else
+-			off += reloc_addend(reloc);
++		off = reloc->sym->offset + arch_insn_adjusted_addend(insn, reloc);
+ 
+ 		dest = find_insn(file, reloc->sym->sec, off);
+ 		if (!dest)
+diff --git a/tools/objtool/include/objtool/arch.h b/tools/objtool/include/objtool/arch.h
+index be33c7b43180a..68664625a4671 100644
+--- a/tools/objtool/include/objtool/arch.h
++++ b/tools/objtool/include/objtool/arch.h
+@@ -83,7 +83,7 @@ bool arch_callee_saved_reg(unsigned char reg);
+ 
+ unsigned long arch_jump_destination(struct instruction *insn);
+ 
+-unsigned long arch_dest_reloc_offset(int addend);
++s64 arch_insn_adjusted_addend(struct instruction *insn, struct reloc *reloc);
+ 
+ const char *arch_nop_insn(int len);
+ const char *arch_ret_insn(int len);
 -- 
 2.50.0
 
