@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1665-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1666-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D26FFB80D5B
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:06:22 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id C958EB80D67
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:06:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9FC392A4D71
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:05:49 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 6D29F1C20A57
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:06:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E46392FB623;
-	Wed, 17 Sep 2025 16:04:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DD7A2FB975;
+	Wed, 17 Sep 2025 16:04:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OM1pFhw8"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rb2Q2JX6"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC6C827875C;
-	Wed, 17 Sep 2025 16:04:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33D392FB967;
+	Wed, 17 Sep 2025 16:04:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125063; cv=none; b=Z6PqkjgG718S8A65pQJTcP3BjZC5vs7pXFvyzI883k/e7/zZd+kV2DwRGwrA1Is9mn2yKVgzcerXBV/+2WvKxqpcQ3lly6lwKDNLfUUZFGuzbtNguFZjir3MDElZ3DPYpY5e3DGDpBqyagHXL/w85Yr0L3H1SP4JHQyyiInHzyM=
+	t=1758125064; cv=none; b=aOtmkVcaMAz81uYxxxf/6xQxbh/n4rH7ErWXSjbUf5Xeun7YXT98exkXTG953KXMxD75gEx3DJhPVNw9GmmDv6VlzVxQZyC0T8GtjLBcB2OtDmA2aX5B/cVA9P6rJeZdJhDyWEFwsAvbO8H0NrSrgT4y1wYiQEnq0Bavsa/hL9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125063; c=relaxed/simple;
-	bh=eHw0u6kn/e6VWlDUX7+51egTO7nADQPtQ5LmQ4ML06Q=;
+	s=arc-20240116; t=1758125064; c=relaxed/simple;
+	bh=fdFBK3Bqt4kG/fMkIPaLswtKtwEuXDZRuj9hIgerOzg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UDgy5GKkDo9ujGFl5EA24bJDazLW3Mp1DEUR6k4Tmx22GLDOfgYLkkiDmHFIHW9xRBDWOvR86kqMngOkrr+SUMG7/ANKyakEUh7/iVoD0Q1tLxGICysDzr6FNX45mk6K/M/JU+s0lJ6gzrQTaZFI/AOAuf5YNPxcXiGI0oKeECg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OM1pFhw8; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C572BC19421;
-	Wed, 17 Sep 2025 16:04:22 +0000 (UTC)
+	 MIME-Version; b=V5PG+cXYJ/+zjn9ER8BaoKWLXw9VjVDFIkKIgQogD+R6XPiJc7NEazwTP8gVURTE8QJ0q845eM5oocq9D0P50QpIv+yl3u7z1h9oqlz+M3cJV3agTFntB/orVsZpfm6FGTYX8FdV15insQuH35mFlBmWzem/zZGoSEjj5MFNms0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rb2Q2JX6; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83EDFC4CEE7;
+	Wed, 17 Sep 2025 16:04:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125063;
-	bh=eHw0u6kn/e6VWlDUX7+51egTO7nADQPtQ5LmQ4ML06Q=;
+	s=k20201202; t=1758125064;
+	bh=fdFBK3Bqt4kG/fMkIPaLswtKtwEuXDZRuj9hIgerOzg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=OM1pFhw8q6gShh4qAiGYO5IYrvhr80DkYXOapti0woV45TFRpxV8s84DfGw3tnRCW
-	 e9zhOF7ttNdRowHlwd9OI7mx88NYODXbPrkgBtzR/8D9OaBJWpkk/1EzBULNZNUqlJ
-	 KmwG7V7+jhQKuswk++eStTK8uoobDUSO17NT8haat2d8UF/GGQrfWCdmY3n1mIIPIX
-	 6LTateE28PYDre7gM6fUvz0zGvctqfgj+MHmOW9uExI30zdjSb4uApd4FJz5j/m5+c
-	 w7vHXFFsS7nuaYSx/k5+gVcUv4pOscD6I/GrmFgKM6PVF80aFJqCquPQdQTva6iBH9
-	 dGafaZCRQuDQw==
+	b=Rb2Q2JX6TMhEDqos/fdKBkxNxZhj170NSeu+NMKHjJpJRWm8JhiNwURGm8cgbdYxR
+	 7QR9mIxH16crgXejoOeGOBEJy+wu4RBytNa43FX0mWfcVL4LeNbLL3YJCIp/Fo7oSZ
+	 wnOEAVoTixgJSHZs+D7BH0LQTl/p36+X4fZTicxjY/HPungfziMacBrE9QsQptWbDF
+	 +tYFuE8Hj/2oPJ2xOrSc0tuZbkSYcYKmOKkox9DBWEJwcPZIOazWRKYfKlTxGMLIau
+	 x0yxoivvuKgzVU02Mg7FidFYK19U+xaYRR/R3wPqGLhv1Y5XTxvAtH39c9dLaKEEPC
+	 IiHrAP5QgbHLw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 10/63] x86/alternative: Refactor INT3 call emulation selftest
-Date: Wed, 17 Sep 2025 09:03:18 -0700
-Message-ID: <5568a50fd9cb11435e18c05a9841cd88a4d664ac.1758067942.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 11/63] interval_tree: Sync interval_tree_generic.h with tools
+Date: Wed, 17 Sep 2025 09:03:19 -0700
+Message-ID: <d73c40a8c06e86e7ee1321a273d9cfa053623ed9.1758067942.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,112 +72,51 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The INT3 call emulation selftest is a bit fragile as it relies on the
-compiler not inserting any extra instructions before the
-int3_selftest_ip() definition.
+The following commit made an improvement to interval_tree_generic.h, but
+didn't sync it to the tools copy:
 
-Also, the int3_selftest_ip() symbol overlaps with the int3_selftest
-symbol(), which can confuse objtool.
+  19811285784f ("lib/interval_tree: skip the check before go to the right subtree")
 
-Fix those issues by slightly reworking the functionality and moving
-int3_selftest_ip() to a separate asm function.  While at it, improve the
-naming.
+Sync it, and add it to objtool's sync-check.sh so they are more likely
+to stay in sync going forward.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/kernel/alternative.c | 51 +++++++++++++++++++----------------
- 1 file changed, 28 insertions(+), 23 deletions(-)
+ tools/include/linux/interval_tree_generic.h | 8 ++------
+ tools/objtool/sync-check.sh                 | 1 +
+ 2 files changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 69fb818df2eed..9e7f03172a227 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -2244,21 +2244,34 @@ int alternatives_text_reserved(void *start, void *end)
-  * See entry_{32,64}.S for more details.
-  */
+diff --git a/tools/include/linux/interval_tree_generic.h b/tools/include/linux/interval_tree_generic.h
+index aaa8a0767aa3a..1b400f26f63d6 100644
+--- a/tools/include/linux/interval_tree_generic.h
++++ b/tools/include/linux/interval_tree_generic.h
+@@ -104,12 +104,8 @@ ITPREFIX ## _subtree_search(ITSTRUCT *node, ITTYPE start, ITTYPE last)	      \
+ 		if (ITSTART(node) <= last) {		/* Cond1 */	      \
+ 			if (start <= ITLAST(node))	/* Cond2 */	      \
+ 				return node;	/* node is leftmost match */  \
+-			if (node->ITRB.rb_right) {			      \
+-				node = rb_entry(node->ITRB.rb_right,	      \
+-						ITSTRUCT, ITRB);	      \
+-				if (start <= node->ITSUBTREE)		      \
+-					continue;			      \
+-			}						      \
++			node = rb_entry(node->ITRB.rb_right, ITSTRUCT, ITRB); \
++			continue;					      \
+ 		}							      \
+ 		return NULL;	/* No match */				      \
+ 	}								      \
+diff --git a/tools/objtool/sync-check.sh b/tools/objtool/sync-check.sh
+index 81d120d054425..86d64e3ac6f73 100755
+--- a/tools/objtool/sync-check.sh
++++ b/tools/objtool/sync-check.sh
+@@ -16,6 +16,7 @@ arch/x86/include/asm/orc_types.h
+ arch/x86/include/asm/emulate_prefix.h
+ arch/x86/lib/x86-opcode-map.txt
+ arch/x86/tools/gen-insn-attr-x86.awk
++include/linux/interval_tree_generic.h
+ include/linux/static_call_types.h
+ "
  
--/*
-- * We define the int3_magic() function in assembly to control the calling
-- * convention such that we can 'call' it from assembly.
-- */
--
--extern void int3_magic(unsigned int *ptr); /* defined in asm */
-+extern void int3_selftest_asm(unsigned int *ptr);
- 
- asm (
- "	.pushsection	.init.text, \"ax\", @progbits\n"
--"	.type		int3_magic, @function\n"
--"int3_magic:\n"
-+"	.type		int3_selftest_asm, @function\n"
-+"int3_selftest_asm:\n"
- 	ANNOTATE_NOENDBR
--"	movl	$1, (%" _ASM_ARG1 ")\n"
-+	/*
-+	 * INT3 padded with NOP to CALL_INSN_SIZE. The INT3 triggers an
-+	 * exception, then the int3_exception_nb notifier emulates a call to
-+	 * int3_selftest_callee().
-+	 */
-+"	int3; nop; nop; nop; nop\n"
- 	ASM_RET
--"	.size		int3_magic, .-int3_magic\n"
-+"	.size		int3_selftest_asm, . - int3_selftest_asm\n"
-+"	.popsection\n"
-+);
-+
-+extern void int3_selftest_callee(unsigned int *ptr);
-+
-+asm (
-+"	.pushsection	.init.text, \"ax\", @progbits\n"
-+"	.type		int3_selftest_callee, @function\n"
-+"int3_selftest_callee:\n"
-+	ANNOTATE_NOENDBR
-+"	movl	$0x1234, (%" _ASM_ARG1 ")\n"
-+	ASM_RET
-+"	.size		int3_selftest_callee, . - int3_selftest_callee\n"
- "	.popsection\n"
- );
- 
-@@ -2267,7 +2280,7 @@ extern void int3_selftest_ip(void); /* defined in asm below */
- static int __init
- int3_exception_notify(struct notifier_block *self, unsigned long val, void *data)
- {
--	unsigned long selftest = (unsigned long)&int3_selftest_ip;
-+	unsigned long selftest = (unsigned long)&int3_selftest_asm;
- 	struct die_args *args = data;
- 	struct pt_regs *regs = args->regs;
- 
-@@ -2282,7 +2295,7 @@ int3_exception_notify(struct notifier_block *self, unsigned long val, void *data
- 	if (regs->ip - INT3_INSN_SIZE != selftest)
- 		return NOTIFY_DONE;
- 
--	int3_emulate_call(regs, (unsigned long)&int3_magic);
-+	int3_emulate_call(regs, (unsigned long)&int3_selftest_callee);
- 	return NOTIFY_STOP;
- }
- 
-@@ -2298,19 +2311,11 @@ static noinline void __init int3_selftest(void)
- 	BUG_ON(register_die_notifier(&int3_exception_nb));
- 
- 	/*
--	 * Basically: int3_magic(&val); but really complicated :-)
--	 *
--	 * INT3 padded with NOP to CALL_INSN_SIZE. The int3_exception_nb
--	 * notifier above will emulate CALL for us.
-+	 * Basically: int3_selftest_callee(&val); but really complicated :-)
- 	 */
--	asm volatile ("int3_selftest_ip:\n\t"
--		      ANNOTATE_NOENDBR
--		      "    int3; nop; nop; nop; nop\n\t"
--		      : ASM_CALL_CONSTRAINT
--		      : __ASM_SEL_RAW(a, D) (&val)
--		      : "memory");
-+	int3_selftest_asm(&val);
- 
--	BUG_ON(val != 1);
-+	BUG_ON(val != 0x1234);
- 
- 	unregister_die_notifier(&int3_exception_nb);
- }
 -- 
 2.50.0
 
