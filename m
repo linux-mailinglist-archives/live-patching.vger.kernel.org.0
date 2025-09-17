@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1687-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1688-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C6B18B80E0C
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:11:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE439B80DD3
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:10:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A1F9544031
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:09:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9C4B03A05A5
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:10:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5063F32BC1A;
-	Wed, 17 Sep 2025 16:04:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 54A13336284;
+	Wed, 17 Sep 2025 16:04:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ILbw/fqd"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WXRFR6po"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 290C832898A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E5D6335954;
 	Wed, 17 Sep 2025 16:04:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125079; cv=none; b=A6+D4hJbA2FiyQ5aaiz0PzcYB+PJgwd2xU9aqmn4NUaUAE6dygdMTEdooJBp6L/8HJqtISbFz/1veCL9p5Xb4V1R2ZiB1uqUX90k50JFmx5ClfRlynv92+wj57jyDOYA/3EbY8XIrWI9oRAT8VcnProZdHoH61hEdKKQPiNt0W8=
+	t=1758125080; cv=none; b=r6BIJZAROdf3XGZWVsc5DItJanNQnljmEB+/W3pct75RFCj6fPPpvvZ7DiPWm+Am1gWwHMfEnGTfFoWfBoyU/pEwWf5G/39VVc0lQXi1/MferEwKoCTuYyx6qOLHdXw9u7scRRMZ+t7XuFO+oBQGkkNK1GLg1LPbzMBH70zuGF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125079; c=relaxed/simple;
-	bh=N+2EyH+rpRcy8Di7tNmxfZO92E0uRDPrwe6F/B9X0fQ=;
+	s=arc-20240116; t=1758125080; c=relaxed/simple;
+	bh=+c3m4SnwkS9U/GosXwbEYwHZVKnVCubU14Y1GjKYlv8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=q3tgJibCdnBBVBRhggKx/DK4jNrX9CF75mwkziPSEjLMCxYpjw5EQGW3usfWinAcvxeHxFpMQw2LdYzGEQBmJLSn6/onUM4d9ktRJPYLvCjmJ/JICHJ//T2T32GPuUL1TX3HrqkL5fVMuDKTP8jq96rSyDKXsZClJ279qH0F/50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ILbw/fqd; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79B4DC4CEE7;
-	Wed, 17 Sep 2025 16:04:38 +0000 (UTC)
+	 MIME-Version; b=Nmcf1qcS3JiNGGgCvR2cosvWuGJKjCEsEAAdzWHWzI1luGMaIwex6D5N3lcr6tD2RJbT4zRqtI3DKe26FwpHlje2Xni82gtuvv3Rh8vwPeqo9+PWo2ZUI3DosqqtocAT7UIbJo2b5u0++SX3FVKMCwVrPdA/UHZtal2PDdqlrHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WXRFR6po; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3160AC4CEF7;
+	Wed, 17 Sep 2025 16:04:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1758125079;
-	bh=N+2EyH+rpRcy8Di7tNmxfZO92E0uRDPrwe6F/B9X0fQ=;
+	bh=+c3m4SnwkS9U/GosXwbEYwHZVKnVCubU14Y1GjKYlv8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ILbw/fqdyyEsYOHwtLDtle9iIgWQ9usOhHhS+sG8YvkwShLTAvP+UmvdWHBfpGq+f
-	 CrXSIeFaen/mm98bicvFi6zUDDQahbtQg6KLg6QvIrt+ZuwGq7X2lU5LMtbEvNWkRf
-	 HoJwnKPuTwObZO9FAhy1N3ItB2xfylrcvA3X3RKOOYt+otQYJdOWcTFkDzhHJqgk2D
-	 U6hCIxt9yb6ZMoYD8uDfe9uqn/AmwKzObI2cgXFFAVIQgxGrJDbIdPqlhBR2lG91hl
-	 k4ABxaIhyXjZZb5M3TDZp4ATE1V7H9xdHuu3zpfhUNYgtcpPIc9wVBoDzElq1oaEsV
-	 nFZEZfX5zqwxw==
+	b=WXRFR6pomdUPoYJpPKUiADHGRuGV+HEayICeyESNWXFL7QYLWbVTKLrYBqskCILzu
+	 ODCVlohhbW2TlKQArQpdWLu4LU8m9fwjm63adoWeIGXDTFX2yyrALOQVuqUWezVwbu
+	 fCWBP+yMv7ATXBpcQFjgmxqLijmRjfkbD47vyqFOcqa0K89j+Uqt+W8e2rtKBld1Ac
+	 QyKF7B6mv3Lvufx9XSf+hwqk6aik6e8XhTT2pPk2V2s6SZggPTssgEKEVzAWk3XFAu
+	 wrdyt+pP9bK48fJ1ukNKSK/ow8Uv6iWm2ntVMTojEbX6tvY5fcraGYMntpiMsTGf8R
+	 hDG7mMipHVq+A==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 32/63] objtool: Simplify reloc offset calculation in unwind_read_hints()
-Date: Wed, 17 Sep 2025 09:03:40 -0700
-Message-ID: <47f3e5967842ad84919539cdf22c9d390186f276.1758067943.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 33/63] objtool: Avoid emptying lists for duplicate sections
+Date: Wed, 17 Sep 2025 09:03:41 -0700
+Message-ID: <b2aef7bd757ba1fe9d0d4d2756855135133b5a99.1758067943.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,34 +72,51 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Simplify the relocation offset calculation in unwind_read_hints(),
-similar to other conversions which have already been done.
+When a to-be-created section already exists, there's no point in
+emptying the various lists if their respective sections already exist.
+In fact it's better to leave them intact as they might get used later.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ tools/objtool/check.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 6f7ed34aea43e..ea53468120d7a 100644
+index ea53468120d7a..f75de86c60f5f 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -2200,14 +2200,7 @@ static int read_unwind_hints(struct objtool_file *file)
- 			return -1;
- 		}
+@@ -635,7 +635,6 @@ static int create_static_call_sections(struct objtool_file *file)
  
--		if (is_sec_sym(reloc->sym)) {
--			offset = reloc_addend(reloc);
--		} else if (reloc->sym->local_label) {
--			offset = reloc->sym->offset;
--		} else {
--			ERROR("unexpected relocation symbol type in %s", sec->rsec->name);
--			return -1;
--		}
-+		offset = reloc->sym->offset + reloc_addend(reloc);
+ 	sec = find_section_by_name(file->elf, ".static_call_sites");
+ 	if (sec) {
+-		INIT_LIST_HEAD(&file->static_call_list);
+ 		WARN("file already has .static_call_sites section, skipping");
+ 		return 0;
+ 	}
+@@ -851,7 +850,6 @@ static int create_cfi_sections(struct objtool_file *file)
  
- 		insn = find_insn(file, reloc->sym->sec, offset);
- 		if (!insn) {
+ 	sec = find_section_by_name(file->elf, ".cfi_sites");
+ 	if (sec) {
+-		INIT_LIST_HEAD(&file->call_list);
+ 		WARN("file already has .cfi_sites section, skipping");
+ 		return 0;
+ 	}
+@@ -900,7 +898,6 @@ static int create_mcount_loc_sections(struct objtool_file *file)
+ 
+ 	sec = find_section_by_name(file->elf, "__mcount_loc");
+ 	if (sec) {
+-		INIT_LIST_HEAD(&file->mcount_loc_list);
+ 		WARN("file already has __mcount_loc section, skipping");
+ 		return 0;
+ 	}
+@@ -945,7 +942,6 @@ static int create_direct_call_sections(struct objtool_file *file)
+ 
+ 	sec = find_section_by_name(file->elf, ".call_sites");
+ 	if (sec) {
+-		INIT_LIST_HEAD(&file->call_list);
+ 		WARN("file already has .call_sites section, skipping");
+ 		return 0;
+ 	}
 -- 
 2.50.0
 
