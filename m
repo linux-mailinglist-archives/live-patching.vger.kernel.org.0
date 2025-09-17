@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1659-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1658-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 744F9B80D2B
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:04:39 +0200 (CEST)
+Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BD7A7B80D37
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:04:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id ECB831C03013
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:05:00 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 98FC57B156E
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:03:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D35E62F8BF5;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1E572F8BF3;
 	Wed, 17 Sep 2025 16:04:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lTR/nntv"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BLcnRz8W"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB192F8BD5;
-	Wed, 17 Sep 2025 16:04:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB9A2F8BDA;
+	Wed, 17 Sep 2025 16:04:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125059; cv=none; b=sZW6lBZeNITRvhFaZnR7AI1i/kLbXmLYy5o6/lfTZFeC4JFy4qfGNx1yycusmz6Rzn8LxM9O9r1nOf5oZDnOYj4vvo6ieLVV8uu9d9sxTAuJ3j5M6cRtYvQ/Qdt8uCICCgtBicV3cwH+mrHuDcsiqJc2DoIBQlMRGKhgtVLqOkc=
+	t=1758125059; cv=none; b=fEbDik5BWMI0MOQPeC3eH4uYfWmt1S88XWzjFcx53oc9G3ivdrCevbhJ2D/H6YAYNPRyN0BKcwmxuvaZ/4Tgd7xmd9BEFOzZh94MY5FzqL8fvzUZs1diiiA3Rp4y7sJtEnMvXLLT9F/WJTF0VQ+v9JWQv5g9XYevihORM31LRgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758125059; c=relaxed/simple;
-	bh=I3QLLmOY/E7ZwGHM5EzQWEH4P7l7uhjOnzCBo67r6ow=;
+	bh=RQybw1fumGyVhHslCFCuRhNEASOrXXvaIx0FvYmfnu4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qeSW8AKMcPB0x//6S4k2icC3guensDDwTdu4NstVKJlhYwcQ39yLS3rUFwb4TenWdpV+y87cXNsjb3ms3oD/5AFNJr+mbLouHWfo1L2xgZUP9+lhN+ijCz162Y8NubqZhLingn0OBacpRQDxAwIozVxyFUivMTm5TUguw0r/YPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lTR/nntv; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E511BC4CEFA;
-	Wed, 17 Sep 2025 16:04:16 +0000 (UTC)
+	 MIME-Version; b=mXUpKM+Qol90+U4NjBgC29g2gIaA+bgRacdafQixtj3nJaWbOWJ3t3pFxw+WnoKjoCdp3+4Mrr1HdSx+cCQcQ1Odpu014eFhOffPi9WQF4K2zXIC0v6W7DohTP3PeS4HlOBlqb4f07Oc15IDf6uxVeO7yeGBRK24Ve9Voc08CqM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BLcnRz8W; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43CCC4CEE7;
+	Wed, 17 Sep 2025 16:04:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125057;
-	bh=I3QLLmOY/E7ZwGHM5EzQWEH4P7l7uhjOnzCBo67r6ow=;
+	s=k20201202; t=1758125058;
+	bh=RQybw1fumGyVhHslCFCuRhNEASOrXXvaIx0FvYmfnu4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lTR/nntv9RmNGRbGXrMbzpvY9+jfTEiau9vqyltJA7yEdTEWUm5Vj0cZcQOvvVqNE
-	 QjhD+5iv0aP15AeQWYOy/hp+VMD6m9/H0JOS0w1r5PhlVMTOW5SqE63z8yLwGmIhMX
-	 /BLFrKFiIVkpa6TTl9/0YZXFQlMWX4EAGu/LhMBQNqRjnijFi5jJKnwxLQwFPWZwTB
-	 lr8OezQcx9iC5pz4hAPabwtcEI4c+AexIibO76PA7VJxUHYuOhpvfyONl9E0o95P+P
-	 ZNoV66q4v0T14r1aW+VsrExCsK8/uX4VjFVsrTlF81Tk/znq8gIf0FOhbupLPMZi3G
-	 AWCsTsDFEzp2Q==
+	b=BLcnRz8WGUFknYFf9ln0hWWaomuaKWbttbWteuUpmgnlqdH327RAwp+/mK/tOu02a
+	 OjQnzrgCGYAK0Y+RfuCAEiSEAaXnx2PSME9LjGdl00HQZJmVsX4U4XBKjtyqTddGg2
+	 m89fqRgawJ3RBeiaL33UmVAIJ3BsuLCnkE005ursDUBCuceRrm1WEfRBVJGh5L4yhw
+	 E5rlBCPVHdGkem2VMbtLPhq1+s+ecL+JW0CEq/BEfW9ndYdQ9xMfffynNhnoCOOHi0
+	 gT2juhvvABjqvyQ+BvTEU46AS/eOoC5S28RP00OzxNUbtKumvRj2QlFxVQxwjm/xUz
+	 gayTyH00rgs8w==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,13 +57,10 @@ Cc: linux-kernel@vger.kernel.org,
 	Chen Zhongjin <chenzhongjin@huawei.com>,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>
-Subject: [PATCH v4 02/63] vmlinux.lds: Unify TEXT_MAIN, DATA_MAIN, and related macros
-Date: Wed, 17 Sep 2025 09:03:10 -0700
-Message-ID: <97d8b7710a8f5389e323d0933dec68888fec5f1f.1758067942.git.jpoimboe@kernel.org>
+	Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH v4 03/63] x86/module: Improve relocation error messages
+Date: Wed, 17 Sep 2025 09:03:11 -0700
+Message-ID: <22b641d3a1a35a0711076104e3285ff4634f35e1.1758067942.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -75,125 +72,74 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-TEXT_MAIN, DATA_MAIN and friends are defined differently depending on
-whether certain config options enable -ffunction-sections and/or
--fdata-sections.
+Add the section number and reloc index to relocation error messages to
+help find the faulty relocation.
 
-There's no technical reason for that beyond voodoo coding.  Keeping the
-separate implementations adds unnecessary complexity, fragments the
-logic, and increases the risk of subtle bugs.
-
-Unify the macros by using the same input section patterns across all
-configs.
-
-This is a prerequisite for the upcoming livepatch klp-build tooling
-which will manually enable -ffunction-sections and -fdata-sections via
-KCFLAGS.
-
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- include/asm-generic/vmlinux.lds.h | 40 ++++++++++---------------------
- scripts/module.lds.S              | 12 ++++------
- 2 files changed, 17 insertions(+), 35 deletions(-)
+ arch/x86/kernel/module.c | 15 +++++++++------
+ kernel/livepatch/core.c  |  4 ++--
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index ae2d2359b79e9..6b2311fa41393 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -87,39 +87,24 @@
- #define ALIGN_FUNCTION()  . = ALIGN(CONFIG_FUNCTION_ALIGNMENT)
- 
- /*
-- * LD_DEAD_CODE_DATA_ELIMINATION option enables -fdata-sections, which
-- * generates .data.identifier sections, which need to be pulled in with
-- * .data. We don't want to pull in .data..other sections, which Linux
-- * has defined. Same for text and bss.
-+ * Support -ffunction-sections by matching .text and .text.*,
-+ * but exclude '.text..*'.
-  *
-- * With LTO_CLANG, the linker also splits sections by default, so we need
-- * these macros to combine the sections during the final link.
-- *
-- * With AUTOFDO_CLANG and PROPELLER_CLANG, by default, the linker splits
-- * text sections and regroups functions into subsections.
-- *
-- * RODATA_MAIN is not used because existing code already defines .rodata.x
-- * sections to be brought in with rodata.
-+ * Special .text.* sections that are typically grouped separately, such as
-+ * .text.unlikely or .text.hot, must be matched explicitly before using
-+ * TEXT_MAIN.
-  */
--#if defined(CONFIG_LD_DEAD_CODE_DATA_ELIMINATION) || defined(CONFIG_LTO_CLANG) || \
--defined(CONFIG_AUTOFDO_CLANG) || defined(CONFIG_PROPELLER_CLANG)
- #define TEXT_MAIN .text .text.[0-9a-zA-Z_]*
--#else
--#define TEXT_MAIN .text
--#endif
--#if defined(CONFIG_LD_DEAD_CODE_DATA_ELIMINATION) || defined(CONFIG_LTO_CLANG)
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index 0ffbae902e2fe..11c45ce42694c 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -97,6 +97,7 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
+ 	DEBUGP("%s relocate section %u to %u\n",
+ 	       apply ? "Applying" : "Clearing",
+ 	       relsec, sechdrs[relsec].sh_info);
 +
-+/*
-+ * Support -fdata-sections by matching .data, .data.*, and others,
-+ * but exclude '.data..*'.
-+ */
- #define DATA_MAIN .data .data.[0-9a-zA-Z_]* .data.rel.* .data..L* .data..compoundliteral* .data.$__unnamed_* .data.$L*
- #define SDATA_MAIN .sdata .sdata.[0-9a-zA-Z_]*
- #define RODATA_MAIN .rodata .rodata.[0-9a-zA-Z_]* .rodata..L*
- #define BSS_MAIN .bss .bss.[0-9a-zA-Z_]* .bss..L* .bss..compoundliteral*
- #define SBSS_MAIN .sbss .sbss.[0-9a-zA-Z_]*
--#else
--#define DATA_MAIN .data .data.rel .data.rel.local
--#define SDATA_MAIN .sdata
--#define RODATA_MAIN .rodata
--#define BSS_MAIN .bss
--#define SBSS_MAIN .sbss
--#endif
+ 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
+ 		size_t size;
  
- /*
-  * GCC 4.5 and later have a 32 bytes section alignment for structures.
-@@ -580,9 +565,8 @@ defined(CONFIG_AUTOFDO_CLANG) || defined(CONFIG_PROPELLER_CLANG)
-  * during second ld run in second ld pass when generating System.map
-  *
-  * TEXT_MAIN here will match symbols with a fixed pattern (for example,
-- * .text.hot or .text.unlikely) if dead code elimination or
-- * function-section is enabled. Match these symbols first before
-- * TEXT_MAIN to ensure they are grouped together.
-+ * .text.hot or .text.unlikely).  Match those before TEXT_MAIN to ensure
-+ * they get grouped together.
-  *
-  * Also placing .text.hot section at the beginning of a page, this
-  * would help the TLB performance.
-diff --git a/scripts/module.lds.S b/scripts/module.lds.S
-index ee79c41059f3d..2632c6cb8ebe7 100644
---- a/scripts/module.lds.S
-+++ b/scripts/module.lds.S
-@@ -38,12 +38,10 @@ SECTIONS {
- 	__kcfi_traps 		: { KEEP(*(.kcfi_traps)) }
- #endif
+@@ -162,15 +163,17 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
  
--#ifdef CONFIG_LTO_CLANG
--	/*
--	 * With CONFIG_LTO_CLANG, LLD always enables -fdata-sections and
--	 * -ffunction-sections, which increases the size of the final module.
--	 * Merge the split sections in the final binary.
--	 */
-+	.text : {
-+		*(.text .text.[0-9a-zA-Z_]*)
-+	}
-+
- 	.bss : {
- 		*(.bss .bss.[0-9a-zA-Z_]*)
- 		*(.bss..L*)
-@@ -58,7 +56,7 @@ SECTIONS {
- 		*(.rodata .rodata.[0-9a-zA-Z_]*)
- 		*(.rodata..L*)
- 	}
--#endif
-+
- 	MOD_SEPARATE_CODETAG_SECTIONS()
- }
+ 		if (apply) {
+ 			if (memcmp(loc, &zero, size)) {
+-				pr_err("x86/modules: Invalid relocation target, existing value is nonzero for type %d, loc %p, val %Lx\n",
+-				       (int)ELF64_R_TYPE(rel[i].r_info), loc, val);
++				pr_err("x86/modules: Invalid relocation target, existing value is nonzero for sec %u, idx %u, type %d, loc %lx, val %llx\n",
++				       relsec, i, (int)ELF64_R_TYPE(rel[i].r_info),
++				       (unsigned long)loc, val);
+ 				return -ENOEXEC;
+ 			}
+ 			write(loc, &val, size);
+ 		} else {
+ 			if (memcmp(loc, &val, size)) {
+-				pr_warn("x86/modules: Invalid relocation target, existing value does not match expected value for type %d, loc %p, val %Lx\n",
+-					(int)ELF64_R_TYPE(rel[i].r_info), loc, val);
++				pr_warn("x86/modules: Invalid relocation target, existing value does not match expected value for sec %u, idx %u, type %d, loc %lx, val %llx\n",
++					relsec, i, (int)ELF64_R_TYPE(rel[i].r_info),
++					(unsigned long)loc, val);
+ 				return -ENOEXEC;
+ 			}
+ 			write(loc, &zero, size);
+@@ -179,8 +182,8 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
+ 	return 0;
+ 
+ overflow:
+-	pr_err("overflow in relocation type %d val %Lx\n",
+-	       (int)ELF64_R_TYPE(rel[i].r_info), val);
++	pr_err("overflow in relocation type %d val %llx sec %u idx %d\n",
++	       (int)ELF64_R_TYPE(rel[i].r_info), val, relsec, i);
+ 	pr_err("`%s' likely not compiled with -mcmodel=kernel\n",
+ 	       me->name);
+ 	return -ENOEXEC;
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 0e73fac55f8eb..7e443c2cf7d48 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -217,8 +217,8 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+ 	for (i = 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
+ 		sym = (Elf_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+ 		if (sym->st_shndx != SHN_LIVEPATCH) {
+-			pr_err("symbol %s is not marked as a livepatch symbol\n",
+-			       strtab + sym->st_name);
++			pr_err("symbol %s at rela sec %u idx %d is not marked as a livepatch symbol\n",
++			       strtab + sym->st_name, symndx, i);
+ 			return -EINVAL;
+ 		}
  
 -- 
 2.50.0
