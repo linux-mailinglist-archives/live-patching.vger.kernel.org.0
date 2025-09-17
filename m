@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1711-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1712-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [147.75.48.161])
-	by mail.lfdr.de (Postfix) with ESMTPS id C4811B80E6C
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:14:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 48DDBB80E57
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:14:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 8FD777BBAAA
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:12:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ED8F06226A8
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:14:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0D39343477;
-	Wed, 17 Sep 2025 16:04:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FD733408DF;
+	Wed, 17 Sep 2025 16:04:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i8/YHrUn"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i+nUoEKI"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47D634346E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0174734347B;
 	Wed, 17 Sep 2025 16:04:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125096; cv=none; b=rPXlVWapwzPGgXyO8KiKGExA56NlyIEzJ6x7o61rYnDtoTtz5pbP0C/jFqmXzze0rHZ9jtMCfX1NLikaqMMWiGbozZ3Fvkb2ti6NS3tLphWNt98UdxMi1wYz8PxlKdtSWGPK21F0fzxiDng+LtAQT+E+j6y2CpCoqM2MAh7gOMM=
+	t=1758125097; cv=none; b=t+iVqYzRNiEAtI6aQE3/PDQPbhGVXsi0q0zp3eHFYXpOFalRCXM9TuXcBOpV3NKGx1wCLulmwv8UzUwM3tOupONBVth1+UZ6mlbiEVQ9o6cxfWmlUtp/7JNzdEz17fSa3sLTqjkwe/IAzLSPR624MneDovy09uF6BTYljHCLX8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125096; c=relaxed/simple;
-	bh=Pzen81aKxEDLsRdrYrpWtsjdpxscgWBdZGH8jyumvcM=;
+	s=arc-20240116; t=1758125097; c=relaxed/simple;
+	bh=A3H5+d5LYxnmBKlvKCIJb0WGEy7vihtqh4K31QNEIDs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gQPvvuMCcLloUnkkkcLFH43OaqsO1C8PahqgdNJJxFO3vA52VjaGdHR/RtvHrS2woDNWgEDZ7bPJcxhDqHwhPIWZBRNHTtHFtK9MgU/houlU3oVxTXYkSzc7zEpiyucxxvSJWG7Q4mZcwqLJFEqOK0zYtL/5moF6Rc2hSxte1Sk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i8/YHrUn; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92806C4CEFB;
-	Wed, 17 Sep 2025 16:04:55 +0000 (UTC)
+	 MIME-Version; b=FzXYeyralGGiUdk+lbo0QO1T3E++QTUtMRuBMQD4GnFWpxgoEYf+2I/fBK2j6U3PUjycG5BxScOwoOzoLma6uhfIFuo+Q9loL8B8p6n/6GtliOhhKFZQPrgcbhrMsURVfazmtLq9iJkfc2e81YBRj0v+QPDe2iX13W1M/I4aYRc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i+nUoEKI; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAF5C4CEF9;
+	Wed, 17 Sep 2025 16:04:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1758125096;
-	bh=Pzen81aKxEDLsRdrYrpWtsjdpxscgWBdZGH8jyumvcM=;
+	bh=A3H5+d5LYxnmBKlvKCIJb0WGEy7vihtqh4K31QNEIDs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=i8/YHrUn4RToAMXVN7ms8BSS2jSg7Sz4whadJupEdgg5JfbsiaH13vj7UrEv7lJa7
-	 cXrpPWhGJhPAGKez7IDxm/r6Z4GYEByYuGl54mDzE98vOdB+WKqfR+aEunZv7VLExc
-	 bwwcO86wuhbWHKvCwqxKpaT+pkXuZSv+GLc9J327+iUE9W+OJM9h8alN7LZ/NPxS9S
-	 1gnCr8roQKwt1KzNv7bj9nUS3006MtLExWvBnrXMXz3YqF+JIKLioT5IoXY6iwzUFu
-	 y2CPddnX+bzyo33HZDMs293gU6vWyKuUiHMUao9p/CB8OWAy7e0ZokCCw+be0nxbLT
-	 IB5HUKPU0rWMw==
+	b=i+nUoEKIzy5ZpH9IouxC7dyvMSexlyYBFtcb4V0Ve372+zFqq2geGln0xd2XtBZ9j
+	 F06D+bfePZjjlKCwA4g91v8qza6yWhpgzu1iPq5aWPgw6xRPGG1yYi+SLWSoiNtdTP
+	 h/9Hq+PHHYLBWQ+/hyw8JuCONtMriSWqd0VGGkNlNh4b1vQ6Y1Y2OQmWleegdCGX3b
+	 /Dbzozk99qzA6uwEXmP3CytQABPRpv8tbB+6QHrK6+ST9GmvncqzWAaoRTkBf5hxzn
+	 c2N1ZOgUjLTjBQqbbPfyxMUDa8gqrxaMsEmkOB84SFlMK2A848R2sJKdvlqgmFExm5
+	 R9vfxiDECp90w==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 56/63] livepatch: Add CONFIG_KLP_BUILD
-Date: Wed, 17 Sep 2025 09:04:04 -0700
-Message-ID: <9240e1a1d47df784cdc2b2f7f0c4126455749843.1758067943.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 57/63] kbuild,objtool: Defer objtool validation step for CONFIG_KLP_BUILD
+Date: Wed, 17 Sep 2025 09:04:05 -0700
+Message-ID: <9c777456807dca9e543abf935612da5a219ba4cc.1758067943.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,47 +72,48 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In preparation for introducing klp-build, add a new CONFIG_KLP_BUILD
-option.  The initial version will only be supported on x86-64.
+In preparation for klp-build, defer objtool validation for
+CONFIG_KLP_BUILD kernels until the final pre-link archive (e.g.,
+vmlinux.o, module-foo.o) is built.  This will simplify the process of
+generating livepatch modules.
+
+Delayed objtool is generally preferred anyway, and is already standard
+for IBT and LTO.  Eventually the per-translation-unit mode will be
+phased out.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/Kconfig         |  1 +
- kernel/livepatch/Kconfig | 12 ++++++++++++
- 2 files changed, 13 insertions(+)
+ scripts/Makefile.lib    | 2 +-
+ scripts/link-vmlinux.sh | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 19b1dbc8d5d26..986d31587e999 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -260,6 +260,7 @@ config X86
- 	select HAVE_FUNCTION_ERROR_INJECTION
- 	select HAVE_KRETPROBES
- 	select HAVE_RETHOOK
-+	select HAVE_KLP_BUILD			if X86_64
- 	select HAVE_LIVEPATCH			if X86_64
- 	select HAVE_MIXED_BREAKPOINTS_REGS
- 	select HAVE_MOD_ARCH_SPECIFIC
-diff --git a/kernel/livepatch/Kconfig b/kernel/livepatch/Kconfig
-index 53d51ed619a3d..4c0a9c18d0b25 100644
---- a/kernel/livepatch/Kconfig
-+++ b/kernel/livepatch/Kconfig
-@@ -18,3 +18,15 @@ config LIVEPATCH
- 	  module uses the interface provided by this option to register
- 	  a patch, causing calls to patched functions to be redirected
- 	  to new function code contained in the patch module.
-+
-+config HAVE_KLP_BUILD
-+	bool
-+	help
-+	  Arch supports klp-build
-+
-+config KLP_BUILD
-+	def_bool y
-+	depends on LIVEPATCH && HAVE_KLP_BUILD
-+	select OBJTOOL
-+	help
-+	  Enable klp-build support
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 15fee73e92895..28a1c08e3b221 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -197,7 +197,7 @@ objtool-args = $(objtool-args-y)					\
+ 	$(if $(delay-objtool), --link)					\
+ 	$(if $(part-of-module), --module)
+ 
+-delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
++delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT),$(CONFIG_KLP_BUILD))
+ 
+ cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
+ cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 51367c2bfc21e..59f8752362926 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -60,7 +60,8 @@ vmlinux_link()
+ 	# skip output file argument
+ 	shift
+ 
+-	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT; then
++	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT ||
++	   is_enabled CONFIG_KLP_BUILD; then
+ 		# Use vmlinux.o instead of performing the slow LTO link again.
+ 		objs=vmlinux.o
+ 		libs=
 -- 
 2.50.0
 
