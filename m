@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1714-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1715-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 21A04B80E8B
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:16:14 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
+	by mail.lfdr.de (Postfix) with ESMTPS id E4134B80E96
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:16:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 6E7371899594
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:15:26 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 258441B282D7
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:15:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25ED3344E2A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1FA4344E4B;
 	Wed, 17 Sep 2025 16:04:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W69E0M3p"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="POxtc5a7"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0E3336CE05;
-	Wed, 17 Sep 2025 16:04:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6278344E42;
+	Wed, 17 Sep 2025 16:04:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125099; cv=none; b=Q4CCAf1p07KRcJrtqr618iKkUVJBHKbAZ9KZ4GI6ZzGkTw09n5ZBQb6UfcvBHlwyBz73YQjOEzEYcolxLcLBxYTWbxyc3Be+/vlm5qSmgzl0GIcNcpWyIz5LLtz3UMYI2h+GDV1JZMQQj8GB6YMi8OWpCA6vWWuaRXs9irceLkM=
+	t=1758125099; cv=none; b=SHDgCQwoxpNCQYyJJji7kYfjC+dX/l+z7jtb9FOYhRuh5xSFu11odf1GkhxMdxgHuEej53vWKR+xw4OthATxMdZoTpTOGfUhcdGoStxnyn8u1La+yQQhDwTqLJ0ZXpMMa741pFsJiNRCOdqkmqViM0gZn7UhNIYlGTtbnxrEEyA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758125099; c=relaxed/simple;
-	bh=6+AHs6jxK6kYVAmSPda/p78+Aru2RlpjwG8zJ/p1Dv4=;
+	bh=mguDIZbl+abuIasSsOt/GJbw7KNexoHYSwSoywhDhgc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Orc7dDraEa0hAkXHtsQRblzJArfxqCayGSLdtH4arHoaV5BF4Cjc5zqbxNBHSW10iipFGRw3YaMB5fkxSrc0aWOXxk1AaiiB7PXJdSOaJIbjyThQZkugCIDJdWKk0HhUvX5znAo+4qmcpXSjU7NJExyde89XRnivUpstZ67MEHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W69E0M3p; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AFFC4CEF7;
-	Wed, 17 Sep 2025 16:04:58 +0000 (UTC)
+	 MIME-Version; b=RAnx2bWxv2D+6OAIoNEruUAdYcfySwljRcUKLO+vmLJpNWPjtv5f7ZiCHjDMqRx35FKDS8V/E8DcoUgo3FaaR6LBrpQ0I/Y7fr+Q8uVwtqW2z82vZWP2CnjUTc/ivynamJcB5CZscMO+ntvD8SQrgWRR+keapEqXcoQfr1h/ico=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=POxtc5a7; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08FB8C4CEFA;
+	Wed, 17 Sep 2025 16:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125098;
-	bh=6+AHs6jxK6kYVAmSPda/p78+Aru2RlpjwG8zJ/p1Dv4=;
+	s=k20201202; t=1758125099;
+	bh=mguDIZbl+abuIasSsOt/GJbw7KNexoHYSwSoywhDhgc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=W69E0M3p8l2ch0GO06yxF4+nHvfW14WXAOgNfXvvUgZHhPvDY6sIKkpmFbVsOrzMI
-	 Lughmly3rZM4s6giTr6ghWFdp9OZ7ye9JtgTRnVj8vBPePfEwZcrqvvgHJNM3k8PWv
-	 xTj2GFJoFQUPEN5s7XTnSx9ckhUZ8tyyU/cpAIYVWQRHPBiF3ajtbiLFolKlaVnffh
-	 Q1fBqhmOAJx7/9wobQ6X9Cg3ISMFHDSpYFpLvWOUN6+VU0c43XFkB3X28Ai28qghOe
-	 dCtX/x9909nohhJcGFeSnvnCd3oXJaHZT0GNAYdYGBYEH/rr/GenezlVmA9trBNb7e
-	 ay21Ba5DDGXXg==
+	b=POxtc5a7fLexygKkoiWhGWTLWD9o5TbuLf7cTaKzl63wA1uMpqdoRRDMWJPNXqkRe
+	 3NjZHX0CNJPZ2rBl9WTI4iOrO93QSFDMmfTTJYlnoDAhyflgkqnaX/pmoZ9fK+QnQv
+	 8JZAV9dkWP9lwv4+Gr61sYZkbxpeRLuPpH57bAR675cv3G3WTUG4w1cLcqhdzlVogA
+	 HbG9rqb3N8gJcZQplbya9++B1d8Z0ZEwXWVr5UwDJEYYiR8l33G1p0CibPf7VrUZoD
+	 0lB0hWSQX9Sd5eE5XAsoOhhXXDAzCB25+gUOBt2R2Dv/bzQN5ax4r4fvvi2WYsZo1v
+	 PDUkvP+j5CCag==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 59/63] livepatch/klp-build: Add stub init code for livepatch modules
-Date: Wed, 17 Sep 2025 09:04:07 -0700
-Message-ID: <702710bf41d72163d494d8cf2e8c5a95dc98ef75.1758067943.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 60/63] livepatch/klp-build: Introduce klp-build script for generating livepatch modules
+Date: Wed, 17 Sep 2025 09:04:08 -0700
+Message-ID: <2b990d8d7a82905cd5dd6cca2286b6cf72da8e0f.1758067943.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,129 +72,826 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a module initialization stub which can be linked with binary diff
-objects to produce a livepatch module.
+Add a klp-build script which automates the generation of a livepatch
+module from a source .patch file by performing the following steps:
+
+  - Builds an original kernel with -function-sections and
+    -fdata-sections, plus objtool function checksumming.
+
+  - Applies the .patch file and rebuilds the kernel using the same
+    options.
+
+  - Runs 'objtool klp diff' to detect changed functions and generate
+    intermediate binary diff objects.
+
+  - Builds a kernel module which links the diff objects with some
+    livepatch module init code (scripts/livepatch/init.c).
+
+  - Finalizes the livepatch module (aka work around linker wreckage)
+    using 'objtool klp post-link'.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- scripts/livepatch/init.c | 108 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 108 insertions(+)
- create mode 100644 scripts/livepatch/init.c
+ scripts/Makefile.lib              |   1 +
+ scripts/livepatch/fix-patch-lines |   2 +-
+ scripts/livepatch/klp-build       | 743 ++++++++++++++++++++++++++++++
+ tools/objtool/klp-diff.c          |   6 +-
+ 4 files changed, 749 insertions(+), 3 deletions(-)
+ create mode 100755 scripts/livepatch/klp-build
 
-diff --git a/scripts/livepatch/init.c b/scripts/livepatch/init.c
-new file mode 100644
-index 0000000000000..2274d8f5a4826
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 28a1c08e3b221..f4b33919ec371 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -173,6 +173,7 @@ ifdef CONFIG_OBJTOOL
+ 
+ objtool := $(objtree)/tools/objtool/objtool
+ 
++objtool-args-$(CONFIG_KLP_BUILD)			+= --checksum
+ objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
+ objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
+ objtool-args-$(CONFIG_MITIGATION_CALL_DEPTH_TRACKING)	+= --hacks=skylake
+diff --git a/scripts/livepatch/fix-patch-lines b/scripts/livepatch/fix-patch-lines
+index 73c5e3dea46e1..fa7d4f6592e6b 100755
+--- a/scripts/livepatch/fix-patch-lines
++++ b/scripts/livepatch/fix-patch-lines
+@@ -23,7 +23,7 @@ BEGIN {
+ 
+ 	in_hunk = 1
+ 
+-	# for @@ -1,3 +1,4 @@:
++	# @@ -1,3 +1,4 @@:
+ 	#   1: line number in old file
+ 	#   3: how many lines the hunk covers in old file
+ 	#   1: line number in new file
+diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
+new file mode 100755
+index 0000000000000..01ed0b66bfaff
 --- /dev/null
-+++ b/scripts/livepatch/init.c
-@@ -0,0 +1,108 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Init code for a livepatch kernel module
-+ */
++++ b/scripts/livepatch/klp-build
+@@ -0,0 +1,743 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Build a livepatch module
 +
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++# shellcheck disable=SC1090,SC2155
 +
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/livepatch.h>
++if (( BASH_VERSINFO[0]  < 4 || \
++     (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 4) )); then
++		echo "error: this script requires bash 4.4+" >&2
++	exit 1
++fi
 +
-+extern struct klp_object_ext __start_klp_objects[];
-+extern struct klp_object_ext __stop_klp_objects[];
++set -o errexit
++set -o errtrace
++set -o pipefail
++set -o nounset
 +
-+static struct klp_patch *patch;
++# Allow doing 'cmd | mapfile -t array' instead of 'mapfile -t array < <(cmd)'.
++# This helps keep execution in pipes so pipefail+errexit can catch errors.
++shopt -s lastpipe
 +
-+static int __init livepatch_mod_init(void)
-+{
-+	struct klp_object *objs;
-+	unsigned int nr_objs;
-+	int ret;
++unset SKIP_CLEANUP XTRACE
 +
-+	nr_objs = __stop_klp_objects - __start_klp_objects;
++REPLACE=1
++SHORT_CIRCUIT=0
++JOBS="$(getconf _NPROCESSORS_ONLN)"
++VERBOSE="-s"
++shopt -o xtrace | grep -q 'on' && XTRACE=1
 +
-+	if (!nr_objs) {
-+		pr_err("nothing to patch!\n");
-+		ret = -EINVAL;
-+		goto err;
-+	}
++# Avoid removing the previous $TMP_DIR until args have been fully processed.
++KEEP_TMP=1
 +
-+	patch = kzalloc(sizeof(*patch), GFP_KERNEL);
-+	if (!patch) {
-+		ret = -ENOMEM;
-+		goto err;
-+	}
++SCRIPT="$(basename "$0")"
++SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++FIX_PATCH_LINES="$SCRIPT_DIR/fix-patch-lines"
 +
-+	objs = kzalloc(sizeof(struct klp_object) * (nr_objs + 1),  GFP_KERNEL);
-+	if (!objs) {
-+		ret = -ENOMEM;
-+		goto err_free_patch;
-+	}
++SRC="$(pwd)"
++OBJ="$(pwd)"
 +
-+	for (int i = 0; i < nr_objs; i++) {
-+		struct klp_object_ext *obj_ext = __start_klp_objects + i;
-+		struct klp_func_ext *funcs_ext = obj_ext->funcs;
-+		unsigned int nr_funcs = obj_ext->nr_funcs;
-+		struct klp_func *funcs = objs[i].funcs;
-+		struct klp_object *obj = objs + i;
++CONFIG="$OBJ/.config"
++TMP_DIR="$OBJ/klp-tmp"
 +
-+		funcs = kzalloc(sizeof(struct klp_func) * (nr_funcs + 1), GFP_KERNEL);
-+		if (!funcs) {
-+			ret = -ENOMEM;
-+			for (int j = 0; j < i; j++)
-+				kfree(objs[i].funcs);
-+			goto err_free_objs;
-+		}
++ORIG_DIR="$TMP_DIR/orig"
++PATCHED_DIR="$TMP_DIR/patched"
++DIFF_DIR="$TMP_DIR/diff"
++KMOD_DIR="$TMP_DIR/kmod"
 +
-+		for (int j = 0; j < nr_funcs; j++) {
-+			funcs[j].old_name   = funcs_ext[j].old_name;
-+			funcs[j].new_func   = funcs_ext[j].new_func;
-+			funcs[j].old_sympos = funcs_ext[j].sympos;
-+		}
++STASH_DIR="$TMP_DIR/stash"
++TIMESTAMP="$TMP_DIR/timestamp"
++PATCH_TMP_DIR="$TMP_DIR/tmp"
 +
-+		obj->name = obj_ext->name;
-+		obj->funcs = funcs;
++KLP_DIFF_LOG="$DIFF_DIR/diff.log"
 +
-+		memcpy(&obj->callbacks, &obj_ext->callbacks, sizeof(struct klp_callbacks));
-+	}
-+
-+	patch->mod = THIS_MODULE;
-+	patch->objs = objs;
-+
-+	/* TODO patch->states */
-+
-+#ifdef KLP_NO_REPLACE
-+	patch->replace = false;
-+#else
-+	patch->replace = true;
-+#endif
-+
-+	return klp_enable_patch(patch);
-+
-+err_free_objs:
-+	kfree(objs);
-+err_free_patch:
-+	kfree(patch);
-+err:
-+	return ret;
++grep0() {
++	command grep "$@" || true
 +}
 +
-+static void __exit livepatch_mod_exit(void)
-+{
-+	unsigned int nr_objs;
-+
-+	nr_objs = __stop_klp_objects - __start_klp_objects;
-+
-+	for (int i = 0; i < nr_objs; i++)
-+		kfree(patch->objs[i].funcs);
-+
-+	kfree(patch->objs);
-+	kfree(patch);
++status() {
++	echo "$*"
 +}
 +
-+module_init(livepatch_mod_init);
-+module_exit(livepatch_mod_exit);
-+MODULE_LICENSE("GPL");
-+MODULE_INFO(livepatch, "Y");
-+MODULE_DESCRIPTION("Livepatch module");
++warn() {
++	echo "error: $SCRIPT: $*" >&2
++}
++
++die() {
++	warn "$@"
++	exit 1
++}
++
++declare -a STASHED_FILES
++
++stash_file() {
++	local file="$1"
++	local rel_file="${file#"$SRC"/}"
++
++	[[ ! -e "$file" ]] && die "no file to stash: $file"
++
++	mkdir -p "$STASH_DIR/$(dirname "$rel_file")"
++	cp -f "$file" "$STASH_DIR/$rel_file"
++
++	STASHED_FILES+=("$rel_file")
++}
++
++restore_files() {
++	local file
++
++	for file in "${STASHED_FILES[@]}"; do
++		mv -f "$STASH_DIR/$file" "$SRC/$file" || warn "can't restore file: $file"
++	done
++
++	STASHED_FILES=()
++}
++
++cleanup() {
++	set +o nounset
++	revert_patches "--recount"
++	restore_files
++	[[ "$KEEP_TMP" -eq 0 ]] && rm -rf "$TMP_DIR"
++	return 0
++}
++
++trap_err() {
++	warn "line ${BASH_LINENO[0]}: '$BASH_COMMAND'"
++}
++
++trap cleanup  EXIT INT TERM HUP
++trap trap_err ERR
++
++__usage() {
++	cat <<EOF
++Usage: $SCRIPT [OPTIONS] PATCH_FILE(s)
++Generate a livepatch module.
++
++Options:
++   -j, --jobs=<jobs>		Build jobs to run simultaneously [default: $JOBS]
++   -o, --output=<file.ko>	Output file [default: livepatch-<patch-name>.ko]
++       --no-replace		Disable livepatch atomic replace
++   -v, --verbose		Pass V=1 to kernel/module builds
++
++Advanced Options:
++   -S, --short-circuit=STEP	Start at build step (requires prior --keep-tmp)
++				   1|orig	Build original kernel (default)
++				   2|patched	Build patched kernel
++				   3|diff	Diff objects
++				   4|kmod	Build patch module
++   -T, --keep-tmp		Preserve tmp dir on exit
++
++EOF
++}
++
++usage() {
++	__usage >&2
++}
++
++process_args() {
++	local keep_tmp=0
++	local short
++	local long
++	local args
++
++	short="hj:o:vS:T"
++	long="help,jobs:,output:,no-replace,verbose,short-circuit:,keep-tmp"
++
++	args=$(getopt --options "$short" --longoptions "$long" -- "$@") || {
++		echo; usage; exit
++	}
++	eval set -- "$args"
++
++	while true; do
++		case "$1" in
++			-h | --help)
++				usage
++				exit 0
++				;;
++			-j | --jobs)
++				JOBS="$2"
++				shift 2
++				;;
++			-o | --output)
++				[[ "$2" != *.ko ]] && die "output filename should end with .ko"
++				OUTFILE="$2"
++				NAME="$(basename "$OUTFILE")"
++				NAME="${NAME%.ko}"
++				NAME="$(module_name_string "$NAME")"
++				shift 2
++				;;
++			--no-replace)
++				REPLACE=0
++				shift
++				;;
++			-v | --verbose)
++				VERBOSE="V=1"
++				shift
++				;;
++			-S | --short-circuit)
++				[[ ! -d "$TMP_DIR" ]] && die "--short-circuit requires preserved klp-tmp dir"
++				keep_tmp=1
++				case "$2" in
++					1 | orig)	SHORT_CIRCUIT=1; ;;
++					2 | patched)	SHORT_CIRCUIT=2; ;;
++					3 | diff)	SHORT_CIRCUIT=3; ;;
++					4 | mod)	SHORT_CIRCUIT=4; ;;
++					*)		die "invalid short-circuit step '$2'" ;;
++				esac
++				shift 2
++				;;
++			-T | --keep-tmp)
++				keep_tmp=1
++				shift
++				;;
++			--)
++				shift
++				break
++				;;
++			*)
++				usage
++				exit 1
++				;;
++		esac
++	done
++
++	if [[ $# -eq 0 ]]; then
++		usage
++		exit 1
++	fi
++
++	KEEP_TMP="$keep_tmp"
++	PATCHES=("$@")
++}
++
++# temporarily disable xtrace for especially verbose code
++xtrace_save() {
++	[[ -v XTRACE ]] && set +x
++	return 0
++}
++
++xtrace_restore() {
++	[[ -v XTRACE ]] && set -x
++	return 0
++}
++
++validate_config() {
++	xtrace_save "reading .config"
++	source "$CONFIG" || die "no .config file in $(dirname "$CONFIG")"
++	xtrace_restore
++
++	[[ -v CONFIG_LIVEPATCH ]] ||			\
++		die "CONFIG_LIVEPATCH not enabled"
++
++	[[ -v CONFIG_KLP_BUILD ]] ||			\
++		die "CONFIG_KLP_BUILD not enabled"
++
++	[[ -v CONFIG_GCC_PLUGIN_LATENT_ENTROPY ]] &&	\
++		die "kernel option 'CONFIG_GCC_PLUGIN_LATENT_ENTROPY' not supported"
++
++	[[ -v CONFIG_GCC_PLUGIN_RANDSTRUCT ]] &&	\
++		die "kernel option 'CONFIG_GCC_PLUGIN_RANDSTRUCT' not supported"
++
++	return 0
++}
++
++# Only allow alphanumerics and '_' and '-' in the module name.  Everything else
++# is replaced with '-'.  Also truncate to 55 chars so the full name + NUL
++# terminator fits in the kernel's 56-byte module name array.
++module_name_string() {
++	echo "${1//[^a-zA-Z0-9_-]/-}" | cut -c 1-55
++}
++
++# If the module name wasn't specified on the cmdline with --output, give it a
++# name based on the patch name.
++set_module_name() {
++	[[ -v NAME ]] && return 0
++
++	if [[ "${#PATCHES[@]}" -eq 1 ]]; then
++		NAME="$(basename "${PATCHES[0]}")"
++		NAME="${NAME%.*}"
++	else
++		NAME="patch"
++	fi
++
++	NAME="livepatch-$NAME"
++	NAME="$(module_name_string "$NAME")"
++
++	OUTFILE="$NAME.ko"
++}
++
++# Hardcode the value printed by the localversion script to prevent patch
++# application from appending it with '+' due to a dirty git working tree.
++set_kernelversion() {
++	local file="$SRC/scripts/setlocalversion"
++	local localversion
++
++	stash_file "$file"
++
++	localversion="$(cd "$SRC" && make --no-print-directory kernelversion)"
++	localversion="$(cd "$SRC" && KERNELVERSION="$localversion" ./scripts/setlocalversion)"
++	[[ -z "$localversion" ]] && die "setlocalversion failed"
++
++	sed -i "2i echo $localversion; exit 0" scripts/setlocalversion
++}
++
++get_patch_files() {
++	local patch="$1"
++
++	grep0 -E '^(--- |\+\+\+ )' "$patch"			\
++		| gawk '{print $2}'				\
++		| sed 's|^[^/]*/||'				\
++		| sort -u
++}
++
++# Make sure git re-stats the changed files
++git_refresh() {
++	local patch="$1"
++	local files=()
++
++	[[ ! -e "$SRC/.git" ]] && return
++
++	get_patch_files "$patch" | mapfile -t files
++
++	(
++		cd "$SRC"
++		git update-index -q --refresh -- "${files[@]}"
++	)
++}
++
++check_unsupported_patches() {
++	local patch
++
++	for patch in "${PATCHES[@]}"; do
++		local files=()
++
++		get_patch_files "$patch" | mapfile -t files
++
++		for file in "${files[@]}"; do
++			case "$file" in
++				lib/*|*.S)
++					die "unsupported patch to $file"
++					;;
++			esac
++		done
++	done
++}
++
++apply_patch() {
++	local patch="$1"
++	shift
++	local extra_args=("$@")
++
++	[[ ! -f "$patch" ]] && die "$patch doesn't exist"
++
++	(
++		cd "$SRC"
++
++		# The sed strips the version signature from 'git format-patch',
++		# otherwise 'git apply --recount' warns.
++		sed -n '/^-- /q;p' "$patch" |
++			git apply "${extra_args[@]}"
++	)
++
++	APPLIED_PATCHES+=("$patch")
++}
++
++revert_patch() {
++	local patch="$1"
++	shift
++	local extra_args=("$@")
++	local tmp=()
++
++	(
++		cd "$SRC"
++
++		sed -n '/^-- /q;p' "$patch" |
++			git apply --reverse "${extra_args[@]}"
++	)
++	git_refresh "$patch"
++
++	for p in "${APPLIED_PATCHES[@]}"; do
++		[[ "$p" == "$patch" ]] && continue
++		tmp+=("$p")
++	done
++
++	APPLIED_PATCHES=("${tmp[@]}")
++}
++
++apply_patches() {
++	local patch
++
++	for patch in "${PATCHES[@]}"; do
++		apply_patch "$patch"
++	done
++}
++
++revert_patches() {
++	local extra_args=("$@")
++	local patches=("${APPLIED_PATCHES[@]}")
++
++	for (( i=${#patches[@]}-1 ; i>=0 ; i-- )) ; do
++		revert_patch "${patches[$i]}" "${extra_args[@]}"
++	done
++
++	APPLIED_PATCHES=()
++}
++
++validate_patches() {
++	check_unsupported_patches
++	apply_patches
++	revert_patches
++}
++
++do_init() {
++	# We're not yet smart enough to handle anything other than in-tree
++	# builds in pwd.
++	[[ ! "$SRC" -ef "$SCRIPT_DIR/../.." ]] && die "please run from the kernel root directory"
++	[[ ! "$OBJ" -ef "$SCRIPT_DIR/../.." ]] && die "please run from the kernel root directory"
++
++	(( SHORT_CIRCUIT <= 1 )) && rm -rf "$TMP_DIR"
++	mkdir -p "$TMP_DIR"
++
++	APPLIED_PATCHES=()
++
++	[[ -x "$FIX_PATCH_LINES" ]] || die "can't find fix-patch-lines"
++
++	validate_config
++	set_module_name
++	set_kernelversion
++}
++
++# Refresh the patch hunk headers, specifically the line numbers and counts.
++refresh_patch() {
++	local patch="$1"
++	local tmpdir="$PATCH_TMP_DIR"
++	local files=()
++
++	rm -rf "$tmpdir"
++	mkdir -p "$tmpdir/a"
++	mkdir -p "$tmpdir/b"
++
++	# Get all source files affected by the patch
++	get_patch_files "$patch" | mapfile -t files
++
++	# Copy orig source files to 'a'
++	( cd "$SRC" && echo "${files[@]}" | xargs cp --parents --target-directory="$tmpdir/a" )
++
++	# Copy patched source files to 'b'
++	apply_patch "$patch" --recount
++	( cd "$SRC" && echo "${files[@]}" | xargs cp --parents --target-directory="$tmpdir/b" )
++	revert_patch "$patch" --recount
++
++	# Diff 'a' and 'b' to make a clean patch
++	( cd "$tmpdir" && git diff --no-index --no-prefix a b > "$patch" ) || true
++}
++
++# Copy the patches to a temporary directory, fix their lines so as not to
++# affect the __LINE__ macro for otherwise unchanged functions further down the
++# file, and update $PATCHES to point to the fixed patches.
++fix_patches() {
++	local idx
++	local i
++
++	rm -f "$TMP_DIR"/*.patch
++
++	idx=0001
++	for i in "${!PATCHES[@]}"; do
++		local old_patch="${PATCHES[$i]}"
++		local tmp_patch="$TMP_DIR/tmp.patch"
++		local patch="${PATCHES[$i]}"
++		local new_patch
++
++		new_patch="$TMP_DIR/$idx-fixed-$(basename "$patch")"
++
++		cp -f "$old_patch" "$tmp_patch"
++		refresh_patch "$tmp_patch"
++		"$FIX_PATCH_LINES" "$tmp_patch" > "$new_patch"
++		refresh_patch "$new_patch"
++
++		PATCHES[i]="$new_patch"
++
++		rm -f "$tmp_patch"
++		idx=$(printf "%04d" $(( 10#$idx + 1 )))
++	done
++}
++
++clean_kernel() {
++	local cmd=()
++
++	cmd=("make")
++	cmd+=("--silent")
++	cmd+=("-j$JOBS")
++	cmd+=("clean")
++
++	(
++		cd "$SRC"
++		"${cmd[@]}"
++	)
++}
++
++build_kernel() {
++	local log="$TMP_DIR/build.log"
++	local cmd=()
++
++	cmd=("make")
++
++	# When a patch to a kernel module references a newly created unexported
++	# symbol which lives in vmlinux or another kernel module, the patched
++	# kernel build fails with the following error:
++	#
++	#   ERROR: modpost: "klp_string" [fs/xfs/xfs.ko] undefined!
++	#
++	# The undefined symbols are working as designed in that case.  They get
++	# resolved later when the livepatch module build link pulls all the
++	# disparate objects together into the same kernel module.
++	#
++	# It would be good to have a way to tell modpost to skip checking for
++	# undefined symbols altogether.  For now, just convert the error to a
++	# warning with KBUILD_MODPOST_WARN, and grep out the warning to avoid
++	# confusing the user.
++	#
++	cmd+=("KBUILD_MODPOST_WARN=1")
++
++	cmd+=("$VERBOSE")
++	cmd+=("-j$JOBS")
++	cmd+=("KCFLAGS=-ffunction-sections -fdata-sections")
++	cmd+=("vmlinux")
++	cmd+=("modules")
++
++	(
++		cd "$SRC"
++		"${cmd[@]}"							\
++			1> >(tee -a "$log")					\
++			2> >(tee -a "$log" | grep0 -v "modpost.*undefined!" >&2)
++	)
++}
++
++find_objects() {
++	local opts=("$@")
++
++	# Find root-level vmlinux.o and non-root-level .ko files,
++	# excluding klp-tmp/ and .git/
++	find "$OBJ" \( -path "$TMP_DIR" -o -path "$OBJ/.git" -o	-regex "$OBJ/[^/][^/]*\.ko" \) -prune -o \
++		    -type f "${opts[@]}"				\
++		    \( -name "*.ko" -o -path "$OBJ/vmlinux.o" \)	\
++		    -printf '%P\n'
++}
++
++# Copy all .o archives to $ORIG_DIR
++copy_orig_objects() {
++	local files=()
++
++	rm -rf "$ORIG_DIR"
++	mkdir -p "$ORIG_DIR"
++
++	find_objects | mapfile -t files
++
++	xtrace_save "copying orig objects"
++	for _file in "${files[@]}"; do
++		local rel_file="${_file/.ko/.o}"
++		local file="$OBJ/$rel_file"
++		local file_dir="$(dirname "$file")"
++		local orig_file="$ORIG_DIR/$rel_file"
++		local orig_dir="$(dirname "$orig_file")"
++		local cmd_file="$file_dir/.$(basename "$file").cmd"
++
++		[[ ! -f "$file" ]] && die "missing $(basename "$file") for $_file"
++
++		mkdir -p "$orig_dir"
++		cp -f "$file" "$orig_dir"
++		[[ -e "$cmd_file" ]] && cp -f "$cmd_file" "$orig_dir"
++	done
++	xtrace_restore
++
++	mv -f "$TMP_DIR/build.log" "$ORIG_DIR"
++	touch "$TIMESTAMP"
++}
++
++# Copy all changed objects to $PATCHED_DIR
++copy_patched_objects() {
++	local files=()
++	local opts=()
++	local found=0
++
++	rm -rf "$PATCHED_DIR"
++	mkdir -p "$PATCHED_DIR"
++
++	# Note this doesn't work with some configs, thus the 'cmp' below.
++	opts=("-newer")
++	opts+=("$TIMESTAMP")
++
++	find_objects "${opts[@]}" | mapfile -t files
++
++	xtrace_save "copying changed objects"
++	for _file in "${files[@]}"; do
++		local rel_file="${_file/.ko/.o}"
++		local file="$OBJ/$rel_file"
++		local orig_file="$ORIG_DIR/$rel_file"
++		local patched_file="$PATCHED_DIR/$rel_file"
++		local patched_dir="$(dirname "$patched_file")"
++
++		[[ ! -f "$file" ]] && die "missing $(basename "$file") for $_file"
++
++		cmp -s "$orig_file" "$file" && continue
++
++		mkdir -p "$patched_dir"
++		cp -f "$file" "$patched_dir"
++		found=1
++	done
++	xtrace_restore
++
++	(( found == 0 )) && die "no changes detected"
++
++	mv -f "$TMP_DIR/build.log" "$PATCHED_DIR"
++}
++
++# Diff changed objects, writing output object to $DIFF_DIR
++diff_objects() {
++	local log="$KLP_DIFF_LOG"
++	local files=()
++
++	rm -rf "$DIFF_DIR"
++	mkdir -p "$DIFF_DIR"
++
++	find "$PATCHED_DIR" -type f -name "*.o" | mapfile -t files
++	[[ ${#files[@]} -eq 0 ]] && die "no changes detected"
++
++	# Diff all changed objects
++	for file in "${files[@]}"; do
++		local rel_file="${file#"$PATCHED_DIR"/}"
++		local orig_file="$rel_file"
++		local patched_file="$PATCHED_DIR/$rel_file"
++		local out_file="$DIFF_DIR/$rel_file"
++		local cmd=()
++
++		mkdir -p "$(dirname "$out_file")"
++
++		cmd=("$SRC/tools/objtool/objtool")
++		cmd+=("klp")
++		cmd+=("diff")
++		cmd+=("$orig_file")
++		cmd+=("$patched_file")
++		cmd+=("$out_file")
++
++		(
++			cd "$ORIG_DIR"
++			"${cmd[@]}"							\
++				1> >(tee -a "$log")					\
++				2> >(tee -a "$log" >&2) ||				\
++				die "objtool klp diff failed"
++		)
++	done
++}
++
++# Build and post-process livepatch module in $KMOD_DIR
++build_patch_module() {
++	local makefile="$KMOD_DIR/Kbuild"
++	local log="$KMOD_DIR/build.log"
++	local kmod_file
++	local cflags=()
++	local files=()
++	local cmd=()
++
++	rm -rf "$KMOD_DIR"
++	mkdir -p "$KMOD_DIR"
++
++	cp -f "$SRC/scripts/livepatch/init.c" "$KMOD_DIR"
++
++	echo "obj-m := $NAME.o" > "$makefile"
++	echo -n "$NAME-y := init.o" >> "$makefile"
++
++	find "$DIFF_DIR" -type f -name "*.o" | mapfile -t files
++	[[ ${#files[@]} -eq 0 ]] && die "no changes detected"
++
++	for file in "${files[@]}"; do
++		local rel_file="${file#"$DIFF_DIR"/}"
++		local orig_file="$ORIG_DIR/$rel_file"
++		local orig_dir="$(dirname "$orig_file")"
++		local kmod_file="$KMOD_DIR/$rel_file"
++		local kmod_dir="$(dirname "$kmod_file")"
++		local cmd_file="$orig_dir/.$(basename "$file").cmd"
++
++		mkdir -p "$kmod_dir"
++		cp -f "$file" "$kmod_dir"
++		[[ -e "$cmd_file" ]] && cp -f "$cmd_file" "$kmod_dir"
++
++		# Tell kbuild this is a prebuilt object
++		cp -f "$file" "${kmod_file}_shipped"
++
++		echo -n " $rel_file" >> "$makefile"
++	done
++
++	echo >> "$makefile"
++
++	cflags=("-ffunction-sections")
++	cflags+=("-fdata-sections")
++	[[ $REPLACE -eq 0 ]] && cflags+=("-DKLP_NO_REPLACE")
++
++	cmd=("make")
++	cmd+=("$VERBOSE")
++	cmd+=("-j$JOBS")
++	cmd+=("--directory=.")
++	cmd+=("M=$KMOD_DIR")
++	cmd+=("KCFLAGS=${cflags[*]}")
++
++	# Build a "normal" kernel module with init.c and the diffed objects
++	(
++		cd "$SRC"
++		"${cmd[@]}"							\
++			1> >(tee -a "$log")					\
++			2> >(tee -a "$log" >&2)
++	)
++
++	kmod_file="$KMOD_DIR/$NAME.ko"
++
++	# Save off the intermediate binary for debugging
++	cp -f "$kmod_file" "$kmod_file.orig"
++
++	# Work around issue where slight .config change makes corrupt BTF
++	objcopy --remove-section=.BTF "$kmod_file"
++
++	# Fix (and work around) linker wreckage for klp syms / relocs
++	"$SRC/tools/objtool/objtool" klp post-link "$kmod_file" || die "objtool klp post-link failed"
++
++	cp -f "$kmod_file" "$OUTFILE"
++}
++
++
++################################################################################
++
++process_args "$@"
++do_init
++
++if (( SHORT_CIRCUIT <= 1 )); then
++	status "Validating patch(es)"
++	validate_patches
++	status "Building original kernel"
++	clean_kernel
++	build_kernel
++	status "Copying original object files"
++	copy_orig_objects
++fi
++
++if (( SHORT_CIRCUIT <= 2 )); then
++	status "Fixing patch(es)"
++	fix_patches
++	apply_patches
++	status "Building patched kernel"
++	build_kernel
++	revert_patches
++	status "Copying patched object files"
++	copy_patched_objects
++fi
++
++if (( SHORT_CIRCUIT <= 3 )); then
++	status "Diffing objects"
++	diff_objects
++fi
++
++if (( SHORT_CIRCUIT <= 4 )); then
++	status "Building patch module: $OUTFILE"
++	build_patch_module
++fi
++
++status "SUCCESS"
+diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+index 817d44394a78c..4d1f9e9977eb9 100644
+--- a/tools/objtool/klp-diff.c
++++ b/tools/objtool/klp-diff.c
+@@ -241,10 +241,12 @@ static struct symbol *next_file_symbol(struct elf *elf, struct symbol *sym)
+ static bool is_uncorrelated_static_local(struct symbol *sym)
+ {
+ 	static const char * const vars[] = {
+-		"__key.",
+-		"__warned.",
+ 		"__already_done.",
+ 		"__func__.",
++		"__key.",
++		"__warned.",
++		"_entry.",
++		"_entry_ptr.",
+ 		"_rs.",
+ 		"descriptor.",
+ 		"CSWTCH.",
 -- 
 2.50.0
 
