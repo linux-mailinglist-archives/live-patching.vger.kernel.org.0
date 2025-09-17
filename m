@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1668-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1669-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from sy.mirrors.kernel.org (sy.mirrors.kernel.org [IPv6:2604:1380:40f1:3f00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 055D9B80D73
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id EFA66B80D7F
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:07:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 300B67B452D
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:04:47 +0000 (UTC)
+	by sy.mirrors.kernel.org (Postfix) with ESMTPS id 472817B8F53
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:05:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBD1E2FC865;
-	Wed, 17 Sep 2025 16:04:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBFF72FCBEF;
+	Wed, 17 Sep 2025 16:04:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V8wVUvEJ"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z8NXzAi0"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3E3C2FC02A;
-	Wed, 17 Sep 2025 16:04:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94FAC2FC893;
+	Wed, 17 Sep 2025 16:04:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125065; cv=none; b=uJV+Sfqp41p3eV7/XSgh3hpgx/OHlDcTkFhjGRGny9vXLiXJY6s79Q3qbCJwpI93hEY64X9JlehAcL3mT7tiIba1INSx4GT+viLnSmAqPbO9dLfW5DuvKEFyVWQtLrv2CDxrjkPyxDbmKlTtLbpmHx6K+lffk9TlDa78x+smz7E=
+	t=1758125066; cv=none; b=PVZM1MFfu+/ler6wUtALwTsU5FkdyBnSTAKZEifTCrJbhexFb5mzAm6F8WofJqvEnjWc93tfbaw4j0d+pfeGOWpK9TMWjpgyAuqAHvuXeBF07go12BLegDTW38J7YaPDBwPX9RL0IXD3FuqjraMWR6j+xkj49Z5gUghbMJOepoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125065; c=relaxed/simple;
-	bh=7sV+gDz90cwGROva10A+mlFzqYKEHIUn+PKA8yjd478=;
+	s=arc-20240116; t=1758125066; c=relaxed/simple;
+	bh=UAC7YfOY8kDiTF/m9XxVFIYLjPWX7E0ESYXVEJ+Kn1s=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CH+J2GUONW/ndYL9SOVHbwbMHc+yRog8dH08GgVF3O24CBgNF5XAI8N7qKBnZZb9b4X1N6/7bShZT4vI/8rL3uDNBLt0K2wiK3wP4iLNrG/4YH4N3rSkdAylnWen157p0V1N+wDcKfm+ZzS2oFAxmyT0BZKA7qTz7kh6R8jox8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V8wVUvEJ; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB391C4AF0D;
-	Wed, 17 Sep 2025 16:04:24 +0000 (UTC)
+	 MIME-Version; b=g8F7cIc7zGvdEZ4A+qbzAxkXbquGTR/k0pZQqRsu1wdgYAh918r7DqJm/BM4GwE5jp7SDszLhJmJD9t7sKH08ZjeCXYeozb4xA3UCvoNY8I2VnQ1KOgWpX9YJqaD74TtJtAdhgTW4Bg4pTJ+TqLK5biR2bhH+lCu28MrLaH7kME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z8NXzAi0; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A377DC4CEE7;
+	Wed, 17 Sep 2025 16:04:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125065;
-	bh=7sV+gDz90cwGROva10A+mlFzqYKEHIUn+PKA8yjd478=;
+	s=k20201202; t=1758125066;
+	bh=UAC7YfOY8kDiTF/m9XxVFIYLjPWX7E0ESYXVEJ+Kn1s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=V8wVUvEJdduYFYCfZtWcihOmX2O19xE0+0kMZhOYcqmuyqqXJSbFQGBdy4O4oegof
-	 lFFxUB117SYWE+OPazk6a2VECBd5i1EWkTSXqSpX/fsid2Rk0ZvgmK8ldfK74KyQ//
-	 InNdd3ugA+owDMZQ3dbSBTwTZL0YEKSSZGwNyjAatNRv7d0ksMi8O9nSmy2vFntJlZ
-	 xraa7lGxuY+dRLJ20trY7GBamI2Uz+JyW2LLqNKcADRJZjk7c47SF7EPSvULm4FxQD
-	 iKoyrOVxI5qiTh8n+iO1bxO8vFPd/MALdGxHHvahekW8Izv5CnQpqidhYQp0quA5FM
-	 CdY7tVfwCWpAg==
+	b=Z8NXzAi0LzMDTXP7B54IAoZHfTuA0hGLA9mKZhKPGto2nJS7blwtASfAyP1gGEGcQ
+	 Ih9YbZlnr+/JESXMlTpBsr/hFmfC+SYKwFubvEV9l/qQCKZhQlwTOhlRXhOdwOMir0
+	 ntqesYTyePYKevss8ll52e1gcibVFAwXf86FQRIg1ongMl1D1CarzqyBynM3mktnoa
+	 jSckt487xqLttKWn2mzStx5UIUV96eGj8VirwPz4Z1hptPAhXTmZ43vTjQ0kztCGws
+	 Y7WD/JF6YsROYVHXJO397nnbg2E20RLOsLhLLhipYML8AIWBqs2yUyuVgPCONx/YrH
+	 bQUou5xVOQi9Q==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 13/63] objtool: Make find_symbol_containing() less arbitrary
-Date: Wed, 17 Sep 2025 09:03:21 -0700
-Message-ID: <9500b90c4182b03da59472e1a27876818610b084.1758067942.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 14/63] objtool: Fix broken error handling in read_symbols()
+Date: Wed, 17 Sep 2025 09:03:22 -0700
+Message-ID: <842152d67abf24d2b4f51eb7286c86d19639b06b.1758067942.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,54 +72,60 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In the rare case of overlapping symbols, find_symbol_containing() just
-returns the first one it finds.  Make it slightly less arbitrary by
-returning the smallest symbol with size > 0.
+The free(sym) call in the read_symbols() error path is fundamentally
+broken: 'sym' doesn't point to any allocated block.  If triggered,
+things would go from bad to worse.
+
+Remove the free() and simplify the error paths.  Freeing memory isn't
+necessary here anyway, these are fatal errors which lead to an immediate
+exit().
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c | 25 ++++++++++++++++++++-----
- 1 file changed, 20 insertions(+), 5 deletions(-)
+ tools/objtool/elf.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index ca5d77db692a2..1c1bb2cb960da 100644
+index 1c1bb2cb960da..b009d9feed760 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -193,14 +193,29 @@ struct symbol *find_func_by_offset(struct section *sec, unsigned long offset)
- struct symbol *find_symbol_containing(const struct section *sec, unsigned long offset)
- {
- 	struct rb_root_cached *tree = (struct rb_root_cached *)&sec->symbol_tree;
--	struct symbol *iter;
-+	struct symbol *sym = NULL, *tmp;
+@@ -492,14 +492,14 @@ static int read_symbols(struct elf *elf)
+ 		if (!gelf_getsymshndx(symtab->data, shndx_data, i, &sym->sym,
+ 				      &shndx)) {
+ 			ERROR_ELF("gelf_getsymshndx");
+-			goto err;
++			return -1;
+ 		}
  
--	__sym_for_each(iter, tree, offset, offset) {
--		if (iter->type != STT_SECTION)
--			return iter;
-+	__sym_for_each(tmp, tree, offset, offset) {
-+		if (tmp->len) {
-+			if (!sym) {
-+				sym = tmp;
-+				continue;
-+			}
-+
-+			if (sym->offset != tmp->offset || sym->len != tmp->len) {
-+				/*
-+				 * In the rare case of overlapping symbols,
-+				 * pick the smaller one.
-+				 *
-+				 * TODO: outlaw overlapping symbols
-+				 */
-+				if (tmp->len < sym->len)
-+					sym = tmp;
-+			}
-+		}
+ 		sym->name = elf_strptr(elf->elf, symtab->sh.sh_link,
+ 				       sym->sym.st_name);
+ 		if (!sym->name) {
+ 			ERROR_ELF("elf_strptr");
+-			goto err;
++			return -1;
+ 		}
+ 
+ 		if ((sym->sym.st_shndx > SHN_UNDEF &&
+@@ -511,7 +511,7 @@ static int read_symbols(struct elf *elf)
+ 			sym->sec = find_section_by_index(elf, shndx);
+ 			if (!sym->sec) {
+ 				ERROR("couldn't find section for symbol %s", sym->name);
+-				goto err;
++				return -1;
+ 			}
+ 			if (GELF_ST_TYPE(sym->sym.st_info) == STT_SECTION) {
+ 				sym->name = sym->sec->name;
+@@ -581,10 +581,6 @@ static int read_symbols(struct elf *elf)
  	}
  
--	return NULL;
-+	return sym;
+ 	return 0;
+-
+-err:
+-	free(sym);
+-	return -1;
  }
  
- /*
+ static int mark_group_syms(struct elf *elf)
 -- 
 2.50.0
 
