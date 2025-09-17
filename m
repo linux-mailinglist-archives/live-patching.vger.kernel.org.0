@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1672-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1673-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 70022B80D7C
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:07:16 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B2C98B80DAC
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 18:09:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CD694622CC2
-	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:07:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 410BC5417F2
+	for <lists+live-patching@lfdr.de>; Wed, 17 Sep 2025 16:07:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BD1A2FDC44;
-	Wed, 17 Sep 2025 16:04:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADB5B2FE063;
+	Wed, 17 Sep 2025 16:04:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VLsAkrXV"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sMUjUtEv"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 735C02FDC31;
-	Wed, 17 Sep 2025 16:04:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84BC82FE059;
+	Wed, 17 Sep 2025 16:04:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758125068; cv=none; b=UujPkPyTe9P9YI39/ZGi19+DeRPbVLRwlGKs1LKUqWXWsTwXgIyjkRyuHPsYpB6F8VvVrZVJp90bXmMsJA/4J4gzvg2MUWWvyUDrj93Jn3ADGUN+pU7Tsd8kDWeylI/UDTCLHFWt3lRuluF2THn2HOotrAiO5ayOdqhVSDCkVsI=
+	t=1758125069; cv=none; b=GxIr4N4KIDtO8CFQJ6b3EXOy5mK3i4nyyWalAfFD9AAKHuUs9UIZIkf2AV0RNrLUoV/vif7KQBt1Er84qS4EX0XkdkYPj47Z6bYtRjUTgx+M8mjMsPEID9wBjaw550gHegS6+ugKt527J3OsoBVbSFjSyQvMYpLAMSqFNdrpJlk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758125068; c=relaxed/simple;
-	bh=efn2p2Wdr/0ie3I+NtGudTFtupmrBjPNApuuCg4PIjA=;
+	s=arc-20240116; t=1758125069; c=relaxed/simple;
+	bh=vivYDmE2QwnFNZP6brZa4TH9uGKMJ/OXaXdHd5GDhEc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=M90bFu2mKkdLSNa90TxpLz/eYBZpzHFonUqUeweUOqvILbdkNWnpDz7v+UrYp2tF3rfzcPJez6EXtoiysLu1tek2NxgZC0YEE9DUQMfMatk2azb59oM6hLdCECIsO4VQzKu9U5VS8p/cOgLhxpE7P3UdG5vHVcMfPhSrx3FrzCc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VLsAkrXV; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2DC7C4CEE7;
-	Wed, 17 Sep 2025 16:04:27 +0000 (UTC)
+	 MIME-Version; b=aCqoMm2IABV1gEBGXMYeomxTKv7zQHpgyXS98CalrVTM0T0brG3JdS2hmdcFJMYPku5X92vYudHL5AyVulQLdkQ2LbZgO+kWkaBZ28Jrrt60ta5TxRykC0Si4W8Od3YPAIMoICxfQeKwYfaumpxf3W1ND393+fOC04MwtWau5Ok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sMUjUtEv; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C34DC4CEF9;
+	Wed, 17 Sep 2025 16:04:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758125068;
-	bh=efn2p2Wdr/0ie3I+NtGudTFtupmrBjPNApuuCg4PIjA=;
+	s=k20201202; t=1758125069;
+	bh=vivYDmE2QwnFNZP6brZa4TH9uGKMJ/OXaXdHd5GDhEc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=VLsAkrXV+Ys5YkS4QIKM4VRoS0LvX7ftsoHTOq3vb1HL40JR4GWKptLSQ0F8ij1LU
-	 glTKo8KfHVKkSUko2E9f5YPPftV9IrHyvuGlb7+8/WXb4N+f/Jl/li/i3GcIgUqAJ3
-	 9SW79OBSlZlYGfM5L1wOTqUPB8+j8I1/6Pf1+TcOz3VbM/XW6SUzl0TAPX+QBiOfFy
-	 Kdi5lfpqRLz5fie3BHeigtyCOjFs05ZEaPaFJ310TLdhRGEJZ81Fkqs3CNUyBPXjY0
-	 +YcKneF66d9tGjI9WGYibPwm/sM86iYGwmk5XXq4BZwf9EvgJHUMHiq5Nl0goUBVVC
-	 gBh75OySkUxQQ==
+	b=sMUjUtEvOI03SkWxmys00Bvn3qV8YIE8vVS7LrhUnYbCK+9jVcTdnJxqGKji5XvM5
+	 Xucn4dZR/T8IeFR0RzBZm+1kjTnUhK2wpKYhtn+rr9nhHeJnjKHlGXPvuTYw6QZn0h
+	 byF4tOWhbybxQ5JMfURn/9xEpvdzyCWkfIDOQE9Qcs+OHzfUB0KCV9nNa9qjguMKDM
+	 hoa0WhV6GPt2VRdIBv/q4j9FRgxatliAl0Z0m9AofY3mVlwITldwvqs8ibcozOIVzO
+	 p5q3NVHHm3U3in6z6UW/wCOUCmygoItLNE6xL8PICYyMBqE0DUBqwm0W8ehto5gIzq
+	 9tE28Km9GbA1A==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v4 17/63] objtool: Add empty symbols to the symbol tree again
-Date: Wed, 17 Sep 2025 09:03:25 -0700
-Message-ID: <457c2e84b81bd6515aaa60ec8e9e0cc892ed7afa.1758067942.git.jpoimboe@kernel.org>
+Subject: [PATCH v4 18/63] objtool: Fix interval tree insertion for zero-length symbols
+Date: Wed, 17 Sep 2025 09:03:26 -0700
+Message-ID: <3634b2e4f230766bef8b308302d2c2b07425fe09.1758067942.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <cover.1758067942.git.jpoimboe@kernel.org>
 References: <cover.1758067942.git.jpoimboe@kernel.org>
@@ -72,51 +72,26 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The following commit
-
-  5da6aea375cd ("objtool: Fix find_{symbol,func}_containing()")
-
-fixed the issue where overlapping symbols weren't getting sorted
-properly in the symbol tree.  Therefore the workaround to skip adding
-empty symbols from the following commit
-
-  a2e38dffcd93 ("objtool: Don't add empty symbols to the rbtree")
-
-is no longer needed.
+Zero-length symbols get inserted in the wrong spot.  Fix that.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ tools/objtool/elf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 19e249f4783cf..a8a78b55d3ece 100644
+index a8a78b55d3ece..c024937eb12a2 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -96,7 +96,8 @@ static inline unsigned long __sym_last(struct symbol *s)
+@@ -92,7 +92,7 @@ static inline unsigned long __sym_start(struct symbol *s)
+ 
+ static inline unsigned long __sym_last(struct symbol *s)
+ {
+-	return s->offset + s->len - 1;
++	return s->offset + (s->len ? s->len - 1 : 0);
  }
  
  INTERVAL_TREE_DEFINE(struct symbol, node, unsigned long, __subtree_last,
--		     __sym_start, __sym_last, static, __sym)
-+		     __sym_start, __sym_last, static inline __maybe_unused,
-+		     __sym)
- 
- #define __sym_for_each(_iter, _tree, _start, _end)			\
- 	for (_iter = __sym_iter_first((_tree), (_start), (_end));	\
-@@ -440,13 +441,6 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
- 	list_add(&sym->list, entry);
- 	elf_hash_add(symbol, &sym->hash, sym->idx);
- 	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
--
--	/*
--	 * Don't store empty STT_NOTYPE symbols in the rbtree.  They
--	 * can exist within a function, confusing the sorting.
--	 */
--	if (!sym->len)
--		__sym_remove(sym, &sym->sec->symbol_tree);
- }
- 
- static int read_symbols(struct elf *elf)
 -- 
 2.50.0
 
