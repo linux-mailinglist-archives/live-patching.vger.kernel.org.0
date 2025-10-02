@@ -1,166 +1,446 @@
-Return-Path: <live-patching+bounces-1725-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1726-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 99E04BAA88A
-	for <lists+live-patching@lfdr.de>; Mon, 29 Sep 2025 21:55:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AC7EEBB5019
+	for <lists+live-patching@lfdr.de>; Thu, 02 Oct 2025 21:28:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 058B2189E897
-	for <lists+live-patching@lfdr.de>; Mon, 29 Sep 2025 19:56:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 660C43264A0
+	for <lists+live-patching@lfdr.de>; Thu,  2 Oct 2025 19:28:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1DD4C24501B;
-	Mon, 29 Sep 2025 19:55:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40E822848A1;
+	Thu,  2 Oct 2025 19:28:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VAlBh20B"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Uf/c/vm0"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4905A241C8C
-	for <live-patching@vger.kernel.org>; Mon, 29 Sep 2025 19:55:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C71B27B34F;
+	Thu,  2 Oct 2025 19:28:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759175749; cv=none; b=Fy2i6xwQnEFndOAJwDPWmJ+OmgU2O07EcRddokHgMT/Tqdj4u178H+ZGTdeD0ns0ooLmi6SLWrU4VXVxHM7bIJL93htjx0/CetaLxwQ6L0d4ePFMiznSKYOQ0J1HogxmHFAuOCIHczX83HtH2h3zG9NQ87m1czDNOwiHLcO+Eow=
+	t=1759433326; cv=none; b=JDlXmeiDRlMiraOOPFO3dtnPSdgB97R12UcvqKA+WCaK9d6cp0rK8cNDig0JLqKVtUh6Tp2m2JZ18+5aJchnhw6MU+lirvazeQu/HF2SBEXIKEgOA/bxsdie9Ff/ORD/Rrhdtosc32m9wIuKuvYByyb+rfA41m9Pt2ZTZE935NQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759175749; c=relaxed/simple;
-	bh=RO76/f9CYEMfPMQPTUBiSF3Nm+ZZmO0CK1pt0ht+BNU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MhgQRsxNY0d8kyYo8aGz5VUsRRnTSKp8Dz0iunUS82d2vmwuua9xw6rr6m46LS+cK0abISAzLsFaC9uY0JBORKM3B+lbLo1hL6GGiwSPwy6ZMgSK7SyVBOUR1JtAWmzCyWzNNryJsCN0fP/+a8zUpsFnxPseQ9TKXD2RClx7+xA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VAlBh20B; arc=none smtp.client-ip=209.85.208.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-36295d53a10so45198291fa.0
-        for <live-patching@vger.kernel.org>; Mon, 29 Sep 2025 12:55:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1759175745; x=1759780545; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2FOl60H4bs8OomkAN24CFvRC0ueG1po3QRTP8yk1rSI=;
-        b=VAlBh20B3P3dm7CaEIn3O06+vQyVZ81bdMTSHJwHkvFx85Kild20mRtqc3F+5YFVV4
-         p8b721ZkYWEXmHrSFUofFk2NE0x5xJ/KvdmxM7kn4aMgXfR5Bmi9yrNeBlUUBB1rIXKd
-         C/J1DNYw8N+cEXYdjf8gYLFSr7Nqg2pDUPkJHA74qb+iY4N9XiaY3krplvntGSbX14Rt
-         XOXkyClREo9RrOy3dLOtLOMW0II0nem+QstrB8lj6/bl5A7JkoJrtmv13m+v5/AhrXb0
-         EWt7hsxbHGqeAvze5wWBwZM5x84yD0NyOYbBDvRg3q2uoFrM3c/oAhEWVZT/vJDerbdl
-         2s8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759175745; x=1759780545;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2FOl60H4bs8OomkAN24CFvRC0ueG1po3QRTP8yk1rSI=;
-        b=sQNXVWkLMxjfJRoWRu+x8tjAynwyrykxVvHSC4LFvm9FO0aAXthVyBMwgjZAFYjyjZ
-         Ew54CInZwrj0+ufJBk2JCXKV9QmYt2KHJrWMwRH/Y+BnDn0DMLwXN7gv/yTslv341fv4
-         4WnB/ZL/zVaZBmP6ROXXvIvCIJB0M7myjnuXSDudRpoINBp5N3TFm8241nqVb43M1jRl
-         DXD+aiJmor/yBWWP0IY4wxALxcAu17bKPeJfnj82KugIB9SPHqdiAkylq8zfxqx/YSyu
-         mxSOP6wsre9WzINmlG/QU2LpdFm7Jl8KxEE1KnPcUi49W1X77e27wUBsew2s5oa3rKyf
-         R5gQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXjwGcPpBQ3y1AyPusvytqUMpkQp9UY+B/Xc3YxAlgSR6Oqz67H6rKTtRrr7YLOeIIxA4KZ3f81p3s0wbsS@vger.kernel.org
-X-Gm-Message-State: AOJu0YxRuH2xFAvyhDTabS2LfDyAsuxHoWIi5ePAH/U0g3i0+YHTzgz0
-	jTOJHAYSCRQF9/eAToCJ3H1Z1Z5H3lVTSRyfXJWUxfhnPnE/jwoPyWvZR1otXuyOr+quyVBh7CO
-	NeXzu0GiC4TgcNkdV3n9zUGDPGk3zf4o=
-X-Gm-Gg: ASbGnctevqh736+dpVmQQerrCoszYPKKLFwufy0BwLKlTxO61BcZJP2qrVMIGaAL9mB
-	/wD5cPBhz8H8FL1JX3FvH7Q4bbMTT/PkUVOGzWRL7qHlPgyo9HAN5eqJOxv01pwp4XwIrMzFann
-	xnViTznCuYPmC+f4RRyFTXfjqp71bwHjPRc1bDOD4iVX6t7/1YgPWM6JtfBbNq94/C+OvWjNash
-	BdihQ==
-X-Google-Smtp-Source: AGHT+IErP2gRQ6ZD56twcKHZTwT0kBevF4fdnA1y+SJ74LG1tfUzYR0s+sNt2FXIYbc5oOC4PL8X1Gg/KiynFJqey6Y=
-X-Received: by 2002:a05:651c:4414:10b0:372:8cce:2360 with SMTP id
- 38308e7fff4ca-3728cce261cmr18756371fa.14.1759175745085; Mon, 29 Sep 2025
- 12:55:45 -0700 (PDT)
+	s=arc-20240116; t=1759433326; c=relaxed/simple;
+	bh=qvPMDb+XH7tgMIrPl5+60JqgDpvJHiXDjvdvRd+M/r8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MM2ywEzHoQDPwW4q3/4YhVIQx7Qzl8Buda0QHMmJ74Omd4g8GuG59iR6gVg8WMhRDQr0/9FR5Epy/w6nJ1YH6e1hDO26UKbAL86HhNl9Abi3GSMSgkGV5zmlE7DVw01QJ1cmQKPKG5kWZagF/h40Y4DOaXssc+S/cUOqluibFK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Uf/c/vm0; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 592DcqmM018505;
+	Thu, 2 Oct 2025 19:28:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=cigzgaDKq45lFyBLavfI2MmaR/bjhlPA9RQHSQBeE
+	Ok=; b=Uf/c/vm0FsXIhhsHbfU2DBaeIcCCgafVLjpbZzSn6/W79gut9Xt9n2QUC
+	ESfgcCM7UGofZrwLulUcaIZczIpso1puWhMzT3OqLnVG87raOG9VtHQez49FKtco
+	1qXyfizir+Da6YGpfHpm485NaRAmmPM1tpPJscuu2NvRo3mkOshbYgCTWeYPQnXF
+	C//pEK4yZA+swPSatb8YAubIJlkXKPSlccRtDab7VRZtiCy7MbdCYDgG7oB9OE7n
+	oF80cdAhxmPEBF+sr9ZfH7LRnF/+uE4GnimaAUp+nksOvuYSEG0oCFSCOevwwLgZ
+	nV1YpKMmKZiPArLwc74fll3+fl/ZA==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49e6bhxewm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 02 Oct 2025 19:28:04 +0000 (GMT)
+Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 592JQKEE021148;
+	Thu, 2 Oct 2025 19:28:03 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49e6bhxewa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 02 Oct 2025 19:28:03 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 592Hv9Rv024121;
+	Thu, 2 Oct 2025 19:28:02 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 49evy1f8ep-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 02 Oct 2025 19:28:02 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 592JS1fZ56099208
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 2 Oct 2025 19:28:01 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EE99A2004B;
+	Thu,  2 Oct 2025 19:28:00 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2851A20040;
+	Thu,  2 Oct 2025 19:27:56 +0000 (GMT)
+Received: from li-bd3f974c-2712-11b2-a85c-df1cec4d728e.ibm.com.com (unknown [9.43.110.151])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  2 Oct 2025 19:27:55 +0000 (GMT)
+From: Hari Bathini <hbathini@linux.ibm.com>
+To: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "Naveen N. Rao" <naveen@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Song Liu <songliubraving@fb.com>,
+        Jiri Olsa <jolsa@kernel.org>, Viktor Malik <vmalik@redhat.com>,
+        live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>, Jiri Kosina <jikos@kernel.org>,
+        linux-trace-kernel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>
+Subject: [PATCH] powerpc64/bpf: support direct_call on livepatch function
+Date: Fri,  3 Oct 2025 00:57:54 +0530
+Message-ID: <20251002192755.86441-1-hbathini@linux.ibm.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250904223850.884188-1-dylanbhatch@google.com> <CAPhsuW5zUEeM3DAw-3OVNS9KmM2vG9B1GaR9KEKS_KFQo-VG9Q@mail.gmail.com>
-In-Reply-To: <CAPhsuW5zUEeM3DAw-3OVNS9KmM2vG9B1GaR9KEKS_KFQo-VG9Q@mail.gmail.com>
-From: Puranjay Mohan <puranjay12@gmail.com>
-Date: Mon, 29 Sep 2025 21:55:34 +0200
-X-Gm-Features: AS18NWAIi9DineMp-TgEBH0HLfNcuGGToX7Qfv23-1VNL-wNOdBAfvSptWoYjzE
-Message-ID: <CANk7y0hUKOVXRKoJ5Ufmg-5DGSe2F5nBH+O7tLVvLRs9Oe54uA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] unwind, arm64: add sframe unwinder for kernel
-To: Song Liu <song@kernel.org>
-Cc: Dylan Hatch <dylanbhatch@google.com>, Josh Poimboeuf <jpoimboe@kernel.org>, 
-	Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Will Deacon <will@kernel.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Jiri Kosina <jikos@kernel.org>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
-	Mark Rutland <mark.rutland@arm.com>, Ian Rogers <irogers@google.com>, 
-	linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	live-patching@vger.kernel.org, joe.lawrence@redhat.com, 
-	Puranjay Mohan <puranjay@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Authority-Analysis: v=2.4 cv=Se/6t/Ru c=1 sm=1 tr=0 ts=68ded244 cx=c_pps
+ a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
+ a=x6icFKpwvdMA:10 a=VwQbUJbxAAAA:8 a=iox4zFpeAAAA:8 a=VnNF1IyMAAAA:8
+ a=-2KXX0oJnJaVn1jAxeUA:9 a=WzC6qhA0u3u7Ye7llzcV:22 a=nl4s5V0KI7Kw-pW0DWrs:22
+ a=pHzHmUro8NiASowvMSCR:22 a=xoEH_sTeL_Rfw54TyV31:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTI3MDAxMCBTYWx0ZWRfXywA8rdq6YRmr
+ G0390Ft+z+bsu3lDkKaNubNM3P9ZAhU2Lc/OZvRO4eqAW2raiMBBp0P2lipUlh+cz771uiLc8nS
+ RkvSHjRw9KByhqufZ5E8qcAqq9MUcU0lTwiyc0tsnNUQnr87zVed6nI5mYvDdNrMAlUZP6j1FVi
+ hbShS4MMdNVega1tSU4gBmwq6IstHxhAv9sS3HZjh4mAaWBcRd/98eps1hG7Apa6PgTd+EOdPC8
+ E0TwT1w0n+73iNmVVJcrArMkY7yuAPhr6ny8BqxOhtWusJL/kd+1xCkUoiVwdJ6vHat156tUjyO
+ zV4f1a2/BbY7TlhKqk1wBd1vZOU7+evfZ7E9JmFFHh8VbuzAByX3woXzJ/Nmk7vR+97RxPWmiG2
+ m8Mv7nMNICJ49gp4w3aA5zxaS9GV+Q==
+X-Proofpoint-GUID: KbfxEnk057SDgqFe5fPNP3mVbYjuTcWP
+X-Proofpoint-ORIG-GUID: 094-ZrOW2CL_hhOok836QPTdr9tN08rp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-02_07,2025-10-02_03,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 malwarescore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0
+ clxscore=1011 phishscore=0 priorityscore=1501 adultscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2509150000 definitions=main-2509270010
 
-On Mon, Sep 29, 2025 at 9:46=E2=80=AFPM Song Liu <song@kernel.org> wrote:
->
-> On Thu, Sep 4, 2025 at 3:39=E2=80=AFPM Dylan Hatch <dylanbhatch@google.co=
-m> wrote:
-> >
-> > This patchset implements a generic kernel sframe-based [1] unwinder.
-> > The main goal is to support reliable stacktraces on arm64.
-> >
-> > On x86 orc unwinder provides reliable stacktraces. But arm64 misses the
-> > required support from objtool: it cannot generate orc unwind tables for
-> > arm64.
-> >
-> > Currently, there's already a sframe unwinder proposed for userspace: [2=
-].
-> > Since the sframe unwind table algorithm is similar, these two proposals
-> > could integrate common functionality in the future.
-> >
-> > Currently, only GCC supports sframe.
-> >
-> > These patches are based on v6.17-rc4 and are available on github [3].
-> >
-> > Ref:
-> > [1]: https://sourceware.org/binutils/docs/sframe-spec.html
-> > [2]: https://lore.kernel.org/lkml/cover.1730150953.git.jpoimboe@kernel.=
-org/
-> > [3]: https://github.com/dylanbhatch/linux/tree/sframe-v2
->
-> I run the following test on this sframe-v2 branch:
->
-> bpftrace -e 'kprobe:security_file_open {printf("%s",
-> kstack);@count+=3D1; if (@count > 1) {exit();}}'
->
->         security_file_open+0
->         bpf_prog_eaca355a0dcdca7f_kprobe_security_file_open_1+16641632@./=
-bpftrace.bpf.o:0
->         path_openat+1892
->         do_filp_open+132
->         do_open_execat+84
->         alloc_bprm+44
->         do_execveat_common.isra.0+116
->         __arm64_sys_execve+72
->         invoke_syscall+76
->         el0_svc_common.constprop.0+68
->         do_el0_svc+32
->         el0_svc+56
->         el0t_64_sync_handler+152
->         el0t_64_sync+388
->
-> This looks wrong. The right call trace should be:
->
->   do_filp_open
->     =3D> path_openat
->       =3D> vfs_open
->         =3D> do_dentry_open
->           =3D> security_file_open
->             =3D> bpf_prog_eaca355a0dcdca7f_...
->
-> I am not sure whether this is just a problem with the bpf program,
-> or also with something else.
+Today, livepatch takes precedence over direct_call. Instead, save the
+state and make direct_call before handling livepatch. This change
+inadvertly skips livepatch stack restore, when an attached fmod_ret
+program fails. To handle this scenario, set cr0.eq bit to indicate
+livepatch is active while making the direct_call, save the expected
+livepatch stack state on the trampoline stack and restore it, if and
+when required, during do_fexit in the trampoline code.
 
-I will try to debug this more but am just curious about BPF's
-interactions with sframe.
-The sframe data for bpf programs doesn't exist, so we would need to
-add that support
-and that wouldn't be trivial, given the BPF programs are JITed.
+Reported-by: Shung-Hsi Yu <shung-hsi.yu@suse.com>
+Closes: https://lore.kernel.org/all/rwmwrvvtg3pd7qrnt3of6dideioohwhsplancoc2gdrjran7bg@j5tqng6loymr/
+Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+---
+ arch/powerpc/include/asm/livepatch.h     | 15 +++++
+ arch/powerpc/kernel/trace/ftrace_entry.S | 74 ++++++++++++++++++++----
+ arch/powerpc/net/bpf_jit_comp.c          | 71 ++++++++++++++++++++++-
+ 3 files changed, 149 insertions(+), 11 deletions(-)
 
-Thanks,
-Puranjay
+diff --git a/arch/powerpc/include/asm/livepatch.h b/arch/powerpc/include/asm/livepatch.h
+index d044a1fd4f44..356c1eb46f5d 100644
+--- a/arch/powerpc/include/asm/livepatch.h
++++ b/arch/powerpc/include/asm/livepatch.h
+@@ -7,6 +7,20 @@
+ #ifndef _ASM_POWERPC_LIVEPATCH_H
+ #define _ASM_POWERPC_LIVEPATCH_H
+ 
++#ifdef CONFIG_LIVEPATCH_64
++#define LIVEPATCH_STACK_MAGIC_OFFSET	8
++#define LIVEPATCH_STACK_LR_OFFSET	16
++#define LIVEPATCH_STACK_TOC_OFFSET	24
++
++#if defined(CONFIG_PPC_FTRACE_OUT_OF_LINE) && defined(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS)
++#define LIVEPATCH_STACK_FRAME_SIZE	32	/* Allocate 4 x 8 bytes (to save new NIP as well) */
++#define LIVEPATCH_STACK_NIP_OFFSET	32
++#else
++#define LIVEPATCH_STACK_FRAME_SIZE	24	/* Allocate 3 x 8 bytes */
++#endif
++#endif
++
++#ifndef __ASSEMBLY__
+ #include <linux/sched.h>
+ #include <linux/sched/task_stack.h>
+ 
+@@ -20,4 +34,5 @@ static inline void klp_init_thread_info(struct task_struct *p)
+ static inline void klp_init_thread_info(struct task_struct *p) { }
+ #endif
+ 
++#endif /* !__ASSEMBLY__ */
+ #endif /* _ASM_POWERPC_LIVEPATCH_H */
+diff --git a/arch/powerpc/kernel/trace/ftrace_entry.S b/arch/powerpc/kernel/trace/ftrace_entry.S
+index 6599fe3c6234..b98f12f378b1 100644
+--- a/arch/powerpc/kernel/trace/ftrace_entry.S
++++ b/arch/powerpc/kernel/trace/ftrace_entry.S
+@@ -8,6 +8,7 @@
+ #include <asm/ppc_asm.h>
+ #include <asm/asm-offsets.h>
+ #include <asm/ftrace.h>
++#include <asm/livepatch.h>
+ #include <asm/ppc-opcode.h>
+ #include <asm/thread_info.h>
+ #include <asm/bug.h>
+@@ -244,6 +245,8 @@
+ 	/* jump after _mcount site */
+ #ifdef CONFIG_PPC_FTRACE_OUT_OF_LINE
+ #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++	/* For direct_call, set cr0.eq bit only if livepatch is active */
++	crclr	4*cr0+eq
+ 	bnectr	cr1
+ #endif
+ 	/*
+@@ -306,10 +309,14 @@ ftrace_no_trace:
+ 	mtctr	r12
+ 	REST_GPRS(11, 12, r1)
+ 	addi	r1, r1, SWITCH_FRAME_SIZE+STACK_FRAME_MIN_SIZE
++	/* For direct_call, set cr0.eq bit only if livepatch is active */
++	crclr	4*cr0+eq
+ 	bctr
+ .Lftrace_direct_call:
+ 	mtctr	r12
+ 	addi	r1, r1, SWITCH_FRAME_SIZE+STACK_FRAME_MIN_SIZE
++	/* For direct_call, set cr0.eq bit only if livepatch is active */
++	crclr	4*cr0+eq
+ 	bctr
+ SYM_FUNC_START(ftrace_stub_direct_tramp)
+ 	blr
+@@ -340,25 +347,72 @@ SYM_FUNC_END(ftrace_stub_direct_tramp)
+ livepatch_handler:
+ 	ld	r12, PACA_THREAD_INFO(r13)
+ 
+-	/* Allocate 3 x 8 bytes */
+ 	ld	r11, TI_livepatch_sp(r12)
+-	addi	r11, r11, 24
++	/* Allocate stack to save LR, TOC & optionally NIP (in case of direct_call) */
++	addi	r11, r11, LIVEPATCH_STACK_FRAME_SIZE
+ 	std	r11, TI_livepatch_sp(r12)
+ 
+ 	/* Store stack end marker */
+ 	lis     r12, STACK_END_MAGIC@h
+ 	ori     r12, r12, STACK_END_MAGIC@l
+-	std	r12, -8(r11)
++	std	r12, -LIVEPATCH_STACK_MAGIC_OFFSET(r11)
+ 
+ 	/* Save toc & real LR on livepatch stack */
+-	std	r2,  -24(r11)
++	std	r2,  -LIVEPATCH_STACK_TOC_OFFSET(r11)
+ #ifndef CONFIG_PPC_FTRACE_OUT_OF_LINE
+ 	mflr	r12
+-	std	r12, -16(r11)
++	std	r12, -LIVEPATCH_STACK_LR_OFFSET(r11)
+ 	mfctr	r12
+ #else
+-	std	r0, -16(r11)
++	std	r0, -LIVEPATCH_STACK_LR_OFFSET(r11)
+ 	mflr	r12
++
++	/* Also, save new NIP on livepatch stack before the direct_call */
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++	std	r12, -LIVEPATCH_STACK_NIP_OFFSET(r11)
++
++	/* For direct_call, set cr0.eq bit to indicate livepatch is active */
++	crset	4*cr0+eq
++	/* Jump to the direct_call */
++	bnectrl	cr1
++
++	/*
++	 * The address to jump after direct call is deduced based on ftrace OOL stub sequence.
++	 * The seemingly insignificant couple of instructions below is to mimic that here to
++	 * jump back to the livepatch handler code below.
++	 */
++	nop
++	b	1f
++
++	/*
++	 * Restore the state for livepatching from the livepatch stack.
++	 * Before that, check if livepatch stack is intact. Use r0 for it.
++	 */
++1:	mtctr	r0
++	ld	r12, PACA_THREAD_INFO(r13)
++	ld	r11, TI_livepatch_sp(r12)
++	lis     r0,  STACK_END_MAGIC@h
++	ori     r0,  r0, STACK_END_MAGIC@l
++	ld	r12, -LIVEPATCH_STACK_MAGIC_OFFSET(r11)
++1:	tdne	r12, r0
++	EMIT_BUG_ENTRY 1b, __FILE__, __LINE__ - 1, 0
++	mfctr	r0
++
++	/*
++	 * A change in r0 implies the direct_call is not done yet. The direct_call
++	 * will take care of calling the original LR. Update r0 in livepatch stack
++	 * with the new LR in the direct_call.
++	 */
++	ld	r12, -LIVEPATCH_STACK_LR_OFFSET(r11)
++	cmpd	r12, r0
++	beq	1f
++	mflr	r0
++	std	r0, -LIVEPATCH_STACK_LR_OFFSET(r11)
++
++	/* Put new NIP back in r12 to proceed with livepatch handling */
++1:	ld	r12, -LIVEPATCH_STACK_NIP_OFFSET(r11)
++#endif /* CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS */
++
+ 	/* Put ctr in r12 for global entry and branch there */
+ 	mtctr	r12
+ #endif
+@@ -377,18 +431,18 @@ livepatch_handler:
+ 	/* Check stack marker hasn't been trashed */
+ 	lis     r2,  STACK_END_MAGIC@h
+ 	ori     r2,  r2, STACK_END_MAGIC@l
+-	ld	r12, -8(r11)
++	ld	r12, -LIVEPATCH_STACK_MAGIC_OFFSET(r11)
+ 1:	tdne	r12, r2
+ 	EMIT_BUG_ENTRY 1b, __FILE__, __LINE__ - 1, 0
+ 
+ 	/* Restore LR & toc from livepatch stack */
+-	ld	r12, -16(r11)
++	ld	r12, -LIVEPATCH_STACK_LR_OFFSET(r11)
+ 	mtlr	r12
+-	ld	r2,  -24(r11)
++	ld	r2,  -LIVEPATCH_STACK_TOC_OFFSET(r11)
+ 
+ 	/* Pop livepatch stack frame */
+ 	ld	r12, PACA_THREAD_INFO(r13)
+-	subi	r11, r11, 24
++	subi	r11, r11, LIVEPATCH_STACK_FRAME_SIZE
+ 	std	r11, TI_livepatch_sp(r12)
+ 
+ 	/* Return to original caller of live patched function */
+diff --git a/arch/powerpc/net/bpf_jit_comp.c b/arch/powerpc/net/bpf_jit_comp.c
+index 88ad5ba7b87f..cc86867d85cd 100644
+--- a/arch/powerpc/net/bpf_jit_comp.c
++++ b/arch/powerpc/net/bpf_jit_comp.c
+@@ -19,6 +19,7 @@
+ 
+ #include <asm/kprobes.h>
+ #include <asm/text-patching.h>
++#include <asm/livepatch.h>
+ 
+ #include "bpf_jit.h"
+ 
+@@ -678,14 +679,16 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
+ 					 struct bpf_tramp_links *tlinks,
+ 					 void *func_addr)
+ {
+-	int regs_off, nregs_off, ip_off, run_ctx_off, retval_off, nvr_off, alt_lr_off, r4_off = 0;
+ 	int i, ret, nr_regs, bpf_frame_size = 0, bpf_dummy_frame_size = 0, func_frame_offset;
+ 	struct bpf_tramp_links *fmod_ret = &tlinks[BPF_TRAMP_MODIFY_RETURN];
++	int regs_off, nregs_off, ip_off, run_ctx_off, retval_off, nvr_off;
+ 	struct bpf_tramp_links *fentry = &tlinks[BPF_TRAMP_FENTRY];
+ 	struct bpf_tramp_links *fexit = &tlinks[BPF_TRAMP_FEXIT];
++	int alt_lr_off, r4_off = 0, livepatch_sp_off = 0;
+ 	struct codegen_context codegen_ctx, *ctx;
+ 	u32 *image = (u32 *)rw_image;
+ 	ppc_inst_t branch_insn;
++	bool handle_lp = false;
+ 	u32 *branches = NULL;
+ 	bool save_ret;
+ 
+@@ -716,6 +719,8 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
+ 	 * dummy frame for unwind       [ back chain 1      ] --
+ 	 *                              [ padding           ] align stack frame
+ 	 *       r4_off                 [ r4 (tailcallcnt)  ] optional - 32-bit powerpc
++	 *                              [ *current.TI.lp_sp ]
++	 *    livepatch_sp_off          [ current.TI.lp_sp  ] optional - livepatch stack info
+ 	 *       alt_lr_off             [ real lr (ool stub)] optional - actual lr
+ 	 *                              [ r26               ]
+ 	 *       nvr_off                [ r25               ] nvr save area
+@@ -780,10 +785,20 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
+ 	nvr_off = bpf_frame_size;
+ 	bpf_frame_size += 2 * SZL;
+ 
++
+ 	/* Optional save area for actual LR in case of ool ftrace */
+ 	if (IS_ENABLED(CONFIG_PPC_FTRACE_OUT_OF_LINE)) {
+ 		alt_lr_off = bpf_frame_size;
+ 		bpf_frame_size += SZL;
++		if (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS)) {
++			handle_lp = (func_ptr_is_kernel_text(func_addr) && fmod_ret->nr_links &&
++				     (flags & BPF_TRAMP_F_CALL_ORIG));
++		}
++	}
++
++	if (handle_lp) {
++		livepatch_sp_off = bpf_frame_size;
++		bpf_frame_size += 2 * SZL;
+ 	}
+ 
+ 	if (IS_ENABLED(CONFIG_PPC32)) {
+@@ -822,6 +837,30 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
+ 	if (IS_ENABLED(CONFIG_PPC32) && nr_regs < 2)
+ 		EMIT(PPC_RAW_STL(_R4, _R1, r4_off));
+ 
++	/* Save expected livepatch stack state on the trampoline stack */
++	if (handle_lp) {
++		/*
++		 * The caller is expected to set cr0.eq bit, if livepatch was active on it.
++		 *
++		 * If livepatch is active, save address & the expected value of
++		 * livepatch stack pointer on the trampoline stack.
++		 * Else, set both of them to 0.
++		 */
++		PPC_BCC_SHORT(COND_EQ, (ctx->idx + 5) * 4);
++		EMIT(PPC_RAW_LI(_R12, 0));
++		EMIT(PPC_RAW_STL(_R12, _R1, livepatch_sp_off));
++		EMIT(PPC_RAW_STL(_R12, _R1, livepatch_sp_off + SZL));
++		PPC_JMP((ctx->idx + 7) * 4);
++
++		EMIT(PPC_RAW_LL(_R12, _R13, offsetof(struct paca_struct, __current) +
++					    offsetof(struct task_struct, thread_info)));
++		EMIT(PPC_RAW_ADDI(_R12, _R12, offsetof(struct thread_info, livepatch_sp)));
++		EMIT(PPC_RAW_STL(_R12, _R1, livepatch_sp_off));
++		EMIT(PPC_RAW_LL(_R12, _R12, 0));
++		EMIT(PPC_RAW_ADDI(_R12, _R12, -LIVEPATCH_STACK_FRAME_SIZE));
++		EMIT(PPC_RAW_STL(_R12, _R1, livepatch_sp_off + SZL));
++	}
++
+ 	bpf_trampoline_save_args(image, ctx, func_frame_offset, nr_regs, regs_off);
+ 
+ 	/* Save our return address */
+@@ -932,6 +971,36 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
+ 		image[branches[i]] = ppc_inst_val(branch_insn);
+ 	}
+ 
++	/*
++	 * Restore livepatch stack state if livepatch was active & an attached
++	 * fmod_ret program failed.
++	 */
++	if (handle_lp) {
++		EMIT(PPC_RAW_LL(_R12, _R1, livepatch_sp_off + SZL));
++		EMIT(PPC_RAW_CMPLI(_R12, 0));
++
++		/*
++		 * If expected value (_R12) of livepatch stack pointer saved on the
++		 * trampoline stack is 0, livepatch was not active. Skip the rest.
++		 */
++		PPC_BCC_SHORT(COND_EQ, (ctx->idx + 7) * 4);
++
++		EMIT(PPC_RAW_LL(_R25, _R1, livepatch_sp_off));
++		EMIT(PPC_RAW_LL(_R25, _R25, 0));
++
++		/*
++		 * If the expected value (_R12) of livepatch stack pointer saved on the
++		 * trampoline stack is not the same as actual value (_R25), it implies
++		 * fmod_ret program failed and skipped calling the traced/livepatch'ed
++		 * function. The livepatch'ed function did not get a chance to tear down
++		 * the livepatch stack it setup. Take care of that here in do_fexit.
++		 */
++		EMIT(PPC_RAW_CMPD(_R12, _R25));
++		PPC_BCC_SHORT(COND_EQ, (ctx->idx + 3) * 4);
++		EMIT(PPC_RAW_LL(_R25, _R1, livepatch_sp_off));
++		EMIT(PPC_RAW_STL(_R12, _R25, 0));
++	}
++
+ 	for (i = 0; i < fexit->nr_links; i++)
+ 		if (invoke_bpf_prog(image, ro_image, ctx, fexit->links[i], regs_off, retval_off,
+ 				    run_ctx_off, false)) {
+-- 
+2.51.0
+
 
