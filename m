@@ -1,148 +1,188 @@
-Return-Path: <live-patching+bounces-1736-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1737-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2AF4EBC5910
-	for <lists+live-patching@lfdr.de>; Wed, 08 Oct 2025 17:27:54 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9F3B9BC7759
+	for <lists+live-patching@lfdr.de>; Thu, 09 Oct 2025 07:50:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E1A9A3A7FCE
-	for <lists+live-patching@lfdr.de>; Wed,  8 Oct 2025 15:27:52 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 889221890CF4
+	for <lists+live-patching@lfdr.de>; Thu,  9 Oct 2025 05:51:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D398A2F3607;
-	Wed,  8 Oct 2025 15:27:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6CA8236451;
+	Thu,  9 Oct 2025 05:50:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gVPWv9Kb"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="l70Aktyx"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ED802EBBA8;
-	Wed,  8 Oct 2025 15:27:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF44AD4B;
+	Thu,  9 Oct 2025 05:50:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759937269; cv=none; b=Xg8c1mwkwUua7gmgVinV5X7NEVMKY4+a4ZUxlXGuQabDn8WM88Hmy/nXnmdssBmxguKhaa6vPX2rIkzieV1GiiaFy4pcF5KXuWXVnxuTrlOhKEZLbVbVVDzbsy5vfquIUNaDwBB3Cr7QkheEMNKe7xJu1XFQ15xdTGRVCVivLFU=
+	t=1759989030; cv=none; b=gEjFLTBS/DhBtdbue2DbK1IyR/lRC8I1+FHBvPQY/kE0lmA10WS09nT6TYwiQJfMY8l9bawlrQ7bwIGOLn0AudpeM8z+ve4jcDYdudnQG+KqLwl2XfanRw3jR852GuYPMsRJT+4dn4DMAaHVwycPrEJuWx+DyCr9vDo4c1zAluI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759937269; c=relaxed/simple;
-	bh=m/gtv3txD5nG4mkTfb82QKREplefXMZgkwqiSnws77A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nC23kK+YPdIViV92M7OCqiEhGrnyVtDcUVTh2dB76davG/ubyxNWaUT8/gtWhZ8iDXnR5PdVU7+GLuB0p2RBRmh3AQVXnnflVOCYvKdTuhRpnx37rvXaMI34O5sbyBZWrsgei6nK+Rpr/UQ+jpqaUkiqdJNyENnFMLzHo8eBfRc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gVPWv9Kb; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 446F5C4CEE7;
-	Wed,  8 Oct 2025 15:27:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759937268;
-	bh=m/gtv3txD5nG4mkTfb82QKREplefXMZgkwqiSnws77A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gVPWv9Kb/h6zVn7KKibvBMp9NGAN+7ts+svazfyNIN5MJDlqa4+YD1XpLI3+S2sk3
-	 qUHNnACmwBRys/ww9v+64KxhlfYHFyiuViKfOhLvOFC70hvb6X0vWaauNeop1ln6D4
-	 nHsxSkA0AjUF53irjYN86tVT+YhzC5I1CCMSyBOf13AvMqEkFMIZoTtTk+hvssv98V
-	 n5r36F4A2Q4n97O+5AYMFFX4epM3uYWdNLYGsA9SkZ8xc88TYZfB8QDolwB91dBKtt
-	 1SUE0FU/Xxpv+5fOh88bmKxvTzMSncijGUD0SgPaijPoZD1xmYRJWAmSowVO7IPKAv
-	 7/WD7ymaqf1bg==
-Date: Wed, 8 Oct 2025 08:27:45 -0700
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Petr Mladek <pmladek@suse.com>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
-	Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>, 
-	live-patching@vger.kernel.org, Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>, 
-	Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, 
-	Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>, 
-	Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay Mohan <puranjay@kernel.org>, 
-	Dylan Hatch <dylanbhatch@google.com>, Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v4 51/63] objtool/klp: Introduce klp diff subcommand for
- diffing object files
-Message-ID: <bnipx2pvsyxcd27uhxw5rr5yugm7iuint6rg3lzt3hdm7vkeue@g3wzb7kyr5da>
-References: <cover.1758067942.git.jpoimboe@kernel.org>
- <702078edac02ecf79f869575f06c5b2dba8cd768.1758067943.git.jpoimboe@kernel.org>
- <aOZuzj0vhKPF1bcW@pathway.suse.cz>
+	s=arc-20240116; t=1759989030; c=relaxed/simple;
+	bh=98qv5gCVu0arT0WU/zbKp6K58lsyDxcHiEjm2yynPKg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dXHY/5TqZx7M0FS2Z5Au2OT+b5KpjxObF1+9kY8h89oyM/nP8i2L5Jx08Gt9r7thALaByMd0EiOQKHJo9SIoQG85Vz2JTDcqZspODcH1CPrPVoT2IFK0IvWm8TyRhi2EJImplxfcYwdVhC/R9nZ3PgzqshAlP/wrqnLIpRp8foY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=l70Aktyx; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5994KH1i002137;
+	Thu, 9 Oct 2025 05:49:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=/5cSbI
+	lTHivCoCjUL+gWdAZHt8AL5oHSUiVwv6sMvf0=; b=l70AktyxnXQwFM9irjndoO
+	CwzJCqr8QN9geIZivEu0D1z3ldjMn9twN0V3D7PbuIXoXvLwcLv4j4qsVSwTf37w
+	U49xkAIq/eVbWGEU0sB2ViYCEFBUv4/t8frQ8X1FjBm5J6HXcdBWkbZ7yyiuU/F8
+	lQFWpC1EcqMGGDTyCQ9rFQcerGlItTZCfU8nPe1EHFpWChl8/Xq5ZpieoW4BCm8T
+	/Ywz5lbHM+V1iz4HsuMjHqDyr4k5Dk08wGRaLOhQhxAasip9lR6UIELVC0hyktpx
+	cmfD0UF+lhTlBDTH31igSIIy2k6yCS/yhjNn9bONw2nXcwqtx1teGkeNph2hmC5w
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49nv86tk9n-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 09 Oct 2025 05:49:54 +0000 (GMT)
+Received: from m0360072.ppops.net (m0360072.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 5995lwZb006383;
+	Thu, 9 Oct 2025 05:49:53 GMT
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49nv86tk9c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 09 Oct 2025 05:49:53 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 5991XAbr021040;
+	Thu, 9 Oct 2025 05:49:52 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 49nv8sjjyb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 09 Oct 2025 05:49:52 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 5995npEc17563960
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 9 Oct 2025 05:49:51 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 082BD20049;
+	Thu,  9 Oct 2025 05:49:51 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7C47F20040;
+	Thu,  9 Oct 2025 05:49:47 +0000 (GMT)
+Received: from [9.78.106.240] (unknown [9.78.106.240])
+	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  9 Oct 2025 05:49:47 +0000 (GMT)
+Message-ID: <42d72061-3d23-43db-bb02-d5f75333c924@linux.ibm.com>
+Date: Thu, 9 Oct 2025 11:19:45 +0530
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <aOZuzj0vhKPF1bcW@pathway.suse.cz>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] powerpc64/bpf: support direct_call on livepatch function
+To: Naveen N Rao <naveen@kernel.org>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Song Liu <songliubraving@fb.com>,
+        Jiri Olsa <jolsa@kernel.org>, Viktor Malik <vmalik@redhat.com>,
+        live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Joe Lawrence
+ <joe.lawrence@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>, linux-trace-kernel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>
+References: <20251002192755.86441-1-hbathini@linux.ibm.com>
+ <amwerofvasp7ssmq3zlrjakqj5aygyrgplcqzweno4ef42tiav@uex2ildqjvx2>
+ <17f49a63-eccb-4075-91dd-b1f37aa762c7@linux.ibm.com>
+ <unegysw3bihg32od7aham3npsdpm5govboo3uglorwsrjqfqfk@pbyzwwztmqtc>
+Content-Language: en-US
+From: Hari Bathini <hbathini@linux.ibm.com>
+In-Reply-To: <unegysw3bihg32od7aham3npsdpm5govboo3uglorwsrjqfqfk@pbyzwwztmqtc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: vmzUx7Jj6cCsN4wLndwN3vVcZMSsNY-1
+X-Proofpoint-ORIG-GUID: _txk5zoJyP1dG6BShDodMjflf50oEsuh
+X-Authority-Analysis: v=2.4 cv=MKNtWcZl c=1 sm=1 tr=0 ts=68e74d02 cx=c_pps
+ a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
+ a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=RPo1N_Dm-bXGz9hhwcIA:9
+ a=QEXdDO2ut3YA:10 a=nl4s5V0KI7Kw-pW0DWrs:22 a=pHzHmUro8NiASowvMSCR:22
+ a=xoEH_sTeL_Rfw54TyV31:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX63z3IqBezQN+
+ C81paXFCtrGEL+Iwuc77cQ41YfOapgJ2QPAn4UVzWbXghqF3hEpqCVAHiIJhKF0M/f05w7Lw+gG
+ ff8ffvldnzoh8rvq2fNMiHmAQzkHiesAZ5+BI2QSsZy0J5GMm03gdq4cpOgySpl/HU9BOyj8hAV
+ 4JEkAr2QgA6Qu3vmiHJ6GLTGmwjM5AAob2Xj4mIxgZ5RnA4X0ION/4HE9wA20fzm7fSv53sZgAS
+ w3HOGKVydVjs4dzud0UNF6gToHe54UuFLftWTx3ODzY7OUebRuteTlI2zBUEyOd9ssevzr6eiy3
+ PtT9OPxLNo8REsbkPPDOeWA1p56Xzk6eb7sKmb2QgAzbuSyrsER3GgGc6Dx9h7TiZnW4ghFca5I
+ YeanlSHdIhip6nb4qt6LtAbUY2YzIA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-09_01,2025-10-06_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 phishscore=0 malwarescore=0 bulkscore=0 spamscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 clxscore=1015
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2510020000
+ definitions=main-2510080121
 
-On Wed, Oct 08, 2025 at 04:01:50PM +0200, Petr Mladek wrote:
-> On Wed 2025-09-17 09:03:59, Josh Poimboeuf wrote:
-> > +static int read_exports(void)
-> > +{
-> > +	const char *symvers = "Module.symvers";
-> > +	char line[1024], *path = NULL;
-> > +	unsigned int line_num = 1;
-> > +	FILE *file;
-> > +
-> > +	file = fopen(symvers, "r");
-> > +	if (!file) {
-> > +		path = top_level_dir(symvers);
-> > +		if (!path) {
-> > +			ERROR("can't open '%s', \"objtool diff\" should be run from the kernel tree", symvers);
-> > +			return -1;
-> > +		}
-> > +
-> > +		file = fopen(path, "r");
-> > +		if (!file) {
-> > +			ERROR_GLIBC("fopen");
-> > +			return -1;
-> > +		}
-> > +	}
-> > +
-> > +	while (fgets(line, 1024, file)) {
+
+
+On 08/10/25 1:43 pm, Naveen N Rao wrote:
+> On Mon, Oct 06, 2025 at 06:50:20PM +0530, Hari Bathini wrote:
+>>
+>>
+>> On 06/10/25 1:22 pm, Naveen N Rao wrote:
+>>> On Fri, Oct 03, 2025 at 12:57:54AM +0530, Hari Bathini wrote:
+>>>> Today, livepatch takes precedence over direct_call. Instead, save the
+>>>> state and make direct_call before handling livepatch.
+>>>
+>>> If we call into the BPF trampoline first and if we have
+>>> BPF_TRAMP_F_CALL_ORIG set, does this result in the BPF trampoline
+>>> calling the new copy of the live-patched function or the old one?
+>>
+>> Naveen, calls the new copy of the live-patched function..
 > 
-> Nit: It might be more safe to replace 1024 with sizeof(line).
->      It might be fixed later in a separate patch.
-
-Indeed.
-
-> > +/*
-> > + * Klp relocations aren't allowed for __jump_table and .static_call_sites if
-> > + * the referenced symbol lives in a kernel module, because such klp relocs may
-> > + * be applied after static branch/call init, resulting in code corruption.
-> > + *
-> > + * Validate a special section entry to avoid that.  Note that an inert
-> > + * tracepoint is harmless enough, in that case just skip the entry and print a
-> > + * warning.  Otherwise, return an error.
-> > + *
-> > + * This is only a temporary limitation which will be fixed when livepatch adds
-> > + * support for submodules: fully self-contained modules which are embedded in
-> > + * the top-level livepatch module's data and which can be loaded on demand when
-> > + * their corresponding to-be-patched module gets loaded.  Then klp relocs can
-> > + * be retired.
+> Hmm... I'm probably missing something.
 > 
-> I wonder how temporary this is ;-) The comment looks optimistic. I am
-> just curious. Do you have any plans to implement the support for
-> the submodules... ?
+> With ftrace OOL stubs, what I recall is that BPF trampoline derives the
+> original function address from the OOL stub (which would be associated
+> with the original function, not the livepatch one).
 
-I actually already have a working POC for that, but didn't want to make
-the patch set even longer ;-)
+Trampoline derives the address from LR. The below snippet
+in livepatch_handler ensures the trampoline jumps to '1f'
+label instead of the original function with LR updated:
 
-It was surprisingly easy and straightforward to implement.
++	/* Jump to the direct_call */
++	bnectrl	cr1
++
++	/*
++	 * The address to jump after direct call is deduced based on ftrace 
+OOL stub sequence.
++	 * The seemingly insignificant couple of instructions below is to 
+mimic that here to
++	 * jump back to the livepatch handler code below.
++	 */
++	nop
++	b	1f
++
++	/*
++	 * Restore the state for livepatching from the livepatch stack.
++	 * Before that, check if livepatch stack is intact. Use r0 for it.
++	 */
++1:	mtctr	r0
 
-> PS: To make some expectations. I am not doing a deep review.
->     I am just looking at the patchset to see how far and mature
->     it is. And I just comment what catches my eye.
-> 
->     My first impression is that it is already in a pretty good state.
->     And I do not see any big problem there. Well, some documentation
->     would be fine ;-)
-> 
->     What are your plans, please?
 
-From my perspective, it's testing well and in a good enough state for
-merging soon (after the merge window?), if there aren't any objections
-to that.
-
-There will be more patches to come, like the submodules and other arch
-support.  And of course there will be bugs discovered by broader
-testing.  But I think this is a good foundation to begin with.
-
-And the sooner we can get people using this, the sooner we can start
-deprecating kpatch-build, which would be really nice.
-
--- 
-Josh
+- Hari
 
