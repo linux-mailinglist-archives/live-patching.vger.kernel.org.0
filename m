@@ -1,101 +1,210 @@
-Return-Path: <live-patching+bounces-1740-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1741-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 94198BCB2EC
-	for <lists+live-patching@lfdr.de>; Fri, 10 Oct 2025 01:19:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 56014BCBE5A
+	for <lists+live-patching@lfdr.de>; Fri, 10 Oct 2025 09:19:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 29CAD426ADA
-	for <lists+live-patching@lfdr.de>; Thu,  9 Oct 2025 23:19:13 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 10009400224
+	for <lists+live-patching@lfdr.de>; Fri, 10 Oct 2025 07:19:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1F62122B5AC;
-	Thu,  9 Oct 2025 23:19:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AAAF5273D66;
+	Fri, 10 Oct 2025 07:19:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bQKhbVlC"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="SeM57uc8"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F9084039;
-	Thu,  9 Oct 2025 23:19:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04B2E1D6193;
+	Fri, 10 Oct 2025 07:19:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760051950; cv=none; b=lHZ4gnNzK+9oy7XZ3rmeE/a3hyRNfeeQcELD3LhfP4wIRlmw5MTm5p5En2zWNWM6LM+f+v74G/LMH5dkGq55VUbiG/4WdHPxeseOGTE4vlMPeibmD1pvH7PspBYjWBUs/nC56YLgrcAvYf92kejWRN5gxHluLYBVHEEKu2h7Mto=
+	t=1760080758; cv=none; b=TsRwX0uA9hqq4HXyCGyMTKXrqeCt3SV7oMMigz8IKxUBJ/kmiC5fdJMHpAMU/iVwLSVRHYgfxA07X7Bc81x+eF4NGU3i9GAKTBEO6sVq2kPRcsHYgMrgjOvwvz8B0UsMxB7eZ+pErHMf9JSDBKjzTtvsWcEK4kUxo1zjsHp68Ek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760051950; c=relaxed/simple;
-	bh=1PvGWVYr9vfvh2L79u5bLC0Cz+FKXrJZ/YdguE3JS6E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QLBPQD1QKSsLjdrWJeEbRpDdAidIClH77PpwjYoN656An3ZsiLtAAkmbTfj8uYKaybSVruERYufnf1eDLLmaQjZCuE+70NnCD/fmWR/GIeduyYBQTRxKf4bl0zl4uWpzxhIkUh8u9UIH3jb54GieOd12pLh03zvo5WJ9iSHCEEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bQKhbVlC; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43FD9C4CEE7;
-	Thu,  9 Oct 2025 23:19:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760051948;
-	bh=1PvGWVYr9vfvh2L79u5bLC0Cz+FKXrJZ/YdguE3JS6E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bQKhbVlClpMcx0bGSFNCJp0YkuEenL52jEEcsJN/ctSxsr7Nl7MnWLCePlTRAbjCM
-	 Luxkxo/JNQmEk4hAgUr1HjcsZGMr6uTTJbFm8PyLU33WjD8HHnp3P6b+nY+aJ9FreY
-	 EEKDxKthMeU5mlFDTUSHPFGcXsE9xNIdbrURugvbXKqgDiyl61PWlE6VBVjnmyFK3A
-	 X5gN9kCr55PI2MYYqF2loVXUGMRLBimGtyoZwu2vz8dMR/+bAgGT6S842FSO30bSvN
-	 rV0H6awiBwq2q9is197xoJQwLesHuaFRixWHO4aD1U/BrsFuOOX4I4b0Yz9cMZMvo/
-	 CM1dBdJjJ96lw==
-Date: Thu, 9 Oct 2025 16:19:05 -0700
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Petr Mladek <pmladek@suse.com>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
-	Miroslav Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>, 
-	live-patching@vger.kernel.org, Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>, 
-	Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, 
-	Weinan Liu <wnliu@google.com>, Fazla Mehrab <a.mehrab@bytedance.com>, 
-	Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay Mohan <puranjay@kernel.org>, 
-	Dylan Hatch <dylanbhatch@google.com>, Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v4 51/63] objtool/klp: Introduce klp diff subcommand for
- diffing object files
-Message-ID: <xwbop4e2f3pcyjk22v5r6aufy2dvlwhgaxthfis6iw3mra7e53@x4r6b3qwomp4>
-References: <cover.1758067942.git.jpoimboe@kernel.org>
- <702078edac02ecf79f869575f06c5b2dba8cd768.1758067943.git.jpoimboe@kernel.org>
- <aOZuzj0vhKPF1bcW@pathway.suse.cz>
- <bnipx2pvsyxcd27uhxw5rr5yugm7iuint6rg3lzt3hdm7vkeue@g3wzb7kyr5da>
- <aOeqt32wQhB5jAD-@pathway.suse.cz>
+	s=arc-20240116; t=1760080758; c=relaxed/simple;
+	bh=dZmPVpX92Pj11sLiBzxN+17J/+bOnrKtfahRS7r2Y1M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=urn2Mz9mkR3Nktm4tHIui7+NwGuI2blaPQ5ZKR/dnrFCZrQwKYXNJwAdg4jrJaUBmOqdTPjxnnAM1l/yVh37LizGeul3on4Kqt/QVKaq9yUeWFefGkFWJOp+IXRXMbgbx38pE4xZKXl6WWzkYEmLy4tFV4pwtx6rfshMW9Xin4Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=SeM57uc8; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 599JTYvg012205;
+	Fri, 10 Oct 2025 07:17:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=8NSNiF
+	sBW58bMpvfBw6u6e82XSmQJRrNFyDoqKUgEsc=; b=SeM57uc8bnAoZNCI9CTzrP
+	wJ3mf6WRZD1xbN/V9Mk6cg5TI/q1z7ZTagbbrKY4dW8+hbKA4O2T2jWXCamHLn15
+	boxTYcHL1aiX2qmLk0Zwz3siRTkZ/bTjRF8vu0KX/VdhD1RSCDrtYDJSMTEVe4H+
+	S70t7nkoNzG3b69kH5CYk9fyTOpVrxeFJnN0lMo2mLBEz52zP8uyXl+lHG5e7y9U
+	Uvy1mi9EwkA5oHeiWzVZr4DLHdj5GSyyFWL+kck0jkIaZ9609kxc3vD8I9CbIuWM
+	v4SQX+GnGVvkjjZD7iWF43xwVC8TvDMGsmuGlVaaGFyuOzwxpLz2AjXeThKZEjIw
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49nv7yhaa4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Oct 2025 07:17:42 +0000 (GMT)
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 59A7Aceb025936;
+	Fri, 10 Oct 2025 07:17:41 GMT
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49nv7yha9y-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Oct 2025 07:17:41 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 59A3bR1l020971;
+	Fri, 10 Oct 2025 07:17:40 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 49nv9n0nbp-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Oct 2025 07:17:40 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 59A7HcGO51183908
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 10 Oct 2025 07:17:38 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CF75020204;
+	Fri, 10 Oct 2025 07:17:26 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9D6C920206;
+	Fri, 10 Oct 2025 07:17:22 +0000 (GMT)
+Received: from [9.78.106.240] (unknown [9.78.106.240])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 10 Oct 2025 07:17:22 +0000 (GMT)
+Message-ID: <79946463-4742-4919-9d56-927a0a6f1c7c@linux.ibm.com>
+Date: Fri, 10 Oct 2025 12:47:21 +0530
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <aOeqt32wQhB5jAD-@pathway.suse.cz>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] powerpc64/bpf: support direct_call on livepatch function
+To: Naveen N Rao <naveen@kernel.org>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Song Liu <songliubraving@fb.com>,
+        Jiri Olsa <jolsa@kernel.org>, Viktor Malik <vmalik@redhat.com>,
+        live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Joe Lawrence
+ <joe.lawrence@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>, linux-trace-kernel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>
+References: <20251002192755.86441-1-hbathini@linux.ibm.com>
+ <amwerofvasp7ssmq3zlrjakqj5aygyrgplcqzweno4ef42tiav@uex2ildqjvx2>
+ <17f49a63-eccb-4075-91dd-b1f37aa762c7@linux.ibm.com>
+ <unegysw3bihg32od7aham3npsdpm5govboo3uglorwsrjqfqfk@pbyzwwztmqtc>
+ <42d72061-3d23-43db-bb02-d5f75333c924@linux.ibm.com>
+ <dvvv5cytyak2iquer7d6g57ttum3qcckupyahsqsmvpzfjbyni@wbsr77swnrcl>
+Content-Language: en-US
+From: Hari Bathini <hbathini@linux.ibm.com>
+In-Reply-To: <dvvv5cytyak2iquer7d6g57ttum3qcckupyahsqsmvpzfjbyni@wbsr77swnrcl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: pYLSquh4ZIkQZb5wIRM6lSn3LVYuqdhV
+X-Proofpoint-ORIG-GUID: qHtgOYHeiHKhlNUjhBuOnuAh19VFb8xY
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX6yj8xu1EemA4
+ RvjxPaq881ftUtrEBrFFd6UU/nqT5VtIxgwqFfHn/TiKxXbt1sNYDAqQ0uEUDIojvMZ43wx/awU
+ G2UuB1aW4fXCCFr6g9Q2SPqZfJsnLiEvScre/OWxoLqhiZokkjWImMq9GYElMf8Uj/PqmAlNjWq
+ 6VdzamwAzocAMTad0PFJptUiSb76JMXu9HvWDrsC9pPukpIUJCX4GxERqfunur2nIF1Dwqygqz1
+ toszBQwqSgemd/WaVSnseQn3TAzy8mcVTLJPk9Z5syrekQNxCME9U7DNHOdaJuRCfZgkLqBfTaF
+ I4wa6ZAvLx/g9g7EIGzWuh5D7BX4UZDpcWxGy4x4FiCFYQwdcPUwaKkLc59fH34bgZVyQorFKrP
+ WHj9DgGBCRwCiDVZMgtdpEv0U7g92w==
+X-Authority-Analysis: v=2.4 cv=FtwIPmrq c=1 sm=1 tr=0 ts=68e8b316 cx=c_pps
+ a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
+ a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=S1Tq6YvCFwAA3lmGF84A:9
+ a=QEXdDO2ut3YA:10 a=nl4s5V0KI7Kw-pW0DWrs:22 a=pHzHmUro8NiASowvMSCR:22
+ a=xoEH_sTeL_Rfw54TyV31:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-10_01,2025-10-06_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 malwarescore=0 clxscore=1015 phishscore=0 spamscore=0
+ bulkscore=0 priorityscore=1501 adultscore=0 lowpriorityscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
 
-On Thu, Oct 09, 2025 at 02:29:43PM +0200, Petr Mladek wrote:
-> Sounds reasonable and I am fine with it. I have one more question
-> before I give my ack ;-)
+
+
+On 09/10/25 4:57 pm, Naveen N Rao wrote:
+> On Thu, Oct 09, 2025 at 11:19:45AM +0530, Hari Bathini wrote:
+>>
+>>
+>> On 08/10/25 1:43 pm, Naveen N Rao wrote:
+>>> On Mon, Oct 06, 2025 at 06:50:20PM +0530, Hari Bathini wrote:
+>>>>
+>>>>
+>>>> On 06/10/25 1:22 pm, Naveen N Rao wrote:
+>>>>> On Fri, Oct 03, 2025 at 12:57:54AM +0530, Hari Bathini wrote:
+>>>>>> Today, livepatch takes precedence over direct_call. Instead, save the
+>>>>>> state and make direct_call before handling livepatch.
+>>>>>
+>>>>> If we call into the BPF trampoline first and if we have
+>>>>> BPF_TRAMP_F_CALL_ORIG set, does this result in the BPF trampoline
+>>>>> calling the new copy of the live-patched function or the old one?
+>>>>
+>>>> Naveen, calls the new copy of the live-patched function..
+>>>
+>>> Hmm... I'm probably missing something.
+>>>
+>>> With ftrace OOL stubs, what I recall is that BPF trampoline derives the
+>>> original function address from the OOL stub (which would be associated
+>>> with the original function, not the livepatch one).
+>>
+>> Trampoline derives the address from LR.
 > 
-> I wonder about the patchset which better integrate callbacks with shadow
-> variables and state API, see
-> https://lore.kernel.org/r/20250115082431.5550-1-pmladek@suse.com
-> 
-> I think that it should not be that big problem to update it on top
-> of this patchset. It would require:
-> 
->    + moving declarations from livepatch.h to livepatch_external.h
->    + updating the macros in livepatch_helpers.h
->    + update callback-related code in create_klp_sections()
-> 
-> Or do you expect bigger problems, please?
+> Does it? I'm referring to BPF_TRAMP_F_CALL_ORIG handling in
+> __arch_prepare_bpf_trampoline().
 
-Yeah, that should be pretty straightforward.  I can help with that.
 
-Right now there's not even a way to create a klp_state.  (not sure if
-anybody's actually using that feature today?)
+> LR at BPF trampoline entry points at
+> the ftrace OOL stub. We recover the "real LR" pointing to the function
+> being traced from there so that we can call into it from within the BPF
+> trampoline.
 
-For your patch set we can add a macro to livepatch_helpers.h for adding
-a state (and its callbacks).  And then corresponding code in
-create_klp_sections() as you mentioned, and a small change to
-scripts/livepatch/init.c to set the klp_patch.states pointer.
+Naveen, from the snippet in livepatch_handler code shared below,
+the LR at BPF trmapoline entry points at the 'nop' after the call
+to trampoline with 'bnectrl cr1' in the updated livepatch_handler.
 
--- 
-Josh
+Mimic'ing ftrace OOL branch instruction in livepatch_handler
+with 'b	1f' (the instruction after nop) to ensure the trmapoline
+derives the real LR to '1f' and jumps back into the livepatch_handler..
+
++       /* Jump to the direct_call */
++       bnectrl cr1
++
++       /*
++        * The address to jump after direct call is deduced based on 
+ftrace OOL stub sequence.
++        * The seemingly insignificant couple of instructions below is 
+to mimic that here to
++        * jump back to the livepatch handler code below.
++        */
++       nop
++       b       1f
++
++       /*
++        * Restore the state for livepatching from the livepatch stack.
++        * Before that, check if livepatch stack is intact. Use r0 for it.
++        */
++1:     mtctr   r0
+
+
+I should probably improve my comments for better readability..
+
+- Hari
 
