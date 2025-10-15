@@ -1,154 +1,170 @@
-Return-Path: <live-patching+bounces-1750-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1751-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
-	by mail.lfdr.de (Postfix) with ESMTPS id 36BF9BDB886
-	for <lists+live-patching@lfdr.de>; Wed, 15 Oct 2025 00:02:55 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3226EBDCAF4
+	for <lists+live-patching@lfdr.de>; Wed, 15 Oct 2025 08:19:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 2D5C94E4457
-	for <lists+live-patching@lfdr.de>; Tue, 14 Oct 2025 22:02:54 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 74DED19A6523
+	for <lists+live-patching@lfdr.de>; Wed, 15 Oct 2025 06:20:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DAD22E2DD4;
-	Tue, 14 Oct 2025 22:02:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7512E30F945;
+	Wed, 15 Oct 2025 06:19:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=crowdstrike.com header.i=@crowdstrike.com header.b="LY404ruG"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hsNNLVEz"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0a-00206402.pphosted.com (mx0a-00206402.pphosted.com [148.163.148.77])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE112223702
-	for <live-patching@vger.kernel.org>; Tue, 14 Oct 2025 22:02:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.148.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95E1230DECC;
+	Wed, 15 Oct 2025 06:19:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760479371; cv=none; b=muMoEXEz7ON+UkwrvfFY94VEEOlObYMoj0XPptB/1fvXtumN4CKxr14Glm8NvrjdvJBv9FjA3LRzEU2fotP52xjc5T+l0oP/rYftRJeFLSMKicWRQdUZzVRFjEvvQpKdR17iJfTBos1hVhb8Yk0yPvq3pS8utqt01d4I40QIxcI=
+	t=1760509178; cv=none; b=YNHUel6m4wsLiHYPeqXy6jcUQAyxF5uK2XQXzLHtZZDFT2BZoJ9znRF7Fp0Wb4wPEUvGLmM6kdHupilFVzNm1SU5srOo+ci2QTfGML/0f8FU/4qOZ7coTch3aTRj90xV50NLFUsM8UaXfERxftXwVYLhFixzMVRYinw8ftVOlok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760479371; c=relaxed/simple;
-	bh=Yo+bJUFBFiDlZlO9M9zdQYyih1rHkSkz2xG7yrfuZ80=;
-	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=N5d1RZWM6rWCQK2kKbHU/8Mffdy2r+98TL48PNAZSn11KVRVz8qVwkRCTiOgi3g+C+CrAyX5Qu/qbTs4p8TPOl3w/pLDCCD/D0CO8tAvAFwLo1FVwKeI9Tj8RuWBUbjHzq/Rt/SRHpp5/VaoZOX9bdki4IZPxGu8CjVf2Gi2kCM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=crowdstrike.com; spf=pass smtp.mailfrom=crowdstrike.com; dkim=pass (2048-bit key) header.d=crowdstrike.com header.i=@crowdstrike.com header.b=LY404ruG; arc=none smtp.client-ip=148.163.148.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=crowdstrike.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crowdstrike.com
-Received: from pps.filterd (m0354650.ppops.net [127.0.0.1])
-	by mx0a-00206402.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59EK58s3000477;
-	Tue, 14 Oct 2025 21:37:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crowdstrike.com;
-	 h=content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=default; bh=Yo+bJUFBFiDlZlO9M9zdQYyi
-	h1rHkSkz2xG7yrfuZ80=; b=LY404ruGNl4RXwiwUGK4av0LwZFDfOALRofjo4p8
-	MwK6PICiMbfsf74rp4AzajuqIguzHbIYjur07MuUlMsHRZTq8MrOFf5s+wvGPkhi
-	Unik2QBz2oarDf+4sHB9vqvJ+Uvy5KtWkL7mGBrQQhsU+GbxMiefTC24DQSK53CY
-	ob9TGifxiX0itz4TKI0iChOrNVhW+jr3ZopzEITxOCk+Lg3OJ0a8qR89EWGiIaQf
-	vk6sE30ugxl5umQCRVFAz9PigWWcG+vaK9FDxslPJTRib7ZYW6S55z/7D0b2IQIV
-	dWsp6fe4wYgB3gkpF/bb3XP1LQDhqAAdCUh1BIw5WtUw0w==
-Received: from mail.crowdstrike.com (74-209-223-77.static.ash01.latisys.net [74.209.223.77] (may be forged))
-	by mx0a-00206402.pphosted.com (PPS) with ESMTPS id 49r3q8ywj7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 14 Oct 2025 21:37:51 +0000 (GMT)
-Received: from 03WPEXCH010.crowdstrike.sys (10.80.52.162) by
- 03WPEXCH010.crowdstrike.sys (10.80.52.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Tue, 14 Oct 2025 21:37:49 +0000
-Received: from 03WPEXCH010.crowdstrike.sys ([fe80::7520:8ac3:8a3d:e06b]) by
- 03WPEXCH010.crowdstrike.sys ([fe80::7520:8ac3:8a3d:e06b%6]) with mapi id
- 15.02.2562.017; Tue, 14 Oct 2025 21:37:49 +0000
-From: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>
-To: "kernel-team@lists.ubuntu.com" <kernel-team@lists.ubuntu.com>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
-Subject: Question - Livepatch/Kprobe Coexistence on Ftrace-enabled Functions
- (Ubuntu kernel based on Linux  stable 5.15.30)
-Thread-Topic: Question - Livepatch/Kprobe Coexistence on Ftrace-enabled
- Functions (Ubuntu kernel based on Linux  stable 5.15.30)
-Thread-Index: AQHcPVBvRiosarywfE+UQ5SoUquMqQ==
-Date: Tue, 14 Oct 2025 21:37:49 +0000
-Message-ID: <c5058315a39d4615b333e485893345be@crowdstrike.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-disclaimer: USA
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1760509178; c=relaxed/simple;
+	bh=575+wvXoKm0wSCqMEWqtmPWHwk3ClafWmET/hcBbNmY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Nod2dpBlr2Whw5dkXwygSU2pitwpXaMUfA0FuUKZZ6vjfSfp8sHSQ8FWSQTUZGW/AjL2jb2JuYmu1NwCajwcv7OkDb+MF7jveGP17yJum8rK67cVaGpjFQdCg+5EaRh2ql1Kv/vpPk52HTmYZFPwMe0OLIT9jcAtdw+Jq0/ql14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hsNNLVEz; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D25C4CEF8;
+	Wed, 15 Oct 2025 06:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760509177;
+	bh=575+wvXoKm0wSCqMEWqtmPWHwk3ClafWmET/hcBbNmY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hsNNLVEzfzWz7dR7//VOQ7HBra/IIKK2TJb+uHsLg9lLGv1xXVYod7dbxtejsTMHb
+	 vvXynatD9q9yBFtQkzQE2SqRJhFB+9NpMD2/LMeADWReV63RNC/ugzjMMtiKOpR9ZI
+	 Z234DnezMu4QVa5hzU7wwUYj1wpxXr9mHrL362hgck6uc8/8PNjzpLMlkVD7Zd5rle
+	 xngjHIYJeT9N//BZB6XWLTT4RYKf71SPeektAn/4kpxT1lUh5GB/oOe1XGfLi2+8+W
+	 astWLyu9y7M06lsXx0eRd/9UU7edQVgQd0fdIaahhK4O3UrrylNkifDDiUgwX2NiEN
+	 bFaD8HCYYaFOw==
+Date: Wed, 15 Oct 2025 11:48:45 +0530
+From: Naveen N Rao <naveen@kernel.org>
+To: Hari Bathini <hbathini@linux.ibm.com>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, bpf@vger.kernel.org, 
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	Andrii Nakryiko <andrii@kernel.org>, Song Liu <songliubraving@fb.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Viktor Malik <vmalik@redhat.com>, live-patching@vger.kernel.org, 
+	Josh Poimboeuf <jpoimboe@kernel.org>, Joe Lawrence <joe.lawrence@redhat.com>, 
+	Jiri Kosina <jikos@kernel.org>, linux-trace-kernel@vger.kernel.org, 
+	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	Mark Rutland <mark.rutland@arm.com>, Shung-Hsi Yu <shung-hsi.yu@suse.com>
+Subject: Re: [PATCH] powerpc64/bpf: support direct_call on livepatch function
+Message-ID: <nuinyo7o7uniemqqmoboctwrkkwkuv77nt7yk6td6eb3x43hv2@2lukfuvcmcko>
+References: <20251002192755.86441-1-hbathini@linux.ibm.com>
+ <amwerofvasp7ssmq3zlrjakqj5aygyrgplcqzweno4ef42tiav@uex2ildqjvx2>
+ <17f49a63-eccb-4075-91dd-b1f37aa762c7@linux.ibm.com>
+ <unegysw3bihg32od7aham3npsdpm5govboo3uglorwsrjqfqfk@pbyzwwztmqtc>
+ <42d72061-3d23-43db-bb02-d5f75333c924@linux.ibm.com>
+ <dvvv5cytyak2iquer7d6g57ttum3qcckupyahsqsmvpzfjbyni@wbsr77swnrcl>
+ <79946463-4742-4919-9d56-927a0a6f1c7c@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Authority-Analysis: v=2.4 cv=H9PWAuYi c=1 sm=1 tr=0 ts=68eec2af cx=c_pps
- a=gZx6DIAxr9wtOoIAvRqG0Q==:117 a=gZx6DIAxr9wtOoIAvRqG0Q==:17
- a=xqWC_Br6kY4A:10 a=EjBHVkixTFsA:10 a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=5mm09hDC4RfZxGnZvyAA:9
- a=QEXdDO2ut3YA:10 a=xLmh-q1SGZoA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDEyMDAxMiBTYWx0ZWRfX6HuSw4fvUdHZ
- WgBDBz1FuzdHkx9/nWOb8s0uTk2BXqXYt+nNxEKwJZnxB9OUo2EGwbURSBDPI1NmzWrS7ithDY8
- NJyn5tsbjeX17njcJ4toKz1nDRJcEZ/Q2SwPzGojNip+7xzgUPmrwW3700OXFnuz+FLYheH/T+1
- jvPdfm8AwUInBFRaBwXCFuI8ClJVAbtjBrCVNKf50bF8W2Z4mtjuMMU8BFz/AHuGyNrggh5QBHS
- TJ5Dh4WPC9I42BvV4fd9CBDuMdQ8S2dgx6+ddjI7Fm/pCFseQuOKk2rRL0QIwXy+fmrW+SOu91W
- hPCiADTOW4pzbQqE6qppUUYb4xCIjzPRjr8Y65Hf+SG3JIWUfkfrt8rgH7wRFuUsOdj2Yz1wsdk
- LHw8/nRiIK2lpns43NYMEF/UfM2hag==
-X-Proofpoint-GUID: l-1TzxHWRaLGrMk99P95iI5ktoVgMKk8
-X-Proofpoint-ORIG-GUID: l-1TzxHWRaLGrMk99P95iI5ktoVgMKk8
-X-Proofpoint-Virus-Version: vendor=nai engine=6800 definitions=11582
- signatures=596818
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 lowpriorityscore=0 clxscore=1011 impostorscore=0 spamscore=0
- priorityscore=1501 malwarescore=0 suspectscore=0 bulkscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510120012
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <79946463-4742-4919-9d56-927a0a6f1c7c@linux.ibm.com>
 
-RGVhciBVcHN0cmVhbSBMaXZlcGF0Y2ggIHRlYW0gYW5kIFVidW50dSBLZXJuZWwgdGVhbSAtIEkg
-aW5jbHVkZWQgeW91IGJvdGggaW4gdGhpcyBzaW5jZSB0aGUgaXNzdWUgbGllcyBvbiB0aGUgYm91
-bmRhcnkgYmV0d2VlbiBVYnVudHUga2VybmVsIGFuZCB1cHN0cmVhbS4gDQoNCkFjY29yZGluZyB0
-byBvZmZpY2lhbCBrZXJuZWwgZG9jdW1lbnRhdGlvbiAgLSBodHRwczovL2RvY3Mua2VybmVsLm9y
-Zy9saXZlcGF0Y2gvbGl2ZXBhdGNoLmh0bWwjbGl2ZXBhdGNoLCBzZWN0aW9uIDcsIExpbWl0YXRp
-b25zIC0gDQoxIC0gS3JldHByb2JlcyB1c2luZyB0aGUgZnRyYWNlIGZyYW1ld29yayBjb25mbGlj
-dCB3aXRoIHRoZSBwYXRjaGVkIGZ1bmN0aW9ucy4NCjIgLSBLcHJvYmVzIGluIHRoZSBvcmlnaW5h
-bCBmdW5jdGlvbiBhcmUgaWdub3JlZCB3aGVuIHRoZSBjb2RlIGlzIHJlZGlyZWN0ZWQgdG8gdGhl
-IG5ldyBpbXBsZW1lbnRhdGlvbi4NCg0KWWV0LCB3aGVuIHRlc3Rpbmcgb24gbXkgVWJ1bnR1IDUu
-MTUuMC0xMDA1LjctYXdzIChiYXNlZCBvbiA1LjE1LjMwIHN0YWJsZSBrZXJuZWwpIG1hY2hpbmUs
-IEkgaGF2ZSBubyBwcm9ibGVtIGFwcGx5aW5nIExpdmVwYXRjaCBhbmQgdGhlbiBzZXR0aW5nIGty
-cG9iZXMgYW5kIGtyZXRwcm9iZXMgb24gYSBwYXRjaGVkIGZ1bmN0aW9uIHVzaW5nIGJwZnRyYWNl
-IChvciBkaXJlY3RseSBieSBjb2RpbmcgYSBCUEYgcHJvZ3JhbSB3aXRoIGtwcm9iZS9rcmV0cHJv
-YmUgYXR0YWNobWVudClhbmQgY2FuIGNvbmZpcm0gYm90aCBleGVjdXRlIHdpdGhvdXQgaXNzdWVz
-LiBBbHNvIHRoZSBvcHBvc2l0ZSB3b3JrcyBmaW5lLCBydW5uaW5nIG15IGtycG9iZSBhbmQga3Jl
-dHByb2JlIGhvb2tzIGRvZXNuJ3QgcHJldmVudCBmcm9tIGxpdmVwYXRjaCB0byBiZSBhcHBsaWVk
-IHN1Y2Nlc3NmdWxseS4gDQoNCmZlbnRyeS9mZXhpdCBwcm9iZXMgZG8gZmFpbCBpbiBpbiBib3Ro
-IGRpcmVjdGlvbnMgLSBidXQgdGhpcyBpcyBleHBlY3RlZCBhY2NvcmRpbmcgdG8gbXkgdW5kZXJz
-dGFuZGluZyBhcyBjb2V4aXN0ZW5jZSBvZiBsaXZlcGF0Y2hpbmcgYW5kIGZ0cmFjZSBiYXNlZCBC
-UEYgaG9va3MgYXJlIG11dHVhbGx5IGV4Y2x1c2l2ZSB1bnRpbCA2LjAgYmFzZWQga2VybmVscyAN
-Cg0KbGliYnBmOiBwcm9nICdiZWdpbl9uZXdfZXhlY19mZW50cnknOiBmYWlsZWQgdG8gYXR0YWNo
-OiBEZXZpY2Ugb3IgcmVzb3VyY2UgYnVzeQ0KbGliYnBmOiBwcm9nICdiZWdpbl9uZXdfZXhlY19m
-ZW50cnknOiBmYWlsZWQgdG8gYXV0by1hdHRhY2g6IC0xNg0KDQoNClBsZWFzZSBoZWxwIG1lIHVu
-ZGVyc3RhbmQgdGhpcyBjb250cmFkaWN0aW9uIGFib3V0IGtwcm9iZXMgLSBpcyB0aGlzIGJlY2F1
-c2UgdGhlIEtQUk9CRVMgYXJlIEZUUkFDRSBiYXNlZCAgb3IgYW55IG90aGVyIHJlYXNvbiA/DQoN
-Cg0KQmVsbG93IGEgZmV3IHByaW50cyB0byBwcm92ZSBteSBwb2ludCAtIHRoZSBrZXJuZWwgZnVu
-Y3Rpb24gaSBhbSB1c2luZyB0byB0ZXN0IGlzIGJlZ2luX25ld19leGVjDQoNCnVidW50dUBpcC14
-eHh4eDp+JCBzdWRvIGNhbm9uaWNhbC1saXZlcGF0Y2ggc3RhdHVzDQpsYXN0IGNoZWNrOiAxOSBt
-aW51dGVzIGFnbw0Ka2VybmVsOiA1LjE1LjAtMTAwNS43LWF3cw0Kc2VydmVyIGNoZWNrLWluOiBz
-dWNjZWVkZWQNCmtlcm5lbCBzdGF0ZTog4pyXIExpdmVwYXRjaCBjb3ZlcmFnZSBlbmRlZCAyMDIz
-LTA1LTIwOyBwbGVhc2UgdXBncmFkZSB0aGUga2VybmVsIGFuZCByZWJvb3QNCnBhdGNoIHN0YXRl
-OiDinJMgYWxsIGFwcGxpY2FibGUgbGl2ZXBhdGNoIG1vZHVsZXMgaW5zZXJ0ZWQNCnBhdGNoIHZl
-cnNpb246IDk0LjENCnRpZXI6IHN0YWJsZQ0KbWFjaGluZSBpZDogeHh4eHgNCg0KdWJ1bnR1QGlw
-LXh4eHh4eDp+JCBzdWRvIGNhdCAvcHJvYy9rYWxsc3ltcyB8IGdyZXAgYmVnaW5fbmV3X2V4ZWMN
-CmZmZmZmZmZmOGFmN2JkYzAgVCBiZWdpbl9uZXdfZXhlYw0KZmZmZmZmZmY4YzMzNTY5NCByIF9f
-a3N5bXRhYl9iZWdpbl9uZXdfZXhlYw0KZmZmZmZmZmY4YzM2OTgzMCByIF9fa3N0cnRhYm5zX2Jl
-Z2luX25ld19leGVjDQpmZmZmZmZmZjhjMzZjZjNkIHIgX19rc3RydGFiX2JlZ2luX25ld19leGVj
-DQpmZmZmZmZmZmMyOGMxNjUwIHQgYmVnaW5fbmV3X2V4ZWMJW2xrcF9VYnVudHVfNV8xNV8wXzEw
-MDVfN19hd3NfOTRdDQpmZmZmZmZmZmMxYTlkMzg4IHQgYnBmX3Byb2dfMjExYTFkYzcxZGUxMTNh
-NF9iZWdpbl9uZXdfZXhlY19rcHJvYmUJW2JwZl0NCmZmZmZmZmZmYzFhOWY1ODggdCBicGZfcHJv
-Z181NTIyYmFjZmJiNzYyOGJkX2JlZ2luX25ld19leGVjX2tyZXRwcm9iZQlbYnBmXQ0KDQp1YnVu
-dHVAaXAteHh4eHg6fiQgc3VkbyBjYXQgL3N5cy9rZXJuZWwvZGVidWcva3Byb2Jlcy9saXN0ICB8
-IGdyZXAgYmVnaW5fbmV3X2V4ZWMNCmZmZmZmZmZmOGFmN2JkYzAgIHIgIGJlZ2luX25ld19leGVj
-KzB4MCAgICBbRlRSQUNFXQ0KZmZmZmZmZmY4YWY3YmRjMCAgayAgYmVnaW5fbmV3X2V4ZWMrMHgw
-ICAgIFtGVFJBQ0VdDQoNCg0Kcm9vdEBpcC14eHh4eDp+IyBlY2hvIDEwMjQwMCA+IC9zeXMva2Vy
-bmVsL2RlYnVnL3RyYWNpbmcvYnVmZmVyX3NpemVfa2IgJiYgZWNobyAxID4gL3N5cy9rZXJuZWwv
-ZGVidWcvdHJhY2luZy9ldmVudHMvYnBmX3RyYWNlL2VuYWJsZSAmJiBlY2hvIDEgPiAvc3lzL2tl
-cm5lbC9kZWJ1Zy90cmFjaW5nL3RyYWNpbmdfb24gJiYgY2F0IA0KL3N5cy9rZXJuZWwvZGVidWcv
-dHJhY2luZy90cmFjZV9waXBlDQogICAgICAgICAgICAgY2F0LTEwNDA2ICAgWzAwMF0gZC4uLjEg
-NDMzMzQxLjAwMzAzNTogYnBmX3RyYWNlX3ByaW50azoga3Byb2JlOiBiZWdpbl9uZXdfZXhlYyBj
-YWxsZWQgd2l0aCBicHJtPTAwMDAwMDAwNTMwNGEzNmUNCiAgICAgICAgICAgICBjYXQtMTA0MDYg
-ICBbMDAwXSBkLi4uMSA0MzMzNDEuMDAzMTYzOiBicGZfdHJhY2VfcHJpbnRrOiBrcmV0cHJvYmU6
-IGJlZ2luX25ld19leGVjIHJldHVybmVkIDANCg0K
+On Fri, Oct 10, 2025 at 12:47:21PM +0530, Hari Bathini wrote:
+> 
+> 
+> On 09/10/25 4:57 pm, Naveen N Rao wrote:
+> > On Thu, Oct 09, 2025 at 11:19:45AM +0530, Hari Bathini wrote:
+> > > 
+> > > 
+> > > On 08/10/25 1:43 pm, Naveen N Rao wrote:
+> > > > On Mon, Oct 06, 2025 at 06:50:20PM +0530, Hari Bathini wrote:
+> > > > > 
+> > > > > 
+> > > > > On 06/10/25 1:22 pm, Naveen N Rao wrote:
+> > > > > > On Fri, Oct 03, 2025 at 12:57:54AM +0530, Hari Bathini wrote:
+> > > > > > > Today, livepatch takes precedence over direct_call. Instead, save the
+> > > > > > > state and make direct_call before handling livepatch.
+> > > > > > 
+> > > > > > If we call into the BPF trampoline first and if we have
+> > > > > > BPF_TRAMP_F_CALL_ORIG set, does this result in the BPF trampoline
+> > > > > > calling the new copy of the live-patched function or the old one?
+> > > > > 
+> > > > > Naveen, calls the new copy of the live-patched function..
+> > > > 
+> > > > Hmm... I'm probably missing something.
+> > > > 
+> > > > With ftrace OOL stubs, what I recall is that BPF trampoline derives the
+> > > > original function address from the OOL stub (which would be associated
+> > > > with the original function, not the livepatch one).
+> > > 
+> > > Trampoline derives the address from LR.
+> > 
+> > Does it? I'm referring to BPF_TRAMP_F_CALL_ORIG handling in
+> > __arch_prepare_bpf_trampoline().
+> 
+> 
+> > LR at BPF trampoline entry points at
+> > the ftrace OOL stub. We recover the "real LR" pointing to the function
+> > being traced from there so that we can call into it from within the BPF
+> > trampoline.
+> 
+> Naveen, from the snippet in livepatch_handler code shared below,
+> the LR at BPF trmapoline entry points at the 'nop' after the call
+> to trampoline with 'bnectrl cr1' in the updated livepatch_handler.
+> 
+> Mimic'ing ftrace OOL branch instruction in livepatch_handler
+> with 'b	1f' (the instruction after nop) to ensure the trmapoline
+> derives the real LR to '1f' and jumps back into the livepatch_handler..
+> 
+> +       /* Jump to the direct_call */
+> +       bnectrl cr1
+> +
+> +       /*
+> +        * The address to jump after direct call is deduced based on ftrace
+> OOL stub sequence.
+> +        * The seemingly insignificant couple of instructions below is to
+> mimic that here to
+> +        * jump back to the livepatch handler code below.
+> +        */
+> +       nop
+> +       b       1f
+> +
+> +       /*
+> +        * Restore the state for livepatching from the livepatch stack.
+> +        * Before that, check if livepatch stack is intact. Use r0 for it.
+> +        */
+> +1:     mtctr   r0
+
+Ah, so you are faking a ftrace OOL stub here. But, won't this mean that 
+bpf_get_func_ip() won't return the function address anymore?
+
+One of the other thoughts I had was if we could stuff the function 
+address into the ftrace OOL stub. I had considered this back when I 
+implemented the OOL stubs, but didn't do it due to the extra memory 
+requirement. However, given the dance we're having to do, I'm now 
+thinking that may make sense and can simplify the code. If we can also 
+hook into livepatch, then we should be able to update the function 
+address in the stub to point to the new address and the trampoline 
+should then "just work" since it already saves/restores the TOC [We may 
+additionally have to update the function IP in _R12, but that would be a 
+minor change overall]
+
+We will still need a way to restore livepatch TOC if the BPF trampoline 
+doesn't itself call into the function, but we may be able to handle that 
+if we change the return address to jump to a stub that restores the TOC 
+from the livepatch stack.
+
+> 
+> 
+> I should probably improve my comments for better readability..
+
+Yes, please. I would also split the changes converting some of the hard 
+coded offsets into macros into a separate patch.
+
+- Naveen
+
 
