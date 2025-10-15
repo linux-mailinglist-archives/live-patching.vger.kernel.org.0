@@ -1,84 +1,87 @@
-Return-Path: <live-patching+bounces-1753-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1754-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
-	by mail.lfdr.de (Postfix) with ESMTPS id 00779BDEADC
-	for <lists+live-patching@lfdr.de>; Wed, 15 Oct 2025 15:12:38 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0E085BDEAC6
+	for <lists+live-patching@lfdr.de>; Wed, 15 Oct 2025 15:11:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 68A954F1500
-	for <lists+live-patching@lfdr.de>; Wed, 15 Oct 2025 13:10:29 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 7B6B1189D53F
+	for <lists+live-patching@lfdr.de>; Wed, 15 Oct 2025 13:12:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2746E3233EE;
-	Wed, 15 Oct 2025 13:10:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 726D2324B3A;
+	Wed, 15 Oct 2025 13:11:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="SOn5znxd"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="JOI0xuUD"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55BB31D38C
-	for <live-patching@vger.kernel.org>; Wed, 15 Oct 2025 13:10:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C23630B534
+	for <live-patching@vger.kernel.org>; Wed, 15 Oct 2025 13:11:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760533827; cv=none; b=ssw6OzdD5nnKyEHavvFW66KNI8hs3sA9Y2fppakW90lA/Teo4LcESF3DGmmS6xa+kCYRYxIm/+X1D3wjHzWE7JepOADSweQmljGLUdGnSZ0sNJ7koY5PfNUBO2yEusdSHKPhEpmEK7W65Q3Ff50JfwgCROS+OHFbEhezA+BiMbE=
+	t=1760533894; cv=none; b=lBUkZmpAMa28C9cvA00X8ZXnduzJ1y/pMRsRXjmD9WWaeKZHGEkZdwVAxIpMQol2UaWwfv+QnsvxOAhC9rW0FHiGZx/anmLfRBRQq50w176xVCVYG3QYaHQI7HnFpZZyvXNfDow5Ev9ezT5qfpZh7Vp5LLc6pRsffGy4qJqjHBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760533827; c=relaxed/simple;
-	bh=yZvPSemDJmujYQJqSbEpjlYvobwClsNXhSzXnC/AwmY=;
+	s=arc-20240116; t=1760533894; c=relaxed/simple;
+	bh=TNN71mayoTkmy8rd0PDSJ9nlu4EsONjvOe6eFy+t5ds=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ILuTudP819ROrQbcM/Yxgoo65glhlByWW+Y3pME6sxksAtOKi8NcdH9AiPj3KwHMk9PZjtWT3dPtNF/BCTRGKpM5AGSBPEcsUrr5H+qeUeakxwcOc+2pryFcBBaPjQ0JVl3YGZ5PcWHHfeWg9JVzkWDvpe+5iM4ZBdpt+f4beQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=SOn5znxd; arc=none smtp.client-ip=209.85.128.47
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bogu55LgZRk+zV3V6YiHsb3RR0xAeN46MklabWETh57Fmtp9ikcT+m6+jfA5SlcLQUC9GIAcj2AuPkkmuljlZwkYUV6Gzv1cY2WP1m40KyRPrlwgiTjJiF+EI7+nn6oly1x3mcep2G+3d2LAxKHzXx91jBQowPvaakCjlGPg03Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=JOI0xuUD; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-46b303f755aso58358785e9.1
-        for <live-patching@vger.kernel.org>; Wed, 15 Oct 2025 06:10:24 -0700 (PDT)
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-47108104bcbso3898315e9.3
+        for <live-patching@vger.kernel.org>; Wed, 15 Oct 2025 06:11:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1760533823; x=1761138623; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1760533891; x=1761138691; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ykx2GQz+96wpwXjuDb3ApIQKn+vmnlBhCM/1P2RoS9o=;
-        b=SOn5znxdVTV0ck31dct7jiHwbLxzaGQ8kqsnK7kpsp6yKoUq5O3yl1sVng/ZUeM8ms
-         LIBMPpsbvrIcnafSm7FlRpVPYcZdRNLvCbIXaKYDPBCalvQiNJJ120j40gAoPuOlLogo
-         qGYJsVFfotePcdMHwaW+eHICM1/ddTiHW4KUgWwQOyuCOyMgsYEQ7CF8EgNgh/xtzVUz
-         fDT+qq+zGLP69lKx8aczrP3xKoYEJNxQU4Pd+4SCwSfReBGpjTT5K680Z0xVptug2ub1
-         im2yt9RK+KFLXysD6vze2XHYojKTc1Xg5DIL6+hynyB2k6Ka8lVjR+LutWidUMJ7IpSi
-         hesQ==
+        bh=KSEXKmipGPjNX9UpQ1OcPNXCLJIBowGxqHQC/E69W1E=;
+        b=JOI0xuUD0xScKu7yRljROe3KNMgEatUh2Robg4Dg2gAddZtwlzJaa96bdV/ZCZkVap
+         oR5ie552WvYnBhRPG7LhHZm2gPgSYCKcWvPQH8A5SuRFJ5y6DsG66LRxDhuH8XwsHZSv
+         u5E462/5bE/CQ9evoUxaMrLZ9K5hCv9WRGwnbqK4/d6/bRT9zGiiwpFJTUvlEzH00HuY
+         b8fGUVl37gftDO5FlKsv2SHq/ZTNKcHC/md7rQkXk6O/8FlGUKNq5RtP8aHk641ymllu
+         0qYjEU5dSMA1xBei7tOHn4FLEdxMK8TdZ0a/tW/xZK3WxIQVdeNwY+YFk4hWt5QSMg61
+         kpHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760533823; x=1761138623;
+        d=1e100.net; s=20230601; t=1760533891; x=1761138691;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ykx2GQz+96wpwXjuDb3ApIQKn+vmnlBhCM/1P2RoS9o=;
-        b=XbtHLbOflYJn3Vby0yG598ZZrASxcdSMbjarsPW/EI14HonrbPpmMZJo1Szvu2aZR/
-         mHkAHkt4np60eQf4Rkq9a4X9i1tCmvvU0cQMkX3fso8QIvYDKeohGmB04B4776n8PWnN
-         luYKxhDkpPJWkZdXsiWOTCoUsY2OgJYN2XhN1DPiIMzOYaagynFZoKgD+XVlSiB+9afm
-         CLlQvz6pd7V5gCc3Cryu9amHpzyKzuDIWjic+QU1lDjj09YI/e5dXZvud/gx4On0QvLy
-         OfNCfZfXrR5iGqXKglMGBPmnLGlLd9Lpatl2js3IBE7gLrqCr5lAUhLNGz9IASAWXH5o
-         b8rw==
-X-Gm-Message-State: AOJu0YxeFvKUhIRZf7/7MN/cmPzQPrBrBB4LcJYOUpgfiaMH2p63xdmd
-	/RMeL3TezGb7DU+hPyn4xIIuxGqikrJLc0ZCBT+4HY1ZAoDBOv3JXGoAwbgEoBljgNQ=
-X-Gm-Gg: ASbGncvo4RzrTLYQKZLWXBirTzq/O/y5y0MahFOd/RJ22cfgUZaepF59QVTnERpO88g
-	vLPO5g+5XxGIYI5lDbi+T1kxuGpbxEIjDyUY0RzI6O6buKMuEyKokRVF1XBYJxHbpv/X4ZIhW7x
-	0aJ4RQcaJqCi2GVaQsMABt/yklgUC0VGtRdNiOpxNkELBC/ZYacsywP5J0gWg+Z4e/SxmVq5GRK
-	PZjR0ccC1C0vrYPHz7UFjct32tNKALAQsS+3SP8TvgOzkv+xwuFq/oBOuHpvZEjMWA7yynW//Pt
-	IcaUuw66zHxH8dkjbw0K/8cTPuGKErDeWmbLKu92vIYtgHCAiTn+Lr4mciFEoZxUQioIBvbU0Wi
-	IqvUDgszg5npYE3bD7s4tIqGiWHd47t+WeKRmLk+oCC+f
-X-Google-Smtp-Source: AGHT+IFYkt/oUuVCbvGRrxSPJnxkuXAmJLOmMYujaBInN6Rtjjn17LQRuoRXWm+lqupLeJIlFDSu5g==
-X-Received: by 2002:a05:600c:a02:b0:46e:4499:ba30 with SMTP id 5b1f17b1804b1-46fa9b052f2mr214906725e9.30.1760533822958;
-        Wed, 15 Oct 2025 06:10:22 -0700 (PDT)
+        bh=KSEXKmipGPjNX9UpQ1OcPNXCLJIBowGxqHQC/E69W1E=;
+        b=DHVo8MLca0LwzJnfsRQAkdaH/u9hS2/xIRTLW7II0AIWRuddR+Hvla6MMQToDZnmu1
+         fDb5vdqJbUt8t7nN9or+3WffrkFZyVtpa3ei+OsWakEolSp+WtDs0T5MannZuRVzfrrO
+         YVq8VfT4S5fz96krKVg1zpgTd2hnUC76mlznVB/uvCNVnpIbxzRPrN4+8P7Pnm0zcRvu
+         x8OxlZZrm764jki26OiU2eOgdr+uVYkn4LCwvF+LHzmzgZo1Zy1mRQfETtLZdjNhxIvy
+         /IkZZq0cnHFOga8aYDy3gZb2rn8+CWcYtzbC0Oee5sNBEXDck7CtXDbbfZskvbyob6ae
+         zdMw==
+X-Forwarded-Encrypted: i=1; AJvYcCXx2j1XeKbsU1JdZSxdVkPwrKzx27i4doiQQxfAg5Obj6ouUPAPjafdGizd9BR70oQaVODF9pEtF3GdLGk6@vger.kernel.org
+X-Gm-Message-State: AOJu0YyJJfj9bdXLyWsJ0b1+j1ufElxewgk4oV6I5FQTahbJMh73knwY
+	8e7RUQEywZ5/qxejg3GhWwC7Ik+W8XpiFzR/+uA0Cx29+7dWqSWBtg4PyQh/Wifhsgw=
+X-Gm-Gg: ASbGncsR8UW1FE/jXqVqbCklziYRRmVm1BmU4RVc/CIK3aczMAZghOBIxI+bqRJLgRq
+	90COBIt8tUSs9DGu1tcZXSaCYe+aXV6U5LJDyxQtcaNl20pRtc50FWkr7HeHo/7qfe80+hfSUFK
+	IylUyrE6cPwN8fUXS60LSeRV0sPcuNfIHwmJ6c4sMtB4KchVzU6+7p6PJG/7KQzAU7gSU+JSxC6
+	3bWU4xldCBHmjWaJq4Nun0Qf0PWvit9OoSGZ125mVaw6U9FkHLAZGJKQw8lnkTkNrLsirUkr1lf
+	nPyCh/CTEjqBUlznPoGpS409wpn4LYoLyJAQfBt4cfJuGnLhVsF3Moj8Igvmy2kiSmatm3slBqA
+	7+HA000Y9WSr9DqgXoaqPIVIuoRJLBWuY9Wuj6mkNaI6cdfWi1f2scL4=
+X-Google-Smtp-Source: AGHT+IHb7yqFd13CCRX2ZsPulLnmXAv3Os19z37S0V2UZLXAtIujA1Vyw8h33iB673wyOzI9vd+ODQ==
+X-Received: by 2002:a05:600c:a309:b0:46f:b42e:e39e with SMTP id 5b1f17b1804b1-46fb42ee4femr110401385e9.39.1760533890656;
+        Wed, 15 Oct 2025 06:11:30 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fab36a773sm185598825e9.0.2025.10.15.06.10.22
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fb482ba41sm294145175e9.4.2025.10.15.06.11.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Oct 2025 06:10:22 -0700 (PDT)
-Date: Wed, 15 Oct 2025 15:10:20 +0200
+        Wed, 15 Oct 2025 06:11:30 -0700 (PDT)
+Date: Wed, 15 Oct 2025 15:11:28 +0200
 From: Petr Mladek <pmladek@suse.com>
-To: Song Liu <song@kernel.org>
-Cc: live-patching@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org,
-	mbenes@suse.cz, joe.lawrence@redhat.com, kernel-team@meta.com
-Subject: Re: [PATCH v2] livepatch: Match old_sympos 0 and 1 in klp_find_func()
-Message-ID: <aO-dPImgapKJRQrw@pathway.suse.cz>
-References: <20251013173019.990707-1-song@kernel.org>
+To: Fushuai Wang <wangfushuai@baidu.com>
+Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
+	joe.lawrence@redhat.com, shuah@kernel.org,
+	live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: livepatch: use canonical ftrace path
+Message-ID: <aO-dgBgwnkplkZtL@pathway.suse.cz>
+References: <20251010120727.20631-1-wangfushuai@baidu.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -87,60 +90,17 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251013173019.990707-1-song@kernel.org>
+In-Reply-To: <20251010120727.20631-1-wangfushuai@baidu.com>
 
-On Mon 2025-10-13 10:30:19, Song Liu wrote:
-> When there is only one function of the same name, old_sympos of 0 and 1
-> are logically identical. Match them in klp_find_func().
+On Fri 2025-10-10 20:07:27, Fushuai Wang wrote:
+> Since v4.1 kernel, a new interface for ftrace called "tracefs" was
+> introduced, which is usually mounted in /sys/kernel/tracing. Therefore,
+> tracing files can now be accessed via either the legacy path
+> /sys/kernel/debug/tracing or the newer path /sys/kernel/tracing.
 > 
-> This is to avoid a corner case with different toolchain behavior.
-> 
-> In this specific issue, issue two versions of kpatch-build were used to
+> Signed-off-by: Fushuai Wang <wangfushuai@baidu.com>
 
-  s/issue, issue/issue/
-
-> build livepatch for the same kernel. One assigns old_sympos == 0 for
-> unique local functions, the other assigns old_sympos == 1 for unique
-> local functions. Both versions work fine by themselves. (PS: This
-> behavior change was introduced in a downstream version of kpatch-build.
-> This change does not exist in upstream kpatch-build.)
-> 
-> However, during livepatch upgrade (with the replace flag set) from a
-> patch built with one version of kpatch-build to the same fix built with
-> the other version of kpatch-build, livepatching fails with errors like:
-> 
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -88,8 +88,14 @@ static struct klp_func *klp_find_func(struct klp_object *obj,
->  	struct klp_func *func;
->  
->  	klp_for_each_func(obj, func) {
-> +		/*
-> +		 * Besides identical old_sympos, also condiser old_sympos
-
-As Josh already pointed out:
-
-   s/condiser/consider/
-
-> +		 * of 0 and 1 are identical.
-> +		 */
->  		if ((strcmp(old_func->old_name, func->old_name) == 0) &&
-> -		    (old_func->old_sympos == func->old_sympos)) {
-> +		    ((old_func->old_sympos == func->old_sympos) ||
-> +		     (old_func->old_sympos == 0 && func->old_sympos == 1) ||
-> +		     (old_func->old_sympos == 1 && func->old_sympos == 0))) {
->  			return func;
->  		}
->  	}
-
-With the two above fixes:
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
-
-I have fixed both problems when committing.
-
-And the patch has been committed into livepatching.git,
+JFYI, the patch has been comitted into livepatching.git,
 branch for-6.19/trivial.
 
 Best Regards,
