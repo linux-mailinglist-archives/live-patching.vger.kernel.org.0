@@ -1,152 +1,192 @@
-Return-Path: <live-patching+bounces-1764-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1765-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id D0579BF1690
-	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 15:03:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A9B9CBF1F2A
+	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 16:57:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id E80AC188440B
-	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 13:01:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2E46E3B8DAC
+	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 14:56:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BF4C31DDB9;
-	Mon, 20 Oct 2025 13:00:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 584F9227E95;
+	Mon, 20 Oct 2025 14:56:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="B9zIvzwJ"
+	dkim=pass (2048-bit key) header.d=crowdstrike.com header.i=@crowdstrike.com header.b="blH3bjOg"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mx0b-00206402.pphosted.com (mx0b-00206402.pphosted.com [148.163.152.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5D813148AD
-	for <live-patching@vger.kernel.org>; Mon, 20 Oct 2025 13:00:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53087182D0
+	for <live-patching@vger.kernel.org>; Mon, 20 Oct 2025 14:56:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.152.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760965206; cv=none; b=IYMlvSgLOgfwyjvy4Hjx1Rnk4CIhs2GjQa77WzWR0bv9GuKOO9CbyVusBRJRwSAkNDMp61CnAfBJF19RKsCsWksytYsujGB8UnR+wgH7lwwruXTeFJFEDEJauVaa69Tb8mJy+D7MpbTooVrIXxqHDig9Yzl6DU/zQDTTywvWQU8=
+	t=1760972190; cv=none; b=trUyI3c95XBoPkpQq2eWTOu47Qy5pVooehJBMD8q/05SCyAhe1MV6v7sr3TqYFTbpOjczBau2Gc6naljTVawF/V3Jas6gAh9pkw0gLCmssLTZJWeaopB27mQveD+AHCumFv5k3KBFnr7Kp8Qsn94177gthhr069I/PLF3zrafVI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760965206; c=relaxed/simple;
-	bh=WbxwA613BWoK+zVhFBSO3/IjK9L9I022ws6w+bJjWB8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=er0oAFcr88YL/E04U/x1pdSbfxLGe+M9yE/ET2dWMKLwJUQ5gp04uvDWfFsV+rVK/Zq45uopDgze0VAWeqiNsSQCAF17CQIfWm8oeGGnyRlib2iwVGP7LOQV+ddMtcjFAfOyuAwKSd6Eb4XWRZRGuRiZZ9YM3NH5IuuWkp4BRno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=B9zIvzwJ; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251020130002euoutp021ea3fd410ea9c2a7d937f2cff5f5b721~wNIV9z9A63104631046euoutp02F
-	for <live-patching@vger.kernel.org>; Mon, 20 Oct 2025 13:00:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251020130002euoutp021ea3fd410ea9c2a7d937f2cff5f5b721~wNIV9z9A63104631046euoutp02F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1760965202;
-	bh=2QjRYOczjrQhp6rJw91bDYI7ZlyYkkR4wbgGlMr0w+U=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=B9zIvzwJ1keydsypVX4ndzOLtFsQbcVwhJ4C0LEm1LFjopYV7W/efE4R5P1rW6SIT
-	 MV/JO5VAnyYKwPnwVh7L6XS5cYuM1mBygzgEX1GO2bmzaLAUoiE6WE623biq59E4Vh
-	 Y2VAlGcy2M7gt/aLidjMUIVvwTRLrAZs9xIpbWQQ=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20251020130001eucas1p259c59daada89ad0fece76b7a86581f0e~wNIVQ5esi0845908459eucas1p2N;
-	Mon, 20 Oct 2025 13:00:01 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20251020125959eusmtip1c2cef3f1f0be5580e63172cd596292f5~wNITlJw540653206532eusmtip1U;
-	Mon, 20 Oct 2025 12:59:59 +0000 (GMT)
-Message-ID: <d7b49971-8d77-43e2-b0cd-a70c6463ea57@samsung.com>
-Date: Mon, 20 Oct 2025 14:59:59 +0200
+	s=arc-20240116; t=1760972190; c=relaxed/simple;
+	bh=hMQ3FgGJULDlirvxd+AIzEYSlZfhZacmDLQEOwWirLU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=hQRDwx4wTiu4yrFwoqWFeQN83HwCvrqx60FCw8btnSjtbAs/9tr2jh7j3Kfhv0AaEKcC8V+nTKxcapJUMgAaQPQYmrp2fUbGwT2kmQ6rgfLqiREUOSf64v6C+olj6KSCqM15t9kOVfHWenSRsX6BdpmkPEErsb1DeN45lgiqnyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=crowdstrike.com; spf=pass smtp.mailfrom=crowdstrike.com; dkim=pass (2048-bit key) header.d=crowdstrike.com header.i=@crowdstrike.com header.b=blH3bjOg; arc=none smtp.client-ip=148.163.152.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=crowdstrike.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crowdstrike.com
+Received: from pps.filterd (m0354655.ppops.net [127.0.0.1])
+	by mx0b-00206402.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59KEkVhZ009210;
+	Mon, 20 Oct 2025 14:56:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crowdstrike.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	default; bh=hMQ3FgGJULDlirvxd+AIzEYSlZfhZacmDLQEOwWirLU=; b=blH3
+	bjOggQnu+6LD7J3o4ep/qFL4G61CZIVIZD2P32+FTxjmmLNGHhyNLAQj9DHcfZrM
+	FwCGCLwLh0UeSzmIVlZFYgyQUrnM8XJ6khV4rQv+BspV1pxlfvJhdeLUM7e3EEyA
+	UTg0jjEqNToF9+CrK0O0miCO0zu5677DCcqRGYgU5yDltD9NviIKsLZGi/wmWjkB
+	o8akpaiEtggkiLSjPE2/uT1XvL2LV5sKbPiXpaNCV7sy8Cw1ZbcQMAY9RmJRK2rt
+	X5ePqtsHq3S2JdKwL+EkELX2GPKK3vBZosBozGn5Z/1+rM5hMVOmt8t5/uT6Exi0
+	wjUrQVLYywnW5E270w==
+Received: from mail.crowdstrike.com (dragosx.crowdstrike.com [208.42.231.60] (may be forged))
+	by mx0b-00206402.pphosted.com (PPS) with ESMTPS id 49vq5bjyed-3
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Oct 2025 14:56:08 +0000 (GMT)
+Received: from [10.82.61.83] (10.100.11.122) by 04WPEXCH010.crowdstrike.sys
+ (10.100.11.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 20 Oct
+ 2025 14:56:06 +0000
+Message-ID: <4cc825e6-fdf8-4fc1-8ccd-9bad456c2131@crowdstrike.com>
+Date: Mon, 20 Oct 2025 10:56:04 -0400
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v4 08/63] kbuild: Remove 'kmod_' prefix from
- __KBUILD_MODNAME
-To: Josh Poimboeuf <jpoimboe@kernel.org>, x86@kernel.org
-Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>, Miroslav
-	Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>,
-	live-patching@vger.kernel.org, Song Liu <song@kernel.org>, laokz
-	<laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza
-	<mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, Fazla Mehrab
-	<a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay
-	Mohan <puranjay@kernel.org>, Dylan Hatch <dylanbhatch@google.com>, Peter
-	Zijlstra <peterz@infradead.org>, Masahiro Yamada <masahiroy@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [External] Re: Question - Livepatch/Kprobe Coexistence on
+ Ftrace-enabled Functions (Ubuntu kernel based on Linux stable 5.15.30)
+To: Song Liu <song@kernel.org>
+CC: Petr Mladek <pmladek@suse.com>,
+        "kernel-team@lists.ubuntu.com"
+	<kernel-team@lists.ubuntu.com>,
+        "live-patching@vger.kernel.org"
+	<live-patching@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+References: <c5058315a39d4615b333e485893345be@crowdstrike.com>
+ <aO-LMaY-os44cEJP@pathway.suse.cz>
+ <eb176565-6e13-4f98-8c9a-cacf7fc42f3a@crowdstrike.com>
+ <aPDPYIA4_mpo-OZS@pathway.suse.cz>
+ <CAHzjS_v2HfpH1Oof3BWawN51WVM_1V1uXro4MSC=0YmMiqVWcg@mail.gmail.com>
+ <82eaaada-f3fc-44f7-826d-8de47ce9fd39@crowdstrike.com>
+ <CAHzjS_s2RhM3_H9CCedud3zkGUWW2xkmvxvPLR1qujLZRhgL1A@mail.gmail.com>
+ <CAHzjS_sQQaTZpxC2drGx8=7zCMAKQN_CNjYFcNzxZEGhd+yXPA@mail.gmail.com>
+ <69339fb8-04a6-4c28-bb71-d9522ebd7282@crowdstrike.com>
+ <CAHzjS_tf0KeBnzA6psjHSCuiXn--hK=owDPhCPUB0=jnLDBk=A@mail.gmail.com>
 Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <f382dddad4b7c8079ce3dd91e5eaea921b03af72.1758067942.git.jpoimboe@kernel.org>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20251020130001eucas1p259c59daada89ad0fece76b7a86581f0e
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251020130001eucas1p259c59daada89ad0fece76b7a86581f0e
-X-EPHeader: CA
-X-CMS-RootMailID: 20251020130001eucas1p259c59daada89ad0fece76b7a86581f0e
-References: <cover.1758067942.git.jpoimboe@kernel.org>
-	<f382dddad4b7c8079ce3dd91e5eaea921b03af72.1758067942.git.jpoimboe@kernel.org>
-	<CGME20251020130001eucas1p259c59daada89ad0fece76b7a86581f0e@eucas1p2.samsung.com>
+From: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>
+In-Reply-To: <CAHzjS_tf0KeBnzA6psjHSCuiXn--hK=owDPhCPUB0=jnLDBk=A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: 04WPEXCH006.crowdstrike.sys (10.100.11.70) To
+ 04WPEXCH010.crowdstrike.sys (10.100.11.80)
+X-Disclaimer: USA
+X-Proofpoint-GUID: Tu0jmZSQHjpw-NasLl4vs2GT4DsfBz2h
+X-Authority-Analysis: v=2.4 cv=BsiQAIX5 c=1 sm=1 tr=0 ts=68f64d88 cx=c_pps
+ a=1d8vc5iZWYKGYgMGCdbIRA==:117 a=1d8vc5iZWYKGYgMGCdbIRA==:17
+ a=wTsGqpD-R78rOsQO:21 a=EjBHVkixTFsA:10 a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=pl6vuDidAAAA:8 a=VwQbUJbxAAAA:8
+ a=f3vEgotgTPPbaZPDP1oA:9 a=QEXdDO2ut3YA:10 a=cPQSjfK2_nFv0Q5t_7PE:22
+X-Proofpoint-ORIG-GUID: Tu0jmZSQHjpw-NasLl4vs2GT4DsfBz2h
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDE5MDAxNCBTYWx0ZWRfX72rD3U1FX63j
+ vi2JAMWEDhyj83sP9jF1OPsB6o2j5XcdzFBzO54gXuhnBYP5kvZ1ZhoP5bsmAH3MgQ0c8x2X7a8
+ B/jFOOyopoP0EZPMKj8BfjgzmYOLZB5edj3sXeKX0INjDU3U1Hw4nxCyhM/+SMXRNt7+rHmtXVj
+ PB6oJTFV9osJ8954355e/dDhyqU87o9OcUgdOvDawthI2xIzj9uiLSMrY9ehwVDb8JDj4+U1QOV
+ 4u13PhyvqsmwQPxQUT/DYvOseRafDitAW012fxpBPvKV8RFRdbEa7hGjtv3pDn7N8lsLReC/a6l
+ 0Btpu1h/yqZGH58p2/oFWhF6odfyzlfQWo8BfyInEBP3W4h8CB1rHrwTaC2E9a4M3wBM2YHbMHo
+ FyoU9yqCBiTGE4brUp0Q6olqOSqE/g==
+X-Proofpoint-Virus-Version: vendor=nai engine=6800 definitions=11588
+ signatures=596818
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 clxscore=1015 priorityscore=1501 suspectscore=0 malwarescore=0
+ lowpriorityscore=0 adultscore=0 bulkscore=0 spamscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510190014
 
-On 17.09.2025 18:03, Josh Poimboeuf wrote:
-> In preparation for the objtool klp diff subcommand, remove the arbitrary
-> 'kmod_' prefix from __KBUILD_MODNAME and instead add it explicitly in
-> the __initcall_id() macro.
->
-> This change supports the standardization of "unique" symbol naming by
-> ensuring the non-unique portion of the name comes before the unique
-> part.  That will enable objtool to properly correlate symbols across
-> builds.
->
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-
-
-This patch landed recently in linux-next as commit 6717e8f91db7 
-("kbuild: Remove 'kmod_' prefix from __KBUILD_MODNAME"). In my tests I 
-found that it completely breaks automatic modules loading on all tested 
-boards (ARM 32bit, ARM 64bit and RiscV64 based), what looks like some 
-kind of a generic issue. Reverting it on top of current linux-next fixes 
-this issue.
-
-
-> ---
->   include/linux/init.h | 3 ++-
->   scripts/Makefile.lib | 2 +-
->   2 files changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/init.h b/include/linux/init.h
-> index 17c1bc712e234..40331923b9f4a 100644
-> --- a/include/linux/init.h
-> +++ b/include/linux/init.h
-> @@ -200,12 +200,13 @@ extern struct module __this_module;
->   
->   /* Format: <modname>__<counter>_<line>_<fn> */
->   #define __initcall_id(fn)					\
-> +	__PASTE(kmod_,						\
->   	__PASTE(__KBUILD_MODNAME,				\
->   	__PASTE(__,						\
->   	__PASTE(__COUNTER__,					\
->   	__PASTE(_,						\
->   	__PASTE(__LINE__,					\
-> -	__PASTE(_, fn))))))
-> +	__PASTE(_, fn)))))))
->   
->   /* Format: __<prefix>__<iid><id> */
->   #define __initcall_name(prefix, __iid, id)			\
-> diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-> index 1d581ba5df66f..b955602661240 100644
-> --- a/scripts/Makefile.lib
-> +++ b/scripts/Makefile.lib
-> @@ -20,7 +20,7 @@ name-fix-token = $(subst $(comma),_,$(subst -,_,$1))
->   name-fix = $(call stringify,$(call name-fix-token,$1))
->   basename_flags = -DKBUILD_BASENAME=$(call name-fix,$(basetarget))
->   modname_flags  = -DKBUILD_MODNAME=$(call name-fix,$(modname)) \
-> -		 -D__KBUILD_MODNAME=kmod_$(call name-fix-token,$(modname))
-> +		 -D__KBUILD_MODNAME=$(call name-fix-token,$(modname))
->   modfile_flags  = -DKBUILD_MODFILE=$(call stringify,$(modfile))
->   
->   _c_flags       = $(filter-out $(CFLAGS_REMOVE_$(target-stem).o), \
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+T24gMTAvMTcvMjUgMTc6MTEsIFNvbmcgTGl1IHdyb3RlOg0KPiBPbiBGcmksIE9jdCAxNywg
+MjAyNSBhdCAxMjo0OOKAr1BNIEFuZHJleSBHcm9kem92c2t5DQo+IDxhbmRyZXkuZ3JvZHpv
+dnNreUBjcm93ZHN0cmlrZS5jb20+IHdyb3RlOg0KPj4gT24gMTAvMTcvMjUgMTU6MDcsIFNv
+bmcgTGl1IHdyb3RlOg0KPj4+IE9uIEZyaSwgT2N0IDE3LCAyMDI1IGF0IDk6NTjigK9BTSBT
+b25nIExpdSA8c29uZ0BrZXJuZWwub3JnPiB3cm90ZToNCj4+Pj4gT24gVGh1LCBPY3QgMTYs
+IDIwMjUgYXQgMjo1NeKAr1BNIEFuZHJleSBHcm9kem92c2t5DQo+Pj4+IDxhbmRyZXkuZ3Jv
+ZHpvdnNreUBjcm93ZHN0cmlrZS5jb20+IHdyb3RlOg0KPj4+PiBbLi4uXQ0KPj4+Pj4gW0FH
+XSAtIFRyeWluZyBmaXJzdCB0byBwb2ludCBoaW0gYXQgdGhlIG9yaWdpbmFsICBmdW5jdGlv
+biAtIGJ1dCBoZQ0KPj4+Pj4gZmFpbHMgb24gdGhlIGZleGl0IEkgYXNzdW1lICAtIHdoaWNo
+IGlzIHN0cmFuZ2UsIEkgYXNzdW1lZCBmZXhpdA0KPj4+Pj4gKGtyZXRmdW5jKSBhbmQgbGl2
+ZXBhdGNoIGNhbiBjb2V4aXN0ID8NCj4+Pj4+DQo+Pj4+PiB1YnVudHVAaXAtMTAtMTAtMTE0
+LTIwNDp+JCBzdWRvIGJwZnRyYWNlIC1lDQo+Pj4+PiAnZmVudHJ5OnZtbGludXg6YmVnaW5f
+bmV3X2V4ZWMgeyBAc3RhcnRbdGlkXSA9IG5zZWNzOyBwcmludGYoIi0+IEVYRUMNCj4+Pj4+
+IFNUQVJUIChmZW50cnkpOiBQSUQgJWQsIENvbW0gJXNcbiIsIHBpZCwgY29tbSk7IH0NCj4+
+Pj4+IGZleGl0OnZtbGludXg6YmVnaW5fbmV3X2V4ZWMgeyAkbGF0ZW5jeSA9IG5zZWNzIC0g
+QHN0YXJ0W3RpZF07DQo+Pj4+PiBkZWxldGUoQHN0YXJ0W3RpZF0pOyBwcmludGYoIjwtIEVY
+RUMgRU5EIChmZXhpdCk6IFBJRCAlZCwgQ29tbSAlcywNCj4+Pj4+IFJldHZhbCAlZCwgTGF0
+ZW5jeSAlZCB1c1xuIiwgcGlkLCBjb21tLCByZXR2YWwsICRsYXRlbmN5IC8gMTAwMCk7IH0n
+DQo+Pj4+PiBBdHRhY2hpbmcgMiBwcm9iZXMuLi4NCj4+Pj4+IEVSUk9SOiBFcnJvciBhdHRh
+Y2hpbmcgcHJvYmU6IGtyZXRmdW5jOnZtbGludXg6YmVnaW5fbmV3X2V4ZWMNCj4+Pj4+DQo+
+Pj4+PiBbQUddIC0gVHJ5aW5nIHRvIHNraXAgdGhlIGZleGl0IGFuZCBvbmx5IGRvIGZlbnRy
+eSAtIGhlIHN0aWxsIHJlamVjdHMNCj4+Pj4+IHVidW50dUBpcC0xMC0xMC0xMTQtMjA0On4k
+IHN1ZG8gYnBmdHJhY2UgLXZ2diAtZQ0KPj4+Pj4gJ2ZlbnRyeTp2bWxpbnV4OmJlZ2luX25l
+d19leGVjIHsgQHN0YXJ0W3RpZF0gPSBuc2VjczsgcHJpbnRmKCItPiBFWEVDDQo+Pj4+PiBT
+VEFSVCAoZmVudHJ5KTogUElEICVkLCBDb21tICVzXG4iLCBwaWQsIGNvbW0pOyB9Jw0KPj4+
+Pj4gc3VkbzogdW5hYmxlIHRvIHJlc29sdmUgaG9zdCBpcC0xMC0xMC0xMTQtMjA0OiBUZW1w
+b3JhcnkgZmFpbHVyZSBpbiBuYW1lDQo+Pj4+PiByZXNvbHV0aW9uDQo+Pj4+PiBJTkZPOiBu
+b2RlIGNvdW50OiAxMg0KPj4+Pj4gQXR0YWNoaW5nIDEgcHJvYmUuLi4NCj4+Pj4+DQo+Pj4+
+PiBQcm9ncmFtIElEOiAyOTUNCj4+Pj4+DQo+Pj4+PiBUaGUgdmVyaWZpZXIgbG9nOg0KPj4+
+Pj4gcHJvY2Vzc2VkIDUwIGluc25zIChsaW1pdCAxMDAwMDAwKSBtYXhfc3RhdGVzX3Blcl9p
+bnNuIDAgdG90YWxfc3RhdGVzIDMNCj4+Pj4+IHBlYWtfc3RhdGVzIDMgbWFya19yZWFkIDEN
+Cj4+Pj4+DQo+Pj4+PiBBdHRhY2hpbmcga2Z1bmM6dm1saW51eDpiZWdpbl9uZXdfZXhlYw0K
+Pj4+Pj4gRVJST1I6IEVycm9yIGF0dGFjaGluZyBwcm9iZToga2Z1bmM6dm1saW51eDpiZWdp
+bl9uZXdfZXhlYw0KPj4+PiBPSywgSSBjb3VsZCByZXByb2R1Y2UgdGhpcyBpc3N1ZSBhbmQg
+Zm91bmQgdGhlIGlzc3VlLiBJbiBteSB0ZXN0LA0KPj4+PiBmZXhpdCtsaXZlcGF0Y2ggd29y
+a3Mgb24gc29tZSBvbGRlciBrZXJuZWwsIGJ1dCBmYWlscyBvbiBzb21lIG5ld2VyDQo+Pj4+
+IGtlcm5lbC4gSSBoYXZlbid0IGJpc2VjdGVkIHRvIHRoZSBjb21taXQgdGhhdCBicm9rZSBp
+dC4NCj4+Pj4NCj4+Pj4gU29tZXRoaW5nIGxpa2UgdGhlIGZvbGxvd2luZyBtYWtlIGl0IHdv
+cms6DQo+Pj4+DQo+Pj4+IGRpZmYgLS1naXQgaS9rZXJuZWwvdHJhY2UvZnRyYWNlLmMgdy9r
+ZXJuZWwvdHJhY2UvZnRyYWNlLmMNCj4+Pj4gaW5kZXggMmUxMTNmOGIxM2EyLi40Mjc3YjRm
+MzNlYjggMTAwNjQ0DQo+Pj4+IC0tLSBpL2tlcm5lbC90cmFjZS9mdHJhY2UuYw0KPj4+PiAr
+Kysgdy9rZXJuZWwvdHJhY2UvZnRyYWNlLmMNCj4+Pj4gQEAgLTU5ODUsNiArNTk4NSw4IEBA
+IGludCByZWdpc3Rlcl9mdHJhY2VfZGlyZWN0KHN0cnVjdCBmdHJhY2Vfb3BzDQo+Pj4+ICpv
+cHMsIHVuc2lnbmVkIGxvbmcgYWRkcikNCj4+Pj4gICAgICAgICAgIG9wcy0+ZGlyZWN0X2Nh
+bGwgPSBhZGRyOw0KPj4+Pg0KPj4+PiAgICAgICAgICAgZXJyID0gcmVnaXN0ZXJfZnRyYWNl
+X2Z1bmN0aW9uX25vbG9jayhvcHMpOw0KPj4+PiArICAgICAgIGlmIChlcnIpDQo+Pj4+ICsg
+ICAgICAgICAgICAgICByZW1vdmVfZGlyZWN0X2Z1bmN0aW9uc19oYXNoKGRpcmVjdF9mdW5j
+dGlvbnMsIGFkZHIpOw0KPj4+Pg0KPj4+PiAgICAgb3V0X3VubG9jazoNCj4+Pj4gICAgICAg
+ICAgIG11dGV4X3VubG9jaygmZGlyZWN0X211dGV4KTsNCj4+Pj4NCj4+Pj4gQW5kcmV5LCBj
+b3VsZCB5b3UgYWxzbyB0ZXN0IHRoaXMgY2hhbmdlPw0KPj4+IEF0dGFjaGVkIGlzIGEgYmV0
+dGVyIHZlcnNpb24gb2YgdGhlIGZpeC4NCj4+Pg0KPj4+IFRoYW5rcywNCj4+PiBTb25nDQo+
+PiBUaGFuayB5b3UgU29uZyENCj4+DQo+PiBTbywgd2l0aCB0aGlzIFlvdSBzYXkgYm90aCBm
+ZW50cnkgYW5kIGZleGl0IHdpbGwgd29yayBubyBpc3N1ZXMgPw0KPiBZZXMsIGZlbnRyeSBh
+bmQgZmV4aXQgc2hvdWxkIGJvdGggd29yay4NCj4NCj4+IFNvIGp1dHMgdG8gdW5kZXJzdGFu
+ZCwgYXMgaSBhbSBub3QgZmFtaWxpYXIgd2l0aCBsaXZlLXBhdGNoIGdlbmVyYXRpb24sDQo+
+PiBJIGdldCB0aGUgc291cmNlcyBmb3IgbXkgVWJ1bnR1IGtlcm5lbCwgSSBhcHBseSB5b3Vy
+IHBhdGNoLCBJIGFsc28NCj4+IGdlbmVyYXRlIG1hbnVhbGx5IGxpdmVwYXRjaCBtb2R1bGUg
+dGhhdCBtYWtlcyBhIGR1bW15IHBhdGNoaW5nIHRvIG15DQo+PiB0ZXN0IGZ1bmN0aW9uIChi
+ZWdpbl9uZXdfZXhlYyksIGFuZCBhcHBseSB0aGlzIHBhdGNoIHRvIG15IHJ1bm5pbmcNCj4+
+IGNvc3R1bSBrZXJuZWwgPyBCZWNhdXNlIGkgZG9uJ3QgdGhpbmsgdGhlIHN0YWRhcmQgdWJ1
+bnR1IGxpdmVwYXRjaGluZw0KPj4gd2lsbCBhZ3JlZSB0byBhcHBseSBoaXMgbGl2ZXBhdGNo
+IENWRXMgdG8gbXkgb3N0dW0ga2VuZWwsIGl0IHdpbGwNCj4+IHByb2JhYmx5IHJlY29nbml6
+ZSBpdCdzIG5vdCBzdG9jayB1YnVudHUga2VybmVsIGJ1dCBhbWFudWxseSBidWlsdCBvbmUu
+DQo+IGxpdmVwYXRjaCBpcyBhIGtlcm5lbCBtb2R1bGUuIFRoZXJlZm9yZSwgdW5sZXNzIHRo
+ZSB0d28ga2VybmVscyBhcmUgYWxtb3N0DQo+IGlkZW50aWNhbCwgbGl2ZXBhdGNoIGJ1aWx0
+IGZvciBvbmUga2VybmVsIGNhbm5vdCBiZSB1c2VkIG9uIHRoZSBvdGhlci4NCj4NCj4gSWYg
+eW91IGJ1aWxkIHRoZSBrZXJuZWwgZnJvbSBzb3VyY2UgY29kZSwgdGhlcmUgYXJlIHNvbWUg
+c2FtcGxlcyBpbg0KPiBzYW1wbGVzL2xpdmVwYXRjaCB0aGF0IHlvdSBjYW4gdXNlIGZvciB0
+ZXN0aW5nLiBQUzogWW91IG5lZWQgdG8gZW5hYmxlDQo+DQo+ICAgIENPTkZJR19TQU1QTEVf
+TElWRVBBVENIPW0NCj4NCj4gSSBob3BlIHRoaXMgaGVscHMuDQoNClRoYW5rcyBTb25nLCB3
+b3JraW5nIG9uIHJlcHJvLCBrZXJuZWwgcmVidWlsdCwgdGVzdCBtb2R1bGUgaXMgbG9hZGlu
+ZyANCmJ1dCwgYnBmdHJhY2UgaXMgcmVmdXNpbmcgdG8gYXR0YWNoIG5vdyB0byBmZW50cmll
+cy9mZXhpdHMgY2xhaW1pbmcgdGhlIA0KY29zdHVtIGtlcm5lbCBpcyBub3Qgc3VwcG9ydGlu
+ZyBpdC4gSXQgZGlkDQphdHRhY2ggaW4gdGhlIGNhc2Ugb2Ygc3RvY2sgQVdTIGtlcm5lbCBp
+IGNvcGllZCB0aGUgLmNvbmZpZyBmcm9tLiBTbyANCmp1c3QgdHJ5aW5nIHRvIGZpZ3VyZSBv
+dXQgbm93IGlmIHNvbWUgS2NvZm5pZyBmbGFncyBhcmUgbWlzc2luZyBvciANCmRpZmZlcmVu
+dCAuIExldCBtZSBrbm93IGluIGNhc2UgeW91IG1hbmFnZSB0byBjb25maXJtIHlvdXJzZWxm
+IGluIHRoZSANCm1lYW53aGlsZSB0aGUgZml4IHdvcmtzIGZvcg0KeW91Lg0KDQpUaGFua3Ms
+DQpBbmRyZXkNCg0KDQo+DQo+IFRoYW5rcywNCj4gU29uZw0KDQoNCg==
 
