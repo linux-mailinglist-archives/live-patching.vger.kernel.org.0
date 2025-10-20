@@ -1,107 +1,144 @@
-Return-Path: <live-patching+bounces-1777-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1778-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 46E27BF3748
-	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 22:31:45 +0200 (CEST)
+Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
+	by mail.lfdr.de (Postfix) with ESMTPS id 55D6ABF3796
+	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 22:40:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id DD2781895B8B
-	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 20:32:08 +0000 (UTC)
+	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id B78684E7260
+	for <lists+live-patching@lfdr.de>; Mon, 20 Oct 2025 20:40:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E99AF2D0617;
-	Mon, 20 Oct 2025 20:31:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2E242DFA21;
+	Mon, 20 Oct 2025 20:40:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="uCJoUzx2"
 X-Original-To: live-patching@vger.kernel.org
-Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3FE29ACE5
-	for <live-patching@vger.kernel.org>; Mon, 20 Oct 2025 20:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=216.40.44.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4538B2D73A7
+	for <live-patching@vger.kernel.org>; Mon, 20 Oct 2025 20:40:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760992300; cv=none; b=UkbQHzKLnDDsxCMv8EGeqr51DpmLh3wFLveH87QLj2cHuBLlg/CpmTaBerpUYwUzdyEiz5gOe07LibLuKlwDpMjpDZRZu6ToGKYvVXESwr9EHOtFt/j6AnjmjxHhUztMHjT2laJ9fsx1kVsRTJH+Ayri+Ya1zaAHqcbVu10odtg=
+	t=1760992820; cv=none; b=Wze6+EdI2G/9jWslBRvAObW5RDxU3vDpv64j6snxKnl65t/5NnCc5AXsKCyGrtqCiY2WmXArOo3S6Bk8LaExxWXmr52kilnfDKUGlsn/SRMTpOCov6NJZRMFmRJmVXh6s9WNUDtbEJsGZ9sGYwg/uh1UJn5MhoUpdYC+oTse9ws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760992300; c=relaxed/simple;
-	bh=kwQ5mRWhqn3KwbVVEu6HMiVDjmpj/6heHOhp0mrszhI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WArcaK3uIs1/mfElokUiMfRSBwBJ2qH3+0iq5uIhyPGhukloCk9MXfuXANbbhiAYo+BMFo8Ejf5GGWOgMMLEz320lXYNw9bk+KbHYZy3b5tbWVKisqaR6huel1CXRMSADCB1GBfgTuXyrS8hzlGRThrg0oZv1zMwoM7b3VWP8EU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org; spf=pass smtp.mailfrom=goodmis.org; arc=none smtp.client-ip=216.40.44.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
-Received: from omf11.hostedemail.com (a10.router.float.18 [10.200.18.1])
-	by unirelay09.hostedemail.com (Postfix) with ESMTP id 42E77853B6;
-	Mon, 20 Oct 2025 20:31:31 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf11.hostedemail.com (Postfix) with ESMTPA id 565EC2002A;
-	Mon, 20 Oct 2025 20:31:29 +0000 (UTC)
-Date: Mon, 20 Oct 2025 16:31:49 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Song Liu <song@kernel.org>
-Cc: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>, Petr Mladek
- <pmladek@suse.com>, "kernel-team@lists.ubuntu.com"
- <kernel-team@lists.ubuntu.com>, "live-patching@vger.kernel.org"
- <live-patching@vger.kernel.org>
-Subject: Re: [External] Re: Question - Livepatch/Kprobe Coexistence on
- Ftrace-enabled Functions (Ubuntu kernel based on Linux stable 5.15.30)
-Message-ID: <20251020163149.1d7f2692@gandalf.local.home>
-In-Reply-To: <CAHzjS_tuotYQQ0HmncVp=oFOfcyxmYqCds0MDBMOr5FC5KzhSA@mail.gmail.com>
-References: <c5058315a39d4615b333e485893345be@crowdstrike.com>
-	<aO-LMaY-os44cEJP@pathway.suse.cz>
-	<eb176565-6e13-4f98-8c9a-cacf7fc42f3a@crowdstrike.com>
-	<aPDPYIA4_mpo-OZS@pathway.suse.cz>
-	<CAHzjS_v2HfpH1Oof3BWawN51WVM_1V1uXro4MSC=0YmMiqVWcg@mail.gmail.com>
-	<82eaaada-f3fc-44f7-826d-8de47ce9fd39@crowdstrike.com>
-	<CAHzjS_s2RhM3_H9CCedud3zkGUWW2xkmvxvPLR1qujLZRhgL1A@mail.gmail.com>
-	<CAHzjS_sQQaTZpxC2drGx8=7zCMAKQN_CNjYFcNzxZEGhd+yXPA@mail.gmail.com>
-	<69339fb8-04a6-4c28-bb71-d9522ebd7282@crowdstrike.com>
-	<CAHzjS_tf0KeBnzA6psjHSCuiXn--hK=owDPhCPUB0=jnLDBk=A@mail.gmail.com>
-	<4cc825e6-fdf8-4fc1-8ccd-9bad456c2131@crowdstrike.com>
-	<CAHzjS_soRQwKKP24DObNKBnOtiNsVZHOM-NnY_34w5GwGhC9rw@mail.gmail.com>
-	<5477a73a-1dce-4b9e-b389-e757ef5536c4@crowdstrike.com>
-	<CAHzjS_tuotYQQ0HmncVp=oFOfcyxmYqCds0MDBMOr5FC5KzhSA@mail.gmail.com>
-X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1760992820; c=relaxed/simple;
+	bh=9wUkGqUIBXLJujqdoNDRnEhUy5hWTQBgT9hIAnXOT+o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=smw4Fx6k6iyNImCLo0SNQhGn+byikd1rbfiZKIstCf/SNhrBuSIPOxE9sZsQ2hTHQBQlCy/RKn8acW/5SP+oNppbTfe3xDLk9RogpuiX467l7VR7jIPnX2xQpTDLzlY+CoiS8NSuPNYNe3BmjGJogZhdGTP9oFWNeuCSu6fFKLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=uCJoUzx2; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251020204015euoutp02c12672fdae8f1c58aafe06930857552c~wTaKugs6S3127731277euoutp02o
+	for <live-patching@vger.kernel.org>; Mon, 20 Oct 2025 20:40:15 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251020204015euoutp02c12672fdae8f1c58aafe06930857552c~wTaKugs6S3127731277euoutp02o
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1760992815;
+	bh=LqJNb4Chs0cDieqVOpjUeWEQ6aUffVpBGo18AK7yOy4=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=uCJoUzx2Jd0WGTVxZtD5njK5keWng6uxJA9lJ3lYE0QEaWq3cFNCZegENDQsXQ7sv
+	 BjD8gcfmUsNG0JeW4dmu2awRPNCSchF+Julew+FE5EPxSdBeM/vGDH/scpFcq/gGMm
+	 00qDrh5WvFlRv6b/GfJBwXN7XpOu7fiiGIJh2T6Y=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251020204013eucas1p29b00e200fcb635983bda03a4f34616e4~wTaJabuQd2129121291eucas1p2-;
+	Mon, 20 Oct 2025 20:40:13 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20251020204012eusmtip293bec40fb5818f44f74687d0c53be37d~wTaIZyVML0756007560eusmtip2B;
+	Mon, 20 Oct 2025 20:40:12 +0000 (GMT)
+Message-ID: <98a11c7b-590b-49e3-99ab-b0857329b0a5@samsung.com>
+Date: Mon, 20 Oct 2025 22:40:12 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] module: Fix device table module aliases
+To: Josh Poimboeuf <jpoimboe@kernel.org>, x86@kernel.org
+Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>, Miroslav
+	Benes <mbenes@suse.cz>, Joe Lawrence <joe.lawrence@redhat.com>,
+	live-patching@vger.kernel.org, Song Liu <song@kernel.org>, laokz
+	<laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, Marcos Paulo de Souza
+	<mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, Fazla Mehrab
+	<a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, Puranjay
+	Mohan <puranjay@kernel.org>, Dylan Hatch <dylanbhatch@google.com>, Peter
+	Zijlstra <peterz@infradead.org>, Alexander Stein
+	<alexander.stein@ew.tq-group.com>, Mark Brown <broonie@kernel.org>, Cosmin
+	Tanislav <demonsingur@gmail.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <e52ee3edf32874da645a9e037a7d77c69893a22a.1760982784.git.jpoimboe@kernel.org>
 Content-Transfer-Encoding: 7bit
-X-Stat-Signature: z9t1p3746jddjsga5ngo9w56zhq8et7m
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: 565EC2002A
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Session-ID: U2FsdGVkX1+bPIGG/By3oBOFJ1S0YOEGkGDw9NXqvOU=
-X-HE-Tag: 1760992289-710706
-X-HE-Meta: U2FsdGVkX19g0F7DSMC5QPZGOwHnpTa/7TSN2nbSeBoj3fegMi4+vHLWb2qb2in8emz0SLFYgs5aGdiYuX036cS0nuXCt+PuEX4vnE5UEd9XbEojcxrzpok+mF4xJikCAlHdJkw22b5+htRSdn3smiyfXsBl9zfTX5yFhdlVrqfFkguCN+emUg9j6HgQ/cLsDPs09yiQJVn4SGcMJV+fntLYNeN7sqD9ifCVWlQToW5R71Jg5u6MeNS295zLvijiDfTBzdbh77WIj2OX6XQG5jwT9X/9ynBhCUpfcY24YFEks9VbzfDo5l2X7CbJ2Feyu4HRqslmKp9vIjtX9EiT32oDVxIHubcimnaaI1aD6zI35+eZx6utlQ==
+X-CMS-MailID: 20251020204013eucas1p29b00e200fcb635983bda03a4f34616e4
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251020175415eucas1p18b060df78fab64a52a29ad10ac25869e
+X-EPHeader: CA
+X-CMS-RootMailID: 20251020175415eucas1p18b060df78fab64a52a29ad10ac25869e
+References: <CGME20251020175415eucas1p18b060df78fab64a52a29ad10ac25869e@eucas1p1.samsung.com>
+	<e52ee3edf32874da645a9e037a7d77c69893a22a.1760982784.git.jpoimboe@kernel.org>
 
-On Mon, 20 Oct 2025 11:53:34 -0700
-Song Liu <song@kernel.org> wrote:
+On 20.10.2025 19:53, Josh Poimboeuf wrote:
+> Commit 6717e8f91db7 ("kbuild: Remove 'kmod_' prefix from
+> __KBUILD_MODNAME") inadvertently broke module alias generation for
+> modules which rely on MODULE_DEVICE_TABLE().
+>
+> It removed the "kmod_" prefix from __KBUILD_MODNAME, which caused
+> MODULE_DEVICE_TABLE() to generate a symbol name which no longer matched
+> the format expected by handle_moddevtable() in scripts/mod/file2alias.c.
+>
+> As a result, modpost failed to find the device tables, leading to
+> missing module aliases.
+>
+> Fix this by explicitly adding the "kmod_" string within the
+> MODULE_DEVICE_TABLE() macro itself, restoring the symbol name to the
+> format expected by file2alias.c.
+>
+> Fixes: 6717e8f91db7 ("kbuild: Remove 'kmod_' prefix from __KBUILD_MODNAME")
+> Reported-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Reported-by: Mark Brown <broonie@kernel.org>
+> Reported-by: Cosmin Tanislav <demonsingur@gmail.com>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-> diff --git i/kernel/trace/ftrace.c w/kernel/trace/ftrace.c
-> index 42bd2ba68a82..8f320df0ac52 100644
-> --- i/kernel/trace/ftrace.c
-> +++ w/kernel/trace/ftrace.c
-> @@ -6049,6 +6049,9 @@ int register_ftrace_direct(struct ftrace_ops
-> *ops, unsigned long addr)
-> 
->         err = register_ftrace_function_nolock(ops);
-> 
-> +       if (err)
-> +               remove_direct_functions_hash(hash, addr);
-> +
->   out_unlock:
->         mutex_unlock(&direct_mutex);
-> 
-> 
-> Steven,
-> 
-> Does this change look good to you?
+This fixes the issue observed on my test systems. Thanks!
 
-With the small nit that you don't need a space between the err = and the if (err).
+Closes: 
+https://lore.kernel.org/all/d7b49971-8d77-43e2-b0cd-a70c6463ea57@samsung.com/
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-But yeah, looks fine to me.
 
--- Steve
+> ---
+>   include/linux/module.h | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/module.h b/include/linux/module.h
+> index e135cc79aceea..d80c3ea574726 100644
+> --- a/include/linux/module.h
+> +++ b/include/linux/module.h
+> @@ -251,10 +251,11 @@ struct module_kobject *lookup_or_create_module_kobject(const char *name);
+>    */
+>   #define __mod_device_table(type, name)	\
+>   	__PASTE(__mod_device_table__,	\
+> +	__PASTE(kmod_,			\
+>   	__PASTE(__KBUILD_MODNAME,	\
+>   	__PASTE(__,			\
+>   	__PASTE(type,			\
+> -	__PASTE(__, name)))))
+> +	__PASTE(__, name))))))
+>   
+>   /* Creates an alias so file2alias.c can find device table. */
+>   #define MODULE_DEVICE_TABLE(type, name)					\
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
 
