@@ -1,80 +1,84 @@
-Return-Path: <live-patching+bounces-1787-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1788-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
 Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [IPv6:2605:f480:58:1:0:1994:3:14])
-	by mail.lfdr.de (Postfix) with ESMTPS id F2D67BFB39D
-	for <lists+live-patching@lfdr.de>; Wed, 22 Oct 2025 11:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id DFA79BFB3B6
+	for <lists+live-patching@lfdr.de>; Wed, 22 Oct 2025 11:54:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id D2AC04F7DCA
-	for <lists+live-patching@lfdr.de>; Wed, 22 Oct 2025 09:52:45 +0000 (UTC)
+	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id BE1734E6512
+	for <lists+live-patching@lfdr.de>; Wed, 22 Oct 2025 09:54:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3EF32F2606;
-	Wed, 22 Oct 2025 09:52:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C2581A317D;
+	Wed, 22 Oct 2025 09:54:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="TSEG2Q1j"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sWBRH/+q"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14DDC310768
-	for <live-patching@vger.kernel.org>; Wed, 22 Oct 2025 09:52:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 706BD313E37
+	for <live-patching@vger.kernel.org>; Wed, 22 Oct 2025 09:53:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761126757; cv=none; b=VqU2mAkcJqq1poG5j4Kb6Vp65YcT/dxQHxRidkOZ2EZBZn+2AbOgXXZ6TPlkeVQ7KZTY3wsEJmFmpIxB7tMui30MrtOhbI4TEh1Z2axrNVRd69EL5xjebrqXMdGCrDFmOSR4zMTQcLn3Kw4sb8Ea+qPkKphpm7pS05iZhqUoz4Y=
+	t=1761126840; cv=none; b=ZFcqZQ0iedESpH+Wq/uUFV9gdJg46uPttRu/5/EFnJ4jCsS9IxGIw1Bl4kdh5t1TkbsTEAtAvrzZbGwjReTI7hjHgsQtU+XCYHmdzOinNWzrCORjjCZ/yt3Yt8I/vspa1CBlYa4wlxuRtq/fdtZTYRrcQB8qIregb3uFUP/frlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761126757; c=relaxed/simple;
-	bh=u9O+M5FnnOd2ey7mT49qZhuszTjr6/05cfotPdNQzLw=;
+	s=arc-20240116; t=1761126840; c=relaxed/simple;
+	bh=p6P4qcqDA3YLsBFfKyvteFlo1EPQ1YrLjGB+faTBjmk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DEdP2Lt0Eq+5YCBfaAs34lJXPoIzynkTzQxND5SeZHsyiHT7BvaI6SOk/rrl01n5voryUKVTIl5Qkj+8/GoLso6N+pIgehWC82wh97m3pCp6uCdGEqwddqQd54uuSIRWA864ht5XsfuIFlE/dF+pVgdfyDmvhf4ds42OsdkkwJY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=TSEG2Q1j; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-79af647cef2so5673064b3a.3
-        for <live-patching@vger.kernel.org>; Wed, 22 Oct 2025 02:52:35 -0700 (PDT)
+	 Content-Type:Content-Disposition:In-Reply-To; b=FwOa196vbIVDDFgCDZSXSJwHJGWoUCOyVFk7gQYFvpw1z6JxTI1zcgcczGHQTR13+/jEF3KyQNJhHYQOpcNowtXdSmpJwPsdy4tL1OfuJgZGBUu8D8brs930iamBU/zThpq1P58Zn1EsoCIlbuk0bSkv/Z2+XQYnBekSvg8Q3zE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=sWBRH/+q; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5903e6fc386so1154318e87.2
+        for <live-patching@vger.kernel.org>; Wed, 22 Oct 2025 02:53:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1761126755; x=1761731555; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1761126836; x=1761731636; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cy2C5yVg52td8J//jTYT9GaB3wcdXgzlUlYOQBGu8zk=;
-        b=TSEG2Q1jw1fkAyc3CDUlSBSCbpOHF6Kb9qg5/7FdsXOfb1zHlbV7JRPL0fjkso3XMx
-         sHZsq7v/ZxUcDSMbhApbkTPFWuAbErKUTK8+Ngr4eMRhBb7dCcaRKEwiyZk43//DoHe8
-         MhY5+T2wU8/Q+Fars2wDhK3tzCWpv7g6Og08g=
+        bh=pbt/O4Tu98SupoHCWRQkxaJ7zq2Tk+PByeJW8+2lzZw=;
+        b=sWBRH/+qELlMFNMskkJao8UpNj9GtiHYk3iSuW9xXvpt1gjwdF3MApH6cX3HWnRGAd
+         PijfJ4PVJMiTVc8f6kTOk1tH9vBNis2XpC2CFOIVDE3zfANbPAxdih5EriO5nz/49yoy
+         H8C3y2ZjNwRpxURYyv0ik+ojP+BSgkk89bSfhQBSWQ4rP6i0TjETW/oMsxmPideTc05K
+         DbiNOxQRaM0eSo3NgHUcjS3XS2kP/GI1YvFRdDkUwkQammn+mIGtLF8njUsgCTN1fo6z
+         +2t6JTZS1HIcApaMEdLyAnEaRXhEwonLdDk5hWI/6w5L9fYP6FxKf0GFC5NeParoJEFo
+         ODSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761126755; x=1761731555;
+        d=1e100.net; s=20230601; t=1761126836; x=1761731636;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cy2C5yVg52td8J//jTYT9GaB3wcdXgzlUlYOQBGu8zk=;
-        b=VayHAjwr5q54C8ysD/VvLos9ov4ce9A4khE6E6CqGMz0wiTFhjdQABDhvycPu49tdc
-         2S5h0uF5J3VsnGm6qvEgLNCYTlXz6lyB/YVdY8CT/htRMb1dEvpF9NHa446tkM2DVoaI
-         0gQp8g5zG3d6QhSb7xMCSBXO3dqZivK45gqlbAsp8dBdA0mzlMoOXSs8tROj9Ug2O0EN
-         rrCETWEa2u1avmmuWCrTdCwN31x61pMLPq/eAPke6kJyDaq/JaJrfiKe5bf/HQDARszF
-         IlQ33m2UoBA++zAK0jakjDuLt/m3sPIlsHkt5jvMVmshXYgTTHpTH4Zh5twsvV23BK44
-         8avA==
-X-Forwarded-Encrypted: i=1; AJvYcCVNHznMqWfpG9AISoeTR2s3XYQpUNAvyIqCL6BbVxWyS6CvmwnxERhlwTunyrhtGkLkxF9NUlC7FG9+deGU@vger.kernel.org
-X-Gm-Message-State: AOJu0YyyW0zyCu+mRAzLqHPumzoSEJ0bp9S1ikx7fnNjW16QgQkVZLPf
-	i1/UHFJA5K2kYGELHtrxnUe5mDVzBtLCdwR7R3NzYQ1hMM3UrxKq2v/QxOjzV3aZPA==
-X-Gm-Gg: ASbGncv8/sp5xRB+TQumsXZESzxRzNeei2+yZu5xnaJCEcxH0LHfFHRVI9k3x1OYZHP
-	YCEzAh6eAZ18a9nEDtXbHu36D3kCWTYsnHkGSZ16WARWGbSfCE/MF76W7Wg61VKHx1mtBNkVzCX
-	34xhra1WS0Ovo/T5qTd7XGxIJSttTLsVPeATSKc0XLtatFxTEDDaQ6b0uFFPGxImJZgVe1SCJRR
-	7ud8DoRgRE1Ij65OOsvCQOwe24sOHxv+Dl+C0HRU8W+ja60UkclLrqtpL+sxXTORq5h/nmnGPpa
-	bn/b3F+RstGlMowflEUs/zq78GijwDbhVJ8mMahk3Qgfvak2AW5nLZvBX8bw+RKZIEg0fk1NNGi
-	oQZk2QHAce56EBnhkk8yihatQ1SQPEQG3ZWwm6A+F8VrkR35Vmg2d6R7xz6myBFEAgl8gkU1yZG
-	fpPDzeo9McX6hqnv15HDxROak4bVuD1SxNGgQppgoKdQ==
-X-Google-Smtp-Source: AGHT+IF/TlX3ycQH/AnoCfYDZr7l7J71NtMoNNV43GbWgsSHyZ2FXA9PMcqteZKDpJHEDLLnhDhrfQ==
-X-Received: by 2002:a05:6300:210a:b0:334:9b5d:3885 with SMTP id adf61e73a8af0-334a861747emr28239424637.35.1761126754672;
-        Wed, 22 Oct 2025 02:52:34 -0700 (PDT)
-Received: from google.com ([2a00:79e0:201d:8:5534:56e9:528e:f9b4])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b6a76b349b2sm12903519a12.23.2025.10.22.02.52.31
+        bh=pbt/O4Tu98SupoHCWRQkxaJ7zq2Tk+PByeJW8+2lzZw=;
+        b=AMNfzuoGLikn1V/VuYuKlRQ7Kzh+pI4jtjwNREPWuCNakrDcNXs2Wa50DIBSqhAIFq
+         KndFCFhPjh8Td/Nt/MVOVv4lBRHeMe0N8q9lernwZHqvC155AOSTqQ/iSbXfaz7XeNZG
+         2PL5HSxg2V+n/FUUdCxM73CnHNGaADX8QnbjstvPmYW2YlyMFNJOqDSpjMlQ4D+0vNX6
+         TXxmsX9fIWVsUOQkjzMa/5FQTyYGipn07P1pOv/Xa/TX5m+PqnhJToceywOwYptcJxnh
+         2rS6GHND5PWAZH0yDhrftI92r7AY/Rk9Wb8BQXeCshQH+tp+HUt3HRRQAQRAsTTwzlEY
+         Oraw==
+X-Forwarded-Encrypted: i=1; AJvYcCVksHB7QEnoQh/04Yd0/ncyINXB5mf9dehT+Rxmwbr0mCBWOjEsODkRUqCZMiKDO26/dM4nhI1uFhfEdTV/@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw69VVIqcqtjzyUZh0lTlYMGvBwzNX1y06BIfiEjzzZLZg9NJHQ
+	KofrKnr6LnGwzF60O4PSLDoBqu9tqeNSk0y1BS5MFD3QkQboRRtjdth3ihqrhBlAtec=
+X-Gm-Gg: ASbGncuVYlZQ2Uh9EwZ3A117Z5pAQkeVNp5YYYE6Pn1ty6tMDBUlnTxUIvqnbOwYCKF
+	DPnhzxlL0t6lqog1tglmXn7pBg7qwKR9Qn2EY7rSmNIqKBJBonAnGa0boi/Wn/Hf2OSpo0B1nhw
+	a91WG2vaCk7/eShZXIwK5iM7Kao5gNrHfmvFZRlTjo2EACpc2yxPyHCQu+sbbrrnb3sIttUSV19
+	KmLQGpTocVai1isHqoni0bBWWwCYcSIi/uqFNbD8GwSlfPVy1zWsv2hvMyGTAOq5ogv54X1cXaB
+	o7V9+JSnriIPyWgm1X8QWbb3/1xtkJNLscW8mWOXUGGu+Tr1cdulDbn58p44R+geHoCQgGqvKqN
+	dgjwA3u11/YWkGnkdpg9NzQRvhfYY47PxBIub3p8A7Jq/m/ZBlo8NUixx1rmRn4xE36rnwNLOHd
+	jjeDIMV40ejOG47lYXU2JlLiFJc+8GcHrwXB29odfzGcb4
+X-Google-Smtp-Source: AGHT+IHiSJK/QTZ2b4xHqPRM58bigb9XVQRBUletKW3JCiAXnSvp7jtl+E7uu6ozuEh3jkAPIKB1aw==
+X-Received: by 2002:a05:6512:401b:b0:58a:ffcc:37b2 with SMTP id 2adb3069b0e04-591ea2cbdf8mr1181159e87.2.1761126836431;
+        Wed, 22 Oct 2025 02:53:56 -0700 (PDT)
+Received: from monster (c-85-229-7-191.bbcust.telenor.se. [85.229.7.191])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-591eaace758sm1808801e87.114.2025.10.22.02.53.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Oct 2025 02:52:34 -0700 (PDT)
-Date: Wed, 22 Oct 2025 17:52:29 +0800
-From: Chen-Yu Tsai <wenst@chromium.org>
+        Wed, 22 Oct 2025 02:53:55 -0700 (PDT)
+Date: Wed, 22 Oct 2025 11:53:54 +0200
+From: Anders Roxell <anders.roxell@linaro.org>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
-	Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>,
+Cc: Alexander Stein <alexander.stein@ew.tq-group.com>, x86@kernel.org,
+	linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+	Miroslav Benes <mbenes@suse.cz>,
 	Joe Lawrence <joe.lawrence@redhat.com>,
 	live-patching@vger.kernel.org, Song Liu <song@kernel.org>,
 	laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>,
@@ -85,45 +89,94 @@ Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
 	Puranjay Mohan <puranjay@kernel.org>,
 	Dylan Hatch <dylanbhatch@google.com>,
 	Peter Zijlstra <peterz@infradead.org>,
-	Alexander Stein <alexander.stein@ew.tq-group.com>,
+	Masahiro Yamada <masahiroy@kernel.org>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Mark Brown <broonie@kernel.org>,
 	Cosmin Tanislav <demonsingur@gmail.com>
-Subject: Re: [PATCH] module: Fix device table module aliases
-Message-ID: <20251022095229.GA715916@google.com>
-References: <e52ee3edf32874da645a9e037a7d77c69893a22a.1760982784.git.jpoimboe@kernel.org>
+Subject: Re: [PATCH v4 08/63] kbuild: Remove 'kmod_' prefix from
+ __KBUILD_MODNAME
+Message-ID: <aPipsiGv2OyZyIv7@monster>
+References: <cover.1758067942.git.jpoimboe@kernel.org>
+ <f382dddad4b7c8079ce3dd91e5eaea921b03af72.1758067942.git.jpoimboe@kernel.org>
+ <5936475.DvuYhMxLoT@steina-w>
+ <ycrgjcczkgt6morojzfpkjyg4ehrm5ova2hzzxy2dxv23hhyre@nf5bltmr4lxm>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <e52ee3edf32874da645a9e037a7d77c69893a22a.1760982784.git.jpoimboe@kernel.org>
+In-Reply-To: <ycrgjcczkgt6morojzfpkjyg4ehrm5ova2hzzxy2dxv23hhyre@nf5bltmr4lxm>
 
-On Mon, Oct 20, 2025 at 10:53:40AM -0700, Josh Poimboeuf wrote:
-> Commit 6717e8f91db7 ("kbuild: Remove 'kmod_' prefix from
-> __KBUILD_MODNAME") inadvertently broke module alias generation for
-> modules which rely on MODULE_DEVICE_TABLE().
+On 2025-10-20 10:22, Josh Poimboeuf wrote:
+> On Mon, Oct 20, 2025 at 02:20:35PM +0200, Alexander Stein wrote:
+> > Hi,
+> > 
+> > Am Mittwoch, 17. September 2025, 18:03:16 CEST schrieb Josh Poimboeuf:
+> > > In preparation for the objtool klp diff subcommand, remove the arbitrary
+> > > 'kmod_' prefix from __KBUILD_MODNAME and instead add it explicitly in
+> > > the __initcall_id() macro.
+> > > 
+> > > This change supports the standardization of "unique" symbol naming by
+> > > ensuring the non-unique portion of the name comes before the unique
+> > > part.  That will enable objtool to properly correlate symbols across
+> > > builds.
+> > > 
+> > > Cc: Masahiro Yamada <masahiroy@kernel.org>
+> > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> > 
+> > Starting with this commit 6717e8f91db71 ("kbuild: Remove 'kmod_' prefix
+> > from __KBUILD_MODNAME") in next-20251020 I don't get any
+> > module aliases anymore.
+> > modinfo spi-fsl-dspi.ko returns:
+> > > filename:       /work/repo/linux/build_arm64/drivers/spi/spi-fsl-dspi.ko
+> > > alias:          platform:fsl-dspi
+> > > license:        GPL
+> > > description:    Freescale DSPI Controller Driver
+> > > depends:        
+> > > intree:         Y
+> > > name:           spi_fsl_dspi
+> > > vermagic:       6.18.0-rc1+ SMP preempt mod_unload modversions aarch64
+> > 
+> > but it should be like this:
+> > > filename:       /work/repo/linux/build_arm64/drivers/spi/spi-fsl-dspi.ko
+> > > alias:          platform:fsl-dspi
+> > > license:        GPL
+> > > description:    Freescale DSPI Controller Driver
+> > > alias:          of:N*T*Cnxp,s32g2-dspiC*
 > 
-> It removed the "kmod_" prefix from __KBUILD_MODNAME, which caused
-> MODULE_DEVICE_TABLE() to generate a symbol name which no longer matched
-> the format expected by handle_moddevtable() in scripts/mod/file2alias.c.
+> Thanks, this patch broke the MODULE_DEVICE_TABLE() macro, as it no
+> longer produces the format expected by scripts/mod/file2alias.c.
 > 
-> As a result, modpost failed to find the device tables, leading to
-> missing module aliases.
+> I didn't see this in x86 testing since it doesn't have device tree.
 > 
-> Fix this by explicitly adding the "kmod_" string within the
-> MODULE_DEVICE_TABLE() macro itself, restoring the symbol name to the
-> format expected by file2alias.c.
-> 
-> Fixes: 6717e8f91db7 ("kbuild: Remove 'kmod_' prefix from __KBUILD_MODNAME")
-> Reported-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Reported-by: Mark Brown <broonie@kernel.org>
-> Reported-by: Cosmin Tanislav <demonsingur@gmail.com>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> I will post the following fix shortly:
 
-Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Anders Roxell <anders.roxell@linaro.org>
+
+When can we expect it?
+
+Cheers,
+Anders
+
+> 
+> diff --git a/include/linux/module.h b/include/linux/module.h
+> index e135cc79aceea..d80c3ea574726 100644
+> --- a/include/linux/module.h
+> +++ b/include/linux/module.h
+> @@ -251,10 +251,11 @@ struct module_kobject *lookup_or_create_module_kobject(const char *name);
+>   */
+>  #define __mod_device_table(type, name)	\
+>  	__PASTE(__mod_device_table__,	\
+> +	__PASTE(kmod_,			\
+>  	__PASTE(__KBUILD_MODNAME,	\
+>  	__PASTE(__,			\
+>  	__PASTE(type,			\
+> -	__PASTE(__, name)))))
+> +	__PASTE(__, name))))))
+>  
+>  /* Creates an alias so file2alias.c can find device table. */
+>  #define MODULE_DEVICE_TABLE(type, name)					\
 
