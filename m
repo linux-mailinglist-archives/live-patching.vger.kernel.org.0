@@ -1,90 +1,91 @@
-Return-Path: <live-patching+bounces-1796-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1797-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [IPv6:2604:1380:4601:e00::3])
-	by mail.lfdr.de (Postfix) with ESMTPS id 650C0C06118
-	for <lists+live-patching@lfdr.de>; Fri, 24 Oct 2025 13:45:43 +0200 (CEST)
+Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3A9F2C06125
+	for <lists+live-patching@lfdr.de>; Fri, 24 Oct 2025 13:45:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 0EE8D19A2AA6
-	for <lists+live-patching@lfdr.de>; Fri, 24 Oct 2025 11:43:27 +0000 (UTC)
+	by am.mirrors.kernel.org (Postfix) with ESMTPS id 0F63C188B06B
+	for <lists+live-patching@lfdr.de>; Fri, 24 Oct 2025 11:43:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 54C3C30EF7A;
-	Fri, 24 Oct 2025 11:42:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F39C830EF7A;
+	Fri, 24 Oct 2025 11:43:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="So529veH"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W2hd5zi8"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8D1422ACF3
-	for <live-patching@vger.kernel.org>; Fri, 24 Oct 2025 11:42:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32F42580E2
+	for <live-patching@vger.kernel.org>; Fri, 24 Oct 2025 11:43:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761306175; cv=none; b=YujHMGytY1ELH1rTj7nbYLhiaTJcZTfynCfYpwpLWJkOMKIO2BGsolYF/8dY6OrV7b6DwBR5eo2nWMNE6U4pSx8c5iHpnTZe8Ne5Ivs4wejRelTdfsyvpMEZeppzj4NpHJm1tpsOw7AyhZOdBplZxxkl3FKceywvKiRTjALt7CA=
+	t=1761306196; cv=none; b=BX3SS8tXKBL/FVhQspwjiRAnOiUVqtjsYicxl7kClgiZX0br8h0xXGBOYrn62eaoG1ov+evz7SK6wIFNmn5ynA0AZx4VRNQ6g3gE8dUXpsb8Lf35qGPwHfsWwLy+rWZauvrTOtHwtgRhYJe7ZxfsCkiaYMYjNRA0v88QcohGTvg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761306175; c=relaxed/simple;
-	bh=BSa+n0RHtBRMZcEWJek59r2Jv4nIb4dvimkE2lkcU5M=;
+	s=arc-20240116; t=1761306196; c=relaxed/simple;
+	bh=CZui3p+NqHREMsGpHs7m0KywPm9p3i9nKNibsoLTXQk=;
 	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uWT2oZHG98/TuYTn/iFfEC0TxOUxfQ5rRM8EZBoQONfhjqJrMJaKNTq3wu+2ifk85fjQzwlmYFkx/B71JT9tiSyfRZFTP9qeGgyaDjzAUSuFG59rykmduvj4N2J8Tgq/mr0afoy1JJ87jKZToJ6wy5vBgHuUXqEheYTZChm3398=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=So529veH; arc=none smtp.client-ip=209.85.128.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=Pd/QrHJrlvpEx7PWLtch0r+258Pyj5xNPJqb5cD0Nf7vA/gSJKHd959i3L0AQ/5eJhn/vIHkVoB63NLFJy1gza+SNXvgBoTT5wrWFCKduyDUe19zI6ppain9dm5IrCSODH1U2i+PtRE17Uw9cjcdbPxZttGvVgyTj9P0Jxl8BxI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W2hd5zi8; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-471b80b994bso27696385e9.3
-        for <live-patching@vger.kernel.org>; Fri, 24 Oct 2025 04:42:52 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-47495477241so16402085e9.3
+        for <live-patching@vger.kernel.org>; Fri, 24 Oct 2025 04:43:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761306171; x=1761910971; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1761306193; x=1761910993; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dYSOpLWf0KKSMlI5IP80glPUH7vqI7+Tr3W3w2SASQg=;
-        b=So529veHjy38XsuZYlINGFEIeO+Brf0ht4wtROg2ZPr06pn5Tj2zewjpGottF/qylw
-         NLSS/MzfNONDrBHY1aTs7s0xiwj1EYeC2Aslh+Wh6AO3oqE58oNquIxD8IuYVoZMxP3K
-         txdHsSmh4st4vr+09ULp3XpJO7B7wjBmQrYX6A318YtmY3JSj/LAWgePlGL/weDcceIe
-         /FGmRjVc7vXLMMX+ruo78ScnrN2Ui8QpNeZ6bgUTJAoiMwmpurGLHjml6CSuVx1kE7jm
-         ynV0kbTs3hc/TE9dqBGnfliZ6uGf2b9qiqyyXUHKyCQhTYC6FkLuMLASkDdEYx10tHbs
-         sjVA==
+        bh=b18S4CmbOg3TG3MbWQlCwD9e5ZRL2nAAZ1ZNc6R+a5o=;
+        b=W2hd5zi8mg9GtsRG5T91H58HFZto2aJJx+TPEEcWinUhJfscrbebdirdaztL8iBBS2
+         mw/KUhLy4BG62nc8GorAjoQM1JoiZhCT2rpNnTc5ggz0eGyIPMgAD5evmWpC40TBV1SX
+         uqHnb7nMAb1dV8z5OpMGAkzPZOBKTf7ujwKGxsGgKItVNTKbirf/vAd3Q+OZer7yo51L
+         InjYzdk+yTBxIhOW/9utgvKaF7oubSHVA3Kseydg7Ad0iQVDAj+Dj4P99evsN6WFtxF+
+         iVZMpjv7stUYIBOjX4dqEcgxZPVJSsVkKAigz2/3Qt+98thKCW9szTMeNcOEUUU8iBC1
+         S9Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761306171; x=1761910971;
+        d=1e100.net; s=20230601; t=1761306193; x=1761910993;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dYSOpLWf0KKSMlI5IP80glPUH7vqI7+Tr3W3w2SASQg=;
-        b=iepcLePyfzMo5IXn9g7Klho9DPEA2FHamjxNiY7CxQMloXLv1AhZTnyfOJM5M8/MFU
-         ympWWmUlo1chdHi44Uc26ZHYR3L50IFi0fG8Fs7zRdxJuP85On/nkB/tRRFY2Syz2XZI
-         k9ee2n07d93u7gm8l4g78V+GjnneRCSDSSzMdgKVLj+Sw/HWFUZnu/55dtSEn5noATT8
-         pwwF6umc5ZSHbDWRSZgVrnJOwfYpWH7e1diU+aQSg5iRcgv4ho+nMNjrbFdkVQ0rO99R
-         LWaX/bnxYdh2sH/FcNJNqsBGI5KuEbwICLTAMgIKkSdZEo7aUcar0iMx2Wh1rqOpbiJq
-         W2Rw==
-X-Forwarded-Encrypted: i=1; AJvYcCW+B00oVFcX1mWhymUitntYfGHNXzaFjgfim340W1X09NRWzjtzCz7uOg4At7Wi0N8SAgGxiENAmXnYzUXA@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzfj0uH65D/YhlOvuhXX5n4oHcw5C/KkszA2IeKejwOJVuzTsHv
-	C9WKOES6YW9l/abTwIEHyG8+EUbIMb7GhWavsFyDo3llThUTNLphP3ZO
-X-Gm-Gg: ASbGncsqtNgJGPdH1ic5SR7NyujMg4HvmdShCARAfwQfRoKM3Ci+S2mbggjR5y3dMQE
-	SGrIG1DuPK6QNsV+J6F3ORqoMqDt+9PXuUP1lJ06wWiMoyJfCVPFwi0eI1M5k5KB1atikV8Km8y
-	fp2blVEs6/CK/kGwgQTqwZm5OMjNDr9WO8fnkmpkM/dZUhFzzDT7KcUZH1qqHDhPZSP8pxdwNsz
-	eZ+/tNONG5KStoWfwT/0A7ZTyV7iZXO/G1v3NnP4SewPa22WurqXcmtaMSzKT+otWc+y+JHntot
-	rJ/UUv5Z1+LUWPOLnbNXNMFhBthXGYObk+v5BnFY6tVE3JNIV5SGb5FHPUArnzFW5R7PvJ4kI3Q
-	MsyXiDSOHtmlmXfWiXr/r1McfsxszpaTPKhcn30nDGMrCKCOZT+bfSQKBXsM8
-X-Google-Smtp-Source: AGHT+IFIUsw6TyOf0Ycr6/XFbQuoCfiAQ0G0a0V5A5EXttedAZG47NAs1I680hPCSVoLr15fOIrshA==
-X-Received: by 2002:a05:600c:3e12:b0:45b:7d77:b592 with SMTP id 5b1f17b1804b1-471178a74demr202375115e9.12.1761306171044;
-        Fri, 24 Oct 2025 04:42:51 -0700 (PDT)
+        bh=b18S4CmbOg3TG3MbWQlCwD9e5ZRL2nAAZ1ZNc6R+a5o=;
+        b=r8yYe5Sn+XVqIfUAtkeMafieQ9HeAtiZNzv6NmlJGGgotyiaPgGR/xpeCvZwaqJGgl
+         rejTpiVbT3a/nuSd9EFx8LrBc1MY/UX2LNLygAxHI238EgnxvwXj0ucs57Gft500UsVA
+         by25WROIGKO+OOcla40D0U1hA/Somp290CkJYkfmFXTNBfmmGaxs6lclIpqA64ZL8dwB
+         Uz4EufGOTT6fYyl62k27+UtBZ6xcj3V57taTuvCtTfbaj6h8Asru7HRixbmQMiK3Cu03
+         HWpRTKOl74pD6sq2jD5XORPE76PNchHjxlWk3Qp7WyaaZ2W61X0Q4nLNzXZApXTtDXDM
+         /ing==
+X-Forwarded-Encrypted: i=1; AJvYcCX2ihGVyUJiiKPFsLhrzDo4K+Lrun0yQfPOL21yt6z89ZhrrKLs2jUK0Xggego4LgwkYKEG/3BDPFNLYn9H@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw97YDvf/eUW4qcmZNNCJStVve6E5MCwEiRoGR9dkGAMUC3LEBZ
+	AlecuJ2lr5GwgQc3aQ5jKxKBx34CUs1ki4c9/NAP09clMy8LMqcjPCCP
+X-Gm-Gg: ASbGncthbd+YUlct8DUDjFd43KWEQhoiVZnDe1J4ckZZcadrm7M1mbAPIXWBu1PDvN0
+	Ju6H4pNBPfCoIaTYWxWUA/+TFPKe3mDS4Zdxpk3+4FGXUnB31tXS3B74YHoymg49CO1P3gaT0AU
+	VFcrTK9izRY5fPNrDJ90g0eG9hEBDcet9ZB3ofJJJ6Rs7IjIYbvfY1H3BmdcVOG8LDHqO48Dzfj
+	/KJ7sMd0pOEVJFPqBNIbd6aFu1+U6lyMwV9dChB5O+8fzy9o7moF2MZDnA0N7dGQCjXgaxMFG/5
+	CtIX8zTpMRHjRnt0NsRphpsi0qvGlYm3xCFCMFz5Q41bUE9wDXpvV/yxAf37X8QkwK3etC6U1/3
+	nh3usS5pXBbh4Qnylf6ATo/lzvvn2cUcyTQTRf9dC4uB3mXA25A==
+X-Google-Smtp-Source: AGHT+IHpcyD6w06WvdrfkL+V8Avu/JoPzLSg/RttGHw9HhPaiYsYuNKZcx58iYrmG4o++/6PM8eOHg==
+X-Received: by 2002:a05:600c:4f09:b0:471:a73:9c49 with SMTP id 5b1f17b1804b1-475caf930dfmr55560595e9.2.1761306192938;
+        Fri, 24 Oct 2025 04:43:12 -0700 (PDT)
 Received: from krava ([2a02:8308:a00c:e200::b44f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429898ecadbsm9269121f8f.45.2025.10.24.04.42.50
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47494ac30b4sm82187635e9.2.2025.10.24.04.43.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Oct 2025 04:42:50 -0700 (PDT)
+        Fri, 24 Oct 2025 04:43:12 -0700 (PDT)
 From: Jiri Olsa <olsajiri@gmail.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date: Fri, 24 Oct 2025 13:42:48 +0200
+Date: Fri, 24 Oct 2025 13:43:10 +0200
 To: Song Liu <song@kernel.org>
 Cc: bpf@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
 	live-patching@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
 	andrii@kernel.org, rostedt@goodmis.org,
 	andrey.grodzovsky@crowdstrike.com, mhiramat@kernel.org,
-	kernel-team@meta.com, stable@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/3] ftrace: Fix BPF fexit with livepatch
-Message-ID: <aPtmOJ9jY3bGPvEq@krava>
+	kernel-team@meta.com
+Subject: Re: [PATCH bpf-next 2/3] ftrace: bpf: Fix IPMODIFY + DIRECT in
+ modify_ftrace_direct()
+Message-ID: <aPtmThVpiCrlKc0b@krava>
 References: <20251024071257.3956031-1-song@kernel.org>
- <20251024071257.3956031-2-song@kernel.org>
+ <20251024071257.3956031-3-song@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -93,57 +94,114 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251024071257.3956031-2-song@kernel.org>
+In-Reply-To: <20251024071257.3956031-3-song@kernel.org>
 
-On Fri, Oct 24, 2025 at 12:12:55AM -0700, Song Liu wrote:
-> When livepatch is attached to the same function as bpf trampoline with
-> a fexit program, bpf trampoline code calls register_ftrace_direct()
-> twice. The first time will fail with -EAGAIN, and the second time it
-> will succeed. This requires register_ftrace_direct() to unregister
-> the address on the first attempt. Otherwise, the bpf trampoline cannot
-> attach. Here is an easy way to reproduce this issue:
+On Fri, Oct 24, 2025 at 12:12:56AM -0700, Song Liu wrote:
+> ftrace_hash_ipmodify_enable() checks IPMODIFY and DIRECT ftrace_ops on
+> the same kernel function. When needed, ftrace_hash_ipmodify_enable()
+> calls ops->ops_func() to prepare the direct ftrace (BPF trampoline) to
+> share the same function as the IPMODIFY ftrace (livepatch).
 > 
->   insmod samples/livepatch/livepatch-sample.ko
->   bpftrace -e 'fexit:cmdline_proc_show {}'
->   ERROR: Unable to attach probe: fexit:vmlinux:cmdline_proc_show...
+> ftrace_hash_ipmodify_enable() is called in register_ftrace_direct() path,
+> but not called in modify_ftrace_direct() path. As a result, the following
+> operations will break livepatch:
 > 
-> Fix this by cleaning up the hash when register_ftrace_function_nolock hits
-> errors.
+> 1. Load livepatch to a kernel function;
+> 2. Attach fentry program to the kernel function;
+> 3. Attach fexit program to the kernel function.
 > 
-> Fixes: d05cb470663a ("ftrace: Fix modification of direct_function hash while in use")
-> Cc: stable@vger.kernel.org # v6.6+
-> Reported-by: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>
-> Closes: https://lore.kernel.org/live-patching/c5058315a39d4615b333e485893345be@crowdstrike.com/
-> Cc: Steven Rostedt (Google) <rostedt@goodmis.org>
-> Cc: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-> Acked-and-tested-by: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>
+> After 3, the kernel function being used will not be the livepatched
+> version, but the original version.
+> 
+> Fix this by adding ftrace_hash_ipmodify_enable() to modify_ftrace_direct()
+> and adjust some logic around the call.
+> 
 > Signed-off-by: Song Liu <song@kernel.org>
 > ---
->  kernel/trace/ftrace.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  kernel/bpf/trampoline.c | 12 +++++++-----
+>  kernel/trace/ftrace.c   | 12 ++++++++++--
+>  2 files changed, 17 insertions(+), 7 deletions(-)
 > 
+> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> index 5949095e51c3..8015f5dc3169 100644
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -221,6 +221,13 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
+>  
+>  	if (tr->func.ftrace_managed) {
+>  		ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 1);
+> +		/*
+> +		 * Clearing fops->trampoline_mutex and fops->NULL is
+
+s/trampoline_mutex/trampoline/
+
+> +		 * needed by the "goto again" case in
+> +		 * bpf_trampoline_update().
+> +		 */
+> +		tr->fops->trampoline = 0;
+> +		tr->fops->func = NULL;
+
+IIUC you move this because if modify_fentry returns -EAGAIN
+we don't want to reset the trampoline, right?
+
+>  		ret = register_ftrace_direct(tr->fops, (long)new_addr);
+>  	} else {
+>  		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
+> @@ -479,11 +486,6 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mut
+>  		 * BPF_TRAMP_F_SHARE_IPMODIFY is set, we can generate the
+>  		 * trampoline again, and retry register.
+>  		 */
+> -		/* reset fops->func and fops->trampoline for re-register */
+> -		tr->fops->func = NULL;
+> -		tr->fops->trampoline = 0;
+> -
+> -		/* free im memory and reallocate later */
+>  		bpf_tramp_image_free(im);
+>  		goto again;
+>  	}
 > diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index 42bd2ba68a82..7f432775a6b5 100644
+> index 7f432775a6b5..370f620734cf 100644
 > --- a/kernel/trace/ftrace.c
 > +++ b/kernel/trace/ftrace.c
-> @@ -6048,6 +6048,8 @@ int register_ftrace_direct(struct ftrace_ops *ops, unsigned long addr)
->  	ops->direct_call = addr;
+> @@ -2020,8 +2020,6 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
+>  				if (is_ipmodify)
+>  					goto rollback;
 >  
->  	err = register_ftrace_function_nolock(ops);
-> +	if (err)
-> +		remove_direct_functions_hash(hash, addr);
+> -				FTRACE_WARN_ON(rec->flags & FTRACE_FL_DIRECT);
 
-should this be handled by the caller of the register_ftrace_direct?
-fops->hash is updated by ftrace_set_filter_ip in register_fentry
+why is this needed?
 
-seems like it's should be caller responsibility, also you could do that
-just for (err == -EAGAIN) case to address the use case directly
-
+thanks,
 jirka
 
+> -
+>  				/*
+>  				 * Another ops with IPMODIFY is already
+>  				 * attached. We are now attaching a direct
+> @@ -6128,6 +6126,15 @@ __modify_ftrace_direct(struct ftrace_ops *ops, unsigned long addr)
+>  	if (err)
+>  		return err;
 >  
->   out_unlock:
->  	mutex_unlock(&direct_mutex);
+> +	/*
+> +	 * Call ftrace_hash_ipmodify_enable() here, so that we can call
+> +	 * ops->ops_func for the ops. This is needed because the above
+> +	 * register_ftrace_function_nolock() worked on tmp_ops.
+> +	 */
+> +	err = ftrace_hash_ipmodify_enable(ops);
+> +	if (err)
+> +		goto out;
+> +
+>  	/*
+>  	 * Now the ftrace_ops_list_func() is called to do the direct callers.
+>  	 * We can safely change the direct functions attached to each entry.
+> @@ -6149,6 +6156,7 @@ __modify_ftrace_direct(struct ftrace_ops *ops, unsigned long addr)
+>  
+>  	mutex_unlock(&ftrace_lock);
+>  
+> +out:
+>  	/* Removing the tmp_ops will add the updated direct callers to the functions */
+>  	unregister_ftrace_function(&tmp_ops);
+>  
 > -- 
 > 2.47.3
 > 
