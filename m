@@ -1,153 +1,139 @@
-Return-Path: <live-patching+bounces-1811-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1812-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from am.mirrors.kernel.org (am.mirrors.kernel.org [147.75.80.249])
-	by mail.lfdr.de (Postfix) with ESMTPS id 74638C0A5A9
-	for <lists+live-patching@lfdr.de>; Sun, 26 Oct 2025 10:54:11 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4665DC0B2F0
+	for <lists+live-patching@lfdr.de>; Sun, 26 Oct 2025 21:33:33 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by am.mirrors.kernel.org (Postfix) with ESMTPS id 7D7DD18A052F
-	for <lists+live-patching@lfdr.de>; Sun, 26 Oct 2025 09:54:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C3DF43BF5E3
+	for <lists+live-patching@lfdr.de>; Sun, 26 Oct 2025 20:27:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58803220F37;
-	Sun, 26 Oct 2025 09:54:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0AC1D23EAB2;
+	Sun, 26 Oct 2025 20:27:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VF11bhJ/"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VZ8kl16Z"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94C181DD525;
-	Sun, 26 Oct 2025 09:54:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 275E62222C8
+	for <live-patching@vger.kernel.org>; Sun, 26 Oct 2025 20:27:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761472447; cv=none; b=fctaZ/I5uivm29H10xqxcHp2kIH4avMB/Hjbxm1xd1oiqWgVnppmX8WLLEAEh1q6JELR4yndAO89YOHffcZHvjCMeUP5C8i8dIDv9s26voH3B2uVEi/GHZmbwua3Dil3uiy2mspiyYI7GRwusAV2Aode3iAUKfikh4f1d1sI1yc=
+	t=1761510460; cv=none; b=bYI4V3ILgQfbmcpC8evMHgwLRRkw/P5E0Sjka6pch1TJeZN6dFBRo5qJOCqIbGhllAVvYnkCBrmnY4m3SZKLdlZcIZ9bLpIp7C9wO5ZsDMCpEP+OZmLoqhgIqWqnQ+qTwGMBVnJTUyCSnqNGGZA8s46jN8yH1g0kL2tCERPRghw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761472447; c=relaxed/simple;
-	bh=yrhzUdN3+Umrl/X0VPnOijPThmoLqx2wbg2hahY7pjY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NvNEU9mnnpyGK1d3Wwy3fRjSbV5s2YmeWv8fc26U5ASOhYpLazgzHJ2zyW6IpRyV7St9LzPMt7xX13afHixVpXh/byrSFmHh2IMvwW0iIxHx5ek2ixhr2tmy1HcTFazhXrelF+nhedgV8R9chUY+/RljHCS2srBLAOBO8caBjNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VF11bhJ/; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761472446; x=1793008446;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yrhzUdN3+Umrl/X0VPnOijPThmoLqx2wbg2hahY7pjY=;
-  b=VF11bhJ/eeXnHXIJQZLPftQIJbP+WLbm7qWmgN41Z8JFw8nh0OhQ0yvr
-   Gs1P2dou3+8SyeQBsYynS0wwcbrNNZMQsRSChjV7/BY5/wUGWxbomRxc0
-   iBZKKmva8gpx0qbuC92oS9sXlZ6VN5o41c5AE9qflN3kq3UjptrU19361
-   6mT/y/otbh4FFopMlGH9QcskanJY6zaWkWMM+Mu4xhImlw9zyy5Ukx37W
-   fK0ueM30sf0u4YmTx+uKRvcmjo93jgs2c2zwnFrgyTMmbIoSEKDAOFNg9
-   0b2HcalwTAPfJFVMUtqDqEmgqqycbmgkeUN3OvGl/X4Ra8eBKBrY2DuHw
-   A==;
-X-CSE-ConnectionGUID: pDeduQ3hTKSuWBoCCQCy/g==
-X-CSE-MsgGUID: qoaAZW2+SYi2qJPntmJ2VQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="81009153"
-X-IronPort-AV: E=Sophos;i="6.19,256,1754982000"; 
-   d="scan'208";a="81009153"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2025 02:54:04 -0700
-X-CSE-ConnectionGUID: IfIOOh9GTxyTYqnNPYVvcQ==
-X-CSE-MsgGUID: IhlL59izRci7VIHXUGHL+w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,256,1754982000"; 
-   d="scan'208";a="183982311"
-Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
-  by orviesa006.jf.intel.com with ESMTP; 26 Oct 2025 02:54:01 -0700
-Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1vCxRm-000G2D-1S;
-	Sun, 26 Oct 2025 09:53:58 +0000
-Date: Sun, 26 Oct 2025 17:53:43 +0800
-From: kernel test robot <lkp@intel.com>
-To: Song Liu <song@kernel.org>, bpf@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, ast@kernel.org, daniel@iogearbox.net,
-	andrii@kernel.org, rostedt@goodmis.org,
-	andrey.grodzovsky@crowdstrike.com, mhiramat@kernel.org,
-	kernel-team@meta.com, olsajiri@gmail.com,
-	Song Liu <song@kernel.org>
-Subject: Re: [PATCH v2 bpf 2/3] ftrace: bpf: Fix IPMODIFY + DIRECT in
- modify_ftrace_direct()
-Message-ID: <202510261733.fSN9P6td-lkp@intel.com>
-References: <20251024182901.3247573-3-song@kernel.org>
+	s=arc-20240116; t=1761510460; c=relaxed/simple;
+	bh=bCRYFVf/yj26So76o/UscaSGcOLCs2R309YdgNO2eV8=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WS1UqoDzsIMM9KGxhd14DbmMqfpngxqsDgPuw51hnxm2blze0unpXYjXi/YRTw+Z4xVCL5//OJi3Nk1SvvMY1xi8jjl1xHsSt9kkZ+lMO5usMC0nuNqTVzMRGgaR9yHV/2744+rCzf+C5BB6yk8s60ptRp5MuL7KESZyoP82vrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VZ8kl16Z; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-475de184058so4215705e9.2
+        for <live-patching@vger.kernel.org>; Sun, 26 Oct 2025 13:27:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1761510457; x=1762115257; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=pblCzHnA/TD1DlfgnXYI2tr2t1P6JwQmaCDKB+tRFYY=;
+        b=VZ8kl16Z2slDJLPqmZPO2HXdf5WyvwU5JOx8Qib6oOSQZkPXaOtqMTMu6q9J+vYcjg
+         dWvU8mbri+blOddmgbzsHRaj/iXyHAu9obemiTG8ppUr5zNyb5id67zkQQ5Q+Jga4gh8
+         8DN6oLTScA+vPehRo6xN/fL5weeVYdwyOV44SpOEfMoBtfNV75AsvteVtM2mIAboZFgA
+         8+L74iEkcLNRutlJskkVCj6QNtDbnOvRiTuBQmQTd2s/QyV1G6R5b6UonErnJyrYPYxY
+         mMcgKYk4+RmDT0OdV8hmS8nXcCA6LG3XNIYH+eH+kgsz3zO0+XnHFoEtFgei7HEhjc3W
+         x4Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761510457; x=1762115257;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pblCzHnA/TD1DlfgnXYI2tr2t1P6JwQmaCDKB+tRFYY=;
+        b=GE94gwED9pIf0vqwChjeNx5SYApy2dS6ziPZhrOMf9Tq5qT/BNQkXBmG+wwgN+0v46
+         bW6mJC+LD2gOE4wb7Z5AvPpm+MjTTs5gKpzvk3YoFUaMz//hY4em/fpeAzzLYBNWWiVd
+         Qlc5ZvNR0hcJ0VjsE92mVbOaV9f9Z5JYWxy4uuVM3IFpm56GRphCj2KW7gGIE8BUlRJb
+         Zl+vhMTttI0cJWId3Y5nC4KLjFibCofINDwnfNud1TEBPuZYOqqe8zrIDSeCKljxDVxp
+         5pZuLqhR/LE1SJX5LxZGMnJvLkQmIZ1EKAxjiwZbMYD9F2vs6EBWDL4pNPRh9fG8y37A
+         6ZWA==
+X-Forwarded-Encrypted: i=1; AJvYcCU+EaYq5YTVO3buNMDyveh+HzWrFb9NbyD00ODQHULnM+D0yAKdlqj0EYFUVh58uEJo3c0soHNjAWFY7B21@vger.kernel.org
+X-Gm-Message-State: AOJu0Yys2Q5NSEB/PRzo9PdAr9GcJRpaiCAc7paCU48N3cF5lgKavIni
+	iwSAd5+l63xol3wxorVgdRdaF9J4Qj27ULfiWLcJ2ygv8hK8ggQoF5FP5G2k5A==
+X-Gm-Gg: ASbGnctmV0Ct1Upz57cqXlp+uIOD+ER3K7INmDOMrXj/UqRDZlTQpbU9wj336Ndq7cq
+	A5gPAeoqH9WWOVQsrVpxFtw12iRdES+m3eKvQjxAlrft97jHZM4ucZDxDa/iPLfsL0AVt1MI5di
+	FDxLPv2c7QXrmxu75BflzjXkJuggsBTtyFOrtlFBryhyIQ2e1czbIFJLPKOvN+q0s3+IVFCKi+r
+	9s+69JkjaPUfz3qYK1PMx2IL8/YCeDjM9I0L3LCG6QF7HhZcoKzraXjhOz+6h/O7jJjcJ/Z3pjc
+	YokXvGhARhJqMhWVM1TFJT6PzlsbHsMCD+7Dn0mAfUHjuaVcJyA6GbZFmqdWfv24S4bwpzYLq/H
+	dC0ah4OvMG4KhpqTIEA3I9J8qkq2rnswFOKc0dx+XZBq90r3bKESKD85MwKzMv+Xm
+X-Google-Smtp-Source: AGHT+IFlHbsfbgm+f6PZD4U6LbUt6zcC9Kc4REe2auj3h2CrWE2UTufQJB1Q/D7zVf6QyTHhVZYEBA==
+X-Received: by 2002:a05:600c:83c6:b0:475:de12:d3b5 with SMTP id 5b1f17b1804b1-475de12d752mr48711745e9.34.1761510457198;
+        Sun, 26 Oct 2025 13:27:37 -0700 (PDT)
+Received: from krava ([176.74.159.170])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-475dd48a07dsm98111805e9.17.2025.10.26.13.27.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Oct 2025 13:27:36 -0700 (PDT)
+From: Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date: Sun, 26 Oct 2025 21:27:34 +0100
+To: Song Liu <songliubraving@meta.com>
+Cc: Song Liu <song@kernel.org>, "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
+	"live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+	"ast@kernel.org" <ast@kernel.org>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	"andrii@kernel.org" <andrii@kernel.org>,
+	"rostedt@goodmis.org" <rostedt@goodmis.org>,
+	"andrey.grodzovsky@crowdstrike.com" <andrey.grodzovsky@crowdstrike.com>,
+	"mhiramat@kernel.org" <mhiramat@kernel.org>,
+	Kernel Team <kernel-team@meta.com>,
+	"olsajiri@gmail.com" <olsajiri@gmail.com>
+Subject: Re: [PATCH v2 bpf 0/3] Fix ftrace for livepatch + BPF fexit programs
+Message-ID: <aP6ENht0hNVcVYbf@krava>
+References: <20251024182901.3247573-1-song@kernel.org>
+ <8412F9AA-FEC6-4EFA-BACD-8B1579B90177@meta.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20251024182901.3247573-3-song@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8412F9AA-FEC6-4EFA-BACD-8B1579B90177@meta.com>
 
-Hi Song,
+On Fri, Oct 24, 2025 at 08:47:08PM +0000, Song Liu wrote:
+> 
+> 
+> > On Oct 24, 2025, at 11:28 AM, Song Liu <song@kernel.org> wrote:
+> > 
+> > livepatch and BPF trampoline are two special users of ftrace. livepatch
+> > uses ftrace with IPMODIFY flag and BPF trampoline uses ftrace direct
+> > functions. When livepatch and BPF trampoline with fexit programs attach to
+> > the same kernel function, BPF trampoline needs to call into the patched
+> > version of the kernel function.
+> > 
+> > 1/3 and 2/3 of this patchset fix two issues with livepatch + fexit cases,
+> > one in the register_ftrace_direct path, the other in the
+> > modify_ftrace_direct path.
+> > 
+> > 3/3 adds selftests for both cases.
+> 
+> AI has a good point on this:
+> 
+> https://github.com/kernel-patches/bpf/pull/10088#issuecomment-3444465504
 
-kernel test robot noticed the following build errors:
+makes sense, I think it'll make the code easier to read
 
-[auto build test ERROR on bpf/master]
+jirka
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/ftrace-Fix-BPF-fexit-with-livepatch/20251025-023411
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
-patch link:    https://lore.kernel.org/r/20251024182901.3247573-3-song%40kernel.org
-patch subject: [PATCH v2 bpf 2/3] ftrace: bpf: Fix IPMODIFY + DIRECT in modify_ftrace_direct()
-config: sparc-randconfig-r132-20251026 (https://download.01.org/0day-ci/archive/20251026/202510261733.fSN9P6td-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 8.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251026/202510261733.fSN9P6td-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202510261733.fSN9P6td-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   kernel/bpf/trampoline.c: In function 'register_fentry':
->> kernel/bpf/trampoline.c:229:11: error: dereferencing pointer to incomplete type 'struct ftrace_ops'
-      tr->fops->trampoline = 0;
-              ^~
-
-
-vim +229 kernel/bpf/trampoline.c
-
-   207	
-   208	/* first time registering */
-   209	static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
-   210	{
-   211		void *ip = tr->func.addr;
-   212		unsigned long faddr;
-   213		int ret;
-   214	
-   215		faddr = ftrace_location((unsigned long)ip);
-   216		if (faddr) {
-   217			if (!tr->fops)
-   218				return -ENOTSUPP;
-   219			tr->func.ftrace_managed = true;
-   220		}
-   221	
-   222		if (tr->func.ftrace_managed) {
-   223			ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 1);
-   224			/*
-   225			 * Clearing fops->trampoline and fops->NULL is
-   226			 * needed by the "goto again" case in
-   227			 * bpf_trampoline_update().
-   228			 */
- > 229			tr->fops->trampoline = 0;
-   230			tr->fops->func = NULL;
-   231			ret = register_ftrace_direct(tr->fops, (long)new_addr);
-   232		} else {
-   233			ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
-   234		}
-   235	
-   236		return ret;
-   237	}
-   238	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> 
+> 
+> I will wait a bit more for human to chime in before sending v3 with the
+> suggestion by AI. 
+> 
+> Thanks,
+> Song
+> 
 
