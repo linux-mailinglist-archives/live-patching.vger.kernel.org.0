@@ -1,268 +1,120 @@
-Return-Path: <live-patching+bounces-1826-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1827-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7FC67C0FCB5
-	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 18:54:04 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 221D7C11AD6
+	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 23:25:10 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id A83704FD64E
-	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 17:51:32 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C038B400D7D
+	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 22:22:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B633631987D;
-	Mon, 27 Oct 2025 17:50:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 910A9326D57;
+	Mon, 27 Oct 2025 22:22:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YlJVXXb4"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nA/MqK24"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E2A73191C0;
-	Mon, 27 Oct 2025 17:50:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6781925F7B9;
+	Mon, 27 Oct 2025 22:22:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761587457; cv=none; b=uqEtRg93JLvH7IGslyXxv9yEY469GfFc8tWBbPEqczPWnq2kLk9T8r2xHL6qVxVBh4GIWYlS72lIUMozLqJXPP/VnfChIwsGEmVNNyt9KYBHcSOGepcd2hjXEcXi47i2kgpm/jBD4pfCSHxkOck5VadDFFSm2Pdp7b7sQtbACOs=
+	t=1761603751; cv=none; b=t8UszH5i0TqM+4+ATmNhzwrtpiY5i+FCJpRwc/DjCNTHwUt2aafVrdr4QhDomHIkkZTznDa7+aOCaTyx7L+m0tWF0QhaQLQd/NGNdgm6OZDJCZMe19yKr+3SQuNM9o93YwZHt+4RhHBeq+v3EF7aXBaAIDnqiTqSYUEBfCFuidc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761587457; c=relaxed/simple;
-	bh=VoFt1eWIRvU9K7JtarVvwZrLTy++5akKeuRJHTwEHk4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pcuvrVxdsMeF0HNOsVqdd/h96HIl2v8MCEZKoecPlxSMOecfroPRN1uQGqy2bJ6e5x7/dZUxsEb/1tBsED+JsKiSSi6YVJk/BiYxxSmuSXWItjuPOB6kgRare8AiSYVl4Iz1Oj+VcNE1VQGSO1Ugg3Tp/MBnkWaanigwWeFjoWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YlJVXXb4; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D1EC4CEF1;
-	Mon, 27 Oct 2025 17:50:56 +0000 (UTC)
+	s=arc-20240116; t=1761603751; c=relaxed/simple;
+	bh=WzcYbo984hVH2IxD77QcvHr4Djfe8H3bMUqVa5YOGtM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SnMdWl+TI9nAxybuXSESO0EXFUWFYNJgLd3c61YKc06vcPs9DMN6z5Xtkyg11465mu7pyMbacquPfvje05vAVHcINe5UlF4OMkRFr8QJ4Fm1qLI2Qdq2FmvMMJiTiaHMipg/YJIO6SlHeYMEa6VaedteNNzZ+/QONDSSPk/s++A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nA/MqK24; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4E10C4CEF1;
+	Mon, 27 Oct 2025 22:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761587457;
-	bh=VoFt1eWIRvU9K7JtarVvwZrLTy++5akKeuRJHTwEHk4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YlJVXXb4Y2ZztGQtGLH+RPMmjAbEvKyRTL45dcDcWg9wg/J/eBmLMpAMxXEC2CH4W
-	 RyVK0WhQ5srGzC7cG5chJBw3MlpAtDrcL3giv19eP97BkmmC+ZCnj3gus79Heh+g/a
-	 r44kt6V3YESP0WknV/ed8CxdoquDfyXThx3QjR45DcLlROZksHAQal0AM4gV5yupLc
-	 ubTLP1nQYR3wEO7omh4R4VbZ+++SD9R7yLvalL7JhZLeSbrBRGmG9m10oK40394uGY
-	 lp4yJ533CSJvCLQb+uxUjbu3rCqUvXteNfrwA+pZ/gviCfi/se2bfMOFA0Tfn8jby3
-	 B+5dmKCTbZSHQ==
-From: Song Liu <song@kernel.org>
-To: bpf@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org,
-	live-patching@vger.kernel.org
-Cc: ast@kernel.org,
-	daniel@iogearbox.net,
-	andrii@kernel.org,
-	rostedt@goodmis.org,
-	andrey.grodzovsky@crowdstrike.com,
-	mhiramat@kernel.org,
-	kernel-team@meta.com,
-	olsajiri@gmail.com,
-	Song Liu <song@kernel.org>,
-	Jiri Olsa <jolsa@kernel.org>
-Subject: [PATCH v4 bpf 3/3] selftests/bpf: Add tests for livepatch + bpf trampoline
-Date: Mon, 27 Oct 2025 10:50:23 -0700
-Message-ID: <20251027175023.1521602-4-song@kernel.org>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20251027175023.1521602-1-song@kernel.org>
-References: <20251027175023.1521602-1-song@kernel.org>
+	s=k20201202; t=1761603750;
+	bh=WzcYbo984hVH2IxD77QcvHr4Djfe8H3bMUqVa5YOGtM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nA/MqK24j5asByktAZbYpWATRsFhwk3bNCS7t8MpQdXV0hUBwbfq/eUBv5IGVGcoV
+	 QDBdt1vHbMk9w7kf2qjIJCA8EABdpqTD1QsTNpgsJ6wWHwL/RL8srjzE/GPglvVS45
+	 IIhRFQsjTV6nujpdRg7vK5gQoHzPp7xFBxwfhn4NlT4O8HBMiH7AkVLZ3ySeEuvnYy
+	 VaUOUeEnvPo0MpmPbT0w51WiiwpQ2LfiGdrUMTnnqPtYgt0Fr+RPc0qPvwc4B2Kg7F
+	 JyxX4Cto5EjWYgEeumI4h2oK6hrUPV80hnu/xlFYPNvAwS8imHxC91dFWmkbwiB1zP
+	 HC+IgZmtmvjpg==
+Date: Mon, 27 Oct 2025 15:22:28 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "x86@kernel.org" <x86@kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>, 
+	Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
+	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
+	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
+	Puranjay Mohan <puranjay@kernel.org>, Dylan Hatch <dylanbhatch@google.com>, 
+	Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v4 49/63] objtool/klp: Add --checksum option to generate
+ per-function checksums
+Message-ID: <5an6r3jzuifkm2b7scmxv4u3suygr77apgue6zneelowbqyjzr@5g6mbczbyk5e>
+References: <cover.1758067942.git.jpoimboe@kernel.org>
+ <1bc263bd69b94314f7377614a76d271e620a4a94.1758067943.git.jpoimboe@kernel.org>
+ <SN6PR02MB41579B83CD295C9FEE40EED6D4FCA@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <SN6PR02MB41579B83CD295C9FEE40EED6D4FCA@SN6PR02MB4157.namprd02.prod.outlook.com>
 
-Both livepatch and BPF trampoline use ftrace. Special attention is needed
-when livepatch and fexit program touch the same function at the same
-time, because livepatch updates a kernel function and the BPF trampoline
-need to call into the right version of the kernel function.
+On Mon, Oct 27, 2025 at 01:19:10AM +0000, Michael Kelley wrote:
+> It turns out that Ubuntu 20.04 installed the 0.7.3-1 version of libxxhash. But from a
+> quick look at the README on the xxhash github site, XXH3 is first supported by the
+> 0.8.0 version, so the compile error probably makes sense. I found a PPA that offers
+> the 0.8.3 version of xxhash for Ubuntu 20.04, and that solved the problem.
+> 
+> So the Makefile steps above that figure out if xxhash is present probably aren't
+> sufficient, as the version of xxhash matters. And the "--checksum not supported"
+> error message should be more specific about the required version.
+> 
+> I reproduced the behavior on two different Ubuntu 20.04 systems, but
+> someone who knows this xxhash stuff better than I do should confirm
+> my conclusions. Maybe the way to fix the check for the presence of xxhash is
+> to augment the inline test program to include a reference to XXH3_state, but
+> I haven't tried to put together a patch to do that, pending any further discussion
+> or ideas.
 
-Use samples/livepatch/livepatch-sample.ko for the test.
+Thanks for reporting that.  I suppose something like the below would work?
 
-The test covers two cases:
-  1) When a fentry program is loaded first. This exercises the
-     modify_ftrace_direct code path.
-  2) When a fentry program is loaded first. This exercises the
-     register_ftrace_direct code path.
+Though, maybe the missing xxhash shouldn't fail the build at all.  It's
+really only needed for people who are actually trying to run klp-build.
+I may look at improving that.
 
-Signed-off-by: Song Liu <song@kernel.org>
-Reviewed-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/config            |   3 +
- .../bpf/prog_tests/livepatch_trampoline.c     | 107 ++++++++++++++++++
- .../bpf/progs/livepatch_trampoline.c          |  30 +++++
- 3 files changed, 140 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c
- create mode 100644 tools/testing/selftests/bpf/progs/livepatch_trampoline.c
-
-diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
-index 70b28c1e653e..f2a2fd236ca8 100644
---- a/tools/testing/selftests/bpf/config
-+++ b/tools/testing/selftests/bpf/config
-@@ -50,6 +50,7 @@ CONFIG_IPV6_SIT=y
- CONFIG_IPV6_TUNNEL=y
- CONFIG_KEYS=y
- CONFIG_LIRC=y
-+CONFIG_LIVEPATCH=y
- CONFIG_LWTUNNEL=y
- CONFIG_MODULE_SIG=y
- CONFIG_MODULE_SRCVERSION_ALL=y
-@@ -111,6 +112,8 @@ CONFIG_IP6_NF_FILTER=y
- CONFIG_NF_NAT=y
- CONFIG_PACKET=y
- CONFIG_RC_CORE=y
-+CONFIG_SAMPLES=y
-+CONFIG_SAMPLE_LIVEPATCH=m
- CONFIG_SECURITY=y
- CONFIG_SECURITYFS=y
- CONFIG_SYN_COOKIES=y
-diff --git a/tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c b/tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c
-new file mode 100644
-index 000000000000..72aa5376c30e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c
-@@ -0,0 +1,107 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2025 Meta Platforms, Inc. and affiliates. */
-+
-+#include <test_progs.h>
-+#include "testing_helpers.h"
-+#include "livepatch_trampoline.skel.h"
-+
-+static int load_livepatch(void)
-+{
-+	char path[4096];
-+
-+	/* CI will set KBUILD_OUTPUT */
-+	snprintf(path, sizeof(path), "%s/samples/livepatch/livepatch-sample.ko",
-+		 getenv("KBUILD_OUTPUT") ? : "../../../..");
-+
-+	return load_module(path, env_verbosity > VERBOSE_NONE);
-+}
-+
-+static void unload_livepatch(void)
-+{
-+	/* Disable the livepatch before unloading the module */
-+	system("echo 0 > /sys/kernel/livepatch/livepatch_sample/enabled");
-+
-+	unload_module("livepatch_sample", env_verbosity > VERBOSE_NONE);
-+}
-+
-+static void read_proc_cmdline(void)
-+{
-+	char buf[4096];
-+	int fd, ret;
-+
-+	fd = open("/proc/cmdline", O_RDONLY);
-+	if (!ASSERT_OK_FD(fd, "open /proc/cmdline"))
-+		return;
-+
-+	ret = read(fd, buf, sizeof(buf));
-+	if (!ASSERT_GT(ret, 0, "read /proc/cmdline"))
-+		goto out;
-+
-+	ASSERT_OK(strncmp(buf, "this has been live patched", 26), "strncmp");
-+
-+out:
-+	close(fd);
-+}
-+
-+static void __test_livepatch_trampoline(bool fexit_first)
-+{
-+	struct livepatch_trampoline *skel = NULL;
-+	int err;
-+
-+	skel = livepatch_trampoline__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
-+		goto out;
-+
-+	skel->bss->my_pid = getpid();
-+
-+	if (!fexit_first) {
-+		/* fentry program is loaded first by default */
-+		err = livepatch_trampoline__attach(skel);
-+		if (!ASSERT_OK(err, "skel_attach"))
-+			goto out;
-+	} else {
-+		/* Manually load fexit program first. */
-+		skel->links.fexit_cmdline = bpf_program__attach(skel->progs.fexit_cmdline);
-+		if (!ASSERT_OK_PTR(skel->links.fexit_cmdline, "attach_fexit"))
-+			goto out;
-+
-+		skel->links.fentry_cmdline = bpf_program__attach(skel->progs.fentry_cmdline);
-+		if (!ASSERT_OK_PTR(skel->links.fentry_cmdline, "attach_fentry"))
-+			goto out;
-+	}
-+
-+	read_proc_cmdline();
-+
-+	ASSERT_EQ(skel->bss->fentry_hit, 1, "fentry_hit");
-+	ASSERT_EQ(skel->bss->fexit_hit, 1, "fexit_hit");
-+out:
-+	livepatch_trampoline__destroy(skel);
-+}
-+
-+void test_livepatch_trampoline(void)
-+{
-+	int retry_cnt = 0;
-+
-+retry:
-+	if (load_livepatch()) {
-+		if (retry_cnt) {
-+			ASSERT_OK(1, "load_livepatch");
-+			goto out;
-+		}
-+		/*
-+		 * Something else (previous run of the same test?) loaded
-+		 * the KLP module. Unload the KLP module and retry.
-+		 */
-+		unload_livepatch();
-+		retry_cnt++;
-+		goto retry;
-+	}
-+
-+	if (test__start_subtest("fentry_first"))
-+		__test_livepatch_trampoline(false);
-+
-+	if (test__start_subtest("fexit_first"))
-+		__test_livepatch_trampoline(true);
-+out:
-+	unload_livepatch();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/livepatch_trampoline.c b/tools/testing/selftests/bpf/progs/livepatch_trampoline.c
-new file mode 100644
-index 000000000000..15579d5bcd91
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/livepatch_trampoline.c
-@@ -0,0 +1,30 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2025 Meta Platforms, Inc. and affiliates. */
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+int fentry_hit;
-+int fexit_hit;
-+int my_pid;
-+
-+SEC("fentry/cmdline_proc_show")
-+int BPF_PROG(fentry_cmdline)
-+{
-+	if (my_pid != (bpf_get_current_pid_tgid() >> 32))
-+		return 0;
-+
-+	fentry_hit = 1;
-+	return 0;
-+}
-+
-+SEC("fexit/cmdline_proc_show")
-+int BPF_PROG(fexit_cmdline)
-+{
-+	if (my_pid != (bpf_get_current_pid_tgid() >> 32))
-+		return 0;
-+
-+	fexit_hit = 1;
-+	return 0;
-+}
--- 
-2.47.3
-
+diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
+index 48928c9bebef1..8b95166b31602 100644
+--- a/tools/objtool/Makefile
++++ b/tools/objtool/Makefile
+@@ -12,7 +12,7 @@ ifeq ($(SRCARCH),loongarch)
+ endif
+ 
+ ifeq ($(ARCH_HAS_KLP),y)
+-	HAVE_XXHASH = $(shell echo "int main() {}" | \
++	HAVE_XXHASH = $(shell echo -e "#include <xxhash.h>\nXXH3_state_t *state;int main() {}" | \
+ 		      $(HOSTCC) -xc - -o /dev/null -lxxhash 2> /dev/null && echo y || echo n)
+ 	ifeq ($(HAVE_XXHASH),y)
+ 		BUILD_KLP	 := y
+diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
+index 1e1ea8396eb3a..aab7fa9c7e00a 100644
+--- a/tools/objtool/builtin-check.c
++++ b/tools/objtool/builtin-check.c
+@@ -164,7 +164,7 @@ static bool opts_valid(void)
+ 
+ #ifndef BUILD_KLP
+ 	if (opts.checksum) {
+-		ERROR("--checksum not supported; install xxhash-devel/libxxhash-dev and recompile");
++		ERROR("--checksum not supported; install xxhash-devel/libxxhash-dev (version >= 0.8) and recompile");
+ 		return false;
+ 	}
+ #endif
 
