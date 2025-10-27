@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1825-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1826-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3AA17C0FC9D
-	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 18:52:54 +0100 (CET)
+Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7FC67C0FCB5
+	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 18:54:04 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AAE61468B35
-	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 17:51:28 +0000 (UTC)
+	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id A83704FD64E
+	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 17:51:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CECCD3168FC;
-	Mon, 27 Oct 2025 17:50:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B633631987D;
+	Mon, 27 Oct 2025 17:50:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VxAFBYBV"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YlJVXXb4"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A06B42D640D;
-	Mon, 27 Oct 2025 17:50:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E2A73191C0;
+	Mon, 27 Oct 2025 17:50:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761587452; cv=none; b=V4EHMq8KRfNcYzRjuVKMG1ArsVom+BrZVdnpckwM9ne1i+5P08ETH7EuXsj6070hBLU6bQAo4r8ePz80rBFNSmwPzJO0zXJihgKRx4FqeCIp0Pp0e2etentbI/X3GWchfshXKTNtkoWichFa7iUeJrAEv3B7CwiFIpUN3bNdwXM=
+	t=1761587457; cv=none; b=uqEtRg93JLvH7IGslyXxv9yEY469GfFc8tWBbPEqczPWnq2kLk9T8r2xHL6qVxVBh4GIWYlS72lIUMozLqJXPP/VnfChIwsGEmVNNyt9KYBHcSOGepcd2hjXEcXi47i2kgpm/jBD4pfCSHxkOck5VadDFFSm2Pdp7b7sQtbACOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761587452; c=relaxed/simple;
-	bh=DyNToPloyJM1mLk/97Yrs8UCsJCSjKY0Z2CKy3b7YtI=;
+	s=arc-20240116; t=1761587457; c=relaxed/simple;
+	bh=VoFt1eWIRvU9K7JtarVvwZrLTy++5akKeuRJHTwEHk4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=T6dtivjDnwoRK5/iCc4/Y6oFThXi6i4Ids/7WoITRBH9eGG4Ook0968EmA/nxkJzYVxbh/2yggAbDFTqf/V1SDe64niw9O2mYdYo8nancVjf4c9RF/gJnfVT6ZOR6mnvFbgtDW6cIkfQ7j/bb9ZiDEhIe0U7zyj8D0dVPptXMxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VxAFBYBV; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA6F3C4CEF1;
-	Mon, 27 Oct 2025 17:50:50 +0000 (UTC)
+	 MIME-Version; b=pcuvrVxdsMeF0HNOsVqdd/h96HIl2v8MCEZKoecPlxSMOecfroPRN1uQGqy2bJ6e5x7/dZUxsEb/1tBsED+JsKiSSi6YVJk/BiYxxSmuSXWItjuPOB6kgRare8AiSYVl4Iz1Oj+VcNE1VQGSO1Ugg3Tp/MBnkWaanigwWeFjoWs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YlJVXXb4; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D1EC4CEF1;
+	Mon, 27 Oct 2025 17:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761587452;
-	bh=DyNToPloyJM1mLk/97Yrs8UCsJCSjKY0Z2CKy3b7YtI=;
+	s=k20201202; t=1761587457;
+	bh=VoFt1eWIRvU9K7JtarVvwZrLTy++5akKeuRJHTwEHk4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=VxAFBYBV4SrlZqNVoni6AJdC3t+nf1EXwC7u8xsZK1Q6juWkXpkyr/OenTRlNaAwB
-	 ShzSO4OTAi7rCk9cseao5CbEEWKgKiz/0gpy3GVu3O1LxC/CvcTkZXSgYlD2fl7ENp
-	 cRBpatf1ULxLE46/YXg2pvcka8Wt4VsO42JAApY1sIKL85UIHzK6Q8BTKmdc6Ju3E7
-	 iJu3270DOS2zXva8ou29QxFKsCh6u/K/ofBD0hRjd2xXMIUh3ufT0j0CHCQzr56uKZ
-	 5KCeXk5xiL6KYbgWnB7MFm+hdLlmvQxMocsJmHCyYC7uAIHhz8W5VGnm0cf9BIRnRA
-	 sP+6AmmBYancw==
+	b=YlJVXXb4Y2ZztGQtGLH+RPMmjAbEvKyRTL45dcDcWg9wg/J/eBmLMpAMxXEC2CH4W
+	 RyVK0WhQ5srGzC7cG5chJBw3MlpAtDrcL3giv19eP97BkmmC+ZCnj3gus79Heh+g/a
+	 r44kt6V3YESP0WknV/ed8CxdoquDfyXThx3QjR45DcLlROZksHAQal0AM4gV5yupLc
+	 ubTLP1nQYR3wEO7omh4R4VbZ+++SD9R7yLvalL7JhZLeSbrBRGmG9m10oK40394uGY
+	 lp4yJ533CSJvCLQb+uxUjbu3rCqUvXteNfrwA+pZ/gviCfi/se2bfMOFA0Tfn8jby3
+	 B+5dmKCTbZSHQ==
 From: Song Liu <song@kernel.org>
 To: bpf@vger.kernel.org,
 	linux-trace-kernel@vger.kernel.org,
@@ -55,9 +55,9 @@ Cc: ast@kernel.org,
 	olsajiri@gmail.com,
 	Song Liu <song@kernel.org>,
 	Jiri Olsa <jolsa@kernel.org>
-Subject: [PATCH v4 bpf 2/3] ftrace: bpf: Fix IPMODIFY + DIRECT in modify_ftrace_direct()
-Date: Mon, 27 Oct 2025 10:50:22 -0700
-Message-ID: <20251027175023.1521602-3-song@kernel.org>
+Subject: [PATCH v4 bpf 3/3] selftests/bpf: Add tests for livepatch + bpf trampoline
+Date: Mon, 27 Oct 2025 10:50:23 -0700
+Message-ID: <20251027175023.1521602-4-song@kernel.org>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20251027175023.1521602-1-song@kernel.org>
 References: <20251027175023.1521602-1-song@kernel.org>
@@ -69,146 +69,199 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-ftrace_hash_ipmodify_enable() checks IPMODIFY and DIRECT ftrace_ops on
-the same kernel function. When needed, ftrace_hash_ipmodify_enable()
-calls ops->ops_func() to prepare the direct ftrace (BPF trampoline) to
-share the same function as the IPMODIFY ftrace (livepatch).
+Both livepatch and BPF trampoline use ftrace. Special attention is needed
+when livepatch and fexit program touch the same function at the same
+time, because livepatch updates a kernel function and the BPF trampoline
+need to call into the right version of the kernel function.
 
-ftrace_hash_ipmodify_enable() is called in register_ftrace_direct() path,
-but not called in modify_ftrace_direct() path. As a result, the following
-operations will break livepatch:
+Use samples/livepatch/livepatch-sample.ko for the test.
 
-1. Load livepatch to a kernel function;
-2. Attach fentry program to the kernel function;
-3. Attach fexit program to the kernel function.
-
-After 3, the kernel function being used will not be the livepatched
-version, but the original version.
-
-Fix this by adding __ftrace_hash_update_ipmodify() to
-__modify_ftrace_direct() and adjust some logic around the call.
+The test covers two cases:
+  1) When a fentry program is loaded first. This exercises the
+     modify_ftrace_direct code path.
+  2) When a fentry program is loaded first. This exercises the
+     register_ftrace_direct code path.
 
 Signed-off-by: Song Liu <song@kernel.org>
 Reviewed-by: Jiri Olsa <jolsa@kernel.org>
 ---
- kernel/trace/ftrace.c | 40 +++++++++++++++++++++++++++++++---------
- 1 file changed, 31 insertions(+), 9 deletions(-)
+ tools/testing/selftests/bpf/config            |   3 +
+ .../bpf/prog_tests/livepatch_trampoline.c     | 107 ++++++++++++++++++
+ .../bpf/progs/livepatch_trampoline.c          |  30 +++++
+ 3 files changed, 140 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c
+ create mode 100644 tools/testing/selftests/bpf/progs/livepatch_trampoline.c
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index cbeb7e833131..59cfacb8a5bb 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -1971,7 +1971,8 @@ static void ftrace_hash_rec_enable_modify(struct ftrace_ops *ops)
-  */
- static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
- 					 struct ftrace_hash *old_hash,
--					 struct ftrace_hash *new_hash)
-+					 struct ftrace_hash *new_hash,
-+					 bool update_target)
- {
- 	struct ftrace_page *pg;
- 	struct dyn_ftrace *rec, *end = NULL;
-@@ -2006,10 +2007,13 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
- 		if (rec->flags & FTRACE_FL_DISABLED)
- 			continue;
- 
--		/* We need to update only differences of filter_hash */
-+		/*
-+		 * Unless we are updating the target of a direct function,
-+		 * we only need to update differences of filter_hash
-+		 */
- 		in_old = !!ftrace_lookup_ip(old_hash, rec->ip);
- 		in_new = !!ftrace_lookup_ip(new_hash, rec->ip);
--		if (in_old == in_new)
-+		if (!update_target && (in_old == in_new))
- 			continue;
- 
- 		if (in_new) {
-@@ -2020,7 +2024,16 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
- 				if (is_ipmodify)
- 					goto rollback;
- 
--				FTRACE_WARN_ON(rec->flags & FTRACE_FL_DIRECT);
-+				/*
-+				 * If this is called by __modify_ftrace_direct()
-+				 * then it is only changing where the direct
-+				 * pointer is jumping to, and the record already
-+				 * points to a direct trampoline. If it isn't,
-+				 * then it is a bug to update ipmodify on a direct
-+				 * caller.
-+				 */
-+				FTRACE_WARN_ON(!update_target &&
-+					       (rec->flags & FTRACE_FL_DIRECT));
- 
- 				/*
- 				 * Another ops with IPMODIFY is already
-@@ -2076,7 +2089,7 @@ static int ftrace_hash_ipmodify_enable(struct ftrace_ops *ops)
- 	if (ftrace_hash_empty(hash))
- 		hash = NULL;
- 
--	return __ftrace_hash_update_ipmodify(ops, EMPTY_HASH, hash);
-+	return __ftrace_hash_update_ipmodify(ops, EMPTY_HASH, hash, false);
- }
- 
- /* Disabling always succeeds */
-@@ -2087,7 +2100,7 @@ static void ftrace_hash_ipmodify_disable(struct ftrace_ops *ops)
- 	if (ftrace_hash_empty(hash))
- 		hash = NULL;
- 
--	__ftrace_hash_update_ipmodify(ops, hash, EMPTY_HASH);
-+	__ftrace_hash_update_ipmodify(ops, hash, EMPTY_HASH, false);
- }
- 
- static int ftrace_hash_ipmodify_update(struct ftrace_ops *ops,
-@@ -2101,7 +2114,7 @@ static int ftrace_hash_ipmodify_update(struct ftrace_ops *ops,
- 	if (ftrace_hash_empty(new_hash))
- 		new_hash = NULL;
- 
--	return __ftrace_hash_update_ipmodify(ops, old_hash, new_hash);
-+	return __ftrace_hash_update_ipmodify(ops, old_hash, new_hash, false);
- }
- 
- static void print_ip_ins(const char *fmt, const unsigned char *p)
-@@ -6114,7 +6127,7 @@ EXPORT_SYMBOL_GPL(unregister_ftrace_direct);
- static int
- __modify_ftrace_direct(struct ftrace_ops *ops, unsigned long addr)
- {
--	struct ftrace_hash *hash;
-+	struct ftrace_hash *hash = ops->func_hash->filter_hash;
- 	struct ftrace_func_entry *entry, *iter;
- 	static struct ftrace_ops tmp_ops = {
- 		.func		= ftrace_stub,
-@@ -6134,13 +6147,21 @@ __modify_ftrace_direct(struct ftrace_ops *ops, unsigned long addr)
- 	if (err)
- 		return err;
- 
-+	/*
-+	 * Call __ftrace_hash_update_ipmodify() here, so that we can call
-+	 * ops->ops_func for the ops. This is needed because the above
-+	 * register_ftrace_function_nolock() worked on tmp_ops.
-+	 */
-+	err = __ftrace_hash_update_ipmodify(ops, hash, hash, true);
-+	if (err)
+diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
+index 70b28c1e653e..f2a2fd236ca8 100644
+--- a/tools/testing/selftests/bpf/config
++++ b/tools/testing/selftests/bpf/config
+@@ -50,6 +50,7 @@ CONFIG_IPV6_SIT=y
+ CONFIG_IPV6_TUNNEL=y
+ CONFIG_KEYS=y
+ CONFIG_LIRC=y
++CONFIG_LIVEPATCH=y
+ CONFIG_LWTUNNEL=y
+ CONFIG_MODULE_SIG=y
+ CONFIG_MODULE_SRCVERSION_ALL=y
+@@ -111,6 +112,8 @@ CONFIG_IP6_NF_FILTER=y
+ CONFIG_NF_NAT=y
+ CONFIG_PACKET=y
+ CONFIG_RC_CORE=y
++CONFIG_SAMPLES=y
++CONFIG_SAMPLE_LIVEPATCH=m
+ CONFIG_SECURITY=y
+ CONFIG_SECURITYFS=y
+ CONFIG_SYN_COOKIES=y
+diff --git a/tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c b/tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c
+new file mode 100644
+index 000000000000..72aa5376c30e
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/livepatch_trampoline.c
+@@ -0,0 +1,107 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2025 Meta Platforms, Inc. and affiliates. */
++
++#include <test_progs.h>
++#include "testing_helpers.h"
++#include "livepatch_trampoline.skel.h"
++
++static int load_livepatch(void)
++{
++	char path[4096];
++
++	/* CI will set KBUILD_OUTPUT */
++	snprintf(path, sizeof(path), "%s/samples/livepatch/livepatch-sample.ko",
++		 getenv("KBUILD_OUTPUT") ? : "../../../..");
++
++	return load_module(path, env_verbosity > VERBOSE_NONE);
++}
++
++static void unload_livepatch(void)
++{
++	/* Disable the livepatch before unloading the module */
++	system("echo 0 > /sys/kernel/livepatch/livepatch_sample/enabled");
++
++	unload_module("livepatch_sample", env_verbosity > VERBOSE_NONE);
++}
++
++static void read_proc_cmdline(void)
++{
++	char buf[4096];
++	int fd, ret;
++
++	fd = open("/proc/cmdline", O_RDONLY);
++	if (!ASSERT_OK_FD(fd, "open /proc/cmdline"))
++		return;
++
++	ret = read(fd, buf, sizeof(buf));
++	if (!ASSERT_GT(ret, 0, "read /proc/cmdline"))
 +		goto out;
 +
- 	/*
- 	 * Now the ftrace_ops_list_func() is called to do the direct callers.
- 	 * We can safely change the direct functions attached to each entry.
- 	 */
- 	mutex_lock(&ftrace_lock);
- 
--	hash = ops->func_hash->filter_hash;
- 	size = 1 << hash->size_bits;
- 	for (i = 0; i < size; i++) {
- 		hlist_for_each_entry(iter, &hash->buckets[i], hlist) {
-@@ -6155,6 +6176,7 @@ __modify_ftrace_direct(struct ftrace_ops *ops, unsigned long addr)
- 
- 	mutex_unlock(&ftrace_lock);
- 
++	ASSERT_OK(strncmp(buf, "this has been live patched", 26), "strncmp");
++
 +out:
- 	/* Removing the tmp_ops will add the updated direct callers to the functions */
- 	unregister_ftrace_function(&tmp_ops);
- 
++	close(fd);
++}
++
++static void __test_livepatch_trampoline(bool fexit_first)
++{
++	struct livepatch_trampoline *skel = NULL;
++	int err;
++
++	skel = livepatch_trampoline__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
++		goto out;
++
++	skel->bss->my_pid = getpid();
++
++	if (!fexit_first) {
++		/* fentry program is loaded first by default */
++		err = livepatch_trampoline__attach(skel);
++		if (!ASSERT_OK(err, "skel_attach"))
++			goto out;
++	} else {
++		/* Manually load fexit program first. */
++		skel->links.fexit_cmdline = bpf_program__attach(skel->progs.fexit_cmdline);
++		if (!ASSERT_OK_PTR(skel->links.fexit_cmdline, "attach_fexit"))
++			goto out;
++
++		skel->links.fentry_cmdline = bpf_program__attach(skel->progs.fentry_cmdline);
++		if (!ASSERT_OK_PTR(skel->links.fentry_cmdline, "attach_fentry"))
++			goto out;
++	}
++
++	read_proc_cmdline();
++
++	ASSERT_EQ(skel->bss->fentry_hit, 1, "fentry_hit");
++	ASSERT_EQ(skel->bss->fexit_hit, 1, "fexit_hit");
++out:
++	livepatch_trampoline__destroy(skel);
++}
++
++void test_livepatch_trampoline(void)
++{
++	int retry_cnt = 0;
++
++retry:
++	if (load_livepatch()) {
++		if (retry_cnt) {
++			ASSERT_OK(1, "load_livepatch");
++			goto out;
++		}
++		/*
++		 * Something else (previous run of the same test?) loaded
++		 * the KLP module. Unload the KLP module and retry.
++		 */
++		unload_livepatch();
++		retry_cnt++;
++		goto retry;
++	}
++
++	if (test__start_subtest("fentry_first"))
++		__test_livepatch_trampoline(false);
++
++	if (test__start_subtest("fexit_first"))
++		__test_livepatch_trampoline(true);
++out:
++	unload_livepatch();
++}
+diff --git a/tools/testing/selftests/bpf/progs/livepatch_trampoline.c b/tools/testing/selftests/bpf/progs/livepatch_trampoline.c
+new file mode 100644
+index 000000000000..15579d5bcd91
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/livepatch_trampoline.c
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2025 Meta Platforms, Inc. and affiliates. */
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++int fentry_hit;
++int fexit_hit;
++int my_pid;
++
++SEC("fentry/cmdline_proc_show")
++int BPF_PROG(fentry_cmdline)
++{
++	if (my_pid != (bpf_get_current_pid_tgid() >> 32))
++		return 0;
++
++	fentry_hit = 1;
++	return 0;
++}
++
++SEC("fexit/cmdline_proc_show")
++int BPF_PROG(fexit_cmdline)
++{
++	if (my_pid != (bpf_get_current_pid_tgid() >> 32))
++		return 0;
++
++	fexit_hit = 1;
++	return 0;
++}
 -- 
 2.47.3
 
