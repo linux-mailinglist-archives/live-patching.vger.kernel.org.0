@@ -1,120 +1,122 @@
-Return-Path: <live-patching+bounces-1827-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1828-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 221D7C11AD6
-	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 23:25:10 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE51DC27432
+	for <lists+live-patching@lfdr.de>; Sat, 01 Nov 2025 01:20:15 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C038B400D7D
-	for <lists+live-patching@lfdr.de>; Mon, 27 Oct 2025 22:22:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A7B0D401EB3
+	for <lists+live-patching@lfdr.de>; Sat,  1 Nov 2025 00:20:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 910A9326D57;
-	Mon, 27 Oct 2025 22:22:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2A161C3C08;
+	Sat,  1 Nov 2025 00:20:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nA/MqK24"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cEVxPZQy"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6781925F7B9;
-	Mon, 27 Oct 2025 22:22:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45C9218A6DB
+	for <live-patching@vger.kernel.org>; Sat,  1 Nov 2025 00:20:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761603751; cv=none; b=t8UszH5i0TqM+4+ATmNhzwrtpiY5i+FCJpRwc/DjCNTHwUt2aafVrdr4QhDomHIkkZTznDa7+aOCaTyx7L+m0tWF0QhaQLQd/NGNdgm6OZDJCZMe19yKr+3SQuNM9o93YwZHt+4RhHBeq+v3EF7aXBaAIDnqiTqSYUEBfCFuidc=
+	t=1761956410; cv=none; b=tIAkvZ0y5tvVJp866ETF/eQBV6Sr6m7BYQsa6d0wpsFcpqxI+Caq9ekY2X2NxAJpvdJSZZY/bMkEFFZwyRFVEg0/8Gcukq1TxASa5+xbVpg/1xp/z/kjIbICakHzxWOHwoBEi57lbQUeBk7uSqD0n+PjghGRA+uq1Em3GjMitCI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761603751; c=relaxed/simple;
-	bh=WzcYbo984hVH2IxD77QcvHr4Djfe8H3bMUqVa5YOGtM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SnMdWl+TI9nAxybuXSESO0EXFUWFYNJgLd3c61YKc06vcPs9DMN6z5Xtkyg11465mu7pyMbacquPfvje05vAVHcINe5UlF4OMkRFr8QJ4Fm1qLI2Qdq2FmvMMJiTiaHMipg/YJIO6SlHeYMEa6VaedteNNzZ+/QONDSSPk/s++A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nA/MqK24; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4E10C4CEF1;
-	Mon, 27 Oct 2025 22:22:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761603750;
-	bh=WzcYbo984hVH2IxD77QcvHr4Djfe8H3bMUqVa5YOGtM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nA/MqK24j5asByktAZbYpWATRsFhwk3bNCS7t8MpQdXV0hUBwbfq/eUBv5IGVGcoV
-	 QDBdt1vHbMk9w7kf2qjIJCA8EABdpqTD1QsTNpgsJ6wWHwL/RL8srjzE/GPglvVS45
-	 IIhRFQsjTV6nujpdRg7vK5gQoHzPp7xFBxwfhn4NlT4O8HBMiH7AkVLZ3ySeEuvnYy
-	 VaUOUeEnvPo0MpmPbT0w51WiiwpQ2LfiGdrUMTnnqPtYgt0Fr+RPc0qPvwc4B2Kg7F
-	 JyxX4Cto5EjWYgEeumI4h2oK6hrUPV80hnu/xlFYPNvAwS8imHxC91dFWmkbwiB1zP
-	 HC+IgZmtmvjpg==
-Date: Mon, 27 Oct 2025 15:22:28 -0700
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "x86@kernel.org" <x86@kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Petr Mladek <pmladek@suse.com>, Miroslav Benes <mbenes@suse.cz>, 
-	Joe Lawrence <joe.lawrence@redhat.com>, "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>, 
-	Song Liu <song@kernel.org>, laokz <laokz@foxmail.com>, Jiri Kosina <jikos@kernel.org>, 
-	Marcos Paulo de Souza <mpdesouza@suse.com>, Weinan Liu <wnliu@google.com>, 
-	Fazla Mehrab <a.mehrab@bytedance.com>, Chen Zhongjin <chenzhongjin@huawei.com>, 
-	Puranjay Mohan <puranjay@kernel.org>, Dylan Hatch <dylanbhatch@google.com>, 
-	Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v4 49/63] objtool/klp: Add --checksum option to generate
- per-function checksums
-Message-ID: <5an6r3jzuifkm2b7scmxv4u3suygr77apgue6zneelowbqyjzr@5g6mbczbyk5e>
-References: <cover.1758067942.git.jpoimboe@kernel.org>
- <1bc263bd69b94314f7377614a76d271e620a4a94.1758067943.git.jpoimboe@kernel.org>
- <SN6PR02MB41579B83CD295C9FEE40EED6D4FCA@SN6PR02MB4157.namprd02.prod.outlook.com>
+	s=arc-20240116; t=1761956410; c=relaxed/simple;
+	bh=+CLbNx0+SCLkDIniWRg4lwdqf5by9vfde27UuYHGViU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=iedc/CvpHDir8mcaWhxzXKIdNI7OENvlfqkTIQf3anNWyrSJ+F/7P2XEtLj15qJE45cgontIkQuBkvAoHxkMZ1uBNrrGlS09QFCyoF0YTIRjdiYNbXgvdckfHkqCSy0u4uvd/hYvC6MyCmTMS8c4bjBIBzrmg7RJeQD9fauZeB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cEVxPZQy; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-429b895458cso1708830f8f.1
+        for <live-patching@vger.kernel.org>; Fri, 31 Oct 2025 17:20:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1761956407; x=1762561207; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+CLbNx0+SCLkDIniWRg4lwdqf5by9vfde27UuYHGViU=;
+        b=cEVxPZQynHD6EVYmi8B7DVKrmIX+D86kI5J1eyjbpM+4S5aqXmGZUHIeZi9HURHdSg
+         NFbmizHnaM6aHfgpJ0nIAp205iBzeltylEEal3kF3wqgnAIlD6PALzd1W+DxvYZCBulb
+         oWTvxbRXUn5VeL+iW6WuD8HfAZHeTR0Fcs0TH7hpA30cv4HBFAIFQte2Z+MnISfhpsvF
+         q9AVlnzRKeFZLa7YtxXezTRCCryEnb5rvjCrwk0b00eWOvIN1nR2UM7QKVBpglByX+m/
+         pNqa2Zx3kVFOBftlpMi+IfIrs73JB2O96RY5iYv93inZ21emikzS7Xxn6VZrc06A/3Ys
+         tE/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761956407; x=1762561207;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+CLbNx0+SCLkDIniWRg4lwdqf5by9vfde27UuYHGViU=;
+        b=NeGk7b1HZWjE09tqNIWnoDXg8gGTiqCYTbEKYHIf8vGQWYCxbC09uwaixbwXTjoQXc
+         cAXaJXWxQBaekhRTYfHs8HnXmJuMyy4cezu73ukf3dC2NpRgAvzbNcrBnznKyhaf0qwR
+         HItJIi7PHilIMde2e5tMABMc0u6eVqRITfB/2/EO91sGTWytGjjoz8JpZe+TfEbahELW
+         f1pMBv7BpaHGS8vM8qK9FTqg5YIUXjjAEMEFYtLnVi/CH0J5xhwkM4g6A+V585xT+wB8
+         ohxM+G0ruGfxlz9VLuPZD9Iu9I7oNCvhvplqkq8dkjMU8ZdmQkdxsmPFuY17DA7OALE4
+         Q1lg==
+X-Forwarded-Encrypted: i=1; AJvYcCWc5V+JxXEq1owAlr1LoYunG0vsKgQoHfnAO6289T7Mz5tyK0SsQUGDjYX2d2VLhT7OKI9tD+TtjyCaivkD@vger.kernel.org
+X-Gm-Message-State: AOJu0YzC2bpeH+c6+dNx2P/IplkOdr5AA1cnjlPUFmpvdg/q2gwtAhzQ
+	MW4NyhkBRIy2zBNBO+e2eU4wLj1VoCFc+t6EG9ZB1ebXXJUyRVyRSP1PtgZBbVk1bEjWdA4xY4f
+	GyBdpAywwGdMzHNd70Gkxr7qhMWO2ALo=
+X-Gm-Gg: ASbGncuF/VE84Jb3x3NNs8lEd+ZrhAaTLNqz3xOB5/9R3v8AlN9tuZBSTiW47H3MaCy
+	azb4kqmnkbK6IZBxm+971zu59yeRdsv5e63Xy/kabinqDAU4Op3HCPWRjB7jAT7RKQoyaRfG/Mm
+	5szG1Q0XlaHEEJJk9j8LRcehkU+dT/T0gNXnDrDz/Ikx8+6oMiXsr4O0PbWUrOAvqmRNC5kYi5Y
+	ayC6CtU0MDqTVj7wjbxQbsPRrqgUgHVDkoDnif0Cj4cxk//KkKXNYgR3NBb9OcUGSVopbXb6df6
+	oDTNBbc/gDMo/X0Smvb22OQz8VtT4//+U0imRC4=
+X-Google-Smtp-Source: AGHT+IHNYlEWOUMUtDvrTK4geQQrmMKnQJBQrV6hcEirA2F2JhOkgWTEMrJG0KJ/zrGB83nhreewf0v0Vbb+Cn07cBE=
+X-Received: by 2002:a05:6000:4283:b0:427:8e5:39df with SMTP id
+ ffacd0b85a97d-429bd67bd2dmr4146048f8f.21.1761956407306; Fri, 31 Oct 2025
+ 17:20:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <SN6PR02MB41579B83CD295C9FEE40EED6D4FCA@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20251027175023.1521602-1-song@kernel.org>
+In-Reply-To: <20251027175023.1521602-1-song@kernel.org>
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Fri, 31 Oct 2025 17:19:54 -0700
+X-Gm-Features: AWmQ_blwHGysxMuw7rx01dYjPj9zdTLkr7fwqsaiFUdesnwh3GVJuzrF-PEto30
+Message-ID: <CAADnVQ+azh4iUmq4_RHYatphAaZUGsW0Zo8=vGOT1_fv-UYOaA@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf 0/3] Fix ftrace for livepatch + BPF fexit programs
+To: Song Liu <song@kernel.org>
+Cc: bpf <bpf@vger.kernel.org>, 
+	linux-trace-kernel <linux-trace-kernel@vger.kernel.org>, live-patching@vger.kernel.org, 
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	Andrii Nakryiko <andrii@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	Kernel Team <kernel-team@meta.com>, Jiri Olsa <olsajiri@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 27, 2025 at 01:19:10AM +0000, Michael Kelley wrote:
-> It turns out that Ubuntu 20.04 installed the 0.7.3-1 version of libxxhash. But from a
-> quick look at the README on the xxhash github site, XXH3 is first supported by the
-> 0.8.0 version, so the compile error probably makes sense. I found a PPA that offers
-> the 0.8.3 version of xxhash for Ubuntu 20.04, and that solved the problem.
-> 
-> So the Makefile steps above that figure out if xxhash is present probably aren't
-> sufficient, as the version of xxhash matters. And the "--checksum not supported"
-> error message should be more specific about the required version.
-> 
-> I reproduced the behavior on two different Ubuntu 20.04 systems, but
-> someone who knows this xxhash stuff better than I do should confirm
-> my conclusions. Maybe the way to fix the check for the presence of xxhash is
-> to augment the inline test program to include a reference to XXH3_state, but
-> I haven't tried to put together a patch to do that, pending any further discussion
-> or ideas.
+On Mon, Oct 27, 2025 at 10:50=E2=80=AFAM Song Liu <song@kernel.org> wrote:
+>
+> livepatch and BPF trampoline are two special users of ftrace. livepatch
+> uses ftrace with IPMODIFY flag and BPF trampoline uses ftrace direct
+> functions. When livepatch and BPF trampoline with fexit programs attach t=
+o
+> the same kernel function, BPF trampoline needs to call into the patched
+> version of the kernel function.
+>
+> 1/3 and 2/3 of this patchset fix two issues with livepatch + fexit cases,
+> one in the register_ftrace_direct path, the other in the
+> modify_ftrace_direct path.
+>
+> 3/3 adds selftests for both cases.
+>
+> ---
+>
+> Changes v3 =3D> v4:
+> 1. Add helper reset_direct. (Steven)
+> 2. Add Reviewed-by from Jiri.
+> 3. Fix minor typo in comments.
 
-Thanks for reporting that.  I suppose something like the below would work?
+Steven,
 
-Though, maybe the missing xxhash shouldn't fail the build at all.  It's
-really only needed for people who are actually trying to run klp-build.
-I may look at improving that.
-
-diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
-index 48928c9bebef1..8b95166b31602 100644
---- a/tools/objtool/Makefile
-+++ b/tools/objtool/Makefile
-@@ -12,7 +12,7 @@ ifeq ($(SRCARCH),loongarch)
- endif
- 
- ifeq ($(ARCH_HAS_KLP),y)
--	HAVE_XXHASH = $(shell echo "int main() {}" | \
-+	HAVE_XXHASH = $(shell echo -e "#include <xxhash.h>\nXXH3_state_t *state;int main() {}" | \
- 		      $(HOSTCC) -xc - -o /dev/null -lxxhash 2> /dev/null && echo y || echo n)
- 	ifeq ($(HAVE_XXHASH),y)
- 		BUILD_KLP	 := y
-diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index 1e1ea8396eb3a..aab7fa9c7e00a 100644
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -164,7 +164,7 @@ static bool opts_valid(void)
- 
- #ifndef BUILD_KLP
- 	if (opts.checksum) {
--		ERROR("--checksum not supported; install xxhash-devel/libxxhash-dev and recompile");
-+		ERROR("--checksum not supported; install xxhash-devel/libxxhash-dev (version >= 0.8) and recompile");
- 		return false;
- 	}
- #endif
+can you apply the fixes or should I take them ?
+If so, pls ack.
 
