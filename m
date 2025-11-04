@@ -1,91 +1,100 @@
-Return-Path: <live-patching+bounces-1830-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1831-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
-	by mail.lfdr.de (Postfix) with ESMTPS id C5B85C29A39
-	for <lists+live-patching@lfdr.de>; Mon, 03 Nov 2025 00:39:36 +0100 (CET)
+Received: from ams.mirrors.kernel.org (ams.mirrors.kernel.org [IPv6:2a01:60a::1994:3:14])
+	by mail.lfdr.de (Postfix) with ESMTPS id 22976C2ED24
+	for <lists+live-patching@lfdr.de>; Tue, 04 Nov 2025 02:40:42 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 8B5E24E27EF
-	for <lists+live-patching@lfdr.de>; Sun,  2 Nov 2025 23:39:35 +0000 (UTC)
+	by ams.mirrors.kernel.org (Postfix) with ESMTPS id C369F343D4F
+	for <lists+live-patching@lfdr.de>; Tue,  4 Nov 2025 01:40:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D32F1DDC2C;
-	Sun,  2 Nov 2025 23:39:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3E01219E8D;
+	Tue,  4 Nov 2025 01:40:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UQMdp11x"
 X-Original-To: live-patching@vger.kernel.org
-Received: from relay.hostedemail.com (smtprelay0010.hostedemail.com [216.40.44.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D41828479;
-	Sun,  2 Nov 2025 23:39:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=216.40.44.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB257215F42;
+	Tue,  4 Nov 2025 01:40:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762126772; cv=none; b=N1mq1gI+zSZ09Zu3T/HBpGLC43NkkRFHYyddej84YGoSHk6BrL4rw0S10x3t/NRpw7FPawendIySOLW1ntQJQZanYTqHNNeov4Fh+m4Wx7CBpij3CYbwg9Sen+JYP8+k2pTnpKiAg1lsXuhCczlvpR80RFv/g8GGIRaxB7LC75c=
+	t=1762220435; cv=none; b=nHQZNnRj28Al5vZPyMjBRMpDcRAhAkvktlAD04HMfR9H8+K/M1oLL9O8X3PPusZmUq9kS4r0wN54ogkC1pW4bJDi7GFxX8hzApG/xaMaBnXIx10l7Y62va1OjcgEcK4D13F1hInC+KpnSweJ+VeJO4VQMOOGLvFmVsdfS/tvQIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762126772; c=relaxed/simple;
-	bh=JTfg5wvOSSMbGw1iWuRfnXsinP4kfZYRB9vwpqILAaU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=b3M2zeMz8+TVuw/Uinr60Iz8a/DiKA5dahyyWcvKLFxZhNUm5DzVI2wWRe9bZDBMGS84JgBo29pCpPQXGjpT0GwFVaWAF/q8bKaMVXlzIYdRjzxR5OEDY2CXc0g9Ns9eR3Xx8rzkQs8FaIi8arQYkZuVO3vt2SUBGEol7VHKPfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=goodmis.org; spf=pass smtp.mailfrom=goodmis.org; arc=none smtp.client-ip=216.40.44.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=goodmis.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
-Received: from omf02.hostedemail.com (a10.router.float.18 [10.200.18.1])
-	by unirelay03.hostedemail.com (Postfix) with ESMTP id BD1D6BC356;
-	Sun,  2 Nov 2025 23:39:21 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf02.hostedemail.com (Postfix) with ESMTPA id 294328000F;
-	Sun,  2 Nov 2025 23:39:19 +0000 (UTC)
-Date: Sun, 2 Nov 2025 18:39:21 -0500
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc: Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
- linux-trace-kernel <linux-trace-kernel@vger.kernel.org>,
- live-patching@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>, Daniel
- Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>, Masami Hiramatsu
- <mhiramat@kernel.org>, Kernel Team <kernel-team@meta.com>, Jiri Olsa
- <olsajiri@gmail.com>
-Subject: Re: [PATCH v4 bpf 0/3] Fix ftrace for livepatch + BPF fexit
- programs
-Message-ID: <20251102183921.795946be@gandalf.local.home>
-In-Reply-To: <20251101091116.763638e5@batman.local.home>
-References: <20251027175023.1521602-1-song@kernel.org>
-	<CAADnVQ+azh4iUmq4_RHYatphAaZUGsW0Zo8=vGOT1_fv-UYOaA@mail.gmail.com>
-	<20251101091116.763638e5@batman.local.home>
-X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1762220435; c=relaxed/simple;
+	bh=lzOD0CVb2YW225N81+aQO9LxHdybwn5EIDNjriISPz0=;
+	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc; b=PQracFoUsTUjl+hCJRuvcn3Y0bzr92vjSmhK52T03CHu6eGK9Wwtt9hY9F8Nslsh91yQx+lY8gD97xNJ+yGMJt4AAaey5RS8QgP/GMj++HHZZkQPfOA9ozFP1VJXb6GCGVROMj05zc6+itz2fH1Ea08g5EcVHTXCVSrXOm58Ts8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UQMdp11x; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F2B6C4CEE7;
+	Tue,  4 Nov 2025 01:40:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762220435;
+	bh=lzOD0CVb2YW225N81+aQO9LxHdybwn5EIDNjriISPz0=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=UQMdp11xSxb02bAhmfbmZypSvTMo1odhWNX3rfXzexvPk1C38VqukMF3CvVUqqX+N
+	 hJH13fbUM6iF5GGukBizaevpm0ZhTysRKesf/TCGolVJ6hGgl/Jl9/8q6g+h6hh9s6
+	 LWb08loFlHMZJj4PvMfKDxzNNw5FiMHupL9DLpILRNJnst3iRB4Ay7y/tqy6iuthSh
+	 j9E7CkN4c7jE+9/CpWK/gCt1o7xJlHNdGzObD2FWEepy1qAT/vjNDV2X9YCjULHGni
+	 oJKWKpboRCQA3bcGBQkndsTY5fsWJ7N80JFWpF0GNnsO995FzNOJt6fu1GSd3axLOI
+	 uj3SErnAtuQWA==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id EB0203809A8A;
+	Tue,  4 Nov 2025 01:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: 7hjd5wcb3154th1rxqr7wftcoqzt44rm
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: 294328000F
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Session-ID: U2FsdGVkX1+MZt+rdSRgoLOtePwqldmbMJy0Z1jMA4A=
-X-HE-Tag: 1762126759-668126
-X-HE-Meta: U2FsdGVkX19mfh72onqb0owf+ocMTCDYMD3aP0mt79d0BWncj7+ru83fkYRqz9nfVJPRGPSqpVgAsjW5MDKSSH44tlZUIowwrsiIi9w1Pgv6eegWJVZzLbRPv4tl+n9T7GsKNHejqyRlMbA1hd5txjIia1wcuwWku5NEgoagozrJ5KBwUNUkr1HsB/pa9JTqkoD0AhexbY82WXbhq+p5cGhiXj5EyXve1iPnw6iHH5tnE/pVoe4psS4z4vb0PvYmcyVceS3Q5c/nU/Iku3FRAKGGBocuLboNkSj3DYCil3qe/J1MVhhvSmbvbgiuEIWOt4t748JQIYdK8D6Xx0x0APo2mdTcTHR+sUTiW8CjoMLd56H7KBtOFAM/cUMRNSAUAtl4Ofb7iUhz0dpry6F+Xg==
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 bpf 0/3] Fix ftrace for livepatch + BPF fexit programs
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <176222040973.2285814.7620331983451064735.git-patchwork-notify@kernel.org>
+Date: Tue, 04 Nov 2025 01:40:09 +0000
+References: <20251027175023.1521602-1-song@kernel.org>
+In-Reply-To: <20251027175023.1521602-1-song@kernel.org>
+To: Song Liu <song@kernel.org>
+Cc: bpf@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+ live-patching@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+ andrii@kernel.org, rostedt@goodmis.org, andrey.grodzovsky@crowdstrike.com,
+ mhiramat@kernel.org, kernel-team@meta.com, olsajiri@gmail.com
 
-On Sat, 1 Nov 2025 09:11:16 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+Hello:
 
-> On Fri, 31 Oct 2025 17:19:54 -0700
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+This series was applied to bpf/bpf.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
+
+On Mon, 27 Oct 2025 10:50:20 -0700 you wrote:
+> livepatch and BPF trampoline are two special users of ftrace. livepatch
+> uses ftrace with IPMODIFY flag and BPF trampoline uses ftrace direct
+> functions. When livepatch and BPF trampoline with fexit programs attach to
+> the same kernel function, BPF trampoline needs to call into the patched
+> version of the kernel function.
 > 
-> > can you apply the fixes or should I take them ?
-> > If so, pls ack.  
+> 1/3 and 2/3 of this patchset fix two issues with livepatch + fexit cases,
+> one in the register_ftrace_direct path, the other in the
+> modify_ftrace_direct path.
 > 
-> Let me run them through my full test suite. It takes up to 13 hours to
-> run. Then I'll give a ack for you to take them.
-> 
+> [...]
 
-They passed my tests.
+Here is the summary with links:
+  - [v4,bpf,1/3] ftrace: Fix BPF fexit with livepatch
+    https://git.kernel.org/bpf/bpf/c/56b3c85e153b
+  - [v4,bpf,2/3] ftrace: bpf: Fix IPMODIFY + DIRECT in modify_ftrace_direct()
+    https://git.kernel.org/bpf/bpf/c/3e9a18e1c3e9
+  - [v4,bpf,3/3] selftests/bpf: Add tests for livepatch + bpf trampoline
+    https://git.kernel.org/bpf/bpf/c/62d2d0a33839
 
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Feel free to send them through the BPF tree.
 
--- Steve
 
