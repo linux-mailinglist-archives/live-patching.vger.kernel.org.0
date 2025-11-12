@@ -1,58 +1,54 @@
-Return-Path: <live-patching+bounces-1843-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1844-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ams.mirrors.kernel.org (ams.mirrors.kernel.org [IPv6:2a01:60a::1994:3:14])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1AA1EC54D01
-	for <lists+live-patching@lfdr.de>; Thu, 13 Nov 2025 00:33:09 +0100 (CET)
+Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
+	by mail.lfdr.de (Postfix) with ESMTPS id CF4F1C54D65
+	for <lists+live-patching@lfdr.de>; Thu, 13 Nov 2025 00:49:16 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ams.mirrors.kernel.org (Postfix) with ESMTPS id C0D3B34688A
-	for <lists+live-patching@lfdr.de>; Wed, 12 Nov 2025 23:32:58 +0000 (UTC)
+	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 5AD7C4E1BBF
+	for <lists+live-patching@lfdr.de>; Wed, 12 Nov 2025 23:48:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9B5D2F0661;
-	Wed, 12 Nov 2025 23:32:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2590D2609CC;
+	Wed, 12 Nov 2025 23:47:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p2VTg/Dw"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qo+zwIZi"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C33BF2EB5B4;
-	Wed, 12 Nov 2025 23:32:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE2221C2BD;
+	Wed, 12 Nov 2025 23:47:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762990363; cv=none; b=Pk4xTFE7bzkhboGdreIWa2Mca2IBg+Sx2R2KF8PjF1tXWGJdVLgdC1VFDkXIlwKuAfUB1KRanv9DEa7h3JrrRDvbpbO/+ts02S0esc7QHnDrO9nblUrzMgPz/XgL0B+gQNv5bFLooRxtw77byUY97zQMXj/xgfnd0VZp0qI2Tto=
+	t=1762991279; cv=none; b=Xhn5/27e6gHSNJOe44tbbLtHZvXL5fWGNzSa63DFs4cW//6iz0/VnivVIGmIq8JOixP5OpSnLqyM84KcfpdRxxCus/wioLLdWevwdTNsGdm0br75V3PfwEmCv5whkd9v6EQaaugzKQKQYY6obVuDGn5w+2xtUDMrMnupdn4fn4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762990363; c=relaxed/simple;
-	bh=ka5LoL3wNysYhYY2ZtA5p9SqKvdyTB6B68s8F46H7Zg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=na5tvBCCHX++95q63AmYlDb973Mb4rSLfINofmOcc5n26CGWPDkvj+BqISpAzKdCmmrsvJcXZ+Yyu0QBAFZHrNakytoPX4Clu5Nwt/ENs+ipR2KQ/vDlY6OeVTWoHnLglwXVIf3nj5xToaDl7XjsACpHUYOZlO7h2e8kYrUYObw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p2VTg/Dw; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05918C16AAE;
-	Wed, 12 Nov 2025 23:32:42 +0000 (UTC)
+	s=arc-20240116; t=1762991279; c=relaxed/simple;
+	bh=kK6d1gDCSEsQb2d2y6y3ycUWObNrgwIqKz569KQlvg0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FSpXX9E7zP6O+wNN9v5nYHEy7jqNLj3ZraJZqfs/ebRGWfh99v6RuMHcricXK4WEq+hGeoCpJN98MhyfYI7YBecpv+ibKkUzGw+/l/iEG4+JS8RSGBhUI/nYPgVeJHB06kSFCkpKGvLrBLBkA71HW7BDkedB5paXguYtdGtTkzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qo+zwIZi; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57635C16AAE;
+	Wed, 12 Nov 2025 23:47:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762990363;
-	bh=ka5LoL3wNysYhYY2ZtA5p9SqKvdyTB6B68s8F46H7Zg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=p2VTg/Dw6Yhh88bmO0cRejWrK1oZGC/AQj9nNlFu1xQf/JnHnu4ij9ZSw++Pr24Ue
-	 VyMjUDy1uGoOhlA3YU2QkqAZkc5WJzRHqQm3ANOoFQ2DdoH1xYA5AOZRYg5jZ1sYCJ
-	 +IEEiQBbfjCgoDfcazT3PwY9E3hV5/AEcFjIoL7N1W7mTghLbGK3fQjGX5MyAWCzNR
-	 T+P1UoUnr+rhJbBGQmQzVlYgr+svfy+Iz+zpWLDPzFxSQvLZGNhVZD2jsWFHfAQfKS
-	 Bqx5vyaJUnp7fRkkcMb4QMA2N0t9dX+NgrOgENe02OraJL+dUvz6/V1eoji1jqK9cW
-	 MBJl3KH5WjOMQ==
+	s=k20201202; t=1762991278;
+	bh=kK6d1gDCSEsQb2d2y6y3ycUWObNrgwIqKz569KQlvg0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Qo+zwIZiS5qPVToEUYfpc+h7cHXlY59V6fFNFx+QYbSd+JrK2LcgacZZTpNt4aS/g
+	 sJpDjnx4ObkZYgqHdUoxcYMTYJMfNV0+vcohHuvtDk7dC4vV/BhnqbAd31krlrFAhb
+	 MV7MBomXohnsoJwdmIUkF48vYQmZqeJxwVZkHM1BErpSC5/ra/qxxIpYTdDTrdQvDV
+	 /CP5UAR33auWYvSu1X20p5YeJEEVav3HULCt0tty1/DYIzj/Puy425z4n1925b3Cup
+	 0niAhAYpq20YyxR/ASGUmlVWn/5OXffqRX2DTsPc342Ptkx8R6cQURNvYu8LYGazgm
+	 VKzqYE+CVFrtA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
 	Peter Zijlstra <peterz@infradead.org>,
-	Michael Kelley <mhklinux@outlook.com>,
 	live-patching@vger.kernel.org
-Subject: [PATCH 2/2] objtool/klp: Only enable --checksum when needed
-Date: Wed, 12 Nov 2025 15:32:34 -0800
-Message-ID: <edbb1ca215e4926e02edb493b68b9d6d063e902f.1762990139.git.jpoimboe@kernel.org>
+Subject: [PATCH 0/4] objtool: Fix some -ffunction-sections edge cases
+Date: Wed, 12 Nov 2025 15:47:47 -0800
+Message-ID: <cover.1762991150.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.51.1
-In-Reply-To: <cover.1762990139.git.jpoimboe@kernel.org>
-References: <cover.1762990139.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -61,67 +57,26 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-With CONFIG_KLP_BUILD enabled, checksums are only needed during a
-klp-build run.  There's no need to enable them for normal kernel builds.
+Fix some more fallout from commit 1ba9f8979426 ("vmlinux.lds: Unify
+TEXT_MAIN, DATA_MAIN, and related macros").
 
-This also has the benefit of softening the xxhash dependency.
+For tip/objtool/core.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
----
- arch/x86/boot/startup/Makefile | 2 +-
- scripts/Makefile.lib           | 1 -
- scripts/livepatch/klp-build    | 4 ++++
- 3 files changed, 5 insertions(+), 2 deletions(-)
+Josh Poimboeuf (4):
+  vmlinux.lds: Fix TEXT_MAIN to include .text.start and friends
+  media: atomisp: Fix startup() section placement with
+    -ffunction-sections
+  drivers/xen/xenbus: Fix split() section placement with AutoFDO
+  objtool: Warn on functions with ambiguous -ffunction-sections section
+    names
 
-diff --git a/arch/x86/boot/startup/Makefile b/arch/x86/boot/startup/Makefile
-index e8fdf020b422..5e499cfb29b5 100644
---- a/arch/x86/boot/startup/Makefile
-+++ b/arch/x86/boot/startup/Makefile
-@@ -36,7 +36,7 @@ $(patsubst %.o,$(obj)/%.o,$(lib-y)): OBJECT_FILES_NON_STANDARD := y
- # relocations, even if other objtool actions are being deferred.
- #
- $(pi-objs): objtool-enabled	= 1
--$(pi-objs): objtool-args	= $(if $(delay-objtool),,$(objtool-args-y)) --noabs
-+$(pi-objs): objtool-args	= $(if $(delay-objtool),--dry-run,$(objtool-args-y)) --noabs
- 
- #
- # Confine the startup code by prefixing all symbols with __pi_ (for position
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index f4b33919ec37..28a1c08e3b22 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -173,7 +173,6 @@ ifdef CONFIG_OBJTOOL
- 
- objtool := $(objtree)/tools/objtool/objtool
- 
--objtool-args-$(CONFIG_KLP_BUILD)			+= --checksum
- objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
- objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
- objtool-args-$(CONFIG_MITIGATION_CALL_DEPTH_TRACKING)	+= --hacks=skylake
-diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-index 881e052e7fae..882272120c9e 100755
---- a/scripts/livepatch/klp-build
-+++ b/scripts/livepatch/klp-build
-@@ -489,8 +489,11 @@ clean_kernel() {
- 
- build_kernel() {
- 	local log="$TMP_DIR/build.log"
-+	local objtool_args=()
- 	local cmd=()
- 
-+	objtool_args=("--checksum")
-+
- 	cmd=("make")
- 
- 	# When a patch to a kernel module references a newly created unexported
-@@ -513,6 +516,7 @@ build_kernel() {
- 	cmd+=("$VERBOSE")
- 	cmd+=("-j$JOBS")
- 	cmd+=("KCFLAGS=-ffunction-sections -fdata-sections")
-+	cmd+=("OBJTOOL_ARGS=${objtool_args[*]}")
- 	cmd+=("vmlinux")
- 	cmd+=("modules")
- 
+ .../media/atomisp/i2c/atomisp-ov2722.c        |  6 +--
+ drivers/xen/xenbus/xenbus_xs.c                |  4 +-
+ include/asm-generic/vmlinux.lds.h             | 38 +++++++++++++------
+ tools/objtool/Documentation/objtool.txt       |  7 ++++
+ tools/objtool/check.c                         | 33 ++++++++++++++++
+ 5 files changed, 72 insertions(+), 16 deletions(-)
+
 -- 
 2.51.1
 
