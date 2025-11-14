@@ -1,64 +1,66 @@
-Return-Path: <live-patching+bounces-1855-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1856-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ams.mirrors.kernel.org (ams.mirrors.kernel.org [IPv6:2a01:60a::1994:3:14])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4FAD1C5C1C0
-	for <lists+live-patching@lfdr.de>; Fri, 14 Nov 2025 09:57:16 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 66858C5D5DB
+	for <lists+live-patching@lfdr.de>; Fri, 14 Nov 2025 14:34:56 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ams.mirrors.kernel.org (Postfix) with ESMTPS id BFF2C34CD6A
-	for <lists+live-patching@lfdr.de>; Fri, 14 Nov 2025 08:57:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 36E683B951A
+	for <lists+live-patching@lfdr.de>; Fri, 14 Nov 2025 13:34:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 033282FCC1E;
-	Fri, 14 Nov 2025 08:57:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFAC931A567;
+	Fri, 14 Nov 2025 13:34:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="I369wdp5"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ueYtGgNJ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB1ED2DCBF8;
-	Fri, 14 Nov 2025 08:57:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A05C136358;
+	Fri, 14 Nov 2025 13:34:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763110627; cv=none; b=iudiCjeuVug5JyhEszPCWZdYwHwYSNOx+pMc5MRXkB6VJzqU5F4VW4HXs5Rmzd1vDlMFM6XOQLOv/b7bLkFaZwuKwD/0HtJ03XF7yEE2b+lU2VhVfadB7wRNZ8e89cp2IOaTD9rKVGh+/jGPzqsGcozIDub7NflVR/ibUTsuXzE=
+	t=1763127272; cv=none; b=J4KM/h6/U0NO/cchuibQ0WZXTXttz3ho8HFUipP3Z24JrCNBB8n8A6sYvxMILCU4b5LhQPJyHghWcoSNv0Knu41Ft8+jEXmfhwekjgty4RUggGz5OltMzDlTOrHrlD3qm6362QSDIb2GHYz64Yij2PZnFK2f0mC9BEpRp0pe0jQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763110627; c=relaxed/simple;
-	bh=wGaGYdyTF8KavI209FyjqxT2jec0brG7w0mGLiPJG9Y=;
+	s=arc-20240116; t=1763127272; c=relaxed/simple;
+	bh=zf5qQNJA0exrvxTbVoHpDniJvWpJhG6NBgdvS5qCzwY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mLzIi3Ds8mMXAcbozVz5fn0HB0mZlLievHQf0Z8LSO4B3Kj9f1Fe4cnVz4wV3Ft1/+zFjRp3iPfxuvH6ZchmtSqvRkVb3OQEPy3ilXNVeaLhYlzqLWX7Gd+Sdjp+S88l6eYVPRVjbFBGhFqmOkGAlSkwKMfbb1GqoCIsKtpGp0E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=I369wdp5; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=bJGpc6Q/Uzl0XHX80MBfsV6KQX2eGjEqpGE2KxiZsQE=; b=I369wdp5CYc50uRNtu3sS4LRIo
-	4yFwJn6VzMxZwTA3Z3ngMk6kjgfRjcP+tiE19vWSuMVpdE/tR0Q4cqDHBQnu0yVC93iSInjjWO90Z
-	RCvy6/y0fEJj73oAqZPjciDeQbioPxSNElLf8MfhR2+GLHgmcAuKrvvHkTVVYZDgvI3GQrGnrkhay
-	WYsqWaJKbnfMYreqR7FleyvKixrJZk3j5hL/w5ZCAlTRfW5Q5nZ2htexjNl7eFyCJeWFAYQb4DlP6
-	SB8jfd7AWwzgab+MwBUYyzjzoLVzgj7XskWXo2GJAtRUXS5j2p00HP04UjjvdUjKoKJXRaZ4DwH4I
-	adE8+fFA==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vJokN-000000027sO-35aP;
-	Fri, 14 Nov 2025 08:01:33 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 05DE430029E; Fri, 14 Nov 2025 09:56:58 +0100 (CET)
-Date: Fri, 14 Nov 2025 09:56:57 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
-	live-patching@vger.kernel.org, Hans de Goede <hansg@kernel.org>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	linux-toolchains@vger.kernel.org
-Subject: Re: [PATCH 2/4] media: atomisp: Fix startup() section placement with
- -ffunction-sections
-Message-ID: <20251114085657.GR278048@noisy.programming.kicks-ass.net>
-References: <cover.1762991150.git.jpoimboe@kernel.org>
- <bf8cd823a3f11f64cc82167913be5013c72afa57.1762991150.git.jpoimboe@kernel.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=IYH5D0ZAAmGXGGVP0MzaMXCXyjd/+XFglkc43NreG03EpgdKspKLkfwqcE84rcOfs2DsjShzkiEyGVA6i8EmJleausWCAwbdHLsQFl05EuDVj+6MO2eonuBzciCXKRQQYXS04rXQJsNCWrY6uW0hT9pI/EjcUVVGi1P5Dcj2AyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ueYtGgNJ; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7424C16AAE;
+	Fri, 14 Nov 2025 13:34:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1763127272;
+	bh=zf5qQNJA0exrvxTbVoHpDniJvWpJhG6NBgdvS5qCzwY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ueYtGgNJqE2f6qGi6XHRMZ5q0gsBW2QkCVscvdOLDqWyxntqU8M9WuWK0AD0XtsBh
+	 Nfm8TLskAvrK4dHhJ9K91lM9czqfmahhBDh/AonvTjW6Wpf8knwN189IfXMzwtkbSr
+	 hlVxE+vBmwjl2J4MCUgaWQE3CyYbdlfUNQCEawAdtSDh/FidkeiNe91tiR0tQ6LTXU
+	 18wFOU3PzoXuVMfvo6wHbv7BEyo3OHIUmy18khe15uXbmWPezgWPGmc06bdkjc70Cw
+	 8uAdrnM/ZgBhh6Lo0nFxJ/nCLbrfhmllLF6WMNXILIBKa3F0v07F4sQ6YUlUBtydTH
+	 /EcIig++sOnVQ==
+Date: Fri, 14 Nov 2025 13:34:25 +0000
+From: Will Deacon <will@kernel.org>
+To: Dylan Hatch <dylanbhatch@google.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Indu Bhagat <indu.bhagat@oracle.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Kosina <jikos@kernel.org>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Weinan Liu <wnliu@google.com>, Mark Rutland <mark.rutland@arm.com>,
+	Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org,
+	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+	joe.lawrence@redhat.com, Puranjay Mohan <puranjay@kernel.org>,
+	Song Liu <song@kernel.org>,
+	Prasanna Kumar T S M <ptsm@linux.microsoft.com>
+Subject: Re: [PATCH v2 1/6] unwind: build kernel with sframe info
+Message-ID: <aRcv4RX40rXKIjxd@willie-the-truck>
+References: <20250904223850.884188-1-dylanbhatch@google.com>
+ <20250904223850.884188-2-dylanbhatch@google.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -67,20 +69,81 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bf8cd823a3f11f64cc82167913be5013c72afa57.1762991150.git.jpoimboe@kernel.org>
+In-Reply-To: <20250904223850.884188-2-dylanbhatch@google.com>
 
-On Wed, Nov 12, 2025 at 03:47:49PM -0800, Josh Poimboeuf wrote:
-> When compiling the kernel with -ffunction-sections (e.g., for LTO,
-> livepatch, dead code elimination, AutoFDO, or Propeller), the startup()
-> function gets compiled into the .text.startup section.  In some cases it
-> can even be cloned into .text.startup.constprop.0 or
-> .text.startup.isra.0.
+On Thu, Sep 04, 2025 at 10:38:45PM +0000, Dylan Hatch wrote:
+> Use the -Wa,--gsframe flags to build the code, so GAS will generate
+> a new .sframe section for the stack trace information.
+> Currently, the sframe format only supports arm64 and x86_64
+> architectures. Add this configuration on arm64 to enable sframe
+> unwinder in the future.
 > 
-> However, the .text.startup and .text.startup.* section names are already
-> reserved for use by the compiler for __attribute__((constructor)) code.
+> Signed-off-by: Weinan Liu <wnliu@google.com>
+> Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
+> Reviewed-by: Prasanna Kumar T S M <ptsm@linux.microsoft.com>
+> ---
+>  Makefile                          |  8 ++++++++
+>  arch/Kconfig                      |  6 ++++++
+>  arch/arm64/Kconfig.debug          | 10 ++++++++++
+>  arch/arm64/kernel/vdso/Makefile   |  2 +-
+>  include/asm-generic/vmlinux.lds.h | 15 +++++++++++++++
+>  5 files changed, 40 insertions(+), 1 deletion(-)
 > 
+> diff --git a/Makefile b/Makefile
+> index b9c661913250..09972c71a3e8 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1078,6 +1078,14 @@ endif
+>  # Ensure compilers do not transform certain loops into calls to wcslen()
+>  KBUILD_CFLAGS += -fno-builtin-wcslen
+>  
+> +# build with sframe table
+> +ifdef CONFIG_SFRAME_UNWIND_TABLE
+> +CC_FLAGS_SFRAME := -Wa,--gsframe
+> +KBUILD_CFLAGS	+= $(CC_FLAGS_SFRAME)
+> +KBUILD_AFLAGS	+= $(CC_FLAGS_SFRAME)
+> +export CC_FLAGS_SFRAME
+> +endif
+> +
+>  # change __FILE__ to the relative path to the source directory
+>  ifdef building_out_of_srctree
+>  KBUILD_CPPFLAGS += $(call cc-option,-fmacro-prefix-map=$(srcroot)/=)
+> diff --git a/arch/Kconfig b/arch/Kconfig
+> index d1b4ffd6e085..4362d2f49d91 100644
+> --- a/arch/Kconfig
+> +++ b/arch/Kconfig
+> @@ -1782,4 +1782,10 @@ config ARCH_WANTS_PRE_LINK_VMLINUX
+>  config ARCH_HAS_CPU_ATTACK_VECTORS
+>  	bool
+>  
+> +config AS_SFRAME
+> +	def_bool $(as-instr,.cfi_sections .sframe\n.cfi_startproc\n.cfi_endproc)
 
-Urgh, that's a 'fun' one. Is this not a -ffunction-sections bug? I mean,
-the compiler should never put regular non-reserved user symbols in a
-section it has reserved for itself, right?
+Is it possible to extend this check so that we reject assemblers that
+emit the unsupported "sframe version one" format?
+
+> +config SFRAME_UNWIND_TABLE
+> +	bool
+
+Is this extra option actually needed for anything?
+
+>  endmenu
+> diff --git a/arch/arm64/Kconfig.debug b/arch/arm64/Kconfig.debug
+> index 265c4461031f..d64bf58457de 100644
+> --- a/arch/arm64/Kconfig.debug
+> +++ b/arch/arm64/Kconfig.debug
+> @@ -20,4 +20,14 @@ config ARM64_RELOC_TEST
+>  	depends on m
+>  	tristate "Relocation testing module"
+>  
+> +config SFRAME_UNWINDER
+> +	bool "Sframe unwinder"
+> +	depends on AS_SFRAME
+> +	depends on 64BIT
+
+Shouldn't there be an arch dependency here as well? Since architectures
+need to make use of sframe in their unwinders, I was expecting something
+like 'depends on ARCH_SUPPORTS_SFRAME_UNWINDER' here.
+
+Will
 
