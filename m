@@ -1,100 +1,139 @@
-Return-Path: <live-patching+bounces-1857-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1858-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [IPv6:2605:f480:58:1:0:1994:3:14])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0B675C5F44C
-	for <lists+live-patching@lfdr.de>; Fri, 14 Nov 2025 21:48:08 +0100 (CET)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1B39CC600A0
+	for <lists+live-patching@lfdr.de>; Sat, 15 Nov 2025 07:44:38 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 3DA474E2860
-	for <lists+live-patching@lfdr.de>; Fri, 14 Nov 2025 20:43:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C77C33BE4CE
+	for <lists+live-patching@lfdr.de>; Sat, 15 Nov 2025 06:44:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56BD02E1F06;
-	Fri, 14 Nov 2025 20:43:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF9AF1FBC92;
+	Sat, 15 Nov 2025 06:44:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m4fXDbT2"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WmftFowl"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1675823A99E;
-	Fri, 14 Nov 2025 20:43:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C5BF1917ED
+	for <live-patching@vger.kernel.org>; Sat, 15 Nov 2025 06:44:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763152994; cv=none; b=StsyFLiDHhrxdeL6sCrzf0r8oaVvjNLtQcsOSofG52Exa3vJs2ESiH5P1AF0BCGHMi1w9yCWYZKafxIlc/WW91FaeYo74puo5wPP8pV2BF0hRgMRmbqHIvf7Lt5TzYcMR/FbXunHZ55bzoGyepyGOJzsGT74nlZgN4wgPkgMbII=
+	t=1763189073; cv=none; b=umLdVPAncvEyZSeQhFibVISJ+ZFHpSlu+MBSL9b4S7DV8GIk1MdIKGb6R+DMX+1gbTUaqir0D0lcGWRpaFpOuh3H3aPipanp3MMyIFQ6zwhRJMQ/Sbhs9MY4MyZZCVgMCqc+FPp5qj1Py6OaAc45S8YAOnoNSM4okC6GxsroHfY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763152994; c=relaxed/simple;
-	bh=hhUf+B2d9VcGFwRmQ5aQm1Ejp6+IslPooZHgnmgDPSM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lx/e8SICPZ9CNerhu8gx/PM/pwyAXD9jXTsryk/94Bn0m0hj8hK2rL93aclSJi4vZL51ilp4EgCtQgYCZudJELqJRXlVuhPhfioF9iJZlhNIAmMa1xI0iuT1joUokZIbH0CVR16MiBJ/yDdPh0tyfcROkj1v4tgiUDviOom5Axo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m4fXDbT2; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF75C113D0;
-	Fri, 14 Nov 2025 20:43:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763152993;
-	bh=hhUf+B2d9VcGFwRmQ5aQm1Ejp6+IslPooZHgnmgDPSM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=m4fXDbT2D4xf3yPDB6fgacFSze3DUYsPJ1VKLUFUzC65Vwgj5oRG1aWyMMjVnDCZj
-	 j+Jnm+iOhkDvq3hi05/lvVKKTYOXeP+Z5JMpwx5nogJg+1PpZYgnJCsKsOYVXPjY/P
-	 zoAH6Yt+p96NHwvaiTzO1Ov0Vj780f35PsmRe8gknjqbvkY25/K3YEUt6tnQoQnUTI
-	 2xgaCF4jNIMwpr4eCzf+nlEtEsa4pbsgvMubxyXHjbRLVqjkY960EtbP2IEofhXJHP
-	 SPcSGaql0xliQIyiDRD49I0M9T8NulLOW4cshqNxXZL1eib4ic4T9dTYY9cOUWo7Yn
-	 +x46SCABzQ/lw==
-Date: Fri, 14 Nov 2025 12:43:10 -0800
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
-	live-patching@vger.kernel.org, Hans de Goede <hansg@kernel.org>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, linux-toolchains@vger.kernel.org
-Subject: Re: [PATCH 2/4] media: atomisp: Fix startup() section placement with
- -ffunction-sections
-Message-ID: <2a3d4d7fco4szxyrw33lorkhckjq4styfsaljxxwd3v4o42i5z@qdavomj5i2mu>
-References: <cover.1762991150.git.jpoimboe@kernel.org>
- <bf8cd823a3f11f64cc82167913be5013c72afa57.1762991150.git.jpoimboe@kernel.org>
- <20251114085657.GR278048@noisy.programming.kicks-ass.net>
+	s=arc-20240116; t=1763189073; c=relaxed/simple;
+	bh=dNQppL3S/rPtDJm3ci5s2VLa/EqCej1o9wKVfCADkdE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=HZlgxurkl4sY0o88bu1axrunA6pok8PJ7/slmqi4gurKzzraKaDqGx/BmB0HXaE2qnXfc4GKNLLnI59C80YETbZ4TVy/ztm5lbQT99i89s+FQyvewKfh9zYMN/CWDF4ykjoADdIoiObXWZsq6JzIejZi3WpooaVzJ7N9fa4l4PU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WmftFowl; arc=none smtp.client-ip=209.85.222.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-ua1-f42.google.com with SMTP id a1e0cc1a2514c-93722262839so1515645241.2
+        for <live-patching@vger.kernel.org>; Fri, 14 Nov 2025 22:44:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1763189071; x=1763793871; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HwC49H0o3FxJV5icz/5NCk5PlqmOiKiZHnb9jvksA8c=;
+        b=WmftFowlLT9uZwgogqTJZNtlOxUp0fiOwlGZIKPxxALrrh7GAHODX2MxdABI6myKWd
+         lGNqJNV2AZ8muV3CJN/qF5mE0uJzBXItI+wNviEPeR92TaRkJQcAKvjbdp6GNMWOWk8o
+         xxmyLPgG05l35bXNXdwCl8xQM48TuPH0ItMV5WEnZBJYSrDOpkTR2JpkiKtokzIcHDFr
+         fmRhH2c38RwQaBWnZVUhLKcHJimYaR1OoM0foSAG6RgQscwifA8RmTgTXcROBi4tIjtr
+         TFvmD4ARo0h1S2jbr4sWM8Fkhr2SOuvp9d+50zssju0zx3xRV1BgyybcKtLqhVCYzeyg
+         97TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1763189071; x=1763793871;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=HwC49H0o3FxJV5icz/5NCk5PlqmOiKiZHnb9jvksA8c=;
+        b=MdsG+AV5yvBqKMl/KuOhUrlEPYyhm7BNt7bec6DtNSxlO+6lrfQV4V5M5lXxctc8+D
+         +ikWCRNuaAZBtZzA/6xk72GssE60Z2AQ2urQZIDd7ZYcvsRWaGANdq8U6JJuJoUnM4Qs
+         Iq2PoTsBtwSDg38BnYEGtsJl3BjJowbveMCNcXNh3I13IhWhQstY6QAastsuoPwJ0Vai
+         RP/tMzXN9yy5q9YngvZMdadoNtfEspuSxG272deK09EHbksOgaT8iWqMx/QKA6vD2Kgo
+         sWyKLxy0nA7GyAeANZHjKZGbcIN7jsMX2Mm6bWFcoOyIlyLgNRnMRmXh1KpQW1AJstoe
+         T5iw==
+X-Forwarded-Encrypted: i=1; AJvYcCVlPWWDbh/h2Q7BQi2vftdzu5y02ouEDDMquHQ9wVtpcMnlKxk+vGgmiUqgxQeSmOFKEa3hQJ6fKR4G5sIM@vger.kernel.org
+X-Gm-Message-State: AOJu0YwXi2udM4bmRuzVtHBWfL6Ex+odBpI3hELRxAfqlhT+uSwtfetM
+	/uwa+FdC+KOdoc2NHwufgnPxNwIcxSdziiZFo+Ykkmxn0BGENsnKDKz+HHPMSMeMzEKBSTR0Ai/
+	fETeavLqtxA9KTkBCke8WPIw16wm+MEalF9iTNx5Q
+X-Gm-Gg: ASbGncsZ/TwvxCRoMwUuzm3MVGt4CwiuUHIbjY3trjg474hKkaN6kqg/UBcqzzvD01F
+	d7RSqfs+7mxbj9/XllwKGSytZ9Wn3jSrqEp5wsQAZHrBnYn0uQd4sI8318Zk583eRglokTrWnOG
+	AN0c58Tyuc3PxIppjPctblKY+i3ihERPaKhAh9Ydwftorv5pp2HfQG3sv84W+qXj3YPzgL7+OE2
+	L8tblCJ7qUBIqrNcLKD12tzDj74y7PSms2QZKeGhiEkX2l409y7H4imPcRoECC4TcFaptw0jbsL
+	xKY2kw==
+X-Google-Smtp-Source: AGHT+IGQuyvvCrY2FskJ9sdLQkXe0RTkOG8d3VDv4bzvAdawM6Rdu6JP8by+xzyV3l/P8ABbnCZCKZMTQxZJfNCf6BU=
+X-Received: by 2002:a05:6102:41a2:b0:5db:d60a:6b1f with SMTP id
+ ada2fe7eead31-5dfc5b727cbmr2280150137.23.1763189070999; Fri, 14 Nov 2025
+ 22:44:30 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20251114085657.GR278048@noisy.programming.kicks-ass.net>
+References: <20250904223850.884188-1-dylanbhatch@google.com>
+ <20250904223850.884188-7-dylanbhatch@google.com> <xo2ro446awhsd7i55shx6tlz6s2azuown4xk6zfm7ie4zz2nqc@244onpurkvy3>
+In-Reply-To: <xo2ro446awhsd7i55shx6tlz6s2azuown4xk6zfm7ie4zz2nqc@244onpurkvy3>
+From: Dylan Hatch <dylanbhatch@google.com>
+Date: Fri, 14 Nov 2025 22:44:20 -0800
+X-Gm-Features: AWmQ_bkkQw_rgL15OTp3r5_njXzYzXc7yIV8EJr04RBS3D5gpBl8zHwupKkVqVU
+Message-ID: <CADBMgpyVis+fRHLOv6BRPrT+0r8846MOutkmOgMbqytLVXh9Ag@mail.gmail.com>
+Subject: Re: [PATCH v2 6/6] unwind: arm64: Add reliable stacktrace with sframe unwinder.
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Will Deacon <will@kernel.org>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Jiri Kosina <jikos@kernel.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
+	Mark Rutland <mark.rutland@arm.com>, Ian Rogers <irogers@google.com>, 
+	linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	live-patching@vger.kernel.org, joe.lawrence@redhat.com, 
+	Puranjay Mohan <puranjay@kernel.org>, Song Liu <song@kernel.org>, 
+	Prasanna Kumar T S M <ptsm@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Nov 14, 2025 at 09:56:57AM +0100, Peter Zijlstra wrote:
-> On Wed, Nov 12, 2025 at 03:47:49PM -0800, Josh Poimboeuf wrote:
-> > When compiling the kernel with -ffunction-sections (e.g., for LTO,
-> > livepatch, dead code elimination, AutoFDO, or Propeller), the startup()
-> > function gets compiled into the .text.startup section.  In some cases it
-> > can even be cloned into .text.startup.constprop.0 or
-> > .text.startup.isra.0.
-> > 
-> > However, the .text.startup and .text.startup.* section names are already
-> > reserved for use by the compiler for __attribute__((constructor)) code.
-> > 
-> 
-> Urgh, that's a 'fun' one. Is this not a -ffunction-sections bug? I mean,
-> the compiler should never put regular non-reserved user symbols in a
-> section it has reserved for itself, right?
+Sorry for the slow reply on this, I'm going to try and get a v3 out
+sometime after next week.
 
-Right, so there's no ambiguity *IF* we know in advance whether it was
-compiled with -ffunction-sections.  If so, constructor code goes in
-.text.startup.*, and startup() goes in .text.startup or
-.text.startup.constprop.0 or .text.startup.isra.0.
+On Wed, Sep 17, 2025 at 4:41=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
+> wrote:
+>
+> As far I can tell, the *only* error condition being checked is if it
+> (successfully) fell back to frame pointers.
 
-So it's not really a compiler bug because it's possible to disambiguate
-those.
+By checking/handling error conditions, do you mean just marking the
+state as unreliable in any case where the unwind isn't successful with
+SFrame? I'm thinking if I can make the unwind_next_frame_sframe() code
+path handle the end of the stack correctly on its own, I can more
+strictly mark the trace as unreliable if it encounters any error.
 
-Problem is, we can have some objects compiled with -ffunction-sections,
-and some compiled without, in the same kernel.  So the disambiguation
-isn't possible at link time, since for example .text.startup could be
-startup() with -ffunction-sections, or it could be
-__attribute__((constructor)) without -ffunction-sections.
+>
+> What if there was some bad or missing sframe data?  Or some unexpected
+> condition on the stack?
+>
+> Also, does the exception handling code have correct cfi/sframe metadata?
+>
+> In order for it to be "reliable", we need to know the unwind reached the
+> end of the stack (e.g., the task pt_regs frame, from entry-from-user).
 
-I attempted to describe all that in patch 4.
+It looks like the frame-pointer based method of handling the end of
+the stack involves calling kunwind_next_frame_record_meta() to extract
+and check frame_record_meta::type for FRAME_META_TYPE_FINAL. I think
+this currently assumes (based on the definition of 'struct
+frame_record') that the next FP and PC are right next to each other,
+alongside the meta type. But the sframe format stores separate entries
+for the FP and RA offsets, which makes extracting the meta type from
+this information a little bit murky to me.
 
--- 
-Josh
+Would it make sense to fall back to the frame pointer method for the
+final stack frame? Or I guess I could define a new sframe-friendly
+meta frame record format?
+
+Thanks,
+Dylan
 
