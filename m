@@ -1,64 +1,63 @@
-Return-Path: <live-patching+bounces-1860-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1861-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [IPv6:2605:f480:58:1:0:1994:3:14])
-	by mail.lfdr.de (Postfix) with ESMTPS id DC4F5C66825
-	for <lists+live-patching@lfdr.de>; Tue, 18 Nov 2025 00:02:00 +0100 (CET)
+Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
+	by mail.lfdr.de (Postfix) with ESMTPS id 35558C66873
+	for <lists+live-patching@lfdr.de>; Tue, 18 Nov 2025 00:08:57 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 8DA6A4E27AA
-	for <lists+live-patching@lfdr.de>; Mon, 17 Nov 2025 23:01:48 +0000 (UTC)
+	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 52EBE4E2FB5
+	for <lists+live-patching@lfdr.de>; Mon, 17 Nov 2025 23:06:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE97A23EAA3;
-	Mon, 17 Nov 2025 23:01:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC146248896;
+	Mon, 17 Nov 2025 23:06:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dDpQvhpD"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FAftbyEx"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA55202F7E;
-	Mon, 17 Nov 2025 23:01:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 807DD184540;
+	Mon, 17 Nov 2025 23:06:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763420502; cv=none; b=YrzNuWpNVLx2KT8OPYjUjT31AomN5JuIqXOth/mbfaevb7kEZnSeXtZLK7gOuiNFrdnaPnL6P8OEC0XduhUrT2nsMCM0BymrrSAzag0fS8hUiLHX36r/WJN0OZIOHJK9ZVe85qy7y5UyaeHfow2KgjQTSGu4yvq8+vglUBsX0hE=
+	t=1763420797; cv=none; b=Yk+BZz05O/rrXrgc/XEZTMPyGSen80Xh2AtrElC1fwVoONhWiU34DEBEMUlgHW5XWSDjIDDmc7oPxB8UlUJk2e6BOgthj3UqMAEKFiq6OEI7DnxTc0ejf/xF2HIqpjZnKOi8JBjie8tMB5WLDvv7fcM5M1cg71vNqN4geWpVE6M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763420502; c=relaxed/simple;
-	bh=Dq0eTFRCeQzhn3vDfbpa3/NnxAYBpBDM1zcOLDRK2bU=;
+	s=arc-20240116; t=1763420797; c=relaxed/simple;
+	bh=9tB/S0iGw6x/PSpO9qPz/mZQjc1eBaQP1GWw54gyuNQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ctsdYLhNBo+RY5A2V11Nmyv3ftly1NqQCFcRotJiI3bVJmZQ+OgCs2s1WiVBimcoD7uILPg8TQellmLlRKzznEADHo1yn9+hboxzDzN1e2TrI51+GQ7p+f4MDLwskHhWxXAwgRBxHekTLwBTpLNedK3X7SaZLeAQko4Ax551iBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dDpQvhpD; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB69FC2BCB3;
-	Mon, 17 Nov 2025 23:01:39 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=EWPwVw4xT3opG6+xKnm3TMpa7fep3ivfUGLFkDqG/eSP6AzFVUeP6hyEIdrwQilkt3wTSnwRiCsgQxjgVbODz3slqTI8JIuJVTd5gU5q9pbMDQ8Rkf1u3sh6UHG58HNIfiPgpZpGJ3zT+U7KLpsPbvQVvZ/V+h47UnZ0TJyEcw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FAftbyEx; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C59C2BC87;
+	Mon, 17 Nov 2025 23:06:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763420501;
-	bh=Dq0eTFRCeQzhn3vDfbpa3/NnxAYBpBDM1zcOLDRK2bU=;
+	s=k20201202; t=1763420796;
+	bh=9tB/S0iGw6x/PSpO9qPz/mZQjc1eBaQP1GWw54gyuNQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dDpQvhpDKHsnKt4nBDk8Wv42Po7aULS2hPhlsauClaEAUGegmN1h4sv5/MP1TV+0t
-	 OT01gy6saaPr/TLmpMTlUf7pvbCmr9K99QlJETJbGNJSfC/zZ2DVVgCR0aYtq7pseR
-	 KXDkEA+BaQpGvGfawf71F5glIU/7oLfhJNWx8iZxKkJkctr4iuWA9PzLtS3S/r2YTT
-	 jFHX1ZuxuPN/PAY498rghNnM3gr4avYUzQKtQeIo4frwFKRfxLBYjy5kk4ai0uKOkO
-	 BUHjHjRnUX0ob7mbewbxnQMEfKK77WM0ZAkZpIXbQm9L+vk7ee+Z4Rlo1HF7uLOdzl
-	 5N/gQUyYsloLA==
-Date: Mon, 17 Nov 2025 15:01:37 -0800
+	b=FAftbyExzDx+orTZGtk5ens60oGqH07nAwWZJO9pOSI79YzpNRAhhf8Yo638YOoZu
+	 RlVLug9Z9I4XyQDX1H9o+y8vIUDpmEZRhYUZliju2GwhZjZ2AJFYXjYZ1d9LIcCpio
+	 NgEBlLORVW5VarLDfMUgeOu4Xo9wEEdM6hUfKZee5PqoGKt6uPSQlR4q4W+TAk2nZf
+	 Qg5HZ7Fz2FFa7c/OxaOGnrcA30ruJNsYmQt+6mrCOpdm69t+wPQ3LsPrdWu7sOBXDP
+	 ow4AkYnPT4kVWuzUZKdAHIhwOQxexlO4WcRqNPZP7x2NSvuWHes/sRfJc5h5UEvdgg
+	 qwj5Nl2rlKfFA==
+Date: Mon, 17 Nov 2025 15:06:32 -0800
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Dylan Hatch <dylanbhatch@google.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>, 
-	Indu Bhagat <indu.bhagat@oracle.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Will Deacon <will@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Jiri Kosina <jikos@kernel.org>, Roman Gushchin <roman.gushchin@linux.dev>, 
-	Weinan Liu <wnliu@google.com>, Mark Rutland <mark.rutland@arm.com>, 
-	Ian Rogers <irogers@google.com>, linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	live-patching@vger.kernel.org, joe.lawrence@redhat.com, Puranjay Mohan <puranjay@kernel.org>, 
-	Song Liu <song@kernel.org>, Prasanna Kumar T S M <ptsm@linux.microsoft.com>
-Subject: Re: [PATCH v2 6/6] unwind: arm64: Add reliable stacktrace with
- sframe unwinder.
-Message-ID: <eo5fod6csuininieur2lm6bxunmpbk6n3wtxajamrwqqpae3ja@o3eqwfp3u6su>
+Cc: Puranjay Mohan <puranjay12@gmail.com>, Song Liu <song@kernel.org>, 
+	Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Will Deacon <will@kernel.org>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Jiri Kosina <jikos@kernel.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
+	Mark Rutland <mark.rutland@arm.com>, Ian Rogers <irogers@google.com>, 
+	linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
+	joe.lawrence@redhat.com, Puranjay Mohan <puranjay@kernel.org>
+Subject: Re: [PATCH v2 0/6] unwind, arm64: add sframe unwinder for kernel
+Message-ID: <nzmtsafrx5vjitgfpducjaa7kq747a3sler2vvyvfbxecutn3v@7ffl2ycnaoo2>
 References: <20250904223850.884188-1-dylanbhatch@google.com>
- <20250904223850.884188-7-dylanbhatch@google.com>
- <xo2ro446awhsd7i55shx6tlz6s2azuown4xk6zfm7ie4zz2nqc@244onpurkvy3>
- <CADBMgpyVis+fRHLOv6BRPrT+0r8846MOutkmOgMbqytLVXh9Ag@mail.gmail.com>
+ <CAPhsuW5zUEeM3DAw-3OVNS9KmM2vG9B1GaR9KEKS_KFQo-VG9Q@mail.gmail.com>
+ <CANk7y0hUKOVXRKoJ5Ufmg-5DGSe2F5nBH+O7tLVvLRs9Oe54uA@mail.gmail.com>
+ <CADBMgpwZ32+shSa0SwO8y4G-Zw14ae-FcoWreA_ptMf08Mu9dA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -68,57 +67,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CADBMgpyVis+fRHLOv6BRPrT+0r8846MOutkmOgMbqytLVXh9Ag@mail.gmail.com>
+In-Reply-To: <CADBMgpwZ32+shSa0SwO8y4G-Zw14ae-FcoWreA_ptMf08Mu9dA@mail.gmail.com>
 
-On Fri, Nov 14, 2025 at 10:44:20PM -0800, Dylan Hatch wrote:
-> Sorry for the slow reply on this, I'm going to try and get a v3 out
-> sometime after next week.
-> 
-> On Wed, Sep 17, 2025 at 4:41 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+On Fri, Nov 14, 2025 at 10:50:16PM -0800, Dylan Hatch wrote:
+> On Mon, Sep 29, 2025 at 12:55 PM Puranjay Mohan <puranjay12@gmail.com> wrote:
 > >
-> > As far I can tell, the *only* error condition being checked is if it
-> > (successfully) fell back to frame pointers.
-> 
-> By checking/handling error conditions, do you mean just marking the
-> state as unreliable in any case where the unwind isn't successful with
-> SFrame?
-
-Right, any sframe error it encounters along the way (including missing
-sframe) would be a reason to mark it as unreliable.
-
-> I'm thinking if I can make the unwind_next_frame_sframe() code
-> path handle the end of the stack correctly on its own, I can more
-> strictly mark the trace as unreliable if it encounters any error.
-> 
+> > I will try to debug this more but am just curious about BPF's
+> > interactions with sframe.
+> > The sframe data for bpf programs doesn't exist, so we would need to
+> > add that support
+> > and that wouldn't be trivial, given the BPF programs are JITed.
 > >
-> > What if there was some bad or missing sframe data?  Or some unexpected
-> > condition on the stack?
-> >
-> > Also, does the exception handling code have correct cfi/sframe metadata?
-> >
-> > In order for it to be "reliable", we need to know the unwind reached the
-> > end of the stack (e.g., the task pt_regs frame, from entry-from-user).
+> > Thanks,
+> > Puranjay
 > 
-> It looks like the frame-pointer based method of handling the end of
-> the stack involves calling kunwind_next_frame_record_meta() to extract
-> and check frame_record_meta::type for FRAME_META_TYPE_FINAL. I think
-> this currently assumes (based on the definition of 'struct
-> frame_record') that the next FP and PC are right next to each other,
-> alongside the meta type. But the sframe format stores separate entries
-> for the FP and RA offsets, which makes extracting the meta type from
-> this information a little bit murky to me.
-> 
-> Would it make sense to fall back to the frame pointer method for the
-> final stack frame? Or I guess I could define a new sframe-friendly
-> meta frame record format?
+> From what I can tell, the ORC unwinder in x86 falls back to using
+> frame pointers in cases of generated code, like BPF. Would matching
+> this behavior in the sframe unwinder be a reasonable approach, at
+> least for the purposes of enabling reliable unwind for livepatch?
 
-For sframe v3, I believe Indu is planning to add support for marking the
-outermost frame.  That would be one definitive way to know that the
-stack trace made it to the end.
+The ORC unwinder marks the unwind "unreliable" if it has to fall back to
+frame pointers.
 
-Or, if the entry-from-user pt_regs frame is always stored at a certain
-offset compared to the end of the task stack page, that might be another
-way.
+But that's not a problem for livepatch because it only[*] unwinds
+blocked/sleeping tasks, which shouldn't have BPF on their stack anyway.
+
+[*] with one exception: the task calling into livepatch
 
 -- 
 Josh
