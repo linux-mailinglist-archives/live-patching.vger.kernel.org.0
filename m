@@ -1,134 +1,108 @@
-Return-Path: <live-patching+bounces-1863-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1864-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from ams.mirrors.kernel.org (ams.mirrors.kernel.org [213.196.21.55])
-	by mail.lfdr.de (Postfix) with ESMTPS id 621DFC6696C
-	for <lists+live-patching@lfdr.de>; Tue, 18 Nov 2025 00:50:28 +0100 (CET)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1FE17C669FF
+	for <lists+live-patching@lfdr.de>; Tue, 18 Nov 2025 01:11:01 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ams.mirrors.kernel.org (Postfix) with ESMTPS id 0DEE7353493
-	for <lists+live-patching@lfdr.de>; Mon, 17 Nov 2025 23:50:28 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTPS id 31381293FF
+	for <lists+live-patching@lfdr.de>; Tue, 18 Nov 2025 00:11:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C170B2D0C66;
-	Mon, 17 Nov 2025 23:50:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9CBA715855E;
+	Tue, 18 Nov 2025 00:10:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UHre4xjq"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fl6EvuYn"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A7642C3768
-	for <live-patching@vger.kernel.org>; Mon, 17 Nov 2025 23:50:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 681351494C3;
+	Tue, 18 Nov 2025 00:10:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763423423; cv=none; b=ixXvNiHH+BCr3DJDEwXMwZN4rdcWRkAr2Sq+wCvpTpB8pWln/VQjXegi+ogXHLZrfSuYFn4WlfEk45x+88OZnh/h5aPEEnjm5vAks4uvnqxP4MlF4v1R75K9leMnGpYd11ZWTRD6LPLioq2HLs5HyaZB3vdEznYgPZaANy/CdFs=
+	t=1763424651; cv=none; b=WmPKFcb+ILVDUYujhvGkqzwLDi7Bg97yisLAyQZ1EQqHzmZ03wUlHyXXGB2l1NE8FltH+7o6TCSgF1dbr1eSpzvJaZnmXrdYwd4kn+qHrmEWXnOyDDNm2N2R1K//3X6T4qOZnrUeaObZFGbmtK8+C8fDr1CtZJFHF5GJRY0S4l4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763423423; c=relaxed/simple;
-	bh=L7ShX2R77QQlrirSYuHJKAuODl0vsxkf0fBM0UTfB4I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Us2lnmdfnpCs1fTJdqwC8JPYUhsDpkmAT84hVdoKEFjAjOinjS6bUsS3TiRnChzt07tXu8hvADZVao+XxVAVHc5FtJLgMdlU0CEg8WPkcK3QvKdTtIIVcrvEv0oWlV4ArBbITOYAlZvQutoQ1dzgbAMOR+mFV4XEC84TezDmibQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UHre4xjq; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-640a503fbe8so8466261a12.1
-        for <live-patching@vger.kernel.org>; Mon, 17 Nov 2025 15:50:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1763423420; x=1764028220; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L7ShX2R77QQlrirSYuHJKAuODl0vsxkf0fBM0UTfB4I=;
-        b=UHre4xjqfYqz1GSJbY+Cht3ltsf1GQf6gGnMFDrXujXZ4mqpbN8iaAJhWqxEG1PY06
-         Y2OozWi194iBKcbEdyGJ3LJbZP22cPjATlCNGLrRzhWeLPCAR2hPcDit/WyDQZFk3fgS
-         aN/JjsVK2g4CEpndOHvXe2S5xBfIwXDXVxEoo/xMa4MCwT4a6M6lpfT6xNRzR6bOrRAs
-         kjZv1mISTxCuTg14c/4vLIj8eZfIkADudk4IiRYtYNWe1tjyi1iGhgsRc2hwvj/a9BHq
-         35cmcioCKG2YAxdW4x/hmHIoATl1sS3S91i0/Ns1p4XrxIhV4YOr1huHvew2V3Pjy3gg
-         Q7xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763423420; x=1764028220;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=L7ShX2R77QQlrirSYuHJKAuODl0vsxkf0fBM0UTfB4I=;
-        b=tFpHkqHVWxL/yO5X0N0Um79AqZzpkKMJe/fil0phr700kjr91MRaPtv/1L9zQtVZsN
-         +YlIwDUmhXuCZLmq5/F+DvuiVX36lyc4iTwaSwq6RGiUYCVc0Kigga1x5/R/GV1f3Mq2
-         no2Guo+l87p4F/WJ69N7NaQ6qLXK5SkTOl42itramn/frdNrLr05IJCUaUPJSJ88uDGl
-         yqF3urT+NuASfDrwC/DczL9U/8TJphzjsTomB6RmMoN2lXhF77PESPpO/jsKidypJybm
-         L2tPcFBFWSUzZ/BUfCMfZ9GIek1CfgqXxoKJb42/vhT0Px1MsrRsKXfKbRTpynIJyO31
-         hPEA==
-X-Forwarded-Encrypted: i=1; AJvYcCV8Eg5ObPvwvAAdI9WFRc91jGO4dJjUCHMczYISkp5Z60ITpcCWvhOlGwzEfTzq0/cilsRnyelSOVw3fSP4@vger.kernel.org
-X-Gm-Message-State: AOJu0YwCTNo7TkiuVJW9a6It8kksAELZiZgYqlZ+JPgF4ejDH907LQ5r
-	8yLSziBUqKSXsdmCseagg+GRBPusF5B/e5LR1b/EoYCQGp7Lt58FRNaYUQ8I+W4mLEd7o/RXpQK
-	frzg8EY7CC9ZMJx/rfk3aUMCmmsAJllM=
-X-Gm-Gg: ASbGnct7FnBHAYUWRP5Sm4RVMoxMo9717Y/8SBMyvwCQ6WjjVX04Pdekl47dqPj+RQt
-	14NxSki28zh4stunnO6r62E0Eduqmre2HYhBlV5jT6u2L+pwHiWjI2IBGIlXo4MppqnbohbjD35
-	2+8rebKtqogKax+Y8s8FgGZoatB3YC5I66c4ehrFF28xez6y0Eqjfn5o7Xi/1U6JoeUEv4n5KZR
-	wBQEmyIWiNBXGIsIXN6Qbd4y6yojjgfxwEph46/aRLjoJ5ko0diEwHKycrpiCvRVYVKfb541eIJ
-	CvyLpAV/jRaIFUxNgy2V2OPO9ds=
-X-Google-Smtp-Source: AGHT+IFQBCppQ37igj5MnmLQkkId5sJwjkwb1o5CC811b5BkF5VmAHhj/INLgbzZeniV+AoWmxwTBSH4owwFCJAXr30=
-X-Received: by 2002:a05:6402:520b:b0:640:edb3:90b5 with SMTP id
- 4fb4d7f45d1cf-64350e004damr12716225a12.7.1763423420337; Mon, 17 Nov 2025
- 15:50:20 -0800 (PST)
+	s=arc-20240116; t=1763424651; c=relaxed/simple;
+	bh=AdmDhGT5GaUYMGxYDS8eezspUbTOzGRVQGgCMIEeZ/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mTdQQdDJNdQG5qZfGnyqIPDzquOiOOthbnkzrniwYGmp27ZOLF4mepYkh5rCY1Alqvdz55trM5d+NFL99FlMEVa5Ol0rAFNZ3qcbeSwf9VZjsqvWbw2IJg3FxacWJKk63CUPE9tu2bMqbszEfUlehhdfvs/VluESpnc65JeFLlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fl6EvuYn; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B25BC2BCB0;
+	Tue, 18 Nov 2025 00:10:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1763424650;
+	bh=AdmDhGT5GaUYMGxYDS8eezspUbTOzGRVQGgCMIEeZ/U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Fl6EvuYndwcQgE1d7HrQDcuZCZc5wfspAE7VOXLw3pjN/a1MrN96diYsFM/mjT1Is
+	 7GaZRdl/i/lOf8IrdPt9TI95AeEonVy7h+BFt2x3Uf8coToeuzVtojlna3SWi26zUL
+	 1diDl9bAJJ9M9neS4x/kYQoeRdoEYhu3Z0OvOX+Z/qQlJPz36qa5BMJqpleQa/JPJj
+	 jkiM0iVsuMqrtYlcdwgTFy+fJWfysrn0JL7gOaVrYXWbkKtgdJKKcG1T7a3xlTmmgt
+	 7gLfaQPZ8SrhfiiPrkV7/iA2hQH3t1dWdeWgXQhBOAQrSJV3WqDrbeEcOZ4yIpPvDu
+	 Xy2ZnpnA7D8GQ==
+Date: Mon, 17 Nov 2025 16:10:46 -0800
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Dylan Hatch <dylanbhatch@google.com>, 
+	Puranjay Mohan <puranjay12@gmail.com>, Song Liu <song@kernel.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Will Deacon <will@kernel.org>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Jiri Kosina <jikos@kernel.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
+	Mark Rutland <mark.rutland@arm.com>, Ian Rogers <irogers@google.com>, 
+	linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
+	joe.lawrence@redhat.com, Puranjay Mohan <puranjay@kernel.org>
+Subject: Re: [PATCH v2 0/6] unwind, arm64: add sframe unwinder for kernel
+Message-ID: <cxxj6lzs226ost6js5vslm52bxblknjwd6llmu24h3bk742zjh@7iwwi5bafysq>
+References: <20250904223850.884188-1-dylanbhatch@google.com>
+ <CAPhsuW5zUEeM3DAw-3OVNS9KmM2vG9B1GaR9KEKS_KFQo-VG9Q@mail.gmail.com>
+ <CANk7y0hUKOVXRKoJ5Ufmg-5DGSe2F5nBH+O7tLVvLRs9Oe54uA@mail.gmail.com>
+ <CADBMgpwZ32+shSa0SwO8y4G-Zw14ae-FcoWreA_ptMf08Mu9dA@mail.gmail.com>
+ <nzmtsafrx5vjitgfpducjaa7kq747a3sler2vvyvfbxecutn3v@7ffl2ycnaoo2>
+ <20251117184223.3c03fe92@gandalf.local.home>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250904223850.884188-1-dylanbhatch@google.com>
- <CAPhsuW5zUEeM3DAw-3OVNS9KmM2vG9B1GaR9KEKS_KFQo-VG9Q@mail.gmail.com>
- <CANk7y0hUKOVXRKoJ5Ufmg-5DGSe2F5nBH+O7tLVvLRs9Oe54uA@mail.gmail.com>
- <CADBMgpwZ32+shSa0SwO8y4G-Zw14ae-FcoWreA_ptMf08Mu9dA@mail.gmail.com> <nzmtsafrx5vjitgfpducjaa7kq747a3sler2vvyvfbxecutn3v@7ffl2ycnaoo2>
-In-Reply-To: <nzmtsafrx5vjitgfpducjaa7kq747a3sler2vvyvfbxecutn3v@7ffl2ycnaoo2>
-From: Puranjay Mohan <puranjay12@gmail.com>
-Date: Tue, 18 Nov 2025 00:50:09 +0100
-X-Gm-Features: AWmQ_bmaiM9OsS3x9uCVm7VnMLeJDAcfWpAUoA7xDr-W293gWhf_zCix61iNl2s
-Message-ID: <CANk7y0hqnQR6X6rmVgA6O44WCf5QMiKVVJ31txWf-R9HtxhBBg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] unwind, arm64: add sframe unwinder for kernel
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Dylan Hatch <dylanbhatch@google.com>, Song Liu <song@kernel.org>, 
-	Steven Rostedt <rostedt@goodmis.org>, Indu Bhagat <indu.bhagat@oracle.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Will Deacon <will@kernel.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Jiri Kosina <jikos@kernel.org>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
-	Mark Rutland <mark.rutland@arm.com>, Ian Rogers <irogers@google.com>, 
-	linux-toolchains@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	live-patching@vger.kernel.org, joe.lawrence@redhat.com, 
-	Puranjay Mohan <puranjay@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20251117184223.3c03fe92@gandalf.local.home>
 
-On Tue, Nov 18, 2025 at 12:06=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.or=
-g> wrote:
->
-> On Fri, Nov 14, 2025 at 10:50:16PM -0800, Dylan Hatch wrote:
-> > On Mon, Sep 29, 2025 at 12:55=E2=80=AFPM Puranjay Mohan <puranjay12@gma=
-il.com> wrote:
-> > >
-> > > I will try to debug this more but am just curious about BPF's
-> > > interactions with sframe.
-> > > The sframe data for bpf programs doesn't exist, so we would need to
-> > > add that support
-> > > and that wouldn't be trivial, given the BPF programs are JITed.
-> > >
-> > > Thanks,
-> > > Puranjay
-> >
-> > From what I can tell, the ORC unwinder in x86 falls back to using
-> > frame pointers in cases of generated code, like BPF. Would matching
-> > this behavior in the sframe unwinder be a reasonable approach, at
-> > least for the purposes of enabling reliable unwind for livepatch?
->
-> The ORC unwinder marks the unwind "unreliable" if it has to fall back to
-> frame pointers.
->
-> But that's not a problem for livepatch because it only[*] unwinds
-> blocked/sleeping tasks, which shouldn't have BPF on their stack anyway.
->
+On Mon, Nov 17, 2025 at 06:42:23PM -0500, Steven Rostedt wrote:
+> On Mon, 17 Nov 2025 15:06:32 -0800
+> Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> 
+> > The ORC unwinder marks the unwind "unreliable" if it has to fall back to
+> > frame pointers.
+> > 
+> > But that's not a problem for livepatch because it only[*] unwinds
+> > blocked/sleeping tasks, which shouldn't have BPF on their stack anyway.
+> > 
+> > [*] with one exception: the task calling into livepatch
+> 
+> It may be a problem with preempted tasks right? I believe with PREEMPT_LAZY
+> (and definitely with PREEMPT_RT) BPF programs can be preempted.
 
-BPF programs can sleep, so wouldn't they show up in the stack?
-Like if I am tracing a syscall with a bpf program attached using
-fentry and the BPF program calls a bpf_arena_alloc_pages(), which can
-sleep.
+In that case, then yes, that stack would be marked unreliable and
+livepatch would have to go try and patch the task later.
+
+If it were an isolated case, that would be fine, but if BPF were
+consistently on the same task's stack, it could stall the completion of
+the livepatch indefinitely.
+
+I haven't (yet?) heard of BPF-induced livepatch stalls happening in
+reality, but maybe it's only a matter of time :-/
+
+To fix that, I suppose we would need some kind of dynamic ORC
+registration interface.  Similar to what has been discussed with
+sframe+JIT.
+
+If BPF were to always use frame pointers then there would be only a very
+limited set of ORC entries (either "frame pointer" or "undefined") for a
+given BPF function and it shouldn't be too complicated.
+
+-- 
+Josh
 
