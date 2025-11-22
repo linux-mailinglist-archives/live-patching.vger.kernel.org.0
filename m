@@ -1,250 +1,283 @@
-Return-Path: <live-patching+bounces-1874-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1875-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 39B5AC73ED2
-	for <lists+live-patching@lfdr.de>; Thu, 20 Nov 2025 13:16:08 +0100 (CET)
+Received: from ams.mirrors.kernel.org (ams.mirrors.kernel.org [IPv6:2a01:60a::1994:3:14])
+	by mail.lfdr.de (Postfix) with ESMTPS id ECF77C7C0C4
+	for <lists+live-patching@lfdr.de>; Sat, 22 Nov 2025 01:56:16 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sea.lore.kernel.org (Postfix) with ESMTPS id E837E3097E
-	for <lists+live-patching@lfdr.de>; Thu, 20 Nov 2025 12:16:06 +0000 (UTC)
+	by ams.mirrors.kernel.org (Postfix) with ESMTPS id 103033438E1
+	for <lists+live-patching@lfdr.de>; Sat, 22 Nov 2025 00:56:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC5CC335080;
-	Thu, 20 Nov 2025 12:15:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F89E201004;
+	Sat, 22 Nov 2025 00:56:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="OUorkC/s";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="9xLM7fGP";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="OUorkC/s";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="9xLM7fGP"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YfM9OGf7"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD5031ED7D
-	for <live-patching@vger.kernel.org>; Thu, 20 Nov 2025 12:15:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C671C5D72;
+	Sat, 22 Nov 2025 00:56:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763640915; cv=none; b=S2Wo2DIQXJaTdgsuhbgdfVXY84aAm4AdJvRdfImAEEMzpLSXIXrJ8puzR5ekK8MEtfOjPtI3+ZYmSD1nGvX2cyrSUcB6lE9aAg9fP0AL4x8imECQTtvrydvAbYBKrruNSOGMC5mHpASxW95JKrPbQmoDj9M46A1pr9Z/G1b6akY=
+	t=1763772970; cv=none; b=HJxxEHgcS6yyuEnhJl48y/xm4jYYec8M9ochU7gpR83CS6iTYsjyFABGc5VfTz0eP4gZJ78hOmzb5zhMLLLHgRBHxsjHVmEf6p+anaezvA0bnDC7QhypjS5ukI8lpmOmhQRrS49wErtF0hUqAfLKNzlTSJGb6pCerLodpFdCjfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763640915; c=relaxed/simple;
-	bh=3WKbXsxMskDbBlAGJjJzra5j3U/rD2Fk5IYz4XYY+eE=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Xs/EyaN9M/pLcGnMLifD8ucn+9oh77jIztoFh+00K813bE3Ky4A19nSzhehFUqbXO42gkoBuvCuXZCEpM3QajYSMGSkILa9pzRYp7fe1cJ7q50Mop0QYKeQS9c+RFxm9+K3xBbGkhBeI8b0o9+6UsGZdic/ii12Z2WjysKcFLDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=OUorkC/s; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=9xLM7fGP; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=OUorkC/s; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=9xLM7fGP; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.100.2.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 2CD5A21751;
-	Thu, 20 Nov 2025 12:15:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1763640912; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/tL5e0kPmgJpzvdPMIT86AAv/0JhJuJT+SS0avjqEE4=;
-	b=OUorkC/sn2qKfhz995/c13viHyBU9Qv38lpnBy4iYVIkGddWvnCzuymsJh3HnjeVC6W7Qa
-	KxY95LGMqctNMXJughsZU1z/Co11F7UipSCTYKUwm09wumbI4kMQtzCx5/tsU770hM0rt5
-	IRWGquXxJTHFUQcPf9ak4bgydlnpNzk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1763640912;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/tL5e0kPmgJpzvdPMIT86AAv/0JhJuJT+SS0avjqEE4=;
-	b=9xLM7fGPX5AcP7u1pCmNLZw4Q1RmSMV5p5fF2GeZRuNyZbuGn1c/ERVTKTv+rVaJIYqvkK
-	qxF8JwyJowk/CHAw==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1763640912; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/tL5e0kPmgJpzvdPMIT86AAv/0JhJuJT+SS0avjqEE4=;
-	b=OUorkC/sn2qKfhz995/c13viHyBU9Qv38lpnBy4iYVIkGddWvnCzuymsJh3HnjeVC6W7Qa
-	KxY95LGMqctNMXJughsZU1z/Co11F7UipSCTYKUwm09wumbI4kMQtzCx5/tsU770hM0rt5
-	IRWGquXxJTHFUQcPf9ak4bgydlnpNzk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1763640912;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/tL5e0kPmgJpzvdPMIT86AAv/0JhJuJT+SS0avjqEE4=;
-	b=9xLM7fGPX5AcP7u1pCmNLZw4Q1RmSMV5p5fF2GeZRuNyZbuGn1c/ERVTKTv+rVaJIYqvkK
-	qxF8JwyJowk/CHAw==
-Date: Thu, 20 Nov 2025 13:15:12 +0100 (CET)
-From: Miroslav Benes <mbenes@suse.cz>
-To: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>
-cc: bpf@vger.kernel.org, live-patching@vger.kernel.org, 
-    DL Linux Open Source Team <linux-open-source@crowdstrike.com>, 
-    Petr Mladek <pmladek@suse.com>, Song Liu <song@kernel.org>, 
-    andrii@kernel.org, Raja Khan <raja.khan@crowdstrike.com>
+	s=arc-20240116; t=1763772970; c=relaxed/simple;
+	bh=xcizmFTGKAM+3wGhQq/RlwVd1svgCwYfWkKqY6ABGVQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=buLMlV5aAJzABNyaB0w5z5s2vzt1/cY9prXa8v0Cm8Hur7V2dBO7NK+sNJnTAzlw/O+AYBRVKvfm8mPBJpKB2uA6qAwWZbcYdTXupHpDAj5SyRQ4Eh548I7edKYuIo45uU+GdzujXFAtYyCA48WlnsSC1oMMCSKyvlfzOWdUBKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YfM9OGf7; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41DAAC4CEF1;
+	Sat, 22 Nov 2025 00:56:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1763772970;
+	bh=xcizmFTGKAM+3wGhQq/RlwVd1svgCwYfWkKqY6ABGVQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YfM9OGf7nRK3ekPd7FEpA1oLFzPNItM0Q6Bz7LaAIucD3buHzN/A9PPKK2uxQds0e
+	 AkIOoI30rxkqZQgpn095PSP0uYYTknLWBlnX9vL9GCklgkTfvOKMM6Y6fCYThfjrsJ
+	 N8st7Mb5DTjRzc3QoY2aQTcNMLZO7ZiLGrxIii+Aa4E5CUaWnQ0adNBPor/crfl2l7
+	 9GA0A/46NLT1FgV2PzxEQui0dTb4KMFOhaJ4UYOZjD8OzTt2xL1DBk1PzJ9YT/KkgV
+	 UTU2is7CDhElJRNwkBF2sPDcDYIdnv32TgYEnhp+urOFW5RUPZ4gjdzOsrDV+Dblcg
+	 d7Pj01vlIAgtg==
+Date: Fri, 21 Nov 2025 16:56:07 -0800
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>, 
+	bpf@vger.kernel.org, live-patching@vger.kernel.org, 
+	DL Linux Open Source Team <linux-open-source@crowdstrike.com>, Petr Mladek <pmladek@suse.com>, Song Liu <song@kernel.org>, 
+	andrii@kernel.org, Raja Khan <raja.khan@crowdstrike.com>
 Subject: Re: BPF fentry/fexit trampolines stall livepatch stalls transition
  due to missing ORC unwind metadata
-In-Reply-To: <0e555733-c670-4e84-b2e6-abb8b84ade38@crowdstrike.com>
-Message-ID: <alpine.LSU.2.21.2511201311570.16226@pobox.suse.cz>
+Message-ID: <h4e7ar2fckfs6y2c2tm4lq4r54edzvqdq6cy5qctb7v3bi5s2u@q4hfzrlembrn>
 References: <0e555733-c670-4e84-b2e6-abb8b84ade38@crowdstrike.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+ <alpine.LSU.2.21.2511201311570.16226@pobox.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="1678380546-51846447-1763640912=:16226"
-X-Spam-Level: 
-X-Spamd-Result: default: False [-3.28 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	CTYPE_MIXED_BOGUS(1.00)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.18)[-0.897];
-	MIME_GOOD(-0.10)[multipart/mixed,text/plain];
-	MIME_TRACE(0.00)[0:+,1:+];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	ARC_NA(0.00)[];
-	RCVD_COUNT_ZERO(0.00)[0];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	RCPT_COUNT_SEVEN(0.00)[8];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_HAS_DN(0.00)[]
-X-Spam-Flag: NO
-X-Spam-Score: -3.28
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.2511201311570.16226@pobox.suse.cz>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, Nov 20, 2025 at 01:15:12PM +0100, Miroslav Benes wrote:
+> > Impact
+> > 
+> > This affects production systems where:
+> > - Security/observability tools use BPF fentry/fexit hooks
+> > - Live kernel patching is required for security updates
+> > - Kernel threads may be blocked in hooked network/storage functions
+> > 
+> > The livepatch transition can stall for 60+ seconds before failing, blocking
+> > critical security patches.
+> 
+> Unfortunately yes.
+> 
+> > Questions for the Community
+> > 
+> > 1. Is this a known limitation (I assume yes) ?
+> 
+> Yes.
+> 
+> > 2. Runtime ORC generation? Could the BPF JIT generate ORC unwind entries for
+> > trampolines, similar to how ftrace trampolines are handled?
+> > 3. Trampoline registration? Could BPF trampolines register their address
+> > ranges with the ORC unwinder to avoid the "unreliable" marking?
+> > 4. Alternative unwinding? Could livepatch use an alternative unwinding method
+> > when BPF trampolines are detected (e.g., frame pointers with validation)?
+> > 5. Workarounds? I mention one bellow and I would be happy to hear if anyone
+> > has a better idea to propose ?
+> 
+> There is a parallel discussion going on under sframe unwiding enablement 
+> for arm64. See this subthread 
+> https://lore.kernel.org/all/CADBMgpwZ32+shSa0SwO8y4G-Zw14ae-FcoWreA_ptMf08Mu9dA@mail.gmail.com/T/#u
+> 
+> I would really welcome if it is solved eventually because it seems we will 
+> meet the described issue more and more often (Josh, I think this email 
+> shows that it happens in practice with the existing monitoring services 
+> based on BPF).
 
---1678380546-51846447-1763640912=:16226
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Maybe we can take advantage of the fact that BPF uses frame pointers
+unconditionally, and avoid the complexity of "dynamic ORC" for now, by
+just having BPF keep track of where the frame pointer is valid (after
+the prologue, before the epilogue).
 
-Hello Andrey,
+Something like the below (completely untested).
 
-On Wed, 19 Nov 2025, Andrey Grodzovsky wrote:
+Andrey, can you try this patch?
 
-> Hello BPF and livepatch teams,
-> 
-> This is somewhat a followup on
-> https://lists.ubuntu.com/archives/kernel-team/2025-October/163881.html as we
-> continue encounter issues and conflicts between BPF and livepatch.
-> 
-> We've encountered an issue between BPF fentry/fexit trampolines and kernel
-> livepatching (kpatch/livepatch) on x86_64 systems with ORC unwinder enabled.
-> I'm reaching out to understand if this is a known limitation and to explore
-> potential solutions. I assume it's known as I see information along this lines
-> in https://www.kernel.org/doc/Documentation/livepatch/reliable-stacktrace.rst
-> 
-> Problem Summary
-> 
-> When BPF programs attach to kernel functions using fentry/fexit hooks, the
-> resulting JIT-compiled trampolines lack ORC unwind metadata. This causes
-> livepatch transition stall when threads are blocked in hooked functions, as
-> the stack becomes unreliable for unwinding purposes.
-> 
-> In our case the environment is
-> 
-> - RHEL 9.6 (kernel 5.14.0-570.17.1.el9_6.x86_64)
-> - CONFIG_UNWINDER_ORC=y
-> - CONFIG_BPF_JIT_ALWAYS_ON=y
-> - BPF fentry/fexit hooks on inet_recvmsg()
-> 
-> Scenario:
-> 1. BPF program attached to inet_recvmsg via fentry/fexit (creates BPF
-> trampoline)
-> 2. CIFS filesystem mounted (creates cifsd kernel thread)
-> 3. cifsd thread blocks in inet_recvmsg → BPF trampoline is on the stack
-> 4. Attempt to load kpatch module
-> 5. Livepatch transition stalls indefinitely
-> 
-> Error Message (repeated every ~1 second):
-> livepatch: klp_try_switch_task: cifsd:2886 has an unreliable stack
-> 
-> Stack trace showing BPF trampoline:
-> cifsd           D  0  2886
-> Call Trace:
->  wait_woken+0x50/0x60
->  sk_wait_data+0x176/0x190
->  tcp_recvmsg_locked+0x234/0x920
->  tcp_recvmsg+0x78/0x210
->  inet_recvmsg+0x5c/0x140
->  bpf_trampoline_6442469985+0x89/0x130  ← NO ORC metadata
->  sock_recvmsg+0x95/0xa0
->  cifs_readv_from_socket+0x1ca/0x2d0 [cifs]
->  ...
-> 
-> As far as I understand and please correct me if it's wrong -
-> 
-> The failure occurs in arch/x86/kernel/unwind_orc.c
-> 
-> orc = orc_find(state->signal ? state->ip : state->ip - 1);
-> if (!orc) {
->     /*
->      * As a fallback, try to assume this code uses a frame pointer.
->      * This is useful for generated code, like BPF, which ORC
->      * doesn't know about.  This is just a guess, so the rest of
->      * the unwind is no longer considered reliable.
->      */
->     orc = &orc_fp_entry;
->     state->error = true;  // ← Marks stack as unreliable
-> }
-> 
-> When orc_find() returns NULL for the BPF trampoline address, the unwinder
-> falls back to frame pointers and marks the stack unreliable. This causes
-> arch_stack_walk_reliable() to fail, which in turn causes livepatch's
-> klp_check_stack() to return -EINVAL before even checking if to-be-patched
-> functions are on the stack.
-> 
-> Key observations:
-> 1. The kernel comment explicitly mentions "generated code, like BPF"
-> 2. Documentation/livepatch/reliable-stacktrace.rst lists "Dynamically
-> generated code (e.g. eBPF)" as causing unreliable stacks
-> 3. Native kernel functions have ORC metadata from objtool during build
-> 4. Ftrace trampolines have special ORC handling via orc_ftrace_find()
-> 5. BPF JIT trampolines have no such handling - Is this correct ?
+---8<---
 
-Yes, all you findings are correct and the above explains the situation 
-really well. Thank you for summing it up.
-
-> Impact
-> 
-> This affects production systems where:
-> - Security/observability tools use BPF fentry/fexit hooks
-> - Live kernel patching is required for security updates
-> - Kernel threads may be blocked in hooked network/storage functions
-> 
-> The livepatch transition can stall for 60+ seconds before failing, blocking
-> critical security patches.
-
-Unfortunately yes.
-
-> Questions for the Community
-> 
-> 1. Is this a known limitation (I assume yes) ?
-
-Yes.
-
-> 2. Runtime ORC generation? Could the BPF JIT generate ORC unwind entries for
-> trampolines, similar to how ftrace trampolines are handled?
-> 3. Trampoline registration? Could BPF trampolines register their address
-> ranges with the ORC unwinder to avoid the "unreliable" marking?
-> 4. Alternative unwinding? Could livepatch use an alternative unwinding method
-> when BPF trampolines are detected (e.g., frame pointers with validation)?
-> 5. Workarounds? I mention one bellow and I would be happy to hear if anyone
-> has a better idea to propose ?
-
-There is a parallel discussion going on under sframe unwiding enablement 
-for arm64. See this subthread 
-https://lore.kernel.org/all/CADBMgpwZ32+shSa0SwO8y4G-Zw14ae-FcoWreA_ptMf08Mu9dA@mail.gmail.com/T/#u
-
-I would really welcome if it is solved eventually because it seems we will 
-meet the described issue more and more often (Josh, I think this email 
-shows that it happens in practice with the existing monitoring services 
-based on BPF).
-
-Regards,
-Miroslav
---1678380546-51846447-1763640912=:16226--
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 977ee75e047c..f610fde2d5c4 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -2,6 +2,7 @@
+ #include <linux/objtool.h>
+ #include <linux/module.h>
+ #include <linux/sort.h>
++#include <linux/bpf.h>
+ #include <asm/ptrace.h>
+ #include <asm/stacktrace.h>
+ #include <asm/unwind.h>
+@@ -172,6 +173,25 @@ static struct orc_entry *orc_ftrace_find(unsigned long ip)
+ }
+ #endif
+ 
++/* Fake frame pointer entry -- used as a fallback for generated code */
++static struct orc_entry orc_fp_entry = {
++	.type		= ORC_TYPE_CALL,
++	.sp_reg		= ORC_REG_BP,
++	.sp_offset	= 16,
++	.bp_reg		= ORC_REG_PREV_SP,
++	.bp_offset	= -16,
++};
++
++static struct orc_entry *orc_bpf_find(unsigned long ip)
++{
++#ifdef CONFIG_BPF_JIT
++	if (bpf_has_frame_pointer(ip))
++		return &orc_fp_entry;
++#endif
++
++	return NULL;
++}
++
+ /*
+  * If we crash with IP==0, the last successfully executed instruction
+  * was probably an indirect function call with a NULL function pointer,
+@@ -186,15 +206,6 @@ static struct orc_entry null_orc_entry = {
+ 	.type = ORC_TYPE_CALL
+ };
+ 
+-/* Fake frame pointer entry -- used as a fallback for generated code */
+-static struct orc_entry orc_fp_entry = {
+-	.type		= ORC_TYPE_CALL,
+-	.sp_reg		= ORC_REG_BP,
+-	.sp_offset	= 16,
+-	.bp_reg		= ORC_REG_PREV_SP,
+-	.bp_offset	= -16,
+-};
+-
+ static struct orc_entry *orc_find(unsigned long ip)
+ {
+ 	static struct orc_entry *orc;
+@@ -238,6 +249,11 @@ static struct orc_entry *orc_find(unsigned long ip)
+ 	if (orc)
+ 		return orc;
+ 
++	/* BPF lookup: */
++	orc = orc_bpf_find(ip);
++	if (orc)
++		return orc;
++
+ 	return orc_ftrace_find(ip);
+ }
+ 
+@@ -495,9 +511,8 @@ bool unwind_next_frame(struct unwind_state *state)
+ 	if (!orc) {
+ 		/*
+ 		 * As a fallback, try to assume this code uses a frame pointer.
+-		 * This is useful for generated code, like BPF, which ORC
+-		 * doesn't know about.  This is just a guess, so the rest of
+-		 * the unwind is no longer considered reliable.
++		 * This is just a guess, so the rest of the unwind is no longer
++		 * considered reliable.
+ 		 */
+ 		orc = &orc_fp_entry;
+ 		state->error = true;
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index de5083cb1d37..510e3e62fd2f 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -1661,6 +1661,9 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image, u8 *rw_image
+ 	emit_prologue(&prog, image, stack_depth,
+ 		      bpf_prog_was_classic(bpf_prog), tail_call_reachable,
+ 		      bpf_is_subprog(bpf_prog), bpf_prog->aux->exception_cb);
++
++	bpf_prog->aux->ksym.fp_start = prog - temp;
++
+ 	/* Exception callback will clobber callee regs for its own use, and
+ 	 * restore the original callee regs from main prog's stack frame.
+ 	 */
+@@ -2716,6 +2719,8 @@ st:			if (is_imm8(insn->off))
+ 					pop_r12(&prog);
+ 			}
+ 			EMIT1(0xC9);         /* leave */
++			bpf_prog->aux->ksym.fp_end = prog - temp;
++
+ 			emit_return(&prog, image + addrs[i - 1] + (prog - temp));
+ 			break;
+ 
+@@ -3299,6 +3304,8 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
+ 	}
+ 	EMIT1(0x55);		 /* push rbp */
+ 	EMIT3(0x48, 0x89, 0xE5); /* mov rbp, rsp */
++	im->ksym.fp_start = prog - (u8 *)rw_image;
++
+ 	if (!is_imm8(stack_size)) {
+ 		/* sub rsp, stack_size */
+ 		EMIT3_off32(0x48, 0x81, 0xEC, stack_size);
+@@ -3436,7 +3443,10 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
+ 		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, -8);
+ 
+ 	emit_ldx(&prog, BPF_DW, BPF_REG_6, BPF_REG_FP, -rbx_off);
++
+ 	EMIT1(0xC9); /* leave */
++	im->ksym.fp_end = prog - (u8 *)rw_image;
++
+ 	if (flags & BPF_TRAMP_F_SKIP_FRAME) {
+ 		/* skip our return address and return to parent */
+ 		EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index d808253f2e94..e3f56e8443da 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1257,6 +1257,8 @@ struct bpf_ksym {
+ 	struct list_head	 lnode;
+ 	struct latch_tree_node	 tnode;
+ 	bool			 prog;
++	u32			 fp_start;
++	u32			 fp_end;
+ };
+ 
+ enum bpf_tramp_prog_type {
+@@ -1483,6 +1485,7 @@ void bpf_image_ksym_add(struct bpf_ksym *ksym);
+ void bpf_image_ksym_del(struct bpf_ksym *ksym);
+ void bpf_ksym_add(struct bpf_ksym *ksym);
+ void bpf_ksym_del(struct bpf_ksym *ksym);
++bool bpf_has_frame_pointer(unsigned long ip);
+ int bpf_jit_charge_modmem(u32 size);
+ void bpf_jit_uncharge_modmem(u32 size);
+ bool bpf_prog_has_trampoline(const struct bpf_prog *prog);
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index d595fe512498..7cd8382d1152 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -760,6 +760,22 @@ struct bpf_prog *bpf_prog_ksym_find(unsigned long addr)
+ 	       NULL;
+ }
+ 
++bool bpf_has_frame_pointer(unsigned long ip)
++{
++	struct bpf_ksym *ksym;
++	unsigned long offset;
++
++	guard(rcu)();
++
++	ksym = bpf_ksym_find(ip);
++	if (!ksym || !ksym->fp_start || !ksym->fp_end)
++		return false;
++
++	offset = ip - ksym->start;
++
++	return offset >= ksym->fp_start && offset < ksym->fp_end;
++}
++
+ const struct exception_table_entry *search_bpf_extables(unsigned long addr)
+ {
+ 	const struct exception_table_entry *e = NULL;
 
