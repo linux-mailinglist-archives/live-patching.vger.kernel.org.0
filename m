@@ -1,46 +1,46 @@
-Return-Path: <live-patching+bounces-1886-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1887-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from dfw.mirrors.kernel.org (dfw.mirrors.kernel.org [142.0.200.124])
-	by mail.lfdr.de (Postfix) with ESMTPS id 30C53C9C9A7
-	for <lists+live-patching@lfdr.de>; Tue, 02 Dec 2025 19:20:57 +0100 (CET)
+Received: from ams.mirrors.kernel.org (ams.mirrors.kernel.org [IPv6:2a01:60a::1994:3:14])
+	by mail.lfdr.de (Postfix) with ESMTPS id 58541C9C9B0
+	for <lists+live-patching@lfdr.de>; Tue, 02 Dec 2025 19:21:11 +0100 (CET)
 Received: from smtp.subspace.kernel.org (relay.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by dfw.mirrors.kernel.org (Postfix) with ESMTPS id 23F554E35E5
-	for <lists+live-patching@lfdr.de>; Tue,  2 Dec 2025 18:20:56 +0000 (UTC)
+	by ams.mirrors.kernel.org (Postfix) with ESMTPS id 4C561348A49
+	for <lists+live-patching@lfdr.de>; Tue,  2 Dec 2025 18:21:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 555E12D0C7F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E31B52D24A0;
 	Tue,  2 Dec 2025 18:20:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f4Iwxv6H"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BJ/ILAX1"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24CFC2C3265;
-	Tue,  2 Dec 2025 18:20:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6BB12D1F64;
+	Tue,  2 Dec 2025 18:20:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764699646; cv=none; b=Y5l6CaORI/egoqaEnfkFBY5+uADXK3fbuKyGfuBOQ8ywpTTBVdLICAlIDmf46iB92HtUkZFG3X6iAY4nDDPFcAKJ9dK1bw2Gj3CwvedL7lAcJL79T8wfNyDGM4YsPmu8RPoFie68y/I9LRYqybUwIUm2HBQGBWGNlIUwyfEQJ00=
+	t=1764699646; cv=none; b=nZG1KdjdEvTrhAzNmltIENB815GY4IGtTltZagSRmTq2HMBnUVCBjxvdwLIPZS5KWhUEL+ff7UsggQiBhtcViQNyJnLxIevMItIZOvRr9yA6LLwEZepJ09nVqg2oQaceM4875SHOjPH+6HxQcDR4UUd+EzkLjWab456QIKiyA60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1764699646; c=relaxed/simple;
-	bh=6YydD1V29Lq5CgnNjkSw6qANowwI15xWUFlqTLG2Y7U=;
+	bh=scklrFrMTQH39Z8x9LkFh0kIoQ2zLYug+90OWuZO7R8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oJc3mJN08OkZpI3ZIcnCD3/kTRg508rsWAIRM3mUgUGy3+DEUh2Yt27zmzp0rvnjJfhWM1nlVamOqfCI3gXAt5QjVNRuOylNqRDc0/mMYAtGyEHDBkbF8tuA6CdvpU9YFk+H5yqaSrtxF+f+uFksF0mB1ze7AZVYQKKbNJIft78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f4Iwxv6H; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3189DC116B1;
+	 MIME-Version; b=HlhPFlEPpyOg2inrN0liQDFApRmINzo0OsZgK4NxLnYPIVc/s96ELkqb2XKOaC2B5gcV5/Xj/gfproix1+CZj+Da+NruJpbE+nqMDmOW+VUYogQlrdpItw0xAm9ajM3GKZ5dwhEpIvRIkr6AkoUvz7Em4GvfREDk8sFw8YukRVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BJ/ILAX1; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB7F3C16AAE;
 	Tue,  2 Dec 2025 18:20:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764699645;
-	bh=6YydD1V29Lq5CgnNjkSw6qANowwI15xWUFlqTLG2Y7U=;
+	s=k20201202; t=1764699646;
+	bh=scklrFrMTQH39Z8x9LkFh0kIoQ2zLYug+90OWuZO7R8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=f4Iwxv6Hqz1tcGOLUmVevPKXcPP9yTzboMfDxgwjPZyokW8Ph3oSIeByoQbMTy/E0
-	 oJYQ9J3OoRuunhVxv8VecNSLMt71wja2Dn1HhgGLZguZZJC8Pe0A9+0ilMu07Rrzvd
-	 ood/Ao/qwl5WFHRpGY+un1PLQ2Pi0lZ2TAWuJGRAzhAfre2QwncXMWRHfwLF5puBEU
-	 ONtrdB32/ytDczKp+4oJx4K+dh/6CpKS+FaCzdk1FCi5hMDfV0T2FXTt6Fb2taQ14e
-	 2dsTr4zZL/Kyi+3y3tgbnAVQb7EfF38aCtsoIvgqS8Gibjmb/TOHnJKlJmhYicp/z0
-	 NdQctsLdTVPRA==
+	b=BJ/ILAX1uyfrScOPCfzz7gWlV8c0eNahbecRy30HjEKNKIAbeP4GPrT8HhoP9Qvw3
+	 gh9bDjuCZkEYJQDzqguWXvPcfr/lQ+a9ydDradWzGgonHnfibsWxSKxJZTZAXKtuKy
+	 wYNFMSYyenDnjeMGGUlPdkgDG6zf9szAD4PYLAShDofnVJhXDrA7n6h3h8FB8850q8
+	 4dn1HFkPo0ds96ZdSTp0V6CYBhaEaSg7JBAImcDPiqbfDmT+7JpV04WZgP3JzK1ubl
+	 v6DYPsQBIyS0Zc/RMWKL6vWIW+rxBd7N2dc8S9936A+LJozjlOdoznYNYaGGI7PTSo
+	 xP4phFVDEvy8w==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -55,9 +55,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Daniel Borkmann <daniel@iogearbox.net>,
 	Andrii Nakryiko <andrii@kernel.org>,
 	Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 1/2] bpf: Add bpf_has_frame_pointer()
-Date: Tue,  2 Dec 2025 10:19:18 -0800
-Message-ID: <c2764d2ad229d0bcea21dbb774e2494ca34fc130.1764699074.git.jpoimboe@kernel.org>
+Subject: [PATCH 2/2] x86/unwind/orc: Support reliable unwinding through BPF stack frames
+Date: Tue,  2 Dec 2025 10:19:19 -0800
+Message-ID: <26bf6f9106478d5e5dd447b21ee15ebe84e0f7cd.1764699074.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.51.1
 In-Reply-To: <cover.1764699074.git.jpoimboe@kernel.org>
 References: <cover.1764699074.git.jpoimboe@kernel.org>
@@ -69,112 +69,105 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Introduce a bpf_has_frame_pointer() helper that uwninders can call to
-determine whether a given instruction pointer is within the valid frame
-pointer region of a BPF JIT program or trampoline (i.e., after the
-prologue, before the epilogue).
+BPF JIT programs and trampolines use a frame pointer, so the current ORC
+unwinder strategy of falling back to frame pointers (when an ORC entry
+is missing) usually works in practice when unwinding through BPF JIT
+stack frames.
 
-This will enable livepatch (with the ORC unwinder) to reliably unwind
-through BPF JIT frames.
+However, that frame pointer fallback is just a guess, so the unwind gets
+marked unreliable for live patching, which can cause livepatch
+transition stalls.
 
+Make the common case reliable by calling the bpf_has_frame_pointer()
+helper to detect the valid frame pointer region of BPF JIT programs and
+trampolines.
+
+Fixes: ee9f8fce9964 ("x86/unwind: Add the ORC unwinder")
+Reported-by: Andrey Grodzovsky <andrey.grodzovsky@crowdstrike.com>
+Closes: https://lore.kernel.org/0e555733-c670-4e84-b2e6-abb8b84ade38@crowdstrike.com
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c | 10 ++++++++++
- include/linux/bpf.h         |  3 +++
- kernel/bpf/core.c           | 16 ++++++++++++++++
- 3 files changed, 29 insertions(+)
+ arch/x86/kernel/unwind_orc.c | 39 +++++++++++++++++++++++++-----------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index de5083cb1d37..510e3e62fd2f 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1661,6 +1661,9 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image, u8 *rw_image
- 	emit_prologue(&prog, image, stack_depth,
- 		      bpf_prog_was_classic(bpf_prog), tail_call_reachable,
- 		      bpf_is_subprog(bpf_prog), bpf_prog->aux->exception_cb);
-+
-+	bpf_prog->aux->ksym.fp_start = prog - temp;
-+
- 	/* Exception callback will clobber callee regs for its own use, and
- 	 * restore the original callee regs from main prog's stack frame.
- 	 */
-@@ -2716,6 +2719,8 @@ st:			if (is_imm8(insn->off))
- 					pop_r12(&prog);
- 			}
- 			EMIT1(0xC9);         /* leave */
-+			bpf_prog->aux->ksym.fp_end = prog - temp;
-+
- 			emit_return(&prog, image + addrs[i - 1] + (prog - temp));
- 			break;
- 
-@@ -3299,6 +3304,8 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
- 	}
- 	EMIT1(0x55);		 /* push rbp */
- 	EMIT3(0x48, 0x89, 0xE5); /* mov rbp, rsp */
-+	im->ksym.fp_start = prog - (u8 *)rw_image;
-+
- 	if (!is_imm8(stack_size)) {
- 		/* sub rsp, stack_size */
- 		EMIT3_off32(0x48, 0x81, 0xEC, stack_size);
-@@ -3436,7 +3443,10 @@ static int __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *rw_im
- 		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, -8);
- 
- 	emit_ldx(&prog, BPF_DW, BPF_REG_6, BPF_REG_FP, -rbx_off);
-+
- 	EMIT1(0xC9); /* leave */
-+	im->ksym.fp_end = prog - (u8 *)rw_image;
-+
- 	if (flags & BPF_TRAMP_F_SKIP_FRAME) {
- 		/* skip our return address and return to parent */
- 		EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index d808253f2e94..e3f56e8443da 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1257,6 +1257,8 @@ struct bpf_ksym {
- 	struct list_head	 lnode;
- 	struct latch_tree_node	 tnode;
- 	bool			 prog;
-+	u32			 fp_start;
-+	u32			 fp_end;
- };
- 
- enum bpf_tramp_prog_type {
-@@ -1483,6 +1485,7 @@ void bpf_image_ksym_add(struct bpf_ksym *ksym);
- void bpf_image_ksym_del(struct bpf_ksym *ksym);
- void bpf_ksym_add(struct bpf_ksym *ksym);
- void bpf_ksym_del(struct bpf_ksym *ksym);
-+bool bpf_has_frame_pointer(unsigned long ip);
- int bpf_jit_charge_modmem(u32 size);
- void bpf_jit_uncharge_modmem(u32 size);
- bool bpf_prog_has_trampoline(const struct bpf_prog *prog);
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index d595fe512498..7cd8382d1152 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -760,6 +760,22 @@ struct bpf_prog *bpf_prog_ksym_find(unsigned long addr)
- 	       NULL;
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 977ee75e047c..f610fde2d5c4 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -2,6 +2,7 @@
+ #include <linux/objtool.h>
+ #include <linux/module.h>
+ #include <linux/sort.h>
++#include <linux/bpf.h>
+ #include <asm/ptrace.h>
+ #include <asm/stacktrace.h>
+ #include <asm/unwind.h>
+@@ -172,6 +173,25 @@ static struct orc_entry *orc_ftrace_find(unsigned long ip)
  }
+ #endif
  
-+bool bpf_has_frame_pointer(unsigned long ip)
++/* Fake frame pointer entry -- used as a fallback for generated code */
++static struct orc_entry orc_fp_entry = {
++	.type		= ORC_TYPE_CALL,
++	.sp_reg		= ORC_REG_BP,
++	.sp_offset	= 16,
++	.bp_reg		= ORC_REG_PREV_SP,
++	.bp_offset	= -16,
++};
++
++static struct orc_entry *orc_bpf_find(unsigned long ip)
 +{
-+	struct bpf_ksym *ksym;
-+	unsigned long offset;
++#ifdef CONFIG_BPF_JIT
++	if (bpf_has_frame_pointer(ip))
++		return &orc_fp_entry;
++#endif
 +
-+	guard(rcu)();
-+
-+	ksym = bpf_ksym_find(ip);
-+	if (!ksym || !ksym->fp_start || !ksym->fp_end)
-+		return false;
-+
-+	offset = ip - ksym->start;
-+
-+	return offset >= ksym->fp_start && offset < ksym->fp_end;
++	return NULL;
 +}
 +
- const struct exception_table_entry *search_bpf_extables(unsigned long addr)
+ /*
+  * If we crash with IP==0, the last successfully executed instruction
+  * was probably an indirect function call with a NULL function pointer,
+@@ -186,15 +206,6 @@ static struct orc_entry null_orc_entry = {
+ 	.type = ORC_TYPE_CALL
+ };
+ 
+-/* Fake frame pointer entry -- used as a fallback for generated code */
+-static struct orc_entry orc_fp_entry = {
+-	.type		= ORC_TYPE_CALL,
+-	.sp_reg		= ORC_REG_BP,
+-	.sp_offset	= 16,
+-	.bp_reg		= ORC_REG_PREV_SP,
+-	.bp_offset	= -16,
+-};
+-
+ static struct orc_entry *orc_find(unsigned long ip)
  {
- 	const struct exception_table_entry *e = NULL;
+ 	static struct orc_entry *orc;
+@@ -238,6 +249,11 @@ static struct orc_entry *orc_find(unsigned long ip)
+ 	if (orc)
+ 		return orc;
+ 
++	/* BPF lookup: */
++	orc = orc_bpf_find(ip);
++	if (orc)
++		return orc;
++
+ 	return orc_ftrace_find(ip);
+ }
+ 
+@@ -495,9 +511,8 @@ bool unwind_next_frame(struct unwind_state *state)
+ 	if (!orc) {
+ 		/*
+ 		 * As a fallback, try to assume this code uses a frame pointer.
+-		 * This is useful for generated code, like BPF, which ORC
+-		 * doesn't know about.  This is just a guess, so the rest of
+-		 * the unwind is no longer considered reliable.
++		 * This is just a guess, so the rest of the unwind is no longer
++		 * considered reliable.
+ 		 */
+ 		orc = &orc_fp_entry;
+ 		state->error = true;
 -- 
 2.51.1
 
