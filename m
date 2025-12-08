@@ -1,329 +1,242 @@
-Return-Path: <live-patching+bounces-1900-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1901-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1EF37CA61B1
-	for <lists+live-patching@lfdr.de>; Fri, 05 Dec 2025 05:34:22 +0100 (CET)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0ACE8CADC52
+	for <lists+live-patching@lfdr.de>; Mon, 08 Dec 2025 17:36:38 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id D5D3C3012C8C
-	for <lists+live-patching@lfdr.de>; Fri,  5 Dec 2025 04:34:19 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id EC4D63016EDF
+	for <lists+live-patching@lfdr.de>; Mon,  8 Dec 2025 16:36:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C01592DAFBA;
-	Fri,  5 Dec 2025 04:34:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3415E256C84;
+	Mon,  8 Dec 2025 16:36:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eXV9kLEu"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="JfCXLG9l"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FBF4261B8C;
-	Fri,  5 Dec 2025 04:34:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9672B1DFE22;
+	Mon,  8 Dec 2025 16:36:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764909258; cv=none; b=SSpl1mU1i1gE3bjbDBSphDFdhfZqaEPelZkbD47cWdbIiIh37NW+/OouXEehZN0r0hRvIe8Z58UYP3HVPsD7zWYQdYbInenTwyencuvUGRwobMB8nY/9T0APZZ/mVZibHINKf8ZWdpjfSF4bh4RNH7ydNma3FWYIwDf16DVzGxU=
+	t=1765211795; cv=none; b=rVYX1qDbJKA03Qth+C8VpdZ8AVuYXmtzp0hFlkNOp0H5P7CWuzPIjvbHneEFWYxuczDoKMbOZCKAkYGnhHQriKWjRUxrHonnD6WTZyNt9JC2bunyk0DtcyeAtdiwVuH/S/bBePl983MBgRFBdTb+w8paUUAJcSutgKc0JzeIudE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764909258; c=relaxed/simple;
-	bh=BTTO7S67pYrc+iPyi8vMbS7klQBdOJREUyOK/N4z6iw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oh0p1/gxs7Tlq9EZghewmLQ/+RsnpOblU0msc/tgz5L2OQzC+BIbBag+7jGKrXROwJoeZ9ByXlH0PLr6qkJp/LBb79xyP51Yy5r24Y/pA9WqACxzWSo2TtU1wUSZH+dPtVczjrCjmhghXCegCwcU1/MwfQ3kQgFmUcHxZA1MXO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eXV9kLEu; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 614CBC4CEF1;
-	Fri,  5 Dec 2025 04:34:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764909258;
-	bh=BTTO7S67pYrc+iPyi8vMbS7klQBdOJREUyOK/N4z6iw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=eXV9kLEuRIotvwDvo5BcIaPnh/Ofrm1+uo2fArb9bZlSvbLv1evwW93z3CTC09N70
-	 XhtoTb14v0vSBdjdXxDntmnN0TyYHqf3198pUlLnVUXmCAg4jE/EVk83d22stwH7ki
-	 DN1uW5LycFw3dFAa1bRjc3Qh8R8LE4bPA1RfaBfM+xj3VXiv+qY+HOJqrl6vBpQ+88
-	 Bdu31kYYr2x9rsNv+aL8Fep7q8KlYB4no5H6GBWT5NvDzxU8TLv6zpQA8Nf6UcysWX
-	 dDLhfeBZWr8mJg1Ra0KTtB3lCtk7512Nxm6pnWA2HHi042eFFJi0XkA10/eehsoSwr
-	 dN5qN89PTY/kg==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Song Liu <song@kernel.org>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sasha Levin <sashal@kernel.org>,
-	jikos@kernel.org,
-	mbenes@suse.cz,
-	live-patching@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-5.10] livepatch: Match old_sympos 0 and 1 in klp_find_func()
-Date: Thu,  4 Dec 2025 23:33:44 -0500
-Message-ID: <20251205043401.528993-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20251205043401.528993-1-sashal@kernel.org>
-References: <20251205043401.528993-1-sashal@kernel.org>
+	s=arc-20240116; t=1765211795; c=relaxed/simple;
+	bh=YnBsFXsGHGSOPxfdQ5wJ0fsKU1bDt2UA+EMrBFaeetI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=W/9HSN/xM4QgE+NvAjHvUt/pM+mJxmYhcjG0ZNoJ3AYu5q5xVG14B9wWekshwOaWeoDpIEIaSZFAW9Gb/m+50aMnXkNoL7MwglRKn1K+5lHnsy5MWgUVU+ZBx7vxpd4ztjC/cRQaBzZuHRyzyWYu8j7ocjWwPeDV8iIDRw4mW2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=JfCXLG9l; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5B883t4J031236;
+	Mon, 8 Dec 2025 16:35:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=e3eICh
+	wSuwWgy6GE4OQOcLb+VywABhBwwWbuVsEmPOw=; b=JfCXLG9luLEQyuk2flqLwU
+	VPLSkQ8UYmif9gEy3uytbinIq9hsN/jMwwp/B5Fcyo1Ot2ywWrvFhYvIkgsRXui8
+	LMXAm5PYW/gUJhtaylBYrQIw5E/8v8AMwVXhg2feYufWzt53/FELV7F2ttmC4PWu
+	o6tXkWtfzL9z2m9hK3qKjCqhj//bTitvcOyUQ4NglbI7AI67faH4Pmj1ulIXmwVC
+	lfHcscd6pdA2cS3kOfLGRQm59vAsfjiQIlJCc8VZpRLi9LMSKpAxFyCmiHVTxG7q
+	GHnwIrzHchOI7yUK/Bd1rCbE7maZgkWeQ8jpO8uCeTmjC5a9tI5rR5cBxSiZse3A
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4avc618r8h-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 08 Dec 2025 16:35:53 +0000 (GMT)
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 5B8GQm8q002455;
+	Mon, 8 Dec 2025 16:35:53 GMT
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4avc618r8f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 08 Dec 2025 16:35:52 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 5B8Eh8TW028123;
+	Mon, 8 Dec 2025 16:35:51 GMT
+Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4avy6xpqyu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 08 Dec 2025 16:35:51 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 5B8GZnnD60031444
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 8 Dec 2025 16:35:49 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 968B72004B;
+	Mon,  8 Dec 2025 16:35:49 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CA12020040;
+	Mon,  8 Dec 2025 16:35:45 +0000 (GMT)
+Received: from [9.43.1.23] (unknown [9.43.1.23])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon,  8 Dec 2025 16:35:45 +0000 (GMT)
+Message-ID: <e34ddd05-d926-4eb4-b861-4bf8fd5635bb@linux.ibm.com>
+Date: Mon, 8 Dec 2025 22:05:44 +0530
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.18
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] powerpc64/bpf: support direct_call on livepatch function
+To: Naveen N Rao <naveen@kernel.org>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Song Liu <songliubraving@fb.com>,
+        Jiri Olsa <jolsa@kernel.org>, Viktor Malik <vmalik@redhat.com>,
+        live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Joe Lawrence
+ <joe.lawrence@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>, linux-trace-kernel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>
+References: <20251002192755.86441-1-hbathini@linux.ibm.com>
+ <amwerofvasp7ssmq3zlrjakqj5aygyrgplcqzweno4ef42tiav@uex2ildqjvx2>
+ <17f49a63-eccb-4075-91dd-b1f37aa762c7@linux.ibm.com>
+ <unegysw3bihg32od7aham3npsdpm5govboo3uglorwsrjqfqfk@pbyzwwztmqtc>
+ <42d72061-3d23-43db-bb02-d5f75333c924@linux.ibm.com>
+ <dvvv5cytyak2iquer7d6g57ttum3qcckupyahsqsmvpzfjbyni@wbsr77swnrcl>
+ <79946463-4742-4919-9d56-927a0a6f1c7c@linux.ibm.com>
+ <nuinyo7o7uniemqqmoboctwrkkwkuv77nt7yk6td6eb3x43hv2@2lukfuvcmcko>
+Content-Language: en-US
+From: Hari Bathini <hbathini@linux.ibm.com>
+In-Reply-To: <nuinyo7o7uniemqqmoboctwrkkwkuv77nt7yk6td6eb3x43hv2@2lukfuvcmcko>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjA2MDAyMCBTYWx0ZWRfX9U2KbdGZ/LCC
+ JOjlrLWWTsixmht3mI0hbyMr73SiF8T4VBqS934bvJozgzXIG9hLpfbmgI5EZ4XNn75Pv6x3P+V
+ uipZqh3xvmpRN7lw9OIhWDgWhlnpvomPUNrMXaZwWoOyyTxr55wntz33MjCtOkZ/axksMtj7IUp
+ tPULqxBEF0eMCUJlnm9mql8gV6g68sTs9P02OVNf1Niwha+yJYgit+DlomxvLnef6Q2pRJvloIt
+ mxSzwt9KczRq47Wh1glc9LxKMyJ5l739xzBOKHIXYMj+FDUj3Mfac0TttMRQGHePqwohwOiUSXo
+ c7a6H5T7CjH3GUIINmXxnNrdLD10MlKFl5xPGC/KNoBHDO11P6GtMzUmv3YpJsU7Tcy1j6jP2C9
+ IvL6enxk8iooG/hhtTomhNsGwFAhNg==
+X-Proofpoint-GUID: eceSSM85vtVc9Swark3NlheFqQRPVYLn
+X-Proofpoint-ORIG-GUID: Xz4BH_e4YtKkpsZ2KZVlvpNoDMQcbkWY
+X-Authority-Analysis: v=2.4 cv=O/U0fR9W c=1 sm=1 tr=0 ts=6936fe69 cx=c_pps
+ a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17
+ a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=ytJgG1wrisC3aVGMN-IA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-12-06_02,2025-12-04_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1011 phishscore=0
+ suspectscore=0 adultscore=0 spamscore=0 malwarescore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510240000 definitions=main-2512060020
 
-From: Song Liu <song@kernel.org>
+Thanks for the review, Naveen.
+I was on leave for sometime and could not look into it in a while
+after that.
 
-[ Upstream commit 139560e8b973402140cafeb68c656c1374bd4c20 ]
+On 15/10/25 11:48 am, Naveen N Rao wrote:
+> On Fri, Oct 10, 2025 at 12:47:21PM +0530, Hari Bathini wrote:
+>>
+>>
+>> On 09/10/25 4:57 pm, Naveen N Rao wrote:
+>>> On Thu, Oct 09, 2025 at 11:19:45AM +0530, Hari Bathini wrote:
+>>>>
+>>>>
+>>>> On 08/10/25 1:43 pm, Naveen N Rao wrote:
+>>>>> On Mon, Oct 06, 2025 at 06:50:20PM +0530, Hari Bathini wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 06/10/25 1:22 pm, Naveen N Rao wrote:
+>>>>>>> On Fri, Oct 03, 2025 at 12:57:54AM +0530, Hari Bathini wrote:
+>>>>>>>> Today, livepatch takes precedence over direct_call. Instead, save the
+>>>>>>>> state and make direct_call before handling livepatch.
+>>>>>>>
+>>>>>>> If we call into the BPF trampoline first and if we have
+>>>>>>> BPF_TRAMP_F_CALL_ORIG set, does this result in the BPF trampoline
+>>>>>>> calling the new copy of the live-patched function or the old one?
+>>>>>>
+>>>>>> Naveen, calls the new copy of the live-patched function..
+>>>>>
+>>>>> Hmm... I'm probably missing something.
+>>>>>
+>>>>> With ftrace OOL stubs, what I recall is that BPF trampoline derives the
+>>>>> original function address from the OOL stub (which would be associated
+>>>>> with the original function, not the livepatch one).
+>>>>
+>>>> Trampoline derives the address from LR.
+>>>
+>>> Does it? I'm referring to BPF_TRAMP_F_CALL_ORIG handling in
+>>> __arch_prepare_bpf_trampoline().
+>>
+>>
+>>> LR at BPF trampoline entry points at
+>>> the ftrace OOL stub. We recover the "real LR" pointing to the function
+>>> being traced from there so that we can call into it from within the BPF
+>>> trampoline.
+>>
+>> Naveen, from the snippet in livepatch_handler code shared below,
+>> the LR at BPF trmapoline entry points at the 'nop' after the call
+>> to trampoline with 'bnectrl cr1' in the updated livepatch_handler.
+>>
+>> Mimic'ing ftrace OOL branch instruction in livepatch_handler
+>> with 'b	1f' (the instruction after nop) to ensure the trmapoline
+>> derives the real LR to '1f' and jumps back into the livepatch_handler..
+>>
+>> +       /* Jump to the direct_call */
+>> +       bnectrl cr1
+>> +
+>> +       /*
+>> +        * The address to jump after direct call is deduced based on ftrace
+>> OOL stub sequence.
+>> +        * The seemingly insignificant couple of instructions below is to
+>> mimic that here to
+>> +        * jump back to the livepatch handler code below.
+>> +        */
+>> +       nop
+>> +       b       1f
+>> +
+>> +       /*
+>> +        * Restore the state for livepatching from the livepatch stack.
+>> +        * Before that, check if livepatch stack is intact. Use r0 for it.
+>> +        */
+>> +1:     mtctr   r0
+> 
+> Ah, so you are faking a ftrace OOL stub here. But, won't this mean that
 
-When there is only one function of the same name, old_sympos of 0 and 1
-are logically identical. Match them in klp_find_func().
+Yeah.
 
-This is to avoid a corner case with different toolchain behavior.
+> bpf_get_func_ip() won't return the function address anymore?
 
-In this specific issue, two versions of kpatch-build were used to
-build livepatch for the same kernel. One assigns old_sympos == 0 for
-unique local functions, the other assigns old_sympos == 1 for unique
-local functions. Both versions work fine by themselves. (PS: This
-behavior change was introduced in a downstream version of kpatch-build.
-This change does not exist in upstream kpatch-build.)
+Right. I do agree it can have issues in some scenarios.
 
-However, during livepatch upgrade (with the replace flag set) from a
-patch built with one version of kpatch-build to the same fix built with
-the other version of kpatch-build, livepatching fails with errors like:
+> 
+> One of the other thoughts I had was if we could stuff the function
+> address into the ftrace OOL stub. I had considered this back when I
+> implemented the OOL stubs, but didn't do it due to the extra memory
+> requirement. However, given the dance we're having to do, I'm now
+> thinking that may make sense and can simplify the code. If we can also
+> hook into livepatch, then we should be able to update the function
+> address in the stub to point to the new address and the trampoline
+> should then "just work" since it already saves/restores the TOC [We may
+> additionally have to update the function IP in _R12, but that would be a
+> minor change overall]
+> 
+> We will still need a way to restore livepatch TOC if the BPF trampoline
+> doesn't itself call into the function, but we may be able to handle that
+> if we change the return address to jump to a stub that restores the TOC
+> from the livepatch stack.
 
-[   14.218706] sysfs: cannot create duplicate filename 'xxx/somefunc,1'
-...
-[   14.219466] Call Trace:
-[   14.219468]  <TASK>
-[   14.219469]  dump_stack_lvl+0x47/0x60
-[   14.219474]  sysfs_warn_dup.cold+0x17/0x27
-[   14.219476]  sysfs_create_dir_ns+0x95/0xb0
-[   14.219479]  kobject_add_internal+0x9e/0x260
-[   14.219483]  kobject_add+0x68/0x80
-[   14.219485]  ? kstrdup+0x3c/0xa0
-[   14.219486]  klp_enable_patch+0x320/0x830
-[   14.219488]  patch_init+0x443/0x1000 [ccc_0_6]
-[   14.219491]  ? 0xffffffffa05eb000
-[   14.219492]  do_one_initcall+0x2e/0x190
-[   14.219494]  do_init_module+0x67/0x270
-[   14.219496]  init_module_from_file+0x75/0xa0
-[   14.219499]  idempotent_init_module+0x15a/0x240
-[   14.219501]  __x64_sys_finit_module+0x61/0xc0
-[   14.219503]  do_syscall_64+0x5b/0x160
-[   14.219505]  entry_SYSCALL_64_after_hwframe+0x4b/0x53
-[   14.219507] RIP: 0033:0x7f545a4bd96d
-...
-[   14.219516] kobject: kobject_add_internal failed for somefunc,1 with
-    -EEXIST, don't try to register things with the same name ...
+Sounds doable. Looking into a couple of other things at the moment
+though. Will try out this suggestion and get back post that.
+Having said that, your thoughts on whether the current approach
+is a viable option if bpf_get_func_ip() can be fixed somehow?
 
-This happens because klp_find_func() thinks somefunc with old_sympos==0
-is not the same as somefunc with old_sympos==1, and klp_add_object_nops
-adds another xxx/func,1 to the list of functions to patch.
-
-Signed-off-by: Song Liu <song@kernel.org>
-Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
-[pmladek@suse.com: Fixed some typos.]
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-LLM Generated explanations, may be completely bogus:
-
-## Analysis
-
-### 1. COMMIT MESSAGE ANALYSIS
-
-**Subject:** `livepatch: Match old_sympos 0 and 1 in klp_find_func()`
-
-**Key indicators:**
-- Fixes a bug: livepatch upgrade failures with replace flag
-- Real-world impact: sysfs duplicate filename error causing patch
-  enablement to fail
-- Clear problem description with error logs
-- Tested-by: Petr Mladek
-- Reviewed-by: Petr Mladek, Josh Poimboeuf
-
-**Root cause:** Different versions of kpatch-build assign `old_sympos` 0
-vs 1 for unique functions. During livepatch upgrade with replace,
-`klp_find_func()` doesn't match them, leading to duplicate sysfs
-entries.
-
-### 2. CODE CHANGE ANALYSIS
-
-**Files changed:** 1 file (`kernel/livepatch/core.c`)
-**Lines changed:** 7 lines added, 1 line modified
-
-**Change:**
-```c
-// Before:
-if ((strcmp(old_func->old_name, func->old_name) == 0) &&
-    (old_func->old_sympos == func->old_sympos)) {
-
-// After:
-if ((strcmp(old_func->old_name, func->old_name) == 0) &&
-    ((old_func->old_sympos == func->old_sympos) ||
-     (old_func->old_sympos == 0 && func->old_sympos == 1) ||
-     (old_func->old_sympos == 1 && func->old_sympos == 0))) {
-```
-
-**Technical explanation:**
-- For unique symbols, `old_sympos` 0 and 1 both refer to the first
-  occurrence
-- `klp_find_object_symbol()` treats `sympos == 0` as "unique symbol"
-  (see lines 170-175)
-- Sysfs displays `old_sympos == 0` as `1` (line 820: `func->old_sympos ?
-  func->old_sympos : 1`)
-- The fix makes `klp_find_func()` treat 0 and 1 as equivalent for
-  matching
-
-**Why this fixes the bug:**
-- During replace upgrade, `klp_add_object_nops()` calls
-  `klp_find_func()` to check if a function already exists
-- Without the fix, `old_sympos==0` and `old_sympos==1` don't match
-- This causes duplicate sysfs entries, leading to `-EEXIST` and patch
-  enablement failure
-
-### 3. CLASSIFICATION
-
-**Type:** Bug fix (not a feature)
-
-**Exception categories:** None needed — this is a bug fix
-
-**Security:** No security impact, but prevents a reliability issue
-
-### 4. SCOPE AND RISK ASSESSMENT
-
-**Scope:**
-- Single function (`klp_find_func()`)
-- Localized change
-- No architectural changes
-
-**Risk:** Low
-- Small, targeted change
-- Clear logic
-- No new code paths
-- Only affects matching logic for unique symbols
-
-**Potential issues:**
-- None identified
-- Change is conservative (adds equivalence, doesn't remove checks)
-
-### 5. USER IMPACT
-
-**Severity:** High for affected users
-- Prevents livepatch upgrades with replace flag
-- Causes kernel errors and patch enablement failure
-- Affects users upgrading between different kpatch-build versions
-
-**Affected users:**
-- Users performing livepatch upgrades with replace
-- Users mixing kpatch-build versions
-- Enterprise users relying on livepatch for updates
-
-**Impact assessment:**
-- Core livepatch functionality (upgrade path)
-- Real-world scenario (different toolchain versions)
-- User-visible failure (error messages, failed upgrades)
-
-### 6. STABILITY INDICATORS
-
-**Testing:**
-- Tested-by: Petr Mladek
-- Reviewed-by: Petr Mladek, Josh Poimboeuf
-- Real-world scenario documented
-
-**Code maturity:**
-- Function exists since atomic replace (Jan 2019)
-- Present in stable trees (5.1+)
-- Mature code path
-
-### 7. DEPENDENCY CHECK
-
-**Dependencies:**
-1. `klp_find_func()` — introduced with atomic replace (commit
-   e1452b607c48c, Jan 2019)
-2. `klp_add_object_nops()` — same commit
-3. Replace functionality — present since ~5.1
-
-**Backport compatibility:**
-- Applies cleanly to any stable tree with atomic replace
-- No other commits required
-- Self-contained fix
-
-**Affected stable versions:**
-- Any stable tree with atomic replace (~5.1+)
-- All current LTS trees (6.1.y, 6.6.y, etc.)
-
-### 8. STABLE KERNEL RULES COMPLIANCE
-
-**Meets criteria:**
-1. Obviously correct: Yes — clear equivalence for unique symbols
-2. Fixes real bug: Yes — documented failure case
-3. Important issue: Yes — breaks livepatch upgrades
-4. Small and contained: Yes — 7 lines, 1 function
-5. No new features: Yes — bug fix only
-6. Applies cleanly: Yes — no conflicts expected
-
-**No violations:**
-- No new features
-- No API changes
-- No architectural changes
-- No new dependencies
-
-### 9. RISK VS BENEFIT TRADE-OFF
-
-**Benefit:**
-- Fixes upgrade failures
-- Low risk, high value
-- Addresses real user issue
-
-**Risk:**
-- Minimal — localized change
-- Conservative logic
-- Well-tested
-
-**Conclusion:** Strong benefit, minimal risk
-
-### 10. FINAL ASSESSMENT
-
-This commit should be backported to stable kernel trees.
-
-**Reasons:**
-1. Fixes a real bug that breaks livepatch upgrades
-2. Small, localized change (7 lines)
-3. Low risk, clear logic
-4. Well-tested and reviewed
-5. No new features or dependencies
-6. Applies cleanly to stable trees with atomic replace
-7. High user impact for affected users
-
-**Recommendation:** Backport to all stable trees that include atomic
-replace functionality (approximately 5.1.y and later).
-
-**YES**
-
- kernel/livepatch/core.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 0e73fac55f8eb..4e7a5cbc40a91 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -88,8 +88,14 @@ static struct klp_func *klp_find_func(struct klp_object *obj,
- 	struct klp_func *func;
- 
- 	klp_for_each_func(obj, func) {
-+		/*
-+		 * Besides identical old_sympos, also consider old_sympos
-+		 * of 0 and 1 are identical.
-+		 */
- 		if ((strcmp(old_func->old_name, func->old_name) == 0) &&
--		    (old_func->old_sympos == func->old_sympos)) {
-+		    ((old_func->old_sympos == func->old_sympos) ||
-+		     (old_func->old_sympos == 0 && func->old_sympos == 1) ||
-+		     (old_func->old_sympos == 1 && func->old_sympos == 0))) {
- 			return func;
- 		}
- 	}
--- 
-2.51.0
-
+- Hari
 
