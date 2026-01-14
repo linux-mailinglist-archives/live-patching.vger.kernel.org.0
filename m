@@ -1,105 +1,117 @@
-Return-Path: <live-patching+bounces-1906-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1907-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3DAD7D0A82E
-	for <lists+live-patching@lfdr.de>; Fri, 09 Jan 2026 14:55:18 +0100 (CET)
+Received: from sto.lore.kernel.org (sto.lore.kernel.org [172.232.135.74])
+	by mail.lfdr.de (Postfix) with ESMTPS id AD5A0D1EC61
+	for <lists+live-patching@lfdr.de>; Wed, 14 Jan 2026 13:31:57 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id BBC513037509
-	for <lists+live-patching@lfdr.de>; Fri,  9 Jan 2026 13:51:55 +0000 (UTC)
+	by sto.lore.kernel.org (Postfix) with ESMTP id 2E9BC30022CE
+	for <lists+live-patching@lfdr.de>; Wed, 14 Jan 2026 12:31:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E49E35B149;
-	Fri,  9 Jan 2026 13:51:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3BF9396B88;
+	Wed, 14 Jan 2026 12:31:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fBroDu6I"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="VuU3Vwqq"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED5A0336ED1;
-	Fri,  9 Jan 2026 13:51:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BC15395242
+	for <live-patching@vger.kernel.org>; Wed, 14 Jan 2026 12:31:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767966715; cv=none; b=WPxHPLqYUeGro4+255w7FvA0mgIJNUe7z/dA+IdMKo+IA2Qe1xGT8nTWoU1ykAPk11Sw4v3fR+ZIYimnntuXoUnDdaGIEGiHaLLsRK+cI8zB92RWe5OFHu2B4q3HFh/uMM4nf6nRwxew2MlyAw8/HnjONgAvy+TBrNHkn9r9gfw=
+	t=1768393913; cv=none; b=RHqKt2WZTv9sR+hK/GFaV5i3XSbS/GSplEcZmxjnyxk1Vi9dy0gruv/tlBsK2NKgYGCj4v7/Q2tTK52mnadWjMuLt+FnXDKQlwNWpZ8dIOVTE7d0FfR6/8mO19UHr0ogznMvmOuUmDGq8du2HL5JKvcwmKND4XPc6NP09AwXTew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767966715; c=relaxed/simple;
-	bh=CLZvYIsZyfLJIsGhoiYPM3t/q9SwiCeDSBIF6jrDkOE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tyqjzlz/HCmVqhDmgZvjSydvki6eQHog/vW5NFmG4qw6YhQW68uDHBs1t62iCBK6/iIAo1hidqbLXToXD9x+Ibkh7TGCPCAmj09kuABX/ju5/d6DSqOm9WZWfaBWdZFcEnRnNdHrHX/5MHX38KATvTxHS7ugyXy4ohA0y1TSGRg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fBroDu6I; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9487C4CEF1;
-	Fri,  9 Jan 2026 13:51:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767966714;
-	bh=CLZvYIsZyfLJIsGhoiYPM3t/q9SwiCeDSBIF6jrDkOE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fBroDu6IN+2tkXyeN5U5QMYb0DBexlKu0/2Zg/2VFDJQ43930saje+YN+kzqeQeX+
-	 u209JM5Zc1YixNnK1OfMUFPqPon20e82wpwxDGFsYfSt5O8uoFHH24jhcLQ4tPGRGO
-	 DMXvkwfXGDK6i7eSqaHWbaY9ask2AohBoxnUfqNLh/o4ZIaVnNrDMF9NicfCgpDpaK
-	 6D5mmeg+QLuPthnOJh0H19g9/AihyIF5/N6+jdsICFCPKGjNOWAB5sudlV+OqWck0l
-	 mhyICObKpOj1w9pYFrvQFSSpnSlyqsyFy/cH8OgmW/gwFh2Zw/27nVEbt1EPx0KMtf
-	 JuCJk3+AY+Dxg==
-Date: Fri, 9 Jan 2026 19:18:22 +0530
-From: Naveen N Rao <naveen@kernel.org>
-To: Hari Bathini <hbathini@linux.ibm.com>
-Cc: Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, bpf@vger.kernel.org, 
-	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	Andrii Nakryiko <andrii@kernel.org>, Song Liu <songliubraving@fb.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Viktor Malik <vmalik@redhat.com>, live-patching@vger.kernel.org, 
-	Josh Poimboeuf <jpoimboe@kernel.org>, Joe Lawrence <joe.lawrence@redhat.com>, 
-	Jiri Kosina <jikos@kernel.org>, linux-trace-kernel@vger.kernel.org, 
-	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, Shung-Hsi Yu <shung-hsi.yu@suse.com>
-Subject: Re: [PATCH] powerpc64/bpf: support direct_call on livepatch function
-Message-ID: <aWEFaNhwUaRSqISq@blrnaveerao1>
-References: <20251002192755.86441-1-hbathini@linux.ibm.com>
- <amwerofvasp7ssmq3zlrjakqj5aygyrgplcqzweno4ef42tiav@uex2ildqjvx2>
- <17f49a63-eccb-4075-91dd-b1f37aa762c7@linux.ibm.com>
- <unegysw3bihg32od7aham3npsdpm5govboo3uglorwsrjqfqfk@pbyzwwztmqtc>
- <42d72061-3d23-43db-bb02-d5f75333c924@linux.ibm.com>
- <dvvv5cytyak2iquer7d6g57ttum3qcckupyahsqsmvpzfjbyni@wbsr77swnrcl>
- <79946463-4742-4919-9d56-927a0a6f1c7c@linux.ibm.com>
- <nuinyo7o7uniemqqmoboctwrkkwkuv77nt7yk6td6eb3x43hv2@2lukfuvcmcko>
- <e34ddd05-d926-4eb4-b861-4bf8fd5635bb@linux.ibm.com>
+	s=arc-20240116; t=1768393913; c=relaxed/simple;
+	bh=4cEsjI6qmluXc03y+Xik1t3t8Tu9eac4951kHHMMRrs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kYD0MrILAcXxRTV8StmrYFspbbvJK7iw3mzwsbT/7wsI1OJ7iuJT8pfHDTMH9O3rvlEoG9p/y4Q2zJyIQWqGaJ90YKrQNT8yDvSHnKR1KTLuY0Sg2FUVIXk3Eqkq1pOeG5Of9vYTcx/cJmYAiPY7fZU7PaCUyB76O+wpI8nq6Es=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=VuU3Vwqq; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-432d2c7dd52so4683544f8f.2
+        for <live-patching@vger.kernel.org>; Wed, 14 Jan 2026 04:31:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1768393908; x=1768998708; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=MDpgMwk1BHGoscfxwj/PsMCXAuQ0lRGKa6CrVf+sfjA=;
+        b=VuU3VwqqVwarBAP0ycg2bJeosFiePVcbzgGObILJMDGoKkegIUBKEmQrVB7e8jw3ZJ
+         cKgP8xyI4evX84RK/CGS+9vzEsAkziFJf6bgOoQa+V5PNeLCQyiUB4Ty6L4XblbUmf95
+         LtSQcJ48FIa9hPd8FHV4uk9t0OZyaHtbhdykq7Fjud6n6OVuPSPJWjjm+zXjrZzInviq
+         dJEL1xqnt0IHGQQ1BkHj/jZqSbP2WkszLC3W4QlMWRJHjwiuItEySpFNXzC5A4985Ui4
+         hs2EAJses/tsXl1QpRjk6OBPOl+x3i0H69AilTcK67mmfH1M/jBB8PXHBqNPPQDsz6/8
+         YbwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768393908; x=1768998708;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MDpgMwk1BHGoscfxwj/PsMCXAuQ0lRGKa6CrVf+sfjA=;
+        b=myNbgxqiR6u5Zdtr2ITlHeJe9/aqEQVPjop6YbLO0dvIKOCXt6YqvphbZWGnH7xb9J
+         NdRTuBujUhPyY/0qyGrc7NnBrSW3HxlJO+XIPMtij2ZY+t5faSFz8Qb2W2ntHSgW0fyE
+         RGNEvoywZs9QotpGdRNOFbsYcQiCYlvItVhFQT1momHA9D7B9zz32rVBtTllIp3PZapb
+         +KJ74oUUgFBXtXCUXAxF5l8SNRJMLmlMbpAtySpTPXcjYvzMDVdly+019fsWMCycQM3P
+         o7+0rAIj6tCXfqgADoNc42gV26HeLdgYbIJ2U6CVbUC76mfSo3q4CUucITf/seN1XkTT
+         Cqfg==
+X-Forwarded-Encrypted: i=1; AJvYcCVbGt324fp8lgQERV7+pLjtrHavG52Zt2iUR7sFjrzgBfR0muL7TGf6NNMF8i6LCRLWrORXjT9/Yeew73iq@vger.kernel.org
+X-Gm-Message-State: AOJu0YxfR7dAF3N0XK8grA0pWRF7jy5VgLJBsisrChkugcdm5Lb+hEhU
+	+TLvNToz9TXgsJ3hLIuRV/3tINAb5W4mLYi22VpvUqfR2/WwVvA8YxZiJ0ft/LSvRz0=
+X-Gm-Gg: AY/fxX4psiet/QJXGqns14bcDToTZqrYvBoxPAtgVx0da7I8dMWPG89kcMvUBN95rkZ
+	M+znFoioPy12TvwFaMWlk3tIptnla8jpz32pwxGSr6s/xJdMsmdpGz0VWjbEK5O2+nlQGls6jZV
+	K4DoSvcYGrNUyC2y3Nl5xzmYagBjDaVEvLKUA7WubNXbXGeIJhqZVvlCEq3a6nedjDLajSadUQw
+	e4cthuIdl5ocBTvrN+Ul3i+OLtVm6Ufpae9o67Gcr9n9vlRjUrO7iuRyFwald5EVnUWlkAZ9t2j
+	/bNTtV74txA0CXcsqxB2poSajMuFSANQAPNnOrBiTcIRRTFCvc0L8B6XELo+/O5+Q6KgGISD9Lr
+	fhIw6pv1OQkRftRKEHr/s9rKu41ikuWPcBJ3UQIj7sgBWkXxmMZwKX2q6r5oKGdBI/2Sf5mR+yp
+	o9VbPYqGuBx0FPS5gP02XqlQdPwBiuDJA=
+X-Received: by 2002:a05:6000:2887:b0:430:f7ae:af3e with SMTP id ffacd0b85a97d-4342c54ac52mr2565147f8f.32.1768393907979;
+        Wed, 14 Jan 2026 04:31:47 -0800 (PST)
+Received: from zovi.suse.cz (109-81-1-107.rct.o2.cz. [109.81.1.107])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd5ee243sm50097772f8f.31.2026.01.14.04.31.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jan 2026 04:31:47 -0800 (PST)
+From: Petr Pavlu <petr.pavlu@suse.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>,
+	Petr Mladek <pmladek@suse.com>,
+	Joe Lawrence <joe.lawrence@redhat.com>
+Cc: Luis Chamberlain <mcgrof@kernel.org>,
+	Petr Pavlu <petr.pavlu@suse.com>,
+	Daniel Gomez <da.gomez@kernel.org>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Aaron Tomlin <atomlin@atomlin.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	live-patching@vger.kernel.org,
+	linux-modules@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Improve handling of the __klp_{objects,funcs} sections in modules
+Date: Wed, 14 Jan 2026 13:29:52 +0100
+Message-ID: <20260114123056.2045816-1-petr.pavlu@suse.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e34ddd05-d926-4eb4-b861-4bf8fd5635bb@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Dec 08, 2025 at 10:05:44PM +0530, Hari Bathini wrote:
-> > 
-> > One of the other thoughts I had was if we could stuff the function
-> > address into the ftrace OOL stub. I had considered this back when I
-> > implemented the OOL stubs, but didn't do it due to the extra memory
-> > requirement. However, given the dance we're having to do, I'm now
-> > thinking that may make sense and can simplify the code. If we can also
-> > hook into livepatch, then we should be able to update the function
-> > address in the stub to point to the new address and the trampoline
-> > should then "just work" since it already saves/restores the TOC [We may
-> > additionally have to update the function IP in _R12, but that would be a
-> > minor change overall]
-> > 
-> > We will still need a way to restore livepatch TOC if the BPF trampoline
-> > doesn't itself call into the function, but we may be able to handle that
-> > if we change the return address to jump to a stub that restores the TOC
-> > from the livepatch stack.
-> 
-> Sounds doable. Looking into a couple of other things at the moment
-> though. Will try out this suggestion and get back post that.
-> Having said that, your thoughts on whether the current approach
-> is a viable option if bpf_get_func_ip() can be fixed somehow?
+Petr Pavlu (2):
+  livepatch: Fix having __klp_objects relics in non-livepatch modules
+  livepatch: Free klp_{object,func}_ext data after initialization
 
-Oh, that's fine -- feel free to go with whatever approach you think 
-works best.
+ include/linux/livepatch.h           |  3 +++
+ kernel/livepatch/core.c             | 21 +++++++++++++++++++++
+ scripts/livepatch/init.c            | 17 ++++++-----------
+ scripts/module.lds.S                |  9 ++-------
+ tools/objtool/check.c               |  2 +-
+ tools/objtool/include/objtool/klp.h | 10 +++++-----
+ tools/objtool/klp-diff.c            |  2 +-
+ 7 files changed, 39 insertions(+), 25 deletions(-)
 
 
-- Naveen
+base-commit: f0b9d8eb98dfee8d00419aa07543bdc2c1a44fb1
+-- 
+2.52.0
 
 
