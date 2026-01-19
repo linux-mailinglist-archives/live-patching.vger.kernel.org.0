@@ -1,201 +1,243 @@
-Return-Path: <live-patching+bounces-1909-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1910-lists+live-patching=lfdr.de@vger.kernel.org>
 X-Original-To: lists+live-patching@lfdr.de
 Delivered-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1212CD1EC81
-	for <lists+live-patching@lfdr.de>; Wed, 14 Jan 2026 13:33:29 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0241FD3BABD
+	for <lists+live-patching@lfdr.de>; Mon, 19 Jan 2026 23:20:16 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 2C4E03050594
-	for <lists+live-patching@lfdr.de>; Wed, 14 Jan 2026 12:32:00 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id A0D97300B37D
+	for <lists+live-patching@lfdr.de>; Mon, 19 Jan 2026 22:20:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 334B6399004;
-	Wed, 14 Jan 2026 12:31:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DCAC2FDC4D;
+	Mon, 19 Jan 2026 22:20:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="H1Yd78pQ"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="L+lW50v6"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 465BD39900C
-	for <live-patching@vger.kernel.org>; Wed, 14 Jan 2026 12:31:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEE492F7440
+	for <live-patching@vger.kernel.org>; Mon, 19 Jan 2026 22:20:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768393918; cv=none; b=BY5sdBUFgX85BxVLhUFX3I81ofUnjgEgoUH07k3aBcuagJRpJnAA+28n2h6qPHKpe8psKXxCW/DfKlOWagj+BAPzuewRYqmuXbpqHuPnQ83rrEsn30KecIuyYu+f1QXkTSguRzu6amBc+uLqTTYaE2NNoXhrBdyEHnkfdckNPgI=
+	t=1768861209; cv=none; b=hj0LstLMJKVzoH05gJ56JD1s0EpWqdjkwMNVG2zdpU+TacoRjXKZDwym/1X0MOStCdpJq983FFSS2+rFNxuvDs/AbJPNhJ0hpQuNSWpvgbGNFHn3yY72e4aISHHC+uuwJuA9fEShZfMjnk2UQ9zLF2pVGxhRDstS10HpS9+tSNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768393918; c=relaxed/simple;
-	bh=lo+iadz8qHbkZgbzUhvlIGNW4LhYtiDx0eCXw/IdSZE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kYgF3VddhUYZ3ju+1Lmb3quQjF3jgaQhWFkdJ7Rb/xWFqAupmNih+wogXbaUiP+K480NMTYImY+HolHCBTFaHy3Bzsm0PDwS5uQdul1+cZUl1S7YsErGbnOIvPGZ07I02SSBelDxYwQYLxC3p+sCpozRdNZrLc0yNuCuADreYq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=H1Yd78pQ; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-477ba2c1ca2so94605765e9.2
-        for <live-patching@vger.kernel.org>; Wed, 14 Jan 2026 04:31:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1768393910; x=1768998710; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AI8gmotF1cnQLBo8BsEJi9P54oWsQwjAb5p5bbIKvWA=;
-        b=H1Yd78pQk7UlAxWa2mWziDx3JIl1mahxgqh2RQQQwfrgt8rosRlyV7wVSUsEHGpmeN
-         DQHSd7rph62ZMmZzZEOv/VuCubDpiJkmqvMgJJS6DpMYBk3NAtVBRInNhKtzrp1+hhBI
-         iy4cui5tK+CztXZnNOAq8NmmI0ruva3eoJQYkEk3xkP3wUkP7xB907UQ/Ng0KOGDDaPG
-         erxJQkZfgR5iH70ZcCErFg5+ln5Mj8kLrE0IBMRqjtxV5gjQbAqvEhgISO7+Oce4IEGM
-         oYk6o+yCLZQQyCmS/BKHkAFLOnyZM5yXWs0k/OPwvW9NCW1sHUuQybDBRry3RyOwKxzy
-         IaUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768393910; x=1768998710;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=AI8gmotF1cnQLBo8BsEJi9P54oWsQwjAb5p5bbIKvWA=;
-        b=mLaawBS/+U2QlupTVH0VEkUEbBfjl/JmpiPT1ZbcFkFdknPtgyqRGCXYNc8VRlsujg
-         7ZSuv5CVearL2BYl++vvPxomLEE4D442Aubkrgzsc4ugo2VmvcxiDa77v0r+bCCV66cn
-         P/c4X6zHOganNet6jvSCmd405ik4YHY9D48GJvoy+VwBAkqqekBb6prpoiMY9+6mWqbb
-         ngt5zdLVzSqEN9KSMhyw4D07WLcXFcjvbzJv6XF1zonuMZ1G0PfSrDCwoLlcRjpDK4Ya
-         Ugja+s/ZolWaR2cvDXHoY0sREifdHzGQcTvd4Ts1dop7TdloxIZCgVbaU0cgMecXbRBI
-         60ww==
-X-Forwarded-Encrypted: i=1; AJvYcCUf1805aunAhuOUWwpKHTL2PWyL4U7I0kF9L0cmqGfKzDJVuYZh/UZGnPMct0fjZR8ex8fTRnRUifMBQ/Am@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy2ntXfaMkwLghKgJwmx/5cwPn+Wp+HKfVYob8GaSlKHg8RbIWb
-	r1luWOYyKhf9EC1FIcpPQCcHsZTUxFxFBRy+tHk8uPIO1nGXZEFR7EQIYWaVUCUDHik=
-X-Gm-Gg: AY/fxX4fq/bEfeVAQ2EB998NZ2F70+wunhI0QVAYZd0bi5KtPWGo+IfrvNCIaowBOeF
-	ThLJqjfrjopVtq6S1nIPGbyGDOPBKVCoyyrqKRBCM6KQrWJW+jMiAMEs05fRxMzKpi0gNuEIWW4
-	5BAUwlf51BR791Lr8VzFyoKGi6WpdJoYkYR1Yj3ht95va0dXrymDootuZE0hO3UyM5MSGi09Tn5
-	SnColRcebOZY99Tk6l48+u3uD0a3OOB+CN1r0pH8Kdz9j1sefLrXFftlLIcHSTkecxjH9uiFVyJ
-	LIFxFkezmD0ytVvcRMStgxYzmJ64sYkk5t87+tTQiOSJIzb6JWwHPwqB6d9havdtkLaoqKymFMk
-	kBZ5zW1D4SgU2S011jhjqwxFMYcEV8XglISJqP4SM3ksqtBnu72cD6my77QWtgEU4NtRgDw8nOB
-	9XDe2BWtg4KA2y06meQywswDVhL6YxLC4=
-X-Received: by 2002:a05:6000:420a:b0:430:fd0f:28fe with SMTP id ffacd0b85a97d-4342c54ace1mr3155170f8f.31.1768393910254;
-        Wed, 14 Jan 2026 04:31:50 -0800 (PST)
-Received: from zovi.suse.cz (109-81-1-107.rct.o2.cz. [109.81.1.107])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd5ee243sm50097772f8f.31.2026.01.14.04.31.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jan 2026 04:31:49 -0800 (PST)
-From: Petr Pavlu <petr.pavlu@suse.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>
-Cc: Luis Chamberlain <mcgrof@kernel.org>,
-	Petr Pavlu <petr.pavlu@suse.com>,
+	s=arc-20240116; t=1768861209; c=relaxed/simple;
+	bh=i7Vka5cBOmMCzqwXf8vHQ+0qPJSKjtgHQwwxyEfUnDI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QzlCBS5m8+1uQUaHWyM2r2lZvpEszL/Q/AJckG0GcGL5FHfxR7GbDgzjmX2XynaXVWt5PQGU/tHVI7AWarQENCLC2wCFbWqTuuPg9PjdhjIZNG5uWfIsIthaq193OzamHkT0HLAgVu1yjbhIazQ64C3KghzEMVqzniiecgLhwNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=L+lW50v6; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1768861207;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=xS4KN3jR3NZDNE6uFYrItJViNkTJBI9nlgCpQMd0lng=;
+	b=L+lW50v6P1+Q1UDQ95k+maFZt4djowh+2n9NKkHdOI4f3/qU1B26cDiBkF+4xiBwBuntoe
+	303NMdB1q75HZVPLD/a/dFW87bgDdtvGWnuDKzyUlPTyUwcT3KedhZPJCNiatW15kKhSAd
+	7bsDuHj0upyF9nnQ66HoNqxRGgtDZ1A=
+Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-84-PyhNjVFiN8K4mgy0QwPIwQ-1; Mon,
+ 19 Jan 2026 17:20:02 -0500
+X-MC-Unique: PyhNjVFiN8K4mgy0QwPIwQ-1
+X-Mimecast-MFC-AGG-ID: PyhNjVFiN8K4mgy0QwPIwQ_1768861200
+Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id D8A6F195609D;
+	Mon, 19 Jan 2026 22:19:59 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.64.98])
+	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 58DF519560A2;
+	Mon, 19 Jan 2026 22:19:56 +0000 (UTC)
+Date: Mon, 19 Jan 2026 17:19:53 -0500
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: Petr Pavlu <petr.pavlu@suse.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
 	Daniel Gomez <da.gomez@kernel.org>,
 	Sami Tolvanen <samitolvanen@google.com>,
 	Aaron Tomlin <atomlin@atomlin.com>,
 	Peter Zijlstra <peterz@infradead.org>,
-	live-patching@vger.kernel.org,
-	linux-modules@vger.kernel.org,
+	live-patching@vger.kernel.org, linux-modules@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] livepatch: Free klp_{object,func}_ext data after initialization
-Date: Wed, 14 Jan 2026 13:29:54 +0100
-Message-ID: <20260114123056.2045816-3-petr.pavlu@suse.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260114123056.2045816-1-petr.pavlu@suse.com>
+Subject: Re: [PATCH 1/2] livepatch: Fix having __klp_objects relics in
+ non-livepatch modules
+Message-ID: <aW6uCQNXj0Y7IGnz@redhat.com>
 References: <20260114123056.2045816-1-petr.pavlu@suse.com>
+ <20260114123056.2045816-2-petr.pavlu@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260114123056.2045816-2-petr.pavlu@suse.com>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
 
-The klp_object_ext and klp_func_ext data, which are stored in the
-__klp_objects and __klp_funcs sections, respectively, are not needed
-after they are used to create the actual klp_object and klp_func
-instances. This operation is implemented by the init function in
-scripts/livepatch/init.c.
+On Wed, Jan 14, 2026 at 01:29:53PM +0100, Petr Pavlu wrote:
+> The linker script scripts/module.lds.S specifies that all input
+> __klp_objects sections should be consolidated into an output section of
+> the same name, and start/stop symbols should be created to enable
+> scripts/livepatch/init.c to locate this data.
+> 
+> This start/stop pattern is not ideal for modules because the symbols are
+> created even if no __klp_objects input sections are present.
+> Consequently, a dummy __klp_objects section also appears in the
+> resulting module. This unnecessarily pollutes non-livepatch modules.
+> 
+> Instead, since modules are relocatable files, the usual method for
+> locating consolidated data in a module is to read its section table.
+> This approach avoids the aforementioned problem.
+> 
+> The klp_modinfo already stores a copy of the entire section table with
+> the final addresses. Introduce a helper function that
+> scripts/livepatch/init.c can call to obtain the location of the
+> __klp_objects section from this data.
+> 
+> Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
+> ---
+>  include/linux/livepatch.h |  3 +++
+>  kernel/livepatch/core.c   | 20 ++++++++++++++++++++
+>  scripts/livepatch/init.c  | 17 ++++++-----------
+>  scripts/module.lds.S      |  7 +------
+>  4 files changed, 30 insertions(+), 17 deletions(-)
+> 
+> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+> index 772919e8096a..ca90adbe89ed 100644
+> --- a/include/linux/livepatch.h
+> +++ b/include/linux/livepatch.h
+> @@ -175,6 +175,9 @@ int klp_enable_patch(struct klp_patch *);
+>  int klp_module_coming(struct module *mod);
+>  void klp_module_going(struct module *mod);
+>  
+> +struct klp_object_ext *klp_build_locate_init_objects(const struct module *mod,
+> +						     unsigned int *nr_objs);
+> +
+>  void klp_copy_process(struct task_struct *child);
+>  void klp_update_patch_state(struct task_struct *task);
+>  
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index 9917756dae46..4e0ac47b3623 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -1356,6 +1356,26 @@ void klp_module_going(struct module *mod)
+>  	mutex_unlock(&klp_mutex);
+>  }
+>  
+> +struct klp_object_ext *klp_build_locate_init_objects(const struct module *mod,
+> +						     unsigned int *nr_objs)
+> +{
+> +	struct klp_modinfo *info = mod->klp_info;
+> +
+> +	for (int i = 1; i < info->hdr.e_shnum; i++) {
+> +		Elf_Shdr *shdr = &info->sechdrs[i];
+> +
+> +		if (strcmp(info->secstrings + shdr->sh_name, "__klp_objects"))
+> +			continue;
+> +
 
-Prefix the two sections with ".init" so they are freed after the module
-is initializated.
+Since this function is doing a string comparision to find the ELF
+section, would it make sense to open up the API by allowing to caller to
+specify the sh_name?  That would give scripts/livepatch/init.c future
+flexibility in finding similarly crafted data structures.  Disregard if
+there is already a pattern of doing it this way :)
 
-Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
----
- kernel/livepatch/core.c             |  3 ++-
- scripts/module.lds.S                |  4 ++--
- tools/objtool/check.c               |  2 +-
- tools/objtool/include/objtool/klp.h | 10 +++++-----
- tools/objtool/klp-diff.c            |  2 +-
- 5 files changed, 11 insertions(+), 10 deletions(-)
+> +		*nr_objs = shdr->sh_size / sizeof(struct klp_object_ext);
+> +		return (struct klp_object_ext *)shdr->sh_addr;
+> +	}
+> +
+> +	*nr_objs = 0;
+> +	return NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(klp_build_locate_init_objects);
+> +
+>  static int __init klp_init(void)
+>  {
+>  	klp_root_kobj = kobject_create_and_add("livepatch", kernel_kobj);
+> diff --git a/scripts/livepatch/init.c b/scripts/livepatch/init.c
+> index 2274d8f5a482..23e037d6de19 100644
+> --- a/scripts/livepatch/init.c
+> +++ b/scripts/livepatch/init.c
+> @@ -9,19 +9,16 @@
+>  #include <linux/slab.h>
+>  #include <linux/livepatch.h>
+>  
+> -extern struct klp_object_ext __start_klp_objects[];
+> -extern struct klp_object_ext __stop_klp_objects[];
+> -
+>  static struct klp_patch *patch;
+>  
+>  static int __init livepatch_mod_init(void)
+>  {
+> +	struct klp_object_ext *obj_exts;
+>  	struct klp_object *objs;
+>  	unsigned int nr_objs;
+>  	int ret;
+>  
+> -	nr_objs = __stop_klp_objects - __start_klp_objects;
+> -
+> +	obj_exts = klp_build_locate_init_objects(THIS_MODULE, &nr_objs);
+>  	if (!nr_objs) {
+>  		pr_err("nothing to patch!\n");
+>  		ret = -EINVAL;
+> @@ -41,7 +38,7 @@ static int __init livepatch_mod_init(void)
+>  	}
+>  
+>  	for (int i = 0; i < nr_objs; i++) {
+> -		struct klp_object_ext *obj_ext = __start_klp_objects + i;
+> +		struct klp_object_ext *obj_ext = obj_exts + i;
+>  		struct klp_func_ext *funcs_ext = obj_ext->funcs;
+>  		unsigned int nr_funcs = obj_ext->nr_funcs;
+>  		struct klp_func *funcs = objs[i].funcs;
+> @@ -90,12 +87,10 @@ static int __init livepatch_mod_init(void)
+>  
+>  static void __exit livepatch_mod_exit(void)
+>  {
+> -	unsigned int nr_objs;
+> -
+> -	nr_objs = __stop_klp_objects - __start_klp_objects;
+> +	struct klp_object *obj;
+>  
+> -	for (int i = 0; i < nr_objs; i++)
+> -		kfree(patch->objs[i].funcs);
+> +	klp_for_each_object_static(patch, obj)
+> +		kfree(obj->funcs);
+>  
+>  	kfree(patch->objs);
+>  	kfree(patch);
+> diff --git a/scripts/module.lds.S b/scripts/module.lds.S
+> index 3037d5e5527c..383d19beffb4 100644
+> --- a/scripts/module.lds.S
+> +++ b/scripts/module.lds.S
+> @@ -35,12 +35,7 @@ SECTIONS {
+>  	__patchable_function_entries : { *(__patchable_function_entries) }
+>  
+>  	__klp_funcs		0: ALIGN(8) { KEEP(*(__klp_funcs)) }
+> -
+> -	__klp_objects		0: ALIGN(8) {
+> -		__start_klp_objects = .;
+> -		KEEP(*(__klp_objects))
+> -		__stop_klp_objects = .;
+> -	}
+> +	__klp_objects		0: ALIGN(8) { KEEP(*(__klp_objects)) }
+>  
+>  #ifdef CONFIG_ARCH_USES_CFI_TRAPS
+>  	__kcfi_traps		: { KEEP(*(.kcfi_traps)) }
+> -- 
+> 2.52.0
+> 
 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 4e0ac47b3623..3621a7c1b737 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -1364,7 +1364,8 @@ struct klp_object_ext *klp_build_locate_init_objects(const struct module *mod,
- 	for (int i = 1; i < info->hdr.e_shnum; i++) {
- 		Elf_Shdr *shdr = &info->sechdrs[i];
- 
--		if (strcmp(info->secstrings + shdr->sh_name, "__klp_objects"))
-+		if (strcmp(info->secstrings + shdr->sh_name,
-+			   ".init.klp_objects"))
- 			continue;
- 
- 		*nr_objs = shdr->sh_size / sizeof(struct klp_object_ext);
-diff --git a/scripts/module.lds.S b/scripts/module.lds.S
-index 383d19beffb4..054ef99e8288 100644
---- a/scripts/module.lds.S
-+++ b/scripts/module.lds.S
-@@ -34,8 +34,8 @@ SECTIONS {
- 
- 	__patchable_function_entries : { *(__patchable_function_entries) }
- 
--	__klp_funcs		0: ALIGN(8) { KEEP(*(__klp_funcs)) }
--	__klp_objects		0: ALIGN(8) { KEEP(*(__klp_objects)) }
-+	.init.klp_funcs		0 : ALIGN(8) { KEEP(*(.init.klp_funcs)) }
-+	.init.klp_objects	0 : ALIGN(8) { KEEP(*(.init.klp_objects)) }
- 
- #ifdef CONFIG_ARCH_USES_CFI_TRAPS
- 	__kcfi_traps		: { KEEP(*(.kcfi_traps)) }
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 3f7999317f4d..933868ee3beb 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -4761,7 +4761,7 @@ static int validate_ibt(struct objtool_file *file)
- 		    !strcmp(sec->name, "__bug_table")			||
- 		    !strcmp(sec->name, "__ex_table")			||
- 		    !strcmp(sec->name, "__jump_table")			||
--		    !strcmp(sec->name, "__klp_funcs")			||
-+		    !strcmp(sec->name, ".init.klp_funcs")		||
- 		    !strcmp(sec->name, "__mcount_loc")			||
- 		    !strcmp(sec->name, ".llvm.call-graph-profile")	||
- 		    !strcmp(sec->name, ".llvm_bb_addr_map")		||
-diff --git a/tools/objtool/include/objtool/klp.h b/tools/objtool/include/objtool/klp.h
-index ad830a7ce55b..e32e5e8bc631 100644
---- a/tools/objtool/include/objtool/klp.h
-+++ b/tools/objtool/include/objtool/klp.h
-@@ -6,12 +6,12 @@
- #define SHN_LIVEPATCH		0xff20
- 
- /*
-- * __klp_objects and __klp_funcs are created by klp diff and used by the patch
-- * module init code to build the klp_patch, klp_object and klp_func structs
-- * needed by the livepatch API.
-+ * .init.klp_objects and .init.klp_funcs are created by klp diff and used by the
-+ * patch module init code to build the klp_patch, klp_object and klp_func
-+ * structs needed by the livepatch API.
-  */
--#define KLP_OBJECTS_SEC	"__klp_objects"
--#define KLP_FUNCS_SEC	"__klp_funcs"
-+#define KLP_OBJECTS_SEC	".init.klp_objects"
-+#define KLP_FUNCS_SEC	".init.klp_funcs"
- 
- /*
-  * __klp_relocs is an intermediate section which are created by klp diff and
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 4d1f9e9977eb..fd64d5e3c3b6 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -1439,7 +1439,7 @@ static int clone_special_sections(struct elfs *e)
- }
- 
- /*
-- * Create __klp_objects and __klp_funcs sections which are intermediate
-+ * Create .init.klp_objects and .init.klp_funcs sections which are intermediate
-  * sections provided as input to the patch module's init code for building the
-  * klp_patch, klp_object and klp_func structs for the livepatch API.
-  */
--- 
-2.52.0
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+
+--
+Joe
 
 
