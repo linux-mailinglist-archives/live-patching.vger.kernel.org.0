@@ -1,101 +1,61 @@
-Return-Path: <live-patching+bounces-1920-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1921-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id UIC+OWpNc2lDugAAu9opvQ
-	(envelope-from <live-patching+bounces-1920-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 23 Jan 2026 11:28:58 +0100
+	id WJHqMNO0c2liyAAAu9opvQ
+	(envelope-from <live-patching+bounces-1921-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 23 Jan 2026 18:50:11 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id A93DA7453B
-	for <lists+live-patching@lfdr.de>; Fri, 23 Jan 2026 11:28:58 +0100 (CET)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 66DD17930E
+	for <lists+live-patching@lfdr.de>; Fri, 23 Jan 2026 18:50:11 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 86D7D301DC3A
-	for <lists+live-patching@lfdr.de>; Fri, 23 Jan 2026 10:28:52 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 6D1D330427C1
+	for <lists+live-patching@lfdr.de>; Fri, 23 Jan 2026 17:50:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7F8A237AA74;
-	Fri, 23 Jan 2026 10:28:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11300221F0A;
+	Fri, 23 Jan 2026 17:50:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="fFcxQwta"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ir37Fktn"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF49936656F
-	for <live-patching@vger.kernel.org>; Fri, 23 Jan 2026 10:28:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD9AC86329;
+	Fri, 23 Jan 2026 17:50:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769164127; cv=none; b=doHUQfMXwUZnOpVvmpbgDTNZzujzLRET45ATWcK0UfQYCz5vJBS057+e7eZgSbYReul8Muo2mz73VoKW2XvCPd4T8ZnTNhDePZpPXoFmUqaNT+u/7x/HJyuttq3ZCHHb0tFu0AN7q4d48Zmk7LrKdS5SFyK8KYOhNyD8USchuJo=
+	t=1769190604; cv=none; b=TB7VRs3TL3U3o2k4kh8/jw+PiZs3e0cVj0nuLr7MWsuYNYab6bnet/h19dgFsBPcQGzCM6mwA5u/+gCdV1AGO36sN+Sv8+1xKiifscgtLR4NY1nMmiKNa0NxhMe7JYHkHokGvmwUj9raxsOUCQ9R3LJrfOavVoq7iSKfx4D/5rw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769164127; c=relaxed/simple;
-	bh=DtOADswTq9t7oM1NSkiyrF+jafF+Tp/877w6zEpUQhU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pdue8VDzeDylkOT9NsGT0JMjVTyAMqim1nGGgPEDfiHtMNC+c3XEgEki0dFzYS4R9CzaolH7cPlJjqVUhoRnKhjILUSZapvB9id5fl5xk0RXEefrQml2XcUn5Vgmz41ZqfjpgZ1ZrF1Hkbatk9TdbviVyINHthNaUxDmi0F6e5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=fFcxQwta; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-47f5c2283b6so15197515e9.1
-        for <live-patching@vger.kernel.org>; Fri, 23 Jan 2026 02:28:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1769164124; x=1769768924; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZxfRVP7W+3lq5s1e+n6bpoYt/Dv/ToAFRdoKHsTj1cI=;
-        b=fFcxQwtaDCazpAceKn6XtsiQQztngTZvmNRaK0nF+1JeAPAatfdkhiNkOYR1RaE7M1
-         IlmkgeaXWIGP5X2YAyca3HUIiwVqwox7mnkNfJrH7sHAOlHsbMeP8EyJcGE3t8YgWjpQ
-         R3WjtlkNCDpxhvMDZucoIP1hzikr/5KyjvfkfmJDUQW0Sky3LsFYq3Oq32qFLvPZrlLi
-         iEpNA6YKjgt/RGMjPTMdvuSi2jEhHF34tpSHy/32LlgeijvjzgiqlIDLsvKrBGODY5j8
-         JPOjf9/qiV5Avbtx7snuiw9y3ayVG7ZBxzKRx4zcQIaN/pMaHOqucc5zBHRyxe85z0kJ
-         QDzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769164124; x=1769768924;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ZxfRVP7W+3lq5s1e+n6bpoYt/Dv/ToAFRdoKHsTj1cI=;
-        b=RvNdCjbSjnWHX7veM6Hsge/c6NS9bVbpWO1zInkaZNxyKlvs/brM6jZ8+dC1bcGzYX
-         U+rBr4qjUpQ+4HnJHvF3xv8Ko8+wiNbH2Msh1vKp+3CHAVYqkUKCchdV86Zdqk975iJi
-         Epze35S8txrJgUqCzZo+RgfxEQFv3bIdNmg+vJzKtrhmfLAs88bnHSc0hmIBd4PeNj9n
-         4/zQ2oBDG3+lmJ+WV3Pd2HjDIkgg52j4H9iqdaezlbEe5SrIbn3BJTvV3ovxe3HPNJ/5
-         pT4yAvLzJr6/Q/7N+wFMJ5NiOpgy+S1B4Ki29f+Z+F8g/vN36LnDiqjptQCXtNtFrYJj
-         fd3A==
-X-Forwarded-Encrypted: i=1; AJvYcCV/cLtO6N00Lszi/xw3wPs4NgVmRKAwz0Ga7qM0Y508JA25sqNDQ7GMWnay65yD21eqrsm++WnN49QOgsUm@vger.kernel.org
-X-Gm-Message-State: AOJu0YwhUPmXNwF4GkKU2yHh1jEHu6AKdkuqOmXJNE31RhCYWZq2PGm+
-	qsD4ubnQ0NR5DDEYToRfYovHCdLobXWK/VZyTLLeJEZDe7mPuZ7F407AL1Dx2b7PWO4=
-X-Gm-Gg: AZuq6aL1iD/al+6cqesEZOjeSFwehjRlQojk9jciUwnx8QbfCX3zmAcRCpDSE0Rjg+7
-	h95Ue3R+kzlW+EykXOkDm/eyb5FN3GMYD6N1+4V+1cmc2oujfQYbk1Z75Bs6wNAZ4VefmlBOHHG
-	tYQrC2+kVuicimW1frrxtTP77D+6xomLByr/wHf83x+I/e1uKuGeJ8nrkVQDYiFRDvU2no1OeDT
-	ROD8lV9gLR8lcd8Z0r4tAqqgqhpm0hQZ9yqQMzSvJ80nrDUScQS1u0gl2YV093i50Wq9AwPTp1x
-	i4ZQDDBCs0m7A1YJakSvYOad8o0p2pjxLebKs5EkbpjiUBI3ExLImafHWCqYDWvCMtQ7IYLgFqp
-	Eq2JlcgEKigk/7HWmUyT9RJwo4sk5L5bvRdvR8xdQWICFr/pr42GQnndkrrnLxz8KonTwMoBKq7
-	5dL1kpZw/UuXm4RT+j1XNczjc/V7RqB7s=
-X-Received: by 2002:a05:600c:6814:b0:477:54cd:200e with SMTP id 5b1f17b1804b1-4804c947d18mr42348725e9.1.1769164124202;
-        Fri, 23 Jan 2026 02:28:44 -0800 (PST)
-Received: from zovi.suse.cz (109-81-1-107.rct.o2.cz. [109.81.1.107])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-480470474cbsm128920065e9.8.2026.01.23.02.28.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jan 2026 02:28:43 -0800 (PST)
-From: Petr Pavlu <petr.pavlu@suse.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>,
-	Joe Lawrence <joe.lawrence@redhat.com>
-Cc: Luis Chamberlain <mcgrof@kernel.org>,
-	Petr Pavlu <petr.pavlu@suse.com>,
-	Daniel Gomez <da.gomez@kernel.org>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Aaron Tomlin <atomlin@atomlin.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	live-patching@vger.kernel.org,
-	linux-modules@vger.kernel.org,
+	s=arc-20240116; t=1769190604; c=relaxed/simple;
+	bh=QR+gFgj7mXHGYDTqe/WjnMp/eyjf+BLKshDboxU3pRA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L/h8HHmN/UwOGVA0LBRHvl4tSrdFnkczqbXkY27KFj4Wjz8C4S/UeK5g3Qm/a6YsPsnTFpbEabfhhB1Xy0hoUGr1bS7p0aojAEE+3eAFobsqRTT7emlbRIu+TTjiwQYNADk1Ki2FBIcU3egJbJzlSnw7W5XjPmVl2pz0M8SAxrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ir37Fktn; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 147E9C19421;
+	Fri, 23 Jan 2026 17:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769190604;
+	bh=QR+gFgj7mXHGYDTqe/WjnMp/eyjf+BLKshDboxU3pRA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ir37FktnhxF/m7o/FYai63DbeO0lUeHvCrWuMbeXDvrFrtO4Nfma4YCuJVE5qG4Bi
+	 fWxzhxHuC35/YmxttjA+JJfgMYE4srBNyeNkmFPi5jK4IDQA+hlKUzfVuhltAuN82/
+	 kI6SkT6CF69JDRzpxBtCos+DozGeO0p9bgdlky3j6slcSU9br2hQHoy5RXPkAgFEu4
+	 9ABAeoFiCCTw9hLZEO+RXc6BnskJEbL0M231bTWrOtC+N2eIN2Y9NpI1BLxRDS72Aj
+	 mhW6HX6IyCTyqRqvYNVqX51EqQuSTThSKP4mlJ5aTTr1QX9LasqbTbFm/1+CYNd7kI
+	 p/GwORaQ6XjAQ==
+Date: Fri, 23 Jan 2026 09:50:02 -0800
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Petr Pavlu <petr.pavlu@suse.com>
+Cc: Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, 
+	Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>, 
+	Luis Chamberlain <mcgrof@kernel.org>, Daniel Gomez <da.gomez@kernel.org>, 
+	Sami Tolvanen <samitolvanen@google.com>, Aaron Tomlin <atomlin@atomlin.com>, 
+	Peter Zijlstra <peterz@infradead.org>, live-patching@vger.kernel.org, linux-modules@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] livepatch: Free klp_{object,func}_ext data after initialization
-Date: Fri, 23 Jan 2026 11:26:57 +0100
-Message-ID: <20260123102825.3521961-3-petr.pavlu@suse.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260123102825.3521961-1-petr.pavlu@suse.com>
+Subject: Re: [PATCH v3 0/2] Improve handling of the __klp_{objects,funcs}
+ sections in modules
+Message-ID: <uiodnd33mmm5xkd2czcfatqjen2wehfyfrwjoj3ysvhha2medv@cnft7tc7qo7n>
 References: <20260123102825.3521961-1-petr.pavlu@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -103,134 +63,60 @@ List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260123102825.3521961-1-petr.pavlu@suse.com>
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-0.66 / 15.00];
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_CONTAINS_FROM(1.00)[];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-1920-lists,live-patching=lfdr.de];
+	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
+	TAGGED_FROM(0.00)[bounces-1921-lists,live-patching=lfdr.de];
+	RCPT_COUNT_TWELVE(0.00)[13];
 	MIME_TRACE(0.00)[0:+];
 	FROM_HAS_DN(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[14];
-	FROM_NEQ_ENVFROM(0.00)[petr.pavlu@suse.com,live-patching@vger.kernel.org];
+	MISSING_XM_UA(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
 	NEURAL_HAM(-0.00)[-0.999];
-	DKIM_TRACE(0.00)[suse.com:+];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	TAGGED_RCPT(0.00)[live-patching];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.com:dkim,suse.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: A93DA7453B
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 66DD17930E
 X-Rspamd-Action: no action
 
-The klp_object_ext and klp_func_ext data, which are stored in the
-__klp_objects and __klp_funcs sections, respectively, are not needed
-after they are used to create the actual klp_object and klp_func
-instances. This operation is implemented by the init function in
-scripts/livepatch/init.c.
+On Fri, Jan 23, 2026 at 11:26:55AM +0100, Petr Pavlu wrote:
+> Changes since v2 [1]:
+> - Generalize the helper function that locates __klp_objects in a module
+>   to allow it to find any data in other sections as well.
+> 
+> Changes since v1 [2]:
+> - Generalize the helper function that locates __klp_objects in a module
+>   to allow it to find objects in other sections as well.
+> 
+> [1] https://lore.kernel.org/linux-modules/20260121082842.3050453-1-petr.pavlu@suse.com/
+> [2] https://lore.kernel.org/linux-modules/20260114123056.2045816-1-petr.pavlu@suse.com/
+> 
+> Petr Pavlu (2):
+>   livepatch: Fix having __klp_objects relics in non-livepatch modules
+>   livepatch: Free klp_{object,func}_ext data after initialization
 
-Prefix the two sections with ".init" so they are freed after the module
-is initializated.
+Thanks!
 
-Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
----
- scripts/livepatch/init.c            |  2 +-
- scripts/module.lds.S                |  4 ++--
- tools/objtool/check.c               |  2 +-
- tools/objtool/include/objtool/klp.h | 10 +++++-----
- tools/objtool/klp-diff.c            |  2 +-
- 5 files changed, 10 insertions(+), 10 deletions(-)
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-diff --git a/scripts/livepatch/init.c b/scripts/livepatch/init.c
-index 9e315fc857bd..638c95cffe76 100644
---- a/scripts/livepatch/init.c
-+++ b/scripts/livepatch/init.c
-@@ -19,7 +19,7 @@ static int __init livepatch_mod_init(void)
- 	unsigned int nr_objs;
- 	int ret;
- 
--	obj_exts = klp_find_section_by_name(THIS_MODULE, "__klp_objects",
-+	obj_exts = klp_find_section_by_name(THIS_MODULE, ".init.klp_objects",
- 					    &obj_exts_sec_size);
- 	nr_objs = obj_exts_sec_size / sizeof(*obj_exts);
- 	if (!nr_objs) {
-diff --git a/scripts/module.lds.S b/scripts/module.lds.S
-index 383d19beffb4..054ef99e8288 100644
---- a/scripts/module.lds.S
-+++ b/scripts/module.lds.S
-@@ -34,8 +34,8 @@ SECTIONS {
- 
- 	__patchable_function_entries : { *(__patchable_function_entries) }
- 
--	__klp_funcs		0: ALIGN(8) { KEEP(*(__klp_funcs)) }
--	__klp_objects		0: ALIGN(8) { KEEP(*(__klp_objects)) }
-+	.init.klp_funcs		0 : ALIGN(8) { KEEP(*(.init.klp_funcs)) }
-+	.init.klp_objects	0 : ALIGN(8) { KEEP(*(.init.klp_objects)) }
- 
- #ifdef CONFIG_ARCH_USES_CFI_TRAPS
- 	__kcfi_traps		: { KEEP(*(.kcfi_traps)) }
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 3f7999317f4d..933868ee3beb 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -4761,7 +4761,7 @@ static int validate_ibt(struct objtool_file *file)
- 		    !strcmp(sec->name, "__bug_table")			||
- 		    !strcmp(sec->name, "__ex_table")			||
- 		    !strcmp(sec->name, "__jump_table")			||
--		    !strcmp(sec->name, "__klp_funcs")			||
-+		    !strcmp(sec->name, ".init.klp_funcs")		||
- 		    !strcmp(sec->name, "__mcount_loc")			||
- 		    !strcmp(sec->name, ".llvm.call-graph-profile")	||
- 		    !strcmp(sec->name, ".llvm_bb_addr_map")		||
-diff --git a/tools/objtool/include/objtool/klp.h b/tools/objtool/include/objtool/klp.h
-index ad830a7ce55b..e32e5e8bc631 100644
---- a/tools/objtool/include/objtool/klp.h
-+++ b/tools/objtool/include/objtool/klp.h
-@@ -6,12 +6,12 @@
- #define SHN_LIVEPATCH		0xff20
- 
- /*
-- * __klp_objects and __klp_funcs are created by klp diff and used by the patch
-- * module init code to build the klp_patch, klp_object and klp_func structs
-- * needed by the livepatch API.
-+ * .init.klp_objects and .init.klp_funcs are created by klp diff and used by the
-+ * patch module init code to build the klp_patch, klp_object and klp_func
-+ * structs needed by the livepatch API.
-  */
--#define KLP_OBJECTS_SEC	"__klp_objects"
--#define KLP_FUNCS_SEC	"__klp_funcs"
-+#define KLP_OBJECTS_SEC	".init.klp_objects"
-+#define KLP_FUNCS_SEC	".init.klp_funcs"
- 
- /*
-  * __klp_relocs is an intermediate section which are created by klp diff and
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 4d1f9e9977eb..fd64d5e3c3b6 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -1439,7 +1439,7 @@ static int clone_special_sections(struct elfs *e)
- }
- 
- /*
-- * Create __klp_objects and __klp_funcs sections which are intermediate
-+ * Create .init.klp_objects and .init.klp_funcs sections which are intermediate
-  * sections provided as input to the patch module's init code for building the
-  * klp_patch, klp_object and klp_func structs for the livepatch API.
-  */
 -- 
-2.52.0
-
+Josh
 
