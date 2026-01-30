@@ -1,183 +1,194 @@
-Return-Path: <live-patching+bounces-1935-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1936-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id YI1rELrxfGndPQIAu9opvQ
-	(envelope-from <live-patching+bounces-1935-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 19:00:26 +0100
+	id yOhXJAEDfWl5PwIAu9opvQ
+	(envelope-from <live-patching+bounces-1936-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 20:14:09 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [172.232.135.74])
-	by mail.lfdr.de (Postfix) with ESMTPS id DCE51BD91E
-	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 19:00:25 +0100 (CET)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0A701BE0D8
+	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 20:14:08 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id 4A7673004632
-	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 18:00:25 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id E29E83035887
+	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 19:14:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D43D36999A;
-	Fri, 30 Jan 2026 18:00:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBE54387570;
+	Fri, 30 Jan 2026 19:14:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RYY+kbjj"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qE8ktFKN"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9027286410
-	for <live-patching@vger.kernel.org>; Fri, 30 Jan 2026 18:00:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9924038737D
+	for <live-patching@vger.kernel.org>; Fri, 30 Jan 2026 19:14:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769796024; cv=none; b=aIPN0rA84TFHw74Kys5zgfQtC9K+k1j6scnvI/lA9Y4IxhiYAfKVFO8UFgfRqGtfN0H5NyhMZEvUTMkZ2ARhr621y8TT+CyctZzTtvy+IsNg2PJX381J2vZ8aWGvfKXi6i2OVGe+MM6dlbFkgyzP6ExsZhdWDCJDZsRDqkc7AJE=
+	t=1769800446; cv=none; b=JLHlHxHMJdV5ayxxCYsGlEzLlsrwHmVPxrTAWQJHjZ1ujCVvYPr3WqThxsyJ0eKrQSiefUP+1lg6hzi4xj03ZoyxdoojuiOb3McYG/+NToFlre95y+GCMLHrhdBPV63Wwz6w3dg+Y8F8fU/MMdl+gVF3E5PxroHfPWqqRLoPkUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769796024; c=relaxed/simple;
-	bh=NAzVAt62STxoeNOKK9wso0S8Uyh09YdR6R0UyULVYFE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-type; b=dfVnLWYYW738Uoi6MEOMhATRwBB2BzQDo8erac8cE0itJHEXEDqyeWOcV0wAqOnW4pa0GpoSQxEgLi8VKdC8e5omF4hKgjUJmObHyoN1E9n5vEZnfGujfEnCAnf1gV+YLz1yCCuC3Vo5HLOE1f8BfIVFnFbwTbNvABar+y/lTMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=RYY+kbjj; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1769796021;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=lISx/+l6MjBmDGSxw3FLJF9iykYaJ1nB0oXSfT6mefg=;
-	b=RYY+kbjjOGGgv82nROpcb7Yw64Po1rvxAzC/qNB5b+U2Ji9mWCKjs0oSDK0NE2T7/2oSYr
-	uTm3Xx8paeb9JfEAwtPI0HTVuwtoIZCcrdNa7DqAyOFKxXniCU8tqaZ2pcbD2iFHLIMdMQ
-	ZChoBswuVMWKE7dv6ygt+z7KfAZatHQ=
-Received: from mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-154-fovFmLstMBabyLCL4ctytQ-1; Fri,
- 30 Jan 2026 13:00:09 -0500
-X-MC-Unique: fovFmLstMBabyLCL4ctytQ-1
-X-Mimecast-MFC-AGG-ID: fovFmLstMBabyLCL4ctytQ_1769796008
-Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 49ACE18005BB;
-	Fri, 30 Jan 2026 18:00:08 +0000 (UTC)
-Received: from jolawren-thinkpadp1gen7.ibmlowe.csb (unknown [10.22.81.18])
-	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 357801800665;
-	Fri, 30 Jan 2026 18:00:07 +0000 (UTC)
-From: Joe Lawrence <joe.lawrence@redhat.com>
-To: live-patching@vger.kernel.org
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>,
-	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 5/5] objtool/klp: provide friendlier error messages
-Date: Fri, 30 Jan 2026 12:59:50 -0500
-Message-ID: <20260130175950.1056961-6-joe.lawrence@redhat.com>
-In-Reply-To: <20260130175950.1056961-1-joe.lawrence@redhat.com>
-References: <20260130175950.1056961-1-joe.lawrence@redhat.com>
+	s=arc-20240116; t=1769800446; c=relaxed/simple;
+	bh=gySfJfeG9aEiTz3tL/SkmjqSJDt1mX2H6i5VlWIMrbs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RiS+owd2evDoVe2GKpESetnHUklok2ni4bSvxKwZXlO+6WoxTGRqh/Xws2xydVGuADMMkqFY0E4JtcZLVOAa8lO+XabDiOMvqG0pSLEFkMSqQxEBIma9wE+MqbMCMU5pIwfn1gko+mvJi5UdH5aEvlkwGZ9wSZf950mh6PpGyjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qE8ktFKN; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71EA7C4CEF7
+	for <live-patching@vger.kernel.org>; Fri, 30 Jan 2026 19:14:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769800446;
+	bh=gySfJfeG9aEiTz3tL/SkmjqSJDt1mX2H6i5VlWIMrbs=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=qE8ktFKNu1xCo5piow4mN1srIf7iJmeKBeZS6E18N0GS9zd3AqJcXO+bnM3yp/x9y
+	 nDVfkN4stcJRIOx1QMTg+DUKEpdo7vRah3g5jG5pA4rL0rQlD9xWmkTvdX8rorrCft
+	 koPyGhi/6yqRdKzfwrTpgAr9AzM82awJWZjk3wmekIPt1mn/qqAcrmclBddZS5mdTU
+	 zmEwVsTOTYk9idrXtVbjgMkNGELQdq2qauCxGHP28VagWw1LqsCnRC0Vhe9MdFYU2Z
+	 SzyfHM9Fv13BzLduQw/dvu/GQPHC1VS8I1uDPTl/tPLr6UKV4GO2XIDdgWrvGVcsy1
+	 wzbaVOkW3A31A==
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-894676e6863so29678656d6.2
+        for <live-patching@vger.kernel.org>; Fri, 30 Jan 2026 11:14:06 -0800 (PST)
+X-Gm-Message-State: AOJu0YylMsFo1hExw8G1FNCBDluGgVbCs0k8lFJnHdOD5DWLtY3aChWn
+	IHk/xaHhbOhyQSAxGZkb/e+3h+7NfkRnDHWzI4NPRtfWcCica4h4q889SbIKp9xYdsGb7nN2V6U
+	srbOpaj2NBogHuYhuZnCMEdTVPINy/ZA=
+X-Received: by 2002:ad4:5aa9:0:b0:894:6eea:709c with SMTP id
+ 6a1803df08f44-894e9f268d7mr53860016d6.8.1769800445660; Fri, 30 Jan 2026
+ 11:14:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
+References: <20260130175950.1056961-1-joe.lawrence@redhat.com> <20260130175950.1056961-5-joe.lawrence@redhat.com>
+In-Reply-To: <20260130175950.1056961-5-joe.lawrence@redhat.com>
+From: Song Liu <song@kernel.org>
+Date: Fri, 30 Jan 2026 11:13:53 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5E8z5DCuCVdxvgTEYRAfgj7dapqzTdjzptmfbNM5YCOQ@mail.gmail.com>
+X-Gm-Features: AZwV_Qj10tMj1c7jKrT6gCXpbsAbDrZ_PU9R4acpQkDyQtp2xyG3w5heCskzpYw
+Message-ID: <CAPhsuW5E8z5DCuCVdxvgTEYRAfgj7dapqzTdjzptmfbNM5YCOQ@mail.gmail.com>
+Subject: Re: [PATCH 4/5] objtool/klp: add -z/--fuzz patch rebasing option
+To: Joe Lawrence <joe.lawrence@redhat.com>
+Cc: live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>, 
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-0.66 / 15.00];
+X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_CONTAINS_FROM(1.00)[];
-	R_MISSING_CHARSET(0.50)[];
-	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
-	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719];
-	R_SPF_ALLOW(-0.20)[+ip4:172.232.135.74:c];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	MIME_TRACE(0.00)[0:+];
-	TO_DN_SOME(0.00)[];
-	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-1936-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-1935-lists,live-patching=lfdr.de];
-	DKIM_TRACE(0.00)[redhat.com:+];
-	ASN(0.00)[asn:63949, ipnet:172.232.128.0/19, country:SG];
-	MISSING_XM_UA(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[joe.lawrence@redhat.com,live-patching@vger.kernel.org];
 	FROM_HAS_DN(0.00)[];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	TO_DN_SOME(0.00)[];
+	MIME_TRACE(0.00)[0:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[6];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
+	RCPT_COUNT_FIVE(0.00)[6];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
+	MISSING_XM_UA(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[5];
 	TAGGED_RCPT(0.00)[live-patching];
 	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_FIVE(0.00)[5];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: DCE51BD91E
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 0A701BE0D8
 X-Rspamd-Action: no action
 
-Provide a little bit more context behind some of the klp-build failure
-modes clarify which of the user-provided patches is unsupported,
-doesn't apply, and which kernel build failed.
+On Fri, Jan 30, 2026 at 10:00=E2=80=AFAM Joe Lawrence <joe.lawrence@redhat.=
+com> wrote:
+>
+> The klp-build script is currently very strict with input patches,
+> requiring them to apply cleanly via `git apply --recount`.  This
+> prevents the use of patches with minor contextual fuzz relative to the
+> target kernel sources.
+>
+> Add an optional -z/--fuzz option to allow klp-build to "rebase" input
+> patches within its klp-tmp/ scratch space.  When enabled, the script
+> utilizes GNU patch's fuzzy matching to apply changes to a temporary
+> directory and then creates a normalized version of the patch using `git
+> diff --no-index`.
+>
+> This rebased patch contains the exact line counts and context required
+> for the subsequent klp-build fixup and build steps, allowing users to
+> reuse a patch across similar kernel streams.
+>
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
----
- scripts/livepatch/klp-build | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+LTGM.
 
-diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-index 535ca18e32c5..64a18c2ae1ba 100755
---- a/scripts/livepatch/klp-build
-+++ b/scripts/livepatch/klp-build
-@@ -429,7 +429,7 @@ check_unsupported_patches() {
- 		for file in "${files[@]}"; do
- 			case "$file" in
- 				lib/*|*.S)
--					die "unsupported patch to $file"
-+					die "$patch unsupported patch to $file"
- 					;;
- 			esac
- 		done
-@@ -449,7 +449,7 @@ apply_patch() {
- 		# The sed strips the version signature from 'git format-patch',
- 		# otherwise 'git apply --recount' warns.
- 		sed -n '/^-- /q;p' "$patch" |
--			git apply "${extra_args[@]}"
-+			git apply "${extra_args[@]}" || die "$patch doesn't apply (retry with --fuzz?)"
- 	)
- 
- 	APPLIED_PATCHES+=("$patch")
-@@ -601,6 +601,7 @@ clean_kernel() {
- }
- 
- build_kernel() {
-+	local build="$1"
- 	local log="$TMP_DIR/build.log"
- 	local objtool_args=()
- 	local cmd=()
-@@ -638,7 +639,7 @@ build_kernel() {
- 		"${cmd[@]}"							\
- 			1> >(tee -a "$log")					\
- 			2> >(tee -a "$log" | grep0 -v "modpost.*undefined!" >&2)
--	)
-+	) || die "$build kernel build failed"
- }
- 
- find_objects() {
-@@ -913,7 +914,7 @@ if (( SHORT_CIRCUIT <= 1 )); then
- 	validate_patches
- 	status "Building original kernel"
- 	clean_kernel
--	build_kernel
-+	build_kernel "Original"
- 	status "Copying original object files"
- 	copy_orig_objects
- fi
-@@ -923,7 +924,7 @@ if (( SHORT_CIRCUIT <= 2 )); then
- 	fix_patches
- 	apply_patches
- 	status "Building patched kernel"
--	build_kernel
-+	build_kernel "Patched"
- 	revert_patches
- 	status "Copying patched object files"
- 	copy_patched_objects
--- 
-2.52.0
+Acked-by: Song Liu <song@kernel.org>
 
+With one nitpick below.
+[...]
+>
+> +# Rebase a patch using GNU patch with fuzz
+> +# Outputs path to rebased patch on success, non-zero on failure
+> +rebase_patch() {
+> +       local idx=3D"$1"
+> +       local input_patch=3D"$2"
+> +       local patch_name=3D"$(basename "$input_patch" .patch)"
+> +       local work_dir=3D"$REBASE_DIR/$idx-$patch_name"
+> +       local output_patch=3D"$work_dir/rebased.patch"
+> +       local files=3D()
+> +       local file
+> +
+> +       rm -rf "$work_dir"
+> +       mkdir -p "$work_dir/orig" "$work_dir/patched"
+> +
+> +       get_patch_files "$input_patch" | mapfile -t files
+> +
+> +       # Copy original files (before patch)
+> +       for file in "${files[@]}"; do
+> +               [[ "$file" =3D=3D "dev/null" ]] && continue
+> +               if [[ -f "$SRC/$file" ]]; then
+> +                       mkdir -p "$work_dir/orig/$(dirname "$file")"
+> +                       cp -f "$SRC/$file" "$work_dir/orig/$file"
+> +               fi
+> +       done
+> +
+> +       # Apply with fuzz
+> +       (
+> +               cd "$SRC"
+> +               sed -n '/^-- /q;p' "$input_patch" | \
+> +                       patch -p1 \
+
+I think we should add -s here, and.
+
+> +                               -F"$FUZZ_FACTOR" \
+> +                               --no-backup-if-mismatch \
+> +                               -r /dev/null \
+> +                               --forward >&2
+> +       ) || return 1
+> +
+> +       # Copy patched files (after patch)
+> +       for file in "${files[@]}"; do
+> +               [[ "$file" =3D=3D "dev/null" ]] && continue
+> +               if [[ -f "$SRC/$file" ]]; then
+> +                       mkdir -p "$work_dir/patched/$(dirname "$file")"
+> +                       cp -f "$SRC/$file" "$work_dir/patched/$file"
+> +               fi
+> +       done
+> +
+> +       # Revert with fuzz
+> +       (
+> +               cd "$SRC"
+> +               sed -n '/^-- /q;p' "$input_patch" | \
+> +                       patch -p1 -R \
+
+.. here, so that we can avoid a bunch of "patching file" messages.
+
+> +                               -F"$FUZZ_FACTOR" \
+> +                               --no-backup-if-mismatch \
+> +                               -r /dev/null >&2
+> +       ) || {
+> +               warn "fuzzy revert failed; source tree may be corrupted"
+> +               return 1
+> +       }
 
