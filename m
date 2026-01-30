@@ -1,189 +1,151 @@
-Return-Path: <live-patching+bounces-1943-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1944-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id +I5lHd8WfWkGQQIAu9opvQ
-	(envelope-from <live-patching+bounces-1943-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 21:38:55 +0100
+	id qIQrJfwWfWkGQQIAu9opvQ
+	(envelope-from <live-patching+bounces-1944-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 21:39:24 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id DCDB3BE75C
-	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 21:38:54 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id B18FCBE763
+	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 21:39:23 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id D0B19300D703
-	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 20:38:53 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 4060E3008C97
+	for <lists+live-patching@lfdr.de>; Fri, 30 Jan 2026 20:39:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 86AF7329E7F;
-	Fri, 30 Jan 2026 20:38:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 177F432B99F;
+	Fri, 30 Jan 2026 20:39:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="jBONvw7W"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="idO4R9cH"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E743A24EF8C
-	for <live-patching@vger.kernel.org>; Fri, 30 Jan 2026 20:38:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B0824EF8C
+	for <live-patching@vger.kernel.org>; Fri, 30 Jan 2026 20:39:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769805531; cv=none; b=G9VWUd+F+4P84WRYygxHrtq9B+92oXzuSO7NJih1+/CpDOc85SlXAPM5+20/3ejpg8QZeY8ROl1G6VEm/e9adxlB/4ypZqvDkOPg42IU+6zfo0tzbxkOf7hsJQIixB+HIFwlhtdsbk9kQeWntZjXUWt9hVs7Oe7RL6yPQ3m+9I0=
+	t=1769805558; cv=none; b=bMKxolUftQGNPhVm4hO5raPjBsSx7Wnv4LoVpEPu8gM+0AzpCrKStlQyb7w4RfeqnQvDkrgzwbDNkueFuPTiKbNLGckbBAR+JtbVwWZKcBbph+OwRHd351T76nJ1J3KByq6ejzQVIcUjSNu/C6DCg1dAChOdHkIojnDVyKx3/vE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769805531; c=relaxed/simple;
-	bh=P9+Ep15JIb9rZ2u4IMcS5BRA3O8o5QZtXGs9daeDfBU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z1j8GSV5oykTuMTHHGOhU78badltfszTqSMiF+vDB2FNbAVZ99VMO+ieP8hb6OJlrmfIeBL/fDq6+WvsJZ6yE3L0IIKN1B1aAU9FeUWQJKcHp1NVwG85MhZA8UnbWS4dd+24D8RFKfsSYa8G34BnbuCGWzqFCo12HOmOyYcGVXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=jBONvw7W; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1769805528;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=o4SAnJqarmKCs8WpruaJML1Ukfl4ZDJBGmVYHMPtOLo=;
-	b=jBONvw7WrEBX8SbVVooEr6TbUcLpnLgKTwUx3N8oZu+k91s5iVApcSY23lzuoP4BFdWhhn
-	9AHt1kb31fp25G6GYpkbOCLWYX3/ZV67JFyLlHbp9T7+D9EoN4jtqU0ZZ7ph5Jpi6CuNDd
-	Y4bvQ1tzmXlcvJBGWmT5J1gjHiIHOQE=
-Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-515-Xu692qhPOUqi-xUl_50v3A-1; Fri,
- 30 Jan 2026 15:38:45 -0500
-X-MC-Unique: Xu692qhPOUqi-xUl_50v3A-1
-X-Mimecast-MFC-AGG-ID: Xu692qhPOUqi-xUl_50v3A_1769805524
-Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 1503D19560B5;
-	Fri, 30 Jan 2026 20:38:44 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.81.18])
-	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 9E16F19560A2;
-	Fri, 30 Jan 2026 20:38:42 +0000 (UTC)
-Date: Fri, 30 Jan 2026 15:38:40 -0500
-From: Joe Lawrence <joe.lawrence@redhat.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: live-patching@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
-	Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 3/5] objtool/klp: validate patches with git apply
- --recount
-Message-ID: <aX0W0JWRkLbuQpGY@redhat.com>
-References: <20260130175950.1056961-1-joe.lawrence@redhat.com>
- <20260130175950.1056961-4-joe.lawrence@redhat.com>
- <lqchka76tcwjxitn5tm42keexglnac6iveb44ppgx4c425qsfg@sbcdkfgmebqu>
+	s=arc-20240116; t=1769805558; c=relaxed/simple;
+	bh=Nf/1w0loMR/2i7P2iarm/D5U6PoOsOHXAnwxA1Bcq+o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qSeDAQhZ8U5KnoMsWj+1Nqzn6uqTwmiiYJwYfP8jSLnUsfSeV6iYeTvJaX2Qb34Qtx2ENqCcMJuoVNglQH5GP8T/nGWN9wDcJIQLG8rXfthl2aUgjVMMSkQ0xZQth+rgu/TYUWCmwq8wSPiighb7FCZb+B5XpOLr4xrjYr3udtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=idO4R9cH; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF92DC4CEF7;
+	Fri, 30 Jan 2026 20:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769805557;
+	bh=Nf/1w0loMR/2i7P2iarm/D5U6PoOsOHXAnwxA1Bcq+o=;
+	h=From:To:Cc:Subject:Date:From;
+	b=idO4R9cHRTmoOFAI6bPhW2v7LDXMRFKpn7sJaK+L1nK1fH/7JRLYQ80Je9UGPZPDj
+	 hykVftZQWyspim38AXLo1a6SVOIcklOdzCgtXW1EV/R0fDHvq+aVusgYyaQFGPcheO
+	 5XVKih6uLcuqbTk1sPxhICdI7vOOq4C9W+vtLJ4FquNBniwkiI6Ikghqw0o0lRSNcE
+	 GK6k+ONT6tYzwJ4OLGe+e89Cl8hvT8mRQ4/cRpq1SIrTcMmqHshNozdTrRAc2I0YQp
+	 0wtG3ammqz2B+CggiHNLhqOHKCrPT7YJPBPVoLaeBVHPTvHALIZvBp+yFy0E1dLzYb
+	 qiJHVcOlCA1Ew==
+From: Song Liu <song@kernel.org>
+To: live-patching@vger.kernel.org
+Cc: jpoimboe@kernel.org,
+	kernel-team@meta.com,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	Song Liu <song@kernel.org>
+Subject: [PATCH] klp-build: Do not warn "no correlation" for __irf_[start|end]
+Date: Fri, 30 Jan 2026 12:39:12 -0800
+Message-ID: <20260130203912.2494181-1-song@kernel.org>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <lqchka76tcwjxitn5tm42keexglnac6iveb44ppgx4c425qsfg@sbcdkfgmebqu>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-2.16 / 15.00];
+X-Spamd-Result: default: False [-0.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
-	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719];
+	MID_CONTAINS_FROM(1.00)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_MISSING_CHARSET(0.50)[];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-1943-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
-	FROM_HAS_DN(0.00)[];
+	TAGGED_FROM(0.00)[bounces-1944-lists,live-patching=lfdr.de];
+	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	DKIM_TRACE(0.00)[redhat.com:+];
-	TO_DN_SOME(0.00)[];
+	FROM_HAS_DN(0.00)[];
 	MIME_TRACE(0.00)[0:+];
+	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	RCPT_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[joe.lawrence@redhat.com,live-patching@vger.kernel.org];
-	MISSING_XM_UA(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[6];
-	MID_RHS_MATCH_FROM(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[8];
 	NEURAL_HAM(-0.00)[-1.000];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: DCDB3BE75C
+	TO_DN_SOME(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: B18FCBE763
 X-Rspamd-Action: no action
 
-On Fri, Jan 30, 2026 at 12:05:35PM -0800, Josh Poimboeuf wrote:
-> On Fri, Jan 30, 2026 at 12:59:48PM -0500, Joe Lawrence wrote:
-> > Consider a patch offset by a line:
-> > 
-> >   $ cat combined.patch
-> >   --- src.orig/fs/proc/cmdline.c	2022-10-24 15:41:08.858760066 -0400
-> >   +++ src/fs/proc/cmdline.c	2022-10-24 15:41:11.698715352 -0400
-> >   @@ -6,8 +6,7 @@
-> >   
-> >    static int cmdline_proc_show(struct seq_file *m, void *v)
-> >    {
-> >   -	seq_puts(m, saved_command_line);
-> >   -	seq_putc(m, '\n');
-> >   +	seq_printf(m, "%s livepatch=1\n", saved_command_line);
-> >    	return 0;
-> >    }
-> >   
-> >   --- a/fs/proc/version.c
-> >   +++ b/fs/proc/version.c
-> >   @@ -9,6 +9,7 @@
-> >   
-> >    static int version_proc_show(struct seq_file *m, void *v)
-> >    {
-> >   +	seq_printf(m, "livepatch ");
-> >    	seq_printf(m, linux_proc_banner,
-> >    		utsname()->sysname,
-> >    		utsname()->release,
-> > 
-> > GNU patch reports the offset:
-> > 
-> >   $ patch --dry-run -p1 < combined.patch
-> >   checking file fs/proc/cmdline.c
-> >   Hunk #1 succeeded at 7 (offset 1 line).
-> >   checking file fs/proc/version.c
-> > 
-> > It would pass the initial check as per validate_patches():
-> > 
-> >   $ git apply --check < combined.patch && echo "ok"
-> >   ok
-> > 
-> > But later fail the patch application by refresh_patch():
-> > 
-> >   $ git apply --check --recount < combined.patch
-> >   error: patch failed: fs/proc/cmdline.c:6
-> >   error: fs/proc/cmdline.c: patch does not apply
-> 
-> Hm, isn't the whole point of --recount that it ignores the line numbers?
-> Or does it just ignore the numbers after the commas (the counts)?
-> 
+When compiling with CONFIG_LTO_CLANG_THIN, vmlinux.o has
+__irf_[start|end] before the first FILE entry:
 
-I don't know exactly.  As I continue digging into the test that sent me
-down this path, I just found that `git apply --recount` doesn't like
-some output generated by `combinediff -q --combine` even with NO line
-drift... then if I manually added in corresponding diff command lines
-(to make it look more like a .patch file generated by `diff -Nu`), ie:
+$ readelf -sW vmlinux.o
+Symbol table '.symtab' contains 597706 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND
+     1: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT   18 __irf_start
+     2: 0000000000000200     0 NOTYPE  LOCAL  DEFAULT   18 __irf_end
+     3: 0000000000000000     0 SECTION LOCAL  DEFAULT   17 .text
+     4: 0000000000000000     0 SECTION LOCAL  DEFAULT   18 .init.ramfs
 
-  diff -Nu src.orig/fs/proc/array.c src/fs/proc/array.c     <---
-  --- src.orig/fs/proc/array.c
-  +++ src/fs/proc/array.c
+This causes klp-build throwing warnings like:
 
-Suddenly `git apply --recount` is happy with the patch.
+vmlinux.o: warning: objtool: no correlation: __irf_start
+vmlinux.o: warning: objtool: no correlation: __irf_end
 
-So I suspect that I started with git not liking the hunks generated by
-combinediff and drove it to the rebase feature, which solves a more
-interesting problem, but by side effect smoothed over this format
-issue when it recreated the patch with git.
+Fix this by not warn for no correlation before seeing the first FILE
+entry.
 
-Anyway, I think this patch still stands on it's own: perform the same
-apply/revert check as what would happen in the fixup steps to fail
-faster for the user?
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ tools/objtool/klp-diff.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---
-Joe 
+diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+index d94531e3f64e..370e5c79ae66 100644
+--- a/tools/objtool/klp-diff.c
++++ b/tools/objtool/klp-diff.c
+@@ -363,6 +363,7 @@ static int correlate_symbols(struct elfs *e)
+ {
+ 	struct symbol *file1_sym, *file2_sym;
+ 	struct symbol *sym1, *sym2;
++	bool found_first_file = false;
+ 
+ 	/* Correlate locals */
+ 	for (file1_sym = first_file_symbol(e->orig),
+@@ -432,9 +433,12 @@ static int correlate_symbols(struct elfs *e)
+ 	}
+ 
+ 	for_each_sym(e->orig, sym1) {
++		if (!found_first_file && is_file_sym(sym1))
++			found_first_file = true;
+ 		if (sym1->twin || dont_correlate(sym1))
+ 			continue;
+-		WARN("no correlation: %s", sym1->name);
++		if (found_first_file)
++			WARN("no correlation: %s", sym1->name);
+ 	}
+ 
+ 	return 0;
+-- 
+2.47.3
 
 
