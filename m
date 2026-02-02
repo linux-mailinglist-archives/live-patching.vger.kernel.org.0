@@ -1,179 +1,220 @@
-Return-Path: <live-patching+bounces-1957-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1958-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id cAdWLhPWfmmrfQIAu9opvQ
-	(envelope-from <live-patching+bounces-1957-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Sun, 01 Feb 2026 05:26:59 +0100
+	id uAXcGvRqgGkd8AIAu9opvQ
+	(envelope-from <live-patching+bounces-1958-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 02 Feb 2026 10:14:28 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 24D38C4E7D
-	for <lists+live-patching@lfdr.de>; Sun, 01 Feb 2026 05:26:59 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 95BEAC9FA1
+	for <lists+live-patching@lfdr.de>; Mon, 02 Feb 2026 10:14:27 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id DBE1C301387A
-	for <lists+live-patching@lfdr.de>; Sun,  1 Feb 2026 04:26:56 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 9D95A3001390
+	for <lists+live-patching@lfdr.de>; Mon,  2 Feb 2026 09:14:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7162E27934B;
-	Sun,  1 Feb 2026 04:26:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C253D3559F8;
+	Mon,  2 Feb 2026 09:14:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lhwyaxmz"
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="jR2QkiqC"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-1-105.ptr.blmpb.com (sg-1-105.ptr.blmpb.com [118.26.132.105])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E2AB148850
-	for <live-patching@vger.kernel.org>; Sun,  1 Feb 2026 04:26:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 568F11EDA2B
+	for <live-patching@vger.kernel.org>; Mon,  2 Feb 2026 09:14:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.105
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769920015; cv=none; b=YUbMD3wRZ68lKmtUOcOwzgC+cHxn6y98KOUsfPEB+eUuTAEbWuyQak1nFCQSDoE6JMYCW7zegU/31bepZNhHdvhnvtyiua0gIA5DVjgg180fSfoLxvCoEHnmeZxkdsOFYh3vtb9ebdnmeG79wF19b6/xLCtQHuQ6BiEljhJKqSE=
+	t=1770023661; cv=none; b=ED0t5eEYUVOCWxmQixzXKhypJohmxAlIbPHno2jppnMLxzlIc2aCpcjmHEzAqwzw36zAOW6Fro1DlcJSCqCp2cK7PNz84SMKrV9wo9cZDxOQB7IsZAVkkL/vF9plfnBdiSzLMpfMVOEi01w7/kNsf4Mc5gaMUxM2Fej3FCAyn/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769920015; c=relaxed/simple;
-	bh=I0DrqKc1uQ8zLNC8XwIzk+ArnWUm3cm6FP8Txa/v4l0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uRMDzv4+BrmQ4bflDP9xdIu0h7BwjzlXN1M2wZqi0bU3NOuO29NRL0XoF9+1d+rSkY6aKOa51tX4EDbWdGm7pHsze3SSXeBlc1+ypfCHerDjh3rMmlA2ORsdaIF4GZgRfZHv5EmxopKzPk5HUBWxSlZZ1E5aBoOHF3GN5NS4mlg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lhwyaxmz; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF802C19425
-	for <live-patching@vger.kernel.org>; Sun,  1 Feb 2026 04:26:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769920014;
-	bh=I0DrqKc1uQ8zLNC8XwIzk+ArnWUm3cm6FP8Txa/v4l0=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=lhwyaxmz/6/yEiZ9PI8IA8wLOOqaKeXQxod+IawElJKFdgsEZEoZ6e+Exd5p+/oos
-	 7V2EYRgrYU1DRZFlROPT2PNdcbu/qcAqOxkb4/gr3bdqWKxmftuZHE4Ba4j5o3n+Pz
-	 Y9RUe6zR6qnz9IxtneOJNXAfBNGqpEbSBXdv/pqI30MzONnLQaQW7btaoFGdmJZq+t
-	 WEm0iiywf7b91yEbuU6ULlCS+WHMrf8Yl17ytz7fVqQV2Vrvu7s2rpNXOz28AAkKOv
-	 L/eImu22+jRaKsgIeZpo9as0HnzNEnA/YZO05cldTg1k/20p3ofglpqh1G/qCXlhyh
-	 Gix5qJlb10gxA==
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-502a789834fso30958951cf.2
-        for <live-patching@vger.kernel.org>; Sat, 31 Jan 2026 20:26:54 -0800 (PST)
-X-Gm-Message-State: AOJu0YyGbVlDuiSirWnzOHyLDkQAKpNQcUbgQMnOLls3kwiKCTBKL49f
-	gCQ4I/UfTMNOSyvxKb+vf6n6bkUokxIHJjzd4XnCovZrA+jwj+qJ3KUsUk3tnOHNjYFSzXc9vUE
-	j3heP4EGttSM6Mzxr5TqHhKc/F+OIkcY=
-X-Received: by 2002:a05:622a:15d4:b0:4ee:1c10:729f with SMTP id
- d75a77b69052e-505d21ce048mr92027581cf.35.1769920013985; Sat, 31 Jan 2026
- 20:26:53 -0800 (PST)
+	s=arc-20240116; t=1770023661; c=relaxed/simple;
+	bh=sPTEvWnva5n5CLrvZht4XWRG0J9xLIleuREsk1wT140=;
+	h=From:Mime-Version:To:Content-Type:Subject:Date:Cc:Message-Id; b=jZj62710a3Twh0L6SvVQjN8J9IabBzqGDlGe6EnN6ulbrDKJqEalx2bY0cZAt942PiMck4gRQWO9wNcyXcgP5drNrKHaPRuos+2ARcdMqG6Dp6/puybTl28zpTw9r+qekdGRRBaQtJR1sFT4CqW/XQLqvuE/39MeWAw7KMeg6p8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=jR2QkiqC; arc=none smtp.client-ip=118.26.132.105
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=2212171451; d=bytedance.com; t=1770023646; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=1k2P3758o5OptGHu6EC22LU4mqBsDuAUN1+em7tI2sM=;
+ b=jR2QkiqCKYNOaHXEkAKPW+7/ZtkOtHmzAGMh0xZIu9vbpn1TMFBGqSdIJO4CVKKfoSYbGn
+ ggpKpp0AzH6lmXTBjLJel6aaVKL8JY7Ceyos4TASnb3sbLeXadrbqs1214JInN9zSUo5XI
+ 8E51/2NL+Xv3e90k8J7FsHg/jjrdXf53bd2q42FS0JbwNW9mMCe5CpFtaY/xOpCdK2qCq6
+ MPP/MLgwS+LtWgnrPEUpj/iNFaPAnhKCx8dAGYsjzsvOiU2caInOusz++l/iQoh8C7uk3W
+ wLYli/AfyTTJXbwjHJwkrpLl/HoOqWFakG6diIRMptSCW4GEA/LkTcjiL1oOZQ==
+X-Original-From: Li Zhe <lizhe.67@bytedance.com>
+From: "Li Zhe" <lizhe.67@bytedance.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260130203912.2494181-1-song@kernel.org> <2ngp5g3ogtin57nytfvbiq2nh6nfy5qxdianll5eme24owsyj5@a4bxxfkobnwc>
-In-Reply-To: <2ngp5g3ogtin57nytfvbiq2nh6nfy5qxdianll5eme24owsyj5@a4bxxfkobnwc>
-From: Song Liu <song@kernel.org>
-Date: Sat, 31 Jan 2026 20:26:42 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW7wB=DsU3Wt3BvAp03NOoAySx7kKcKm5R0ySwe3-+3LJQ@mail.gmail.com>
-X-Gm-Features: AZwV_QgLozZaBgqN9reGaeOiNQLikL5-Ay9nG3pI1kAzfw3BrCPnKNOMehRmhOM
-Message-ID: <CAPhsuW7wB=DsU3Wt3BvAp03NOoAySx7kKcKm5R0ySwe3-+3LJQ@mail.gmail.com>
-Subject: Re: [PATCH] klp-build: Do not warn "no correlation" for __irf_[start|end]
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: live-patching@vger.kernel.org, kernel-team@meta.com, jikos@kernel.org, 
-	mbenes@suse.cz, pmladek@suse.com, joe.lawrence@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+To: <jpoimboe@kernel.org>, <jikos@kernel.org>, <mbenes@suse.cz>, 
+	<pmladek@suse.com>, <joe.lawrence@redhat.com>
+X-Mailer: git-send-email 2.45.2
+Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH] klp: use stop machine to check and expedite transition for running tasks
+Date: Mon,  2 Feb 2026 17:13:34 +0800
+X-Lms-Return-Path: <lba+269806adc+078a4c+vger.kernel.org+lizhe.67@bytedance.com>
+Content-Transfer-Encoding: 7bit
+Cc: <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
+	<lizhe.67@bytedance.com>, <qirui.001@bytedance.com>
+Message-Id: <20260202091334.60881-1-lizhe.67@bytedance.com>
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-2.16 / 15.00];
+X-Spamd-Result: default: False [-0.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	MID_CONTAINS_FROM(1.00)[];
+	DMARC_POLICY_ALLOW(-0.50)[bytedance.com,quarantine];
+	MV_CASE(0.50)[];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_DKIM_ALLOW(-0.20)[bytedance.com:s=2212171451];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	MIME_TRACE(0.00)[0:+];
-	DKIM_TRACE(0.00)[kernel.org:+];
+	RCVD_COUNT_THREE(0.00)[3];
 	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-1958-lists,live-patching=lfdr.de];
+	DKIM_TRACE(0.00)[bytedance.com:+];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-1957-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	MISSING_XM_UA(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
+	MIME_TRACE(0.00)[0:+];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
-	NEURAL_HAM(-0.00)[-1.000];
+	FROM_NEQ_ENVFROM(0.00)[lizhe.67@bytedance.com,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	TO_DN_NONE(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[7];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 24D38C4E7D
+	RCPT_COUNT_SEVEN(0.00)[9];
+	NEURAL_HAM(-0.00)[-1.000];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,bytedance.com:email,bytedance.com:dkim,bytedance.com:mid]
+X-Rspamd-Queue-Id: 95BEAC9FA1
 X-Rspamd-Action: no action
 
-On Fri, Jan 30, 2026 at 6:27=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
-> wrote:
-[...]
-> It's a bit worrisome that Clang is stripping FILE entries and moving
-> symbols, but I looked at the symbol table for a thin LTO vmlinux.o and
-> it only seems to have stripped this one FILE symbol for initramfs_data.o
-> and made its symbols orphans.  Presumably because this file only has
-> data and no code.
->
-> I actually think the warning is valid.  We should try to correlate those
-> pre-FILE symbols, otherwise things like klp_reloc_needed() might not
-> work as intended.
->
-> Does the below patch work instead?
+In the current KLP transition implementation, the strategy for running
+tasks relies on waiting for a context switch to attempt to clear the
+TIF_PATCH_PENDING flag. Alternatively, determine whether the
+TIF_PATCH_PENDING flag can be cleared by inspecting the stack once the
+process has yielded the CPU. However, this approach proves problematic
+in certain environments.
 
-Yes, this does look better. Let's ship this version.
+Consider a scenario where the majority of system CPUs are configured
+with nohzfull and isolcpus, each dedicated to a VM with a vCPU pinned
+to that physical core and configured with idle=poll within the guest.
+Under such conditions, these vCPUs rarely leave the CPU. Combined with
+the high core counts typical of modern server platforms, this results
+in transition completion times that are not only excessively prolonged
+but also highly unpredictable.
 
-Thanks,
-Song
+This patch resolves this issue by registering a callback with
+stop_machine. The callback attempts to transition the associated running
+task. In a VM environment configured with 32 CPUs, the live patching
+operation completes promptly after the SIGNALS_TIMEOUT period with this
+patch applied; without it, the process nearly fails to complete under
+the same scenario.
 
->
-> diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-> index d94531e3f64e..ea292ebe217f 100644
-> --- a/tools/objtool/klp-diff.c
-> +++ b/tools/objtool/klp-diff.c
-> @@ -364,11 +364,40 @@ static int correlate_symbols(struct elfs *e)
->         struct symbol *file1_sym, *file2_sym;
->         struct symbol *sym1, *sym2;
->
-> -       /* Correlate locals */
-> -       for (file1_sym =3D first_file_symbol(e->orig),
-> -            file2_sym =3D first_file_symbol(e->patched); ;
-> -            file1_sym =3D next_file_symbol(e->orig, file1_sym),
-> -            file2_sym =3D next_file_symbol(e->patched, file2_sym)) {
-> +       file1_sym =3D first_file_symbol(e->orig);
-> +       file2_sym =3D first_file_symbol(e->patched);
-> +
-> +       /*
-> +        * Correlate any locals before the first FILE symbol.  This has b=
-een
-> +        * seen when LTO inexplicably strips the initramfs_data.o FILE sy=
-mbol
-> +        * due to the file only containing data and no code.
-> +        */
-> +       for_each_sym(e->orig, sym1) {
-> +               if (sym1 =3D=3D file1_sym || !is_local_sym(sym1))
-> +                       break;
-> +
-> +               if (dont_correlate(sym1))
-> +                       continue;
-> +
-> +               for_each_sym(e->patched, sym2) {
-> +                       if (sym2 =3D=3D file2_sym || !is_local_sym(sym2))
-> +                               break;
-> +
-> +                       if (sym2->twin || dont_correlate(sym2))
-> +                               continue;
-> +
-> +                       if (strcmp(sym1->demangled_name, sym2->demangled_=
-name))
-> +                               continue;
-> +
-> +                       sym1->twin =3D sym2;
-> +                       sym2->twin =3D sym1;
-> +                       break;
-> +               }
-> +       }
-> +
-> +       /* Correlate locals after the first FILE symbol */
-> +       for (; ; file1_sym =3D next_file_symbol(e->orig, file1_sym),
-> +                file2_sym =3D next_file_symbol(e->patched, file2_sym)) {
->
->                 if (!file1_sym && file2_sym) {
->                         ERROR("FILE symbol mismatch: NULL !=3D %s", file2=
-_sym->name);
+Co-developed-by: Rui Qi <qirui.001@bytedance.com>
+Signed-off-by: Rui Qi <qirui.001@bytedance.com>
+Signed-off-by: Li Zhe <lizhe.67@bytedance.com>
+---
+ kernel/livepatch/transition.c | 62 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 58 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index 2351a19ac2a9..9c078b9bd755 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -10,6 +10,7 @@
+ #include <linux/cpu.h>
+ #include <linux/stacktrace.h>
+ #include <linux/static_call.h>
++#include <linux/stop_machine.h>
+ #include "core.h"
+ #include "patch.h"
+ #include "transition.h"
+@@ -297,6 +298,61 @@ static int klp_check_and_switch_task(struct task_struct *task, void *arg)
+ 	return 0;
+ }
+ 
++enum klp_stop_work_bit {
++	KLP_STOP_WORK_PENDING_BIT,
++};
++
++struct klp_stop_work_info {
++	struct task_struct *task;
++	unsigned long flag;
++};
++
++static DEFINE_PER_CPU(struct cpu_stop_work, klp_transition_stop_work);
++static DEFINE_PER_CPU(struct klp_stop_work_info, klp_stop_work_info);
++
++static int klp_check_task(struct task_struct *task, void *old_name)
++{
++	if (task == current)
++		return klp_check_and_switch_task(current, old_name);
++	else
++		return task_call_func(task, klp_check_and_switch_task, old_name);
++}
++
++static int klp_transition_stop_work_fn(void *arg)
++{
++	struct klp_stop_work_info *info = (struct klp_stop_work_info *)arg;
++	struct task_struct *task = info->task;
++	const char *old_name;
++
++	clear_bit(KLP_STOP_WORK_PENDING_BIT, &info->flag);
++
++	if (likely(klp_patch_pending(task)))
++		klp_check_task(task, &old_name);
++
++	put_task_struct(task);
++
++	return 0;
++}
++
++static void klp_try_transition_running_task(struct task_struct *task)
++{
++	int cpu = task_cpu(task);
++
++	if (klp_signals_cnt && !(klp_signals_cnt % SIGNALS_TIMEOUT)) {
++		struct klp_stop_work_info *info =
++			per_cpu_ptr(&klp_stop_work_info, cpu);
++
++		if (test_and_set_bit(KLP_STOP_WORK_PENDING_BIT, &info->flag))
++			return;
++
++		info->task = get_task_struct(task);
++		if (!stop_one_cpu_nowait(cpu, klp_transition_stop_work_fn, info,
++					 per_cpu_ptr(&klp_transition_stop_work,
++					 cpu)))
++			put_task_struct(task);
++	}
++}
++
+ /*
+  * Try to safely switch a task to the target patch state.  If it's currently
+  * running, or it's sleeping on a to-be-patched or to-be-unpatched function, or
+@@ -323,10 +379,7 @@ static bool klp_try_switch_task(struct task_struct *task)
+ 	 * functions.  If all goes well, switch the task to the target patch
+ 	 * state.
+ 	 */
+-	if (task == current)
+-		ret = klp_check_and_switch_task(current, &old_name);
+-	else
+-		ret = task_call_func(task, klp_check_and_switch_task, &old_name);
++	ret = klp_check_task(task, &old_name);
+ 
+ 	switch (ret) {
+ 	case 0:		/* success */
+@@ -335,6 +388,7 @@ static bool klp_try_switch_task(struct task_struct *task)
+ 	case -EBUSY:	/* klp_check_and_switch_task() */
+ 		pr_debug("%s: %s:%d is running\n",
+ 			 __func__, task->comm, task->pid);
++		klp_try_transition_running_task(task);
+ 		break;
+ 	case -EINVAL:	/* klp_check_and_switch_task() */
+ 		pr_debug("%s: %s:%d has an unreliable stack\n",
+-- 
+2.20.1
 
