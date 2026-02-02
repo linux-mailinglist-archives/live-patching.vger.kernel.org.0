@@ -1,87 +1,89 @@
-Return-Path: <live-patching+bounces-1965-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1966-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id qEs+Ga4dgWm0EAMAu9opvQ
-	(envelope-from <live-patching+bounces-1965-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Mon, 02 Feb 2026 22:57:02 +0100
+	id YDjnFkYegWm0EAMAu9opvQ
+	(envelope-from <live-patching+bounces-1966-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 02 Feb 2026 22:59:34 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id BC17FD1E3F
-	for <lists+live-patching@lfdr.de>; Mon, 02 Feb 2026 22:57:01 +0100 (CET)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id B08B4D1E7B
+	for <lists+live-patching@lfdr.de>; Mon, 02 Feb 2026 22:59:33 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 3BA193017C1D
-	for <lists+live-patching@lfdr.de>; Mon,  2 Feb 2026 21:56:37 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 0475D3018BC1
+	for <lists+live-patching@lfdr.de>; Mon,  2 Feb 2026 21:59:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A108F318ED4;
-	Mon,  2 Feb 2026 21:56:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6876D318EE0;
+	Mon,  2 Feb 2026 21:59:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qnTEPKZS"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qs89bqHA"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DCD2318BB8
-	for <live-patching@vger.kernel.org>; Mon,  2 Feb 2026 21:56:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4575D318BB2
+	for <live-patching@vger.kernel.org>; Mon,  2 Feb 2026 21:59:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770069396; cv=none; b=Ba/MJ/IboLeTZLj5j5LPnLOtUWX3lyo1m29Akdh3WrUxnMz5irt8abFR+xUTMMeHnAXENTQMXoiGGHYjlK2F0EN714puTSZEroeh+ZZrFarSl+dYqOJa4VXVN0woFzOP64u58X4IafZGX2H8+BWmCZFmzbXiodYUWv1sfThRM60=
+	t=1770069566; cv=none; b=sERpuqqItNN3X5lMnwmlm5i7nUQybA+CGhZXOPRi6AkJeghYlaeltjwu8nvsgK+l9dNYGdJhkBkyYSK2DoEcUiDCObcWL6CVWVGxpx5lhdU8hv1XI2nwYdE/rwyvuCQ7EgNJ2dFic8j34ThOpmre9AghbThCfHEAJxV/Hw5hnyM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770069396; c=relaxed/simple;
-	bh=5AHLgYWBVgXG5Vyrb2RZ5uU9Ofm/rGv76fvDht/whVQ=;
+	s=arc-20240116; t=1770069566; c=relaxed/simple;
+	bh=83293i7jcnUcVkBVW7it3OvjhcrYUca8CHdxEre9tmM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RyEqMdo5AjSIKKeNmGWtmmVvMRIIq29e4G8JEIQ5KSMHWpgZBo1qp3QbtnZHsQBE5Bjy4gV++J7bxsQudQO5HURKXz28b/FejIy0HOc2miup2bR5tPw8dWKlzUgwOvvJLhHLLQ9baLIuTOS6Sbq8kUe8kkElEafEA8bCK11zJgc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qnTEPKZS; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FFBEC19425
-	for <live-patching@vger.kernel.org>; Mon,  2 Feb 2026 21:56:36 +0000 (UTC)
+	 To:Cc:Content-Type; b=ioCViLXkYynNlB7EAoW0XzUtdWozgnWtBWIhh81b0IsYIHlih3czXhHwp2CuXUAaFlN/q8nyRxYCBQBwxlWoBAnnA9v2F4GLBMNX9OSAFA78mgwUbfauaMs1lNKkfpXU1YfeijIfD6xyyilmx3h76QYVNHU4SU3qWsOqRLy/HME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qs89bqHA; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9176C2BC86
+	for <live-patching@vger.kernel.org>; Mon,  2 Feb 2026 21:59:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770069396;
-	bh=5AHLgYWBVgXG5Vyrb2RZ5uU9Ofm/rGv76fvDht/whVQ=;
+	s=k20201202; t=1770069565;
+	bh=83293i7jcnUcVkBVW7it3OvjhcrYUca8CHdxEre9tmM=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=qnTEPKZSxP2fqu43iftFuy1LiUfarfK9wkcwonmq/Vu6k1UZeDnc978DHg3EmAgQh
-	 bKGgkp45ys2qiqsnzj47aBBxTtF8dj/J6SFDXS4v5vO608ozQ1I23h7SGN7za7nKbJ
-	 d/mr66HYWOeWhGpP6am/p+WyxwR1YFesQAPrAF5SU07vzE5bmUMQWzW0bHegRvJ5qu
-	 dqMqDiBKIsm4jJmKq2QUtGO1sVfh0XX5JuOh0Wbgasiy+dW96hfsumUKkQfOMILtfd
-	 OsmcMbjwf6JPDgmhYfh0yh+kHjbqcf/8aj9CQfeM4WBiiHchoyQ5wevuNM+neF3O3V
-	 0xA1qHHuC7OIQ==
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-4ffbea7fdf1so47631131cf.1
-        for <live-patching@vger.kernel.org>; Mon, 02 Feb 2026 13:56:36 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVxMWIUNJ6wyk9QkOZ/lB830SNV9qvj4lI5DCIcMbB0FE3vCwG8jt/oZvGn3XMTFwYY+7QuSUKNoQmqnuSW@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8Y8csq1NOsWDOL4KN1TpOmKDabbNObG5HLQOl0sjsMTra819y
-	z1GbPEhBiHj8d7fJYF1csqq/mK97ZQbL41CmVIVGhnnc4oxOMt5Wcu7M81HvnFM8ODgk9Rc//oT
-	wpO1fow9NoR3X8ZJgun5aTwvxln2g0gU=
-X-Received: by 2002:a05:622a:2c2:b0:4f1:b947:aa04 with SMTP id
- d75a77b69052e-505d217c778mr172940411cf.18.1770069395349; Mon, 02 Feb 2026
- 13:56:35 -0800 (PST)
+	b=qs89bqHApGWMQWM05OZ3fYAPoREMCbSm4H62hMwUJqJPWMHPHouzD+KjZ6PxdwhKa
+	 z2ocbQUUNrnebG5pRQlF64o60r0r5rYhrVZd5gt5FV61oTyTVBkF7gG5SvlYKkhdD4
+	 jI0Kd8iHu5tYerTfm+RqXbTV3STU3+zrGLyP92ZidOTJZDNx3+3G0tALGLntoWWyhK
+	 umeU2FRlLerws/NYiOr0/UTxwW4oWWynLqjovSUkqjIQYGRsXym9fwM3eJbJwSf9ji
+	 mx87XtcXJDhWYIqMkRNWntk6RPnAKHyZkSvCmjUaugMHRtv9TW0rVRSVd1zbhaq0/i
+	 i1nc6P+9IN43w==
+Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-8c6a0702b86so507724085a.0
+        for <live-patching@vger.kernel.org>; Mon, 02 Feb 2026 13:59:25 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWKGmU0vfkvZV++YOa8zKR6RICA9fhnfDMNXUHZlSFLpZ8yK2TtsSIDQjY6DhK2n2LRV64Id3XEMjINUWXq@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw3A17b13u666+bjQHGLEXC0GP3j55XmQh+7zvOK6rQriMf3UwY
+	xEiWSFq8fZRoZnfvV2R8NrYpc5e3DGpTnfJbtk9Txphdg/0JIrMc3ESz/TNMCC6B6FQchnl2UAX
+	G0+aHV+b4AWSzP8blG94/0fwCu8MvXNk=
+X-Received: by 2002:a05:620a:440b:b0:8a4:107a:6772 with SMTP id
+ af79cd13be357-8c9eb32dfc5mr1687381585a.76.1770069565051; Mon, 02 Feb 2026
+ 13:59:25 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <e21ec1141fc749b5f538d7329b531c1ab63a6d1a.1770055235.git.jpoimboe@kernel.org>
-In-Reply-To: <e21ec1141fc749b5f538d7329b531c1ab63a6d1a.1770055235.git.jpoimboe@kernel.org>
+References: <0bd3ae9a53c3d743417fe842b740a7720e2bcd1c.1770058775.git.jpoimboe@kernel.org>
+In-Reply-To: <0bd3ae9a53c3d743417fe842b740a7720e2bcd1c.1770058775.git.jpoimboe@kernel.org>
 From: Song Liu <song@kernel.org>
-Date: Mon, 2 Feb 2026 13:56:24 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6YtAAdNkKS=c9tJ7M7BonKmsOwop2xmL9+EkkcjhrmpQ@mail.gmail.com>
-X-Gm-Features: AZwV_QhSdh_qaej1UqAK-D96t9vzsnLya5gCp0S12M2F8qRbjLRTYFAwV56EbvA
-Message-ID: <CAPhsuW6YtAAdNkKS=c9tJ7M7BonKmsOwop2xmL9+EkkcjhrmpQ@mail.gmail.com>
-Subject: Re: [PATCH] objtool/klp: Fix symbol correlation for orphaned local symbols
+Date: Mon, 2 Feb 2026 13:59:13 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7HDdwSdvNzVMtTPrJp=96coaLttU4p4szmF19beTzKnQ@mail.gmail.com>
+X-Gm-Features: AZwV_QiGwRQ-4tdr5_P3YKfSqoCVqhT_35PcGn7uUVIHntvQmHSaqDGTmJgR3Vo
+Message-ID: <CAPhsuW7HDdwSdvNzVMtTPrJp=96coaLttU4p4szmF19beTzKnQ@mail.gmail.com>
+Subject: Re: [PATCH] objtool/klp: Fix unexported static call key access for
+ manually built livepatch modules
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
-	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>
+	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
+	Arnd Bergmann <arnd@arndb.de>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-1965-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-1966-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
 	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
@@ -89,8 +91,8 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	TO_DN_SOME(0.00)[];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	RCPT_COUNT_FIVE(0.00)[5];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	RCPT_COUNT_FIVE(0.00)[6];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
 	MISSING_XM_UA(0.00)[];
@@ -98,38 +100,41 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	NEURAL_HAM(-0.00)[-1.000];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: BC17FD1E3F
+	DBL_BLOCKED_OPENRESOLVER(0.00)[arndb.de:email,mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: B08B4D1E7B
 X-Rspamd-Action: no action
 
-On Mon, Feb 2, 2026 at 10:01=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
+On Mon, Feb 2, 2026 at 11:00=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org=
 > wrote:
 >
-> When compiling with CONFIG_LTO_CLANG_THIN, vmlinux.o has
-> __irf_[start|end] before the first FILE entry:
+> Enabling CONFIG_MEM_ALLOC_PROFILING_DEBUG with CONFIG_SAMPLE_LIVEPATCH
+> results in the following error:
 >
->   $ readelf -sW vmlinux.o
->   Symbol table '.symtab' contains 597706 entries:
->      Num:    Value          Size Type    Bind   Vis      Ndx Name
->        0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND
->        1: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT   18 __irf_start
->        2: 0000000000000200     0 NOTYPE  LOCAL  DEFAULT   18 __irf_end
->        3: 0000000000000000     0 SECTION LOCAL  DEFAULT   17 .text
->        4: 0000000000000000     0 SECTION LOCAL  DEFAULT   18 .init.ramfs
+>   samples/livepatch/livepatch-shadow-fix1.o: error: objtool: static_call:=
+ can't find static_call_key symbol: __SCK__WARN_trap
 >
-> This causes klp-build warnings like:
+> This is caused an extra file->klp sanity check which was added by commit
+> 164c9201e1da ("objtool: Add base objtool support for livepatch
+> modules").  That check was intended to ensure that livepatch modules
+> built with klp-build always have full access to their static call keys.
 >
->   vmlinux.o: warning: objtool: no correlation: __irf_start
->   vmlinux.o: warning: objtool: no correlation: __irf_end
+> However, it failed to account for the fact that manually built livepatch
+> modules (i.e., not built with klp-build) might need access to unexported
+> static call keys, for which read-only access is typically allowed for
+> modules.
 >
-> The problem is that Clang LTO is stripping the initramfs_data.o FILE
-> symbol, causing those two symbols to be orphaned and not noticed by
-> klp-diff's correlation logic.  Add a loop to correlate any symbols found
-> before the first FILE symbol.
+> While the livepatch-shadow-fix1 module doesn't explicitly use any static
+> calls, it does have a memory allocation, which can cause
+> CONFIG_MEM_ALLOC_PROFILING_DEBUG to insert a WARN() call.  And WARN() is
+> now an unexported static call as of commit 860238af7a33 ("x86_64/bug:
+> Inline the UD1").
 >
-> Fixes: dd590d4d57eb ("objtool/klp: Introduce klp diff subcommand for diff=
-ing object files")
-> Reported-by: Song Liu <song@kernel.org>
+> Fix it by removing the overzealous file->klp check, restoring the
+> original behavior for manually built livepatch modules.
+>
+> Fixes: 164c9201e1da ("objtool: Add base objtool support for livepatch mod=
+ules")
+> Reported-by: Arnd Bergmann <arnd@arndb.de>
 > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
 Acked-by: Song Liu <song@kernel.org>
