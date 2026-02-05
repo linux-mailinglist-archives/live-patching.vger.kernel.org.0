@@ -1,140 +1,152 @@
-Return-Path: <live-patching+bounces-1988-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-1989-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id qJjsJ5SSg2lCpQMAu9opvQ
-	(envelope-from <live-patching+bounces-1988-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 04 Feb 2026 19:40:20 +0100
+	id GFvJCfS8hGnG4wMAu9opvQ
+	(envelope-from <live-patching+bounces-1989-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 05 Feb 2026 16:53:24 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 29CC1EBBAA
-	for <lists+live-patching@lfdr.de>; Wed, 04 Feb 2026 19:40:20 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 73568F4CE3
+	for <lists+live-patching@lfdr.de>; Thu, 05 Feb 2026 16:53:23 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 64FC9300BD82
-	for <lists+live-patching@lfdr.de>; Wed,  4 Feb 2026 18:40:18 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id AE7C83005335
+	for <lists+live-patching@lfdr.de>; Thu,  5 Feb 2026 15:53:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A26C23793D7;
-	Wed,  4 Feb 2026 18:40:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96D2F426D20;
+	Thu,  5 Feb 2026 15:53:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="funEj5DD"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="J48VPXBy"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80279421EF4
-	for <live-patching@vger.kernel.org>; Wed,  4 Feb 2026 18:40:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 364D4421F11
+	for <live-patching@vger.kernel.org>; Thu,  5 Feb 2026 15:53:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770230417; cv=none; b=ibORGKw45QS4x55nDDArN2JpSC29mLM5Ru5WFC+Sfax0BVppgrbjcDnDqSQQLerCPBBeTvlSUvAqX9cF26+Yw0c5cadOaFKFsW4xzX5PJUs4AUJ/ZxRdanhcijviIsnM6TdlvMI+OdHGVICE2yTegpf6MbfQloqUpuQ8NsGUIVs=
+	t=1770306799; cv=none; b=Yp4ogWnxOIC7ckeiiAr+QIEndXQmCh0CqMSAZ5ZUjECQS/tVCcj8ObWFd2dLaHdx8xaWzjj/lJkNyICmkzd7NxOstjsbR3qkDfa3NBH3Wxxk9/ahK4aC05hHYMIfwZWXfqrxbyZYvvXcfGOcP3dPYoCXx7TubLumANTm3ayaHr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770230417; c=relaxed/simple;
-	bh=S9ewF7VsNUF/85TMFz/ArAEbOAXtt1aOWlN6dmg6i6E=;
+	s=arc-20240116; t=1770306799; c=relaxed/simple;
+	bh=BvNQP8toLJCzP4InBeCg66IkoQckS9Gld5kou8pVDFY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tl5rGSLNf3VsFltld2vw1Wlo5V3Min+2Mrjeu52Ea2z13OrKOPQNPVqRK1jIgHvLrVux4DhBqgDqVWJcHlmRqrA3FnJ39n6Zj7E3Pv7FFjmJ0hH6oUrnRJPAcpWNDQS4DwRHKh7+xHbOuCKdUojFH+ZEf+QMkyrtdU6jBDIrZmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=funEj5DD; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE09C116C6;
-	Wed,  4 Feb 2026 18:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770230416;
-	bh=S9ewF7VsNUF/85TMFz/ArAEbOAXtt1aOWlN6dmg6i6E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=funEj5DDHefgeRH6jfDI/BfVZ5zkPIn6Dnra+JSlnWi5gcCvKCflgRcwIHXu8gk6A
-	 Jxb7zobss7Yksn7RGivD8JCyk23VO9uTdvt/sIoCO3VQGDczCykchoqDz0hA84NlUQ
-	 9ysx3B+rQecKUhKb7PCgXlP4ZQACtDHizeZFJoLZw/iCE0IiDNtRRPbEEDMO65hxw7
-	 +mM+/VtB6NOgObQvMKMehNhN8MNC5RYMB2P2nzJb4kN1JQIOVVCtPNpkmv+MhU+TYd
-	 xlJ5rNPwQ2xFEbVNEnfxwqlUVlsJGlgTAXakNVQS/QPl/+O6hluhdsU4hGs2aLoVze
-	 rl0VqAPBBSgmg==
-Date: Wed, 4 Feb 2026 10:40:14 -0800
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: live-patching@vger.kernel.org, Song Liu <song@kernel.org>, 
-	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 4/5] livepatch/klp-build: minor short-circuiting tweaks
-Message-ID: <njg3ylqbsk3dc6smj6vnrk2bb7ttjrfsulfzocmh4fsdq527fj@xgoaep6sbqws>
+	 Content-Type:Content-Disposition:In-Reply-To; b=jZz7TxytD9O8g7iFGpGEJo0hQ6ZXNe+obhFX2gPqg0+1K8ASvjayas9FIR88qf6JcPFazwJiFtFGqtaiklQdWwIJxHbk6wE6hdxPI1+CP9YmJbfNQp1ih0Vm8wZV3M3a7W0s0u7EzRmosRDZ/x+zqvcFiWdNNjh3LuslaR9pW7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=J48VPXBy; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1770306798;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QRJieIvLVa5p1iEpaxUcQ1NO7fwzTV6dGvyMy85+XqI=;
+	b=J48VPXByhYmpYTnYKV0XccwiHrKczN1/KI88KTNNS+GJjQsvG9iAnGtUuHknlBOTY849W5
+	82ujdHiTynHKtbSq/KJvtOFD7U4dGh65kxiq4YjBDcWZwIvT/pvmRb1hi1L3Q3DOeFE8P6
+	2wJwmPm+0GXFqPOpJkhNcLjx8csFA4Q=
+Received: from mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-475-eB5tZZxfNeqDRKBfD0Y0jA-1; Thu,
+ 05 Feb 2026 10:53:10 -0500
+X-MC-Unique: eB5tZZxfNeqDRKBfD0Y0jA-1
+X-Mimecast-MFC-AGG-ID: eB5tZZxfNeqDRKBfD0Y0jA_1770306789
+Received: from mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.111])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 48CE418002E6;
+	Thu,  5 Feb 2026 15:53:09 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.80.42])
+	by mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id D54B718003F6;
+	Thu,  5 Feb 2026 15:53:07 +0000 (UTC)
+Date: Thu, 5 Feb 2026 10:53:05 -0500
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: live-patching@vger.kernel.org, Song Liu <song@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+	Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v2 1/5] objtool/klp: Fix mkstemp() failure with long paths
+Message-ID: <aYS84XTYTrjqLcci@redhat.com>
 References: <20260204025140.2023382-1-joe.lawrence@redhat.com>
- <20260204025140.2023382-5-joe.lawrence@redhat.com>
+ <20260204025140.2023382-2-joe.lawrence@redhat.com>
+ <jwj6k6bbvga3uaaj2hhtau256t7mvcg65wsv5cpsdrx7cpt4zd@knbng27js6t5>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260204025140.2023382-5-joe.lawrence@redhat.com>
+In-Reply-To: <jwj6k6bbvga3uaaj2hhtau256t7mvcg65wsv5cpsdrx7cpt4zd@knbng27js6t5>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.111
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-1.66 / 15.00];
+X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_RHS_NOT_FQDN(0.50)[];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
+	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
+	TAGGED_FROM(0.00)[bounces-1989-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
-	RCVD_COUNT_THREE(0.00)[4];
+	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-1988-lists,live-patching=lfdr.de];
+	DKIM_TRACE(0.00)[redhat.com:+];
 	TO_DN_SOME(0.00)[];
 	MIME_TRACE(0.00)[0:+];
-	FROM_HAS_DN(0.00)[];
-	MISSING_XM_UA(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	TAGGED_RCPT(0.00)[live-patching];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
 	RCPT_COUNT_FIVE(0.00)[6];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 29CC1EBBAA
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[joe.lawrence@redhat.com,live-patching@vger.kernel.org];
+	MISSING_XM_UA(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[6];
+	MID_RHS_MATCH_FROM(0.00)[];
+	NEURAL_HAM(-0.00)[-0.999];
+	TAGGED_RCPT(0.00)[live-patching];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 73568F4CE3
 X-Rspamd-Action: no action
 
-On Tue, Feb 03, 2026 at 09:51:39PM -0500, Joe Lawrence wrote:
-> Update SHORT_CIRCUIT behavior to better handle patch validation and
-> argument processing in later klp-build steps.
+On Wed, Feb 04, 2026 at 08:47:41AM -0800, Josh Poimboeuf wrote:
+> On Tue, Feb 03, 2026 at 09:51:36PM -0500, Joe Lawrence wrote:
+> > @@ -1219,13 +1221,17 @@ struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name)
+> >  
+> >  	base = basename(base);
+> >  
+> > -	tmp_name = malloc(256);
+> > +	tmp_name = malloc(PATH_MAX);
 > 
-> Perform patch validation for both step 1 (building original kernel)
-> and step 2 (building patched kernel) to ensure patches are verified
-> before any compilation occurs.
+> The allocation size can be more precise with something like
 > 
-> Additionally, allow the user to omit input patches when skipping past
-> step 2, while noting that any specified patches will be ignored in that
-> case if they were provided.
+> 	tmp_name = malloc(strlen(name) + 8);
 > 
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-> ---
->  scripts/livepatch/klp-build | 17 +++++++++++++----
->  1 file changed, 13 insertions(+), 4 deletions(-)
+> Also, I'm scratching my head at the existing code and wondering why we
+> are splitting out the dirname() and the basename() just to paste them
+> back together again??  Can you simplify that while you're at it?
 > 
-> diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-> index ee43a9caa107..df3a0fa031a6 100755
-> --- a/scripts/livepatch/klp-build
-> +++ b/scripts/livepatch/klp-build
-> @@ -214,12 +214,18 @@ process_args() {
->  	done
->  
->  	if [[ $# -eq 0 ]]; then
-> -		usage
-> -		exit 1
-> +		if (( SHORT_CIRCUIT <= 2 )); then
-> +			usage
-> +			exit 1
-> +		fi
+> >  	if (!tmp_name) {
+> >  		ERROR_GLIBC("malloc");
+> >  		return NULL;
+> >  	}
+> >  
+> > -	snprintf(tmp_name, 256, "%s/%s.XXXXXX", dir, base);
+> > +	path_len = snprintf(tmp_name, PATH_MAX, "%s/%s.XXXXXX", dir, base);
+> > +	if (path_len >= PATH_MAX) {
+> > +		ERROR_GLIBC("snprintf");
+> > +		return NULL;
+> > +	}
+> 
+> Checking for all the snprintf() cases can be a pain so we have a
+> snprintf_check() for a streamlined error checking experience.
+> 
 
-Ack
+Ah, completely missed that, thanks for pointing out.  I'll incorporate
+both suggestions into v3.
 
-> +	else
-> +		if (( SHORT_CIRCUIT >= 3 )); then
-> +			status "note: patch arguments ignored at step $SHORT_CIRCUIT"
-> +		fi
+--
+Joe
 
-Personally I don't care to see this status, but maybe I'm biased from
-writing the --short-circuit feature and not being confused by this :-)
-
--- 
-Josh
 
