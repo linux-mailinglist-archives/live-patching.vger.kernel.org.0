@@ -1,71 +1,72 @@
-Return-Path: <live-patching+bounces-2039-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2040-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id kIP0FSO4lGlmHQIAu9opvQ
-	(envelope-from <live-patching+bounces-2039-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 19:49:07 +0100
+	id aBCEHLrAlGkXHgIAu9opvQ
+	(envelope-from <live-patching+bounces-2040-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 20:25:46 +0100
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id A6F0914F555
-	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 19:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id E388614F9DF
+	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 20:25:45 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 7B13C305E9A2
-	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 18:45:59 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 9F03530420B6
+	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 19:25:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A973372B54;
-	Tue, 17 Feb 2026 18:45:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B53CD37755C;
+	Tue, 17 Feb 2026 19:25:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ITfzDlYi"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S4AJV9O5"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07D6D29AB00
-	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 18:45:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C8937474B
+	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 19:25:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771353959; cv=none; b=JwvimBOWhNzOlEOEZ5fjQv6cqV3tPbLdpiT/tkJsCslLVMCYFSHne5kdAvCRlg9bHwWB4pHkOV6B1EbHUSOTWDnihD7QvxoKYDuuGIDDoSiEFSEZmkjxzpzf/6xWDsn4X3uKw2E6B3ixyCFQyAy+hpAL0iejV9uHrDsMR9Tpc+A=
+	t=1771356327; cv=none; b=MgAtDw8S4cBaWFmZaE1NVzhnQh8A/r8+apDoKLfqeZx2mMAUJQNS8w3sssh65PNB+RLXLe1Znenv6aW2bazNmBCUyzjr5j5rw2OPjd5n4A2WWCDk4UfrS8VssrN8UY0ehWQbBgiUhRe/BG+vcix3er4lng2coD7K0lnm6qzTXBM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771353959; c=relaxed/simple;
-	bh=kNxzKoPNRCke7AS5KrODXvgKb2igsffOXA4+rh9pAH0=;
+	s=arc-20240116; t=1771356327; c=relaxed/simple;
+	bh=JfmqxG8GUqZhxJJXh5PLNUA1AGbiIOXu2TGEZi/jedo=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kBDnQrxD73ylDGcOJBqam5zLOg1+kriwE8NFx6WIBBsJ2HWdQqX2Dx7CFMSpW7R+kJ2cq/l2N0ryyF0918roSdI9ae5MG52e5wSXPG06OljARoSnIVlFdC9OOHxSvuyvlsghgvz8arhk/urujNA9Ruh/trqNFU/qw2Zi8d760HQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ITfzDlYi; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EE71C4CEF7
-	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 18:45:58 +0000 (UTC)
+	 To:Cc:Content-Type; b=ZwmWTZslJCFxyA1LXDNWTmSL52dScYdsdqax5us3xw2dPdXaZJGLhg5nvUS1kGEBwQj6bm9EX81NCKGLepV3h3PI2PFSCQPeToRZPGaEAUd89kIMliB5qAS+hcopoxwWCS3shgPA9a4Ke81qAywBpGA5gpdZADuzzGVj4/9UnkI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S4AJV9O5; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A7FC4AF09
+	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 19:25:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771353958;
-	bh=kNxzKoPNRCke7AS5KrODXvgKb2igsffOXA4+rh9pAH0=;
+	s=k20201202; t=1771356327;
+	bh=JfmqxG8GUqZhxJJXh5PLNUA1AGbiIOXu2TGEZi/jedo=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=ITfzDlYiMpnXIOexz0ve6XmdaGcHKkRELM7TBuaGdEv7v0ph0qv8dUeQlwKe4KtJP
-	 s02F+C8/gtsBCXISYOgdrK8pJxtQkX1tSA0ikrA7MvFlHpUy8yN11f4D3lewPagM1+
-	 qfwtPME0PyAUQ/qJCb2634DL3N4IAql7nDuLXtOJ7q+yxVQc+sawnmmvXIeqE5Cwzu
-	 3s7hOx60bi3jR/2JQy8bUiPnfpv1RGqo8e5TwUzkNNvnUSXfL+3N6z+5qyrevxas0c
-	 0AAlozJH6TBzf6mXYJNpYwjbJ0ILPFqz+I5YkpmRzbEpvuwR6PpyMpEi1DihNHKmFs
-	 /yXp7VvSnU3Rw==
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-50698970941so51400641cf.0
-        for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 10:45:58 -0800 (PST)
-X-Gm-Message-State: AOJu0YwdI69wI10IYKn1tj01jkBnxXGBFatbbU5k3M0oSah5vEfLSJO3
-	EnOcdBmUMoVok2GBo6BOQIPegwYow9MKpl4oUGljnGtR7vP5arpqI23cvGQj9rZ+IS6MPA6K/QV
-	dl1/VIPBvDOszvsj3MjjUJtMVhLbAOBw=
-X-Received: by 2002:a05:622a:1654:b0:501:5284:c49b with SMTP id
- d75a77b69052e-506b400153bmr145569541cf.39.1771353957878; Tue, 17 Feb 2026
- 10:45:57 -0800 (PST)
+	b=S4AJV9O596f41Hl/UdSvUAOJMW1XrwnLshK4sJH47kWMpmhOnq09NawLmPaC1Zvx3
+	 VMeDioRnkPNH7d1FQ2Cj881xj9nZf2cUYFgFmLmvYgFKSa0FdJ1DY7526U4KCjxucn
+	 wNgN6pkmJRxkCwMTMYv1zHRtHQAvFben0FYeKr/DOoivy8fjpEya1Oz/Yg+6OUL2hw
+	 NRRcbppHqlrCmFa/tWqfXn/pLy8zSNPM3493CxW/8JIHx+YWxuCCXtu5bYNrQbn+n8
+	 t8AOkBvjCrNj1uDjLduIVdTGu5naHLvcNUS72zH52+ads388bTry9usI4bcQXUgd8i
+	 pg7CJQXpEO47A==
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-5069df1d711so38884261cf.2
+        for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 11:25:27 -0800 (PST)
+X-Gm-Message-State: AOJu0Yz/uTL087XGutnG20vrm23BsjdPmyqEawV43UWuBHnQS2+wFeYg
+	/09DpyR3shfZCGRGdS8Y41xzdC7fkcHJb8CfODiNlNUV9XuYLncvR/rQilaPEDojhYITFKFlx5v
+	Os94+LpPqcdOJswoPatTiYjGp/kzbW90=
+X-Received: by 2002:a05:622a:1455:b0:4eb:a6c9:e839 with SMTP id
+ d75a77b69052e-506a8318edfmr211465141cf.47.1771356326385; Tue, 17 Feb 2026
+ 11:25:26 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260217160645.3434685-1-joe.lawrence@redhat.com> <20260217160645.3434685-12-joe.lawrence@redhat.com>
-In-Reply-To: <20260217160645.3434685-12-joe.lawrence@redhat.com>
+References: <20260217160645.3434685-1-joe.lawrence@redhat.com>
+ <20260217160645.3434685-10-joe.lawrence@redhat.com> <aZSUfFUfpUYIbuiA@redhat.com>
+In-Reply-To: <aZSUfFUfpUYIbuiA@redhat.com>
 From: Song Liu <song@kernel.org>
-Date: Tue, 17 Feb 2026 10:45:45 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5rZ3o_mXoSsbLohKL-qxdVoSbYadh3Y91jTtY_SjNsMw@mail.gmail.com>
-X-Gm-Features: AaiRm50_9sTsE-_WRQDZ1UItF1jxBt0_Mbj3wD3L6XWxbpVQc4aWPZ1A5jDtEnk
-Message-ID: <CAPhsuW5rZ3o_mXoSsbLohKL-qxdVoSbYadh3Y91jTtY_SjNsMw@mail.gmail.com>
-Subject: Re: [PATCH v3 11/13] livepatch/klp-build: add terminal color output
+Date: Tue, 17 Feb 2026 11:25:13 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW55E-T0gg4zFitjVB81+y5wHPEQ0665MDPnznV9=9Y1+g@mail.gmail.com>
+X-Gm-Features: AaiRm504Xcw1YMkNdZXGb3jTqP7lHBj5KJTEXMLA9cyfRM7p03tHrYa9ZcBotbQ
+Message-ID: <CAPhsuW55E-T0gg4zFitjVB81+y5wHPEQ0665MDPnznV9=9Y1+g@mail.gmail.com>
+Subject: Re: [PATCH v3 09/13] livepatch/klp-build: fix version mismatch when short-circuiting
 To: Joe Lawrence <joe.lawrence@redhat.com>
 Cc: live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>, 
 	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
@@ -81,7 +82,7 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2039-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2040-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
@@ -96,19 +97,27 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
 	RCPT_COUNT_FIVE(0.00)[6];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,mail.gmail.com:mid]
-X-Rspamd-Queue-Id: A6F0914F555
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: E388614F9DF
 X-Rspamd-Action: no action
 
-On Tue, Feb 17, 2026 at 8:07=E2=80=AFAM Joe Lawrence <joe.lawrence@redhat.c=
+On Tue, Feb 17, 2026 at 8:17=E2=80=AFAM Joe Lawrence <joe.lawrence@redhat.c=
 om> wrote:
 >
-> Improve the readability of klp-build output by implementing a basic
-> color scheme.  When the standard output and error are connected to a
-> terminal, highlight status messages in bold, warnings in yellow, and
-> errors in red.
+[...]
+> > 2.53.0
+> >
+> >
 >
-> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> Maybe I'm starting to see things, but when running 'S 2' builds, I keep
+> getting "vmlinux.o: changed function: override_release".  It could be
+> considered benign for quick development work, or confusing.  Seems easy
+> enough to stash and avoid.
 
-Acked-by: Song Liu <song@kernel.org>
+"-S 2" with a different set of patches is only needed in patch development,
+but not used for official releases. Therefore, I agree this is not a real i=
+ssue.
+
+Thanks,
+Song
 
