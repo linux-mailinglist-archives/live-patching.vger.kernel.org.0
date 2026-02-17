@@ -1,72 +1,71 @@
-Return-Path: <live-patching+bounces-2033-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2034-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id aDhaFEarlGl7GQIAu9opvQ
-	(envelope-from <live-patching+bounces-2033-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 18:54:14 +0100
+	id sHb/LvaxlGlbGgIAu9opvQ
+	(envelope-from <live-patching+bounces-2034-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 19:22:46 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id BCDA914EC50
-	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 18:54:13 +0100 (CET)
+Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A89714F071
+	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 19:22:46 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 7EE91305EE85
-	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 17:53:06 +0000 (UTC)
+	by sto.lore.kernel.org (Postfix) with ESMTP id 363983013454
+	for <lists+live-patching@lfdr.de>; Tue, 17 Feb 2026 18:22:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2533E352F8E;
-	Tue, 17 Feb 2026 17:53:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D2A1036F41C;
+	Tue, 17 Feb 2026 18:22:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xs3DS/ae"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EADOOk0D"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0291937105D
-	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 17:53:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFDC636F416
+	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 18:22:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771350786; cv=none; b=EXuYUj5I4g0uWXVdUn3lK3gqs4FY4numC4LUrVd1tXdpC67gBH7vzynWWDQb8S7bVsiTuZvzQo/2pFARNrddBldtvkG5rLG4Kr6iUz6t9RS8fwyJ9C2hJAYnm+NPgeXCHuVuXzn18is/DYnFoQbQmqJmVc30sA8o7JYBEZThmbU=
+	t=1771352558; cv=none; b=avMd7HcBx/f5l5iEOWHz4bb6Y7pJbsq9O9EdgFmoz8096DujBCQvMiqUd8c53prOtQAuPX0Cs1sIwQ1buMxLiAyr5c29W73CIOmPMwotyJ+jTX+Qh7shlV2Ug/vknAJPZYKn6qYfYTXp2lS1n8bWbr8hNkH0bKcJli3us2BUMjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771350786; c=relaxed/simple;
-	bh=p0W16M7m2arkZQX3SiatrR6BpJ7W0uTky0H98+X8gcI=;
+	s=arc-20240116; t=1771352558; c=relaxed/simple;
+	bh=eJegjciZz2CZK3hGtVAAVzygyORfPDWTn1ASZVmvX+Y=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cxvA8TKt3JlVlodgFjPeTTjXAwoI2QwsJBebx/z8oxzOcThgAwQp1o0cn7jJ2BLp0XPtDpJnBE+e4q5LgksiI+p+uZgRTHM7L6JMP+17DeUPHhH24VGyT9AIPJgdtO81c/s5E+s3g42Ykt1InkIOYIA77nfGXuPRp2tggvB13t4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xs3DS/ae; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DACB1C4AF09
-	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 17:53:05 +0000 (UTC)
+	 To:Cc:Content-Type; b=LyaZPMv0+x4L2hFb/sbBdHFBowe8oL+bNmzZUW8DITqpWDBppwhEdXMKt6NZrHY90Tc5TuP2PUEnGuSXMlz3gx3qJM1fgib8BUnn1wAJHsI1v3xlHWcp6IRMtCgDbZ7c/xTXtSYNmKvn0CwyvzEMrSwL4tlS5MKY5ft8peoTaKk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EADOOk0D; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A35C19421
+	for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 18:22:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771350785;
-	bh=p0W16M7m2arkZQX3SiatrR6BpJ7W0uTky0H98+X8gcI=;
+	s=k20201202; t=1771352558;
+	bh=eJegjciZz2CZK3hGtVAAVzygyORfPDWTn1ASZVmvX+Y=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=Xs3DS/aezRQmM20MSBewp2pXT1bRnkN+uvCk/+/aaRcpW5iggVKojvN4rj64isyDL
-	 8yMlYJGHaBQzDGUotXg1E2CPpYjFoR7iYeER7YQxsqWP0vsDYWlYjUZILt7t3oKywP
-	 zuVQPF4/ogyJiXo03lY+sY/WrG3RxZuLZtnirdInt27+mt2VXfuL97ATtDMXWvM6Gw
-	 fz1mNZ09EqM802et3GFRXsV00zg4ChlSgkUhCvPo9TZ6qvs1JtCs1Chk6UQadk+05b
-	 CsU7QH9cRegMSaHHKZtmv5SATEan6grZYtBUYnnySu3TobE+Bl1dO/7GQ9XpNEjVZS
-	 YjiEUcT/oVPYw==
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-896f44dc48dso39350606d6.2
-        for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 09:53:05 -0800 (PST)
-X-Gm-Message-State: AOJu0YyZf2YGopP35tooR1hT884dT3pbHuToaZBbOLL+O3pkJ2ME1xGd
-	3t4q0X5sh6TJlebNI3h2kLBQUfl/gqvhkPzYnVbFGYw3nOVNKYNDxlnsqQRME/VUmU0DDgNtYyq
-	ML7hSZZO0PsT9Ce8yGvZ07YbDuZ/9Pc8=
-X-Received: by 2002:ad4:5742:0:b0:896:a692:cabe with SMTP id
- 6a1803df08f44-897361cd337mr227204276d6.47.1771350784978; Tue, 17 Feb 2026
- 09:53:04 -0800 (PST)
+	b=EADOOk0D00+W1YRVVQ/j9s5Ya6e7IU45Svj7LG9CFe7d0YlG0hBbI+mNlI+xvvaBf
+	 ZgS9hEkKCH9rYEywuj/z5wtD88z30GZa4zpJLHtjkmYSuNjupHVkYkJvVgTYLykh/H
+	 cMaVp4Qrw3YMIe84vgI5KfiuaTRnCBQOmrqd4E/REQg6E6Ee0NfEY8ePQhP4NnyZKx
+	 RH8WvZICTtnc4kwKRwNxcxnSWCkPDfkOoPc4efbcAMdZGnPwhdf9IS9Fp0AAsJ9790
+	 rJPmJdw0EB4rhnRFffk/ggQ0OM6SdU96bMPc8eRiH7SaMCTExdZt/P8wywA2rNv26c
+	 T3VRfTaObLMcA==
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-503347dea84so48398101cf.3
+        for <live-patching@vger.kernel.org>; Tue, 17 Feb 2026 10:22:38 -0800 (PST)
+X-Gm-Message-State: AOJu0Yxo397hRWoo5A0es3qSNY08rg/Kzp16G+eJtPUz5ru8DD7tvfFT
+	OxJzo5GoAotiJv9c42qyY41qWlTexosFIXubxBQfA99UY0H55ljxzXVSAxF5oBLQUQb1hgsjPKg
+	lfNi3toQeXQZdKa7e9QLymHoMKMc3PwU=
+X-Received: by 2002:ac8:7f4f:0:b0:506:4507:e65e with SMTP id
+ d75a77b69052e-506b3f97d1cmr159109331cf.19.1771352557762; Tue, 17 Feb 2026
+ 10:22:37 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260217160645.3434685-1-joe.lawrence@redhat.com> <20260217160645.3434685-4-joe.lawrence@redhat.com>
-In-Reply-To: <20260217160645.3434685-4-joe.lawrence@redhat.com>
+References: <20260217160645.3434685-1-joe.lawrence@redhat.com> <20260217160645.3434685-6-joe.lawrence@redhat.com>
+In-Reply-To: <20260217160645.3434685-6-joe.lawrence@redhat.com>
 From: Song Liu <song@kernel.org>
-Date: Tue, 17 Feb 2026 09:52:53 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4A+vRxi0K6==JJPRkPqXBfJv1BRtG4q+CU5P_1BwHBiw@mail.gmail.com>
-X-Gm-Features: AaiRm514kTBsvlfp9BOvmeDlKK80Q22Pf9FGpzF9f7OBwhkxdPuMazi9FUOvWC8
-Message-ID: <CAPhsuW4A+vRxi0K6==JJPRkPqXBfJv1BRtG4q+CU5P_1BwHBiw@mail.gmail.com>
-Subject: Re: [PATCH v3 03/13] livepatch/klp-build: support patches that
- add/remove files
+Date: Tue, 17 Feb 2026 10:22:25 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7UjagyRD9NACwwOMMcASSUBa+sxTLJ1ZuYy98jrSZTjg@mail.gmail.com>
+X-Gm-Features: AaiRm52Wu1Fdm5FX6WSvhcZPoBMMZ72Nxsy5NGzCbTZAQV-cmZOqpItjtGsxtLs
+Message-ID: <CAPhsuW7UjagyRD9NACwwOMMcASSUBa+sxTLJ1ZuYy98jrSZTjg@mail.gmail.com>
+Subject: Re: [PATCH v3 05/13] livepatch/klp-build: add grep-override function
 To: Joe Lawrence <joe.lawrence@redhat.com>
 Cc: live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>, 
 	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
@@ -76,19 +75,19 @@ X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2033-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2034-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	TO_DN_SOME(0.00)[];
 	DKIM_TRACE(0.00)[kernel.org:+];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
+	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
 	MISSING_XM_UA(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
@@ -97,29 +96,19 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
 	RCPT_COUNT_FIVE(0.00)[6];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: BCDA914EC50
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 2A89714F071
 X-Rspamd-Action: no action
 
-On Tue, Feb 17, 2026 at 8:06=E2=80=AFAM Joe Lawrence <joe.lawrence@redhat.c=
+On Tue, Feb 17, 2026 at 8:07=E2=80=AFAM Joe Lawrence <joe.lawrence@redhat.c=
 om> wrote:
 >
-> The klp-build script prepares a clean patch by populating two temporary
-> directories ('a' and 'b') with source files and diffing the result.
-> However, this process fails when a patch introduces a new source file,
-> as the script attempts to copy files that do not yet exist in the
-> original source tree.  Likewise, it fails when a patch removes a source
-> file and the script attempts to copy a file that no longer exists.
+> Provide a custom grep() function to catch direct usage of the command.
+> Bare grep calls are generally incompatible with pipefail and
+> errexit behavior (where a failed match causes the script to exit).
 >
-> Refactor the file-gathering logic to distinguish between original input
-> files and patched output files:
->
-> - Split get_patch_files() into get_patch_input_files() and
->   get_patch_output_files() to identify which files exist before and
->   after patch application.
-> - Filter out "/dev/null" from both to handle file creation/deletion.
-> - Update refresh_patch() to only copy existing input files to the 'a'
->   directory and the resulting output files to the 'b' directory.
+> Developers can still call grep via command grep if that behavior is
+> explicitly desired.
 >
 > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 
