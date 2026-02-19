@@ -1,233 +1,154 @@
-Return-Path: <live-patching+bounces-2046-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2047-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id UBZfMJxElmmYdAIAu9opvQ
-	(envelope-from <live-patching+bounces-2046-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 00:00:44 +0100
+	id vaX5EOZ6lmmcgAIAu9opvQ
+	(envelope-from <live-patching+bounces-2047-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 03:52:22 +0100
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 250F515ABF9
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 00:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5D27B15BC99
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 03:52:21 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id A1E8530053CC
-	for <lists+live-patching@lfdr.de>; Wed, 18 Feb 2026 23:00:42 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id C979B30209ED
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 02:52:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B5052E888C;
-	Wed, 18 Feb 2026 23:00:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF7652367B3;
+	Thu, 19 Feb 2026 02:52:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="OIN4oQPo"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CGp4gx4h"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89A212773E4
-	for <live-patching@vger.kernel.org>; Wed, 18 Feb 2026 23:00:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A7A31C84A0
+	for <live-patching@vger.kernel.org>; Thu, 19 Feb 2026 02:52:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771455642; cv=none; b=MBHSGVe+HcbGy5nrkEVDpb4ze1e5X04Qn+Fh4GwClhn32+SRY7CVhdAJ0y/cvKYuhEQJwfYwEBysEgcqJ/WwBB/m7UOdZfLxbRqQ/6WT0u+jTzO6Ge8SnQFUoI3IERIMYjAk+2npGATXhxKHbCDwcUkbu5eBXk6XelGW/iiZCok=
+	t=1771469538; cv=none; b=cz9DTSv0LmbRCyGAaoeuc6AXJxTyGKsvKxqgNOBIyCV4XeKB2uwSKU/LZ6CxEx5rAf3/a4gDQgXqKKxzpjPlNohA5pOJ4/3i+kTMq/6/4l8BEcdgUwrSgSCVqvrUxoW5w8FdGOlZt66E9Y1ZDPxtFCuoJch5JBWkciiEBae5k7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771455642; c=relaxed/simple;
-	bh=SxGo6UdnphjjQeViKpegIs8L7Drae2gWpQWUNYbC8kw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GkmQEDPFMK5Bym/8vw9HBvuhZ+WvGa9lx88cMOqFN/4NSL80vg0qbUEpmuAXp2jG8gbqUeUou5+/oK21k4qj3MlWCiil/vQuyufYvHU2BQ7kPaNPG+NrPQb9ZHjjZ9siscjilTHhTeOFaeUm76zwepef9Qhbt5jSK7rXElQ2g3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=OIN4oQPo; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1771455639;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QP0l+D5nytpf3JtYLuWhZA2GAqgCk4RQjtJQOe1MPdc=;
-	b=OIN4oQPoIo0dI7IknCj6w8rrGk5kUZYtC3htH5oFPFBElNe7BA/fPr0EJhhHJz64oavpW8
-	It/4YkaSDlSFJPeUNQgTUqR8sJ5lxZpjJESNN4zJE7TU6CR1DU9tbTXn2s3ObkslsBEKOV
-	ISfbvBkBvTOoRHm79E1MVaWly7xUoI4=
-Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-517-zJdHadtrPieNR7F_OejIAQ-1; Wed,
- 18 Feb 2026 18:00:35 -0500
-X-MC-Unique: zJdHadtrPieNR7F_OejIAQ-1
-X-Mimecast-MFC-AGG-ID: zJdHadtrPieNR7F_OejIAQ_1771455634
-Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 2B4EB1956052;
-	Wed, 18 Feb 2026 23:00:34 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.80.197])
-	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 65C351800348;
-	Wed, 18 Feb 2026 23:00:32 +0000 (UTC)
-Date: Wed, 18 Feb 2026 18:00:29 -0500
-From: Joe Lawrence <joe.lawrence@redhat.com>
-To: Song Liu <song@kernel.org>
-Cc: live-patching@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org,
-	mbenes@suse.cz, pmladek@suse.com, kernel-team@meta.com
-Subject: Re: [PATCH 0/8] objtool/klp: klp-build LTO support and tests
-Message-ID: <aZZEjfxgLWTWODE7@redhat.com>
-References: <20260212192201.3593879-1-song@kernel.org>
+	s=arc-20240116; t=1771469538; c=relaxed/simple;
+	bh=5tECyJNXcPD8dUadmqVWAoKZnLUB6EqH1KLZtDQXwfE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KGxTWfiS3M0pYuhNvKpfGqw6GvBa4tIVt0+LbcO4WRVFq7/CiPU4qXpU9qZgCoQAfF+L0yvhoP4ZYUZl8Wg5JshomK6ThfDJsy40A7a19aytcqFFbg1w9Sm/nkHakW4TWERDaMIVyJmgKqCjoTmdiILG4skniCZ82sMp2kKH/yA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CGp4gx4h; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C6CFC2BC87
+	for <live-patching@vger.kernel.org>; Thu, 19 Feb 2026 02:52:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771469538;
+	bh=5tECyJNXcPD8dUadmqVWAoKZnLUB6EqH1KLZtDQXwfE=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=CGp4gx4hnSLj/ZUDteaBVJIf/cPyqW+rKJ3GukAnjua5iFVHLdNpIPKySAGYxXt30
+	 Lm9uEcqpvJjLmjniyQn0tkaYn1snHbKSMNUB5QuSzFakQp2fD4YlEZfn/2ShKPY6fx
+	 DoykFiOQ43fWxtGuTPMSPWL+bGZqxrOQ7aECMwLv81yrF19bTlO379osYaQvIPDvjd
+	 ToWP1T9nFW0YnEl/uabiXmB+QXwael/SPjRwFTNr+1R2uGzLbe90NRDaCaieYvY4mA
+	 82QNp5HpGWnbqekspkDUmGRP8I7do3f438fWUbzYhEoxmCWLSjRkSOjaIN8DaT8l8o
+	 A9EEShnN5v1ZQ==
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-8cb4acdacb2so56579785a.3
+        for <live-patching@vger.kernel.org>; Wed, 18 Feb 2026 18:52:18 -0800 (PST)
+X-Gm-Message-State: AOJu0YxmfXDv7cz3ARXHsCAHTA6YFOxC5o8RKpTzJEms4w3UYP8ASCBN
+	TlmUzBHiyPjYQ6W7GkE2jV8r4U8RqPiy0AQcWUINSz19zERmTBzs1gzOCWVL0ZWf29VbvZ5yDZu
+	gFf6foum/wa91qDPnbpCWsZUINDK8kc0=
+X-Received: by 2002:a05:620a:2a0e:b0:8b2:e922:529a with SMTP id
+ af79cd13be357-8cb4bf871d3mr1979471185a.19.1771469537149; Wed, 18 Feb 2026
+ 18:52:17 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260212192201.3593879-1-song@kernel.org>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
+References: <20260217160645.3434685-1-joe.lawrence@redhat.com>
+ <20260217160645.3434685-10-joe.lawrence@redhat.com> <aZSUfFUfpUYIbuiA@redhat.com>
+ <CAPhsuW55E-T0gg4zFitjVB81+y5wHPEQ0665MDPnznV9=9Y1+g@mail.gmail.com> <aZXVCIuSdlk6f-1K@redhat.com>
+In-Reply-To: <aZXVCIuSdlk6f-1K@redhat.com>
+From: Song Liu <song@kernel.org>
+Date: Wed, 18 Feb 2026 18:52:05 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW6rcwiqXWdG8SbMrNgj4fnYYRo_qxWgtOprx0x0i6Kuyg@mail.gmail.com>
+X-Gm-Features: AaiRm517xyOZBi04rQMb-c7AZqQi9cAppkfbSHXWCUfDx246QgMdJGgncozNIT8
+Message-ID: <CAPhsuW6rcwiqXWdG8SbMrNgj4fnYYRo_qxWgtOprx0x0i6Kuyg@mail.gmail.com>
+Subject: Re: [PATCH v3 09/13] livepatch/klp-build: fix version mismatch when short-circuiting
+To: Joe Lawrence <joe.lawrence@redhat.com>
+Cc: live-patching@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>, 
+	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
-	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	DKIM_TRACE(0.00)[redhat.com:+];
-	TAGGED_FROM(0.00)[bounces-2046-lists,live-patching=lfdr.de];
+	MIME_TRACE(0.00)[0:+];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	TAGGED_FROM(0.00)[bounces-2047-lists,live-patching=lfdr.de];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	MISSING_XM_UA(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
+	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[joe.lawrence@redhat.com,live-patching@vger.kernel.org];
-	MIME_TRACE(0.00)[0:+];
-	RCVD_COUNT_FIVE(0.00)[6];
-	MID_RHS_MATCH_FROM(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	RCVD_COUNT_FIVE(0.00)[5];
+	TAGGED_RCPT(0.00)[live-patching];
 	NEURAL_HAM(-0.00)[-0.999];
-	RCPT_COUNT_SEVEN(0.00)[7];
-	TO_DN_SOME(0.00)[]
-X-Rspamd-Queue-Id: 250F515ABF9
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCPT_COUNT_FIVE(0.00)[6]
+X-Rspamd-Queue-Id: 5D27B15BC99
 X-Rspamd-Action: no action
 
-On Thu, Feb 12, 2026 at 11:21:53AM -0800, Song Liu wrote:
-> Add support for LTO in klp-build toolchain. The key changes are to the
-> symbol correlation logic.Basically, we want to:
-> 
-> 1. Match symbols with differerent .llvm.<hash> suffixes, e.g., foo.llvm.123
->    to foo.llvm.456.
-> 2. Match local symbols with promoted global symbols, e.g., local foo
->    with global foo.llvm.123.
-> 
-> 1/8 and 2/8 are small cleanup/fix for existing code.
-> 3/8 through 7/8 contains the core logic changes to correlate_symbols().
-> 8/8 contains tests for klp-build toolchain.
-> 
-> Song Liu (8):
->   objtool/klp: Remove redundent strcmp in correlate_symbols
->   objtool/klp: Remove trailing '_' in demangle_name()
->   objtool/klp: Use sym->demangled_name for symbol_name hash
->   objtool/klp: Also demangle global objects
->   objtool/klp: Remove .llvm suffix in demangle_name()
->   objtool/klp: Match symbols based on demangled_name for global
->     variables
->   objtool/klp: Correlate locals to globals
->   livepatch: Add tests for klp-build toolchain
-> 
+On Wed, Feb 18, 2026 at 7:04=E2=80=AFAM Joe Lawrence <joe.lawrence@redhat.c=
+om> wrote:
+>
+> On Tue, Feb 17, 2026 at 11:25:13AM -0800, Song Liu wrote:
+> > On Tue, Feb 17, 2026 at 8:17=E2=80=AFAM Joe Lawrence <joe.lawrence@redh=
+at.com> wrote:
+> > >
+> > [...]
+> > > > 2.53.0
+> > > >
+> > > >
+> > >
+> > > Maybe I'm starting to see things, but when running 'S 2' builds, I ke=
+ep
+> > > getting "vmlinux.o: changed function: override_release".  It could be
+> > > considered benign for quick development work, or confusing.  Seems ea=
+sy
+> > > enough to stash and avoid.
+> >
+> > "-S 2" with a different set of patches is only needed in patch developm=
+ent,
+> > but not used for official releases. Therefore, I agree this is not a re=
+al issue.
+> >
+>
+> My use case was running a series of tests:
+>
+>   (test 1) - full build with -T
+>   (test N) - short circuit with -S 2 -T
+>   ...
+>
+> and where it confused me was that I had created tests which were
+> designed to fail, specifically one wanted to verify no changes found
+> for the recountdiff change in this set.
+>
+> Without this patch, that test will succeed as the version glitch gets
+> picked up as:
+>
+>   vmlinux.o: changed function: override_release
+>
+> I could work around that in verification, but then I miss the *specific*
+> failure report from klp-build.  I could also run each individual test as
+> full, but each build was taking ~6 minutes on my machine.
 
-Hi Song,
+Agreed that saving ~6 minutes per test is huge.
 
-One of the tests that Josh had suggested running to validate "no
-changes" and git apply --recount / recountdiff was to touch most of the
-.c files in the tree like so:
+I think we can ship this.
 
-  $ find . -type f -name '*.c' ! -path "./lib/*" -print0 | xargs -0 sed -i '1iasm("nop");'
-  $ git checkout tools arch/x86/lib/inat.c arch/x86/lib/insn.c kernel/configs.c
-  $ git diff > /tmp/oneline.patch
-
-which results in "klp-build: no changes detected" using gcc, but with
-this patchset+llvm thin-LTO results in a few c_start/c_stop/c_next
-uncorrelated variables.
-
-Here is a minimal version of a reproducer:
-
-$ grep LTO .config
-CONFIG_LTO=y
-CONFIG_LTO_CLANG=y
-CONFIG_ARCH_SUPPORTS_LTO_CLANG=y
-CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=y
-CONFIG_HAS_LTO_CLANG=y
-# CONFIG_LTO_NONE is not set
-# CONFIG_LTO_CLANG_FULL is not set
-CONFIG_LTO_CLANG_THIN=y
-
-$ cat ~/min.patch
-diff --git a/arch/x86/kernel/cpu/proc.c b/arch/x86/kernel/cpu/proc.c
-index 6571d432cbe3..96c6c8bb7228 100644
---- a/arch/x86/kernel/cpu/proc.c
-+++ b/arch/x86/kernel/cpu/proc.c
-@@ -1,3 +1,4 @@
-+asm("nop");
- // SPDX-License-Identifier: GPL-2.0
- #include <linux/smp.h>
- #include <linux/timex.h>
-diff --git a/crypto/proc.c b/crypto/proc.c
-index 82f15b967e85..1474800162bf 100644
---- a/crypto/proc.c
-+++ b/crypto/proc.c
-@@ -1,3 +1,4 @@
-+asm("nop");
- // SPDX-License-Identifier: GPL-2.0-or-later
- /*
-  * Scatterlist Cryptographic API.
-diff --git a/fs/proc/consoles.c b/fs/proc/consoles.c
-index b7cab1ad990d..066e625ae14e 100644
---- a/fs/proc/consoles.c
-+++ b/fs/proc/consoles.c
-@@ -1,3 +1,4 @@
-+asm("nop");
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-  * Copyright (c) 2010 Werner Fink, Jiri Slaby
-
-$ LLVM=1 ./scripts/livepatch/klp-build -T ~/min.patch 
-Validating patch(es)
-Building original kernel
-Copying original object files
-Fixing patch(es)
-Building patched kernel
-Copying patched object files
-Diffing objects
-vmlinux.o: warning: objtool: correlate c_start.llvm.15251198824366928061 (origial) to c_start.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate c_stop.llvm.15251198824366928061 (origial) to c_stop.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate c_next.llvm.15251198824366928061 (origial) to c_next.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate show_cpuinfo.llvm.15251198824366928061 (origial) to show_cpuinfo.llvm.10047843810948474008 (patched)
-vmlinux.o: warning: objtool: correlate .str.llvm.1768504738091882651 (origial) to .str.llvm.7814622528726587167 (patched)
-vmlinux.o: warning: objtool: correlate crypto_seq_ops.llvm.1768504738091882651 (origial) to crypto_seq_ops.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate c_start.llvm.1768504738091882651 (origial) to c_start.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate c_stop.llvm.1768504738091882651 (origial) to c_stop.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate c_next.llvm.1768504738091882651 (origial) to c_next.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate c_show.llvm.1768504738091882651 (origial) to c_show.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_c_start.llvm.15251198824366928061 (origial) to __pfx_c_start.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_c_stop.llvm.15251198824366928061 (origial) to __pfx_c_stop.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_c_next.llvm.15251198824366928061 (origial) to __pfx_c_next.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_show_cpuinfo.llvm.15251198824366928061 (origial) to __pfx_show_cpuinfo.llvm.10047843810948474008 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_c_start.llvm.1768504738091882651 (origial) to __pfx_c_start.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_c_stop.llvm.1768504738091882651 (origial) to __pfx_c_stop.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_c_next.llvm.1768504738091882651 (origial) to __pfx_c_next.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: correlate __pfx_c_show.llvm.1768504738091882651 (origial) to __pfx_c_show.llvm.14107081093236395767 (patched)
-vmlinux.o: warning: objtool: no correlation: c_start.llvm.1768504738091882651
-vmlinux.o: warning: objtool: no correlation: c_stop.llvm.1768504738091882651
-vmlinux.o: warning: objtool: no correlation: c_next.llvm.1768504738091882651
-vmlinux.o: new function: c_start.llvm.10047843810948474008
-vmlinux.o: new function: c_stop.llvm.10047843810948474008
-vmlinux.o: new function: c_next.llvm.10047843810948474008
-vmlinux.o: changed function: c_start.llvm.14107081093236395767
-vmlinux.o: changed function: c_stop.llvm.14107081093236395767
-vmlinux.o: changed function: c_next.llvm.14107081093236395767
-Building patch module: livepatch-min.ko
-SUCCESS
-
-And since we're here, it looks like there's a type:
-s/origial/original/g.
-
---
-Joe
-
+Acked-by: Song Liu <song@kernel.org>
 
