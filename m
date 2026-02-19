@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2056-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2057-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id +DwSO0uNl2lv0QIAu9opvQ
-	(envelope-from <live-patching+bounces-2056-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:07 +0100
+	id oMEoJVCNl2lv0QIAu9opvQ
+	(envelope-from <live-patching+bounces-2057-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:12 +0100
 X-Original-To: lists+live-patching@lfdr.de
 Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 97256163210
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4DD2B163218
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:12 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 8B04A30158BD
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 22:23:06 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 540F53015893
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 22:23:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FD0D32B99B;
-	Thu, 19 Feb 2026 22:23:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B07ED32B9A0;
+	Thu, 19 Feb 2026 22:23:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UtEuYagO"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KUj3MkEk"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CB5232ABD0
-	for <live-patching@vger.kernel.org>; Thu, 19 Feb 2026 22:23:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E3FC32ABD0
+	for <live-patching@vger.kernel.org>; Thu, 19 Feb 2026 22:23:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771539784; cv=none; b=i4y5fgkm4d7Ii3naEnizqgBWGZ853A5j40LPEJMGQybpnk52LAYY2S2RaKJXUC5foum1iTpcVUwtA4UlCKXy38f5ft6aaCWAmgdkMYbJ9vG5YYClWsXoXTreVY7uEzX6JXsn0drZyYoZo3X6GZrrIfLAStZqFxOZZQVJWAqjhvc=
+	t=1771539789; cv=none; b=ME4x2auAFJEDPN/fIqWLnjRiGk3J+1JY8EoS5VO6yYDB56p/zbDBv97UhxafcH9cRLAWeep8Se+Ni4hwx0Y8DCx20j8I+qLdGUUkz5UtOsAOmYww7tyVwyIKH4fQ94dEB5iMtLurXPBd2UYLttATwCGeaMiaWdClYtoHestVP50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771539784; c=relaxed/simple;
-	bh=ExTcJA3LLDGN4tefNxh3Ss1LGswGMantD462UCJL7Ks=;
+	s=arc-20240116; t=1771539789; c=relaxed/simple;
+	bh=TLhRd3kSS4Cp7cPZphm+Lh5Lq6UmY3aYlOZ/EPRQil4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BuIRKQnmEfX6+toLPVAe9+DNV4hLsnOnAq5idZYzEId+B1Q+jS2jRz5kS8wP50CP0z1EEIG9HJ06CFO8oJzAXC98Cgywz5M188nnQf341JcEU4ujf1qgseoFbqV/tylowbR1mCi7O7CVz8F1vTynGA6zHTefXrB97h/YX6NB+eE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UtEuYagO; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 218DBC4CEF7;
-	Thu, 19 Feb 2026 22:23:02 +0000 (UTC)
+	 MIME-Version; b=hVdHdIvXXMkwihDPNMDO2F50VboGW247bumR74UPXvbxHs2woQBhmFoUHI9GXjb/rcMN5UXUbyykVe7Jv3X+ZvVdjea2Ma/XtzjwxKL6GOwNqwaS/Q9bl/RavVpzTs5QGeZ28k6bssVuCjHb5WEEvuradg3kAf99l2yZfMMwwyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KUj3MkEk; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B2DC4CEF7;
+	Thu, 19 Feb 2026 22:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771539783;
-	bh=ExTcJA3LLDGN4tefNxh3Ss1LGswGMantD462UCJL7Ks=;
+	s=k20201202; t=1771539789;
+	bh=TLhRd3kSS4Cp7cPZphm+Lh5Lq6UmY3aYlOZ/EPRQil4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=UtEuYagO79m/ulOCf3gb5uRMjnQwwhs8vxdgrcbxE6W+c0U/G8YBI4qqNKwmsG6Ix
-	 T0X3DjM0O9Z8iCbepJdwCeX4I0hDVSGzF2py4UgWiFROOtSInCM5Uk3Yj4xwZS1CuN
-	 FakQi3+oCcLvw3E1o88Vfp3VtwHJ/0xd8HtPSZl5HCEswqz0q2LFNe+/0IrYuByGfx
-	 1xiDEDQ3ePpM/U/1tSt4WSMtBL5Nn4ifqyFZa0T9ea7J9s6gcNW8+Pm6SWXYjGXCBK
-	 G5zUi7I/2GP7Dgn8eITd8XgvCmwlA3eWOibEzVD8KrPIYviEZ3SnuO2/XWDQjBo7Ij
-	 U2NX25RyFyOOQ==
+	b=KUj3MkEkOMEJXi9GJTISnJNfJ+qFlbl3d71g9nKGlXy6Pv7ob+VoEivFDACSym8uV
+	 psHdGFyZUNvGzF+Q56+apkHyiE+/KsdWkxVrKT7fQFVH/7MgwyyX0/1K9AGqutYZk4
+	 9nk54sIcWB6P7+hKvpLFYFBe5zX2wnDb9SeWbEZWhzinffXpzX011Q9lfJ8uXQvB4j
+	 vap0v2/7mOny6H2IUfXcCzJo2dp2hQ+QgpacU5WVfm7DzklC7k3JSV+p5u8vOlDJ9t
+	 Jt8Vd5bWRHNe/qACxFO9yc5SoBbPVYVAjLX32MxmptlnpV5o5WYOrKyhDfusrH26T4
+	 apcaH3kLXQCVA==
 From: Song Liu <song@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: jpoimboe@kernel.org,
@@ -53,9 +53,9 @@ Cc: jpoimboe@kernel.org,
 	joe.lawrence@redhat.com,
 	kernel-team@meta.com,
 	Song Liu <song@kernel.org>
-Subject: [PATCH v2 3/8] objtool/klp: Use sym->demangled_name for symbol_name hash
-Date: Thu, 19 Feb 2026 14:22:34 -0800
-Message-ID: <20260219222239.3650400-4-song@kernel.org>
+Subject: [PATCH v2 4/8] objtool/klp: Also demangle global objects
+Date: Thu, 19 Feb 2026 14:22:35 -0800
+Message-ID: <20260219222239.3650400-5-song@kernel.org>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260219222239.3650400-1-song@kernel.org>
 References: <20260219222239.3650400-1-song@kernel.org>
@@ -78,7 +78,7 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2056-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2057-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -94,153 +94,34 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 97256163210
+X-Rspamd-Queue-Id: 4DD2B163218
 X-Rspamd-Action: no action
 
-For klp-build with LTO, it is necessary to correlate demangled symbols,
-e.g., correlate foo.llvm.<num 1> and foo.llvm.<num 2>. However, these two
-symbols do not have the same str_hash(name). To be able to correlate the
-two symbols, calculate hash based on demanged_name, so that these two
-symbols have the same hash.
+With CONFIG_LTO_CLANG_THIN, it is possible to have global __UNIQUE_ID,
+such as:
 
-No functional changes intended.
+   FUNC    GLOBAL HIDDEN  19745 __UNIQUE_ID_quirk_amd_nb_node_458
+
+Also demangle global objects.
 
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- tools/objtool/elf.c | 58 +++++++++++++++++++++++++++++++--------------
- 1 file changed, 40 insertions(+), 18 deletions(-)
+ tools/objtool/elf.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 0d93e8496e8d..c784a0484270 100644
+index c784a0484270..d66452d66fb4 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -26,11 +26,18 @@
- #include <objtool/elf.h>
- #include <objtool/warn.h>
- 
-+static ssize_t demangled_name_len(const char *name);
-+
- static inline u32 str_hash(const char *str)
- {
- 	return jhash(str, strlen(str), 0);
- }
- 
-+static inline u32 str_hash_demangled(const char *str)
-+{
-+	return jhash(str, demangled_name_len(str), 0);
-+}
-+
- #define __elf_table(name)	(elf->name##_hash)
- #define __elf_bits(name)	(elf->name##_bits)
- 
-@@ -294,7 +301,7 @@ static struct symbol *find_local_symbol_by_file_and_name(const struct elf *elf,
- {
- 	struct symbol *sym;
- 
--	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash(name)) {
-+	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
- 		if (sym->bind == STB_LOCAL && sym->file == file &&
- 		    !strcmp(sym->name, name)) {
- 			return sym;
-@@ -308,7 +315,7 @@ struct symbol *find_global_symbol_by_name(const struct elf *elf, const char *nam
- {
- 	struct symbol *sym;
- 
--	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash(name)) {
-+	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
- 		if (!strcmp(sym->name, name) && !is_local_sym(sym))
- 			return sym;
- 	}
-@@ -441,6 +448,28 @@ static int read_sections(struct elf *elf)
- 	return 0;
- }
- 
-+/*
-+ * Returns desired length of the demangled name.
-+ * If name doesn't need demangling, return strlen(name).
-+ */
-+static ssize_t demangled_name_len(const char *name)
-+{
-+	ssize_t len;
-+
-+	if (!strstarts(name, "__UNIQUE_ID_") && !strchr(name, '.'))
-+		return strlen(name);
-+
-+	for (len = strlen(name) - 1; len >= 0; len--) {
-+		char c = name[len];
-+
-+		if (!isdigit(c) && c != '.' && c != '_')
-+			break;
-+	}
-+	if (len <= 0)
-+		return strlen(name);
-+	return len;
-+}
-+
- /*
-  * Remove number suffix of a symbol.
-  *
-@@ -457,6 +486,7 @@ static int read_sections(struct elf *elf)
- static const char *demangle_name(struct symbol *sym)
- {
+@@ -488,9 +488,6 @@ static const char *demangle_name(struct symbol *sym)
  	char *str;
-+	ssize_t len;
+ 	ssize_t len;
  
- 	if (!is_local_sym(sym))
- 		return sym->name;
-@@ -464,24 +494,16 @@ static const char *demangle_name(struct symbol *sym)
+-	if (!is_local_sym(sym))
+-		return sym->name;
+-
  	if (!is_func_sym(sym) && !is_object_sym(sym))
  		return sym->name;
- 
--	if (!strstarts(sym->name, "__UNIQUE_ID_") && !strchr(sym->name, '.'))
-+	len = demangled_name_len(sym->name);
-+	if (len == strlen(sym->name))
- 		return sym->name;
- 
--	str = strdup(sym->name);
-+	str = strndup(sym->name, len);
- 	if (!str) {
- 		ERROR_GLIBC("strdup");
- 		return NULL;
- 	}
- 
--	for (int i = strlen(str) - 1; i >= 0; i--) {
--		char c = str[i];
--
--		if (!isdigit(c) && c != '.' && c != '_') {
--			str[i + 1] = '\0';
--			break;
--		}
--	}
--
- 	return str;
- }
- 
-@@ -517,9 +539,13 @@ static int elf_add_symbol(struct elf *elf, struct symbol *sym)
- 		entry = &sym->sec->symbol_list;
- 	list_add(&sym->list, entry);
- 
-+	sym->demangled_name = demangle_name(sym);
-+	if (!sym->demangled_name)
-+		return -1;
-+
- 	list_add_tail(&sym->global_list, &elf->symbols);
- 	elf_hash_add(symbol, &sym->hash, sym->idx);
--	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
-+	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->demangled_name));
- 
- 	if (is_func_sym(sym) &&
- 	    (strstarts(sym->name, "__pfx_") ||
-@@ -543,10 +569,6 @@ static int elf_add_symbol(struct elf *elf, struct symbol *sym)
- 
- 	sym->pfunc = sym->cfunc = sym;
- 
--	sym->demangled_name = demangle_name(sym);
--	if (!sym->demangled_name)
--		return -1;
--
- 	return 0;
- }
  
 -- 
 2.47.3
