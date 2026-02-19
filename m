@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2057-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2058-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id oMEoJVCNl2lv0QIAu9opvQ
-	(envelope-from <live-patching+bounces-2057-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:12 +0100
+	id QJrcDFiNl2lv0QIAu9opvQ
+	(envelope-from <live-patching+bounces-2058-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:20 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4DD2B163218
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:12 +0100 (CET)
+Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id C1B0E16321F
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 23:23:19 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 540F53015893
-	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 22:23:11 +0000 (UTC)
+	by sto.lore.kernel.org (Postfix) with ESMTP id 2FA6C300AC86
+	for <lists+live-patching@lfdr.de>; Thu, 19 Feb 2026 22:23:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B07ED32B9A0;
-	Thu, 19 Feb 2026 22:23:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1852732B99B;
+	Thu, 19 Feb 2026 22:23:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KUj3MkEk"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pailzwFX"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E3FC32ABD0
-	for <live-patching@vger.kernel.org>; Thu, 19 Feb 2026 22:23:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA0CB2EC54C
+	for <live-patching@vger.kernel.org>; Thu, 19 Feb 2026 22:23:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771539789; cv=none; b=ME4x2auAFJEDPN/fIqWLnjRiGk3J+1JY8EoS5VO6yYDB56p/zbDBv97UhxafcH9cRLAWeep8Se+Ni4hwx0Y8DCx20j8I+qLdGUUkz5UtOsAOmYww7tyVwyIKH4fQ94dEB5iMtLurXPBd2UYLttATwCGeaMiaWdClYtoHestVP50=
+	t=1771539796; cv=none; b=t9Ba+P1D4OGBMUSjYphadTCHknEsnmBhI/mh2s6X8lRT61hvUWBys+pjXwvGDhMqnWBSBePqQ16KI9vh3W9wiBaViePFD5nZo3OidKC6UKUflpO/2ilzgC+xLrZtB55d08dPzCYpVqVCjd8N3b71pwDaRqI5Bv2tJ4YyqYccSSY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771539789; c=relaxed/simple;
-	bh=TLhRd3kSS4Cp7cPZphm+Lh5Lq6UmY3aYlOZ/EPRQil4=;
+	s=arc-20240116; t=1771539796; c=relaxed/simple;
+	bh=eKr5J9budkSlw7R2Xgj4GlPzCqaaiSuLkblPDVyEOjA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hVdHdIvXXMkwihDPNMDO2F50VboGW247bumR74UPXvbxHs2woQBhmFoUHI9GXjb/rcMN5UXUbyykVe7Jv3X+ZvVdjea2Ma/XtzjwxKL6GOwNqwaS/Q9bl/RavVpzTs5QGeZ28k6bssVuCjHb5WEEvuradg3kAf99l2yZfMMwwyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KUj3MkEk; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B2DC4CEF7;
-	Thu, 19 Feb 2026 22:23:07 +0000 (UTC)
+	 MIME-Version; b=UyP5dlHkAOMgTPxENCKNW8YD/Ao1BHF+Arz8OfAXWHr/B/dkWQi1nvFi59XAzsqOmh3Ek03+Dl5t+3UQmzUvkFcKK8/Mx7jWTTEeCFCTUKjKSf0reqDwJrlksS97UbZPbycuOoVGljpas+X9VBcPFKVpW7nkMZ6PCzGMjgQH2nM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pailzwFX; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BCF6C4CEF7;
+	Thu, 19 Feb 2026 22:23:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771539789;
-	bh=TLhRd3kSS4Cp7cPZphm+Lh5Lq6UmY3aYlOZ/EPRQil4=;
+	s=k20201202; t=1771539795;
+	bh=eKr5J9budkSlw7R2Xgj4GlPzCqaaiSuLkblPDVyEOjA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KUj3MkEkOMEJXi9GJTISnJNfJ+qFlbl3d71g9nKGlXy6Pv7ob+VoEivFDACSym8uV
-	 psHdGFyZUNvGzF+Q56+apkHyiE+/KsdWkxVrKT7fQFVH/7MgwyyX0/1K9AGqutYZk4
-	 9nk54sIcWB6P7+hKvpLFYFBe5zX2wnDb9SeWbEZWhzinffXpzX011Q9lfJ8uXQvB4j
-	 vap0v2/7mOny6H2IUfXcCzJo2dp2hQ+QgpacU5WVfm7DzklC7k3JSV+p5u8vOlDJ9t
-	 Jt8Vd5bWRHNe/qACxFO9yc5SoBbPVYVAjLX32MxmptlnpV5o5WYOrKyhDfusrH26T4
-	 apcaH3kLXQCVA==
+	b=pailzwFXb/R69sUAio8RSkLNriy5CmQOB9isCJudkIHdWC491MQRHeovgurV8dRE1
+	 0wi1hyUcm14nxkaLF/ybSOFTZXAsIofDVbGU6Acb45Nhsq9IShJ9ZvHJrdm3+jMGnp
+	 //AZC2FZ1i8STVGjLa/63tLPn//WMEe0EpKXY3vkpiteQ6tUm1L2oD1GP2KxWmxHhe
+	 pTzZvTRjPMvZCc8pigvIbU49UDil6XomDibrDp/0G4qOlkYncsU8b6UFJBz7CQn73F
+	 yHhQrn2eQox/ounu3PLTOxeO89hMSnv6JS5LIsWRaiXTESyshIIT9yHXcJI6BizE43
+	 IMtT0TS1I+wIg==
 From: Song Liu <song@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: jpoimboe@kernel.org,
@@ -53,9 +53,9 @@ Cc: jpoimboe@kernel.org,
 	joe.lawrence@redhat.com,
 	kernel-team@meta.com,
 	Song Liu <song@kernel.org>
-Subject: [PATCH v2 4/8] objtool/klp: Also demangle global objects
-Date: Thu, 19 Feb 2026 14:22:35 -0800
-Message-ID: <20260219222239.3650400-5-song@kernel.org>
+Subject: [PATCH v2 5/8] objtool/klp: Remove .llvm suffix in demangle_name()
+Date: Thu, 19 Feb 2026 14:22:36 -0800
+Message-ID: <20260219222239.3650400-6-song@kernel.org>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260219222239.3650400-1-song@kernel.org>
 References: <20260219222239.3650400-1-song@kernel.org>
@@ -72,13 +72,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2057-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2058-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -92,37 +92,49 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 4DD2B163218
+	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: C1B0E16321F
 X-Rspamd-Action: no action
 
-With CONFIG_LTO_CLANG_THIN, it is possible to have global __UNIQUE_ID,
-such as:
-
-   FUNC    GLOBAL HIDDEN  19745 __UNIQUE_ID_quirk_amd_nb_node_458
-
-Also demangle global objects.
+Remove .llvm suffix, so that we can correlate foo.llvm.<hash 1> and
+foo.llvm.<hash 2>.
 
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- tools/objtool/elf.c | 3 ---
- 1 file changed, 3 deletions(-)
+ tools/objtool/elf.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index c784a0484270..d66452d66fb4 100644
+index d66452d66fb4..efb13ec0a89d 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -488,9 +488,6 @@ static const char *demangle_name(struct symbol *sym)
- 	char *str;
+@@ -455,10 +455,15 @@ static int read_sections(struct elf *elf)
+ static ssize_t demangled_name_len(const char *name)
+ {
  	ssize_t len;
++	const char *p;
  
--	if (!is_local_sym(sym))
--		return sym->name;
--
- 	if (!is_func_sym(sym) && !is_object_sym(sym))
- 		return sym->name;
+ 	if (!strstarts(name, "__UNIQUE_ID_") && !strchr(name, '.'))
+ 		return strlen(name);
  
++	p = strstr(name, ".llvm.");
++	if (p)
++		return p - name;
++
+ 	for (len = strlen(name) - 1; len >= 0; len--) {
+ 		char c = name[len];
+ 
+@@ -482,6 +487,9 @@ static ssize_t demangled_name_len(const char *name)
+  *   __UNIQUE_ID_addressable___UNIQUE_ID_pci_invalid_bar_694_695
+  *
+  * to remove both trailing numbers, also remove trailing '_'.
++ *
++ * For symbols with llvm suffix, i.e., foo.llvm.<hash>, remove the
++ * .llvm.<hash> part.
+  */
+ static const char *demangle_name(struct symbol *sym)
+ {
 -- 
 2.47.3
 
