@@ -1,59 +1,59 @@
-Return-Path: <live-patching+bounces-2072-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2073-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id K0gWMV/HnGkwKQQAu9opvQ
-	(envelope-from <live-patching+bounces-2072-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Mon, 23 Feb 2026 22:32:15 +0100
+	id uLFBNlrJnGkwKQQAu9opvQ
+	(envelope-from <live-patching+bounces-2073-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 23 Feb 2026 22:40:42 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 113A817D9AC
-	for <lists+live-patching@lfdr.de>; Mon, 23 Feb 2026 22:32:14 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0EF9417DAA6
+	for <lists+live-patching@lfdr.de>; Mon, 23 Feb 2026 22:40:41 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 454A5303DADE
-	for <lists+live-patching@lfdr.de>; Mon, 23 Feb 2026 21:32:13 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 98678300F289
+	for <lists+live-patching@lfdr.de>; Mon, 23 Feb 2026 21:40:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9485C378808;
-	Mon, 23 Feb 2026 21:32:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DC8B378D96;
+	Mon, 23 Feb 2026 21:40:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n0wMnVxk"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RwIUnWCn"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 719DF36CDE3
-	for <live-patching@vger.kernel.org>; Mon, 23 Feb 2026 21:32:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7F9377543
+	for <live-patching@vger.kernel.org>; Mon, 23 Feb 2026 21:40:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771882332; cv=none; b=oXrlXqsXek8K5K3EHaG1zIIy+lzOfkv2b2atF4MVo5Db4IkZeNnlsTtva3MbdN0iA2c5832ql/pFY8ssacreHNnNtho3ImOHDngcyM44TjGgEYQvwqEG3/pO2gAyKfwZQoenRMqWmZU0vrtUlvJTnkTzE6y85MdoutOcK+we5XI=
+	t=1771882817; cv=none; b=EoNyC5M8rBKlGNl84+PaknS7X9MF7RHTH+vpBCpIRjw88Ur1p5H3LsLiwbl1x3MS7gT0c5+bEe987y6Zt6WrFY7+ITRy7dvZ1FEovXfyPjlYg9lJ+mjyTejMUcukig/eQpcUTxO1FWik4hn9Bb8rZzrOGfY/9fPOE+mZrVFYKuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771882332; c=relaxed/simple;
-	bh=Q9BmQ+EEAtNFmGKno5/ZywermgmltXznMKRaijNLyH8=;
+	s=arc-20240116; t=1771882817; c=relaxed/simple;
+	bh=zF74N69ts4tQKlXd398w5q4hVQHGwPFRRezuaR1V8i0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=STne4FVNsh4li2i7sB1cZqJFsLCz3KFHOyYtRELciJW2pIaeiO4Roh/mHlphu/Pmm/1R6tduBW43jkseSS4ziRomDxWyX33R0wyZIHuV6IvUKLpTfrWlhWFSlKwlBAaP2tErrF5bt3iFzmG5UTTpb9D2HC55MiNGR6Aua+3XWMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n0wMnVxk; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56A83C116C6;
-	Mon, 23 Feb 2026 21:32:11 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=qzNfTppAP7vhIBc0aLkJRLSflsU1f6YZn5e6xB96Vg4QZjWZKA/eE/7pIU4cYdcfqTxahMSKGff5mUMiGPE3Uv+v0P4QPvUt/hPNta0X8X8i3+Vf2k0Hz8xdUfhk9RJUymoSEJZAgR1CInFWAfS4A6EpDju02+Ixjss67nfX+fE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RwIUnWCn; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F230C116C6;
+	Mon, 23 Feb 2026 21:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771882332;
-	bh=Q9BmQ+EEAtNFmGKno5/ZywermgmltXznMKRaijNLyH8=;
+	s=k20201202; t=1771882816;
+	bh=zF74N69ts4tQKlXd398w5q4hVQHGwPFRRezuaR1V8i0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=n0wMnVxkFZ18ekClMjQDDWe0tx9EPrMd5yYO0tlGkOFbrVXpGBvbQMfza/2UGlaSp
-	 bF2ooZ1TiocM5fzgZHyPLUFuZCnYBJa3VT67J9OPf9F1eH9wECJ0PILHNbnahCu+TM
-	 yVB/AgS44H6xXcKrRVWRz19Z8+j/w3VARlnQvRubgdKBwac+QzgnQiS/WK8cQTeI+Y
-	 D0kacscpOYagdFBY1xdog4z75tJdEL4fk0rkbH+gy2L4aXuOMnbijS2iERMRBSmbQh
-	 vDqNRMQhw8sfa85TqcvrJyD1AodvgrFMRyL7vs/lJUdBF29zvTXOfZuT1eBGBsDRfM
-	 cOWfAHCXaXUuQ==
-Date: Mon, 23 Feb 2026 13:32:09 -0800
+	b=RwIUnWCnCQoMfwDUCR1hn/Cv6Ns3NtaVAJwkId/qZ670uYlHuZV9jiEZ6TvvAfbyc
+	 DGqrH4FHiAJHp9/dIgHo273dIYdAItSy8fZN5whe0pGyw3UuGuO1tfpS0+Q/vGyHoO
+	 1rdta556XORodv1yB229982MDiUx8JJ4og9WdcUQPZzi/ts1+yvv6zwFyESCxyK4yD
+	 SRvYr6NcoAehRgONxFeIDkCbqINCi8J6AiGNHQSYXVws9KoWbDwNSxwAbldVH7WN/R
+	 vtOeVtuHWiQ9LhGWlp+6t6hloXr8xr1J04pWwtoFWS9m9sw5SKf/D0ahbi8Hnux/gn
+	 NhcJsGe4ECRAQ==
+Date: Mon, 23 Feb 2026 13:40:14 -0800
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Joe Lawrence <joe.lawrence@redhat.com>
 Cc: live-patching@vger.kernel.org, Song Liu <song@kernel.org>, 
 	Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v3 11/13] livepatch/klp-build: add terminal color output
-Message-ID: <oetssfso7zbcsleiapmqwfiwqcobu3ghsf26ubxbqnkild7dve@hpa3e45rgtp7>
+Subject: Re: [PATCH v3 12/13] livepatch/klp-build: report patch validation
+ drift
+Message-ID: <7iqwondhaweraszxu2xyjbz7lq6ttdd3yvg3erzuurboo757ov@4b5h7apjdarm>
 References: <20260217160645.3434685-1-joe.lawrence@redhat.com>
- <20260217160645.3434685-12-joe.lawrence@redhat.com>
- <7lykwpkqigzixza3xqhg7yqfhydcdim6dmzf2e5lembxjim6zb@z6y5n6qpb4xs>
+ <20260217160645.3434685-13-joe.lawrence@redhat.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -62,21 +62,21 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <7lykwpkqigzixza3xqhg7yqfhydcdim6dmzf2e5lembxjim6zb@z6y5n6qpb4xs>
+In-Reply-To: <20260217160645.3434685-13-joe.lawrence@redhat.com>
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	MID_RHS_NOT_FQDN(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2072-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2073-lists,live-patching=lfdr.de];
 	TO_DN_SOME(0.00)[];
 	MIME_TRACE(0.00)[0:+];
 	FROM_HAS_DN(0.00)[];
@@ -87,63 +87,62 @@ X-Spamd-Result: default: False [-1.66 / 15.00];
 	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
 	DKIM_TRACE(0.00)[kernel.org:+];
 	TAGGED_RCPT(0.00)[live-patching];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	RCPT_COUNT_FIVE(0.00)[6];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 113A817D9AC
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 0EF9417DAA6
 X-Rspamd-Action: no action
 
-On Mon, Feb 23, 2026 at 01:28:45PM -0800, Josh Poimboeuf wrote:
-> On Tue, Feb 17, 2026 at 11:06:42AM -0500, Joe Lawrence wrote:
-> > Improve the readability of klp-build output by implementing a basic
-> > color scheme.  When the standard output and error are connected to a
-> > terminal, highlight status messages in bold, warnings in yellow, and
-> > errors in red.
-> > 
-> > Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
-> > ---
-> >  scripts/livepatch/klp-build | 15 ++++++++++++---
-> >  1 file changed, 12 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-> > index 80703ec4d775..fd104ace29e6 100755
-> > --- a/scripts/livepatch/klp-build
-> > +++ b/scripts/livepatch/klp-build
-> > @@ -52,6 +52,15 @@ PATCH_TMP_DIR="$TMP_DIR/tmp"
-> >  
-> >  KLP_DIFF_LOG="$DIFF_DIR/diff.log"
-> >  
-> > +# Terminal output colors
-> > +read -r COLOR_RESET COLOR_BOLD COLOR_ERROR COLOR_WARN <<< ""
-> > +if [[ -t 1 && -t 2 ]]; then
-> > +	COLOR_RESET="\033[0m"
-> > +	COLOR_BOLD="\033[1m"
-> > +	COLOR_ERROR="\033[0;31m"
-> > +	COLOR_WARN="\033[0;33m"
-> > +fi
-> > +
-> >  grep0() {
-> >  	# shellcheck disable=SC2317
-> >  	command grep "$@" || true
-> > @@ -65,15 +74,15 @@ grep() {
-> >  }
-> >  
-> >  status() {
-> > -	echo "$*"
-> > +	echo -e "${COLOR_BOLD}$*${COLOR_RESET}"
-> >  }
-> >  
-> >  warn() {
-> > -	echo "error: $SCRIPT: $*" >&2
-> > +	echo -e "${COLOR_WARN}warn${COLOR_RESET}: $SCRIPT: $*" >&2
+On Tue, Feb 17, 2026 at 11:06:43AM -0500, Joe Lawrence wrote:
+> Capture the output of the patch command to detect when a patch applies
+> with fuzz or line offsets.
 > 
-> Shouldn't this reset the colors *after* printing out the whole message?
+> If such "drift" is detected during the validation phase, warn the user
+> and display the details.  This helps identify input patches that may need
+> refreshing against the target source tree.
 > 
-> Also, while it does make sense for warn() to print "warn:" rather than
-> "error:", note its called by trap_err(), which should print the latter.
+> Ensure that internal patch operations (such as those in refresh_patch or
+> during the final build phase) can still run quietly.
+> 
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+> ---
+>  scripts/livepatch/klp-build | 24 +++++++++++++++++++-----
+>  1 file changed, 19 insertions(+), 5 deletions(-)
+> 
+> diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
+> index fd104ace29e6..5367d573b94b 100755
+> --- a/scripts/livepatch/klp-build
+> +++ b/scripts/livepatch/klp-build
+> @@ -369,11 +369,24 @@ check_unsupported_patches() {
+>  
+>  apply_patch() {
+>  	local patch="$1"
+> +	shift
+> +	local extra_args=("$@")
+> +	local drift_regex="with fuzz|offset [0-9]+ line"
+> +	local output
+> +	local status
+>  
+>  	[[ ! -f "$patch" ]] && die "$patch doesn't exist"
+> -	patch -d "$SRC" -p1 --dry-run --silent --no-backup-if-mismatch -r /dev/null < "$patch"
+> -	patch -d "$SRC" -p1 --silent --no-backup-if-mismatch -r /dev/null < "$patch"
+> +	status=0
+> +	output=$(patch -d "$SRC" -p1 --dry-run --no-backup-if-mismatch -r /dev/null "${extra_args[@]}" < "$patch" 2>&1) || status=$?
+> +	if [[ "$status" -ne 0 ]]; then
+> +		echo "$output"
+> +		die "$patch did not apply"
+> +	elif [[ "$output" =~ $drift_regex ]]; then
+> +		warn "$patch applied with drift"
+> +		echo "$output"
 
-also I think s/warn:/warning:/ is better.
+Just for consistency with the output ordering of the "patch did not
+apply" error, I think the "$output" should be printed *before* the
+"$patch applied with drift".
+
+Also, should $output be printed to stderr?
+
+Also, I've not heard of patch "drift", is "fuzz" better?
 
 -- 
 Josh
