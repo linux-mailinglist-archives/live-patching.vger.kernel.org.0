@@ -1,752 +1,242 @@
-Return-Path: <live-patching+bounces-2088-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2089-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id sMR2Gf6Zn2mucwQAu9opvQ
-	(envelope-from <live-patching+bounces-2088-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 01:55:26 +0100
+	id aNPwDxgnoGlEfwQAu9opvQ
+	(envelope-from <live-patching+bounces-2089-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 11:57:28 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0EBF119FA8A
-	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 01:55:26 +0100 (CET)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 937DB1A4B6C
+	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 11:57:27 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id BF66D3037D61
-	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 00:55:24 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id C3BA73148832
+	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 10:52:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D16B361661;
-	Thu, 26 Feb 2026 00:55:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAC633254BA;
+	Thu, 26 Feb 2026 10:52:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fHymobY6"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="BtdOjjra";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="DhqTz4uK";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="BtdOjjra";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="DhqTz4uK"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A93031984E
-	for <live-patching@vger.kernel.org>; Thu, 26 Feb 2026 00:55:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6931931B104
+	for <live-patching@vger.kernel.org>; Thu, 26 Feb 2026 10:52:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772067324; cv=none; b=sj3KB1jEayFxMVIFW6NKtPA/xh+Q2iJYc8fRZAaE5d0KvOBF0KJlEyulDoPVAIdvp8mzeXvP/TQyWgppE8hJcZVVOV/svMJpyNZ2Cfa/juspEjjb3h7b4tAszZWW7ysWrP30/TmwhohQaW2RlB+Se+RNtHw5118rII8oWH1t7sI=
+	t=1772103121; cv=none; b=hwUB3VD7JzBrLvUcE3hvfXvI/oDiZN9UKgQIozGHUgFkSkwNoUk6iTWNANjhSThUA1eqIS6/hDMByBd7AWR3dvu938AyvgVYQT+wcVzdVPsVyC5SkAJ9GEBs7Q3BcBlUHW5ziJmioC0WP4yeS3elNkXljNfeW9yX3PLNzINJY4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772067324; c=relaxed/simple;
-	bh=xJWMnk4774uO5kACm2ui1fwMNwas6CquIfTeFQMS0K4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rTnYUflKRrAP1mhFdJZGAVg8reERSPHIBjncGnkT2KHwrASDO30jCbQpfQU2FM6kqyAxCe8m4AR4vu0O7SXBSATGoL7nRueuxXzdw1kh7l6FuFXA5cGJW3L/shnCAbFjB8X9bLxc5bKHE7Zu2BALYSn733VMtKpK4asmMwVO1FE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fHymobY6; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A52E7C116D0;
-	Thu, 26 Feb 2026 00:55:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772067323;
-	bh=xJWMnk4774uO5kACm2ui1fwMNwas6CquIfTeFQMS0K4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=fHymobY6uW27cqhXTzA4G92IILavzJJipD6SM90SUxLrTh4EDawUoaEt8pRXg53ZW
-	 /GqMtwlTHsaZNilCqf6FGNX+zN+bjp9FEXUooLTeG3gKl6cQwKFEq9cdc2UWpFWsRn
-	 Ig76FJd6xpyMm4MOH8T5HcNt7v/0Vn7ieYXm5C+J3a1pYoX2WqPCRqXoaedVQgYuqY
-	 kDZSzI76+df8av2LfMvxbG9lpmndxFE+i/l5QEzWvdJe6fyJWSmd0EHWZL9/PP+rsH
-	 GmFCrOlknbJYWQPIFrsKo6IwEcOOQx2au3f9M0uWkKBSf4f1OsQpEKzpXI/xgcqDBI
-	 pUNAcUDTyyUfg==
-From: Song Liu <song@kernel.org>
-To: live-patching@vger.kernel.org
-Cc: jpoimboe@kernel.org,
-	jikos@kernel.org,
-	mbenes@suse.cz,
-	pmladek@suse.com,
-	joe.lawrence@redhat.com,
-	kernel-team@meta.com,
-	Song Liu <song@kernel.org>
-Subject: [PATCH v3 8/8] livepatch: Add tests for klp-build toolchain
-Date: Wed, 25 Feb 2026 16:54:36 -0800
-Message-ID: <20260226005436.379303-9-song@kernel.org>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260226005436.379303-1-song@kernel.org>
-References: <20260226005436.379303-1-song@kernel.org>
+	s=arc-20240116; t=1772103121; c=relaxed/simple;
+	bh=OW9jBrw6UlKYAR5G6puvzpuBw0/LmaOaAW/CKdNUqyM=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=h+y/UTjtQbJHYa8pbMgZMaPUMrBckaTS1IBYTdxavF88AVKscxnguFfyygijC4QOyAQ8SBhgHAP4lRmnJW56W89lwNu3O1z3307ydYrxHu9Vm9a23VlzvSPXJLtbm6BXE7DeATdj491H80+6mMNAIRiYcbrbfeBT+2Ubz5NBnQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=BtdOjjra; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=DhqTz4uK; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=BtdOjjra; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=DhqTz4uK; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from pobox.suse.cz (unknown [10.128.32.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 520E34D303;
+	Thu, 26 Feb 2026 10:51:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1772103113; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YRTmkOMlRvhhgDm3Bj6NzrogGPyP1ivHOK1BORzlqgc=;
+	b=BtdOjjraadHHE2MfRdYKt5HG/0XCy/7gvF0LZcjL4kHaN1Tt6bKh5irc2RaORfHXboV16u
+	xxF+qxKEu5oImnDOksHvYI/FvCVXbWojJkbbl/+NFI7851GtL67QDYfXf4X+iD2F5ImvKN
+	lXqgSuewnL7e/dwI2hIZ7kzS5VBQMVs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1772103113;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YRTmkOMlRvhhgDm3Bj6NzrogGPyP1ivHOK1BORzlqgc=;
+	b=DhqTz4uKCAEP3eSHIhOvETTC7rBzH3h8/8JSfz88aECcECfsBsMqfHhsQHtcAfU6K3HJBg
+	TKQb5nOTwm9ZGRDw==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1772103113; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YRTmkOMlRvhhgDm3Bj6NzrogGPyP1ivHOK1BORzlqgc=;
+	b=BtdOjjraadHHE2MfRdYKt5HG/0XCy/7gvF0LZcjL4kHaN1Tt6bKh5irc2RaORfHXboV16u
+	xxF+qxKEu5oImnDOksHvYI/FvCVXbWojJkbbl/+NFI7851GtL67QDYfXf4X+iD2F5ImvKN
+	lXqgSuewnL7e/dwI2hIZ7kzS5VBQMVs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1772103113;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YRTmkOMlRvhhgDm3Bj6NzrogGPyP1ivHOK1BORzlqgc=;
+	b=DhqTz4uKCAEP3eSHIhOvETTC7rBzH3h8/8JSfz88aECcECfsBsMqfHhsQHtcAfU6K3HJBg
+	TKQb5nOTwm9ZGRDw==
+Date: Thu, 26 Feb 2026 11:51:53 +0100 (CET)
+From: Miroslav Benes <mbenes@suse.cz>
+To: Song Chen <chensong_2000@189.cn>
+cc: Steven Rostedt <rostedt@goodmis.org>, mcgrof@kernel.org, 
+    petr.pavlu@suse.com, da.gomez@kernel.org, samitolvanen@google.com, 
+    atomlin@atomlin.com, mhiramat@kernel.org, mark.rutland@arm.com, 
+    mathieu.desnoyers@efficios.com, linux-modules@vger.kernel.org, 
+    linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+    live-patching@vger.kernel.org
+Subject: Re: [PATCH] kernel/trace/ftrace: introduce ftrace module notifier
+In-Reply-To: <e18ed5f4-3917-46e7-bca9-78063e6e4457@189.cn>
+Message-ID: <alpine.LSU.2.21.2602261147150.5739@pobox.suse.cz>
+References: <20260225054639.21637-1-chensong_2000@189.cn> <20260225192724.48ed165e@fedora> <e18ed5f4-3917-46e7-bca9-78063e6e4457@189.cn>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="-2146828000-1599428458-1772103001=:5739"
+Content-ID: <alpine.LSU.2.21.2602261150450.5739@pobox.suse.cz>
+X-Spam-Score: -3.30
+X-Spam-Level: 
+X-Spam-Flag: NO
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
+	CTYPE_MIXED_BOGUS(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_CONTAINS_FROM(1.00)[];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
 	MAILLIST(-0.15)[generic];
-	MIME_GOOD(-0.10)[text/plain];
+	MIME_GOOD(-0.10)[multipart/mixed,text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2088-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
+	DMARC_NA(0.00)[suse.cz];
+	FREEMAIL_TO(0.00)[189.cn];
 	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[14];
+	MIME_TRACE(0.00)[0:+,1:+];
+	TAGGED_FROM(0.00)[bounces-2089-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	RCPT_COUNT_SEVEN(0.00)[8];
 	NEURAL_HAM(-0.00)[-1.000];
-	DKIM_TRACE(0.00)[kernel.org:+];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[suse.cz:+];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 0EBF119FA8A
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,189.cn:email]
+X-Rspamd-Queue-Id: 937DB1A4B6C
 X-Rspamd-Action: no action
 
-Add selftests for the klp-build toolchain. This includes kernel side test
-code and .patch files. The tests cover both livepatch to vmlinux and kernel
-modules.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Check tools/testing/selftests/livepatch/test_patches/README for
-instructions to run these tests.
+---2146828000-1599428458-1772103001=:5739
+Content-Type: text/plain; CHARSET=ISO-2022-JP
+Content-ID: <alpine.LSU.2.21.2602261150451.5739@pobox.suse.cz>
 
-Signed-off-by: Song Liu <song@kernel.org>
+Hi,
 
----
++ Cc: live-patching@vger.kernel.org
 
-AI was used to wrote the test code and .patch files in this.
----
- kernel/livepatch/Kconfig                      |  20 +++
- kernel/livepatch/Makefile                     |   2 +
- kernel/livepatch/tests/Makefile               |   6 +
- kernel/livepatch/tests/klp_test_module.c      | 111 ++++++++++++++
- kernel/livepatch/tests/klp_test_module.h      |   8 +
- kernel/livepatch/tests/klp_test_vmlinux.c     | 138 ++++++++++++++++++
- kernel/livepatch/tests/klp_test_vmlinux.h     |  16 ++
- kernel/livepatch/tests/klp_test_vmlinux_aux.c |  59 ++++++++
- .../selftests/livepatch/test_patches/README   |  15 ++
- .../test_patches/klp_test_hash_change.patch   |  30 ++++
- .../test_patches/klp_test_module.patch        |  18 +++
- .../klp_test_nonstatic_to_static.patch        |  40 +++++
- .../klp_test_static_to_nonstatic.patch        |  39 +++++
- .../test_patches/klp_test_vmlinux.patch       |  18 +++
- 14 files changed, 520 insertions(+)
- create mode 100644 kernel/livepatch/tests/Makefile
- create mode 100644 kernel/livepatch/tests/klp_test_module.c
- create mode 100644 kernel/livepatch/tests/klp_test_module.h
- create mode 100644 kernel/livepatch/tests/klp_test_vmlinux.c
- create mode 100644 kernel/livepatch/tests/klp_test_vmlinux.h
- create mode 100644 kernel/livepatch/tests/klp_test_vmlinux_aux.c
- create mode 100644 tools/testing/selftests/livepatch/test_patches/README
- create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_test_hash_change.patch
- create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_test_module.patch
- create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_test_nonstatic_to_static.patch
- create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_test_static_to_nonstatic.patch
- create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_test_vmlinux.patch
+On Thu, 26 Feb 2026, Song Chen wrote:
 
-diff --git a/kernel/livepatch/Kconfig b/kernel/livepatch/Kconfig
-index 4c0a9c18d0b2..852049601389 100644
---- a/kernel/livepatch/Kconfig
-+++ b/kernel/livepatch/Kconfig
-@@ -30,3 +30,23 @@ config KLP_BUILD
- 	select OBJTOOL
- 	help
- 	  Enable klp-build support
-+
-+config KLP_TEST
-+	bool "Livepatch test code"
-+	depends on LIVEPATCH
-+	help
-+	  Dummy kernel code for testing the klp-build livepatch toolchain.
-+	  Provides built-in vmlinux functions with sysfs interfaces for
-+	  verifying livepatches.
-+
-+	  If unsure, say N.
-+
-+config KLP_TEST_MODULE
-+	tristate "Livepatch test module (klp_test_module)"
-+	depends on KLP_TEST && m
-+	help
-+	  Test module for livepatch testing. Dummy kernel module for
-+	  testing the klp-build toolchain. Provides sysfs interfaces for
-+	  verifying livepatches.
-+
-+	  If unsure, say N.
-diff --git a/kernel/livepatch/Makefile b/kernel/livepatch/Makefile
-index cf03d4bdfc66..751080a62cec 100644
---- a/kernel/livepatch/Makefile
-+++ b/kernel/livepatch/Makefile
-@@ -2,3 +2,5 @@
- obj-$(CONFIG_LIVEPATCH) += livepatch.o
- 
- livepatch-objs := core.o patch.o shadow.o state.o transition.o
-+
-+obj-$(CONFIG_KLP_TEST) += tests/
-diff --git a/kernel/livepatch/tests/Makefile b/kernel/livepatch/tests/Makefile
-new file mode 100644
-index 000000000000..82ae48f54abe
---- /dev/null
-+++ b/kernel/livepatch/tests/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+obj-y                           += klp_test_vmlinux_all.o
-+obj-$(CONFIG_KLP_TEST_MODULE)   += klp_test_module.o
-+
-+klp_test_vmlinux_all-y := klp_test_vmlinux.o \
-+			   klp_test_vmlinux_aux.o
-diff --git a/kernel/livepatch/tests/klp_test_module.c b/kernel/livepatch/tests/klp_test_module.c
-new file mode 100644
-index 000000000000..25cefbe36a2b
---- /dev/null
-+++ b/kernel/livepatch/tests/klp_test_module.c
-@@ -0,0 +1,111 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * klp_test_module.c - Single-file test module for livepatch/klp-build testing
-+ *
-+ * Copyright (C) 2026 Meta Platforms, Inc. and affiliates.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/kobject.h>
-+#include <linux/sysfs.h>
-+#include <linux/string.h>
-+#include "klp_test_module.h"
-+#include "klp_test_vmlinux.h"
-+
-+static int klp_test_module_var1;
-+static int klp_test_module_var2;
-+
-+static noinline ssize_t __klp_test_module_func1(char *buf, int len)
-+{
-+	ssize_t ret = 0;
-+	int i;
-+
-+	for (i = 0; i < len; i++)
-+		klp_test_module_var1 += i;
-+
-+	if (klp_test_module_var1 > 1000)
-+		klp_test_module_var1 = 0;
-+
-+	ret = sysfs_emit(buf, "klp_test_module_func1 unpatched %d\n",
-+			 klp_test_module_var1);
-+	return ret;
-+}
-+
-+ssize_t klp_test_module_func1(char *buf, int len)
-+{
-+	return __klp_test_module_func1(buf, len);
-+}
-+EXPORT_SYMBOL_GPL(klp_test_module_func1);
-+
-+static noinline ssize_t __klp_test_module_func2(char *buf, int len)
-+{
-+	ssize_t ret = 0;
-+	int i;
-+
-+	for (i = 0; i < len; i++)
-+		klp_test_module_var2 += i * 2;
-+
-+	if (klp_test_module_var2 > 1000)
-+		klp_test_module_var2 = 0;
-+
-+	ret = sysfs_emit(buf, "klp_test_module_func2 unpatched %d\n",
-+			 klp_test_module_var2);
-+	return ret;
-+}
-+
-+ssize_t klp_test_module_func2(char *buf, int len)
-+{
-+	return __klp_test_module_func2(buf, len);
-+}
-+EXPORT_SYMBOL_GPL(klp_test_module_func2);
-+
-+static ssize_t func1_show(struct kobject *kobj,
-+			   struct kobj_attribute *attr, char *buf)
-+{
-+	return klp_test_module_func1(buf, 5);
-+}
-+
-+static ssize_t func2_show(struct kobject *kobj,
-+			   struct kobj_attribute *attr, char *buf)
-+{
-+	return klp_test_module_func2(buf, 5);
-+}
-+
-+static struct kobj_attribute func1_attr = __ATTR_RO(func1);
-+static struct kobj_attribute func2_attr = __ATTR_RO(func2);
-+
-+static struct attribute *klp_test_module_attrs[] = {
-+	&func1_attr.attr,
-+	&func2_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group klp_test_module_attr_group = {
-+	.attrs = klp_test_module_attrs,
-+};
-+
-+static struct kobject *klp_test_module_kobj;
-+
-+static int __init klp_test_module_init(void)
-+{
-+	klp_test_module_kobj = kobject_create_and_add("module",
-+						      klp_test_kobj);
-+	if (!klp_test_module_kobj)
-+		return -ENOMEM;
-+
-+	return sysfs_create_group(klp_test_module_kobj,
-+				  &klp_test_module_attr_group);
-+}
-+
-+static void __exit klp_test_module_exit(void)
-+{
-+	sysfs_remove_group(klp_test_module_kobj, &klp_test_module_attr_group);
-+	kobject_put(klp_test_module_kobj);
-+}
-+
-+module_init(klp_test_module_init);
-+module_exit(klp_test_module_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Livepatch single-file test module");
-diff --git a/kernel/livepatch/tests/klp_test_module.h b/kernel/livepatch/tests/klp_test_module.h
-new file mode 100644
-index 000000000000..56a766f4744b
---- /dev/null
-+++ b/kernel/livepatch/tests/klp_test_module.h
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#ifndef _KLP_TEST_MODULE_H
-+#define _KLP_TEST_MODULE_H
-+
-+ssize_t klp_test_module_func1(char *buf, int len);
-+ssize_t klp_test_module_func2(char *buf, int len);
-+
-+#endif /* _KLP_TEST_MODULE_H */
-diff --git a/kernel/livepatch/tests/klp_test_vmlinux.c b/kernel/livepatch/tests/klp_test_vmlinux.c
-new file mode 100644
-index 000000000000..bd4157ea97c0
---- /dev/null
-+++ b/kernel/livepatch/tests/klp_test_vmlinux.c
-@@ -0,0 +1,138 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * klp_test_vmlinux.c - Dummy built-in code for livepatch/klp-build testing
-+ *
-+ * Copyright (C) 2026 Meta Platforms, Inc. and affiliates.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/kobject.h>
-+#include <linux/sysfs.h>
-+#include <linux/init.h>
-+#include <linux/string.h>
-+#include "klp_test_vmlinux.h"
-+
-+static int klp_test_vmlinux_var1;
-+static int klp_test_vmlinux_var2;
-+
-+static noinline int __helper(int x, int len)
-+{
-+	int i, sum = x;
-+
-+	for (i = 0; i < len; i++)
-+		sum += i + 5;
-+	if (sum > 1000)
-+		sum = 0;
-+	return sum;
-+}
-+
-+static noinline ssize_t __klp_test_vmlinux_func1(char *buf, int len)
-+{
-+	ssize_t ret = 0;
-+
-+	klp_test_vmlinux_var1 = __helper(klp_test_vmlinux_var1, len);
-+
-+	ret = sysfs_emit(buf, "klp_test_vmlinux_func1 unpatched %d\n",
-+			 klp_test_vmlinux_var1);
-+	return ret;
-+}
-+
-+ssize_t klp_test_vmlinux_func1(char *buf, int len)
-+{
-+	return __klp_test_vmlinux_func1(buf, len);
-+}
-+EXPORT_SYMBOL_GPL(klp_test_vmlinux_func1);
-+
-+static noinline ssize_t __klp_test_vmlinux_func2(char *buf, int len)
-+{
-+	ssize_t ret = 0;
-+	int i;
-+
-+	for (i = 0; i < len; i++)
-+		klp_test_vmlinux_var2 += i * 2;
-+
-+	if (klp_test_vmlinux_var2 > 1000)
-+		klp_test_vmlinux_var2 = 0;
-+
-+	ret = sysfs_emit(buf, "klp_test_vmlinux_func2 unpatched %d\n",
-+			 klp_test_vmlinux_var2);
-+	return ret;
-+}
-+
-+ssize_t klp_test_vmlinux_func2(char *buf, int len)
-+{
-+	return __klp_test_vmlinux_func2(buf, len);
-+}
-+EXPORT_SYMBOL_GPL(klp_test_vmlinux_func2);
-+
-+static ssize_t vmlinux_func1_show(struct kobject *kobj,
-+				   struct kobj_attribute *attr, char *buf)
-+{
-+	return klp_test_vmlinux_func1(buf, 5);
-+}
-+
-+static ssize_t vmlinux_func2_show(struct kobject *kobj,
-+				   struct kobj_attribute *attr, char *buf)
-+{
-+	return klp_test_vmlinux_func2(buf, 5);
-+}
-+
-+static struct kobj_attribute vmlinux_func1_attr = __ATTR_RO(vmlinux_func1);
-+static struct kobj_attribute vmlinux_func2_attr = __ATTR_RO(vmlinux_func2);
-+
-+static struct attribute *klp_test_attrs[] = {
-+	&vmlinux_func1_attr.attr,
-+	&vmlinux_func2_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group klp_test_attr_group = {
-+	.attrs = klp_test_attrs,
-+};
-+
-+static struct kobject *klp_test_vmlinux_kobj;
-+struct kobject *klp_test_kobj;
-+EXPORT_SYMBOL_GPL(klp_test_kobj);
-+
-+static int __init klp_test_vmlinux_init(void)
-+{
-+	int ret;
-+
-+	klp_test_kobj = kobject_create_and_add("klp_test", kernel_kobj);
-+	if (!klp_test_kobj)
-+		return -ENOMEM;
-+
-+	klp_test_vmlinux_kobj = kobject_create_and_add("vmlinux", klp_test_kobj);
-+	if (!klp_test_vmlinux_kobj) {
-+		kobject_put(klp_test_kobj);
-+		return -ENOMEM;
-+	}
-+
-+	ret = sysfs_create_group(klp_test_vmlinux_kobj, &klp_test_attr_group);
-+	if (ret)
-+		goto err_group;
-+
-+	ret = klp_test_vmlinux_aux_init(klp_test_vmlinux_kobj);
-+	if (ret)
-+		goto err_aux;
-+
-+	return 0;
-+
-+err_aux:
-+	sysfs_remove_group(klp_test_vmlinux_kobj, &klp_test_attr_group);
-+err_group:
-+	kobject_put(klp_test_vmlinux_kobj);
-+	kobject_put(klp_test_kobj);
-+	return ret;
-+}
-+
-+static void __exit klp_test_vmlinux_exit(void)
-+{
-+	klp_test_vmlinux_aux_exit(klp_test_vmlinux_kobj);
-+	sysfs_remove_group(klp_test_vmlinux_kobj, &klp_test_attr_group);
-+	kobject_put(klp_test_vmlinux_kobj);
-+	kobject_put(klp_test_kobj);
-+}
-+
-+late_initcall(klp_test_vmlinux_init);
-diff --git a/kernel/livepatch/tests/klp_test_vmlinux.h b/kernel/livepatch/tests/klp_test_vmlinux.h
-new file mode 100644
-index 000000000000..56d9f7b6d350
---- /dev/null
-+++ b/kernel/livepatch/tests/klp_test_vmlinux.h
-@@ -0,0 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#ifndef _KLP_TEST_VMLINUX_H
-+#define _KLP_TEST_VMLINUX_H
-+
-+#include <linux/kobject.h>
-+
-+extern struct kobject *klp_test_kobj;
-+
-+ssize_t klp_test_vmlinux_func1(char *buf, int len);
-+ssize_t klp_test_vmlinux_func2(char *buf, int len);
-+ssize_t klp_test_vmlinux_func3(char *buf, int len);
-+
-+int klp_test_vmlinux_aux_init(struct kobject *parent);
-+void klp_test_vmlinux_aux_exit(struct kobject *parent);
-+
-+#endif /* _KLP_TEST_VMLINUX_H */
-diff --git a/kernel/livepatch/tests/klp_test_vmlinux_aux.c b/kernel/livepatch/tests/klp_test_vmlinux_aux.c
-new file mode 100644
-index 000000000000..1d76b0308a11
---- /dev/null
-+++ b/kernel/livepatch/tests/klp_test_vmlinux_aux.c
-@@ -0,0 +1,59 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * klp_test_vmlinux_aux.c - Auxiliary built-in code for livepatch/klp-build
-+ *                          testing. This file has its own static __helper()
-+ *                          to test ThinLTO .llvm.<hash> suffix handling.
-+ *
-+ * Copyright (C) 2026 Meta Platforms, Inc. and affiliates.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/kobject.h>
-+#include <linux/sysfs.h>
-+#include <linux/string.h>
-+#include "klp_test_vmlinux.h"
-+
-+static int klp_test_vmlinux_var3;
-+
-+static noinline int __helper(int x, int len)
-+{
-+	int i, sum = x;
-+
-+	for (i = 0; i < len; i++)
-+		sum += i + 10;
-+	if (sum > 1000)
-+		sum = 0;
-+	return sum;
-+}
-+
-+static noinline ssize_t __klp_test_vmlinux_func3(char *buf, int len)
-+{
-+	klp_test_vmlinux_var3 = __helper(klp_test_vmlinux_var3, len);
-+
-+	return sysfs_emit(buf, "klp_test_vmlinux_func3 unpatched %d\n",
-+			 klp_test_vmlinux_var3);
-+}
-+
-+ssize_t klp_test_vmlinux_func3(char *buf, int len)
-+{
-+	return __klp_test_vmlinux_func3(buf, len);
-+}
-+EXPORT_SYMBOL_GPL(klp_test_vmlinux_func3);
-+
-+static ssize_t vmlinux_func3_show(struct kobject *kobj,
-+				   struct kobj_attribute *attr, char *buf)
-+{
-+	return klp_test_vmlinux_func3(buf, 5);
-+}
-+
-+static struct kobj_attribute vmlinux_func3_attr = __ATTR_RO(vmlinux_func3);
-+
-+int klp_test_vmlinux_aux_init(struct kobject *parent)
-+{
-+	return sysfs_create_file(parent, &vmlinux_func3_attr.attr);
-+}
-+
-+void klp_test_vmlinux_aux_exit(struct kobject *parent)
-+{
-+	sysfs_remove_file(parent, &vmlinux_func3_attr.attr);
-+}
-diff --git a/tools/testing/selftests/livepatch/test_patches/README b/tools/testing/selftests/livepatch/test_patches/README
-new file mode 100644
-index 000000000000..8266348aab57
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_patches/README
-@@ -0,0 +1,15 @@
-+This is folder contains patches to test the klp-build toolchain.
-+
-+To run the test:
-+
-+1. Enable CONFIG_KLP_TEST and CONFIG_KLP_TEST_MODULE, and build the kernel.
-+
-+2. Build these patches with:
-+
-+  ./scripts/livepatch/klp-build tools/testing/selftests/livepatch/test_patches/*.patch
-+
-+3. Verify the correctness with:
-+
-+  modprobe klp_test_module
-+  kpatch load livepatch-patch.ko
-+  grep -q unpatched /sys/kernel/klp_test/*/* && echo FAIL || echo PASS
-diff --git a/tools/testing/selftests/livepatch/test_patches/klp_test_hash_change.patch b/tools/testing/selftests/livepatch/test_patches/klp_test_hash_change.patch
-new file mode 100644
-index 000000000000..609d54d6d6f6
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_patches/klp_test_hash_change.patch
-@@ -0,0 +1,30 @@
-+Test ThinLTO .llvm.<hash> suffix handling.
-+
-+Modify a static __helper() function whose body change causes its
-+.llvm.<hash> suffix to change under ThinLTO. Both klp_test_vmlinux.c
-+and klp_test_vmlinux_aux.c define static __helper() with different
-+bodies, so ThinLTO promotes both to globals with different hashes.
-+This patch changes the __helper() in the aux file, which changes its
-+hash, and klp-build must correctly match the old and new symbols.
-+
-+diff --git i/kernel/livepatch/tests/klp_test_vmlinux_aux.c w/kernel/livepatch/tests/klp_test_vmlinux_aux.c
-+--- i/kernel/livepatch/tests/klp_test_vmlinux_aux.c
-++++ w/kernel/livepatch/tests/klp_test_vmlinux_aux.c
-+@@ -20,7 +20,7 @@
-+ 	int i, sum = x;
-+ 
-+ 	for (i = 0; i < len; i++)
-+-		sum += i + 10;
-++		sum += i * 2 + 10;
-+ 	if (sum > 1000)
-+ 		sum = 0;
-+ 	return sum;
-+@@ -30,7 +30,7 @@
-+ {
-+ 	klp_test_vmlinux_var3 = __helper(klp_test_vmlinux_var3, len);
-+ 
-+-	return sysfs_emit(buf, "klp_test_vmlinux_func3 unpatched %d\n",
-++	return sysfs_emit(buf, "klp_test_vmlinux_func3 hash_patched %d\n",
-+ 			 klp_test_vmlinux_var3);
-+ }
-+ 
-diff --git a/tools/testing/selftests/livepatch/test_patches/klp_test_module.patch b/tools/testing/selftests/livepatch/test_patches/klp_test_module.patch
-new file mode 100644
-index 000000000000..d86e75618136
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_patches/klp_test_module.patch
-@@ -0,0 +1,18 @@
-+Test basic module patching.
-+
-+Patch a loadable module function to verify that klp-build can generate
-+a livepatch for module code. Changes __klp_test_module_func1() output
-+from "unpatched" to "patched".
-+
-+diff --git i/kernel/livepatch/tests/klp_test_module.c w/kernel/livepatch/tests/klp_test_module.c
-+--- i/kernel/livepatch/tests/klp_test_module.c
-++++ w/kernel/livepatch/tests/klp_test_module.c
-+@@ -27,7 +27,7 @@
-+ 	if (klp_test_module_var1 > 1000)
-+ 		klp_test_module_var1 = 0;
-+ 
-+-	ret = sysfs_emit(buf, "klp_test_module_func1 unpatched %d\n",
-++	ret = sysfs_emit(buf, "klp_test_module_func1 patched %d\n",
-+ 			 klp_test_module_var1);
-+ 	return ret;
-+ }
-diff --git a/tools/testing/selftests/livepatch/test_patches/klp_test_nonstatic_to_static.patch b/tools/testing/selftests/livepatch/test_patches/klp_test_nonstatic_to_static.patch
-new file mode 100644
-index 000000000000..f26711c6bfac
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_patches/klp_test_nonstatic_to_static.patch
-@@ -0,0 +1,40 @@
-+Test nonstatic-to-static symbol change.
-+
-+Change klp_test_module_func2() from nonstatic (global) to static and
-+remove its EXPORT_SYMBOL_GPL. Also remove its declaration from the
-+header file. This tests klp-build's ability to handle symbol visibility
-+changes where a function that was originally global becomes static in
-+the patched kernel.
-+
-+diff --git i/kernel/livepatch/tests/klp_test_module.c w/kernel/livepatch/tests/klp_test_module.c
-+--- i/kernel/livepatch/tests/klp_test_module.c
-++++ w/kernel/livepatch/tests/klp_test_module.c
-+@@ -49,16 +49,15 @@
-+ 	if (klp_test_module_var2 > 1000)
-+ 		klp_test_module_var2 = 0;
-+
-+-	ret = sysfs_emit(buf, "klp_test_module_func2 unpatched %d\n",
-++	ret = sysfs_emit(buf, "klp_test_module_func2 patched_nts %d\n",
-+ 			 klp_test_module_var2);
-+ 	return ret;
-+ }
-+
-+-ssize_t klp_test_module_func2(char *buf, int len)
-++static noinline ssize_t klp_test_module_func2(char *buf, int len)
-+ {
-+ 	return __klp_test_module_func2(buf, len);
-+ }
-+-EXPORT_SYMBOL_GPL(klp_test_module_func2);
-+
-+ static ssize_t func1_show(struct kobject *kobj,
-+ 			   struct kobj_attribute *attr, char *buf)
-+diff --git i/kernel/livepatch/tests/klp_test_module.h w/kernel/livepatch/tests/klp_test_module.h
-+--- i/kernel/livepatch/tests/klp_test_module.h
-++++ w/kernel/livepatch/tests/klp_test_module.h
-+@@ -3,6 +3,5 @@
-+ #define _KLP_TEST_MODULE_H
-+
-+ ssize_t klp_test_module_func1(char *buf, int len);
-+-ssize_t klp_test_module_func2(char *buf, int len);
-+
-+ #endif /* _KLP_TEST_MODULE_H */
-diff --git a/tools/testing/selftests/livepatch/test_patches/klp_test_static_to_nonstatic.patch b/tools/testing/selftests/livepatch/test_patches/klp_test_static_to_nonstatic.patch
-new file mode 100644
-index 000000000000..673f6c42f698
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_patches/klp_test_static_to_nonstatic.patch
-@@ -0,0 +1,39 @@
-+Test static-to-nonstatic symbol change.
-+
-+Change __klp_test_vmlinux_func2() from static to nonstatic (global).
-+This tests klp-build's ability to handle symbol visibility changes
-+where a function that was originally static becomes globally visible
-+in the patched kernel.
-+
-+diff --git i/kernel/livepatch/tests/klp_test_vmlinux.c w/kernel/livepatch/tests/klp_test_vmlinux.c
-+--- i/kernel/livepatch/tests/klp_test_vmlinux.c
-++++ w/kernel/livepatch/tests/klp_test_vmlinux.c
-+@@ -44,7 +44,7 @@
-+ }
-+ EXPORT_SYMBOL_GPL(klp_test_vmlinux_func1);
-+
-+-static noinline ssize_t __klp_test_vmlinux_func2(char *buf, int len)
-++noinline ssize_t __klp_test_vmlinux_func2(char *buf, int len)
-+ {
-+ 	ssize_t ret = 0;
-+ 	int i;
-+@@ -55,7 +55,7 @@
-+ 	if (klp_test_vmlinux_var2 > 1000)
-+ 		klp_test_vmlinux_var2 = 0;
-+
-+-	ret = sysfs_emit(buf, "klp_test_vmlinux_func2 unpatched %d\n",
-++	ret = sysfs_emit(buf, "klp_test_vmlinux_func2 patched_stn %d\n",
-+ 			 klp_test_vmlinux_var2);
-+ 	return ret;
-+ }
-+diff --git i/kernel/livepatch/tests/klp_test_vmlinux.h w/kernel/livepatch/tests/klp_test_vmlinux.h
-+--- i/kernel/livepatch/tests/klp_test_vmlinux.h
-++++ w/kernel/livepatch/tests/klp_test_vmlinux.h
-+@@ -9,6 +9,7 @@
-+ ssize_t klp_test_vmlinux_func1(char *buf, int len);
-+ ssize_t klp_test_vmlinux_func2(char *buf, int len);
-+ ssize_t klp_test_vmlinux_func3(char *buf, int len);
-++ssize_t __klp_test_vmlinux_func2(char *buf, int len);
-+
-+ int klp_test_vmlinux_aux_init(struct kobject *parent);
-+ void klp_test_vmlinux_aux_exit(struct kobject *parent);
-diff --git a/tools/testing/selftests/livepatch/test_patches/klp_test_vmlinux.patch b/tools/testing/selftests/livepatch/test_patches/klp_test_vmlinux.patch
-new file mode 100644
-index 000000000000..8b1d91381728
---- /dev/null
-+++ b/tools/testing/selftests/livepatch/test_patches/klp_test_vmlinux.patch
-@@ -0,0 +1,18 @@
-+Test basic vmlinux patching.
-+
-+Patch a built-in vmlinux function to verify that klp-build can generate
-+a livepatch for vmlinux code. Changes __klp_test_vmlinux_func1() output
-+from "unpatched" to "patched".
-+
-+diff --git i/kernel/livepatch/tests/klp_test_vmlinux.c w/kernel/livepatch/tests/klp_test_vmlinux.c
-+--- i/kernel/livepatch/tests/klp_test_vmlinux.c
-++++ w/kernel/livepatch/tests/klp_test_vmlinux.c
-+@@ -33,7 +33,7 @@
-+ 
-+ 	klp_test_vmlinux_var1 = __helper(klp_test_vmlinux_var1, len);
-+ 
-+-	ret = sysfs_emit(buf, "klp_test_vmlinux_func1 unpatched %d\n",
-++	ret = sysfs_emit(buf, "klp_test_vmlinux_func1 patched %d\n",
-+ 			 klp_test_vmlinux_var1);
-+ 	return ret;
-+ }
--- 
-2.47.3
+> Hi,
+> 
+> 在 2026/2/26 08:27, Steven Rostedt 写道:
+> > On Wed, 25 Feb 2026 13:46:39 +0800
+> > chensong_2000@189.cn wrote:
+> > 
+> >> From: Song Chen <chensong_2000@189.cn>
+> >>
+> >> Like kprobe, fprobe and btf, this patch attempts to introduce
+> >> a notifier_block for ftrace to decouple its initialization from
+> >> load_module.
+> >>
+> >> Below is the table of ftrace fucntions calls in different
+> >> module state:
+> >>
+> >>  MODULE_STATE_UNFORMED	ftrace_module_init
+> >>  MODULE_STATE_COMING	ftrace_module_enable
+> >>  MODULE_STATE_LIVE	ftrace_free_mem
+> >>  MODULE_STATE_GOING	ftrace_release_mod
+> >>
+> >> Unlike others, ftrace module notifier must take care of state
+> >> MODULE_STATE_UNFORMED to ensure calling ftrace_module_init
+> >> before complete_formation which changes module's text property.
+> >>
+> >> That pretty much remains same logic with its original design,
+> >> the only thing that changes is blocking_notifier_call_chain
+> >> (MODULE_STATE_GOING) has to be moved from coming_cleanup to
+> >> ddebug_cleanup in function load_module to ensure
+> >> ftrace_release_mod is invoked in case complete_formation fails.
+> >>
+> >> Signed-off-by: Song Chen <chensong_2000@189.cn>
+> >> ---
+> >>   kernel/module/main.c  | 14 ++++----------
+> >>   kernel/trace/ftrace.c | 37 +++++++++++++++++++++++++++++++++++++
+> >>   2 files changed, 41 insertions(+), 10 deletions(-)
+> >>
+> >> diff --git a/kernel/module/main.c b/kernel/module/main.c
+> >> index 710ee30b3bea..5dc0a980e9bd 100644
+> >> --- a/kernel/module/main.c
+> >> +++ b/kernel/module/main.c
+> >> @@ -45,7 +45,6 @@
+> >>   #include <linux/license.h>
+> >>   #include <asm/sections.h>
+> >>   #include <linux/tracepoint.h>
+> >> -#include <linux/ftrace.h>
+> >>   #include <linux/livepatch.h>
+> >>   #include <linux/async.h>
+> >>   #include <linux/percpu.h>
+> >> @@ -836,7 +835,6 @@ SYSCALL_DEFINE2(delete_module, const char __user *,
+> >> name_user,
+> >>    blocking_notifier_call_chain(&module_notify_list,
+> >>    			     MODULE_STATE_GOING, mod);
+> >>   	klp_module_going(mod);
+> >> -	ftrace_release_mod(mod);
+> > 
+> > Is the above safe? klp uses ftrace. That means klp_module_going() may
+> > need to be called before ftrace_release_mod(). That said, I wonder if
+> > klp_module_going() could be moved into ftrace_release_mod()?
+> > 
+> >>   
+> 
+> I didn't test with klp, so i'm not sure if it's safe. But i consider klp is
+> the other part which should be decoupled after ftrace and klp should introduce
+> its own notifier.
+> 
+> If klp_module_going must be running before ftrace_release_mod, i can try to
+> use priority in notifier_block to ensure their order.
+> 
+> Let me see if there is any way to use notifier and remain below calling
+> sequence:
+> 
+> ftrace_module_enable
+> klp_module_coming
+> blocking_notifier_call_chain_robust(MODULE_STATE_COMING)
+> 
+> blocking_notifier_call_chain(MODULE_STATE_GOING)
+> klp_module_going
+> ftrace_release_mod
 
+Both klp and ftrace used module notifiers in the past. We abandoned that 
+and opted for direct calls due to issues with ordering at the time. I do 
+not have the list of problems at hand but I remember it was very fragile.
+
+See commits 7dcd182bec27 ("ftrace/module: remove ftrace module 
+notifier"), 7e545d6eca20 ("livepatch/module: remove livepatch module 
+notifier") and their surroundings.
+
+So unless there is a reason for the change (which should be then carefully 
+reviewed and properly tested), I would prefer to keep it as is. What is 
+the motivation? I am failing to find it in the commit log.
+
+Regards,
+Miroslav
+---2146828000-1599428458-1772103001=:5739--
 
