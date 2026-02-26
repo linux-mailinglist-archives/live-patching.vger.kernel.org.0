@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2082-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2083-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id ePGhEt6Zn2mucwQAu9opvQ
-	(envelope-from <live-patching+bounces-2082-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 01:54:54 +0100
+	id sDcYN+aZn2mucwQAu9opvQ
+	(envelope-from <live-patching+bounces-2083-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 01:55:02 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [172.232.135.74])
-	by mail.lfdr.de (Postfix) with ESMTPS id 08DD619FA58
-	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 01:54:54 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 14A8D19FA5F
+	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 01:55:02 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id 75BFC302DAA5
-	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 00:54:53 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id A96EC300E6AD
+	for <lists+live-patching@lfdr.de>; Thu, 26 Feb 2026 00:54:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B22D7081F;
-	Thu, 26 Feb 2026 00:54:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF0EC2DC765;
+	Thu, 26 Feb 2026 00:54:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z7i8MVvI"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PlklNugc"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58CFE4A21
-	for <live-patching@vger.kernel.org>; Thu, 26 Feb 2026 00:54:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABEB32C21F1
+	for <live-patching@vger.kernel.org>; Thu, 26 Feb 2026 00:54:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772067292; cv=none; b=I0EplMLDP7/cCBLYogeubJjub2pAZMFipu9wK9SgJupmTtKq6SWRsKma2AkawrfGZUfR/nlM929oyC3Y3nY6f41V4cA6Ll/byXzmfFdNz0VvE9l0tY5oZDqJddfzsspl+TsA+bUYrExIPkBKJ90e7YaZrNDmRpOjiZdeI31D20Q=
+	t=1772067297; cv=none; b=tfBkt69kQFn8pXAtmFagHvEDjgRuhvkoZCuQ0VhEWBSckmftpDSkgxzsuWQG1pq0KnTaxMPBqv1mocIRwpRg8YpbGZmD5J5rVyaoS6GFik9RwkSK7lYcIXv4BydVSjWJEsfUL53n06XuIkB8Nbhyd+MrZTWvhMBU5WVmnHeuVs0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772067292; c=relaxed/simple;
-	bh=Sikm3tBdRebSPK/JmcCZImuhJKkS3pnJEMKEf+9Njs4=;
+	s=arc-20240116; t=1772067297; c=relaxed/simple;
+	bh=ExTcJA3LLDGN4tefNxh3Ss1LGswGMantD462UCJL7Ks=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IFm7d1jMSumWA2hybUPAVEzbWE9CggoaHv0ftLySTDxQ5aJdJnIq/5MeeNOhFGbhXkwsKL3QXhNxJc+PFaTrEEj243wY1NxlwTkUsz9dz1k/0wcWDxrU29hcw6TDwLh7/SUzBOToWT9q0nOYBfvckhASwACebVK9bjs3O58mmtU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z7i8MVvI; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7170C116D0;
-	Thu, 26 Feb 2026 00:54:50 +0000 (UTC)
+	 MIME-Version; b=mAwYL/TEycJlZQeriCpQoGKZovm0XGO5yRwCRfZg+F9VyMSsjjtOUBmLGGz5vlqJBxoOJXvxRngP5aIUQUKa42TDEndxmtfzCwW+afo91GW629a9cvvVFjwpgwvLvRI9OZTjmcGGdY6PyzcUWgCrpL4tdNidfXoQe70i3Pp024E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PlklNugc; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D5A1C116D0;
+	Thu, 26 Feb 2026 00:54:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772067292;
-	bh=Sikm3tBdRebSPK/JmcCZImuhJKkS3pnJEMKEf+9Njs4=;
+	s=k20201202; t=1772067297;
+	bh=ExTcJA3LLDGN4tefNxh3Ss1LGswGMantD462UCJL7Ks=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Z7i8MVvImXPmeiBtVJstDzA3KPAb/c3BhVj3emNlnBifYgWV26PGWo5x6BpKB56lv
-	 8pwJPylpDOzA8EKVlAd/qk1xJhIsocwquHjGfyY7T+Tk8Hsaft9apg3JPVfFaoCyth
-	 rNe+Cwj2+Zl6Q/JZf9aD5CWgRwMUBLCxRWLvLzLRC20wID7e9aKIgPyau/PK8weN2F
-	 XZl2Uhhpaj71eRZG2cKX7m5nN0XaXJ73eFWQUZBsofOggShaTHnA/Cc9fwX+wuja2p
-	 O2OmWT01cpdG2HlujHsgS8sPAkW+jI5cKrkBe1NRhdrGJQcOl2YNtN3EWJVoAozib3
-	 SQESpsuSJKvxw==
+	b=PlklNugcfSyjljSEtsKbvNFkEcMKdS7NkyrAI9bdpfnDzuhjDqN9CEE2dWAe8+Cpg
+	 UH3FZV043VwM8uUR6WnP0W82OL8026244Z7iCLQuVw5A+CbkknT3WYDpcJpg/RoguO
+	 qy3d1nlbidThhLu9H629GX2NkdPqMYdGWJ5fvhO7TbaXZQKdlQ5Nn6a9js0gxgSH/v
+	 TCvbc+zJxcifG03LXdakIxKZZnWOVW3Uh1BvEq1g99PHDn/ynVKFHbCc4pJLfFuxfT
+	 Uee+eSdB1jzjefT49OA/zY0VtDH96jYFG/RrOYnYM/uEDfGnIGgdgJiJsmRmJCNg0G
+	 De1QrcN8++QdA==
 From: Song Liu <song@kernel.org>
 To: live-patching@vger.kernel.org
 Cc: jpoimboe@kernel.org,
@@ -53,9 +53,9 @@ Cc: jpoimboe@kernel.org,
 	joe.lawrence@redhat.com,
 	kernel-team@meta.com,
 	Song Liu <song@kernel.org>
-Subject: [PATCH v3 2/8] objtool/klp: Remove trailing '_' in demangle_name()
-Date: Wed, 25 Feb 2026 16:54:30 -0800
-Message-ID: <20260226005436.379303-3-song@kernel.org>
+Subject: [PATCH v3 3/8] objtool/klp: Use sym->demangled_name for symbol_name hash
+Date: Wed, 25 Feb 2026 16:54:31 -0800
+Message-ID: <20260226005436.379303-4-song@kernel.org>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260226005436.379303-1-song@kernel.org>
 References: <20260226005436.379303-1-song@kernel.org>
@@ -72,13 +72,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.232.135.74:c];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2082-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2083-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -92,58 +92,156 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.232.128.0/19, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 08DD619FA58
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 14A8D19FA5F
 X-Rspamd-Action: no action
 
-With CONFIG_LTO_CLANG_THIN, it is possible to have nested __UNIQUE_ID_,
-such as:
+For klp-build with LTO, it is necessary to correlate demangled symbols,
+e.g., correlate foo.llvm.<num 1> and foo.llvm.<num 2>. However, these two
+symbols do not have the same str_hash(name). To be able to correlate the
+two symbols, calculate hash based on demanged_name, so that these two
+symbols have the same hash.
 
-  __UNIQUE_ID_addressable___UNIQUE_ID_pci_invalid_bar_694_695
-
-To remove both trailing numbers, also remove trailing '_'.
-
-Also add comments to demangle_name().
+No functional changes intended.
 
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- tools/objtool/elf.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ tools/objtool/elf.c | 58 +++++++++++++++++++++++++++++++--------------
+ 1 file changed, 40 insertions(+), 18 deletions(-)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 2c02c7b49265..0d93e8496e8d 100644
+index 0d93e8496e8d..c784a0484270 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -441,6 +441,19 @@ static int read_sections(struct elf *elf)
+@@ -26,11 +26,18 @@
+ #include <objtool/elf.h>
+ #include <objtool/warn.h>
+ 
++static ssize_t demangled_name_len(const char *name);
++
+ static inline u32 str_hash(const char *str)
+ {
+ 	return jhash(str, strlen(str), 0);
+ }
+ 
++static inline u32 str_hash_demangled(const char *str)
++{
++	return jhash(str, demangled_name_len(str), 0);
++}
++
+ #define __elf_table(name)	(elf->name##_hash)
+ #define __elf_bits(name)	(elf->name##_bits)
+ 
+@@ -294,7 +301,7 @@ static struct symbol *find_local_symbol_by_file_and_name(const struct elf *elf,
+ {
+ 	struct symbol *sym;
+ 
+-	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash(name)) {
++	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
+ 		if (sym->bind == STB_LOCAL && sym->file == file &&
+ 		    !strcmp(sym->name, name)) {
+ 			return sym;
+@@ -308,7 +315,7 @@ struct symbol *find_global_symbol_by_name(const struct elf *elf, const char *nam
+ {
+ 	struct symbol *sym;
+ 
+-	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash(name)) {
++	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
+ 		if (!strcmp(sym->name, name) && !is_local_sym(sym))
+ 			return sym;
+ 	}
+@@ -441,6 +448,28 @@ static int read_sections(struct elf *elf)
  	return 0;
  }
  
 +/*
-+ * Remove number suffix of a symbol.
-+ *
-+ * Specifically, remove trailing numbers for "__UNIQUE_ID_" symbols and
-+ * symbols with '.'.
-+ *
-+ * With CONFIG_LTO_CLANG_THIN, it is possible to have nested __UNIQUE_ID_,
-+ * such as
-+ *
-+ *   __UNIQUE_ID_addressable___UNIQUE_ID_pci_invalid_bar_694_695
-+ *
-+ * to remove both trailing numbers, also remove trailing '_'.
++ * Returns desired length of the demangled name.
++ * If name doesn't need demangling, return strlen(name).
 + */
++static ssize_t demangled_name_len(const char *name)
++{
++	ssize_t len;
++
++	if (!strstarts(name, "__UNIQUE_ID_") && !strchr(name, '.'))
++		return strlen(name);
++
++	for (len = strlen(name) - 1; len >= 0; len--) {
++		char c = name[len];
++
++		if (!isdigit(c) && c != '.' && c != '_')
++			break;
++	}
++	if (len <= 0)
++		return strlen(name);
++	return len;
++}
++
+ /*
+  * Remove number suffix of a symbol.
+  *
+@@ -457,6 +486,7 @@ static int read_sections(struct elf *elf)
  static const char *demangle_name(struct symbol *sym)
  {
  	char *str;
-@@ -463,7 +476,7 @@ static const char *demangle_name(struct symbol *sym)
- 	for (int i = strlen(str) - 1; i >= 0; i--) {
- 		char c = str[i];
++	ssize_t len;
  
--		if (!isdigit(c) && c != '.') {
-+		if (!isdigit(c) && c != '.' && c != '_') {
- 			str[i + 1] = '\0';
- 			break;
- 		}
+ 	if (!is_local_sym(sym))
+ 		return sym->name;
+@@ -464,24 +494,16 @@ static const char *demangle_name(struct symbol *sym)
+ 	if (!is_func_sym(sym) && !is_object_sym(sym))
+ 		return sym->name;
+ 
+-	if (!strstarts(sym->name, "__UNIQUE_ID_") && !strchr(sym->name, '.'))
++	len = demangled_name_len(sym->name);
++	if (len == strlen(sym->name))
+ 		return sym->name;
+ 
+-	str = strdup(sym->name);
++	str = strndup(sym->name, len);
+ 	if (!str) {
+ 		ERROR_GLIBC("strdup");
+ 		return NULL;
+ 	}
+ 
+-	for (int i = strlen(str) - 1; i >= 0; i--) {
+-		char c = str[i];
+-
+-		if (!isdigit(c) && c != '.' && c != '_') {
+-			str[i + 1] = '\0';
+-			break;
+-		}
+-	}
+-
+ 	return str;
+ }
+ 
+@@ -517,9 +539,13 @@ static int elf_add_symbol(struct elf *elf, struct symbol *sym)
+ 		entry = &sym->sec->symbol_list;
+ 	list_add(&sym->list, entry);
+ 
++	sym->demangled_name = demangle_name(sym);
++	if (!sym->demangled_name)
++		return -1;
++
+ 	list_add_tail(&sym->global_list, &elf->symbols);
+ 	elf_hash_add(symbol, &sym->hash, sym->idx);
+-	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
++	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->demangled_name));
+ 
+ 	if (is_func_sym(sym) &&
+ 	    (strstarts(sym->name, "__pfx_") ||
+@@ -543,10 +569,6 @@ static int elf_add_symbol(struct elf *elf, struct symbol *sym)
+ 
+ 	sym->pfunc = sym->cfunc = sym;
+ 
+-	sym->demangled_name = demangle_name(sym);
+-	if (!sym->demangled_name)
+-		return -1;
+-
+ 	return 0;
+ }
+ 
 -- 
 2.47.3
 
