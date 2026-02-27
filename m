@@ -1,226 +1,231 @@
-Return-Path: <live-patching+bounces-2096-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2097-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 6GiXJn+roWm1vQQAu9opvQ
-	(envelope-from <live-patching+bounces-2096-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 27 Feb 2026 15:34:39 +0100
+	id oO2LNvjUoWlcwgQAu9opvQ
+	(envelope-from <live-patching+bounces-2097-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 27 Feb 2026 18:31:36 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0D9011B90B4
-	for <lists+live-patching@lfdr.de>; Fri, 27 Feb 2026 15:34:39 +0100 (CET)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4BF931BB7B7
+	for <lists+live-patching@lfdr.de>; Fri, 27 Feb 2026 18:31:36 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id A4F0D3008D17
-	for <lists+live-patching@lfdr.de>; Fri, 27 Feb 2026 14:28:46 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id B67B730ABF78
+	for <lists+live-patching@lfdr.de>; Fri, 27 Feb 2026 17:27:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CC762C158D;
-	Fri, 27 Feb 2026 14:28:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBF5F361658;
+	Fri, 27 Feb 2026 17:27:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="gJk1XxQ/"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GHg0o6Jm"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90C32C159E
-	for <live-patching@vger.kernel.org>; Fri, 27 Feb 2026 14:28:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B812B346AC3
+	for <live-patching@vger.kernel.org>; Fri, 27 Feb 2026 17:27:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772202526; cv=none; b=YOe/8C4eZP83WFdzInTz8aIU8MnaDQClSQj6oHGAcwKF+tkHZEQWvaf68hYdYIhU8XvoaFKJDaCa2uGml6Wi2TDpi2C5zwSl6TpR4XJOY/eV9sdQa/sW/XAPH1YJ/h3xcH9b+o1FYS2gMlMg9yARh7mpXcxH2X6auYtE1f64NSc=
+	t=1772213228; cv=none; b=tGD+7AO+diKop2mrlPy1+yGJ4/2dzFFQ7NInBVGYd8c2cGCnsxBG4fWq4mrRaM4YvHBx2XmNygXmNwqjCNIc+UgTpRe8UUQGnjwha29g1OoORdknhJGAt40/GEMppK/ykcH7yCBvRekcX2IUGyGNC5450lIJI/0EGhA9LqeYOmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772202526; c=relaxed/simple;
-	bh=i6cBFMHUsx0EJf2CjWn4sCmkc35R9btH0euWmqlbYsk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=FRD3DNKcTLa7H/rJ9FGToWTDTRX/Ha5/PxApBsvSXVWYId3IphnB5JDMd5DPUAsmKiBQcdxWMLiZ/Us+Mn7ml9tYAx9BWH1ECw5dhcuOWP6lleFU5+iJt9PG0RCH77wiSrPXoGGPAfZcWR81/FdJmzHBuIme5AXNnNcCG7g3Yw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=gJk1XxQ/; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4806ce0f97bso17267685e9.0
-        for <live-patching@vger.kernel.org>; Fri, 27 Feb 2026 06:28:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1772202522; x=1772807322; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=i6cBFMHUsx0EJf2CjWn4sCmkc35R9btH0euWmqlbYsk=;
-        b=gJk1XxQ/D3JcPOla8s1C33DQ/wDdlxRIWCZoj/ews5RSQwIIk6UlLtGFiGUFLSeouH
-         XdJUve0YN591X3z/dH49gM+Qh9KzN5ftOpXJZRZskelZ3XQhLIlHMEwXUkXELbjPDlq7
-         jU+MdpSlfo3+OuasNsYzHSsrNMx4gXh8qiX078Ard4OL/bWqhARyvO+hD2V+rxtA44yt
-         eStZBw58j2y0FdrzM7wOEYCt65E+EZftUGPQ66La6t2/430Dr6skxdAw282EIq/OkQf8
-         YpafWujcuLm6oWQ7EmXx7AooynmRme4+iiEGJvr25r/i4kYS04CmwP34GUHbp8ik21O1
-         nF3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772202522; x=1772807322;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=i6cBFMHUsx0EJf2CjWn4sCmkc35R9btH0euWmqlbYsk=;
-        b=ljn7pnvNFcvs8Fl+2/zzk1K3DTDEtUBTTtGFpJh2qu1OCBumS6G2EPBi7i+MahmFM9
-         TC/xTOLDnO5x/wF7dD8PPGkc/dphHitkSZNRJeszlAo/NACpwitXlhmqxICFoRpyuI08
-         85uJo4gjhSdPgq7393sOwTpt2rb8mHRIn5CtlgRzdYh1mO8ftICoZnXSXuN8bY3l9COO
-         cEW0WebBx8eVjkLOteFOWelqOeMK89kLCFXFbtsrZp+rxmDhoM7WvB0QZNibw4g98Rbn
-         gRtBHOCdxKkE9wCsXSSb+lckwZwjxpkswdvNPjl2lIuwr4xVkkjAxaRdTm4FP9QZPv0U
-         CeGg==
-X-Forwarded-Encrypted: i=1; AJvYcCUq0Mg6bd3JnqFIJfQYGzOUBA19AaYhWwaeLEuSkxzSyqg9IWIsQaZvb1fITQAgk4R4CFSFrpbfbuZfp6z1@vger.kernel.org
-X-Gm-Message-State: AOJu0YzvvaKwUk5eHeeFZ+cMfgQv/chn+TPmBsQz2sDn0EgDmloiHYg0
-	3i7tG0Zff+kHu4xYGXEWKhfGMnXnSxGoGm/T0EalgetP6MU90H8YXp5baCdG1lzlaOg=
-X-Gm-Gg: ATEYQzx39BT2wMCvQ+Xrt8dryG3Dk3oqiJP4XMHDg8SqrOW6TpaK4cVoT33sxA3Lkhg
-	5qONnwCaZzLV7r/KpSqXiSVDNxWwa6ErIq2qJXoI4u5tbPXTtANPkXpwJJd1KBU2GdNU2NW1SUh
-	YYJ/TpVe7EdaxrNqJw5r+ltd2fXw3tzFO7wxo/r+hVyhRX+xw/fJbDKJ1+rYcPfiEuqjV9uDb9N
-	jLOmlwIALy4u8Jsu+fQdjL7Jmhxp2oHfJslnj8VvI8KZTXeiwOLlBmdh73nafjFlMXRUs+a/nac
-	N/QPLUNGxBWrEl2dKlY0ubV5YBv8Z3GUlJE4PwveTtfA5a2JsQdWFflBErUP/hy9ZvIbBjVtvWD
-	FAUtHq5KWn6UE7UHr/PEUnXyRCzW61PRqiiYkO6o3JQhAa88FtL5XKS8GM9CJzArL+xN0wczq2k
-	DS2AQwSDXOlPV66uyquyDAUquhEnLeLuDGCfEralRq8wGRLrXuytLJXl9DhMQSJ3BWlXjXBHOW
-X-Received: by 2002:a05:600c:470a:b0:477:abea:9028 with SMTP id 5b1f17b1804b1-483c9ba68eemr42134715e9.6.1772202522131;
-        Fri, 27 Feb 2026 06:28:42 -0800 (PST)
-Received: from ?IPv6:2804:5078:81a:8e00:58f2:fc97:371f:3? ([2804:5078:81a:8e00:58f2:fc97:371f:3])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56a9215ac92sm6872333e0c.14.2026.02.27.06.28.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Feb 2026 06:28:41 -0800 (PST)
-Message-ID: <42ab207746352197bc11fc9c2eafcb8663cd1362.camel@suse.com>
-Subject: Re: [PATCH 2/2] selftests: livepatch: functions.sh: Workaround
- heredoc on older bash
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Miroslav Benes <mbenes@suse.cz>
-Cc: Joe Lawrence <joe.lawrence@redhat.com>, Josh Poimboeuf
- <jpoimboe@kernel.org>,  Jiri Kosina <jikos@kernel.org>, Petr Mladek
- <pmladek@suse.com>, Shuah Khan <shuah@kernel.org>, 
-	live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Date: Fri, 27 Feb 2026 11:28:37 -0300
-In-Reply-To: <3a4a2d27c241bda76a0b5cf812f7921088d5cbd8.camel@suse.com>
-References: <20260220-lp-test-trace-v1-0-4b6703cd01a6@suse.com>
-		  <20260220-lp-test-trace-v1-2-4b6703cd01a6@suse.com>
-		  <aZx1ViTc7NJws-rf@redhat.com>
-		 <5ca16692b304185df695e517434b16e59cb15a42.camel@suse.com>
-		 <alpine.LSU.2.21.2602261337170.5739@pobox.suse.cz>
-	 <3a4a2d27c241bda76a0b5cf812f7921088d5cbd8.camel@suse.com>
-Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
- keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
- Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
- gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
- QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
- GO8seNG8sYiP6JfRjl7Hyqca6YsE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (by Flathub.org) 
+	s=arc-20240116; t=1772213228; c=relaxed/simple;
+	bh=Fg5Jrw4IVvKU3hn7qV5fh+bR7WQGoWAoVrSiTSkdZVY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ITwksg/naf8x2ZrbccHA2bU6TZUWxp2yzTVUCSDxSat3eKgoOhNCWT23eCDG9mtdmK9PQyiAvnz8fNrz4ZoiooDTnBKaZJ62x8i8Fvn8JV2SM7pE2L2V4ekbwTusrqKtwqSkfHrQguhSrKTJ1FJyboJJrKQ+loyNy2H0dTQ4H78=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GHg0o6Jm; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D46C2BC9E
+	for <live-patching@vger.kernel.org>; Fri, 27 Feb 2026 17:27:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772213228;
+	bh=Fg5Jrw4IVvKU3hn7qV5fh+bR7WQGoWAoVrSiTSkdZVY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=GHg0o6JmVh/DHJ+9MH9M0Odk2ZX16T+KhsJeDkhPmq81U8a/Sm5ZMcVrq49JmJ2m1
+	 mh+CXLLkrzSHkAfPbfJuMGrQz+/zcLO9pC8ITW99pfCgdYgKr++j/JoYsYKfIEc/m2
+	 +9zAZii1lgPbhPZtN0uuK4ukw56Wso6NQbLcVYPuuGEen1/wpeZD6Q6QgkC842+sdV
+	 Wmkcmo07osb7IFnOT8PwuZKM+9NVa1PI1Dn2wuDSFA8bH/6Wsh6330kN8CD+0QDe3R
+	 oP205YsXz3VkA21wQ47Z9W8baFAncBTHBmKyCEDNI0NsZaNn9FMHyDST1SSyT7Xq40
+	 lHEB3vs++bkeA==
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-896f9397ecdso28216906d6.3
+        for <live-patching@vger.kernel.org>; Fri, 27 Feb 2026 09:27:08 -0800 (PST)
+X-Gm-Message-State: AOJu0YzlZYTKiW5NJ1U+8PyJ2gy6AIghwB0xMOjqFymuVfTwMXeUajV9
+	vAwmyxyWt8EdvDgSD5C/IOtGwMAoMGo/8pK4wmKFyV6YIi2zwVD/CiEK7VMFZMCqYOLGh2AiYj+
+	oLsg5TQihSaDvvwZuGG/NoEHawnHoylQ=
+X-Received: by 2002:a05:6214:20e3:b0:892:7085:4dd8 with SMTP id
+ 6a1803df08f44-899d1e88f01mr55996736d6.59.1772213227703; Fri, 27 Feb 2026
+ 09:27:07 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20260226005436.379303-1-song@kernel.org> <20260226005436.379303-9-song@kernel.org>
+ <alpine.LSU.2.21.2602271052240.374@pobox.suse.cz>
+In-Reply-To: <alpine.LSU.2.21.2602271052240.374@pobox.suse.cz>
+From: Song Liu <song@kernel.org>
+Date: Fri, 27 Feb 2026 09:26:55 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW69EZTcMGyXSKv2fEjh7mhtYaSxriZrSgX0nTPCEYKS7A@mail.gmail.com>
+X-Gm-Features: AaiRm51L5lI08jBwMADuEeu2tBPRPIsMJPTzcnCTLZZ7N6MhUbfPKjhGkH7NHuA
+Message-ID: <CAPhsuW69EZTcMGyXSKv2fEjh7mhtYaSxriZrSgX0nTPCEYKS7A@mail.gmail.com>
+Subject: Re: [PATCH v3 8/8] livepatch: Add tests for klp-build toolchain
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: live-patching@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org, 
+	pmladek@suse.com, joe.lawrence@redhat.com, kernel-team@meta.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	FROM_HAS_DN(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2096-lists,live-patching=lfdr.de];
 	MIME_TRACE(0.00)[0:+];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mpdesouza@suse.com,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2097-lists,live-patching=lfdr.de];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	FROM_HAS_DN(0.00)[];
 	TO_DN_SOME(0.00)[];
 	RCVD_COUNT_FIVE(0.00)[5];
-	MID_RHS_MATCH_FROM(0.00)[];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[trace.sh:url,ftrace.sh:url,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.com:mid,suse.com:dkim]
-X-Rspamd-Queue-Id: 0D9011B90B4
+	TAGGED_RCPT(0.00)[live-patching];
+	RCPT_COUNT_SEVEN(0.00)[7];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,mail.gmail.com:mid]
+X-Rspamd-Queue-Id: 4BF931BB7B7
 X-Rspamd-Action: no action
 
-On Thu, 2026-02-26 at 11:34 -0300, Marcos Paulo de Souza wrote:
-> On Thu, 2026-02-26 at 13:40 +0100, Miroslav Benes wrote:
-> > Hi,
-> >=20
-> > On Mon, 23 Feb 2026, Marcos Paulo de Souza wrote:
-> >=20
-> > > On Mon, 2026-02-23 at 10:42 -0500, Joe Lawrence wrote:
-> > > > On Fri, Feb 20, 2026 at 11:12:34AM -0300, Marcos Paulo de Souza
-> > > > wrote:
-> > > > > When running current selftests on older distributions like
-> > > > > SLE12-
-> > > > > SP5 that
-> > > > > contains an older bash trips over heredoc. Convert it to
-> > > > > plain
-> > > > > echo
-> > > > > calls, which ends up with the same result.
-> > > > >=20
-> > > >=20
-> > > > Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
-> > >=20
-> > > Thanks for the review Joe!
-> > >=20
-> > > >=20
-> > > > Just curious, what's the bash/heredoc issue?=C2=A0 All I could find
-> > > > via
-> > > > google search was perhaps something to do with the temporary
-> > > > file
-> > > > implementation under the hood.
-> > >=20
-> > > # ./test-ftrace.sh=20
-> > > cat: -: No such file or directory
-> > > TEST: livepatch interaction with ftrace_enabled sysctl ...
-> > > ^CQEMU:
-> > > Terminated
-> >=20
-> > I cannot reproduce it locally on SLE12-SP5. The patched test-
-> > ftrace.sh=20
-> > runs smoothly without 2/2.
-> >=20
-> > linux:~/linux/tools/testing/selftests/livepatch # ./test-ftrace.sh=20
-> > TEST: livepatch interaction with ftrace_enabled sysctl ... ok
-> > TEST: trace livepatched function and check that the live patch
-> > remains in effect ... ok
-> > TEST: livepatch a traced function and check that the live patch
-> > remains in effect ... ok
-> >=20
-> > GNU bash, version 4.3.48(1)-release (x86_64-suse-linux-gnu)
-> >=20
-> > Does "set -x" in the script give you anything interesting?
->=20
-> Nope:
->=20
-> boot_livepatch:/mnt/tools/testing/selftests/livepatch # ./test-
-> trace.sh
-> + cat=C2=A0=C2=A0=C2=A0=C2=A0=20
-> cat: -: No such file or directory=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
-> + set_ftrace_enabled 1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=20
-> + local can_fail=3D0
->=20
->=20
-> Same version here:
-> GNU bash, version 4.3.48(1)-release (x86_64-suse-linux-gnu)
->=20
-> I'm using virtme-ng, so I'm not sure if this is related. At the same
-> time it works on SLE15-SP4, using the same virtme-ng, but with a
-> different bash:
-> GNU bash, version 4.4.23(1)-release (x86_64-suse-linux-gnu)
->=20
-> So I was blaming bash for this issue...
+Hi Miroslav,
 
-This patch can be skipped. For the record, I discovered that it only
-happens when vng is called using --rw, making it to fail on older bash
-since it doesn't create overlays for /tmp. If the overlay is added the
-issue is gone.
+On Fri, Feb 27, 2026 at 2:05=E2=80=AFAM Miroslav Benes <mbenes@suse.cz> wro=
+te:
+>
+> Hi,
+>
+> I have a couple of questions before reviewing the code itself. See below.
+> I removed the code completely as it seems better to have it compact. Sorr=
+y
+> if it is too confusing in the end and I apologize for being late to the
+> party. We can always merge the first 7 patches when they are settled and
+> keep this one separate.
 
-So, this patch can be skipped. Thanks Miroslav for testing!
+Yes, I was also thinking this patch will need more discussions than the
+rest of the set.
 
->=20
-> >=20
-> > Miroslav
+> On Wed, 25 Feb 2026, Song Liu wrote:
+>
+> > Add selftests for the klp-build toolchain. This includes kernel side te=
+st
+> > code and .patch files. The tests cover both livepatch to vmlinux and ke=
+rnel
+> > modules.
+> >
+> > Check tools/testing/selftests/livepatch/test_patches/README for
+> > instructions to run these tests.
+> >
+> > Signed-off-by: Song Liu <song@kernel.org>
+> >
+> > ---
+> >
+> > AI was used to wrote the test code and .patch files in this.
+>
+> This should go to the changelog directly. See new
+> Documentation/process/generated-content.rst.
+
+Thanks for pointing this out. I didn't know we had this guidance.
+
+>
+> > ---
+> >  kernel/livepatch/Kconfig                      |  20 +++
+> >  kernel/livepatch/Makefile                     |   2 +
+> >  kernel/livepatch/tests/Makefile               |   6 +
+> >  kernel/livepatch/tests/klp_test_module.c      | 111 ++++++++++++++
+> >  kernel/livepatch/tests/klp_test_module.h      |   8 +
+> >  kernel/livepatch/tests/klp_test_vmlinux.c     | 138 ++++++++++++++++++
+> >  kernel/livepatch/tests/klp_test_vmlinux.h     |  16 ++
+> >  kernel/livepatch/tests/klp_test_vmlinux_aux.c |  59 ++++++++
+> >  .../selftests/livepatch/test_patches/README   |  15 ++
+> >  .../test_patches/klp_test_hash_change.patch   |  30 ++++
+> >  .../test_patches/klp_test_module.patch        |  18 +++
+> >  .../klp_test_nonstatic_to_static.patch        |  40 +++++
+> >  .../klp_test_static_to_nonstatic.patch        |  39 +++++
+> >  .../test_patches/klp_test_vmlinux.patch       |  18 +++
+> >  14 files changed, 520 insertions(+)
+> >  create mode 100644 kernel/livepatch/tests/Makefile
+> >  create mode 100644 kernel/livepatch/tests/klp_test_module.c
+> >  create mode 100644 kernel/livepatch/tests/klp_test_module.h
+> >  create mode 100644 kernel/livepatch/tests/klp_test_vmlinux.c
+> >  create mode 100644 kernel/livepatch/tests/klp_test_vmlinux.h
+> >  create mode 100644 kernel/livepatch/tests/klp_test_vmlinux_aux.c
+> >  create mode 100644 tools/testing/selftests/livepatch/test_patches/READ=
+ME
+> >  create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_=
+test_hash_change.patch
+> >  create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_=
+test_module.patch
+> >  create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_=
+test_nonstatic_to_static.patch
+> >  create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_=
+test_static_to_nonstatic.patch
+> >  create mode 100644 tools/testing/selftests/livepatch/test_patches/klp_=
+test_vmlinux.patch
+>
+> We store test modules in tools/testing/selftests/livepatch/test_modules/
+> now. Could you move klp_test_module.c there, please? You might also reuse
+> existing ones for the purpose perhaps.
+
+IIUC, tools/testing/selftests/livepatch/test_modules/ is more like an out
+of tree module. In the case of testing klp-build, we prefer to have it to
+work the same as in-tree modules. This is important because klp-build
+is a toolchain, and any changes of in-tree Makefiles may cause issues
+with klp-build. Current version can catch these issues easily. If we build
+the test module as an OOT module, we may miss some of these issues.
+In the longer term, we should consider adding klp-build support to build
+livepatch for OOT modules. But for now, good test coverage for in-tree
+modules are more important.
+
+>
+> What about vmlinux? I understand that it provides a lot more flexibility
+> to have separate functions for testing but would it be somehow sufficient
+> to use the existing (real) kernel functions? Like cmdline_proc_show() and
+> such which we use everywhere else? Or would it be to limited? I am fine i=
+f
+> you find it necessary in the end. I just think that reusing as much as
+> possible is generally a good approach.
+
+I think using existing functions would be too limited, and Joe seems to
+agree with this based on his experience. To be able to test corner cases
+of the compiler/linker, such as LTO, we need special code patterns.
+OTOH, if we want to use an existing kernel function for testing, it needs
+to be relatively stable, i.e., not being changed very often. It is not alwa=
+ys
+easy to find some known to be stable code that follows specific patterns.
+If we add dedicated code as test targets, things will be much easier
+down the road.
+
+CC Joe to chime in here.
+
+>
+> The patch mentiones kpatch in some places. Could you replace it, please?
+
+I was using kpatch for testing. I can replace it with insmod.
+
+> And a little bit of bikeshedding at the end. I think it would be more
+> descriptive if the new config options and tests (test modules) have
+> klp-build somewhere in the name to keep it clear. What do you think?
+
+Technically, we can also use these tests to test other toolchains, for
+example, kpatch-build. I don't know ksplice or kGraft enough to tell
+whether they can benefit from these tests or not. OTOH, I am OK
+changing the name/description of these config options.
+
+Thanks,
+Song
 
