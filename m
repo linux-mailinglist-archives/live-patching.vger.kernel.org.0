@@ -1,59 +1,59 @@
-Return-Path: <live-patching+bounces-2129-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2130-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id GH3lNMHbqWneGQEAu9opvQ
-	(envelope-from <live-patching+bounces-2129-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 20:38:41 +0100
+	id eAzzIxrdqWm4GgEAu9opvQ
+	(envelope-from <live-patching+bounces-2130-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 20:44:26 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4FC17217A45
-	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 20:38:41 +0100 (CET)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 099C9217B59
+	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 20:44:25 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 443ED3014414
-	for <lists+live-patching@lfdr.de>; Thu,  5 Mar 2026 19:38:40 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 4F4CF30488B4
+	for <lists+live-patching@lfdr.de>; Thu,  5 Mar 2026 19:43:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B54943043C9;
-	Thu,  5 Mar 2026 19:38:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A00023E3DB3;
+	Thu,  5 Mar 2026 19:43:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SsSQElid"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NN65Evxi"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924192F5A36
-	for <live-patching@vger.kernel.org>; Thu,  5 Mar 2026 19:38:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F312877DA
+	for <live-patching@vger.kernel.org>; Thu,  5 Mar 2026 19:43:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772739517; cv=none; b=hinhISeVRE0ARGNYULyso7tSZ5bqoJe5gGy5LgXQ4/ISbQbDLqTHcDKRCn1X0N5w4ZLXEHtLUNG651rgoL/Kelhjpd1NHekkFffZuaF0t1nxorWunsoZIPtt7xoSiUdW70N5RRIxmETop5UeBrmu6Pknv+/zsWx7qhMRgkJP+Rg=
+	t=1772739798; cv=none; b=WtlL30SMs7C4rHDWuTMv9BB6iaTsMMOiwhC+gO7T11F8/2bjFs4c+ZXHieIfMfMkYShuWR5GuEVbo8SGxGGt5Zrjcm8e1ruwUIAi+FTsBZM9kntbc1W3ug/qeBgh4TpmjdpxuQIsllTypggqQMrfIhtaIuRPrqZPP6GAInOzXIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772739517; c=relaxed/simple;
-	bh=JNL+EcooIV0QgYx9mtEnjcmMpxsPDmd9BeXjcNWIxQc=;
+	s=arc-20240116; t=1772739798; c=relaxed/simple;
+	bh=qW143HAwkH2l7Iivf/aqhFq1jbZqNvHXrvu+kO+oqIs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EhwLb9qovdROeoeIMPIL7kIHi9yV8hrA7HOJNhZcHF6j1C5Z3tIJID8FO8/usKOztxQ4mRjzst+gphM7zosl9B9CZ1IWhoACOQ2UJEbM75/l2ZxuVh5nB6BrcMruwkHNGSAiVCmRe05bdfrlmR2n7bn26xt68OOoAiuCdrPomyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SsSQElid; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A93EC116C6;
-	Thu,  5 Mar 2026 19:38:36 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=tdWoEqcrzFwk4ejt1SjgXcxcKt5scSVw65J0k9y4vutikaX7bntMWh5gMGblt7RSGNQog1f9nCQerLm/RFsrIGqyS4UBZLN5EbF3KdbxRcrhHg6hMTuPEiH1hAMN8fwSmIu8KmCVZXlGJADyuw6KQa8qUP1Quk+AgXZlF5clHBc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NN65Evxi; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A31C0C19422;
+	Thu,  5 Mar 2026 19:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772739517;
-	bh=JNL+EcooIV0QgYx9mtEnjcmMpxsPDmd9BeXjcNWIxQc=;
+	s=k20201202; t=1772739798;
+	bh=qW143HAwkH2l7Iivf/aqhFq1jbZqNvHXrvu+kO+oqIs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SsSQElid/2oHztO3iswvVIyZZab6m2Cs9yDnL4KG8fExgp0X7XTzcdBpC00nUs6M6
-	 2t5cexs9hgvSgQF4kSSxxVvCEs75YBXYqNkHRYb36vkX1H8h/FtbxMTj7+hU/Ku8Xs
-	 IVTbwJmBuXtZlr+Wmv8H2bNGd920cBczyfgMwzAzrZCeL39FOPqmG21JhxikDvTp/q
-	 pcH7mYb5vwzT0djrJ+tHYaYhz7l28/zwD7AVJxFQXaV1p4ld9C9nnQa3xagj5pzGRN
-	 cJbsSUAcOgVJVtCluQaA1ptXc+qNFc8VKBlKUh33o8uMnrDrRX75aaxV213YYqsffe
-	 0St5ZL+SuT33w==
-Date: Thu, 5 Mar 2026 11:38:34 -0800
+	b=NN65Evxiibr2VSZXZh9q/6XMnfDPBBYB7s9PVyxcwQHacBw8e9SkPVjfduN8YXD6K
+	 UN21U3gQg1uVKsbm2OWwqSI9++ofZI6QPqE+xHHK/8h/lfP6RrLFZNmbMoEI4ynSYN
+	 V/IBh/eEsW4AbFkw0Qah3WjOtEdM3r0WN7sKNZHpMCvGhea3wCpIccaeTCA8hMUTOb
+	 XIhPZbBMJa/KPPm/wxqT1y2P09RHIXXrWRCCnfFk/T+23OHif4xw8Ua78OfFroedNz
+	 814UbexqQr6uPcXTwkNVSTMlee1fIueM59SMiPG9zvDoePhNui+kKpwsQb9puLRsFR
+	 2R0V8UdK3H8PA==
+Date: Thu, 5 Mar 2026 11:43:16 -0800
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Song Liu <song@kernel.org>
 Cc: live-patching@vger.kernel.org, jikos@kernel.org, mbenes@suse.cz, 
 	pmladek@suse.com, joe.lawrence@redhat.com, kernel-team@meta.com
-Subject: Re: [PATCH v3 1/8] objtool/klp: Remove redundent strcmp in
- correlate_symbols
-Message-ID: <a5dvhxvye6ix6irath7yvlpm5opuhd3azuldz3vuol4gg5kdpx@ih6lmhuzwyo2>
+Subject: Re: [PATCH v3 3/8] objtool/klp: Use sym->demangled_name for
+ symbol_name hash
+Message-ID: <el2c3kyz3s2tzwqmfk5npyopzykzpax4clt523jysktxpxcysq@vvojeeq6vyf6>
 References: <20260226005436.379303-1-song@kernel.org>
- <20260226005436.379303-2-song@kernel.org>
+ <20260226005436.379303-4-song@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -62,62 +62,63 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260226005436.379303-2-song@kernel.org>
-X-Rspamd-Queue-Id: 4FC17217A45
+In-Reply-To: <20260226005436.379303-4-song@kernel.org>
+X-Rspamd-Queue-Id: 099C9217B59
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	MID_RHS_NOT_FQDN(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2129-lists,live-patching=lfdr.de];
-	FROM_HAS_DN(0.00)[];
-	DKIM_TRACE(0.00)[kernel.org:+];
 	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2130-lists,live-patching=lfdr.de];
+	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	MIME_TRACE(0.00)[0:+];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
 	MISSING_XM_UA(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
-	TAGGED_RCPT(0.00)[live-patching];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	RCPT_COUNT_SEVEN(0.00)[7];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TO_DN_SOME(0.00)[]
+	TAGGED_RCPT(0.00)[live-patching];
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo]
 X-Rspamd-Action: no action
 
-On Wed, Feb 25, 2026 at 04:54:29PM -0800, Song Liu wrote:
-> find_global_symbol_by_name() already compares names of the two symbols,
-> so there is no need to compare them again.
-> 
-> Signed-off-by: Song Liu <song@kernel.org>
-> ---
->  tools/objtool/klp-diff.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-> index a3198a63c2f0..57606bc3390a 100644
-> --- a/tools/objtool/klp-diff.c
-> +++ b/tools/objtool/klp-diff.c
-> @@ -454,7 +454,7 @@ static int correlate_symbols(struct elfs *e)
->  
->  		sym2 = find_global_symbol_by_name(e->patched, sym1->name);
->  
-> -		if (sym2 && !sym2->twin && !strcmp(sym1->name, sym2->name)) {
-> +		if (sym2 && !sym2->twin) {
->  			sym1->twin = sym2;
->  			sym2->twin = sym1;
+On Wed, Feb 25, 2026 at 04:54:31PM -0800, Song Liu wrote:
+> +/*
+> + * Returns desired length of the demangled name.
+> + * If name doesn't need demangling, return strlen(name).
+> + */
+> +static ssize_t demangled_name_len(const char *name)
+> +{
+> +	ssize_t len;
+> +
+> +	if (!strstarts(name, "__UNIQUE_ID_") && !strchr(name, '.'))
+> +		return strlen(name);
+> +
+> +	for (len = strlen(name) - 1; len >= 0; len--) {
+> +		char c = name[len];
+> +
+> +		if (!isdigit(c) && c != '.' && c != '_')
+> +			break;
+> +	}
+> +	if (len <= 0)
+> +		return strlen(name);
+> +	return len;
+> +}
 
-Subject has a typo ("redundent"), and function names are missing "()":
-
-  Remove redundant strcmp() in correlate_symbols()
+This actually returns the index of the last char rather than the length.
+Should "len" be renamed to "idx" and then it can return "idx + 1"?
 
 -- 
 Josh
