@@ -1,88 +1,56 @@
-Return-Path: <live-patching+bounces-2126-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2127-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id iNzIItuiqWl5BQEAu9opvQ
-	(envelope-from <live-patching+bounces-2126-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 16:35:55 +0100
+	id 2PeGCJfQqWmYFgEAu9opvQ
+	(envelope-from <live-patching+bounces-2127-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 19:51:03 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 951192149FE
-	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 16:35:54 +0100 (CET)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id A64A3217211
+	for <lists+live-patching@lfdr.de>; Thu, 05 Mar 2026 19:51:02 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 26E2330668DA
-	for <lists+live-patching@lfdr.de>; Thu,  5 Mar 2026 15:20:58 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 213B03087D2B
+	for <lists+live-patching@lfdr.de>; Thu,  5 Mar 2026 18:50:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3E4C37BE99;
-	Thu,  5 Mar 2026 15:20:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8F322D9ECD;
+	Thu,  5 Mar 2026 18:50:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="g+5v0h1T"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YJKwmfEu"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 611823BE154
-	for <live-patching@vger.kernel.org>; Thu,  5 Mar 2026 15:20:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 852872D0603
+	for <live-patching@vger.kernel.org>; Thu,  5 Mar 2026 18:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772724056; cv=none; b=GPXT8gpMnlxNgcmAuJiQN+A+BN/mevCZMHGSxEYyNv7Nce8Q8x/3/525TunC8FRnuVjElX1w2lkfuyTb8UJ9AbZEIAhsEHGXtckJp74ViwN5kjyR+WxiX6TiVYiVe+f75lWupen9RJwMklb1aEyQIJDR3eh9aF5aDCXXmcI5pWc=
+	t=1772736656; cv=none; b=SDRH/MjFTkgl09XAa/Lc7AxmWAPdHn3jiAdFrvI7gkOq1/EfufO07PTV1j8PXYpARhhEpWNYtS5KxuNDMSfUemjAs/L4D4TVTPQEsqxwj9AJayuwheCj3kFcUr1mSZnSjbMOSpIqVzN79WD7utIgokbJI28FIWLRN7WDiqdrVLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772724056; c=relaxed/simple;
-	bh=vgF/42HSRGCHCud38H76BcD3xd1xoVfPLioOUYjzl2k=;
+	s=arc-20240116; t=1772736656; c=relaxed/simple;
+	bh=ZpJ3xSD7T1Kv84rXWd6Gw/ltqbl3d1h4ltapX+7b1a0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F/vZRhfNw+nZ22XlEHHaNIFmuJ+ABbHZkQvqZNHI/6O8mCv0Aeu0v2NH1Mbsk8ufxTdnWKapDnfS2i2UmJZY66RWqxWJkPjIo/kYInQTFYmFG2h4UjdP/SNyqcy6+VUmffuc8Gzgosea+POu3B13qEyaUg6MayMv7sNPdLO9rLU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=g+5v0h1T; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-483a233819aso80572285e9.3
-        for <live-patching@vger.kernel.org>; Thu, 05 Mar 2026 07:20:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1772724054; x=1773328854; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=G2XinCcOcOVs3jXZ/3RhlXte/lcWkGjrlAL+WQQoS9g=;
-        b=g+5v0h1T4GTDxw3UMQZwikXtLt6fBf3UU/TaYDMrgV1io6+5BYvNHexoJaOrWtt7sD
-         PCCu8wlcTY4R0LIOAphGC1F7zHflhsTeo/NQhtIZ7miGKy7U3NyiWWnn4FQdHvlFoobh
-         XZuQ8u2k0ndJ4V3ZVs1LriWAonhue2Kd3/XlV73r7DZnVo2HInto1U7jVqgVuHyOg/9t
-         RRYBXXoYF6M/8An47aNkkkjK8ndx66+KmFYiyL4xz+4bksH0hAA5UyR1AcsGvy7hsVY+
-         Mo3YjzSDbwhQZr3x1ELGSunrRBl3PPN5PPBBcIfhJOsAcq5hxLqyZ5TAKYTbFjA82ZA3
-         d87w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772724054; x=1773328854;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=G2XinCcOcOVs3jXZ/3RhlXte/lcWkGjrlAL+WQQoS9g=;
-        b=W6iZ69LDtOuip+WbcJhucVXFJ+FYxuAyQ+EeZ/uPmMx0lMLDnDNhiKqOHhtH1ZC5cS
-         H4RcGeOf36hx45RWJYZ0/A2IXGlgI7jjMaqdRk/HjQYeTB142Li/yACTDc8ePhowvQil
-         vOwacMw9UiBwH18HTcIgsuvGbLlkW2bp9+asIQNSy0Q5i1iAnXGTXFAETFV8cieTpHaC
-         iGv5VZRUW0w/sqKtNFOyDnVmJYLuqqWigJlGCdxUjaEDPbnOqp0DqDMVcFRyvOWKKYmO
-         zkQghQPyaXOwgXKCV3g+5BYOwSELH3m+i53Td99FmqsOwxeeKAPWBC8BsmbaonMcL/dg
-         K/JA==
-X-Forwarded-Encrypted: i=1; AJvYcCVNyf5PvoCQ1vfGB6v+PoVWSC7jDsNyW8CH9RJXmqnfMaad7sDrCXb9DhxQZ1KkhmichHbxqpEPZOa4hiBq@vger.kernel.org
-X-Gm-Message-State: AOJu0YwH+5sIXSAMmPzj1Zlr9Ev1onnqEgDsImA/GgrggPENf09AMmfa
-	OdXyyoNWrQgOwLUz5w5P7gK8eAgyLEs9GiOL1DzFGw0m4yiV/L+WUoUsnAZUPpmVxls=
-X-Gm-Gg: ATEYQzwBhYkM1HmesWrUavbydeKoOexs5kJYPm1ZJtKCF2JTt1yi16dDJDQUc/aDoh4
-	QnVj6e0AttBc53UmCeSqoXkboBt3LhXu+bk3y38HAZrK2CTf1WcRdbKT/6e71Ebu++oOr8gYQgF
-	T7Suci5LDqMJt5OYDcYnNAjjv+iI5bm4K5woeTiaXAE2/g6TFPcqP2maHZYPtp3Q5Gm2/yPwToR
-	MLzURBNYeLxcsU6RGjK7pgmrqV4s1AaqNq2fEezmduOpo6JQbHtHV1kxajXdN+6TJA7szjK7Mnf
-	bNJeB43yhY/61W3VAptl/L6AfwH3pBuqv7CLd9VmOhIhufaZ64Nf0+XLGi7NqH1wDg7XYwyeTVU
-	JYS7/aADIC15uez0DTgzyamzgS9qbNJW7DVuh2cdZzOzVkcvDI1qjaqEZ0W6k2lhuwlk2cNPhGY
-	fWzoUWriSt/PM7YDhsLuQ4sV2gKA==
-X-Received: by 2002:a05:600c:1986:b0:477:af8d:203a with SMTP id 5b1f17b1804b1-48519897aa6mr101526865e9.27.1772724053477;
-        Thu, 05 Mar 2026 07:20:53 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439ac9f3e5bsm41237947f8f.37.2026.03.05.07.20.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2026 07:20:53 -0800 (PST)
-Date: Thu, 5 Mar 2026 16:20:51 +0100
-From: Petr Mladek <pmladek@suse.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=uCU/DX5RwOdA4Ir2/dSm/rD4b3ema0D3+cAD5OnFEKFTMRytJI2wZFYXq9h6eVmQgahWsfV0HRmds4F9trDJSbC92Q17kZg2s30uk3qalhFVS+0hNP/UZd7YYw80UbpnmbhaVN9DC8p/VMwPm3G8cwCb3MFZpamDkm9bmF8Y5ks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YJKwmfEu; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3A9C116C6;
+	Thu,  5 Mar 2026 18:50:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772736656;
+	bh=ZpJ3xSD7T1Kv84rXWd6Gw/ltqbl3d1h4ltapX+7b1a0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YJKwmfEu+4LdotvFLlO0dZO035ymulrAD0MAy6l147my2kcASnfaofqcD07NzUlNP
+	 R3VBLCCCPpGHb3nZpYHj/efweUop7eIFtmkJWGw+qFxvQQ9v/s56pVwGszU3kcgYwq
+	 of/QVQb0x2r/Z8QwyqDvYE9MNILDwhA/KPiwuGDWXoIeDaoSt5HP0vDhtMTW3RLtb4
+	 i+y9dNvaI25dcS14697dUBGUvn0tsPBvaU+C3TR7z8kOHpcB8DTWjx6eOfHzDhjdSa
+	 wKBqHCdhBMoyY0Il6VDYjbELbo8TRONbCNvcR/NyCDzK6ruBzh40NQyLSd+DnMTp7a
+	 03E5aR5We+FDA==
+Date: Thu, 5 Mar 2026 10:50:53 -0800
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: Miroslav Benes <mbenes@suse.cz>, Song Liu <song@kernel.org>,
-	live-patching@vger.kernel.org, jpoimboe@kernel.org,
-	jikos@kernel.org, kernel-team@meta.com
+Cc: Miroslav Benes <mbenes@suse.cz>, Song Liu <song@kernel.org>, 
+	live-patching@vger.kernel.org, jikos@kernel.org, pmladek@suse.com, kernel-team@meta.com
 Subject: Re: [PATCH v3 8/8] livepatch: Add tests for klp-build toolchain
-Message-ID: <aamfUxhAM_EZ0MtR@pathway.suse.cz>
+Message-ID: <i7i5tbrk5au3udsoigqzwhjwziiiylehaxhauz3pfgongk56hf@dz56fniz7w2a>
 References: <20260226005436.379303-1-song@kernel.org>
  <20260226005436.379303-9-song@kernel.org>
  <alpine.LSU.2.21.2602271052240.374@pobox.suse.cz>
@@ -95,40 +63,41 @@ List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 In-Reply-To: <aaiI7zv2JVgXZkPm@redhat.com>
-X-Rspamd-Queue-Id: 951192149FE
+X-Rspamd-Queue-Id: A64A3217211
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-2.16 / 15.00];
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	MIME_TRACE(0.00)[0:+];
-	DKIM_TRACE(0.00)[suse.com:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2126-lists,live-patching=lfdr.de];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	MISSING_XM_UA(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2127-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[pmladek@suse.com,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
+	MIME_TRACE(0.00)[0:+];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	MISSING_XM_UA(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
-	TAGGED_RCPT(0.00)[live-patching];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	RCPT_COUNT_SEVEN(0.00)[7];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:rdns,sin.lore.kernel.org:helo,functions.sh:url,suse.com:dkim]
+	TAGGED_RCPT(0.00)[live-patching];
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:rdns,sea.lore.kernel.org:helo]
 X-Rspamd-Action: no action
 
-On Wed 2026-03-04 14:33:03, Joe Lawrence wrote:
+On Wed, Mar 04, 2026 at 02:33:03PM -0500, Joe Lawrence wrote:
 > On Mon, Mar 02, 2026 at 09:38:17AM +0100, Miroslav Benes wrote:
 > > Him
 > > 
@@ -166,73 +135,50 @@ On Wed 2026-03-04 14:33:03, Joe Lawrence wrote:
 > > 
 > > Fair enough.
 > > 
-> Do the helpers in functions.sh for safely loading and unloading
-> livepatches (that wait for the transition, etc.) aid here?
 > 
-> > > > And a little bit of bikeshedding at the end. I think it would be more
-> > > > descriptive if the new config options and tests (test modules) have
-> > > > klp-build somewhere in the name to keep it clear. What do you think?
-> > > 
-> > > Technically, we can also use these tests to test other toolchains, for
-> > > example, kpatch-build. I don't know ksplice or kGraft enough to tell
-> > > whether they can benefit from these tests or not. OTOH, I am OK
-> > > changing the name/description of these config options.
-> > 
-> > I would prefer it, thank you. Unless someone else objects of course.
-> > 
+> I've been tinkering with ideas in this space, though I took it in a very
+> different direction.
 > 
-> To continue the bike shedding, in my branch, I had dumped this all under
-> a new tools/testing/klp-build subdirectory as my focus was to put
-> klp-build through the paces.  It does load the generated livepatches in
-> the runtime testing, but as only as a sanity check.  With that, it
-> didn't touch CONFIG or intermix testing with the livepatch/ set.
-
-The question is what you expect from the klp-build testing.
-
-My understanding is that the current test primary checks whether:
-
-  + klp-build machinery is able to put together a working livepatch
-  + "objtool klp diff" is able to find and match the right symbols
-
-I assume this because the README contains a very simple steps:
-
-    <paste>
-    3. Verify the correctness with:
-
-      modprobe klp_test_module
-      kpatch load livepatch-patch.ko
-      grep -q unpatched /sys/kernel/klp_test/*/* && echo FAIL || echo PASS
-    </paste>
-
-A separate directory would be perfectly fine in this case.
-
-We could keep the existing selftests/livepatch as is for
-testing the kernel/livepatch features, e.g. transition,
-shadow variables, callbacks, cooperation with ftrace/kprobe.
-
-An integration with the existing selftests/livepatch would be
-better if you wanted to do more complicated tests. You
-might want to reuse the existing framework for checking
-the dmesg output.
-
-Honestly, I guess that we would want to integrate both tests
-sooner or later anyway. You might want to test how klp-build
-handles the extra features, e.g. shadow variables, ...
-
-But the integration might be non-trivial.
-
-> If we do end up supplementing the livepatch/ with klp-build tests, then
-> I agree that naming them (either filename prefix or subdirectory) would
-> be nice.
+> (First a disclaimer, this effort is largely the result of vibe coding
+> with Claude to prototype testing concepts, so I don't believe any of it
+> is reliable or upstream-worthy at this point.)
 > 
-> But first, is it goal for klp-build to be the build tool (rather than
-> simple module kbuild) for the livepatching .ko selftests?
+> From a top-down perspective, I might start with the generated test
+> reports:
 
-Best Regards,
-Petr
+Thanks Song and Joe, these are some great ideas.  Testing will be
+extremely important for the success of klp-build.
 
-PS: Sigh, I hope that I'll find time to send v2 of the patchset reworking
-    the callbacks, shadow variables, and states. It modifies/reworks
-    the existing selftests modules a lot, see v1 at
-    https://lore.kernel.org/all/20250115082431.5550-1-pmladek@suse.com/
+Below are some back of napkin thoughts based on my experiences with
+kpatch testing.  In my opinion the unit/integration test split for
+kpatch was successful and we should try to continue that tradition with
+klp-build.
+
+- unit testing (.o diff)
+  - great for preventing past regressions
+  - nice and fast
+  - tests the most fragile bits
+  - catches 99% of bugs (almost everything except for new kernel/compiler features)
+  - try to enforce a rule: one test for every regression
+  - if we're storing binaries we may need to host the test suite elsewhere
+  - extracting .o's could be more of a challenge now that vmlinux.o diff is the norm
+    - the making of regression tests needs to be as easy as possible
+  - or maybe they can be built on demand with .c and/or .S?
+    - that *might* be more difficult
+    - we'd need meta-tests to ensure the tests continue to test what they're supposed to
+
+- integration testing: 
+  - good for testing "this complex end-to-end operation still works"
+  - good for finding issues with new toolchain versions and new kernel features
+  - can be used for testing certain runtime-critical features like static branches/calls
+  - not necessarily good for testing regressions, the underlying code is free to change at any time
+  - I like Song's idea of adding a fake (yet stable) test component in vmlinux for which we can create .patch files to test
+  - I also like Joe's idea of scripted patch generation (e.g., automatically patching meminfo_proc_show() somehow)
+
+And in general, we may want to look to porting as many of the kpatch
+unit/integration tests as possible so we can take advantage of all those
+accumulated testing experiences.
+
+-- 
+Josh
 
