@@ -1,154 +1,185 @@
-Return-Path: <live-patching+bounces-2159-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2160-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id EFevIG20q2klfwEAu9opvQ
-	(envelope-from <live-patching+bounces-2159-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Sat, 07 Mar 2026 06:15:25 +0100
+	id yCbqA9WMr2n4aQIAu9opvQ
+	(envelope-from <live-patching+bounces-2160-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 10 Mar 2026 04:15:33 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4511222A309
-	for <lists+live-patching@lfdr.de>; Sat, 07 Mar 2026 06:15:25 +0100 (CET)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 78D62244AE7
+	for <lists+live-patching@lfdr.de>; Tue, 10 Mar 2026 04:15:32 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id C7AAF3020EA5
-	for <lists+live-patching@lfdr.de>; Sat,  7 Mar 2026 05:15:23 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 6EC123020ECD
+	for <lists+live-patching@lfdr.de>; Tue, 10 Mar 2026 03:14:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 312CC36C0BD;
-	Sat,  7 Mar 2026 05:15:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 787923B895A;
+	Tue, 10 Mar 2026 03:14:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="lIifXCwu"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IftY/sgF"
 X-Original-To: live-patching@vger.kernel.org
-Received: from out-178.mta0.migadu.com (out-178.mta0.migadu.com [91.218.175.178])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA90A3644D3
-	for <live-patching@vger.kernel.org>; Sat,  7 Mar 2026 05:15:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5107838B7C0;
+	Tue, 10 Mar 2026 03:14:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772860520; cv=none; b=WpUTogGdPq0/YW1wNCxEkF9L2N8Wt+4bju+tgF1LSY2KLtBcmeGFA+nQ16Cxg3m0dqDlP4VERDNUenQ+I+CtVHMiQSoKm7FPbHbV5+2/wNg4fs6n3V3QRAaVCFeElW5TU15MQEjbEew6zPfwu0KlcjCr94WubvpsXFcJ3faBaA4=
+	t=1773112463; cv=none; b=E5QbBoIJVC6HEph64neFAR26pAsJm/QB9MljDXsxzHHhK4EdlGvH/FKz5A5Ud0xpcMu1IiOs7nynpUfUbXQwW9BvMy09wydK+Q36R1Jr/5QAtJq5NtJRfIzdhTUoOXVwnpWQazK5012P0wFEK+VcIar0qTdRJPoO3eUvdQyGfDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772860520; c=relaxed/simple;
-	bh=h+CX0JJ0tUyfPPria3ogYiqLcW/imvT4cgeJbLA69lk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KURuYiX0/9CYgJVm65fJGqlCoL4qaYPVKrPDJLh9E5zcSb/slaSmExkxrRqK++oSKiTyGTldJCKyrQK3AeDMgxivsyNLhSl+nMahlZ9pn9StIP2Tbacmg/w3qGWGh/rhmSUfyCDSCp25aBy8JKVDEFWcsuHI1BmkkF1xWA5lthw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=lIifXCwu; arc=none smtp.client-ip=91.218.175.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Message-ID: <22f5c641-f472-4fe9-aec5-a660efbfdd5e@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1772860506;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oVeP2T6JpMBn5IOWgrXjDxvTzJ0Ym2WSlHNkgDf+DoQ=;
-	b=lIifXCwuAJ2DciDp8vw6wNT10UlQ/oC/piwkNzlvQYR/nlHCqfCgAVaf9CcKcZI9C5mtBi
-	mdECe/aPrXuqAHnf0siVsiy8bi/h3moP0rYal02yUMPZFD/qjGDNFju9OhOK38gKokkiQl
-	tb1CbDDm/dDLrkCLattKYQyz0lnjxR4=
-Date: Fri, 6 Mar 2026 21:14:56 -0800
+	s=arc-20240116; t=1773112463; c=relaxed/simple;
+	bh=X6rBUHlsAWpnqZFAipqPmjIKUoFR7rKomQfTbdomyyI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S8IcVoDyZJWPG7WxEb6UwbVU3CZdSNGSXM9mghXuZkA6zhHl/+lb0tvV2RcmanGzU+3iiO2pvjUq6M95ygYlVUdQqhaXGwoUoi7M+bvuZccdLam9hXqWQP91ulcu1bTLXZan1qQy5R9WDIE5xHJfbQZKU2vV2N4rnZGnfoisXzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IftY/sgF; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FB8FC4CEF7;
+	Tue, 10 Mar 2026 03:14:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773112463;
+	bh=X6rBUHlsAWpnqZFAipqPmjIKUoFR7rKomQfTbdomyyI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=IftY/sgFJ+VZByRTe38PHlrrmdaX68EUn5utrCxUmVsxwdSxwMlY3Z7TJ/L12v5Ov
+	 TM6unhOeTJIpNA/Q2KDHLLtsooC2QfMxGh0DMItEfjq/cCzkrKFY6yplFpdqThIXhD
+	 MSNPMeVY+ub06VwlEogFCYZiYUzstLi5avicb6AOh+ubKdllmZdNU1V6sz1CBsjDRP
+	 ZcluBa96q/r0bYFAkghTi6EdiOnpny8qISKV0g49VUVhWIsO7BGQkuXldxpcXZCIhZ
+	 qM/Mi8uiPnpU5Wl0HQ9ZfDzcBEOzUkDcclIVDl/3Mjp6WOyfscgkAmIl48aujmxMH0
+	 8k6xTmeHiWHXA==
+Date: Mon, 9 Mar 2026 20:14:18 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Yonghong Song <yonghong.song@linux.dev>
+Cc: linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org,
+	Josh Poimboeuf <jpoimboe@kernel.org>, kernel-team@fb.com,
+	Nicolas Schier <nsc@kernel.org>, Song Liu <song@kernel.org>
+Subject: Re: [PATCH kbuild v2] kbuild: Reduce the number of
+ compiler-generated suffixes for clang thin-lto build
+Message-ID: <20260310031418.GA3988399@ax162>
+References: <20260307050250.3767489-1-yonghong.song@linux.dev>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Subject: Re: [PATCH kbuild] kbuild: Allow to reduce the number of suffixes for
- clang thin-lto build
-Content-Language: en-GB
-To: Nathan Chancellor <nathan@kernel.org>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, linux-kbuild@vger.kernel.org,
- live-patching@vger.kernel.org, kernel-team@fb.com,
- Nicolas Schier <nsc@kernel.org>, Song Liu <song@kernel.org>
-References: <20260306034325.3605301-1-yonghong.song@linux.dev>
- <pat2b5nibiik6nua6ls7cu7eqy5qgrugo4gnel32bz6vpcrmz3@f7ynsbvnxcaj>
- <f1afe1e8-0dfd-47b0-8ca4-f09d4fda13eb@linux.dev>
- <bt7t2452h27o7bf27f7ljs2xhn7venhvslynq3a77jbtwi7hqk@cgobhbhi5y2r>
- <lmj53l5djuipucmuxwr563n6ty7hobduzg4vvy4pjnw4yz5t56@he3wiioegzhy>
- <f0c037e6-d498-41c3-8d71-0597a2e1d68d@linux.dev>
- <20260306224522.GA2746259@ax162>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Yonghong Song <yonghong.song@linux.dev>
-In-Reply-To: <20260306224522.GA2746259@ax162>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Rspamd-Queue-Id: 4511222A309
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260307050250.3767489-1-yonghong.song@linux.dev>
+X-Rspamd-Queue-Id: 78D62244AE7
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-2.16 / 15.00];
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[linux.dev,none];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
-	R_DKIM_ALLOW(-0.20)[linux.dev:s=key1];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2159-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2160-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
-	RCVD_COUNT_THREE(0.00)[3];
-	DKIM_TRACE(0.00)[linux.dev:+];
-	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	TO_DN_SOME(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[yonghong.song@linux.dev,live-patching@vger.kernel.org];
+	RCVD_COUNT_THREE(0.00)[4];
+	MIME_TRACE(0.00)[0:+];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
 	MISSING_XM_UA(0.00)[];
-	NEURAL_HAM(-0.00)[-0.941];
+	NEURAL_HAM(-0.00)[-1.000];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[nathan@kernel.org,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	RCPT_COUNT_SEVEN(0.00)[7];
-	MID_RHS_MATCH_FROM(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[linux.dev:dkim,linux.dev:mid,tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo]
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo]
 X-Rspamd-Action: no action
 
+On Fri, Mar 06, 2026 at 09:02:50PM -0800, Yonghong Song wrote:
+> The current clang thin-lto build often produces lots of symbols with
+> suffix. The following is a partial list of such function call symbols:
+>     ...
+>     ethnl_module_fw_flash_ntf.llvm.7631589765585346066
+>     __nf_conntrack_alloc.llvm.6438426151906658917
+>     tcp_can_early_drop.llvm.11937612064648250727
+>     tcp_print_conntrack.llvm.11937612064648250727
+>     ...
+> 
+> In my particular build with current bpf-next, the number of '*.llvm.<hash>'
+> function calls is 1212. As the side effect of cross-file inlining,
+> some static variables may be promoted with '*.llvm.<hash>' as well.
+> In my same setup, the number of variables with such suffixes is 9.
+> 
+> Such symbols make kernel live patching difficult since
+>   - a minor code change will change the hash and then the '*.llvm.<hash>'
+>     symbol becomes another one with a different hash. Sometimes, maybe
+>     the suffix is gone.
+>   - a previous source-level symbol may become a one with suffix after live
+>     patching code.
+> 
+> In [1], Song Liu suggested to reduce the number of '*.llvm.<hash>' functions
+> to make live patch easier. In respond of this, I implemented this
+> in llvm ([2]). The same thin-lto build with [2] only has two symbols with
+> suffix:
+>     m_stop.llvm.14460341347352036579
+>     m_next.llvm.14460341347352036579
+> This should make live patch much easier.
+> 
+> To support suffix symbol reduction, two lld flags are necessary to enable
+> this feature in kernel:
+>     - Flag '--lto-whole-program-visibility' is needed as it ensures that all
+>       non-assembly files are available in the same thin-lto lld, which is true
+>       for kernel.
+>     - Flag '-mllvm -always-rename-promoted-locals=false' is needed to enable
+>       suffix reduction. Currently in llvm [1], only process mode is supported.
+>       There is another distributed mode (across different processes or even
+>       different machines) which is not supported yet ([2]). The kernel uses
+>       process mode so it should work.
+> 
+> The assembly files may have some global functions/data which may potentially
+> conflict with thin-lto global symbols after the above two flags. But such assembly
+> global symbols are limited and tend to be uniquely named for its context.
+> Hence the conflict with globals in non-assembly codes is rare. If indeed the
+> conflict happens, we can rename either of them to avoid conflicts.
+> 
+> Nathan Chancellor suggested the following under thin-lto:
+>   KBUILD_LDFLAGS += $(call ld-option,--lto-whole-program-visibility -mllvm -always-rename-promoted-locals=false)
+> The '-mllvm -always-rename-promoted-locals=false' flag is only available for llvm23.
+> So for llvm22 or earlier, the above KBUILD_LDFLAGS will ignore those two flags.
+> For llvm23 and later, two flags will be added to KBUILD_LDFLAGS.
+> 
+>   [1] https://lpc.events/event/19/contributions/2212
+>   [2] https://github.com/llvm/llvm-project/pull/178587
+> 
+> Signed-off-by: Yonghong Song <yonghong.song@linux.dev>
 
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org> # build
 
-On 3/6/26 2:45 PM, Nathan Chancellor wrote:
-> On Fri, Mar 06, 2026 at 02:12:44PM -0800, Yonghong Song wrote:
->> So you mean we do not need a new config. Should just check clang and
->> clang versionn like below?
->>
->> diff --git a/Makefile b/Makefile
->> index e944c6e71e81..9bd3990024c5 100644
->> --- a/Makefile
->> +++ b/Makefile
->> @@ -1034,6 +1034,11 @@ endif
->>   ifdef CONFIG_LTO_CLANG
->>   ifdef CONFIG_LTO_CLANG_THIN
->>   CC_FLAGS_LTO   := -flto=thin -fsplit-lto-unit
->> +ifdef CONFIG_CC_IS_CLANG
->> +ifeq ($(shell test $(CONFIG_CLANG_VERSION) -ge 230000; echo $$?),0)
-> This is the same as
->
->    ifeq ($(call clang-min-version,230000),y)
->
-> That being said, could we not just do a dynamic check so that it always
-> works when these flags are supported?
+Thanks!
 
-Thanks for the suggestion! What you had below with 'call ld-option' is perfect
-to satisfy this requirement: <= llvm22, two flags will be ignored, and
->= llvm23, two flags will be used.
-
-v2: https://lore.kernel.org/linux-kbuild/20260307050250.3767489-1-yonghong.song@linux.dev/
-
->
->> +KBUILD_LDFLAGS += --lto-whole-program-visibility -mllvm -always-rename-promoted-locals=false
->    KBUILD_LDFLAGS += $(call ld-option,--lto-whole-program-visibility -mllvm -always-rename-promoted-locals=false)
->
->> +endif
->> +endif
->>   else
->>   CC_FLAGS_LTO   := -flto
->>   endif
->>
->> I think this should work. In rare case, renaming the function should
->> solve the problem.
-> I agree with Josh that having this be the default behavior with the
-> workarounds that we have available to us to avoid problems from it is
-> worth it. Thanks for chasing this after the discussions at LPC.
->
-> Cheers,
-> Nathan
-
+> ---
+>  Makefile | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> Changelog:
+>   v1 -> v2:
+>     - v1: https://lore.kernel.org/linux-kbuild/20260306034325.3605301-1-yonghong.song@linux.dev/
+>     - Removed the new config option and use ld-option to check whether new flags
+>       will be used or not.
+> 
+> diff --git a/Makefile b/Makefile
+> index e944c6e71e81..e4385af16985 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1034,6 +1034,7 @@ endif
+>  ifdef CONFIG_LTO_CLANG
+>  ifdef CONFIG_LTO_CLANG_THIN
+>  CC_FLAGS_LTO	:= -flto=thin -fsplit-lto-unit
+> +KBUILD_LDFLAGS += $(call ld-option,--lto-whole-program-visibility -mllvm -always-rename-promoted-locals=false)
+>  else
+>  CC_FLAGS_LTO	:= -flto
+>  endif
+> -- 
+> 2.47.3
+> 
 
