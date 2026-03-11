@@ -1,185 +1,118 @@
-Return-Path: <live-patching+bounces-2185-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2186-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id EOF1EYvrsWmSHAAAu9opvQ
-	(envelope-from <live-patching+bounces-2185-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 11 Mar 2026 23:24:11 +0100
+	id eAZPAOL2sWl7HQAAu9opvQ
+	(envelope-from <live-patching+bounces-2186-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 12 Mar 2026 00:12:34 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 99C2026ADE6
-	for <lists+live-patching@lfdr.de>; Wed, 11 Mar 2026 23:24:10 +0100 (CET)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5FF2426B403
+	for <lists+live-patching@lfdr.de>; Thu, 12 Mar 2026 00:12:33 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 5383E303A6FA
-	for <lists+live-patching@lfdr.de>; Wed, 11 Mar 2026 22:24:09 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 50E163035A7F
+	for <lists+live-patching@lfdr.de>; Wed, 11 Mar 2026 23:12:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F17ED38B7A2;
-	Wed, 11 Mar 2026 22:24:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 262023A1687;
+	Wed, 11 Mar 2026 23:12:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QGfaYwB5"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SDlYxToe"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE30033DEF3
-	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 22:24:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02AC239EF23
+	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 23:12:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773267847; cv=none; b=j/YnyKKWiwQfc7C/TAL0mIjAm17j1byBSe44L2NtBH9MioF7nH68aZlABv3RXfQqE0rEW123kK5x0zu4U2Z5mf0N4JjGivwWjw5k0Un/UAfZBHjprndk63qqSvicC6bpzjQIiWTh69DByCYVYNNlXiTSae8F++QbngqG6wECy00=
+	t=1773270749; cv=none; b=t2M83hYgG1FfDaB3mmv9JC/RYvpGTpD7W/OepC7YOvEZ2cKxM1IQkx1BMg6Ys7wo7PyAwaaLv3AVtH0HIsKmqUtIV2m9oCw2G6Fb4thaRjK3aP+Px0h7GECkjkC1wD2Ih2NOZxYUyoksb6ddVdhVOVpbweE17mS31X4iXcvu65U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773267847; c=relaxed/simple;
-	bh=ZLFVU5eapEktBKzOoBgi0i5NSJUcQ2q4Vyl8Jvb9E1Q=;
+	s=arc-20240116; t=1773270749; c=relaxed/simple;
+	bh=xBhhGMjdEf/AAt0r3NS/ftcYplPTotkFnhvNtKj38Dc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=F+W65mYIhB0nnTF5OpdtQygmJKCC6AAuqxl9XGjA7BX30CmUKgwj0dlR6bSEq/XnFhdD1uzUfAUvU5XLl8ETcPP/IYoa76GDnmc+ERUD97c7NhGrmeoZJZuZgef8Eg0EA2jLz6LS0jz+Dbx4MggBCpKBpXUWiUTTG4X+sNn5fPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QGfaYwB5; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DBD8C2BC9E
-	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 22:24:07 +0000 (UTC)
+	 To:Cc:Content-Type; b=Tt7lN6hAg43bUetViIrCXxMY+GHSkXjGDtwUZry7VJX+xEgTWjVZzb0SNDq3K0CUKVRXFHXRBZGWY/pyRnSQn3gqZiKdNZzWVMiwlsPF02PGZON9Waip+Yv2qkJfeXMCGjxLU7q3GjN9sv/vyfbGJfemCcZDF31iXhvG4IVEUFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SDlYxToe; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8104C4CEF7
+	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 23:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773267847;
-	bh=ZLFVU5eapEktBKzOoBgi0i5NSJUcQ2q4Vyl8Jvb9E1Q=;
+	s=k20201202; t=1773270748;
+	bh=xBhhGMjdEf/AAt0r3NS/ftcYplPTotkFnhvNtKj38Dc=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=QGfaYwB53cQvAke/lXZIySX+qGdO8r/IMsNYe+qC5rhNiywcUTxbgUZrsqlu4Ixzd
-	 e+yj0+tiVcDpuHiESnhMX7rlnMeUtiFZ5ZK2+C8LV2JfHJCXwClRcdmoWuaShWP7lk
-	 zl8B/u2p21Bl7+uV4q6DBnvWXj7k9qEiEz4LfJDvcvkUzKpHLXHzJrMA9V2FypQDlx
-	 b7f7b4ZaWZO4xy7H7AJzODJxvdGcOOXvitIYsQItLa6Ctqmw8qJHAFXeK889flpIFO
-	 jtCJSDf3ffsrUs51SsrcWbhftO7yotlUvrK3H6NmrcIXtmrOUzUmH+yrKhFfmdk6SD
-	 kU2Nx9XND1L8Q==
-Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-89a09ef1e3aso5075556d6.0
-        for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 15:24:07 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVRIgbe/lO+NZ8a8q8uVxmun5hxsB0yQI9TdBOb5QDujn2HoCUHvUU1UmZuHK0d5CDCYVKmBJP4sMMksYJ6@vger.kernel.org
-X-Gm-Message-State: AOJu0YyFqb16uBt4trwnv4S/t0HKOJSgC4Au7D9pSW7THwF0dmIhyT/k
-	hBHlESz/HEuT2lDbP5sSs6tEtWr5/RcUPrQHdlIFzL7Xfa7fbhZdo+SGxR++q1V8lb3qPnAYspH
-	1gQEpAopehzCdXW3Wv943TtQwDwOq9AI=
-X-Received: by 2002:a05:6214:62b:b0:89a:73c:babd with SMTP id
- 6a1803df08f44-89a66a6c92emr56326186d6.27.1773267846694; Wed, 11 Mar 2026
- 15:24:06 -0700 (PDT)
+	b=SDlYxToegILB0SYrOCc9jqf/1RSBM4kCZYiywc+yvo0PxI9+RoNVAj4DlNa1M9zdB
+	 JbiAisvkKUu68Ptozo7g6RizpbFSvjrmMFpld5ALPXF7+yyyIDX2bUTprJt4loOx7+
+	 u3G0/XvR9BIBs9Fk2Ushkpq6aiaE2LdV5eKw/8SWlwEFZngnNOBFpob3QlRRb/Ugnn
+	 Djq8L3fVTWRa/Nk63f0GEHpyX0H322Wc4iQn3RS7lOcxLv6Cf4IkppS38WcrUmiyaS
+	 LktWjYOxwGRLPUXVkm2vT7D9l1/GGrQtV8gLLsgmjOgJyvbR5tFCMTHxvPFBvqG4QU
+	 be8ruiHRA6iVw==
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-506aa68065eso3239541cf.1
+        for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 16:12:28 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUBm+ysGpsiTSM6J0wizm48MzSfCKbLbNC2cMFGoVDD4ojP86QPMIq98z+7mAYzMB6FP6D/PJXtaAklimz4@vger.kernel.org
+X-Gm-Message-State: AOJu0YyY7UsHAWYM4uMPA1eZu6KOV5NzqV9pWOtqzsayxzU3wLburTZC
+	h4XWsBI/RtYeBoYeXiQTHcoYNRxFIzwuDT9C4Ot+HHCUbBOm2+JJDt7uS1Tz/DLZ+H+TFyYaNve
+	loP17RY6+u+xmKkNu2TOmzKaJi7GioJg=
+X-Received: by 2002:ac8:508:0:b0:509:456b:52e7 with SMTP id
+ d75a77b69052e-509456b85c9mr21498081cf.16.1773270747795; Wed, 11 Mar 2026
+ 16:12:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260307050250.3767489-1-yonghong.song@linux.dev>
-In-Reply-To: <20260307050250.3767489-1-yonghong.song@linux.dev>
+References: <cover.1772681234.git.jpoimboe@kernel.org> <2fa6fbde8c6bbd91df0e2bf48b9c9370047dc61e.1772681234.git.jpoimboe@kernel.org>
+In-Reply-To: <2fa6fbde8c6bbd91df0e2bf48b9c9370047dc61e.1772681234.git.jpoimboe@kernel.org>
 From: Song Liu <song@kernel.org>
-Date: Wed, 11 Mar 2026 15:23:55 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6NVTTE8m8OWEaiWhdL14GqkWSZMeOOrAo0FKsry2jrFA@mail.gmail.com>
-X-Gm-Features: AaiRm51QMHljYY2EirQncO_nM0tq77sPO79debvbSjmaWoHa-3d5kYlw5Ix15-U
-Message-ID: <CAPhsuW6NVTTE8m8OWEaiWhdL14GqkWSZMeOOrAo0FKsry2jrFA@mail.gmail.com>
-Subject: Re: [PATCH kbuild v2] kbuild: Reduce the number of compiler-generated
- suffixes for clang thin-lto build
-To: Yonghong Song <yonghong.song@linux.dev>
-Cc: linux-kbuild@vger.kernel.org, live-patching@vger.kernel.org, 
-	Josh Poimboeuf <jpoimboe@kernel.org>, kernel-team@fb.com, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nsc@kernel.org>
+Date: Wed, 11 Mar 2026 16:12:16 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6-Jeppuw-3dCnS=a31p6uwdQfvW-CDURXh9eyEwHPBUg@mail.gmail.com>
+X-Gm-Features: AaiRm52rdNhb-OMPbVu7A6BSy4A_BsoV676rdnM-RkVREh6ybLEJlmVinm4_0hk
+Message-ID: <CAPhsuW6-Jeppuw-3dCnS=a31p6uwdQfvW-CDURXh9eyEwHPBUg@mail.gmail.com>
+Subject: Re: [PATCH 03/14] arm64: Annotate intra-function calls
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
+	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, 
+	Mark Rutland <mark.rutland@arm.com>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nsc@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	MIME_TRACE(0.00)[0:+];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2186-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2185-lists,live-patching=lfdr.de];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	MISSING_XM_UA(0.00)[];
 	FROM_HAS_DN(0.00)[];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	RCPT_COUNT_TWELVE(0.00)[13];
+	MIME_TRACE(0.00)[0:+];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
-	NEURAL_HAM(-0.00)[-1.000];
+	MISSING_XM_UA(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[5];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[7];
+	NEURAL_HAM(-0.00)[-1.000];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,linux.dev:email,mail.gmail.com:mid,lpc.events:url]
-X-Rspamd-Queue-Id: 99C2026ADE6
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 5FF2426B403
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Fri, Mar 6, 2026 at 9:03=E2=80=AFPM Yonghong Song <yonghong.song@linux.d=
-ev> wrote:
+On Wed, Mar 4, 2026 at 7:31=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org>=
+ wrote:
 >
-> The current clang thin-lto build often produces lots of symbols with
-> suffix. The following is a partial list of such function call symbols:
->     ...
->     ethnl_module_fw_flash_ntf.llvm.7631589765585346066
->     __nf_conntrack_alloc.llvm.6438426151906658917
->     tcp_can_early_drop.llvm.11937612064648250727
->     tcp_print_conntrack.llvm.11937612064648250727
->     ...
+> In preparation for enabling objtool on arm64, annotate intra-function
+> calls.
 >
-> In my particular build with current bpf-next, the number of '*.llvm.<hash=
->'
-> function calls is 1212. As the side effect of cross-file inlining,
-> some static variables may be promoted with '*.llvm.<hash>' as well.
-> In my same setup, the number of variables with such suffixes is 9.
->
-> Such symbols make kernel live patching difficult since
->   - a minor code change will change the hash and then the '*.llvm.<hash>'
->     symbol becomes another one with a different hash. Sometimes, maybe
->     the suffix is gone.
->   - a previous source-level symbol may become a one with suffix after liv=
-e
->     patching code.
->
-> In [1], Song Liu suggested to reduce the number of '*.llvm.<hash>' functi=
-ons
-> to make live patch easier. In respond of this, I implemented this
-> in llvm ([2]). The same thin-lto build with [2] only has two symbols with
-> suffix:
->     m_stop.llvm.14460341347352036579
->     m_next.llvm.14460341347352036579
-> This should make live patch much easier.
->
-> To support suffix symbol reduction, two lld flags are necessary to enable
-> this feature in kernel:
->     - Flag '--lto-whole-program-visibility' is needed as it ensures that =
-all
->       non-assembly files are available in the same thin-lto lld, which is=
- true
->       for kernel.
->     - Flag '-mllvm -always-rename-promoted-locals=3Dfalse' is needed to e=
-nable
->       suffix reduction. Currently in llvm [1], only process mode is suppo=
-rted.
->       There is another distributed mode (across different processes or ev=
-en
->       different machines) which is not supported yet ([2]). The kernel us=
-es
->       process mode so it should work.
->
-> The assembly files may have some global functions/data which may potentia=
-lly
-> conflict with thin-lto global symbols after the above two flags. But such=
- assembly
-> global symbols are limited and tend to be uniquely named for its context.
-> Hence the conflict with globals in non-assembly codes is rare. If indeed =
-the
-> conflict happens, we can rename either of them to avoid conflicts.
->
-> Nathan Chancellor suggested the following under thin-lto:
->   KBUILD_LDFLAGS +=3D $(call ld-option,--lto-whole-program-visibility -ml=
-lvm -always-rename-promoted-locals=3Dfalse)
-> The '-mllvm -always-rename-promoted-locals=3Dfalse' flag is only availabl=
-e for llvm23.
-> So for llvm22 or earlier, the above KBUILD_LDFLAGS will ignore those two =
-flags.
-> For llvm23 and later, two flags will be added to KBUILD_LDFLAGS.
->
->   [1] https://lpc.events/event/19/contributions/2212
->   [2] https://github.com/llvm/llvm-project/pull/178587
->
-> Signed-off-by: Yonghong Song <yonghong.song@linux.dev>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
 Acked-by: Song Liu <song@kernel.org>
-
-Thanks for making this improvement happen!
 
