@@ -1,73 +1,72 @@
-Return-Path: <live-patching+bounces-2191-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2192-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id WPc0DWv3sWl7HQAAu9opvQ
-	(envelope-from <live-patching+bounces-2191-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 12 Mar 2026 00:14:51 +0100
+	id CNRsGxT4sWl7HQAAu9opvQ
+	(envelope-from <live-patching+bounces-2192-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 12 Mar 2026 00:17:40 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id CEE6126B487
-	for <lists+live-patching@lfdr.de>; Thu, 12 Mar 2026 00:14:50 +0100 (CET)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id BEA6E26B4B4
+	for <lists+live-patching@lfdr.de>; Thu, 12 Mar 2026 00:17:39 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id 3C6E6302B4FC
-	for <lists+live-patching@lfdr.de>; Wed, 11 Mar 2026 23:14:50 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 52CD030E73B2
+	for <lists+live-patching@lfdr.de>; Wed, 11 Mar 2026 23:15:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D180D3A16BB;
-	Wed, 11 Mar 2026 23:14:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96E593A257C;
+	Wed, 11 Mar 2026 23:15:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W8q0bowG"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ooyPSvBC"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEC493A16B4
-	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 23:14:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 738463A1E81
+	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 23:15:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773270889; cv=none; b=NkDy35KnzY8lHSJLnChMWAfzbnN/3u3OM2cNTiaCXbJ/miES5VlQ/gxv9QKWgXGy7yglCm1fPs5kRptPKX240VnRaZIFWVSGugx9LYw3rRNtMkI3HRzLrM2lARUlK7p7oOHc8xRBbE3jDDu3R0plrOV+WLs5fxCttDf0Bht9z0U=
+	t=1773270941; cv=none; b=GYhFVCApHj2EgSWctsnzB2nlOOQNwnQdW5ZwioRi52tvnfTdsdxXn94u+YHhtjaHgL1eaPu7vGXzApMkPZCSU+yX86+oCb0mT9zwtBSsaEN3GVOe9zkzkc8zwFkBd7Wd34patLoj+7UuFhif3wvUxfWBLBnPzIhOh5/mMc3q8tE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773270889; c=relaxed/simple;
-	bh=L2Vb8WWsjbjLZLSdFcWe+vZrR4O/vGefxzNxxS6mHi4=;
+	s=arc-20240116; t=1773270941; c=relaxed/simple;
+	bh=tAX27w1ClGrm27ttzVo75rXyxC8Tz6Oha3WktnTKOE0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Dt9WZQvDwrGZXcROATs/+D8GbqESBYksKl/EnZewr6xoY5fxxYMPu77THIVaiUzV5sIk8jzeCaH5nXaTB0c5SEKDO7T0dVgVeEUZQKDzx7UuOBJ1hOGNMN2DNZESNcnbnG8RAVYf8+WG+tAUyEjjOc75D5I06DogqWOaNyVlJfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W8q0bowG; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61368C4AF0E
-	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 23:14:49 +0000 (UTC)
+	 To:Cc:Content-Type; b=H0Cx1fjudQzpftA/h2CtXJbQgL3spCiWFbxuF7leMmrhkqRi+BL51E2lBgNwvVuPXhK4oo2/28mPN/71J75jo0ekU3p4CHpnl5zzTjrPDNhHbpK5B5Eg3Qhv3xV21g2eAEnSJhbXfE23Goei3jFiHFh/U5NIGqrKJoxMxG9/CT8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ooyPSvBC; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B26EC4AF09
+	for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 23:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773270889;
-	bh=L2Vb8WWsjbjLZLSdFcWe+vZrR4O/vGefxzNxxS6mHi4=;
+	s=k20201202; t=1773270941;
+	bh=tAX27w1ClGrm27ttzVo75rXyxC8Tz6Oha3WktnTKOE0=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=W8q0bowGnjemJX7uqLPgT1xLErcuBbqz/RuI4rneA5sbik4+m56tYlVnrlh/EFMOD
-	 llim9Pk9OTCW+WsrgGb66XhOtC8Cz95CJXZCVgITdPDJ4dOIJli7WumygN8zBx0DWg
-	 Q5Jf2L3fVMOhwDRGfwN9CKBlZ+Js0liycYogBE3TJ5NZxRy4K+zjvfk1yOea0uSNZ9
-	 xfxCT+pPGKfN1v5P1txy0Sr+EAhaPChUOqq74lh9gGtRJM2Ca6QLMOifDq/aL6hZAc
-	 ypN5g+X6QB7yHhRHpiwHXK23e36i+RqLaWS4IKB0Mwnk8PvdMrWXAM0l3QpvVh1/di
-	 g/xEvy6xCG1sw==
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-899ee87355dso5649016d6.1
-        for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 16:14:49 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWHOF74acAr58Z0tzDnFjWnYUO/TzRc7uDPknBCJRHZTR6H4XjQ28CG7Kp15VfK/B+os6SOd2bSFkrRvHJr@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzv/wz9Lh7Bo6BSjLT6qOM0TU+yHGu+obo3pjhlkVpeIG5DXl/Q
-	9TENqBkgjQPnxtFQhc25FBDtEA1/uNVdf65xwu1W8fhUUZznAp+oJUFvXhDbvQua6XKz2UsO1Tx
-	hEFZOtXodJPu5mQAorYFd9u5n5qMUopw=
-X-Received: by 2002:a05:622a:9cd:10b0:509:3f5d:4fb3 with SMTP id
- d75a77b69052e-5093f5d6100mr34675641cf.13.1773270888609; Wed, 11 Mar 2026
- 16:14:48 -0700 (PDT)
+	b=ooyPSvBCFajql2Ep/5K5qokahjigO0axg2RMrdykjnm+XGhXr/OnrUpNUNQuh91Oe
+	 DDHtl+6OVGW2lNNZRZL7msM1I2HNIjLEBN1Xsy9Gxi0eLdl4CVdjegPaww5ifaGArT
+	 HtqRq8UWP5PS0PQdDDhoJhy9HjA54LaP+vL4TMoEteM+qZSM1Ujfd7btbMvvcX3mU0
+	 qQdTi/C7VXotc7liFbfr0GnJH2Y4GbruiV3rzR4itcemMrr92zDgODQzKNB0vYdaMC
+	 HxwfdNxQVl6fzax/n6O43FWg2Qfa0iArCp6PYpLk+LJ6riZGi9iongyi8/hMw0UXUS
+	 k8UaYXmaaju4A==
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-899e87b04d8so6829816d6.3
+        for <live-patching@vger.kernel.org>; Wed, 11 Mar 2026 16:15:41 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCX79RoUYqpfGjGvsJCmmyjLi2QyNYZ+d0z7PLlPhCk4S+s0zAhe3pWevkpsnuxwssBbJXhXc/smc+s1Pwf2@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyba6GOddIQRzKQ0nsf0CjzsArEgV0iZiEl4PleGWJAtpRyl1Jf
+	oNWOjHSCvZAgu5Q2rvuqso9vZpDdXFcIVWu54csS8/CiXIc5T2ta7tt9YRccWDJ0l2DAQogVfs9
+	BwTPAtXuhGEj1dcmalCp6GOZUBNJeoAc=
+X-Received: by 2002:ac8:5893:0:b0:4ff:c17b:5ab0 with SMTP id
+ d75a77b69052e-50939f6cc8bmr61579481cf.9.1773270940398; Wed, 11 Mar 2026
+ 16:15:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1772681234.git.jpoimboe@kernel.org> <4aaa59736860f593e18e5978ebd56e04e4deea9d.1772681234.git.jpoimboe@kernel.org>
-In-Reply-To: <4aaa59736860f593e18e5978ebd56e04e4deea9d.1772681234.git.jpoimboe@kernel.org>
+References: <cover.1772681234.git.jpoimboe@kernel.org> <1cdd2737d2db5a300eea971382c5e8edda7fb474.1772681234.git.jpoimboe@kernel.org>
+In-Reply-To: <1cdd2737d2db5a300eea971382c5e8edda7fb474.1772681234.git.jpoimboe@kernel.org>
 From: Song Liu <song@kernel.org>
-Date: Wed, 11 Mar 2026 16:14:36 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6pcHSWtz5DaVuv6rVsCvWYbKO11iTGsudnzw0Z95MYRQ@mail.gmail.com>
-X-Gm-Features: AaiRm50QscE1g3DpmwkcVcm00gGImnuGoZRqYD-6Lqv8-ehUpmfzOfVXTOxYaiQ
-Message-ID: <CAPhsuW6pcHSWtz5DaVuv6rVsCvWYbKO11iTGsudnzw0Z95MYRQ@mail.gmail.com>
-Subject: Re: [PATCH 10/14] objtool: Ignore jumps to the end of the function
- for non-CFG arches
+Date: Wed, 11 Mar 2026 16:15:28 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7DXkCpuA-K8KJz=ViG4fJTVhpXbiYoEs5LjwrQRYoeqw@mail.gmail.com>
+X-Gm-Features: AaiRm52pQjRmKTr96uU394J28OHiIKkdK4Vv2r4jR0PViDmqztJOGlWlW8qDkxo
+Message-ID: <CAPhsuW7DXkCpuA-K8KJz=ViG4fJTVhpXbiYoEs5LjwrQRYoeqw@mail.gmail.com>
+Subject: Re: [PATCH 12/14] objtool: Reuse consecutive string references
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
 	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
@@ -80,12 +79,12 @@ Content-Transfer-Encoding: quoted-printable
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2191-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2192-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
 	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
@@ -93,7 +92,7 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	RCPT_COUNT_TWELVE(0.00)[13];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
@@ -102,17 +101,28 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	NEURAL_HAM(-0.00)[-1.000];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: CEE6126B487
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: BEA6E26B4B4
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
 On Wed, Mar 4, 2026 at 7:31=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org>=
  wrote:
 >
-> Sometimes Clang arm64 code jumps to the end of the function for UB.
-> No need to make that an error, arm64 doesn't reverse engineer the CFG
-> anyway.
+> For duplicate strings, elf_add_string() just blindly adds duplicates.
+>
+> That can be a problem for arm64 which often uses two consecutive
+> instructions (and corresponding relocations) to put an address into a
+> register, like:
+>
+>   d8:   90000001        adrp    x1, 0 <meminfo_proc_show>       d8: R_AAR=
+CH64_ADR_PREL_PG_HI21  .rodata.meminfo_proc_show.str1.8
+>   dc:   91000021        add     x1, x1, #0x0    dc: R_AARCH64_ADD_ABS_LO1=
+2_NC   .rodata.meminfo_proc_show.str1.8
+>
+> Referencing two different string addresses in the adrp+add pair can
+> result in a corrupt string addresses.  Detect such consecutive reuses
+> and force them to use the same string.
 >
 > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
