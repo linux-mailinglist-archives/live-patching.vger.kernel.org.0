@@ -1,84 +1,84 @@
-Return-Path: <live-patching+bounces-2198-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2199-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id SGPqCr16tGmOogAAu9opvQ
-	(envelope-from <live-patching+bounces-2198-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 21:59:41 +0100
+	id 0AZEDdt6tGmOogAAu9opvQ
+	(envelope-from <live-patching+bounces-2199-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 22:00:11 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 701BA289F57
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 21:59:40 +0100 (CET)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8D6B1289F77
+	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 22:00:10 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 6508F30EAB4E
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 20:58:51 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id DA0243037D42
+	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 20:59:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56557382373;
-	Fri, 13 Mar 2026 20:58:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E85D382363;
+	Fri, 13 Mar 2026 20:58:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="gBLGV6Ln"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Gh01QykV"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 282583815D7
-	for <live-patching@vger.kernel.org>; Fri, 13 Mar 2026 20:58:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4EB8381AED
+	for <live-patching@vger.kernel.org>; Fri, 13 Mar 2026 20:58:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773435529; cv=none; b=ihrGteXeiewLZiWFgGDo0mQLUO25ZqUTpFyI3rkd3ua2buW1XzSF9bRL2obY870N90DgiL15GjZzHCJ7J/ACPLkHGdgtzhUnBxCDT+F+kiB3e107psM4tpcv8SJQqmh9aD5umK9/yg+8kKazKKFO/uexhFu40Xbxip+i2JXVGOA=
+	t=1773435533; cv=none; b=JtuWzlT7xOFv9iPXGehMrsyNKgnMc3xeTlCFdWdvrr4m3QrLMcH67/owVQgM1CSDzzVkjiN9IxpXWsaB3ORbWBgy4FFJC5G2+du6hPHS8rjL0v1Ovk5myF2i2BE/f8EkX0v7e1ZXrbg6VgI7bO4zyoYtluF72lZtTvhIkpEfjJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773435529; c=relaxed/simple;
-	bh=8jRkvxxvT99z3b+LG2vpiz3TQlNMu0g+HY9wzZ0lZRw=;
+	s=arc-20240116; t=1773435533; c=relaxed/simple;
+	bh=1RfbEstq7Ctycg2Jjjbdik5k6wt6QjUzw7dgsIUK4B0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Yr0tR2oL3XH1SkRdBD1yydutdKmrFHty8xIqRhZ8lRH6/CNT0XX7iARhbzIdTkhxPlusbyw7ORl/iYX34Kq80igaw9iNrpZVglAl8KkL+pXNUFgOvsczuUeul2IEviOgZ4W/dPfHVUzZ+q/n895qx4dFrmTkKYa8TbVYl2Y8roo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=gBLGV6Ln; arc=none smtp.client-ip=209.85.128.41
+	 In-Reply-To:To:Cc; b=NdBfNbWfzz8r7F6cyTbAOzllcA+HGeFER7zr8DAn+NUmiM5LioOCNO7vDDyYJrM9DNFAkhH71RcZfVImuynV7xJm0Rv7WGoePL4S/rZVs4XhI5EG77ndJpFHeVLEwuMu2vW+6dJ9PymULNsGsduXd0T3neK3FPKAW3yQ0DjfKbw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Gh01QykV; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-48557c8ad47so11839975e9.0
-        for <live-patching@vger.kernel.org>; Fri, 13 Mar 2026 13:58:45 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4852f8ac7e9so30090765e9.1
+        for <live-patching@vger.kernel.org>; Fri, 13 Mar 2026 13:58:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1773435524; x=1774040324; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1773435529; x=1774040329; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=HVWkiiv18U1tuwb2itRTyF8mnxLw6x7wlBUEkvfx9EI=;
-        b=gBLGV6LnOSbQNUAc75Ri1RNAglMHT/blh9GU3ixQNicJLCHqbBQvUbcdjCk+vFfYPu
-         cZxajpQ2C9urTfN/IKeWHZZmAPfb1z0lRgWuar3ILPnJO97AiA7PsjLE6g/uKJAwjZk2
-         M5DFf/Vinvnl6vXtS2qvtuiPPpxYQPCpca5u6Udbqp3m5uvk16WbKEqmWRKRz7gSAJyO
-         jSTIZaT2+UFBzKPD7uf9e+y6vglxcUAU55xiXnxTwF7FTses4MybSD6ZOkRnTyGwcGK6
-         T5eepNnTgHaaaGMP7efROOF2/5j7YiNZXa5Lo94rsLdJb7bhU+MxGU/8GP7eIDcJFLZy
-         71Og==
+        bh=iETlcb04uVTRpZaVmkcYa5KMez1NknEs+5aPJ6reEiA=;
+        b=Gh01QykVHQt/Jmjc8t4Jh+wE9xEjnw99M9n3Yu2B0QxzcwDWP8AO8ZyKFJ9jxw5Sjn
+         39//qw5978H0u1V+IR6BFQbpsiaoar1SWHOAM2y/Zq1IOsvROMeQIENZ7VA7/aXoyD56
+         YNnDZR5WcdgCNvLg7J4TaTFqOqZNp5QGxdPW/k12DQ6fMb7KFxGmXmARFpRWR1mh/4cv
+         GQ6a43Ag9JsK5bO2C3fWtsdYM8BYNgsTsYhg/2lrxKa0zs7YKPqMFnINYDSUTap9q8eS
+         JrD0CBLviiJC1UQugSLEbN/vxFE0qUdwvmoVvLar7cLZLaSuYrwriS+IiDypwFZKmAtw
+         LQtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773435524; x=1774040324;
+        d=1e100.net; s=20251104; t=1773435529; x=1774040329;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=HVWkiiv18U1tuwb2itRTyF8mnxLw6x7wlBUEkvfx9EI=;
-        b=g+itsPc3ZXTBt10+5buRynpEbZ1MqPj6dLeLLb8WqldyHm8A/k1ehrBEEsioSH/1WA
-         /Hd+GyvnmVneFAyw+aH9O/fgSHtHLbvju4EUSKl+Mzak412wXhx8KL4V49AVRPaibDR/
-         BsT2VefvovDMwWuni6kKT3yuxGehh5s1wq1Vjxo7OshoGmKB6yO9589RFfLn3bmID1PB
-         pe/0KiNuGoQLBGNCNbbBtJ6ZZvPuTuvyDOyWnip/GuNmSFsh93/hu48ZquexHIqx4JNh
-         /NUSvu6EIdloxv79TSnuoGBrCJHydOUHI11Dbt8Ioj0HOjMflndVQ8VW+c1IQLcqBzFO
-         V19w==
-X-Gm-Message-State: AOJu0YxRqT/qI0OonXcjH9CTulotEalUUWzZVLZqCWexOkzqweg4iQzN
-	LZrdtgD4/BKLK5iWffgcxUt9pSU3VULmtVwdFZhnWyGTNwl5KT69xkii9e/xYso5eaE=
-X-Gm-Gg: ATEYQzx9o+VNKwy3YlowJs3cXQknwykFXglm7owBtxtkc9bswgdM0P0hhk9/+OPMhG7
-	6yWptmeEMB2BVXxOZA957oYCWOf9nJBWPIUtWil2M48YM1wwfANuFZYQqRkOVNv5MkXt8B0Wtv7
-	NGiMXiIT+QqK0eVV6hNrFG8j5KDLQYnu0qg3FLAWC3yw62t+4WURlUERzTWzIc27i2R/zOn27Ak
-	KjCq8ashWoMfasxxCfsr0HWAGgIzfxMO30fuBi1+DxYf5MMuza9T9OycVg4dHdJ1pmgH71Tbc8M
-	favCqOtxRx42eISwp9AFecYS9TJ+CyhVoljX4/6qo+SucNwIQ8SggAWjYDMJJT00rKdekJTG68v
-	YfUf6GvudYepUdItvpcNHhbw/5rTDyPIpg4wBSgmV17K2hIoxQ9PIZctafPNWtJV5wWPRPCErug
-	e+1UzNezlXlUC+e8D3KVaZ
-X-Received: by 2002:a05:600d:8489:20b0:485:3812:36dc with SMTP id 5b1f17b1804b1-485566d9068mr59603325e9.9.1773435524238;
-        Fri, 13 Mar 2026 13:58:44 -0700 (PDT)
+        bh=iETlcb04uVTRpZaVmkcYa5KMez1NknEs+5aPJ6reEiA=;
+        b=T0lL2Ujk9tZyIb3nqWICkGrjc2+HOxEAeY3DcOI9IBN6FkWI9HEQGWZBpqdhgh65oi
+         eylmzWebVqMOuj8W94tTyLaXrfO0SqeOVThrdqQ1+H16MbkWtjtyn+LyPGnQTkZDOwjN
+         4yWJOTpInvZLlNjafTjEjnr7sKkUHO/vqDRA58zaNwWCKc2QtEx4IqSb6ayNqFzdKVp1
+         Yiwy3bZJ056xzNayMYBCwTfCk90luNyf2x0YCmi16uDBuZ/ELhMRODg77RNUHxM13K/E
+         OedhNTwwnudXOutq8nFt48T+icuckE15UuCdX+1Q4RnRsL0H0gGkBUVviYNVoUc3ukEB
+         NgQg==
+X-Gm-Message-State: AOJu0YwxXkBxMpm+IAVPJwKdpvzTlUfSybL13uTg9sOMluJCeOUk+Lgf
+	wLD308K2iNRWJQXPaFij5EoGvKCsd81yW8yABdNQKttfZhO6aXpyA2E9olIMqCFVqcU=
+X-Gm-Gg: ATEYQzw1bxjv+tJJ88cwkm5isuIyXvetqGu4+DY06TiA/m22SShbgzuykhpIIO/3/FX
+	zJ66wERIV43GdPNfYZW+cUiib7y6LqH8vR6NIcV4pmzI8i4ge24tGVrWskNnj4Zqn+G/A1FXOiT
+	tmQqmjg543JZzpq0ZtXQaTxahG7QMAP3MhB4wYBGFtvx8CFDE8yR4S4gU1Ecp/PWxKBUp4fgO1q
+	VqnYYwRKIDxjLu0ZokxwlqyTcuT7KX8TElcAKqF2uh2/X31md8FgN+VoS9JGSlg6jXLTmgcKeqe
+	DKsyjaqcycMpOr6rD2ukWXfYxSOkp1nSPBdn6qjteK09n2qwx5I6V81q93h16v7aKVoIwOUCsuR
+	PhbRQas48AArdmmd4B7rUdbdX0RDvZ6m+73aXEekZ13upia9lOpNRQRJT4RjeOTSfU5cv9Ac7rL
+	R1giljLZ5mqIL2MgxI9BIa
+X-Received: by 2002:a05:600c:a45:b0:485:4006:960c with SMTP id 5b1f17b1804b1-48556702a7dmr80842015e9.16.1773435528862;
+        Fri, 13 Mar 2026 13:58:48 -0700 (PDT)
 Received: from [127.0.0.1] ([2804:5078:834:1300:58f2:fc97:371f:3])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2beab526d3csm4042611eec.18.2026.03.13.13.58.40
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2beab526d3csm4042611eec.18.2026.03.13.13.58.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2026 13:58:43 -0700 (PDT)
+        Fri, 13 Mar 2026 13:58:47 -0700 (PDT)
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Fri, 13 Mar 2026 17:58:32 -0300
-Subject: [PATCH 1/8] selftests: livepatch: test-syscall: Check for
- ARCH_HAS_SYSCALL_WRAPPER
+Date: Fri, 13 Mar 2026 17:58:33 -0300
+Subject: [PATCH 2/8] selftests: livepatch: test-kprobe: Replace true/false
+ mod param by 1/0
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -87,7 +87,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260313-lp-tests-old-fixes-v1-1-71ac6dfb3253@suse.com>
+Message-Id: <20260313-lp-tests-old-fixes-v1-2-71ac6dfb3253@suse.com>
 References: <20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@suse.com>
 In-Reply-To: <20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@suse.com>
 To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
@@ -96,18 +96,18 @@ To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
 Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
 X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1773435515; l=1173;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773435515; l=2034;
  i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=8jRkvxxvT99z3b+LG2vpiz3TQlNMu0g+HY9wzZ0lZRw=;
- b=kOkiJw1y1W4Nogu0138hwjYMxSp1GgsM6j987tFoG/Ck+s5vwr5Phe55spvzVJy88qTDJIB+p
- CLzBjIkGSlnCRP4IRl2JxRUjeZDSJTZS+UXo8Bhs57aT5qGKgPcgLxs
+ bh=1RfbEstq7Ctycg2Jjjbdik5k6wt6QjUzw7dgsIUK4B0=;
+ b=R/GLdILhXCj8zr9ANzfi18u0WJVrCq1VW4lQo+ZqgoW+db89pYy4Iz86oJs/y0P/+VEgo2FKf
+ LOOHZgWkIL8Dsc4KGGsnzlUUdTL2ENdD52Z9KhNOzQydZXdxZIg7thn
 X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
  pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
 	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
@@ -116,9 +116,9 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	FROM_HAS_DN(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
 	RECEIVED_HELO_LOCALHOST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2198-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2199-lists,live-patching=lfdr.de];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
 	PRECEDENCE_BULK(0.00)[];
@@ -129,43 +129,57 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	NEURAL_HAM(-0.00)[-1.000];
 	RCPT_COUNT_SEVEN(0.00)[10];
 	TO_DN_SOME(0.00)[]
-X-Rspamd-Queue-Id: 701BA289F57
+X-Rspamd-Queue-Id: 8D6B1289F77
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Instead of checking if the architecture running the test was powerpc,
-check if CONF_ARCH_HAS_SYSCALL_WRAPPER is defined or not.
+Older kernels don't support true/false for boolean module parameters
+because they lack commit 0d6ea3ac94ca
+("lib/kstrtox.c: add "false"/"true" support to kstrtobool()"). Replace
+true/false by 1/0 so the test module can be loaded on older kernels.
 
 No functional changes.
 
 Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 ---
- tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ tools/testing/selftests/livepatch/test-kprobe.sh | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-index dd802783ea849..c01a586866304 100644
---- a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-+++ b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-@@ -12,15 +12,14 @@
- #include <linux/slab.h>
- #include <linux/livepatch.h>
+diff --git a/tools/testing/selftests/livepatch/test-kprobe.sh b/tools/testing/selftests/livepatch/test-kprobe.sh
+index b67dfad03d97f..cdf31d0e51955 100755
+--- a/tools/testing/selftests/livepatch/test-kprobe.sh
++++ b/tools/testing/selftests/livepatch/test-kprobe.sh
+@@ -20,11 +20,11 @@ start_test "livepatch interaction with kprobed function with post_handler"
  
--#if defined(__x86_64__)
-+#if !defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
-+#define FN_PREFIX
-+#elif defined(__x86_64__)
- #define FN_PREFIX __x64_
- #elif defined(__s390x__)
- #define FN_PREFIX __s390x_
- #elif defined(__aarch64__)
- #define FN_PREFIX __arm64_
--#else
--/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER */
--#define FN_PREFIX
- #endif
+ echo 1 > "$SYSFS_KPROBES_DIR/enabled"
  
- /* Protects klp_pids */
+-load_mod $MOD_KPROBE has_post_handler=true
++load_mod $MOD_KPROBE has_post_handler=1
+ load_failing_mod $MOD_LIVEPATCH
+ unload_mod $MOD_KPROBE
+ 
+-check_result "% insmod test_modules/test_klp_kprobe.ko has_post_handler=true
++check_result "% insmod test_modules/test_klp_kprobe.ko has_post_handler=1
+ % insmod test_modules/$MOD_LIVEPATCH.ko
+ livepatch: enabling patch '$MOD_LIVEPATCH'
+ livepatch: '$MOD_LIVEPATCH': initializing patching transition
+@@ -39,14 +39,14 @@ insmod: ERROR: could not insert module test_modules/$MOD_LIVEPATCH.ko: Device or
+ 
+ start_test "livepatch interaction with kprobed function without post_handler"
+ 
+-load_mod $MOD_KPROBE has_post_handler=false
++load_mod $MOD_KPROBE has_post_handler=0
+ load_lp $MOD_LIVEPATCH
+ 
+ unload_mod $MOD_KPROBE
+ disable_lp $MOD_LIVEPATCH
+ unload_lp $MOD_LIVEPATCH
+ 
+-check_result "% insmod test_modules/test_klp_kprobe.ko has_post_handler=false
++check_result "% insmod test_modules/test_klp_kprobe.ko has_post_handler=0
+ % insmod test_modules/$MOD_LIVEPATCH.ko
+ livepatch: enabling patch '$MOD_LIVEPATCH'
+ livepatch: '$MOD_LIVEPATCH': initializing patching transition
 
 -- 
 2.52.0
