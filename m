@@ -1,166 +1,255 @@
-Return-Path: <live-patching+bounces-2205-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2206-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 6Ko6CmV7tGmOogAAu9opvQ
-	(envelope-from <live-patching+bounces-2205-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 22:02:29 +0100
+	id dSRcNa6vtGnOrwAAu9opvQ
+	(envelope-from <live-patching+bounces-2206-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Sat, 14 Mar 2026 01:45:34 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id BDD8E28A029
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 22:02:28 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id E2E6628B081
+	for <lists+live-patching@lfdr.de>; Sat, 14 Mar 2026 01:45:33 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 806EB327824F
-	for <lists+live-patching@lfdr.de>; Fri, 13 Mar 2026 20:59:31 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 1212F3010724
+	for <lists+live-patching@lfdr.de>; Sat, 14 Mar 2026 00:45:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61EBF3A2573;
-	Fri, 13 Mar 2026 20:59:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8945F280CD2;
+	Sat, 14 Mar 2026 00:45:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="D3Uwbq4C"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nY0/fL18"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 292073CF023
-	for <live-patching@vger.kernel.org>; Fri, 13 Mar 2026 20:59:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6670D221F06;
+	Sat, 14 Mar 2026 00:45:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773435561; cv=none; b=oE4N5cSK5VWCFV35FV+wB5AsafwvtKwehxYUiCWc2xsgCPgoI/BARAMDDdPm+VCn4nv+kj23dfh7xoGh3jUOqMBlrfqUVXENY8kiH+4hmnKNjyRF//urMruYaVC1RZ3dKwjUsVt44o/pAJvJ6Dy3I9h2hyaIdPXv2ZAdGf88D+I=
+	t=1773449128; cv=none; b=obyi3rY9trvtGmvn7Poe3NptrBu4wkwrBtX+iHmWhUKBIcedHauw5+XdL9LvlsjotVHr9DiLE6XAKHbG/Lxn/lGd2k0u6oyJxJtQiuduNh12mVuC2Nyw7bUUU5bXUzVB0C/522iWYu2CIXtU1izb+mRmXsNFz7KN08E0fqbDAE0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773435561; c=relaxed/simple;
-	bh=csQBdTnyzr0JSm7zjXTuth96BuITEbEVBybFpbpIwyk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=jW85JRyAHb8S/3gOZsUdu1QQyifN3ad4sZamyMeI4zgF35tgU6x2JUQNT6dcI4VkqLXuxh5qVSTNdL+OK6RQTMjoH6MVBWC+nYHcq+Ky+tuZEiopS9iV/5IwA7/UH1ZUveo/OWTenYqTB9KBOQeq9Ci11vg1SGcLj9WDPxgP0po=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=D3Uwbq4C; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4852fdb36a8so29620125e9.2
-        for <live-patching@vger.kernel.org>; Fri, 13 Mar 2026 13:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1773435556; x=1774040356; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/dCEg0dd6B9Tjl1kgEu3NhdDbbVSDX6h4iOv2b5vp0o=;
-        b=D3Uwbq4CEtNyw1GcsJQB8sOGJX5Fa4kmaGYo+SHnQeb4vdlB7BV+VhAunyHWi7tNce
-         qGpgY1sX67tu1JoeRP5NPeTBhX3JjzsJQLo9ehbGEnsBPI3rKdJsQKqOHdvxHVrbH2rU
-         mYQJ2o817IsuNWxZIeVpevWdOS/BSOaGVd/yTX5nwurbhLIIt7hdWolBDfuoIXuPxSW0
-         lz3Gn6UWzhNQoHJPKYS1Vw802Wb8u3QKqIFQIDdkCcWvpRVbbBq1DiUCLzrWnSokyHv7
-         V9kibxIjF9XJzb84MvGw/zR2fDjUF+bUZ0QX4zRqrVhfUAoApGwbreaALFrGp+foEMX0
-         Jrgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773435556; x=1774040356;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=/dCEg0dd6B9Tjl1kgEu3NhdDbbVSDX6h4iOv2b5vp0o=;
-        b=rg5mxcVXncQAepnpeoK9BkjlK9pJvAN+6VD/JSjn5ZmF1gTXpgQO9VXEcTVh0HOUy3
-         RWcFFZDM5EwKFYNDJFEk5Pg2RBpNdMCV6kAGdpxb/XY12dkn5zJBRaAQWVewT6K8IhoA
-         05wVbiBQSS1p0r49cADmGKifZLJGJjr9xEpPqz6lom6E81NjKfaCsO4iZKDxJKVW+I1Q
-         d7V/4lWjPoZn/D7jMawPQJSNBLpghqb5kECOARJfoJ3+NcCleaTvT6wHCRIWkYDZ1Pnt
-         t4UV9CzBQoTVP8FgTYT5K4zDEFBwDz7rHjlb3sfMjK8TPJ2VhKMlxp44OcmGhFFDtY8T
-         70Nw==
-X-Gm-Message-State: AOJu0YyZgGLlQrF4WO1qLJ9qD8++RZBOxSbWoAYAo7cOdgifTRkY1mXn
-	+n56IQwVMetYBBlvtSKJzHhD78v+0Ef/RzFC/bKat3DuG/xU7y2M5ZUZcRQEoC5blhw=
-X-Gm-Gg: ATEYQzzjaEtEOqq+iEWPyS2eRMjYj3Xn5YiiuNlOBmnWT31a9YCD1ocaa0q+4Rj8gFN
-	XuQuJvU16HvcxfFhhkL3YwQkNG1OTiTV3evXZfm1LycRVK7TnsCO5hICetWDGW4GlcmnCpRYCIc
-	Q6CYgFHSlT3laq1pyLOacWbLJUfNLhnniXuGXUV8kZBNU9jnUvAfqGOQFp7gzqFNli0w73Tyc93
-	qfuxoqlYJFtkhkHE8YkkJP97FPsEzPoXmcyYuw5hNCw/eB25wHC8L9LpY2CLvjjTVjvNK381ljj
-	08AlvEagi9Qe46p5x8a4DyIg4NRK1XlKSSoaoxf2C2LQZwGEXGiu8omhdKtZglGSG/ceq7IANOt
-	1UH+yuovt7D6Wscc77iPoc1/eca1h9UzldNTWqyQPJLmJ8SAduoJ3jK8G0CTUV80pEn4AH7Qjl/
-	2PVk6mSXnEwnYvZ/EBHGKj
-X-Received: by 2002:a05:600c:c0c3:20b0:485:5981:1411 with SMTP id 5b1f17b1804b1-4855981166bmr45853985e9.23.1773435556207;
-        Fri, 13 Mar 2026 13:59:16 -0700 (PDT)
-Received: from [127.0.0.1] ([2804:5078:834:1300:58f2:fc97:371f:3])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2beab526d3csm4042611eec.18.2026.03.13.13.59.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2026 13:59:15 -0700 (PDT)
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Fri, 13 Mar 2026 17:58:39 -0300
-Subject: [PATCH 8/8] selftests: livepatch: functions.sh: Extend check for
- taint flag kernel message
+	s=arc-20240116; t=1773449128; c=relaxed/simple;
+	bh=/V0uuyTzcQCpPt9FAfdP68pgwdCXchE6IRs8x/fuKmo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lOIcHMjPbbZOPjaIOvx2EfwM51f0ujTcoCSUmAff1lhEum0yGzyfAO8Q+LKxBQ8p7bNtJJOXFAUdrzNc18wgTeWSawAffaAnX5yzv3PhutdcI/HSsMAJG6wWLNUhWzpNScg2FmJvH17MNNzFddB34caI+H/z5CU5NScKp0gzT74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nY0/fL18; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 920F3C19421;
+	Sat, 14 Mar 2026 00:45:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773449128;
+	bh=/V0uuyTzcQCpPt9FAfdP68pgwdCXchE6IRs8x/fuKmo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nY0/fL187q+R4CU2/4X+/6CEvQzvajl5IhjeFhmLw6SAABAzmlYETnlapZ1bFX7L3
+	 7IFQC3US5b3dBBbEZ7Cy6dvr667FcoJbE/N5hCs+z2jP6+Ix8w3eitB2tUVsu8I3y2
+	 JYY4Mgm22Num9+1VwufG2hZjmBFDC5e5gkSgqlje9FKKHQb7jblC6b7IYLPfj/b/ww
+	 PHhc10cvDxevO4Fe/DzdU4IWuG9yi7PFtIVhg0u/f463YRsNYndFitFkQXZzNHnsHh
+	 oLwyrz22RyTTwlGG9DSEJar3wWa+/IGjn8bMrHtXCbRgb7ZkwV2D0LA6KrBxAlDavl
+	 2TS9swuXAFxoA==
+Date: Fri, 13 Mar 2026 17:45:22 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
+	live-patching@vger.kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
+	Mark Rutland <mark.rutland@arm.com>,
+	Nicolas Schier <nsc@kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH 09/14] kbuild: Only run objtool if there is at least one
+ command
+Message-ID: <20260314004522.GA3886710@ax162>
+References: <cover.1772681234.git.jpoimboe@kernel.org>
+ <b5f73df0d598e77104f7d2de5a84d69e75e80b9f.1772681234.git.jpoimboe@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260313-lp-tests-old-fixes-v1-8-71ac6dfb3253@suse.com>
-References: <20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@suse.com>
-In-Reply-To: <20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@suse.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
- Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
-X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1773435515; l=1115;
- i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=csQBdTnyzr0JSm7zjXTuth96BuITEbEVBybFpbpIwyk=;
- b=GZFkqsGQmRtJSxuKY0Pl1xY69C7WZjWhDrYyBHAZcepdSz5AAxV1bkP9VYtsNctvJ/lXx7vQA
- zFraRerPgyFCgu8ZkptriwDws9SBHSt1Pf6+hqhdMjA4CoGvDgEyv7+
-X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
- pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
-X-Spamd-Result: default: False [-2.16 / 15.00];
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b5f73df0d598e77104f7d2de5a84d69e75e80b9f.1772681234.git.jpoimboe@kernel.org>
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	TAGGED_FROM(0.00)[bounces-2205-lists,live-patching=lfdr.de];
-	FROM_HAS_DN(0.00)[];
-	RECEIVED_HELO_LOCALHOST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	MIME_TRACE(0.00)[0:+];
+	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2206-lists,live-patching=lfdr.de];
+	RCPT_COUNT_TWELVE(0.00)[13];
+	MIME_TRACE(0.00)[0:+];
+	FROM_HAS_DN(0.00)[];
+	MISSING_XM_UA(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	NEURAL_HAM(-0.00)[-1.000];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[nathan@kernel.org,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	TAGGED_RCPT(0.00)[live-patching];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mpdesouza@suse.com,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_SEVEN(0.00)[10];
-	MID_RHS_MATCH_FROM(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.com:dkim,suse.com:email,suse.com:mid]
-X-Rspamd-Queue-Id: BDD8E28A029
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: E2E6628B081
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On SLE kernels there is a warning when a livepatch is disabled:
-  livepatch: attempt to disable live patch test_klp_livepatch, setting
-  NO_SUPPORT taint flag
+On Wed, Mar 04, 2026 at 07:31:28PM -0800, Josh Poimboeuf wrote:
+> Split the objtool args into commands and options, such that if no
+> commands have been enabled, objtool doesn't run.
+> 
+> This is in preparation in enabling objtool and klp-build for arm64.
+> 
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-Extend lightly the detection of messages when a livepatch is disabled
-to cover this case as well.
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
 
-Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
----
- tools/testing/selftests/livepatch/functions.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I assume this will go with the rest of the series.
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index 781346d6e94e0..73a1d4e6acaeb 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -324,7 +324,7 @@ function check_result {
- 	# - filter out dmesg timestamp prefixes
- 	result=$(dmesg | awk -v last_dmesg="$LAST_DMESG" 'p; $0 == last_dmesg { p=1 }' | \
- 		 grep -e 'livepatch:' -e 'test_klp' | \
--		 grep -v '\(tainting\|taints\) kernel' | \
-+		 grep -v '\(tainting\|taints\|taint\) \(kernel\|flag\)' | \
- 		 sed 's/^\[[ 0-9.]*\] //' | \
- 		 sed 's/^\[[ ]*[CT][0-9]*\] //')
- 
-
--- 
-2.52.0
-
+> ---
+>  arch/x86/boot/startup/Makefile |  2 +-
+>  scripts/Makefile.build         |  4 +--
+>  scripts/Makefile.lib           | 46 ++++++++++++++++++----------------
+>  scripts/Makefile.vmlinux_o     | 15 ++++-------
+>  4 files changed, 33 insertions(+), 34 deletions(-)
+> 
+> diff --git a/arch/x86/boot/startup/Makefile b/arch/x86/boot/startup/Makefile
+> index 5e499cfb29b5..a08297829fc6 100644
+> --- a/arch/x86/boot/startup/Makefile
+> +++ b/arch/x86/boot/startup/Makefile
+> @@ -36,7 +36,7 @@ $(patsubst %.o,$(obj)/%.o,$(lib-y)): OBJECT_FILES_NON_STANDARD := y
+>  # relocations, even if other objtool actions are being deferred.
+>  #
+>  $(pi-objs): objtool-enabled	= 1
+> -$(pi-objs): objtool-args	= $(if $(delay-objtool),--dry-run,$(objtool-args-y)) --noabs
+> +$(pi-objs): objtool-args	= $(if $(delay-objtool),--dry-run,$(objtool-cmds-y) $(objtool-opts-y)) --noabs
+>  
+>  #
+>  # Confine the startup code by prefixing all symbols with __pi_ (for position
+> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> index 32e209bc7985..d2d0776df947 100644
+> --- a/scripts/Makefile.build
+> +++ b/scripts/Makefile.build
+> @@ -277,7 +277,7 @@ endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+>  is-standard-object = $(if $(filter-out y%, $(OBJECT_FILES_NON_STANDARD_$(target-stem).o)$(OBJECT_FILES_NON_STANDARD)n),$(is-kernel-object))
+>  
+>  ifdef CONFIG_OBJTOOL
+> -$(obj)/%.o: private objtool-enabled = $(if $(is-standard-object),$(if $(delay-objtool),$(is-single-obj-m),y))
+> +$(obj)/%.o: private objtool-enabled = $(if $(is-standard-object),$(if $(objtool-cmds-y),$(if $(delay-objtool),$(is-single-obj-m),y)))
+>  endif
+>  
+>  ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
+> @@ -499,7 +499,7 @@ define rule_ld_multi_m
+>  	$(call cmd,gen_objtooldep)
+>  endef
+>  
+> -$(multi-obj-m): private objtool-enabled := $(delay-objtool)
+> +$(multi-obj-m): private objtool-enabled := $(if $(objtool-cmds-y),$(delay-objtool))
+>  $(multi-obj-m): private part-of-module := y
+>  $(multi-obj-m): %.o: %.mod FORCE
+>  	$(call if_changed_rule,ld_multi_m)
+> diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+> index 0718e39cedda..40a462581666 100644
+> --- a/scripts/Makefile.lib
+> +++ b/scripts/Makefile.lib
+> @@ -183,27 +183,31 @@ ifdef CONFIG_OBJTOOL
+>  
+>  objtool := $(objtree)/tools/objtool/objtool
+>  
+> -objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
+> -objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
+> -objtool-args-$(CONFIG_MITIGATION_CALL_DEPTH_TRACKING)	+= --hacks=skylake
+> -objtool-args-$(CONFIG_X86_KERNEL_IBT)			+= --ibt
+> -objtool-args-$(CONFIG_FINEIBT)				+= --cfi
+> -objtool-args-$(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL)	+= --mcount
+> -ifdef CONFIG_FTRACE_MCOUNT_USE_OBJTOOL
+> -objtool-args-$(CONFIG_HAVE_OBJTOOL_NOP_MCOUNT)		+= --mnop
+> -endif
+> -objtool-args-$(CONFIG_UNWINDER_ORC)			+= --orc
+> -objtool-args-$(CONFIG_MITIGATION_RETPOLINE)		+= --retpoline
+> -objtool-args-$(CONFIG_MITIGATION_RETHUNK)		+= --rethunk
+> -objtool-args-$(CONFIG_MITIGATION_SLS)			+= --sls
+> -objtool-args-$(CONFIG_STACK_VALIDATION)			+= --stackval
+> -objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
+> -objtool-args-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
+> -objtool-args-$(or $(CONFIG_GCOV_KERNEL),$(CONFIG_KCOV))	+= --no-unreachable
+> -objtool-args-$(CONFIG_PREFIX_SYMBOLS)			+= --prefix=$(CONFIG_FUNCTION_PADDING_BYTES)
+> -objtool-args-$(CONFIG_OBJTOOL_WERROR)			+= --werror
+> +# objtool commands
+> +objtool-cmds-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
+> +objtool-cmds-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
+> +objtool-cmds-$(CONFIG_MITIGATION_CALL_DEPTH_TRACKING)	+= --hacks=skylake
+> +objtool-cmds-$(CONFIG_X86_KERNEL_IBT)			+= --ibt
+> +objtool-cmds-$(CONFIG_FINEIBT)				+= --cfi
+> +objtool-cmds-$(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL)	+= --mcount
+> +objtool-cmds-$(CONFIG_UNWINDER_ORC)			+= --orc
+> +objtool-cmds-$(CONFIG_MITIGATION_RETPOLINE)		+= --retpoline
+> +objtool-cmds-$(CONFIG_MITIGATION_RETHUNK)		+= --rethunk
+> +objtool-cmds-$(CONFIG_MITIGATION_SLS)			+= --sls
+> +objtool-cmds-$(CONFIG_STACK_VALIDATION)			+= --stackval
+> +objtool-cmds-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
+> +objtool-cmds-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
+> +objtool-cmds-$(CONFIG_PREFIX_SYMBOLS)			+= --prefix=$(CONFIG_FUNCTION_PADDING_BYTES)
+> +objtool-cmds-y						+= $(OBJTOOL_ARGS)
+>  
+> -objtool-args = $(objtool-args-y)					\
+> +# objtool options
+> +ifdef CONFIG_FTRACE_MCOUNT_USE_OBJTOOL
+> +objtool-opts-$(CONFIG_HAVE_OBJTOOL_NOP_MCOUNT)		+= --mnop
+> +endif
+> +objtool-opts-$(or $(CONFIG_GCOV_KERNEL),$(CONFIG_KCOV))	+= --no-unreachable
+> +objtool-opts-$(CONFIG_OBJTOOL_WERROR)			+= --werror
+> +
+> +objtool-args = $(objtool-cmds-y) $(objtool-opts-y)			\
+>  	$(if $(delay-objtool), --link)					\
+>  	$(if $(part-of-module), --module)
+>  
+> @@ -212,7 +216,7 @@ delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT),$(CONFIG_KLP_
+>  cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
+>  cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+>  
+> -objtool-enabled := y
+> +objtool-enabled = $(if $(objtool-cmds-y),y)
+>  
+>  endif # CONFIG_OBJTOOL
+>  
+> diff --git a/scripts/Makefile.vmlinux_o b/scripts/Makefile.vmlinux_o
+> index 527352c222ff..09af33203bd8 100644
+> --- a/scripts/Makefile.vmlinux_o
+> +++ b/scripts/Makefile.vmlinux_o
+> @@ -36,18 +36,13 @@ endif
+>  # For !delay-objtool + CONFIG_NOINSTR_VALIDATION, it runs on both translation
+>  # units and vmlinux.o, with the latter only used for noinstr/unret validation.
+>  
+> -objtool-enabled := $(or $(delay-objtool),$(CONFIG_NOINSTR_VALIDATION))
+> -
+> -ifeq ($(delay-objtool),y)
+> -vmlinux-objtool-args-y					+= $(objtool-args-y)
+> -else
+> -vmlinux-objtool-args-$(CONFIG_OBJTOOL_WERROR)		+= --werror
+> +ifneq ($(delay-objtool),y)
+> +objtool-cmds-y					 =
+> +objtool-opts-y					+= --link
+>  endif
+>  
+> -vmlinux-objtool-args-$(CONFIG_NOINSTR_VALIDATION)	+= --noinstr \
+> -							   $(if $(or $(CONFIG_MITIGATION_UNRET_ENTRY),$(CONFIG_MITIGATION_SRSO)), --unret)
+> -
+> -objtool-args = $(vmlinux-objtool-args-y) --link
+> +objtool-cmds-$(CONFIG_NOINSTR_VALIDATION)	+= --noinstr \
+> +						   $(if $(or $(CONFIG_MITIGATION_UNRET_ENTRY),$(CONFIG_MITIGATION_SRSO)), --unret)
+>  
+>  # Link of vmlinux.o used for section mismatch analysis
+>  # ---------------------------------------------------------------------------
+> -- 
+> 2.53.0
+> 
 
