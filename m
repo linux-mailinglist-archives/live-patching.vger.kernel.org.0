@@ -1,255 +1,180 @@
-Return-Path: <live-patching+bounces-2206-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2207-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id dSRcNa6vtGnOrwAAu9opvQ
-	(envelope-from <live-patching+bounces-2206-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Sat, 14 Mar 2026 01:45:34 +0100
+	id 6OqDA0/gtmn2JwEAu9opvQ
+	(envelope-from <live-patching+bounces-2207-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Sun, 15 Mar 2026 17:37:35 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id E2E6628B081
-	for <lists+live-patching@lfdr.de>; Sat, 14 Mar 2026 01:45:33 +0100 (CET)
+Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 68A6929179C
+	for <lists+live-patching@lfdr.de>; Sun, 15 Mar 2026 17:37:34 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 1212F3010724
-	for <lists+live-patching@lfdr.de>; Sat, 14 Mar 2026 00:45:31 +0000 (UTC)
+	by sto.lore.kernel.org (Postfix) with ESMTP id 2E644300826A
+	for <lists+live-patching@lfdr.de>; Sun, 15 Mar 2026 16:37:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8945F280CD2;
-	Sat, 14 Mar 2026 00:45:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0AD7365A0D;
+	Sun, 15 Mar 2026 16:37:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nY0/fL18"
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="DiJz6cjd"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-173.mta0.migadu.com (out-173.mta0.migadu.com [91.218.175.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6670D221F06;
-	Sat, 14 Mar 2026 00:45:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCCA428726A
+	for <live-patching@vger.kernel.org>; Sun, 15 Mar 2026 16:37:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773449128; cv=none; b=obyi3rY9trvtGmvn7Poe3NptrBu4wkwrBtX+iHmWhUKBIcedHauw5+XdL9LvlsjotVHr9DiLE6XAKHbG/Lxn/lGd2k0u6oyJxJtQiuduNh12mVuC2Nyw7bUUU5bXUzVB0C/522iWYu2CIXtU1izb+mRmXsNFz7KN08E0fqbDAE0=
+	t=1773592651; cv=none; b=WNeVrTlBmvghB1L8l5fj9dIIA9q4mxtZNnrfAXO8EDTaULktaij/0gOHfzHLFQmk6+hTxE4vio3ddkHRwvbSbFQOVLcaK/VAxCHvRw1UJAO/lc6aub59Ae3Ps0zHOcXeLRsBrd/Bm0z61XfojPkNbHP14eV2VW5TH3C5HIaEsqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773449128; c=relaxed/simple;
-	bh=/V0uuyTzcQCpPt9FAfdP68pgwdCXchE6IRs8x/fuKmo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lOIcHMjPbbZOPjaIOvx2EfwM51f0ujTcoCSUmAff1lhEum0yGzyfAO8Q+LKxBQ8p7bNtJJOXFAUdrzNc18wgTeWSawAffaAnX5yzv3PhutdcI/HSsMAJG6wWLNUhWzpNScg2FmJvH17MNNzFddB34caI+H/z5CU5NScKp0gzT74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nY0/fL18; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 920F3C19421;
-	Sat, 14 Mar 2026 00:45:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773449128;
-	bh=/V0uuyTzcQCpPt9FAfdP68pgwdCXchE6IRs8x/fuKmo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nY0/fL187q+R4CU2/4X+/6CEvQzvajl5IhjeFhmLw6SAABAzmlYETnlapZ1bFX7L3
-	 7IFQC3US5b3dBBbEZ7Cy6dvr667FcoJbE/N5hCs+z2jP6+Ix8w3eitB2tUVsu8I3y2
-	 JYY4Mgm22Num9+1VwufG2hZjmBFDC5e5gkSgqlje9FKKHQb7jblC6b7IYLPfj/b/ww
-	 PHhc10cvDxevO4Fe/DzdU4IWuG9yi7PFtIVhg0u/f463YRsNYndFitFkQXZzNHnsHh
-	 oLwyrz22RyTTwlGG9DSEJar3wWa+/IGjn8bMrHtXCbRgb7ZkwV2D0LA6KrBxAlDavl
-	 2TS9swuXAFxoA==
-Date: Fri, 13 Mar 2026 17:45:22 -0700
-From: Nathan Chancellor <nathan@kernel.org>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
-	live-patching@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
-	Mark Rutland <mark.rutland@arm.com>,
-	Nicolas Schier <nsc@kernel.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH 09/14] kbuild: Only run objtool if there is at least one
- command
-Message-ID: <20260314004522.GA3886710@ax162>
-References: <cover.1772681234.git.jpoimboe@kernel.org>
- <b5f73df0d598e77104f7d2de5a84d69e75e80b9f.1772681234.git.jpoimboe@kernel.org>
+	s=arc-20240116; t=1773592651; c=relaxed/simple;
+	bh=WYrvUmZYKYBIJAq6MuZF2VVUG9+Sg0Vs1TXdFgpWwOc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ab8SBvQRMcaMK/MGogPcBFfY68GnG7fuOqIu7AUsJEhKzcjqNr+242+K92TqhrxcDT8rCT5+FwpiO2MDMsdCdll2lMk1STtwd/bKFR79UmXAblXyGlGe0A84V1Zo1hNO3Sum2eW/MUS7c70NgxBitP7Rhl+g1es2BCkEoDKiKWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=DiJz6cjd; arc=none smtp.client-ip=91.218.175.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Message-ID: <044bebc0-d996-4be3-9330-a64195c19a84@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1773592647;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=KSwYpeETL0sL6LM2+CQsNcn/6oSQ1vhBc3WNrjiMzF0=;
+	b=DiJz6cjdi9WmJf1rAnAi3xxChJbBHs3/qLPuhqy6FT0e/tGOOmtS0s20Zu9g0GgeRuud+g
+	CL47T6F2SXrKZuuLwHt8Z2u+0ZU5Wkskvgyhb1sWsNtxvFjkX2OmpS4Yt33CYz99+W6DH/
+	KuFO/3EeFlXCIoC4o+/nyjD0bEuI3Vs=
+Date: Sun, 15 Mar 2026 09:37:22 -0700
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b5f73df0d598e77104f7d2de5a84d69e75e80b9f.1772681234.git.jpoimboe@kernel.org>
-X-Spamd-Result: default: False [-1.66 / 15.00];
+Subject: Re: [PATCH kbuild v2] kbuild: Reduce the number of compiler-generated
+ suffixes for clang thin-lto build
+To: Nicolas Schier <nsc@kernel.org>, linux-kbuild@vger.kernel.org,
+ live-patching@vger.kernel.org
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, kernel-team@fb.com,
+ Nathan Chancellor <nathan@kernel.org>, Song Liu <song@kernel.org>
+References: <20260307050250.3767489-1-yonghong.song@linux.dev>
+ <177332462174.82802.2344537821152391518.b4-ty@kernel.org>
+Content-Language: en-GB
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Yonghong Song <yonghong.song@linux.dev>
+In-Reply-To: <177332462174.82802.2344537821152391518.b4-ty@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_RHS_NOT_FQDN(0.50)[];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	DMARC_POLICY_ALLOW(-0.50)[linux.dev,none];
+	R_DKIM_ALLOW(-0.20)[linux.dev:s=key1];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	RCVD_TLS_LAST(0.00)[];
-	RCVD_COUNT_THREE(0.00)[4];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2206-lists,live-patching=lfdr.de];
-	RCPT_COUNT_TWELVE(0.00)[13];
-	MIME_TRACE(0.00)[0:+];
+	URIBL_MULTI_FAIL(0.00)[linux.dev:server fail,sto.lore.kernel.org:server fail];
+	TAGGED_FROM(0.00)[bounces-2207-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
+	RCVD_COUNT_THREE(0.00)[3];
+	RCVD_TLS_LAST(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	DKIM_TRACE(0.00)[linux.dev:+];
+	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
 	MISSING_XM_UA(0.00)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[nathan@kernel.org,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[kernel.org:+];
+	FROM_NEQ_ENVFROM(0.00)[yonghong.song@linux.dev,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[7];
 	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: E2E6628B081
+	DBL_BLOCKED_OPENRESOLVER(0.00)[linux.dev:dkim,linux.dev:mid]
+X-Rspamd-Queue-Id: 68A6929179C
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Wed, Mar 04, 2026 at 07:31:28PM -0800, Josh Poimboeuf wrote:
-> Split the objtool args into commands and options, such that if no
-> commands have been enabled, objtool doesn't run.
-> 
-> This is in preparation in enabling objtool and klp-build for arm64.
-> 
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
 
-I assume this will go with the rest of the series.
+On 3/12/26 7:12 AM, Nicolas Schier wrote:
+> On Fri, 06 Mar 2026 21:02:50 -0800, Yonghong Song wrote:
+>> The current clang thin-lto build often produces lots of symbols with
+>> suffix. The following is a partial list of such function call symbols:
+>>      ...
+>>      ethnl_module_fw_flash_ntf.llvm.7631589765585346066
+>>      __nf_conntrack_alloc.llvm.6438426151906658917
+>>      tcp_can_early_drop.llvm.11937612064648250727
+>>      tcp_print_conntrack.llvm.11937612064648250727
+>>      ...
+>>
+>> [...]
+> Note: Due to application of [1] to kbuild-next-unstable, I had to update the
+>        patch context.
+>
+> [1]: https://lore.kernel.org/linux-kbuild/20251028182822.3210436-1-xur@google.com/
+>
+>
+>
+> Applied to kbuild/kbuild-next.git (kbuild-next-unstable), thanks!
+>
+> [1/1] kbuild: Reduce the number of compiler-generated suffixes for clang thin-lto build
+>        https://git.kernel.org/kbuild/c/b7a7ce34
+>
+> Please look out for regression or issue reports or other follow up
+> comments, as they may result in the patch/series getting dropped,
+> reverted or modified (e.g. trailers). Patches applied to the
+> kbuild-next-unstable branch are accepted pending wider testing in
+> linux-next and any post-commit review; they will generally be moved
+> to the kbuild-next branch in about a week if no issues are found.
 
-> ---
->  arch/x86/boot/startup/Makefile |  2 +-
->  scripts/Makefile.build         |  4 +--
->  scripts/Makefile.lib           | 46 ++++++++++++++++++----------------
->  scripts/Makefile.vmlinux_o     | 15 ++++-------
->  4 files changed, 33 insertions(+), 34 deletions(-)
-> 
-> diff --git a/arch/x86/boot/startup/Makefile b/arch/x86/boot/startup/Makefile
-> index 5e499cfb29b5..a08297829fc6 100644
-> --- a/arch/x86/boot/startup/Makefile
-> +++ b/arch/x86/boot/startup/Makefile
-> @@ -36,7 +36,7 @@ $(patsubst %.o,$(obj)/%.o,$(lib-y)): OBJECT_FILES_NON_STANDARD := y
->  # relocations, even if other objtool actions are being deferred.
->  #
->  $(pi-objs): objtool-enabled	= 1
-> -$(pi-objs): objtool-args	= $(if $(delay-objtool),--dry-run,$(objtool-args-y)) --noabs
-> +$(pi-objs): objtool-args	= $(if $(delay-objtool),--dry-run,$(objtool-cmds-y) $(objtool-opts-y)) --noabs
->  
->  #
->  # Confine the startup code by prefixing all symbols with __pi_ (for position
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 32e209bc7985..d2d0776df947 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -277,7 +277,7 @@ endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
->  is-standard-object = $(if $(filter-out y%, $(OBJECT_FILES_NON_STANDARD_$(target-stem).o)$(OBJECT_FILES_NON_STANDARD)n),$(is-kernel-object))
->  
->  ifdef CONFIG_OBJTOOL
-> -$(obj)/%.o: private objtool-enabled = $(if $(is-standard-object),$(if $(delay-objtool),$(is-single-obj-m),y))
-> +$(obj)/%.o: private objtool-enabled = $(if $(is-standard-object),$(if $(objtool-cmds-y),$(if $(delay-objtool),$(is-single-obj-m),y)))
->  endif
->  
->  ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
-> @@ -499,7 +499,7 @@ define rule_ld_multi_m
->  	$(call cmd,gen_objtooldep)
->  endef
->  
-> -$(multi-obj-m): private objtool-enabled := $(delay-objtool)
-> +$(multi-obj-m): private objtool-enabled := $(if $(objtool-cmds-y),$(delay-objtool))
->  $(multi-obj-m): private part-of-module := y
->  $(multi-obj-m): %.o: %.mod FORCE
->  	$(call if_changed_rule,ld_multi_m)
-> diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-> index 0718e39cedda..40a462581666 100644
-> --- a/scripts/Makefile.lib
-> +++ b/scripts/Makefile.lib
-> @@ -183,27 +183,31 @@ ifdef CONFIG_OBJTOOL
->  
->  objtool := $(objtree)/tools/objtool/objtool
->  
-> -objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
-> -objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
-> -objtool-args-$(CONFIG_MITIGATION_CALL_DEPTH_TRACKING)	+= --hacks=skylake
-> -objtool-args-$(CONFIG_X86_KERNEL_IBT)			+= --ibt
-> -objtool-args-$(CONFIG_FINEIBT)				+= --cfi
-> -objtool-args-$(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL)	+= --mcount
-> -ifdef CONFIG_FTRACE_MCOUNT_USE_OBJTOOL
-> -objtool-args-$(CONFIG_HAVE_OBJTOOL_NOP_MCOUNT)		+= --mnop
-> -endif
-> -objtool-args-$(CONFIG_UNWINDER_ORC)			+= --orc
-> -objtool-args-$(CONFIG_MITIGATION_RETPOLINE)		+= --retpoline
-> -objtool-args-$(CONFIG_MITIGATION_RETHUNK)		+= --rethunk
-> -objtool-args-$(CONFIG_MITIGATION_SLS)			+= --sls
-> -objtool-args-$(CONFIG_STACK_VALIDATION)			+= --stackval
-> -objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
-> -objtool-args-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
-> -objtool-args-$(or $(CONFIG_GCOV_KERNEL),$(CONFIG_KCOV))	+= --no-unreachable
-> -objtool-args-$(CONFIG_PREFIX_SYMBOLS)			+= --prefix=$(CONFIG_FUNCTION_PADDING_BYTES)
-> -objtool-args-$(CONFIG_OBJTOOL_WERROR)			+= --werror
-> +# objtool commands
-> +objtool-cmds-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
-> +objtool-cmds-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
-> +objtool-cmds-$(CONFIG_MITIGATION_CALL_DEPTH_TRACKING)	+= --hacks=skylake
-> +objtool-cmds-$(CONFIG_X86_KERNEL_IBT)			+= --ibt
-> +objtool-cmds-$(CONFIG_FINEIBT)				+= --cfi
-> +objtool-cmds-$(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL)	+= --mcount
-> +objtool-cmds-$(CONFIG_UNWINDER_ORC)			+= --orc
-> +objtool-cmds-$(CONFIG_MITIGATION_RETPOLINE)		+= --retpoline
-> +objtool-cmds-$(CONFIG_MITIGATION_RETHUNK)		+= --rethunk
-> +objtool-cmds-$(CONFIG_MITIGATION_SLS)			+= --sls
-> +objtool-cmds-$(CONFIG_STACK_VALIDATION)			+= --stackval
-> +objtool-cmds-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
-> +objtool-cmds-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
-> +objtool-cmds-$(CONFIG_PREFIX_SYMBOLS)			+= --prefix=$(CONFIG_FUNCTION_PADDING_BYTES)
-> +objtool-cmds-y						+= $(OBJTOOL_ARGS)
->  
-> -objtool-args = $(objtool-args-y)					\
-> +# objtool options
-> +ifdef CONFIG_FTRACE_MCOUNT_USE_OBJTOOL
-> +objtool-opts-$(CONFIG_HAVE_OBJTOOL_NOP_MCOUNT)		+= --mnop
-> +endif
-> +objtool-opts-$(or $(CONFIG_GCOV_KERNEL),$(CONFIG_KCOV))	+= --no-unreachable
-> +objtool-opts-$(CONFIG_OBJTOOL_WERROR)			+= --werror
-> +
-> +objtool-args = $(objtool-cmds-y) $(objtool-opts-y)			\
->  	$(if $(delay-objtool), --link)					\
->  	$(if $(part-of-module), --module)
->  
-> @@ -212,7 +216,7 @@ delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT),$(CONFIG_KLP_
->  cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool-args) $@)
->  cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
->  
-> -objtool-enabled := y
-> +objtool-enabled = $(if $(objtool-cmds-y),y)
->  
->  endif # CONFIG_OBJTOOL
->  
-> diff --git a/scripts/Makefile.vmlinux_o b/scripts/Makefile.vmlinux_o
-> index 527352c222ff..09af33203bd8 100644
-> --- a/scripts/Makefile.vmlinux_o
-> +++ b/scripts/Makefile.vmlinux_o
-> @@ -36,18 +36,13 @@ endif
->  # For !delay-objtool + CONFIG_NOINSTR_VALIDATION, it runs on both translation
->  # units and vmlinux.o, with the latter only used for noinstr/unret validation.
->  
-> -objtool-enabled := $(or $(delay-objtool),$(CONFIG_NOINSTR_VALIDATION))
-> -
-> -ifeq ($(delay-objtool),y)
-> -vmlinux-objtool-args-y					+= $(objtool-args-y)
-> -else
-> -vmlinux-objtool-args-$(CONFIG_OBJTOOL_WERROR)		+= --werror
-> +ifneq ($(delay-objtool),y)
-> +objtool-cmds-y					 =
-> +objtool-opts-y					+= --link
->  endif
->  
-> -vmlinux-objtool-args-$(CONFIG_NOINSTR_VALIDATION)	+= --noinstr \
-> -							   $(if $(or $(CONFIG_MITIGATION_UNRET_ENTRY),$(CONFIG_MITIGATION_SRSO)), --unret)
-> -
-> -objtool-args = $(vmlinux-objtool-args-y) --link
-> +objtool-cmds-$(CONFIG_NOINSTR_VALIDATION)	+= --noinstr \
-> +						   $(if $(or $(CONFIG_MITIGATION_UNRET_ENTRY),$(CONFIG_MITIGATION_SRSO)), --unret)
->  
->  # Link of vmlinux.o used for section mismatch analysis
->  # ---------------------------------------------------------------------------
-> -- 
-> 2.53.0
-> 
+Thanks, Nicolas,
+
+I looked at the patch [1] and find that my patch needs some change.
+The current change is
+
+@@ -1047,6 +1047,7 @@ CC_FLAGS_LTO := -flto
+else
+CC_FLAGS_LTO := -flto=thin -fsplit-lto-unit
++KBUILD_LDFLAGS += $(call ld-option,--lto-whole-program-visibility 
+-mllvm -always-rename-promoted-locals=false)
+endif
+CC_FLAGS_LTO += -fvisibility=hidden Due to [1], the above change should 
+be @@ -1047,6 +1047,7 @@ CC_FLAGS_LTO := -flto
+else
+CC_FLAGS_LTO := -flto=thin -fsplit-lto-unit
++if CONFIG_LTO_CLANG_THIN
++KBUILD_LDFLAGS += $(call ld-option,--lto-whole-program-visibility 
+-mllvm -always-rename-promoted-locals=false)
++endif
+endif
+CC_FLAGS_LTO += -fvisibility=hidden
+
+The reason likes below:
+
+The patch [1] introduced CONFOG_LTO_CLANG_THIN_DIST and in Makefile, for the following change:
+
+  ifdef CONFIG_LTO_CLANG
+-ifdef CONFIG_LTO_CLANG_THIN -CC_FLAGS_LTO := -flto=thin 
+-fsplit-lto-unit -else +ifdef CONFIG_LTO_CLANG_FULL  CC_FLAGS_LTO	:= -flto
++else +CC_FLAGS_LTO := -flto=thin -fsplit-lto-unit  endif
+  CC_FLAGS_LTO	+= -fvisibility=hidden
+
+The else branch 'CC_FLAGS_LTO := -flto=thin -fsplit-lto-unit' will support both CONFIG_LTO_CLANG_THIN and CONFIG_LTO_CLANG_THIN_DIST.
+
+My patch commit message mentioned that the new flag won't support
+thinlto distributed mode yet. So The new ldflags
+   $(call ld-option,--lto-whole-program-visibility -mllvm 
+-always-rename-promoted-locals=false) needs under LTO_CLANG_THIN but not 
+LTO_CLANG_THIN_DIST. There will be some effort in llvm to support 
+distributed thin-lto as well for suffix reduction. But it may take a 
+little bit time as llvm needs some infrastructure change before 
+supporting distributed thin-lto. Thanks!
+
+>
+> Best regards,
+
 
