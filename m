@@ -1,207 +1,181 @@
-Return-Path: <live-patching+bounces-2252-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2253-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id ugi5OleLwmlvewQAu9opvQ
-	(envelope-from <live-patching+bounces-2252-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 24 Mar 2026 14:02:15 +0100
+	id aONdLrCfwmm3fQQAu9opvQ
+	(envelope-from <live-patching+bounces-2253-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 24 Mar 2026 15:29:04 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6E7D8308D39
-	for <lists+live-patching@lfdr.de>; Tue, 24 Mar 2026 14:02:15 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id BC65230A260
+	for <lists+live-patching@lfdr.de>; Tue, 24 Mar 2026 15:29:03 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id 6E2D93050AB2
-	for <lists+live-patching@lfdr.de>; Tue, 24 Mar 2026 12:53:22 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 88FB1300BE85
+	for <lists+live-patching@lfdr.de>; Tue, 24 Mar 2026 14:22:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2690F39657C;
-	Tue, 24 Mar 2026 12:53:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8BF53FEB36;
+	Tue, 24 Mar 2026 14:22:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b="LESe/nCj"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="dTlti1ss";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="L1ROqEz8";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="DG6ktTNK";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kQ68gNe1"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0DAF38B7B0
-	for <live-patching@vger.kernel.org>; Tue, 24 Mar 2026 12:53:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.77.101.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0293FEB27
+	for <live-patching@vger.kernel.org>; Tue, 24 Mar 2026 14:22:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774356800; cv=none; b=cAqH5PpW7s8xgjpL0syRBXVvzuKyuB5TyKBTleEa+fYcf7Ge5SbOd4m3lUgk7gcqAnFMU+JtQ4QklymeJKgR08gCEc42CiWwVLqgOZmIw/f6OQjmrq5522As3t4beetzj+iTrG4UBMXWfQ7RmB5WeJrCZWFNrh+Wd9lwlwxGnj8=
+	t=1774362155; cv=none; b=BeT9qQjYv6ULXYQN2foYlFClnjwbz4dk5k27gEIE++As6SX+2dvYgpGIHiTl3oxGmFyBhpgTXEATuYgcZBeqWEbbVohQcu+vg4ukfjs7zcpYxxl5zRshmb2cYUWSQpw8FMuvTLUUD9tZVEFQ52cLvK7hlXddH7kn5RkHpTffcuU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774356800; c=relaxed/simple;
-	bh=czOsuqvFQqvM6JI9RdObWMtbvC9KS3m+61g9x9nKrZQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aA9P49K65/DfNkTRobt6EpZUaFuUH9l06GUGw22/GaEsMTP5h3WDAVIKR020zt8ZGsIpk150RhGc3FxDwmrGGsi62hppaCorM7fo8LmuE05YzN0DftWobwSOzKFuehza0x72VdHr2enExQ25Ip6N4pNYPTTFEquezUNa6mnEFDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl; spf=pass smtp.mailfrom=wp.pl; dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b=LESe/nCj; arc=none smtp.client-ip=212.77.101.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wp.pl
-Received: (wp-smtpd smtp.wp.pl 38048 invoked from network); 24 Mar 2026 13:53:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=20241105;
-          t=1774356785; bh=3I8BdEJ6fNQCElTQ50WkDj9eLS0W2x/JwM2lSBg4wFg=;
-          h=From:To:Cc:Subject;
-          b=LESe/nCjch/35QijCLpbvuDy/b+jpWkftSuhHZI/PMLG8528l80AwGDzUmerECn1U
-           KTIIgMtyJ9l2+SDRN+9TkfaUjx9bmvJDyVfHcyrFnC28gXwe612NrnzoUYGtFw462n
-           iDZaaOIl4xopbJZLYk4RUwEqrOeE+wcZyjym0ODoQv1V1ZuTvA7HkuMBWwayZZF/lv
-           uOoBfC3K5n5uFXMHsjLaO3KQwstZnb/HrjJ7QRixvN+83LBHNoIgJc/BotI7JNpT2z
-           RQ+Y6NU0bDaA8T5EJowXPnvEE2msTGb3lhHanAdNGNK/wdewaUXBDNPHI5wpjeH6q/
-           JWRLjt8J6OlKA==
-Received: from zbigniew33.net.autocom.pl (HELO localhost) (stf_xl@wp.pl@[77.236.6.42])
-          (envelope-sender <stf_xl@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with TLS_AES_256_GCM_SHA384 encrypted SMTP
-          for <petr.pavlu@suse.com>; 24 Mar 2026 13:53:05 +0100
-Date: Tue, 24 Mar 2026 13:53:04 +0100
-From: Stanislaw Gruszka <stf_xl@wp.pl>
-To: Petr Pavlu <petr.pavlu@suse.com>
-Cc: linux-modules@vger.kernel.org, Sami Tolvanen <samitolvanen@google.com>,
-	Luis Chamberlain <mcgrof@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-	Daniel Gomez <da.gomez@kernel.org>,
-	Aaron Tomlin <atomlin@atomlin.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Jordan Rome <linux@jordanrome.com>,
-	Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH] module/kallsyms: sort function symbols and use binary
- search
-Message-ID: <20260324125304.GA15972@wp.pl>
-References: <20260317110423.45481-1-stf_xl@wp.pl>
- <b6030f42-b4d2-4e52-acec-76e25c0f40db@suse.com>
+	s=arc-20240116; t=1774362155; c=relaxed/simple;
+	bh=l1y+dHz07c8oKvOlkZE/zzGXtSlNqW836W5eAjuV7wU=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=eahvU6qExi2orpPVvKRftTCxCFZ5nxj3Y1c2E2gBT1A2sO/wFUxuNoENkEgvWTCsmWll4ckALjuKaJVBzO6FObLUurDyqO26mGV+UvQU5a8cuynyQeZ59N9rWbU22KPdEsSCWnb5GtsoulgUx5aQ6MO8ZkxGDwqNVnOkPR30WPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=dTlti1ss; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=L1ROqEz8; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=DG6ktTNK; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kQ68gNe1; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from localhost.localdomain (unknown [IPv6:2a07:de40:b2bf:1b::12ef])
+	by smtp-out1.suse.de (Postfix) with ESMTP id B796D4D1D5;
+	Tue, 24 Mar 2026 14:22:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1774362150; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0d+miF3FPQ4mJOMemR09EeUmoR4iHBN8H3OEhaM5WMg=;
+	b=dTlti1ssZEhc6Q6sHO8lTD+naIXPFRTukwvZlEBC/3d83wIaUbYxohBgvMej67ZAtByPBE
+	ifoGJRRfmw1TaFADNzvd22+QaN3wbxy8PhGkEUMU8DRO8omIedpD5R/AQNfKOiyrHu22ha
+	/ETwSCL0cN5HDn9XP7iwB/j8am3nFV8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1774362150;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0d+miF3FPQ4mJOMemR09EeUmoR4iHBN8H3OEhaM5WMg=;
+	b=L1ROqEz81Pz6cC9EJbgpyENkSwWP9QvbreDHdn0i1FDLBkX8fcZukVM5AZDNF5XvfyJpX2
+	A3BL7yLKf5pVTzDw==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=DG6ktTNK;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=kQ68gNe1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1774362148; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0d+miF3FPQ4mJOMemR09EeUmoR4iHBN8H3OEhaM5WMg=;
+	b=DG6ktTNKKcJeLTGylHqjdRXPQtLtkUUxm48/ZlY0OIc2uesL+9cya6bGUWPmoEGzlEGibW
+	A+y9PUfI0zzNKfanHLmi/VqVq6/PhLzpRaL3g4HFNgXw/iFwMwv3QzOGQ0R9RIVlUrqDkP
+	u7OHqNu52t4twUB2CjKgd8D/DOAezwI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1774362148;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0d+miF3FPQ4mJOMemR09EeUmoR4iHBN8H3OEhaM5WMg=;
+	b=kQ68gNe1P2i/AT87VeCTrhrwzbBzGSpoR8pSj9Yi6oowad19trQaw4ymKG48emb5pGpO7Y
+	V7ZDYthsmR341yDQ==
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6030f42-b4d2-4e52-acec-76e25c0f40db@suse.com>
-X-WP-MailID: 03314cd79dc357a376b4607d17023d82
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000001 [AcKt]                               
-X-Spamd-Result: default: False [-2.16 / 15.00];
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] selftests/livepatch: add test for module function
+ patching
+From: Miroslav Benes <mbenes@suse.cz>
+To: Pablo Hugen <phugen@redhat.com>
+Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org, 
+ mbenes@suse.cz, pmladek@suse.com, joe.lawrence@redhat.com, shuah@kernel.org
+In-Reply-To: <20260320201135.1203992-1-phugen@redhat.com>
+References: <20260320201135.1203992-1-phugen@redhat.com>
+Date: Tue, 24 Mar 2026 15:22:27 +0100
+Message-Id: <177436214729.62466.7977538958560300344.b4-review@b4>
+X-Mailer: b4 0.15.0
+X-Spamd-Bar: +++++++++++++++++
+X-Spam-Flag: YES
+X-Spam-Score: 17.39
+X-Spam-Level: *****************
+X-Spamd-Result: default: False [3.84 / 15.00];
+	SPAM_FLAG(5.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[wp.pl,none];
-	R_DKIM_ALLOW(-0.20)[wp.pl:s=20241105];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
+	MID_RHS_NOT_FQDN(0.50)[];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
+	FROM_HAS_DN(0.00)[];
+	DMARC_NA(0.00)[suse.cz];
 	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
-	FORGED_SENDER_MAILLIST(0.00)[];
 	MIME_TRACE(0.00)[0:+];
-	TAGGED_FROM(0.00)[bounces-2252-lists,live-patching=lfdr.de];
-	FREEMAIL_FROM(0.00)[wp.pl];
-	RCPT_COUNT_TWELVE(0.00)[13];
-	FROM_HAS_DN(0.00)[];
-	MISSING_XM_UA(0.00)[];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2253-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[stf_xl@wp.pl,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[wp.pl:+];
-	MID_RHS_MATCH_FROM(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
-	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns,nano:email,wp.pl:dkim,wp.pl:mid]
-X-Rspamd-Queue-Id: 6E7D8308D39
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[suse.cz:+];
+	NEURAL_HAM(-0.00)[-0.981];
+	TAGGED_RCPT(0.00)[live-patching];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,test-callbacks.sh:url]
+X-Rspamd-Queue-Id: BC65230A260
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Hi,
+On Fri, 20 Mar 2026 17:11:17 -0300, Pablo Hugen <phugen@redhat.com> wrote:
+> Add a target module and livepatch pair that verify module function
+> patching via a proc entry. Two test cases cover both the
+> klp_enable_patch path (target loaded before livepatch) and the
+> klp_module_coming path (livepatch loaded before target).
 
-On Mon, Mar 23, 2026 at 02:06:43PM +0100, Petr Pavlu wrote:
-> On 3/17/26 12:04 PM, Stanislaw Gruszka wrote:
-> > Module symbol lookup via find_kallsyms_symbol() performs a linear scan
-> > over the entire symtab when resolving an address. The number of symbols
-> > in module symtabs has grown over the years, largely due to additional
-> > metadata in non-standard sections, making this lookup very slow.
-> > 
-> > Improve this by separating function symbols during module load, placing
-> > them at the beginning of the symtab, sorting them by address, and using
-> > binary search when resolving addresses in module text.
-> 
-> Doesn't considering only function symbols break the expected behavior
-> with CONFIG_KALLSYMS_ALL=y. For instance, when using kdb, is it still
-> able to see all symbols in a module? The module loader should be remain
-> consistent with the main kallsyms code regarding which symbols can be
-> looked up.
+We sort of test the same in test-callbacks.sh. Just using different
+means. I think I would not mind having this as well.
 
-We already have a CONFIG_KALLSYMS_ALL=y inconsistency between kernel and 
-module symbol lookup, independent of this patch. find_kallsyms_symbol()
-restricts the search to MOD_TEXT (or MOD_INIT_TEXT) address ranges, so
-it cannot resolve data or rodata symbols.
+Petr, Joe, what do you think?
 
-This appears to be acceptable in practice, most kallsyms_lookup() users are
-interested in function symbols. Users relying on CONFIG_KALLSYMS_ALL=y
-seems to use name-based lookups or iterate over the full symtab. Though kdb 
-looks like the exception: it can resolve data symbols by address in the kernel,
-but not in modules. But, I think, resolving symbols by name is more common for
-kdb.
+>
+>
+> diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_mod_target.c b/tools/testing/selftests/livepatch/test_modules/test_klp_mod_target.c
+> new file mode 100644
+> index 000000000000..9643984d2402
+> --- /dev/null
+> +++ b/tools/testing/selftests/livepatch/test_modules/test_klp_mod_target.c
+> @@ -0,0 +1,39 @@
+> [ ... skip 11 lines ... ]
+> +
+> +static noinline int test_klp_mod_target_show(struct seq_file *m, void *v)
+> +{
+> +	seq_printf(m, "%s: %s\n", THIS_MODULE->name, "original output");
+> +	return 0;
+> +}
 
-To make the behavior consistent, we could either: extend find_kallsyms_symbol()
-to cover data/rodata symbols (for CONFIG_KALLSYSM_ALL), or restrict
-kallsyms_lookup() to text symbols and introduce a separate API for data symbols
-lookup for users that really need that. I think second option is better, as
-some (maybe most) users are not interested in all symbols, even if
-CONFIG_KALLSYSM_ALL is set.
+A nit but is 'noinline' keyword needed here? proc_create_single() below
+takes a function pointer so hopefully test_klp_mod_target_show() stays
+even without it?
 
-However, either would require substantial rework and is outside the scope
-of this patch.
+> +
+> +static int test_klp_mod_target_init(void)
+> +{
+> +	pr_info("%s\n", __func__);
+> +	pde = proc_create_single("test_klp_mod_target", 0, NULL,
+> +				 test_klp_mod_target_show);
 
-Regards
-Stanislaw
+...here.
 
-> > This also should improve times for linear symbol name lookups, as valid
-> > function symbols are now located at the beginning of the symtab.
-> > 
-> > The cost of sorting is small relative to module load time. In repeated
-> > module load tests [1], depending on .config options, this change
-> > increases load time between 2% and 4%. With cold caches, the difference
-> > is not measurable, as memory access latency dominates.
-> > 
-> > The sorting theoretically could be done in compile time, but much more
-> > complicated as we would have to simulate kernel addresses resolution
-> > for symbols, and then correct relocation entries. That would be risky
-> > if get out of sync.
-> > 
-> > The improvement can be observed when listing ftrace filter functions:
-> > 
-> > root@nano:~# time cat /sys/kernel/tracing/available_filter_functions | wc -l
-> > 74908
-> > 
-> > real	0m1.315s
-> > user	0m0.000s
-> > sys	0m1.312s
-> > 
-> > After:
-> > 
-> > root@nano:~# time cat /sys/kernel/tracing/available_filter_functions | wc -l
-> > 74911
-> > 
-> > real	0m0.167s
-> > user	0m0.004s
-> > sys	0m0.175s
-> > 
-> > (there are three more symbols introduced by the patch)
-> 
-> This looks as a reasonable improvement.
-> 
-> > 
-> > For livepatch modules, the symtab layout is preserved and the existing
-> > linear search is used. For this case, it should be possible to keep
-> > the original ELF symtab instead of copying it 1:1, but that is outside
-> > the scope of this patch.
-> 
-> Livepatch modules are already handled specially by the kallsyms module
-> code so excluding them from this optimization is probably ok.
-> 
-> However, it might be worth revisiting this exception. I believe that
-> livepatch support requires the original symbol table for relocations to
-> remain usable. It might make sense to investigate whether updating the
-> relocation data with the adjusted symbol indexes would be sensible.
-> 
-> -- 
-> Thanks,
-> Petr
+Otherwise it looks good to me.
+
+-- 
+Miroslav
+
 
