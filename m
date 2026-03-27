@@ -1,185 +1,167 @@
-Return-Path: <live-patching+bounces-2261-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2262-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id uMdKJrJjxmm+JAUAu9opvQ
-	(envelope-from <live-patching+bounces-2261-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2026 12:02:10 +0100
+	id GK9PG4pmxmnnJgUAu9opvQ
+	(envelope-from <live-patching+bounces-2262-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2026 12:14:18 +0100
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id C98E134305C
-	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2026 12:02:09 +0100 (CET)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5B20A3432EE
+	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2026 12:14:17 +0100 (CET)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 4A85931410E3
-	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2026 10:46:53 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id DF48C304EA0D
+	for <lists+live-patching@lfdr.de>; Fri, 27 Mar 2026 11:00:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 605ED329E49;
-	Fri, 27 Mar 2026 10:46:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B2D6E3E5EC7;
+	Fri, 27 Mar 2026 11:00:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="esgTEk2A";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="qO8Jv29R";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="ELyChpfD";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="q6tfU2aD"
+	dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b="KyRusaRx"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8721330650
-	for <live-patching@vger.kernel.org>; Fri, 27 Mar 2026 10:46:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 343913E51FD
+	for <live-patching@vger.kernel.org>; Fri, 27 Mar 2026 11:00:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.77.101.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774608411; cv=none; b=AXVlgM96DdpG6L7PkGnPFeijb6qSUqFOrv60g1C5CZ6Lm+ReQBNUUcKZD9245cv7hhgm1oXU/kNnotn4XA3jQeEn/fYFb5Qz2wq+9U274x7Cn0R7IuTKFwDoIpVX9lEyMVDUIIzl5NgE3dvsVhbm3EHyJTtxadlyQhOVjbDsrOk=
+	t=1774609224; cv=none; b=H8W2lKZ7/6rpoHIuAk7eTqIOl7bruPkKdElxY+oWwom5OmCxkBNOguVOeAnF7P7KyitqB6zNtdJDScrt67DZMVcsoagE5tci9NBdxxF3sNsc14eyC716PRFqiUmYhxmTM7hmATXqEdMErJTD3x2tcpm5gGQca7w0a0f5wybC4HA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774608411; c=relaxed/simple;
-	bh=lcSYNW/uwUu3VeMG/a+Pz7DxjC1TSMaACR0ZqsRz2nc=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=TL410P9tTcJw4w8GPOOulT9mjQ8zH8jIA5Gf88gSKtKLluO/Fq69XGbHa+sEQuimYWIq7csQDm0nN4GpCrY0A43j5WD4CzQ7F3DWQbzENJDWzASHxDTUiJ0J06Eod0EDxvnOvUTK7e7m+iom/OAIJUVwzqTkQH+O7eS1M4c8kHg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=esgTEk2A; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=qO8Jv29R; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=ELyChpfD; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=q6tfU2aD; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.128.32.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 0498C4D1E1;
-	Fri, 27 Mar 2026 10:46:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1774608408; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=P3dIUJZjjmmsd1tModYnbExJ4mU9pGlHtsHU4YXsTeU=;
-	b=esgTEk2AEzAmYF9l8zrClML+/jzbWBX/ewoqcJYD81mb83uqOvdBioWRsXGbfiHr4b7DKz
-	yKn4hlvrpZUncT0I03AR8Ab6ECZFKkULXR/prJ8haWgKHpFGIaHmGk+J45kx4CHnnzM9sJ
-	+lnMFleLXYw9GOqCU5yqLTx93YkfJNg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1774608408;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=P3dIUJZjjmmsd1tModYnbExJ4mU9pGlHtsHU4YXsTeU=;
-	b=qO8Jv29R11Id5j37chrQ1Iu7CZ5jtV66Rh/GpQiEexKSnEjaeru/h52qsg/e9rylTSF9fy
-	GlI2nTGwrx2dW7Cw==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1774608407; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=P3dIUJZjjmmsd1tModYnbExJ4mU9pGlHtsHU4YXsTeU=;
-	b=ELyChpfDFNWwAprcmR326hSY64zlFWL5mPJeGicewjzji6BWe6e8DTRAVhrTUHVnpQwFoc
-	RoE7wtxWla4UvLdvWjBUTpuiL2rgEiLN0zYRWcI5LtutZaY+qxKTRaub7AiIpob+AsPfei
-	A2SiZn7G8ZGhy61BCdXAiFuS8NzzIKg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1774608407;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=P3dIUJZjjmmsd1tModYnbExJ4mU9pGlHtsHU4YXsTeU=;
-	b=q6tfU2aDiN4kZqxI2WxTuuag5h6eTboTTM/aM5jcNaTAA0y4R693AoZK+d2e2l32TD5qgv
-	YQWxP7DKU0d3DTAQ==
-Date: Fri, 27 Mar 2026 11:46:46 +0100 (CET)
-From: Miroslav Benes <mbenes@suse.cz>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-cc: Petr Mladek <pmladek@suse.com>, Pablo Hugen <phugen@redhat.com>, 
-    live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-    linux-kernel@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org, 
-    shuah@kernel.org
-Subject: Re: [PATCH] selftests/livepatch: add test for module function
- patching
-In-Reply-To: <acWZ3r2CoSDy_NLf@redhat.com>
-Message-ID: <alpine.LSU.2.21.2603271143310.31210@pobox.suse.cz>
-References: <20260320201135.1203992-1-phugen@redhat.com> <acVD_NPu4JVRoaVK@pathway.suse.cz> <acWZ3r2CoSDy_NLf@redhat.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	s=arc-20240116; t=1774609224; c=relaxed/simple;
+	bh=nrnsHUz7/k/GUUXVjLVXMiD7Ts+e/jGMmi0H77ovY2E=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=BRlDq7yqI47H3qNIHqtXmIS4vIg9x0VzDiSGXrdLc+NN4jkBHYDzrtnyaMvnL8yWo0WI5A2noEz2GLBq6fraAaYQq3u3hkfHvARW/frLMSLw0vEl664xzEXoNDn2+GT3Vt7Nj+gKr9x6rWUR20o9uNoA0YTxL1Vbq8jaIocP9FA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl; spf=pass smtp.mailfrom=wp.pl; dkim=pass (2048-bit key) header.d=wp.pl header.i=@wp.pl header.b=KyRusaRx; arc=none smtp.client-ip=212.77.101.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=wp.pl
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wp.pl
+Received: (wp-smtpd smtp.wp.pl 19510 invoked from network); 27 Mar 2026 12:00:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=20241105;
+          t=1774609207; bh=0tuv4FfKBKr6pfb0Zpw0fG5uTeoZMPynNgZXrQMlRdg=;
+          h=From:To:Cc:Subject;
+          b=KyRusaRxgqYdpjFnFpgkoRU6WRMrO4P9/K/87xY9wzL6l/bDPsO3zHR17NGXfjVBg
+           8Uk3BHyM7Ifauu0p6Tl7VYXdj2M4iRyAaDkkB5xfmMCu6FMuiDUbKtWzOaUFiq+Kys
+           A4D4nK/IvqnAvP5LweZNadyHxJmtWAgkTaloSoV1dp5g1obOA50SbvEXM6ev1UOe5x
+           /M7f0kyj0vknySfwuNxaXt6qy1mrKoozUJAQYAV9DPsPWvMQhqP1BkOZp6y1UF/tfF
+           AhGufyUPdVn64So44cxFkauYP8BITW4p0aK8dho+QUFkwGzwqW91QHuz3cbtAs2bwF
+           pWINHecCPEHDg==
+Received: from 77-236-5-223.static.play.pl (HELO localhost) (stf_xl@wp.pl@[77.236.5.223])
+          (envelope-sender <stf_xl@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with TLS_AES_256_GCM_SHA384 encrypted SMTP
+          for <linux-modules@vger.kernel.org>; 27 Mar 2026 12:00:07 +0100
+From: Stanislaw Gruszka <stf_xl@wp.pl>
+To: linux-modules@vger.kernel.org,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Petr Pavlu <petr.pavlu@suse.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org,
+	live-patching@vger.kernel.org,
+	Daniel Gomez <da.gomez@kernel.org>,
+	Aaron Tomlin <atomlin@atomlin.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Jordan Rome <linux@jordanrome.com>,
+	Viktor Malik <vmalik@redhat.com>
+Subject: [PATCH v2 1/2] module/kallsyms: fix nextval for data symbol lookup
+Date: Fri, 27 Mar 2026 12:00:04 +0100
+Message-Id: <20260327110005.16499-1-stf_xl@wp.pl>
+X-Mailer: git-send-email 2.25.4
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Flag: NO
-X-Spam-Score: -4.30
-X-Spam-Level: 
-X-Spamd-Result: default: False [-1.66 / 15.00];
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: e0d26d1a0bf3dbd632a0485b0efa94ed
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [IWNk]                               
+X-Spamd-Result: default: False [-0.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	MID_CONTAINS_FROM(1.00)[];
+	R_MISSING_CHARSET(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[wp.pl,none];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_DKIM_ALLOW(-0.20)[wp.pl:s=20241105];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2261-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2262-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
-	DMARC_NA(0.00)[suse.cz];
-	DKIM_TRACE(0.00)[suse.cz:+];
 	RCVD_COUNT_THREE(0.00)[4];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
+	FREEMAIL_FROM(0.00)[wp.pl];
+	RCPT_COUNT_TWELVE(0.00)[13];
+	URIBL_MULTI_FAIL(0.00)[wp.pl:server fail,sin.lore.kernel.org:server fail];
+	DKIM_TRACE(0.00)[wp.pl:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[stf_xl@wp.pl,live-patching@vger.kernel.org];
 	FROM_HAS_DN(0.00)[];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
-	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,functions.sh:url,pobox.suse.cz:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: C98E134305C
+	NEURAL_HAM(-0.00)[-1.000];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[wp.pl:dkim,wp.pl:email,wp.pl:mid]
+X-Rspamd-Queue-Id: 5B20A3432EE
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-> > > +disable_lp $MOD_TARGET_PATCH
-> > > +unload_lp $MOD_TARGET_PATCH
-> > > +
-> > > +if [[ "$(cat /proc/$MOD_TARGET)" != "$MOD_TARGET: original output" ]] ; then
-> > > +	echo -e "FAIL\n\n"
-> > > +	die "livepatch kselftest(s) failed"
-> > > +fi
-> > > +
-> > > +unload_mod $MOD_TARGET
-> > > +
-> > > +check_result "% insmod test_modules/$MOD_TARGET.ko
-> > > +$MOD_TARGET: test_klp_mod_target_init
-> > > +% insmod test_modules/$MOD_TARGET_PATCH.ko
-> > 
-> 
-> So following this technique, all the other tests with command sequences
-> would need to be re-written as '&&' chains, e.g. the "patch getpid
-> syscall while being heavily hammered" one like:
-> 
->   pid_list=$(echo "${pids[@]}" | tr ' ' ',') && \
->     load_lp $MOD_SYSCALL klp_pids=$pid_list && \
->     loop_until "grep -q '^0$' $SYSFS_KERNEL_DIR/$MOD_SYSCALL/npids" && \
->     log "$MOD_SYSCALL: Remaining not livepatched processes: $(cat $SYSFS_KERNEL_DIR/$MOD_SYSCALL/npids)"
-> 
-> so that we only continue down a particular test for as long as it's
-> successful, then the cleanup code is unconditional:
-> 
->   pending_pids=$(cat $SYSFS_KERNEL_DIR/$MOD_SYSCALL/npids)
->   log "$MOD_SYSCALL: Remaining not livepatched processes: $pending_pids"
-> 
->   for pid in ${pids[@]}; do
->           kill $pid || true
->   done
-> 
->   disable_lp $MOD_SYSCALL
->   unload_lp $MOD_SYSCALL
-> 
->   check_result  <- flags a problem
-> 
-> Yeah, may be that's not so bad.  The functions.sh helpers may need to be
-> hardened a little (can they cancel / bust a transition?  it's been a
-> while since I've looked.) 
-> 
-> Or maybe ... ugh, bash is not a programming language ... each test is
-> split into its own script, the die calls can remain as they are, but we
-> move the cleanup logic into a trap EXIT handler so it always runs?
+The symbol lookup code assumes the queried address resides in either
+MOD_TEXT or MOD_INIT_TEXT. This breaks for addresses in other module
+memory regions (e.g. rodata or data), resulting in incorrect upper
+bounds and wrong symbol size.
 
-We use this technique in OOT https://github.com/SUSE/qa_test_klp/ tests 
-(slowly being upstreamed). See 
-https://github.com/SUSE/qa_test_klp/blob/master/klp_tc_functions.sh. 
-Mainly klp_tc_init(), klp_tc_exit() and klp_tc_abort(). Different tests 
-then use what you proposed above... caching pids and modules to clean up.
+Select the module memory region the address belongs to instead of
+hardcoding text sections. Also initialize the lower bound to the start
+of that region, as searching from address 0 is unnecessary.
 
-Miroslav
+Signed-off-by: Stanislaw Gruszka <stf_xl@wp.pl>
+---
+v1 -> v2: new patch.
+
+ kernel/module/kallsyms.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
+index 0fc11e45df9b..f23126d804b2 100644
+--- a/kernel/module/kallsyms.c
++++ b/kernel/module/kallsyms.c
+@@ -258,17 +258,25 @@ static const char *find_kallsyms_symbol(struct module *mod,
+ 	unsigned int i, best = 0;
+ 	unsigned long nextval, bestval;
+ 	struct mod_kallsyms *kallsyms = rcu_dereference(mod->kallsyms);
+-	struct module_memory *mod_mem;
++	struct module_memory *mod_mem = NULL;
+ 
+-	/* At worse, next value is at end of module */
+-	if (within_module_init(addr, mod))
+-		mod_mem = &mod->mem[MOD_INIT_TEXT];
+-	else
+-		mod_mem = &mod->mem[MOD_TEXT];
++	for_each_mod_mem_type(type) {
++#ifndef CONFIG_KALLSYMS_ALL
++		if (!mod_mem_type_is_text(type))
++			continue;
++#endif
++		if (within_module_mem_type(addr, mod, type)) {
++			mod_mem = &mod->mem[type];
++			break;
++		}
++	}
+ 
+-	nextval = (unsigned long)mod_mem->base + mod_mem->size;
++	if (!mod_mem)
++		return NULL;
+ 
+-	bestval = kallsyms_symbol_value(&kallsyms->symtab[best]);
++	/* Initialize bounds within memory region the address belongs to. */
++	nextval = (unsigned long)mod_mem->base + mod_mem->size;
++	bestval = (unsigned long)mod_mem->base - 1;
+ 
+ 	/*
+ 	 * Scan for closest preceding symbol, and next symbol. (ELF
+-- 
+2.50.1
+
 
