@@ -1,94 +1,68 @@
-Return-Path: <live-patching+bounces-2268-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2269-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id cH5yOsmBymkI9gUAu9opvQ
-	(envelope-from <live-patching+bounces-2268-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Mon, 30 Mar 2026 15:59:37 +0200
+	id mH3UAbzcymkQAwYAu9opvQ
+	(envelope-from <live-patching+bounces-2269-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 30 Mar 2026 22:27:40 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8D3B235C767
-	for <lists+live-patching@lfdr.de>; Mon, 30 Mar 2026 15:59:37 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 745FD360F33
+	for <lists+live-patching@lfdr.de>; Mon, 30 Mar 2026 22:27:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 903DE3044803
-	for <lists+live-patching@lfdr.de>; Mon, 30 Mar 2026 13:49:04 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 4F2823017FB6
+	for <lists+live-patching@lfdr.de>; Mon, 30 Mar 2026 20:27:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3876D3BAD8D;
-	Mon, 30 Mar 2026 13:49:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 539863806D2;
+	Mon, 30 Mar 2026 20:27:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="TbpTuWxO"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EMacDWh5"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8E123C9EDF
-	for <live-patching@vger.kernel.org>; Mon, 30 Mar 2026 13:49:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EDBC2BE7DC;
+	Mon, 30 Mar 2026 20:27:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774878543; cv=none; b=cNStgvvQDg3jEvuvgcgkEM5G+QfXh3IBLZa5mXN6SXEf3EJDF5krXXvbIcLJUHILEdmHmn2MCfIwy+dFRwz/U9DrutQdczWJ1JhA9TR9o5vUgJInn5SOnLjq8CProRISWDcXcFmS0agzXap8R60idMbS/rRXBJEbcF+fcUA1F0g=
+	t=1774902455; cv=none; b=GZRKyZG0lvWcYDnqoObsSyee4L1/joWGb/M2my9ZY/E69Dj/Gb5315Jz9KT9VTB4AMQCw5GFiuHHlhReEmvcygLA57pb7ZxTdPPCujmTWCTZnQg+kEIHJCDc/ZT2ypjCR8m85w1k20/87lGJ33/W+l7BUslMjInYsNhyGDJeAfg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774878543; c=relaxed/simple;
-	bh=XkO1wPeal3Kc8w275PiOatPBzgWgLU7yfkQaxOpKYzc=;
+	s=arc-20240116; t=1774902455; c=relaxed/simple;
+	bh=g+gwsR+gNrNm22Hp+EF93Bvvi9OTcgbAaxyzqRzDwLk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YkTo9dJzUI5Yr+P7jH9Ni3lFUfDjDmsT9N6aijeW8TrY+4ZL9vlE79kS9sX3A3vbSKzfAY7YEWQS6VcqqoNltL5OxjWE++pfZ98QOEaaUOY8+ErxWQsVpS3gp0yecYPnbt9/nvAyx8BzOcldHq2f1odpYe02R6SS37bvvb2gj1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=TbpTuWxO; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-48334ee0aeaso39030275e9.1
-        for <live-patching@vger.kernel.org>; Mon, 30 Mar 2026 06:49:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1774878540; x=1775483340; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=njb2j7pkbXogpjPTY38oH4qSs8U+jP8c+JG2E4esAKs=;
-        b=TbpTuWxOaP7Qwz4V808ahKSugVmVHWlAewXrKDlL9/zCSgoT1pwiw8jC2n7KQNEjkX
-         ps6dedA0Yh2KPCDci4Germ0jpWVGqhTsh5+Ut78tADMczfThh+LYUH6anHaX5ly0JAWK
-         E7ESwQmpQMav9kFpCXsAhSOOvBJ+eQweYwog0NKkpG6Dtx4/nHg080OUedMg+/jUkTMj
-         REhl3yJVgta6UmP8hCjYSosKrRwZy35i2UFFQ7UrroSSwqeJ9cz1w2XqYnhxqiSfone5
-         dRNqtpSyn9bGrI3P6jV6gjCCY11ZzhFSA9QRIqtjb0rs/xylnyhsN7IXWPxS+UmUFIsU
-         aKlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774878540; x=1775483340;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=njb2j7pkbXogpjPTY38oH4qSs8U+jP8c+JG2E4esAKs=;
-        b=FaFFocHzjLPD7ny3m5w3mNYTUNTPJKUNX5TXcaxinUneiabAI+bVhj/85/um31PnYM
-         1MX6i9hKcfn99VEihc+v9B3SUzmiAjLutHMjerXOPLwg0qVDFbBwkz7B4FJZwBjElE+g
-         22ak/7A4CoRJDUYsBYU6HrUOOrq6SOPp6WmAYaVQrXxQRRe6/fCO4P7Edwy+gCZVSQKT
-         EOfepIRi7sdWCnYG8zQI98aWB7P0tLU6kAj7g1JrR0MeWiSWBQyGDHS2gjZBozp9YThI
-         QMsK6LhmS3GvefUgRYBJ0O4kNybk/gpGeHphNkBX86yoMhxK4DhaNLTImRg0d8XVv58H
-         37Hw==
-X-Forwarded-Encrypted: i=1; AJvYcCXg0gZ0D1F2thi0Qevtak6oTRvuffVZKsoJz7SF0ek0Xk3VSh7k/yr6FkMB5kaZMvrL/CRRAWdnISnlBIAl@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyb//tr6qjGt1686ixXeBEwldrdNM+WlygOhzJPk0ztdQtB/qBn
-	FCCko9zal0hh8nsBUxCCIDQ3wCT1qlx+V0CPXpC3ezqOlHDR0rY4w42Ev6Mvg7XiPTGs7aRCmXD
-	vmDKjtF0=
-X-Gm-Gg: ATEYQzxljFECVggmOar7q4T2Pwto1dUvqn+msYqg55bBMU4inWZUcT8vA7Gg+LPw1kZ
-	Nb16CgPbCPYUxZxm+SAtAOaMgNMdgAc+xE6dwH5mf8GGc51GUJzCQGEBRVeyzwuu0yuPrS/Ny0r
-	4b5qdXQi2RMI3JvKD9YMLUs85z/H422MIWrcVKu44VHAKkDCgDQJmQGD6Q/WKRQPDIrSupEnV1e
-	61Ze++wDPe4uob4/6ZbPXPiRp1XrcaGb923+tGisZ4rUlQp6o+vJvv48Z+ILs59YHaaYx37q4gm
-	vYFPMWmtcLTv37QZdtnwIFO2sfsXskEoh+vwYtrsyN9Gh6qGJStXvjrf07PfQwbF+VdlS6m2HXT
-	9uHpRA7ZffYBbmLuBa5JPm21lnV12wCPYDBDy68vRXbbSbUDiwlHYckevgeMgAVxYdkJyM6H7Ir
-	HXA47g4MjlbbnmYDv1jBR7/9CQQw==
-X-Received: by 2002:a05:600c:4744:b0:485:2a4b:7bc3 with SMTP id 5b1f17b1804b1-48727d5d6femr207566795e9.4.1774878540187;
-        Mon, 30 Mar 2026 06:49:00 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48730628efasm297363515e9.5.2026.03.30.06.48.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2026 06:48:59 -0700 (PDT)
-Date: Mon, 30 Mar 2026 15:48:57 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Joe Lawrence <joe.lawrence@redhat.com>
-Cc: Pablo Hugen <phugen@redhat.com>, live-patching@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-	shuah@kernel.org
-Subject: speaker-test-module: Re: [PATCH] selftests/livepatch: add test for
- module function patching
-Message-ID: <acp_Sa9iyGLdSN04@pathway.suse.cz>
-References: <20260320201135.1203992-1-phugen@redhat.com>
- <acVD_NPu4JVRoaVK@pathway.suse.cz>
- <acWZ3r2CoSDy_NLf@redhat.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=dSIvDcsbEwnYyNhSXkFK8jkDgI4mbU+1bCAwLOh1V79p9d7AMGjgEB0TuFeaFuPKQT/40csUeHunnw3xixpltiJ2IL/GEsLXgmxeh3jv3JFABkvXrUYIwPFywSvNecAy/gIJLlZxkxjRmPE978YL7xzNGRbd5Gw4k1k0hxNaLFQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EMacDWh5; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79CDDC4CEF7;
+	Mon, 30 Mar 2026 20:27:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774902454;
+	bh=g+gwsR+gNrNm22Hp+EF93Bvvi9OTcgbAaxyzqRzDwLk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EMacDWh57ISefa8yBdpmiZ6lgzX1NTVvuvP6ITKNfuPWEiwh9eGPoLwcfrLMehPI9
+	 Vz/xrAn03fVZc8uabw9zlPDGpgk+4FKfDVOc+Bw+88JEmM87JjWYwxTdc20AUemzWs
+	 NsBGQPscOB4otw2Ul6ElWnVRvnNjL6Lsq04SY/LvuIB5lwrh9D53nW0LQEyD0xHaGe
+	 nSs2GAKe5ZfP9L2sfEzgYYho8vXVYiR0b97bgufZyv87QNCfg6n4ozoH2q2e51mW+m
+	 Dz3K/lzFkEbSSLsbf40rpi4vfqP6EIBjvoblp3yK/tHyn6X4YSl7pNdIF/IPJXmEfE
+	 o6THgOpNDYqhA==
+Date: Mon, 30 Mar 2026 20:49:20 +0200
+From: Nicolas Schier <nsc@kernel.org>
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
+	live-patching@vger.kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
+	Mark Rutland <mark.rutland@arm.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH v2 07/12] kbuild: Only run objtool if there is at least
+ one command
+Message-ID: <acrFsFFBVOzPYl_C@levanger>
+References: <cover.1773787568.git.jpoimboe@kernel.org>
+ <42418c5fa73a8876e91b3dfb38fa3f263e39f1c1.1773787568.git.jpoimboe@kernel.org>
+ <absC93h6fNgyniD4@derry.ads.avm.de>
+ <zdipyf26t2gos5dw2gjyzmeg2zm5a67xwr5ozubnhmhllrwgnm@ezdt54coe2bk>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -97,92 +71,95 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <acWZ3r2CoSDy_NLf@redhat.com>
-X-Spamd-Result: default: False [-2.16 / 15.00];
+In-Reply-To: <zdipyf26t2gos5dw2gjyzmeg2zm5a67xwr5ozubnhmhllrwgnm@ezdt54coe2bk>
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	MIME_TRACE(0.00)[0:+];
-	DKIM_TRACE(0.00)[suse.com:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2268-lists,live-patching=lfdr.de];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	MISSING_XM_UA(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2269-lists,live-patching=lfdr.de];
+	RCPT_COUNT_TWELVE(0.00)[13];
+	MIME_TRACE(0.00)[0:+];
 	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[pmladek@suse.com,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	MISSING_XM_UA(0.00)[];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[nsc@kernel.org,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[9];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[pathway.suse.cz:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.com:dkim]
-X-Rspamd-Queue-Id: 8D3B235C767
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 745FD360F33
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Thu 2026-03-26 16:41:02, Joe Lawrence wrote:
-> On Thu, Mar 26, 2026 at 03:34:36PM +0100, Petr Mladek wrote:
-> > On Fri 2026-03-20 17:11:17, Pablo Hugen wrote:
-> > > From: Pablo Alessandro Santos Hugen <phugen@redhat.com>
-> > In my RFC, I created a helper module which implemented a person
-> > (speaker) which would come on the stage and welcome the audience.
-> > I am not sure if it was a good idea. But it became a bit confusing
-> > when everything (module name, sysfs interface, function name, message)
-> > included the same strings like (livepatch, callback, shadow_var).
+On Wed, Mar 18, 2026 at 05:49:27PM -0700, Josh Poimboeuf wrote:
+> On Wed, Mar 18, 2026 at 08:54:31PM +0100, Nicolas Schier wrote:
+> > On Tue, Mar 17, 2026 at 03:51:07PM -0700, Josh Poimboeuf wrote:
+> > > Split the objtool args into commands and options, such that if no
+> > > commands have been enabled, objtool doesn't run.
+> > > 
+> > > This is in preparation in enabling objtool and klp-build for arm64.
+> > > 
+> > > Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+> > > Tested-by: Nathan Chancellor <nathan@kernel.org>
+> > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> > > ---
+> > >  arch/x86/boot/startup/Makefile |  2 +-
+> > >  scripts/Makefile.build         |  4 +--
+> > >  scripts/Makefile.lib           | 46 ++++++++++++++++++----------------
+> > >  scripts/Makefile.vmlinux_o     | 15 ++++-------
+> > >  4 files changed, 33 insertions(+), 34 deletions(-)
+> > > 
+> > [...]
+> > > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> > > index 3652b85be545..8a1bdfdb2fdb 100644
+> > > --- a/scripts/Makefile.build
+> > > +++ b/scripts/Makefile.build
+> > > @@ -277,7 +277,7 @@ endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+> > >  is-standard-object = $(if $(filter-out y%, $(OBJECT_FILES_NON_STANDARD_$(target-stem).o)$(OBJECT_FILES_NON_STANDARD)n),$(is-kernel-object))
+> > >  
+> > >  ifdef CONFIG_OBJTOOL
+> > > -$(obj)/%.o: private objtool-enabled = $(if $(is-standard-object),$(if $(delay-objtool),$(is-single-obj-m),y))
+> > > +$(obj)/%.o: private objtool-enabled = $(if $(is-standard-object),$(if $(objtool-cmds-y),$(if $(delay-objtool),$(is-single-obj-m),y)))
 > > 
-> > Anyway, my tests produced messages like these:
+> > Please use $(and a,b,c) instead of multiple nested $(if $(a),$(if
+> > $(b),$(c)); as the last variable (is-single-obj-m) is 'y' or empty, the final 'y' can be
+> > left-out:
 > > 
-> > +% cat $SYSFS_MODULE_DIR/$MOD_TARGET/parameters/welcome
-> > +$MOD_TARGET: speaker_welcome: Hello, World!
-> > 
-> > , see https://lore.kernel.org/all/20250115082431.5550-9-pmladek@suse.com/
-> > 
-> > 
-> > There were even tests which blocked the transition. They tested shadow
-> > variables which added an applause to the message. They did something like:
-> > 
-> > <paste>
-> > All four callbacks are used as follows:
-> > 
-> >   + pre_patch() allocates a shadow variable with a string and fills
-> > 		it with "[]".
-> >   + post_patch() fills the string with "[APPLAUSE]".
-> >   + pre_unpatch() reverts the string back to "[]".
-> >   + post_unpatch() releases the shadow variable.
-> > 
-> > The welcome message printed by the livepatched function allows us to
-> > distinguish between the transition and the completed transition.
-> > Specifically, the speaker's welcome message appears as:
-> > 
-> >   + Not patched system:		 "Hello, World!"
-> >   + Transition (unpatched task): "[] Hello, World!"
-> >   + Transition (patched task):	 "[] Ladies and gentlemen, ..."
-> >   + Patched system:		 "[APPLAUSE] Ladies and gentlemen, ..."
-> > </paste>
-> > 
-> > , see https://lore.kernel.org/all/20250115082431.5550-11-pmladek@suse.com/
-> > 
-> > Sigh, I have done many changes in the tests for v1. But they still
-> > need some love (and rebasing) for sending.
-> > 
+> > $(obj)/%.o: private objtool-enabled = $(and $(is-standard-object),$(objtool-cmds-y),$(delay-objtool),$(is-single-obj-m))
 > 
-> If these can be pulled out independently from the v1 patch, perhaps
-> Pablo would want to hack on that in a follow up series?
+> I believe that would break the !delay-objtool case.  The logic needs to
+> be something like:
+> 
+> if (is-standard-object && objtool-cmds-y) {
+> 	if (delay-objtool) {
+> 		// for delay-objtool, only enable objtool for single-object modules
+> 		$(is-single-obj-m)
+> 	} else {
+> 		// for !delay-objtool, always enable objtool
+> 		y
+> 	}
+> }
+> 
+> so maybe something like this?
+> 
+> $(obj)/%.o: private objtool-enabled = $(and $(is-standard-object),$(objtool-cmds-y),$(if $(delay-objtool),$(is-single-obj-m),y))
 
-Unfortunately, the selftest changes can't be pulled out easily.
-The new test module and related livepatches are implemented using
-the reworked livepatch API. :-/
+sorry for the delay!  Yes, I overlooked the !delay-objtool.  That line
+looks good to me, thanks!
 
-I hope that I'll find time to work on it rather sooner than later.
 
-Best Regards,
-Petr
+-- 
+Nicolas
 
