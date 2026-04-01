@@ -1,197 +1,223 @@
-Return-Path: <live-patching+bounces-2272-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2273-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id cKFaAuw4zGlFRgYAu9opvQ
-	(envelope-from <live-patching+bounces-2272-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 31 Mar 2026 23:13:16 +0200
+	id AMXOL6PNzGlFWwYAu9opvQ
+	(envelope-from <live-patching+bounces-2273-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 01 Apr 2026 09:47:47 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9C68237175E
-	for <lists+live-patching@lfdr.de>; Tue, 31 Mar 2026 23:13:15 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 20FC13763FA
+	for <lists+live-patching@lfdr.de>; Wed, 01 Apr 2026 09:47:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id C40FB305C716
-	for <lists+live-patching@lfdr.de>; Tue, 31 Mar 2026 21:10:28 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id A4F2D300877A
+	for <lists+live-patching@lfdr.de>; Wed,  1 Apr 2026 07:41:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03C5D402B8E;
-	Tue, 31 Mar 2026 21:10:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 14D4537F017;
+	Wed,  1 Apr 2026 07:41:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BF7FOLzz";
-	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="kpiCmpvU"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="CGHbsyHr";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="141OuvNb";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="z4eYEgF2";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="z3XHhETI"
 X-Original-To: live-patching@vger.kernel.org
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA2B94014B4
-	for <live-patching@vger.kernel.org>; Tue, 31 Mar 2026 21:10:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB0937E2E9
+	for <live-patching@vger.kernel.org>; Wed,  1 Apr 2026 07:41:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774991427; cv=none; b=uz+yEOVY0RreO7Q08mjW5bvbrmgpHpOLsJzJmJzB/jFyLBXg5cl7cylMe9nKrLpzJuVx51oB22c7SHs/+Ux9tRgbKcL5iolDyiPApDms+PU1o641Bnm4l+mVLBXcaBFSLA5ImBUBoMCAVWMCfHRaj9lRl90RHTtsW8gn2A4SbQ8=
+	t=1775029269; cv=none; b=ezb/HiijsbwfUjSs0dtnd3jw/nzP4lfek7T9NrMlgc91MUzocCvbZuze5P7IzmcCZm6Ha4iwvlgBHgJ5BZqwWj7Vz9CDsi6Br0HZ+FIDwoQS8kzlqJju9Eq1rCnQPgckHIZaXr7EZKvJOJ/obfIfSGoMh8Ome/A4tQsyX1FBkcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774991427; c=relaxed/simple;
-	bh=V3QDfpUCHD3J70aYAoaXsLi0BbOWK1sx1MtxsffsVYI=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=cCJR9KIWJUf/VYZM4z3k+byQhoO1mRbmyBybGgF/1ItCRi2En3TI8kS5Ha1MXZfQjUJbReKlDY0v8dh9BcKfeQBM6bRWeoTOg88AkI38CmArhxK5DroJbuwBpfFFEoUOgVRAa4wgSbM0lbipHyRHs3e+IhaJCV+J4nUFU5fxfLc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BF7FOLzz; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=kpiCmpvU; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1774991425;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	s=arc-20240116; t=1775029269; c=relaxed/simple;
+	bh=erEGmthLCCq5QaevIpQZZtKGYxx/zf3Sdg+6Wd/Uo3w=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=KenEqybo7elJAfcVmrza2NWxjjvBIqLPXrwewcRo5uonKuGuNmzWmSrg+DZktpnfl0sNQrTkkwQ+i1oiPo8KuV82Ztb8PXdr/Tgxr4eT0k6KUorEXuE2KK7g2wDJvJIbFd/G5KQUcG8vfzzgqHR5Pm96nklqAadIvApJ/kk0a30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=CGHbsyHr; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=141OuvNb; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=z4eYEgF2; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=z3XHhETI; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from pobox.suse.cz (unknown [10.128.32.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id DDDC34D1E6;
+	Wed,  1 Apr 2026 07:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1775029266; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YlJ7p+iVljF4/jt/mLpXPYGwW4amrNrMTIm4YNtSvJc=;
-	b=BF7FOLzzenqhGziolIPWlEfPd4nYlkotMsZ+IQEGD9mKY1FGWFgfz+H9x9GN1SXZsLTMNL
-	hhHkhBL6aoSIA4It/YnOmG+GxMNDhd/SKkHqq8R1yolKz/+QzpPZgXsJmZ1c6Cop+Z6U9v
-	gXlT8J+6A8WLbHn9NXxjpFifDk9DvQw=
-Received: from mail-vk1-f199.google.com (mail-vk1-f199.google.com
- [209.85.221.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-546-xfRFhWWtMQqS9O5_7VjPVQ-1; Tue, 31 Mar 2026 17:10:24 -0400
-X-MC-Unique: xfRFhWWtMQqS9O5_7VjPVQ-1
-X-Mimecast-MFC-AGG-ID: xfRFhWWtMQqS9O5_7VjPVQ_1774991423
-Received: by mail-vk1-f199.google.com with SMTP id 71dfb90a1353d-56d39dd9a24so3784173e0c.2
-        for <live-patching@vger.kernel.org>; Tue, 31 Mar 2026 14:10:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=redhat.com; s=google; t=1774991423; x=1775596223; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YlJ7p+iVljF4/jt/mLpXPYGwW4amrNrMTIm4YNtSvJc=;
-        b=kpiCmpvU+r7iCYwdzRoBEDDuIPT6p8wOeAdLW0hokQyhO/zbLUDGrXCd4/B01VqsEt
-         IybKBnriS8E9QLdUApn3iQQOB4dnwPcFe40S17tdpNh+jnIIXuCJPdy+XTmchEK26v5l
-         ExI9gVK240sV5lEE73GZrvb+nBGD+4zTwXwvEieLDwlCWjhB2X6840+ggEe8btZRO7NT
-         XW2KpqszwVqyUHk57CI6JuSE9AH6rwkmELJlYCXyg7BhWkNH5hwNX+TqK2DWHQxXwkTE
-         LEy/CRNki3fF144loyWtdH0LpLdGiClDcKq8BXFj5FdcpoUx8kopnfjxcgTN4zpYsCTk
-         oF3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774991423; x=1775596223;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YlJ7p+iVljF4/jt/mLpXPYGwW4amrNrMTIm4YNtSvJc=;
-        b=VDggeIrGvV+CY/QvN43wdtHAQeF427gMSlLsbiNJN/HdPR39EqMtJvCPsvLfbZJice
-         4LlbTC7MJoxheGWjxj5jBeznI5f3VTD5SZ9xcaUfq97j8/s55ov2tnMPb686dofezlN4
-         cUxDA4NPvAppyfuZKVEjWYf+PuEjsoTngtHX0MkdKq6/o2Kkr5t3kVtQ5L8xN9rTKxZ2
-         nWunVBpnUJoYN6lKldwQSjP33jgKSI+yFs19XP+r5BX/f6m5lpXf4S+PUmW150I8+81c
-         Cy5Jt+vouxDGKKh2YZ7awrYOtBvg+8TMUeusU47une4a5Eoe1asHC2sD59JTyF+/fbrQ
-         rFjg==
-X-Forwarded-Encrypted: i=1; AJvYcCVmtgOXU0faYx/BA4mxMRVwqTW33thEiW9zw5zXa39sPYqSon388WEInfzLAQ5pNP6INE4tvyt9+TJ8De3w@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz38+dwEKFJXi/2ZRt1yyv4zAIkjHLo50tkd2gV97bjaGsr41KI
-	iWZZ9J2VNU3aXpAFgexSm90Fia5SaTcRxFc8DBNamtyUPpTDFHteAnFZ5q1EEQ6C/7af7MYtyMv
-	x2qC9/RrmWKzrzDx66Tl2f6v8vDAJE0pjmNof1AkvrUfxKEAITVJOsONbQN0xC/5k+Bo=
-X-Gm-Gg: ATEYQzyqpJu09sqOWNxNz30Ukl8Nvgp+3Zk5Q+MRCyfrhDtYpQE1RGrroqjQN2+qnft
-	/xZfRCfr7hmjnUO2GhqKSiJ7vVzMJz/duYfEVQpycJrDE9R5Znn2yMJJH5nyCZb2e0Nt7f5dBB0
-	3vJQzUrTUJeKpK12Mi68shaUS7raio2H90cfU6J11Fi+EmlW5RnHxuuU/GSJEC9Y5Nq7/4fj4nl
-	FmzfIzQtBjVX7dX4qxdVqnKKANZKPB4i7ytNHjBWVCJxFoiYMqLb2oBVdyNlLW97P6+O/uVg1iu
-	lemzz0xwRazSTD3YbncmTx6q9PMoTh+BneXq4UzMy5KLyaLt3xT7f6wBR4n+FIzMkhA58N/gyiC
-	P1GPAbBz4rVr4ieU=
-X-Received: by 2002:a05:6122:469a:b0:56b:95a5:da18 with SMTP id 71dfb90a1353d-56d8a905828mr579908e0c.10.1774991422924;
-        Tue, 31 Mar 2026 14:10:22 -0700 (PDT)
-X-Received: by 2002:a05:6122:469a:b0:56b:95a5:da18 with SMTP id 71dfb90a1353d-56d8a905828mr579891e0c.10.1774991422440;
-        Tue, 31 Mar 2026 14:10:22 -0700 (PDT)
-Received: from localhost ([143.54.48.116])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56d58a333c9sm13810366e0c.13.2026.03.31.14.10.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Mar 2026 14:10:21 -0700 (PDT)
+	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
+	b=CGHbsyHrfnSjT79FZ+5Va7hTUHGdbdtMvl/y8DyR7Y01ZVJfVTzCsCrxTJ9aQNxl2zFpHH
+	x1NnapJ1m2gnVFKhRF4XxEdUJsHXx62VX9sOKolgrgAIwFqTcYY6rgZQNrA7rK8oFvo5y1
+	O19uC0HtyPzV2KYEftUqiRoWcZw3m6U=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1775029266;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
+	b=141OuvNbRIjjpUQ+nBpbbyldgmG3O0YE/HGK9es8fhAHS4y8Esy8coQdD1Pu5SGeazv77K
+	efoZ85skoBid4jBQ==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1775029265; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
+	b=z4eYEgF2oBMO7xLy+jaGqL4OUSiqakxBduOipe6nXIoUT3OAId9dsBug+wg7l89gdltSMq
+	mlVJ+X5nagDQw3GlbH3N5BPerqxfU9RotkWvD5chrRCYGD2ciuwzL3U7aP+pDdRd6+AraS
+	OWwhyu+3A5ai5cAU4uvhsqGSweHIT9g=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1775029265;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
+	b=z3XHhETIrT2fg6CmVJEE31EIFXqqCiMhE+B/gRp3gs5p68bhLiFv++YWA07d4AH4323YyO
+	x+lbuU8ZTpSXrDAQ==
+Date: Wed, 1 Apr 2026 09:41:05 +0200 (CEST)
+From: Miroslav Benes <mbenes@suse.cz>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+cc: Joe Lawrence <joe.lawrence@redhat.com>, 
+    Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+    Petr Mladek <pmladek@suse.com>, Shuah Khan <shuah@kernel.org>, 
+    live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] selftests: livepatch: test-syscall: Check for
+ ARCH_HAS_SYSCALL_WRAPPER
+In-Reply-To: <a23f00ad4a454cbb3379cdf512e8c61ce7499194.camel@suse.com>
+Message-ID: <alpine.LSU.2.21.2604010937120.12688@pobox.suse.cz>
+References: <20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@suse.com>  <20260313-lp-tests-old-fixes-v1-1-71ac6dfb3253@suse.com>  <abhjYtyveer4niGM@redhat.com> <a23f00ad4a454cbb3379cdf512e8c61ce7499194.camel@suse.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=c254c86e525b2971ae8a9abacaab64ab5088645da2db68accb1dda6b2953;
- micalg=pgp-sha512; protocol="application/pgp-signature"
-Date: Tue, 31 Mar 2026 18:10:16 -0300
-Message-Id: <DHH9XZULMJOP.VB88ZIPXYI4J@redhat.com>
-Cc: "Petr Mladek" <pmladek@suse.com>, "Pablo Hugen" <phugen@redhat.com>,
- <live-patching@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <jpoimboe@kernel.org>, <jikos@kernel.org>,
- <shuah@kernel.org>
-Subject: Re: [PATCH] selftests/livepatch: add test for module function
- patching
-From: "Pablo Hugen" <phugen@redhat.com>
-To: "Miroslav Benes" <mbenes@suse.cz>, "Joe Lawrence"
- <joe.lawrence@redhat.com>
-References: <20260320201135.1203992-1-phugen@redhat.com>
- <acVD_NPu4JVRoaVK@pathway.suse.cz> <acWZ3r2CoSDy_NLf@redhat.com>
- <alpine.LSU.2.21.2603271143310.31210@pobox.suse.cz>
-In-Reply-To: <alpine.LSU.2.21.2603271143310.31210@pobox.suse.cz>
-X-Spamd-Result: default: False [-3.76 / 15.00];
-	SIGNED_PGP(-2.00)[];
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="-2146828000-2095840910-1775029265=:12688"
+X-Spam-Score: -3.30
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-0.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
-	MV_CASE(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
-	MIME_GOOD(-0.20)[multipart/signed,text/plain];
-	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719,redhat.com:s=google];
+	CTYPE_MIXED_BOGUS(1.00)[];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
 	MAILLIST(-0.15)[generic];
+	MIME_GOOD(-0.10)[multipart/mixed,text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	DKIM_TRACE(0.00)[redhat.com:+];
-	MIME_TRACE(0.00)[0:+,1:+,2:~];
-	TAGGED_FROM(0.00)[bounces-2272-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	RECEIVED_HELO_LOCALHOST(0.00)[];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
 	FROM_HAS_DN(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
-	RCVD_COUNT_FIVE(0.00)[6];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[phugen@redhat.com,live-patching@vger.kernel.org];
-	MISSING_XM_UA(0.00)[];
-	MID_RHS_MATCH_FROM(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[10];
+	TAGGED_FROM(0.00)[bounces-2273-lists,live-patching=lfdr.de];
+	RCVD_TLS_LAST(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	DMARC_NA(0.00)[suse.cz];
+	MIME_TRACE(0.00)[0:+,1:+];
+	DKIM_TRACE(0.00)[suse.cz:+];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	TO_DN_SOME(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 9C68237175E
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	NEURAL_HAM(-0.00)[-1.000];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	TAGGED_RCPT(0.00)[live-patching];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[pobox.suse.cz:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.cz:dkim,suse.com:email]
+X-Rspamd-Queue-Id: 20FC13763FA
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
---c254c86e525b2971ae8a9abacaab64ab5088645da2db68accb1dda6b2953
-Content-Transfer-Encoding: quoted-printable
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+---2146828000-2095840910-1775029265=:12688
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-> > Summary:
-> >
-> > IMHO, this patch is perfectly fine as is if we accept that it will get
-> > eventually obsoleted by my patchset (hopefully in a year or two).
-> >
-> > On the other hand, this patch would deserve some clean up,
-> > (helper functions, don't die in the middle of the test) if
-> > you planned to work on more tests. It would help to maintain
-> > the tests.
+On Tue, 31 Mar 2026, Marcos Paulo de Souza wrote:
 
-> Right, I think this was a good intro patch for Pablo and that the
-> revised execution flow would be a great follow on series, if he is
-> interested.  How about that?
+> On Mon, 2026-03-16 at 16:12 -0400, Joe Lawrence wrote:
+> > On Fri, Mar 13, 2026 at 05:58:32PM -0300, Marcos Paulo de Souza
+> > wrote:
+> > > Instead of checking if the architecture running the test was
+> > > powerpc,
+> > > check if CONF_ARCH_HAS_SYSCALL_WRAPPER is defined or not.
+> > > 
+> > > No functional changes.
+> > > 
+> > > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> > > ---
+> > >  tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> > > | 7 +++----
+> > >  1 file changed, 3 insertions(+), 4 deletions(-)
+> > > 
+> > > diff --git
+> > > a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> > > b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> > > index dd802783ea849..c01a586866304 100644
+> > > ---
+> > > a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> > > +++
+> > > b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> > > @@ -12,15 +12,14 @@
+> > >  #include <linux/slab.h>
+> > >  #include <linux/livepatch.h>
+> > >  
+> > > -#if defined(__x86_64__)
+> > > +#if !defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+> > > +#define FN_PREFIX
+> > > +#elif defined(__x86_64__)
+> > >  #define FN_PREFIX __x64_
+> > >  #elif defined(__s390x__)
+> > >  #define FN_PREFIX __s390x_
+> > >  #elif defined(__aarch64__)
+> > >  #define FN_PREFIX __arm64_
+> > > -#else
+> > > -/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER */
+> > > -#define FN_PREFIX
+> > 
+> > The patch does maintain the previous behavior, but I'm wondering if
+> > the
+> > original assertion about ARCH_HAS_SYSCALL_WRAPPER on Power was
+> > correct:
+> > 
+> >   $ grep ARCH_HAS_SYSCALL_WRAPPER arch/powerpc/Kconfig
+> >           select ARCH_HAS_SYSCALL_WRAPPER         if !SPU_BASE &&
+> > !COMPAT
+> >           depends on PPC64 && ARCH_HAS_SYSCALL_WRAPPER
+> > 
+> > Perhaps I just forgot what that additional piece of information that
+> > explains the comment (highly probable these days), and if so, might
+> > be
+> > nice to add to this commit since I don't see it in 6a71770442b5
+> > ("selftests: livepatch: Test livepatching a heavily called syscall").
+> 
+> Looking again at the code and at the symbols for SLE for ppc64le, I can
+> say that, even with ARCH_HAS_SYSCALL_WRAPPER being set, the syscall
+> names are not changed for ppc64le. Looking at
+> arch/powerpc/kernel/systbl.c:
+> 
+> #ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
+> #define __SYSCALL(nr, entry) [nr] = entry,
+> #else
+> /*
+>  * Coerce syscall handlers with arbitrary parameters to common type
+>  * requires cast to void* to avoid -Wcast-function-type.
+>  */
+> #define __SYSCALL(nr, entry) [nr] = (void *) entry,
+> #endif
 
-Sure, will take a stab at revising the cleanup flow. And thanks for the ide=
-as.
+I think this is not the complete picture though. The definition of the 
+syscall table did not change but the actual wrappers (or syscall functions 
+naming before) did change a couple of times even on powerpc if I am 
+reading the git history right. ARCH_HAS_SYSCALL_WRAPPER also changed how 
+syscall parameters are consumed (from registers to stack frame (pt_regs)). 
+It is not particularly relevant for getpid() which is SYSCALL_DEFINE0() 
+but I wanted to point that out.
 
-> > This code is repeated several times. It might be worth creating a
-> > helper function in tools/testing/selftests/livepatch/functions.sh.
-
-Makes sense. Will include in the follow-up.
-
-Thanks for the reviews everyone, and thanks Petr for picking it up.
-
-Pablo
-
---c254c86e525b2971ae8a9abacaab64ab5088645da2db68accb1dda6b2953
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQMP+tqh8XWgfhXItgg/MNYDx+9egUCacw4PQAKCRAg/MNYDx+9
-eqxiAQCGcnxyRstJp79GbB3BASfV3LTj9euCgFXlSYXqa41t+AEAmxNRxcKnhSIF
-0sCDcIbb48AIFhU59jPUrvFU91tdXQY=
-=6YsZ
------END PGP SIGNATURE-----
-
---c254c86e525b2971ae8a9abacaab64ab5088645da2db68accb1dda6b2953--
-
+Miroslav
+---2146828000-2095840910-1775029265=:12688--
 
