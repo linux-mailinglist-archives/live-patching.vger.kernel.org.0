@@ -1,310 +1,286 @@
-Return-Path: <live-patching+bounces-2280-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2281-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 4JVQFiNuzmnxngYAu9opvQ
-	(envelope-from <live-patching+bounces-2280-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 02 Apr 2026 15:24:51 +0200
+	id gCJtOzBvzmnxngYAu9opvQ
+	(envelope-from <live-patching+bounces-2281-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 02 Apr 2026 15:29:20 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id C3C50389A4C
-	for <lists+live-patching@lfdr.de>; Thu, 02 Apr 2026 15:24:50 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8A8A1389BDA
+	for <lists+live-patching@lfdr.de>; Thu, 02 Apr 2026 15:29:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id EA3D23013896
-	for <lists+live-patching@lfdr.de>; Thu,  2 Apr 2026 13:13:10 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id EAD07304F0BB
+	for <lists+live-patching@lfdr.de>; Thu,  2 Apr 2026 13:21:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7084388392;
-	Thu,  2 Apr 2026 13:13:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC9043009CB;
+	Thu,  2 Apr 2026 13:21:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bujKVQcS"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bm440UxV"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37EE34B661;
-	Thu,  2 Apr 2026 13:13:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775135589; cv=none; b=eb3nDj1A510U3ceL1nApyeE0vtLLhsMoOIZFibwlk0rnghRJf7Zb2Sh6oKRXO/fkO+oJ3qL290qPs4K5M7whESQ07mecntggrlpq+8TDFwc7OQUdAh4F6uKIYcmUQSxd7ErMKjcWe0YrS5QiiwOi90WmvtxYCKkdHeE6AaEk3qQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775135589; c=relaxed/simple;
-	bh=dtvD+0d6PLGlXTzCklFJtpqXzOFx5lbqIcfTjfd1ONg=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=lFvWdcCmm7paprGliA7ZtqOFi3cAmmFzCIBg0KyF2Y/8JYR06tEzm/5ArpJP8Jh2tWwahLmOp7Y5GaiDbQtvEk7xmXOJ+rvVBNzmwK8Mo5A2C5R4MOhHuO6J+qcAidxVkfOmmvwVIeXR1wfIsov34uJtyVDf7OqXUdPFXnDuXaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bujKVQcS; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA3EC116C6;
-	Thu,  2 Apr 2026 13:13:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775135589;
-	bh=dtvD+0d6PLGlXTzCklFJtpqXzOFx5lbqIcfTjfd1ONg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=bujKVQcSbihHaZa/0OJotxjt82t00R1fVbxKclchXEJHRtHL2JMyxcpHueykbhql3
-	 NUZJRTRHcgaMkUMiBPukPVpOebbIttbNy2ED+WEI5a82iVlcv1cK60DuaTmqOWlge3
-	 JCtmm8rHTbT98T/VTbBWKDPdr3OKSI25lBlys37JBN0r/n9q1i3duOF4N6aOGAwfPm
-	 caC6GI5HKNtfF1qGqF35ZS+T5rWhGi1Qc5Tt+VaLp/hw9DvhD0y0bqQzyHoA5zimvZ
-	 E4lQxXxfOWriPPcPjubhKlMcquOtIdT/H2kE++RuJvUJMrc560DoL/UwipIrHk33rl
-	 qkfBZcK2m26og==
-Date: Thu, 2 Apr 2026 22:13:01 +0900
-From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To: Yafang Shao <laoar.shao@gmail.com>
-Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
- joe.lawrence@redhat.com, rostedt@goodmis.org,
- mathieu.desnoyers@efficios.com, kpsingh@kernel.org,
- mattbobrowski@google.com, song@kernel.org, jolsa@kernel.org,
- ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
- martin.lau@linux.dev, eddyz87@gmail.com, memxor@gmail.com,
- yonghong.song@linux.dev, live-patching@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- bpf@vger.kernel.org
-Subject: Re: [RFC PATCH 1/4] trace: Simplify kprobe overridable function
- check
-Message-Id: <20260402221301.88000892c71eb33c0d4a6f79@kernel.org>
-In-Reply-To: <20260402092607.96430-2-laoar.shao@gmail.com>
-References: <20260402092607.96430-1-laoar.shao@gmail.com>
-	<20260402092607.96430-2-laoar.shao@gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98AC33009E1
+	for <live-patching@vger.kernel.org>; Thu,  2 Apr 2026 13:21:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775136095; cv=pass; b=oNgGA8oEel4nbRluDPRM60DE9JBTaAK9SE/lfVKwTcAM8jCYtYazAvDIZstFnK7OSjNld9/is2ChbAuvNnHbKzfHAYfy2ffuty/1KvwdWc/3WLlXphTlJcP+bMgTQmkrpmJEzYYlq+kc1AgucztZAZpWwQ0ZLsVfxzMk7ndLC2c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775136095; c=relaxed/simple;
+	bh=92ifLkSB1QdWZYuCe2bJNqdGfTWsYwdd5FnM5cH+Uek=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=M0pqorzJiW3Vm+uAtf1eeQc2GA0ZPP0bWIRPyhafpgW2Zh/CadW5TwlbpLS0wkmJFbfFMa9b231YMKE/T4rJ/7wRuBe7RlfmrTbBLQt0fBXNiHroX714xfyzwcsdclmdZLFSHlEnCc1X1v187ZA0NGCSPT4qquHZUFWeetG0XVQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bm440UxV; arc=pass smtp.client-ip=74.125.224.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-650182d19e0so1007794d50.1
+        for <live-patching@vger.kernel.org>; Thu, 02 Apr 2026 06:21:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775136092; cv=none;
+        d=google.com; s=arc-20240605;
+        b=EgF7S/uIrKrpYIn5Clv2VlSZPHe4rAhWZ7mYsbVsJxlI8TEXcMPkzJiXzZV0C/wLY9
+         aFm0ftgv1xHCkeChnJ/bSEkGFxag3rPNvE1Cld/7D1wPC5YszxoLj62M7VL8gx3fl8uF
+         msdIiAAc2ZQy7njwq2pTZaKfJNbawlp4/e/79oK85bMGV7FN9yvFoIsAfEsvMBddMCqJ
+         S3nC3yjoUI58HlsHlGkKsJ9CcEkDfGlxwSR/Wv4t//Cjs+6XhUZT6ISybxLx/RDTTyh6
+         tMxzxokt1oyPLt0XMS84GGgyJL9SPIWSyNmOE7L/KPcHEslaMeMpP5czXRR1vMfgsUxF
+         mDbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=P/+RvF4sr+15hFwCy/1QY5L6R+YF2MZZgsand9uX2p8=;
+        fh=jYJu8ioX08RSz/5FEIL9oJBa/ENZKiq8TjDqx+LV88E=;
+        b=HlailPeb7wTpyPMCIe02T36YG/HP25pPkumqwYuCJasEm9Q3Mz10LayGS0sFoZ8YLT
+         oY6B3BnGDd09ALKr/h0+wequifiw5zPXNnZ0BOBqgP14Y53BlsKuShMq8TwAcSt5cBTI
+         O5sCl2lmbkG5b3g5BI4WgKdu28M9t2STD2DzM0s4mSeVL5Wja4LQNZSnQeoheZXQR3Zv
+         GRBFYqIOvzls5bQUcpjIRxTTLXNiSR+shmUbfBl50vY0zawwr0mlK9aLct1NZi3wmAeH
+         wlSwSQ4CjAtuWdqT/uRYtLHQpGu45EbhUOPc5aBTF/SW2WzmR3NnxjP6rkwJN4u4zoqX
+         LGgA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775136092; x=1775740892; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P/+RvF4sr+15hFwCy/1QY5L6R+YF2MZZgsand9uX2p8=;
+        b=bm440UxVqOnXh6b79oWalrfPhYQW4Z4WKNgYdrdUK1TF6rlQ+wO//yT5nDSYwBpe3M
+         3MYDe4jfdPdbEl7PS44Kgmpq8yYKdubvQ47hwwMqs53YJ80dz4kjNeLojz5hgjx3XwTU
+         gJaFWlU6BeYPAubFhHOeQxQ2cuypCd4CETGTOo0weQaD/vJX41vy10Sc9AtyZyljjU+r
+         rLorbuhQ4KlOzPJRLkwqiSgpLGB+PKnB6jKEE8KraTzJfylZ1LVZ7FOcedxsx40wpDEl
+         L4qV9CCZs7MVqHczcsg5xWjAXt48v3RGnbBt9YoZ0YiMnmCIkOjkqIKWS3OZwkje6GRN
+         JbGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775136092; x=1775740892;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=P/+RvF4sr+15hFwCy/1QY5L6R+YF2MZZgsand9uX2p8=;
+        b=TjObQIk/ISv73QdYnckHRUw1nhzp2rgtomdAYbWpAzKCG5YnqeBMOMB62UIN4H2eFD
+         Ym234H4z5+5gKxhefhIZt4s+YCmqAw6ZpyONz4hI1eBZ0CfVI0xdKbr8ipfgvSPVpSl0
+         OWWH0E6fSX6yVIvi5Ns6up+tO9TH1kFjkARwkcS6A75Ux2h6tOeKJZcPeVxh17+vnRw8
+         ORz9yG6+5kN3ziQE+GbcaAikxjWU31HGAq22XB1KngQeJE+k9deOebZm76fo66ccgiNa
+         yiQdwBb3C7rO0YGYJBQHPG1POp1aA6BsnKd7mp5RDixWlyLdxjkHkTbg4sVJomNI5P14
+         ORvA==
+X-Forwarded-Encrypted: i=1; AJvYcCXCCYFv/QszIkxLG+ECKC0pk2jtDP3lL5VqW+sq2ML5N+DoZvy6EcH++FPb+oLhUoWBEeF6zyj9EuKJ7pjd@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxvux8xPIhK4lBkpqNGdGuG/IXrE6WTc/rWo2QqrGYXriWRDxQL
+	KCXH4EjnySoXkuwCB9mQABrUBerIFtK0SB4w0wqadccHJ3E9FeYHnHna/MjCtTlzmDI+RL4modF
+	rPSb4HbivkfrNQTNOCbRLRXZAilfevp8=
+X-Gm-Gg: AeBDietIijP4zp5gfSThBzVG3VCK/7db3gJ2Sctd7b7gE2B0C+FNshnx5ee7UlpwstC
+	lFL12yKHHCVoNyBvNfUxXaKmg1t5dTppfpAm9wqx2RYVioXx9SUF4qszwgqZYR5O6tD65OX6IYN
+	J78McEJAjEP2txPmm+TMkngi2FPL6jon64VwFKwhQGVvLUeW3rN3y+VwQ1cEKy5SF++aEONnb/g
+	sqDs0+7aOJUu4fVM6B6Y4dnw97bCfVF4jghZuYOWUaLERbWb/AB82f7slp+oIvF7hj/sUCc7gka
+	IFMgCrrM
+X-Received: by 2002:a05:690e:144b:b0:649:bbf4:121b with SMTP id
+ 956f58d0204a3-6502fd9534cmr7636575d50.2.1775136092404; Thu, 02 Apr 2026
+ 06:21:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spamd-Result: default: False [-0.16 / 15.00];
-	SUSPICIOUS_RECIPS(1.50)[];
-	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MV_CASE(0.50)[];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
+MIME-Version: 1.0
+References: <20260402092607.96430-1-laoar.shao@gmail.com> <20260402092607.96430-3-laoar.shao@gmail.com>
+ <2261072.irdbgypaU6@7950hx>
+In-Reply-To: <2261072.irdbgypaU6@7950hx>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Thu, 2 Apr 2026 21:20:55 +0800
+X-Gm-Features: AQROBzCq379oCyNjtOYZmuBoMyOqOT1_VV-wnZMWv4kRMd3OjGsW1s1XAyz2G-0
+Message-ID: <CALOAHbDnNba_w_nWH3-S9GAXw0+VKuLTh1gy5hy9Yqgeo4C0iA@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/4] trace: Allow kprobes to override livepatched functions
+To: Menglong Dong <menglong.dong@linux.dev>
+Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com, 
+	joe.lawrence@redhat.com, rostedt@goodmis.org, mhiramat@kernel.org, 
+	mathieu.desnoyers@efficios.com, kpsingh@kernel.org, mattbobrowski@google.com, 
+	song@kernel.org, jolsa@kernel.org, ast@kernel.org, daniel@iogearbox.net, 
+	andrii@kernel.org, martin.lau@linux.dev, eddyz87@gmail.com, memxor@gmail.com, 
+	yonghong.song@linux.dev, live-patching@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spamd-Result: default: False [-2.16 / 15.00];
+	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=2];
+	DMARC_POLICY_ALLOW(-0.50)[gmail.com,none];
+	R_DKIM_ALLOW(-0.20)[gmail.com:s=20251104];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
+	TAGGED_FROM(0.00)[bounces-2281-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2280-lists,live-patching=lfdr.de];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_TO(0.00)[gmail.com];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	RCVD_COUNT_THREE(0.00)[4];
-	RCPT_COUNT_TWELVE(0.00)[23];
-	MIME_TRACE(0.00)[0:+];
 	FREEMAIL_CC(0.00)[kernel.org,suse.cz,suse.com,redhat.com,goodmis.org,efficios.com,google.com,iogearbox.net,linux.dev,gmail.com,vger.kernel.org];
+	FREEMAIL_FROM(0.00)[gmail.com];
+	RCVD_COUNT_THREE(0.00)[4];
+	RCPT_COUNT_TWELVE(0.00)[24];
+	MIME_TRACE(0.00)[0:+];
+	FROM_HAS_DN(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	TO_DN_SOME(0.00)[];
-	MID_RHS_MATCH_FROM(0.00)[];
+	NEURAL_HAM(-0.00)[-1.000];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mhiramat@kernel.org,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	NEURAL_HAM(-0.00)[-0.990];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[laoarshao@gmail.com,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[gmail.com:+];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	TAGGED_RCPT(0.00)[live-patching];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: C3C50389A4C
+	MISSING_XM_UA(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns,linux.dev:email]
+X-Rspamd-Queue-Id: 8A8A1389BDA
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Thu,  2 Apr 2026 17:26:04 +0800
-Yafang Shao <laoar.shao@gmail.com> wrote:
+On Thu, Apr 2, 2026 at 8:48=E2=80=AFPM Menglong Dong <menglong.dong@linux.d=
+ev> wrote:
+>
+> On 2026/4/2 17:26, Yafang Shao wrote:
+> > Introduce the ability for kprobes to override the return values of
+> > functions that have been livepatched. This functionality is guarded by =
+the
+> > CONFIG_KPROBE_OVERRIDE_KLP_FUNC configuration option.
+>
+> Hi, Yafang. This is a interesting idea.
+>
+> For now, the bpf_override_return() can only be used on the kernel
+> functions that allow error injection to prevent the BPF program from
+> crash the kernel. If we use it on the kernel functions that patched
+> by the KLP, we can crash the kernel easily by return a invalid value
+> with bpf_override_return(), right? (Of course, we can crash the kernel
+> easily with KLP too ;)
 
-> Simplify the logic for checking overridable kprobe functions by removing
-> redundant code.
-> 
-> No functional change.
+Right.
+Livepatch already grants the power to modify the kernel at will;
+allowing BPF to override a patched function simply adds a layer of
+runtime programmability to an existing modification.
 
-NACK.
+>
+> I haven't figure out the use case yet. Can KLP be used together with
+> the BPF program that use bpf_override_return()?
 
-trace_kprobe must be hidden inside the trace_kprobe.c. It is not
-designed to be exposed. 
+The two mechanisms do not target the same entry point: whileKLP
+modifies the original kernel function, bpf_override_return() is
+applied to the newly patched function provided by the KLP module.
 
-Thank you,
+> The KLP will modify
+> the RIP on the stack, and the bpf_override_return() will modify it too.
+> AFAIK, there can't be two ftrace_ops that both have the
+> FTRACE_OPS_FL_IPMODIFY flag. Did I miss something?
 
-> 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  kernel/trace/bpf_trace.c    | 13 ++++++---
->  kernel/trace/trace_kprobe.c | 40 +++++----------------------
->  kernel/trace/trace_probe.h  | 54 ++++++++++++++++++++++++++-----------
->  3 files changed, 54 insertions(+), 53 deletions(-)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 0b040a417442..c901ace836cb 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1929,10 +1929,15 @@ int perf_event_attach_bpf_prog(struct perf_event *event,
->  	 * Kprobe override only works if they are on the function entry,
->  	 * and only if they are on the opt-in list.
->  	 */
-> -	if (prog->kprobe_override &&
-> -	    (!trace_kprobe_on_func_entry(event->tp_event) ||
-> -	     !trace_kprobe_error_injectable(event->tp_event)))
-> -		return -EINVAL;
-> +	if (prog->kprobe_override) {
-> +		struct trace_kprobe *tp = trace_kprobe_primary_from_call(event->tp_event);
-> +
-> +		if (!tp)
-> +			return -EINVAL;
-> +		if (!trace_kprobe_on_func_entry(tp) ||
-> +		    !trace_kprobe_error_injectable(tp))
-> +			return -EINVAL;
-> +	}
->  
->  	mutex_lock(&bpf_event_mutex);
->  
-> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-> index a5dbb72528e0..768702674a5c 100644
-> --- a/kernel/trace/trace_kprobe.c
-> +++ b/kernel/trace/trace_kprobe.c
-> @@ -53,17 +53,6 @@ static struct dyn_event_operations trace_kprobe_ops = {
->  	.match = trace_kprobe_match,
->  };
->  
-> -/*
-> - * Kprobe event core functions
-> - */
-> -struct trace_kprobe {
-> -	struct dyn_event	devent;
-> -	struct kretprobe	rp;	/* Use rp.kp for kprobe use */
-> -	unsigned long __percpu *nhit;
-> -	const char		*symbol;	/* symbol name */
-> -	struct trace_probe	tp;
-> -};
-> -
->  static bool is_trace_kprobe(struct dyn_event *ev)
->  {
->  	return ev->ops == &trace_kprobe_ops;
-> @@ -212,33 +201,16 @@ unsigned long trace_kprobe_address(struct trace_kprobe *tk)
->  	return addr;
->  }
->  
-> -static nokprobe_inline struct trace_kprobe *
-> -trace_kprobe_primary_from_call(struct trace_event_call *call)
-> -{
-> -	struct trace_probe *tp;
-> -
-> -	tp = trace_probe_primary_from_call(call);
-> -	if (WARN_ON_ONCE(!tp))
-> -		return NULL;
-> -
-> -	return container_of(tp, struct trace_kprobe, tp);
-> -}
-> -
-> -bool trace_kprobe_on_func_entry(struct trace_event_call *call)
-> +bool trace_kprobe_on_func_entry(struct trace_kprobe *tp)
->  {
-> -	struct trace_kprobe *tk = trace_kprobe_primary_from_call(call);
-> -
-> -	return tk ? (kprobe_on_func_entry(tk->rp.kp.addr,
-> -			tk->rp.kp.addr ? NULL : tk->rp.kp.symbol_name,
-> -			tk->rp.kp.addr ? 0 : tk->rp.kp.offset) == 0) : false;
-> +	return !kprobe_on_func_entry(tp->rp.kp.addr,
-> +			tp->rp.kp.addr ? NULL : tp->rp.kp.symbol_name,
-> +			tp->rp.kp.addr ? 0 : tp->rp.kp.offset);
->  }
->  
-> -bool trace_kprobe_error_injectable(struct trace_event_call *call)
-> +bool trace_kprobe_error_injectable(struct trace_kprobe *tp)
->  {
-> -	struct trace_kprobe *tk = trace_kprobe_primary_from_call(call);
-> -
-> -	return tk ? within_error_injection_list(trace_kprobe_address(tk)) :
-> -	       false;
-> +	return within_error_injection_list(trace_kprobe_address(tp));
->  }
->  
->  static int register_kprobe_event(struct trace_kprobe *tk);
-> diff --git a/kernel/trace/trace_probe.h b/kernel/trace/trace_probe.h
-> index 9fc56c937130..958eb78a9068 100644
-> --- a/kernel/trace/trace_probe.h
-> +++ b/kernel/trace/trace_probe.h
-> @@ -30,6 +30,7 @@
->  
->  #include "trace.h"
->  #include "trace_output.h"
-> +#include "trace_dynevent.h"
->  
->  #define MAX_TRACE_ARGS		128
->  #define MAX_ARGSTR_LEN		63
-> @@ -210,21 +211,6 @@ DECLARE_BASIC_PRINT_TYPE_FUNC(symbol);
->  #define ASSIGN_FETCH_TYPE_END {}
->  #define MAX_ARRAY_LEN	64
->  
-> -#ifdef CONFIG_KPROBE_EVENTS
-> -bool trace_kprobe_on_func_entry(struct trace_event_call *call);
-> -bool trace_kprobe_error_injectable(struct trace_event_call *call);
-> -#else
-> -static inline bool trace_kprobe_on_func_entry(struct trace_event_call *call)
-> -{
-> -	return false;
-> -}
-> -
-> -static inline bool trace_kprobe_error_injectable(struct trace_event_call *call)
-> -{
-> -	return false;
-> -}
-> -#endif /* CONFIG_KPROBE_EVENTS */
-> -
->  struct probe_arg {
->  	struct fetch_insn	*code;
->  	bool			dynamic;/* Dynamic array (string) is used */
-> @@ -271,6 +257,32 @@ struct event_file_link {
->  	struct list_head		list;
->  };
->  
-> +/*
-> + * Kprobe event core functions
-> + */
-> +struct trace_kprobe {
-> +	struct dyn_event	devent;
-> +	struct kretprobe	rp;	/* Use rp.kp for kprobe use */
-> +	unsigned long __percpu	*nhit;
-> +	const char		*symbol;	/* symbol name */
-> +	struct trace_probe	tp;
-> +};
-> +
-> +#ifdef CONFIG_KPROBE_EVENTS
-> +bool trace_kprobe_on_func_entry(struct trace_kprobe *tp);
-> +bool trace_kprobe_error_injectable(struct trace_kprobe *tp);
-> +#else
-> +static inline bool trace_kprobe_on_func_entry(struct trace_kprobe *tp)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline bool trace_kprobe_error_injectable(struct trace_kprobe *tp)
-> +{
-> +	return false;
-> +}
-> +#endif /* CONFIG_KPROBE_EVENTS */
-> +
->  static inline unsigned int trace_probe_load_flag(struct trace_probe *tp)
->  {
->  	return smp_load_acquire(&tp->event->flags);
-> @@ -329,6 +341,18 @@ trace_probe_primary_from_call(struct trace_event_call *call)
->  	return list_first_entry_or_null(&tpe->probes, struct trace_probe, list);
->  }
->  
-> +static nokprobe_inline struct trace_kprobe *
-> +trace_kprobe_primary_from_call(struct trace_event_call *call)
-> +{
-> +	struct trace_probe *tp;
-> +
-> +	tp = trace_probe_primary_from_call(call);
-> +	if (WARN_ON_ONCE(!tp))
-> +		return NULL;
-> +
-> +	return container_of(tp, struct trace_kprobe, tp);
-> +}
-> +
->  static inline struct list_head *trace_probe_probe_list(struct trace_probe *tp)
->  {
->  	return &tp->event->probes;
-> -- 
-> 2.47.3
-> 
+Correct, but as noted, they target different functions
 
+>
+> It will be helpful for me to understand the use case if a selftests is
+> offered :)
 
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Here is a recent use case from our production environment.
+
+- The livepatch
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_mai=
+n.c
+index e378bbe5705f..047e937bfa6d 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -5175,12 +5175,22 @@ int bond_update_slave_arr(struct bonding
+*bond, struct slave *skipslave)
+        return ret;
+ }
+
++/* noclone to avoid bond_get_slave_hook.constprop.0 */
++__attribute__((__noclone__, __noinline__))
++int bond_get_slave_hook(struct sk_buff *skb, u32 hash, unsigned int count)
++{
++       return -1;
++}
+
+ static struct slave *bond_xmit_3ad_xor_slave_get(struct bonding *bond,
+                                                 struct sk_buff *skb,
+                                                 struct bond_up_slave *slav=
+es)
+ {
+        struct slave *slave;
+        unsigned int count;
++       int slave_idx;
+        u32 hash;
+
+        hash =3D bond_xmit_hash(bond, skb);
+@@ -5188,6 +5198,13 @@ static struct slave
+*bond_xmit_3ad_xor_slave_get(struct bonding *bond,
+        if (unlikely(!count))
+                return NULL;
+
++       /* Try BPF hook first - returns slave index directly */
++       slave_idx =3D bond_get_slave_hook(skb, hash, count);
++       /* If BPF hook returned valid slave index, use it */
++       if (slave_idx >=3D 0 && slave_idx < count) {
++               slave =3D slaves->arr[slave_idx];
++               return slave;
++       }
+        slave =3D slaves->arr[hash % count];
+        return slave;
+ }
+
+- The BPF program
+
+SEC("kprobe/bond_get_slave_hook")
+int BPF_KPROBE(slave_selector, struct sk_buff *skb, u32 hash, u32 count)
+{
+        unsigned short net_hdr_off;
+        unsigned char *head;
+        struct iphdr iph;
+        int *slave_idx;
+        __u32 daddr;
+
+        __u16 proto =3D BPF_CORE_READ(skb, protocol);
+        if (proto !=3D bpf_htons(0x0800))
+                return 0;
+
+        head =3D BPF_CORE_READ(skb, head);
+        net_hdr_off =3D BPF_CORE_READ(skb, network_header);
+
+        if (bpf_probe_read_kernel(&iph, sizeof(iph), head + net_hdr_off) !=
+=3D 0)
+                return 0;
+
+        daddr =3D iph.daddr;
+        slave_idx =3D bpf_map_lookup_elem(&ip_slave_map, &daddr);
+        if (slave_idx) {
+                int idx =3D *slave_idx;
+
+                if (idx >=3D 0 && idx < (int)count)
+                        bpf_override_return(ctx, idx);
+        }
+        return 0;
+}
+
+>
+> BTW, if we allow the usage of bpf_override_return() on the KLP patched
+> function, we should allow the usage of BPF_MODIFY_RETURN on this
+> case too, right?
+
+It's a possibility, but I haven't tested that specifically yet.
+
+--=20
+Regards
+Yafang
 
