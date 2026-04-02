@@ -1,223 +1,196 @@
-Return-Path: <live-patching+bounces-2273-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2274-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id AMXOL6PNzGlFWwYAu9opvQ
-	(envelope-from <live-patching+bounces-2273-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 01 Apr 2026 09:47:47 +0200
+	id 4M81C+k2zmmAmAYAu9opvQ
+	(envelope-from <live-patching+bounces-2274-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 02 Apr 2026 11:29:13 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 20FC13763FA
-	for <lists+live-patching@lfdr.de>; Wed, 01 Apr 2026 09:47:47 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8F466386ED8
+	for <lists+live-patching@lfdr.de>; Thu, 02 Apr 2026 11:29:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id A4F2D300877A
-	for <lists+live-patching@lfdr.de>; Wed,  1 Apr 2026 07:41:09 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id B5B5B301C6EE
+	for <lists+live-patching@lfdr.de>; Thu,  2 Apr 2026 09:26:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 14D4537F017;
-	Wed,  1 Apr 2026 07:41:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 975343932CC;
+	Thu,  2 Apr 2026 09:26:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="CGHbsyHr";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="141OuvNb";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="z4eYEgF2";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="z3XHhETI"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PK7aYTF2"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB0937E2E9
-	for <live-patching@vger.kernel.org>; Wed,  1 Apr 2026 07:41:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5375B38F646
+	for <live-patching@vger.kernel.org>; Thu,  2 Apr 2026 09:26:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775029269; cv=none; b=ezb/HiijsbwfUjSs0dtnd3jw/nzP4lfek7T9NrMlgc91MUzocCvbZuze5P7IzmcCZm6Ha4iwvlgBHgJ5BZqwWj7Vz9CDsi6Br0HZ+FIDwoQS8kzlqJju9Eq1rCnQPgckHIZaXr7EZKvJOJ/obfIfSGoMh8Ome/A4tQsyX1FBkcY=
+	t=1775121989; cv=none; b=pdPMGBgpLF8hq/r+Mx3jho6oWeYOZtS6UuCETxit8Aiz0H+sb0lIs5s4xc7wNVV5U36WQI/XRE5NORVQmOYNsX1n69RfXvPXkAn+pSLJBLXkh6ewMPbDB7r2ovj9fyVOJmTDcwHn0DwMmQET3riSSBGH8nhBeYwMdamz/JE3o7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775029269; c=relaxed/simple;
-	bh=erEGmthLCCq5QaevIpQZZtKGYxx/zf3Sdg+6Wd/Uo3w=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=KenEqybo7elJAfcVmrza2NWxjjvBIqLPXrwewcRo5uonKuGuNmzWmSrg+DZktpnfl0sNQrTkkwQ+i1oiPo8KuV82Ztb8PXdr/Tgxr4eT0k6KUorEXuE2KK7g2wDJvJIbFd/G5KQUcG8vfzzgqHR5Pm96nklqAadIvApJ/kk0a30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=CGHbsyHr; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=141OuvNb; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=z4eYEgF2; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=z3XHhETI; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.128.32.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id DDDC34D1E6;
-	Wed,  1 Apr 2026 07:41:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1775029266; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
-	b=CGHbsyHrfnSjT79FZ+5Va7hTUHGdbdtMvl/y8DyR7Y01ZVJfVTzCsCrxTJ9aQNxl2zFpHH
-	x1NnapJ1m2gnVFKhRF4XxEdUJsHXx62VX9sOKolgrgAIwFqTcYY6rgZQNrA7rK8oFvo5y1
-	O19uC0HtyPzV2KYEftUqiRoWcZw3m6U=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1775029266;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
-	b=141OuvNbRIjjpUQ+nBpbbyldgmG3O0YE/HGK9es8fhAHS4y8Esy8coQdD1Pu5SGeazv77K
-	efoZ85skoBid4jBQ==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1775029265; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
-	b=z4eYEgF2oBMO7xLy+jaGqL4OUSiqakxBduOipe6nXIoUT3OAId9dsBug+wg7l89gdltSMq
-	mlVJ+X5nagDQw3GlbH3N5BPerqxfU9RotkWvD5chrRCYGD2ciuwzL3U7aP+pDdRd6+AraS
-	OWwhyu+3A5ai5cAU4uvhsqGSweHIT9g=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1775029265;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=b1pEdDeMovITLQfcEHCNx180y8KjPanNMnxJcqmlOt8=;
-	b=z3XHhETIrT2fg6CmVJEE31EIFXqqCiMhE+B/gRp3gs5p68bhLiFv++YWA07d4AH4323YyO
-	x+lbuU8ZTpSXrDAQ==
-Date: Wed, 1 Apr 2026 09:41:05 +0200 (CEST)
-From: Miroslav Benes <mbenes@suse.cz>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-cc: Joe Lawrence <joe.lawrence@redhat.com>, 
-    Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
-    Petr Mladek <pmladek@suse.com>, Shuah Khan <shuah@kernel.org>, 
-    live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/8] selftests: livepatch: test-syscall: Check for
- ARCH_HAS_SYSCALL_WRAPPER
-In-Reply-To: <a23f00ad4a454cbb3379cdf512e8c61ce7499194.camel@suse.com>
-Message-ID: <alpine.LSU.2.21.2604010937120.12688@pobox.suse.cz>
-References: <20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@suse.com>  <20260313-lp-tests-old-fixes-v1-1-71ac6dfb3253@suse.com>  <abhjYtyveer4niGM@redhat.com> <a23f00ad4a454cbb3379cdf512e8c61ce7499194.camel@suse.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	s=arc-20240116; t=1775121989; c=relaxed/simple;
+	bh=4ECgb/AfeI/g65ADzXXjhXc34kvosRuBpZwZRATvnTA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OcSiBC0PRZQGNU9QSlXAl6f2Z2VjjU5ZH3bsYIi02cEwFhUl+NjD35LVz0zM1hSBAqMf8uE+F89LuDgP+MzWNyK8slVFk3qufozTr7ck7rQFMSRLdLETLVUqz5hbTcPIP0EA1wvR+ZvpdXTZ2Tv7j433bXznPbCKOpFljK6vkjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PK7aYTF2; arc=none smtp.client-ip=209.85.216.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-35d90833cacso346854a91.2
+        for <live-patching@vger.kernel.org>; Thu, 02 Apr 2026 02:26:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775121982; x=1775726782; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xJn/mu9tI/GhEXXW9g1aC2S5Xq1EhBmi8P2sfsvCv7U=;
+        b=PK7aYTF2nKbGhR80fVoxFVk22YR5yod0PSzWIb3AzHJgjIksMRbn02SaHf4aoIDKXi
+         AOyBoWjEhaSFB3ynLqe+0EcAvJeW+GZgqx9M+yF3PC0c2G1tcEDr6QV1PvLNT2eygfsL
+         O6lYgU6Uqn1fDjijkiup2AAVfB/qOry1PZ5WUWMilS6Fhj6AtX+4aZ2sijMC0NQLwmIT
+         wWOyEn9Aawj3BQjq65DWW0epcftQsbhCv3t34WKIKC4YueVGBAH94JolYW6bXDYsNKc2
+         PWf+f2H+QUcAc1SqmP64zRsDnNCBd3aSL64+DqFIo0DX6e2HuOHodcHXkkPXHuKvu69a
+         K6sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775121982; x=1775726782;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xJn/mu9tI/GhEXXW9g1aC2S5Xq1EhBmi8P2sfsvCv7U=;
+        b=iAS1K1X5hND6pn0qIGtSkPY/9+i7C0rJ6Z9NGBkG/brKwiISXSmOuTKXxEuenwUGdm
+         jbpsDa3CyDWAIYsQ7AP2STgd2NS3V86Z76SlgvONREWWqbaO1GWYbr78Tq8aqXBv5sm+
+         GXZB8w8I+doK2CuqWayXxDb/kGyXc8PoZcGMTs2FIvkXwQaj3jbWExcfyUU4nkrOUgX7
+         YJK/3MpUMAdsHkeNDpvk/yxGFXYk61IrwgBUWT3Q5qCgIfmLbWtiLHczxhOvCmNT+uVi
+         JqCZCtnewHWAvQBKg+p7bNQCHF4Kat+c3U/TD7nTfFTdnlfujy5cavpjPsxUY6sWeEGg
+         k2Jg==
+X-Gm-Message-State: AOJu0Yy/HP87R9AKYr6EvsJ26Pgre3Cmz/HRIX2j4wwoWCcS2YydnH/S
+	6qP/GERtA9mJknWmLC92JGaHciCKfqJ0LouQ1kot0L8CExNN/fvoL7ao
+X-Gm-Gg: AeBDieuwvTUggxMaZ9tAwCnNISM/hKdJ2qc71R5Y1moixASDtika9rh2+jRjYKZFsmR
+	6vwopbhHyMUhFJAw0Cu7TyUm7IL/+vnl2vwPCq96S+FXlHNalMRwY100IXq2WbHxi2+TTyhgot4
+	RelD3Hs4k1WulxEZ/UyUKbiMxhMgImmz7CcS26P1o9k+yGINQt+JUcY00Hv8ZnqKphKRx9P0h+p
+	N9i2UcaeBeSXnNKPfKo5ByYkyiN/+zhZOnESUWKsnJv/xu3yFzv2fLHCu/GfMgf5PBPj4T644S4
+	OubgttsMF3Q0cwlCsReHq8VhGm1Y4Dm+mx6L1zDQQ/CmNaJ0N/fAMBUhvYs/soTsZVy8PQVTucK
+	lhe0fRpcj2CZQj1TH7Ld6Vrn0XS1YEdO18T80HIWVUxZBQFjQhYYjTTXUIM/vaDxl8LEtOVdcaf
+	BQUCma7A8wShqxK5nR+sIYxnfiIDTJHOxKvsUvxXzbNe/N
+X-Received: by 2002:a17:90a:c107:b0:35b:a656:a5fe with SMTP id 98e67ed59e1d1-35dc6e77dcemr6086211a91.3.1775121982115;
+        Thu, 02 Apr 2026 02:26:22 -0700 (PDT)
+Received: from yafangs-Air ([2409:891f:1aa0:8613:19f3:7bee:2e41:149e])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35dd35f50e9sm2227645a91.6.2026.04.02.02.26.13
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Thu, 02 Apr 2026 02:26:21 -0700 (PDT)
+From: Yafang Shao <laoar.shao@gmail.com>
+To: jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	rostedt@goodmis.org,
+	mhiramat@kernel.org,
+	mathieu.desnoyers@efficios.com,
+	kpsingh@kernel.org,
+	mattbobrowski@google.com,
+	song@kernel.org,
+	jolsa@kernel.org,
+	ast@kernel.org,
+	daniel@iogearbox.net,
+	andrii@kernel.org,
+	martin.lau@linux.dev,
+	eddyz87@gmail.com,
+	memxor@gmail.com,
+	yonghong.song@linux.dev
+Cc: live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org,
+	bpf@vger.kernel.org,
+	Yafang Shao <laoar.shao@gmail.com>
+Subject: [RFC PATCH 0/4] trace, livepatch: Allow kprobe return overriding for livepatched functions
+Date: Thu,  2 Apr 2026 17:26:03 +0800
+Message-ID: <20260402092607.96430-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="-2146828000-2095840910-1775029265=:12688"
-X-Spam-Score: -3.30
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-0.66 / 15.00];
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-0.16 / 15.00];
+	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	CTYPE_MIXED_BOGUS(1.00)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	R_MISSING_CHARSET(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[gmail.com,none];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_DKIM_ALLOW(-0.20)[gmail.com:s=20251104];
 	MAILLIST(-0.15)[generic];
-	MIME_GOOD(-0.10)[multipart/mixed,text/plain];
+	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FROM_HAS_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2273-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	DMARC_NA(0.00)[suse.cz];
-	MIME_TRACE(0.00)[0:+,1:+];
-	DKIM_TRACE(0.00)[suse.cz:+];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
-	TO_DN_SOME(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
+	TAGGED_FROM(0.00)[bounces-2274-lists,live-patching=lfdr.de];
+	FREEMAIL_FROM(0.00)[gmail.com];
+	FREEMAIL_CC(0.00)[vger.kernel.org,gmail.com];
+	RCPT_COUNT_TWELVE(0.00)[24];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_TLS_LAST(0.00)[];
+	FREEMAIL_TO(0.00)[kernel.org,suse.cz,suse.com,redhat.com,goodmis.org,efficios.com,google.com,iogearbox.net,linux.dev,gmail.com];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[5];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[laoarshao@gmail.com,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[gmail.com:+];
 	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[pobox.suse.cz:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.cz:dkim,suse.com:email]
-X-Rspamd-Queue-Id: 20FC13763FA
+	MID_RHS_MATCH_FROM(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	FROM_HAS_DN(0.00)[]
+X-Rspamd-Queue-Id: 8F466386ED8
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Livepatching allows for rapid experimentation with new kernel features
+without interrupting production workloads. However, static livepatches lack
+the flexibility required to tune features based on task-specific attributes,
+such as cgroup membership, which is critical in multi-tenant k8s
+environments. Furthermore, hardcoding logic into a livepatch prevents
+dynamic adjustments based on the runtime environment.
 
----2146828000-2095840910-1775029265=:12688
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+To address this, we propose a hybrid approach using BPF. Our production use
+case involves:
 
-On Tue, 31 Mar 2026, Marcos Paulo de Souza wrote:
+1. Deploying a Livepatch function to serve as a stable BPF hook.
 
-> On Mon, 2026-03-16 at 16:12 -0400, Joe Lawrence wrote:
-> > On Fri, Mar 13, 2026 at 05:58:32PM -0300, Marcos Paulo de Souza
-> > wrote:
-> > > Instead of checking if the architecture running the test was
-> > > powerpc,
-> > > check if CONF_ARCH_HAS_SYSCALL_WRAPPER is defined or not.
-> > > 
-> > > No functional changes.
-> > > 
-> > > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> > > ---
-> > >  tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> > > | 7 +++----
-> > >  1 file changed, 3 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git
-> > > a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> > > b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> > > index dd802783ea849..c01a586866304 100644
-> > > ---
-> > > a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> > > +++
-> > > b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
-> > > @@ -12,15 +12,14 @@
-> > >  #include <linux/slab.h>
-> > >  #include <linux/livepatch.h>
-> > >  
-> > > -#if defined(__x86_64__)
-> > > +#if !defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
-> > > +#define FN_PREFIX
-> > > +#elif defined(__x86_64__)
-> > >  #define FN_PREFIX __x64_
-> > >  #elif defined(__s390x__)
-> > >  #define FN_PREFIX __s390x_
-> > >  #elif defined(__aarch64__)
-> > >  #define FN_PREFIX __arm64_
-> > > -#else
-> > > -/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER */
-> > > -#define FN_PREFIX
-> > 
-> > The patch does maintain the previous behavior, but I'm wondering if
-> > the
-> > original assertion about ARCH_HAS_SYSCALL_WRAPPER on Power was
-> > correct:
-> > 
-> >   $ grep ARCH_HAS_SYSCALL_WRAPPER arch/powerpc/Kconfig
-> >           select ARCH_HAS_SYSCALL_WRAPPER         if !SPU_BASE &&
-> > !COMPAT
-> >           depends on PPC64 && ARCH_HAS_SYSCALL_WRAPPER
-> > 
-> > Perhaps I just forgot what that additional piece of information that
-> > explains the comment (highly probable these days), and if so, might
-> > be
-> > nice to add to this commit since I don't see it in 6a71770442b5
-> > ("selftests: livepatch: Test livepatching a heavily called syscall").
-> 
-> Looking again at the code and at the symbols for SLE for ppc64le, I can
-> say that, even with ARCH_HAS_SYSCALL_WRAPPER being set, the syscall
-> names are not changed for ppc64le. Looking at
-> arch/powerpc/kernel/systbl.c:
-> 
-> #ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
-> #define __SYSCALL(nr, entry) [nr] = entry,
-> #else
-> /*
->  * Coerce syscall handlers with arbitrary parameters to common type
->  * requires cast to void* to avoid -Wcast-function-type.
->  */
-> #define __SYSCALL(nr, entry) [nr] = (void *) entry,
-> #endif
+2. Utilizing bpf_override_return() to dynamically modify the return value
+   of that hook based on the current task's context.
 
-I think this is not the complete picture though. The definition of the 
-syscall table did not change but the actual wrappers (or syscall functions 
-naming before) did change a couple of times even on powerpc if I am 
-reading the git history right. ARCH_HAS_SYSCALL_WRAPPER also changed how 
-syscall parameters are consumed (from registers to stack frame (pt_regs)). 
-It is not particularly relevant for getpid() which is SYSCALL_DEFINE0() 
-but I wanted to point that out.
+A significant challenge arises when atomic-replace is enabled. In this
+mode, deploying a new livepatch changes the target function's address,
+forcing a re-attachment of the BPF program. This re-attachment latency is
+unacceptable in critical paths, such as those handling networking policies.
 
-Miroslav
----2146828000-2095840910-1775029265=:12688--
+To solve this, we introduce a hybrid livepatch mode that allows specific
+patches to remain non-replaceable, ensuring the function address remains
+stable and the BPF program stays attached.
+
+Furthermore, this mechanism provides a lower-maintenance alternative to
+out-of-tree BPF hooks. Given the complexities of upstreaming custom BPF
+hooks (e.g., [0], [1]), this hybrid mode allows for the maintenance of
+stable, minimal hook points via livepatching with significantly reduced
+maintenance burden.
+
+Link: https://lwn.net/Articles/1054030/ [0]
+Link: https://lwn.net/Articles/1043548/ [1]
+
+Yafang Shao (4):
+  trace: Simplify kprobe overridable function check
+  trace: Allow kprobes to override livepatched functions
+  livepatch: Add "replaceable" attribute to klp_patch
+  livepatch: Implement livepatch hybrid mode
+
+ include/linux/livepatch.h   |  2 ++
+ kernel/livepatch/core.c     | 50 +++++++++++++++++++++++++++++++
+ kernel/trace/Kconfig        | 14 +++++++++
+ kernel/trace/bpf_trace.c    | 14 ++++++---
+ kernel/trace/trace_kprobe.c | 49 ++++++++++++------------------
+ kernel/trace/trace_probe.h  | 59 +++++++++++++++++++++++++++----------
+ 6 files changed, 139 insertions(+), 49 deletions(-)
+
+-- 
+2.47.3
+
 
