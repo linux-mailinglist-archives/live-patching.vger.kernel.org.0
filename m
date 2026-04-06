@@ -1,521 +1,197 @@
-Return-Path: <live-patching+bounces-2306-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2307-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 8LnpB/AA1GnmpAcAu9opvQ
-	(envelope-from <live-patching+bounces-2306-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Mon, 06 Apr 2026 20:52:32 +0200
+	id cNIGIMYh1GlxrgcAu9opvQ
+	(envelope-from <live-patching+bounces-2307-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 06 Apr 2026 23:12:38 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id BCC973A6667
-	for <lists+live-patching@lfdr.de>; Mon, 06 Apr 2026 20:52:31 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2C78C3A76E9
+	for <lists+live-patching@lfdr.de>; Mon, 06 Apr 2026 23:12:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 11FB63057C4B
-	for <lists+live-patching@lfdr.de>; Mon,  6 Apr 2026 18:50:56 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id E90FD304C7D1
+	for <lists+live-patching@lfdr.de>; Mon,  6 Apr 2026 21:12:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA8A43976AB;
-	Mon,  6 Apr 2026 18:50:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D6A1B386C25;
+	Mon,  6 Apr 2026 21:12:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AcreckdU"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="h8qTvWxW"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ECA0397694
-	for <live-patching@vger.kernel.org>; Mon,  6 Apr 2026 18:50:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D534312815
+	for <live-patching@vger.kernel.org>; Mon,  6 Apr 2026 21:12:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775501437; cv=none; b=HgPP7ZL3i6OCLyaUZCJa8hec0BXRk7t36rPelPzZo1o+uUF4MEhdQeCfMGtHnwSJuCtboXgc25lUi+UQI+H8cNzq4B0awwTV2Zxxlcmrs5TvZAvkjKslrE+wpw68eImw0CosqldZKnjV2LOF1Osv1MOr9vCD+81joM4nSqIoSyg=
+	t=1775509944; cv=none; b=Dl5FTVt2quuVuTshNxhNJ+Y0XyzReH6hUFihYB20sApYNl686qIlc4X45LQq3D0zRj2JCr0T1+rSnfj+BiGpQho7HSUNzk/l1oyFqBco9djjVnbhKSfGNLeNqx08y08QQRquKEUB7YHq+0jE66U10RKktByN3wB1c5g4LAmmZvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775501437; c=relaxed/simple;
-	bh=Ki65MefgNzHq6ISx6NAc0yPLIHUzqBtO6jD9b5LCdMY=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=GWur/AuifBwRVaTsFJ2NcRvJR6S1T6EtRSZXG31PCoBUQtrJ4Ks9BeyF6nvGH9GwC23lAxZVTGFX4YDoX5KJd0XJNjN+uKGd3y4wDvXiznUb1q6YWiZ9YeW8mKX6NBUNcQ+cENfX9+mJM5VcwmJ1p1FZilH6njwU0BGQLWjshTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AcreckdU; arc=none smtp.client-ip=209.85.210.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-82c8768a704so2337829b3a.3
-        for <live-patching@vger.kernel.org>; Mon, 06 Apr 2026 11:50:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775501436; x=1776106236; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NUfWhY67lIhptCLOMSh+gb51pACdbxlvycMF2len7NM=;
-        b=AcreckdUXxhg1MnM2ISQovCWlLMPlJOpnX9rIt3AADzUQN47jZPMH+IH3rItLBMy9/
-         enuKUhBDsNSCZmNYWKkN7a7EqAoIJrIOhBnMxXsfo+cri23bpLurEMXlhPm4XKuN029v
-         iwTUQxnePOEj3xrk+5FTW2fQ5kytS27HzpPlZxMonlYDTEsAbq3E57kLCek8R3213nok
-         yJzG9SnXPuJgzGWL9LaAgRqz56VKWWzHoa9KJIRtDZAfuWX5u0hRP382RXZ6Hk5PoxeX
-         Xn8lFyED3hzuinuwHTwFoMpjt1t4m98cmhrTknAOhNBBauLKka06EVe6z/rDv0UGG7fb
-         pxCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775501436; x=1776106236;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NUfWhY67lIhptCLOMSh+gb51pACdbxlvycMF2len7NM=;
-        b=XYEGzsPUBDfStyWqDPBuzHWF1tiSPx5GWkSc9f9qIBOOsXKDQEbWWkChio+LnJ0seb
-         jU4wim6sGjPKS5ap5zsx6YHdgzjbrCnmuZOpw6LZx6o1I6n1BhEOTRgfq8AT68PBqhDx
-         X876Mt+JooVMzCFx9ag+xYhpeqeE+vhUzsm6hqTWTHBmwv0G9z3AVQwh6AGTpdCHvqTN
-         OLF5+Uk5JHzwS96SdgMg0JFhd8K0s5LDyqhUU61i6pZgDraXzSm0L6srFo4rldHzN5sn
-         PZ9Tgww60Kzh8QYKyY6TxnxQpeOC6EJI3xVX0yZWVeOddbjvL9DxIvNbagRI9/eGYuoG
-         TZAQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUMdy4rP9zslahZwZddn0+YFT9XyBS3wYPI4XI+v1RpLEEDH5PYjircCBNYpW/AV8gA/ZhO64FS35mCUrxu@vger.kernel.org
-X-Gm-Message-State: AOJu0YynuGcqaaPL4c5wuRVg61iEg62Yilg2WGnFp+Tlnn4wI/U9vMd3
-	gF8Yo3BAkwJaQb75pzklHEFYWyLpoZUI5sR0PYyE1ktQtvpGGdqkqEiDsHzesWJO4enQJhaf6fP
-	6T7eLzd6mUMnOO/JIeh7yKScE5g==
-X-Received: from pfx21.prod.google.com ([2002:a05:6a00:a455:b0:829:7f86:634])
- (user=dylanbhatch job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:1805:b0:82a:1380:417d with SMTP id d2e1a72fcca58-82d0dbcfad1mr13503330b3a.52.1775501435455;
- Mon, 06 Apr 2026 11:50:35 -0700 (PDT)
-Date: Mon,  6 Apr 2026 18:50:00 +0000
-In-Reply-To: <20260406185000.1378082-1-dylanbhatch@google.com>
+	s=arc-20240116; t=1775509944; c=relaxed/simple;
+	bh=l7vxEJgC+Ob793xoUL3efo8+VTg3EnXl8F+bVIOAC8s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sjlKtmZN143K/m9ap4klgw8MKOhXxEB2HMuAYRwhRetRIZ8oYkPe1QeBOgSxb9/8K6pOItOF0yZa/fXk7049SG9Nbtx3k5LtMeR2aabeMTmHyuxytMC6S+kMm/RGTI5RknwjMQ83TuG3QIcI1D1g6SVYCWLgXlfnzUwrOhY4ktg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=h8qTvWxW; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1775509942;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sknxFjh3PzCtxEMIhDuCr7zygcrbfejjCpqHKn1w+TQ=;
+	b=h8qTvWxWlKGCeaPTh9IN5z/JvM6o4Cr3o1+gsFm5RBoBFR5pH2GXPnAwlpEapQerC4ORK3
+	GZX+X/EANZLz6pf/WWkYGjwEHbHFLMgkLKMM42JJvenFe8sLf9FCWPTpim6FAtI8nldyDx
+	nUztwLVv0QMEfuGdFQhZD86OdBKdSUg=
+Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-299-mXEQr5PIMhyg2dAXpnV_3w-1; Mon,
+ 06 Apr 2026 17:12:16 -0400
+X-MC-Unique: mXEQr5PIMhyg2dAXpnV_3w-1
+X-Mimecast-MFC-AGG-ID: mXEQr5PIMhyg2dAXpnV_3w_1775509933
+Received: from mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.111])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 5AB91195608B;
+	Mon,  6 Apr 2026 21:12:12 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.80.40])
+	by mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 0BAF31800576;
+	Mon,  6 Apr 2026 21:12:06 +0000 (UTC)
+Date: Mon, 6 Apr 2026 17:12:04 -0400
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: Song Liu <song@kernel.org>
+Cc: Yafang Shao <laoar.shao@gmail.com>,
+	Dylan Hatch <dylanbhatch@google.com>, jpoimboe@kernel.org,
+	jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
+	rostedt@goodmis.org, mhiramat@kernel.org,
+	mathieu.desnoyers@efficios.com, kpsingh@kernel.org,
+	mattbobrowski@google.com, jolsa@kernel.org, ast@kernel.org,
+	daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+	eddyz87@gmail.com, memxor@gmail.com, yonghong.song@linux.dev,
+	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [RFC PATCH 3/4] livepatch: Add "replaceable" attribute to
+ klp_patch
+Message-ID: <adQhpBC2W9I6QW-g@redhat.com>
+References: <20260402092607.96430-1-laoar.shao@gmail.com>
+ <20260402092607.96430-4-laoar.shao@gmail.com>
+ <CAPhsuW51Hh7XfN6xXm_uMAoDXBBQoNQ5ynqom+wVNdqCt81f2A@mail.gmail.com>
+ <CADBMgpy3e25EH5xbKMN5GeOK47jE6uzviknbt35V49_Y7zFj8A@mail.gmail.com>
+ <CAPhsuW6p3YOv3_M_c0ThMcrNqNjT=7i46ekJBrWO_oGzQkxrxA@mail.gmail.com>
+ <CALOAHbCbcw2jpjk9JD9yyf+SMpQ-s9FAonSaz7Gs4XUeP+w+2g@mail.gmail.com>
+ <CAPhsuW4B00-grg9XJa+AO3xgGwM_u8FC+GH3JrkYZOJx4PuV8Q@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20260406185000.1378082-1-dylanbhatch@google.com>
-X-Mailer: git-send-email 2.53.0.1213.gd9a14994de-goog
-Message-ID: <20260406185000.1378082-9-dylanbhatch@google.com>
-Subject: [PATCH v3 8/8] unwind: arm64: Use sframe to unwind interrupt frames.
-From: Dylan Hatch <dylanbhatch@google.com>
-To: Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
-	Will Deacon <will@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>, 
-	Indu Bhagat <indu.bhagat@oracle.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Steven Rostedt <rostedt@goodmis.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Jiri Kosina <jikos@kernel.org>
-Cc: Dylan Hatch <dylanbhatch@google.com>, Mark Rutland <mark.rutland@arm.com>, 
-	Prasanna Kumar T S M <ptsm@linux.microsoft.com>, Puranjay Mohan <puranjay@kernel.org>, 
-	Song Liu <song@kernel.org>, joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-	Jens Remus <jremus@linux.ibm.com>, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPhsuW4B00-grg9XJa+AO3xgGwM_u8FC+GH3JrkYZOJx4PuV8Q@mail.gmail.com>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.111
 X-Spamd-Result: default: False [-0.66 / 15.00];
-	MID_CONTAINS_FROM(1.00)[];
+	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MV_CASE(0.50)[];
-	DMARC_POLICY_ALLOW(-0.50)[google.com,reject];
-	R_DKIM_ALLOW(-0.20)[google.com:s=20251104];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
+	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2306-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	RCVD_COUNT_THREE(0.00)[4];
-	RCPT_COUNT_TWELVE(0.00)[20];
+	FREEMAIL_CC(0.00)[gmail.com,google.com,kernel.org,suse.cz,suse.com,goodmis.org,efficios.com,iogearbox.net,linux.dev,vger.kernel.org];
+	TAGGED_FROM(0.00)[bounces-2307-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[24];
+	MIME_TRACE(0.00)[0:+];
+	DKIM_TRACE(0.00)[redhat.com:+];
+	MISSING_XM_UA(0.00)[];
 	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[6];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[dylanbhatch@google.com,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[google.com:+];
-	NEURAL_HAM(-0.00)[-1.000];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
+	FROM_NEQ_ENVFROM(0.00)[joe.lawrence@redhat.com,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	NEURAL_HAM(-0.00)[-0.998];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: BCC973A6667
+	MID_RHS_MATCH_FROM(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 2C78C3A76E9
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Add unwind_next_frame_sframe() function to unwind by sframe info if
-present. Use this method at exception boundaries, falling back to
-frame-pointer unwind only on failure. In such failure cases, the
-stacktrace is considered unreliable.
+On Mon, Apr 06, 2026 at 11:11:27AM -0700, Song Liu wrote:
+> On Mon, Apr 6, 2026 at 4:08 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+> >
+> > On Sat, Apr 4, 2026 at 5:36 AM Song Liu <song@kernel.org> wrote:
+> > >
+> > > On Fri, Apr 3, 2026 at 1:55 PM Dylan Hatch <dylanbhatch@google.com> wrote:
+> > > [...]
+> > > > > IIRC, the use case for this change is when multiple users load various
+> > > > > livepatch modules on the same system. I still don't believe this is the
+> > > > > right way to manage livepatches. That said, I won't really NACK this
+> > > > > if other folks think this is a useful option.
+> > > >
+> > > > In our production fleet, we apply exactly one cumulative livepatch
+> > > > module, and we use per-kernel build "livepatch release" branches to
+> > > > track the contents of these cumulative livepatches. This model has
+> > > > worked relatively well for us, but there are some painpoints.
+> > > >
+> > > > We are often under pressure to selectively deploy a livepatch fix to
+> > > > certain subpopulations of production. If the subpopulation is running
+> > > > the same build of everything else, this would require us to introduce
+> > > > another branching factor to the "livepatch release" branches --
+> > > > something we do not support due to the added toil and complexity.
+> > > >
+> > > > However, if we had the ability to build "off-band" livepatch modules
+> > > > that were marked as non-replaceable, we could support these selective
+> > > > patches without the additional branching factor. I will have to
+> > > > circulate the idea internally, but to me this seems like a very useful
+> > > > option to have in certain cases.
+> > >
+> > >  IIUC, the plan is:
+> > >
+> > > - The regular livepatches are cumulative, have the replace flag; and
+> > >   are replaceable.
+> > > - The occasional "off-band" livepatches do not have the replace flag,
+> > >   and are not replaceable.
+> > >
+> > > With this setup, for systems with off-band livepatches loaded, we can
+> > > still release a cumulative livepatch to replace the previous cumulative
+> > > livepatch. Is this the expected use case?
+> >
+> > That matches our expected use case.
+> 
+> If we really want to serve use cases like this, I think we can introduce
+> some replace tag concept: Each livepatch will have a tag, u32 number.
+> Newly loaded livepatch will only replace existing livepatch with the
+> same tag. We can even reuse the existing "bool replace" in klp_patch,
+> and make it u32: replace=0 means no replace; replace > 0 are the
+> replace tag.
+> 
+> For current users of cumulative patches, all the livepatch will have the
+> same tag, say 1. For your use case, you can assign each user a
+> unique tag. Then all these users can do atomic upgrades of their
+> own livepatches.
+> 
+> We may also need to check whether two livepatches of different tags
+> touch the same kernel function. When that happens, the later
+> livepatch should fail to load.
+> 
+> Does this make sense?
+> 
 
-During normal unwind, prefer frame pointer unwind (for better
-performance) with sframe as a backup.
+I haven't been following the thread carefully, but could the Livepatch
+system state API (see Documentation/livepatch/system-state.rst) be
+leveraged somehow instead of adding further replace semantics?
 
-This change restores the LR behavior originally introduced in commit
-c2c6b27b5aa14fa2 ("arm64: stacktrace: unwind exception boundaries"),
-But later removed in commit 32ed1205682e ("arm64: stacktrace: Skip
-reporting LR at exception boundaries")
-
-This can be done because the sframe data can be used to determine
-whether the LR is current for the PC value recovered from pt_regs at the
-exception boundary.
-
-Signed-off-by: Weinan Liu <wnliu@google.com>
-Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
-Reviewed-by: Prasanna Kumar T S M <ptsm@linux.microsoft.com>
----
- arch/arm64/include/asm/stacktrace/common.h |   6 +
- arch/arm64/kernel/stacktrace.c             | 242 +++++++++++++++++++--
- 2 files changed, 228 insertions(+), 20 deletions(-)
-
-diff --git a/arch/arm64/include/asm/stacktrace/common.h b/arch/arm64/include/asm/stacktrace/common.h
-index 821a8fdd31af..96c4c0a7e6de 100644
---- a/arch/arm64/include/asm/stacktrace/common.h
-+++ b/arch/arm64/include/asm/stacktrace/common.h
-@@ -21,6 +21,8 @@ struct stack_info {
-  *
-  * @fp:          The fp value in the frame record (or the real fp)
-  * @pc:          The lr value in the frame record (or the real lr)
-+ * @sp:          The sp value at the call site of the current function.
-+ * @unreliable:  Stacktrace is unreliable.
-  *
-  * @stack:       The stack currently being unwound.
-  * @stacks:      An array of stacks which can be unwound.
-@@ -29,7 +31,11 @@ struct stack_info {
- struct unwind_state {
- 	unsigned long fp;
- 	unsigned long pc;
-+#ifdef CONFIG_SFRAME_UNWINDER
-+	unsigned long sp;
-+#endif
- 
-+	bool unreliable;
- 	struct stack_info stack;
- 	struct stack_info *stacks;
- 	int nr_stacks;
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 3ebcf8c53fb0..16a4eb31c5c1 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -14,6 +14,7 @@
- #include <linux/sched/debug.h>
- #include <linux/sched/task_stack.h>
- #include <linux/stacktrace.h>
-+#include <linux/sframe.h>
- 
- #include <asm/efi.h>
- #include <asm/irq.h>
-@@ -26,6 +27,7 @@ enum kunwind_source {
- 	KUNWIND_SOURCE_CALLER,
- 	KUNWIND_SOURCE_TASK,
- 	KUNWIND_SOURCE_REGS_PC,
-+	KUNWIND_SOURCE_REGS_LR,
- };
- 
- union unwind_flags {
-@@ -85,6 +87,9 @@ kunwind_init_from_regs(struct kunwind_state *state,
- 	state->regs = regs;
- 	state->common.fp = regs->regs[29];
- 	state->common.pc = regs->pc;
-+#ifdef CONFIG_SFRAME_UNWINDER
-+	state->common.sp = regs->sp;
-+#endif
- 	state->source = KUNWIND_SOURCE_REGS_PC;
- }
- 
-@@ -103,6 +108,9 @@ kunwind_init_from_caller(struct kunwind_state *state)
- 
- 	state->common.fp = (unsigned long)__builtin_frame_address(1);
- 	state->common.pc = (unsigned long)__builtin_return_address(0);
-+#ifdef CONFIG_SFRAME_UNWINDER
-+	state->common.sp = (unsigned long)__builtin_frame_address(0);
-+#endif
- 	state->source = KUNWIND_SOURCE_CALLER;
- }
- 
-@@ -124,6 +132,9 @@ kunwind_init_from_task(struct kunwind_state *state,
- 
- 	state->common.fp = thread_saved_fp(task);
- 	state->common.pc = thread_saved_pc(task);
-+#ifdef CONFIG_SFRAME_UNWINDER
-+	state->common.sp = thread_saved_sp(task);
-+#endif
- 	state->source = KUNWIND_SOURCE_TASK;
- }
- 
-@@ -181,7 +192,6 @@ int kunwind_next_regs_pc(struct kunwind_state *state)
- 	state->regs = regs;
- 	state->common.pc = regs->pc;
- 	state->common.fp = regs->regs[29];
--	state->regs = NULL;
- 	state->source = KUNWIND_SOURCE_REGS_PC;
- 	return 0;
- }
-@@ -237,6 +247,9 @@ kunwind_next_frame_record(struct kunwind_state *state)
- 
- 	unwind_consume_stack(&state->common, info, fp, sizeof(*record));
- 
-+#ifdef CONFIG_SFRAME_UNWINDER
-+	state->common.sp = state->common.fp;
-+#endif
- 	state->common.fp = new_fp;
- 	state->common.pc = new_pc;
- 	state->source = KUNWIND_SOURCE_FRAME;
-@@ -244,6 +257,172 @@ kunwind_next_frame_record(struct kunwind_state *state)
- 	return 0;
- }
- 
-+#ifdef CONFIG_SFRAME_UNWINDER
-+
-+static __always_inline struct stack_info *
-+get_word(struct unwind_state *state, unsigned long *word)
-+{
-+	unsigned long addr = *word;
-+	struct stack_info *info;
-+
-+	info = unwind_find_stack(state, addr, sizeof(addr));
-+	if (!info)
-+		return info;
-+
-+	*word = READ_ONCE(*(unsigned long *)addr);
-+
-+	return info;
-+}
-+
-+static __always_inline int
-+get_consume_word(struct unwind_state *state, unsigned long *word)
-+{
-+	struct stack_info *info;
-+	unsigned long addr = *word;
-+
-+	info = get_word(state, word);
-+	if (!info)
-+		return -EINVAL;
-+
-+	unwind_consume_stack(state, info, addr, sizeof(addr));
-+	return 0;
-+}
-+
-+/*
-+ * Unwind to the next frame according to sframe.
-+ */
-+static __always_inline int
-+unwind_next_frame_sframe(struct kunwind_state *state)
-+{
-+	struct unwind_frame frame;
-+	unsigned long cfa, fp, ra;
-+	enum kunwind_source source = KUNWIND_SOURCE_FRAME;
-+	struct pt_regs *regs = state->regs;
-+
-+	int err;
-+
-+	/* FP/SP alignment 8 bytes */
-+	if (state->common.fp & 0x7 || state->common.sp & 0x7)
-+		return -EINVAL;
-+
-+	/*
-+	 * Most/all outermost functions are not visible to sframe. So, check for
-+	 * a meta frame record if the sframe lookup fails.
-+	 */
-+	err = sframe_find_kernel(state->common.pc, &frame);
-+	if (err)
-+		return kunwind_next_frame_record_meta(state);
-+
-+	if (frame.outermost)
-+		return -ENOENT;
-+
-+	/* Get the Canonical Frame Address (CFA) */
-+	switch (frame.cfa.rule) {
-+	case UNWIND_CFA_RULE_SP_OFFSET:
-+		cfa = state->common.sp;
-+		break;
-+	case UNWIND_CFA_RULE_FP_OFFSET:
-+		if (state->common.fp < state->common.sp)
-+			return -EINVAL;
-+		cfa = state->common.fp;
-+		break;
-+	case UNWIND_CFA_RULE_REG_OFFSET:
-+	case UNWIND_CFA_RULE_REG_OFFSET_DEREF:
-+		if (!regs)
-+			return -EINVAL;
-+		cfa = regs->regs[frame.cfa.regnum];
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		return -EINVAL;
-+	}
-+	cfa += frame.cfa.offset;
-+
-+	/*
-+	 * CFA typically points to a higher address than RA or FP, so don't
-+	 * consume from the stack when we read it.
-+	 */
-+	if (frame.cfa.rule & UNWIND_RULE_DEREF &&
-+	    !get_word(&state->common, &cfa))
-+		return -EINVAL;
-+
-+	/* CFA alignment 8 bytes */
-+	if (cfa & 0x7)
-+		return -EINVAL;
-+
-+	/* Get the Return Address (RA) */
-+	switch (frame.ra.rule) {
-+	case UNWIND_RULE_RETAIN:
-+		if (!regs)
-+			return -EINVAL;
-+		ra = regs->regs[30];
-+		source = KUNWIND_SOURCE_REGS_LR;
-+		break;
-+	/* UNWIND_USER_RULE_CFA_OFFSET not implemented on purpose */
-+	case UNWIND_RULE_CFA_OFFSET_DEREF:
-+		ra = cfa + frame.ra.offset;
-+		break;
-+	case UNWIND_RULE_REG_OFFSET:
-+	case UNWIND_RULE_REG_OFFSET_DEREF:
-+		if (!regs)
-+			return -EINVAL;
-+		ra = regs->regs[frame.cfa.regnum];
-+		ra += frame.ra.offset;
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		return -EINVAL;
-+	}
-+
-+	/* Get the Frame Pointer (FP) */
-+	switch (frame.fp.rule) {
-+	case UNWIND_RULE_RETAIN:
-+		fp = state->common.fp;
-+		break;
-+	/* UNWIND_USER_RULE_CFA_OFFSET not implemented on purpose */
-+	case UNWIND_RULE_CFA_OFFSET_DEREF:
-+		fp = cfa + frame.fp.offset;
-+		break;
-+	case UNWIND_RULE_REG_OFFSET:
-+	case UNWIND_RULE_REG_OFFSET_DEREF:
-+		if (!regs)
-+			return -EINVAL;
-+		fp = regs->regs[frame.fp.regnum];
-+		fp += frame.fp.offset;
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		return -EINVAL;
-+	}
-+
-+	/*
-+	 * Consume RA and FP from the stack. The frame record puts FP at a lower
-+	 * address than RA, so we always read FP first.
-+	 */
-+	if (frame.fp.rule & UNWIND_RULE_DEREF &&
-+	    !get_word(&state->common, &fp))
-+		return -EINVAL;
-+
-+	if (frame.ra.rule & UNWIND_RULE_DEREF &&
-+	    get_consume_word(&state->common, &ra))
-+		return -EINVAL;
-+
-+	state->common.pc = ra;
-+	state->common.sp = cfa;
-+	state->common.fp = fp;
-+
-+	state->source = source;
-+
-+	return 0;
-+}
-+
-+#else
-+
-+static __always_inline int
-+unwind_next_frame_sframe(struct kunwind_state *state) { return -EINVAL; }
-+
-+#endif
-+
- /*
-  * Unwind from one frame record (A) to the next frame record (B).
-  *
-@@ -259,12 +438,25 @@ kunwind_next(struct kunwind_state *state)
- 	state->flags.all = 0;
- 
- 	switch (state->source) {
-+	case KUNWIND_SOURCE_REGS_PC:
-+		err = unwind_next_frame_sframe(state);
-+
-+		if (err && err != -ENOENT) {
-+			/* Fallback to FP based unwinder */
-+			err = kunwind_next_frame_record(state);
-+			state->common.unreliable = true;
-+		}
-+		state->regs = NULL;
-+		break;
- 	case KUNWIND_SOURCE_FRAME:
- 	case KUNWIND_SOURCE_CALLER:
- 	case KUNWIND_SOURCE_TASK:
--	case KUNWIND_SOURCE_REGS_PC:
-+	case KUNWIND_SOURCE_REGS_LR:
- 		err = kunwind_next_frame_record(state);
-+		if (err && err != -ENOENT)
-+			err = unwind_next_frame_sframe(state);
- 		break;
-+
- 	default:
- 		err = -EINVAL;
- 	}
-@@ -350,6 +542,9 @@ kunwind_stack_walk(kunwind_consume_fn consume_state,
- 		.common = {
- 			.stacks = stacks,
- 			.nr_stacks = ARRAY_SIZE(stacks),
-+#ifdef CONFIG_SFRAME_UNWINDER
-+			.sp = 0,
-+#endif
- 		},
- 	};
- 
-@@ -390,34 +585,40 @@ noinline noinstr void arch_stack_walk(stack_trace_consume_fn consume_entry,
- 	kunwind_stack_walk(arch_kunwind_consume_entry, &data, task, regs);
- }
- 
-+struct kunwind_reliable_consume_entry_data {
-+	stack_trace_consume_fn consume_entry;
-+	void *cookie;
-+	bool unreliable;
-+};
-+
- static __always_inline bool
--arch_reliable_kunwind_consume_entry(const struct kunwind_state *state, void *cookie)
-+arch_kunwind_reliable_consume_entry(const struct kunwind_state *state, void *cookie)
- {
--	/*
--	 * At an exception boundary we can reliably consume the saved PC. We do
--	 * not know whether the LR was live when the exception was taken, and
--	 * so we cannot perform the next unwind step reliably.
--	 *
--	 * All that matters is whether the *entire* unwind is reliable, so give
--	 * up as soon as we hit an exception boundary.
--	 */
--	if (state->source == KUNWIND_SOURCE_REGS_PC)
--		return false;
-+	struct kunwind_reliable_consume_entry_data *data = cookie;
- 
--	return arch_kunwind_consume_entry(state, cookie);
-+	if (state->common.unreliable) {
-+		data->unreliable = true;
-+		return false;
-+	}
-+	return data->consume_entry(data->cookie, state->common.pc);
- }
- 
--noinline noinstr int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
--					      void *cookie,
--					      struct task_struct *task)
-+noinline notrace int arch_stack_walk_reliable(
-+				stack_trace_consume_fn consume_entry,
-+				void *cookie, struct task_struct *task)
- {
--	struct kunwind_consume_entry_data data = {
-+	struct kunwind_reliable_consume_entry_data data = {
- 		.consume_entry = consume_entry,
- 		.cookie = cookie,
-+		.unreliable = false,
- 	};
- 
--	return kunwind_stack_walk(arch_reliable_kunwind_consume_entry, &data,
--				  task, NULL);
-+	kunwind_stack_walk(arch_kunwind_reliable_consume_entry, &data, task, NULL);
-+
-+	if (data.unreliable)
-+		return -EINVAL;
-+
-+	return 0;
- }
- 
- struct bpf_unwind_consume_entry_data {
-@@ -452,6 +653,7 @@ static const char *state_source_string(const struct kunwind_state *state)
- 	case KUNWIND_SOURCE_CALLER:	return "C";
- 	case KUNWIND_SOURCE_TASK:	return "T";
- 	case KUNWIND_SOURCE_REGS_PC:	return "P";
-+	case KUNWIND_SOURCE_REGS_LR:	return "L";
- 	default:			return "U";
- 	}
- }
--- 
-2.53.0.1213.gd9a14994de-goog
+--
+Joe
 
 
