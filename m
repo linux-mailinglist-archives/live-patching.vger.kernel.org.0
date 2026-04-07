@@ -1,103 +1,107 @@
-Return-Path: <live-patching+bounces-2315-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2316-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id sF1hDmQM1WlQzwcAu9opvQ
-	(envelope-from <live-patching+bounces-2315-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 07 Apr 2026 15:53:40 +0200
+	id GOj7HIIf1Wnr0wcAu9opvQ
+	(envelope-from <live-patching+bounces-2316-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 07 Apr 2026 17:15:14 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3A86C3AF85E
-	for <lists+live-patching@lfdr.de>; Tue, 07 Apr 2026 15:53:39 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id D42BD3B0C28
+	for <lists+live-patching@lfdr.de>; Tue, 07 Apr 2026 17:15:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 0F177301F241
-	for <lists+live-patching@lfdr.de>; Tue,  7 Apr 2026 13:52:28 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 023A0305616B
+	for <lists+live-patching@lfdr.de>; Tue,  7 Apr 2026 15:08:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E9583AA4E3;
-	Tue,  7 Apr 2026 13:52:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6DF235FF58;
+	Tue,  7 Apr 2026 15:08:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="CaTXx7l8"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Fdh61hJ2"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EFC83B6C1E
-	for <live-patching@vger.kernel.org>; Tue,  7 Apr 2026 13:52:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DDD735F5F7
+	for <live-patching@vger.kernel.org>; Tue,  7 Apr 2026 15:08:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775569929; cv=none; b=XcEH75K/ODgNvJkvZN8WVlL46LP8AT7rrjk6OHUtjve8PWWELks4WKT+Q0puV13AhAfCuEiZbMufPiSTfANTccUHdxNgW+W0j19yvjdhkbyAQycbFUchjsoDTUHHnvvVbqSpi0Dt/0UL+bRVmPOjGGYje3PoHhATQY7wgJeyIvY=
+	t=1775574488; cv=none; b=P8qU1fCWm2wDk2262EXNcdwacUhjCXFm8OgxV0nUnX3+4SosEr2IC+hrJdipu9oXxeF8xrqW0FMC5QYfUC/x59AF6Ptd4qrqKLwX022zMGZmPT61rgPMNdtfA5uRFcEgEMEuZtzyXh2TBoElL/mZhJm6E0pqIMj5AiKKM+hkqmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775569929; c=relaxed/simple;
-	bh=sZK7slSStiXifygBueGYf8FwIze5xkgJ1HepAoo0Yt0=;
+	s=arc-20240116; t=1775574488; c=relaxed/simple;
+	bh=ty0KOjKQyTnZaKdoshASSXSZqQBi5bCYN1Ysfs56ZTo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KnV7QVzpVUHOyY9hDlLJhUZ7v6KVFBsEs+BNiPiS/eNrqlK5VH6O1M8OoG8aGP2Rf9IGyTNIeqZoEY7ISIuUSHcBJ42aOaqlm/R6X1XTzhxHihQz9kGFdj2sjD9cAsFZegzMP3L1RkfqShE6QLZq+8X1wbGeDwoJqhCQZaQEWww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=CaTXx7l8; arc=none smtp.client-ip=209.85.221.49
+	 Content-Type:Content-Disposition:In-Reply-To; b=d7moHkB4Fmkg5l0NnsLhitPLc9IPO9KwY/zeidWXfdedq0O8s+Uo23uRrW241HbkUE+eCdVgHGl57Row4sY5QiHwRaWoelT4ecvBhlNN92mREwQ2m+izrs9144j6WvjtBv3iRifKyjxLkEVrkZiXG5wMSkb1kIlYJaeGaRtWN6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Fdh61hJ2; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-43cf5d14d6eso4176881f8f.0
-        for <live-patching@vger.kernel.org>; Tue, 07 Apr 2026 06:52:07 -0700 (PDT)
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-48334ee0aeaso47721005e9.1
+        for <live-patching@vger.kernel.org>; Tue, 07 Apr 2026 08:08:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1775569926; x=1776174726; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1775574485; x=1776179285; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=9Rj0iJqaS4GtsGFAM2U1MRAy3OlGygjlwynVu1x1N0M=;
-        b=CaTXx7l8HvWAG6a+GaR1PCJsnZRuG1nKQ1Na5vl8yACtI2DLG+vYXeRG5OZUTYGI8D
-         As21YQRdoYqk3RaXvHYcbcvJa3MqrlTVx3XlZpLzl4FzKpuNOpDq8RdFkpz/lYZKqnNk
-         SdzNwjiRS51zUJFHsmvFRzGayGVsId9dis1pEHCq4hOU0wPPstP8BvXW4BfjbhDwPbw8
-         McjyCpuY5obJ+EctwPK3NyCV9iXk96lxFRYH3/KXu7GqUQrWF790QRTCEDRdBmn/lhfV
-         NrsQY1QGEs60/3rbweSty0SdMInRSXaTJaadJA98vjnOo52rkgTzaoyz7AaMBNLOus7g
-         hwSg==
+        bh=iGjzV8IRrkdKa9tu7b5Wnqj/M+3GwqIJMX4TAs0mafs=;
+        b=Fdh61hJ2egMuHDvAbE6gAEG/65sTZblgScVS+1N3Vj1HG+HKR43vGkI0SxB6dluWUn
+         onOkN9rBRgcJ9rtrNZijPd0J19K4tq4AU9Q9ZqTQHWaw4ZvLTGUIaawaWSmzHKF1emy+
+         N947KqfTVR1hijj1VCrVR6wrLIhVNr6MUmUD+7EPTpCv7eSEskkIFRo1shKkZkTuNCzD
+         wdrqhes8jYnbjdBPzU1ryaGArly3DhzaQbWX9Q5IrvkW61ZJQAHL1RhTZkWITIV8nwEb
+         DuhMeFtjHXFc+FqRGPjhR8r4LbRXvwMQHHcCZyEEyQjyfRv1fgrB9B7PHNXHYqo6Gem6
+         ZJkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775569926; x=1776174726;
+        d=1e100.net; s=20251104; t=1775574485; x=1776179285;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9Rj0iJqaS4GtsGFAM2U1MRAy3OlGygjlwynVu1x1N0M=;
-        b=LFNn8iNi0FwUgqIVOSK+IzlbGYPGCdeMx2iMT/O4PQhlaBMEQ1PTaf8qUdfFCW4iXk
-         xtBYvRePHpMwMAEemaX1JNtLoAfjHdQohrB/OMgWJqJ6kt/wlmeqO3MLz1pxvnYqQZ+X
-         KM4/yOvJ4y3HRDfDWpFXz42xldcLuIjdeTRXidNicDXeqt0UsnrV9lv/Z4uVRQ/lZNkt
-         ntrfGUp0sBVngNv+4QxZ+8T1TDx+gjLm69LGbEtyhMyuByFxV8GzW68/Lhxqv1yHpkg1
-         1I6xa07t9piAUNNHarav2RJqMg7xmLbBklg4jjYjWNPEWVx/KDdrTJ8+EG3N99jL3fTv
-         ujtA==
-X-Forwarded-Encrypted: i=1; AJvYcCUD0NCEGCrovx1YI95sPqPA/kux2cg6pdIHgraCILIIK5QjbS/TgXJEPDlXcUqHhwclwIMDPWFAWHcPADWp@vger.kernel.org
-X-Gm-Message-State: AOJu0YwE+9EpTRtPRqursxPIUDPIbafinurpcHaYLbZ+jnl7/sH7PNld
-	PXiclP6UrIzJ16wTSr5E8AelMCdZSMTmEfo7W8L+FHqsmLpdLwsNf2tmlbHyHRi5Oe4KQEjP29N
-	tRzua9ns=
-X-Gm-Gg: AeBDiesn+2WX2SKOh4z3iVRZRjjk8zm3AfXinNy5ZWq1y7tw9qHBREA5RCivUiLLmDz
-	ksxK2gzJJ3KVvSbtVPOImB6EXGgMT57027BLtT89P0regtbmPncGc9NHjV+hmJl9Mt3dcKaIdFD
-	hKeYmywe9XLVDEkFbdfQd8ona7gMX6K93hzfPli7+Da+oaovMlbgor4vXeSVLklY+XOIzrNDsMa
-	DVVoH0b424gm3eV1xwem7dx0mzVoJEr7krUaa4iooJMgucB9udUaRAAvoZKVz9BtJGxvp+zoihj
-	z2ep+aKMSN6gQJQxtzxOOYf7ScvT0B9XURoFkQNyAkqVGDsy4Ib2mhWURPMF/nD13vqU9x2iNHR
-	SD6w2mtvnaOzSLMEmnKKv4DmI6L6OKGEY1vi7+OdL3yqTzMmzbmw7jnKFdPMCslsiP1+GeYZRbG
-	n3juQ64Ck4nAhCi3jSJUUQB0r/3G/+DWjTqarCIxJY
-X-Received: by 2002:a05:6000:4282:b0:43b:4352:1bdd with SMTP id ffacd0b85a97d-43d292df38bmr25373308f8f.39.1775569925715;
-        Tue, 07 Apr 2026 06:52:05 -0700 (PDT)
+        bh=iGjzV8IRrkdKa9tu7b5Wnqj/M+3GwqIJMX4TAs0mafs=;
+        b=PcwoHrf2myiohJC/XPLkxFMWnkW4/Qe0kL4gvWKkrMh7sCt5o5OE0mUsHr8Jv7teVx
+         vfKCDPZIi5kte+1s7e4MsVwPUcEmHrGpq6se8pb4dGu0h69jDiCHjxOOKAmRhAkU+KLA
+         S1LzpVDoChKnVbpq5XCL9rIvGuUEEQ8gEz+uPiCGnnpWSzDPA/fRQurqg7mUasamFJXz
+         6Q+AFehrjCytNEfPkj4dPqNqyOqTaECr94Za8ksHxKrFIa7hJzzDCVsGdi0Kwy7GVFEP
+         lQyIViclHqZSWHKq4LZamBV5R8p1bev30YvOM+gZZzY6OR9CB7d4RvQgsa0aJnDJRCPp
+         1hZA==
+X-Forwarded-Encrypted: i=1; AJvYcCWBXx7K5zGsOvNwLwhtjpQFd+ywioG+YiKWqzMI2SRFdl2QTefUzvRV+ZUyO1yIljhlofEa8TE/PsXNCRag@vger.kernel.org
+X-Gm-Message-State: AOJu0YwZYeXiCxI2n0pSgjiwyzteP2ItPZ6hvFiqklCZ/li+nwfiKHFC
+	oJnAN42W8bykTmXs1h8IPvuz9+8l53osMgqA2vp8ZPEsThaatrKvn3s2hAF9uOKoPNk=
+X-Gm-Gg: AeBDietHssYQ4JD6DEfxYT+jfN8YwotCP1xLfAtHzKu2xaIbnrSSBZ8bo7gPA9aYllt
+	Co+SfSwwkgW+QcHC8CYlkEcjW8kP0UfOr5jDikzravCS6RGoBmKYVNGY++VfNpFNBLP5/XnjXEi
+	D3uxQQaxbAk6orxlbPa0e/sIkm6y5U3+fyEphAI1p0y2qbRoagEnWcjH3oVvA6/Y9M3/IpFu9kD
+	nu2cw2Qv0raCUs5k0DxWAxo39Gotf+I2ZT7GEVkB2ixKgcqGz7BKfYwpBpK2+poTjaEk8Bn9KJW
+	Yp09ABVTyePxdmElCULmR5msu4NQ07UGH5zMEJQNzkaO0eYyeL5lQhTnrty4cErCkSGDjTNN32i
+	4CDjqh480gIsEYYGvWxlyrKm4Rekh0ZUcW3bY1ZUA/NPEaxPI2bu6xSszEeVGAXgzGGFEYN6fBV
+	2PNizQ/mAxIUelPBIu6C/S1BDl5y6XUZnNL2tvbcjZJN9mSnqGi3U=
+X-Received: by 2002:a05:600c:138f:b0:47e:e076:c7a5 with SMTP id 5b1f17b1804b1-4889970e3c4mr239821275e9.11.1775574484681;
+        Tue, 07 Apr 2026 08:08:04 -0700 (PDT)
 Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d1e2c637asm48288462f8f.14.2026.04.07.06.52.03
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4888a7165aasm555642275e9.14.2026.04.07.08.08.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Apr 2026 06:52:05 -0700 (PDT)
-Date: Tue, 7 Apr 2026 15:52:02 +0200
+        Tue, 07 Apr 2026 08:08:03 -0700 (PDT)
+Date: Tue, 7 Apr 2026 17:08:00 +0200
 From: Petr Mladek <pmladek@suse.com>
 To: Yafang Shao <laoar.shao@gmail.com>
-Cc: Song Liu <song@kernel.org>, Dylan Hatch <dylanbhatch@google.com>,
-	jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-	joe.lawrence@redhat.com, rostedt@goodmis.org, mhiramat@kernel.org,
-	mathieu.desnoyers@efficios.com, kpsingh@kernel.org,
-	mattbobrowski@google.com, jolsa@kernel.org, ast@kernel.org,
-	daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-	eddyz87@gmail.com, memxor@gmail.com, yonghong.song@linux.dev,
-	live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, bpf@vger.kernel.org
+Cc: Song Liu <song@kernel.org>, Joe Lawrence <joe.lawrence@redhat.com>,
+	Dylan Hatch <dylanbhatch@google.com>, jpoimboe@kernel.org,
+	jikos@kernel.org, mbenes@suse.cz, rostedt@goodmis.org,
+	mhiramat@kernel.org, mathieu.desnoyers@efficios.com,
+	kpsingh@kernel.org, mattbobrowski@google.com, jolsa@kernel.org,
+	ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+	martin.lau@linux.dev, eddyz87@gmail.com, memxor@gmail.com,
+	yonghong.song@linux.dev, live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+	bpf@vger.kernel.org
 Subject: Re: [RFC PATCH 3/4] livepatch: Add "replaceable" attribute to
  klp_patch
-Message-ID: <adUMAsZRAC3dDKsK@pathway.suse.cz>
-References: <20260402092607.96430-1-laoar.shao@gmail.com>
- <20260402092607.96430-4-laoar.shao@gmail.com>
+Message-ID: <adUd0Mojbtrwmeod@pathway.suse.cz>
+References: <20260402092607.96430-4-laoar.shao@gmail.com>
  <CAPhsuW51Hh7XfN6xXm_uMAoDXBBQoNQ5ynqom+wVNdqCt81f2A@mail.gmail.com>
  <CADBMgpy3e25EH5xbKMN5GeOK47jE6uzviknbt35V49_Y7zFj8A@mail.gmail.com>
  <CAPhsuW6p3YOv3_M_c0ThMcrNqNjT=7i46ekJBrWO_oGzQkxrxA@mail.gmail.com>
  <CALOAHbCbcw2jpjk9JD9yyf+SMpQ-s9FAonSaz7Gs4XUeP+w+2g@mail.gmail.com>
+ <CAPhsuW4B00-grg9XJa+AO3xgGwM_u8FC+GH3JrkYZOJx4PuV8Q@mail.gmail.com>
+ <adQhpBC2W9I6QW-g@redhat.com>
+ <CAPhsuW66tuF+QZ0pVheWb5sC4NQ-9CXikq=zMrPBXTHcsVPjdg@mail.gmail.com>
+ <CALOAHbDN_t-ZRO0g9_sQFCv0J6SPDFfwJCcwSzd4ww5XRkU0QA@mail.gmail.com>
+ <CALOAHbCxPA0dtsx7L2kYn8wwBdM=krZyOpfRTBiDW9qfA_zmzQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -107,21 +111,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALOAHbCbcw2jpjk9JD9yyf+SMpQ-s9FAonSaz7Gs4XUeP+w+2g@mail.gmail.com>
+In-Reply-To: <CALOAHbCxPA0dtsx7L2kYn8wwBdM=krZyOpfRTBiDW9qfA_zmzQ@mail.gmail.com>
 X-Spamd-Result: default: False [-0.66 / 15.00];
 	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
 	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
-	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2315-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2316-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
 	FREEMAIL_TO(0.00)[gmail.com];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	FREEMAIL_CC(0.00)[kernel.org,google.com,suse.cz,redhat.com,goodmis.org,efficios.com,iogearbox.net,linux.dev,gmail.com,vger.kernel.org];
+	FREEMAIL_CC(0.00)[kernel.org,redhat.com,google.com,suse.cz,goodmis.org,efficios.com,iogearbox.net,linux.dev,gmail.com,vger.kernel.org];
 	RCPT_COUNT_TWELVE(0.00)[24];
 	MIME_TRACE(0.00)[0:+];
 	FROM_HAS_DN(0.00)[];
@@ -131,98 +135,174 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[pmladek@suse.com,live-patching@vger.kernel.org];
 	DKIM_TRACE(0.00)[suse.com:+];
-	NEURAL_HAM(-0.00)[-1.000];
+	NEURAL_HAM(-0.00)[-0.999];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim,sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,pathway.suse.cz:mid]
-X-Rspamd-Queue-Id: 3A86C3AF85E
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,pathway.suse.cz:mid,suse.com:dkim]
+X-Rspamd-Queue-Id: D42BD3B0C28
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Mon 2026-04-06 19:08:05, Yafang Shao wrote:
-> On Sat, Apr 4, 2026 at 5:36 AM Song Liu <song@kernel.org> wrote:
+On Tue 2026-04-07 17:45:31, Yafang Shao wrote:
+> On Tue, Apr 7, 2026 at 11:16 AM Yafang Shao <laoar.shao@gmail.com> wrote:
 > >
-> > On Fri, Apr 3, 2026 at 1:55 PM Dylan Hatch <dylanbhatch@google.com> wrote:
-> > [...]
-> > > > IIRC, the use case for this change is when multiple users load various
-> > > > livepatch modules on the same system. I still don't believe this is the
-> > > > right way to manage livepatches. That said, I won't really NACK this
-> > > > if other folks think this is a useful option.
+> > On Tue, Apr 7, 2026 at 10:54 AM Song Liu <song@kernel.org> wrote:
 > > >
-> > > In our production fleet, we apply exactly one cumulative livepatch
-> > > module, and we use per-kernel build "livepatch release" branches to
-> > > track the contents of these cumulative livepatches. This model has
-> > > worked relatively well for us, but there are some painpoints.
-> > >
-> > > We are often under pressure to selectively deploy a livepatch fix to
-> > > certain subpopulations of production. If the subpopulation is running
-> > > the same build of everything else, this would require us to introduce
-> > > another branching factor to the "livepatch release" branches --
-> > > something we do not support due to the added toil and complexity.
-> > >
-> > > However, if we had the ability to build "off-band" livepatch modules
-> > > that were marked as non-replaceable, we could support these selective
-> > > patches without the additional branching factor. I will have to
-> > > circulate the idea internally, but to me this seems like a very useful
-> > > option to have in certain cases.
-> >
-> >  IIUC, the plan is:
-> >
-> > - The regular livepatches are cumulative, have the replace flag; and
-> >   are replaceable.
-> > - The occasional "off-band" livepatches do not have the replace flag,
-> >   and are not replaceable.
-> >
-> > With this setup, for systems with off-band livepatches loaded, we can
-> > still release a cumulative livepatch to replace the previous cumulative
-> > livepatch. Is this the expected use case?
-> 
-> That matches our expected use case.
-> 
-> >
-> > I think there are a few issues with this:
-> > 1. The "off-band" livepatches cannot be replaced atomically. To upgrade
-> >    "off-band' livepatches, we will have to unload the old version and load
-> >    the new version later.
-> 
-> Right. That is how the non-atomic-replace patch works.
-> 
-> > 2. Any conflict with the off-band livepatches and regular livepatches will
-> >    be difficult to manage.
-> 
-> We need to manage this conflict with a complex user script. That said,
-> everything can be controlled from userspace.
->
-> > IOW, we kind removed the benefit of cumulative
-> >    livepatches. For example, what shall we do if we really need two fixes
-> >    to the same kernel functions: one from the original branch, the other
-> >    from the off-band branch?
-> 
-> We run tens of livepatches on our production servers and have never
-> run into this issue. It's an extremely rare case — and if it does
-> happen, a user script should be able to handle it just fine.
+> > > On Mon, Apr 6, 2026 at 2:12 PM Joe Lawrence <joe.lawrence@redhat.com> wrote:
+> > > [...]
+> > > > > > > - The regular livepatches are cumulative, have the replace flag; and
+> > > > > > >   are replaceable.
+> > > > > > > - The occasional "off-band" livepatches do not have the replace flag,
+> > > > > > >   and are not replaceable.
+> > > > > > >
+> > > > > > > With this setup, for systems with off-band livepatches loaded, we can
+> > > > > > > still release a cumulative livepatch to replace the previous cumulative
+> > > > > > > livepatch. Is this the expected use case?
+> > > > > >
+> > > > > > That matches our expected use case.
+> > > > >
+> > > > > If we really want to serve use cases like this, I think we can introduce
+> > > > > some replace tag concept: Each livepatch will have a tag, u32 number.
+> > > > > Newly loaded livepatch will only replace existing livepatch with the
+> > > > > same tag. We can even reuse the existing "bool replace" in klp_patch,
+> > > > > and make it u32: replace=0 means no replace; replace > 0 are the
+> > > > > replace tag.
+> > > > >
+> > > > > For current users of cumulative patches, all the livepatch will have the
+> > > > > same tag, say 1. For your use case, you can assign each user a
+> > > > > unique tag. Then all these users can do atomic upgrades of their
+> > > > > own livepatches.
+> > > > >
+> > > > > We may also need to check whether two livepatches of different tags
+> > > > > touch the same kernel function. When that happens, the later
+> > > > > livepatch should fail to load.
 
-Could you please share the script? Or at least summarize the situations
-when this script detect a conflict and refuse loading a livepatch?
+I still think how to make the hybrid mode more secure:
 
-I believe that most/all of these checks can be implemented in the kernel.
-And if we agreed to add a hybrid mode than it should be added
-together with the checks.
+    + The isolated sets of livepatched functions look like a good rule.
+    + What about isolating the shadow variables/states as well?
 
-We have already invested a lot of effort into make the kernel
-livepatching as safe as possible. From my POV, the most important
-parts are:
+> > That sounds like a viable solution. I'll look into it and see how we
+> > can implement it.
+> 
+> Does the following change look good to you ?
+> 
+> Subject: [PATCH] livepatch: Support scoped atomic replace using replace tags
+> 
+> Extend the replace attribute from a boolean to a u32 to act as a replace
+> tag. This introduces the following semantics:
+> 
+>   replace = 0: Atomic replace is disabled. However, this patch remains
+>                eligible to be superseded by others.
+>   replace > 0: Enables tagged replace (default is 1). A newly loaded
+>                livepatch will only replace existing patches that share the
+>                same tag.
+> 
+> To maintain backward compatibility, a patch with replace == 0 does not
+> trigger an outgoing atomic replace, but remains eligible to be superseded
+> by any incoming patch with a valid replace tag.
+> 
+> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+> index ba9e3988c07c..417c67a17b99 100644
+> --- a/include/linux/livepatch.h
+> +++ b/include/linux/livepatch.h
+> @@ -123,7 +123,11 @@ struct klp_state {
+>   * @mod:       reference to the live patch module
+>   * @objs:      object entries for kernel objects to be patched
+>   * @states:    system states that can get modified
+> - * @replace:   replace all actively used patches
+> + * @replace:   replace tag:
+> + *             = 0: Atomic replace is disabled; however, this patch remains
+> + *                  eligible to be superseded by others.
 
-  + consistency model: Tasks are transitioned separately when they
-       do not use any livepatched function.
+This is weird semantic. Which livepatch tag would be allowed to
+supersede it, please?
 
-  + atomic replace: Transition all livepatched functions at once.
+Do we still need this category?
 
-If we agree to add the hybrid model then we should add it with
-some safety belts as well. And it would be nice to get inspiration
-about the safety checks from your script.
+> + *             > 0: Atomic replace is enabled. Only existing patches with a
+> + *                  matching replace tag will be superseded.
+>   * @list:      list node for global list of actively used patches
+>   * @kobj:      kobject for sysfs resources
+>   * @obj_list:  dynamic list of the object entries
+> @@ -137,7 +141,7 @@ struct klp_patch {
+>         struct module *mod;
+>         struct klp_object *objs;
+>         struct klp_state *states;
+> -       bool replace;
+> +       unsigned int replace;
+
+This already breaks the backward compatibility by changing the type
+and semantic of this field. I would also change the name to better
+match the new semantic. What about using:
+
+
+  * @replace_set: Livepatch using the same @replace_set will get
+		atomically replaced, see also conflicts[*].
+
+	unsigned int replace_set;
+
+[*] A livepatch module, livepatching an already livepatches function,
+    can be loaded only when it has the same @replace_set number.
+
+    By other words, two livepatches conflict when they have a different
+    @replace_set number and have at least one livepatched version
+    in common.
+
+> 
+>         /* internal */
+>         struct list_head list;
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> index 28d15ba58a26..e4e5c03b0724 100644
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -793,6 +793,8 @@ void klp_free_replaced_patches_async(struct
+> klp_patch *new_patch)
+>         klp_for_each_patch_safe(old_patch, tmp_patch) {
+>                 if (old_patch == new_patch)
+>                         return;
+> +               if (old_patch->replace && old_patch->replace !=
+> new_patch->replace)
+> +                       continue;
+>                 klp_free_patch_async(old_patch);
+>         }
+>  }
+> @@ -1194,6 +1196,8 @@ void klp_unpatch_replaced_patches(struct
+> klp_patch *new_patch)
+>         klp_for_each_patch(old_patch) {
+>                 if (old_patch == new_patch)
+>                         return;
+> +               if (old_patch->replace && old_patch->replace !=
+> new_patch->replace)
+> +                       continue;
+> 
+>                 old_patch->enabled = false;
+>                 klp_unpatch_objects(old_patch);
+
+This handles only the freeing part. More changes will be
+necessary:
+
+   + klp_is_patch_compatible() must check also conflicts
+     between livepatches with different @replace_set.
+     The conflicts might be in the lists of:
+
+	+ livepatched functions
+	+ state IDs (aka callbacks and shadow variables IDs)
+
+   + klp_add_nops() must skip livepatches with another @replace_set
+
+   + klp_unpatch_replaced_patches() should unpatch only
+     patches with the same @replace_set
+
+Finally, we would need to update existing selftests
+plus add new selftests.
+
+It is possible that I have missed something.
+
+Anyway, you should wait for more feedback before you do too much
+coding, especially the selftests are not needed at RFC stage.
 
 Best Regards,
 Petr
