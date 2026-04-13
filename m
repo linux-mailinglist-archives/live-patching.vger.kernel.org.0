@@ -1,194 +1,190 @@
-Return-Path: <live-patching+bounces-2336-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2337-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id YPlxDPei3GkEUgkAu9opvQ
-	(envelope-from <live-patching+bounces-2336-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Mon, 13 Apr 2026 10:01:59 +0200
+	id kOzeNakp3WmVaQkAu9opvQ
+	(envelope-from <live-patching+bounces-2337-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 13 Apr 2026 19:36:41 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id DACA73E8AB2
-	for <lists+live-patching@lfdr.de>; Mon, 13 Apr 2026 10:01:58 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id D07F03F190A
+	for <lists+live-patching@lfdr.de>; Mon, 13 Apr 2026 19:36:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 9A84230117A9
-	for <lists+live-patching@lfdr.de>; Mon, 13 Apr 2026 08:01:55 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 6B9943007A63
+	for <lists+live-patching@lfdr.de>; Mon, 13 Apr 2026 17:26:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10D0E37E30D;
-	Mon, 13 Apr 2026 08:01:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF85B34C989;
+	Mon, 13 Apr 2026 17:26:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="MONPj0tT"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail.189.cn (189sx01-ptr.21cn.com [125.88.204.37])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 598863559CA;
-	Mon, 13 Apr 2026 08:01:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=125.88.204.37
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242AF3346A5
+	for <live-patching@vger.kernel.org>; Mon, 13 Apr 2026 17:26:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776067313; cv=none; b=gweWUX3GUuddP3bEIGVf2KHoyZ8UDyOGZtEKgO7cLKq1zPEWRX+/8OkdhdhikyBfmDQXZ3QXVkHnBd+WUbrmMfYVHdMjeykujGr/WB+39yzk3/5QhzcBPHV746P4vIhX9TZ8qmZ80ONCdxlxmDJXg1RRjoH6jEHSQASgLhb2Bhg=
+	t=1776101184; cv=none; b=cowGQm+0hPNlQ6YN/nZck80sqLpIG7yTw8JbJgRblbx2AO6VQUlIogtnk8iprGhixI3NoZ1fYMsOn5BbkBreCjtXMVc3Goec/d1trf4mW3z+O6OKOWDdVMhXc3LDEFI/gvWhNXLLtwYjOwsGO4HTHVTB2DUsCNivkfXh3te630A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776067313; c=relaxed/simple;
-	bh=VUnQLH2pPEqvFRZdcj9hGaqbHbCCyp43cVorRQ4b3rQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bg3JOOaCYiGLLOoZHGXjS6CvvQB/Y6wvtJQW6z0k+nPoImlE3K9Oty2bGJKYJ9tqNjUmMWyrdVFmPt68jSmJnraQwbGBs2ml65IIEiP0j9QiqfdPZxovveFNic5t78fnNKhCPlTiiqCBbpC/yDqTeuVDQXRiSDg/FxZJXXfmqbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=189.cn; spf=pass smtp.mailfrom=189.cn; arc=none smtp.client-ip=125.88.204.37
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=189.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=189.cn
-HMM_SOURCE_IP:10.158.242.145:0.2069108682
-HMM_ATTACHE_NUM:0000
-HMM_SOURCE_TYPE:SMTP
-Received: from clientip-221.238.56.48 (unknown [10.158.242.145])
-	by mail.189.cn (HERMES) with SMTP id 24E5F4002A1;
-	Mon, 13 Apr 2026 16:01:43 +0800 (CST)
-Received: from  ([221.238.56.48])
-	by gateway-153622-dep-76cc7bc9cd-r45x9 with ESMTP id 33ade6dc9ca54545a389407f17f1d0f0 for rafael@kernel.org;
-	Mon, 13 Apr 2026 16:01:46 CST
-X-Transaction-ID: 33ade6dc9ca54545a389407f17f1d0f0
-X-Real-From: chensong_2000@189.cn
-X-Receive-IP: 221.238.56.48
-X-MEDUSA-Status: 0
-Sender: chensong_2000@189.cn
-From: chensong_2000@189.cn
-To: rafael@kernel.org,
-	lenb@kernel.org,
-	mturquette@baylibre.com,
-	sboyd@kernel.org,
-	viresh.kumar@linaro.org,
-	agk@redhat.com,
-	snitzer@kernel.org,
-	mpatocka@redhat.com,
-	bmarzins@redhat.com,
-	song@kernel.org,
-	yukuai@fnnas.com,
-	linan122@huawei.com,
-	jason.wessel@windriver.com,
-	danielt@kernel.org,
-	dianders@chromium.org,
-	horms@kernel.org,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	paulmck@kernel.org,
-	frederic@kernel.org,
-	mcgrof@kernel.org,
-	petr.pavlu@suse.com,
-	da.gomez@kernel.org,
-	samitolvanen@google.com,
-	atomlin@atomlin.com,
-	jpoimboe@kernel.org,
-	jikos@kernel.org,
-	mbenes@suse.cz,
-	pmladek@suse.com,
-	joe.lawrence@redhat.com,
-	rostedt@goodmis.org,
-	mhiramat@kernel.org,
-	mark.rutland@arm.com,
-	mathieu.desnoyers@efficios.com
-Cc: linux-modules@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org,
-	linux-acpi@vger.kernel.org,
-	linux-clk@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	live-patching@vger.kernel.org,
-	dm-devel@lists.linux.dev,
-	linux-raid@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net,
-	netdev@vger.kernel.org,
-	Song Chen <chensong_2000@189.cn>
-Subject: [RFC PATCH 0/2] Decouple ftrace/livepatch from module loader via notifier priority and reverse traversal
-Date: Mon, 13 Apr 2026 16:01:40 +0800
-Message-ID: <20260413080140.180616-1-chensong_2000@189.cn>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1776101184; c=relaxed/simple;
+	bh=tlNFGMK5G8ttgy6AVZeZhapjuaMcl29X2npFsloWIt4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=IV+yd/EYJNdhsIKPVnhNjYokT3lccAhBoAMvrZnRFKFOkn0edWD1JcLJCVXzAuFKCU0XRIOYd7l6or5tbtt73ahug5SVkSOSVIZQN+TOZ4JitNAjecFg8Md4rlx3Ds/5In4Q0yOK2RS3S3eTmXtszRao/lfYBnzrc6qbCFTnf4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=MONPj0tT; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488a29e6110so51480465e9.3
+        for <live-patching@vger.kernel.org>; Mon, 13 Apr 2026 10:26:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1776101180; x=1776705980; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xfIAEo902tc41YQ+6N7jIsCT6MaMx+Ubc93DD0U02wg=;
+        b=MONPj0tTvGFstiEhgBKKPgKbSYUVrgUDkSz1+ownoyaDM37rje++d0kY4wg9EEd19z
+         butp9EoWOmIH5K0cV2NGHW6R0JV7RSSv9vgbO7M80mQ7nYZwb28GkmNn4UbczvoKaYPK
+         CRc/JCG0MlCqw9urJQdma4hTdqfCBKdwVBnVAxd1YGeYOw4uIrSAlsM//Iu9RfrTpXYr
+         he59+VxrZDhz8nfxORV8DF5nW45QtreVHyEWdZgWKpsC+t9TlnzrhkmovX5eMXoqtyBi
+         5NoRvzj3cu+cvtmkWdli14fRy4/T65egfvJtoTETLMuShGPeh2zIn8ePHasqcfyQi81x
+         9ezg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776101180; x=1776705980;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xfIAEo902tc41YQ+6N7jIsCT6MaMx+Ubc93DD0U02wg=;
+        b=jAZghqwzF52h0iIPCMZMw2kP4y8ypCi4GaDWve2lVvLwQBqI3tTLGTKHr0p5eIRL5y
+         qs8C4HBl+Q3aKkjeW6ibdpzlAdKk+F0SO7UDDvSHTfqMRZzIRcwB/LdJGkSPKKq9R7yn
+         gLt66bYjMjgiW//a2j+c7p6ToHkqkjGK7y/zB+0TP96EO2pinOCEJ8Imhd8aqtqL9Ggs
+         bPHjlW13S8A7XxR8HtIVJRlQH6NJ9sDi1Ipk9zZq6MUdQgWvREOyB7efxdGkPug5Du1a
+         8Xb4cwtBMep3geKQQ+hColwpk+1cTQrOZNCjFyTitmjCaD/HD2w7SP8e6WlzJPZF5lAV
+         Awyg==
+X-Gm-Message-State: AOJu0YyVlZQXOnGefHwkpKQYYYTaxAXEKi2JK70LcqcULWNl2U5QM2sk
+	JNmpKCKXmxePvNnUUoRxXkMF+s9z9LTuq9zG5i7uHvHBqSdZM1g+wv5bwW7QOUc9tlg=
+X-Gm-Gg: AeBDietNBmyrV4wdgG62BLrDQJ6UJO3ekB6HN2lhwAK/fVwt5zP7orpMi47XFhAg4QF
+	6SMR89uONBfbZ3KUq1maTB1ufcTZPdHo7oz7hZFrs0k7JznWnsilI2IKrO2cYf1+Af4FEYPzNKZ
+	eZXV6BwrxONyPJuDVTZPnUiohiBnX3Tb8RppVohZ9vJm/G53ZOiYCKUDImI/q6HFQqhSSk8qs2v
+	EMLR9atPl0fPtHwuvVK22dXmEin+fK8Patdmcr0DzpUrMde1RmRBGc9wPsbaYdfKKRRmfE9hwu+
+	KM3SZKKp+8jQ+10tV+HI9rfSjRrgws3apGJpq6/kejYAJYH5wFJGA4psoiNGOoOVLsFN0qWWue/
+	WokMugdIyGzmfr+Iy/KPHAWScc1Ycni61beQ5QU9H11TsTbJ+eCrdacHIZrPn0WGB3d7nbTMu0O
+	iKGc+psq2tRN2RLDJbG2WwNoE190jJ0mydpQ==
+X-Received: by 2002:a05:600c:5306:b0:487:59c:2bb8 with SMTP id 5b1f17b1804b1-488d68c3385mr197391985e9.27.1776101180364;
+        Mon, 13 Apr 2026 10:26:20 -0700 (PDT)
+Received: from [127.0.0.1] ([2804:1bc4:224:7800:585c:db3a:fcb:e21f])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488d5734a94sm298657835e9.0.2026.04.13.10.26.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Apr 2026 10:26:20 -0700 (PDT)
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: [PATCH v2 0/6] kselftests: livepatch: Adapt tests to be executed
+ on 4.12 kernels
+Date: Mon, 13 Apr 2026 14:26:11 -0300
+Message-Id: <20260413-lp-tests-old-fixes-v2-0-367c7cb5006f@suse.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Result: default: False [0.04 / 15.00];
-	MID_CONTAINS_FROM(1.00)[];
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIADMn3WkC/22Nyw6CMBBFf4XM2jF9BBBX/IdhAWWQGqSkU4iG8
+ O8WdOny5D7OCkzeEsM1WcHTYtm6MYI6JWD6erwT2jYyKKEyoUWBw4SBODC6ocXOvoixK9K0bsy
+ FjMohDidPRxB3t+rLPDcPMmF/2hu95eD8+7Aucu/9BFL/EywSBeayNlnbNVqluuSZ6WzcE6pt2
+ z598ED7xQAAAA==
+X-Change-ID: 20260309-lp-tests-old-fixes-f955abc8ec27
+To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+ Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
+ Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776101176; l=2546;
+ i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
+ bh=tlNFGMK5G8ttgy6AVZeZhapjuaMcl29X2npFsloWIt4=;
+ b=dgMIwWOoPPxnVBD33RIsUE57uohRERIxr3/vmU7Ina+6wliM2wP5bwsHPuHZgMb/PzJitEex/
+ K8M+fOMmz3NCu/I5zzbXUWuIA+SP+l1vUhvf+Kq98mnnRZeekTdzI9U
+X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
+ pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
+X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114];
+	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
+	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2336-lists,live-patching=lfdr.de];
-	FREEMAIL_FROM(0.00)[189.cn];
-	MIME_TRACE(0.00)[0:+];
-	DMARC_NA(0.00)[189.cn];
-	RCPT_COUNT_TWELVE(0.00)[48];
+	DKIM_TRACE(0.00)[suse.com:+];
+	TAGGED_FROM(0.00)[bounces-2337-lists,live-patching=lfdr.de];
+	FROM_HAS_DN(0.00)[];
+	RECEIVED_HELO_LOCALHOST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	FREEMAIL_CC(0.00)[vger.kernel.org,lists.linux.dev,lists.sourceforge.net,189.cn];
+	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	FROM_NO_DN(0.00)[];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TO_DN_SOME(0.00)[];
 	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[chensong_2000@189.cn,live-patching@vger.kernel.org];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	NEURAL_HAM(-0.00)[-0.999];
+	FROM_NEQ_ENVFROM(0.00)[mpdesouza@suse.com,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	NEURAL_HAM(-0.00)[-1.000];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	MID_RHS_MATCH_FROM(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	R_DKIM_NA(0.00)[];
-	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns,189.cn:email,189.cn:mid]
-X-Rspamd-Queue-Id: DACA73E8AB2
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: D07F03F190A
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-From: Song Chen <chensong_2000@189.cn>
+A new version of the patchset, with fewer patches now. Please take a look!
 
-This patchset addresses a long-standing tight coupling between the
-module loader and two of its key consumers: ftrace and livepatch.
+Original cover-letter:
+These patches don't really change how the patches are run, just skip
+some tests on kernels that don't support a feature (like kprobe and
+livepatched living together) or when a livepatch sysfs attribute is
+missing.
 
-Background:
+The last patch slightly adjusts check_result function to skip dmesg
+messages on SLE kernels when a livepatch is removed.
 
-The module loader currently hard-codes direct calls to
-ftrace_module_enable(), klp_module_coming(), klp_module_going() and
-ftrace_release_mod() inside prepare_coming_module() and the module
-unload path. This hard-coding was necessary because the module notifier
-chain could not guarantee the strict call ordering that ftrace and
-livepatch require:
+These patches are based on printk/for-next branch.
 
-  During MODULE_STATE_COMING, ftrace must run before livepatch, so
-  that per-module function records are ready before livepatch registers
-  its ftrace hooks.
+Please review! Thanks!
 
-  During MODULE_STATE_GOING, livepatch must run before ftrace, so that
-  livepatch removes its hooks before ftrace releases those records.
+Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+---
+Changes in v2:
+- Patch descriptions were changed to remove "test-X", since it was polluting the commit subjects (Miroslav Benes)
+- Patch 8 was dropped since it was checking for a message from an out-of-tree patch. (Petr Mladek)
+- Patch 3 was dropped as should be treated as expected failure for older kernels. (Petr Mladek)
+- Patch 2 was changed to use y/n instead of 1/0, since it's more natural to use it.
+- Patch 1 was changed to handle ppc and loongson, and error out if dealing with a different architecture that sets
+  CONFIG_ARCH_HAS_SYSCALL_WRAPPER and haven't changed the test to include the proper wrapper prefix.
+- Patch 4 was changed to invert the return of the bash function to return 1 in failure, like
+  a normal bash function (Joe Lawrence)
+- Patches 5, 6 an 7 were changed to not split the tests, but to only run the tests
+  when the attribute were present (Miroslav Benes)
+- Link to v1: https://patch.msgid.link/20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@suse.com
 
-This symmetric setup/teardown ordering could not be expressed through
-the notifier chain because the chain only supported forward (descending
-priority) traversal. Without reverse traversal, it was impossible to
-guarantee that the GOING order would be the strict inverse of the
-COMING order using a single priority value per notifier.
+---
+Marcos Paulo de Souza (6):
+      selftests: livepatch: Check for ARCH_HAS_SYSCALL_WRAPPER config
+      selftests: livepatch: Replace true/false module parameter by y/n
+      selftests: livepatch: Introduce does_sysfs_exists function
+      selftests: livepatch: Check if patched sysfs attribute exists
+      selftests: livepatch: Check if replace sysfs attribute exists
+      selftests: livepatch: Check if stack_order sysfs attribute exists
 
-Patch 1 - notifier: replace single-linked list with double-linked list.
-Patch 2 - ftrace/klp: decouple from module loader using notifier
-priority.
+ tools/testing/selftests/livepatch/functions.sh     |  10 ++
+ tools/testing/selftests/livepatch/test-kprobe.sh   |   8 +-
+ tools/testing/selftests/livepatch/test-sysfs.sh    | 120 ++++++++++++---------
+ .../livepatch/test_modules/test_klp_syscall.c      |  17 ++-
+ 4 files changed, 99 insertions(+), 56 deletions(-)
+---
+base-commit: 712c0756828becbfc629ff8d8b82deff5d1115e4
+change-id: 20260309-lp-tests-old-fixes-f955abc8ec27
 
-headsup: somehow the smtp of my mailbox doesn't work very well lately, 
-if i receive return letter, i have to resend, sorry in advance.
-
-Song Chen (2):
-  kernel/notifier: replace single-linked list with double-linked list
-    for reverse traversal
-  kernel/module: Decouple klp and ftrace from load_module
-
- drivers/acpi/sleep.c      |   1 -
- drivers/clk/clk.c         |   2 +-
- drivers/cpufreq/cpufreq.c |   2 +-
- drivers/md/dm-integrity.c |   1 -
- drivers/md/md.c           |   1 -
- include/linux/module.h    |   8 ++
- include/linux/notifier.h  |  26 ++---
- kernel/debug/debug_core.c |   1 -
- kernel/livepatch/core.c   |  29 ++++-
- kernel/module/main.c      |  34 +++---
- kernel/notifier.c         | 219 ++++++++++++++++++++++++++++++++------
- kernel/trace/ftrace.c     |  38 +++++++
- net/ipv4/nexthop.c        |   2 +-
- 13 files changed, 290 insertions(+), 74 deletions(-)
-
--- 
-2.43.0
+Best regards,
+--  
+Marcos Paulo de Souza <mpdesouza@suse.com>
 
 
