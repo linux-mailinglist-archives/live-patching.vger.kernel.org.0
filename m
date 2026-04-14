@@ -1,446 +1,222 @@
-Return-Path: <live-patching+bounces-2344-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2345-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id QL9ONBgw3mnxogkAu9opvQ
-	(envelope-from <live-patching+bounces-2344-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 14:16:24 +0200
+	id 8F0uBrgw3mnxogkAu9opvQ
+	(envelope-from <live-patching+bounces-2345-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 14:19:04 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2CEC73F9E7D
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 14:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6369A3F9EEE
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 14:19:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id C07B130D4666
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 12:10:27 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 7BA37305854C
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 12:13:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49E953921E4;
-	Tue, 14 Apr 2026 12:10:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A86E3E1203;
+	Tue, 14 Apr 2026 12:13:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="tEbpv5Qk"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="fxl4I8ZH"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D7B3E5592;
-	Tue, 14 Apr 2026 12:10:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F1A39B486
+	for <live-patching@vger.kernel.org>; Tue, 14 Apr 2026 12:13:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776168627; cv=none; b=RayFKfLh3QZkKDsomehLlAQ6gaxvC9sedsB2YVrGPxVxzjQCH8Vgvvx2a0Jmw1gJNJqkYxOAR51GXyBFY+N1nvtGEJGPuKdY/GgseRnTtzwxDrIHpuQbii9kmr3L9M/EOWu5xdjcYELo3I2AgyEwDhOWRCYjvKlixaA247kk9C0=
+	t=1776168787; cv=none; b=jMZVPURec25GbFUI2aR9+sQ7GMAUznpEe7k1wGhy6KPsiHHlOCspRiuBICE5pZXKIZyjU/zT5T690nxPabIewJvYqm3t3ZakZmsx12CHGokxiiv6pEfY8EBzu8LSPitXIr2TOxoYZlb6PEgXV6F7X+u1pBoRaUW5l/l9jW6lLgw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776168627; c=relaxed/simple;
-	bh=KjxmY5evGCgMMLQGolPBFmX2Ox+zlsJAxki6zO5bxkg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Q9d/kiQLADTOtTKdAw+przB+OH9ahRwRNzBgKyrfSd3jOMF5YD09HVQ64whJPMniclDO5yVo40hgcnDbarAwcvni7nNWFYLpaNrL/jz2+tF25Zzaw4fR//YlUrIK0ZWUHwxsDGcktY+u3xg3VeDr/66YESc4TxBHYj1TBsC2XAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=tEbpv5Qk; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63DLIUvd2130640;
-	Tue, 14 Apr 2026 12:09:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=AeWnSl
-	gGKZBcyenb8mUUEqV0mdW31nwaGuQrp2ApXLk=; b=tEbpv5QkdxUtovtblXHfnl
-	YNLlDu/7aGcHlB5OE8YAFYB0Bn2xP12uW9iG+j8y7eEBVztQfinRFDjoDef91me0
-	vFfj3pjxJLjHrML8Jg103gwhMu3zfUE5SijDkV6RwI0FcDrUrD99vtwyN+IH91fM
-	Ulg/gCzVhKPemhuVUoDxrf7caeFCTj2YdAorYi4wnGmY6rJbyRXAFBxfCST8r81J
-	4/keMlRlu9TjpibrEL2TY9pXBUXYoT+YHwob16C0ro5Bv8al/4D14hhg6Bmnmepj
-	rXx0GMiNLnXywpSFCJW0nFDlmn197LF8aPG+HGIuF3Rc+m0eOQYNJhABqSUNJIfg
-	==
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4dh89nakf4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 14 Apr 2026 12:09:47 +0000 (GMT)
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 63E9NLqg030721;
-	Tue, 14 Apr 2026 12:09:46 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4dg10y9f77-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 14 Apr 2026 12:09:46 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63EC9iQP28836298
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 14 Apr 2026 12:09:44 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8B57320043;
-	Tue, 14 Apr 2026 12:09:44 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2F21820040;
-	Tue, 14 Apr 2026 12:09:44 +0000 (GMT)
-Received: from [9.52.200.195] (unknown [9.52.200.195])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 14 Apr 2026 12:09:44 +0000 (GMT)
-Message-ID: <e087a768-507d-4ac2-8875-ab7c522420bd@linux.ibm.com>
-Date: Tue, 14 Apr 2026 14:09:42 +0200
+	s=arc-20240116; t=1776168787; c=relaxed/simple;
+	bh=+QnCQVCjojEcuevSC8g0MJA/h24xDP0xiW/QNvX/aco=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=ZQWygwdRLI677opVrYvIIHmnALEQqpEsLcKlXfkyFGZioDb8azWsh0R2Iepw9qpdbMFVuUvg0Xr0Gd55Wh4zyybZxbTKrv2od+1Zs4as5RVue2CRZI6+7UfeAevrgnrXhaeVXOTkMp7xaN0us5Aq/lcqGXPDJizybT4qKxYXpko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=fxl4I8ZH; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-488b00ed86fso57190155e9.3
+        for <live-patching@vger.kernel.org>; Tue, 14 Apr 2026 05:13:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1776168785; x=1776773585; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=+QnCQVCjojEcuevSC8g0MJA/h24xDP0xiW/QNvX/aco=;
+        b=fxl4I8ZHiJKWOX/0KlNsMjhxexf+MCO11K7GYjL94X6qgWenvd1KPnp2wxIGGW3ASk
+         +3YZmm9S/Le8SrJs7f4USqFGN5wygMj8ZQ66ByZZcUCmq46MmMAl54w8SKxdQU7cWwG7
+         5wfxFEU9SP3idSHXctmJ4apkGy4UDAGHLblfQn1Qqw5dHTWiru+el1GNTXbXxSYDIQCC
+         LGKnRuzCpWaZ4C14CCDxSs8E/9tE+lowrE+2lu3Ho81Z4qUPsK5CZ7AXsea6DvHhRj6s
+         c8MnYGhxnkBtdT3rIIFRVSdawvb40jZhqPukhwhoCncDtwwb1fJiYtUYLHV1HgCcZh1a
+         P3dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776168785; x=1776773585;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+QnCQVCjojEcuevSC8g0MJA/h24xDP0xiW/QNvX/aco=;
+        b=sL1lML1qQRHbxrwwymB90yI+qB/VQVtjVAAMafu0j0hZU63py2c1bayOBckeH0VImN
+         hbCpct3Ic0qTnmGGcbQSVH6EkIiqaHpW3ow8MKhkeDXpB7vFeXo0QpXKCZmZ0kclw/Ss
+         ueRlGslJeMXJ8DHyHVmZOsjIpkFtaJ2pQjDM+LzEtAiJsUxgHjA4DUMHzzW34/sQ2dQe
+         QiabYQWcNfY1Qvz6+iIGXkVCApadxVs+HiT+YcwyfJBPfKAQ/5+lRE4EsVJoMLj3aKV7
+         AW60DkkmyMYK8ZZDf2IR94j+kXm/rhChpWqBKTXfKCw72oVayUSYP69Bdahi7M0Ifezc
+         h/LQ==
+X-Gm-Message-State: AOJu0Yzn6ATCpO2ybtXFYLU6+eVbxD/Akgd/mIJ7JYApQ9SpN4pF5teq
+	e0ZnwYTwr5/YXdRG9t+aXEL0yluE8Iggg65uY8+5j3Dy7s5Rg0yOJjNcHRR39xPYVNQ=
+X-Gm-Gg: AeBDieuyal3IUXGpXUEXS+VDg/IgxyBEer5Q2FmUQYJ8wX8dDO4DaPD66D4IP5fsQJ7
+	22zknw2whQg8S9KhXrp4o9KYcwspa5umO0wjcoimdwM1Mzcuoo5CBdVdGIm236MpVIUdBHMnS+z
+	Q7XdnUoCdgN/3vjtKahxMra1Dk1CZ7uafRHpA4s9DqyDdkCDq56sEb44+dp+iVfnquyocVMmXYu
+	uq42F55Yc3x3YmoBsu3YE/ki72O8Tt7toL31Oxrjz2P7OzOSkt89ZsIpQLKB9ZjPwuN7mzYsHgW
+	dJpyynT8rU5U+S3jzOtWAjmcDxJdsLfYBKceb4VAkSJqN5ki7zws/GLb956aidWyvvYBkyi0d1w
+	OspjDRFTGe0D0FnOOFW+kTvvExMN0pAXi5oB0ngBiA3CB3OY8P50jSj0bLtzyEzsT2xvaSFRg0r
+	b2az+SPdyfiwA50OOZHsYI8r6VAUjv5hOjzCgK5RX83h/QV0O96M78zzxHgcPMWwVc0wKbiwVm5
+	N4KOw==
+X-Received: by 2002:a05:600d:8449:b0:486:fdba:f5db with SMTP id 5b1f17b1804b1-488d664f29emr192886925e9.0.1776168784711;
+        Tue, 14 Apr 2026 05:13:04 -0700 (PDT)
+Received: from ?IPv6:2804:1bc4:224:7800:585c:db3a:fcb:e21f? ([2804:1bc4:224:7800:585c:db3a:fcb:e21f])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488d67b4a46sm269592205e9.4.2026.04.14.05.13.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Apr 2026 05:13:04 -0700 (PDT)
+Message-ID: <6ab30eed1165bcd68395e32d8ab61d7437a8ccf6.camel@suse.com>
+Subject: Re: [PATCH v2 0/6] kselftests: livepatch: Adapt tests to be
+ executed on 4.12 kernels
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+ Miroslav Benes
+	 <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, Joe Lawrence
+	 <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Date: Tue, 14 Apr 2026 09:12:58 -0300
+In-Reply-To: <20260413-lp-tests-old-fixes-v2-0-367c7cb5006f@suse.com>
+References: <20260413-lp-tests-old-fixes-v2-0-367c7cb5006f@suse.com>
+Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
+ keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
+ Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
+ gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
+ QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
+ GO8seNG8sYiP6JfRjl7Hyqca6YsE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.0 (by Flathub.org) 
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/8] sframe: Allow kernelspace sframe sections.
-To: Dylan Hatch <dylanbhatch@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Weinan Liu <wnliu@google.com>, Will Deacon <will@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Indu Bhagat <indu.bhagat@oracle.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Jiri Kosina <jikos@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>,
-        Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
-        Puranjay Mohan <puranjay@kernel.org>, Song Liu <song@kernel.org>,
-        joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20260406185000.1378082-1-dylanbhatch@google.com>
- <20260406185000.1378082-2-dylanbhatch@google.com>
-Content-Language: en-US
-From: Jens Remus <jremus@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20260406185000.1378082-2-dylanbhatch@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Proofpoint-GUID: 7s7cXi06g2xRhHmoKeqjlbPa6_VRgFW7
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDE0MDExMCBTYWx0ZWRfX9/u2/WGDmdi7
- 7VBm4jga7f++j/WVPnbbqm+2mLvlfxeJWr3YeGTscgsYBNJSTaUeZUx6PUe/BBQtwKDEmnK/I/u
- Zd9NFpl4M9cNL9B6Yjm6u0AEUTA3S4ej6exA1d7dOkFM17EtN6Qcx4eFizNZHvRu3V20oY4/RBC
- vUU9la7B3CdTW5r7MDYVk1Y81VNGSngddNnhVpzGILbqpuy98Lib4tqGHGOi4k/lQm/u9dnjLGe
- huzoCekBKesJNpd6ePZxBfmtraB7bV3t2c4I3AZrJZyTVHcy5hmF8zoDIGBccO4b36VI8w+/mtw
- FaPbhLXNBvcga2Jq/C/6zSau8PeTE98prOeIzMMwW0t4eV0YdDgHJ+nVvsS56403SEyYo9GI0D7
- j3+EMdz2cQeFBC2MgtAIDYvOvFoZhdFshuhTOpJX30oUxMBFHv/Nvhj6RuNAV3ite+oYlaP7mY8
- +mrH5AVdfnKmr8PqonQ==
-X-Proofpoint-ORIG-GUID: kLj3cRsPjkPaXpmA957ELV5MyMQakV30
-X-Authority-Analysis: v=2.4 cv=FY4HAp+6 c=1 sm=1 tr=0 ts=69de2e8c cx=c_pps
- a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17
- a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=iQ6ETzBq9ecOQQE5vZCe:22 a=VnNF1IyMAAAA:8
- a=1XWaLZrsAAAA:8 a=EcvllB-cgGEySGRCOTcA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-14_03,2026-04-13_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 bulkscore=0 impostorscore=0 spamscore=0
- lowpriorityscore=0 suspectscore=0 clxscore=1011 malwarescore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604140110
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[ibm.com,none];
-	R_DKIM_ALLOW(-0.20)[ibm.com:s=pp1];
+	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
+	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
 	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	MIME_TRACE(0.00)[0:+];
-	RCPT_COUNT_TWELVE(0.00)[19];
-	DKIM_TRACE(0.00)[ibm.com:+];
-	TAGGED_FROM(0.00)[bounces-2344-lists,live-patching=lfdr.de];
-	HAS_ORG_HEADER(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,linux.ibm.com:mid];
-	TO_DN_SOME(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[jremus@linux.ibm.com,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[suse.com:+];
 	FROM_HAS_DN(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	RCVD_TLS_LAST(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2345-lists,live-patching=lfdr.de];
+	MIME_TRACE(0.00)[0:+];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TAGGED_RCPT(0.00)[live-patching];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[mpdesouza@suse.com,live-patching@vger.kernel.org];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[5];
 	MID_RHS_MATCH_FROM(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
-	TAGGED_RCPT(0.00)[live-patching];
-	RCVD_COUNT_SEVEN(0.00)[11]
-X-Rspamd-Queue-Id: 2CEC73F9E7D
+	RCPT_COUNT_SEVEN(0.00)[9];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,msgid.link:url,suse.com:dkim,suse.com:email,suse.com:mid]
+X-Rspamd-Queue-Id: 6369A3F9EEE
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Hello Dylan!
+On Mon, 2026-04-13 at 14:26 -0300, Marcos Paulo de Souza wrote:
+> A new version of the patchset, with fewer patches now. Please take a
+> look!
+>=20
+> Original cover-letter:
+> These patches don't really change how the patches are run, just skip
+> some tests on kernels that don't support a feature (like kprobe and
+> livepatched living together) or when a livepatch sysfs attribute is
+> missing.
+>=20
+> The last patch slightly adjusts check_result function to skip dmesg
+> messages on SLE kernels when a livepatch is removed.
+>=20
+> These patches are based on printk/for-next branch.
+>=20
+> Please review! Thanks!
+>=20
+> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-On 4/6/2026 8:49 PM, Dylan Hatch wrote:
-> Generalize the sframe lookup code to support kernelspace sections. This
-> is done by defining a SFRAME_LOOKUP option that can be activated
-> separate from UNWIND_USER_SFRAME, as there will be other clients to this
-> library than just userspace unwind.
 
-Nit: s/UNWIND_USER_SFRAME/HAVE_UNWIND_USER_SFRAME/
+I saw some checks made by sashiko, and besides they not being so
+horrible, I believe that I should fix me an send a v3 to address them.
+But still, feel free to take a look :)
 
-This actually uses the following two new Kconfig options (with
-SFRAME_UNWINDER technically being introduced in the next patch):
+https://sashiko.dev/#/patchset/20260413-lp-tests-old-fixes-v2-0-367c7cb5006=
+f%40suse.com
 
-  SFRAME_LOOKUP
-  SFRAME_UNWINDER
-
-IIUC SFRAME_UNWINDER is the kernel counterpart to the existing
-HAVE_UNWIND_USER_SFRAME.  Would it therefore make sense to align the
-naming as follows?
-
-  HAVE_UNWIND_KERNEL_SFRAME (instead of SFRAME_UNWINDER)
-  HAVE_UNWIND_USER_SFRAME
-
-> Sframe section location is now tracked in a separate sec_type field to
-> determine whether user-access functions are necessary to read the sframe
-> data. Relevant type delarations are moved and renamed to reflect the
-> non-user sframe support.
-> 
-> Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
-
-> diff --git a/arch/Kconfig b/arch/Kconfig
-
-> @@ -486,6 +486,9 @@ config AS_SFRAME3
->  	def_bool $(as-instr,.cfi_startproc\n.cfi_endproc,-Wa$(comma)--gsframe-3)
->  	select AS_SFRAME
->  
-> +config SFRAME_LOOKUP
-> +	bool
-> +
->  config UNWIND_USER
->  	bool
->  
-> @@ -496,6 +499,7 @@ config HAVE_UNWIND_USER_FP
->  config HAVE_UNWIND_USER_SFRAME
->  	bool
->  	select UNWIND_USER
-> +	select SFRAME_LOOKUP
->  
->  config SFRAME_VALIDATION
->  	bool "Enable .sframe section debugging"
-
-IIUC SFRAME_LOOKUP only exists to pull in the common (kernel and user)
-sframe lookup code if SFRAME_UNWINDER and/or UNWIND_USER_SFRAME are
-enabled.  Given there is currently no other use case than kernel/user
-stacktrace unwinding, would it make sense to rename it as follows to
-group all of the related options with the UNWIND prefix?
-
-  UNWIND_SFRAME[_LOOKUP]
-
-> diff --git a/include/linux/sframe.h b/include/linux/sframe.h
-
-> @@ -4,36 +4,85 @@
->  
->  #include <linux/mm_types.h>
->  #include <linux/srcu.h>
-> -#include <linux/unwind_user_types.h>
->  
-> -#ifdef CONFIG_HAVE_UNWIND_USER_SFRAME
-> +#define UNWIND_RULE_DEREF			BIT(31)
-> +
-> +enum unwind_cfa_rule {
-> +	UNWIND_CFA_RULE_SP_OFFSET,		/* CFA = SP + offset */
-> +	UNWIND_CFA_RULE_FP_OFFSET,		/* CFA = FP + offset */
-> +	UNWIND_CFA_RULE_REG_OFFSET,	/* CFA = reg + offset */
-> +	/* DEREF variants */
-> +	UNWIND_CFA_RULE_REG_OFFSET_DEREF =	/* CFA = *(reg + offset) */
-> +		UNWIND_CFA_RULE_REG_OFFSET | UNWIND_RULE_DEREF,
-> +};
-> +
-> +struct unwind_cfa_rule_data {
-> +	enum unwind_cfa_rule rule;
-> +	s32 offset;
-> +	unsigned int regnum;
-> +};
-> +
-> +enum unwind_rule {
-> +	UNWIND_RULE_RETAIN,		/* entity = entity */
-> +	UNWIND_RULE_CFA_OFFSET,		/* entity = CFA + offset */
-> +	UNWIND_RULE_REG_OFFSET,		/* entity = register + offset */
-> +	/* DEREF variants */
-> +	UNWIND_RULE_CFA_OFFSET_DEREF =	/* entity = *(CFA + offset) */
-> +		UNWIND_RULE_CFA_OFFSET | UNWIND_RULE_DEREF,
-> +	UNWIND_RULE_REG_OFFSET_DEREF =	/* entity = *(register + offset) */
-> +		UNWIND_RULE_REG_OFFSET | UNWIND_RULE_DEREF,
-> +};
-> +
-> +struct unwind_rule_data {
-> +	enum unwind_rule rule;
-> +	s32 offset;
-> +	unsigned int regnum;
-> +};
-> +
-> +struct unwind_frame {
-> +	struct unwind_cfa_rule_data cfa;
-> +	struct unwind_rule_data ra;
-> +	struct unwind_rule_data fp;
-> +	bool outermost;
-> +};
-
-You are moving (and renaming to generalize for kernel and user unwind
-use) the above definitions from include/linux/unwind_user_types.h to
-include/linux/sframe.h.  Given the definitions are used in
-kernel/unwind/user.c for FP and SFRAME unwinding this seems wrong to
-me.  The definitions should better be moved (and renamed as you did)
-into a new include/linux/unwind_types.h (or the like).
-
-> diff --git a/include/linux/unwind_user_types.h b/include/linux/unwind_user_types.h
-
-> @@ -27,47 +27,6 @@ struct unwind_stacktrace {
->  	unsigned long	*entries;
->  };
->  
-> -#define UNWIND_USER_RULE_DEREF			BIT(31)
-> -
-> -enum unwind_user_cfa_rule {
-> -	UNWIND_USER_CFA_RULE_SP_OFFSET,		/* CFA = SP + offset */
-> -	UNWIND_USER_CFA_RULE_FP_OFFSET,		/* CFA = FP + offset */
-> -	UNWIND_USER_CFA_RULE_REG_OFFSET,	/* CFA = reg + offset */
-> -	/* DEREF variants */
-> -	UNWIND_USER_CFA_RULE_REG_OFFSET_DEREF =	/* CFA = *(reg + offset) */
-> -		UNWIND_USER_CFA_RULE_REG_OFFSET | UNWIND_USER_RULE_DEREF,
-> -};
-> -
-> -struct unwind_user_cfa_rule_data {
-> -	enum unwind_user_cfa_rule rule;
-> -	s32 offset;
-> -	unsigned int regnum;
-> -};
-> -
-> -enum unwind_user_rule {
-> -	UNWIND_USER_RULE_RETAIN,		/* entity = entity */
-> -	UNWIND_USER_RULE_CFA_OFFSET,		/* entity = CFA + offset */
-> -	UNWIND_USER_RULE_REG_OFFSET,		/* entity = register + offset */
-> -	/* DEREF variants */
-> -	UNWIND_USER_RULE_CFA_OFFSET_DEREF =	/* entity = *(CFA + offset) */
-> -		UNWIND_USER_RULE_CFA_OFFSET | UNWIND_USER_RULE_DEREF,
-> -	UNWIND_USER_RULE_REG_OFFSET_DEREF =	/* entity = *(register + offset) */
-> -		UNWIND_USER_RULE_REG_OFFSET | UNWIND_USER_RULE_DEREF,
-> -};
-> -
-> -struct unwind_user_rule_data {
-> -	enum unwind_user_rule rule;
-> -	s32 offset;
-> -	unsigned int regnum;
-> -};
-> -
-> -struct unwind_user_frame {
-> -	struct unwind_user_cfa_rule_data cfa;
-> -	struct unwind_user_rule_data ra;
-> -	struct unwind_user_rule_data fp;
-> -	bool outermost;
-> -};
-> -
->  struct unwind_user_state {
->  	unsigned long				ip;
->  	unsigned long				sp;
-
-> diff --git a/kernel/unwind/Makefile b/kernel/unwind/Makefile
-
-> @@ -1,2 +1,2 @@
->   obj-$(CONFIG_UNWIND_USER)		+= user.o deferred.o
-> - obj-$(CONFIG_HAVE_UNWIND_USER_SFRAME)	+= sframe.o
-> + obj-$(CONFIG_SFRAME_LOOKUP)	+= sframe.o
-
-> diff --git a/kernel/unwind/sframe.c b/kernel/unwind/sframe.c
-
-> @@ -44,8 +43,6 @@ struct sframe_fre_internal {
->  	unsigned char	dw_size;
->  };
->  
-> -DEFINE_STATIC_SRCU(sframe_srcu);
-> -
->  static __always_inline unsigned char fre_type_to_size(unsigned char fre_type)
->  {
->  	if (fre_type > 2)
-> @@ -60,6 +57,78 @@ static __always_inline unsigned char dataword_size_enum_to_size(unsigned char da
->  	return 1 << dataword_size;
->  }
->  
-> +#ifdef CONFIG_HAVE_UNWIND_USER_SFRAME
-> +
-> +DEFINE_STATIC_SRCU(sframe_srcu);
-> +
-> +#define UNSAFE_USER_COPY(to, from, size, label)				\
-> +	unsafe_copy_from_user(to, (void __user *)from, size, label)
-> +
-> +#define UNSAFE_USER_GET(to, from, type, label)				\
-> +	unsafe_get_user(to, (type __user *)from, label)
-> +
-> +#else /* !CONFIG_HAVE_UNWIND_USER_SFRAME */
-> +
-> +#define UNSAFE_USER_COPY(to, from, size, label) do {			\
-> +	(void)to; (void)from; (void)size;				\
-> +	goto label;							\
-> +} while (0)
-> +
-> +#define UNSAFE_USER_GET(to, from, type, label) do {			\
-> +	(void)to; (void)from;						\
-> +	goto label;							\
-> +} while (0)
-> +
-> +#endif /* !CONFIG_HAVE_UNWIND_USER_SFRAME */
-> +
-> +#ifdef CONFIG_SFRAME_UNWINDER
-> +
-> +#define KERNEL_COPY(to, from, size) memcpy(to, (void *)from, size)
-> +#define KERNEL_GET(to, from, type) ({ (to) = *(type *)(from); })
-> +
-> +#else /* !CONFIG_SFRAME_UNWINDER */
-> +
-> +#define KERNEL_COPY(to, from, size) do {				\
-> +	(void)(to); (void)(from); (void)size;				\
-> +	return -EFAULT;							\
-> +} while (0)
-> +
-> +#define KERNEL_GET(to, from, type) do {					\
-> +	(void)(to); (void)(from);					\
-> +	return -EFAULT;							\
-> +} while (0)
-
-The error return value in above dummy implementations is never used
-(see DATA_COPY() and DATA_GET() below).  Maybe better define the KERNEL
-flavors with the same interface as the UNSAFE_USER ones (with error
-label) and have the dummy implementations goto that label?
-
-> +
-> +
-
-Nit: Two instead of one empty line.
-
-> +#endif /* !CONFIG_SFRAME_UNWINDER */
-> +
-> +#define DATA_COPY(sec, to, from, size, label)			\
-> +({								\
-> +	switch (sec->sec_type) {				\
-> +	case SFRAME_KERNEL:					\
-> +		KERNEL_COPY(to, from, size);			\
-> +		break;						\
-> +	case SFRAME_USER:					\
-> +		UNSAFE_USER_COPY(to, from, size, label);	\
-> +		break;						\
-> +	default:						\
-> +		return -EFAULT;					\
-> +	}							\
-> +})
-> +
-> +#define DATA_GET(sec, to, from, type, label)			\
-> +({								\
-> +	switch (sec->sec_type) {				\
-> +	case SFRAME_KERNEL:					\
-> +		KERNEL_GET(to, from, type);			\
-> +		break;						\
-> +	case SFRAME_USER:					\
-> +		UNSAFE_USER_GET(to, from, type, label);		\
-> +		break;						\
-> +	default:						\
-> +		return -EFAULT;					\
-> +	}							\
-> +})
-> +
->  static __always_inline int __read_fde(struct sframe_section *sec,
->  				      unsigned int fde_num,
->  				      struct sframe_fde_internal *fde)
-
-Regards,
-Jens
--- 
-Jens Remus
-Linux on Z Development (D3303)
-jremus@de.ibm.com / jremus@linux.ibm.com
-
-IBM Deutschland Research & Development GmbH; Vorsitzender des Aufsichtsrats: Wolfgang Wendt; Geschäftsführung: David Faller; Sitz der Gesellschaft: Ehningen; Registergericht: Amtsgericht Stuttgart, HRB 243294
-IBM Data Privacy Statement: https://www.ibm.com/privacy/
-
+> ---
+> Changes in v2:
+> - Patch descriptions were changed to remove "test-X", since it was
+> polluting the commit subjects (Miroslav Benes)
+> - Patch 8 was dropped since it was checking for a message from an
+> out-of-tree patch. (Petr Mladek)
+> - Patch 3 was dropped as should be treated as expected failure for
+> older kernels. (Petr Mladek)
+> - Patch 2 was changed to use y/n instead of 1/0, since it's more
+> natural to use it.
+> - Patch 1 was changed to handle ppc and loongson, and error out if
+> dealing with a different architecture that sets
+> =C2=A0 CONFIG_ARCH_HAS_SYSCALL_WRAPPER and haven't changed the test to
+> include the proper wrapper prefix.
+> - Patch 4 was changed to invert the return of the bash function to
+> return 1 in failure, like
+> =C2=A0 a normal bash function (Joe Lawrence)
+> - Patches 5, 6 an 7 were changed to not split the tests, but to only
+> run the tests
+> =C2=A0 when the attribute were present (Miroslav Benes)
+> - Link to v1:
+> https://patch.msgid.link/20260313-lp-tests-old-fixes-v1-0-71ac6dfb3253@su=
+se.com
+>=20
+> ---
+> Marcos Paulo de Souza (6):
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 selftests: livepatch: Check for ARCH_HAS_S=
+YSCALL_WRAPPER config
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 selftests: livepatch: Replace true/false m=
+odule parameter by
+> y/n
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 selftests: livepatch: Introduce does_sysfs=
+_exists function
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 selftests: livepatch: Check if patched sys=
+fs attribute exists
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 selftests: livepatch: Check if replace sys=
+fs attribute exists
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 selftests: livepatch: Check if stack_order=
+ sysfs attribute
+> exists
+>=20
+> =C2=A0tools/testing/selftests/livepatch/functions.sh=C2=A0=C2=A0=C2=A0=C2=
+=A0 |=C2=A0 10 ++
+> =C2=A0tools/testing/selftests/livepatch/test-kprobe.sh=C2=A0=C2=A0 |=C2=
+=A0=C2=A0 8 +-
+> =C2=A0tools/testing/selftests/livepatch/test-sysfs.sh=C2=A0=C2=A0=C2=A0 |=
+ 120
+> ++++++++++++---------
+> =C2=A0.../livepatch/test_modules/test_klp_syscall.c=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 |=C2=A0 17 ++-
+> =C2=A04 files changed, 99 insertions(+), 56 deletions(-)
+> ---
+> base-commit: 712c0756828becbfc629ff8d8b82deff5d1115e4
+> change-id: 20260309-lp-tests-old-fixes-f955abc8ec27
+>=20
+> Best regards,
+> --=C2=A0=20
+> Marcos Paulo de Souza <mpdesouza@suse.com>
 
