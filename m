@@ -1,84 +1,78 @@
-Return-Path: <live-patching+bounces-2347-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2348-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id ECPuEM1R3mlIqQkAu9opvQ
-	(envelope-from <live-patching+bounces-2347-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 16:40:13 +0200
+	id WG3HIo1o3mmxDgAAu9opvQ
+	(envelope-from <live-patching+bounces-2348-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 18:17:17 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id B7D4B3FB691
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 16:40:12 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id DD0473FC70C
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 18:17:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id AD4A530A2402
-	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 14:33:44 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 4112630982A5
+	for <lists+live-patching@lfdr.de>; Tue, 14 Apr 2026 16:11:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A1863E92B0;
-	Tue, 14 Apr 2026 14:33:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C6A8E3ECBC8;
+	Tue, 14 Apr 2026 16:11:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="csX3ImIg"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Bjbrj4Pg"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF64A3E8685
-	for <live-patching@vger.kernel.org>; Tue, 14 Apr 2026 14:33:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 928CE3E959D;
+	Tue, 14 Apr 2026 16:11:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776177217; cv=none; b=hlSm3pdjyB/kKEEbKw4zeARKffSzixbcOLxod/83x/gy+PbSwPlvmiFLKTqT6eV9G9qhFKg0biSakCGFxFahK18fNh4jA2UVnM/eGe8DyHo1GchNdx+lbpAQexjWpkhY4za3BkqzPoHrm8Jpw6f7XvCSEPZZ0QJM5cglgPzjrZI=
+	t=1776183075; cv=none; b=LzNc0l2oxfo9h1Rv5tN3quqkq3lrrW8JGZYVuRhhrwa8fg1P4nZbKutaRZ+JOINmffE+cXdiNf9o7A7cOsFVsrwwqNy0pgIQEj3A1R0EtXGuyXKMZMz/7nHsV2DXIExSwmfXIEvKc6yAlhKTIT3Z38ycqwhXj08oErLzDRvQqY0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776177217; c=relaxed/simple;
-	bh=Nw8cBmmH7vxfiWNqiq8CyDvGGD1xyD0qs9zhurR1ZIk=;
+	s=arc-20240116; t=1776183075; c=relaxed/simple;
+	bh=/nasxjWRWhFVRuYYtDCdZJM1QVHz+XfdKRi1L2425Sk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tLr0tJlMe/Mwy0XIU0YATHt+Gxa6/GmXf5tAhHROaOkEQE0skGIrvxiLkYRE1Zrbo/713yToUC01XF0Y5xJ5fFmxq9DoRgklJVxsotgVBas2ANlNdOkS3YB9Kx5ouC+x8qKjE3zcrDAltzJUv7MKEarh81BdkK6NkLFY6sIyMTU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=csX3ImIg; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-43cfd832155so3916054f8f.1
-        for <live-patching@vger.kernel.org>; Tue, 14 Apr 2026 07:33:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1776177213; x=1776782013; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ELLPgP8F2+Og4+n8Ds04pnwfQ38UDYTElLkIo6rrsKM=;
-        b=csX3ImIgVJ3bv9XD4JOBHQE8R/HX1u4JHADlRr/UG+jMjc3TICB/1iDlmiZqdZITdt
-         dFpIV0YnNDRg14GGanRAk3IKYi8KdJuWvTn11PTpb2nizuQAwP0x4FaCzx9m4io/2ah/
-         4TE/O7KTVfu46WAUYFIZWtKKyJrgMvPYcPs+n3QAItEDmNkMoOYjXbKe0l968utmnWAR
-         FFAU47TY3vBBDI/5yBY1XMwoY6Ib//AP804Lm53KHeiyZVal2/Br7c1llMhgmgN3v6Gx
-         YmGq+X5Kbkbt5f8w95TRfQVI6gvHKN6VIo9IBWY1wMVMhZGZODRETSD6V62kAQa9csoj
-         sRYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776177213; x=1776782013;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ELLPgP8F2+Og4+n8Ds04pnwfQ38UDYTElLkIo6rrsKM=;
-        b=ZvhlJ6JODnj0dr+HogiWUCHRRpXLD+CuZhpRGVVI/5ZyaE7lu6nU238HH5slkF7N3b
-         27PF3m/1vgH7MUCCI85wzlD8uS113qAoblnej3f80WWjXPB2K6oC6NiErnarL7vvG8Zc
-         XsZhc+EZcSSKpDrDsC9pMlfWwAK2lzv1JXrfOPtPryqLsyLJEZAAWWW46KJD/jaGxfjX
-         MAl9E8yg6gjpNZ+3Oz3HD+2+i+L6QktTCXf58RRp6twT4akt/Lw1VE1bJ00T3o+mWzsF
-         B8ZORtIim9fVK0+C2wL8wrVyDrc5wq62+zfWKovCpWLY0iWBt60r1Hvo/xxiR4kXX/RN
-         H/sw==
-X-Forwarded-Encrypted: i=1; AFNElJ8eLqkJpWukzIJA+sFOSO6Ya3U5Xn53Ma+CUjOiDyRP35ZDNj6rsVdWj6n8/QG8YBAadZgsk55EiSmnNfwd@vger.kernel.org
-X-Gm-Message-State: AOJu0YwkFWp63SE+pbHdIccR/A39nAjvaHaHuIJb+GyPxXtx2bGZM/At
-	xNuyxnnjzSKXoxlMq9vOAijruUKQVMWSXdOJ1GZTS0vubeWWCEYr0zR5dtojsEXWDgE=
-X-Gm-Gg: AeBDietaQtCrfG8iC9A/vMIUXBwovJ3SoumRxVFYvnJ0/gyXx/1kJXxAqT9rskVb/So
-	z9JYs81hzuoZ/zvjwY+ut3By9ladTs1DEUxSg4yT7xxBWBg76pkDKMHxve0T4TE6x2tt5YIUNem
-	euVeYzWFRmA+gvmkCA+0/uefLxc0ZO7KZfQmdgQi1BIJ7HTB6fGKPo0+2NFFWZwkdUJUsEfb33b
-	EREXC6qx+Q2W0AdXQDTvvHXI90M83RWxuCajwNVqYzc7OUeQjH/qdTh4rmykZu0apxiTKcl99m/
-	UTs7YZoAi0/4rY/+zmivD6NszMPUJOYB+EdBeLch1F+JDJhysvgHGaf4SxAexdrPY4MxSwwOtQq
-	d1qNrTtQORurUX15Io18JaQjVdQI/MgO+jqQykCseNAvIAO+1YTnVA2fdSne3XL9H8eY9LatKR4
-	6Gkpwggd5GqqJ1faxDv6pdTa8gioTXOgOZ8fe57Qn0yuRZ
-X-Received: by 2002:a05:6000:2305:b0:43d:775b:c9bd with SMTP id ffacd0b85a97d-43d775bcb1bmr13224241f8f.10.1776177212871;
-        Tue, 14 Apr 2026 07:33:32 -0700 (PDT)
-Received: from [10.100.51.209] (nat2.prg.suse.com. [195.250.132.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d7ba57e72sm14650537f8f.0.2026.04.14.07.33.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Apr 2026 07:33:32 -0700 (PDT)
-Message-ID: <1191caf5-6a61-4622-a15e-854d3701f4fc@suse.com>
-Date: Tue, 14 Apr 2026 16:33:31 +0200
+	 In-Reply-To:Content-Type; b=tAIdDcMXbMjuCOjMFi1DNk09ggN/b4iGXr6LBAC0j3gao9YBJ5daFz+vDL1yKNNez7BQwDgumCp5GqaFnuzVvVF4gLRi6Hv20s1wgOTMzd0Mujsmvf8ynkGe/c/Xl17XVAxE68uFd4G4pP1OAkKeZYIDPRgqIaqTxx6f8cmQNaY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Bjbrj4Pg; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63EEWv2J1842742;
+	Tue, 14 Apr 2026 16:10:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=xkgEun
+	Iybz/uxHtgdoi9HPYkRW3cWxQhmhXZ60Km/OQ=; b=Bjbrj4PgenYyjPDRGsg/QU
+	E9NsAXuNeQgMPWF4A/IxLAvYI5uxJgbwojOYm0uXg5U4HSl+FxBmapfp7GMOuFRD
+	pyS/J2CUeC9t/Z0mUtmnI/FMXd13Q8EQbhclpT81uM9f1ArzTM5k+W9cv+6ZyNEU
+	cHsBTJ4PTArou4bHbAXK06b9LtO2ZeEMv2HnECe+sixrNIg5scEDxs/fwvlSM5BH
+	3oE9wObWRX0e1FP+LcIkLRO9CZ5oVC/6KbvTOaX/luzqaQXwvJCGS8rXfwFK1O/E
+	vM8mR0CuDEfC/dk4Yb4kAQ41Kebh2gEaS4yZ1pemdnX9DuCPjOl1LSww/zLwEZOA
+	==
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4dh89mkppf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Apr 2026 16:10:36 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 63EEweMq026284;
+	Tue, 14 Apr 2026 16:10:36 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4dg2ujj4h3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Apr 2026 16:10:35 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63EGAYGD29032930
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 14 Apr 2026 16:10:34 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 324232004B;
+	Tue, 14 Apr 2026 16:10:34 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D055420040;
+	Tue, 14 Apr 2026 16:10:33 +0000 (GMT)
+Received: from [9.52.200.195] (unknown [9.52.200.195])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 14 Apr 2026 16:10:33 +0000 (GMT)
+Message-ID: <c1d306dc-c6da-4ae6-8cc7-6133e253334b@linux.ibm.com>
+Date: Tue, 14 Apr 2026 18:10:31 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -86,369 +80,109 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 2/2] kernel/module: Decouple klp and ftrace from
- load_module
-To: chensong_2000@189.cn
-Cc: rafael@kernel.org, lenb@kernel.org, mturquette@baylibre.com,
- sboyd@kernel.org, viresh.kumar@linaro.org, agk@redhat.com,
- snitzer@kernel.org, mpatocka@redhat.com, bmarzins@redhat.com,
- song@kernel.org, yukuai@fnnas.com, linan122@huawei.com,
- jason.wessel@windriver.com, danielt@kernel.org, dianders@chromium.org,
- horms@kernel.org, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, paulmck@kernel.org, frederic@kernel.org,
- mcgrof@kernel.org, da.gomez@kernel.org, samitolvanen@google.com,
- atomlin@atomlin.com, jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
- pmladek@suse.com, joe.lawrence@redhat.com, rostedt@goodmis.org,
- mhiramat@kernel.org, mark.rutland@arm.com, mathieu.desnoyers@efficios.com,
- linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
- live-patching@vger.kernel.org, dm-devel@lists.linux.dev,
- linux-raid@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
- netdev@vger.kernel.org
-References: <20260413080701.180976-1-chensong_2000@189.cn>
+Subject: Re: [PATCH v3 0/8] unwind, arm64: add sframe unwinder for kernel
+To: Dylan Hatch <dylanbhatch@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Weinan Liu <wnliu@google.com>, Will Deacon <will@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Indu Bhagat <indu.bhagat@oracle.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Jiri Kosina <jikos@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>,
+        Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
+        Puranjay Mohan <puranjay@kernel.org>, Song Liu <song@kernel.org>,
+        joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20260406185000.1378082-1-dylanbhatch@google.com>
 Content-Language: en-US
-From: Petr Pavlu <petr.pavlu@suse.com>
-In-Reply-To: <20260413080701.180976-1-chensong_2000@189.cn>
+From: Jens Remus <jremus@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20260406185000.1378082-1-dylanbhatch@google.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDE0MDE0OCBTYWx0ZWRfX7eqnRXSdZg4v
+ glBjYWKYGKBs4G24BhjG6Utm6E8Yw+TfyJxD9Si0jZPY/67mJDI7pUaiJOQBIlnNYup+XBRaqUs
+ PEzSBdVyU7Y3Tir/sJZjOdFTqghkyQP7N+Y4Tavg+7hQpAM/TYBu3h1Vk4867xqPqZUmYbVhL7j
+ YzDx691+QzSrwr3UndTlgJ/oioBpvo2DXnHToPR1lUHpWwaTF01hVEoCvR0oHgksjOmyNP6y+aF
+ FOWtifBFnzD6A627BzbKr66+Si2NQSCTIfPtF6T1+/kw6y2LCY2SSTJTU/b3+x5HFnIKiqZL4p4
+ jcHi43Y9kJuaS/mEXEz6k6M+rQsoliJuQDTiV1RQfcDxJMFcl2DZ7r0fXqrijQyohqJAIoLXxVM
+ WMEEenyXrDGQFRAFF0uv2t7LIede3fJ00fQBK/3DUjvv7nF9q6GYleeA91/hYAFPyfrIqnuyJ7z
+ +w2Ujw/v1oh/wnZQcCg==
+X-Authority-Analysis: v=2.4 cv=eJ4jSnp1 c=1 sm=1 tr=0 ts=69de66fd cx=c_pps
+ a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=uAbxVGIbfxUO_5tXvNgY:22 a=VnNF1IyMAAAA:8
+ a=Zg_fgM-7fzLk7_7bOdYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=zZCYzV9kfG8A:10
+X-Proofpoint-GUID: 3m3_VBFCWvmOrIMnl-0WlOdsMwD0_RKw
+X-Proofpoint-ORIG-GUID: CH-2a-nuGZI5u_Lb2b4gbgN4-GM4wBNM
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-14_03,2026-04-13_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 lowpriorityscore=0 adultscore=0 priorityscore=1501
+ clxscore=1015 bulkscore=0 suspectscore=0 spamscore=0 impostorscore=0
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604070000
+ definitions=main-2604140148
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	DMARC_POLICY_ALLOW(-0.50)[ibm.com,none];
+	R_DKIM_ALLOW(-0.20)[ibm.com:s=pp1];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	TAGGED_FROM(0.00)[bounces-2347-lists,live-patching=lfdr.de];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_TO(0.00)[189.cn];
-	RCVD_TLS_LAST(0.00)[];
 	MIME_TRACE(0.00)[0:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[19];
+	DKIM_TRACE(0.00)[ibm.com:+];
+	TAGGED_FROM(0.00)[bounces-2348-lists,live-patching=lfdr.de];
+	HAS_ORG_HEADER(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[47];
-	RCVD_COUNT_FIVE(0.00)[5];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[linux.ibm.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns];
+	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[petr.pavlu@suse.com,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
-	TO_DN_NONE(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[jremus@linux.ibm.com,live-patching@vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	FORGED_SENDER_MAILLIST(0.00)[];
 	MID_RHS_MATCH_FROM(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[fhfr.pm:email,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns,digitalocean.com:email,189.cn:email,suse.com:dkim,suse.com:mid]
-X-Rspamd-Queue-Id: B7D4B3FB691
+	RCVD_COUNT_SEVEN(0.00)[11]
+X-Rspamd-Queue-Id: DD0473FC70C
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On 4/13/26 10:07 AM, chensong_2000@189.cn wrote:
-> From: Song Chen <chensong_2000@189.cn>
-> 
-> ftrace and livepatch currently have their module load/unload callbacks
-> hard-coded in the module loader as direct function calls to
-> ftrace_module_enable(), klp_module_coming(), klp_module_going()
-> and ftrace_release_mod(). This tight coupling was originally introduced
-> to enforce strict call ordering that could not be guaranteed by the
-> module notifier chain, which only supported forward traversal. Their
-> notifiers were moved in and out back and forth. see [1] and [2].
+On 4/6/2026 8:49 PM, Dylan Hatch wrote:
 
-I'm unclear about what is meant by the notifiers being moved back and
-forth. The links point to patches that converted ftrace+klp from using
-module notifiers to explicit callbacks due to ordering issues, but this
-switch occurred only once. Have there been other attempts to use
-notifiers again?
+> Dylan Hatch (7):
+>   sframe: Allow kernelspace sframe sections.
+>   arm64, unwind: build kernel with sframe V3 info
+>   sframe: Provide PC lookup for vmlinux .sframe section.
+>   sframe: Allow unsorted FDEs.
+>   arm64/module, sframe: Add sframe support for modules.
+>   sframe: Introduce in-kernel SFRAME_VALIDATION.
+>   unwind: arm64: Use sframe to unwind interrupt frames.
 
-> 
-> Now that the notifier chain supports reverse traversal via
-> blocking_notifier_call_chain_reverse(), the ordering can be enforced
-> purely through notifier priority. As a result, the module loader is now
-> decoupled from the implementation details of ftrace and livepatch.
-> What's more, adding a new subsystem with symmetric setup/teardown ordering
-> requirements during module load/unload no longer requires modifying
-> kernel/module/main.c; it only needs to register a notifier_block with an
-> appropriate priority.
-> 
-> [1]:https://lore.kernel.org/all/
-> 	alpine.LNX.2.00.1602172216491.22700@cbobk.fhfr.pm/
-> [2]:https://lore.kernel.org/all/
-> 	20160301030034.GC12120@packer-debian-8-amd64.digitalocean.com/
+Nit: Trailing dot in commit subjects seems unusual.  Remove?
 
-Nit: Avoid wrapping URLs, as it breaks autolinking and makes the links
-harder to copy.
-
-Better links would be:
-[1] https://lore.kernel.org/all/1455661953-15838-1-git-send-email-jeyu@redhat.com/
-[2] https://lore.kernel.org/all/1458176139-17455-1-git-send-email-jeyu@redhat.com/
-
-The first link is the final version of what landed as commit
-7dcd182bec27 ("ftrace/module: remove ftrace module notifier"). The
-second is commit 7e545d6eca20 ("livepatch/module: remove livepatch
-module notifier").
-
-> 
-> Signed-off-by: Song Chen <chensong_2000@189.cn>
-> ---
->  include/linux/module.h  |  8 ++++++++
->  kernel/livepatch/core.c | 29 ++++++++++++++++++++++++++++-
->  kernel/module/main.c    | 34 +++++++++++++++-------------------
->  kernel/trace/ftrace.c   | 38 ++++++++++++++++++++++++++++++++++++++
->  4 files changed, 89 insertions(+), 20 deletions(-)
-> 
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index 14f391b186c6..0bdd56f9defd 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -308,6 +308,14 @@ enum module_state {
->  	MODULE_STATE_COMING,	/* Full formed, running module_init. */
->  	MODULE_STATE_GOING,	/* Going away. */
->  	MODULE_STATE_UNFORMED,	/* Still setting it up. */
-> +	MODULE_STATE_FORMED,
-
-I don't see a reason to add a new module state. Why is it necessary and
-how does it fit with the existing states?
-
-> +};
-> +
-> +enum module_notifier_prio {
-> +	MODULE_NOTIFIER_PRIO_LOW = INT_MIN,	/* Low prioroty, coming last, going first */
-> +	MODULE_NOTIFIER_PRIO_MID = 0,	/* Normal priority. */
-> +	MODULE_NOTIFIER_PRIO_SECOND_HIGH = INT_MAX - 1,	/* Second high priorigy, coming second*/
-> +	MODULE_NOTIFIER_PRIO_HIGH = INT_MAX,	/* High priorigy, coming first, going late. */
-
-I suggest being explicit about how the notifiers are ordered. For
-example:
-
-enum module_notifier_prio {
-	MODULE_NOTIFIER_PRIO_NORMAL,	/* Normal priority, coming last, going first. */
-	MODULE_NOTIFIER_PRIO_LIVEPATCH,
-	MODULE_NOTIFIER_PRIO_FTRACE,	/* High priority, coming first, going late. */
-};
-
->  };
->  
->  struct mod_tree_node {
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 28d15ba58a26..ce78bb23e24b 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -1375,13 +1375,40 @@ void *klp_find_section_by_name(const struct module *mod, const char *name,
->  }
->  EXPORT_SYMBOL_GPL(klp_find_section_by_name);
->  
-> +static int klp_module_callback(struct notifier_block *nb, unsigned long op,
-> +			void *module)
-> +{
-> +	struct module *mod = module;
-> +	int err = 0;
-> +
-> +	switch (op) {
-> +	case MODULE_STATE_COMING:
-> +		err = klp_module_coming(mod);
-> +		break;
-> +	case MODULE_STATE_LIVE:
-> +		break;
-> +	case MODULE_STATE_GOING:
-> +		klp_module_going(mod);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-
-klp_module_coming() and klp_module_going() are now used only in
-kernel/livepatch/core.c where they are also defined. This means the
-functions can be static and their declarations removed from
-include/linux/livepatch.h.
-
-Nit: The MODULE_STATE_LIVE and default cases in the switch can be
-removed.
-
-> +
-> +	return notifier_from_errno(err);
-> +}
-> +
-> +static struct notifier_block klp_module_nb = {
-> +	.notifier_call = klp_module_callback,
-> +	.priority = MODULE_NOTIFIER_PRIO_SECOND_HIGH
-> +};
-> +
->  static int __init klp_init(void)
->  {
->  	klp_root_kobj = kobject_create_and_add("livepatch", kernel_kobj);
->  	if (!klp_root_kobj)
->  		return -ENOMEM;
->  
-> -	return 0;
-> +	return register_module_notifier(&klp_module_nb);
->  }
->  
->  module_init(klp_init);
-> diff --git a/kernel/module/main.c b/kernel/module/main.c
-> index c3ce106c70af..226dd5b80997 100644
-> --- a/kernel/module/main.c
-> +++ b/kernel/module/main.c
-> @@ -833,10 +833,8 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
->  	/* Final destruction now no one is using it. */
->  	if (mod->exit != NULL)
->  		mod->exit();
-> -	blocking_notifier_call_chain(&module_notify_list,
-> +	blocking_notifier_call_chain_reverse(&module_notify_list,
->  				     MODULE_STATE_GOING, mod);
-> -	klp_module_going(mod);
-> -	ftrace_release_mod(mod);
->  
->  	async_synchronize_full();
->  
-> @@ -3135,10 +3133,8 @@ static noinline int do_init_module(struct module *mod)
->  	mod->state = MODULE_STATE_GOING;
->  	synchronize_rcu();
->  	module_put(mod);
-> -	blocking_notifier_call_chain(&module_notify_list,
-> +	blocking_notifier_call_chain_reverse(&module_notify_list,
->  				     MODULE_STATE_GOING, mod);
-> -	klp_module_going(mod);
-> -	ftrace_release_mod(mod);
->  	free_module(mod);
->  	wake_up_all(&module_wq);
->  
-
-The patch unexpectedly leaves a call to ftrace_free_mem() in
-do_init_module().
-
-> @@ -3281,20 +3277,14 @@ static int complete_formation(struct module *mod, struct load_info *info)
->  	return err;
->  }
->  
-> -static int prepare_coming_module(struct module *mod)
-> +static int prepare_module_state_transaction(struct module *mod,
-> +			unsigned long val_up, unsigned long val_down)
->  {
->  	int err;
->  
-> -	ftrace_module_enable(mod);
-> -	err = klp_module_coming(mod);
-> -	if (err)
-> -		return err;
-> -
->  	err = blocking_notifier_call_chain_robust(&module_notify_list,
-> -			MODULE_STATE_COMING, MODULE_STATE_GOING, mod);
-> +			val_up, val_down, mod);
->  	err = notifier_to_errno(err);
-> -	if (err)
-> -		klp_module_going(mod);
->  
->  	return err;
->  }
-> @@ -3468,14 +3458,21 @@ static int load_module(struct load_info *info, const char __user *uargs,
->  	init_build_id(mod, info);
->  
->  	/* Ftrace init must be called in the MODULE_STATE_UNFORMED state */
-> -	ftrace_module_init(mod);
-> +	err = prepare_module_state_transaction(mod,
-> +				MODULE_STATE_UNFORMED, MODULE_STATE_FORMED);
-
-I believe val_down should be MODULE_STATE_GOING to reverse the
-operation. Why is the new state MODULE_STATE_FORMED needed here?
-
-> +	if (err)
-> +		goto ddebug_cleanup;
->  
->  	/* Finally it's fully formed, ready to start executing. */
->  	err = complete_formation(mod, info);
-> -	if (err)
-> +	if (err) {
-> +		blocking_notifier_call_chain_reverse(&module_notify_list,
-> +				MODULE_STATE_FORMED, mod);
->  		goto ddebug_cleanup;
-> +	}
->  
-> -	err = prepare_coming_module(mod);
-> +	err = prepare_module_state_transaction(mod,
-> +				MODULE_STATE_COMING, MODULE_STATE_GOING);
->  	if (err)
->  		goto bug_cleanup;
->  
-> @@ -3522,7 +3519,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
->  	destroy_params(mod->kp, mod->num_kp);
->  	blocking_notifier_call_chain(&module_notify_list,
->  				     MODULE_STATE_GOING, mod);
-
-My understanding is that all notifier chains for MODULE_STATE_GOING
-should be reversed.
-
-> -	klp_module_going(mod);
->   bug_cleanup:
->  	mod->state = MODULE_STATE_GOING;
->  	/* module_bug_cleanup needs module_mutex protection */
-
-The patch removes the klp_module_going() cleanup call in load_module().
-Similarly, the ftrace_release_mod() call under the ddebug_cleanup label
-should be removed and appropriately replaced with a cleanup via
-a notifier.
-
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index 8df69e702706..efedb98d3db4 100644
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -5241,6 +5241,44 @@ static int __init ftrace_mod_cmd_init(void)
->  }
->  core_initcall(ftrace_mod_cmd_init);
->  
-> +static int ftrace_module_callback(struct notifier_block *nb, unsigned long op,
-> +			void *module)
-> +{
-> +	struct module *mod = module;
-> +
-> +	switch (op) {
-> +	case MODULE_STATE_UNFORMED:
-> +		ftrace_module_init(mod);
-> +		break;
-> +	case MODULE_STATE_COMING:
-> +		ftrace_module_enable(mod);
-> +		break;
-> +	case MODULE_STATE_LIVE:
-> +		ftrace_free_mem(mod, mod->mem[MOD_INIT_TEXT].base,
-> +				mod->mem[MOD_INIT_TEXT].base + mod->mem[MOD_INIT_TEXT].size);
-> +		break;
-> +	case MODULE_STATE_GOING:
-> +	case MODULE_STATE_FORMED:
-> +		ftrace_release_mod(mod);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-
-ftrace_module_init(), ftrace_module_enable(), ftrace_free_mem() and
-ftrace_release_mod() should be newly used only in kernel/trace/ftrace.c
-where they are also defined. The functions can then be made static and
-removed from include/linux/ftrace.h.
-
-Nit: The default case in the switch can be removed.
-
-> +
-> +	return notifier_from_errno(0);
-
-Nit: This can be simply "return NOTIFY_OK;".
-
-> +}
-> +
-> +static struct notifier_block ftrace_module_nb = {
-> +	.notifier_call = ftrace_module_callback,
-> +	.priority = MODULE_NOTIFIER_PRIO_HIGH
-> +};
-> +
-> +static int __init ftrace_register_module_notifier(void)
-> +{
-> +	return register_module_notifier(&ftrace_module_nb);
-> +}
-> +core_initcall(ftrace_register_module_notifier);
-> +
->  static void function_trace_probe_call(unsigned long ip, unsigned long parent_ip,
->  				      struct ftrace_ops *op, struct ftrace_regs *fregs)
->  {
-
+> Weinan Liu (1):
+>   arm64: entry: add unwind info for various kernel entries
+Regards,
+Jens
 -- 
-Thanks,
-Petr
+Jens Remus
+Linux on Z Development (D3303)
+jremus@de.ibm.com / jremus@linux.ibm.com
+
+IBM Deutschland Research & Development GmbH; Vorsitzender des Aufsichtsrats: Wolfgang Wendt; Geschäftsführung: David Faller; Sitz der Gesellschaft: Ehningen; Registergericht: Amtsgericht Stuttgart, HRB 243294
+IBM Data Privacy Statement: https://www.ibm.com/privacy/
+
 
