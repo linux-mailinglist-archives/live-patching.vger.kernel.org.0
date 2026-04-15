@@ -1,133 +1,201 @@
-Return-Path: <live-patching+bounces-2353-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2354-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id QGqEHIZB32kxRAAAu9opvQ
-	(envelope-from <live-patching+bounces-2353-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 09:43:02 +0200
+	id kHa+DRpk32mKSQAAu9opvQ
+	(envelope-from <live-patching+bounces-2354-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 12:10:34 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0FAE64017CC
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 09:43:01 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3BA4140325C
+	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 12:10:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id F097830CF119
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 07:40:28 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 201953005150
+	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 09:58:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E76E03A641C;
-	Wed, 15 Apr 2026 07:40:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C01F6326D65;
+	Wed, 15 Apr 2026 09:58:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="GRC7t/3b"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="vDB2QW89";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="zQfjjTKa";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="vDB2QW89";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="zQfjjTKa"
 X-Original-To: live-patching@vger.kernel.org
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB74538AC7D;
-	Wed, 15 Apr 2026 07:40:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667E22EA171
+	for <live-patching@vger.kernel.org>; Wed, 15 Apr 2026 09:58:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776238826; cv=none; b=MzE7KK/3ImGpI3q6eXnH3ZJBZ3vCV5Vx14Mrwi0+nzSSuwBkPlw5r7Q/rUrYN/CDTMbSsnXpDQSHDVt2uEbdUhVlVi84xg6soSU7ixRz/NIzJRLKv+Rk7nBUg+qntiiz8lIZ7kw4oBLBfDU6dOSf/qKIJ928nptnLAXQRolWlWU=
+	t=1776247133; cv=none; b=l809FqID2XCM0xda2DnGQCmEv+1YRhrDcm/18SPLJXnJSo/eflSi8OGaI1sfZtXt+gvR3+W1AhAtklChrR4QQ7yRdjY5Laq/tKYgcQms9UyrmOFugikFupJSBHcp0CfzMMf84biAtelHswB+FRD2ZZ3HFplxuywne/nqQwbxGyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776238826; c=relaxed/simple;
-	bh=FVy8jCFlUIveZkRvfAIgAH4jdv76uLaL71KeKyWWa0A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UDmgt0vUBD6lMePu3/+cLZCuS174JxuXY0I5/ZXtt1Go/uQclbD4hoFg+kg0jendx1u/fz316liD3fxAQtdILi7azijKos+awsFEPVAvTOrk6YlneSQQzu6ql2g28BIFzlcolYFXZWkkCKZUWAUf1B4G59YXav0uZARzpW8ZAz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=GRC7t/3b; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=NQ3FGyj3bB3s3TzgG2AxlTj+u1qB1K3Y0IxoIVLKrvk=; b=GRC7t/3bI7JrNSLxeAMHgwX0K3
-	xAtrXImzdHW7DjijCOvWl5uo9/a2L4na/HS9F/pxZocXEzRMU9/3W/DbnhQtfjmntUMumfaekHgVs
-	JkymKksYscQDAWhsY7kaP5ZNlpkKxH790qgELBntdnQznef/Q7gbpvWEjZjYwEWaDeBReSTC31Vz9
-	0/CNYrcSJDjOUbJO0e8rx/bKOLGKBkSTdCrQ4PvelVDl+p7o76807HnUjeXj973wAqCmNGzxM63WD
-	75DdlQQAK05ZULtWENPz2ItUB2af6iD5mfwoGpmuXIYGFtnoqIRoCIa0Grmtn6PPrY8x33yj9B1cg
-	ULLy052g==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1wCur6-00000000k4p-0j2C;
-	Wed, 15 Apr 2026 07:40:12 +0000
-Date: Wed, 15 Apr 2026 00:40:12 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: chensong_2000@189.cn
-Cc: rafael@kernel.org, lenb@kernel.org, mturquette@baylibre.com,
-	sboyd@kernel.org, viresh.kumar@linaro.org, agk@redhat.com,
-	snitzer@kernel.org, mpatocka@redhat.com, bmarzins@redhat.com,
-	song@kernel.org, yukuai@fnnas.com, linan122@huawei.com,
-	jason.wessel@windriver.com, danielt@kernel.org,
-	dianders@chromium.org, horms@kernel.org, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	paulmck@kernel.org, frederic@kernel.org, mcgrof@kernel.org,
-	petr.pavlu@suse.com, da.gomez@kernel.org, samitolvanen@google.com,
-	atomlin@atomlin.com, jpoimboe@kernel.org, jikos@kernel.org,
-	mbenes@suse.cz, pmladek@suse.com, joe.lawrence@redhat.com,
-	rostedt@goodmis.org, mhiramat@kernel.org, mark.rutland@arm.com,
-	mathieu.desnoyers@efficios.com, linux-modules@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-	linux-acpi@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-pm@vger.kernel.org, live-patching@vger.kernel.org,
-	dm-devel@lists.linux.dev, linux-raid@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] kernel/notifier: replace single-linked list with
- double-linked list for reverse traversal
-Message-ID: <ad9A3JahjIcVkkQG@infradead.org>
-References: <20260415070137.17860-1-chensong_2000@189.cn>
+	s=arc-20240116; t=1776247133; c=relaxed/simple;
+	bh=FJjQg6+ajwdSb2YinDQGQQVPHZXIXGCeuUqs30O3xQs=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=fkhiTtriGOIXo/0QD3ve8kRDl3K61DV8Ddo15uDBVrZwOjYF0c6Z5kAhfDdY2a1vCFkqSQamp6QfksAgZMAjbgXNbenbsDX61wL6/RbFs6jGw7kV+TAjiJ8yg8J/Ceyay12jCYC7D7r0HeNqT2+ZQpbkPIkGAm9Hs94VftT4a4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=vDB2QW89; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=zQfjjTKa; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=vDB2QW89; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=zQfjjTKa; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Received: from pobox.suse.cz (unknown [10.128.32.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 893EB6A7E3;
+	Wed, 15 Apr 2026 09:58:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1776247130; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dcRxfkAdzDk7Zhvra4nNB/DbQIffMMgrxS8OnxtUX7g=;
+	b=vDB2QW892Air6/p0thgJ/jce/Zi5L3hZaWdWObz34lA/yA78Qs7JNjuUJoDAcip1lHIoJU
+	kxvNa7LXuB19CqSgpRYv/w/niEDD6DxxHrJcsYq11ezWM0gN8Avcc37swz+D1Ljo+nKa9j
+	ISGkDj7rop7WvcLZ2LCxeZqv8/EndL0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1776247130;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dcRxfkAdzDk7Zhvra4nNB/DbQIffMMgrxS8OnxtUX7g=;
+	b=zQfjjTKaw43oE0mL6WQ+pTStG7SqjkmF0jSpbbL4uqusxkED7U+V0V9zxpzFbjGeVyebeA
+	GUNMA2S8/CFktGAg==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1776247130; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dcRxfkAdzDk7Zhvra4nNB/DbQIffMMgrxS8OnxtUX7g=;
+	b=vDB2QW892Air6/p0thgJ/jce/Zi5L3hZaWdWObz34lA/yA78Qs7JNjuUJoDAcip1lHIoJU
+	kxvNa7LXuB19CqSgpRYv/w/niEDD6DxxHrJcsYq11ezWM0gN8Avcc37swz+D1Ljo+nKa9j
+	ISGkDj7rop7WvcLZ2LCxeZqv8/EndL0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1776247130;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dcRxfkAdzDk7Zhvra4nNB/DbQIffMMgrxS8OnxtUX7g=;
+	b=zQfjjTKaw43oE0mL6WQ+pTStG7SqjkmF0jSpbbL4uqusxkED7U+V0V9zxpzFbjGeVyebeA
+	GUNMA2S8/CFktGAg==
+Date: Wed, 15 Apr 2026 11:58:50 +0200 (CEST)
+From: Miroslav Benes <mbenes@suse.cz>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+    Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>, 
+    Shuah Khan <shuah@kernel.org>, live-patching@vger.kernel.org, 
+    linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] selftests: livepatch: Check for ARCH_HAS_SYSCALL_WRAPPER
+ config
+In-Reply-To: <20260413-lp-tests-old-fixes-v2-1-367c7cb5006f@suse.com>
+Message-ID: <alpine.LSU.2.21.2604151154330.1967@pobox.suse.cz>
+References: <20260413-lp-tests-old-fixes-v2-0-367c7cb5006f@suse.com> <20260413-lp-tests-old-fixes-v2-1-367c7cb5006f@suse.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260415070137.17860-1-chensong_2000@189.cn>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spamd-Result: default: False [-2.16 / 15.00];
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Score: -4.30
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[infradead.org,none];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
-	R_DKIM_ALLOW(-0.20)[infradead.org:s=bombadil.20210309];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FROM_HAS_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2353-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2354-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
+	DMARC_NA(0.00)[suse.cz];
+	DKIM_TRACE(0.00)[suse.cz:+];
 	RCVD_COUNT_THREE(0.00)[4];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	FREEMAIL_TO(0.00)[189.cn];
 	MIME_TRACE(0.00)[0:+];
-	DKIM_TRACE(0.00)[infradead.org:+];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	MISSING_XM_UA(0.00)[];
-	TO_DN_NONE(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[hch@infradead.org,live-patching@vger.kernel.org];
+	FORGED_SENDER_MAILLIST(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	MID_RHS_MATCH_FROM(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[48];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[189.cn:email,infradead.org:dkim,infradead.org:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 0FAE64017CC
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,suse.com:email,suse.cz:dkim,pobox.suse.cz:mid]
+X-Rspamd-Queue-Id: 3BA4140325C
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Wed, Apr 15, 2026 at 03:01:37PM +0800, chensong_2000@189.cn wrote:
-> diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-> index 132a9df98471..b776dbd5a382 100644
-> --- a/drivers/acpi/sleep.c
-> +++ b/drivers/acpi/sleep.c
-> @@ -56,7 +56,6 @@ static int tts_notify_reboot(struct notifier_block *this,
+On Mon, 13 Apr 2026, Marcos Paulo de Souza wrote:
+
+> Older kernels that lack CONFIG_ARCH_HAS_SYSCALL_WRAPPER config don't
+> have any prefixes for their syscalls. The same applies to current
+> powerpc and loongarch, covering all currently supported architectures
+> that support livepatch.
+> 
+> The other supported architectures have specific prefixes, so error out
+> when a new architecture adds livepatch support with wrappes but didn't
+> update the test to include it.
+> 
+> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> ---
+>  .../selftests/livepatch/test_modules/test_klp_syscall.c | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> index dd802783ea84..b5527a288a7c 100644
+> --- a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> +++ b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> @@ -12,15 +12,26 @@
+>  #include <linux/slab.h>
+>  #include <linux/livepatch.h>
 >  
->  static struct notifier_block tts_notifier = {
->  	.notifier_call	= tts_notify_reboot,
-> -	.next		= NULL,
->  	.priority	= 0,
+> -#if defined(__x86_64__)
+> +/*
+> + * Before CONFIG_ARCH_HAS_SYSCALL_WRAPPER was introduced there were no
+> + * prefixes for system calls.
+> + * Both ppc and loongarch does not set prefixes for their system calls either.
+> + */
+> +#if !defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER) ||  defined(__powerpc__) || \
+> +	defined(__loongarch__)
+> +#define FN_PREFIX
+> +#elif defined(__x86_64__)
+>  #define FN_PREFIX __x64_
+>  #elif defined(__s390x__)
+>  #define FN_PREFIX __s390x_
+>  #elif defined(__aarch64__)
+>  #define FN_PREFIX __arm64_
+> -#else
+> -/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER */
+> +#elif defined(__powerpc__)
+> +#define FN_PREFIX
+> +#elif defined(__loongarch__)
+>  #define FN_PREFIX
+> +#else
+> +#error "Missing syscall wrapper for the given architecture."
+>  #endif
 
-IFF this becomes important for some reason (and right now I don't see
-it), please start by using proper wrappers for notifiers so that the
-implementation details don't leak into the users.  That would actually
-be useful on it's own even.
+I know that Sashiko commented on that already but even with that I wonder 
+if it was cleaner to structure it differently...
 
+#if defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+  #if define(__x86_64__)
+  ...
+  #elif define(__powerpc__)
+    #define FN_PREFIX
+  #else
+    #error
+  #endif
+#elif
+  #define FN_PREFIX
+#endif
+
+?
+
+I still hope that it will be sufficient and we do not have to introduce 
+KERNEL_VERSION checks since wrappers changed/will change.
+
+Miroslav
 
