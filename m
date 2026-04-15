@@ -1,493 +1,710 @@
-Return-Path: <live-patching+bounces-2350-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2351-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id qDLyFKg032lqQAAAu9opvQ
-	(envelope-from <live-patching+bounces-2350-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 08:48:08 +0200
+	id SD9VDwg432nAQQAAu9opvQ
+	(envelope-from <live-patching+bounces-2351-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 09:02:32 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id C22C8401095
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 08:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BDDEC4012AC
+	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 09:02:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id B2B13303012A
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 06:44:11 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 5390F309292A
+	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 07:01:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FCBC3914EA;
-	Wed, 15 Apr 2026 06:44:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 00BF639B977;
+	Wed, 15 Apr 2026 07:01:51 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
 Received: from mail.189.cn (189sx01-ptr.21cn.com [125.88.204.37])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E6C3315D35;
-	Wed, 15 Apr 2026 06:44:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C07C39A06D;
+	Wed, 15 Apr 2026 07:01:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=125.88.204.37
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776235451; cv=none; b=iaUvSpS14EluN4cSV0uTvhdDBl78yBya3VrM+JBM2XoiJoi5agl6rl4X90lC+FXhuekIbbROKRRYl7aeXGWI4p+8JYy/qv/mUebKEIy76IiNayIwDNs9eW+PSFfhTAu7+r0VfbCSExjZnDxDug/c7tnVDTELObjrojFTbgIl5Eg=
+	t=1776236510; cv=none; b=bmy/PY1sXYxe2D+CCV6zxmmvYnh7PULD6Sh6fKwarZfQPDer8xz5JfncB1cPtgkZFIGhCZv2JgqZLr9q3+9IoyThpHsL/RRhhbexwSSRAiJ9t0khljD7+HQThCRvCldD4YDcO69vBtTFQIR3M7yL+1AIG+2pjuKH7+/4VzD6E6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776235451; c=relaxed/simple;
-	bh=lwCmgqjqcbQlfJMh1X8hwGEYnxoUR0QLxjz3mrbn7NU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HBx22jvqQhbTcebiQ21DESwSM9y+mrp+Wih04Enlgxo00e6XtZbBFoV50aRf763ccOfJ+AN4dk17w0tKZQ2/71/pSYjN9VXzr23RTmgTV87lOKJz4RkkWPjRdA+mzG9ucjxcXtO8fOcR1N62NzG7Sr2/vlac2mQb0tDtwCaV6kM=
+	s=arc-20240116; t=1776236510; c=relaxed/simple;
+	bh=BdXFa86tEq+gELj7r9l68qLIBxrEun2ypMTFapr2S8c=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OqawEpVKANJjF6MKeLGw1QzzZLgA1CX9XfMHR/op1Iibn/qv6DiZXs8fRybFlguCBuPVicNr3dLJyoztgcJDh/GDb3DdAR9dxXDJRToXp1ny76PY4nSMy3ZNaxFPgOknOxhsOP2QfYiQAvmZPfD4qL1xUOoMEFKArA0wFUr8nRs=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=189.cn; spf=pass smtp.mailfrom=189.cn; arc=none smtp.client-ip=125.88.204.37
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=189.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=189.cn
-HMM_SOURCE_IP:10.158.243.220:0.2014231400
+HMM_SOURCE_IP:10.158.242.145:0.1634015706
 HMM_ATTACHE_NUM:0000
 HMM_SOURCE_TYPE:SMTP
-Received: from clientip-60.27.227.144 (unknown [10.158.243.220])
-	by mail.189.cn (HERMES) with SMTP id 7104C4002A0;
-	Wed, 15 Apr 2026 14:43:54 +0800 (CST)
+Received: from clientip-60.27.227.144 (unknown [10.158.242.145])
+	by mail.189.cn (HERMES) with SMTP id 169D940029D;
+	Wed, 15 Apr 2026 15:01:40 +0800 (CST)
 Received: from  ([60.27.227.144])
-	by gateway-153622-dep-76cc7bc9cd-j7zjr with ESMTP id b5a71e7471bb4154ab14a2cc20557b33 for petr.pavlu@suse.com;
-	Wed, 15 Apr 2026 14:43:57 CST
-X-Transaction-ID: b5a71e7471bb4154ab14a2cc20557b33
+	by gateway-153622-dep-76cc7bc9cd-r45x9 with ESMTP id 8223a8ac66f64c7cbbfe1057b1437054 for rafael@kernel.org;
+	Wed, 15 Apr 2026 15:01:43 CST
+X-Transaction-ID: 8223a8ac66f64c7cbbfe1057b1437054
 X-Real-From: chensong_2000@189.cn
 X-Receive-IP: 60.27.227.144
 X-MEDUSA-Status: 0
 Sender: chensong_2000@189.cn
-Message-ID: <a35f5f94-7d5a-4347-974b-b270c89ef241@189.cn>
-Date: Wed, 15 Apr 2026 14:43:53 +0800
+From: chensong_2000@189.cn
+To: rafael@kernel.org,
+	lenb@kernel.org,
+	mturquette@baylibre.com,
+	sboyd@kernel.org,
+	viresh.kumar@linaro.org,
+	agk@redhat.com,
+	snitzer@kernel.org,
+	mpatocka@redhat.com,
+	bmarzins@redhat.com,
+	song@kernel.org,
+	yukuai@fnnas.com,
+	linan122@huawei.com,
+	jason.wessel@windriver.com,
+	danielt@kernel.org,
+	dianders@chromium.org,
+	horms@kernel.org,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	paulmck@kernel.org,
+	frederic@kernel.org,
+	mcgrof@kernel.org,
+	petr.pavlu@suse.com,
+	da.gomez@kernel.org,
+	samitolvanen@google.com,
+	atomlin@atomlin.com,
+	jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	rostedt@goodmis.org,
+	mhiramat@kernel.org,
+	mark.rutland@arm.com,
+	mathieu.desnoyers@efficios.com
+Cc: linux-modules@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org,
+	linux-acpi@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	live-patching@vger.kernel.org,
+	dm-devel@lists.linux.dev,
+	linux-raid@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net,
+	netdev@vger.kernel.org,
+	Song Chen <chensong_2000@189.cn>
+Subject: [RFC PATCH 1/2] kernel/notifier: replace single-linked list with double-linked list for reverse traversal
+Date: Wed, 15 Apr 2026 15:01:37 +0800
+Message-ID: <20260415070137.17860-1-chensong_2000@189.cn>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 2/2] kernel/module: Decouple klp and ftrace from
- load_module
-To: Petr Pavlu <petr.pavlu@suse.com>
-Cc: rafael@kernel.org, lenb@kernel.org, mturquette@baylibre.com,
- sboyd@kernel.org, viresh.kumar@linaro.org, agk@redhat.com,
- snitzer@kernel.org, mpatocka@redhat.com, bmarzins@redhat.com,
- song@kernel.org, yukuai@fnnas.com, linan122@huawei.com,
- jason.wessel@windriver.com, danielt@kernel.org, dianders@chromium.org,
- horms@kernel.org, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, paulmck@kernel.org, frederic@kernel.org,
- mcgrof@kernel.org, da.gomez@kernel.org, samitolvanen@google.com,
- atomlin@atomlin.com, jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
- pmladek@suse.com, joe.lawrence@redhat.com, rostedt@goodmis.org,
- mhiramat@kernel.org, mark.rutland@arm.com, mathieu.desnoyers@efficios.com,
- linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
- live-patching@vger.kernel.org, dm-devel@lists.linux.dev,
- linux-raid@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
- netdev@vger.kernel.org
-References: <20260413080701.180976-1-chensong_2000@189.cn>
- <1191caf5-6a61-4622-a15e-854d3701f4fc@suse.com>
-Content-Language: en-US
-From: Song Chen <chensong_2000@189.cn>
-In-Reply-To: <1191caf5-6a61-4622-a15e-854d3701f4fc@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spamd-Result: default: False [-1.46 / 15.00];
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [0.04 / 15.00];
+	MID_CONTAINS_FROM(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
+	R_MISSING_CHARSET(0.50)[];
 	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	TAGGED_FROM(0.00)[bounces-2350-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	DMARC_NA(0.00)[189.cn];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[47];
+	TAGGED_FROM(0.00)[bounces-2351-lists,live-patching=lfdr.de];
 	FREEMAIL_FROM(0.00)[189.cn];
+	MIME_TRACE(0.00)[0:+];
+	DMARC_NA(0.00)[189.cn];
+	RCPT_COUNT_TWELVE(0.00)[48];
+	RCVD_TLS_LAST(0.00)[];
+	FREEMAIL_CC(0.00)[vger.kernel.org,lists.linux.dev,lists.sourceforge.net,189.cn];
+	FORGED_SENDER_MAILLIST(0.00)[];
 	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	FROM_HAS_DN(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
+	FROM_NO_DN(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[chensong_2000@189.cn,live-patching@vger.kernel.org];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	NEURAL_HAM(-0.00)[-0.940];
+	TAGGED_RCPT(0.00)[live-patching];
 	R_DKIM_NA(0.00)[];
-	NEURAL_HAM(-0.00)[-0.999];
-	MID_RHS_MATCH_FROM(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,digitalocean.com:email,fhfr.pm:email,189.cn:mid,189.cn:email]
-X-Rspamd-Queue-Id: C22C8401095
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[fhfr.pm:email,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,189.cn:mid,189.cn:email]
+X-Rspamd-Queue-Id: BDDEC4012AC
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Hi,
+From: Song Chen <chensong_2000@189.cn>
 
-On 4/14/26 22:33, Petr Pavlu wrote:
-> On 4/13/26 10:07 AM, chensong_2000@189.cn wrote:
->> From: Song Chen <chensong_2000@189.cn>
->>
->> ftrace and livepatch currently have their module load/unload callbacks
->> hard-coded in the module loader as direct function calls to
->> ftrace_module_enable(), klp_module_coming(), klp_module_going()
->> and ftrace_release_mod(). This tight coupling was originally introduced
->> to enforce strict call ordering that could not be guaranteed by the
->> module notifier chain, which only supported forward traversal. Their
->> notifiers were moved in and out back and forth. see [1] and [2].
-> 
-> I'm unclear about what is meant by the notifiers being moved back and
-> forth. The links point to patches that converted ftrace+klp from using
-> module notifiers to explicit callbacks due to ordering issues, but this
-> switch occurred only once. Have there been other attempts to use
-> notifiers again?
-> 
+The current notifier chain implementation uses a single-linked list
+(struct notifier_block *next), which only supports forward traversal
+in priority order. This makes it difficult to handle cleanup/teardown
+scenarios that require notifiers to be called in reverse priority order.
 
-Yes,only once,i will rephrase.
+A concrete example is the ordering dependency between ftrace and
+livepatch during module load/unload. see the detail here [1].
 
->>
->> Now that the notifier chain supports reverse traversal via
->> blocking_notifier_call_chain_reverse(), the ordering can be enforced
->> purely through notifier priority. As a result, the module loader is now
->> decoupled from the implementation details of ftrace and livepatch.
->> What's more, adding a new subsystem with symmetric setup/teardown ordering
->> requirements during module load/unload no longer requires modifying
->> kernel/module/main.c; it only needs to register a notifier_block with an
->> appropriate priority.
->>
->> [1]:https://lore.kernel.org/all/
->> 	alpine.LNX.2.00.1602172216491.22700@cbobk.fhfr.pm/
->> [2]:https://lore.kernel.org/all/
->> 	20160301030034.GC12120@packer-debian-8-amd64.digitalocean.com/
-> 
-> Nit: Avoid wrapping URLs, as it breaks autolinking and makes the links
-> harder to copy.
-> 
-> Better links would be:
-> [1] https://lore.kernel.org/all/1455661953-15838-1-git-send-email-jeyu@redhat.com/
-> [2] https://lore.kernel.org/all/1458176139-17455-1-git-send-email-jeyu@redhat.com/
-> 
-> The first link is the final version of what landed as commit
-> 7dcd182bec27 ("ftrace/module: remove ftrace module notifier"). The
-> second is commit 7e545d6eca20 ("livepatch/module: remove livepatch
-> module notifier").
-> 
+This patch replaces the single-linked list in struct notifier_block
+with a struct list_head, converting the notifier chain into a
+doubly-linked list sorted in descending priority order. Based on
+this, a new function notifier_call_chain_reverse() is introduced,
+which traverses the chain in reverse (ascending priority order).
+The corresponding blocking_notifier_call_chain_reverse() is also
+added as the locking wrapper for blocking notifier chains.
 
-Thank you, i will update.
+The internal notifier_call_chain_robust() is updated to use
+notifier_call_chain_reverse() for rollback: on error, it records
+the failing notifier (last_nb) and the count of successfully called
+notifiers (nr), then rolls back exactly those nr-1 notifiers in
+reverse order starting from last_nb's predecessor, without needing
+to know the total length of the chain.
 
->>
->> Signed-off-by: Song Chen <chensong_2000@189.cn>
->> ---
->>   include/linux/module.h  |  8 ++++++++
->>   kernel/livepatch/core.c | 29 ++++++++++++++++++++++++++++-
->>   kernel/module/main.c    | 34 +++++++++++++++-------------------
->>   kernel/trace/ftrace.c   | 38 ++++++++++++++++++++++++++++++++++++++
->>   4 files changed, 89 insertions(+), 20 deletions(-)
->>
->> diff --git a/include/linux/module.h b/include/linux/module.h
->> index 14f391b186c6..0bdd56f9defd 100644
->> --- a/include/linux/module.h
->> +++ b/include/linux/module.h
->> @@ -308,6 +308,14 @@ enum module_state {
->>   	MODULE_STATE_COMING,	/* Full formed, running module_init. */
->>   	MODULE_STATE_GOING,	/* Going away. */
->>   	MODULE_STATE_UNFORMED,	/* Still setting it up. */
->> +	MODULE_STATE_FORMED,
-> 
-> I don't see a reason to add a new module state. Why is it necessary and
-> how does it fit with the existing states?
-> 
-because once notifier fails in state MODULE_STATE_UNFORMED (now only 
-ftrace has someting to do in this state), notifier chain will roll back 
-by calling blocking_notifier_call_chain_robust, i'm afraid 
-MODULE_STATE_GOING is going to jeopardise the notifers which don't 
-handle it appropriately, like:
+With this change, subsystems with symmetric setup/teardown ordering
+requirements can register a single notifier_block with one priority
+value, and rely on blocking_notifier_call_chain() for forward
+traversal and blocking_notifier_call_chain_reverse() for reverse
+traversal, without needing hard-coded call sequences or separate
+notifier registrations for each direction.
 
-case MODULE_STATE_COMING:
-      kmalloc();
-case MODULE_STATE_GOING:
-      kfree();
+[1]:https://lore.kernel.org/all
+	/alpine.LNX.2.00.1602172216491.22700@cbobk.fhfr.pm/
 
+Signed-off-by: Song Chen <chensong_2000@189.cn>
+---
+ drivers/acpi/sleep.c      |   1 -
+ drivers/clk/clk.c         |   2 +-
+ drivers/cpufreq/cpufreq.c |   2 +-
+ drivers/md/dm-integrity.c |   1 -
+ drivers/md/md.c           |   1 -
+ include/linux/notifier.h  |  26 ++---
+ kernel/debug/debug_core.c |   1 -
+ kernel/notifier.c         | 219 ++++++++++++++++++++++++++++++++------
+ net/ipv4/nexthop.c        |   2 +-
+ 9 files changed, 201 insertions(+), 54 deletions(-)
 
->> +};
->> +
->> +enum module_notifier_prio {
->> +	MODULE_NOTIFIER_PRIO_LOW = INT_MIN,	/* Low prioroty, coming last, going first */
->> +	MODULE_NOTIFIER_PRIO_MID = 0,	/* Normal priority. */
->> +	MODULE_NOTIFIER_PRIO_SECOND_HIGH = INT_MAX - 1,	/* Second high priorigy, coming second*/
->> +	MODULE_NOTIFIER_PRIO_HIGH = INT_MAX,	/* High priorigy, coming first, going late. */
-> 
-> I suggest being explicit about how the notifiers are ordered. For
-> example:
-> 
-> enum module_notifier_prio {
-> 	MODULE_NOTIFIER_PRIO_NORMAL,	/* Normal priority, coming last, going first. */
-> 	MODULE_NOTIFIER_PRIO_LIVEPATCH,
-> 	MODULE_NOTIFIER_PRIO_FTRACE,	/* High priority, coming first, going late. */
-> };
-> 
-
-accepted.
-
->>   };
->>   
->>   struct mod_tree_node {
->> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
->> index 28d15ba58a26..ce78bb23e24b 100644
->> --- a/kernel/livepatch/core.c
->> +++ b/kernel/livepatch/core.c
->> @@ -1375,13 +1375,40 @@ void *klp_find_section_by_name(const struct module *mod, const char *name,
->>   }
->>   EXPORT_SYMBOL_GPL(klp_find_section_by_name);
->>   
->> +static int klp_module_callback(struct notifier_block *nb, unsigned long op,
->> +			void *module)
->> +{
->> +	struct module *mod = module;
->> +	int err = 0;
->> +
->> +	switch (op) {
->> +	case MODULE_STATE_COMING:
->> +		err = klp_module_coming(mod);
->> +		break;
->> +	case MODULE_STATE_LIVE:
->> +		break;
->> +	case MODULE_STATE_GOING:
->> +		klp_module_going(mod);
->> +		break;
->> +	default:
->> +		break;
->> +	}
-> 
-> klp_module_coming() and klp_module_going() are now used only in
-> kernel/livepatch/core.c where they are also defined. This means the
-> functions can be static and their declarations removed from
-> include/linux/livepatch.h.
-> 
-> Nit: The MODULE_STATE_LIVE and default cases in the switch can be
-> removed.
-> 
-
-accepted.
-
->> +
->> +	return notifier_from_errno(err);
->> +}
->> +
->> +static struct notifier_block klp_module_nb = {
->> +	.notifier_call = klp_module_callback,
->> +	.priority = MODULE_NOTIFIER_PRIO_SECOND_HIGH
->> +};
->> +
->>   static int __init klp_init(void)
->>   {
->>   	klp_root_kobj = kobject_create_and_add("livepatch", kernel_kobj);
->>   	if (!klp_root_kobj)
->>   		return -ENOMEM;
->>   
->> -	return 0;
->> +	return register_module_notifier(&klp_module_nb);
->>   }
->>   
->>   module_init(klp_init);
->> diff --git a/kernel/module/main.c b/kernel/module/main.c
->> index c3ce106c70af..226dd5b80997 100644
->> --- a/kernel/module/main.c
->> +++ b/kernel/module/main.c
->> @@ -833,10 +833,8 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
->>   	/* Final destruction now no one is using it. */
->>   	if (mod->exit != NULL)
->>   		mod->exit();
->> -	blocking_notifier_call_chain(&module_notify_list,
->> +	blocking_notifier_call_chain_reverse(&module_notify_list,
->>   				     MODULE_STATE_GOING, mod);
->> -	klp_module_going(mod);
->> -	ftrace_release_mod(mod);
->>   
->>   	async_synchronize_full();
->>   
->> @@ -3135,10 +3133,8 @@ static noinline int do_init_module(struct module *mod)
->>   	mod->state = MODULE_STATE_GOING;
->>   	synchronize_rcu();
->>   	module_put(mod);
->> -	blocking_notifier_call_chain(&module_notify_list,
->> +	blocking_notifier_call_chain_reverse(&module_notify_list,
->>   				     MODULE_STATE_GOING, mod);
->> -	klp_module_going(mod);
->> -	ftrace_release_mod(mod);
->>   	free_module(mod);
->>   	wake_up_all(&module_wq);
->>   
-> 
-> The patch unexpectedly leaves a call to ftrace_free_mem() in
-> do_init_module().
-
-Thanks for pointing it out, it was removed when i implemented and 
-tested, but when i organized the patch, it was left. I will remove it.
-
-> 
->> @@ -3281,20 +3277,14 @@ static int complete_formation(struct module *mod, struct load_info *info)
->>   	return err;
->>   }
->>   
->> -static int prepare_coming_module(struct module *mod)
->> +static int prepare_module_state_transaction(struct module *mod,
->> +			unsigned long val_up, unsigned long val_down)
->>   {
->>   	int err;
->>   
->> -	ftrace_module_enable(mod);
->> -	err = klp_module_coming(mod);
->> -	if (err)
->> -		return err;
->> -
->>   	err = blocking_notifier_call_chain_robust(&module_notify_list,
->> -			MODULE_STATE_COMING, MODULE_STATE_GOING, mod);
->> +			val_up, val_down, mod);
->>   	err = notifier_to_errno(err);
->> -	if (err)
->> -		klp_module_going(mod);
->>   
->>   	return err;
->>   }
->> @@ -3468,14 +3458,21 @@ static int load_module(struct load_info *info, const char __user *uargs,
->>   	init_build_id(mod, info);
->>   
->>   	/* Ftrace init must be called in the MODULE_STATE_UNFORMED state */
->> -	ftrace_module_init(mod);
->> +	err = prepare_module_state_transaction(mod,
->> +				MODULE_STATE_UNFORMED, MODULE_STATE_FORMED);
-> 
-> I believe val_down should be MODULE_STATE_GOING to reverse the
-> operation. Why is the new state MODULE_STATE_FORMED needed here?
-to avoid this:
-
-case MODULE_STATE_COMING:
-      kmalloc();
-case MODULE_STATE_GOING:
-      kfree();
-
-
-
-> 
->> +	if (err)
->> +		goto ddebug_cleanup;
->>   
->>   	/* Finally it's fully formed, ready to start executing. */
->>   	err = complete_formation(mod, info);
->> -	if (err)
->> +	if (err) {
->> +		blocking_notifier_call_chain_reverse(&module_notify_list,
->> +				MODULE_STATE_FORMED, mod);
->>   		goto ddebug_cleanup;
->> +	}
->>   
->> -	err = prepare_coming_module(mod);
->> +	err = prepare_module_state_transaction(mod,
->> +				MODULE_STATE_COMING, MODULE_STATE_GOING);
->>   	if (err)
->>   		goto bug_cleanup;
->>   
->> @@ -3522,7 +3519,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
->>   	destroy_params(mod->kp, mod->num_kp);
->>   	blocking_notifier_call_chain(&module_notify_list,
->>   				     MODULE_STATE_GOING, mod);
-> 
-> My understanding is that all notifier chains for MODULE_STATE_GOING
-> should be reversed.
-yes, all, from lowest priority notifier to highest.
-I will resend patch 1 which was failed due to my proxy setting.
-
-> 
->> -	klp_module_going(mod);
->>    bug_cleanup:
->>   	mod->state = MODULE_STATE_GOING;
->>   	/* module_bug_cleanup needs module_mutex protection */
-> 
-> The patch removes the klp_module_going() cleanup call in load_module().
-> Similarly, the ftrace_release_mod() call under the ddebug_cleanup label
-> should be removed and appropriately replaced with a cleanup via
-> a notifier.
-> 
-     err = prepare_module_state_transaction(mod,
-                 MODULE_STATE_UNFORMED, MODULE_STATE_FORMED);
-     if (err)
-         goto ddebug_cleanup;
-
-ftrace will be cleanup in blocking_notifier_call_chain_robust rolling back.
-
-     err = prepare_module_state_transaction(mod,
-                 MODULE_STATE_COMING, MODULE_STATE_GOING);
-
-each notifier including ftrace and klp will be cleanup in 
-blocking_notifier_call_chain_robust rolling back.
-
-if all notifiers are successful in MODULE_STATE_COMING, they all will be 
-clean up in
-  coming_cleanup:
-     mod->state = MODULE_STATE_GOING;
-     destroy_params(mod->kp, mod->num_kp);
-     blocking_notifier_call_chain(&module_notify_list,
-                      MODULE_STATE_GOING, mod);
-
-if  something wrong underneath.
-
->> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
->> index 8df69e702706..efedb98d3db4 100644
->> --- a/kernel/trace/ftrace.c
->> +++ b/kernel/trace/ftrace.c
->> @@ -5241,6 +5241,44 @@ static int __init ftrace_mod_cmd_init(void)
->>   }
->>   core_initcall(ftrace_mod_cmd_init);
->>   
->> +static int ftrace_module_callback(struct notifier_block *nb, unsigned long op,
->> +			void *module)
->> +{
->> +	struct module *mod = module;
->> +
->> +	switch (op) {
->> +	case MODULE_STATE_UNFORMED:
->> +		ftrace_module_init(mod);
->> +		break;
->> +	case MODULE_STATE_COMING:
->> +		ftrace_module_enable(mod);
->> +		break;
->> +	case MODULE_STATE_LIVE:
->> +		ftrace_free_mem(mod, mod->mem[MOD_INIT_TEXT].base,
->> +				mod->mem[MOD_INIT_TEXT].base + mod->mem[MOD_INIT_TEXT].size);
->> +		break;
->> +	case MODULE_STATE_GOING:
->> +	case MODULE_STATE_FORMED:
->> +		ftrace_release_mod(mod);
->> +		break;
->> +	default:
->> +		break;
->> +	}
-> 
-> ftrace_module_init(), ftrace_module_enable(), ftrace_free_mem() and
-> ftrace_release_mod() should be newly used only in kernel/trace/ftrace.c
-> where they are also defined. The functions can then be made static and
-> removed from include/linux/ftrace.h.
-> 
-> Nit: The default case in the switch can be removed.
-> 
-
-accepted.
-
->> +
->> +	return notifier_from_errno(0);
-> 
-> Nit: This can be simply "return NOTIFY_OK;".
-
-accepted
-> 
->> +}
->> +
->> +static struct notifier_block ftrace_module_nb = {
->> +	.notifier_call = ftrace_module_callback,
->> +	.priority = MODULE_NOTIFIER_PRIO_HIGH
->> +};
->> +
->> +static int __init ftrace_register_module_notifier(void)
->> +{
->> +	return register_module_notifier(&ftrace_module_nb);
->> +}
->> +core_initcall(ftrace_register_module_notifier);
->> +
->>   static void function_trace_probe_call(unsigned long ip, unsigned long parent_ip,
->>   				      struct ftrace_ops *op, struct ftrace_regs *fregs)
->>   {
-> 
-
-Best regards
-
-Song
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 132a9df98471..b776dbd5a382 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -56,7 +56,6 @@ static int tts_notify_reboot(struct notifier_block *this,
+ 
+ static struct notifier_block tts_notifier = {
+ 	.notifier_call	= tts_notify_reboot,
+-	.next		= NULL,
+ 	.priority	= 0,
+ };
+ 
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 47093cda9df3..b6fe380d0468 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -4862,7 +4862,7 @@ int clk_notifier_unregister(struct clk *clk, struct notifier_block *nb)
+ 			clk->core->notifier_count--;
+ 
+ 			/* XXX the notifier code should handle this better */
+-			if (!cn->notifier_head.head) {
++			if (list_empty(&cn->notifier_head.head)) {
+ 				srcu_cleanup_notifier_head(&cn->notifier_head);
+ 				list_del(&cn->node);
+ 				kfree(cn);
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 277884d91913..12637e742ffa 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -445,7 +445,7 @@ static void cpufreq_list_transition_notifiers(void)
+ 
+ 	mutex_lock(&cpufreq_transition_notifier_list.mutex);
+ 
+-	for (nb = cpufreq_transition_notifier_list.head; nb; nb = nb->next)
++	list_for_each_entry(nb, &cpufreq_transition_notifier_list.head, entry)
+ 		pr_info("%pS\n", nb->notifier_call);
+ 
+ 	mutex_unlock(&cpufreq_transition_notifier_list.mutex);
+diff --git a/drivers/md/dm-integrity.c b/drivers/md/dm-integrity.c
+index 06e805902151..ccdf75c40b62 100644
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -3909,7 +3909,6 @@ static void dm_integrity_resume(struct dm_target *ti)
+ 	}
+ 
+ 	ic->reboot_notifier.notifier_call = dm_integrity_reboot;
+-	ic->reboot_notifier.next = NULL;
+ 	ic->reboot_notifier.priority = INT_MAX - 1;	/* be notified after md and before hardware drivers */
+ 	WARN_ON(register_reboot_notifier(&ic->reboot_notifier));
+ 
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 3ce6f9e9d38e..8249e78636ab 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -10480,7 +10480,6 @@ static int md_notify_reboot(struct notifier_block *this,
+ 
+ static struct notifier_block md_notifier = {
+ 	.notifier_call	= md_notify_reboot,
+-	.next		= NULL,
+ 	.priority	= INT_MAX, /* before any real devices */
+ };
+ 
+diff --git a/include/linux/notifier.h b/include/linux/notifier.h
+index 01b6c9d9956f..b2abbdfcaadd 100644
+--- a/include/linux/notifier.h
++++ b/include/linux/notifier.h
+@@ -53,41 +53,41 @@ typedef	int (*notifier_fn_t)(struct notifier_block *nb,
+ 
+ struct notifier_block {
+ 	notifier_fn_t notifier_call;
+-	struct notifier_block __rcu *next;
++	struct list_head __rcu entry;
+ 	int priority;
+ };
+ 
+ struct atomic_notifier_head {
+ 	spinlock_t lock;
+-	struct notifier_block __rcu *head;
++	struct list_head __rcu head;
+ };
+ 
+ struct blocking_notifier_head {
+ 	struct rw_semaphore rwsem;
+-	struct notifier_block __rcu *head;
++	struct list_head __rcu head;
+ };
+ 
+ struct raw_notifier_head {
+-	struct notifier_block __rcu *head;
++	struct list_head __rcu head;
+ };
+ 
+ struct srcu_notifier_head {
+ 	struct mutex mutex;
+ 	struct srcu_usage srcuu;
+ 	struct srcu_struct srcu;
+-	struct notifier_block __rcu *head;
++	struct list_head __rcu head;
+ };
+ 
+ #define ATOMIC_INIT_NOTIFIER_HEAD(name) do {	\
+ 		spin_lock_init(&(name)->lock);	\
+-		(name)->head = NULL;		\
++		INIT_LIST_HEAD(&(name)->head);		\
+ 	} while (0)
+ #define BLOCKING_INIT_NOTIFIER_HEAD(name) do {	\
+ 		init_rwsem(&(name)->rwsem);	\
+-		(name)->head = NULL;		\
++		INIT_LIST_HEAD(&(name)->head);		\
+ 	} while (0)
+ #define RAW_INIT_NOTIFIER_HEAD(name) do {	\
+-		(name)->head = NULL;		\
++		INIT_LIST_HEAD(&(name)->head);		\
+ 	} while (0)
+ 
+ /* srcu_notifier_heads must be cleaned up dynamically */
+@@ -97,17 +97,17 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
+ 
+ #define ATOMIC_NOTIFIER_INIT(name) {				\
+ 		.lock = __SPIN_LOCK_UNLOCKED(name.lock),	\
+-		.head = NULL }
++		.head = LIST_HEAD_INIT((name).head) }
+ #define BLOCKING_NOTIFIER_INIT(name) {				\
+ 		.rwsem = __RWSEM_INITIALIZER((name).rwsem),	\
+-		.head = NULL }
++		.head = LIST_HEAD_INIT((name).head) }
+ #define RAW_NOTIFIER_INIT(name)	{				\
+-		.head = NULL }
++		.head = LIST_HEAD_INIT((name).head) }
+ 
+ #define SRCU_NOTIFIER_INIT(name, pcpu)				\
+ 	{							\
+ 		.mutex = __MUTEX_INITIALIZER(name.mutex),	\
+-		.head = NULL,					\
++		.head = LIST_HEAD_INIT((name).head),					\
+ 		.srcuu = __SRCU_USAGE_INIT(name.srcuu),		\
+ 		.srcu = __SRCU_STRUCT_INIT(name.srcu, name.srcuu, pcpu, 0), \
+ 	}
+@@ -170,6 +170,8 @@ extern int atomic_notifier_call_chain(struct atomic_notifier_head *nh,
+ 		unsigned long val, void *v);
+ extern int blocking_notifier_call_chain(struct blocking_notifier_head *nh,
+ 		unsigned long val, void *v);
++extern int blocking_notifier_call_chain_reverse(struct blocking_notifier_head *nh,
++		unsigned long val, void *v);
+ extern int raw_notifier_call_chain(struct raw_notifier_head *nh,
+ 		unsigned long val, void *v);
+ extern int srcu_notifier_call_chain(struct srcu_notifier_head *nh,
+diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
+index 0b9495187fba..a26a7683d142 100644
+--- a/kernel/debug/debug_core.c
++++ b/kernel/debug/debug_core.c
+@@ -1054,7 +1054,6 @@ dbg_notify_reboot(struct notifier_block *this, unsigned long code, void *x)
+ 
+ static struct notifier_block dbg_reboot_notifier = {
+ 	.notifier_call		= dbg_notify_reboot,
+-	.next			= NULL,
+ 	.priority		= INT_MAX,
+ };
+ 
+diff --git a/kernel/notifier.c b/kernel/notifier.c
+index 2f9fe7c30287..6f4d887771c4 100644
+--- a/kernel/notifier.c
++++ b/kernel/notifier.c
+@@ -14,39 +14,47 @@
+  *	are layered on top of these, with appropriate locking added.
+  */
+ 
+-static int notifier_chain_register(struct notifier_block **nl,
++static int notifier_chain_register(struct list_head *nl,
+ 				   struct notifier_block *n,
+ 				   bool unique_priority)
+ {
+-	while ((*nl) != NULL) {
+-		if (unlikely((*nl) == n)) {
++	struct notifier_block *cur;
++
++	list_for_each_entry(cur, nl, entry) {
++		if (unlikely(cur == n)) {
+ 			WARN(1, "notifier callback %ps already registered",
+ 			     n->notifier_call);
+ 			return -EEXIST;
+ 		}
+-		if (n->priority > (*nl)->priority)
+-			break;
+-		if (n->priority == (*nl)->priority && unique_priority)
++
++		if (n->priority == cur->priority && unique_priority)
+ 			return -EBUSY;
+-		nl = &((*nl)->next);
++
++		if (n->priority > cur->priority) {
++			list_add_tail(&n->entry, &cur->entry);
++			goto out;
++		}
+ 	}
+-	n->next = *nl;
+-	rcu_assign_pointer(*nl, n);
++
++	list_add_tail(&n->entry, nl);
++out:
+ 	trace_notifier_register((void *)n->notifier_call);
+ 	return 0;
+ }
+ 
+-static int notifier_chain_unregister(struct notifier_block **nl,
++static int notifier_chain_unregister(struct list_head *nl,
+ 		struct notifier_block *n)
+ {
+-	while ((*nl) != NULL) {
+-		if ((*nl) == n) {
+-			rcu_assign_pointer(*nl, n->next);
++	struct notifier_block *cur;
++
++	list_for_each_entry(cur, nl, entry) {
++		if (cur == n) {
++			list_del(&n->entry);
+ 			trace_notifier_unregister((void *)n->notifier_call);
+ 			return 0;
+ 		}
+-		nl = &((*nl)->next);
+ 	}
++
+ 	return -ENOENT;
+ }
+ 
+@@ -59,25 +67,25 @@ static int notifier_chain_unregister(struct notifier_block **nl,
+  *			value of this parameter is -1.
+  *	@nr_calls:	Records the number of notifications sent. Don't care
+  *			value of this field is NULL.
++ *	@last_nb:  Records the last called notifier block for rolling back
+  *	Return:		notifier_call_chain returns the value returned by the
+  *			last notifier function called.
+  */
+-static int notifier_call_chain(struct notifier_block **nl,
++static int notifier_call_chain(struct list_head *nl,
+ 			       unsigned long val, void *v,
+-			       int nr_to_call, int *nr_calls)
++			       int nr_to_call, int *nr_calls,
++				   struct notifier_block **last_nb)
+ {
+ 	int ret = NOTIFY_DONE;
+-	struct notifier_block *nb, *next_nb;
+-
+-	nb = rcu_dereference_raw(*nl);
++	struct notifier_block *nb;
+ 
+-	while (nb && nr_to_call) {
+-		next_nb = rcu_dereference_raw(nb->next);
++	if (!nr_to_call)
++		return ret;
+ 
++	list_for_each_entry(nb, nl, entry) {
+ #ifdef CONFIG_DEBUG_NOTIFIERS
+ 		if (unlikely(!func_ptr_is_kernel_text(nb->notifier_call))) {
+ 			WARN(1, "Invalid notifier called!");
+-			nb = next_nb;
+ 			continue;
+ 		}
+ #endif
+@@ -87,15 +95,118 @@ static int notifier_call_chain(struct notifier_block **nl,
+ 		if (nr_calls)
+ 			(*nr_calls)++;
+ 
++		if (last_nb)
++			*last_nb = nb;
++
+ 		if (ret & NOTIFY_STOP_MASK)
+ 			break;
+-		nb = next_nb;
+-		nr_to_call--;
++
++		if (nr_to_call-- == 0)
++			break;
+ 	}
+ 	return ret;
+ }
+ NOKPROBE_SYMBOL(notifier_call_chain);
+ 
++/**
++ * notifier_call_chain_reverse - Informs the registered notifiers
++ *			about an event reversely.
++ *	@nl:		Pointer to head of the blocking notifier chain
++ *	@val:		Value passed unmodified to notifier function
++ *	@v:		Pointer passed unmodified to notifier function
++ *	@nr_to_call:	Number of notifier functions to be called. Don't care
++ *			value of this parameter is -1.
++ *	@nr_calls:	Records the number of notifications sent. Don't care
++ *			value of this field is NULL.
++ *	Return:		notifier_call_chain returns the value returned by the
++ *			last notifier function called.
++ */
++static int notifier_call_chain_reverse(struct list_head *nl,
++					struct notifier_block *start,
++					unsigned long val, void *v,
++					int nr_to_call, int *nr_calls)
++{
++	int ret = NOTIFY_DONE;
++	struct notifier_block *nb;
++	bool do_call = (start == NULL);
++
++	if (!nr_to_call)
++		return ret;
++
++	list_for_each_entry_reverse(nb, nl, entry) {
++		if (!do_call) {
++			if (nb == start)
++				do_call = true;
++			continue;
++		}
++#ifdef CONFIG_DEBUG_NOTIFIERS
++		if (unlikely(!func_ptr_is_kernel_text(nb->notifier_call))) {
++			WARN(1, "Invalid notifier called!");
++			continue;
++		}
++#endif
++		trace_notifier_run((void *)nb->notifier_call);
++		ret = nb->notifier_call(nb, val, v);
++
++		if (nr_calls)
++			(*nr_calls)++;
++
++		if (ret & NOTIFY_STOP_MASK)
++			break;
++
++		if (nr_to_call-- == 0)
++			break;
++	}
++	return ret;
++}
++NOKPROBE_SYMBOL(notifier_call_chain_reverse);
++
++/**
++ * notifier_call_chain_rcu - Informs the registered notifiers
++ *			about an event for srcu notifier chain.
++ *	@nl:		Pointer to head of the blocking notifier chain
++ *	@val:		Value passed unmodified to notifier function
++ *	@v:		Pointer passed unmodified to notifier function
++ *	@nr_to_call:	Number of notifier functions to be called. Don't care
++ *			value of this parameter is -1.
++ *	@nr_calls:	Records the number of notifications sent. Don't care
++ *			value of this field is NULL.
++ *	Return:		notifier_call_chain returns the value returned by the
++ *			last notifier function called.
++ */
++static int notifier_call_chain_rcu(struct list_head *nl,
++			       unsigned long val, void *v,
++			       int nr_to_call, int *nr_calls)
++{
++	int ret = NOTIFY_DONE;
++	struct notifier_block *nb;
++
++	if (!nr_to_call)
++		return ret;
++
++	list_for_each_entry_rcu(nb, nl, entry) {
++#ifdef CONFIG_DEBUG_NOTIFIERS
++		if (unlikely(!func_ptr_is_kernel_text(nb->notifier_call))) {
++			WARN(1, "Invalid notifier called!");
++			continue;
++		}
++#endif
++		trace_notifier_run((void *)nb->notifier_call);
++		ret = nb->notifier_call(nb, val, v);
++
++		if (nr_calls)
++			(*nr_calls)++;
++
++		if (ret & NOTIFY_STOP_MASK)
++			break;
++
++		if (nr_to_call-- == 0)
++			break;
++	}
++	return ret;
++}
++NOKPROBE_SYMBOL(notifier_call_chain_rcu);
++
+ /**
+  * notifier_call_chain_robust - Inform the registered notifiers about an event
+  *                              and rollback on error.
+@@ -111,15 +222,16 @@ NOKPROBE_SYMBOL(notifier_call_chain);
+  *
+  * Return:	the return value of the @val_up call.
+  */
+-static int notifier_call_chain_robust(struct notifier_block **nl,
++static int notifier_call_chain_robust(struct list_head *nl,
+ 				     unsigned long val_up, unsigned long val_down,
+ 				     void *v)
+ {
+ 	int ret, nr = 0;
++	struct notifier_block *last_nb = NULL;
+ 
+-	ret = notifier_call_chain(nl, val_up, v, -1, &nr);
++	ret = notifier_call_chain(nl, val_up, v, -1, &nr, &last_nb);
+ 	if (ret & NOTIFY_STOP_MASK)
+-		notifier_call_chain(nl, val_down, v, nr-1, NULL);
++		notifier_call_chain_reverse(nl, last_nb, val_down, v, nr-1, NULL);
+ 
+ 	return ret;
+ }
+@@ -220,7 +332,7 @@ int atomic_notifier_call_chain(struct atomic_notifier_head *nh,
+ 	int ret;
+ 
+ 	rcu_read_lock();
+-	ret = notifier_call_chain(&nh->head, val, v, -1, NULL);
++	ret = notifier_call_chain(&nh->head, val, v, -1, NULL, NULL);
+ 	rcu_read_unlock();
+ 
+ 	return ret;
+@@ -238,7 +350,7 @@ NOKPROBE_SYMBOL(atomic_notifier_call_chain);
+  */
+ bool atomic_notifier_call_chain_is_empty(struct atomic_notifier_head *nh)
+ {
+-	return !rcu_access_pointer(nh->head);
++	return list_empty(&nh->head);
+ }
+ 
+ /*
+@@ -340,7 +452,7 @@ int blocking_notifier_call_chain_robust(struct blocking_notifier_head *nh,
+ 	 * racy then it does not matter what the result of the test
+ 	 * is, we re-check the list after having taken the lock anyway:
+ 	 */
+-	if (rcu_access_pointer(nh->head)) {
++	if (!list_empty(&nh->head)) {
+ 		down_read(&nh->rwsem);
+ 		ret = notifier_call_chain_robust(&nh->head, val_up, val_down, v);
+ 		up_read(&nh->rwsem);
+@@ -375,15 +487,52 @@ int blocking_notifier_call_chain(struct blocking_notifier_head *nh,
+ 	 * racy then it does not matter what the result of the test
+ 	 * is, we re-check the list after having taken the lock anyway:
+ 	 */
+-	if (rcu_access_pointer(nh->head)) {
++	if (!list_empty(&nh->head)) {
+ 		down_read(&nh->rwsem);
+-		ret = notifier_call_chain(&nh->head, val, v, -1, NULL);
++		ret = notifier_call_chain(&nh->head, val, v, -1, NULL, NULL);
+ 		up_read(&nh->rwsem);
+ 	}
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(blocking_notifier_call_chain);
+ 
++/**
++ *	blocking_notifier_call_chain_reverse - Call functions reversely in
++ *				a blocking notifier chain
++ *	@nh: Pointer to head of the blocking notifier chain
++ *	@val: Value passed unmodified to notifier function
++ *	@v: Pointer passed unmodified to notifier function
++ *
++ *	Calls each function in a notifier chain in turn.  The functions
++ *	run in a process context, so they are allowed to block.
++ *
++ *	If the return value of the notifier can be and'ed
++ *	with %NOTIFY_STOP_MASK then blocking_notifier_call_chain()
++ *	will return immediately, with the return value of
++ *	the notifier function which halted execution.
++ *	Otherwise the return value is the return value
++ *	of the last notifier function called.
++ */
++
++int blocking_notifier_call_chain_reverse(struct blocking_notifier_head *nh,
++		unsigned long val, void *v)
++{
++	int ret = NOTIFY_DONE;
++
++	/*
++	 * We check the head outside the lock, but if this access is
++	 * racy then it does not matter what the result of the test
++	 * is, we re-check the list after having taken the lock anyway:
++	 */
++	if (!list_empty(&nh->head)) {
++		down_read(&nh->rwsem);
++		ret = notifier_call_chain_reverse(&nh->head, NULL, val, v, -1, NULL);
++		up_read(&nh->rwsem);
++	}
++	return ret;
++}
++EXPORT_SYMBOL_GPL(blocking_notifier_call_chain_reverse);
++
+ /*
+  *	Raw notifier chain routines.  There is no protection;
+  *	the caller must provide it.  Use at your own risk!
+@@ -450,7 +599,7 @@ EXPORT_SYMBOL_GPL(raw_notifier_call_chain_robust);
+ int raw_notifier_call_chain(struct raw_notifier_head *nh,
+ 		unsigned long val, void *v)
+ {
+-	return notifier_call_chain(&nh->head, val, v, -1, NULL);
++	return notifier_call_chain(&nh->head, val, v, -1, NULL, NULL);
+ }
+ EXPORT_SYMBOL_GPL(raw_notifier_call_chain);
+ 
+@@ -543,7 +692,7 @@ int srcu_notifier_call_chain(struct srcu_notifier_head *nh,
+ 	int idx;
+ 
+ 	idx = srcu_read_lock(&nh->srcu);
+-	ret = notifier_call_chain(&nh->head, val, v, -1, NULL);
++	ret = notifier_call_chain_rcu(&nh->head, val, v, -1, NULL);
+ 	srcu_read_unlock(&nh->srcu, idx);
+ 	return ret;
+ }
+@@ -566,7 +715,7 @@ void srcu_init_notifier_head(struct srcu_notifier_head *nh)
+ 	mutex_init(&nh->mutex);
+ 	if (init_srcu_struct(&nh->srcu) < 0)
+ 		BUG();
+-	nh->head = NULL;
++	INIT_LIST_HEAD(&nh->head);
+ }
+ EXPORT_SYMBOL_GPL(srcu_init_notifier_head);
+ 
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index c942f1282236..0afcba2967c7 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -90,7 +90,7 @@ static const struct nla_policy rtm_nh_res_bucket_policy_get[] = {
+ 
+ static bool nexthop_notifiers_is_empty(struct net *net)
+ {
+-	return !net->nexthop.notifier_chain.head;
++	return list_empty(&net->nexthop.notifier_chain.head);
+ }
+ 
+ static void
+-- 
+2.43.0
 
 
