@@ -1,167 +1,244 @@
-Return-Path: <live-patching+bounces-2368-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2369-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id qBC8F1744GnZnwAAu9opvQ
-	(envelope-from <live-patching+bounces-2368-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 16:55:26 +0200
+	id WGyIMAz54GkloAAAu9opvQ
+	(envelope-from <live-patching+bounces-2369-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 16:58:20 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id C1DE540FEB9
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 16:55:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3C2C3410053
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 16:58:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 8DDC23050C0D
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 14:54:33 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 2E1C93025481
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 14:58:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7F403E1CEE;
-	Thu, 16 Apr 2026 14:54:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 688823A6EF6;
+	Thu, 16 Apr 2026 14:58:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="AxvLgQs0"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="OEwhZ5K5"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28A1B3E120D
-	for <live-patching@vger.kernel.org>; Thu, 16 Apr 2026 14:54:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1172934DB4F;
+	Thu, 16 Apr 2026 14:58:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776351269; cv=none; b=gLSG3qb/fFEANFPN14Ejtnv4TnSs1DrbAnMpoCbD1k7t+QR3fSicnt4M330w5xIGeOeY8Dg2YJbK78KUFI90TCq3kruH2JAZYDWK2ElodE3fDLtHxjStGLwN95LpIE8CzKiC50gdqkuURSHzutyXDQHFgRQ+Pw92BEb2irdvX1w=
+	t=1776351498; cv=none; b=P/Yoypv7bsB+kRBPN2wAgLllZgok4K5LMGh2xJuB0MxbU6+mFknamuGZ5o0ylxGcC0FdpB5FyAgSFfQshNeNt3u+BlluVssPiJ8Q2L48LagavfLV5sr4OiA8DGrE5udyG6CXiXba9EycTG6S7T2y1/aK4fh0pPI1ra0NdJdBSaM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776351269; c=relaxed/simple;
-	bh=EPHRfB7I5uH7xIWit20L1zYnCi9wOT2o59aqll9Yfh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CMvcPZ6nLj2e2wxPPY91GdfYFCNCFxSwiUuITuBgl9FdkJzaWs3dQ2Ay12E6c//3QZWB0J6XuVR3dvCQaK0uR0w+09pJW7K/Dw1iN10ISH8C1qIgN/EAOBnG3p83BMA7PsmsUnsHBmM1iLjnwNHXPyciZubr8iq6aReIUA3xon0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=AxvLgQs0; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-488c21c636dso49836985e9.2
-        for <live-patching@vger.kernel.org>; Thu, 16 Apr 2026 07:54:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1776351266; x=1776956066; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nUk9+5ugjhG90uPs8bskXfY1v/H6BYvalTyZQcNSMUA=;
-        b=AxvLgQs0aTfo5aAuCATMtxqRRyrWZscAlPsA/t41RJ+9AHIVNMbCmUsIeVQrkPCx+c
-         w6usVFoGLtuyL6ix3ExuPLMCE2wXopuILo7/owj/aeMHFfikW3URlwtyVLrBFDMGmC9R
-         oriTluTZb8rpNneBcFfL6C9opqoTySGkMuV66LC6WpwfOpNLO3JZwFkHqLleCS4QYWsv
-         7xNDCB+p2+IISzNFUXDt5Pq74+TRIkbYatSvjOFQ/jusNKjpBs6kIWj/kmd646CZan1f
-         vOyVERub8RMzJxxLAGz5S3gV5TaQz7ehlGQp3Jm1jNc58JUIwHLYqgbcY3wChskeG4uz
-         ABXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776351266; x=1776956066;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nUk9+5ugjhG90uPs8bskXfY1v/H6BYvalTyZQcNSMUA=;
-        b=nfhuRhG44ysDC/Jk2s4Er00XSBysH9iVXO262EuRPizn+oomzA7PncXrX4Lw3M6QwC
-         DnY6aCXtkdOjT6AnUJO0vM5DcY8LhurPsF14KKNO9EKPMXJONxyM3Zd+r6cr12oQK98y
-         Lv5lObgcWc8YVUitRMZrPpOz1D5y5cF+vMT7UF0ylUWrkPr6RnSHFTJ2kHfPOrTDagjN
-         PeCc0ZwP5MJ54jTVLModgvWseIohwdjEnbB0zOo+QtP+InlAzxhQ8/QgOCkqPEm2MAwT
-         sej0uFiC8Jv0b42uq2HcNu6XG9JEvb5/6G79fYMYFxMVcJDL7FReSyUS43ugRy0AlfIg
-         848g==
-X-Forwarded-Encrypted: i=1; AFNElJ+BaULMhKAIU8KZJ3J+oF9nMjM7fPYq8axo7BKRKHcjnkg+R+03GLK8fTdyojoatJAiOiE1Aem5d5mOJKWS@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx3uf2NH4ZINY9TWVnKQEXjrfr1s2Cf+2eMW6YCzQADoI0vvsrr
-	qi8MIQh1zoPtL2AWzdABaotpJeSzPs/4pnHfODv1cZDjr2HK73kj39496HDPO8XVWIk=
-X-Gm-Gg: AeBDieukbUoDBcvZPmnKisQf+beKViyvmY1KvSTsdfNpvqu6Hg7/rHf2dV22CdaM9D4
-	GsIMzfBJ5n/o4qdOYceb/XECkcf2WJxiUm+7qXkpT4MjedW+dtWzHUcgvS3C/64hIrmG2Sa3XsS
-	XtYwu/D32ZMkdqlxl1aMca9JeEd6EP+b+zP/No9Lrc6hfZPBa0DJpf2mawWNDpYxmYGB/c5QrAb
-	m0X+mQ7AwKcA6KW8PE9E74EUUbrtiQOQtukmfExeLgCQ6OIPTTWxD1MYHfc7WI+CAD43wco9qw+
-	F1UcxxQ5oGRwPzn8KDDcUEnJr1JTJc90E1PKYFXEcqih7cEK8cdW8Vmxm06e275iD4PVl2UZ4I2
-	43TKW5qtHFVRo4UEvT2EtgRiL/9pf3XeMn6Osit/si5CIAYlWAGzvnjuztEeiJzlVvkGg4JPEOL
-	DUpQXWgh+yrN7xY17BocLS+Wuo1g==
-X-Received: by 2002:a05:600d:4:b0:480:69b6:dfed with SMTP id 5b1f17b1804b1-488d68ab2bfmr302762205e9.24.1776351266415;
-        Thu, 16 Apr 2026 07:54:26 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43ead2decafsm12915427f8f.0.2026.04.16.07.54.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2026 07:54:26 -0700 (PDT)
-Date: Thu, 16 Apr 2026 16:54:23 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: David Laight <david.laight.linux@gmail.com>
-Cc: chensong_2000@189.cn, rafael@kernel.org, lenb@kernel.org,
-	mturquette@baylibre.com, sboyd@kernel.org, viresh.kumar@linaro.org,
-	agk@redhat.com, snitzer@kernel.org, mpatocka@redhat.com,
-	bmarzins@redhat.com, song@kernel.org, yukuai@fnnas.com,
-	linan122@huawei.com, jason.wessel@windriver.com, danielt@kernel.org,
-	dianders@chromium.org, horms@kernel.org, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	paulmck@kernel.org, frederic@kernel.org, mcgrof@kernel.org,
-	petr.pavlu@suse.com, da.gomez@kernel.org, samitolvanen@google.com,
-	atomlin@atomlin.com, jpoimboe@kernel.org, jikos@kernel.org,
-	mbenes@suse.cz, joe.lawrence@redhat.com, rostedt@goodmis.org,
-	mhiramat@kernel.org, mark.rutland@arm.com,
-	mathieu.desnoyers@efficios.com, linux-modules@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-	linux-acpi@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-pm@vger.kernel.org, live-patching@vger.kernel.org,
-	dm-devel@lists.linux.dev, linux-raid@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] kernel/notifier: replace single-linked list with
- double-linked list for reverse traversal
-Message-ID: <aeD4H8P1DiPQoM8V@pathway.suse.cz>
-References: <20260415070137.17860-1-chensong_2000@189.cn>
- <20260416133004.07bd2886@pumpkin>
+	s=arc-20240116; t=1776351498; c=relaxed/simple;
+	bh=rwoWBAI19GGSXGBzeZCHMwA0DT8fetfYb6JRWXv7sC4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EQwUL9jFJ6QJE1qzxzfmFUfdBmCTum2wbJbGKKPdk1OxKxT02ebl2cMdOGoX/TPqP8TN1TRx3A0+sU/6lY8Q8dJTaEYnGaN/J39uEzcMtF0po5fThgkHFZNzuRCBqF9eHqAYhxMNwHNfx30X4kH5pZRGyZgguKt9+KSMGEC5GMo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=OEwhZ5K5; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63FNsdiF123217;
+	Thu, 16 Apr 2026 14:57:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=IiFTqN
+	RsW+CS1xyti7DFe/0/7O0KPEJESBzPaT2EaKY=; b=OEwhZ5K5GzpnqOsL6J8tzX
+	orFny0soLKWrR5LMVi98dWuUKoeVo3nn8171NgQ+qgYRyLyg4cGQxwgKtnJ21+Be
+	cqjlyIMt2Ig6vIRSwDJijFtP4G1rGQsR3yWocHYn1f5FZlqqq5JoOc/ey3FDzSOK
+	mesMB73/4dE3k7mWs59ei41cfj5EcpDqJGLAnjjRE7fm0FUPeAtHhRshqkXauMJ5
+	W6GGVg7t5GXWBSQbCRrQbK+PolaU1gDmv/6bt9vm1mXBFbm1LKWYC2Cstd2jb4Rz
+	olFlWGIUs2U7XLCrC+Niz357DACz608+ogPr8MWII8xnxBn/DWKM8NagLXvjqaiQ
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4dh89pn4wh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 16 Apr 2026 14:57:46 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 63GBGvSx015206;
+	Thu, 16 Apr 2026 14:57:45 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4dg0msuhkh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 16 Apr 2026 14:57:45 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63GEviiY44040564
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 16 Apr 2026 14:57:44 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 044E920043;
+	Thu, 16 Apr 2026 14:57:44 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 207B820040;
+	Thu, 16 Apr 2026 14:57:43 +0000 (GMT)
+Received: from [9.111.199.83] (unknown [9.111.199.83])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu, 16 Apr 2026 14:57:43 +0000 (GMT)
+Message-ID: <52b8f4c6-baa6-4163-8dbd-4b0789389455@linux.ibm.com>
+Date: Thu, 16 Apr 2026 16:57:40 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260416133004.07bd2886@pumpkin>
-X-Spamd-Result: default: False [-0.66 / 15.00];
-	SUSPICIOUS_RECIPS(1.50)[];
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 5/8] sframe: Allow unsorted FDEs.
+To: Dylan Hatch <dylanbhatch@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Weinan Liu <wnliu@google.com>, Will Deacon <will@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Indu Bhagat <indu.bhagat@oracle.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Jiri Kosina <jikos@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>,
+        Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
+        Puranjay Mohan <puranjay@kernel.org>, Song Liu <song@kernel.org>,
+        joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Heiko Carstens <hca@linux.ibm.com>
+References: <20260406185000.1378082-1-dylanbhatch@google.com>
+ <20260406185000.1378082-6-dylanbhatch@google.com>
+Content-Language: en-US
+From: Jens Remus <jremus@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20260406185000.1378082-6-dylanbhatch@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Proofpoint-GUID: ZM9UdjMfRQTtwPFkdWXaQp2GrTAo940S
+X-Proofpoint-ORIG-GUID: YfFfJ_XYa4519ZbQXfQQ9UzoQjC4ENhB
+X-Authority-Analysis: v=2.4 cv=WbE8rUhX c=1 sm=1 tr=0 ts=69e0f8eb cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=Y2IxJ9c9Rs8Kov3niI8_:22 a=VnNF1IyMAAAA:8
+ a=1XWaLZrsAAAA:8 a=LFt20mCCc4CE-LtB3JUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDE2MDEzNyBTYWx0ZWRfXwHEumePO8J3y
+ +bEHaemOIo9ZzaNBvXdmjlh1I7YlodIIZ/JXgqyJc1jYGRLACpwnznCPgaqx6IbKbWPzSe9zAsV
+ SvviQYO6I0WO6pVbojGXktjEE73Msfz1+H1rgdZ5IOdIlNoYZHf401kgFrHgicutvvZMb+x5B+M
+ 0eB+R4DrbgPsPCj1LyafgubYeEEQyS7qZ58MUXIikdb30EYr0J3wV9wx0B/uH6Obmn5Zr6yUL6D
+ bLaKn3TNiL14x9A+wRDEpZAjggto9tc8d9gGfLAydBht0PK2OuQLkOOTFHnqY4a9cKi99kDK2M2
+ xR/Qo577BcxhQnc8yVNtEoXjJW+ZZwZNIh8yIVq7dcllxF1dfFpXVwXEqtOHzVPNrIVJmCV9csm
+ 19NMbEjojO+hDNAiN3A4sqxx4yFnDkM3+RTjcr+1DksCFjMrVpAXUInYKz/PgsFIpPUnC31OxKG
+ dMzZXrrbVuhhjq7Flow==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-16_03,2026-04-16_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 bulkscore=0 priorityscore=1501 spamscore=0 clxscore=1015
+ phishscore=0 impostorscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604160137
+X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	DMARC_POLICY_ALLOW(-0.50)[ibm.com,none];
+	R_DKIM_ALLOW(-0.20)[ibm.com:s=pp1];
 	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2368-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	FREEMAIL_TO(0.00)[gmail.com];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	FREEMAIL_CC(0.00)[189.cn,kernel.org,baylibre.com,linaro.org,redhat.com,fnnas.com,huawei.com,windriver.com,chromium.org,davemloft.net,google.com,suse.com,atomlin.com,suse.cz,goodmis.org,arm.com,efficios.com,vger.kernel.org,lists.linux.dev,lists.sourceforge.net];
-	RCPT_COUNT_TWELVE(0.00)[48];
 	MIME_TRACE(0.00)[0:+];
-	FROM_HAS_DN(0.00)[];
-	MISSING_XM_UA(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[20];
+	DKIM_TRACE(0.00)[ibm.com:+];
+	TAGGED_FROM(0.00)[bounces-2369-lists,live-patching=lfdr.de];
+	HAS_ORG_HEADER(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[pmladek@suse.com,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[suse.com:+];
-	NEURAL_HAM(-0.00)[-0.999];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns,linux.ibm.com:mid];
 	TO_DN_SOME(0.00)[];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[jremus@linux.ibm.com,live-patching@vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
 	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim,pathway.suse.cz:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: C1DE540FEB9
+	FORGED_SENDER_MAILLIST(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	NEURAL_HAM(-0.00)[-1.000];
+	TAGGED_RCPT(0.00)[live-patching];
+	RCVD_COUNT_SEVEN(0.00)[11]
+X-Rspamd-Queue-Id: 3C2C3410053
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Thu 2026-04-16 13:30:04, David Laight wrote:
-> On Wed, 15 Apr 2026 15:01:37 +0800
-> chensong_2000@189.cn wrote:
+On 4/6/2026 8:49 PM, Dylan Hatch wrote:
+> The .sframe in kernel modules is built without SFRAME_F_FDE_SORTED set.
+> In order to allow sframe PC lookup in modules, add a code path to handle
+> unsorted FDE tables by doing a simple linear search.
 > 
-> > From: Song Chen <chensong_2000@189.cn>
-> > 
-> > The current notifier chain implementation uses a single-linked list
-> > (struct notifier_block *next), which only supports forward traversal
-> > in priority order. This makes it difficult to handle cleanup/teardown
-> > scenarios that require notifiers to be called in reverse priority order.
-> 
-> If it is only cleanup/teardown then the list can be order-reversed
-> as part of that process at the same time as the list is deleted.
+> Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
 
-Interesting idea. But it won't work in all situations.
+With my below two minor comments considered:
 
-Note that the motivation for this update are the module loader
-notifiers which are called several times for each loaded/removed module.
+Reviewed-by: Jens Remus <jremus@linux.ibm.com>
 
-Best Regards,
-Petr
+> diff --git a/include/linux/sframe.h b/include/linux/sframe.h
+
+> @@ -64,6 +64,7 @@ struct sframe_section {
+>  	unsigned long		text_start;
+>  	unsigned long		text_end;
+>  
+> +	bool			fdes_sorted;
+>  	unsigned long		fdes_start;
+>  	unsigned long		fres_start;
+>  	unsigned long		fres_end;
+
+The struct would be smaller if the bool fdes_sorted flag would be
+inserted after the unsigned int num_fdes field:
+
+$ pahole -C sframe_section kernel/unwind/sframe.o
+
+Yours:
+size: 96
+
+With bool fdes_sorted moved after unsigned int num_fdes:
+size: 88
+
+> diff --git a/kernel/unwind/sframe.c b/kernel/unwind/sframe.c
+
+> @@ -179,9 +179,34 @@ static __always_inline int __read_fde(struct sframe_section *sec,
+>  	return -EFAULT;
+>  }
+>  
+> -static __always_inline int __find_fde(struct sframe_section *sec,
+> -				      unsigned long ip,
+> -				      struct sframe_fde_internal *fde)
+> +static __always_inline int __find_fde_unsorted(struct sframe_section *sec,
+> +					       unsigned long ip,
+> +					       struct sframe_fde_internal *fde)
+> +{
+> +	struct sframe_fde_v3 *cur, *start, *end;
+> +
+> +	start = (struct sframe_fde_v3 *)sec->fdes_start;
+> +	end = start + sec->num_fdes;
+> +
+> +	for (cur = start; cur < end; cur++) {
+> +		s64 func_off;
+> +		u32 func_size;
+> +		unsigned long func_addr;
+> +
+> +		DATA_GET(sec, func_off, &cur->func_start_off, s64, Efault);
+> +		DATA_GET(sec, func_size, &cur->func_size, u32, Efault);
+> +		func_addr = (unsigned long)cur + func_off;
+> +
+> +		if (ip >= func_addr && ip < func_addr + func_size)
+> +			return __read_fde(sec, cur - start, fde);
+> +	}
+
+__find_fde() (now __find_fde_sorted()) returns -EINVAL, if no FDE is found:
+
+	return -EINVAL;
+
+> +Efault:
+> +	return -EFAULT;
+> +}
+Regards,
+Jens
+-- 
+Jens Remus
+Linux on Z Development (D3303)
+jremus@de.ibm.com / jremus@linux.ibm.com
+
+IBM Deutschland Research & Development GmbH; Vorsitzender des Aufsichtsrats: Wolfgang Wendt; Geschäftsführung: David Faller; Sitz der Gesellschaft: Ehningen; Registergericht: Amtsgericht Stuttgart, HRB 243294
+IBM Data Privacy Statement: https://www.ibm.com/privacy/
+
 
