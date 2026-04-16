@@ -1,178 +1,344 @@
-Return-Path: <live-patching+bounces-2356-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2357-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id uGrPCK+G32nSUgAAu9opvQ
-	(envelope-from <live-patching+bounces-2356-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 14:38:07 +0200
+	id 6FvAI2wq4GlEdAAAu9opvQ
+	(envelope-from <live-patching+bounces-2357-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 02:16:44 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 880A340454A
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 14:38:06 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 726284092DE
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 02:16:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 3576030711A9
-	for <lists+live-patching@lfdr.de>; Wed, 15 Apr 2026 12:37:43 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 10FCC30561FE
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 00:16:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 088CA2DC334;
-	Wed, 15 Apr 2026 12:37:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E33B18787A;
+	Thu, 16 Apr 2026 00:16:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="NihDecWh"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dIlRp/P7"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D6F92D7812
-	for <live-patching@vger.kernel.org>; Wed, 15 Apr 2026 12:37:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28F9217B418;
+	Thu, 16 Apr 2026 00:16:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776256659; cv=none; b=g9Yi0wrnecceeSAeUx+G0YW1usKfGearT6ofO1OXmBQHHsOkiU9latNdFhnuUR38CWN+80WDUjUP+qGRBnDAE4sU2c1HqDwqDlBsYf49TF47OFyN4m3TY1iqCgVUHVwpuwBE5msQciRPeBLA6HA+E/qJBZuTdGA6J1Tj9f7NjZs=
+	t=1776298601; cv=none; b=sDVrxqvbU7tSr5B5Vkh+nM7uHLvnz4RC8jrzgdgn/92avuKp6DLxiQjsfkl9Zd6LioFMEIhTvf5TTB6NAeJMpuhmT/DTSvC3+3LLAlQOhH/+1y3udK9KWs3IUFDIhXwbI/IieGBetVLRPBS7jTOo6Q5TcgLgNvF1x8tGIERV5FY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776256659; c=relaxed/simple;
-	bh=q4znQqg8V/w+XTKKS6TQ22baPgvBcP185doNB6m/8Eo=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=NLsQnbZUPDHUM4BZQHqQsBQGVTPon2AflXcN5MC2Mx3stjur4Msmb3TlcphhkKDv82u24Lci210Mu+hmgR1tOVwCc4R1KzXSaHiWgZenyXEN3MVvngHpODqYfqjo3FAzqDmmo91JB5owPCoilN3xP8SR3he5V0rATNhmySloHuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=NihDecWh; arc=none smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-43d572f7437so4280431f8f.1
-        for <live-patching@vger.kernel.org>; Wed, 15 Apr 2026 05:37:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1776256657; x=1776861457; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=q4znQqg8V/w+XTKKS6TQ22baPgvBcP185doNB6m/8Eo=;
-        b=NihDecWh8FInuI7hc8thR0MnAL7IO4TfE264DqxkIk2aVjd9p6syUlUo+eXPbtCirt
-         Y9L8qbqYdiuCBEm1ogRjSLxjA8LGMdfDEuH81yuY+RF8NrIWblgXVNvrnzLsVB4mgCLl
-         JM1znEpBMRxcyLSbzRxXAz4nafxqbWXIZcCSn1DjvmLKPMmDU+9yzEI7Z2Xv9eLrmwyO
-         krl3I4FqOjL8MerTRG4fAlgOPYCWaZ0M58COpqaZy3OEfiDv8Jeytdto4cn+6seJu4eP
-         igBFgSYv+B5G9zPQkoGo3CwfrG/k8zWHR5l89if+ljkdmhhYZT3xhMEKxyfJzK55T9eM
-         kedA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776256657; x=1776861457;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=q4znQqg8V/w+XTKKS6TQ22baPgvBcP185doNB6m/8Eo=;
-        b=sNCCmrGalNK5LFs9k0OQj2eysYIT4vBIJhpvKrEf0Ay1tKUA/SLlbKLbbPtVufY13P
-         TB2fiRt9UYKMTRCtC2p7gJKrEd/YU4ebPapGypAevMWl4p8aAZbSonYKvlZRKWofE6tV
-         1C7WFL84JTXe8V3fO7eic5g67CNr65WO/OkghPTQHlvlNbNRJbT+L/HIgNeCEYEGTEVe
-         9UqKwi6DCivP8avaFwki0UJYtxKLBIja5Fry08XZA4sZECF7gwqZLoyXmqfeX4eE5np5
-         JQWRXfXy3imhK0hDAwkP0byu0Wi1n5Kd0Bn/cV9qK9ysmenjsUalD+/9DlNSnStHfx8o
-         GZTA==
-X-Forwarded-Encrypted: i=1; AFNElJ+aPheWxn9RVZPEFvPr1KwzwdX707qvpdMJqSgyykvSOpgQXNjzgZiyGulgFc+C60F6cJuch0lUeNuuybVw@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx0kyPHGbwuuydFaNwFBkPN/W8Hm9z/vgmCSouTQ04RJc+FUa1M
-	Qvi3UjcUMdTGqageBuvkjyfE3hozBbs0Hna/e9kL92ZHRjmD54bJxMXzl4wlOtR0m6o=
-X-Gm-Gg: AeBDietSeG9hvECDDpFW8KqU5T9IqqX8qq8keagzgFv+hyySKZ/qrrIs0hoYgQGUN9A
-	QS+BJFvBQ7dIyKgIrKAHNvxYHn7Z3hYyHSqzGAX+w4pUgby5TxKcw5ZIgrhBPsDgHRbJbpN0OXD
-	ckqPfUkHNF4F9uimYgvOsJC/gh3v0iFEadCFNcp7SsJg6sD5gu7K8bKs2QKcCdN60PJ5lFsN2P5
-	R9N63/lh76HoWKwwlUKCkYKwCyCho32R9R53/AortRHE5Jz/O089lDZU6IPpyqef7iwvbIye/yd
-	D1SxwcTpX4OR6PqMpdvt/3am/9XBNvSt3O+2vXAZEX6FMDnVfI8v8dE4zCc688K/cq95KkMI6GV
-	8+3WEnd9HsbioHw/zSmYKrTr4NGR7vEZabf4+1Tc/4hgtrU6SNkM7xvdAAgFSPVooyiEUeplOuB
-	xyXYvTdyHIEds+bJz4i/U+MsHBBgDN7TgCpJlFSMGvJXY7roZGwrfhNxPUYkwRVSrbVwk=
-X-Received: by 2002:a05:6000:1004:b0:43d:7868:21db with SMTP id ffacd0b85a97d-43d786822b6mr12590363f8f.18.1776256656638;
-        Wed, 15 Apr 2026 05:37:36 -0700 (PDT)
-Received: from ?IPv6:2804:1bc4:224:7800:585c:db3a:fcb:e21f? ([2804:1bc4:224:7800:585c:db3a:fcb:e21f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43ead33d65asm5004581f8f.4.2026.04.15.05.37.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Apr 2026 05:37:36 -0700 (PDT)
-Message-ID: <847de72350a1fe8bd765f2e5493b13e8bf7b2966.camel@suse.com>
-Subject: Re: [PATCH v2 0/6] kselftests: livepatch: Adapt tests to be
- executed on 4.12 kernels
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Miroslav Benes <mbenes@suse.cz>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>,
- Shuah Khan <shuah@kernel.org>, 	live-patching@vger.kernel.org,
- linux-kselftest@vger.kernel.org, 	linux-kernel@vger.kernel.org
-Date: Wed, 15 Apr 2026 09:37:30 -0300
-In-Reply-To: <alpine.LSU.2.21.2604151357350.1967@pobox.suse.cz>
-References: <20260413-lp-tests-old-fixes-v2-0-367c7cb5006f@suse.com>
-	 <alpine.LSU.2.21.2604151357350.1967@pobox.suse.cz>
-Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
- keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
- Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
- gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
- QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
- GO8seNG8sYiP6JfRjl7Hyqca6YsE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.0 (by Flathub.org) 
+	s=arc-20240116; t=1776298601; c=relaxed/simple;
+	bh=pW7ATLxGItLWgDrh83nUF0l1D7OA11kkykUEjmwOpZQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=t5i4Gx68XNhFZ10fOdxhj0CG/mP2B9T/y4rsRAgYvtbK0hWgm+vHqjfkadKz898WlMlb4hC+ucdoYHD1fOs81VyicJKZCZrAgbu4uy8TJPIN87MOd7EBzi6ub1Akf2eKUhpKudmWCwl5ySQzXXaOYg/8zizFP7sZvTB95znFcFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dIlRp/P7; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA0E9C19424;
+	Thu, 16 Apr 2026 00:16:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776298601;
+	bh=pW7ATLxGItLWgDrh83nUF0l1D7OA11kkykUEjmwOpZQ=;
+	h=From:To:Cc:Subject:Date:From;
+	b=dIlRp/P7Np64VuKZiIsR2jsxoQonH5eGmLKgBr28bobzjQcRz3eTZxq7P02dQt2Vf
+	 EpJV7sxH8MPIor1NUpPUKZR3HAHI1p7qaeKcFsN88qLd/d0rPc2Kf+dwy3ZQXJfcBf
+	 Bmg4pM48NI78HiRr42hVFoZ/4MW/3y9QRw6u4Pz/Y4AHKykrvWaCHizXPltnxd0FR0
+	 9k0phSnQDDOuAt4uTMOk40DJv1VVrUYl+B+Nm0TUhImltR7f3HfPldE0SxORd7BiHN
+	 Kw3RrsWpuFskzBrqmDl93zuWzWxaXJXlZf/JNf8Dv1KqBtHqPMqzCuIOuAdsEJCl2U
+	 VZ4lEKzIi9/+g==
+From: Song Liu <song@kernel.org>
+To: live-patching@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: jpoimboe@kernel.org,
+	jikos@kernel.org,
+	mbenes@suse.cz,
+	pmladek@suse.com,
+	joe.lawrence@redhat.com,
+	laoar.shao@gmail.com,
+	kernel-team@meta.com,
+	Song Liu <song@kernel.org>
+Subject: [PATCH] samples/livepatch: Add BPF struct_ops integration sample
+Date: Wed, 15 Apr 2026 17:16:28 -0700
+Message-ID: <20260416001628.2062468-1-song@kernel.org>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spamd-Result: default: False [-2.16 / 15.00];
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [0.84 / 15.00];
+	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
+	MID_CONTAINS_FROM(1.00)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_MISSING_CHARSET(0.50)[];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	FROM_HAS_DN(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2356-lists,live-patching=lfdr.de];
+	ASN_FAIL(0.00)[114.105.105.172.asn.rspamd.com:server fail];
+	FREEMAIL_CC(0.00)[kernel.org,suse.cz,suse.com,redhat.com,gmail.com,meta.com];
 	MIME_TRACE(0.00)[0:+];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mpdesouza@suse.com,live-patching@vger.kernel.org];
+	TAGGED_FROM(0.00)[bounces-2357-lists,live-patching=lfdr.de];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	MID_RHS_MATCH_FROM(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.com:dkim,suse.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 880A340454A
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	NEURAL_HAM(-0.00)[-0.994];
+	TAGGED_RCPT(0.00)[live-patching];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 726284092DE
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Wed, 2026-04-15 at 14:01 +0200, Miroslav Benes wrote:
-> On Mon, 13 Apr 2026, Marcos Paulo de Souza wrote:
->=20
-> > A new version of the patchset, with fewer patches now. Please take
-> > a look!
-> >=20
-> > Original cover-letter:
-> > These patches don't really change how the patches are run, just
-> > skip
-> > some tests on kernels that don't support a feature (like kprobe and
-> > livepatched living together) or when a livepatch sysfs attribute is
-> > missing.
-> >=20
-> > The last patch slightly adjusts check_result function to skip dmesg
-> > messages on SLE kernels when a livepatch is removed.
-> >=20
-> > These patches are based on printk/for-next branch.
-> >=20
-> > Please review! Thanks!
-> >=20
-> > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
->=20
-> Besides my comment for 1/6 and what Sashiko discovered, it looks good
-> to=20
-> me.
->=20
-> However, please also take a look at brand new=20
-> test_modules/test_klp_mod_target.c. It does not build on old kernels
-> since=20
-> they lack proc_create_single(). I think it should be covered in this
-> patch=20
-> set too.
+Add a sample module that demonstrates how BPF struct_ops can work
+together with kernel livepatch. The module livepatches
+cmdline_proc_show() and delegates the output to a BPF struct_ops
+callback. When no BPF program is attached, a fallback message is
+shown; when a BPF struct_ops program is attached, it controls the
+/proc/cmdline output via the bpf_klp_seq_write kfunc.
 
-I saw that yesterday as well, but I wanted to merge this series first.
-I have plans to create a way to unregister the livepatches if something
-fails, so we can continue to run the other tests. I was planning to fix
-the test_klp_mod_target.c in the same patchset.
+This builds on the existing livepatch-sample.c pattern but shows how
+livepatch and BPF struct_ops can be combined to make livepatched
+behavior programmable from userspace.
 
->=20
-> Regards
-> Miroslav
+The module is built when both CONFIG_SAMPLE_LIVEPATCH and
+CONFIG_BPF_JIT are enabled.
+
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ samples/livepatch/Makefile        |   3 +
+ samples/livepatch/livepatch-bpf.c | 202 ++++++++++++++++++++++++++++++
+ 2 files changed, 205 insertions(+)
+ create mode 100644 samples/livepatch/livepatch-bpf.c
+
+diff --git a/samples/livepatch/Makefile b/samples/livepatch/Makefile
+index 9f853eeb6140..1ab4ecbf1f0f 100644
+--- a/samples/livepatch/Makefile
++++ b/samples/livepatch/Makefile
+@@ -6,3 +6,6 @@ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-shadow-fix2.o
+ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-demo.o
+ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-mod.o
+ obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-busymod.o
++ifdef CONFIG_BPF_JIT
++obj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-bpf.o
++endif
+diff --git a/samples/livepatch/livepatch-bpf.c b/samples/livepatch/livepatch-bpf.c
+new file mode 100644
+index 000000000000..4a702a3b4726
+--- /dev/null
++++ b/samples/livepatch/livepatch-bpf.c
+@@ -0,0 +1,202 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * livepatch-bpf.c - BPF struct_ops + Kernel Live Patching Sample Module
++ *
++ * Copyright (c) 2026 Meta Platforms, Inc. and affiliates.
++ *
++ * This sample demonstrates how BPF struct_ops can control kernel
++ * behavior through livepatch. The module livepatches cmdline_proc_show()
++ * and delegates output to a BPF struct_ops callback. A BPF program can
++ * then attach to override /proc/cmdline output via the bpf_klp_seq_write
++ * kfunc.
++ *
++ * Example:
++ *
++ * $ insmod livepatch-bpf.ko
++ * $ cat /proc/cmdline
++ * livepatch_bpf: no struct_ops attached
++ *
++ * (attach a BPF struct_ops program implementing set_cmdline, e.g.)
++ *
++ * SEC("struct_ops/set_cmdline")
++ * int BPF_PROG(set_cmdline, struct seq_file *m)
++ * {
++ *     char custom[] = "klp_bpf: custom cmdline\n";
++ *     bpf_klp_seq_write(m, custom, sizeof(custom) - 1);
++ *     return 0;
++ * }
++ *
++ * $ cat /proc/cmdline
++ * klp_bpf: custom cmdline
++ *
++ * $ echo 0 > /sys/kernel/livepatch/livepatch_bpf/enabled
++ * $ cat /proc/cmdline
++ * <your cmdline>
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/bpf.h>
++#include <linux/btf.h>
++#include <linux/btf_ids.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/livepatch.h>
++#include <linux/seq_file.h>
++#include <linux/bpf_verifier.h>
++
++struct klp_bpf_cmdline_ops {
++	int (*set_cmdline)(struct seq_file *m);
++};
++
++static struct klp_bpf_cmdline_ops *active_ops;
++
++/* --- kfunc: allow BPF struct_ops programs to write to seq_file --- */
++
++__bpf_kfunc_start_defs();
++
++__bpf_kfunc void bpf_klp_seq_write(struct seq_file *m,
++				    const char *data, u32 data__sz)
++{
++	seq_write(m, data, data__sz);
++}
++
++__bpf_kfunc_end_defs();
++
++BTF_KFUNCS_START(klp_bpf_kfunc_ids)
++BTF_ID_FLAGS(func, bpf_klp_seq_write)
++BTF_KFUNCS_END(klp_bpf_kfunc_ids)
++
++static const struct btf_kfunc_id_set klp_bpf_kfunc_set = {
++	.owner = THIS_MODULE,
++	.set   = &klp_bpf_kfunc_ids,
++};
++
++/* --- Livepatch replacement for cmdline_proc_show --- */
++
++static int livepatch_cmdline_proc_show(struct seq_file *m, void *v)
++{
++	struct klp_bpf_cmdline_ops *ops = READ_ONCE(active_ops);
++
++	if (ops && ops->set_cmdline)
++		return ops->set_cmdline(m);
++
++	seq_printf(m, "%s: no struct_ops attached\n", THIS_MODULE->name);
++	return 0;
++}
++
++static struct klp_func funcs[] = {
++	{
++		.old_name = "cmdline_proc_show",
++		.new_func = livepatch_cmdline_proc_show,
++	}, { }
++};
++
++static struct klp_object objs[] = {
++	{
++		/* name being NULL means vmlinux */
++		.funcs = funcs,
++	}, { }
++};
++
++static struct klp_patch patch = {
++	.mod = THIS_MODULE,
++	.objs = objs,
++};
++
++/* --- struct_ops registration --- */
++
++static int klp_bpf_cmdline_reg(void *kdata, struct bpf_link *link)
++{
++	struct klp_bpf_cmdline_ops *ops = kdata;
++
++	if (cmpxchg(&active_ops, NULL, ops))
++		return -EBUSY;
++
++	return 0;
++}
++
++static void klp_bpf_cmdline_unreg(void *kdata, struct bpf_link *link)
++{
++	WRITE_ONCE(active_ops, NULL);
++}
++
++static int klp_bpf_cmdline_init(struct btf *btf)
++{
++	return 0;
++}
++
++static int klp_bpf_cmdline_init_member(const struct btf_type *t,
++				       const struct btf_member *member,
++				       void *kdata, const void *udata)
++{
++	return 0;
++}
++
++static bool klp_bpf_cmdline_is_valid_access(int off, int size,
++					    enum bpf_access_type type,
++					    const struct bpf_prog *prog,
++					    struct bpf_insn_access_aux *info)
++{
++	return bpf_tracing_btf_ctx_access(off, size, type, prog, info);
++}
++
++static int klp_bpf_cmdline_btf_struct_access(struct bpf_verifier_log *log,
++					     const struct bpf_reg_state *reg,
++					     int off, int size)
++{
++	return -EACCES;
++}
++
++static const struct bpf_verifier_ops klp_bpf_cmdline_verifier_ops = {
++	.is_valid_access = klp_bpf_cmdline_is_valid_access,
++	.btf_struct_access = klp_bpf_cmdline_btf_struct_access,
++};
++
++/* CFI stubs */
++static int klp_bpf_cmdline__set_cmdline(struct seq_file *m)
++{
++	return 0;
++}
++
++static struct klp_bpf_cmdline_ops __bpf_klp_bpf_cmdline_ops = {
++	.set_cmdline = klp_bpf_cmdline__set_cmdline,
++};
++
++static struct bpf_struct_ops bpf_klp_bpf_cmdline_ops = {
++	.verifier_ops = &klp_bpf_cmdline_verifier_ops,
++	.init = klp_bpf_cmdline_init,
++	.init_member = klp_bpf_cmdline_init_member,
++	.reg = klp_bpf_cmdline_reg,
++	.unreg = klp_bpf_cmdline_unreg,
++	.cfi_stubs = &__bpf_klp_bpf_cmdline_ops,
++	.name = "klp_bpf_cmdline_ops",
++	.owner = THIS_MODULE,
++};
++
++/* --- Module init/exit --- */
++
++static int __init livepatch_bpf_init(void)
++{
++	int ret;
++
++	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_STRUCT_OPS,
++					&klp_bpf_kfunc_set);
++	ret = ret ?: register_bpf_struct_ops(&bpf_klp_bpf_cmdline_ops,
++					     klp_bpf_cmdline_ops);
++	if (ret)
++		return ret;
++
++	return klp_enable_patch(&patch);
++}
++
++static void __exit livepatch_bpf_exit(void)
++{
++}
++
++module_init(livepatch_bpf_init);
++module_exit(livepatch_bpf_exit);
++MODULE_LICENSE("GPL");
++MODULE_INFO(livepatch, "Y");
++MODULE_AUTHOR("Song Liu");
++MODULE_DESCRIPTION("Sample: BPF struct_ops + livepatch integration");
+-- 
+2.52.0
+
 
