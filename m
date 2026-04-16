@@ -1,78 +1,78 @@
-Return-Path: <live-patching+bounces-2369-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2370-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id WGyIMAz54GkloAAAu9opvQ
-	(envelope-from <live-patching+bounces-2369-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 16:58:20 +0200
+	id AP21ATv74GlloAAAu9opvQ
+	(envelope-from <live-patching+bounces-2370-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 17:07:39 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3C2C3410053
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 16:58:20 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id 662174103D2
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 17:07:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 2E1C93025481
-	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 14:58:19 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 5B00D30EFB49
+	for <lists+live-patching@lfdr.de>; Thu, 16 Apr 2026 15:05:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 688823A6EF6;
-	Thu, 16 Apr 2026 14:58:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CB5130B50F;
+	Thu, 16 Apr 2026 15:05:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="OEwhZ5K5"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="kVkUrTOk"
 X-Original-To: live-patching@vger.kernel.org
 Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1172934DB4F;
-	Thu, 16 Apr 2026 14:58:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05CBF23D2A1;
+	Thu, 16 Apr 2026 15:05:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776351498; cv=none; b=P/Yoypv7bsB+kRBPN2wAgLllZgok4K5LMGh2xJuB0MxbU6+mFknamuGZ5o0ylxGcC0FdpB5FyAgSFfQshNeNt3u+BlluVssPiJ8Q2L48LagavfLV5sr4OiA8DGrE5udyG6CXiXba9EycTG6S7T2y1/aK4fh0pPI1ra0NdJdBSaM=
+	t=1776351906; cv=none; b=M9HZLjniq8EGbzb+5L3Je1e9ZSQXR4UTNYGITLAi+eM7ztLUQHVDmIvZ0ti29xvHCW8gax8xIYwhrUSZFYDOUsTlmJ9d9MAeHQ13M14OcvrFu+1SnJkofETuvaTaiBJREqE+qlwv/Ymo3bu3NoIM7TcEi/+IbndlQRwbSB0hXDI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776351498; c=relaxed/simple;
-	bh=rwoWBAI19GGSXGBzeZCHMwA0DT8fetfYb6JRWXv7sC4=;
+	s=arc-20240116; t=1776351906; c=relaxed/simple;
+	bh=4VuJ8gdBOFhuUhDcHQUNqlBfgwvEsd7307O84Com4UY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EQwUL9jFJ6QJE1qzxzfmFUfdBmCTum2wbJbGKKPdk1OxKxT02ebl2cMdOGoX/TPqP8TN1TRx3A0+sU/6lY8Q8dJTaEYnGaN/J39uEzcMtF0po5fThgkHFZNzuRCBqF9eHqAYhxMNwHNfx30X4kH5pZRGyZgguKt9+KSMGEC5GMo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=OEwhZ5K5; arc=none smtp.client-ip=148.163.158.5
+	 In-Reply-To:Content-Type; b=Sof5pumbZqpWmxSKDYQA2nkuC/Z4hQOXoev1TnB7pxKEuahOw1FmR7+a2q233K6tDM4R3/QP+slPBzoMh9JcHRXehREnW2gBlcjvARB8GxdmHZCiB3OSJsb0cXV/WsKAKKaHKCGMnuNNq89AdE7PoxWOz7+Imr8/q+M3kOJkN94=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=kVkUrTOk; arc=none smtp.client-ip=148.163.158.5
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63FNsdiF123217;
-	Thu, 16 Apr 2026 14:57:47 GMT
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63G3DU1S435815;
+	Thu, 16 Apr 2026 15:04:26 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=IiFTqN
-	RsW+CS1xyti7DFe/0/7O0KPEJESBzPaT2EaKY=; b=OEwhZ5K5GzpnqOsL6J8tzX
-	orFny0soLKWrR5LMVi98dWuUKoeVo3nn8171NgQ+qgYRyLyg4cGQxwgKtnJ21+Be
-	cqjlyIMt2Ig6vIRSwDJijFtP4G1rGQsR3yWocHYn1f5FZlqqq5JoOc/ey3FDzSOK
-	mesMB73/4dE3k7mWs59ei41cfj5EcpDqJGLAnjjRE7fm0FUPeAtHhRshqkXauMJ5
-	W6GGVg7t5GXWBSQbCRrQbK+PolaU1gDmv/6bt9vm1mXBFbm1LKWYC2Cstd2jb4Rz
-	olFlWGIUs2U7XLCrC+Niz357DACz608+ogPr8MWII8xnxBn/DWKM8NagLXvjqaiQ
+	:message-id:mime-version:references:subject:to; s=pp1; bh=FDhIJN
+	kzyRhbrOnlr3Ssr/UqRv/BNHAmvWAkHArYosY=; b=kVkUrTOkO/dZwHXZzglQOi
+	PHh4drWnA/GUs8h+dDm/eN9xt/30v+3x7CksJaP26/I/yJg+cwi28FPzeAlBXBSR
+	YsGHw9kIzJ1XVaBcaeloarE3He/iSx3RM7BGGRVuh85/mq3vZHn1NlQ65l2bJ3e6
+	wSMvDxiQb8+tm6yPcqVaajDs+Iuxufzc4w7+lPCNaN8KtxQyHwqNW72TyKmRXLLv
+	8Xd7OYV/8ZRgB/QhNZX/8krEeqL/EKDW5K58Y8ue63Dv6awLeYN+i3iFvG2E17xG
+	5h8/Wuh2aS96fiPew22eBr7tOfTGGqL3Uwpe+4UysCQAaEFHd7BtqXjRkZg8MRag
 	==
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4dh89pn4wh-1
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4dh89kd6a9-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Apr 2026 14:57:46 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 63GBGvSx015206;
-	Thu, 16 Apr 2026 14:57:45 GMT
+	Thu, 16 Apr 2026 15:04:26 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 63GC1GTB031106;
+	Thu, 16 Apr 2026 15:04:25 GMT
 Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4dg0msuhkh-1
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4dg10ykg9f-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Apr 2026 14:57:45 +0000
+	Thu, 16 Apr 2026 15:04:25 +0000
 Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63GEviiY44040564
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63GF4NSm44040534
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 16 Apr 2026 14:57:44 GMT
+	Thu, 16 Apr 2026 15:04:23 GMT
 Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 044E920043;
-	Thu, 16 Apr 2026 14:57:44 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 476FC20040;
+	Thu, 16 Apr 2026 15:04:23 +0000 (GMT)
 Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 207B820040;
-	Thu, 16 Apr 2026 14:57:43 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 6134F20043;
+	Thu, 16 Apr 2026 15:04:22 +0000 (GMT)
 Received: from [9.111.199.83] (unknown [9.111.199.83])
 	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Thu, 16 Apr 2026 14:57:43 +0000 (GMT)
-Message-ID: <52b8f4c6-baa6-4163-8dbd-4b0789389455@linux.ibm.com>
-Date: Thu, 16 Apr 2026 16:57:40 +0200
+	Thu, 16 Apr 2026 15:04:22 +0000 (GMT)
+Message-ID: <de7bd273-3650-4378-8fd8-a51217e7284b@linux.ibm.com>
+Date: Thu, 16 Apr 2026 17:04:19 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -80,7 +80,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 5/8] sframe: Allow unsorted FDEs.
+Subject: Re: [PATCH v3 7/8] sframe: Introduce in-kernel SFRAME_VALIDATION.
 To: Dylan Hatch <dylanbhatch@google.com>,
         Roman Gushchin <roman.gushchin@linux.dev>,
         Weinan Liu <wnliu@google.com>, Will Deacon <will@kernel.org>,
@@ -98,140 +98,100 @@ Cc: Mark Rutland <mark.rutland@arm.com>,
         linux-arm-kernel@lists.infradead.org,
         Heiko Carstens <hca@linux.ibm.com>
 References: <20260406185000.1378082-1-dylanbhatch@google.com>
- <20260406185000.1378082-6-dylanbhatch@google.com>
+ <20260406185000.1378082-8-dylanbhatch@google.com>
 Content-Language: en-US
 From: Jens Remus <jremus@linux.ibm.com>
 Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20260406185000.1378082-6-dylanbhatch@google.com>
+In-Reply-To: <20260406185000.1378082-8-dylanbhatch@google.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
 X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Proofpoint-GUID: ZM9UdjMfRQTtwPFkdWXaQp2GrTAo940S
-X-Proofpoint-ORIG-GUID: YfFfJ_XYa4519ZbQXfQQ9UzoQjC4ENhB
-X-Authority-Analysis: v=2.4 cv=WbE8rUhX c=1 sm=1 tr=0 ts=69e0f8eb cx=c_pps
- a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+X-Proofpoint-GUID: LGktqNeCrtWBnCML3C6tEOuD6Fh7VnlS
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDE2MDEzNyBTYWx0ZWRfX9pop2o8ktxKt
+ eAyZAyaLAxXH9ZP4qmHTQphFxeEJPFMuZBGOwD/6YL/wPQJcgyUqJwLQ0foDsTDQztWTvV0EdPL
+ CrCDrbXD2/LiEgZBq2Jxwdz9W7qxabuvwggJ1sZ7nElk+xyB5ACB1kr2bt+CzFbXol8gPiqUty7
+ Qn0EtA9MKS7Z4NoRuirwArpE8lqjtCmKul2X2wUKKjvqNOJkfpgDwg/6c06dWVjHxJ1UqQZg9Cf
+ kJ7poFDH4XSBeHJ+PGIufM0j5My6gp2YE9d4uYnT/gdsDjhw6BGLukChKhEepJPlPPeKYfInI1Y
+ uQJJ4E00EnRUFgsRvdWns1IBcyh9f7Tust2ynoBVGfB4e6L2SpuLJQbgoco32ZZGmk+6cnMbUs8
+ 24MIDSJZiyJCaj+J6kA+Gs9NdoDqGCGbuXmnm+4Vmu9nxKPVl5w7k8BZYAGMHSd9l8dmM4uNuLv
+ YtysFuGgggr5WnjQFrQ==
+X-Proofpoint-ORIG-GUID: 9nHZvSvL_Zh6PcFV8qu2Tjq2WgUvuWAe
+X-Authority-Analysis: v=2.4 cv=W60IkxWk c=1 sm=1 tr=0 ts=69e0fa7a cx=c_pps
+ a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17
  a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=Y2IxJ9c9Rs8Kov3niI8_:22 a=VnNF1IyMAAAA:8
- a=1XWaLZrsAAAA:8 a=LFt20mCCc4CE-LtB3JUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDE2MDEzNyBTYWx0ZWRfXwHEumePO8J3y
- +bEHaemOIo9ZzaNBvXdmjlh1I7YlodIIZ/JXgqyJc1jYGRLACpwnznCPgaqx6IbKbWPzSe9zAsV
- SvviQYO6I0WO6pVbojGXktjEE73Msfz1+H1rgdZ5IOdIlNoYZHf401kgFrHgicutvvZMb+x5B+M
- 0eB+R4DrbgPsPCj1LyafgubYeEEQyS7qZ58MUXIikdb30EYr0J3wV9wx0B/uH6Obmn5Zr6yUL6D
- bLaKn3TNiL14x9A+wRDEpZAjggto9tc8d9gGfLAydBht0PK2OuQLkOOTFHnqY4a9cKi99kDK2M2
- xR/Qo577BcxhQnc8yVNtEoXjJW+ZZwZNIh8yIVq7dcllxF1dfFpXVwXEqtOHzVPNrIVJmCV9csm
- 19NMbEjojO+hDNAiN3A4sqxx4yFnDkM3+RTjcr+1DksCFjMrVpAXUInYKz/PgsFIpPUnC31OxKG
- dMzZXrrbVuhhjq7Flow==
+ a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=VnNF1IyMAAAA:8
+ a=1XWaLZrsAAAA:8 a=Q2lZ1eOwVUoNMOp4RhMA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-04-16_03,2026-04-16_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 bulkscore=0 priorityscore=1501 spamscore=0 clxscore=1015
- phishscore=0 impostorscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0
+ impostorscore=0 clxscore=1015 priorityscore=1501 spamscore=0 bulkscore=0
+ adultscore=0 phishscore=0 lowpriorityscore=0 suspectscore=0 malwarescore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604160137
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[ibm.com,none];
 	R_DKIM_ALLOW(-0.20)[ibm.com:s=pp1];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	MIME_TRACE(0.00)[0:+];
 	RCPT_COUNT_TWELVE(0.00)[20];
 	DKIM_TRACE(0.00)[ibm.com:+];
-	TAGGED_FROM(0.00)[bounces-2369-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2370-lists,live-patching=lfdr.de];
 	HAS_ORG_HEADER(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns,linux.ibm.com:mid];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[linux.ibm.com:mid];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[jremus@linux.ibm.com,live-patching@vger.kernel.org];
 	FROM_HAS_DN(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	MID_RHS_MATCH_FROM(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
 	TAGGED_RCPT(0.00)[live-patching];
 	RCVD_COUNT_SEVEN(0.00)[11]
-X-Rspamd-Queue-Id: 3C2C3410053
+X-Rspamd-Queue-Id: 662174103D2
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
+Hello Dylan!
+
 On 4/6/2026 8:49 PM, Dylan Hatch wrote:
-> The .sframe in kernel modules is built without SFRAME_F_FDE_SORTED set.
-> In order to allow sframe PC lookup in modules, add a code path to handle
-> unsorted FDE tables by doing a simple linear search.
-> 
+> Generalize the __safe* helpers to support a non-user-access code path.
+> Allow for kernel FDE read failures due to the presence of .rodata.text.
+> This section contains code that can't be executed by the kernel
+> direclty, and thus lies ouside the normal kernel-text bounds.
+
+Nits: s/direclty/directly/ s/ouside/outside/
+
+Could you please explain the issue?  How/why does .sframe for
+.rodata.text pose an issue for .sframe verification?
+
 > Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
-
-With my below two minor comments considered:
-
-Reviewed-by: Jens Remus <jremus@linux.ibm.com>
-
-> diff --git a/include/linux/sframe.h b/include/linux/sframe.h
-
-> @@ -64,6 +64,7 @@ struct sframe_section {
->  	unsigned long		text_start;
->  	unsigned long		text_end;
->  
-> +	bool			fdes_sorted;
->  	unsigned long		fdes_start;
->  	unsigned long		fres_start;
->  	unsigned long		fres_end;
-
-The struct would be smaller if the bool fdes_sorted flag would be
-inserted after the unsigned int num_fdes field:
-
-$ pahole -C sframe_section kernel/unwind/sframe.o
-
-Yours:
-size: 96
-
-With bool fdes_sorted moved after unsigned int num_fdes:
-size: 88
 
 > diff --git a/kernel/unwind/sframe.c b/kernel/unwind/sframe.c
 
-> @@ -179,9 +179,34 @@ static __always_inline int __read_fde(struct sframe_section *sec,
->  	return -EFAULT;
->  }
+> @@ -690,6 +699,13 @@ static int sframe_validate_section(struct sframe_section *sec)
+>  		int ret;
 >  
-> -static __always_inline int __find_fde(struct sframe_section *sec,
-> -				      unsigned long ip,
-> -				      struct sframe_fde_internal *fde)
-> +static __always_inline int __find_fde_unsorted(struct sframe_section *sec,
-> +					       unsigned long ip,
-> +					       struct sframe_fde_internal *fde)
-> +{
-> +	struct sframe_fde_v3 *cur, *start, *end;
-> +
-> +	start = (struct sframe_fde_v3 *)sec->fdes_start;
-> +	end = start + sec->num_fdes;
-> +
-> +	for (cur = start; cur < end; cur++) {
-> +		s64 func_off;
-> +		u32 func_size;
-> +		unsigned long func_addr;
-> +
-> +		DATA_GET(sec, func_off, &cur->func_start_off, s64, Efault);
-> +		DATA_GET(sec, func_size, &cur->func_size, u32, Efault);
-> +		func_addr = (unsigned long)cur + func_off;
-> +
-> +		if (ip >= func_addr && ip < func_addr + func_size)
-> +			return __read_fde(sec, cur - start, fde);
-> +	}
-
-__find_fde() (now __find_fde_sorted()) returns -EINVAL, if no FDE is found:
-
-	return -EINVAL;
-
-> +Efault:
-> +	return -EFAULT;
-> +}
-Regards,
+>  		ret = safe_read_fde(sec, i, &fde);
+> +		/*
+> +		 * Code in .rodata.text is not considered part of normal kernel
+> +		 * text, but there is no easy way to prevent sframe data from
+> +		 * being generated for it.
+> +		 */
+> +		if (ret && sec->sec_type == SFRAME_KERNEL)
+> +			continue;
+>  		if (ret)
+>  			return ret;
+>  
+Thanks and regards,
 Jens
 -- 
 Jens Remus
