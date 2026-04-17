@@ -1,169 +1,185 @@
-Return-Path: <live-patching+bounces-2387-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2388-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id aIDnOUxX4mm25AAAu9opvQ
-	(envelope-from <live-patching+bounces-2387-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 17 Apr 2026 17:52:44 +0200
+	id qIi1ALF34mnh6AAAu9opvQ
+	(envelope-from <live-patching+bounces-2388-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 17 Apr 2026 20:10:57 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1996B41CD21
-	for <lists+live-patching@lfdr.de>; Fri, 17 Apr 2026 17:52:43 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id E8AC641DD74
+	for <lists+live-patching@lfdr.de>; Fri, 17 Apr 2026 20:10:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id E972A3014916
-	for <lists+live-patching@lfdr.de>; Fri, 17 Apr 2026 15:52:40 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 51131301076A
+	for <lists+live-patching@lfdr.de>; Fri, 17 Apr 2026 18:10:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C992633BBD0;
-	Fri, 17 Apr 2026 15:52:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D7BD3B7B75;
+	Fri, 17 Apr 2026 18:10:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q8RWZWxc"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gSxIbV71"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A65B9314A86
-	for <live-patching@vger.kernel.org>; Fri, 17 Apr 2026 15:52:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56DF6388390
+	for <live-patching@vger.kernel.org>; Fri, 17 Apr 2026 18:10:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776441159; cv=none; b=ZkQVOz9diPI7zCmUDTiPDYLZrKhw+NnnrJ1f5cOtVmsDMjb3GpUOHbVfXt99Cv6GYmidJ+LqugCfVtD2XSgpwk+5Q5fZ+hpqv19cXrhkW+wU1JgFnsE3UuDpz91QDHZK2J3Rae1OXA0cn64xjFr0lRvBNkC36GUb8HeybrDiimE=
+	t=1776449433; cv=none; b=RMZwR6URk3GmjFTEs6WQiNTDgSLE95OVW8ewBCC0aGAp+eYAe8mutx0YBgDIhGUFXFzlPPN3kGh/fXF/10jbdq3CvlfEcvJaZWOb5PWcNvm7RwyPAZstoA5peu2qA4Q5Tyem9XYCTLcnrgkAzqiRx23+IVeZblWSEVwi+U23VHo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776441159; c=relaxed/simple;
-	bh=PiA3mTLszP2wuwFh7nfl9RQZy7J3J6oQRlJkiolWoNE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EkNBBJi63Pvc7Yz6fI7FXtG88T0FUuNlsxXRQxrRT1vhsXT86PmtnZRCffNUmtpU7YOldKKQ6dm8918BGNijCQAc0i6O9Te8aQYWAhaMzhjNHDdO0jVflUhUj87RZknnys6u1tXXYDV0237aypKEN/LDFlXUKnH/VgNn7twkz1s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q8RWZWxc; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6484CC19425
-	for <live-patching@vger.kernel.org>; Fri, 17 Apr 2026 15:52:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776441159;
-	bh=PiA3mTLszP2wuwFh7nfl9RQZy7J3J6oQRlJkiolWoNE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=Q8RWZWxc3IzB9WgkfbXQm+2Zm4pCvaXOU36nB2NxPKSEDTLTKqPr1IHPp+ooWOnBk
-	 FmX+ir92nkRmCGOgc9xYB2p5AEavsAevzftJApo56ZlJwtQbScwIr0jZ5YomtrGma/
-	 LUEEGByLueQNHCLi/7uRNMJ9PyueCAIo4l9qrlVQFTPsw5E22BzvamTcFYYtDmdsjY
-	 Oe/flI8CxLlnrStdbf7Kvx1VrFcaFywd3GI5cyERw50VOV3F1zDeAcvJLFB2JfN9tE
-	 yop9ppi5fCjZtzsPJ8uV+Ay//X0DaHV6ZyhTJEUJ7Vz+49+GQciZZzK1XNSxV7Zhy0
-	 0N0F+whMdZokg==
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-8a4b8c3a30bso8052406d6.3
-        for <live-patching@vger.kernel.org>; Fri, 17 Apr 2026 08:52:39 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ8yfugNPIFE+E4j5mAwSrG5ylL6fiOgzQUMqOdWZYK2f/eaPwR5CAoKIsnQacCtSqVBpNDyW3SWvsqaAI3x@vger.kernel.org
-X-Gm-Message-State: AOJu0YycBnu/PoWW1kKe7EVnNBCqwFp9hWuzrvJY4m/W9GCjSTE5Q6GL
-	r87P+daLFLPeNPSuUS1prokOLGSpNklpdaq3wAe2lFPVeXX5dFIEWwKwcOozf6isXrc0OOM971z
-	Befm2J6eBQMLTWJRpxh5+eQLH4G5VZfM=
-X-Received: by 2002:a05:6214:5f82:b0:8ae:7146:603d with SMTP id
- 6a1803df08f44-8b0280fc43bmr45445356d6.13.1776441158607; Fri, 17 Apr 2026
- 08:52:38 -0700 (PDT)
+	s=arc-20240116; t=1776449433; c=relaxed/simple;
+	bh=X6Pb1/2qLw+LnrK4sxSBFTN5qn/ioZ80l+kq/fKtAc0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XYifkf2S0GDNQ+KSX135eAc5FijhwJGjdstysYHWRJXWE7RyKHWH2DjR1M2coaSb8kvyTcITc9lzCxpl2Nx5BC2rKUUzydqxUK+BPsEz5rXHF3oxyk0jN1DUSfyPgK1AlvHQyKW9TsoHU0QqGtpfBFgFt3hO5NSC8adIiSLFijg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=gSxIbV71; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1776449427;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6kyborFkruSgvXIq68WA0o3wu4Kuyav6HoYwh7WM0s0=;
+	b=gSxIbV71+4voqGv3bwNRO74QDuM0ZEqbxdazpi8VTXUsenOPZZTYrwWjhMVFM9qRt6OKV4
+	AgCDjS8/UxCdgfUKsC5Bzn5+WjR4qh4W0HGtJGlOeTwgbZJ5KLPeWbK5Mn2QYQI7H0Zg8c
+	jh1G6S4ZlpUB8r+9YDaZoouxq8BtiKY=
+Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-125-ZbyjFoCBMHGSMiexMPoOMg-1; Fri,
+ 17 Apr 2026 14:10:26 -0400
+X-MC-Unique: ZbyjFoCBMHGSMiexMPoOMg-1
+X-Mimecast-MFC-AGG-ID: ZbyjFoCBMHGSMiexMPoOMg_1776449425
+Received: from mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.111])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id DA52919560A6;
+	Fri, 17 Apr 2026 18:10:24 +0000 (UTC)
+Received: from redhat.com (unknown [10.22.88.10])
+	by mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 403371800446;
+	Fri, 17 Apr 2026 18:10:23 +0000 (UTC)
+Date: Fri, 17 Apr 2026 14:10:20 -0400
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Miroslav Benes <mbenes@suse.cz>,
+	Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>, Shuah Khan <shuah@kernel.org>,
+	live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] selftests: livepatch: Check for
+ ARCH_HAS_SYSCALL_WRAPPER config
+Message-ID: <aeJ3jPszYCpte8SY@redhat.com>
+References: <20260413-lp-tests-old-fixes-v2-0-367c7cb5006f@suse.com>
+ <20260413-lp-tests-old-fixes-v2-1-367c7cb5006f@suse.com>
+ <alpine.LSU.2.21.2604151154330.1967@pobox.suse.cz>
+ <aeJNnFqLEdMgnHKh@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260416001628.2062468-1-song@kernel.org> <CALOAHbDSpofLCQ-LCU2uVtkc9w+zib0PPgBr+6sEv5FD5+Hd=g@mail.gmail.com>
- <CAPhsuW5=oXwQQyOU7Hf6Qf5=tK=-J75Xr+p+dcGiPs2vVEeMFw@mail.gmail.com> <aeIzhNyvYaR2Krrq@pathway.suse.cz>
-In-Reply-To: <aeIzhNyvYaR2Krrq@pathway.suse.cz>
-From: Song Liu <song@kernel.org>
-Date: Fri, 17 Apr 2026 08:52:26 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6Z91qAM7G=iA_APX4Jfa8a0pshnGSTYn0+JXKsUfEVqQ@mail.gmail.com>
-X-Gm-Features: AQROBzB_Y82sC84m4Aso-1GIlQUzZAZ1ICzC-zH3u-nIc68ICmgCXkfMrUOdlVc
-Message-ID: <CAPhsuW6Z91qAM7G=iA_APX4Jfa8a0pshnGSTYn0+JXKsUfEVqQ@mail.gmail.com>
-Subject: Re: [PATCH] samples/livepatch: Add BPF struct_ops integration sample
-To: Petr Mladek <pmladek@suse.com>
-Cc: Yafang Shao <laoar.shao@gmail.com>, live-patching@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org, 
-	mbenes@suse.cz, joe.lawrence@redhat.com, kernel-team@meta.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spamd-Result: default: False [-0.66 / 15.00];
-	SUSPICIOUS_RECIPS(1.50)[];
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aeJNnFqLEdMgnHKh@pathway.suse.cz>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.111
+X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
+	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FREEMAIL_CC(0.00)[gmail.com,vger.kernel.org,kernel.org,suse.cz,redhat.com,meta.com];
-	FROM_HAS_DN(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	TAGGED_FROM(0.00)[bounces-2387-lists,live-patching=lfdr.de];
+	DKIM_TRACE(0.00)[redhat.com:+];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2388-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
 	MISSING_XM_UA(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[6];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[joe.lawrence@redhat.com,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
-	TAGGED_RCPT(0.00)[live-patching];
 	RCPT_COUNT_SEVEN(0.00)[9];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,mail.gmail.com:mid]
-X-Rspamd-Queue-Id: 1996B41CD21
+	MID_RHS_MATCH_FROM(0.00)[];
+	TAGGED_RCPT(0.00)[live-patching];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: E8AC641DD74
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Fri, Apr 17, 2026 at 6:20=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrot=
-e:
->
-> On Thu 2026-04-16 09:32:46, Song Liu wrote:
-[...]
-> Let' use the code from this patch:
->
-> static int __init livepatch_bpf_init(void)
-> {
->         int ret;
->
->         ret =3D register_btf_kfunc_id_set(BPF_PROG_TYPE_STRUCT_OPS,
->                                         &klp_bpf_kfunc_set);
->         ret =3D ret ?: register_bpf_struct_ops(&bpf_klp_bpf_cmdline_ops,
->                                              klp_bpf_cmdline_ops);
->         if (ret)
->                 return ret;
->
-> --->    /*
-> --->     * We would need to wait here until the BPF program gets loaded.
-> --->     * for the new bpf_struct_ops in this new livepatch.
-> --->     */
->         return klp_enable_patch(&patch);
-> }
+On Fri, Apr 17, 2026 at 05:11:24PM +0200, Petr Mladek wrote:
+> On Wed 2026-04-15 11:58:50, Miroslav Benes wrote:
+> > On Mon, 13 Apr 2026, Marcos Paulo de Souza wrote:
+> > 
+> > > Older kernels that lack CONFIG_ARCH_HAS_SYSCALL_WRAPPER config don't
+> > > have any prefixes for their syscalls. The same applies to current
+> > > powerpc and loongarch, covering all currently supported architectures
+> > > that support livepatch.
+> > > 
+> > > The other supported architectures have specific prefixes, so error out
+> > > when a new architecture adds livepatch support with wrappes but didn't
+> > > update the test to include it.
+> > > 
+> > > --- a/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> > > +++ b/tools/testing/selftests/livepatch/test_modules/test_klp_syscall.c
+> > > @@ -12,15 +12,26 @@
+> > >  #include <linux/slab.h>
+> > >  #include <linux/livepatch.h>
+> > >  
+> > > -#if defined(__x86_64__)
+> > > +/*
+> > > + * Before CONFIG_ARCH_HAS_SYSCALL_WRAPPER was introduced there were no
+> > > + * prefixes for system calls.
+> > > + * Both ppc and loongarch does not set prefixes for their system calls either.
+> > > + */
+> > > +#if !defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER) ||  defined(__powerpc__) || \
+> > > +	defined(__loongarch__)
+> > > +#define FN_PREFIX
+> > > +#elif defined(__x86_64__)
+> > >  #define FN_PREFIX __x64_
+> > >  #elif defined(__s390x__)
+> > >  #define FN_PREFIX __s390x_
+> > >  #elif defined(__aarch64__)
+> > >  #define FN_PREFIX __arm64_
+> > > -#else
+> > > -/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER */
+> > > +#elif defined(__powerpc__)
+> > > +#define FN_PREFIX
+> > > +#elif defined(__loongarch__)
+> > >  #define FN_PREFIX
+> > > +#else
+> > > +#error "Missing syscall wrapper for the given architecture."
+> > >  #endif
+> > 
+> > I know that Sashiko commented on that already but even with that I wonder 
+> > if it was cleaner to structure it differently...
+> > 
+> > #if defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+> >   #if define(__x86_64__)
+> >   ...
+> >   #elif define(__powerpc__)
+> >     #define FN_PREFIX
+> >   #else
+> >     #error
+> >   #endif
+> > #elif
+> >   #define FN_PREFIX
+> > #endif
+> 
+> Yeah, this looks better.
+> 
 
-Yes, something in this direction is needed to make atomic replace work.
-We have no plan to use this in production. I will let Yafang figure out
-his plan.
+Agreed, if there is v3, this would definitely be clearer.
 
-> Or maybe, the bpf_struct_ops can be _allocated dynamically_ and
-> the pointer might be _passed via shadow variables_.
->
-> One problem is that shadow variables would add another overhead
-> and need not be suitable for hot paths.
->
->
-> Anyway, I think that I have similar feelings as Miroslav.
-> The combination of livepatches and BPF programs increases
-> the complexity for all involved parties: core kernel maintainers,
-> livepatch and BPF program authors, and system maintainers.
->
-> Do we really want to propagate it?
-> Is there any significant advantage in combining these two, please?
-> Is it significantly easier to write BPF program then a livepatch?
-> Is it significantly easier to update BPF programs then livepatches?
+--
+Joe
 
-Some combination like this will probably make sense for Yafang's use
-cases. But I agree maybe we don't want this in the samples, because
-it is indeed complicated and could be more dangerous.
-
-Thanks,
-Song
-
-> IMHO, the livepatches should allow enough flexibility. And it might
-> be easier to update the livepatch when needed.
->
-> Or do you install more independent livepatches as well?
->
-> Would the support of different replace tags help?
-> They would allow to replace only livepatches with the same tag.
 
