@@ -1,239 +1,209 @@
-Return-Path: <live-patching+bounces-2408-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2409-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id GP8FM4w252mg5QEAu9opvQ
-	(envelope-from <live-patching+bounces-2408-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 10:34:20 +0200
+	id uGD0EBs/52no5QEAu9opvQ
+	(envelope-from <live-patching+bounces-2409-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 11:10:51 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id C7B4C438391
-	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 10:34:19 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8CAED438A72
+	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 11:10:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 40BD53004DB8
-	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 08:34:15 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 357C4301D33D
+	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 09:05:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 013343815DE;
-	Tue, 21 Apr 2026 08:34:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49D363A16AB;
+	Tue, 21 Apr 2026 09:05:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="JMm1DwLu"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Xcc1CP1c"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A905835DA75;
-	Tue, 21 Apr 2026 08:34:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A90539C657
+	for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 09:05:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776760451; cv=none; b=uX4EXwj5vg5fUwY7z0hHyvhOPVvYqxBazbAmr42sV8wY0HScMjWLkNhQYTB9Ng+eJ/M9r2ANLq0xhYqbS0m5wvgJbqp5pvK9/CFr9HyLoWnsOWAJtmq0YooV9bjAO04FpdZAu5XlHNdvUZd6OnZZAQUgZFEtnju8NmeYjTqrAhI=
+	t=1776762328; cv=none; b=IBOPPQTYlMxvxy3ddMrTFJSb3JuclrbRA9gUlgEl4Hb9N67nAtuVjC3TMlrhd5Tjcdp1Kd4JJUka9SwRTaxe7txAL3deNtfKdoKZagG/bEgYBwBH8bc1PSKbtAaoWn/EyRoY7U4JbO/MvWvAfeSdISVS+ROXrU8nHwHAPnxpb/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776760451; c=relaxed/simple;
-	bh=uSfxKRwjpew2HmTRfW08i9EUnOP8Y7nhJIo6xFpeKYw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FOCkP6iDWrAXQMTcNgNkSQvhl1tb+E73eoq3vIqoUmnaGITsIWQielPA2Zj2XdWyAWTAJ/3rnyeOeDa+yJE4smY9VvbL1lOrBE1oiZ4Y0wGL0lgnniIEz9YQihWYqrOlQgOF3a6jpa3cuQty3VNrCQB1/Rbg+O3nsWcTCUL2hhQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=JMm1DwLu; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63KJgrTX1651159;
-	Tue, 21 Apr 2026 08:33:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=tvgU+J
-	+uG4qVRdJ0fs/rTSKY//EETVDv8n341qcJESE=; b=JMm1DwLugRh9n3Pzk8PG/7
-	RBeu/h58aiVtiO6x87msc+X3di6kQBA0LPSn+GqnnDwrpsXitVaBqpL8IJWsQu6+
-	4eBryUILfdzsk8kHKksN5yXGDYJ16pKxWNQBjR8/Uu/ribCiI881dqewEU8p2iCe
-	hRk7k/xOaGhWgzPUHiPXQ/f/Ucl+THWL5qQe2Pp3K2waoDSXxgnbx3yhOEY3xtz4
-	NmgPkB7F+9gPRel114P+1GMyEHmMvhOFBcxIPqZG3l1f6T+aYf0VNzx/ZPcoo/W9
-	0iZNrSo5PtvHtQ//g48GgY/SWHF3FAzGhE21PR7Za3LbwiclnjkSa/YF/jd7cq8g
-	==
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4dm2k53d5x-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Apr 2026 08:33:33 +0000 (GMT)
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 63L8KNho017504;
-	Tue, 21 Apr 2026 08:33:32 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4dmmnvr3pf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Apr 2026 08:33:32 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63L8XUBL29557270
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 21 Apr 2026 08:33:30 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8C24220043;
-	Tue, 21 Apr 2026 08:33:30 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 16AC920040;
-	Tue, 21 Apr 2026 08:33:30 +0000 (GMT)
-Received: from [9.52.200.195] (unknown [9.52.200.195])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 21 Apr 2026 08:33:30 +0000 (GMT)
-Message-ID: <887de7b5-046c-4f68-b44c-8a1aaf2635e7@linux.ibm.com>
-Date: Tue, 21 Apr 2026 10:33:29 +0200
+	s=arc-20240116; t=1776762328; c=relaxed/simple;
+	bh=jNS11TxrGCzC/ayr6dWUKwMQYFcjJbkoMNjsM92foRg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ht0B4d+QI1/hHajtWBAA/scuasz2eMPJ8ZhyLNhMfsej9cjxqCpR9D0v5f0ZnVPTDLl91rWqVV1Jh1Vov6Cq76PG0FFYKuyhf0exKsytQ6v8kz8B8BKTnzaNQPL4amX2mxCPoJRcpwI3PwfT6cX6v2YojPfwpkq6wvnCfM8th7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Xcc1CP1c; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43d75312379so3054058f8f.1
+        for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 02:05:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1776762325; x=1777367125; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Bq9QG9cvLvgk2UCX7BCWel9Xe8wLb+Jo7joT5Pt0764=;
+        b=Xcc1CP1cnpjrdwUmB5v0J4Irq7DUhlBQD21ey2Ch8Kf6N2zXz11+vDy6TZgmIaAUJC
+         +zoEz8FhqsnU8ZDeplIlW5qDu4M1jS604a2J+/T4WHykYlPpreT7WCgIS73DUOordZhU
+         GSQpP79dJgdMCPtm+L0j6TbNe5PuLwUFNi+EpHD1QPWzLgzk5WJ2OJHQfvHv7r2ufHNM
+         nX6nSDXwcL1hB+Q6aa5W7/7q/7STQTSZPxNsZMvv51vHikW+kMIXBLc6pQtRVKpk8XIr
+         0PPbT4gMMmh5vdD5GsAgJgoWAemXJ+aXAnYSthNEwj6jZRtccCdx87/R/FK10xXMgnxj
+         3nYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776762325; x=1777367125;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Bq9QG9cvLvgk2UCX7BCWel9Xe8wLb+Jo7joT5Pt0764=;
+        b=sLCMEGVBABACQlswXYgCOWB68NgkVocrOKKLLPvonbXl0GLGBdZ8kxfChklOvpeGdj
+         bRv1yssL0vlBEEGn/Uo4Bta2QRjpSmIA2j1N4kMDxJjL9hMSFK9OfesY8f/Ywf8YeR4M
+         G0rl0jc7Mr7cldU7vNY6qn1CeHgoNDyL7jk1KjhmyCZ1bXfXgD9PbwsykszcRalvzw9n
+         dy7G1DarklB7+gdx55niIvA6fbkvPN9BSc3fG6cChmMQfkVgsZsKj3oD419YixoYgH06
+         xK3LLod3CL00d79MLWyilBia25TrQRrn4UCOte+N3nTykMjxN69+CA1jVBM/NuKPmkwB
+         JziQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/oxrg8LgEyC29THZrZ/hS1g2sXOFidme62yUALEK8EitRkiCGGKWQbB5crJILM3werkvtF/GQD4Caan+Y/@vger.kernel.org
+X-Gm-Message-State: AOJu0YxK0TVujjyjeXobUdVudz4/coBJKUJo6vFCjA/CwgcNK3+mupth
+	FukcnsUd4J1s0mWF/+inNNOZjF2nE809hDRwnnVzvLbTTACkq4N3sPOXBIBL07MLCRo=
+X-Gm-Gg: AeBDiesqLDHhB+8Eg3DNvLn9XmG5aBtgzH5XkRGgl9KghrtHxhbXEkZbhVf5Nb9BCAD
+	6EfhEahbLcAEM9ENyQ6cXPyTslHHgd7Ffrvz+xIMgjUplRMbiOc+7UjB9/ROXbrrcjkJ4zEjztz
+	pMjJ2fVUtiAVfQCjeu2e8iv7JZzQgQLLUvbbr4ui27eW5xlCvcjQT7wQ+L4L9rp7dHXQjgZNALT
+	OezYrF7/aTXQZ843Rp9Z7Mi6wYTqhNrFMXwb+imy2P+4hc7efRIn3bIYg8v4C/vJHGM++zA0QfI
+	9JR9CbkHzPIoF8H8Kq7gpps4Uk++lLB7ajd8loY/P0pkAAVAa+sqSL586Mb5LPQVZv6y2ZyG+UB
+	Ci5cGrHTYmmHLNjTZGA8VEkf+uVjm+AqhUVJJHIr7DWIYXWI/3gbcp3aSSmBKK6ZjMuOi5fyKby
+	3c4uTUAg7S2aIGDTV2fAxygi1xsqIBHX+vmkj9hF8QsGEVr0ByRXc=
+X-Received: by 2002:a5d:5c81:0:b0:43d:729e:f23a with SMTP id ffacd0b85a97d-43fe408dab9mr19081632f8f.22.1776762324596;
+        Tue, 21 Apr 2026 02:05:24 -0700 (PDT)
+Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4cb135asm39945351f8f.6.2026.04.21.02.05.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2026 02:05:24 -0700 (PDT)
+Date: Tue, 21 Apr 2026 11:05:21 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: chensong_2000@189.cn, rafael@kernel.org, lenb@kernel.org,
+	mturquette@baylibre.com, sboyd@kernel.org, viresh.kumar@linaro.org,
+	agk@redhat.com, snitzer@kernel.org, mpatocka@redhat.com,
+	bmarzins@redhat.com, song@kernel.org, yukuai@fnnas.com,
+	linan122@huawei.com, jason.wessel@windriver.com, danielt@kernel.org,
+	dianders@chromium.org, horms@kernel.org, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	paulmck@kernel.org, frederic@kernel.org, mcgrof@kernel.org,
+	petr.pavlu@suse.com, da.gomez@kernel.org, samitolvanen@google.com,
+	atomlin@atomlin.com, jpoimboe@kernel.org, jikos@kernel.org,
+	mbenes@suse.cz, joe.lawrence@redhat.com, rostedt@goodmis.org,
+	mark.rutland@arm.com, mathieu.desnoyers@efficios.com,
+	linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
+	live-patching@vger.kernel.org, dm-devel@lists.linux.dev,
+	linux-raid@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+	netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 1/2] kernel/notifier: replace single-linked list with
+ double-linked list for reverse traversal
+Message-ID: <aec90caYZDHDAHgw@pathway.suse.cz>
+References: <20260415070137.17860-1-chensong_2000@189.cn>
+ <20260420144429.57b45f2beece690bceea96ec@kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 7/8] sframe: Introduce in-kernel SFRAME_VALIDATION.
-To: Dylan Hatch <dylanbhatch@google.com>
-Cc: Indu Bhagat <ibhagatgnu@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Weinan Liu <wnliu@google.com>, Will Deacon <will@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Indu Bhagat <indu.bhagat@oracle.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Jiri Kosina <jikos@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
-        Puranjay Mohan <puranjay@kernel.org>, Song Liu <song@kernel.org>,
-        joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Heiko Carstens <hca@linux.ibm.com>
-References: <20260406185000.1378082-1-dylanbhatch@google.com>
- <20260406185000.1378082-8-dylanbhatch@google.com>
- <de7bd273-3650-4378-8fd8-a51217e7284b@linux.ibm.com>
- <CADBMgpzbEGTm-sZ71a5hvFOHbu5VgSR406F3NsMLF1+oDWbO6A@mail.gmail.com>
- <dde1daa9-724c-4186-aaf6-caff6b47c5a9@linux.ibm.com>
- <CADBMgpzBvKTvRKHmLbEF301S_DnCg6SRETkMh6jPo-1hOEEZVw@mail.gmail.com>
-Content-Language: en-US
-From: Jens Remus <jremus@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <CADBMgpzBvKTvRKHmLbEF301S_DnCg6SRETkMh6jPo-1hOEEZVw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Proofpoint-GUID: 0l_0RsB_xVUM48Vi_xszwbiWIKn94MiD
-X-Proofpoint-ORIG-GUID: oLmmSpz0tjomWJLPkahKivQ_qCrtNnAk
-X-Authority-Analysis: v=2.4 cv=VP7tWdPX c=1 sm=1 tr=0 ts=69e7365e cx=c_pps
- a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17
- a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=U7nrCbtTmkRpXpFmAIza:22 a=VnNF1IyMAAAA:8
- a=LFt20mCCc4CE-LtB3JUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDIxMDA4MCBTYWx0ZWRfX074kI05iuZWX
- OgF+ppwk0jYBKZuP91sOou6vhfh7Y1EsTO8Lr2UCkwBgTT6VK25UiXfJ4dtQ9wFMtQHGQxlgdet
- oN63gcciIX/G7lfkL40WjskQSC+oXC4L5BEO0HkmnCLjFZICQ9sU9iCvjCMBlNCR7AUKnQ1NrxW
- hCHqaZR5ajpEvhwbLNVC1sm0WJiIlG0KNR87SjudIOtEfnfln4fyWNNrTukrNfD5/1C51ftwJ1C
- 6eaD+BjjfwmHEmaXZ6Gh65Y0GsfiNQsRx8hL9E7uE2wGPzI1utdwm2/yeJZRrfWtCfex8q6nvGJ
- aG8qUGxZmuH5ytYEs6nTrN4r40xZYAQ+oMq7Lo4QIKpY0sSh1Ls9naD/IZxmk7+7Fa/zD+cX8cy
- airZxFY0uA5K6kp4/ppqgPig7vxQAD85MWSMYIJO2FU7KMAx3gySUmvPQzQYZRp56iN9NQIybNL
- hb0ja4sy5LL4XCVdNlA==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-21_01,2026-04-20_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 suspectscore=0 priorityscore=1501 adultscore=0
- spamscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604210080
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260420144429.57b45f2beece690bceea96ec@kernel.org>
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[ibm.com,none];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64];
-	R_DKIM_ALLOW(-0.20)[ibm.com:s=pp1];
+	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
+	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	MIME_TRACE(0.00)[0:+];
-	RCPT_COUNT_TWELVE(0.00)[21];
-	FREEMAIL_CC(0.00)[gmail.com,linux.dev,google.com,kernel.org,oracle.com,infradead.org,goodmis.org,arm.com,linux.microsoft.com,redhat.com,vger.kernel.org,lists.infradead.org,linux.ibm.com];
-	TAGGED_FROM(0.00)[bounces-2408-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	HAS_ORG_HEADER(0.00)[];
-	DKIM_TRACE(0.00)[ibm.com:+];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns];
-	TO_DN_SOME(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[jremus@linux.ibm.com,live-patching@vger.kernel.org];
+	TAGGED_FROM(0.00)[bounces-2409-lists,live-patching=lfdr.de];
+	FREEMAIL_CC(0.00)[189.cn,kernel.org,baylibre.com,linaro.org,redhat.com,fnnas.com,huawei.com,windriver.com,chromium.org,davemloft.net,google.com,suse.com,atomlin.com,suse.cz,goodmis.org,arm.com,efficios.com,vger.kernel.org,lists.linux.dev,lists.sourceforge.net];
 	FROM_HAS_DN(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	MID_RHS_MATCH_FROM(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[47];
+	MIME_TRACE(0.00)[0:+];
+	DKIM_TRACE(0.00)[suse.com:+];
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	MISSING_XM_UA(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[5];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[pmladek@suse.com,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCVD_COUNT_SEVEN(0.00)[11]
-X-Rspamd-Queue-Id: C7B4C438391
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[189.cn:email,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,pathway.suse.cz:mid,suse.com:dkim]
+X-Rspamd-Queue-Id: 8CAED438A72
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On 4/21/2026 3:29 AM, Dylan Hatch wrote:
-> On Mon, Apr 20, 2026 at 5:31 AM Jens Remus <jremus@linux.ibm.com> wrote:
->>
->> On 4/20/2026 7:02 AM, Dylan Hatch wrote:
->>> On Thu, Apr 16, 2026 at 8:04 AM Jens Remus <jremus@linux.ibm.com> wrote:
->>>> On 4/6/2026 8:49 PM, Dylan Hatch wrote:
->>
->>>>> Generalize the __safe* helpers to support a non-user-access code path.
->>>>> Allow for kernel FDE read failures due to the presence of .rodata.text.
->>>>> This section contains code that can't be executed by the kernel
->>>>> direclty, and thus lies ouside the normal kernel-text bounds.
->>>>
->>>> Nits: s/direclty/directly/ s/ouside/outside/
->>>>
->>>> Could you please explain the issue?  How/why does .sframe for
->>>> .rodata.text pose an issue for .sframe verification?
->>>
->>> __read_fde checks that the fde_addr it extracts is within the bounds
->>> of sec->text_start and sec->text_end. In the case of the vmlinux
->>
->> Looking at the existing check in __read_fde(), do you agree that it is
->> wrong, as sec->text_end IIUC points behind .text and thus the check
->> should be:
->>
->>         if (func_addr < sec->text_start || func_addr >= sec->text_end)
->>                 return -EINVAL;
+On Mon 2026-04-20 14:44:29, Masami Hiramatsu wrote:
+> Hi Song,
 > 
-> I agree this is correct. Is this a fix that would be folded into your
-> previous patch series?
-
-Yes.  I would send a new version once we have clarified how to move
-forward in general.
-
->>> Alternatively, we can check for FDEs located
->>> in .rodata.text during validation, but this seems to only be present
->>> in arm64, so maybe we would need an arch-specific hook to do this? I'm
->>> open to suggestions.
->>
->> Maybe that is better than ignoring __read_fde() failures?  I first
->> thought this would get nasty, but maybe it would not be too bad.
->> Following is what I came up with (note tabs replaced by spaces due to
->> copy&paste from terminal):
-
->> diff --git a/include/linux/sframe.h b/include/linux/sframe.h
->> @@ -63,6 +63,10 @@ struct sframe_section {
->>         unsigned long           sframe_end;
->>         unsigned long           text_start;
->>         unsigned long           text_end;
->> +#if defined(CONFIG_SFRAME_UNWINDER) && defined(CONFIG_ARM64)
->> +       unsigned long           rodatatext_start;
->> +       unsigned long           rodatatext_end;
->> +#endif
+> On Wed, 15 Apr 2026 15:01:37 +0800
+> chensong_2000@189.cn wrote:
 > 
-> It looks to me like .rodata.text only exists for vmlinux. I wonder if
-> in sframe_func_start_addr_valid we can just use the global
-> _srodatatext and _erodatatext after identifying if an sframe_section
-> corresponds to vmlinux (kernel_sfsec)? That way we don't need to add
-> these extra fields.
+> > From: Song Chen <chensong_2000@189.cn>
+> > 
+> > The current notifier chain implementation uses a single-linked list
+> > (struct notifier_block *next), which only supports forward traversal
+> > in priority order. This makes it difficult to handle cleanup/teardown
+> > scenarios that require notifiers to be called in reverse priority order.
+> 
+> What about introducing a new notification callback API that allows you
+> to describe dependencies between callback functions?
+> 
+> For example, when registering a callback, you could register a string
+> as an ID and specify whether to call it before or after that ID,
+> or you could register a comparison function that is called when adding
+> to a list. (I prefer @name and @depends fields so that it can be easily
+> maintained.)
 
-Sure.  I don't have and preferences.
+This looks too complex. It would make sense only
+when this API has more users.
 
-Regards,
-Jens
--- 
-Jens Remus
-Linux on Z Development (D3303)
-jremus@de.ibm.com / jremus@linux.ibm.com
+Also this won't be enough for the ftrace/livepatch callbacks.
+They need to be ordered against against each other. But they
+also need to be called before/after all other callbacks.
+For example, when the module is loaded:
 
-IBM Deutschland Research & Development GmbH; Vorsitzender des Aufsichtsrats: Wolfgang Wendt; Geschäftsführung: David Faller; Sitz der Gesellschaft: Ehningen; Registergericht: Amtsgericht Stuttgart, HRB 243294
-IBM Data Privacy Statement: https://www.ibm.com/privacy/
+   + 1st frace
+   + 2nd livepatch
+   + then other notifiers
 
+See the commit c1bf08ac26e92122 ("ftrace: Be first to run code
+modification on modules").
+
+> This would allow for better dependency building when adding to the list.
+ 
+> > 
+> > A concrete example is the ordering dependency between ftrace and
+> > livepatch during module load/unload. see the detail here [1].
+> 
+> If this only concerns notification callback issues with the ftrace
+> and livepatch modules, it's far more robust to simply call the
+> necessary processing directly when the modules load and unload,
+> rather than registering notification callbacks externally.
+> 
+> There are fprobe, kprobe and its trace-events, all of them are using
+> ftrace as its fundation layer. In this case, I always needs to
+> consider callback order when a module is unloaded.
+> 
+> If ftrace is working as a part of module callbacks, it will conflict
+> with fprobe/kprobe module callback. Of course we can reorder it with
+> modifying its priority. But this is ugly, because when we introduce
+> a new other feature which depends on another layer, we need to
+> reorder the callback's priority number on the list.
+> 
+> Based on the above, I don't think this can be resolved simply by
+> changing the list of notification callbacks to a bidirectional list.
+
+I agree. I would keep it as is (hardcoded).
+
+Best Regards,
+Petr
 
