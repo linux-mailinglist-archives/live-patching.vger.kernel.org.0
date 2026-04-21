@@ -1,72 +1,72 @@
-Return-Path: <live-patching+bounces-2416-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2417-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id WEjuIGgA6GlJEAIAu9opvQ
-	(envelope-from <live-patching+bounces-2416-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:55:36 +0200
+	id GD6bDsAA6GlJEAIAu9opvQ
+	(envelope-from <live-patching+bounces-2417-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:57:04 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id DC12244053A
-	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 98626440585
+	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:57:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 12DA630F30A7
-	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 22:52:23 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id EACA731071F3
+	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 22:52:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FEB13A6F06;
-	Tue, 21 Apr 2026 22:52:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D2E73A7824;
+	Tue, 21 Apr 2026 22:52:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="c36Lf7T5"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="s7XcmSRB"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4D594414
-	for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 22:52:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A8883A782B
+	for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 22:52:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776811942; cv=none; b=LjiwfzRAlVI908VFToKsowH2Nzr7Oa4RLpE3MmdOVnlEjEO44j6cuolpUWohzHQ8yyDpexAcxbHainnMdFIyjv5HGRl1rpCNWgLT6Zx4lXWs7BYqKQCkspq894bExBPCswyCy9cyFRDWKuKDDIf/Pw7nVX6rj54oKqozmd84R1Y=
+	t=1776811947; cv=none; b=DH8JlzaxTBl9Jsc3ywl7dXEB1gjayRJw4E24v/Un6x7w/iqmadp7WXPtVAIr56/3qNwr0c64t6/kByxnEc6X6j+n6MMtAosZWw2SO6v8vY5jYqIdd2G8Js5cF+MBWjStbbw7U7GFLZN+DFO7ep9iDN8JYk1/3b+QfXPEIS0MBKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776811942; c=relaxed/simple;
-	bh=HVaWq1dxFNQfepawJxR+vwfJ462W5or0AaOM9S8qC4g=;
+	s=arc-20240116; t=1776811947; c=relaxed/simple;
+	bh=HcHbWf4But37GRlHHhJj2shggv7jUZ569KAsIFqpDcI=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=tj8vuQNWyf18NwPTILrwQsHOa7rySr25u3dbJKJrh5GBKIOva/bbLu1wFd3k8p6/b7yw97tdG96jQJ4bizeS91wiHBEaIuSxekAHJ+xXnA6GVutwUh/N4U5m43QjakCXwQqB1d7XVTzAUQjFJA5cWptSkf8IAvK8auVw8nKA+JM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=c36Lf7T5; arc=none smtp.client-ip=209.85.210.201
+	 To:Cc:Content-Type; b=PujhfKzEgRgTnAtWm8xho20Hp+gUj+zZE1YroiQMmX9zLbsTWciZn8uIh6bOzHtx7lviVyQPKnnKT8erzMH8EbA48+cw2/KFZ5Q+tsDBSwrE0I3Pb2rwsas9CGBPpVKZ2gVKbGLa4yxUN6qIMLzJssKqH0ySisn02vORwLV9Aus=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=s7XcmSRB; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-82f6610a6c8so2382463b3a.2
-        for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 15:52:20 -0700 (PDT)
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-82fa1c94b37so2795467b3a.0
+        for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 15:52:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776811940; x=1777416740; darn=vger.kernel.org;
+        d=google.com; s=20251104; t=1776811943; x=1777416743; darn=vger.kernel.org;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=r/yLmRqvzN2aFF0ctBbudoPYYemVc0jOSsthBuuHiX4=;
-        b=c36Lf7T5nK9liCQZTVHULZ54xQwFTg/QcKCha/Nqhjq6XcOWCzX8ASuLjTDNcaXVz8
-         FCaBtWxae+hNgm68T/sgqVSiuiz0b//T8BXkR1Lk4RuZlo4eJUNDRtr3wtMHR032XDL9
-         2/+lVX6hswUNgltJmQlnooR1EiiglgU8cesIasV+9QWweSljkInfk/BURnBlRpOLhH7t
-         I/SikEXpQSjaUniI4NgobxxM1PGFlJkQF8SmO6lehv2aAzi2R2yJI5LQHvpu1rh5srKu
-         C9H/HK4kFr2NqTL2PKP3YDogs8WG0PAM+hyflZ2A3VaTZST6KYHBd2Ir/9uBWEuZUi22
-         HBUA==
+        bh=P5zH7mctwcDOEQHijpP6Dn53P2ryMqn8C5QEWnKsM/M=;
+        b=s7XcmSRBQfgDCQGXlsAVvq9QJV4rTbdp4qr4VO+UpoXUt7JKU95py7OuChdzxjOYKK
+         hld/CsPt3Bdv2mWP3JN5ermXrOV+Ec8q2hlPXRYRPFUT863vrEuMDfqsS/MMneR5ZKku
+         MjLEBSA6WAF2kHG2LMgWyQ2RNzgQ4vVvlYj3dsnAXBznAzIsqzTLpPWuJvPORrcycCyO
+         QNvZKbsO7+LaGcue30s1W1lIlTQw6NZEfeSli3GlW7SJ/WlNWhjIQadgXVuEWOQlcp65
+         JAPKEiPKs3Rso/CgXB/gvCMKVna9zEKOcioTzLGX0QFN/slvKrYkdCF9Yw+kgFTn0zDY
+         149g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776811940; x=1777416740;
+        d=1e100.net; s=20251104; t=1776811943; x=1777416743;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=r/yLmRqvzN2aFF0ctBbudoPYYemVc0jOSsthBuuHiX4=;
-        b=cfj02XkgCBZ2krrgarIhzo2U7bsaKYxoWTMV2MGIeWyQI5kUxW6E4lapWHHNX8+EmA
-         VjP7vYUW7NdaSf2QR0yp7LSLWZQKi6kEUARcq6iu9Ikk+ppeSGxoYYeALQBaNAdM/ep6
-         b/1vsoxsUCTPd53F1maqMc6XOuXLv9KBiEr6LWeIsHOGH5CJe7FfD9qtKnl70KlioGHo
-         /cGGadVmro1KKkJ6UKIGag/BTxu0NZCEayV3Z+ognRiBgLCdT3YfO38ta7u8A5SzAhxw
-         wSmdR5yI5tMeU0p4J4q1XUcr2KOZek+0TXNIBdpSpfCXevjNERcRiZfY3kSZ1RxF2SnX
-         279g==
-X-Forwarded-Encrypted: i=1; AFNElJ8Uz3sLDwiQHVV9vTVH7EWBXZJf20vT3kYGaFA84IrL3c807W13f9KlR+FIaL2sht6DkXGa32XsHhqM1o4P@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy3c83jvtkMSJqH8aCyoI0VMjoz0049T2OFk+Ds83+LzBOLhrKH
-	gudFAKUxQry1aMKuo+qT9E+Wr8Okp7UYaPeRaKyiTU7MwlaS7GGgsW0cgaObKOcwEh3xM0LfACQ
-	c5d+tZNjPA6rVbqhej5gLeDvDiQ==
-X-Received: from pfbde11.prod.google.com ([2002:a05:6a00:468b:b0:82f:3ec7:cdd])
+        bh=P5zH7mctwcDOEQHijpP6Dn53P2ryMqn8C5QEWnKsM/M=;
+        b=SnxAOED8XpoxgZ1t74Dd+ljmb/AOobi+iamlncgQ85jtkRf6QDpTT5iU2Cz9u1CPJN
+         9r2ZQPIuuG/cZWfiOUQ451bKeFHQYzcYFlNIiycNJG3NMCkRDoCnjnmu9yybz8Xa7mG9
+         l5kfyUfYPJ3EyWBwCGnES+PB0OwcO4ls+Mm8Pji4k/dN65hzSU/ANceHe43SUAeZB++g
+         K4uELrVF2P/HdM0u79TzYxjJOzrK82Z7FM31JOJfAIYVxjlfReyy1dvJ/9acN+3t14SZ
+         rxBSv8QgdWe4frBX0YnmHX3GmpwPs6f5nN1NNeIEmdC3O/IMLaEEOt8wV2GpR7kewJTf
+         utdQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/43Dl59N+IliIzzLzcL5BUHU2Jec64AQ9ALpgDNDfCgByz3wdpbta7V4+jG9nakdxl6Rf2rlTXuHvSjo9U@vger.kernel.org
+X-Gm-Message-State: AOJu0YxCQvh3I88fOvjNTIKfYJMdePUPn1WsxEF7bgiIm1cw5WKbbNgi
+	QRqxdtylPPf89If9xSDNNtDqDwpETLq1xpU/W+lMrj1TLlsYNzxw15tPhUjtxHhZR0Se9hurDUs
+	2J26TiZySEO5NcQpgxgXV7KgoNQ==
+X-Received: from pfbjw25.prod.google.com ([2002:a05:6a00:9299:b0:82f:b709:3747])
  (user=dylanbhatch job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:ae10:b0:82f:9300:cc44 with SMTP id d2e1a72fcca58-82f9300d8d3mr17127125b3a.8.1776811939880;
- Tue, 21 Apr 2026 15:52:19 -0700 (PDT)
-Date: Tue, 21 Apr 2026 22:51:56 +0000
+ 2002:a05:6a00:a247:b0:82c:1cd0:2f7e with SMTP id d2e1a72fcca58-82f8b553974mr15760811b3a.20.1776811942482;
+ Tue, 21 Apr 2026 15:52:22 -0700 (PDT)
+Date: Tue, 21 Apr 2026 22:51:57 +0000
 In-Reply-To: <20260421225200.1198447-1-dylanbhatch@google.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -76,8 +76,8 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 References: <20260421225200.1198447-1-dylanbhatch@google.com>
 X-Mailer: git-send-email 2.54.0.rc1.555.g9c883467ad-goog
-Message-ID: <20260421225200.1198447-5-dylanbhatch@google.com>
-Subject: [PATCH v4 4/8] sframe: Provide PC lookup for vmlinux .sframe section
+Message-ID: <20260421225200.1198447-6-dylanbhatch@google.com>
+Subject: [PATCH v4 5/8] sframe: Allow unsorted FDEs
 From: Dylan Hatch <dylanbhatch@google.com>
 To: Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
 	Will Deacon <will@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>, 
@@ -107,7 +107,7 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCPT_COUNT_TWELVE(0.00)[21];
-	TAGGED_FROM(0.00)[bounces-2416-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2417-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
@@ -117,120 +117,117 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
 	TAGGED_RCPT(0.00)[live-patching];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: DC12244053A
+X-Rspamd-Queue-Id: 98626440585
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-With SFRAME_UNWINDER, read in the .sframe section at boot. This provides
-unwind data as an alternative/supplement to frame pointer-based
-unwinding.
+The .sframe in kernel modules is built without SFRAME_F_FDE_SORTED set.
+In order to allow sframe PC lookup in modules, add a code path to handle
+unsorted FDE tables by doing a simple linear search.
 
 Reviewed-by: Jens Remus <jremus@linux.ibm.com>
 Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
 ---
- arch/arm64/kernel/setup.c |  2 ++
- include/linux/sframe.h    | 14 ++++++++++++++
- kernel/unwind/sframe.c    | 36 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 52 insertions(+)
+ include/linux/sframe.h |  1 +
+ kernel/unwind/sframe.c | 45 +++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 41 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
-index 23c05dc7a8f2..4a633bc7aefb 100644
---- a/arch/arm64/kernel/setup.c
-+++ b/arch/arm64/kernel/setup.c
-@@ -32,6 +32,7 @@
- #include <linux/sched/task.h>
- #include <linux/scs.h>
- #include <linux/mm.h>
-+#include <linux/sframe.h>
- 
- #include <asm/acpi.h>
- #include <asm/fixmap.h>
-@@ -375,6 +376,7 @@ void __init __no_sanitize_address setup_arch(char **cmdline_p)
- 			"This indicates a broken bootloader or old kernel\n",
- 			boot_args[1], boot_args[2], boot_args[3]);
- 	}
-+	init_sframe_table();
- }
- 
- static inline bool cpu_can_disable(unsigned int cpu)
 diff --git a/include/linux/sframe.h b/include/linux/sframe.h
-index 0cb2924367bc..5b7341b61a7c 100644
+index 5b7341b61a7c..8ae31ed36226 100644
 --- a/include/linux/sframe.h
 +++ b/include/linux/sframe.h
-@@ -69,4 +69,18 @@ static inline int sframe_find_user(unsigned long ip, struct unwind_frame *frame)
+@@ -28,6 +28,7 @@ struct sframe_section {
+ 	unsigned long		fres_start;
+ 	unsigned long		fres_end;
+ 	unsigned int		num_fdes;
++	bool			fdes_sorted;
  
- #endif /* CONFIG_HAVE_UNWIND_USER_SFRAME */
- 
-+#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
-+
-+void __init init_sframe_table(void);
-+void sframe_module_init(struct module *mod, void *sframe, size_t sframe_size,
-+			void *text, size_t text_size);
-+
-+extern int sframe_find_kernel(unsigned long ip, struct unwind_frame *frame);
-+
-+#else
-+
-+static inline void __init init_sframe_table(void) {}
-+
-+#endif /* CONFIG_HAVE_UNWIND_KERNEL_SFRAME */
-+
- #endif /* _LINUX_SFRAME_H */
+ 	signed char		ra_off;
+ 	signed char		fp_off;
 diff --git a/kernel/unwind/sframe.c b/kernel/unwind/sframe.c
-index ae15f5c06939..fb3b6b2d8677 100644
+index fb3b6b2d8677..243027244854 100644
 --- a/kernel/unwind/sframe.c
 +++ b/kernel/unwind/sframe.c
-@@ -14,10 +14,20 @@
- #include <linux/sframe.h>
- #include <linux/unwind_types.h>
- #include <asm/unwind_sframe.h>
-+#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
-+#include <linux/kallsyms.h>
-+#endif
- 
- #include "sframe.h"
- #include "sframe_debug.h"
- 
-+#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
-+
-+static bool sframe_init __ro_after_init;
-+static struct sframe_section kernel_sfsec __ro_after_init;
-+
-+#endif /* CONFIG_HAVE_UNWIND_KERNEL_SFRAME */
-+
- struct sframe_fde_internal {
- 	unsigned long	func_addr;
- 	u32		func_size;
-@@ -930,3 +940,29 @@ void sframe_free_mm(struct mm_struct *mm)
+@@ -176,9 +176,35 @@ static __always_inline int __read_fde(struct sframe_section *sec,
+ 	return -EFAULT;
  }
  
- #endif /* CONFIG_HAVE_UNWIND_USER_SFRAME */
-+
-+#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
-+
-+int sframe_find_kernel(unsigned long ip, struct unwind_frame *frame)
+-static __always_inline int __find_fde(struct sframe_section *sec,
+-				      unsigned long ip,
+-				      struct sframe_fde_internal *fde)
++static __always_inline int __find_fde_unsorted(struct sframe_section *sec,
++					       unsigned long ip,
++					       struct sframe_fde_internal *fde)
 +{
-+	if (!frame || !sframe_init)
-+		return -EINVAL;
++	struct sframe_fde_v3 *cur, *start, *end;
 +
-+	return  __sframe_find(&kernel_sfsec, ip, frame);
++	start = (struct sframe_fde_v3 *)sec->fdes_start;
++	end = start + sec->num_fdes;
++
++	for (cur = start; cur < end; cur++) {
++		s64 func_off;
++		u32 func_size;
++		unsigned long func_addr;
++
++		DATA_GET(sec, func_off, &cur->func_start_off, s64, Efault);
++		DATA_GET(sec, func_size, &cur->func_size, u32, Efault);
++		func_addr = (unsigned long)cur + func_off;
++
++		if (ip >= func_addr && ip < func_addr + func_size)
++			return __read_fde(sec, cur - start, fde);
++	}
++	return -EINVAL;
++Efault:
++	return -EFAULT;
 +}
 +
-+void __init init_sframe_table(void)
++static __always_inline int __find_fde_sorted(struct sframe_section *sec,
++					     unsigned long ip,
++					     struct sframe_fde_internal *fde)
+ {
+ 	unsigned long func_addr_low = 0, func_addr_high = ULONG_MAX;
+ 	struct sframe_fde_v3 *first, *low, *high, *found = NULL;
+@@ -233,6 +259,15 @@ static __always_inline int __find_fde(struct sframe_section *sec,
+ 	return -EFAULT;
+ }
+ 
++static __always_inline int __find_fde(struct sframe_section *sec,
++					     unsigned long ip,
++					     struct sframe_fde_internal *fde)
 +{
-+	kernel_sfsec.sec_type		= SFRAME_KERNEL;
-+	kernel_sfsec.sframe_start	= (unsigned long)__start_sframe;
-+	kernel_sfsec.sframe_end		= (unsigned long)__end_sframe;
-+	kernel_sfsec.text_start		= (unsigned long)_stext;
-+	kernel_sfsec.text_end		= (unsigned long)_etext;
-+
-+	if (WARN_ON(sframe_read_header(&kernel_sfsec)))
-+		return;
-+
-+	sframe_init = true;
++	if (sec->fdes_sorted)
++		return __find_fde_sorted(sec, ip, fde);
++	return __find_fde_unsorted(sec, ip, fde);
 +}
 +
-+#endif /* CONFIG_HAVE_UNWIND_KERNEL_SFRAME */
+ #define ____GET_INC(sec, to, from, type, label)				\
+ ({									\
+ 	type __to;							\
+@@ -657,7 +692,7 @@ static int sframe_validate_section(struct sframe_section *sec)
+ 			return ret;
+ 
+ 		ip = fde.func_addr;
+-		if (ip <= prev_ip) {
++		if (sec->fdes_sorted && ip <= prev_ip) {
+ 			dbg_sec("fde %u not sorted\n", i);
+ 			return -EFAULT;
+ 		}
+@@ -736,7 +771,6 @@ static int sframe_read_header(struct sframe_section *sec)
+ 
+ 	if (shdr.preamble.magic != SFRAME_MAGIC ||
+ 	    shdr.preamble.version != SFRAME_VERSION_3 ||
+-	    !(shdr.preamble.flags & SFRAME_F_FDE_SORTED) ||
+ 	    !(shdr.preamble.flags & SFRAME_F_FDE_FUNC_START_PCREL) ||
+ 	    shdr.auxhdr_len) {
+ 		dbg_sec("bad/unsupported sframe header\n");
+@@ -766,6 +800,7 @@ static int sframe_read_header(struct sframe_section *sec)
+ 		return -EINVAL;
+ 	}
+ 
++	sec->fdes_sorted	= shdr.preamble.flags & SFRAME_F_FDE_SORTED;
+ 	sec->num_fdes		= num_fdes;
+ 	sec->fdes_start		= fdes_start;
+ 	sec->fres_start		= fres_start;
 -- 
 2.54.0.rc1.555.g9c883467ad-goog
 
