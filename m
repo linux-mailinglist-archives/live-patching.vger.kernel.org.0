@@ -1,136 +1,240 @@
-Return-Path: <live-patching+bounces-2411-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2412-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id aOgqJQH952m6DwIAu9opvQ
-	(envelope-from <live-patching+bounces-2411-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:41:05 +0200
+	id MNvEG5z/52lJEAIAu9opvQ
+	(envelope-from <live-patching+bounces-2412-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:52:12 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2C25544036C
-	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:41:05 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id D47014404A2
+	for <lists+live-patching@lfdr.de>; Wed, 22 Apr 2026 00:52:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id 2D73830117E5
-	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 22:41:00 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id ABF233037F19
+	for <lists+live-patching@lfdr.de>; Tue, 21 Apr 2026 22:52:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E2DC23A6412;
-	Tue, 21 Apr 2026 22:40:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2808379ED6;
+	Tue, 21 Apr 2026 22:52:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dl+2IoGH"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Rg7sVRus"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF9A139F17D
-	for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 22:40:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 309B232D7FA
+	for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 22:52:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776811258; cv=none; b=qr9+zVOy099S9FDBacsRyj1OFVOj65QQYjq59Vx5ZvJTxmBP80Nmyi9sZRkuVPyaPQ7vU9U6NAbQiQmegqY0IS3WWH2kj44aRc0385bzK5K9E5nclY+AqscCOaBGGD0yBw27wCw4Xu7iMjarZh/oypcSPtXwvdIpVfiDGAsa3UE=
+	t=1776811929; cv=none; b=d9XVOT6XuLt8OXqzF8V8icjciuGlrTEky0dDCHUKBdvdVg7YfBfyaTBr4iXbEevibkyIyYkKgDIdLTUG08b+LEwZbpKIwV0Jn4M0rzj120TJQWRsVYp/9k/5M9cwSssIYsuxPXiijTFGRVZfYC9d3rRYkfpXLO+nQihnH5PI880=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776811258; c=relaxed/simple;
-	bh=+8Ta7U3L4TbgcUEZFLK/HPCsnWeYOSpoEcpgWOXF5ic=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BqIjFpxMdefjZtOFsgApAB0vtPVDiT3h97Nd8kr+6vp5K+SacQhOsz9ZuBpAe3Hv3qNpUjlqdf+6Vte4X2aOldHwz5bcpbsgEF2o4NHvytIwuloB3kJ55kdDrFXYUyqq/149i3opel9MGtZA/AiLAariiXCo2I+hfnjpdH+GvXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dl+2IoGH; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1AFFC2BCB9
-	for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 22:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776811258;
-	bh=+8Ta7U3L4TbgcUEZFLK/HPCsnWeYOSpoEcpgWOXF5ic=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=dl+2IoGHcD1abPM6p0ta768cK+nV2WWCgU73PSgqaFXccXH/cYV9gXqhpZEboWUeU
-	 AywPOXscswc7xbP4PMlieq7wUEKXMMAFDxORoMfQ2MwWzNXsee70vIsJOnUgHGOCZA
-	 ONJChqX95VHr2zTRXNIXVG+wQTvu5RwPtnvUZkSXhUqVO2uIII+VlKPqkvSP8eVA+x
-	 xI0ZT6IYAOIiAiKdy6juCrNxvbQBtZXivBHmrm64V4k71OvlPu8LWL/2r0v2KsUR/x
-	 h70jSFv/s4OWfpUvFWIASrwwRJ3h9LWQTte5VC6W9qzjhRXg8DbcxjOEUrRLccZKzG
-	 WzKNnkTiMV1ug==
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-8ec9f099fc6so222600685a.0
-        for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 15:40:58 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ91rqi9QsyfKTYkZVL+hKDTCtXg0hJIhd2RBLevJBuWl43XoeSwbsm3Ri5jk/nvhmmHOA2n5QmNGLQckxLb@vger.kernel.org
-X-Gm-Message-State: AOJu0YwH+6LVOLlJzUZ1UnYQ1V8Nw9lW79zOtAWZjtsPyrs2Sk19NLkI
-	2+OplnuIbzodf/WXuTm/UNOuJSru8qFoWYR8bL2IHRtFHAGQQQlaMulQi6etcC6FP/Q7dwdvmhB
-	2osA/QaWweJg3s1vyCGqhwtJuK/jhpBU=
-X-Received: by 2002:a05:620a:2953:b0:8cd:7952:d449 with SMTP id
- af79cd13be357-8e7918a34b8mr2892702785a.29.1776811257679; Tue, 21 Apr 2026
- 15:40:57 -0700 (PDT)
+	s=arc-20240116; t=1776811929; c=relaxed/simple;
+	bh=faoU1qOsT+cISXhTB6VFhtd7V9b58T5GMOQTcv5af9k=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=qP9r2kWWRTGvRXt+9JObYiNntIMeZMjWVHBQJyy3/za1Xe13BeXXg86wkAXFrLGW5gtdiI9NyeRoCgs+sYCjCrtQ8NS40Lgt3RxgE8VzUyeiQVwBLSh78RMX6SwXxRQX++04UQOvr/A716IZuLwN3KMvXl5SbHqonaGwQfDKtS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Rg7sVRus; arc=none smtp.client-ip=209.85.215.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com
+Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-c6e24ee93a6so2996191a12.0
+        for <live-patching@vger.kernel.org>; Tue, 21 Apr 2026 15:52:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1776811927; x=1777416727; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=n45LXp1+vniYlrGp0e6dQKzFc3A3nIm5Tab9EOuG3Yg=;
+        b=Rg7sVRusGYsmQBmciK/K2fV8GuONaZVGiyErLK2U7gq4PU/U4Tgd5Ryjw2sApCxIeQ
+         r0H7knedtjBhhl6VaxlZgUsn9WiCkpshZCJw/ycNBzIOvsIrB9IyFwplFnjWTIAOjzPE
+         lxXY1TgbUaMu+sKxmmxIpn/nCHYX4BzhNEfj0NqjtLl5KxfZ/AC5QDoBHUyXU6m3mcKg
+         VSwhjHv6qzPYhSzLSWIcBq2R/3voTFPVm6/80O3kzqA/1s1QCiJpPlXIS7oEfLG6+dSJ
+         qsuVljPUTT5kfQjuaOQA/XfZ6udN2PubX6972krRUDOOgRzkdnltCf7zcffx2gSiWpvf
+         BiSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776811927; x=1777416727;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=n45LXp1+vniYlrGp0e6dQKzFc3A3nIm5Tab9EOuG3Yg=;
+        b=Xcbv9dvsw92TsirUHncUKVr4aSKD0FZaFTyV4pq58RXcotUDXeZHslAnrTrtXF5NUD
+         XBFcMSAlFIn5iZAOVuHyb6bnfXtaefO7YZGk76yKAxadLGSiepDtEksr1cX2VmmUxVnL
+         gEMJfoga5KBtRpZQNisWPhRRfIuCm9eqbVn+WzwPPGWyXLBdMI+OyWcwi21uxkCtnSvt
+         elgXlCnmotiv+i/tf8wGLAChMPAMM++w+WRSOoZBJvEPB9clseT3yBfbjWpsNozI5VXg
+         iNJTmRPfSUMPCZ00rVHSYljjD6YjhO5C5KdchDy2MpB2KtQy1PphrE8xWsGLpa1He+8X
+         uUOA==
+X-Forwarded-Encrypted: i=1; AFNElJ9PfBsea7sfzQy/stmp/buwtLNLk5qnaHRhl4xyHhEVp+/SzIny8ZRD4Xq+NCdGVC0luISA5Ue8PkacRLg4@vger.kernel.org
+X-Gm-Message-State: AOJu0YxIrz2aTv3/1wtLfBQbDSh0dQET4++P7RRTZEOqAP4UWED05g7Z
+	4CnRB8RoM01qcv6RzhGE6jS6sopDt9CyCgTKksxxL2M8AGxWNkTwolfHjQV50BQdesUPL+dxVvB
+	MRSmaDM09ZuxXtt+iFCgZi6YsFA==
+X-Received: from pfna24.prod.google.com ([2002:aa7:80d8:0:b0:82f:5576:285b])
+ (user=dylanbhatch job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6a00:4b01:b0:82f:49b5:cfc3 with SMTP id d2e1a72fcca58-82f8b551df5mr16857789b3a.18.1776811927282;
+ Tue, 21 Apr 2026 15:52:07 -0700 (PDT)
+Date: Tue, 21 Apr 2026 22:51:52 +0000
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260225054639.21637-1-chensong_2000@189.cn> <20260225192724.48ed165e@fedora>
- <e18ed5f4-3917-46e7-bca9-78063e6e4457@189.cn> <alpine.LSU.2.21.2602261147150.5739@pobox.suse.cz>
- <20260226123014.2197d9b7@gandalf.local.home> <321d4670-27cb-453f-a50d-426c83894074@189.cn>
- <aaqk-GrpCTqO36xj@pathway.suse.cz> <4037aa19-1b01-4076-b823-5cc0e43becac@189.cn>
-In-Reply-To: <4037aa19-1b01-4076-b823-5cc0e43becac@189.cn>
-From: Song Liu <song@kernel.org>
-Date: Tue, 21 Apr 2026 15:40:46 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4TkxEQAZt0ggbAO7+fm2RabTGb_vsnQ9rFXGacm3RAtw@mail.gmail.com>
-X-Gm-Features: AQROBzAvMTYSV5nNLSiUr2ZDdV1n0E9WLV1CWsr3dpVAQqPMW5tLMYBS9_AZ9MQ
-Message-ID: <CAPhsuW4TkxEQAZt0ggbAO7+fm2RabTGb_vsnQ9rFXGacm3RAtw@mail.gmail.com>
-Subject: Re: [PATCH] kernel/trace/ftrace: introduce ftrace module notifier
-To: Song Chen <chensong_2000@189.cn>
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	Miroslav Benes <mbenes@suse.cz>, mcgrof@kernel.org, petr.pavlu@suse.com, 
-	da.gomez@kernel.org, samitolvanen@google.com, atomlin@atomlin.com, 
-	mhiramat@kernel.org, mark.rutland@arm.com, mathieu.desnoyers@efficios.com, 
-	linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, live-patching@vger.kernel.org
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.rc1.555.g9c883467ad-goog
+Message-ID: <20260421225200.1198447-1-dylanbhatch@google.com>
+Subject: [PATCH v4 0/8] unwind, arm64: add sframe unwinder for kernel
+From: Dylan Hatch <dylanbhatch@google.com>
+To: Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
+	Will Deacon <will@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>, 
+	Indu Bhagat <ibhagatgnu@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Steven Rostedt <rostedt@goodmis.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Jiri Kosina <jikos@kernel.org>, Jens Remus <jremus@linux.ibm.com>
+Cc: Dylan Hatch <dylanbhatch@google.com>, Mark Rutland <mark.rutland@arm.com>, 
+	Prasanna Kumar T S M <ptsm@linux.microsoft.com>, Puranjay Mohan <puranjay@kernel.org>, 
+	Song Liu <song@kernel.org>, joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, Randy Dunlap <rdunlap@infradead.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spamd-Result: default: False [-2.16 / 15.00];
+X-Spamd-Result: default: False [-0.66 / 15.00];
+	MID_CONTAINS_FROM(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
+	MV_CASE(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[google.com,reject];
+	R_DKIM_ALLOW(-0.20)[google.com:s=20251104];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2411-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	FREEMAIL_TO(0.00)[189.cn];
+	RCVD_TLS_LAST(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
+	FREEMAIL_TO(0.00)[linux.dev,google.com,kernel.org,gmail.com,infradead.org,goodmis.org,arm.com,linux.ibm.com];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[16];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
-	MISSING_XM_UA(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
+	RCPT_COUNT_TWELVE(0.00)[21];
+	TAGGED_FROM(0.00)[bounces-2412-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns,mail.gmail.com:mid,189.cn:email]
-X-Rspamd-Queue-Id: 2C25544036C
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[dylanbhatch@google.com,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[google.com:+];
+	NEURAL_HAM(-0.00)[-1.000];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
+	TAGGED_RCPT(0.00)[live-patching];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sourceware.org:url,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: D47014404A2
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Hi,
+Implement a generic kernel sframe-based [1] unwinder. The main goal is
+to improve reliable stacktrace on arm64 by unwinding across exception
+boundaries.
 
-I am replying partially to make sure folks know there are two
-persons with the same first name.
+On x86, the ORC unwinder provides reliable stacktrace through similar
+methodology, but arm64 lacks the necessary support from objtool to
+create ORC unwind tables.
 
-On Sun, Apr 12, 2026 at 7:11=E2=80=AFAM Song Chen <chensong_2000@189.cn> wr=
-ote:
-[...]
-> >
-> >    + We would need to make sure that it does not break some
-> >      existing "hidden" dependencies.
-> >
-> Thanks so much, this is the solution i'm working on. I replaced next
-> with a list_head in notifier_block and implemented
-> anotifier_call_chain_reverse to address the order issues, like your
-> suggestion. And a new robust revision for rolling back.
+Currently, there's already a sframe unwinder proposed for userspace: [2].
+To maintain common definitions and algorithms for sframe lookup, a
+substantial portion of this patch series aims to refactor the sframe
+lookup code to support both kernel and userspace sframe sections.
 
-I personally don't think there is strong enough motivation to make
-changes like the following. If there is indeed strong motivations,
-please make it clear in the next revision.
+Currently, only GNU Binutils support sframe. This series relies on the
+Sframe V3 format, which is supported in binutils 2.46.
 
-Thanks,
-Song
+These patches are based on Steven Rostedt's sframe/core branch [3],
+which is and aggregation of existing work done for x86 sframe userspace
+unwind, and contains [2]. This branch is, in turn, based on Linux
+v7.0-rc3. This full series (applied to the sframe/core branch) is
+available on github: [4].
+
+Ref:
+[1]: https://sourceware.org/binutils/docs/sframe-spec.html
+[2]: https://lore.kernel.org/lkml/20260127150554.2760964-1-jremus@linux.ibm.com/
+[3]: https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git/log/?h=sframe/core
+[4]: https://github.com/dylanbhatch/linux/tree/sframe-v3-with-v3
+
+Changes since v3:
+
+  - (Jens) Clean up patch summaries.
+  - (Jens) Rename SFRAME_LOOKUP -> UNWIND_SFRAME_LOOKUP to fit existing
+    naming convention.
+  - (Randy) Correct typo errors in new config options.
+  - (Jens) Move unwind types to a new unwind_types.h to match their
+    usage.
+  - (Jens) Update KERNEL_[COPY|GET] to use label-based error handling
+    like their userspace counterparts.
+  - (Jens) Rename SFRAME_UNWINDER -> HAVE_UNWIND_KERNEL_SFRAME and
+    ARCH_SUPPORTS_SFRAME_UNWINDER -> ARCH_SUPPORTS_UNWIND_KERNEL_SFRAME
+    to match existing naming convention.
+  - (Jens) Move HAVE_UNWIND_KERNEL_SFRAME config option to arch/Kconfig.
+  - (Jens) Rename/move extern definitions of __[start|end]_sframe into
+    include/asm-generic/sections.h.
+  - (Jens) Fix up CFI annotations at kernel entry.
+  - (Jens) Fix error path for unsorted FDE lookup.
+  - (Jens) Zero-out module sframe_section before init.
+  - (Jens) For SFRAME_VALIDATION, use an arch-specific function-address
+    validation helper so that .rodata.text can be correctly handled on
+    arm64 vmlinux.
+  - (Jens) Fixup and better comment kernel stacktrace code.
+
+Changes since v2:
+
+The biggest change from v2 is the switch from adding a dedicated,
+in-kernel sframe-lookup library, to refactoring/using the existing
+library developed by Josh, Jens, and Steve. Consequently, this series
+now depends on Sframe V3, though this upgrade would likely have been
+necessary anyway. Below is a full accounting of the changes since v2.
+
+  - (Josh) Add stricter reliability checks during unwind.
+  - (Puranjay, Indu, Jens) Update to use a common sframe library with
+    userpace unwind, thus resolving the need to support
+    SFRAME_F_FDE_FUNC_START_PCREL, added in binutils 2.45.
+  - (Jens) Add check for sframe V3, thus resolving the prior need for V2
+    and SFRAME_F_FDE_FUNC_START_PCREL support.
+  - (Will) Add ARCH_SUPPORTS_SFRAME_UNWINDER, remove SFRAME_UNWIND_TABLE
+  - (Indu) add support for unsorted FDE tables, allowing for module
+    sframe lookups.
+  - (Mark) Prefer frame-pointer unwind when possible, for better
+    performance.
+  - Simplify compile-time logic, adding stubbs when necessary.
+  - Add support for in-kernel SFRAME_VALIDATION.
+  - Rebase onto core/sframe (with v7.0-rc3 base)
+
+Dylan Hatch (7):
+  sframe: Allow kernelspace sframe sections
+  arm64, unwind: build kernel with sframe V3 info
+  sframe: Provide PC lookup for vmlinux .sframe section
+  sframe: Allow unsorted FDEs
+  arm64/module, sframe: Add sframe support for modules
+  sframe: Introduce in-kernel SFRAME_VALIDATION
+  unwind: arm64: Use sframe to unwind interrupt frames
+
+Weinan Liu (1):
+  arm64: entry: add unwind info for various kernel entries
+
+ MAINTAINERS                                   |   3 +-
+ Makefile                                      |   8 +
+ arch/Kconfig                                  |  27 +-
+ arch/arm64/Kconfig                            |   1 +
+ arch/arm64/include/asm/module.h               |   6 +
+ arch/arm64/include/asm/sections.h             |   1 +
+ arch/arm64/include/asm/stacktrace/common.h    |   6 +
+ arch/arm64/include/asm/unwind_sframe.h        |  29 ++
+ arch/arm64/kernel/entry.S                     |  23 +
+ arch/arm64/kernel/module.c                    |   8 +
+ arch/arm64/kernel/setup.c                     |   2 +
+ arch/arm64/kernel/stacktrace.c                | 246 ++++++++++-
+ arch/arm64/kernel/vdso/Makefile               |   2 +-
+ arch/arm64/kernel/vmlinux.lds.S               |   2 +
+ .../{unwind_user_sframe.h => unwind_sframe.h} |   6 +-
+ arch/x86/include/asm/unwind_user.h            |  12 +-
+ include/asm-generic/sections.h                |   4 +
+ include/asm-generic/vmlinux.lds.h             |  15 +
+ include/linux/sframe.h                        |  67 ++-
+ include/linux/unwind_types.h                  |  46 ++
+ include/linux/unwind_user_types.h             |  41 --
+ kernel/unwind/Makefile                        |   2 +-
+ kernel/unwind/sframe.c                        | 410 ++++++++++++++----
+ kernel/unwind/user.c                          |  41 +-
+ 24 files changed, 801 insertions(+), 207 deletions(-)
+ create mode 100644 arch/arm64/include/asm/unwind_sframe.h
+ rename arch/x86/include/asm/{unwind_user_sframe.h => unwind_sframe.h} (50%)
+ create mode 100644 include/linux/unwind_types.h
+
+-- 
+2.54.0.rc1.555.g9c883467ad-goog
+
 
