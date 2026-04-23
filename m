@@ -1,144 +1,251 @@
-Return-Path: <live-patching+bounces-2501-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2502-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id PjNXAByQ6mkz0wIAu9opvQ
-	(envelope-from <live-patching+bounces-2501-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 23:33:16 +0200
+	id uEBLNKur6mlc1wIAu9opvQ
+	(envelope-from <live-patching+bounces-2502-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 01:30:51 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5131D457E89
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 23:33:15 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 41B9D458588
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 01:30:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id DCA0330131ED
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 21:33:13 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id B1DBD301178D
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 23:30:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23C5A332EA0;
-	Thu, 23 Apr 2026 21:33:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 762B535839C;
+	Thu, 23 Apr 2026 23:30:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AahsqLWk"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Azk6Gkon"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00A1326ADC
-	for <live-patching@vger.kernel.org>; Thu, 23 Apr 2026 21:33:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 539FB282F16;
+	Thu, 23 Apr 2026 23:30:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776979993; cv=none; b=ah67dVEStHaOjqJXtj9rD63PzGPVguqDEM1xIJyWhr55iB3oNaEEqehm78SnrrErONpKUaj/hUZuyjEinewW9szIZYyrN3TbM8XYE6YV+UBEAUJd+NwMX4h1bxA6kyBoQ5AZyiyrEtM7HvA0gncwV6RVtTOJvoBem43IjqTdPu0=
+	t=1776987048; cv=none; b=K2oIc7zme1ZvitmCBfByx8y6dvcMFmERvmFyKivG+pOd8U0jljrTRCgKKy76c+uFW0AfNJmqQCfOcyaFyfiJTbncHOo7j6m9lK9DcBPDOdkmHuWoJj30oIpQDK5Q0lCFtyuURWhSMWDm9AfDMaxEqOW56UjQYMvmlQzRqg9Pfns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776979993; c=relaxed/simple;
-	bh=mtKwd0qCq0YBC9CGimRIDoa5meSx99Zg1tgpnx84zX8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jT3xw6gMs8IFop5ev27DnIFWolpgCqOkB0gs8Uwe0/f+fl0y1SbhdBomPBTWv0uH5xQv7qRYSfsa1zG+3ppXHfaK8CeGdx7q7DHvEVTe8vrUT6NmDOViDDLFJGhGxfhKgTko39OO4ksY70/mnyiOs8EJnj77LGRYxz0RNR6d9qw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AahsqLWk; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C6DCC2BCB8
-	for <live-patching@vger.kernel.org>; Thu, 23 Apr 2026 21:33:12 +0000 (UTC)
+	s=arc-20240116; t=1776987048; c=relaxed/simple;
+	bh=CJScKsiW3Uupfdl+NIuGJpv25DDnR/ay6Nm3VKzEN60=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BqAKUC/ePVClLeJpgLTgIuqkxAxj/bsxymWaStNXK1Fq3eG7Vr57+oiZFLcMWYGRpWLZin4MkUzAaiX2XLDhlhyB/9JDaqzC/L2G8+KzynzV+ypFNWTIzKMW344VUVAsETDZXCUuCwPPKR5l89YWr+Nn8SOR8y54DpB8JUHRgoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Azk6Gkon; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6D6EC2BCAF;
+	Thu, 23 Apr 2026 23:30:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776979992;
-	bh=mtKwd0qCq0YBC9CGimRIDoa5meSx99Zg1tgpnx84zX8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=AahsqLWkWWhMFQVdEQ4Znae7VK8LyYINjjnHmOXcfy6Z4pZT0UoX+0gKP50CmBQjc
-	 tQ3fMn7xT5Khj/3Wz8V1h9uNQiOBGw4/o7x1sYrQGgbpZ8mvg6jbQTzEO1XgWV8QsX
-	 m9ZcjgznhkH7oHWd/z/1eWuWSgRJ2XaF0mSmYvaiHJS5BlY1a5DsyJtvnlcv0GZh//
-	 dYdukSygfEeDQX8YVghkMLvJYfW20knuw/49OuuPpJcI+qTKb2JeRwSwE8JtcjfEYA
-	 ZA/6bkatkk6DQx/HVcT9Z7banpAH5X486HCLzYVAfXeDae1wFpa0yiucgvuOPu6Tqr
-	 qoXWQLekoRvBw==
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-8eea23d01f7so185450985a.0
-        for <live-patching@vger.kernel.org>; Thu, 23 Apr 2026 14:33:12 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ8PLQp6Hbsj2Zezyh7QbIJfpy6SQ4uWA9e0Qlbj3nhuk3dXfI1RT5g3KpkkOwXrrp3JAlcWltB3ZG4q7o0V@vger.kernel.org
-X-Gm-Message-State: AOJu0YyXaJB9OvpnqjOzAELcMfr3NdNE4nJ4VNnlXUKpL7qDV56wep1J
-	84XlRBuJPsdQcRDrRbknlo2RL10tJakBMj3REnSYpNravYictTWW15miPYJ1HlKm5vH6UohG+O9
-	/kh7KzBn10WoE/9XnyEVqpewNtqNO8gE=
-X-Received: by 2002:a05:620a:649b:b0:8ea:b4d3:b19c with SMTP id
- af79cd13be357-8eab4d3b2d6mr2711019385a.28.1776979991792; Thu, 23 Apr 2026
- 14:33:11 -0700 (PDT)
+	s=k20201202; t=1776987047;
+	bh=CJScKsiW3Uupfdl+NIuGJpv25DDnR/ay6Nm3VKzEN60=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Azk6Gkon+9Ye0U/4qUtUC8AkwfjVuenFmGbN3FbMc1itHlERt5A89FZnXeCXsCAm+
+	 +eG+ACSsNWG/lneXnjeek3/yblOsLjGxguMMTQ3laUTcowt51nAVtjn0j7bCvMVntz
+	 R/ugAaITaj75QjjIad3wj3vmielzQEZSBUBlSCjhIcHZt88jXpBgqbH7oZId0EPykT
+	 CY5HQLKMQQ17pa8ALIRCPAk/d5yAU34/CckmzH/H6d6sTCfC62wWndIK7SzLtePD68
+	 5+INjPR4T+kpcoJdBBoLbfePVjGxnB3wtxuVwu76uw2aVKYKje/nBBxummGj52O7hK
+	 EU9J/Iv1xyWSQ==
+Date: Thu, 23 Apr 2026 16:30:45 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
+	live-patching@vger.kernel.org, Joe Lawrence <joe.lawrence@redhat.com>, 
+	Song Liu <song@kernel.org>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 45/48] x86/Kconfig: Enable CONFIG_PREFIX_SYMBOLS for
+ FineIBT
+Message-ID: <d5ex4fawfive7trcvhsptu2dwr5l5yru5q6bsx5zh3sqlle26u@navby7ru5z6t>
+References: <cover.1776916871.git.jpoimboe@kernel.org>
+ <70107aab81b01f8a2360f052ff550a9e97c30f79.1776916871.git.jpoimboe@kernel.org>
+ <20260423084758.GY3126523@noisy.programming.kicks-ass.net>
+ <n6xqf563o4moyl3sqp37ymakjhyvbxfinghi5k5lygeocak6ns@ugrn3b7csjot>
+ <20260423151925.GG1064669@noisy.programming.kicks-ass.net>
+ <gpq7mfal5gydlrqsm5mza5hzx5aa2rq7yk6olozlzotdnl7e24@ljzzzwwsputr>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1776916871.git.jpoimboe@kernel.org> <93c7c80130375edd22874a57cdea132b0edbb0e4.1776916871.git.jpoimboe@kernel.org>
- <CAPhsuW6_FzbAeqOduv56jZEk2E1xm+RqAxOHdekUHJwezvGOyw@mail.gmail.com> <gmjxp6lzlwjfdp4gf2nktoqfwrdx4bapf2mnnezo2gjyjj6yqf@if35zh3xa7t6>
-In-Reply-To: <gmjxp6lzlwjfdp4gf2nktoqfwrdx4bapf2mnnezo2gjyjj6yqf@if35zh3xa7t6>
-From: Song Liu <song@kernel.org>
-Date: Thu, 23 Apr 2026 14:33:00 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6VWk43z+BYCYRxo56w-4VKw8W3nmvVfCLh=ouN7a2Cqg@mail.gmail.com>
-X-Gm-Features: AQROBzAhumUQqFXSWIF7qWwlD30cIAYoff5V7kLdQDLFIT7Su6cUH0sUdTf4qeU
-Message-ID: <CAPhsuW6VWk43z+BYCYRxo56w-4VKw8W3nmvVfCLh=ouN7a2Cqg@mail.gmail.com>
-Subject: Re: [PATCH 04/48] objtool/klp: Ignore __UNIQUE_ID_*() PCI stub functions
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
-	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
-	Joe Lawrence <joe.lawrence@redhat.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spamd-Result: default: False [-2.16 / 15.00];
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <gpq7mfal5gydlrqsm5mza5hzx5aa2rq7yk6olozlzotdnl7e24@ljzzzwwsputr>
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
+	MID_RHS_NOT_FQDN(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
+	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2502-lists,live-patching=lfdr.de];
+	FROM_HAS_DN(0.00)[];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
 	MIME_TRACE(0.00)[0:+];
 	DKIM_TRACE(0.00)[kernel.org:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2501-lists,live-patching=lfdr.de];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	MISSING_XM_UA(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
-	TAGGED_RCPT(0.00)[live-patching];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	RCPT_COUNT_SEVEN(0.00)[8];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 5131D457E89
+	TAGGED_RCPT(0.00)[live-patching];
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 41B9D458588
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Thu, Apr 23, 2026 at 12:31=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.or=
-g> wrote:
->
-> On Thu, Apr 23, 2026 at 12:05:03PM -0700, Song Liu wrote:
-> > On Wed, Apr 22, 2026 at 9:04=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel=
-.org> wrote:
-> > >
-> > > With Clang LTO enabled, DECLARE_PCI_FIXUP_SECTION() uses __UNIQUE_ID(=
-)
-> > > to generate uniquely named wrapper functions, which are being reporte=
-d
-> > > as new functions and unnecessarily included in the patch module:
-> > >
-> > >   vmlinux.o: new function: __UNIQUE_ID_quirk_f0_vpd_link_661
-> > >
-> > > These stub functions only exist to make the compiler happy.  Just ign=
-ore
-> > > them along with any other dont_correlate() symbols.  Note that
-> > > dont_correlate() already includes prefix functions.
-> > >
-> > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> >
-> > The actual change appears to be much bigger than the subject line.
-> > Maybe rephrase it a bit?
->
-> Hm, in fact this is a relic from a previous iteration of the patches: it
-> longer fixes what it claims to fix, as __UNIQUE_ID_ (other than
-> __ADDRESSABLE()) are now correlated.  The claimed issue actually gets
-> fixed later by the rewriting of the correlation algorithm.
->
-> That said, I still think the below is needed, I just need to rewrite the
-> commit log.
+On Thu, Apr 23, 2026 at 09:23:12AM -0700, Josh Poimboeuf wrote:
+> On Thu, Apr 23, 2026 at 05:19:25PM +0200, Peter Zijlstra wrote:
+> > On Thu, Apr 23, 2026 at 08:16:08AM -0700, Josh Poimboeuf wrote:
+> > > On Thu, Apr 23, 2026 at 10:47:58AM +0200, Peter Zijlstra wrote:
+> > > > On Wed, Apr 22, 2026 at 09:04:13PM -0700, Josh Poimboeuf wrote:
+> > > > > PREFIX_SYMBOLS has a !CFI dependency because the compiler already
+> > > > > generates __cfi_ prefix symbols for kCFI builds, so objtool-generated
+> > > > > __pfx_ symbols were considered redundant.
+> > > > > 
+> > > > > However, the __cfi_ symbols only cover the 5-byte kCFI type hash.  With
+> > > > > FUNCTION_CALL_PADDING, there are also 11 bytes of NOP padding between
+> > > > > the hash and the function entry which have no symbol to claim them.
+> > > > 
+> > > > If you force the function alignment to 64 bytes, the prefix will also be
+> > > > 64bytes, rather than the normal 16.
+> > > 
+> > > Sorry, how do you get 64 here?
+> > 
+> > DEBUG_FORCE_FUNCTION_ALIGNMENT_64B=y
+> 
+> Ok, so in that case it would be 5-byte cfi symbol and 59-byte NOP gap.
+> Or a 64-byte pfx for the !CFI case.
+> 
+> > > > > The NOPs can be rewritten with call depth tracking thunks at runtime.
+> > > > > Without a symbol, unwinders and other tools that symbolize code
+> > > > > locations misattribute those bytes.
+> > > > > 
+> > > > > Remove the !CFI guard so objtool creates __pfx_ symbols for all
+> > > > > CALL_PADDING configs, covering the full padding area regardless of
+> > > > > whether there's also a __cfi_ symbol.
+> > > > 
+> > > > Egads, that a ton of symbols :/ Does it not make sense to 'fix' up the
+> > > > __cfi_ symbols to cover the whole prefix?
+> > > 
+> > > Yeah, I suppose that would be better, via objtool I presume.
+> > 
+> > Yup.
 
-Agreed.
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: [PATCH] objtool: Grow __cfi_* symbols for FineIBT
 
-Thanks,
-Song
+For FineIBT, the __cfi_ symbols only cover the 5-byte kCFI type hash.
+After that there also N bytes of NOP padding between the hash and the
+function entry which aren't associated with any symbol.
+
+The NOPs can be replaced with actual code at runtime.  Without a symbol,
+unwinders, objtool, and other tools have no way of knowing where those
+bytes belong.
+
+Grow the existing __cfi_* symbols to fill that gap.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+---
+ scripts/Makefile.lib                |  2 +-
+ tools/objtool/check.c               | 13 ++++++++++++-
+ tools/objtool/elf.c                 | 20 ++++++++++++++++++++
+ tools/objtool/include/objtool/elf.h |  1 +
+ 4 files changed, 34 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 0718e39cedda..baaf9f6c6bb5 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -187,7 +187,7 @@ objtool-args-$(CONFIG_HAVE_JUMP_LABEL_HACK)		+= --hacks=jump_label
+ objtool-args-$(CONFIG_HAVE_NOINSTR_HACK)		+= --hacks=noinstr
+ objtool-args-$(CONFIG_MITIGATION_CALL_DEPTH_TRACKING)	+= --hacks=skylake
+ objtool-args-$(CONFIG_X86_KERNEL_IBT)			+= --ibt
+-objtool-args-$(CONFIG_FINEIBT)				+= --cfi
++objtool-args-$(CONFIG_FINEIBT)				+= --cfi --prefix=$(CONFIG_FUNCTION_PADDING_BYTES)
+ objtool-args-$(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL)	+= --mcount
+ ifdef CONFIG_FTRACE_MCOUNT_USE_OBJTOOL
+ objtool-args-$(CONFIG_HAVE_OBJTOOL_NOP_MCOUNT)		+= --mnop
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 410061aeed26..fb24fd284e09 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -923,6 +923,17 @@ static int create_cfi_sections(struct objtool_file *file)
+ 			return -1;
+ 
+ 		idx++;
++
++		/*
++		 * Grow the __cfi_ symbol to fill the NOP gap between the
++		 * 'mov <hash>, %rax' and the start of the function.
++		 */
++		if (sym->len == 5) {
++			sym->len += opts.prefix;
++			sym->sym.st_size = sym->len;
++			if (elf_write_symbol(file->elf, sym))
++				return -1;
++		}
+ 	}
+ 
+ 	return 0;
+@@ -4927,7 +4938,7 @@ int check(struct objtool_file *file)
+ 			goto out;
+ 	}
+ 
+-	if (opts.prefix) {
++	if (opts.prefix && !opts.cfi) {
+ 		ret = create_prefix_symbols(file);
+ 		if (ret)
+ 			goto out;
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index 2ca1151de815..ede87dd9644c 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -983,6 +983,26 @@ struct symbol *elf_create_symbol(struct elf *elf, const char *name,
+ 	return sym;
+ }
+ 
++int elf_write_symbol(struct elf *elf, struct symbol *sym)
++{
++	struct section *symtab, *symtab_shndx;
++
++	symtab = find_section_by_name(elf, ".symtab");
++	if (!symtab) {
++		ERROR("no .symtab");
++		return -1;
++	}
++
++	symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
++
++	if (elf_update_symbol(elf, symtab, symtab_shndx, sym))
++		return -1;
++
++	mark_sec_changed(elf, symtab, true);
++
++	return 0;
++}
++
+ struct symbol *elf_create_section_symbol(struct elf *elf, struct section *sec)
+ {
+ 	struct symbol *sym = calloc(1, sizeof(*sym));
+diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
+index 0fd1a9b563e9..4c8a67a68063 100644
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -199,6 +199,7 @@ struct reloc *elf_init_reloc_data_sym(struct elf *elf, struct section *sec,
+ 				      struct symbol *sym,
+ 				      s64 addend);
+ 
++int elf_write_symbol(struct elf *elf, struct symbol *sym);
+ int elf_write_insn(struct elf *elf, struct section *sec, unsigned long offset,
+ 		   unsigned int len, const char *insn);
+ 
+-- 
+2.53.0
+
 
