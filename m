@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2447-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2448-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 4LSiBMub6Wm3ewIAu9opvQ
-	(envelope-from <live-patching+bounces-2447-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:10:51 +0200
+	id oG4gOlOb6Wm3ewIAu9opvQ
+	(envelope-from <live-patching+bounces-2448-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:08:51 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0817044CC29
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:10:50 +0200 (CEST)
+Received: from sto.lore.kernel.org (sto.lore.kernel.org [172.232.135.74])
+	by mail.lfdr.de (Postfix) with ESMTPS id A64AF44CB8B
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:08:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 925D9302FF03
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:06:27 +0000 (UTC)
+	by sto.lore.kernel.org (Postfix) with ESMTP id 70F6630418C2
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:06:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA96F3CBE7D;
-	Thu, 23 Apr 2026 04:04:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 660E23D7D65;
+	Thu, 23 Apr 2026 04:04:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vGgetgGZ"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q2vMUoT/"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53DD3D75A0;
-	Thu, 23 Apr 2026 04:04:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 429603D75D0;
+	Thu, 23 Apr 2026 04:04:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776917073; cv=none; b=h4FMg9sJ+bcHtCKpHjLUWrQEnBavsMxKsUyvgPrEAyK4XSVmFfRrsHYBj5L5M8aqUViPLzJMzDC9ejDydPrEux8KCajDkWYr0Ct+q5k4gL7YJhyi3B9ooNb808bM/gzWO/ai2QO9aDXx1v8+3jEJJq7vP7xzlJLpaUKybd5RgGI=
+	t=1776917074; cv=none; b=AbR3Q49d82VKJYRwbN/gVxt/am6RV6gHHDDnj53XCtZrDw88+vmo460f3s4X4nyZCZhgZoukAEp9wD5eUoQ1PA7u3NRW+z7dd9e2moiL2ukrlzF1MpKK7Gali1jkALwuejy8wWWsoR/2E0D5bveJ25DNMatgkUXsThbUsB3Z/KI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776917073; c=relaxed/simple;
-	bh=p3tDSzhkhuYxo7Rda0jssYM2X7zLXfdCw/lc/q2MBvI=;
+	s=arc-20240116; t=1776917074; c=relaxed/simple;
+	bh=572VMYMokd1zIrU682srFN53tjx+p2xgs9meRhcLEfc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=f+pfvXVGigTID5F4erd77gfH0M75Tx6heuuNoq7oc/kJKK05n9zplpi+kQdHkLTt0HK0AMvDwCPoDUPdXeYhfku0tjYKFrabmOX/P5X6uOTOnaGaynzgLI3fafp1DU8aZTTY56w50+w7UiLJvJgS9jFqh8mKYVM3+y5vP/cOhIc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vGgetgGZ; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544F1C2BCB2;
+	 MIME-Version; b=Q3cs6Ay692S3Xv/ahw2kJHSc5ctdNuG+LGn5EwuVM6IFbrrZRymaNIheygU1DUcSA5CBqkNm1TrkzrBXpa8FToEUK0VBYLLGuTrM+FrH3w7m0LLEFYnx4Z1uCKsQkAFNE9+EcFSEqQZUnnzvEaOE7yGk6j6pb8ZV5ImsM6O0E0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q2vMUoT/; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF627C2BCC4;
 	Thu, 23 Apr 2026 04:04:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776917073;
-	bh=p3tDSzhkhuYxo7Rda0jssYM2X7zLXfdCw/lc/q2MBvI=;
+	s=k20201202; t=1776917074;
+	bh=572VMYMokd1zIrU682srFN53tjx+p2xgs9meRhcLEfc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=vGgetgGZdpahrvq2LAhRk7GcdNa2zsd68FktJYpWHwX6KBFj5nMY/b5ywNXnO4AU0
-	 39mLZ/72IWp5DzKp/1BIdzfJaRsgGVRlTGVjT2lMcNjeUetCQ/0JkZx/DUFwRZxsJz
-	 xoPjHY36w3nCsV32x4eA5usbBjDbN7SGYEhbfqxQty5HnQxrROjnU1U2X9TXBVgc3r
-	 Xx0wh3cTM6p83fogP6FcQztd7ryn27noYDpkF722Kur9beGC1nSfwXKRhJYwlYfY1U
-	 cB1QYa5sPJru38mDNynCpOs21Y1faSpsqjX2tACooYFCGXvPQM5NvaCtQOtYlKDZ9K
-	 A6OcSJRqlOqfg==
+	b=q2vMUoT/ygHTZ1c0ydtEMX99VJrOSpukhi4oZJ/7OQBSTjrkL7VF8maOHCeClCm0r
+	 oGM5AxWcakjgFkhNBT4hBjw1cPszcRMppWTbYxYaxggE4TWA1qdV60NnwAXsjDZjn1
+	 kzgFIDCnNnwRGLGTN1gvG1ej/n4dnGMavFIoGXT1cAGOQ9FehJnR69VlK5KeQ8F6yZ
+	 rFosBMSfhKtJuBECmU3Hxuha6FYbapf0DhZ7qJhVH5TQbZfCv0U8SXUQj3GUBAbRb1
+	 W1MDkxjjCj4458guDByxMVzUEOiLFhwAycg7fQXYg2Snxm0eItcmCDbeHr/u43Lqav
+	 pBzpmHqs9lOPA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 20/48] klp-build: Don't use errexit
-Date: Wed, 22 Apr 2026 21:03:48 -0700
-Message-ID: <f86bf0b781101152b35437bfe0e6a286f3955247.1776916871.git.jpoimboe@kernel.org>
+Subject: [PATCH 21/48] klp-build: Validate patch file existence
+Date: Wed, 22 Apr 2026 21:03:49 -0700
+Message-ID: <66e3edb75bf1924c650bce43835acc2053d1cf1a.1776916871.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1776916871.git.jpoimboe@kernel.org>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
@@ -71,13 +71,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.232.135.74:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2447-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2448-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -91,33 +91,43 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 0817044CC29
+	ASN(0.00)[asn:63949, ipnet:172.232.128.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: A64AF44CB8B
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-The errtrace option (combined with the ERR trap) already serves the same
-function (and more) as errexit, so errexit is redundant.  And it has
-more pitfalls.  Remove it.
+Make sure all patch files actually exist.  Otherwise there can be
+confusing errors later.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- scripts/livepatch/klp-build | 1 -
- 1 file changed, 1 deletion(-)
+ scripts/livepatch/klp-build | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-index 2b8b3c338a87..e2f0eb8fdc7f 100755
+index e2f0eb8fdc7f..115f68db49c9 100755
 --- a/scripts/livepatch/klp-build
 +++ b/scripts/livepatch/klp-build
-@@ -11,7 +11,6 @@ if (( BASH_VERSINFO[0]  < 4 || \
- 	exit 1
- fi
+@@ -157,6 +157,7 @@ process_args() {
+ 	local short
+ 	local long
+ 	local args
++	local patch
  
--set -o errexit
- set -o errtrace
- set -o pipefail
- set -o nounset
+ 	short="hfj:o:vdS:T"
+ 	long="help,show-first-changed,jobs:,output:,no-replace,verbose,debug,short-circuit:,keep-tmp"
+@@ -235,6 +236,10 @@ process_args() {
+ 
+ 	KEEP_TMP="$keep_tmp"
+ 	PATCHES=("$@")
++
++	for patch in "${PATCHES[@]}"; do
++		[[ -f "$patch" ]] || die "$patch doesn't exist"
++	done
+ }
+ 
+ # temporarily disable xtrace for especially verbose code
 -- 
 2.53.0
 
