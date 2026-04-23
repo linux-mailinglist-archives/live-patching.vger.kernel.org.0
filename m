@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2429-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2430-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id YIwNOECd6WkAfQIAu9opvQ
-	(envelope-from <live-patching+bounces-2429-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:17:04 +0200
+	id 8OueIEid6WkAfQIAu9opvQ
+	(envelope-from <live-patching+bounces-2430-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:17:12 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7964344CDD4
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:17:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D7FA744CDE3
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:17:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id E582C3046069
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:04:28 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 642A13051BFE
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:04:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C985335F8B9;
-	Thu, 23 Apr 2026 04:04:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 794AA3CBE99;
+	Thu, 23 Apr 2026 04:04:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cthaEmPR"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bd/UpBJR"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A397932ED24;
-	Thu, 23 Apr 2026 04:04:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F293CAE88;
+	Thu, 23 Apr 2026 04:04:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776917064; cv=none; b=HPgAjMbvJc5twfOZA8nOdJa/AgixcwsKXurltL5Cw3Ri9ez/Om1g+bUNKtUnjwbZgRk7ZIe/MYeiPcUh/FwklLCzxEFCiYZ+VUD3JZvPFa1nxzI3VaRfpZqSqgZGUmmDB0GG8y3+Y83cwZc0ILYgczvDcG/nSHaZ/gXThNkhzMs=
+	t=1776917065; cv=none; b=Fl9gsNwbJ0jPS8/vadvD1OI5JbBVtkcUE9Q+Vb3iiSNqmR341QudbTWoeiKCtAYOAm74/nRPDJKZGOk83n6uUFP811KnrA2I/6Ztqy2LD1DULWawtahLvEIdVwlEsA43N/nTlNseMmN8P5bRJUGQwh8fcOa7kAQ+9RIYOfqqZmE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776917064; c=relaxed/simple;
-	bh=m63KetNM8hjihetR3hWKARSwXrlz8FMc6/yAkKODq4o=;
+	s=arc-20240116; t=1776917065; c=relaxed/simple;
+	bh=v1/YJzbW78of1CWH8JzZKZQJi1ocZAKbzDcRsWSyYUc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=h3iIBQZDgzMCNXGrgHMttWD2rkyvTeHg9dnr0jrbjDmYGdChnP24sov0khbTDv5kFRx9UQvj/C6iUI8Ayz2DwKTmrnFNxTEQyvuz/Mjk5ftpj/bmqaw7LESfSiLdoQXETlouvStyE+PKk/Pz36SE8aOxVIoQq10iiXOCNMWBAgY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cthaEmPR; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D2FC2BCB7;
+	 MIME-Version; b=F8+7BIKkkKvxgSefLgwe5W8eZAuaNv0RucPWNKBMxW1FZFl3MghHKezZMsxzYBs0SyQcJuGIzDHLotYXc+HbUP5/ntcxVbysG34/ktbFwfTybfc0Nf6uP1nb/6T1WMWhXv+fRL62UDelVBuJyFOcMsZjcr2zZT4Rf+YXHrx4A+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bd/UpBJR; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB049C2BCB4;
 	Thu, 23 Apr 2026 04:04:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776917064;
-	bh=m63KetNM8hjihetR3hWKARSwXrlz8FMc6/yAkKODq4o=;
+	s=k20201202; t=1776917065;
+	bh=v1/YJzbW78of1CWH8JzZKZQJi1ocZAKbzDcRsWSyYUc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=cthaEmPR59tv0x35YlMswmRUajeUCH/x2qQ9kOU63AJLsjCm5/7kA8rYVCWR8jZiI
-	 3lh9+bEkSzNGAVRHo/ucOfg9Qb7JQY8Y0cn/7vV3fk/jUYm81brakJbHnTHIbP5o9s
-	 DAx5mfIA6/3m48Bht9DS9WTIYtzmINDnomcvsZP8KfG8XHdhs0qq0OpFPSur+KnOJP
-	 kf1dpZ4g8PKOIcOY07FRXA8BlprdZm7oHdfTTaQ0fcj4qbYzI2G06hFl3ZKtV3m9bH
-	 NNp6pfQPYXP2I2v8X0zDELifwKP9pdbIhDgCnpSh03DrC/GwYjLuoZ1FnWSpujMmPM
-	 n0DbyUOBxpwag==
+	b=bd/UpBJRcj60h8ndcdZ3gMivL5+djsGqFUhrx2KqjFAaR26m7RCUtBqRAnAYj+piQ
+	 9c6p/EKw/dfEyYvq0IbT88w24h7ZRVt3Sm3pza8+1uTD8u09RM4jrKkhcAKnEmrUlD
+	 KS2WTe+jRxN9RjAtIF8V8svK0xTQNqwy/6eN3q+5lWyWYuSm7kKTcuPQfpbeOiZCr0
+	 3zK5CzoXPjMun1eSKB2OKHdgXm02lVyQfwz5FY6Ou7/3WTRlPSG0abqsnjZD9EK3c7
+	 zmFxKiw5WbqFLQyuTTQ4yxtsdWPximFqrpV9hWq8O7vl/l2EIhKelzhXK71DBZv/Ur
+	 K3ffavY3K/gPA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 02/48] objtool/klp: Fix .data..once static local non-correlation
-Date: Wed, 22 Apr 2026 21:03:30 -0700
-Message-ID: <f34990d29dd7642ada7843613c96c563043c28a5.1776916871.git.jpoimboe@kernel.org>
+Subject: [PATCH 03/48] objtool/klp: Don't correlate __ADDRESSABLE() symbols
+Date: Wed, 22 Apr 2026 21:03:31 -0700
+Message-ID: <ea9af1b6136e9aa11589e592d0fc59e4ef414579.1776916871.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1776916871.git.jpoimboe@kernel.org>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
@@ -77,7 +77,7 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2429-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2430-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -93,34 +93,46 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 7964344CDD4
+X-Rspamd-Queue-Id: D7FA744CDE3
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-While there was once a section named .data.once, it has since been
-renamed to .data..once with commit dbefa1f31a91 ("Rename .data.once to
-.data..once to fix resetting WARN*_ONCE").  Fix it.
+Symbols created by __ADDRESSABLE() are only used to convince the
+toolchain not to optimize out the referenced symbol.
 
-Fixes: dd590d4d57eb ("objtool/klp: Introduce klp diff subcommand for diffing object files")
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/klp-diff.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/objtool/klp-diff.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index b1b068e9b4c7..cb26c1c92a74 100644
+index cb26c1c92a74..36753eeba58c 100644
 --- a/tools/objtool/klp-diff.c
 +++ b/tools/objtool/klp-diff.c
-@@ -257,7 +257,8 @@ static bool is_uncorrelated_static_local(struct symbol *sym)
- 	if (!is_object_sym(sym) || !is_local_sym(sym))
- 		return false;
+@@ -352,6 +352,15 @@ static bool is_special_section_aux(struct section *sec)
+ 	return false;
+ }
  
--	if (!strcmp(sym->sec->name, ".data.once"))
-+	/* WARN_ONCE, etc */
-+	if (!strcmp(sym->sec->name, ".data..once"))
- 		return true;
- 
- 	dot = strchr(sym->name, '.');
++/*
++ * Symbols created by ___ADDRESSABLE() are only used to convince the toolchain
++ * not to optimize out the referenced symbol.
++ */
++static bool is_addressable_sym(struct symbol *sym)
++{
++	return !strcmp(sym->sec->name, ".discard.addressable");
++}
++
+ /*
+  * These symbols should never be correlated, so their local patched versions
+  * are used instead of linking to the originals.
+@@ -365,6 +374,7 @@ static bool dont_correlate(struct symbol *sym)
+ 	       is_uncorrelated_static_local(sym) ||
+ 	       is_clang_tmp_label(sym) ||
+ 	       is_string_sec(sym->sec) ||
++	       is_addressable_sym(sym) ||
+ 	       is_special_section(sym->sec) ||
+ 	       is_special_section_aux(sym->sec) ||
+ 	       strstarts(sym->name, "__initcall__");
 -- 
 2.53.0
 
