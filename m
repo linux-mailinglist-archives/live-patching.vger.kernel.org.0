@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2442-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2443-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id OIyCJ/Ca6Wm0egIAu9opvQ
-	(envelope-from <live-patching+bounces-2442-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:07:12 +0200
+	id qOYEDXqb6Wm3ewIAu9opvQ
+	(envelope-from <live-patching+bounces-2443-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:09:30 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4406B44CB41
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:07:11 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4429144CBB1
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:09:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id 47A45303419C
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:05:53 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 336C9302344A
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:05:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D7633D525E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F243F3D5670;
 	Thu, 23 Apr 2026 04:04:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Lxspzcl4"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A7YtDtnh"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79D313D5250;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFC423D4125;
 	Thu, 23 Apr 2026 04:04:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776917071; cv=none; b=BQ2C/yMHjnzcMaQsE8+MKip4ZTKSvSyDzxOLHqXG8Jw2HstJrCeZnjqAuRzcsEiTmCzCaZCi2X5R6Kl0fvdZz/QqBmQh150DYtJft3yzkbFHf4oEGzrViAQ8S8cpeUCkY63Iwv9eo6BqPQF893tIExX51UBV3cvXkkBeyTMaxwY=
+	t=1776917071; cv=none; b=CjGsYeMWmvCbGqjrpL3XRqWuAs4SYetwdMo7L9RfnfpcD53kHnequuO9MwaIO+oj0ntnNB3YPnZ5HLXFU9cUPIicvXWNPgu0V7LB7+AcSznNBVmTh+HLpbWGpV90OyUs9TSmpPjw7fo186FwrmuX8RBfxhid871521TgeGhr7+U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776917071; c=relaxed/simple;
-	bh=pytJZpJjyK7ja4MgCp5b2WBjImBrrXu1b/o8kx/gZ/w=;
+	bh=vt25iPC4lRsFBzlUwIK2gTOLg/NqXONtzBsE6CA3csA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=T8ixqL0BJSYNXt8u3qtZ+7wUWef8ruPPXEwi3AfNGygD8iJKOJ1GXGdl8oUZpLATDM6LliN/0R2Be5Xg3ZFBvnrrNp8hVO1vsS/WUCcARNw0wEPY/e1oNz2usGLlIv5ebo5T2DSGHggnSK8D2oI1azE5/0z1YQF4IDvHNbV8Ke4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Lxspzcl4; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6CA7C2BCB9;
-	Thu, 23 Apr 2026 04:04:30 +0000 (UTC)
+	 MIME-Version; b=oXvXW/3seY8NQ3Dlo8Gm1ikuEmitU/tQV2betkSchAPcjBOtTzNKUarlVFfzIhuiNyrwsUQ4jzWgQva/NiXImmow3K18E2HcfP/+FFpnuD79M6ZbCTg2uC0/jrPBCl5OLcKyr+THeaqQXH3o4y7h5QzeNupwjMNVulROGXVxfAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A7YtDtnh; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69CADC2BCB7;
+	Thu, 23 Apr 2026 04:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776917071;
-	bh=pytJZpJjyK7ja4MgCp5b2WBjImBrrXu1b/o8kx/gZ/w=;
+	bh=vt25iPC4lRsFBzlUwIK2gTOLg/NqXONtzBsE6CA3csA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Lxspzcl4uBH0BHsHMPKftU4YmHtENPHM7XiE8eeYp9EiBJrlqUwKa3JnmTkntP+vO
-	 ELpR6A6aG5UZlcS9YgPrp5Pf3Z2jvWlQEKCKQwQEPgJXdfPBKhiFyfhp/qQM2SpkLW
-	 d0T0RliCgh7p/cKnMmIe2vcMIf8QZfX7G2BjxJ7l7cxmNn6CqZbVapuC4uHrfz00V8
-	 vlTBFpmwaXaTmSPPg1t4ETBbac8ZMn/7a/U9JbwzboGJ8ShSeUqgXFlU0Ab6JhM2UI
-	 tDLMV8Ld7rJ1Q8SyWgD4V7vjtNWtkBK5mj2Pf4NrABN5WIPtQ/7OKIOzE23eMVlkO2
-	 MYquJYvETaSmw==
+	b=A7YtDtnhNFfWXg6YUcDXazyDy9KiR+fXE2zvSw3qwVRT9/u2bjvG3171N/a6x/2c4
+	 3oghwh/CnhTLxWwoCh+pqIYGQPTBtlW2tv/1gtDWe/C1kYRu7B7PEFgSUeUqXA0vCu
+	 4vGR9FB1OAIY/ysST9Cp8LZqjZJjqDNCBCLzN1cba96SnfUo6zYulpm9edm+KXHRXl
+	 MjVaVin0jgVXPFovWErTMNbq+4O96HIo92rfbXfbVBYidbTv4jdq8fppOXStehNPKJ
+	 RSgsOyDOPeDKOdGrenkvuIFcGMS+686oP0BKfxJPK9X/FYvyTkLgBnQhjeHnfdLJ9S
+	 OiUK+b7W7mPoQ==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 15/48] objtool/klp: Fix kCFI trap handling
-Date: Wed, 22 Apr 2026 21:03:43 -0700
-Message-ID: <2022e064d670290bfc4ce96207c64b2282d39959.1776916871.git.jpoimboe@kernel.org>
+Subject: [PATCH 16/48] objtool/klp: Fix relocation conversion failures for R_X86_64_NONE
+Date: Wed, 22 Apr 2026 21:03:44 -0700
+Message-ID: <2779114efd74a9dd9f1e78076e1b9e3a5273de73.1776916871.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1776916871.git.jpoimboe@kernel.org>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
@@ -71,13 +71,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2442-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2443-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -91,36 +91,38 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 4406B44CB41
+	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 4429144CBB1
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-.kcfi_traps contains references to kCFI trap instruction locations.
-When a KCFI type check fails at an indirect call, the trap handler looks
-up the faulting address in this section.
+Objtool has some hacks which NOP out certain calls/jumps and replace
+their relocations with R_X86_64_NONE.  The klp-diff relocation
+extraction code will error out when trying to copy these relocations due
+to their negative addend, which would only makes sense for a PC-relative
+branch instruction.  Just ignore them.
 
-Add it to the special sections list so the entries get extracted for the
-changed functions they reference.
-
+Fixes: dd590d4d57eb ("objtool/klp: Introduce klp diff subcommand for diffing object files")
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/klp-diff.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/objtool/klp-diff.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 22942f394745..a8b9a1441e7e 100644
+index a8b9a1441e7e..57d2af98a33c 100644
 --- a/tools/objtool/klp-diff.c
 +++ b/tools/objtool/klp-diff.c
-@@ -296,6 +296,7 @@ static bool is_special_section(struct section *sec)
+@@ -1048,6 +1048,9 @@ static int convert_reloc_secsym_to_sym(struct elf *elf, struct reloc *reloc)
+  */
+ static int convert_reloc_sym(struct elf *elf, struct reloc *reloc)
  {
- 	static const char * const specials[] = {
- 		".altinstructions",
-+		".kcfi_traps",
- 		".smp_locks",
- 		"__bug_table",
- 		"__ex_table",
++	if (reloc_type(reloc) == R_NONE)
++		return 1;
++
+ 	if (is_reloc_allowed(reloc))
+ 		return 0;
+ 
 -- 
 2.53.0
 
