@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2432-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2433-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id KBlgE2+a6Wm0egIAu9opvQ
-	(envelope-from <live-patching+bounces-2432-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:05:03 +0200
+	id eLH/Epyc6Wm3ewIAu9opvQ
+	(envelope-from <live-patching+bounces-2433-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:14:20 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [172.232.135.74])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2022344CADC
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:05:02 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 936C444CD0D
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:14:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id 86428300A30A
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:04:46 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id B39B7306EB4C
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:04:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8DD323CEB80;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F25DB3CF04D;
 	Thu, 23 Apr 2026 04:04:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HGGXrATR"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UPM9KZp7"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ABF73CE493;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFB1A3CEBB7;
 	Thu, 23 Apr 2026 04:04:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776917066; cv=none; b=en13oUU/BGzG8AnVOdes1TPyR9+w+wk4nwSdQOaGo4hJ93R12OLD5ZTXSrt5YV5LayBstGSMUCDRN6rp9dZC2Qgbi8D9VjclAu2+oNxZVA0/2wOXmYrRFN+c0bLOG2tTJEKI49jbno8LY4OugBVzkTWzaD13hobpXhAeHOznhkM=
+	t=1776917066; cv=none; b=BphGAbYzAnCk6bU0llcgXr1hB4+/f0JzSwGgxw7E22M86B7uNvHa+W9QphfuxqIr8QzWYuH6kg6a9zSWlJl6fsZNkdeUABK/bAYQCZKb//P5C7Wffq0NIoYTuBnky+uaxm3GaVnTs92Xfpwc6BoYZAYR+gvZ0n/9ISQK6GusKJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776917066; c=relaxed/simple;
-	bh=ugHeCutv5a7BLLAyhgSmNXWzhfKrZRVBZiPfR6m9uQg=;
+	bh=HnzSw9B7ABZdAUJ8CrWgBNLplWHA42vKKzWDFcZRmYM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MVYnv00y/jsZBzRMQyMZGL1aeFP7rwR/40FZoLQYHNkr5Zf9D6HO56s0DWg9AQuq/SRt3Hr5NlMdFw2/Vgf+QRaJA4JToBQ0pDWYTCJnW9km9SsGUlDJtjCE4gD1jxfmHp0zEfC9SMwiFjJzQqUGtegCeUjZXLrqeKmoxM0iYEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HGGXrATR; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7948C2BCB5;
-	Thu, 23 Apr 2026 04:04:25 +0000 (UTC)
+	 MIME-Version; b=jtyh0BRCxaKTM7aRadEzw8GZ0B4GFMIVmnsxYr3iKUrzbZ5eNO275c4LiwMaL66VZt/VKp5rjIrmh3wBVjF/Llvulh445P5TMjK7HPdpPk8+6cEdmXgruILn2PzaTvWq6xT0pROQ/z7LNu7yxazQe66oSjMEBQPdcAp4xfXPEQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UPM9KZp7; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5670BC2BCB2;
+	Thu, 23 Apr 2026 04:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776917066;
-	bh=ugHeCutv5a7BLLAyhgSmNXWzhfKrZRVBZiPfR6m9uQg=;
+	bh=HnzSw9B7ABZdAUJ8CrWgBNLplWHA42vKKzWDFcZRmYM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=HGGXrATRJK551pU1DVlQhCmfzQEuln84NTfxhxnOl/UvTIjJTTxsvkmBw43oIazrl
-	 PDVMEAX9gOk0v/1AVGfvFUkmSgKEo70IVCoRK/60gbOx3vLMrJ93c5myeRWJk3k/u5
-	 xx8WVwlCMN0zkvnBw3xOtbQOwbYaU1x8JioWh0NVRTHl912mGEs6pJpUqodKMEeiHq
-	 nyDXprCadM46yb1BIwSmE7Esbi39Q27MPXNfK+rn3ibkOnOHJEL4BpMnoOzIBEluVb
-	 gwxFfGuciLL9ig9WO4dJkP6qRdJENKpEKsFrIoU26sC+giePFfW/u375LqfzO3gRz5
-	 uQwieM5bZaeFA==
+	b=UPM9KZp7chTUZFxT/grSTDssHWGe5slGOBvpd86CGtsY/b+qHpfKMxidoTmQ5C4JI
+	 AR1CIoOqqc5+A367vVAYOHqaK8XcCv/dMzSnaAZeZmmfVON1jHHN4H6mRU5sz88ZzH
+	 pb/tM4myygYmuSr/77fkyjcHlDEO6PQbbqGryvRkpWJEFXN9JFr6uh3JYkA13cgs/I
+	 OruSSTv/lkG0O+xkxK8rYZIDKKI7tZOan6qH75qnX1FIShAEN1b6Z1U6cR6jINIY6G
+	 ZFeDTrkPXADvCkrIWBXd1epx3QcsqDUA1uFXhRTJECiS/8htVUbUfQJBIBn5xcv+Cn
+	 DG+nQwHsOl0Pw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 05/48] objtool: Move mark_rodata() to elf.c
-Date: Wed, 22 Apr 2026 21:03:33 -0700
-Message-ID: <c32b3d8d0770c93f8c0d8e4a989f2f43c29e9a5f.1776916871.git.jpoimboe@kernel.org>
+Subject: [PATCH 06/48] objtool/klp: Don't correlate rodata symbols
+Date: Wed, 22 Apr 2026 21:03:34 -0700
+Message-ID: <602e405888ab38cd08de4375060b56db0965651d.1776916871.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1776916871.git.jpoimboe@kernel.org>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
@@ -71,13 +71,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.232.135.74:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2432-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2433-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -91,105 +91,38 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.232.128.0/19, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 2022344CADC
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 936C444CD0D
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Move the sec->rodata marking from check.c to elf.c so it's set during
-ELF reading rather than during the check pipeline.  This makes the
-rodata flag available to all objtool users, including klp-diff which
-reads ELF files directly without running check().
+Some crypto assembly codes define the same local rodata labels (e.g.,
+K256) which get duplicated when multiple .S files are linked into the
+same composite object, triggering "Multiple correlation candidates"
+errors.
 
-Add an is_rodata_sec() helper to elf.h for consistency with
-is_text_sec() and is_string_sec().
+Correlating rodata is tricky anyway, and not all rodata is associated
+with a symbol.  So just don't correlate any rodata, so that any
+referenced data will get duplicated in the livepatch module.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c               | 11 +++--------
- tools/objtool/elf.c                 | 13 +++++++++++++
- tools/objtool/include/objtool/elf.h |  5 +++++
- 3 files changed, 21 insertions(+), 8 deletions(-)
+ tools/objtool/klp-diff.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 9b11cf3193b9..5722d4568401 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2566,7 +2566,6 @@ static int classify_symbols(struct objtool_file *file)
- static void mark_rodata(struct objtool_file *file)
- {
- 	struct section *sec;
--	bool found = false;
- 
- 	/*
- 	 * Search for the following rodata sections, each of which can
-@@ -2579,15 +2578,11 @@ static void mark_rodata(struct objtool_file *file)
- 	 * .rodata.str1.* sections are ignored; they don't contain jump tables.
- 	 */
- 	for_each_sec(file->elf, sec) {
--		if ((!strncmp(sec->name, ".rodata", 7) &&
--		     !strstr(sec->name, ".str1.")) ||
--		    !strncmp(sec->name, ".data.rel.ro", 12)) {
--			sec->rodata = true;
--			found = true;
-+		if (is_rodata_sec(sec)) {
-+			file->rodata = true;
-+			return;
- 		}
- 	}
--
--	file->rodata = found;
- }
- 
- static void mark_holes(struct objtool_file *file)
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index f3df2bde119f..ac9da81a7a2f 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -1172,6 +1172,17 @@ static int read_relocs(struct elf *elf)
- 	return 0;
- }
- 
-+static void mark_rodata(struct elf *elf)
-+{
-+	struct section *sec;
-+
-+	for_each_sec(elf, sec) {
-+		if ((strstarts(sec->name, ".rodata") && !strstr(sec->name, ".str1.")) ||
-+		    strstarts(sec->name, ".data.rel.ro"))
-+			sec->rodata = true;
-+	}
-+}
-+
- struct elf *elf_open_read(const char *name, int flags)
- {
- 	struct elf *elf;
-@@ -1222,6 +1233,8 @@ struct elf *elf_open_read(const char *name, int flags)
- 	if (read_sections(elf))
- 		goto err;
- 
-+	mark_rodata(elf);
-+
- 	if (read_symbols(elf))
- 		goto err;
- 
-diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index 25573e5af76e..c61bd57767f9 100644
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -296,6 +296,11 @@ static inline bool is_text_sec(struct section *sec)
- 	return sec->sh.sh_flags & SHF_EXECINSTR;
- }
- 
-+static inline bool is_rodata_sec(struct section *sec)
-+{
-+	return sec->rodata;
-+}
-+
- static inline bool sec_changed(struct section *sec)
- {
- 	return sec->_changed;
+diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+index ea9ccf8c4ea9..f6597015b33b 100644
+--- a/tools/objtool/klp-diff.c
++++ b/tools/objtool/klp-diff.c
+@@ -374,6 +374,7 @@ static bool dont_correlate(struct symbol *sym)
+ 	       is_uncorrelated_static_local(sym) ||
+ 	       is_clang_tmp_label(sym) ||
+ 	       is_string_sec(sym->sec) ||
++	       is_rodata_sec(sym->sec) ||
+ 	       is_addressable_sym(sym) ||
+ 	       is_special_section(sym->sec) ||
+ 	       is_special_section_aux(sym->sec) ||
 -- 
 2.53.0
 
