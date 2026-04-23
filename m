@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2466-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2467-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id +FaZCCGd6Wm3ewIAu9opvQ
-	(envelope-from <live-patching+bounces-2466-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:16:33 +0200
+	id IIhCJNee6WkAfQIAu9opvQ
+	(envelope-from <live-patching+bounces-2467-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:23:51 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1CC4F44CD96
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:16:31 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3482044CEB5
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:23:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id B1E42306DA01
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:08:36 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id B482D32D0FEB
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:08:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 62C2B3DCD9B;
-	Thu, 23 Apr 2026 04:04:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C07F3DD50B;
+	Thu, 23 Apr 2026 04:04:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dsSoejWm"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ma5VlDf/"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 381913DCD81;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED5753DCDB4;
 	Thu, 23 Apr 2026 04:04:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776917084; cv=none; b=jLehWfi/dOu8BylVuBPoe4VYRVsqCvUFSJwui0SPSsFkrs/AOhbnU+B2K+1ttL3ZZvH3wLDt7PYVwcqAeMimxO36iuVXoxHUHncrBE7IPw1zEhMt1aLxIJQpuZY5cRYv6LTXbknQrs8fKKbvtC+Hv88FAvNtqXkuYhJaxHKD+EI=
+	t=1776917085; cv=none; b=kNxIw6AEeWBM6IWZ/n5D75dCbrT7Mz5bqaDeCZEf4kaEjP7IMv4uokX+/I8s/+u1bTvjWHfOPhomZTQO4YLEgcvwqJJAFM9FTtRhjGHCGXtzUoLgX89MuV6Z8cMNUm0I9TQM4MJc/MRitROGOWbYUy9h31vbpWcrZSUAr3cWemg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776917084; c=relaxed/simple;
-	bh=2w8CeG6pOvd1rlnM0WqP9uenooE/GJd9V/fFSVkUS7E=;
+	s=arc-20240116; t=1776917085; c=relaxed/simple;
+	bh=R+8ECy7yKq4jzp8RCvv7108cy8ywNl7MbZrfSymzIeo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MS1uolsFztXhFrqc8lTX9HUy3hCnO/noWTUMwO9W5j1Ame4zY2ORs+H8OJXkW/rfNZrMb3ZNaOq2/6ag9ffyEdRepV3m9lzyYqK4fvCfmGgR0mzPtMAntIy3IIfxh/C0CAjuw+YlDgdq1rCR28b/CAC5zl5LKm7N09k2LYtbzk4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dsSoejWm; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE38C2BCB2;
-	Thu, 23 Apr 2026 04:04:43 +0000 (UTC)
+	 MIME-Version; b=dIid0AU8L36rh2XWByVPWMk/LBAiGHhaWf3pLwTBRQI7Z0yze9idgdb/iudlHSno452w5a9VwRQ3SLJFY9jql9Ak+eEvfWJXd6wYAtecgvsVvyKnl2jRQgcG2s4/QkwKe6XGw5Bc8YN1J5POgAsZgvYnfetKjk0kLZHeUZb/gVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ma5VlDf/; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 554CFC2BCB4;
+	Thu, 23 Apr 2026 04:04:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776917084;
-	bh=2w8CeG6pOvd1rlnM0WqP9uenooE/GJd9V/fFSVkUS7E=;
+	bh=R+8ECy7yKq4jzp8RCvv7108cy8ywNl7MbZrfSymzIeo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=dsSoejWmlSmCA//um+LUJ88uf9VRQfFOq38cZX3PdaA6PVbi6Wy4kZ8g+fa2xAIHS
-	 bNV9uRlcQgYg/CDRdw5KWUXGZGpoIh/wx9fvvsAFFfTKS8xYK3VZ0//x+uqcM3phsh
-	 U07HWUzeF/z6HawjOuI+fkng42a4WBNkxq+5yniBdHfl4KB9qBDn61RJL3/7fvdtNY
-	 Zn/dWrdyJTPdldNCyV8J1vQ9r4/fObQP/xrOQKleKTt+Bru3OxHXb9mQ0XIKhm1HLW
-	 e9DpjdFY/xyEGOygu8Jp/rqtLIbRw87FDWnBLnurQcb1CiA5SCfN4Iv/3EHMfbAfZD
-	 Pfw6O4i3sSvuw==
+	b=Ma5VlDf/0OzzM81D5iviwwY4gJCat5drvAU3olfjhiM4V8xAiK/8W2qkI0e2N6LYq
+	 nUVC/7ftMTiJ0BKSsMm/2bioCNMtJtBqP6LjBVpVH99hf9aWltvK5FrHMAd9OOXoTq
+	 6LHYoL6RpuzE/+v1soZ8jP53Oa1GQZGOWSNl+jX4FX9EGaT11IaqBWncnn1kYVoUCu
+	 erYT8wBv/dLdXQ5ALi52JVZfB5LDfcXu8J9ANGsG6Z97L4t9QY1aCgviWY1WEGtLzA
+	 cNG2YMHKayBPc6QG6rHO/vUQmcMJLnUhP0naBtRE/Ii7aDc4YyEjs6FThrQREFcwP2
+	 5uh8dRjXWjGJw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 39/48] objtool: Replace iterator callbacks with for_each_sym_by_*()
-Date: Wed, 22 Apr 2026 21:04:07 -0700
-Message-ID: <03f7804ae62c5c4521053afc3f6a1c4a11bc85de.1776916871.git.jpoimboe@kernel.org>
+Subject: [PATCH 40/48] objtool/klp: Calculate object checksums
+Date: Wed, 22 Apr 2026 21:04:08 -0700
+Message-ID: <084424751bed439249657e1aef6a3d5c4e199680.1776916871.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1776916871.git.jpoimboe@kernel.org>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
@@ -71,13 +71,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2466-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2467-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -91,378 +91,310 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 1CC4F44CD96
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: 3482044CEB5
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Convert the callback-based iterate_sym_by_name() and
-iterate_sym_by_demangled_name() callers to use new
-for_each_sym_by[_demangled]_name() macros.  This eliminates the callback
-structs and functions and makes the code more compact and readable.
+Start checksumming data objects in preparation for revamping the
+correlation algorithm.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c                 | 80 ++++++-----------------------
- tools/objtool/include/objtool/elf.h | 40 ++++++++++++---
- tools/objtool/klp-checksum.c        | 20 +++-----
- tools/objtool/klp-diff.c            | 42 +++++----------
- 4 files changed, 73 insertions(+), 109 deletions(-)
+ tools/objtool/include/objtool/checksum.h | 43 ++++++++----
+ tools/objtool/include/objtool/warn.h     | 29 ++++----
+ tools/objtool/klp-checksum.c             | 88 +++++++++++++++++++-----
+ tools/objtool/klp-diff.c                 |  2 +-
+ 4 files changed, 115 insertions(+), 47 deletions(-)
 
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 8a6e1338af97..8d823e96b7c9 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -27,27 +27,16 @@
+diff --git a/tools/objtool/include/objtool/checksum.h b/tools/objtool/include/objtool/checksum.h
+index be4eb7dfe6f2..ccaf57c7df38 100644
+--- a/tools/objtool/include/objtool/checksum.h
++++ b/tools/objtool/include/objtool/checksum.h
+@@ -6,28 +6,43 @@
  
- static ssize_t demangled_name_len(const char *name);
+ #ifdef BUILD_KLP
  
--static inline u32 str_hash(const char *str)
--{
--	return jhash(str, strlen(str), 0);
--}
--
--static inline u32 str_hash_demangled(const char *str)
-+u32 str_hash_demangled(const char *str)
+-static inline void checksum_init(struct symbol *func)
++static inline void checksum_init(struct symbol *sym)
  {
- 	return jhash(str, demangled_name_len(str), 0);
+-	if (func && !func->csum.state) {
+-		func->csum.state = XXH3_createState();
+-		XXH3_64bits_reset(func->csum.state);
++	if (sym && !sym->csum.state) {
++		sym->csum.state = XXH3_createState();
++		XXH3_64bits_reset(sym->csum.state);
+ 	}
  }
  
--#define __elf_table(name)	(elf->name##_hash)
--#define __elf_bits(name)	(elf->name##_bits)
--
--#define __elf_table_entry(name, key) \
--	__elf_table(name)[hash_min(key, __elf_bits(name))]
--
- #define elf_hash_add(name, node, key)					\
- ({									\
- 	struct elf_hash_node *__node = node;				\
--	__node->next = __elf_table_entry(name, key);			\
--	__elf_table_entry(name, key) = __node;				\
-+	__node->next = __elf_table_entry(elf, name, key);		\
-+	__elf_table_entry(elf, name, key) = __node;			\
- })
- 
- static inline void __elf_hash_del(struct elf_hash_node *node,
-@@ -69,30 +58,20 @@ static inline void __elf_hash_del(struct elf_hash_node *node,
+-static inline void checksum_update(struct symbol *func,
+-				   struct instruction *insn,
+-				   const void *data, size_t size)
++static inline void __checksum_update(struct symbol *sym, const void *data,
++				     size_t size)
+ {
+-	XXH3_64bits_update(func->csum.state, data, size);
+-	dbg_checksum(func, insn, XXH3_64bits_digest(func->csum.state));
++	XXH3_64bits_update(sym->csum.state, data, size);
  }
  
- #define elf_hash_del(name, node, key) \
--	__elf_hash_del(node, &__elf_table_entry(name, key))
--
--#define elf_list_entry(ptr, type, member)				\
--({									\
--	typeof(ptr) __ptr = (ptr);					\
--	__ptr ? container_of(__ptr, type, member) : NULL;		\
--})
--
--#define elf_hash_for_each_possible(name, obj, member, key)		\
--	for (obj = elf_list_entry(__elf_table_entry(name, key), typeof(*obj), member); \
--	     obj;							\
--	     obj = elf_list_entry(obj->member.next, typeof(*(obj)), member))
-+	__elf_hash_del(node, &__elf_table_entry(elf, name, key))
- 
- #define elf_alloc_hash(name, size)					\
- ({									\
--	__elf_bits(name) = max(10, ilog2(size));			\
--	__elf_table(name) = mmap(NULL, sizeof(struct elf_hash_node *) << __elf_bits(name), \
-+	__elf_bits(elf, name) = max(10, ilog2(size));			\
-+	__elf_table(elf, name) = mmap(NULL,				\
-+				 sizeof(struct elf_hash_node *) << __elf_bits(elf, name), \
- 				 PROT_READ|PROT_WRITE,			\
- 				 MAP_PRIVATE|MAP_ANON, -1, 0);		\
--	if (__elf_table(name) == (void *)-1L) {				\
-+	if (__elf_table(elf, name) == (void *)-1L) {			\
- 		ERROR_GLIBC("mmap fail " #name);			\
--		__elf_table(name) = NULL;				\
-+		__elf_table(elf, name) = NULL;				\
- 	}								\
--	__elf_table(name);						\
-+	__elf_table(elf, name);						\
- })
- 
- static inline unsigned long __sym_start(struct symbol *s)
-@@ -141,7 +120,7 @@ struct section *find_section_by_name(const struct elf *elf, const char *name)
+-static inline void checksum_finish(struct symbol *func)
++static inline void __checksum_update_insn(struct symbol *sym,
++					  struct instruction *insn,
++					  const void *data, size_t size)
  {
- 	struct section *sec;
- 
--	elf_hash_for_each_possible(section_name, sec, name_hash, str_hash(name)) {
-+	elf_hash_for_each_possible(elf, section_name, sec, name_hash, str_hash(name)) {
- 		if (!strcmp(sec->name, name))
- 			return sec;
- 	}
-@@ -154,7 +133,7 @@ static struct section *find_section_by_index(struct elf *elf,
- {
- 	struct section *sec;
- 
--	elf_hash_for_each_possible(section, sec, hash, idx) {
-+	elf_hash_for_each_possible(elf, section, sec, hash, idx) {
- 		if (sec->idx == idx)
- 			return sec;
- 	}
-@@ -166,7 +145,7 @@ static struct symbol *find_symbol_by_index(struct elf *elf, unsigned int idx)
- {
- 	struct symbol *sym;
- 
--	elf_hash_for_each_possible(symbol, sym, hash, idx) {
-+	elf_hash_for_each_possible(elf, symbol, sym, hash, idx) {
- 		if (sym->idx == idx)
- 			return sym;
- 	}
-@@ -285,7 +264,7 @@ struct symbol *find_symbol_by_name(const struct elf *elf, const char *name)
- {
- 	struct symbol *sym;
- 
--	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash(name)) {
-+	elf_hash_for_each_possible(elf, symbol_name, sym, name_hash, str_hash(name)) {
- 		if (!strcmp(sym->name, name))
- 			return sym;
- 	}
-@@ -300,7 +279,7 @@ static struct symbol *find_local_symbol_by_file_and_name(const struct elf *elf,
- {
- 	struct symbol *sym;
- 
--	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
-+	elf_hash_for_each_possible(elf, symbol_name, sym, name_hash, str_hash_demangled(name)) {
- 		if (sym->bind == STB_LOCAL && sym->file == file &&
- 		    !strcmp(sym->name, name)) {
- 			return sym;
-@@ -314,7 +293,7 @@ struct symbol *find_global_symbol_by_name(const struct elf *elf, const char *nam
- {
- 	struct symbol *sym;
- 
--	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
-+	elf_hash_for_each_possible(elf, symbol_name, sym, name_hash, str_hash_demangled(name)) {
- 		if (!strcmp(sym->name, name) && !is_local_sym(sym))
- 			return sym;
- 	}
-@@ -322,31 +301,6 @@ struct symbol *find_global_symbol_by_name(const struct elf *elf, const char *nam
- 	return NULL;
- }
- 
--void iterate_global_symbol_by_demangled_name(const struct elf *elf,
--					     const char *demangled_name,
--					     void (*process)(struct symbol *sym, void *data),
--					     void *data)
--{
--	struct symbol *sym;
--
--	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash(demangled_name)) {
--		if (!strcmp(sym->demangled_name, demangled_name) && !is_local_sym(sym))
--			process(sym, data);
--	}
--}
--
--void iterate_sym_by_name(const struct elf *elf, const char *name,
--			 void (*process)(struct symbol *sym, void *data),
--			 void *data)
--{
--	struct symbol *sym;
--
--	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
--		if (!strcmp(sym->name, name))
--			process(sym, data);
--	}
--}
--
- struct reloc *find_reloc_by_dest_range(const struct elf *elf, struct section *sec,
- 				     unsigned long offset, unsigned int len)
- {
-@@ -359,7 +313,7 @@ struct reloc *find_reloc_by_dest_range(const struct elf *elf, struct section *se
- 		return NULL;
- 
- 	for_offset_range(o, offset, offset + len) {
--		elf_hash_for_each_possible(reloc, reloc, hash,
-+		elf_hash_for_each_possible(elf, reloc, reloc, hash,
- 					   sec_offset_hash(rsec, o)) {
- 			if (reloc->sec != rsec)
- 				continue;
-diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index 82b9fb05af26..ba13dd67cf26 100644
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -21,6 +21,13 @@
- #define SEC_NAME_LEN		1024
- #define SYM_NAME_LEN		512
- 
-+static inline u32 str_hash(const char *str)
-+{
-+	return jhash(str, strlen(str), 0);
+-	if (func && func->csum.state) {
+-		func->csum.checksum = XXH3_64bits_digest(func->csum.state);
+-		XXH3_freeState(func->csum.state);
+-		func->csum.state = NULL;
++	__checksum_update(sym, data, size);
++	dbg_checksum_insn(sym, insn, XXH3_64bits_digest(sym->csum.state));
 +}
 +
-+u32 str_hash_demangled(const char *str);
++static inline void __checksum_update_object(struct symbol *sym,
++					    unsigned long offset,
++					    const char *what, const void *data,
++					    size_t size)
++{
++	__checksum_update(sym, data, size);
++	dbg_checksum_object(sym, offset, what, XXH3_64bits_digest(sym->csum.state));
++}
 +
- #define bswap_if_needed(elf, val) __bswap_if_needed(&elf->ehdr, val)
++static inline void checksum_finish(struct symbol *sym)
++{
++	if (sym && sym->csum.state) {
++		sym->csum.checksum = XXH3_64bits_digest(sym->csum.state);
++		XXH3_freeState(sym->csum.state);
++		sym->csum.state = NULL;
+ 	}
+ }
  
- #ifdef LIBELF_USE_DEPRECATED
-@@ -129,6 +136,23 @@ struct elf {
- 	struct symbol *symbol_data;
- };
+diff --git a/tools/objtool/include/objtool/warn.h b/tools/objtool/include/objtool/warn.h
+index fa8b7d292e83..595ee8009667 100644
+--- a/tools/objtool/include/objtool/warn.h
++++ b/tools/objtool/include/objtool/warn.h
+@@ -130,10 +130,22 @@ static inline void unindent(int *unused) { indent--; }
+ 		objname ? ": " : "",					\
+ 		##__VA_ARGS__)
  
-+#define __elf_table(elf, name)	((elf)->name##_hash)
-+#define __elf_bits(elf, name)	((elf)->name##_bits)
-+
-+#define __elf_table_entry(elf, name, key) \
-+	__elf_table(elf, name)[hash_min(key, __elf_bits(elf, name))]
-+
-+#define elf_list_entry(ptr, type, member)				\
-+({									\
-+	typeof(ptr) __ptr = (ptr);					\
-+	__ptr ? container_of(__ptr, type, member) : NULL;		\
+-#define dbg(args...)							\
++#define dbg_checksum_insn(func, insn, checksum)				\
+ ({									\
+-	if (unlikely(debug))						\
+-		__dbg(args);						\
++	if (unlikely(func->debug_checksum)) {				\
++		char *insn_off = offstr(insn->sec, insn->offset);	\
++		__dbg("checksum: %s(): %s %016llx",			\
++		      func->name, insn_off, (unsigned long long)checksum);\
++		free(insn_off);						\
++	}								\
 +})
 +
-+#define elf_hash_for_each_possible(elf, name, obj, member, key)		\
-+	for (obj = elf_list_entry(__elf_table_entry(elf, name, key), typeof(*obj), member); \
-+	     obj;							\
-+	     obj = elf_list_entry(obj->member.next, typeof(*(obj)), member))
-+
- struct elf *elf_open_read(const char *name, int flags);
- struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name);
++#define dbg_checksum_object(sym, offset, what, checksum)		\
++({									\
++	if (unlikely(sym->debug_checksum))				\
++		__dbg("checksum: %s+0x%lx: %s %016llx",			\
++		      sym->name, offset, what,				\
++		      (unsigned long long)checksum);			\
+ })
  
-@@ -185,12 +209,6 @@ struct symbol *find_func_by_offset(struct section *sec, unsigned long offset);
- struct symbol *find_symbol_by_offset(struct section *sec, unsigned long offset);
- struct symbol *find_symbol_by_name(const struct elf *elf, const char *name);
- struct symbol *find_global_symbol_by_name(const struct elf *elf, const char *name);
--void iterate_global_symbol_by_demangled_name(const struct elf *elf, const char *demangled_name,
--					     void (*process)(struct symbol *sym, void *data),
--					     void *data);
--void iterate_sym_by_name(const struct elf *elf, const char *name,
--			 void (*process)(struct symbol *sym, void *data),
--			 void *data);
- struct symbol *find_symbol_containing(const struct section *sec, unsigned long offset);
- int find_symbol_hole_containing(const struct section *sec, unsigned long offset);
- struct reloc *find_reloc_by_dest(const struct elf *elf, struct section *sec, unsigned long offset);
-@@ -485,6 +503,16 @@ static inline void set_sym_next_reloc(struct reloc *reloc, struct reloc *next)
- #define for_each_sym_continue(elf, sym)					\
- 	list_for_each_entry_continue(sym, &elf->symbols, global_list)
+ #define __dbg_indent(format, ...)					\
+@@ -147,15 +159,4 @@ static inline void unindent(int *unused) { indent--; }
+ 	__dbg_indent(args);						\
+ 	indent++
  
-+#define for_each_sym_by_name(elf, _name, sym)				\
-+	elf_hash_for_each_possible(elf, symbol_name, sym, name_hash,	\
-+				   str_hash_demangled(_name))		\
-+		if (!strcmp(sym->name, _name))
-+
-+#define for_each_sym_by_demangled_name(elf, name, sym)			\
-+	elf_hash_for_each_possible(elf, symbol_name, sym, name_hash,	\
-+				   str_hash(name))			\
-+		if (!strcmp(sym->demangled_name, name))
-+
- #define rsec_next_reloc(rsec, reloc)					\
- 	reloc_idx(reloc) < sec_num_entries(rsec) - 1 ? reloc + 1 : NULL
- 
+-#define dbg_checksum(func, insn, checksum)				\
+-({									\
+-	if (unlikely(insn->sym && insn->sym->pfunc &&			\
+-		     insn->sym->pfunc->debug_checksum)) {		\
+-		char *insn_off = offstr(insn->sec, insn->offset);	\
+-		__dbg("checksum: %s %s %016llx",			\
+-		      func->name, insn_off, (unsigned long long)checksum);\
+-		free(insn_off);						\
+-	}								\
+-})
+-
+ #endif /* _WARN_H */
 diff --git a/tools/objtool/klp-checksum.c b/tools/objtool/klp-checksum.c
-index 4edd29028bff..e4a910f3211c 100644
+index e4a910f3211c..adfd02447a45 100644
 --- a/tools/objtool/klp-checksum.c
 +++ b/tools/objtool/klp-checksum.c
-@@ -11,17 +11,6 @@
- #include <objtool/warn.h>
- #include <objtool/checksum.h>
- 
--static void enable_debug_checksum_cb(struct symbol *sym, void *d)
--{
--	bool *found = d;
--
--	if (!is_func_sym(sym))
--		return;
--
--	sym->debug_checksum = 1;
--	*found = true;
--}
--
- static int checksum_debug_init(struct objtool_file *file)
- {
- 	char *dup, *s;
-@@ -38,13 +27,20 @@ static int checksum_debug_init(struct objtool_file *file)
- 	s = dup;
- 	while (*s) {
- 		bool found = false;
-+		struct symbol *sym;
- 		char *comma;
- 
- 		comma = strchr(s, ',');
- 		if (comma)
+@@ -35,7 +35,7 @@ static int checksum_debug_init(struct objtool_file *file)
  			*comma = '\0';
  
--		iterate_sym_by_name(file->elf, s, enable_debug_checksum_cb, &found);
-+		for_each_sym_by_name(file->elf, s, sym) {
-+			if (!is_func_sym(sym))
-+				continue;
-+			sym->debug_checksum = 1;
-+			found = true;
+ 		for_each_sym_by_name(file->elf, s, sym) {
+-			if (!is_func_sym(sym))
++			if (!is_func_sym(sym) && !is_object_sym(sym))
+ 				continue;
+ 			sym->debug_checksum = 1;
+ 			found = true;
+@@ -66,14 +66,14 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
+ 	if (insn->fake)
+ 		return;
+ 
+-	checksum_update(func, insn, insn->sec->data->d_buf + insn->offset, insn->len);
++	__checksum_update_insn(func, insn, insn->sec->data->d_buf + insn->offset, insn->len);
+ 
+ 	if (!reloc) {
+ 		struct symbol *call_dest = insn_call_dest(insn);
+ 
+ 		if (call_dest)
+-			checksum_update(func, insn, call_dest->demangled_name,
+-					strlen(call_dest->demangled_name));
++			__checksum_update_insn(func, insn, call_dest->demangled_name,
++					       strlen(call_dest->demangled_name));
+ 		goto alts;
+ 	}
+ 
+@@ -84,7 +84,7 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
+ 		char *str;
+ 
+ 		str = sym->sec->data->d_buf + sym->offset + offset;
+-		checksum_update(func, insn, str, strlen(str));
++		__checksum_update_insn(func, insn, str, strlen(str));
+ 		goto alts;
+ 	}
+ 
+@@ -96,8 +96,9 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
+ 		offset -= sym->offset;
+ 	}
+ 
+-	checksum_update(func, insn, sym->demangled_name, strlen(sym->demangled_name));
+-	checksum_update(func, insn, &offset, sizeof(offset));
++	__checksum_update_insn(func, insn, sym->demangled_name,
++			       strlen(sym->demangled_name));
++	__checksum_update_insn(func, insn, &offset, sizeof(offset));
+ 
+ alts:
+ 	for (alt = insn->alts; alt; alt = alt->next) {
+@@ -108,12 +109,13 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
+ 			break;
+ 		in_alt = true;
+ 
+-		checksum_update(func, insn, &alt->type, sizeof(alt->type));
++		__checksum_update_insn(func, insn, &alt->type,
++				       sizeof(alt->type));
+ 
+ 		if (alt_group && alt_group->orig_group) {
+ 			struct instruction *alt_insn;
+ 
+-			checksum_update(func, insn, &alt_group->feature, sizeof(alt_group->feature));
++			__checksum_update_insn(func, insn, &alt_group->feature,sizeof(alt_group->feature));
+ 
+ 			for (alt_insn = alt->insn; alt_insn; alt_insn = next_insn_same_sec(file, alt_insn)) {
+ 				checksum_update_insn(file, func, alt_insn);
+@@ -128,31 +130,81 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
+ 	}
+ }
+ 
++static void checksum_update_object(struct objtool_file *file, struct symbol *sym)
++{
++	struct reloc *reloc;
++
++	__checksum_update_object(sym, 0, "len", &sym->len, sizeof(sym->len));
++
++	if (sym->sec->data->d_buf)
++		__checksum_update_object(sym, 0, "data",
++					 sym->sec->data->d_buf + sym->offset,
++					 sym->len);
++
++	sym_for_each_reloc(file->elf, sym, reloc) {
++		struct symbol *target = reloc->sym;
++		s64 offset;
++
++		offset = reloc_addend(reloc);
++
++		if (is_string_sec(target->sec)) {
++			char *str;
++
++			str = target->sec->data->d_buf + target->offset + offset;
++			__checksum_update_object(sym, reloc_offset(reloc),
++						 "reloc string", str, strlen(str));
++			continue;
 +		}
 +
- 		if (!found)
- 			WARN("--debug-checksum: can't find '%s'", s);
- 
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index c903aa65d4b6..33e401b85001 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -46,11 +46,6 @@ static const struct option klp_diff_options[] = {
- 
- static DEFINE_HASHTABLE(exports, 15);
- 
--static inline u32 str_hash(const char *str)
--{
--	return jhash(str, strlen(str), 0);
--}
--
- static char *escape_str(const char *orig)
- {
- 	size_t len = 0;
-@@ -398,22 +393,6 @@ static bool dont_correlate(struct symbol *sym)
- 	       is_special_section_aux(sym->sec);
- }
- 
--struct process_demangled_name_data {
--	struct symbol *ret;
--	int count;
--};
--
--static void process_demangled_name(struct symbol *sym, void *d)
--{
--	struct process_demangled_name_data *data = d;
--
--	if (sym->twin)
--		return;
--
--	data->count++;
--	data->ret = sym;
--}
--
- /*
-  * When there is no full name match, try match demangled_name. This would
-  * match original foo.llvm.123 to patched foo.llvm.456.
-@@ -425,16 +404,23 @@ static void process_demangled_name(struct symbol *sym, void *d)
- static int find_global_symbol_by_demangled_name(struct elf *elf, struct symbol *sym,
- 						struct symbol **out_sym)
- {
--	struct process_demangled_name_data data = {};
-+	struct symbol *sym2, *result = NULL;
-+	int count = 0;
- 
--	iterate_global_symbol_by_demangled_name(elf, sym->demangled_name,
--						process_demangled_name,
--						&data);
--	if (data.count > 1) {
--		ERROR("Multiple (%d) correlation candidates for %s", data.count, sym->name);
-+	for_each_sym_by_demangled_name(elf, sym->demangled_name, sym2) {
-+		if (is_local_sym(sym2) || sym2->twin)
-+			continue;
++		if (is_sec_sym(target)) {
++			target = find_symbol_containing(reloc->sym->sec, offset);
++			if (!target)
++				continue;
 +
-+		count++;
-+		result = sym2;
++			offset -= target->offset;
++		}
++
++		__checksum_update_object(sym, reloc_offset(reloc), "reloc name",
++					 target->demangled_name,
++					 strlen(target->demangled_name));
++		__checksum_update_object(sym, reloc_offset(reloc), "reloc addend",
++					 &offset, sizeof(offset));
 +	}
++}
 +
-+	if (count > 1) {
-+		ERROR("Multiple (%d) correlation candidates for %s", count, sym->name);
+ int calculate_checksums(struct objtool_file *file)
+ {
+ 	struct instruction *insn;
+-	struct symbol *func;
++	struct symbol *sym;
+ 
+ 	if (checksum_debug_init(file))
  		return -1;
- 	}
--	*out_sym = data.ret;
+ 
+-	for_each_sym(file->elf, func) {
++	for_each_sym(file->elf, sym) {
 +
-+	*out_sym = result;
+ 		/*
+ 		 * Skip cold subfunctions and aliases: they share the
+ 		 * parent's checksum via func_for_each_insn() which
+ 		 * follows func->cfunc into the cold subfunction.
+ 		 */
+-		if (!is_func_sym(func) || is_cold_func(func) ||
+-		    is_alias_sym(func) || !func->len)
++		if (is_cold_func(sym) || is_alias_sym(sym) || !sym->len ||
++		    !sym->sec || !sym->sec->data)
+ 			continue;
+ 
+-		checksum_init(func);
++		if (is_func_sym(sym)) {
++			checksum_init(sym);
++			func_for_each_insn(file, sym, insn)
++				checksum_update_insn(file, sym, insn);
++			checksum_finish(sym);
+ 
+-		func_for_each_insn(file, func, insn)
+-			checksum_update_insn(file, func, insn);
++		} else if (is_object_sym(sym)) {
++			checksum_init(sym);
++			checksum_update_object(file, sym);
++			checksum_finish(sym);
++		}
+ 
+-		checksum_finish(func);
+ 	}
++
  	return 0;
  }
+ 
+@@ -213,7 +265,7 @@ int cmd_klp_checksum(int argc, const char **argv)
+ 	int ret;
+ 
+ 	const struct option options[] = {
+-		OPT_STRING(0,	"debug-checksum", &opts.debug_checksum,	"funcs", "enable checksum debug output"),
++		OPT_STRING(0,	"debug-checksum", &opts.debug_checksum,	"syms", "enable checksum debug output"),
+ 		OPT_BOOLEAN(0,	"dry-run", &opts.dryrun, "don't write modifications"),
+ 		OPT_END(),
+ 	};
+diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+index 33e401b85001..8d64d4c691cb 100644
+--- a/tools/objtool/klp-diff.c
++++ b/tools/objtool/klp-diff.c
+@@ -201,7 +201,7 @@ static int read_sym_checksums(struct elf *elf)
+ 			return -1;
+ 		}
+ 
+-		if (is_func_sym(sym))
++		if (is_func_sym(sym) || is_object_sym(sym))
+ 			sym->csum.checksum = sym_checksum->checksum;
+ 	}
  
 -- 
 2.53.0
