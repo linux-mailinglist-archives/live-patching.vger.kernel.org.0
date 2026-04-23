@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2436-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2437-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id MEsSE/6a6Wm0egIAu9opvQ
-	(envelope-from <live-patching+bounces-2436-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:07:26 +0200
+	id gAeUFkCe6WkAfQIAu9opvQ
+	(envelope-from <live-patching+bounces-2437-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:21:20 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 405E344CB50
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:07:24 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id ACA9D44CE5A
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 06:21:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 068BC3014936
-	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:05:14 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 0EE9A310CB83
+	for <lists+live-patching@lfdr.de>; Thu, 23 Apr 2026 04:05:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A85213D349C;
-	Thu, 23 Apr 2026 04:04:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A2AA3D3CF0;
+	Thu, 23 Apr 2026 04:04:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PZhHZrol"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aH8wP7S9"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C2935E937;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 200DC3D34BD;
 	Thu, 23 Apr 2026 04:04:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776917068; cv=none; b=AoB358XFiJpQjpfyq/QR9Ib/Y+eeTXJ2p76VqOWqR8o/YEmmD45890QbmufD6koUz/cGfM8TQ/fbsSsljewu87E2llbbgk/iv3sotYfIDnAbYk8M7UDi2GJbrCfNtj4fd4Kww/f6m3zfxlFBxmEzMKm8OPigi1Fp4wrYJI69TLQ=
+	t=1776917069; cv=none; b=f7fu5d9i49FzAbPn1seqNPMypOt+SCYIZ5l8gP/Q3HzZHEGGzw+D27F0FbfuejuPsC/LlBRRB0rJ7waNkXFsuUJSGruh6V2DJKa5Z1wXWB/VrUGGsjtrZnpSndRXl6FzLowkFi5G45VxN5tFtoNBOHX/o+HvJpeXbFar7VJ5ayU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776917068; c=relaxed/simple;
-	bh=IJ9wumKXfu5EvewV2eGErMj5akhjS9yL+uKUgD0DKhQ=;
+	s=arc-20240116; t=1776917069; c=relaxed/simple;
+	bh=rVqo26BEtqzWbHDo8Y040gyqac0pVZ43mNsABwPmsbo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=X+Grybzxj1l1wIct9m3P9iM7JguFm+FDe7ydHMxqCBi2SsyQHIi+mq2eO8m0tY2IPD+urwrrxEXjqWNtFyqNqgT0CPR2C07LYVM1g0jIqwqcsbCtJDXhLu8eHP+h2PikkVL+3DWDH5lvabrnlyacrfcOsS59PeCOfuoKusVYQSw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PZhHZrol; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C289AC2BCB4;
-	Thu, 23 Apr 2026 04:04:27 +0000 (UTC)
+	 MIME-Version; b=Rm69iApn6uEeKmT6ApHpkHZ5Gq1RRzFdDOiKVnUWi6S7sdgn8igNK1av6qT1vV+tegbvHv67WqNOX1mJU+96rUqi6D/L/yf+bvZoXyBNr5FiLdATC+jjP86Eh5KItjXDd91Nq5NM72Sh4wTKt5E2I6LQKtpERU3N2G4LWOv8c70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aH8wP7S9; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54727C2BCC4;
+	Thu, 23 Apr 2026 04:04:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776917068;
-	bh=IJ9wumKXfu5EvewV2eGErMj5akhjS9yL+uKUgD0DKhQ=;
+	bh=rVqo26BEtqzWbHDo8Y040gyqac0pVZ43mNsABwPmsbo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=PZhHZrolGJo0ZQrnW/m+WlJu5aSIOPOhdKFKrBwsV7HhYqL42UWZfp+V/4r9NE1t4
-	 BVT5Om4jp/Z3tCdX2QeC3N7CVxlHKwI/VhnBwzK7UP2wKERKbwr8fDK/zWNHWKSzyk
-	 RD4jSv59JN6CeFR7hP3v215QZYnBGfGZTLzB1QFOTNaAoPADpkCojGD6JG6qKiljqa
-	 2/9Ad51x3d3lu/idNCHDVeWPEQ5FWqnXr//7wj8ClgCzQR4Vo1rLng1jPDzMgwMnJs
-	 DCDXDQ3MuXUmJr5aAJQbJkdMV5Y/L4F/0yDjNZPChnSHVi+qVfBTW3Vl0I06jchWzO
-	 uezoqqefncqaw==
+	b=aH8wP7S9CD5PYdEeKRrY6ahQtBMMGjFFTal1JFXBMeH7eteOe08Z26VfR8gcJRU4X
+	 kkW2+O2BVuVYGecNMGGlI0wixMeLazkB7nB9XKpjzaw5SqZ8Rwy99SrpmopWhGbshK
+	 rZr6M0TvAKQo/yQ9kF3L4TWlFtuupRLxeFwPxPw1+nXRyMmRP+FJRmEyLBtgwvdla7
+	 NeIC4V6FexEKNe2W/fzq1ovv2mhdisznZKCxQeCLzGnnBMt/qTGdfDQ2wFLufRAosE
+	 fLXUkAeGyBzhsEU1HSjAK+7ayCakJgqDxs6TciwBhQIGISRDCsvhVvmTDYspVrrpoU
+	 mIdXNJBslmflg==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 09/48] objtool/klp: Fix create_fake_symbols() skipping entsize-based sections
-Date: Wed, 22 Apr 2026 21:03:37 -0700
-Message-ID: <e10231fce5d8f3f17e4cc7a396a4a8e8d791f994.1776916871.git.jpoimboe@kernel.org>
+Subject: [PATCH 10/48] objtool/klp: Fix --debug-checksum for duplicate symbol names
+Date: Wed, 22 Apr 2026 21:03:38 -0700
+Message-ID: <7fd49264db4f5a9c654ad162cca96ce575e77ae4.1776916871.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1776916871.git.jpoimboe@kernel.org>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
@@ -71,13 +71,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2436-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2437-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -91,54 +91,106 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
-X-Rspamd-Queue-Id: 405E344CB50
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+X-Rspamd-Queue-Id: ACA9D44CE5A
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-From: Joe Lawrence <joe.lawrence@redhat.com>
+find_symbol_by_name() only returns the first match, so
+--debug-checksum=<func> silently ignores any subsequent duplicately
+named functions after the first.
 
-create_fake_symbols() has two phases: creating symbols from
-ANNOTATE_DATA_SPECIAL entries, and a fallback that uses sh_entsize for
-special sections like .static_call_sites.
+Add a new iterate_sym_by_name() to fix that.
 
-When .discard.annotate_data is absent, the function returns early,
-skipping the entsize fallback and silently allowing unsupported
-module-local static call keys through.
-
-Fix it by jumping to the entsize phase instead of returning early.
-
-Fixes: dd590d4d57eb ("objtool/klp: Introduce klp diff subcommand for diffing object files")
-Assisted-by: Claude:claude-4-opus
-Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/klp-diff.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/objtool/check.c               | 19 ++++++++++++++-----
+ tools/objtool/elf.c                 | 12 ++++++++++++
+ tools/objtool/include/objtool/elf.h |  3 +++
+ 3 files changed, 29 insertions(+), 5 deletions(-)
 
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 022522cd9b6c..767716766d41 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -1375,7 +1375,7 @@ static int create_fake_symbols(struct elf *elf)
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 5722d4568401..f14212a8c179 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3657,6 +3657,17 @@ static bool skip_alt_group(struct instruction *insn)
+ 	return alt_insn->type == INSN_CLAC || alt_insn->type == INSN_STAC;
+ }
  
- 	sec = find_section_by_name(elf, ".discard.annotate_data");
- 	if (!sec || !sec->rsec)
--		return 0;
-+		goto entsize;
++static void enable_debug_checksum_cb(struct symbol *sym, void *d)
++{
++	bool *found = d;
++
++	if (!is_func_sym(sym))
++		return;
++
++	sym->debug_checksum = 1;
++	*found = true;
++}
++
+ static int checksum_debug_init(struct objtool_file *file)
+ {
+ 	char *dup, *s;
+@@ -3672,18 +3683,16 @@ static int checksum_debug_init(struct objtool_file *file)
  
- 	for_each_reloc(sec->rsec, reloc) {
- 		unsigned long offset, size;
-@@ -1407,7 +1407,7 @@ static int create_fake_symbols(struct elf *elf)
- 	/*
- 	 * 2) Make symbols for sh_entsize, and simple arrays of pointers:
- 	 */
--
-+entsize:
- 	for_each_sec(elf, sec) {
- 		unsigned int entry_size;
- 		unsigned long offset;
+ 	s = dup;
+ 	while (*s) {
+-		struct symbol *func;
++		bool found = false;
+ 		char *comma;
+ 
+ 		comma = strchr(s, ',');
+ 		if (comma)
+ 			*comma = '\0';
+ 
+-		func = find_symbol_by_name(file->elf, s);
+-		if (!func || !is_func_sym(func))
++		iterate_sym_by_name(file->elf, s, enable_debug_checksum_cb, &found);
++		if (!found)
+ 			WARN("--debug-checksum: can't find '%s'", s);
+-		else
+-			func->debug_checksum = 1;
+ 
+ 		if (!comma)
+ 			break;
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index ac9da81a7a2f..a5486e172e5c 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -335,6 +335,18 @@ void iterate_global_symbol_by_demangled_name(const struct elf *elf,
+ 	}
+ }
+ 
++void iterate_sym_by_name(const struct elf *elf, const char *name,
++			 void (*process)(struct symbol *sym, void *data),
++			 void *data)
++{
++	struct symbol *sym;
++
++	elf_hash_for_each_possible(symbol_name, sym, name_hash, str_hash_demangled(name)) {
++		if (!strcmp(sym->name, name))
++			process(sym, data);
++	}
++}
++
+ struct reloc *find_reloc_by_dest_range(const struct elf *elf, struct section *sec,
+ 				     unsigned long offset, unsigned int len)
+ {
+diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
+index c61bd57767f9..cd5844c7b4e2 100644
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -189,6 +189,9 @@ struct symbol *find_global_symbol_by_name(const struct elf *elf, const char *nam
+ void iterate_global_symbol_by_demangled_name(const struct elf *elf, const char *demangled_name,
+ 					     void (*process)(struct symbol *sym, void *data),
+ 					     void *data);
++void iterate_sym_by_name(const struct elf *elf, const char *name,
++			 void (*process)(struct symbol *sym, void *data),
++			 void *data);
+ struct symbol *find_symbol_containing(const struct section *sec, unsigned long offset);
+ int find_symbol_hole_containing(const struct section *sec, unsigned long offset);
+ struct reloc *find_reloc_by_dest(const struct elf *elf, struct section *sec, unsigned long offset);
 -- 
 2.53.0
 
