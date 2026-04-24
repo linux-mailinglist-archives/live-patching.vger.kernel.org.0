@@ -1,166 +1,119 @@
-Return-Path: <live-patching+bounces-2519-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2520-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id uHw2IYVf62lGLwAAu9opvQ
-	(envelope-from <live-patching+bounces-2519-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 14:18:13 +0200
+	id WNGBHZjV62kASAAAu9opvQ
+	(envelope-from <live-patching+bounces-2520-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 22:42:00 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id DE15945E4FA
-	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 14:18:12 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 887EA4633FB
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 22:41:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 7A7EF300CBC3
-	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 12:17:34 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 5A3E13009E03
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 20:41:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1009F3BD633;
-	Fri, 24 Apr 2026 12:17:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 17EA63FB7E1;
+	Fri, 24 Apr 2026 20:41:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="DjBVA/wJ";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="chW8bc40";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="VbX9FFjr";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="M0xVMi3Z"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eEOSnSNQ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD4863BA24B
-	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 12:17:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E94383E928A
+	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 20:41:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777033053; cv=none; b=kTwA0m0TMQA9j4qIQ3FyjUigm0knXEImTtK4NXD39NAagFVMdr0aL3buWBVhkf6WcJDxh12Tn5MRntqqMUUnc0LlbxQ6dOIXGbFk1jNBGu4rq6l8iysw3iV2mr/hpAATpjMJOPdWetyBJ+BQAShXB4yqS09l8L4rIthXM0SNcXc=
+	t=1777063313; cv=none; b=AVwDLXa55/c2/FfvzHZX53ERmyU/xuWPgSPCbprYQW34JSpri7+d24FxsqIG33NI7fga+Z4RT3Zw44AcS/Pt6qCScyJcIWHADh5+2/hjifOCikVYjQ+6o/Q+NzNiibUC/vCRKulKTl6bHvRidsIFbi4sIeK3/i+dwrKrhb54U64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777033053; c=relaxed/simple;
-	bh=OTPj328k8h2HCGRidF8t3D99EjuMJZ/KHVTR1VwUHLE=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=RIm6QMXQu+kUaB0TDYKkIeb491I50NL10lM9RZNpdKatY5JP5bD6WZUiPsFInGRKRzbQWxfft0Q/VGdMpAI27AzuFZP8rBdJgc8v6nlc2UrExLu2XPOrM8EJSDxlmEqEQdShA4RBvfyO44j5jTsllLH1YFRQ3kzq7upYbnOTNQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=DjBVA/wJ; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=chW8bc40; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=VbX9FFjr; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=M0xVMi3Z; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from localhost.localdomain (unknown [IPv6:2a07:de40:b2bf:2b::1244])
-	by smtp-out2.suse.de (Postfix) with ESMTP id CBF075BD7A;
-	Fri, 24 Apr 2026 12:17:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1777033051; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1p27kcwsak9l72VKqAhR3OpGPKIe9uXTQ3xypdV0/KQ=;
-	b=DjBVA/wJNq2qqhPEz0i0i8hhqbxrX2B6oqUInto+qm3VkEdlFMFx5gzL5+oD9WnCSoET/K
-	uoIB5p231AmF4O/Gsw4EC5CIXYmYijW3TgFskRkUL2EOxmLUUrykSqN6R5DVfErx2pLzhV
-	KhxFJhEJl64peQ/lZ+4PuSMLxBoqfKI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1777033051;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1p27kcwsak9l72VKqAhR3OpGPKIe9uXTQ3xypdV0/KQ=;
-	b=chW8bc40PtbBqnNaudesSJTqbDHP3AC0IR3BFBFCBBIjJNLdYCtPNXg2uI9izAOUx+wy1d
-	/TlA/sykL1+r8XAw==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=VbX9FFjr;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=M0xVMi3Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1777033050; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1p27kcwsak9l72VKqAhR3OpGPKIe9uXTQ3xypdV0/KQ=;
-	b=VbX9FFjr6pQkNJ0PwA09E4sWcko8Kc4JMnYHaXs7P9ZwcoYAA6jeSJa6DciqpKT0PvDnrQ
-	q6+e57rEhAAOF3Gc522lFVsvh7h0ik5oie4JrIAadGqzwEt9JV3zj1Jy1Z78xWCTX7VwHr
-	fcWErGLpVDcwln5wb48/nPE1wzGdkRs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1777033050;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1p27kcwsak9l72VKqAhR3OpGPKIe9uXTQ3xypdV0/KQ=;
-	b=M0xVMi3ZQfeQ1RgU6m87EFn+Nfz6wpfxQ+o+ePTbwLc6YDZiIE6jkCu+++takhK/y5+EDR
-	sRfoTIWvTueSUMDg==
+	s=arc-20240116; t=1777063313; c=relaxed/simple;
+	bh=TNQ4Axthw9Qbf5yyPfwI8p0cLoQild24n893ka2Ewng=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=AqPnp3wmEazzQCl/egDnW0USw2/T9hh0zVmdVQGIaJKyRQV3wR7xv9cz0wJ0x3Rj9hpLNdF0Vs0DBNhRfETVL4DPnJ/PZqSrRcBbQVoXLnb+MaAF9vjsaRnvY8FXTo9AhpHSugt5n4v6Hx9pgyjdIuyv3jiDfCdybl0kIM8bV0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eEOSnSNQ; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A08C8C19425
+	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 20:41:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777063312;
+	bh=TNQ4Axthw9Qbf5yyPfwI8p0cLoQild24n893ka2Ewng=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=eEOSnSNQG4QgSaSC0xt9oODho3hjKRNRZj++EjzaidkwO4KGObcrJYkOjoAH4hx78
+	 EIipVwQEwD9ySGQtTYQX3rpdUyKpguqVxpcmbI8wVZ4N0O3rCyfxNr82pSR+zJD13I
+	 1kxJefANXTu3TNvo403nU7DI4nWjJlWIHJ1CB2y20ZIn2fbqyA1trblGBxIJDg6SC7
+	 d7Zt9jRHfEnltuqsWU95j55Guri3Y9YPwtthBNmCOcFRU8DbaQpYSey7SCH4tix9Fl
+	 Td5YUQ+EumeORZXtj1zoSAoKxxTuFQQBcENuPWLUQONn/kI7NZvMI4/jviL9NoGRu6
+	 q5uIfva3QAY0w==
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-50d876329bbso93306231cf.2
+        for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 13:41:52 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ/WeGx6gqxt/0pV+OH5gE8EuF8KecUXV+ZhhGO2LCE54InFiuESbk4jfdHUDIlG8ReQK/DsaPE0HSZltGSm@vger.kernel.org
+X-Gm-Message-State: AOJu0YzYIRfUcQwkW+Bzl1ys6SH1G7RvTF+bBj6mtndOExVW4xRC9UCR
+	ZnZB80Z9BGZRYclYXX04KT1Mmiyze1+nvRt0xnSWoMo5RgwZGfIbHzkRGoX6LoxBOp/YS8wtiye
+	yLfABqwNuACZEoegSGcsOcgQxTg3F5l0=
+X-Received: by 2002:ac8:5d8b:0:b0:50d:d1ea:65dd with SMTP id
+ d75a77b69052e-50e36b6af8emr502963151cf.14.1777063311795; Fri, 24 Apr 2026
+ 13:41:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 08/48] objtool/klp: Don't correlate __initstub__
- symbols
-From: Miroslav Benes <mbenes@suse.cz>
+References: <cover.1776916871.git.jpoimboe@kernel.org> <c32b3d8d0770c93f8c0d8e4a989f2f43c29e9a5f.1776916871.git.jpoimboe@kernel.org>
+In-Reply-To: <c32b3d8d0770c93f8c0d8e4a989f2f43c29e9a5f.1776916871.git.jpoimboe@kernel.org>
+From: Song Liu <song@kernel.org>
+Date: Fri, 24 Apr 2026 13:41:40 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7DOScR5qC3S9mkoy85r8vgfZ9LqrxOdU6JqMMhHH4F0g@mail.gmail.com>
+X-Gm-Features: AQROBzDmFDVGlOEz6E3zb4JMcJGNRdJugs5CpaG2_1woKb9T0X1Jcsz6jIumGLA
+Message-ID: <CAPhsuW7DOScR5qC3S9mkoy85r8vgfZ9LqrxOdU6JqMMhHH4F0g@mail.gmail.com>
+Subject: Re: [PATCH 05/48] objtool: Move mark_rodata() to elf.c
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
- live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
- Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>, 
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-In-Reply-To: <b62dafa3c40576c8e82b062bc24116772c272b87.1776916871.git.jpoimboe@kernel.org>
-References: <cover.1776916871.git.jpoimboe@kernel.org>
- <b62dafa3c40576c8e82b062bc24116772c272b87.1776916871.git.jpoimboe@kernel.org>
-Date: Fri, 24 Apr 2026 14:17:29 +0200
-Message-Id: <177703304919.234971.9364615046091916148.b4-review@b4>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=527; i=mbenes@suse.cz;
- h=from:subject:message-id; bh=OTPj328k8h2HCGRidF8t3D99EjuMJZ/KHVTR1VwUHLE=;
- b=owGbwMvMwMHYWJt9x2W1tA7jabUkhszX8VH1wqu4D/+7xjNnjYzr+rqjz7zyA0rc+xbv+x1kK
- 8kYpHGkk9GfhYGRg8FSTJHl9V5nOcMpuQaa1e/uwgxiZQKZIi3SwAAELAx8uYl5pUY6Rnqm2oZ6
- hkCGjhEDF6cATPXN7+z/zB+e3v2hKUy6iJkxvkB+1t+sjAxFSWbr6sPxUa8uhR2vufvlRtDCxa/
- N97VuXvF5v6TFyT25/AfiYmNvLOKbuK/S3G+N3L/83u/H5IW7uOMkJQ+eYOb/q7FNWdYvfHPyqQ
- 7GRYs2hE2W0PM7MfnVjz2rNr8JWeWjLmy5MTvAjHti85+Su/1pKblPN8186rV1A6PKPsV1t/9ki
- 8yue5VQU+nYb7Lk+x+7+5M9J/GIZlguOFW4+vMGd8WI1Lm26pHVq+UWtQvzT1j/UTcsxSQkPyDo
- tVhL+vwpd4t1djCw6FWze7pFnVtqfyNzQ4TtAq7HNVZFj5qOV6ps2nEtXl7mwZMjGRevuTwx831
- XYP0DAA==
-X-Developer-Key: i=mbenes@suse.cz; a=openpgp;
- fpr=91BB0699882EF39D46654BB3FF98A38DA80834DA
-X-Spamd-Bar: +++++++++++++++++
-X-Spam-Flag: YES
-X-Spam-Score: 17.66
-X-Spam-Level: *****************
-X-Rspamd-Queue-Id: DE15945E4FA
+	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Rspamd-Queue-Id: 887EA4633FB
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [3.84 / 15.00];
-	SPAM_FLAG(5.00)[];
+X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_RHS_NOT_FQDN(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FROM_HAS_DN(0.00)[];
-	DMARC_NA(0.00)[suse.cz];
-	RCVD_TLS_LAST(0.00)[];
-	RCVD_COUNT_THREE(0.00)[4];
-	MIME_TRACE(0.00)[0:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2519-lists,live-patching=lfdr.de];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	TO_DN_SOME(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2520-lists,live-patching=lfdr.de];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[suse.cz:+];
+	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
+	RCVD_COUNT_FIVE(0.00)[5];
+	RCPT_COUNT_SEVEN(0.00)[8];
 	NEURAL_HAM(-0.00)[-1.000];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.cz:dkim,suse.cz:email]
+	TO_DN_SOME(0.00)[]
 
-On Wed, 22 Apr 2026 21:03:36 -0700, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> With LTO, the initcall infrastructure generates __initstub__kmod_*
-> wrapper functions in .init.text.  These are the LTO equivalent of
-> __initcall__kmod_* data pointers, which are already excluded from
-> correlation.
-> 
-> These are __init functions whose memory is freed after boot, so there's
-> no reason to include or reference them in a livepatch module.
-> 
-> [...]
+On Wed, Apr 22, 2026 at 9:04=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
+> wrote:
+>
+> Move the sec->rodata marking from check.c to elf.c so it's set during
+> ELF reading rather than during the check pipeline.  This makes the
+> rodata flag available to all objtool users, including klp-diff which
+> reads ELF files directly without running check().
+>
+> Add an is_rodata_sec() helper to elf.h for consistency with
+> is_text_sec() and is_string_sec().
+>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-
--- 
-Miroslav
-
+Acked-by: Song Liu <song@kernel.org>
 
