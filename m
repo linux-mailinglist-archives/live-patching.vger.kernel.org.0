@@ -1,80 +1,80 @@
-Return-Path: <live-patching+bounces-2542-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2543-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id GOYmCDTq62nhSwAAu9opvQ
-	(envelope-from <live-patching+bounces-2542-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Sat, 25 Apr 2026 00:09:56 +0200
+	id OE1hD2vq62nhSwAAu9opvQ
+	(envelope-from <live-patching+bounces-2543-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Sat, 25 Apr 2026 00:10:51 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6E9B7463AE9
-	for <lists+live-patching@lfdr.de>; Sat, 25 Apr 2026 00:09:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D3425463B91
+	for <lists+live-patching@lfdr.de>; Sat, 25 Apr 2026 00:10:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 00E24300CC2B
-	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 22:09:04 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 36864300C92A
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 22:09:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01DC8389460;
-	Fri, 24 Apr 2026 22:09:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DA7C37E2E9;
+	Fri, 24 Apr 2026 22:09:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BjPQhCzv"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="crQo7z33"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2F8C38759C
-	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 22:09:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B6E634A3C5
+	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 22:09:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777068542; cv=none; b=U/cTLdd/a+ZaU3NtAfzQEo35Jg7a/AJFQCN+oxcA/6Nwks+Khd3oky2uL+TSK9gE2TDnOR8HOiVqtDB3tZ5bQ+KgS2EC8ElQIB+y3WRZdIPRCb0e2YJG3+K52mN+nfhfoFgbN3LRj544BuWlQLZ4Gt4mrZ+HK4/h8DKr8407gjY=
+	t=1777068596; cv=none; b=OvUuP1Xpmvoryo/5u1MhOsz4MAME1KUxLSrC5wLey9CiNtFdSNRBWQd4r5rKGGZwwR7YAiMbJsVV07MHw1J9Avn3Tn8mhS15F++7GibXgLsgkDuNX175WzsaXJCHkyBOIZB2b7kybP1TFpVqyuPBCGs+2JGDnjB9dr1MGt3oSAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777068542; c=relaxed/simple;
-	bh=3sSuRSiE/gPB/7CQLXZz4KiHBEIIOM+2X5I3iVlViok=;
+	s=arc-20240116; t=1777068596; c=relaxed/simple;
+	bh=qprXUrP9faDT4wd293/ZL/uj5S2XM+z4MG4WPDOICYk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ExPlmoH9nWE+OQcSiCbah4N0NUeko1Ex0DEMhUUcWQlVyWlu6RQkrb6vAUY9Mibjh+xd/gJinpeA2juNuY2XWJrV8Wl5g3/TZJEec+eVzPdAY+5CAb/LXvJBflqv76CH33XhIJBH3WqHMTG3xGRXglxe1V7+pCgYMjBWMsIXnEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BjPQhCzv; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F455C19425
-	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 22:09:02 +0000 (UTC)
+	 To:Cc:Content-Type; b=lDRrBAKRtG5LsW+WMkSdRYzOiRv30CIdNxtlo3rxhPBPOdDENCX0nv0LQ3cMX/rqX94NllEt+hlBZKUmqW12WfztH/4DGRNM8Y36G1Lv71Y4DZZ/jBy1viCk96c94NTKqvdEq6hMLAk55fG4JSl1iKXmYLHP6FxNp0zYv6qUarI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=crQo7z33; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60569C2BCB6
+	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 22:09:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777068542;
-	bh=3sSuRSiE/gPB/7CQLXZz4KiHBEIIOM+2X5I3iVlViok=;
+	s=k20201202; t=1777068596;
+	bh=qprXUrP9faDT4wd293/ZL/uj5S2XM+z4MG4WPDOICYk=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=BjPQhCzvAdRUksoFZWiufaeFJVK7gKBnqSYHG/NQjrkBFkcQo4w4ft7IMh/916NZp
-	 8/dmxCqCwLQOn0vcJXvVBOlopDneAa/Br0igK4N1AyLna33wf94yOeM4tSpnKnY/6D
-	 9mCPzz4XKW0RoO/BXYIyxo3lLWu3R9wcrRSTlq2bAe0ZP0mc83KFUf5crgeub9bzpL
-	 4B9GHX4uIG8k+dHUApSO55qjy0oBu4GGyTUZsh/L7O2Q0p431o4IrCB6JYiYhUO/CJ
-	 1aArDMh/cXAX4e3OIf4ma0m/z8ir3S/8n+F94VgoMHPbqzsbCtyzKLQZyBC4oLIxTS
-	 Ln5X9/H4Ov8OQ==
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-89fc4147f2eso91929906d6.3
-        for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 15:09:02 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ/7fNGWQURqRmwHkVgMXDslQigy/dPWTv1IvD4Gcz7gzQ9rfPOxy+UDRbWbVaz3zopltKy3uuAPfW4dhErm@vger.kernel.org
-X-Gm-Message-State: AOJu0YwER4t14K6wDIez9cVcKOGXl8awtpHljLw376N4Wft3Ys7nyNvH
-	OjzPd+E9tQDIRnZPdN+0bDx/jB99eAdsjilxzHtKAKIbZjhJC1+1k8TZCzZ0jEzIfHcLqDQsMWl
-	8pBiax+OqK1TAyW9Xsca/C7/YXg3kV0M=
-X-Received: by 2002:a05:6214:498f:b0:8ac:73e8:af42 with SMTP id
- 6a1803df08f44-8b027ffbce3mr531623026d6.4.1777068541659; Fri, 24 Apr 2026
- 15:09:01 -0700 (PDT)
+	b=crQo7z33FCo7RzYQvFrotjIf9bcHlwzI8DrPbt2yEqgMKR5p+ffWKnfvBvNSumB4w
+	 7Yns+og0kU6s5nYmKOFG0xmplAOpCnKMo9SOBdui3NBWCMmjYQZAP23V8z4q7oEZH4
+	 43a+gynLXMqFNG29fdpTtVWl5b1gSOV5S5uD7m4eGodOefexiLcB5IUJ+tH9hFod69
+	 hHGtzmcFLrjUzOHmlMTevdR8hRHQGt337M1kwigPh1HfDSVHzbwuuLKOC86kBQpG1s
+	 ejmF+z88grgyYgTsTNGriBD8+Bw8McyXpw5L9Cn5DuTo3ARPFRS0/PZ46KRYSOMJTR
+	 iyjx5IQL82sMw==
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-8acb3daf2aaso128922646d6.0
+        for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 15:09:56 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ+8H7bS/j2ZINk3WVYtlnmzbNLkyADEcm21UkZ4bZw9Y5dFChkZfxduAgTHtlUMu/4sfQyiDt0wC/L7Hc6Q@vger.kernel.org
+X-Gm-Message-State: AOJu0Yydih661DfOsmCflbbOS9UHXNlJkqVC34x5n1r7CoESwObs370Y
+	/0lKO46snE96AWGrEuV+83QjZIUErNJC/SNF7hf6e2DKWyyg8v6FlU21SLX+Z+M2f5o3WhZw5AT
+	uMdmKVQ99Syi8U2NfQUvBR1lM5hDMthM=
+X-Received: by 2002:a05:6214:518d:b0:8ae:672d:36a5 with SMTP id
+ 6a1803df08f44-8b0281a0fbemr495022486d6.51.1777068595596; Fri, 24 Apr 2026
+ 15:09:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1776916871.git.jpoimboe@kernel.org> <199a3d975e8e562421edd342b9eda242b4f57a71.1776916871.git.jpoimboe@kernel.org>
-In-Reply-To: <199a3d975e8e562421edd342b9eda242b4f57a71.1776916871.git.jpoimboe@kernel.org>
+References: <cover.1776916871.git.jpoimboe@kernel.org> <11a0af398f5ebd591e87f3f8627bbf512260549a.1776916871.git.jpoimboe@kernel.org>
+In-Reply-To: <11a0af398f5ebd591e87f3f8627bbf512260549a.1776916871.git.jpoimboe@kernel.org>
 From: Song Liu <song@kernel.org>
-Date: Fri, 24 Apr 2026 15:08:50 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW64h7DpkRZrY-6xCuxgJAz5yM3dNF2ZvhY5b-ckZF+-EQ@mail.gmail.com>
-X-Gm-Features: AQROBzAnIgIFNZWU7eWDW-C-tsDmCnS55mcb-JsqSZ1YMskVuCWzpzGVMnEFXWU
-Message-ID: <CAPhsuW64h7DpkRZrY-6xCuxgJAz5yM3dNF2ZvhY5b-ckZF+-EQ@mail.gmail.com>
-Subject: Re: [PATCH 28/48] objtool/klp: Create empty checksum sections for
- function-less object files
+Date: Fri, 24 Apr 2026 15:09:43 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7tR9jk9AWTgM=gtBK9MkR8q2UHQj_vWSB87ftXWqbsEg@mail.gmail.com>
+X-Gm-Features: AQROBzANmTWZpCG-2gtphCn0UjJSGzelHcrQNYsqrNi71MOOnjQoGa_Ew5Pb-dY
+Message-ID: <CAPhsuW7tR9jk9AWTgM=gtBK9MkR8q2UHQj_vWSB87ftXWqbsEg@mail.gmail.com>
+Subject: Re: [PATCH 30/48] objtool/klp: Handle Clang .data..Lanon anonymous
+ data sections
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
 	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
 	Joe Lawrence <joe.lawrence@redhat.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Rspamd-Queue-Id: 6E9B7463AE9
+X-Rspamd-Queue-Id: D3425463B91
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
@@ -89,7 +89,7 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2542-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2543-lists,live-patching=lfdr.de];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	MISSING_XM_UA(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
@@ -106,14 +106,11 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 On Wed, Apr 22, 2026 at 9:04=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
 > wrote:
 >
-> If an object file has no functions, objtool has nothing to checksum, so
-> it doesn't create the .discard.sym_checksum symbol.
->
-> Then when 'objtool klp diff' reads symbol checksums, it errors out due
-> to the missing .discard.sym_checksum section.
->
-> Instead, just create an empty checksum section to signal to
-> read_sym_checksums() that the file has been processed.
+> Clang generates anonymous data sections named .data..Lanon.<hash>.
+> These need section-symbol references in the same way as .data..Lubsan
+> (GCC) and .data..L__unnamed_ (Clang UBSAN) sections.  Without this,
+> convert_reloc_sym() fails when processing relocations that reference
+> these sections.
 >
 > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
