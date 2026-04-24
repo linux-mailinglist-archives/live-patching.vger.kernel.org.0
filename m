@@ -1,85 +1,85 @@
-Return-Path: <live-patching+bounces-2526-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2527-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id gPg4MKXf62mdSQAAu9opvQ
-	(envelope-from <live-patching+bounces-2526-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 23:24:53 +0200
+	id FrfqM5Hg62n1SQAAu9opvQ
+	(envelope-from <live-patching+bounces-2527-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 23:28:49 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 24056463793
-	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 23:24:52 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 427A84637F0
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 23:28:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id A47EE30179DF
-	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 21:24:39 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 21D93301CFD2
+	for <lists+live-patching@lfdr.de>; Fri, 24 Apr 2026 21:28:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FCD034A788;
-	Fri, 24 Apr 2026 21:24:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF302368975;
+	Fri, 24 Apr 2026 21:28:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZpWPiic7"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnPAmW02"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E16BF347C7
-	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 21:24:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC898344DB7
+	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 21:28:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777065879; cv=none; b=pMJKax0yYKqLrPDtoSJfInomlwowAJVDd8fp7vX6TmQFJyYkOI4gDgbcPI8itx3x+Z73qxk/tN/vp18jJ1hV4cxbBCp31Lq/rk77hoErUxNFZEwO2acAHPKhtoMTg+3nVYQ35J19u/M9B1ZJus6Gnq/pDE6ioqetnFiYLdXApJw=
+	t=1777066126; cv=none; b=YSKc7qxzYIwxlDtwSuPXNVXj5uIuyLUkaJcR9yfu2wCZcsgGu1iqBVHQ5kfwwxkcgk9vhl8KQBwhedjbKgZCT+cjr2WhkdxXWbEdoQx1LYw7QdSG2f/uv56dkKbpf5WUKz10Z9OgU6jYdNlCCtPk+riJbaARP8XDTp89BOxJWpo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777065879; c=relaxed/simple;
-	bh=sDYcfdYmD3QRj4GmluKuDG1bwY3pheQAsFX3ucCp+Bw=;
+	s=arc-20240116; t=1777066126; c=relaxed/simple;
+	bh=nl7PcNKGWULcoApTslbMZ2BbWXighufhGGb3xWhSd0I=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NR3pbsFOuXtMz7KyoXqkNCwI1iyrGOvdc32799S2OefhwW5lDUwHZwRckO0G8EKXivuSbxERpsCJY3R8khdKgeaSHeh/MqQsyrk+na119G3Ik9EwJLxegW0CFTAJC79kVKxGl3jS77qUUaCPOWTyAfsJIt9RlWxpsSDpLX1e3rc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZpWPiic7; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3012C2BCB7
-	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 21:24:38 +0000 (UTC)
+	 To:Cc:Content-Type; b=r/eC0itBw5/KQYoMqO8/GCBIFP/Tvy3YYTBhgZplE6AVxIutQVSF14gpoUuGFIFNj4gQFJhiRXYIPjmNqUIBfrqPawETSzFYoqbsHjVii2hSBX7qBFXg3f4QUi2ekEwof0Megn2MDVVVGgHv04Xfayo6Tby/nHbhz6P0mTnLJu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnPAmW02; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6221AC19425
+	for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 21:28:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777065878;
-	bh=sDYcfdYmD3QRj4GmluKuDG1bwY3pheQAsFX3ucCp+Bw=;
+	s=k20201202; t=1777066126;
+	bh=nl7PcNKGWULcoApTslbMZ2BbWXighufhGGb3xWhSd0I=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=ZpWPiic7A5H9NQZTpopCx2mVilMUMTFnlj6i1oAs2avRDJjv8rK0cIGHDGCguZX76
-	 nRVktnOzPNzzOlKJPTWuIExhpvYSugdOTGIWSH09DLkiO/qk6BbL/QzJAF+NBnNBBt
-	 trdtqiS5w2Zxw3V2Mfy1W1BPeJ5e+mpGBw4iS5RN/ywTvo1dz0xWT8w8SVKn4Ky4J8
-	 mLDo5jR8jC54TQMViKkGLoYUjyHp6OPShats/HRc/vsUla3N6PbFPwTTKTD776YK5D
-	 E4NLTi2309/4jo2maomfM5VadpXi7BrMLSdfG/lnPGIVRpsDfm+W2kJX5Vf0r4an9z
-	 m8vePX7Mwp7SQ==
-Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-8a154cc6a48so91468416d6.0
-        for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 14:24:38 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+Z/6Px2ZlvObl/laVWKkyILsrQTYZFWJokKD+NEOICvfYQm4hAwV3x/Comyv3v+LQ8uqylv6RwlTK0rmaI@vger.kernel.org
-X-Gm-Message-State: AOJu0YwgZ6l3Ebkor1sRiHJyREIkAvW6/YzhBpoAgkoTCWVd2zR6fEGa
-	K8onM2f2ls6ilrpcYWuCA2ewr8v7o8Fgr7fkJi3gjXqCEsVntXM8EGkc4HkCvYXypiz+ioufURp
-	X2v6lF1I5YvfHK0Et/+510jOyhZ3gyqU=
-X-Received: by 2002:ad4:4eab:0:b0:8ac:d13c:3ab4 with SMTP id
- 6a1803df08f44-8b0280ffb13mr542963536d6.37.1777065877881; Fri, 24 Apr 2026
- 14:24:37 -0700 (PDT)
+	b=dnPAmW028zXFLsuu9sSYR49EGQmEH8ffaMpcNdF/UkRX3Hd29tr4xOaibpOpBsDrV
+	 6sHsH9Y7i04TUqCvgEIcS3VtZeOLw98mn4ntPSqTCThLVYF/6trbRbguQCwqcqx3Q5
+	 +kLn0HB/l0jmxRawvEdyGIVnxM62udR37jm9BpYqLXEq0H49zkhI54CnE3DIpEINvH
+	 COWSwtn3aYB7HqHy9zwIVKpDhb2ofyJ1NYfcXi6a+swbRrpw5+aU1nDd9VJYontYHn
+	 rLWH5lov2ok1IfNKHT90VoYi6kiHuR0zAZzXF4jY8Tri++DXwVOM42A0H1pKgXdqs0
+	 rgCnV0+rLc5WQ==
+Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-8a58057d7baso98386456d6.1
+        for <live-patching@vger.kernel.org>; Fri, 24 Apr 2026 14:28:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ85h7dxU5LDGG6crfZ7cNusdRkFGRYLiiF4gx56Y5XfsJpdoQ91hmDDrPPfxxpZKhY/T179WKgu4biczsai@vger.kernel.org
+X-Gm-Message-State: AOJu0YxJR4xc9CekaTtgRSVN0AxgheC83TsqDveBmVaPK1TzdbQfqeWW
+	qgVzDTNuvn9qnqg+5eT0SgAwRHvFknagjriVlzCoBocmQHsghhInO7qzlVRI1PVVf+3THyivK9J
+	cb3uBhhydznsX6AgpENq58NKsWEX8gFI=
+X-Received: by 2002:a05:6214:2686:b0:8a4:8b2c:428f with SMTP id
+ 6a1803df08f44-8b027ff8849mr604784316d6.2.1777066125586; Fri, 24 Apr 2026
+ 14:28:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1776916871.git.jpoimboe@kernel.org> <2a02cb0d5de7a60f5ef135dac071c93f6303bd82.1776916871.git.jpoimboe@kernel.org>
-In-Reply-To: <2a02cb0d5de7a60f5ef135dac071c93f6303bd82.1776916871.git.jpoimboe@kernel.org>
+References: <cover.1776916871.git.jpoimboe@kernel.org> <b998db762616ed3c4972b64a3f64759d39bfe674.1776916871.git.jpoimboe@kernel.org>
+In-Reply-To: <b998db762616ed3c4972b64a3f64759d39bfe674.1776916871.git.jpoimboe@kernel.org>
 From: Song Liu <song@kernel.org>
-Date: Fri, 24 Apr 2026 14:24:26 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7Ot+3QKPW1NCE6agYqSqc7KP8efCNco=bF-gmqSGF_YA@mail.gmail.com>
-X-Gm-Features: AQROBzCFAHRxb8bL5PXU-kpU12LKkD7Mc730plIE0Dee41xnRstJ4L_-WXXqyuU
-Message-ID: <CAPhsuW7Ot+3QKPW1NCE6agYqSqc7KP8efCNco=bF-gmqSGF_YA@mail.gmail.com>
-Subject: Re: [PATCH 12/48] objtool/klp: Fix cloning of zero-length section symbols
+Date: Fri, 24 Apr 2026 14:28:34 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6wHwBBVD088HvTQUU5WUmmDQ_jA3NoAy20+CCoJNhhXA@mail.gmail.com>
+X-Gm-Features: AQROBzCd_VLmoUIWAoKXSL1RxLvaXLMrUblpcvIylX0bj4HF5Oo75gN7x9q9rAY
+Message-ID: <CAPhsuW6wHwBBVD088HvTQUU5WUmmDQ_jA3NoAy20+CCoJNhhXA@mail.gmail.com>
+Subject: Re: [PATCH 13/48] objtool/klp: Fix XXH3 state memory leak
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
 	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
 	Joe Lawrence <joe.lawrence@redhat.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Rspamd-Queue-Id: 24056463793
+X-Rspamd-Queue-Id: 427A84637F0
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
@@ -88,7 +88,7 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	DKIM_TRACE(0.00)[kernel.org:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2526-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2527-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	MISSING_XM_UA(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -96,21 +96,19 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
 	TAGGED_RCPT(0.00)[live-patching];
 	RCPT_COUNT_SEVEN(0.00)[8];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
 
 On Wed, Apr 22, 2026 at 9:04=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
 > wrote:
 >
-> Fix NULL dereference when cloning a symbol from an empty section.
-> sec->data is only populated for sections with non-zero size.
+> The XXH3 state allocated in checksum_init() is never freed.  Free it in
+> checksum_finish().
 >
-> Fixes: dd590d4d57eb ("objtool/klp: Introduce klp diff subcommand for diff=
-ing object files")
 > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
 Acked-by: Song Liu <song@kernel.org>
