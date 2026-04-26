@@ -1,288 +1,197 @@
-Return-Path: <live-patching+bounces-2555-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2556-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id eNbMFjR67WlkkAAAu9opvQ
-	(envelope-from <live-patching+bounces-2555-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Sun, 26 Apr 2026 04:36:36 +0200
+	id UJusHNAa7mm/qgAAu9opvQ
+	(envelope-from <live-patching+bounces-2556-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Sun, 26 Apr 2026 16:01:52 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id B2165468972
-	for <lists+live-patching@lfdr.de>; Sun, 26 Apr 2026 04:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C54AD46A395
+	for <lists+live-patching@lfdr.de>; Sun, 26 Apr 2026 16:01:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id CC16E3015E3C
-	for <lists+live-patching@lfdr.de>; Sun, 26 Apr 2026 02:36:33 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 17C25300E733
+	for <lists+live-patching@lfdr.de>; Sun, 26 Apr 2026 14:01:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC6CA19E819;
-	Sun, 26 Apr 2026 02:36:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEDBA363C7F;
+	Sun, 26 Apr 2026 14:01:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HbbBjLcs"
+	dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b="Gfz8tGph"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from m16.mail.126.com (m16.mail.126.com [117.135.210.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 769DE3D544
-	for <live-patching@vger.kernel.org>; Sun, 26 Apr 2026 02:36:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.174
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777170992; cv=pass; b=U+51sQI+V7mPXnzZkrXzXJ5B6IjoFwmosPqWz0oJOksFpZFhHHf8zoLBS3fM1f9h1EyRmUZKihPzccx0QizC2UQ2vbepWhQRxdWEGGfpdhv7Ki7i44ja13iJA+aYqgyYOCq2e/u1QQoGEkETsOeTLys2oaJHcAu3zc+ynVClP7k=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777170992; c=relaxed/simple;
-	bh=eji+PZheiTKzmXtx7yg8KW4DGN6RvgVU6ZyU2Ey4bp8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fsorHw3h8mvgQcqrAtx2TosNEm+oqkLE/TF/GhfdyVpCJ4sD/Pe3uM8IdqhIZJ/dG2geYHKV8O+cIF7paRmgFKnUqJZXVtZmm247LAvvsG06hVdF9ojfQphmIBgzBk4Hm45nTsE5m1mhOEAnKFZo10PG5CvBG/9E7r+KC1cBNvY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HbbBjLcs; arc=pass smtp.client-ip=209.85.128.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-7986e538decso91724127b3.1
-        for <live-patching@vger.kernel.org>; Sat, 25 Apr 2026 19:36:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777170990; cv=none;
-        d=google.com; s=arc-20240605;
-        b=XMLtMoVEd8Mm5ftob0zguTAyG1m1685+P3FJXhE9BVThKsXzoK97SemGQ+qbMLclLX
-         m5fdasN00caHuprXVip39xPZLNHSATf8Pg2+nGgg1C0sATCp/wQG0njyE02vhyGpY4jA
-         Az/eEPrN+yv8QOn+E88B8RwwxK3a9Ckake2qRqFkLEIZixAAWuPalxrSztFbjv5Yefvt
-         L43ppoIDIze5bz4fAl3tYUmmFMVUqwTFMb8VXw+tIf6s3RhNox/Dd/cBjBFwbYDnVv5W
-         daMgYLWmlkVMeZifNtb8vcYWMih3jDakEo5dK9wDPqw0QtDhrBYtd4ooJ4/wQi8s51Wz
-         Q6Vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=TgGNRIMirfBoLbKid2PCkDbdr5swnsfLNMRgrcmLKLY=;
-        fh=ATD4nkVvcalszDto9uRLoDcPzgnwp9OgaJGoP48mxEw=;
-        b=G6+zcaNUwD8mrAZ73TnOqCtMH2fThpWoIg90B0FCSWeEC02O0HdG6EvTXvO8BSmB26
-         evFQeNQuBMIY8KEm9QTbzoLSoBGWhnGOUG8G683INpN7blJsw1K6mO8FtODT3c7/063V
-         7cvNSEf7WyaZZ7de9Kym15SMjJ9e1k8rYxx0j9iMzIxLzgwfPHlZ+lL8NadUrkIxuz+L
-         SjdRnVDdh3UxM8sn731HcSc1Wc5Mv4MLmvF0XsSRJviisbQoguxI/4lGIwBuBD5icQmV
-         YUsMT+3AdqbBxcc1yGWoXXnxfeItST5DnOastBx5y7HY+Ujam7AjAVPdUuNJ+rWHECic
-         uOng==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777170990; x=1777775790; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TgGNRIMirfBoLbKid2PCkDbdr5swnsfLNMRgrcmLKLY=;
-        b=HbbBjLcsVb9dgD4OtAo0C7PlS1gqGoARA3h/li0cm2xrkRw/flMQuDrqH43zlckthd
-         PuA1VR8skQNsU/dH4Fl3OvKUWfvWz3GMLAmp7Zt9bVh9z6YupXyPhEketp990VVw6wXQ
-         DDXkUR2DOxTDdfKZVC3XVLCoGbGocnN8Fr64jwSN2hUTwhK9R6NpdL0vKDHJUFjxPyU4
-         ulj2LRIMrct14bvQd+svTIpZHUJpnIYkY/xIBk61ismcMPnlYGtfaPj++IpTvdC7JonP
-         6+fXtIcxqG37+BMhIxKT/jTJ0hbLWnyXHy6nn1I6bMHHmD8ZRgusE2AyOwjwyGBtgOJk
-         3cfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777170990; x=1777775790;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=TgGNRIMirfBoLbKid2PCkDbdr5swnsfLNMRgrcmLKLY=;
-        b=V0EJI/aBNTcCiIf4yRtfc6I3ks41GMc/ZxxHDLRC9GYfIfIkcyv2gPDFH//qNs2I5/
-         cB+Z2uIJ/k12p1NkIwHFCaf7A59NUizja35ymiDcvUa8fXRpmkkDJCgmRKNBWGZS9HY7
-         G9nZ00UwhvK8Ur0CSRLQvVD8WDkYCh/GRhyNpwVF5XHyFwaj1qnP5HZbNS5ZxYG+GO/z
-         ElSX4FLtjSvoPUGAK57wi1PvK1XYuJH7QaEBhdWtIA9CPSMSRXtY7RDEP8SMLh4wZuxT
-         ANv/R1cWs/nrL527IN22F3wUJ1nivWp5W4bOxsh3XIVYANtcPpTe9j+GSvlCnYN/bSy0
-         ywIQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+V0HfrGM8xBLFjRE2diezYzWuRjGVZWE9Yg76GSgVZtjTdvNWQ6RXalIBmgFBgSMkwnYDYlR14rIR3fjWS@vger.kernel.org
-X-Gm-Message-State: AOJu0YyiuJzIzjNH5wfn7gGdi4Ah3FQ0Zm/AB5x7OpgqEOWZS2iAIbxp
-	H36/xOYy/kHRu06zIg+MYNlq+QAD6dLUimw/GQX7UlsDKi5ERAOS9qAaf4v3Hx8yZs+Qlrzy5x1
-	/Ao8bIKdA/c4BUM0MqAXXFU4vikm2ckY=
-X-Gm-Gg: AeBDieu2wy25mzYKqXdFTvOMVdP+mL2AuWT1IQqlIz7fObViX0aPfanSHxZSM1pxOf+
-	dXUftGBmQ7UBMC5c/OJqNhKjeiey4HVcIJrudLQa83YBD745VsEd1EUPGc7xVAnKC0ldr8LFpJx
-	A6jhtCim90wHqba7bQmAHumCkGwqhcO2HWm7gNDoBY0l+5vS1aKApQ7PETkleLnW26EcAx2xy/V
-	dpoiMvYno7kXRr8MJjXa1vymg7SixjggRccyNPBEOp7vpWhTewH7yHHq+U0dLsk+tVrq1+tx4/Q
-	Dw14PNkhZUqM3IjVBwtqpP0GeN5hbq+1pyqdLZntLYbnR19zhuI=
-X-Received: by 2002:a05:690c:6387:b0:7b8:bc4e:ac3 with SMTP id
- 00721157ae682-7b9ecf85b82mr379193897b3.26.1777170990342; Sat, 25 Apr 2026
- 19:36:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F8A52BEC43;
+	Sun, 26 Apr 2026 14:01:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.9
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777212101; cv=none; b=fNnxC8e632xyBtRjul6WKexVSm1iRXuWMiB0cSshCoYsBqKAQ/E/K1CUXzjHCnyCYjPyf5qOvpP+qmZZ63HLjOkzfvuphtEm8lhovqgW72NGcpAgGEeRFkMyEEEjUWgK4W7AoMkn7LtNG39pQn+8PWCXOrYOyu441ayAL42zkqg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777212101; c=relaxed/simple;
+	bh=1EWd3FHK/NUyYRjrPUv26hddlhWeaeFiowafrqz4J6I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PQ3YRqbiWlw5FZ7K5ZFEGH8ys41/9ZkPkKTZQUMeRfJuRZqizloPsX8zsInnqNLdizKEcCqA0ja41TNAvs4ziBMVmKPwd8zbrX1oY6aID1/szGjLjaGVtBKzmhCI9bfHY5gSFZif51/hZCDtRIhJRYMGUJmT/PB2Mpvd0J0iPQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b=Gfz8tGph; arc=none smtp.client-ip=117.135.210.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+	s=s110527; h=Message-ID:Date:MIME-Version:Subject:To:From:
+	Content-Type; bh=VObAGbTW+9A0YlT8RDgNBAL8kbf8Bp4GNC/bJiVMM38=;
+	b=Gfz8tGph2KWgVIskV7kFH/2JPRot07G06I1K2xbCam83mOtshbvOugP3G7Jyqo
+	ai37Dr1ofQD7wUpqZRBL3mxeK1hyR12P/5uwp0yunrzAchjxANOPZenxC08kKLYx
+	5hJRvTmihsx0Vyjm1RkYPJzh1rEdFERh8U8wZYoIfh//U=
+Received: from [IPV6:2408:8210:480a:2590:ec66:74e8:68a7:a44b] (unknown [])
+	by gzsmtp4 (Coremail) with SMTP id PykvCgD3_9WEGe5pvjEhEA--.25861S2;
+	Sun, 26 Apr 2026 21:56:23 +0800 (CST)
+Message-ID: <30411bd3-2c92-495b-9d87-d6660b5cf3a3@126.com>
+Date: Sun, 26 Apr 2026 21:56:20 +0800
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260416001628.2062468-1-song@kernel.org> <CALOAHbDSpofLCQ-LCU2uVtkc9w+zib0PPgBr+6sEv5FD5+Hd=g@mail.gmail.com>
- <CAPhsuW5=oXwQQyOU7Hf6Qf5=tK=-J75Xr+p+dcGiPs2vVEeMFw@mail.gmail.com>
- <aeIzhNyvYaR2Krrq@pathway.suse.cz> <CAPhsuW6Z91qAM7G=iA_APX4Jfa8a0pshnGSTYn0+JXKsUfEVqQ@mail.gmail.com>
- <CALOAHbCQ_0uuDnLujgEo3mnFucUih_w44B86wjpa61GxpG0NGA@mail.gmail.com> <aedBHr4F0hTsY5x3@pathway.suse.cz>
-In-Reply-To: <aedBHr4F0hTsY5x3@pathway.suse.cz>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Sun, 26 Apr 2026 10:35:54 +0800
-X-Gm-Features: AQROBzDvAkYEkNlz6mURhOxeb2qjJmUASrJMQLKgZPwwepz5WRCFRlR0guhZKA4
-Message-ID: <CALOAHbBoXmU9FBqCms9AoApwdWUdi-+YkBrHWnutr_Y3RQY65Q@mail.gmail.com>
-Subject: Re: [PATCH] samples/livepatch: Add BPF struct_ops integration sample
-To: Petr Mladek <pmladek@suse.com>
-Cc: Song Liu <song@kernel.org>, live-patching@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, jpoimboe@kernel.org, jikos@kernel.org, 
-	mbenes@suse.cz, joe.lawrence@redhat.com, kernel-team@meta.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Rspamd-Queue-Id: B2165468972
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 1/2] kernel/notifier: replace single-linked list with
+ double-linked list for reverse traversal
+To: Petr Mladek <pmladek@suse.com>, Masami Hiramatsu <mhiramat@kernel.org>
+Cc: chensong_2000@189.cn, rafael@kernel.org, lenb@kernel.org,
+ mturquette@baylibre.com, sboyd@kernel.org, viresh.kumar@linaro.org,
+ agk@redhat.com, snitzer@kernel.org, mpatocka@redhat.com,
+ bmarzins@redhat.com, song@kernel.org, yukuai@fnnas.com, linan122@huawei.com,
+ jason.wessel@windriver.com, danielt@kernel.org, dianders@chromium.org,
+ horms@kernel.org, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, paulmck@kernel.org, frederic@kernel.org,
+ mcgrof@kernel.org, petr.pavlu@suse.com, da.gomez@kernel.org,
+ samitolvanen@google.com, atomlin@atomlin.com, jpoimboe@kernel.org,
+ jikos@kernel.org, mbenes@suse.cz, joe.lawrence@redhat.com,
+ rostedt@goodmis.org, mark.rutland@arm.com, mathieu.desnoyers@efficios.com,
+ linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-trace-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
+ live-patching@vger.kernel.org, dm-devel@lists.linux.dev,
+ linux-raid@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+ netdev@vger.kernel.org
+References: <20260415070137.17860-1-chensong_2000@189.cn>
+ <20260420144429.57b45f2beece690bceea96ec@kernel.org>
+ <aec90caYZDHDAHgw@pathway.suse.cz>
+Content-Language: en-US
+From: Song Chen <chensong_2000@126.com>
+In-Reply-To: <aec90caYZDHDAHgw@pathway.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:PykvCgD3_9WEGe5pvjEhEA--.25861S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxGr48trW5Xw1rurW8KFy5twb_yoW5Wry5pF
+	90gF4SkF4kJr92kFn2gw18WF1Y9FZ5GFWqqr18GrySkwn0grnFvrZrtw15uFykur48Ar12
+	vrWUXasru34DZaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UXyCJUUUUU=
+X-CM-SenderInfo: xfkh02prqjsjqqqqqiyswou0bp/xtbBpQd9-GnuGYeunwAA3L
+X-Rspamd-Queue-Id: C54AD46A395
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
-	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=2];
-	DMARC_POLICY_ALLOW(-0.50)[gmail.com,none];
+	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
+	DMARC_POLICY_ALLOW(-0.50)[126.com,none];
 	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
-	R_DKIM_ALLOW(-0.20)[gmail.com:s=20251104];
+	R_DKIM_ALLOW(-0.20)[126.com:s=s110527];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FROM_HAS_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2555-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2556-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
-	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	TO_DN_SOME(0.00)[];
-	DKIM_TRACE(0.00)[gmail.com:+];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
-	MISSING_XM_UA(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[laoarshao@gmail.com,live-patching@vger.kernel.org];
+	FREEMAIL_CC(0.00)[189.cn,kernel.org,baylibre.com,linaro.org,redhat.com,fnnas.com,huawei.com,windriver.com,chromium.org,davemloft.net,google.com,suse.com,atomlin.com,suse.cz,goodmis.org,arm.com,efficios.com,vger.kernel.org,lists.linux.dev,lists.sourceforge.net];
+	RCPT_COUNT_TWELVE(0.00)[48];
+	MIME_TRACE(0.00)[0:+];
+	FROM_HAS_DN(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
+	FREEMAIL_FROM(0.00)[126.com];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[chensong_2000@126.com,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[126.com:+];
+	NEURAL_HAM(-0.00)[-1.000];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	FREEMAIL_FROM(0.00)[gmail.com];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.com:email]
+	MID_RHS_MATCH_FROM(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	TO_DN_SOME(0.00)[]
 
-On Tue, Apr 21, 2026 at 5:19=E2=80=AFPM Petr Mladek <pmladek@suse.com> wrot=
-e:
->
-> On Sun 2026-04-19 11:19:19, Yafang Shao wrote:
-> > On Fri, Apr 17, 2026 at 11:52=E2=80=AFPM Song Liu <song@kernel.org> wro=
-te:
-> > >
-> > > On Fri, Apr 17, 2026 at 6:20=E2=80=AFAM Petr Mladek <pmladek@suse.com=
-> wrote:
-> > > >
-> > > > On Thu 2026-04-16 09:32:46, Song Liu wrote:
-> > > [...]
-> > > > Let' use the code from this patch:
-> > > >
-> > > > static int __init livepatch_bpf_init(void)
-> > > > {
-> > > >         int ret;
-> > > >
-> > > >         ret =3D register_btf_kfunc_id_set(BPF_PROG_TYPE_STRUCT_OPS,
-> > > >                                         &klp_bpf_kfunc_set);
-> > > >         ret =3D ret ?: register_bpf_struct_ops(&bpf_klp_bpf_cmdline=
-_ops,
-> > > >                                              klp_bpf_cmdline_ops);
-> > > >         if (ret)
-> > > >                 return ret;
-> > > >
-> > > > --->    /*
-> > > > --->     * We would need to wait here until the BPF program gets lo=
-aded.
-> > > > --->     * for the new bpf_struct_ops in this new livepatch.
-> > > > --->     */
-> >
-> > No waiting is necessary. If the BPF program is not attached, the
-> > default logic can be executed instead.
->
-> But it means a regression. I guess that you need the BPF program
-> for a reason. The default logic is not good enough indeed.
->
-> > Consider Song's test case: we can handle it as follows.
-> >
-> > static int livepatch_cmdline_proc_show(struct seq_file *m, void *v)
-> > {
-> >     struct klp_bpf_cmdline_ops *ops =3D READ_ONCE(active_ops);
-> >
-> >     if (ops && ops->set_cmdline)
-> >         return ops->set_cmdline(m);
-> >
-> >     // If no BPF program is attached, the default kernel function runs.
-> >     return cmdline_proc_show(m, v);
-> > }
-> >
-> > However, as Song explained below, if we want atomic replace to work,
-> > we may need to wait for the new BPF program here. But that would make
-> > the combination of livepatch and BPF more complex.
-> >
-> > Currently, on our production servers, we handle this through a user
-> > script, such as:
-> >
-> >   stop_traffic_relying_on_livepatch_bpf
-> >   kpatch load new-livepatch-bpf-module.ko
-> >   reattach_the_bpf_program
-> >   start_the_traffic_again
-> >
-> > Although this approach requires restarting the affected traffic, other
-> > services running on the same server remain unaffected.
->
-> We put a lot of effort to make livepatching as less disruptive
-> as possible. The atomic replace is supposed to work without
-> any disruption.
->
-> > > >         return klp_enable_patch(&patch);
-> > > > }
-> > >
-> > > Yes, something in this direction is needed to make atomic replace wor=
-k.
-> > > We have no plan to use this in production. I will let Yafang figure o=
-ut
-> > > his plan.
-> > >
-> > > > Or maybe, the bpf_struct_ops can be _allocated dynamically_ and
-> > > > the pointer might be _passed via shadow variables_.
-> > > >
-> > > > One problem is that shadow variables would add another overhead
-> > > > and need not be suitable for hot paths.
-> > > >
-> > > >
-> > > > Anyway, I think that I have similar feelings as Miroslav.
-> > > > The combination of livepatches and BPF programs increases
-> > > > the complexity for all involved parties: core kernel maintainers,
-> > > > livepatch and BPF program authors, and system maintainers.
-> > > >
-> > > > Do we really want to propagate it?
-> > > > Is there any significant advantage in combining these two, please?
-> > > > Is it significantly easier to write BPF program then a livepatch?
-> > > > Is it significantly easier to update BPF programs then livepatches?
-> >
-> > This is an important feature for avoiding server restarts,
-> > particularly in a VM host environment. Since only one VM on the host
-> > may be affected by this feature, we can deploy it rapidly without
-> > impacting other VMs on the same host.
->
-> This does not answer the question why you need the combination
-> of livepatch + BPF. Why a livepatch is not enough?
+Hi,
 
-Consider this recent use case from our production servers:
+On 4/21/26 17:05, Petr Mladek wrote:
+> On Mon 2026-04-20 14:44:29, Masami Hiramatsu wrote:
+>> Hi Song,
+>>
+>> On Wed, 15 Apr 2026 15:01:37 +0800
+>> chensong_2000@189.cn wrote:
+>>
+>>> From: Song Chen <chensong_2000@189.cn>
+>>>
+>>> The current notifier chain implementation uses a single-linked list
+>>> (struct notifier_block *next), which only supports forward traversal
+>>> in priority order. This makes it difficult to handle cleanup/teardown
+>>> scenarios that require notifiers to be called in reverse priority order.
+>>
+>> What about introducing a new notification callback API that allows you
+>> to describe dependencies between callback functions?
+>>
+>> For example, when registering a callback, you could register a string
+>> as an ID and specify whether to call it before or after that ID,
+>> or you could register a comparison function that is called when adding
+>> to a list. (I prefer @name and @depends fields so that it can be easily
+>> maintained.)
+> 
+> This looks too complex. It would make sense only
+> when this API has more users.
+> 
+> Also this won't be enough for the ftrace/livepatch callbacks.
+> They need to be ordered against against each other. But they
+> also need to be called before/after all other callbacks.
+> For example, when the module is loaded:
+> 
+>     + 1st frace
+>     + 2nd livepatch
+>     + then other notifiers
+> 
+> See the commit c1bf08ac26e92122 ("ftrace: Be first to run code
+> modification on modules").
+> 
+>> This would allow for better dependency building when adding to the list.
+>   
+>>>
+>>> A concrete example is the ordering dependency between ftrace and
+>>> livepatch during module load/unload. see the detail here [1].
+>>
+>> If this only concerns notification callback issues with the ftrace
+>> and livepatch modules, it's far more robust to simply call the
+>> necessary processing directly when the modules load and unload,
+>> rather than registering notification callbacks externally.
+>>
+>> There are fprobe, kprobe and its trace-events, all of them are using
+>> ftrace as its fundation layer. In this case, I always needs to
+>> consider callback order when a module is unloaded.
+>>
+>> If ftrace is working as a part of module callbacks, it will conflict
+>> with fprobe/kprobe module callback. Of course we can reorder it with
+>> modifying its priority. But this is ugly, because when we introduce
+>> a new other feature which depends on another layer, we need to
+>> reorder the callback's priority number on the list.
+>>
+>> Based on the above, I don't think this can be resolved simply by
+>> changing the list of notification callbacks to a bidirectional list.
+> 
+> I agree. I would keep it as is (hardcoded).
+> 
+> Best Regards,
+> Petr
+> 
 
-    https://lore.kernel.org/live-patching/CALOAHbDnNba_w_nWH3-S9GAXw0+VKuLT=
-h1gy5hy9Yqgeo4C0iA@mail.gmail.com/
 
-In one of our clusters, we needed to route BGP traffic through
-specific NICs based on destination IP addresses. To achieve this
-without service interruption, we applied a livepatch to
-bond_xmit_3ad_xor_slave_get() to introduce a new hook,
-bond_get_slave_hook(). We then attached a BPF program to this hook to
-select the outgoing NIC by parsing the SKB. Because the destination
-IPs must be adjusted on demand, a static livepatch alone was
-insufficient; the BPF integration provided the necessary dynamic
-flexibility.
+Thanks for the feedback, the necessity doesn't convincing enough. I will 
+try the proposal from Masami Hiramatsu.
 
->
-> Let me repeat the questions:
->
-> Is it significantly easier to write BPF program then a livepatch?
-> Is it significantly easier to install BPF programs then livepatches?
->
-> > > > Would the support of different replace tags help?
-> > > > They would allow to replace only livepatches with the same tag.
-> >
-> > Right, it will help.
->
-> Would this make a rapid update of livepatches easy enough so that
-> you won't need the BPF part?
+Best regards,
 
-As explained above, we cannot rely solely on livepatching to handle
-destination IP changes, as these require real-time updates.
+Song
 
---=20
-Regards
-Yafang
 
