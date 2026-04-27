@@ -1,246 +1,121 @@
-Return-Path: <live-patching+bounces-2568-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2569-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id kE52KHSs72lIDwEAu9opvQ
-	(envelope-from <live-patching+bounces-2568-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 20:35:32 +0200
+	id EOtDIGuy72n5DwEAu9opvQ
+	(envelope-from <live-patching+bounces-2569-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 21:00:59 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 478D7478ABE
-	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 20:35:32 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id D7621478E9F
+	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 21:00:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 1C2EF30C64B9
-	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 18:31:32 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 045B2303C00F
+	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 19:00:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEBA03ECBD6;
-	Mon, 27 Apr 2026 18:31:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A4AF369996;
+	Mon, 27 Apr 2026 19:00:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="esKtUfa9"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ol7J3ILk"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B06A3EC2F0
-	for <live-patching@vger.kernel.org>; Mon, 27 Apr 2026 18:31:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E81285CA2;
+	Mon, 27 Apr 2026 19:00:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777314690; cv=none; b=F14hwYkmymh1KdSlT9SVFcs05ql3Rt3owXyi4dMG60/FmuGTECO49pnigt4bKaNfI3k24RPKTw6VGg2vySLYf/mBbjVIkg/ncY1kcg/r5pK/Dc35h5P2VUN6DIEOFmGf/DD9LiL0DxkyAdBTc8/07bGbkUKL62a95P5Axa2sjpE=
+	t=1777316451; cv=none; b=ooEwd0LUpMfdwVVBLOfvRdAB82bj1EFiiVYuQaACBe7gVHIDLItVO1/lcdGQh4kxn6gOLPG27yPnSPDacNyVbw/VTHt7tdxMj1GqdcsbRtZGvNsv1v7npBq5jxdPngBAJAyxL6pXz3gCkhy4qEL034Z0UDE4CaFMAdob7UqINa4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777314690; c=relaxed/simple;
-	bh=F9d6PBr1+/K4ckE8UJhOXONnbp2b82hTORgGVjrcAuU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Io/Nij1xl4no2RRlFtN1CSX78PPaLEEfPSiYAIooAfZB3KL/efitnLLllML4simzRc/4nyZUfBUX56Ene7nIjoilvvN/o/UAb8UKBYAli9yShKr8jwYaA6gWPweaPoyVY1ZJ6639zJzFw5HfLMMb8l2cHp7CAUcT0Z6hepREqJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=esKtUfa9; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4891f625344so95611385e9.0
-        for <live-patching@vger.kernel.org>; Mon, 27 Apr 2026 11:31:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1777314687; x=1777919487; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UjtkWRBFA/1Gy4WW9Vb+jxm+URT45UeeL62kECqzZxA=;
-        b=esKtUfa9aFarEBAknLOyrg+h0DxoUCjIYioRW1SPtVgKzq4sIA1QK98AA/S+nO6pvK
-         68Hur9JS0Pm6ISvhmor47ZKcf7vaYrrrwV6TSZdHd2hIUvC2vg3IVSmxprTlVve+/9AN
-         bt80B5PNE9zrGGbhk5vJtX8h1t01WEQTt0gayW5B2CqQ0JIOmBvPU6W6zPN4i6+sUPUR
-         p4P8Y4Rl5Bf0oXGoReK1lR7pnShOi9jaKzhJfVAPSrWIieV5jVE/Q1X8S8BfTQ7YrMLj
-         CcpZasabug7frFLqfbtCWcBYtqvqPfdN8AzZmUGA7ei18zQy7qCSRQKKadaMpcO5YXa+
-         eovQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777314687; x=1777919487;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=UjtkWRBFA/1Gy4WW9Vb+jxm+URT45UeeL62kECqzZxA=;
-        b=BrDwf95DnzQ809sL72MfsHequWA0BKdCXv8oy2SMuCKcAeQIbPyGdoBCNWVCTIwDaH
-         vfnTEyCuzh+zxZP9sNzxsz1ZGRDDnMbYVadqV/pmrDwk2D/nlvboq9+tVcoTx7TUwUII
-         7bI8W4U6dhokuDTOe1OjbWIoYdHWSieCbj05fcCgIwyLx2GhZDJ2Deejph6bt90EV2Gx
-         c5KZszmKD1no/3JFUgWR+9RDWfMer0EP4L0VO80kaCK6zYBRvOxi7eDiQWL2fevFZpl2
-         wm2LhkOKaHF4kE1dwImzWO4+5hfHOEm4NblpjVWmY2vRz4yIjIlFzCpWgioe9XxRQlRM
-         KV1g==
-X-Gm-Message-State: AOJu0Yw6BtDLQ8XexYsG1GPMqMEkvkPi3S81CtizVQWlzXXJTwWIAjsB
-	aibji3xuGCi412jOfJS3dRBoZcESP65K1ATJUHMt5gi3Mme7Vdmhf/7APxctnHlac0RzZ+75jAL
-	qAgumpd8=
-X-Gm-Gg: AeBDiethWwVRMulGILjprGMrgR2US5NVo84RpUyU+JxKyNjfxxAO3kRKeRKJrl7yVuq
-	TW0ueB+k8TjfJS24SCTJvzuVAZIWbUmK3uUhbEsN4HkSuw5sqYuPXJp9wKPNQVrobO0qX0ZQw7Z
-	25MowLeKr1/8Of+cIFwnuMFIaMAyxPCYHq0vfiNAS0fKbnri7sw19g6oNSbfxTBiJ2cQ1PIbR4O
-	d46Dy9OpaiHdm54tUtmPTEPGarCK5KhCMFPIQx1P/kzp5uz1mS35tTl0tqzU/u28dR0wmZBsSru
-	xokbYGO3GDDnIBegzr8diUqkU89xWyuJBZcBZQ29wlny1JZq4tJTMuRCj0DOgf6nBaCVvx92E/+
-	XjlLodFnwpFmyo+i5VhWZbf9cJIXp/wI9irfVzX1kKMCeWOaIcPC+WQWUG/oW1a181/eJMAEOs8
-	aPReOo9NRuaA0oXN9KJimQ0qR2el0LzRjjEA==
-X-Received: by 2002:a05:600c:1c1b:b0:48a:5339:a46 with SMTP id 5b1f17b1804b1-48a7763cb34mr2682085e9.9.1777314687237;
-        Mon, 27 Apr 2026 11:31:27 -0700 (PDT)
-Received: from [127.0.0.1] ([2804:1bc4:224:7800:585c:db3a:fcb:e21f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a7749cabdsm1182065e9.9.2026.04.27.11.31.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 11:31:26 -0700 (PDT)
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Mon, 27 Apr 2026 15:31:02 -0300
-Subject: [PATCH v3 6/6] selftests: livepatch: Check if stack_order sysfs
- attribute exists
+	s=arc-20240116; t=1777316451; c=relaxed/simple;
+	bh=7mzhvxp5zZ/YPfDy3On/xp/JGgRcUl6eqWm/A7O4L18=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rwfpUXpU2OkC8kvqQBA+cTWLZ+z8tau7RAytExrip6Rq8mbUzb40Ly/2ij9m3EUB9gkdD7ZNnxiKMm7c55pnQcOj/2pujZoWq406MctmXPA9E/TSOIcRJCubhYpjh9XEFfujFIZMOdwPn3I6GT4CRAF/MMj15OGZuB5eHIs4c+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ol7J3ILk; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F50AC19425;
+	Mon, 27 Apr 2026 19:00:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777316451;
+	bh=7mzhvxp5zZ/YPfDy3On/xp/JGgRcUl6eqWm/A7O4L18=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Ol7J3ILkyWNtyEgXSYISao/zzSlIWTlqAAidI6zgsBceVtyn59GVDEYRLb6nyMhxW
+	 9ALg3lCa2YmyFXQY96NI4YphLeIlMObNQsMar0xHUyb2dmlko5hNFmqMdqfep1rKh1
+	 cD4zHt/OjYsnHfE0Xt1yeO7bnbzOnunuF1QBIK8BAOKj5+vHuKg0Xr8lyJKCdFBqSs
+	 8DabUBAfFLKQhivppgBleka9Vo8wtoJMq6ncodAXdvjNLnfUg5j6apy4osYg03L06B
+	 aNdCtGhN9Da/HELSp8yd4hpwAPamm1HITpM+rGoo1GEU58/w+UJ9JkYZhqH/kzBkWE
+	 7rylJnmgco3rA==
+Date: Mon, 27 Apr 2026 12:00:48 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
+	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>, Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 03/48] objtool/klp: Don't correlate __ADDRESSABLE()
+ symbols
+Message-ID: <3ca4kejjaoy4kj4p2232xtb6rpgog5q7dm65ljq5tvqwp6liij@yfxb3womgfnv>
+References: <cover.1776916871.git.jpoimboe@kernel.org>
+ <ea9af1b6136e9aa11589e592d0fc59e4ef414579.1776916871.git.jpoimboe@kernel.org>
+ <177702262868.199199.17632749620515020845.b4-review@b4>
+ <alpine.LSU.2.21.2604241133330.25696@pobox.suse.cz>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-lp-tests-old-fixes-v3-6-ccf3c90f744c@suse.com>
-References: <20260427-lp-tests-old-fixes-v3-0-ccf3c90f744c@suse.com>
-In-Reply-To: <20260427-lp-tests-old-fixes-v3-0-ccf3c90f744c@suse.com>
-To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, 
- Joe Lawrence <joe.lawrence@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
-X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777314662; l=3634;
- i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=F9d6PBr1+/K4ckE8UJhOXONnbp2b82hTORgGVjrcAuU=;
- b=dFnpCs2V4iZjjH921Uun2jOYSBmBjt2A650cuRcFLbWx3CAphw9odj2L2W2DVcgAEraJS8HHn
- Ird6vvqQxbLCp0coplJ12QM63W7b8HghUh8w+tLIbBd8X63lV2kSMAQ
-X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
- pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
-X-Rspamd-Queue-Id: 478D7478ABE
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.2604241133330.25696@pobox.suse.cz>
+X-Rspamd-Queue-Id: D7621478E9F
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-2.16 / 15.00];
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	TAGGED_FROM(0.00)[bounces-2568-lists,live-patching=lfdr.de];
-	FROM_HAS_DN(0.00)[];
-	RECEIVED_HELO_LOCALHOST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2569-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
+	MAILSPIKE_FAIL(0.00)[2600:3c0a:e001:db::12fc:5321:query timed out];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mpdesouza@suse.com,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	MISSING_XM_UA(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_SEVEN(0.00)[10];
-	MID_RHS_MATCH_FROM(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.com:dkim,suse.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+	RCPT_COUNT_SEVEN(0.00)[8];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
 
-The commit 3dae09de4061 ("livepatch: Add stack_order sysfs attribute"),
-merged in v6.14, introduced a new sysfs attribute.
+On Fri, Apr 24, 2026 at 11:34:33AM +0200, Miroslav Benes wrote:
+> On Fri, 24 Apr 2026, Miroslav Benes wrote:
+> 
+> > On Wed, 22 Apr 2026 21:03:31 -0700, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> > > Symbols created by __ADDRESSABLE() are only used to convince the
+> > > toolchain not to optimize out the referenced symbol.
+> > 
+> > Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+> 
+> Looking at it again... wouldn't it be better to address this in 
+> is_special_section() which is looking at .discard.addressable already 
+> (only the outcome is different)?
 
-In order to run the selftests on older kernels, check if given kernel
-has support for the attribute. If the attribute is not supported, skip
-the checks.
-
-Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
----
- tools/testing/selftests/livepatch/test-sysfs.sh | 43 ++++++++++++++-----------
- 1 file changed, 25 insertions(+), 18 deletions(-)
-
-diff --git a/tools/testing/selftests/livepatch/test-sysfs.sh b/tools/testing/selftests/livepatch/test-sysfs.sh
-index 744c612a90d3..ce67a2b770d0 100755
---- a/tools/testing/selftests/livepatch/test-sysfs.sh
-+++ b/tools/testing/selftests/livepatch/test-sysfs.sh
-@@ -10,6 +10,7 @@ MOD_LIVEPATCH3=test_klp_syscall
- 
- HAS_PATCH_ATTR=0
- HAS_REPLACE_ATTR=0
-+HAS_STACK_ORDER_ATTR=0
- 
- setup_config
- 
-@@ -23,8 +24,6 @@ check_sysfs_rights "$MOD_LIVEPATCH" "" "drwxr-xr-x"
- check_sysfs_rights "$MOD_LIVEPATCH" "enabled" "-rw-r--r--"
- check_sysfs_value  "$MOD_LIVEPATCH" "enabled" "1"
- check_sysfs_rights "$MOD_LIVEPATCH" "force" "--w-------"
--check_sysfs_rights "$MOD_LIVEPATCH" "stack_order" "-r--r--r--"
--check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
- check_sysfs_rights "$MOD_LIVEPATCH" "transition" "-r--r--r--"
- check_sysfs_value  "$MOD_LIVEPATCH" "transition" "0"
- 
-@@ -39,6 +38,12 @@ if does_sysfs_exist "$MOD_LIVEPATCH" "replace"; then
- 	HAS_REPLACE_ATTR=1
- fi
- 
-+if does_sysfs_exist "$MOD_LIVEPATCH" "stack_order"; then
-+	check_sysfs_rights "$MOD_LIVEPATCH" "stack_order" "-r--r--r--"
-+	check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
-+	HAS_STACK_ORDER_ATTR=1
-+fi
-+
- disable_lp $MOD_LIVEPATCH
- 
- unload_lp $MOD_LIVEPATCH
-@@ -150,33 +155,34 @@ livepatch: '$MOD_LIVEPATCH': unpatching complete
- % rmmod $MOD_LIVEPATCH"
- fi
- 
--start_test "sysfs test stack_order value"
-+if [[ "$HAS_STACK_ORDER_ATTR" == "1" ]]; then
-+	start_test "sysfs test stack_order value"
- 
--load_lp $MOD_LIVEPATCH
-+	load_lp $MOD_LIVEPATCH
- 
--check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
-+	check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
- 
--load_lp $MOD_LIVEPATCH2
-+	load_lp $MOD_LIVEPATCH2
- 
--check_sysfs_value  "$MOD_LIVEPATCH2" "stack_order" "2"
-+	check_sysfs_value  "$MOD_LIVEPATCH2" "stack_order" "2"
- 
--load_lp $MOD_LIVEPATCH3
-+	load_lp $MOD_LIVEPATCH3
- 
--check_sysfs_value  "$MOD_LIVEPATCH3" "stack_order" "3"
-+	check_sysfs_value  "$MOD_LIVEPATCH3" "stack_order" "3"
- 
--disable_lp $MOD_LIVEPATCH2
--unload_lp $MOD_LIVEPATCH2
-+	disable_lp $MOD_LIVEPATCH2
-+	unload_lp $MOD_LIVEPATCH2
- 
--check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
--check_sysfs_value  "$MOD_LIVEPATCH3" "stack_order" "2"
-+	check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
-+	check_sysfs_value  "$MOD_LIVEPATCH3" "stack_order" "2"
- 
--disable_lp $MOD_LIVEPATCH3
--unload_lp $MOD_LIVEPATCH3
-+	disable_lp $MOD_LIVEPATCH3
-+	unload_lp $MOD_LIVEPATCH3
- 
--disable_lp $MOD_LIVEPATCH
--unload_lp $MOD_LIVEPATCH
-+	disable_lp $MOD_LIVEPATCH
-+	unload_lp $MOD_LIVEPATCH
- 
--check_result "% insmod test_modules/$MOD_LIVEPATCH.ko
-+	check_result "% insmod test_modules/$MOD_LIVEPATCH.ko
- livepatch: enabling patch '$MOD_LIVEPATCH'
- livepatch: '$MOD_LIVEPATCH': initializing patching transition
- livepatch: '$MOD_LIVEPATCH': starting patching transition
-@@ -216,5 +222,6 @@ livepatch: '$MOD_LIVEPATCH': starting unpatching transition
- livepatch: '$MOD_LIVEPATCH': completing unpatching transition
- livepatch: '$MOD_LIVEPATCH': unpatching complete
- % rmmod $MOD_LIVEPATCH"
-+fi
- 
- exit 0
+No, I don't think so.  If .discard.addressable were classified as a
+"special" section then klp-diff would try to extract its entries into
+the livepatch module, which is completely unnecessary as these are
+throwaway symbols.
 
 -- 
-2.54.0
-
+Josh
 
