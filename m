@@ -1,85 +1,85 @@
-Return-Path: <live-patching+bounces-2565-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2566-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id EBcMNjms72kCDwEAu9opvQ
-	(envelope-from <live-patching+bounces-2565-lists+live-patching=lfdr.de@vger.kernel.org>)
+	id 0FmdKTms72lIDwEAu9opvQ
+	(envelope-from <live-patching+bounces-2566-lists+live-patching=lfdr.de@vger.kernel.org>)
 	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 20:34:33 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1EF94478A64
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2C5D5478A65
 	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 20:34:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 9179F300C34C
-	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 18:31:19 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id B19983015718
+	for <lists+live-patching@lfdr.de>; Mon, 27 Apr 2026 18:31:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3548F3EC2E9;
-	Mon, 27 Apr 2026 18:31:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 444343ECBC3;
+	Mon, 27 Apr 2026 18:31:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="gk+EouAU"
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="DS2xoav6"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3E613EC2EE
-	for <live-patching@vger.kernel.org>; Mon, 27 Apr 2026 18:31:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A6B3EC2F4
+	for <live-patching@vger.kernel.org>; Mon, 27 Apr 2026 18:31:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777314679; cv=none; b=XBBa+YqJqX8NKtD2d/1VVbxxEKfIl05ZQfJ8kMRBbv4aKAiOH7tFQMBo0hwxt6llWXK555DF14VhwP0OipplIZmDMOXnpAMQEM/FGFfY4W5uk5GubNpQiZkb7XsnClGbaT16v7dGLY5HWhx2okaDKcwM6qf8ymD6xNj3yrtzDEU=
+	t=1777314683; cv=none; b=syued8mevcmSDG28OZDk74G0KMfDC1dl2pUA3QfO2O2AkC/OwpaYfh2Ev0kpx9NNRBrVmOrO5WVFJHFuGbfBA+T24dgTdVFNX7FbTqjzbfxCGXKjN8brir2iKpXj0s33Ob+rq6yjdKiQI0g50JBpqG/8VOZMfIf8l7CYkHrAFBY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777314679; c=relaxed/simple;
-	bh=zwVAcfIrB5gkKSQrtegRJbhzNles6rOGTmiKmx6GRWQ=;
+	s=arc-20240116; t=1777314683; c=relaxed/simple;
+	bh=cabsWImOrTfadEvXIKkGEu46ZFIbjUR+jCHHWZS1nFI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=n8g3NzlMXqJQNQc2lQmAehcIm8OhQo9Wg90FXlcKID24cPvIXxuUzDsCxSiNW+Q5G5EIp7JZnAMNhyYFTT6Skka6rrI4ETjtT6AcCgTiJkI0Pffm9RjBHbIgURv0V0IpmwqKh46DOgBnbKs+XQkxYbva9OOcHniWqt4xGLoYP4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=gk+EouAU; arc=none smtp.client-ip=209.85.128.52
+	 In-Reply-To:To:Cc; b=T8cx2wbm2N83D9WRTS+jQ1jDmwfatWoO9EhvXseqVlik1o9+u3Wa9wkA70kgt0waZsM0udtl6MoSE+uwAyj8UwZdaXLprQfAe7+mgnvxgHvwqV5UyNMHXLVK2Mwrya7O25aIfdNDv7M1qqeQdezj6y6GucCcikqTzo4jNJtRqhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=DS2xoav6; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-488ff90d6c7so90465015e9.2
-        for <live-patching@vger.kernel.org>; Mon, 27 Apr 2026 11:31:17 -0700 (PDT)
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4891f625344so95610385e9.0
+        for <live-patching@vger.kernel.org>; Mon, 27 Apr 2026 11:31:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1777314676; x=1777919476; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1777314680; x=1777919480; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=/rb04HihRpFGGRez1OC1FkeRKyhSIjAaQFdeNYoGCmo=;
-        b=gk+EouAUkmmw6ejIs0bZcaMtTLrPEmsQehq9QLSbxtM27d7LIJaV+wfCNYUNbUKaGd
-         GSFFs541NbeJAjFQPdy89FbeXkQtECA3vEIzc5pc38qLkROsNg/yeCfhNhaSBMCGHWiI
-         wPW++9UJWXSAwzGyx2E9kslvvPWAFVA3G02SG4vt7uKpVZCl0R48EtJeFpVu/YyNmZWw
-         j31oOODSHrD3v70jNKvAOHmq6F59spTD3l0txUIboQc0uanTZg1AXWrPb7C+QdTg9Lti
-         4CcUP8wJnE7wfbnfGLZTc2DHieeWQRJDc+2AxwUvC+7p0dvY3+lxPOli8vF/VmWsQteU
-         6/Iw==
+        bh=ZSv7mvHEKazo1ADkBY1eKHJ65hhcoj1auW86Wb7XPbw=;
+        b=DS2xoav6lvwb9x9e3FcavzXeNTDLCQQYvlQZs5NK1rdd1r59M1/+LcE3yQZrCse77l
+         Br5/a59/Bw7fIyMMn5iI9wSj6/aKFhEiNmfKFlKAO2cmNlZePC5NZK3JShBC+QTvGmdM
+         SZ/yif5Wm6V5hzYOssVD356sm71Amac+/x4VKkoix/O9sTUVAI+NrxL1VbV5Gxy5A/zM
+         TeAFmYKpcc/Af9kSec7V7HFqBmhgpO8EzLvwj37TUdLiMw4enn8KTfwu8pjhYgPNo8yr
+         Afq5kreRiLepPyaRj4cbWpMnwODSNPhUd1JLuNXQunmfFgLM0/rP6RAyVwj/sbCN3meg
+         MiIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777314676; x=1777919476;
+        d=1e100.net; s=20251104; t=1777314680; x=1777919480;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=/rb04HihRpFGGRez1OC1FkeRKyhSIjAaQFdeNYoGCmo=;
-        b=oz0xc4xG15/4fLYZkEnFodOuujqNUsXuUPG/eCgbPEZCHhfmuQu+8WEGi06b0Zhl4e
-         cUzRns3b4gWzpg9NKnAFV4KVKPhznu/O4JAN0k4Ruz8tK6t/ANZflXQSTNzmN7Z65/YY
-         7UXOLQQOCfBj2Cg5OYkQH5ocNq9CLyXLaJsH/ZOdGZCoHHNvrofYa+bIsrrRZ6V9qszM
-         ppiUcsIpRoEW2HdZ/lCoORID/UAcV/MHF4gJjFtKqZX7GJmiWODMsiLhNZjjH0TvJiwz
-         in0xFeuBamJJmuWzg9/PeCO6oimuQ7DJKr1P4PY74CVnqp08uJmNnCHPKYqoGOqhWflN
-         haNA==
-X-Gm-Message-State: AOJu0YyLWsuUejw2OHWgwiYO18fxdfQPojLQdEzZKXO+OpKD8ajXvjvO
-	kCjP3emTNqdh+3UAKMx+G/dMcDNYs8gpEa9qTqxv61Y225V/KSaONd/os4Kkp3fJ4GacTMgWtAK
-	8SkC9zBI=
-X-Gm-Gg: AeBDietcxKzPKXw3HCFoxgGDIbiBroIjblku/IjpQuB1EuuXpW5MzSeybticSJvP1hi
-	PmYMdqf69dRjORlWsTuaDmEQNJkgj5p3eib3AibGbcj+fogKzy73K5V1FCfLXrTisTY3cg1KD1E
-	AfMZe/BS81gRSQgYnBJAgVk56Jp90XKJ5nyekctZz5L/mKZ7IgKiTBU8nkzd6L9zmqv7cYBtY5O
-	rTt54uzim7MD+PWB+w2DudZmXN4VXbaYUg9toOjhncIWb9wRtLH1oGjm71y2ntyft4oyeo31gOe
-	RAXqSlPTnnv038FJFZpYXxKNSl7xE5wfiho755jS0zU6xt3UwVYVhTZfYKe9mHZo9xvMcisu0uD
-	nWdLxb7y7Z+Bm8PZM5lpGDlE0RLU6M54vUrHLovweEdD4znUdKo5m+dle09WMFPMxB5rZWydMHP
-	UllLufbEn2EkLPgpBd6lcjdivVi69A3PuYwQ==
-X-Received: by 2002:a05:600c:8588:b0:48a:5821:5ffc with SMTP id 5b1f17b1804b1-48a76f4d4eamr5060945e9.2.1777314675876;
-        Mon, 27 Apr 2026 11:31:15 -0700 (PDT)
+        bh=ZSv7mvHEKazo1ADkBY1eKHJ65hhcoj1auW86Wb7XPbw=;
+        b=VPdJg0uWiQmfK6Jj+Ui+onZZu0aMOYHOviEo3PbZi5RaISGaH3Frhfduy6dalIEame
+         s+APXegwxj9xf8NXLRUlDKCdpSJNBF/pwCo0BDN0tBuV/hHkjSxdhbeVnSn0f/tOtvfs
+         ET6YIEHgjKkZwbQ052YJC80OmdwPyHoj+shPulToonkIkr5T0qJa2oeE56YgeoSe9fnM
+         ed+FSHj/iIXostSwd58Ik9CBwyKSN+d2ghTfY4C7e7AuWY48yL92KkFj4hhGYkwO49Zi
+         PK0cFwUwh5jKWu7d+Aj2JsK8GWIkXpIaAhhc+ZT/wlxXnziAFRbixYc86MqIdhxhL1ts
+         Ec7w==
+X-Gm-Message-State: AOJu0YzWUrpFR4pjNIp89P5+XptR6mJOSIuxr58U0eFFMNMWNt2Jv2iw
+	uWWto/GE5LmdBowoRZDjkAO4RxRvXd+8ijRV0lJFYUoPg1N8dcZVphm/sppw5QT46SlzJZXriKJ
+	8xPrnP8E=
+X-Gm-Gg: AeBDietL6cbFZdAR5a/kICGDID/Nug845ZiPkJ7C4NMPqBBkm0OF9I8qIgF8YHUs5yc
+	RtfrCjzqaWIIa8IuSqEfCc8PPUE6aTMOc198yEzay7IgPkTFAD0vpVSf2JsYh2xlm2DBavNvRL7
+	ThD2uC7Xlw0g8j++WRiMHnME1ZDLH9RVsZ2UX+wLHTyMPRKYeaN86FfYAWvkUcZpQ0kt76UNN8b
+	Jb/8Q7vDIla0Y09OuyECA2aNfu98XCRQYXsWk6Syx8CB0Fol9xk5Ogb00Lkd4kchjWGcU/xjmeq
+	zPfo3DOjgKngnMSGpB7hY263NLwzWJJs7Gw3CHT4srOYGF5zK4PgE0/kvOTHwtxu/tSAXDbmhgY
+	Od41luHraoNzBDk82SC6jqfCju0DkW70EZNp09ZcknwlCcYCVqXYZqBy2+2dPkkQAWAW4qcOuC4
+	7PlsdfJ9kgja3gr3pEqRNxDXRsy8UtJWEHhg==
+X-Received: by 2002:a05:600c:2e4c:b0:489:32b:ac0b with SMTP id 5b1f17b1804b1-48a77635c61mr1553295e9.6.1777314679620;
+        Mon, 27 Apr 2026 11:31:19 -0700 (PDT)
 Received: from [127.0.0.1] ([2804:1bc4:224:7800:585c:db3a:fcb:e21f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a7749cabdsm1182065e9.9.2026.04.27.11.31.12
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a7749cabdsm1182065e9.9.2026.04.27.11.31.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 11:31:15 -0700 (PDT)
+        Mon, 27 Apr 2026 11:31:19 -0700 (PDT)
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Mon, 27 Apr 2026 15:30:59 -0300
-Subject: [PATCH v3 3/6] selftests: livepatch: Introduce does_sysfs_exist
- function
+Date: Mon, 27 Apr 2026 15:31:00 -0300
+Subject: [PATCH v3 4/6] selftests: livepatch: Check if patched sysfs
+ attribute exists
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -88,7 +88,7 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-lp-tests-old-fixes-v3-3-ccf3c90f744c@suse.com>
+Message-Id: <20260427-lp-tests-old-fixes-v3-4-ccf3c90f744c@suse.com>
 References: <20260427-lp-tests-old-fixes-v3-0-ccf3c90f744c@suse.com>
 In-Reply-To: <20260427-lp-tests-old-fixes-v3-0-ccf3c90f744c@suse.com>
 To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
@@ -97,26 +97,26 @@ To: Josh Poimboeuf <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>,
 Cc: live-patching@vger.kernel.org, linux-kselftest@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Marcos Paulo de Souza <mpdesouza@suse.com>
 X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777314662; l=1087;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777314662; l=3506;
  i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=zwVAcfIrB5gkKSQrtegRJbhzNles6rOGTmiKmx6GRWQ=;
- b=uwrNh3NOvNhP4CUH8KIrYnpyJhIr9yii3s+MOQSBeKBBfupCiNw+N5m+vDWSe3YLLzJ+5M8Pm
- YTUyXceBvuxCNGEsjLumSvbgeg9+B00KoUFrWE4V1EPy9JJVtaQDWPs
+ bh=cabsWImOrTfadEvXIKkGEu46ZFIbjUR+jCHHWZS1nFI=;
+ b=RtWCyDoZ0CDWVtPSx0XGCigfMLI0Lb5+rOa/9wKam/t4YGJk/K8YQBnkY4lt+BILQ/S6deQd5
+ 3YeSCj30LdiCXyvcQMn6XyU+TV/k7AU928KD1L1SAMjFi78o5EmD2J7
 X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
  pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
-X-Rspamd-Queue-Id: 1EF94478A64
+X-Rspamd-Queue-Id: 2C5D5478A65
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
 	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
-	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	DKIM_TRACE(0.00)[suse.com:+];
-	TAGGED_FROM(0.00)[bounces-2565-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2566-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
 	RECEIVED_HELO_LOCALHOST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
@@ -128,42 +128,100 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[mpdesouza@suse.com,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
 	RCPT_COUNT_SEVEN(0.00)[10];
 	MID_RHS_MATCH_FROM(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.com:dkim,suse.com:mid,sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.com:email,suse.com:dkim,suse.com:mid]
 
-Returns true if the livepatch sysfs attribute exists, and false otherwise.
-This new function will be used in the next patches.
+The commit bb26cfd9e77e
+("livepatch: add sysfs entry "patched" for each klp_object") was merged
+in v6.1, introducing a new sysfs attribute.
+
+In order to run the selftests on older kernels, check if given kernel
+has support for the attribute. If the attribute is not supported, skip
+the checks.
 
 Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 ---
- tools/testing/selftests/livepatch/functions.sh | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ tools/testing/selftests/livepatch/test-sysfs.sh | 38 +++++++++++++++----------
+ 1 file changed, 23 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-index 8ec0cb64ad94..2bc50271729c 100644
---- a/tools/testing/selftests/livepatch/functions.sh
-+++ b/tools/testing/selftests/livepatch/functions.sh
-@@ -339,6 +339,16 @@ function check_result {
- 	fi
- }
+diff --git a/tools/testing/selftests/livepatch/test-sysfs.sh b/tools/testing/selftests/livepatch/test-sysfs.sh
+index 58fe1d96997c..394cf3ff99cd 100755
+--- a/tools/testing/selftests/livepatch/test-sysfs.sh
++++ b/tools/testing/selftests/livepatch/test-sysfs.sh
+@@ -8,6 +8,8 @@ MOD_LIVEPATCH=test_klp_livepatch
+ MOD_LIVEPATCH2=test_klp_callbacks_demo
+ MOD_LIVEPATCH3=test_klp_syscall
  
-+# does_sysfs_exist(modname, attr) - check sysfs attribute existence
-+#	modname - livepatch module creating the sysfs interface
-+#	attr - attribute name to be checked
-+function does_sysfs_exist() {
-+	local mod="$1"; shift
-+	local attr="$1"; shift
++HAS_PATCH_ATTR=0
 +
-+	[[ -f "$SYSFS_KLP_DIR/$mod/$attr" ]]
-+}
+ setup_config
+ 
+ # - load a livepatch and verifies the sysfs entries work as expected
+@@ -25,8 +27,12 @@ check_sysfs_rights "$MOD_LIVEPATCH" "stack_order" "-r--r--r--"
+ check_sysfs_value  "$MOD_LIVEPATCH" "stack_order" "1"
+ check_sysfs_rights "$MOD_LIVEPATCH" "transition" "-r--r--r--"
+ check_sysfs_value  "$MOD_LIVEPATCH" "transition" "0"
+-check_sysfs_rights "$MOD_LIVEPATCH" "vmlinux/patched" "-r--r--r--"
+-check_sysfs_value  "$MOD_LIVEPATCH" "vmlinux/patched" "1"
 +
- # check_sysfs_rights(modname, rel_path, expected_rights) - check sysfs
- # path permissions
- #	modname - livepatch module creating the sysfs interface
++if does_sysfs_exist "$MOD_LIVEPATCH/vmlinux" "patched"; then
++	check_sysfs_rights "$MOD_LIVEPATCH" "vmlinux/patched" "-r--r--r--"
++	check_sysfs_value  "$MOD_LIVEPATCH" "vmlinux/patched" "1"
++	HAS_PATCH_ATTR=1
++fi
+ 
+ disable_lp $MOD_LIVEPATCH
+ 
+@@ -45,23 +51,24 @@ livepatch: '$MOD_LIVEPATCH': completing unpatching transition
+ livepatch: '$MOD_LIVEPATCH': unpatching complete
+ % rmmod $MOD_LIVEPATCH"
+ 
+-start_test "sysfs test object/patched"
++if [[ "$HAS_PATCH_ATTR" == "1" ]]; then
++	start_test "sysfs test object/patched"
+ 
+-MOD_LIVEPATCH=test_klp_callbacks_demo
+-MOD_TARGET=test_klp_callbacks_mod
+-load_lp $MOD_LIVEPATCH
++	MOD_LIVEPATCH=test_klp_callbacks_demo
++	MOD_TARGET=test_klp_callbacks_mod
++	load_lp $MOD_LIVEPATCH
+ 
+-# check the "patch" file changes as target module loads/unloads
+-check_sysfs_value  "$MOD_LIVEPATCH" "$MOD_TARGET/patched" "0"
+-load_mod $MOD_TARGET
+-check_sysfs_value  "$MOD_LIVEPATCH" "$MOD_TARGET/patched" "1"
+-unload_mod $MOD_TARGET
+-check_sysfs_value  "$MOD_LIVEPATCH" "$MOD_TARGET/patched" "0"
++	# check the "patch" file changes as target module loads/unloads
++	check_sysfs_value  "$MOD_LIVEPATCH" "$MOD_TARGET/patched" "0"
++	load_mod $MOD_TARGET
++	check_sysfs_value  "$MOD_LIVEPATCH" "$MOD_TARGET/patched" "1"
++	unload_mod $MOD_TARGET
++	check_sysfs_value  "$MOD_LIVEPATCH" "$MOD_TARGET/patched" "0"
+ 
+-disable_lp $MOD_LIVEPATCH
+-unload_lp $MOD_LIVEPATCH
++	disable_lp $MOD_LIVEPATCH
++	unload_lp $MOD_LIVEPATCH
+ 
+-check_result "% insmod test_modules/test_klp_callbacks_demo.ko
++	check_result "% insmod test_modules/test_klp_callbacks_demo.ko
+ livepatch: enabling patch 'test_klp_callbacks_demo'
+ livepatch: 'test_klp_callbacks_demo': initializing patching transition
+ test_klp_callbacks_demo: pre_patch_callback: vmlinux
+@@ -87,6 +94,7 @@ livepatch: 'test_klp_callbacks_demo': completing unpatching transition
+ test_klp_callbacks_demo: post_unpatch_callback: vmlinux
+ livepatch: 'test_klp_callbacks_demo': unpatching complete
+ % rmmod test_klp_callbacks_demo"
++fi
+ 
+ start_test "sysfs test replace enabled"
+ 
 
 -- 
 2.54.0
