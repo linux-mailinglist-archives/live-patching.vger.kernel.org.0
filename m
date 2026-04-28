@@ -1,61 +1,60 @@
-Return-Path: <live-patching+bounces-2585-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2586-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id CMP2AU/g8GmoagEAu9opvQ
-	(envelope-from <live-patching+bounces-2585-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:29:03 +0200
+	id IM1jJwni8GmoagEAu9opvQ
+	(envelope-from <live-patching+bounces-2586-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:36:25 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 78ECE488E4C
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 43282489112
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:36:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 2CF293080EAF
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 16:21:08 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 1998E30F5AA0
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 16:24:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C99C444A71C;
-	Tue, 28 Apr 2026 16:14:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4484439007;
+	Tue, 28 Apr 2026 16:19:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EM875fx9"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VqRCq667"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CE7441022;
-	Tue, 28 Apr 2026 16:14:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8136F33A029;
+	Tue, 28 Apr 2026 16:19:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777392880; cv=none; b=mcH6567vTr5wZav9G6wpddB9YPfNewKe9TndS7rx0naEaWS9q1trdoXjeanJO/NlUZtUfsZZ2HI8OijLvx/1QeySnd8wtn4CKzxQr5rW84Bny9MbBPBnAmmXde6UYxVNwck65asg/zExsj722apYyuFxF7knhTTiD5cXaMDAioA=
+	t=1777393150; cv=none; b=jIq9NqPD1PwDI15X3H2KJZ3VTTtxoUoOUnqLGrv8xaLuaO0CvrwA1KSvkdzbUXtggikwg09xw597AEDlUi45YwyrdEDZhFrbU4YW4gqFPfZdfpxjaqeY/G2mQFhc720BKDVx2sWigFMF3mdkv4DtPlo1F8CppuJNx3cyNgmEI20=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777392880; c=relaxed/simple;
-	bh=CPUYEqVRAarPXNaMkzwcGIW59ajwxAMrIorC5VSFggA=;
+	s=arc-20240116; t=1777393150; c=relaxed/simple;
+	bh=sqS5KPFM8Htw+ohlhNlX8lNtmWTxrvAeFxBvKeKMjjk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qOTfpSx8Xsf/0LCF6CIfVttzGj7m/lHGAOkPtV0slEy0yZ+x3hu9wvla0/80HOaWQEairnKHKL/TntQ2jnBlYJMQZSYmLUbcHW0gZMVekEA15y5maFbyMb6U1KjJQLmMVbMVEQDFH6MO4EkRekzGxQadMhyfDxoAB1oIYY4ebIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EM875fx9; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913CEC2BCAF;
-	Tue, 28 Apr 2026 16:14:39 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=tUvFqirn1YNfcp2cVp95QPgDEZhHmEcPIArMZBWQDUbDb03dLylU9xahOi4U1N0+BgXA3d3FIPaEyjgpdSE2+RjhnSMIJa9EoKy3m4Nood8QxyVwciSTnbSmCmtdQ5LCVcJPzKS4yR/gPrzQIkHeMTWOyQcstVtjgnXCGSd4d+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VqRCq667; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F2B0C2BCAF;
+	Tue, 28 Apr 2026 16:19:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777392880;
-	bh=CPUYEqVRAarPXNaMkzwcGIW59ajwxAMrIorC5VSFggA=;
+	s=k20201202; t=1777393150;
+	bh=sqS5KPFM8Htw+ohlhNlX8lNtmWTxrvAeFxBvKeKMjjk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EM875fx97im26wG8B0+vX1KV95Vk4L8TeKMUuC27Vcg8iSkHhmKsKZtpu9FbZLhL/
-	 yOInh1nIEX2boLo9nPKbQJd7FQ8IYmA8akAHf9b69GwwrEcCHYAlXlx0cQQo9Kz5i3
-	 +MMz8IbpPTnCzLcX/TBUII+eTRx8ioLeGS3V3PF8KgZb+dJ7+9o8/kzcdxZFW/EsPv
-	 j8x1mB3o26ByaR8tCmYb17EHFb3rAVCPD+GD+7S8cmJCwKaRftwxThzrQ+13axF1KZ
-	 84KN7fR/5/JffnJt0Du6GXscpbehmfPRkfh9D5xMU6BsYW+nJrCQjitvWxcjQT3kl4
-	 mronJNkMoITMQ==
-Date: Tue, 28 Apr 2026 09:14:37 -0700
+	b=VqRCq667jm8mzqN8VDptwJ28WdGqQc0WEUVqfnJgucWhWZ+UULc4+klegemB4EIqE
+	 +xP6srZSxjosvah/GzlMauAXWW2R/j6QNAXL6h6N/Avi4jVXWoFTidBFfay8gwVAdn
+	 wGJK3EIvj/3Gw39LzeAcU7NOW/5KlrE6Bc+ma+xFjt9L7q91vr/up27/qxOWTBXZ93
+	 eZv97BpvyWgfZvsBaRzJ7mMa+/53M6nEOcD3JRZ8syTNtUDDKd9MPW0PfxS06oAmHo
+	 5LP7+18Pyp4G3OjltYvbjKnHmnEGqeqfEMmOBrdRZeTt7Vx/X2nvdkdjlznRNRpRaE
+	 0uNEfA9Gz2UEQ==
+Date: Tue, 28 Apr 2026 09:19:07 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Song Liu <song@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
 	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
 	Joe Lawrence <joe.lawrence@redhat.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 39/48] objtool: Replace iterator callbacks with
- for_each_sym_by_*()
-Message-ID: <hvetzvby2f2gj7txal3apitn5ny364rtwexfei7qyornsr4bpn@kijmg6altcxt>
+Subject: Re: [PATCH 38/48] klp-build: Validate short-circuit prerequisites
+Message-ID: <jygegcn3d4efw2xtnl7z4uo7zx4ghzvuv3ref3yxuvccy7ohcc@aunjpiemzmxm>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
- <03f7804ae62c5c4521053afc3f6a1c4a11bc85de.1776916871.git.jpoimboe@kernel.org>
- <CAPhsuW7=EAeOT3cTvROoDVcvU6wibF56nJFPQzXQhnVcxfmPrw@mail.gmail.com>
+ <338295e0bf3353dd62536df672a2615f72be013b.1776916871.git.jpoimboe@kernel.org>
+ <CAPhsuW66Mx6RU9NT4nyk7GuN-0Kve6P7YdnM-ke3D2Cx0o0_Kw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -65,8 +64,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPhsuW7=EAeOT3cTvROoDVcvU6wibF56nJFPQzXQhnVcxfmPrw@mail.gmail.com>
-X-Rspamd-Queue-Id: 78ECE488E4C
+In-Reply-To: <CAPhsuW66Mx6RU9NT4nyk7GuN-0Kve6P7YdnM-ke3D2Cx0o0_Kw@mail.gmail.com>
+X-Rspamd-Queue-Id: 43282489112
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-1.66 / 15.00];
@@ -79,7 +78,7 @@ X-Spamd-Result: default: False [-1.66 / 15.00];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2585-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2586-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
@@ -97,30 +96,58 @@ X-Spamd-Result: default: False [-1.66 / 15.00];
 	TO_DN_SOME(0.00)[];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
 
-On Fri, Apr 24, 2026 at 05:04:08PM -0700, Song Liu wrote:
+On Fri, Apr 24, 2026 at 05:06:43PM -0700, Song Liu wrote:
 > On Wed, Apr 22, 2026 at 9:04 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
 > >
-> > Convert the callback-based iterate_sym_by_name() and
-> > iterate_sym_by_demangled_name() callers to use new
-> > for_each_sym_by[_demangled]_name() macros.  This eliminates the callback
-> > structs and functions and makes the code more compact and readable.
+> > The --short-circuit option implicitly requires that certain directories
+> > are already in klp-tmp.  Enforce that to prevent confusing errors.
 > >
 > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 > > ---
-> >  tools/objtool/elf.c                 | 80 ++++++-----------------------
-> >  tools/objtool/include/objtool/elf.h | 40 ++++++++++++---
-> >  tools/objtool/klp-checksum.c        | 20 +++-----
-> >  tools/objtool/klp-diff.c            | 42 +++++----------
-> >  4 files changed, 73 insertions(+), 109 deletions(-)
+> >  scripts/livepatch/klp-build | 18 ++++++++++++++++++
+> >  1 file changed, 18 insertions(+)
+> >
+> > diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
+> > index eda690b297cc..b44924d097a5 100755
+> > --- a/scripts/livepatch/klp-build
+> > +++ b/scripts/livepatch/klp-build
+> > @@ -440,6 +440,20 @@ do_init() {
+> >         [[ ! "$SRC" -ef "$SCRIPT_DIR/../.." ]] && die "please run from the kernel root directory"
+> >         [[ ! "$OBJ" -ef "$SCRIPT_DIR/../.." ]] && die "please run from the kernel root directory"
+> >
+> > +       if (( SHORT_CIRCUIT >= 2 )); then
+> > +               [[ -f "$ORIG_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $ORIG_DIR"
+> > +               if (( SHORT_CIRCUIT >= 3 )); then
+> > +                       [[ -f "$PATCHED_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $PATCHED_DIR"
+> > +                       if (( SHORT_CIRCUIT >= 4 )); then
+> > +                               [[ -f "$ORIG_CSUM_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $ORIG_CSUM_DIR"
+> > +                               [[ -f "$PATCHED_CSUM_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $PATCHED_CSUM_DIR"
+> > +                               if (( SHORT_CIRCUIT >= 5 )); then
+> > +                                       [[ -f "$DIFF_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $DIFF_DIR"
+> > +                               fi
+> > +                       fi
+> > +               fi
+> > +       fi
+> > +
 > 
-> Macros are indeed cleaner. But Sashiko has a valid point on this. [1].
+> Do we really need these to nest together?
 
-Ok, I'll make those an "if (mismatch) {} else":
+Hm, I suppose flattening is a little less offensive to the eye:
 
-#define for_each_sym_by_name(elf, _name, sym)				\
-	elf_hash_for_each_possible(elf, symbol_name, sym, name_hash,	\
-				   str_hash_demangled(_name))		\
-		if (strcmp(sym->name, _name)) {} else
+
+	if (( SHORT_CIRCUIT >= 2 )); then
+		[[ -f "$ORIG_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $ORIG_DIR"
+	fi
+	if (( SHORT_CIRCUIT >= 3 )); then
+		[[ -f "$PATCHED_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $PATCHED_DIR"
+	fi
+	if (( SHORT_CIRCUIT >= 4 )); then
+		[[ -f "$ORIG_CSUM_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $ORIG_CSUM_DIR"
+		[[ -f "$PATCHED_CSUM_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $PATCHED_CSUM_DIR"
+	fi
+	if (( SHORT_CIRCUIT >= 5 )); then
+		[[ -f "$DIFF_DIR/.complete" ]] || die "-S $SHORT_CIRCUIT requires completed $DIFF_DIR"
+	fi
 -- 
 Josh
 
