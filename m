@@ -1,72 +1,72 @@
-Return-Path: <live-patching+bounces-2597-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2598-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id EMLRBuj+8GnubgEAu9opvQ
-	(envelope-from <live-patching+bounces-2597-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 20:39:36 +0200
+	id CFOWIvL+8GnubgEAu9opvQ
+	(envelope-from <live-patching+bounces-2598-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 20:39:46 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id A149648AC14
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 20:39:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 04EE648AC2A
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 20:39:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 152E83079E2D
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:37:32 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id B906C307DA93
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:37:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B500B47CC67;
-	Tue, 28 Apr 2026 18:37:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76C3347B408;
+	Tue, 28 Apr 2026 18:37:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uRZkCkQg"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="m9oYEckb"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF6B447B436
-	for <live-patching@vger.kernel.org>; Tue, 28 Apr 2026 18:37:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B1CF47B42E
+	for <live-patching@vger.kernel.org>; Tue, 28 Apr 2026 18:37:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777401450; cv=none; b=BPeNsieXRpnUYKMWwZDGeaIy5Skr4JdxNN50AvoK4SeUBWx8c3K/ZFTQSItW0AEWPbJAx7l2/PRxBs+pUMcY62O1O6Rm2s1v95EFJWpxZBknddtY+0I5jF5SYSI/D7vLLu2pTpSn9fwqtvhRFN4yh1xvwVslXxp1Db7GmBmEPHM=
+	t=1777401456; cv=none; b=cHdtDt/aBBpOgbLTddM7PFnmMNim1JS+ekNj+83zc+vmhGaTaYXVdbzG6MuqLSWOzEuHADs7hjtakYgTsjgpq/A1anvDK8NGBTkgEzLp2l3lXQGXng9/GXq23deLPngofD7WdvF2hCMZN6K7ZKtBee8NtjAdN0QtpNtXzH0i9vI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777401450; c=relaxed/simple;
-	bh=wm8fmz57HEth2J1hN6vgXStLpyz5KgZ/vbS889B0dtc=;
+	s=arc-20240116; t=1777401456; c=relaxed/simple;
+	bh=eUcBXFOTvR8ZdL6IqA6TLXYsvIHF4JVdur74bowB8GA=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=BAmK2R27V7u48aaFi7WTUru81F7v2eN6Tmb7eQxapEZwySDnvG7W1oh0D3rsbBxz+ZTZmFEcmvWXBR4TYs4ZIeSNPxJdBgEwR0ElsvA9aixdKzkL5DLUPoAFJdyaVPzGSwf0nMnGS+ixIUKxeMSGg96kFJH4DKZAk/MQnWM0u8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uRZkCkQg; arc=none smtp.client-ip=209.85.214.201
+	 To:Cc:Content-Type; b=fjC80uCowe4oKZMMRBgKwSFS1P+Dyz2gNGTLtxvlE1sWQXLRCYsX6uGZ+/LxKUVq2S40rGXV1/xB7Rh2n45tQTTUb602CPn9pgz8aAsoA9eZ5RdzW07cGXHo9W+lBApndnWvRcNhh/Dk8gJs6jX0JXIcllfDTt/xdfI7wry/B1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=m9oYEckb; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dylanbhatch.bounces.google.com
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2b458add85aso25501445ad.2
-        for <live-patching@vger.kernel.org>; Tue, 28 Apr 2026 11:37:28 -0700 (PDT)
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-82f07078ff0so8100557b3a.1
+        for <live-patching@vger.kernel.org>; Tue, 28 Apr 2026 11:37:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777401448; x=1778006248; darn=vger.kernel.org;
+        d=google.com; s=20251104; t=1777401451; x=1778006251; darn=vger.kernel.org;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Goh3F7XcpkTSr7iRpzcfIAl6DDNpb912M5nWLNqSnmg=;
-        b=uRZkCkQgy1PKvqXpmzO4WYWxYJLJbamh9mliJPRtSNHvwF907HMdmgAXWVhvINHonG
-         jYPPNcBRkqHuOJ2+zoKypMm+LA7rWzEpgG3dI0O2jMJnRkJ6oKykwYofV3fWzA7bmebN
-         j0+f6hP9wdQx1GWEkKmWRk4ja7H1WV1rIvK84anqqdmt8z95XsnqZTBOg93wvOdUASwU
-         +i+z8d92fjSoNUTNi1ETzgwOnTCx6yPOyffCtQgkx/FTzYXjHjoAV4SlwiDrrY7fLuc8
-         DZqF6uEZquvvETjiRANAIoWdVAtA7Ng2gE996+0RoZBk+M2ZiZTEQp0QRJoQQ33tWA/N
-         7T8w==
+        bh=Cq4/UBTJbBSIBMYrEdgu8vO+sExHQ1BWSN/SoA97xbg=;
+        b=m9oYEckb9cPaumnJOoFOqpscQsTNLt+5LVP8BWhPv9Kt5BhLc0ut6J1MqfCS0uJVx8
+         sHQxxfrSD/3fjGZwlMOlfc0E0iJppqRA3mG84leUm5Bwx3znvYLuww8l5yfa43N6DuyU
+         PiEt+t/xZWiA1tDRnqTGQ6XTuX2elRtrYfPI6uEvNJE7XzS2nk0mLiWjhUmrw+fFBBZ3
+         59Bdycu8jnuJiv5bID2z6Zny1Wo6gwQLwBMMgCDjaXhQVYMMTyQkt2flYMpYE1ycPE30
+         ysHAaM3BOJGZ4Ppx7vjJr3h+SJVpG/PN+59hNvJ6aZRD/QqNL1s+vIMyc8dl8EXMw7OG
+         QdVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777401448; x=1778006248;
+        d=1e100.net; s=20251104; t=1777401451; x=1778006251;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Goh3F7XcpkTSr7iRpzcfIAl6DDNpb912M5nWLNqSnmg=;
-        b=HFyVNqhSmQ+bqj4P2O5+gVHaaTG5BrP0BeB4244sbdAYVAfhNwqTgMUtAITtJ29OBi
-         5C+pRXMPaE/1DEXKeyPUN7+Z0lrS9zOwT9sW0Tf3Wv+xXDT7xE0y6J3G/7CUVrW4R11p
-         uWahF+FoSemKn7bkyxzfV7DH8MbDZpY+qQ0fVVPeU+r2S1QnGxPJSg+GuTgluKIVwvCn
-         X2PgNfSnrl6LvksTOiAvymWq2NvXQHK0M2cF2bFfrNw0WR6bszzyN6IrP9EfUkMw3Z4i
-         gcN7xCk3HWMuVlD8d9I8UhJgs568OlTqTSS1nqiEUb1idzONO4SJ17cTVqBjaxw6oHqw
-         0/Nw==
-X-Forwarded-Encrypted: i=1; AFNElJ/2AD+OiQvmiZmvRr6Oyc1dOk6yOr6R+UnPFxq+euXOtds+cPNp7PpkPi+nFeHybFmWTkkgM5APgmMlR2fJ@vger.kernel.org
-X-Gm-Message-State: AOJu0YwnQ3/xmigiztbLiqXGUUC4RiYhlXwwNOUpW5aBekUhjIbYRbwr
-	qKU2cR6HhlHtZ1QXI8zp/1yp4t6cbHhe8yt+BX6xpxUkNRIGJzDtY0Px/OSJNQuX2jzRPr7UDDN
-	Qs/2Tog5iE7jGSKJWevXRC2kD6w==
-X-Received: from plbkg3.prod.google.com ([2002:a17:903:603:b0:2b4:5fd0:a45d])
+        bh=Cq4/UBTJbBSIBMYrEdgu8vO+sExHQ1BWSN/SoA97xbg=;
+        b=PuvRvgDDeJVGx7MJi3p2jYKODbW/ScYv2SncjJX2s3yUkaO8PFrs6hrRryuhe92e4L
+         DDAb81igDj+Oc3CduI3MrPGcewfykigy73cXsD1yma5ks++wKfxlqRF1dkF4rrVMQRc+
+         xASoRbLArIqBM3adi+a1jR6d/i2CzfCa1dJ0oWzd+XxapLz4yh9A1dOXZKeXkamrOu7/
+         FW8PuAS1ug2j/8q3aNpQJOT9KepHYH8WArznJhpg/2mEvrs637AURrJ+M2lL/C2ThF9R
+         dbcWZlANuubqVerYPsEqiUG0FaAUpJmyYA0x/bjxIG8EEVzQ9p2rFRjQnHcmdUaqkWVE
+         DWnw==
+X-Forwarded-Encrypted: i=1; AFNElJ/JFJtZ3Baly5dRD4j2jKYF9Pt4EbJbcM6xXVGAVkLYerazdBuDeb0Uku3LVUn/BIkavkuBjowOGxU+sGQe@vger.kernel.org
+X-Gm-Message-State: AOJu0YxSQVDLQL5358l8CVN/tSbQdBKMffzEzs0LJ4pIaLZgGVFFkzEc
+	180SpAlyhV+sDdbZnQBvhmKwMjioNeoYMqfBAWOAoQYcld+idqiaoGxN1QYFr0wRi4WPX8fPiTY
+	9fIE3uoeVOR9/cp+LNHllqBOZfQ==
+X-Received: from pfbif1.prod.google.com ([2002:a05:6a00:8b01:b0:82f:a396:2229])
  (user=dylanbhatch job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:903:3583:b0:2b0:59c4:e9dc with SMTP id d9443c01a7336-2b987407cfamr4803655ad.22.1777401447910;
- Tue, 28 Apr 2026 11:37:27 -0700 (PDT)
-Date: Tue, 28 Apr 2026 18:36:42 +0000
+ 2002:a05:6a00:4286:b0:82f:7182:693d with SMTP id d2e1a72fcca58-834ddbefcc3mr4672076b3a.30.1777401450692;
+ Tue, 28 Apr 2026 11:37:30 -0700 (PDT)
+Date: Tue, 28 Apr 2026 18:36:43 +0000
 In-Reply-To: <20260428183643.3796063-1-dylanbhatch@google.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
@@ -76,8 +76,8 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 References: <20260428183643.3796063-1-dylanbhatch@google.com>
 X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260428183643.3796063-8-dylanbhatch@google.com>
-Subject: [PATCH v5 7/8] sframe: Introduce in-kernel SFRAME_VALIDATION
+Message-ID: <20260428183643.3796063-9-dylanbhatch@google.com>
+Subject: [PATCH v5 8/8] unwind: arm64: Use sframe to unwind interrupt frames
 From: Dylan Hatch <dylanbhatch@google.com>
 To: Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
 	Will Deacon <will@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>, 
@@ -90,7 +90,7 @@ Cc: Dylan Hatch <dylanbhatch@google.com>, Mark Rutland <mark.rutland@arm.com>,
 	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
 	linux-arm-kernel@lists.infradead.org, Randy Dunlap <rdunlap@infradead.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Rspamd-Queue-Id: A149648AC14
+X-Rspamd-Queue-Id: 04EE648AC2A
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
@@ -98,250 +98,430 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	MV_CASE(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[google.com,reject];
-	R_DKIM_ALLOW(-0.20)[google.com:s=20251104];
 	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_DKIM_ALLOW(-0.20)[google.com:s=20251104];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	FROM_HAS_DN(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
 	FREEMAIL_TO(0.00)[linux.dev,google.com,kernel.org,gmail.com,infradead.org,goodmis.org,arm.com,linux.ibm.com];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCPT_COUNT_TWELVE(0.00)[21];
-	TAGGED_FROM(0.00)[bounces-2597-lists,live-patching=lfdr.de];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	DKIM_TRACE(0.00)[google.com:+];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[dylanbhatch@google.com,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[google.com:+];
+	TAGGED_FROM(0.00)[bounces-2598-lists,live-patching=lfdr.de];
 	NEURAL_HAM(-0.00)[-1.000];
 	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	TAGGED_RCPT(0.00)[live-patching];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
 
-Generalize the __safe* helpers to support a non-user-access code path.
+Add unwind_next_frame_sframe() function to unwind by sframe info if
+present. Use this method at exception boundaries, falling back to
+frame-pointer unwind only on failure. In such failure cases, the
+stacktrace is considered unreliable.
 
-This requires arch-specific function address validation. This is because
-arm64 vmlinux keeps .exit.text (normally discarded), and .rodata.text
-sections both of which lie outside the bounds of the normal .text.
-.rodata.text contains code that is never executed by the kernel mapping,
-but for which the toolchain nonetheless generates sframe data, and needs
-to be considered valid for a PC lookup.
+During normal unwind, prefer frame pointer unwind (for better
+performance) with sframe as a backup.
 
-Additionally .init.text lies outside .text for all arches and must be
-accounted for as well.
+This change restores the LR behavior originally introduced in commit
+c2c6b27b5aa14fa2 ("arm64: stacktrace: unwind exception boundaries"),
+But later removed in commit 32ed1205682e ("arm64: stacktrace: Skip
+reporting LR at exception boundaries")
 
-Suggested-by: Jens Remus <jremus@linux.ibm.com>
+This can be done because the sframe data can be used to determine
+whether the LR is current for the PC value recovered from pt_regs at the
+exception boundary.
+
+Signed-off-by: Weinan Liu <wnliu@google.com>
+Reviewed-by: Prasanna Kumar T S M <ptsm@linux.microsoft.com>
 Reviewed-by: Jens Remus <jremus@linux.ibm.com>
 Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
 ---
- arch/Kconfig                           |  2 +-
- arch/arm64/include/asm/sections.h      |  1 +
- arch/arm64/include/asm/unwind_sframe.h | 47 ++++++++++++++++++++++++++
- arch/arm64/kernel/vmlinux.lds.S        |  2 ++
- include/linux/sframe.h                 |  2 ++
- kernel/unwind/sframe.c                 | 25 ++++++++++++--
- 6 files changed, 76 insertions(+), 3 deletions(-)
+ arch/arm64/include/asm/stacktrace/common.h |   6 +
+ arch/arm64/kernel/stacktrace.c             | 246 +++++++++++++++++++--
+ 2 files changed, 232 insertions(+), 20 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 8d27b3249e7a..a528f5b23647 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -503,7 +503,7 @@ config HAVE_UNWIND_USER_SFRAME
+diff --git a/arch/arm64/include/asm/stacktrace/common.h b/arch/arm64/include/asm/stacktrace/common.h
+index 821a8fdd31af..4df68181e1b5 100644
+--- a/arch/arm64/include/asm/stacktrace/common.h
++++ b/arch/arm64/include/asm/stacktrace/common.h
+@@ -21,6 +21,8 @@ struct stack_info {
+  *
+  * @fp:          The fp value in the frame record (or the real fp)
+  * @pc:          The lr value in the frame record (or the real lr)
++ * @sp:          The sp value at the call site of the current function.
++ * @unreliable:  Stacktrace is unreliable.
+  *
+  * @stack:       The stack currently being unwound.
+  * @stacks:      An array of stacks which can be unwound.
+@@ -29,7 +31,11 @@ struct stack_info {
+ struct unwind_state {
+ 	unsigned long fp;
+ 	unsigned long pc;
++#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
++	unsigned long sp;
++#endif
  
- config SFRAME_VALIDATION
- 	bool "Enable .sframe section debugging"
--	depends on HAVE_UNWIND_USER_SFRAME
-+	depends on UNWIND_SFRAME_LOOKUP
- 	depends on DYNAMIC_DEBUG
- 	help
- 	  When adding an .sframe section for a task, validate the entire
-diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
-index 51b0d594239e..5edb4304f661 100644
---- a/arch/arm64/include/asm/sections.h
-+++ b/arch/arm64/include/asm/sections.h
-@@ -23,6 +23,7 @@ extern char __irqentry_text_start[], __irqentry_text_end[];
- extern char __mmuoff_data_start[], __mmuoff_data_end[];
- extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
- extern char __relocate_new_kernel_start[], __relocate_new_kernel_end[];
-+extern char _srodatatext[], _erodatatext[];
- 
- static inline size_t entry_tramp_text_size(void)
- {
-diff --git a/arch/arm64/include/asm/unwind_sframe.h b/arch/arm64/include/asm/unwind_sframe.h
-index 876412881196..66ebe5f38bd0 100644
---- a/arch/arm64/include/asm/unwind_sframe.h
-+++ b/arch/arm64/include/asm/unwind_sframe.h
-@@ -2,7 +2,54 @@
- #ifndef _ASM_ARM64_UNWIND_SFRAME_H
- #define _ASM_ARM64_UNWIND_SFRAME_H
- 
-+#include <linux/module.h>
++	bool unreliable;
+ 	struct stack_info stack;
+ 	struct stack_info *stacks;
+ 	int nr_stacks;
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index 3ebcf8c53fb0..c935323f393b 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -14,6 +14,7 @@
+ #include <linux/sched/debug.h>
+ #include <linux/sched/task_stack.h>
+ #include <linux/stacktrace.h>
 +#include <linux/sframe.h>
-+#include <asm/sections.h>
-+
- #define SFRAME_REG_SP	31
- #define SFRAME_REG_FP	29
  
-+static inline bool sframe_func_start_addr_valid(struct sframe_section *sec,
-+						unsigned long func_addr)
-+{
-+	/* Common case for unwinding */
-+	if (sec->text_start <= func_addr && func_addr < sec->text_end)
-+		return true;
-+
-+	if (sec->sec_type != SFRAME_KERNEL)
-+		return false;
-+
-+	/*
-+	 * Account for vmlinux and module code outside the normal .text section.
-+	 * The toolchain still generates sframe data for these functions, so
-+	 * sframe lookups on them should be allowed.
-+	 */
-+	if (sec == &kernel_sfsec) {
-+		if (is_kernel_inittext(func_addr))
-+			return true;
-+
-+		/* .exit.text is retained in vmlinux on arm64. */
-+		if (func_addr >= (unsigned long)__exittext_begin &&
-+		    func_addr < (unsigned long)__exittext_end)
-+			return true;
-+
-+
-+		/*
-+		 * .rodata.text is never executed from the kernel mapping, but
-+		 * still has sframe data
-+		 */
-+		if (func_addr >= (unsigned long)_srodatatext &&
-+		    func_addr < (unsigned long)_erodatatext)
-+			return true;
-+	} else {
-+		struct module *mod = container_of(sec, struct module,
-+						  arch.sframe_sec);
-+		if (within_module_mem_type(func_addr, mod, MOD_INIT_TEXT))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+#define sframe_func_start_addr_valid sframe_func_start_addr_valid
-+
- #endif /* _ASM_ARM64_UNWIND_SFRAME_H */
-diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
-index 2964aad0362e..8c2dae6e7a86 100644
---- a/arch/arm64/kernel/vmlinux.lds.S
-+++ b/arch/arm64/kernel/vmlinux.lds.S
-@@ -213,12 +213,14 @@ SECTIONS
- 
- 	/* code sections that are never executed via the kernel mapping */
- 	.rodata.text : {
-+		_srodatatext = .;
- 		TRAMP_TEXT
- 		HIBERNATE_TEXT
- 		KEXEC_TEXT
- 		IDMAP_TEXT
- 		. = ALIGN(PAGE_SIZE);
- 	}
-+	_erodatatext = .;
- 
- 	idmap_pg_dir = .;
- 	. += PAGE_SIZE;
-diff --git a/include/linux/sframe.h b/include/linux/sframe.h
-index 27f5a66190af..ac3aa9db7d91 100644
---- a/include/linux/sframe.h
-+++ b/include/linux/sframe.h
-@@ -34,6 +34,8 @@ struct sframe_section {
- 	signed char		fp_off;
+ #include <asm/efi.h>
+ #include <asm/irq.h>
+@@ -26,6 +27,7 @@ enum kunwind_source {
+ 	KUNWIND_SOURCE_CALLER,
+ 	KUNWIND_SOURCE_TASK,
+ 	KUNWIND_SOURCE_REGS_PC,
++	KUNWIND_SOURCE_REGS_LR,
  };
  
-+extern struct sframe_section kernel_sfsec __ro_after_init;
-+
- #endif /* CONFIG_UNWIND_SFRAME_LOOKUP */
- 
- #ifdef CONFIG_HAVE_UNWIND_USER_SFRAME
-diff --git a/kernel/unwind/sframe.c b/kernel/unwind/sframe.c
-index 70001c8e586d..99c2a39c51ce 100644
---- a/kernel/unwind/sframe.c
-+++ b/kernel/unwind/sframe.c
-@@ -21,10 +21,18 @@
- #include "sframe.h"
- #include "sframe_debug.h"
- 
-+#ifndef sframe_func_start_addr_valid
-+static inline bool sframe_func_start_addr_valid(struct sframe_section *sec,
-+						unsigned long func_addr)
-+{
-+	return (sec->text_start <= func_addr && func_addr < sec->text_end);
-+}
+ union unwind_flags {
+@@ -85,6 +87,9 @@ kunwind_init_from_regs(struct kunwind_state *state,
+ 	state->regs = regs;
+ 	state->common.fp = regs->regs[29];
+ 	state->common.pc = regs->pc;
++#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
++	state->common.sp = regs->sp;
 +#endif
-+
- #ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
- 
- static bool sframe_init __ro_after_init;
--static struct sframe_section kernel_sfsec __ro_after_init;
-+struct sframe_section kernel_sfsec __ro_after_init;
- 
- #endif /* CONFIG_HAVE_UNWIND_KERNEL_SFRAME */
- 
-@@ -152,7 +160,7 @@ static __always_inline int __read_fde(struct sframe_section *sec,
- 		  sizeof(struct sframe_fde_v3), Efault);
- 
- 	func_addr = fde_addr + _fde.func_start_off;
--	if (func_addr < sec->text_start || func_addr > sec->text_end)
-+	if (!sframe_func_start_addr_valid(sec, func_addr))
- 		return -EINVAL;
- 
- 	fda_addr = sec->fres_start + _fde.fres_off;
-@@ -636,6 +644,9 @@ static int safe_read_fde(struct sframe_section *sec,
- {
- 	int ret;
- 
-+	if (sec->sec_type == SFRAME_KERNEL)
-+		return __read_fde(sec, fde_num, fde);
-+
- 	if (!user_read_access_begin((void __user *)sec->sframe_start,
- 				    sec->sframe_end - sec->sframe_start))
- 		return -EFAULT;
-@@ -651,6 +662,9 @@ static int safe_read_fre(struct sframe_section *sec,
- {
- 	int ret;
- 
-+	if (sec->sec_type == SFRAME_KERNEL)
-+		return __read_fre(sec, fde, fre_addr, fre);
-+
- 	if (!user_read_access_begin((void __user *)sec->sframe_start,
- 				    sec->sframe_end - sec->sframe_start))
- 		return -EFAULT;
-@@ -665,6 +679,9 @@ static int safe_read_fre_datawords(struct sframe_section *sec,
- {
- 	int ret;
- 
-+	if (sec->sec_type == SFRAME_KERNEL)
-+		return __read_fre_datawords(sec, fde, fre);
-+
- 	if (!user_read_access_begin((void __user *)sec->sframe_start,
- 				    sec->sframe_end - sec->sframe_start))
- 		return -EFAULT;
-@@ -1013,6 +1030,8 @@ void __init init_sframe_table(void)
- 
- 	if (WARN_ON(sframe_read_header(&kernel_sfsec)))
- 		return;
-+	if (WARN_ON(sframe_validate_section(&kernel_sfsec)))
-+		return;
- 
- 	sframe_init = true;
+ 	state->source = KUNWIND_SOURCE_REGS_PC;
  }
-@@ -1031,6 +1050,8 @@ void sframe_module_init(struct module *mod, void *sframe, size_t sframe_size,
  
- 	if (WARN_ON(sframe_read_header(&sec)))
- 		return;
-+	if (WARN_ON(sframe_validate_section(&sec)))
-+		return;
+@@ -103,6 +108,9 @@ kunwind_init_from_caller(struct kunwind_state *state)
  
- 	mod->arch.sframe_sec = sec;
- 	mod->arch.sframe_init = true;
+ 	state->common.fp = (unsigned long)__builtin_frame_address(1);
+ 	state->common.pc = (unsigned long)__builtin_return_address(0);
++#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
++	state->common.sp = (unsigned long)__builtin_frame_address(0);
++#endif
+ 	state->source = KUNWIND_SOURCE_CALLER;
+ }
+ 
+@@ -124,6 +132,9 @@ kunwind_init_from_task(struct kunwind_state *state,
+ 
+ 	state->common.fp = thread_saved_fp(task);
+ 	state->common.pc = thread_saved_pc(task);
++#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
++	state->common.sp = thread_saved_sp(task);
++#endif
+ 	state->source = KUNWIND_SOURCE_TASK;
+ }
+ 
+@@ -181,7 +192,6 @@ int kunwind_next_regs_pc(struct kunwind_state *state)
+ 	state->regs = regs;
+ 	state->common.pc = regs->pc;
+ 	state->common.fp = regs->regs[29];
+-	state->regs = NULL;
+ 	state->source = KUNWIND_SOURCE_REGS_PC;
+ 	return 0;
+ }
+@@ -237,6 +247,9 @@ kunwind_next_frame_record(struct kunwind_state *state)
+ 
+ 	unwind_consume_stack(&state->common, info, fp, sizeof(*record));
+ 
++#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
++	state->common.sp = state->common.fp;
++#endif
+ 	state->common.fp = new_fp;
+ 	state->common.pc = new_pc;
+ 	state->source = KUNWIND_SOURCE_FRAME;
+@@ -244,6 +257,176 @@ kunwind_next_frame_record(struct kunwind_state *state)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
++
++static __always_inline struct stack_info *
++get_word(struct unwind_state *state, unsigned long *word)
++{
++	unsigned long addr = *word;
++	struct stack_info *info;
++
++	info = unwind_find_stack(state, addr, sizeof(addr));
++	if (!info)
++		return info;
++
++	*word = READ_ONCE(*(unsigned long *)addr);
++
++	return info;
++}
++
++static __always_inline int
++get_consume_word(struct unwind_state *state, unsigned long *word)
++{
++	struct stack_info *info;
++	unsigned long addr = *word;
++
++	info = get_word(state, word);
++	if (!info)
++		return -EINVAL;
++
++	unwind_consume_stack(state, info, addr, sizeof(addr));
++	return 0;
++}
++
++/*
++ * Unwind to the next frame according to sframe.
++ */
++static __always_inline int
++unwind_next_frame_sframe(struct kunwind_state *state)
++{
++	struct unwind_frame frame;
++	unsigned long cfa, fp, ra;
++	enum kunwind_source source = KUNWIND_SOURCE_FRAME;
++	struct pt_regs *regs = state->regs;
++
++	int err;
++
++	/* FP/SP alignment 8 bytes */
++	if (state->common.fp & 0x7 || state->common.sp & 0x7)
++		return -EINVAL;
++
++	/*
++	 * Most/all outermost functions are not visible to sframe. So, check for
++	 * a meta frame record if the sframe lookup fails.
++	 */
++	err = sframe_find_kernel(state->common.pc, &frame);
++	if (err)
++		return kunwind_next_frame_record_meta(state);
++
++	if (frame.outermost)
++		return -ENOENT;
++
++	/* Get the Canonical Frame Address (CFA) */
++	switch (frame.cfa.rule) {
++	case UNWIND_CFA_RULE_SP_OFFSET:
++		cfa = state->common.sp;
++		break;
++	case UNWIND_CFA_RULE_FP_OFFSET:
++		if (state->common.fp < state->common.sp)
++			return -EINVAL;
++		cfa = state->common.fp;
++		break;
++	case UNWIND_CFA_RULE_REG_OFFSET:
++	case UNWIND_CFA_RULE_REG_OFFSET_DEREF:
++		/* regs only available in topmost/interrupt frame */
++		if (!regs || frame.cfa.regnum > 30)
++			return -EINVAL;
++		cfa = regs->regs[frame.cfa.regnum];
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		return -EINVAL;
++	}
++	cfa += frame.cfa.offset;
++
++	/*
++	 * CFA typically points to a higher address than RA or FP, so don't
++	 * consume from the stack when we read it.
++	 */
++	if (frame.cfa.rule & UNWIND_RULE_DEREF &&
++	    !get_word(&state->common, &cfa))
++		return -EINVAL;
++
++	/* CFA alignment 8 bytes */
++	if (cfa & 0x7)
++		return -EINVAL;
++
++	/* Get the Return Address (RA) */
++	switch (frame.ra.rule) {
++	case UNWIND_RULE_RETAIN:
++		/* regs only available in topmost/interrupt frame */
++		if (!regs)
++			return -EINVAL;
++		ra = regs->regs[30];
++		source = KUNWIND_SOURCE_REGS_LR;
++		break;
++	/* UNWIND_USER_RULE_CFA_OFFSET not implemented on purpose */
++	case UNWIND_RULE_CFA_OFFSET_DEREF:
++		ra = cfa + frame.ra.offset;
++		break;
++	case UNWIND_RULE_REG_OFFSET:
++	case UNWIND_RULE_REG_OFFSET_DEREF:
++		/* regs only available in topmost/interrupt frame */
++		if (!regs)
++			return -EINVAL;
++		ra = regs->regs[frame.cfa.regnum];
++		ra += frame.ra.offset;
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		return -EINVAL;
++	}
++
++	/* Get the Frame Pointer (FP) */
++	switch (frame.fp.rule) {
++	case UNWIND_RULE_RETAIN:
++		fp = state->common.fp;
++		break;
++	/* UNWIND_USER_RULE_CFA_OFFSET not implemented on purpose */
++	case UNWIND_RULE_CFA_OFFSET_DEREF:
++		fp = cfa + frame.fp.offset;
++		break;
++	case UNWIND_RULE_REG_OFFSET:
++	case UNWIND_RULE_REG_OFFSET_DEREF:
++		/* regs only available in topmost/interrupt frame */
++		if (!regs)
++			return -EINVAL;
++		fp = regs->regs[frame.fp.regnum];
++		fp += frame.fp.offset;
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		return -EINVAL;
++	}
++
++	/*
++	 * Consume RA and FP from the stack. The frame record puts FP at a lower
++	 * address than RA, so we always read FP first.
++	 */
++	if (frame.fp.rule & UNWIND_RULE_DEREF &&
++	    !get_word(&state->common, &fp))
++		return -EINVAL;
++
++	if (frame.ra.rule & UNWIND_RULE_DEREF &&
++	    get_consume_word(&state->common, &ra))
++		return -EINVAL;
++
++	state->common.pc = ra;
++	state->common.sp = cfa;
++	state->common.fp = fp;
++
++	state->source = source;
++
++	return 0;
++}
++
++#else /* !CONFIG_HAVE_UNWIND_KERNEL_SFRAME */
++
++static __always_inline int
++unwind_next_frame_sframe(struct kunwind_state *state) { return -EINVAL; }
++
++#endif /* !CONFIG_HAVE_UNWIND_KERNEL_SFRAME*/
++
+ /*
+  * Unwind from one frame record (A) to the next frame record (B).
+  *
+@@ -259,12 +442,25 @@ kunwind_next(struct kunwind_state *state)
+ 	state->flags.all = 0;
+ 
+ 	switch (state->source) {
++	case KUNWIND_SOURCE_REGS_PC:
++		err = unwind_next_frame_sframe(state);
++
++		if (err && err != -ENOENT) {
++			/* Fallback to FP based unwinder */
++			err = kunwind_next_frame_record(state);
++			state->common.unreliable = true;
++		}
++		state->regs = NULL;
++		break;
+ 	case KUNWIND_SOURCE_FRAME:
+ 	case KUNWIND_SOURCE_CALLER:
+ 	case KUNWIND_SOURCE_TASK:
+-	case KUNWIND_SOURCE_REGS_PC:
++	case KUNWIND_SOURCE_REGS_LR:
+ 		err = kunwind_next_frame_record(state);
++		if (err && err != -ENOENT)
++			err = unwind_next_frame_sframe(state);
+ 		break;
++
+ 	default:
+ 		err = -EINVAL;
+ 	}
+@@ -350,6 +546,9 @@ kunwind_stack_walk(kunwind_consume_fn consume_state,
+ 		.common = {
+ 			.stacks = stacks,
+ 			.nr_stacks = ARRAY_SIZE(stacks),
++#ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
++			.sp = 0,
++#endif
+ 		},
+ 	};
+ 
+@@ -390,34 +589,40 @@ noinline noinstr void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 	kunwind_stack_walk(arch_kunwind_consume_entry, &data, task, regs);
+ }
+ 
++struct kunwind_reliable_consume_entry_data {
++	stack_trace_consume_fn consume_entry;
++	void *cookie;
++	bool unreliable;
++};
++
+ static __always_inline bool
+-arch_reliable_kunwind_consume_entry(const struct kunwind_state *state, void *cookie)
++arch_kunwind_reliable_consume_entry(const struct kunwind_state *state, void *cookie)
+ {
+-	/*
+-	 * At an exception boundary we can reliably consume the saved PC. We do
+-	 * not know whether the LR was live when the exception was taken, and
+-	 * so we cannot perform the next unwind step reliably.
+-	 *
+-	 * All that matters is whether the *entire* unwind is reliable, so give
+-	 * up as soon as we hit an exception boundary.
+-	 */
+-	if (state->source == KUNWIND_SOURCE_REGS_PC)
+-		return false;
++	struct kunwind_reliable_consume_entry_data *data = cookie;
+ 
+-	return arch_kunwind_consume_entry(state, cookie);
++	if (state->common.unreliable) {
++		data->unreliable = true;
++		return false;
++	}
++	return data->consume_entry(data->cookie, state->common.pc);
+ }
+ 
+-noinline noinstr int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
+-					      void *cookie,
+-					      struct task_struct *task)
++noinline notrace int arch_stack_walk_reliable(
++				stack_trace_consume_fn consume_entry,
++				void *cookie, struct task_struct *task)
+ {
+-	struct kunwind_consume_entry_data data = {
++	struct kunwind_reliable_consume_entry_data data = {
+ 		.consume_entry = consume_entry,
+ 		.cookie = cookie,
++		.unreliable = false,
+ 	};
+ 
+-	return kunwind_stack_walk(arch_reliable_kunwind_consume_entry, &data,
+-				  task, NULL);
++	kunwind_stack_walk(arch_kunwind_reliable_consume_entry, &data, task, NULL);
++
++	if (data.unreliable)
++		return -EINVAL;
++
++	return 0;
+ }
+ 
+ struct bpf_unwind_consume_entry_data {
+@@ -452,6 +657,7 @@ static const char *state_source_string(const struct kunwind_state *state)
+ 	case KUNWIND_SOURCE_CALLER:	return "C";
+ 	case KUNWIND_SOURCE_TASK:	return "T";
+ 	case KUNWIND_SOURCE_REGS_PC:	return "P";
++	case KUNWIND_SOURCE_REGS_LR:	return "L";
+ 	default:			return "U";
+ 	}
+ }
 -- 
 2.54.0.545.g6539524ca2-goog
 
