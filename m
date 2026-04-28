@@ -1,60 +1,61 @@
-Return-Path: <live-patching+bounces-2584-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2585-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 8ILnNpjZ8GkLaQEAu9opvQ
-	(envelope-from <live-patching+bounces-2584-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:00:24 +0200
+	id CMP2AU/g8GmoagEAu9opvQ
+	(envelope-from <live-patching+bounces-2585-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:29:03 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 27BDA488653
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 78ECE488E4C
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 18:29:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 1786430F524F
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 15:57:37 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 2CF293080EAF
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 16:21:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6AC9B449ED6;
-	Tue, 28 Apr 2026 15:57:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C99C444A71C;
+	Tue, 28 Apr 2026 16:14:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I0oIMP7D"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EM875fx9"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C6B5441048;
-	Tue, 28 Apr 2026 15:57:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CE7441022;
+	Tue, 28 Apr 2026 16:14:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777391826; cv=none; b=Sf+kXbhs26ymPxJEP+ZZAMTBQTY9vO+meSuq/mkGWspXk2Dbl1FtT0GvosWdpecnZQk/CiSvLbgPPVWCU2lwJ+7jzgg9Nc3SkJ1x86hxqdR7WKVzFqBPp4blP8NIG/kpNP27x80iTTuTVB07LgNK9ZlK5rF0yD8L3hZB2DbYdOc=
+	t=1777392880; cv=none; b=mcH6567vTr5wZav9G6wpddB9YPfNewKe9TndS7rx0naEaWS9q1trdoXjeanJO/NlUZtUfsZZ2HI8OijLvx/1QeySnd8wtn4CKzxQr5rW84Bny9MbBPBnAmmXde6UYxVNwck65asg/zExsj722apYyuFxF7knhTTiD5cXaMDAioA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777391826; c=relaxed/simple;
-	bh=IIZQQe80fo0Si1JwtHMDkfM2py8bX5Pngag0IU46ZsI=;
+	s=arc-20240116; t=1777392880; c=relaxed/simple;
+	bh=CPUYEqVRAarPXNaMkzwcGIW59ajwxAMrIorC5VSFggA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Oqr1zoiSVWz303OtK8GBp4WiRwiolgoRLCfkDeWyWYJWjWe6ITEpyYck8Xak4POM7dXI0b+LPO6xtxshNsLLs7LYJIBfeEb73RXjMqsQueaRKJlGCQ98vUjzNzkJ0pzd3eNfXbQVDRtjmv2QI2yeMTcmyxzpVzK4cp9gtO66wek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I0oIMP7D; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB886C2BCFB;
-	Tue, 28 Apr 2026 15:57:04 +0000 (UTC)
+	 Content-Type:Content-Disposition:In-Reply-To; b=qOTfpSx8Xsf/0LCF6CIfVttzGj7m/lHGAOkPtV0slEy0yZ+x3hu9wvla0/80HOaWQEairnKHKL/TntQ2jnBlYJMQZSYmLUbcHW0gZMVekEA15y5maFbyMb6U1KjJQLmMVbMVEQDFH6MO4EkRekzGxQadMhyfDxoAB1oIYY4ebIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EM875fx9; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913CEC2BCAF;
+	Tue, 28 Apr 2026 16:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777391825;
-	bh=IIZQQe80fo0Si1JwtHMDkfM2py8bX5Pngag0IU46ZsI=;
+	s=k20201202; t=1777392880;
+	bh=CPUYEqVRAarPXNaMkzwcGIW59ajwxAMrIorC5VSFggA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=I0oIMP7Dr0Lzpqc+Tm0cpPG9S89k1AoNIVEmZLQLRJbg+GrtRncqQnwLo3E29+Xab
-	 EQEz5fZhbEwwI4FytR/2p0zjsa652LY5gXtoX2fGbWffc5AfxCNNafD52tZIIpcMGc
-	 GSVhctBTfzzam836lXxDh2+eRVRbibHQfPTqqt9uMOYDoD703a0HGIddGwcfTqKS0x
-	 ZDWeO9e3s/d8GkwIkvhyYoC6T9/zU822V+GUXCejttrCsx4q+5hDcn2HTgC+Pc4dty
-	 fqqCVJHcHSfXLZjF6A/9ROBmOmGjtjKtjZbDLd1o1l+q/Yo0XANc1yyRs8KpC2S0Jh
-	 0kDtp+nuGXL1Q==
-Date: Tue, 28 Apr 2026 08:57:02 -0700
+	b=EM875fx97im26wG8B0+vX1KV95Vk4L8TeKMUuC27Vcg8iSkHhmKsKZtpu9FbZLhL/
+	 yOInh1nIEX2boLo9nPKbQJd7FQ8IYmA8akAHf9b69GwwrEcCHYAlXlx0cQQo9Kz5i3
+	 +MMz8IbpPTnCzLcX/TBUII+eTRx8ioLeGS3V3PF8KgZb+dJ7+9o8/kzcdxZFW/EsPv
+	 j8x1mB3o26ByaR8tCmYb17EHFb3rAVCPD+GD+7S8cmJCwKaRftwxThzrQ+13axF1KZ
+	 84KN7fR/5/JffnJt0Du6GXscpbehmfPRkfh9D5xMU6BsYW+nJrCQjitvWxcjQT3kl4
+	 mronJNkMoITMQ==
+Date: Tue, 28 Apr 2026 09:14:37 -0700
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: Song Liu <song@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
 	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
 	Joe Lawrence <joe.lawrence@redhat.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 18/48] klp-build: Fix hang on out-of-date .config
-Message-ID: <5h664rns5es27okhx4upvisok5mvzwjfdcqlrpce5iie23fz55@n4n4vay7rhpe>
+Subject: Re: [PATCH 39/48] objtool: Replace iterator callbacks with
+ for_each_sym_by_*()
+Message-ID: <hvetzvby2f2gj7txal3apitn5ny364rtwexfei7qyornsr4bpn@kijmg6altcxt>
 References: <cover.1776916871.git.jpoimboe@kernel.org>
- <1b3add71a35ff83fc9653c2c872b811cfd5629a3.1776916871.git.jpoimboe@kernel.org>
- <CAPhsuW7c44JzDX8Q6PgYAeigSFWTuEnuvgG88ABDdMNmPY6Oiw@mail.gmail.com>
+ <03f7804ae62c5c4521053afc3f6a1c4a11bc85de.1776916871.git.jpoimboe@kernel.org>
+ <CAPhsuW7=EAeOT3cTvROoDVcvU6wibF56nJFPQzXQhnVcxfmPrw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -64,8 +65,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPhsuW7c44JzDX8Q6PgYAeigSFWTuEnuvgG88ABDdMNmPY6Oiw@mail.gmail.com>
-X-Rspamd-Queue-Id: 27BDA488653
+In-Reply-To: <CAPhsuW7=EAeOT3cTvROoDVcvU6wibF56nJFPQzXQhnVcxfmPrw@mail.gmail.com>
+X-Rspamd-Queue-Id: 78ECE488E4C
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-1.66 / 15.00];
@@ -78,7 +79,7 @@ X-Spamd-Result: default: False [-1.66 / 15.00];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2584-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2585-lists,live-patching=lfdr.de];
 	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
@@ -96,43 +97,30 @@ X-Spamd-Result: default: False [-1.66 / 15.00];
 	TO_DN_SOME(0.00)[];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
 
-On Fri, Apr 24, 2026 at 02:51:54PM -0700, Song Liu wrote:
+On Fri, Apr 24, 2026 at 05:04:08PM -0700, Song Liu wrote:
 > On Wed, Apr 22, 2026 at 9:04 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
 > >
-> > If .config is out of date with the kernel source, 'make syncconfig'
-> > hangs while waiting for user input on new config options.  Detect the
-> > mismatch and return an error.
+> > Convert the callback-based iterate_sym_by_name() and
+> > iterate_sym_by_demangled_name() callers to use new
+> > for_each_sym_by[_demangled]_name() macros.  This eliminates the callback
+> > structs and functions and makes the code more compact and readable.
 > >
-> > Fixes: 6f93f7b06810 ("livepatch/klp-build: Fix inconsistent kernel version")
 > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 > > ---
-> >  scripts/livepatch/klp-build | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-> > index 0ad7e6631314..81b35fc10877 100755
-> > --- a/scripts/livepatch/klp-build
-> > +++ b/scripts/livepatch/klp-build
-> > @@ -306,7 +306,12 @@ set_kernelversion() {
-> >
-> >         stash_file "$file"
-> >
-> > -       kernelrelease="$(cd "$SRC" && make syncconfig &>/dev/null && make -s kernelrelease)"
-> > +       if [[ -n "$(make -s listnewconfig 2>/dev/null)" ]]; then
-> > +               die ".config mismatch, check your .config or run 'make olddefconfig'"
-> > +       fi
-> > +       make syncconfig &>/dev/null || die "make syncconfig failed"
-> > +
-> > +       kernelrelease="$(cd "$SRC" && make -s kernelrelease)"
+> >  tools/objtool/elf.c                 | 80 ++++++-----------------------
+> >  tools/objtool/include/objtool/elf.h | 40 ++++++++++++---
+> >  tools/objtool/klp-checksum.c        | 20 +++-----
+> >  tools/objtool/klp-diff.c            | 42 +++++----------
+> >  4 files changed, 73 insertions(+), 109 deletions(-)
 > 
-> Do we really need cd "$SRC" here? If so, we need it before
-> all the make commands, right?
+> Macros are indeed cleaner. But Sashiko has a valid point on this. [1].
 
-Yeah, the "$SRC" thing is a half-hearted implementation throughout, with
-the idea of eventually having the sourcedir outside of $PWD, and/or
-building the object files in a separate directory.  That's confusing,
-I'll just strip all that out for now.
+Ok, I'll make those an "if (mismatch) {} else":
 
+#define for_each_sym_by_name(elf, _name, sym)				\
+	elf_hash_for_each_possible(elf, symbol_name, sym, name_hash,	\
+				   str_hash_demangled(_name))		\
+		if (strcmp(sym->name, _name)) {} else
 -- 
 Josh
 
