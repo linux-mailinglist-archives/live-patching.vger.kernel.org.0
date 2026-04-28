@@ -1,166 +1,122 @@
-Return-Path: <live-patching+bounces-2581-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2582-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id WNpCCGPB8GloYQEAu9opvQ
-	(envelope-from <live-patching+bounces-2581-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 16:17:07 +0200
+	id KLXgI4bW8GnJZwEAu9opvQ
+	(envelope-from <live-patching+bounces-2582-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 17:47:18 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1C3CC486C30
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 16:17:05 +0200 (CEST)
+Received: from sto.lore.kernel.org (sto.lore.kernel.org [172.232.135.74])
+	by mail.lfdr.de (Postfix) with ESMTPS id 222FC4882F0
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 17:47:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 15E3E36E39F8
-	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 12:48:06 +0000 (UTC)
+	by sto.lore.kernel.org (Postfix) with ESMTP id 77B833024C61
+	for <lists+live-patching@lfdr.de>; Tue, 28 Apr 2026 15:46:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 24C4B44D00E;
-	Tue, 28 Apr 2026 12:44:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66F2B3C2799;
+	Tue, 28 Apr 2026 15:46:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="LD340ztM";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Ci2fG9EF";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="LD340ztM";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Ci2fG9EF"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KcnJVH5T"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B0FD41C31E
-	for <live-patching@vger.kernel.org>; Tue, 28 Apr 2026 12:44:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 427AA3A9638;
+	Tue, 28 Apr 2026 15:46:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777380255; cv=none; b=qN6ej9m8n0aBmAnspzKUzCDb4c0fjZLiw1uKaOKKf+XZBaRvL7jm8wjaeqi0wCyNLASN3V2NiBiUQBGeFdzGON+INwoI358oiMJUYIBuozwFglP1Ao0uz339zw3WP0GqXPIqd7vd+yyOHQnvk7Vc6RL93hgaEMUYOJZtzarCqr0=
+	t=1777391212; cv=none; b=lpcQEJD5ARU8zi7I2buTubrGsn1lru6pK8nBquHPQLco7nXgOsmdsMQ0Ep8f1CErx7hFq/gfNoDaxw5HEbNoaoxgFYQDwPb/3dACgHXSgUv7d9Az10N/csqHc5sH6ZR9qaueU7yJAGLOieZYIapBt6tj5iT9JiLr8nVEWWMfsqI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777380255; c=relaxed/simple;
-	bh=M851tRMV/xqcCGzOe1deJBa3wdrYN/CyJu4FeeEuK6A=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=W+YzykHKhoamVcxH11eSGUIftQ4OWZiCYVZbDkkCf6dGurjX0ubEXcaLcJ9YGxMBLMXrI7apfF7hVJmsd36B+rVWHXCGySFs6CE3tGKFUHTDPVAeZ1nLMfQIMoUvaVRNY4axMhaqC+1FM5K0AG4xtF7R3DuGvPw8GUGXemAu86E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=LD340ztM; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Ci2fG9EF; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=LD340ztM; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Ci2fG9EF; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from localhost.localdomain (unknown [IPv6:2a07:de40:b2bf:1b::12ef])
-	by smtp-out1.suse.de (Postfix) with ESMTP id 8F45F6A84E;
-	Tue, 28 Apr 2026 12:43:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1777380180; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=M+X3Kdg4mVNxAtvQ1gOYLsUUv+5UuOgrZKRVQxAdXtQ=;
-	b=LD340ztMV09HBVZAz6vVRJ7xJOgc5ZoO22Ypgcy6vdaEaCRrRHm4nVcOfd1ISfYuO2b4E/
-	bK3+AgYPA0gmZcgF9J7itCOTeoOoBMlDLfQBkTyeKYzwD+j1aFoZO9KeOGe2g1pCF0Yzn6
-	KLukR1vuBknBg/z1/xr69YJCvJ0sGQ8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1777380180;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=M+X3Kdg4mVNxAtvQ1gOYLsUUv+5UuOgrZKRVQxAdXtQ=;
-	b=Ci2fG9EFqS/IdYn+FpWYfrtvFkxY9fvucgbuFc5Jy8628M02ztAGRf67cVQARDc+JdlGEl
-	DGK+zzNNdjCfyKBg==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=LD340ztM;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=Ci2fG9EF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1777380180; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=M+X3Kdg4mVNxAtvQ1gOYLsUUv+5UuOgrZKRVQxAdXtQ=;
-	b=LD340ztMV09HBVZAz6vVRJ7xJOgc5ZoO22Ypgcy6vdaEaCRrRHm4nVcOfd1ISfYuO2b4E/
-	bK3+AgYPA0gmZcgF9J7itCOTeoOoBMlDLfQBkTyeKYzwD+j1aFoZO9KeOGe2g1pCF0Yzn6
-	KLukR1vuBknBg/z1/xr69YJCvJ0sGQ8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1777380180;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=M+X3Kdg4mVNxAtvQ1gOYLsUUv+5UuOgrZKRVQxAdXtQ=;
-	b=Ci2fG9EFqS/IdYn+FpWYfrtvFkxY9fvucgbuFc5Jy8628M02ztAGRf67cVQARDc+JdlGEl
-	DGK+zzNNdjCfyKBg==
+	s=arc-20240116; t=1777391212; c=relaxed/simple;
+	bh=ZHKJH0C0b7JuB87gZ5cDrHkLwnWIhZWz9d4LUP9dLjg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Kv3IE185QLx5pOzsNWkPw3Pw5t47NTMHBjceLEIPFdJ4knEsWbATKoO6IOnQ2g94OUa0KLzVM4HGvRJ5AkR4rkLEKx21XNz2aqvq69J3fqnJ9ePFh2rr+i5ULYigyURVQxycD2fQLl8abeJ/eM4x6HQKfynaaeuUfnNyyiu0g/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KcnJVH5T; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237EFC2BCAF;
+	Tue, 28 Apr 2026 15:46:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777391211;
+	bh=ZHKJH0C0b7JuB87gZ5cDrHkLwnWIhZWz9d4LUP9dLjg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KcnJVH5TMDgLX6qyFoZ4JLzRERpLl3QX61D9rRpl89t6vP3PZhsliNf7NpEtb4Awa
+	 0CyC55viWPGdIBLsjdLWUiOoWnG5J6SDNVV/7d/J5YwegLHXg2pFPlybdcWtScDKes
+	 tRqt7VFDn2lvJAFjGo8GgU3pIbzaNA44t9X3b46dhBpSWERYehMAOlSuizrrvFD4K2
+	 BnI09GIA3eyYFuviFu/kMfk2kZwTJQg/4qOX5wSHbkwN3eHW5MbjqjK8IZItXwYOHA
+	 nhG6tIpOjLpaRKBR88UI336255o+gvz7pk9fCPctlyGGtzZApduar1TM0dHkIwUz03
+	 jsFopXLDJQ6BQ==
+Date: Tue, 28 Apr 2026 08:46:49 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Miroslav Benes <mbenes@suse.cz>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
+	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
+	Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>, Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 06/48] objtool/klp: Don't correlate rodata symbols
+Message-ID: <roposyrufm52sqyuncxmjvb3e6ghcshrbojkl32ysq2qhkhxos@w4wo6qsme5no>
+References: <cover.1776916871.git.jpoimboe@kernel.org>
+ <602e405888ab38cd08de4375060b56db0965651d.1776916871.git.jpoimboe@kernel.org>
+ <177703167198.234971.16690298062704654470.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 17/48] objtool: Fix reloc hash collision in
- find_reloc_by_dest_range()
-From: Miroslav Benes <mbenes@suse.cz>
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
- live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
- Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>, 
- Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-In-Reply-To: <09dab1995c4ba6ca29dd70b0a7472f1a2975fefd.1776916871.git.jpoimboe@kernel.org>
-References: <cover.1776916871.git.jpoimboe@kernel.org>
- <09dab1995c4ba6ca29dd70b0a7472f1a2975fefd.1776916871.git.jpoimboe@kernel.org>
-Date: Tue, 28 Apr 2026 14:42:55 +0200
-Message-Id: <177738017548.11371.16572871519515726131.b4-review@b4>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=536; i=mbenes@suse.cz;
- h=from:subject:message-id; bh=M851tRMV/xqcCGzOe1deJBa3wdrYN/CyJu4FeeEuK6A=;
- b=owGbwMvMwMHYWJt9x2W1tA7jabUkhswPq4NaezcUve1OMLlZPMG/0fxjRuaFtD/Mn2vUBFUv5
- 7FXvRTvZPRnYWDkYLAUU2R5vddZznBKroFm9bu7MINYmUCmSIs0MAABCwNfbmJeqZGOkZ6ptqGe
- IZChY8TAxSkAU71+PwfDtjzepzqZ5Xt2JMVlvjQN2bRc9dyRIMNzJeHb5rFvqVvAuObV1eJbPt/
- czh2K/vR8kY/3G82TpxvuWP4py7FUrrvSdHOFVsgkm64I8Qf3xTczfQ50PmhR8aROb6L57i/ZR8
- 9fMnYp+/JCPFDhBdcHB3E+M8W9whmlyxjknix4m2jfzrHz1Mvn0g5ThBMZY3pufDzAGWx9/7XCk
- VWqP85eMS+IvLCddenm02ZnZu2Q0p685o/lefUbYpHW7+/W73LLy+AMYLIqfTFd1KHRQ1w78XqH
- 0LxUo3kzzkRnRZitMPLzlXzd/OrQAZu3G1z5fzL6/v7/9tvPGZNctPtd9794vNq51Fje48734JI
- LV18cAQA=
-X-Developer-Key: i=mbenes@suse.cz; a=openpgp;
- fpr=91BB0699882EF39D46654BB3FF98A38DA80834DA
-X-Spamd-Bar: ++++++++++++++++++++
-X-Spam-Flag: YES
-X-Spam-Score: 20.68
-X-Spam-Level: ********************
-X-Rspamd-Queue-Id: 1C3CC486C30
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <177703167198.234971.16690298062704654470.b4-review@b4>
+X-Rspamd-Queue-Id: 222FC4882F0
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [3.84 / 15.00];
-	SPAM_FLAG(5.00)[];
+X-Spamd-Result: default: False [-1.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	MID_RHS_NOT_FQDN(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_SPF_ALLOW(-0.20)[+ip4:172.232.135.74:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FROM_HAS_DN(0.00)[];
-	DMARC_NA(0.00)[suse.cz];
 	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2582-lists,live-patching=lfdr.de];
+	FROM_HAS_DN(0.00)[];
+	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
 	MIME_TRACE(0.00)[0:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2581-lists,live-patching=lfdr.de];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	TO_DN_SOME(0.00)[];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	ASN(0.00)[asn:63949, ipnet:172.232.128.0/19, country:SG];
+	MISSING_XM_UA(0.00)[];
+	NEURAL_HAM(-0.00)[-1.000];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[suse.cz:+];
-	NEURAL_HAM(-0.00)[-0.999];
+	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[8];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,suse.cz:dkim,suse.cz:email]
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sashiko.dev:url,sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
 
-On Wed, 22 Apr 2026 21:03:45 -0700, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> In find_reloc_by_dest_range(), hash collisions can cause a high-offset
-> relocation to appear when probing a low-offset hash bucket.
+On Fri, Apr 24, 2026 at 01:54:31PM +0200, Miroslav Benes wrote:
+> On Wed, 22 Apr 2026 21:03:34 -0700, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> > diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+> > index ea9ccf8c4ea9..f6597015b33b 100644
+> > --- a/tools/objtool/klp-diff.c
+> > +++ b/tools/objtool/klp-diff.c
+> > @@ -374,6 +374,7 @@ static bool dont_correlate(struct symbol *sym)
+> >  	       is_uncorrelated_static_local(sym) ||
+> >  	       is_clang_tmp_label(sym) ||
+> >  	       is_string_sec(sym->sec) ||
+> > +	       is_rodata_sec(sym->sec) ||
 > 
-> Only return early when the best match found so far genuinely belongs to
-> the current bucket (its offset is within the bucket's stride range).
-> Otherwise, continue scanning later buckets which may contain
-> lower-offset matches.
+> Sashiko comments here [1] that the check is suddenly to broad and it
+> covers also global rodata symbols which might then be skipped in
+> klp_reloc_needed(). I think it has a point.
 > 
-> [...]
+> [1] https://sashiko.dev/#/patchset/cover.1776916871.git.jpoimboe%40kernel.org?part=6
 
-Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+Yeah, after looking at this, I'm going to drop this patch.  While
+there's no harm in duplicating read-only data, it would break pointer
+comparison, regardless of global or local.
 
 -- 
-Miroslav
-
+Josh
 
