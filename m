@@ -1,78 +1,78 @@
-Return-Path: <live-patching+bounces-2614-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2615-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 8ObSFK0r82mwxgEAu9opvQ
-	(envelope-from <live-patching+bounces-2614-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2026 12:15:09 +0200
+	id SLK6NnEs82n7xwEAu9opvQ
+	(envelope-from <live-patching+bounces-2615-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2026 12:18:25 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id B2AB54A09DF
-	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2026 12:15:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6BE404A0AE7
+	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2026 12:18:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 5F50130DBF47
-	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2026 10:05:27 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 72ADA3033D32
+	for <lists+live-patching@lfdr.de>; Thu, 30 Apr 2026 10:11:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 16E6F401A0D;
-	Thu, 30 Apr 2026 10:04:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DEFCD3D75D1;
+	Thu, 30 Apr 2026 10:11:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="YAzDcjQg"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ooX/Amwl"
 X-Original-To: live-patching@vger.kernel.org
 Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6008D401483;
-	Thu, 30 Apr 2026 10:04:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA88E3ACA65;
+	Thu, 30 Apr 2026 10:11:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777543487; cv=none; b=OC6gHG3HRpJSpayS0SG92QC7bEVIblFbBNU8nt64BoDAW7OXqvzq57fENDLXkEHNU9kMmbnUQJ2teGYlfnSdTO8lU5iE5w/7VplDucmjb/vpo8xoqiJkICdoHbrXKwxtxYS3p2ExywveQw8gj4Grl202GZElveFq/HItzZqzifc=
+	t=1777543904; cv=none; b=clWQG1oh6OVGxdsETMXxTkdOFWnXnE7HHia4hFAobuHcgPTeH2qpCL3CkQkwCoYu3cZGqwBiMa1lcQa0gLWEDJDFQsaalL05UUnBWssaVCFs51RuvxftbpTokVdbHBBS3OB3855D0eenDo2V6iFEWkpq0AX04v5yGeGyG9+C0/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777543487; c=relaxed/simple;
-	bh=ydDGlMxsHgJvoWlbd0vdAFJmSMfPZZMtucp4dyTHDyc=;
+	s=arc-20240116; t=1777543904; c=relaxed/simple;
+	bh=dndwwuq/7ygB6hguKEjW+rEbqX4C87ZN0kWbXpMW0qM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ic1XAsh74G3Z9rTFKMkJ1MhA3hcLiIm8croNCYUPEG/FG6YuhLOAY8K9LF51N6XIZ+axqtOraq7oFjRDYQBXJv/JCTu/umCHeKCPTUjk2Itx7+b5cPhka9rUDtyfdMIyDLaz1DXiEgl4SEBTKQIog4hs96CkX0AzbAqdxtldLaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=YAzDcjQg; arc=none smtp.client-ip=148.163.158.5
+	 In-Reply-To:Content-Type; b=UQ/Y9+YqLGRXSGllCYj5lsDlzfKQQ8q+MeDqCpYB6XlHLaR076NW2nw+o2O3NL8LT7W6EPeVsQnyZAUV1HlM9AqNO4NhrJZ086IOCswJad1HBJ8x9IQNWF9RG8QRR1pfDfMIf+iCtaSAY+PQRAWv9OxWgoGadcQaHV18C1TqXw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=ooX/Amwl; arc=none smtp.client-ip=148.163.158.5
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63U7SUuA996575;
-	Thu, 30 Apr 2026 10:04:19 GMT
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63U7SUug996575;
+	Thu, 30 Apr 2026 10:11:13 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=ekjrcZ
-	YHERZenE83ZIfheqQI0RapxQLtaYQ2BGyVATU=; b=YAzDcjQg801acHa/MFZUTJ
-	zbWiWHELeHr8e5Me5mna2rASRZJP4k/dK5/Lmi60yAR+oQIlY8HS2igWu+GucgGv
-	dbvNL0p+gnvYGEIQiSgzk8Wdbf3U7cSXgfPSq/QSQQSjfrT3hgGtweY3KedpDPls
-	k019+ONnITvenKhYQXnCd5a1eoHij3+g5uxQ5DCjGom66mFe4r7pYzWhIXY9bKqr
-	CxdmkQHm3XRkrpeY249aRaaTqKUV5HzFgLgOnH7UWJLT/TKJ3b62MzVkTMiTMtzH
-	4p1m27ybwZpWKFhOHSB8dLS846ZXQ3e0mz/SNrzSMLqqCJ3ElQiKMC2LCi/DqvRQ
+	:message-id:mime-version:references:subject:to; s=pp1; bh=ZQsR3Z
+	mfPa0GldIWkQ2+yCvcfskHYNHdknXs08KN38k=; b=ooX/Amwlqn7xpCIFyD2L8I
+	bLOEvfjyZYPBYd0tN+ru3CJh3zfe9rN6l/MRG29wEoKABIfDCJuE3eKs4jecbcrw
+	dNJmDuvx+MMkt5hxQ/fCZeGjYmj6Pe5VoFbsZujtXU1ddiNpM6M4Xr2xZF+Agr2M
+	0gSdjmJlKHXm3EiUvwHtXpAcaQvM9ZoaoDJUQ3vxpOJ4X1G83O/xhJhge23IrnN6
+	AiIk9Ax8IwdXUaVO67qZLq7Mp9baKb2Nu1horo4zYy1Nw9dRpsI2fiPNZ7OxdGGb
+	5Ggedo0H6iNh/2t7PpvUP1keWY4aTfSM1jtIwFT67ds+JvmJ+cPj+QlxvGuTMJnQ
 	==
-Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4drn8vnb1w-1
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4drn8vnbxx-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 30 Apr 2026 10:04:18 +0000 (GMT)
-Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 63U9rkYS023446;
-	Thu, 30 Apr 2026 10:04:17 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4ds8xkadnx-1
+	Thu, 30 Apr 2026 10:11:12 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 63UA8nHM011684;
+	Thu, 30 Apr 2026 10:11:11 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4ds7xqjk36-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 30 Apr 2026 10:04:17 +0000 (GMT)
+	Thu, 30 Apr 2026 10:11:11 +0000 (GMT)
 Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63UA4Fs360031408
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63UABA9o49021232
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 30 Apr 2026 10:04:15 GMT
+	Thu, 30 Apr 2026 10:11:10 GMT
 Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9250F20040;
-	Thu, 30 Apr 2026 10:04:15 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 062962004D;
+	Thu, 30 Apr 2026 10:11:10 +0000 (GMT)
 Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2582220049;
-	Thu, 30 Apr 2026 10:04:15 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 9523A20049;
+	Thu, 30 Apr 2026 10:11:09 +0000 (GMT)
 Received: from [9.52.200.195] (unknown [9.52.200.195])
 	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Thu, 30 Apr 2026 10:04:15 +0000 (GMT)
-Message-ID: <55535704-ca32-483a-97e5-4d059294a9a3@linux.ibm.com>
-Date: Thu, 30 Apr 2026 12:04:14 +0200
+	Thu, 30 Apr 2026 10:11:09 +0000 (GMT)
+Message-ID: <549d10b6-ba2b-4ae9-86ef-6157e13b6ee3@linux.ibm.com>
+Date: Thu, 30 Apr 2026 12:11:09 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -80,8 +80,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 6/8] arm64/module, sframe: Add sframe support for
- modules
+Subject: Re: [PATCH v5 0/8] unwind, arm64: add sframe unwinder for kernel
 To: Dylan Hatch <dylanbhatch@google.com>,
         Roman Gushchin <roman.gushchin@linux.dev>,
         Weinan Liu <wnliu@google.com>, Will Deacon <will@kernel.org>,
@@ -100,30 +99,29 @@ Cc: Mark Rutland <mark.rutland@arm.com>,
         Randy Dunlap <rdunlap@infradead.org>,
         Heiko Carstens <hca@linux.ibm.com>
 References: <20260428183643.3796063-1-dylanbhatch@google.com>
- <20260428183643.3796063-7-dylanbhatch@google.com>
 Content-Language: en-US
 From: Jens Remus <jremus@linux.ibm.com>
 Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20260428183643.3796063-7-dylanbhatch@google.com>
+In-Reply-To: <20260428183643.3796063-1-dylanbhatch@google.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
 X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Authority-Analysis: v=2.4 cv=CIIamxrD c=1 sm=1 tr=0 ts=69f32923 cx=c_pps
- a=GFwsV6G8L6GxiO2Y/PsHdQ==:117 a=GFwsV6G8L6GxiO2Y/PsHdQ==:17
+X-Authority-Analysis: v=2.4 cv=CIIamxrD c=1 sm=1 tr=0 ts=69f32ac1 cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
  a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
  a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=VnNF1IyMAAAA:8
- a=YDQLautM2RPBGTTizU0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: BwPT5JYnQt3nKA7Nba_B9lCmuGb7WnjJ
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDMwMDA5OCBTYWx0ZWRfX7X/1LldJi0xs
- 5roC7bud/0ChxSIn9IEWxj++FwIyu5IL63F3vQDSocbluE7szCQUgAlV6jpoPT0BNuMo/biNQRd
- mZMfotz/xe14SYjL1y2UYinaJgjTsKClXa9o96LVTMPSQUZHHrIz8J139Qa+PXQTq7um6emfteK
- rGTojnzj78U3l9arEfMsjRJboa8i747nd78XZXjD7jVrgTQKLdFxsUQWg38gg/vsZyj87a1xbjp
- GNAPeTqVkg8+HfigFb8g3Bl4OCMmR4dt/nbbl657dXE3kvSv9K15AnnW7+IAQHiwWC3GHdzhWYX
- 5Kq5LWQvFd/t8DuV7+XdVV4apTJIkvspZv0gPOm41NDhlDxV/j4HbtlUhjRHSMUuhdMSERBl/E/
- zVEe9GOvZ6ilywIdtA4HxpAhPea1hgPo029EHoGzlbHxUrgjI0WeNA4g1hanbDK/dPCebHaUq6I
- CvUjhvGiUijeOPtHOVQ==
-X-Proofpoint-GUID: 8mFbwPJSfhxNg5qoftsVu3ev66yYtrOy
+ a=qLAYoD_hbcmcrnpDZzoA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: ThVfijeHO2wEaJY3mabwe1xeAUhojc0V
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDMwMDA5OCBTYWx0ZWRfX0N8PYikcpGTI
+ YDbSn82HUzVb9D0S9Lf3eUTYxCEcrkBcjQNFuKhcFVsfYSeAIHJaGZ60nSkQ7qcOjNhFjXr4nmS
+ /fIXZM+RxaFbYfGltwHA7xHOrkL54f7TQSHwInGb6j3KvauzidEt9hsAVVAAbBSWnWU4wCYCUpF
+ kx3o/bcqxIz5QhOsdjeUnPheu1S/FEUHzIWUvcojT0JuaHJXouhQ8zUN1UpkA9UmfyQ0VXi0bA1
+ 78TddqoNld3gRUoyc0oTaLpHFStVB/74KcUb6Ed8BpvU4hpEtrMJ5pPEA4ZzIRi4C+kHMtJmGSB
+ PGYP5M/2GyAuSzVDDwPiVwBx4hvWlMmwQExwsWYfCTHDoqJcAylr+/3QWQ9P/WxJzXepCje52FA
+ +hSoXxHFFIVW3ROO3mQtC0Pdt1hEquC9vQyRXahcIchXNZ9xkJq8KKg6vFPNk4LnQLPjU1yQSmi
+ lA3oBqK+SOhBWYX6lVQ==
+X-Proofpoint-GUID: RY_eyZRMZ9tLjaxV7lAbQXTmYIeE_cG_
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-04-30_03,2026-04-28_01,2025-10-01_01
@@ -133,7 +131,7 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604200000
  definitions=main-2604300098
-X-Rspamd-Queue-Id: B2AB54A09DF
+X-Rspamd-Queue-Id: 6BE404A0AE7
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
@@ -146,13 +144,13 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	HAS_LIST_UNSUB(-0.01)[];
 	MIME_TRACE(0.00)[0:+];
 	RCPT_COUNT_TWELVE(0.00)[21];
-	TAGGED_FROM(0.00)[bounces-2614-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2615-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
 	HAS_ORG_HEADER(0.00)[];
 	FREEMAIL_TO(0.00)[google.com,linux.dev,kernel.org,gmail.com,infradead.org,goodmis.org,arm.com];
 	DKIM_TRACE(0.00)[ibm.com:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,linux.ibm.com:mid];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[linux.ibm.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[jremus@linux.ibm.com,live-patching@vger.kernel.org];
@@ -165,133 +163,62 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	RCVD_COUNT_SEVEN(0.00)[11]
 
 On 4/28/2026 8:36 PM, Dylan Hatch wrote:
-> Add sframe table to mod_arch_specific and support sframe PC lookups when
-> an .sframe section can be found on incoming modules.
-One small fix and a proposal to sort the module's SFrame FDE index.
+> Implement a generic kernel sframe-based [1] unwinder. The main goal is
+> to improve reliable stacktrace on arm64 by unwinding across exception
+> boundaries.
 
-> diff --git a/kernel/unwind/sframe.c b/kernel/unwind/sframe.c
+Please add support to initialize the optional sframe unwinder debug
+information.  Either in the appropriate patches in this series or as a
+separate patch.
 
-A subsequent patch adds a call to sframe_validate_section(), which would
-operate on the temporary struct sframe_section instance and thus fail
-to use container_of() to access the struct module instance.  To resolve
-change as follows:
-
-> +void sframe_module_init(struct module *mod, void *sframe, size_t sframe_size,
-> +			void *text, size_t text_size)
-> +{
-> +	struct sframe_section sec;
-
-	struct sframe_section *sec = &mod->arch.sframe_sec;
-
-It is fine to initialize the module's struct sframe_section instance as
-use of the information is guarded by mod->arch.sframe_init, which is
-only set if the instance has been full initialized.
-
-> +
-> +	memset(&sec, 0, sizeof(sec));
-
-Can be dropped if struct module instance got zero-initialized.
-
-> +	sec.sec_type	 = SFRAME_KERNEL;
-> +	sec.sframe_start = (unsigned long)sframe;
-> +	sec.sframe_end   = (unsigned long)sframe + sframe_size;
-> +	sec.text_start   = (unsigned long)text;
-> +	sec.text_end     = (unsigned long)text + text_size;
-
-Adjust all lines above to pointer access.
-
-> +
-> +	if (WARN_ON(sframe_read_header(&sec)))
-
-Ditto.
-
-> +		return;
-> +
-> +	mod->arch.sframe_sec = sec;
-
-Drop.
-
-> +	mod->arch.sframe_init = true;
-> +}
-Indu suggested that it would be preferable if a module's .sframe FDE
-index table could be sorted during loading of the module to enable
-binary search instead of having to resort to linear search.  I propose
-to change this patch as follows to sort the module .sframe FDE index
-table in sframe_module_init().  Note that the patch assumes above
-changes have been implemented.  The sorting is very similar to sorting
-of ORC tables in arch/x86/kernel/unwind_orc.c in unwind_module_init().
+Note that for the module case I wonder whether it would be preferable
+to somehow indicate that it is a module name in the string, e.g.
+"(<module-name>)" or "<module-name> (module)"?
 
 diff --git a/kernel/unwind/sframe.c b/kernel/unwind/sframe.c
 --- a/kernel/unwind/sframe.c
 +++ b/kernel/unwind/sframe.c
-@@ -12,6 +12,7 @@
- #include <linux/mm.h>
- #include <linux/string_helpers.h>
- #include <linux/sframe.h>
-+#include <linux/sort.h>
- #include <linux/unwind_types.h>
- #include <asm/unwind_sframe.h>
- #ifdef CONFIG_HAVE_UNWIND_KERNEL_SFRAME
-@@ -1038,6 +1039,50 @@ void __init init_sframe_table(void)
- 	sframe_init = true;
- }
+@@ -1028,6 +1028,8 @@ void __init init_sframe_table(void)
+ 	kernel_sfsec.text_start		= (unsigned long)_stext;
+ 	kernel_sfsec.text_end		= (unsigned long)_etext;
  
-+static int sframe_sort_cmp_fde(const void *a, const void *b)
-+{
-+	const struct sframe_fde_v3 *fde_a = a, *fde_b = b;
-+	unsigned long func_start_a, func_start_b;
++	dbg_init(&kernel_sfsec);
 +
-+	func_start_a = (unsigned long)fde_a + fde_a->func_start_off;
-+	func_start_b = (unsigned long)fde_b + fde_b->func_start_off;
-+
-+	return cmp_int(func_start_a, func_start_b);
-+}
-+
-+static void sframe_sort_swap_fde(void *a, void *b, int size)
-+{
-+	struct sframe_fde_v3 *fde_a = a, *fde_b = b;
-+	struct sframe_fde_v3 temp;
-+	long delta;
-+
-+	/* Swap potentially unaligned FDE */
-+	memcpy(&temp, fde_a, sizeof(struct sframe_fde_v3));
-+	memcpy(fde_a, fde_b, sizeof(struct sframe_fde_v3));
-+	memcpy(fde_b, &temp, sizeof(struct sframe_fde_v3));
-+
-+	/* Adjust FDE function start offset from FDE */
-+	delta = (long)((unsigned long)fde_b - (unsigned long)fde_a);
-+	fde_a->func_start_off += delta;
-+	fde_b->func_start_off -= delta;
-+}
-+
-+static int sframe_sort_fdes(struct sframe_section *sec)
-+{
-+	void *fdes = (void *)sec->fdes_start;
-+	size_t num_fdes = sec->num_fdes;
-+
-+	if (sec->sec_type != SFRAME_KERNEL)
-+		return -EINVAL;
-+	if (sec->fdes_sorted)
-+		return 0;
-+
-+	sort(fdes, num_fdes, sizeof(struct sframe_fde_v3),
-+	     sframe_sort_cmp_fde, sframe_sort_swap_fde);
-+	sec->fdes_sorted = true;
-+	return 0;
-+}
-+
- void sframe_module_init(struct module *mod, void *sframe, size_t sframe_size,
- 			void *text, size_t text_size)
- {
-@@ -1053,6 +1098,8 @@ void sframe_module_init(struct module *mod, void *sframe, size_t sframe_size,
+ 	if (WARN_ON(sframe_read_header(&kernel_sfsec)))
+ 		return;
+ 	if (WARN_ON(sframe_validate_section(&kernel_sfsec)))
+@@ -1047,6 +1049,8 @@ void sframe_module_init(struct module *mod, void *sframe, size_t sframe_size,
+ 	sec->text_start   = (unsigned long)text;
+ 	sec->text_end     = (unsigned long)text + text_size;
  
++	dbg_init(sec);
++
  	if (WARN_ON(sframe_read_header(sec)))
  		return;
-+	if (WARN_ON(sframe_sort_fdes(sec)))
-+		return;
  	if (WARN_ON(sframe_validate_section(sec)))
- 		return;
+diff --git a/kernel/unwind/sframe_debug.h b/kernel/unwind/sframe_debug.h
+--- a/kernel/unwind/sframe_debug.h
++++ b/kernel/unwind/sframe_debug.h
+@@ -32,6 +32,18 @@ static inline void dbg_init(struct sframe_section *sec)
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct *vma;
  
++	if (sec->sec_type == SFRAME_KERNEL) {
++		if (sec == &kernel_sfsec) {
++			sec->filename = kstrdup("(vmlinux)", GFP_KERNEL);
++		} else {
++			struct module *mod = container_of(sec, struct module,
++							  arch.sframe_sec);
++			sec->filename = kstrdup(mod->name, GFP_KERNEL);
++		}
++
++		return;
++	}
++
+ 	guard(mmap_read_lock)(mm);
+ 	vma = vma_lookup(mm, sec->sframe_start);
+ 	if (!vma)
+
 Regards,
 Jens
 -- 
