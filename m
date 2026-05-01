@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2656-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2658-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id WN7COCAp9GkH+wEAu9opvQ
-	(envelope-from <live-patching+bounces-2656-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:16:32 +0200
+	id iHkEO4op9GlA+wEAu9opvQ
+	(envelope-from <live-patching+bounces-2658-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:18:18 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 988C64AA2E5
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:16:32 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0323A4AA36C
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:18:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id A09783064355
-	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:11:18 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id BA58A3050D78
+	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:11:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C63B336A01A;
-	Fri,  1 May 2026 04:09:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4412A36C0CF;
+	Fri,  1 May 2026 04:09:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KOKQivFY"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S2MoqPvL"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2DCD369236;
-	Fri,  1 May 2026 04:09:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AEA336B046;
+	Fri,  1 May 2026 04:09:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777608548; cv=none; b=opWK8FxkLuMISMGPo/vcUC1+WPN3010ZpA+LLbnNk1cSrbXUt//UDdRaJtfrgVTJqCv4S8Til49UROGJVfatp0U3H9YGZLU+diexoPW3ZtoTODje0ie8WvXDyD5myS7YOs31dmlNSkjlix6UAW2NpXnUXFQHA2kidotirFRqc+0=
+	t=1777608549; cv=none; b=usCqQT/ZPKUwnYDANBvP4JTVKDiwNEyL/L67pB7coif2eFbR8GIby3ihDH/57mRa0ZfX1fAtwgZUCnd6ggyjvnQ5g0Ol3ZI7wT0Bxd5fVosnDrxMNeF/X4tDCRBDPjuQqis90wL59Fju5tfOibAsn0/0kR79L8esIZO/QWjmGUc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777608548; c=relaxed/simple;
-	bh=x+o7MttE8HaIrZqO53iTQAE6hE+z2eW5kHbKMjGZdRo=;
+	s=arc-20240116; t=1777608549; c=relaxed/simple;
+	bh=m/ozg1EAde/Oq0i+pAtSNUYhLnhNOg5iFqi9kLnbM7k=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PU3hSVpWR8xeVmAIccdkoYDEO57AYGPcLL8wmpILn1K/i4LLApGVwJgdj/3chRh/+vi4jkN8faR3fzixR/5/LWYxjDsc9KfpH9Q4VdMoqubx7aJcWzi39ewiDDIyS6HcXNJRj/UcplPlfvWJSzKRmLqt6+DWWhhpZK9RqG+vD/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KOKQivFY; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E211C2BCF4;
+	 MIME-Version; b=FDIjEpqCEDDXzv1ZxVOBDdkyQ0UFgLNTcAupmQXBMv1x2gCgVTSIFOnegnh0/3bPiLt70YVX7X6IqnRW3uzZOtUrqgqM2mH6i921Kz2lfwsMm27NLr8j3NxL23U+EExCsAYvgOXkwvaQqp9VfBqTwzWM/uxB+RKSJsChsWhCv4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S2MoqPvL; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEC68C2BCB7;
 	Fri,  1 May 2026 04:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777608548;
-	bh=x+o7MttE8HaIrZqO53iTQAE6hE+z2eW5kHbKMjGZdRo=;
+	s=k20201202; t=1777608549;
+	bh=m/ozg1EAde/Oq0i+pAtSNUYhLnhNOg5iFqi9kLnbM7k=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KOKQivFYgaP8IShYRAbdczxLswCtBIr6d1BZhwSdP8jrRmiNEnxVzvORttcigUgR6
-	 +zAzanQSTm8vLJDOEtXzp2lgMAtPGPLoGSdTftwRHGHx+L8Rd+h1ANRZkq7Ru797AT
-	 25uZmFqPsU2D2O5qGbopG4ZMQAg4lk+4v9qs0nJpthKkchQP3skdyZ+8n7wo3tUseC
-	 TWRgtGt7mPQ7V1nS8bXUBeEZnFq0Q+/J1Vt045rZgG+xEFChBdoee/+lAam/Oj54ed
-	 xD9L/6/pUdk8UmJYimiQAN//CW29mDHu2L7ll7Vz8cqTdVUvUtZVgDYTA3eynFMKcu
-	 Vao3skvZUy7lQ==
+	b=S2MoqPvLjobCDFbBephCUsWbaz29eUSsOx653JSjD6cgk1BM7YIJDJQ3kbfp0xnrt
+	 hxtBhCVHDiC/f0KUpgze6hG4twAxT8gsLPCh1Xdk+7SNDRJhZMrmlW/SQhvwwblCIv
+	 fVDZOOL1fjxVv3DvNQAlLS/f167BoxyZYGV2/XdXJ02N/NU3VVVr98/np/hjhozjEu
+	 PBHOx+zpwmeYzlZl2e+5WBE4RchJ0BAtFu7P7qNT4D3XH7EYPggpx2fzHXoKp5fh4U
+	 cTuQwWPxomwUPwMT/Ag5XvAm9I64O37O83g1YdTX3Y6UkclCoIfzZCnFNpwNov4Thd
+	 UVBe4iSwQ5jjg==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 39/53] objtool/klp: Extricate checksum calculation from validate_branch()
-Date: Thu, 30 Apr 2026 21:08:27 -0700
-Message-ID: <a455b47ef57dcc3506cd97e3c2027ac744941cf1.1777575752.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 40/53] objtool: Consolidate file decoding into decode_file()
+Date: Thu, 30 Apr 2026 21:08:28 -0700
+Message-ID: <36478f25bee19c8acbff3992e27436b544c4e26b.1777575752.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1777575752.git.jpoimboe@kernel.org>
 References: <cover.1777575752.git.jpoimboe@kernel.org>
@@ -66,7 +66,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 988C64AA2E5
+X-Rspamd-Queue-Id: 0323A4AA36C
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
@@ -74,13 +74,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2656-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2658-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -94,259 +94,110 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,infradead.org:email]
 
-In preparation for porting the checksum code to other arches, make its
-functionality independent from the CFG reverse engineering code.
+decode_sections() relies on CFI and cfi_hash initialization done
+separately in check(), making it unusable outside of check().
 
-Move it into a standalone calculate_checksums() function which iterates
-all functions and instructions directly, rather than being called inline
-from do_validate_branch().
+Consolidate the initialization into decode_sections() and rename it to
+decode_file(), and make it global along with free_insns() and
+insn_reloc() for use by other objtool components -- namely, the checksum
+code which will be moving to another file.
 
-Since checksum_update_insn() is no longer called during CFG traversal,
-it needs to manually iterate the alternatives.
-
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Song Liu <song@kernel.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/check.c                    | 106 +++++++++++++++++------
- tools/objtool/include/objtool/checksum.h |   6 +-
- 2 files changed, 80 insertions(+), 32 deletions(-)
+ tools/objtool/check.c                 | 36 +++++++++++++--------------
+ tools/objtool/include/objtool/check.h |  5 ++++
+ 2 files changed, 22 insertions(+), 19 deletions(-)
 
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 93a054adf209..f019e1f06780 100644
+index f019e1f06780..49171ddc6f54 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -1350,10 +1350,7 @@ static struct reloc *insn_reloc(struct objtool_file *file, struct instruction *i
+@@ -1346,7 +1346,7 @@ __weak bool arch_is_embedded_insn(struct symbol *sym)
+ 	return false;
+ }
+ 
+-static struct reloc *insn_reloc(struct objtool_file *file, struct instruction *insn)
++struct reloc *insn_reloc(struct objtool_file *file, struct instruction *insn)
  {
  	struct reloc *reloc;
  
--	if (insn->no_reloc)
--		return NULL;
--
--	if (!file)
-+	if (!file || insn->no_reloc || insn->fake)
- 		return NULL;
- 
- 	reloc = find_reloc_by_dest_range(file->elf, insn->sec,
-@@ -2622,9 +2619,17 @@ static void mark_holes(struct objtool_file *file)
- 
- static bool validate_branch_enabled(void)
- {
--	return opts.stackval ||
--	       opts.orc ||
--	       opts.uaccess ||
-+	return opts.stackval	||
-+	       opts.orc		||
-+	       opts.uaccess;
-+}
-+
-+static bool alts_needed(void)
-+{
-+	return validate_branch_enabled()	||
-+	       opts.noinstr			||
-+	       opts.hack_jump_label		||
-+	       opts.disas			||
+@@ -2633,8 +2633,21 @@ static bool alts_needed(void)
  	       opts.checksum;
  }
  
-@@ -2658,7 +2663,7 @@ static int decode_sections(struct objtool_file *file)
- 	 * Must be before add_jump_destinations(), which depends on 'func'
- 	 * being set for alternatives, to enable proper sibling call detection.
- 	 */
--	if (validate_branch_enabled() || opts.noinstr || opts.hack_jump_label || opts.disas) {
-+	if (alts_needed()) {
- 		if (add_special_section_alts(file))
- 			return -1;
- 	}
-@@ -3654,6 +3659,7 @@ static bool skip_alt_group(struct instruction *insn)
- 	return alt_insn->type == INSN_CLAC || alt_insn->type == INSN_STAC;
- }
- 
-+#ifdef BUILD_KLP
- static int checksum_debug_init(struct objtool_file *file)
+-static int decode_sections(struct objtool_file *file)
++int decode_file(struct objtool_file *file)
  {
- 	char *dup, *s;
-@@ -3701,8 +3707,10 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 				 struct instruction *insn)
- {
- 	struct reloc *reloc = insn_reloc(file, insn);
-+	struct alternative *alt;
- 	unsigned long offset;
- 	struct symbol *sym;
-+	static bool in_alt;
- 
- 	if (insn->fake)
- 		return;
-@@ -3715,7 +3723,7 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 		if (call_dest)
- 			checksum_update(func, insn, call_dest->demangled_name,
- 					strlen(call_dest->demangled_name));
--		return;
-+		goto alts;
- 	}
- 
- 	sym = reloc->sym;
-@@ -3726,21 +3734,78 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 
- 		str = sym->sec->data->d_buf + sym->offset + offset;
- 		checksum_update(func, insn, str, strlen(str));
--		return;
-+		goto alts;
- 	}
- 
- 	if (is_sec_sym(sym)) {
- 		sym = find_symbol_containing(reloc->sym->sec, offset);
- 		if (!sym)
--			return;
-+			goto alts;
- 
- 		offset -= sym->offset;
- 	}
- 
- 	checksum_update(func, insn, sym->demangled_name, strlen(sym->demangled_name));
- 	checksum_update(func, insn, &offset, sizeof(offset));
++	arch_initial_func_cfi_state(&initial_func_cfi);
++	init_cfi_state(&init_cfi);
++	init_cfi_state(&func_cfi);
++	set_func_state(&func_cfi);
++	init_cfi_state(&force_undefined_cfi);
++	force_undefined_cfi.force_undefined = true;
 +
-+alts:
-+	for (alt = insn->alts; alt; alt = alt->next) {
-+		struct alt_group *alt_group = alt->insn->alt_group;
-+
-+		/* Prevent __ex_table recursion, e.g. LOAD_SEGMENT() */
-+		if (in_alt)
-+			break;
-+		in_alt = true;
-+
-+		checksum_update(func, insn, &alt->type, sizeof(alt->type));
-+
-+		if (alt_group && alt_group->orig_group) {
-+			struct instruction *alt_insn;
-+
-+			checksum_update(func, insn, &alt_group->feature, sizeof(alt_group->feature));
-+
-+			for (alt_insn = alt->insn; alt_insn; alt_insn = next_insn_same_sec(file, alt_insn)) {
-+				checksum_update_insn(file, func, alt_insn);
-+				if (!alt_group->last_insn || alt_insn == alt_group->last_insn)
-+					break;
-+			}
-+		} else {
-+			checksum_update_insn(file, func, alt->insn);
-+		}
-+
-+		in_alt = false;
-+	}
- }
- 
-+static int calculate_checksums(struct objtool_file *file)
-+{
-+	struct instruction *insn;
-+	struct symbol *func;
-+
-+	if (checksum_debug_init(file))
++	if (!cfi_hash_alloc(1UL << (file->elf->symbol_bits - 3)))
 +		return -1;
 +
-+	for_each_sym(file->elf, func) {
-+		/*
-+		 * Skip cold subfunctions and aliases: they share the
-+		 * parent's checksum via func_for_each_insn() which
-+		 * follows func->cfunc into the cold subfunction.
-+		 */
-+		if (!is_func_sym(func) || is_cold_func(func) ||
-+		    is_alias_sym(func) || !func->len)
-+			continue;
++	cfi_hash_add(&init_cfi);
++	cfi_hash_add(&func_cfi);
 +
-+		checksum_init(func);
-+
-+		func_for_each_insn(file, func, insn)
-+			checksum_update_insn(file, func, insn);
-+
-+		checksum_finish(func);
-+	}
-+	return 0;
-+}
-+#endif /* BUILD_KLP */
-+
- static int validate_branch(struct objtool_file *file, struct symbol *func,
- 			   struct instruction *insn, struct insn_state state);
- static int do_validate_branch(struct objtool_file *file, struct symbol *func,
-@@ -4022,9 +4087,6 @@ static int do_validate_branch(struct objtool_file *file, struct symbol *func,
- 		insn->trace = 0;
- 		next_insn = next_insn_to_validate(file, insn);
+ 	file->klp = is_livepatch_module(file);
  
--		if (opts.checksum && func && insn->sec)
--			checksum_update_insn(file, func, insn);
+ 	mark_rodata(file);
+@@ -4998,7 +5011,7 @@ struct insn_chunk {
+  * which can trigger more allocations for .debug_* sections whose data hasn't
+  * been read yet.
+  */
+-static void free_insns(struct objtool_file *file)
++void free_insns(struct objtool_file *file)
+ {
+ 	struct instruction *insn;
+ 	struct insn_chunk *chunks = NULL, *chunk;
+@@ -5045,22 +5058,7 @@ int check(struct objtool_file *file)
+ 		objtool_disas_ctx = disas_ctx;
+ 	}
+ 
+-	arch_initial_func_cfi_state(&initial_func_cfi);
+-	init_cfi_state(&init_cfi);
+-	init_cfi_state(&func_cfi);
+-	set_func_state(&func_cfi);
+-	init_cfi_state(&force_undefined_cfi);
+-	force_undefined_cfi.force_undefined = true;
 -
- 		if (func && insn_func(insn) && func != insn_func(insn)->pfunc) {
- 			/* Ignore KCFI type preambles, which always fall through */
- 			if (is_prefix_func(func))
-@@ -4090,9 +4152,6 @@ static int validate_unwind_hint(struct objtool_file *file,
- 		struct symbol *func = insn_func(insn);
- 		int ret;
- 
--		if (opts.checksum)
--			checksum_init(func);
--
- 		ret = validate_branch(file, func, insn, *state);
- 		if (ret)
- 			BT_INSN(insn, "<=== (hint)");
-@@ -4535,9 +4594,6 @@ static int validate_symbol(struct objtool_file *file, struct section *sec,
- 
- 	func = insn_func(insn);
- 
--	if (opts.checksum)
--		checksum_init(func);
--
- 	if (opts.trace && !fnmatch(opts.trace, sym->name, 0)) {
- 		trace_enable();
- 		TRACE("%s: validation begin\n", sym->name);
-@@ -4550,9 +4606,6 @@ static int validate_symbol(struct objtool_file *file, struct section *sec,
- 	TRACE("%s: validation %s\n\n", sym->name, ret ? "failed" : "end");
- 	trace_disable();
- 
--	if (opts.checksum)
--		checksum_finish(func);
--
- 	return ret;
- }
- 
-@@ -5007,10 +5060,6 @@ int check(struct objtool_file *file)
- 	cfi_hash_add(&init_cfi);
- 	cfi_hash_add(&func_cfi);
- 
--	ret = checksum_debug_init(file);
--	if (ret)
+-	if (!cfi_hash_alloc(1UL << (file->elf->symbol_bits - 3))) {
+-		ret = -1;
 -		goto out;
+-	}
 -
- 	ret = decode_sections(file);
+-	cfi_hash_add(&init_cfi);
+-	cfi_hash_add(&func_cfi);
+-
+-	ret = decode_sections(file);
++	ret = decode_file(file);
  	if (ret)
  		goto out;
-@@ -5101,6 +5150,9 @@ int check(struct objtool_file *file)
- 		warnings += check_abs_references(file);
  
- 	if (opts.checksum) {
-+		ret = calculate_checksums(file);
-+		if (ret)
-+			goto out;
- 		ret = create_sym_checksum_section(file);
- 		if (ret)
- 			goto out;
-diff --git a/tools/objtool/include/objtool/checksum.h b/tools/objtool/include/objtool/checksum.h
-index 0bd16fe9168b..3f25df90305d 100644
---- a/tools/objtool/include/objtool/checksum.h
-+++ b/tools/objtool/include/objtool/checksum.h
-@@ -33,11 +33,7 @@ static inline void checksum_finish(struct symbol *func)
+diff --git a/tools/objtool/include/objtool/check.h b/tools/objtool/include/objtool/check.h
+index 5f2f77bd9b41..6489e52ea2f2 100644
+--- a/tools/objtool/include/objtool/check.h
++++ b/tools/objtool/include/objtool/check.h
+@@ -155,6 +155,11 @@ struct instruction *next_insn_same_sec(struct objtool_file *file, struct instruc
+ 	     insn && insn->offset < sym->offset + sym->len;		\
+ 	     insn = next_insn_same_sec(file, insn))
  
- #else /* !BUILD_KLP */
++struct reloc *insn_reloc(struct objtool_file *file, struct instruction *insn);
++
++int decode_file(struct objtool_file *file);
++void free_insns(struct objtool_file *file);
++
+ const char *objtool_disas_insn(struct instruction *insn);
  
--static inline void checksum_init(struct symbol *func) {}
--static inline void checksum_update(struct symbol *func,
--				   struct instruction *insn,
--				   const void *data, size_t size) {}
--static inline void checksum_finish(struct symbol *func) {}
-+static inline int calculate_checksums(struct objtool_file *file) { return -ENOSYS; }
- 
- #endif /* !BUILD_KLP */
- 
+ extern size_t sym_name_max_len;
 -- 
 2.53.0
 
