@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2654-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2655-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id eCpIFdQp9GlA+wEAu9opvQ
-	(envelope-from <live-patching+bounces-2654-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:19:32 +0200
+	id +PnxG98p9GlA+wEAu9opvQ
+	(envelope-from <live-patching+bounces-2655-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:19:43 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id AB2E54AA3A8
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:19:31 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id D334C4AA3C6
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:19:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id A7551309E2CC
-	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:11:02 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 7D58630427F3
+	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:11:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D85CB363C53;
-	Fri,  1 May 2026 04:09:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 54C2A366061;
+	Fri,  1 May 2026 04:09:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mPGiSoAV"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p5rjoy+p"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B590D31283E;
-	Fri,  1 May 2026 04:09:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F399313267;
+	Fri,  1 May 2026 04:09:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777608547; cv=none; b=MFcD0Lc45miTKylysw/FTF9Fj0/0fqFjDsYLApjQDt4NSxd6RbHErXn90W5TE8jlGNCTWH1nDeqdIa8KUmVPrmjVe5gdIhuJshY9l7M8oAABCEUlLKPznLsGgOuaF4saAhdm4mPcvyVkGSpxsIVLwJc/ml2Hos+o42k6mwv92oo=
+	t=1777608548; cv=none; b=mAJpPAgyjiWW150iLUe+3/nPcipAcqtEWtF/JVqtUSA4pooyd2DZO9Mt/VAVaGqyxZh5B2OgnGaPMoVmmknI7Wh6OCC1s/+GSzrAkquMALjNyIJdKEsugpILhP7cTS2Fy8h3mHcR7rCllljTDwwBPq9ZO5wsqz0UKuIk05VrXEY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777608547; c=relaxed/simple;
-	bh=U1/zXTGHmGDeZk5zmEiLTowFn8oD8+hWbudhQLdzfVA=;
+	s=arc-20240116; t=1777608548; c=relaxed/simple;
+	bh=1YoJrPuxqlDAdZSZ/V51TZ5Nbry8SmQdApKpcxnsBJA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oOQQT3MCqyWXPFV3IUkb4Qyre1KltTAi/r8gR0vGS6U2XbhXAg5gHehhPA0Ku4FVJY90cFaP+VsiJpJpHSoj3J5bh7yav6Jtp9aJdUuJ97uKW5z55zGM7V/QtWdPYFUFXz886j/BC/yeW6Douem+nIwry6wbMUGTilrOmiNo98o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mPGiSoAV; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5526EC2BCB9;
+	 MIME-Version; b=Xwydkra7O268TsmNKf/awvmG9Ki9NvTv02eU8gdFWQb0nUVJ/rvwsdlaZD65fT/IrXL36dFp3jz0rdt56Cji/PfYmXRgqJIdO5m5x4rcRrLETySyGWWTiH8Kd8yjIRrVtmJDp91vS7RiYapjrwJ5u8A23/V+bJsgdx6G2hMTtRQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p5rjoy+p; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C337DC2BCB7;
 	Fri,  1 May 2026 04:09:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777608547;
-	bh=U1/zXTGHmGDeZk5zmEiLTowFn8oD8+hWbudhQLdzfVA=;
+	s=k20201202; t=1777608548;
+	bh=1YoJrPuxqlDAdZSZ/V51TZ5Nbry8SmQdApKpcxnsBJA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=mPGiSoAVujosCaTs7qHYIAu7SdocyUdJIJp0ZbHB52+AinDT8Gknd14LlPrsoZoa7
-	 hKq5Ffeync370AxGSPmVbC3As+T/96vu68N69edcCrA6u3DzDHKDGfgL/RfgKBWaK7
-	 rvD3XXXh0nvIARIGTX2SPrwRH71yD6YlW1Iu09AdQFXM+Yw3joqI/z4yVOtRQIzfeP
-	 55lp9OE8r6Oedzsm1rzWRXEsmfi4gTcnRoDRfTMBPIcZxTZ68SIBOxjGeId+ug8v2k
-	 3TX6jmmJJ09ilmMx5IC2IxChGuF5Bm5Ba6wFHvdxCMm7FmsbGbngX4yVO++23p77Of
-	 XgMEpDggOpd/A==
+	b=p5rjoy+p1FAxRycGSp6pA9H2+tvEoCSisShhI78cbZ4jQ7za2pra9mweZ5ajvoODS
+	 jeHiKsH7mNwZK7VXQkoyv0UV9sn98oIdWlSSWFJnMG8dH41WtTkMghJfT/dynqR1AJ
+	 UjfO7jDd+Sfe3RX/4Trprj0Dnd7eRVGDC1EQ8PY5AKeALvnzAGufrorMWM8Rqd+242
+	 aLpUQC22bzIfjOZdeDPNA0VS/tUwpo65ad9aWSLO42NCIYpH9vW1YMWT59CSCbjpev
+	 a3gljYuQ7dbkyuez5Tk16JPMQ1Uv286dy1Dsm2f7QAe4N8Hk7C1AB9+kWF6b2/Hzb3
+	 U8jhlj5IbMmOw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 37/53] objtool: Add is_alias_sym() helper
-Date: Thu, 30 Apr 2026 21:08:25 -0700
-Message-ID: <87cfee570bfffb35961d9b6e5abfbfeae6d903dc.1777575752.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 38/53] objtool: Add is_cold_func() helper
+Date: Thu, 30 Apr 2026 21:08:26 -0700
+Message-ID: <a84513224f38c7c7ca2cf2a4930f87d43a76908b.1777575752.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1777575752.git.jpoimboe@kernel.org>
 References: <cover.1777575752.git.jpoimboe@kernel.org>
@@ -66,7 +66,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: AB2E54AA3A8
+X-Rspamd-Queue-Id: D334C4AA3C6
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
@@ -74,13 +74,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2654-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2655-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -94,68 +94,72 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,infradead.org:email]
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
 
-Improve readability with a new is_alias_sym() helper.
+Add an is_cold_func() helper.  No functional changes intended.
 
-No functional changes intended.
-
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Song Liu <song@kernel.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
  tools/objtool/check.c               | 6 +++---
  tools/objtool/include/objtool/elf.h | 5 +++++
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ tools/objtool/klp-diff.c            | 3 ++-
+ 3 files changed, 10 insertions(+), 4 deletions(-)
 
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index f020f21f94a7..6c94eb32c090 100644
+index 6c94eb32c090..93a054adf209 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -491,7 +491,7 @@ static int decode_instructions(struct objtool_file *file)
- 				return -1;
- 			}
+@@ -2614,7 +2614,7 @@ static void mark_holes(struct objtool_file *file)
+ 		if (insn->jump_dest) {
+ 			struct symbol *dest_func = insn_func(insn->jump_dest);
  
--			if (func->embedded_insn || func->alias != func)
-+			if (func->embedded_insn || is_alias_sym(func))
- 				continue;
- 
- 			if (!find_insn(file, sec, func->offset)) {
-@@ -2229,7 +2229,7 @@ static int add_jump_table_alts(struct objtool_file *file)
- 		return 0;
- 
- 	for_each_sym(file->elf, func) {
--		if (!is_func_sym(func) || func->alias != func)
-+		if (!is_func_sym(func) || is_alias_sym(func))
- 			continue;
- 
- 		mark_func_jump_tables(file, func);
-@@ -4523,7 +4523,7 @@ static int validate_symbol(struct objtool_file *file, struct section *sec,
- 		return 1;
+-			if (dest_func && dest_func->cold)
++			if (dest_func && is_cold_func(dest_func))
+ 				dest_func->ignore = true;
+ 		}
  	}
+@@ -4422,8 +4422,8 @@ static int create_prefix_symbol(struct objtool_file *file, struct symbol *func)
+ 	char name[SYM_NAME_LEN];
+ 	struct cfi_state *cfi;
  
--	if (sym->pfunc != sym || sym->alias != sym)
-+	if (sym->pfunc != sym || is_alias_sym(sym))
+-	if (!is_func_sym(func) || is_prefix_func(func) ||
+-	    func->cold || func->static_call_tramp)
++	if (!is_func_sym(func) || is_prefix_func(func) || is_cold_func(func) ||
++	    func->static_call_tramp)
  		return 0;
  
- 	insn = find_insn(file, sec, sym->offset);
+ 	if ((strlen(func->name) + sizeof("__pfx_") > SYM_NAME_LEN)) {
 diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index 8a543cea43b9..ccc72a692d9a 100644
+index ccc72a692d9a..e452784df702 100644
 --- a/tools/objtool/include/objtool/elf.h
 +++ b/tools/objtool/include/objtool/elf.h
-@@ -298,6 +298,11 @@ static inline bool is_local_sym(struct symbol *sym)
- 	return sym->bind == STB_LOCAL;
+@@ -308,6 +308,11 @@ static inline bool is_prefix_func(struct symbol *sym)
+ 	return sym->prefix;
  }
  
-+static inline bool is_alias_sym(struct symbol *sym)
++static inline bool is_cold_func(struct symbol *sym)
 +{
-+	return sym->alias != sym;
++	return sym->cold;
 +}
 +
- static inline bool is_prefix_func(struct symbol *sym)
+ static inline bool is_reloc_sec(struct section *sec)
  {
- 	return sym->prefix;
+ 	return sec->sh.sh_type == SHT_RELA || sec->sh.sh_type == SHT_REL;
+diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+index 7e58ef36f805..8728dda1e08c 100644
+--- a/tools/objtool/klp-diff.c
++++ b/tools/objtool/klp-diff.c
+@@ -1709,7 +1709,8 @@ static int create_klp_sections(struct elfs *e)
+ 		unsigned long sympos;
+ 		void *func_data;
+ 
+-		if (!is_func_sym(sym) || sym->cold || !sym->clone || !sym->clone->changed)
++		if (!is_func_sym(sym) || is_cold_func(sym) ||
++		    !sym->clone || !sym->clone->changed)
+ 			continue;
+ 
+ 		/* allocate klp_func_ext */
 -- 
 2.53.0
 
